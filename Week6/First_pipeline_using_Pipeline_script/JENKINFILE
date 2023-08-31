@@ -1,0 +1,12 @@
+pipeline {
+   agent any
+    stages {
+        stage('build') {
+            steps {
+                
+                sh 'echo welcome to first pipeline'
+                sh 'python3 -version'
+            }
+        }
+    }
+}
