@@ -15,10 +15,8 @@
 
 ### On macOS and Linux
 
-1. Create a bridge network in Docker: `docker network create jenkins`
-2. Download and run the `docker:dind` Docker image.
+* Go to floder macOS_and_Linux
 
 ### On Windows
 
-Make sure your Docker for Windows installation is configured to run Linux Containers.
-
+* Go to floder Windows
