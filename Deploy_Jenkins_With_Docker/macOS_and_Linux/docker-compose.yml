@@ -10,16 +10,21 @@ services:
       - jenkins-docker-certs:/certs/client
       - jenkins-data:/var/jenkins_home
     ports:
-      - "2376:2376"
+      - 2376:2376
+      - 8085:8085
     networks:
-      - jenkins
+      jenkins:
+        aliases:
+          - docker
     command: --storage-driver overlay2
 
   jenkins-blueocean:
     build:
       context: .
-      dockerfile: Dockerfile # assuming the Dockerfile for myjenkins-blueocean:2.414.1-1 is in the same directory
+      dockerfile: Dockerfile
     container_name: jenkins-blueocean
+    depends_on:
+      - jenkins-docker
     restart: on-failure
     environment:
       - DOCKER_HOST=tcp://docker:2376
