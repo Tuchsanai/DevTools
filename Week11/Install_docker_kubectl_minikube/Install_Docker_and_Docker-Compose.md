@@ -18,8 +18,7 @@
 2. Press `i` to go into insert mode, then copy and paste the following shell script code into the editor:
 
 ```
-
-#!/bin/bash
+#!/bin/bash -e
 
 # Update package list and install dependencies
 sudo apt update
@@ -44,9 +43,11 @@ sudo apt install -y docker-ce docker-ce-cli containerd.io
 sudo systemctl enable docker
 sudo systemctl start docker
 
+# Change permissions of Docker socket (Not Recommended for production)
+sudo chmod 666 /var/run/docker.sock
+
 # Add the current user to the Docker group
 sudo usermod -aG docker $USER
-
 
 # Install Docker Compose
 echo "Installing Docker Compose..."
@@ -55,10 +56,11 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 echo "Installation complete. Please log out and log back in for changes to take effect."
 
-# Verify Docker Installation
-docker --version
+# Verify Docker Installation using sudo to avoid permission issues
+sudo docker --version
 # Verify Docker Compose Installation
-docker-compose --version
+sudo docker-compose --version
+
 
 ```
 
