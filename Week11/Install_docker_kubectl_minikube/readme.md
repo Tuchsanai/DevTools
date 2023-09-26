@@ -9,47 +9,61 @@ This repository contains a shell script for installing Minikube and kubectl on U
 
 ## Installation Steps
 
-1. Clone this repository:
+1. Open your terminal and type the following command to create a new shell script file using the vi editor:
 
     ```bash
-    git clone https://github.com/yourusername/minikube-kubectl-installer.git
+    vi install_docker_docker-compose.sh
     ```
 
-2. Change directory into the cloned repository:
+2. Press i to go into insert mode, then copy and paste the following shell script code into the editor:
 
     ```bash
-    cd minikube-kubectl-installer
+    #!/bin/bash
+
+# Update package list and install dependencies
+sudo apt update
+sudo apt install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+# Add Docker’s official GPG key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+# Add Docker APT repository
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Update the package index and install Docker
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io
+
+# Enable and start Docker
+sudo systemctl enable docker
+sudo systemctl start docker
+
+# Verify Docker Installation
+docker --version
+
+# Install Docker Compose
+echo "Installing Docker Compose..."
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+# Verify Docker Compose Installation
+docker-compose --version
+
+echo "Installation complete."
+
     ```
 
-3. Make the shell script executable:
+3. Press ESC to exit insert mode.
+
+4. Type :wq and press Enter to save the file and exit the vi editor.
+
+5. Give the script executable permissions:
 
     ```bash
-    chmod +x install_minikube_kubectl.sh
+    chmod +x install_docker_docker-compose.sh
     ```
-
-4. Run the installation script with sudo privileges:
-
-    ```bash
-    sudo ./install_minikube_kubectl.sh
-    ```
-
-## Verification
-
-After the script completes, you can verify the installation with:
-
-- Check Minikube status:
-
-    ```bash
-    minikube status
-    ```
-
-- Check kubectl version:
-
-    ```bash
-    kubectl version --client
-    ```
-
-## Contributors
-
-- Your Name
-
