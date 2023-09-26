@@ -18,6 +18,7 @@ This repository contains a shell script for installing Minikube and kubectl on U
 2. Press `i`` to go into insert mode, then copy and paste the following shell script code into the editor:
 
 ```
+
 #!/bin/bash
 
 # Update package list and install dependencies
@@ -43,20 +44,24 @@ sudo apt install -y docker-ce docker-ce-cli containerd.io
 sudo systemctl enable docker
 sudo systemctl start docker
 
-# Verify Docker Installation
-docker --version
+# Add the current user to the Docker group
+sudo usermod -aG docker $USER
+
 
 # Install Docker Compose
 echo "Installing Docker Compose..."
 sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
+echo "Installation complete. Please log out and log back in for changes to take effect."
+
+# Verify Docker Installation
+docker --version
 # Verify Docker Compose Installation
 docker-compose --version
 
-echo "Installation complete."
-
 ```
+
 
 3. Press ESC to exit insert mode.
 
