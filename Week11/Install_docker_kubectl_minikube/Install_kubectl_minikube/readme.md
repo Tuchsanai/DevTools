@@ -4,9 +4,7 @@ To install kubectl and minikube on Ubuntu 22.04 using a .sh file, you can follow
 https://minikube.sigs.k8s.io/docs/start/ and  https://kubernetes.io/docs/tasks/tools/
 Here is a sample shell script that combines the installation steps for both tools:
 
-0.
-
-modifies the permissions of the Docker socket file located at /var/run/docker.sock.
+0. modifies the permissions of the Docker socket file located at /var/run/docker.sock.
 
 ```
 sudo chmod 666 /var/run/docker.sock 
