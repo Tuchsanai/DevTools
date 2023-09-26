@@ -18,37 +18,31 @@ Here is a sample shell script that combines the installation steps for both tool
 ```
 #!/bin/bash
 
-# Update system packages
-sudo apt update && sudo apt upgrade -y
+# Update package lists and install dependencies
+sudo apt update
+sudo apt install -y curl
 
-# Install required dependencies
-sudo apt install curl wget apt-transport-https -y
-
-# Install VirtualBox
-sudo apt install virtualbox virtualbox-ext-pack -y
+# Install kubectl
+echo "Installing kubectl..."
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
 
 # Install Minikube
-wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-chmod +x minikube-linux-amd64
-sudo mv minikube-linux-amd64 /usr/local/bin/minikube
+echo "Installing Minikube..."
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
 
-# Verify Minikube Installation
+# Verify installations
+echo "Verifying installations..."
+kubectl version --client
 minikube version
 
-# Install kubectl (optional)
-sudo apt install kubectl -y
-
-
-# Start Minikube cluster
+# Start Minikube
+echo "Starting Minikube..."
 minikube start
 
-
-# Verify kubectl Installation
-kubectl version --client
-
-# Check Minikube status
-minikube status
-
+echo "Installation and Minikube start complete."
 
 
 ```
