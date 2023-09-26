@@ -44,7 +44,7 @@ sudo usermod -aG minikube $USER
 sudo minikube start 
 
 
- Verify Minikube Installation
+ # Verify Minikube Installation
 minikube version
 
 
