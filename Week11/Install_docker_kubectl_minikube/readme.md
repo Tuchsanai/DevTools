@@ -18,7 +18,8 @@ This repository contains a shell script for installing Minikube and kubectl on U
 2. Press `i`` to go into insert mode, then copy and paste the following shell script code into the editor:
 
 ```
-    #!/bin/bash
+#!/bin/bash
+
 # Update package list and install dependencies
 sudo apt update
 sudo apt install -y \
