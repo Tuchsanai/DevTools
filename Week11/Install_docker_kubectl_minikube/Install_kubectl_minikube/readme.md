@@ -31,8 +31,6 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
 
 
-# Add the current user to the Docker group
-sudo usermod -aG minikube $USER
 
 # Start Minikube cluster
 sudo minikube start 
