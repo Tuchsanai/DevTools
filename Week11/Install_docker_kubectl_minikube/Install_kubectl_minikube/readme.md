@@ -22,7 +22,6 @@ Here is a sample shell script that combines the installation steps for both tool
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 
-#
 
 
 # Install kubectl
@@ -33,7 +32,7 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
 
 # Start Minikube cluster
-sudo minikube start 
+minikube start 
 
 
  # Verify Minikube Installation
@@ -70,8 +69,9 @@ sudo ./install_k8s_tools.sh
 ```
 
 
-## 10.  check the status:
+## 10. minikube start  and  check the status:
 
+###  minikube start
 ```
 minikube start 
 ```
