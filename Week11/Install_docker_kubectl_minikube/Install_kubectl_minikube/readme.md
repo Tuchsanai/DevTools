@@ -33,8 +33,12 @@ sudo install minikube-linux-amd64 /usr/local/bin/minikube
 # Verify Minikube Installation
 minikube version
 
-# Install kubectl (optional)
-sudo apt install kubectl -y
+
+# Install kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+sudo apt-get install -y kubectl
+   
 
 
 # Start Minikube cluster
