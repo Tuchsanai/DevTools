@@ -30,7 +30,7 @@ sudo apt install virtualbox virtualbox-ext-pack -y
 # Install Minikube
 wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 chmod +x minikube-linux-amd64
-sudo install minikube-linux-amd64 /usr/local/bin/minikube
+sudo mv minikube-linux-amd64 /usr/local/bin/minikube
 
 # Verify Minikube Installation
 minikube version
@@ -40,7 +40,7 @@ sudo apt install kubectl -y
 
 
 # Start Minikube cluster
-minikube start --driver=virtualbox
+minikube start 
 
 
 # Verify kubectl Installation
