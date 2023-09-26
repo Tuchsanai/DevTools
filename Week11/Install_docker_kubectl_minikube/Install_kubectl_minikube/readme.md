@@ -23,8 +23,6 @@ sudo chmod 666 /var/run/docker.sock
 ```
 #!/bin/bash
 
-# Update system packages
-sudo apt update 
 
 # Install Minikube
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
