@@ -4,7 +4,14 @@ To install kubectl and minikube on Ubuntu 22.04 using a .sh file, you can follow
 https://minikube.sigs.k8s.io/docs/start/ and  https://kubernetes.io/docs/tasks/tools/
 Here is a sample shell script that combines the installation steps for both tools:
 
+0.
 
+modifies the permissions of the Docker socket file located at /var/run/docker.sock.
+
+```
+sudo chmod 666 /var/run/docker.sock 
+
+```
 
 1. Open your terminal and type the following command to create a new shell script file using the vi editor:
 
@@ -21,16 +28,11 @@ Here is a sample shell script that combines the installation steps for both tool
 # Update system packages
 sudo apt update && sudo apt upgrade -y
 
-# Install required dependencies
-sudo apt install curl wget apt-transport-https -y
-
-# Install VirtualBox
-sudo apt install virtualbox virtualbox-ext-pack -y
 
 # Install Minikube
-wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 chmod +x minikube-linux-amd64
-sudo mv minikube-linux-amd64 /usr/local/bin/minikube
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
 
 # Verify Minikube Installation
 minikube version
