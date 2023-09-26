@@ -74,12 +74,8 @@ sudo ./install_k8s_tools.sh
 ```
 
 
-## 10. Start Minikube and check the status:
+## 10.  check the status:
 
-```
-minikube start 
-
-```
 
 
 ```
