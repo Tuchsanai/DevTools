@@ -38,7 +38,12 @@ echo "Verifying installations..."
 kubectl version --client
 minikube version
 
-echo "Installation complete."
+# Start Minikube
+echo "Starting Minikube..."
+minikube start
+
+echo "Installation and Minikube start complete."
+
 
 ```
 
@@ -58,4 +63,23 @@ echo "Installation complete."
 
 ```
 sudo ./install_k8s_tools.sh
+```
+
+
+## 10. Start Minikube and check the status:
+
+```
+minikube start 
+
+```
+
+
+```
+minikube status 
+
+```
+
+
+```
+kubectl version --client
 ```
