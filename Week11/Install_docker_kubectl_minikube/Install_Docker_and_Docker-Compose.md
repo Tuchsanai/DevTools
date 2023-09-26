@@ -76,5 +76,5 @@ docker-compose --version
 6. Run the script as a superuser:
 
 ```
-   sudo ./install_docker_docker-compose.sh
+sudo ./install_docker_docker-compose.sh
 ```
