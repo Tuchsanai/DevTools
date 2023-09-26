@@ -15,11 +15,10 @@ This repository contains a shell script for installing Minikube and kubectl on U
     vi install_docker_docker-compose.sh
     ```
 
-2. Press i to go into insert mode, then copy and paste the following shell script code into the editor:
+2. Press `i`` to go into insert mode, then copy and paste the following shell script code into the editor:
 
-    ```bash
+```
     #!/bin/bash
-
 # Update package list and install dependencies
 sudo apt update
 sudo apt install -y \
@@ -56,7 +55,7 @@ docker-compose --version
 
 echo "Installation complete."
 
-    ```
+```
 
 3. Press ESC to exit insert mode.
 
