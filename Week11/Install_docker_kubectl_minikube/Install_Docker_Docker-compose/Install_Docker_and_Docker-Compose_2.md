@@ -75,6 +75,7 @@ sudo docker-compose --version
     chmod +x install_docker_docker-compose.sh
     ```
 
+
 6. Run the script as a superuser:
 
 ```
