@@ -1,13 +1,13 @@
-# Minikube and kubectl Installation Script for Ubuntu 22.04
+# Installation Docker and Docker Compose and Minikube and kubectl Installation Script for Ubuntu 22.04
 
-This repository contains a shell script for installing Minikube and kubectl on Ubuntu 22.04.
+
 
 ## Prerequisites
 
 - Ubuntu 22.04 machine
 - User with sudo privileges
 
-## Installation Steps
+## Installation Docker and Docker Compose on Ubuntu 22.04Steps
 
 1. Open your terminal and type the following command to create a new shell script file using the vi editor:
 
