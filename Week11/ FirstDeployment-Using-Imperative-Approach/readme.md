@@ -27,8 +27,6 @@ Make sure you have the following installed and set up:
 3. Tag the Docker image with the desired repository name and version
 ```
  docker tag kub-first-app tuchsanai/kubfirstapp:version1.0
-
-
 ```
 
 4.
