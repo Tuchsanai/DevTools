@@ -1,4 +1,4 @@
-# Lab: Deploy Your First Kubernetes Application
+# Excercise : Deploy Your First Kubernetes Application
 
 ## Objectives
 
@@ -20,5 +20,33 @@ Make sure you have the following installed and set up:
 1. Navigate to the directory containing the Dockerfile.
 2. Run the following command to build the Docker image:
 
-   ```shell
-   docker build -t first-app .
+```
+  docker build -t kub-first-app .  
+```
+
+```
+ docker tag kub-first-app  tuchsanai/kubfirstapp
+```
+
+```
+docker push tuchsanai/kubfirstapp
+```
+
+
+3. Deploy the Docker image to a Kubernetes cluster using the following command:
+
+```
+kubectl create deployment first-app --image=tuchsanai/kub-first-app
+```
+
+4. To check the status of the deployment and see if it was successful, use the following command:
+
+```
+kubectl get deployment
+```
+
+5. 
+
+```
+kubectl  get pods
+```
