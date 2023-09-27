@@ -24,28 +24,32 @@ Make sure you have the following installed and set up:
   docker build -t kub-first-app .  
 ```
 
+3. Tag the Docker image with the desired repository name and version
 ```
- docker tag kub-first-app  tuchsanai/kubfirstapp
-```
-
-```
-docker push tuchsanai/kubfirstapp
-```
+ docker tag kub-first-app tuchsanai/kubfirstapp:version1.0
 
 
-3. Deploy the Docker image to a Kubernetes cluster using the following command:
-
-```
-kubectl create deployment first-app --image=tuchsanai/kub-first-app
 ```
 
-4. To check the status of the deployment and see if it was successful, use the following command:
+4.
+```
+docker push tuchsanai/kubfirstapp:version1.0
+```
+
+
+5. Deploy the Docker image to a Kubernetes cluster using the following command:
+
+```
+kubectl create deployment first-app --image=tuchsanai/kubfirstapp:version1.0
+```
+
+6. To check the status of the deployment and see if it was successful, use the following command:
 
 ```
 kubectl get deployment
 ```
 
-5. 
+7. 
 
 ```
 kubectl  get pods
