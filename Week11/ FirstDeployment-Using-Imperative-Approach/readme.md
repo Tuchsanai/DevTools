@@ -80,15 +80,21 @@ kubectl  get pods
 kubectl get service
 ```
 
-#### 8 .Create New service :  The kubectl expose command in Kubernetes is used to create a new service that exposes an existing resource within the cluster
+#### 8 . Create New service by   kubectl expose command 
 
 ```
 kubectl expose deployment first-app --type=NodePort    --type=NodePort    --port=8080  --target-port=8080
 ```
 
-#### 9.   
+#### 9.  service which created by kubectl expose
+
 
 ```
 kubectl get service
 ```
   
+##### Test url from kubectl get service
+
+```
+url:port
+```
