@@ -63,7 +63,7 @@ kubectl  get pods
 kubectl expose deployment first-app --type=LoadBalance    --port=8080
 ```
 
-#### 9. 
+#### 9.   
 
 ```
 kubectl get service
