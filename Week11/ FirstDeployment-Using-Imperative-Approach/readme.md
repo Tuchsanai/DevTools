@@ -60,7 +60,7 @@ kubectl  get pods
 #### 8 . 
 
 ```
-kubectl expose deployment first-app --type=NodePort    --port=8080 --target-port=8080
+kubectl expose deployment first-app --type=NodePort    --type=NodePort    --port=8080  --target-port=8080
 ```
 
 #### 9.   
