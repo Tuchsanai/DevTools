@@ -13,6 +13,24 @@ Make sure you have the following installed and set up:
 - Kubernetes cluster (either Minikube or a cloud-based Kubernetes service)
 - kubectl command-line tool
 
+
+** Hint
+he kubectl expose command in Kubernetes is used to create a new service that exposes an existing resource within the cluster. This command is typically used to expose deployments, pods, or other resources as services, making them accessible to other parts of your cluster or external clients.
+
+# `kubectl expose` Command Reference
+
+The `kubectl expose` command in Kubernetes is used to create a new service that exposes an existing resource within the cluster. This table provides a reference for using the `kubectl expose` command with both `--port` and `--target-port` options.
+
+| Command                                   | Description                                   | Example                                  |
+|-------------------------------------------|-----------------------------------------------|------------------------------------------|
+| `kubectl expose deployment <deployment-name> --port=<port> --target-port=<target-port>`  | Expose a deployment with a specific port and target port | `kubectl expose deployment my-deployment --port=80 --target-port=8080` |
+| `kubectl expose pod <pod-name> --port=<port> --target-port=<target-port>`  | Expose a pod with a specific port and target port   | `kubectl expose pod my-pod --port=8080 --target-port=80`   |
+| `kubectl expose service <service-name> --port=<port> --target-port=<target-port>`  | Expose an existing service with specific port and target port | `kubectl expose service my-service --port=8081 --target-port=8080` |
+| `kubectl expose <resource-type> <resource-name> --port=<port> --target-port=<target-port>`  | Expose various Kubernetes resources with specified ports and target ports | `kubectl expose deployment my-deployment --port=8080 --target-port=80` |
+
+These `kubectl expose` commands allow you to create services with customized port and target port configurations, enabling effective communication within your Kubernetes cluster.
+
+
 ## Steps
 
 ### Build the Docker Image
@@ -52,12 +70,17 @@ kubectl create deployment first-app --image=tuchsanai/kubfirstapp:version1.0
 kubectl get deployment
 ```
 
-#### 7. show all pods
+#### 7. show all pods and service
 
 ```
 kubectl  get pods
 ```
-#### 8 . 
+
+```
+kubectl get service
+```
+
+#### 8 .Create New service :  The kubectl expose command in Kubernetes is used to create a new service that exposes an existing resource within the cluster
 
 ```
 kubectl expose deployment first-app --type=NodePort    --type=NodePort    --port=8080  --target-port=8080
