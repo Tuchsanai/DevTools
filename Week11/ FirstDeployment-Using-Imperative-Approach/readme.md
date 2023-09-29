@@ -93,8 +93,20 @@ kubectl expose deployment first-app --type=NodePort    --type=NodePort    --port
 kubectl get service
 ```
   
-##### Test url from kubectl get service
+#####  10. Test url from kubectl get service
 
 ```
 url:port
+```
+
+
+#### 11 scale deployment
+
+```
+kubectl scale deployment/first-app  --replicas=3
+```
+
+##### Check Scale 
+```
+kubectl get pods -o wide
 ```
