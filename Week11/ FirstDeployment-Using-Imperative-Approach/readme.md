@@ -68,3 +68,4 @@ kubectl expose deployment first-app --type=LoadBalancer    --port=8080
 ```
 kubectl get service
 ```
+  
