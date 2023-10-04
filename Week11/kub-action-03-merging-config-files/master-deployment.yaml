@@ -1,37 +1,33 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: backend
-spec:
-  selector: 
-    app: second-app
-  ports:
-    - protocol: 'TCP'
-      port: 80
-      targetPort: 80
-    # - protocol: 'TCP'
-    #   port: 443
-    #   targetPort: 443
-  type: NodePort
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: second-app-deployment
+  name: nginx-deployment
 spec:
-  replicas: 1
+  replicas: 3  # You can adjust the number of replicas as needed
   selector:
     matchLabels:
-      app: second-app
-      tier: backend
+      app: nginx
   template:
-    metadata: 
+    metadata:
       labels:
-        app: second-app
-        tier: backend
-    spec: 
+        app: nginx
+    spec:
       containers:
-        - name: second-node
-          image: nginx
-        # - name: ...
-        #   image: ...
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort
