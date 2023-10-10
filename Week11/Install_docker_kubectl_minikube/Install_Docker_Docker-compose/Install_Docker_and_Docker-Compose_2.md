@@ -84,3 +84,10 @@ docker-compose --version
 ```
 sudo ./install_docker_docker-compose.sh
 ```
+
+
+7. Change permissions of Docker socket 
+
+```
+sudo chmod 666 /var/run/docker.sock
+```
