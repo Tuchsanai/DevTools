@@ -1,0 +1,18 @@
+pipeline {
+   agent any
+    stages {
+         stage('pre -build') {
+            steps {
+                sh 'echo Pre-build'
+                sh 'python3 --version'
+            }
+        }
+        stage('build') {
+            steps {
+                
+                echo 'build in progress'
+                sh 'python3  Webhook/main.py'
+            }
+        }
+    }
+}
