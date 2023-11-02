@@ -1,0 +1,4 @@
+docker run --restart=always -d --name cct_prometheus \
+    -p 9090:9090 \
+    -v ./prometheus-node-exporter.yml:/etc/prometheus/prometheus.yml \
+    prom/prometheus

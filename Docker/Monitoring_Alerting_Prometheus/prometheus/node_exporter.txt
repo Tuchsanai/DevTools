@@ -1,0 +1,28 @@
+1. https://github.com/prometheus/node_exporter
+Prometheus exporter for hardware and OS metrics exposed by *NIX kernels, 
+written in Go with pluggable metric collectors.
+
+
+docker run -d \
+  -p 9100:9100 \
+  -v "/:/host:ro,rslave" \
+  quay.io/prometheus/node-exporter:latest \
+  --path.rootfs=/host
+
+2. IP:9100/metrics
+
+3. กลับมาที่ prometheus server เพื่อตั้งค่าให้รู้จักกับ production server
+
+4. ดูได้ที่ http://IP:9090/targets
+
+5.ทดลองใช้ grafana
+user: admin
+pass: admin
+
+https://grafana.com/grafana/dashboards/1860
+
+https://grafana.com/grafana/dashboards/15172-node-exporter-for-prometheus-dashboard-based-on-11074/
+
+
+
+

@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+rule_files:
+  #- "first_rule.yml"
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+    - targets: ['localhost:9090']
+  - job_name: 'node'
+    static_configs:
+    - targets: [172.17.0.1:9100']
