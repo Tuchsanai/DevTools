@@ -1,6 +1,6 @@
 global:
-  scrape_interval: 5s
-  evaluation_interval: 5s
+  scrape_interval: 1s
+  evaluation_interval: 1s
 rule_files:
   #- "first_rule.yml"
 scrape_configs:
@@ -9,4 +9,4 @@ scrape_configs:
     - targets: ['localhost:9090']
   - job_name: 'node'
     static_configs:
-    - targets: [172.17.0.1:9100']
+    - targets: ['172.17.0.2:9100']
