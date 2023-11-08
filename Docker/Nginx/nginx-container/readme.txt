@@ -1,5 +1,5 @@
 //nginx with a path html 
-docker run --name nginx --hostname ng1 -p 80:80 -v /Users/HusseinNasser/javascript/javascript_playground/nginx-udemy-container/html:/usr/share/nginx/html -d nginx
+docker run --name nginx --hostname ng1 -p 80:80 -v ./html:/usr/share/nginx/html -d nginx
 
 //inspect ccontainer 
 docker inspect nginx
@@ -13,7 +13,7 @@ docker run --hostname nodeapp1 --name nodeapp1 -d nodeapp
 docker run --hostname nodeapp2 --name nodeapp2 -d nodeapp
 docker run --hostname nodeapp3 --name nodeapp3 -d nodeapp
 
-docker run --hostname ng1 --name nginx -p 80:8080 -v /Users/HusseinNasser/javascript/javascript_playground/nginx-udemy-container/nginx.conf:/etc/nginx/nginx.conf -d nginx
+docker run --hostname ng1 --name nginx -p 80:8080 -v /Users/tuchsanai/Documents/GitHub/DevTools/Docker/Nginx/nginx-container/nginx.conf:/etc/nginx/nginx.conf -d nginx
 
 //create a docker network
 docker network create backendnet
