@@ -92,4 +92,4 @@ Creating a lab scenario that involves using `git add`, `git commit`, and `git st
 
 ### Conclusion
 
-Through these steps, you've created a lab environment that demonstrates the basic workflow of Git, including monitoring file changes with `git status`, staging changes with `git add`, and committing changes with `git commit`. This scenario provides hands-on experience with Git, which is crucial for understanding version control in devops and AI/machine learning projects.
+Through these steps, you've created a lab environment that demonstrates the basic workflow of Git, including monitoring file changes with `git status`, staging changes with `git add`, and committing changes with `git commit`.
