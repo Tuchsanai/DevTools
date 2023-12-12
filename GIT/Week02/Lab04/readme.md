@@ -32,8 +32,9 @@ To gain hands-on experience and understanding of `git pull`, `git status`, `git 
 1. Create a new repository on a platform like GitHub, GitLab, or Bitbucket.
 2. Link your local repository to the remote and push your changes.
    ```bash
+   git branch -M main
    git remote add origin [REMOTE-URL]
-   git push -u origin master
+   git push -u origin main
    ```
 
 ### Part 2: Making Changes in a Cloned Repository

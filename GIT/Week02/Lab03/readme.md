@@ -24,8 +24,9 @@ To demonstrate a scenario with Git involving fetching from a remote repository a
 
 4. **Add Remote and Push**:
    ```bash
+   git branch -M main
    git remote add origin [REMOTE-URL]
-   git push -u origin master
+   git push -u origin main
    ```
 
 ### Making Changes in a Separate Clone (Simulating Another Team Member)
