@@ -48,7 +48,13 @@ To demonstrate a scenario with Git involving fetching from a remote repository a
    git commit -m "First set of changes"
    git push
 
-   # Repeat similar steps for second and third set of changes
+   # Second round of changes
+   echo "Change 2 for file 1" >> file1.txt
+   echo "Change 2 for file 2" >> file2.txt
+   git add .
+   git commit -m "Second set of changes"
+   git push
+
    ```
 
 ### Fetching and Viewing Log in the Main Repository
