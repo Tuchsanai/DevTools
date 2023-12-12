@@ -54,7 +54,7 @@ To gain hands-on experience and understanding of `git pull`, `git status`, `git 
    git commit -m "First change to file 1"
    git push
 
-   # Repeat for the second and third sets of changes
+   # Repeat for the second of changes
    echo "Change 2 in file 1" >> file1.txt
    git add file1.txt
    git commit -m "Second change to file 1"
