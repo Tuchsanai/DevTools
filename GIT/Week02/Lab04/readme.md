@@ -55,6 +55,10 @@ To gain hands-on experience and understanding of `git pull`, `git status`, `git 
    git push
 
    # Repeat for the second and third sets of changes
+   echo "Change 2 in file 1" >> file1.txt
+   git add file1.txt
+   git commit -m "Second change to file 1"
+   git push
    ```
 
 ### Part 3: Pulling, Status Checking, Logging, and Checking Out
