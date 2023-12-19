@@ -128,3 +128,13 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    ```    
  
 
+### Task 3: Add Experimental branch and Delete
+
+```
+git branch experimental
+```
+
+```
+git switch experimental
+```
+
