@@ -68,7 +68,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    
    make sure you are in master branch
    ```
-   git checkout -b master
+   git switch master
    ```
    
    ```bash
@@ -82,7 +82,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
 
   Switch to the new branch
    ```bash
-   git checkout -b new_branch
+   git switch new_branch
    ```
    
    Check the branch we are on
