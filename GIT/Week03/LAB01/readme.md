@@ -2,7 +2,7 @@ Certainly! Using `echo` to create the content of files directly from the command
 
 ---
 
-## Git Lab Exercise: Understanding Commits and Branches with Echo
+## Git Lab Exercise: Understanding Commits and Branches 
 
 ### Objective
 Learn the basic Git workflow, including staging changes, making commits, and creating branches, using the `echo` command to add content to files.
@@ -35,6 +35,12 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    ```bash
    git commit -m "My First Commit"
    ```
+    Check status
+   ```
+   git status
+   ```
+
+
  3. git log check history
    ```bash
    git log
