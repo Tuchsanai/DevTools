@@ -74,11 +74,12 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    ```bash
    echo "# Line 4 (master)" >> README.md
    git add README.md
+   
    ```
    ```
    git commit -m "Added Line four"
    ```
-   ```
+ 
 
   Switch to the new branch
    ```bash
