@@ -88,7 +88,7 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
    ```
    
    ```
-   echo "Line :Add Alpha text " >> conflict.txt
+   echo "Line Extra master : Add Alpha text " >> conflict.txt
    git add conflict.txt
    git commit -m "Alpha commit"
    ```
