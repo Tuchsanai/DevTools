@@ -115,9 +115,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    git add README.md
    git commit -m "New branch commit"
    ```
-   ```
-
-
+   
    ```bash
    echo "This is my first file in the Git repository." >> README.md
    git add README.md
@@ -125,7 +123,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    ```
 
   check Head and history
-```bash
+   ```bash
    git log --all --oneline
    ```    
  
