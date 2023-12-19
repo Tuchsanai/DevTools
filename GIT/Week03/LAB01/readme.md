@@ -138,3 +138,7 @@ git branch experimental
 git switch experimental
 ```
 
+```
+echo "This is experimental branch" >> README.md
+echo "Finall this branch will delete" >> README.md
+```
