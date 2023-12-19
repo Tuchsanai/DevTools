@@ -126,8 +126,8 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
 
    A merge conflict will occur because of the incompatible changes.
 
-   ```
-   <<<<<<< HEAD
+```
+<<<<<<< HEAD
 Line 1: This is the start of the document.
 Line 2: Additional line in master branch.
 Line 3: Further changes in master branch.
@@ -137,7 +137,7 @@ Line 1 (new branch): This line will cause a merge conflict.
 Line 2 (new branch): This is another conflicting line.
 >>>>>>> new_branch
 
-   ```
+```
 
 
 3. Manually resolve the conflict by editing the file to keep the lines you want.
