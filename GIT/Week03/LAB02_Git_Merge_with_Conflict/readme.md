@@ -66,6 +66,18 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
    git commit -m "Second commit on new_branch"
    ```
 
+ 4. Display the commit history:
+
+
+   ```
+   cat conflict.txt
+   ```
+   
+    ```bash
+    git log --oneline --graph --all
+    ```
+
+
 ### Task 4: Merge `new_branch` into `master` and Resolve Conflict
 
 1. Switch back to the `master` branch:
