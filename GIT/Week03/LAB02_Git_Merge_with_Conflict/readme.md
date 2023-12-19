@@ -42,6 +42,18 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
    git commit -m "Third commit on master"
    ```
 
+ 3. Display the commit history:
+
+   ```
+   cat conflict.txt
+   ```
+
+   check git log
+    
+    git log --oneline
+    
+
+
 ### Task 3: Create `new_branch` and Add Commits
 
 1. Create a new branch named `new_branch` and switch to it:
