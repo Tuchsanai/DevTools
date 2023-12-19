@@ -74,12 +74,19 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    ```bash
    echo "# Line 4 (master)" >> README.md
    git add README.md
-   
+
    ```
+   
    ```
    git commit -m "Added Line four"
    ```
  
+   display Readme.md
+   ```
+    cat README.md
+   ```
+ 
+
 
   Switch to the new branch
    ```bash
@@ -91,6 +98,11 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    git branch
    ``` 
 
+   display Readme.md
+   ```
+    cat README.md
+  ```
+ 
 
 2. Add a new line to `README.md` on the `feature` branch:
 
