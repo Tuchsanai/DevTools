@@ -75,9 +75,9 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
 
    check git log
 
-    ```
+    
     git log --oneline
-    ```
+    
     
 
 
