@@ -50,6 +50,29 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    git branch
    ```
 
+### Task 2: Create  New Branch 
+
+1. Create and switch to a new branch named `new_branch`:
+
+   # Create a new branch
+   ```
+   git branch new_branch
+   ```
+
+    # Switch to the new branch
+
+   ```bash
+   git checkout -b new_branch
+   ```
+
+2. Add a new line to `README.md` on the `feature` branch:
+
+   ```bash
+   echo "This line is added in the feature branch." >> README.md
+   git add README.md
+   git commit -m "Added feature branch line to README.md"
+   ```
+
 
 ### Task 2: Second Commit with `echo`
 
@@ -61,21 +84,6 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    git commit -m "Added description line to README.md"
    ```
 
-### Task 3: Create and Commit on a New Branch with `echo`
-
-1. Create and switch to a new branch named `feature`:
-
-   ```bash
-   git checkout -b feature
-   ```
-
-2. Add a new line to `README.md` on the `feature` branch:
-
-   ```bash
-   echo "This line is added in the feature branch." >> README.md
-   git add README.md
-   git commit -m "Added feature branch line to README.md"
-   ```
 
 ### Task 4: View Commit History
 
