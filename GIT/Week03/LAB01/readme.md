@@ -21,7 +21,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
 1. Use `echo` to create a new file called `README.md` with some initial content and stage it for commit:
 
    ```bash
-   echo "# Lne 1" > README.md
+   echo "# Line 1" > README.md
    echo "# Line 2" >> README.md
    echo "# Line 3" >> README.md
    git add README.md
@@ -50,7 +50,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    git branch
    ```
 
-### Task 2: Create  New Branch 
+### Task 2: Commit "Add Line four" in master and Create and commit  new branch = new_branch
 
 1. Create and switch to a new branch named `new_branch`:
 
@@ -63,6 +63,22 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    ```
    git branch
    ``` 
+
+   Commit "Added Line four" in master branch  
+   
+   # make sure you are in master branch
+   ```
+   git checkout -b master
+   ```
+   
+   ```bash
+   echo "# Line 4 (master)" > README.md
+   git add README.md
+   ```
+   ```
+   git commit -m "Added Line four"
+   ```
+   ```
 
   Switch to the new branch
    ```bash
