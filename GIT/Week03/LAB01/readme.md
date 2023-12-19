@@ -16,7 +16,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    git init
    ```
 
-### Task 1: First Commit with `echo`
+### Task 1: First Commit 
 
 1. Use `echo` to create a new file called `README.md` with some initial content and stage it for commit:
 
@@ -26,7 +26,10 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    echo "# Line 3" >> README.md
    git add README.md
    ```
-
+   # Check status
+   ```
+   git status
+   ```
 2. Commit your staged change:
 
    ```bash
