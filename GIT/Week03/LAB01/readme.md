@@ -149,6 +149,8 @@ git branch
 ```
 echo "This is experimental branch" >> README.md
 echo "Finall this branch will delete" >> README.md
+git add README.md
+git commit -m "New branch commit 2"
 ```
 
 ```
