@@ -54,16 +54,26 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
 
 1. Create and switch to a new branch named `new_branch`:
 
-   # Create a new branch
+   Create a new branch
    ```
    git branch new_branch
    ```
+  
+  Check the branch we are on
+   ```
+   git branch
+   ``` 
 
-    # Switch to the new branch
-
+  Switch to the new branch
    ```bash
    git checkout -b new_branch
    ```
+   
+   Check the branch we are on
+   ```
+   git branch
+   ``` 
+
 
 2. Add a new line to `README.md` on the `feature` branch:
 
