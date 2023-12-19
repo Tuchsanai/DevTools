@@ -43,7 +43,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
 
  3. git log check Head and history
    ```bash
-   git log
+   git log --all --oneline 
    ```  
 4. display current branch
    ```bash
@@ -104,7 +104,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
   ```
    check Head and history
     ```
-    git log
+    git log --all --oneline 
     ```
   
  
