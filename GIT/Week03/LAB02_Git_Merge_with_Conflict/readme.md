@@ -65,7 +65,7 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
 2. Make changes to `conflict.txt` that will conflict with `master`:
 
    ```bash
-   echo "Line 2: This line will cause a merge conflict." > conflict.txt
+   echo "Line 1 (new branch): This line will cause a merge conflict." > conflict.txt
    git add conflict.txt
    git commit -m "First commit on new_branch"
    ```
@@ -73,7 +73,7 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
 3. Add another conflicting line and commit:
 
    ```
-   echo "Line 3: This is another conflicting line." >> conflict.txt
+   echo "Line 2 (new branch): This is another conflicting line." >> conflict.txt
    git add conflict.txt
    git commit -m "Second commit on new_branch"
    ```
