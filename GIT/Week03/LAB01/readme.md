@@ -22,8 +22,8 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
 
    ```bash
    echo "# Lne 1" > README.md
-   echo "Line 2" >> README.md
-   echo "Line 3" >> README.md
+   echo "# Line 2" >> README.md
+   echo "# Line 3" >> README.md
    git add README.md
    ```
 
