@@ -78,7 +78,9 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
    git commit -m "Second commit on new_branch"
    ```
 
- 4. Switch back to the `master` branch and Add Alpha commit:
+  ### Task 4: add new commit in master branch
+
+ 1. Switch back to the `master` branch and Add Alpha commit:
 
   
    ```
@@ -93,7 +95,7 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
 
 
 
- 5. Display the commit history:
+ 2. Display the commit history:
 
 
    ```
@@ -108,7 +110,7 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
     
 
 
-### Task 4: Merge `new_branch` into `master` and Resolve Conflict
+### Task 5: Merge `new_branch` into `master` and Resolve Conflict
 
 1. Switch back to the `master` branch:
 
