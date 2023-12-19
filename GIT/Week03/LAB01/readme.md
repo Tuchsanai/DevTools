@@ -150,3 +150,12 @@ git branch
 echo "This is experimental branch" >> README.md
 echo "Finall this branch will delete" >> README.md
 ```
+
+```
+git switch master
+```
+
+```
+git branch -D experimental
+```
+
