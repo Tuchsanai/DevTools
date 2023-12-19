@@ -64,7 +64,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    git branch
    ``` 
 
-   Commit "Added Line four" in master branch  
+
    
    make sure you are in master branch
    ```
@@ -76,7 +76,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    git add README.md
 
    ```
-   
+   Commit "Added Line four" in master branch  
    ```
    git commit -m "Added Line four"
    ```
