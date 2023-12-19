@@ -155,6 +155,12 @@ echo "Finall this branch will delete" >> README.md
 git switch master
 ```
 
+tell me if error
+```
+git branch -d experimental
+```
+
+
 ```
 git branch -D experimental
 ```
