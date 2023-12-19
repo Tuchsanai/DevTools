@@ -108,54 +108,25 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
     
     git log --all --oneline 
     
-  
 
-2. Add a new line to `README.md` on the `feature` branch:
-
-   ```bash
+   Commit new branch
+   ```
    echo "This line is added in the feature branch." >> README.md
    git add README.md
-   git commit -m "Added feature branch line to README.md"
+   git commit -m "New branch commit"
+   ```
    ```
 
-
-### Task 2: Second Commit with `echo`
-
-1. Add a new line to `README.md` using `echo` and append it using the `>>` operator:
 
    ```bash
    echo "This is my first file in the Git repository." >> README.md
    git add README.md
-   git commit -m "Added description line to README.md"
+   git commit -m "New branch commit 2"
    ```
 
+  check Head and history
+```bash
+   git log --all --oneline
+   ```    
+ 
 
-### Task 4: View Commit History
-
-1. View the commit history for the current branch:
-
-   ```bash
-   git log
-   ```
-
-2. To see the commit history with a graph, including all branches, use:
-
-   ```bash
-   git log --graph --all --decorate
-   ```
-
-### Conclusion
-
-You have used `echo` to create and modify files, learned to stage and commit those changes, and worked with branches. You have also inspected the commit history with different `git log` commands.
-
-### Submission
-
-Please submit the following:
-
-1. The final content of your `README.md` file (you can use `cat README.md` to display its content).
-2. The output of your `git log --graph --all --decorate` command.
-3. Optionally, any observations or questions you have about the process you've completed.
-
----
-
-This lab exercise guides students through a hands-on activity where they use `echo` to manipulate the content of files and use Git to track those changes. It's designed to be simple enough for beginners to follow while still exposing them to key Git concepts.
