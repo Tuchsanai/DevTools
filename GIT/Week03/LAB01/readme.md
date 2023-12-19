@@ -138,8 +138,8 @@ git branch experimental
 git switch experimental
 ```
 
-# chek the branch we are on
-```
+check the branch we are on
+
 ```
 git branch
 ```
