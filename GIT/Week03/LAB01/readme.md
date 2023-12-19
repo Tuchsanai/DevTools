@@ -26,7 +26,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    echo "# Line 3" >> README.md
    git add README.md
    ```
-   # Check status
+   Check status
    ```
    git status
    ```
