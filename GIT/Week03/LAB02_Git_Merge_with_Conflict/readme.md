@@ -78,7 +78,22 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
    git commit -m "Second commit on new_branch"
    ```
 
- 4. Display the commit history:
+ 4. Switch back to the `master` branch and Add Alpha commit:
+
+  
+   ```
+   git switch master
+   ```
+   
+   ```
+   echo "Line :Add Alpha text " >> conflict.txt
+   git add conflict.txt
+   git commit -m "Alpha commit"
+   ```
+
+
+
+ 5. Display the commit history:
 
 
    ```
@@ -109,26 +124,15 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
 
    A merge conflict will occur because of the incompatible changes.
 
-3. Open `conflict.txt` in a text editor. You will see merge conflict markers indicating the conflicting sections. For example:
 
-   ```
-   <<<<<<< HEAD
-   Line 2: Additional line in master branch.
-   Line 3: Further changes in master branch.
-   =======
-   Line 2: This line will cause a merge conflict.
-   Line 3: This is another conflicting line.
-   >>>>>>> new_branch
-   ```
-
-4. Manually resolve the conflict by editing the file to keep the lines you want.
-5. After resolving the conflict, stage the changes:
+3. Manually resolve the conflict by editing the file to keep the lines you want.
+4. After resolving the conflict, stage the changes:
 
    ```bash
    git add conflict.txt
    ```
 
-6. Complete the merge with a commit:
+5. Complete the merge with a commit:
 
    ```bash
    git commit -m "Resolved merge conflict between master and new_branch"
