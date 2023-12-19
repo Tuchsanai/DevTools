@@ -105,9 +105,9 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    
    check Head and history
 
-    ```
+    
     git log --all --oneline 
-    ```
+    
   
 
 2. Add a new line to `README.md` on the `feature` branch:
