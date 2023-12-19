@@ -60,7 +60,7 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
 
 3. Add another conflicting line and commit:
 
-   ```bash
+   ```
    echo "Line 3: This is another conflicting line." >> conflict.txt
    git add conflict.txt
    git commit -m "Second commit on new_branch"
@@ -72,8 +72,8 @@ Learn how to resolve a merge conflict in Git that occurs when changes in two bra
    ```
    cat conflict.txt
    ```
-   
-    ```bash
+
+    ```
     git log --oneline --graph --all
     ```
 
