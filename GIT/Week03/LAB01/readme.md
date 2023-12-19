@@ -41,7 +41,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    ```
 
 
- 3. git log check history
+ 3. git log check Head and history
    ```bash
    git log
    ```  
@@ -102,6 +102,11 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    ```
     cat README.md
   ```
+   check Head and history
+    ```
+    git log
+    ```
+  
  
 
 2. Add a new line to `README.md` on the `feature` branch:
