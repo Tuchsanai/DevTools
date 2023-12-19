@@ -50,7 +50,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
    git branch
    ```
 
-### Task 2: Commit "Add Line four" in master and Create and commit  new branch = new_branch
+### Task 2: Commit "Add Line four" in master and Create and commit  new branch 
 
 1. Create and switch to a new branch named `new_branch`:
 
@@ -66,7 +66,7 @@ Learn the basic Git workflow, including staging changes, making commits, and cre
 
    Commit "Added Line four" in master branch  
    
-   # make sure you are in master branch
+   make sure you are in master branch
    ```
    git checkout -b master
    ```
