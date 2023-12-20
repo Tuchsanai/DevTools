@@ -18,7 +18,7 @@ echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
+sudo apt-get update -y
 
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
@@ -39,7 +39,17 @@ sudo apt-get install docker-compose-plugin
 
 # Print Docker and Docker Compose versions
 docker --version
-docker compose --version
+docker compose version
 
 
+```
+
+# check
+
+```
+docker --version
+```
+
+```
+docker compose version
 ```
