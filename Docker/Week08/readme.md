@@ -1,61 +1,67 @@
-# Week 8
+# Install  docker and docker-compose for ubuntu
 
-# install docker with shell script on Ubuntu 22.04
+https://docs.docker.com/engine/install/ubuntu/
 
-Create a new file named install-git-docker.sh using the command 
 
-```
-nano install-git-docker.sh 
-```
-or any other text editor you prefer.
+### 1. Set up Docker's apt repository.
 
-# Add the following lines to the file:
-    
 ```
 #!/bin/bash
 
-# Update the package list
-sudo apt update
+# Update package information
+sudo apt-get update -y
 
-# Install Git
-sudo apt install git -y
+# Install prerequisites
+sudo apt-get install -y ca-certificates curl gnupg
 
-# Install Docker
-sudo apt install docker.io -y
+# Create a directory for the Docker GPG key
+sudo install -m 0755 -d /etc/apt/keyrings
+
+# Add Docker's official GPG key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+# Set permissions for the GPG key
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Add the Docker repository to Apt sources
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Update package information again
+sudo apt-get update -y
+
+# Install Docker packages
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Add the current user to the Docker group
-sudo usermod -aG docker ${USER}
-
-# Install Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-
-# Make the Docker Compose binary executable
-sudo chmod +x /usr/local/bin/docker-compose
-
-# Enable Docker service
-sudo systemctl enable docker.service
-
-# Enable Docker Compose
-sudo systemctl enable docker-compose.service
-
-```
-
-# Save the file by pressing 
-```
-Ctrl+X, then Y, then Enter.
-```
-# Make the file executable using the command 
-```
-chmod +x install-git-docker.sh
-```
-# Run the script using the command 
-```
-./install-git-docker.sh
-```
-
-# Allow to run docker without sudo
-
-```
 sudo usermod -aG docker $USER
+sudo groupadd docker
 
+# Adjust permissions for the Docker socket
+sudo chmod 666 /var/run/docker.sock 
+
+# Enable and start the Docker service
+sudo systemctl enable docker
+sudo systemctl start docker
+
+# Install the Compose plugin
+sudo apt-get install -y docker-compose-plugin
+
+# Print Docker and Docker Compose versions
+docker --version
+docker compose version
+
+```
+
+
+# check
+
+```
+docker --version
+```
+
+```
+docker compose version
 ```
