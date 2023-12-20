@@ -1,4 +1,4 @@
-# Install  docker, docker-compose for ubuntu
+# Install  docker and docker-compose for ubuntu
 
 https://docs.docker.com/engine/install/ubuntu/
 
