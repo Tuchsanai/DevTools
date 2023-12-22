@@ -106,6 +106,13 @@ docker compose version
 ```
 
 
+**check docker installation**
+
+```
+docker --version
+docker compose version
+```
+
 
 ## If you want Jenkins to run Docker commands without needing a password, you can configure sudoers:
 
