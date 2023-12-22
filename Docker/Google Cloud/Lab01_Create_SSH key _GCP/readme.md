@@ -1,4 +1,4 @@
-To create an SSH key for Google Cloud Platform (GCP) with the username "tuchsanai" and save it in the current directory with the filename `mykey`, you can follow these steps:
+To create an SSH key for Google Cloud Platform (GCP) with the username "username" and save it in the current directory with the filename `mykey`, you can follow these steps:
 
 ### Step 1: Generate the SSH Key Pair
 
@@ -9,12 +9,12 @@ To create an SSH key for Google Cloud Platform (GCP) with the username "tuchsana
 3. **Generate the SSH Key Pair**: Use the `ssh-keygen` command to generate a new SSH key pair. The key will be saved in the current directory with the name `mykey`. Run the following command:
 
    ```bash
-   ssh-keygen -t rsa -b 2048 -C "tuchsanai" -f ./mykey
+   ssh-keygen -t rsa -b 2048 -C "username" -f ./mykey
    ```
 
    - `-t rsa`: Specifies the type of key to create, in this case, RSA.
    - `-b 2048`: Specifies the number of bits in the key, in this case, 2048 bits.
-   - `-C "tuchsanai"`: Adds a comment to the key, here it is the username.
+   - `-C "username"`: Adds a comment to the key, here it is the username.
    - `-f ./mykey`: Specifies the filename and path of the key file. `./` denotes the current directory.
 
 4. **Set a Password** (Optional): You'll be prompted to enter a passphrase for additional security. This step is optional but recommended.
@@ -42,10 +42,10 @@ To create an SSH key for Google Cloud Platform (GCP) with the username "tuchsana
 2. **Connect via SSH**: Use the SSH command to connect to the instance. Replace `[EXTERNAL_IP]` with the actual IP address:
 
    ```bash
-   ssh -i ./mykey tuchsanai@[EXTERNAL_IP]
+   ssh -i ./mykey username@[EXTERNAL_IP]
    ```
 
    - `-i ./mykey`: Specifies the private key file for authentication.
-   - `tuchsanai@[EXTERNAL_IP]`: The username and IP address of the GCP instance.
+   - `username@[EXTERNAL_IP]`: The username and IP address of the GCP instance.
 
 Following these steps, you should be able to generate an SSH key in your specified directory and use it to connect to your GCP instances securely. Remember to keep the private key (`mykey`) secure and private.
