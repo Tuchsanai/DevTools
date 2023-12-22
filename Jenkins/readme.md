@@ -94,6 +94,7 @@ First, you need to install Jenkins on your Ubuntu machine. You can do this by fo
 6. **Start the Jenkins service:**
    ```bash
    sudo systemctl start jenkins
+   sudo systemctl status jenkins
    ```
 
 7. **Enable Jenkins to start at boot:**
