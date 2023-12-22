@@ -55,3 +55,85 @@ sudo systemctl start jenkins
 ```
 sudo systemctl status jenkins
 ```
+
+
+
+
+Configuring Jenkins on Ubuntu to run Docker commands requires a series of steps involving installing Jenkins, Docker, and then configuring the necessary permissions for Jenkins to interact with Docker. Here's a professional, step-by-step guide to set this up:
+
+### 1. Installing Jenkins
+
+First, you need to install Jenkins on your Ubuntu machine. You can do this by following these steps:
+
+1. **Update your package index:**
+   ```bash
+   sudo apt update
+   ```
+
+2. **Install Java (Jenkins requires Java):**
+   ```bash
+   sudo apt install openjdk-11-jdk
+   ```
+
+3. **Add the Jenkins repository and key:**
+   ```bash
+   wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+   sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+   ```
+
+4. **Update your package index again:**
+   ```bash
+   sudo apt update
+   ```
+
+5. **Install Jenkins:**
+   ```bash
+   sudo apt install jenkins
+   ```
+
+6. **Start the Jenkins service:**
+   ```bash
+   sudo systemctl start jenkins
+   ```
+
+7. **Enable Jenkins to start at boot:**
+   ```bash
+   sudo systemctl enable jenkins
+   ```
+
+
+# If you want Jenkins to run Docker commands without needing a password, you can configure sudoers:
+
+1. **Edit the sudoers file:**
+   ```bash
+   sudo visudo
+   ```
+
+2. **Add the following line to allow Jenkins to run all commands without a password:**
+   ```
+   jenkins ALL=(ALL) NOPASSWD: ALL
+   ```
+   Alternatively, for a more secure approach, only allow Docker commands:
+   ```
+   jenkins ALL=(ALL) NOPASSWD: /usr/bin/docker
+   ```
+
+3. **Save and exit the editor.**
+
+### 5. Testing the Setup
+
+1. **Restart Jenkins:**
+   ```bash
+   sudo systemctl restart jenkins
+   ```
+
+2. **Login to Jenkins and create a new job or pipeline.**
+
+3. **In the job configuration, use a shell script to execute Docker commands and test if it works.**
+
+
+
+
+
+
+
