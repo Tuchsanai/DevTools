@@ -8,7 +8,7 @@ This guide provides step-by-step instructions for installing Jenkins on Ubuntu. 
 - An Ubuntu machine (Physical or Virtual)
 - Internet access
 
-## Installation Steps
+## Installation Jenkins Steps
 
 1. **Update System Packages**
    Update the list of available packages and their versions.
@@ -28,16 +28,17 @@ OpenJDK 64-Bit Server VM (build 17.0.8+7-Debian-1deb12u1, mixed mode, sharing)
 
 ```
 
-3. Long Term Support release
+3.  install Jenkins through Long Term Support release
 
 ```
-curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
-  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
-echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
-  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
-  /etc/apt/sources.list.d/jenkins.list > /dev/null
-sudo apt-get update
-sudo apt-get install jenkins
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+sudo dnf upgrade
+# Add required dependencies for the jenkins package
+sudo dnf install fontconfig java-17-openjdk
+sudo dnf install jenkins
+sudo systemctl daemon-reload
 
 ```
 
@@ -46,13 +47,7 @@ sudo apt-get install jenkins
 
 ```
 sudo systemctl enable jenkins
-```
-
-```
 sudo systemctl start jenkins
-```
-
-```
 sudo systemctl status jenkins
 ```
 
