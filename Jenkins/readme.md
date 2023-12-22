@@ -41,12 +41,19 @@ sudo apt-get install jenkins
 
 4.  Start Jenkins
 
+
 ```
 sudo systemctl enable jenkins
 sudo systemctl start jenkins
 sudo systemctl status jenkins
 ```
 
+5.  Unlocking Jenkins with password
+
+
+```
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
 
 ## Installing Docker
 
