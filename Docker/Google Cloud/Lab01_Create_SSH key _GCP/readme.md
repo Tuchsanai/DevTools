@@ -8,6 +8,11 @@ To create an SSH key for Google Cloud Platform (GCP) with the username "username
 
 3. **Generate the SSH Key Pair**: Use the `ssh-keygen` command to generate a new SSH key pair. The key will be saved in the current directory with the name `mykey`. Run the following command:
 
+   ```
+   mkdir mykey
+   cd mykey
+   ```
+
    ```bash
    ssh-keygen -t rsa -b 2048 -C "username" -f ./mykey
    ```
