@@ -118,18 +118,10 @@ First, you need to install Jenkins on your Ubuntu machine. You can do this by fo
    jenkins ALL=(ALL) NOPASSWD: /usr/bin/docker
    ```
 
-3. **Save and exit the editor.**
-
-### 5. Testing the Setup
-
-1. **Restart Jenkins:**
+3. **Restart Jenkins:**
    ```bash
    sudo systemctl restart jenkins
    ```
-
-2. **Login to Jenkins and create a new job or pipeline.**
-
-3. **In the job configuration, use a shell script to execute Docker commands and test if it works.**
 
 
 
