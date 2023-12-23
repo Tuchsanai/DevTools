@@ -13,14 +13,14 @@ This guide provides step-by-step instructions for installing Jenkins on Ubuntu. 
 1. **Update System Packages**
    Update the list of available packages and their versions.
    ```bash
-   sudo apt-get update
+   sudo apt-get update 
    ```
 
 2. Installation of Java
 
 ```
-sudo apt update
-sudo apt install fontconfig openjdk-17-jre
+sudo apt update -y
+sudo apt install fontconfig openjdk-17-jre -y
 java -version
 
 ```
