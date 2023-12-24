@@ -1,8 +1,6 @@
-Certainly! Here's a comprehensive Git lab exercise, designed for teaching university students about using `git checkout`, `git log --oneline`, and understanding the concept of a detached head. The exercise includes making five specific commits, viewing commit logs, and then practicing checking out to the third and first commits.
 
----
 
-### Git Lab Exercise: Commit Navigation, Log Viewing, and Detached Head
+### Git Lab Exercise: Git checkout and Detached Head
 
 #### Objective
 This lab will guide you through using `git checkout` to navigate between commits, using `git log --oneline` to view a concise commit history, and understanding the concept of a detached head in Git. You will create and navigate through a series of five commits.
