@@ -71,11 +71,4 @@ To understand and practice the use of `git reset` with `soft` and `hard` options
      ```bash
      git reset --hard <commit-hash-of-first-commit>
      ```
-   - Have students note the changes in the working directory and commit history.
-
-9. **Analysis and Reflection**
-   - Students should analyze the differences between `soft` and `hard` resets.
-   - Encourage them to check the status of the repository after each reset.
-
-10. **Lab Report**
-    - Students should submit a detailed report explaining their observations and the effects of `soft` and `hard` resets in Git.
+   
