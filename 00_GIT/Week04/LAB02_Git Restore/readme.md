@@ -21,14 +21,14 @@ Develop a comprehensive understanding of the `git restore` command in Git throug
 2. **Create Files and Commit Sequentially:**
    Follow these steps for each of the five commits:
 
-   - **Commit 1:**
+   - **Commit :**
      ```bash
      echo "Initial content in file1" > file1.txt
      git add file1.txt
      git commit -m "Initial commit of file1"
      ```
 
-   - **Commit 2:**
+   - **Commit :**
      ```bash
      echo "Initial content in file2" > file2.txt
      git add file2.txt
