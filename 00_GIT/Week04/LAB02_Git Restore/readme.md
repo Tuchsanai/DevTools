@@ -14,6 +14,10 @@ Develop a comprehensive understanding of the `git restore` command in Git throug
    cd GitRestoreLab
    ```
 
+   ```bash
+   git init 
+   ```
+
 2. **Create Files and Commit Sequentially:**
    Follow these steps for each of the five commits:
 
