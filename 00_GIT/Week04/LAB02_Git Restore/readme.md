@@ -38,11 +38,18 @@ Develop a comprehensive understanding of the `git restore` command in Git throug
      git commit -m "Update file1"
      ```
 
-   - **Commit 4:**
+- **Commit 4:**
+ ```bash
+     echo "Initial content in file3" > file3.txt
+     git add file3.txt
+     git commit -m "Initial commit of file3"
+     ```
+
+   - **Commit 5:**
     ```bash
-     echo "xxxx More xxxx Update to file1" >> file1.txt
-     git add file1.txt
-     git commit -m "Update xxx More xxx file1"
+     echo "xxxx More xxxx Update to file3" >> file3.txt
+     git add file3.txt
+     git commit -m "Update xxx More xxx file3"
      ```
 
    
@@ -66,17 +73,8 @@ Develop a comprehensive understanding of the `git restore` command in Git throug
    git status  # Check the effect
    ```
 
-3.1. **Restore to Specific Commit and HEAD~3:**
-   Alter a file and restore it to an earlier commit:
 
-   ```bash
-   echo "Change in file2" >> file2.txt
-   git status  # Check the effect
-   git restore --source=<commit-hash> file2.txt
-   git status  # Check the effect
-   ```
-
-3.2. **Restore to Specific Commit and HEAD~3:**
+3. **Restore to Specific Commit and HEAD~3:**
    Alter a file and restore it to an earlier commit:
 
    ```bash
