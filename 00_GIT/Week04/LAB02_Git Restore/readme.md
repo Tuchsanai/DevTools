@@ -35,21 +35,34 @@ Develop a comprehensive understanding of the `git restore` command in Git throug
      git commit -m "Add file2"
      ```
 
-   - **Commit 3:**
+   - **Commit :**
 ```bash
      echo "Update to file1" >> file1.txt
      git add file1.txt
      git commit -m "Update file1"
 ```
+```bash
+     echo "Update to file2" >> file2.txt
+     git add file2.txt
+     git commit -m "Update file2"
+```
 
-- **Commit 4:**
+
+
+- **Commit :**
  ```bash
      echo "Initial content in file3" > file3.txt
      git add file3.txt
      git commit -m "Initial commit of file3"
 ```
+```bash
+     echo "Update to file3" >> file3.txt
+     git add file3.txt
+     git commit -m "Update file3"
+```
 
-- **Commit 5:**
+
+- **Commit :**
     ```bash
      echo "xxxx More xxxx Update to file3" >> file3.txt
      git add file3.txt
@@ -73,9 +86,14 @@ Develop a comprehensive understanding of the `git restore` command in Git throug
    ```bash
    echo "Additional line in file1" >> file1.txt
    git status  # Check the effect
+   git log --oneline  # Check the effect
+   ```
+  ```bash
    git restore --source=HEAD file1.txt
    git status  # Check the effect
+   git log --oneline  # Check the effect
    ```
+
 
 
 3. **Restore to Specific Commit and HEAD~3:**
@@ -83,9 +101,11 @@ Develop a comprehensive understanding of the `git restore` command in Git throug
 
    ```bash
    echo "More Change in file2" >> file2.txt
-   git status  # Check the effect
-   git restore --source=HEAD~3 file2.txt
-   git status  # Confirm the restoration
+   ```
+
+   ** try to change N = 1,2,3..
+   ```bash
+   git restore --source=HEAD~N file2.txt
    ```
 
 
@@ -96,9 +116,14 @@ Develop a comprehensive understanding of the `git restore` command in Git throug
    ```bash
    echo "Further changes in file3" >> file3.txt
    git add file3.txt
+   git status  # Verify staged
+   ```
+
+  ```bash
    git restore --staged file3.txt
    git status  # Verify unstage
    ```
+
 
 #### Deliverables
 - A detailed report documenting each step, the `git` commands used, and the outcomes observed.
