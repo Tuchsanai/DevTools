@@ -40,9 +40,9 @@ Develop a comprehensive understanding of the `git restore` command in Git throug
 
    - **Commit 4:**
     ```bash
-     echo "Update to file4" >> file1.txt
-     git add file4.txt
-     git commit -m "Update file4"
+     echo "xxxx More xxxx Update to file1" >> file1.txt
+     git add file1.txt
+     git commit -m "Update xxx More xxx file1"
      ```
 
    
