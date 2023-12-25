@@ -36,30 +36,30 @@ Develop a comprehensive understanding of the `git restore` command in Git throug
      ```
 
    - **Commit :**
-```bash
-     echo "Update to file1" >> file1.txt
-     git add file1.txt
-     git commit -m "Update file1"
-```
-```bash
-     echo "Update to file2" >> file2.txt
-     git add file2.txt
-     git commit -m "Update file2"
-```
+   ```bash
+      echo "Update to file1" >> file1.txt
+      git add file1.txt
+      git commit -m "Update file1"
+   ```
+   ```bash
+      echo "Update to file2" >> file2.txt
+      git add file2.txt
+      git commit -m "Update file2"
+   ```
 
 
 
 - **Commit :**
- ```bash
-     echo "Initial content in file3" > file3.txt
-     git add file3.txt
-     git commit -m "Initial commit of file3"
-```
-```bash
-     echo "Update to file3" >> file3.txt
-     git add file3.txt
-     git commit -m "Update file3"
-```
+   ```bash
+      echo "Initial content in file3" > file3.txt
+      git add file3.txt
+      git commit -m "Initial commit of file3"
+   ```
+   ```bash
+      echo "Update to file3" >> file3.txt
+      git add file3.txt
+      git commit -m "Update file3"
+   ```
 
 
 - **Commit :**
