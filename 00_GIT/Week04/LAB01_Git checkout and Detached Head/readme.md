@@ -73,7 +73,8 @@ This lab will guide you through using `git checkout` to navigate between commits
      Checkout back to the latest commit on your main branch:
 
      ```bash
-     git checkout main
+     git checkout main or git checkout master
+
      ```
 
    - **Checkout to the First Commit:**
