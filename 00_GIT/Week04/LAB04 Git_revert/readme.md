@@ -60,7 +60,7 @@ Learn to effectively use the `git revert` command to undo changes in a Git repos
    git log --oneline
    ```
 
-2. **Revert Specific Commits:**
+2. **Revert Specific Commits:** : Don't worry if there are merge conflicts. We will resolve them in the next step.
    Choose a commit to revert. For example, revert the third commit:
 
    ```bash
@@ -76,8 +76,9 @@ Learn to effectively use the `git revert` command to undo changes in a Git repos
 
    ```bash
    # Edit the conflicted files
-   git add <resolved-files>
+   git add .
    git revert --continue
+   git log --oneline  # Verify the revert
    ```
 
 
