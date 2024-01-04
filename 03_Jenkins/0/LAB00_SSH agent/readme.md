@@ -16,8 +16,7 @@ pipeline {
         
         stage('Apply multiple Commands') {
             steps {
-                sshagent(['prod-agent_id'])  {
-                   
+                sshagent(['agent_id'])  {
                    
                     sh '''
                         ssh -o StrictHostKeyChecking=no remote_user@remote_host
@@ -25,7 +24,6 @@ pipeline {
                             echo Second command;
                             echo Third command
                     '''
-                       
                     // Replace remote_user, remote_host, and the commands with your own.
                 }
             }
