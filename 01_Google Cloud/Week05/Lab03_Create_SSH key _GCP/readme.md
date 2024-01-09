@@ -22,23 +22,12 @@ To create an SSH key for Google Cloud Platform (GCP) with the username "username
    - `-C "username"`: Adds a comment to the key, here it is the username.
    - `-f tuchsanai_gcp_key`: Specifies the filename and path of the key file. 
 
-4. **Set a Password** (Optional): You'll be prompted to enter a passphrase for additional security. This step is optional but recommended.
+
 
 ### Step 2: Add the Public Key to GCP
 
-1. **Locate the Public Key**: The command above creates two files in the current directory: `mykey` (private key) and `mykey.pub` (public key). You need to upload the public key to GCP.
 
-2. **Copy the Public Key**: Display and copy the contents of the public key file by using the command:
-
-   ```bash
-   cat ./username.pub
-   ```
-
-3. **Log in to GCP Console**: Go to your GCP console in a web browser.
-
-4. **Navigate to SSH Keys Section**: Go to the "Compute Engine" section, then to "Metadata", and find the "SSH Keys" tab.
-
-5. **Add the SSH Key**: Paste the copied public key into the SSH keys section and save the changes.
+ - **Add the SSH Key**: Paste the copied public key into the SSH keys section and save the changes.
 
 ### Step 3: Connect to a GCP Instance
 
