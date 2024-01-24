@@ -1,5 +1,9 @@
 
-![Demo](./mydemo2.jpg)
+
+# display 2 images gpc.jpg and web.jpg
+| ![gpc](./gpc.jpg) | ![web](./web.jpg) |
+|:---:|:---:|
+
 
 
 
