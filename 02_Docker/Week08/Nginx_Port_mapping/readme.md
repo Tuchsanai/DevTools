@@ -7,7 +7,8 @@
 
 ## git clone branch week8
     
-    ```bash
+    
+    ```
     git clone -b week8 https://github.com/Tuchsanai/DevTools.git
     ```
 
