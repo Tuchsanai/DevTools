@@ -1,6 +1,6 @@
 ## create directory
 
-    ```bash
+    ```
     mkdir Nginx_Port_mapping
     cd Nginx_Port_mapping
     ```     
