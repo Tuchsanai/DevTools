@@ -1,15 +1,23 @@
-### Clone
+## create directory
 
-```
-git clone https://github.com/Tuchsanai/devpot_week9.git
-```
+   
+    mkdir LAB5_Week9
+    cd    LAB5_Week9
+    
+
+## git clone branch dev
+    
+    
+   ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   ```
+   
+   ```   
+    cd DevTools/02_Docker/Week09/Lab5
+   ```
 
 
-### go to Directory
-```
-cd devpot_week9/Lab5
 
-```
 
 
 
