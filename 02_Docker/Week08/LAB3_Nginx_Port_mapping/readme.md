@@ -1,18 +1,18 @@
 ## create directory
 
    
-    mkdir Nginx_Port_mapping
-    cd Nginx_Port_mapping
+    mkdir LAB3_Nginx_Port_mapping 
+    cd    LAB3_Nginx_Port_mapping 
     
 
-## git clone branch week8
+## git clone branch dev
     
     
    
-    git clone -b week8 https://github.com/Tuchsanai/DevTools.git
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
 
    
-    cd DevTools/Nginx_Port_mapping
+    cd DevTools/02_Docker/Week08/LAB3_Nginx_Port_mapping
   
 
 
