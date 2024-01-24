@@ -1,3 +1,24 @@
+
+## create directory
+
+   
+    mkdir LAB1_Nginx
+    cd    LAB1_Nginx
+    
+
+## git clone branch dev
+    
+    
+   ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   ```
+   
+   ```   
+    cd DevTools/02_Docker/Week10_Nginx/01_LAB1
+   ```   
+
+
+
 ## create  nodeapp 
 
 ```bash
