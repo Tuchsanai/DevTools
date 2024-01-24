@@ -1,3 +1,21 @@
+## create directory
+
+    ```bash
+    mkdir Nginx_Port_mapping
+    cd Nginx_Port_mapping
+    ```     
+
+## git clone branch week8
+    
+    ```bash
+    git clone -b week8 https://github.com/Tuchsanai/DevTools.git
+    ```
+
+    ```
+    cd DevTools/Nginx_Port_mapping
+    ```
+
+
 ## Run Nginx with port mapping
 
 ```
