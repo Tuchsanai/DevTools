@@ -23,7 +23,7 @@ docker run -p 8080:80 nginx
 
 
 
-![Demo](./portmap_demo1.jpg)
+![Demo](./portmap_demo1.jpg =250x)
 
 
 
