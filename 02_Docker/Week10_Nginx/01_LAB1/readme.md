@@ -30,7 +30,7 @@ docker run --hostname nodeapp3 --name nodeapp3 -d nodeapp
 ## create nginx
 
 ```bash
-docker run --hostname ng1 --name nginx -p 80:8080 -v $(PWD)/nginx.conf:/etc/nginx/nginx.conf -d nginx
+docker run --hostname ng1 --name nginx -p 8080:8080 -v ./nginx.conf:/etc/nginx/nginx.conf -d nginx
 ```
 
 ## create a docker network
