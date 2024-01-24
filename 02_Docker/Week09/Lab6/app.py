@@ -1,7 +1,11 @@
 import streamlit as st
 from PIL import Image
+import os
 
-st.title('Upload and Display Image with Username and ID')
+env_SERVER_URL = os.environ['SERVER_URL']
+   
+
+st.title('Upload and Display Image with Username and ID to {}'.format(env_SERVER_URL))
 
 # User input
 username = st.text_input("Enter your username")
