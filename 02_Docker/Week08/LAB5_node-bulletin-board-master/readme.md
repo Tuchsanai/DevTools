@@ -1,15 +1,24 @@
 
 ![Demo](./demo3.jpg)
 
+## create directory
 
-## 1 Git clone
+   
+    mkdir LAB5_node-bulletin-board-master
+    cd    LAB5_node-bulletin-board-master
+    
 
-```
-git clone https://github.com/Tuchsanai/devopt_week8.git
+## git clone branch dev
+    
+    
+   ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   ```
+   
+   ```   
+    cd DevTools/02_Docker/Week08/LAB5_node-bulletin-board-master
+   ```
 
-cd devopt_week8/node-bulletin-board-master/bulletin-board-app
-
-```
 
 ## 3 Build Docker image
 ```
