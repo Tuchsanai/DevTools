@@ -1,5 +1,4 @@
 ![Alt Text](demo0.jpg)
-
 ## create directory
 
    
@@ -15,7 +14,7 @@
    ```
    
    ```   
-    cd DevTools/02_Docker/Week09/LAB3_Week9
+    cd DevTools/02_Docker/Week09/Lab3
    ```
 
 

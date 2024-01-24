@@ -15,7 +15,7 @@
    ```
    
    ```   
-    cd DevTools/02_Docker/Week09/LAB2_Week9
+    cd DevTools/02_Docker/Week09/Lab2
    ```
 
 
