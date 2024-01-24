@@ -18,15 +18,16 @@
    ```
    
    ```   
-    cd DevTools/02_Docker/Week08/LAB5_node-bulletin-board-master
+    cd DevTools/02_Docker/Week08/LAB5_node-bulletin-board-master/bulletin-board-app
    ```
+
 
 
 ## 3 Build Docker image
 ```
 
 
-docker build  -f ./bulletin-board-app/Dockerfile -t bulletinboard:1.0 .
+docker build   -t bulletinboard:1.0 .
 
 
 ```
