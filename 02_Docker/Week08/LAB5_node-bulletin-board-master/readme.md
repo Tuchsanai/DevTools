@@ -25,7 +25,8 @@
 ## 3 Build Docker image
 ```
 
-docker build -t bulletinboard:1.0 .
+
+docker build  -f ./bulletin-board-app/Dockerfile -t bulletinboard:1.0 .
 
 
 ```
