@@ -23,10 +23,17 @@
 
 ```bash
 docker build . -t nodeapp
-docker run --hostname nodeapp1 --name nodeapp1 -d nodeapp
-docker run --hostname nodeapp2 --name nodeapp2 -d nodeapp
-docker run --hostname nodeapp3 --name nodeapp3 -d nodeapp
+docker run --hostname nodeapp1 -p8080:80 --name nodeapp1 -d nodeapp
+docker run --hostname nodeapp2 -p8080:80 --name nodeapp2 -d nodeapp
+docker run --hostname nodeapp3 -p8080:80 --name nodeapp3 -d nodeapp
 ```
+
+## show All container
+
+```bash
+docker ps -a
+```
+
 ## create nginx
 
 ```bash

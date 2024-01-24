@@ -67,8 +67,6 @@ docker compose version
 ```
 
 
-
-
 # Delete all containers
 
 ```
