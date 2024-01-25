@@ -18,20 +18,6 @@
 
 
 
-### Next, create a new file called Dockerfile in the root of your project directory with the following contents:
-```
-FFROM python:3.9-slim-buster
-
-WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY . .
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
-```
-
 ### build Docker image with docker build 
 ```
 docker build -t fastapi-docker_lab5 .
