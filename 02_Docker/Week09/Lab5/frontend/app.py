@@ -36,6 +36,7 @@ if st.button('Finish'):
         with col1:
             image = Image.open(uploaded_file)
             st.image(image, caption='Uploaded Image.', use_column_width=True)
+            st.write('username: ', username, 'surname: ', surname)
 
         with col2:
             image = Image.open(uploaded_file)
