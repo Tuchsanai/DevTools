@@ -1,8 +1,8 @@
 ## create directory
 
    
-    mkdir LAB5_Week9
-    cd    LAB5_Week9
+    mkdir LAB5_Week9_Backend
+    cd    LAB5_Week9_Backend
     
 
 ## git clone branch dev
@@ -13,12 +13,8 @@
    ```
    
    ```   
-    cd DevTools/02_Docker/Week09/Lab5
+    cd DevTools/02_Docker/Week09/Lab5/backend
    ```
-
-
-
-
 
 
 
