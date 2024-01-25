@@ -1,5 +1,3 @@
-# week9
- 
 
 # Delete all containers
 
