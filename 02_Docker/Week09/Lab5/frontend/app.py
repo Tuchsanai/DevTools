@@ -2,10 +2,10 @@ import streamlit as st
 from PIL import Image
 import os
 
-env_SERVER_URL = os.environ['SERVER_URL']
+env_BACKEND_URL = os.environ['BACKEND_URL']
    
 
-st.title('Upload and Display Image with Username and ID to {}'.format(env_SERVER_URL))
+st.title('Upload and Display Image with Username and ID with Backend Url = {}'.format(env_BACKEND_URL))
 
 # User input
 username = st.text_input("Enter your username")
@@ -26,6 +26,7 @@ if st.button('Finish'):
             st.write("ID Number:", id_number) 
         with col2:
             st.image(image, caption="Image 2")
+            st.write("Username:", username)
 
 
     else:
