@@ -9,6 +9,7 @@ import base64
 
 app = FastAPI()
 
+
 class ImageRequest(BaseModel):
     image: str
     name: str
