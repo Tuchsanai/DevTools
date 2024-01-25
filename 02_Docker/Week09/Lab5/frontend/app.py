@@ -17,10 +17,16 @@ uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png
 # Finish button
 if st.button('Finish'):
     if uploaded_file is not None:
-        # Display the image and details
-        image = Image.open(uploaded_file)
-        st.image(image, caption='Uploaded Image.', use_column_width=True)
-        st.write("Username:", username)
-        st.write("ID Number:", id_number)
+        # Create a 2x1 table to display images
+        col1, col2 = st.columns(2)
+        with col1:
+            image = Image.open(uploaded_file)
+            st.image(image, caption='Uploaded Image.', use_column_width=True)
+            st.write("Username:", username)
+            st.write("ID Number:", id_number) 
+        with col2:
+            st.image(image, caption="Image 2")
+
+
     else:
         st.write("Please upload an image.")
