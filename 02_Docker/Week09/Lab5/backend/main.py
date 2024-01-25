@@ -2,6 +2,7 @@
 import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
+from typing import List  # Import List from typing
 import numpy as np
 import cv2
 import base64
