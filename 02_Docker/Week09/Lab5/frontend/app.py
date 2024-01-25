@@ -20,7 +20,7 @@ def decode_image(image_string):
     return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
 
-env_BACKEND_URL = os.environ.get('BACKEND_URL', '127.0.0.1:8000') # Adjust the default port if necessary
+env_BACKEND_URL = os.environ.get('BACKEND_URL', '127.0.0.1') # Adjust the default port if necessary
 
 
 
@@ -48,6 +48,8 @@ if st.button('Finish'):
             }
 
             response = requests.post(f"http://{env_BACKEND_URL}:8088/process-image", json=payload)
+        
+
             if response.status_code == 200:
                 data = json.loads(response.content)
                 processed_image_string = data["processed_image"]

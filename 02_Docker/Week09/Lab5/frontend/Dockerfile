@@ -5,8 +5,12 @@ FROM python:3.8
 WORKDIR   /app
 
 # Copy the dependencies file to the working directory
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-COPY requirements.txt .
+# Make port 8501 available to the world outside this container
+EXPOSE 8501
+
 
 # Install any dependencies
 RUN pip install -r requirements.txt
