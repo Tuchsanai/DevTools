@@ -4,8 +4,8 @@
 ## create directory
 
    
-    mkdir LAB5_Week9_Frontend
-    cd    LAB5_Week9_Frontend
+    mkdir LAB4_Week9_Frontend
+    cd    LAB4_Week9_Frontend
     
 
 ## git clone branch dev
@@ -16,7 +16,7 @@
    ```
    
    ```   
-    cd DevTools/02_Docker/Week09/Lab5/frontend
+    cd DevTools/02_Docker/Week09/Lab4/frontend
    ```
 
 
