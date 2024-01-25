@@ -1,6 +1,25 @@
 
 # Build and run the container as before:
 
+## create directory
+
+   
+    mkdir LAB5_Week9_Frontend
+    cd    LAB5_Week9_Frontend
+    
+
+## git clone branch dev
+    
+    
+   ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   ```
+   
+   ```   
+    cd DevTools/02_Docker/Week09/Lab5/frontend
+   ```
+
+
 1. **Build the Docker Image**:
    ```bash
    docker build -t streamlit-app_lab5  .
