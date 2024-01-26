@@ -1,56 +1,44 @@
 
-## create directory
+### Step 1: Building Docker Images for Express Apps
 
-   
-    mkdir LAB1_Nginx
-    cd    LAB1_Nginx
-    
-
-## git clone branch dev
-    
-    
-   ```
-    git clone -b dev https://github.com/Tuchsanai/DevTools.git
-   ```
-   
-   ```   
-    cd DevTools/02_Docker/Week10_Nginx/01_LAB1
-   ```   
-
-
-
-## create  nodeapp 
 
 ```bash
-docker build . -t nodeapp
-docker run --hostname nodeapp1 -p8080:80 --name nodeapp1 -d nodeapp
-docker run --hostname nodeapp2 -p8080:80 --name nodeapp2 -d nodeapp
-docker run --hostname nodeapp3 -p8080:80 --name nodeapp3 -d nodeapp
+
+docker build -t express-app .
+
 ```
 
-## show All container
+### Step 2: Creating a Docker Network
+
+Create a custom network for your Docker containers. This allows the containers to communicate with each other.
 
 ```bash
-docker ps -a
+docker network create express-network
 ```
 
-## create nginx
+### Step 3: Running Express App Containers
+
+Run the containers for `app1` and `app2` on the created network:
 
 ```bash
-docker run --hostname ng1 --name nginx -p 8080:8080 -v ./nginx.conf:/etc/nginx/nginx.conf -d nginx
+docker run -d --name app1 --network express-network -p 3001:3000 express-app
+docker run -d --name app2 --network express-network -p 3002:3000 express-app
 ```
 
-## create a docker network
+### Step 4: Setting Up Nginx for Load Balancing
+
 
 ```bash
-docker network create backendnet
+docker run -d --name nginx-load-balancer --network express-network -p 8080:8080 -v ./nginx.conf:/etc/nginx/nginx.conf:ro nginx
 ```
 
-## connect containers to the network
+
+# Clearing Up
 
 ```bash
-docker network connect backendnet nodeapp1
-docker network connect backendnet nodeapp2
-docker network connect backendnet nodeapp3
-docker network connect backendnet nginx
+docker stop $(docker ps -a -q)  
+docker rm $(docker ps -a -q) 
+docker rmi $(docker images -q) 
+docker volume rm $(docker volume ls -q)  
+docker network prune -f
 ```
