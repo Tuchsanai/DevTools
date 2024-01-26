@@ -7,9 +7,11 @@ const port = 3000;
 app.get('/', (req, res) => {
     const currentTime = new Date().toLocaleTimeString();
 
-    res.send("hostname: " + os.hostname() + "<br>");
-    res.send("platform: " + os.platform() + "<br>");
-    res.send("current time: " + currentTime);
+    res.send(`<div>
+                <span style="font-size: 24px;">hostname: ${os.hostname()}</span><br>
+                <span>platform: ${os.platform()}</span><br>
+                <span>current time: ${currentTime}</span>
+              </div>`);
 });
 
 app.listen(port, () => {
