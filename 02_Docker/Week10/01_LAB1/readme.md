@@ -50,6 +50,10 @@ Run the containers for `app1` and `app2` on the created network:
 docker run -d --name app1 --network express-network -p 3001:3000 express-app
 docker run -d --name app2 --network express-network -p 3002:3000 express-app
 ```
+# display docker ps
+```
+docker ps -a
+```
 
 ### Step 4: Setting Up Nginx for Load Balancing
 
