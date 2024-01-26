@@ -19,7 +19,7 @@
    ```
    
    ```   
-    cd DevTools/02_Docker/Week10/01_LAB1
+    cd DevTools/02_Docker/Week10/01_LAB1_Nginx_LoadBalance
    ```
 
 
