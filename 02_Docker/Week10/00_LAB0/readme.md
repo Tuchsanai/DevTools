@@ -3,11 +3,9 @@
 
 
 ```bash
-# For app1
-docker build -t express-app1 .
 
-# For app2
-docker build -t express-app2 .
+docker build -t express-app .
+
 ```
 
 ### Step 2: Creating a Docker Network
@@ -23,8 +21,8 @@ docker network create express-network
 Run the containers for `app1` and `app2` on the created network:
 
 ```bash
-docker run -d --name app1 --network express-network -p 3001:3000 express-app1
-docker run -d --name app2 --network express-network -p 3002:3000 express-app2
+docker run -d --name app1 --network express-network -p 3001:3000 express-app
+docker run -d --name app2 --network express-network -p 3002:3000 express-app
 ```
 
 ### Step 4: Setting Up Nginx for Load Balancing
