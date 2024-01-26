@@ -5,7 +5,11 @@ const app = express();
 const port = 3000;
 
 app.get('/', (req, res) => {
-    res.send(`Host IP: ${req.ip} - Host Name: ${os.hostname()}`);
+    const currentTime = new Date().toLocaleTimeString();
+
+    res.send("hostname: " + os.hostname() + "<br>");
+    res.send("platform: " + os.platform() + "<br>");
+    res.send("current time: " + currentTime);
 });
 
 app.listen(port, () => {

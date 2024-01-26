@@ -29,7 +29,7 @@ docker run -d --name app2 --network express-network -p 3002:3000 express-app
 
 
 ```bash
-docker run -d --name nginx-load-balancer --network express-network -p 8080:80 -v $(pwd)/nginx.conf:/etc/nginx/nginx.conf:ro nginx
+docker run -d --name nginx-load-balancer --network express-network -p 8080:8080 -v ./nginx.conf:/etc/nginx/nginx.conf:ro nginx
 ```
 
 
