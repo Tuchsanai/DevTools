@@ -1,3 +1,6 @@
+# Create Load Balancer with Nginx
+
+![1.jpg](nginx.jpg) 
 
 ### Step 1: Building Docker Images for Express Apps
 
