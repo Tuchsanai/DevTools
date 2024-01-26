@@ -2,6 +2,29 @@
 
 ![1.jpg](nginx.jpg) 
 
+
+
+## create directory
+
+   
+    mkdir LAB1_Week10
+    cd    LAB1_Week10
+    
+
+## git clone branch dev
+    
+    
+   ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   ```
+   
+   ```   
+    cd DevTools/02_Docker/Week10/01_LAB1
+   ```
+
+
+
+
 ### Step 1: Building Docker Images for Express Apps
 
 
