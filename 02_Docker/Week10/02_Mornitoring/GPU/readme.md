@@ -37,7 +37,7 @@ docker run -d --name=node-exporter --net=monitoring prom/node-exporter
 
 Run nvidia_gpu_exporter
 ```bash
-docker run --rm --name=nvidia_gpu_exporter --gpus all -p 9445:9445 utkuozdemir/nvidia_gpu_exporter:1.2.0
+docker run -d --rm --name=nvidia_gpu_exporter --gpus all -p 9445:9445 utkuozdemir/nvidia_gpu_exporter:1.2.0
 ```
 
 
