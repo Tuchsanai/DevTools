@@ -4,8 +4,8 @@ To set up monitoring for server performance using Prometheus, Grafana, and Node 
 ## create directory
 
    
-    mkdir LAB2_CPU_Week10
-    cd    LAB2_CPU_Week10
+    mkdir LAB2_GPU_Week10
+    cd    LAB2_GPU_Week10
     
 
 ## git clone branch dev
@@ -16,7 +16,7 @@ To set up monitoring for server performance using Prometheus, Grafana, and Node 
    ```
    
    ```   
-    cd DevTools/02_Docker/Week10/02_Mornitoring/CPU
+    cd DevTools/02_Docker/Week10/02_Mornitoring/GPU
    ```
 
 
@@ -34,6 +34,11 @@ Run Node Exporter in a Docker container:
 ```bash
 docker run -d --name=node-exporter --net=monitoring prom/node-exporter
 ```
+
+Run nvidia_gpu_exporter
+```bash
+docker run --rm --name=nvidia_gpu_exporter --gpus all -p 9445:9445 utkuozdemir/nvidia_gpu_exporter:1.2.0
+``
 
 
 Run Prometheus in a Docker container, mounting the configuration file:

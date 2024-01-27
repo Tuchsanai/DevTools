@@ -7,3 +7,6 @@ scrape_configs:
     static_configs:
       - targets: ['node-exporter:9100']
 
+  - job_name: 'nvidia_smi_exporter'
+    static_configs:
+      - targets: ['nvidia_gpu_exporter:9835']
