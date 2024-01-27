@@ -25,6 +25,10 @@ Run Grafana, mounting the configuration files and dashboard directory:
 ```bash
 docker run -d --name=grafana --net=monitoring -p 3000:3000 -v $(pwd)/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml -v $(pwd)/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml -v $(pwd)/grafana-dashboards:/var/lib/grafana/dashboards grafana/grafana
 ```
+### Test Monitoring
+- Grafana will be available at `http://localhost:3000` (default login is `admin`/`admin`, which you'll be prompted to change). 
+- You can add a Prometheus data source at `http://prometheus:9090` (the name `prometheus` is the hostname of the Prometheus container on the Docker network). 
+
 
 ### Accessing the Services
 - **Prometheus:** Access Prometheus at `http://localhost:9090`
