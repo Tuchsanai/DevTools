@@ -30,49 +30,9 @@ docker run -d --name=prometheus --net=monitoring -p 9090:9090 -v $(pwd)/promethe
 ```
 
 ### Step 4: Grafana Configuration
-For Grafana, you'll need two files: `datasources.yaml` and `dashboards.yaml`.
-
-#### datasources.yaml
-```yaml
-apiVersion: 1
-
-datasources:
-  - name: Prometheus
-    type: prometheus
-    access: proxy
-    url: http://prometheus:9090
-    isDefault: true
-```
-
-#### dashboards.yaml
-```yaml
-apiVersion: 1
-
-providers:
-  - name: 'default'
-    orgId: 1
-    folder: ''
-    folderUid: ''
-    type: file
-    disableDeletion: false
-    editable: true
-    options:
-      path: /var/lib/grafana/dashboards
-      foldersFromFilesStructure: true
-```
-
-#### Running Grafana with Configuration
-Create a directory for Grafana dashboards:
-```bash
-mkdir -p grafana-dashboards
-```
-
-Download the dashboard with ID 1860 (you'll need to do this step manually as I can't perform downloads):
-```bash
-# Download the dashboard JSON file from Grafana's website and save it in the grafana-dashboards directory
-```
 
 Run Grafana, mounting the configuration files and dashboard directory:
+
 ```bash
 docker run -d --name=grafana --net=monitoring -p 3000:3000 -v $(pwd)/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml -v $(pwd)/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml -v $(pwd)/grafana-dashboards:/var/lib/grafana/dashboards grafana/grafana
 ```
