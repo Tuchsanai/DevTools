@@ -49,7 +49,6 @@ docker run -d \
 utkuozdemir/nvidia_gpu_exporter:1.1.0
 ```
 
-
 Run Prometheus in a Docker container, mounting the configuration file:
 ```bash
 docker run -d --name=prometheus --net=monitoring -p 9090:9090 -v ./prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
