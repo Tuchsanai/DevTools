@@ -53,6 +53,10 @@ docker run -d --name=grafana --net=monitoring -p 3000:3000 -v $(pwd)/datasources
 ### Test Monitoring
 - Grafana will be available at `http://localhost:3000` (default login is `admin`/`admin`, which you'll be prompted to change). 
 
+| Picture 1 | Picture 2 | Picture 3 | Picture 4 | Picture 5 |
+|-----------|-----------|-----------|-----------|-----------|
+| ![Image 1](./images/grafana_login.jpg) | ![Image 2](./images/grafana_login1.jpg) | ![Image 3](./images/grafana_login2.jpg) | ![Image 4](./images/grafana_login3.jpg) | ![Image 5](image5.jpg) |
+
 
 ### Accessing the Services
 - **Prometheus:** Access Prometheus at `http://localhost:9090`
