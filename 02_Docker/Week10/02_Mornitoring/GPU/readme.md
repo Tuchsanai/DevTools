@@ -46,6 +46,7 @@ docker run -d \
 -v /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1 \
 -v /usr/bin/nvidia-smi:/usr/bin/nvidia-smi \
 -p 9835:9835 \
+--net=monitoring \
 utkuozdemir/nvidia_gpu_exporter:1.1.0
 ```
 
