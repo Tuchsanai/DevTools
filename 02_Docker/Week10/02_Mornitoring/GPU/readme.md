@@ -43,7 +43,7 @@ docker run -d --rm --name=nvidia_gpu_exporter --gpus all -p 9445:9445 utkuozdemi
 
 Run Prometheus in a Docker container, mounting the configuration file:
 ```bash
-docker run -d --name=prometheus --net=monitoring -p 9090:9090 -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+docker run -d --name=prometheus --net=monitoring -p 9090:9090 -v $./prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
 ```
 
 
@@ -53,7 +53,7 @@ docker run -d --name=prometheus --net=monitoring -p 9090:9090 -v $(pwd)/promethe
 Run Grafana, mounting the configuration files and dashboard directory:
 
 ```bash
-docker run -d --name=grafana --net=monitoring -p 3000:3000 -v $(pwd)/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml -v $(pwd)/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml -v $(pwd)/grafana-dashboards:/var/lib/grafana/dashboards grafana/grafana
+docker run -d --name=grafana --net=monitoring -p 3000:3000 -v $./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml -v $./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml -v $./grafana-dashboards:/var/lib/grafana/dashboards grafana/grafana
 ```
 ### Test Monitoring
 - Grafana will be available at `http://localhost:3000` (default login is `admin`/`admin`, which you'll be prompted to change). 
