@@ -1,5 +1,28 @@
 To set up monitoring for server performance using Prometheus, Grafana, and Node Exporter in Docker containers, follow these steps.
 
+
+## create directory
+
+   
+    mkdir LAB2_CPU_Week10
+    cd    LAB2_CPU_Week10
+    
+
+## git clone branch dev
+    
+    
+   ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   ```
+   
+   ```   
+    cd DevTools/02_Docker/Week10/02_Mornitoring/CPU
+   ```
+
+
+
+
+
 ### Step 1: Create a Docker Network
 First, create a Docker network to connect the containers:
 ```bash
