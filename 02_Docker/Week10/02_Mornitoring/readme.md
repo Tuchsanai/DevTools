@@ -6,7 +6,7 @@ First, create a Docker network to connect the containers:
 docker network create monitoring
 ```
 
-### Step 2: Run Node Exporter
+### Step 2: Run Node Exporter abd Prometheus
 Run Node Exporter in a Docker container:
 ```bash
 docker run -d --name=node-exporter --net=monitoring prom/node-exporter
