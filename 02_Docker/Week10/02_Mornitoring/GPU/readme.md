@@ -32,7 +32,7 @@ docker network create monitoring
 ### Step 2: Run Node Exporter abd Prometheus
 Run Node Exporter in a Docker container:
 ```bash
-docker run -d --name=node-exporter --net=monitoring prom/node-exporter
+docker run -d --name=node-exporter -p 9100:9100 --net=monitoring prom/node-exporter
 ```
 
 Run nvidia_gpu_exporter
