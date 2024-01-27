@@ -39,7 +39,7 @@ Run nvidia_gpu_exporter
 ```bash
 
 docker run -d \
-  --name nvidia_smi_exporter \
+  --name=nvidia_smi_exporter \
   --restart unless-stopped \
   --device /dev/nvidiactl:/dev/nvidiactl \
   --device /dev/nvidia0:/dev/nvidia0 \
