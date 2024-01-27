@@ -48,7 +48,7 @@ docker run -d \
   -v /usr/bin/nvidia-smi:/usr/bin/nvidia-smi \
   -p 9835:9835 \
   --net=monitoring \
-  utkuozdemir/nvidia_gpu_exporter:1.2.0
+  utkuozdemir/nvidia_gpu_exporter:1.1.0
 
 ```
 
