@@ -38,7 +38,7 @@ docker run -d --name=node-exporter -p 9100:9100 --net=monitoring prom/node-expor
 Run nvidia_gpu_exporter
 ```bash
 docker run -d \
---name nvidia_smi_exporter \
+--name=nvidia_smi_exporter \
 --restart unless-stopped \
 --device /dev/nvidiactl:/dev/nvidiactl \
 --device /dev/nvidia0:/dev/nvidia0 \
