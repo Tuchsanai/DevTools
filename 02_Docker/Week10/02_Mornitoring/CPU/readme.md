@@ -15,7 +15,7 @@ docker run -d --name=node-exporter --net=monitoring prom/node-exporter
 
 Run Prometheus in a Docker container, mounting the configuration file:
 ```bash
-docker run -d --name=prometheus --net=monitoring -p 9090:9090 -v ./prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+docker run -d --name=prometheus --net=monitoring -p 9090:9090 -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
 ```
 
 
@@ -41,3 +41,12 @@ This setup will get you started with monitoring server performance using Docker 
 
 
 
+# Delete all containers
+
+```
+docker stop $(docker ps -a -q)  
+docker rm $(docker ps -a -q) 
+docker rmi $(docker images -q) 
+docker volume rm $(docker volume ls -q)  
+docker network prune -f
+```
