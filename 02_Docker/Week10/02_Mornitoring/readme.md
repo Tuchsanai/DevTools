@@ -12,17 +12,6 @@ Run Node Exporter in a Docker container:
 docker run -d --name=node-exporter --net=monitoring prom/node-exporter
 ```
 
-### Step 3: Prometheus Configuration
-Create a file named `prometheus.yml` with the following content:
-```yaml
-global:
-  scrape_interval: 1s
-
-scrape_configs:
-  - job_name: 'node'
-    static_configs:
-      - targets: ['node-exporter:9100']
-```
 
 Run Prometheus in a Docker container, mounting the configuration file:
 ```bash
