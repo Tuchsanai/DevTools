@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 1s
+
+scrape_configs:
+  - job_name: 'nvidia_smi_exporter'
+    static_configs:
+      - targets: ['nvidia_smi_exporter:9835']
+
+  - job_name: 'nodeexporter'
+    static_configs:
+      - targets: ['nodeexporter:9100']
+

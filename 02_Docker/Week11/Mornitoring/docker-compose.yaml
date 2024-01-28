@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - 9090:9090
+    networks:
+      - mornitor_network  
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=passwd
+    volumes:
+      - ./grafana-datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - 3000:3000
+    networks:
+      - mornitor_network    
+
+
+  nvidia_smi_exporter:
+    image: utkuozdemir/nvidia_gpu_exporter:1.1.0
+    container_name: nvidia_smi_exporter
+    restart: unless-stopped
+    devices:
+      - /dev/nvidiactl:/dev/nvidiactl
+      - /dev/nvidia0:/dev/nvidia0
+    volumes:
+      - /usr/lib/x86_64-linux-gnu/libnvidia-ml.so:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so
+      - /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1
+      - /usr/bin/nvidia-smi:/usr/bin/nvidia-smi
+    ports:
+      - 9835:9835
+    networks:
+      - mornitor_network    
+
+
+  nodeexporter:
+    image: prom/node-exporter
+    container_name: nodeexporter
+    ports:
+      - '9100:9100'
+    networks:
+      - mornitor_network    
+
+networks:
+  mornitor_network :
