@@ -1,6 +1,7 @@
 ## ตัวอย่าง Mini Project 
 
-https://drive.google.com/drive/u/1/folders/1evneI8taeTrpU3jWQtsCGSXhaMBPrwGpouHcDSaKyZJ2QdQsyQPTpnYTqjAJJdN2_iBwu7Oe
+- https://drive.google.com/drive/u/1/folders/1evneI8taeTrpU3jWQtsCGSXhaMBPrwGpouHcDSaKyZJ2QdQsyQPTpnYTqjAJJdN2_iBwu7Oe
+- ต้อง log in ผ่าน email @it.kmitl.ac.th เท่านั้น
 
 ## กำหนดการนำเสนอผลงาน Mini Project
 - สัปดาห์สุดท้ายของการเรียนการสอน
@@ -8,7 +9,7 @@ https://drive.google.com/drive/u/1/folders/1evneI8taeTrpU3jWQtsCGSXhaMBPrwGpouHc
 ## การจัดกลุ่ม ให้กลุ่มละไม่เกิน 6 คน ทั้งหมดไม่เกิน 8 กลุ่ม
 - Deadline วันที่ 17 กุมภาพันธ์ 2564 เวลา 23.59 น.
 - ลงทะเบียนกลุ่ม ที่ https://docs.google.com/spreadsheets/d/1NUucA15no_O6xJGejX1uaXM1BEHIO1eOOk96mLsJq8M/edit?usp=sharing
-- ต้องลงทะเบียนโดย log in ผ่าน email @it.kmitl.ac.th เท่านั้น
+- ต้อง log in ผ่าน email @it.kmitl.ac.th เท่านั้น
 
 ## หมายเหตุ
 
