@@ -1,3 +1,6 @@
+## Mini Project
+- https://docs.google.com/document/d/13LAqAwo3OipwsF2yYf5eTamRwGyb8hCOej7A5d8HXOI/edit?usp=sharing
+
 ## ตัวอย่าง Mini Project 
 
 - https://drive.google.com/drive/u/1/folders/1evneI8taeTrpU3jWQtsCGSXhaMBPrwGpouHcDSaKyZJ2QdQsyQPTpnYTqjAJJdN2_iBwu7Oe
