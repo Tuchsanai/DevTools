@@ -3,12 +3,11 @@
 https://drive.google.com/drive/u/1/folders/1evneI8taeTrpU3jWQtsCGSXhaMBPrwGpouHcDSaKyZJ2QdQsyQPTpnYTqjAJJdN2_iBwu7Oe
 
 
-## การจัดกลุ่ม ให้กลุ่มละ 6 คน
-
----
-ลงทะเบียนกลุ่ม ที่ https://docs.google.com/spreadsheets/d/1NUucA15no_O6xJGejX1uaXM1BEHIO1eOOk96mLsJq8M/edit?usp=sharing
+## การจัดกลุ่ม ให้กลุ่มละ 6 คน ลงทะเบียนกลุ่ม ที่ https://docs.google.com/spreadsheets/d/1NUucA15no_O6xJGejX1uaXM1BEHIO1eOOk96mLsJq8M/edit?usp=sharing
 ** หมายเหตุ ต้องลงทะเบียนโดย log in ผ่าน email @it.kmitl.ac.th เท่านั้น
 ---
+
+## หมายเหตุ
 
 - นักศึกษาที่ลงเรียน กลุ่ม ทฤษฏี 1 วันอังคาร  (ยอด 46 คน) จะถูกแบ่งเป็นกลุ่มย่อย 8 กลุ่ม โดยแต่ละกลุ่มจะมีจำนวนนักศึกษา 5-6 คน   
 - นักศึกษาที่ลงเรียน กลุ่ม ทฤษฏี 3 วันพฤหัสบดี (ยอด 47 คน) จะถูกแบ่งเป็นกลุ่มย่อย 8 กลุ่ม โดยแต่ละกลุ่มจะมีจำนวนนักศึกษา 5-6 คน           
