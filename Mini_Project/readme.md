@@ -6,6 +6,12 @@
 ## กำหนดการนำเสนอผลงาน Mini Project
 - สัปดาห์สุดท้ายของการเรียนการสอน
 
+## ส่งที่ต้องส่งก่อนเวลานำเสนอ
+ - Slide
+ - github Source Code
+ - Report
+ - video นำเสนอผลงาน ไม่เกิน 15 นาที
+
 ## การจัดกลุ่ม ให้กลุ่มละไม่เกิน 6 คน ทั้งหมดไม่เกิน 8 กลุ่ม
 - Deadline วันที่ 17 กุมภาพันธ์ 2564 เวลา 23.59 น.
 - ลงทะเบียนกลุ่ม ที่ https://docs.google.com/spreadsheets/d/1NUucA15no_O6xJGejX1uaXM1BEHIO1eOOk96mLsJq8M/edit?usp=sharing
