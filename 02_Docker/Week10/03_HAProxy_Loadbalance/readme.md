@@ -27,8 +27,7 @@ docker run -d -p 8081:3000 -e NAME='Server 2' --name express-server-2 my-express
 docker build -t my-haproxy -f ./HAProxy/Dockerfile .
 ```
 
-
-## 4. Run the HAProxy Container
+- Run the HAProxy Container
 
 ```bash
 docker run -d -p 8083:80 --name my-haproxy my-haproxy
