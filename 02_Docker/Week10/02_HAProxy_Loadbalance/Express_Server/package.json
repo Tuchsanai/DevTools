@@ -1,13 +1,12 @@
-{
-    "name": "haproxy-lab",  
+  {
+    "name": "ehaproxy-lab",
     "version": "1.0.0",
     "description": "A simple HAProxy Lab with Express servers",
-    "main": "app.js",  
+    "main": "app.js",
     "scripts": {
       "start": "node app.js"
     },
     "dependencies": {
-      "express": "^4.18.2"
+      "express": "^4.17.1"
     }
   }
-  
