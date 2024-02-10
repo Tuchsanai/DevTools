@@ -45,7 +45,7 @@ docker build -t my-express-app   .
 go to home directory
 
 ```bash
-cd ..
+cd ~
 ```
 
 - Run the first container:
