@@ -96,7 +96,7 @@ docker build -t my-haproxy  .
 docker run -d --name my-haproxy  --network express-network -p 8083:80 -v  ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg haproxy:2.4 
 ```
 
-```
+```bash
 docker run -d \
    --name haproxy \
    --net express-network \
