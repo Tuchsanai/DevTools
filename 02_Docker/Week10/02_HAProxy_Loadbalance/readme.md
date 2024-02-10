@@ -93,7 +93,7 @@ docker build -t my-haproxy  .
 
 
 ```bash
-docker run -d --name my-haproxy  --network express-network -p 8083:80 -v  ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg haproxy:2.4 
+docker run -d --name my-haproxy  --network express-network -p 8083:80 -v  $(pwd):/usr/local/etc/haproxy:ro  haproxy:2.4 
 ```
 
 ```bash
@@ -158,6 +158,6 @@ git checkout main
 ```
 docker stop my-haproxy
 docker rm my-haproxy
-docker rmi haproxy:2.4
+#docker rmi haproxy:2.4
 
 ```
