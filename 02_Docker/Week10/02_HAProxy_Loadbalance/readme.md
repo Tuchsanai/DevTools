@@ -138,3 +138,13 @@ git checkout main
 git branch -D dev
 git push origin --delete dev
 ```
+
+# Delete directory and files and updata
+```
+git switch dev
+find "./" -type f \( -name "*.pdf" -o -name "*.jpg" \) -delete
+git add .
+git commit -m "delete files"
+git push origin dev
+git checkout main
+```
