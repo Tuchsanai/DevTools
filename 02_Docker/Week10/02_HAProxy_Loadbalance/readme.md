@@ -26,6 +26,12 @@
     ls -a
   ``` 
 
+### 0. Create a custom network for your Docker containers. This allows the containers to communicate with each other.
+
+```bash
+docker network create express-network
+```
+
 
 ## 1. Create express-app Docker Image
 
@@ -51,12 +57,12 @@ cd ~
 - Run the first container:
 
 ```bash
-docker run -d -p 8080:3000 -e NAME='Server 1' --name express-server-1 my-express-app
+docker run -d -p 8080:3000 --network express-network -e NAME='Server 1' --name express-server-1 my-express-app
 ```
 - Run the second container:
 
 ```bash
-docker run -d -p 8081:3000 -e NAME='Server 2' --name express-server-2 my-express-app
+docker run -d -p 8081:3000 --network express-network -e NAME='Server 2' --name express-server-2 my-express-app
 ```
 
 display all the containers
@@ -86,12 +92,19 @@ docker build -t my-haproxy  .
 - Run the HAProxy Container
 
 ```bash
-docker run -d -p 8083:80 --name my-haproxy my-haproxy
+docker run -d -p 8083:80 --network express-network  --name my-haproxy my-haproxy
 ```
+
+display all the containers
+
+```
+docker ps -a
+```
+
 
 ### 5. Testing:
 
-Open your browser and go to http://localhost:8083. You should see responses from your Express containers, rotating with each refresh.
+Open your browser and go to http://External IP:8083. You should see responses from your Express containers, rotating with each refresh.
 
 
 Important Notes:
