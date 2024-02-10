@@ -17,14 +17,25 @@
    ```
    
    ```   
-    cd DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/
+    cd DevTools/02_Docker/Week10/02_HAProxy_Loadbalanc
    ```
-
+   
+  display the files
+  
+  ```
+    ls -a
+  ``` 
 
 
 ## 1. Create express-app Docker Image
 
-```
+go to Express_Server directory
+
+```bash
+ cd DevTools/02_Docker/Week10/02_HAProxy_Loadbalanc/Express_Server
+``` 
+
+```bash
 docker build -t my-express-app  -f ./Express_Server/Dockerfile . 
 ```
 
@@ -40,6 +51,12 @@ docker run -d -p 8080:3000 -e NAME='Server 1' --name express-server-1 my-express
 
 ```bash
 docker run -d -p 8081:3000 -e NAME='Server 2' --name express-server-2 my-express-app
+```
+
+display all the containers
+
+```
+docker ps -a
 ```
 
 ## 3. Create the HAProxy Docker Image
