@@ -92,7 +92,7 @@ docker build -t my-haproxy  .
 - Run the HAProxy Container
 
 ```bash
-docker run -d -p 8083:80 --network express-network  --name my-haproxy my-haproxy
+docker run -d -p 8083:80 -v ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg   --network express-network  --name my-haproxy my-haproxy
 ```
 
 display all the containers
