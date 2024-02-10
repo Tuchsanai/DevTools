@@ -17,7 +17,7 @@
    ```
    
    ```   
-        cd DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/
+    cd DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/
    ```
    
   display the files
