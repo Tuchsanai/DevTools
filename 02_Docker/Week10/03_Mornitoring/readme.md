@@ -4,8 +4,8 @@ To set up monitoring for server performance using Prometheus, Grafana, and Node 
 ## create directory
 
    
-    mkdir LAB2_CPU_Week10
-    cd    LAB2_CPU_Week10
+    mkdir LAB3_CPU_Week10
+    cd    LAB3_CPU_Week10
     
 
 ## git clone branch dev
@@ -16,7 +16,7 @@ To set up monitoring for server performance using Prometheus, Grafana, and Node 
    ```
    
    ```   
-    cd DevTools/02_Docker/Week10/02_Mornitoring/
+    cd DevTools/02_Docker/Week10/03_Mornitoring/
    ```
 
 

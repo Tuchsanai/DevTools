@@ -1,4 +1,25 @@
-# HA proxy load balancer
+# load balancer with HAProxy
+
+
+
+## create directory
+
+   
+    mkdir LAB2_Week10
+    cd    LAB2_Week10
+    
+
+## git clone branch dev
+    
+    
+   ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   ```
+   
+   ```   
+    cd DevTools/02_Docker/Week10/02_HAProxy_Loadbalanc
+   ```
+
 
 
 ## 1. Create express-app Docker Image
