@@ -67,6 +67,20 @@ docker ps -a
 
 ## 3. Create the HAProxy Docker Image
 
+go to HAProxy directory
+
+```
+cd ~
+cd  ./LAB2_Week10/DevTools/02_Docker/Week10/02_HAProxy_Loadbalanc/HAProxy
+```
+
+```bash
+
+
+```
+
+
+
 ```bash
 docker build -t my-haproxy  .
 ```
