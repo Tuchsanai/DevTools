@@ -63,3 +63,15 @@ Important Notes:
 
 HAProxy health checks (check in the config) are recommended for production.
 Consider network configuration or using an internal Docker network if running on a remote server.
+
+
+
+# Delete all containers
+
+```
+docker stop $(docker ps -a -q)  
+docker rm $(docker ps -a -q) 
+docker rmi $(docker images -q) 
+docker volume rm $(docker volume ls -q)  
+docker network prune -f
+```
