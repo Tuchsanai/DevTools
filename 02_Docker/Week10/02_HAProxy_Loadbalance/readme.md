@@ -74,11 +74,6 @@ cd ~
 cd  ./LAB2_Week10/DevTools/02_Docker/Week10/02_HAProxy_Loadbalanc/HAProxy
 ```
 
-```bash
-
-
-```
-
 
 
 ```bash
