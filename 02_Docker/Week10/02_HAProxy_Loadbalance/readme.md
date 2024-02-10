@@ -1,6 +1,6 @@
 # load balancer with HAProxy
 
-
+####  ref = https://www.haproxy.com/blog/how-to-run-haproxy-with-docker
 
 ## create directory
 
@@ -96,6 +96,16 @@ docker build -t my-haproxy  .
 docker run -d --name my-haproxy  --network express-network -p 8083:80 -v  ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg haproxy:2.4 
 ```
 
+```
+docker run -d \
+   --name haproxy \
+   --net express-network \
+   -v $(pwd):/usr/local/etc/haproxy:ro \
+   -p 8083:80 \
+   -p 8084:8404 \
+   haproxytech/haproxy-alpine:2.4
+```
+
 display all the containers
 
 ```
@@ -141,4 +151,13 @@ git add .
 git commit -m "delete files"
 git push origin dev
 git checkout main
+```
+
+ Delete
+
+```
+docker stop my-haproxy
+docker rm my-haproxy
+docker rmi haproxy:2.4
+
 ```
