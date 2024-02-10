@@ -32,15 +32,21 @@
 go to Express_Server directory
 
 ```bash
- cd DevTools/02_Docker/Week10/02_HAProxy_Loadbalanc/Express_Server
+ cd  ./Express_Server
 ``` 
 
 ```bash
-docker build -t my-express-app  -f ./Express_Server/Dockerfile . 
+docker build -t my-express-app   . 
 ```
 
 
 ## 2. Run the Express Containers
+
+go to home directory
+
+```bash
+cd ..
+```
 
 - Run the first container:
 
@@ -62,7 +68,7 @@ docker ps -a
 ## 3. Create the HAProxy Docker Image
 
 ```bash
-docker build -t my-haproxy -f ./HAProxy/Dockerfile .
+docker build -t my-haproxy  .
 ```
 
 - Run the HAProxy Container
