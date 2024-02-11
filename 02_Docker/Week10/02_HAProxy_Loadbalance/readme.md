@@ -116,7 +116,7 @@ docker ps -a
 
 ### 5. Testing Load Balancing:
 
-Open your browser and go to http://External IP:8083. You should see responses from your Express containers, rotating with each refresh.
+Open your browser and go to http://ExternalIP:8083. You should see responses from your Express containers, rotating with each refresh.
 
 | Loab balance 1 | Loab balance 12|
 |----------|----------|
@@ -130,7 +130,7 @@ Open your browser and go to http://External IP:8083. You should see responses fr
 ![Statistic Page](./images/3.jpg)
 
 
-Open your browser and go to http://External IP:8084. You should see responses from your Express containers, rotating with each refresh.
+Open your browser and go to http://ExternalIP:8084. You should see responses from your Express containers, rotating with each refresh.
 
 
 Important Notes:
