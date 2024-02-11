@@ -99,7 +99,7 @@ docker build -t my-haproxy  .
 ```bash
 docker run -d \
    --name haproxy \
-   --net express-network \
+   --network express-network  \
    -v $(pwd):/usr/local/etc/haproxy:ro \
    -p 8083:8083 \
    -p 8084:8084 \
