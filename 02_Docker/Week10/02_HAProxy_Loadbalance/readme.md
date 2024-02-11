@@ -2,6 +2,9 @@
 
 ####  ref = https://www.haproxy.com/blog/how-to-run-haproxy-with-docker
 
+![HA proxy](./images/0.jpg)
+
+
 ## create directory
 
    
