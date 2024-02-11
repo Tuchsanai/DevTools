@@ -131,16 +131,16 @@ docker volume rm $(docker volume ls -q)
 docker network prune -f
 ```
 
-# Clear git 
+# Delete branch dev both local and remote  and create new branch dev with updated removed files
 
 ```
 git checkout main
 git branch -D dev
 git push origin --delete dev
 ```
-
-#  Delete directory and files and updata
+  
 ```
+git branch dev
 git switch dev
 find "./" -type f \( -name "*.pdf" -o -name "*.jpg" \) -delete
 git add .
