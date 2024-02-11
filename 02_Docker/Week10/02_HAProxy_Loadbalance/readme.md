@@ -51,11 +51,7 @@ docker build -t my-express-app   .
 
 ## 2. Run the Express Containers
 
-go to home directory
 
-```bash
-cd ~
-```
 
 - Run the first container:
 
