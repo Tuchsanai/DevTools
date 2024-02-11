@@ -106,9 +106,18 @@ docker ps -a
 ```
 
 
-### 5. Testing:
+### 5. Testing Load Balancing:
 
 Open your browser and go to http://External IP:8083. You should see responses from your Express containers, rotating with each refresh.
+
+
+### 6. Testing Statistic Page:
+
+
+![Statistic Page](./images/3.jpg)
+
+
+Open your browser and go to http://External IP:8084. You should see responses from your Express containers, rotating with each refresh.
 
 
 Important Notes:
