@@ -101,9 +101,10 @@ docker run -d \
    --name haproxy \
    --net express-network \
    -v $(pwd):/usr/local/etc/haproxy:ro \
-   -p 8083:80 \
-   -p 8084:8404 \
+   -p 80:80 \
+   -p 8084:8084 \
    haproxytech/haproxy-alpine:2.4
+
 ```
 
 display all the containers
