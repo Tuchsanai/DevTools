@@ -94,7 +94,7 @@ docker build -t my-haproxy  .
 
 - Run the HAProxy Container
 
-
+![HA](./images/9.jpg)  
 
 ```bash
 docker run -d \
