@@ -118,6 +118,11 @@ docker ps -a
 
 Open your browser and go to http://External IP:8083. You should see responses from your Express containers, rotating with each refresh.
 
+| Loab balance 1 | Loab balance 12|
+|----------|----------|
+|   ![Page1](./images/1.jpg)       |    ![Page1](./images/2.jpg)      |
+
+
 
 ### 6. Testing Statistic Page:
 
