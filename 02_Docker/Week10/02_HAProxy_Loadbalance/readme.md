@@ -87,16 +87,13 @@ cd   LAB2_Week10/DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/HAProxy
 - Run the HAProxy Container
 
 
-```bash
-docker run -d --name my-haproxy  --network express-network -p 8083:80 -v  $(pwd):/usr/local/etc/haproxy:ro  haproxy:2.4 
-```
 
 ```bash
 docker run -d \
    --name haproxy \
    --net express-network \
    -v $(pwd):/usr/local/etc/haproxy:ro \
-   -p 80:80 \
+   -p 8083:8083 \
    -p 8084:8084 \
    haproxytech/haproxy-alpine:2.4
 
