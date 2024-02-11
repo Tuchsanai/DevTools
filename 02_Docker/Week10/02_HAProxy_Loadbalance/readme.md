@@ -166,12 +166,3 @@ git commit -m "delete files"
 git push origin dev
 git checkout main
 ```
-
- Delete
-
-```
-docker stop my-haproxy
-docker rm my-haproxy
-#docker rmi haproxy:2.4
-
-```
