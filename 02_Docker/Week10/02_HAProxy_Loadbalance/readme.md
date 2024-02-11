@@ -79,10 +79,8 @@ cd ~
 ```
 
 ```bash
-cd   LAB2_Week10/DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/
+cd   LAB2_Week10/DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/HAProxy/
 ```
-
-
 
 - Run the HAProxy Container
 
