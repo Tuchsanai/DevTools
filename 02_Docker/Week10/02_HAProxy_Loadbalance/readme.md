@@ -121,7 +121,7 @@ Consider network configuration or using an internal Docker network if running on
 
 
 
-# Delete all containers
+### Danger Zone for admin only : Delete all containers
 
 ```
 docker stop $(docker ps -a -q)  
@@ -131,7 +131,7 @@ docker volume rm $(docker volume ls -q)
 docker network prune -f
 ```
 
-# Delete branch dev both local and remote  and create new branch dev with updated removed files
+### Danger Zone for admin only : Delete branch dev both local and remote  and create new branch dev with updated removed files
 
 ```
 git checkout main
