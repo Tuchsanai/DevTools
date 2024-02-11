@@ -86,11 +86,6 @@ cd   LAB2_Week10/DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/
 
 - Run the HAProxy Container
 
-#### Setting up HAProxy to Load Balance from file : haproxy.cfg
-
-![HA](./images/10.jpg)  
-
-```bash
 
 
 ```bash
