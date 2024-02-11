@@ -94,7 +94,7 @@ docker build -t my-haproxy  .
 
 - Run the HAProxy Container
 
-#### Setting up HAProxy to Load Balance from file = haproxy.cfg
+#### Setting up HAProxy to Load Balance from file : haproxy.cfg
 
 ![HA](./images/10.jpg)  
 
