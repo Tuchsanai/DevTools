@@ -97,6 +97,17 @@ if sucess you will see the following containers
 
 ![myip](./images/docker0.jpg) 
 
+
+if HAproxy container is *** not running ***, you can check haproxy.cfg file with `nano haproxy.cfg` and try between method 1 and method 2. 
+
+
+
+| try1 | try2|
+|----------|----------|
+|   ![Page1](./images/n1.jpg)       |    ![Page1](./images/n2.jpg)      |
+
+
+
 ### 5. Testing Load Balancing:
 
 Open your browser and go to http://ExternalIP:8083. You should see responses from your Express containers, rotating with each refresh.
