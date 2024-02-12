@@ -97,11 +97,7 @@ if sucess you will see the following containers
 
 ![myip](./images/docker0.jpg) 
 
-
 if HAproxy container is *** not running ***, you can check haproxy.cfg file with `nano haproxy.cfg` and try between method 1 and method 2. and then run  docker run  haproxy above again.
-
-```bash
-
 
 
 | method 1 | method 2|
