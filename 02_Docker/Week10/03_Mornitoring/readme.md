@@ -1,12 +1,13 @@
-To set up monitoring for server performance using Prometheus, Grafana, and Node Exporter in Docker containers, follow these steps.
-
-
 
 | Column 1 | Column 2 |
 |----------|----------|
 |   ![Image 1](./images/m1.jpg)  |  ![Image 1](./images/m2.jpg)   |
 
-![Image 5](./images/grafana_login5.jpg)
+![Mornitoring](./images/grafana_login5.jpg)
+
+
+To set up monitoring for server performance using Prometheus, Grafana, and Node Exporter in Docker containers, follow these steps.
+
 
 
 ## create directory
