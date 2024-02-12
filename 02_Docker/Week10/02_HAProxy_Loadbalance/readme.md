@@ -143,7 +143,7 @@ docker network prune -f
 ```
 
 ---
-### Danger Zone for admin only : Delete branch dev both local and remote  and create new branch dev with updated removed files
+### Danger Zone for admin only : 
 
 ```
 git checkout main
