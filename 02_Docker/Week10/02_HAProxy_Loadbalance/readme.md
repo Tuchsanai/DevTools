@@ -146,23 +146,3 @@ docker rmi $(docker images -q)
 docker volume rm $(docker volume ls -q)  
 docker network prune -f
 ```
-
----
-### Danger Zone for admin only : 
-
-```
-git checkout main
-git branch -D dev
-git push origin --delete dev
-```
-  
-```
-git branch dev
-git switch dev
-find "./" -type f \( -name "*.pdf" -o -name "*.jpg" \) -delete
-git add .
-git commit -m "delete files"
-git push origin dev
-git checkout main
-```
-
