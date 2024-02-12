@@ -87,13 +87,13 @@ cd   LAB2_Week10/DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/HAProxy/
 
 
 ```bash
-docker run -d \
-   --name haproxy \
-   --network express-network  \
-   -v $(pwd):/usr/local/etc/haproxy:ro \
-   -p 8083:8083 \
-   -p 8084:8084 \
-   haproxytech/haproxy-alpine:2.4
+docker run  -d  --rm\
+  --name haproxy \
+  --network express-network  \
+  -v $(pwd):/usr/local/etc/haproxy:ro \
+  -p 8083:8083 \
+  -p 8084:8084 \
+  haproxytech/haproxy-alpine:2.4
 
 ```
 
@@ -132,7 +132,7 @@ Consider network configuration or using an internal Docker network if running on
 
 
 
-### Danger Zone for admin only : Delete all containers
+### Delete all containers
 
 ```
 docker stop $(docker ps -a -q)  
@@ -142,6 +142,7 @@ docker volume rm $(docker volume ls -q)
 docker network prune -f
 ```
 
+---
 ### Danger Zone for admin only : Delete branch dev both local and remote  and create new branch dev with updated removed files
 
 ```
@@ -159,3 +160,4 @@ git commit -m "delete files"
 git push origin dev
 git checkout main
 ```
+
