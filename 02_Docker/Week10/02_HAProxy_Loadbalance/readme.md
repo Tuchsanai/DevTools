@@ -17,11 +17,9 @@
     
    ```
     git clone -b dev https://github.com/Tuchsanai/DevTools.git
-   ```
-   
-   ```   
     cd DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/
    ```
+   
    
   display the files
   
