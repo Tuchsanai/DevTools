@@ -101,6 +101,9 @@ display all the containers
 docker ps -a
 ```
 
+if sucess you will see the following containers
+
+![myip](./images/docker0.jpg) 
 
 ### 5. Testing Load Balancing:
 
