@@ -51,20 +51,11 @@ docker build -t my-express-app   .
 
 
 
-- Run the first container:
+- Run  container:
 
 ```bash
 docker run -d -p 8080:3000 --network express-network -e NAME='Server 1' --name express-server-1 my-express-app
-```
-- Run the second container:
-
-```bash
 docker run -d -p 8081:3000 --network express-network -e NAME='Server 2' --name express-server-2 my-express-app
-```
-
-display all the containers
-
-```
 docker ps -a
 ```
 
@@ -74,9 +65,6 @@ go to HAProxy directory
 
 ```bash
 cd ~
-```
-
-```bash
 cd   LAB2_Week10/DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/HAProxy/
 ```
 
@@ -93,13 +81,10 @@ docker run  -d  --rm\
   -p 8084:8084 \
   haproxytech/haproxy-alpine:2.4
 
-```
-
-display all the containers
-
-```
 docker ps -a
+
 ```
+
 
 if sucess you will see the following containers
 
