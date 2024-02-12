@@ -107,9 +107,11 @@ if sucess you will see the following containers
 
 ### 5. Testing Load Balancing:
 
+Open your browser and go to http://ExternalIP:8083. You should see responses from your Express containers, rotating with each refresh.
+
 ![myip](./images/ip0.jpg)   
 
-Open your browser and go to http://ExternalIP:8083. You should see responses from your Express containers, rotating with each refresh.
+
 
 | Loab balance 1 | Loab balance 12|
 |----------|----------|
