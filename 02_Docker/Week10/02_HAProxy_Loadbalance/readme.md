@@ -118,11 +118,12 @@ Open your browser and go to http://ExternalIP:8083. You should see responses fro
 
 ### 6. Testing Statistic Page:
 
+- Open your browser and go to http://ExternalIP:8084. You should see responses from your Express containers, rotating with each refresh.
+- Open your browser and go to http://ExternalIP:8083/haproxy?stats
 
 ![Statistic Page](./images/3.jpg)
 
 
-Open your browser and go to http://ExternalIP:8084. You should see responses from your Express containers, rotating with each refresh.
 
 
 Important Notes:
