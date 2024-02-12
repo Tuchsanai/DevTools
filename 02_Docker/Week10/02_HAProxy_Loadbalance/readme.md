@@ -86,6 +86,13 @@ docker ps -a
 ```
 
 
+ Check again (important)
+
+ ```bash
+docker ps -a
+```
+
+
 if sucess you will see the following containers
 
 ![myip](./images/docker0.jpg) 
