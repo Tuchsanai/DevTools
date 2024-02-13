@@ -64,6 +64,17 @@ docker ps -a
 docker run -d --name nginx-load-balancer --network express-network -p 8080:8080 -v ./nginx.conf:/etc/nginx/nginx.conf:ro nginx
 ```
 
+display Is nginx-load-balancer running?
+
+```
+docker ps -a
+```
+
+
+### 5. Testing Load Balancing:
+
+Open your browser and go to http://ExternalIP:8080. You should see responses from your Express containers, rotating with each refresh.
+
 | From Loadbalance No1 | From Loadbalance No2 |
 |-----------|-----------|
 | ![1.jpg](1.jpg) | ![2.jpg](2.jpg) |
