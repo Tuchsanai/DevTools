@@ -22,7 +22,10 @@ docker network inspect lab_network
 
 ###  3. Run a new container with the busybox image and connect it to the "lab_network" using the following command:
 ```
-docker run -d --name busybox_container --network lab_network busybox
+docker run -d --name busybox_container --network lab_network busybox sleep 360000
+```
+
+
 
 ```
 
