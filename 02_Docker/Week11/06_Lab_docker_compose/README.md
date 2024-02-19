@@ -54,7 +54,7 @@ docker compose down
 ## To delete all networks, images, and volumes with Docker Compose, you can use the following commands:
 
 ```
-docker-compose down --rmi all --volumes --remove-orphans
+docker compose down --rmi all --volumes --remove-orphans
 ```
 
 
