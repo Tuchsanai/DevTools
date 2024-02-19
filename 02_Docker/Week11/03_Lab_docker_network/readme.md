@@ -27,7 +27,7 @@ docker run -d --name busybox_container --network lab_network busybox sleep 36000
 
 
 
-```
+
 
 ###  4.  To check the IP address of a running busybox container, follow these steps:
 ```
