@@ -41,6 +41,12 @@ docker compose up
 
 ```
 
+## Accessing the Services
+
+* Access Grafana at http://localhost:8085
+
+![results](./images/s1.jpg)
+
 ## docker-compose down
 ### This command is used to stop and remove the containers defined in the docker-compose.yml file.
 
@@ -54,7 +60,7 @@ docker compose down
 ## To delete all networks, images, and volumes with Docker Compose, you can use the following commands:
 
 ```
-docker compose down --rmi all --volumes --remove-orphans
+docker-compose down --rmi all --volumes --remove-orphans
 ```
 
 
