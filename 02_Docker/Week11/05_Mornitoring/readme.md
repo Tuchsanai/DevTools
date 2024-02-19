@@ -67,3 +67,10 @@ docker compose down
 docker ps -a
 ```
 
+
+### Accessing the Services by process docker-compose.yml
+
+![pass](./images/s1.jpg)
+
+- **Prometheus:** Access Prometheus at `http://localhost:9090`
+- **Grafana:** Access Grafana at `http://localhost:3000` (default login is `admin`/`passwd`, which you'll be prompted to change)
