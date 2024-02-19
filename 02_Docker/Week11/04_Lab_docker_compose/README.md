@@ -31,7 +31,7 @@ A simple distributed application running across multiple Docker containers.
     cd DevTools/02_Docker/Week11/04_Lab_docker_compose/
    ```
 
-≈
+
 
 ## docker-compose up
 ### This command is used to start the containers defined in the docker-compose.yml file. If the containers don't exist, they will be created.
