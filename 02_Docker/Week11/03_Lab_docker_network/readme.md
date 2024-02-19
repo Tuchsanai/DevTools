@@ -39,6 +39,14 @@ docker exec -it busybox_container sh
 ip addr
 ```
 
+
+```
+exit
+```
+
+
+
+
 ### 5.  To disconnect the busybox container from the "lab_network", use the following command:
 
 
