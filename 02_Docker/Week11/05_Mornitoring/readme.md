@@ -74,3 +74,16 @@ docker ps -a
 
 - **Prometheus:** Access Prometheus at `http://localhost:9090`
 - **Grafana:** Access Grafana at `http://localhost:3000` (default login is `admin`/`passwd`, which you'll be prompted to change)
+
+
+
+
+# Delete all containers
+
+```
+docker stop $(docker ps -a -q)  
+docker rm $(docker ps -a -q) 
+docker rmi $(docker images -q) 
+docker volume rm $(docker volume ls -q)  
+docker network prune -f
+```

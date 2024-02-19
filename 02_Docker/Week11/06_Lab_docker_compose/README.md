@@ -15,6 +15,24 @@ A simple distributed application running across multiple Docker containers.
 
 
 
+## create directory
+
+   
+    mkdir LAB6_Week11
+    cd    LAB6_Week11
+    
+
+## git clone branch dev
+    
+    
+   ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+     
+    cd DevTools/02_Docker/Week11/06_Lab_docker_compose/
+   ```
+
+≈
+
 ## docker-compose up
 ### This command is used to start the containers defined in the docker-compose.yml file. If the containers don't exist, they will be created.
 
@@ -54,3 +72,16 @@ docker volume prune
 * The second command (docker network prune) will remove any unused networks.
 
 * The third command (docker volume prune) will remove any unused volumes.
+
+
+
+
+# Delete all containers
+
+```
+docker stop $(docker ps -a -q)  
+docker rm $(docker ps -a -q) 
+docker rmi $(docker images -q) 
+docker volume rm $(docker volume ls -q)  
+docker network prune -f
+```
