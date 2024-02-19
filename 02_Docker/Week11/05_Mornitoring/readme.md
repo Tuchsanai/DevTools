@@ -55,17 +55,6 @@ docker compose up -d
 docker ps -a
 ```
 
-**** close the services with Docker Compose, you would run:
-
-```
-docker compose down
-```
-
-**** display the running containers
-
-```
-docker ps -a
-```
 
 
 ### Accessing the Services by process docker-compose.yml
@@ -76,6 +65,18 @@ docker ps -a
 - **Grafana:** Access Grafana at `http://localhost:3000` (default login is `admin`/`passwd`, which you'll be prompted to change)
 
 
+
+### close the services with Docker Compose, you would run:
+
+```
+docker compose down
+```
+
+**** display the running containers
+
+```
+docker ps -a
+```
 
 
 # Delete all containers
