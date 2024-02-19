@@ -19,7 +19,7 @@ services:
     volumes:
      - ./vote:/app
     ports:
-      - "5000:80"
+      - "8085:80"
     networks:
       - front-tier
       - back-tier
