@@ -8,6 +8,27 @@
 
 
 
+
+## create directory
+
+   
+    mkdir LAB1_Week11
+    cd    LAB1_Week11
+    
+
+## git clone branch dev
+    
+    
+   ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   ```
+   
+   ```   
+    cd DevTools/02_Docker/Week11/01_Lab_Dockerfile/
+   ```
+
+
+
 ```
 FROM python:3.9-slim
 
