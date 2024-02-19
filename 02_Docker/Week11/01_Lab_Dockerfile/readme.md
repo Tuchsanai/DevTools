@@ -56,6 +56,7 @@ docker run -d --rm -e JUPYTER_TOKEN=12345 -p 8081:8888 -v $(pwd):/app my_lab01
 
 
 
+
 --
 ### Danger Zone for admin only : 
 
