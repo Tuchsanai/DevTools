@@ -58,22 +58,3 @@ docker run -d --rm -e JUPYTER_TOKEN=12345 -p 8081:8888 -v $(pwd):/app my_lab01
 
 
 
-
---
-### Danger Zone for admin only : 
-
-```
-git checkout main
-git branch -D dev
-git push origin --delete dev
-```
-  
-```
-git branch dev
-git switch dev
-find "./" -type f \( -name "*.pdf" -o -name "*.jpg" \) -delete
-git add .
-git commit -m "delete files"
-git push origin dev
-git checkout main
-```
