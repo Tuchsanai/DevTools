@@ -18,8 +18,8 @@ A simple distributed application running across multiple Docker containers.
 ## create directory
 
    
-    mkdir LAB6_Week11
-    cd    LAB6_Week11
+    mkdir LAB4_Week11
+    cd    LAB4_Week11
     
 
 ## git clone branch dev
@@ -28,7 +28,7 @@ A simple distributed application running across multiple Docker containers.
    ```
     git clone -b dev https://github.com/Tuchsanai/DevTools.git
      
-    cd DevTools/02_Docker/Week11/06_Lab_docker_compose/
+    cd DevTools/02_Docker/Week11/04_Lab_docker_compose/
    ```
 
 ≈
