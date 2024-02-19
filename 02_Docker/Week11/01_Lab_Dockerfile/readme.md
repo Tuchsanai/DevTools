@@ -53,3 +53,24 @@ docker build -t my_lab01 .
 docker run -it --rm -p 8081:8888 -v "$(pwd)":/app my_lab01
 
 ```
+
+
+
+--
+### Danger Zone for admin only : 
+
+```
+git checkout main
+git branch -D dev
+git push origin --delete dev
+```
+  
+```
+git branch dev
+git switch dev
+find "./" -type f \( -name "*.pdf" -o -name "*.jpg" \) -delete
+git add .
+git commit -m "delete files"
+git push origin dev
+git checkout main
+```
