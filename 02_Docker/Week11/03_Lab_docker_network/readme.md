@@ -3,6 +3,14 @@
 This guide explains how to create a lab Docker network with a specific subnet using a busybox container.
 
 ### 1. Create a new Docker network named "lab_network" with a specific subnet, e.g., 192.168.100.0/24, using the following command:
+
+Explore  Networks
+
+```
+docker network ls
+
+```
+
 ```
 docker network create --subnet 192.168.100.0/24 lab_network
 ```
@@ -31,12 +39,39 @@ ip addr
 ```
 
 ### 5. To disconnect the busybox container from the "lab_network", use the following command:
+
+
 ```
 docker network disconnect lab_network busybox_container
 
 ```
 
+** inspect the network again
+
+```
+docker network inspect lab_network
+```
+
+** reconnect the container to the network
+
+```
+docker network connect lab_network busybox_container
+```
+
+** inspect the network again
+
+```
+docker network inspect lab_network
+```
+
+
 ### 6.To remove the "lab_network" when it's no longer needed, use the following command:
+
+```
+docker network disconnect lab_network busybox_container
+
+```
+
 
 ```
 docker network rm lab_network
