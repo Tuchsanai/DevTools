@@ -46,7 +46,9 @@ docker compose up
 * Access  at http://localhost:8087
 
 
-![results](./images/s1.jpg)
+![results1](./images/s1.jpg)
+![results2](./images/s2.jpg)
+
 
 ## docker-compose down
 ### This command is used to stop and remove the containers defined in the docker-compose.yml file.
