@@ -1,5 +1,5 @@
 
-# LAB Basic example of a Dockerfile for creating a lab environment with Python, Jupyter, and some essential data science libraries:
+### LAB Basic example of a Dockerfile for creating a lab environment with Python, Jupyter, and some essential data science libraries:
 
 
 ### A Dockerfile is a script that contains instructions to build a Docker image. Here's a basic example of a Dockerfile for creating a lab environment with Python, Jupyter, and some essential data science libraries:
