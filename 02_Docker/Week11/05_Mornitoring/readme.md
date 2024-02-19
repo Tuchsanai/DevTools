@@ -44,8 +44,26 @@ This dashboard uses the metrics exported by utkuozdemir/nvidia_gpu_exporter to p
 
 
 
-To start the services with Docker Compose, you would run:
+## To start the services with Docker Compose, you would run:
 
 ```
-docker-compose up -d
+docker compose up -d
 ```
+**** display the running containers
+
+```
+docker ps -a
+```
+
+**** close the services with Docker Compose, you would run:
+
+```
+docker compose down
+```
+
+**** display the running containers
+
+```
+docker ps -a
+```
+
