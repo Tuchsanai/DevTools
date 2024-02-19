@@ -12,6 +12,27 @@ The goal of this lab is to understand:
 
 ### Lab Setup
 
+
+
+## create directory
+
+   
+    mkdir LAB0_Week11
+    cd    LAB0_Week11
+    
+
+## git clone branch dev
+    
+    
+   ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   ```
+   
+   ```   
+    cd DevTools/02_Docker/Week11/00_LAB_CMD_Entrypoint/
+   ```
+
+
 1. **Create a Dockerfile for CMD**
 
    First, we'll create a simple Dockerfile that uses `CMD`.
