@@ -33,10 +33,6 @@ docker login xxx
 
 
 
-#### go to Directory
-```
-cd devopt_week10/Lab_docker_registry/
-```
 
 ### Step 3: Build the Docker image
 
