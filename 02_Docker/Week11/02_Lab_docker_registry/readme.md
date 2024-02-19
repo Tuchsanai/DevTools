@@ -5,8 +5,12 @@
 #### Run the following command to login to Docker Hub:
 
 ```
-docker login -u  yourusername -p yourpassword
+docker login -u  yourusername 
 
+```
+```
+#### Enter your password when prompted.
+................................
 ```
 
 ### Step 2:
