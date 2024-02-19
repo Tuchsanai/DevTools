@@ -11,11 +11,27 @@ docker login xxx
 
 ### Step 2:
 
-#### Clone
 
-```
-git clone https://github.com/Tuchsanai/devopt_week10.git
-```
+
+## create directory
+
+   
+    mkdir LAB2_Week11
+    cd    LAB2_Week11
+    
+
+## git clone branch dev
+    
+    
+   ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   ```
+   
+   ```   
+    cd DevTools/02_Docker/Week11/02_Lab_docker_registry/
+   ```
+
+
 
 #### go to Directory
 ```
