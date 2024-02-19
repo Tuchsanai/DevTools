@@ -21,12 +21,17 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=passwd
     volumes:
-      - ./grafana-datasources:/etc/grafana/provisioning/datasources
+      # - ./grafana-datasources:/etc/grafana/provisioning/datasources
+      # - ./grafana-dashboards:/var/lib/grafana/dashboards grafana/grafana
+      - ./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml 
       - ./grafana-dashboards:/var/lib/grafana/dashboards grafana/grafana
     ports:
       - 3000:3000
     networks:
       - mornitor_network    
+
+
 
 
 
