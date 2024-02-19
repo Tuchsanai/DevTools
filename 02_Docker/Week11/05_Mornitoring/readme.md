@@ -25,6 +25,25 @@ This dashboard uses the metrics exported by utkuozdemir/nvidia_gpu_exporter to p
 
 
 
+
+## create directory
+
+   
+    mkdir LAB5_Week11
+    cd    LAB5_Week11
+    
+
+## git clone branch dev
+    
+    
+   ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+     
+    cd DevTools/02_Docker/Week11/05_Mornitoring/
+   ```
+
+
+
 To start the services with Docker Compose, you would run:
 
 ```
