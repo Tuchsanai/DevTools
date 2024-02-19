@@ -17,6 +17,25 @@ docker login -u  yourusername
 
 
 
+## Delete all containers
+
+```
+docker stop $(docker ps -a -q)  
+docker rm $(docker ps -a -q) 
+docker rmi $(docker images -q) 
+docker volume rm $(docker volume ls -q)  
+docker network prune -f
+```
+
+## display all containers and images
+
+```
+docker ps -a
+docker images
+```
+
+
+
 ## create directory
 
    
@@ -64,31 +83,40 @@ docker images
 ### Step 4: Push the Docker image to Docker Hub
 
 ```
-docker push tuchsanai/custom-nginx-registry:1.0
+docker push tuchsanai/custom-nginx-registry:2.0
 ```
+
+** if success, you will see the following output:
+
+![Docker_push for image](./images/s1.jpg)
 
 ###  Step 5: Stop all Container and remove all images
 
 ```
-docker stop $(docker ps -a -q)
-docker rm $(docker ps -a -q)
-docker rmi $(docker images -q)
+docker stop $(docker ps -a -q)  
+docker rm $(docker ps -a -q) 
+docker rmi $(docker images -q) 
+docker volume rm $(docker volume ls -q)  
+docker network prune -f
 ```
+
 
 
 ### Step 6: Pull the Docker image from Docker Hub
 
 ```
-docker pull tuchsanai/custom-nginx-registry:1.0
+docker pull tuchsanai/custom-nginx-registry:2.0
 ```
 
 
 ### Step 7: Run the Docker container using the pulled image with the following command:
     
 ```
-docker run -d -p 8085:80 tuchsanai/custom-nginx-registry:1.0
+docker run -d -p 8085:80 tuchsanai/custom-nginx-registry:2.0
 ```
 
+** if success, you will see the following output:
+![Docker_push for image](./images/s2.jpg)
 
 
 # Delete all containers
