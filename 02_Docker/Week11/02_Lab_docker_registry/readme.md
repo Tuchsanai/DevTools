@@ -25,9 +25,7 @@ docker login -u  yourusername -p yourpassword
     
    ```
     git clone -b dev https://github.com/Tuchsanai/DevTools.git
-   ```
-   
-   ```   
+     
     cd DevTools/02_Docker/Week11/02_Lab_docker_registry/
    ```
 
@@ -39,10 +37,6 @@ docker login -u  yourusername -p yourpassword
 
 Build the Docker image with a custom tag using the following command:
 
-```
-docker build -t tuchsanai/custom-nginx-registry:1.0 .
-
-```
 
 Play with tag
 ```
@@ -50,7 +44,7 @@ docker build -t local_tuchsanai:1.0 .
 
 ```
 
- rename tag
+ In order to push to docke registry, you need to rename (tag command) the image with format: `<docker-username>/<repository-name>:<tag>`
 
 ```
 docker tag  local_tuchsanai:1.0 tuchsanai/custom-nginx-registry:2.0
@@ -89,4 +83,16 @@ docker pull tuchsanai/custom-nginx-registry:1.0
     
 ```
 docker run -d -p 8085:80 tuchsanai/custom-nginx-registry:1.0
+```
+
+
+
+# Delete all containers
+
+```
+docker stop $(docker ps -a -q)  
+docker rm $(docker ps -a -q) 
+docker rmi $(docker images -q) 
+docker volume rm $(docker volume ls -q)  
+docker network prune -f
 ```
