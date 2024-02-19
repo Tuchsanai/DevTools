@@ -1,0 +1,3 @@
+# Dockerfile-CMD
+FROM ubuntu
+CMD ["echo", "Hello from CMD!"]
