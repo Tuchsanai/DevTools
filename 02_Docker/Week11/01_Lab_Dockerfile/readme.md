@@ -27,7 +27,10 @@
     cd DevTools/02_Docker/Week11/01_Lab_Dockerfile/
    ```
 
+## Watch for Dockerfile  in directory
 
+```
+    cat Dockerfile
 
 ```
 FROM python:3.9-slim
