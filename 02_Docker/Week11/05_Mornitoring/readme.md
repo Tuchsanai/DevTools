@@ -61,8 +61,7 @@ docker ps -a
 
 ![pass](./images/s1.jpg)
 
-- **Prometheus:** Access Prometheus at `http://localhost:9090`
-- **Grafana:** Access Grafana at `http://localhost:3000` (default login is `admin`/`passwd`, which you'll be prompted to change)
+- **Grafana:** Access Grafana at `http://localhost:3000` (default login  as show in image is `admin`/`passwd`, which you'll be prompted to change)
 
 
 
