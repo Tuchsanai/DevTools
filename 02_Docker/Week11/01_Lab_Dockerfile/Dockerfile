@@ -3,14 +3,13 @@ FROM python:3.9-slim
 
 # Set the working directory
 WORKDIR /app
-COPY requirements.txt . 
 
+# Copy the requirements file into the container
+COPY requirements.txt .
 
 # Install Python dependencies
-
-RUN pip install --upgrade pip
-RUN pip install  -r requirements.txt
-
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
 # Set environment variables
 ENV LANG=C.UTF-8 \
@@ -18,6 +17,5 @@ ENV LANG=C.UTF-8 \
     JUPYTER_TOKEN=my_token \
     JUPYTER_PORT=8888
 
-
 # Start Jupyter Notebook
-CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token=my_token"]
+CMD ["sh", "-c", "jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token=${JUPYTER_TOKEN}"]
