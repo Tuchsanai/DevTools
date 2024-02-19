@@ -50,7 +50,7 @@ docker build -t my_lab01 .
 ###  After the image has been built, you can run a Docker container using the following command:
 
 ```
-docker run -it --rm -p 8081:8888 -v $(pwd):/app my_lab01
+docker run -d --rm -p 8081:8888 -v $(pwd):/app my_lab01
 
 
 ```
