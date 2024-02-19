@@ -1,5 +1,5 @@
 
-### Objective
+### Objective `CMD` and `ENTRYPOINT`
 
 The goal of this lab is to understand:
 - How `CMD` and `ENTRYPOINT` instructions define a container's default behavior.
