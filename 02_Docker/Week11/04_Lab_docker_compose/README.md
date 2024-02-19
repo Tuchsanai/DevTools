@@ -42,7 +42,9 @@ docker compose up
 
 ## Accessing the Services
 
-* Access Grafana at http://localhost:8085
+* Access  at http://localhost:8085
+* Access  at http://localhost:8087
+
 
 ![results](./images/s1.jpg)
 
