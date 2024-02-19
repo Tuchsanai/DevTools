@@ -30,7 +30,7 @@
 ## Watch for Dockerfile  in directory
 
 ```
-    cat Dockerfile
+cat Dockerfile
 
 ```
 
