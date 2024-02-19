@@ -29,22 +29,6 @@ services:
       - mornitor_network    
 
 
-  nvidia_smi_exporter:
-    image: utkuozdemir/nvidia_gpu_exporter:1.1.0
-    container_name: nvidia_smi_exporter
-    restart: unless-stopped
-    devices:
-      - /dev/nvidiactl:/dev/nvidiactl
-      - /dev/nvidia0:/dev/nvidia0
-    volumes:
-      - /usr/lib/x86_64-linux-gnu/libnvidia-ml.so:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so
-      - /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1
-      - /usr/bin/nvidia-smi:/usr/bin/nvidia-smi
-    ports:
-      - 9835:9835
-    networks:
-      - mornitor_network    
-
 
   nodeexporter:
     image: prom/node-exporter
