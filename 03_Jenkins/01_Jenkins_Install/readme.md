@@ -67,7 +67,7 @@ When you first access a new Jenkins instance, you are asked to unlock it using a
 
 ![Unlock Jenkin](./images/setup-jenkins.jpeg)
 
-* The command: 
+* The command: ```sudo cat /var/lib/jenkins/secrets/initialAdminPassword``` will print the password at console
 
-```sudo cat /var/lib/jenkins/secrets/initialAdminPassword``` will print the password at console
 
+![Unlock Jenkin2](./images/setup-jenkins-02-copying-initial-admin-password.png)
