@@ -57,11 +57,17 @@ sudo systemctl status jenkins
 ```
 
 
-##Unlocking Jenkins
+## 5. Unlocking Jenkins
 
 When you first access a new Jenkins instance, you are asked to unlock it using an automatically-generated password.
 
-![Unlock Jenkin](./images/setup-jenkins.jpeg)
+
 
 * Browse to http://localhost:8080 (or whichever port you configured for Jenkins when installing it) and wait until the Unlock Jenkins page appears.
-* The command: sudo cat /var/lib/jenkins/secrets/initialAdminPassword will print the password at console
+
+![Unlock Jenkin](./images/setup-jenkins.jpeg)
+
+* The command: 
+
+```sudo cat /var/lib/jenkins/secrets/initialAdminPassword``` will print the password at console
+
