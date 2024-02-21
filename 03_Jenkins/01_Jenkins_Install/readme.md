@@ -72,3 +72,7 @@ When you first access a new Jenkins instance, you are asked to unlock it using a
 * Create First Admin User
 
 ![Unlock Jenkin4](./images/4.jpg)
+
+* if completed, Jenkins is ready to use
+
+![Unlock Jenkin5](./images/5.jpg)
