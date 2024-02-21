@@ -67,4 +67,4 @@ When you first access a new Jenkins instance, you are asked to unlock it using a
 
 * select Install suggested plugins.
 
-![Unlock Jenkin3](./images/s3.jpg)
+![Unlock Jenkin3](./images/3.jpg)
