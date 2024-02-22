@@ -67,7 +67,7 @@ When you first access a new Jenkins instance, you are asked to unlock it using a
 
 
 
-####  Browse to http://localhost:8080 (or whichever port you configured for Jenkins when installing it) and wait until the Unlock Jenkins page appears.
+###  Browse to http://localhost:8080 (or whichever port you configured for Jenkins when installing it) and wait until the Unlock Jenkins page appears.
 
 ![Unlock Jenkin](./images/setup-jenkins.jpeg)
 
@@ -77,7 +77,7 @@ When you first access a new Jenkins instance, you are asked to unlock it using a
 
 
 
-#### select Install plugins to install.
+### select Install plugins to install.
    | Step 1 | Step 2 |
    |---------|---------|
    | ![Unlock Jenkin3](./images/3.jpg) | ![m1](./images/i0.jpg) |
@@ -88,11 +88,11 @@ When you first access a new Jenkins instance, you are asked to unlock it using a
 
 
 
-
-* Create First Admin User
+###
+ Create First Admin User
 
 ![Unlock Jenkin4](./images/4.jpg)
 
-* if completed, Jenkins is ready to use
+### if completed, Jenkins is ready to use
 
 ![Unlock Jenkin5](./images/5.jpg)
