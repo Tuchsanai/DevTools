@@ -1,59 +1,31 @@
 # Dive Into Kubernetes - Getting Started with Containers, Docker and Kubernetes - Docker Compose - Tutorial
 
-This tutorial supports you in running a Kubernetes lab, accessible in your browser 🚀
 
-## Pre-requisite
+Here's a basic script to get you started. This script:
 
-* Install a current version of docker-compose, new releases available [here](https://github.com/docker/compose/releases)
+1. Installs `curl`, `docker.io`, and `conntrack` (required by Minikube).
+2. Installs the latest version of `kubectl`.
+3. Installs the latest version of Minikube.
+4. Starts Minikube with Docker driver.
 
-## Clone this specific branch and change to the directory
+```bash
+#!/bin/bash
 
+# Update and Install Required Tools
+sudo apt-get update -y
+sudo apt-get install -y curl docker.io conntrack
 
-## create directory
+# Install kubectl
+sudo curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
 
-   
-    mkdir LAB0
-    cd    LAB0
-    
+# Install Minikube
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+chmod +x minikube
+sudo mv minikube /usr/local/bin/
 
-## git clone branch dev
-    
-    
-   ```
-    git clone -b dev https://github.com/Tuchsanai/DevTools.git
-   ```
-   
-   ```   
-    cd DevTools/04_kubernetes/01_Install_KubernetesLab/
-   ```
-
-
-
-
-## Starting the Lab Environment 
-
-```
-docker compose up -d
+# Start Minikube
+minikube start --driver=docker
 ```
 
-
- 
-## Stopping the Lab Environment
-
-```
-docker compose down -v
-```
-
-
-
-# Start lab at
-
-```
-http://localhost:8090
-```
-
-# if sucess you will see the following page
-
-![Kubernetes Lab](./images/k0.jpg)
-
-* login with username: root and password: root
