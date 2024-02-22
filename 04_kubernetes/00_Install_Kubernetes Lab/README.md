@@ -12,8 +12,8 @@ This tutorial supports you in running a Kubernetes lab, accessible in your brows
 ## create directory
 
    
-    mkdir LAB1_Week10
-    cd    LAB1_Week10
+    mkdir LAB0
+    cd    LAB0
     
 
 ## git clone branch dev
