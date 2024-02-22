@@ -36,6 +36,12 @@ sudo apt-get update -y
 # Install Docker packages
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+
+# Enable and start the Docker service
+sudo systemctl enable docker
+sudo systemctl start docker
+
+
 # Add the current user to the Docker group
 sudo usermod -aG docker $USER
 sudo groupadd docker
@@ -43,16 +49,9 @@ sudo groupadd docker
 # Adjust permissions for the Docker socket
 sudo chmod 666 /var/run/docker.sock 
 
-# Enable and start the Docker service
-sudo systemctl enable docker
-sudo systemctl start docker
-
 # Install the Compose plugin
 sudo apt-get install -y docker-compose-plugin
 
-# Print Docker and Docker Compose versions
-docker --version
-docker compose version
 
 ```
 
@@ -60,7 +59,7 @@ docker compose version
 # Add the current user to the Docker group
 sudo usermod -aG docker $USER
 sudo groupadd docker
-
+sudo chmod 666 /var/run/docker.sock 
 # Print Docker and Docker Compose versions
 docker --version
 docker compose version
