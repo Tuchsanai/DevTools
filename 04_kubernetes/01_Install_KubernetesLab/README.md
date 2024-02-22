@@ -34,3 +34,71 @@ After starting Minikube, you can launch the Kubernetes dashboard by running:
 ```bash
 minikube dashboard
 ```
+
+
+To check if Kubernetes is working, you typically want to verify the status of the cluster, nodes, and pods. Here’s a step-by-step guide on how to do this using `kubectl`, which is the Kubernetes command-line tool. Before proceeding, ensure that `kubectl` is installed and configured to communicate with your cluster.
+
+1. **Check Cluster Health:**
+   First, you want to ensure that your Kubernetes cluster is up and running. You can do this by checking the health status of the cluster.
+
+   ```bash
+   kubectl cluster-info
+   ```
+
+   This command will display the Kubernetes master and the KubeDNS services if your cluster is up.
+
+2. **Get Nodes Status:**
+   Next, check the status of the nodes in your cluster. Nodes are the physical or virtual machines where Kubernetes runs your applications.
+
+   ```bash
+   kubectl get nodes
+   ```
+
+   This command lists all nodes attached to the cluster and shows their status as Ready, NotReady, or Unknown. A node in the Ready state is working correctly.
+
+3. **Check Pods Status:**
+   Pods are the smallest deployable units in Kubernetes, and they host your application instances. Checking the status of your pods can help you verify if your applications are running as expected.
+
+   ```bash
+   kubectl get pods --all-namespaces
+   ```
+
+   This command lists all pods in all namespaces, along with their status. You’re looking for pods in the Running or Completed state, depending on the nature of your application.
+
+4. **Check Deployments:**
+   Deployments represent a set of multiple, identical pods. A Deployment runs multiple replicas of your application and automatically replaces any instances that fail or become unresponsive.
+
+   ```bash
+   kubectl get deployments
+   ```
+
+   This will show you the current deployments, their desired and current states, and how many are up to date and available.
+
+5. **Check Services:**
+   Services in Kubernetes are an abstract way to expose an application running on a set of Pods as a network service.
+
+   ```bash
+   kubectl get services
+   ```
+
+   This command lists the services that are running, which helps you understand how your applications are exposed internally or externally.
+
+6. **Accessing Kubernetes Dashboard (Optional):**
+   If your cluster has the Kubernetes Dashboard installed, you can access it for a graphical overview of cluster and application status. This might require additional setup, such as creating a proxy server:
+
+   ```bash
+   kubectl proxy
+   ```
+
+   After starting the proxy, you can access the dashboard through a web browser at a URL typically like `http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/`.
+
+7. **Reviewing Logs:**
+   Checking logs can also be helpful to ensure that your applications and services are running as expected.
+
+   ```bash
+   kubectl logs <pod-name>
+   ```
+
+   Replace `<pod-name>` with the name of the pod for which you want to view logs.
+
+By following these steps, you can check if Kubernetes is working correctly and ensure that your applications are running as expected within the cluster.
