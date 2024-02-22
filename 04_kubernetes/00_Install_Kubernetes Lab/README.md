@@ -48,5 +48,3 @@ This tutorial supports you in running a Kubernetes lab, accessible in your brows
 ```
 ./start.bat
 ```
-
-![DiveInto](https://raw.githubusercontent.com/spurin/diveintokubernetes/cloudshell/DiveIntoKubernetes.jpeg)
