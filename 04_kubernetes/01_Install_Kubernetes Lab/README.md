@@ -43,11 +43,6 @@ This tutorial supports you in running a Kubernetes lab, accessible in your brows
 ./stop.sh
 ```
 
-## Starting the Lab Environment (Windows CMD)
-
-```
-./start.bat
-```
 
 
 # Start lab at
