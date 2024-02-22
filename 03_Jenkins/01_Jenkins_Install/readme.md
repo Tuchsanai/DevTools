@@ -78,9 +78,11 @@ When you first access a new Jenkins instance, you are asked to unlock it using a
 
 
 ### select Install plugins to install.
-   | Step 1 | Step 2 |
+   | Step 1 |
    |---------|---------|
-   | ![Unlock Jenkin3](./images/3.jpg) | ![m1](./images/i0.jpg) |
+   | ![Unlock Jenkin3](./images/3.jpg)
+   | Step 2 | 
+   | ![m1](./images/i0.jpg) |
    | Step 3 | Step 4 |
    | ![m2](./images/i1.jpg) | ![m2](./images/i2.jpg)        |
    | Step 5 |
