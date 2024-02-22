@@ -56,6 +56,17 @@ docker compose version
 
 ```
 
+```
+# Add the current user to the Docker group
+sudo usermod -aG docker $USER
+sudo groupadd docker
+
+# Print Docker and Docker Compose versions
+docker --version
+docker compose version
+
+```
+
 
 # check
 
