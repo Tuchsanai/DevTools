@@ -81,12 +81,14 @@ When you first access a new Jenkins instance, you are asked to unlock it using a
    | Step 1 |
    |---------|
    | ![Unlock Jenkin3](./images/3.jpg) |
-   | Step 2 |  Step 3 |
-   | ![m1](./images/i0.jpg) | ![m2](./images/i1.jpg) |
+   | Step 2 |  
+   |![m1](./images/i0.jpg) | 
+   |Step 3 |
+   |![m2](./images/i1.jpg) |
    | Step 4 |
-   |  ![m2](./images/i2.jpg)   |
+   |![m2](./images/i2.jpg)   |
    | Step 5 |
-   | ![m2](./images/i4.jpg) |
+   |![m2](./images/i4.jpg) |
 
 
 
