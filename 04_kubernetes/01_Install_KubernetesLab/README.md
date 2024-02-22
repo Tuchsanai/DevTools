@@ -52,5 +52,8 @@ docker compose down -v
 http://localhost:8090
 ```
 
+# if sucess you will see the following page
 
 ![Kubernetes Lab](./images/k0.jpg)
+
+* login with username: root and password: root
