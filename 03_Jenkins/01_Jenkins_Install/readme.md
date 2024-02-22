@@ -47,7 +47,7 @@ sudo usermod -aG  jenkins $USER
 ```
 sudo systemctl enable jenkins
 sudo systemctl start jenkins
-sudo systemctl status jenkins
+
 ```
 
 * Admin password Jenkins
