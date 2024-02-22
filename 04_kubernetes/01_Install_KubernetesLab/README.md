@@ -1,4 +1,4 @@
-# Dive Into Kubernetes - Getting Started with Containers, Docker and Kubernetes - Docker Compose - Tutorial
+# Dive Into Kubernetes
 
 
 Here's a basic script to get you started. This script:
@@ -29,3 +29,8 @@ sudo mv minikube /usr/local/bin/
 minikube start --driver=docker
 ```
 
+After starting Minikube, you can launch the Kubernetes dashboard by running:
+
+```bash
+minikube dashboard
+```
