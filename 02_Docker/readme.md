@@ -67,15 +67,6 @@ docker compose version
 ```
 
 
-# check
-
-```
-docker --version
-```
-
-```
-docker compose version
-```
 
 
 # Delete all containers
