@@ -75,9 +75,15 @@ When you first access a new Jenkins instance, you are asked to unlock it using a
 
 
 
-![Unlock Jenkin2](./images/setup-jenkins-02-copying-initial-admin-password.jpg)
+
 
 * select Install suggested plugins.
+   | Image 1 | Image 2 |
+   |---------|---------|
+   | ![m0](./images/setup-jenkins-02-copying-initial-admin-password.jpg)| ![m1](./images/i0.jpg) |
+   | Image 1 | Image 2 |
+   | ![m2](./images/i1.jpg) |         |
+
 
 ![Unlock Jenkin3](./images/3.jpg)
 
