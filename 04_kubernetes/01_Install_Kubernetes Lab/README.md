@@ -48,3 +48,10 @@ This tutorial supports you in running a Kubernetes lab, accessible in your brows
 ```
 ./start.bat
 ```
+
+
+# Start lab at
+
+```
+http://localhost:8090
+```
