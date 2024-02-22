@@ -25,7 +25,7 @@ services:
     depends_on:
      - control-plane
     ports: 
-     - 32436:80
+     - 8090:80
     networks:
      - kubernetes.compose.diveinto.io
 
