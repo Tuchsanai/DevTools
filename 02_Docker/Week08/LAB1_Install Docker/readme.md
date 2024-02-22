@@ -60,9 +60,6 @@ sudo apt-get install -y docker-compose-plugin
 sudo usermod -aG docker $USER
 sudo groupadd docker
 sudo chmod 666 /var/run/docker.sock 
-# Print Docker and Docker Compose versions
-docker --version
-docker compose version
 
 ```
 
