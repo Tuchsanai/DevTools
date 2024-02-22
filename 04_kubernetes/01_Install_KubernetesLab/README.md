@@ -25,11 +25,13 @@ curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/miniku
 chmod +x minikube
 sudo mv minikube /usr/local/bin/
 
-# Start Minikube
-minikube start --driver=docker
 ```
 
-After starting Minikube, you can launch the Kubernetes dashboard by running:
+
+### Start Minikube
+minikube start --driver=docker
+
+### After starting Minikube, you can launch the Kubernetes dashboard by running:
 
 ```bash
 minikube dashboard
