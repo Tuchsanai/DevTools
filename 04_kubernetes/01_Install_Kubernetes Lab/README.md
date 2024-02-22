@@ -32,7 +32,7 @@ This tutorial supports you in running a Kubernetes lab, accessible in your brows
 ## Starting the Lab Environment 
 
 ```
-./start.sh
+docker compose up
 ```
 
 
@@ -40,7 +40,7 @@ This tutorial supports you in running a Kubernetes lab, accessible in your brows
 ## Stopping the Lab Environment
 
 ```
-./stop.sh
+docker compose down -v
 ```
 
 
