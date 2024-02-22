@@ -8,22 +8,34 @@ This tutorial supports you in running a Kubernetes lab, accessible in your brows
 
 ## Clone this specific branch and change to the directory
 
-```
-git clone --single-branch -b compose https://github.com/spurin/diveintokubernetes.git
-cd diveintokubernetes
-```
 
-## Starting the Lab Environment (Linux/Mac/Windows WSL)
+## create directory
+
+   
+    mkdir LAB1_Week10
+    cd    LAB1_Week10
+    
+
+## git clone branch dev
+    
+    
+   ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   ```
+   
+   ```   
+    cd DevTools/04_kubernetes/00_Install_Kubernetes Lab\
+   ```
+
+
+
+## Starting the Lab Environment (Linux/Mac)
 
 ```
 ./start.sh
 ```
 
-## Starting the Lab Environment (Windows CMD)
 
-```
-./start.bat
-```
 
 ## Stopping the Lab Environment (Linux/Mac/Windows WSL)
 
