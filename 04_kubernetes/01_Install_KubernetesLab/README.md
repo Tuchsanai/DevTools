@@ -33,7 +33,7 @@ This tutorial supports you in running a Kubernetes lab, accessible in your brows
 ## Starting the Lab Environment 
 
 ```
-docker compose up
+docker compose up -d
 ```
 
 
