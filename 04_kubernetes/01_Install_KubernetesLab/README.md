@@ -51,3 +51,6 @@ docker compose down -v
 ```
 http://localhost:8090
 ```
+
+
+![Kubernetes Lab](./images/k0.jpg
