@@ -29,15 +29,15 @@ This tutorial supports you in running a Kubernetes lab, accessible in your brows
 
 
 
-## Starting the Lab Environment (Linux/Mac)
+## Starting the Lab Environment 
 
 ```
 ./start.sh
 ```
 
 
-
-## Stopping the Lab Environment (Linux/Mac/Windows WSL)
+ 
+## Stopping the Lab Environment
 
 ```
 ./stop.sh
