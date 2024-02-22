@@ -35,9 +35,7 @@ minikube start --driver=docker
 ```
 ### After starting Minikube, you can launch the Kubernetes dashboard by running:
 
-```bash
-minikube dashboard
-```
+
 
 
 To check if Kubernetes is working, you typically want to verify the status of the cluster, nodes, and pods. Here’s a step-by-step guide on how to do this using `kubectl`, which is the Kubernetes command-line tool. Before proceeding, ensure that `kubectl` is installed and configured to communicate with your cluster.
@@ -84,25 +82,3 @@ To check if Kubernetes is working, you typically want to verify the status of th
    ```bash
    kubectl get services
    ```
-
-   This command lists the services that are running, which helps you understand how your applications are exposed internally or externally.
-
-6. **Accessing Kubernetes Dashboard (Optional):**
-   If your cluster has the Kubernetes Dashboard installed, you can access it for a graphical overview of cluster and application status. This might require additional setup, such as creating a proxy server:
-
-   ```bash
-   kubectl proxy
-   ```
-
-   After starting the proxy, you can access the dashboard through a web browser at a URL typically like `http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/`.
-
-7. **Reviewing Logs:**
-   Checking logs can also be helpful to ensure that your applications and services are running as expected.
-
-   ```bash
-   kubectl logs <pod-name>
-   ```
-
-   Replace `<pod-name>` with the name of the pod for which you want to view logs.
-
-By following these steps, you can check if Kubernetes is working correctly and ensure that your applications are running as expected within the cluster.
