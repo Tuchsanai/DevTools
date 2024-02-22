@@ -67,17 +67,17 @@ When you first access a new Jenkins instance, you are asked to unlock it using a
 
 
 
-# * Browse to http://localhost:8080 (or whichever port you configured for Jenkins when installing it) and wait until the Unlock Jenkins page appears.
+####  Browse to http://localhost:8080 (or whichever port you configured for Jenkins when installing it) and wait until the Unlock Jenkins page appears.
 
 ![Unlock Jenkin](./images/setup-jenkins.jpeg)
 
-# * The command: ```sudo cat /var/lib/jenkins/secrets/initialAdminPassword``` will print the password at console
+#### The command: ```sudo cat /var/lib/jenkins/secrets/initialAdminPassword``` will print the password at console
 
   ![wpassword](./images/setup-jenkins-02-copying-initial-admin-password.jpg)
 
 
 
-# * select Install plugins to install.
+#### select Install plugins to install.
    | Step 1 | Step 2 |
    |---------|---------|
    | ![Unlock Jenkin3](./images/3.jpg) | ![m1](./images/i0.jpg) |
