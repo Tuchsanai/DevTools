@@ -24,8 +24,9 @@ This tutorial supports you in running a Kubernetes lab, accessible in your brows
    ```
    
    ```   
-    cd DevTools/04_kubernetes/00_Install_Kubernetes Lab\
+    cd DevTools/04_kubernetes/01_Install_Kubernetes Lab\
    ```
+
 
 
 
