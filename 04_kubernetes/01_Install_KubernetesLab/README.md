@@ -33,7 +33,7 @@ sudo mv minikube /usr/local/bin/
 ```bash
 minikube start --driver=docker
 ```
-### After starting Minikube, you can launch the Kubernetes dashboard by running:
+### After starting Minikube, you can launch the Kubernetes  by running:
 
 
 
