@@ -81,7 +81,7 @@ pipeline {
     agent any  // Execute on any available Jenkins agent
 
     environment {
-        // Define an environment variable to store the Docker version or availability status
+        // Define an environment variable 
         DOCKER_VERSION = ''
     }
 
@@ -93,7 +93,7 @@ pipeline {
                     def dockerCheck = sh(script: 'docker --version || echo "No Docker"', returnStdout: true).trim()
 
                     sh 'echo dockerCheck = ' + dockerCheck
-                    
+
                     // Check if Docker is available and set environment variable accordingly
                     if (dockerCheck.contains('Docker version')) {
                         env.DOCKER_VERSION = dockerCheck
