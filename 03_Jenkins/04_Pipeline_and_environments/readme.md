@@ -91,7 +91,9 @@ pipeline {
                 script {
                     // Try to get Docker version
                     def dockerCheck = sh(script: 'docker --version || echo "No Docker"', returnStdout: true).trim()
+
                     sh 'echo dockerCheck = ' + dockerCheck
+                    
                     // Check if Docker is available and set environment variable accordingly
                     if (dockerCheck.contains('Docker version')) {
                         env.DOCKER_VERSION = dockerCheck
