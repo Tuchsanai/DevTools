@@ -4,7 +4,7 @@
 
 Multiple Stages
 
-```
+```bash
 pipeline {
     agent any
     stages {
@@ -44,7 +44,7 @@ pipeline {
 ```
 
 Pipeline with post actions
-```
+```bash
 pipeline {
     agent any
     stages {
@@ -72,4 +72,49 @@ pipeline {
         }
     }
 }
+```
+
+
+
+```bash
+pipeline {
+    agent any  // Execute on any available Jenkins agent
+
+    environment {
+        // Define an environment variable to store the Docker version or availability status
+        DOCKER_VERSION = ''
+    }
+
+    stages {
+        stage('Check Docker') {
+            steps {
+                script {
+                    // Try to get Docker version
+                    def dockerCheck = sh(script: 'docker --version || echo "No Docker"', returnStdout: true).trim()
+                    sh 'echo dockerCheck = ' + dockerCheck
+                    // Check if Docker is available and set environment variable accordingly
+                    if (dockerCheck.contains('Docker version')) {
+                        env.DOCKER_VERSION = dockerCheck
+                    } else {
+                        env.DOCKER_VERSION = 'No Docker'
+                    }
+                }
+            }
+        }
+
+        stage('Run Docker Hello World') {
+            steps {
+                script {
+                    // Check if Docker version was found and run hello-world image
+                    if (env.DOCKER_VERSION != 'No Docker') {
+                        sh 'docker run hello-world'
+                    } else {
+                        echo 'No Docker available on this machine'
+                    }
+                }
+            }
+        }
+    }
+}
+
 ```
