@@ -41,6 +41,11 @@ pipeline {
 }
 ```
 
+- if successful, you will get the following output
+
+
+![multiple stages](./images/1_MultipleStages.jpg)
+
 ## Example 2. Post actions and Conditions
 
 ```bash
@@ -178,7 +183,7 @@ pipeline {
             steps {
                 script {
                     // Try to get Docker version
-                    def dockerCheck = sh(script: 'docker --version || echo "No Docker"', returnStdout: true).trim()
+                    def dockerCheck = sh(script: 'docker --version', returnStdout: true).trim()
 
                     sh 'echo dockerCheck = ' + dockerCheck
 
