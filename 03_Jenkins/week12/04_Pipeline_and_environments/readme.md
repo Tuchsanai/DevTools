@@ -96,7 +96,7 @@ python3 --version
 
 ## Example 3. Environment Variables and Docker
 
-### - Basic environment variables
+### - Basic environment variables 1
 
 ```bash
 
@@ -131,6 +131,35 @@ pipeline {
 
 
 ```
+
+- if successful, you will get the following output
+![env variables1](./images/3_env1.jpg)
+
+### - Basic environment variables 2
+
+```bash
+Jenkinsfile (Declarative Pipeline)
+pipeline {
+    agent any
+
+    environment {
+        DISABLE_AUTH = 'true'
+        DB_ENGINE    = 'sqlite'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo "Database engine is ${DB_ENGINE}"
+                echo "DISABLE_AUTH is ${DISABLE_AUTH}"
+                sh 'printenv'
+            }
+        }
+    }
+}
+
+```
+
 
 ### - Docker and Environment variables
 
