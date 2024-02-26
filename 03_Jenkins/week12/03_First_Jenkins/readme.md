@@ -8,11 +8,13 @@ pipeline {
     stages {
         stage('Hello World') {
             steps {
-                sh echo 'Hello World!'
+                sh  'echo Hello World!'
             }
         }
     }
 }
+
+
 
 
 ```
