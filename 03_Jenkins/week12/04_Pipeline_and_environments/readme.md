@@ -54,7 +54,7 @@ pipeline {
             }
         }
     }
- post {
+    post {
         always {
             echo 'Always'
         }
@@ -72,6 +72,8 @@ pipeline {
         }
     }
 }
+
+
 ```
 
 ## Example 3. Environment Variables and Docker
