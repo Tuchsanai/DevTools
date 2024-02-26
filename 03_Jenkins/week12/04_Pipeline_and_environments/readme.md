@@ -213,3 +213,7 @@ pipeline {
 }
 
 ```
+
+- if successful, you will get the following output
+
+![docker](./images/4_docker.jpg)
