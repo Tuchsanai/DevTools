@@ -45,8 +45,6 @@ pipeline {
 
 ```bash
 
-Pipeline with post actions
-```bash
 pipeline {
     agent any
     stages {
