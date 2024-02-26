@@ -41,7 +41,7 @@ pipeline {
 }
 ```
 
-## Example 2. post actions
+## Example 2. Post actions and Conditions
 
 ```bash
 
@@ -80,6 +80,8 @@ pipeline {
 
 ```bash
 
+### - Basic environment variables
+
 pipeline {
     agent any
 
@@ -109,6 +111,9 @@ pipeline {
 
 
 ```
+
+### - Docker and Environment variables
+
 
 ```bash
 pipeline {
