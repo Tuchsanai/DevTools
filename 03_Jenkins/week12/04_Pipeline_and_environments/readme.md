@@ -50,7 +50,7 @@ pipeline {
     stages {
         stage('build') {
             steps {
-                sh 'python --version'
+                sh 'python3 --version'
             }
         }
     }
@@ -79,7 +79,20 @@ pipeline {
 
 ![no python](./images/2_nopython.jpg)
 
+- To install Python on Ubuntu, you can use the following steps. 
+
 ```bash
+sudo apt update
+sudo apt install python3
+```
+
+```
+python3 --version
+```
+
+- If you have python installed, you will get the following output
+
+![no python](./images/2_python.jpg)
 
 ## Example 3. Environment Variables and Docker
 
@@ -99,6 +112,7 @@ pipeline {
     stages {
         stage('Demo') {
             steps {
+
                 // Use the environment variables
                 echo "Using environment variable: ${env.MY_ENV_VAR}"
                 echo "Using another environment variable: ${env.ANOTHER_VAR}"
@@ -109,6 +123,7 @@ pipeline {
                 }
                 
                 echo "Using a newly set environment variable: ${env.NEW_VAR}"
+                sh 'printenv'
             }
         }
     }
