@@ -54,11 +54,7 @@ pipeline {
             }
         }
     }
- post {
-        always {
-            echo 'Cleanup after everything!'
-        }
-    }
+ 
 }
 ```
 
