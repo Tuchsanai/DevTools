@@ -1,5 +1,4 @@
-# ********** There are 4 Mini Labs in this section ******************************
-
+# * There are 4 Mini Labs in this section *
 
 ## Example 1. Multiple Stages
 
