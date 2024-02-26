@@ -21,4 +21,4 @@ pipeline {
 
 - if sucess you will see the following output:
 
-![Jenkins1](images/first_jenkins.jpg)
+![Jenkins1](images/first_jenkins1.jpg)
