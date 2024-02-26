@@ -1,8 +1,6 @@
 
 
-
-
-Multiple Stages
+## Example 1. Multiple Stages
 
 ```bash
 pipeline {
@@ -43,6 +41,10 @@ pipeline {
 }
 ```
 
+## Example 2. post actions
+
+```bash
+
 Pipeline with post actions
 ```bash
 pipeline {
@@ -74,7 +76,39 @@ pipeline {
 }
 ```
 
+## Example 3. Environment Variables and Docker
 
+```bash
+
+pipeline {
+    agent any
+
+    environment {
+        // Define environment variables
+        MY_ENV_VAR = 'Hello, Jenkins Environment Variables!'
+        ANOTHER_VAR = 'This is another environment variable.'
+    }
+
+    stages {
+        stage('Demo') {
+            steps {
+                // Use the environment variables
+                echo "Using environment variable: ${env.MY_ENV_VAR}"
+                echo "Using another environment variable: ${env.ANOTHER_VAR}"
+                
+                // Set a new environment variable or modify an existing one
+                script {
+                    env.NEW_VAR = 'This is a new environment variable set during runtime.'
+                }
+                
+                echo "Using a newly set environment variable: ${env.NEW_VAR}"
+            }
+        }
+    }
+}
+
+
+```
 
 ```bash
 pipeline {
