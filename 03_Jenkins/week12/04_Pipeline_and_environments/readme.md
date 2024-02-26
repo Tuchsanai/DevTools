@@ -1,3 +1,4 @@
+# ********** There are 4 Mini Labs in this section ******************************
 
 
 ## Example 1. Multiple Stages
@@ -101,7 +102,7 @@ python3 --version
 
 ## Example 3. Environment Variables and Docker
 
-### - Basic environment variables 1
+### - 3.1 Basic environment variables 1
 
 ```bash
 
@@ -140,7 +141,7 @@ pipeline {
 - if successful, you will get the following output
 ![env variables1](./images/3_env1.jpg)
 
-### - Basic environment variables 2
+### - 3.2 Basic environment variables 2
 
 ```bash
 Jenkinsfile (Declarative Pipeline)
@@ -166,7 +167,7 @@ pipeline {
 ```
 
 
-### - Docker and Environment variables
+###  Example 4. Docker and Environment variables
 
 
 ```bash
