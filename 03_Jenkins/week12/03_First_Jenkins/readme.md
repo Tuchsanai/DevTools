@@ -21,4 +21,4 @@ pipeline {
 
 - if sucess you will see the following output:
 
-[![Jenkins Pipeline](https://img.youtube.com/vi/3zv3n3j3y9E/0.jpg)](https://www.youtube.com/watch?v=3zv3n3j3y9E)
+![Jenkins1](images/first_jenkins.jpg)
