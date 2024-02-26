@@ -76,9 +76,9 @@ pipeline {
 
 ## Example 3. Environment Variables and Docker
 
-```bash
-
 ### - Basic environment variables
+
+```bash
 
 pipeline {
     agent any
