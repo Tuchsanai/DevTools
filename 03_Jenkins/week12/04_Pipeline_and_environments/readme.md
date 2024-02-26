@@ -73,8 +73,13 @@ pipeline {
     }
 }
 
-
 ```
+
+- if there are no python you will get the following output
+
+![no python](./images/2_nopython.jpg)
+
+```bash
 
 ## Example 3. Environment Variables and Docker
 
