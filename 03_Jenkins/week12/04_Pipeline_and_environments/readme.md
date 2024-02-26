@@ -1,4 +1,4 @@
-# * There are 4  Labs in this section *
+# * There are 4 labs in this section (Example 1,2,3,4) *
 
 ## Example 1. Multiple Stages
 
