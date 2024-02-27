@@ -20,9 +20,9 @@ pipeline {
             steps {
                 script {
                     // Run Python script with only os library
-                    sh 'pwd'
-                    sh 'python3  ./03_Jenkins/week13/01_Run_Jenkinfile_From_Github/status.py'
                     sh 'ls -l'
+                    sh 'python3  ./03_Jenkins/week13/01_Run_Jenkinfile_From_Github_WithSCM/status.py'
+                    
                 }
             }
         }
