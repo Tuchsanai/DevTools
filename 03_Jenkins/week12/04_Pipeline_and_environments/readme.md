@@ -143,7 +143,7 @@ pipeline {
 ### - 3.2 Basic environment variables 2
 
 ```bash
-Jenkinsfile (Declarative Pipeline)
+
 pipeline {
     agent any
 
