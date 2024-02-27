@@ -20,7 +20,7 @@ pipeline {
             steps {
                 script {
                     // Run Python script with only os library
-                    sh 'python3 status.py'
+                    sh 'python3  ./03_Jenkins/week13/01_Run_Jenkinfile_From_Github/status.py'
                     sh 'ls -l'
                 }
             }
