@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Check Python Installation') {
+            steps {
+                script {
+                    // Check if Python is installed
+                    def pythonInstalled = sh(script: "which python3", returnStatus: true) == 0
+                    if (!pythonInstalled) {
+                        // Install Python if not installed
+                        sh 'sudo apt update'
+                        sh 'sudo apt install -y python3'
+                    }
+                }
+            }
+        }
+
+        stage('Run Python Script') {
+            steps {
+                script {
+                    // Run Python script with only os library
+                    sh 'python3 status.py'
+                    sh 'ls -l'
+                }
+            }
+        }
+    }
+}
