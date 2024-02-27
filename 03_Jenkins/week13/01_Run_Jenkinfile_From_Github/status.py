@@ -6,8 +6,6 @@ def main():
     print("---------------")
     print("Operating System:", os.name)
     print("\n")
-    print("User:", os.getlogin())
-    print("\n")
     print("Environment Variables:", os.environ)
     print("\n")
     print("finished.")
