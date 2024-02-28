@@ -1,4 +1,5 @@
 # Jenkins file with GitHub
+# - detail in slides 
 
 ```
 pipeline {
@@ -51,4 +52,3 @@ pipeline {
 ```
 
 
-- detail in slides 
