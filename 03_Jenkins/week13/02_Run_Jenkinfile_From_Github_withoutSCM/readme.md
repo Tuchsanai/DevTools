@@ -1,6 +1,5 @@
 # Jenkins file with GitHub
 
-
 ```
 pipeline {
     agent any
@@ -43,7 +42,13 @@ pipeline {
                 }
             }
 
-}   
+        } 
+        
+    }
+
+}    
+
 ```
+
 
 - detail in slides 
