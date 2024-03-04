@@ -1,28 +1,73 @@
 pipeline {
     agent any
 
+    environment {
+        // Define variables
+        DOCKER_IMAGE = 'tuchsanai/demoweb_fastapi:latest'
+        DOCKER_CREDENTIALS = credentials('dockerhub')
+    }
+
     stages {
-        stage('Build') {
+        stage('Start Jenkins') {
             steps {
-                echo 'Building project...'
-                // Add your build commands here 
-                // Example: sh 'mvn clean package' 
+                // Checkout your source code from version control
+                echo 'Start Jenkins............'
+                echo 'docker user are =  $DOCKER_CREDENTIALS_USR'
+                echo 'docker password are = $DOCKER_CREDENTIALS_PSW'
             }
         }
 
-        stage('Test') {
+        stage('Build Docker Image') {
             steps {
-                echo 'Running tests...'
-                // Add your test commands here
-                // Example: sh 'mvn test' 
+                script {
+                    // Build the Docker image
+                    sh 'echo start build the Docker image = $DOCKER_IMAGE'
+                    sh 'docker build -t $DOCKER_IMAGE .'
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    
+                    // Login to Docker Hub
+                    sh 'echo $DOCKER_CREDENTIALS_PSW | docker login --username $DOCKER_CREDENTIALS_USR --password-stdin'
+                    // Push the image
+                    sh 'docker push $DOCKER_IMAGE'
+                }
+            }
+        }
+
+        stage('Clear Docker Components') {
+            steps {
+                script {
+                    // Remove Docker images and containers
+                    sh 'echo remove all containers'
+                    sh 'docker system prune -af'
+                    sh 'echo display all containers'
+                    sh 'docker images -a'
+                    sh 'docker ps -a'
+                }
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying...'
-                // Add your deployment logic here
+                script {
+                    // Pull the Docker image from Docker Hub
+                    sh 'docker pull $DOCKER_IMAGE'
+                    // Run the Docker container
+                    sh 'docker run -d --name fastapi-webhook -p 8085:80 $DOCKER_IMAGE'
+                }
             }
+        }
+    }
+
+    post {
+        always {
+            // Logout from Docker Hub
+            sh 'docker logout'
         }
     }
 }
