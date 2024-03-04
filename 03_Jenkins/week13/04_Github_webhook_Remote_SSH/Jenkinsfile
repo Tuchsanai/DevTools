@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'tuchsanai/fastapi-webhook:latestmage' // Replace with your Docker image
-        REMOTE_HOST = 'username@remote_ip' // Replace username and remote_ip with actual values
+        DOCKER_IMAGE    = 'tuchsanai/fastapi-webhook:latestmage' // Replace with your Docker image
+        REMOTE_HOST     = 'tuchsanai@34.124.197.62' // Replace username and remote_ip with actual values
+        SSH_CREDENTIALS = 'ssh_prod_instance' // Replace with your SSH credentials
     }
 
     stages {
@@ -18,7 +19,7 @@ pipeline {
 
         stage('Run Docker on Remote Server') {
             steps {
-                sshagent(['remotessh']) {
+                sshagent(['ssh_prod_instance']) {
                     // Replace your_docker_command with the actual Docker command you want to run on the remote server
                     sh 'ssh ${REMOTE_HOST}' 
                     sh 'docker stop $(docker ps -a -q)'  
