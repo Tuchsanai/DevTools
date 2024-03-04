@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE    = 'tuchsanai/fastapi-webhook:latestmage' // Replace with your Docker image
-        REMOTE_HOST     = 'tuchsanai@34.124.197.62' // Replace username and remote_ip with actual values
-        SSH_CREDENTIALS = 'ssh_prod_instance' // Replace with your SSH credentials
+        DOCKER_IMAGE    = 'tuchsanai/fastapi-webhook:latest' // Corrected the Docker image name
+        REMOTE_HOST     = 'tuchsanai@34.124.197.62' // Username and remote IP should be updated with actual values
+        SSH_CREDENTIALS = 'ssh_prod_instance' // SSH credentials should be replaced with your actual credentials
     }
 
     stages {
@@ -20,16 +20,18 @@ pipeline {
         stage('Run Docker on Remote Server') {
             steps {
                 sshagent(['ssh_prod_instance']) {
-                    // Replace your_docker_command with the actual Docker command you want to run on the remote server
-                    sh 'ssh ${REMOTE_HOST}' 
-                    sh 'docker stop $(docker ps -a -q)'  
-                    sh  'docker rm $(docker ps -a -q)' 
-                    sh  'docker rmi $(docker images -q)'
-                    sh 'docker system prune -af'
-                    sh 'docker pull ${DOCKER_IMAGE}'
-                    sh 'docker run -d --name fastapi-webhook -p 8085:80 $DOCKER_IMAGE' 
+                    // Corrected command to execute Docker run on the remote server
+                    sh "ssh -o StrictHostKeyChecking=no $REMOTE_HOST 'docker stop $(docker ps -a -q)'"
+                    sh "ssh -o StrictHostKeyChecking=no $REMOTE_HOST 'docker rm $(docker ps -a -q)'"
+                    sh "ssh -o StrictHostKeyChecking=no $REMOTE_HOST 'docker rmi $(docker images -q)'"
+                    sh "ssh -o StrictHostKeyChecking=no $REMOTE_HOST 'docker run -d --name fastapi-webhook -p 8085:80 $DOCKER_IMAGE'"
+                    sh "ssh -o StrictHostKeyChecking=no $REMOTE_HOST 'docker run -d  nginx'"
                 }
             }
         }
     }
 }
+
+
+
+ sh ''
