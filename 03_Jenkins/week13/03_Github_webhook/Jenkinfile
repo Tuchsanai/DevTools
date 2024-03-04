@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Define variables
-        DOCKER_IMAGE = 'tuchsanai/demoweb_fastapi:latest'
+        DOCKER_IMAGE       = 'tuchsanai/fastapi-webhook:latest'
         DOCKER_CREDENTIALS = credentials('dockerhub')
     }
 
@@ -11,26 +11,22 @@ pipeline {
         stage('Start Jenkins') {
             steps {
                 // Checkout your source code from version control
-                script{
+             
                     sh 'echo Start Jenkins............'
-                    sh 'echo docker user are =  $DOCKER_CREDENTIALS_USR'
-                    sh 'echo docker password are = $DOCKER_CREDENTIALS_PSW'
-                    sh 'curent directory is = $PWD'
-                    sh '==============================='
-                }
+                    sh 'echo docker : user = $DOCKER_CREDENTIALS_USR : password = $DOCKER_CREDENTIALS_PSW'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                     // Build the Docker image
+                    
                     dir('./03_Jenkins/week13/03_Github_webhook') {
                        sh 'echo "Running in $(pwd)"'
                        sh 'echo start build the Docker image = $DOCKER_IMAGE'
                        sh 'docker build -t $DOCKER_IMAGE .'
                     }   
-                
-                     sh 'echo "Runningxxx in $(pwd)"'
+                  
             }
         }
 
@@ -50,11 +46,7 @@ pipeline {
             steps {
                 script {
                     // Remove Docker images and containers
-                    sh 'echo remove all containers'
                     sh 'docker system prune -af'
-                    sh 'echo display all containers'
-                    sh 'docker images -a'
-                    sh 'docker ps -a'
                 }
             }
         }
