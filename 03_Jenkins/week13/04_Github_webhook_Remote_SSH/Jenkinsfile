@@ -25,7 +25,8 @@ pipeline {
                     sh "ssh -o StrictHostKeyChecking=no $REMOTE_HOST 'docker rm $(docker ps -a -q)'"
                     sh "ssh -o StrictHostKeyChecking=no $REMOTE_HOST 'docker rmi $(docker images -q)'"
                     sh "ssh -o StrictHostKeyChecking=no $REMOTE_HOST 'docker run -d --name fastapi-webhook -p 8085:80 $DOCKER_IMAGE'"
-                    sh "ssh -o StrictHostKeyChecking=no $REMOTE_HOST 'docker run -d  nginx'"
+                    sh "ssh -o StrictHostKeyChecking=no $REMOTE_HOST 'docker ps -a'"
+                 
                 }
             }
         }
