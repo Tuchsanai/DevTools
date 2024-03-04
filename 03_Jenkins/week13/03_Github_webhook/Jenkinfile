@@ -6,6 +6,7 @@ pipeline {
         DOCKER_IMAGE = 'tuchsanai/demoweb_fastapi:latest'
         DOCKER_CREDENTIALS = credentials('dockerhub')
     }
+    
 
     stages {
         stage('Start Jenkins') {
