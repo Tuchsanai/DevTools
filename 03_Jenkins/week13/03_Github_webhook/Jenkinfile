@@ -11,9 +11,9 @@ pipeline {
         stage('Start Jenkins') {
             steps {
                 // Checkout your source code from version control
-                echo 'Start Jenkins............'
-                echo 'docker user are =  $DOCKER_CREDENTIALS_USR'
-                echo 'docker password are = $DOCKER_CREDENTIALS_PSW'
+                sh 'echo Start Jenkins............'
+                sh 'echo docker user are =  $DOCKER_CREDENTIALS_USR'
+                sh 'echo docker password are = $DOCKER_CREDENTIALS_PSW'
             }
         }
 
