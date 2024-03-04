@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'tuchsanai/fastapi-webhook:latestmage' // Replace with your Docker image
+        REMOTE_HOST = 'username@remote_ip' // Replace username and remote_ip with actual values
+    }
+
+    stages {
+
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USER')]) {
+                    sh 'echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USER --password-stdin'
+                }
+            }
+        }
+
+        stage('Run Docker on Remote Server') {
+            steps {
+                sshagent(['remotessh']) {
+                    // Replace your_docker_command with the actual Docker command you want to run on the remote server
+                    sh 'ssh ${REMOTE_HOST}' 
+                    sh 'docker stop $(docker ps -a -q)'  
+                    sh  'docker rm $(docker ps -a -q)' 
+                    sh  'docker rmi $(docker images -q)'
+                    sh 'docker system prune -af'
+                    sh 'docker pull ${DOCKER_IMAGE}'
+                    sh 'docker run -d --name fastapi-webhook -p 8085:80 $DOCKER_IMAGE' 
+                }
+            }
+        }
+    }
+}
