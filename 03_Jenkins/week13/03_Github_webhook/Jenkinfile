@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Define variables
         DOCKER_IMAGE       = 'tuchsanai/fastapi-webhook:latest'
-        DOCKER_CREDENTIALS = credentials('dockerhub')
+        DOCKER_CREDENTIALS = credentials('kataroja1')
     }
 
     stages {
@@ -14,6 +14,7 @@ pipeline {
              
                     sh 'echo Start Jenkins............'
                     sh 'echo docker : user = $DOCKER_CREDENTIALS_USR : password = $DOCKER_CREDENTIALS_PSW'
+
             }
         }
 
