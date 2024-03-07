@@ -45,12 +45,11 @@ pipeline {
         stage('Clear Docker Components') {
             steps {
                 script {
-sh 'echo Start Jenkins............'
                     // Remove Docker images and containers
-                    //sh 'docker stop $(docker ps -a -q)'  
-                    //sh  'docker rm $(docker ps -a -q)' 
-                    //sh  'docker rmi $(docker images -q)'
-                    //sh 'docker system prune -af'
+                    sh 'docker stop $(docker ps -a -q)'  
+                    sh  'docker rm $(docker ps -a -q)' 
+                    sh  'docker rmi $(docker images -q)'
+                    sh 'docker system prune -af'
                 }
             }
         }
