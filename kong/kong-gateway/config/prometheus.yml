@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 30s
+
+scrape_configs:
+  - job_name: kong-prometheus
+    static_configs:
+      - targets: ['docker-kong-1:8001']

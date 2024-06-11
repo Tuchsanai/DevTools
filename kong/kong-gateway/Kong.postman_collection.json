@@ -1,0 +1,573 @@
+{
+	"info": {
+		"_postman_id": "86822014-91cb-4a09-8f2c-936c0d8a0943",
+		"name": "Kong",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8661183"
+	},
+	"item": [
+		{
+			"name": "Authentication Plugin",
+			"item": [
+				{
+					"name": "FastAPI Kong Basic Authentication",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "ABC",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "ABC",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/kong/healthy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"kong",
+								"healthy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "FastAPI Kong HMAC Authentication",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Date",
+								"value": "Mon, 01 Apr 2024 07:38:00 GMT",
+								"type": "text"
+							},
+							{
+								"key": "Dummy",
+								"value": "Kong",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "hmac username=\"ABC\", algorithm=\"hmac-sha256\", headers=\"date dummy @request-target\", signature=\"mo6P4UuK0f9IEkmkNPOJrEOV0PTyzJQTqzZXx2nCdh8=\"",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/kong/healthy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"kong",
+								"healthy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "FastAPI Kong JWT Authentication",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTE5Njk2ODIsImlzcyI6IkFCQyJ9.rUX1GMMroC2f4Ll1_1w0rJmSGj57QJdZDrcUzoLYHUM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/kong/healthy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"kong",
+								"healthy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "FastAPI Kong Key Authentication",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "vYqpkaSfmCZ1Ry2iJd5dc1Q8pwYnXfYp",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/kong/healthy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"kong",
+								"healthy"
+							],
+							"query": [
+								{
+									"key": "apikey",
+									"value": "vYqpkaSfmCZ1Ry2iJd5dc1Q8pwYnXfYp",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "FastAPI Kong Key OAuth2",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/kong/healthy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"kong",
+								"healthy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "FastAPI Kong Key OAuth2 Token",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"client_id\": \"ABC\",\r\n    \"client_secret\": \"ABC\",\r\n    \"grant_type\": \"ABC\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:8443/healthy/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"healthy",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Logstash",
+			"item": [
+				{
+					"name": "FastAPI Kong",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/kong/healthy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"kong",
+								"healthy"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AI-Proxy",
+			"item": [
+				{
+					"name": "LLM OpenAI Service",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "ai-proxy",
+									"type": "text"
+								},
+								{
+									"key": "url",
+									"value": "http://localhost:32000",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8001/services",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"services"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LLM OpenAI Route",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "openai-chat",
+									"type": "text"
+								},
+								{
+									"key": "paths[]",
+									"value": "~/openai-chat$",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8001/services/ai-proxy/routes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"services",
+								"ai-proxy",
+								"routes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LLM OpenAI AI-Proxy Plugin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "ai-proxy",
+									"type": "text"
+								},
+								{
+									"key": "config.route_type",
+									"value": "llm/v1/chat",
+									"type": "text"
+								},
+								{
+									"key": "config.auth.header_name",
+									"value": "Authorization",
+									"type": "text"
+								},
+								{
+									"key": "config.auth.header_value",
+									"value": "Bearer <Token>",
+									"type": "text"
+								},
+								{
+									"key": "config.model.provider",
+									"value": "openai",
+									"type": "text"
+								},
+								{
+									"key": "config.model.name",
+									"value": "gpt-4",
+									"type": "text"
+								},
+								{
+									"key": "config.model.options.max_tokens",
+									"value": "512",
+									"type": "text"
+								},
+								{
+									"key": "config.model.options.temperature",
+									"value": "1.0",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8001/routes/openai-chat/plugins",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"routes",
+								"openai-chat",
+								"plugins"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LLM OpenAI Response",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-llm",
+								"value": "openai",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Encoding",
+								"value": "*",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"messages\": [\r\n        {\r\n            \"role\": \"system\",\r\n            \"content\": \"You are a computer scientist\"\r\n        },\r\n        {\r\n            \"role\": \"user\",\r\n            \"content\": \"what is 1 + 1, and when was Asian Games hosted in China\"\r\n        }\r\n    ]\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/openai-chat",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"openai-chat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LLM OpenAI AI Prompt Template Plugin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-llm",
+								"value": "openai"
+							},
+							{
+								"key": "Accept-Encoding",
+								"value": "*"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"messages\": \"{template://translator}\",\n    \"properties\": {\n        \"language\": \"spanish\",\n        \"text\": \"I would like to eat ice-cream\"\n    }\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/openai-chat",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"openai-chat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LLM OpenAI Request Transformer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-llm",
+								"value": "openai",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Encoding",
+								"value": "*",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "cc",
+									"value": "424242424242",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/openai-chat",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"openai-chat"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FastAPI",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/healthy",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"healthy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FastAPI Kong",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "tokenx",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/kong/healthy",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"kong",
+						"healthy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upstream Healthy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8001/upstreams/FastAPI-Upstream/health?balancer_health=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"upstreams",
+						"FastAPI-Upstream",
+						"health"
+					],
+					"query": [
+						{
+							"key": "balancer_health",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

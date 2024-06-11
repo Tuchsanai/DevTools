@@ -1,0 +1,67 @@
+version: '3'
+
+networks:
+  kong-net:
+    external: true
+    name: kong_kong-net
+
+services:
+
+  #############################################################
+  # Konga: Kong GUI alternative                               #
+  # WARNING : The application is no longer actively developed #
+  # Using default kong manager UI is reccomended              #
+  #############################################################
+  
+  konga-database:
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_DB: konga_db
+      POSTGRES_USER: konga
+      POSTGRES_PASSWORD: mykongapassword
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-d",
+          "-konga",
+          "-U",
+          "-konga"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    networks:
+      - kong-net
+
+  konga-prepare:
+    container_name: konga-prepare
+    image: pantsel/konga:0.14.9
+    command: "-c prepare -a postgres -u postgresql://konga:mykongapassword@konga-database:5432/konga_db"
+    networks:
+      - kong-net
+    restart: on-failure
+  
+  konga:
+    container_name: konga
+    image: pantsel/konga:0.14.9
+    restart: unless-stopped
+    networks:
+      - kong-net
+    environment:
+      DB_ADAPTER: postgres
+      DB_HOST: konga-database
+      DB_USER: konga
+      DB_PASSWORD: mykongapassword
+      DB_DATABASE: konga_db
+      # any string will OK for token
+      TOKEN_SECRET: iu7YDcPLiZkozQXzZ9kka3Ee1Vid5ZgQ
+      NODE_ENV: development
+    depends_on:
+      - konga-prepare
+    ports:
+      - "1337:1337"

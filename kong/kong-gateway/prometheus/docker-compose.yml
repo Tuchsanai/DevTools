@@ -1,0 +1,27 @@
+version: '3'
+
+networks:
+  kong-net:
+    external: true
+    name: kong_kong-net
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.48.1
+    container_name: prometheus
+    restart: unless-stopped
+    networks:
+      - kong-net
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana-enterprise:10.2.3
+    container_name: grafana
+    restart: unless-stopped
+    networks:
+      - kong-net
+    ports:
+      - "3000:3000"

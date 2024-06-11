@@ -1,0 +1,16 @@
+version: '3'
+
+networks:
+  kong-net:
+    external: true
+    name: kong_kong-net
+
+services:
+  zipkin:
+    image: openzipkin/zipkin:2
+    container_name: zipkin
+    restart: unless-stopped
+    networks:
+      - kong-net
+    ports:
+      - "9411:9411"
