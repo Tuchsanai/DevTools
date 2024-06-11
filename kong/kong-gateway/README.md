@@ -3,14 +3,6 @@
 
 # Kong Docker Setup
 
-## 1. Getting Started With The Fast API Application
-
-```sh
-$ git clone https://github.com/raj713335/kong-gateway.git
-$ cd kong-gateway
-$ pip install -r requirements.txt
-$ python main.py
-```
 
 ## Run & Go
 For easy installation and setup run a single command below.
