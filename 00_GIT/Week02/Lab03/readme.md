@@ -84,4 +84,12 @@ Now, back in the main repository, you would fetch the changes and view the log:
    git log --all --oneline
    ```
 
+2. ** Merge the Changes:
+   - Incorporate the fetched changes into your local branch.
+```
+git merge origin/main
+
+```
+
+
 This process illustrates how changes made by different team members (or in different clones of the repository) can be incorporated and reviewed in a collaborative workflow. The `git fetch` command updates your local repository with the latest commits from the remote, and `git log` provides a historical record of the changes, aiding in tracking and understanding the evolution of the project. 
