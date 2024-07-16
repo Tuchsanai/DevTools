@@ -84,10 +84,10 @@ Now, back in the main repository, you would fetch the changes and view the log:
    git log --all --oneline
    ```
 
-3. **checkout the Changes:
-   - Incorporate checkout changes into your local branch.
+3. **merge the Changes:
+   - Incorporate  changes into your local branch.
 ```
-git checkout origin/main
+git merge origin/main
 ```
 
 
