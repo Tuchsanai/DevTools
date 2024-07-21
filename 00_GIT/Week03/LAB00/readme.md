@@ -50,14 +50,18 @@ Students will learn how to:
     echo "This is file3 in branch1" > file3.txt
     git add .
     git commit -m "Added files in branch1"
-    
+    ```
+
+    ```bash
     git checkout branch2
     echo "This is file1 in branch2" > file1.txt
     echo "This is file2 in branch2" > file2.txt
     echo "This is file3 in branch2" > file3.txt
     git add .
     git commit -m "Added files in branch2"
-    
+    ```
+
+ ```bash
     git checkout branch3
     echo "This is file1 in branch3" > file1.txt
     echo "This is file2 in branch3" > file2.txt
@@ -79,6 +83,7 @@ Students will learn how to:
     git add .
     git commit -m "Added files in branch5"
     ```
+
 
 #### 4. Switch Between Branches Using `git switch` and `git checkout`
 1. Switch back to `main` branch using `git switch`:
