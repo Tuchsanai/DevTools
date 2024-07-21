@@ -186,17 +186,15 @@ Students will learn how to:
     ```bash
     git log origin/main --oneline
     ```
-  ```bash
+    ```bash
     git log origin/main
-  ```
-
- ```bash
+    ```
+   ```bash
     git log origin/branch1
- ```
-
-```bash
+   ```
+   ```bash
     git log origin/branch5
- ```
+   ```
 
 
 ### Summary
