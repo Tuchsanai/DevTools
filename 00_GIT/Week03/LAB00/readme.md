@@ -42,7 +42,7 @@ Students will learn how to:
     git branch branch4
     git branch branch5
     ```
-2. Switch to each branch and create files:
+2. Switch to each branch and create files (Note: You can use `git checkout` or `git switch` to switch branches):
     ```bash
     git checkout branch1
     echo "This is file1 in branch1" > file1.txt
@@ -61,21 +61,25 @@ Students will learn how to:
     git commit -m "Added files in branch2"
     ```
 
- ```bash
+    ```bash
     git checkout branch3
     echo "This is file1 in branch3" > file1.txt
     echo "This is file2 in branch3" > file2.txt
     echo "This is file3 in branch3" > file3.txt
     git add .
     git commit -m "Added files in branch3"
-    
+    ```
+
+    ```bash
     git checkout branch4
     echo "This is file1 in branch4" > file1.txt
     echo "This is file2 in branch4" > file2.txt
     echo "This is file3 in branch4" > file3.txt
     git add .
     git commit -m "Added files in branch4"
-    
+    ```
+
+    ```bash
     git checkout branch5
     echo "This is file1 in branch5" > file1.txt
     echo "This is file2 in branch5" > file2.txt
@@ -84,9 +88,8 @@ Students will learn how to:
     git commit -m "Added files in branch5"
     ```
 
-
 #### 4. Switch Between Branches Using `git switch` and `git checkout`
-1. Switch back to `main` branch using `git switch`:
+1. Switch back to the `main` branch using `git switch`:
     ```bash
     git switch main
     ```
@@ -94,7 +97,7 @@ Students will learn how to:
     ```bash
     git switch branch1
     ```
-3. Switch back to `main` branch using `git checkout`:
+3. Switch back to the `main` branch using `git checkout`:
     ```bash
     git checkout main
     ```
