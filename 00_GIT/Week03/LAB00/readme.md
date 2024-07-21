@@ -25,14 +25,17 @@ Students will learn how to:
 
 #### 2. Rename the Master Branch to Main
 1. Rename the master branch and start first commit:
-    ```bash
+    
+     ```bash
    git branch -m master main
+   ```
+
+    
+    ```bash
    echo "This is main" > main.txt
    git add main.txt
    git commit -m "Initial commit on main branch"
-
    ```
-
 
 2. Verify the branch has been renamed:
 
