@@ -65,6 +65,13 @@ Students will learn how to:
     git add .
     git commit -m "Added files in branch1"
     ```
+    ```bash
+    git status
+    ```
+
+    ```bash
+    git branch
+    ```
 
     ```bash
     git checkout branch2
@@ -74,6 +81,15 @@ Students will learn how to:
     git add .
     git commit -m "Added files in branch2"
     ```
+
+    ```bash
+    git status
+    ```
+
+    ```bash
+    git branch
+    ```
+
 
     ```bash
     git checkout branch3
@@ -101,6 +117,15 @@ Students will learn how to:
     git add .
     git commit -m "Added files in branch5"
     ```
+    ```bash
+    git status
+    ```
+
+    ```bash
+    git branch
+    ```
+
+
 
 #### 4. Switch Between Branches Using `git switch` and `git checkout`
 1. Switch back to the `main` branch using `git switch`:
