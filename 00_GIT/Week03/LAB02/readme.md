@@ -116,8 +116,18 @@
 3. **Force delete `feature-2` branch:**
    ```bash
    git checkout main
+   ```
+  
+   ```bash
+   git branch -d feature-2
+   ```
+  This should result in an error
+
+
+   ```bash
    git branch -D feature-2
    ```
+  
    - **Explanation:** Switches back to the `main` branch and force deletes the `feature-2` branch using the `-D` option, which deletes the branch regardless of its merge status.
 
 #### Step 7: Complete the Task by Viewing the Full Git Log
