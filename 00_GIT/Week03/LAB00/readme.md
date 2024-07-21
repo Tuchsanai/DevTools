@@ -144,6 +144,9 @@ Students will learn how to:
     ```bash
     git log --oneline
     ```
+    ```bash
+    git log 
+    ```
 2. Fetch the latest changes from the remote repository:
     ```bash
     git fetch
