@@ -186,6 +186,18 @@ Students will learn how to:
     ```bash
     git log origin/main --oneline
     ```
+  ```bash
+    git log origin/main
+  ```
+
+ ```bash
+    git log origin/branch1
+ ```
+
+```bash
+    git log origin/branch5
+ ```
+
 
 ### Summary
 By the end of this lab, students should be able to:
