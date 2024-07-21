@@ -29,6 +29,11 @@ Students will learn how to:
     git branch -m master main
     ```
 2. Verify the branch has been renamed:
+
+    ```bash
+    git status
+    ```
+
     ```bash
     git branch
     ```
