@@ -132,6 +132,10 @@ Students will learn how to:
     ```bash
     git switch main
     ```
+    ```bash
+    git branch
+    ```
+
 2. Switch to `branch1` using `git switch`:
     ```bash
     git switch branch1
@@ -140,10 +144,18 @@ Students will learn how to:
     ```bash
     git checkout main
     ```
+    ```bash
+    git branch
+    ```
+
 4. Switch to `branch2` using `git checkout`:
     ```bash
     git checkout branch2
     ```
+    ```bash
+    git branch
+    ```
+
 
 #### 5. Push Branches to a Remote Repository
 1. Create a new repository on GitHub (or any other Git hosting service).
