@@ -1,4 +1,4 @@
-## Git Lab for University Students
+
 
 ### Objective
 Students will learn how to:
