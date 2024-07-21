@@ -1,5 +1,3 @@
-
-
 ### Step-by-Step Explanation of the Lab
 
 #### Step 1: Initialize a New Git Repository and Make the First Commit
@@ -90,9 +88,10 @@
 1. **Checkout the last commit of `feature-1`:**
    ```bash
    git checkout feature-1
+   git log --oneline --graph
    git checkout main
    ```
-   - **Explanation:** Switches to the `feature-1` branch and then back to the `main` branch to simulate switching between branches.
+   - **Explanation:** Switches to the `feature-1` branch to view its commit history and then back to the `main` branch.
 
 2. **Delete the `feature-1` branch:**
    ```bash
@@ -121,4 +120,12 @@
    ```
    - **Explanation:** Switches back to the `main` branch and force deletes the `feature-2` branch using the `-D` option, which deletes the branch regardless of its merge status.
 
-By completing this lab, students will learn how to initialize a Git repository, create and manage branches, make commits, merge branches without conflicts, and handle branch deletion.
+#### Step 7: Complete the Task by Viewing the Full Git Log
+
+1. **View the full Git log:**
+   ```bash
+   git log --oneline --graph --all
+   ```
+   - **Explanation:** Displays a complete log of all commits in the repository, including those from deleted branches, with a graphical representation to show the entire commit history.
+
+By completing this lab, students will learn how to initialize a Git repository, create and manage branches, make commits, merge branches without conflicts, and handle branch deletion. Additionally, they will gain experience in viewing the full commit history using Git log.
