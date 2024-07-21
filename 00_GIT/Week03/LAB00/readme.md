@@ -1,5 +1,3 @@
-
-
 ### Objective
 Students will learn how to:
 1. Initialize a new Git repository.
@@ -8,6 +6,7 @@ Students will learn how to:
 4. Add and commit files in different branches.
 5. Push branches to a remote repository.
 6. Understand the differences between local and remote logs.
+7. Delete a remote branch.
 
 ### Lab Instructions
 
@@ -24,25 +23,20 @@ Students will learn how to:
     ```
 
 #### 2. Rename the Master Branch to Main
-1. Rename the master branch and start first commit:
-    
-     ```bash
-   git branch -m master main
-   ```
-
-    
+1. Rename the master branch and start the first commit:
     ```bash
-   echo "This is main" > main.txt
-   git add main.txt
-   git commit -m "Initial commit on main branch"
-   ```
+    git branch -m master main
+    ```
+    ```bash
+    echo "This is main" > main.txt
+    git add main.txt
+    git commit -m "Initial commit on main branch"
+    ```
 
 2. Verify the branch has been renamed:
-
     ```bash
     git status
     ```
-
     ```bash
     git branch
     ```
@@ -56,7 +50,7 @@ Students will learn how to:
     git branch branch4
     git branch branch5
     ```
-2. Switch to each branch and create files (Note: You can use `git checkout` or `git switch` to switch branches):
+2. Switch to each branch, create files, and display the current branch (Note: You can use `git checkout` or `git switch` to switch branches):
     ```bash
     git checkout branch1
     echo "This is file1 in branch1" > file1.txt
@@ -64,13 +58,7 @@ Students will learn how to:
     echo "This is file3 in branch1" > file3.txt
     git add .
     git commit -m "Added files in branch1"
-    ```
-    ```bash
-    git status
-    ```
-
-    ```bash
-    git branch
+    echo "Current branch: $(git branch --show-current)"
     ```
 
     ```bash
@@ -80,16 +68,8 @@ Students will learn how to:
     echo "This is file3 in branch2" > file3.txt
     git add .
     git commit -m "Added files in branch2"
+    echo "Current branch: $(git branch --show-current)"
     ```
-
-    ```bash
-    git status
-    ```
-
-    ```bash
-    git branch
-    ```
-
 
     ```bash
     git checkout branch3
@@ -98,6 +78,7 @@ Students will learn how to:
     echo "This is file3 in branch3" > file3.txt
     git add .
     git commit -m "Added files in branch3"
+    echo "Current branch: $(git branch --show-current)"
     ```
 
     ```bash
@@ -107,6 +88,7 @@ Students will learn how to:
     echo "This is file3 in branch4" > file3.txt
     git add .
     git commit -m "Added files in branch4"
+    echo "Current branch: $(git branch --show-current)"
     ```
 
     ```bash
@@ -116,46 +98,30 @@ Students will learn how to:
     echo "This is file3 in branch5" > file3.txt
     git add .
     git commit -m "Added files in branch5"
+    echo "Current branch: $(git branch --show-current)"
     ```
-    ```bash
-    git status
-    ```
-
-    ```bash
-    git branch
-    ```
-
-
 
 #### 4. Switch Between Branches Using `git switch` and `git checkout`
 1. Switch back to the `main` branch using `git switch`:
     ```bash
     git switch main
+    echo "Current branch: $(git branch --show-current)"
     ```
-    ```bash
-    git branch
-    ```
-
 2. Switch to `branch1` using `git switch`:
     ```bash
     git switch branch1
+    echo "Current branch: $(git branch --show-current)"
     ```
 3. Switch back to the `main` branch using `git checkout`:
     ```bash
     git checkout main
+    echo "Current branch: $(git branch --show-current)"
     ```
-    ```bash
-    git branch
-    ```
-
 4. Switch to `branch2` using `git checkout`:
     ```bash
     git checkout branch2
+    echo "Current branch: $(git branch --show-current)"
     ```
-    ```bash
-    git branch
-    ```
-
 
 #### 5. Push Branches to a Remote Repository
 1. Create a new repository on GitHub (or any other Git hosting service).
@@ -187,15 +153,17 @@ Students will learn how to:
     git log origin/main --oneline
     ```
     ```bash
-    git log origin/main
+    git log origin/branch1 --oneline
     ```
-   ```bash
-    git log origin/branch1
-   ```
-   ```bash
-    git log origin/branch5
-   ```
+    ```bash
+    git log origin/branch5 --oneline
+    ```
 
+#### 7. Delete a Remote Branch
+1. To delete a remote branch, use the following command:
+    ```bash
+    git push origin --delete branch-name
+    ```
 
 ### Summary
 By the end of this lab, students should be able to:
@@ -203,5 +171,6 @@ By the end of this lab, students should be able to:
 - Create and switch between branches.
 - Add, commit, and push changes to a remote repository.
 - Understand the difference between local and remote logs.
+- Delete a remote branch.
 
 Encourage students to ask questions and experiment with additional Git commands to deepen their understanding.
