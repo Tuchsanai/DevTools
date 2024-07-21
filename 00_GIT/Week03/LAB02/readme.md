@@ -116,15 +116,13 @@
 3. **Force delete `feature-2` branch:**
    ```bash
    git checkout main
-   ```
-  
-   ```bash
    git branch -d feature-2
    ```
-  This should result in an error
+    - **Explanation:** this may fail if the branch has unmerged changes.
 
 
    ```bash
+   git checkout main
    git branch -D feature-2
    ```
   
