@@ -1,169 +1,124 @@
-Certainly! Using `echo` to create the content of files directly from the command line can be a practical way to demonstrate the use of Git without needing a text editor. Below is a lab exercise that incorporates the `echo` command:
 
----
 
-## Git Lab Exercise: Understanding Commits and Branches 
+### Step-by-Step Explanation of the Lab
 
-### Objective
-Learn the basic Git workflow, including staging changes, making commits, and creating branches, using the `echo` command to add content to files.
+#### Step 1: Initialize a New Git Repository and Make the First Commit
 
-### Setup
+1. **Create a new directory for the repository:**
+   ```bash
+   mkdir my-git-repo
+   cd my-git-repo
+   ```
+   - **Explanation:** This creates a new directory called `my-git-repo` and changes the current directory to it. This is where your Git repository will reside.
 
-1. Open the terminal.
-2. Choose a directory for your Git project, navigate there using `cd`, and then initialize a new Git repository with:
-
+2. **Initialize the Git repository:**
    ```bash
    git init
    ```
+   - **Explanation:** Initializes an empty Git repository in the `my-git-repo` directory.
 
-### Task 1: My First Commit 
-
-1. Use `echo` to create a new file called `README.md` with some initial content and stage it for commit:
-
+3. **Create a new file and make the first commit:**
    ```bash
-   echo "# Line 1" > README.md
-   echo "# Line 2" >> README.md
-   echo "# Line 3" >> README.md
-   git add README.md
+   echo "Initial commit" > file1.txt
+   git add file1.txt
+   git commit -m "Initial commit"
    ```
-   Check status
-   ```
-   git status
-   ```
-2. Commit your staged change:
+   - **Explanation:** Creates a new file named `file1.txt` with the content "Initial commit", adds it to the staging area, and commits it to the repository with the message "Initial commit".
 
+#### Step 2: Rename the Master Branch to Main
+
+1. **Rename the branch:**
    ```bash
-   git commit -m "My First Commit"
+   git branch -M main
    ```
-    Check status
-   ```
-   git status
-   ```
+   - **Explanation:** Renames the current branch (which is `master` by default) to `main`.
 
+#### Step 3: Create Two New Branches with At Least Three Commits Each
 
- 3. git log check Head and history
+1. **Create the first branch (`feature-1`) and make three commits:**
    ```bash
-   git log --all --oneline 
-   ```  
-4. display current branch
+   git checkout -b feature-1
+   echo "Feature 1 - Commit 1" > feature1.txt
+   git add feature1.txt
+   git commit -m "Feature 1 - Commit 1"
+
+   echo "Feature 1 - Commit 2" >> feature1.txt
+   git add feature1.txt
+   git commit -m "Feature 1 - Commit 2"
+
+   echo "Feature 1 - Commit 3" >> feature1.txt
+   git add feature1.txt
+   git commit -m "Feature 1 - Commit 3"
+   ```
+   - **Explanation:** Creates a new branch named `feature-1` and switches to it. Then, it creates a file named `feature1.txt` and makes three commits with different changes to this file.
+
+2. **Create the second branch (`feature-2`) and make three commits:**
    ```bash
-   git branch
-   ```
+   git checkout main
+   git checkout -b feature-2
+   echo "Feature 2 - Commit 1" > feature2.txt
+   git add feature2.txt
+   git commit -m "Feature 2 - Commit 1"
 
-### Task 2: Commit "Add Line four" in master and Create and commit  new branch 
+   echo "Feature 2 - Commit 2" >> feature2.txt
+   git add feature2.txt
+   git commit -m "Feature 2 - Commit 2"
 
-1. Create and switch to a new branch named `new_branch`:
+   echo "Feature 2 - Commit 3" >> feature2.txt
+   git add feature2.txt
+   git commit -m "Feature 2 - Commit 3"
+   ```
+   - **Explanation:** Switches back to the `main` branch, then creates another new branch named `feature-2` and switches to it. Similar to `feature-1`, it creates a file named `feature2.txt` and makes three commits with different changes to this file.
 
-   Create a new branch
-   ```
-   git branch new_branch
-   ```
-  
-  Check the branch we are on
-   ```
-   git branch
-   ``` 
+#### Step 4: Merge Branches Without Conflict
 
-
-   
-   make sure you are in master branch
-   ```
-   git switch master
-   ```
-   
+1. **Merge `feature-1` into `main`:**
    ```bash
-   echo "# Line 4 (master)" >> README.md
-   git add README.md
+   git checkout main
+   git merge feature-1
+   ```
+   - **Explanation:** Switches back to the `main` branch and merges the changes from `feature-1` into `main`. Since there are no conflicting changes, the merge should complete successfully.
 
-   ```
-   Commit "Added Line four" in master branch  
-   ```
-   git commit -m "Added Line four"
-   ```
- 
-   display Readme.md
-   ```
-    cat README.md
-   ```
- 
-
-
-  Switch to the new branch
+2. **Verify the merge:**
    ```bash
-   git switch new_branch
+   git log --oneline --graph
    ```
-   
-   Check the branch we are on
-   ```
-   git branch
-   ``` 
+   - **Explanation:** Displays a log of commits with a graphical representation to show the commit history and how the branches were merged.
 
-   display Readme.md
-   ```
-    cat README.md
-  ```
-   
-   check Head and history
+#### Step 5: Switch to the Last Commit in the First Branch from Main and Delete the Branch
 
-    
-    git log --all --oneline 
-    
-
-   Commit new branch
-   ```
-   echo "This line is added in the feature branch." >> README.md
-   git add README.md
-   git commit -m "New branch commit"
-   ```
-   
+1. **Checkout the last commit of `feature-1`:**
    ```bash
-   echo "This is my first file in the Git repository." >> README.md
-   git add README.md
-   git commit -m "New branch commit 2"
+   git checkout feature-1
+   git checkout main
    ```
+   - **Explanation:** Switches to the `feature-1` branch and then back to the `main` branch to simulate switching between branches.
 
-  check Head and history
+2. **Delete the `feature-1` branch:**
    ```bash
-   git log --all --oneline
-   ```    
- 
+   git branch -d feature-1
+   ```
+   - **Explanation:** Deletes the `feature-1` branch. The `-d` option deletes the branch only if it has been fully merged.
 
-### Task 3: Add Experimental branch and Delete
+#### Step 6: Focus on the Second Branch (Experimental)
 
-```
-git branch experimental
-```
+1. **Switch to the `feature-2` branch:**
+   ```bash
+   git checkout feature-2
+   ```
+   - **Explanation:** Switches to the `feature-2` branch to start working on it.
 
-```
-git switch experimental
-```
+2. **Attempt to delete `feature-2` branch while checked out (should cause an error):**
+   ```bash
+   git branch -d feature-2
+   ```
+   - **Explanation:** Attempts to delete the currently checked-out branch (`feature-2`). This should result in an error because you cannot delete the branch you are currently on.
 
-check the branch we are on
+3. **Force delete `feature-2` branch:**
+   ```bash
+   git checkout main
+   git branch -D feature-2
+   ```
+   - **Explanation:** Switches back to the `main` branch and force deletes the `feature-2` branch using the `-D` option, which deletes the branch regardless of its merge status.
 
-```
-git branch
-```
-
-
-
-```
-echo "This is experimental branch" >> README.md
-echo "Finall this branch will delete" >> README.md
-git add README.md
-git commit -m "New branch commit 2"
-```
-
-```
-git switch master
-```
-
-tell me if error
-```
-git branch -d experimental
-```
-
-
-```
-git branch -D experimental
-```
-
+By completing this lab, students will learn how to initialize a Git repository, create and manage branches, make commits, merge branches without conflicts, and handle branch deletion.
