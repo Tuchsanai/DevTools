@@ -67,14 +67,8 @@ docker ps -a
 
 ## 3. Create the HAProxy Docker Image
 
-go to HAProxy directory
 
-```bash
-cd ~
-cd   LAB2_Week10/DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/HAProxy/
-```
-
-This is config of Haproxy [haproxy.cfg]
+This is config of Haproxy. you can see at path HAProxy/haproxy.cfg
 
 ```
 global
@@ -106,6 +100,14 @@ listen stats
     stats refresh 10s
     stats auth admin:password  # Optional: Set basic authentication for stats page
 
+```
+
+
+go to HAProxy directory
+
+```bash
+cd ~
+cd   LAB2_Week10/DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/HAProxy/
 ```
 
 - Run the HAProxy Container
