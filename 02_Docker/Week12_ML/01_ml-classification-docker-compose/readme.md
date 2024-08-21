@@ -78,3 +78,6 @@ The system is composed of three main components:
            
 
 ```
+
+
+![Front end](img/1.jpg)
