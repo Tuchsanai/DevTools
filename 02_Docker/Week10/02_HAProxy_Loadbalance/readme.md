@@ -74,7 +74,7 @@ cd ~
 cd   LAB2_Week10/DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/HAProxy/
 ```
 
-This is config of Haproxy
+This is config of Haproxy [haproxy.cfg]
 
 ```
 global
