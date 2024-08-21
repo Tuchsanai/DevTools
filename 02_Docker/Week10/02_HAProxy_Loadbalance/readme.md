@@ -73,7 +73,7 @@ cd   LAB2_Week10/DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/HAProxy/
 
 
 ```bash
-docker run  -d  --rm\
+docker run  -d  \
   --name haproxy \
   --network express-network  \
   -v $(pwd)/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro \
