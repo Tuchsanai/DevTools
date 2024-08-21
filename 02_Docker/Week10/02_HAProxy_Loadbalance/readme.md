@@ -74,18 +74,56 @@ cd ~
 cd   LAB2_Week10/DevTools/02_Docker/Week10/02_HAProxy_Loadbalance/HAProxy/
 ```
 
+This is config of Haproxy
+
+```
+global
+    log stdout format raw local0
+    maxconn 4096
+
+defaults
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    timeout connect 5000ms
+    timeout client 50000ms
+    timeout server 50000ms
+
+frontend http_front
+    bind *:8083
+    default_backend http_back
+
+backend http_back
+    balance roundrobin
+    server express-server-1 express-server-1:3000 check
+    server express-server-2 express-server-2:3000 check
+
+listen stats
+    bind *:8084
+    stats enable
+    stats uri /haproxy?stats
+    stats refresh 10s
+    stats auth admin:password  # Optional: Set basic authentication for stats page
+
+```
+
 - Run the HAProxy Container
 
 
 
 ```bash
-docker run  -d  \
-  --name haproxy \
-  --network express-network  \
-  -v $(pwd)/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro \
-  -p 8083:8083 \
-  -p 8084:8084 \
-  haproxytech/haproxy-alpine:2.4
+
+docker stop haproxy
+docker rm    haproxy 
+
+docker run -d --name haproxy \
+    -p 8083:8083 \
+    -p 8084:8084 \
+    -v $(pwd)/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro \
+    --network express-network \
+    haproxy:latest
+
 
 # Sleep for 3 seconds
 sleep 3
@@ -97,17 +135,6 @@ docker ps -a
 ```
 
 
-
-if sucess you will see the following containers
-
-![myip](./images/docker0.jpg) 
-
-if HAproxy container is *** not running ***, you can check haproxy.cfg file with `nano haproxy.cfg` and try between method 1 and method 2. and then run  docker run  haproxy above again.
-
-
-| method 1 | method 2|
-|----------|----------|
-|   ![Page1](./images/n1.jpg)       |    ![Page1](./images/n2.jpg)      |
 
 
 
@@ -122,23 +149,6 @@ Open your browser and go to http://ExternalIP:8083. You should see responses fro
 | Loab balance 1 | Loab balance 12|
 |----------|----------|
 |   ![Page1](./images/1.jpg)       |    ![Page1](./images/2.jpg)      |
-
-
-
-### 6. Testing Statistic Page:
-
-- Open your browser and go to http://ExternalIP:8084. You should see responses from your Express containers, rotating with each refresh.
-- Open your browser and go to http://ExternalIP:8083/haproxy?stats
-
-![Statistic Page](./images/3.jpg)
-
-
-
-
-Important Notes:
-
-HAProxy health checks (check in the config) are recommended for production.
-Consider network configuration or using an internal Docker network if running on a remote server.
 
 
 
