@@ -87,7 +87,7 @@ docker run  -d  \
   -p 8084:8084 \
   haproxytech/haproxy-alpine:2.4
 
-# Sleep for 2 seconds
+# Sleep for 3 seconds
 sleep 3
 
 # Then list all Docker containers
