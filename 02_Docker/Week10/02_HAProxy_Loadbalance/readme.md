@@ -56,7 +56,13 @@ docker build -t my-express-app   .
 ```bash
 docker run -d -p 8080:3000 --network express-network -e NAME='Server 1' --name express-server-1 my-express-app
 docker run -d -p 8081:3000 --network express-network -e NAME='Server 2' --name express-server-2 my-express-app
+
+# Sleep for 2 seconds
+sleep 2
+
+# Then list all Docker containers
 docker ps -a
+
 ```
 
 ## 3. Create the HAProxy Docker Image
@@ -81,16 +87,15 @@ docker run  -d  \
   -p 8084:8084 \
   haproxytech/haproxy-alpine:2.4
 
+# Sleep for 2 seconds
+sleep 3
+
+# Then list all Docker containers
 docker ps -a
+
 
 ```
 
-
- Check again (important)
-
- ```bash
-docker ps -a
-```
 
 
 if sucess you will see the following containers
