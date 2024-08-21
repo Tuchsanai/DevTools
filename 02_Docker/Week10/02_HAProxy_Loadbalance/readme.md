@@ -121,7 +121,6 @@ docker rm    haproxy
 
 docker run -d --name haproxy \
     -p 8083:8083 \
-    -p 8084:8084 \
     -v $(pwd)/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro \
     --network express-network \
     haproxy:latest
