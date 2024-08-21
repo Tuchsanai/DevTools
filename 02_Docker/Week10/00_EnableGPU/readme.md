@@ -19,8 +19,8 @@ Before you begin, ensure that you have the following:
 ![Alt text](img/7.png)
 ![Alt text](img/8.png)
 ![Alt text](img/9.png)
-![Alt text](img/10.png)
-![Alt text](img/11.png)
+![Alt text](img/10.jpg)
+![Alt text](img/11.jpg)
 
 
 
