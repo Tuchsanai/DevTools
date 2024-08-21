@@ -28,7 +28,7 @@ ml-classification-docker-compose/
 
 - **`docker-compose.yml`**: Docker Compose file to define and run the multi-container application.
 
-
+```
 +------------------+      +---------------------+      +-----------------+
 |                  |      |                     |      |                 |
 | Gradio Frontend  +----->| FastAPI Backend     +----->|    Model        |
@@ -51,3 +51,4 @@ ml-classification-docker-compose/
           |   Services and  |
           |    Networking   |
           +-----------------+
+```
