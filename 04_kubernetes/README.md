@@ -93,7 +93,6 @@ kubectl get nodes
 # Verify installation
 
 ```
-minikube status
 kubectl get nodes
 ```
 
