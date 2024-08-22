@@ -68,7 +68,34 @@ docker compose version
 
 # Install Minikube
 
+```
 
+# Download and install Minikube
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+rm minikube-linux-amd64
+
+# Download and install kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install kubectl /usr/local/bin/kubectl
+rm kubectl
+
+# Start Minikube with Docker driver
+minikube start --driver=docker
+
+# Verify installation
+minikube status
+kubectl get nodes
+
+```
+
+
+# Verify installation
+
+```
+minikube status
+kubectl get nodes
+```
 
 
 
