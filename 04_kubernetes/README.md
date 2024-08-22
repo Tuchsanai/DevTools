@@ -1,58 +1,74 @@
 # Kubernates
 
-Install Kubernates for ubuntu
+## Step 1 
+
+
+### 1. Set up Docker's apt repository.
+
 
 ```
 #!/bin/bash
 
-# Update the package list and install dependencies
-sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl
+# Update package information
+sudo apt-get update -y
 
-# Download and add the Kubernetes signing key
-sudo curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+# Install prerequisites
+sudo apt-get install -y ca-certificates curl gnupg
 
-# Add the Kubernetes APT repository
-sudo bash -c 'cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
-deb https://apt.kubernetes.io/ kubernetes-xenial main
-EOF'
+# Create a directory for the Docker GPG key
+sudo install -m 0755 -d /etc/apt/keyrings
 
-# Update the package list with the Kubernetes packages
-sudo apt-get update
+# Add Docker's official GPG key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 
-# Install Kubernetes components
-sudo apt-get install -y kubelet kubeadm kubectl
+# Set permissions for the GPG key
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
-# Hold the versions of these packages to prevent automatic upgrades
-sudo apt-mark hold kubelet kubeadm kubectl
+# Add the Docker repository to Apt sources
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-# Disable swap as it's required by Kubernetes
-sudo swapoff -a
+# Update package information again
+sudo apt-get update -y
 
-# Initialize the Kubernetes cluster
-sudo kubeadm init --pod-network-cidr=192.168.0.0/16
+# Install Docker packages
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-# Set up the kubeconfig file for the root user
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-# Install a pod network add-on (we'll use Calico here)
-kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+# Enable and start the Docker service
+sudo systemctl enable docker
+sudo systemctl start docker
 
-# Allow the master node to run pods (since it's a single-node setup)
-kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 
-echo "Kubernetes single-node setup is complete!"
+# Add the current user to the Docker group
+sudo usermod -aG docker $USER
+sudo groupadd docker
 
-# Command to check if Kubernetes is ready
-kubectl get nodes
+# Adjust permissions for the Docker socket
+sudo chmod 666 /var/run/docker.sock 
+
+# Install the Compose plugin
+sudo apt-get install -y docker-compose-plugin
+
+
 ```
 
-
-
-
-# Command to check if Kubernetes is ready
 ```
-kubectl get nodes
+# Add the current user to the Docker group
+sudo usermod -aG docker $USER
+sudo groupadd docker
+sudo chmod 666 /var/run/docker.sock 
+# Print Docker and Docker Compose versions
+docker --version
+docker compose version
+
 ```
+
+# Install Minikube
+
+
+
+
+
