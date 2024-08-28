@@ -1,0 +1,29 @@
+apiVersion: mongodbcommunity.mongodb.com/v1
+kind: MongoDBCommunity
+metadata:
+  name: mongodb-grade-submission
+  namespace: mongodb
+spec:
+  members: 1
+  type: ReplicaSet
+  version: "6.0.5"
+  security:
+    authentication:
+      modes: ["SCRAM"]
+  users:
+    - name: user
+      db: grades
+      passwordSecretRef:
+        name: mongodb-user-password
+      roles: 
+        - name: readWrite
+          db: grades
+      scramCredentialsSecretName: mongodb-grade-submission
+
+  statefulSet:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: mongodb-agent
+            image: "quay.io/mongodb/mongodb-agent-ubi:12.0.32.7857-1"

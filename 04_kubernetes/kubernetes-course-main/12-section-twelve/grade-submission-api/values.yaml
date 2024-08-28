@@ -1,0 +1,15 @@
+microservice:   ## general service details 
+  name: grade-submission-api
+  namespace: grade-submission
+  replicas: 2
+
+workload:   ## container specific configurations
+  image: rslim087/kubernetes-course-grade-submission-api:stateless-v4
+  port: 3000
+  resources:
+    memory: "128Mi"
+    cpu: "128m"
+  livenessDelay: 15
+
+secrets:  ## sensitive data
+  MONGODB_URI: 'mongodb://mongodb.mongodb.svc.cluster.local:27017'

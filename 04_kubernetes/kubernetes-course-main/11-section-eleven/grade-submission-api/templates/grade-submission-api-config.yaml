@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.microservice.name }}-config
+  namespace: {{ .Values.microservice.namespace }}
+data:
+  MONGODB_HOST: {{ .Values.env.MONGODB_HOST }}
+  MONGODB_PORT: {{ .Values.env.MONGODB_PORT | quote }}

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: grade-submission-api
+  namespace: grade-submission
+  labels:
+    app.kubernetes.io/name: grade-submission
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/instance: grade-submission-api
+spec:
+  containers:
+  - name: grade-submission-api
+    image: rslim087/kubernetes-course-grade-submission-api:stateless
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "128m"
+      limits:
+        memory: "128Mi"
+    ports:
+      - containerPort: 3000

@@ -1,0 +1,12 @@
+useStatefulSet: true
+
+auth:
+  enabled: false
+
+image:
+  registry: docker.io
+  repository: mongo
+  tag: 6.0.4-jammy
+
+persistence:
+  mountPath: /data/db

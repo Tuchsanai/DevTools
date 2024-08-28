@@ -1,5 +1,8 @@
 ## Mini Project
 - https://docs.google.com/document/d/13LAqAwo3OipwsF2yYf5eTamRwGyb8hCOej7A5d8HXOI/edit?usp=sharing
+
+- https://drive.google.com/drive/folders/1UzG2dNzQd5lIogbi9wge8Dute6Y1cOAqqTsq8lcb14mDH7dg4JQQk5PdwW0sazwym2lbiFbm?usp=sharing
+
 - ต้อง log in ผ่าน email @it.kmitl.ac.th เท่านั้น
 
 ## ตัวอย่าง Mini Project 

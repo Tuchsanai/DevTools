@@ -2,6 +2,7 @@
 /backup
 backup/
 solution/
+**/backup
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/jupyternotebooks,python,macos

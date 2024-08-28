@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.microservice.name }}
+  namespace: {{ .Values.microservice.namespace }}
+spec:
+  replicas: {{ .Values.microservice.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Values.microservice.name }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: grade-submission
+        app.kubernetes.io/component: backend
+        app.kubernetes.io/instance: {{ .Values.microservice.name }}
+    spec:
+      containers:
+      - name: {{ .Values.microservice.name }}
+        image: {{ .Values.workload.image }}
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: {{ .Values.workload.port }}
+          initialDelaySeconds: {{ .Values.workload.livenessDelay }}
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: {{ .Values.workload.port }}
+          periodSeconds: 5
+        envFrom:
+          - secretRef:
+              name: {{ .Values.microservice.name }}-secret
+        resources:
+          requests:
+            memory: {{ .Values.workload.resources.memory }}
+            cpu: {{ .Values.workload.resources.cpu }}
+          limits:
+            memory: {{ .Values.workload.resources.memory }}
+        ports:
+          - name: http
+            containerPort: {{ .Values.workload.port }}

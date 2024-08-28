@@ -1,0 +1,4 @@
+apiVersion: v2
+name: grade-submission-api
+description: A Helm chart for deploying the Grade Submission API, a backend service for managing grade data.
+version: 1.0.1

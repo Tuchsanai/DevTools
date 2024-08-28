@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.microservice.name }}
+  namespace: {{ .Values.microservice.namespace }}
+spec:
+  selector:
+    app.kubernetes.io/instance: {{ .Values.microservice.name }}
+  ports:
+  - port: {{ .Values.workload.port }}
+    targetPort: {{ .Values.workload.port }}
