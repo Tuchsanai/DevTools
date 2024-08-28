@@ -7,7 +7,21 @@
 
 ## ตัวอย่าง Mini Project 
 
+Slide
+
+ปี 2565
 - https://drive.google.com/drive/u/1/folders/1evneI8taeTrpU3jWQtsCGSXhaMBPrwGpouHcDSaKyZJ2QdQsyQPTpnYTqjAJJdN2_iBwu7Oe
+
+ปี 2566
+- https://drive.google.com/drive/folders/1UzG2dNzQd5lIogbi9wge8Dute6Y1cOAqqTsq8lcb14mDH7dg4JQQk5PdwW0sazwym2lbiFbm?usp=sharing
+
+Report
+
+ปี 2566
+
+- https://drive.google.com/drive/folders/1gKORrc-MRvJC7spKWyGZytiLTRh4jqIrkWY2APlzOwaNCN1YNDpI4A1YfydZYjipaT06azb-?usp=sharing
+
+
 - ต้อง log in ผ่าน email @it.kmitl.ac.th เท่านั้น
 
 ## กำหนดการนำเสนอผลงาน Mini Project
@@ -18,8 +32,8 @@
  - github Source Code    (จะเก็บไว้ให้รุ่นน้องศึกษาในอนาคต) 
  - Report ประมาณ 20 หน้า  (จะเก็บไว้ให้รุ่นน้องศึกษาในอนาคต) 
  - video นำเสนอผลงาน ประมาณ 15 นาที (มากกว่าเวลา pitch จริง) ให้ส่งในรูปแบบ file mp4  (จะเก็บไว้ให้รุ่นน้องศึกษาในอนาคต) 
- - Deadline กลุ่มเรียนวันอังคาร  กำหนดส่งงานภายใน วันจันทร์ที่ 11 มีนาคม 2566 เวลา 23.59 น.  และนำเสนอผลงานในวันอังคารที่ 12 มีนาคม 2566
- - Deadline กลุ่มเรียนวันพฤหัสบดี  กำหนดส่งงานภายใน วันพุธที่ 13 มีนาคม 2566 เวลา 23.59 น.   และนำเสนอผลงานในวันพฤหัสบดีที่ 14 มีนาคม 2566
+ - Deadline : สัปดาห์ สุดท้ายของการเรียนการสอน
+
  - ลำดับการนำเสนอเป็นแบบ random ในวันจริง แต่ละกลุ่มจะได้เวลานำเสนอ 10 นาที และเวลาตอบคำถาม 5 นาที
 
 
