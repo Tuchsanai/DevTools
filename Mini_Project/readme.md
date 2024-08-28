@@ -15,6 +15,8 @@ Slide
 ปี 2566
 - https://drive.google.com/drive/folders/1UzG2dNzQd5lIogbi9wge8Dute6Y1cOAqqTsq8lcb14mDH7dg4JQQk5PdwW0sazwym2lbiFbm?usp=sharing
 
+- https://drive.google.com/drive/folders/1l3lhuLbk9Tl1VrWlVopBdbPlT19Y2gP3o-QaSYQ-t21zJut1tPbYt7IhAfjo1cpFfNhWnbt4?usp=sharing
+
 Report
 
 ปี 2566
