@@ -38,27 +38,7 @@ This configuration creates a pod with two containers:
 - The main API container
 - A health checker container
 
-### Grade Submission Portal Pod
-
-File: `grade-submission-portal-pod.yaml`
-
-This configuration creates a pod with two containers:
-- The main portal container
-- A health checker container
-
-## Lab Instructions
-
-Follow these steps to deploy and manage the Grade Submission System:
-
-1. Clone this repository:
-   ```
-   git clone <repository-url>
-   cd <repository-directory>
-   ```
-
-2. Deploy the Grade Submission API pod:
-
-
+Detailed breakdown:
 
 ```yaml
 apiVersion: v1
@@ -91,36 +71,26 @@ spec:
         memory: "128Mi"
 ```
 
-```
+- The pod is named `grade-submission-api` and labeled for easy identification.
+- It contains two containers:
+  1. `grade-submission-api`: The main API container
+     - Uses the image `rslim087/kubernetes-course-grade-submission-api:stateless`
+     - Requests 128Mi of memory and 128m (12.8%) of CPU
+     - Exposes port 3000
+  2. `grade-submission-api-health-checker`: A separate container for health checks
+     - Uses a specific health checker image
+     - Requests 128Mi of memory and 200m (20%) of CPU
+- Both containers have memory limits set to 128Mi
 
-In Kubernetes resource requests and limits, "128Mi" for memory and "200m" for CPU have specific meanings:
+### Grade Submission Portal Pod
 
-Memory: "128Mi"
+File: `grade-submission-portal-pod.yaml`
 
-"Mi" stands for Mebibyte (1 Mebibyte = 1,048,576 bytes)
-"128Mi" means 128 Mebibytes, which is approximately 134.2 Megabytes
-This specifies that the container requests or is limited to 128 Mebibytes of memory
+This configuration creates a pod with two containers:
+- The main portal container
+- A health checker container
 
-
-CPU: "200m"
-
-"m" stands for milliCPU or millicores
-1000m is equivalent to 1 full CPU core
-"200m" means 200 millicores, which is 0.2 or 20% of a single CPU core
-This specifies that the container requests or is limited to 20% of a CPU core
-
-
-
-These values are used in the resource requests and limits sections of the Kubernetes pod specifications. Here's a brief explanation of requests vs. limits:
-
-```
-
-   ```
-   kubectl apply -f grade-submission-api-pod.yaml
-   ```
-
-3. Deploy the Grade Submission Portal pod:
-
+Detailed breakdown:
 
 ```yaml
 apiVersion: v1
@@ -153,8 +123,33 @@ spec:
         memory: "128Mi"
 ```
 
+- The pod is named `grade-submission-portal` and labeled as a frontend component.
+- It contains two containers:
+  1. `grade-submission-portal`: The main portal container
+     - Uses the image `rslim087/kubernetes-course-grade-submission-portal`
+     - Requests 128Mi of memory and 200m (20%) of CPU
+     - Exposes port 5001
+  2. `grade-submission-portal-health-checker`: A separate container for health checks
+     - Uses a specific health checker image
+     - Requests 128Mi of memory and 200m (20%) of CPU
+- Both containers have memory limits set to 128Mi
 
+## Lab Instructions
 
+Follow these steps to deploy and manage the Grade Submission System:
+
+1. Clone this repository:
+   ```
+   git clone <repository-url>
+   cd <repository-directory>
+   ```
+
+2. Deploy the Grade Submission API pod:
+   ```
+   kubectl apply -f grade-submission-api-pod.yaml
+   ```
+
+3. Deploy the Grade Submission Portal pod:
    ```
    kubectl apply -f grade-submission-portal-pod.yaml
    ```
@@ -182,10 +177,10 @@ Both pods use the following resource specifications:
 
 - Memory: 128Mi (128 Mebibytes ≈ 134.2 Megabytes)
 - CPU: 
-  - API: 128m (12.8% of a CPU core)
-  - Portal: 200m (20% of a CPU core)
+  - API: 128m (12.8% of a CPU core) for the main container, 200m (20%) for the health checker
+  - Portal: 200m (20% of a CPU core) for both containers
 
-These specifications are used in the resource requests and limits sections of the pod configurations.
+These specifications are used in the resource requests and limits sections of the pod configurations. The use of resource requests ensures that the pods are scheduled on nodes with sufficient resources, while limits prevent the containers from consuming more than the specified amount of resources.
 
 ## Cleanup
 
@@ -195,18 +190,3 @@ To remove the deployed pods:
 kubectl delete pod grade-submission-api
 kubectl delete pod grade-submission-portal
 ```
-
-## Contributing
-
-Contributions to improve the lab or extend its functionality are welcome. Please follow these steps:
-
-1. Fork the repository
-2. Create a new branch for your feature
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
-
-
-
-
-
