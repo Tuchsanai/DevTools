@@ -57,11 +57,79 @@ Follow these steps to deploy and manage the Grade Submission System:
    ```
 
 2. Deploy the Grade Submission API pod:
+
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: grade-submission-api
+  labels:
+    app.kubernetes.io/name: grade-submission
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/instance: grade-submission-api
+spec:
+  containers:
+  - name: grade-submission-api
+    image: rslim087/kubernetes-course-grade-submission-api:stateless
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "128m"
+      limits:
+        memory: "128Mi"
+    ports:
+      - containerPort: 3000
+  - name: grade-submission-api-health-checker
+    image: rslim087/kubernetes-course-grade-submission-api-health-checker
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "200m"
+      limits:
+        memory: "128Mi"
+```
+
    ```
    kubectl apply -f grade-submission-api-pod.yaml
    ```
 
 3. Deploy the Grade Submission Portal pod:
+
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: grade-submission-portal
+  labels:
+    app.kubernetes.io/name: grade-submission
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/instance: grade-submission-portal
+spec:
+  containers:
+  - name: grade-submission-portal
+    image: rslim087/kubernetes-course-grade-submission-portal
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "200m"
+      limits:
+        memory: "128Mi"
+    ports:
+      - containerPort: 5001  
+  - name: grade-submission-portal-health-checker
+    image: rslim087/kubernetes-course-grade-submission-portal-health-checker
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "200m"
+      limits:
+        memory: "128Mi"
+```
+
+
+
    ```
    kubectl apply -f grade-submission-portal-pod.yaml
    ```
@@ -113,10 +181,7 @@ Contributions to improve the lab or extend its functionality are welcome. Please
 4. Push to the branch
 5. Create a new Pull Request
 
-## License
 
-[Specify your license here, e.g., MIT, Apache 2.0, etc.]
 
----
 
-For more information about Kubernetes and its features, visit the [official Kubernetes documentation](https://kubernetes.io/docs/home/).
+
