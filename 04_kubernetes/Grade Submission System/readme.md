@@ -59,6 +59,7 @@ Follow these steps to deploy and manage the Grade Submission System:
 2. Deploy the Grade Submission API pod:
 
 
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -88,6 +89,30 @@ spec:
         cpu: "200m"
       limits:
         memory: "128Mi"
+```
+
+```
+Certainly, I'd be happy to explain the memory and CPU specifications you're asking about.
+In Kubernetes resource requests and limits, "128Mi" for memory and "200m" for CPU have specific meanings:
+
+Memory: "128Mi"
+
+"Mi" stands for Mebibyte (1 Mebibyte = 1,048,576 bytes)
+"128Mi" means 128 Mebibytes, which is approximately 134.2 Megabytes
+This specifies that the container requests or is limited to 128 Mebibytes of memory
+
+
+CPU: "200m"
+
+"m" stands for milliCPU or millicores
+1000m is equivalent to 1 full CPU core
+"200m" means 200 millicores, which is 0.2 or 20% of a single CPU core
+This specifies that the container requests or is limited to 20% of a CPU core
+
+
+
+These values are used in the resource requests and limits sections of the Kubernetes pod specifications. Here's a brief explanation of requests vs. limits:
+
 ```
 
    ```
