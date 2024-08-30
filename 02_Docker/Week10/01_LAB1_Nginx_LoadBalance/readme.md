@@ -59,6 +59,26 @@ docker ps -a
 
 ### Step 4: Setting Up Nginx for Load Balancing
 
+this is nginx.conf file.
+
+```
+events {}
+
+http {
+    upstream backend {
+        server app1:3000;
+        server app2:3000;
+    }
+
+    server {
+        listen 8080;
+
+        location / {
+            proxy_pass http://backend;
+        }
+    }
+}
+```
 
 ```bash
 docker run -d --name nginx-load-balancer --network express-network -p 8080:8080 -v ./nginx.conf:/etc/nginx/nginx.conf:ro nginx
