@@ -92,7 +92,7 @@ spec:
 ```
 
 ```
-Certainly, I'd be happy to explain the memory and CPU specifications you're asking about.
+
 In Kubernetes resource requests and limits, "128Mi" for memory and "200m" for CPU have specific meanings:
 
 Memory: "128Mi"
