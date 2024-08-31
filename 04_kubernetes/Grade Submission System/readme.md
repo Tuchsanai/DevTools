@@ -165,11 +165,17 @@ Follow these steps to deploy and manage the Grade Submission System:
    kubectl describe pod grade-submission-portal
    ```
 
-6. Check pod logs:
+6. Check pod inside logs:
+   
    ```
    kubectl logs grade-submission-api -c grade-submission-api
-   kubectl logs grade-submission-portal -c grade-submission-portal
    ```
+
+ ```
+   kubectl logs grade-submission-portal -c grade-submission-portal
+ ```
+
+
 
 ## Resource Specifications
 
@@ -189,4 +195,11 @@ To remove the deployed pods:
 ```
 kubectl delete pod grade-submission-api
 kubectl delete pod grade-submission-portal
+```
+
+
+To remove all deployed pods at once, use the following command:
+
+```
+kubectl delete pod --all
 ```
