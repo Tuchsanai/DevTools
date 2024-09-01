@@ -138,10 +138,17 @@ spec:
 
 Follow these steps to deploy and manage the Grade Submission System:
 
+0. Create directory
+
+```
+mkdir 02_Grade Submission System_pod
+cd    02_Grade Submission System_pod
+```
+
 1. Clone this repository:
    ```
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   cd  04_kubernetes/02_Grade Submission System_pod
    ```
 
 2. Deploy the Grade Submission API pod:
