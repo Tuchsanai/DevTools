@@ -141,8 +141,8 @@ Follow these steps to deploy and manage the Grade Submission System:
 0. Create directory
 
 ```
-mkdir 02_Grade Submission System_pod
-cd    02_Grade Submission System_pod
+mkdir 02_GradeSubmissionSystem_pod
+cd   02_GradeSubmissionSystem_pod
 ```
 
 1. Clone this repository:
