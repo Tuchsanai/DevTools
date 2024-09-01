@@ -13,7 +13,7 @@ spec:
     resources:
       requests:
         memory: "128Mi"
-        cpu: "200m"ชขจตคึุถ
+        cpu: "200m"
       limits:
         memory: "128Mi"
     ports:
