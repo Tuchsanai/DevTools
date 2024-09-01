@@ -172,8 +172,15 @@ cd   02_GradeSubmissionSystem_pod
    ```
 
 5. Inspect pod details:
+
+   Inspect : grade-submission-api
+
    ```
    kubectl describe pod grade-submission-api
+   ```
+
+   Inspect : grade-submission-portal
+   ```
    kubectl describe pod grade-submission-portal
    ```
 
