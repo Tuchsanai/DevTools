@@ -214,7 +214,8 @@ These specifications are used in the resource requests and limits sections of th
 
 To remove the deployed pods:
 
-    Verify that the pods are running:
+**Verify that the pods are running:
+
 ```
    kubectl get pods
 ```
