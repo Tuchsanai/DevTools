@@ -152,7 +152,7 @@ cd   02_GradeSubmissionSystem_pod
    ```
 
   ```
-  cd  04_kubernetes/02_GradeSubmissionSystem_pod
+  cd  DevTools/04_kubernetes/02_GradeSubmissionSystem_pod
   ```
 
 
