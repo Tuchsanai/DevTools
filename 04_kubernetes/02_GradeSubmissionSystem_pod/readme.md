@@ -212,7 +212,7 @@ These specifications are used in the resource requests and limits sections of th
 
 ## Cleanup
 
-To remove the deployed pods:
+- To remove the deployed pods:
 
 **Verify that the pods are running:
 
@@ -226,19 +226,19 @@ kubectl delete pod grade-submission-portal
 ```
 
 
-To remove all deployed pods at once, use the following command:
+- To remove all deployed pods at once, use the following command:
 
-
+** create pod
 ```
    kubectl apply -f grade-submission-api-pod.yaml
    kubectl apply -f grade-submission-portal-pod.yaml
 ```
-
+**Verify that the pods are running:
 ```
    kubectl get pods
 ```
 
-
+** delete all pod
 ```
 kubectl delete pod --all
 ```
