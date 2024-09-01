@@ -148,8 +148,10 @@ cd    02_Grade Submission System_pod
 1. Clone this repository:
    ```
    git clone -b dev https://github.com/Tuchsanai/DevTools.git
-   cd  04_kubernetes/02_Grade Submission System_pod
+   cd  04_kubernetes/02_GradeSubmissionSystem_pod
    ```
+
+
 
 2. Deploy the Grade Submission API pod:
    ```
