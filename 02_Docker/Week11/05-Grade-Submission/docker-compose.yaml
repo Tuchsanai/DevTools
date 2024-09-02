@@ -1,7 +1,7 @@
 version: '3'
 services:
   flask-app:
-    build: ./grade-submission-portal
+    image:  rslim087/kubernetes-course-grade-submission-portal
     container_name: flask-app
     ports:
       - "5001:5001"
@@ -9,9 +9,17 @@ services:
       - GRADE_SERVICE_HOST=node-server
     depends_on:
       - node-server
+    networks:
+      - app-network
 
   node-server:
-    image: rslim087/grade-submission-api:2.0.0
+    image: rslim087/kubernetes-course-grade-submission-api:stateless
     container_name: node-server
     ports:
       - "3000:3000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
