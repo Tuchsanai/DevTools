@@ -3,7 +3,7 @@
 
 ```
 docker compose up
-'''
+```
 
 
 ![Image1](./images/1.jpg)
