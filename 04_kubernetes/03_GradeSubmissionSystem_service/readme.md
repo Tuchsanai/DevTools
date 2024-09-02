@@ -73,16 +73,13 @@ This demo will guide you through setting up and running the grade submission app
 
 ## Step 1: Prepare the Environment
 
-1. Ensure your Kubernetes cluster is running:
-   ```
-   kubectl cluster-info
-   ```
 
-2. Create a new directory for the project and navigate to it:
+
+1. Create a new directory for the project and navigate to it:
     
    ```
-   mkdir 02_GradeSubmissionSystem_pod
-   cd   02_GradeSubmissionSystem_pod
+   mkdir 03_GradeSubmissionSystem_service
+   cd   03_GradeSubmissionSystem_service
    ```
     
     ```
