@@ -1,7 +1,8 @@
 version: '3'
 services:
   flask-app:
-    image: rslim087/grade-submission-portal
+    build: ./
+
     container_name: flask-app
     ports:
       - "5001:5001"
