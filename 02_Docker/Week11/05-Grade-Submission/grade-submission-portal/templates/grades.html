@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Grades</title>
+  <link href="{{ url_for('static', filename='grades-stylesheet.css') }}" rel="stylesheet">
+</head>
+<body>
+  <div class="topnav">
+    <a href="{{ url_for('get_form') }}">Form</a>
+    <a href="{{ url_for('get_grades') }}">Grades</a>
+  </div>
+  <div class="container">
+    <table id="table">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Subject</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      fetchGrades();
+    });
+
+    function fetchGrades() {
+      fetch('/api/grades')
+        .then(response => response.json())
+        .then(data => {
+          populateTable(data);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    function populateTable(grades) {
+      const tbody = document.querySelector('#table tbody');
+      tbody.innerHTML = '';
+      grades.forEach(grade => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${grade.name}</td>
+          <td>${grade.subject}</td>
+          <td>${grade.score}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>

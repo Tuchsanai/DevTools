@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Form</title>
+  <link href="{{ url_for('static', filename='form-stylesheet.css') }}" rel="stylesheet">
+</head>
+<body>
+  <div class="topnav">
+    <a href="{{ url_for('get_form') }}">Form</a>
+    <a href="{{ url_for('get_grades') }}">Grades</a>
+  </div>
+  <div class="container">
+    <h2>Grade Portal</h2>
+    <form method="post" action="{{ url_for('submit_form') }}">
+      <input type="text" placeholder="Name" name="name">
+      <input type="text" placeholder="Score" name="score">
+      <input type="text" placeholder="Subject" name="subject">
+      <br><br>
+      <input type="submit" value="Submit">
+    </form>
+  </div>
+</body>
+</html>
