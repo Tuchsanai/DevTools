@@ -1,8 +1,7 @@
 version: '3'
 services:
   flask-app:
-    build: ./
-
+    build: ./grade-submission-portal
     container_name: flask-app
     ports:
       - "5001:5001"
