@@ -163,9 +163,9 @@ This demo will guide you through setting up and running the grade submission app
 ## Step 5: Access the Application
 
 
-     ```
-     kubectl get nodes -o wide
-     ```
+   ```
+   kubectl get nodes -o wide
+   ```
    - Access the application at `http://<node-ip>:32000`
 
 
