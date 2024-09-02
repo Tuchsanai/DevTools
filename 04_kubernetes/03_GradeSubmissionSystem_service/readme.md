@@ -178,8 +178,20 @@ When you're done with the demo, you can clean up the resources:
    kubectl delete pod grade-submission-api grade-submission-portal
    ```
 
+   or 
+
+   ```
+   kubectl delete pods --all
+   ```
+
 2. Delete the services:
    ```
    kubectl delete service grade-submission-api grade-submission-portal
+   ```
+
+  or
+ 
+   ```
+   kubectl delete svc --all
    ```
 
