@@ -48,7 +48,7 @@ This service file defines a Kubernetes Service for the grade submission portal:
 
 ## Lab Structure and Components
 
-1. Backend (API):
+- Backend (API):
    - Pod: grade-submission-api
      - Container: grade-submission-api
      - Image: rslim087/kubernetes-course-grade-submission-api:stateless
@@ -56,7 +56,7 @@ This service file defines a Kubernetes Service for the grade submission portal:
    - Service: grade-submission-api (ClusterIP)
      - Exposes port 3000 internally
 
-2. Frontend (Portal):
+- Frontend (Portal):
    - Pod: grade-submission-portal
      - Container: grade-submission-portal
      - Image: rslim087/kubernetes-course-grade-submission-portal
@@ -65,17 +65,121 @@ This service file defines a Kubernetes Service for the grade submission portal:
    - Service: grade-submission-portal (NodePort)
      - Exposes port 5001 internally and 32000 externally
 
-3. Networking:
-   - The frontend pod communicates with the backend service using the hostname "grade-submission-api" (set via environment variable).
-   - External users access the frontend through the NodePort service on port 32000.
-   - The backend is not directly accessible from outside the cluster.
 
-4. Resource Management:
-   - Both pods have resource requests and limits defined:
-     - API: 128Mi memory, 128m CPU
-     - Portal: 128Mi memory, 200m CPU
+# Full Kubernetes Lab Service 
 
-5. Labels and Selectors:
-   - Pods are labeled with app.kubernetes.io/name, app.kubernetes.io/component, and app.kubernetes.io/instance.
-   - Services use the app.kubernetes.io/instance label to select the correct pods.
+This demo will guide you through setting up and running the grade submission application in a Kubernetes environment.
+
+
+## Step 1: Prepare the Environment
+
+1. Ensure your Kubernetes cluster is running:
+   ```
+   kubectl cluster-info
+   ```
+
+2. Create a new directory for the project and navigate to it:
+    
+   ```
+   mkdir 02_GradeSubmissionSystem_pod
+   cd   02_GradeSubmissionSystem_pod
+   ```
+    
+    ```
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+  
+    ```
+
+    ```
+    cd  DevTools/04_kubernetes/03_GradeSubmissionSystem_service
+    ```
+
+
+
+## Step 2: Deploy the API
+
+1. Create the API pod:
+   ```
+   kubectl apply -f grade-submission-api-pod.yaml
+   ```
+
+2. Create the API service:
+   ```
+   kubectl apply -f grade-submission-api-service.yaml
+   ```
+
+3. Verify the API pod is running:
+   ```
+   kubectl get pods
+   ```
+
+4. Check the API service:
+   ```
+   kubectl get services
+   ```
+
+## Step 3: Deploy the Portal
+
+1. Create the portal pod:
+   ```
+   kubectl apply -f grade-submission-portal-pod.yaml
+   ```
+
+2. Create the portal service:
+   ```
+   kubectl apply -f grade-submission-portal-service.yaml
+   ```
+
+3. Verify the portal pod is running:
+   ```
+   kubectl get pods
+   ```
+
+4. Check the portal service:
+   ```
+   kubectl get services
+   ```
+
+## Step 4: Verify the Setup
+
+1. Check all running pods:
+   ```
+   kubectl get pods
+   ```
+   You should see both grade-submission-api and grade-submission-portal pods running.
+
+2. Check all services:
+   ```
+   kubectl get services
+   ```
+   You should see both grade-submission-api and grade-submission-portal services.
+
+3. Get more details about the portal service:
+   ```
+   kubectl describe service grade-submission-portal
+   ```
+   Note the NodePort assigned (should be 32000).
+
+## Step 5: Access the Application
+
+
+     ```
+     kubectl get nodes -o wide
+     ```
+   - Access the application at `http://<node-ip>:32000`
+
+
+## Step 6: Clean Up
+
+When you're done with the demo, you can clean up the resources:
+
+1. Delete the pods:
+   ```
+   kubectl delete pod grade-submission-api grade-submission-portal
+   ```
+
+2. Delete the services:
+   ```
+   kubectl delete service grade-submission-api grade-submission-portal
+   ```
 
