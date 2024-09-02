@@ -4,6 +4,8 @@
 
 ### 1. grade-submission-api-service.yaml
 
+![Kubernetes service Architecture](./images/system.jpg)
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -160,14 +162,59 @@ This demo will guide you through setting up and running the grade submission app
    ```
    Note the NodePort assigned (should be 32000).
 
-## Step 5: Access the Application
 
 
+## 5.Step-by-Step Port Mapping Process
+
+1. **Get the Minikube IP address:**
+   First, we need to know the IP address of our Minikube node:
+   ```
+   minikube ip
+   ```
+   ```
+   minikube service grade-submission-portal
+   ```
    ```
    kubectl get nodes -o wide
    ```
-   - Access the application at `http://<node-ip>:32000`
 
+   This command returns the IP address of your Minikube cluster.
+
+2. **Set up port forwarding:**
+   Use the following SSH command to set up port forwarding:
+   ```
+   ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip) -L 8080:localhost:32000
+   ```
+
+   Let's break down this command:
+   - `-i ~/.minikube/machines/minikube/id_rsa`: Specifies the SSH key to use for authentication.
+   - `docker@$(minikube ip)`: Connects to the Minikube VM using the 'docker' user and the Minikube IP.
+   - `-L 8080:localhost:32000`: Sets up the port forwarding. It forwards your local port 8080 to port 32000 on the Minikube VM.
+
+3. **Accessing the application:**
+   After running the SSH command, you can access the grade submission portal in your web browser at:
+   ```
+   http://localhost:8080
+   ```
+
+![Kubernetes front Architecture](./images/front.jpg)
+
+
+   This URL will now connect to your grade submission portal running in the Kubernetes cluster.
+
+## Important Notes
+
+- Keep the SSH session running to maintain the port forwarding.
+- If you want to use a different local port, just change the '8080' in the SSH command to your preferred port number.
+- This method works well for development and testing. In a production environment, you'd typically use an Ingress controller or a LoadBalancer service instead.
+
+By using this port mapping technique, you can easily access and test your Kubernetes-deployed application from your local development environment.
+
+
+
+
+   
+--------------------------------------
 
 ## Step 6: Clean Up
 
