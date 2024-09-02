@@ -1,0 +1,89 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    #### uncomment the following line to use the GPU
+    # deploy:
+    #   replicas: 1
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    healthcheck:
+      test: timeout 5 bash -c "</dev/tcp/localhost/11434"
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    volumes:
+      - ollama:/root/.ollama
+    networks:
+      default:
+
+  searxng:
+    image: searxng/searxng:latest
+    volumes:
+      - ./searxng:/etc/searxng
+    restart: unless-stopped
+    networks:
+      default:
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    environment:
+      ## Ollama
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+
+      ## Searxng
+      - ENABLE_RAG_WEB_SEARCH=true
+      - RAG_WEB_SEARCH_ENGINE=searxng
+      - RAG_WEB_SEARCH_RESULT_COUNT=3
+      - RAG_WEB_SEARCH_CONCURRENT_REQUEST=10
+      - SEARXNG_QUERY_URL=http://searxng:8080/search?q=<query>
+
+      ## Web
+      - OAUTH_MERGE_ACCOUNTS_BY_EMAIL=${OAUTH_MERGE_ACCOUNTS_BY_EMAIL:-false}
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-secret}
+      - USE_CUDA_DOCKER=${USE_CUDA_DOCKER:-false}
+      - DATABASE_URL=${DATABASE_URL}
+
+    restart: unless-stopped
+    volumes:
+      - open_webui:/app/backend/data
+    networks:
+      default:
+
+  postgres:
+    image: postgres:${PG_MAJOR:-latest}
+    environment:
+      - TZ=${TIMEZONE}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ['CMD-SHELL', "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: always
+    volumes:
+      - postgres:/var/lib/postgresql/data:rw
+    networks:
+      default:
+
+networks:
+  default:
+
+volumes: 
+  ollama:
+  open_webui:
+  postgres:
