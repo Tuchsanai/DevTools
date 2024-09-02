@@ -79,6 +79,9 @@ This demo will guide you through setting up and running the grade submission app
     
    ```
    mkdir 03_GradeSubmissionSystem_service
+   ```
+
+   ```
    cd   03_GradeSubmissionSystem_service
    ```
     
