@@ -80,19 +80,17 @@ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stabl
 sudo install kubectl /usr/local/bin/kubectl
 rm kubectl
 
-# Start Minikube with Docker driver
+```
+
+# 3. Start Minikube with Docker driver
+
+```
 minikube start --driver=docker
+```
 
-# Verify installation
+# 4. Verify installation
+```
 minikube status
-kubectl get nodes
-
-```
-
-
-# 3. Verify installation
-
-```
 kubectl get nodes
 ```
 
