@@ -4,7 +4,7 @@
 - ลงทะเบียนกลุ่ม ได้ที่ https://docs.google.com/spreadsheets/d/1U9zEjHwce22JQS8OnRlTajx6wm44BUHTbVAUhIviy78/edit?usp=sharing
 
 - สมาชิก  [เช้า 7 กลุ่ม บ่าย 7 กลุ่ม] : โดย โดยใน 7 กลุ่มประกอบด้วย (5 กลุ่ม แรก 4 คน และ 2 กลุ่มสุดท้าย 5 คน รวมทั้งสิ้น 30 คน)
-- Deadline จับกลุ่ม 
+- ****** Deadline จับกลุ่ม 7 กันยายน 2024 เวลา 23.59  ************
 
 - ต้อง log in ผ่าน email @it.kmitl.ac.th เท่านั้น
 
