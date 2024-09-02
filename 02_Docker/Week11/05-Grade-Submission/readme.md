@@ -1,6 +1,6 @@
 # Grade Submission Portal
 
-This project demonstrates a simple grade submission system using a Flask frontend and a Node.js backend. It's designed to be deployed using Docker Compose and later applied in Kubernetes sections.
+### * This project demonstrates a simple grade submission system using a Flask frontend and a Node.js backend. It's designed to be deployed using Docker Compose and later applied in Kubernetes sections.
 
 ## Architecture
 
