@@ -4,6 +4,10 @@ Here's the corrected version of your `README.md`:
 
 # openwebui-ollama-docker
 
+![Alt text](./images/2024-09-04_11-57-24.jpg)
+
+
+
 Basic Open WebUI + Ollama stack for Local ChatGPT.
 
 ## What's inside?
