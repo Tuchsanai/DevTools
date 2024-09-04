@@ -1,14 +1,15 @@
-Here's the corrected version of your `README.md`:
+
+
+
+# openwebui-ollama-docker
+# Basic Open WebUI + Ollama stack for Local ChatGPT.
 
 ---
 
-# openwebui-ollama-docker
 
 ![Alt text](./images/2024-09-04_11-57-24.jpg)
 
 
-
-Basic Open WebUI + Ollama stack for Local ChatGPT.
 
 ## What's inside?
 
@@ -99,9 +100,22 @@ volumes:
 ## Basic Usage
 
 1. Clone this repository:
-   ```bash
-   git clone <repository-url>
+
    ```
+   mkdir 02_openwebui-ollama-docker-main
+
+   cd    02_openwebui-ollama-docker-main
+
+   ```  
+
+   ```bash
+
+    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+  
+    cd DevTools/02_Docker/Week12_ML/02_openwebui-ollama-docker-main
+
+   ``` 
+
 2. Navigate to the project directory:
    ```bash
    cd 02_openwebui-ollama-docker-main
@@ -116,24 +130,40 @@ volumes:
    ```
 
 5. Connect to the Ollama service:
+   
    ```bash
+   
    docker exec -it ollama-service bash
-      ```
+   
+   ```
    * install llm model 
-   ``
+   
+   ```
+   
    ollama pull llama3.1:8b
-   ``
-
-  * 
+   
    ```
+   
+   ```
+   
    exit
+   
    ```
+
 
 Note you can see all ollama model by https://ollama.com/
+
+
 ![Facebook post image 1](./images/ollama_web.jpg)
 
 
-6. Open your browser and go to [http://localhost:9003](http://localhost:9003).
+6. Open your browser and go to 
+
+
+```
+http://localhost:9003
+```
+
 
 
 ---
