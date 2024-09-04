@@ -8,7 +8,6 @@ services:
       interval: 10s
       timeout: 30s
       retries: 5
-      start_period: 15s
     restart: unless-stopped
     volumes:
       - ollama:/root/.ollama
@@ -20,10 +19,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      postgres:
-        condition: service_healthy
-      ollama:
-        condition: service_healthy
+      - postgres
+      - ollama
     environment:
       - OLLAMA_BASE_URL
       - OAUTH_MERGE_ACCOUNTS_BY_EMAIL
@@ -55,10 +52,10 @@ services:
       - default
 
 networks:
-  default:  # Properly define the default network
+  default:
     driver: bridge
 
 volumes:
-  ollama:  # Define the named volumes correctly
+  ollama:
   open_webui:
   postgres:
