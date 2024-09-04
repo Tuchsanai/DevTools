@@ -1,9 +1,8 @@
 services:
   ollama:
     image: ollama/ollama:latest
-    
     healthcheck:
-      test: timeout 5 bash -c "</dev/tcp/localhost/11434"
+      test: ["CMD-SHELL", "timeout 5 bash -c '</dev/tcp/localhost/11434' || exit 1"]
       interval: 10s
       timeout: 30s
       retries: 5
@@ -12,8 +11,7 @@ services:
     volumes:
       - ollama:/root/.ollama
     networks:
-      default:
-
+      - default
 
   open-webui:
     image: ghcr.io/open-webui/open-webui
@@ -33,13 +31,11 @@ services:
       - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-secret}
       - USE_CUDA_DOCKER=${USE_CUDA_DOCKER:-false}
       - DATABASE_URL=${DATABASE_URL}
-
     restart: unless-stopped
     volumes:
       - open_webui:/app/backend/data
     networks:
-      default:
-
+      - default
 
   postgres:
     image: postgres:${PG_MAJOR:-latest}
@@ -49,7 +45,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     healthcheck:
-      test: ['CMD-SHELL', "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 3s
       retries: 3
@@ -57,7 +53,7 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data:rw
     networks:
-      default:
+      - default
 
 networks:
   default:
