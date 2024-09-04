@@ -40,6 +40,7 @@ Basic Open WebUI + Ollama stack for Local ChatGPT
 5. Open your browser and go to [http://localhost:8080](http://localhost:8080).
 
 
+
 ## Initial Settings in Open WebUI
 * Sign up as the first user -> this guy will be the super admin
 <img width="441" alt="Screenshot 2567-07-23 at 22 50 17" src="https://github.com/user-attachments/assets/2af2c24a-0715-4111-b78b-d88489dd57df">
@@ -58,3 +59,21 @@ Basic Open WebUI + Ollama stack for Local ChatGPT
 
 * for Search Engine capabilities. please delete starting and endind " if it is there. Press save
 * <img width="1302" alt="Screenshot 2567-07-23 at 23 19 17" src="https://github.com/user-attachments/assets/c750f27a-3995-49a2-a780-772c1d869c03">
+
+
+
+Stop all container
+
+```
+docker-compose down --volumes --rmi all
+
+```
+
+
+```
+docker stop $(docker ps -a -q)  
+docker rm $(docker ps -a -q) 
+docker rmi $(docker images -q) 
+docker volume rm $(docker volume ls -q)  
+docker network prune -f
+```
