@@ -1,6 +1,5 @@
-Here's the complete `README.md` file content formatted in a single block:
 
-```markdown
+
 # openwebui-ollama-docker
 
 Basic Open WebUI + Ollama stack for Local ChatGPT
@@ -12,7 +11,7 @@ Basic Open WebUI + Ollama stack for Local ChatGPT
   * **Open WebUI**: User interface for Ollama and API compatible with Ollama/OpenAI. For more details, check out the [Open WebUI documentation](https://docs.openwebui.com/).
   * **Postgres**: A widely-used open-source SQL database known for its extensible functionalities.
 
-Repository Path: `02_Docker/Week12_ML/02_openwebui-ollama-docker-main`
+
 
 ## Basic Usage
 
