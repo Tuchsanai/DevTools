@@ -35,7 +35,7 @@ services:
       - default
 
   postgres:
-    image: postgres:${PG_MAJOR:-latest}
+    image: postgres:${PG_MAJOR}
     environment:
       - TZ
       - POSTGRES_DB
