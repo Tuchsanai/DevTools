@@ -116,20 +116,16 @@ volumes:
 
    ``` 
 
-2. Navigate to the project directory:
-   ```bash
-   cd 02_openwebui-ollama-docker-main
-   ```
-3. Copy the example environment file:
+2. Copy the example environment file:
    ```bash
    cp .env.example .env
    ```
-4. Start the services using Docker Compose:
+3. Start the services using Docker Compose:
    ```bash
    docker-compose up -d
    ```
 
-5. Connect to the Ollama service:
+4. Connect to the Ollama service:
    
    ```bash
    
@@ -157,7 +153,7 @@ Note you can see all ollama model by https://ollama.com/
 ![Facebook post image 1](./images/ollama_web.jpg)
 
 
-6. Open your browser and go to 
+5. Open your browser and go to 
 
 
 ```
