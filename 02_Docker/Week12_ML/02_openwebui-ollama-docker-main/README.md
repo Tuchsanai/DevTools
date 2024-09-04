@@ -1,22 +1,45 @@
+Here's the complete `README.md` file content formatted in a single block:
+
+```markdown
 # openwebui-ollama-docker
-basic Open WebUI + Ollama stack for Local ChatGPT
+
+Basic Open WebUI + Ollama stack for Local ChatGPT
 
 ## What is inside?
-* Services
-  * Ollama : LLM engine, model catalog. Please refer to https://ollama.com/library for available models
-  * Searxng : Private Search Engine with unlimited search API capabilities. This can be used as Web Search Tool for agentic workflow. Off the shelf, it works seanlessly with Open WebUI
-  * Open WebUI : User interface for Ollama, also Ollama / OpenAI compatible API. Please visit [this docs](https://docs.openwebui.com/) for more details
-  * Postgres : Most popular open source SQL DB with extensible functionalities
+
+* **Services**
+  * **Ollama**: A Large Language Model (LLM) engine and model catalog. For available models, visit [Ollama Library](https://ollama.com/library).
+  * **Open WebUI**: User interface for Ollama and API compatible with Ollama/OpenAI. For more details, check out the [Open WebUI documentation](https://docs.openwebui.com/).
+  * **Postgres**: A widely-used open-source SQL database known for its extensible functionalities.
+
+Repository Path: `02_Docker/Week12_ML/02_openwebui-ollama-docker-main`
 
 ## Basic Usage
-1. Clone this repository
-2. `$ cd openwebui-ollama-docker`
-3. `$ cp .env.example .env`
-4. Edit `.env` file to your liking
-5. `$ cp ./searxng/settings.yml.example ./searxng/settings.yml`
-6. Edit `secret_key` in `./searxng/settings.yml` to your liking
-7. `$ docker-compose up -d`
-8. Open your browser and go to `http://localhost:8080`
+
+1. Clone this repository:
+   ```bash
+   git clone <repository-url>
+   ```
+2. Navigate to the project directory:
+
+   ```bash
+   cd 02_openwebui-ollama-docker-main
+   ```
+
+3. Copy the example environment file:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Start the services using Docker Compose:
+
+   ```bash
+   docker-compose up -d
+   ```
+
+5. Open your browser and go to [http://localhost:8080](http://localhost:8080).
+
 
 ## Initial Settings in Open WebUI
 * Sign up as the first user -> this guy will be the super admin
