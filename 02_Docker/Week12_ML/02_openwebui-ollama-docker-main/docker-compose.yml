@@ -1,3 +1,5 @@
+version: '3.8'  # Specify the version compatible with your Docker Compose setup
+
 services:
   ollama:
     image: ollama/ollama:latest
@@ -35,7 +37,7 @@ services:
       - default
 
   postgres:
-    image: postgres:${PG_MAJOR}
+    image: postgres:${PG_MAJOR:-latest}
     environment:
       - TZ
       - POSTGRES_DB
@@ -53,9 +55,10 @@ services:
       - default
 
 networks:
-  default:
+  default:  # Properly define the default network
+    driver: bridge
 
-volumes: 
-  ollama:
+volumes:
+  ollama:  # Define the named volumes correctly
   open_webui:
   postgres:
