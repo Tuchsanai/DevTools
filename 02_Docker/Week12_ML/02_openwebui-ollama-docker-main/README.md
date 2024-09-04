@@ -205,12 +205,14 @@ http://localhost:9003
 
 Let me know if you need further adjustments!
 
-## Initial Settings in Open WebUI
-* Sign up as the first user -> this guy will be the super admin
-<img width="441" alt="Screenshot 2567-07-23 at 22 50 17" src="https://github.com/user-attachments/assets/2af2c24a-0715-4111-b78b-d88489dd57df">
 
-* Sign in and see your first login
-<img width="1715" alt="Screenshot 2567-07-23 at 23 10 16" src="https://github.com/user-attachments/assets/a7c17cb3-d63a-460b-bad1-f3ffca190234">
+![Alt1](./images/1.jpg)
+
+![Alt2](./images//2.jpg)
+
+![Alt3](./images/3.jpg)
+
+![Alt4](./images/4.jpg)
 
 
 Stop all container
