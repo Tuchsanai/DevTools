@@ -159,7 +159,7 @@ volumes:
   you may see like this
 
   ```
-  
+
   docker exec -it ollama-service bash
 
   root@abbc077bf4ff:/# 
@@ -177,19 +177,13 @@ volumes:
   success 
   ```
 
-   
+   exit from container  ollama-service
+
    ```
    
    exit
    
    ```
-
-
-Note you can see all ollama model by https://ollama.com/
-
-
-![Facebook post image 1](./images/ollama_web.jpg)
-
 
 5. Open your browser and go to 
 
@@ -197,6 +191,13 @@ Note you can see all ollama model by https://ollama.com/
 ```
 http://localhost:9003
 ```
+
+Note you can see all ollama model by https://ollama.com/
+
+
+![Facebook post image 1](./images/ollama_web.jpg)
+
+
 
 
 
