@@ -9,6 +9,10 @@
 
 ![Alt text](./images/2024-09-04_11-57-24.jpg)
 
+Note you can see all ollama model by https://ollama.com/
+
+
+![Facebook post image 1](./images/ollama_web.jpg)
 
 
 ## What's inside?
@@ -192,10 +196,6 @@ volumes:
 http://localhost:9003
 ```
 
-Note you can see all ollama model by https://ollama.com/
-
-
-![Facebook post image 1](./images/ollama_web.jpg)
 
 
 
