@@ -1,17 +1,96 @@
+Here's the corrected version of your `README.md`:
 
+---
 
 # openwebui-ollama-docker
 
-Basic Open WebUI + Ollama stack for Local ChatGPT
+Basic Open WebUI + Ollama stack for Local ChatGPT.
 
-## What is inside?
+## What's inside?
 
-* **Services**
-  * **Ollama**: A Large Language Model (LLM) engine and model catalog. For available models, visit [Ollama Library](https://ollama.com/library).
-  * **Open WebUI**: User interface for Ollama and API compatible with Ollama/OpenAI. For more details, check out the [Open WebUI documentation](https://docs.openwebui.com/).
-  * **Postgres**: A widely-used open-source SQL database known for its extensible functionalities.
+* **Services:**
+  * **Ollama**: A Large Language Model (LLM) engine and model catalog. For available models, visit the [Ollama Library](https://ollama.com/library).
+  * **Open WebUI**: A user interface for Ollama, compatible with Ollama/OpenAI APIs. For more details, check the [Open WebUI documentation](https://docs.openwebui.com/).
+  * **Postgres**: A widely used open-source SQL database known for its extensibility.
 
+## Docker Compose Configuration
 
+In file . env
+```env
+# postgres
+TIMEZONE=Asia/Bangkok
+PG_MAJOR=latest
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=< $ openssl rand -hex 64 >
+POSTGRES_DB=postgres
+
+# open-webui
+WEBUI_SECRET_KEY=< $ openssl rand -base64 64 >
+USE_CUDA_DOCKER=false
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+OLLAMA_BASE_URL=http://ollama:11434
+```
+
+In file docker-compose.yanl
+
+```yaml
+version: '3.3'
+
+services:
+  ollama:
+    container_name: ollama-service
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - ollama:/root/.ollama
+    networks:
+      - default
+
+  open-webui:
+    container_name: open-webui-service
+    image: ghcr.io/open-webui/open-webui:latest
+    ports:
+      - "9003:8080"
+    depends_on:
+      - postgres
+      - ollama
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OAUTH_MERGE_ACCOUNTS_BY_EMAIL
+      - WEBUI_SECRET_KEY
+      - USE_CUDA_DOCKER
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    restart: unless-stopped
+    volumes:
+      - open_webui:/app/backend/data
+    networks:
+      - default
+
+  postgres:
+    container_name: postgres-service
+    image: postgres:${PG_MAJOR:-15}
+    environment:
+      - TZ
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    restart: always
+    volumes:
+      - postgres:/var/lib/postgresql/data:rw
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  ollama:
+  open_webui:
+  postgres:
+```
 
 ## Basic Usage
 
@@ -20,26 +99,30 @@ Basic Open WebUI + Ollama stack for Local ChatGPT
    git clone <repository-url>
    ```
 2. Navigate to the project directory:
-
    ```bash
    cd 02_openwebui-ollama-docker-main
    ```
-
 3. Copy the example environment file:
-
    ```bash
    cp .env.example .env
    ```
-
 4. Start the services using Docker Compose:
-
    ```bash
    docker-compose up -d
    ```
 
-5. Open your browser and go to [http://localhost:8080](http://localhost:8080).
+5. Connect to the Ollama service:
+   ```bash
+   docker exec -it ollama-service bash
+   ```
 
 
+6. Open your browser and go to [http://localhost:9003](http://localhost:9003).
+
+
+---
+
+Let me know if you need further adjustments!
 
 ## Initial Settings in Open WebUI
 * Sign up as the first user -> this guy will be the super admin
