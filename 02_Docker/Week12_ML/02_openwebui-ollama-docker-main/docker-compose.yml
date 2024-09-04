@@ -1,15 +1,7 @@
 services:
   ollama:
     image: ollama/ollama:latest
-    #### uncomment the following line to use the GPU
-    # deploy:
-    #   replicas: 1
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
+    
     healthcheck:
       test: timeout 5 bash -c "</dev/tcp/localhost/11434"
       interval: 10s
@@ -22,13 +14,6 @@ services:
     networks:
       default:
 
-  searxng:
-    image: searxng/searxng:latest
-    volumes:
-      - ./searxng:/etc/searxng
-    restart: unless-stopped
-    networks:
-      default:
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
@@ -43,13 +28,6 @@ services:
       ## Ollama
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
 
-      ## Searxng
-      - ENABLE_RAG_WEB_SEARCH=true
-      - RAG_WEB_SEARCH_ENGINE=searxng
-      - RAG_WEB_SEARCH_RESULT_COUNT=3
-      - RAG_WEB_SEARCH_CONCURRENT_REQUEST=10
-      - SEARXNG_QUERY_URL=http://searxng:8080/search?q=<query>
-
       ## Web
       - OAUTH_MERGE_ACCOUNTS_BY_EMAIL=${OAUTH_MERGE_ACCOUNTS_BY_EMAIL:-false}
       - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-secret}
@@ -61,6 +39,7 @@ services:
       - open_webui:/app/backend/data
     networks:
       default:
+
 
   postgres:
     image: postgres:${PG_MAJOR:-latest}
