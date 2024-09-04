@@ -23,14 +23,11 @@ services:
       ollama:
         condition: service_healthy
     environment:
-      ## Ollama
-      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
-
-      ## Web
-      - OAUTH_MERGE_ACCOUNTS_BY_EMAIL=${OAUTH_MERGE_ACCOUNTS_BY_EMAIL:-false}
-      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-secret}
-      - USE_CUDA_DOCKER=${USE_CUDA_DOCKER:-false}
-      - DATABASE_URL=${DATABASE_URL}
+      - OLLAMA_BASE_URL
+      - OAUTH_MERGE_ACCOUNTS_BY_EMAIL
+      - WEBUI_SECRET_KEY
+      - USE_CUDA_DOCKER
+      - DATABASE_URL
     restart: unless-stopped
     volumes:
       - open_webui:/app/backend/data
@@ -40,10 +37,10 @@ services:
   postgres:
     image: postgres:${PG_MAJOR:-latest}
     environment:
-      - TZ=${TIMEZONE}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - TZ
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
