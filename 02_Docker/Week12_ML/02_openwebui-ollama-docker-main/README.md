@@ -130,6 +130,7 @@ volumes:
    ```
 
 Note you can see all ollama model by https://ollama.com/
+![Facebook post image 1](./images/ollama_web.jpg)
 
 
 6. Open your browser and go to [http://localhost:9003](http://localhost:9003).
