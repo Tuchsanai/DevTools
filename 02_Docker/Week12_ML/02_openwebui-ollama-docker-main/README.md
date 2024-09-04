@@ -124,6 +124,22 @@ volumes:
    ```bash
    docker-compose up -d
    ```
+  
+   check docker 
+   ```
+   docker ps -a
+   ```
+
+   you may see like this
+   
+   ```bash
+   
+      CONTAINER ID   IMAGE                                  COMMAND                  CREATED         STATUS                   PORTS                                         NAMES
+    8d448a2269c9   ghcr.io/open-webui/open-webui:latest   "bash start.sh"          5 minutes ago   Up 5 minutes (healthy)   0.0.0.0:9003->8080/tcp, [::]:9003->8080/tcp   open-webui-service
+    ace052e2eab7   postgres:latest                        "docker-entrypoint.s…"   6 minutes ago   Up 5 minutes             5432/tcp                                      postgres-service
+    abbc077bf4ff   ollama/ollama:latest                   "/bin/ollama serve"      6 minutes ago   Up 5 minutes             11434/tcp                                     ollama-service
+
+   ```
 
 4. Connect to the Ollama service:
    
