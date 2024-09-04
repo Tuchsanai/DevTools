@@ -114,7 +114,18 @@ volumes:
 5. Connect to the Ollama service:
    ```bash
    docker exec -it ollama-service bash
+      ```
+   * install llm model 
+   ``
+   ollama pull llama3.1:8b
+   ``
+
+  * 
    ```
+   exit
+   ```
+
+Note you can see all ollama model by https://ollama.com/
 
 
 6. Open your browser and go to [http://localhost:9003](http://localhost:9003).
@@ -151,6 +162,7 @@ Stop all container
 docker-compose down --volumes --rmi all
 
 ```
+
 
 
 ```
