@@ -14,7 +14,7 @@ RUN pip install --upgrade pip && \
 # Set environment variables
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
-    JUPYTER_TOKEN=my_token \
+    JUPYTER_TOKEN=12345 \
     JUPYTER_PORT=8888
 
 # Start Jupyter Notebook
