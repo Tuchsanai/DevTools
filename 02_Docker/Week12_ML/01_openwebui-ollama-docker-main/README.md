@@ -2,6 +2,9 @@
 
 
 # openwebui-ollama-docker
+
+# https://medium.com/@vimalathithanswetha/ollama-unleash-the-power-of-large-language-models-on-your-local-machine-df8907e13580
+
 # Basic Open WebUI + Ollama stack for Local ChatGPT.
 
 ---
