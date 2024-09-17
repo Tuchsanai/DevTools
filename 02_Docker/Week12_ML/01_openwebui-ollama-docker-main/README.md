@@ -9,6 +9,8 @@
 
 ---
 
+## Ollama for GPU 
+https://hub.docker.com/r/ollama/ollama
 
 ![Alt text](./images/2024-09-04_11-57-24.jpg)
 
