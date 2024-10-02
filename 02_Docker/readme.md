@@ -72,12 +72,12 @@ docker compose version
 # Delete all containers
 
 ```
-docker stop $(docker ps -a -q) || true 
-docker rm $(docker ps -a -q)   || true 
+docker stop $(docker ps -a -q) 2>/dev/null || true
+docker rm $(docker ps -a -q) 2>/dev/null || true
 
-docker rmi $(docker images -q) || true 
+docker rmi $(docker images -q) 2>/dev/null || true
 
-docker volume rm $(docker volume ls -q)  || true 
-docker network prune -f || true 
+docker volume rm $(docker volume ls -q) 2>/dev/null || true
+docker network prune -f 2>/dev/null || true
 
 ```
