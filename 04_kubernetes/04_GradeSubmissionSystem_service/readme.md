@@ -93,7 +93,7 @@ This demo will guide you through setting up and running the grade submission app
     ```
 
     ```
-    cd  DevTools/04_kubernetes/03_GradeSubmissionSystem_service
+    cd  DevTools/04_kubernetes/04_GradeSubmissionSystem_service
     ```
 
 
