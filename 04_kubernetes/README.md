@@ -98,3 +98,4 @@ kubectl get nodes
 
 
 
+https://www.youtube.com/watch?v=lv0DdVLZuHc
