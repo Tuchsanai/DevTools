@@ -46,6 +46,10 @@
 
 ## 🧰 คลังตัวอย่าง Mini Project (สำหรับศึกษาแนวทาง)
 ### Slide
+- **ปี 2567**
+   -<https://drive.google.com/drive/folders/1DGpJGYKD5AeDzfbGK3Y9pizewjRps-znyvX5YSxYlDb_KPIwErAmzIdXkxzYY9rHF1k8mCxH?usp=sharing>
+  
+    
 - **ปี 2565:**  
   - <https://drive.google.com/drive/u/1/folders/1evneI8taeTrpU3jWQtsCGSXhaMBPrwGpouHcDSaKyZJ2QdQsyQPTpnYTqjAJJdN2_iBwu7Oe>
 - **ปี 2566:**  
