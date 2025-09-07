@@ -1,157 +1,203 @@
 
 # 🚀 Load Balancer with Nginx + Docker
 
-This lab shows how to use **Nginx** as a **load balancer** for multiple **Express.js containers**.
+This lab demonstrates how to use **Nginx** as a **load balancer** for multiple **Express.js containers**.
 
-Think of a load balancer like a **traffic police officer at an intersection** 🚦. When cars (requests) come in, the officer decides **which road (server)** each car should go to. This helps prevent one road from being too crowded.
+Think of a load balancer as a **traffic officer at an intersection** 🚦. When requests (cars) arrive, the officer decides which server (road) each request should go to. This prevents one server from being overloaded while others stay idle.
 
-We will learn 2 main strategies:
+We will cover **two main strategies**:
 
-* **🔄 Round Robin** → Requests are passed one by one to each server in order.
-* **⚖️ Weighted Round Robin** → Some servers get more requests than others (based on assigned weight).
+* **🔄 Round Robin** → Requests are distributed evenly, one by one, across all servers.
+* **⚖️ Weighted Round Robin** → Some servers handle more requests than others (based on assigned weight).
 
 ---
 
-## 📌 Load Balancing Concepts
+## 📌 What You’ll Learn
 
-### 🔄 Round Robin
+* Build and run multiple Express.js servers in Docker
+* Use Nginx as a reverse proxy and load balancer
+* Understand Round Robin and Weighted Round Robin balancing strategies
+* Test how requests are distributed between servers
 
-**How it works:**
-Imagine you have 3 cashiers in a supermarket. Each new customer is sent to the next cashier in line. This ensures everyone gets work evenly.
+---
+
+## 🖼️ How Load Balancing Works
+
+![Nginx Overview](nginx.jpg)
+
+Nginx acts as a **reverse proxy** and **load balancer** in front of multiple application servers. Clients send requests to Nginx, and Nginx forwards them to backend servers according to the chosen strategy.
+
+---
+
+## 🔄 Round Robin
+
+**Concept:**
+Like customers lining up at supermarket counters — each new customer goes to the next available counter in order.
 
 ![Round Robin](round.png)
 
-**nginx.conf example:**
+**Nginx configuration:**
 
 ```nginx
 events {}
 
 http {
-  upstream food-app {
-    server food-server1:5000;
-    server food-server2:3000;  
-    server food-server3:8000;  
-  }
-
-  server {
-    listen 80;
-
-    location / {
-      proxy_pass http://food-app;
+    upstream food-app {
+        server food-server1:5000;
+        server food-server2:3000;  
+        server food-server3:8000;  
     }
-  }
+
+    server {
+        listen 80;
+
+        location / {
+            proxy_pass http://food-app;
+        }
+    }
 }
 ```
 
-➡️ In this setup, Nginx will forward requests **one by one**:
-First to `food-server1`, then `food-server2`, then `food-server3`, and repeat.
+➡️ Requests are sent in this sequence: `server1 → server2 → server3 → server1 → ...`
 
 ---
 
-### ⚖️ Weighted Round Robin (3:2)
+## ⚖️ Weighted Round Robin
 
-**How it works:**
-Now imagine one cashier works faster than the others. You want that cashier to handle **more customers**.
-
-That’s what weights do. If cashier A has weight **3** and cashier B has weight **2**, cashier A will get 3 customers for every 2 customers that go to cashier B.
+**Concept:**
+Some servers are more powerful and can handle more traffic. By giving them a **weight**, Nginx sends more requests their way.
 
 ![Weighted Round Robin](weight.png)
 
-**nginx.conf example:**
+**Nginx configuration (3:2 ratio):**
 
 ```nginx
-# Example weight 3:2
 events {}
 
 http {
-  upstream food-app {
-    server food-server1:5000 weight=3;
-    server food-server2:3000 weight=2;  
-  }
-
-  server {
-    listen 80;
-
-    location / {
-      proxy_pass http://food-app;
+    upstream food-app {
+        server food-server1:5000 weight=3;
+        server food-server2:3000 weight=2;  
     }
-  }
+
+    server {
+        listen 80;
+
+        location / {
+            proxy_pass http://food-app;
+        }
+    }
 }
 ```
 
 ➡️ This means:
 
-* `food-server1` gets **3 requests**
-* `food-server2` gets **2 requests**
-* Then the cycle repeats.
+* `food-server1` handles **3 requests**
+* `food-server2` handles **2 requests**
+* Then it repeats
 
 ---
 
 ## 🧪 LAB A: Round Robin
 
-We will build and run 2 Express servers, then use Nginx to balance requests between them.
+We’ll build two Express servers, then configure Nginx to balance requests between them.
 
 ---
 
-### 1️⃣ Create a Project Folder
+### 1️⃣ Create Project Folder
 
 ```bash
 mkdir LAB1_Week10
 cd LAB1_Week10
 ```
 
-👉 Why?
-We create a clean workspace to avoid mixing files with other projects.
-
 ---
 
-### 2️⃣ Clone the Repository
+### 2️⃣ Clone Repository
 
 ```bash
 git clone -b dev https://github.com/Tuchsanai/DevTools.git
 cd DevTools/02_Docker/Week10/01_LAB1_Nginx_LoadBalance
 ```
 
-👉 Why?
-This repo already has a simple Express app that returns a message.
-We’ll run multiple copies of it.
+This repo contains a simple Express app (`app.js`) and Docker setup.
 
 ---
 
-### 3️⃣ Build the Express App Image
+### 3️⃣ Express App (`app.js`)
+
+```js
+const express = require('express');
+const os = require('os');
+
+const app = express();
+const port = 3000;
+
+app.get('/', (req, res) => {
+    const currentTime = new Date().toLocaleTimeString();
+
+    res.send(`<div>
+                <span style="font-size: 24px;">hostname: ${os.hostname()}</span><br>
+                <span>platform: ${os.platform()}</span><br>
+                <span>current time: ${currentTime}</span>
+              </div>`);
+});
+
+app.listen(port, () => {
+    console.log(`Express app listening on port ${port}`);
+});
+```
+
+👉 Each container will display its own **hostname**, **platform**, and **current time**.
+
+---
+
+### 4️⃣ Dockerfile
+
+```dockerfile
+FROM node:14
+
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+
+CMD ["node", "app.js"]
+```
+
+👉 This builds a **Node.js Express app** image.
+
+---
+
+### 5️⃣ Build the Image
 
 ```bash
 docker build -t express-app .
 ```
 
-👉 Why?
-This creates a Docker image called **express-app** from the code inside the repo.
-Think of it as a **template** you can use to create many containers.
-
 ---
 
-### 4️⃣ Create a Docker Network
+### 6️⃣ Create Docker Network
 
 ```bash
 docker network create express-network
 ```
 
-👉 Why?
-Containers need a **shared network** so Nginx can talk to the Express apps by name (`app1`, `app2`).
+This lets containers talk to each other by name.
 
 ---
 
-### 5️⃣ Run Two Express Containers
+### 7️⃣ Run Express Containers
 
 ```bash
 docker run -d --name app1 --network express-network -p 3001:3000 express-app
 docker run -d --name app2 --network express-network -p 3002:3000 express-app
 ```
 
-👉 Why?
-We now have 2 running apps (`app1` and `app2`). Each one responds differently (so we can tell them apart).
+Now you have two running apps, each showing different hostnames.
 
-Check containers:
+Check:
 
 ```bash
 docker ps -a
@@ -159,9 +205,7 @@ docker ps -a
 
 ---
 
-### 6️⃣ Configure & Run Nginx Load Balancer
-
-Create `nginx.conf`:
+### 8️⃣ Configure Nginx (`nginx.conf`)
 
 ```nginx
 events {}
@@ -182,13 +226,11 @@ http {
 }
 ```
 
-👉 Explanation:
+👉 Nginx will forward requests alternately to `app1` and `app2`.
 
-* **upstream backend** → Defines the group of servers (`app1` and `app2`).
-* **listen 8080** → Nginx listens on port 8080.
-* **proxy\_pass** → Forwards requests to `backend`.
+---
 
-Run Nginx container:
+### 9️⃣ Run Nginx Container
 
 ```bash
 docker run -d --name nginx-load-balancer \
@@ -198,23 +240,17 @@ docker run -d --name nginx-load-balancer \
   nginx
 ```
 
-Check container:
-
-```bash
-docker ps -a
-```
-
 ---
 
-### 7️⃣ Test Load Balancing
+### 🔟 Test in Browser
 
-Open in browser:
+Visit:
 
 ```
-http://ExternalIP:8080
+http://localhost:8080
 ```
 
-Refresh the page multiple times. You should see responses switching between `app1` and `app2`.
+Refresh several times → you’ll see **different hostnames** switching between containers.
 
 | From App1      | From App2      |
 | -------------- | -------------- |
@@ -224,7 +260,11 @@ Refresh the page multiple times. You should see responses switching between `app
 
 ## 🧪 LAB B: Weighted Round Robin
 
-👉 Try modifying `nginx.conf` so that one app receives **more traffic** than the other.
+```
+
+ทำเอง 
+
+```
 
 
 
@@ -232,7 +272,7 @@ Refresh the page multiple times. You should see responses switching between `app
 
 ## 🧹 Cleanup
 
-When you’re done, stop and remove everything:
+Stop and remove everything:
 
 ```bash
 docker stop $(docker ps -a -q)  
@@ -242,3 +282,10 @@ docker volume rm $(docker volume ls -q)
 docker network prune -f
 ```
 
+---
+
+✅ You now have a working **Nginx + Docker load balancer** setup with both **Round Robin** and **Weighted Round Robin** strategies!
+
+---
+
+Would you like me to also add a **troubleshooting section** (e.g., common errors like "port already in use" or "network not found") to help students debug faster?
