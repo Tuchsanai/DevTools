@@ -48,7 +48,7 @@ First to `food-server1`, then `food-server2`, then `food-server3`, and repeat.
 
 ---
 
-### ⚖️ Weighted Round Robin
+### ⚖️ Weighted Round Robin (3:2)
 
 **How it works:**
 Now imagine one cashier works faster than the others. You want that cashier to handle **more customers**.
