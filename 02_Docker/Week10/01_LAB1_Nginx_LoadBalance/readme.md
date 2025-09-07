@@ -39,7 +39,7 @@ http {
 
 ### ⚖️ Weighted Round Robin
 
-Servers get different weights (priority).
+Servers get different weights 3:2 (priority).
 Example: server1 gets 3 requests for every 2 requests sent to server2.
 
 ![Weighted Round Robin](weight.png)
