@@ -52,8 +52,8 @@ events {}
 
 http {
   upstream food-app {
-    server food-server:5000 weight=3;
-    server gin-test:3000 weight=2;  
+    server food-server1:5000 weight=3;
+    server food-server2:3000 weight=2;  
   }
 
   server {
