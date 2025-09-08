@@ -2,6 +2,16 @@
 
 ![1.jpg](nginx.jpg) 
 
+type of nginx 
+
+Round Robin:
+
+![1.jpg](round.png) 
+
+
+Weighted Round Robin:
+
+![1.jpg](weight.png) 
 
 
 ## create directory
