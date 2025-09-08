@@ -19,8 +19,10 @@ events {}
 
 http {
   upstream food-app {
-    server food-server:5000;
-    server gin-test:3000;  
+    server food-server1:5000;
+    server food-server2:3000;  
+    server food-server3:8000;  
+
   }
 
   server {
