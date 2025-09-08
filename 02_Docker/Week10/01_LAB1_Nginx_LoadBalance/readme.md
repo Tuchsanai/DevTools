@@ -1,16 +1,21 @@
-# Create Load Balancer with Nginx
+# 🚀 Load Balancer with Nginx + Docker
 
-![1.jpg](nginx.jpg) 
+This lab demonstrates how to use **Nginx** as a load balancer for multiple **Express.js containers**.  
+You will learn about **Round Robin** and **Weighted Round Robin** strategies.
 
-type of nginx 
+---
 
-Round Robin:
+## 📌 Load Balancing Concepts
 
-![1.jpg](round.png) 
+### 🔄 Round Robin
+Each request is distributed sequentially across servers.
 
-```
-events {
-}
+![Round Robin](round.png)
+
+**nginx.conf**
+
+```nginx
+events {}
 
 http {
   upstream food-app {
@@ -26,19 +31,22 @@ http {
     }
   }
 }
-```
+````
 
+---
 
+### ⚖️ Weighted Round Robin
 
-Weighted Round Robin:
+Servers get different weights (priority).
+Example: server1 gets 3 requests for every 2 requests sent to server2.
 
-![1.jpg](weight.png) 
+![Weighted Round Robin](weight.png)
 
-```
-# example weight 3:2
+**nginx.conf**
 
-events {
-}
+```nginx
+# Example weight 3:2
+events {}
 
 http {
   upstream food-app {
@@ -56,66 +64,54 @@ http {
 }
 ```
 
-# LAB ย่อย A (Round Robin)
+---
 
-## create directory
+## 🧪 LAB A: Round Robin
 
-   
-    mkdir LAB1_Week10
-    cd    LAB1_Week10
-    
-
-## git clone branch dev
-    
-    
-   ```
-    git clone -b dev https://github.com/Tuchsanai/DevTools.git
-   ```
-   
-   ```   
-    cd DevTools/02_Docker/Week10/01_LAB1_Nginx_LoadBalance
-   ```
-
-
-
-
-### Step 1: Building Docker Images for Express Apps
-
+### 1️⃣ Setup Project Directory
 
 ```bash
-
-docker build -t express-app .
-
+mkdir LAB1_Week10
+cd LAB1_Week10
 ```
 
-### Step 2: Creating a Docker Network
+### 2️⃣ Clone Git Repository
 
-Create a custom network for your Docker containers. This allows the containers to communicate with each other.
+```bash
+git clone -b dev https://github.com/Tuchsanai/DevTools.git
+cd DevTools/02_Docker/Week10/01_LAB1_Nginx_LoadBalance
+```
+
+### 3️⃣ Build Express App Image
+
+```bash
+docker build -t express-app .
+```
+
+### 4️⃣ Create Docker Network
 
 ```bash
 docker network create express-network
 ```
 
-### Step 3: Running Express App Containers
-
-Run the containers for `app1` and `app2` on the created network:
+### 5️⃣ Run Express App Containers
 
 ```bash
 docker run -d --name app1 --network express-network -p 3001:3000 express-app
 docker run -d --name app2 --network express-network -p 3002:3000 express-app
 ```
 
-display docker ps
+👉 Check containers:
 
-```
+```bash
 docker ps -a
 ```
 
-### Step 4: Setting Up Nginx for Load Balancing
+### 6️⃣ Configure & Run Nginx Load Balancer
 
-this is nginx.conf file.
+Create **nginx.conf**:
 
-```
+```nginx
 events {}
 
 http {
@@ -134,32 +130,44 @@ http {
 }
 ```
 
+Run Nginx container:
+
 ```bash
-docker run -d --name nginx-load-balancer --network express-network -p 8080:8080 -v ./nginx.conf:/etc/nginx/nginx.conf:ro nginx
+docker run -d --name nginx-load-balancer \
+  --network express-network \
+  -p 8080:8080 \
+  -v ./nginx.conf:/etc/nginx/nginx.conf:ro \
+  nginx
 ```
 
-display Is nginx-load-balancer running?
+👉 Check Nginx container:
 
-```
+```bash
 docker ps -a
 ```
 
+### 7️⃣ Test Load Balancing
 
-### 5. Testing Load Balancing:
+Open browser:
+[http://ExternalIP:8080](http://ExternalIP:8080)
 
-Open your browser and go to http://ExternalIP:8080. You should see responses from your Express containers, rotating with each refresh.
+You should see alternating responses from `app1` and `app2`.
 
-| From Loadbalance No1 | From Loadbalance No2 |
-|-----------|-----------|
-| ![1.jpg](1.jpg) | ![2.jpg](2.jpg) |
+| From App1      | From App2      |
+| -------------- | -------------- |
+| ![App1](1.jpg) | ![App2](2.jpg) |
 
+---
 
-# LAB ย่อย B (Weighted Round Robin)
-- ทำเองครับ
+## 🧪 LAB B: Weighted Round Robin
 
+👉 Try setting up your own **weighted configuration** using the above example (3:2).
 
+---
 
-# Clearing Up
+## 🧹 Cleanup
+
+Stop and remove all containers, images, volumes, and networks:
 
 ```bash
 docker stop $(docker ps -a -q)  
@@ -168,3 +176,10 @@ docker rmi $(docker images -q)
 docker volume rm $(docker volume ls -q)  
 docker network prune -f
 ```
+
+---
+
+✅ Congratulations! You’ve successfully deployed a **Dockerized Nginx Load Balancer** 🎉
+
+```
+
