@@ -13,6 +13,27 @@ Weighted Round Robin:
 
 ![1.jpg](weight.png) 
 
+```
+# example weight 3:2
+
+events {
+}
+
+http {
+  upstream food-app {
+    server food-server:5000 weight=3;
+    server gin-test:3000 weight=2;  
+  }
+
+  server {
+    listen 80;
+
+    location / {
+      proxy_pass http://food-app;
+    }
+  }
+}
+```
 
 ## create directory
 
