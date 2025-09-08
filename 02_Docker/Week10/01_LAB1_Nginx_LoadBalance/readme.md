@@ -8,6 +8,27 @@ Round Robin:
 
 ![1.jpg](round.png) 
 
+```
+events {
+}
+
+http {
+  upstream food-app {
+    server food-server:5000;
+    server gin-test:3000;  
+  }
+
+  server {
+    listen 80;
+
+    location / {
+      proxy_pass http://food-app;
+    }
+  }
+}
+```
+
+
 
 Weighted Round Robin:
 
@@ -34,6 +55,8 @@ http {
   }
 }
 ```
+
+# LAB ย่อย A (Round Robin)
 
 ## create directory
 
@@ -129,6 +152,10 @@ Open your browser and go to http://ExternalIP:8080. You should see responses fro
 | From Loadbalance No1 | From Loadbalance No2 |
 |-----------|-----------|
 | ![1.jpg](1.jpg) | ![2.jpg](2.jpg) |
+
+
+# LAB ย่อย B (Weighted Round Robin)
+- ทำเองครับ
 
 
 
