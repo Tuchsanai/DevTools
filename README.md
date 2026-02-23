@@ -74,5 +74,4 @@ Principles to Software Professionals, Roles of Applications in Software Engineer
 | 13 | **Application Docker and Kubernetes 2** | บรรยาย + LAB | CLO-5, CLO-6 |
 | 14 | **Application Docker and Kubernetes 3** | บรรยาย + LAB | CLO-1 ~ CLO-6 |
 | 15 | **Mini Project** | Mini Project + Pitch | - |
-| | ให้นักศึกษานำความรู้ที่ได้มาทำ Mini Project แล้วนำเสนอในรูปแบบการ Pitch | | |
 
