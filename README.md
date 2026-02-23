@@ -10,6 +10,18 @@
 Principles to Software Professionals, Roles of Applications in Software Engineering Tasks, Agile Software Development Tools, Product Development Tracking, Version and Configuration Management, Build and Continuous Integration Tools, Program Debugging and Profiling Tools, Collaborative Development Environments, Packaging and Deployment
 
 
+## Course Learning Outcomes (CLOs)
+
+| CLO ID | CLO Description |
+|--------|----------------|
+| CLO-1 | เข้าใจสภาพแวดล้อมและเครื่องมือที่ใช้ในการพัฒนาซอฟต์แวร์ในภาคอุตสาหกรรม |
+| CLO-2 | เข้าใจแนวคิดของการจัดเก็บเวอร์ชั่นและสามารถใช้ Git Workflow เช่น Git Push, Git Fetch, Git Pull และการแตก Git Branch และเข้าใจการรวม Git Merges และ Merge Conflicts ในการทำงานพัฒนาซอฟต์แวร์ |
+| CLO-3 | เข้าใจระบบ Undo Changes โดยใช้ `git restore`, `git revert` และ `git reset` พร้อมทั้งเข้าใจระบบ Git Collaboration Workflow |
+| CLO-4 | เข้าใจระบบคอนเทนเนอร์ Docker ได้แก่ Docker Images, Docker Engine, Docker Storage, Docker Networking และการใช้งาน Docker Compose และ Docker Swarm รวมถึงการออกแบบ CI/CD |
+| CLO-5 | เข้าใจการจัดการควบคุมปฏิบัติงานของคอนเทนเนอร์โดยใช้ Kubernetes การกำหนดค่า Kubernetes Configuration Files ใน YAML และสามารถเข้าใจการสร้าง Kubernetes Cluster ได้ |
+| CLO-6 | เข้าใจการ Deploy Applications บน Kubernetes และการตั้งค่า ReplicaSets, Services และ Deployments รวมถึงสามารถเข้าใจการสร้าง Microservices Application บน Kubernetes และ CI/CD |
+
+
 
 ### 📋 ตารางแผนการสอน
 
