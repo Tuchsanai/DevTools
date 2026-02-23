@@ -15,7 +15,7 @@ Principles to Software Professionals, Roles of Applications in Software Engineer
 
 | Session | Topics | Teaching Methods | CLOs |
 |:---:|------|:---:|:---:|
-| 1 | **Introduction to Software Development Tools & Environments** | บรรยาย | CLO-1 |
+| 1 | **Introduction to Software Development Tools and Environments** | บรรยาย | CLO-1 |
 | | • Principles to Software Professionals | | |
 | | • Roles of Applications in Software Engineering Tasks | | |
 | | • Agile Software Development Tools (Scrum, Kanban) | | |
