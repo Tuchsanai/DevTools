@@ -86,6 +86,12 @@
 ### 2.1 หลักการ SOLID Principles
 
 > 💡 **SOLID** คือชุดของหลักการออกแบบซอฟต์แวร์เชิงวัตถุ (Object-Oriented Design) ที่ช่วยให้โค้ดมีความยืดหยุ่น บำรุงรักษาง่าย และขยายได้
+>
+> - **S** — Single Responsibility Principle (หลักความรับผิดชอบเดียว)
+> - **O** — Open/Closed Principle (หลักเปิด-ปิด)
+> - **L** — Liskov Substitution Principle (หลักการแทนที่ของลิสคอฟ)
+> - **I** — Interface Segregation Principle (หลักแยก Interface)
+> - **D** — Dependency Inversion Principle (หลักกลับทิศการพึ่งพา)
 
 ```
 ╔═════════════════════════════════════════════════════════════════════════╗
