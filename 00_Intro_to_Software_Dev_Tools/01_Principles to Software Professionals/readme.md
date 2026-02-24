@@ -222,37 +222,307 @@
 ### 2.3 Clean Code Principles
 
 > 💡 **Clean Code** คือโค้ดที่อ่านง่าย เข้าใจง่าย และบำรุงรักษาได้ง่าย เป็นหนึ่งในสิ่งที่ Software Professional ต้องให้ความสำคัญ
+> เพราะนักพัฒนาใช้เวลา **อ่านโค้ดมากกว่าเขียนโค้ดถึง 10 เท่า** — โค้ดที่อ่านยากจึงทำให้ทั้งทีมช้าลง
+
+```
+╔═════════════════════════════════════════════════════════════════════════╗
+║                     📝 CLEAN CODE PRINCIPLES                            ║
+╠═════════════════════════════════════════════════════════════════════════╣
+║                                                                         ║
+║  1. MEANINGFUL NAMES — ตั้งชื่อให้สื่อความหมาย                         ║
+║  ─────────────────────────────────────────────────                      ║
+║  ชื่อตัวแปร, ฟังก์ชัน, คลาส ควรบอกได้ว่า "มันคืออะไร" และ             ║
+║  "มันทำอะไร" โดยไม่ต้องอ่าน Comment                                    ║
+║                                                                         ║
+║  2. SMALL FUNCTIONS — ฟังก์ชันควรสั้นและทำแค่อย่างเดียว                 ║
+║  ─────────────────────────────────────────────────                      ║
+║  ฟังก์ชันที่ดีควรยาวไม่เกิน 20-30 บรรทัด                               ║
+║  ถ้ายาวกว่านั้น → แยกเป็นฟังก์ชันย่อย                                  ║
+║                                                                         ║
+║  3. NO MAGIC NUMBERS — ไม่ใช้ตัวเลขลอย ๆ ในโค้ด                       ║
+║  ─────────────────────────────────────────────────                      ║
+║  ตัวเลขที่ปรากฏกลางโค้ดโดยไม่รู้ว่าหมายถึงอะไร                        ║
+║  ควรแทนด้วยค่าคงที่ (Constant) ที่มีชื่อสื่อความหมาย                   ║
+║                                                                         ║
+║  4. CONSISTENT FORMATTING — จัดรูปแบบโค้ดให้สม่ำเสมอ                   ║
+║  ─────────────────────────────────────────────────                      ║
+║  Indentation, Spacing, Bracket Style ต้องเป็นแบบเดียวกันทั้งโปรเจกต์   ║
+║                                                                         ║
+║  5. CLEAR COMMENTS — เขียน Comment เฉพาะเมื่อจำเป็น                    ║
+║  ─────────────────────────────────────────────────                      ║
+║  โค้ดที่ดี "อธิบายตัวเอง" ได้ → ใช้ Comment เฉพาะกรณีที่ซับซ้อนจริง ๆ ║
+║  Comment ควรบอก "ทำไม (Why)" ไม่ใช่ "ทำอะไร (What)"                    ║
+║                                                                         ║
+║  6. ERROR HANDLING — จัดการ Error อย่างสง่างาม                          ║
+║  ─────────────────────────────────────────────────                      ║
+║  ไม่ปล่อยให้โปรแกรม Crash โดยไม่แจ้งสาเหตุ                             ║
+║  ใช้ try-catch อย่างเหมาะสม พร้อม Error Message ที่ชัดเจน              ║
+║                                                                         ║
+╚═════════════════════════════════════════════════════════════════════════╝
+```
+
+#### 2.3.1 Meaningful Names — ตั้งชื่อให้สื่อความหมาย
 
 ```python
-# ❌ BAD CODE — ยากต่อการอ่านและเข้าใจ
+# ❌ BAD — อ่านแล้วไม่รู้ว่าตัวแปรคืออะไร
+d = 30
+s = "active"
+def calc(a, b):
+    return a * b
+
+# ✅ GOOD — อ่านปุ๊บเข้าใจปั๊บ ไม่ต้องเดา
+max_login_days = 30
+account_status = "active"
+def calculate_subtotal(unit_price, quantity):
+    return unit_price * quantity
+```
+
+```python
+# ❌ BAD — ชื่อฟังก์ชันไม่บอกว่าทำอะไร
+def do_stuff(u):
+    if u.a > 18 and u.s == 1:
+        return True
+    return False
+
+# ✅ GOOD — อ่านชื่อฟังก์ชันก็รู้แล้วว่าทำอะไร
+def is_eligible_for_registration(user):
+    MINIMUM_AGE = 18
+    ACTIVE_STATUS = 1
+    return user.age > MINIMUM_AGE and user.status == ACTIVE_STATUS
+```
+
+```
+💡 เคล็ดลับการตั้งชื่อ:
+┌──────────────┬────────────────────┬────────────────────────────┐
+│ ประเภท        │ ควรตั้งชื่อแบบ     │ ตัวอย่าง                   │
+├──────────────┼────────────────────┼────────────────────────────┤
+│ ตัวแปร        │ คำนาม (Noun)       │ user_age, total_price      │
+│ ฟังก์ชัน      │ คำกริยา (Verb)     │ get_user(), send_email()   │
+│ Boolean       │ คำถาม Yes/No      │ is_active, has_permission  │
+│ ค่าคงที่      │ UPPER_SNAKE_CASE  │ MAX_RETRIES, TAX_RATE      │
+│ Class        │ PascalCase         │ UserAccount, OrderService  │
+└──────────────┴────────────────────┴────────────────────────────┘
+```
+
+#### 2.3.2 Small Functions — ฟังก์ชันสั้น ทำแค่อย่างเดียว
+
+```python
+# ❌ BAD — ฟังก์ชันเดียวทำทุกอย่าง (คำนวณ + ตรวจสอบ + แสดงผล + บันทึก)
+def process_order(order):
+    total = 0
+    for item in order.items:
+        total += item.price * item.quantity
+    if total > 1000:
+        total = total * 0.9
+    print(f"Total: {total}")
+    db.save(order)
+    send_email(order.customer, total)
+
+# ✅ GOOD — แยกแต่ละหน้าที่เป็นฟังก์ชันของตัวเอง อ่านง่าย แก้ง่าย ทดสอบง่าย
+def process_order(order):
+    total = calculate_total(order.items)
+    total = apply_discount(total)
+    save_order(order)
+    notify_customer(order.customer, total)
+
+def calculate_total(items):
+    return sum(item.price * item.quantity for item in items)
+
+def apply_discount(total):
+    DISCOUNT_THRESHOLD = 1000
+    DISCOUNT_RATE = 0.9
+    if total > DISCOUNT_THRESHOLD:
+        return total * DISCOUNT_RATE
+    return total
+```
+
+```python
+# ❌ BAD — ฟังก์ชันสมัครสมาชิกที่ยัดทุกอย่างไว้รวมกัน
+def register(name, email, pw):
+    if len(name) < 2:
+        return "name too short"
+    if "@" not in email:
+        return "bad email"
+    if len(pw) < 8:
+        return "weak password"
+    hashed = hashlib.sha256(pw.encode()).hexdigest()
+    user = {"name": name, "email": email, "password": hashed}
+    db.insert("users", user)
+    smtp.send(email, "Welcome!", "Thanks for joining.")
+    log.info(f"New user: {email}")
+    return "ok"
+
+# ✅ GOOD — แยกหน้าที่ชัดเจน ทดสอบแต่ละส่วนได้อิสระ
+def register(name, email, password):
+    validate_registration(name, email, password)
+    hashed_password = hash_password(password)
+    user = create_user(name, email, hashed_password)
+    save_user(user)
+    send_welcome_email(email)
+    log_registration(email)
+
+def validate_registration(name, email, password):
+    if len(name) < MIN_NAME_LENGTH:
+        raise ValueError("Name is too short")
+    if not is_valid_email(email):
+        raise ValueError("Invalid email format")
+    if len(password) < MIN_PASSWORD_LENGTH:
+        raise ValueError("Password is too weak")
+```
+
+#### 2.3.3 No Magic Numbers — ไม่ใช้ตัวเลขลอย ๆ
+
+```python
+# ❌ BAD — 1.07 คืออะไร? 100000 คืออะไร? 30 คืออะไร?
 def calc(x, y, z):
     r = x * y
     if z == 1:
         r = r * 1.07
+    if r > 100000:
+        r = r * 0.95
     return r
 
-# ✅ CLEAN CODE — อ่านง่าย เข้าใจชัดเจน
+# ✅ GOOD — ค่าคงที่มีชื่อ อ่านแล้วเข้าใจทันที
 TAX_RATE = 0.07
 INCLUDE_TAX = 1
+BULK_DISCOUNT_THRESHOLD = 100000
+BULK_DISCOUNT_RATE = 0.95
 
 def calculate_total_price(unit_price: float, quantity: int, tax_option: int) -> float:
     """
     คำนวณราคารวมทั้งหมด
-    
+
     Args:
         unit_price: ราคาต่อหน่วย
         quantity: จำนวน
         tax_option: 1 = รวมภาษี, 0 = ไม่รวมภาษี
-    
+
     Returns:
         ราคารวมทั้งหมด
     """
     subtotal = unit_price * quantity
-    
+
     if tax_option == INCLUDE_TAX:
-        return subtotal * (1 + TAX_RATE)
-    
+        subtotal = subtotal * (1 + TAX_RATE)
+
+    if subtotal > BULK_DISCOUNT_THRESHOLD:
+        subtotal = subtotal * BULK_DISCOUNT_RATE
+
     return subtotal
+```
+
+```python
+# ❌ BAD — ตัวเลข 3, 86400, 5 หมายถึงอะไร?
+def check_account(user):
+    if user.failed_logins > 3:
+        user.locked_until = time.time() + 86400
+    if user.inactive_days > 5:
+        send_warning(user)
+
+# ✅ GOOD — อ่านเข้าใจจุดประสงค์ของทุกตัวเลข
+MAX_FAILED_LOGINS = 3
+LOCK_DURATION_SECONDS = 86400       # 24 ชั่วโมง
+INACTIVE_WARNING_DAYS = 5
+
+def check_account(user):
+    if user.failed_logins > MAX_FAILED_LOGINS:
+        user.locked_until = time.time() + LOCK_DURATION_SECONDS
+    if user.inactive_days > INACTIVE_WARNING_DAYS:
+        send_warning(user)
+```
+
+#### 2.3.4 Comments — เขียน Comment อย่างเหมาะสม
+
+```python
+# ❌ BAD COMMENT — บอก "ทำอะไร" ซึ่งอ่านโค้ดก็รู้แล้ว
+x = x + 1  # เพิ่มค่า x ขึ้น 1 (ไม่มีประโยชน์!)
+
+# ✅ GOOD COMMENT — บอก "ทำไม" ซึ่งอ่านโค้ดอย่างเดียวไม่รู้
+retry_count = retry_count + 1  # API มี rate limit ต้อง retry เมื่อได้ 429
+
+# ❌ BAD — Comment แทนการตั้งชื่อที่ดี
+d = 86400  # จำนวนวินาทีใน 1 วัน
+
+# ✅ GOOD — ไม่ต้อง Comment เลย ชื่อบอกหมดแล้ว
+SECONDS_PER_DAY = 86400
+```
+
+```python
+# ❌ BAD — Comment เก่าที่ไม่ตรงกับโค้ดแล้ว (อันตราย! ทำให้เข้าใจผิด)
+# คำนวณราคารวม VAT 7%
+def calculate_price(amount):
+    return amount * 1.10   # โค้ดจริงคือ 10% แต่ Comment บอก 7%!
+
+# ❌ BAD — Comment ทุกบรรทัด ทำให้รกจนอ่านยากกว่าเดิม
+def get_user(id):
+    # สร้าง query
+    query = f"SELECT * FROM users WHERE id = {id}"
+    # execute query
+    result = db.execute(query)
+    # return result
+    return result
+
+# ✅ GOOD — Comment เฉพาะที่มีเหตุผลจริง ๆ
+def get_user(id):
+    # ใช้ parameterized query ป้องกัน SQL Injection
+    query = "SELECT * FROM users WHERE id = %s"
+    return db.execute(query, (id,))
+```
+
+#### 2.3.5 Error Handling — จัดการ Error อย่างเหมาะสม
+
+```python
+# ❌ BAD — ดักทุก Error แบบเหมารวม ไม่รู้ว่าเกิดอะไรขึ้น
+def get_user_data(user_id):
+    try:
+        data = api.fetch(user_id)
+        return data
+    except:
+        return None   # เกิดอะไรขึ้น? ไม่มีทางรู้เลย!
+
+# ✅ GOOD — ดักเฉพาะ Error ที่คาดไว้ พร้อม Log สาเหตุชัดเจน
+def get_user_data(user_id):
+    try:
+        data = api.fetch(user_id)
+        return data
+    except ConnectionError:
+        logger.error(f"Cannot connect to API for user {user_id}")
+        raise ServiceUnavailableError("API is currently unavailable")
+    except TimeoutError:
+        logger.warning(f"API timeout for user {user_id}, retrying...")
+        return retry_fetch(user_id)
+```
+
+```python
+# ❌ BAD — ส่ง return code ที่ไม่รู้ว่าหมายถึงอะไร
+def divide(a, b):
+    if b == 0:
+        return -9999    # -9999 หมายถึง error? หรือเป็นผลลัพธ์จริง?
+
+# ✅ GOOD — ใช้ Exception ที่ชัดเจน
+def divide(a, b):
+    if b == 0:
+        raise ValueError("Cannot divide by zero: divisor must not be 0")
+    return a / b
+```
+
+#### 2.3.6 สรุปเปรียบเทียบ Dirty Code vs Clean Code
+
+```
+┌──────────────────────────────────┬──────────────────────────────────┐
+│         🚫 DIRTY CODE             │         ✅ CLEAN CODE              │
+├──────────────────────────────────┼──────────────────────────────────┤
+│ ชื่อตัวแปร: x, d, tmp, data     │ ชื่อตัวแปร: user_age, order_id  │
+│ ฟังก์ชันยาว 200+ บรรทัด          │ ฟังก์ชันสั้น 20-30 บรรทัด       │
+│ ตัวเลขลอย ๆ: 0.07, 86400       │ ค่าคงที่: TAX_RATE, SECONDS     │
+│ Comment ไม่มี หรือมีแต่ไร้สาระ  │ Comment บอก "ทำไม" เมื่อจำเป็น  │
+│ ไม่มี Error Handling             │ จัดการ Error อย่างเหมาะสม       │
+│ Indent ไม่สม่ำเสมอ               │ Format เป็นระเบียบทั้งโปรเจกต์  │
+├──────────────────────────────────┼──────────────────────────────────┤
+│ 🐛 แก้ Bug ทีหนึ่ง สร้าง Bug ใหม่ │ 🧘 แก้ไขง่าย ไม่พัง            │
+│ 😰 คนใหม่อ่านไม่รู้เรื่อง         │ 😊 คนใหม่เข้าใจได้เร็ว          │
+│ 🕐 ยิ่งนานยิ่งพัฒนาช้า           │ ⚡ พัฒนาเร็วขึ้นเรื่อย ๆ        │
+└──────────────────────────────────┴──────────────────────────────────┘
 ```
 
 ---
