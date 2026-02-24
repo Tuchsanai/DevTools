@@ -2,11 +2,13 @@
 
 > **Course:** SOFTWARE DEVELOPMENT TOOLS AND ENVIRONMENTS
 > **Session:** 1 — Introduction to Software Development Tools & Environments
+> **Level:** Beginner → Intermediate
 
 ---
 
 ## 📑 สารบัญ (Table of Contents)
 
+- [0. วัตถุประสงค์การเรียนรู้](#0-วัตถุประสงค์การเรียนรู้)
 - [1. ภาพรวม — Applications ในงาน Software Engineering](#1-ภาพรวม)
 - [2. Categories of Applications](#2-categories-of-applications)
 - [3. Applications ตาม SDLC Phase](#3-applications-ตาม-sdlc-phase)
@@ -18,88 +20,200 @@
 - [9. Deployment & Infrastructure Tools](#9-deployment--infrastructure-tools)
 - [10. Monitoring & Observability Tools](#10-monitoring--observability-tools)
 - [11. Communication & Collaboration Tools](#11-communication--collaboration-tools)
-- [12. สรุป](#12-สรุป)
+- [12. Tool Selection Framework](#12-tool-selection-framework)
+- [13. Real-World Toolchain Examples](#13-real-world-toolchain-examples)
+- [14. สรุป](#14-สรุป)
+- [15. แบบฝึกหัด](#15-แบบฝึกหัด)
 
 ---
 
-## 1. ภาพรวม
-
-> 💡 ในงาน Software Engineering ไม่มี "เครื่องมือสากล" ที่ทำได้ทุกอย่าง — แต่ละงานมี Application ที่เหมาะสมของตัวเอง Software Professional ที่ดีต้องรู้ว่า **เมื่อไหร่ควรใช้อะไร**
+## 0. วัตถุประสงค์การเรียนรู้
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
-║         🛠️  WHY DO WE NEED APPLICATIONS IN SOFTWARE ENG?         ║
+║  🎯 เมื่อเรียนจบ Session นี้ คุณจะสามารถ...                     ║
 ╠══════════════════════════════════════════════════════════════════╣
 ║                                                                  ║
-║  ❌ Without Tools:                                               ║
-║     • ติดตาม Task ด้วยกระดาษ → หาย, ลืม, ไม่อัปเดต             ║
-║     • ส่งโค้ดทาง Email → เวอร์ชันยุ่งเหยิง                      ║
-║     • Deploy ด้วยมือ → พลาดขั้นตอน, ไม่สม่ำเสมอ                ║
-║     • ทดสอบเองทั้งหมด → ช้า, พลาด Edge Case                     ║
-║                                                                  ║
-║  ✅ With Tools:                                                  ║
-║     • ติดตาม Task อัตโนมัติ → ทีมรู้สถานะตลอดเวลา               ║
-║     • Git จัดการโค้ด → ย้อนกลับได้, ทำงานพร้อมกันได้            ║
-║     • CI/CD Deploy อัตโนมัติ → เร็ว, แม่นยำ, ซ้ำได้             ║
-║     • Automated Tests → ตรวจสอบได้ทุก Commit                    ║
+║  1. อธิบายได้ว่าแต่ละ Category ของ Tool มีบทบาทอย่างไร          ║
+║  2. จับคู่ Tool กับ SDLC Phase ที่เหมาะสมได้                    ║
+║  3. เปรียบเทียบ Tool ใน Category เดียวกันได้                     ║
+║  4. ออกแบบ Toolchain พื้นฐานสำหรับทีมพัฒนาซอฟต์แวร์ได้          ║
+║  5. อธิบายได้ว่า Tool แต่ละตัวแก้ปัญหาอะไรในชีวิตจริง           ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-## 2. Categories of Applications
+## 1. ภาพรวม
 
-Applications ในงาน Software Engineering แบ่งออกได้เป็น 7 หมวดหลัก ตามบทบาทที่ทำในกระบวนการพัฒนา
+> 💡 ในงาน Software Engineering ไม่มี "เครื่องมือสากล" ที่ทำได้ทุกอย่าง — แต่ละงานมี Application ที่เหมาะสมของตัวเอง Software Professional ที่ดีต้องรู้ว่า **เมื่อไหร่ควรใช้อะไร และทำไม**
+
+### 1.1 ทำไมต้องมี Tools?
+
+ลองนึกภาพการสร้างบ้านโดยไม่มีเครื่องมือ — ใช้มือขุดดิน, ใช้หินเจาะตะปู, ใช้สายตาวัดความตรง ผลลัพธ์คือ ช้า, พลาด, ไม่มีคุณภาพ — Software Engineering ก็เหมือนกัน
 
 ```
-                  🗂️  CATEGORIES OF SOFTWARE ENGINEERING APPLICATIONS
+╔══════════════════════════════════════════════════════════════════╗
+║         🛠️  WHY DO WE NEED APPLICATIONS IN SOFTWARE ENG?         ║
+╠══════════════════════════════╦═══════════════════════════════════╣
+║  ❌ WITHOUT TOOLS            ║  ✅ WITH TOOLS                    ║
+╠══════════════════════════════╬═══════════════════════════════════╣
+║  ติดตาม Task ด้วยกระดาษ     ║  ติดตาม Task อัตโนมัติ            ║
+║  → หาย, ลืม, ไม่อัปเดต     ║  → ทีมรู้สถานะตลอดเวลา            ║
+╠══════════════════════════════╬═══════════════════════════════════╣
+║  ส่งโค้ดทาง Email           ║  Git จัดการโค้ด                   ║
+║  → เวอร์ชันยุ่งเหยิง         ║  → ย้อนกลับได้, ทำงานพร้อมกันได้  ║
+╠══════════════════════════════╬═══════════════════════════════════╣
+║  Deploy ด้วยมือ             ║  CI/CD Deploy อัตโนมัติ           ║
+║  → พลาดขั้นตอน, ไม่สม่ำเสมอ║  → เร็ว, แม่นยำ, ทำซ้ำได้         ║
+╠══════════════════════════════╬═══════════════════════════════════╣
+║  ทดสอบเองทั้งหมด             ║  Automated Tests                  ║
+║  → ช้า, พลาด Edge Case      ║  → ตรวจสอบทุก Commit              ║
+╠══════════════════════════════╬═══════════════════════════════════╣
+║  ไม่รู้ว่าระบบพังตอนไหน      ║  Monitoring แจ้งเตือนทันที         ║
+║  → รู้จากผู้ใช้แจ้งมา        ║  → รู้ก่อนผู้ใช้ แก้ได้ทันที       ║
+╚══════════════════════════════╩═══════════════════════════════════╝
+```
 
-    ┌───────────────────────────────────────────────────────────────┐
-    │                                                               │
-    │   📋 Planning        💻 Development       🔀 Version Control  │
-    │   ─────────────      ──────────────       ───────────────     │
-    │   Jira, Trello       VS Code, IntelliJ    Git, GitHub         │
-    │   Notion, Linear     Cursor, Vim          GitLab, Bitbucket   │
-    │                                                               │
-    │   🏗️  Build/CI        🧪 Testing           📦 Deployment       │
-    │   ───────────────    ─────────────        ────────────────    │
-    │   Jenkins, Actions   Jest, Selenium       Docker, Kubernetes  │
-    │   CircleCI, Travis   Postman, k6          Helm, Terraform     │
-    │                                                               │
-    │                  📊 Monitoring                                │
-    │                  ─────────────                                │
-    │                  Grafana, Datadog                             │
-    │                  Sentry, New Relic                            │
-    │                                                               │
-    └───────────────────────────────────────────────────────────────┘
+### 1.2 The Cost of No Tools
+
+```
+เหตุการณ์จริงในทีมที่ไม่ใช้ Tools อย่างเหมาะสม:
+
+Timeline ─────────────────────────────────────────────────────►
+
+  Week 1    Week 2    Week 3    Week 4    Week 5
+    │         │         │         │         │
+  Alice     Bob       Alice     ❌ CHAOS  🔥 PANIC
+  แก้โค้ด   แก้โค้ด   Merge     โค้ดชนกัน  Deploy พัง
+  ไฟล์ A    ไฟล์ A    ไม่ได้     ใครแก้อะไร ลูกค้าโกรธ
+            ส่ง Email           ไม่รู้เลย
+            "ver_final_
+            v2_FINAL.zip"
+
+  😅 สถานการณ์นี้เกิดขึ้นจริงในทีมที่ไม่ใช้ Git & Project Management Tools
+```
+
+---
+
+## 2. Categories of Applications
+
+Applications ในงาน Software Engineering แบ่งออกได้เป็น **7 หมวดหลัก** ตามบทบาทที่ทำในกระบวนการพัฒนา
+
+```
+══════════════════════════════════════════════════════════════════
+             🗂️  7 CATEGORIES OF SOFTWARE ENGINEERING TOOLS
+══════════════════════════════════════════════════════════════════
+
+  ① PLANNING           ② DEVELOPMENT        ③ VERSION CONTROL
+  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+  │ 📋 จัดการงาน     │  │ 💻 เขียนโค้ด     │  │ 🔀 ติดตามการเปลี่ยน│
+  │                 │  │                 │  │    แปลงโค้ด     │
+  │ Jira, Trello    │  │ VS Code         │  │ Git, GitHub     │
+  │ Notion, Linear  │  │ IntelliJ, Cursor│  │ GitLab          │
+  │ Asana           │  │ PyCharm, Vim    │  │ Bitbucket       │
+  └─────────────────┘  └─────────────────┘  └─────────────────┘
+
+  ④ BUILD / CI/CD      ⑤ TESTING           ⑥ DEPLOYMENT
+  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+  │ 🏗️ Build & Deploy│  │ 🧪 ทดสอบระบบ     │  │ 📦 ส่งมอบระบบ   │
+  │   อัตโนมัติ      │  │                 │  │   สู่ผู้ใช้     │
+  │ Jenkins         │  │ Jest, PyTest    │  │ Docker          │
+  │ GitHub Actions  │  │ Selenium, k6    │  │ Kubernetes      │
+  │ CircleCI        │  │ Postman, Cypress│  │ Terraform       │
+  └─────────────────┘  └─────────────────┘  └─────────────────┘
+
+                      ⑦ MONITORING
+                      ┌─────────────────┐
+                      │ 📊 ดูแลระบบหลัง │
+                      │   Deploy        │
+                      │ Grafana, Sentry │
+                      │ Datadog, ELK    │
+                      │ PagerDuty       │
+                      └─────────────────┘
+
+══════════════════════════════════════════════════════════════════
+```
+
+### 2.1 ความสัมพันธ์ระหว่าง Category
+
+```
+  PLAN ──► CODE ──► COMMIT ──► BUILD ──► TEST ──► DEPLOY ──► MONITOR
+   ①         ②        ③          ④        ④⑤       ④⑥         ⑦
+   │         │        │          │         │        │          │
+   │         │        │          └─────────┘        │          │
+   │         │        └──────────────────────────────          │
+   │         └─────────────────────────────────────────────────┘
+   └──────────────────── Feedback Loop ─────────────────────────►
 ```
 
 ---
 
 ## 3. Applications ตาม SDLC Phase
 
-เครื่องมือแต่ละตัวถูกออกแบบมาเพื่อรองรับงานเฉพาะส่วนใน Lifecycle ของซอฟต์แวร์
+เครื่องมือแต่ละตัวถูกออกแบบมาเพื่อรองรับงานเฉพาะส่วนใน Software Development Lifecycle
 
 ```
-PLAN ──► ANALYZE ──► DESIGN ──► DEVELOP ──► TEST ──► DEPLOY ──► MAINTAIN
-  │          │           │          │           │        │           │
-  ▼          ▼           ▼          ▼           ▼        ▼           ▼
-Jira      Confluence   Figma     VS Code     Jest     Docker     Grafana
-Trello    Notion       Lucidchart  Git       Selenium  Jenkins   Sentry
-Linear    Miro         Draw.io   GitHub      Postman  Kubernetes  PagerDuty
-Asana     Whimsical    Zeplin    npm/pip     k6       Terraform   Datadog
+══════════════════════════════════════════════════════════════════
+                   📅 SDLC PHASES & TOOLS MAPPING
+══════════════════════════════════════════════════════════════════
+
+ ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
+ │  PLAN    │  │  ANALYZE │  │  DESIGN  │  │  DEVELOP │
+ │          │  │          │  │          │  │          │
+ │  Jira    │  │Confluence│  │  Figma   │  │  VS Code │
+ │  Trello  │  │  Notion  │  │ Lucidchar│  │   Git    │
+ │  Linear  │  │   Miro   │  │  Draw.io │  │ IntelliJ │
+ │  Asana   │  │Whimsical │  │  Zeplin  │  │  npm/pip │
+ └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘
+      │              │              │              │
+      └──────────────┴──────────────┴──────┬───────┘
+                                           │
+ ┌──────────┐  ┌──────────┐  ┌──────────┐  │
+ │ MAINTAIN │  │  DEPLOY  │  │   TEST   │  │
+ │          │  │          │  │          │◄─┘
+ │ Grafana  │  │  Docker  │  │   Jest   │
+ │  Sentry  │  │  Kubernet│  │ Selenium │
+ │PagerDuty │  │ Terraform│  │  Postman │
+ │  Datadog │  │  Jenkins │  │    k6    │
+ └────┬─────┘  └────┬─────┘  └────┬─────┘
+      └──────────────┴──────────────┘
+              Continuous Loop 🔄
+
+══════════════════════════════════════════════════════════════════
+```
+
+### 3.1 Phase-by-Phase Breakdown
+
+```
+┌─────────┬─────────────────────────┬──────────────────────────────┐
+│  PHASE  │      หน้าที่หลัก         │      เครื่องมือสำคัญ          │
+├─────────┼─────────────────────────┼──────────────────────────────┤
+│ Plan    │ วางแผน งาน, ทรัพยากร   │ Jira, Trello, Notion         │
+│ Analyze │ รวบรวมและวิเคราะห์      │ Confluence, Miro, Notion     │
+│         │ Requirements            │                              │
+│ Design  │ ออกแบบ UI/UX,           │ Figma, Draw.io, Lucidchart   │
+│         │ Architecture            │                              │
+│ Develop │ เขียนโค้ด, ทดสอบเบื้อง  │ VS Code, IntelliJ, Git       │
+│         │ ต้น                     │                              │
+│ Test    │ ทดสอบระบบทุกระดับ       │ Jest, Selenium, Postman, k6  │
+│ Deploy  │ ส่งมอบระบบสู่ผู้ใช้      │ Docker, Kubernetes, Jenkins  │
+│ Maintain│ ดูแลและพัฒนาต่อเนื่อง   │ Grafana, Sentry, PagerDuty   │
+└─────────┴─────────────────────────┴──────────────────────────────┘
 ```
 
 ---
 
 ## 4. Planning & Project Management Tools
 
-> 💡 เครื่องมือวางแผนช่วยให้ทีมมองเห็นภาพรวมของ Project ติดตาม Progress และจัดลำดับความสำคัญของงานได้อย่างมีประสิทธิภาพ
+> 💡 เครื่องมือวางแผนช่วยให้ทีมมองเห็นภาพรวมของ Project ติดตาม Progress และจัดลำดับความสำคัญของงานได้อย่างมีประสิทธิภาพ — **ทีมที่ดีไม่ใช่แค่โค้ดเก่ง แต่ต้องจัดการงานเก่งด้วย**
 
 ### 4.1 Jira
 
 **บทบาท:** Issue & Project Tracking สำหรับทีม Agile
+
+**เหมาะกับ:** ทีมขนาดกลาง-ใหญ่ที่ใช้ Scrum/Kanban อย่างจริงจัง
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
@@ -108,59 +222,122 @@ Asana     Whimsical    Zeplin    npm/pip     k6       Terraform   Datadog
 ║                                                                  ║
 ║  📌 สร้างและติดตาม Issue / Bug / Feature Request                 ║
 ║  📌 จัดการ Sprint และ Backlog ในรูปแบบ Scrum                    ║
-║  📌 กำหนด Priority, Assignee, Due Date                          ║
-║  📌 ดู Burndown Chart และ Velocity Report                       ║
+║  📌 กำหนด Priority, Assignee, Due Date, Story Points            ║
+║  📌 ดู Burndown Chart, Velocity Report, Release Planning         ║
 ║  📌 เชื่อมต่อกับ GitHub/GitLab → ดู Commit ที่เกี่ยวข้องกับ Issue║
+║  📌 สร้าง Custom Workflow ให้เหมาะกับกระบวนการของทีม             ║
 ║                                                                  ║
 ╠══════════════════════════════════════════════════════════════════╣
-║  ตัวอย่างการใช้งาน:                                              ║
+║  ตัวอย่างโครงสร้างใน Jira:                                       ║
 ║                                                                  ║
-║  PRODUCT BACKLOG                                                 ║
-║  ┌─────────────────────────────────────────────────────────┐    ║
-║  │ [EPIC] User Authentication System                        │    ║
-║  │   ├── [Story] Login with Email/Password   → In Progress  │    ║
-║  │   ├── [Story] OAuth with Google           → To Do        │    ║
-║  │   └── [Story] Forgot Password Flow        → To Do        │    ║
-║  │                                                          │    ║
-║  │ [BUG] Login page crashes on mobile        → To Do        │    ║
-║  │ [TASK] Write unit tests for AuthService   → Done         │    ║
-║  └─────────────────────────────────────────────────────────┘    ║
+║  PROJECT: E-Commerce Platform                                    ║
+║  │                                                               ║
+║  ├── [EPIC] 🏆 User Authentication System                        ║
+║  │     ├── [Story] Login with Email/Password   → In Progress 🔄  ║
+║  │     │     ├── [Task] สร้าง Login API         → Done ✅        ║
+║  │     │     ├── [Task] สร้าง Login UI          → Done ✅        ║
+║  │     │     └── [Task] เขียน Unit Test         → In Progress 🔄 ║
+║  │     ├── [Story] OAuth with Google            → To Do 📋       ║
+║  │     └── [Story] Forgot Password Flow         → To Do 📋       ║
+║  │                                                               ║
+║  ├── [EPIC] 🛒 Shopping Cart                                     ║
+║  │     └── [Story] Add/Remove Items            → To Do 📋        ║
+║  │                                                               ║
+║  └── [BUG] 🐛 Login page crashes on mobile     → To Do 📋        ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
 ```
+
+**Jira Workflow ตัวอย่าง:**
+```
+  [TO DO] ──► [IN PROGRESS] ──► [CODE REVIEW] ──► [TESTING] ──► [DONE]
+     │               │                │                │            │
+  PM สร้าง       Dev รับงาน       PR ถูกสร้าง      QA ทดสอบ     Deploy
+  Issue          และเริ่มทำ       และ Review       และ Pass     Production
+```
+
+---
 
 ### 4.2 Trello
 
 **บทบาท:** Visual Kanban Board สำหรับทีมขนาดเล็ก หรืองานที่ไม่ซับซ้อน
 
-```
-TRELLO BOARD — ตัวอย่าง Kanban สำหรับทีม Dev
+**เหมาะกับ:** Startup, Side Project, ทีมที่เพิ่งเริ่ม Agile
 
-┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
-│   📋 TODO    │  │ 🔄 IN PROGRESS│  │ 🔍 REVIEW   │  │ ✅ DONE     │
-├─────────────┤  ├─────────────┤  ├─────────────┤  ├─────────────┤
-│ Design DB   │  │ Login API   │  │ Register    │  │ Setup Git   │
-│ Schema      │  │ @Alice      │  │ Page UI     │  │ Repo        │
-│             │  │             │  │ @Bob        │  │             │
-├─────────────┤  ├─────────────┤  ├─────────────┤  ├─────────────┤
-│ Write       │  │ Docker      │  │             │  │ Init        │
-│ API Docs    │  │ Setup       │  │             │  │ Project     │
-│             │  │ @Charlie    │  │             │  │             │
-└─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘
 ```
+TRELLO BOARD — ตัวอย่าง Kanban สำหรับทีม Dev 4 คน
+
+┌─────────────┐ ┌──────────────┐ ┌─────────────┐ ┌─────────────┐
+│  📋 BACKLOG  │ │🔄 IN PROGRESS│ │ 🔍 REVIEW   │ │ ✅ DONE     │
+├─────────────┤ ├──────────────┤ ├─────────────┤ ├─────────────┤
+│ 🎯 Design   │ │ 🔐 Login API │ │ 📝 Register │ │ 🚀 Setup    │
+│ DB Schema   │ │ @Alice       │ │ Page UI     │ │ Git Repo    │
+│ #database   │ │ Due: Tomorrow│ │ @Bob        │ │             │
+├─────────────┤ ├──────────────┤ ├─────────────┤ ├─────────────┤
+│ 📝 Write    │ │ 🐳 Docker    │ │             │ │ 🏗️ Init     │
+│ API Docs    │ │ Setup        │ │             │ │ Project     │
+│ #docs       │ │ @Charlie     │ │             │ │             │
+├─────────────┤ ├──────────────┤ ├─────────────┤ ├─────────────┤
+│ 🧪 Write    │ │              │ │             │ │ 📋 Define   │
+│ E2E Tests   │ │              │ │             │ │ Requirements│
+│ #testing    │ │              │ │             │ │             │
+└─────────────┘ └──────────────┘ └─────────────┘ └─────────────┘
+
+Labels: 🔴 Urgent  🟡 Normal  🟢 Low Priority
+```
+
+---
 
 ### 4.3 Notion / Confluence
 
-**บทบาท:** Knowledge Base และ Documentation สำหรับทีม
+**บทบาท:** Knowledge Base และ Documentation Hub สำหรับทีม
 
 ```
-บทบาทใน Software Engineering:
+╔══════════════════════════════════════════════════════════════════╗
+║  📚 NOTION / CONFLUENCE — บทบาทใน Software Engineering          ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  📁 Technical Documentation                                      ║
+║     → เขียนและจัดเก็บ API Docs, System Design                   ║
+║     → Architecture Decision Records (ADR)                       ║
+║     → Runbook สำหรับ Operation Tasks                             ║
+║                                                                  ║
+║  📅 Team Process                                                 ║
+║     → บันทึก Meeting Notes และ Action Items                      ║
+║     → Sprint Planning และ Retrospective                          ║
+║     → Team Norms และ Working Agreement                           ║
+║                                                                  ║
+║  🧑‍💻 Knowledge Sharing                                          ║
+║     → Onboarding Guide สำหรับสมาชิกใหม่                         ║
+║     → How-to Guides และ Best Practices                           ║
+║     → Troubleshooting Playbook                                   ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+```
 
-• เขียนและจัดเก็บ Technical Documentation
-• บันทึก Architecture Decision Records (ADR)
-• เก็บ Meeting Notes และ Sprint Retrospectives
-• สร้าง Onboarding Guide สำหรับสมาชิกใหม่
-• Wiki ความรู้ภายในทีม
+---
+
+### 4.4 เปรียบเทียบ Planning Tools
+
+```
+┌──────────────┬────────────────┬───────────────┬──────────────────┐
+│   เกณฑ์       │   Jira         │   Trello      │ Notion/Confluence │
+├──────────────┼────────────────┼───────────────┼──────────────────┤
+│ ความซับซ้อน  │ สูง (มี Feature │ ต่ำ (ใช้ง่าย) │ กลาง             │
+│              │ มาก)           │               │                  │
+├──────────────┼────────────────┼───────────────┼──────────────────┤
+│ ขนาดทีม     │ กลาง-ใหญ่      │ เล็ก-กลาง     │ ทุกขนาด          │
+├──────────────┼────────────────┼───────────────┼──────────────────┤
+│ Agile Support│ Scrum + Kanban │ Kanban        │ Custom           │
+├──────────────┼────────────────┼───────────────┼──────────────────┤
+│ ราคา         │ Free/Paid      │ Free/Paid     │ Free/Paid        │
+├──────────────┼────────────────┼───────────────┼──────────────────┤
+│ เหมาะกับ    │ Enterprise,    │ Startup,      │ Knowledge Base,  │
+│              │ Scrum Team     │ Small Team    │ Documentation    │
+└──────────────┴────────────────┴───────────────┴──────────────────┘
+
+💡 เคล็ดลับ: ทีมส่วนใหญ่ใช้ร่วมกัน เช่น Jira + Confluence
+             หรือ Trello + Notion
 ```
 
 ---
@@ -169,15 +346,47 @@ TRELLO BOARD — ตัวอย่าง Kanban สำหรับทีม Dev
 
 > 💡 เครื่องมือพัฒนาโค้ดคือส่วนที่นักพัฒนาใช้เวลาร่วมด้วยมากที่สุด การเลือกและตั้งค่า IDE ให้เหมาะสมส่งผลโดยตรงต่อ Productivity
 
-### 5.1 Code Editors & IDEs
+### 5.1 Code Editors & IDEs — ภาพรวม
 
-| เครื่องมือ | ประเภท | บทบาทหลัก | เหมาะกับ |
-|-----------|--------|-----------|---------|
-| **VS Code** | Editor | General Purpose, Extensions มาก | ทุก Language โดยเฉพาะ Web |
-| **IntelliJ IDEA** | Full IDE | Java/Kotlin, Smart Refactoring | Java, Android, Kotlin |
-| **PyCharm** | Full IDE | Python-specific, Debugging เก่ง | Python, Data Science |
-| **Vim / Neovim** | Editor | เร็วมาก, Server-friendly | Power Users, Remote Dev |
-| **Cursor** | AI Editor | AI Pair Programming ในตัว | ทุก Language + AI Assist |
+```
+══════════════════════════════════════════════════════════════════
+              🖥️  CODE EDITORS & IDEs COMPARISON
+══════════════════════════════════════════════════════════════════
+
+  LIGHTWEIGHT EDITORS              FULL IDEs
+  ──────────────────               ─────────────────────
+  เริ่มเร็ว, กิน RAM น้อย          เริ่มช้ากว่า, Feature มากกว่า
+
+  ┌──────────────────┐             ┌──────────────────────┐
+  │  📝 VS Code      │             │  🧠 IntelliJ IDEA    │
+  │  ─────────────   │             │  ───────────────────  │
+  │  • ใช้ได้ทุกภาษา │             │  • Java/Kotlin/Groovy │
+  │  • Extensions    │             │  • Smart Refactoring  │
+  │    มากมาย        │             │  • Deep Code Analysis │
+  │  • ฟรี 100%      │             │  • มี Free Edition    │
+  └──────────────────┘             └──────────────────────┘
+
+  ┌──────────────────┐             ┌──────────────────────┐
+  │  ⚡ Vim/Neovim   │             │  🐍 PyCharm          │
+  │  ─────────────   │             │  ───────────────────  │
+  │  • เร็วมาก       │             │  • Python เฉพาะทาง   │
+  │  • ใช้ใน Terminal│             │  • Debugger เก่ง      │
+  │  • Learning      │             │  • Data Science       │
+  │    Curve สูง     │             │    Support            │
+  └──────────────────┘             └──────────────────────┘
+
+  ┌──────────────────┐
+  │  🤖 Cursor       │   ← NEW! AI-First Editor
+  │  ─────────────   │   ทำงานคู่กับ AI ได้ในตัว
+  │  • AI Chat       │   เหมาะกับยุค AI-Assisted Dev
+  │  • Code Generate │
+  │  • Codebase Q&A  │
+  └──────────────────┘
+
+══════════════════════════════════════════════════════════════════
+```
+
+---
 
 ### 5.2 บทบาทของ IDE ใน Software Engineering
 
@@ -187,237 +396,527 @@ TRELLO BOARD — ตัวอย่าง Kanban สำหรับทีม Dev
 ╠══════════════════════════════════════════════════════════════════╣
 ║                                                                  ║
 ║  1. CODE WRITING & COMPLETION                                    ║
-║     → IntelliSense / Autocomplete ลดเวลาพิมพ์                   ║
+║     ┌─────────────────────────────────────────────────────┐     ║
+║     │  def calculate_tax(income):                         │     ║
+║     │      if income > 50000:                             │     ║
+║     │          return income * 0.3  ← IntelliSense แนะนำ │     ║
+║     │                               ตัวเลือกให้เลือก      │     ║
+║     └─────────────────────────────────────────────────────┘     ║
+║     → Autocomplete ลดเวลาพิมพ์และลดการพิมพ์ผิด                  ║
 ║     → Syntax Highlighting ช่วยอ่านโค้ดง่ายขึ้น                  ║
 ║     → Code Snippet ใส่โครงโค้ดซ้ำ ๆ ได้รวดเร็ว                  ║
 ║                                                                  ║
-║  2. DEBUGGING                                                    ║
+║  2. DEBUGGING — ค้นหาและแก้ Bug                                  ║
+║     ┌─────────────────────────────────────────────────────┐     ║
+║     │  Line 42: result = price * qty    ← 🔴 Breakpoint   │     ║
+║     │  ► Paused at Breakpoint                              │     ║
+║     │  Variables:                                          │     ║
+║     │    price = 100                                       │     ║
+║     │    qty   = -1  ← 💡 เจอ Bug แล้ว! qty เป็นลบ        │     ║
+║     └─────────────────────────────────────────────────────┘     ║
 ║     → ตั้ง Breakpoint หยุดโปรแกรม ณ จุดที่ต้องการ               ║
 ║     → ดูค่า Variable ใน Runtime แบบ Real-time                   ║
 ║     → Step Through โค้ดทีละบรรทัด                               ║
 ║                                                                  ║
-║  3. REFACTORING                                                  ║
+║  3. REFACTORING — ปรับปรุงโค้ด                                   ║
 ║     → Rename ตัวแปร/ฟังก์ชันทั่วทั้งโปรเจกต์พร้อมกัน            ║
 ║     → Extract Method อัตโนมัติ                                   ║
+║     → Find All References ดูว่า Function ถูกใช้ที่ไหนบ้าง        ║
 ║     → ตรวจจับ Code Smell เบื้องต้น                               ║
 ║                                                                  ║
-║  4. INTEGRATION                                                  ║
-║     → เชื่อมต่อ Git โดยตรงใน Editor                              ║
-║     → Run Tests ภายใน IDE                                       ║
-║     → Terminal ในตัว ไม่ต้องสลับหน้าต่าง                        ║
+║  4. INTEGRATION — เชื่อมกับ Tools อื่น                           ║
+║     → Git Panel: Commit, Push, Pull ใน Editor เลย               ║
+║     → Run Tests: ดูผล Test Pass/Fail ทันที                      ║
+║     → Terminal: Built-in ไม่ต้องสลับหน้าต่าง                    ║
+║     → Extensions: Docker, Kubernetes, Database Client            ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
+```
+
+---
+
+### 5.3 Package Managers — ส่วนสำคัญที่มักถูกมองข้าม
+
+```
+  🎁 PACKAGE MANAGERS — จัดการ Dependencies ของโปรเจกต์
+
+  ┌─────────────┬──────────────┬────────────────────────────────┐
+  │   ภาษา       │    Tool      │         ตัวอย่างการใช้          │
+  ├─────────────┼──────────────┼────────────────────────────────┤
+  │ JavaScript  │ npm / yarn   │ npm install express            │
+  │             │ / pnpm       │ yarn add react                 │
+  ├─────────────┼──────────────┼────────────────────────────────┤
+  │ Python      │ pip / conda  │ pip install django             │
+  │             │ / poetry     │ poetry add fastapi             │
+  ├─────────────┼──────────────┼────────────────────────────────┤
+  │ Java        │ Maven /      │ mvn install                    │
+  │             │ Gradle       │ gradle build                   │
+  ├─────────────┼──────────────┼────────────────────────────────┤
+  │ Dart/Flutter│ pub          │ flutter pub add http           │
+  ├─────────────┼──────────────┼────────────────────────────────┤
+  │ Go          │ go mod       │ go get github.com/gin-gonic/gin│
+  └─────────────┴──────────────┴────────────────────────────────┘
+
+  บทบาท:
+  • ดาวน์โหลด Library ที่โปรเจกต์ต้องการ
+  • จัดการ Version ของ Dependencies
+  • แก้ปัญหา Dependency Conflict
+  • ล็อค Version (package-lock.json, poetry.lock)
+    → ทุกคนในทีมใช้ Version เดียวกัน
 ```
 
 ---
 
 ## 6. Version Control & Collaboration Tools
 
-> 💡 Version Control คือหัวใจของ Software Engineering สมัยใหม่ ทีมที่ไม่ใช้ Version Control เปรียบเหมือนทำงานโดยไม่มีตาข่ายนิรภัย
+> 💡 Version Control คือ **หัวใจ** ของ Software Engineering สมัยใหม่ ทีมที่ไม่ใช้ Version Control เปรียบเหมือนทำงานโดยไม่มีตาข่ายนิรภัย — หากพลาด ไม่มีทางย้อนกลับ
 
-### 6.1 Git
-
-**บทบาท:** Distributed Version Control System — ติดตามการเปลี่ยนแปลงของโค้ดทุกบรรทัด
+### 6.1 Git — ทำความเข้าใจแบบเปรียบเทียบ
 
 ```
-บทบาทของ Git ใน Software Engineering Tasks:
+  🕰️ Git เปรียบเหมือน "Time Machine" ของโค้ด
 
-┌────────────────────────────────────────────────────────────────┐
-│  TASK                    │  Git ช่วยอย่างไร                   │
-├────────────────────────────────────────────────────────────────┤
-│  พัฒนา Feature ใหม่      │  สร้าง Branch แยก ไม่กระทบ main    │
-│  แก้ Bug ฉุกเฉิน         │  Hotfix Branch → Merge กลับเร็ว    │
-│  ย้อนกลับเมื่อพัง         │  git revert / git reset            │
-│  ตรวจสอบว่าใครแก้อะไร    │  git log / git blame               │
-│  ทำงานพร้อมกันหลายคน     │  Merge / Rebase จัดการ Conflict    │
-│  ส่งโค้ดขึ้น Production   │  Tag Release + CI/CD Trigger       │
-└────────────────────────────────────────────────────────────────┘
+  ────────────────────────────────────────────────────────►  time
+
+  Commit 1        Commit 2        Commit 3        Commit 4
+  "สร้างโปรเจกต์"  "เพิ่ม Login"   "แก้ Bug #42"  "เพิ่ม Register"
+      │               │               │               │
+      └───────────────┴───────────────┴───────────────┘
+                                                        ▲
+                                              เราอยู่ตรงนี้
+
+  ← ย้อนกลับไปได้ทุก Commit ที่ผ่านมา (git checkout, git revert)
 ```
 
-### 6.2 GitHub / GitLab / Bitbucket
+### 6.2 Git Branching Strategy
 
-**บทบาท:** Remote Repository + Collaboration Platform
+```
+  🌿 GIT BRANCHING — ทำงานพร้อมกันโดยไม่ชนกัน
+
+  main ───────────────────────────────────────────────────►
+    │                           ▲           ▲
+    │                           │ Merge     │ Merge
+    │         feature/login ────┘           │
+    │         │ (Alice ทำ)                  │
+    │         │                             │
+    └──────────►                            │
+               hotfix/bug-42 ───────────────┘
+               (Bob แก้ด่วน)
+
+  แต่ละ Branch แยกกันทำงาน → Merge กลับเมื่อพร้อม
+  ไม่กระทบโค้ดหลักระหว่างพัฒนา
+```
+
+### 6.3 บทบาทของ Git ใน Software Engineering Tasks
+
+```
+┌──────────────────────────┬────────────────────────────────────┐
+│  Task ที่ต้องทำ           │  Git ช่วยอย่างไร                   │
+├──────────────────────────┼────────────────────────────────────┤
+│  พัฒนา Feature ใหม่      │  git checkout -b feature/xxx       │
+│                          │  → สร้าง Branch แยก ไม่กระทบ main  │
+├──────────────────────────┼────────────────────────────────────┤
+│  แก้ Bug ฉุกเฉิน         │  git checkout -b hotfix/xxx        │
+│                          │  → Hotfix Branch → Merge กลับเร็ว  │
+├──────────────────────────┼────────────────────────────────────┤
+│  ย้อนกลับเมื่อโค้ดพัง    │  git revert HEAD                   │
+│                          │  git reset --hard v1.2.0           │
+├──────────────────────────┼────────────────────────────────────┤
+│  ตรวจสอบว่าใครแก้อะไร   │  git log --oneline                 │
+│                          │  git blame src/auth.py             │
+├──────────────────────────┼────────────────────────────────────┤
+│  ทำงานพร้อมกันหลายคน     │  git merge / git rebase            │
+│                          │  → จัดการ Conflict ได้             │
+├──────────────────────────┼────────────────────────────────────┤
+│  ส่งโค้ดขึ้น Production   │  git tag v2.0.0                    │
+│                          │  → Tag Release + CI/CD Trigger     │
+└──────────────────────────┴────────────────────────────────────┘
+```
+
+---
+
+### 6.4 GitHub / GitLab / Bitbucket
+
+**บทบาท:** Remote Repository + Collaboration Platform = Git บน Cloud พร้อม Tools เพิ่มเติม
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
 ║         🐙 GITHUB — บทบาทใน Software Engineering                ║
 ╠══════════════════════════════════════════════════════════════════╣
 ║                                                                  ║
-║  🔀 Pull Request (PR) / Merge Request (MR)                       ║
-║     → นักพัฒนาเสนอโค้ดให้ทีม Review ก่อน Merge                  ║
-║     → แสดง Diff ของโค้ดที่เปลี่ยนแปลง                           ║
-║     → เพื่อน Comment, แนะนำ, อนุมัติ หรือปฏิเสธ                 ║
+║  🔀 Pull Request (PR) — Code Review Process                      ║
+║                                                                  ║
+║  Alice Push Code         Team Reviews              Merge! ✅     ║
+║       │                        │                      │         ║
+║  ─────►──── PR Created ────►───►── Approved ──────►───          ║
+║              │                  │                               ║
+║              └─ Bob: "แนะนำให้  └─ Charlie: "LGTM! 👍"          ║
+║                 ใช้ try/catch"                                   ║
+║                                                                  ║
+╠══════════════════════════════════════════════════════════════════╣
 ║                                                                  ║
 ║  🐛 Issue Tracking                                               ║
-║     → รายงาน Bug / Feature Request                              ║
-║     → เชื่อมโยง PR กับ Issue อัตโนมัติ                           ║
+║     → รายงาน Bug / Feature Request อย่างเป็นระบบ                ║
+║     → เชื่อมโยง PR กับ Issue อัตโนมัติ (Closes #42)             ║
+║     → Labels, Milestones, Assignees                              ║
 ║                                                                  ║
-║  🔄 GitHub Actions (CI/CD)                                       ║
+║  🔄 GitHub Actions (CI/CD Built-in)                              ║
 ║     → Run Tests อัตโนมัติทุกครั้งที่ Push                       ║
 ║     → Deploy อัตโนมัติเมื่อ Merge สู่ main                      ║
+║     → ไม่ต้องติดตั้ง Server CI แยกต่างหาก                       ║
 ║                                                                  ║
-║  📚 Wiki & Pages                                                 ║
-║     → เก็บ Documentation ของ Project                            ║
-║     → Host Static Website จาก Repository                        ║
+║  📚 Additional Features                                          ║
+║     → GitHub Pages: Host Static Website จาก Repo                ║
+║     → GitHub Packages: ทำ Private Package Registry               ║
+║     → GitHub Copilot: AI Code Suggestion                         ║
+║     → Security Scanning: Dependabot แจ้งเตือน Vulnerability      ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
+```
+
+### 6.5 GitHub vs GitLab vs Bitbucket
+
+```
+┌───────────────┬──────────────┬──────────────┬──────────────────┐
+│   เกณฑ์        │   GitHub     │   GitLab     │    Bitbucket     │
+├───────────────┼──────────────┼──────────────┼──────────────────┤
+│ เจ้าของ        │ Microsoft    │ GitLab Inc.  │ Atlassian        │
+├───────────────┼──────────────┼──────────────┼──────────────────┤
+│ CI/CD         │ GitHub       │ GitLab CI    │ Bitbucket        │
+│               │ Actions      │ (Built-in    │ Pipelines        │
+│               │              │ แบบ Full)    │                  │
+├───────────────┼──────────────┼──────────────┼──────────────────┤
+│ Self-hosted   │ ❌ (Cloud)   │ ✅ (ติดตั้ง  │ ❌ (Cloud)       │
+│               │              │ บน Server)   │                  │
+├───────────────┼──────────────┼──────────────┼──────────────────┤
+│ Integration   │ GitHub       │ ครบในตัว     │ Jira, Confluence │
+│               │ Marketplace  │              │ (Atlassian Suite)│
+├───────────────┼──────────────┼──────────────┼──────────────────┤
+│ เหมาะกับ     │ Open Source, │ Enterprise,  │ ทีมที่ใช้        │
+│               │ Community    │ Security     │ Atlassian อยู่แล้ว│
+└───────────────┴──────────────┴──────────────┴──────────────────┘
 ```
 
 ---
 
 ## 7. Build & CI/CD Tools
 
-> 💡 **CI/CD (Continuous Integration / Continuous Delivery)** คือการทำให้กระบวนการ Build, Test, Deploy เกิดขึ้นอัตโนมัติทุกครั้งที่มีโค้ดใหม่ ลดข้อผิดพลาดจากการทำด้วยมือ
+> 💡 **CI/CD** ย่อมาจาก **Continuous Integration / Continuous Delivery** คือการทำให้กระบวนการ Build, Test, Deploy เกิดขึ้น**อัตโนมัติ**ทุกครั้งที่มีโค้ดใหม่ — ลดข้อผิดพลาดจากมนุษย์ และเร่งความเร็วในการส่งมอบ
 
-### 7.1 Jenkins
-
-**บทบาท:** Open-source Automation Server สำหรับ CI/CD Pipeline
+### 7.1 ทำความเข้าใจ CI vs CD
 
 ```
-JENKINS PIPELINE — ตัวอย่าง Flow
-
-Developer Push Code
-        │
-        ▼
-┌───────────────┐
-│  1. CHECKOUT  │  ← ดึงโค้ดล่าสุดจาก GitHub
-└───────┬───────┘
-        │
-        ▼
-┌───────────────┐
-│  2. BUILD     │  ← npm install / pip install / gradle build
-└───────┬───────┘
-        │
-        ▼
-┌───────────────┐
-│  3. TEST      │  ← รัน Unit Tests, Integration Tests
-└───────┬───────┘
-        │ ✅ All Tests Pass
-        ▼
-┌───────────────┐
-│  4. ANALYSIS  │  ← SonarQube ตรวจ Code Quality
-└───────┬───────┘
-        │
-        ▼
-┌───────────────┐
-│  5. PACKAGE   │  ← Build Docker Image
-└───────┬───────┘
-        │
-        ▼
-┌───────────────┐
-│  6. DEPLOY    │  ← Push to Staging / Production
-└───────────────┘
+╔══════════════════════════════════════════════════════════════════╗
+║                 🔄 CI vs CD — ต่างกันอย่างไร?                   ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  CI — Continuous Integration                                     ║
+║  → ทุกครั้งที่ Push Code → ระบบ Build + Test อัตโนมัติ          ║
+║  → เป้าหมาย: ตรวจจับ Bug ได้เร็วที่สุด                          ║
+║  → ผลลัพธ์: รู้ทันทีว่าโค้ดใหม่ "รวม" กับโค้ดเดิมได้ไหม        ║
+║                                                                  ║
+║  CD — Continuous Delivery / Deployment                           ║
+║  → เมื่อผ่าน CI แล้ว → Deploy ไปยัง Environment อัตโนมัติ      ║
+║  → Delivery: Deploy ไป Staging รอ Manual Approve สู่ Prod       ║
+║  → Deployment: Deploy ไป Production อัตโนมัติเลย                ║
+║                                                                  ║
+║  Developer                                                       ║
+║      │ git push                                                  ║
+║      ▼                                                           ║
+║  ┌───────┐    ┌────────┐    ┌────────┐    ┌──────────┐          ║
+║  │ Build │ ►  │  Test  │ ►  │Staging │ ►  │Production│          ║
+║  └───────┘    └────────┘    └────────┘    └──────────┘          ║
+║  ◄────── CI ──────────►    ◄──── CD (Delivery) ────►            ║
+║  ◄────────────── CD (Deployment) ──────────────────►            ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
 ```
 
-### 7.2 GitHub Actions
+---
 
-**บทบาท:** CI/CD ที่ Built-in อยู่ใน GitHub ไม่ต้องติดตั้งเพิ่มเติม
+### 7.2 Jenkins Pipeline
+
+**บทบาท:** Open-source Automation Server — Pipeline แบบกำหนดเองได้อย่างยืดหยุ่น
+
+```
+══════════════════════════════════════════════════════════════════
+  JENKINS PIPELINE — ตัวอย่าง Full Flow
+
+  Developer Push Code to GitHub
+          │
+          ▼
+  ┌───────────────────────────────────────────────────────────┐
+  │                    JENKINS PIPELINE                        │
+  │                                                           │
+  │  ① CHECKOUT    ② BUILD      ③ TEST      ④ ANALYSIS       │
+  │  ──────────    ────────     ───────     ──────────        │
+  │  Pull code     npm install  Unit Test   SonarQube         │
+  │  from GitHub   or pip       ✅ 142/142  Code Quality      │
+  │                install      passed      Score: A          │
+  │       │             │           │           │             │
+  │       └─────────────┴───────────┴─────┬─────┘            │
+  │                                       │                   │
+  │  ⑤ PACKAGE     ⑥ PUSH       ⑦ DEPLOY                    │
+  │  ──────────    ──────────   ─────────                     │
+  │  Build Docker  Push Image   Deploy to                     │
+  │  Image         to Registry  Kubernetes                    │
+  │                                       │                   │
+  └───────────────────────────────────────┼───────────────────┘
+                                          │
+                                          ▼
+                                ✅ Deployment SUCCESS
+                                   Notify team via Slack
+                                   🔔 "v2.3.1 deployed to Prod"
+
+══════════════════════════════════════════════════════════════════
+```
+
+---
+
+### 7.3 GitHub Actions
+
+**บทบาท:** CI/CD Built-in ใน GitHub — ไม่ต้องติดตั้งอะไรเพิ่ม
 
 ```yaml
-# ตัวอย่าง .github/workflows/ci.yml
+# .github/workflows/ci-cd.yml
+# ตัวอย่าง GitHub Actions Pipeline พร้อม Annotation
 
-name: CI Pipeline
+name: CI/CD Pipeline
+
+# ทริกเกอร์เมื่อไหร่?
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop]    # Push ไป main หรือ develop
   pull_request:
-    branches: [main]
+    branches: [main]             # สร้าง PR เข้า main
 
 jobs:
+  # ─── JOB 1: ทดสอบโค้ด ───────────────────────────────────────
   test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    name: 🧪 Run Tests
+    runs-on: ubuntu-latest       # รันบน Ubuntu Container
 
-      - name: Install Dependencies
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Install Dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Tests
-        run: pytest tests/
+      - name: ✅ Run Unit Tests
+        run: pytest tests/ --cov=app --cov-report=xml
 
-      - name: Build Docker Image
-        run: docker build -t myapp:latest .
+      - name: 📊 Upload Coverage Report
+        uses: codecov/codecov-action@v3
+
+  # ─── JOB 2: Build & Deploy (เฉพาะ main) ─────────────────────
+  deploy:
+    name: 🚀 Build & Deploy
+    needs: test                  # รันหลังจาก test ผ่านแล้วเท่านั้น
+    if: github.ref == 'refs/heads/main'  # เฉพาะ main branch
+
+    steps:
+      - name: 🐳 Build Docker Image
+        run: docker build -t myapp:${{ github.sha }} .
+
+      - name: 🚢 Push to Registry
+        run: docker push myapp:${{ github.sha }}
+
+      - name: ☸️ Deploy to Kubernetes
+        run: kubectl set image deployment/myapp myapp=myapp:${{ github.sha }}
 ```
 
 ```
 บทบาทของ CI/CD ใน Software Engineering:
 
-✅ ตรวจจับ Bug ได้เร็ว — รู้ทันทีที่ Push ว่าโค้ดพังหรือเปล่า
-✅ ลด Manual Work — Deploy อัตโนมัติแทนการทำด้วยมือ
-✅ มั่นใจในคุณภาพ — ต้องผ่าน Tests ก่อนเสมอก่อน Merge
-✅ Deploy บ่อยขึ้น — Release เล็ก ๆ บ่อย ๆ แทน Big Bang Release
-✅ Rollback ได้ง่าย — มี History ของทุก Deployment
+  ✅ ตรวจจับ Bug ได้เร็ว   → รู้ทันทีที่ Push ว่าโค้ดพังหรือเปล่า
+  ✅ ลด Manual Work        → Deploy อัตโนมัติแทนการทำด้วยมือ
+  ✅ มั่นใจในคุณภาพ        → ต้องผ่าน Tests ก่อนเสมอก่อน Merge
+  ✅ Deploy บ่อยขึ้น       → Release เล็ก ๆ บ่อย ๆ แทน Big Bang
+  ✅ Rollback ได้ง่าย      → มี History ของทุก Deployment
+  ✅ ลด "Fear of Deploy"   → ทีมกล้า Deploy เพราะมี Safety Net
+```
+
+---
+
+### 7.4 CI/CD Tools Comparison
+
+```
+┌──────────────────┬───────────┬───────────┬────────────┬──────────┐
+│   เกณฑ์           │  Jenkins  │  GitHub   │  GitLab CI │ CircleCI │
+│                  │           │  Actions  │            │          │
+├──────────────────┼───────────┼───────────┼────────────┼──────────┤
+│ Setup            │ ยาก       │ ง่าย      │ ง่าย       │ ง่าย     │
+│                  │ (Self-host)│ (Built-in)│ (Built-in) │ (Cloud)  │
+├──────────────────┼───────────┼───────────┼────────────┼──────────┤
+│ Flexibility      │ สูงมาก    │ สูง       │ สูง        │ กลาง     │
+├──────────────────┼───────────┼───────────┼────────────┼──────────┤
+│ Community        │ ใหญ่มาก   │ ใหญ่มาก   │ ใหญ่       │ กลาง     │
+├──────────────────┼───────────┼───────────┼────────────┼──────────┤
+│ ราคา             │ ฟรี       │ Free Tier │ Free Tier  │ Free Tier│
+│                  │ (Self-host)│           │            │          │
+├──────────────────┼───────────┼───────────┼────────────┼──────────┤
+│ เหมาะกับ        │ Enterprise │ GitHub    │ GitLab     │ General  │
+│                  │ ที่ควบคุม  │ Users     │ Users      │ Purpose  │
+│                  │ Infrastructure│        │            │          │
+└──────────────────┴───────────┴───────────┴────────────┴──────────┘
 ```
 
 ---
 
 ## 8. Testing & Quality Assurance Tools
 
-> 💡 การทดสอบไม่ใช่แค่การหา Bug — แต่คือการสร้าง **ความมั่นใจ** ว่าซอฟต์แวร์ทำงานถูกต้องและเป็นไปตามที่ผู้ใช้คาดหวัง
+> 💡 การทดสอบไม่ใช่แค่การหา Bug — แต่คือการสร้าง **ความมั่นใจ** ว่าซอฟต์แวร์ทำงานถูกต้องและเป็นไปตามที่ผู้ใช้คาดหวัง **"Testing is not about finding bugs; it's about delivering confidence"**
 
-### 8.1 Testing Pyramid และเครื่องมือที่ใช้
+### 8.1 Testing Pyramid — ทำความเข้าใจระดับการทดสอบ
 
 ```
-                          🔺 TESTING PYRAMID
+══════════════════════════════════════════════════════════════════
+                        🔺 TESTING PYRAMID
+══════════════════════════════════════════════════════════════════
 
-                    ┌──────────────────┐
-                    │    E2E TESTS      │  ← ทดสอบ User Journey ทั้งหมด
-                    │  Selenium, Cypress│    ช้า, แพง, แต่เหมือนจริง
-                    │  Playwright       │
-                    └────────┬─────────┘
-                   /          \
-                  /            \
-           ┌─────────────────────┐
-           │  INTEGRATION TESTS  │  ← ทดสอบการทำงานร่วมกันของ Modules
-           │  Postman, PyTest    │    ทดสอบ API, Database Connection
-           │  Spring Boot Test   │
-           └──────────┬──────────┘
-          /            \
-         /              \
-   ┌──────────────────────────┐
-   │       UNIT TESTS          │  ← ทดสอบ Function/Method ย่อย ๆ
-   │  Jest, PyTest, JUnit      │    เร็ว, ถูก, รันได้บ่อย
-   │  Mocha, NUnit             │
-   └──────────────────────────┘
-   
-   หลักการ: มี Unit Tests มากที่สุด, E2E น้อยที่สุด
+                           ╱▔▔▔▔▔▔╲
+                          ╱  E2E   ╲        จำนวน: น้อย
+                         ╱  Tests   ╲       ความเร็ว: ช้า
+                        ╱ Playwright ╲      ราคา: แพง
+                       ╱  Selenium    ╲     แต่ครอบคลุม User Journey
+                      ╱────────────────╲
+                     ╱  INTEGRATION     ╲   จำนวน: กลาง
+                    ╱      TESTS         ╲  ความเร็ว: กลาง
+                   ╱  Postman, PyTest     ╲ ทดสอบ API & DB Connection
+                  ╱  Spring Boot Test     ╲
+                 ╱───────────────────────────╲
+                ╱         UNIT TESTS           ╲  จำนวน: มาก
+               ╱  Jest, PyTest, JUnit, Mocha    ╲ ความเร็ว: เร็วมาก
+              ╱   ทดสอบ Function/Method ย่อย ๆ   ╲ ราคา: ถูก
+             ╱─────────────────────────────────────╲
+
+  ─────────────────────────────────────────────────────────────
+  💡 กฎ: Unit Tests มากที่สุด → Integration → E2E น้อยที่สุด
+         เพราะ Unit Tests เร็ว ถูก และรัน CI ได้บ่อย
+══════════════════════════════════════════════════════════════════
 ```
+
+---
 
 ### 8.2 บทบาทของเครื่องมือทดสอบแต่ละประเภท
 
-| เครื่องมือ | บทบาท | ใช้กับ |
-|-----------|--------|--------|
-| **Jest** | Unit & Integration Testing | JavaScript, TypeScript, React |
-| **PyTest** | Unit, Integration, Fixture Management | Python |
-| **JUnit** | Unit Testing Framework | Java |
-| **Selenium** | Browser Automation Testing | Web Applications |
-| **Cypress** | Modern E2E Testing | Web UI, ดู Test ได้ Real-time |
-| **Postman** | API Testing, Manual & Automated | REST API, GraphQL |
-| **k6** | Load & Performance Testing | API, ทดสอบรับโหลดหนัก |
-| **SonarQube** | Static Code Analysis | ทุก Language, ตรวจ Code Smell |
+```
+  🧪 TESTING TOOLS — ครอบคลุมทุกระดับ
 
-### 8.3 Postman — บทบาทใน API Development
+  UNIT TESTING
+  ┌─────────────────────────────────────────────────────────┐
+  │  # ตัวอย่าง PyTest — Unit Test                          │
+  │  def test_calculate_tax_high_income():                  │
+  │      result = calculate_tax(100000)                     │
+  │      assert result == 30000  # 30% tax                  │
+  │                                                         │
+  │  def test_calculate_tax_zero_income():                  │
+  │      result = calculate_tax(0)                          │
+  │      assert result == 0                                 │
+  └─────────────────────────────────────────────────────────┘
+
+  API TESTING (Postman / Newman)
+  ┌─────────────────────────────────────────────────────────┐
+  │  POST /api/users/login                                  │
+  │  Body: { "email": "test@test.com", "password": "1234" } │
+  │                                                         │
+  │  Expected Response:                                     │
+  │  Status: 200 ✅                                         │
+  │  Body: { "token": "eyJhbGc...", "user": {...} }         │
+  │                                                         │
+  │  Tests: pm.test("Status is 200", () => {                │
+  │    pm.response.to.have.status(200)                      │
+  │  })                                                     │
+  └─────────────────────────────────────────────────────────┘
+
+  E2E TESTING (Cypress / Playwright)
+  ┌─────────────────────────────────────────────────────────┐
+  │  // Cypress — ทดสอบ User Login Flow ทั้งหมด             │
+  │  it('User can login successfully', () => {              │
+  │    cy.visit('/login')                                   │
+  │    cy.get('[data-cy=email]').type('user@test.com')      │
+  │    cy.get('[data-cy=password]').type('password123')     │
+  │    cy.get('[data-cy=submit]').click()                   │
+  │    cy.url().should('include', '/dashboard')             │
+  │    cy.contains('Welcome back!').should('be.visible')    │
+  │  })                                                     │
+  └─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 8.3 Testing Tools Reference Table
+
+```
+┌───────────────┬─────────────────────────┬──────────────────────┐
+│  เครื่องมือ    │  บทบาทหลัก              │  ใช้กับ               │
+├───────────────┼─────────────────────────┼──────────────────────┤
+│ Jest          │ Unit & Integration Test │ JavaScript, React,   │
+│               │ + Snapshot Testing      │ TypeScript, Node.js  │
+├───────────────┼─────────────────────────┼──────────────────────┤
+│ PyTest        │ Unit, Integration,      │ Python ทุกประเภท     │
+│               │ Fixture Management      │                      │
+├───────────────┼─────────────────────────┼──────────────────────┤
+│ JUnit 5       │ Unit Testing Framework  │ Java, Kotlin         │
+├───────────────┼─────────────────────────┼──────────────────────┤
+│ Selenium      │ Browser Automation      │ Web App (ทุกภาษา)    │
+├───────────────┼─────────────────────────┼──────────────────────┤
+│ Cypress       │ Modern E2E Testing      │ Web UI + Component   │
+│               │ + Component Testing     │ Testing              │
+├───────────────┼─────────────────────────┼──────────────────────┤
+│ Playwright    │ Cross-browser E2E       │ Web UI (Chrome,      │
+│               │ Testing                 │ Firefox, Safari)     │
+├───────────────┼─────────────────────────┼──────────────────────┤
+│ Postman       │ API Testing, Manual     │ REST API, GraphQL,   │
+│               │ & Automated + Mock      │ gRPC                 │
+├───────────────┼─────────────────────────┼──────────────────────┤
+│ k6            │ Load & Performance      │ API & Backend        │
+│               │ Testing                 │ Services             │
+├───────────────┼─────────────────────────┼──────────────────────┤
+│ SonarQube     │ Static Code Analysis    │ ทุกภาษา              │
+│               │ + Security Scan         │                      │
+└───────────────┴─────────────────────────┴──────────────────────┘
+```
+
+---
+
+### 8.4 Postman — บทบาทใน API Development
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
 ║  📮 POSTMAN — บทบาทใน Software Engineering Tasks                ║
 ╠══════════════════════════════════════════════════════════════════╣
 ║                                                                  ║
-║  🧪 API Testing                                                  ║
-║     → ส่ง HTTP Request ทดสอบ API โดยไม่ต้องเขียน Code           ║
-║     → ตรวจสอบ Response Status, Body, Headers                    ║
+║  🧪 1. Manual API Testing                                        ║
+║     GET  https://api.myapp.com/users/123                        ║
+║     ──────────────────────────────────────────────              ║
+║     Response 200 OK                                             ║
+║     { "id": 123, "name": "Alice", "email": "alice@..." }       ║
 ║                                                                  ║
-║  📝 API Documentation                                            ║
-║     → สร้าง API Docs จาก Collection อัตโนมัติ                   ║
-║     → แชร์ให้ทีม Frontend ใช้ได้ทันที                            ║
+║  📝 2. API Documentation (Auto-generated)                        ║
+║     → สร้าง Doc จาก Collection อัตโนมัติ                        ║
+║     → แชร์ Link ให้ Frontend Dev ใช้ได้ทันที                     ║
 ║                                                                  ║
-║  🤖 Automated Test Suite                                         ║
-║     → เขียน Test Script ใน JavaScript                           ║
-║     → รันใน CI/CD Pipeline ด้วย Newman (CLI)                    ║
+║  🤖 3. Automated Test Suite                                      ║
+║     pm.test("Response time < 200ms", () => {                    ║
+║       pm.expect(pm.response.responseTime).to.be.below(200)     ║
+║     })                                                          ║
+║     → รัน Newman (CLI) ใน CI/CD Pipeline                        ║
 ║                                                                  ║
-║  🔄 Mock Server                                                  ║
-║     → สร้าง Fake API สำหรับ Frontend ใช้ก่อนที่ Backend จะพร้อม ║
+║  🔄 4. Mock Server                                               ║
+║     → สร้าง Fake API Response สำหรับ Frontend                   ║
+║     → Frontend พัฒนาได้ก่อนที่ Backend จะพร้อม                  ║
+║     → ลด Blocking ระหว่างทีม                                    ║
+║                                                                  ║
+║  📊 5. Environment Management                                    ║
+║     → สลับ Base URL ระหว่าง Dev / Staging / Prod ง่าย          ║
+║     → {{base_url}}/api/users → เปลี่ยน Environment เดียว        ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
 ```
@@ -426,264 +925,791 @@ jobs:
 
 ## 9. Deployment & Infrastructure Tools
 
-> 💡 เครื่องมือ Deployment ช่วยให้ซอฟต์แวร์จาก Developer's Machine ไปถึงมือผู้ใช้ได้อย่างรวดเร็ว น่าเชื่อถือ และทำซ้ำได้
+> 💡 เครื่องมือ Deployment ช่วยให้ซอฟต์แวร์จาก Developer's Machine ไปถึงมือผู้ใช้ได้อย่าง **รวดเร็ว น่าเชื่อถือ และทำซ้ำได้** ไม่ว่าจะ Deploy กี่ครั้ง ก็ได้ผลลัพธ์เหมือนกันทุกครั้ง
 
-### 9.1 Docker
+### 9.1 Docker — ทำความเข้าใจผ่านเปรียบเทียบ
 
-**บทบาท:** Containerization — บรรจุ Application พร้อม Dependencies ไว้ใน Container
+```
+  🚢 Docker เปรียบเหมือน "ตู้คอนเทนเนอร์" ของซอฟต์แวร์
+
+  ก่อน Docker (ปัญหา):             หลัง Docker (แก้ปัญหา):
+  ────────────────────             ────────────────────────
+  Dev's MacBook                    Docker Container
+  ┌───────────────┐                ┌─────────────────────┐
+  │ Python 3.11   │                │ Python 3.11         │
+  │ Django 4.2    │  ≠ Conflict!  │ Django 4.2          │
+  │ PostgreSQL 15 │                │ PostgreSQL 15       │
+  └───────────────┘                │ All Dependencies    │
+                                   └──────────┬──────────┘
+  Server (Ubuntu)                             │
+  ┌───────────────┐                           │ Same Container
+  │ Python 3.8    │  ← เวอร์ชันต่างกัน!        │ รันได้ทุกที่
+  │ Django 3.2    │                           ▼
+  │ PostgreSQL 13 │             Dev / Staging / Production
+  └───────────────┘             → ผลลัพธ์เหมือนกันทุกที่
+```
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
 ║  🐳 DOCKER — บทบาทใน Software Engineering Tasks                  ║
 ╠══════════════════════════════════════════════════════════════════╣
 ║                                                                  ║
-║  ❌ ปัญหาที่ Docker แก้:                                         ║
-║     "It works on my machine!" ← ปัญหาคลาสสิกที่ทุกทีมเจอ       ║
-║     → Dev ใช้ macOS, Server ใช้ Ubuntu → พฤติกรรมต่างกัน        ║
+║  Development Phase:                                              ║
+║  docker-compose up -d                                            ║
+║  → สร้าง Local Environment ครบ (App + DB + Cache) ใน 1 คำสั่ง   ║
+║  → ทีมทุกคน Environment เหมือนกัน                                ║
 ║                                                                  ║
-║  ✅ Docker ทำอะไร:                                               ║
-║     → บรรจุ App + ทุก Dependency ไว้ใน Container                ║
-║     → Run Container ที่ไหนก็ได้ผลลัพธ์เหมือนกันทุกที่           ║
-║     → Isolate แต่ละ Service ไม่กระทบกัน                          ║
-║     → Scale ง่าย — เพิ่ม Container เพิ่ม Capacity              ║
+║  Testing Phase:                                                  ║
+║  → สร้าง Test Database Container → ทดสอบ → ลบทิ้ง               ║
+║  → ไม่ทิ้งข้อมูลทดสอบค้างในระบบ                                  ║
 ║                                                                  ║
-╠══════════════════════════════════════════════════════════════════╣
-║  บทบาทในแต่ละ Phase:                                             ║
+║  CI/CD Phase:                                                    ║
+║  docker build -t myapp:v2.0 .                                   ║
+║  docker push registry/myapp:v2.0                                ║
+║  → Build Image เดียว → ใช้ทุก Environment                       ║
 ║                                                                  ║
-║  Development → docker-compose up สร้าง Local Environment เต็มรูป║
-║  Testing     → Container สำหรับ Test DB ที่ทิ้งได้หลังทดสอบ     ║
-║  CI/CD       → Build Docker Image ส่วนหนึ่งของ Pipeline          ║
-║  Production  → Deploy Image เดิมที่ผ่าน Test แล้วทุกขั้น        ║
+║  Production Phase:                                               ║
+║  docker pull registry/myapp:v2.0                                ║
+║  docker run -p 8080:8080 myapp:v2.0                             ║
+║  → Deploy Image เดิมที่ผ่าน Test แล้วทุกขั้น                    ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
 ```
 
-### 9.2 Kubernetes
+---
 
-**บทบาท:** Container Orchestration — จัดการ Container จำนวนมากในระดับ Production
-
-```
-บทบาทของ Kubernetes ใน Software Engineering:
-
-┌────────────────────────────────────────────────────────────────┐
-│  CHALLENGE              │  Kubernetes แก้ปัญหาอย่างไร          │
-├────────────────────────────────────────────────────────────────┤
-│  Container พัง          │  Auto-restart ทันที                  │
-│  Traffic เยอะ           │  Auto-scale เพิ่ม Container           │
-│  Deploy Version ใหม่    │  Rolling Update ไม่มี Downtime        │
-│  Version ใหม่มีปัญหา    │  Rollback อัตโนมัติ                  │
-│  Multiple Services      │  Service Discovery & Load Balancing  │
-│  Secret/Config จัดการ   │  ConfigMap & Secret                  │
-└────────────────────────────────────────────────────────────────┘
-```
-
-### 9.3 Terraform
-
-**บทบาท:** Infrastructure as Code (IaC) — เขียน Infrastructure เป็นโค้ด
+### 9.2 Kubernetes — จัดการ Container ในระดับ Production
 
 ```
-บทบาทใน Software Engineering:
+  ☸️ Kubernetes คือ "ผู้จัดการ Container" ระดับ Enterprise
 
-• สร้าง Cloud Resources (EC2, VPC, RDS) ด้วยโค้ด แทนการคลิกใน Console
-• ทำให้ Infrastructure ซ้ำได้และอยู่ใน Version Control
-• สร้าง Environment เหมือนกันทั้ง Dev / Staging / Production
-• ทีม DevOps และ Developer ทำงานร่วมกันบน Infrastructure ได้
+  ปัญหาที่เกิดโดยไม่มี Kubernetes:
 
-ตัวอย่างง่าย ๆ:
-resource "aws_instance" "web_server" {
-  ami           = "ami-0abcdef1234567890"
-  instance_type = "t2.micro"
-  tags = {
-    Name = "WebServer"
-    Env  = "Production"
-  }
-}
+  Traffic ปกติ          Traffic พุ่ง (Flash Sale!)
+  ──────────────         ──────────────────────────
+  [Container 1]          [Container 1] ← โหลดหนักมาก!
+  รับ Request ปกติ       [Container 1] ← Response ช้า
+                         [Container 1] ← บางคนรอไม่ได้
+
+  ✅ Kubernetes แก้ปัญหาอย่างไร:
+
+  Traffic พุ่ง → Kubernetes ตรวจจับ CPU สูง
+              → Auto-scale เพิ่ม Container อัตโนมัติ
+              → Load Balance แจก Request
+  ┌────────────┐
+  │ Container 1│ ← Request ───►
+  │ Container 2│ ← Request ───► Load Balancer
+  │ Container 3│ ← Request ───►
+  │ Container 4│ ← Request ───► (สร้างใหม่อัตโนมัติ)
+  └────────────┘
+
+  Traffic ลด → ลด Container อัตโนมัติ ประหยัด Cost
+```
+
+```
+┌──────────────────────────────┬─────────────────────────────────┐
+│  ความท้าทาย                  │  Kubernetes แก้ปัญหาอย่างไร     │
+├──────────────────────────────┼─────────────────────────────────┤
+│  Container พัง               │  Auto-restart ทันทีอัตโนมัติ    │
+├──────────────────────────────┼─────────────────────────────────┤
+│  Traffic เพิ่มฉับพลัน        │  Auto-scale เพิ่ม Container      │
+├──────────────────────────────┼─────────────────────────────────┤
+│  Deploy Version ใหม่         │  Rolling Update ไม่มี Downtime   │
+├──────────────────────────────┼─────────────────────────────────┤
+│  Version ใหม่มีปัญหา         │  Rollback อัตโนมัติใน Seconds   │
+├──────────────────────────────┼─────────────────────────────────┤
+│  ต้องการ Downtime น้อยที่สุด │  Zero-downtime Deployment        │
+├──────────────────────────────┼─────────────────────────────────┤
+│  Multiple Services           │  Service Discovery + Load Balance│
+├──────────────────────────────┼─────────────────────────────────┤
+│  Secret/Config               │  ConfigMap & Secret Management   │
+└──────────────────────────────┴─────────────────────────────────┘
+```
+
+---
+
+### 9.3 Terraform — Infrastructure as Code
+
+**บทบาท:** เขียน Infrastructure เป็นโค้ด แทนการ "คลิก" สร้าง Server
+
+```
+  🏗️ Terraform — ทำไมต้อง Infrastructure as Code?
+
+  แบบเดิม (คลิกใน Console):          แบบ Terraform (IaC):
+  ─────────────────────────           ────────────────────────
+  1. เปิด AWS Console                 # main.tf
+  2. คลิก EC2 → Launch Instance       resource "aws_instance" "web" {
+  3. เลือก AMI                          ami           = "ami-xxx"
+  4. เลือก Instance Type               instance_type = "t3.micro"
+  5. ตั้ง Security Group                tags = {
+  6. เพิ่ม Key Pair                       Name = "WebServer"
+  7. Review & Launch                      Env  = "Production"
+                                        }
+  ❌ ทำซ้ำยาก                        }
+  ❌ ไม่อยู่ใน Version Control
+  ❌ Dev/Staging/Prod ต่างกัน         ✅ terraform apply
+  ❌ ถ้า Server หาย ต้องทำใหม่        → สร้าง Infrastructure เหมือนกัน
+                                      ทุกครั้ง ทุก Environment
+```
+
+```
+บทบาทของ Terraform ใน Software Engineering:
+
+• สร้าง Cloud Resources (EC2, VPC, RDS, S3) ด้วยโค้ด
+• Infrastructure อยู่ใน Git → Review, Version Control, Rollback ได้
+• สร้าง Environment Dev / Staging / Production เหมือนกัน 100%
+• terraform plan → ดูก่อนว่าจะเปลี่ยนแปลงอะไรบ้าง (Preview)
+• terraform destroy → ลบ Resources ทั้งหมดง่าย ๆ (ประหยัดค่าใช้จ่าย)
+```
+
+---
+
+### 9.4 Deployment Tools Overview
+
+```
+  📦 DEPLOYMENT TOOLS — แต่ละระดับมีเครื่องมือของตัวเอง
+
+  Application Level           Infrastructure Level
+  ─────────────────────       ─────────────────────────
+  Docker                      Terraform (Cloud Resources)
+  Kubernetes                  Ansible (Server Config)
+  Helm (K8s Package Mgr)      CloudFormation (AWS-specific)
+
+  Cloud Platforms             Platform as a Service (PaaS)
+  ─────────────────────       ─────────────────────────
+  AWS, Google Cloud           Heroku, Railway
+  Azure, DigitalOcean         Render, Vercel, Netlify
+  → ต้องจัดการ Infrastructure  → ไม่ต้องจัดการ Server เลย
+  → ยืดหยุ่นสูง               → ง่าย แต่ยืดหยุ่นน้อยกว่า
 ```
 
 ---
 
 ## 10. Monitoring & Observability Tools
 
-> 💡 งานของ Software Engineer ไม่จบแค่ Deploy — ต้องรู้ว่าระบบที่ Deploy ไปนั้น **ทำงานได้ดีแค่ไหน** และ **มีปัญหาอะไรบ้าง** ในสภาพแวดล้อมจริง
+> 💡 งานของ Software Engineer **ไม่จบแค่ Deploy** — ต้องรู้ว่าระบบที่ Deploy ไปนั้น ทำงานได้ดีแค่ไหน มีปัญหาอะไรบ้าง และผู้ใช้ได้รับประสบการณ์อย่างไรในสภาพแวดล้อมจริง
 
 ### 10.1 The Three Pillars of Observability
 
 ```
-                    🔭 OBSERVABILITY = รู้ว่าระบบเป็นอย่างไร
-
-    ┌─────────────────────────────────────────────────────────┐
-    │                                                         │
-    │   📈 METRICS          📋 LOGS           🔍 TRACES       │
-    │   ────────────        ──────────        ──────────      │
-    │   ตัวเลขสถิติ          บันทึกเหตุการณ์   ติดตาม Request │
-    │   ของระบบ             ที่เกิดขึ้น       ทั้ง Flow       │
-    │                                                         │
-    │   Prometheus          ELK Stack         Jaeger          │
-    │   Grafana             Loki              Zipkin          │
-    │   Datadog             Papertrail        OpenTelemetry   │
-    │                                                         │
-    └─────────────────────────────────────────────────────────┘
+╔══════════════════════════════════════════════════════════════════╗
+║              🔭 OBSERVABILITY = รู้ว่าระบบเป็นอย่างไร            ║
+╠════════════════════╦═════════════════╦════════════════════════════╣
+║   📈 METRICS       ║   📋 LOGS       ║   🔍 TRACES                ║
+╠════════════════════╬═════════════════╬════════════════════════════╣
+║                    ║                 ║                            ║
+║ ตัวเลขสถิติ        ║ บันทึกเหตุการณ์  ║ ติดตาม Request             ║
+║ วัดสุขภาพระบบ      ║ ที่เกิดขึ้น      ║ ทั้งกระบวนการ              ║
+║                    ║                 ║                            ║
+║ เช่น:              ║ เช่น:           ║ เช่น:                      ║
+║ • CPU: 45%         ║ [ERROR] DB      ║ Request → API Gateway      ║
+║ • RAM: 2.1GB       ║ connection      ║   → User Service           ║
+║ • Req/sec: 1,200   ║ failed at       ║     → Order Service        ║
+║ • Response: 120ms  ║ 14:35:22        ║       → DB Query           ║
+║ • Error Rate: 0.1% ║ line 42         ║ ใช้เวลารวม: 245ms          ║
+║                    ║                 ║                            ║
+║ Tools:             ║ Tools:          ║ Tools:                     ║
+║ Prometheus         ║ ELK Stack       ║ Jaeger, Zipkin             ║
+║ Grafana            ║ Loki            ║ OpenTelemetry              ║
+║ Datadog            ║ Papertrail      ║ Datadog APM                ║
+║                    ║                 ║                            ║
+║ ตอบคำถาม:          ║ ตอบคำถาม:       ║ ตอบคำถาม:                  ║
+║ "ระบบช้าไหม?"      ║ "Error เกิดตอน  ║ "Request ติดขัดที่          ║
+║                    ║ ไหน?"           ║ Service ไหน?"              ║
+╚════════════════════╩═════════════════╩════════════════════════════╝
 ```
 
-### 10.2 บทบาทของ Monitoring Tools
+---
 
-| เครื่องมือ | บทบาทหลัก | ตัวอย่างการใช้งาน |
-|-----------|-----------|----------------|
-| **Prometheus** | เก็บ Metrics จาก Application / Infrastructure | ดู CPU, Memory, Request Rate |
-| **Grafana** | Visualize Metrics เป็น Dashboard | แสดงกราฟ Response Time ของ API |
-| **Sentry** | Error Tracking แบบ Real-time | แจ้งเตือนทันทีเมื่อ Exception เกิดขึ้น |
-| **Datadog** | APM + Monitoring ครบวงจร | ดู Performance ของทุก Service |
-| **ELK Stack** | Log Aggregation & Search | ค้นหา Log ของ Error ที่เกิดขึ้น |
-| **PagerDuty** | Alerting & On-call Management | โทรปลุก On-call Engineer เมื่อ Alert ดัง |
+### 10.2 Monitoring Workflow
+
+```
+  ระบบในการทำงาน → เกิด Alert → ทีมรับรู้ → แก้ปัญหา
+
+  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+  │  Production  │     │  Prometheus  │     │   Grafana    │
+  │  Application │────►│  (เก็บข้อมูล)│────►│  (แสดงกราฟ)  │
+  │              │     │              │     │              │
+  └──────────────┘     └──────┬───────┘     └──────────────┘
+                              │
+                    CPU > 80% หรือ Error Rate > 1%
+                              │
+                              ▼
+                      ┌──────────────┐
+                      │  AlertManager│
+                      │  หรือ Datadog│
+                      └──────┬───────┘
+                             │
+               ┌─────────────┼─────────────┐
+               ▼             ▼             ▼
+          📧 Email       💬 Slack      📱 PagerDuty
+          ส่งรายงาน     แจ้งทีม      โทรปลุก On-call
+          สรุป           ทันที        Engineer
+```
+
+---
+
+### 10.3 Monitoring Tools Reference
+
+```
+┌───────────────┬──────────────────────────┬──────────────────────┐
+│  เครื่องมือ    │  บทบาทหลัก               │  ตัวอย่างการใช้งาน   │
+├───────────────┼──────────────────────────┼──────────────────────┤
+│ Prometheus    │ เก็บ Metrics แบบ          │ ดู CPU, Memory,      │
+│               │ Time-series              │ Request Rate ทุก 15s │
+├───────────────┼──────────────────────────┼──────────────────────┤
+│ Grafana       │ Visualize Data เป็น       │ Dashboard Response   │
+│               │ Dashboard แบบสวย          │ Time ของทุก API      │
+├───────────────┼──────────────────────────┼──────────────────────┤
+│ Sentry        │ Error Tracking แบบ        │ แจ้งเตือนทันทีพร้อม  │
+│               │ Real-time                │ Stack Trace เมื่อ Error│
+├───────────────┼──────────────────────────┼──────────────────────┤
+│ Datadog       │ APM + Infrastructure     │ ดู Performance ของ   │
+│               │ Monitoring ครบวงจร        │ ทุก Service          │
+├───────────────┼──────────────────────────┼──────────────────────┤
+│ ELK Stack     │ Log Aggregation          │ ค้นหา Log Error ที่   │
+│               │ & Search                 │ เกิดใน 1 ชั่วโมงที่ผ่าน│
+├───────────────┼──────────────────────────┼──────────────────────┤
+│ PagerDuty     │ Alerting & On-call       │ โทรปลุก On-call เมื่อ │
+│               │ Management               │ Alert Critical ดัง   │
+└───────────────┴──────────────────────────┴──────────────────────┘
+```
+
+---
+
+### 10.4 Sentry — Error Tracking ในชีวิตจริง
+
+```
+  🔴 เหตุการณ์จริงที่เกิดขึ้น Production (ไม่มี Sentry):
+
+  14:35  ← Error เกิด                 ผู้ใช้เห็นหน้า 500 Error
+  15:10  ← ผู้ใช้ที่ 5 แจ้ง Support   "แอปพัง!"
+  15:45  ← Support แจ้ง Dev Team
+  16:00  ← Dev เริ่มหา Bug
+  17:30  ← หา Error เจอในไฟล์ Log
+  18:00  ← แก้และ Deploy ใหม่
+  ────────────────────────────────
+  ⏱️ ใช้เวลา: 3.5 ชั่วโมง ผู้ใช้เดือดร้อน
+
+  ✅ เหตุการณ์เดียวกัน (มี Sentry):
+
+  14:35  ← Error เกิด
+  14:35  ← Sentry แจ้ง Slack: "🔴 TypeError: Cannot read
+            property 'id' of undefined
+            File: src/checkout.js:142
+            User: 847 คน ได้รับผลกระทบ"
+  14:40  ← Dev เห็น Stack Trace ครบ เริ่มแก้ทันที
+  15:00  ← Deploy Fix
+  ────────────────────────────────
+  ⏱️ ใช้เวลา: 25 นาที
+```
 
 ---
 
 ## 11. Communication & Collaboration Tools
 
-> 💡 Software Engineering คือ **งานทีม** การสื่อสารที่ดีส่งผลต่อคุณภาพของ Software ไม่แพ้ทักษะเขียนโค้ด
+> 💡 Software Engineering คือ **งานทีม** ไม่ใช่ Solo Project การสื่อสารที่ดีส่งผลต่อคุณภาพของ Software ไม่แพ้ทักษะการเขียนโค้ด — **"Bad communication costs more than bad code"**
+
+### 11.1 ภาพรวม Communication Tools
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
-║         💬 COMMUNICATION TOOLS — บทบาทใน Software Engineering   ║
+║      💬 COMMUNICATION TOOLS — บทบาทใน Software Engineering       ║
 ╠══════════════════════════════════════════════════════════════════╣
 ║                                                                  ║
-║  Slack / Microsoft Teams                                         ║
-║  ─────────────────────────────────                               ║
-║  • แจ้งเตือน CI/CD Build Pass/Fail เข้า Channel อัตโนมัติ       ║
-║  • Bot แจ้งเมื่อ Error เกิดใน Production                        ║
-║  • Thread การอภิปรายทาง Technical โดยไม่รบกวนช่อง หลัก          ║
-║  • Integration กับ Jira, GitHub, PagerDuty                       ║
+║  Slack / Microsoft Teams — Async Communication Hub              ║
+║  ─────────────────────────────────────────────────              ║
+║  • แจ้งเตือน CI/CD Build Pass ✅ / Fail ❌ เข้า Channel อัตโนมัติ║
+║  • Sentry Bot: "🔴 New Error in Production: NullPointerException"║
+║  • Grafana Alert: "⚠️ CPU > 85% on server-prod-01"              ║
+║  • Thread อภิปราย Technical โดยไม่รบกวนช่องหลัก                 ║
+║  • Integration: Jira, GitHub, PagerDuty, Datadog               ║
 ║                                                                  ║
-║  Miro / FigJam                                                   ║
-║  ─────────────────────────────────                               ║
-║  • วาด System Architecture Diagram ร่วมกัน                       ║
-║  • Brainstorm ใน Sprint Planning                                 ║
-║  • Retrospective Board ในแบบ Visual                              ║
+║  Miro / FigJam — Visual Collaboration                            ║
+║  ─────────────────────────────────────────────────              ║
+║  • วาด System Architecture Diagram ร่วมกัน Real-time            ║
+║  • Brainstorm Solution ใน Sprint Planning                        ║
+║  • Retrospective Board แบบ Sticky Note Virtual                   ║
 ║                                                                  ║
-║  Figma                                                           ║
-║  ─────────────────────────────────                               ║
-║  • Designer สร้าง UI Mockup                                      ║
-║  • Developer ดู Spec ที่ชัดเจน (Color Code, Spacing, Font)       ║
-║  • Handoff ระหว่าง Design ↔ Development                          ║
+║  Figma — Design-to-Development Handoff                           ║
+║  ─────────────────────────────────────────────────              ║
+║  • Designer สร้าง UI Mockup ที่มี Spec ครบ                       ║
+║  • Developer ดูขนาด, สี, Spacing โดยไม่ต้องถาม Designer         ║
+║  • Developer Mode: Export CSS Code ตรง ๆ จาก Design              ║
+║  • Comment & Feedback ระหว่าง Design ↔ Development              ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-## 12. สรุป
+### 11.2 Slack Integration Ecosystem
+
+```
+  Slack Channel #dev-alerts รับข้อมูลจากทุก Tool:
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │  #dev-alerts                                                │
+  ├─────────────────────────────────────────────────────────────┤
+  │  🤖 GitHub Actions                                 14:35   │
+  │  ✅ CI Pipeline PASSED                                      │
+  │  Branch: feature/add-payment                               │
+  │  Duration: 3m 42s | Tests: 142 passed                      │
+  ├─────────────────────────────────────────────────────────────┤
+  │  🔴 Sentry                                         14:38   │
+  │  New Error: UnhandledPromiseRejection                       │
+  │  Affected users: 12 | First seen: 2 min ago                │
+  │  [View in Sentry] [Assign to me]                           │
+  ├─────────────────────────────────────────────────────────────┤
+  │  🔵 Jira                                           14:42   │
+  │  Issue Updated: PROJ-234 "Payment Bug"                      │
+  │  Status: To Do → In Progress | Assigned: @alice            │
+  ├─────────────────────────────────────────────────────────────┤
+  │  ⚠️ Grafana                                        14:50   │
+  │  ALERT: Response Time > 500ms (avg: 823ms)                 │
+  │  Service: payment-service | Duration: 8 min                │
+  └─────────────────────────────────────────────────────────────┘
+
+  → ทีมรับรู้สิ่งที่เกิดขึ้นทุกอย่างใน 1 ที่ โดยไม่ต้องตรวจสอบหลายหน้าต่าง
+```
+
+---
+
+## 12. Tool Selection Framework
+
+> 💡 การเลือก Tool ที่ถูกต้องไม่ใช่แค่ "Tool ที่ Popular ที่สุด" แต่คือ Tool ที่ **เหมาะกับบริบทของทีมและโปรเจกต์**
+
+### 12.1 เกณฑ์การเลือก Tool
+
+```
+╔══════════════════════════════════════════════════════════════════╗
+║              🤔 HOW TO CHOOSE THE RIGHT TOOL?                    ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  ถามตัวเองก่อนเลือก Tool:                                        ║
+║                                                                  ║
+║  1. 🎯 Problem: Tool นี้แก้ปัญหาอะไรให้ทีมเรา?                  ║
+║     → ถ้าไม่มีปัญหานั้น ไม่ต้องใช้ Tool นั้น                    ║
+║                                                                  ║
+║  2. 👥 Team Size: ทีมมีกี่คน?                                    ║
+║     → 2-5 คน: Trello เพียงพอ                                    ║
+║     → 10+ คน: Jira คุ้มค่ากว่า                                  ║
+║                                                                  ║
+║  3. 💰 Budget: ค่าใช้จ่ายที่ยอมรับได้?                           ║
+║     → Open Source / Free Tier เพียงพอหรือเปล่า?                 ║
+║                                                                  ║
+║  4. 🔗 Integration: Tool นี้ทำงานกับ Tool ที่มีอยู่ได้ไหม?       ║
+║     → Ecosystem สำคัญมาก                                        ║
+║                                                                  ║
+║  5. 📈 Scalability: พอทีมโตขึ้น Tool ยังรองรับได้ไหม?            ║
+║                                                                  ║
+║  6. 📚 Learning Curve: ทีมเรียนรู้ได้เร็วแค่ไหน?                 ║
+║     → Tool ที่ซับซ้อนอาจไม่คุ้มถ้าทีมเล็ก                       ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+```
+
+---
+
+### 12.2 Decision Tree สำหรับเลือก Tool
+
+```
+  ต้องการ Tracking งาน?
+         │
+         ▼
+  ทีมมี > 10 คน?
+  ├── ใช่ → Jira (มี Scrum/Kanban ครบ)
+  └── ไม่ → ต้องการ Documentation ด้วยไหม?
+             ├── ใช่ → Notion (Kanban + Docs ในที่เดียว)
+             └── ไม่ → Trello (ง่ายและเร็ว)
+
+  ────────────────────────────────────────────
+
+  ต้องการ CI/CD?
+         │
+         ▼
+  ใช้ GitHub อยู่แล้ว?
+  ├── ใช่ → GitHub Actions (ง่าย, Built-in)
+  └── ไม่ → ต้องการ Self-hosted?
+             ├── ใช่ → Jenkins (ยืดหยุ่นสูงสุด)
+             └── ไม่ → CircleCI หรือ GitLab CI
+
+  ────────────────────────────────────────────
+
+  ต้องการ Monitoring?
+         │
+         ▼
+  Budget มี?
+  ├── ใช่ → Datadog (ครบที่สุด, ราคาสูง)
+  └── ไม่ → Prometheus + Grafana (Open Source, ฟรี)
+             + Sentry Free Tier (Error Tracking)
+```
+
+---
+
+## 13. Real-World Toolchain Examples
+
+> 💡 ในชีวิตจริง ทีมต่างๆ มี Toolchain ที่แตกต่างกันตาม Context — ไม่มีคำตอบที่ "ถูก" หรือ "ผิด" มีแค่ "เหมาะสม" หรือ "ไม่เหมาะสม"
+
+### 13.1 Startup Toolchain (ทีม 3-5 คน)
+
+```
+══════════════════════════════════════════════════════════════════
+  🚀 STARTUP TOOLCHAIN — เน้นความเร็วและต้นทุนต่ำ
+
+  PLAN         CODE          VERSION       CI/CD
+  ────────     ────────      ─────────     ────────
+  Notion       VS Code       GitHub        GitHub
+  (Tasks +     (Editor)      (Free)        Actions
+  Docs ในที่    +                           (Free Tier)
+  เดียว)       Cursor AI
+
+  TESTING      DEPLOY        MONITOR       COMMUNICATE
+  ────────     ────────      ─────────     ────────────
+  Jest +       Railway หรือ  Sentry        Slack
+  Postman      Render        (Free)        (Free)
+  (Manual)     (PaaS - ไม่    + Uptime
+               ต้องจัดการ    Robot
+               Server)
+
+  💡 ข้อดี: ต้นทุนต่ำ, Setup เร็ว, เรียนรู้ง่าย
+  💡 ข้อเสีย: ยืดหยุ่นน้อยกว่า, Scale ยากเมื่อโตขึ้น
+══════════════════════════════════════════════════════════════════
+```
+
+---
+
+### 13.2 Mid-size Company Toolchain (ทีม 20-50 คน)
+
+```
+══════════════════════════════════════════════════════════════════
+  🏢 MID-SIZE COMPANY TOOLCHAIN — Balance ระหว่าง Speed & Control
+
+  PLAN               CODE              VERSION CONTROL
+  ────────────────   ────────────      ─────────────────
+  Jira (Sprint,      IntelliJ /        GitHub / GitLab
+  Roadmap)           VS Code +         (Protected Branch,
+  Confluence         Team Extensions   PR Required)
+  (Documentation)
+
+  CI/CD              TESTING           DEPLOY
+  ────────────────   ────────────      ─────────────────
+  GitHub Actions     Jest / PyTest     Docker +
+  หรือ Jenkins       + Cypress (E2E)   Kubernetes
+  + SonarQube        + Postman         (Staging + Prod)
+  (Code Quality)     Newman (CI)       Helm
+
+  MONITOR                              COMMUNICATE
+  ────────────────                     ─────────────────
+  Prometheus +                         Slack + Miro
+  Grafana +                            Figma
+  Sentry +                             (Design Handoff)
+  PagerDuty
+
+  💡 ข้อดี: ครบ, Scale ได้, มาตรฐานสูง
+  💡 ข้อเสีย: ต้นทุนสูงขึ้น, ต้องการคนดูแล Infrastructure
+══════════════════════════════════════════════════════════════════
+```
+
+---
+
+### 13.3 Full Toolchain Flow — ภาพรวม End-to-End
+
+```
+  👨‍💻 DEVELOPER WRITES CODE        👥 TEAM COLLABORATES
+  ──────────────────────────       ─────────────────────
+  VS Code / IntelliJ           ←──► GitHub (PR Review)
+        │ Code                          │ Review Approved
+        │                              │
+        ▼ git push                     ▼
+  ──────────────────────────────────────────────────────
+                   🤖 AUTOMATION KICKS IN
+  ──────────────────────────────────────────────────────
+                       │
+               GitHub Actions (CI)
+                       │
+           ┌───────────┼───────────┐
+           ▼           ▼           ▼
+      Install Deps   Run Tests   Code Analysis
+      (npm/pip)    (Jest/PyTest) (SonarQube)
+           │           │           │
+           └───────────┴───────────┘
+                       │ All Pass ✅
+                       ▼
+                  Docker Build
+                       │
+                       ▼
+               Deploy to Staging
+                       │
+              ┌────────┴────────┐
+              ▼                 ▼
+        Notify Team         E2E Tests
+        (Slack Bot)         (Cypress)
+              │                 │
+              └────────┬────────┘
+                       │ Approved ✅
+                       ▼
+               Deploy to Production
+               (Kubernetes)
+                       │
+            ┌──────────┴──────────┐
+            ▼                     ▼
+      Monitor Health          Track Errors
+      (Grafana)               (Sentry)
+            │                     │
+            └──────────┬──────────┘
+                       │ Alert! ⚠️
+                       ▼
+              PagerDuty แจ้ง On-call
+                       │
+                       ▼
+              Team แก้ปัญหา → กลับต้น Loop
+```
+
+---
+
+## 14. สรุป
 
 ```
 ╔═════════════════════════════════════════════════════════════════╗
-║      🏆 KEY TAKEAWAYS — Roles of Applications in SW Eng         ║
+║       🏆 KEY TAKEAWAYS — Roles of Applications in SW Eng        ║
 ╠═════════════════════════════════════════════════════════════════╣
 ║                                                                 ║
-║  1️⃣  ไม่มีเครื่องมือเดียวที่ทำได้ทุกอย่าง                       ║
-║     → แต่ละ Phase ของ SDLC มี Application ที่เหมาะสมของตัวเอง   ║
+║  1️⃣  ไม่มีเครื่องมือเดียวที่ทำได้ทุกอย่าง                      ║
+║      แต่ละ Phase ของ SDLC มี Application ที่เหมาะสมของตัวเอง    ║
+║      เรียนรู้ "บทบาท" ก่อน แล้วค่อยเลือก Tool                   ║
 ║                                                                 ║
-║  2️⃣  เครื่องมือที่ดีช่วยแก้ปัญหาของมนุษย์                       ║
-║     → ลดความผิดพลาดจากการทำด้วยมือ                              ║
-║     → ทำให้ทีมทำงานพร้อมกันได้โดยไม่ชนกัน                       ║
+║  2️⃣  เครื่องมือที่ดีแก้ปัญหาของมนุษย์                           ║
+║      ลดความผิดพลาดจากการทำด้วยมือ                               ║
+║      ทำให้ทีมทำงานพร้อมกันได้โดยไม่ชนกัน                        ║
 ║                                                                 ║
-║  3️⃣  Integration คือกุญแจสำคัญ                                  ║
-║     → Jira + GitHub + Jenkins + Slack ทำงานร่วมกันเป็น Ecosystem║
-║     → ข้อมูลไหลอัตโนมัติ ไม่ต้องรายงานซ้ำซ้อน                   ║
+║  3️⃣  Integration คือกุญแจสำคัญ                                 ║
+║      Jira + GitHub + GitHub Actions + Slack ทำงานร่วมกัน        ║
+║      ข้อมูลไหลอัตโนมัติ ไม่ต้องรายงานซ้ำซ้อน                    ║
 ║                                                                 ║
-║  4️⃣  เรียนรู้ "ทำไม" ก่อน "วิธีใช้"                             ║
-║     → รู้ว่าแต่ละ Tool แก้ปัญหาอะไร → เลือกใช้ได้ถูกต้อง        ║
+║  4️⃣  เรียนรู้ "ทำไม" ก่อน "วิธีใช้"                            ║
+║      รู้ว่าแต่ละ Tool แก้ปัญหาอะไร → เลือกใช้ได้ถูกต้อง         ║
+║      ไม่ใช้ Tool เพราะ Popular แต่ใช้เพราะ "เหมาะสม"             ║
 ║                                                                 ║
-║  5️⃣  เครื่องมือเปลี่ยน แต่หลักการคงอยู่                          ║
-║     → Jenkins อาจถูกแทนด้วย GitHub Actions                      ║
-║     → แต่แนวคิด CI/CD ยังคงเหมือนเดิม                           ║
+║  5️⃣  เครื่องมือเปลี่ยน แต่หลักการคงอยู่                         ║
+║      Jenkins → GitHub Actions                                   ║
+║      แต่แนวคิด CI/CD ยังคงเหมือนเดิม                            ║
+║      เข้าใจหลักการ → ปรับตัวกับ Tool ใหม่ได้เสมอ                ║
+║                                                                 ║
+║  6️⃣  เริ่มจาก Problem ไม่ใช่ Tool                               ║
+║      "ทีมมีปัญหาอะไร?" → "Tool ไหนแก้ได้?"                      ║
+║      ไม่ใช่ "Tool นี้ดูเท่ โปรเจกต์ถัดไปลองใช้ดีกว่า"           ║
 ║                                                                 ║
 ╚═════════════════════════════════════════════════════════════════╝
 ```
 
-### 🗺️ ภาพรวม Application Ecosystem ของ Software Team
+### ภาพสรุป 7 Categories
 
 ```
-  DEV WRITES CODE               TEAM COLLABORATES
-  ──────────────                 ─────────────────
-  VS Code / IntelliJ   ←──────►  GitHub (PR Review)
-        │                               │
-        ▼                               ▼
-  git commit & push   ──────────► GitHub Actions (CI)
-                                        │
-                              ┌─────────┴──────────┐
-                              ▼                    ▼
-                          Tests Run          Code Analysis
-                          (Jest/PyTest)      (SonarQube)
-                              │
-                              ▼
-                         Docker Build
-                              │
-                              ▼
-                      Deploy to Staging
-                              │
-                    ┌─────────┴─────────┐
-                    ▼                   ▼
-              Notify Team          Run E2E Tests
-              (Slack Bot)          (Cypress)
-                    │
-                    ▼
-              Deploy to Production
-              (Kubernetes)
-                    │
-          ┌─────────┴─────────┐
-          ▼                   ▼
-    Monitor Health       Track Errors
-    (Grafana)            (Sentry)
+  📋 PLAN     💻 CODE     🔀 VERSION    🏗️ CI/CD
+  Jira        VS Code     Git           Jenkins
+  Trello      IntelliJ    GitHub        GitHub Actions
+  Notion      Cursor      GitLab        CircleCI
+     │            │           │              │
+     └────────────┴───────────┴──────────────┘
+                            │
+                   🧪 TEST──┴──📦 DEPLOY
+                   Jest         Docker
+                   Cypress      Kubernetes
+                   Postman      Terraform
+                       │
+                       ▼
+                  📊 MONITOR
+                  Grafana
+                  Sentry
+                  Datadog
 ```
 
 ---
 
-## 📝 แบบฝึกหัด (Exercises)
+## 15. แบบฝึกหัด
 
-### ✏️ Exercise 1: Tool Mapping
-> จับคู่สถานการณ์กับเครื่องมือที่เหมาะสมที่สุด
+### ✏️ Exercise 1: Tool Mapping (จับคู่สถานการณ์กับ Tool)
 
 ```
-สถานการณ์:
+สถานการณ์ที่เกิดขึ้น:
 
-A. ทีมต้องการดูว่า API ของตัวเองรองรับผู้ใช้พร้อมกัน 10,000 คนได้ไหม
-B. Developer ต้องการย้อนกลับไปดูว่าใครเพิ่มโค้ด Bug เข้ามาเมื่อสัปดาห์ที่แล้ว
-C. ต้องการให้ระบบ Deploy อัตโนมัติทุกครั้งที่ Merge เข้า main
-D. Frontend ต้องการดูสี, ขนาด Font ที่ Designer ออกแบบไว้
-E. ต้องการรู้ว่า Error ใน Production เกิดจาก Line โค้ดไหน
+A. ทีมต้องการทดสอบว่า API รองรับผู้ใช้พร้อมกัน 10,000 คนได้ไหม
+B. Developer ต้องการดูว่าใครเพิ่มโค้ดที่ทำให้เกิด Bug เมื่อสัปดาห์ที่แล้ว
+C. ต้องการให้ระบบ Deploy อัตโนมัติทุกครั้งที่ Merge เข้า main branch
+D. Frontend Developer ต้องการดูสี, Font Size ที่ Designer ออกแบบไว้
+E. ต้องการรู้ว่า Error ใน Production เกิดจาก Line โค้ดที่เท่าไหร่
+F. ต้องการสร้าง Cloud Server 10 ตัว โดยไม่คลิกที่ AWS Console
+G. ทีม 3 คนต้องการติดตาม Task อย่างง่าย ๆ ด้วย Kanban Board
+H. ต้องการส่ง HTTP Request ทดสอบ API ใหม่ที่เพิ่งสร้าง
 
-เครื่องมือ:  Sentry / k6 / GitHub Actions / Figma / git log
+เครื่องมือ:
+[ Sentry ]  [ k6 ]  [ GitHub Actions ]  [ Figma ]
+[ git blame ]  [ Terraform ]  [ Trello ]  [ Postman ]
+
+เฉลย (คิดก่อนดู! 🤔):
+A → k6
+B → git blame
+C → GitHub Actions
+D → Figma
+E → Sentry
+F → Terraform
+G → Trello
+H → Postman
 ```
-
-### ✏️ Exercise 2: Design Your Toolchain
-> ออกแบบ Toolchain สำหรับทีมพัฒนา Mobile App ขนาด 5 คน โดยระบุ:
->
-> 1. เครื่องมือสำหรับแต่ละ Phase ของ SDLC
-> 2. เหตุผลที่เลือกเครื่องมือนั้น
-> 3. วิธีที่เครื่องมือเหล่านั้นทำงานร่วมกัน (Integration)
 
 ---
 
-## 🔗 แหล่งอ้างอิงเพิ่มเติม (References)
+### ✏️ Exercise 2: Spot the Problem
 
-| เครื่องมือ | Documentation | ประเภท |
-|-----------|--------------|--------|
-| Git | [git-scm.com/doc](https://git-scm.com/doc) | 🌐 Official Docs |
-| GitHub Actions | [docs.github.com/actions](https://docs.github.com/actions) | 🌐 Official Docs |
-| Docker | [docs.docker.com](https://docs.docker.com) | 🌐 Official Docs |
-| Kubernetes | [kubernetes.io/docs](https://kubernetes.io/docs) | 🌐 Official Docs |
-| Jenkins | [jenkins.io/doc](https://www.jenkins.io/doc/) | 🌐 Official Docs |
-| Jira | [atlassian.com/software/jira](https://www.atlassian.com/software/jira) | 🌐 Product Page |
+```
+ทีมพัฒนาขนาด 8 คน มี Toolchain ดังนี้:
+
+  Planning:    กระดาษ + WhatsApp Group
+  Code Editor: VS Code (ทุกคน)
+  Version Control: Google Drive (zip file)
+  Testing:     ทดสอบมือ ก่อน Deploy
+  Deploy:      Copy ไฟล์ขึ้น Server ด้วย FileZilla
+  Monitor:     รอให้ลูกค้าโทรมาแจ้ง
+
+คำถาม:
+1. ระบุปัญหาที่จะเกิดขึ้นใน 3 เดือน
+2. แนะนำ Tool ที่ควรเพิ่มในแต่ละส่วน (เริ่มจากสำคัญที่สุด)
+3. ลำดับความสำคัญในการ Adopt Tool ใหม่ควรเป็นอย่างไร?
+```
+
+---
+
+### ✏️ Exercise 3: Design Your Toolchain
+
+```
+โจทย์: ออกแบบ Toolchain สำหรับ...
+
+  บริษัท: FinTech Startup ที่พัฒนา Mobile Banking App
+  ทีม: 8 คน (4 Dev, 1 QA, 1 DevOps, 1 Designer, 1 PM)
+  Budget: $500/เดือน
+  ข้อกำหนดพิเศษ:
+    - ต้องการ Security สูง (Financial Data)
+    - ต้องการ Audit Trail ของทุก Deployment
+    - ผู้ใช้คาดหวัง Uptime 99.9%
+    - ต้องการ Deploy ได้ 3-4 ครั้งต่อสัปดาห์
+
+ให้ระบุ:
+1. Tool แต่ละ Category พร้อมเหตุผล
+2. วิธีที่ Tool ทำงานร่วมกัน (Integration Flow)
+3. Metrics ที่จะ Monitor หลัง Launch
+4. Tool ไหน "Must Have" vs "Nice to Have"
+```
+
+---
+
+### ✏️ Exercise 4: Tool Research Challenge
+
+```
+เลือก 1 Tool จากรายการที่ยังไม่เคยใช้:
+
+  [ ] Linear (Project Management)
+  [ ] Cursor (AI Code Editor)
+  [ ] k6 (Performance Testing)
+  [ ] Terraform (Infrastructure as Code)
+  [ ] Playwright (E2E Testing)
+
+Research และสร้าง Mini-report (1 หน้า) ที่มี:
+  1. บทบาทหลักของ Tool นี้
+  2. ปัญหาที่แก้ได้
+  3. ทำไมถึงดีกว่า/ต่างจาก Alternative
+  4. ตัวอย่างการใช้งานจริง (Code หรือ Screenshot)
+  5. ข้อจำกัดและเมื่อไหร่ไม่ควรใช้
+```
+
+---
+
+## 🔗 แหล่งเรียนรู้เพิ่มเติม
+
+```
+┌──────────────────┬──────────────────────────────┬─────────────┐
+│  เครื่องมือ       │  แหล่งเรียนรู้ที่แนะนำ         │  ประเภท     │
+├──────────────────┼──────────────────────────────┼─────────────┤
+│ Git              │ learngitbranching.com          │ 🎮 Interactive│
+│                  │ git-scm.com/doc               │ 📖 Official  │
+├──────────────────┼──────────────────────────────┼─────────────┤
+│ GitHub Actions   │ docs.github.com/actions       │ 📖 Official  │
+│                  │ github.com/actions/starter-   │ 📦 Templates │
+│                  │ workflows                     │             │
+├──────────────────┼──────────────────────────────┼─────────────┤
+│ Docker           │ docs.docker.com/get-started   │ 📖 Official  │
+│                  │ play-with-docker.com          │ 🎮 Playground│
+├──────────────────┼──────────────────────────────┼─────────────┤
+│ Kubernetes       │ kubernetes.io/docs/tutorials  │ 📖 Official  │
+│                  │ killercoda.com                │ 🎮 Interactive│
+├──────────────────┼──────────────────────────────┼─────────────┤
+│ Testing Pyramid  │ martinfowler.com/articles/    │ 📝 Article   │
+│                  │ practical-test-pyramid.html   │             │
+├──────────────────┼──────────────────────────────┼─────────────┤
+│ DevOps Roadmap   │ roadmap.sh/devops             │ 🗺️ Roadmap   │
+└──────────────────┴──────────────────────────────┴─────────────┘
+```
+
+---
+
+## 📌 Quick Reference Card
+
+```
+╔══════════════════════════════════════════════════════════════════╗
+║                  🃏 QUICK REFERENCE — TOOL CHEATSHEET            ║
+╠══════════════╦═══════════════════════════════════════════════════╣
+║  ต้องการ...   ║  ใช้...                                          ║
+╠══════════════╬═══════════════════════════════════════════════════╣
+║ ติดตามงาน    ║ Jira / Trello / Notion                           ║
+║ เขียนเอกสาร  ║ Confluence / Notion                               ║
+║ ออกแบบ UI   ║ Figma / Zeplin                                    ║
+║ วาด Diagram  ║ Draw.io / Lucidchart / Miro                       ║
+╠══════════════╬═══════════════════════════════════════════════════╣
+║ เขียนโค้ด    ║ VS Code / IntelliJ / Cursor                       ║
+║ Debug โค้ด   ║ IDE Debugger / Chrome DevTools                    ║
+║ จัดการ Pkg   ║ npm / pip / Maven / Gradle                        ║
+╠══════════════╬═══════════════════════════════════════════════════╣
+║ Version Ctrl ║ Git (Local)                                       ║
+║ Host โค้ด    ║ GitHub / GitLab / Bitbucket                       ║
+║ Code Review  ║ Pull Request / Merge Request                      ║
+╠══════════════╬═══════════════════════════════════════════════════╣
+║ Build Auto   ║ GitHub Actions / Jenkins / CircleCI               ║
+║ Unit Test    ║ Jest / PyTest / JUnit                             ║
+║ E2E Test     ║ Cypress / Playwright / Selenium                   ║
+║ API Test     ║ Postman / Insomnia                                ║
+║ Load Test    ║ k6 / JMeter                                       ║
+║ Code Quality ║ SonarQube / ESLint / Pylint                       ║
+╠══════════════╬═══════════════════════════════════════════════════╣
+║ Containerize ║ Docker                                            ║
+║ Orchestrate  ║ Kubernetes / Docker Swarm                         ║
+║ Infra as Code║ Terraform / Ansible / CloudFormation              ║
+║ Host (PaaS)  ║ Heroku / Railway / Render / Vercel               ║
+╠══════════════╬═══════════════════════════════════════════════════╣
+║ ดู Metrics   ║ Prometheus + Grafana / Datadog                    ║
+║ Track Error  ║ Sentry / Rollbar                                  ║
+║ ดู Logs      ║ ELK Stack / Loki / Papertrail                     ║
+║ Alert        ║ PagerDuty / Opsgenie                              ║
+╠══════════════╬═══════════════════════════════════════════════════╣
+║ Chat ทีม     ║ Slack / Microsoft Teams                           ║
+║ Video Call   ║ Zoom / Google Meet                                ║
+║ Whiteboard   ║ Miro / FigJam                                     ║
+╚══════════════╩═══════════════════════════════════════════════════╝
+```
 
 ---
 
 <div align="center">
 
 **📌 Session 1 | SOFTWARE DEVELOPMENT TOOLS AND ENVIRONMENTS**
-**👨‍🏫 TUCHSANAI PLOYSUWAN**
 
 ```
-"A craftsman is only as good as their tools —
- but a master knows which tool to use, and when."
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  "A craftsman is only as good as their tools —
+   but a master knows which tool to use, and when."
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
+
+**🔑 สิ่งที่สำคัญที่สุด:**
+เข้าใจ **ปัญหา** ก่อน → แล้วค่อยเลือก **Tool** ที่ใช่
 
 </div>
