@@ -1,5 +1,4 @@
 # 📖 Overview of Development Workflow & Toolchain
-### *ฉบับปรับปรุง — เพิ่มเนื้อหา ภาพประกอบ และความเข้าใจง่าย*
 
 > **Course:** SOFTWARE DEVELOPMENT TOOLS AND ENVIRONMENTS
 > **Session:** 1 — Introduction to Software Development Tools & Environments
@@ -2147,23 +2146,6 @@ jobs:
 
 ---
 
-```
-  📊 บทความนี้ครอบคลุม:
-
-  ✅ 5-Phase Development Workflow Loop
-  ✅ Toolchain Map ครบทุก Phase (30+ Tools)
-  ✅ ตัวอย่าง GitHub Actions CI/CD Pipeline (YAML)
-  ✅ Git Branching Strategy + Commit Convention
-  ✅ Testing Pyramid + Quality Gates
-  ✅ Deployment Strategies เปรียบเทียบ
-  ✅ Toolchain Archetypes ตามขนาดทีม (Solo/Startup/Mid-size)
-  ✅ Integration Patterns ระหว่าง Tools
-  ✅ Toolchain Adoption Roadmap (Level 1-5)
-  ✅ DevOps Culture + DORA Metrics
-  ✅ Common Pitfalls + วิธีแก้
-  ✅ FAQ 7 ข้อ
-  ✅ 5 แบบฝึกหัด
-```
 
 *สร้างด้วย ❤️ เพื่อนักพัฒนาซอฟต์แวร์รุ่นใหม่*
 *ปรับปรุงเพื่อเพิ่มเนื้อหา ภาพประกอบ และความเข้าใจง่าย*
