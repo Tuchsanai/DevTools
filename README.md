@@ -22,7 +22,6 @@ Principles to Software Professionals, Roles of Applications in Software Engineer
 | CLO-6 | เข้าใจการ Deploy Applications บน Kubernetes และการตั้งค่า ReplicaSets, Services และ Deployments รวมถึงสามารถเข้าใจการสร้าง Microservices Application บน Kubernetes และ CI/CD |
 
 
-
 # 📋 ตารางแผนการสอน — SOFTWARE DEVELOPMENT TOOLS AND ENVIRONMENTS
 
 | Session | Topics | Teaching Methods | CLOs |
@@ -63,46 +62,52 @@ Principles to Software Professionals, Roles of Applications in Software Engineer
 | | • Git Restore / Git Reset / Git Revert | | |
 | | • Undoing Changes Exercise | | |
 | | • Git Collaboration Workflow (Forking, Pull Requests) | | |
-| 5 | **Docker Overview** | บรรยาย + LAB | CLO-4 |
+| 5 | **Google Cloud** | บรรยาย + LAB | CLO-4 |
+| | • Create a Project on GCP | | |
+| | • Create a Virtual Machine (VM Instance) | | |
+| | • Create an SSH Key | | |
+| | • Google Cloud Storage Bucket | | |
+| | • Open Port / Firewall Rules | | |
+| 6 | **Docker Overview** | บรรยาย + LAB | CLO-4 |
 | | • Basic Docker Commands | | |
 | | • Docker Run | | |
 | | • Docker Images | | |
 | | • Environment Variables | | |
 | | • Command vs Entrypoint | | |
-| 6 | **Docker Compose & Registry** | บรรยาย + LAB | CLO-4 |
+| 7 | **Docker Compose & Registry** | บรรยาย + LAB | CLO-4 |
 | | • Docker Compose | | |
 | | • Docker Registry | | |
-| 7 | **Docker Engine, Storage & Networking** | บรรยาย + LAB | CLO-4 |
+| 8 | **Docker Engine, Storage & Networking** | บรรยาย + LAB | CLO-4 |
 | | • Docker Engine | | |
 | | • Docker Storage | | |
 | | • Docker Networking | | |
-| 8 | **Docker Applications & CI/CD** | บรรยาย + LAB | CLO-4 |
+| 9 | **Docker Applications & CI/CD** | บรรยาย + LAB | CLO-4 |
 | | • Docker Applications | | |
 | | • CI/CD — Docker Integration | | |
-| 9 | **Jenkins CI/CD — Fundamentals** | บรรยาย + LAB | CLO-4 |
+| 10 | **Jenkins CI/CD — Fundamentals** | บรรยาย + LAB | CLO-4 |
 | | • Installing Jenkins on Ubuntu | | |
 | | • Adding Credentials in Jenkins | | |
 | | • Creating Your First Pipeline | | |
 | | • Multi-Stage Pipeline and Environment Variables | | |
-| 10 | **Jenkins CI/CD — GitHub Integration & Deployment** | บรรยาย + LAB | CLO-4 |
+| 11 | **Jenkins CI/CD — GitHub Integration & Deployment** | บรรยาย + LAB | CLO-4 |
 | | • CI/CD Pipeline Concepts (Continuous Integration / Continuous Deployment) | | |
 | | • Workflow: Code Push → GitHub → Webhook → Jenkins → Build → Test → Deploy | | |
 | | • Running Jenkinsfile from GitHub with SCM | | |
 | | • Running Jenkinsfile from GitHub without SCM | | |
 | | • GitHub Webhook + Build & Deploy Docker | | |
 | | • Deploying to Remote Server via SSH | | |
-| 11 | **Kubernetes 1** | บรรยาย + LAB | CLO-5 |
+| 12 | **Kubernetes 1** | บรรยาย + LAB | CLO-5 |
 | | • Container Orchestration | | |
 | | • Kubernetes Architecture | | |
 | | • PODs | | |
 | | • Services | | |
-| 12 | **Kubernetes 2** | บรรยาย + LAB | CLO-5 |
+| 13 | **Kubernetes 2** | บรรยาย + LAB | CLO-5 |
 | | • Basics of Networking in Kubernetes | | |
 | | • ReplicaSets & Deployments | | |
-| 13 | **Application Docker and Kubernetes 1** | บรรยาย + LAB | CLO-5, CLO-6 |
+| 14 | **Application Docker and Kubernetes 1** | บรรยาย + LAB | CLO-5, CLO-6 |
 | | • Deploy Applications บน Kubernetes | | |
 | | • ตั้งค่า ReplicaSets / Services / Deployments | | |
-| 14 | **Application Docker and Kubernetes 2** | บรรยาย + LAB | CLO-5, CLO-6 |
+| 15 | **Application Docker and Kubernetes 2** | บรรยาย + LAB | CLO-5, CLO-6 |
 | | • สร้าง Microservices Application บน Kubernetes | | |
-| 15 | **Mini Project** | Mini Project + Pitch | - |
+| 16 | **Mini Project** | Mini Project + Pitch | - |
 | | • นำเสนอ Mini Project ที่รวม Git, Docker, Kubernetes และ CI/CD | | |
