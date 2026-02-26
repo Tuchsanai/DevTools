@@ -102,10 +102,7 @@ Principles to Software Professionals, Roles of Applications in Software Engineer
 | 13 | **Kubernetes 2** | บรรยาย + LAB | CLO-5 |
 | | • Basics of Networking in Kubernetes | | |
 | | • ReplicaSets & Deployments | | |
-| 14 | **Application Docker and Kubernetes 1** | บรรยาย + LAB | CLO-5, CLO-6 |
+| 14 | **Application Kubernetes ** | บรรยาย + LAB | CLO-5, CLO-6 |
 | | • Deploy Applications บน Kubernetes | | |
-| | • ตั้งค่า ReplicaSets / Services / Deployments | | |
-| 15 | **Application Docker and Kubernetes 2** | บรรยาย + LAB | CLO-5, CLO-6 |
-| | • Create Application on Kubernetes | | |
-| 16 | **Mini Project** | Mini Project + Pitch | - |
+| 15 | **Mini Project** | Mini Project + Pitch | - |
 | | • นำเสนอ Mini Project  | | |
