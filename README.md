@@ -21,7 +21,7 @@ Principles to Software Professionals, Roles of Applications in Software Engineer
 | CLO-5 | เข้าใจการจัดการควบคุมปฏิบัติงานของคอนเทนเนอร์โดยใช้ Kubernetes การกำหนดค่า Kubernetes Configuration Files ใน YAML และสามารถเข้าใจการสร้าง Kubernetes Cluster ได้ |
 | CLO-6 | เข้าใจการ Deploy Applications บน Kubernetes และการตั้งค่า ReplicaSets, Services และ Deployments รวมถึงสามารถเข้าใจการสร้าง Microservices Application บน Kubernetes และ CI/CD |
 
-# 📋 ตารางแผนการสอน — SOFTWARE DEVELOPMENT TOOLS AND ENVIRONMENTS
+## 📋 ตารางแผนการสอน — SOFTWARE DEVELOPMENT TOOLS AND ENVIRONMENTS
 
 | Session | Topics | Teaching Methods | CLOs |
 |:---:|------|:---:|:---:|
@@ -102,7 +102,7 @@ Principles to Software Professionals, Roles of Applications in Software Engineer
 | 13 | **Kubernetes 2** | บรรยาย + LAB | CLO-5 |
 | | • Basics of Networking in Kubernetes | | |
 | | • ReplicaSets & Deployments | | |
-| 14 | **Application Kubernetes ** | บรรยาย + LAB | CLO-5, CLO-6 |
+| 14 | **Application Kubernetes** | บรรยาย + LAB | CLO-5, CLO-6 |
 | | • Deploy Applications บน Kubernetes | | |
 | 15 | **Mini Project** | Mini Project + Pitch | - |
 | | • นำเสนอ Mini Project  | | |
