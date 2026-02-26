@@ -23,35 +23,45 @@ Principles to Software Professionals, Roles of Applications in Software Engineer
 
 
 
-### 📋 ตารางแผนการสอน
+# 📋 ตารางแผนการสอน — SOFTWARE DEVELOPMENT TOOLS AND ENVIRONMENTS
 
 | Session | Topics | Teaching Methods | CLOs |
 |:---:|------|:---:|:---:|
 | 1 | **Introduction to Software Development Tools and Environments** | บรรยาย | CLO-1 |
-| | • Principles to Software Professionals | | |
-| | • Roles of Applications in Software Engineering Tasks | | |
-| | • Agile Software Development Tools (Scrum, Kanban) | | |
-| | • Product Development Tracking (Jira, Trello) | | |
-| | • Overview of Development Workflow & Toolchain | | |
+| | **• Principles to Software Professionals** | | |
+| | &nbsp;&nbsp;&nbsp;&nbsp;◦ Software Professional vs Programmer | | |
+| | &nbsp;&nbsp;&nbsp;&nbsp;◦ SOLID & Design Principles (DRY, KISS, YAGNI) | | |
+| | &nbsp;&nbsp;&nbsp;&nbsp;◦ Clean Code & Professional Ethics (ACM/IEEE) | | |
+| | **• Roles of Applications in Software Engineering Tasks** | | |
+| | &nbsp;&nbsp;&nbsp;&nbsp;◦ Planning & Development Tools (Jira, Trello, VS Code) | | |
+| | &nbsp;&nbsp;&nbsp;&nbsp;◦ Version Control, CI/CD & Monitoring | | |
+| | **• Agile Software Development Tools (Scrum & Kanban)** | | |
+| | &nbsp;&nbsp;&nbsp;&nbsp;◦ Scrum Framework (3 Roles, 5 Events, 3 Artifacts) | | |
+| | &nbsp;&nbsp;&nbsp;&nbsp;◦ Kanban (Board, WIP Limit) & Agile Metrics | | |
+| | **• Product Development Tracking (Jira & Trello)** | | |
+| | &nbsp;&nbsp;&nbsp;&nbsp;◦ Jira (Epic/Story/Task/Bug, Sprint Board, JQL) | | |
+| | &nbsp;&nbsp;&nbsp;&nbsp;◦ Trello (Board-List-Card, Automation) | | |
+| | **• Overview of Development Workflow & Toolchain** | | |
+| | &nbsp;&nbsp;&nbsp;&nbsp;◦ Plan & Code → Test & Deploy → Monitor & Feedback | | |
+| | &nbsp;&nbsp;&nbsp;&nbsp;◦ CI/CD Pipeline Overview | | |
 | 2 | **Git and GitHub Fundamentals** | บรรยาย + LAB | CLO-1, CLO-2 |
 | | • Configure Git | | |
-| | • Creating and Cloning Repositories | | |
-| | • Private Repositories and Token | | |
-| | • Add and Commit | | |
+| | • Creating & Cloning Repositories | | |
+| | • Private Repositories & Token | | |
+| | • Add & Commit | | |
 | | • Git Log | | |
-| | • Git Remote and Git Push | | |
-| | • Fetch and Pull | | |
+| | • Git Remote & Git Push | | |
+| | • Fetch & Pull | | |
 | 3 | **Understanding Branches** | บรรยาย + LAB | CLO-2 |
 | | • Understanding HEAD | | |
 | | • Git Branch Commands | | |
-| | • Delete and Rename Branches | | |
-| | • Merging Branches — Theory and Concepts | | |
-| | • Merging Branches in Practice | | |
+| | • Delete & Rename Branches | | |
+| | • Merging Branches (Theory & Practice) | | |
 | | • Git Diff | | |
 | 4 | **Git with Going Back and Undoing Changes** | บรรยาย + LAB | CLO-1, CLO-3 |
-| | • Git Checkout and Detached HEAD | | |
-| | • Git Restore, Git Reset, Git Revert | | |
-| | • Undoing Changes — Exercise and Solution | | |
+| | • Git Checkout & Detached HEAD | | |
+| | • Git Restore / Git Reset / Git Revert | | |
+| | • Undoing Changes Exercise | | |
 | | • Git Collaboration Workflow (Forking, Pull Requests) | | |
 | 5 | **Docker Overview** | บรรยาย + LAB | CLO-4 |
 | | • Basic Docker Commands | | |
@@ -69,21 +79,30 @@ Principles to Software Professionals, Roles of Applications in Software Engineer
 | 8 | **Docker Applications & CI/CD** | บรรยาย + LAB | CLO-4 |
 | | • Docker Applications | | |
 | | • CI/CD — Docker Integration | | |
-| 9 | **Jenkins CI/CD** | บรรยาย | CLO-4 |
-| | • Jenkins Pipeline Overview | | |
-| | • Build and Continuous Integration Tools | | |
-| | • Program Debugging and Profiling Tools | | |
-| | • Collaborative Development Environments | | |
-| 10 | **Kubernetes 1** | บรรยาย + LAB | CLO-5 |
+| 9 | **Jenkins CI/CD — Fundamentals** | บรรยาย + LAB | CLO-4 |
+| | • Installing Jenkins on Ubuntu | | |
+| | • Adding Credentials in Jenkins | | |
+| | • Creating Your First Pipeline | | |
+| | • Multi-Stage Pipeline and Environment Variables | | |
+| 10 | **Jenkins CI/CD — GitHub Integration & Deployment** | บรรยาย + LAB | CLO-4 |
+| | • CI/CD Pipeline Concepts (Continuous Integration / Continuous Deployment) | | |
+| | • Workflow: Code Push → GitHub → Webhook → Jenkins → Build → Test → Deploy | | |
+| | • Running Jenkinsfile from GitHub with SCM | | |
+| | • Running Jenkinsfile from GitHub without SCM | | |
+| | • GitHub Webhook + Build & Deploy Docker | | |
+| | • Deploying to Remote Server via SSH | | |
+| 11 | **Kubernetes 1** | บรรยาย + LAB | CLO-5 |
 | | • Container Orchestration | | |
 | | • Kubernetes Architecture | | |
 | | • PODs | | |
 | | • Services | | |
-| 11 | **Kubernetes 2** | บรรยาย + LAB | CLO-5 |
+| 12 | **Kubernetes 2** | บรรยาย + LAB | CLO-5 |
 | | • Basics of Networking in Kubernetes | | |
-| | • ReplicaSets and Deployments | | |
-| 12 | **Application Docker and Kubernetes 1** | บรรยาย + LAB | CLO-5, CLO-6 |
-| 13 | **Application Docker and Kubernetes 2** | บรรยาย + LAB | CLO-5, CLO-6 |
-| 14 | **Application Docker and Kubernetes 3** | บรรยาย + LAB | CLO-1 ~ CLO-6 |
+| | • ReplicaSets & Deployments | | |
+| 13 | **Application Docker and Kubernetes 1** | บรรยาย + LAB | CLO-5, CLO-6 |
+| | • Deploy Applications บน Kubernetes | | |
+| | • ตั้งค่า ReplicaSets / Services / Deployments | | |
+| 14 | **Application Docker and Kubernetes 2** | บรรยาย + LAB | CLO-5, CLO-6 |
+| | • สร้าง Microservices Application บน Kubernetes | | |
 | 15 | **Mini Project** | Mini Project + Pitch | - |
-
+| | • นำเสนอ Mini Project ที่รวม Git, Docker, Kubernetes และ CI/CD | | |
