@@ -78,11 +78,10 @@ Principles to Software Professionals, Roles of Applications in Software Engineer
 | | • Docker Storage | | |
 | | • Docker Networking | | |
 | 8 | **Docker Compose & Registry** | บรรยาย + LAB | CLO-4 |
-| | • Docker Compose | | |
 | | • Docker Registry | | |
-| 9 | **Docker Applications & CI/CD** | บรรยาย + LAB | CLO-4 |
+| | • Docker Compose | | |
+| 9 | **Docker Applications** | บรรยาย + LAB | CLO-4 |
 | | • Docker Applications | | |
-| | • CI/CD — Docker Integration | | |
 | 10 | **Jenkins CI/CD — Fundamentals** | บรรยาย + LAB | CLO-4 |
 | | • Installing Jenkins on Ubuntu | | |
 | | • Adding Credentials in Jenkins | | |
@@ -107,6 +106,6 @@ Principles to Software Professionals, Roles of Applications in Software Engineer
 | | • Deploy Applications บน Kubernetes | | |
 | | • ตั้งค่า ReplicaSets / Services / Deployments | | |
 | 15 | **Application Docker and Kubernetes 2** | บรรยาย + LAB | CLO-5, CLO-6 |
-| | • สร้าง Microservices Application บน Kubernetes | | |
+| | • Create Application on Kubernetes | | |
 | 16 | **Mini Project** | Mini Project + Pitch | - |
-| | • นำเสนอ Mini Project ที่รวม Git, Docker, Kubernetes และ CI/CD | | |
+| | • นำเสนอ Mini Project  | | |
