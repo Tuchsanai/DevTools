@@ -21,7 +21,6 @@ Principles to Software Professionals, Roles of Applications in Software Engineer
 | CLO-5 | เข้าใจการจัดการควบคุมปฏิบัติงานของคอนเทนเนอร์โดยใช้ Kubernetes การกำหนดค่า Kubernetes Configuration Files ใน YAML และสามารถเข้าใจการสร้าง Kubernetes Cluster ได้ |
 | CLO-6 | เข้าใจการ Deploy Applications บน Kubernetes และการตั้งค่า ReplicaSets, Services และ Deployments รวมถึงสามารถเข้าใจการสร้าง Microservices Application บน Kubernetes และ CI/CD |
 
-
 # 📋 ตารางแผนการสอน — SOFTWARE DEVELOPMENT TOOLS AND ENVIRONMENTS
 
 | Session | Topics | Teaching Methods | CLOs |
@@ -74,13 +73,13 @@ Principles to Software Professionals, Roles of Applications in Software Engineer
 | | • Docker Images | | |
 | | • Environment Variables | | |
 | | • Command vs Entrypoint | | |
-| 7 | **Docker Compose & Registry** | บรรยาย + LAB | CLO-4 |
-| | • Docker Compose | | |
-| | • Docker Registry | | |
-| 8 | **Docker Engine, Storage & Networking** | บรรยาย + LAB | CLO-4 |
+| 7 | **Docker Engine, Storage & Networking** | บรรยาย + LAB | CLO-4 |
 | | • Docker Engine | | |
 | | • Docker Storage | | |
 | | • Docker Networking | | |
+| 8 | **Docker Compose & Registry** | บรรยาย + LAB | CLO-4 |
+| | • Docker Compose | | |
+| | • Docker Registry | | |
 | 9 | **Docker Applications & CI/CD** | บรรยาย + LAB | CLO-4 |
 | | • Docker Applications | | |
 | | • CI/CD — Docker Integration | | |
