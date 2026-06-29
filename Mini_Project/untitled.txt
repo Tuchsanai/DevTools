@@ -1,33 +1,6 @@
 
 - อ่าน readme.md
-
-ช่วย update ตัวอย่าง Mini project ในปี 2568 ที
-Slide : https://drive.google.com/drive/folders/1odeuFiVVMzYsDu56uvtilOqvWCAtKQLB4GljkjOdSOYq1QtfYEXvjRY-LD-r9gRzb1N0rXMp?usp=sharing
-Report : https://drive.google.com/drive/folders/1pdTCHIQC3S8YIHorBoR9gz-yuSpwJDL3hD_tHeUeKFzlYLHjW4BGZzIe8KtC62_dcTg51Mo1?usp=sharing
-
-ช่วยทำเป็นตารางหน่อย โพย :
-
-https://drive.google.com/open?id=1VaJMSuO0NU31H5bJo_kfcDNr0SniQFmG	https://drive.google.com/open?id=13om7O_wk7GOoea6dv_2YOiKj3qZRg68g		
-https://drive.google.com/open?id=1HkZTm_aJqGRfkccPN9DqxEPmWPjKfLKs	https://drive.google.com/open?id=1xEmwQFWVscGyEPaRCtS4s_pgSNld0XvI		
-https://drive.google.com/open?id=1M5w43kFT9UDTrpiZixkBYZ9nALGynwqx	https://drive.google.com/open?id=1qCpseurgSfhKh1bKJLT2UN4UpVMEEDWW		
-https://drive.google.com/open?id=1NELYHiQkx5mVwpEFP_tXok--_1KTfUfo	https://drive.google.com/open?id=1hqX6qvPWFmT4Hj6oUEKS7VMEVuhALubL		
-https://drive.google.com/open?id=1bLvlVdSbtzI2sTQS5qplK3F_n25C8zgE	https://drive.google.com/open?id=1Tqpfln8YEeRyTgtfHVP0BQwZ6qZPNNse		
-https://drive.google.com/open?id=1ANGpQBE_LkmiHNP5pklotsU5KH694MQ9	https://drive.google.com/open?id=18ZLRJlJK28-R4wQ9n8sGQ-mjH1HtdhGk		
-https://drive.google.com/open?id=1yldHBxejDKxz1_hZ0gQRXj8siMNaaWUf	https://drive.google.com/open?id=10Xk_rW7KdN-PfLRytrX_sw5ROYt3hjky		
-https://drive.google.com/open?id=1qKBETC7lCipruj8O6QnKqAs7t9Na7_nL	https://drive.google.com/open?id=1e0m-v-894-ARee5ngflCO1Gr7DMuBJBT		
-https://drive.google.com/open?id=17GuLqx-ogIGhUULQnVhZzazOUPHR1vZq	https://drive.google.com/open?id=1s4idd2pw9hwCyVMkO4Mpopyb-we9jjrZ		
-https://drive.google.com/open?id=1-9_lDB6zqdKD6qOkZD9ZbYf2sqiKNR0G	https://drive.google.com/open?id=1baP9VoNu7sIcb-eVMrasaGB4dIWn3Qry		
-https://drive.google.com/open?id=19WoewD-9foKbqVKw_WbykVeTx1jWej7X	https://drive.google.com/open?id=1dDOPdu6JFOrjmnyglAgokUJSQ5EWJwto		
-https://drive.google.com/open?id=1aure5gKzwCd_JoAJTyh518hJvyLjoOng	https://drive.google.com/open?id=1fs-nKQ4H_s6JbnKWxz7r9Ny2zqa30RS5		
-https://drive.google.com/open?id=15yS5uCaZb4VfLIEKZK5ncTa5OR6KkfFg	https://drive.google.com/open?id=12J5px_Q2ePgkGjGyeHt_Gtm1qoNZiBDp		
-https://drive.google.com/open?id=1HgfMkVtbq00-0LkyETFcYu8lJlLHH6tP	https://drive.google.com/open?id=1XJ4M1ibavqB6pbJMO6xLDqhBGIc0e2JC		
-https://drive.google.com/open?id=1L4ms7GTkhnsevNVyaKj0GwE-E3v7YCK5	https://drive.google.com/open?id=1q5xBIB2prwEHqT6jnnIkVRCYthv1fhw-		
-https://drive.google.com/open?id=1hvJ558uWrVjIkN0l1lTKuN6i2NZ8xzgq	https://drive.google.com/open?id=1qkVzpxptV5yR0Fvf9vv2AWPqYpmh0KHl		
-https://drive.google.com/open?id=1dQB1I60yT0AA0e3luo4wsY4kOo62PPJI	https://drive.google.com/open?id=1_cCk1bpyq439ljSOfwNSgnTC3UvhDuM6		
-https://drive.google.com/open?id=1daNcYQAHRtFWw17iFNCECVv77u-QHHTr	https://drive.google.com/open?id=1qUsvqQZ-xomx-1jGApNvnjhrd1yerq7S		
-			
-			
-			
+ช่วย update ตัวอย่าง Mini project ในปี 2567 2566 ให้เป็นดังตัวอย่าง ปี 2568  ที และ เรียบเรียงใหม่ให้สวยงาม
 			
 			
 			
