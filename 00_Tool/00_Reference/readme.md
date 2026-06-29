@@ -16,8 +16,11 @@ Container พื้นฐานสำหรับ DevTools labs — Ubuntu 24.04
 | **Tooling** | git, curl, wget, vim, nano, less, net-tools, ping, dnsutils, openssh-server |
 | **Workdir** | `/workspace` |
 | **Ports** | `22` (SSH) |
+| **SSH login** | user `root` / password `passwd` (เปิด PasswordAuthentication + PermitRootLogin) |
 
 > หมายเหตุ: container รันเป็น `root` (ไม่มี user `student` แล้ว)
+
+> ⚠️ รหัสผ่าน SSH ของ `root` คือ `passwd` — ใช้สำหรับการเรียน/ทดสอบเท่านั้น ไม่ควรใช้ในระบบ production
 
 > 💡 ทุกคำสั่งในเอกสารนี้เป็น **บรรทัดเดียว** copy-paste ได้ทั้ง Windows และ Linux/macOS
 
@@ -79,8 +82,11 @@ docker exec -it devtools bash
 
 ### เข้าผ่าน SSH
 
+login ด้วย user `root` รหัสผ่าน `passwd`
+
 ```bash
 ssh root@localhost -p 2222
+# password: passwd
 ```
 
 ### ทดสอบว่า Docker-in-Docker ทำงาน

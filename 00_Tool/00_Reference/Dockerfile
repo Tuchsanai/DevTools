@@ -53,6 +53,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 
 RUN install -d /workspace
 
+# ตั้งรหัสผ่าน root = passwd และเปิดให้ login ผ่าน SSH ด้วย password ได้
+RUN echo 'root:passwd' | chpasswd \
+ && mkdir -p /etc/ssh/sshd_config.d \
+ && printf 'PermitRootLogin yes\nPasswordAuthentication yes\n' \
+      > /etc/ssh/sshd_config.d/10-root-login.conf
+
 VOLUME /var/lib/docker
 
 # 22=ssh
