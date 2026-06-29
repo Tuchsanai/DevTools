@@ -6,8 +6,6 @@
 
 ## 🔗 ลิงก์สำคัญ
 - 📄 **รายละเอียดโครงการ:** [เปิดเอกสาร](https://docs.google.com/document/d/1ti1VC6ihqt2Gi5W0zZ22pgiTE7Xh3iJke13JUeYGaIw/edit?usp=sharing)
-- 📝 **ลงทะเบียนกลุ่ม:** [เปิดสเปรดชีต](https://docs.google.com/spreadsheets/d/1M9IbS6WnF2YmsR78zhF2ZXwrHg6CEOb-t3fnhx8pEn0/edit?usp=sharing)
-
 > ℹ️ **หมายเหตุ:** ต้อง **ลงชื่อเข้าใช้ด้วยอีเมล `@it.kmitl.ac.th` เท่านั้น**
 
 
