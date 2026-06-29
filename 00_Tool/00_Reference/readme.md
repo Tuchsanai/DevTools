@@ -137,5 +137,5 @@ image ถูก publish ไว้แล้วที่ [`tuchsanai/devtools`](ht
 ```bash
 docker pull tuchsanai/devtools:2569_1
 
-docker run -d --name devtools --privileged -p 2222:22 tuchsanai/devtools:2569_1
+docker run -dit --name devtools --privileged -p 2222:22 tuchsanai/devtools:2569_1
 ```

@@ -1,3 +1,4 @@
 
 - อ่าน mlops_docker_guide.html
-- ต้องการเปลียนเนื้อหา จาก mlops เป็น SOFTWARE DEVELOPMENT TOOLS AND ENVIRONMENTS 
+- เนื่องจากมีการเปลียนวิชา จาก mlops มาสอน devtool
+- ต้องการเปลียนเนื้อหา จาก mlops เป็น SOFTWARE DEVELOPMENT TOOLS AND ENVIRONMENTS  เปลียน container ที่ใช้ run เป็น tuchsanai/devtools:2569_1
