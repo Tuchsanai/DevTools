@@ -45,10 +45,7 @@ https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${VERSION_
         docker-compose-plugin \
  && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m -s /bin/bash student \
- && echo 'student:student' | chpasswd \
- && usermod -aG sudo,docker student \
- && install -d -o student -g student /workspace
+RUN install -d /workspace
 
 VOLUME /var/lib/docker
 

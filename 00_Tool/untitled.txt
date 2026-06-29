@@ -1,0 +1,3 @@
+
+- อ่าน mlops_docker_guide.html
+- ต้องการเปลียนเนื้อหา จาก mlops เป็น SOFTWARE DEVELOPMENT TOOLS AND ENVIRONMENTS 
