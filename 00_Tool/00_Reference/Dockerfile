@@ -45,11 +45,18 @@ https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${VERSION_
         docker-compose-plugin \
  && rm -rf /var/lib/apt/lists/*
 
+# Node.js (LTS 22.x) สำหรับ run Next.js / React / Vite
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+ && apt-get install -y --no-install-recommends nodejs \
+ && npm install -g npm@latest \
+ && rm -rf /var/lib/apt/lists/*
+
 RUN install -d /workspace
 
 VOLUME /var/lib/docker
 
-EXPOSE 22 8000
+# 22=ssh
+EXPOSE 22
 
 WORKDIR /workspace
 

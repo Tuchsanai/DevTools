@@ -1,7 +1,7 @@
 # DevTools Base Learning Container
 
-Container พื้นฐานสำหรับ DevTools labs — Ubuntu 24.04 ที่มาพร้อม **Docker-in-Docker**, **Python 3**
-และ **SSH** ใช้งานได้ทันที
+Container พื้นฐานสำหรับ DevTools labs — Ubuntu 24.04 ที่มาพร้อม **Docker-in-Docker**, **Python 3**,
+**Node.js 22 (LTS)** และ **SSH** ใช้งานได้ทันที
 
 ---
 
@@ -12,11 +12,14 @@ Container พื้นฐานสำหรับ DevTools labs — Ubuntu 24.04
 | **Base** | Ubuntu 24.04, timezone `Asia/Bangkok`, locale UTF-8 |
 | **Docker-in-Docker** | docker-ce, CLI, containerd, buildx & compose plugins |
 | **Python** | python3, pip, venv (`python` → `python3`) |
+| **Node.js** | Node.js 22.x LTS + npm/npx (สำหรับ Next.js / React / Vite) |
 | **Tooling** | git, curl, wget, vim, nano, less, net-tools, ping, dnsutils, openssh-server |
 | **Workdir** | `/workspace` |
-| **Ports** | `22` (SSH), `8000` |
+| **Ports** | `22` (SSH) |
 
 > หมายเหตุ: container รันเป็น `root` (ไม่มี user `student` แล้ว)
+
+> 💡 ทุกคำสั่งในเอกสารนี้เป็น **บรรทัดเดียว** copy-paste ได้ทั้ง Windows และ Linux/macOS
 
 ---
 
@@ -51,14 +54,10 @@ docker build --no-cache -t devtools:2569_1 .
 ## 2. Run container
 
 ต้องใช้ `--privileged` เพราะข้างในรัน Docker daemon (Docker-in-Docker)
+คำสั่งนี้เป็นบรรทัดเดียว copy-paste ได้ทั้ง **Windows และ Linux/macOS**
 
 ```bash
-docker run -d \
-  --name devtools \
-  --privileged \
-  -p 2222:22 \
-  -p 8000:8000 \
-  devtools:2569_1
+docker run -d --name devtools --privileged -p 2222:22 devtools:2569_1
 ```
 
 | Flag | ความหมาย |
@@ -67,7 +66,6 @@ docker run -d \
 | `--name devtools` | ตั้งชื่อ container |
 | `--privileged` | จำเป็นสำหรับ Docker-in-Docker ให้ `dockerd` ทำงานได้ |
 | `-p 2222:22` | map SSH port ออกมาที่เครื่อง host พอร์ต 2222 |
-| `-p 8000:8000` | map พอร์ต 8000 สำหรับ dev server |
 
 ---
 
@@ -127,4 +125,17 @@ docker tag devtools:2569_1 tuchsanai/devtools:latest
 docker login -u tuchsanai
 docker push tuchsanai/devtools:2569_1
 docker push tuchsanai/devtools:latest
+```
+
+---
+
+## 6. ดึง image จาก Docker Hub (ใช้ image สำเร็จรูป)
+
+image ถูก publish ไว้แล้วที่ [`tuchsanai/devtools`](https://hub.docker.com/r/tuchsanai/devtools) — ไม่ต้อง build เองก็ได้
+ทุกคำสั่งเป็นบรรทัดเดียว copy-paste ได้ทั้ง **Windows และ Linux/macOS**
+
+```bash
+docker pull tuchsanai/devtools:2569_1
+
+docker run -d --name devtools --privileged -p 2222:22 tuchsanai/devtools:2569_1
 ```
