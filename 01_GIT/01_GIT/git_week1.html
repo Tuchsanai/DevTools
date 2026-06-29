@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git — Week 1 | Software Development Tools and Environments</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2333; --border:#30363d;
+    --text:#e6edf3; --muted:#8b949e; --accent:#f05133; --accent2:#58a6ff;
+    --green:#3fb950; --yellow:#d29922; --purple:#bc8cff; --code-bg:#0b0f14;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Segoe UI","Noto Sans Thai",-apple-system,Tahoma,sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.75;
+  }
+  a{color:var(--accent2);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* ===== Layout ===== */
+  .wrap{display:flex;max-width:1480px;margin:0 auto}
+  nav.side{
+    position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;
+    width:280px;flex-shrink:0;padding:24px 18px;border-right:1px solid var(--border);
+    background:var(--panel);
+  }
+  nav.side .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;padding:0 8px}
+  nav.side .brand .m{width:34px;height:34px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px}
+  nav.side .brand b{font-size:1rem}
+  nav.side h2{font-size:.72rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:18px 8px 8px}
+  nav.side a{display:block;color:var(--muted);padding:7px 12px;border-radius:8px;font-size:.9rem;margin-bottom:1px}
+  nav.side a:hover{background:var(--panel2);color:var(--text);text-decoration:none}
+  nav.side a .n{color:var(--accent);font-weight:700;margin-right:8px;display:inline-block;width:20px}
+  main{flex:1;min-width:0;padding:0 0 80px}
+
+  /* ===== Hero ===== */
+  header.hero{
+    padding:70px 56px 52px;text-align:center;
+    background:radial-gradient(circle at 50% -20%, #2d1810 0%, var(--bg) 60%);
+    border-bottom:1px solid var(--border);
+  }
+  .gitmark{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:88px;height:88px;border-radius:22px;background:var(--accent);
+    font-size:44px;margin-bottom:22px;box-shadow:0 12px 40px rgba(240,81,51,.35);
+  }
+  header.hero .kicker{color:var(--accent);font-weight:700;letter-spacing:2px;font-size:.82rem;text-transform:uppercase}
+  header.hero h1{font-size:3rem;margin:10px 0 6px;background:linear-gradient(90deg,#fff,#f05133);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  header.hero p.sub{color:var(--muted);font-size:1.1rem}
+  header.hero p.author{margin-top:14px;color:var(--text);font-size:.95rem}
+  .scores{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+  .chip{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 20px;min-width:120px}
+  .chip .v{font-size:1.6rem;font-weight:800;color:var(--accent2)}
+  .chip .l{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+  /* ===== Sections ===== */
+  section{padding:48px 56px;border-bottom:1px solid var(--border);scroll-margin-top:10px}
+  .sec-head{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+  .sec-num{
+    flex-shrink:0;width:48px;height:48px;border-radius:13px;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.3rem
+  }
+  h2.sec-title{font-size:1.8rem}
+  .slideref{color:var(--muted);font-size:.78rem;margin:0 0 22px 64px;font-style:italic}
+  h3{font-size:1.22rem;margin:30px 0 12px;color:#fff;display:flex;align-items:center;gap:8px}
+  h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  h4.mini{font-size:1.02rem;color:var(--accent2);margin:18px 0 8px}
+  p{margin-bottom:12px;color:#c9d1d9}
+  ul,ol{margin:0 0 14px 22px}
+  li{margin-bottom:7px;color:#c9d1d9}
+  strong,b{color:#fff}
+
+  /* ===== Code ===== */
+  pre{
+    background:var(--code-bg);border:1px solid var(--border);border-radius:12px;
+    padding:18px 20px;overflow-x:auto;margin:14px 0;
+    font-family:"JetBrains Mono",Consolas,Monaco,monospace;font-size:.9rem;line-height:1.65
+  }
+  pre code{color:#e6edf3}
+  .cmt{color:#6e7681}
+  .cmd{color:var(--green)}
+  .flag{color:var(--purple)}
+  .str{color:var(--yellow)}
+  .out{color:var(--accent2)}
+  code.inline{background:var(--panel2);padding:2px 8px;border-radius:6px;font-family:Consolas,monospace;font-size:.88em;color:var(--purple)}
+
+  /* ===== Story / comic strip ===== */
+  .story{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+  .panel{background:linear-gradient(160deg,#1d4e89,#16365f);border-radius:14px;padding:18px;text-align:center;border:1px solid #2a5a92;position:relative}
+  .panel .face{font-size:2rem;margin-bottom:6px}
+  .panel p{font-size:.86rem;color:#dbe9ff;margin:0}
+  .panel .step{position:absolute;top:8px;left:10px;font-size:.7rem;color:#7fb3e8;font-weight:700}
+
+  /* ===== Cards & callouts ===== */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:18px 0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .card .ic{font-size:1.8rem;margin-bottom:10px}
+  .card h4{color:#fff;margin-bottom:6px;font-size:1.05rem}
+  .card p{font-size:.88rem;color:var(--muted);margin:0}
+
+  .callout{border-left:4px solid var(--accent2);background:var(--panel);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0}
+  .callout.warn{border-color:var(--yellow)}
+  .callout.tip{border-color:var(--green)}
+  .callout.danger{border-color:var(--accent)}
+  .callout b{color:#fff}
+
+  /* ===== diagram boxes (VCS flow) ===== */
+  .diagram{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;background:#2a2a2a;border:1px solid var(--border);border-radius:16px;padding:26px;margin:18px 0}
+  .node{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-align:center;min-width:120px}
+  .node .ic{font-size:1.8rem}
+  .node .lbl{font-size:.82rem;color:var(--muted);margin-top:4px}
+  .node.repo{background:#3a1f1c;border-color:var(--accent)}
+  .node.repo .lbl{color:var(--accent);font-weight:700}
+  .arrow{font-size:1.6rem;color:var(--accent2)}
+
+  /* ===== Comparison table ===== */
+  table{width:100%;border-collapse:collapse;margin:18px 0;background:var(--panel);border-radius:12px;overflow:hidden}
+  th,td{padding:13px 18px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+  th{background:var(--panel2);color:#fff;font-size:.9rem;letter-spacing:.5px}
+  td{color:#c9d1d9;font-size:.9rem}
+  tr:last-child td{border-bottom:none}
+  .vs th:nth-child(2){color:var(--accent)}
+  .vs th:nth-child(3){color:var(--accent2)}
+
+  /* ===== Centralized vs Distributed ===== */
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:18px 0}
+  .box{border-radius:14px;padding:22px;border:1px solid var(--border)}
+  .box.cen{background:linear-gradient(160deg,#2a1a1a,#161b22)}
+  .box.dis{background:linear-gradient(160deg,#0f2a1a,#161b22)}
+  .box h4{font-size:1.1rem;margin-bottom:6px}
+  .box.cen h4{color:var(--yellow)} .box.dis h4{color:var(--green)}
+  .box ul{margin-top:10px}
+  .box .eg{font-size:.82rem;color:var(--muted);margin-top:10px;font-style:italic}
+
+  /* ===== Steps (numbered walkthrough) ===== */
+  .steps{counter-reset:s;margin:18px 0}
+  .stepitem{display:flex;gap:16px;align-items:flex-start;padding:14px 0;border-bottom:1px dashed var(--border)}
+  .stepitem:last-child{border-bottom:none}
+  .stepitem .badge{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem}
+  .stepitem .body b{color:#fff}
+  .stepitem .body{padding-top:3px}
+
+  /* ===== Exercise ===== */
+  .exercise{background:linear-gradient(135deg,#1c2333,#161b22);border:1px solid var(--accent);border-radius:16px;padding:28px}
+
+  footer{padding:32px 56px;text-align:center;color:var(--muted);font-size:.85rem}
+
+  @media(max-width:900px){
+    nav.side{display:none}
+    header.hero h1{font-size:2rem}
+    section,header.hero,footer{padding-left:22px;padding-right:22px}
+    .twocol{grid-template-columns:1fr}
+  }
+  .top-link{position:fixed;bottom:24px;right:24px;background:var(--accent);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 6px 20px rgba(0,0,0,.4);z-index:50}
+  .top-link:hover{text-decoration:none;transform:translateY(-2px)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== Sidebar ===== -->
+  <nav class="side">
+    <div class="brand"><div class="m">🔀</div><b>Git · Week 1</b></div>
+    <h2>เนื้อหา</h2>
+    <a href="#intro"><span class="n">1</span>เปรียบเสมือนการเซฟเกม</a>
+    <a href="#before"><span class="n">2</span>โลกก่อนมี Version Control</a>
+    <a href="#vcs"><span class="n">3</span>Version Control System</a>
+    <a href="#cen-dis"><span class="n">4</span>Centralized vs Distributed</a>
+    <a href="#why"><span class="n">5</span>ทำไมต้อง Git</a>
+    <a href="#vs"><span class="n">6</span>Git vs GitHub</a>
+    <a href="#install"><span class="n">7</span>การติดตั้ง Git</a>
+    <a href="#config"><span class="n">8</span>การตั้งค่า Git</a>
+    <a href="#repo"><span class="n">9</span>สร้าง Repository</a>
+    <a href="#folder"><span class="n">10</span>Git ในโฟลเดอร์</a>
+    <a href="#ignore"><span class="n">11</span>.gitignore</a>
+    <a href="#token"><span class="n">12</span>Private Repo &amp; Token</a>
+    <a href="#exercise"><span class="n">13</span>แบบฝึกหัด</a>
+    <a href="#cheat"><span class="n">14</span>สรุปคำสั่ง</a>
+  </nav>
+
+  <main>
+    <!-- ===== Hero ===== -->
+    <header class="hero" id="top">
+      <div class="gitmark">🔀</div>
+      <p class="kicker">Software Development Tools &amp; Environments</p>
+      <h1>Git — Week 1</h1>
+      <p class="sub">Starting with Git · Version Control System &amp; GitHub</p>
+      <p class="author">นำเสนอโดย <b>ผศ.ดร. ทัศนัย พลสุวรรณ</b></p>
+      <div class="scores">
+        <div class="chip"><div class="v">35</div><div class="l">Midterm</div></div>
+        <div class="chip"><div class="v">35</div><div class="l">Final</div></div>
+        <div class="chip"><div class="v">15</div><div class="l">HW &amp; Lab</div></div>
+        <div class="chip"><div class="v">15</div><div class="l">Mini Project</div></div>
+      </div>
+    </header>
+
+    <!-- ===== 1. Intro / save game ===== -->
+    <section id="intro">
+      <div class="sec-head"><div class="sec-num">1</div><h2 class="sec-title">Git เปรียบเสมือนการ "เซฟเกม" 🎮</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 9–15 · Git – What and Why</p>
+      <p>ก่อนจะลงรายละเอียดทางเทคนิค สไลด์เปิดด้วยเรื่องเล่าของเกมเมอร์คนหนึ่ง เพื่อให้เห็นภาพว่า Git ทำงานอย่างไร — มันก็คือ <b>"การเซฟเกม"</b> ของโปรแกรมเมอร์นั่นเอง</p>
+      <div class="story">
+        <div class="panel"><div class="step">1</div><div class="face">😎</div><p>"ชอบเล่นเกมนี้จัง!"</p></div>
+        <div class="panel"><div class="step">2</div><div class="face">💾</div><p>"เซฟเกมไว้ก่อน เผื่อเดี๋ยวตาย!"</p></div>
+        <div class="panel"><div class="step">3</div><div class="face">😰</div><p>"ด่านนี้ยากมากเลย..."</p></div>
+        <div class="panel"><div class="step">4</div><div class="face">💀</div><p>"อาาาา ตายแล้ว!"</p></div>
+        <div class="panel"><div class="step">5</div><div class="face">😇</div><p>"ดีนะที่เซฟไว้ — โหลดกลับมาเล่นใหม่ได้!"</p></div>
+      </div>
+      <div class="callout tip">💡 <b>แนวคิดหลัก:</b> Git ช่วยให้เราบันทึก "จุดเซฟ" (commit) ของโค้ดไว้เป็นระยะ ถ้าทำพังเมื่อไหร่ ก็ <b>ย้อนกลับ (revert)</b> ไปยังจุดที่โค้ดยังทำงานได้เสมอ</p>
+    </section>
+
+    <!-- ===== 2. Before VCS ===== -->
+    <section id="before">
+      <div class="sec-head"><div class="sec-num">2</div><h2 class="sec-title">โลกก่อนมี Version Control</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 16–22 · Before Version Control System</p>
+      <p>ลองนึกถึงทีมที่ยังไม่มีระบบจัดการเวอร์ชัน เรื่องราวจะเป็นแบบนี้:</p>
+      <div class="steps">
+        <div class="stepitem"><div class="badge">1</div><div class="body">นักพัฒนาคนแรกเขียนโค้ด <b>Version 1.0</b> จนรันได้ (running code version 1.0)</div></div>
+        <div class="stepitem"><div class="badge">2</div><div class="body">เพื่อนบอกว่า <i>"ฉันมีไอเดียเจ๋ง ๆ ส่งโค้ดมาให้หน่อย"</i> → ส่งไฟล์ให้กันทาง email / USB</div></div>
+        <div class="stepitem"><div class="badge">3</div><div class="body">เพื่อนแก้ต่อเป็น <b>Version 2.0</b> แล้วรันได้ (running code version 2.0)</div></div>
+        <div class="stepitem"><div class="badge">🔥</div><div class="body">แต่แล้ว... <b>เซิร์ฟเวอร์พัง / ไฟไหม้</b> โค้ดที่กระจัดกระจายอยู่หลายเครื่องไม่มีศูนย์กลางที่เชื่อถือได้</div></div>
+      </div>
+      <h3><span class="dot"></span>ปัญหาที่เกิดขึ้น</h3>
+      <div class="cards">
+        <div class="card"><div class="ic">🐌</div><h4>Rollback is time consuming</h4><p>ย้อนกลับเวอร์ชันเก่าต้องไล่หาไฟล์เองทีละอัน เสียเวลามาก</p></div>
+        <div class="card"><div class="ic">🔍</div><h4>No audit tracking</h4><p>ไม่มีบันทึกว่าใครแก้อะไร เมื่อไหร่ ทำไม</p></div>
+        <div class="card"><div class="ic">👥</div><h4>Not scalable for large teams</h4><p>ทีมยิ่งใหญ่ ยิ่งโกลาหล โค้ดทับกันตลอด</p></div>
+      </div>
+    </section>
+
+    <!-- ===== 3. VCS ===== -->
+    <section id="vcs">
+      <div class="sec-head"><div class="sec-num">3</div><h2 class="sec-title">Version Control System คือทางออก</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 23–29 · Version Control System</p>
+      <p>VCS แก้ปัญหาทั้งหมดด้วยการมี <b>Repository</b> เป็นศูนย์กลางที่เก็บโค้ดทุกเวอร์ชัน (v1.0, v2.0, …) นักพัฒนาดึงโค้ดไปแก้ แล้วส่งเวอร์ชันใหม่กลับเข้า repository ได้พร้อมประวัติครบถ้วน</p>
+      <div class="diagram">
+        <div class="node"><div class="ic">👩‍💻</div><div class="lbl">Developer</div></div>
+        <div class="arrow">⇄</div>
+        <div class="node repo"><div class="ic">🗄️</div><div class="lbl">Repository<br>v1.0 · v2.0</div></div>
+        <div class="arrow">⇄</div>
+        <div class="node"><div class="ic">👨‍💻</div><div class="lbl">Developer</div></div>
+      </div>
+      <ul>
+        <li><b>Fetch the code</b> — ดึงโค้ดเวอร์ชันล่าสุดมาทำงานบนเครื่องตัวเอง</li>
+        <li>แก้ไขแล้วบันทึกกลับเป็นเวอร์ชันใหม่ (v2.0) เก็บไว้ใน repository</li>
+        <li>ทุกเวอร์ชันถูกเก็บไว้ → ย้อนกลับไปเวอร์ชันไหนก็ได้ทันที</li>
+      </ul>
+    </section>
+
+    <!-- ===== 4. Centralized vs Distributed ===== -->
+    <section id="cen-dis">
+      <div class="sec-head"><div class="sec-num">4</div><h2 class="sec-title">Centralized vs Distributed VCS</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 30–33 · VCS มี 2 รูปแบบหลัก</p>
+      <div class="twocol">
+        <div class="box cen">
+          <h4>🏛️ Centralized VCS (รวมศูนย์)</h4>
+          <p style="font-size:.9rem">นักพัฒนาทุกคนเชื่อมต่อเข้า <b>Centralized Repository</b> เพียงที่เดียว</p>
+          <ul>
+            <li><b>Single point of failure</b> — ถ้าเซิร์ฟเวอร์กลางพัง ทุกคนหยุดชะงัก</li>
+            <li><b>Requires constant connectivity</b> — ต้องต่อเน็ตตลอดเวลาจึงทำงานได้</li>
+          </ul>
+          <div class="eg">E.G — Subversion (SVN), Endevor</div>
+        </div>
+        <div class="box dis">
+          <h4>🌐 Distributed VCS (กระจาย)</h4>
+          <p style="font-size:.9rem">นักพัฒนาแต่ละคนมี <b>Local Repository</b> เต็มก้อนบนเครื่องตัวเอง และ sync กับ Remote Repository</p>
+          <ul>
+            <li><b>Each developer has a local copy</b> — มีสำเนาเต็ม ทำงาน offline ได้</li>
+            <li><b>More scalable than centralized</b> — รองรับทีมขนาดใหญ่ได้ดีกว่า</li>
+          </ul>
+          <div class="eg">E.G — Mercurial, <b style="color:var(--accent)">Git</b></div>
+        </div>
+      </div>
+      <div class="diagram">
+        <div class="node"><div class="ic">💻</div><div class="lbl">Local Repo</div></div>
+        <div class="node"><div class="ic">💻</div><div class="lbl">Local Repo</div></div>
+        <div class="node"><div class="ic">💻</div><div class="lbl">Local Repo</div></div>
+        <div class="arrow">⇄</div>
+        <div class="node repo"><div class="ic">☁️</div><div class="lbl">Remote Repository</div></div>
+      </div>
+    </section>
+
+    <!-- ===== 5. Why Git ===== -->
+    <section id="why">
+      <div class="sec-head"><div class="sec-num">5</div><h2 class="sec-title">ทำไมต้อง Git?</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 34 · Why Git?</p>
+      <div class="cards">
+        <div class="card"><div class="ic">🌐</div><h4>Distributed</h4><p>ทุกคนมีสำเนาเต็ม ทำงานแยกอิสระได้</p></div>
+        <div class="card"><div class="ic">⚡</div><h4>Performant</h4><p>เร็ว แม้กับโปรเจกต์ขนาดใหญ่</p></div>
+        <div class="card"><div class="ic">📋</div><h4>Detailed audit tracking</h4><p>ติดตามได้ละเอียดว่าใครแก้อะไร</p></div>
+        <div class="card"><div class="ic">🔓</div><h4>Open source</h4><p>โค้ดเปิด ต่อยอด ตรวจสอบได้</p></div>
+        <div class="card"><div class="ic">🆓</div><h4>Free!</h4><p>ใช้งานได้ฟรี</p></div>
+        <div class="card"><div class="ic">🔧</div><h4>DevOps Ready</h4><p>ใช้กับ Kubernetes GitOps, Jenkins และเครื่องมือ DevOps อื่น ๆ</p></div>
+        <div class="card"><div class="ic">☁️</div><h4>เป็นพื้นฐานของ Cloud</h4><p>GitHub, GitLab, CodeCommit ล้วน based on Git</p></div>
+      </div>
+    </section>
+
+    <!-- ===== 6. Git vs GitHub ===== -->
+    <section id="vs">
+      <div class="sec-head"><div class="sec-num">6</div><h2 class="sec-title">Git vs GitHub</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 35–38</p>
+      <p>สองสิ่งนี้คนละอย่างกัน — <b>Git</b> คือ "เครื่องมือ" version control ที่ติดตั้งบนเครื่อง ส่วน <b>GitHub</b> คือ "บริการ" ที่นำ Git ไปโฮสต์บน cloud พร้อมฟีเจอร์เสริม</p>
+      <table class="vs">
+        <tr><th>หัวข้อ</th><th>Git</th><th>GitHub</th></tr>
+        <tr><td>ประเภท</td><td>Version Control System</td><td>บริการ hosting repo + ฟีเจอร์อื่น ๆ</td></tr>
+        <tr><td>ทำงานที่</td><td>ติดตั้งบนเครื่อง (local)</td><td>ทำงานบน cloud</td></tr>
+        <tr><td>กำเนิด</td><td>ปี 2005 โดย Linus Torvalds</td><td>ปี 2008 (ปัจจุบัน Microsoft เป็นเจ้าของ)</td></tr>
+        <tr><td>License</td><td>Open source · ใช้ในหลายบริการ cloud</td><td>ไม่ open source · มีทั้ง free และ paid tier</td></tr>
+      </table>
+      <div class="callout tip">💡 <b>สมัครใช้งาน GitHub ฟรี:</b> <a href="https://github.com" target="_blank">https://github.com</a></div>
+    </section>
+
+    <!-- ===== 7. Install ===== -->
+    <section id="install">
+      <div class="sec-head"><div class="sec-num">7</div><h2 class="sec-title">การติดตั้ง Git</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 39–45 · Installing Git</p>
+
+      <h3><span class="dot"></span>🍎 macOS / 🐧 Linux</h3>
+      <p>มี Git ติดตั้งมากับ OS อยู่แล้ว ตรวจสอบเวอร์ชันด้วยคำสั่ง:</p>
+      <pre><code><span class="cmd">git</span> <span class="flag">--version</span>
+<span class="out">>> git version 2.25.1 (Apple Git-128)</span></code></pre>
+      <p>หากต้องการอัปเดต/ติดตั้งใหม่ ดาวน์โหลดได้จากเว็บทางการ → <a href="https://git-scm.com/downloads" target="_blank">git-scm.com/downloads</a></p>
+
+      <h3><span class="dot"></span>🪟 Windows</h3>
+      <div class="steps">
+        <div class="stepitem"><div class="badge">1</div><div class="body">ติดตั้ง <b>VS Code</b> ก่อน → <a href="https://code.visualstudio.com/" target="_blank">code.visualstudio.com</a> (Download with Default Settings)</div></div>
+        <div class="stepitem"><div class="badge">2</div><div class="body">ติดตั้ง <b>Git</b> → <a href="https://git-scm.com/" target="_blank">git-scm.com</a> ระหว่างติดตั้งจะถามว่าใช้ default editor อะไร ให้เลือก VS Code</div></div>
+      </div>
+      <div class="callout"><b>ทำไม HIGHLY recommend VS Code?</b> เพราะชุด <b>Windows + VS Code + GitHub</b> ทำงานเข้ากันได้ดีและ integrate กันโดยตรง · จะต้องติดตั้ง VS Code ไว้ก่อนถึงจะเลือกเป็น default editor ตอนติดตั้ง Git ได้ (ใช้ text editor อื่นที่ถนัดก็ได้)</div>
+    </section>
+
+    <!-- ===== 8. Config ===== -->
+    <section id="config">
+      <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title">การตั้งค่า Git (Configure)</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 46–50 · Day 1 — Configure Git</p>
+      <p>ก่อนเริ่มใช้งาน ต้องตั้ง <b>username</b> และ <b>email</b> ซึ่งจะถูกผูกติดกับทุก commit ที่เราสร้างขึ้น</p>
+      <pre><code><span class="cmt"># ตั้งค่าชื่อและอีเมล (--global = ใช้กับทุก repo บนเครื่อง)</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="str">"user"</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="str">"email"</span></code></pre>
+
+      <h4 class="mini">สลับไปใช้ GitHub อีก account</h4>
+      <pre><code><span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="str">"user"</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="str">"email"</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> credential.username <span class="str">"user"</span></code></pre>
+
+      <h4 class="mini">ลบ config เก่า (เมื่อ commit ไม่ได้ หรือต้องการเปลี่ยน account)</h4>
+      <pre><code><span class="cmt">-- ลบ config เก่า --</span>
+<span class="cmd">git</span> config <span class="flag">--global --unset</span> user.name
+<span class="cmd">git</span> config <span class="flag">--global --unset</span> user.email
+<span class="cmd">git</span> config <span class="flag">--global --unset</span> credential.username
+
+<span class="cmt">-- ลบ origin คนเก่า ถ้า commit ไม่ได้ --</span>
+<span class="cmd">git</span> remote remove origin</code></pre>
+
+      <h4 class="mini">ตรวจสอบการตั้งค่า</h4>
+      <pre><code><span class="cmd">git</span> config <span class="flag">--list</span>              <span class="cmt"># หรือ  git config -l</span>
+<span class="cmd">git</span> config <span class="flag">--list --show-origin</span>  <span class="cmt"># ดูว่าค่าแต่ละตัวมาจากไฟล์ไหน</span></code></pre>
+      <div class="callout tip">💡 ค่า <b>global</b> เก็บที่ไฟล์ <code class="inline">~/.gitconfig</code> · ส่วนค่า <b>local</b> เก็บที่ <code class="inline">.git/config</code> ของแต่ละ repo</div>
+    </section>
+
+    <!-- ===== 9. Create Repo ===== -->
+    <section id="repo">
+      <div class="sec-head"><div class="sec-num">9</div><h2 class="sec-title">สร้าง Git Repository</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 51–53 · Day 1 — Creating a Git Repository</p>
+      <pre><code><span class="cmd">git</span> init     <span class="cmt"># สร้าง Git Repository บนเครื่อง (รันครั้งเดียวต่อโปรเจกต์)</span>
+<span class="cmd">git</span> status   <span class="cmt"># รายงานสถานะปัจจุบันของ repository</span></code></pre>
+      <div class="cards">
+        <div class="card"><div class="ic">📁</div><h4>ไฟล์ซ่อน .git</h4><p>เมื่อรัน <code class="inline">git init</code> จะเกิดไฟล์/โฟลเดอร์ซ่อนชื่อ <code class="inline">.git</code> ที่ทำหน้าที่จัดการ versioning ของไฟล์ทั้งหมดใน repo</p></div>
+        <div class="card"><div class="ic">1️⃣</div><h4>รันครั้งเดียวพอ</h4><p><code class="inline">git init</code> รันแค่ครั้งเดียวต่อ 1 โปรเจกต์ ไม่ต้องรันซ้ำ</p></div>
+        <div class="card"><div class="ic">📊</div><h4>git status</h4><p>ใช้เช็กว่ามีไฟล์ไหนถูกแก้ / ยังไม่ถูก track / พร้อม commit</p></div>
+      </div>
+      <div class="callout danger">⚠️ <b>ห้ามลบโฟลเดอร์ <code class="inline">.git</code></b> เพราะมันคือหัวใจที่เก็บประวัติทั้งหมดของ repo ถ้าลบไป = สูญเสียประวัติทั้งหมด</div>
+    </section>
+
+    <!-- ===== 10. Git inside a folder ===== -->
+    <section id="folder">
+      <div class="sec-head"><div class="sec-num">10</div><h2 class="sec-title">Git ภายในโฟลเดอร์ / ไดเรกทอรี</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 54–61 · Git inside a Folder/Directory</p>
+      <p>เมื่อสร้าง Git Repository แล้ว <b>ทุกโฟลเดอร์/ไดเรกทอรีที่อยู่ภายใต้ repository ระดับบนสุด (top level) จะถูกนับเป็นส่วนหนึ่งของ repo นั้นโดยอัตโนมัติ</b> หมายความว่าการเปลี่ยนแปลงทั้งหมดในโฟลเดอร์ลูกจะถูก track ไปด้วย</p>
+      <div class="diagram">
+        <div class="node repo"><div class="ic">📂</div><div class="lbl">root + .git</div></div>
+        <div class="arrow">→</div>
+        <div class="node"><div class="ic">📁</div><div class="lbl">subfolder (tracked)</div></div>
+        <div class="node"><div class="ic">📁</div><div class="lbl">subfolder (tracked)</div></div>
+      </div>
+      <div class="callout danger">🚫 <b>ห้าม <code class="inline">git init</code> ซ้อน!</b> (สไลด์หน้า 60) อย่ารัน <code class="inline">git init</code> ในโฟลเดอร์ลูกที่อยู่ภายใต้ repo ที่มี <code class="inline">.git</code> อยู่แล้ว เพราะจะเกิด <b>nested repository</b> (repo ซ้อน repo) ทำให้การจัดการเวอร์ชันสับสน — 1 repo ควรมี <code class="inline">.git</code> เพียงอันเดียวที่ root</div>
+    </section>
+
+    <!-- ===== 11. gitignore ===== -->
+    <section id="ignore">
+      <div class="sec-head"><div class="sec-num">11</div><h2 class="sec-title">การ Ignore ไฟล์ด้วย .gitignore</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 62–63 · Ignoring Files</p>
+      <p>เราสามารถบอก Git ว่าไฟล์/โฟลเดอร์ไหน <b>ไม่ต้อง</b> เก็บเข้า repo โดยสร้างไฟล์ชื่อ <code class="inline">.gitignore</code> ไว้ที่ root ของ repository ซึ่งมีประโยชน์กับไฟล์ที่เรา <b>ไม่มีวันอยากจะ commit</b></p>
+      <h3><span class="dot"></span>ไฟล์ที่ควรใส่ใน .gitignore</h3>
+      <div class="cards">
+        <div class="card"><div class="ic">🔑</div><h4>Secrets &amp; Keys</h4><p>API keys, credentials, รหัสผ่าน</p></div>
+        <div class="card"><div class="ic">💻</div><h4>OS Files</h4><p>ไฟล์ของระบบ เช่น .DS_Store บน Mac</p></div>
+        <div class="card"><div class="ic">📜</div><h4>Log Files</h4><p>ไฟล์ log ต่าง ๆ</p></div>
+        <div class="card"><div class="ic">📦</div><h4>Dependencies &amp; Packages</h4><p>เช่น node_modules ที่ติดตั้งใหม่ได้</p></div>
+      </div>
+      <h3><span class="dot"></span>ตัวอย่าง Pattern</h3>
+      <p>สร้างไฟล์ชื่อ <code class="inline">.gitignore</code> ที่ root แล้วเขียน pattern ข้างใน:</p>
+      <pre><code><span class="cmt"># .gitignore</span>
+.DS_Store        <span class="cmt"># ignore ไฟล์ชื่อ .DS_Store</span>
+folderName/      <span class="cmt"># ignore ทั้งไดเรกทอรี (ลงท้ายด้วย /)</span>
+*.log            <span class="cmt"># ignore ทุกไฟล์ที่นามสกุล .log</span></code></pre>
+      <div class="callout tip">💡 สร้าง .gitignore สำเร็จรูปตามภาษา/framework ได้ที่ → <a href="https://www.toptal.com/developers/gitignore" target="_blank">toptal.com/developers/gitignore</a></div>
+    </section>
+
+    <!-- ===== 12. Private Repo & Token ===== -->
+    <section id="token">
+      <div class="sec-head"><div class="sec-num">12</div><h2 class="sec-title">Private Repository &amp; Personal Access Token</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 64–70 · Day 1 — Private Repositories and Tokens</p>
+      <p>repo สาธารณะ clone ได้ตามปกติ แต่ <b>repo ส่วนตัว (private)</b> ต้องยืนยันตัวตนด้วย <b>Personal Access Token (PAT)</b> แทนรหัสผ่าน</p>
+      <pre><code><span class="cmt"># แบบเดิม (repo สาธารณะ)</span>
+<span class="cmd">git</span> clone https://github.com/account/repo.git
+
+<span class="cmt"># แบบใช้ PAT (repo ส่วนตัว)</span>
+<span class="cmd">git</span> clone https://username:<span class="str">YOUR_TOKEN</span>@github.com/username/repo.git</code></pre>
+
+      <h3><span class="dot"></span>ขั้นตอนสร้าง Personal Access Token</h3>
+      <div class="steps">
+        <div class="stepitem"><div class="badge">1</div><div class="body">คลิก <b>รูปโปรไฟล์</b> มุมขวาบน → เลือก <b>"Settings"</b></div></div>
+        <div class="stepitem"><div class="badge">2</div><div class="body">ใน sidebar ซ้าย เลื่อนลงไปเลือก <b>"Developer settings"</b></div></div>
+        <div class="stepitem"><div class="badge">3</div><div class="body">เลือก <b>Personal access tokens</b> → <b>Tokens (classic)</b></div></div>
+        <div class="stepitem"><div class="badge">4</div><div class="body">คลิก <b>"Generate new token"</b> → ตั้งชื่อ, เลือกอายุ (expiration), และ scope สิทธิ์ที่ต้องการ (เช่น <code class="inline">repo</code>)</div></div>
+        <div class="stepitem"><div class="badge">5</div><div class="body"><b>คัดลอก token เก็บไว้ทันที</b> — token จะแสดงเพียงครั้งเดียว!</div></div>
+      </div>
+      <div class="callout danger">⚠️ <b>อย่า commit token ลง repo เด็ดขาด</b> ควรใส่ไว้ใน .gitignore และถ้า token รั่วไหลให้ revoke แล้วสร้างใหม่ทันที</div>
+    </section>
+
+    <!-- ===== 13. Exercise ===== -->
+    <section id="exercise">
+      <div class="sec-head"><div class="sec-num">13</div><h2 class="sec-title">แบบฝึกหัด (Exercise)</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 71–77 · Day 1 — Exercise</p>
+      <div class="exercise">
+        <h3 style="margin-top:0"><span class="dot"></span>โจทย์ (Exercise Tasks)</h3>
+        <div class="steps">
+          <div class="stepitem"><div class="badge">1</div><div class="body">สร้าง <b style="color:var(--accent)">Private Repository</b> ใหม่บน GitHub</div></div>
+          <div class="stepitem"><div class="badge">2</div><div class="body"><b>Initialize</b> repository พร้อม <b>README</b>, <b>license</b> และ <b>.gitignore</b></div></div>
+          <div class="stepitem"><div class="badge">3</div><div class="body">สร้างไฟล์ <code class="inline">test.txt</code> แล้วใส่ <b>ข้อมูลสุ่ม (random data)</b></div></div>
+          <div class="stepitem"><div class="badge">4</div><div class="body"><b>Clone</b> repository ลงเครื่องผ่าน <b>Command Line</b> (ใช้ PAT)</div></div>
+        </div>
+      </div>
+
+      <h3><span class="dot"></span>ขั้นตอนทำทีละสเต็ป (จาก screenshot ในสไลด์)</h3>
+      <div class="steps">
+        <div class="stepitem"><div class="badge">A</div><div class="body">บน GitHub กดปุ่ม <b>"New repository"</b> (มุมขวาบน หรือเมนู +)</div></div>
+        <div class="stepitem"><div class="badge">B</div><div class="body">ตั้งชื่อ repo (เช่น <code class="inline">test_week1</code>) → เลือก <b>Private</b> → ติ๊ก <b>Add a README file</b>, เลือก <b>.gitignore</b> และ <b>license</b> → กด <b>Create repository</b></div></div>
+        <div class="stepitem"><div class="badge">C</div><div class="body">บนหน้า repo กด <b>Add file → Create new file</b> ตั้งชื่อ <code class="inline">test.txt</code> ใส่ข้อมูลสุ่ม</div></div>
+        <div class="stepitem"><div class="badge">D</div><div class="body">ใส่ <b>Commit message</b> (เช่น "add new file") → <b>Commit changes</b> · จะเห็น test.txt ปรากฏใน repo</div></div>
+        <div class="stepitem"><div class="badge">E</div><div class="body">Clone ลงเครื่องด้วย token:</div></div>
+      </div>
+      <pre><code><span class="cmd">git</span> clone https://username:<span class="str">YOUR_TOKEN</span>@github.com/username/repo.git</code></pre>
+    </section>
+
+    <!-- ===== 14. Cheat sheet ===== -->
+    <section id="cheat">
+      <div class="sec-head"><div class="sec-num">14</div><h2 class="sec-title">สรุปคำสั่งสำคัญ (Cheat Sheet)</h2></div>
+      <pre><code><span class="cmt"># ── ตรวจสอบ / ตั้งค่า ─────────────────</span>
+<span class="cmd">git</span> <span class="flag">--version</span>                       <span class="cmt"># เช็กว่ามี Git และเวอร์ชันอะไร</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="str">"name"</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="str">"email"</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> credential.username <span class="str">"user"</span>
+<span class="cmd">git</span> config <span class="flag">--list</span>                       <span class="cmt"># ดู config ทั้งหมด (= git config -l)</span>
+<span class="cmd">git</span> config <span class="flag">--list --show-origin</span>         <span class="cmt"># ดูว่าค่ามาจากไฟล์ไหน</span>
+
+<span class="cmt"># ── ลบ config / origin เก่า ──────────</span>
+<span class="cmd">git</span> config <span class="flag">--global --unset</span> user.name
+<span class="cmd">git</span> config <span class="flag">--global --unset</span> user.email
+<span class="cmd">git</span> remote remove origin
+
+<span class="cmt"># ── สร้าง / ตรวจสอบ repo ─────────────</span>
+<span class="cmd">git</span> init                            <span class="cmt"># สร้าง repo (เกิดโฟลเดอร์ .git)</span>
+<span class="cmd">git</span> status                          <span class="cmt"># ดูสถานะปัจจุบัน</span>
+
+<span class="cmt"># ── clone ───────────────────────────</span>
+<span class="cmd">git</span> clone https://github.com/user/repo.git
+<span class="cmd">git</span> clone https://user:<span class="str">TOKEN</span>@github.com/user/repo.git  <span class="cmt"># private</span></code></pre>
+    </section>
+
+    <footer>
+      📘 Software Development Tools and Environments — Week 1: Git<br>
+      ผศ.ดร. ทัศนัย พลสุวรรณ &nbsp;·&nbsp; เรียบเรียงให้ตรงตามลำดับสไลด์ทั้ง 77 หน้า
+    </footer>
+  </main>
+</div>
+<a href="#top" class="top-link" title="กลับขึ้นบน">↑</a>
+</body>
+</html>

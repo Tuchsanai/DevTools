@@ -1,0 +1,65 @@
+==============================================
+PROMPT: ทำ LAB จริง + Computer Use + Capture หลักฐานภาพ
+==============================================
+
+บทบาท: ทำตัวเป็นนักศึกษาวิชา Software Development Tools and Environments
+
+ภารกิจ:
+1. อ่าน LAB_GUIDE.md ให้เข้าใจทั้งหมดก่อน
+2. ทำ LAB จริงตามลำดับ: build/run container → LAB 1 (SSH) → LAB 2 (FastAPI)
+   → LAB 3 (Docker-in-Docker) โดยรันคำสั่งจริงและเก็บ output จริง
+   (ห้ามแต่งผลลัพธ์ขึ้นเอง — ถ้ารันไม่ได้ให้บันทึก error ตามจริงพร้อมวิธีแก้)
+
+3. ใช้ Computer Use เก็บ "หลักฐานภาพ" (screenshot) ของแต่ละขั้นตอนจริง
+   บันทึกไฟล์ภาพไว้ในโฟลเดอร์ ./screenshots/ ตั้งชื่อสื่อความ เช่น
+   - 01_docker_desktop.png   → เปิด Docker Desktop เห็น container devtools-lab รันอยู่ (สถานะ Running)
+   - 02_powershell_run.png   → หน้าต่าง PowerShell ตอน docker build / docker run สำเร็จ
+   - 03_ssh_login.png        → เซสชัน SSH ที่ login เป็น student สำเร็จ (whoami, git --version)
+   - 04_hello_world.png      → ผล docker run --rm hello-world (Docker-in-Docker)
+   - 05_uvicorn_running.png  → log uvicorn ตอนเซิร์ฟเวอร์รันที่พอร์ต 8000
+   - 06_browser_root.png     → เบราว์เซอร์เปิด http://localhost:8000 เห็น JSON ตอบกลับ
+   - 07_swagger_ui.png       → หน้า Swagger UI ที่ http://localhost:8000/docs
+   - 08_dind_build_run.png   → docker build + docker run ของอิมเมจที่สร้างซ้อนใน DinD
+   ขั้นตอนการ capture:
+   - เปิดโปรแกรม/หน้าต่างจริง (Docker Desktop, PowerShell, Chrome) ด้วย computer use
+   - จัดหน้าต่างให้เห็นผลลัพธ์ชัด แล้วถ่าย screenshot เก็บไฟล์จริง
+   - ถ้า capture ไม่ได้/ไม่มีสิทธิ์ ให้บันทึกตามจริงว่าใช้วิธีสำรองอะไร (เช่น คำสั่ง screenshot ของ OS)
+     และยังต้องมี output ข้อความจริงประกอบเสมอ — ห้ามสร้างภาพปลอม
+
+   *** คุณภาพภาพ (สำคัญมาก — เครื่องนี้เป็นจอ ultrawide / กว้างพิเศษ) ***
+   - ห้ามแคปทั้งจอ (full virtual screen) เพราะหน้าต่างจะลอยอยู่กลางพื้นที่ว่างกว้าง ดูไม่สวย/อ่านยาก
+   - ต้อง "โฟกัสและ crop เฉพาะหน้าต่างเป้าหมาย" ให้ภาพมีแต่หน้าต่างนั้นเต็มเฟรม:
+     1) เปิด/โฟกัสหน้าต่าง (COM AppActivate ด้วย PID — เลี่ยง Win32 P/Invoke ที่ AMSI มักบล็อก)
+     2) หา bounding rectangle ของหน้าต่างด้วย UI Automation (managed API ไม่ใช่ P/Invoke):
+        [System.Windows.Automation.AutomationElement] -> Current.BoundingRectangle
+        (โหลด UIAutomationClient, UIAutomationTypes)
+     3) แคปเฉพาะกรอบนั้นด้วย System.Drawing.Graphics.CopyFromScreen โดยส่ง
+        ตำแหน่ง/ขนาด = ค่าจาก BoundingRectangle (ได้ภาพ crop พอดีหน้าต่าง)
+   - ทำให้หน้าต่างใหญ่และเนื้อหาชัดก่อนแคป:
+       * PowerShell: เปิดด้วย -WindowStyle Maximized และตั้งฟอนต์ใหญ่/คอนทราสต์สูง
+       * Chrome: เปิดเต็มจอ/ขยายหน้าต่าง และซูมหน้าให้อ่านง่าย
+   - หลังแคปทุกภาพ ให้ "เปิดไฟล์ภาพมาตรวจ" ว่า crop พอดีหน้าต่าง อ่านข้อความออก ไม่มีพื้นที่ดำว่าง/
+     ไม่มีหน้าต่างอื่นบังหรือแอบโผล่ ถ้ายังไม่สวยให้แคปใหม่จนผ่าน
+   - ถ้า BoundingRectangle ใช้ไม่ได้ ให้ fallback: maximize หน้าต่างแล้ว crop เป็นกรอบจอหลัก
+     (primary monitor) แทนการใช้ virtual screen ทั้งหมด
+
+4. สร้างไฟล์ lab_result.html แบบ self-contained
+   (CSS อยู่ในไฟล์, เปิดด้วยเบราว์เซอร์ได้เลย ไม่พึ่ง internet)
+   - ฝัง screenshot เข้าไปในแต่ละ LAB ด้วย <img> โดยอ้าง path ./screenshots/...
+     (ถ้าต้องการให้เป็นไฟล์เดียวจบจริง ๆ ให้ embed ภาพเป็น base64 data URI)
+   - ใต้ภาพมีคำบรรยายสั้น ๆ ว่าภาพนี้พิสูจน์อะไร
+
+โครงสร้าง HTML ที่ต้องการ:
+- หัวเรื่อง + สารบัญลิงก์ไปแต่ละ LAB
+- แต่ละ LAB เป็น section แยก ประกอบด้วย:
+  🎯 โจทย์ → 💻 คำสั่ง (code block จัดสีอ่านง่าย) → ✅ ผลลัพธ์จริง (ข้อความ)
+  → 📸 หลักฐานภาพ (screenshot จาก computer use) → 📝 หมายเหตุ/จุดพลาดที่พบบ่อย
+- ท้ายไฟล์มี checklist "เกณฑ์ส่งงาน" ติ๊กตามที่ทำได้จริง
+  (แต่ละข้ออ้างอิงทั้ง output ข้อความ และไฟล์ screenshot ที่เป็นหลักฐาน)
+
+ข้อกำหนดความถูกต้อง (สำคัญ):
+- ทุกผลลัพธ์และทุก screenshot ต้องมาจากการทำจริงเท่านั้น ห้าม mock/แต่ง
+- ถ้าเครื่องมือ computer use ใช้ไม่ได้ในสภาพแวดล้อมนี้ ให้แจ้งตามจริง
+  แล้วเสนอวิธีสำรองที่ยังได้หลักฐานจริง (เช่น สคริปต์แคปหน้าจอด้วย PowerShell/OS)
+
+โทน: เขียนให้เพื่อนนักศึกษาคนอื่นเปิดอ่านแล้วทำตามได้ทันที

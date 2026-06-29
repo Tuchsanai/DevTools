@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git — Week 2 | Getting Started with Git</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2333; --border:#30363d;
+    --text:#e6edf3; --muted:#8b949e; --accent:#f05133; --accent2:#58a6ff;
+    --green:#3fb950; --yellow:#d29922; --purple:#bc8cff; --code-bg:#0b0f14;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Segoe UI","Noto Sans Thai",-apple-system,Tahoma,sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.75;
+  }
+  a{color:var(--accent2);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* ===== Layout ===== */
+  .wrap{display:flex;max-width:1480px;margin:0 auto}
+  nav.side{
+    position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;
+    width:280px;flex-shrink:0;padding:24px 18px;border-right:1px solid var(--border);
+    background:var(--panel);
+  }
+  nav.side .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;padding:0 8px}
+  nav.side .brand .m{width:34px;height:34px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px}
+  nav.side .brand b{font-size:1rem}
+  nav.side h2{font-size:.72rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:18px 8px 8px}
+  nav.side a{display:block;color:var(--muted);padding:7px 12px;border-radius:8px;font-size:.9rem;margin-bottom:1px}
+  nav.side a:hover{background:var(--panel2);color:var(--text);text-decoration:none}
+  nav.side a.active{background:var(--panel2);color:#fff;box-shadow:inset 3px 0 0 var(--accent)}
+  nav.side a .n{color:var(--accent);font-weight:700;margin-right:8px;display:inline-block;width:20px}
+  main{flex:1;min-width:0;padding:0 0 80px}
+
+  /* ===== Hero ===== */
+  header.hero{
+    padding:70px 56px 52px;text-align:center;
+    background:radial-gradient(circle at 50% -20%, #2d1810 0%, var(--bg) 60%);
+    border-bottom:1px solid var(--border);
+  }
+  .gitmark{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:88px;height:88px;border-radius:22px;background:var(--accent);
+    font-size:44px;margin-bottom:22px;box-shadow:0 12px 40px rgba(240,81,51,.35);
+  }
+  header.hero .kicker{color:var(--accent);font-weight:700;letter-spacing:2px;font-size:.82rem;text-transform:uppercase}
+  header.hero h1{font-size:3rem;margin:10px 0 6px;background:linear-gradient(90deg,#fff,#f05133);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  header.hero p.sub{color:var(--muted);font-size:1.1rem}
+  header.hero p.author{margin-top:14px;color:var(--text);font-size:.95rem}
+  .scores{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+  .chip{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 20px;min-width:120px}
+  .chip .v{font-size:1.6rem;font-weight:800;color:var(--accent2)}
+  .chip .l{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+  /* ===== Sections ===== */
+  section{padding:48px 56px;border-bottom:1px solid var(--border);scroll-margin-top:24px}
+  .sec-head{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+  .sec-num{
+    flex-shrink:0;width:48px;height:48px;border-radius:13px;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.3rem
+  }
+  h2.sec-title{font-size:1.8rem}
+  .slideref{color:var(--muted);font-size:.78rem;margin:0 0 22px 64px;font-style:italic}
+  h3{font-size:1.22rem;margin:30px 0 12px;color:#fff;display:flex;align-items:center;gap:8px}
+  h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  h4.mini{font-size:1.02rem;color:var(--accent2);margin:18px 0 8px}
+  p{margin-bottom:12px;color:#c9d1d9}
+  ul,ol{margin:0 0 14px 22px}
+  li{margin-bottom:7px;color:#c9d1d9}
+  strong,b{color:#fff}
+
+  /* ===== Code ===== */
+  pre{
+    background:var(--code-bg);border:1px solid var(--border);border-radius:12px;
+    padding:18px 20px;overflow-x:auto;margin:14px 0;
+    font-family:"JetBrains Mono",Consolas,Monaco,monospace;font-size:.9rem;line-height:1.65
+  }
+  pre code{color:#e6edf3}
+  .cmt{color:#6e7681}
+  .cmd{color:var(--green)}
+  .flag{color:var(--purple)}
+  .str{color:var(--yellow)}
+  .out{color:var(--accent2)}
+  .add{color:#56d364;font-weight:600}
+  .del{color:#ff7b72;font-weight:600}
+  code.inline{background:var(--panel2);padding:2px 8px;border-radius:6px;font-family:Consolas,monospace;font-size:.88em;color:var(--purple)}
+
+  /* ===== Story / comic strip ===== */
+  .story{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+  .panel{background:linear-gradient(160deg,#1d4e89,#16365f);border-radius:14px;padding:18px;text-align:center;border:1px solid #2a5a92;position:relative}
+  .panel .face{font-size:2rem;margin-bottom:6px}
+  .panel p{font-size:.86rem;color:#dbe9ff;margin:0}
+  .panel .step{position:absolute;top:8px;left:10px;font-size:.7rem;color:#7fb3e8;font-weight:700}
+
+  /* ===== Cards & callouts ===== */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:18px 0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .card .ic{font-size:1.8rem;margin-bottom:10px}
+  .card h4{color:#fff;margin-bottom:6px;font-size:1.05rem}
+  .card p{font-size:.88rem;color:var(--muted);margin:0}
+
+  .callout{border-left:4px solid var(--accent2);background:var(--panel);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0}
+  .callout.warn{border-color:var(--yellow)}
+  .callout.tip{border-color:var(--green)}
+  .callout.danger{border-color:var(--accent)}
+  .callout b{color:#fff}
+
+  /* ===== diagram boxes (flow) ===== */
+  .diagram{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;background:#22262e;border:1px solid var(--border);border-radius:16px;padding:26px;margin:18px 0}
+  .node{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-align:center;min-width:120px}
+  .node .ic{font-size:1.8rem}
+  .node .lbl{font-size:.82rem;color:var(--muted);margin-top:4px}
+  .node.repo{background:#3a1f1c;border-color:var(--accent)}
+  .node.repo .lbl{color:var(--accent);font-weight:700}
+  .arrow{font-size:1.5rem;color:var(--accent2);display:flex;flex-direction:column;align-items:center;font-weight:700}
+  .arrow small{font-size:.66rem;color:var(--green);font-family:Consolas,monospace}
+
+  /* ===== Comparison table ===== */
+  table{width:100%;border-collapse:collapse;margin:18px 0;background:var(--panel);border-radius:12px;overflow:hidden}
+  th,td{padding:13px 18px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+  th{background:var(--panel2);color:#fff;font-size:.9rem;letter-spacing:.5px}
+  td{color:#c9d1d9;font-size:.9rem}
+  tr:last-child td{border-bottom:none}
+  .vs th:nth-child(2){color:var(--accent2)}
+  .vs th:nth-child(3){color:var(--yellow)}
+
+  /* ===== two-column compare ===== */
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:18px 0}
+  .box{border-radius:14px;padding:22px;border:1px solid var(--border)}
+  .box.cen{background:linear-gradient(160deg,#0f2a1a,#161b22)}
+  .box.dis{background:linear-gradient(160deg,#2a2410,#161b22)}
+  .box h4{font-size:1.1rem;margin-bottom:6px}
+  .box.cen h4{color:var(--green)} .box.dis h4{color:var(--yellow)}
+  .box ul{margin-top:10px}
+  .box .eg{font-size:.82rem;color:var(--muted);margin-top:10px;font-style:italic}
+
+  /* ===== Steps (numbered walkthrough) ===== */
+  .steps{counter-reset:s;margin:18px 0}
+  .stepitem{display:flex;gap:16px;align-items:flex-start;padding:14px 0;border-bottom:1px dashed var(--border)}
+  .stepitem:last-child{border-bottom:none}
+  .stepitem .badge{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem}
+  .stepitem .body b{color:#fff}
+  .stepitem .body{padding-top:3px}
+
+  /* ===== Commit chain (slide 37) ===== */
+  .chain{display:flex;align-items:stretch;justify-content:center;gap:0;flex-wrap:wrap;margin:18px 0}
+  .cnode{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:14px 16px;min-width:150px;font-family:Consolas,monospace;font-size:.8rem}
+  .cnode .h{color:var(--accent);font-weight:700;margin-bottom:6px}
+  .cnode .row{color:var(--muted)}
+  .cnode .row b{color:#fff;font-weight:600}
+  .clink{display:flex;align-items:center;color:var(--accent2);font-size:1.4rem;padding:0 8px}
+
+  /* ===== Lab card ===== */
+  .lab{background:linear-gradient(135deg,#1c2333,#161b22);border:1px solid var(--accent);border-radius:16px;padding:26px;margin:20px 0}
+  .lab .labhd{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .lab .tag{background:var(--accent);color:#fff;font-size:.74rem;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:.5px}
+  .lab h3{margin:0;color:#fff}
+  .lab .goal{color:var(--muted);font-size:.9rem;margin:4px 0 12px}
+  .lab .cmds{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .lab .cmds code{background:var(--panel2);color:var(--purple);padding:3px 9px;border-radius:6px;font-size:.8rem;font-family:Consolas,monospace}
+
+  .exercise{background:linear-gradient(135deg,#1c2333,#161b22);border:1px solid var(--accent2);border-radius:16px;padding:24px;margin-top:8px}
+
+  footer{padding:32px 56px;text-align:center;color:var(--muted);font-size:.85rem}
+
+  @media(max-width:900px){
+    nav.side{display:none}
+    header.hero h1{font-size:2rem}
+    section,header.hero,footer{padding-left:22px;padding-right:22px}
+    .twocol{grid-template-columns:1fr}
+  }
+  .top-link{position:fixed;bottom:24px;right:24px;background:var(--accent);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 6px 20px rgba(0,0,0,.4);z-index:50}
+  .top-link:hover{text-decoration:none;transform:translateY(-2px)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== Sidebar ===== -->
+  <nav class="side">
+    <div class="brand"><div class="m">🔀</div><b>Git · Week 2</b></div>
+    <h2>เนื้อหา</h2>
+    <a href="#overview"><span class="n">1</span>ภาพรวม Week 2</a>
+    <a href="#workflow"><span class="n">2</span>Basic Git Workflow</a>
+    <a href="#commit"><span class="n">3</span>3 พื้นที่: Add &amp; Commit</a>
+    <a href="#anatomy"><span class="n">4</span>กายวิภาคของ Commit</a>
+    <a href="#remote"><span class="n">5</span>Push &amp; Remote Branches</a>
+    <a href="#clone"><span class="n">6</span>Cloning &amp; Remote-Tracking</a>
+    <a href="#log"><span class="n">7</span>Git Log &amp; Diff</a>
+    <a href="#fetchpull"><span class="n">8</span>Fetch vs Pull</a>
+    <a href="#labs"><span class="n">9</span>แบบฝึกหัด (4 Labs)</a>
+    <a href="#cheat"><span class="n">10</span>สรุปคำสั่ง (Cheat Sheet)</a>
+  </nav>
+
+  <main>
+    <!-- ===== Hero ===== -->
+    <header class="hero" id="top">
+      <div class="gitmark">🔀</div>
+      <p class="kicker">Software Development Tools &amp; Environments</p>
+      <h1>Git — Week 2</h1>
+      <p class="sub">Getting Started with Git · Basic Git Usage &amp; Remote Workflow</p>
+      <p class="author">นำเสนอโดย <b>ผศ.ดร. ทัศนัย พลสุวรรณ</b></p>
+      <div class="scores">
+        <div class="chip"><div class="v">add</div><div class="l">Stage</div></div>
+        <div class="chip"><div class="v">commit</div><div class="l">Save</div></div>
+        <div class="chip"><div class="v">push</div><div class="l">Upload</div></div>
+        <div class="chip"><div class="v">pull</div><div class="l">Sync</div></div>
+      </div>
+    </header>
+
+    <!-- ===== 1. Overview ===== -->
+    <section id="overview">
+      <div class="sec-head"><div class="sec-num">1</div><h2 class="sec-title">ภาพรวม Week 2 — คำสั่งที่จะได้เรียน</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 1–4 · Week 2 — Getting Started with Git</p>
+      <p>สัปดาห์นี้เราจะลงมือใช้ Git จริง ๆ โดยเริ่มจาก <b>วงจรการทำงานพื้นฐาน (basic workflow)</b> ของ Git และ GitHub ตัวอย่างทั้งหมดจะสมมติว่าเป็น <b>นักพัฒนาคนเดียว (solo developer)</b> ที่ทำงานอยู่บน branch เดียวกัน — ส่วนเรื่อง branch และการทำงานร่วมกับผู้อื่นจะอยู่ใน <b>Week 3</b></p>
+      <div class="cards">
+        <div class="card"><div class="ic">✏️</div><h4>เปลี่ยนแปลงโค้ด</h4><p>บอก Git ว่ามีไฟล์ไหนเปลี่ยนบ้าง ด้วย <code class="inline">git add</code></p></div>
+        <div class="card"><div class="ic">💾</div><h4>บันทึกการเปลี่ยนแปลง</h4><p>เซฟเป็นจุด ๆ ด้วย <code class="inline">git commit</code></p></div>
+        <div class="card"><div class="ic">🔄</div><h4>ส่งขึ้น / ดึงลง</h4><p>ซิงก์กับ remote ด้วย <code class="inline">git push</code> และ <code class="inline">git pull</code></p></div>
+        <div class="card"><div class="ic">🔍</div><h4>ตรวจสอบสถานะ</h4><p>ดูสถานะ &amp; ประวัติด้วย <code class="inline">git status</code>, <code class="inline">git log</code>, <code class="inline">git diff</code></p></div>
+        <div class="card"><div class="ic">📥</div><h4>ดึงจาก remote branch</h4><p>นำการเปลี่ยนแปลงจาก remote มาด้วย <code class="inline">git fetch</code> และ <code class="inline">git pull</code></p></div>
+      </div>
+      <div class="callout tip">💡 <b>เป้าหมายของสัปดาห์นี้:</b> เข้าใจ <b>Git Workflow</b> · บอก Git เรื่องการแก้ไขโค้ด · push การเปลี่ยนแปลงขึ้น GitHub · และ pull การเปลี่ยนแปลงกลับลงมา</div>
+    </section>
+
+    <!-- ===== 2. Basic Workflow ===== -->
+    <section id="workflow">
+      <div class="sec-head"><div class="sec-num">2</div><h2 class="sec-title">Basic Git Workflow</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 5–15 · Basic Git Usage</p>
+      <p>มี <b>2 วิธี</b> ในการเริ่มต้น repository บนเครื่องของเรา:</p>
+      <div class="twocol">
+        <div class="box cen">
+          <h4>🐙 เริ่มจาก GitHub แล้ว Clone</h4>
+          <p style="font-size:.9rem">สร้าง Repo บน GitHub ก่อน แล้วดึงสำเนาทั้งหมดลงมาบนเครื่อง</p>
+          <pre style="margin:8px 0"><code><span class="cmt"># 1) สร้าง repo บน github.com</span>
+<span class="cmt"># 2) คัดลอกมาทั้งก้อน</span>
+<span class="cmd">git</span> clone https://github.com/user/repo.git</code></pre>
+          <div class="eg">เหมาะเมื่อโปรเจกต์เริ่มที่ GitHub</div>
+        </div>
+        <div class="box dis">
+          <h4>📁 เริ่มจากเครื่องด้วย git init</h4>
+          <p style="font-size:.9rem">มีโฟลเดอร์โปรเจกต์อยู่แล้ว เปลี่ยนให้เป็น Git repo</p>
+          <pre style="margin:8px 0"><code><span class="cmt"># ในโฟลเดอร์โปรเจกต์</span>
+<span class="cmd">git</span> init
+<span class="cmt"># เกิดโฟลเดอร์ซ่อน .git ขึ้นมา</span></code></pre>
+          <div class="eg">เหมาะเมื่อโค้ดมีอยู่แล้วบนเครื่อง</div>
+        </div>
+      </div>
+
+      <h3><span class="dot"></span>Commit คือ "จุดเซฟ" ของโปรเจกต์</h3>
+      <p>เมื่อเราพัฒนาไปเรื่อย ๆ (Initial Project → Add Code → More Code …) เราสามารถมอง <b>แต่ละก้าว</b> เป็น <b>commit</b> — คือการบอก Git ถึงการเปลี่ยนแปลงเฉพาะจุดของไฟล์</p>
+      <div class="chain">
+        <div class="cnode"><div class="h">Initial Project</div><div class="row">commit แรกสุด</div></div>
+        <div class="clink">→</div>
+        <div class="cnode"><div class="h">Add Code</div><div class="row">commit ถัดมา</div></div>
+        <div class="clink">→</div>
+        <div class="cnode"><div class="h">More Code</div><div class="row">commit ล่าสุด</div></div>
+      </div>
+      <div class="callout tip">↩️ <b>ย้อนกลับได้:</b> เพราะทุก commit ถูกบันทึกไว้ เราจึง <b>กลับไปยัง commit ก่อนหน้า</b> ได้ตลอดเวลา</div>
+      <div class="callout">🗂️ <b>1 commit ครอบคลุมหลายไฟล์:</b> commit ไม่ได้เก็บแค่การเปลี่ยนแปลงของไฟล์เดียว แต่บันทึก <b>การเปลี่ยนแปลงข้ามทั้ง working directory</b> ได้ (เช่น <code class="inline">program.py</code>, <code class="inline">index.html</code>, <code class="inline">style.css</code> พร้อมกัน)</div>
+    </section>
+
+    <!-- ===== 3. Add & Commit (3 areas) ===== -->
+    <section id="commit">
+      <div class="sec-head"><div class="sec-num">3</div><h2 class="sec-title">สามพื้นที่ของ Git: Add &amp; Commit</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 16–36 · Add and Commit</p>
+      <p>หัวใจของ Git คือการเดินทางของไฟล์ผ่าน <b>3 พื้นที่ (three areas)</b>:</p>
+      <div class="diagram">
+        <div class="node"><div class="ic">📝</div><div class="lbl">Working Directory<br>ที่เราแก้ไฟล์</div></div>
+        <div class="arrow">→<small>git add</small></div>
+        <div class="node"><div class="ic">📦</div><div class="lbl">Staging Area<br>(index)</div></div>
+        <div class="arrow">→<small>git commit</small></div>
+        <div class="node repo"><div class="ic">🗄️</div><div class="lbl">Repository<br>(.git)</div></div>
+      </div>
+      <ul>
+        <li><b>Working Directory</b> — โฟลเดอร์ที่เราแก้ไฟล์จริง (program.py, index.html, style.css)</li>
+        <li><b>Staging Area</b> — "ห้องเตรียมตัว" รวบรวมไฟล์ที่จะ commit ในรอบนี้ ด้วย <code class="inline">git add</code></li>
+        <li><b>Repository</b> — ที่เก็บประวัติถาวร เมื่อ <code class="inline">git commit</code> แล้ว snapshot จะถูกบันทึกไว้</li>
+      </ul>
+
+      <h3><span class="dot"></span>เดินตามตัวอย่างทีละสเต็ป</h3>
+      <div class="steps">
+        <div class="stepitem"><div class="badge">1</div><div class="body"><b>stage ไฟล์เดียว</b> — ย้าย <code class="inline">program.py</code> เข้า Staging Area
+        <pre style="margin:8px 0"><code><span class="cmd">git</span> add program.py</code></pre></div></div>
+        <div class="stepitem"><div class="badge">2</div><div class="body"><b>commit</b> สิ่งที่ stage ไว้ลง Repository พร้อมข้อความอธิบาย
+        <pre style="margin:8px 0"><code><span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"python code"</span></code></pre>
+        Staging Area ว่างลง และ Repository ได้ snapshot ของ program.py</div></div>
+        <div class="stepitem"><div class="badge">3</div><div class="body"><b>stage ทุกไฟล์ที่เหลือ</b> ด้วยจุด (<code class="inline">.</code>) = ทุกไฟล์ใน working directory
+        <pre style="margin:8px 0"><code><span class="cmd">git</span> add .</code></pre>
+        ตอนนี้ index.html และ style.css เข้า Staging Area</div></div>
+        <div class="stepitem"><div class="badge">4</div><div class="body"><b>commit รอบที่สอง</b>
+        <pre style="margin:8px 0"><code><span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"site files"</span></code></pre>
+        Repository มี 2 commit แล้ว: "python code" และ "site files"</div></div>
+        <div class="stepitem"><div class="badge">5</div><div class="body"><b>push</b> commit ทั้งหมดขึ้น remote (GitHub) → ดูรายละเอียดในหัวข้อถัดไป
+        <pre style="margin:8px 0"><code><span class="cmd">git</span> push</code></pre></div></div>
+      </div>
+      <div class="callout warn">⚠️ <b>ลำดับสำคัญ:</b> ไฟล์ต้องผ่าน <b>add → commit</b> เสมอ การแก้ไฟล์เฉย ๆ ไม่ได้แปลว่า Git บันทึกให้ ต้อง <code class="inline">git add</code> เพื่อ stage ก่อน แล้วจึง <code class="inline">git commit</code></div>
+    </section>
+
+    <!-- ===== 4. Commit anatomy ===== -->
+    <section id="anatomy">
+      <div class="sec-head"><div class="sec-num">4</div><h2 class="sec-title">กายวิภาคของ Commit (Commit Anatomy)</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 37 · โครงสร้างภายในของ commit</p>
+      <p>แต่ละ commit มี <b>รหัส (hash)</b> ของตัวเอง และชี้ไปยัง <b>commit แม่ (parent)</b> ทำให้เกิดเป็น <b>ห่วงโซ่ของประวัติ</b> ที่ย้อนกลับได้</p>
+      <div class="chain">
+        <div class="cnode">
+          <div class="h">add banner</div>
+          <div class="row">hash: <b>171615…ffd8765</b></div>
+          <div class="row">parent: <b>236ff65…</b></div>
+          <div class="row">message: <b>add banner</b></div>
+        </div>
+        <div class="clink">←</div>
+        <div class="cnode">
+          <div class="h">fix typo</div>
+          <div class="row">hash: <b>236ff65…df35d897</b></div>
+          <div class="row">parent: <b>987fac6…</b></div>
+          <div class="row">message: <b>fix typo</b></div>
+        </div>
+        <div class="clink">←</div>
+        <div class="cnode">
+          <div class="h">remove x…</div>
+          <div class="row">hash: <b>987fac6…6ce7dd765</b></div>
+          <div class="row">parent: <b>none</b></div>
+          <div class="row">message: <b>remove x…</b></div>
+        </div>
+      </div>
+      <p style="text-align:center;color:var(--muted);font-size:.85rem">ลูกศร <b>←</b> ชี้จากแต่ละ commit กลับไปยัง <b>parent</b> ของมัน (commit ใหม่สุดอยู่ซ้าย) — ตรงกับสไลด์หน้า 37</p>
+      <div class="cards">
+        <div class="card"><div class="ic">🔑</div><h4>hash</h4><p>ลายนิ้วมือเฉพาะตัวของ commit (SHA) ใช้ระบุ commit ได้ไม่ซ้ำกัน</p></div>
+        <div class="card"><div class="ic">🔗</div><h4>parent</h4><p>ตัวชี้ไปยัง commit ก่อนหน้า — commit แรกสุดมี parent เป็น <code class="inline">none</code></p></div>
+        <div class="card"><div class="ic">💬</div><h4>message</h4><p>ข้อความที่เราเขียนตอน <code class="inline">-m</code> อธิบายว่า commit นี้ทำอะไร</p></div>
+      </div>
+    </section>
+
+    <!-- ===== 5. Push & Remote Branches ===== -->
+    <section id="remote">
+      <div class="sec-head"><div class="sec-num">5</div><h2 class="sec-title">Push &amp; Remote Branches</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 38–49 · Push and Remote Branches</p>
+
+      <h3><span class="dot"></span>ตรวจสอบ remote ที่มีอยู่</h3>
+      <pre><code><span class="cmd">git</span> remote <span class="flag">-v</span></code></pre>
+      <ul>
+        <li>ถ้ารันบน repo ที่ <b>clone มา</b> จะเห็น <b>URL ของ remote</b> (เช่น URL ของ GitHub)</li>
+        <li>ถ้า <b>ยังไม่เชื่อมต่อ</b> remote ใด ก็จะ <b>ไม่เห็น URL</b></li>
+      </ul>
+
+      <h3><span class="dot"></span>เพิ่ม remote branch (origin)</h3>
+      <p>เราบอก Git ให้เพิ่ม remote ด้วยรูปแบบ <code class="inline">git remote add &lt;name&gt; &lt;url&gt;</code> โดย <b>ตามธรรมเนียม</b> เราจะตั้งชื่อ remote นี้ว่า <b>origin</b></p>
+      <pre><code><span class="cmt"># รูปแบบทั่วไป</span>
+<span class="cmd">git</span> remote add name https://url.git
+
+<span class="cmt"># ตามธรรมเนียมใช้ชื่อ origin (แทน url ด้วย .git URL ของ repo เรา)</span>
+<span class="cmd">git</span> remote add origin https://github.com/user/repo.git</code></pre>
+      <div class="callout">📝 <b>เผื่ออนาคต (ไม่ได้ใช้ตอนนี้):</b> เปลี่ยนชื่อ/ลบ remote ได้ด้วย
+      <pre style="margin:8px 0"><code><span class="cmd">git</span> remote rename <span class="flag">&lt;old&gt; &lt;new&gt;</span>
+<span class="cmd">git</span> remote remove <span class="flag">&lt;name&gt;</span></code></pre></div>
+
+      <h3><span class="dot"></span>Push ขึ้น remote ที่ชื่อ origin</h3>
+      <p>เมื่อเชื่อมต่อกับ remote บน GitHub แล้ว สั่ง push โค้ดขึ้นไปยัง <b>remote ที่ชื่อ origin</b> (ที่ branch <code class="inline">main</code>/<code class="inline">master</code>) ได้ด้วย</p>
+      <pre><code><span class="cmd">git</span> push <span class="flag">-u</span> origin main      <span class="cmt"># หรือ master ถ้า branch หลักชื่อ master</span></code></pre>
+      <p>ตัวเลือก <code class="inline">-u</code> (upstream) ทำให้ครั้งต่อ ๆ ไปสั่งแค่ <code class="inline">git push</code> สั้น ๆ ก็พอ</p>
+      <div class="callout"><b>📌 origin = ชื่อ remote ไม่ใช่ชื่อ branch:</b> <code class="inline">origin</code> คือชื่อที่เราตั้งให้ remote repository ส่วน <code class="inline">main</code>/<code class="inline">master</code> คือชื่อ branch — คำสั่ง <code class="inline">git push origin main</code> จึงหมายถึง "push branch main ไปยัง remote ชื่อ origin"</div>
+
+      <div class="callout warn">⚠️ <b>master → main:</b> GitHub เปลี่ยน <b>default branch ของ repo ที่สร้างใหม่</b> จาก <code class="inline">master</code> เป็น <code class="inline">main</code> อย่างเป็นทางการแล้ว (repo เก่าที่ยังใช้ master ไม่ได้ถูกเปลี่ยนย้อนหลัง) คำสั่งที่ GitHub แนะนำให้เปลี่ยนชื่อ branch ปัจจุบันเป็น main คือ
+      <pre style="margin:8px 0"><code><span class="cmd">git</span> branch <span class="flag">-M</span> main</code></pre></div>
+
+      <h3><span class="dot"></span>โฟลเดอร์ในเครื่อง → GitHub โดยไม่ต้อง Clone</h3>
+      <p>ถ้าเรามีโฟลเดอร์อยู่ในเครื่อง (LOCAL DESKTOP) อยู่แล้ว และอยากผูกกับ repo บน GitHub โดยไม่ clone ใหม่ — ต้องระวังเรื่องชื่อ branch ให้ <b>ตรงกัน</b> (main ↔ main) ถ้าชื่อไม่ตรง (master ↔ main) แล้ว push ชื่อ branch ตรง ๆ เช่น <code class="inline">git push -u origin master</code> Git จะไป <b>สร้าง branch master แยกอีกตัวบน remote</b> คนละตัวกับ main กลายเป็น <b>improper reference</b> — มี branch หลักสองสาขาไม่ตรงกัน (ส่วน <code class="inline">git push</code> เปล่า ๆ ที่ยังไม่ตั้ง upstream จะ <b>ฟ้อง error</b> แทน) จึงควร <code class="inline">git branch -M main</code> ให้ชื่อ branch ในเครื่องตรงกับ remote ก่อน</p>
+    </section>
+
+    <!-- ===== 6. Cloning & Remote-Tracking ===== -->
+    <section id="clone">
+      <div class="sec-head"><div class="sec-num">6</div><h2 class="sec-title">A Closer Look at Cloning &amp; Remote-Tracking Branches</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 50–62 · Remote-Tracking Branches &amp; Detached HEAD</p>
+      <p>เมื่อ <code class="inline">git clone</code> เราจะได้ branch <b>2 แบบ</b> บนเครื่อง:</p>
+      <div class="twocol">
+        <div class="box cen">
+          <h4>🟢 master (local branch)</h4>
+          <p style="font-size:.9rem">ตัวชี้ branch <b>ปกติ</b> ของเรา — เราเลื่อนมันเองได้ ทุกครั้งที่ commit ใหม่ ตัวชี้ <code class="inline">master</code> จะขยับไปข้างหน้า</p>
+        </div>
+        <div class="box dis">
+          <h4>🔖 origin/master (remote-tracking)</h4>
+          <p style="font-size:.9rem">"Remote-Tracking Branch" — เป็น <b>บุ๊กมาร์ก</b> ที่ชี้ไปยังสถานะล่าสุดของ master บน remote ที่เรารู้ <b>เราขยับมันเองไม่ได้</b> มันจะอัปเดตเมื่อ sync กับ remote เท่านั้น</p>
+        </div>
+      </div>
+
+      <h3><span class="dot"></span>ดู remote branches ที่เครื่องรู้จัก</h3>
+      <pre><code><span class="cmd">git</span> branch <span class="flag">-r</span></code></pre>
+
+      <h3><span class="dot"></span>เมื่อ commit ในเครื่อง — ตัวชี้ขยับไม่พร้อมกัน</h3>
+      <div class="steps">
+        <div class="stepitem"><div class="badge">1</div><div class="body">เริ่มต้น: <code class="inline">master</code> และ <code class="inline">origin/master</code> ชี้ commit เดียวกัน</div></div>
+        <div class="stepitem"><div class="badge">2</div><div class="body">commit ใหม่ในเครื่อง → <code class="inline">master</code> ขยับไปข้างหน้า แต่ <code class="inline">origin/master</code> <b>อยู่ที่เดิม</b></div></div>
+        <div class="stepitem"><div class="badge">3</div><div class="body">commit อีกครั้ง → <code class="inline">master</code> ขยับอีก ส่วน <code class="inline">origin/master</code> <b>ยังไม่ขยับ</b> (จนกว่าจะ push)</div></div>
+      </div>
+      <p>เมื่อรัน <code class="inline">git status</code> Git จะบอกว่าเรา <b>"ahead"</b> อยู่กี่ commit:</p>
+      <pre><code><span class="cmd">git</span> status
+<span class="out">On branch master</span>
+<span class="out">Your branch is ahead of 'origin/master' by 2 commits.</span>
+<span class="out">  (use "git push" to publish your local commits)</span></code></pre>
+
+      <h3><span class="dot"></span>Detached HEAD — ไม่ต้องตกใจ</h3>
+      <p>เราสามารถ checkout ไปดูสถานะ ณ remote pointer หรือ commit เก่าได้ เช่น "ตอน clone มาครั้งแรกหน้าตาเป็นยังไงนะ?"</p>
+      <pre><code><span class="cmd">git</span> checkout origin/master
+<span class="out">Note: switching to 'origin/master'.</span>
+<span class="out">You are in 'detached HEAD' state. You can look around, make</span>
+<span class="out">experimental changes and commit them, and you can discard</span>
+<span class="out">any commits you make in this state...</span></code></pre>
+      <div class="callout tip">😌 <b>Detached HEAD ไม่ใช่ error!</b> มันแค่หมายความว่า HEAD ชี้ตรงไปที่ commit ใด commit หนึ่ง (ไม่ใช่ปลายของ branch) เรา "มองดูได้ ทดลองได้" และกลับมา branch เดิมได้เสมอ</div>
+      <div class="callout warn">⚠️ <b>ระวังตอน commit ขณะ detached:</b> commit ที่ทำระหว่าง detached HEAD จะกลายเป็น <b>unreachable</b> เมื่อ checkout กลับไป branch อื่น (ยังกู้คืนได้ชั่วคราวผ่าน <code class="inline">git reflog</code> ก่อนถูก garbage-collect) ถ้าอยากเก็บถาวร ต้อง <b>สร้าง branch ก่อนกลับ</b> เช่น <code class="inline">git switch -c new-branch</code> (หรือ <code class="inline">git branch new-branch &lt;hash&gt;</code>)</div>
+
+      <h3><span class="dot"></span>Clone แล้ว ≠ มีทุก branch ใน workspace</h3>
+      <p>เมื่อ clone มา เราได้ <b>ข้อมูลและประวัติ Git ทั้งหมด</b> ณ ขณะนั้น แต่ <b>ไม่ได้แปลว่าทุก branch อยู่ใน workspace</b> เช่น remote มี branch ชื่อ <code class="inline">puppies</code> แต่พอรัน <code class="inline">git branch</code> กลับเห็นแค่ master:</p>
+      <pre><code><span class="cmd">git</span> branch
+<span class="out">* master</span></code></pre>
+      <p>เป็นเรื่องปกติ — branch อื่น ๆ ของ remote ยังอยู่ใน Git history แต่ยังไม่ถูกสร้างเป็น local branch จนกว่าเราจะ checkout มัน</p>
+    </section>
+
+    <!-- ===== 7. Git Log ===== -->
+    <section id="log">
+      <div class="sec-head"><div class="sec-num">7</div><h2 class="sec-title">Git Log &amp; Diff — ดูประวัติและความเปลี่ยนแปลง</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 63–64 (Git Log) · git diff จากภาพรวมคำสั่งสไลด์หน้า 2</p>
+      <p>ก่อนจะใช้ <code class="inline">git fetch</code> และ <code class="inline">git pull</code> มารู้จัก <code class="inline">git log</code> กันก่อน — มันแสดง <b>รายการ commit ทั้งหมด</b> ที่เคยทำใน repo พร้อม <b>hash, message และ metadata</b> มองว่ามันคือ <b>"ประวัติของ repo"</b> ได้เลย</p>
+      <pre><code><span class="cmt"># ประวัติแบบเต็ม (hash, author, date, message)</span>
+<span class="cmd">git</span> log
+
+<span class="cmt"># แบบกระชับ บรรทัดเดียวต่อ commit</span>
+<span class="cmd">git</span> log <span class="flag">--oneline</span>
+
+<span class="cmt"># ดู log ของทุก branch ไม่ใช่แค่ branch ปัจจุบัน</span>
+<span class="cmd">git</span> log <span class="flag">--all --oneline</span></code></pre>
+      <div class="callout tip">🔎 ใช้ <code class="inline">git log --oneline</code> เพื่อหา <b>commit hash</b> สั้น ๆ ที่จะนำไปใช้กับ <code class="inline">git checkout &lt;hash&gt;</code> เพื่อย้อนไปดูสถานะเก่าได้</div>
+
+      <h3><span class="dot"></span>git diff — ดูว่าแก้อะไรไปบ้าง</h3>
+      <p><code class="inline">git diff</code> แสดง <b>ความแตกต่าง (changes)</b> ของไฟล์ที่แก้ไปแล้วแต่ <b>ยังไม่ได้ stage</b> (ยังไม่ได้ <code class="inline">git add</code>) บรรทัดที่ <b>เพิ่ม</b> นำหน้าด้วย <code class="inline">+</code> บรรทัดที่ <b>ลบ</b> นำหน้าด้วย <code class="inline">-</code></p>
+      <pre><code><span class="cmd">git</span> diff
+<span class="out">diff --git a/file1.txt b/file1.txt</span>
+<span class="out">@@ -1 +1,2 @@</span>
+ Content for file 1
+<span class="add">+Additional content for file 1</span>     <span class="cmt"># บรรทัดที่เพิ่มเข้ามา</span></code></pre>
+    </section>
+
+    <!-- ===== 8. Fetch vs Pull ===== -->
+    <section id="fetchpull">
+      <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title">Fetch vs Pull</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 65–76 · Fetch and Pull</p>
+      <p>มี <b>2 วิธี</b> ในการนำการเปลี่ยนแปลงจาก remote branch (เช่นบน GitHub) ลงมา: <code class="inline">git fetch</code> และ <code class="inline">git pull</code> ภาพรวมของวงจรทั้งหมดเป็นดังนี้:</p>
+      <div class="diagram">
+        <div class="node"><div class="ic">📝</div><div class="lbl">Workspace<br>(Working Dir)</div></div>
+        <div class="arrow">→<small>git add</small></div>
+        <div class="node"><div class="ic">📦</div><div class="lbl">Staging<br>(index)</div></div>
+        <div class="arrow">→<small>git commit</small></div>
+        <div class="node"><div class="ic">💻</div><div class="lbl">Local<br>Repository</div></div>
+        <div class="arrow">→<small>git push</small></div>
+        <div class="node repo"><div class="ic">☁️</div><div class="lbl">Remote<br>Repository</div></div>
+      </div>
+      <p style="text-align:center;color:var(--muted)">ขากลับ: <code class="inline">git fetch</code> และ <code class="inline">git pull</code> นำการเปลี่ยนแปลงจาก Remote กลับลงมา</p>
+      <div class="callout tip">📂 <b>pull ดึงสถานะล่าสุดลงมาที่ Working Directory:</b> <code class="inline">git pull</code> นำ commit และสถานะไฟล์ล่าสุดจาก remote ลงมารวมกับ local — ไฟล์ที่ถูก track (เช่น <code class="inline">index.html</code>, <code class="inline">style.css</code>) จะถูกซิงก์ให้ตรงกับ remote (อ้างอิงสไลด์หน้า 34–36)</div>
+
+      <div class="callout"><b style="color:var(--accent)">สูตรสำคัญ:</b> <code class="inline" style="font-size:1em">git pull = git fetch + git merge</code>
+      <ul style="margin-top:8px">
+        <li><b>git fetch</b> → อัปเดต <b>remote-tracking branch</b> (เช่น origin/main) ด้วยการเปลี่ยนแปลงล่าสุดจาก remote</li>
+        <li><b>git merge</b> → นำการเปลี่ยนแปลงจาก remote-tracking branch มารวมเข้ากับ branch ปัจจุบันของเรา</li>
+      </ul></div>
+
+      <h3><span class="dot"></span>เปรียบเทียบ git fetch กับ git pull</h3>
+      <table class="vs">
+        <tr><th>ประเด็น</th><th>git fetch</th><th>git pull</th></tr>
+        <tr><td>ดึงการเปลี่ยนแปลงจาก remote branch</td><td>✅ ใช่</td><td>✅ ใช่</td></tr>
+        <tr><td>อัปเดต remote-tracking branch</td><td>✅ อัปเดต</td><td>✅ อัปเดต</td></tr>
+        <tr><td>merge เข้า HEAD/branch ปัจจุบัน</td><td>❌ <b>ไม่</b> merge</td><td>✅ merge ให้อัตโนมัติ</td></tr>
+        <tr><td>โอกาสเกิด merge conflict</td><td>ไม่เกิด (ปลอดภัย)</td><td>อาจเกิด conflict ได้</td></tr>
+        <tr><td>ความปลอดภัย</td><td><b>ทำได้ทุกเมื่อ (safe)</b></td><td>ไม่แนะนำถ้ายังมีไฟล์ที่ยังไม่ commit</td></tr>
+      </table>
+      <div class="callout tip">✅ <b>git fetch</b> — ปลอดภัยเสมอ เพราะแค่ดึงข้อมูลมาเก็บไว้ที่ remote-tracking branch ยังไม่แตะ branch ที่เรากำลังทำงานอยู่ เราตรวจสอบก่อนค่อย merge เองได้</div>
+      <div class="callout warn">⚠️ <b>git pull</b> — สะดวกกว่า (ดึง+merge ในคำสั่งเดียว) แต่ <b>อาจเกิด merge conflict</b> และ <b>ไม่แนะนำให้ใช้ขณะที่ยังมีการเปลี่ยนแปลงที่ยังไม่ได้ commit</b> (uncommitted changes)</div>
+    </section>
+
+    <!-- ===== 9. Labs ===== -->
+    <section id="labs">
+      <div class="sec-head"><div class="sec-num">9</div><h2 class="sec-title">แบบฝึกหัด — 4 Labs</h2></div>
+      <p class="slideref">อ้างอิงสไลด์หน้า 77 · Exercise · และไฟล์ Lab01–Lab04</p>
+      <p>ลงมือทำทั้ง 4 แล็บตามลำดับ เพื่อฝึกครบทุกคำสั่งของ Week 2 ตั้งแต่ทำงานคนเดียวในเครื่อง ไปจนถึงการทำงานร่วมกันผ่าน remote repository</p>
+
+      <!-- Lab 1 -->
+      <div class="lab">
+        <div class="labhd"><span class="tag">LAB 01</span><h3>add · commit · status (Local)</h3></div>
+        <p class="goal">🎯 ฝึกวงจรพื้นฐาน: ติดตามการเปลี่ยนแปลงของ 3 ไฟล์ ผ่าน 3 รอบการแก้ไข บนเครื่องตัวเอง (ยังไม่มี remote)</p>
+        <div class="cmds"><code>git init</code><code>git status</code><code>git add</code><code>git commit</code><code>git log</code></div>
+        <pre><code><span class="cmt"># Step 1: สร้าง repo + commit แรก</span>
+<span class="cmd">mkdir</span> git-lab &amp;&amp; <span class="cmd">cd</span> git-lab
+<span class="cmd">git</span> init
+<span class="cmd">echo</span> <span class="str">"Content for file 1"</span> &gt; file1.txt
+<span class="cmd">echo</span> <span class="str">"Content for file 2"</span> &gt; file2.txt
+<span class="cmd">echo</span> <span class="str">"Content for file 3"</span> &gt; file3.txt
+<span class="cmd">git</span> status                       <span class="cmt"># เห็น untracked files</span>
+<span class="cmd">git</span> add file1.txt file2.txt file3.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Initial commit with three files"</span>
+<span class="cmd">git</span> status &amp;&amp; <span class="cmd">git</span> log            <span class="cmt"># ✔ ตรวจสอบหลัง commit ทุกครั้ง</span>
+
+<span class="cmt"># Step 2: แก้ไฟล์แล้ว commit รอบสอง</span>
+<span class="cmd">echo</span> <span class="str">"Additional content for file 1"</span> &gt;&gt; file1.txt
+<span class="cmd">echo</span> <span class="str">"Additional content for file 2"</span> &gt;&gt; file2.txt
+<span class="cmd">git</span> status                       <span class="cmt"># เห็น modified files</span>
+<span class="cmd">git</span> add file1.txt file2.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Updated file1 and file2"</span>
+<span class="cmd">git</span> status &amp;&amp; <span class="cmd">git</span> log            <span class="cmt"># ✔ ตรวจสอบอีกครั้ง</span>
+
+<span class="cmt"># Step 3: แก้ file3 แล้ว commit รอบสุดท้าย</span>
+<span class="cmd">echo</span> <span class="str">"Additional content for file 3"</span> &gt;&gt; file3.txt
+<span class="cmd">git</span> add file3.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Final update to file3"</span>
+<span class="cmd">git</span> status &amp;&amp; <span class="cmd">git</span> log            <span class="cmt"># ✔ ตรวจสอบรอบสุดท้าย</span></code></pre>
+      </div>
+
+      <!-- Lab 2 -->
+      <div class="lab">
+        <div class="labhd"><span class="tag">LAB 02</span><h3>push ขึ้น Remote + แก้ไข 3 รอบ</h3></div>
+        <p class="goal">🎯 ผูก local repo เข้ากับ remote บน GitHub/GitLab/Bitbucket แล้ว push การเปลี่ยนแปลง 3 รอบ</p>
+        <div class="cmds"><code>git init</code><code>git remote add origin</code><code>git push -u</code><code>git push</code></div>
+        <pre><code><span class="cmt"># 1) สร้าง local repo + commit แรก</span>
+<span class="cmd">mkdir</span> lab-git &amp;&amp; <span class="cmd">cd</span> lab-git
+<span class="cmd">git</span> init
+<span class="cmd">echo</span> <span class="str">"Initial content for file 1"</span> &gt; file1.txt
+<span class="cmd">echo</span> <span class="str">"Initial content for file 2"</span> &gt; file2.txt
+<span class="cmd">echo</span> <span class="str">"Initial content for file 3"</span> &gt; file3.txt
+<span class="cmd">git</span> add file1.txt file2.txt file3.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Initial commit with three files"</span>
+
+<span class="cmt"># 2) สร้าง remote repo บน GitHub แล้วผูก origin + push</span>
+<span class="cmd">git</span> remote add origin <span class="str">REMOTE-URL</span>
+<span class="cmd">git</span> push <span class="flag">-u</span> origin master   <span class="cmt"># Git รุ่นใหม่ default = main; ถ้า branch ชื่อ main ใช้ origin main</span>
+
+<span class="cmt"># 3) แก้ไฟล์ + commit + push ซ้ำ 3 รอบ (ใบงานให้แก้ทั้ง file1/file2/file3 ทุกรอบ)</span>
+<span class="cmd">echo</span> <span class="str">"Change 1 for file 1"</span> &gt;&gt; file1.txt    <span class="cmt"># ตัวอย่างย่อ — ของจริงแก้ครบทั้ง 3 ไฟล์</span>
+<span class="cmd">git</span> add .
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"First set of changes"</span>
+<span class="cmd">git</span> push origin master
+<span class="cmt"># ... ทำซ้ำเป็น "Second set of changes", "Third set of changes"</span></code></pre>
+      </div>
+
+      <!-- Lab 3 -->
+      <div class="lab">
+        <div class="labhd"><span class="tag">LAB 03</span><h3>fetch + log (จำลองเพื่อนร่วมทีม)</h3></div>
+        <p class="goal">🎯 จำลองสถานการณ์: เพื่อน clone ไปแก้แล้ว push — เรา fetch การเปลี่ยนแปลง ดู log แล้ว merge เข้ามา</p>
+        <div class="cmds"><code>git clone</code><code>git fetch</code><code>git log --oneline</code><code>git merge</code></div>
+        <pre><code><span class="cmt"># ── ใน main-repo: ตั้งต้น + push ขึ้น remote (branch main) ──</span>
+<span class="cmd">mkdir</span> main-repo &amp;&amp; <span class="cmd">cd</span> main-repo
+<span class="cmd">git</span> init
+<span class="cmd">echo</span> <span class="str">"Initial content for file 1"</span> &gt; file1.txt
+<span class="cmd">echo</span> <span class="str">"Initial content for file 2"</span> &gt; file2.txt
+<span class="cmd">echo</span> <span class="str">"Initial content for file 3"</span> &gt; file3.txt
+<span class="cmd">git</span> add . &amp;&amp; <span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Initial commit with three files"</span>
+<span class="cmd">git</span> branch <span class="flag">-M</span> main
+<span class="cmd">git</span> remote add origin <span class="str">[REMOTE-URL]</span>
+<span class="cmd">git</span> push <span class="flag">-u</span> origin main
+
+<span class="cmt"># ── จำลองเพื่อน: clone แล้วแก้/ push 2 รอบ ──</span>
+<span class="cmd">git</span> clone <span class="str">[REMOTE-URL]</span> colleague-repo &amp;&amp; <span class="cmd">cd</span> colleague-repo
+<span class="cmd">echo</span> <span class="str">"Change 1 for file 1"</span> &gt;&gt; file1.txt
+<span class="cmd">git</span> add . &amp;&amp; <span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"First set of changes"</span> &amp;&amp; <span class="cmd">git</span> push
+<span class="cmd">echo</span> <span class="str">"Change 2 for file 1"</span> &gt;&gt; file1.txt
+<span class="cmd">git</span> add . &amp;&amp; <span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Second set of changes"</span> &amp;&amp; <span class="cmd">git</span> push
+
+<span class="cmt"># ── กลับมาที่ main-repo: fetch + ดู log + merge ──</span>
+<span class="cmd">cd</span> ../main-repo
+<span class="cmd">git</span> fetch
+<span class="cmd">git</span> log <span class="flag">--oneline</span>
+<span class="cmd">git</span> log <span class="flag">--all --oneline</span>
+<span class="cmd">git</span> merge origin/main</code></pre>
+      </div>
+
+      <!-- Lab 4 -->
+      <div class="lab">
+        <div class="labhd"><span class="tag">LAB 04</span><h3>pull · status · log · checkout (Collaborative)</h3></div>
+        <p class="goal">🎯 แล็บรวบยอด: ฝึก git pull, git status, git log, git checkout ในสถานการณ์ทำงานร่วมกัน พร้อมส่ง report</p>
+        <div class="cmds"><code>git pull</code><code>git status</code><code>git log --oneline</code><code>git checkout</code></div>
+        <pre><code><span class="cmt"># ── (ใช้ lab-git ที่ตั้งค่า + push ขึ้น remote ไว้แล้วจาก Lab02/03) ──</span>
+<span class="cmt"># ── เพื่อน clone แล้วแก้/push 2 รอบ ──</span>
+<span class="cmd">git</span> clone <span class="str">[REMOTE-URL]</span> colleague-repo &amp;&amp; <span class="cmd">cd</span> colleague-repo
+<span class="cmd">echo</span> <span class="str">"Change 1 in file 1"</span> &gt;&gt; file1.txt
+<span class="cmd">git</span> add file1.txt &amp;&amp; <span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"First change to file 1"</span> &amp;&amp; <span class="cmd">git</span> push
+<span class="cmd">echo</span> <span class="str">"Change 2 in file 1"</span> &gt;&gt; file1.txt
+<span class="cmd">git</span> add file1.txt &amp;&amp; <span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Second change to file 1"</span> &amp;&amp; <span class="cmd">git</span> push
+
+<span class="cmt"># ── ที่ lab-git เดิม: pull + ตรวจสถานะ + ดูประวัติ ──</span>
+<span class="cmd">git</span> pull
+<span class="cmd">git</span> status
+<span class="cmd">git</span> log <span class="flag">--oneline</span>
+
+<span class="cmt"># ── สำรวจ commit เก่า แล้วกลับสู่ล่าสุด ──</span>
+<span class="cmd">git</span> checkout <span class="str">[COMMIT-HASH]</span>
+<span class="cmd">git</span> checkout main          <span class="cmt"># กลับ branch หลัก (readme เขียน master ผิด เพราะเราเปลี่ยนเป็น main ด้วย branch -M แล้ว)</span></code></pre>
+        <div class="exercise">
+          <h4 class="mini" style="margin-top:0">📦 Deliverables &amp; เกณฑ์ประเมิน</h4>
+          <ul style="margin-bottom:0">
+            <li><b>Step-by-Step Report</b> — บันทึกทุกขั้นตอน คำสั่งที่ใช้และผลลัพธ์ (แนบ screenshot ได้)</li>
+            <li><b>Reflective Summary</b> — สะท้อนการใช้ pull/status/log/checkout ในการจัดการการเปลี่ยนแปลงร่วมกัน</li>
+            <li><b>เกณฑ์:</b> ความครบถ้วน/ถูกต้องของขั้นตอน · ความชัดเจนของรายงาน · ความเข้าใจคำสั่ง Git และการนำไปใช้จริง</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 10. Cheat sheet ===== -->
+    <section id="cheat">
+      <div class="sec-head"><div class="sec-num">10</div><h2 class="sec-title">สรุปคำสั่งสำคัญ (Cheat Sheet)</h2></div>
+      <pre><code><span class="cmt"># ── เริ่มต้น repo ──────────────────────</span>
+<span class="cmd">git</span> init                              <span class="cmt"># สร้าง repo ใหม่ในเครื่อง (เกิด .git)</span>
+<span class="cmd">git</span> clone https://github.com/user/repo.git   <span class="cmt"># คัดลอก repo ทั้งก้อนลงมา</span>
+
+<span class="cmt"># ── ตรวจสอบ / ดูประวัติ ─────────────────</span>
+<span class="cmd">git</span> status                            <span class="cmt"># ดูสถานะ working dir + staging</span>
+<span class="cmd">git</span> log                               <span class="cmt"># ประวัติ commit เต็ม</span>
+<span class="cmd">git</span> log <span class="flag">--oneline</span>                    <span class="cmt"># ประวัติแบบบรรทัดเดียว</span>
+<span class="cmd">git</span> log <span class="flag">--all --oneline</span>              <span class="cmt"># ทุก branch</span>
+<span class="cmd">git</span> diff                              <span class="cmt"># ดูความต่างที่ยังไม่ stage</span>
+
+<span class="cmt"># ── add &amp; commit (Working → Staging → Repo) ──</span>
+<span class="cmd">git</span> add file.txt                      <span class="cmt"># stage ไฟล์เดียว</span>
+<span class="cmd">git</span> add .                             <span class="cmt"># stage ทุกไฟล์</span>
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"message"</span>             <span class="cmt"># บันทึก snapshot ลง repo</span>
+
+<span class="cmt"># ── remote (เชื่อม GitHub) ───────────────</span>
+<span class="cmd">git</span> remote <span class="flag">-v</span>                         <span class="cmt"># ดู remote ที่ผูกไว้</span>
+<span class="cmd">git</span> remote add origin https://url.git  <span class="cmt"># ผูก remote ชื่อ origin</span>
+<span class="cmd">git</span> remote rename <span class="flag">&lt;old&gt; &lt;new&gt;</span>          <span class="cmt"># เปลี่ยนชื่อ remote</span>
+<span class="cmd">git</span> remote remove <span class="flag">&lt;name&gt;</span>              <span class="cmt"># ลบ remote</span>
+<span class="cmd">git</span> branch <span class="flag">-M</span> main                   <span class="cmt"># เปลี่ยนชื่อ branch ปัจจุบันเป็น main</span>
+<span class="cmd">git</span> branch <span class="flag">-r</span>                         <span class="cmt"># ดู remote branches ที่รู้จัก</span>
+
+<span class="cmt"># ── push &amp; pull &amp; fetch ──────────────────</span>
+<span class="cmd">git</span> push <span class="flag">-u</span> origin main               <span class="cmt"># push ครั้งแรก (ตั้ง upstream)</span>
+<span class="cmd">git</span> push                              <span class="cmt"># push ครั้งต่อไป</span>
+<span class="cmd">git</span> fetch                             <span class="cmt"># ดึงมาแต่ยังไม่ merge (ปลอดภัย)</span>
+<span class="cmd">git</span> pull                              <span class="cmt"># = fetch + merge</span>
+<span class="cmd">git</span> merge origin/main                 <span class="cmt"># รวม remote-tracking เข้า branch</span>
+
+<span class="cmt"># ── checkout (สำรวจ commit/branch) ───────</span>
+<span class="cmd">git</span> checkout <span class="flag">&lt;commit-hash&gt;</span>           <span class="cmt"># ย้อนไปดู commit เก่า (detached HEAD)</span>
+<span class="cmd">git</span> checkout main                     <span class="cmt"># กลับสู่ branch หลัก</span></code></pre>
+      <div class="callout tip">🧭 <b>จำเป็นแกน Week 2:</b> <code class="inline">add</code> → <code class="inline">commit</code> → <code class="inline">push</code> (ขาขึ้น) และ <code class="inline">fetch</code>/<code class="inline">pull</code> (ขาลง) · จำสูตร <code class="inline">git pull = git fetch + git merge</code> ให้ขึ้นใจ</div>
+    </section>
+
+    <footer>
+      📘 Software Development Tools and Environments — Week 2: Getting Started with Git<br>
+      ผศ.ดร. ทัศนัย พลสุวรรณ &nbsp;·&nbsp; เรียบเรียงให้ตรงตามลำดับสไลด์ทั้ง 77 หน้า + Lab01–Lab04
+    </footer>
+  </main>
+</div>
+<a href="#top" class="top-link" title="กลับขึ้นบน">↑</a>
+<script>
+  // Scroll-spy: highlight the active section link in the sidebar
+  (function(){
+    var links = Array.prototype.slice.call(document.querySelectorAll('nav.side a'));
+    var byId = {};
+    links.forEach(function(a){ var id = a.getAttribute('href').slice(1); if(id) byId[id] = a; });
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(a){ a.classList.remove('active'); });
+          var l = byId[e.target.id];
+          if(l) l.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    document.querySelectorAll('main section[id]').forEach(function(s){ obs.observe(s); });
+  })();
+</script>
+</body>
+</html>

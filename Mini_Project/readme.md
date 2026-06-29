@@ -10,20 +10,6 @@
 
 > ℹ️ **หมายเหตุ:** ต้อง **ลงชื่อเข้าใช้ด้วยอีเมล `@it.kmitl.ac.th` เท่านั้น**
 
----
-
-## 👥 การจัดกลุ่มและจำนวนนักศึกษา
-
-### Sec 1 (เช้า)
-![Sec 1](img/1.png)
-
-### Sec 3 (บ่าย)
-![Sec 3](img/3.png)
-
-
-
-- สมาชิกทั้งหมด: **เช้า (Sec 1) 37 คน** และ **บ่าย (Sec 3) 36 คน**
-- แบ่งกลุ่มกลุ่มละ **4–5 คน** รวม **8 กลุ่ม** ต่อช่วง
 
 ### สรุปการกระจายกลุ่ม
 | ช่วงเรียน | จำนวนนักศึกษา | จำนวนกลุ่ม | โครงสร้างขนาดกลุ่ม |
@@ -46,19 +32,47 @@
 
 ## 🧰 คลังตัวอย่าง Mini Project (สำหรับศึกษาแนวทาง)
 ### Slide
-- **ปี 2567**
-   -<https://drive.google.com/drive/folders/1DGpJGYKD5AeDzfbGK3Y9pizewjRps-znyvX5YSxYlDb_KPIwErAmzIdXkxzYY9rHF1k8mCxH?usp=sharing>
-  
-    
-- **ปี 2565:**  
-  - <https://drive.google.com/drive/u/1/folders/1evneI8taeTrpU3jWQtsCGSXhaMBPrwGpouHcDSaKyZJ2QdQsyQPTpnYTqjAJJdN2_iBwu7Oe>
+- **ปี 2568:**  
+### 📑 ตัวอย่างรายกลุ่ม ปี 2568 (หัวข้อ + Slide)
+
+> หัวข้อโครงงานดึงมาจากหน้าแรกของสไลด์/รายงานของแต่ละกลุ่ม (ธีมหลักปีนี้คือ **PetTech**)
+
+| ที่ | หัวข้อโครงงาน | Slide |
+|---:|---|---|
+| 1 | **PetCare** — ระบบจองคิวบริการสำหรับสัตว์เลี้ยง | [Slide](https://drive.google.com/open?id=13om7O_wk7GOoea6dv_2YOiKj3qZRg68g) |
+| 2 | **Pet Tech** — เว็บไซต์ช่วยค้นหาพี่เลี้ยงสัตว์เลี้ยง | [Slide](https://drive.google.com/open?id=1xEmwQFWVscGyEPaRCtS4s_pgSNld0XvI) |
+| 3 | ระบบจัดการการนัดหมายสำหรับคลินิกสัตว์เลี้ยง | [Slide](https://drive.google.com/open?id=1qCpseurgSfhKh1bKJLT2UN4UpVMEEDWW) |
+| 4 | **HomeTail** — แพลตฟอร์มหาบ้านให้สัตว์จรจัด | [Slide](https://drive.google.com/open?id=1hqX6qvPWFmT4Hj6oUEKS7VMEVuhALubL) |
+| 5 | **LostBuddy** — ระบบประกาศ/ช่วยเหลือสัตว์เลี้ยงสูญหาย | [Slide](https://drive.google.com/open?id=1Tqpfln8YEeRyTgtfHVP0BQwZ6qZPNNse) |
+| 6 | **Peeder** — ระบบจัดการตารางดูแลสัตว์เลี้ยง | [Slide](https://drive.google.com/open?id=18ZLRJlJK28-R4wQ9n8sGQ-mjH1HtdhGk) |
+| 7 | **JaiKAE** — แพลตฟอร์มรับเลี้ยง/หาบ้านให้สัตว์เลี้ยง | [Slide](https://drive.google.com/open?id=10Xk_rW7KdN-PfLRytrX_sw5ROYt3hjky) |
+| 8 | **PetEz** — ระบบบริการพี่เลี้ยงสัตว์ (จองพี่เลี้ยง/รับฝากเลี้ยง) | [Slide](https://drive.google.com/open?id=1e0m-v-894-ARee5ngflCO1Gr7DMuBJBT) |
+| 9 | **Pet ID** — ระบบระบุตัวตนและติดตามสัตว์เลี้ยง | [Slide](https://drive.google.com/open?id=1s4idd2pw9hwCyVMkO4Mpopyb-we9jjrZ) |
+| 10 | **StarGo** — เว็บไซต์ค้นหาสถานที่ Pet Friendly | [Slide](https://drive.google.com/open?id=1baP9VoNu7sIcb-eVMrasaGB4dIWn3Qry) |
+| 11 | **ZeunKung** — แพลตฟอร์มจองพี่เลี้ยงสัตว์เลี้ยง (รีวิว/เรตติ้ง) | [Slide](https://drive.google.com/open?id=1dDOPdu6JFOrjmnyglAgokUJSQ5EWJwto) |
+| 12 | **Pet Track** — ระบบติดตามตำแหน่งสัตว์เลี้ยง (GPS) | [Slide](https://drive.google.com/open?id=1fs-nKQ4H_s6JbnKWxz7r9Ny2zqa30RS5) |
+| 13 | **PawSitter** — แพลตฟอร์มหาผู้ดูแลสัตว์เลี้ยงชั่วคราว | [Slide](https://drive.google.com/open?id=12J5px_Q2ePgkGjGyeHt_Gtm1qoNZiBDp) |
+| 14 | **Rescue Paw** — ระบบรับเลี้ยง บริจาค และช่วยเหลือสัตว์จรจัด | [Slide](https://drive.google.com/open?id=1XJ4M1ibavqB6pbJMO6xLDqhBGIc0e2JC) |
+| 15 | **PetSos** — ระบบตามหาสัตว์เลี้ยงสูญหาย | [Slide](https://drive.google.com/open?id=1q5xBIB2prwEHqT6jnnIkVRCYthv1fhw-) |
+| 16 | **PetSitter Finder** — ค้นหาพี่เลี้ยงสัตว์เลี้ยงที่ถูกใจ | [Slide](https://drive.google.com/open?id=1qUsvqQZ-xomx-1jGApNvnjhrd1yerq7S) |
+
+
+- **ปี 2567:**  
+  - <https://drive.google.com/drive/folders/1DGpJGYKD5AeDzfbGK3Y9pizewjRps-znyvX5YSxYlDb_KPIwErAmzIdXkxzYY9rHF1k8mCxH?usp=sharing>
 - **ปี 2566:**  
   - <https://drive.google.com/drive/folders/1UzG2dNzQd5lIogbi9wge8Dute6Y1cOAqqTsq8lcb14mDH7dg4JQQk5PdwW0sazwym2lbiFbm?usp=sharing>  
   - <https://drive.google.com/drive/folders/1l3lhuLbk9Tl1VrWlVopBdbPlT19Y2gP3o-QaSYQ-t21zJut1tPbYt7IhAfjo1cpFfNhWnbt4?usp=sharing>
+- **ปี 2565:**  
+  - <https://drive.google.com/drive/u/1/folders/1evneI8taeTrpU3jWQtsCGSXhaMBPrwGpouHcDSaKyZJ2QdQsyQPTpnYTqjAJJdN2_iBwu7Oe>
 
 ### Report
+- **ปี 2568:**  
+  - <https://drive.google.com/drive/folders/1pdTCHIQC3S8YIHorBoR9gz-yuSpwJDL3hD_tHeUeKFzlYLHjW4BGZzIe8KtC62_dcTg51Mo1?usp=sharing>
 - **ปี 2566:**  
   - <https://drive.google.com/drive/folders/1gKORrc-MRvJC7spKWyGZytiLTRh4jqIrkWY2APlzOwaNCN1YNDpI4A1YfydZYjipaT06azb-?usp=sharing>
+
+
+> 🧾 **หมายเหตุเรื่องข้อมูล:** โพยต้นฉบับมี 18 รายการ แต่มีลิงก์ซ้ำ 2 ชุด (**PawSitter** และ **Rescue Paw** ถูกใส่มาซ้ำกลุ่มละ 2 ครั้ง) จึงรวมเหลือ **16 โครงงานที่ไม่ซ้ำ**
 
 > ℹ️ **หมายเหตุ:** การเข้าถึงไฟล์ตัวอย่างต้อง **ลงชื่อเข้าใช้ด้วยอีเมล `@it.kmitl.ac.th`**
 
