@@ -336,29 +336,108 @@
     <section id="config">
       <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title">การตั้งค่า Git (Configure)</h2></div>
       <p class="slideref">อ้างอิงสไลด์หน้า 46–50 · Day 1 — Configure Git</p>
-      <p>ก่อนเริ่มใช้งาน ต้องตั้ง <b>username</b> และ <b>email</b> ซึ่งจะถูกผูกติดกับทุก commit ที่เราสร้างขึ้น</p>
+
+      <h3><span class="dot"></span>ทำไมต้องตั้งค่าก่อนใช้งาน?</h3>
+      <p>ทุกครั้งที่เรา commit — Git จะ <b>แนบชื่อ (user.name) และอีเมล (user.email) ของผู้เขียนติดไปกับ commit นั้นถาวร</b> เพื่อบอกว่า "ใครเป็นคนแก้โค้ดชุดนี้" ถ้ายังไม่ตั้งค่า Git จะไม่ยอมให้ commit และแจ้ง error ว่า <code class="inline">Please tell me who you are</code></p>
+      <div class="cards">
+        <div class="card"><div class="ic">🪪</div><h4>ระบุตัวตนผู้เขียน</h4><p>ชื่อ + อีเมลถูกฝังในทุก commit ทำให้ตามได้ว่าใครแก้อะไร เมื่อไหร่ (ดูได้จาก <code class="inline">git log</code>)</p></div>
+        <div class="card"><div class="ic">🔗</div><h4>เชื่อมกับ GitHub</h4><p>ถ้าอีเมลตรงกับที่ผูกไว้ใน GitHub account — commit จะโชว์รูปโปรไฟล์และนับเป็น contribution (ช่องเขียว) ของเรา</p></div>
+        <div class="card"><div class="ic">1️⃣</div><h4>ตั้งครั้งเดียวพอ</h4><p>ค่าแบบ <code class="inline">--global</code> ตั้งครั้งเดียวใช้ได้กับทุก repo บนเครื่อง ไม่ต้องตั้งใหม่ทุกโปรเจกต์</p></div>
+      </div>
+
+      <h3><span class="dot"></span>3 ระดับของการตั้งค่า (Configuration Levels)</h3>
+      <p>Git อ่านค่า config จาก 3 ระดับ โดย <b>ระดับที่แคบกว่าจะชนะเสมอ</b> (local &gt; global &gt; system)</p>
+      <table>
+        <tr><th>ระดับ</th><th>Flag</th><th>ขอบเขต</th><th>เก็บที่ไฟล์</th></tr>
+        <tr><td><b>System</b></td><td><code class="inline">--system</code></td><td>ทุก user ทุก repo บนเครื่อง (แทบไม่ได้ใช้)</td><td><code class="inline">/etc/gitconfig</code></td></tr>
+        <tr><td><b>Global</b> ⭐</td><td><code class="inline">--global</code></td><td>ทุก repo ของ user คนนี้ — <b>ใช้ระดับนี้เป็นหลัก</b></td><td><code class="inline">~/.gitconfig</code></td></tr>
+        <tr><td><b>Local</b></td><td><code class="inline">--local</code> (ค่า default)</td><td>เฉพาะ repo นั้น ๆ — ใช้เมื่ออยากให้บางโปรเจกต์ใช้ตัวตนอื่น</td><td><code class="inline">.git/config</code> ใน repo</td></tr>
+      </table>
+
+      <h3><span class="dot"></span>ขั้นที่ 1 — ตั้งชื่อและอีเมล (บังคับ)</h3>
       <pre><code><span class="cmt"># ตั้งค่าชื่อและอีเมล (--global = ใช้กับทุก repo บนเครื่อง)</span>
-<span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="str">"user"</span>
-<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="str">"email"</span></code></pre>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="str">"Your Name"</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="str">"you@example.com"</span>
 
-      <h4 class="mini">สลับไปใช้ GitHub อีก account</h4>
-      <pre><code><span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="str">"user"</span>
-<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="str">"email"</span>
-<span class="cmd">git</span> config <span class="flag">--global</span> credential.username <span class="str">"user"</span></code></pre>
+<span class="cmt"># ตัวอย่างจริง (สมมติ)</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="str">"somchai-dev"</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="str">"somchai.dev@example.com"</span></code></pre>
+      <div class="callout"><b>ℹ️ ใช้ค่าไหนดี?</b> ให้ใช้ <b>username และอีเมลเดียวกับที่สมัคร GitHub</b> เพื่อให้ commit ผูกกับ account เราอัตโนมัติ · ชื่อที่มีช่องว่างต้องครอบด้วยเครื่องหมายคำพูด เช่น <code class="inline">"Somchai Jaidee"</code></div>
+      <p>เมื่อตั้งแล้ว ทุก commit จะบันทึกตัวตนของเราไว้ ดูได้จาก <code class="inline">git log</code>:</p>
+      <pre><code><span class="cmd">git</span> log
+<span class="out">>> commit 3f9d2a1c8b... (HEAD -> main)
+>> Author: somchai-dev &lt;somchai.dev@example.com&gt;   ← มาจาก user.name / user.email
+>> Date:   Mon Jul 6 10:30:00 2026 +0700
+>>
+>>     first commit</span></code></pre>
 
-      <h4 class="mini">ลบ config เก่า (เมื่อ commit ไม่ได้ หรือต้องการเปลี่ยน account)</h4>
-      <pre><code><span class="cmt">-- ลบ config เก่า --</span>
+      <h3><span class="dot"></span>ขั้นที่ 2 — ตั้งค่าเสริมที่แนะนำ (Optional แต่ควรทำ)</h3>
+      <pre><code><span class="cmt"># ให้ branch แรกชื่อ main (แทน master) ตรงกับมาตรฐาน GitHub</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> init.defaultBranch <span class="str">main</span>
+
+<span class="cmt"># ตั้ง VS Code เป็น editor เวลา Git ต้องให้เราพิมพ์ข้อความ (เช่น commit message)</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> core.editor <span class="str">"code --wait"</span>
+
+<span class="cmt"># เปิดสีในผลลัพธ์คำสั่ง อ่าน git status / git diff ง่ายขึ้น</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> color.ui <span class="str">auto</span>
+
+<span class="cmt"># จำรหัสผ่าน/token ไว้ ไม่ต้องกรอกซ้ำทุกครั้งที่ push/pull</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> credential.helper <span class="str">store</span></code></pre>
+      <div class="callout warn">⚠️ <code class="inline">credential.helper store</code> จะเก็บ token เป็น <b>ข้อความธรรมดา</b> ในไฟล์ <code class="inline">~/.git-credentials</code> — สะดวกสำหรับเครื่องส่วนตัว แต่<b>ห้ามใช้บนเครื่องสาธารณะ/เครื่อง Lab ที่ใช้ร่วมกับคนอื่น</b></div>
+
+      <h3><span class="dot"></span>ขั้นที่ 3 — ตรวจสอบการตั้งค่า</h3>
+      <pre><code><span class="cmt"># ดูค่า config ทั้งหมด (กด q เพื่อออก)</span>
+<span class="cmd">git</span> config <span class="flag">--list</span>              <span class="cmt"># หรือย่อเป็น  git config -l</span>
+<span class="out">>> user.name=somchai-dev
+>> user.email=somchai.dev@example.com
+>> init.defaultbranch=main
+>> color.ui=auto</span>
+
+<span class="cmt"># ดูทีละค่า — เช็กเฉพาะตัวที่สงสัย</span>
+<span class="cmd">git</span> config user.name
+<span class="out">>> somchai-dev</span>
+<span class="cmd">git</span> config user.email
+<span class="out">>> somchai.dev@example.com</span>
+
+<span class="cmt"># ดูว่าค่าแต่ละตัวถูกตั้งจากไฟล์ไหน (มีประโยชน์มากเวลาค่า local ทับ global)</span>
+<span class="cmd">git</span> config <span class="flag">--list --show-origin</span>
+<span class="out">>> file:/home/somchai/.gitconfig      user.name=somchai-dev
+>> file:.git/config                   user.name=work-account</span></code></pre>
+
+      <h3><span class="dot"></span>สลับไปใช้ GitHub อีก account</h3>
+      <p>กรณีมีหลาย account (เช่น account ส่วนตัว กับ account ของมหาวิทยาลัย) ต้องเปลี่ยนทั้ง <b>ตัวตนใน commit</b> (user.name / user.email) และ <b>ตัวตนที่ใช้ login</b> (credential.username):</p>
+      <pre><code><span class="cmt"># เปลี่ยนตัวตนที่แนบใน commit</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="str">"somchai-uni"</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="str">"somchai.j@university-example.ac.th"</span>
+
+<span class="cmt"># เปลี่ยน username ที่ใช้ยืนยันตัวตนกับ GitHub ตอน push/pull</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> credential.username <span class="str">"somchai-uni"</span></code></pre>
+      <div class="callout tip">💡 ถ้าอยากให้ <b>เฉพาะโปรเจกต์เดียว</b> ใช้ตัวตนอื่น — เข้าไปในโฟลเดอร์ repo นั้นแล้วรันคำสั่งเดิมโดย<b>ตัด <code class="inline">--global</code> ออก</b> ค่า local จะทับค่า global เฉพาะ repo นั้น</div>
+
+      <h3><span class="dot"></span>แก้ปัญหา: commit / push ไม่ได้เพราะค้าง account เก่า</h3>
+      <p>อาการที่พบบ่อยในห้อง Lab: เครื่องเคย login ด้วย account ของคนก่อนหน้า ทำให้ push แล้วขึ้น <code class="inline">Permission denied</code> หรือ 403 — วิธีแก้คือล้าง config เก่าออกก่อน แล้วตั้งใหม่:</p>
+      <pre><code><span class="cmt"># 1) ลบ config ตัวตนเก่าออกทั้งหมด (--unset = ลบค่านั้นทิ้ง)</span>
 <span class="cmd">git</span> config <span class="flag">--global --unset</span> user.name
 <span class="cmd">git</span> config <span class="flag">--global --unset</span> user.email
 <span class="cmd">git</span> config <span class="flag">--global --unset</span> credential.username
 
-<span class="cmt">-- ลบ origin คนเก่า ถ้า commit ไม่ได้ --</span>
-<span class="cmd">git</span> remote remove origin</code></pre>
+<span class="cmt"># 2) ถ้า repo ชี้ remote ของคนเก่าอยู่ ให้ถอด origin ออก</span>
+<span class="cmd">git</span> remote <span class="flag">-v</span>                <span class="cmt"># เช็กก่อนว่า origin ชี้ไปที่ไหน</span>
+<span class="out">>> origin  https://github.com/old-user/old-repo.git (fetch)</span>
+<span class="cmd">git</span> remote remove origin      <span class="cmt"># ลบ origin เก่า แล้วค่อย git remote add ใหม่</span>
 
-      <h4 class="mini">ตรวจสอบการตั้งค่า</h4>
-      <pre><code><span class="cmd">git</span> config <span class="flag">--list</span>              <span class="cmt"># หรือ  git config -l</span>
-<span class="cmd">git</span> config <span class="flag">--list --show-origin</span>  <span class="cmt"># ดูว่าค่าแต่ละตัวมาจากไฟล์ไหน</span></code></pre>
-      <div class="callout tip">💡 ค่า <b>global</b> เก็บที่ไฟล์ <code class="inline">~/.gitconfig</code> · ส่วนค่า <b>local</b> เก็บที่ <code class="inline">.git/config</code> ของแต่ละ repo</div>
+<span class="cmt"># 3) ตั้งค่า account ของเราใหม่ตามขั้นที่ 1</span></code></pre>
+
+      <h3><span class="dot"></span>เก็บ Token ไว้ใน Environment Variable</h3>
+      <p>อีกเทคนิคที่ใช้ในการทำ Lab: เก็บ Personal Access Token ไว้ในตัวแปร <code class="inline">GIT_TOKEN</code> แล้วอ้างถึงตัวแปรแทนการพิมพ์ token ตรง ๆ — ลดโอกาส token หลุดไปอยู่ในไฟล์หรือประวัติคำสั่ง (ดูรายละเอียดการสร้าง token ที่ <a href="#token">หัวข้อ 12</a>)</p>
+      <pre><code><span class="cmt"># เก็บ token ไว้ในตัวแปร (token สมมติ — ใช้ของตัวเองที่สร้างจาก GitHub)</span>
+<span class="cmd">export</span> GIT_TOKEN=<span class="str">ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+
+<span class="cmt"># นำไปใช้ clone private repo โดยไม่ต้องพิมพ์ token ตรง ๆ</span>
+<span class="cmd">git</span> clone https://<span class="str">somchai-dev</span>:<span class="str">${GIT_TOKEN}</span>@github.com/somchai-dev/my-private-repo.git</code></pre>
+      <div class="callout danger">⚠️ ตัวแปรจาก <code class="inline">export</code> อยู่แค่ใน terminal session นั้น — ปิด terminal แล้วหาย ต้อง export ใหม่ · และ<b>ห้ามเขียน token จริงลงไฟล์ใด ๆ ที่จะ commit</b> เด็ดขาด</div>
+
+      <div class="callout tip">💡 <b>สรุปที่เก็บไฟล์ config:</b> ค่า <b>global</b> เก็บที่ <code class="inline">~/.gitconfig</code> · ค่า <b>local</b> เก็บที่ <code class="inline">.git/config</code> ของแต่ละ repo · เปิดแก้ตรง ๆ ด้วย text editor ก็ได้ หรือใช้ <code class="inline">git config --global --edit</code></div>
     </section>
 
     <!-- ===== 9. Create Repo ===== -->
