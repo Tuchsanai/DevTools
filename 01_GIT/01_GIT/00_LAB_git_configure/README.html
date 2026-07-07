@@ -103,16 +103,15 @@
     <h2>เนื้อหา</h2>
     <a href="#story"><span class="n">1</span>Story / Pain Point</a>
     <a href="#goals"><span class="n">2</span>สิ่งที่จะได้เรียนรู้</a>
-    <a href="#theory"><span class="n">3</span>ทฤษฎีก่อนลงมือ</a>
-    <a href="#prep"><span class="n">4</span>เตรียมความพร้อม</a>
-    <a href="#step1"><span class="n">5</span>STEP 1 — สำรวจเครื่องใหม่</a>
-    <a href="#step2"><span class="n">6</span>STEP 2 — ตั้งตัวตน</a>
-    <a href="#step3"><span class="n">7</span>STEP 3 — ตรวจสอบ</a>
-    <a href="#step4"><span class="n">8</span>STEP 4 — hint หายไปแล้ว</a>
-    <a href="#step5"><span class="n">9</span>STEP 5 — local ทับ global</a>
-    <a href="#step6"><span class="n">10</span>STEP 6 — ล้าง account เก่า</a>
-    <a href="#check"><span class="n">11</span>Checklist</a>
-    <a href="#quiz"><span class="n">12</span>คำถามทบทวน</a>
+    <a href="#prep"><span class="n">3</span>เตรียมความพร้อม</a>
+    <a href="#step1"><span class="n">4</span>STEP 1 — สำรวจเครื่องใหม่</a>
+    <a href="#step2"><span class="n">5</span>STEP 2 — ตั้งตัวตน</a>
+    <a href="#step3"><span class="n">6</span>STEP 3 — ตรวจสอบ</a>
+    <a href="#step4"><span class="n">7</span>STEP 4 — hint หายไปแล้ว</a>
+    <a href="#step5"><span class="n">8</span>STEP 5 — local ทับ global</a>
+    <a href="#step6"><span class="n">9</span>STEP 6 — ล้าง account เก่า</a>
+    <a href="#check"><span class="n">10</span>Checklist</a>
+    <a href="#quiz"><span class="n">11</span>คำถามทบทวน</a>
     <h2>อ้างอิง</h2>
     <a href="../git_week1.html#config"><span class="n" aria-hidden="true">📖</span>Week 1 · หัวข้อ 8 Configure</a>
   </nav>
@@ -157,48 +156,9 @@
       <div class="callout tip"><span aria-hidden="true">✂️</span> LAB นี้ใช้เฉพาะคำสั่งที่เรียนแล้ว: <code class="inline">git config</code> และ <code class="inline">git init</code> เท่านั้น — ยังไม่แตะ <code class="inline">git add</code> / <code class="inline">git commit</code> ซึ่งจะได้เรียนใน LAB ถัดไป</div>
     </section>
 
-    <!-- 3. Theory -->
-    <section id="theory">
-      <div class="sec-head"><div class="sec-num">3</div><h2 class="sec-title"><span aria-hidden="true">📚</span> ทฤษฎีก่อนลงมือ</h2></div>
-      <p class="slideref">อ้างอิงสไลด์หน้า 46–50 · Day 1 — Configure Git</p>
-
-      <h3><span class="dot"></span>1) Git ต้องรู้ว่า "ใคร" เป็นคนทำงาน</h3>
-      <p>หน้าที่หลักของ Git คือบันทึกประวัติว่า<b>ใคร แก้อะไร เมื่อไหร่</b> — ดังนั้นทุกครั้งที่ Git บันทึกงาน จะแนบ <code class="inline">user.name</code> และ <code class="inline">user.email</code> ของผู้เขียนติดไป<b>ถาวร</b> ถ้ายังไม่ตั้งค่า เมื่อถึงขั้นตอนบันทึกงาน (จะได้เรียนใน LAB ถัดไป) Git จะหยุดพร้อม error <code class="inline">*** Please tell me who you are.</code></p>
-      <div class="cards">
-        <div class="card"><div class="ic" aria-hidden="true">🪪</div><h4>ระบุตัวตนผู้เขียน</h4><p>ตามได้ว่าใครแก้อะไร เมื่อไหร่ — หัวใจของการทำงานเป็นทีม</p></div>
-        <div class="card"><div class="ic" aria-hidden="true">🔗</div><h4>เชื่อมกับ GitHub</h4><p>ถ้าอีเมลตรงกับที่ผูกใน GitHub account — งานที่บันทึกจะโชว์รูปโปรไฟล์และ<b>นับเป็น contribution (ช่องเขียว)</b> ของเรา</p></div>
-        <div class="card"><div class="ic" aria-hidden="true">1️⃣</div><h4>ตั้งครั้งเดียวพอ</h4><p>ค่าแบบ <code class="inline">--global</code> ใช้กับทุก repo บนเครื่อง ไม่ต้องตั้งใหม่ทุกโปรเจกต์</p></div>
-      </div>
-
-      <h3><span class="dot"></span>2) Config มี 3 ระดับ — ระดับที่แคบกว่าชนะเสมอ</h3>
-      <p>Git อ่านค่า config จาก 3 ระดับ ทับกันตามลำดับ <b>local &gt; global &gt; system</b></p>
-      <table>
-        <tr><th>ระดับ</th><th>Flag</th><th>ขอบเขต</th><th>เก็บที่ไฟล์</th></tr>
-        <tr><td><b>System</b></td><td><code class="inline">--system</code></td><td>ทุก user ทุก repo บนเครื่อง (แทบไม่ได้ใช้)</td><td><code class="inline">/etc/gitconfig</code></td></tr>
-        <tr><td><b>Global</b> ⭐</td><td><code class="inline">--global</code></td><td>ทุก repo ของ user คนนี้ — <b>ใช้ระดับนี้เป็นหลัก</b></td><td><code class="inline">~/.gitconfig</code></td></tr>
-        <tr><td><b>Local</b></td><td><code class="inline">--local</code> (ค่า default)</td><td>เฉพาะ repo นั้น ๆ — ใช้เมื่ออยากให้บางโปรเจกต์ใช้ตัวตนอื่น</td><td><code class="inline">.git/config</code> ใน repo</td></tr>
-      </table>
-      <div class="callout"><span aria-hidden="true">🏢</span> <b>ตัวอย่างการใช้จริง:</b> ตั้ง global เป็น account ส่วนตัว แต่ repo งานบริษัทตั้ง local ทับเป็น account บริษัท — งานใน repo นั้นจะใช้ตัวตนบริษัทอัตโนมัติ (ได้ลองจริงใน STEP 5)</div>
-
-      <h3><span class="dot"></span>3) ค่าเสริมที่ควรตั้ง (Optional แต่แนะนำ)</h3>
-      <table>
-        <tr><th>คำสั่ง</th><th>ทำอะไร</th></tr>
-        <tr><td><code class="inline">git config --global init.defaultBranch main</code></td><td>ให้ branch แรกชื่อ <code class="inline">main</code> (แทน <code class="inline">master</code>) ตรงมาตรฐาน GitHub — และปิด hint ยาว ๆ ตอน <code class="inline">git init</code></td></tr>
-        <tr><td><code class="inline">git config --global color.ui auto</code></td><td>เปิดสีในผลลัพธ์คำสั่ง Git อ่านง่ายขึ้น</td></tr>
-        <tr><td><code class="inline">git config --global core.editor "code --wait"</code></td><td>ใช้ VS Code เป็น editor เวลา Git ให้พิมพ์ข้อความ (บน container ที่ไม่มี VS Code ข้ามได้)</td></tr>
-        <tr><td><code class="inline">git config --global credential.helper store</code></td><td>จำรหัส/token ไว้ ไม่ต้องกรอกซ้ำทุกครั้งที่ติดต่อ GitHub</td></tr>
-      </table>
-      <div class="callout warn"><span aria-hidden="true">⚠️</span> <code class="inline">credential.helper store</code> เก็บ token เป็น<b>ข้อความธรรมดา</b>ในไฟล์ <code class="inline">~/.git-credentials</code> — สะดวกสำหรับเครื่องส่วนตัว แต่<b>ห้ามใช้บนเครื่องสาธารณะ/เครื่อง Lab ที่ใช้ร่วมกับคนอื่น</b></div>
-
-      <h3><span class="dot"></span>4) คำสั่งตรวจสอบ — เครื่องมือสืบสวนเวลา config เพี้ยน</h3>
-      <pre><code><span class="cmd">git config</span> <span class="flag">--list</span>                 <span class="cmt"># ดูทุกค่า (ย่อ: git config -l)</span>
-<span class="cmd">git config</span> user.name              <span class="cmt"># ดูทีละค่า — เช็กเฉพาะตัวที่สงสัย</span>
-<span class="cmd">git config</span> <span class="flag">--list --show-origin</span>   <span class="cmt"># ดูว่าแต่ละค่ามาจาก "ไฟล์ไหน" — ตัวชี้ขาดเวลา local ทับ global</span></code></pre>
-    </section>
-
-    <!-- 4. Prep -->
+    <!-- 3. Prep -->
     <section id="prep">
-      <div class="sec-head"><div class="sec-num">4</div><h2 class="sec-title"><span aria-hidden="true">⚙️</span> เตรียมความพร้อม</h2></div>
+      <div class="sec-head"><div class="sec-num">3</div><h2 class="sec-title"><span aria-hidden="true">⚙️</span> เตรียมความพร้อม</h2></div>
       <p>รัน container สำหรับทดลอง (บนเครื่องตัวเอง):</p>
       <pre><code><span class="cmd">docker run</span> -dit --name devtools --privileged -p 2222:22 tuchsanai/devtools:2569_1</code></pre>
       <p>จากนั้น SSH เข้าไป (password: <code class="inline">passwd</code>):</p>
@@ -208,7 +168,7 @@
 
     <!-- STEP 1 -->
     <section id="step1">
-      <div class="sec-head"><div class="sec-num">5</div><h2 class="sec-title">STEP 1 — สำรวจเครื่องใหม่: Git รู้จักเราหรือยัง?</h2></div>
+      <div class="sec-head"><div class="sec-num">4</div><h2 class="sec-title">STEP 1 — สำรวจเครื่องใหม่: Git รู้จักเราหรือยัง?</h2></div>
       <p>ถาม Git ว่ารู้จักเราไหม (จำลองสถานการณ์ของมายด์):</p>
       <pre><code><span class="cmd">git config</span> <span class="flag">--list</span>
 <span class="cmd">echo</span> <span class="str">"exit code: $?"</span>
@@ -247,7 +207,7 @@ Initialized empty Git repository in /root/config_lab/first-try/.git/</span></cod
 
     <!-- STEP 2 -->
     <section id="step2">
-      <div class="sec-head"><div class="sec-num">6</div><h2 class="sec-title">STEP 2 — ตั้งตัวตน + ค่าเสริม (ทางแก้ที่ถูกต้อง)</h2></div>
+      <div class="sec-head"><div class="sec-num">5</div><h2 class="sec-title">STEP 2 — ตั้งตัวตน + ค่าเสริม (ทางแก้ที่ถูกต้อง)</h2></div>
       <p>ตั้งชื่อและอีเมล <b>ให้ตรงกับ GitHub account ของตัวเอง</b> (ตัวอย่างนี้ใช้ account สมมติ <code class="inline">somchai-dev</code> — <b>เปลี่ยนเป็นชื่อ–อีเมลของตัวเอง</b>):</p>
       <pre><code><span class="cmd">git config</span> <span class="flag">--global</span> user.name <span class="str">"somchai-dev"</span>
 <span class="cmd">git config</span> <span class="flag">--global</span> user.email <span class="str">"somchai.dev@example.com"</span>
@@ -259,7 +219,7 @@ Initialized empty Git repository in /root/config_lab/first-try/.git/</span></cod
 
     <!-- STEP 3 -->
     <section id="step3">
-      <div class="sec-head"><div class="sec-num">7</div><h2 class="sec-title">STEP 3 — ตรวจสอบว่าตั้งสำเร็จ</h2></div>
+      <div class="sec-head"><div class="sec-num">6</div><h2 class="sec-title">STEP 3 — ตรวจสอบว่าตั้งสำเร็จ</h2></div>
       <pre><code><span class="cmd">git config</span> <span class="flag">--list</span></code></pre>
       <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">user.name=somchai-dev
 user.email=somchai.dev@example.com
@@ -297,7 +257,7 @@ file:.git/config	core.logallrefupdates=true</span></code></pre></div>
 
     <!-- STEP 4 -->
     <section id="step4">
-      <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title">STEP 4 — ผลของ init.defaultBranch: hint หายไปแล้ว</h2></div>
+      <div class="sec-head"><div class="sec-num">7</div><h2 class="sec-title">STEP 4 — ผลของ init.defaultBranch: hint หายไปแล้ว</h2></div>
       <p>สร้าง repo ใหม่อีกอัน แล้วเทียบผลกับ <code class="inline">git init</code> ครั้งแรกใน STEP 1:</p>
       <pre><code><span class="cmd">cd</span> ~/config_lab
 <span class="cmd">mkdir</span> my-project &amp;&amp; <span class="cmd">cd</span> my-project
@@ -309,7 +269,7 @@ file:.git/config	core.logallrefupdates=true</span></code></pre></div>
 
     <!-- STEP 5 -->
     <section id="step5">
-      <div class="sec-head"><div class="sec-num">9</div><h2 class="sec-title">STEP 5 — Local ทับ Global: ให้ repo เดียวใช้ตัวตนอื่น</h2></div>
+      <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title">STEP 5 — Local ทับ Global: ให้ repo เดียวใช้ตัวตนอื่น</h2></div>
       <p>สมมติ repo <code class="inline">my-project</code> เป็นงานบริษัท ต้องใช้ตัวตน <code class="inline">work-account</code> เฉพาะที่นี่ — รันคำสั่งเดิมแต่<b>ตัด <code class="inline">--global</code> ออก</b> (= ระดับ local เขียนลง <code class="inline">.git/config</code> ของ repo นี้):</p>
       <pre><code><span class="cmd">git config</span> user.name <span class="str">"work-account"</span>
 <span class="cmd">git config</span> user.email <span class="str">"work@company-example.com"</span>
@@ -340,7 +300,7 @@ file:.git/config	user.email=work@company-example.com</span></code></pre></div>
 
     <!-- STEP 6 -->
     <section id="step6">
-      <div class="sec-head"><div class="sec-num">10</div><h2 class="sec-title">STEP 6 — Troubleshooting: ล้างเครื่อง Lab ที่ค้าง account เก่า</h2></div>
+      <div class="sec-head"><div class="sec-num">9</div><h2 class="sec-title">STEP 6 — Troubleshooting: ล้างเครื่อง Lab ที่ค้าง account เก่า</h2></div>
       <p>จำลองสถานการณ์เพื่อนของมายด์ — สมมติเราเป็น "คนถัดไป" ที่มาใช้เครื่องนี้ และต้องล้างตัวตนของคนก่อนหน้าออกก่อน (<code class="inline">--unset</code> = ลบค่านั้นทิ้ง):</p>
       <pre><code><span class="cmd">git config</span> <span class="flag">--global --unset</span> user.name
 <span class="cmd">git config</span> <span class="flag">--global --unset</span> user.email
@@ -366,7 +326,7 @@ core.logallrefupdates=true</span></code></pre></div>
 
     <!-- Checklist -->
     <section id="check">
-      <div class="sec-head"><div class="sec-num">11</div><h2 class="sec-title"><span aria-hidden="true">✅</span> Checklist ก่อนไปต่อ</h2></div>
+      <div class="sec-head"><div class="sec-num">10</div><h2 class="sec-title"><span aria-hidden="true">✅</span> Checklist ก่อนไปต่อ</h2></div>
       <ul class="checklist">
         <li>เจอกับตาตัวเองว่าเครื่องเปล่า <code class="inline">git config user.name</code> เงียบ + exit code 1 และไม่มีไฟล์ <code class="inline">~/.gitconfig</code></li>
         <li><code class="inline">git config --list</code> แสดง <code class="inline">user.name</code> / <code class="inline">user.email</code> ของตัวเอง และ <code class="inline">init.defaultbranch=main</code></li>
@@ -379,7 +339,7 @@ core.logallrefupdates=true</span></code></pre></div>
 
     <!-- Quiz -->
     <section id="quiz">
-      <div class="sec-head"><div class="sec-num">12</div><h2 class="sec-title"><span aria-hidden="true">❓</span> คำถามทบทวน</h2></div>
+      <div class="sec-head"><div class="sec-num">11</div><h2 class="sec-title"><span aria-hidden="true">❓</span> คำถามทบทวน</h2></div>
       <div class="quiz">
         <ol>
           <li>เครื่องที่ยังไม่ตั้งค่า — <code class="inline">git config user.name</code> ให้ผลอย่างไร และ exit code เท่าไร? ค่านี้บอกอะไรเรา</li>

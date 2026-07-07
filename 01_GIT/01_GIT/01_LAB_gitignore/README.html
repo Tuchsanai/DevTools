@@ -103,13 +103,12 @@
     <h2>เนื้อหา</h2>
     <a href="#story"><span class="n">1</span>Story / Pain Point</a>
     <a href="#goals"><span class="n">2</span>สิ่งที่จะได้เรียนรู้</a>
-    <a href="#theory"><span class="n">3</span>ทฤษฎีก่อนลงมือ</a>
-    <a href="#prep"><span class="n">4</span>เตรียมความพร้อม</a>
-    <a href="#step1"><span class="n">5</span>STEP 1 — ความรกของ git status</a>
-    <a href="#step2"><span class="n">6</span>STEP 2 — สร้าง .gitignore</a>
-    <a href="#step3"><span class="n">7</span>STEP 3 — ซ่อนไม่ใช่หาย</a>
-    <a href="#check"><span class="n">8</span>Checklist</a>
-    <a href="#quiz"><span class="n">9</span>คำถามทบทวน</a>
+    <a href="#prep"><span class="n">3</span>เตรียมความพร้อม</a>
+    <a href="#step1"><span class="n">4</span>STEP 1 — ความรกของ git status</a>
+    <a href="#step2"><span class="n">5</span>STEP 2 — สร้าง .gitignore</a>
+    <a href="#step3"><span class="n">6</span>STEP 3 — ซ่อนไม่ใช่หาย</a>
+    <a href="#check"><span class="n">7</span>Checklist</a>
+    <a href="#quiz"><span class="n">8</span>คำถามทบทวน</a>
     <h2>อ้างอิง</h2>
     <a href="https://www.toptal.com/developers/gitignore" target="_blank" rel="noopener"><span class="n" aria-hidden="true">🔗</span>ตัวสร้าง .gitignore (สไลด์ 44)</a>
   </nav>
@@ -154,48 +153,9 @@
       <div class="callout tip"><span aria-hidden="true">✂️</span> LAB นี้ใช้เฉพาะสิ่งที่เรียนแล้ว: <b>สร้างไฟล์ + <code class="inline">.gitignore</code> + <code class="inline">git status</code></b> เท่านั้น — ยังไม่แตะ <code class="inline">git add</code> / <code class="inline">git commit</code> ซึ่งจะได้เรียนใน LAB ถัดไป</div>
     </section>
 
-    <!-- 3. Theory -->
-    <section id="theory">
-      <div class="sec-head"><div class="sec-num">3</div><h2 class="sec-title"><span aria-hidden="true">📚</span> ทฤษฎีก่อนลงมือ</h2></div>
-      <p class="slideref">อ้างอิงสไลด์หน้า 43–44 · Day 1 — Ignoring Files / .gitignore</p>
-
-      <h3><span class="dot"></span>1) <code class="inline">.gitignore</code> คืออะไร และแก้ปัญหาอะไร</h3>
-      <p><code class="inline">.gitignore</code> คือ<b>ไฟล์ข้อความธรรมดา</b>ที่วางไว้ที่ root ของ repo ข้างในเขียน "pattern" บอก Git ว่า<b>ไฟล์/โฟลเดอร์ไหนให้มองข้าม</b> — Git จะไม่ติดตาม ไม่ขึ้นใน <code class="inline">git status</code> และไม่มีวันถูก commit โดยบังเอิญ · สไลด์หน้า 43 ระบุ 4 ประเภทไฟล์ที่ <i>"you know you NEVER want to commit"</i>:</p>
-      <div class="cards">
-        <div class="card"><div class="ic" aria-hidden="true">🔑</div><h4>Secrets / Keys</h4><p><code class="inline">.env</code>, credentials — หลุดขึ้น GitHub = โดนขโมยไปใช้ เสียเงิน/เสียข้อมูล</p></div>
-        <div class="card"><div class="ic" aria-hidden="true">💻</div><h4>OS files</h4><p><code class="inline">.DS_Store</code> (macOS) — ไฟล์ขยะเฉพาะเครื่อง ไม่เกี่ยวกับโปรเจกต์</p></div>
-        <div class="card"><div class="ic" aria-hidden="true">📄</div><h4>Log files</h4><p><code class="inline">*.log</code> — ไฟล์บันทึกที่งอกใหม่เรื่อย ๆ ทุกครั้งที่รันโปรแกรม</p></div>
-        <div class="card"><div class="ic" aria-hidden="true">📦</div><h4>Dependencies</h4><p><code class="inline">venv/</code>, <code class="inline">node_modules/</code>, <code class="inline">__pycache__/</code> — สร้างใหม่ได้เสมอ ไม่ต้องเก็บ (ใหญ่มาก)</p></div>
-      </div>
-
-      <h3><span class="dot"></span>2) 3 Pattern หลัก (จากสไลด์หน้า 44)</h3>
-      <p>เขียน pattern บรรทัดละหนึ่งอันในไฟล์ <code class="inline">.gitignore</code>:</p>
-      <table>
-        <tr><th>Pattern</th><th>ความหมาย</th><th>ตัวอย่างที่โดน</th></tr>
-        <tr><td><code class="inline">.DS_Store</code></td><td>ละเว้น<b>ไฟล์ที่ชื่อตรงตัว</b>นี้</td><td><code class="inline">.DS_Store</code></td></tr>
-        <tr><td><code class="inline">folderName/</code></td><td>ละเว้น<b>ทั้งโฟลเดอร์</b> (มี <code class="inline">/</code> ปิดท้าย)</td><td><code class="inline">venv/</code>, <code class="inline">__pycache__/</code> ทั้งอัน</td></tr>
-        <tr><td><code class="inline">*.log</code></td><td>ละเว้น<b>ทุกไฟล์นามสกุล</b> <code class="inline">.log</code> (<code class="inline">*</code> = อะไรก็ได้)</td><td><code class="inline">training.log</code>, <code class="inline">debug.log</code></td></tr>
-      </table>
-      <p>ไวยากรณ์เสริมที่ควรรู้ (นอกเหนือจากสไลด์):</p>
-      <table>
-        <tr><th>Pattern</th><th>ความหมาย</th></tr>
-        <tr><td><code class="inline"># comment</code></td><td>บรรทัดที่ขึ้นต้นด้วย <code class="inline">#</code> = คอมเมนต์ (Git ข้าม) · บรรทัดว่างก็ถูกข้าม</td></tr>
-        <tr><td><code class="inline">!important.log</code></td><td>เครื่องหมาย <code class="inline">!</code> = <b>ยกเว้น</b> (un-ignore) ดึงไฟล์กลับมา แม้โดน pattern อื่นละเว้นไว้ — <i>ยกเว้นไม่ได้ถ้าโฟลเดอร์แม่ถูกละเว้นทั้งอันไปแล้ว</i> (เช่น มี <code class="inline">venv/</code> แล้วสั่ง <code class="inline">!venv/keep.txt</code> จะไม่ได้ผล)</td></tr>
-        <tr><td><code class="inline">/config.py</code></td><td><code class="inline">/</code> นำหน้า = ยึดกับ root ของ repo เท่านั้น ไม่ลามไปโฟลเดอร์ย่อย</td></tr>
-      </table>
-
-      <h3><span class="dot"></span>3) จุดที่ต้องรู้ (2 กับดักยอดฮิต)</h3>
-      <table>
-        <tr><th>⚠️</th><th>กับดัก</th><th>สิ่งที่ต้องจำ</th></tr>
-        <tr><td><b>1</b></td><td>ตัว <code class="inline">.gitignore</code> เองล่ะ?</td><td><code class="inline">.gitignore</code> <b>ควรถูก commit เข้า repo ด้วย</b> เพื่อให้ทุกคนในทีมใช้กติกาละเว้นชุดเดียวกัน (มันจะยังเป็น "untracked" ใน LAB นี้ ซึ่งถูกต้อง — ตั้งใจจะเก็บมันในบทถัดไป)</td></tr>
-        <tr><td><b>2</b></td><td>เพิ่มชื่อไฟล์ที่ <b>commit ไปแล้ว</b> ลง <code class="inline">.gitignore</code></td><td><b>ไม่ช่วย!</b> <code class="inline">.gitignore</code> มีผลกับไฟล์ที่ <b>ยังไม่ถูก track</b> เท่านั้น — ทางที่ดีที่สุดคือใส่ <code class="inline">.gitignore</code> ให้ครบ <b>ก่อน</b> commit ครั้งแรก</td></tr>
-      </table>
-      <div class="callout tip"><span aria-hidden="true">🔗</span> ไม่อยากเขียน <code class="inline">.gitignore</code> เองทั้งหมด? มีตัวสร้างสำเร็จรูปตามภาษา/เฟรมเวิร์ก (สไลด์หน้า 44 แนะนำไว้): <a href="https://www.toptal.com/developers/gitignore" target="_blank" rel="noopener">toptal.com/developers/gitignore</a></div>
-    </section>
-
-    <!-- 4. Prep -->
+    <!-- 3. Prep -->
     <section id="prep">
-      <div class="sec-head"><div class="sec-num">4</div><h2 class="sec-title"><span aria-hidden="true">⚙️</span> เตรียมความพร้อม</h2></div>
+      <div class="sec-head"><div class="sec-num">3</div><h2 class="sec-title"><span aria-hidden="true">⚙️</span> เตรียมความพร้อม</h2></div>
       <p>รัน container สำหรับทดลอง (บนเครื่องตัวเอง):</p>
       <pre><code><span class="cmd">docker run</span> -dit --name devtools --privileged -p 2222:22 tuchsanai/devtools:2569_1</code></pre>
       <p>จากนั้น SSH เข้าไป (password: <code class="inline">passwd</code>):</p>
@@ -205,7 +165,7 @@
 
     <!-- STEP 1 -->
     <section id="step1">
-      <div class="sec-head"><div class="sec-num">5</div><h2 class="sec-title">STEP 1 — สร้างโปรเจกต์จริง แล้วดู "ความรก" ของ git status</h2></div>
+      <div class="sec-head"><div class="sec-num">4</div><h2 class="sec-title">STEP 1 — สร้างโปรเจกต์จริง แล้วดู "ความรก" ของ git status</h2></div>
       <p>สร้างโฟลเดอร์โปรเจกต์ พร้อมทั้ง <b>โค้ดจริง</b> และ <b>ไฟล์ขยะ</b> ที่มักงอกในโปรเจกต์ AI:</p>
       <pre><code><span class="cmd">mkdir</span> -p ~/gitignore_lab/secret-ai-project &amp;&amp; <span class="cmd">cd</span> ~/gitignore_lab/secret-ai-project
 
@@ -274,7 +234,7 @@ nothing added to commit but untracked files present (use "git add" to track)</sp
 
     <!-- STEP 2 -->
     <section id="step2">
-      <div class="sec-head"><div class="sec-num">6</div><h2 class="sec-title">STEP 2 — สร้าง .gitignore แล้ว git status สะอาดขึ้นทันที</h2></div>
+      <div class="sec-head"><div class="sec-num">5</div><h2 class="sec-title">STEP 2 — สร้าง .gitignore แล้ว git status สะอาดขึ้นทันที</h2></div>
       <p>สร้างไฟล์ <code class="inline">.gitignore</code> ที่ <b>root ของ repo</b> ใส่ pattern ครอบขยะทั้ง 4 ประเภท (heredoc ด้านล่างเขียนไฟล์ให้ในทีเดียว):</p>
       <pre><code><span class="cmd">cat</span> &gt; .gitignore <span class="str">&lt;&lt;'EOF'</span>
 <span class="cmt"># Secrets &amp; credentials</span>
@@ -331,7 +291,7 @@ nothing added to commit but untracked files present (use "git add" to track)</sp
 
     <!-- STEP 3 -->
     <section id="step3">
-      <div class="sec-head"><div class="sec-num">7</div><h2 class="sec-title">STEP 3 — พิสูจน์ว่าไฟล์ถูก "ซ่อน" ไม่ใช่ "หาย"</h2></div>
+      <div class="sec-head"><div class="sec-num">6</div><h2 class="sec-title">STEP 3 — พิสูจน์ว่าไฟล์ถูก "ซ่อน" ไม่ใช่ "หาย"</h2></div>
       <p><code class="inline">.gitignore</code> <b>ไม่ได้ลบไฟล์</b> — แค่บอก Git ให้มองข้าม ไฟล์ยังอยู่บนดิสก์ครบ เติม flag <code class="inline">--ignored</code> เพื่อให้ Git โชว์รายการที่มัน "จงใจซ่อน":</p>
       <pre><code><span class="cmd">git status</span> <span class="flag">--ignored</span></code></pre>
       <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">On branch main
@@ -363,7 +323,7 @@ nothing added to commit but untracked files present (use "git add" to track)</sp
 
     <!-- Checklist -->
     <section id="check">
-      <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title"><span aria-hidden="true">✅</span> Checklist ก่อนไปต่อ</h2></div>
+      <div class="sec-head"><div class="sec-num">7</div><h2 class="sec-title"><span aria-hidden="true">✅</span> Checklist ก่อนไปต่อ</h2></div>
       <ul class="checklist">
         <li>เห็นกับตาว่า <code class="inline">git status</code> ก่อนมี <code class="inline">.gitignore</code> โชว์ทั้ง 10 รายการ รวมถึง <code class="inline">.env</code> ที่มีความลับ</li>
         <li>สร้างไฟล์ <code class="inline">.gitignore</code> ที่ root และ <code class="inline">cat</code> ดูเนื้อหาได้ถูกต้อง</li>
@@ -375,7 +335,7 @@ nothing added to commit but untracked files present (use "git add" to track)</sp
 
     <!-- Quiz -->
     <section id="quiz">
-      <div class="sec-head"><div class="sec-num">9</div><h2 class="sec-title"><span aria-hidden="true">❓</span> คำถามทบทวน</h2></div>
+      <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title"><span aria-hidden="true">❓</span> คำถามทบทวน</h2></div>
       <div class="quiz">
         <ol>
           <li>ไฟล์ 4 ประเภทที่สไลด์บอกว่า "NEVER want to commit" มีอะไรบ้าง และทำไมไฟล์ <code class="inline">.env</code> ถึงอันตรายที่สุด?</li>
