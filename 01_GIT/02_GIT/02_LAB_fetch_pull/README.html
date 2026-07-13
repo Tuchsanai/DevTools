@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAB 02 — Two Machines, One Project | clone / fetch / pull (Sync จาก Remote)</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2333; --border:#30363d;
+    --text:#e6edf3; --muted:#8b949e; --accent:#f05133; --accent2:#58a6ff;
+    --green:#3fb950; --yellow:#d29922; --purple:#bc8cff; --code-bg:#0b0f14;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI","Noto Sans Thai",-apple-system,Tahoma,sans-serif;background:var(--bg);color:var(--text);line-height:1.75}
+  a{color:var(--accent2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{display:flex;max-width:1480px;margin:0 auto}
+  nav.side{position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;width:280px;flex-shrink:0;padding:24px 18px;border-right:1px solid var(--border);background:var(--panel)}
+  nav.side .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;padding:0 8px}
+  nav.side .brand .m{width:34px;height:34px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px}
+  nav.side .brand b{font-size:1rem}
+  nav.side h2{font-size:.72rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:18px 8px 8px}
+  nav.side a{display:block;color:var(--muted);padding:7px 12px;border-radius:8px;font-size:.9rem;margin-bottom:1px}
+  nav.side a:hover{background:var(--panel2);color:var(--text);text-decoration:none}
+  nav.side a .n{color:var(--accent);font-weight:700;margin-right:8px;display:inline-block;width:20px}
+  main{flex:1;min-width:0;padding:0 0 80px}
+  header.hero{padding:64px 56px 48px;text-align:center;background:radial-gradient(circle at 50% -20%, #2d1810 0%, var(--bg) 60%);border-bottom:1px solid var(--border)}
+  .gitmark{display:inline-flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:22px;background:var(--accent);font-size:42px;margin-bottom:20px;box-shadow:0 12px 40px rgba(240,81,51,.35)}
+  header.hero .kicker{color:var(--accent);font-weight:700;letter-spacing:2px;font-size:.82rem;text-transform:uppercase}
+  header.hero h1{font-size:2.6rem;margin:10px 0 6px;background:linear-gradient(90deg,#fff,#f05133);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  header.hero p.sub{color:var(--muted);font-size:1.08rem}
+  .scores{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+  .chip{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 20px;min-width:120px}
+  .chip .v{font-size:1.25rem;font-weight:800;color:var(--accent2)}
+  .chip .l{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  section{padding:46px 56px;border-bottom:1px solid var(--border);scroll-margin-top:10px}
+  .sec-head{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+  .sec-num{flex-shrink:0;width:48px;height:48px;border-radius:13px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.3rem}
+  h2.sec-title{font-size:1.7rem}
+  .slideref{color:var(--muted);font-size:.78rem;margin:0 0 22px 64px;font-style:italic}
+  h3{font-size:1.2rem;margin:28px 0 12px;color:#fff;display:flex;align-items:center;gap:8px}
+  h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  p{margin-bottom:12px;color:#c9d1d9}
+  ul,ol{margin:0 0 14px 22px}
+  li{margin-bottom:7px;color:#c9d1d9}
+  strong,b{color:#fff}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:12px;padding:16px 20px;overflow-x:auto;margin:12px 0;font-family:"JetBrains Mono",Consolas,Monaco,monospace;font-size:.9rem;line-height:1.65}
+  pre code{color:#e6edf3}
+  .cmt{color:#8b949e}
+  .cmd{color:var(--green)}
+  .flag{color:#79c0ff}
+  .str{color:var(--yellow)}
+  .out{color:#9db4cd}
+  .err{color:#ff7b72}
+  .ok{color:var(--green)}
+  code.inline{background:var(--panel2);padding:2px 8px;border-radius:6px;font-family:Consolas,monospace;font-size:.88em;color:var(--purple)}
+  .expected{border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:0 12px 12px 0;background:var(--code-bg);margin:12px 0}
+  .expected .lbl{display:block;padding:8px 20px 0;font-size:.75rem;font-weight:700;letter-spacing:1px;color:var(--accent2);text-transform:uppercase}
+  .expected pre{border:none;margin:0;background:transparent}
+  .story{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+  .panel{background:linear-gradient(160deg,#1d4e89,#16365f);border-radius:14px;padding:18px;text-align:center;border:1px solid #2a5a92;position:relative}
+  .panel .face{font-size:2rem;margin-bottom:6px}
+  .panel p{font-size:.86rem;color:#dbe9ff;margin:0}
+  .panel .step{position:absolute;top:8px;left:10px;font-size:.7rem;color:#7fb3e8;font-weight:700}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:18px 0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .card .ic{font-size:1.8rem;margin-bottom:10px}
+  .card h3{color:#fff;margin:0 0 6px;font-size:1.05rem;display:block}
+  .card p{font-size:.88rem;color:var(--muted);margin:0}
+  .callout{border-left:4px solid var(--accent2);background:var(--panel);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0}
+  .callout.warn{border-color:var(--yellow)}
+  .callout.tip{border-color:var(--green)}
+  .callout.danger{border-color:var(--accent)}
+  .callout b{color:#fff}
+  table{width:100%;border-collapse:collapse;margin:18px 0;background:var(--panel);border-radius:12px;overflow:hidden}
+  th,td{padding:13px 18px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+  th{background:var(--panel2);color:#fff;font-size:.9rem;letter-spacing:.5px}
+  td{color:#c9d1d9;font-size:.9rem}
+  tr:last-child td{border-bottom:none}
+  .tablewrap{overflow-x:auto}
+  .diagram{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;background:#22262e;border:1px solid var(--border);border-radius:16px;padding:26px;margin:18px 0}
+  .node{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-align:center;min-width:150px}
+  .node .ic{font-size:1.8rem}
+  .node .lbl{font-size:.82rem;color:var(--muted);margin-top:4px}
+  .node .sub{font-size:.72rem;color:var(--muted)}
+  .node.repo{background:#3a1f1c;border-color:var(--accent)}
+  .node.repo .lbl{color:var(--accent);font-weight:700}
+  .node.mark{background:#1c2b1e;border-color:var(--green)}
+  .node.mark .lbl{color:var(--green);font-weight:700}
+  .arrow{font-size:1.4rem;color:var(--accent2);display:flex;flex-direction:column;align-items:center;font-weight:700}
+  .arrow .cap{font-size:.72rem;font-family:Consolas,monospace;color:var(--green)}
+  .arrow.bad{color:#ff7b72}
+  .arrow.bad .cap{color:#ff7b72}
+  .checklist{list-style:none;margin-left:0}
+  .checklist li{padding-left:32px;position:relative}
+  .checklist li::before{content:"☐";position:absolute;left:4px;color:var(--green);font-size:1.05rem}
+  .quiz{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px 26px;margin:16px 0}
+  .quiz ol{margin-bottom:0}
+  footer{padding:32px 56px;text-align:center;color:var(--muted);font-size:.85rem}
+  @media(max-width:900px){
+    .wrap{flex-direction:column}
+    nav.side{position:static;height:auto;width:100%;border-right:none;border-bottom:1px solid var(--border)}
+    header.hero h1{font-size:1.9rem}
+    section,header.hero,footer{padding-left:22px;padding-right:22px}
+  }
+  .top-link{position:fixed;bottom:24px;right:24px;background:var(--accent);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 6px 20px rgba(0,0,0,.4);z-index:50}
+  .top-link:hover{text-decoration:none;transform:translateY(-2px)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="side">
+    <div class="brand"><div class="m" aria-hidden="true">🔄</div><b>LAB 02 · Fetch &amp; Pull</b></div>
+    <h2>เนื้อหา</h2>
+    <a href="#story"><span class="n">1</span>Story / Pain Point</a>
+    <a href="#goals"><span class="n">2</span>สิ่งที่จะได้เรียนรู้</a>
+    <a href="#theory1"><span class="n">3</span>ทฤษฎี: git clone</a>
+    <a href="#theory2"><span class="n">4</span>ทฤษฎี: origin/main บุ๊กมาร์ก</a>
+    <a href="#theory3"><span class="n">5</span>ทฤษฎี: Fetch vs Pull</a>
+    <a href="#prep"><span class="n">6</span>เตรียมความพร้อม + สร้าง repo</a>
+    <a href="#step1"><span class="n">7</span>STEP 1 — clone เครื่องแลป</a>
+    <a href="#step2"><span class="n">8</span>STEP 2 — ทำงานที่บ้าน + push</a>
+    <a href="#step3"><span class="n">9</span>STEP 3 — status โกหก → fetch</a>
+    <a href="#step4"><span class="n">10</span>STEP 4 (โบนัส) — detached HEAD</a>
+    <a href="#step5"><span class="n">11</span>STEP 5 — merge origin/main</a>
+    <a href="#step6"><span class="n">12</span>STEP 6 — ท่ารวบ git pull</a>
+    <a href="#step7"><span class="n">13</span>STEP 7 — สลับขา + ปิดลูป</a>
+    <a href="#cheat"><span class="n">14</span>สรุป + Cheat Sheet</a>
+    <a href="#check"><span class="n">15</span>Checklist</a>
+    <a href="#quiz"><span class="n">16</span>คำถามทบทวน</a>
+    <h2>อ้างอิง</h2>
+    <a href="../git_week2.html#clone"><span class="n" aria-hidden="true">📖</span>Week 2 · Cloning</a>
+    <a href="../git_week2.html#fetchpull"><span class="n" aria-hidden="true">📖</span>Week 2 · Fetch vs Pull</a>
+    <a href="../02_GIT.pdf"><span class="n" aria-hidden="true">📕</span>สไลด์ 02_GIT.pdf</a>
+    <a href="../01_LAB_push_to_github/README.html"><span class="n" aria-hidden="true">⬅️</span>LAB 01 · Push to GitHub</a>
+  </nav>
+
+  <main>
+    <header class="hero" id="top">
+      <div class="gitmark" aria-hidden="true">🔄</div>
+      <p class="kicker">Week 2 · Getting Started with Git · LAB 02</p>
+      <h1>Two Machines, One Project</h1>
+      <p class="sub">ยกโปรเจกต์ลงเครื่องใหม่ด้วย <code class="inline">git clone</code> · เช็กของใหม่แบบปลอดภัยด้วย <code class="inline">git fetch</code> · แล้วพิสูจน์สูตร <code class="inline">git pull = git fetch + git merge</code> ด้วยมือตัวเอง</p>
+      <div class="scores">
+        <div class="chip"><div class="v">Docker</div><div class="l">รันจริงบน container</div></div>
+        <div class="chip"><div class="v">~50 นาที</div><div class="l">เวลาโดยประมาณ</div></div>
+        <div class="chip"><div class="v">7 STEPS</div><div class="l">clone / fetch / pull จริง</div></div>
+      </div>
+    </header>
+
+    <!-- 1 Story -->
+    <section id="story">
+      <div class="sec-head"><div class="sec-num">1</div><h2 class="sec-title"><span aria-hidden="true">📖</span> Story / Pain Point</h2></div>
+      <p>จบ <a href="../01_LAB_push_to_github/README.html">LAB 01</a> สมชายมี repository อยู่บน GitHub แล้ว — เครื่องพังงานไม่หาย <span aria-hidden="true">🎉</span> แต่เช้าวันจันทร์ สมชายไปถึง<b>ห้องแลปมหาวิทยาลัย</b> นั่งลงหน้าคอมของแลป…แล้วก็นิ่งไป</p>
+      <div class="story">
+        <div class="panel"><span class="step">1</span><div class="face" aria-hidden="true">😎</div><p>จบ LAB 01<br>งานอยู่ครบบน GitHub</p></div>
+        <div class="panel"><span class="step">2</span><div class="face" aria-hidden="true">🏫</div><p>มาถึงเครื่องแลปมหาลัย<br><b>ว่างเปล่า ไม่มีสักไฟล์</b></p></div>
+        <div class="panel"><span class="step">3</span><div class="face" aria-hidden="true">🌙</div><p>คืนนั้นแก้งานที่บ้าน<br>แล้ว push ขึ้น GitHub</p></div>
+        <div class="panel"><span class="step">4</span><div class="face" aria-hidden="true">😵</div><p>เช้าวันต่อมาเครื่องแลป<br>กลายเป็น "เวอร์ชันเมื่อวาน"</p></div>
+      </div>
+      <p>เครื่องแลป<b>ไม่มีโปรเจกต์ของเขาเลยสักไฟล์</b> — งานทั้งหมดอยู่บน GitHub กับโน้ตบุ๊กที่บ้าน และต่อให้เอาลงมาได้ พอทำงานสลับสองเครื่องไปสักพัก คำถามที่ตามมาคือ "เครื่องนี้ทันกับ GitHub อยู่หรือเปล่า?"</p>
+      <h3><span class="dot" aria-hidden="true"></span>Pain Point ที่ LAB 01 ยังแก้ไม่ครบ</h3>
+      <div class="tablewrap"><table>
+        <tr><th style="width:52px">#</th><th>ปัญหา</th><th>อาการ</th></tr>
+        <tr><td>1</td><td><b>เครื่องใหม่ = เริ่มจากศูนย์</b></td><td>จะเอาโปรเจกต์ (พร้อม<b>ประวัติทุก commit</b>) ลงเครื่องแลปยังไง — ก๊อปไฟล์มาได้แต่ประวัติหาย</td></tr>
+        <tr><td>2</td><td><b>สองเครื่องไม่ตรงกัน</b></td><td>คืนนี้แก้งานที่บ้านแล้ว push — พรุ่งนี้เครื่องแลปกลายเป็น "เวอร์ชันเมื่อวาน" ทันที</td></tr>
+        <tr><td>3</td><td><b>ไม่รู้ว่า GitHub มีอะไรใหม่</b></td><td>นั่งลงหน้าเครื่องแลปแล้วตอบไม่ได้ว่า "ที่นี่ล้าหลัง GitHub อยู่กี่ commit"</td></tr>
+        <tr><td>4</td><td><b>กลัวดึงงานมาทับ</b></td><td>อยากได้ของใหม่จาก GitHub แต่กลัวมัน "ทับ" สิ่งที่กำลังทำค้างอยู่บนเครื่อง</td></tr>
+      </table></div>
+      <div class="callout tip"><span aria-hidden="true">💡</span> <b>ทางแก้ = ขาดาวน์โหลดของ Git.</b> LAB 01 ฝึกขาขึ้น (<code class="inline">git push</code>) — LAB นี้ฝึก<b>ขาลง</b>ให้ครบวงจร: <code class="inline">git clone</code> ยกโปรเจกต์+ประวัติทั้งหมดลงเครื่องใหม่ · <code class="inline">git fetch</code> เช็กของใหม่แบบ<b>ปลอดภัย</b> · <code class="inline">git merge</code> / <code class="inline">git pull</code> นำของใหม่เข้า branch ของเรา</div>
+    </section>
+
+    <!-- 2 Goals -->
+    <section id="goals">
+      <div class="sec-head"><div class="sec-num">2</div><h2 class="sec-title"><span aria-hidden="true">🎯</span> สิ่งที่จะได้เรียนรู้</h2></div>
+      <div class="cards">
+        <div class="card"><div class="ic" aria-hidden="true">📦</div><h3>git clone</h3><p>ประตูทางเข้าที่สอง: ได้ไฟล์ + ประวัติทุก commit + การเชื่อมต่อ remote <b>ฟรีในคำสั่งเดียว</b></p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🔖</div><h3>origin/main</h3><p>remote-tracking branch — "บุ๊กมาร์ก" ที่ทำให้ <code class="inline">git status</code> รู้ว่าเรา ahead/behind</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🧭</div><h3>อ่าน ahead / behind</h3><p>อ่านสถานะให้ออก — และรู้ว่ามันเทียบกับ<b>บุ๊กมาร์ก</b> ไม่ใช่ GitHub สด ๆ</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">📥</div><h3>git fetch</h3><p>ดึงของใหม่มา<b>เก็บไว้ก่อน</b> โดยไม่แตะไฟล์ที่กำลังทำงาน — ปลอดภัยเสมอ</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🧮</div><h3>สูตร pull</h3><p><code class="inline">git pull</code> = <code class="inline">git fetch</code> + <code class="inline">git merge</code> — ลองแยกทีละท่อนก่อน แล้วค่อยใช้ท่ารวบ</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">👀</div><h3>โบนัส: detached HEAD</h3><p>แอบดูของที่ fetch มาด้วย <code class="inline">git checkout origin/main</code> แบบไม่ต้องตกใจ</p></div>
+      </div>
+    </section>
+
+    <!-- 3 Theory clone -->
+    <section id="theory1">
+      <div class="sec-head"><div class="sec-num">3</div><h2 class="sec-title"><span aria-hidden="true">📦</span> ทฤษฎี ① — git clone: ประตูทางเข้าที่สอง</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ 02_GIT.pdf หน้า 5–7, 47, 50–52</p>
+      <p>การพาโปรเจกต์มาเจอกับ GitHub มี <b>2 เส้นทาง</b>:</p>
+      <div class="diagram" role="img" aria-label="เส้นทาง A ของ LAB 01: git init ในเครื่องแล้วต้อง remote add, branch -M main, push -u ขึ้น GitHub">
+        <div class="node"><div class="ic" aria-hidden="true">💻</div><div class="lbl">เส้นทาง A (LAB 01) — local เกิดก่อน</div><div class="sub">git init → branch: master</div></div>
+        <div class="arrow"><span aria-hidden="true">→</span><span class="cap">remote add · branch -M main · push -u</span></div>
+        <div class="node repo"><div class="ic" aria-hidden="true">☁️</div><div class="lbl">GitHub</div><div class="sub">branch: main</div></div>
+      </div>
+      <div class="diagram" role="img" aria-label="เส้นทาง B ของ LAB นี้: สร้าง repo บน GitHub ก่อน แล้ว git clone ลงเครื่อง ได้ branch main ติดมาเลย">
+        <div class="node repo"><div class="ic" aria-hidden="true">☁️</div><div class="lbl">เส้นทาง B (LAB นี้) — GitHub เกิดก่อน</div><div class="sub">Create repo + README → branch: main</div></div>
+        <div class="arrow"><span aria-hidden="true">→</span><span class="cap">git clone — คำสั่งเดียวจบ ✓</span></div>
+        <div class="node"><div class="ic" aria-hidden="true">💻</div><div class="lbl">เครื่องเรา</div><div class="sub">ได้ branch: main ติดมาเลย</div></div>
+      </div>
+      <p><code class="inline">git clone &lt;URL&gt;</code> ให้เราแบบครบเซ็ต:</p>
+      <ul>
+        <li>ดาวน์โหลด<b>ทุกไฟล์ + ประวัติทุก commit</b> ของ repo ณ ขณะนั้น (ไม่ใช่แค่ไฟล์เวอร์ชันล่าสุด)</li>
+        <li>ตั้ง remote <code class="inline">origin</code> ให้อัตโนมัติ — ไม่ต้อง <code class="inline">git remote add</code></li>
+        <li>ได้ branch ชื่อ <b><code class="inline">main</code> ตามต้นทาง</b> — ปัญหา Improper Reference (master ชน main, สไลด์หน้า 46) <b>ไม่เกิดเลย</b>ในเส้นทางนี้ (สไลด์หน้า 47)</li>
+        <li>ผูก upstream ให้เสร็จ — <code class="inline">git push</code> / <code class="inline">git pull</code> ได้ทันทีโดยไม่ต้องใส่ <code class="inline">-u</code></li>
+      </ul>
+    </section>
+
+    <!-- 4 Theory origin/main -->
+    <section id="theory2">
+      <div class="sec-head"><div class="sec-num">4</div><h2 class="sec-title"><span aria-hidden="true">🔖</span> ทฤษฎี ② — origin/main: บุ๊กมาร์กที่เลื่อนเองไม่ได้</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ 02_GIT.pdf หน้า 53–59</p>
+      <p>หลัง clone เครื่องเราจะมีตัวชี้ <b>2 ตัว</b> ที่หน้าตาคล้ายกันแต่คนละหน้าที่:</p>
+      <div class="tablewrap"><table>
+        <tr><th>ตัวชี้</th><th>ชนิด</th><th>ใครขยับมัน</th></tr>
+        <tr><td><code class="inline">main</code></td><td>local branch ของเรา</td><td><b>เราขยับเอง</b> — ขยับไปข้างหน้าทุกครั้งที่ commit</td></tr>
+        <tr><td><code class="inline">origin/main</code></td><td><b>remote-tracking branch</b></td><td><b>เราขยับเองไม่ได้</b> — เป็นบุ๊กมาร์กจดว่า "เท่าที่รู้ล่าสุด main บน GitHub อยู่ตรงไหน" อัปเดตเฉพาะตอน sync (<code class="inline">fetch</code> / <code class="inline">pull</code> / <code class="inline">push</code>)</td></tr>
+      </table></div>
+      <div class="diagram" role="img" aria-label="สองสถานการณ์: commit ในเครื่องทำให้ ahead, มีคน push ขึ้น GitHub ทำให้ behind หลัง fetch">
+        <div class="node"><div class="ic" aria-hidden="true">⬆️</div><div class="lbl">commit ในเครื่อง 2 ครั้ง</div><div class="sub">main นำหน้า origin/main<br>→ status: <b>"ahead by 2"</b></div></div>
+        <div class="arrow"><span aria-hidden="true">·</span><span class="cap">คนละทิศ</span></div>
+        <div class="node mark"><div class="ic" aria-hidden="true">⬇️</div><div class="lbl">มีของใหม่บน GitHub</div><div class="sub">หลัง fetch: origin/main นำหน้า main<br>→ status: <b>"behind by 2"</b></div></div>
+      </div>
+      <ul>
+        <li>ดูบุ๊กมาร์กทั้งหมดที่เครื่องรู้จัก: <code class="inline">git branch -r</code> (สไลด์หน้า 55)</li>
+        <li><code class="inline">git status</code> เทียบ <code class="inline">main</code> กับ <code class="inline">origin/main</code> แล้วรายงาน <b>ahead</b> (เรามีของที่ยังไม่ push) / <b>behind</b> (remote มีของที่เรายังไม่รับ) / <b>up to date</b></li>
+      </ul>
+      <div class="callout warn"><span aria-hidden="true">⚠️</span> <b>กับดักสำคัญ:</b> <code class="inline">git status</code> <b>ไม่ได้ต่อเน็ตไปถาม GitHub</b> — มันเทียบกับบุ๊กมาร์กในเครื่องเท่านั้น ถ้าบุ๊กมาร์กเก่า (ยังไม่ fetch) มันจะตอบ <code class="inline">up to date</code> ทั้งที่ GitHub มีของใหม่แล้ว → เจอของจริงใน STEP 3</div>
+    </section>
+
+    <!-- 5 Theory fetch vs pull -->
+    <section id="theory3">
+      <div class="sec-head"><div class="sec-num">5</div><h2 class="sec-title"><span aria-hidden="true">🔄</span> ทฤษฎี ③ — Fetch vs Pull: ดึงแบบระวัง vs ดึงแบบรวบรัด</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ 02_GIT.pdf หน้า 63–76</p>
+      <p>การนำการเปลี่ยนแปลงจาก remote ลงมามี <b>2 วิธี</b> (สไลด์หน้า 66):</p>
+      <div class="diagram" role="img" aria-label="git fetch นำของจาก GitHub มาเก็บที่บุ๊กมาร์ก origin/main แล้ว git merge นำเข้า branch main — git pull ทำทั้งสองอย่างในคำสั่งเดียว">
+        <div class="node repo"><div class="ic" aria-hidden="true">☁️</div><div class="lbl">Remote — GitHub</div><div class="sub">มี commit ใหม่</div></div>
+        <div class="arrow"><span aria-hidden="true">→</span><span class="cap">git fetch</span></div>
+        <div class="node mark"><div class="ic" aria-hidden="true">🔖</div><div class="lbl">origin/main</div><div class="sub">บุ๊กมาร์กขยับ · เก็บใน .git<br>ยังไม่แตะไฟล์ที่ทำงานอยู่</div></div>
+        <div class="arrow"><span aria-hidden="true">→</span><span class="cap">git merge origin/main</span></div>
+        <div class="node"><div class="ic" aria-hidden="true">💻</div><div class="lbl">main + ไฟล์จริง</div><div class="sub">ไฟล์บนโต๊ะทำงานอัปเดต</div></div>
+      </div>
+      <div class="callout tip"><span aria-hidden="true">🧮</span> <b>สูตรที่ต้องจำ (สไลด์หน้า 74):</b> <code class="inline">git pull</code> = <code class="inline">git fetch</code> + <code class="inline">git merge</code> — ทีเดียวจบทั้งสองลูกศรบน</div>
+      <div class="tablewrap"><table>
+        <tr><th>ประเด็น</th><th>git fetch</th><th>git pull</th></tr>
+        <tr><td>ดึงการเปลี่ยนแปลงจาก remote</td><td>✅ ใช่</td><td>✅ ใช่</td></tr>
+        <tr><td>อัปเดตบุ๊กมาร์ก <code class="inline">origin/main</code></td><td>✅ อัปเดต</td><td>✅ อัปเดต</td></tr>
+        <tr><td>merge เข้า branch ปัจจุบัน + เปลี่ยนไฟล์จริง</td><td>❌ ไม่ทำ</td><td>✅ ทำให้อัตโนมัติ</td></tr>
+        <tr><td>โอกาสเกิด merge conflict</td><td>❌ ไม่เกิด (ปลอดภัย)</td><td>✅ อาจเกิดได้ — เจาะลึก Week 3</td></tr>
+        <tr><td>ความปลอดภัย</td><td><b>ทำได้ทุกเมื่อ</b> — ตรวจก่อนค่อยตัดสินใจ merge เอง</td><td>สะดวก แต่ไม่แนะนำถ้ามีงานค้างยังไม่ commit</td></tr>
+      </table></div>
+      <ul>
+        <li>ระหว่างกลาง (fetch แล้วแต่ยังไม่ merge) ใช้ <code class="inline">git log --oneline --all</code> ดูได้ว่ามี commit ใหม่อะไรรออยู่ (สไลด์หน้า 63–64)</li>
+        <li>LAB นี้ทุก merge เป็นแบบ <b>Fast-forward</b> — เลื่อนตัวชี้ตามไปเฉย ๆ เพราะเราไม่มี commit สวนทาง · กรณีต่างคนต่างแก้จน<b>ชนกัน (merge conflict)</b> เป็นเรื่องของ branch ใน Week 3</li>
+      </ul>
+    </section>
+
+    <!-- 6 Prep -->
+    <section id="prep">
+      <div class="sec-head"><div class="sec-num">6</div><h2 class="sec-title"><span aria-hidden="true">⚙️</span> เตรียมความพร้อม + สร้าง repo</h2></div>
+      <h3><span class="dot" aria-hidden="true"></span>6.1 Container + ตัวตน</h3>
+      <pre><code><span class="cmd">docker</span> run <span class="flag">-dit --name</span> devtools <span class="flag">--privileged -p</span> 2222:22 tuchsanai/devtools:2569_1
+<span class="cmd">ssh</span> root@localhost <span class="flag">-p</span> 2222        <span class="cmt"># password: passwd</span></code></pre>
+      <pre><code><span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="str">"somchai-dev"</span>              <span class="cmt"># ← ใช้ชื่อของตัวเอง</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="str">"somchai.dev@example.com"</span> <span class="cmt"># ← ใช้อีเมลของตัวเอง</span></code></pre>
+      <h3><span class="dot" aria-hidden="true"></span>6.2 Token</h3>
+      <p>ใช้ Personal Access Token ตัวเดียวกับ LAB 01 (scope <code class="inline">repo</code>):</p>
+      <pre><code><span class="cmd">export</span> GIT_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   <span class="cmt"># ← token ของตัวเอง</span></code></pre>
+      <div class="callout danger"><span aria-hidden="true">🔐</span> <b>token = รหัสผ่าน</b> — ห้ามส่งให้เพื่อน ห้าม commit ลงไฟล์ ห้ามแปะในรายงาน/สไลด์ · ตัวอย่างทั้งเอกสารนี้ใช้ตัวแปร <code class="inline">${GIT_TOKEN}</code> แทนค่าจริงเสมอ</div>
+      <h3><span class="dot" aria-hidden="true"></span>6.3 สร้าง Remote Repository บน GitHub (ผ่านเว็บ)</h3>
+      <ol>
+        <li>เข้า <a href="https://github.com">github.com</a> → ปุ่ม <b>New repository</b></li>
+        <li><b>Repository name:</b> <code class="inline">lab-sync</code></li>
+        <li>เลือก <b>Private</b></li>
+        <li>✅ คราวนี้<b>ติ๊ก "Add a README file"</b> — ตรงข้ามกับ LAB 01!</li>
+        <li>กด <b>Create repository</b></li>
+      </ol>
+      <div class="callout"><span aria-hidden="true">💡</span> <b>ทำไม LAB 01 ห้ามติ๊ก แต่ LAB นี้ต้องติ๊ก?</b> — LAB 01 เรามีประวัติในเครื่องอยู่แล้ว ถ้า GitHub สร้าง commit ให้ก่อนจะชนกัน แต่ LAB นี้เราเริ่มจาก<b>ศูนย์ทั้งสองเครื่อง</b> — ให้ GitHub สร้าง commit แรก (<code class="inline">Initial commit</code> + ไฟล์ <code class="inline">README.md</code>) รอไว้ แล้วเรา clone ลงมา นี่คือเส้นทาง <b>"Create Repo on GitHub → git clone"</b> ตามสไลด์หน้า 6–7 เป๊ะ ๆ</div>
+      <h3><span class="dot" aria-hidden="true"></span>บทบาทสมมุติใน LAB</h3>
+      <p>เครื่องเดียวของเราจะเล่นเป็น 2 เครื่อง โดยใช้ 2 โฟลเดอร์แทน:</p>
+      <div class="diagram" role="img" aria-label="โฟลเดอร์ uni-pc แทนคอมห้องแลปมหาวิทยาลัย และโฟลเดอร์ home-laptop แทนโน้ตบุ๊กที่บ้าน ซิงก์กันผ่าน GitHub">
+        <div class="node"><div class="ic" aria-hidden="true">🏫</div><div class="lbl">📁 uni-pc</div><div class="sub">คอมห้องแลปมหาวิทยาลัย</div></div>
+        <div class="arrow"><span aria-hidden="true">⇄</span><span class="cap">ซิงก์ผ่าน GitHub</span></div>
+        <div class="node repo"><div class="ic" aria-hidden="true">☁️</div><div class="lbl">lab-sync</div><div class="sub">GitHub</div></div>
+        <div class="arrow"><span aria-hidden="true">⇄</span><span class="cap">ซิงก์ผ่าน GitHub</span></div>
+        <div class="node"><div class="ic" aria-hidden="true">🏠</div><div class="lbl">📁 home-laptop</div><div class="sub">โน้ตบุ๊กที่บ้าน</div></div>
+      </div>
+    </section>
+
+    <!-- 7 STEP 1 -->
+    <section id="step1">
+      <div class="sec-head"><div class="sec-num">7</div><h2 class="sec-title">STEP 1 — clone ลงเครื่องแลป (uni-pc)</h2></div>
+      <p>สมชายนั่งหน้าเครื่องแลป — ยกโปรเจกต์จาก GitHub ลงมาทั้งก้อนด้วยคำสั่งเดียว:</p>
+      <pre><code><span class="cmd">git</span> clone https://YOUR_USERNAME:<span class="str">${GIT_TOKEN}</span>@github.com/YOUR_USERNAME/lab-sync.git uni-pc
+<span class="cmd">cd</span> uni-pc
+<span class="cmd">ls</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Cloning into 'uni-pc'...
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+Receiving objects: 100% (3/3), done.</span>
+
+<span class="ok">README.md</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> คำที่ต่อท้าย URL (<code class="inline">uni-pc</code>) = ชื่อโฟลเดอร์ปลายทาง (ถ้าไม่ใส่จะได้โฟลเดอร์ชื่อ <code class="inline">lab-sync</code>) · จำนวน objects/ความเร็ว ของแต่ละคนอาจต่างกันเล็กน้อย</div>
+      <p>สำรวจของแถมที่ clone ให้ฟรี — branch, บุ๊กมาร์ก และ remote:</p>
+      <pre><code><span class="cmd">git</span> branch
+<span class="cmd">git</span> branch <span class="flag">-r</span>
+<span class="cmd">git</span> remote <span class="flag">-v</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">* main</span>
+
+<span class="out">  origin/HEAD -&gt; origin/main
+  origin/main</span>
+
+<span class="out">origin	https://YOUR_USERNAME:<span class="str">${GIT_TOKEN}</span>@github.com/YOUR_USERNAME/lab-sync.git (fetch)
+origin	https://YOUR_USERNAME:<span class="str">${GIT_TOKEN}</span>@github.com/YOUR_USERNAME/lab-sync.git (push)</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> เทียบกับ LAB 01 ชัด ๆ: ไม่ต้อง <code class="inline">git branch -M main</code> (ได้ <code class="inline">main</code> ติดมาเลย — สไลด์หน้า 47) · ไม่ต้อง <code class="inline">git remote add origin</code> (ผูกให้แล้ว) · <code class="inline">git branch -r</code> โชว์<b>บุ๊กมาร์ก</b>ฝั่ง remote ที่เครื่องรู้จัก ส่วน <code class="inline">origin/HEAD -&gt; origin/main</code> หมายถึง branch หลักของ remote คือ <code class="inline">main</code></div>
+      <div class="callout danger"><span aria-hidden="true">🔐</span> <code class="inline">git remote -v</code> โชว์ token เต็ม ๆ ใน URL — ระวังเวลาแชร์หน้าจอ/แคปภาพส่งรายงาน</div>
+      <p>ดูประวัติและสถานะ:</p>
+      <pre><code><span class="cmd">git</span> log <span class="flag">--oneline</span>
+<span class="cmd">git</span> status</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">0a3ff6b (HEAD -&gt; main, origin/main, origin/HEAD) Initial commit</span>
+
+<span class="out">On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> <code class="inline">(HEAD -&gt; main, origin/main, origin/HEAD)</code> = ตอนนี้ <code class="inline">main</code> กับบุ๊กมาร์ก <code class="inline">origin/main</code> ชี้ commit เดียวกัน → <code class="inline">git status</code> จึงรายงาน <code class="inline">up to date</code> · hash ของแต่ละคนจะไม่เหมือนตัวอย่าง</div>
+    </section>
+
+    <!-- 8 STEP 2 -->
+    <section id="step2">
+      <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title">STEP 2 — กลับบ้าน: clone เครื่องที่สอง แล้วทำงานต่อ (home-laptop)</h2></div>
+      <p>ตกเย็นสมชายกลับบ้าน — โน้ตบุ๊กที่บ้านก็ยังไม่มีโปรเจกต์เหมือนกัน clone อีกรอบ (ถอยออกมาก่อนด้วย <code class="inline">cd ..</code> ให้สองโฟลเดอร์อยู่ระดับเดียวกัน):</p>
+      <pre><code><span class="cmd">cd</span> ..
+<span class="cmd">git</span> clone https://YOUR_USERNAME:<span class="str">${GIT_TOKEN}</span>@github.com/YOUR_USERNAME/lab-sync.git home-laptop
+<span class="cmd">cd</span> home-laptop</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Cloning into 'home-laptop'...
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+Receiving objects: 100% (3/3), done.</span></code></pre></div>
+      <p>คืนนี้ไฟแรง — เขียนโปรแกรมแรก + จดวิธีรัน (2 commits ตามวงจรที่ฝึกใน LAB 00):</p>
+      <pre><code><span class="cmd">echo</span> <span class="str">'print("Hello from DevTools project")'</span> &gt; app.py
+<span class="cmd">git</span> add app.py
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Add app.py"</span>
+
+<span class="cmd">echo</span> <span class="str">"Run with: python3 app.py"</span> &gt; howto.txt
+<span class="cmd">git</span> add howto.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Add how-to-run notes"</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[main 395d6a8] Add app.py</span>
+<span class="out"> 1 file changed, 1 insertion(+)
+ create mode 100644 app.py</span>
+
+<span class="ok">[main f339d7d] Add how-to-run notes</span>
+<span class="out"> 1 file changed, 1 insertion(+)
+ create mode 100644 howto.txt</span></code></pre></div>
+      <p>ก่อน push ลองถามเข็มทิศ — ทฤษฎี ② จะปรากฏตัวครั้งแรก:</p>
+      <pre><code><span class="cmd">git</span> status
+<span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">On branch main</span>
+<span class="ok">Your branch is ahead of 'origin/main' by 2 commits.</span>
+<span class="out">  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean</span>
+
+<span class="ok">f339d7d (HEAD -&gt; main) Add how-to-run notes
+395d6a8 Add app.py
+0a3ff6b (origin/main, origin/HEAD) Initial commit</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> <b><code class="inline">ahead of 'origin/main' by 2 commits</code></b> (สไลด์หน้า 56–59): เรา commit ไป 2 ครั้ง → ตัวชี้ <code class="inline">main</code> ขยับ 2 ก้าว แต่บุ๊กมาร์ก <code class="inline">origin/main</code> ยังปักอยู่ที่ <code class="inline">Initial commit</code> · ดูใน <code class="inline">git log</code> ก็เห็นตรงกัน: <code class="inline">(HEAD -&gt; main)</code> อยู่บนสุด ส่วน <code class="inline">(origin/main)</code> ค้างอยู่ล่างสุด</div>
+      <p>ส่งขึ้น GitHub — สังเกตว่า<b>ไม่ต้องใส่ <code class="inline">-u origin main</code></b> เพราะ clone ผูก upstream ให้แล้ว:</p>
+      <pre><code><span class="cmd">git</span> push
+<span class="cmd">git</span> status</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 32 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (6/6), 557 bytes | 557.00 KiB/s, done.
+Total 6 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (1/1), done.
+To https://github.com/YOUR_USERNAME/lab-sync.git</span>
+<span class="ok">   0a3ff6b..f339d7d  main -&gt; main</span>
+
+<span class="out">On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> <code class="inline">main -&gt; main</code> = local main ไปอัปเดต main บน GitHub · push แล้วบุ๊กมาร์กขยับตาม → กลับมา <code class="inline">up to date</code> (จำนวน threads/ความเร็ว ขึ้นกับเครื่องแต่ละคน)</div>
+    </section>
+
+    <!-- 9 STEP 3 -->
+    <section id="step3">
+      <div class="sec-head"><div class="sec-num">9</div><h2 class="sec-title">STEP 3 — เช้าวันใหม่ที่แลป: git status โกหก?! → git fetch</h2></div>
+      <p>เช้าวันอังคาร สมชายกลับมานั่งเครื่องแลป (<code class="inline">uni-pc</code>) — เครื่องนี้<b>ยังไม่รู้อะไรเลย</b>เกี่ยวกับงานเมื่อคืน ลองถามเข็มทิศดูก่อน:</p>
+      <pre><code><span class="cmd">cd</span> ../uni-pc
+<span class="cmd">git</span> status
+<span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean</span>
+
+<span class="out">0a3ff6b (HEAD -&gt; main, origin/main, origin/HEAD) Initial commit</span></code></pre></div>
+      <div class="callout warn"><span aria-hidden="true">⚠️</span> <b><code class="inline">up to date</code> ทั้งที่ GitHub มีของใหม่ 2 commits!</b> — ไม่ใช่ bug: <code class="inline">git status</code> เทียบกับ<b>บุ๊กมาร์ก <code class="inline">origin/main</code> ในเครื่อง</b>ซึ่งยังปักอยู่ที่ <code class="inline">Initial commit</code> ตั้งแต่ตอน clone เมื่อวาน มัน<b>ไม่เคยต่อเน็ตไปถาม GitHub เอง</b> — เราต้องสั่งอัปเดตบุ๊กมาร์กด้วย <code class="inline">git fetch</code></div>
+      <p>อัปเดตบุ๊กมาร์กแบบปลอดภัย:</p>
+      <pre><code><span class="cmd">git</span> fetch</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">remote: Enumerating objects: 7, done.
+remote: Counting objects: 100% (7/7), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 6 (delta 1), reused 6 (delta 1), pack-reused 0 (from 0)
+Unpacking objects: 100% (6/6), 537 bytes | 268.00 KiB/s, done.
+From https://github.com/YOUR_USERNAME/lab-sync</span>
+<span class="ok">   0a3ff6b..f339d7d  main       -&gt; origin/main</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> บรรทัดสำคัญ: <b><code class="inline">main -&gt; origin/main</code></b> = ดาวน์โหลดของใหม่แล้วเลื่อน<b>บุ๊กมาร์ก</b> — เทียบกับตอน push ที่ขึ้นว่า <code class="inline">main -&gt; main</code> (อัปเดต branch จริงบน GitHub) คนละทิศ คนละความหมาย</div>
+      <p>คราวนี้ถามเข็มทิศอีกรอบ + ส่องดูว่ามีอะไรรออยู่:</p>
+      <pre><code><span class="cmd">git</span> status
+<span class="cmd">git</span> log <span class="flag">--oneline --all</span>
+<span class="cmd">ls</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">On branch main</span>
+<span class="ok">Your branch is behind 'origin/main' by 2 commits, and can be fast-forwarded.</span>
+<span class="out">  (use "git pull" to update your local branch)
+
+nothing to commit, working tree clean</span>
+
+<span class="ok">f339d7d (origin/main, origin/HEAD) Add how-to-run notes
+395d6a8 Add app.py
+0a3ff6b (HEAD -&gt; main) Initial commit</span>
+
+<span class="out">README.md</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">🔎</span> อ่านผลให้ครบ 3 ชั้น: ① <code class="inline">behind by 2, can be fast-forwarded</code> — ตอนนี้เครื่องรู้แล้วว่าตัวเองล้าหลัง 2 commits · ② <code class="inline">git log --oneline --all</code> (สไลด์หน้า 63–64) — <code class="inline">(origin/main)</code> วิ่งขึ้นไปบนสุดแล้ว แต่ <code class="inline">(HEAD -&gt; main)</code> ของเรายังอยู่ล่าง — commit ใหม่<b>อยู่ในเครื่องแล้ว</b> (ใน <code class="inline">.git</code>) · ③ แต่ <code class="inline">ls</code> ยังไม่มี <code class="inline">app.py</code> / <code class="inline">howto.txt</code> — <b>fetch ไม่แตะไฟล์ที่เราทำงานอยู่</b> นี่แหละความปลอดภัยของมัน</div>
+    </section>
+
+    <!-- 10 STEP 4 -->
+    <section id="step4">
+      <div class="sec-head"><div class="sec-num">10</div><h2 class="sec-title">STEP 4 (โบนัส) — แอบดูของที่ fetch มา ด้วย detached HEAD <span aria-hidden="true">👀</span></h2></div>
+      <p class="slideref">อ้างอิงสไลด์ 02_GIT.pdf หน้า 60–61</p>
+      <p>ยังไม่อยาก merge แต่อยากเห็นหน้าตางานเมื่อคืนก่อน? checkout ไปที่บุ๊กมาร์กได้เลย:</p>
+      <pre><code><span class="cmd">git</span> checkout origin/main
+<span class="cmd">ls</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Note: switching to 'origin/main'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c &lt;new-branch-name&gt;
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at f339d7d Add how-to-run notes</span>
+
+<span class="ok">README.md  app.py  howto.txt</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">😌</span> <b>detached HEAD ไม่ใช่ error!</b> แค่แปลว่า HEAD ไปเกาะ commit ตรง ๆ (ไม่ได้เกาะปลาย branch) — "มองดูได้ ทดลองได้" · ไฟล์งานเมื่อคืนโผล่ครบ พิสูจน์ว่า fetch ดาวน์โหลดมาจริง แค่เก็บไว้ใน <code class="inline">.git</code> · จะเจาะลึก checkout / detached HEAD กันจริงจังใน Week 4</div>
+      <p>ดูเสร็จแล้ว กลับบ้าน (branch <code class="inline">main</code>) — ไฟล์ก็หายไปเหมือนเดิม:</p>
+      <pre><code><span class="cmd">git</span> checkout main
+<span class="cmd">ls</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Previous HEAD position was f339d7d Add how-to-run notes
+Switched to branch 'main'
+Your branch is behind 'origin/main' by 2 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)</span>
+
+<span class="ok">README.md</span></code></pre></div>
+    </section>
+
+    <!-- 11 STEP 5 -->
+    <section id="step5">
+      <div class="sec-head"><div class="sec-num">11</div><h2 class="sec-title">STEP 5 — git merge origin/main: นำของใหม่เข้า branch เรา</h2></div>
+      <p>ตรวจสอบแล้ว ปลอดภัย — merge จากบุ๊กมาร์กเข้า <code class="inline">main</code> ของเครื่องแลป:</p>
+      <pre><code><span class="cmd">git</span> merge origin/main
+<span class="cmd">ls</span>
+<span class="cmd">cat</span> howto.txt</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Updating 0a3ff6b..f339d7d</span>
+<span class="ok">Fast-forward</span>
+<span class="out"> app.py    | 1 +
+ howto.txt | 1 +
+ 2 files changed, 2 insertions(+)
+ create mode 100644 app.py
+ create mode 100644 howto.txt</span>
+
+<span class="ok">README.md  app.py  howto.txt</span>
+
+<span class="out">Run with: python3 app.py</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> <b><code class="inline">Fast-forward</code></b> = <code class="inline">main</code> ของเราไม่มี commit สวนทาง Git เลยแค่ "เลื่อนตัวชี้ตามไป" ไม่ต้องสร้าง commit ใหม่ — ไฟล์จริงบนโต๊ะทำงานถูกอัปเดตในจังหวะนี้เอง (ไม่ใช่ตอน fetch)</div>
+      <pre><code><span class="cmd">git</span> status
+<span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean</span>
+
+<span class="ok">f339d7d (HEAD -&gt; main, origin/main, origin/HEAD) Add how-to-run notes
+395d6a8 Add app.py
+0a3ff6b Initial commit</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">🎉</span> <code class="inline">main</code> กับ <code class="inline">origin/main</code> กลับมาชี้จุดเดียวกัน — เครื่องแลปตามทัน GitHub แล้ว และเราเพิ่งทำ <b><code class="inline">git fetch</code> + <code class="inline">git merge</code> = สิ่งที่ <code class="inline">git pull</code> ทำ</b> แบบแยกท่อนครบถ้วน</div>
+    </section>
+
+    <!-- 12 STEP 6 -->
+    <section id="step6">
+      <div class="sec-head"><div class="sec-num">12</div><h2 class="sec-title">STEP 6 — รอบสอง: ใช้ท่ารวบ git pull ทีเดียวจบ</h2></div>
+      <p>คืนวันอังคาร สมชายแก้งานที่บ้านอีกรอบแล้ว push (ทำฝั่ง <code class="inline">home-laptop</code>):</p>
+      <pre><code><span class="cmd">cd</span> ../home-laptop
+<span class="cmd">echo</span> <span class="str">'print("Hello again from the home laptop")'</span> &gt;&gt; app.py
+<span class="cmd">git</span> add app.py
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Update app.py from home laptop"</span>
+<span class="cmd">git</span> push</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[main 7aab544] Update app.py from home laptop</span>
+<span class="out"> 1 file changed, 1 insertion(+)
+
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 32 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 387 bytes | 387.00 KiB/s, done.
+Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/YOUR_USERNAME/lab-sync.git</span>
+<span class="ok">   f339d7d..7aab544  main -&gt; main</span></code></pre></div>
+      <p>เช้าวันพุธที่แลป — คราวนี้มั่นใจแล้วว่าไม่มีงานค้าง ใช้ <code class="inline">git pull</code> คำสั่งเดียว:</p>
+      <pre><code><span class="cmd">cd</span> ../uni-pc
+<span class="cmd">git</span> pull</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 3 (delta 0), reused 3 (delta 0), pack-reused 0 (from 0)
+Unpacking objects: 100% (3/3), 367 bytes | 367.00 KiB/s, done.
+From https://github.com/YOUR_USERNAME/lab-sync</span>
+<span class="ok">   f339d7d..7aab544  main       -&gt; origin/main</span>
+<span class="out">Updating f339d7d..7aab544</span>
+<span class="ok">Fast-forward</span>
+<span class="out"> app.py | 1 +
+ 1 file changed, 1 insertion(+)</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">🧮</span> อ่าน output แล้วจะเห็น<b>สูตรทั้งสูตรในคำสั่งเดียว</b>: ท่อนบนคือหน้าตาของ <code class="inline">git fetch</code> (จบที่ <code class="inline">main -&gt; origin/main</code>) ท่อนล่างคือหน้าตาของ <code class="inline">git merge</code> (<code class="inline">Updating … Fast-forward</code>) — <code class="inline">pull = fetch + merge</code> จริงตามสไลด์หน้า 74</div>
+      <pre><code><span class="cmd">cat</span> app.py
+<span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">print("Hello from DevTools project")
+print("Hello again from the home laptop")</span>
+
+<span class="ok">7aab544 (HEAD -&gt; main, origin/main, origin/HEAD) Update app.py from home laptop
+f339d7d Add how-to-run notes
+395d6a8 Add app.py
+0a3ff6b Initial commit</span></code></pre></div>
+    </section>
+
+    <!-- 13 STEP 7 -->
+    <section id="step7">
+      <div class="sec-head"><div class="sec-num">13</div><h2 class="sec-title">STEP 7 — สลับขา: แลปเป็นฝ่ายส่งบ้าง แล้วปิดลูป</h2></div>
+      <p>ที่แลป สมชายจดโน้ตสรุปบทเรียน (อยู่ที่ <code class="inline">uni-pc</code> ต่อ) — คราวนี้เครื่องแลปเป็นฝ่าย <b>ahead</b> บ้าง:</p>
+      <pre><code><span class="cmd">echo</span> <span class="str">"git pull = git fetch + git merge"</span> &gt; notes.txt
+<span class="cmd">git</span> add notes.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Add lab notes at university"</span>
+<span class="cmd">git</span> status</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[main 2d83061] Add lab notes at university</span>
+<span class="out"> 1 file changed, 1 insertion(+)
+ create mode 100644 notes.txt
+
+On branch main</span>
+<span class="ok">Your branch is ahead of 'origin/main' by 1 commit.</span>
+<span class="out">  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> ครบทั้งสองทิศแล้ว: <b>behind → แก้ด้วย <code class="inline">pull</code></b> (STEP 3–6) · <b>ahead → แก้ด้วย <code class="inline">push</code></b> (ตอนนี้)</div>
+      <pre><code><span class="cmd">git</span> push
+<span class="cmd">git</span> status</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Enumerating objects: 4, done.
+Counting objects: 100% (4/4), done.
+Delta compression using up to 32 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (3/3), 309 bytes | 309.00 KiB/s, done.
+Total 3 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/YOUR_USERNAME/lab-sync.git</span>
+<span class="ok">   7aab544..2d83061  main -&gt; main</span>
+
+<span class="out">On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean</span></code></pre></div>
+      <p>ปิดลูป: ฝั่งบ้านดึงโน้ตกลับไปด้วย <code class="inline">git pull</code> — สองเครื่องจะเห็นประวัติเดียวกันเป๊ะ:</p>
+      <pre><code><span class="cmd">cd</span> ../home-laptop
+<span class="cmd">git</span> pull
+<span class="cmd">git</span> log <span class="flag">--oneline</span>
+<span class="cmd">ls</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">remote: Enumerating objects: 4, done.
+remote: Counting objects: 100% (4/4), done.
+remote: Compressing objects: 100% (1/1), done.
+remote: Total 3 (delta 1), reused 3 (delta 1), pack-reused 0 (from 0)
+Unpacking objects: 100% (3/3), 289 bytes | 289.00 KiB/s, done.
+From https://github.com/YOUR_USERNAME/lab-sync</span>
+<span class="ok">   7aab544..2d83061  main       -&gt; origin/main</span>
+<span class="out">Updating 7aab544..2d83061</span>
+<span class="ok">Fast-forward</span>
+<span class="out"> notes.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 notes.txt</span>
+
+<span class="ok">2d83061 (HEAD -&gt; main, origin/main, origin/HEAD) Add lab notes at university
+7aab544 Update app.py from home laptop
+f339d7d Add how-to-run notes
+395d6a8 Add app.py
+0a3ff6b Initial commit</span>
+
+<span class="out">README.md  app.py  howto.txt  notes.txt</span></code></pre></div>
+      <p><b>ตรวจบนเว็บ GitHub:</b> เปิดหน้า repo <code class="inline">lab-sync</code> → เห็นไฟล์ 4 ไฟล์ และตัวเลข <b>5 Commits</b> ตรงกับ <code class="inline">git log --oneline</code> ทั้งสองเครื่อง <span aria-hidden="true">☁️</span></p>
+      <div class="callout tip"><span aria-hidden="true">🎉</span> <b>สมชายทำงานสองเครื่องได้ลื่นไหลแล้ว</b> — เช้า pull เย็น push งานวิ่งตามตัวไปทุกที่ ไม่ต้องพกแฟลชไดรฟ์ และรู้เสมอว่าตัวเองล้ำหน้า/ล้าหลัง GitHub อยู่กี่ก้าว — Pain Point ทั้ง 4 ข้อจาก Story ถูกแก้ครบ: clone เอาประวัติมาครบ · สองเครื่องซิงก์กันได้ · fetch+status บอกระยะห่าง · fetch ปลอดภัยไม่ทับงาน</div>
+    </section>
+
+    <!-- 14 Cheat -->
+    <section id="cheat">
+      <div class="sec-head"><div class="sec-num">14</div><h2 class="sec-title"><span aria-hidden="true">📋</span> สรุป + Cheat Sheet</h2></div>
+      <div class="tablewrap"><table>
+        <tr><th>คำสั่ง</th><th>ทำอะไร</th></tr>
+        <tr><td><code class="inline">git clone &lt;URL&gt; [folder]</code></td><td>ยก repo+ประวัติทั้งหมดลงเครื่อง พร้อมผูก origin/upstream ให้ฟรี</td></tr>
+        <tr><td><code class="inline">git branch -r</code></td><td>ดู remote-tracking branches (บุ๊กมาร์ก) ที่เครื่องรู้จัก</td></tr>
+        <tr><td><code class="inline">git status</code></td><td>รายงาน ahead/behind — <b>เทียบกับบุ๊กมาร์ก ไม่ใช่ GitHub สด ๆ</b></td></tr>
+        <tr><td><code class="inline">git fetch</code></td><td>อัปเดตบุ๊กมาร์ก <code class="inline">origin/main</code> — ไม่แตะไฟล์งาน ปลอดภัยเสมอ</td></tr>
+        <tr><td><code class="inline">git log --oneline --all</code></td><td>ส่องว่า <code class="inline">origin/main</code> ล้ำหน้า <code class="inline">main</code> อยู่กี่ commit หลัง fetch</td></tr>
+        <tr><td><code class="inline">git merge origin/main</code></td><td>นำของจากบุ๊กมาร์กเข้า branch เรา (LAB นี้เป็น Fast-forward)</td></tr>
+        <tr><td><code class="inline">git pull</code></td><td>ท่ารวบ = <code class="inline">git fetch</code> + <code class="inline">git merge</code></td></tr>
+        <tr><td><code class="inline">git checkout origin/main</code></td><td>แอบดูสถานะที่บุ๊กมาร์ก (detached HEAD — ดูได้ กลับด้วย <code class="inline">git checkout main</code>)</td></tr>
+      </table></div>
+      <div class="callout tip"><span aria-hidden="true">🔁</span> <b>วงจรทำงานหลายเครื่องที่ต้องจำ:</b> นั่งลง → <code class="inline">git pull</code> → ทำงาน → <code class="inline">git add</code> → <code class="inline">git commit</code> → <code class="inline">git push</code> ก่อนลุก</div>
+    </section>
+
+    <!-- 15 Checklist -->
+    <section id="check">
+      <div class="sec-head"><div class="sec-num">15</div><h2 class="sec-title"><span aria-hidden="true">✅</span> Checklist ก่อนไปต่อ</h2></div>
+      <ul class="checklist">
+        <li>clone แล้ว <code class="inline">git branch</code> ตอบ <code class="inline">* main</code> และ <code class="inline">git remote -v</code> มี origin ครบ โดย<b>ไม่ได้ตั้งค่าเอง</b>สักคำสั่ง</li>
+        <li>เห็น <code class="inline">git status</code> ตอบ <code class="inline">ahead of 'origin/main' by 2 commits</code> ก่อน push (ฝั่ง home-laptop)</li>
+        <li>เห็น <code class="inline">git status</code> ตอบ <code class="inline">up to date</code> ทั้งที่ GitHub มีของใหม่ (ฝั่ง uni-pc ก่อน fetch) และอธิบายได้ว่าทำไม</li>
+        <li>หลัง <code class="inline">git fetch</code>: status เปลี่ยนเป็น <code class="inline">behind by 2</code> แต่ <code class="inline">ls</code> ยังไม่เห็นไฟล์ใหม่</li>
+        <li>หลัง <code class="inline">git merge origin/main</code>: เห็น <code class="inline">Fast-forward</code> และไฟล์ใหม่โผล่ครบ</li>
+        <li>อ่าน output ของ <code class="inline">git pull</code> แล้วชี้ได้ว่าท่อนไหนคือ fetch ท่อนไหนคือ merge</li>
+        <li><code class="inline">git log --oneline</code> ของทั้งสองโฟลเดอร์ และเลข Commits บนเว็บ GitHub ตรงกัน (5 commits)</li>
+      </ul>
+    </section>
+
+    <!-- 16 Quiz -->
+    <section id="quiz">
+      <div class="sec-head"><div class="sec-num">16</div><h2 class="sec-title"><span aria-hidden="true">❓</span> คำถามทบทวน</h2></div>
+      <div class="quiz">
+        <ol>
+          <li><code class="inline">git clone</code> ให้อะไรมาบ้างที่ LAB 01 ต้องทำเองถึง 3 คำสั่ง (<code class="inline">remote add</code> / <code class="inline">branch -M</code> / <code class="inline">push -u</code>)?</li>
+          <li><code class="inline">main</code> กับ <code class="inline">origin/main</code> ต่างกันอย่างไร ใครเป็นคนขยับตัวชี้แต่ละตัว?</li>
+          <li>ทำไม <code class="inline">git status</code> ที่เครื่องแลป (STEP 3) ถึงตอบ <code class="inline">up to date</code> ทั้งที่ GitHub มีของใหม่แล้ว 2 commits?</li>
+          <li>output ของ <code class="inline">git fetch</code> มีบรรทัด <code class="inline">main -&gt; origin/main</code> ส่วนของ <code class="inline">git push</code> เป็น <code class="inline">main -&gt; main</code> — สองบรรทัดนี้ต่างกันอย่างไร?</li>
+          <li>ถ้ามีงานค้างยังไม่ commit อยู่ในเครื่อง ระหว่าง <code class="inline">git fetch</code> กับ <code class="inline">git pull</code> ควรใช้อะไร เพราะอะไร?</li>
+          <li>คำว่า <code class="inline">Fast-forward</code> ใน output ของ merge/pull แปลว่าอะไร และสถานการณ์แบบไหนที่จะ<b>ไม่</b>เป็น Fast-forward? (คำใบ้: Week 3)</li>
+          <li>ตอน detached HEAD (STEP 4) ไฟล์ <code class="inline">app.py</code> โผล่มา แต่พอ <code class="inline">git checkout main</code> มันหายไป — ไฟล์นั้นหายไปไหน แล้วทำไม fetch แล้วไฟล์ไม่มาเลยตั้งแต่แรก?</li>
+          <li>ทำไม LAB นี้ตอนสร้าง repo บนเว็บถึง<b>ต้องติ๊ก</b> "Add a README file" ทั้งที่ LAB 01 ห้ามติ๊ก?</li>
+        </ol>
+      </div>
+    </section>
+
+    <footer>
+      LAB 02 — Two Machines, One Project · DevTools Week 2 · expected output ทุกจุดรันจริงบน <code class="inline">tuchsanai/devtools:2569_1</code> (git 2.43.0) กับ GitHub จริง — commit hash / จำนวน objects / ความเร็ว ของแต่ละคนจะต่างจากตัวอย่าง · ตัวอย่างใช้ตัวตนสมมุติ <code class="inline">somchai-dev</code> — ใช้ username และ token ของตัวเองเสมอ
+    </footer>
+  </main>
+</div>
+<a class="top-link" href="#top" aria-label="กลับขึ้นบนสุด">↑</a>
+</body>
+</html>

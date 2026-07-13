@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAB 01 — Backup to the Cloud | push ขึ้น GitHub (Remote Repository)</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2333; --border:#30363d;
+    --text:#e6edf3; --muted:#8b949e; --accent:#f05133; --accent2:#58a6ff;
+    --green:#3fb950; --yellow:#d29922; --purple:#bc8cff; --code-bg:#0b0f14;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI","Noto Sans Thai",-apple-system,Tahoma,sans-serif;background:var(--bg);color:var(--text);line-height:1.75}
+  a{color:var(--accent2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{display:flex;max-width:1480px;margin:0 auto}
+  nav.side{position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;width:280px;flex-shrink:0;padding:24px 18px;border-right:1px solid var(--border);background:var(--panel)}
+  nav.side .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;padding:0 8px}
+  nav.side .brand .m{width:34px;height:34px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px}
+  nav.side .brand b{font-size:1rem}
+  nav.side h2{font-size:.72rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:18px 8px 8px}
+  nav.side a{display:block;color:var(--muted);padding:7px 12px;border-radius:8px;font-size:.9rem;margin-bottom:1px}
+  nav.side a:hover{background:var(--panel2);color:var(--text);text-decoration:none}
+  nav.side a .n{color:var(--accent);font-weight:700;margin-right:8px;display:inline-block;width:20px}
+  main{flex:1;min-width:0;padding:0 0 80px}
+  header.hero{padding:64px 56px 48px;text-align:center;background:radial-gradient(circle at 50% -20%, #2d1810 0%, var(--bg) 60%);border-bottom:1px solid var(--border)}
+  .gitmark{display:inline-flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:22px;background:var(--accent);font-size:42px;margin-bottom:20px;box-shadow:0 12px 40px rgba(240,81,51,.35)}
+  header.hero .kicker{color:var(--accent);font-weight:700;letter-spacing:2px;font-size:.82rem;text-transform:uppercase}
+  header.hero h1{font-size:2.6rem;margin:10px 0 6px;background:linear-gradient(90deg,#fff,#f05133);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  header.hero p.sub{color:var(--muted);font-size:1.08rem}
+  .scores{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+  .chip{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 20px;min-width:120px}
+  .chip .v{font-size:1.25rem;font-weight:800;color:var(--accent2)}
+  .chip .l{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  section{padding:46px 56px;border-bottom:1px solid var(--border);scroll-margin-top:10px}
+  .sec-head{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+  .sec-num{flex-shrink:0;width:48px;height:48px;border-radius:13px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.3rem}
+  h2.sec-title{font-size:1.7rem}
+  .slideref{color:var(--muted);font-size:.78rem;margin:0 0 22px 64px;font-style:italic}
+  h3{font-size:1.2rem;margin:28px 0 12px;color:#fff;display:flex;align-items:center;gap:8px}
+  h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  p{margin-bottom:12px;color:#c9d1d9}
+  ul,ol{margin:0 0 14px 22px}
+  li{margin-bottom:7px;color:#c9d1d9}
+  strong,b{color:#fff}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:12px;padding:16px 20px;overflow-x:auto;margin:12px 0;font-family:"JetBrains Mono",Consolas,Monaco,monospace;font-size:.9rem;line-height:1.65}
+  pre code{color:#e6edf3}
+  .cmt{color:#6e7681}
+  .cmd{color:var(--green)}
+  .flag{color:#79c0ff}
+  .str{color:var(--yellow)}
+  .out{color:#9db4cd}
+  .err{color:#ff7b72}
+  .ok{color:var(--green)}
+  code.inline{background:var(--panel2);padding:2px 8px;border-radius:6px;font-family:Consolas,monospace;font-size:.88em;color:var(--purple)}
+  .expected{border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:0 12px 12px 0;background:var(--code-bg);margin:12px 0}
+  .expected .lbl{display:block;padding:8px 20px 0;font-size:.75rem;font-weight:700;letter-spacing:1px;color:var(--accent2);text-transform:uppercase}
+  .expected pre{border:none;margin:0;background:transparent}
+  .story{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+  .panel{background:linear-gradient(160deg,#1d4e89,#16365f);border-radius:14px;padding:18px;text-align:center;border:1px solid #2a5a92;position:relative}
+  .panel .face{font-size:2rem;margin-bottom:6px}
+  .panel p{font-size:.86rem;color:#dbe9ff;margin:0}
+  .panel .step{position:absolute;top:8px;left:10px;font-size:.7rem;color:#7fb3e8;font-weight:700}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:18px 0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .card .ic{font-size:1.8rem;margin-bottom:10px}
+  .card h3{color:#fff;margin:0 0 6px;font-size:1.05rem;display:block}
+  .card p{font-size:.88rem;color:var(--muted);margin:0}
+  .callout{border-left:4px solid var(--accent2);background:var(--panel);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0}
+  .callout.warn{border-color:var(--yellow)}
+  .callout.tip{border-color:var(--green)}
+  .callout.danger{border-color:var(--accent)}
+  .callout b{color:#fff}
+  table{width:100%;border-collapse:collapse;margin:18px 0;background:var(--panel);border-radius:12px;overflow:hidden}
+  th,td{padding:13px 18px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+  th{background:var(--panel2);color:#fff;font-size:.9rem;letter-spacing:.5px}
+  td{color:#c9d1d9;font-size:.9rem}
+  tr:last-child td{border-bottom:none}
+  .tablewrap{overflow-x:auto}
+  .diagram{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;background:#22262e;border:1px solid var(--border);border-radius:16px;padding:26px;margin:18px 0}
+  .node{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-align:center;min-width:150px}
+  .node .ic{font-size:1.8rem}
+  .node .lbl{font-size:.82rem;color:var(--muted);margin-top:4px}
+  .node .sub{font-size:.72rem;color:var(--muted)}
+  .node.repo{background:#3a1f1c;border-color:var(--accent)}
+  .node.repo .lbl{color:var(--accent);font-weight:700}
+  .node.bad{border-color:var(--err,#ff7b72)}
+  .arrow{font-size:1.4rem;color:var(--accent2);display:flex;flex-direction:column;align-items:center;font-weight:700}
+  .arrow .cap{font-size:.72rem;font-family:Consolas,monospace;color:var(--green)}
+  .arrow.bad{color:#ff7b72}
+  .arrow.bad .cap{color:#ff7b72}
+  .checklist{list-style:none;margin-left:0}
+  .checklist li{padding-left:32px;position:relative}
+  .checklist li::before{content:"☐";position:absolute;left:4px;color:var(--green);font-size:1.05rem}
+  .quiz{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px 26px;margin:16px 0}
+  .quiz ol{margin-bottom:0}
+  footer{padding:32px 56px;text-align:center;color:var(--muted);font-size:.85rem}
+  @media(max-width:900px){
+    .wrap{flex-direction:column}
+    nav.side{position:static;height:auto;width:100%;border-right:none;border-bottom:1px solid var(--border)}
+    header.hero h1{font-size:1.9rem}
+    section,header.hero,footer{padding-left:22px;padding-right:22px}
+  }
+  .top-link{position:fixed;bottom:24px;right:24px;background:var(--accent);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 6px 20px rgba(0,0,0,.4);z-index:50}
+  .top-link:hover{text-decoration:none;transform:translateY(-2px)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="side">
+    <div class="brand"><div class="m" aria-hidden="true">☁️</div><b>LAB 01 · Push to GitHub</b></div>
+    <h2>เนื้อหา</h2>
+    <a href="#story"><span class="n">1</span>Story / Pain Point</a>
+    <a href="#goals"><span class="n">2</span>สิ่งที่จะได้เรียนรู้</a>
+    <a href="#theory1"><span class="n">3</span>ทฤษฎี: Local ↔ Remote</a>
+    <a href="#theory2"><span class="n">4</span>ทฤษฎี: master vs main</a>
+    <a href="#prep"><span class="n">5</span>เตรียมความพร้อม + Token</a>
+    <a href="#step1"><span class="n">6</span>STEP 1 — local repo</a>
+    <a href="#step2"><span class="n">7</span>STEP 2 — master → main</a>
+    <a href="#step3"><span class="n">8</span>STEP 3 — สร้าง repo บนเว็บ</a>
+    <a href="#step4"><span class="n">9</span>STEP 4 — remote add</a>
+    <a href="#step5"><span class="n">10</span>STEP 5 — push ครั้งแรก (-u)</a>
+    <a href="#step6"><span class="n">11</span>STEP 6 — แก้→commit→push ×3</a>
+    <a href="#step7"><span class="n">12</span>STEP 7 — ตรวจผลสุดท้าย</a>
+    <a href="#cheat"><span class="n">13</span>สรุป + Cheat Sheet</a>
+    <a href="#check"><span class="n">14</span>Checklist</a>
+    <a href="#quiz"><span class="n">15</span>คำถามทบทวน</a>
+    <h2>อ้างอิง</h2>
+    <a href="../git_week2.html#remote"><span class="n" aria-hidden="true">📖</span>Week 2 · Push &amp; Remote</a>
+    <a href="../02_GIT.pdf"><span class="n" aria-hidden="true">📕</span>สไลด์ 02_GIT.pdf</a>
+    <a href="../00_LAB_add_commit_status/README.html"><span class="n" aria-hidden="true">⬅️</span>LAB 00 · Time Machine</a>
+  </nav>
+
+  <main>
+    <header class="hero" id="top">
+      <div class="gitmark" aria-hidden="true">☁️</div>
+      <p class="kicker">Week 2 · Getting Started with Git · LAB 01</p>
+      <h1>Backup to the Cloud</h1>
+      <p class="sub">เชื่อม repo ในเครื่องเข้ากับ GitHub ด้วย <code class="inline">git remote add</code> · เปลี่ยน <code class="inline">master → main</code> · แล้วฝึกวงจร แก้ไข → commit → <code class="inline">git push</code> ให้เป็นนิสัย</p>
+      <div class="scores">
+        <div class="chip"><div class="v">Docker</div><div class="l">รันจริงบน container</div></div>
+        <div class="chip"><div class="v">~45 นาที</div><div class="l">เวลาโดยประมาณ</div></div>
+        <div class="chip"><div class="v">7 STEPS</div><div class="l">push จริงขึ้น GitHub</div></div>
+      </div>
+    </header>
+
+    <!-- 1 Story -->
+    <section id="story">
+      <div class="sec-head"><div class="sec-num">1</div><h2 class="sec-title"><span aria-hidden="true">📖</span> Story / Pain Point</h2></div>
+      <p>สมชายทำ <a href="../00_LAB_add_commit_status/README.html">LAB 00</a> จบ — มี time machine ประจำโปรเจกต์แล้ว <span aria-hidden="true">🎉</span> แต่คืนนั้นเอง…<b>ชาเย็นทั้งแก้วคว่ำใส่โน้ตบุ๊ก</b> เครื่องดับ เปิดไม่ติด</p>
+      <div class="story">
+        <div class="panel"><span class="step">1</span><div class="face" aria-hidden="true">😎</div><p>ทำ LAB 00 จบ<br>มีประวัติ commit ครบ 3 จุด</p></div>
+        <div class="panel"><span class="step">2</span><div class="face" aria-hidden="true">🧋</div><p>ชาเย็นคว่ำใส่โน้ตบุ๊ก<br>เครื่องเปิดไม่ติด</p></div>
+        <div class="panel"><span class="step">3</span><div class="face" aria-hidden="true">😭</div><p>ทั้ง <code class="inline">.git/</code> ทั้งไฟล์งาน<br>อยู่ในเครื่องที่เพิ่งพัง</p></div>
+        <div class="panel"><span class="step">4</span><div class="face" aria-hidden="true">💡</div><p>ถ้ามีสำเนา repo<br>อยู่บน cloud ล่ะ?</p></div>
+      </div>
+      <p>ประวัติ commit ทั้งหมดของ LAB 00 อยู่ในโฟลเดอร์ <code class="inline">.git/</code> <b>ในเครื่องที่เพิ่งพังไปเมื่อกี้</b> — time machine ที่อุตส่าห์สร้าง จมน้ำชาไปพร้อมกัน</p>
+      <h3><span class="dot" aria-hidden="true"></span>Pain Point ที่ LAB 00 ยังแก้ไม่ได้</h3>
+      <div class="tablewrap"><table>
+        <tr><th style="width:52px">#</th><th>ปัญหา</th><th>อาการ</th></tr>
+        <tr><td>1</td><td><b>เครื่องพัง = งานหาย</b></td><td>ทุก commit อยู่ในเครื่องเดียว ไม่มีสำเนาที่อื่นเลย</td></tr>
+        <tr><td>2</td><td><b>ทำงานได้เครื่องเดียว</b></td><td>อยากทำต่อที่แลป/ที่บ้าน ต้องก๊อปใส่แฟลชไดรฟ์</td></tr>
+        <tr><td>3</td><td><b>ไม่มีใครเห็นงานเรา</b></td><td>อาจารย์/เพื่อนร่วมทีม ดูโค้ดของเราไม่ได้</td></tr>
+      </table></div>
+      <div class="callout tip"><span aria-hidden="true">💡</span> <b>ทางแก้ = Remote Repository.</b> ฝากสำเนา repository ไว้บนเซิร์ฟเวอร์ (GitHub) แล้วซิงก์ขึ้นไปด้วย <code class="inline">git push</code> — เครื่องพังก็แค่ clone กลับมา งานอยู่ครบทุก commit</div>
+    </section>
+
+    <!-- 2 Goals -->
+    <section id="goals">
+      <div class="sec-head"><div class="sec-num">2</div><h2 class="sec-title"><span aria-hidden="true">🎯</span> สิ่งที่จะได้เรียนรู้</h2></div>
+      <div class="cards">
+        <div class="card"><div class="ic" aria-hidden="true">🔗</div><h3>เชื่อม local ↔ remote</h3><p><code class="inline">git remote add origin &lt;URL&gt;</code> และตรวจด้วย <code class="inline">git remote -v</code></p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🌿</div><h3>master vs main</h3><p>เข้าใจปัญหาชื่อ branch ชนกัน และแก้ด้วย <code class="inline">git branch -M main</code></p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🚀</div><h3>push ครั้งแรก</h3><p><code class="inline">git push -u origin main</code> — ความหมายของ <code class="inline">-u</code> (upstream)</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🔁</div><h3>วงจรทำงานจริง</h3><p>แก้ไข → commit → push ซ้ำ 3 รอบจนเป็นนิสัยติดตัว</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🔐</div><h3>ใช้ token อย่างปลอดภัย</h3><p>push ผ่าน HTTPS ด้วย PAT ของตัวเอง และรู้ว่า token โผล่ตรงไหนบ้าง</p></div>
+      </div>
+    </section>
+
+    <!-- 3 Theory local/remote -->
+    <section id="theory1">
+      <div class="sec-head"><div class="sec-num">3</div><h2 class="sec-title"><span aria-hidden="true">🌐</span> ทฤษฎี ① — Local ↔ Remote และชื่อ "origin"</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ 02_GIT.pdf หน้า 38–42</p>
+      <div class="diagram" role="img" aria-label="เครื่องเรา (local) ส่งงานขึ้น GitHub (remote) ด้วย git push และดึงกลับด้วย git pull">
+        <div class="node"><div class="ic" aria-hidden="true">💻</div><div class="lbl">LOCAL — เครื่องเรา</div><div class="sub">lab-git/ (.git ครบทุก commit)</div></div>
+        <div class="arrow"><span aria-hidden="true">⇄</span><span class="cap">git push ↗ · git pull ↙</span></div>
+        <div class="node repo"><div class="ic" aria-hidden="true">☁️</div><div class="lbl">REMOTE — GitHub</div><div class="sub">lab-git.git (สำเนาบน cloud)</div></div>
+      </div>
+      <ul>
+        <li><b>remote</b> = repository อีกก้อนที่อยู่บนเซิร์ฟเวอร์ เช่น GitHub, GitLab, Bitbucket</li>
+        <li><code class="inline">git remote -v</code> (สไลด์หน้า 39) — ดูว่า repo เราเชื่อมกับ remote ไหนอยู่ · repo ที่ <b>clone</b> มาจะเห็น URL ทันที ส่วน repo ที่ <code class="inline">git init</code> เองจะ<b>ว่างเปล่า</b>จนกว่าจะ add</li>
+        <li><code class="inline">git remote add origin https://url.git</code> (สไลด์หน้า 40) — ผูก remote พร้อมตั้งชื่อเรียกสั้น ๆ ว่า <b><code class="inline">origin</code></b> — เป็น<b>ธรรมเนียม</b> ไม่ใช่คำสงวน จะตั้งชื่ออื่นก็ได้แต่แทบไม่มีใครทำ</li>
+        <li>เผื่ออนาคต (สไลด์หน้า 41): <code class="inline">git remote rename &lt;old&gt; &lt;new&gt;</code> · <code class="inline">git remote remove &lt;name&gt;</code></li>
+        <li>ในแผนภาพมี <code class="inline">git pull</code> = ทิศตรงข้ามของ push คือ<b>ดึง</b>การเปลี่ยนแปลงจาก remote ลงเครื่อง (สไลด์หน้า 35–36) — LAB นี้โฟกัสขา push ส่วน pull ฝึกต่อในหัวข้อ <a href="../git_week2.html#fetchpull">Fetch vs Pull</a> ของ Week 2</li>
+        <li><code class="inline">git push -u origin main</code> (สไลด์หน้า 42) — push ครั้งแรกพร้อมตั้ง <b>upstream</b> (<code class="inline">-u</code>): จับคู่ branch ในเครื่องกับ branch บน remote → รอบถัดไป Git รู้เองว่าต้อง push ไปไหน</li>
+      </ul>
+    </section>
+
+    <!-- 4 Theory master vs main -->
+    <section id="theory2">
+      <div class="sec-head"><div class="sec-num">4</div><h2 class="sec-title"><span aria-hidden="true">🌿</span> ทฤษฎี ② — master vs main: ปัญหาชนกันที่ต้องรู้ก่อน push</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ 02_GIT.pdf หน้า 43–48</p>
+      <ul>
+        <li>เดิม Git ตั้งชื่อ branch แรกว่า <code class="inline">master</code> — แต่ <b>GitHub ประกาศเปลี่ยนธรรมเนียมชื่อ default branch เป็น <code class="inline">main</code> อย่างเป็นทางการ</b> (สไลด์หน้า 43) repo ที่สร้างบนเว็บ GitHub ปัจจุบันจึงชื่อ <code class="inline">main</code></li>
+        <li>แต่ <code class="inline">git init</code> ในเครื่องเรา (git 2.43 ใน container) ยังได้ <code class="inline">master</code> → เกิดสถานการณ์ <b>Improper Reference</b> (สไลด์หน้า 46): local กับ GitHub ถือ branch <b>คนละชื่อ = คนละเส้น</b> push/pull กันไม่เจอ</li>
+      </ul>
+      <div class="diagram" role="img" aria-label="ปัญหา improper reference: เครื่องเราถือ branch master แต่ GitHub ถือ branch main จึงเชื่อมกันไม่ได้">
+        <div class="node"><div class="ic" aria-hidden="true">💻</div><div class="lbl">LOCAL DESKTOP</div><div class="sub">Branch: <b>master</b></div></div>
+        <div class="arrow bad"><span aria-hidden="true">⇄✗</span><span class="cap">git push · git pull ไม่เจอกัน</span></div>
+        <div class="node repo"><div class="ic" aria-hidden="true">☁️</div><div class="lbl">GitHub</div><div class="sub">Branch: <b>main</b></div></div>
+      </div>
+      <h3><span class="dot" aria-hidden="true"></span>สองทางแก้</h3>
+      <div class="tablewrap"><table>
+        <tr><th>วิธี</th><th>คำสั่ง</th><th>เหมาะกับ</th></tr>
+        <tr><td><b>เปลี่ยนชื่อ branch ปัจจุบันทันที</b> (ใช้ใน LAB นี้)</td><td><code class="inline">git branch -M main</code></td><td>repo ที่ <code class="inline">git init</code> มาแล้วเป็น master — เป็นคำสั่งเดียวกับที่หน้า repo ใหม่บน GitHub แนะนำ (สไลด์หน้า 43)</td></tr>
+        <tr><td><b>ตั้งค่าถาวรทุก repo ใหม่</b></td><td><code class="inline">git config --global init.defaultBranch main</code></td><td>ตั้งครั้งเดียวจบ — repo ที่สร้างหลังจากนี้เป็น main ตั้งแต่เกิด (ทำแล้วใน LAB Configure Week 1)</td></tr>
+      </table></div>
+      <div class="callout"><span aria-hidden="true">📌</span> กรณี <b>clone</b> repo จาก GitHub ลงมา (สไลด์หน้า 47) จะ<b>ไม่เจอปัญหานี้เลย</b> — เพราะได้ branch <code class="inline">main</code> ติดมาตั้งแต่แรก · ปัญหาเกิดเฉพาะเส้นทาง <b>"local folder เดิม → GitHub โดยไม่ได้ clone"</b> (สไลด์หน้า 48) ซึ่งคือสิ่งที่เรากำลังทำใน LAB นี้พอดี</div>
+    </section>
+
+    <!-- 5 Prep -->
+    <section id="prep">
+      <div class="sec-head"><div class="sec-num">5</div><h2 class="sec-title"><span aria-hidden="true">⚙️</span> เตรียมความพร้อม + Token</h2></div>
+      <h3><span class="dot" aria-hidden="true"></span>5.1 Container + ตัวตน</h3>
+      <p>รัน container แล้ว SSH เข้าไป (password: <code class="inline">passwd</code>):</p>
+      <pre><code><span class="cmd">docker</span> run <span class="flag">-dit --name</span> devtools <span class="flag">--privileged -p</span> 2222:22 tuchsanai/devtools:2569_1
+<span class="cmd">ssh</span> root@localhost <span class="flag">-p</span> 2222</code></pre>
+      <p>ตั้งตัวตน — <b>ใช้ชื่อและอีเมลของตัวเอง</b> (ตัวอย่างทั้ง LAB ใช้ตัวตนสมมุติ):</p>
+      <pre><code><span class="cmd">git config</span> <span class="flag">--global</span> user.name <span class="str">"somchai-dev"</span>
+<span class="cmd">git config</span> <span class="flag">--global</span> user.email <span class="str">"somchai.dev@example.com"</span></code></pre>
+      <h3><span class="dot" aria-hidden="true"></span>5.2 Personal Access Token (PAT) ของตัวเอง</h3>
+      <p>GitHub ไม่รับ password สำหรับ push แล้ว — ต้องใช้ <b>token</b> (วิธีสร้างอยู่ใน LAB ชุด token ของ Week 1: GitHub → Settings → Developer settings → Personal access tokens (classic) → เลือก scope <code class="inline">repo</code>)</p>
+      <pre><code><span class="cmd">export</span> GIT_TOKEN=<span class="str">ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>   <span class="cmt"># ← token ของตัวเอง</span></code></pre>
+      <div class="callout danger"><span aria-hidden="true">🔐</span> <b>token = รหัสผ่าน</b> — ห้ามส่งให้เพื่อน ห้าม commit ลงไฟล์ ห้ามแปะในรายงาน/สไลด์/แชท · เอกสารนี้จึงเขียนเป็นตัวแปร <code class="inline">${GIT_TOKEN}</code> แทนค่าจริงเสมอ</div>
+      <div class="callout"><span aria-hidden="true">🆕</span> GitHub ปัจจุบันมี token แบบใหม่ <b>fine-grained</b> (จำกัดสิทธิ์ราย repo ได้ละเอียดกว่า) ให้เลือกด้วย — ใน LAB นี้ใช้แบบ classic + scope <code class="inline">repo</code> ตามที่ฝึกใน Week 1 ก็เพียงพอ</div>
+    </section>
+
+    <!-- 6 STEP 1 -->
+    <section id="step1">
+      <div class="sec-head"><div class="sec-num">6</div><h2 class="sec-title">STEP 1 — สร้าง local repo + commit แรก (ทบทวน LAB 00)</h2></div>
+      <p>ขั้นนี้คือวงจรที่ฝึกมาแล้วทั้ง LAB 00 — รวดเดียวจบ:</p>
+      <pre><code><span class="cmd">mkdir</span> lab-git
+<span class="cmd">cd</span> lab-git
+<span class="cmd">git</span> init
+<span class="cmd">echo</span> <span class="str">"Initial content for file 1"</span> &gt; file1.txt
+<span class="cmd">echo</span> <span class="str">"Initial content for file 2"</span> &gt; file2.txt
+<span class="cmd">echo</span> <span class="str">"Initial content for file 3"</span> &gt; file3.txt
+<span class="cmd">git</span> add file1.txt file2.txt file3.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Initial commit with three files"</span>
+<span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output (ย่อ)</span><pre><code><span class="ok">[master (root-commit) 8f157da] Initial commit with three files</span>
+<span class="out"> 3 files changed, 3 insertions(+)
+ create mode 100644 file1.txt
+ create mode 100644 file2.txt
+ create mode 100644 file3.txt</span>
+
+<span class="ok">8f157da Initial commit with three files</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> hash ของแต่ละคนไม่เหมือนกัน — และสังเกตใน output: เรายังอยู่บน <code class="inline">master</code> ซึ่งกำลังจะเป็นปัญหาในขั้นถัดไป</div>
+    </section>
+
+    <!-- 7 STEP 2 -->
+    <section id="step2">
+      <div class="sec-head"><div class="sec-num">7</div><h2 class="sec-title">STEP 2 — เปลี่ยน master → main (แก้ปัญหาจากทฤษฎี ②)</h2></div>
+      <p>ดูชื่อ branch ปัจจุบัน → เปลี่ยนชื่อ → ตรวจซ้ำ:</p>
+      <pre><code><span class="cmd">git</span> branch
+<span class="cmd">git</span> branch <span class="flag">-M</span> main
+<span class="cmd">git</span> branch
+<span class="cmd">git</span> status</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">* master</span>
+
+<span class="cmt"># (git branch -M main ไม่มี output — เงียบ = สำเร็จ)</span>
+
+<span class="ok">* main</span>
+
+<span class="out">On branch main
+nothing to commit, working tree clean</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> <code class="inline">-M</code> = เปลี่ยนชื่อ branch (บังคับทับถ้าชื่อปลายทางมีอยู่แล้ว) — commit ทั้งหมดอยู่ครบ แค่ป้ายชื่อเปลี่ยน</div>
+      <div class="callout tip"><span aria-hidden="true">💡</span> ถ้าเครื่องคุณตั้ง <code class="inline">init.defaultBranch main</code> ไว้จาก Week 1 — <code class="inline">git branch</code> จะตอบ <code class="inline">* main</code> ตั้งแต่แรก · สั่ง <code class="inline">git branch -M main</code> ซ้ำก็ไม่เสียหายอะไร</div>
+    </section>
+
+    <!-- 8 STEP 3 -->
+    <section id="step3">
+      <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title">STEP 3 — สร้าง Remote Repository บน GitHub (ผ่านเว็บ)</h2></div>
+      <ol>
+        <li>เข้า <a href="https://github.com">github.com</a> → ปุ่ม <b>New repository</b></li>
+        <li><b>Repository name:</b> <code class="inline">lab-git</code></li>
+        <li>เลือก <b>Private</b></li>
+        <li><b>ไม่ต้องติ๊ก</b> "Add a README file" และไม่เลือก .gitignore / license ใด ๆ</li>
+        <li>กด <b>Create repository</b> — จะเจอหน้า quick setup พร้อมชุดคำสั่งแนะนำ</li>
+      </ol>
+      <div class="callout"><span aria-hidden="true">🆕</span> สังเกตบล็อก <b>"…or push an existing repository from the command line"</b> บนหน้า quick setup — คือชุดคำสั่งเดียวกับที่เรากำลังทำเป๊ะ ๆ: <code class="inline">git remote add origin …</code> → <code class="inline">git branch -M main</code> (STEP 2 ของเรา) → <code class="inline">git push -u origin main</code> — จบ LAB นี้แล้วคุณจะอ่านหน้านั้นออกทั้งหมด</div>
+      <div class="callout warn"><span aria-hidden="true">⚠️</span> <b>ทำไมห้ามติ๊ก "Add a README file"?</b> — เพราะเราจะ push ประวัติจาก local ขึ้นไปเอง ถ้าให้ GitHub สร้าง commit แรก (README) ไว้ก่อน remote จะมีประวัติที่ local ไม่มี → push ครั้งแรกจะโดน <code class="inline">! [rejected]</code> ทันที</div>
+    </section>
+
+    <!-- 9 STEP 4 -->
+    <section id="step4">
+      <div class="sec-head"><div class="sec-num">9</div><h2 class="sec-title">STEP 4 — เชื่อม local เข้ากับ remote</h2></div>
+      <p>ก่อนเชื่อม — พิสูจน์ว่า repo ที่ <code class="inline">git init</code> เองยังไม่รู้จัก remote ใดเลย (ตรงตามทฤษฎี ①):</p>
+      <pre><code><span class="cmd">git</span> remote <span class="flag">-v</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="cmt"># (ว่างเปล่า — ไม่มี output ใด ๆ)</span></code></pre></div>
+      <p>ผูก remote ชื่อ <code class="inline">origin</code> — ฝัง token ไว้ใน URL เพื่อให้ push ได้โดยไม่ต้องกรอกรหัสทุกครั้ง (<b>แทน <code class="inline">YOUR_USERNAME</code> ด้วย username GitHub ของตัวเอง</b>) แล้วตรวจซ้ำ:</p>
+      <pre><code><span class="cmd">git</span> remote add origin <span class="str">https://YOUR_USERNAME:${GIT_TOKEN}@github.com/YOUR_USERNAME/lab-git.git</span>
+<span class="cmd">git</span> remote <span class="flag">-v</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">origin	https://YOUR_USERNAME:${GIT_TOKEN}@github.com/YOUR_USERNAME/lab-git.git (fetch)
+origin	https://YOUR_USERNAME:${GIT_TOKEN}@github.com/YOUR_USERNAME/lab-git.git (push)</span></code></pre></div>
+      <div class="callout danger"><span aria-hidden="true">🔐</span> ในเครื่องจริง <code class="inline">git remote -v</code> จะโชว์ <b>token จริงของคุณเต็ม ๆ</b> ใน URL — ระวังเวลาแชร์หน้าจอหรือแคปภาพส่งรายงาน</div>
+    </section>
+
+    <!-- 10 STEP 5 -->
+    <section id="step5">
+      <div class="sec-head"><div class="sec-num">10</div><h2 class="sec-title">STEP 5 — Push ครั้งแรก (<code class="inline">-u</code> = ตั้ง upstream)</h2></div>
+      <pre><code><span class="cmd">git</span> push <span class="flag">-u</span> origin main</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 32 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (5/5), 379 bytes | 379.00 KiB/s, done.
+Total 5 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/YOUR_USERNAME/lab-git.git</span>
+<span class="ok"> * [new branch]      main -&gt; main
+branch 'main' set up to track 'origin/main'.</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> บรรทัดสำคัญ: <code class="inline">* [new branch] main -&gt; main</code> = สร้าง branch main บน GitHub สำเร็จ · <code class="inline">branch 'main' set up to track 'origin/main'</code> = ผลของ <code class="inline">-u</code> · ส่วนจำนวน threads / ความเร็ว KiB/s ขึ้นกับเครื่องแต่ละคน</div>
+      <pre><code><span class="cmd">git</span> status</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">On branch main
+Your branch is up to date with 'origin/main'.</span>
+
+<span class="out">nothing to commit, working tree clean</span></code></pre></div>
+      <p>สังเกตบรรทัดใหม่: <code class="inline">Your branch is up to date with 'origin/main'.</code> — เพราะมี upstream แล้ว <code class="inline">git status</code> จึงรายงานเทียบกับ remote ให้ด้วย · refresh หน้า repo บน GitHub จะเห็นไฟล์ทั้ง 3 แล้ว <span aria-hidden="true">🎉</span></p>
+    </section>
+
+    <!-- 11 STEP 6 -->
+    <section id="step6">
+      <div class="sec-head"><div class="sec-num">11</div><h2 class="sec-title">STEP 6 — วงจรจริง: แก้ไข → commit → push × 3 รอบ</h2></div>
+      <h3><span class="dot" aria-hidden="true"></span>รอบที่ 1 (ละเอียดครบทุกคำสั่ง)</h3>
+      <pre><code><span class="cmd">echo</span> <span class="str">"Change 1 for file 1"</span> &gt;&gt; file1.txt
+<span class="cmd">echo</span> <span class="str">"Change 1 for file 2"</span> &gt;&gt; file2.txt
+<span class="cmd">echo</span> <span class="str">"Change 1 for file 3"</span> &gt;&gt; file3.txt
+<span class="cmd">git</span> status
+<span class="cmd">git</span> add file1.txt file2.txt file3.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"First set of changes"</span>
+<span class="cmd">git</span> push origin main</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)</span>
+	<span class="err">modified:   file1.txt
+	modified:   file2.txt
+	modified:   file3.txt</span>
+
+<span class="out">no changes added to commit (use "git add" and/or "git commit -a")</span>
+
+<span class="ok">[main 1ed541c] First set of changes</span>
+<span class="out"> 3 files changed, 3 insertions(+)</span>
+
+<span class="out">Enumerating objects: 9, done.
+Counting objects: 100% (9/9), done.
+Delta compression using up to 32 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (5/5), 431 bytes | 431.00 KiB/s, done.
+Total 5 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/YOUR_USERNAME/lab-git.git</span>
+<span class="ok">   8f157da..1ed541c  main -&gt; main</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> คราวนี้ไม่มี <code class="inline">[new branch]</code> แล้ว — แต่เป็น <code class="inline">8f157da..1ed541c</code> = เลื่อน main จาก commit เก่าไป commit ใหม่ · และไม่ต้องใส่ <code class="inline">-u</code> อีก เพราะตั้ง upstream ไว้ตั้งแต่ STEP 5</div>
+      <h3><span class="dot" aria-hidden="true"></span>รอบที่ 2</h3>
+      <pre><code><span class="cmd">echo</span> <span class="str">"Change 2 for file 1"</span> &gt;&gt; file1.txt
+<span class="cmd">echo</span> <span class="str">"Change 2 for file 2"</span> &gt;&gt; file2.txt
+<span class="cmd">echo</span> <span class="str">"Change 2 for file 3"</span> &gt;&gt; file3.txt
+<span class="cmd">git</span> add file1.txt file2.txt file3.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Second set of changes"</span>
+<span class="cmd">git</span> push origin main</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[main e81cee4] Second set of changes</span>
+<span class="out"> 3 files changed, 3 insertions(+)
+
+Enumerating objects: 9, done.
+Counting objects: 100% (9/9), done.
+Delta compression using up to 32 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (5/5), 444 bytes | 444.00 KiB/s, done.
+Total 5 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/YOUR_USERNAME/lab-git.git</span>
+<span class="ok">   1ed541c..e81cee4  main -&gt; main</span></code></pre></div>
+      <h3><span class="dot" aria-hidden="true"></span>รอบที่ 3</h3>
+      <pre><code><span class="cmd">echo</span> <span class="str">"Change 3 for file 1"</span> &gt;&gt; file1.txt
+<span class="cmd">echo</span> <span class="str">"Change 3 for file 2"</span> &gt;&gt; file2.txt
+<span class="cmd">echo</span> <span class="str">"Change 3 for file 3"</span> &gt;&gt; file3.txt
+<span class="cmd">git</span> add file1.txt file2.txt file3.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Third set of changes"</span>
+<span class="cmd">git</span> push origin main</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[main 4482f52] Third set of changes</span>
+<span class="out"> 3 files changed, 3 insertions(+)
+
+Enumerating objects: 9, done.
+Counting objects: 100% (9/9), done.
+Delta compression using up to 32 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (5/5), 453 bytes | 453.00 KiB/s, done.
+Total 5 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/YOUR_USERNAME/lab-git.git</span>
+<span class="ok">   e81cee4..4482f52  main -&gt; main</span></code></pre></div>
+    </section>
+
+    <!-- 12 STEP 7 -->
+    <section id="step7">
+      <div class="sec-head"><div class="sec-num">12</div><h2 class="sec-title">STEP 7 — ตรวจผลสุดท้าย</h2></div>
+      <pre><code><span class="cmd">git</span> log <span class="flag">--oneline</span>
+<span class="cmd">git</span> status
+<span class="cmd">cat</span> file1.txt</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">4482f52 Third set of changes
+e81cee4 Second set of changes
+1ed541c First set of changes
+8f157da Initial commit with three files</span>
+
+<span class="out">On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean</span>
+
+<span class="out">Initial content for file 1
+Change 1 for file 1
+Change 2 for file 1
+Change 3 for file 1</span></code></pre></div>
+      <p><b>ตรวจบนเว็บ GitHub:</b> เปิดหน้า repo <code class="inline">lab-git</code> → เห็นไฟล์ 3 ไฟล์ พร้อมข้อความ commit ล่าสุด "Third set of changes" → กดตัวเลข <b>4 Commits</b> เพื่อไล่ดูประวัติทั้งหมดบน cloud <span aria-hidden="true">☁️</span></p>
+      <div class="callout tip"><span aria-hidden="true">🎉</span> ตอนนี้ต่อให้โน้ตบุ๊กจมชาเย็นทั้งแก้ว งานของสมชายก็ยังอยู่ครบทุก commit บน GitHub — Pain Point ทั้ง 3 ข้อจาก Story ถูกแก้หมดแล้ว: มีสำเนาบน cloud · ทำงานต่อจากเครื่องไหนก็ได้ (clone) · แชร์ให้อาจารย์/เพื่อนดูได้</div>
+    </section>
+
+    <!-- 13 Cheat -->
+    <section id="cheat">
+      <div class="sec-head"><div class="sec-num">13</div><h2 class="sec-title"><span aria-hidden="true">📋</span> สรุป + Cheat Sheet</h2></div>
+      <div class="tablewrap"><table>
+        <tr><th>คำสั่ง</th><th>ทำอะไร</th></tr>
+        <tr><td><code class="inline">git branch -M main</code></td><td>เปลี่ยนชื่อ branch ปัจจุบันเป็น main (ตามธรรมเนียม GitHub)</td></tr>
+        <tr><td><code class="inline">git remote -v</code></td><td>ดู remote ที่เชื่อมอยู่ — ว่างเปล่า = ยังไม่เชื่อม</td></tr>
+        <tr><td><code class="inline">git remote add origin &lt;URL&gt;</code></td><td>ผูก remote ชื่อ origin เข้ากับ repo</td></tr>
+        <tr><td><code class="inline">git push -u origin main</code></td><td>push ครั้งแรก + ตั้ง upstream</td></tr>
+        <tr><td><code class="inline">git push origin main</code></td><td>push รอบถัดไป (มี upstream แล้ว จะพิมพ์แค่ <code class="inline">git push</code> ก็ได้)</td></tr>
+        <tr><td><code class="inline">git remote rename / remove</code></td><td>เปลี่ยนชื่อ / ถอด remote — เผื่อใช้ในอนาคต</td></tr>
+        <tr><td><code class="inline">git pull</code></td><td>ดึง commit ใหม่จาก remote ลงเครื่อง (คู่ตรงข้ามของ push — ฝึกในหัวข้อ Fetch vs Pull)</td></tr>
+      </table></div>
+      <div class="callout tip"><span aria-hidden="true">🔁</span> <b>วงจรที่ต้องจำให้ขึ้นใจ:</b> แก้ไข → <code class="inline">git add</code> → <code class="inline">git commit -m</code> → <code class="inline">git push</code></div>
+    </section>
+
+    <!-- 14 Checklist -->
+    <section id="check">
+      <div class="sec-head"><div class="sec-num">14</div><h2 class="sec-title"><span aria-hidden="true">✅</span> Checklist ก่อนไปต่อ</h2></div>
+      <ul class="checklist">
+        <li><code class="inline">git branch</code> ตอบ <code class="inline">* main</code> ก่อน push ครั้งแรก</li>
+        <li><code class="inline">git remote -v</code> ก่อน add ว่างเปล่า / หลัง add เห็น origin 2 บรรทัด (fetch, push)</li>
+        <li>push แรกเห็น <code class="inline">* [new branch] main -&gt; main</code> และ <code class="inline">set up to track</code></li>
+        <li>push รอบถัดไปเห็นรูปแบบ <code class="inline">&lt;hash เก่า&gt;..&lt;hash ใหม่&gt;  main -&gt; main</code></li>
+        <li><code class="inline">git log --oneline</code> มี 4 commits และหน้าเว็บ GitHub แสดง "4 Commits" ตรงกัน</li>
+        <li>ตอบได้ว่าถ้าเครื่องพังตอนนี้ งานหายไหม เพราะอะไร</li>
+      </ul>
+    </section>
+
+    <!-- 15 Quiz -->
+    <section id="quiz">
+      <div class="sec-head"><div class="sec-num">15</div><h2 class="sec-title"><span aria-hidden="true">❓</span> คำถามทบทวน</h2></div>
+      <div class="quiz">
+        <ol>
+          <li><code class="inline">origin</code> คืออะไร — เป็นคำสงวนของ Git หรือแค่ธรรมเนียม? ใช้ชื่ออื่นได้ไหม</li>
+          <li>ทำไมต้อง <code class="inline">git branch -M main</code> ก่อน push? ถ้าไม่ทำแล้ว push <code class="inline">master</code> ขึ้น repo ที่ default เป็น <code class="inline">main</code> — GitHub จะมีกี่ branch และหน้าแรกของ repo จะแสดงงานเราไหม</li>
+          <li><code class="inline">-u</code> ใน <code class="inline">git push -u origin main</code> ทำอะไร และเห็นผลที่บรรทัดไหนของ output?</li>
+          <li>ตอนสร้าง repo บนเว็บ ทำไม LAB นี้ห้ามติ๊ก "Add a README file"?</li>
+          <li><code class="inline">git remote -v</code> หลัง STEP 4 มีอะไรซ่อนอยู่ใน URL ที่ไม่ควรให้ใครเห็น? สถานการณ์ไหนที่ต้องระวังเป็นพิเศษ</li>
+          <li>push รอบ 2 เป็นต้นไป ไม่มีคำว่า <code class="inline">[new branch]</code> แล้ว — บรรทัด <code class="inline">8f157da..1ed541c  main -&gt; main</code> อ่านว่าอย่างไร</li>
+          <li>สถานการณ์ไหนที่จะ<b>ไม่เจอ</b>ปัญหา master vs main ตั้งแต่ต้น? (คำใบ้: สไลด์หน้า 47 — clone)</li>
+        </ol>
+      </div>
+    </section>
+
+    <footer>
+      LAB 01 — Backup to the Cloud · DevTools Week 2 · expected output ทุกจุดรันจริงบน <code class="inline">tuchsanai/devtools:2569_1</code> (git 2.43.0) และ push ขึ้น GitHub จริง — commit hash / จำนวน threads / ความเร็ว ของแต่ละคนจะต่างจากตัวอย่าง · ตัวอย่างใช้ตัวตนสมมุติ <code class="inline">somchai-dev</code> — ใช้ username และ token ของตัวเองเสมอ
+    </footer>
+  </main>
+</div>
+<a class="top-link" href="#top" aria-label="กลับขึ้นบนสุด">↑</a>
+</body>
+</html>

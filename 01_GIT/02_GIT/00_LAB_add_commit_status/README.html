@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAB 00 — The Time Machine | add · commit · status (Local Workflow)</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2333; --border:#30363d;
+    --text:#e6edf3; --muted:#8b949e; --accent:#f05133; --accent2:#58a6ff;
+    --green:#3fb950; --yellow:#d29922; --purple:#bc8cff; --code-bg:#0b0f14;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI","Noto Sans Thai",-apple-system,Tahoma,sans-serif;background:var(--bg);color:var(--text);line-height:1.75}
+  a{color:var(--accent2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{display:flex;max-width:1480px;margin:0 auto}
+  nav.side{position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;width:280px;flex-shrink:0;padding:24px 18px;border-right:1px solid var(--border);background:var(--panel)}
+  nav.side .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;padding:0 8px}
+  nav.side .brand .m{width:34px;height:34px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px}
+  nav.side .brand b{font-size:1rem}
+  nav.side h2{font-size:.72rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:18px 8px 8px}
+  nav.side a{display:block;color:var(--muted);padding:7px 12px;border-radius:8px;font-size:.9rem;margin-bottom:1px}
+  nav.side a:hover{background:var(--panel2);color:var(--text);text-decoration:none}
+  nav.side a .n{color:var(--accent);font-weight:700;margin-right:8px;display:inline-block;width:20px}
+  main{flex:1;min-width:0;padding:0 0 80px}
+  header.hero{padding:64px 56px 48px;text-align:center;background:radial-gradient(circle at 50% -20%, #2d1810 0%, var(--bg) 60%);border-bottom:1px solid var(--border)}
+  .gitmark{display:inline-flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:22px;background:var(--accent);font-size:42px;margin-bottom:20px;box-shadow:0 12px 40px rgba(240,81,51,.35)}
+  header.hero .kicker{color:var(--accent);font-weight:700;letter-spacing:2px;font-size:.82rem;text-transform:uppercase}
+  header.hero h1{font-size:2.6rem;margin:10px 0 6px;background:linear-gradient(90deg,#fff,#f05133);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  header.hero p.sub{color:var(--muted);font-size:1.08rem}
+  .scores{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+  .chip{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 20px;min-width:120px}
+  .chip .v{font-size:1.25rem;font-weight:800;color:var(--accent2)}
+  .chip .l{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  section{padding:46px 56px;border-bottom:1px solid var(--border);scroll-margin-top:10px}
+  .sec-head{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+  .sec-num{flex-shrink:0;width:48px;height:48px;border-radius:13px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.3rem}
+  h2.sec-title{font-size:1.7rem}
+  .slideref{color:var(--muted);font-size:.78rem;margin:0 0 22px 64px;font-style:italic}
+  h3{font-size:1.2rem;margin:28px 0 12px;color:#fff;display:flex;align-items:center;gap:8px}
+  h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  p{margin-bottom:12px;color:#c9d1d9}
+  ul,ol{margin:0 0 14px 22px}
+  li{margin-bottom:7px;color:#c9d1d9}
+  strong,b{color:#fff}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:12px;padding:16px 20px;overflow-x:auto;margin:12px 0;font-family:"JetBrains Mono",Consolas,Monaco,monospace;font-size:.9rem;line-height:1.65}
+  pre code{color:#e6edf3}
+  .cmt{color:#6e7681}
+  .cmd{color:var(--green)}
+  .flag{color:#79c0ff}
+  .str{color:var(--yellow)}
+  .out{color:#9db4cd}
+  .err{color:#ff7b72}
+  .ok{color:var(--green)}
+  code.inline{background:var(--panel2);padding:2px 8px;border-radius:6px;font-family:Consolas,monospace;font-size:.88em;color:var(--purple)}
+  .expected{border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:0 12px 12px 0;background:var(--code-bg);margin:12px 0}
+  .expected .lbl{display:block;padding:8px 20px 0;font-size:.75rem;font-weight:700;letter-spacing:1px;color:var(--accent2);text-transform:uppercase}
+  .expected pre{border:none;margin:0;background:transparent}
+  .story{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+  .panel{background:linear-gradient(160deg,#1d4e89,#16365f);border-radius:14px;padding:18px;text-align:center;border:1px solid #2a5a92;position:relative}
+  .panel .face{font-size:2rem;margin-bottom:6px}
+  .panel p{font-size:.86rem;color:#dbe9ff;margin:0}
+  .panel .step{position:absolute;top:8px;left:10px;font-size:.7rem;color:#7fb3e8;font-weight:700}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:18px 0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .card .ic{font-size:1.8rem;margin-bottom:10px}
+  .card h3{color:#fff;margin:0 0 6px;font-size:1.05rem;display:block}
+  .card p{font-size:.88rem;color:var(--muted);margin:0}
+  .callout{border-left:4px solid var(--accent2);background:var(--panel);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0}
+  .callout.warn{border-color:var(--yellow)}
+  .callout.tip{border-color:var(--green)}
+  .callout.danger{border-color:var(--accent)}
+  .callout b{color:#fff}
+  table{width:100%;border-collapse:collapse;margin:18px 0;background:var(--panel);border-radius:12px;overflow:hidden}
+  th,td{padding:13px 18px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+  th{background:var(--panel2);color:#fff;font-size:.9rem;letter-spacing:.5px}
+  td{color:#c9d1d9;font-size:.9rem}
+  tr:last-child td{border-bottom:none}
+  .tablewrap{overflow-x:auto}
+  .diagram{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;background:#22262e;border:1px solid var(--border);border-radius:16px;padding:26px;margin:18px 0}
+  .node{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-align:center;min-width:150px}
+  .node .ic{font-size:1.8rem}
+  .node .lbl{font-size:.82rem;color:var(--muted);margin-top:4px}
+  .node .sub{font-size:.72rem;color:var(--muted)}
+  .node.repo{background:#3a1f1c;border-color:var(--accent)}
+  .node.repo .lbl{color:var(--accent);font-weight:700}
+  .arrow{font-size:1.4rem;color:var(--accent2);display:flex;flex-direction:column;align-items:center;font-weight:700}
+  .arrow .cap{font-size:.72rem;font-family:Consolas,monospace;color:var(--green)}
+  .checklist{list-style:none;margin-left:0}
+  .checklist li{padding-left:32px;position:relative}
+  .checklist li::before{content:"☐";position:absolute;left:4px;color:var(--green);font-size:1.05rem}
+  .quiz{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px 26px;margin:16px 0}
+  .quiz ol{margin-bottom:0}
+  footer{padding:32px 56px;text-align:center;color:var(--muted);font-size:.85rem}
+  @media(max-width:900px){
+    .wrap{flex-direction:column}
+    nav.side{position:static;height:auto;width:100%;border-right:none;border-bottom:1px solid var(--border)}
+    header.hero h1{font-size:1.9rem}
+    section,header.hero,footer{padding-left:22px;padding-right:22px}
+  }
+  .top-link{position:fixed;bottom:24px;right:24px;background:var(--accent);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 6px 20px rgba(0,0,0,.4);z-index:50}
+  .top-link:hover{text-decoration:none;transform:translateY(-2px)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="side">
+    <div class="brand"><div class="m" aria-hidden="true">⏳</div><b>LAB 00 · Time Machine</b></div>
+    <h2>เนื้อหา</h2>
+    <a href="#story"><span class="n">1</span>Story / Pain Point</a>
+    <a href="#goals"><span class="n">2</span>สิ่งที่จะได้เรียนรู้</a>
+    <a href="#theory1"><span class="n">3</span>ทฤษฎี: Commit = Snapshot</a>
+    <a href="#theory2"><span class="n">4</span>ทฤษฎี: 3 พื้นที่ของ Git</a>
+    <a href="#prep"><span class="n">5</span>เตรียมความพร้อม</a>
+    <a href="#step1"><span class="n">6</span>STEP 1 — repo + commit แรก</a>
+    <a href="#step2"><span class="n">7</span>STEP 2 — แก้ 2 ไฟล์ เลือก stage</a>
+    <a href="#step3"><span class="n">8</span>STEP 3 — ปิดจ๊อบ file3</a>
+    <a href="#cheat"><span class="n">9</span>สรุป + Cheat Sheet</a>
+    <a href="#check"><span class="n">10</span>Checklist</a>
+    <a href="#quiz"><span class="n">11</span>คำถามทบทวน</a>
+    <h2>อ้างอิง</h2>
+    <a href="../git_week2.html#commit"><span class="n" aria-hidden="true">📖</span>Week 2 · Add &amp; Commit</a>
+    <a href="../02_GIT.pdf"><span class="n" aria-hidden="true">📕</span>สไลด์ 02_GIT.pdf</a>
+    <a href="../01_LAB_push_to_github/README.html"><span class="n" aria-hidden="true">➡️</span>LAB 01 · Push to GitHub</a>
+  </nav>
+
+  <main>
+    <header class="hero" id="top">
+      <div class="gitmark" aria-hidden="true">⏳</div>
+      <p class="kicker">Week 2 · Getting Started with Git · LAB 00</p>
+      <h1>The Time Machine</h1>
+      <p class="sub">สร้าง "เครื่องย้อนเวลา" ให้โปรเจกต์ด้วย <code class="inline">git add</code> · <code class="inline">git commit</code> · <code class="inline">git status</code> — ทำงานในเครื่องตัวเองล้วน ๆ ยังไม่แตะ remote</p>
+      <div class="scores">
+        <div class="chip"><div class="v">Docker</div><div class="l">รันจริงบน container</div></div>
+        <div class="chip"><div class="v">~30 นาที</div><div class="l">เวลาโดยประมาณ</div></div>
+        <div class="chip"><div class="v">3 STEPS</div><div class="l">3 ไฟล์ · 3 commits</div></div>
+      </div>
+    </header>
+
+    <!-- 1 Story -->
+    <section id="story">
+      <div class="sec-head"><div class="sec-num">1</div><h2 class="sec-title"><span aria-hidden="true">📖</span> Story / Pain Point</h2></div>
+      <p>คืนก่อนส่งงาน สมชาย (<code class="inline">somchai-dev</code>) นั่งแก้โปรเจกต์ถึงตีสอง แก้ไปแก้มา…โค้ดที่เคยรันได้กลับ<b>พังกว่าเดิม</b> อยากย้อนกลับไป "เวอร์ชันเมื่อวานที่ยังรันได้" แต่กด Ctrl+Z ย้อนไม่ถึงแล้ว สุดท้ายหน้า Desktop เต็มไปด้วย:</p>
+      <pre><code><span class="out">project_final.zip
+project_final_v2.zip
+project_final_v2_จริงๆ.zip
+project_final_v2_จริงๆ_ล่าสุด.zip</span></code></pre>
+      <div class="story">
+        <div class="panel"><span class="step">1</span><div class="face" aria-hidden="true">😤</div><p>แก้โค้ดถึงตีสอง<br>"เดี๋ยวก็เสร็จ"</p></div>
+        <div class="panel"><span class="step">2</span><div class="face" aria-hidden="true">😱</div><p>โค้ดที่เคยรันได้<br><b>พังกว่าเดิม</b></p></div>
+        <div class="panel"><span class="step">3</span><div class="face" aria-hidden="true">🥶</div><p>Ctrl+Z ก็ย้อนไม่ถึง<br>เวอร์ชันเมื่อวานหายไปแล้ว</p></div>
+        <div class="panel"><span class="step">4</span><div class="face" aria-hidden="true">💡</div><p>ถ้ามี "เครื่องย้อนเวลา"<br>ของโปรเจกต์ล่ะ?</p></div>
+      </div>
+      <h3><span class="dot" aria-hidden="true"></span>Pain Point ที่เกิดขึ้น</h3>
+      <div class="tablewrap"><table>
+        <tr><th style="width:52px">#</th><th>ปัญหา</th><th>อาการ</th></tr>
+        <tr><td>1</td><td><b>ย้อนเวลาไม่ได้</b></td><td>แก้โค้ดพังแล้ว กลับไปเวอร์ชันที่เคยรันได้ไม่ได้</td></tr>
+        <tr><td>2</td><td><b>ไม่รู้ประวัติ</b></td><td>ตอบไม่ได้ว่า "แก้ไฟล์ไหน เมื่อไหร่ เพราะอะไร"</td></tr>
+        <tr><td>3</td><td><b>สำเนาท่วมเครื่อง</b></td><td>ก๊อปทั้งโฟลเดอร์เก็บไว้หลายชุด เปลืองที่ + สับสนเอง</td></tr>
+        <tr><td>4</td><td><b>ไม่รู้สถานะ</b></td><td>ไฟล์ไหนแก้แล้วยังไม่บันทึก ไฟล์ไหนเรียบร้อย — ไม่มีใครบอก</td></tr>
+      </table></div>
+      <div class="callout tip"><span aria-hidden="true">💡</span> <b>ทางแก้ = Git.</b> ทุกครั้งที่งานถึงจุดที่ "ดีแล้ว" สั่ง <code class="inline">git commit</code> เพื่อถ่ายรูป (snapshot) ทั้งโปรเจกต์เก็บไว้ · อยากรู้ว่ามีอะไรค้าง → <code class="inline">git status</code> · อยากดูประวัติ → <code class="inline">git log</code> · อยากย้อนเวลา → ทำได้จริง (ฝึกใน Week 4)</div>
+    </section>
+
+    <!-- 2 Goals -->
+    <section id="goals">
+      <div class="sec-head"><div class="sec-num">2</div><h2 class="sec-title"><span aria-hidden="true">🎯</span> สิ่งที่จะได้เรียนรู้</h2></div>
+      <div class="cards">
+        <div class="card"><div class="ic" aria-hidden="true">🔁</div><h3>วงจรพื้นฐานของ Git</h3><p>แก้ไฟล์ → <code class="inline">git add</code> → <code class="inline">git commit</code> ทำซ้ำ 3 รอบจนเป็นนิสัย</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🗺️</div><h3>3 พื้นที่ของ Git</h3><p>Working Directory → Staging Area → Repository และเหตุผลที่ต้องมี Staging</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🧭</div><h3>git status = เข็มทิศ</h3><p>อ่านสถานะ untracked / staged / modified / clean ให้ออกทุกบรรทัด</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">📜</div><h3>git log = สมุดประวัติ</h3><p>ไล่ดูสายโซ่ commit และเข้าใจว่า hash ของแต่ละคนไม่เหมือนกัน</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🌿</div><h3>master vs main</h3><p>รู้ที่มาของชื่อ branch เริ่มต้น <code class="inline">master</code> และธรรมเนียม <code class="inline">main</code> ของ GitHub</p></div>
+      </div>
+    </section>
+
+    <!-- 3 Theory: snapshot -->
+    <section id="theory1">
+      <div class="sec-head"><div class="sec-num">3</div><h2 class="sec-title"><span aria-hidden="true">📸</span> ทฤษฎี ① — Commit = Snapshot ของทั้งโปรเจกต์</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ 02_GIT.pdf หน้า 12–15 และ 37</p>
+      <p>มองโปรเจกต์เป็นเส้นเวลา: <b>Initial Project → Add Code → More Code → …</b> จุดที่เราบอก Git ให้จดจำไว้แต่ละจุด เรียกว่า <b>commit</b></p>
+      <div class="diagram" role="img" aria-label="เส้นเวลาของ commit: Initial Project ไปยัง Add Code ไปยัง More Code แต่ละจุดคือหนึ่ง commit">
+        <div class="node"><div class="ic" aria-hidden="true">📸</div><div class="lbl">Initial Project</div><div class="sub">commit #1</div></div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="node"><div class="ic" aria-hidden="true">📸</div><div class="lbl">Add Code</div><div class="sub">commit #2</div></div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="node"><div class="ic" aria-hidden="true">📸</div><div class="lbl">More Code</div><div class="sub">commit #3</div></div>
+      </div>
+      <ul>
+        <li>commit <b>ไม่ใช่</b>การเซฟทีละไฟล์ — หนึ่ง commit เก็บการเปลี่ยนแปลงได้<b>ทั้ง working directory</b> เช่นแก้ <code class="inline">program.py</code>, <code class="inline">index.html</code>, <code class="inline">style.css</code> พร้อมกันก็รวมอยู่ใน commit เดียวได้ (สไลด์หน้า 15)</li>
+        <li>ทุก commit มี 3 อย่างเสมอ (สไลด์หน้า 37): <b>hash</b> เลขประจำตัว เช่น <code class="inline">678e366…</code> · <b>message</b> คำอธิบายว่าทำอะไร · <b>parent</b> ตัวชี้กลับไป commit ก่อนหน้า</li>
+        <li>parent ทำให้ commit ต่อกันเป็น<b>สายโซ่ประวัติ</b> — นี่แหละคือรางของเครื่องย้อนเวลา เราจึงถอยกลับไป commit เก่าได้เสมอ (สไลด์หน้า 14)</li>
+      </ul>
+    </section>
+
+    <!-- 4 Theory: three areas -->
+    <section id="theory2">
+      <div class="sec-head"><div class="sec-num">4</div><h2 class="sec-title"><span aria-hidden="true">🗺️</span> ทฤษฎี ② — สามพื้นที่ของ Git</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ 02_GIT.pdf หน้า 17–31</p>
+      <p>ก่อนไฟล์จะกลายเป็น snapshot ถาวร มันเดินทางผ่าน 3 พื้นที่:</p>
+      <div class="diagram" role="img" aria-label="สามพื้นที่ของ Git: Working Directory ผ่าน git add ไป Staging Area ผ่าน git commit ไป Repository">
+        <div class="node"><div class="ic" aria-hidden="true">🖥️</div><div class="lbl">Working Directory</div><div class="sub">โต๊ะทำงาน — ไฟล์จริงที่เราแก้</div></div>
+        <div class="arrow"><span aria-hidden="true">→</span><span class="cap">git add</span></div>
+        <div class="node"><div class="ic" aria-hidden="true">🧺</div><div class="lbl">Staging Area</div><div class="sub">ตะกร้าเตรียมถ่ายรูป — เลือกเฉพาะไฟล์</div></div>
+        <div class="arrow"><span aria-hidden="true">→</span><span class="cap">git commit</span></div>
+        <div class="node repo"><div class="ic" aria-hidden="true">🗄️</div><div class="lbl">Repository (.git/)</div><div class="sub">อัลบั้มถาวร — เก็บทุก snapshot</div></div>
+      </div>
+      <ul>
+        <li><b>Working Directory</b> — โฟลเดอร์จริงที่เราสร้าง/แก้ไฟล์ (สไลด์หน้า 18–20)</li>
+        <li><b>Staging Area</b> — พื้นที่พักสำหรับ "เลือกเฉพาะไฟล์" ที่จะบันทึกใน commit ถัดไป ด้วย <code class="inline">git add</code> (สไลด์หน้า 21–23) — ประโยชน์จริง: แก้ 3 ไฟล์ แต่จะ commit แค่ 2 ไฟล์ก็ทำได้ ซึ่งเราจะได้ลองเองใน STEP 2</li>
+        <li><b>Repository</b> — ฐานข้อมูลในโฟลเดอร์ <code class="inline">.git/</code> ที่เก็บ snapshot ถาวรทุก commit ด้วย <code class="inline">git commit</code> (สไลด์หน้า 24–31)</li>
+      </ul>
+      <h3><span class="dot" aria-hidden="true"></span>สถานะของไฟล์ที่ <code class="inline">git status</code> รายงาน</h3>
+      <div class="tablewrap"><table>
+        <tr><th>ข้อความใน git status</th><th>สถานะ</th><th>ความหมาย</th></tr>
+        <tr><td><code class="inline">Untracked files</code></td><td>untracked</td><td>ไฟล์ใหม่ที่ Git ยังไม่รู้จัก ยังไม่จับตาดู</td></tr>
+        <tr><td><code class="inline">Changes to be committed</code></td><td>staged</td><td>เข้า Staging Area แล้ว รอถ่ายรูปใน commit ถัดไป</td></tr>
+        <tr><td><code class="inline">Changes not staged for commit</code></td><td>modified</td><td>ไฟล์ที่เคย commit ถูกแก้ แต่ยังไม่ได้ <code class="inline">git add</code></td></tr>
+        <tr><td><code class="inline">nothing to commit, working tree clean</code></td><td>clean</td><td>ทุกอย่างถูกบันทึกครบแล้ว — สถานะที่อยากเห็นตอนจบวัน</td></tr>
+      </table></div>
+    </section>
+
+    <!-- 5 Prep -->
+    <section id="prep">
+      <div class="sec-head"><div class="sec-num">5</div><h2 class="sec-title"><span aria-hidden="true">⚙️</span> เตรียมความพร้อม</h2></div>
+      <p>รัน container สำหรับทดลอง แล้ว SSH เข้าไป (password: <code class="inline">passwd</code>):</p>
+      <pre><code><span class="cmd">docker</span> run <span class="flag">-dit --name</span> devtools <span class="flag">--privileged -p</span> 2222:22 tuchsanai/devtools:2569_1
+<span class="cmd">ssh</span> root@localhost <span class="flag">-p</span> 2222</code></pre>
+      <p>Git ต้องรู้ก่อนว่า "เราเป็นใคร" จึงจะ commit ได้ (หัวข้อจาก LAB Configure ของ Week 1 — เครื่อง/container ใหม่ต้องตั้งใหม่ทุกครั้ง) <b>ใช้ชื่อและอีเมลของตัวเอง</b> — ตัวอย่างทั้ง LAB นี้ใช้ตัวตนสมมุติ:</p>
+      <pre><code><span class="cmd">git config</span> <span class="flag">--global</span> user.name <span class="str">"somchai-dev"</span>
+<span class="cmd">git config</span> <span class="flag">--global</span> user.email <span class="str">"somchai.dev@example.com"</span>
+<span class="cmd">git config</span> <span class="flag">--global --list</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">user.name=somchai-dev
+user.email=somchai.dev@example.com</span></code></pre></div>
+      <div class="callout warn"><span aria-hidden="true">⚠️</span> ถ้าข้ามขั้นนี้ <code class="inline">git commit</code> ใน STEP 1 จะล้มเหลวพร้อมข้อความ <code class="inline">Author identity unknown</code></div>
+    </section>
+
+    <!-- 6 STEP 1 -->
+    <section id="step1">
+      <div class="sec-head"><div class="sec-num">6</div><h2 class="sec-title">STEP 1 — สร้าง repo แรก + commit แรก</h2></div>
+      <p>สร้างโฟลเดอร์งาน แล้วประกาศให้ Git เริ่มจับตาดูด้วย <code class="inline">git init</code>:</p>
+      <pre><code><span class="cmd">mkdir</span> git-lab
+<span class="cmd">cd</span> git-lab
+<span class="cmd">git</span> init</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint:
+hint: 	git config --global init.defaultBranch &lt;name&gt;
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m &lt;name&gt;</span>
+<span class="ok">Initialized empty Git repository in /workspace/git-lab/.git/</span></code></pre></div>
+
+      <h3><span class="dot" aria-hidden="true"></span><span aria-hidden="true">🌿</span> master vs main — hint ยาว ๆ นี้บอกอะไรเรา?</h3>
+      <p class="slideref">อ้างอิงสไลด์ 02_GIT.pdf หน้า 43</p>
+      <ul>
+        <li>branch เริ่มต้นของ Git ใช้ชื่อ <code class="inline">master</code> มาแต่เดิม แต่ <b>GitHub เปลี่ยนธรรมเนียมชื่อ default branch เป็น <code class="inline">main</code> อย่างเป็นทางการแล้ว</b> — repo ที่สร้างบนเว็บ GitHub ทุกวันนี้จึงชื่อ <code class="inline">main</code></li>
+        <li>LAB นี้ทำงานใน<b>เครื่องตัวเองล้วน ๆ</b> ชื่อ branch จึงยังไม่มีผลอะไร — ใช้ <code class="inline">master</code> ต่อได้เลย</li>
+        <li>แต่ LAB 01 เราจะ push ขึ้น GitHub — ถ้าปล่อย local เป็น <code class="inline">master</code> ส่วน GitHub เป็น <code class="inline">main</code> จะกลายเป็น<b>คนละ branch คุยกันไม่เจอ</b> → LAB 01 จะแก้ด้วย <code class="inline">git branch -M main</code> ตามที่ GitHub แนะนำ</li>
+      </ul>
+      <div class="callout tip"><span aria-hidden="true">💡</span> ถ้าเครื่องคุณเคยตั้ง <code class="inline">git config --global init.defaultBranch main</code> ไว้จาก LAB Configure (Week 1) — <code class="inline">git init</code> จะ<b>ไม่แสดง hint นี้</b> และ branch จะชื่อ <code class="inline">main</code> ตั้งแต่แรก ซึ่งถูกต้องเช่นกัน (ทุกบรรทัดที่เหลือของ LAB จะเห็น <code class="inline">On branch main</code> แทน <code class="inline">On branch master</code>)</div>
+
+      <p>สร้างไฟล์ 3 ไฟล์ แล้วถาม "เข็มทิศ" ว่าเห็นอะไรบ้าง:</p>
+      <pre><code><span class="cmd">echo</span> <span class="str">"Content for file 1"</span> &gt; file1.txt
+<span class="cmd">echo</span> <span class="str">"Content for file 2"</span> &gt; file2.txt
+<span class="cmd">echo</span> <span class="str">"Content for file 3"</span> &gt; file3.txt
+<span class="cmd">git</span> status</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)</span>
+	<span class="err">file1.txt
+	file2.txt
+	file3.txt</span>
+
+<span class="out">nothing added to commit but untracked files present (use "git add" to track)</span></code></pre></div>
+      <p>ทั้งสามไฟล์เป็น <b>untracked</b> (สีแดง) — Git เห็นว่ามีไฟล์ใหม่ แต่ยังไม่จับตาดูจนกว่าเราจะสั่ง <code class="inline">git add</code>:</p>
+      <pre><code><span class="cmd">git</span> add file1.txt file2.txt file3.txt
+<span class="cmd">git</span> status</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">On branch master
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached &lt;file&gt;..." to unstage)</span>
+	<span class="ok">new file:   file1.txt
+	new file:   file2.txt
+	new file:   file3.txt</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">💡</span> <b>ทางลัดที่ใช้บ่อยในงานจริง:</b> <code class="inline">git add .</code> = stage ทุกไฟล์ที่เปลี่ยนในโฟลเดอร์รวดเดียว (สไลด์หน้า 28) — ใน LAB นี้ตั้งใจ add ทีละไฟล์เพื่อให้เห็นชัดว่า Staging Area "เลือกได้" พอคล่องแล้วค่อยใช้ทางลัด</div>
+      <p>สามไฟล์ย้ายเข้า <b>Staging Area</b> แล้ว (สีเขียว · <code class="inline">Changes to be committed</code>) — ได้เวลากดชัตเตอร์ถ่าย snapshot แรก:</p>
+      <pre><code><span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Initial commit with three files"</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[master (root-commit) 678e366] Initial commit with three files</span>
+<span class="out"> 3 files changed, 3 insertions(+)
+ create mode 100644 file1.txt
+ create mode 100644 file2.txt
+ create mode 100644 file3.txt</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> <code class="inline">678e366</code> คือ <b>commit hash</b> — <b>ของแต่ละคนจะไม่เหมือนกัน</b> (Git คำนวณจากเนื้อหา + ชื่อผู้เขียน + เวลา) ส่วน <code class="inline">root-commit</code> = commit แรกสุดของ repo ที่ยังไม่มี parent</div>
+      <p>ตรวจสอบผลด้วยเข็มทิศ + สมุดประวัติ:</p>
+      <pre><code><span class="cmd">git</span> status
+<span class="cmd">git</span> log</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">On branch master
+nothing to commit, working tree clean</span>
+
+<span class="str">commit 678e3667ca4fd037059c249d2f2d1bfda0e2a13e</span>
+<span class="out">Author: somchai-dev &lt;somchai.dev@example.com&gt;
+Date:   Tue Jul 14 04:27:03 2026 +0700
+
+    Initial commit with three files</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> hash / Author / Date ในเครื่องคุณจะเป็น<b>ของคุณเอง</b> ไม่ตรงกับตัวอย่าง — สิ่งที่ต้องเหมือนคือ<b>โครงสร้าง</b>ของ output</div>
+    </section>
+
+    <!-- 7 STEP 2 -->
+    <section id="step2">
+      <div class="sec-head"><div class="sec-num">7</div><h2 class="sec-title">STEP 2 — แก้ 2 ไฟล์ แล้ว "เลือก" stage เฉพาะที่ต้องการ</h2></div>
+      <p>เพิ่มเนื้อหาต่อท้ายไฟล์ (<code class="inline">&gt;&gt;</code> = append) เฉพาะ file1 กับ file2 — จงใจไม่แตะ file3:</p>
+      <pre><code><span class="cmd">echo</span> <span class="str">"Additional content for file 1"</span> &gt;&gt; file1.txt
+<span class="cmd">echo</span> <span class="str">"Additional content for file 2"</span> &gt;&gt; file2.txt
+<span class="cmd">git</span> status</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">On branch master
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)</span>
+	<span class="err">modified:   file1.txt
+	modified:   file2.txt</span>
+
+<span class="out">no changes added to commit (use "git add" and/or "git commit -a")</span></code></pre></div>
+      <p>คราวนี้สถานะไม่ใช่ <code class="inline">untracked</code> แล้ว แต่เป็น <b><code class="inline">modified</code></b> — Git รู้จักไฟล์อยู่แล้ว และตรวจพบว่ามันต่างไปจาก snapshot ล่าสุด · สังเกตว่า <code class="inline">file3.txt</code> ไม่ถูกพูดถึงเลยเพราะเราไม่ได้แก้</p>
+      <p>stage เฉพาะสองไฟล์ที่แก้ แล้ว commit — นี่คือพลังของ Staging Area ที่เล่าไว้ในทฤษฎี ②:</p>
+      <pre><code><span class="cmd">git</span> add file1.txt file2.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Updated file1 and file2"</span>
+<span class="cmd">git</span> status
+<span class="cmd">git</span> log</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[master bce79d5] Updated file1 and file2</span>
+<span class="out"> 2 files changed, 2 insertions(+)</span>
+
+<span class="ok">On branch master
+nothing to commit, working tree clean</span>
+
+<span class="str">commit bce79d5014174e2659bdb75c6447276af43193fd</span>
+<span class="out">Author: somchai-dev &lt;somchai.dev@example.com&gt;
+Date:   Tue Jul 14 04:27:03 2026 +0700
+
+    Updated file1 and file2</span>
+
+<span class="str">commit 678e3667ca4fd037059c249d2f2d1bfda0e2a13e</span>
+<span class="out">Author: somchai-dev &lt;somchai.dev@example.com&gt;
+Date:   Tue Jul 14 04:27:03 2026 +0700
+
+    Initial commit with three files</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> <code class="inline">git log</code> เรียง commit <b>ใหม่สุดอยู่บนสุด</b> — สายโซ่ประวัติของเรามี 2 ข้อแล้ว</div>
+    </section>
+
+    <!-- 8 STEP 3 -->
+    <section id="step3">
+      <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title">STEP 3 — ปิดจ๊อบ file3 + commit สุดท้าย</h2></div>
+      <p>เหลือ file3 ที่ยังไม่ได้อัปเดต — ทำรอบสุดท้ายให้ครบวงจร:</p>
+      <pre><code><span class="cmd">echo</span> <span class="str">"Additional content for file 3"</span> &gt;&gt; file3.txt
+<span class="cmd">git</span> status</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">On branch master
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)</span>
+	<span class="err">modified:   file3.txt</span>
+
+<span class="out">no changes added to commit (use "git add" and/or "git commit -a")</span></code></pre></div>
+      <pre><code><span class="cmd">git</span> add file3.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Final update to file3"</span>
+<span class="cmd">git</span> status</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[master 1411fe8] Final update to file3</span>
+<span class="out"> 1 file changed, 1 insertion(+)</span>
+
+<span class="ok">On branch master
+nothing to commit, working tree clean</span></code></pre></div>
+      <p>ดูประวัติทั้งเส้น — แบบเต็ม และแบบย่อหนึ่งบรรทัดต่อ commit:</p>
+      <pre><code><span class="cmd">git</span> log
+<span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="str">commit 1411fe801d13e08325bad883c3d758ded7b1947e</span>
+<span class="out">Author: somchai-dev &lt;somchai.dev@example.com&gt;
+Date:   Tue Jul 14 04:27:03 2026 +0700
+
+    Final update to file3</span>
+
+<span class="str">commit bce79d5014174e2659bdb75c6447276af43193fd</span>
+<span class="out">Author: somchai-dev &lt;somchai.dev@example.com&gt;
+Date:   Tue Jul 14 04:27:03 2026 +0700
+
+    Updated file1 and file2</span>
+
+<span class="str">commit 678e3667ca4fd037059c249d2f2d1bfda0e2a13e</span>
+<span class="out">Author: somchai-dev &lt;somchai.dev@example.com&gt;
+Date:   Tue Jul 14 04:27:03 2026 +0700
+
+    Initial commit with three files</span>
+
+<span class="ok">1411fe8 Final update to file3
+bce79d5 Updated file1 and file2
+678e366 Initial commit with three files</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">🎉</span> <b>สมชายมี time machine แล้ว</b> — ประวัติ 3 จุดที่ย้อนกลับได้เสมอ ไม่ต้องมี <code class="inline">final_v2_จริงๆ.zip</code> อีกต่อไป · แต่ประวัติทั้งหมดยังอยู่ใน<b>เครื่องเดียว</b>… ถ้าเครื่องพังล่ะ? ไปต่อกันที่ <a href="../01_LAB_push_to_github/README.html">LAB 01 — Backup to the Cloud</a></div>
+    </section>
+
+    <!-- 9 Cheat -->
+    <section id="cheat">
+      <div class="sec-head"><div class="sec-num">9</div><h2 class="sec-title"><span aria-hidden="true">📋</span> สรุป + Cheat Sheet</h2></div>
+      <div class="tablewrap"><table>
+        <tr><th>คำสั่ง</th><th>ทำอะไร</th></tr>
+        <tr><td><code class="inline">git init</code></td><td>เริ่มให้ Git จับตาดูโฟลเดอร์นี้ (สร้าง <code class="inline">.git/</code>)</td></tr>
+        <tr><td><code class="inline">git status</code></td><td>เข็มทิศ: ไฟล์ไหน untracked / modified / staged / clean</td></tr>
+        <tr><td><code class="inline">git add &lt;file&gt;</code></td><td>ย้ายไฟล์เข้า Staging Area — เลือกเป็นรายไฟล์ได้</td></tr>
+        <tr><td><code class="inline">git commit -m "msg"</code></td><td>ถ่าย snapshot จาก Staging เข้า Repository</td></tr>
+        <tr><td><code class="inline">git log</code> · <code class="inline">git log --oneline</code></td><td>ดูประวัติ commit — ใหม่สุดอยู่บนสุด</td></tr>
+      </table></div>
+      <div class="callout tip"><span aria-hidden="true">🔁</span> <b>วงจรที่ต้องจำให้ขึ้นใจ:</b> แก้ไฟล์ → <code class="inline">git status</code> → <code class="inline">git add</code> → <code class="inline">git commit -m</code> → <code class="inline">git status</code> / <code class="inline">git log</code></div>
+    </section>
+
+    <!-- 10 Checklist -->
+    <section id="check">
+      <div class="sec-head"><div class="sec-num">10</div><h2 class="sec-title"><span aria-hidden="true">✅</span> Checklist ก่อนไปต่อ</h2></div>
+      <ul class="checklist">
+        <li><code class="inline">git status</code> หลังสร้างไฟล์ใหม่ เห็น <code class="inline">Untracked files</code> ครบ 3 ไฟล์</li>
+        <li><code class="inline">git status</code> หลัง <code class="inline">git add</code> เห็น <code class="inline">Changes to be committed</code> (สีเขียว)</li>
+        <li>commit สำเร็จ 3 ครั้ง และ <code class="inline">git status</code> ตอบ <code class="inline">working tree clean</code> หลัง commit ทุกครั้ง</li>
+        <li>STEP 2 stage เฉพาะ file1/file2 ได้ โดย file3 ไม่ติดเข้าไปใน commit ด้วย</li>
+        <li><code class="inline">git log --oneline</code> แสดง 3 บรรทัด เรียงจากใหม่ → เก่า</li>
+        <li>อธิบายเส้นทาง Working Directory → Staging Area → Repository ให้เพื่อนฟังได้</li>
+        <li>บอกได้ว่าทำไม branch เริ่มต้นชื่อ <code class="inline">master</code> และทำไม GitHub ใช้ <code class="inline">main</code></li>
+      </ul>
+    </section>
+
+    <!-- 11 Quiz -->
+    <section id="quiz">
+      <div class="sec-head"><div class="sec-num">11</div><h2 class="sec-title"><span aria-hidden="true">❓</span> คำถามทบทวน</h2></div>
+      <div class="quiz">
+        <ol>
+          <li>ไฟล์สถานะ <code class="inline">untracked</code> กับ <code class="inline">modified</code> ต่างกันอย่างไร? ใน LAB นี้เจอแต่ละแบบที่ STEP ไหน</li>
+          <li>ทำไม Git ต้องมี Staging Area — commit ตรงจาก Working Directory เลยไม่ได้หรือ? ยกสถานการณ์ที่ staging ช่วยได้จริง</li>
+          <li>ใน STEP 2 ถ้าเผลอสั่ง <code class="inline">git add file3.txt</code> ไปด้วย จะถอนออกจาก staging ด้วยคำสั่งอะไร? (คำใบ้: อ่าน output ของ <code class="inline">git status</code> — Git บอกเองทุกครั้ง)</li>
+          <li>เพื่อนพิมพ์คำสั่งเหมือนเราทุกตัวอักษร แต่ commit hash ไม่เหมือนกัน — เพราะอะไร?</li>
+          <li>hint ตอน <code class="inline">git init</code> แนะนำให้ตั้งค่าอะไร ถ้าอยากให้ branch เริ่มต้นชื่อ <code class="inline">main</code> ถาวรทุก repo ที่สร้างใหม่?</li>
+          <li>LAB นี้ commit ไป 3 ครั้ง — ถ้าโค้ดพังตอนนี้ สมชายจะกลับไป "เวอร์ชันที่เคยรันได้" ได้เพราะ commit เก็บอะไรไว้บ้าง?</li>
+        </ol>
+      </div>
+    </section>
+
+    <footer>
+      LAB 00 — The Time Machine · DevTools Week 2 · expected output ทุกจุดรันจริงบน <code class="inline">tuchsanai/devtools:2569_1</code> (git 2.43.0) — commit hash / วันเวลา ของแต่ละคนจะต่างจากตัวอย่าง
+    </footer>
+  </main>
+</div>
+<a class="top-link" href="#top" aria-label="กลับขึ้นบนสุด">↑</a>
+</body>
+</html>
