@@ -1,5 +1,5 @@
 # LAB 01 — Merge Day ⚔️
-### รวมจักรวาลกลับเป็นหนึ่ง: Fast-forward · 3-way Merge · และสงคราม Conflict
+### รวมจักรวาลกลับเป็นหนึ่ง: Fast-forward · 3-way Merge · สงคราม Conflict + ห้องทดลอง git diff
 
 > **Week 3 · Branches and Working with Others · LAB 01**
 > เนื้อหาอ้างอิงสไลด์ `03_GIT.pdf` หน้า 61–82 · ทุก expected output รันจริงบน container `tuchsanai/devtools:2569_1` (git 2.43.0)
@@ -27,7 +27,7 @@
 - **3-way merge** — สองเส้นแยกกันจริง Git สร้าง **merge commit** ให้อัตโนมัติ พร้อมข้อความ default `Merge branch '...'` (สไลด์หน้า 70–75)
 - เคสที่ Git รวมให้เองได้: ต่างคนต่างแตะคนละไฟล์/คนละส่วน — ไม่มีข้อมูลฝั่งไหนหาย (สไลด์หน้า 76–82)
 - **Merge conflict**: อ่าน marker `<<<<<<<` `=======` `>>>>>>>` → แก้ → `add` → `commit` จบสงครามอย่างมีขั้นตอน
-- `git diff` — ส่องความต่าง: ก่อน commit, ระหว่าง branch, และตอน conflict
+- **`git diff` ครบทุกกล้อง** — `git diff` (ยังไม่ `add`) · `--staged` (ค้างใน staging) · `HEAD` (รวมทุกอย่าง) · เทียบสอง commit ด้วย hash · เทียบสอง branch (พยากรณ์ conflict) · และ `diff --cc` กลางสนามรบ
 - `git log --oneline --all --graph` — อ่านแผนที่ประวัติแบบเห็นเส้นแยก-เส้นรวม
 - โบนัสเชื่อม LAB 00: branch ที่ merge แล้วลบด้วย `-d` ได้เงียบกริบ
 
@@ -73,6 +73,34 @@ Git ฉลาดเรื่องรวมงาน แต่**ไม่ตั�
 
 ขั้นตอนดับไฟมี 3 จังหวะตายตัว: **แก้ไฟล์ให้เหลือเวอร์ชันสุดท้าย → `git add` → `git commit`** — และถ้าอยากถอยทั้งกระดาน `git status` ก็ใบ้ทางหนีไฟไว้ให้ (`git merge --abort`)
 
+## ทฤษฎี ④ — git diff: แว่นขยายส่องความต่าง 🔍
+
+*(หัวข้อ "Using git diff" ตามสารบัญสไลด์หน้า 2)*
+
+ตั้งแต่ Week 2 เรารู้ว่างานใน Git เดินผ่าน "สามสถานี": **โต๊ะทำงาน (working directory) → ที่พักของ (staging area) → ตู้เซฟ (commit ล่าสุด = HEAD)** · `git diff` คือกล้องเทียบของ**ระหว่างสถานี** — เลือกได้ว่าจะเทียบคู่ไหน:
+
+| คำสั่ง | เทียบอะไรกับอะไร | ตอบคำถามว่า |
+|--------|------------------|--------------|
+| `git diff` | โต๊ะทำงาน ↔ staging | "แก้อะไรไปแล้วที่**ยังไม่ได้ `add`**?" |
+| `git diff --staged` | staging ↔ HEAD | "`add` อะไรค้างไว้ — **กำลังจะ commit อะไร**?" |
+| `git diff HEAD` | โต๊ะทำงาน ↔ HEAD | "ตั้งแต่ commit ล่าสุด เปลี่ยนอะไรไปแล้ว**ทั้งหมด**?" |
+| `git diff <A> <B>` | commit/branch สองจุดใด ๆ | "สองจุดนี้ในประวัติต่างกันตรงไหน?" (ใช้พยากรณ์ conflict ได้) |
+
+**อ่าน output ของ diff ให้ออก** — ทุกบรรทัดมีความหมาย:
+
+```
+diff --git a/menu.txt b/menu.txt   ← ไฟล์ที่ถูกเทียบ: a/ = ฝั่งเก่า, b/ = ฝั่งใหม่
+index 503c3ee..595b945 100644      ← รหัสเนื้อไฟล์ เก่า..ใหม่ + โหมดไฟล์
+--- a/menu.txt                     ← เครื่องหมายฝั่งเก่า (บรรทัด -)
++++ b/menu.txt                     ← เครื่องหมายฝั่งใหม่ (บรรทัด +)
+@@ -1,5 +1,5 @@                    ← hunk: ฝั่งเก่าเริ่มบรรทัด 1 ยาว 5 บรรทัด / ฝั่งใหม่เริ่ม 1 ยาว 5
+ == Cafe Menu ==                   ← ขึ้นต้นด้วยช่องว่าง = บรรทัดบริบท (ไม่เปลี่ยน)
+-Latte 55                          ← บรรทัดที่หายไปจากฝั่งเก่า
++Latte 60                          ← บรรทัดที่เพิ่มมาในฝั่งใหม่
+```
+
+> 💡 สังเกต: **การ "แก้" 1 บรรทัด Git มองเป็น "ลบของเก่า + เพิ่มของใหม่"** เสมอ — คู่ `-` / `+` ติดกันจึงหมายถึงการแก้บรรทัดนั้น · ทั้งหมดนี้จะได้ลองจริงทีละแบบใน STEP 2
+
 ---
 
 ## 4) เตรียมความพร้อม ⚙️
@@ -109,14 +137,14 @@ git log --oneline
 ```
 Initialized empty Git repository in /root/cafe-menu/.git/
 
-[master (root-commit) ef92a02] Initial menu
+[master (root-commit) d4b72bf] Initial menu
  2 files changed, 4 insertions(+)
  create mode 100644 menu.txt
  create mode 100644 special.txt
 
 * main
 
-ef92a02 (HEAD -> main) Initial menu
+d4b72bf (HEAD -> main) Initial menu
 ```
 
 > 📌 commit hash ของแต่ละคนจะไม่เหมือนตัวอย่าง — ทั้งเอกสารนี้
@@ -165,15 +193,15 @@ git log --oneline
 **Expected Output**
 
 ```
-[feature-tea 4ece70b] Add green tea
+[feature-tea 2216dd4] Add green tea
  1 file changed, 1 insertion(+)
 
-[feature-tea 977c83e] Add thai tea
+[feature-tea e851822] Add thai tea
  1 file changed, 1 insertion(+)
 
-977c83e (HEAD -> feature-tea) Add thai tea
-4ece70b Add green tea
-ef92a02 (main) Initial menu
+e851822 (HEAD -> feature-tea) Add thai tea
+2216dd4 Add green tea
+d4b72bf (main) Initial menu
 ```
 
 งานเสร็จ! กลับ `main` — และเจอ Pain Point ข้อ 1 เต็ม ๆ:
@@ -193,9 +221,9 @@ Switched to branch 'main'
 Americano 45
 Latte 55
 
-* 977c83e (feature-tea) Add thai tea
-* 4ece70b Add green tea
-* ef92a02 (HEAD -> main) Initial menu
+* e851822 (feature-tea) Add thai tea
+* 2216dd4 Add green tea
+* d4b72bf (HEAD -> main) Initial menu
 ```
 
 > 📌 บน `main` ไม่มีชาสักแก้ว — และดูแผนที่: **เส้นตรงเส้นเดียว** โดย `main` อยู่ข้างหลัง `feature-tea` เฉย ๆ ไม่มี commit สวนทาง → เข้าเงื่อนไข Fast-forward พอดี (สไลด์หน้า 63–67)
@@ -211,7 +239,7 @@ git log --oneline --graph
 **Expected Output**
 
 ```
-Updating ef92a02..977c83e
+Updating d4b72bf..e851822
 Fast-forward
  menu.txt | 2 ++
  1 file changed, 2 insertions(+)
@@ -222,12 +250,12 @@ Latte 55
 Green Tea 50
 Thai Tea 45
 
-* 977c83e (HEAD -> main, feature-tea) Add thai tea
-* 4ece70b Add green tea
-* ef92a02 Initial menu
+* e851822 (HEAD -> main, feature-tea) Add thai tea
+* 2216dd4 Add green tea
+* d4b72bf Initial menu
 ```
 
-> 📌 Git ประกาศเองว่า **`Fast-forward`** — แค่เลื่อนป้าย `main` จาก `ef92a02` ไป `977c83e` · ไม่มี commit ใหม่ ประวัติยังเป็นเส้นตรง และตอนนี้ `main` กับ `feature-tea` ชี้จุดเดียวกัน
+> 📌 Git ประกาศเองว่า **`Fast-forward`** — แค่เลื่อนป้าย `main` จาก `d4b72bf` ไป `e851822` · ไม่มี commit ใหม่ ประวัติยังเป็นเส้นตรง และตอนนี้ `main` กับ `feature-tea` ชี้จุดเดียวกัน
 
 ป้ายที่งานถูกรวมแล้ว ลบได้เงียบกริบด้วย `-d` ตัวเล็ก (เทียบกับ LAB 00 ที่โดนกำแพง!):
 
@@ -239,7 +267,7 @@ git branch
 **Expected Output**
 
 ```
-Deleted branch feature-tea (was 977c83e).
+Deleted branch feature-tea (was e851822).
 
 * main
 ```
@@ -248,7 +276,189 @@ Deleted branch feature-tea (was 977c83e).
 
 ---
 
-## 6) STEP 2 — เค้ก vs เบอร์ติดต่อ: 3-way merge (มี AUTO Commit)
+## 6) STEP 2 — ห้องทดลอง git diff: กล้อง 4 ตัวส่องงานเดียวกัน 🔬
+
+ก่อนเดินหน้าสู่ merge ที่ยากขึ้น สมชายขอฝึกแว่นขยายจากทฤษฎี ④ ให้ชิน — เพราะอีกไม่กี่ STEP มันจะกลายเป็นเครื่องมือเอาตัวรอด
+
+### 2.1 แก้ 1 บรรทัด แล้วส่องด้วย `git diff`
+
+ปรับราคาลาเต้ขึ้นตามต้นทุนนม: เปิด `nano menu.txt` แก้บรรทัด `Latte 55` เป็น `Latte 60` (หรือใช้คำสั่งบรรทัดเดียวข้างล่างนี้ก็ได้ ผลเหมือนกัน):
+
+```bash
+sed -i 's/Latte 55/Latte 60/' menu.txt
+git diff
+```
+
+**Expected Output**
+
+```
+diff --git a/menu.txt b/menu.txt
+index 503c3ee..595b945 100644
+--- a/menu.txt
++++ b/menu.txt
+@@ -1,5 +1,5 @@
+ == Cafe Menu ==
+ Americano 45
+-Latte 55
++Latte 60
+ Green Tea 50
+ Thai Tea 45
+```
+
+> 🔍 ตรงตามทฤษฎี ④ ทุกบรรทัด: การแก้ 1 บรรทัดโผล่เป็นคู่ `-Latte 55` / `+Latte 60` ล้อมด้วยบรรทัดบริบท (ช่องว่างนำหน้า) · hunk `@@ -1,5 +1,5 @@` = ทั้งสองฝั่งเริ่มบรรทัด 1 ยาว 5 บรรทัด
+
+### 2.2 `add` แล้ว diff "หาย"?! — รู้จัก `git diff --staged`
+
+```bash
+git add menu.txt
+git diff
+```
+
+**Expected Output**
+
+```
+(ไม่มี output — ว่างเปล่า)
+```
+
+> 😲 การแก้ไม่ได้หายไปไหน! จำนิยามให้แม่น: **`git diff` (เปล่า ๆ) เทียบโต๊ะทำงานกับ staging** — พอ `add` แล้วสองที่นี้เหมือนกันเป๊ะ diff จึงว่าง · อยากเห็นของที่ `add` ค้างไว้ต้องใช้กล้องอีกตัว:
+
+```bash
+git diff --staged
+```
+
+**Expected Output**
+
+```
+diff --git a/menu.txt b/menu.txt
+index 503c3ee..595b945 100644
+--- a/menu.txt
++++ b/menu.txt
+@@ -1,5 +1,5 @@
+ == Cafe Menu ==
+ Americano 45
+-Latte 55
++Latte 60
+ Green Tea 50
+ Thai Tea 45
+```
+
+> 📌 `--staged` เทียบ **staging กับ commit ล่าสุด (HEAD)** = สิ่งที่จะถูกบันทึกถ้ากด `git commit` ตอนนี้
+
+### 2.3 สองการแก้ สองสถานี — กล้อง 3 ตัวเห็นคนละมุม
+
+ระหว่างที่ราคาลาเต้ยัง `add` ค้างอยู่ ป้าสั่งเพิ่มเมนูโกโก้อีกรายการ (อันนี้ยังไม่ `add`):
+
+```bash
+echo "Cocoa 50" >> menu.txt
+git diff
+git diff --staged
+git diff HEAD
+```
+
+**Expected Output** *(ทั้ง 3 คำสั่ง ตามลำดับ)*
+
+```
+diff --git a/menu.txt b/menu.txt
+index 595b945..894924b 100644
+--- a/menu.txt
++++ b/menu.txt
+@@ -3,3 +3,4 @@ Americano 45
+ Latte 60
+ Green Tea 50
+ Thai Tea 45
++Cocoa 50
+
+diff --git a/menu.txt b/menu.txt
+index 503c3ee..595b945 100644
+--- a/menu.txt
++++ b/menu.txt
+@@ -1,5 +1,5 @@
+ == Cafe Menu ==
+ Americano 45
+-Latte 55
++Latte 60
+ Green Tea 50
+ Thai Tea 45
+
+diff --git a/menu.txt b/menu.txt
+index 503c3ee..894924b 100644
+--- a/menu.txt
++++ b/menu.txt
+@@ -1,5 +1,6 @@
+ == Cafe Menu ==
+ Americano 45
+-Latte 55
++Latte 60
+ Green Tea 50
+ Thai Tea 45
++Cocoa 50
+```
+
+> 🎯 **ไฟล์เดียว แต่กล้อง 3 ตัวเห็นคนละภาพ** — นี่คือหัวใจของ diff:
+> - `git diff` → เห็นเฉพาะ `+Cocoa 50` (ของใหม่บนโต๊ะที่ยังไม่ `add`)
+> - `git diff --staged` → เห็นเฉพาะ `-Latte 55 / +Latte 60` (ของที่ `add` ค้างไว้)
+> - `git diff HEAD` → เห็น**ทั้งคู่** (ทุกอย่างที่ต่างจาก commit ล่าสุด)
+>
+> เกร็ดเพิ่ม: hunk แรกขึ้นว่า `@@ -3,3 +3,4 @@ Americano 45` — ข้อความหลัง `@@` คือบรรทัดหลักที่อยู่เหนือบริเวณที่แก้ Git แถมมาให้ช่วยหาตำแหน่ง
+
+### 2.4 commit แล้วทุกกล้องว่าง
+
+```bash
+git add menu.txt
+git commit -m "Update latte price and add cocoa"
+git diff
+git diff --staged
+```
+
+**Expected Output**
+
+```
+[main 12c959a] Update latte price and add cocoa
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+(git diff และ git diff --staged — ว่างเปล่าทั้งคู่)
+```
+
+> 📌 ทั้งสามสถานีเหมือนกันหมดแล้ว (`working = staging = HEAD`) — diff ทุกตัวจึงเงียบ · สังเกต `2 insertions(+), 1 deletion(-)` = โกโก้ 1 + ลาเต้ใหม่ 1 เพิ่ม, ลาเต้เก่า 1 หาย ตรงกับ diff ที่เราเห็นก่อน commit เป๊ะ
+
+### 2.5 ย้อนเวลา: เทียบ commit เก่ากับปัจจุบันด้วย hash
+
+`git diff` เทียบ**จุดไหนในประวัติก็ได้** — ดู hash จาก log แล้วเทียบ commit แรกสุดกับตอนนี้:
+
+```bash
+git log --oneline
+git diff d4b72bf HEAD        # ← แทน d4b72bf ด้วย hash ของ "Initial menu" ของตัวเอง!
+```
+
+**Expected Output**
+
+```
+12c959a (HEAD -> main) Update latte price and add cocoa
+e851822 Add thai tea
+2216dd4 Add green tea
+d4b72bf Initial menu
+
+diff --git a/menu.txt b/menu.txt
+index fc61276..894924b 100644
+--- a/menu.txt
++++ b/menu.txt
+@@ -1,3 +1,6 @@
+ == Cafe Menu ==
+ Americano 45
+-Latte 55
++Latte 60
++Green Tea 50
++Thai Tea 45
++Cocoa 50
+```
+
+> 🕰️ อ่านได้ทันทีว่าตั้งแต่เปิดร้าน เมนูโตขึ้นแค่ไหน: ชาเขียว ชาไทย โกโก้ เพิ่มเข้ามา และลาเต้ปรับราคา — โดย `special.txt` ไม่โผล่ใน diff เพราะไม่เคยถูกแก้ · เขียนเป็น `git diff <hashเก่า> <hashใหม่>` ก็ได้ (`HEAD` เป็นแค่ชื่อเรียก commit ล่าสุด) — **hash ของแต่ละคนไม่เหมือนกัน ต้องใช้ของตัวเองจาก `git log`**
+>
+> ⏭️ กล้องแบบสุดท้าย `git diff <branch1> <branch2>` เก็บไว้ใช้ของจริงใน STEP 4 — พยากรณ์ conflict ก่อน merge!
+
+---
+
+## 7) STEP 3 — เค้ก vs เบอร์ติดต่อ: 3-way merge (มี AUTO Commit)
 
 คราวนี้เจอสถานการณ์สไลด์หน้า 70–75 เต็มรูปแบบ: แตกไปทำเมนูเค้ก แต่**ระหว่างนั้น `main` ก็มีงานใหม่** (ป้าขอเบอร์ติดต่อด่วน):
 
@@ -270,21 +480,22 @@ git log --oneline --all --graph
 
 ```
 Switched to a new branch 'feature-cake'
-[feature-cake 46913ff] Add cake menu
+[feature-cake 588ba07] Add cake menu
  1 file changed, 1 insertion(+)
  create mode 100644 cake.txt
 
 Switched to branch 'main'
-[main 8c6e723] Add contact info
+[main 9038fdc] Add contact info
  1 file changed, 1 insertion(+)
  create mode 100644 contact.txt
 
-* 46913ff (feature-cake) Add cake menu
-| * 8c6e723 (HEAD -> main) Add contact info
+* 588ba07 (feature-cake) Add cake menu
+| * 9038fdc (HEAD -> main) Add contact info
 |/
-* 977c83e Add thai tea
-* 4ece70b Add green tea
-* ef92a02 Initial menu
+* 12c959a Update latte price and add cocoa
+* e851822 Add thai tea
+* 2216dd4 Add green tea
+* d4b72bf Initial menu
 ```
 
 > 📌 แผนที่**แตกเป็นสองง่าม**แล้ว — `main` มี commit สวนทาง (`Add contact info` = "Commit Alpha" ของสไลด์หน้า 72) เลื่อนป้ายเฉย ๆ ไม่ได้อีกแล้ว
@@ -319,28 +530,29 @@ git branch -d feature-cake
 **Expected Output**
 
 ```
-*   89f3df3 (HEAD -> main) Merge branch 'feature-cake'
+*   fc11f4a (HEAD -> main) Merge branch 'feature-cake'
 |\
-| * 46913ff (feature-cake) Add cake menu
-* | 8c6e723 Add contact info
+| * 588ba07 (feature-cake) Add cake menu
+* | 9038fdc Add contact info
 |/
-* 977c83e Add thai tea
-* 4ece70b Add green tea
-* ef92a02 Initial menu
+* 12c959a Update latte price and add cocoa
+* e851822 Add thai tea
+* 2216dd4 Add green tea
+* d4b72bf Initial menu
 
 cake.txt
 contact.txt
 menu.txt
 special.txt
 
-Deleted branch feature-cake (was 46913ff).
+Deleted branch feature-cake (was 588ba07).
 ```
 
-> 📌 commit `89f3df3` มี**สองขา** (parent สองตัว) — ขาซ้ายลงไป `Add contact info` ขาขวาลงไป `Add cake menu` · ไฟล์ครบทั้งเค้กและเบอร์ติดต่อ — **Pain Point ข้อ 2 หายแล้ว**
+> 📌 commit `fc11f4a` มี**สองขา** (parent สองตัว) — ขาซ้ายลงไป `Add contact info` ขาขวาลงไป `Add cake menu` · ไฟล์ครบทั้งเค้กและเบอร์ติดต่อ — **Pain Point ข้อ 2 หายแล้ว**
 
 ---
 
-## 7) STEP 3 — สงครามหนึ่งบรรทัด: Merge Conflict ⚔️
+## 8) STEP 4 — สงครามหนึ่งบรรทัด: Merge Conflict ⚔️
 
 วันเสาร์ สมชายแตก branch ไปเปลี่ยนเมนูพิเศษเป็น **Matcha Latte** … แต่ระหว่างนั้นป้าโทรมาสั่งเปลี่ยนหน้าร้านเป็น **Iced Cocoa** — สมชายเลยแก้บน `main` ด้วย ทั้งสองฝั่งเขียนทับ **บรรทัดเดียวกัน** ของ `special.txt`:
 
@@ -360,11 +572,11 @@ git commit -m "Change special to Iced Cocoa"
 
 ```
 Switched to a new branch 'feature-weekend'
-[feature-weekend 77fa925] Weekend special: Matcha Latte
+[feature-weekend 5bdff25] Weekend special: Matcha Latte
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Switched to branch 'main'
-[main acf24cc] Change special to Iced Cocoa
+[main aa932bd] Change special to Iced Cocoa
  1 file changed, 1 insertion(+), 1 deletion(-)
 ```
 
@@ -386,17 +598,18 @@ index 687f2fc..15515f7 100644
 -Special: Iced Cocoa
 +Special: Matcha Latte
 
-* 77fa925 (feature-weekend) Weekend special: Matcha Latte
-| * acf24cc (HEAD -> main) Change special to Iced Cocoa
+* 5bdff25 (feature-weekend) Weekend special: Matcha Latte
+| * aa932bd (HEAD -> main) Change special to Iced Cocoa
 |/
-*   89f3df3 Merge branch 'feature-cake'
+*   fc11f4a Merge branch 'feature-cake'
 |\
-| * 46913ff Add cake menu
-* | 8c6e723 Add contact info
+| * 588ba07 Add cake menu
+* | 9038fdc Add contact info
 |/
-* 977c83e Add thai tea
-* 4ece70b Add green tea
-* ef92a02 Initial menu
+* 12c959a Update latte price and add cocoa
+* e851822 Add thai tea
+* 2216dd4 Add green tea
+* d4b72bf Initial menu
 ```
 
 > 🔍 diff บอกชัด: บรรทัดเดียวกัน ฝั่ง `main` เป็น Iced Cocoa (`-`) ฝั่ง `feature-weekend` เป็น Matcha Latte (`+`) — สองง่ามในแผนที่ก็ยืนยัน ชนแน่นอน
@@ -500,7 +713,7 @@ git commit
 **Expected Output** *(หลังออกจาก nano)*
 
 ```
-[main 078bc04] Merge branch 'feature-weekend'
+[main 432307e] Merge branch 'feature-weekend'
 ```
 
 ตรวจสนามหลังสงคราม แล้วเก็บป้าย:
@@ -514,21 +727,22 @@ cat special.txt
 **Expected Output**
 
 ```
-*   078bc04 (HEAD -> main) Merge branch 'feature-weekend'
+*   432307e (HEAD -> main) Merge branch 'feature-weekend'
 |\
-| * 77fa925 (feature-weekend) Weekend special: Matcha Latte
-* | acf24cc Change special to Iced Cocoa
+| * 5bdff25 (feature-weekend) Weekend special: Matcha Latte
+* | aa932bd Change special to Iced Cocoa
 |/
-*   89f3df3 Merge branch 'feature-cake'
+*   fc11f4a Merge branch 'feature-cake'
 |\
-| * 46913ff Add cake menu
-* | 8c6e723 Add contact info
+| * 588ba07 Add cake menu
+* | 9038fdc Add contact info
 |/
-* 977c83e Add thai tea
-* 4ece70b Add green tea
-* ef92a02 Initial menu
+* 12c959a Update latte price and add cocoa
+* e851822 Add thai tea
+* 2216dd4 Add green tea
+* d4b72bf Initial menu
 
-Deleted branch feature-weekend (was 77fa925).
+Deleted branch feature-weekend (was 5bdff25).
 
 Special: Matcha Latte and Iced Cocoa
 ```
@@ -537,7 +751,7 @@ Special: Matcha Latte and Iced Cocoa
 
 ---
 
-## 8) สรุป + Cheat Sheet 📋
+## 9) สรุป + Cheat Sheet 📋
 
 | คำสั่ง | ทำอะไร |
 |--------|--------|
@@ -546,7 +760,10 @@ Special: Matcha Latte and Iced Cocoa
 | — ผล `Merge made by the 'ort' strategy.` | สองเส้นแยกกันจริง → Git สร้าง merge commit (ตั้งชื่อ default `Merge branch '...'`) |
 | — ผล `CONFLICT (content)` | สองเส้นแก้บรรทัดเดียวกัน → หยุดรอมนุษย์: แก้ไฟล์ → `add` → `commit` |
 | `git merge --abort` | ทางหนีไฟ: ยกเลิก merge ที่ค้าง กลับสภาพก่อนชน |
-| `git diff` | ดูของที่แก้แล้วยังไม่ stage (และดูเขตสงครามตอน conflict) |
+| `git diff` | โต๊ะทำงาน ↔ staging: ของที่แก้แล้ว**ยังไม่ `add`** (และดูเขตสงครามตอน conflict) |
+| `git diff --staged` | staging ↔ HEAD: ของที่ `add` ค้างไว้ — กำลังจะ commit อะไร |
+| `git diff HEAD` | โต๊ะทำงาน ↔ HEAD: ทุกความเปลี่ยนแปลงตั้งแต่ commit ล่าสุด |
+| `git diff <hashA> <hashB>` | เทียบสอง commit ในประวัติ (ใช้ hash จาก `git log`; `HEAD` = commit ล่าสุด) |
 | `git diff <b1> <b2>` | เทียบสอง branch — พยากรณ์ conflict ก่อน merge |
 | `git log --oneline --all --graph` | แผนที่ประวัติ: เห็นเส้นแยก สองง่าม และเพชร merge |
 | `git branch -d <branch>` | ลบป้ายที่ merge แล้ว (ผ่านฉลุย — ต่างจาก LAB 00 ที่ต้องใช้ `-D`) |
@@ -555,10 +772,13 @@ Special: Matcha Latte and Iced Cocoa
 
 ---
 
-## 9) Checklist ✅
+## 10) Checklist ✅
 
 - [ ] merge แรกเห็นคำว่า `Fast-forward` และ `git log --graph` **ไม่มี** merge commit (เส้นตรง)
 - [ ] อธิบายได้ว่าทำไมเคสแรกถึง fast-forward ได้ (main ไม่มี commit สวนทาง)
+- [ ] ห้องทดลอง diff: เห็นกับตาว่า `git diff` ว่างหลัง `add` แต่ `git diff --staged` เห็นของ — และอธิบายได้ว่าแต่ละตัวเทียบสถานีไหนกับสถานีไหน
+- [ ] ตอนมีการแก้ค้างสองสถานี (2.3): ชี้ได้ว่าการแก้ไหนโผล่ใน `git diff` / `--staged` / `HEAD`
+- [ ] ใช้ hash จาก `git log` ของตัวเองเทียบ commit แรกกับ `HEAD` ได้ (2.5)
 - [ ] merge ที่สองเห็น `Merge made by the 'ort' strategy.` + nano เด้งพร้อมข้อความ `Merge branch 'feature-cake'`
 - [ ] `git log --oneline --graph` เห็นรูปเพชร (commit ที่มี parent สองตัว)
 - [ ] ใช้ `git diff main feature-weekend` พยากรณ์ conflict ได้ก่อน merge จริง
@@ -569,16 +789,20 @@ Special: Matcha Latte and Iced Cocoa
 
 ---
 
-## 10) คำถามทบทวน ❓
+## 11) คำถามทบทวน ❓
 
 1. เงื่อนไขอะไรทำให้ merge เป็นแบบ Fast-forward ได้ และผลลัพธ์ต่างจาก 3-way merge อย่างไรในแผนที่ `git log --graph`?
 2. ก่อน merge ต้อง `git switch` ไปที่ branch ไหน — ปลายทางหรือต้นทาง? เพราะอะไร?
-3. ทำไม merge ใน STEP 2 (เค้ก vs เบอร์ติดต่อ) Git ถึงรวมให้เองได้ แต่ STEP 3 (เมนูพิเศษ) ต้องให้มนุษย์ตัดสิน?
+3. ทำไม merge ใน STEP 3 (เค้ก vs เบอร์ติดต่อ) Git ถึงรวมให้เองได้ แต่ STEP 4 (เมนูพิเศษ) ต้องให้มนุษย์ตัดสิน?
 4. ข้อความ default ของ merge commit คืออะไร และมันโผล่ขึ้นมาตอนไหนบนหน้าจอ?
 5. ใน conflict marker — ส่วนที่อยู่เหนือ `=======` เป็นของฝั่งไหน? `>>>>>>> feature-weekend` บอกอะไร?
 6. ขั้นตอนดับไฟ conflict 3 จังหวะมีอะไรบ้าง? ถ้าอยากล้มกระดานกลับไปก่อน merge ใช้คำสั่งอะไร?
 7. `git diff main feature-weekend` ช่วยอะไรเรา*ก่อน* merge — บรรทัดที่ขึ้นต้น `-` และ `+` หมายถึงฝั่งไหน?
 8. ทำไม `git branch -d feature-tea` ใน LAB นี้ผ่านฉลุย ทั้งที่ LAB 00 คำสั่งเดียวกันโดน error จนต้องใช้ `-D`?
+9. แก้ไฟล์เสร็จแล้ว `git add` ทันที — พอรัน `git diff` กลับว่างเปล่า การแก้หายไปไหม? ต้องใช้คำสั่งไหนถึงจะเห็น?
+10. `git diff` / `git diff --staged` / `git diff HEAD` แต่ละตัวเทียบ "สถานี" ไหนกับสถานีไหน — ในสถานการณ์ 2.3 (ลาเต้ staged + โกโก้ยังไม่ add) แต่ละตัวเห็นอะไร?
+11. ทำไมการแก้ราคา `Latte 55 → Latte 60` จึงโผล่ใน diff เป็น **สองบรรทัด** (`-Latte 55` กับ `+Latte 60`) แทนที่จะเป็นบรรทัดเดียว?
+12. บรรทัด `@@ -1,5 +1,6 @@` ใน diff อ่านว่าอย่างไร — เลขแต่ละตัวหมายถึงอะไร?
 
 ---
 

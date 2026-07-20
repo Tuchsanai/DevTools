@@ -30,6 +30,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && dpkg-reconfigure -f noninteractive tzdata \
  && rm -rf /var/lib/apt/lists/*
 
+# Git ล่าสุดจาก git-core PPA (git worktree ต้องใช้ git >= 2.5; Ubuntu 24.04 มี 2.43 อยู่แล้ว
+# แต่ติดตั้งเวอร์ชันล่าสุดไว้เพื่อให้ได้ฟีเจอร์ worktree ครบทุกคำสั่ง เช่น repair/move)
+RUN add-apt-repository -y ppa:git-core/ppa \
+ && apt-get update && apt-get install -y --no-install-recommends git \
+ && git --version \
+ && git init -q /tmp/worktree-check \
+ && git -C /tmp/worktree-check worktree list >/dev/null \
+ && rm -rf /tmp/worktree-check /var/lib/apt/lists/*
+
 RUN install -m 0755 -d /etc/apt/keyrings \
  && curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc \
  && chmod a+r /etc/apt/keyrings/docker.asc \

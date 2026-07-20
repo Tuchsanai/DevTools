@@ -120,13 +120,15 @@
     <a href="#theory1"><span class="n">3</span>ทฤษฎี: Fast-forward</a>
     <a href="#theory2"><span class="n">4</span>ทฤษฎี: 3-way merge</a>
     <a href="#theory3"><span class="n">5</span>ทฤษฎี: Conflict</a>
-    <a href="#prep"><span class="n">6</span>เตรียมความพร้อม</a>
-    <a href="#step1"><span class="n">7</span>STEP 1 — Fast-forward</a>
-    <a href="#step2"><span class="n">8</span>STEP 2 — 3-way merge</a>
-    <a href="#step3"><span class="n">9</span>STEP 3 — Conflict!</a>
-    <a href="#cheat"><span class="n">10</span>สรุป + Cheat Sheet</a>
-    <a href="#check"><span class="n">11</span>Checklist</a>
-    <a href="#quiz"><span class="n">12</span>คำถามทบทวน</a>
+    <a href="#theory4"><span class="n">6</span>ทฤษฎี: git diff</a>
+    <a href="#prep"><span class="n">7</span>เตรียมความพร้อม</a>
+    <a href="#step1"><span class="n">8</span>STEP 1 — Fast-forward</a>
+    <a href="#stepdiff"><span class="n">9</span>STEP 2 — ห้องทดลอง diff</a>
+    <a href="#step2"><span class="n">10</span>STEP 3 — 3-way merge</a>
+    <a href="#step3"><span class="n">11</span>STEP 4 — Conflict!</a>
+    <a href="#cheat"><span class="n">12</span>สรุป + Cheat Sheet</a>
+    <a href="#check"><span class="n">13</span>Checklist</a>
+    <a href="#quiz"><span class="n">14</span>คำถามทบทวน</a>
     <h2>อ้างอิง</h2>
     <a href="../03_GIT.pdf"><span class="n" aria-hidden="true">📕</span>สไลด์ 03_GIT.pdf</a>
     <a href="../00_LAB_branch_switch/README.html"><span class="n" aria-hidden="true">⬅️</span>LAB 00 · Branch &amp; Switch</a>
@@ -140,8 +142,8 @@
       <p class="sub">รวมจักรวาลกลับเป็นหนึ่งด้วย <code class="inline">git merge</code> — จาก <code class="inline">Fast-forward</code> ง่าย ๆ · สู่ <code class="inline">3-way merge</code> อัตโนมัติ · จนถึงสงคราม <code class="inline">CONFLICT</code> ที่มนุษย์ต้องตัดสิน (มี <code class="inline">git diff</code> เป็นแว่นส่องตลอดทาง)</p>
       <div class="scores">
         <div class="chip"><div class="v">Docker</div><div class="l">รันจริงบน container</div></div>
-        <div class="chip"><div class="v">~45 นาที</div><div class="l">เวลาโดยประมาณ</div></div>
-        <div class="chip"><div class="v">3 แบบ</div><div class="l">FF / 3-way / conflict ครบ</div></div>
+        <div class="chip"><div class="v">~55 นาที</div><div class="l">เวลาโดยประมาณ</div></div>
+        <div class="chip"><div class="v">4 STEPS</div><div class="l">FF / diff lab / 3-way / conflict</div></div>
       </div>
     </header>
 
@@ -173,7 +175,7 @@
         <div class="card"><div class="ic" aria-hidden="true">⏩</div><h3>Fast-forward merge</h3><p>การรวมแบบ "เลื่อนป้ายตาม" — ไม่มี commit ใหม่ ประวัติยังเป็นเส้นตรง</p></div>
         <div class="card"><div class="ic" aria-hidden="true">🔀</div><h3>3-way merge</h3><p>สองเส้นแยกกันจริง — Git สร้าง <b>merge commit</b> ให้อัตโนมัติ พร้อมชื่อ default <code class="inline">Merge branch '...'</code></p></div>
         <div class="card"><div class="ic" aria-hidden="true">⚔️</div><h3>Merge conflict</h3><p>อ่าน marker <code class="inline">&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> <code class="inline">=======</code> <code class="inline">&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> แล้วดับไฟ 3 จังหวะ: แก้ → add → commit</p></div>
-        <div class="card"><div class="ic" aria-hidden="true">🔍</div><h3>git diff</h3><p>แว่นส่องความต่าง: ก่อน commit · ระหว่าง branch (พยากรณ์ conflict!) · และกลางสนามรบ</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🔍</div><h3>git diff ครบทุกกล้อง</h3><p><code class="inline">git diff</code> · <code class="inline">--staged</code> · <code class="inline">HEAD</code> · เทียบสอง commit ด้วย hash · เทียบสอง branch (พยากรณ์ conflict!) · และ <code class="inline">diff --cc</code> กลางสนามรบ</p></div>
         <div class="card"><div class="ic" aria-hidden="true">🗺️</div><h3>อ่านแผนที่ประวัติ</h3><p><code class="inline">git log --oneline --all --graph</code> — เห็นเส้นแยก สองง่าม และเพชร merge</p></div>
         <div class="card"><div class="ic" aria-hidden="true">🧹</div><h3>ปิดจ๊อบ branch</h3><p>branch ที่ merge แล้ว ลบด้วย <code class="inline">-d</code> ได้เงียบกริบ — เชื่อมกลับไปหากำแพงของ LAB 00</p></div>
       </div>
@@ -186,13 +188,13 @@
       <p>ถ้าเราแตก branch ออกไปทำงาน แล้ว <b>เส้นเดิม (<code class="inline">main</code>) ไม่มี commit ใหม่เลย</b> — ปลายทั้งสองยังอยู่บนโซ่เส้นเดียวกัน:</p>
       <div class="diagram" role="img" aria-label="โซ่ commit หนึ่ง สอง สาม โดย main ชี้อยู่ที่ commit แรก และ new branch ชี้ commit ที่สาม การ merge คือเลื่อนป้าย main ไปที่ commit สาม">
         <div class="node repo"><div class="ic" aria-hidden="true">🏷️</div><div class="lbl">main</div><div class="sub">ยังปักที่ Commit One</div></div>
-        <div class="arrow"><span aria-hidden="true">→</span></div>
+        <div class="arrow"><span aria-hidden="true">→</span><span class="cap">ป้ายชี้ commit</span></div>
         <div class="node"><div class="ic" aria-hidden="true">🔗</div><div class="lbl">Commit One</div></div>
-        <div class="arrow"><span aria-hidden="true">←</span></div>
+        <div class="arrow"><span aria-hidden="true">←</span><span class="cap">parent</span></div>
         <div class="node"><div class="ic" aria-hidden="true">🔗</div><div class="lbl">Commit Two</div></div>
-        <div class="arrow"><span aria-hidden="true">←</span></div>
+        <div class="arrow"><span aria-hidden="true">←</span><span class="cap">parent</span></div>
         <div class="node"><div class="ic" aria-hidden="true">🔗</div><div class="lbl">Commit Three</div></div>
-        <div class="arrow"><span aria-hidden="true">←</span></div>
+        <div class="arrow"><span aria-hidden="true">←</span><span class="cap">ป้ายชี้ commit</span></div>
         <div class="node mark"><div class="ic" aria-hidden="true">🏷️</div><div class="lbl">new_branch</div><div class="sub">นำหน้าไป 2 commits</div></div>
       </div>
       <p>การ "รวม" จึงไม่ต้องรวมอะไรจริง ๆ — Git แค่<b>เลื่อนป้าย <code class="inline">main</code> ไปข้างหน้า</b>จนทันปลาย branch (<code class="inline">git switch main</code> แล้ว <code class="inline">git merge new_branch</code> — สไลด์หน้า 68–69):</p>
@@ -225,6 +227,7 @@
     <!-- 5 Theory conflict -->
     <section id="theory3">
       <div class="sec-head"><div class="sec-num">5</div><h2 class="sec-title"><span aria-hidden="true">⚔️</span> ทฤษฎี ③ — Conflict: จุดที่ Git ยกมือขอมนุษย์ตัดสิน</h2></div>
+      <p class="slideref">หัวข้อ "Merging Branches and Conflicts" ตามสารบัญสไลด์ 03_GIT.pdf หน้า 2 · เทียบกับเคสรวมได้เองหน้า 76–82</p>
       <p>Git ฉลาดเรื่องรวมงาน แต่<b>ไม่ตัดสินใจแทนเรา</b>: ถ้าสอง branch แก้ <b>บรรทัดเดียวกันของไฟล์เดียวกัน</b> เป็นคนละค่า Git ไม่มีทางรู้ว่าค่าไหนถูก — มันจะหยุดกลางคัน ประกาศ <code class="inline">CONFLICT</code> แล้วเขียน<b>เครื่องหมายเขตสงคราม</b>ลงในไฟล์ให้เราเลือกเอง:</p>
       <pre><code><span class="err">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>
 <span class="out">ของฝั่งเรา (branch ที่ยืนอยู่)</span>
@@ -234,9 +237,40 @@
       <div class="callout tip"><span aria-hidden="true">🧯</span> <b>ขั้นตอนดับไฟมี 3 จังหวะตายตัว:</b> ① แก้ไฟล์ให้เหลือเวอร์ชันสุดท้าย (ลบ marker ทิ้งให้หมด) → ② <code class="inline">git add</code> บอกว่าไฟล์นี้จบแล้ว → ③ <code class="inline">git commit</code> ปิดการ merge · และถ้าอยากถอยทั้งกระดาน <code class="inline">git status</code> ก็ใบ้ทางหนีไฟไว้ให้: <code class="inline">git merge --abort</code></div>
     </section>
 
-    <!-- 6 Prep -->
+    <!-- 6 Theory diff -->
+    <section id="theory4">
+      <div class="sec-head"><div class="sec-num">6</div><h2 class="sec-title"><span aria-hidden="true">🔍</span> ทฤษฎี ④ — git diff: แว่นขยายส่องความต่าง</h2></div>
+      <p class="slideref">หัวข้อ "Using git diff" ตามสารบัญสไลด์ 03_GIT.pdf หน้า 2</p>
+      <p>ตั้งแต่ Week 2 เรารู้ว่างานใน Git เดินผ่าน "สามสถานี" — <code class="inline">git diff</code> คือกล้องเทียบของ<b>ระหว่างสถานี</b> เลือกได้ว่าจะเทียบคู่ไหน:</p>
+      <div class="diagram" role="img" aria-label="สามสถานีของ Git: โต๊ะทำงาน ไป staging ด้วย git add แล้วไป commit ล่าสุด HEAD ด้วย git commit — git diff เทียบโต๊ะทำงานกับ staging, git diff --staged เทียบ staging กับ HEAD, git diff HEAD เทียบโต๊ะทำงานกับ HEAD">
+        <div class="node"><div class="ic" aria-hidden="true">🗂️</div><div class="lbl">โต๊ะทำงาน</div><div class="sub">working directory</div></div>
+        <div class="arrow"><span aria-hidden="true">→</span><span class="cap">git add</span></div>
+        <div class="node mark"><div class="ic" aria-hidden="true">📥</div><div class="lbl">staging area</div><div class="sub">ของที่รอ commit</div></div>
+        <div class="arrow"><span aria-hidden="true">→</span><span class="cap">git commit</span></div>
+        <div class="node repo"><div class="ic" aria-hidden="true">🔒</div><div class="lbl">HEAD</div><div class="sub">commit ล่าสุด</div></div>
+      </div>
+      <div class="tablewrap"><table>
+        <tr><th>คำสั่ง</th><th>เทียบอะไรกับอะไร</th><th>ตอบคำถามว่า</th></tr>
+        <tr><td><code class="inline">git diff</code></td><td>โต๊ะทำงาน ↔ staging</td><td>"แก้อะไรไปแล้วที่<b>ยังไม่ได้ <code class="inline">add</code></b>?"</td></tr>
+        <tr><td><code class="inline">git diff --staged</code></td><td>staging ↔ HEAD</td><td>"<code class="inline">add</code> อะไรค้างไว้ — <b>กำลังจะ commit อะไร</b>?"</td></tr>
+        <tr><td><code class="inline">git diff HEAD</code></td><td>โต๊ะทำงาน ↔ HEAD</td><td>"ตั้งแต่ commit ล่าสุด เปลี่ยนอะไรไปแล้ว<b>ทั้งหมด</b>?"</td></tr>
+        <tr><td><code class="inline">git diff &lt;A&gt; &lt;B&gt;</code></td><td>commit/branch สองจุดใด ๆ</td><td>"สองจุดนี้ในประวัติต่างกันตรงไหน?" (ใช้พยากรณ์ conflict ได้)</td></tr>
+      </table></div>
+      <h3><span class="dot" aria-hidden="true"></span>อ่าน output ของ diff ให้ออก — ทุกบรรทัดมีความหมาย</h3>
+      <pre><code><span class="out">diff --git a/menu.txt b/menu.txt</span>   <span class="cmt">← ไฟล์ที่ถูกเทียบ: a/ = ฝั่งเก่า, b/ = ฝั่งใหม่</span>
+<span class="out">index 503c3ee..595b945 100644</span>      <span class="cmt">← รหัสเนื้อไฟล์ เก่า..ใหม่ + โหมดไฟล์</span>
+<span class="out">--- a/menu.txt</span>                     <span class="cmt">← เครื่องหมายฝั่งเก่า (บรรทัด -)</span>
+<span class="out">+++ b/menu.txt</span>                     <span class="cmt">← เครื่องหมายฝั่งใหม่ (บรรทัด +)</span>
+<span class="flag">@@ -1,5 +1,5 @@</span>                    <span class="cmt">← hunk: ฝั่งเก่าเริ่มบรรทัด 1 ยาว 5 บรรทัด / ฝั่งใหม่เริ่ม 1 ยาว 5</span>
+<span class="out"> == Cafe Menu ==</span>                   <span class="cmt">← ขึ้นต้นด้วยช่องว่าง = บรรทัดบริบท (ไม่เปลี่ยน)</span>
+<span class="err">-Latte 55</span>                          <span class="cmt">← บรรทัดที่หายไปจากฝั่งเก่า</span>
+<span class="ok">+Latte 60</span>                          <span class="cmt">← บรรทัดที่เพิ่มมาในฝั่งใหม่</span></code></pre>
+      <div class="callout"><span aria-hidden="true">💡</span> สังเกต: <b>การ "แก้" 1 บรรทัด Git มองเป็น "ลบของเก่า + เพิ่มของใหม่"</b> เสมอ — คู่ <code class="inline">-</code> / <code class="inline">+</code> ติดกันจึงหมายถึงการแก้บรรทัดนั้น · ทั้งหมดนี้จะได้ลองจริงทีละแบบใน STEP 2</div>
+    </section>
+
+    <!-- 7 Prep -->
     <section id="prep">
-      <div class="sec-head"><div class="sec-num">6</div><h2 class="sec-title"><span aria-hidden="true">⚙️</span> เตรียมความพร้อม</h2></div>
+      <div class="sec-head"><div class="sec-num">7</div><h2 class="sec-title"><span aria-hidden="true">⚙️</span> เตรียมความพร้อม</h2></div>
       <p>ใช้ container เดิมจาก LAB 00 ได้เลย (ถ้าเปิด container ใหม่ ให้ตั้งตัวตนก่อน — ตัวอย่างใช้ตัวตนสมมุติ <code class="inline">somchai-dev</code> ให้แทนด้วยชื่อ-อีเมลของตัวเอง):</p>
       <pre><code><span class="cmd">docker</span> run <span class="flag">-dit --name</span> devtools <span class="flag">--privileged -p</span> 2222:22 tuchsanai/devtools:2569_1
 <span class="cmd">ssh</span> root@localhost <span class="flag">-p</span> 2222        <span class="cmt"># password: passwd</span>
@@ -258,20 +292,20 @@
 <span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
       <div class="expected"><span class="lbl">Expected Output <span style="text-transform:none">(ตัด hint ของ git init ที่เห็นกันแล้วใน LAB 00 ออก)</span></span><pre><code><span class="ok">Initialized empty Git repository in /root/cafe-menu/.git/</span>
 
-<span class="ok">[master (root-commit) ef92a02] Initial menu</span>
+<span class="ok">[master (root-commit) d4b72bf] Initial menu</span>
 <span class="out"> 2 files changed, 4 insertions(+)
  create mode 100644 menu.txt
  create mode 100644 special.txt</span>
 
 <span class="ok">* main</span>
 
-<span class="ok">ef92a02 (HEAD -&gt; main) Initial menu</span></code></pre></div>
+<span class="ok">d4b72bf (HEAD -&gt; main) Initial menu</span></code></pre></div>
       <div class="callout"><span aria-hidden="true">📌</span> commit hash ของแต่ละคนจะไม่เหมือนตัวอย่าง — เป็นแบบนี้ทั้งเอกสาร</div>
     </section>
 
-    <!-- 7 STEP 1 -->
+    <!-- 8 STEP 1 -->
     <section id="step1">
-      <div class="sec-head"><div class="sec-num">7</div><h2 class="sec-title">STEP 1 — เมนูชา: ทำงานบน branch แล้วรวมแบบ Fast-forward <span aria-hidden="true">⏩</span></h2></div>
+      <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title">STEP 1 — เมนูชา: ทำงานบน branch แล้วรวมแบบ Fast-forward <span aria-hidden="true">⏩</span></h2></div>
       <p>ป้าอยากขายชา — แตกจักรวาลไปทำตามวิชา LAB 00 (ใช้ทางลัด <code class="inline">switch -c</code>):</p>
       <pre><code><span class="cmd">git</span> switch <span class="flag">-c</span> feature-tea
 <span class="cmd">echo</span> <span class="str">"Green Tea 50"</span> &gt;&gt; menu.txt
@@ -295,15 +329,15 @@ index fc61276..e15df45 100644
 <span class="cmd">git</span> add menu.txt
 <span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Add thai tea"</span>
 <span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
-      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[feature-tea 4ece70b] Add green tea</span>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[feature-tea 2216dd4] Add green tea</span>
 <span class="out"> 1 file changed, 1 insertion(+)</span>
 
-<span class="ok">[feature-tea 977c83e] Add thai tea</span>
+<span class="ok">[feature-tea e851822] Add thai tea</span>
 <span class="out"> 1 file changed, 1 insertion(+)</span>
 
-<span class="ok">977c83e (HEAD -&gt; feature-tea) Add thai tea</span>
-<span class="out">4ece70b Add green tea
-ef92a02 (main) Initial menu</span></code></pre></div>
+<span class="ok">e851822 (HEAD -&gt; feature-tea) Add thai tea</span>
+<span class="out">2216dd4 Add green tea
+d4b72bf (main) Initial menu</span></code></pre></div>
       <p>งานเสร็จ! กลับ <code class="inline">main</code> — และเจอ Pain Point ข้อ 1 เต็ม ๆ:</p>
       <pre><code><span class="cmd">git</span> switch main
 <span class="cmd">cat</span> menu.txt
@@ -314,15 +348,15 @@ ef92a02 (main) Initial menu</span></code></pre></div>
 Americano 45
 Latte 55</span>
 
-<span class="out">* 977c83e (feature-tea) Add thai tea
-* 4ece70b Add green tea
-* ef92a02 (HEAD -&gt; main) Initial menu</span></code></pre></div>
+<span class="out">* e851822 (feature-tea) Add thai tea
+* 2216dd4 Add green tea
+* d4b72bf (HEAD -&gt; main) Initial menu</span></code></pre></div>
       <div class="callout"><span aria-hidden="true">📌</span> บน <code class="inline">main</code> ไม่มีชาสักแก้ว — และดูแผนที่: <b>เส้นตรงเส้นเดียว</b> โดย <code class="inline">main</code> อยู่ข้างหลัง <code class="inline">feature-tea</code> เฉย ๆ ไม่มี commit สวนทาง → เข้าเงื่อนไข Fast-forward พอดี (สไลด์หน้า 63–67)</div>
       <p>รวมงานกลับ — <b>ยืนที่ branch ปลายทาง (<code class="inline">main</code>) แล้วดึงเข้ามา</b>:</p>
       <pre><code><span class="cmd">git</span> merge feature-tea
 <span class="cmd">cat</span> menu.txt
 <span class="cmd">git</span> log <span class="flag">--oneline --graph</span></code></pre>
-      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Updating ef92a02..977c83e</span>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Updating d4b72bf..e851822</span>
 <span class="ok">Fast-forward</span>
 <span class="out"> menu.txt | 2 ++
  1 file changed, 2 insertions(+)</span>
@@ -333,22 +367,141 @@ Latte 55</span>
 <span class="ok">Green Tea 50
 Thai Tea 45</span>
 
-<span class="out">* 977c83e (HEAD -&gt; main, feature-tea) Add thai tea
-* 4ece70b Add green tea
-* ef92a02 Initial menu</span></code></pre></div>
-      <div class="callout"><span aria-hidden="true">⏩</span> Git ประกาศเองว่า <b><code class="inline">Fast-forward</code></b> — แค่เลื่อนป้าย <code class="inline">main</code> จาก <code class="inline">ef92a02</code> ไป <code class="inline">977c83e</code> · ไม่มี commit ใหม่ ประวัติยังเป็นเส้นตรง และตอนนี้ <code class="inline">main</code> กับ <code class="inline">feature-tea</code> ชี้จุดเดียวกัน</div>
+<span class="out">* e851822 (HEAD -&gt; main, feature-tea) Add thai tea
+* 2216dd4 Add green tea
+* d4b72bf Initial menu</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">⏩</span> Git ประกาศเองว่า <b><code class="inline">Fast-forward</code></b> — แค่เลื่อนป้าย <code class="inline">main</code> จาก <code class="inline">d4b72bf</code> ไป <code class="inline">e851822</code> · ไม่มี commit ใหม่ ประวัติยังเป็นเส้นตรง และตอนนี้ <code class="inline">main</code> กับ <code class="inline">feature-tea</code> ชี้จุดเดียวกัน</div>
       <p>ป้ายที่งานถูกรวมแล้ว ลบได้เงียบกริบด้วย <code class="inline">-d</code> ตัวเล็ก (เทียบกับ LAB 00 ที่โดนกำแพง!):</p>
       <pre><code><span class="cmd">git</span> branch <span class="flag">-d</span> feature-tea
 <span class="cmd">git</span> branch</code></pre>
-      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Deleted branch feature-tea (was 977c83e).</span>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Deleted branch feature-tea (was e851822).</span>
 
 <span class="ok">* main</span></code></pre></div>
       <div class="callout tip"><span aria-hidden="true">💡</span> คราวนี้ไม่มี error เพราะงาน merge เข้า <code class="inline">main</code> ครบแล้ว — ลบป้ายชื่อทิ้ง <b>commit ไม่หายไปไหน</b> (ยังอยู่ในเส้น <code class="inline">main</code>) · วงจรชีวิต branch จบสวย: <b>แตก → ทำ → รวม → ลบป้าย</b></div>
     </section>
 
-    <!-- 8 STEP 2 -->
+    <!-- 9 STEP 2 diff playground -->
+    <section id="stepdiff">
+      <div class="sec-head"><div class="sec-num">9</div><h2 class="sec-title">STEP 2 — ห้องทดลอง git diff: กล้อง 4 ตัวส่องงานเดียวกัน <span aria-hidden="true">🔬</span></h2></div>
+      <p>ก่อนเดินหน้าสู่ merge ที่ยากขึ้น สมชายขอฝึกแว่นขยายจากทฤษฎี ④ ให้ชิน — เพราะอีกไม่กี่ STEP มันจะกลายเป็นเครื่องมือเอาตัวรอด</p>
+
+      <h3><span class="dot" aria-hidden="true"></span>2.1 แก้ 1 บรรทัด แล้วส่องด้วย git diff</h3>
+      <p>ปรับราคาลาเต้ขึ้นตามต้นทุนนม: เปิด <code class="inline">nano menu.txt</code> แก้บรรทัด <code class="inline">Latte 55</code> เป็น <code class="inline">Latte 60</code> (หรือใช้คำสั่งบรรทัดเดียวข้างล่างนี้ก็ได้ ผลเหมือนกัน):</p>
+      <pre><code><span class="cmd">sed</span> <span class="flag">-i</span> <span class="str">'s/Latte 55/Latte 60/'</span> menu.txt
+<span class="cmd">git</span> diff</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">diff --git a/menu.txt b/menu.txt
+index 503c3ee..595b945 100644
+--- a/menu.txt
++++ b/menu.txt
+@@ -1,5 +1,5 @@
+ == Cafe Menu ==
+ Americano 45</span>
+<span class="err">-Latte 55</span>
+<span class="ok">+Latte 60</span>
+<span class="out"> Green Tea 50
+ Thai Tea 45</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">🔍</span> ตรงตามทฤษฎี ④ ทุกบรรทัด: การแก้ 1 บรรทัดโผล่เป็นคู่ <code class="inline">-Latte 55</code> / <code class="inline">+Latte 60</code> ล้อมด้วยบรรทัดบริบท (ช่องว่างนำหน้า) · hunk <code class="inline">@@ -1,5 +1,5 @@</code> = ทั้งสองฝั่งเริ่มบรรทัด 1 ยาว 5 บรรทัด</div>
+
+      <h3><span class="dot" aria-hidden="true"></span>2.2 add แล้ว diff "หาย"?! — รู้จัก git diff --staged</h3>
+      <pre><code><span class="cmd">git</span> add menu.txt
+<span class="cmd">git</span> diff</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="cmt">(ไม่มี output — ว่างเปล่า)</span></code></pre></div>
+      <div class="callout warn"><span aria-hidden="true">😲</span> การแก้ไม่ได้หายไปไหน! จำนิยามให้แม่น: <b><code class="inline">git diff</code> (เปล่า ๆ) เทียบโต๊ะทำงานกับ staging</b> — พอ <code class="inline">add</code> แล้วสองที่นี้เหมือนกันเป๊ะ diff จึงว่าง · อยากเห็นของที่ <code class="inline">add</code> ค้างไว้ต้องใช้กล้องอีกตัว:</div>
+      <pre><code><span class="cmd">git</span> diff <span class="flag">--staged</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">diff --git a/menu.txt b/menu.txt
+index 503c3ee..595b945 100644
+--- a/menu.txt
++++ b/menu.txt
+@@ -1,5 +1,5 @@
+ == Cafe Menu ==
+ Americano 45</span>
+<span class="err">-Latte 55</span>
+<span class="ok">+Latte 60</span>
+<span class="out"> Green Tea 50
+ Thai Tea 45</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> <code class="inline">--staged</code> เทียบ <b>staging กับ commit ล่าสุด (HEAD)</b> = สิ่งที่จะถูกบันทึกถ้ากด <code class="inline">git commit</code> ตอนนี้</div>
+
+      <h3><span class="dot" aria-hidden="true"></span>2.3 สองการแก้ สองสถานี — กล้อง 3 ตัวเห็นคนละมุม</h3>
+      <p>ระหว่างที่ราคาลาเต้ยัง <code class="inline">add</code> ค้างอยู่ ป้าสั่งเพิ่มเมนูโกโก้อีกรายการ (อันนี้ยังไม่ <code class="inline">add</code>):</p>
+      <pre><code><span class="cmd">echo</span> <span class="str">"Cocoa 50"</span> &gt;&gt; menu.txt
+<span class="cmd">git</span> diff
+<span class="cmd">git</span> diff <span class="flag">--staged</span>
+<span class="cmd">git</span> diff HEAD</code></pre>
+      <div class="expected"><span class="lbl">Expected Output (ทั้ง 3 คำสั่ง ตามลำดับ)</span><pre><code><span class="out">diff --git a/menu.txt b/menu.txt
+index 595b945..894924b 100644
+--- a/menu.txt
++++ b/menu.txt
+@@ -3,3 +3,4 @@ Americano 45
+ Latte 60
+ Green Tea 50
+ Thai Tea 45</span>
+<span class="ok">+Cocoa 50</span>
+
+<span class="out">diff --git a/menu.txt b/menu.txt
+index 503c3ee..595b945 100644
+--- a/menu.txt
++++ b/menu.txt
+@@ -1,5 +1,5 @@
+ == Cafe Menu ==
+ Americano 45</span>
+<span class="err">-Latte 55</span>
+<span class="ok">+Latte 60</span>
+<span class="out"> Green Tea 50
+ Thai Tea 45</span>
+
+<span class="out">diff --git a/menu.txt b/menu.txt
+index 503c3ee..894924b 100644
+--- a/menu.txt
++++ b/menu.txt
+@@ -1,5 +1,6 @@
+ == Cafe Menu ==
+ Americano 45</span>
+<span class="err">-Latte 55</span>
+<span class="ok">+Latte 60</span>
+<span class="out"> Green Tea 50
+ Thai Tea 45</span>
+<span class="ok">+Cocoa 50</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">🎯</span> <b>ไฟล์เดียว แต่กล้อง 3 ตัวเห็นคนละภาพ</b> — นี่คือหัวใจของ diff: <code class="inline">git diff</code> เห็นเฉพาะ <code class="inline">+Cocoa 50</code> (ของใหม่บนโต๊ะที่ยังไม่ <code class="inline">add</code>) · <code class="inline">--staged</code> เห็นเฉพาะคู่ลาเต้ (ของที่ <code class="inline">add</code> ค้างไว้) · <code class="inline">HEAD</code> เห็น<b>ทั้งคู่</b> (ทุกอย่างที่ต่างจาก commit ล่าสุด) · เกร็ดเพิ่ม: hunk แรกขึ้นว่า <code class="inline">@@ -3,3 +3,4 @@ Americano 45</code> — ข้อความหลัง <code class="inline">@@</code> คือบรรทัดหลักเหนือบริเวณที่แก้ Git แถมมาให้ช่วยหาตำแหน่ง</div>
+
+      <h3><span class="dot" aria-hidden="true"></span>2.4 commit แล้วทุกกล้องว่าง</h3>
+      <pre><code><span class="cmd">git</span> add menu.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Update latte price and add cocoa"</span>
+<span class="cmd">git</span> diff
+<span class="cmd">git</span> diff <span class="flag">--staged</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[main 12c959a] Update latte price and add cocoa</span>
+<span class="out"> 1 file changed, 2 insertions(+), 1 deletion(-)</span>
+
+<span class="cmt">(git diff และ git diff --staged — ว่างเปล่าทั้งคู่)</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> ทั้งสามสถานีเหมือนกันหมดแล้ว (working = staging = HEAD) — diff ทุกตัวจึงเงียบ · สังเกต <code class="inline">2 insertions(+), 1 deletion(-)</code> = โกโก้ 1 + ลาเต้ใหม่ 1 เพิ่ม, ลาเต้เก่า 1 หาย ตรงกับ diff ที่เราเห็นก่อน commit เป๊ะ</div>
+
+      <h3><span class="dot" aria-hidden="true"></span>2.5 ย้อนเวลา: เทียบ commit เก่ากับปัจจุบันด้วย hash</h3>
+      <p><code class="inline">git diff</code> เทียบ<b>จุดไหนในประวัติก็ได้</b> — ดู hash จาก log แล้วเทียบ commit แรกสุดกับตอนนี้:</p>
+      <pre><code><span class="cmd">git</span> log <span class="flag">--oneline</span>
+<span class="cmd">git</span> diff d4b72bf HEAD        <span class="cmt"># ← แทน d4b72bf ด้วย hash ของ "Initial menu" ของตัวเอง!</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">12c959a (HEAD -&gt; main) Update latte price and add cocoa</span>
+<span class="out">e851822 Add thai tea
+2216dd4 Add green tea
+d4b72bf Initial menu</span>
+
+<span class="out">diff --git a/menu.txt b/menu.txt
+index fc61276..894924b 100644
+--- a/menu.txt
++++ b/menu.txt
+@@ -1,3 +1,6 @@
+ == Cafe Menu ==
+ Americano 45</span>
+<span class="err">-Latte 55</span>
+<span class="ok">+Latte 60
++Green Tea 50
++Thai Tea 45
++Cocoa 50</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">🕰️</span> อ่านได้ทันทีว่าตั้งแต่เปิดร้าน เมนูโตขึ้นแค่ไหน: ชาเขียว ชาไทย โกโก้ เพิ่มเข้ามา และลาเต้ปรับราคา — โดย <code class="inline">special.txt</code> ไม่โผล่ใน diff เพราะไม่เคยถูกแก้ · เขียนเป็น <code class="inline">git diff &lt;hashเก่า&gt; &lt;hashใหม่&gt;</code> ก็ได้ (<code class="inline">HEAD</code> เป็นแค่ชื่อเรียก commit ล่าสุด) — <b>hash ของแต่ละคนไม่เหมือนกัน ต้องใช้ของตัวเองจาก <code class="inline">git log</code></b></div>
+      <div class="callout tip"><span aria-hidden="true">⏭️</span> กล้องแบบสุดท้าย <code class="inline">git diff &lt;branch1&gt; &lt;branch2&gt;</code> เก็บไว้ใช้ของจริงใน STEP 4 — พยากรณ์ conflict ก่อน merge!</div>
+    </section>
+
+    <!-- 10 STEP 3 -->
     <section id="step2">
-      <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title">STEP 2 — เค้ก vs เบอร์ติดต่อ: 3-way merge (มี AUTO Commit) <span aria-hidden="true">🔀</span></h2></div>
+      <div class="sec-head"><div class="sec-num">10</div><h2 class="sec-title">STEP 3 — เค้ก vs เบอร์ติดต่อ: 3-way merge (มี AUTO Commit) <span aria-hidden="true">🔀</span></h2></div>
       <p>คราวนี้เจอสถานการณ์สไลด์หน้า 70–75 เต็มรูปแบบ: แตกไปทำเมนูเค้ก แต่<b>ระหว่างนั้น <code class="inline">main</code> ก็มีงานใหม่</b> (ป้าขอเบอร์ติดต่อด่วน):</p>
       <pre><code><span class="cmd">git</span> switch <span class="flag">-c</span> feature-cake
 <span class="cmd">echo</span> <span class="str">"Cheesecake 89"</span> &gt; cake.txt
@@ -362,21 +515,22 @@ Thai Tea 45</span>
 
 <span class="cmd">git</span> log <span class="flag">--oneline --all --graph</span></code></pre>
       <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Switched to a new branch 'feature-cake'</span>
-<span class="ok">[feature-cake 46913ff] Add cake menu</span>
+<span class="ok">[feature-cake 588ba07] Add cake menu</span>
 <span class="out"> 1 file changed, 1 insertion(+)
  create mode 100644 cake.txt</span>
 
 <span class="ok">Switched to branch 'main'</span>
-<span class="ok">[main 8c6e723] Add contact info</span>
+<span class="ok">[main 9038fdc] Add contact info</span>
 <span class="out"> 1 file changed, 1 insertion(+)
  create mode 100644 contact.txt</span>
 
-<span class="out">* 46913ff (feature-cake) Add cake menu
-| * 8c6e723 (HEAD -&gt; main) Add contact info
+<span class="out">* 588ba07 (feature-cake) Add cake menu
+| * 9038fdc (HEAD -&gt; main) Add contact info
 |/
-* 977c83e Add thai tea
-* 4ece70b Add green tea
-* ef92a02 Initial menu</span></code></pre></div>
+* 12c959a Update latte price and add cocoa
+* e851822 Add thai tea
+* 2216dd4 Add green tea
+* d4b72bf Initial menu</span></code></pre></div>
       <div class="callout warn"><span aria-hidden="true">📌</span> แผนที่<b>แตกเป็นสองง่าม</b>แล้ว — <code class="inline">main</code> มี commit สวนทาง (<code class="inline">Add contact info</code> = "Commit Alpha" ของสไลด์หน้า 72) เลื่อนป้ายเฉย ๆ ไม่ได้อีกแล้ว</div>
       <p>merge เลย — คราวนี้ Git ต้องสร้าง commit ใหม่ และจะเปิด <b>nano</b> ให้ตั้งชื่อ:</p>
       <pre><code><span class="cmd">git</span> merge feature-cake</code></pre>
@@ -390,24 +544,25 @@ Thai Tea 45</span>
       <pre><code><span class="cmd">git</span> log <span class="flag">--oneline --graph</span>
 <span class="cmd">ls</span>
 <span class="cmd">git</span> branch <span class="flag">-d</span> feature-cake</code></pre>
-      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">*   89f3df3 (HEAD -&gt; main) Merge branch 'feature-cake'</span>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">*   fc11f4a (HEAD -&gt; main) Merge branch 'feature-cake'</span>
 <span class="out">|\
-| * 46913ff (feature-cake) Add cake menu
-* | 8c6e723 Add contact info
+| * 588ba07 (feature-cake) Add cake menu
+* | 9038fdc Add contact info
 |/
-* 977c83e Add thai tea
-* 4ece70b Add green tea
-* ef92a02 Initial menu</span>
+* 12c959a Update latte price and add cocoa
+* e851822 Add thai tea
+* 2216dd4 Add green tea
+* d4b72bf Initial menu</span>
 
 <span class="out">cake.txt  contact.txt  menu.txt  special.txt</span>
 
-<span class="ok">Deleted branch feature-cake (was 46913ff).</span></code></pre></div>
-      <div class="callout tip"><span aria-hidden="true">💠</span> commit <code class="inline">89f3df3</code> มี<b>สองขา</b> (parent สองตัว) — ขาซ้ายลงไป <code class="inline">Add contact info</code> ขาขวาลงไป <code class="inline">Add cake menu</code> · ไฟล์ครบทั้งเค้กและเบอร์ติดต่อ — <b>Pain Point ข้อ 2 หายแล้ว</b></div>
+<span class="ok">Deleted branch feature-cake (was 588ba07).</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">💠</span> commit <code class="inline">fc11f4a</code> มี<b>สองขา</b> (parent สองตัว) — ขาซ้ายลงไป <code class="inline">Add contact info</code> ขาขวาลงไป <code class="inline">Add cake menu</code> · ไฟล์ครบทั้งเค้กและเบอร์ติดต่อ — <b>Pain Point ข้อ 2 หายแล้ว</b></div>
     </section>
 
-    <!-- 9 STEP 3 -->
+    <!-- 11 STEP 4 -->
     <section id="step3">
-      <div class="sec-head"><div class="sec-num">9</div><h2 class="sec-title">STEP 3 — สงครามหนึ่งบรรทัด: Merge Conflict <span aria-hidden="true">⚔️</span></h2></div>
+      <div class="sec-head"><div class="sec-num">11</div><h2 class="sec-title">STEP 4 — สงครามหนึ่งบรรทัด: Merge Conflict <span aria-hidden="true">⚔️</span></h2></div>
       <p>วันเสาร์ สมชายแตก branch ไปเปลี่ยนเมนูพิเศษเป็น <b>Matcha Latte</b> … แต่ระหว่างนั้นป้าโทรมาสั่งเปลี่ยนหน้าร้านเป็น <b>Iced Cocoa</b> — สมชายเลยแก้บน <code class="inline">main</code> ด้วย ทั้งสองฝั่งเขียนทับ<b>บรรทัดเดียวกัน</b>ของ <code class="inline">special.txt</code>:</p>
       <pre><code><span class="cmd">git</span> switch <span class="flag">-c</span> feature-weekend
 <span class="cmd">echo</span> <span class="str">"Special: Matcha Latte"</span> &gt; special.txt
@@ -419,11 +574,11 @@ Thai Tea 45</span>
 <span class="cmd">git</span> add special.txt
 <span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Change special to Iced Cocoa"</span></code></pre>
       <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Switched to a new branch 'feature-weekend'</span>
-<span class="ok">[feature-weekend 77fa925] Weekend special: Matcha Latte</span>
+<span class="ok">[feature-weekend 5bdff25] Weekend special: Matcha Latte</span>
 <span class="out"> 1 file changed, 1 insertion(+), 1 deletion(-)</span>
 
 <span class="ok">Switched to branch 'main'</span>
-<span class="ok">[main acf24cc] Change special to Iced Cocoa</span>
+<span class="ok">[main aa932bd] Change special to Iced Cocoa</span>
 <span class="out"> 1 file changed, 1 insertion(+), 1 deletion(-)</span></code></pre></div>
       <p>ก่อน merge ใช้ <code class="inline">git diff</code> เทียบสอง branch — <b>พยากรณ์การชนล่วงหน้าได้เลย</b>:</p>
       <pre><code><span class="cmd">git</span> diff main feature-weekend
@@ -436,17 +591,18 @@ index 687f2fc..15515f7 100644
 <span class="err">-Special: Iced Cocoa</span>
 <span class="ok">+Special: Matcha Latte</span>
 
-<span class="out">* 77fa925 (feature-weekend) Weekend special: Matcha Latte
-| * acf24cc (HEAD -&gt; main) Change special to Iced Cocoa
+<span class="out">* 5bdff25 (feature-weekend) Weekend special: Matcha Latte
+| * aa932bd (HEAD -&gt; main) Change special to Iced Cocoa
 |/
-*   89f3df3 Merge branch 'feature-cake'
+*   fc11f4a Merge branch 'feature-cake'
 |\
-| * 46913ff Add cake menu
-* | 8c6e723 Add contact info
+| * 588ba07 Add cake menu
+* | 9038fdc Add contact info
 |/
-* 977c83e Add thai tea
-* 4ece70b Add green tea
-* ef92a02 Initial menu</span></code></pre></div>
+* 12c959a Update latte price and add cocoa
+* e851822 Add thai tea
+* 2216dd4 Add green tea
+* d4b72bf Initial menu</span></code></pre></div>
       <div class="callout"><span aria-hidden="true">🔍</span> diff บอกชัด: บรรทัดเดียวกัน ฝั่ง <code class="inline">main</code> เป็น Iced Cocoa (<code class="inline">-</code>) ฝั่ง <code class="inline">feature-weekend</code> เป็น Matcha Latte (<code class="inline">+</code>) — สองง่ามในแผนที่ก็ยืนยัน ชนแน่นอน</div>
       <p>เดินหน้าชน:</p>
       <pre><code><span class="cmd">git</span> merge feature-weekend</code></pre>
@@ -500,34 +656,35 @@ Changes to be committed:
       <h3><span class="dot" aria-hidden="true"></span>จังหวะที่ 3 — ปิดสงครามด้วย commit</h3>
       <pre><code><span class="cmd">git</span> commit</code></pre>
       <div class="callout"><span aria-hidden="true">⌨️</span> nano เด้งขึ้นมาพร้อมข้อความ default <code class="inline">Merge branch 'feature-weekend'</code> — กด <b>Ctrl+O → Enter → Ctrl+X</b> เหมือนเดิม</div>
-      <div class="expected"><span class="lbl">Expected Output (หลังออกจาก nano)</span><pre><code><span class="ok">[main 078bc04] Merge branch 'feature-weekend'</span></code></pre></div>
+      <div class="expected"><span class="lbl">Expected Output (หลังออกจาก nano)</span><pre><code><span class="ok">[main 432307e] Merge branch 'feature-weekend'</span></code></pre></div>
       <p>ตรวจสนามหลังสงคราม แล้วเก็บป้าย:</p>
       <pre><code><span class="cmd">git</span> log <span class="flag">--oneline --graph</span>
 <span class="cmd">git</span> branch <span class="flag">-d</span> feature-weekend
 <span class="cmd">cat</span> special.txt</code></pre>
-      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">*   078bc04 (HEAD -&gt; main) Merge branch 'feature-weekend'</span>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">*   432307e (HEAD -&gt; main) Merge branch 'feature-weekend'</span>
 <span class="out">|\
-| * 77fa925 (feature-weekend) Weekend special: Matcha Latte
-* | acf24cc Change special to Iced Cocoa
+| * 5bdff25 (feature-weekend) Weekend special: Matcha Latte
+* | aa932bd Change special to Iced Cocoa
 |/
-*   89f3df3 Merge branch 'feature-cake'
+*   fc11f4a Merge branch 'feature-cake'
 |\
-| * 46913ff Add cake menu
-* | 8c6e723 Add contact info
+| * 588ba07 Add cake menu
+* | 9038fdc Add contact info
 |/
-* 977c83e Add thai tea
-* 4ece70b Add green tea
-* ef92a02 Initial menu</span>
+* 12c959a Update latte price and add cocoa
+* e851822 Add thai tea
+* 2216dd4 Add green tea
+* d4b72bf Initial menu</span>
 
-<span class="ok">Deleted branch feature-weekend (was 77fa925).</span>
+<span class="ok">Deleted branch feature-weekend (was 5bdff25).</span>
 
 <span class="ok">Special: Matcha Latte and Iced Cocoa</span></code></pre></div>
       <div class="callout tip"><span aria-hidden="true">🎉</span> เพชรเม็ดที่สองขึ้นแผนที่ — ประวัติเล่าเรื่องครบ: ใครแยกไปทำอะไร ชนกันตรงไหน และมนุษย์ตัดสินอย่างไร · <b>Pain Point ครบทั้ง 4 ข้อ</b>: งานใน branch กลับบ้านได้ (FF) · สองงานรวมกันไม่มีของหาย (3-way) · ชนบรรทัดเดียวกันก็มีขั้นตอนแก้ (conflict) · และ <code class="inline">git diff</code> ส่องความต่างได้ทุกจังหวะ</div>
     </section>
 
-    <!-- 10 Cheat -->
+    <!-- 12 Cheat -->
     <section id="cheat">
-      <div class="sec-head"><div class="sec-num">10</div><h2 class="sec-title"><span aria-hidden="true">📋</span> สรุป + Cheat Sheet</h2></div>
+      <div class="sec-head"><div class="sec-num">12</div><h2 class="sec-title"><span aria-hidden="true">📋</span> สรุป + Cheat Sheet</h2></div>
       <div class="tablewrap"><table>
         <tr><th>คำสั่ง / ผลลัพธ์</th><th>ความหมาย</th></tr>
         <tr><td><code class="inline">git merge &lt;branch&gt;</code></td><td>รวม <code class="inline">&lt;branch&gt;</code> เข้า branch ที่ยืนอยู่ (<b>ยืนที่ปลายทางเสมอ!</b>)</td></tr>
@@ -535,7 +692,10 @@ Changes to be committed:
         <tr><td>ผล <code class="inline">Merge made by the 'ort' strategy.</code></td><td>สองเส้นแยกกันจริง → Git สร้าง merge commit (ชื่อ default <code class="inline">Merge branch '...'</code>)</td></tr>
         <tr><td>ผล <code class="inline">CONFLICT (content)</code></td><td>สองเส้นแก้บรรทัดเดียวกัน → หยุดรอมนุษย์: แก้ไฟล์ → <code class="inline">add</code> → <code class="inline">commit</code></td></tr>
         <tr><td><code class="inline">git merge --abort</code></td><td>ทางหนีไฟ: ยกเลิก merge ที่ค้าง กลับสภาพก่อนชน</td></tr>
-        <tr><td><code class="inline">git diff</code></td><td>ดูของที่แก้แล้วยังไม่ stage (และดูเขตสงครามตอน conflict)</td></tr>
+        <tr><td><code class="inline">git diff</code></td><td>โต๊ะทำงาน ↔ staging: ของที่แก้แล้ว<b>ยังไม่ <code class="inline">add</code></b> (และดูเขตสงครามตอน conflict)</td></tr>
+        <tr><td><code class="inline">git diff --staged</code></td><td>staging ↔ HEAD: ของที่ <code class="inline">add</code> ค้างไว้ — กำลังจะ commit อะไร</td></tr>
+        <tr><td><code class="inline">git diff HEAD</code></td><td>โต๊ะทำงาน ↔ HEAD: ทุกความเปลี่ยนแปลงตั้งแต่ commit ล่าสุด</td></tr>
+        <tr><td><code class="inline">git diff &lt;hashA&gt; &lt;hashB&gt;</code></td><td>เทียบสอง commit ในประวัติ (ใช้ hash จาก <code class="inline">git log</code>; <code class="inline">HEAD</code> = commit ล่าสุด)</td></tr>
         <tr><td><code class="inline">git diff &lt;b1&gt; &lt;b2&gt;</code></td><td>เทียบสอง branch — พยากรณ์ conflict ก่อน merge</td></tr>
         <tr><td><code class="inline">git log --oneline --all --graph</code></td><td>แผนที่ประวัติ: เห็นเส้นแยก สองง่าม และเพชร merge</td></tr>
         <tr><td><code class="inline">git branch -d &lt;branch&gt;</code></td><td>ลบป้ายที่ merge แล้ว (ผ่านฉลุย — ต่างจาก LAB 00 ที่ต้องใช้ <code class="inline">-D</code>)</td></tr>
@@ -543,12 +703,15 @@ Changes to be committed:
       <div class="callout tip"><span aria-hidden="true">🧠</span> <b>ภาพจำ:</b> งานเดินเส้นเดียว = Fast-forward · สองเส้นแตะคนละที่ = AUTO Commit · สองเส้นแตะที่เดียวกัน = มนุษย์ตัดสิน</div>
     </section>
 
-    <!-- 11 Checklist -->
+    <!-- 13 Checklist -->
     <section id="check">
-      <div class="sec-head"><div class="sec-num">11</div><h2 class="sec-title"><span aria-hidden="true">✅</span> Checklist ก่อนไปต่อ</h2></div>
+      <div class="sec-head"><div class="sec-num">13</div><h2 class="sec-title"><span aria-hidden="true">✅</span> Checklist ก่อนไปต่อ</h2></div>
       <ul class="checklist">
         <li>merge แรกเห็นคำว่า <code class="inline">Fast-forward</code> และ <code class="inline">git log --graph</code> <b>ไม่มี</b> merge commit (เส้นตรง)</li>
         <li>อธิบายได้ว่าทำไมเคสแรกถึง fast-forward ได้ (main ไม่มี commit สวนทาง)</li>
+        <li>ห้องทดลอง diff: เห็นกับตาว่า <code class="inline">git diff</code> ว่างหลัง <code class="inline">add</code> แต่ <code class="inline">git diff --staged</code> เห็นของ — และอธิบายได้ว่าแต่ละตัวเทียบสถานีไหนกับสถานีไหน</li>
+        <li>ตอนมีการแก้ค้างสองสถานี (2.3): ชี้ได้ว่าการแก้ไหนโผล่ใน <code class="inline">git diff</code> / <code class="inline">--staged</code> / <code class="inline">HEAD</code></li>
+        <li>ใช้ hash จาก <code class="inline">git log</code> ของตัวเองเทียบ commit แรกกับ <code class="inline">HEAD</code> ได้ (2.5)</li>
         <li>merge ที่สองเห็น <code class="inline">Merge made by the 'ort' strategy.</code> + nano เด้งพร้อมข้อความ <code class="inline">Merge branch 'feature-cake'</code></li>
         <li><code class="inline">git log --oneline --graph</code> เห็นรูปเพชร (commit ที่มี parent สองตัว)</li>
         <li>ใช้ <code class="inline">git diff main feature-weekend</code> พยากรณ์ conflict ได้ก่อน merge จริง</li>
@@ -559,19 +722,23 @@ Changes to be committed:
       </ul>
     </section>
 
-    <!-- 12 Quiz -->
+    <!-- 14 Quiz -->
     <section id="quiz">
-      <div class="sec-head"><div class="sec-num">12</div><h2 class="sec-title"><span aria-hidden="true">❓</span> คำถามทบทวน</h2></div>
+      <div class="sec-head"><div class="sec-num">14</div><h2 class="sec-title"><span aria-hidden="true">❓</span> คำถามทบทวน</h2></div>
       <div class="quiz">
         <ol>
           <li>เงื่อนไขอะไรทำให้ merge เป็นแบบ Fast-forward ได้ และผลลัพธ์ต่างจาก 3-way merge อย่างไรในแผนที่ <code class="inline">git log --graph</code>?</li>
           <li>ก่อน merge ต้อง <code class="inline">git switch</code> ไปที่ branch ไหน — ปลายทางหรือต้นทาง? เพราะอะไร?</li>
-          <li>ทำไม merge ใน STEP 2 (เค้ก vs เบอร์ติดต่อ) Git ถึงรวมให้เองได้ แต่ STEP 3 (เมนูพิเศษ) ต้องให้มนุษย์ตัดสิน?</li>
+          <li>ทำไม merge ใน STEP 3 (เค้ก vs เบอร์ติดต่อ) Git ถึงรวมให้เองได้ แต่ STEP 4 (เมนูพิเศษ) ต้องให้มนุษย์ตัดสิน?</li>
           <li>ข้อความ default ของ merge commit คืออะไร และมันโผล่ขึ้นมาตอนไหนบนหน้าจอ?</li>
           <li>ใน conflict marker — ส่วนที่อยู่เหนือ <code class="inline">=======</code> เป็นของฝั่งไหน? <code class="inline">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature-weekend</code> บอกอะไร?</li>
           <li>ขั้นตอนดับไฟ conflict 3 จังหวะมีอะไรบ้าง? ถ้าอยากล้มกระดานกลับไปก่อน merge ใช้คำสั่งอะไร?</li>
           <li><code class="inline">git diff main feature-weekend</code> ช่วยอะไรเรา<i>ก่อน</i> merge — บรรทัดที่ขึ้นต้น <code class="inline">-</code> และ <code class="inline">+</code> หมายถึงฝั่งไหน?</li>
           <li>ทำไม <code class="inline">git branch -d feature-tea</code> ใน LAB นี้ผ่านฉลุย ทั้งที่ LAB 00 คำสั่งเดียวกันโดน error จนต้องใช้ <code class="inline">-D</code>?</li>
+          <li>แก้ไฟล์เสร็จแล้ว <code class="inline">git add</code> ทันที — พอรัน <code class="inline">git diff</code> กลับว่างเปล่า การแก้หายไปไหม? ต้องใช้คำสั่งไหนถึงจะเห็น?</li>
+          <li><code class="inline">git diff</code> / <code class="inline">git diff --staged</code> / <code class="inline">git diff HEAD</code> แต่ละตัวเทียบ "สถานี" ไหนกับสถานีไหน — ในสถานการณ์ 2.3 (ลาเต้ staged + โกโก้ยังไม่ add) แต่ละตัวเห็นอะไร?</li>
+          <li>ทำไมการแก้ราคา <code class="inline">Latte 55 → Latte 60</code> จึงโผล่ใน diff เป็น<b>สองบรรทัด</b> (<code class="inline">-Latte 55</code> กับ <code class="inline">+Latte 60</code>) แทนที่จะเป็นบรรทัดเดียว?</li>
+          <li>บรรทัด <code class="inline">@@ -1,5 +1,6 @@</code> ใน diff อ่านว่าอย่างไร — เลขแต่ละตัวหมายถึงอะไร?</li>
         </ol>
       </div>
     </section>
