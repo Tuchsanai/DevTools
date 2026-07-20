@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAB 02 — Shadow Clone | Git Worktree (ทำงานหลาย branch พร้อมกัน)</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2333; --border:#30363d;
+    --text:#e6edf3; --muted:#8b949e; --accent:#f05133; --accent2:#58a6ff;
+    --green:#3fb950; --yellow:#d29922; --purple:#bc8cff; --code-bg:#0b0f14;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI","Noto Sans Thai",-apple-system,Tahoma,sans-serif;background:var(--bg);color:var(--text);line-height:1.75}
+  a{color:var(--accent2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{display:flex;max-width:1480px;margin:0 auto}
+  nav.side{position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;width:280px;flex-shrink:0;padding:24px 18px;border-right:1px solid var(--border);background:var(--panel)}
+  nav.side .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;padding:0 8px}
+  nav.side .brand .m{width:34px;height:34px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px}
+  nav.side .brand b{font-size:1rem}
+  nav.side h2{font-size:.72rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:18px 8px 8px}
+  nav.side a{display:block;color:var(--muted);padding:7px 12px;border-radius:8px;font-size:.9rem;margin-bottom:1px}
+  nav.side a:hover{background:var(--panel2);color:var(--text);text-decoration:none}
+  nav.side a .n{color:var(--accent);font-weight:700;margin-right:8px;display:inline-block;width:20px}
+  main{flex:1;min-width:0;padding:0 0 80px}
+  header.hero{padding:64px 56px 48px;text-align:center;background:radial-gradient(circle at 50% -20%, #2d1810 0%, var(--bg) 60%);border-bottom:1px solid var(--border)}
+  .gitmark{display:inline-flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:22px;background:var(--accent);font-size:42px;margin-bottom:20px;box-shadow:0 12px 40px rgba(240,81,51,.35)}
+  header.hero .kicker{color:var(--accent);font-weight:700;letter-spacing:2px;font-size:.82rem;text-transform:uppercase}
+  header.hero h1{font-size:2.6rem;margin:10px 0 6px;background:linear-gradient(90deg,#fff,#f05133);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  header.hero p.sub{color:var(--muted);font-size:1.08rem}
+  .scores{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+  .chip{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 20px;min-width:120px}
+  .chip .v{font-size:1.25rem;font-weight:800;color:var(--accent2)}
+  .chip .l{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  section{padding:46px 56px;border-bottom:1px solid var(--border);scroll-margin-top:10px}
+  .sec-head{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+  .sec-num{flex-shrink:0;width:48px;height:48px;border-radius:13px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.3rem}
+  h2.sec-title{font-size:1.7rem}
+  .slideref{color:var(--muted);font-size:.78rem;margin:0 0 22px 64px;font-style:italic}
+  h3{font-size:1.2rem;margin:28px 0 12px;color:#fff;display:flex;align-items:center;gap:8px}
+  h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  p{margin-bottom:12px;color:#c9d1d9}
+  ul,ol{margin:0 0 14px 22px}
+  li{margin-bottom:7px;color:#c9d1d9}
+  strong,b{color:#fff}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:12px;padding:16px 20px;overflow-x:auto;margin:12px 0;font-family:"JetBrains Mono",Consolas,Monaco,monospace;font-size:.9rem;line-height:1.65}
+  pre code{color:#e6edf3}
+  .cmt{color:#8b949e}
+  .cmd{color:var(--green)}
+  .flag{color:#79c0ff}
+  .str{color:var(--yellow)}
+  .out{color:#9db4cd}
+  .err{color:#ff7b72}
+  .ok{color:var(--green)}
+  code.inline{background:var(--panel2);padding:2px 8px;border-radius:6px;font-family:Consolas,monospace;font-size:.88em;color:var(--purple)}
+  .expected{border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:0 12px 12px 0;background:var(--code-bg);margin:12px 0}
+  .expected .lbl{display:block;padding:8px 20px 0;font-size:.75rem;font-weight:700;letter-spacing:1px;color:var(--accent2);text-transform:uppercase}
+  .expected pre{border:none;margin:0;background:transparent}
+  .story{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+  .panel{background:linear-gradient(160deg,#1d4e89,#16365f);border-radius:14px;padding:18px;text-align:center;border:1px solid #2a5a92;position:relative}
+  .panel .face{font-size:2rem;margin-bottom:6px}
+  .panel p{font-size:.86rem;color:#dbe9ff;margin:0}
+  .panel .step{position:absolute;top:8px;left:10px;font-size:.7rem;color:#7fb3e8;font-weight:700}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:18px 0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .card .ic{font-size:1.8rem;margin-bottom:10px}
+  .card h3{color:#fff;margin:0 0 6px;font-size:1.05rem;display:block}
+  .card p{font-size:.88rem;color:var(--muted);margin:0}
+  .callout{border-left:4px solid var(--accent2);background:var(--panel);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0}
+  .callout.warn{border-color:var(--yellow)}
+  .callout.tip{border-color:var(--green)}
+  .callout.danger{border-color:var(--accent)}
+  .callout b{color:#fff}
+  table{width:100%;border-collapse:collapse;margin:18px 0;background:var(--panel);border-radius:12px;overflow:hidden}
+  th,td{padding:13px 18px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+  th{background:var(--panel2);color:#fff;font-size:.9rem;letter-spacing:.5px}
+  td{color:#c9d1d9;font-size:.9rem}
+  tr:last-child td{border-bottom:none}
+  .tablewrap{overflow-x:auto}
+  .svgwrap{background:#22262e;border:1px solid var(--border);border-radius:16px;padding:20px;margin:18px 0;overflow-x:auto}
+  .svgwrap svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  .svgcap{color:var(--muted);font-size:.8rem;text-align:center;margin-top:10px;font-style:italic}
+  .checklist{list-style:none;margin-left:0}
+  .checklist li{padding-left:32px;position:relative}
+  .checklist li::before{content:"☐";position:absolute;left:4px;color:var(--green);font-size:1.05rem}
+  .quiz{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px 26px;margin:16px 0}
+  .quiz ol{margin-bottom:0}
+  footer{padding:32px 56px;text-align:center;color:var(--muted);font-size:.85rem}
+  @media(max-width:900px){
+    .wrap{flex-direction:column}
+    nav.side{position:static;height:auto;width:100%;border-right:none;border-bottom:1px solid var(--border)}
+    header.hero h1{font-size:1.9rem}
+    section,header.hero,footer{padding-left:22px;padding-right:22px}
+  }
+  .top-link{position:fixed;bottom:24px;right:24px;background:var(--accent);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 6px 20px rgba(0,0,0,.4);z-index:50}
+  .top-link:hover{text-decoration:none;transform:translateY(-2px)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="side">
+    <div class="brand"><div class="m" aria-hidden="true">🥷</div><b>LAB 02 · Git Worktree</b></div>
+    <h2>เนื้อหา</h2>
+    <a href="#story"><span class="n">1</span>Story / Pain Point</a>
+    <a href="#goals"><span class="n">2</span>สิ่งที่จะได้เรียนรู้</a>
+    <a href="#theory1"><span class="n">3</span>ทฤษฎี: ต้นทุนการสลับ</a>
+    <a href="#theory2"><span class="n">4</span>ทฤษฎี: worktree คืออะไร</a>
+    <a href="#theory3"><span class="n">5</span>ทฤษฎี: โครงสร้าง + กติกา</a>
+    <a href="#theory4"><span class="n">6</span>ทฤษฎี: เทียบทางเลือก</a>
+    <a href="#prep"><span class="n">7</span>เตรียมความพร้อม</a>
+    <a href="#step1"><span class="n">8</span>STEP 1 — ตั้งร้าน</a>
+    <a href="#step2"><span class="n">9</span>STEP 2 — งานค้างครึ่งทาง</a>
+    <a href="#step3"><span class="n">10</span>STEP 3 — switch โดนเบรก</a>
+    <a href="#step4"><span class="n">11</span>STEP 4 — แยกเงา: add</a>
+    <a href="#step5"><span class="n">12</span>STEP 5 — SHARED/ISOLATED</a>
+    <a href="#step6"><span class="n">13</span>STEP 6 — กำแพง 1 : 1</a>
+    <a href="#step7"><span class="n">14</span>STEP 7 — merge ปิดจ๊อบ</a>
+    <a href="#step8"><span class="n">15</span>STEP 8 — ไทม์แมชชีน</a>
+    <a href="#step9"><span class="n">16</span>STEP 9 — เก็บกวาด</a>
+    <a href="#usecase"><span class="n">17</span>Use case: AI agents</a>
+    <a href="#caveats"><span class="n">18</span>ข้อควรระวัง</a>
+    <a href="#cheat"><span class="n">19</span>สรุป + Cheat Sheet</a>
+    <a href="#check"><span class="n">20</span>Checklist</a>
+    <a href="#quiz"><span class="n">21</span>คำถามทบทวน</a>
+    <h2>อ้างอิง</h2>
+    <a href="../week3-Git worktree slides.pdf"><span class="n" aria-hidden="true">📕</span>สไลด์ Git Worktree</a>
+    <a href="../00_LAB_branch_switch/README.html"><span class="n" aria-hidden="true">⬅️</span>LAB 00 · Parallel Universe</a>
+    <a href="../01_LAB_merge_conflict/README.html"><span class="n" aria-hidden="true">⬅️</span>LAB 01 · Merge Day</a>
+  </nav>
+
+  <main>
+    <header class="hero" id="top">
+      <div class="gitmark" aria-hidden="true">🥷</div>
+      <p class="kicker">Week 3 · Branches and Working with Others · LAB 02</p>
+      <h1>Shadow Clone</h1>
+      <p class="sub">Git Worktree: ทำงานหลาย branch <b>พร้อมกัน</b> โดยไม่ต้องสลับไปมา — <code class="inline">git worktree add</code> / <code class="inline">list</code> / <code class="inline">remove</code> / <code class="inline">prune</code> + ทวนวิชา merge จาก LAB 01</p>
+      <div class="scores">
+        <div class="chip"><div class="v">Docker</div><div class="l">รันจริงบน container</div></div>
+        <div class="chip"><div class="v">~60 นาที</div><div class="l">เวลาโดยประมาณ</div></div>
+        <div class="chip"><div class="v">9 STEPS</div><div class="l">เปิดเงา → ดับไฟ → เก็บกวาด</div></div>
+      </div>
+    </header>
+
+    <!-- 1 Story -->
+    <section id="story">
+      <div class="sec-head"><div class="sec-num">1</div><h2 class="sec-title"><span aria-hidden="true">📖</span> Story / Pain Point</h2></div>
+      <p>จบ <a href="../01_LAB_merge_conflict/README.html">LAB 01</a> สมชายแตก branch–merge–ดับ conflict ได้ครบวงจร ร้านป้าไปได้สวย… จนวันหนึ่ง:</p>
+      <p>สมชายกำลังทำ<b>เมนูใหม่</b>อยู่บน branch <code class="inline">feature-newmenu</code> — พิมพ์เมนูโกโก้ค้างอยู่ครึ่งบรรทัด ราคายังใส่ไม่เสร็จ — ป้าโทรมาเสียงสั่น: <i>"เวลาเปิดร้านบนหน้าเว็บผิด! ลูกค้ามารอหน้าร้านตั้งแต่ 7 โมง แต่ร้านเปิด 8 โมง แก้เดี๋ยวนี้เลยนะ!"</i> <span aria-hidden="true">🔥</span></p>
+      <div class="story">
+        <div class="panel"><span class="step">1</span><div class="face" aria-hidden="true">🍫</div><p>ทำเมนูใหม่ค้างอยู่<br>ราคาโกโก้พิมพ์ไม่เสร็จ</p></div>
+        <div class="panel"><span class="step">2</span><div class="face" aria-hidden="true">📞</div><p>ป้าโทรมา — งานด่วน!<br>เวลาเปิดร้านผิด</p></div>
+        <div class="panel"><span class="step">3</span><div class="face" aria-hidden="true">🧱</div><p><code class="inline">git switch main</code><br>โดน Git เบรกหัวทิ่ม</p></div>
+        <div class="panel"><span class="step">4</span><div class="face" aria-hidden="true">🥷</div><p>วิชาแยกเงา:<br>เปิดโต๊ะใหม่ ไม่ต้องสลับ</p></div>
+      </div>
+      <p>งานด่วนต้องแก้บน <code class="inline">main</code> แต่สมชายยืนอยู่บน <code class="inline">feature-newmenu</code> ที่มีไฟล์แก้ค้างไม่เสร็จ — วิชา <code class="inline">git switch</code> จาก LAB 00 กลับกลายเป็นตัวปัญหาซะเอง:</p>
+      <div class="tablewrap"><table>
+        <tr><th style="width:52px">#</th><th>ปัญหา</th><th>อาการ</th></tr>
+        <tr><td>1</td><td><b>switch ทั้งที่งานค้าง — Git ไม่ให้ไป</b></td><td>ไฟล์แก้ครึ่งทางจะถูกเขียนทับ Git เบรกหัวทิ่ม: <code class="inline">would be overwritten</code></td></tr>
+        <tr><td>2</td><td><b>จำใจ commit งานครึ่งทาง (WIP commit)</b></td><td>ต้อง <code class="inline">git commit -am "WIP: ยังไม่เสร็จ"</code> ทิ้งไว้ก่อน แล้วค่อยแกะกลับมาทำต่อ — ประวัติเลอะ สมาธิหลุด</td></tr>
+        <tr><td>3</td><td><b>สลับกลับมาแล้ว…เมื่อกี้ทำถึงไหนนะ</b></td><td>ทุกครั้งที่สลับ branch คือการรื้อโต๊ะทำงานทิ้งทั้งโต๊ะ แล้วจัดใหม่ — context หายเกลี้ยง</td></tr>
+        <tr><td>4</td><td><b>โปรเจกต์ใหญ่ สลับทีเจ็บที</b></td><td>dependencies / build cache ถูกเขียนทับทุกครั้งที่ checkout ข้าม branch — บางทีมรอ build เป็นสิบนาทีต่อการสลับหนึ่งครั้ง</td></tr>
+      </table></div>
+      <div class="callout tip"><span aria-hidden="true">💡</span> <b>ทางแก้ = <code class="inline">git worktree</code>.</b> ไม่ต้องสลับ — <b>เปิดโต๊ะทำงานตัวใหม่</b>ของ repo เดิมขึ้นมาข้าง ๆ กันเลย: โฟลเดอร์ใหม่ checkout branch ใหม่ ส่วนโต๊ะเดิมกับงานค้างครึ่งทาง<b>ไม่ถูกแตะต้องแม้แต่ไบต์เดียว</b> — เหมือนวิชาแยกเงา (Shadow Clone): ตัวจริงทำเมนูต่อ ตัวเงาไปดับไฟ <span aria-hidden="true">🥷</span></div>
+    </section>
+
+    <!-- 2 Goals -->
+    <section id="goals">
+      <div class="sec-head"><div class="sec-num">2</div><h2 class="sec-title"><span aria-hidden="true">🎯</span> สิ่งที่จะได้เรียนรู้</h2></div>
+      <div class="cards">
+        <div class="card"><div class="ic" aria-hidden="true">💸</div><h3>ต้นทุนของการสลับ branch</h3><p>ทำไม <code class="inline">git switch</code> ถึงไม่ตอบโจทย์งานขนาน (สไลด์ 01)</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🥷</div><h3>Git Worktree คืออะไร</h3><p>1 repository → หลาย working directory: <b>SHARED · ISOLATED · CHEAP</b> (สไลด์ 02)</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🏗️</div><h3>โครงสร้าง worktree</h3><p>main + linked worktree ใช้ <code class="inline">.git</code> ก้อนเดียวกัน · กติกา<b>หนึ่ง branch ต่อหนึ่ง worktree</b> (สไลด์ 03)</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">➕</div><h3><code class="inline">git worktree add</code> ครบ 3 ท่า</h3><p>checkout branch เดิม · <code class="inline">-b</code> สร้าง branch ใหม่ · <code class="inline">--detach</code> ย้อนดู commit เก่า (สไลด์ 04)</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🧹</div><h3>list / remove / prune</h3><p>จัดการวงจรชีวิต worktree ตั้งแต่เกิดจนเก็บกวาด (สไลด์ 05)</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🔥</div><h3>Workflow hotfix ด่วน</h3><p>ของจริงตั้งแต่เปิดเงาจนเก็บกวาด (สไลด์ 06) + ทวน Fast-forward / 3-way merge จาก LAB 01</p></div>
+      </div>
+    </section>
+
+    <!-- 3 Theory 1 -->
+    <section id="theory1">
+      <div class="sec-head"><div class="sec-num">3</div><h2 class="sec-title"><span aria-hidden="true">💸</span> ทฤษฎี ① — ต้นทุนที่มองไม่เห็นของ git switch</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ Git Worktree — 01 · THE PROBLEM</p>
+      <p>LAB 00 สอนว่า switch = ย้ายจักรวาล แต่มีรายละเอียดที่เพิ่งจะกัดเราวันนี้: <b>ทุกจักรวาลใช้ "โต๊ะทำงาน" (working directory) ตัวเดียวกัน</b> การ switch คือการรื้อไฟล์บนโต๊ะทิ้งแล้ววางไฟล์ของ branch ใหม่แทน ดังนั้น:</p>
+      <ul>
+        <li>งานที่ยังไม่ commit <b>ขวางทาง switch</b> — Git ยอมให้ไปเฉพาะเมื่อพกงานค้างข้ามไปได้โดยไม่ทับอะไร ถ้าทับ → <code class="inline">error: Your local changes ... would be overwritten</code></li>
+        <li>ทางหนีแบบเดิมคือ <b>WIP commit</b>: <code class="inline">git commit -am "WIP: ยังไม่เสร็จ"</code> แล้วค่อยแกะกลับ (ด้วยวิชา reset ที่ยังไม่เรียน) — ทำได้ แต่ประวัติรก และเสี่ยงลืม</li>
+        <li>ไฟล์ที่ Git ไม่ track (dependencies, build cache) อยู่บนโต๊ะเดียวกันด้วย — โปรเจกต์จริงสลับ branch ทีอาจต้องรอ build ใหม่นานหลายนาที</li>
+      </ul>
+
+      <div class="svgwrap" role="img" aria-label="ไดอะแกรม: git switch ถูกบล็อกเพราะมีไฟล์แก้ค้างที่ยังไม่ commit">
+      <svg viewBox="0 0 860 250" width="860" height="250" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Noto Sans Thai, sans-serif">
+        <!-- left desk: feature-newmenu -->
+        <rect x="30" y="35" width="310" height="180" rx="14" fill="#161b22" stroke="#30363d"/>
+        <text x="185" y="66" text-anchor="middle" fill="#e6edf3" font-size="15" font-weight="700">โต๊ะทำงาน (มีตัวเดียว!)</text>
+        <rect x="60" y="82" width="180" height="26" rx="13" fill="#1c2b1e" stroke="#3fb950"/>
+        <text x="150" y="100" text-anchor="middle" fill="#3fb950" font-size="12.5" font-family="Consolas, monospace">feature-newmenu</text>
+        <rect x="60" y="122" width="250" height="70" rx="10" fill="#0b0f14" stroke="#30363d"/>
+        <text x="76" y="147" fill="#9db4cd" font-size="12.5" font-family="Consolas, monospace">menu.txt</text>
+        <text x="76" y="172" fill="#d29922" font-size="12.5" font-family="Consolas, monospace">Cocoa 5▍ ✏️ แก้ค้าง ยังไม่ commit</text>
+        <!-- blocked arrow -->
+        <line x1="350" y1="125" x2="540" y2="125" stroke="#ff7b72" stroke-width="4" stroke-dasharray="10 7"/>
+        <polygon points="540,125 522,116 522,134" fill="#ff7b72"/>
+        <circle cx="445" cy="125" r="22" fill="#2d1214" stroke="#ff7b72" stroke-width="3"/>
+        <text x="445" y="132" text-anchor="middle" fill="#ff7b72" font-size="16" font-weight="800">✕</text>
+        <text x="445" y="86" text-anchor="middle" fill="#e6edf3" font-size="13.5" font-family="Consolas, monospace">git switch main</text>
+        <text x="445" y="176" text-anchor="middle" fill="#ff7b72" font-size="12">error: ... would be overwritten</text>
+        <text x="445" y="196" text-anchor="middle" fill="#ff7b72" font-size="12">Aborting</text>
+        <!-- right: main -->
+        <rect x="550" y="35" width="280" height="180" rx="14" fill="#161b22" stroke="#30363d"/>
+        <text x="690" y="66" text-anchor="middle" fill="#e6edf3" font-size="15" font-weight="700">จักรวาล main</text>
+        <rect x="640" y="82" width="100" height="26" rx="13" fill="#3a1f1c" stroke="#f05133"/>
+        <text x="690" y="100" text-anchor="middle" fill="#f05133" font-size="12.5" font-family="Consolas, monospace">main</text>
+        <text x="690" y="145" text-anchor="middle" fill="#8b949e" font-size="12.5">งานด่วนรออยู่ที่นี่ 🔥</text>
+        <text x="690" y="170" text-anchor="middle" fill="#8b949e" font-size="12.5">(hours.txt เวลาเปิดผิด)</text>
+      </svg>
+      <p class="svgcap">โต๊ะเดียว สลับไม่ได้เพราะงานค้างขวางทาง — ถ้าฝืนไป การแก้ที่ยังไม่ commit จะถูกเขียนทับ</p>
+      </div>
+
+      <div class="callout tip"><span aria-hidden="true">💡</span> <b>คำถามเปลี่ยนมุม:</b> ปัญหาไม่ใช่ "จะสลับยังไงให้เร็ว" แต่คือ <b>"ทำไมต้องสลับด้วยล่ะ?"</b> — ถ้ามีโต๊ะทำงานสองตัวพร้อมกัน ก็ไม่ต้องรื้อโต๊ะไหนเลย</div>
+    </section>
+
+    <!-- 4 Theory 2 -->
+    <section id="theory2">
+      <div class="sec-head"><div class="sec-num">4</div><h2 class="sec-title"><span aria-hidden="true">🥷</span> ทฤษฎี ② — Git Worktree: 1 repo → หลายโต๊ะทำงาน</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ Git Worktree — 02 · CONCEPT</p>
+      <p><b>Git Worktree = 1 repository → หลาย working directory ที่ checkout branch ต่างกัน และทำงานพร้อมกันได้</b> คุณสมบัติ 3 ข้อที่ทำให้มันเวิร์ก:</p>
+      <div class="cards">
+        <div class="card"><div class="ic" aria-hidden="true">🔗</div><h3>SHARED</h3><p>ทุก worktree ใช้ <b>object database และ refs ชุดเดียวกัน</b> — commit จากที่หนึ่ง เห็นได้ทันทีจากอีกที่ ไม่ต้อง push/pull หากัน</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🧱</div><h3>ISOLATED</h3><p>แต่ละ directory มี <b>ไฟล์, index และ HEAD ของตัวเอง</b> — แก้งานคนละ branch โดยไม่รบกวนกัน งานค้างของโต๊ะไหนอยู่โต๊ะนั้น</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🪶</div><h3>CHEAP</h3><p>ไม่ต้อง clone ซ้ำ — สร้างได้ในไม่กี่วินาที ใช้พื้นที่เพิ่มเฉพาะไฟล์ working copy (ไม่ก๊อป object database)</p></div>
+      </div>
+    </section>
+
+    <!-- 5 Theory 3 -->
+    <section id="theory3">
+      <div class="sec-head"><div class="sec-num">5</div><h2 class="sec-title"><span aria-hidden="true">🏗️</span> ทฤษฎี ③ — โครงสร้าง: main worktree + linked worktree</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ Git Worktree — 03 · CONCEPT</p>
+
+      <div class="svgwrap" role="img" aria-label="ไดอะแกรมโครงสร้าง: สาม worktree ใช้ .git ก้อนเดียวกัน">
+      <svg viewBox="0 0 940 340" width="940" height="340" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Noto Sans Thai, sans-serif">
+        <!-- worktree boxes -->
+        <rect x="30" y="30" width="270" height="120" rx="14" fill="#161b22" stroke="#f05133" stroke-width="2"/>
+        <text x="165" y="60" text-anchor="middle" fill="#e6edf3" font-size="14.5" font-weight="700" font-family="Consolas, monospace">~/coffee-app</text>
+        <rect x="70" y="72" width="190" height="24" rx="12" fill="#3a1f1c" stroke="#f05133"/>
+        <text x="165" y="89" text-anchor="middle" fill="#f05133" font-size="12" font-weight="700">main worktree (ตัวจริง)</text>
+        <text x="165" y="126" text-anchor="middle" fill="#8b949e" font-size="12" font-family="Consolas, monospace">.git = โฟลเดอร์เต็ม ๆ</text>
+
+        <rect x="335" y="30" width="270" height="120" rx="14" fill="#161b22" stroke="#30363d"/>
+        <text x="470" y="60" text-anchor="middle" fill="#e6edf3" font-size="14.5" font-weight="700" font-family="Consolas, monospace">~/hotfix</text>
+        <rect x="385" y="72" width="170" height="24" rx="12" fill="#1c2b1e" stroke="#3fb950"/>
+        <text x="470" y="89" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="700">linked worktree</text>
+        <text x="470" y="126" text-anchor="middle" fill="#8b949e" font-size="12" font-family="Consolas, monospace">.git = ไฟล์จดที่อยู่ 1 บรรทัด</text>
+
+        <rect x="640" y="30" width="270" height="120" rx="14" fill="#161b22" stroke="#30363d"/>
+        <text x="775" y="60" text-anchor="middle" fill="#e6edf3" font-size="14.5" font-weight="700" font-family="Consolas, monospace">~/time-machine</text>
+        <rect x="690" y="72" width="170" height="24" rx="12" fill="#241b36" stroke="#bc8cff"/>
+        <text x="775" y="89" text-anchor="middle" fill="#bc8cff" font-size="12" font-weight="700">linked · detached HEAD</text>
+        <text x="775" y="126" text-anchor="middle" fill="#8b949e" font-size="12" font-family="Consolas, monospace">.git = ไฟล์จดที่อยู่ 1 บรรทัด</text>
+
+        <!-- arrows down to .git -->
+        <line x1="165" y1="150" x2="400" y2="235" stroke="#f05133" stroke-width="3"/>
+        <polygon points="400,235 382,231 390,217" fill="#f05133"/>
+        <line x1="470" y1="150" x2="470" y2="230" stroke="#58a6ff" stroke-width="3" stroke-dasharray="8 6"/>
+        <polygon points="470,235 461,219 479,219" fill="#58a6ff"/>
+        <line x1="775" y1="150" x2="545" y2="235" stroke="#58a6ff" stroke-width="3" stroke-dasharray="8 6"/>
+        <polygon points="545,235 555,218 563,232" fill="#58a6ff"/>
+        <text x="610" y="185" fill="#58a6ff" font-size="12" font-family="Consolas, monospace">gitdir: ...ชี้กลับ</text>
+        <text x="230" y="205" fill="#f05133" font-size="12">เจ้าของ</text>
+
+        <!-- shared .git -->
+        <rect x="240" y="238" width="460" height="66" rx="14" fill="#3a1f1c" stroke="#f05133" stroke-width="2.5"/>
+        <text x="470" y="266" text-anchor="middle" fill="#f05133" font-size="16" font-weight="800" font-family="Consolas, monospace">~/coffee-app/.git</text>
+        <text x="470" y="290" text-anchor="middle" fill="#e6edf3" font-size="12.5">object database + refs + config — ใช้ร่วมกันทุก worktree</text>
+      </svg>
+      <p class="svgcap">โฟลเดอร์ที่ git init = main worktree เจ้าของ .git ตัวจริง · โฟลเดอร์จาก git worktree add = linked worktree มีแค่ไฟล์จดที่อยู่ชี้กลับ</p>
+      </div>
+
+      <ul>
+        <li>โฟลเดอร์ที่ <code class="inline">git init</code> ไว้แต่แรก = <b>main worktree</b> — เจ้าของ <code class="inline">.git</code> ตัวจริง</li>
+        <li>โฟลเดอร์ที่เพิ่มด้วย <code class="inline">git worktree add</code> = <b>linked worktree</b> — ข้างในไม่มี <code class="inline">.git</code> เต็ม ๆ มีแค่<b>ไฟล์จดที่อยู่</b>ชี้กลับไปหา <code class="inline">.git</code> ของ main worktree (เดี๋ยวได้เปิดดูของจริงใน STEP 5)</li>
+      </ul>
+      <div class="callout danger"><span aria-hidden="true">📜</span> <b>กติกาสำคัญ: หนึ่ง branch ถูก checkout ได้ในหนึ่ง worktree เท่านั้น</b> — กันไม่ให้สองโต๊ะแก้ branch เดียวกันซ้อนกันจนประวัติพัง (เดี๋ยวได้ชนกำแพงจริงใน STEP 6)</div>
+    </section>
+
+    <!-- 6 Theory 4 -->
+    <section id="theory4">
+      <div class="sec-head"><div class="sec-num">6</div><h2 class="sec-title"><span aria-hidden="true">⚖️</span> ทฤษฎี ④ — Worktree เทียบกับทางเลือกอื่น</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ Git Worktree — 08 · COMPARISON</p>
+      <div class="tablewrap"><table>
+        <tr><th></th><th>สลับ branch ใน directory เดียว</th><th>clone หลายชุด</th><th style="color:var(--accent)">git worktree</th></tr>
+        <tr><td><b>ทำงานหลาย branch พร้อมกัน</b></td><td>ไม่ได้</td><td>ได้</td><td><b>ได้</b></td></tr>
+        <tr><td><b>เวลา setup</b></td><td>ทันที</td><td>ช้า — ดาวน์โหลดทั้ง repo</td><td><b>ไม่กี่วินาที</b></td></tr>
+        <tr><td><b>disk space</b></td><td>น้อยที่สุด</td><td>เต็ม repo ต่อชุด</td><td><b>เฉพาะ working copy</b></td></tr>
+        <tr><td><b>branch / refs ตรงกันเสมอ</b></td><td>ใช่ — repo เดียว</td><td>ต้อง fetch / push เอง</td><td><b>ใช่ — แชร์ refs กัน</b></td></tr>
+        <tr><td><b>เหมาะกับ</b></td><td>งานเดี่ยวตามลำดับ</td><td>โปรเจกต์แยกขาดถาวร</td><td><b>งานขนานใน repo เดิม</b></td></tr>
+      </table></div>
+    </section>
+
+    <!-- 7 Prep -->
+    <section id="prep">
+      <div class="sec-head"><div class="sec-num">7</div><h2 class="sec-title"><span aria-hidden="true">⚙️</span> เตรียมความพร้อม</h2></div>
+      <p>รัน container และ SSH เข้าไป (เหมือนทุก LAB):</p>
+      <pre><code><span class="cmd">docker</span> run <span class="flag">-dit</span> <span class="flag">--name</span> devtools <span class="flag">--privileged</span> <span class="flag">-p</span> 2222:22 tuchsanai/devtools:2569_1
+<span class="cmd">ssh</span> root@localhost <span class="flag">-p</span> 2222        <span class="cmt"># password: passwd</span></code></pre>
+      <p>ตั้งตัวตน (ถ้า container นี้ยังไม่เคยตั้ง) — <b>ใช้ชื่อ-อีเมลของตัวเอง</b> ตัวอย่างในเอกสารนี้ใช้ตัวตนสมมุติ <code class="inline">somchai-dev</code>:</p>
+      <pre><code><span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="str">"somchai-dev"</span>              <span class="cmt"># ← ใช้ชื่อของตัวเอง</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="str">"somchai.dev@example.com"</span> <span class="cmt"># ← ใช้อีเมลของตัวเอง</span></code></pre>
+      <p>จำ hint ยาว ๆ ตอน <code class="inline">git init</code> ใน LAB 00 ได้ไหม? Git แนะนำวิธีตั้งชื่อ branch แรกให้เป็น <code class="inline">main</code> อัตโนมัติ — ได้เวลาใช้จริง จะได้ไม่ต้อง <code class="inline">git branch -m</code> ทุกรอบ:</p>
+      <pre><code><span class="cmd">git</span> config <span class="flag">--global</span> init.defaultBranch main</code></pre>
+      <div class="callout"><span aria-hidden="true">📌</span> LAB นี้ทำงานในเครื่องล้วน ๆ — ไม่ต้องใช้ GitHub และไม่ต้องใช้ token</div>
+      <div class="callout warn"><span aria-hidden="true">⚠️</span> <code class="inline">git worktree</code> ต้องใช้ git 2.5 ขึ้นไป — เช็กด้วย <code class="inline">git --version</code> (container นี้คือ 2.54.0 สบายมาก)</div>
+    </section>
+
+    <!-- 8 STEP 1 -->
+    <section id="step1">
+      <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title"><span aria-hidden="true">☕</span> STEP 1 — ตั้งร้าน: repo coffee-app + งานฐาน 2 commit</h2></div>
+      <pre><code><span class="cmd">cd</span> ~
+<span class="cmd">mkdir</span> coffee-app &amp;&amp; <span class="cmd">cd</span> coffee-app
+<span class="cmd">git</span> init</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Initialized empty Git repository in /root/coffee-app/.git/</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> คราวนี้ไม่มี hint เตือนเรื่อง <code class="inline">master</code> แล้ว — เพราะเราตั้ง <code class="inline">init.defaultBranch main</code> ไว้ branch แรกเกิดมาเป็น <code class="inline">main</code> เลย</div>
+      <p>สร้างเมนูและเวลาเปิดร้าน (สังเกตว่าเวลา<b>ผิด</b>อยู่ — ระเบิดเวลาของ story นี้ <span aria-hidden="true">🕖</span>):</p>
+      <pre><code><span class="cmd">echo</span> <span class="str">"Americano 45"</span> &gt; menu.txt
+<span class="cmd">echo</span> <span class="str">"Latte 55"</span> &gt;&gt; menu.txt
+<span class="cmd">git</span> add menu.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Add menu"</span>
+
+<span class="cmd">echo</span> <span class="str">"Open daily 07:00 - 17:00"</span> &gt; hours.txt
+<span class="cmd">git</span> add hours.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Add opening hours"</span>
+<span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[main (root-commit) 27b9a0b] Add menu</span>
+<span class="out"> 1 file changed, 2 insertions(+)
+ create mode 100644 menu.txt</span>
+
+<span class="ok">[main 51c6bbb] Add opening hours</span>
+<span class="out"> 1 file changed, 1 insertion(+)
+ create mode 100644 hours.txt</span>
+
+<span class="out">51c6bbb (HEAD -> main) Add opening hours
+27b9a0b Add menu</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> <b>commit hash (<code class="inline">27b9a0b</code>, <code class="inline">51c6bbb</code>) ของแต่ละคนจะไม่เหมือนตัวอย่าง</b> — เป็นแบบนี้ทั้งเอกสาร</div>
+    </section>
+
+    <!-- 9 STEP 2 -->
+    <section id="step2">
+      <div class="sec-head"><div class="sec-num">9</div><h2 class="sec-title"><span aria-hidden="true">🍫</span> STEP 2 — งานเมนูใหม่: ทำค้างครึ่งทางไว้ (ตั้งใจ!)</h2></div>
+      <p>สมชายเริ่มงานเมนูใหม่ตามวิชา LAB 00 — แตก branch ก่อนเสมอ:</p>
+      <pre><code><span class="cmd">git</span> switch <span class="flag">-c</span> feature-newmenu
+<span class="cmd">echo</span> <span class="str">"Matcha Latte 65"</span> &gt;&gt; menu.txt
+<span class="cmd">git</span> add menu.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Add Matcha Latte"</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Switched to a new branch 'feature-newmenu'</span>
+
+<span class="ok">[feature-newmenu 0bb5ca5] Add Matcha Latte</span>
+<span class="out"> 1 file changed, 1 insertion(+)</span></code></pre></div>
+      <p>ต่อด้วยเมนูโกโก้ … พิมพ์ราคาไปได้ตัวเดียว (ตั้งใจจะพิมพ์ <code class="inline">50</code> แต่ได้แค่ <code class="inline">5</code>) — <b>อย่าเพิ่ง commit อย่าเพิ่ง add</b> ปล่อยค้างไว้แบบนี้:</p>
+      <pre><code><span class="cmd">echo</span> <span class="str">"Cocoa 5"</span> &gt;&gt; menu.txt
+<span class="cmd">cat</span> menu.txt
+<span class="cmd">git</span> status</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Americano 45
+Latte 55
+Matcha Latte 65
+Cocoa 5</span>
+
+<span class="out">On branch feature-newmenu
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)</span>
+	<span class="err">modified:   menu.txt</span>
+
+<span class="out">no changes added to commit (use "git add" and/or "git commit -a")</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> นี่คือสภาพ "งานค้างครึ่งทาง" ของจริง: <code class="inline">menu.txt</code> แก้แล้วแต่ยังไม่เสร็จ ยังไม่ add ยังไม่ commit — โต๊ะทำงานรกอยู่พอดี… และเสียงโทรศัพท์ก็ดังขึ้น <span aria-hidden="true">📞</span></div>
+    </section>
+
+    <!-- 10 STEP 3 -->
+    <section id="step3">
+      <div class="sec-head"><div class="sec-num">10</div><h2 class="sec-title"><span aria-hidden="true">🧱</span> STEP 3 — ป้าโทรมา: ลอง switch หนีงาน → Git เบรกหัวทิ่ม</h2></div>
+      <p>เวลาเปิดร้านผิด! ต้องรีบแก้บน <code class="inline">main</code> — ลองย้ายจักรวาลแบบที่เคยทำ:</p>
+      <pre><code><span class="cmd">git</span> switch main</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="err">error: Your local changes to the following files would be overwritten by checkout:
+	menu.txt
+Please commit your changes or stash them before you switch branches.
+Aborting</span></code></pre></div>
+      <div class="callout danger"><span aria-hidden="true">🧱</span> <b>Pain Point ข้อ 1 ตัวเป็น ๆ:</b> <code class="inline">menu.txt</code> ของ <code class="inline">feature-newmenu</code> (มี Matcha) กับของ <code class="inline">main</code> (ไม่มี) ไม่เหมือนกัน — ถ้า Git ยอมให้ switch งานแก้ค้างจะถูกเขียนทับหาย Git เลย <code class="inline">Aborting</code> ไว้ก่อน</div>
+      <p>ทางเลือกที่เหลือดูแย่ทั้งคู่: ① commit งานครึ่งทางเป็น WIP commit — ประวัติเลอะ ② ทิ้งการแก้ — งานหาย … หรือ ③ <b>ไม่ต้องสลับเลย</b> — เปิดโต๊ะใหม่ข้าง ๆ ด้วย worktree <span aria-hidden="true">✨</span></p>
+    </section>
+
+    <!-- 11 STEP 4 -->
+    <section id="step4">
+      <div class="sec-head"><div class="sec-num">11</div><h2 class="sec-title"><span aria-hidden="true">🥷</span> STEP 4 — วิชาแยกเงา: git worktree add</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ Git Worktree — 04 · COMMANDS — รูปแบบคำสั่ง: git worktree add &lt;path&gt; &lt;branch&gt;</p>
+      <p>สร้าง worktree ใหม่ที่ <code class="inline">../hotfix</code> พร้อม<b>สร้าง branch ใหม่</b> <code class="inline">hotfix-hours</code> แตกจาก <code class="inline">main</code> — จบในคำสั่งเดียว <b>โดยไม่ต้องขยับออกจากที่ยืน</b>:</p>
+      <pre><code><span class="cmd">git</span> worktree add ../hotfix <span class="flag">-b</span> hotfix-hours main</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Preparing worktree (new branch 'hotfix-hours')</span>
+<span class="out">HEAD is now at 51c6bbb Add opening hours</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> อ่านคำสั่งให้ครบ 3 ส่วน: <code class="inline">../hotfix</code> = <b>ที่อยู่โต๊ะใหม่</b> (โฟลเดอร์ข้าง ๆ ไม่ใช่ข้างใน repo!) · <code class="inline">-b hotfix-hours</code> = สร้าง branch ใหม่ · <code class="inline">main</code> = <b>ฐานที่แตกออกมา</b> — ตัวเงาเกิดมายืนบนปลาย <code class="inline">main</code> (<code class="inline">51c6bbb</code>) พอดี</div>
+      <p>ดูสารบัญโต๊ะทำงานทั้งหมด:</p>
+      <pre><code><span class="cmd">git</span> worktree list</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">/root/coffee-app 0bb5ca5 [feature-newmenu]
+/root/hotfix     51c6bbb [hotfix-hours]</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> บรรทัดแรกคือ <b>main worktree</b> (โฟลเดอร์ที่ <code class="inline">git init</code>) — ยังยืนบน <code class="inline">feature-newmenu</code> งานค้างอยู่ครบ · บรรทัดสองคือ <b>linked worktree</b> เกิดใหม่บน <code class="inline">hotfix-hours</code> — สองโต๊ะ สอง branch <b>พร้อมกัน</b> โดยไม่มีใครต้อง switch</div>
+
+      <div class="svgwrap" role="img" aria-label="ไดอะแกรม: สองโต๊ะทำงานขนานกัน โต๊ะเดิมงานค้าง โต๊ะเงาดับไฟ ใช้ .git ร่วมกัน">
+      <svg viewBox="0 0 920 380" width="920" height="380" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Noto Sans Thai, sans-serif">
+        <!-- left desk -->
+        <rect x="30" y="30" width="400" height="230" rx="14" fill="#161b22" stroke="#30363d"/>
+        <text x="230" y="60" text-anchor="middle" fill="#e6edf3" font-size="15" font-weight="700" font-family="Consolas, monospace">~/coffee-app · ตัวจริง</text>
+        <rect x="120" y="74" width="220" height="26" rx="13" fill="#1c2b1e" stroke="#3fb950"/>
+        <text x="230" y="92" text-anchor="middle" fill="#3fb950" font-size="12.5" font-family="Consolas, monospace">[feature-newmenu]</text>
+        <rect x="60" y="114" width="340" height="118" rx="10" fill="#0b0f14" stroke="#30363d"/>
+        <text x="78" y="140" fill="#9db4cd" font-size="12.5" font-family="Consolas, monospace">menu.txt</text>
+        <text x="78" y="162" fill="#9db4cd" font-size="12.5" font-family="Consolas, monospace">  Americano 45 · Latte 55</text>
+        <text x="78" y="184" fill="#9db4cd" font-size="12.5" font-family="Consolas, monospace">  Matcha Latte 65</text>
+        <text x="78" y="208" fill="#d29922" font-size="12.5" font-family="Consolas, monospace">  Cocoa 5▍ ✏️ ค้างไว้ — ไม่ถูกแตะ</text>
+        <!-- right desk -->
+        <rect x="490" y="30" width="400" height="230" rx="14" fill="#161b22" stroke="#f05133" stroke-width="2"/>
+        <text x="690" y="60" text-anchor="middle" fill="#e6edf3" font-size="15" font-weight="700" font-family="Consolas, monospace">~/hotfix · ตัวเงา 🔥</text>
+        <rect x="590" y="74" width="200" height="26" rx="13" fill="#3a1f1c" stroke="#f05133"/>
+        <text x="690" y="92" text-anchor="middle" fill="#f05133" font-size="12.5" font-family="Consolas, monospace">[hotfix-hours]</text>
+        <rect x="520" y="114" width="340" height="118" rx="10" fill="#0b0f14" stroke="#30363d"/>
+        <text x="538" y="140" fill="#9db4cd" font-size="12.5" font-family="Consolas, monospace">hours.txt</text>
+        <text x="538" y="164" fill="#ff7b72" font-size="12.5" font-family="Consolas, monospace">- Open daily 07:00 - 17:00</text>
+        <text x="538" y="186" fill="#3fb950" font-size="12.5" font-family="Consolas, monospace">+ Open daily 08:00 - 18:00 ✅</text>
+        <text x="538" y="210" fill="#8b949e" font-size="12.5" font-family="Consolas, monospace">commit e6ddb4e "Fix opening hours"</text>
+        <!-- shared .git -->
+        <line x1="230" y1="260" x2="410" y2="315" stroke="#58a6ff" stroke-width="3"/>
+        <polygon points="410,315 391,312 398,297" fill="#58a6ff"/>
+        <line x1="690" y1="260" x2="510" y2="315" stroke="#58a6ff" stroke-width="3" stroke-dasharray="8 6"/>
+        <polygon points="510,315 521,299 529,313" fill="#58a6ff"/>
+        <rect x="310" y="318" width="300" height="50" rx="12" fill="#3a1f1c" stroke="#f05133" stroke-width="2"/>
+        <text x="460" y="340" text-anchor="middle" fill="#f05133" font-size="14" font-weight="800" font-family="Consolas, monospace">.git (SHARED)</text>
+        <text x="460" y="359" text-anchor="middle" fill="#e6edf3" font-size="11.5">commit จากโต๊ะไหน อีกโต๊ะเห็นทันที</text>
+      </svg>
+      <p class="svgcap">Shadow Clone: สองโต๊ะ สอง branch ทำงานพร้อมกัน — ISOLATED ที่ไฟล์ แต่ SHARED ที่ .git</p>
+      </div>
+    </section>
+
+    <!-- 12 STEP 5 -->
+    <section id="step5">
+      <div class="sec-head"><div class="sec-num">12</div><h2 class="sec-title"><span aria-hidden="true">🔥</span> STEP 5 — ดับไฟในตัวเงา + พิสูจน์ SHARED / ISOLATED</h2></div>
+
+      <h3><span class="dot" aria-hidden="true"></span>5.1 เข้าไปสำรวจโต๊ะใหม่</h3>
+      <pre><code><span class="cmd">cd</span> ../hotfix
+<span class="cmd">ls</span>
+<span class="cmd">git</span> branch <span class="flag">--show-current</span>
+<span class="cmd">cat</span> menu.txt</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">hours.txt
+menu.txt</span>
+
+<span class="out">hotfix-hours</span>
+
+<span class="out">Americano 45
+Latte 55</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> ไฟล์ครบเหมือน checkout <code class="inline">main</code> สด ๆ — และ <code class="inline">menu.txt</code> ที่นี่<b>ไม่มี</b> Matcha / Cocoa เพราะโต๊ะนี้แตกจาก <code class="inline">main</code> ไม่เกี่ยวกับงานค้างของอีกโต๊ะ (<b>ISOLATED</b>)</div>
+
+      <h3><span class="dot" aria-hidden="true"></span>5.2 แอบดูไส้ใน: .git ของ linked worktree เป็นแค่ "ป้ายบอกทาง"</h3>
+      <p><i>(ทฤษฎี ③ ของจริง — เทียบกับ <code class="inline">cat .git/HEAD</code> ที่เคยแอบดูใน LAB 00)</i></p>
+      <pre><code><span class="cmd">cat</span> .git</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">gitdir: /root/coffee-app/.git/worktrees/hotfix</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">🤯</span> <code class="inline">.git</code> ที่นี่<b>ไม่ใช่โฟลเดอร์ แต่เป็นไฟล์ข้อความบรรทัดเดียว</b> — จดที่อยู่ชี้กลับไปหา <code class="inline">.git</code> ตัวจริงใน <code class="inline">coffee-app</code> นี่คือกลไกของ <b>SHARED</b>: ทุก worktree อ่าน-เขียน object database ก้อนเดียวกัน และคือเหตุผลของ <b>CHEAP</b>: สร้าง worktree ไม่ต้องก๊อปประวัติสักไบต์</div>
+      <p>เทียบกับ <code class="inline">.git</code> <b>ตัวจริง</b>ของ main worktree — อันนั้นเป็นโฟลเดอร์เต็ม ๆ:</p>
+      <pre><code><span class="cmd">ls</span> ~/coffee-app/.git</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">COMMIT_EDITMSG
+HEAD
+config
+description
+hooks
+index
+info
+logs
+objects
+refs
+worktrees</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> ครบเครื่องทั้ง <code class="inline">objects</code> (ประวัติ) <code class="inline">refs</code> (ป้าย branch) <code class="inline">config</code> — และสังเกตโฟลเดอร์ <code class="inline">worktrees</code> โผล่มาใหม่: นั่นคือที่ที่ Git เก็บ metadata ของเงาแต่ละตัว (เดี๋ยว STEP 9 จะวนกลับมาที่นี่ตอนคุยเรื่อง <code class="inline">prune</code>)</div>
+
+      <h3><span class="dot" aria-hidden="true"></span>5.3 แก้เวลาเปิดร้าน + commit จากในเงา</h3>
+      <pre><code><span class="cmd">echo</span> <span class="str">"Open daily 08:00 - 18:00"</span> &gt; hours.txt
+<span class="cmd">git</span> commit <span class="flag">-am</span> <span class="str">"Fix opening hours"</span>
+<span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[hotfix-hours e6ddb4e] Fix opening hours</span>
+<span class="out"> 1 file changed, 1 insertion(+), 1 deletion(-)</span>
+
+<span class="out">e6ddb4e (HEAD -> hotfix-hours) Fix opening hours
+51c6bbb (main) Add opening hours
+27b9a0b Add menu</span></code></pre></div>
+
+      <h3><span class="dot" aria-hidden="true"></span>5.4 พิสูจน์ SHARED: commit ในเงา เห็นได้จากทุกที่ทันที</h3>
+      <p>ยังยืนอยู่ใน <code class="inline">hotfix</code> — ขอดู<b>ทุก branch</b> (วิชา LAB 00):</p>
+      <pre><code><span class="cmd">git</span> log <span class="flag">--oneline</span> <span class="flag">--all</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">0bb5ca5 (feature-newmenu) Add Matcha Latte
+e6ddb4e (HEAD -> hotfix-hours) Fix opening hours
+51c6bbb (main) Add opening hours
+27b9a0b Add menu</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> เห็น <code class="inline">feature-newmenu</code> ของอีกโต๊ะจากที่นี่เลย ไม่ต้อง push/pull — เพราะ refs อยู่ใน <code class="inline">.git</code> ก้อนเดียวกัน (<b>SHARED</b>)</div>
+
+      <h3><span class="dot" aria-hidden="true"></span>5.5 พิสูจน์ ISOLATED: กลับโต๊ะเดิม — งานค้างอยู่ครบทุกตัวอักษร</h3>
+      <pre><code><span class="cmd">cd</span> ~/coffee-app
+<span class="cmd">git</span> branch <span class="flag">--show-current</span>
+<span class="cmd">cat</span> menu.txt
+<span class="cmd">git</span> status <span class="flag">--short</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">feature-newmenu</span>
+
+<span class="out">Americano 45
+Latte 55
+Matcha Latte 65
+Cocoa 5</span>
+
+<span class="err"> M menu.txt</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">🥷</span> <b>โมเมนต์ Shadow Clone สมบูรณ์:</b> ตัวเงาดับไฟ–commit เสร็จไปแล้วบน <code class="inline">hotfix-hours</code> ส่วนโต๊ะนี้ยังยืนบน <code class="inline">feature-newmenu</code> เดิม <code class="inline">Cocoa 5</code> ยังพิมพ์ค้างอยู่ที่เดิม <code class="inline">git status</code> ยังเห็นไฟล์แก้ค้างเหมือนไม่มีอะไรเกิดขึ้น — <b>Pain Point ข้อ 2–3 หายเกลี้ยง</b>: ไม่มี WIP commit ไม่มี context หาย</div>
+    </section>
+
+    <!-- 13 STEP 6 -->
+    <section id="step6">
+      <div class="sec-head"><div class="sec-num">13</div><h2 class="sec-title"><span aria-hidden="true">🚧</span> STEP 6 — ชนกำแพง: หนึ่ง branch ต่อหนึ่ง worktree</h2></div>
+      <p><i>(กติกาสำคัญจากทฤษฎี ③ — ลองแหกดูให้เห็นกับตา)</i></p>
+      <p>ลองเปิดเงาอีกตัวบน branch ที่<b>ถูกใช้อยู่แล้ว</b>:</p>
+      <pre><code><span class="cmd">git</span> worktree add ../oops feature-newmenu</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Preparing worktree (checking out 'feature-newmenu')</span>
+<span class="err">fatal: 'feature-newmenu' is already used by worktree at '/root/coffee-app'</span></code></pre></div>
+      <p>กลับกันก็โดน — ยืนที่โต๊ะนี้แล้วขอ switch ไป branch ที่เงาใช้อยู่:</p>
+      <pre><code><span class="cmd">git</span> switch hotfix-hours</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="err">fatal: 'hotfix-hours' is already used by worktree at '/root/hotfix'</span></code></pre></div>
+      <div class="callout danger"><span aria-hidden="true">🧱</span> ทั้งสองทิศชนกำแพงเดียวกัน: <b>branch หนึ่งมีโต๊ะประจำได้ตัวเดียว</b> — ถ้าสองโต๊ะ checkout branch เดียวกันแล้วต่าง commit ป้าย branch จะวิ่งแยกสองทางพร้อมกัน ประวัติพังทันที Git เลยห้ามตั้งแต่ต้นทาง</div>
+    </section>
+
+    <!-- 14 STEP 7 -->
+    <section id="step7">
+      <div class="sec-head"><div class="sec-num">14</div><h2 class="sec-title"><span aria-hidden="true">⚔️</span> STEP 7 — ปิดจ๊อบทั้งสองงาน: ทวนวิชา merge จาก LAB 01</h2></div>
+      <p>ไฟดับแล้ว กลับมาทำเมนูต่อให้จบ — เปิด <code class="inline">nano menu.txt</code> แก้บรรทัดสุดท้าย <code class="inline">Cocoa 5</code> → <code class="inline">Cocoa 50</code> (บันทึก: <code class="inline">Ctrl+O</code> <code class="inline">Enter</code> ออก: <code class="inline">Ctrl+X</code>) หรือใช้ <code class="inline">sed</code> แทนก็ได้:</p>
+      <pre><code><span class="cmd">sed</span> <span class="flag">-i</span> <span class="str">'s/Cocoa 5$/Cocoa 50/'</span> menu.txt
+<span class="cmd">cat</span> menu.txt
+<span class="cmd">git</span> commit <span class="flag">-am</span> <span class="str">"Add Cocoa"</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Americano 45
+Latte 55
+Matcha Latte 65
+Cocoa 50</span>
+
+<span class="ok">[feature-newmenu 4e47c28] Add Cocoa</span>
+<span class="out"> 1 file changed, 1 insertion(+)</span></code></pre></div>
+      <p>งานเสร็จทั้งคู่แล้ว — พางานกลับบ้านทั้งสองทาง ตอนนี้ไม่มีไฟล์ค้าง <code class="inline">git switch main</code> ผ่านฉลุย:</p>
+      <pre><code><span class="cmd">git</span> switch main
+<span class="cmd">git</span> merge hotfix-hours</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Switched to branch 'main'</span>
+
+<span class="out">Updating 51c6bbb..e6ddb4e</span>
+<span class="ok">Fast-forward</span>
+<span class="out"> hours.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> <b>Fast-forward</b> (LAB 01): <code class="inline">main</code> ไม่ขยับเลยตั้งแต่แตก <code class="inline">hotfix-hours</code> — เลื่อนป้ายตามเฉย ๆ ไม่มี commit ใหม่</div>
+      <pre><code><span class="cmd">git</span> merge feature-newmenu</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Merge made by the 'ort' strategy.</span>
+<span class="out"> menu.txt | 2 ++
+ 1 file changed, 2 insertions(+)</span></code></pre></div>
+      <div class="callout warn"><span aria-hidden="true">📝</span> คราวนี้สองเส้นแยกกันจริง (main มี hotfix แล้ว) → <b>3-way merge</b>: <b>nano จะเด้งขึ้นมา</b>พร้อมข้อความ default <code class="inline">Merge branch 'feature-newmenu'</code> — บันทึกออกตามเดิม (<code class="inline">Ctrl+O</code> <code class="inline">Enter</code> <code class="inline">Ctrl+X</code>) แล้วจะเห็นบรรทัด <code class="inline">ort</code> ตามตัวอย่าง · ไม่มี conflict เพราะสองงานแตะคนละไฟล์</div>
+      <p>ดูแผนที่รวมพล:</p>
+      <pre><code><span class="cmd">git</span> log <span class="flag">--oneline</span> <span class="flag">--all</span> <span class="flag">--graph</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">*   e4a2b04 (HEAD -> main) Merge branch 'feature-newmenu'
+|\  
+| * 4e47c28 (feature-newmenu) Add Cocoa
+| * 0bb5ca5 Add Matcha Latte
+* | e6ddb4e (hotfix-hours) Fix opening hours
+|/  
+* 51c6bbb Add opening hours
+* 27b9a0b Add menu</span></code></pre></div>
+
+      <div class="svgwrap" role="img" aria-label="กราฟ commit รูปเพชร: สองเส้นที่ถูกสร้างจากคนละ worktree รวมกลับเป็น main">
+      <svg viewBox="0 0 880 300" width="880" height="300" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Noto Sans Thai, sans-serif">
+        <!-- edges -->
+        <line x1="90" y1="150" x2="230" y2="150" stroke="#c3c9d4" stroke-width="4"/>
+        <path d="M230 150 Q290 150 310 110 L360 80" fill="none" stroke="#3fb950" stroke-width="4"/>
+        <line x1="360" y1="80" x2="540" y2="80" stroke="#3fb950" stroke-width="4"/>
+        <path d="M230 150 Q290 150 310 190 L470 222" fill="none" stroke="#f05133" stroke-width="4"/>
+        <path d="M540 80 Q650 80 700 128 L720 150" fill="none" stroke="#3fb950" stroke-width="4"/>
+        <path d="M470 222 Q640 222 700 172 L720 150" fill="none" stroke="#f05133" stroke-width="4"/>
+        <!-- commits -->
+        <circle cx="90" cy="150" r="15" fill="#161b22" stroke="#c3c9d4" stroke-width="4"/>
+        <text x="90" y="188" text-anchor="middle" fill="#9db4cd" font-size="12" font-family="Consolas, monospace">27b9a0b</text>
+        <text x="90" y="207" text-anchor="middle" fill="#8b949e" font-size="11">Add menu</text>
+        <circle cx="230" cy="150" r="15" fill="#161b22" stroke="#c3c9d4" stroke-width="4"/>
+        <text x="230" y="188" text-anchor="middle" fill="#9db4cd" font-size="12" font-family="Consolas, monospace">51c6bbb</text>
+        <text x="230" y="207" text-anchor="middle" fill="#8b949e" font-size="11">Add opening hours</text>
+        <circle cx="360" cy="80" r="15" fill="#161b22" stroke="#3fb950" stroke-width="4"/>
+        <text x="360" y="48" text-anchor="middle" fill="#9db4cd" font-size="12" font-family="Consolas, monospace">0bb5ca5</text>
+        <text x="360" y="30" text-anchor="middle" fill="#8b949e" font-size="11">Add Matcha Latte</text>
+        <circle cx="540" cy="80" r="15" fill="#161b22" stroke="#3fb950" stroke-width="4"/>
+        <text x="540" y="48" text-anchor="middle" fill="#9db4cd" font-size="12" font-family="Consolas, monospace">4e47c28</text>
+        <text x="540" y="30" text-anchor="middle" fill="#8b949e" font-size="11">Add Cocoa</text>
+        <circle cx="470" cy="222" r="15" fill="#161b22" stroke="#f05133" stroke-width="4"/>
+        <text x="470" y="260" text-anchor="middle" fill="#9db4cd" font-size="12" font-family="Consolas, monospace">e6ddb4e</text>
+        <text x="470" y="279" text-anchor="middle" fill="#8b949e" font-size="11">Fix opening hours</text>
+        <circle cx="720" cy="150" r="17" fill="#3a1f1c" stroke="#f05133" stroke-width="5"/>
+        <text x="720" y="188" text-anchor="middle" fill="#9db4cd" font-size="12" font-family="Consolas, monospace">e4a2b04</text>
+        <text x="720" y="207" text-anchor="middle" fill="#8b949e" font-size="11">Merge branch 'feature-newmenu'</text>
+        <!-- branch chips -->
+        <rect x="610" y="60" width="150" height="24" rx="12" fill="#1c2b1e" stroke="#3fb950"/>
+        <text x="685" y="77" text-anchor="middle" fill="#3fb950" font-size="11.5" font-family="Consolas, monospace">feature-newmenu 🥷</text>
+        <rect x="545" y="230" width="130" height="24" rx="12" fill="#3a1f1c" stroke="#f05133"/>
+        <text x="610" y="247" text-anchor="middle" fill="#f05133" font-size="11.5" font-family="Consolas, monospace">hotfix-hours 🔥</text>
+        <rect x="765" y="106" width="110" height="24" rx="12" fill="#152747" stroke="#58a6ff"/>
+        <text x="820" y="123" text-anchor="middle" fill="#58a6ff" font-size="11.5" font-family="Consolas, monospace">HEAD → main</text>
+      </svg>
+      <p class="svgcap">รูปเพชรเหมือน LAB 01 เป๊ะ — ต่างแค่ครั้งนี้สองเส้นถูกสร้างจากคนละโต๊ะพร้อมกัน: เส้นเขียวจากโต๊ะจริง เส้นส้มจากตัวเงา</p>
+      </div>
+
+      <div class="callout"><span aria-hidden="true">📌</span> งานด่วนไม่เคยต้องรอเมนู เมนูไม่เคยต้องหลบงานด่วน — และ merge ก็คือวิชา LAB 01 เดิมทุกประการ เพราะ worktree ไม่ได้เปลี่ยนกติกาของ branch เลย</div>
+    </section>
+
+    <!-- 15 STEP 8 -->
+    <section id="step8">
+      <div class="sec-head"><div class="sec-num">15</div><h2 class="sec-title"><span aria-hidden="true">⏳</span> STEP 8 — โบนัส: --detach ไทม์แมชชีนดูอดีต</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ Git Worktree — 04 · COMMANDS — git worktree add --detach</p>
+      <p>ป้าถามว่า <i>"เมนูรุ่นแรกสุดของร้านมีอะไรบ้างนะ?"</i> — ไม่ต้อง switch ไม่ต้องกลัวกระทบงาน เปิดเงาชั่วคราวส่องอดีต (<code class="inline">HEAD~3</code> = ถอยจาก merge commit ไป 3 ก้าวตามเส้นหลัก = commit แรกสุด):</p>
+      <pre><code><span class="cmd">git</span> worktree add <span class="flag">--detach</span> ../time-machine HEAD~3
+<span class="cmd">cat</span> ../time-machine/menu.txt
+<span class="cmd">ls</span> ../time-machine</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Preparing worktree (detached HEAD 27b9a0b)</span>
+<span class="out">HEAD is now at 27b9a0b Add menu</span>
+
+<span class="out">Americano 45
+Latte 55</span>
+
+<span class="out">menu.txt</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> <code class="inline">--detach</code> = ไม่เกาะ branch ไหนเลย (detached HEAD — ยืนบน commit ตรง ๆ) เหมาะกับส่องของเก่า/ทดสอบชั่วคราว · สังเกตว่าในนั้นยังไม่มี <code class="inline">hours.txt</code> ด้วยซ้ำ — โลกของ commit แรกจริง ๆ</div>
+      <pre><code><span class="cmd">git</span> worktree list</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">/root/coffee-app   e4a2b04 [main]
+/root/hotfix       e6ddb4e [hotfix-hours]
+/root/time-machine 27b9a0b (detached HEAD)</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> 3 โต๊ะ 3 สถานะ: branch หลัก · branch hotfix · detached HEAD — คอลัมน์ท้ายบอกชัดว่าใครยืนบนอะไร</div>
+    </section>
+
+    <!-- 16 STEP 9 -->
+    <section id="step9">
+      <div class="sec-head"><div class="sec-num">16</div><h2 class="sec-title"><span aria-hidden="true">🧹</span> STEP 9 — เก็บกวาดให้เป็น: remove / prune + กำแพงกันพลาด</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ Git Worktree — 05 · COMMANDS และ 09 · CAVEATS</p>
+
+      <h3><span class="dot" aria-hidden="true"></span>9.1 ปริศนาจาก LAB 00 เฉลยที่นี่</h3>
+      <p>งานจบแล้ว ลบ branch <code class="inline">hotfix-hours</code> ทิ้ง (merge แล้ว <code class="inline">-d</code> ตัวเล็กต้องผ่าน…?):</p>
+      <pre><code><span class="cmd">git</span> branch <span class="flag">-d</span> hotfix-hours</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="err">error: cannot delete branch 'hotfix-hours' used by worktree at '/root/hotfix'</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">💡</span> <b>จำ error ประหลาดตอนลบ branch ที่ตัวเองยืนอยู่ใน LAB 00 ได้ไหม? — ข้อความเดียวกันเป๊ะ!</b> เพราะโฟลเดอร์ที่เรายืน <code class="inline">git init</code> ก็คือ worktree ตัวหนึ่ง (main worktree) ในสายตา Git มาตลอด การยืนบน branch = branch นั้น "ถูกใช้โดย worktree" — วันนี้วงจรความรู้ครบแล้ว: <b>ลบ branch ที่มีโต๊ะใช้งานอยู่ไม่ได้ ต้องเก็บโต๊ะก่อน</b></div>
+
+      <h3><span class="dot" aria-hidden="true"></span>9.2 เก็บโต๊ะด้วย git worktree remove — เจอกำแพงของแท้</h3>
+      <p>สมมุติสมชายเคยจดโน้ตค้างไว้ในเงา (ไฟล์ untracked):</p>
+      <pre><code><span class="cmd">echo</span> <span class="str">"remember to tell auntie"</span> &gt; ../hotfix/note.txt
+<span class="cmd">git</span> worktree remove ../hotfix</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="err">fatal: '../hotfix' contains modified or untracked files, use --force to delete it</span></code></pre></div>
+      <div class="callout warn"><span aria-hidden="true">🧱</span> Git เช็กก่อนลบเสมอ — มีไฟล์แก้ค้าง/untracked จะไม่ยอมลบเงียบ ๆ กันงานหายโดยไม่รู้ตัว · โน้ตไม่เอาแล้วจริง ๆ ก็ยืนยันด้วย <code class="inline">--force</code>:</div>
+      <pre><code><span class="cmd">git</span> worktree remove <span class="flag">--force</span> ../hotfix
+<span class="cmd">git</span> worktree list
+<span class="cmd">git</span> branch <span class="flag">-d</span> hotfix-hours
+<span class="cmd">git</span> branch <span class="flag">-d</span> feature-newmenu
+<span class="cmd">git</span> branch</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">/root/coffee-app   e4a2b04 [main]
+/root/time-machine 27b9a0b (detached HEAD)</span>
+
+<span class="ok">Deleted branch hotfix-hours (was e6ddb4e).
+Deleted branch feature-newmenu (was 4e47c28).</span>
+
+<span class="out">* main</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> พอโต๊ะถูกเก็บ <code class="inline">branch -d</code> ก็ผ่านแบบ LAB 01 (merge แล้วลบได้เงียบกริบ) — <b>ลบ worktree ≠ ลบ branch</b>: ตอน remove โต๊ะ commit ทั้งหมดยังอยู่ครบ เพิ่งหายตอนเราสั่งลบป้ายเอง</div>
+
+      <h3><span class="dot" aria-hidden="true"></span>9.3 บาปของการ rm -rf + ไม้กวาด prune</h3>
+      <p>เพื่อนร่วมทีมไม่รู้เรื่อง ลบโฟลเดอร์ time-machine ตรง ๆ แบบโฟลเดอร์ธรรมดา:</p>
+      <pre><code><span class="cmd">rm</span> <span class="flag">-rf</span> ../time-machine
+<span class="cmd">git</span> worktree list</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">/root/coffee-app   e4a2b04 [main]</span>
+<span class="out">/root/time-machine 27b9a0b (detached HEAD) </span><span class="err">prunable</span></code></pre></div>
+      <div class="callout danger"><span aria-hidden="true">⚠️</span> โฟลเดอร์หายไปแล้ว แต่ Git <b>ยังจำ</b>อยู่ — metadata ค้างใน <code class="inline">.git/worktrees/</code> สถานะ <code class="inline">prunable</code> = "ศพที่รอเก็บ" · นี่คือเหตุผลที่สไลด์ 09 เตือน<b>อย่าลบ directory ตรง ๆ</b> — ใช้ <code class="inline">git worktree remove</code> เสมอ ถ้าพลาดไปแล้วก็เก็บกวาดด้วย:</div>
+      <pre><code><span class="cmd">git</span> worktree prune
+<span class="cmd">git</span> worktree list</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">/root/coffee-app e4a2b04 [main]</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">✅</span> สะอาดเอี่ยม — เหลือ main worktree ตัวเดียว (ซึ่งไม่มีวันถูก remove/prune — มันคือตัวจริง ไม่ใช่เงา)</div>
+    </section>
+
+    <!-- 17 Use case -->
+    <section id="usecase">
+      <div class="sec-head"><div class="sec-num">17</div><h2 class="sec-title"><span aria-hidden="true">🤖</span> Use case ระดับโปร: รัน AI coding agent หลายตัวพร้อมกัน</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ Git Worktree — 07 · USE CASE — อ่านเฉย ๆ ไม่ต้องรัน</p>
+      <p>ทีมยุคใหม่ใช้ AI agent ช่วยเขียนโค้ด — ปัญหาคือถ้า agent หลายตัวเขียนไฟล์ในโฟลเดอร์เดียวกันมันจะทับกันเอง ทางแก้คือแพตเทิร์นเดียวกับ LAB นี้เป๊ะ: <b>หนึ่ง agent → หนึ่ง worktree → หนึ่ง branch</b></p>
+
+      <div class="svgwrap" role="img" aria-label="ไดอะแกรม: AI agent สามตัว แต่ละตัวมี worktree และ branch ของตัวเอง ใช้ .git ร่วมกัน">
+      <svg viewBox="0 0 920 330" width="920" height="330" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Noto Sans Thai, sans-serif">
+        <rect x="30" y="30" width="270" height="150" rx="14" fill="#161b22" stroke="#30363d"/>
+        <text x="165" y="62" text-anchor="middle" font-size="22">🤖</text>
+        <text x="165" y="92" text-anchor="middle" fill="#e6edf3" font-size="14" font-weight="700" font-family="Consolas, monospace">~/agent-auth</text>
+        <rect x="90" y="104" width="150" height="24" rx="12" fill="#1c2b1e" stroke="#3fb950"/>
+        <text x="165" y="121" text-anchor="middle" fill="#3fb950" font-size="11.5" font-family="Consolas, monospace">[agent/auth]</text>
+        <text x="165" y="158" text-anchor="middle" fill="#8b949e" font-size="12" font-family="Consolas, monospace">$ claude "แก้ระบบ OAuth"</text>
+
+        <rect x="325" y="30" width="270" height="150" rx="14" fill="#161b22" stroke="#30363d"/>
+        <text x="460" y="62" text-anchor="middle" font-size="22">🤖</text>
+        <text x="460" y="92" text-anchor="middle" fill="#e6edf3" font-size="14" font-weight="700" font-family="Consolas, monospace">~/agent-search</text>
+        <rect x="380" y="104" width="160" height="24" rx="12" fill="#152747" stroke="#58a6ff"/>
+        <text x="460" y="121" text-anchor="middle" fill="#58a6ff" font-size="11.5" font-family="Consolas, monospace">[agent/search]</text>
+        <text x="460" y="158" text-anchor="middle" fill="#8b949e" font-size="12" font-family="Consolas, monospace">$ claude "เพิ่ม fuzzy search"</text>
+
+        <rect x="620" y="30" width="270" height="150" rx="14" fill="#161b22" stroke="#30363d"/>
+        <text x="755" y="62" text-anchor="middle" font-size="22">🤖</text>
+        <text x="755" y="92" text-anchor="middle" fill="#e6edf3" font-size="14" font-weight="700" font-family="Consolas, monospace">~/agent-tests</text>
+        <rect x="675" y="104" width="160" height="24" rx="12" fill="#241b36" stroke="#bc8cff"/>
+        <text x="755" y="121" text-anchor="middle" fill="#bc8cff" font-size="11.5" font-family="Consolas, monospace">[agent/tests]</text>
+        <text x="755" y="158" text-anchor="middle" fill="#8b949e" font-size="12" font-family="Consolas, monospace">$ claude "เขียน test ให้ครบ"</text>
+
+        <line x1="165" y1="180" x2="400" y2="252" stroke="#58a6ff" stroke-width="3" stroke-dasharray="8 6"/>
+        <line x1="460" y1="180" x2="460" y2="248" stroke="#58a6ff" stroke-width="3" stroke-dasharray="8 6"/>
+        <line x1="755" y1="180" x2="520" y2="252" stroke="#58a6ff" stroke-width="3" stroke-dasharray="8 6"/>
+        <rect x="310" y="255" width="300" height="52" rx="12" fill="#3a1f1c" stroke="#f05133" stroke-width="2"/>
+        <text x="460" y="278" text-anchor="middle" fill="#f05133" font-size="14" font-weight="800" font-family="Consolas, monospace">.git (SHARED)</text>
+        <text x="460" y="298" text-anchor="middle" fill="#e6edf3" font-size="11.5">เสร็จแล้ว review + merge ทีละ branch</text>
+      </svg>
+      <p class="svgcap">แต่ละ agent ได้ working directory และ branch ของตัวเอง — ทำงานขนานกันโดยไม่แย่งเขียนไฟล์</p>
+      </div>
+
+      <pre><code><span class="cmd">git</span> worktree add ../agent-auth <span class="flag">-b</span> agent/auth main
+<span class="cmt"># ทำซ้ำต่อ agent หนึ่งตัว — แต่ละตัวทำงานขนานกันโดยไม่แย่งเขียนไฟล์</span>
+<span class="cmt"># เสร็จแล้ว review และ merge ทีละ branch (วิชา LAB 01) แล้วเก็บกวาด (STEP 9)</span></code></pre>
+      <p>สังเกตว่าทั้งหมดคือคำสั่งที่เพิ่งใช้มาแล้วใน LAB นี้ทุกตัว — สเกลจาก "สมชาย + เงา 1 ตัว" เป็น "agent N ตัว" ได้ตรง ๆ</p>
+    </section>
+
+    <!-- 18 Caveats -->
+    <section id="caveats">
+      <div class="sec-head"><div class="sec-num">18</div><h2 class="sec-title"><span aria-hidden="true">⚠️</span> ข้อควรระวังและข้อจำกัด</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ Git Worktree — 09 · CAVEATS — สองข้อแรกเจอตัวเป็น ๆ ไปแล้ว</p>
+      <div class="tablewrap"><table>
+        <tr><th>ข้อควรระวัง</th><th>รายละเอียด</th><th style="width:120px">เจอใน</th></tr>
+        <tr><td><b>หนึ่ง branch ต่อหนึ่ง worktree</b></td><td>checkout branch ที่ถูกใช้อยู่ในโต๊ะอื่น → <code class="inline">fatal: ... already used by worktree</code></td><td>STEP 6</td></tr>
+        <tr><td><b>อย่าลบ directory ตรง ๆ</b></td><td><code class="inline">rm -rf</code> ทิ้ง metadata ค้าง — ใช้ <code class="inline">git worktree remove</code> หรือตามเก็บด้วย <code class="inline">prune</code> เสมอ</td><td>STEP 9</td></tr>
+        <tr><td><b>untracked files ไม่ตามไปด้วย</b></td><td>worktree ใหม่ได้เฉพาะไฟล์ที่ Git track — <code class="inline">node_modules</code>, <code class="inline">.env</code>, config ต้อง setup ใหม่ในแต่ละโต๊ะ เผื่อเวลา install ด้วย</td><td>(สังเกต STEP 5.1)</td></tr>
+        <tr><td><b>submodules รองรับได้จำกัด</b></td><td>repo ที่พึ่งพา submodule หนัก ๆ ควรทดสอบ workflow ก่อนใช้จริง</td><td>—</td></tr>
+      </table></div>
+    </section>
+
+    <!-- 19 Cheat sheet -->
+    <section id="cheat">
+      <div class="sec-head"><div class="sec-num">19</div><h2 class="sec-title"><span aria-hidden="true">📋</span> สรุป + Cheat Sheet</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ Git Worktree — 10 · SUMMARY</p>
+      <div class="callout tip"><span aria-hidden="true">🥷</span> <b>ครั้งหน้าที่มีงานด่วนแทรก — สร้าง worktree แทนการสลับ branch แล้วงานเดิมจะอยู่ตรงที่เราทิ้งไว้เสมอ</b></div>
+      <div class="tablewrap"><table>
+        <tr><th style="width:46%">คำสั่ง</th><th>ทำอะไร</th></tr>
+        <tr><td><code class="inline">git worktree add &lt;path&gt; &lt;branch&gt;</code></td><td>เปิดโต๊ะใหม่ checkout branch ที่มีอยู่แล้ว</td></tr>
+        <tr><td><code class="inline">git worktree add &lt;path&gt; -b &lt;new&gt; &lt;base&gt;</code></td><td>เปิดโต๊ะใหม่ + สร้าง branch ใหม่จากฐานที่กำหนด (ท่าหลักของ LAB นี้)</td></tr>
+        <tr><td><code class="inline">git worktree add --detach &lt;path&gt; &lt;commit&gt;</code></td><td>เปิดโต๊ะชั่วคราวแบบ detached HEAD — ส่องอดีต/ทดลอง</td></tr>
+        <tr><td><code class="inline">git worktree list</code></td><td>ดูโต๊ะทั้งหมด: path · commit · branch (+ <code class="inline">prunable</code> ถ้ามีศพรอเก็บ)</td></tr>
+        <tr><td><code class="inline">git worktree remove &lt;path&gt;</code></td><td>เก็บโต๊ะอย่างถูกวิธี (มีไฟล์ค้างต้อง <code class="inline">--force</code>)</td></tr>
+        <tr><td><code class="inline">git worktree prune</code></td><td>เก็บกวาด metadata ของโต๊ะที่โฟลเดอร์ถูกลบไปแล้ว</td></tr>
+      </table></div>
+      <div class="callout"><span aria-hidden="true">🧠</span> <b>ภาพจำ:</b> repo = คลังกลาง (<code class="inline">.git</code> เดียว) · worktree = โต๊ะทำงานหลายตัวหน้าคลัง · หนึ่งโต๊ะหนึ่ง branch · เลิกใช้เก็บโต๊ะด้วย <code class="inline">remove</code> ไม่ใช่ <code class="inline">rm</code></div>
+    </section>
+
+    <!-- 20 Checklist -->
+    <section id="check">
+      <div class="sec-head"><div class="sec-num">20</div><h2 class="sec-title"><span aria-hidden="true">✅</span> Checklist</h2></div>
+      <ul class="checklist">
+        <li>อธิบายได้ว่าทำไม <code class="inline">git switch</code> ตอนมีงานค้างถึงโดน <code class="inline">would be overwritten</code> (STEP 3)</li>
+        <li>สร้าง worktree ใหม่พร้อม branch ใหม่ได้ในคำสั่งเดียว และชี้ได้ว่า path / branch ใหม่ / ฐาน คือส่วนไหนของคำสั่ง (STEP 4)</li>
+        <li><code class="inline">cat .git</code> ใน linked worktree แล้วอธิบายได้ว่ามันพิสูจน์ SHARED + CHEAP ยังไง (STEP 5.2)</li>
+        <li>commit จากในเงาแล้วเห็นจาก <code class="inline">git log --oneline --all</code> ของโต๊ะไหนก็ได้ (STEP 5.4)</li>
+        <li>กลับโต๊ะเดิมแล้ว <code class="inline">Cocoa 5</code> ยังค้างอยู่ — ชี้ได้ว่านี่คือ ISOLATED (STEP 5.5)</li>
+        <li>ชนกำแพง "หนึ่ง branch ต่อหนึ่ง worktree" ครบทั้งสองทิศ (STEP 6)</li>
+        <li>merge กลับ <code class="inline">main</code> ครบสองงาน: Fast-forward หนึ่ง + <code class="inline">ort</code> หนึ่ง แล้วเห็นรูปเพชรใน <code class="inline">--graph</code> (STEP 7)</li>
+        <li>ใช้ <code class="inline">--detach</code> เปิดไทม์แมชชีน และอ่าน <code class="inline">(detached HEAD)</code> ใน <code class="inline">worktree list</code> ออก (STEP 8)</li>
+        <li>เฉลยปริศนา LAB 00 ได้: ทำไม error ลบ branch ถึงพูดถึง "worktree" (STEP 9.1)</li>
+        <li>เจอครบ: remove โดนกำแพง untracked → <code class="inline">--force</code> → <code class="inline">rm -rf</code> เกิด <code class="inline">prunable</code> → <code class="inline">prune</code> เก็บกวาด (STEP 9)</li>
+        <li>จบ LAB: <code class="inline">git worktree list</code> เหลือบรรทัดเดียว และ <code class="inline">git branch</code> เหลือ <code class="inline">* main</code></li>
+      </ul>
+    </section>
+
+    <!-- 21 Quiz -->
+    <section id="quiz">
+      <div class="sec-head"><div class="sec-num">21</div><h2 class="sec-title"><span aria-hidden="true">❓</span> คำถามทบทวน</h2></div>
+      <div class="quiz"><ol>
+        <li>ทำไม <code class="inline">git switch main</code> ใน STEP 3 ถึงโดนปฏิเสธ — Git กลัวอะไรหาย? แล้วทำไม <code class="inline">git switch main</code> ใน STEP 7 ถึงผ่าน?</li>
+        <li>worktree แก้ Pain Point "WIP commit" ได้อย่างไร — ต่างจากการ commit งานครึ่งทางแล้วค่อยแกะกลับตรงไหน?</li>
+        <li>SHARED / ISOLATED / CHEAP — แต่ละคำหมายถึงอะไร และใน LAB นี้พิสูจน์แต่ละข้อด้วยการทดลองไหน?</li>
+        <li><code class="inline">cat .git</code> ใน linked worktree ได้ไฟล์ข้อความบรรทัดเดียว — มันชี้ไปไหน และต่างจาก <code class="inline">.git</code> ของ main worktree อย่างไร?</li>
+        <li>ในคำสั่ง <code class="inline">git worktree add ../hotfix -b hotfix-hours main</code> — สามส่วน <code class="inline">../hotfix</code> / <code class="inline">hotfix-hours</code> / <code class="inline">main</code> แต่ละส่วนคืออะไร?</li>
+        <li>ทำไม Git ถึงห้ามสอง worktree checkout branch เดียวกัน — ถ้ายอมให้ทำ จะเกิดอะไรขึ้นกับป้าย branch?</li>
+        <li>commit ที่ทำจากใน <code class="inline">../hotfix</code> ไปเก็บอยู่ที่ไหน — ทำไมโต๊ะอื่นเห็นทันทีโดยไม่ต้อง push?</li>
+        <li><code class="inline">git worktree add --detach</code> ต่างจากแบบปกติอย่างไร และสถานการณ์ไหนควรใช้?</li>
+        <li>error <code class="inline">cannot delete branch ... used by worktree</code> เคยเจอใน LAB 00 ตอนไหน — ความรู้ LAB นี้อธิบายมันว่าอย่างไร?</li>
+        <li>ลบ worktree ด้วย <code class="inline">git worktree remove</code> กับ <code class="inline">rm -rf</code> ต่างกันอย่างไร — ถ้าเผลอ <code class="inline">rm -rf</code> ไปแล้วต้องตามด้วยคำสั่งอะไร?</li>
+        <li><code class="inline">git worktree remove ../hotfix</code> ครั้งแรกโดนปฏิเสธเพราะอะไร — กำแพงนี้ป้องกันความผิดพลาดแบบไหน?</li>
+        <li>"ลบ worktree ≠ ลบ branch" — หลัง <code class="inline">remove --force ../hotfix</code> แล้ว commit <code class="inline">Fix opening hours</code> ยังอยู่ไหม? รู้ได้อย่างไร?</li>
+      </ol></div>
+    </section>
+
+    <footer>
+      LAB 02 — Shadow Clone · DevTools Week 3 · expected output ทุกจุดรันจริงบน <code class="inline">tuchsanai/devtools:2569_1</code> (git 2.54.0) — commit hash ของแต่ละคนจะต่างจากตัวอย่าง · ตัวอย่างใช้ตัวตนสมมุติ <code class="inline">somchai-dev</code> — ใช้ชื่อและอีเมลของตัวเองเสมอ
+    </footer>
+  </main>
+</div>
+<a class="top-link" href="#top" aria-label="กลับขึ้นบนสุด">↑</a>
+</body>
+</html>
