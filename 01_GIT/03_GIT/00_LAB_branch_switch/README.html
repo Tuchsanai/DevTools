@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAB 00 — The Parallel Universe | Branch &amp; Switch (แตกเส้นทางงานคู่ขนาน)</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2333; --border:#30363d;
+    --text:#e6edf3; --muted:#8b949e; --accent:#f05133; --accent2:#58a6ff;
+    --green:#3fb950; --yellow:#d29922; --purple:#bc8cff; --code-bg:#0b0f14;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI","Noto Sans Thai",-apple-system,Tahoma,sans-serif;background:var(--bg);color:var(--text);line-height:1.75}
+  a{color:var(--accent2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{display:flex;max-width:1480px;margin:0 auto}
+  nav.side{position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;width:280px;flex-shrink:0;padding:24px 18px;border-right:1px solid var(--border);background:var(--panel)}
+  nav.side .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;padding:0 8px}
+  nav.side .brand .m{width:34px;height:34px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px}
+  nav.side .brand b{font-size:1rem}
+  nav.side h2{font-size:.72rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:18px 8px 8px}
+  nav.side a{display:block;color:var(--muted);padding:7px 12px;border-radius:8px;font-size:.9rem;margin-bottom:1px}
+  nav.side a:hover{background:var(--panel2);color:var(--text);text-decoration:none}
+  nav.side a .n{color:var(--accent);font-weight:700;margin-right:8px;display:inline-block;width:20px}
+  main{flex:1;min-width:0;padding:0 0 80px}
+  header.hero{padding:64px 56px 48px;text-align:center;background:radial-gradient(circle at 50% -20%, #2d1810 0%, var(--bg) 60%);border-bottom:1px solid var(--border)}
+  .gitmark{display:inline-flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:22px;background:var(--accent);font-size:42px;margin-bottom:20px;box-shadow:0 12px 40px rgba(240,81,51,.35)}
+  header.hero .kicker{color:var(--accent);font-weight:700;letter-spacing:2px;font-size:.82rem;text-transform:uppercase}
+  header.hero h1{font-size:2.6rem;margin:10px 0 6px;background:linear-gradient(90deg,#fff,#f05133);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  header.hero p.sub{color:var(--muted);font-size:1.08rem}
+  .scores{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+  .chip{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 20px;min-width:120px}
+  .chip .v{font-size:1.25rem;font-weight:800;color:var(--accent2)}
+  .chip .l{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  section{padding:46px 56px;border-bottom:1px solid var(--border);scroll-margin-top:10px}
+  .sec-head{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+  .sec-num{flex-shrink:0;width:48px;height:48px;border-radius:13px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.3rem}
+  h2.sec-title{font-size:1.7rem}
+  .slideref{color:var(--muted);font-size:.78rem;margin:0 0 22px 64px;font-style:italic}
+  h3{font-size:1.2rem;margin:28px 0 12px;color:#fff;display:flex;align-items:center;gap:8px}
+  h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  p{margin-bottom:12px;color:#c9d1d9}
+  ul,ol{margin:0 0 14px 22px}
+  li{margin-bottom:7px;color:#c9d1d9}
+  strong,b{color:#fff}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:12px;padding:16px 20px;overflow-x:auto;margin:12px 0;font-family:"JetBrains Mono",Consolas,Monaco,monospace;font-size:.9rem;line-height:1.65}
+  pre code{color:#e6edf3}
+  .cmt{color:#8b949e}
+  .cmd{color:var(--green)}
+  .flag{color:#79c0ff}
+  .str{color:var(--yellow)}
+  .out{color:#9db4cd}
+  .err{color:#ff7b72}
+  .ok{color:var(--green)}
+  code.inline{background:var(--panel2);padding:2px 8px;border-radius:6px;font-family:Consolas,monospace;font-size:.88em;color:var(--purple)}
+  .expected{border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:0 12px 12px 0;background:var(--code-bg);margin:12px 0}
+  .expected .lbl{display:block;padding:8px 20px 0;font-size:.75rem;font-weight:700;letter-spacing:1px;color:var(--accent2);text-transform:uppercase}
+  .expected pre{border:none;margin:0;background:transparent}
+  .story{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+  .panel{background:linear-gradient(160deg,#1d4e89,#16365f);border-radius:14px;padding:18px;text-align:center;border:1px solid #2a5a92;position:relative}
+  .panel .face{font-size:2rem;margin-bottom:6px}
+  .panel p{font-size:.86rem;color:#dbe9ff;margin:0}
+  .panel .step{position:absolute;top:8px;left:10px;font-size:.7rem;color:#7fb3e8;font-weight:700}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:18px 0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .card .ic{font-size:1.8rem;margin-bottom:10px}
+  .card h3{color:#fff;margin:0 0 6px;font-size:1.05rem;display:block}
+  .card p{font-size:.88rem;color:var(--muted);margin:0}
+  .callout{border-left:4px solid var(--accent2);background:var(--panel);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0}
+  .callout.warn{border-color:var(--yellow)}
+  .callout.tip{border-color:var(--green)}
+  .callout.danger{border-color:var(--accent)}
+  .callout b{color:#fff}
+  table{width:100%;border-collapse:collapse;margin:18px 0;background:var(--panel);border-radius:12px;overflow:hidden}
+  th,td{padding:13px 18px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+  th{background:var(--panel2);color:#fff;font-size:.9rem;letter-spacing:.5px}
+  td{color:#c9d1d9;font-size:.9rem}
+  tr:last-child td{border-bottom:none}
+  .tablewrap{overflow-x:auto}
+  .diagram{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;background:#22262e;border:1px solid var(--border);border-radius:16px;padding:26px;margin:18px 0}
+  .node{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-align:center;min-width:150px}
+  .node .ic{font-size:1.8rem}
+  .node .lbl{font-size:.82rem;color:var(--muted);margin-top:4px}
+  .node .sub{font-size:.72rem;color:var(--muted)}
+  .node.repo{background:#3a1f1c;border-color:var(--accent)}
+  .node.repo .lbl{color:var(--accent);font-weight:700}
+  .node.mark{background:#1c2b1e;border-color:var(--green)}
+  .node.mark .lbl{color:var(--green);font-weight:700}
+  .arrow{font-size:1.4rem;color:var(--accent2);display:flex;flex-direction:column;align-items:center;font-weight:700}
+  .arrow .cap{font-size:.72rem;font-family:Consolas,monospace;color:var(--green)}
+  .arrow.bad{color:#ff7b72}
+  .arrow.bad .cap{color:#ff7b72}
+  .checklist{list-style:none;margin-left:0}
+  .checklist li{padding-left:32px;position:relative}
+  .checklist li::before{content:"☐";position:absolute;left:4px;color:var(--green);font-size:1.05rem}
+  .quiz{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px 26px;margin:16px 0}
+  .quiz ol{margin-bottom:0}
+  footer{padding:32px 56px;text-align:center;color:var(--muted);font-size:.85rem}
+  @media(max-width:900px){
+    .wrap{flex-direction:column}
+    nav.side{position:static;height:auto;width:100%;border-right:none;border-bottom:1px solid var(--border)}
+    header.hero h1{font-size:1.9rem}
+    section,header.hero,footer{padding-left:22px;padding-right:22px}
+  }
+  .top-link{position:fixed;bottom:24px;right:24px;background:var(--accent);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 6px 20px rgba(0,0,0,.4);z-index:50}
+  .top-link:hover{text-decoration:none;transform:translateY(-2px)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="side">
+    <div class="brand"><div class="m" aria-hidden="true">🌌</div><b>LAB 00 · Branch &amp; Switch</b></div>
+    <h2>เนื้อหา</h2>
+    <a href="#story"><span class="n">1</span>Story / Pain Point</a>
+    <a href="#goals"><span class="n">2</span>สิ่งที่จะได้เรียนรู้</a>
+    <a href="#theory1"><span class="n">3</span>ทฤษฎี: ทำไมต้องมี branch</a>
+    <a href="#theory2"><span class="n">4</span>ทฤษฎี: branch = pointer</a>
+    <a href="#theory3"><span class="n">5</span>ทฤษฎี: HEAD</a>
+    <a href="#prep"><span class="n">6</span>เตรียมความพร้อม</a>
+    <a href="#step1"><span class="n">7</span>STEP 1 — ตั้งร้าน + main</a>
+    <a href="#step2"><span class="n">8</span>STEP 2 — สร้าง branch</a>
+    <a href="#step3"><span class="n">9</span>STEP 3 — switch + ทำงาน</a>
+    <a href="#step4"><span class="n">10</span>STEP 4 — จักรวาลคู่ขนาน</a>
+    <a href="#step5"><span class="n">11</span>STEP 5 — branch ทดลอง</a>
+    <a href="#step6"><span class="n">12</span>STEP 6 — rename + delete</a>
+    <a href="#cheat"><span class="n">13</span>สรุป + Cheat Sheet</a>
+    <a href="#check"><span class="n">14</span>Checklist</a>
+    <a href="#quiz"><span class="n">15</span>คำถามทบทวน</a>
+    <h2>อ้างอิง</h2>
+    <a href="../03_GIT.pdf"><span class="n" aria-hidden="true">📕</span>สไลด์ 03_GIT.pdf</a>
+    <a href="../01_LAB_merge_conflict/README.html"><span class="n" aria-hidden="true">➡️</span>LAB 01 · Merge Day</a>
+  </nav>
+
+  <main>
+    <header class="hero" id="top">
+      <div class="gitmark" aria-hidden="true">🌌</div>
+      <p class="kicker">Week 3 · Branches and Working with Others · LAB 00</p>
+      <h1>The Parallel Universe</h1>
+      <p class="sub">แตกเส้นทางงานคู่ขนานด้วย <code class="inline">git branch</code> · ย้ายจักรวาลด้วย <code class="inline">git switch</code> / <code class="inline">git checkout</code> · เข้าใจ <code class="inline">HEAD</code> · แล้วเก็บกวาดด้วย <code class="inline">git branch -m / -d / -D</code></p>
+      <div class="scores">
+        <div class="chip"><div class="v">Docker</div><div class="l">รันจริงบน container</div></div>
+        <div class="chip"><div class="v">~45 นาที</div><div class="l">เวลาโดยประมาณ</div></div>
+        <div class="chip"><div class="v">6 STEPS</div><div class="l">branch / switch / delete จริง</div></div>
+      </div>
+    </header>
+
+    <!-- 1 Story -->
+    <section id="story">
+      <div class="sec-head"><div class="sec-num">1</div><h2 class="sec-title"><span aria-hidden="true">📖</span> Story / Pain Point</h2></div>
+      <p>จบ Week 2 สมชายทำงานสองเครื่องผ่าน GitHub ได้คล่องแล้ว คราวนี้เขารับงานจริงชิ้นแรก: <b>ระบบข้อมูลร้านกาแฟของป้า</b> — ไฟล์เมนู ไฟล์เวลาเปิดปิด อยู่ใน repo เรียบร้อย ป้าเปิดดูได้ทุกวัน แปลว่าโค้ดเวอร์ชันหลักต้อง <b>"ใช้งานได้เสมอ"</b></p>
+      <p>แล้วปัญหาก็มา: ป้าอยากได้<b>โปรโมชั่นวันศุกร์</b>เพิ่มในเมนู สมชายเริ่มแก้ไฟล์ตรง ๆ … แก้ครึ่ง ๆ กลาง ๆ อยู่ ป้าโทรมาขอเปิดดูเมนู — หน้าจอป้าเจอเมนูเวอร์ชันแหว่งที่แก้ค้างไว้ <span aria-hidden="true">😱</span></p>
+      <div class="story">
+        <div class="panel"><span class="step">1</span><div class="face" aria-hidden="true">☕</div><p>งานจริงชิ้นแรก<br>เมนูร้านป้าอยู่ใน repo</p></div>
+        <div class="panel"><span class="step">2</span><div class="face" aria-hidden="true">🛠️</div><p>เริ่มแก้โปรโมชั่น<br><b>บนของจริงโดยตรง</b></p></div>
+        <div class="panel"><span class="step">3</span><div class="face" aria-hidden="true">📞</div><p>ป้าขอดูเมนูกลางคัน<br>เจองานแหว่งครึ่งทาง</p></div>
+        <div class="panel"><span class="step">4</span><div class="face" aria-hidden="true">🗂️</div><p>หนีไปก๊อปโฟลเดอร์<br>shop-final-จริงๆ/ ท่วมเครื่อง</p></div>
+      </div>
+      <h3><span class="dot" aria-hidden="true"></span>Pain Point ของการมีประวัติ "เส้นเดียว"</h3>
+      <div class="tablewrap"><table>
+        <tr><th style="width:52px">#</th><th>ปัญหา</th><th>อาการ</th></tr>
+        <tr><td>1</td><td><b>แก้งานบนของจริงโดยตรง</b></td><td>ฟีเจอร์ทำค้างครึ่งทาง = ของจริงพังครึ่งทาง ลูกค้าเห็นงานแหว่ง</td></tr>
+        <tr><td>2</td><td><b>ก๊อปโฟลเดอร์หนีปัญหา</b></td><td><code class="inline">shop-v2/</code>, <code class="inline">shop-final/</code>, <code class="inline">shop-final-จริงๆ/</code> — โฟลเดอร์ท่วม ประวัติขาดตอน ไม่รู้อันไหนล่าสุด</td></tr>
+        <tr><td>3</td><td><b>ไอเดียทดลองไม่มีที่อยู่</b></td><td>อยากลองไอเดียบ้า ๆ ("AI ชงกาแฟ!") แต่กลัวเลอะงานหลัก เลยไม่กล้าลองอะไรเลย</td></tr>
+        <tr><td>4</td><td><b>ทำสองงานพร้อมกันไม่ได้</b></td><td>งานโปรโมชั่นยังไม่เสร็จ แต่ต้องรีบแก้เวลาเปิดร้านด่วน — สลับงานแล้วไฟล์ตีกันเอง</td></tr>
+      </table></div>
+      <div class="callout tip"><span aria-hidden="true">💡</span> <b>ทางแก้ = Branch.</b> สไลด์หน้า 8 พูดตรงประเด็น: เราต้องการวิธี <i>"focus on new updates without breaking old code"</i> — Git ให้ "จักรวาลคู่ขนาน" ของโปรเจกต์: แตกเส้นทางใหม่ไปทดลอง ทำเสร็จค่อยกลับมา ของจริงบนเส้นหลักไม่สะเทือนแม้แต่ไบต์เดียว</div>
+    </section>
+
+    <!-- 2 Goals -->
+    <section id="goals">
+      <div class="sec-head"><div class="sec-num">2</div><h2 class="sec-title"><span aria-hidden="true">🎯</span> สิ่งที่จะได้เรียนรู้</h2></div>
+      <div class="cards">
+        <div class="card"><div class="ic" aria-hidden="true">🏷️</div><h3>Branch คืออะไรกันแน่</h3><p>ไม่ใช่การก๊อปโปรเจกต์ — เป็นแค่ <b>pointer ชี้ commit</b> สร้างเร็ว ราคาถูกที่สุดใน Git</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🧭</div><h3>HEAD</h3><p>เข็มบอกว่า "ตอนนี้เรายืนอยู่ตรงไหน" — ย้ายเข็มเมื่อไร ไฟล์บนโต๊ะเปลี่ยนตาม</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🌿</div><h3>git branch</h3><p>สร้าง/ดู branch — และเข้าใจว่าการสร้าง<b>ไม่ได้พาเราย้าย</b>ไปไหน</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🔀</div><h3>git switch / checkout</h3><p>ย้ายจักรวาลได้สองคำสั่ง — รุ่นใหม่กับรุ่นพี่ที่ต้องอ่านออกทั้งคู่ (+ ทางลัด <code class="inline">-c</code>)</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">✏️</div><h3>เปลี่ยนชื่อ branch</h3><p><code class="inline">git branch -m</code> — ตั้งแต่ master→main จนถึงป้ายชื่อสุดฮา <code class="inline">please_delete</code></p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🗑️</div><h3>ลบ branch ให้เป็น</h3><p><code class="inline">-d</code> กับกำแพงกันพลาด 2 ชั้น และ <code class="inline">-D</code> ใบยืนยันสำหรับของที่ไม่เอาจริง ๆ</p></div>
+      </div>
+    </section>
+
+    <!-- 3 Theory 1 -->
+    <section id="theory1">
+      <div class="sec-head"><div class="sec-num">3</div><h2 class="sec-title"><span aria-hidden="true">⛓️</span> ทฤษฎี ① — สายโซ่ commit และเหตุผลที่ต้องมี branch</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ 03_GIT.pdf หน้า 5–20</p>
+      <p>ทุก commit จดว่า <b>parent ของตัวเองคือใคร</b> ต่อกันเป็นโซ่เส้นเดียว (สไลด์หน้า 6–7):</p>
+      <div class="diagram" role="img" aria-label="สายโซ่ commit สามข้อ: started project เป็น parent ของ added code ซึ่งเป็น parent ของ more updates">
+        <div class="node"><div class="ic" aria-hidden="true">🔗</div><div class="lbl">commit 05a36…</div><div class="sub">"started project"<br>parent: ไม่มี</div></div>
+        <div class="arrow"><span aria-hidden="true">←</span><span class="cap">parent</span></div>
+        <div class="node"><div class="ic" aria-hidden="true">🔗</div><div class="lbl">commit 70690…</div><div class="sub">"added code"</div></div>
+        <div class="arrow"><span aria-hidden="true">←</span><span class="cap">parent</span></div>
+        <div class="node"><div class="ic" aria-hidden="true">🔗</div><div class="lbl">commit 7dc05…</div><div class="sub">"more updates"</div></div>
+      </div>
+      <p>ตราบใดที่มีเส้นเดียว ทุกการแก้ไขต้องต่อท้ายเส้นนี้ — งานทดลอง งานค้าง งานพัง ปนอยู่บนเส้นเดียวกับของจริง สไลด์หน้า 11–20 เลยวาดภาพทีมที่แตกงานเป็นหลายเส้น: <i>New Library Version</i> · <i>New Styling</i> · <i>Performance</i> — ต่างคนต่างวิ่งบนเส้นของตัวเอง โดยมี <b>master/main</b> เป็นเส้นหลักที่ควรพร้อมใช้งานเสมอ</p>
+      <ul>
+        <li><b>Branch = อิสระของเส้นทางพัฒนา</b> (สไลด์หน้า 9): แต่ละ branch ให้ working directory + staging area + ประวัติ เป็นของตัวเอง</li>
+        <li>องค์กรนิยมถือ master/main เป็น branch "ของจริง" สำหรับ deploy — เป็นธรรมเนียม ไม่ใช่ข้อบังคับของ Git (สไลด์หน้า 22)</li>
+      </ul>
+    </section>
+
+    <!-- 4 Theory 2 -->
+    <section id="theory2">
+      <div class="sec-head"><div class="sec-num">4</div><h2 class="sec-title"><span aria-hidden="true">🏷️</span> ทฤษฎี ② — Branch เป็นแค่ pointer (ของถูกที่สุดใน Git)</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ 03_GIT.pdf หน้า 10, 21–27, 34</p>
+      <div class="diagram" role="img" aria-label="โซ่ commit สามข้อ มีป้าย master และป้าย new branch ชี้ commit ล่าสุดตัวเดียวกัน">
+        <div class="node"><div class="ic" aria-hidden="true">🔗</div><div class="lbl">C1</div></div>
+        <div class="arrow"><span aria-hidden="true">←</span></div>
+        <div class="node"><div class="ic" aria-hidden="true">🔗</div><div class="lbl">C2</div></div>
+        <div class="arrow"><span aria-hidden="true">←</span></div>
+        <div class="node"><div class="ic" aria-hidden="true">🔗</div><div class="lbl">C3</div></div>
+        <div class="arrow"><span aria-hidden="true">⇐</span><span class="cap">ป้ายชี้ปลายโซ่</span></div>
+        <div class="node repo"><div class="ic" aria-hidden="true">🏷️</div><div class="lbl">master</div><div class="sub">branch = pointer</div></div>
+        <div class="node mark"><div class="ic" aria-hidden="true">🏷️</div><div class="lbl">new_branch</div><div class="sub">ป้ายใหม่ ชี้ C3 เหมือนกัน</div></div>
+      </div>
+      <ul>
+        <li>Branch <b>ไม่ใช่กล่องใส่ commit</b> — มันคือ<b>ป้ายชื่อที่ชี้ไปยัง commit ปลายเส้น</b> (tip) หนึ่งอัน ประวัติที่เหลือไล่ตาม parent เอาเอง (สไลด์หน้า 34)</li>
+        <li>สร้าง branch = Git สร้าง pointer ใหม่ 1 ตัว <b>เท่านั้น</b> — ไม่ก๊อปไฟล์ ไม่แตะ repo ส่วนอื่นเลย (สไลด์หน้า 24) นี่คือเหตุผลที่สร้าง branch เร็วและ "ฟรี" ต่างจากการก๊อปโฟลเดอร์ทั้งก้อน</li>
+        <li><b>master vs main</b> (สไลด์หน้า 21–23): <code class="inline">git init</code> สร้าง branch แรกชื่อ <code class="inline">master</code> ส่วน GitHub ใช้ชื่อ <code class="inline">main</code> — มันคือ branch ธรรมดาที่บังเอิญเกิดก่อน เปลี่ยนชื่อได้เสมอ</li>
+      </ul>
+    </section>
+
+    <!-- 5 Theory 3 -->
+    <section id="theory3">
+      <div class="sec-head"><div class="sec-num">5</div><h2 class="sec-title"><span aria-hidden="true">🧭</span> ทฤษฎี ③ — HEAD: เข็มบอกว่าเรายืนอยู่ตรงไหน</h2></div>
+      <p class="slideref">อ้างอิงสไลด์ 03_GIT.pdf หน้า 28–41</p>
+      <p>พอมีหลายป้าย คำถามคือ "ตอนนี้เรากำลังมองป้ายไหนอยู่?" — คำตอบคือ <b>HEAD</b>:</p>
+      <div class="diagram" role="img" aria-label="HEAD ชี้ไปที่ branch main และ main ชี้ไปที่ commit ล่าสุด ไฟล์ในโฟลเดอร์คือ snapshot ของ commit นั้น">
+        <div class="node mark"><div class="ic" aria-hidden="true">🧭</div><div class="lbl">HEAD</div><div class="sub">เข็มบอกตำแหน่งเรา</div></div>
+        <div class="arrow"><span aria-hidden="true">→</span><span class="cap">ชี้ branch</span></div>
+        <div class="node repo"><div class="ic" aria-hidden="true">🏷️</div><div class="lbl">main</div><div class="sub">branch (pointer)</div></div>
+        <div class="arrow"><span aria-hidden="true">→</span><span class="cap">ชี้ commit</span></div>
+        <div class="node"><div class="ic" aria-hidden="true">🔗</div><div class="lbl">commit ล่าสุด</div><div class="sub">snapshot ของไฟล์ทั้งหมด</div></div>
+        <div class="arrow"><span aria-hidden="true">→</span><span class="cap">กางออกมาเป็น</span></div>
+        <div class="node"><div class="ic" aria-hidden="true">🗂️</div><div class="lbl">ไฟล์บนโต๊ะทำงาน</div><div class="sub">ที่เราเห็นด้วย ls / cat</div></div>
+      </div>
+      <ul>
+        <li><b>HEAD คือตัวชี้บอกว่าเรากำลัง "มอง" commit ไหนอยู่</b> — ปกติ HEAD ชี้ไปที่ <i>branch</i> แล้ว branch ชี้ commit ต่ออีกที: <code class="inline">HEAD -&gt; master</code> ที่โผล่ใน <code class="inline">git log</code> (สไลด์หน้า 31–32)</li>
+        <li>ไฟล์ที่เห็นในโฟลเดอร์ = snapshot ของ commit ที่ HEAD พาไปดู — <b>ย้าย HEAD (switch/checkout) = ไฟล์บนโต๊ะเปลี่ยนตาม</b> (สไลด์หน้า 39–41)</li>
+        <li>commit ใหม่ต่อจากจุดที่ HEAD ยืน และลาก branch ปัจจุบันขยับตามไป — branch อื่นปักอยู่ที่เดิม (สไลด์หน้า 46–51)</li>
+      </ul>
+      <div class="callout"><span aria-hidden="true">📌</span> LAB นี้จะได้เห็น HEAD ทั้งสองมุม: ใน <code class="inline">git log</code> (<code class="inline">HEAD -&gt; main</code>) และแอบเปิดไฟล์จริง <code class="inline">.git/HEAD</code> ดูไส้ในกันเลย</div>
+    </section>
+
+    <!-- 6 Prep -->
+    <section id="prep">
+      <div class="sec-head"><div class="sec-num">6</div><h2 class="sec-title"><span aria-hidden="true">⚙️</span> เตรียมความพร้อม</h2></div>
+      <p>รัน container และ SSH เข้าไป (เหมือนทุก LAB):</p>
+      <pre><code><span class="cmd">docker</span> run <span class="flag">-dit --name</span> devtools <span class="flag">--privileged -p</span> 2222:22 tuchsanai/devtools:2569_1
+<span class="cmd">ssh</span> root@localhost <span class="flag">-p</span> 2222        <span class="cmt"># password: passwd</span></code></pre>
+      <p>ตั้งตัวตน (ถ้า container นี้ยังไม่เคยตั้ง) — ตัวอย่างในเอกสารนี้ใช้ตัวตนสมมุติ <code class="inline">somchai-dev</code>:</p>
+      <pre><code><span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="str">"somchai-dev"</span>              <span class="cmt"># ← ใช้ชื่อของตัวเอง</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="str">"somchai.dev@example.com"</span> <span class="cmt"># ← ใช้อีเมลของตัวเอง</span></code></pre>
+      <div class="callout tip"><span aria-hidden="true">🔌</span> LAB นี้ทำงานในเครื่องล้วน ๆ — <b>ไม่ต้องใช้ GitHub และไม่ต้องใช้ token</b> · branch เป็นวิชา "ในเครื่อง" ก่อน แล้วค่อยไปเจอ remote ทีหลัง</div>
+    </section>
+
+    <!-- 7 STEP 1 -->
+    <section id="step1">
+      <div class="sec-head"><div class="sec-num">7</div><h2 class="sec-title">STEP 1 — ตั้งร้าน: repo + เปลี่ยนชื่อ master → main</h2></div>
+      <p>สร้างโปรเจกต์ร้านกาแฟของป้า:</p>
+      <pre><code><span class="cmd">mkdir</span> coffee-shop &amp;&amp; <span class="cmd">cd</span> coffee-shop
+<span class="cmd">git</span> init</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint:
+hint: 	git config --global init.defaultBranch &lt;name&gt;
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m &lt;name&gt;</span>
+<span class="ok">Initialized empty Git repository in /root/coffee-shop/.git/</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> Git บอกเองว่า branch แรกชื่อ <code class="inline">master</code> และแนะนำคำสั่งเปลี่ยนชื่อ <code class="inline">git branch -m</code> — ตรงกับสไลด์หน้า 21–23 เดี๋ยวเราใช้จริงข้างล่างนี้เลย</div>
+      <p>commit แรก แล้วดู branch:</p>
+      <pre><code><span class="cmd">echo</span> <span class="str">"Americano 45"</span> &gt; menu.txt
+<span class="cmd">echo</span> <span class="str">"Latte 55"</span> &gt;&gt; menu.txt
+<span class="cmd">git</span> add menu.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Add first menu"</span>
+<span class="cmd">git</span> branch</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[master (root-commit) 41b269c] Add first menu</span>
+<span class="out"> 1 file changed, 2 insertions(+)
+ create mode 100644 menu.txt</span>
+
+<span class="ok">* master</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> <code class="inline">git branch</code> แสดง branch ทั้งหมด — ตอนนี้มีเส้นเดียวชื่อ <code class="inline">master</code> และเครื่องหมาย <code class="inline">*</code> บอกว่าเรายืนอยู่บนมัน · <b>commit hash (<code class="inline">41b269c</code>) ของแต่ละคนจะไม่เหมือนตัวอย่าง</b> — เป็นแบบนี้ทั้งเอกสาร</div>
+      <p>เปลี่ยนชื่อให้ตรงมาตรฐานที่ใช้กับ GitHub (สไลด์หน้า 23):</p>
+      <pre><code><span class="cmd">git</span> branch <span class="flag">-m</span> master main
+<span class="cmd">git</span> branch
+<span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">* main</span>
+
+<span class="ok">41b269c (HEAD -&gt; main) Add first menu</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">🧭</span> ใน log มีวงเล็บ <b><code class="inline">(HEAD -&gt; main)</code></b> — ตัวละครหลักของ LAB นี้: <b>HEAD ชี้ไป branch <code class="inline">main</code> และ <code class="inline">main</code> ชี้ commit นี้</b> (สไลด์หน้า 31)</div>
+      <p>แอบเปิดดูไส้ในสักนิด — HEAD เป็นแค่ไฟล์ข้อความจริง ๆ:</p>
+      <pre><code><span class="cmd">cat</span> .git/HEAD</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">ref: refs/heads/main</span></code></pre></div>
+      <p>เพิ่ม commit ที่สองไว้เป็นฐาน:</p>
+      <pre><code><span class="cmd">echo</span> <span class="str">"Open daily 07:00 - 17:00"</span> &gt; hours.txt
+<span class="cmd">git</span> add hours.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Add opening hours"</span>
+<span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">[main 4f2b390] Add opening hours</span>
+<span class="out"> 1 file changed, 1 insertion(+)
+ create mode 100644 hours.txt</span>
+
+<span class="ok">4f2b390 (HEAD -&gt; main) Add opening hours</span>
+<span class="out">41b269c Add first menu</span></code></pre></div>
+    </section>
+
+    <!-- 8 STEP 2 -->
+    <section id="step2">
+      <div class="sec-head"><div class="sec-num">8</div><h2 class="sec-title">STEP 2 — งานโปรโมชั่นมา: สร้าง branch (แต่ยังไม่ย้าย!)</h2></div>
+      <p>ป้าสั่งงานโปรโมชั่นวันศุกร์ — สมชายจะไม่แตะ <code class="inline">main</code> ตรง ๆ อีกแล้ว:</p>
+      <pre><code><span class="cmd">git</span> branch feature-promo
+<span class="cmd">git</span> branch
+<span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">  feature-promo</span>
+<span class="ok">* main</span>
+
+<span class="ok">4f2b390 (HEAD -&gt; main, feature-promo) Add opening hours</span>
+<span class="out">41b269c Add first menu</span></code></pre></div>
+      <div class="callout warn"><span aria-hidden="true">⚠️</span> อ่านให้ครบ 2 จุด: ① <code class="inline">*</code> ยังอยู่ที่ <code class="inline">main</code> — <b><code class="inline">git branch &lt;name&gt;</code> สร้าง pointer ใหม่เฉย ๆ ไม่พาเราย้ายไปไหน</b> ② ใน log ทั้ง <code class="inline">HEAD -&gt; main</code> และ <code class="inline">feature-promo</code> เกาะอยู่บน <b>commit เดียวกัน</b> — branch ใหม่คือป้ายชื่ออีกป้ายบน commit เดิม ไม่มีการก๊อปไฟล์ใด ๆ (สไลด์หน้า 24–27 เป๊ะ)</div>
+    </section>
+
+    <!-- 9 STEP 3 -->
+    <section id="step3">
+      <div class="sec-head"><div class="sec-num">9</div><h2 class="sec-title">STEP 3 — ย้ายจักรวาล: git switch แล้วทำงานบน branch</h2></div>
+      <pre><code><span class="cmd">git</span> switch feature-promo
+<span class="cmd">cat</span> .git/HEAD
+<span class="cmd">git</span> branch</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Switched to branch 'feature-promo'</span>
+
+<span class="out">ref: refs/heads/feature-promo</span>
+
+<span class="ok">* feature-promo</span>
+<span class="out">  main</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">🧭</span> สิ่งเดียวที่เปลี่ยนคือ <b>HEAD หันไปชี้ <code class="inline">feature-promo</code></b> (เห็นได้จากไฟล์ <code class="inline">.git/HEAD</code> ตรง ๆ) — ตรงภาพสไลด์หน้า 37–38 ที่ HEAD ย้ายไปเกาะ branch ใหม่</div>
+      <p>ทำงานโปรโมชั่นตามปกติ — วงจร <code class="inline">edit → add → commit</code> เดิมที่คุ้นเคย:</p>
+      <pre><code><span class="cmd">echo</span> <span class="str">"PROMO: Friday - Latte buy 1 get 1 free"</span> &gt;&gt; menu.txt
+<span class="cmd">cat</span> menu.txt
+<span class="cmd">git</span> add menu.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Add Friday promo"</span>
+<span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">Americano 45
+Latte 55
+PROMO: Friday - Latte buy 1 get 1 free</span>
+
+<span class="ok">[feature-promo 1786c2b] Add Friday promo</span>
+<span class="out"> 1 file changed, 1 insertion(+)</span>
+
+<span class="ok">1786c2b (HEAD -&gt; feature-promo) Add Friday promo</span>
+<span class="out">4f2b390 (main) Add opening hours
+41b269c Add first menu</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> commit ใหม่ลาก <code class="inline">feature-promo</code> ขยับไปข้างหน้า แต่ <b><code class="inline">(main)</code> ยังปักอยู่ commit เดิม</b> — สองป้ายแยกจากกันแล้ว (สไลด์หน้า 50)</div>
+    </section>
+
+    <!-- 10 STEP 4 -->
+    <section id="step4">
+      <div class="sec-head"><div class="sec-num">10</div><h2 class="sec-title">STEP 4 — โมเมนต์จักรวาลคู่ขนาน: switch กลับแล้วไฟล์ "เปลี่ยนเอง" <span aria-hidden="true">🌌</span></h2></div>
+      <p>ระหว่างนั้นป้าโทรมา: <i>"เดี๋ยวก่อน ขอดูเมนูจริงหน่อย โปรยังไม่ประกาศนะ!"</i> — กลับจักรวาลหลัก:</p>
+      <pre><code><span class="cmd">git</span> switch main
+<span class="cmd">cat</span> menu.txt
+<span class="cmd">git</span> log <span class="flag">--oneline</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Switched to branch 'main'</span>
+
+<span class="out">Americano 45
+Latte 55</span>
+
+<span class="ok">4f2b390 (HEAD -&gt; main) Add opening hours</span>
+<span class="out">41b269c Add first menu</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">🌌</span> <b>บรรทัดโปรโมชั่นหายไปจากไฟล์!</b> ไม่ใช่งานหาย — งานอยู่ครบใน <code class="inline">feature-promo</code> แต่ HEAD พาเรากลับมาดู snapshot ของ <code class="inline">main</code> ซึ่งไม่เคยมีโปรโมชั่น · ป้าเห็นเมนูจริงเนี้ยบ ๆ ส่วนงานค้างอยู่อีกจักรวาลอย่างปลอดภัย — <b>Pain Point ข้อ 1 หายทันที</b></div>
+      <p>อยากเห็นทุกจักรวาลพร้อมกัน ใช้ <code class="inline">--all</code>:</p>
+      <pre><code><span class="cmd">git</span> log <span class="flag">--oneline --all</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">1786c2b (feature-promo) Add Friday promo</span>
+<span class="out">4f2b390 (HEAD -&gt; main) Add opening hours
+41b269c Add first menu</span></code></pre></div>
+      <h3><span class="dot" aria-hidden="true"></span>git checkout — คำสั่งรุ่นพี่ที่เจอบ่อยในโลกจริง</h3>
+      <p>สไลด์หน้า 44 ให้ใช้ได้ทั้งคู่: <code class="inline">git checkout &lt;branch&gt;</code> ย้าย branch ได้เหมือน <code class="inline">git switch</code> ทุกประการ — ลองสลับด้วย checkout ดูบ้าง:</p>
+      <pre><code><span class="cmd">git</span> checkout feature-promo
+<span class="cmd">cat</span> menu.txt
+<span class="cmd">git</span> checkout main</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Switched to branch 'feature-promo'</span>
+
+<span class="out">Americano 45
+Latte 55
+PROMO: Friday - Latte buy 1 get 1 free</span>
+
+<span class="ok">Switched to branch 'main'</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">💡</span> <code class="inline">switch</code> เป็นคำสั่งรุ่นใหม่ที่แยกงาน "ย้าย branch" ออกมาจาก <code class="inline">checkout</code> (ซึ่งทำได้สารพัดจนสับสน) — ใช้ <code class="inline">switch</code> เป็นหลักได้เลย แต่ต้องอ่าน <code class="inline">checkout</code> ให้ออก เพราะเอกสาร/เพื่อนร่วมทีมยังใช้กันทั่วไป</div>
+    </section>
+
+    <!-- 11 STEP 5 -->
+    <section id="step5">
+      <div class="sec-head"><div class="sec-num">11</div><h2 class="sec-title">STEP 5 — ไอเดียบ้า: branch ทดลองด้วย git switch -c</h2></div>
+      <p>สมชายอยากลองไอเดียเพี้ยน ๆ: <b>AI barista คุยกับลูกค้า</b> — ไม่แน่ใจว่าจะรอด เปิดจักรวาลทดลองใหม่ด้วยทางลัด (สร้าง + ย้าย ในคำสั่งเดียว):</p>
+      <pre><code><span class="cmd">git</span> switch <span class="flag">-c</span> experimental
+<span class="cmd">echo</span> <span class="str">"TODO: AI barista that talks to customers"</span> &gt; idea.txt
+<span class="cmd">git</span> add idea.txt
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="str">"Experiment: AI barista"</span>
+<span class="cmd">git</span> log <span class="flag">--oneline --all</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Switched to a new branch 'experimental'</span>
+
+<span class="ok">[experimental fa1fc4b] Experiment: AI barista</span>
+<span class="out"> 1 file changed, 1 insertion(+)
+ create mode 100644 idea.txt</span>
+
+<span class="ok">fa1fc4b (HEAD -&gt; experimental) Experiment: AI barista</span>
+<span class="out">1786c2b (feature-promo) Add Friday promo
+4f2b390 (main) Add opening hours
+41b269c Add first menu</span></code></pre></div>
+      <div class="callout tip"><span aria-hidden="true">🎉</span> ตอนนี้มี 3 จักรวาล: <code class="inline">main</code> (ของจริง) · <code class="inline">feature-promo</code> (งานป้า) · <code class="inline">experimental</code> (ไอเดียบ้า) — ตรงภาพสไลด์หน้า 53 และ <b>Pain Point ข้อ 3–4 หายแล้ว</b>: ทดลองได้ ทำหลายงานสลับได้ ไม่มีอะไรตีกัน</div>
+    </section>
+
+    <!-- 12 STEP 6 -->
+    <section id="step6">
+      <div class="sec-head"><div class="sec-num">12</div><h2 class="sec-title">STEP 6 — ไอเดียแป้ก: เปลี่ยนชื่อ แล้วลบทิ้งให้เป็น <span aria-hidden="true">🗑️</span></h2></div>
+      <p>หนึ่งสัปดาห์ผ่านไป… AI barista ไปไม่รอด <span aria-hidden="true">😅</span> ตั้งชื่อ branch ใหม่ให้สมศักดิ์ศรีก่อนลบ (ตามสไลด์หน้า 55 เป๊ะ ๆ) — <code class="inline">git branch -m &lt;ชื่อใหม่&gt;</code> ที่ไม่ใส่ชื่อเก่า = เปลี่ยนชื่อ <b>branch ที่ยืนอยู่</b>:</p>
+      <pre><code><span class="cmd">git</span> branch <span class="flag">-m</span> please_delete
+<span class="cmd">git</span> branch</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="out">  feature-promo
+  main</span>
+<span class="ok">* please_delete</span></code></pre></div>
+      <p>ลองลบทั้งที่ยังยืนอยู่บนมัน — <b>กำแพงชั้นที่ 1</b>:</p>
+      <pre><code><span class="cmd">git</span> branch <span class="flag">-d</span> please_delete</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="err">error: cannot delete branch 'please_delete' used by worktree at '/root/coffee-shop'</span></code></pre></div>
+      <div class="callout warn"><span aria-hidden="true">🧱</span> สไลด์หน้า 58: <i>"You can not delete a branch you are checked out at"</i> — ลบพื้นที่ตัวเองยืนอยู่ไม่ได้ ต้องถอยออกก่อน</div>
+      <p>ถอยไป <code class="inline">main</code> แล้วลองใหม่ — <b>กำแพงชั้นที่ 2</b>:</p>
+      <pre><code><span class="cmd">git</span> switch main
+<span class="cmd">git</span> branch <span class="flag">-d</span> please_delete</code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Switched to branch 'main'</span>
+
+<span class="err">error: the branch 'please_delete' is not fully merged.
+If you are sure you want to delete it, run 'git branch -D please_delete'</span></code></pre></div>
+      <div class="callout warn"><span aria-hidden="true">🧱</span> งานใน branch นี้<b>ยังไม่เคยถูกรวมกลับ</b> (not fully merged) — ลบแล้วงานหายถาวรนะ Git เลยขอใบยืนยัน: ต้องใช้ <code class="inline">-D</code> ตัวใหญ่ (ใจความเดียวกับสไลด์หน้า 57–58)</div>
+      <p>สมชายมั่นใจ — ไอเดียนี้ไม่เอาแล้วจริง ๆ:</p>
+      <pre><code><span class="cmd">git</span> branch <span class="flag">-D</span> please_delete
+<span class="cmd">git</span> branch
+<span class="cmd">git</span> log <span class="flag">--oneline --all</span>
+<span class="cmd">ls</span></code></pre>
+      <div class="expected"><span class="lbl">Expected Output</span><pre><code><span class="ok">Deleted branch please_delete (was fa1fc4b).</span>
+
+<span class="out">  feature-promo</span>
+<span class="ok">* main</span>
+
+<span class="ok">1786c2b (feature-promo) Add Friday promo</span>
+<span class="out">4f2b390 (HEAD -&gt; main) Add opening hours
+41b269c Add first menu</span>
+
+<span class="out">hours.txt
+menu.txt</span></code></pre></div>
+      <div class="callout"><span aria-hidden="true">📌</span> commit <code class="inline">fa1fc4b</code> หายไปจาก log และ <code class="inline">idea.txt</code> ไม่อยู่ในโฟลเดอร์ — จักรวาลทดลองถูกพับเก็บสะอาดหมดจด ส่วน <code class="inline">main</code> และ <code class="inline">feature-promo</code> ไม่สะเทือนเลย (สไลด์หน้า 59–60)</div>
+      <div class="callout tip"><span aria-hidden="true">⏭️</span> สังเกตว่า <code class="inline">feature-promo</code> (งานโปรโมชั่นที่<b>เสร็จแล้ว</b>) ยังค้างอยู่ — จะเอากลับเข้า <code class="inline">main</code> ยังไง? นั่นคือเรื่องของ <a href="../01_LAB_merge_conflict/README.html"><b>LAB 01: Merge Day</b></a></div>
+    </section>
+
+    <!-- 13 Cheat -->
+    <section id="cheat">
+      <div class="sec-head"><div class="sec-num">13</div><h2 class="sec-title"><span aria-hidden="true">📋</span> สรุป + Cheat Sheet</h2></div>
+      <div class="tablewrap"><table>
+        <tr><th>คำสั่ง</th><th>ทำอะไร</th></tr>
+        <tr><td><code class="inline">git branch</code></td><td>ดู branch ทั้งหมด (<code class="inline">*</code> = จุดที่ยืนอยู่)</td></tr>
+        <tr><td><code class="inline">git branch &lt;name&gt;</code></td><td>สร้าง branch ใหม่ (pointer ใหม่ — <b>ไม่ย้ายตัวเราไป</b>)</td></tr>
+        <tr><td><code class="inline">git switch &lt;name&gt;</code></td><td>ย้ายไป branch นั้น (HEAD ย้าย + ไฟล์บนโต๊ะเปลี่ยนตาม)</td></tr>
+        <tr><td><code class="inline">git switch -c &lt;name&gt;</code></td><td>สร้าง + ย้าย ในคำสั่งเดียว</td></tr>
+        <tr><td><code class="inline">git checkout &lt;name&gt;</code></td><td>ย้าย branch แบบคำสั่งรุ่นพี่ — ผลเหมือน <code class="inline">switch</code></td></tr>
+        <tr><td><code class="inline">git branch -m &lt;old&gt; &lt;new&gt;</code> / <code class="inline">-m &lt;new&gt;</code></td><td>เปลี่ยนชื่อ branch (แบบหลัง = เปลี่ยนชื่อ branch ปัจจุบัน)</td></tr>
+        <tr><td><code class="inline">git branch -d &lt;name&gt;</code></td><td>ลบ branch — ยอมลบเฉพาะที่ merge แล้ว + ต้องไม่ยืนอยู่บนมัน</td></tr>
+        <tr><td><code class="inline">git branch -D &lt;name&gt;</code></td><td>บังคับลบทั้งที่ยังไม่ merge — งานใน branch หายถาวร</td></tr>
+        <tr><td><code class="inline">git log --oneline --all</code></td><td>ดูทุก branch พร้อมกัน + ตำแหน่ง <code class="inline">(HEAD -&gt; ...)</code></td></tr>
+        <tr><td><code class="inline">cat .git/HEAD</code></td><td>แอบดูว่า HEAD ชี้ branch ไหน (ไฟล์ข้อความธรรมดา)</td></tr>
+      </table></div>
+      <div class="callout tip"><span aria-hidden="true">🧠</span> <b>ภาพจำ:</b> commit = ข้อต่อโซ่ · branch = ป้ายชื่อชี้ปลายโซ่ · HEAD = เข็มบอกว่าเรายืนป้ายไหน · switch = ย้ายเข็ม (ไฟล์เปลี่ยนตาม)</div>
+    </section>
+
+    <!-- 14 Checklist -->
+    <section id="check">
+      <div class="sec-head"><div class="sec-num">14</div><h2 class="sec-title"><span aria-hidden="true">✅</span> Checklist ก่อนไปต่อ</h2></div>
+      <ul class="checklist">
+        <li>อธิบายได้ว่า branch คือ pointer — สร้างแล้ว <code class="inline">git log</code> เห็น 2 ป้ายบน commit เดียว (STEP 2)</li>
+        <li>เห็นว่า <code class="inline">git branch &lt;name&gt;</code> ไม่ย้ายตัวเรา (<code class="inline">*</code> ค้างที่ <code class="inline">main</code>)</li>
+        <li><code class="inline">cat .git/HEAD</code> แล้วชี้ได้ว่า HEAD เปลี่ยนตอน switch</li>
+        <li>เห็นโมเมนต์ไฟล์ "หาย/โผล่" ตอน switch ไป-กลับ และอธิบายได้ว่าทำไม (STEP 4)</li>
+        <li>ใช้ได้ทั้ง <code class="inline">git switch</code> และ <code class="inline">git checkout</code> และรู้ว่าคู่นี้แทนกันได้</li>
+        <li>เจอกำแพง 2 ชั้นตอนลบ branch: ยืนอยู่บนมัน / ยังไม่ merge — และผ่านมันด้วย <code class="inline">git switch</code> + <code class="inline">-D</code></li>
+        <li>จบ LAB เหลือ 2 branch: <code class="inline">main</code> และ <code class="inline">feature-promo</code> (เก็บไว้ต่อ LAB 01)</li>
+      </ul>
+    </section>
+
+    <!-- 15 Quiz -->
+    <section id="quiz">
+      <div class="sec-head"><div class="sec-num">15</div><h2 class="sec-title"><span aria-hidden="true">❓</span> คำถามทบทวน</h2></div>
+      <div class="quiz">
+        <ol>
+          <li>Branch ใน Git คืออะไรกันแน่ — ทำไมการสร้าง branch ถึงเร็วกว่าก๊อปโฟลเดอร์โปรเจกต์มหาศาล?</li>
+          <li><code class="inline">git branch feature-x</code> กับ <code class="inline">git switch -c feature-x</code> ให้ผลต่างกันอย่างไร?</li>
+          <li>HEAD คืออะไร และตอน <code class="inline">git switch</code> เกิดอะไรขึ้นกับ HEAD / ไฟล์ในโฟลเดอร์?</li>
+          <li>ตอนอยู่บน <code class="inline">feature-promo</code> แล้ว commit — ทำไม <code class="inline">(main)</code> ใน log ไม่ขยับตาม?</li>
+          <li>STEP 4 บรรทัดโปรโมชั่น "หายไป" จาก <code class="inline">menu.txt</code> — งานหายจริงไหม? อยู่ที่ไหน?</li>
+          <li>กำแพง 2 ชั้นของ <code class="inline">git branch -d</code> มีอะไรบ้าง แต่ละชั้นป้องกันความผิดพลาดแบบไหน?</li>
+          <li>หลัง <code class="inline">git branch -D please_delete</code> แล้ว commit <code class="inline">fa1fc4b</code> ไปไหน? ถ้าเป็น branch ที่ merge แล้ว การลบป้ายชื่อทำให้งานหายไหม?</li>
+          <li>ทำไม <code class="inline">git init</code> ถึงได้ branch ชื่อ <code class="inline">master</code> แต่ GitHub ใช้ <code class="inline">main</code> — และเราแก้ให้ตรงกันด้วยคำสั่งอะไร?</li>
+        </ol>
+      </div>
+    </section>
+
+    <footer>
+      LAB 00 — The Parallel Universe · DevTools Week 3 · expected output ทุกจุดรันจริงบน <code class="inline">tuchsanai/devtools:2569_1</code> (git 2.43.0) — commit hash ของแต่ละคนจะต่างจากตัวอย่าง · ตัวอย่างใช้ตัวตนสมมุติ <code class="inline">somchai-dev</code> — ใช้ชื่อและอีเมลของตัวเองเสมอ
+    </footer>
+  </main>
+</div>
+<a class="top-link" href="#top" aria-label="กลับขึ้นบนสุด">↑</a>
+</body>
+</html>
