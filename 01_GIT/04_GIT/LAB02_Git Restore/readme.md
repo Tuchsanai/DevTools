@@ -106,8 +106,11 @@ The diagram below shows the two forms of `git restore` you will practice in this
 
    ✅ **Expected output** (your commit hashes will be different):
 
+   ```bash
+   git log --oneline
+   ```
+
    ```text
-   $ git log --oneline
    f9a01b8 Update xxx More xxx file3
    9f170ba Update file3
    8b9a4ce Initial commit of file3
@@ -115,8 +118,13 @@ The diagram below shows the two forms of `git restore` you will practice in this
    2441c7a Update file1
    b963520 Add file2
    8cdace8 Initial commit of file1
+   ```
 
-   $ git status
+   ```bash
+   git status
+   ```
+
+   ```text
    On branch master
    nothing to commit, working tree clean
    ```
@@ -134,8 +142,11 @@ The diagram below shows the two forms of `git restore` you will practice in this
 
    ✅ **Expected output** — `file1.txt` is now **modified** (but `git log` does not change, because nothing was committed):
 
+   ```bash
+   git status
+   ```
+
    ```text
-   $ git status
    On branch master
    Changes not staged for commit:
      (use "git add <file>..." to update what will be committed)
@@ -143,8 +154,13 @@ The diagram below shows the two forms of `git restore` you will practice in this
            modified:   file1.txt
 
    no changes added to commit (use "git add" and/or "git commit -a")
+   ```
 
-   $ cat file1.txt
+   ```bash
+   cat file1.txt
+   ```
+
+   ```text
    Initial content in file1
    Update to file1
    Additional line in file1
@@ -166,12 +182,20 @@ The diagram below shows the two forms of `git restore` you will practice in this
 
    ✅ **Expected output** — the extra line is gone and the working tree is clean again:
 
+   ```bash
+   cat file1.txt
+   ```
+
    ```text
-   $ cat file1.txt
    Initial content in file1
    Update to file1
+   ```
 
-   $ git status
+   ```bash
+   git status
+   ```
+
+   ```text
    On branch master
    nothing to commit, working tree clean
    ```
@@ -200,8 +224,11 @@ The diagram below shows the two forms of `git restore` you will practice in this
 
    ✅ **Expected output** — after adding the line, `file2.txt` has 3 lines:
 
+   ```bash
+   cat file2.txt
+   ```
+
    ```text
-   $ cat file2.txt
    Initial content in file2
    Update to file2
    More Change in file2
@@ -209,21 +236,32 @@ The diagram below shows the two forms of `git restore` you will practice in this
 
    With `N = 1` the extra line disappears, because `file2.txt` in commit `HEAD~1` still had only 2 lines:
 
+   ```bash
+   git restore --source=HEAD~1 file2.txt
+   cat file2.txt
+   ```
+
    ```text
-   $ git restore --source=HEAD~1 file2.txt
-   $ cat file2.txt
    Initial content in file2
    Update to file2
    ```
 
    With `N = 4` the file goes all the way back to its **initial content** (commit "Update file1" happened *before* "Update file2"), and `git status` reports the file as modified because it now differs from `HEAD`:
 
-   ```text
-   $ git restore --source=HEAD~4 file2.txt
-   $ cat file2.txt
-   Initial content in file2
+   ```bash
+   git restore --source=HEAD~4 file2.txt
+   cat file2.txt
+   ```
 
-   $ git status
+   ```text
+   Initial content in file2
+   ```
+
+   ```bash
+   git status
+   ```
+
+   ```text
    On branch master
    Changes not staged for commit:
      (use "git add <file>..." to update what will be committed)
@@ -235,9 +273,12 @@ The diagram below shows the two forms of `git restore` you will practice in this
 
    You can bring the file back to the latest committed version at any time:
 
+   ```bash
+   git restore --source=HEAD file2.txt
+   cat file2.txt
+   ```
+
    ```text
-   $ git restore --source=HEAD file2.txt
-   $ cat file2.txt
    Initial content in file2
    Update to file2
    ```
@@ -261,8 +302,11 @@ The diagram below shows the two forms of `git restore` you will practice in this
 
    ✅ **Expected output** — the change is **staged** (ready to be committed):
 
+   ```bash
+   git status
+   ```
+
    ```text
-   $ git status
    On branch master
    Changes to be committed:
      (use "git restore --staged <file>..." to unstage)
@@ -278,8 +322,11 @@ The diagram below shows the two forms of `git restore` you will practice in this
 
    ✅ **Expected output** — the file is **unstaged**, but notice that your change is still in the file (`git restore --staged` only touches the staging area, not the working directory):
 
+   ```bash
+   git status
+   ```
+
    ```text
-   $ git status
    On branch master
    Changes not staged for commit:
      (use "git add <file>..." to update what will be committed)
@@ -287,8 +334,13 @@ The diagram below shows the two forms of `git restore` you will practice in this
            modified:   file3.txt
 
    no changes added to commit (use "git add" and/or "git commit -a")
+   ```
 
-   $ cat file3.txt
+   ```bash
+   cat file3.txt
+   ```
+
+   ```text
    Initial content in file3
    Update to file3
    xxxx More xxxx Update to file3
