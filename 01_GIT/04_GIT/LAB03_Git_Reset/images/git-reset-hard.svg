@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="440" viewBox="0 0 1160 440" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrowT2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/>
+    </marker>
+    <marker id="arrowMove2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#cf222e"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1160" height="440" fill="#ffffff" rx="8"/>
+
+  <text x="580" y="32" text-anchor="middle" font-size="18" font-weight="bold" fill="#24292f">git reset --hard &#60;first-commit&#62; : HEAD moves back AND the file is rolled back too</text>
+
+  <!-- BEFORE -->
+  <text x="70" y="85" font-size="15" font-weight="bold" fill="#57606a">BEFORE</text>
+  <line x1="120" y1="130" x2="800" y2="130" stroke="#8b949e" stroke-width="2.5" marker-end="url(#arrowT2)"/>
+
+  <circle cx="200" cy="130" r="9" fill="#d4a72c"/>
+  <text x="200" y="103" text-anchor="middle" font-size="13.5" font-weight="bold" font-family="Consolas, monospace" fill="#9a6700">eac26f4</text>
+  <text x="200" y="162" text-anchor="middle" font-size="12.5" fill="#24292f">First commit</text>
+  <text x="200" y="178" text-anchor="middle" font-size="12" font-style="italic" fill="#9a6700">(reset target)</text>
+
+  <circle cx="440" cy="130" r="9" fill="#57606a"/>
+  <text x="440" y="103" text-anchor="middle" font-size="13.5" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">0fbb58b</text>
+  <text x="440" y="162" text-anchor="middle" font-size="12.5" fill="#24292f">Second commit</text>
+
+  <circle cx="680" cy="130" r="11" fill="#cf222e"/>
+  <text x="680" y="103" text-anchor="middle" font-size="13.5" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">153cf96</text>
+  <text x="680" y="162" text-anchor="middle" font-size="12.5" fill="#24292f">Third commit</text>
+  <text x="680" y="70" text-anchor="middle" font-size="15" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">HEAD</text>
+
+  <!-- file before -->
+  <rect x="850" y="70" width="260" height="120" fill="#f6f8fa" stroke="#d0d7de" rx="8"/>
+  <text x="980" y="92" text-anchor="middle" font-size="13" font-weight="bold" font-family="Consolas, monospace" fill="#24292f">file.txt</text>
+  <text x="866" y="115" font-size="11.5" font-family="Consolas, monospace" fill="#24292f">First Commit Content</text>
+  <text x="866" y="132" font-size="11.5" font-family="Consolas, monospace" fill="#24292f">Second Commit Content</text>
+  <text x="866" y="149" font-size="11.5" font-family="Consolas, monospace" fill="#24292f">Third Commit Content</text>
+  <text x="866" y="166" font-size="11.5" font-family="Consolas, monospace" fill="#24292f">Fourth Commit Content</text>
+  <text x="866" y="183" font-size="11.5" font-family="Consolas, monospace" fill="#24292f">Fifth Commit Content</text>
+
+  <!-- AFTER -->
+  <text x="70" y="255" font-size="15" font-weight="bold" fill="#57606a">AFTER</text>
+  <line x1="120" y1="300" x2="800" y2="300" stroke="#8b949e" stroke-width="2.5" marker-end="url(#arrowT2)"/>
+
+  <circle cx="200" cy="300" r="11" fill="#cf222e"/>
+  <text x="200" y="273" text-anchor="middle" font-size="13.5" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">eac26f4</text>
+  <text x="200" y="332" text-anchor="middle" font-size="12.5" fill="#24292f">First commit</text>
+  <text x="200" y="240" text-anchor="middle" font-size="15" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">HEAD</text>
+
+  <circle cx="440" cy="300" r="9" fill="none" stroke="#8b949e" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="440" y="332" text-anchor="middle" font-size="12.5" fill="#8b949e" font-style="italic">Second commit</text>
+  <circle cx="680" cy="300" r="9" fill="none" stroke="#8b949e" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="680" y="332" text-anchor="middle" font-size="12.5" fill="#8b949e" font-style="italic">Third commit</text>
+  <text x="560" y="273" text-anchor="middle" font-size="12.5" fill="#8b949e" font-style="italic">removed from git log</text>
+
+  <!-- HEAD move arrow -->
+  <path d="M 665 205 Q 440 170 220 235" fill="none" stroke="#cf222e" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowMove2)"/>
+  <text x="440" y="212" text-anchor="middle" font-size="13" font-weight="bold" fill="#cf222e">HEAD moves back to First commit</text>
+
+  <!-- file after -->
+  <rect x="850" y="255" width="260" height="90" fill="#ffebe9" stroke="#cf222e" rx="8"/>
+  <text x="980" y="277" text-anchor="middle" font-size="13" font-weight="bold" font-family="Consolas, monospace" fill="#24292f">file.txt</text>
+  <text x="866" y="300" font-size="11.5" font-family="Consolas, monospace" fill="#24292f">First Commit Content</text>
+  <text x="980" y="327" text-anchor="middle" font-size="11.5" font-style="italic" fill="#cf222e">lines 2–5 are gone!</text>
+
+  <text x="580" y="390" text-anchor="middle" font-size="14" fill="#24292f"><tspan font-weight="bold" fill="#cf222e">--hard resets everything</tspan> — commit history, staging area, and file contents all go back to the target commit</text>
+  <text x="580" y="414" text-anchor="middle" font-size="12.5" fill="#57606a" font-style="italic">&#9888; The discarded work cannot be recovered. (commit hashes on your machine will be different)</text>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="420" viewBox="0 0 1160 420" font-family="Segoe UI, Arial, sans-serif">
+  <rect x="0" y="0" width="1160" height="420" fill="#ffffff" rx="8"/>
+
+  <text x="580" y="34" text-anchor="middle" font-size="19" font-weight="bold" fill="#24292f">git reset --soft  vs  git reset --hard</text>
+  <text x="580" y="58" text-anchor="middle" font-size="13.5" fill="#57606a" font-style="italic">Both move the branch back to an older commit — the difference is what happens to your files</text>
+
+  <!-- column headers -->
+  <text x="360" y="100" text-anchor="middle" font-size="15" font-weight="bold" fill="#24292f">Commit history</text>
+  <text x="360" y="118" text-anchor="middle" font-size="12" fill="#57606a">(git log)</text>
+  <text x="650" y="100" text-anchor="middle" font-size="15" font-weight="bold" fill="#24292f">Staging area</text>
+  <text x="650" y="118" text-anchor="middle" font-size="12" fill="#57606a">(git status)</text>
+  <text x="950" y="100" text-anchor="middle" font-size="15" font-weight="bold" fill="#24292f">File contents</text>
+  <text x="950" y="118" text-anchor="middle" font-size="12" fill="#57606a">(cat file.txt)</text>
+
+  <!-- row: soft -->
+  <rect x="40" y="140" width="1080" height="110" fill="#ddf4ff" rx="10"/>
+  <text x="130" y="185" text-anchor="middle" font-size="16" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">git reset</text>
+  <text x="130" y="207" text-anchor="middle" font-size="16" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">--soft</text>
+
+  <text x="360" y="190" text-anchor="middle" font-size="14" font-weight="bold" fill="#cf222e">&#10007; commits after the</text>
+  <text x="360" y="210" text-anchor="middle" font-size="14" font-weight="bold" fill="#cf222e">target are removed</text>
+
+  <text x="650" y="190" text-anchor="middle" font-size="14" font-weight="bold" fill="#9a6700">changes kept as</text>
+  <text x="650" y="210" text-anchor="middle" font-size="14" font-weight="bold" fill="#9a6700">"Changes to be committed"</text>
+
+  <text x="950" y="190" text-anchor="middle" font-size="14" font-weight="bold" fill="#2da44e">&#10003; unchanged</text>
+  <text x="950" y="210" text-anchor="middle" font-size="13" fill="#57606a">(still has all 5 lines)</text>
+
+  <!-- row: hard -->
+  <rect x="40" y="270" width="1080" height="110" fill="#ffebe9" rx="10"/>
+  <text x="130" y="315" text-anchor="middle" font-size="16" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">git reset</text>
+  <text x="130" y="337" text-anchor="middle" font-size="16" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">--hard</text>
+
+  <text x="360" y="320" text-anchor="middle" font-size="14" font-weight="bold" fill="#cf222e">&#10007; commits after the</text>
+  <text x="360" y="340" text-anchor="middle" font-size="14" font-weight="bold" fill="#cf222e">target are removed</text>
+
+  <text x="650" y="320" text-anchor="middle" font-size="14" font-weight="bold" fill="#cf222e">&#10007; cleared</text>
+  <text x="650" y="340" text-anchor="middle" font-size="13" fill="#57606a">(nothing staged)</text>
+
+  <text x="950" y="320" text-anchor="middle" font-size="14" font-weight="bold" fill="#cf222e">&#10007; rolled back to the</text>
+  <text x="950" y="340" text-anchor="middle" font-size="14" font-weight="bold" fill="#cf222e">target commit</text>
+
+  <text x="580" y="408" text-anchor="middle" font-size="13" fill="#57606a" font-style="italic">&#9888; Changes discarded by --hard cannot be recovered — use it only when you are sure.</text>
+</svg>

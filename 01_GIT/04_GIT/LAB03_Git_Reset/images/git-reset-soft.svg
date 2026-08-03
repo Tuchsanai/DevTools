@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="440" viewBox="0 0 1160 440" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrowT" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/>
+    </marker>
+    <marker id="arrowMove" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#0969da"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1160" height="440" fill="#ffffff" rx="8"/>
+
+  <text x="580" y="32" text-anchor="middle" font-size="18" font-weight="bold" fill="#24292f">git reset --soft &#60;third-commit&#62; : HEAD moves back, files stay the same</text>
+
+  <!-- BEFORE -->
+  <text x="70" y="85" font-size="15" font-weight="bold" fill="#57606a">BEFORE</text>
+  <line x1="120" y1="130" x2="1080" y2="130" stroke="#8b949e" stroke-width="2.5" marker-end="url(#arrowT)"/>
+
+  <circle cx="180" cy="130" r="9" fill="#57606a"/>
+  <text x="180" y="103" text-anchor="middle" font-size="13.5" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">eac26f4</text>
+  <text x="180" y="162" text-anchor="middle" font-size="12.5" fill="#24292f">First commit</text>
+
+  <circle cx="380" cy="130" r="9" fill="#57606a"/>
+  <text x="380" y="103" text-anchor="middle" font-size="13.5" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">0fbb58b</text>
+  <text x="380" y="162" text-anchor="middle" font-size="12.5" fill="#24292f">Second commit</text>
+
+  <circle cx="580" cy="130" r="9" fill="#d4a72c"/>
+  <text x="580" y="103" text-anchor="middle" font-size="13.5" font-weight="bold" font-family="Consolas, monospace" fill="#9a6700">153cf96</text>
+  <text x="580" y="162" text-anchor="middle" font-size="12.5" fill="#24292f">Third commit</text>
+  <text x="580" y="178" text-anchor="middle" font-size="12" font-style="italic" fill="#9a6700">(reset target)</text>
+
+  <circle cx="780" cy="130" r="9" fill="#57606a"/>
+  <text x="780" y="103" text-anchor="middle" font-size="13.5" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">9122acb</text>
+  <text x="780" y="162" text-anchor="middle" font-size="12.5" fill="#24292f">Fourth commit</text>
+
+  <circle cx="980" cy="130" r="11" fill="#cf222e"/>
+  <text x="980" y="103" text-anchor="middle" font-size="13.5" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">139c3b5</text>
+  <text x="980" y="162" text-anchor="middle" font-size="12.5" fill="#24292f">Fifth commit</text>
+  <text x="980" y="70" text-anchor="middle" font-size="15" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">HEAD</text>
+
+  <!-- AFTER -->
+  <text x="70" y="255" font-size="15" font-weight="bold" fill="#57606a">AFTER</text>
+  <line x1="120" y1="300" x2="1080" y2="300" stroke="#8b949e" stroke-width="2.5" marker-end="url(#arrowT)"/>
+
+  <circle cx="180" cy="300" r="9" fill="#57606a"/>
+  <text x="180" y="273" text-anchor="middle" font-size="13.5" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">eac26f4</text>
+  <text x="180" y="332" text-anchor="middle" font-size="12.5" fill="#24292f">First commit</text>
+
+  <circle cx="380" cy="300" r="9" fill="#57606a"/>
+  <text x="380" y="273" text-anchor="middle" font-size="13.5" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">0fbb58b</text>
+  <text x="380" y="332" text-anchor="middle" font-size="12.5" fill="#24292f">Second commit</text>
+
+  <circle cx="580" cy="300" r="11" fill="#cf222e"/>
+  <text x="580" y="273" text-anchor="middle" font-size="13.5" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">153cf96</text>
+  <text x="580" y="332" text-anchor="middle" font-size="12.5" fill="#24292f">Third commit</text>
+  <text x="580" y="240" text-anchor="middle" font-size="15" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">HEAD</text>
+
+  <!-- removed commits (ghost) -->
+  <circle cx="780" cy="300" r="9" fill="none" stroke="#8b949e" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="780" y="332" text-anchor="middle" font-size="12.5" fill="#8b949e" font-style="italic">Fourth commit</text>
+  <circle cx="980" cy="300" r="9" fill="none" stroke="#8b949e" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="980" y="332" text-anchor="middle" font-size="12.5" fill="#8b949e" font-style="italic">Fifth commit</text>
+  <text x="880" y="273" text-anchor="middle" font-size="12.5" fill="#8b949e" font-style="italic">removed from git log</text>
+
+  <!-- HEAD move arrow -->
+  <path d="M 965 205 Q 780 175 600 235" fill="none" stroke="#0969da" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowMove)"/>
+  <text x="790" y="215" text-anchor="middle" font-size="13" font-weight="bold" fill="#0969da">HEAD moves back to Third commit</text>
+
+  <text x="580" y="385" text-anchor="middle" font-size="14" fill="#24292f"><tspan font-weight="bold" fill="#2da44e">file.txt still has all 5 lines</tspan> — the changes from commits 4–5 are now waiting in the staging area</text>
+  <text x="580" y="410" text-anchor="middle" font-size="12.5" fill="#57606a" font-style="italic">git status shows: "Changes to be committed: modified: file.txt"  (commit hashes on your machine will be different)</text>
+</svg>
