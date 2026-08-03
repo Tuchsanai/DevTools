@@ -2,8 +2,23 @@
 
 ### Git Lab Exercise: Git checkout and Detached Head
 
-#### Objective
-This lab will guide you through using `git checkout` to navigate between commits, using `git log --oneline` to view a concise commit history, and understanding the concept of a detached head in Git. You will create and navigate through a series of five commits.
+#### Objective (วัตถุประสงค์)
+ใน LAB นี้ นักศึกษาจะได้เรียนรู้การ **"ย้อนเวลา"** กลับไปดูประวัติของ Git repository ด้วยคำสั่ง `git checkout` และทำความเข้าใจว่าสถานะ **detached HEAD** คืออะไร
+
+ภาพรวมขั้นตอนทั้งหมดของ LAB นี้:
+
+1. **สร้าง repository ใหม่** ชื่อ `GitCheckoutLab` พร้อมไฟล์ `example.txt` หนึ่งไฟล์
+2. **ทำ commit ทั้งหมด 5 ครั้ง** — แต่ละ commit เพิ่มข้อความใหม่ 1 บรรทัดลงใน `example.txt` ทำให้ไฟล์โตขึ้นจาก 1 บรรทัดเป็น 5 บรรทัด
+3. **ดูประวัติ commit** ด้วย `git log --oneline` เพื่อดู commit ทั้ง 5 และ hash ของแต่ละ commit
+4. **Checkout ไปยัง commit ที่ 3** — จะเข้าสู่สถานะ **detached HEAD** และ `example.txt` จะย้อนกลับไปเหลือ 3 บรรทัด จากนั้นสำรวจสถานะ repository ด้วย `git status`, `git log` และ `cat`
+5. **กลับสู่ commit ล่าสุด** ด้วย `git checkout main` — `example.txt` จะกลับมาครบ 5 บรรทัด พิสูจน์ว่าข้อมูลไม่ได้หายไปไหน
+6. **Checkout ไปยัง commit แรก** — เข้าสู่สถานะ detached HEAD อีกครั้ง คราวนี้ `example.txt` เหลือเพียง 1 บรรทัด
+
+เมื่อจบ LAB นี้ นักศึกษาควรอธิบายได้ว่า:
+- `git checkout <hash>` ย้าย HEAD ไปยัง commit ใดก็ได้ในประวัติได้อย่างไร
+- ทำไมไฟล์ใน working directory จึงเปลี่ยนไปตาม commit ที่ checkout
+- "detached HEAD" คืออะไร และทำไม commit ที่ใหม่กว่าจึงไม่แสดงใน `git log` (แต่ไม่ได้ถูกลบ)
+- วิธีกลับสู่เวอร์ชันล่าสุดอย่างปลอดภัยด้วย `git checkout main`
 
 #### Setup
 1. **Initialize a New Git Repository:**
