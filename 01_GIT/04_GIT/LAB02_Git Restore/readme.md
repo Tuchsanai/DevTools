@@ -2,8 +2,17 @@
 
 ### Git Lab Exercise: Proficiency with `git restore`
 
-#### Objective
-Develop a comprehensive understanding of the `git restore` command in Git through a series of hands-on exercises. This lab includes making five distinct commits, followed by operations using `git restore`, and understanding the repository's state with `git log` and `git status`.
+#### Objective (วัตถุประสงค์)
+
+LAB นี้จะพาฝึกใช้คำสั่ง `git restore` เพื่อ "ย้อนคืน" ไฟล์กลับไปยังสถานะที่ต้องการ ผ่านการลงมือทำจริงทีละขั้นตอน โดยภาพรวมของสิ่งที่นักศึกษาจะได้ทำมีดังนี้
+
+1. **สร้าง repository และประวัติ commit ของตัวเอง** — เริ่มจาก `git init` แล้วสร้างไฟล์ `file1.txt`, `file2.txt`, `file3.txt` พร้อม commit ต่อเนื่องรวม 7 ครั้ง เพื่อให้มีประวัติสำหรับใช้ย้อนกลับในขั้นตอนถัดไป
+2. **อ่านสถานะของ repository** — ใช้ `git log --oneline` ดูประวัติ commit และ `git status` ตรวจสอบว่าไฟล์อยู่ในสถานะใด (clean / modified / staged) หลังทำแต่ละคำสั่ง
+3. **ยกเลิกการแก้ไขไฟล์ใน working directory** — แก้ไขไฟล์แล้วใช้ `git restore --source=HEAD <file>` เพื่อทิ้งการแก้ไขและดึงเนื้อหาจาก commit ล่าสุดกลับมา
+4. **ดึงไฟล์เวอร์ชันเก่าจาก commit ก่อนหน้า** — ใช้ `git restore --source=HEAD~N <file>` เพื่อย้อนไฟล์กลับไปยัง commit ที่ N ก่อนหน้า และทำความเข้าใจว่า `HEAD~1`, `HEAD~2`, ... ชี้ไปที่ commit ใดในประวัติ
+5. **ถอนไฟล์ออกจาก staging area** — ใช้ `git restore --staged <file>` เพื่อ unstage ไฟล์ที่ `git add` ไปแล้ว โดยการแก้ไขในไฟล์ยังคงอยู่ (คำสั่งนี้แตะเฉพาะ staging area ไม่แตะ working directory)
+
+เมื่อจบ LAB นักศึกษาจะเข้าใจความแตกต่างของ `git restore` ทั้งสองรูปแบบ (คืนไฟล์ใน working directory กับถอนไฟล์จาก staging area) และสามารถเลือกใช้ได้ถูกสถานการณ์
 
 The diagram below shows the two forms of `git restore` you will practice in this lab:
 
