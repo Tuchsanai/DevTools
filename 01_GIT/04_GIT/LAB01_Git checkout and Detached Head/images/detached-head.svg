@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="560" viewBox="0 0 1160 560" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrowTime2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/>
+    </marker>
+    <marker id="arrowHead2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#cf222e"/>
+    </marker>
+    <marker id="arrowBranch2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#1a7f37"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1160" height="560" fill="#ffffff" rx="8"/>
+
+  <!-- ============ Panel 1: normal state ============ -->
+  <text x="580" y="34" text-anchor="middle" font-size="18" font-weight="bold" fill="#24292f">Normal state: HEAD points to a branch</text>
+  <text x="580" y="58" text-anchor="middle" font-size="13.5" font-family="Consolas, monospace" fill="#57606a">git checkout main</text>
+
+  <line x1="70" y1="170" x2="1105" y2="170" stroke="#8b949e" stroke-width="2.5" marker-end="url(#arrowTime2)"/>
+
+  <circle cx="150" cy="170" r="9" fill="#57606a"/>
+  <text x="150" y="205" text-anchor="middle" font-size="13" font-family="Consolas, monospace" fill="#57606a">05d747f</text>
+  <circle cx="345" cy="170" r="9" fill="#57606a"/>
+  <text x="345" y="205" text-anchor="middle" font-size="13" font-family="Consolas, monospace" fill="#57606a">c7ef346</text>
+  <circle cx="540" cy="170" r="9" fill="#57606a"/>
+  <text x="540" y="205" text-anchor="middle" font-size="13" font-family="Consolas, monospace" fill="#57606a">51b4d87</text>
+  <circle cx="735" cy="170" r="9" fill="#57606a"/>
+  <text x="735" y="205" text-anchor="middle" font-size="13" font-family="Consolas, monospace" fill="#57606a">9b3c766</text>
+  <circle cx="930" cy="170" r="11" fill="#1a7f37"/>
+  <text x="930" y="205" text-anchor="middle" font-size="13" font-weight="bold" font-family="Consolas, monospace" fill="#1a7f37">2fa3e21</text>
+
+  <rect x="900" y="118" width="60" height="26" rx="6" fill="#dafbe1" stroke="#1a7f37" stroke-width="1.5"/>
+  <text x="930" y="136" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#1a7f37">main</text>
+  <line x1="930" y1="144" x2="930" y2="156" stroke="#1a7f37" stroke-width="2" marker-end="url(#arrowBranch2)"/>
+
+  <rect x="900" y="76" width="60" height="26" rx="6" fill="#ffebe9" stroke="#cf222e" stroke-width="1.5"/>
+  <text x="930" y="94" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">HEAD</text>
+  <line x1="930" y1="102" x2="930" y2="114" stroke="#cf222e" stroke-width="2" marker-end="url(#arrowHead2)"/>
+
+  <text x="580" y="245" text-anchor="middle" font-size="13" fill="#24292f">HEAD &#8594; <tspan font-family="Consolas, monospace" fill="#1a7f37" font-weight="bold">main</tspan> &#8594; newest commit &#8226; example.txt has <tspan font-weight="bold">5 lines</tspan></text>
+
+  <!-- divider -->
+  <line x1="60" y1="272" x2="1100" y2="272" stroke="#d0d7de" stroke-width="1.5" stroke-dasharray="6,5"/>
+
+  <!-- ============ Panel 2: detached head ============ -->
+  <text x="580" y="310" text-anchor="middle" font-size="18" font-weight="bold" fill="#cf222e">Detached HEAD: HEAD points directly to a commit</text>
+  <text x="580" y="334" text-anchor="middle" font-size="13.5" font-family="Consolas, monospace" fill="#57606a">git checkout 51b4d87   (the third commit)</text>
+
+  <line x1="70" y1="450" x2="1105" y2="450" stroke="#8b949e" stroke-width="2.5" marker-end="url(#arrowTime2)"/>
+
+  <circle cx="150" cy="450" r="9" fill="#57606a"/>
+  <text x="150" y="485" text-anchor="middle" font-size="13" font-family="Consolas, monospace" fill="#57606a">05d747f</text>
+  <circle cx="345" cy="450" r="9" fill="#57606a"/>
+  <text x="345" y="485" text-anchor="middle" font-size="13" font-family="Consolas, monospace" fill="#57606a">c7ef346</text>
+  <circle cx="540" cy="450" r="11" fill="#cf222e"/>
+  <text x="540" y="485" text-anchor="middle" font-size="13" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">51b4d87</text>
+  <circle cx="735" cy="450" r="9" fill="#d0d7de"/>
+  <text x="735" y="485" text-anchor="middle" font-size="13" font-family="Consolas, monospace" fill="#8b949e">9b3c766</text>
+  <circle cx="930" cy="450" r="9" fill="#d0d7de"/>
+  <text x="930" y="485" text-anchor="middle" font-size="13" font-family="Consolas, monospace" fill="#8b949e">2fa3e21</text>
+
+  <!-- HEAD points directly at commit 3 -->
+  <rect x="510" y="356" width="60" height="26" rx="6" fill="#ffebe9" stroke="#cf222e" stroke-width="1.5"/>
+  <text x="540" y="374" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">HEAD</text>
+  <line x1="540" y1="382" x2="540" y2="436" stroke="#cf222e" stroke-width="2" marker-end="url(#arrowHead2)"/>
+
+  <!-- main still points at newest commit -->
+  <rect x="900" y="398" width="60" height="26" rx="6" fill="#dafbe1" stroke="#1a7f37" stroke-width="1.5"/>
+  <text x="930" y="416" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#1a7f37">main</text>
+  <line x1="930" y1="424" x2="930" y2="436" stroke="#1a7f37" stroke-width="2" marker-end="url(#arrowBranch2)"/>
+
+  <text x="580" y="520" text-anchor="middle" font-size="13" fill="#24292f">HEAD &#8594; commit <tspan font-family="Consolas, monospace" fill="#cf222e" font-weight="bold">51b4d87</tspan> directly (no branch) &#8226; example.txt has <tspan font-weight="bold">3 lines</tspan> &#8226; <tspan font-family="Consolas, monospace">main</tspan> still remembers the newest commit</text>
+  <text x="580" y="544" text-anchor="middle" font-size="12.5" fill="#57606a" font-style="italic">The newer commits (grey) are not lost &#8212; run "git checkout main" to return to them.</text>
+</svg>

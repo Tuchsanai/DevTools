@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="370" viewBox="0 0 860 370" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrowGray" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#1f6feb"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#d29922"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="860" height="370" fill="#ffffff" rx="8"/>
+
+  <!-- Working Directory -->
+  <rect x="40" y="70" width="220" height="110" rx="10" fill="#dafbe1" stroke="#2da44e" stroke-width="2"/>
+  <text x="150" y="115" text-anchor="middle" font-size="18" font-weight="bold" fill="#1a7f37">Working Directory</text>
+  <text x="150" y="140" text-anchor="middle" font-size="13" fill="#57606a">file1.txt  file2.txt  file3.txt</text>
+  <text x="150" y="160" text-anchor="middle" font-size="13" fill="#57606a">(files you edit)</text>
+
+  <!-- Staging Area -->
+  <rect x="320" y="70" width="220" height="110" rx="10" fill="#fff8c5" stroke="#d4a72c" stroke-width="2"/>
+  <text x="430" y="115" text-anchor="middle" font-size="18" font-weight="bold" fill="#9a6700">Staging Area</text>
+  <text x="430" y="140" text-anchor="middle" font-size="13" fill="#57606a">(index)</text>
+  <text x="430" y="160" text-anchor="middle" font-size="13" fill="#57606a">files added with git add</text>
+
+  <!-- Repository -->
+  <rect x="600" y="70" width="220" height="110" rx="10" fill="#ddf4ff" stroke="#218bff" stroke-width="2"/>
+  <text x="710" y="115" text-anchor="middle" font-size="18" font-weight="bold" fill="#0969da">Repository</text>
+  <text x="710" y="140" text-anchor="middle" font-size="13" fill="#57606a">commits (HEAD, HEAD~1, ...)</text>
+  <text x="710" y="160" text-anchor="middle" font-size="13" fill="#57606a">permanent history</text>
+
+  <!-- git add / git commit (top, gray) -->
+  <line x1="260" y1="90" x2="318" y2="90" stroke="#8b949e" stroke-width="2" marker-end="url(#arrowGray)"/>
+  <text x="289" y="60" text-anchor="middle" font-size="13" fill="#57606a" font-family="Consolas, monospace">git add</text>
+
+  <line x1="540" y1="90" x2="598" y2="90" stroke="#8b949e" stroke-width="2" marker-end="url(#arrowGray)"/>
+  <text x="569" y="60" text-anchor="middle" font-size="13" fill="#57606a" font-family="Consolas, monospace">git commit</text>
+
+  <!-- restore staged : Repository to Staging Area (orange elbow) -->
+  <polyline points="660,180 660,225 430,225 430,187" fill="none" stroke="#d29922" stroke-width="2.5" marker-end="url(#arrowOrange)"/>
+  <text x="545" y="246" text-anchor="middle" font-size="15" font-weight="bold" fill="#d29922" font-family="Consolas, monospace">git restore --staged &lt;file&gt;</text>
+  <text x="545" y="265" text-anchor="middle" font-size="13" fill="#57606a">unstage the file — the working directory is NOT changed</text>
+
+  <!-- restore source : Repository to Working Directory (blue elbow) -->
+  <polyline points="770,180 770,310 150,310 150,187" fill="none" stroke="#1f6feb" stroke-width="2.5" marker-end="url(#arrowBlue)"/>
+  <text x="460" y="302" text-anchor="middle" font-size="15" font-weight="bold" fill="#1f6feb" font-family="Consolas, monospace">git restore --source=HEAD &lt;file&gt;   (or HEAD~N)</text>
+  <text x="460" y="330" text-anchor="middle" font-size="13" fill="#57606a">copy the file from a commit back into the working directory</text>
+</svg>

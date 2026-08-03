@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="300" viewBox="0 0 1160 300" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrowTime" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/>
+    </marker>
+    <marker id="arrowHead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#cf222e"/>
+    </marker>
+    <marker id="arrowBranch" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#1a7f37"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1160" height="300" fill="#ffffff" rx="8"/>
+
+  <text x="580" y="34" text-anchor="middle" font-size="18" font-weight="bold" fill="#24292f">The five commits in this lab (oldest &#8594; newest)</text>
+
+  <!-- timeline -->
+  <line x1="70" y1="170" x2="1105" y2="170" stroke="#8b949e" stroke-width="2.5" marker-end="url(#arrowTime)"/>
+  <text x="72" y="150" font-size="13" fill="#57606a" font-style="italic">oldest</text>
+  <text x="1100" y="150" text-anchor="end" font-size="13" fill="#57606a" font-style="italic">newest</text>
+
+  <!-- Node 1 -->
+  <circle cx="150" cy="170" r="9" fill="#57606a"/>
+  <text x="150" y="130" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">05d747f</text>
+  <text x="150" y="203" text-anchor="middle" font-size="12.5" fill="#24292f">Initial commit</text>
+  <text x="150" y="221" text-anchor="middle" font-size="12" font-style="italic" fill="#57606a">1 line in example.txt</text>
+
+  <!-- Node 2 -->
+  <circle cx="345" cy="170" r="9" fill="#57606a"/>
+  <text x="345" y="130" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">c7ef346</text>
+  <text x="345" y="203" text-anchor="middle" font-size="12.5" fill="#24292f">Second commit</text>
+  <text x="345" y="221" text-anchor="middle" font-size="12" font-style="italic" fill="#57606a">2 lines</text>
+
+  <!-- Node 3 -->
+  <circle cx="540" cy="170" r="9" fill="#57606a"/>
+  <text x="540" y="130" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">51b4d87</text>
+  <text x="540" y="203" text-anchor="middle" font-size="12.5" fill="#24292f">Third commit</text>
+  <text x="540" y="221" text-anchor="middle" font-size="12" font-style="italic" fill="#57606a">3 lines</text>
+
+  <!-- Node 4 -->
+  <circle cx="735" cy="170" r="9" fill="#57606a"/>
+  <text x="735" y="130" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">9b3c766</text>
+  <text x="735" y="203" text-anchor="middle" font-size="12.5" fill="#24292f">Fourth commit</text>
+  <text x="735" y="221" text-anchor="middle" font-size="12" font-style="italic" fill="#57606a">4 lines</text>
+
+  <!-- Node 5 -->
+  <circle cx="930" cy="170" r="11" fill="#1a7f37"/>
+  <text x="930" y="130" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#1a7f37">2fa3e21</text>
+  <text x="930" y="203" text-anchor="middle" font-size="12.5" fill="#24292f">Fifth commit</text>
+  <text x="930" y="221" text-anchor="middle" font-size="12" font-style="italic" fill="#57606a">5 lines</text>
+
+  <!-- main label + HEAD pointing at node 5 -->
+  <rect x="1000" y="80" width="60" height="26" rx="6" fill="#dafbe1" stroke="#1a7f37" stroke-width="1.5"/>
+  <text x="1030" y="98" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#1a7f37">main</text>
+  <line x1="1000" y1="98" x2="944" y2="160" stroke="#1a7f37" stroke-width="2" marker-end="url(#arrowBranch)"/>
+
+  <rect x="1000" y="40" width="60" height="26" rx="6" fill="#ffebe9" stroke="#cf222e" stroke-width="1.5"/>
+  <text x="1030" y="58" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">HEAD</text>
+  <line x1="1030" y1="66" x2="1030" y2="76" stroke="#cf222e" stroke-width="2" marker-end="url(#arrowHead)"/>
+
+  <text x="580" y="266" text-anchor="middle" font-size="13.5" fill="#24292f">After the five commits, <tspan font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">HEAD</tspan> points to the branch <tspan font-weight="bold" font-family="Consolas, monospace" fill="#1a7f37">main</tspan>, which points to the newest commit.</text>
+  <text x="580" y="288" text-anchor="middle" font-size="12.5" fill="#57606a" font-style="italic">Note: the commit hashes on your machine will be different.</text>
+</svg>

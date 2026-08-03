@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="330" viewBox="0 0 1160 330" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrowTime" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/>
+    </marker>
+    <marker id="arrowCount" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#cf222e"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1160" height="330" fill="#ffffff" rx="8"/>
+
+  <text x="580" y="30" text-anchor="middle" font-size="18" font-weight="bold" fill="#24292f">Commit history (oldest &#8594; newest) and how HEAD~N counts backwards</text>
+
+  <!-- timeline -->
+  <line x1="60" y1="150" x2="1115" y2="150" stroke="#8b949e" stroke-width="2.5" marker-end="url(#arrowTime)"/>
+  <text x="62" y="130" font-size="13" fill="#57606a" font-style="italic">oldest</text>
+  <text x="1110" y="130" text-anchor="end" font-size="13" fill="#57606a" font-style="italic">newest</text>
+
+  <!-- Node 1: HEAD~6 -->
+  <circle cx="120" cy="150" r="9" fill="#57606a"/>
+  <text x="120" y="105" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">8cdace8</text>
+  <text x="120" y="185" text-anchor="middle" font-size="15" font-weight="bold" font-family="Consolas, monospace" fill="#57606a">HEAD~6</text>
+  <text x="120" y="212" text-anchor="middle" font-size="12.5" fill="#24292f">Initial commit</text>
+  <text x="120" y="228" text-anchor="middle" font-size="12.5" fill="#24292f">of file1</text>
+
+  <!-- Node 2: HEAD~5 (file2 created) -->
+  <circle cx="270" cy="150" r="9" fill="#d4a72c"/>
+  <text x="270" y="105" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#9a6700">b963520</text>
+  <text x="270" y="185" text-anchor="middle" font-size="15" font-weight="bold" font-family="Consolas, monospace" fill="#9a6700">HEAD~5</text>
+  <text x="270" y="212" text-anchor="middle" font-size="12.5" fill="#24292f">Add file2</text>
+  <text x="270" y="228" text-anchor="middle" font-size="12" font-style="italic" fill="#9a6700">(file2 created here)</text>
+
+  <!-- Node 3: HEAD~4 -->
+  <circle cx="420" cy="150" r="9" fill="#57606a"/>
+  <text x="420" y="105" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">2441c7a</text>
+  <text x="420" y="185" text-anchor="middle" font-size="15" font-weight="bold" font-family="Consolas, monospace" fill="#57606a">HEAD~4</text>
+  <text x="420" y="212" text-anchor="middle" font-size="12.5" fill="#24292f">Update file1</text>
+
+  <!-- Node 4: HEAD~3 (last change to file2) -->
+  <circle cx="570" cy="150" r="9" fill="#d4a72c"/>
+  <text x="570" y="105" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#9a6700">452a9fb</text>
+  <text x="570" y="185" text-anchor="middle" font-size="15" font-weight="bold" font-family="Consolas, monospace" fill="#9a6700">HEAD~3</text>
+  <text x="570" y="212" text-anchor="middle" font-size="12.5" fill="#24292f">Update file2</text>
+  <text x="570" y="228" text-anchor="middle" font-size="12" font-style="italic" fill="#9a6700">(last change to file2)</text>
+
+  <!-- Node 5: HEAD~2 -->
+  <circle cx="720" cy="150" r="9" fill="#57606a"/>
+  <text x="720" y="105" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">8b9a4ce</text>
+  <text x="720" y="185" text-anchor="middle" font-size="15" font-weight="bold" font-family="Consolas, monospace" fill="#57606a">HEAD~2</text>
+  <text x="720" y="212" text-anchor="middle" font-size="12.5" fill="#24292f">Initial commit</text>
+  <text x="720" y="228" text-anchor="middle" font-size="12.5" fill="#24292f">of file3</text>
+
+  <!-- Node 6: HEAD~1 -->
+  <circle cx="870" cy="150" r="9" fill="#57606a"/>
+  <text x="870" y="105" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#0969da">9f170ba</text>
+  <text x="870" y="185" text-anchor="middle" font-size="15" font-weight="bold" font-family="Consolas, monospace" fill="#57606a">HEAD~1</text>
+  <text x="870" y="212" text-anchor="middle" font-size="12.5" fill="#24292f">Update file3</text>
+
+  <!-- Node 7: HEAD -->
+  <circle cx="1020" cy="150" r="11" fill="#cf222e"/>
+  <text x="1020" y="105" text-anchor="middle" font-size="14" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">f9a01b8</text>
+  <text x="1020" y="185" text-anchor="middle" font-size="16" font-weight="bold" font-family="Consolas, monospace" fill="#cf222e">HEAD</text>
+  <text x="1020" y="212" text-anchor="middle" font-size="12.5" fill="#24292f">Update xxx More</text>
+  <text x="1020" y="228" text-anchor="middle" font-size="12.5" fill="#24292f">xxx file3</text>
+
+  <!-- counting arcs from HEAD back to HEAD~3 -->
+  <path d="M 1012 78 A 78 26 0 0 0 878 78" fill="none" stroke="#cf222e" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#arrowCount)"/>
+  <path d="M 862 78 A 78 26 0 0 0 728 78" fill="none" stroke="#cf222e" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#arrowCount)"/>
+  <path d="M 712 78 A 78 26 0 0 0 578 78" fill="none" stroke="#cf222e" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#arrowCount)"/>
+  <text x="945" y="58" text-anchor="middle" font-size="13" font-weight="bold" fill="#cf222e" font-family="Consolas, monospace">~1</text>
+  <text x="795" y="58" text-anchor="middle" font-size="13" font-weight="bold" fill="#cf222e" font-family="Consolas, monospace">~2</text>
+  <text x="645" y="58" text-anchor="middle" font-size="13" font-weight="bold" fill="#cf222e" font-family="Consolas, monospace">~3</text>
+
+  <text x="580" y="280" text-anchor="middle" font-size="14" fill="#24292f"><tspan font-weight="bold" font-family="Consolas, monospace">HEAD~N</tspan> = the commit that is N steps before the newest commit (HEAD)</text>
+  <text x="580" y="308" text-anchor="middle" font-size="12.5" fill="#57606a" font-style="italic">Note: the commit hashes on your machine will be different.</text>
+</svg>
