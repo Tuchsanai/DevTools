@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 470" font-family="Segoe UI, Sarabun, Noto Sans Thai, sans-serif">
+  <defs>
+    <marker id="s4-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5568"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="980" height="470" fill="#ffffff"/>
+  <text x="490" y="28" text-anchor="middle" font-size="19" font-weight="bold" fill="#1e2430">Task 3 — <tspan font-family="Consolas, monospace">git restore --source=HEAD~N file2.txt</tspan></text>
+  <text x="490" y="49" text-anchor="middle" font-size="12.5" fill="#4a5568">ผลลัพธ์จริงเมื่อลองเปลี่ยนค่า N ตั้งแต่ 1 ถึง 6</text>
+
+  <!-- current state -->
+  <rect x="25" y="130" width="270" height="150" rx="12" fill="#fffaf0" stroke="#dd6b20" stroke-width="2"/>
+  <text x="160" y="156" text-anchor="middle" font-size="14" font-weight="bold" fill="#c05621">file2.txt ตอนนี้ (แก้ค้างไว้)</text>
+  <rect x="42" y="170" width="236" height="76" rx="7" fill="#ffffff" stroke="#fbd38d"/>
+  <text x="53" y="190" font-family="Consolas, monospace" font-size="11.5" fill="#1e2430">Initial content in file2</text>
+  <text x="53" y="209" font-family="Consolas, monospace" font-size="11.5" fill="#1e2430">Update to file2</text>
+  <text x="53" y="228" font-family="Consolas, monospace" font-size="11.5" font-weight="bold" fill="#c53030">More Change in file2</text>
+  <text x="160" y="266" text-anchor="middle" font-family="Consolas, monospace" font-size="12" fill="#c05621">$ git status --short  →  M file2.txt</text>
+
+  <!-- arrows -->
+  <path d="M 299 205 C 340 205, 340 105, 380 105" fill="none" stroke="#4a5568" stroke-width="1.8" marker-end="url(#s4-ar)"/>
+  <path d="M 299 205 L 380 205" fill="none" stroke="#4a5568" stroke-width="1.8" marker-end="url(#s4-ar)"/>
+  <path d="M 299 205 C 340 205, 340 340, 380 340" fill="none" stroke="#c53030" stroke-width="1.8" marker-end="url(#s4-ar)"/>
+
+  <!-- result 1: N = 1,2,3 -->
+  <rect x="386" y="70" width="565" height="105" rx="10" fill="#f0fff4" stroke="#2f855a" stroke-width="2"/>
+  <rect x="400" y="84" width="120" height="30" rx="6" fill="#c6f6d5" stroke="#2f855a"/>
+  <text x="460" y="104" text-anchor="middle" font-family="Consolas, monospace" font-size="13" font-weight="bold" fill="#22543d">N = 1, 2, 3</text>
+  <text x="534" y="104" font-size="12.5" fill="#276749">→ commit 8d8ad6f / fbe74cd / d7eaf88 (file2 ยังไม่ถูกแก้หลังจากนี้)</text>
+  <rect x="400" y="122" width="330" height="40" rx="6" fill="#ffffff" stroke="#9ae6b4"/>
+  <text x="411" y="139" font-family="Consolas, monospace" font-size="11.5" fill="#1e2430">Initial content in file2</text>
+  <text x="411" y="156" font-family="Consolas, monospace" font-size="11.5" fill="#1e2430">Update to file2</text>
+  <text x="746" y="139" font-size="12" fill="#276749">✔ เหมือนกับ HEAD ทุกประการ</text>
+  <text x="746" y="157" font-family="Consolas, monospace" font-size="11.5" fill="#2f855a">git status → (ว่าง = สะอาด)</text>
+
+  <!-- result 2: N = 4,5 -->
+  <rect x="386" y="188" width="565" height="105" rx="10" fill="#ebf4ff" stroke="#2b6cb0" stroke-width="2"/>
+  <rect x="400" y="202" width="120" height="30" rx="6" fill="#bee3f8" stroke="#2b6cb0"/>
+  <text x="460" y="222" text-anchor="middle" font-family="Consolas, monospace" font-size="13" font-weight="bold" fill="#1a365d">N = 4, 5</text>
+  <text x="534" y="222" font-size="12.5" fill="#2b6cb0">→ commit 56f1bb6 / bf5b9e2 (file2 เพิ่งถูกสร้าง มีบรรทัดเดียว)</text>
+  <rect x="400" y="240" width="330" height="40" rx="6" fill="#ffffff" stroke="#bee3f8"/>
+  <text x="411" y="258" font-family="Consolas, monospace" font-size="11.5" fill="#1e2430">Initial content in file2</text>
+  <text x="411" y="275" font-family="Consolas, monospace" font-size="11" fill="#a0aec0">(บรรทัด "Update to file2" หายไป)</text>
+  <text x="746" y="258" font-size="12" fill="#2b6cb0">✔ ย้อนกลับไปเวอร์ชันเก่ากว่า</text>
+  <text x="746" y="276" font-family="Consolas, monospace" font-size="11.5" fill="#2b6cb0">git status →  M file2.txt</text>
+
+  <!-- result 3: N = 6 -->
+  <rect x="386" y="306" width="565" height="105" rx="10" fill="#fff5f5" stroke="#c53030" stroke-width="2.5"/>
+  <rect x="400" y="320" width="120" height="30" rx="6" fill="#fed7d7" stroke="#c53030"/>
+  <text x="460" y="340" text-anchor="middle" font-family="Consolas, monospace" font-size="13" font-weight="bold" fill="#742a2a">N = 6</text>
+  <text x="534" y="340" font-size="12.5" fill="#9b2c2c">→ commit 5ef1cca ตอนนั้น <tspan font-family="Consolas, monospace">file2.txt ยังไม่มีอยู่จริง</tspan></text>
+  <rect x="400" y="358" width="330" height="40" rx="6" fill="#ffffff" stroke="#feb2b2"/>
+  <text x="411" y="382" font-family="Consolas, monospace" font-size="12" font-weight="bold" fill="#c53030">⚠️ file2.txt ถูกลบจาก working dir</text>
+  <text x="746" y="376" font-size="12" fill="#9b2c2c">คำสั่งเงียบ ไม่มี error (exit 0)</text>
+  <text x="746" y="394" font-family="Consolas, monospace" font-size="11.5" fill="#c53030">git status →  D file2.txt</text>
+
+  <rect x="25" y="424" width="926" height="34" rx="8" fill="#faf5ff" stroke="#6b46c1" stroke-width="1.5"/>
+  <text x="490" y="446" text-anchor="middle" font-size="12.5" fill="#553c9a">🔁 กู้กลับสู่สถานะล่าสุดได้ทุกเมื่อด้วย <tspan font-family="Consolas, monospace" font-weight="bold">git restore --source=HEAD file2.txt</tspan> (เพราะเนื้อหาที่ HEAD ถูก commit ไว้แล้ว)</text>
+</svg>

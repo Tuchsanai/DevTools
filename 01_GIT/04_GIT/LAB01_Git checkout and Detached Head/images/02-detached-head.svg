@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="290" viewBox="0 0 760 290" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="760" height="290" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+  <text x="24" y="32" font-size="15" font-weight="bold" fill="#0f172a">2. After `git checkout 39848d6` — HEAD is detached</text>
+  <text x="24" y="52" font-size="12" fill="#475569">HEAD now points straight at commit C3, not at a branch. main still points at C5 — nothing was undone.</text>
+
+  <!-- detached HEAD box over C3 -->
+  <rect x="292" y="78" width="116" height="30" rx="6" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="350" y="98" font-size="13" font-weight="bold" fill="#7f1d1d" text-anchor="middle">HEAD (detached)</text>
+  <line x1="350" y1="108" x2="350" y2="186" stroke="#dc2626" stroke-width="2" stroke-dasharray="5,4"/>
+  <polygon points="345,186 355,186 350,194" fill="#dc2626"/>
+
+  <!-- main box over C5 -->
+  <rect x="571" y="136" width="80" height="30" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="611" y="156" font-size="13" font-weight="bold" fill="#14532d" text-anchor="middle">main</text>
+  <line x1="611" y1="166" x2="611" y2="186" stroke="#64748b" stroke-width="2"/>
+  <polygon points="606,186 616,186 611,194" fill="#64748b"/>
+
+  <!-- commit chain -->
+  <line x1="90" y1="218" x2="177" y2="218" stroke="#94a3b8" stroke-width="2"/>
+  <polygon points="177,213 177,223 185,218" fill="#94a3b8"/>
+  <line x1="220" y1="218" x2="307" y2="218" stroke="#94a3b8" stroke-width="2"/>
+  <polygon points="307,213 307,223 315,218" fill="#94a3b8"/>
+  <line x1="350" y1="218" x2="437" y2="218" stroke="#94a3b8" stroke-width="2"/>
+  <polygon points="437,213 437,223 445,218" fill="#94a3b8"/>
+  <line x1="480" y1="218" x2="567" y2="218" stroke="#94a3b8" stroke-width="2"/>
+  <polygon points="567,213 567,223 575,218" fill="#94a3b8"/>
+
+  <circle cx="90" cy="218" r="24" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="90" y="223" font-size="13" font-weight="bold" fill="#1e3a8a" text-anchor="middle">C1</text>
+  <text x="90" y="262" font-size="11" font-family="Consolas, monospace" fill="#334155" text-anchor="middle">c58d7a9</text>
+
+  <circle cx="220" cy="218" r="24" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="220" y="223" font-size="13" font-weight="bold" fill="#1e3a8a" text-anchor="middle">C2</text>
+  <text x="220" y="262" font-size="11" font-family="Consolas, monospace" fill="#334155" text-anchor="middle">684754d</text>
+
+  <circle cx="350" cy="218" r="24" fill="#fecaca" stroke="#dc2626" stroke-width="3"/>
+  <text x="350" y="223" font-size="13" font-weight="bold" fill="#7f1d1d" text-anchor="middle">C3</text>
+  <text x="350" y="262" font-size="11" font-family="Consolas, monospace" fill="#334155" text-anchor="middle">39848d6</text>
+  <text x="350" y="278" font-size="11" fill="#b91c1c" text-anchor="middle">you are here</text>
+
+  <circle cx="480" cy="218" r="24" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="480" y="223" font-size="13" font-weight="bold" fill="#1e3a8a" text-anchor="middle">C4</text>
+  <text x="480" y="262" font-size="11" font-family="Consolas, monospace" fill="#334155" text-anchor="middle">1f4bdd1</text>
+
+  <circle cx="611" cy="218" r="24" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="611" y="223" font-size="13" font-weight="bold" fill="#1e3a8a" text-anchor="middle">C5</text>
+  <text x="611" y="262" font-size="11" font-family="Consolas, monospace" fill="#334155" text-anchor="middle">38681ca</text>
+
+  <text x="480" y="290" font-size="0" fill="#ffffff">.</text>
+</svg>

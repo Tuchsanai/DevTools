@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="330" viewBox="0 0 760 330" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="760" height="330" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+  <text x="24" y="32" font-size="15" font-weight="bold" fill="#0f172a">3. Committing while detached, then leaving — the commit is orphaned</text>
+  <text x="24" y="52" font-size="12" fill="#475569">e818743 was created on top of C3, but no branch points at it. After `git checkout main` it is unreachable.</text>
+
+  <!-- orphan commit -->
+  <line x1="364" y1="231" x2="411" y2="166" stroke="#9ca3af" stroke-width="2" stroke-dasharray="6,4"/>
+  <polygon points="416,159 415,169 407,163" fill="#9ca3af"/>
+  <circle cx="430" cy="140" r="24" fill="#f1f5f9" stroke="#9ca3af" stroke-width="2" stroke-dasharray="5,4"/>
+  <text x="430" y="145" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">C3'</text>
+  <text x="390" y="112" font-size="11" font-family="Consolas, monospace" fill="#334155" text-anchor="end">e818743</text>
+  <text x="390" y="130" font-size="11" fill="#b91c1c" text-anchor="end">no branch points here</text>
+  <text x="390" y="148" font-size="11" fill="#b91c1c" text-anchor="end">= unreachable (orphaned)</text>
+
+  <!-- HEAD -> main -> C5 -->
+  <rect x="571" y="100" width="80" height="30" rx="6" fill="#fef3c7" stroke="#d97706"/>
+  <text x="611" y="120" font-size="13" font-weight="bold" fill="#78350f" text-anchor="middle">HEAD</text>
+  <line x1="611" y1="130" x2="611" y2="150" stroke="#64748b" stroke-width="2"/>
+  <polygon points="606,150 616,150 611,158" fill="#64748b"/>
+  <rect x="571" y="158" width="80" height="30" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="611" y="178" font-size="13" font-weight="bold" fill="#14532d" text-anchor="middle">main</text>
+  <line x1="611" y1="188" x2="611" y2="218" stroke="#64748b" stroke-width="2"/>
+  <polygon points="606,218 616,218 611,226" fill="#64748b"/>
+
+  <!-- commit chain -->
+  <line x1="90" y1="250" x2="177" y2="250" stroke="#94a3b8" stroke-width="2"/>
+  <polygon points="177,245 177,255 185,250" fill="#94a3b8"/>
+  <line x1="220" y1="250" x2="307" y2="250" stroke="#94a3b8" stroke-width="2"/>
+  <polygon points="307,245 307,255 315,250" fill="#94a3b8"/>
+  <line x1="350" y1="250" x2="437" y2="250" stroke="#94a3b8" stroke-width="2"/>
+  <polygon points="437,245 437,255 445,250" fill="#94a3b8"/>
+  <line x1="480" y1="250" x2="567" y2="250" stroke="#94a3b8" stroke-width="2"/>
+  <polygon points="567,245 567,255 575,250" fill="#94a3b8"/>
+
+  <circle cx="90" cy="250" r="24" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="90" y="255" font-size="13" font-weight="bold" fill="#1e3a8a" text-anchor="middle">C1</text>
+  <text x="90" y="294" font-size="11" font-family="Consolas, monospace" fill="#334155" text-anchor="middle">c58d7a9</text>
+
+  <circle cx="220" cy="250" r="24" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="220" y="255" font-size="13" font-weight="bold" fill="#1e3a8a" text-anchor="middle">C2</text>
+  <text x="220" y="294" font-size="11" font-family="Consolas, monospace" fill="#334155" text-anchor="middle">684754d</text>
+
+  <circle cx="350" cy="250" r="24" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="350" y="255" font-size="13" font-weight="bold" fill="#1e3a8a" text-anchor="middle">C3</text>
+  <text x="350" y="294" font-size="11" font-family="Consolas, monospace" fill="#334155" text-anchor="middle">39848d6</text>
+
+  <circle cx="480" cy="250" r="24" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="480" y="255" font-size="13" font-weight="bold" fill="#1e3a8a" text-anchor="middle">C4</text>
+  <text x="480" y="294" font-size="11" font-family="Consolas, monospace" fill="#334155" text-anchor="middle">1f4bdd1</text>
+
+  <circle cx="611" cy="250" r="24" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="611" y="255" font-size="13" font-weight="bold" fill="#1e3a8a" text-anchor="middle">C5</text>
+  <text x="611" y="294" font-size="11" font-family="Consolas, monospace" fill="#334155" text-anchor="middle">38681ca</text>
+
+  <text x="24" y="320" font-size="11" font-family="Consolas, monospace" fill="#b91c1c">git checkout main  &#8594;  "Warning: you are leaving 1 commit behind, not connected to any of your branches"</text>
+</svg>

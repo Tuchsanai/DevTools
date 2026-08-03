@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="272" viewBox="0 0 760 272" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="760" height="272" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+  <text x="24" y="30" font-size="15" font-weight="bold" fill="#0f172a">5. What `cat example.txt` shows after checking out each commit</text>
+  <text x="24" y="50" font-size="12" fill="#475569">Checking out a commit rewrites your working directory to look exactly like it did at that commit.</text>
+
+  <!-- C1 -->
+  <rect x="16" y="66" width="136" height="152" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+  <rect x="16" y="66" width="136" height="30" rx="8" fill="#dbeafe" stroke="#93c5fd"/>
+  <text x="84" y="86" font-size="11" font-family="Consolas, monospace" font-weight="bold" fill="#1e3a8a" text-anchor="middle">C1 &#183; c58d7a9</text>
+  <text x="26" y="118" font-size="10" font-family="Consolas, monospace" fill="#0f172a">Initial line in</text>
+  <text x="26" y="132" font-size="10" font-family="Consolas, monospace" fill="#0f172a">the file.</text>
+  <text x="84" y="208" font-size="10" fill="#64748b" text-anchor="middle">1 line</text>
+
+  <!-- C2 -->
+  <rect x="164" y="66" width="136" height="152" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+  <rect x="164" y="66" width="136" height="30" rx="8" fill="#dbeafe" stroke="#93c5fd"/>
+  <text x="232" y="86" font-size="11" font-family="Consolas, monospace" font-weight="bold" fill="#1e3a8a" text-anchor="middle">C2 &#183; 684754d</text>
+  <text x="174" y="118" font-size="10" font-family="Consolas, monospace" fill="#94a3b8">Initial line ...</text>
+  <text x="174" y="134" font-size="10" font-family="Consolas, monospace" fill="#0f172a">Second line in</text>
+  <text x="174" y="148" font-size="10" font-family="Consolas, monospace" fill="#0f172a">the file.</text>
+  <text x="232" y="208" font-size="10" fill="#64748b" text-anchor="middle">2 lines</text>
+
+  <!-- C3 -->
+  <rect x="312" y="66" width="136" height="152" rx="8" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+  <rect x="312" y="66" width="136" height="30" rx="8" fill="#fed7aa" stroke="#fb923c"/>
+  <text x="380" y="86" font-size="11" font-family="Consolas, monospace" font-weight="bold" fill="#7c2d12" text-anchor="middle">C3 &#183; 39848d6</text>
+  <text x="322" y="118" font-size="10" font-family="Consolas, monospace" fill="#94a3b8">Initial line ...</text>
+  <text x="322" y="134" font-size="10" font-family="Consolas, monospace" fill="#94a3b8">Second line ...</text>
+  <text x="322" y="150" font-size="10" font-family="Consolas, monospace" fill="#0f172a">Third line</text>
+  <text x="322" y="164" font-size="10" font-family="Consolas, monospace" fill="#0f172a">added.</text>
+  <text x="380" y="196" font-size="10" font-weight="bold" fill="#c2410c" text-anchor="middle">detached HEAD</text>
+  <text x="380" y="210" font-size="10" fill="#7c2d12" text-anchor="middle">3 lines</text>
+
+  <!-- C4 -->
+  <rect x="460" y="66" width="136" height="152" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+  <rect x="460" y="66" width="136" height="30" rx="8" fill="#dbeafe" stroke="#93c5fd"/>
+  <text x="528" y="86" font-size="11" font-family="Consolas, monospace" font-weight="bold" fill="#1e3a8a" text-anchor="middle">C4 &#183; 1f4bdd1</text>
+  <text x="470" y="118" font-size="10" font-family="Consolas, monospace" fill="#94a3b8">Initial line ...</text>
+  <text x="470" y="134" font-size="10" font-family="Consolas, monospace" fill="#94a3b8">Second line ...</text>
+  <text x="470" y="150" font-size="10" font-family="Consolas, monospace" fill="#94a3b8">Third line ...</text>
+  <text x="470" y="166" font-size="10" font-family="Consolas, monospace" fill="#0f172a">Fourth line now.</text>
+  <text x="528" y="208" font-size="10" fill="#64748b" text-anchor="middle">4 lines</text>
+
+  <!-- C5 -->
+  <rect x="608" y="66" width="136" height="152" rx="8" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+  <rect x="608" y="66" width="136" height="30" rx="8" fill="#bbf7d0" stroke="#4ade80"/>
+  <text x="676" y="86" font-size="11" font-family="Consolas, monospace" font-weight="bold" fill="#14532d" text-anchor="middle">C5 &#183; 38681ca</text>
+  <text x="618" y="118" font-size="10" font-family="Consolas, monospace" fill="#94a3b8">Initial line ...</text>
+  <text x="618" y="134" font-size="10" font-family="Consolas, monospace" fill="#94a3b8">Second line ...</text>
+  <text x="618" y="150" font-size="10" font-family="Consolas, monospace" fill="#94a3b8">Third line ...</text>
+  <text x="618" y="166" font-size="10" font-family="Consolas, monospace" fill="#94a3b8">Fourth line ...</text>
+  <text x="618" y="182" font-size="10" font-family="Consolas, monospace" fill="#0f172a">Finally, the</text>
+  <text x="618" y="194" font-size="10" font-family="Consolas, monospace" fill="#0f172a">fifth line.</text>
+  <text x="676" y="212" font-size="10" font-weight="bold" fill="#15803d" text-anchor="middle">main (tip) &#183; 5 lines</text>
+
+  <text x="24" y="248" font-size="11" fill="#475569">Greyed lines are already present from earlier commits; the dark line is what that commit added.</text>
+  <text x="24" y="264" font-size="11" fill="#475569">Your own hashes will differ from these &#8212; that is expected. Match the <tspan font-weight="bold">shape</tspan> of the output, not the hash characters.</text>
+</svg>

@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 380" font-family="Segoe UI, Sarabun, Noto Sans Thai, sans-serif">
+  <defs>
+    <marker id="s3-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5568"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="960" height="380" fill="#ffffff"/>
+  <text x="480" y="28" text-anchor="middle" font-size="19" font-weight="bold" fill="#1e2430">Task 2 — <tspan font-family="Consolas, monospace">git restore --source=HEAD file1.txt</tspan></text>
+  <text x="480" y="49" text-anchor="middle" font-size="12.5" fill="#4a5568">ดึง file1.txt เวอร์ชันของ commit ล่าสุด (HEAD) มาทับไฟล์ใน working directory</text>
+
+  <!-- panel 1 -->
+  <rect x="25" y="70" width="285" height="250" rx="12" fill="#f0fff4" stroke="#2f855a" stroke-width="2"/>
+  <text x="167" y="96" text-anchor="middle" font-size="14" font-weight="bold" fill="#276749">① หลัง commit ครบ 7 ครั้ง</text>
+  <rect x="45" y="112" width="245" height="76" rx="7" fill="#ffffff" stroke="#9ae6b4"/>
+  <text x="57" y="130" font-family="Consolas, monospace" font-size="11.5" fill="#718096">file1.txt</text>
+  <text x="57" y="150" font-family="Consolas, monospace" font-size="11.5" fill="#1e2430">Initial content in file1</text>
+  <text x="57" y="168" font-family="Consolas, monospace" font-size="11.5" fill="#1e2430">Update to file1</text>
+  <rect x="45" y="202" width="245" height="98" rx="7" fill="#ffffff" stroke="#9ae6b4"/>
+  <text x="57" y="222" font-family="Consolas, monospace" font-size="11.5" fill="#718096">$ git status</text>
+  <text x="57" y="242" font-family="Consolas, monospace" font-size="11.5" fill="#1e2430">On branch main</text>
+  <text x="57" y="260" font-family="Consolas, monospace" font-size="11.5" fill="#2f855a">nothing to commit,</text>
+  <text x="57" y="277" font-family="Consolas, monospace" font-size="11.5" fill="#2f855a">working tree clean</text>
+  <text x="167" y="296" text-anchor="middle" font-size="11.5" fill="#276749">✔ สะอาด</text>
+
+  <!-- arrow 1 -->
+  <line x1="316" y1="195" x2="352" y2="195" stroke="#4a5568" stroke-width="2" marker-end="url(#s3-ar)"/>
+  <text x="334" y="182" text-anchor="middle" font-size="10.5" font-family="Consolas, monospace" fill="#2d3748">echo &gt;&gt;</text>
+
+  <!-- panel 2 -->
+  <rect x="358" y="70" width="285" height="250" rx="12" fill="#fffaf0" stroke="#dd6b20" stroke-width="2"/>
+  <text x="500" y="96" text-anchor="middle" font-size="14" font-weight="bold" fill="#c05621">② หลังแก้ไฟล์ (ยังไม่ add)</text>
+  <rect x="378" y="112" width="245" height="76" rx="7" fill="#ffffff" stroke="#fbd38d"/>
+  <text x="390" y="130" font-family="Consolas, monospace" font-size="11.5" fill="#718096">file1.txt</text>
+  <text x="390" y="150" font-family="Consolas, monospace" font-size="11.5" fill="#1e2430">Initial content in file1</text>
+  <text x="390" y="168" font-family="Consolas, monospace" font-size="11.5" fill="#1e2430">Update to file1</text>
+  <text x="390" y="184" font-family="Consolas, monospace" font-size="11.5" font-weight="bold" fill="#c53030">Additional line in file1</text>
+  <rect x="378" y="202" width="245" height="98" rx="7" fill="#ffffff" stroke="#fbd38d"/>
+  <text x="390" y="222" font-family="Consolas, monospace" font-size="11.5" fill="#718096">$ git status</text>
+  <text x="390" y="242" font-family="Consolas, monospace" font-size="11.5" fill="#1e2430">Changes not staged</text>
+  <text x="390" y="260" font-family="Consolas, monospace" font-size="11.5" fill="#1e2430">for commit:</text>
+  <text x="390" y="278" font-family="Consolas, monospace" font-size="11.5" fill="#c53030">  modified: file1.txt</text>
+  <text x="500" y="296" text-anchor="middle" font-size="11.5" fill="#c05621">⚠ มีการแก้ค้างอยู่</text>
+
+  <!-- arrow 2 -->
+  <line x1="649" y1="195" x2="685" y2="195" stroke="#4a5568" stroke-width="2" marker-end="url(#s3-ar)"/>
+  <text x="667" y="182" text-anchor="middle" font-size="10.5" font-family="Consolas, monospace" fill="#2d3748">restore</text>
+
+  <!-- panel 3 -->
+  <rect x="691" y="70" width="244" height="250" rx="12" fill="#f0fff4" stroke="#2f855a" stroke-width="2.5"/>
+  <text x="813" y="96" text-anchor="middle" font-size="14" font-weight="bold" fill="#276749">③ หลัง git restore</text>
+  <rect x="705" y="112" width="216" height="76" rx="7" fill="#ffffff" stroke="#9ae6b4"/>
+  <text x="715" y="130" font-family="Consolas, monospace" font-size="11" fill="#718096">file1.txt</text>
+  <text x="715" y="150" font-family="Consolas, monospace" font-size="11" fill="#1e2430">Initial content in file1</text>
+  <text x="715" y="168" font-family="Consolas, monospace" font-size="11" fill="#1e2430">Update to file1</text>
+  <rect x="705" y="202" width="216" height="98" rx="7" fill="#ffffff" stroke="#9ae6b4"/>
+  <text x="715" y="222" font-family="Consolas, monospace" font-size="11" fill="#718096">$ git status</text>
+  <text x="715" y="242" font-family="Consolas, monospace" font-size="11" fill="#1e2430">On branch main</text>
+  <text x="715" y="260" font-family="Consolas, monospace" font-size="11" fill="#2f855a">nothing to commit,</text>
+  <text x="715" y="277" font-family="Consolas, monospace" font-size="11" fill="#2f855a">working tree clean</text>
+  <text x="813" y="296" text-anchor="middle" font-size="11.5" fill="#276749">✔ กลับมาเหมือนเดิม</text>
+
+  <rect x="25" y="334" width="910" height="34" rx="8" fill="#fff5f5" stroke="#c53030" stroke-width="1.5"/>
+  <text x="480" y="356" text-anchor="middle" font-size="12.5" fill="#9b2c2c">⚠️ <tspan font-weight="bold">git log --oneline ไม่เปลี่ยนเลย</tspan> — git restore แก้แค่ไฟล์ ไม่แตะประวัติ commit &#160;•&#160; และบรรทัดที่หายไปกู้คืนไม่ได้ (ยังไม่เคย commit)</text>
+</svg>

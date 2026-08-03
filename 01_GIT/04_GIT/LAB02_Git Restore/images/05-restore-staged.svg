@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 400" font-family="Segoe UI, Sarabun, Noto Sans Thai, sans-serif">
+  <defs>
+    <marker id="s5-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5568"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="980" height="400" fill="#ffffff"/>
+  <text x="490" y="28" text-anchor="middle" font-size="19" font-weight="bold" fill="#1e2430">Task 4 — <tspan font-family="Consolas, monospace">git restore --staged file3.txt</tspan> (เอาไฟล์ออกจาก staging)</text>
+  <text x="490" y="49" text-anchor="middle" font-size="12.5" fill="#4a5568">จุดสำคัญ: <tspan font-weight="bold">--staged แตะแค่ staging area เท่านั้น เนื้อหาไฟล์บนดิสก์ไม่หายไปไหน</tspan></text>
+
+  <!-- state 1 -->
+  <rect x="25" y="72" width="285" height="248" rx="12" fill="#fffaf0" stroke="#dd6b20" stroke-width="2"/>
+  <text x="167" y="98" text-anchor="middle" font-size="14" font-weight="bold" fill="#c05621">① แก้ไฟล์ ยังไม่ add</text>
+  <rect x="42" y="112" width="251" height="70" rx="7" fill="#ffffff" stroke="#fbd38d"/>
+  <text x="53" y="130" font-size="11.5" fill="#718096">Working Directory</text>
+  <text x="53" y="150" font-family="Consolas, monospace" font-size="11" fill="#1e2430">file3.txt = 4 บรรทัด</text>
+  <text x="53" y="169" font-family="Consolas, monospace" font-size="11" font-weight="bold" fill="#c53030">+ Further changes in file3</text>
+  <rect x="42" y="192" width="251" height="52" rx="7" fill="#f7fafc" stroke="#cbd5e0"/>
+  <text x="53" y="210" font-size="11.5" fill="#718096">Staging Area</text>
+  <text x="53" y="231" font-family="Consolas, monospace" font-size="11" fill="#a0aec0">(ว่าง)</text>
+  <rect x="42" y="254" width="251" height="52" rx="7" fill="#ffffff" stroke="#fbd38d"/>
+  <text x="53" y="272" font-family="Consolas, monospace" font-size="11" fill="#718096">$ git status</text>
+  <text x="53" y="292" font-family="Consolas, monospace" font-size="11" fill="#c53030">Changes not staged…</text>
+
+  <line x1="316" y1="196" x2="352" y2="196" stroke="#4a5568" stroke-width="2" marker-end="url(#s5-ar)"/>
+  <text x="334" y="184" text-anchor="middle" font-size="10.5" font-family="Consolas, monospace" fill="#2d3748">git add</text>
+
+  <!-- state 2 -->
+  <rect x="358" y="72" width="285" height="248" rx="12" fill="#ebf4ff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="500" y="98" text-anchor="middle" font-size="14" font-weight="bold" fill="#2b6cb0">② หลัง git add file3.txt</text>
+  <rect x="375" y="112" width="251" height="70" rx="7" fill="#ffffff" stroke="#bee3f8"/>
+  <text x="386" y="130" font-size="11.5" fill="#718096">Working Directory</text>
+  <text x="386" y="150" font-family="Consolas, monospace" font-size="11" fill="#1e2430">file3.txt = 4 บรรทัด</text>
+  <text x="386" y="169" font-family="Consolas, monospace" font-size="11" fill="#718096">(ไม่เปลี่ยน)</text>
+  <rect x="375" y="192" width="251" height="52" rx="7" fill="#bee3f8" stroke="#2b6cb0" stroke-width="1.6"/>
+  <text x="386" y="210" font-size="11.5" fill="#2c5282">Staging Area</text>
+  <text x="386" y="231" font-family="Consolas, monospace" font-size="11" font-weight="bold" fill="#1a365d">file3.txt ✔ เข้ามาแล้ว</text>
+  <rect x="375" y="254" width="251" height="52" rx="7" fill="#ffffff" stroke="#bee3f8"/>
+  <text x="386" y="272" font-family="Consolas, monospace" font-size="11" fill="#718096">$ git status</text>
+  <text x="386" y="292" font-family="Consolas, monospace" font-size="11" fill="#2b6cb0">Changes to be committed:</text>
+
+  <line x1="649" y1="196" x2="685" y2="196" stroke="#c53030" stroke-width="2" marker-end="url(#s5-ar)"/>
+  <text x="667" y="184" text-anchor="middle" font-size="10.5" font-family="Consolas, monospace" fill="#9b2c2c">--staged</text>
+
+  <!-- state 3 -->
+  <rect x="691" y="72" width="264" height="248" rx="12" fill="#fffaf0" stroke="#dd6b20" stroke-width="2.5"/>
+  <text x="823" y="98" text-anchor="middle" font-size="14" font-weight="bold" fill="#c05621">③ หลัง restore --staged</text>
+  <rect x="706" y="112" width="234" height="70" rx="7" fill="#ffffff" stroke="#fbd38d"/>
+  <text x="716" y="130" font-size="11.5" fill="#718096">Working Directory</text>
+  <text x="716" y="150" font-family="Consolas, monospace" font-size="11" fill="#1e2430">file3.txt = 4 บรรทัด</text>
+  <text x="716" y="169" font-family="Consolas, monospace" font-size="11" font-weight="bold" fill="#2f855a">✔ เนื้อหายังอยู่ครบ</text>
+  <rect x="706" y="192" width="234" height="52" rx="7" fill="#f7fafc" stroke="#cbd5e0"/>
+  <text x="716" y="210" font-size="11.5" fill="#718096">Staging Area</text>
+  <text x="716" y="231" font-family="Consolas, monospace" font-size="11" fill="#c53030">ว่าง (ถูก unstage แล้ว)</text>
+  <rect x="706" y="254" width="234" height="52" rx="7" fill="#ffffff" stroke="#fbd38d"/>
+  <text x="716" y="272" font-family="Consolas, monospace" font-size="11" fill="#718096">$ git status</text>
+  <text x="716" y="292" font-family="Consolas, monospace" font-size="11" fill="#c53030">Changes not staged…</text>
+
+  <rect x="25" y="336" width="930" height="52" rx="8" fill="#f0fff4" stroke="#2f855a" stroke-width="1.5"/>
+  <text x="41" y="357" font-size="12.5" fill="#276749">สถานะ ③ เหมือนกับ ① ทุกประการ — <tspan font-family="Consolas, monospace">--staged</tspan> คือการ "ถอย git add" ไม่ใช่การ "ทิ้งงาน"</text>
+  <text x="41" y="377" font-size="12.5" fill="#276749">ถ้าอยากทิ้งเนื้อหาที่แก้ด้วยจริง ๆ ให้ตามด้วย <tspan font-family="Consolas, monospace" font-weight="bold">git restore file3.txt</tspan> (ระวัง! กู้คืนไม่ได้)</text>
+</svg>
