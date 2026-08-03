@@ -156,7 +156,13 @@ The diagram below shows the two forms of `git restore` you will practice in this
    git log --oneline  # Check the effect
    ```
 
-   > 📝 **คำอธิบาย:** `git restore --source=HEAD file1.txt` คือการ "ทิ้งการแก้ไข" — Git จะคัดลอกเนื้อหา `file1.txt` เวอร์ชันของ commit ล่าสุด (HEAD) มาทับไฟล์ใน working directory บรรทัดที่เพิ่งเติมจึงหายไป และ `git status` กลับมาเป็น clean ⚠️ ระวัง: การแก้ไขที่ถูกทิ้งด้วยวิธีนี้**กู้คืนไม่ได้** เพราะมันไม่เคยถูก commit
+   > 📝 **คำอธิบาย:** คำสั่งนี้ใช้ย้อนไฟล์กลับไปเป็นเวอร์ชันล่าสุดที่เคย commit ไว้ — Git จะดึงเนื้อหา `file1.txt` จาก commit ล่าสุด (HEAD) มาเขียนทับไฟล์ใน working directory ผลที่เกิดขึ้นคือ
+   >
+   > - บรรทัด `Additional line in file1` ที่เพิ่งเติมเข้าไป **หายไป** เพราะบรรทัดนี้ไม่มีอยู่ในเวอร์ชันของ HEAD
+   > - `git status` กลับมาเป็น `working tree clean` เพราะไฟล์กลับไปตรงกับ commit ล่าสุดแล้ว
+   > - `git log` **ไม่เปลี่ยน** เพราะคำสั่งนี้แก้เฉพาะไฟล์ ไม่ได้สร้างหรือลบ commit ใดๆ
+   >
+   > ⚠️ **ข้อควรระวัง:** การแก้ไขที่ถูกทิ้งด้วยวิธีนี้**กู้คืนไม่ได้** เพราะมันยังไม่เคยถูก commit — ก่อนใช้คำสั่งนี้ต้องแน่ใจว่าไม่ต้องการการแก้ไขนั้นแล้วจริงๆ
 
    ✅ **Expected output** — the extra line is gone and the working tree is clean again:
 
