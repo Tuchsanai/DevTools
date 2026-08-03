@@ -31,6 +31,8 @@ The diagram below shows the two forms of `git restore` you will practice in this
    git init 
    ```
 
+   > 📝 **คำอธิบาย:** `git init GitRestoreLab` จะสร้างโฟลเดอร์ใหม่ชื่อ `GitRestoreLab` พร้อม repository เปล่าข้างใน แล้วใช้ `cd` เข้าไปทำงานในโฟลเดอร์นั้น (ส่วน `git init` เฉยๆ ใช้ในกรณีที่สร้างโฟลเดอร์เองไว้แล้วและอยู่ข้างในโฟลเดอร์นั้นอยู่แล้ว — เลือกทำอย่างใดอย่างหนึ่งพอ)
+
 2. **Create Files and Commit Sequentially:**
    Follow these steps for each of the five commits:
 
@@ -41,12 +43,16 @@ The diagram below shows the two forms of `git restore` you will practice in this
      git commit -m "Initial commit of file1"
      ```
 
+     > 📝 **คำอธิบาย:** `echo "..." > file1.txt` สร้างไฟล์ใหม่พร้อมเนื้อหา 1 บรรทัด (เครื่องหมาย `>` คือเขียนทับทั้งไฟล์) จากนั้น `git add` นำไฟล์เข้า staging area และ `git commit` บันทึกเป็น commit แรกของ repository
+
    - **Commit :**
      ```bash
      echo "Initial content in file2" > file2.txt
      git add file2.txt
      git commit -m "Add file2"
      ```
+
+     > 📝 **คำอธิบาย:** สร้าง `file2.txt` และ commit เป็นครั้งที่ 2 — จุดนี้คือ commit ที่ `file2.txt` เกิดขึ้นครั้งแรก (จะเห็นความสำคัญตอน Task 3 เมื่อย้อนไฟล์กลับไปหา commit เก่าๆ)
 
    - **Commit :**
    ```bash
@@ -60,7 +66,7 @@ The diagram below shows the two forms of `git restore` you will practice in this
       git commit -m "Update file2"
    ```
 
-
+   > 📝 **คำอธิบาย:** สังเกตว่ารอบนี้ใช้ `>>` (ต่อท้ายไฟล์) ไม่ใช่ `>` (เขียนทับ) — ทั้ง `file1.txt` และ `file2.txt` จึงมี 2 บรรทัด และได้ commit เพิ่มอีก 2 ครั้ง (รวมเป็น 4) การอัปเดตไฟล์ทีละ commit แบบนี้ทำให้แต่ละไฟล์มี "เวอร์ชัน" หลายจุดในประวัติให้ย้อนกลับไปหาได้
 
 - **Commit :**
    ```bash
@@ -74,6 +80,7 @@ The diagram below shows the two forms of `git restore` you will practice in this
       git commit -m "Update file3"
    ```
 
+   > 📝 **คำอธิบาย:** สร้าง `file3.txt` แล้วอัปเดต 1 ครั้ง ได้ commit ที่ 5 และ 6 — ไฟล์นี้จะถูกใช้เป็นตัวทดลองใน Task 4 (เรื่อง staging area)
 
 - **Commit :**
     ```bash
@@ -81,6 +88,8 @@ The diagram below shows the two forms of `git restore` you will practice in this
      git add file3.txt
      git commit -m "Update xxx More xxx file3"
     ```
+
+   > 📝 **คำอธิบาย:** commit ที่ 7 ซึ่งเป็น commit สุดท้าย — ตำแหน่งนี้คือ **HEAD** (commit ล่าสุดที่ branch ชี้อยู่) เมื่อจบ Setup ประวัติทั้งหมดจะมี 7 commits ให้ใช้ฝึก `git restore` ใน Tasks ถัดไป
 
    
 
@@ -92,6 +101,8 @@ The diagram below shows the two forms of `git restore` you will practice in this
    git log --oneline
    git status
    ```
+
+   > 📝 **คำอธิบาย:** `git log --oneline` แสดงประวัติ commit แบบย่อ (บรรทัดละ 1 commit เรียงจาก **ใหม่สุดอยู่บนสุด**) ส่วน `git status` บอกสถานะปัจจุบันของไฟล์ — ตอนนี้ควรเห็น commit ครบ 7 รายการ และ `working tree clean` เพราะยังไม่มีการแก้ไขใดๆ ค้างอยู่ ใน Tasks ถัดไปให้รันสองคำสั่งนี้หลังทุกการเปลี่ยนแปลง เพื่อสังเกตว่าอะไรเปลี่ยน (และอะไรไม่เปลี่ยน)
 
    ✅ **Expected output** (your commit hashes will be different):
 
@@ -119,6 +130,8 @@ The diagram below shows the two forms of `git restore` you will practice in this
    git log --oneline  # Check the effect
    ```
 
+   > 📝 **คำอธิบาย:** เติมบรรทัดใหม่ลงท้าย `file1.txt` เพื่อ "จำลองการแก้ไขที่ยังไม่ได้ commit" — `git status` จะรายงานว่าไฟล์เป็น `modified` แต่ `git log` **ไม่เปลี่ยน** เพราะการแก้ไขใน working directory ยังไม่ถูกบันทึกเป็น commit
+
    ✅ **Expected output** — `file1.txt` is now **modified** (but `git log` does not change, because nothing was committed):
 
    ```text
@@ -143,6 +156,8 @@ The diagram below shows the two forms of `git restore` you will practice in this
    git log --oneline  # Check the effect
    ```
 
+   > 📝 **คำอธิบาย:** `git restore --source=HEAD file1.txt` คือการ "ทิ้งการแก้ไข" — Git จะคัดลอกเนื้อหา `file1.txt` เวอร์ชันของ commit ล่าสุด (HEAD) มาทับไฟล์ใน working directory บรรทัดที่เพิ่งเติมจึงหายไป และ `git status` กลับมาเป็น clean ⚠️ ระวัง: การแก้ไขที่ถูกทิ้งด้วยวิธีนี้**กู้คืนไม่ได้** เพราะมันไม่เคยถูก commit
+
    ✅ **Expected output** — the extra line is gone and the working tree is clean again:
 
    ```text
@@ -164,6 +179,8 @@ The diagram below shows the two forms of `git restore` you will practice in this
    echo "More Change in file2" >> file2.txt
    ```
 
+   > 📝 **คำอธิบาย:** เติมบรรทัดลง `file2.txt` ให้มี 3 บรรทัด เพื่อใช้เป็นจุดตั้งต้นก่อนทดลองย้อนไฟล์กลับไปหา commit เก่าๆ
+
    Before choosing `N`, look at the history again. `HEAD~N` means "N commits **before** the latest commit":
 
    ![How HEAD~N maps to the commit history](images/head-tilde-map.svg)
@@ -172,6 +189,8 @@ The diagram below shows the two forms of `git restore` you will practice in this
    ```bash
    git restore --source=HEAD~N file2.txt
    ```
+
+   > 📝 **คำอธิบาย:** `--source=HEAD~N` บอก Git ให้ดึง `file2.txt` เวอร์ชันของ commit ที่อยู่ก่อน HEAD ไป N ครั้งมาทับไฟล์ปัจจุบัน — ลองเปลี่ยนค่า N หลายๆ ค่าแล้ว `cat file2.txt` ดูทุกครั้ง จะเห็นเนื้อหาไฟล์ "เดินทางย้อนเวลา" ตามประวัติ commit (ใช้รูปด้านบนช่วยไล่ว่า N แต่ละค่าตรงกับ commit ไหน)
 
    ✅ **Expected output** — after adding the line, `file2.txt` has 3 lines:
 
@@ -217,6 +236,10 @@ The diagram below shows the two forms of `git restore` you will practice in this
    Update to file2
    ```
 
+   > 📝 **คำอธิบาย:** การย้อนด้วย `--source=HEAD~N` ไม่ได้ลบ commit ใดทิ้ง — ประวัติใน `git log` ยังครบ 7 รายการเหมือนเดิม เพียงแค่ไฟล์ใน working directory ถูกเปลี่ยนเนื้อหา ดังนั้นจึงกลับมาเวอร์ชันล่าสุดได้เสมอด้วย `--source=HEAD` ก่อนไป Task ถัดไป ให้รันคำสั่งนี้เพื่อให้ working tree กลับมา clean
+
+
+
 
 
 4. **Stage Changes and Explore `git restore --staged`:**
@@ -227,6 +250,8 @@ The diagram below shows the two forms of `git restore` you will practice in this
    git add file3.txt
    git status  # Verify staged
    ```
+
+   > 📝 **คำอธิบาย:** เติมบรรทัดลง `file3.txt` แล้ว `git add` เพื่อนำการแก้ไขเข้า **staging area** — สังเกตว่า `git status` ย้ายไฟล์ไปอยู่ใต้หัวข้อ `Changes to be committed` แปลว่าถ้าสั่ง `git commit` ตอนนี้ การแก้ไขนี้จะถูกบันทึกทันที
 
    ✅ **Expected output** — the change is **staged** (ready to be committed):
 
@@ -242,6 +267,8 @@ The diagram below shows the two forms of `git restore` you will practice in this
    git restore --staged file3.txt
    git status  # Verify unstage
    ```
+
+   > 📝 **คำอธิบาย:** `git restore --staged file3.txt` คือการ **unstage** (ตรงข้ามกับ `git add`) — Git จะรีเซ็ต staging area ของไฟล์นี้กลับไปเท่ากับ HEAD ไฟล์จึงย้ายจาก `Changes to be committed` กลับมาเป็น `Changes not staged for commit` แต่**เนื้อหาไฟล์ใน working directory ไม่ถูกแตะเลย** — ลอง `cat file3.txt` จะเห็นบรรทัดที่เติมยังอยู่ครบ นี่คือข้อแตกต่างสำคัญจาก `git restore` แบบธรรมดาใน Task 2 ที่ทิ้งการแก้ไขจริงๆ
 
    ✅ **Expected output** — the file is **unstaged**, but notice that your change is still in the file (`git restore --staged` only touches the staging area, not the working directory):
 
