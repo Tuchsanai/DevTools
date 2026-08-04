@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="440" viewBox="0 0 1160 440" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#57606a"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#2da44e"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1160" height="440" fill="#ffffff" rx="8"/>
+
+  <text x="580" y="34" text-anchor="middle" font-size="19" font-weight="bold" fill="#24292f">git revert = undo แบบ "เพิ่ม commit ใหม่" (ไม่ลบประวัติเดิม)</text>
+  <text x="580" y="58" text-anchor="middle" font-size="13.5" fill="#57606a" font-style="italic">Reverting creates a NEW commit that reverses an old commit — the old commits all stay in history</text>
+
+  <!-- curved undo arrow from revert commit back to commit 3 -->
+  <path d="M 1025 128 C 900 78, 620 78, 495 125" fill="none" stroke="#2da44e" stroke-width="2.5" stroke-dasharray="7,5" marker-end="url(#arrowGreen)"/>
+  <text x="760" y="95" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#2da44e">ยกเลิก (undo) การแก้ไขของ commit นี้</text>
+
+  <!-- commit 1 -->
+  <rect x="60" y="135" width="150" height="80" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.5" rx="10"/>
+  <text x="135" y="163" text-anchor="middle" font-size="12.5" font-family="Consolas, monospace" fill="#57606a">ebe9382</text>
+  <text x="135" y="185" text-anchor="middle" font-size="12.5" fill="#24292f">Initial commit</text>
+  <text x="135" y="202" text-anchor="middle" font-size="12.5" fill="#24292f">of file1</text>
+  <line x1="210" y1="175" x2="236" y2="175" stroke="#57606a" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- commit 2 -->
+  <rect x="238" y="135" width="150" height="80" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.5" rx="10"/>
+  <text x="313" y="163" text-anchor="middle" font-size="12.5" font-family="Consolas, monospace" fill="#57606a">19f1b97</text>
+  <text x="313" y="192" text-anchor="middle" font-size="12.5" fill="#24292f">Add file2</text>
+  <line x1="388" y1="175" x2="414" y2="175" stroke="#57606a" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- commit 3 (target of revert) -->
+  <rect x="416" y="135" width="150" height="80" fill="#ffebe9" stroke="#cf222e" stroke-width="2.5" rx="10"/>
+  <text x="491" y="163" text-anchor="middle" font-size="12.5" font-family="Consolas, monospace" fill="#cf222e">eb8915a</text>
+  <text x="491" y="192" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#cf222e">Update file1</text>
+  <line x1="566" y1="175" x2="592" y2="175" stroke="#57606a" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- commit 4 -->
+  <rect x="594" y="135" width="150" height="80" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.5" rx="10"/>
+  <text x="669" y="163" text-anchor="middle" font-size="12.5" font-family="Consolas, monospace" fill="#57606a">8a512a4</text>
+  <text x="669" y="192" text-anchor="middle" font-size="12.5" fill="#24292f">Update file2</text>
+  <line x1="744" y1="175" x2="770" y2="175" stroke="#57606a" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- commit 5 -->
+  <rect x="772" y="135" width="150" height="80" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.5" rx="10"/>
+  <text x="847" y="163" text-anchor="middle" font-size="12.5" font-family="Consolas, monospace" fill="#57606a">d288776</text>
+  <text x="847" y="185" text-anchor="middle" font-size="12.5" fill="#24292f">Final update</text>
+  <text x="847" y="202" text-anchor="middle" font-size="12.5" fill="#24292f">file1</text>
+  <line x1="922" y1="175" x2="948" y2="175" stroke="#57606a" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- revert commit (new) -->
+  <rect x="950" y="135" width="150" height="80" fill="#dafbe1" stroke="#2da44e" stroke-width="2.5" rx="10"/>
+  <text x="1025" y="163" text-anchor="middle" font-size="12.5" font-family="Consolas, monospace" fill="#2da44e">88f51a2</text>
+  <text x="1025" y="185" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#2da44e">Revert</text>
+  <text x="1025" y="202" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#2da44e">"Update file1"</text>
+  <text x="1025" y="238" text-anchor="middle" font-size="12.5" fill="#2da44e" font-weight="bold">&#9650; commit ใหม่ที่ git revert สร้างให้</text>
+
+  <!-- HEAD label -->
+  <text x="135" y="248" text-anchor="middle" font-size="12" fill="#57606a">commit แรก</text>
+
+  <!-- comparison note -->
+  <rect x="60" y="285" width="1040" height="110" fill="#f6f8fa" stroke="#d0d7de" rx="10"/>
+  <text x="90" y="320" font-size="14" font-weight="bold" fill="#2da44e">&#10003; git revert</text>
+  <text x="230" y="320" font-size="13.5" fill="#24292f">ไม่ลบ commit เดิมออกจาก git log — แต่สร้าง commit ใหม่ที่ "แก้ไขย้อนกลับ" การเปลี่ยนแปลงของ commit ที่เลือก</text>
+  <text x="90" y="352" font-size="14" font-weight="bold" fill="#cf222e">&#10007; git reset</text>
+  <text x="230" y="352" font-size="13.5" fill="#24292f">(LAB03) ตัด commit ออกจากประวัติจริงๆ — commit ที่ถูกตัดจะหายไปจาก git log</text>
+  <text x="90" y="382" font-size="13" fill="#57606a" font-style="italic">เพราะประวัติไม่ถูกเขียนทับ git revert จึงปลอดภัยสำหรับ branch ที่ทำงานร่วมกับคนอื่น (shared branch)</text>
+</svg>
