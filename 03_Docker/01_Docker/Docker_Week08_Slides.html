@@ -951,14 +951,14 @@ body.ov #ctl,body.ov #counter{position:fixed}
       <li>เตรียมโฟลเดอร์ แล้ว clone โค้ดแล็บ (ทำครั้งเดียว ใช้ได้ทุกแล็บ)
         <pre class="code xs" style="margin-top:5px"><span class="k">mkdir -p ~/labwork ; cd ~/labwork
 git clone https://github.com/Tuchsanai/DevTools.git
-cd DevTools/03_Docker/01_Docker/01_LAB_Nginx_Port_Mapping</span></pre></li>
+cd DevTools/03_Docker/01_Docker/002_LAB_Nginx_Port_Mapping</span></pre></li>
       <li>รัน Nginx แบบ foreground — terminal จะค้าง กด <kbd>Ctrl+C</kbd> เพื่อหยุด
         <pre class="code xs" style="margin-top:5px"><span class="k">docker run -p 8080:80 nginx</span></pre></li>
       <li>รันใหม่แบบ <b>detached</b> (<code>-d</code>) จะได้ prompt คืน แล้วสั่งคำสั่งอื่นต่อได้
         <pre class="code xs" style="margin-top:5px"><span class="k">docker run -d -p 8080:80 --name web1 nginx</span></pre></li>
       <li>ทดสอบด้วย <code>curl http://localhost:8080</code> · ดู log ด้วย <code>docker logs web1</code> — จะเปิดดูในเบราว์เซอร์ ให้ forward port <code>8080</code> ที่แท็บ <b>PORTS</b> ของ VS Code ก่อน</li>
     </ol>
-    <div class="callout warn" style="margin-top:10px; font-size:17px">โฟลเดอร์ในรีโพชื่อ <code>01_LAB_Nginx_Port_Mapping</code> — ตรงกับ <b>LAB 2</b> ในสไลด์ (เพราะ LAB 1 เป็นคำสั่งพื้นฐาน ไม่มีโฟลเดอร์โค้ด) · เลิกใช้แล้วลบด้วย <code>docker rm -f web1</code></div>
+    <div class="callout warn" style="margin-top:10px; font-size:17px">โฟลเดอร์แล็บในรีโพคือ <code>001_LAB_Docker_Run</code> … <code>004_LAB_Node_Bulletin_Board</code> — <b>เลขโฟลเดอร์ตรงกับเลขแล็บ</b> (แล็บนี้อยู่ใน <code>002_LAB_Nginx_Port_Mapping</code>) · เลิกใช้แล้วลบด้วย <code>docker rm -f web1</code></div>
   </div>
   <div class="s-foot"><span>Docker — Week 8 · LAB 2</span><span class="pg"></span></div>
 </section></div>
@@ -1070,7 +1070,7 @@ cd DevTools/03_Docker/01_Docker/01_LAB_Nginx_Port_Mapping</span></pre></li>
       <li>เข้าไปที่ไดเรกทอรีที่ clone ไว้ตอน LAB 2
         <pre class="code xs" style="margin-top:6px"><span class="k">cd ~/labwork/DevTools/03_Docker/01_Docker</span></pre></li>
       <li>เข้าโฟลเดอร์ของแล็บนี้ (ถ้ายังไม่เคย clone ให้ clone ก่อนเหมือน LAB 2)
-        <pre class="code xs" style="margin-top:6px"><span class="k">cd 02_LAB_Nginx_Volume_Port_Mapping
+        <pre class="code xs" style="margin-top:6px"><span class="k">cd 003_LAB_Nginx_Volume_Port_Mapping
 ls</span>   <span class="c"># จะเห็นโฟลเดอร์ web_demo ที่มี index.html ของเรา</span></pre></li>
       <li>รัน Nginx พร้อม volume + port mapping
         <pre class="code xs" style="margin-top:6px"><span class="k">docker run -d -p 8083:80 -v ${PWD}/web_demo:/usr/share/nginx/html:ro nginx</span></pre></li>
@@ -1170,7 +1170,7 @@ ls</span>   <span class="c"># จะเห็นโฟลเดอร์ web_dem
     <ol class="steps">
       <li>เข้าไปที่โฟลเดอร์แอป (ในรีโพที่ clone ไว้แล้ว)
         <pre class="code sm" style="margin-top:8px"><span class="k">cd ~/labwork/DevTools/03_Docker/01_Docker
-cd 03_LAB_Node_Bulletin_Board/bulletin-board-app</span></pre></li>
+cd 004_LAB_Node_Bulletin_Board/bulletin-board-app</span></pre></li>
       <li>ดูให้แน่ใจว่ามี <code>Dockerfile</code> อยู่ในโฟลเดอร์นี้
         <pre class="code sm" style="margin-top:8px"><span class="k">ls</span>   <span class="c"># Dockerfile  LICENSE  app.js  backend  fonts  index.html  package.json  server.js  site.css</span></pre></li>
       <li>Build image
