@@ -1467,53 +1467,6 @@ cd 004_LAB_Node_Bulletin_Board/bulletin-board-app</span></pre></li>
   <div class="s-foot"><span>Docker — Week 8 · สรุป</span><span class="pg"></span></div>
 </section></div>
 
-<!-- ============ 65 : สรุป : สรุป Port ที่ใช้ในแต่ละแล็บ ============ -->
-<div class="slot"><section class="slide">
-  <div class="s-head"><h2>สรุป Port ที่ใช้ในแต่ละแล็บ</h2></div>
-  <div class="s-body">
-    <table class="tbl">
-      <tr><th style="width:12%">แล็บ</th><th style="width:52%">คำสั่ง</th><th style="width:18%">Host Port</th><th style="width:18%">Container Port</th></tr>
-      <tr><td><b>LAB 2</b></td><td><code>docker run -p 8080:80 nginx</code></td><td>8080</td><td>80</td></tr>
-      <tr><td><b>LAB 3</b></td><td><code>docker run -d -p 8083:80 -v ... nginx</code></td><td>8083</td><td>80</td></tr>
-      <tr><td><b>LAB 4</b></td><td><code>docker run -p 8085:8080 -d --name bb bulletinboard:1.0</code></td><td>8085</td><td>8080</td></tr>
-    </table>
-    <div class="callout warn" style="margin-top:30px; font-size:21px">
-      ถ้ารันทั้ง 3 แล็บพร้อมกันได้ ก็เพราะ <b>host port ไม่ซ้ำกัน</b> (8080 / 8083 / 8085) ตามกฎเหล็กใน LAB 2
-    </div>
-    <div class="callout" style="margin-top:16px; font-size:20px">ถ้าจะเปิดดูทั้ง 3 แล็บในเบราว์เซอร์ ให้ forward ทั้ง 3 port นี้ใน VS Code (แท็บ <b>PORTS</b>) หรือใช้ <code>ssh -L &lt;port&gt;:localhost:&lt;port&gt; root@localhost -p 2222</code> — <b>ทดลองเสร็จ ให้ลบ tunnel ทุกครั้ง</b> (Stop Forwarding Port / พิมพ์ <code>exit</code> ใน session ของ <code>ssh -L</code>)</div>
-  </div>
-  <div class="s-foot"><span>Docker — Week 8 · สรุป</span><span class="pg"></span></div>
-</section></div>
-
-<!-- ============ 66 : สรุป : ล้างระบบทั้งหมด ============ -->
-<div class="slot"><section class="slide">
-  <div class="s-head"><h2>ล้างระบบทั้งหมด</h2><div class="sub">ใช้เมื่อต้องการเคลียร์เครื่องเรียนให้กลับมาสะอาด</div></div>
-  <div class="s-body">
-    <div class="callout bad" style="font-size:17px; margin-bottom:12px">
-      <b>⚠ คำเตือน :</b> ชุดคำสั่งนี้ลบ <b>ทุกอย่าง</b> ทั้ง container, image, volume และ network ที่ไม่ได้ใช้ — <b>ข้อมูลใน volume จะหายถาวร</b>
-    </div>
-    <pre class="code xs"><span class="c"># $(...) = เอาผลลัพธ์ของคำสั่งข้างในมาเป็น argument · -q = แสดงเฉพาะ ID</span>
-<span class="k">docker stop $(docker ps -a -q)</span>            <span class="c"># หยุด container ทั้งหมด</span>
-<span class="k">docker rm   $(docker ps -a -q)</span>            <span class="c"># ลบ container ทั้งหมด</span>
-<span class="k">docker rmi  $(docker images -q)</span>           <span class="c"># ลบ image ทั้งหมด</span>
-<span class="k">docker volume rm $(docker volume ls -q)</span>   <span class="c"># ลบ volume ทั้งหมด</span>
-<span class="k">docker network prune -f</span>                   <span class="c"># ลบ network ที่ไม่ได้ใช้</span>
-
-<span class="c"># ผลรันจริงหลังล้าง — เหลือแค่หัวตาราง ไม่มีข้อมูล</span>
-<span class="k">docker ps -a</span>     <span class="o">CONTAINER ID   IMAGE   COMMAND   CREATED   STATUS   PORTS   NAMES</span>
-<span class="k">docker images</span>    <span class="o">IMAGE   ID   DISK USAGE   CONTENT SIZE   EXTRA</span></pre>
-    <div class="grid2" style="margin-top:14px">
-      <div class="card r"><h4 style="font-size:17px">เจอ error นี้ตอนรันจริง</h4>
-        <p style="font-size:15.5px">ถ้าไม่มีอะไรให้ลบ <code>$(...)</code> จะได้ค่าว่าง แล้วขึ้น<br><b>docker: 'docker volume rm' requires at least 1 argument</b><br>— ไม่ใช่ความผิดพลาด แปลว่าสะอาดอยู่แล้ว</p></div>
-      <div class="card g"><h4 style="font-size:17px">คำสั่งเดียวจบ ปลอดภัยกว่า</h4>
-        <pre class="code xs" style="margin-top:8px"><span class="k">docker system prune -af --volumes</span>
-<span class="o">Total reclaimed space: 0B</span></pre>
-        <p style="font-size:15.5px; margin-top:6px">ได้ <b>0B</b> เพราะ 5 บรรทัดข้างบนล้างไปหมดแล้ว — ถ้าสั่งคำสั่งนี้<b>ตั้งแต่แรก</b>คำสั่งเดียวก็จบ และไม่พังเมื่อไม่มีอะไรให้ลบ</p></div>
-    </div>
-  </div>
-  <div class="s-foot"><span>Docker — Week 8 · สรุป</span><span class="pg"></span></div>
-</section></div>
-
 </div><!-- /stage -->
 
 <div id="ui"><div id="bar"><i></i></div></div>
