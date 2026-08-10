@@ -1,6 +1,6 @@
 # LAB 4 — Build Docker Image เอง (Node.js Bulletin Board)
 
-> โฟลเดอร์ `03_LAB_Node_Bulletin_Board` = **LAB 4** ในสไลด์
+> โฟลเดอร์ `004_LAB_Node_Bulletin_Board` = **LAB 4** ในสไลด์ `Docker_Week08_Slides.html`
 
 ## สิ่งที่จะได้เรียนรู้
 
@@ -13,16 +13,37 @@
 ## 0. เตรียมเครื่องเรียน
 
 ```bash
+docker rm -f devtools
 docker run -dit --name devtools --privileged -p 2222:22 tuchsanai/devtools:2569_1
 ssh root@localhost -p 2222        # password : passwd
+```
+
+> ใน VS Code ใช้ **Remote-SSH** ต่อไปที่ `root@localhost:2222` แล้วทำแล็บทั้งหมดข้างใน
+
+เช็กว่า Docker ในเครื่องเรียนพร้อมใช้งาน :
+
+```bash
+docker --version
+```
+
+```
+Docker version 29.6.2, build dfc4efb
 ```
 
 ---
 
 ## 1. เข้าโฟลเดอร์แอป
 
+ถ้ายังไม่เคย clone รีโพ ให้ clone ก่อน (ทำครั้งเดียว ใช้ได้ทุกแล็บ) :
+
 ```bash
-cd ~/labwork/DevTools/03_Docker/01_Docker/03_LAB_Node_Bulletin_Board/bulletin-board-app
+mkdir -p ~/labwork ; cd ~/labwork
+git clone https://github.com/Tuchsanai/DevTools.git
+```
+
+```bash
+cd ~/labwork
+cd DevTools/03_Docker/01_Docker/004_LAB_Node_Bulletin_Board/bulletin-board-app
 ls
 ```
 
@@ -49,6 +70,8 @@ COPY . .                        # 7. คัดลอกซอร์สโค้�
 
 > **EXPOSE ไม่ได้เปิด port ให้จริง** — เป็นเพียงการประกาศเจตนา การเปิดจริงต้องใช้ `-p` ตอน `docker run`
 
+> **ข้อสังเกต :** ไฟล์นี้วาง `COPY . .` ไว้หลัง `CMD` ซึ่งยังทำงานได้ปกติ (เพราะ `CMD` เป็นแค่การประกาศ ไม่ใช่การรันตอน build) แต่ตามธรรมเนียมที่ดีควรวางไว้ก่อน `EXPOSE`/`CMD`
+
 ---
 
 ## 3. Build image
@@ -60,20 +83,24 @@ docker build -t bulletinboard:1.0 .
 ผลรันจริง (ย่อ) :
 
 ```
-#1 [internal] load build definition from Dockerfile                    DONE 0.1s
-#2 [internal] load metadata for docker.io/library/node:current-slim    DONE 2.4s
-#3 [internal] load .dockerignore     DONE 0.0s
-#4 [internal] load build context     transferring context: 38.10kB     DONE 0.1s
-#5 [1/5] FROM docker.io/library/node:current-slim@sha256:4ebb5ace66f1...   DONE 14.6s
-#6 [2/5] WORKDIR /usr/src/app                                          DONE 0.1s
-#7 [3/5] COPY package.json .                                           DONE 0.1s
-#8 [4/5] RUN npm install
-#8 8.277 added 115 packages, and audited 116 packages in 8s            DONE 8.4s
-#9 [5/5] COPY . .                                                      DONE 0.1s
-#10 naming to docker.io/library/bulletinboard:1.0 done                  DONE 1.5s
+#1 [internal] load build definition from Dockerfile   transferring dockerfile: 164B   DONE 0.1s
+#2 [internal] load metadata for docker.io/library/node:current-slim                   DONE 2.4s
+#4 [internal] load .dockerignore                                                      DONE 0.0s
+#5 [internal] load build context      transferring context: 31.91kB                   DONE 0.1s
+#6 [1/5] FROM docker.io/library/node:current-slim@sha256:4ebb5ace66f1...              DONE 24.2s
+#7 [2/5] WORKDIR /usr/src/app                                                         DONE 0.1s
+#8 [3/5] COPY package.json .                                                          DONE 0.1s
+#9 [4/5] RUN npm install
+#9 6.700 added 115 packages, and audited 116 packages in 6s                           DONE 6.8s
+#10 [5/5] COPY . .                                                                    DONE 0.1s
+#11 naming to docker.io/library/bulletinboard:1.0 done                                DONE 1.3s
+
+real    0m35.518s
 ```
 
 `[1/5]` … `[5/5]` คือคำสั่งใน Dockerfile ที่ **สร้าง layer** — `EXPOSE` และ `CMD` ไม่นับ เพราะเป็นแค่ metadata
+
+ขั้นที่กินเวลาที่สุดคือ `FROM` ที่ต้องโหลด base image (**24.2 วินาที**) และ `RUN npm install` (**6.8 วินาที**) — รวมทั้ง build **35.5 วินาที** จำตัวเลขนี้ไว้ แล้วดูข้อ 6
 
 ---
 
@@ -84,7 +111,7 @@ docker run -p 8085:8080 -d --name bb bulletinboard:1.0
 ```
 
 ```
-fb1694ca74a7f3b7e486fce2e1e6efea8583be626369dee34912409280575f78
+b683cbce27c3b5166875f3d11443c35d7d8a029177e52b7cd8b0d7abbd62f90e
 ```
 
 ```bash
@@ -93,7 +120,7 @@ docker images
 
 ```
 IMAGE               ID             DISK USAGE   CONTENT SIZE   EXTRA
-bulletinboard:1.0   0924eadc8511        399MB           94MB   U
+bulletinboard:1.0   8aea598d47d9        399MB           94MB   U
 ```
 
 ```bash
@@ -102,7 +129,7 @@ docker ps
 
 ```
 CONTAINER ID   IMAGE               COMMAND                  CREATED         STATUS         PORTS                                         NAMES
-fb1694ca74a7   bulletinboard:1.0   "docker-entrypoint.s…"   7 seconds ago   Up 7 seconds   0.0.0.0:8085->8080/tcp, [::]:8085->8080/tcp   bb
+b683cbce27c3   bulletinboard:1.0   "docker-entrypoint.s…"   9 seconds ago   Up 8 seconds   0.0.0.0:8085->8080/tcp, [::]:8085->8080/tcp   bb
 ```
 
 ```bash
@@ -154,7 +181,20 @@ node_modules  package-lock.json  package.json  server.js  site.css
 
 `node_modules` ถูกสร้างขึ้น **ในกล่อง** ตอน `RUN npm install` — ไม่ได้ก๊อปมาจากเครื่องเรา
 
-เปิดดูในเบราว์เซอร์ (VS Code → แท็บ **PORTS** → Forward a Port → `8085`) :
+เปิดดูในเบราว์เซอร์ — ให้ VS Code forward port ของแล็บนี้ออกมาก่อน :
+แท็บ **PORTS** → **Forward a Port** → พิมพ์ `8085` → เปิด `http://localhost:8085`
+(ขั้นตอนเหมือนภาพด้านล่าง — แล็บนี้ใช้เลข **8085**)
+
+![วิธี forward port ใน VS Code](./images/vscode-port-forward.png)
+
+ทางเลือก : forward ด้วยคำสั่ง `ssh -L` จาก terminal บนเครื่องเรา — **ssh เข้าไปยัง port ภายในเครื่องเรียน** โดยตรง :
+
+```bash
+ssh -L 8085:localhost:8085 root@localhost -p 2222        # password : passwd
+```
+
+> **ทดลองเสร็จแล้ว ลบ tunnel ทุกครั้ง** — แบบ `ssh -L` พิมพ์ `exit` / กด `Ctrl+D` ·
+> แบบ VS Code คลิกขวาที่ port ในแท็บ **PORTS** → **Stop Forwarding Port**
 
 ![Bulletin Board](./images/bulletinboard-8085.png)
 
@@ -171,15 +211,17 @@ docker build -t bulletinboard:1.1 .
 
 ```
 #5 [1/5] FROM docker.io/library/node:current-slim@sha256:4ebb5ace...   DONE 0.0s
-#6 [3/5] COPY package.json .        CACHED
-#7 [2/5] WORKDIR /usr/src/app       CACHED
-#8 [4/5] RUN npm install            CACHED      <- ประหยัดไป 8 วินาที
-#9 [5/5] COPY . .                                            DONE 0.0s
+#6 [2/5] WORKDIR /usr/src/app       CACHED
+#7 [3/5] COPY package.json .        CACHED
+#8 [4/5] RUN npm install            CACHED      <- ประหยัดไป 6.8 วินาที
+#9 [5/5] COPY . .                                            DONE 0.1s
 #10 naming to docker.io/library/bulletinboard:1.1 done       DONE 0.3s
+
+real    0m1.730s
 ```
 
-build รอบแรกใช้เวลา ~25 วินาที (ต้องโหลด base image + `npm install`)
-build รอบสองเหลือ **ไม่ถึง 2 วินาที**
+build รอบแรกใช้เวลา **35.518 วินาที** (ต้องโหลด base image + `npm install`)
+build รอบสองเหลือ **1.730 วินาที** (เร็วขึ้น ~20 เท่า) — มีแค่ `COPY . .` ที่รันใหม่ เพราะ `index.html` เปลี่ยน
 
 | เขียนแบบ | ผลที่ได้ |
 |---|---|
@@ -199,5 +241,17 @@ docker stop bb                    # หยุด
 docker rm bb                      # ลบ container
 docker rmi bulletinboard:1.0      # ลบ image
 ```
+
+เก็บกวาดท้ายแล็บ :
+
+```bash
+docker rm -f bb
+```
+
+```
+bb
+```
+
+---
 
 *ผลลัพธ์ทั้งหมดในเอกสารนี้มาจากการรันจริงในเครื่องเรียน `tuchsanai/devtools:2569_1` เมื่อ 10 ส.ค. 2026*

@@ -32,13 +32,13 @@ ssh root@localhost -p 2222        # password : passwd
 
 | แล็บในสไลด์ | โฟลเดอร์ | หัวข้อ | Port |
 |---|---|---|---|
-| **LAB 1** | — (ไม่มีโค้ด) | คำสั่ง `docker run` · `ps` · `pull` · `images` และวงจรชีวิต container | — |
-| **LAB 2** | [`01_LAB_Nginx_Port_Mapping`](./01_LAB_Nginx_Port_Mapping) | Nginx + Port Mapping | 8080 |
-| **LAB 3** | [`02_LAB_Nginx_Volume_Port_Mapping`](./02_LAB_Nginx_Volume_Port_Mapping) | Nginx + Volume + Port Mapping | 8083 |
-| **LAB 4** | [`03_LAB_Node_Bulletin_Board`](./03_LAB_Node_Bulletin_Board) | Build image เอง (Node.js Bulletin Board) | 8085 |
+| **LAB 1** | [`001_LAB_Docker_Run`](./001_LAB_Docker_Run) | คำสั่ง `docker run` · `ps` · `pull` · `images` และวงจรชีวิต container | — |
+| **LAB 2** | [`002_LAB_Nginx_Port_Mapping`](./002_LAB_Nginx_Port_Mapping) | Nginx + Port Mapping | 8080 |
+| **LAB 3** | [`003_LAB_Nginx_Volume_Port_Mapping`](./003_LAB_Nginx_Volume_Port_Mapping) | Nginx + Volume + Port Mapping | 8083 |
+| **LAB 4** | [`004_LAB_Node_Bulletin_Board`](./004_LAB_Node_Bulletin_Board) | Build image เอง (Node.js Bulletin Board) | 8085 |
 
-> หมายเลขโฟลเดอร์ (`01`/`02`/`03`) ต่างจากหมายเลขแล็บในสไลด์ (LAB 2/3/4) อยู่ 1
-> เพราะ **LAB 1** เป็นคำสั่งพื้นฐานที่ไม่มีโฟลเดอร์โค้ดของตัวเอง
+> **เลขโฟลเดอร์ตรงกับเลขแล็บ** (`001`–`004` = LAB 1–4) — LAB 1 เป็นคำสั่งล้วน
+> โฟลเดอร์ `001_LAB_Docker_Run` จึงมีเฉพาะเอกสาร ไม่มีไฟล์โค้ด
 
 ## Clone โค้ดแล็บ
 
