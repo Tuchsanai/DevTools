@@ -956,7 +956,7 @@ cd DevTools/03_Docker/01_Docker/002_LAB_Nginx_Port_Mapping</span></pre></li>
         <pre class="code xs" style="margin-top:5px"><span class="k">docker run -p 8080:80 nginx</span></pre></li>
       <li>รันใหม่แบบ <b>detached</b> (<code>-d</code>) จะได้ prompt คืน แล้วสั่งคำสั่งอื่นต่อได้
         <pre class="code xs" style="margin-top:5px"><span class="k">docker run -d -p 8080:80 --name web1 nginx</span></pre></li>
-      <li>ทดสอบด้วย <code>curl http://localhost:8080</code> · ดู log ด้วย <code>docker logs web1</code> — จะเปิดดูในเบราว์เซอร์ ให้ forward port <code>8080</code> ที่แท็บ <b>PORTS</b> ของ VS Code ก่อน</li>
+      <li>ทดสอบด้วย <code>curl http://localhost:8080</code> · ดู log ด้วย <code>docker logs web1</code> — จะเปิดดูในเบราว์เซอร์ ให้ forward port <code>8080</code> ที่แท็บ <b>PORTS</b> ของ VS Code ก่อน (วิธีทำอยู่ในสไลด์ถัดไป)</li>
     </ol>
     <div class="callout warn" style="margin-top:10px; font-size:17px">โฟลเดอร์แล็บในรีโพคือ <code>001_LAB_Docker_Run</code> … <code>004_LAB_Node_Bulletin_Board</code> — <b>เลขโฟลเดอร์ตรงกับเลขแล็บ</b> (แล็บนี้อยู่ใน <code>002_LAB_Nginx_Port_Mapping</code>) · เลิกใช้แล้วลบด้วย <code>docker rm -f web1</code></div>
   </div>
@@ -1087,7 +1087,7 @@ cd DevTools/03_Docker/01_Docker/002_LAB_Nginx_Port_Mapping</span></pre></li>
 ls</span>   <span class="c"># จะเห็นโฟลเดอร์ web_demo ที่มี index.html ของเรา</span></pre></li>
       <li>รัน Nginx พร้อม volume + port mapping
         <pre class="code xs" style="margin-top:6px"><span class="k">docker run -d -p 8083:80 -v ${PWD}/web_demo:/usr/share/nginx/html:ro nginx</span></pre></li>
-      <li>ทดสอบที่ <code>http://localhost:8083</code> → เห็นหน้าเว็บของเราเอง ไม่ใช่หน้า default</li>
+      <li>ทดสอบที่ <code>http://localhost:8083</code> → เห็นหน้าเว็บของเราเอง ไม่ใช่หน้า default — จะเปิดในเบราว์เซอร์ ให้ forward port <code>8083</code> เหมือนที่ทำใน LAB 2 (แท็บ <b>PORTS</b> หรือ <code>ssh -L 8083:localhost:8083 root@localhost -p 2222</code>) และ<b>ลบ tunnel เมื่อเลิกใช้</b></li>
     </ol>
     <div class="callout good" style="margin-top:10px; font-size:17px">รันจริงได้หน้าเว็บของวิชาเรา (Tailwind CSS + ลูกเล่น) จาก <code>web_demo/index.html</code> — ไม่ใช่หน้า <b>Welcome to nginx!</b> ของ image อีกต่อไป</div>
   </div>
@@ -1326,7 +1326,10 @@ cd 004_LAB_Node_Bulletin_Board/bulletin-board-app</span></pre></li>
   <div class="s-head"><span class="badge lab">LAB 4</span><h2>ทดสอบแอป และคำสั่งที่ใช้บ่อยหลัง build</h2></div>
   <div class="s-body top">
     <div class="grid12" style="align-items:start">
-      <div class="fig shot" style="height:250px"><img data-a="jbulletin" alt="แอป Bulletin Board"></div>
+      <div>
+        <div class="fig shot" style="height:250px"><img data-a="jbulletin" alt="แอป Bulletin Board"></div>
+        <div class="figcap" style="font-size:14px; margin-top:6px">เปิดดูโดย forward port <code>8085</code> (แท็บ <b>PORTS</b> หรือ <code>ssh -L 8085:localhost:8085 root@localhost -p 2222</code>) — เสร็จแล้ว<b>ลบ tunnel</b> ทุกครั้ง</div>
+      </div>
       <div>
         <pre class="code xs"><span class="k">curl -s http://localhost:8085 | head -30</span>
 <span class="o">&lt;title&gt;Bulletin Board&lt;/title&gt;</span>
@@ -1477,7 +1480,7 @@ cd 004_LAB_Node_Bulletin_Board/bulletin-board-app</span></pre></li>
     <div class="callout warn" style="margin-top:30px; font-size:21px">
       ถ้ารันทั้ง 3 แล็บพร้อมกันได้ ก็เพราะ <b>host port ไม่ซ้ำกัน</b> (8080 / 8083 / 8085) ตามกฎเหล็กใน LAB 2
     </div>
-    <div class="callout" style="margin-top:16px; font-size:20px">ถ้าจะเปิดดูทั้ง 3 แล็บในเบราว์เซอร์ ให้ forward ทั้ง 3 port นี้ใน VS Code (แท็บ <b>PORTS</b>)</div>
+    <div class="callout" style="margin-top:16px; font-size:20px">ถ้าจะเปิดดูทั้ง 3 แล็บในเบราว์เซอร์ ให้ forward ทั้ง 3 port นี้ใน VS Code (แท็บ <b>PORTS</b>) หรือใช้ <code>ssh -L &lt;port&gt;:localhost:&lt;port&gt; root@localhost -p 2222</code> — <b>ทดลองเสร็จ ให้ลบ tunnel ทุกครั้ง</b> (Stop Forwarding Port / พิมพ์ <code>exit</code> ใน session ของ <code>ssh -L</code>)</div>
   </div>
   <div class="s-foot"><span>Docker — Week 8 · สรุป</span><span class="pg"></span></div>
 </section></div>
