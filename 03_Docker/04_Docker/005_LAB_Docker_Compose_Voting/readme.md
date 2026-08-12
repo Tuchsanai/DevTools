@@ -83,9 +83,7 @@ cd DevTools/03_Docker/04_Docker/005_LAB_Docker_Compose_Voting
 ```
 
 > 📝 **คำอธิบาย:** `mkdir -p ~/labwork` สร้างโฟลเดอร์เก็บงาน (`-p` = มีอยู่แล้วก็ไม่ error) · `git clone` ดึงรีโพของวิชาลงมา — ถ้าเคย clone จากแล็บก่อนแล้ว git จะบอกว่าโฟลเดอร์ไม่ว่าง ข้ามไป `cd` ได้เลย ·
-> จากนี้ไป **ทุกคำสั่ง `docker compose` ต้องสั่งจากโฟลเดอร์นี้** เพราะ compose หาไฟล์ `docker-compose.yml` จากโฟลเดอร์ปัจจุบัน
-
-> ⚠️ ถ้าสั่ง `docker compose` จากโฟลเดอร์อื่น จะเจอ `no configuration file provided: not found` — อาการนี้แก้ด้วยการ `cd` กลับเข้าโฟลเดอร์แล็บ ไม่ใช่การพิมพ์คำสั่งใหม่
+> จากนี้ไป **ทุกคำสั่ง `docker compose` ต้องสั่งจากโฟลเดอร์นี้** เพราะ compose หาไฟล์ `docker-compose.yml` จากโฟลเดอร์ปัจจุบัน — สั่งจากที่อื่นจะเจอ `no configuration file provided: not found`
 
 ---
 
@@ -196,11 +194,10 @@ networks:
 > `build: ./vote` บอกว่า image ของ service นี้ให้ **build จาก Dockerfile ในโฟลเดอร์ `./vote`** ส่วน redis ใช้ `image: redis:7-alpine` คือ **ดึงจาก registry ตรง ๆ** — สองคำนี้คือทางเลือกคู่กัน: โค้ดเราเอง → `build` / ของสำเร็จรูป → `image` ·
 > `ports: - "8085:5000"` คือ `-p 8085:5000` ของ `docker run` ในเวอร์ชัน YAML (host:container) — สังเกตว่า redis **ไม่มี ports เลย** = โลกภายนอกเข้าไม่ถึง เข้าได้เฉพาะเพื่อน container ในเครือข่ายเดียวกัน · `environment: REDIS_HOST: redis` ส่งตัวแปรให้ `app.py` ใช้เลือกปลายทาง — ค่า `redis` คือ **ชื่อ service** เพราะ compose ตั้ง DNS ให้ชื่อ service ชี้ไปยัง container ตัวจริงอัตโนมัติ (กลไกเดียวกับที่ทดลองใน LAB 4)
 
-> 📝 **คำอธิบาย (ต่อ) — คู่หูที่ทำให้ระบบเปิดถูกลำดับ:**
-> `healthcheck:` ฝั่ง redis สั่งให้ Docker รัน `redis-cli ping` ทุก `interval: 5s` ถ้าเกิน `timeout: 3s` ถือว่าล้มเหลว และล้มติดกันเกิน `retries: 5` ครั้งจะถูกตราหน้าว่า `unhealthy` ·
+> 📝 **คำอธิบาย (ต่อ) — คู่หูที่ทำให้ระบบเปิดถูกลำดับ:** `healthcheck:` ฝั่ง redis สั่งให้ Docker รัน `redis-cli ping` ทุก `interval: 5s` ถ้าเกิน `timeout: 3s` ถือว่าล้มเหลว และล้มติดกันเกิน `retries: 5` ครั้งจะถูกตราหน้าว่า `unhealthy` ·
 > `depends_on: redis: condition: service_healthy` ฝั่ง vote/result แปลว่า "อย่าเพิ่งสตาร์ตฉัน จนกว่า redis จะ **healthy**" — เข้มกว่า `depends_on` แบบสั้นที่รอแค่ "สตาร์ตแล้ว" เพราะ container ขึ้น `Up` ≠ โปรแกรมข้างในพร้อมรับ connection ·
 > `command: redis-server --appendonly yes` override คำสั่งเริ่มต้นของ image ให้เปิดโหมด AOF — เขียนทุกการเปลี่ยนแปลงลงไฟล์ใน `/data` · `volumes: - vote-data:/data` เอา named volume มาแปะทับ `/data` พอดี **คะแนนโหวตจึงอยู่นอกตัว container** — ข้อ 7 จะใช้จุดนี้ทำเรื่องเซอร์ไพรส์ ·
-> `networks:` vote/result อยู่ทั้ง `front-tier` และ `back-tier` แต่ redis อยู่แค่ `back-tier` — แยกโซน "โลกภายนอกเข้าถึง" ออกจาก "ฐานข้อมูลภายใน" · ท้ายไฟล์ `volumes:` กับ `networks:` เปล่า ๆ คือประกาศให้ compose สร้างทรัพยากรเหล่านี้ด้วยค่า default · `develop: watch:` เก็บไว้ใช้จริงในข้อ 9
+> `networks:` vote/result อยู่ทั้งสองวง แต่ redis อยู่แค่ `back-tier` — แยกโซน "โลกภายนอกเข้าถึง" ออกจาก "ฐานข้อมูลภายใน" · ท้ายไฟล์ `volumes:` กับ `networks:` เปล่า ๆ คือประกาศให้ compose สร้างทรัพยากรเหล่านี้ด้วยค่า default · `develop: watch:` เก็บไว้ใช้จริงในข้อ 9
 
 > 📝 **จุดทันสมัย:** ไฟล์นี้ **ไม่มีบรรทัด `version:`** — Compose ยุคใหม่ (Compose Specification) เลิกใช้แล้ว ถ้าใส่มา Docker จะเตือนว่า obsolete — ตัวอย่างเก่าที่ขึ้นต้นด้วย `version: "3"` คือมรดกจากยุค docker-compose v1
 
@@ -227,7 +224,7 @@ EXPOSE 5000
 CMD ["python", "app.py"]
 ```
 
-> 📝 **คำอธิบาย:** compose ไม่ได้มาแทนความรู้เดิม — Dockerfile ยังคือ Dockerfile, network ยังคือ network, volume ยังคือ volume · สิ่งที่ compose เพิ่มให้มีอย่างเดียว: **เลิกพิมพ์ flag ยาว ๆ เอง แล้วประกาศทุกอย่างเป็นไฟล์** ที่ commit ลง git ได้ ทีมอ่านได้ และรันซ้ำได้เหมือนกันทุกเครื่อง
+> 📝 **คำอธิบาย:** compose ไม่ได้มาแทนความรู้เดิม — Dockerfile ยังคือ Dockerfile, network ยังคือ network, volume ยังคือ volume · สิ่งที่เพิ่มมีอย่างเดียว: **เลิกพิมพ์ flag ยาว ๆ เอง แล้วประกาศทุกอย่างเป็นไฟล์** ที่ commit ลง git ได้ ทีมอ่านได้ รันซ้ำได้เหมือนกันทุกเครื่อง
 
 ---
 
@@ -330,9 +327,8 @@ redis-1  | 1:M 12 Aug 2026 11:50:08.819 * Ready to accept connections tcp
 
 หน้าเว็บทั้งสองเปิดอยู่ **ข้างในเครื่องเรียน** ต้อง forward port ออกมาก่อน — รอบนี้มี 2 port:
 
-1. เปิดแท็บ **PORTS** ใน VS Code (แถวเดียวกับ TERMINAL)
-2. กดปุ่ม **Forward a Port** พิมพ์ `8085` กด **Enter** แล้วกด **Add Port** เพิ่ม `8086` อีกครั้ง
-3. เปิดเบราว์เซอร์ 2 แท็บ : `http://localhost:8085` (หน้าโหวต) และ `http://localhost:8086` (หน้าผลคะแนน)
+1. เปิดแท็บ **PORTS** ใน VS Code (แถวเดียวกับ TERMINAL) → กด **Forward a Port** พิมพ์ `8085` กด **Enter** → กด **Add Port** เพิ่ม `8086` อีกครั้ง
+2. เปิดเบราว์เซอร์ 2 แท็บ : `http://localhost:8085` (หน้าโหวต) และ `http://localhost:8086` (หน้าผลคะแนน)
 
 #### ทางเลือก : forward ด้วยคำสั่ง `ssh -L` (ไม่ใช้ VS Code)
 
@@ -387,18 +383,15 @@ docker compose exec redis redis-cli KEYS 'votes:*'
 docker compose exec redis redis-cli GET votes:cats
 ```
 
-> 📝 **คำอธิบาย:** `compose exec <service> <คำสั่ง>` คือ `docker exec` เวอร์ชันเรียกด้วย **ชื่อ service** — compose แปลงเป็นชื่อ container จริง (`005_lab_..._redis-1`) ให้เอง · `redis-cli` คือ CLI ที่ติดมากับ image redis อยู่แล้ว · `KEYS 'votes:*'` ไล่หา key ที่ขึ้นต้นด้วย `votes:` · `GET` อ่านค่าของ key เดียว ·
-> อย่าลืม quote รอบ `'votes:*'` — กัน shell เอา `*` ไปขยายเป็นชื่อไฟล์ก่อนถึงมือ redis
+> 📝 **คำอธิบาย:** `compose exec <service> <คำสั่ง>` คือ `docker exec` เวอร์ชันเรียกด้วย **ชื่อ service** — compose แปลงเป็นชื่อ container จริง (`005_lab_..._redis-1`) ให้เอง · `redis-cli` คือ CLI ที่ติดมากับ image redis อยู่แล้ว · `KEYS 'votes:*'` ไล่หา key ที่ขึ้นต้นด้วย `votes:` (อย่าลืม quote — กัน shell ขยาย `*` เป็นชื่อไฟล์) · `GET` อ่านค่าของ key เดียว
 
-✅ **Expected output** — เจอ 2 key และค่า `votes:cats` คือ 6 ตามหน้าเว็บ:
+✅ **Expected output** — เจอ 2 key และค่า `votes:cats` คือ 6 ตรงกับหน้าเว็บ — เว็บทั้งสองตัวเป็นแค่ "หน้ากาก" ของข้อมูลใน redis ซึ่งนอนอยู่ใน volume `vote-data`:
 
 ```
 votes:cats
 votes:dogs
 6
 ```
-
-> ตัวเลขที่ result วาดเป็นแท่ง กับตัวเลขที่ redis เก็บ คือก้อนเดียวกัน — เว็บทั้งสองตัวเป็นแค่ "หน้ากาก" ของข้อมูลใน redis ซึ่งนอนอยู่ใน volume `vote-data`
 
 ---
 
@@ -459,7 +452,7 @@ curl -s http://localhost:8086/data
 }
 ```
 
-> **นี่คือคำตอบของคำถามก่อนเริ่ม:** container เป็นของใช้แล้วทิ้ง แต่ **ข้อมูลใน named volume อยู่ยงคงกระพัน** — redis ตัวใหม่เกิดมา mount `vote-data` ลูกเดิม อ่านไฟล์ AOF เดิม คะแนนจึงกลับมาครบทุกแต้ม · เปิดหน้า `http://localhost:8086` ดูอีกครั้งได้เลย — 60:40 เหมือนไม่มีอะไรเกิดขึ้น
+> **นี่คือคำตอบของคำถามก่อนเริ่ม:** container เป็นของใช้แล้วทิ้ง แต่ **ข้อมูลใน named volume อยู่ยงคงกระพัน** — redis ตัวใหม่ mount `vote-data` ลูกเดิม อ่านไฟล์ AOF เดิม คะแนนจึงกลับมาครบทุกแต้ม · เปิด `http://localhost:8086` ดูอีกครั้งได้เลย — 60:40 เหมือนไม่มีอะไรเกิดขึ้น
 
 ---
 
@@ -523,7 +516,7 @@ curl -s http://localhost:8086/data
 docker compose up --watch
 ```
 
-> 📝 **คำอธิบาย:** `--watch` เปิดใช้บล็อก `develop: watch:` ที่ประกาศไว้ใน service `vote` — compose จะเฝ้าดูโฟลเดอร์ `./vote` บนเครื่อง แล้ว **sync ไฟล์ที่เปลี่ยนเข้าไปที่ `/app` ใน container** ทันที · รอบนี้ไม่มี `-d` เพราะอยากเห็น log สด ๆ — terminal จะค้างอยู่กับ log ของทั้ง 3 services **ปล่อยค้างไว้ อย่าเพิ่งกดอะไร**
+> 📝 **คำอธิบาย:** `--watch` เปิดใช้บล็อก `develop: watch:` ที่ประกาศไว้ใน service `vote` — compose จะเฝ้าดูโฟลเดอร์ `./vote` บนเครื่อง แล้ว **sync ไฟล์ที่เปลี่ยนเข้าไปที่ `/app` ใน container** ทันที · รอบนี้ไม่มี `-d` เพราะอยากเห็น log สด ๆ — terminal ค้างอยู่กับ log ของทั้ง 3 services **ปล่อยค้างไว้ อย่าเพิ่งกดอะไร**
 
 ✅ **Expected output** — container เดิมยังรันอยู่ compose จึงรายงาน `Running` แล้วขึ้นบรรทัดสำคัญ `Watch enabled`:
 
