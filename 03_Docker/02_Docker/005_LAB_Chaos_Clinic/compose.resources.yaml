@@ -1,7 +1,0 @@
-# Optional override: use only when Docker runs directly on a cgroup-capable host.
-# The privileged Docker-in-Docker classroom intentionally omits these limits
-# because some cgroup v2 hosts expose a threaded subtree to the nested daemon.
-services:
-  clinic:
-    mem_limit: 128m
-    cpus: 0.50
