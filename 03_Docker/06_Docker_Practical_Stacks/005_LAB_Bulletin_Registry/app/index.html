@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docker Bulletin Board</title>
+  <link rel="stylesheet" href="/site.css">
+</head>
+<body>
+  <header class="hero">
+    <p class="eyebrow">DOCKER PRACTICAL STACKS · LAB 5</p>
+    <h1>Welcome to the Bulletin Board</h1>
+    <p>หนึ่ง image ที่ build แบบ multi-stage พร้อม healthcheck และ versioned release</p>
+    <span id="api-status" class="status">กำลังตรวจ API…</span>
+  </header>
+
+  <main>
+    <section class="panel form-panel">
+      <h2>เพิ่มกิจกรรม</h2>
+      <form id="event-form">
+        <label>ชื่อกิจกรรม<input id="title" name="title" required placeholder="เช่น Docker Compose Workshop"></label>
+        <label>รายละเอียด<textarea id="detail" name="detail" rows="4" placeholder="สิ่งที่จะเรียนรู้"></textarea></label>
+        <label>วันที่<input id="date" name="date" type="date"></label>
+        <button type="submit">เพิ่มบนกระดาน</button>
+      </form>
+      <p id="form-message" aria-live="polite"></p>
+    </section>
+
+    <section class="panel board-panel">
+      <div class="board-heading">
+        <h2>กิจกรรมล่าสุด</h2>
+        <button id="refresh" class="secondary" type="button">โหลดใหม่</button>
+      </div>
+      <div id="events" class="events" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer>ข้อมูลตัวอย่างอยู่ใน memory และเริ่มใหม่เมื่อสร้าง container ใหม่</footer>
+  <script src="/app.js" defer></script>
+</body>
+</html>

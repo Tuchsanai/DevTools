@@ -1,0 +1,40 @@
+name: lab7-vision
+
+services:
+  api:
+    build:
+      context: ./api
+    image: vision-api:lab7
+    environment:
+      APP_VERSION: ${APP_VERSION:-1.0.0}
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      start_period: 10s
+      retries: 8
+    restart: unless-stopped
+    networks:
+      - vision-net
+
+  ui:
+    build:
+      context: ./ui
+    image: vision-ui:lab7
+    environment:
+      API_URL: http://api:8000
+      PROCESS_MODE: ${PROCESS_MODE:-edges}
+    ports:
+      - "8501:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - vision-net
+
+networks:
+  vision-net:
+    name: lab7-vision-net

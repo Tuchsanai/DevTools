@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MySQL Network &amp; Volume Proof</title>
+  <style>
+    :root { font-family: "Noto Sans Thai", "Leelawadee UI", system-ui, sans-serif; color: #16212f; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #f4f7fb; }
+    header { padding: 3.5rem max(5vw, 2rem); color: white; background: linear-gradient(135deg,#0b2545,#1864ab); }
+    .tag { color: #ffd8a8; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: .55rem 0 0; font-size: clamp(2.5rem,6vw,5rem); }
+    main { width: min(1120px, 90vw); margin: -1.4rem auto 3rem; }
+    .flow { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; }
+    .box { padding: 1.5rem; border: 2px solid #1971c2; border-radius: 18px; background: white; box-shadow: 0 12px 30px rgba(15,52,88,.1); }
+    .box.db { border-color: #e8590c; }
+    .arrow { color: #1971c2; font-size: 2rem; font-weight: 900; }
+    code { color: #0f4c81; font-family: "Cascadia Code", Consolas, monospace; }
+    .proofs { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 1rem; }
+    .proof { padding: 1.25rem; border-radius: 16px; background: white; border-left: 7px solid #2f9e44; }
+    .proof.bad { border-color: #c92a2a; }
+    .proof strong { display: block; font-size: 1.08rem; margin-bottom: .35rem; }
+    @media(max-width:760px){ .flow,.proofs { grid-template-columns: 1fr; } .arrow { transform: rotate(90deg); text-align:center; } }
+  </style>
+</head>
+<body>
+  <header><div class="tag">LAB 3 · ตรวจจากการรันจริง</div><h1>MySQL Network + Named Volume</h1></header>
+  <main>
+    <section class="flow">
+      <div class="box"><b>mysql client</b><br><code>--network lab3-net</code></div>
+      <div class="arrow">→ DNS: lab3-db →</div>
+      <div class="box db"><b>MySQL container</b><br><code>lab3-db:3306</code><br>ไม่ publish port ออก host</div>
+    </section>
+    <section class="proofs">
+      <article class="proof bad"><strong>localhost ใช้ไม่ได้</strong>client จะมองหาฐานข้อมูลในกล่องของตัวเอง</article>
+      <article class="proof"><strong>ชื่อ container ใช้ได้</strong>Docker DNS แปลง <code>lab3-db</code> เป็น IP ภายใน</article>
+      <article class="proof"><strong>ลบ DB แล้วข้อมูลยังอยู่</strong>สร้าง container ใหม่และพบข้อความเดิมใน <code>lab3-mysql-data</code></article>
+    </section>
+  </main>
+</body>
+</html>

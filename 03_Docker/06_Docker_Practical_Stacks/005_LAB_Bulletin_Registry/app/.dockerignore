@@ -1,0 +1,10 @@
+.git
+.gitignore
+.env
+.env.*
+Dockerfile*
+node_modules
+npm-debug.log*
+*.md
+evidence
+images

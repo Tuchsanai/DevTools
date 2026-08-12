@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docker Operations LAB</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: "Noto Sans Thai", "Leelawadee UI", system-ui, sans-serif;
+      background: #081426;
+      color: #eef6ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(36,150,237,.32), transparent 36%),
+        radial-gradient(circle at 82% 75%, rgba(232,89,12,.24), transparent 34%),
+        #081426;
+    }
+    main { width: min(980px, 92vw); }
+    .eyebrow { color: #74c0fc; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { margin: .35rem 0 1rem; font-size: clamp(2.5rem, 7vw, 5.7rem); line-height: 1; }
+    h1 span { color: #ffa94d; }
+    .lead { max-width: 760px; color: #c5d7eb; font-size: 1.25rem; line-height: 1.7; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.2rem; }
+    article { padding: 1.3rem; border: 1px solid #284b71; border-radius: 18px; background: rgba(12,33,58,.8); }
+    article strong { display: block; color: #74c0fc; font-size: 1.05rem; margin-bottom: .4rem; }
+    code { color: #ffd479; font-family: "Cascadia Code", Consolas, monospace; }
+    footer { margin-top: 2rem; color: #8ba6c3; }
+    @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">LAB 1 · Container Operations</div>
+    <h1>คุมกล่อง<br><span>ให้อยู่มือ</span></h1>
+    <p class="lead">
+      หน้าเว็บนี้ถูกส่งเข้า Nginx ด้วย <code>docker cp</code> หลังจากเราเข้าไปสำรวจกล่องด้วย
+      <code>docker exec -it</code> ทุก request ที่เปิดหน้านี้จะปรากฏใน <code>docker logs -f</code>
+    </p>
+    <section class="grid">
+      <article><strong>เข้าไปดู</strong><code>docker exec -it</code><br>สำรวจ process และไฟล์จริงในกล่อง</article>
+      <article><strong>สังเกตสด</strong><code>docker logs -f</code><br>เห็น access log ทุกครั้งที่ browser เรียกเว็บ</article>
+      <article><strong>นำไฟล์เข้า–ออก</strong><code>docker cp</code><br>คัดลอกได้โดยไม่ต้อง rebuild image</article>
+    </section>
+    <footer>Nginx container: <code>ops-nginx</code> · inner host port: <code>8081</code></footer>
+  </main>
+</body>
+</html>
