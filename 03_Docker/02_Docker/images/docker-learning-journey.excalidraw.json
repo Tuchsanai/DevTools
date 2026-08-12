@@ -1,0 +1,26 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://github.com/excalidraw/excalidraw",
+  "elements": [
+    {"type":"text","id":"title","x":170,"y":35,"width":470,"height":35,"text":"Docker Learning Journey","fontSize":28,"strokeColor":"#1e1e1e"},
+    {"type":"rectangle","id":"l1","x":40,"y":180,"width":125,"height":90,"strokeColor":"#4a9eed","backgroundColor":"#a5d8ff","fillStyle":"solid","roundness":{"type":3}},
+    {"type":"text","id":"t1","x":72,"y":205,"width":64,"height":50,"text":"01\nRUN","fontSize":20,"strokeColor":"#1e1e1e"},
+    {"type":"arrow","id":"a1","x":165,"y":225,"width":35,"height":0,"points":[[0,0],[35,0]],"strokeColor":"#4a9eed","endArrowhead":"arrow"},
+    {"type":"rectangle","id":"l2","x":200,"y":180,"width":125,"height":90,"strokeColor":"#f59e0b","backgroundColor":"#ffd8a8","fillStyle":"solid","roundness":{"type":3}},
+    {"type":"text","id":"t2","x":224,"y":205,"width":80,"height":50,"text":"02\nBUILD","fontSize":20,"strokeColor":"#1e1e1e"},
+    {"type":"arrow","id":"a2","x":325,"y":225,"width":35,"height":0,"points":[[0,0],[35,0]],"strokeColor":"#f59e0b","endArrowhead":"arrow"},
+    {"type":"rectangle","id":"l3","x":360,"y":180,"width":125,"height":90,"strokeColor":"#22c55e","backgroundColor":"#c3fae8","fillStyle":"solid","roundness":{"type":3}},
+    {"type":"text","id":"t3","x":392,"y":205,"width":64,"height":50,"text":"03\nDATA","fontSize":20,"strokeColor":"#1e1e1e"},
+    {"type":"arrow","id":"a3","x":485,"y":225,"width":35,"height":0,"points":[[0,0],[35,0]],"strokeColor":"#22c55e","endArrowhead":"arrow"},
+    {"type":"rectangle","id":"l4","x":520,"y":180,"width":125,"height":90,"strokeColor":"#8b5cf6","backgroundColor":"#d0bfff","fillStyle":"solid","roundness":{"type":3}},
+    {"type":"text","id":"t4","x":538,"y":205,"width":96,"height":50,"text":"04\nCOMPOSE","fontSize":20,"strokeColor":"#1e1e1e"},
+    {"type":"arrow","id":"a4","x":645,"y":225,"width":35,"height":0,"points":[[0,0],[35,0]],"strokeColor":"#8b5cf6","endArrowhead":"arrow"},
+    {"type":"rectangle","id":"l5","x":680,"y":180,"width":125,"height":90,"strokeColor":"#ec4899","backgroundColor":"#eebefa","fillStyle":"solid","roundness":{"type":3}},
+    {"type":"text","id":"t5","x":705,"y":205,"width":80,"height":50,"text":"05\nDEBUG","fontSize":20,"strokeColor":"#1e1e1e"},
+    {"type":"rectangle","id":"goal","x":200,"y":355,"width":445,"height":72,"strokeColor":"#f59e0b","backgroundColor":"#fff3bf","fillStyle":"solid","roundness":{"type":3}},
+    {"type":"text","id":"goaltext","x":236,"y":378,"width":375,"height":25,"text":"Explain every container with evidence","fontSize":20,"strokeColor":"#1e1e1e"}
+  ],
+  "appState": {"viewBackgroundColor":"#ffffff","gridSize":null},
+  "files": {}
+}

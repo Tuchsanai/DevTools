@@ -20,7 +20,5 @@ services:
     tmpfs: [/tmp]
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
-    mem_limit: 128m
-    cpus: 0.50
     labels:
       devtools.lab: chaos-clinic
