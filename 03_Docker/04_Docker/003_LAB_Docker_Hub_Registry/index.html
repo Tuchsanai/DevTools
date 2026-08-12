@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Digital Business Card</title>
+<style>
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #2b1055 0%, #7597de 100%);
+    font-family: "Leelawadee UI", "Noto Sans Thai", "Segoe UI", sans-serif;
+  }
+  .card {
+    background: #fff; border-radius: 22px; width: 460px; overflow: hidden;
+    box-shadow: 0 24px 70px rgba(0,0,0,.45); text-align: center;
+  }
+  .banner { height: 110px; background: linear-gradient(120deg, #1864ab, #22b8cf); }
+  .avatar {
+    width: 108px; height: 108px; border-radius: 50%; background: #e7f5ff;
+    border: 5px solid #fff; margin: -58px auto 0; font-size: 56px; line-height: 100px;
+  }
+  h1 { font-size: 28px; margin: 14px 0 2px; color: #16212f; }
+  p.role { color: #5b6b7f; margin: 0 0 18px; font-size: 17px; }
+  .tags { display: flex; gap: 10px; justify-content: center; padding-bottom: 26px; flex-wrap: wrap; }
+  .tag {
+    background: #e7f5ff; color: #1864ab; border-radius: 999px;
+    padding: 7px 16px; font-size: 15px; font-weight: 700;
+  }
+  .tag.o { background: #fff4e6; color: #e8590c; }
+  .tag.g { background: #ebfbee; color: #2f9e44; }
+  .foot { background: #f6f8fa; padding: 12px; font-size: 14px; color: #68778a; }
+  .foot b { font-family: Consolas, monospace; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="banner"></div>
+    <div class="avatar">🧑‍💻</div>
+    <!-- ✏️ แก้ชื่อด้านล่างให้เป็นชื่อของคุณเอง ก่อน build image -->
+    <h1>YOUR NAME</h1>
+    <p class="role">DevOps Student · Software Development Tools</p>
+    <div class="tags">
+      <span class="tag">🐳 Docker</span>
+      <span class="tag o">📦 Registry</span>
+      <span class="tag g">🚀 CI/CD</span>
+    </div>
+    <div class="foot">image นี้ถูก push ขึ้น Docker Hub แล้ว pull กลับมารันโดย <b>docker run</b></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+# ไฟล์ที่ไม่ควรหลุดเข้าไปใน build context / image
+__pycache__/
+*.pyc
+.git
+.gitignore
+readme.md
+images/

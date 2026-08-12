@@ -1,0 +1,4 @@
+# กัน readme และรูปประกอบไม่ให้เข้า build context
+readme.md
+images/
+.git

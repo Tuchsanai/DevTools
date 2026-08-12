@@ -1,0 +1,26 @@
+name: devtools-chaos-clinic
+
+services:
+  clinic:
+    build: ./app
+    environment:
+      HEALTH_MODE: ${HEALTH_MODE:-broken}
+      RELEASE: ${RELEASE:-canary}
+      PORT: 8080
+    ports: ["8080:8080"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=1)"]
+      interval: 2s
+      timeout: 1s
+      start_period: 2s
+      retries: 3
+    restart: on-failure:3
+    init: true
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    cpus: 0.50
+    labels:
+      devtools.lab: chaos-clinic

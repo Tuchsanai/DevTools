@@ -1,0 +1,8 @@
+# ── CMD อย่างเดียว : กำหนด "คำสั่งเริ่มต้น" ที่ถูกแทนที่ได้ทั้งก้อน ──
+# ทั้ง 3 Dockerfile ของแล็บนี้ใช้ FROM + RUN บรรทัดเดียวกันเป๊ะ
+# → Docker ใช้ layer cache ร่วมกัน build ไฟล์ที่ 2-3 จะเร็วมาก
+
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y figlet && rm -rf /var/lib/apt/lists/*
+
+CMD ["figlet", "Hello CMD"]

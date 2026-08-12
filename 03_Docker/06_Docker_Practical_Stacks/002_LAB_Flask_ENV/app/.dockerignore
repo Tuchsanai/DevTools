@@ -1,7 +1,0 @@
-__pycache__/
-*.py[cod]
-.venv/
-.git/
-.env
-images/
-evidence/
