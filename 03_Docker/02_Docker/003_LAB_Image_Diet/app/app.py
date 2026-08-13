@@ -6,6 +6,7 @@
 import json
 import os
 import platform
+import re
 import socket
 from pathlib import Path
 
@@ -62,6 +63,20 @@ def build_info():
     return {}
 
 
+UNITS = {"B": 1, "KB": 1024, "MB": 1024 ** 2, "GB": 1024 ** 3, "TB": 1024 ** 4}
+
+
+def to_bytes(text):
+    """รับค่าที่ได้จาก docker images (เช่น '1.62GB' หรือ '179MB') หรือเลขไบต์ล้วน"""
+    text = (text or "").strip()
+    if not text:
+        return None
+    m = re.fullmatch(r"([0-9]+(?:\.[0-9]+)?)\s*([KMGT]?B)?", text, flags=re.I)
+    if not m:
+        return None
+    return int(float(m.group(1)) * UNITS.get((m.group(2) or "B").upper(), 1))
+
+
 def sizes():
     """อ่านขนาด image ของแต่ละรุ่นจาก environment (ส่งเข้ามาตอน docker run)"""
     out = []
@@ -70,13 +85,12 @@ def sizes():
         ("SIZE_V2", "python:3.12-slim"),
         ("SIZE_V3", "python:3.12-slim (multi-stage)"),
     ):
+        tag = key.replace("SIZE_", "").lower()
         raw = os.environ.get(key, "").strip()
-        try:
-            value = int(raw)
-        except ValueError:
-            value = None
-        out.append({"tag": key.replace("SIZE_", "v").lower(), "base": base,
-                    "bytes": value, "human": human(value)})
+        value = to_bytes(raw)
+        out.append({"tag": tag, "base": base, "bytes": value,
+                    "human": raw if value else None,
+                    "rebuild": os.environ.get("REBUILD_" + tag.upper(), "").strip() or "—"})
     return out
 
 
@@ -116,25 +130,34 @@ def index():
     known = [r["bytes"] for r in rows if r["bytes"]]
     biggest = max(known) if known else 1
 
-    bars = []
+    bars = [
+        '<div class="row chead"><div class="tag">รุ่น</div>'
+        '<div class="base">base image</div>'
+        '<div class="track"></div>'
+        '<div class="num">ขนาดบนดิสก์</div>'
+        '<div class="time">rebuild</div></div>'
+    ]
     for r in rows:
         if not r["bytes"]:
             bars.append(
                 f'<div class="row"><div class="tag">{r["tag"]}</div>'
+                f'<div class="base">{r["base"]}</div>'
                 f'<div class="track"><div class="bar unknown" style="width:6%"></div></div>'
-                f'<div class="num">ไม่ได้ส่งค่ามา</div></div>'
+                f'<div class="num">ไม่ได้ส่งค่ามา</div>'
+                f'<div class="time">{r["rebuild"]}</div></div>'
             )
             continue
-        pct = max(4.0, r["bytes"] / biggest * 100.0)
+        pct = max(3.0, r["bytes"] / biggest * 100.0)
         cls = "fat" if r["tag"] == "v1" else ("mid" if r["tag"] == "v2" else "slim")
         saved = ""
         if r["tag"] != "v1" and rows[0]["bytes"]:
             saved = f' <span class="saved">−{100 - r["bytes"] / rows[0]["bytes"] * 100:.0f}%</span>'
         bars.append(
             f'<div class="row"><div class="tag">{r["tag"]}</div>'
-            f'<div class="track"><div class="bar {cls}" style="width:{pct:.1f}%">'
-            f'<span>{r["base"]}</span></div></div>'
-            f'<div class="num">{r["human"]}{saved}</div></div>'
+            f'<div class="base">{r["base"]}</div>'
+            f'<div class="track"><div class="bar {cls}" style="width:{pct:.1f}%"></div></div>'
+            f'<div class="num">{r["human"]}{saved}</div>'
+            f'<div class="time">{r["rebuild"]}</div></div>'
         )
 
     user_badge = (
@@ -166,10 +189,11 @@ def index():
   </header>
 
   <section class="card">
-    <h2>ขนาด image ของแต่ละรุ่น</h2>
+    <h2>ขนาด image ของแต่ละรุ่น · เวลา rebuild หลังแก้โค้ด 1 บรรทัด</h2>
     <div class="chart">{''.join(bars)}</div>
-    <p class="hint">ค่าเหล่านี้ส่งเข้ามาทาง environment variable ตอน <code>docker run</code>
-       (<code>docker image inspect --format '{{{{.Size}}}}'</code>) — ไม่ได้ hard-code ไว้ในโค้ด</p>
+    <p class="hint">ค่าเหล่านี้ไม่ได้ hard-code ไว้ในโค้ด แต่ส่งเข้ามาทาง environment variable ตอน
+       <code>docker run</code> ด้วย <code>docker images --format '{{{{.Size}}}}'</code>
+       จึงเป็นตัวเลขเดียวกับที่เห็นใน terminal เป๊ะ ๆ</p>
   </section>
 
   <section class="grid">

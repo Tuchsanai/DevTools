@@ -1,0 +1,1246 @@
+<!-- ============ 1 : Cover ============ -->
+<div class="slot"><section class="slide cover">
+  <div class="s-body">
+    <div style="display:grid; grid-template-columns:1.12fr .88fr; gap:40px; align-items:center; width:100%">
+      <div>
+        <div class="k">Software Development Tools and Environments</div>
+        <h1 style="font-size:56px">Docker &amp; Compose<br><span style="font-size:44px; color:#cfe4ff">ควบคุม · สืบสวน · ประกอบ</span></h1>
+        <div class="rule"></div>
+        <div class="m">Week 9 — จาก container เดียว สู่ระบบที่รันได้จริง<br>
+        ทฤษฎี + ปฏิบัติการ 5 แล็บ <span style="font-size:18px">(ผลการรันทุกบรรทัดในสไลด์นี้ รันจริงบนเครื่องเรียน)</span></div>
+      </div>
+      <div style="background:rgba(255,255,255,.94); border-radius:14px; padding:16px">
+        <img data-a="f01" alt="แผนที่ Week 9 : LAB 1 Control Room, LAB 2 Color Factory, LAB 3 Image Diet, LAB 4 Vision API, LAB 5 Ops Clinic" style="width:100%;height:auto;display:block"></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Docker &amp; Compose — Week 9</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 2 : Agenda ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>สิ่งที่จะเรียนวันนี้</h2><div class="sub">สัปดาห์ที่แล้วเราสร้าง container ขึ้นมาได้ — สัปดาห์นี้เราจะ <b>บังคับมัน สอบสวนมัน ตั้งค่ามัน และประกอบมันเป็นระบบ</b></div></div>
+  <div class="s-body">
+    <div class="agenda">
+      <div class="it"><div class="ix">01</div><div class="tt">วงจรชีวิตและโหมดการรัน<s>run · ps · stop · start · rm · tag — และทำไม <code>stop</code> ไม่เท่ากับ <code>rm</code></s></div></div>
+      <div class="it lab"><div class="ix">02</div><div class="tt">เครื่องมือสืบสวน 5 ชิ้น + <b>LAB 1</b><s>logs · exec · inspect --format · stats · ps --filter</s></div></div>
+      <div class="it"><div class="ix">03</div><div class="tt">Environment Variables<s>ส่งค่าเข้า container จากข้างนอก — ลำดับความสำคัญของ 3 แหล่ง</s></div></div>
+      <div class="it lab"><div class="ix">04</div><div class="tt"><b>LAB 2</b> : image เดียว หลายบุคลิก<s>build ครั้งเดียว รัน 3 สี ด้วย <code>-e</code> และ <code>--env-file</code></s></div></div>
+      <div class="it"><div class="ix">05</div><div class="tt">Layer · Build Cache · Multi-stage<s>ทำไม Dockerfile สลับบรรทัดแล้ว build ช้าลง 100 เท่า</s></div></div>
+      <div class="it lab"><div class="ix">06</div><div class="tt"><b>LAB 3</b> : ลดน้ำหนัก image<s>.dockerignore · multi-stage · non-root · <code>image history</code></s></div></div>
+      <div class="it"><div class="ix">07</div><div class="tt">หลาย service + Docker Compose<s>ชื่อ service = ชื่อ DNS · <code>compose.yaml</code> แทน flag ที่พิมพ์เอง</s></div></div>
+      <div class="it lab"><div class="ix">08</div><div class="tt"><b>LAB 4</b> : Vision API<s>FastAPI + OpenCV ตรวจจับขอบภาพ คู่กับหน้าเว็บอัปโหลด</s></div></div>
+      <div class="it"><div class="ix">09</div><div class="tt">Health · Restart · Resource limits<s>“Up” ไม่เท่ากับ “ใช้งานได้” — และ Exited (137) แปลว่าอะไร</s></div></div>
+      <div class="it lab"><div class="ix">10</div><div class="tt"><b>LAB 5</b> : คลินิกอาการเสีย + สรุป<s>4 เคสจริง · แผนที่วินิจฉัย · cheat sheet</s></div></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Docker &amp; Compose — Week 9</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 3 : Learning loop ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge">LEARNING LOOP</span><h2>เรียนแบบนักทดลอง ไม่ใช่แบบท่องคำสั่ง</h2>
+  <div class="sub">คำสั่ง Docker มีเป็นร้อย — จำไม่ไหวและไม่ต้องจำ สิ่งที่ต้องได้คือ “อ่านหลักฐานเป็น”</div></div>
+  <div class="s-body">
+    <div class="loop4">
+      <div class="loop-step"><span class="ln">1</span><h4>Predict — ทาย</h4><p>ก่อนกด Enter ทายว่าจะเกิดอะไร ถ้า <code>stop</code> แล้ว container หายไหม? ไฟล์ที่เขียนไว้ยังอยู่ไหม?</p></div>
+      <div class="loop-step"><span class="ln">2</span><h4>Run — ลงมือ</h4><p>รันจริงบนเครื่องเรียน ทีละคำสั่ง อ่าน output ให้จบก่อนขยับขั้นถัดไป</p></div>
+      <div class="loop-step"><span class="ln">3</span><h4>Observe — ดูหลักฐาน</h4><p>เทียบกับที่ทายไว้ ใช้ <code>ps -a</code> · <code>logs</code> · <code>inspect</code> ยืนยัน อย่าเดา</p></div>
+      <div class="loop-step"><span class="ln">4</span><h4>Explain — อธิบาย</h4><p>บอกด้วยภาษาตัวเองว่ากลไกไหนทำให้ผลเป็นแบบนั้น แล้วเปลี่ยนตัวแปรหนึ่งค่า ทดสอบซ้ำ</p></div>
+    </div>
+    <div class="grid2" style="margin-top:22px">
+      <div class="callout good"><b>ผ่านหนึ่งรอบเมื่อ</b> คุณชี้ได้ว่าบรรทัดไหนใน output คือหลักฐาน และอธิบายได้ว่าทำไมมันถึงเป็นแบบนั้น</div>
+      <div class="callout warn"><b>ยังไม่ผ่านถ้า</b> “ทำตามแล้วมันขึ้นแบบนี้” — นั่นคือการลอกคำสั่ง ไม่ใช่การเข้าใจ</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>วิธีเรียนในห้อง LAB</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 4 : เตรียมเครื่องเรียน ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge">SETUP</span><h2>เตรียมเครื่องเรียน — ทำครั้งเดียว ใช้ได้ทั้ง 5 แล็บ</h2>
+  <div class="sub">ทุกแล็บรัน Docker <b>ซ้อนอยู่ข้างในกล่องเรียน</b> เพื่อให้ทุกคนอยู่บนสภาพแวดล้อมเดียวกัน</div></div>
+  <div class="s-body top">
+    <div class="grid2" style="align-items:start">
+      <div>
+        <pre class="code sm"><span class="c"># บนเครื่องของเรา (host)</span>
+<span class="k">docker</span> rm -f devtools-lab001 <span class="o">2&gt;/dev/null</span>
+<span class="k">docker</span> run -dit <span class="y">--name</span> devtools-lab001 <span class="y">\
+  --privileged</span> <span class="y">-p</span> 2222:22 <span class="y">-p</span> 18081:8080 <span class="y">\
+  </span>tuchsanai/devtools:2569_1
+
+<span class="k">ssh</span> root@localhost <span class="y">-p</span> 2222   <span class="c"># password : passwd</span></pre>
+        <div class="callout sm" style="margin-top:14px"><b>ทำไมต้อง <code>--privileged</code></b> — เพื่อให้รัน Docker ซ้อนข้างในกล่องได้ (Docker-in-Docker) · <code>-p 2222:22</code> เปิดทาง SSH · <code>-p 18081:8080</code> เปิดทางให้หน้าเว็บของแล็บโผล่ออกมาที่เบราว์เซอร์</div>
+      </div>
+      <div>
+        <pre class="code sm"><span class="c"># ข้างในกล่องเรียน — เช็กก่อนเริ่มทุกครั้ง</span>
+<span class="k">docker</span> --version
+<span class="k">docker</span> compose version</pre>
+        <div class="term" style="margin-top:12px">
+          <div class="tbar"><i></i> ผลจริงจากเครื่องเรียน</div>
+          <pre class="code sm">{{SETUP_VER}}</pre>
+        </div>
+        <div class="callout warn sm" style="margin-top:12px"><b>สังเกต</b> เป็น <code>docker compose</code> (เว้นวรรค) ไม่ใช่ <code>docker-compose</code> (ขีดกลาง) ซึ่งเป็นรุ่นเก่าที่เลิกใช้แล้ว</div>
+      </div>
+    </div>
+    <div class="callout good sm" style="margin-top:16px"><b>เลข port ของแต่ละแล็บไม่ซ้ำกัน</b> — LAB 1 ใช้ 2222/18081 · LAB 2 ใช้ 2223/18021–18023 · LAB 3 ใช้ 2224/18031 · LAB 4 ใช้ 2225/18041–18042 · LAB 5 ใช้ 2226/18051 &nbsp;ทำทีละแล็บและ <code>docker rm -f</code> ให้เรียบร้อยก่อนขึ้นแล็บถัดไป</div>
+  </div>
+  <div class="s-foot"><span>เตรียมเครื่องเรียน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 5 : SECTION 01 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">01</div>
+    <h1>ควบคุมและสืบสวน container</h1>
+    <div class="m">container ที่รันอยู่ไม่ใช่กล่องดำ — มีเครื่องมือ 5 ชิ้นที่เปิดดูข้างในได้ทั้งหมด</div>
+    <div class="chips"><span>run · ps · stop · start · rm</span><span>tag</span><span>logs</span><span>exec</span><span>inspect</span><span>stats</span><span>LAB 1</span></div>
+  </div>
+  <div class="s-foot"><span>SECTION 01</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 6 : image vs container ทบทวน ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ทบทวน 60 วินาที — image กับ container</h2>
+  <div class="sub">แยกสองคำนี้ไม่ออก จะงงทุกคำสั่งหลังจากนี้</div></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div class="card"><h4>IMAGE — แม่แบบ</h4>
+        <p>ไฟล์อ่านอย่างเดียว ที่ถูก build ไว้ครั้งเดียว · เก็บ OS ย่อย ๆ + โปรแกรม + ค่าเริ่มต้น<br>
+        ดูด้วย <code>docker images</code> · ลบด้วย <code>docker rmi</code></p></div>
+      <div class="card g"><h4>CONTAINER — ชิ้นงานที่รันจริง</h4>
+        <p>เกิดจาก image + <b>writable layer</b> ของตัวเอง · มีสถานะ มี PID มี IP<br>
+        ดูด้วย <code>docker ps</code> · ลบด้วย <code>docker rm</code></p></div>
+    </div>
+    <div class="grid2" style="margin-top:18px">
+      <div class="callout"><b>1 image → หลาย container ได้</b> ทุกตัวใช้ layer อ่านอย่างเดียวชุดเดียวกันร่วมกัน จึงกินดิสก์เพิ่มน้อยมาก</div>
+      <div class="callout bad"><b>ลบ container = ลบ writable layer</b> ทุกอย่างที่เขียนลงไปข้างในหายหมด (นี่คือเหตุผลที่ต้องมี volume — Week 8)</div>
+    </div>
+    <div class="callout warn" style="margin-top:18px"><b>คำถามที่คนพลาดบ่อยที่สุด</b> : <code>docker rmi</code> ลบ <b>image</b> · <code>docker rm</code> ลบ <b>container</b> — ชื่อคล้ายกันแต่คนละของ และลบ image ไม่ได้ถ้ายังมี container ใช้อยู่</div>
+  </div>
+  <div class="s-foot"><span>01 · ควบคุมและสืบสวน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 7 : lifecycle figure ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>วงจรชีวิต — คำสั่งไหนพาไปสถานะไหน</h2>
+  <div class="sub">แผนที่นี้ตอบคำถามยอดฮิต “container ผมหายไปไหน”</div></div>
+  <div class="s-body">
+    <div class="fig fill"><img data-a="f02" alt="แผนภาพวงจรชีวิต container : IMAGE ผ่าน docker run ไป RUNNING, docker stop ไป EXITED, docker rm ไป REMOVED, docker start กลับมา RUNNING และ docker rm -f ข้ามจาก RUNNING ไป REMOVED"></div>
+  </div>
+  <div class="s-foot"><span>01 · ควบคุมและสืบสวน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 8 : ps vs ps -a จริง ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2><code>docker ps</code> กับ <code>docker ps -a</code> — อ่านให้เป็นทีละคอลัมน์</h2></div>
+  <div class="s-body top">
+    <div class="term">
+      <div class="tbar"><i></i> ผลจริง — หลังเปิด container 3 ตัว แล้ว stop ไป 1 ตัว</div>
+      <pre class="code xxs">{{L1_PS}}</pre>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div>
+        <table class="tbl sm">
+          <tr><th>คอลัมน์</th><th>อ่านว่าอะไร</th></tr>
+          <tr><td><code>STATUS</code></td><td><code>Up …</code> = กำลังรัน · <code>Exited (0)</code> = จบปกติ · <code>Exited (1)</code> = จบด้วย error</td></tr>
+          <tr><td><code>PORTS</code></td><td>ว่างเปล่า = ไม่ได้ publish ออกมา เปิดจากเบราว์เซอร์ไม่ได้</td></tr>
+          <tr><td><code>NAMES</code></td><td>ถ้าไม่ตั้ง <code>--name</code> Docker สุ่มชื่อให้ เช่น <code>silly_sammet</code></td></tr>
+        </table>
+      </div>
+      <div class="callout warn"><b><code>docker ps</code> โกหกโดยไม่ได้ตั้งใจ</b> — มันแสดงเฉพาะตัวที่ <b>กำลังรัน</b><br>
+      container ที่ตายไปแล้วยังอยู่บนดิสก์และยัง<b>จองชื่อ</b>อยู่ ต้อง <code>-a</code> ถึงจะเห็น<br>
+      <span class="tag r">อาการ</span> “ชื่อนี้ถูกใช้แล้ว” ทั้งที่ <code>docker ps</code> ว่างเปล่า</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>01 · ควบคุมและสืบสวน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 9 : run modes ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>สามวิธีเปิด container — ใครยึด terminal ของเราไว้</h2></div>
+  <div class="s-body">
+    <div class="fig fill"><img data-a="f03" alt="เปรียบเทียบสามโหมดของ docker run : foreground ที่ log ไหลเข้า terminal, -it ที่ได้ shell ข้างใน container, และ -d ที่คืน prompt ทันที"></div>
+  </div>
+  <div class="s-foot"><span>01 · ควบคุมและสืบสวน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 10 : run modes commands ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>flag ที่ต้องอ่านออกในคำสั่ง <code>docker run</code></h2>
+  <div class="sub">อ่านคำสั่งจากซ้ายไปขวา : ตัวเลือกทั้งหมดอยู่ <b>ก่อน</b> ชื่อ image เสมอ ส่วนที่ตามหลัง image คือคำสั่งของโปรแกรมข้างใน</div></div>
+  <div class="s-body top">
+    <pre class="code sm"><span class="k">docker</span> run <span class="y">-d</span> <span class="y">--name</span> web <span class="y">-p</span> 8080:80 <span class="y">--label</span> lab=control-room nginx:1.29-alpine
+<span class="o">│           │   │            │              │                             │</span>
+<span class="o">│           │   │            │              │                             └─</span> <span class="b">image + tag</span>
+<span class="o">│           │   │            │              └─</span> <span class="b">ป้ายกำกับ ใช้กรองและเก็บกวาดทีหลัง</span>
+<span class="o">│           │   │            └─</span> <span class="b">port ของเครื่อง : port ในกล่อง</span>
+<span class="o">│           │   └─</span> <span class="b">ตั้งชื่อเอง จะได้ไม่ต้องจำ ID</span>
+<span class="o">│           └─</span> <span class="b">detached — คืน prompt ให้เราทันที</span>
+<span class="o">└─</span> <span class="b">สร้าง container ใหม่จาก image (ไม่ใช่ start ตัวเดิม)</span></pre>
+    <div class="grid3" style="margin-top:18px">
+      <div class="card o"><h4><code>--rm</code></h4><p>ลบ container ทิ้งอัตโนมัติเมื่อโปรแกรมจบ — เหมาะกับคำสั่งใช้แล้วทิ้ง ไม่ให้ขยะค้าง</p></div>
+      <div class="card p"><h4><code>-it</code></h4><p><code>-i</code> เปิด stdin ค้างไว้ + <code>-t</code> ให้มี terminal — ต้องใช้คู่กันเสมอเวลาจะพิมพ์โต้ตอบ</p></div>
+      <div class="card g"><h4><code>-e KEY=VALUE</code></h4><p>ส่งค่าตั้งค่าเข้าไปให้โปรแกรมข้างใน — พระเอกของ SECTION 02</p></div>
+    </div>
+    <div class="callout bad sm" style="margin-top:16px"><b>ข้อผิดพลาดที่พบบ่อย</b> — <code>docker run</code> สร้างตัว<b>ใหม่</b>ทุกครั้ง ถ้าอยากเปิดตัวเดิมที่ stop ไว้ ต้องใช้ <code>docker start &lt;ชื่อ&gt;</code></div>
+  </div>
+  <div class="s-foot"><span>01 · ควบคุมและสืบสวน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 11 : tag anatomy ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>อ่านชื่อ image ให้เป็น — และทำไม <code>latest</code> คือกับดัก</h2></div>
+  <div class="s-body" style="gap:12px">
+    <div class="fig" style="flex:1 1 auto; min-height:0"><img data-a="f04" alt="แผนภาพแยกส่วนของชื่อ image : registry docker.io, namespace library, repository nginx, tag 1.29-alpine พร้อมอธิบายว่า latest เป็นเพียงชื่อ tag เริ่มต้นที่เจ้าของ image ย้ายไปชี้ที่ไหนก็ได้ และ digest sha256 คือการอ้างอิงที่ไม่เปลี่ยน"></div>
+    <div class="term" style="flex:0 0 auto">
+      <div class="tbar"><i></i> ผลจริงจาก LAB 1 — ถาม image เองว่าเป็นเวอร์ชันอะไร</div>
+      <pre class="code xxs">{{L1_TAG}}</pre>
+    </div>
+  </div>
+  <div class="s-foot"><span>01 · ควบคุมและสืบสวน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 12 : five instruments ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>เครื่องมือสืบสวน 5 ชิ้น</h2>
+  <div class="sub">จำแค่ว่า “อยากรู้อะไร” แล้วเลือกเครื่องมือให้ถูก — ไม่ต้องจำ flag</div></div>
+  <div class="s-body">
+    <div class="fig fill"><img data-a="f05" alt="แผนภาพ container ตรงกลางล้อมด้วยคำสั่ง docker ps, docker logs, docker exec, docker inspect และ docker stats พร้อมคำถามที่แต่ละคำสั่งตอบได้"></div>
+  </div>
+  <div class="s-foot"><span>01 · ควบคุมและสืบสวน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 13 : logs ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge">เครื่องมือ 1</span><h2><code>docker logs</code> — โปรแกรมข้างในพูดอะไรไว้บ้าง</h2>
+  <div class="sub">Docker เก็บทุกอย่างที่โปรแกรมพิมพ์ออก <b>stdout / stderr</b> ไว้ให้ ไม่ต้องเข้าไปหาไฟล์ log เอง</div></div>
+  <div class="s-body top">
+    <div class="term">
+      <div class="tbar"><i></i> ผลจริง — access log ของ nginx หลังยิง curl เข้าไป</div>
+      <pre class="code xxs">{{L1_LOGS}}</pre>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <dl class="kv">
+        <dt>--tail 5</dt><dd>เอาแค่ 5 บรรทัดท้าย — ใช้บ่อยที่สุด</dd>
+        <dt>-f</dt><dd>ไหลสด ๆ (follow) ออกด้วย <kbd>Ctrl+C</kbd></dd>
+        <dt>-t</dt><dd>เติมเวลาหน้าทุกบรรทัด</dd>
+        <dt>--since 5m</dt><dd>เฉพาะ 5 นาทีล่าสุด</dd>
+      </dl>
+      <div class="callout good"><b>ใช้ได้แม้ container ตายไปแล้ว</b> — ตราบใดที่ยังไม่ <code>docker rm</code><br>
+      นี่คือคำสั่งแรกที่ต้องพิมพ์เสมอเวลา container <code>Exited</code> แบบไม่ทราบสาเหตุ</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>01 · ควบคุมและสืบสวน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 14 : exec ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge">เครื่องมือ 2</span><h2><code>docker exec</code> — เดินเข้าไปดูข้างใน</h2>
+  <div class="sub">รันคำสั่งเพิ่มใน container ที่<b>กำลังรันอยู่</b> โดยไม่ต้องมี SSH ไม่ต้องแก้ image</div></div>
+  <div class="s-body top">
+    <div class="term">
+      <div class="tbar"><i></i> ผลจริง</div>
+      <pre class="code xxs">{{L1_EXEC}}</pre>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="card p"><h4>ไม่ใส่ <code>-it</code> = ยิงคำสั่งเดียวแล้วออก</h4>
+        <p><code>docker exec web nginx -v</code> — เหมาะกับสคริปต์และการเช็กเร็ว ๆ</p></div>
+      <div class="card"><h4>ใส่ <code>-it</code> = ได้ shell ค้างไว้</h4>
+        <p><code>docker exec -it web sh</code> แล้วออกด้วย <code>exit</code> — <b>ออกจาก shell ไม่ทำให้ container ดับ</b> เพราะไม่ใช่ process หลัก</p></div>
+    </div>
+    <div class="callout bad sm" style="margin-top:14px"><b>ข้อจำกัดที่ต้องรู้</b> — <code>exec</code> ใช้กับ container ที่ <code>Exited</code> ไม่ได้ (ไม่มี process ให้เข้าไป) และ image เล็ก ๆ อย่าง alpine ไม่มี <code>bash</code> ให้ใช้ <code>sh</code> แทน</div>
+  </div>
+  <div class="s-foot"><span>01 · ควบคุมและสืบสวน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 15 : inspect ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge">เครื่องมือ 3</span><h2><code>docker inspect</code> — พิมพ์เขียวทั้งใบ (แล้วเลือกหยิบทีละชิ้น)</h2>
+  <div class="sub"><code>docker inspect</code> เปล่า ๆ คืน JSON หลายร้อยบรรทัด — ใช้ <code>--format</code> ดึงเฉพาะที่อยากรู้ · ใช้กับ <b>image</b> ได้ด้วย (เจอกันอีกทีใน SECTION 02)</div></div>
+  <div class="s-body top">
+    <div class="term">
+      <div class="tbar"><i></i> ผลจริง — สูตร <code>--format</code> ที่ใช้บ่อยที่สุด</div>
+      <pre class="code xxs">{{L1_INSPECT}}</pre>
+    </div>
+    <div class="callout sm" style="margin-top:14px"><b>อ่านสูตรให้ออก</b> — <code>--format</code> ใช้ Go template : <code>{{.State.Status}}</code> คือ “เดินเข้าไปใน JSON ที่ key <code>State</code> แล้วเอา <code>Status</code>” · <code>{{json …}}</code> สั่งให้พิมพ์เป็น JSON แทนข้อความธรรมดา · <code>{{range …}}</code> ใช้วนลูปเมื่อค่านั้นเป็นรายการ (เช่น container ต่อหลาย network)</div>
+  </div>
+  <div class="s-foot"><span>01 · ควบคุมและสืบสวน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 16 : ps --filter/--format + stats ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge">เครื่องมือ 4 · 5</span><h2>กรองให้เหลือเฉพาะที่สนใจ + ดูว่าข้างในรัน process อะไรอยู่</h2></div>
+  <div class="s-body top">
+    <div class="term">
+      <div class="tbar"><i></i> ผลจริง — <code>ps --filter</code> · <code>--format</code> · <code>docker top</code></div>
+      <pre class="code xxs">{{L1_STATS}}</pre>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="callout"><b><code>--filter</code> ที่ใช้ได้จริง</b><br>
+      <code>--filter name=web</code> · <code>--filter status=exited</code> · <code>--filter label=lab=control-room</code> · <code>--filter ancestor=nginx</code></div>
+      <div class="callout good"><b>ทำไมต้องติด <code>--label</code> ตั้งแต่ตอน run</b><br>
+      เพราะทำให้เก็บกวาด “เฉพาะของแล็บนี้” ได้ โดยไม่แตะ container อื่นบนเครื่องเดียวกัน</div>
+    </div>
+    <div class="callout warn sm" style="margin-top:12px"><b><code>docker stats --no-stream</code></b> บอก CPU / RAM ที่ใช้อยู่ตอนนี้ · บนเครื่องเรียนที่รัน Docker ซ้อนกัน container ที่<b>ไม่ได้ตั้ง</b> <code>--memory</code> จะขึ้น <code>0B / 0B</code> (cgroup ชั้นในไม่มีเพดานให้อ้างอิง) แต่พอตั้ง limit แล้วจะอ่านได้ปกติ — เห็นตัวอย่างจริงใน LAB 5</div>
+  </div>
+  <div class="s-foot"><span>01 · ควบคุมและสืบสวน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 17 : stop != rm ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>พิสูจน์ว่า <code>stop</code> ไม่ใช่ <code>rm</code></h2>
+  <div class="sub">หลักฐานคือ container ID — ถ้า ID เท่าเดิมแปลว่ายังเป็นตัวเดิม ไม่ได้สร้างใหม่</div></div>
+  <div class="s-body top">
+    <div class="term">
+      <div class="tbar"><i></i> ผลจริง — จับ ID ก่อน stop แล้วเทียบหลัง start (ตัดมาเฉพาะบรรทัดสำคัญจาก transcript ของ LAB 1)</div>
+      <pre class="code xxs">{{L1_STOPSTART}}</pre>
+    </div>
+    <div class="grid3" style="margin-top:16px">
+      <div class="card"><h4><code>stop</code></h4><p>ส่งสัญญาณให้ปิดตัวอย่างสุภาพ (SIGTERM แล้วรอ 10 วิ) — <b>ไฟล์ที่เขียนไว้ยังอยู่</b></p></div>
+      <div class="card o"><h4><code>restart</code></h4><p>= <code>stop</code> + <code>start</code> ในคำสั่งเดียว ยังเป็น container เดิม ID เดิม</p></div>
+      <div class="card r"><h4><code>rm</code></h4><p>ลบทิ้งถาวรพร้อม writable layer — ต้อง stop ก่อน หรือใช้ <code>-f</code> บังคับ</p></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>01 · ควบคุมและสืบสวน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 18 : cleanup ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>เก็บกวาด — คำสั่งที่ต้องระวังที่สุดในสไลด์นี้</h2></div>
+  <div class="s-body top">
+    <div class="grid2" style="align-items:start">
+      <div>
+        <div class="callout bad sm" style="margin-bottom:10px"><b>⚠️ กวาดทั้งเครื่อง — อย่าใช้บนเครื่องที่มีงานอื่นรันอยู่</b></div>
+        <pre class="code sm"><span class="k">docker</span> stop $(<span class="k">docker</span> ps -aq)
+<span class="k">docker</span> rm $(<span class="k">docker</span> ps -aq)
+<span class="k">docker</span> container prune <span class="y">-f</span>
+<span class="k">docker</span> image prune <span class="y">-f</span></pre>
+        <div class="callout warn sm" style="margin-top:10px"><code>$(docker ps -aq)</code> คือ “ID ของ container ทุกตัวบนเครื่อง” — รวมของเพื่อนร่วมเครื่อง ของอาจารย์ และของระบบด้วย</div>
+      </div>
+      <div>
+        <div class="callout good sm" style="margin-bottom:10px"><b>✅ กวาดเฉพาะของแล็บเรา — ใช้แบบนี้แทน</b></div>
+        <pre class="code sm"><span class="c"># ติด label ตั้งแต่ตอน run</span>
+<span class="k">docker</span> run -d <span class="y">--label</span> lab=control-room ...
+
+<span class="c"># แล้วเก็บกวาดเฉพาะป้ายนี้</span>
+<span class="k">docker</span> rm -f $(<span class="k">docker</span> ps -aq <span class="y">--filter</span> label=lab=control-room)
+
+<span class="c"># ตรวจว่าไม่มีอะไรค้าง</span>
+<span class="k">docker</span> ps -a <span class="y">--filter</span> label=lab=control-room</pre>
+      </div>
+    </div>
+    <div class="term" style="margin-top:16px">
+      <div class="tbar"><i></i> ผลจริง — <code>rmi</code> ถูกปฏิเสธเพราะยังมี container ใช้ image อยู่</div>
+      <pre class="code xxs">{{L1_IMAGES}}</pre>
+    </div>
+  </div>
+  <div class="s-foot"><span>01 · ควบคุมและสืบสวน</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 19 : LAB 1 ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">LAB 1</span><h2>Container Control Room</h2>
+  <div class="sub">โฟลเดอร์ <code>001_LAB_Container_Control_Room</code> · SSH <code>2222</code> · เว็บ <code>18081</code> · ~30 นาที</div></div>
+  <div class="s-body top">
+    <div class="grid31">
+      <div class="steps">
+        <div class="st"><div class="sn">1</div><div class="sx">เปิดกองเรือ 3 ลำ — <b>web</b> (nginx + หน้าเว็บของเราเอง), <b>cache</b> (redis), <b>box</b> (ubuntu sleep)</div></div>
+        <div class="st"><div class="sn">2</div><div class="sx">อ่าน <code>ps</code> / <code>ps -a</code> ทีละคอลัมน์ แล้วกรองด้วย <code>--filter</code> และ <code>--format</code></div></div>
+        <div class="st"><div class="sn">3</div><div class="sx">ลองครบทั้งสามโหมดของ <code>run</code> — foreground, <code>-it</code>, <code>-d</code></div></div>
+        <div class="st"><div class="sn">4</div><div class="sx">พิสูจน์เรื่อง <b>tag</b> — <code>redis</code> กับ <code>redis:7-alpine</code> ได้ image คนละตัว</div></div>
+        <div class="st"><div class="sn">5</div><div class="sx">สืบสวนด้วย <code>logs</code> · <code>exec</code> · <code>inspect --format</code> · <code>stats</code></div></div>
+        <div class="st"><div class="sn">6</div><div class="sx">พิสูจน์ <code>stop</code> ≠ <code>rm</code> ด้วย container ID</div></div>
+        <div class="st"><div class="sn">7</div><div class="sx">เก็บกวาดด้วย label แล้วยืนยันว่าไม่เหลืออะไรค้าง</div></div>
+      </div>
+      <div class="fig shot"><img data-a="sh_control" alt="หน้าเว็บ Control Room ที่รันจริงจาก container nginx ในแล็บ 1"></div>
+    </div>
+    <div class="callout warn" style="margin-top:14px"><b>คำถามก่อนเริ่ม</b> : ถ้า <code>docker stop</code> แล้วสั่ง <code>docker run</code> ด้วยชื่อเดิมอีกครั้ง จะได้ container ตัวเดิมหรือตัวใหม่ ? แล้วทำไมมันถึงขึ้น error ?</div>
+  </div>
+  <div class="s-foot"><span>LAB 1 · Container Control Room</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 20 : SECTION 02 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">02</div>
+    <h1>Environment Variables</h1>
+    <div class="m">image เดียวกัน ใช้ได้ทั้ง dev / test / prod — ถ้าเอาค่าตั้งค่าออกมาไว้ข้างนอก</div>
+    <div class="chips"><span>-e KEY=VALUE</span><span>--env-file</span><span>ENV ใน Dockerfile</span><span>ลำดับความสำคัญ</span><span>docker inspect image</span><span>LAB 2</span></div>
+  </div>
+  <div class="s-foot"><span>SECTION 02</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 21 : ปัญหา hard-code ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ปัญหา : ค่าตั้งค่าถูกฝังอยู่ในโค้ด</h2>
+  <div class="sub">ถ้าเปลี่ยนค่าแล้วต้อง build image ใหม่ทุกครั้ง แปลว่าออกแบบผิดตั้งแต่ต้น</div></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div>
+        <div class="callout bad sm" style="margin-bottom:10px"><b>❌ แบบฝังในโค้ด</b></div>
+        <pre class="code sm"><span class="p">COLOR</span> = <span class="y">"blue"</span>
+<span class="p">DB_HOST</span> = <span class="y">"10.0.0.5"</span></pre>
+        <ul class="bul sm" style="margin-top:12px">
+          <li>เปลี่ยนสี = แก้โค้ด + build ใหม่ + deploy ใหม่</li>
+          <li>dev / prod ต้องใช้คนละ image → ทดสอบไม่ตรงกับของจริง</li>
+          <li>รหัสผ่านหลุดเข้า Git ตั้งแต่ commit แรก</li>
+        </ul>
+      </div>
+      <div>
+        <div class="callout good sm" style="margin-bottom:10px"><b>✅ แบบอ่านจากสิ่งแวดล้อม</b></div>
+        <pre class="code sm"><span class="k">import</span> os
+<span class="p">COLOR</span> = os.environ.get(<span class="y">"APP_COLOR"</span>, <span class="y">"blue"</span>)
+<span class="p">DB_HOST</span> = os.environ.get(<span class="y">"DB_HOST"</span>, <span class="y">"localhost"</span>)</pre>
+        <ul class="bul sm" style="margin-top:12px">
+          <li>build ครั้งเดียว ใช้ทุกที่ เปลี่ยนค่าตอน <code>run</code></li>
+          <li>ค่า default อยู่ในโค้ด → รันบนเครื่องตัวเองได้เลยโดยไม่ต้องตั้งอะไร</li>
+          <li>เป็นหลักข้อ III ของ <b>The Twelve-Factor App</b> — “เก็บ config ไว้ใน environment”</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:18px"><b>ประโยคที่ต้องจำ</b> — <span class="hl">image คือ “โปรแกรม” · environment variable คือ “การตั้งค่า”</span> อย่าเอาสองอย่างนี้มาปนกัน</div>
+  </div>
+  <div class="s-foot"><span>02 · Environment Variables</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 22 : one image many ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>build ครั้งเดียว → รันได้หลายบุคลิก</h2></div>
+  <div class="s-body">
+    <div class="fig fill"><img data-a="f07" alt="แผนภาพ image color-app:1.0 ที่ build ครั้งเดียวแล้วนำไปรันเป็น 3 container สีแดง เขียว น้ำเงิน ด้วย -e APP_COLOR ต่างกันและ port ต่างกัน"></div>
+  </div>
+  <div class="s-foot"><span>02 · Environment Variables</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 23 : code + dockerfile ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>โค้ดของ <code>color-app</code> และ Dockerfile ของมัน</h2>
+  <div class="sub">แอป Flask เล็ก ๆ ที่อ่านสีจาก environment — นี่คือของจริงใน <code>002_LAB_Env_Color_Factory/app/</code></div></div>
+  <div class="s-body top">
+    <div class="grid2" style="align-items:start">
+      <div>
+        <div class="callout sm" style="margin-bottom:8px"><b>app.py</b> (ตัดมาเฉพาะส่วนสำคัญ)</div>
+        <pre class="code xs"><span class="k">import</span> os
+<span class="k">from</span> flask <span class="k">import</span> Flask, jsonify
+
+app = Flask(__name__)
+
+<span class="p">COLOR</span>  = os.environ.get(<span class="y">"APP_COLOR"</span>, <span class="y">"blue"</span>)
+<span class="p">NAME</span>   = os.environ.get(<span class="y">"APP_NAME"</span>,  <span class="y">"color-app"</span>)
+<span class="p">PORT</span>   = <span class="k">int</span>(os.environ.get(<span class="y">"APP_PORT"</span>, <span class="y">"8081"</span>))
+
+<span class="p">@app.route</span>(<span class="y">"/healthz"</span>)
+<span class="k">def</span> healthz():
+    <span class="k">return</span> jsonify(status=<span class="y">"ok"</span>, color=<span class="p">COLOR</span>)
+
+<span class="k">if</span> __name__ == <span class="y">"__main__"</span>:
+    app.run(host=<span class="y">"0.0.0.0"</span>, port=<span class="p">PORT</span>)</pre>
+      </div>
+      <div>
+        <div class="callout sm" style="margin-bottom:8px"><b>Dockerfile</b></div>
+        <pre class="code xs"><span class="k">FROM</span> python:3.12-slim
+
+<span class="k">WORKDIR</span> /app
+<span class="c"># คัดลอกรายการ dependency ก่อน แล้วค่อยติดตั้ง
+# เพื่อให้ layer ของ pip ถูก cache ไว้ (SECTION 03)</span>
+<span class="k">COPY</span> requirements.txt .
+<span class="k">RUN</span> pip install --no-cache-dir -r requirements.txt
+
+<span class="k">COPY</span> app.py .
+
+<span class="c"># ค่า default ที่ติดมากับ image</span>
+<span class="k">ENV</span> <span class="p">APP_COLOR</span>=blue <span class="p">APP_PORT</span>=8081
+<span class="k">EXPOSE</span> 8081
+<span class="k">CMD</span> [<span class="y">"python"</span>, <span class="y">"app.py"</span>]</pre>
+      </div>
+    </div>
+    <div class="callout warn" style="margin-top:14px"><b><code>EXPOSE</code> ไม่ได้เปิด port ให้</b> — เป็นแค่เอกสารกำกับ image ว่า “ข้างในฟังอยู่ที่ 8081” การเปิดจริงต้องใช้ <code>-p</code> ตอน <code>run</code> เท่านั้น</div>
+  </div>
+  <div class="s-foot"><span>02 · Environment Variables</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 24 : precedence ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ค่ามาจาก 3 ที่ — ใครชนะ?</h2></div>
+  <div class="s-body">
+    <div class="fig fill"><img data-a="f06" alt="แผนภาพลำดับความสำคัญของ environment variable : ENV ใน Dockerfile อ่อนที่สุด ถูกทับด้วย --env-file และถูกทับด้วย -e ซึ่งชนะเสมอ"></div>
+  </div>
+  <div class="s-foot"><span>02 · Environment Variables</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 24b : precedence proof ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge gr">ผลการรันจริง</span><h2>พิสูจน์ว่า <code>-e</code> ชนะจริง — อย่าเชื่อเพราะสไลด์บอก</h2>
+  <div class="sub">container ตัวนี้ได้ค่า <code>APP_COLOR</code> มาพร้อมกัน 3 ทาง : <code>blue</code> จาก Dockerfile · <code>red</code> จากไฟล์ · <code>pink</code> จาก <code>-e</code></div></div>
+  <div class="s-body top">
+    <div class="term">
+      <div class="tbar"><i></i> ผลจริง — (ค่ายาว ๆ อย่าง PATH / GPG_KEY ถูกย่อด้วย <code>…</code> ให้พอดีจอ)</div>
+      <pre class="code xxs">{{L2_PRECEDENCE}}</pre>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="callout good"><b>สิ่งที่โปรแกรมเห็นจริงคือ <code>pink</code></b> — ตรงกับลำดับในแผนภาพหน้าก่อน</div>
+      <div class="callout warn"><b>สังเกตบรรทัด <code>Config.Env</code></b> — มี <code>APP_COLOR</code> อยู่ <b>สองครั้ง</b> (<code>red</code> แล้วตามด้วย <code>pink</code>) Docker ไม่ได้ลบตัวที่แพ้ทิ้ง แต่ระบบ environment ของ Linux จะใช้<b>ตัวหลังสุด</b> เสมอ</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>02 · Environment Variables</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 25 : env-file ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2><code>--env-file</code> — เมื่อค่ามีเยอะเกินกว่าจะพิมพ์ <code>-e</code> ทีละตัว</h2></div>
+  <div class="s-body top">
+    <div class="grid2" style="align-items:start">
+      <div>
+        <div class="callout sm" style="margin-bottom:8px"><b>env/red.env</b></div>
+        <pre class="code sm"><span class="c"># หนึ่งบรรทัด = หนึ่งค่า ไม่ต้องมีเครื่องหมายคำพูด</span>
+<span class="p">APP_COLOR</span>=red
+<span class="p">APP_NAME</span>=Red Factory
+<span class="p">APP_PORT</span>=8081</pre>
+        <pre class="code sm" style="margin-top:12px"><span class="k">docker</span> run -d <span class="y">--name</span> color-red <span class="y">\
+  --env-file</span> env/red.env <span class="y">-p</span> 8081:8081 color-app:1.0</pre>
+      </div>
+      <div>
+        <table class="tbl sm">
+          <tr><th>เรื่อง</th><th>ต้องรู้</th></tr>
+          <tr><td>ค่าที่มีช่องว่าง</td><td>เขียนตรง ๆ ได้ <code>APP_NAME=Red Factory</code> — <b>ห้ามใส่ <code>"</code></b> เพราะจะติดไปกับค่าด้วย</td></tr>
+          <tr><td>คอมเมนต์</td><td>ขึ้นต้นบรรทัดด้วย <code>#</code></td></tr>
+          <tr><td>ไฟล์นี้ควรอยู่ใน Git ไหม</td><td><span class="no">ไม่</span> — ใส่ <code>.env</code> ไว้ใน <code>.gitignore</code> แล้ว commit เฉพาะ <code>.env.example</code></td></tr>
+          <tr><td>ลำดับ</td><td><code>-e</code> ที่เขียนบน command line ชนะไฟล์เสมอ</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="callout bad" style="margin-top:16px"><b>⚠️ environment variable ไม่ใช่ที่เก็บความลับ</b> — ใครก็ตามที่รัน <code>docker inspect</code> บนเครื่องนั้น เห็นค่าทั้งหมดทันที และถ้าเอา secret ใส่ <code>ARG</code>/<code>ENV</code> ใน Dockerfile มันจะติดอยู่ใน layer ของ image ตลอดไป แม้จะลบทีหลังก็ยังขุดคืนได้</div>
+  </div>
+  <div class="s-foot"><span>02 · Environment Variables</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 25b : secret leak ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">ความปลอดภัย</span><h2><code>ARG</code> / <code>ENV</code> ไม่ใช่ที่เก็บความลับ — ดูด้วยตาตัวเอง</h2>
+  <div class="sub">image ตัวอย่างนี้ build จาก Dockerfile ที่ใส่รหัสผ่านสมมติไว้ แล้ว “ลบ” ทีหลัง — ดูว่ามันยังอยู่ไหม</div></div>
+  <div class="s-body top">
+    <div class="term">
+      <div class="tbar"><i></i> ผลจริง — ค่าทั้งหมดเป็นค่าสมมติสำหรับสอนเท่านั้น</div>
+      <pre class="code xxs">{{L2_SECRET}}</pre>
+    </div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="callout bad"><b>BuildKit เตือนตั้งแต่ตอน build</b> — <code>SecretsUsedInArgOrEnv</code> ขึ้นมาเองโดยเราไม่ต้องติดตั้งอะไรเพิ่ม ถ้าเห็นคำเตือนนี้ในโปรเจกต์จริง ให้ถือว่าเป็นบั๊กความปลอดภัย ไม่ใช่เรื่องเล็ก</div>
+      <div class="callout warn"><b><code>docker history</code> ขุดคืนได้ทุกบรรทัด</b> — ค่า <code>ARG</code> ยังฝังอยู่ในคำสั่ง <code>RUN</code> ของ layer นั้นตลอดไป · ใครที่ <code>docker pull</code> image นี้ได้ ก็อ่านค่าได้ทันทีโดยไม่ต้องรันมันด้วยซ้ำ</div>
+    </div>
+    <div class="callout good sm" style="margin-top:12px"><b>แล้วต้องทำอย่างไร</b> — ส่งความลับตอน <b>run</b> (<code>-e</code> / <code>--env-file</code> ที่ไม่ขึ้น Git) หรือใช้ <code>--mount=type=secret</code> ตอน build · และเก็บของจริงไว้ใน secret manager ของระบบ</div>
+  </div>
+  <div class="s-foot"><span>02 · Environment Variables</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 26 : inspect image ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2><code>docker inspect</code> บน <b>image</b> — อ่านพิมพ์เขียวก่อนจะรัน</h2>
+  <div class="sub">ก่อนรัน image ที่ไม่รู้จัก ให้ถามมันก่อนว่า “เปิด port อะไร ตั้ง ENV อะไร รันคำสั่งอะไร”</div></div>
+  <div class="s-body top">
+    <div class="term">
+      <div class="tbar"><i></i> ผลจริง</div>
+      <pre class="code xxs">{{L2_INSPECT_IMG}}</pre>
+    </div>
+    <div class="grid3" style="margin-top:16px">
+      <div class="card"><h4><code>Config.Env</code></h4><p>ค่า default ที่ติดมากับ image — คือบรรทัด <code>ENV</code> ใน Dockerfile</p></div>
+      <div class="card o"><h4><code>Config.Cmd</code></h4><p>คำสั่งที่จะรันถ้าเราไม่ระบุอะไรต่อท้าย <code>docker run</code></p></div>
+      <div class="card g"><h4><code>ExposedPorts</code></h4><p>port ที่ผู้สร้าง image บอกว่า “ข้างในฟังอยู่ตรงนี้” — ยังต้อง <code>-p</code> เองอยู่ดี</p></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>02 · Environment Variables</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 27 : LAB 2 ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">LAB 2</span><h2>Env Color Factory — image เดียว หลายบุคลิก</h2>
+  <div class="sub">โฟลเดอร์ <code>002_LAB_Env_Color_Factory</code> · SSH <code>2223</code> · เว็บ <code>18021 · 18022 · 18023</code></div></div>
+  <div class="s-body top">
+    <div class="shot3">
+      <div><img data-a="sh_red" alt="หน้าเว็บ color-app สีแดง จาก container ที่รันด้วย -e APP_COLOR=red"><div class="cp">-e APP_COLOR=red · :8081</div></div>
+      <div><img data-a="sh_green" alt="หน้าเว็บ color-app สีเขียว จาก container ที่รันด้วย -e APP_COLOR=green"><div class="cp">-e APP_COLOR=green · :8082</div></div>
+      <div><img data-a="sh_blue" alt="หน้าเว็บ color-app สีน้ำเงิน จาก container ที่รันด้วย -e APP_COLOR=blue"><div class="cp">-e APP_COLOR=blue · :8083</div></div>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="callout good"><b>สามหน้านี้มาจาก image เดียวกัน</b> — <code>color-app:1.0</code> ตัวเดียว digest เดียว ไม่มีการ build ซ้ำระหว่างสามคำสั่ง</div>
+      <div class="callout warn"><b>คำถามก่อนเริ่ม</b> : ถ้าใส่ทั้ง <code>ENV</code> ใน Dockerfile, <code>--env-file</code> และ <code>-e</code> พร้อมกัน หน้าเว็บจะออกมาเป็นสีอะไร ? แล็บนี้ให้คุณพิสูจน์เอง</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 2 · Env Color Factory</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 28 : SECTION 03 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">03</div>
+    <h1>Image ที่ดี — เล็ก เร็ว ปลอดภัย</h1>
+    <div class="m">image ที่เขียนไม่ดีทำให้ทุกคนในทีมรอ build ครั้งละหลายนาที ทุกวัน</div>
+    <div class="chips"><span>layer</span><span>build cache</span><span>.dockerignore</span><span>multi-stage</span><span>non-root</span><span>image history</span><span>LAB 3</span></div>
+  </div>
+  <div class="s-foot"><span>SECTION 03</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 29 : layer ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>image คือชั้นที่ซ้อนกัน — ทุกบรรทัดใน Dockerfile คือหนึ่งชั้น</h2></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div>
+        <pre class="code sm"><span class="k">FROM</span> python:3.12-slim      <span class="c">← ชั้นฐาน</span>
+<span class="k">WORKDIR</span> /app                <span class="c">← ชั้นที่ 2</span>
+<span class="k">COPY</span> requirements.txt .     <span class="c">← ชั้นที่ 3</span>
+<span class="k">RUN</span> pip install -r ...      <span class="c">← ชั้นที่ 4 (หนักที่สุด)</span>
+<span class="k">COPY</span> app.py .               <span class="c">← ชั้นที่ 5</span>
+<span class="k">CMD</span> [<span class="y">"python"</span>, <span class="y">"app.py"</span>]  <span class="c">← metadata</span></pre>
+      </div>
+      <div>
+        <ul class="bul sm">
+          <li>แต่ละชั้นเก็บ <b>เฉพาะส่วนต่าง</b> จากชั้นก่อนหน้า<span class="s">image 500 MB ไม่ได้แปลว่าคัดลอก 500 MB ทุกครั้ง</span></li>
+          <li>ชั้นทั้งหมด <b>อ่านอย่างเดียว</b> และใช้ร่วมกันได้ระหว่าง image<span class="s">10 image ที่ <code>FROM python:3.12-slim</code> เหมือนกัน ใช้ชั้นฐานร่วมกันชุดเดียว</span></li>
+          <li>Docker <b>จำผลของทุกชั้นไว้</b> (build cache)<span class="s">ถ้าอินพุตของชั้นนั้นไม่เปลี่ยน ก็ไม่ต้องทำใหม่</span></li>
+          <li>ลบไฟล์ในชั้นถัดไป <b>ไม่ทำให้ image เล็กลง</b><span class="s">ของเดิมยังอยู่ในชั้นล่าง — นี่คือเหตุผลที่ต้องมี multi-stage</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:18px"><b>กฎข้อเดียวที่ต้องจำ</b> — <span class="hl">ชั้นไหนเปลี่ยน ทุกชั้นที่อยู่<b>ใต้</b>มันต้องสร้างใหม่ทั้งหมด</span></div>
+  </div>
+  <div class="s-foot"><span>03 · Image ที่ดี</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 30 : cache cascade ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>สลับสองบรรทัด แล้วเวลา build ต่างกันคนละโลก</h2></div>
+  <div class="s-body">
+    <div class="fig fill"><img data-a="f08" alt="เปรียบเทียบ Dockerfile สองแบบ : v1 ที่ COPY ทุกอย่างก่อน ทำให้ pip install ต้องรันใหม่ทุกครั้ง กับ v2 ที่ COPY requirements.txt ก่อน ทำให้ layer ของ pip ถูก cache"></div>
+  </div>
+  <div class="s-foot"><span>03 · Image ที่ดี</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 31 : dockerignore ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2><code>.dockerignore</code> — อย่าส่งของที่ไม่ได้ใช้เข้าไปให้ Docker</h2>
+  <div class="sub">ก่อน build จะเริ่ม Docker จะ “แพ็ก” ทั้งโฟลเดอร์ส่งเข้า build engine ก่อน — เรียกว่า <b>build context</b></div></div>
+  <div class="s-body top">
+    <div class="grid2" style="align-items:start">
+      <div>
+        <div class="callout sm" style="margin-bottom:8px"><b>.dockerignore</b></div>
+        <pre class="code sm">.git
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+assets/          <span class="c"># ไฟล์ตัวอย่างขนาดใหญ่</span>
+*.md
+.env</pre>
+      </div>
+      <div>
+        <div class="term">
+          <div class="tbar"><i></i> ผลจริง — ขนาด build context ก่อน / หลัง</div>
+          <pre class="code xs">{{L3_CTX}}</pre>
+        </div>
+      </div>
+    </div>
+    <div class="grid3" style="margin-top:16px">
+      <div class="card g"><h4>build เร็วขึ้น</h4><p>ไม่ต้องแพ็กและส่งไฟล์ที่ไม่เกี่ยวข้ามไปมา</p></div>
+      <div class="card o"><h4>cache ไม่พังง่าย</h4><p><code>COPY . .</code> จะไม่ถูกกระตุ้นเพียงเพราะเราแก้ README หรือมี <code>.pyc</code> ใหม่</p></div>
+      <div class="card r"><h4>ปลอดภัยขึ้น</h4><p><code>.env</code> และ <code>.git</code> จะไม่หลุดเข้าไปอยู่ใน image (ซึ่งขุดออกมาได้)</p></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>03 · Image ที่ดี</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 32 : multistage ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Multi-stage build — build ในห้องใหญ่ ส่งของในกล่องเล็ก</h2></div>
+  <div class="s-body">
+    <div class="fig fill"><img data-a="f09" alt="แผนภาพ multi-stage build : stage แรกเป็น builder ที่มีเครื่องมือ compile และ pip install ลง /opt/venv ส่วน stage ที่สองเป็น runtime ที่ COPY --from=builder เฉพาะ venv และรันด้วย USER appuser"></div>
+  </div>
+  <div class="s-foot"><span>03 · Image ที่ดี</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 33 : v3 dockerfile ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Dockerfile ฉบับสมบูรณ์ — multi-stage + non-root + healthcheck</h2>
+  <div class="sub">ของจริงจาก <code>003_LAB_Image_Diet/v3/Dockerfile</code></div></div>
+  <div class="s-body top">
+    <div class="grid2" style="align-items:start">
+      <pre class="code xxs"><span class="c"># ---------------- stage 1 : builder ----------------</span>
+<span class="k">FROM</span> python:3.12 <span class="k">AS</span> builder
+
+<span class="k">WORKDIR</span> /build
+
+<span class="k">RUN</span> python -m venv /opt/venv
+<span class="k">ENV</span> <span class="p">PATH</span>=<span class="y">"/opt/venv/bin:$PATH"</span>
+
+<span class="k">COPY</span> app/requirements.txt ./requirements.txt
+<span class="k">RUN</span> pip install --no-cache-dir -r requirements.txt
+
+<span class="k">COPY</span> app/ ./app/
+<span class="k">RUN</span> python app/build_assets.py
+
+<span class="c"># base ตัวหนัก 1 GB ใช้ได้เต็มที่ตรงนี้
+# เพราะไม่มีอะไรจากชั้นนี้ตามไปกับ image สุดท้าย</span></pre>
+      <pre class="code xxs"><span class="c"># ---------------- stage 2 : runtime ----------------</span>
+<span class="k">FROM</span> python:3.12-slim
+
+<span class="k">RUN</span> useradd --create-home --uid 10001 appuser
+
+<span class="k">WORKDIR</span> /app
+
+<span class="k">COPY</span> --from=builder /opt/venv /opt/venv
+<span class="k">COPY</span> --from=builder /build/app/ ./app/
+
+<span class="k">ENV</span> <span class="p">PATH</span>=<span class="y">"/opt/venv/bin:$PATH"</span> <span class="y">\</span>
+    <span class="p">PYTHONUNBUFFERED</span>=1 <span class="y">\</span>
+    <span class="p">APP_VARIANT</span>=v3 <span class="y">\</span>
+    <span class="p">APP_PORT</span>=8080
+
+<span class="k">USER</span> appuser
+
+<span class="k">EXPOSE</span> 8080
+
+<span class="k">HEALTHCHECK</span> --interval=10s --timeout=3s --start-period=5s --retries=3 <span class="y">\</span>
+    <span class="k">CMD</span> python -c <span class="y">"import urllib.request as u; u.urlopen('http://127.0.0.1:8080/healthz')"</span> || exit 1
+
+<span class="k">CMD</span> [<span class="y">"python"</span>, <span class="y">"app/app.py"</span>]</pre>
+    </div>
+    <div class="callout bad" style="margin-top:14px"><b>ทำไม <code>USER</code> ถึงสำคัญ</b> — โดยค่าเริ่มต้น process ใน container รันเป็น <b>root</b> ถ้าแอปมีช่องโหว่ ผู้โจมตีจะได้ root ใน container ทันที และมีโอกาสงัดออกไปหา host ต่อ · เพิ่มสองบรรทัดนี้ปิดความเสี่ยงชั้นใหญ่ไปได้ฟรี ๆ</div>
+  </div>
+  <div class="s-foot"><span>03 · Image ที่ดี</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 34 : ผลจริง size table ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge gr">ผลการวัดจริง</span><h2>ตัวเลขจาก LAB 3 — โค้ดเดียวกัน Dockerfile ต่างกัน</h2>
+  <div class="sub">ทุกตัวเลขในตารางนี้วัดจากการ build จริงบนเครื่องเรียน</div></div>
+  <div class="s-body">
+    <div class="term">
+      <div class="tbar"><i></i> ผลจริง — <code>docker images</code> และเวลา rebuild หลังแก้โค้ด 1 บรรทัด</div>
+      <pre class="code xxs">{{L3_TABLE}}</pre>
+    </div>
+    <div class="callout good" style="margin-top:18px"><b>สิ่งที่ต้องอ่านจากตาราง</b> — ขนาดที่ลดลงมาจาก <b>base image + multi-stage</b> ส่วนเวลา rebuild ที่ลดลงมาจาก <b>ลำดับบรรทัดใน Dockerfile</b> เท่านั้น เป็นคนละเรื่องกัน และต้องแก้ทั้งสองอย่าง</div>
+  </div>
+  <div class="s-foot"><span>03 · Image ที่ดี</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 35 : image history ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2><code>docker image history</code> — ชั้นไหนกินที่เท่าไร</h2>
+  <div class="sub">เวลาจะลดขนาด image อย่าเดา ให้ดูก่อนว่าน้ำหนักไปกองอยู่ชั้นไหน</div></div>
+  <div class="s-body top">
+    <div class="term">
+      <div class="tbar"><i></i> ผลจริง</div>
+      <pre class="code xxs">{{L3_HISTORY}}</pre>
+    </div>
+    <div class="callout warn" style="margin-top:16px"><b>อ่านอย่างไร</b> — คอลัมน์ <code>SIZE</code> คือส่วนที่ชั้นนั้น <b>เพิ่ม</b> เข้ามา · ชั้นที่ <code>0B</code> คือ metadata (เช่น <code>ENV</code>, <code>CMD</code>, <code>EXPOSE</code>) ซึ่งไม่กินที่เลย · <code>&lt;missing&gt;</code> ในคอลัมน์ ID เป็นเรื่องปกติของชั้นที่มาจาก base image</div>
+  </div>
+  <div class="s-foot"><span>03 · Image ที่ดี</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 36 : LAB 3 ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">LAB 3</span><h2>Image Diet — ลดน้ำหนักและลดเวลารอ</h2>
+  <div class="sub">โฟลเดอร์ <code>003_LAB_Image_Diet</code> · SSH <code>2224</code> · เว็บ <code>18031</code></div></div>
+  <div class="s-body top">
+    <div class="grid31">
+      <div class="steps">
+        <div class="st"><div class="sn">1</div><div class="sx">build <b>v1</b> แบบไร้เดียงสา — <code>FROM python:3.12</code> เต็ม ๆ, <code>COPY . .</code> มาก่อน <code>pip install</code></div></div>
+        <div class="st"><div class="sn">2</div><div class="sx">แก้โค้ด 1 บรรทัด แล้ว build ซ้ำ — จับเวลา และดูว่าชั้นไหนขึ้น <code>CACHED</code> บ้าง</div></div>
+        <div class="st"><div class="sn">3</div><div class="sx">build <b>v2</b> ที่จัดลำดับใหม่ + ใส่ <code>.dockerignore</code> แล้วแก้โค้ดบรรทัดเดิม build ซ้ำ</div></div>
+        <div class="st"><div class="sn">4</div><div class="sx">build <b>v3</b> multi-stage + <code>USER appuser</code> แล้วยืนยันด้วย <code>docker run --rm v3 whoami</code></div></div>
+        <div class="st"><div class="sn">5</div><div class="sx">เทียบ <code>docker images</code> และ <code>docker image history</code> ของ v1 กับ v3</div></div>
+        <div class="st"><div class="sn">6</div><div class="sx">เปิดหน้าเว็บ v3 ที่ <code>18031</code> — ยืนยันว่าเล็กลงแล้ว<b>ยังทำงานเหมือนเดิม</b></div></div>
+      </div>
+      <div class="fig shot"><img data-a="sh_diet" alt="หน้าเว็บรายงานผลของแล็บ Image Diet ที่รันจาก image v3"></div>
+    </div>
+    <div class="callout warn" style="margin-top:14px"><b>คำถามก่อนเริ่ม</b> : การย้ายบรรทัด <code>COPY</code> ขึ้น-ลงใน Dockerfile มีผลกับ <b>เวลา build</b> จริงไหม ? และมีผลกับ <b>ขนาด image</b> ด้วยหรือเปล่า ?</div>
+  </div>
+  <div class="s-foot"><span>LAB 3 · Image Diet</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 37 : SECTION 04 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">04</div>
+    <h1>หลาย service ทำงานร่วมกัน</h1>
+    <div class="m">แอปจริงไม่เคยมี container เดียว — และการพิมพ์ <code>docker run</code> ทีละตัวก็ไปต่อไม่ไหว</div>
+    <div class="chips"><span>network</span><span>ชื่อ service = DNS</span><span>compose.yaml</span><span>depends_on</span><span>healthcheck</span><span>FastAPI + OpenCV</span><span>LAB 4</span></div>
+  </div>
+  <div class="s-foot"><span>SECTION 04</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 38 : รันมือ ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ลองทำมือก่อน — เพื่อให้รู้ว่า Compose มาแก้อะไร</h2>
+  <div class="sub">ระบบมีแค่ 2 service เอง แต่ต้องพิมพ์ขนาดนี้ และต้องพิมพ์ให้ถูกลำดับด้วย</div></div>
+  <div class="s-body top">
+    <pre class="code sm"><span class="c"># 1) สร้างวงเน็ตเวิร์กของโปรเจกต์ (ถ้าไม่สร้าง จะเรียกกันด้วยชื่อไม่ได้)</span>
+<span class="k">docker</span> network create vision-net
+
+<span class="c"># 2) build ทีละตัว</span>
+<span class="k">docker</span> build <span class="y">-t</span> vision-backend:1.0 backend/
+<span class="k">docker</span> build <span class="y">-t</span> vision-frontend:1.0 frontend/
+
+<span class="c"># 3) เปิด backend ก่อน แล้วรอให้มันพร้อม (ต้องรอเอง!)</span>
+<span class="k">docker</span> run -d <span class="y">--name</span> backend <span class="y">--network</span> vision-net <span class="y">-p</span> 8000:8000 vision-backend:1.0
+
+<span class="c"># 4) ค่อยเปิด frontend พร้อมบอกที่อยู่ของ backend</span>
+<span class="k">docker</span> run -d <span class="y">--name</span> frontend <span class="y">--network</span> vision-net <span class="y">\
+  -e</span> <span class="p">BACKEND_URL</span>=http://backend:8000 <span class="y">-p</span> 8501:8501 vision-frontend:1.0</pre>
+    <div class="grid3" style="margin-top:18px">
+      <div class="card r"><h4>ต้องจำลำดับเอง</h4><p>ถ้าเปิด frontend ก่อน มันจะยิงไปหา backend ที่ยังไม่มีตัวตน</p></div>
+      <div class="card r"><h4>พิมพ์ผิดง่าย</h4><p>ชื่อ network, ชื่อ container, ตัวแปร — พลาดตัวเดียวพังทั้งระบบ</p></div>
+      <div class="card r"><h4>ส่งต่อให้เพื่อนไม่ได้</h4><p>ความรู้เรื่อง “ต้องรันอะไรก่อน” อยู่ในหัวเราคนเดียว ไม่ได้อยู่ในรีโพ</p></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>04 · หลาย service</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 39 : topology ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ใครคุยกับใคร และคุยด้วยชื่ออะไร</h2>
+  <div class="sub">หัวใจคือ <b>ชื่อ service = ชื่อโฮสต์</b> — ไม่ต้องรู้ IP ไม่ต้องแก้โค้ดเวลา IP เปลี่ยน</div></div>
+  <div class="s-body">
+    <div class="fig fill"><img data-a="f10" alt="แผนภาพระบบ 2 service : เบราว์เซอร์เข้าหา frontend ผ่าน port ที่ publish ไว้ ส่วน frontend เรียก backend ด้วยชื่อ http://backend:8000 ภายใน network ที่ Compose สร้างให้ โดย backend ไม่ได้ publish port ออกมา"></div>
+  </div>
+  <div class="s-foot"><span>04 · หลาย service</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 40 : compose.yaml ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2><code>compose.yaml</code> — คำสั่งเมื่อกี้ทั้งหมด เขียนไว้ในไฟล์เดียว</h2>
+  <div class="sub">ของจริงจาก <code>004_LAB_Vision_API_Compose/compose.yaml</code></div></div>
+  <div class="s-body top">
+    <div class="grid2" style="align-items:start">
+      <pre class="code xxs"><span class="k">name</span>: vision
+
+<span class="k">services</span>:
+
+  <span class="p">backend</span>:
+    <span class="k">build</span>: ./backend                 <span class="c"># แทน docker build -t vision-backend:1.0 backend/</span>
+    <span class="k">image</span>: vision-backend:1.0
+    <span class="k">environment</span>:
+      <span class="p">CANNY_LOW</span>: <span class="y">${CANNY_LOW:-100}</span>   <span class="c"># อ่านจากไฟล์ .env</span>
+      <span class="p">CANNY_HIGH</span>: <span class="y">${CANNY_HIGH:-200}</span>
+    <span class="k">ports</span>:
+      - <span class="y">"8000:8000"</span>                  <span class="c"># แทน -p 8000:8000</span>
+    <span class="k">networks</span>:
+      - visionnet                    <span class="c"># แทน --network visionnet</span>
+    <span class="k">healthcheck</span>:                     <span class="c"># compose รอ healthy ก่อนค่อยปล่อย frontend</span>
+      <span class="k">test</span>: [<span class="y">"CMD"</span>, <span class="y">"python"</span>, <span class="y">"-c"</span>,
+             <span class="y">"import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"</span>]
+      <span class="k">interval</span>: 5s
+      <span class="k">timeout</span>: 3s
+      <span class="k">retries</span>: 5
+      <span class="k">start_period</span>: 10s</pre>
+      <pre class="code xxs">  <span class="p">frontend</span>:
+    <span class="k">build</span>: ./frontend
+    <span class="k">image</span>: vision-frontend:1.0
+    <span class="k">environment</span>:
+      <span class="p">BACKEND_URL</span>: http://backend:8000   <span class="c"># ชื่อ service = ชื่อ host</span>
+      <span class="p">APP_TITLE</span>: <span class="y">${APP_TITLE:-Vision API}</span>
+    <span class="k">ports</span>:
+      - <span class="y">"8501:8501"</span>
+    <span class="k">depends_on</span>:
+      <span class="p">backend</span>:
+        <span class="k">condition</span>: service_healthy       <span class="c"># รอจน backend สุขภาพดีจริง</span>
+    <span class="k">networks</span>:
+      - visionnet
+
+<span class="k">networks</span>:
+  <span class="p">visionnet</span>:</pre>
+    </div>
+    <div class="callout good" style="margin-top:14px"><b>อ่านไฟล์นี้เหมือนอ่านเอกสารระบบ</b> — มีกี่ service · แต่ละตัว build จากไหน · ตัวไหนเปิดออกสู่ภายนอก · ใครต้องพร้อมก่อนใคร — ทั้งหมดอยู่ในหน้าจอเดียว และอยู่ในรีโพให้ทุกคนอ่านได้</div>
+  </div>
+  <div class="s-foot"><span>04 · หลาย service</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 41 : run <-> compose ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ตารางแปลง — <code>docker run</code> flag ↔ key ใน <code>compose.yaml</code></h2>
+  <div class="sub">ไม่มีอะไรใหม่ให้จำเลย ทุก key คือ flag ที่เราพิมพ์เองอยู่แล้ว</div></div>
+  <div class="s-body">
+    <table class="tbl sm">
+      <tr><th style="width:34%">พิมพ์เองด้วย <code>docker run</code></th><th style="width:30%">เขียนใน <code>compose.yaml</code></th><th>หมายเหตุ</th></tr>
+      <tr><td><code>docker build -t x .</code></td><td><code>build: .</code> + <code>image: x</code></td><td><code>docker compose up --build</code> สั่ง build ให้เอง</td></tr>
+      <tr><td><code>-p 8501:8501</code></td><td><code>ports: ["8501:8501"]</code></td><td>ไม่ใส่ = ไม่เปิดออกสู่ภายนอก (แต่ service อื่นยังเรียกได้)</td></tr>
+      <tr><td><code>-e KEY=VALUE</code></td><td><code>environment:</code></td><td>เขียนเป็น map หรือ list ก็ได้</td></tr>
+      <tr><td><code>--env-file f.env</code></td><td><code>env_file: f.env</code></td><td>ค่าใน <code>environment:</code> ชนะไฟล์</td></tr>
+      <tr><td><code>--network vision-net</code></td><td><code>networks: [vision-net]</code></td><td>ถ้าไม่เขียนเลย Compose สร้าง network ให้อัตโนมัติ 1 วง</td></tr>
+      <tr><td><code>--name backend</code></td><td>ชื่อ service คือ <code>backend</code></td><td>และชื่อนี้กลายเป็นชื่อ DNS ให้ service อื่นเรียก</td></tr>
+      <tr><td><code>--restart unless-stopped</code></td><td><code>restart: unless-stopped</code></td><td>เจอกันใน SECTION 05</td></tr>
+      <tr><td><code>--health-cmd …</code></td><td><code>healthcheck:</code></td><td>ปลดล็อก <code>depends_on: condition: service_healthy</code></td></tr>
+      <tr><td>(ไม่มี — ต้องรอเอง)</td><td><code>depends_on:</code></td><td>Compose เรียงลำดับการเปิดให้ตามที่ประกาศไว้</td></tr>
+    </table>
+  </div>
+  <div class="s-foot"><span>04 · หลาย service</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 42 : depends_on ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2><code>depends_on</code> เฉย ๆ ยังไม่พอ — ต้องคู่กับ <code>healthcheck</code></h2></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div>
+        <div class="callout bad sm" style="margin-bottom:10px"><b>❌ แค่ “สตาร์ตแล้ว”</b></div>
+        <pre class="code sm"><span class="k">depends_on</span>:
+  - backend</pre>
+        <p style="font-size:18px; line-height:1.55; margin-top:12px; color:#33475e">
+        Compose รอแค่ให้ container ของ <code>backend</code> <b>ถูกสร้างและสตาร์ต</b> เท่านั้น
+        ซึ่งกินเวลาเสี้ยววินาที — แต่ uvicorn + OpenCV ใช้เวลาโหลดอีกหลายวินาที<br><br>
+        ผลคือ frontend ยิง request แรกไปตอน backend ยังไม่รับสาย → <b>Connection refused</b></p>
+      </div>
+      <div>
+        <div class="callout good sm" style="margin-bottom:10px"><b>✅ “พร้อมรับงานจริง”</b></div>
+        <pre class="code sm"><span class="k">depends_on</span>:
+  <span class="p">backend</span>:
+    <span class="k">condition</span>: service_healthy</pre>
+        <p style="font-size:18px; line-height:1.55; margin-top:12px; color:#33475e">
+        คราวนี้ Compose จะรอจนกว่า <code>healthcheck</code> ของ <code>backend</code> จะผ่านจริง
+        ถึงจะยอมเปิด <code>frontend</code><br><br>
+        เงื่อนไขที่ใช้ได้ : <code>service_started</code> · <code>service_healthy</code> · <code>service_completed_successfully</code></p>
+      </div>
+    </div>
+    <div class="callout warn" style="margin-top:18px"><b>ถ้า service ไหนไม่มี <code>healthcheck</code></b> จะใช้ <code>condition: service_healthy</code> กับมันไม่ได้ — Compose จะฟ้องทันทีตอน <code>up</code></div>
+  </div>
+  <div class="s-foot"><span>04 · หลาย service</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 43 : compose commands ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>คำสั่ง Compose ที่ใช้จริงทุกวัน</h2>
+  <div class="sub">ทุกคำสั่งอ้างถึง <b>ชื่อ service</b> ไม่ใช่ชื่อ container จริง — จำง่ายกว่ามาก</div></div>
+  <div class="s-body top">
+    <div class="term">
+      <div class="tbar"><i></i> ผลจริง — <code>docker compose ps</code> ตอนระบบขึ้นครบ (คอลัมน์ PORTS ตัดส่วน IPv6 ออกให้พอดีจอ)</div>
+      <pre class="code xxs">{{L4_PS}}</pre>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <dl class="kv">
+        <dt>up -d --build</dt><dd>build (ถ้าจำเป็น) แล้วเปิดทั้งระบบเบื้องหลัง</dd>
+        <dt>ps</dt><dd>สถานะทุก service รวมถึงคอลัมน์ <code>STATUS</code> ที่บอก <code>healthy</code></dd>
+        <dt>logs -f backend</dt><dd>ดู log เฉพาะ service เดียว แบบไหลสด</dd>
+      </dl>
+      <dl class="kv">
+        <dt>exec backend sh</dt><dd>เข้าไปข้างใน โดยไม่ต้องรู้ชื่อ container จริง</dd>
+        <dt>down</dt><dd>ลบ container + network ที่ Compose สร้างไว้</dd>
+        <dt>config</dt><dd>ตรวจไวยากรณ์ไฟล์ และดูค่าหลังรวม <code>.env</code> แล้ว</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="s-foot"><span>04 · หลาย service</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 44 : dns proof ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>พิสูจน์ว่า “ชื่อ service = ชื่อ DNS” จริง</h2>
+  <div class="sub">อย่าเชื่อเพราะสไลด์บอก — ให้ container มันตอบเอง</div></div>
+  <div class="s-body top">
+    <div class="term">
+      <div class="tbar"><i></i> ผลจริง — ถามจากข้างใน container <code>frontend</code></div>
+      <pre class="code xxs">{{L4_DNS}}</pre>
+    </div>
+    <div class="callout" style="margin-top:16px"><b>เกิดอะไรขึ้นเบื้องหลัง</b> — Docker ใส่ DNS server ของตัวเองไว้ที่ <code>127.0.0.11</code> ในทุก container ที่อยู่บน user-defined network เมื่อ frontend ถาม <code>backend</code> DNS ตัวนี้จะตอบ IP ปัจจุบันของ container นั้นให้ · IP เปลี่ยนทุกครั้งที่ <code>up</code> ใหม่ แต่<b>ชื่อไม่เคยเปลี่ยน</b> โค้ดจึงไม่ต้องแก้</div>
+    <div class="callout bad sm" style="margin-top:12px"><b>ข้อยกเว้นที่ต้องรู้</b> — network ชื่อ <code>bridge</code> ที่ Docker แถมมาตั้งแต่ติดตั้ง <b>ไม่มี</b> DNS นี้ ต้องเป็น network ที่เราสร้างเอง (หรือที่ Compose สร้างให้) เท่านั้น</div>
+  </div>
+  <div class="s-foot"><span>04 · หลาย service</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 45 : backend code ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>โค้ด backend — FastAPI + OpenCV ตรวจจับขอบภาพ</h2>
+  <div class="sub">สัญญาระหว่างสอง service : ส่งรูปเป็น <b>base64 ใน JSON</b> รับกลับมาเป็น base64 เหมือนกัน</div></div>
+  <div class="s-body top">
+    <div class="grid2" style="align-items:start">
+      <pre class="code xxs"><span class="k">import</span> base64, os
+<span class="k">import</span> cv2, numpy <span class="k">as</span> np
+<span class="k">from</span> fastapi <span class="k">import</span> FastAPI, HTTPException
+<span class="k">from</span> pydantic <span class="k">import</span> BaseModel
+
+<span class="c"># ค่า threshold อ่านจาก environment (ตั้งจากข้างนอกได้)</span>
+<span class="p">CANNY_LOW</span>  = <span class="k">int</span>(os.environ.get(<span class="y">"CANNY_LOW"</span>, <span class="y">"100"</span>))
+<span class="p">CANNY_HIGH</span> = <span class="k">int</span>(os.environ.get(<span class="y">"CANNY_HIGH"</span>, <span class="y">"200"</span>))
+
+app = FastAPI(title=<span class="y">"Vision API"</span>, version=<span class="y">"1.0"</span>)
+
+<span class="k">class</span> <span class="p">ImageRequest</span>(BaseModel):
+    image: str
+    name: str
+    surname: str
+    numbers: List[<span class="k">int</span>]
+
+<span class="k">def</span> decode_image(image_string: str):
+    encoded_data = image_string.split(<span class="y">","</span>)[1]
+    nparr = np.frombuffer(base64.b64decode(encoded_data), np.uint8)
+    <span class="k">return</span> cv2.imdecode(nparr, cv2.IMREAD_COLOR)</pre>
+      <pre class="code xxs"><span class="k">def</span> encode_image(image) -> str:
+    _, encoded_image = cv2.imencode(<span class="y">".jpg"</span>, image)
+    <span class="k">return</span> <span class="y">"data:image/jpeg;base64,"</span> + base64.b64encode(encoded_image).decode()
+
+<span class="k">def</span> apply_canny(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    <span class="k">return</span> cv2.Canny(gray, <span class="p">CANNY_LOW</span>, <span class="p">CANNY_HIGH</span>)
+
+<span class="p">@app.get</span>(<span class="y">"/healthz"</span>)
+<span class="k">def</span> healthz():
+    <span class="k">return</span> {<span class="y">"status"</span>: <span class="y">"ok"</span>, <span class="y">"canny_low"</span>: <span class="p">CANNY_LOW</span>,
+            <span class="y">"canny_high"</span>: <span class="p">CANNY_HIGH</span>, <span class="y">"cv2"</span>: cv2.__version__}
+
+<span class="p">@app.post</span>(<span class="y">"/process-image"</span>)
+<span class="k">async def</span> process_image(image_request: <span class="p">ImageRequest</span>):
+    image = decode_image(image_request.image)
+    <span class="k">if</span> image <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">raise</span> HTTPException(status_code=400, detail=<span class="y">"decode image failed"</span>)
+    edges = apply_canny(image)
+    <span class="k">return</span> {<span class="y">"name"</span>: image_request.name, <span class="y">"surname"</span>: image_request.surname,
+            <span class="y">"numbers"</span>: image_request.numbers,
+            <span class="y">"processed_image"</span>: encode_image(edges)}</pre>
+    </div>
+    <div class="callout sm" style="margin-top:14px"><b>สังเกตว่าค่า <code>CANNY_LOW</code> / <code>CANNY_HIGH</code> มาจาก environment</b> — เท่ากับว่าเราปรับความไวของการตรวจจับขอบได้จาก <code>compose.yaml</code> โดยไม่ต้อง build image ใหม่ (บทเรียนจาก SECTION 02 กลับมาใช้ที่นี่)</div>
+  </div>
+  <div class="s-foot"><span>04 · หลาย service</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 46 : LAB 4 ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">LAB 4</span><h2>Vision API — สองบริการที่ทำงานร่วมกันจริง</h2>
+  <div class="sub">โฟลเดอร์ <code>004_LAB_Vision_API_Compose</code> · SSH <code>2225</code> · เว็บ <code>18041</code> (frontend) · <code>18042</code> (FastAPI docs)</div></div>
+  <div class="s-body top">
+    <div class="grid2" style="align-items:start; gap:20px">
+      <div class="fig shot"><img data-a="sh_vision" alt="หน้าเว็บ Vision API แสดงภาพต้นฉบับคู่กับภาพที่ผ่านการตรวจจับขอบด้วย Canny"></div>
+      <div class="fig shot"><img data-a="sh_docs" alt="หน้า /docs ของ FastAPI ที่แสดง endpoint process-image และ healthz"></div>
+    </div>
+    <div class="steps" style="margin-top:16px; font-size:17.5px">
+      <div class="st"><div class="sn">1</div><div class="sx">รันด้วยมือก่อน (network + 2 <code>run</code>) แล้ว<b>นับจำนวนสิ่งที่ต้องพิมพ์</b></div></div>
+      <div class="st"><div class="sn">2</div><div class="sx">ย้ายมา <code>compose.yaml</code> แล้ว <code>docker compose up -d --build</code> — เทียบกันตรง ๆ</div></div>
+      <div class="st"><div class="sn">3</div><div class="sx">อัปโหลดรูป ดูผล Canny · เปลี่ยน <code>CANNY_LOW/HIGH</code> ใน compose แล้ว <code>up -d</code> ซ้ำ เห็นผลเปลี่ยนทันที</div></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 4 · Vision API</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 47 : SECTION 05 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">05</div>
+    <h1>ทำให้มันอยู่รอด</h1>
+    <div class="m">“รันขึ้นแล้ว” กับ “ใช้งานได้จริง” เป็นคนละเรื่องกัน — และเวลาพัง ต้องหาเจอภายในหนึ่งนาที</div>
+    <div class="chips"><span>HEALTHCHECK</span><span>restart policy</span><span>--memory / --cpus</span><span>OOMKilled</span><span>แผนที่วินิจฉัย</span><span>LAB 5</span></div>
+  </div>
+  <div class="s-foot"><span>SECTION 05</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 48 : health states ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2><code>Up</code> ไม่ได้แปลว่า “ใช้งานได้”</h2></div>
+  <div class="s-body">
+    <div class="fig fill"><img data-a="f12" alt="แผนภาพสถานะ healthcheck : health starting เปลี่ยนเป็น healthy เมื่อ probe ผ่าน และเปลี่ยนเป็น unhealthy เมื่อ probe ล้มเหลวติดกัน 3 ครั้ง พร้อมคำอธิบายว่า unhealthy ไม่ทำให้ container restart เอง"></div>
+  </div>
+  <div class="s-foot"><span>05 · ทำให้มันอยู่รอด</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 49 : restart policy ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Restart policy — ให้ Docker ปลุกให้เองเมื่อโปรแกรมตาย</h2></div>
+  <div class="s-body top">
+    <table class="tbl xs">
+      <tr><th style="width:24%">policy</th><th style="width:38%">พฤติกรรม</th><th>ใช้เมื่อไร</th></tr>
+      <tr><td><code>no</code> <span class="tag b">ค่าเริ่มต้น</span></td><td>ตายแล้วตายเลย</td><td>งานที่รันครั้งเดียวจบ เช่น สคริปต์ย้ายข้อมูล</td></tr>
+      <tr><td><code>on-failure[:N]</code></td><td>restart เฉพาะเมื่อ exit code ≠ 0 จำกัดจำนวนครั้งได้</td><td>งานที่ควรสำเร็จ ถ้าล้มเหลวให้ลองซ้ำแบบมีขอบเขต</td></tr>
+      <tr><td><code>always</code></td><td>restart เสมอ และเปิดขึ้นเองเมื่อ Docker daemon สตาร์ตใหม่ — <b>แม้เราจะสั่ง <code>stop</code> เอง</b> แล้ว daemon รีสตาร์ต ก็จะขึ้นมาอีก</td><td>ระวัง — มักไม่ใช่สิ่งที่ต้องการ</td></tr>
+      <tr><td><code>unless-stopped</code> <span class="tag g">แนะนำ</span></td><td>เหมือน <code>always</code> แต่ถ้าเรา <code>stop</code> เองแล้ว จะไม่แอบขึ้นมาใหม่</td><td>service ที่ต้องออนไลน์ตลอด</td></tr>
+    </table>
+    <div class="term" style="margin-top:16px">
+      <div class="tbar"><i></i> ผลจริง — container ที่ตั้ง <code>--restart on-failure:3</code> และตายทุกครั้ง</div>
+      <pre class="code xxs">{{L5_RESTART}}</pre>
+    </div>
+    <div class="callout warn sm" style="margin-top:10px"><b>restart ไม่ได้แก้บั๊ก</b> — มันแค่ซื้อเวลา ถ้า <code>RestartCount</code> เพิ่มเรื่อย ๆ แปลว่ามีปัญหาจริงที่ต้องไปอ่าน <code>docker logs</code></div>
+  </div>
+  <div class="s-foot"><span>05 · ทำให้มันอยู่รอด</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 50 : limits / OOM ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>จำกัดทรัพยากร — และหน้าตาของ container ที่โดนฆ่าเพราะกินแรม</h2>
+  <div class="sub">ถ้าไม่จำกัด container เดียวที่รั่วสามารถลากทั้งเครื่องลงไปด้วยได้</div></div>
+  <div class="s-body top">
+    <pre class="code sm"><span class="k">docker</span> run -d <span class="y">--name</span> leaky <span class="y">--memory</span>=64m <span class="y">--cpus</span>=0.5 ops-app:1.0</pre>
+    <div class="term" style="margin-top:14px">
+      <div class="tbar"><i></i> ผลจริง — หลังสั่งให้แอปกินแรมเกิน 64 MB</div>
+      <pre class="code xxs">{{L5_OOM}}</pre>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="callout bad"><b><code>Exited (137)</code> คือลายเซ็นของ OOM</b><br>
+      137 = 128 + 9 แปลว่าโดน <code>SIGKILL</code> · ยืนยันให้ชัดด้วย <code>{{.State.OOMKilled}}</code> = <code>true</code><br>
+      <span class="tag r">สำคัญ</span> ไม่มีอะไรใน <code>docker logs</code> เพราะโปรแกรมไม่ได้ crash — มันถูกฆ่ากลางอากาศ</div>
+      <div class="callout good"><b>ใน <code>compose.yaml</code> เขียนแบบนี้</b>
+      <pre class="code xxs" style="margin-top:8px"><span class="k">deploy</span>:
+  <span class="k">resources</span>:
+    <span class="k">limits</span>:
+      <span class="p">memory</span>: 64M
+      <span class="p">cpus</span>: <span class="y">"0.50"</span></pre></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>05 · ทำให้มันอยู่รอด</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 51 : triage map ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>แผนที่วินิจฉัย — เปิดหน้าเว็บไม่ขึ้น ทำอะไรก่อน</h2></div>
+  <div class="s-body">
+    <div class="fig fill"><img data-a="f13" alt="แผนผังการวินิจฉัยแบบไล่จากบนลงล่าง : docker ps, docker port, docker inspect State.Health และ docker inspect State.OOMKilled พร้อมข้อสรุปของแต่ละกรณี"></div>
+  </div>
+  <div class="s-foot"><span>05 · ทำให้มันอยู่รอด</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 52 : 4 เคส ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>สี่เคสที่เจอบ่อยที่สุด — และหลักฐานที่ใช้ชี้ขาด</h2></div>
+  <div class="s-body">
+    <table class="tbl sm">
+      <tr><th style="width:19%">อาการ</th><th style="width:27%">คำสั่งแรกที่ต้องพิมพ์</th><th style="width:26%">หลักฐานที่มองหา</th><th>การรักษา</th></tr>
+      <tr><td><b>A</b> เปิดแล้วหายไปเลย</td><td><code>docker ps -a</code> → <code>docker logs</code></td><td><code>Exited (1)</code> + ข้อความ error บรรทัดท้าย ๆ</td><td>แก้คำสั่ง/โค้ดที่ทำให้ process จบ</td></tr>
+      <tr><td><b>B</b> <code>Up</code> แต่เปิดเว็บไม่ได้</td><td><code>docker port &lt;name&gt;</code></td><td>ไม่มีบรรทัด mapping เลย หรือผูกไว้กับ <code>127.0.0.1</code> เท่านั้น</td><td>ใส่ <code>-p</code> ให้ถูก และให้แอปฟังที่ <code>0.0.0.0</code></td></tr>
+      <tr><td><b>C</b> <code>Up</code> แต่ตอบผิด/ช้า</td><td><code>docker inspect --format '{{json .State.Health}}'</code></td><td><code>"Status":"unhealthy"</code> + log ของ probe ที่ fail</td><td>อ่าน <code>docker logs</code> ต่อ — ปัญหาอยู่ในแอป ไม่ใช่ที่ Docker</td></tr>
+      <tr><td><b>D</b> ตายเงียบ ๆ เป็นระยะ</td><td><code>docker inspect --format '{{.State.OOMKilled}}'</code></td><td><code>true</code> และ <code>Exited (137)</code></td><td>เพิ่ม <code>--memory</code> หรือแก้ที่การใช้หน่วยความจำของแอป</td></tr>
+    </table>
+    <div class="callout good" style="margin-top:18px"><b>ทั้งสี่เคสใช้เครื่องมือชุดเดิมจาก LAB 1 ทั้งหมด</b> — ไม่มีคำสั่งใหม่ให้ท่องเลย สิ่งที่เพิ่มขึ้นคือ “รู้ว่าจะถามอะไรก่อน”</div>
+  </div>
+  <div class="s-foot"><span>05 · ทำให้มันอยู่รอด</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 53 : LAB 5 ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">LAB 5</span><h2>Ops Clinic — คนไข้ 4 ราย รอวินิจฉัย</h2>
+  <div class="sub">โฟลเดอร์ <code>005_LAB_Ops_Clinic</code> · SSH <code>2226</code> · เว็บ <code>18051</code></div></div>
+  <div class="s-body top">
+    <div class="grid31">
+      <div class="steps">
+        <div class="st"><div class="sn">A</div><div class="sx">คนไข้ตายทันทีที่เกิด — ใช้ <code>ps -a</code> + <code>logs</code> หาสาเหตุ แล้วใส่ <code>--restart on-failure:3</code> ดู <code>RestartCount</code> ไต่ขึ้น</div></div>
+        <div class="st"><div class="sn">B</div><div class="sx"><code>Up</code> แต่เว็บไม่ขึ้น — ลองทั้งแบบไม่ใส่ <code>-p</code>, ผูกกับ <code>127.0.0.1</code>, และแบบถูกต้อง</div></div>
+        <div class="st"><div class="sn">C</div><div class="sx">ดู <code>HEALTHCHECK</code> เดินจาก <code>starting</code> → <code>healthy</code> แล้วสั่งให้แอปป่วย ดูมันกลายเป็น <code>unhealthy</code></div></div>
+        <div class="st"><div class="sn">D</div><div class="sx">จำกัด <code>--memory=64m</code> แล้วสั่งให้กินแรม — จับ <code>Exited (137)</code> และ <code>OOMKilled=true</code></div></div>
+        <div class="st"><div class="sn">✚</div><div class="sx">ประกอบร่างเวอร์ชันที่รักษาแล้วด้วย <code>compose.yaml</code> ที่มีครบทั้ง health · restart · limits</div></div>
+      </div>
+      <div class="fig shot"><img data-a="sh_ops" alt="หน้าเว็บของแอปในแล็บ Ops Clinic ที่แสดงสถานะ health ของตัวเอง"></div>
+    </div>
+    <div class="callout warn" style="margin-top:14px"><b>คำถามก่อนเริ่ม</b> : container ที่ <code>docker ps</code> ขึ้นว่า <code>Up 5 minutes (unhealthy)</code> — Docker จะ restart ให้เองไหม ?</div>
+  </div>
+  <div class="s-foot"><span>LAB 5 · Ops Clinic</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 54 : cheat sheet ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Cheat sheet — คำสั่งทั้งหมดของสัปดาห์นี้</h2></div>
+  <div class="s-body top">
+    <div class="grid2" style="align-items:start; gap:26px">
+      <div>
+        <div class="callout sm" style="margin-bottom:8px"><b>วงจรชีวิตและการสำรวจ</b></div>
+        <pre class="code xxs"><span class="k">docker</span> run -d --name web -p 8080:80 nginx:1.29-alpine
+<span class="k">docker</span> run -it --rm ubuntu:24.04 sh
+<span class="k">docker</span> ps                      <span class="c"># เฉพาะที่กำลังรัน</span>
+<span class="k">docker</span> ps -a                   <span class="c"># ทั้งหมด รวมที่ตายแล้ว</span>
+<span class="k">docker</span> ps --filter label=lab=x --format <span class="y">"table {{.Names}}\t{{.Status}}"</span>
+<span class="k">docker</span> stop / start / restart / rm <span class="o">&lt;name&gt;</span>
+<span class="k">docker</span> rm -f <span class="o">&lt;name&gt;</span>            <span class="c"># stop + rm</span>
+<span class="k">docker</span> logs --tail 20 -f <span class="o">&lt;name&gt;</span>
+<span class="k">docker</span> exec -it <span class="o">&lt;name&gt;</span> sh
+<span class="k">docker</span> inspect --format <span class="y">'{{.State.Status}}'</span> <span class="o">&lt;name&gt;</span>
+<span class="k">docker</span> stats --no-stream
+<span class="k">docker</span> port <span class="o">&lt;name&gt;</span></pre>
+        <div class="callout sm" style="margin:12px 0 8px"><b>image</b></div>
+        <pre class="code xxs"><span class="k">docker</span> images
+<span class="k">docker</span> image history <span class="o">&lt;image&gt;</span>
+<span class="k">docker</span> image inspect --format <span class="y">'{{json .Config.Env}}'</span> <span class="o">&lt;image&gt;</span>
+<span class="k">docker</span> rmi <span class="o">&lt;image&gt;</span>
+<span class="k">docker</span> image prune -f</pre>
+      </div>
+      <div>
+        <div class="callout sm" style="margin-bottom:8px"><b>build และ environment</b></div>
+        <pre class="code xxs"><span class="k">docker</span> build -t color-app:1.0 app/
+<span class="k">docker</span> build --no-cache -t x .   <span class="c"># ไม่ใช้ cache เลย</span>
+<span class="k">docker</span> run -e APP_COLOR=red <span class="o">&lt;image&gt;</span>
+<span class="k">docker</span> run --env-file env/red.env <span class="o">&lt;image&gt;</span>
+<span class="k">docker</span> exec <span class="o">&lt;name&gt;</span> env | grep APP_</pre>
+        <div class="callout sm" style="margin:12px 0 8px"><b>compose</b></div>
+        <pre class="code xxs"><span class="k">docker</span> compose up -d --build
+<span class="k">docker</span> compose ps
+<span class="k">docker</span> compose logs -f backend
+<span class="k">docker</span> compose exec backend sh
+<span class="k">docker</span> compose config          <span class="c"># ตรวจไฟล์ก่อนรัน</span>
+<span class="k">docker</span> compose down</pre>
+        <div class="callout sm" style="margin:12px 0 8px"><b>ops</b></div>
+        <pre class="code xxs"><span class="k">docker</span> run --restart unless-stopped <span class="o">&lt;image&gt;</span>
+<span class="k">docker</span> run --memory=64m --cpus=0.5 <span class="o">&lt;image&gt;</span>
+<span class="k">docker</span> inspect --format <span class="y">'{{.RestartCount}}'</span> <span class="o">&lt;name&gt;</span>
+<span class="k">docker</span> inspect --format <span class="y">'{{.State.OOMKilled}}'</span> <span class="o">&lt;name&gt;</span>
+<span class="k">docker</span> inspect --format <span class="y">'{{json .State.Health}}'</span> <span class="o">&lt;name&gt;</span></pre>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>สรุป</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 55 : anti-patterns ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>เจ็ดข้อที่ทำแล้วจะเจ็บทีหลัง</h2></div>
+  <div class="s-body">
+    <table class="tbl sm">
+      <tr><th style="width:38%">อย่าทำ</th><th style="width:30%">ทำแบบนี้แทน</th><th>เพราะอะไร</th></tr>
+      <tr><td><code>FROM python:latest</code></td><td><code>FROM python:3.12-slim</code></td><td><code>latest</code> เปลี่ยนได้ทุกเมื่อ — build วันนี้กับพรุ่งนี้ได้คนละของ</td></tr>
+      <tr><td><code>COPY . .</code> ก่อน <code>pip install</code></td><td>คัดลอก <code>requirements.txt</code> ก่อน</td><td>แก้โค้ดบรรทัดเดียวก็ต้องติดตั้ง dependency ใหม่หมด</td></tr>
+      <tr><td>ไม่มี <code>.dockerignore</code></td><td>ใส่ตั้งแต่ไฟล์แรกของโปรเจกต์</td><td><code>.git</code> และ <code>.env</code> หลุดเข้า image · build ช้า</td></tr>
+      <tr><td>ใส่รหัสผ่านใน <code>ENV</code> / <code>ARG</code></td><td>ส่งตอน run หรือใช้ secret manager</td><td><code>docker history</code> ขุดค่าเก่าคืนได้ทั้งหมด</td></tr>
+      <tr><td>รันเป็น root ตลอด</td><td><code>USER appuser</code></td><td>ช่องโหว่ในแอป = root ใน container ทันที</td></tr>
+      <tr><td><code>docker rm -f $(docker ps -aq)</code> บนเครื่องรวม</td><td>กรองด้วย <code>--filter label=…</code></td><td>ลบงานของคนอื่นบนเครื่องเดียวกันเกลี้ยง</td></tr>
+      <tr><td>เขียน IP ของ service ลงในโค้ด</td><td>เรียกด้วย <b>ชื่อ service</b></td><td>IP เปลี่ยนทุกครั้งที่ <code>up</code> ใหม่ ชื่อไม่เปลี่ยน</td></tr>
+    </table>
+  </div>
+  <div class="s-foot"><span>สรุป</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 56 : สรุป/ต่อไป ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>สรุปสัปดาห์นี้ และสิ่งที่รออยู่ข้างหน้า</h2></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div>
+        <div class="callout good sm" style="margin-bottom:12px"><b>ถ้าจบวันนี้แล้วคุณควรทำสิ่งเหล่านี้ได้</b></div>
+        <ul class="bul sm">
+          <li>บอกได้ว่า container ตอนนี้อยู่สถานะไหน และคำสั่งไหนพาไปสถานะนั้น</li>
+          <li>หาสาเหตุที่ container ตาย ด้วย <code>ps -a</code> + <code>logs</code> ภายในหนึ่งนาที</li>
+          <li>ดึงค่าใด ๆ ออกจาก <code>docker inspect</code> ด้วย <code>--format</code></li>
+          <li>ทำให้ image เดียวรันได้หลายค่าตั้งค่า และรู้ว่าค่าไหนชนะ</li>
+          <li>เขียน Dockerfile ที่ build ซ้ำแล้วเร็ว เล็ก และไม่รันเป็น root</li>
+          <li>แปลง <code>docker run</code> หลายบรรทัดให้เป็น <code>compose.yaml</code> ที่อ่านรู้เรื่อง</li>
+        </ul>
+      </div>
+      <div>
+        <div class="callout sm" style="margin-bottom:12px"><b>สัปดาห์ถัดไป</b></div>
+        <div class="card"><h4>Week 10 — Load Balancing &amp; Monitoring</h4>
+          <p>เมื่อ service เดียวรับไม่ไหว : Nginx / HAProxy กระจายโหลดไปหลาย container แล้วเฝ้าดูด้วยระบบ monitoring</p></div>
+        <div class="card p" style="margin-top:12px"><h4>Week 11 — Dockerfile เจาะลึก &amp; Registry</h4>
+          <p><code>CMD</code> vs <code>ENTRYPOINT</code> · push image ขึ้น Docker Hub · network และ DNS แบบเจาะลึก · Compose กับ named volume</p></div>
+        <div class="callout warn sm" style="margin-top:12px"><b>ก่อนปิดเครื่องทุกครั้ง</b><br>
+        <code>docker rm -f devtools-lab00N</code> แล้วตรวจด้วย <code>docker ps -a --filter "name=^devtools-"</code> ให้ว่างเปล่า</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>สรุป</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 57 : ปิด ============ -->
+<div class="slot"><section class="slide cover">
+  <div class="s-body">
+    <div style="text-align:center; width:100%">
+      <div class="k" style="justify-self:center">Week 9 · Software Development Tools and Environments</div>
+      <h1 style="font-size:54px">ขอให้สนุกกับการทดลอง</h1>
+      <div class="rule" style="margin:26px auto"></div>
+      <div class="m" style="max-width:820px; margin:0 auto">
+        เอกสารแล็บทั้ง 5 อยู่ในโฟลเดอร์ <code style="color:#ffd479">001_</code> ถึง <code style="color:#ffd479">005_</code> ข้าง ๆ ไฟล์สไลด์นี้<br>
+        ทุกคำสั่งและทุกผลลัพธ์ในเอกสาร รันจริงบนเครื่องเรียนเดียวกับที่ทุกคนใช้<br><br>
+        <span style="font-size:19px; color:#8ec5ff">กด <b>O</b> เพื่อดูสไลด์ทั้งหมด · <b>?</b> เพื่อดูปุ่มลัด · <b>Ctrl+P</b> เพื่อบันทึกเป็น PDF</span>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Docker &amp; Compose — Week 9</span><span class="pg"></span></div>
+</section></div>

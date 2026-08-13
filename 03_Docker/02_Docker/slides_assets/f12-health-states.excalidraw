@@ -1,0 +1,326 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "msq2r5hg5kal2mgydj6",
+      "type": "text",
+      "x": 40,
+      "y": 6,
+      "width": 877,
+      "height": 35,
+      "strokeColor": "#1864ab",
+      "text": "Up  is not the same as  working  —  what HEALTHCHECK adds",
+      "fontSize": 28,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:37:42.151Z",
+      "updatedAt": "2026-08-12T12:37:42.151Z",
+      "version": 1
+    },
+    {
+      "id": "st",
+      "type": "rectangle",
+      "x": 70,
+      "y": 140,
+      "width": 330,
+      "height": 120,
+      "backgroundColor": "#f1f3f5",
+      "strokeColor": "#495057",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "health: starting"
+      },
+      "fontSize": 21,
+      "fontFamily": 3,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "ok",
+      "type": "rectangle",
+      "x": 540,
+      "y": 140,
+      "width": 330,
+      "height": 120,
+      "backgroundColor": "#d3f9d8",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "healthy"
+      },
+      "fontSize": 23,
+      "fontFamily": 3,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "bad",
+      "type": "rectangle",
+      "x": 1010,
+      "y": 140,
+      "width": 330,
+      "height": 120,
+      "backgroundColor": "#ffe3e3",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "unhealthy"
+      },
+      "fontSize": 23,
+      "fontFamily": 3,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "msq2r5hgmkm1l3cqgbs",
+      "type": "arrow",
+      "x": 408,
+      "y": 200,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          124,
+          2.842170943040401e-14
+        ]
+      ],
+      "start": {
+        "id": "st"
+      },
+      "end": {
+        "id": "ok"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "msq2r5hg3lt8o9sopjo",
+      "type": "text",
+      "x": 417,
+      "y": 152,
+      "width": 106,
+      "height": 21,
+      "strokeColor": "#2f9e44",
+      "text": "probe passes",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "msq2r5hgsuixxm9nbp",
+      "type": "arrow",
+      "x": 870,
+      "y": 180,
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "roundness": {
+        "type": 2
+      },
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          140,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "msq2r5hg8m2smqyu3tq",
+      "type": "text",
+      "x": 878,
+      "y": 132,
+      "width": 123,
+      "height": 21,
+      "strokeColor": "#c92a2a",
+      "text": "probe fails 3x",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "msq2r5hgie3wpnjjfb",
+      "type": "arrow",
+      "x": 1010,
+      "y": 232,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "roundness": {
+        "type": 2
+      },
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -140,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "msq2r5hhpa7y3s76uy",
+      "type": "text",
+      "x": 887,
+      "y": 254,
+      "width": 106,
+      "height": 21,
+      "strokeColor": "#2f9e44",
+      "text": "passes again",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "msq2r5hhr1fxp3p2pb8",
+      "type": "text",
+      "x": 107,
+      "y": 282,
+      "width": 256,
+      "height": 21,
+      "strokeColor": "#5b6b7f",
+      "text": "start-period : not judged yet",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "msq2r5hhj2ru9lv437d",
+      "type": "text",
+      "x": 532,
+      "y": 282,
+      "width": 345,
+      "height": 21,
+      "strokeColor": "#2f9e44",
+      "text": "docker ps :  Up 2 minutes (healthy)",
+      "fontSize": 17,
+      "fontFamily": 3,
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "msq2r5hh4buih5jpgwj",
+      "type": "text",
+      "x": 1042,
+      "y": 282,
+      "width": 265,
+      "height": 21,
+      "strokeColor": "#c92a2a",
+      "text": "still Up — nothing restarts it",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "cmd",
+      "type": "rectangle",
+      "x": 70,
+      "y": 348,
+      "width": 1270,
+      "height": 66,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1971c2",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "HEALTHCHECK --interval=10s --timeout=3s --retries=3 --start-period=5s CMD curl -fs http://localhost:8080/healthz || exit 1"
+      },
+      "fontSize": 16,
+      "fontFamily": 3,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "msq2r5hhprmrdrusj8",
+      "type": "text",
+      "x": 70,
+      "y": 448,
+      "width": 1348,
+      "height": 23,
+      "strokeColor": "#343a40",
+      "text": "A health check only reports.  To act on it you need  restart: unless-stopped  (the container is restarted when its process EXITS)",
+      "fontSize": 19,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "msq2r5hhc1jxxo4d7lv",
+      "type": "text",
+      "x": 70,
+      "y": 482,
+      "width": 1212,
+      "height": 23,
+      "strokeColor": "#343a40",
+      "text": "or  depends_on:  condition: service_healthy  so a second service refuses to start until this one is genuinely ready.",
+      "fontSize": 19,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    },
+    {
+      "id": "msq2r5hhx0ip3kcjfoe",
+      "type": "text",
+      "x": 70,
+      "y": 522,
+      "width": 867,
+      "height": 23,
+      "strokeColor": "#c92a2a",
+      "text": "Exited (137)  +  OOMKilled=true   ->  it did not crash, the memory limit killed it.",
+      "fontSize": 19,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:37:42.152Z",
+      "updatedAt": "2026-08-12T12:37:42.152Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

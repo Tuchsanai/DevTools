@@ -1,0 +1,5 @@
+# ไฟล์ขยะที่ "สร้างเองในแล็บ" ไม่ต้อง commit ขึ้น git
+app/assets/
+app/static/
+*.log
+__pycache__/

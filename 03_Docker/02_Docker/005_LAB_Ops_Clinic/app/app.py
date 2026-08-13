@@ -13,7 +13,7 @@ import socket
 import threading
 import time
 
-from flask import Flask, jsonify, Response
+from flask import Flask, jsonify, request, Response
 
 app = Flask(__name__)
 
@@ -46,11 +46,11 @@ def rss_mb():
         return -1
 
 
-def _leak_worker(chunk_mb):
+def _leak_worker(chunk_mb, delay):
     while True:
         _BUCKET.append(b"x" * (chunk_mb * 1024 * 1024))
         STATE["leaked_mb"] += chunk_mb
-        time.sleep(0.25)
+        time.sleep(delay)
 
 
 @app.get("/healthz")
@@ -84,10 +84,14 @@ def do_fix():
 
 @app.post("/leak")
 def do_leak():
+    # ปรับความแรงได้ เช่น  /leak?mb=2&delay=1  = กินเพิ่มทีละ 2 MB ทุก 1 วินาที
+    chunk_mb = int(request.args.get("mb", 8))
+    delay = float(request.args.get("delay", 0.25))
     if not STATE["leaking"]:
         STATE["leaking"] = True
-        threading.Thread(target=_leak_worker, args=(8,), daemon=True).start()
-    return jsonify(ok=True, leaking=True, chunk_mb=8, limit_mb=mem_limit_mb())
+        threading.Thread(target=_leak_worker, args=(chunk_mb, delay), daemon=True).start()
+    return jsonify(ok=True, leaking=True, chunk_mb=chunk_mb, delay_sec=delay,
+                   limit_mb=mem_limit_mb(), rss_mb=rss_mb())
 
 
 PAGE = """<!doctype html>

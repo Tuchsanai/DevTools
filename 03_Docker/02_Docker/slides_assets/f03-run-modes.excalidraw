@@ -1,0 +1,543 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "msq2hpqfjq7tuzzvmxe",
+      "type": "text",
+      "x": 40,
+      "y": 6,
+      "width": 954,
+      "height": 35,
+      "strokeColor": "#1864ab",
+      "text": "Three ways to start a container  —  and who owns your terminal",
+      "fontSize": 28,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "cmdfg",
+      "type": "rectangle",
+      "x": 40,
+      "y": 70,
+      "width": 430,
+      "height": 62,
+      "backgroundColor": "#f1f3f5",
+      "strokeColor": "#495057",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "docker run nginx"
+      },
+      "fontSize": 19,
+      "fontFamily": 3,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfetkdqicx66n",
+      "type": "text",
+      "x": 191,
+      "y": 150,
+      "width": 127,
+      "height": 27,
+      "strokeColor": "#e8590c",
+      "text": "FOREGROUND",
+      "fontSize": 22,
+      "fontFamily": 5,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "termfg",
+      "type": "rectangle",
+      "x": 40,
+      "y": 190,
+      "width": 430,
+      "height": 92,
+      "backgroundColor": "#ffffff",
+      "strokeColor": "#495057",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "YOUR TERMINAL"
+      },
+      "fontSize": 19,
+      "fontFamily": 5,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "boxfg",
+      "type": "rectangle",
+      "x": 40,
+      "y": 372,
+      "width": 430,
+      "height": 92,
+      "backgroundColor": "#ffe8cc",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "CONTAINER"
+      },
+      "fontSize": 19,
+      "fontFamily": 5,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfds3igoxmtu4",
+      "type": "arrow",
+      "x": 255,
+      "y": 290,
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          74
+        ]
+      ],
+      "start": {
+        "id": "termfg"
+      },
+      "end": {
+        "id": "boxfg"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqf9jma4wxlca9",
+      "type": "text",
+      "x": 131,
+      "y": 480,
+      "width": 247,
+      "height": 21,
+      "strokeColor": "#343a40",
+      "text": "logs pour into your terminal",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfn6w8w9k1rjb",
+      "type": "text",
+      "x": 136,
+      "y": 506,
+      "width": 238,
+      "height": 21,
+      "strokeColor": "#343a40",
+      "text": "the prompt is taken hostage",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfwwxhuu7yh9h",
+      "type": "text",
+      "x": 93,
+      "y": 542,
+      "width": 323,
+      "height": 22,
+      "strokeColor": "#e8590c",
+      "text": "Ctrl+C  ->  the container stops",
+      "fontSize": 18,
+      "fontFamily": 5,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "cmdit",
+      "type": "rectangle",
+      "x": 515,
+      "y": 70,
+      "width": 430,
+      "height": 62,
+      "backgroundColor": "#f1f3f5",
+      "strokeColor": "#495057",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "docker run -it ubuntu sh"
+      },
+      "fontSize": 19,
+      "fontFamily": 3,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfeijh1n2zp8n",
+      "type": "text",
+      "x": 660,
+      "y": 150,
+      "width": 140,
+      "height": 27,
+      "strokeColor": "#1971c2",
+      "text": "INTERACTIVE",
+      "fontSize": 22,
+      "fontFamily": 5,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "termit",
+      "type": "rectangle",
+      "x": 515,
+      "y": 190,
+      "width": 430,
+      "height": 92,
+      "backgroundColor": "#ffffff",
+      "strokeColor": "#495057",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "YOUR TERMINAL"
+      },
+      "fontSize": 19,
+      "fontFamily": 5,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "boxit",
+      "type": "rectangle",
+      "x": 515,
+      "y": 372,
+      "width": 430,
+      "height": 92,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1971c2",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "CONTAINER"
+      },
+      "fontSize": 19,
+      "fontFamily": 5,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfqmtusaev18",
+      "type": "arrow",
+      "x": 730,
+      "y": 290,
+      "strokeColor": "#1971c2",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          74
+        ]
+      ],
+      "start": {
+        "id": "termit"
+      },
+      "end": {
+        "id": "boxit"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfhdlue62m5ni",
+      "type": "text",
+      "x": 575,
+      "y": 480,
+      "width": 309,
+      "height": 21,
+      "strokeColor": "#343a40",
+      "text": "-i keeps stdin open, -t gives a tty",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfnicyfageh98",
+      "type": "text",
+      "x": 575,
+      "y": 506,
+      "width": 309,
+      "height": 21,
+      "strokeColor": "#343a40",
+      "text": "you are typing INSIDE the container",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfyyn9mkyw7o",
+      "type": "text",
+      "x": 579,
+      "y": 542,
+      "width": 302,
+      "height": 22,
+      "strokeColor": "#1971c2",
+      "text": "exit  ->  the container stops",
+      "fontSize": 18,
+      "fontFamily": 5,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "cmdd",
+      "type": "rectangle",
+      "x": 990,
+      "y": 70,
+      "width": 430,
+      "height": 62,
+      "backgroundColor": "#f1f3f5",
+      "strokeColor": "#495057",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "docker run -d nginx"
+      },
+      "fontSize": 19,
+      "fontFamily": 3,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfgac2wbu0jso",
+      "type": "text",
+      "x": 1154,
+      "y": 150,
+      "width": 102,
+      "height": 27,
+      "strokeColor": "#2f9e44",
+      "text": "DETACHED",
+      "fontSize": 22,
+      "fontFamily": 5,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "termd",
+      "type": "rectangle",
+      "x": 990,
+      "y": 190,
+      "width": 430,
+      "height": 92,
+      "backgroundColor": "#ffffff",
+      "strokeColor": "#495057",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "YOUR TERMINAL"
+      },
+      "fontSize": 19,
+      "fontFamily": 5,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "boxd",
+      "type": "rectangle",
+      "x": 990,
+      "y": 372,
+      "width": 430,
+      "height": 92,
+      "backgroundColor": "#d3f9d8",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "CONTAINER"
+      },
+      "fontSize": 19,
+      "fontFamily": 5,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfcn603er5vjk",
+      "type": "arrow",
+      "x": 1205,
+      "y": 290,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          74
+        ]
+      ],
+      "start": {
+        "id": "termd"
+      },
+      "end": {
+        "id": "boxd"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqf3gaqbv8x7ql",
+      "type": "text",
+      "x": 1068,
+      "y": 480,
+      "width": 274,
+      "height": 21,
+      "strokeColor": "#343a40",
+      "text": "prints a container ID and hands",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfsldakdumm9o",
+      "type": "text",
+      "x": 1068,
+      "y": 506,
+      "width": 274,
+      "height": 21,
+      "strokeColor": "#343a40",
+      "text": "the prompt straight back to you",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfpnoqgiyetxt",
+      "type": "text",
+      "x": 1028,
+      "y": 542,
+      "width": 354,
+      "height": 22,
+      "strokeColor": "#2f9e44",
+      "text": "docker logs  ->  read output later",
+      "fontSize": 18,
+      "fontFamily": 5,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqf66ba1266fha",
+      "type": "text",
+      "x": 296,
+      "y": 315,
+      "width": 74,
+      "height": 20,
+      "strokeColor": "#e8590c",
+      "text": "attached",
+      "fontSize": 16,
+      "fontFamily": 5,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqfvo2mkohc8tb",
+      "type": "text",
+      "x": 760,
+      "y": 315,
+      "width": 129,
+      "height": 20,
+      "strokeColor": "#1971c2",
+      "text": "attached + tty",
+      "fontSize": 16,
+      "fontFamily": 5,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqf7pk4wvm12ji",
+      "type": "text",
+      "x": 1237,
+      "y": 315,
+      "width": 111,
+      "height": 20,
+      "strokeColor": "#2f9e44",
+      "text": "not attached",
+      "fontSize": 16,
+      "fontFamily": 5,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    },
+    {
+      "id": "msq2hpqf348tmfp0bb5",
+      "type": "text",
+      "x": 40,
+      "y": 590,
+      "width": 1118,
+      "height": 22,
+      "strokeColor": "#343a40",
+      "text": "-d does not make the container 'quieter' — the output still exists, you just have to ask for it with  docker logs",
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-08-12T12:30:21.834Z",
+      "updatedAt": "2026-08-12T12:30:21.834Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

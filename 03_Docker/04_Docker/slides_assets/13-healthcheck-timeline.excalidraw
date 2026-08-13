@@ -35,13 +35,13 @@
       "strokeWidth": 2,
       "text": "healthcheck + depends_on — เปิดเว็บเมื่อฐานข้อมูล \"พร้อมจริง\" เท่านั้น",
       "textAlign": "center",
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 420483429,
       "verticalAlign": "middle"
     },
     {
-      "id": "msq1w5dkfrxyfq6hqkq",
+      "id": "msq40afwsfqw6i6p6xo",
       "type": "line",
       "x": 60,
       "y": 130,
@@ -72,15 +72,15 @@
       ],
       "roughness": 1,
       "roundness": null,
-      "seed": 1775556297,
+      "seed": 1901957983,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#adb5bd",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
-      "versionNonce": 452123175
+      "versionNonce": 164812905
     },
     {
       "id": "tl",
@@ -114,7 +114,7 @@
       "strokeWidth": 2,
       "text": "เวลา →",
       "textAlign": "center",
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 1081269849,
       "verticalAlign": "middle"
@@ -134,7 +134,7 @@
           "type": "text"
         },
         {
-          "id": "msq1w5dkmigvpe978ge",
+          "id": "msq40afwr73ywrzn1zb",
           "type": "arrow"
         }
       ],
@@ -156,7 +156,7 @@
       "strokeColor": "#c92a2a",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 1833022144
     },
@@ -175,11 +175,11 @@
           "type": "text"
         },
         {
-          "id": "msq1w5dkmigvpe978ge",
+          "id": "msq40afwr73ywrzn1zb",
           "type": "arrow"
         },
         {
-          "id": "msq1w5dkcsg0cq7bs",
+          "id": "msq40afwho1g0e3id9",
           "type": "arrow"
         }
       ],
@@ -201,7 +201,7 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 1971565359
     },
@@ -220,11 +220,11 @@
           "type": "text"
         },
         {
-          "id": "msq1w5dkcsg0cq7bs",
+          "id": "msq40afwho1g0e3id9",
           "type": "arrow"
         },
         {
-          "id": "msq1w5dkb0o4d5494w",
+          "id": "msq40afw4adm6pa4qtr",
           "type": "arrow"
         }
       ],
@@ -246,12 +246,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 1636034536
     },
     {
-      "id": "msq1w5dkmigvpe978ge",
+      "id": "msq40afwr73ywrzn1zb",
       "type": "arrow",
       "x": 348,
       "y": 195,
@@ -287,7 +287,7 @@
       ],
       "roughness": 1,
       "roundness": null,
-      "seed": 1770962788,
+      "seed": 1042184597,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "p1",
@@ -298,12 +298,12 @@
       "strokeColor": "#868e96",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
-      "versionNonce": 222087982
+      "versionNonce": 140422627
     },
     {
-      "id": "msq1w5dkcsg0cq7bs",
+      "id": "msq40afwho1g0e3id9",
       "type": "arrow",
       "x": 728,
       "y": 195,
@@ -339,7 +339,7 @@
       ],
       "roughness": 1,
       "roundness": null,
-      "seed": 764616781,
+      "seed": 2138473433,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "p2",
@@ -350,9 +350,9 @@
       "strokeColor": "#868e96",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
-      "versionNonce": 193354913
+      "versionNonce": 272658357
     },
     {
       "id": "wait",
@@ -387,7 +387,7 @@
       "strokeColor": "#868e96",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 1938173570
     },
@@ -406,7 +406,7 @@
           "type": "text"
         },
         {
-          "id": "msq1w5dkb0o4d5494w",
+          "id": "msq40afw4adm6pa4qtr",
           "type": "arrow"
         }
       ],
@@ -428,12 +428,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 2000433801
     },
     {
-      "id": "msq1w5dkb0o4d5494w",
+      "id": "msq40afw4adm6pa4qtr",
       "type": "arrow",
       "x": 888.9621024051571,
       "y": 237.3000745961196,
@@ -469,7 +469,7 @@
       ],
       "roughness": 1,
       "roundness": null,
-      "seed": 376141992,
+      "seed": 2072165518,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "p3",
@@ -480,9 +480,9 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2.5,
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
-      "versionNonce": 138011184
+      "versionNonce": 392068870
     },
     {
       "id": "yml",
@@ -510,7 +510,7 @@
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 1518914451
     },
@@ -546,7 +546,7 @@
       "strokeWidth": 2,
       "text": "redis:\n  healthcheck:\n    test: [\"CMD\",\"redis-cli\",\"ping\"]\n    interval: 5s\n    timeout: 3s\n    retries: 5",
       "textAlign": "center",
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 753165243,
       "verticalAlign": "middle"
@@ -577,7 +577,7 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 278261443
     },
@@ -613,7 +613,7 @@
       "strokeWidth": 2,
       "text": "vote:\n  depends_on:\n    redis:\n      condition: service_healthy",
       "textAlign": "center",
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 30695595,
       "verticalAlign": "middle"
@@ -623,7 +623,7 @@
       "type": "text",
       "x": 60,
       "y": 690,
-      "width": 1745,
+      "width": 1574,
       "height": 24,
       "angle": 0,
       "autoResize": true,
@@ -641,16 +641,16 @@
       "link": null,
       "locked": false,
       "opacity": 100,
-      "originalText": "ถ้าใช้ depends_on ธรรมดา (ไม่มี condition) จะรอแค่ \"เริ่ม start\" — แอปอาจเปิดก่อน DB พร้อมแล้วพัง (เหมือน Internal Server Error ในสไลด์เรื่อง voting app)",
+      "originalText": "ถ้าใช้ depends_on ธรรมดา (ไม่มี condition) จะรอแค่ \"เริ่ม start\" — เว็บอาจเปิดก่อน DB พร้อม แล้วพังด้วยอาการ Internal Server Error คลาสสิก",
       "roughness": 1,
       "roundness": null,
       "seed": 1362886521,
       "strokeColor": "#495057",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "text": "ถ้าใช้ depends_on ธรรมดา (ไม่มี condition) จะรอแค่ \"เริ่ม start\" — แอปอาจเปิดก่อน DB พร้อมแล้วพัง (เหมือน Internal Server Error ในสไลด์เรื่อง voting app)",
+      "text": "ถ้าใช้ depends_on ธรรมดา (ไม่มี condition) จะรอแค่ \"เริ่ม start\" — เว็บอาจเปิดก่อน DB พร้อม แล้วพังด้วยอาการ Internal Server Error คลาสสิก",
       "textAlign": "center",
-      "updated": 1786536815675,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 706848727,
       "verticalAlign": "middle"
@@ -687,7 +687,7 @@
       "strokeWidth": 1,
       "text": "redis: Created\n→ Starting",
       "textAlign": "center",
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 1347984233,
       "verticalAlign": "middle"
@@ -724,7 +724,7 @@
       "strokeWidth": 1,
       "text": "ทดสอบทุก 5s :\nredis-cli ping → PONG?",
       "textAlign": "center",
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 140495046,
       "verticalAlign": "middle"
@@ -761,7 +761,7 @@
       "strokeWidth": 1,
       "text": "Healthy ✅",
       "textAlign": "center",
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 6850939,
       "verticalAlign": "middle"
@@ -798,7 +798,7 @@
       "strokeWidth": 1,
       "text": "vote และ result : รออยู่... ⏳\n(depends_on: redis: condition: service_healthy)",
       "textAlign": "center",
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 1645697881,
       "verticalAlign": "middle"
@@ -835,7 +835,7 @@
       "strokeWidth": 1,
       "text": "vote / result : Started 🚀\n(เปิดหลัง redis พร้อมเท่านั้น)",
       "textAlign": "center",
-      "updated": 1786536815674,
+      "updated": 1786540368093,
       "version": 1,
       "versionNonce": 1223679440,
       "verticalAlign": "middle"

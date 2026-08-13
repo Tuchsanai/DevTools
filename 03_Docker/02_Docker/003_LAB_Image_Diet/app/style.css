@@ -116,24 +116,26 @@ header .stamp {
     color: var(--muted);
 }
 
+.row .base {
+    width: 240px;
+    font-size: 14px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .row .track {
     flex: 1;
     background: #0d151d;
     border-radius: 8px;
-    height: 38px;
+    height: 34px;
     overflow: hidden;
 }
 
 .row .bar {
     height: 100%;
-    display: flex;
-    align-items: center;
-    padding-left: 14px;
     border-radius: 8px;
-    font-size: 13px;
-    color: #06121a;
-    font-weight: 600;
-    white-space: nowrap;
 }
 
 .row .bar.fat   { background: linear-gradient(90deg, #f87171, #ef4444); }
@@ -147,6 +149,36 @@ header .stamp {
     font-variant-numeric: tabular-nums;
     font-size: 16px;
     font-weight: 600;
+}
+
+.row .time {
+    width: 92px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-size: 15px;
+    color: var(--muted);
+}
+
+/* หัวตารางของกราฟ */
+.row.chead {
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.row.chead .tag,
+.row.chead .num,
+.row.chead .time {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.row.chead .track {
+    background: none;
+    height: auto;
+    padding-left: 14px;
 }
 
 .row .num .saved {
