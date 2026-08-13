@@ -1,0 +1,3317 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Dockerfile จากพื้นฐานสู่ใช้งานจริง | สื่อการสอนฉบับเรียงใหม่</title>
+    <style>
+      :root {
+        --navy: #0b2545;
+        --blue: #1769aa;
+        --sky: #e8f4ff;
+        --orange: #e8590c;
+        --orange-bg: #fff4e6;
+        --green: #27864a;
+        --green-bg: #eaf8ef;
+        --red: #bd3030;
+        --red-bg: #fff0f0;
+        --ink: #17293a;
+        --muted: #607184;
+        --line: #d8e1ea;
+        --code: #101c2d;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: #f5f8fb;
+        color: var(--ink);
+        font-family:
+          "Noto Sans Thai", "Leelawadee UI", Tahoma, system-ui, sans-serif;
+        line-height: 1.7;
+      }
+      code,
+      pre,
+      kbd {
+        font-family: "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+      }
+      .hero {
+        background: linear-gradient(125deg, #08233f, #1769aa);
+        color: white;
+        padding: 70px 22px 58px;
+      }
+      .wrap {
+        width: min(1100px, calc(100% - 40px));
+        margin: auto;
+      }
+      .eyebrow {
+        color: #9fd1ff;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        font-size: 0.88rem;
+      }
+      .hero h1 {
+        font-size: clamp(2.2rem, 6vw, 4.5rem);
+        line-height: 1.15;
+        margin: 14px 0;
+      }
+      .hero p {
+        font-size: 1.2rem;
+        max-width: 720px;
+        color: #d5eaff;
+      }
+      .pill {
+        display: inline-block;
+        background: #ffb45a;
+        color: #452300;
+        border-radius: 99px;
+        padding: 4px 12px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        margin-top: 16px;
+      }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: #fffdf8ee;
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(10px);
+      }
+      nav .wrap {
+        display: flex;
+        gap: 16px;
+        overflow: auto;
+        padding: 10px 0;
+      }
+      nav a {
+        white-space: nowrap;
+        text-decoration: none;
+        color: var(--blue);
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .section {
+        padding: 55px 0;
+      }
+      .section:nth-of-type(even) {
+        background: #fff;
+      }
+      .section h2 {
+        font-size: clamp(1.7rem, 4vw, 2.6rem);
+        line-height: 1.25;
+        color: var(--navy);
+        margin: 0 0 13px;
+        border-left: 7px solid var(--orange);
+        padding-left: 15px;
+      }
+      .lead {
+        font-size: 1.13rem;
+        color: var(--muted);
+        margin-top: 0;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+      }
+      .grid3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 20px #1736530c;
+      }
+      .card h3 {
+        margin: 0 0 8px;
+        color: var(--blue);
+        line-height: 1.35;
+      }
+      .diagram {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+        margin: 25px 0;
+        box-shadow: 0 6px 22px #17365312;
+      }
+      .diagram img {
+        display: block;
+        width: 100%;
+        max-height: 560px;
+        object-fit: contain;
+      }
+      .caption {
+        font-size: 0.9rem;
+        color: var(--muted);
+        text-align: center;
+        margin: 10px 4px 0;
+      }
+      .note {
+        margin: 18px 0;
+        border-left: 6px solid var(--blue);
+        background: var(--sky);
+        padding: 14px 18px;
+        border-radius: 0 10px 10px 0;
+      }
+      .note.warn {
+        border-color: var(--orange);
+        background: var(--orange-bg);
+      }
+      .note.good {
+        border-color: var(--green);
+        background: var(--green-bg);
+      }
+      .note.bad {
+        border-color: var(--red);
+        background: var(--red-bg);
+      }
+      pre {
+        background: var(--code);
+        color: #e6f1ff;
+        border-radius: 14px;
+        padding: 20px;
+        overflow: auto;
+        line-height: 1.6;
+        font-size: 0.92rem;
+      }
+      .cmd {
+        color: #ffcf86;
+      }
+      .comment {
+        color: #8293aa;
+      }
+      .instruction {
+        color: #93e6a6;
+        font-weight: bold;
+      }
+      .result {
+        background: #07130d;
+        border: 1px solid #2f7650;
+        color: #a8f0c2;
+      }
+      .tag {
+        background: #e8eef5;
+        color: #154c7a;
+        border-radius: 5px;
+        padding: 1px 6px;
+        font-size: 0.92em;
+      }
+      .table-wrap {
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: white;
+      }
+      .tbl {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 700px;
+      }
+      .tbl th,
+      .tbl td {
+        padding: 13px 15px;
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .tbl th {
+        background: var(--sky);
+        color: var(--blue);
+      }
+      .tbl tr:last-child td {
+        border: 0;
+      }
+      .tbl td pre {
+        margin: 0;
+        padding: 10px 12px;
+        font-size: 0.78rem;
+        border-radius: 10px;
+        white-space: pre;
+      }
+      .steps {
+        counter-reset: step;
+        list-style: none;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+      }
+      .steps li {
+        counter-increment: step;
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 16px 14px 64px;
+        position: relative;
+      }
+      .steps li:before {
+        content: counter(step);
+        position: absolute;
+        left: 16px;
+        top: 15px;
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--blue);
+        color: white;
+        font-weight: 800;
+      }
+      .checklist {
+        padding-left: 1.2em;
+      }
+      .checklist li {
+        margin: 7px 0;
+      }
+      .explain {
+        margin-top: 18px;
+        border-top: 1px dashed var(--line);
+        padding-top: 16px;
+      }
+      .explain h4 {
+        margin: 0 0 8px;
+        color: var(--navy);
+        font-size: 1.05rem;
+      }
+      .explain ol,
+      .explain ul {
+        margin: 8px 0;
+        padding-left: 1.35rem;
+      }
+      .explain li {
+        margin: 7px 0;
+      }
+      .filetree {
+        background: #f6f8fa;
+        color: #26384a;
+        border: 1px solid var(--line);
+        box-shadow: none;
+      }
+      .mini {
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      details {
+        margin: 14px 0;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fbfdff;
+        padding: 10px 14px;
+      }
+      summary {
+        cursor: pointer;
+        color: var(--blue);
+        font-weight: 800;
+      }
+      .lab {
+        margin-top: 28px;
+        border: 2px solid #9ecbf0;
+        background: #f8fcff;
+        border-radius: 18px;
+        padding: 22px;
+      }
+      .lab h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+      .lab-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--green-bg);
+        color: #135c35;
+        border: 1px solid #b9e4c7;
+        border-radius: 99px;
+        padding: 4px 11px;
+        font-size: 0.82rem;
+        font-weight: 900;
+      }
+      .proof {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+        gap: 18px;
+        align-items: start;
+      }
+      .proof figure {
+        margin: 0;
+      }
+      .proof img {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+      }
+      .walkthrough {
+        display: grid;
+        gap: 20px;
+        margin: 22px 0;
+      }
+      .walk-step {
+        margin: 0;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .walk-step img {
+        display: block;
+        width: 100%;
+        max-height: 720px;
+        object-fit: contain;
+        border-radius: 10px;
+        background: #f5f7fa;
+      }
+      .walk-step h4 {
+        margin: 14px 0 5px;
+        color: var(--navy);
+        font-size: 1.06rem;
+      }
+      .walk-step p {
+        margin: 5px 0;
+      }
+      .footer {
+        background: var(--navy);
+        color: #d7e6f5;
+        padding: 32px 0;
+        margin-top: 30px;
+      }
+      .footer a {
+        color: #9fd1ff;
+      }
+      @media (max-width: 700px) {
+        .grid,
+        .grid3,
+        .proof,
+        .walkthrough {
+          grid-template-columns: 1fr;
+        }
+        .hero {
+          padding-top: 48px;
+        }
+        .section {
+          padding: 38px 0;
+        }
+        .wrap {
+          width: min(100% - 28px, 1100px);
+        }
+        pre {
+          font-size: 0.8rem;
+          padding: 14px;
+        }
+      }
+
+      .hero {
+        padding-bottom: 42px;
+      }
+      .hero p {
+        margin-bottom: 12px;
+      }
+      .hero-progress {
+        margin-top: 28px;
+        max-width: 800px;
+      }
+      .progress-label {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        color: #d5eaff;
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+      .progress-track {
+        display: grid;
+        grid-template-columns: repeat(13, 1fr);
+        gap: 6px;
+        margin-top: 9px;
+      }
+      .progress-track span {
+        height: 8px;
+        border-radius: 99px;
+        background: #ffffff45;
+      }
+      .progress-track span:nth-child(-n + 7) {
+        background: #ffb45a;
+      }
+      .section {
+        scroll-margin-top: 62px;
+      }
+      .section-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .chapter {
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--muted);
+        letter-spacing: 0.04em;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 99px;
+        padding: 3px 11px;
+        font-size: 0.79rem;
+        font-weight: 900;
+        border: 1px solid transparent;
+      }
+      .level-basic {
+        color: #135c35;
+        background: #eaf8ef;
+        border-color: #b9e4c7;
+      }
+      .level-practice {
+        color: #14528a;
+        background: #e8f4ff;
+        border-color: #b8dafa;
+      }
+      .level-deep {
+        color: #7a3d00;
+        background: #fff4e6;
+        border-color: #ffd09a;
+      }
+      .level-reference {
+        color: #55329b;
+        background: #f3f0ff;
+        border-color: #d8cff9;
+      }
+      .level-review {
+        color: #8b2430;
+        background: #fff0f0;
+        border-color: #f2bdc3;
+      }
+      .learning {
+        font-size: 1.08rem;
+        color: #314a61;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 13px 16px;
+        margin: 0 0 18px;
+      }
+      .think {
+        margin: 18px 0;
+        border: 1px dashed #8d6bcd;
+        background: #faf8ff;
+        padding: 14px 18px;
+        border-radius: 10px;
+      }
+      .think b {
+        color: #6741d9;
+      }
+      .line-guide {
+        margin-top: 18px;
+      }
+      .line-guide li code:first-child {
+        font-weight: 800;
+        color: var(--blue);
+      }
+      .summary-table {
+        margin-top: 20px;
+      }
+      .footer {
+        margin-top: 0;
+      }
+      @media (max-width: 700px) {
+        nav .wrap {
+          padding-inline: 4px;
+        }
+        .progress-label {
+          font-size: 0.8rem;
+        }
+        .progress-track {
+          gap: 3px;
+        }
+        .section-meta {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="wrap">
+        <div class="eyebrow">สื่อการสอน Dockerfile · ฉบับเรียงลำดับใหม่</div>
+        <h1>จาก Dockerfile<br />สู่ Container ที่รันได้</h1>
+        <p>เริ่มจากทบทวนคำสั่ง แล้วอ่านสูตร Dockerfile, build/run, cache, CMD/ENTRYPOINT และ ENV ก่อนส่ง image เข้า registry เชื่อมหลาย container ด้วย network และ Compose แล้วปิดด้วย multi-stage และตัวอย่างใช้งานจริง</p>
+        <span class="pill">12 ตอน · ทบทวน → พื้นฐาน → ลงมือทำ → เจาะลึก</span>
+        <div aria-label="เส้นทางการเรียน 12 ตอน" class="hero-progress">
+          <div class="progress-label">
+            <span>เริ่มจากภาพรวม</span><span>ไปถึง Dockerfile ใช้งานจริง</span>
+          </div>
+          <div aria-hidden="true" class="progress-track">
+            <span></span><span></span><span></span><span></span><span></span
+            ><span></span><span></span><span></span><span></span><span></span
+            ><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav aria-label="สารบัญ 12 ตอน"><div class="wrap"><a href="#recap">1 ทบทวน</a><a href="#flow">2 ภาพรวม</a><a href="#first-file">3 ไฟล์แรก</a><a href="#build-run">4 Build/Run</a><a href="#cache">5 Cache</a><a href="#runtime">6 RUN/CMD</a><a href="#env-vars">7 ENV</a><a href="#registry">8 Registry</a><a href="#network">9 Network</a><a href="#compose">10 Compose</a><a href="#multi-stage">11 Multi-stage</a><a href="#examples">12 ตัวอย่าง</a></div></nav>
+    <main>
+      <section class="section" data-level="ทบทวน" id="recap">
+        <div class="wrap">
+          <div class="section-meta"><span class="chapter">ตอนที่ 1 จาก 12</span><span class="badge level-review">ทบทวน</span></div>
+          <h2>1. ทบทวนคำสั่ง Docker ก่อนเริ่มครั้งที่ 2</h2>
+          <p class="learning"><b>จะได้อะไรจากตอนนี้:</b> ทบทวนคำสั่งที่เคยใช้ และรู้ว่าคำสั่งใดจะกลับมาใช้ในครั้งที่ 2</p>
+          <p class="lead">ครั้งที่ 1 เราใช้คำสั่งเหล่านี้กับ image สำเร็จรูปไปแล้ว ครั้งนี้จะสร้าง image เองจาก Dockerfile ตารางนี้เปิดย้อนดูได้ตลอดบทเรียน</p>
+          <h3>วงจรชีวิต container</h3><div class="table-wrap"><table class="tbl"><thead><tr><th>คำสั่ง</th><th>ทำอะไร</th><th>ตัวอย่าง/option ที่พบบ่อย</th><th>ตัวอย่างจริง + ผลการรัน</th></tr></thead><tbody>
+<tr><td><code>docker run</code></td><td>สร้างและเริ่ม container ในคำสั่งเดียว</td><td><code>-d</code> เบื้องหลัง, <code>-it</code> โต้ตอบ, <code>--name</code> ตั้งชื่อ, <code>-p host:container</code>, <code>-e</code> ตัวแปร, <code>-v</code> เมานต์</td><td><pre><span class="comment"># -d รันเบื้องหลัง, --name ตั้งชื่อให้เรียกง่าย, -p 2280:80 ต่อพอร์ต 2280 ของเครื่องเข้าพอร์ต 80 ใน container</span>
+<span class="cmd">docker run -d --name devtools-lifecycle -p 2280:80 nginx:alpine</span>
+353b784ecb782f0e16703b51c69261557b315c20e3eeb02070dfdbfbb138ff07
+<span class="comment"># เลขยาว 64 ตัวคือ container ID เต็ม — ที่เห็นใน docker ps คือ 12 ตัวแรก (353b784ecb78)</span></pre></td></tr>
+<tr><td><code>docker ps</code></td><td>ดู container ที่<b>กำลังรัน</b>อยู่ตอนนี้</td><td><code>--filter name=...</code> กรองตามชื่อ, <code>--format</code> เลือกคอลัมน์</td><td><pre><span class="comment"># เห็นเฉพาะตัวที่กำลังรัน — ตัวที่หยุดแล้วจะไม่โผล่</span>
+<span class="cmd">docker ps</span>
+CONTAINER ID   IMAGE          STATUS         NAMES
+a30e4b6c5a33   nginx:alpine   Up 2 seconds   devtools-debug
+<span class="comment"># STATUS ขึ้นต้นด้วย Up = กำลังทำงาน</span></pre></td></tr>
+<tr><td><code>docker ps -a</code></td><td>ดู container <b>ทั้งหมด</b> รวมตัวที่หยุดไปแล้ว</td><td><code>-a</code> = all — ใช้ตอนหา container ที่ &quot;หายไป&quot; จาก <code>docker ps</code></td><td><pre><span class="comment"># เติม -a จะเห็นตัวที่หยุดแล้ว (Exited) เพิ่มขึ้นมาด้วย</span>
+<span class="cmd">docker ps -a</span>
+CONTAINER ID   IMAGE          STATUS                     NAMES
+6c4e951aa7f0   nginx:alpine   Exited (0) 2 seconds ago   devtools-stopped
+a30e4b6c5a33   nginx:alpine   Up 2 seconds               devtools-debug
+<span class="comment"># Exited (0) = จบการทำงานปกติ ถ้าเลขไม่ใช่ 0 แปลว่ามีข้อผิดพลาด</span></pre></td></tr>
+<tr><td><code>docker stop</code></td><td>หยุด container (ข้อมูลข้างในยังอยู่ ไม่ได้ถูกลบ)</td><td><code>docker stop &lt;name&gt;</code> ส่ง SIGTERM รอ 10 วิ แล้วค่อย SIGKILL</td><td><pre><span class="cmd">docker stop devtools-lifecycle</span>
+devtools-lifecycle
+<span class="comment"># พิมพ์ชื่อกลับมา = หยุดสำเร็จ ตรวจซ้ำด้วย docker ps -a</span>
+<span class="cmd">docker ps -a</span>
+CONTAINER ID   IMAGE          COMMAND                  STATUS                     NAMES
+353b784ecb78   nginx:alpine   &quot;/docker-entrypoint.…&quot;   Exited (0) 1 second ago    devtools-lifecycle
+<span class="comment"># docker ps เฉยๆ จะไม่เห็นแล้ว ต้องใช้ -a</span></pre></td></tr>
+<tr><td><code>docker start</code></td><td>เริ่ม container ที่หยุดอยู่ ให้กลับมาทำงาน (ข้อมูลเดิมยังอยู่)</td><td><code>docker start &lt;name&gt;</code>, <code>-a</code> ดู output ด้วย</td><td><pre><span class="comment"># เรียกด้วยชื่อเดิมได้เลย ไม่ต้องระบุ -p / -v ซ้ำ เพราะ Docker จำค่าตอน run ไว้แล้ว</span>
+<span class="cmd">docker start devtools-lifecycle</span>
+devtools-lifecycle
+<span class="comment"># พิมพ์ชื่อกลับมา = เริ่มสำเร็จ ไฟล์ที่เคยแก้ไว้ข้างใน container ยังอยู่ครบ</span></pre></td></tr>
+<tr><td><code>docker restart</code></td><td>หยุดแล้วเริ่มใหม่ในคำสั่งเดียว</td><td><code>docker restart &lt;name&gt;</code> — ใช้ตอนแก้ config แล้วอยากให้โหลดใหม่</td><td><pre><span class="cmd">docker restart devtools-lifecycle</span>
+devtools-lifecycle
+<span class="comment"># ตรวจด้วย docker ps — CONTAINER ID เดิม แต่ STATUS นับเวลาใหม่</span>
+<span class="cmd">docker ps</span>
+CONTAINER ID   IMAGE          COMMAND                  STATUS                  NAMES
+353b784ecb78   nginx:alpine   &quot;/docker-entrypoint.…&quot;   Up Less than a second   devtools-lifecycle</pre></td></tr>
+<tr><td><code>docker rm</code></td><td>ลบ container ทิ้ง — ต้อง<b>หยุดก่อน</b>ถึงจะลบได้</td><td><code>docker rm &lt;name&gt;</code> — ถ้ายังรันอยู่จะถูกปฏิเสธ</td><td><pre><span class="comment"># ลองลบตอนที่ container ยังรันอยู่ → Docker ปฏิเสธ</span>
+<span class="cmd">docker rm devtools-lifecycle</span>
+Error response from daemon: cannot remove container &quot;devtools-lifecycle&quot;: container is running: stop the container before removing or force remove
+<span class="comment"># ทางแก้: docker stop ก่อน แล้วค่อย docker rm หรือใช้ -f (แถวถัดไป)</span></pre></td></tr>
+<tr><td><code>docker rm -f</code></td><td>บังคับลบ = หยุด + ลบให้เลยในคำสั่งเดียว</td><td><code>docker rm -f &lt;name&gt;</code> — สะดวกตอนทำแล็บ แต่ระวังลบผิดตัว</td><td><pre><span class="comment"># -f (force) ไม่ต้อง stop ก่อน</span>
+<span class="cmd">docker rm -f devtools-lifecycle</span>
+devtools-lifecycle
+<span class="comment"># ตรวจซ้ำ: เหลือแต่หัวตาราง แปลว่าถูกลบแล้วจริง</span>
+<span class="cmd">docker ps -a --filter name=devtools-lifecycle</span>
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES</pre></td></tr>
+<tr><td><code>docker run --rm</code></td><td>ให้ Docker ลบ container ทิ้งอัตโนมัติเมื่อทำงานจบ</td><td>เหมาะกับงานรันครั้งเดียว ไม่ทิ้งขยะค้างระบบ</td><td><pre><span class="comment"># รันคำสั่งเดียวแล้วจบ ไม่ต้องตามลบเอง</span>
+<span class="cmd">docker run --rm --name devtools-lifecycle-tmp nginx:alpine echo &quot;hello from container&quot;</span>
+hello from container
+<span class="comment"># ตรวจซ้ำ: ว่างเปล่า (ถูกลบอัตโนมัติแล้ว)</span>
+<span class="cmd">docker ps -a --filter name=devtools-lifecycle-tmp</span>
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES</pre></td></tr>
+</tbody></table></div>
+          <h3>ดูข้างในและดีบัก</h3><div class="table-wrap"><table class="tbl"><thead><tr><th>คำสั่ง</th><th>ทำอะไร</th><th>ตัวอย่าง/option ที่พบบ่อย</th><th>ตัวอย่างจริง + ผลการรัน</th></tr></thead><tbody>
+<tr><td><code>docker logs</code></td><td>อ่าน log ที่ container พิมพ์ออก stdout/stderr — จุดแรกที่ควรดูเวลามีปัญหา</td><td><code>--tail N</code> ดูแค่ N บรรทัดท้าย, <code>--since 10m</code> ดูย้อนหลังตามเวลา</td><td><pre><span class="comment"># ดู log ทั้งหมดที่ container พิมพ์ออกมา</span>
+<span class="cmd">docker logs devtools-debug</span>
+2026/08/13 22:24:41 [notice] 1#1: start worker process 61
+172.17.0.1 - - [13/Aug/2026:22:25:02 +0000] &quot;GET / HTTP/1.1&quot; 200 896 &quot;-&quot; &quot;curl/8.5.0&quot; &quot;-&quot;
+2026/08/13 22:25:02 [error] 30#30: *2 open() &quot;/usr/share/nginx/html/missing&quot; failed (2: No such file or directory), client: 172.17.0.1, request: &quot;GET /missing HTTP/1.1&quot;
+172.17.0.1 - - [13/Aug/2026:22:25:02 +0000] &quot;GET /missing HTTP/1.1&quot; 404 153 &quot;-&quot; &quot;curl/8.5.0&quot; &quot;-&quot;
+<span class="comment"># เห็น 200 (สำเร็จ) และ 404 (หาไฟล์ไม่เจอ) พร้อมบรรทัด error บอกสาเหตุ</span>
+<span class="comment"># log ยาวมาก ใช้ --tail ดูแค่ท้ายๆ</span>
+<span class="cmd">docker logs --tail 2 devtools-debug</span>
+2026/08/13 22:24:41 [notice] 1#1: start worker process 60
+2026/08/13 22:24:41 [notice] 1#1: start worker process 61</pre></td></tr>
+<tr><td><code>docker logs -f</code></td><td>ติดตาม log แบบสด — ค้างรอ แล้วพ่นบรรทัดใหม่ทันทีที่เกิดขึ้น</td><td><code>-f</code> = follow, มักใช้คู่กับ <code>--tail</code> เพื่อไม่ต้องดูของเก่าทั้งหมด</td><td><pre><span class="comment"># ค้างรอ แล้วพ่นบรรทัดใหม่ออกมาทันทีที่มี request เข้ามา (ใช้ดูปัญหาสดๆ)</span>
+<span class="cmd">docker logs -f --tail 1 devtools-debug</span>
+2026/08/13 22:39:21 [notice] 1#1: start worker process 61
+172.17.0.1 - - [13/Aug/2026:22:39:35 +0000] &quot;GET / HTTP/1.1&quot; 200 896 &quot;-&quot; &quot;curl/8.5.0&quot; &quot;-&quot;
+172.17.0.1 - - [13/Aug/2026:22:39:37 +0000] &quot;GET /health-check HTTP/1.1&quot; 404 153 &quot;-&quot; &quot;curl/8.5.0&quot; &quot;-&quot;
+<span class="comment">^C  &lt;-- ค้างอยู่จนกว่าจะกด Ctrl+C เพื่อหยุดติดตาม (container ไม่ได้หยุดตาม)</span></pre></td></tr>
+<tr><td><code>docker exec &lt;name&gt; &lt;คำสั่ง&gt;</code></td><td>สั่งรันคำสั่ง<b>เดียว</b>ข้างใน container แล้วจบ ไม่ต้องเข้า shell</td><td>เหมาะกับเช็คไฟล์/เวอร์ชันเร็วๆ เช่น <code>cat</code>, <code>ls</code></td><td><pre><span class="comment"># เช็คว่า container นี้ใช้ OS อะไร</span>
+<span class="cmd">docker exec devtools-debug cat /etc/os-release</span>
+NAME=&quot;Alpine Linux&quot;
+ID=alpine
+VERSION_ID=3.23.5
+<span class="comment"># ดูไฟล์เว็บที่ nginx เสิร์ฟอยู่</span>
+<span class="cmd">docker exec devtools-debug ls /usr/share/nginx/html</span>
+50x.html
+index.html</pre></td></tr>
+<tr><td><code>docker exec -it &lt;name&gt; sh</code></td><td>เข้า shell แบบโต้ตอบ พิมพ์คำสั่งต่อเนื่องได้เหมือน ssh เข้าเครื่อง</td><td><code>-i</code> รับ input, <code>-t</code> ให้มี prompt; image ที่มี bash ใช้ <code>bash</code> แทน <code>sh</code> ได้</td><td><pre><span class="comment"># / # คือ prompt ข้างใน container — พิมพ์คำสั่งต่อได้เรื่อยๆ</span>
+<span class="cmd">docker exec -it devtools-debug sh</span>
+/ # whoami
+root
+/ # pwd
+/
+/ # ls /usr/share/nginx/html
+50x.html
+index.html
+/ # cat /etc/alpine-release
+3.23.5
+/ # exit
+<span class="comment"># พิมพ์ exit เพื่อออกจาก shell — container ยังรันต่อตามปกติ</span></pre></td></tr>
+<tr><td><code>docker inspect</code></td><td>ดูค่า config ทั้งหมดของ object เป็น JSON (IP, port, mount, สถานะ)</td><td><b>โครงสร้างที่ต้องเข้าใจก่อน:</b> <code>docker inspect</code> คืนค่าเป็น JSON แล้ว <code>--format</code> คือการ&quot;เจาะ&quot;เข้าไปหยิบเฉพาะค่าที่ต้องการ<br><br><b>ไวยากรณ์ <code>--format</code> (Go template)</b><br><code>{{.A.B}}</code> = ไล่ลงไปตามชั้นของ JSON เช่น <code>{{.State.Status}}</code> คือ key <code>State</code> แล้วเข้าไปเอา <code>Status</code><br><code>{{range ...}}{{end}}</code> = วนลูป เมื่อค่าเป็น list หรือ map (เช่น <code>Env</code>, <code>Networks</code>, <code>Mounts</code>)<br><code>{{index ค่า 0}}</code> = หยิบสมาชิกลำดับที่ 0 ของ list<br><code>{{json ...}}</code> = แสดงค่านั้นเป็น JSON ดิบ (ใช้ตอนค่าซ้อนหลายชั้น)<br><code>{{println .}}</code> = ขึ้นบรรทัดใหม่ให้แต่ละรอบของ range<br><br><b>option อื่น</b><br><code>-f</code> = ตัวย่อของ <code>--format</code> (พิมพ์สั้นกว่า ผลเหมือนกัน)<br><code>--type=container</code> / <code>--type=image</code> = บังคับว่าให้หาเฉพาะชนิดนั้น กันกรณี container กับ image ชื่อชนกัน<br>ใส่หลายชื่อต่อท้ายได้ เพื่อ inspect หลายตัวพร้อมกัน<br><br><b>ชื่อ key ต้องสะกดตรงเป๊ะ (ตัวพิมพ์ใหญ่-เล็กสำคัญ)</b> ถ้าผิดจะขึ้น <code>map has no entry for key</code></td><td><pre><span class="comment"># --format เจาะเข้าไปหยิบทีละค่า</span>
+<span class="cmd">docker inspect --format '{{.State.Status}}' devtools-insp</span>
+running
+<span class="comment"># -f คือตัวย่อของ --format ผลเหมือนกันเป๊ะ</span>
+<span class="cmd">docker inspect -f '{{.State.Status}}' devtools-insp</span>
+running
+
+<span class="comment"># {{range}} ใช้ตอนค่าเป็น list — {{println .}} ให้ขึ้นบรรทัดใหม่ทุกรอบ</span>
+<span class="cmd">docker inspect -f '{{range .Config.Env}}{{println .}}{{end}}' devtools-insp</span>
+APP_ENV=production
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+NGINX_VERSION=1.31.3
+
+<span class="comment"># {{index ... 0}} หยิบเฉพาะสมาชิกตัวแรกของ list</span>
+<span class="cmd">docker inspect -f '{{index .Config.Env 0}}' devtools-insp</span>
+APP_ENV=production
+
+<span class="comment"># {{json ...}} ใช้ตอนค่าซ้อนหลายชั้น อยากเห็นทั้งก้อน</span>
+<span class="cmd">docker inspect -f '{{json .Config.ExposedPorts}}' devtools-insp</span>
+{&quot;80/tcp&quot;:{}}
+
+<span class="comment"># --type บังคับชนิด กันชื่อ container กับ image ชนกัน</span>
+<span class="cmd">docker inspect --type=container --format '{{.Name}}' devtools-insp</span>
+/devtools-insp
+<span class="cmd">docker inspect --type=image --format '{{.Os}}/{{.Architecture}}' nginx:alpine</span>
+linux/amd64
+
+<span class="comment"># สะกด key ผิด (Runing แทน Running) จะฟ้องชัดเจนว่าไม่มี key นี้</span>
+<span class="cmd">docker inspect -f '{{.State.Runing}}' devtools-insp</span>
+template parsing error: template: :1:8: executing &quot;&quot; at &lt;.State.Runing&gt;: map has no entry for key &quot;Runing&quot;</pre></td></tr>
+<tr><td><code>docker container inspect</code></td><td>เหมือน <code>docker inspect</code> แต่<b>เจาะจง</b>ว่าหาเฉพาะ container</td><td>ใช้ทุก option เหมือน <code>docker inspect</code> ได้หมด แต่มีเพิ่มเฉพาะ container:<br><br><code>--size</code> (หรือ <code>-s</code>) = คำนวณขนาดดิสก์ที่ container นี้ใช้ จะได้ 2 ค่าเพิ่มมา<br>&nbsp;&nbsp;• <code>{{.SizeRw}}</code> = ขนาดที่ container <b>เขียนเพิ่ม</b>เองหลังเริ่มรัน<br>&nbsp;&nbsp;• <code>{{.SizeRootFs}}</code> = ขนาดรวมทั้งหมด (image + ที่เขียนเพิ่ม)<br><br><b>path ที่ใช้บ่อย</b><br><code>{{.Name}}</code> ชื่อ (มี <code>/</code> นำหน้า)<br><code>{{.State.Status}}</code> สถานะ · <code>{{.State.ExitCode}}</code> รหัสตอนจบ<br><code>{{.Config.Image}}</code> image ที่ใช้สร้าง · <code>{{.Config.Env}}</code> ตัวแปรสภาพแวดล้อม<br><code>{{.Mounts}}</code> รายการ volume/bind mount ที่ผูกไว้<br><code>{{.NetworkSettings.Networks}}</code> network ที่ต่ออยู่ (เป็น map ต้องใช้ <code>range</code>)</td><td><pre><span class="comment"># ระบุชัดว่าเป็น container จะได้ไม่ไปเจอ image ชื่อเดียวกัน</span>
+<span class="cmd">docker container inspect --format '{{.Name}} {{.State.Status}} {{.Config.Image}}' devtools-debug</span>
+/devtools-debug running nginx:alpine
+
+<span class="comment"># --size เพิ่มค่าขนาดดิสก์เข้ามา (ไม่ใส่ --size จะได้ 0)</span>
+<span class="cmd">docker container inspect --size --format '{{.SizeRw}} bytes เขียนเพิ่ม / {{.SizeRootFs}} bytes ทั้งหมด' devtools-insp</span>
+1095 bytes เขียนเพิ่ม / 62358124 bytes ทั้งหมด
+<span class="comment"># SizeRw เล็กนิดเดียวเพราะ container เพิ่งเขียน log ไปไม่กี่บรรทัด</span>
+
+<span class="comment"># {{range .Mounts}} ดูว่ามีโฟลเดอร์ไหนถูกผูกเข้ามาบ้าง</span>
+<span class="cmd">docker inspect -f '{{range .Mounts}}{{.Source}} -&gt; {{.Destination}} ({{.Type}}){{end}}' devtools-insp</span>
+/tmp -&gt; /data (bind)
+<span class="comment"># อ่านว่า: /tmp ของเครื่อง ถูกผูกไปที่ /data ใน container แบบ bind mount</span></pre></td></tr>
+<tr><td><code>docker image inspect</code></td><td>ดูค่าที่มี<b>เฉพาะใน image</b> เช่น CMD ที่ตั้งไว้ สถาปัตยกรรม และ OS</td><td>ใช้ option เหมือน <code>docker inspect</code> แต่ path ข้างในเป็นของ image คนละชุดกับ container<br><br><b>path ที่ใช้บ่อย</b><br><code>{{.Id}}</code> digest เต็มของ image<br><code>{{.Os}}</code> / <code>{{.Architecture}}</code> = OS และสถาปัตยกรรม (ใช้เช็คว่า image ตรงกับเครื่องไหม เช่น <code>amd64</code> vs <code>arm64</code>)<br><code>{{.Config.Cmd}}</code> คำสั่งที่จะรันอัตโนมัติตอน <code>docker run</code><br><code>{{.Config.Entrypoint}}</code> · <code>{{.Config.WorkingDir}}</code> · <code>{{.Config.ExposedPorts}}</code><br><code>{{.Config.Env}}</code> ตัวแปรที่ติดมากับ image<br><br><b>ข้อควรระวัง:</b> ค่าอย่าง <code>.State</code> ใช้กับ image ไม่ได้ เพราะ image ไม่มีสถานะการทำงาน</td><td><pre><span class="comment"># ดู CMD, สถาปัตยกรรม และ OS ของ image</span>
+<span class="cmd">docker image inspect --format '{{.Config.Cmd}} | {{.Architecture}} | {{.Os}}' nginx:alpine</span>
+[nginx -g daemon off;] | amd64 | linux
+<span class="comment"># CMD คือคำสั่งที่จะถูกรันอัตโนมัติตอน docker run</span>
+
+<span class="comment"># ดู digest เต็มของ image (ใช้ยืนยันว่าเป็น image ตัวเดียวกันข้ามเครื่อง)</span>
+<span class="cmd">docker image inspect --format '{{.Id}}' nginx:alpine</span>
+sha256:ea51152ef8c480b999cee0271a288c698704b18483276119b1253e576ef3232f
+
+<span class="comment"># เช็คสถาปัตยกรรมก่อนรัน — ถ้าเครื่องเป็น arm64 แต่ image เป็น amd64 จะช้าหรือรันไม่ได้</span>
+<span class="cmd">docker inspect --type=image --format '{{.Os}}/{{.Architecture}}' nginx:alpine</span>
+linux/amd64</pre></td></tr>
+<tr><td><code>docker history</code></td><td>ดูว่า image ถูกสร้างมาจากคำสั่งอะไรบ้าง แต่ละ layer กินพื้นที่เท่าไร</td><td><code>docker history &lt;image&gt;</code> — ใช้หาว่า layer ไหนทำให้ image ใหญ่</td><td><pre><span class="comment"># ไล่ดูทีละ layer ว่ามาจากคำสั่งไหนใน Dockerfile</span>
+<span class="cmd">docker history nginx:alpine</span>
+IMAGE          CREATED       CREATED BY                                      SIZE      COMMENT
+ea51152ef8c4   7 weeks ago   RUN /bin/sh -c set -x     &amp;&amp; apkArch=&quot;$(cat …   49.5MB    buildkit.dockerfile.v0
+&lt;missing&gt;      7 weeks ago   ENV NJS_VERSION=0.9.9                           0B        buildkit.dockerfile.v0
+&lt;missing&gt;      7 weeks ago   CMD [&quot;nginx&quot; &quot;-g&quot; &quot;daemon off;&quot;]                0B        buildkit.dockerfile.v0
+&lt;missing&gt;      7 weeks ago   EXPOSE map[80/tcp:{}]                           0B        buildkit.dockerfile.v0
+<span class="comment"># layer RUN กิน 49.5MB ส่วน ENV/CMD/EXPOSE เป็น 0B</span></pre></td></tr>
+</tbody></table></div>
+          <h3>จัดการ image</h3><div class="table-wrap"><table class="tbl"><thead><tr><th>คำสั่ง</th><th>ทำอะไร</th><th>ตัวอย่าง/option ที่พบบ่อย</th><th>ตัวอย่างจริง + ผลการรัน</th></tr></thead><tbody>
+<tr><td><code>docker images</code></td><td>ดู image ทั้งหมดที่มีในเครื่อง</td><td>ใส่ชื่อต่อท้ายเพื่อกรอง เช่น <code>docker images nginx</code>; ดูคอลัมน์ SIZE เพื่อเช็คพื้นที่</td><td><pre><span class="comment"># แสดงเฉพาะ image ที่ชื่อ nginx</span>
+<span class="cmd">docker images nginx</span>
+REPOSITORY   TAG           IMAGE ID       SIZE
+nginx        alpine        ea51152ef8c4   62.2MB
+nginx        1.29-alpine   812d47f806db   62.2MB
+<span class="comment"># image เดียวกันมีได้หลาย tag — ดูที่ IMAGE ID ว่าซ้ำกันไหม</span></pre></td></tr>
+<tr><td><code>docker image ls</code></td><td>คำสั่ง<b>เดียวกับ</b> <code>docker images</code> แค่เขียนแบบใหม่</td><td>Docker รุ่นใหม่จัดคำสั่งเป็น <code>docker &lt;object&gt; &lt;action&gt;</code> — แบบเก่ายังใช้ได้ปกติ</td><td><pre><span class="comment"># เขียนแบบใหม่ ผลลัพธ์เหมือน docker images เป๊ะ</span>
+<span class="cmd">docker image ls nginx</span>
+REPOSITORY   TAG           IMAGE ID       SIZE
+nginx        alpine        ea51152ef8c4   62.2MB
+nginx        1.29-alpine   812d47f806db   62.2MB
+<span class="comment"># เทียบกับแถวบน: output ตรงกันทุกบรรทัด เลือกใช้แบบไหนก็ได้</span></pre></td></tr>
+<tr><td><code>docker pull</code></td><td>ดึง image จาก registry มาเก็บไว้ในเครื่อง</td><td><code>docker pull alpine:3.20</code> — ระบุ tag เสมอ ไม่งั้นได้ <code>:latest</code></td><td><pre><span class="comment"># ระบุ tag เสมอ (:3.20) ถ้าไม่ระบุจะได้ :latest ซึ่งเปลี่ยนเป็นเวอร์ชันใหม่เมื่อไรก็ได้</span>
+<span class="cmd">docker pull alpine:3.20</span>
+3.20: Pulling from library/alpine
+25f1d6b1951a: Pull complete
+Digest: sha256:d9e853e87e55526f6b2917df91a2115c36dd7c696a35be12163d44e6e2a4b6bc
+Status: Downloaded newer image for alpine:3.20
+docker.io/library/alpine:3.20
+<span class="comment"># Digest คือลายนิ้วมือของ image — ใช้ยืนยันว่าทุกเครื่องได้ image ตัวเดียวกันเป๊ะ</span>
+<span class="comment"># ถ้ามี image ล่าสุดอยู่แล้ว pull ซ้ำจะไม่โหลดใหม่:</span>
+<span class="cmd">docker pull nginx:alpine</span>
+Digest: sha256:4a73073bd557c65b759505da037898b61f1be6cbcc3c2c3aeac22d2a470c1752
+Status: Image is up to date for nginx:alpine
+docker.io/library/nginx:alpine</pre></td></tr>
+<tr><td><code>docker build -t</code></td><td>สร้าง image จาก Dockerfile และตั้งชื่อ:tag ให้</td><td><code>docker build -t myapp:1.0 .</code> — จุดท้ายคือ build context, <code>-f</code> ระบุชื่อ Dockerfile</td><td><pre><span class="comment"># สร้างจาก Dockerfile ในโฟลเดอร์ปัจจุบัน (จุดท้าย = build context)</span>
+<span class="cmd">docker build -t myapp:1.0 .</span>
+#4 [1/2] FROM docker.io/library/alpine:3.20
+#4 DONE 0.0s
+#5 [2/2] RUN echo &quot;สวัสดีจาก myapp&quot; &gt; /message.txt
+#5 DONE 0.2s
+#6 exporting to image
+#6 writing image sha256:1a7c4b0281b62ef198fa64e6af52b8a31fb72f664700756411de5fe3c1c74475 done
+#6 naming to docker.io/library/myapp:1.0 done
+<span class="comment"># ทดสอบว่าใช้ได้จริง</span>
+<span class="cmd">docker run --rm myapp:1.0</span>
+สวัสดีจาก myapp</pre></td></tr>
+<tr><td><code>docker tag</code></td><td>ตั้งชื่อเพิ่มให้ image เดิม (ไม่ได้ copy ใหม่ ไม่กินพื้นที่เพิ่ม)</td><td><code>docker tag SOURCE TARGET</code> — ต้อง tag เป็น <code>&lt;บัญชี&gt;/&lt;ชื่อ&gt;</code> ก่อน push</td><td><pre><span class="comment"># ตั้งชื่อที่สองให้ image เดิม</span>
+<span class="cmd">docker tag myapp:1.0 tuchsanai/myapp:1.0</span>
+<span class="cmd">docker images</span>
+REPOSITORY        TAG       IMAGE ID       CREATED         SIZE
+myapp             1.0       1a7c4b0281b6   5 seconds ago   7.81MB
+tuchsanai/myapp   1.0       1a7c4b0281b6   5 seconds ago   7.81MB
+<span class="comment"># IMAGE ID เดียวกัน = เป็น image ตัวเดียวกัน แค่มี 2 ชื่อ</span></pre></td></tr>
+<tr><td><code>docker login</code></td><td>ยืนยันตัวตนกับ registry ก่อน push</td><td>ใช้ <b>Access Token</b> ไม่ใช่รหัสผ่านบัญชี — สร้างได้ที่หน้า Account Settings ของ Docker Hub</td><td><pre><span class="comment"># แทน &lt;DOCKERHUB_USERNAME&gt; ด้วยชื่อบัญชี Docker Hub ของตัวเอง</span>
+<span class="cmd">echo &quot;&lt;ACCESS_TOKEN&gt;&quot; | docker login -u &lt;DOCKERHUB_USERNAME&gt; --password-stdin</span>
+Login Succeeded
+<span class="comment"># --password-stdin ปลอดภัยกว่าพิมพ์รหัสในคำสั่ง เพราะไม่ค้างใน history</span></pre></td></tr>
+<tr><td><code>docker logout</code></td><td>ออกจากระบบ ลบ credential ที่เก็บไว้ในเครื่อง</td><td>ควรทำทุกครั้งเมื่อใช้เครื่องรวม เช่น เครื่องในแล็บ</td><td><pre><span class="comment"># ลบ credential ที่ค้างอยู่ในเครื่อง</span>
+<span class="cmd">docker logout</span>
+Removing login credentials for https://index.docker.io/v1/
+<span class="comment"># หลังจากนี้ต้อง docker login ใหม่ถึงจะ push ได้อีก</span></pre></td></tr>
+<tr><td><code>docker push</code></td><td>ส่ง image ที่ tag แล้วขึ้น registry ให้คนอื่น/เครื่องอื่นดึงไปใช้ได้</td><td>ต้อง <code>docker login</code> และ tag ชื่อให้ตรงกับ registry ปลายทางก่อน</td><td><pre><span class="comment"># ตัวอย่างนี้ push ขึ้น registry ทดสอบในเครื่อง (localhost:5000)</span>
+<span class="comment"># รูปแบบ output เหมือนกับตอน push ขึ้น Docker Hub</span>
+<span class="cmd">docker push localhost:5000/myapp:1.0</span>
+The push refers to repository [localhost:5000/myapp]
+0645eb7d3aca: Pushed
+08bc4e534116: Pushed
+1.0: digest: sha256:7e96344e8fe184832d363c3fd0154624e46dc0142179124845ffe5c711b12081 size: 735
+<span class="comment"># แต่ละ layer ถูกส่งแยกกัน — ครั้งต่อไปที่ push layer เดิมจะไม่ถูกส่งซ้ำ</span></pre></td></tr>
+<tr><td><code>docker rmi</code></td><td>ลบ image ออกจากเครื่อง (แบบเขียนสั้น)</td><td>ถ้า image มีหลาย tag การลบ tag แรกจะยัง<b>ไม่ลบ</b>ไฟล์จริง</td><td><pre><span class="comment"># มี 2 tag ชี้ image เดียวกัน -&gt; ลบ tag แรก ได้แค่ Untagged</span>
+<span class="cmd">docker rmi tuchsanai/myapp:1.0</span>
+Untagged: tuchsanai/myapp:1.0
+<span class="comment"># ไม่มีบรรทัด Deleted แปลว่า layer ยังอยู่บนดิสก์ เพราะยังมีอีก tag ชี้อยู่</span></pre></td></tr>
+<tr><td><code>docker image rm</code></td><td>คำสั่ง<b>เดียวกับ</b> <code>docker rmi</code> แค่เขียนแบบใหม่</td><td>ถ้ามี container ใช้ image อยู่ ต้องลบ container ก่อน</td><td><pre><span class="comment"># ลบ tag สุดท้าย -&gt; ถึงจะลบ layer ออกจากดิสก์จริง</span>
+<span class="cmd">docker image rm myapp:1.0</span>
+Untagged: myapp:1.0
+Deleted: sha256:1a7c4b0281b62ef198fa64e6af52b8a31fb72f664700756411de5fe3c1c74475
+<span class="comment"># มีบรรทัด Deleted = พื้นที่ถูกคืนจริง</span></pre></td></tr>
+</tbody></table></div>
+          <h3>Volume, Network และพื้นที่</h3><div class="table-wrap"><table class="tbl"><thead><tr><th>คำสั่ง</th><th>ทำอะไร</th><th>ตัวอย่าง/option ที่พบบ่อย</th><th>ตัวอย่างจริง + ผลการรัน</th></tr></thead><tbody>
+<tr><td>bind mount<br><code>-v &lt;โฟลเดอร์บนเครื่องเรา&gt;:&lt;โฟลเดอร์ใน container&gt;</code></td><td>เอาโฟลเดอร์บนเครื่องเรา ไป&quot;ทับ&quot;โฟลเดอร์ใน container <br><br>ผลคือทั้งสองฝั่งกลายเป็น<b>ไฟล์ก้อนเดียวกัน</b> ไม่ใช่การ copy — แก้ฝั่งไหนอีกฝั่งก็เปลี่ยนตามทันที และไม่ต้อง build image ใหม่</td><td>อ่านจากซ้ายไปขวา คั่นด้วย <code>:</code> เหมือน <code>-p</code><br>ซ้าย = ที่อยู่<b>บนเครื่องเรา</b> เช่น <code>/demo/web</code><br>ขวา = ที่อยู่<b>ใน container</b> เช่น <code>/usr/share/nginx/html</code><br><br>ใช้ตอนพัฒนาเว็บ: แก้โค้ดในเครื่อง แล้วรีเฟรชหน้าเว็บเห็นผลเลย</td><td><pre><span class="comment"># ขั้น 1: สร้างไฟล์เว็บไว้ที่ /demo/web บนเครื่องเราก่อน</span>
+<span class="cmd">echo &quot;&lt;h1&gt;หน้าเว็บจาก host&lt;/h1&gt;&quot; &gt; /demo/web/index.html</span>
+
+<span class="comment"># ขั้น 2: run โดยผูก  /demo/web (เครื่องเรา)  ไว้กับ  /usr/share/nginx/html (ใน container)</span>
+<span class="comment">#         ซึ่งเป็นโฟลเดอร์ที่ nginx ใช้เสิร์ฟหน้าเว็บ</span>
+<span class="cmd">docker run -d --name web-bind -p 8080:80 -v /demo/web:/usr/share/nginx/html nginx:alpine</span>
+
+<span class="comment"># ขั้น 3: เข้าไปดูข้างใน container — เจอไฟล์ที่เราสร้างไว้บนเครื่อง</span>
+<span class="cmd">docker exec web-bind cat /usr/share/nginx/html/index.html</span>
+&lt;h1&gt;หน้าเว็บจาก host&lt;/h1&gt;
+
+<span class="comment"># ขั้น 4: แก้ไฟล์ฝั่งเครื่องเรา (ไม่แตะ container เลย ไม่ build ใหม่ ไม่ restart)</span>
+<span class="cmd">echo &quot;&lt;h1&gt;แก้จาก host แล้ว&lt;/h1&gt;&quot; &gt; /demo/web/index.html</span>
+
+<span class="comment"># ขั้น 5: ดูข้างใน container อีกครั้ง — เปลี่ยนตามทันที</span>
+<span class="cmd">docker exec web-bind cat /usr/share/nginx/html/index.html</span>
+&lt;h1&gt;แก้จาก host แล้ว&lt;/h1&gt;
+<span class="comment"># นี่คือหลักฐานว่าเป็นไฟล์ก้อนเดียวกัน ไม่ได้ copy เข้าไป</span></pre></td></tr>
+<tr><td><code>docker volume create</code></td><td>สร้าง named volume — พื้นที่เก็บข้อมูลที่ Docker ดูแลให้ อยู่รอดแม้ลบ container</td><td><code>docker volume create app-data</code> แล้วใช้ <code>-v app-data:/data</code> ตอน run</td><td><pre><span class="comment"># สร้าง volume ชื่อ app-data</span>
+<span class="cmd">docker volume create app-data</span>
+app-data
+<span class="comment"># พิสูจน์ว่าข้อมูลอยู่รอด: เขียนไฟล์ แล้วลบ container ทิ้ง (--rm)</span>
+<span class="cmd">docker run --rm -v app-data:/data alpine:3.20 sh -c 'echo &quot;ข้อมูลใน volume&quot; &gt; /data/note.txt'</span>
+<span class="comment"># container ใหม่คนละตัว แต่ยังอ่านไฟล์เดิมได้</span>
+<span class="cmd">docker run --rm -v app-data:/data alpine:3.20 cat /data/note.txt</span>
+ข้อมูลใน volume</pre></td></tr>
+<tr><td><code>docker volume ls</code></td><td>ดูรายชื่อ volume ทั้งหมดที่มีในเครื่อง</td><td>volume ที่ชื่อเป็นเลขฐาน 16 ยาวๆ คือ anonymous volume ที่ Docker สร้างให้เอง</td><td><pre><span class="comment"># ดู volume ทั้งหมด</span>
+<span class="cmd">docker volume ls</span>
+DRIVER    VOLUME NAME
+local     app-data
+<span class="comment"># DRIVER local = เก็บไว้บนดิสก์ของเครื่องนี้</span></pre></td></tr>
+<tr><td><code>docker volume inspect</code></td><td>ดูรายละเอียด volume โดยเฉพาะ <b>Mountpoint</b> ว่าข้อมูลจริงอยู่ที่ไหนบนเครื่อง</td><td><code>--format</code> / <code>-f</code> ใช้ได้เหมือนกัน แต่ path สั้นกว่ามาก เพราะ JSON ของ volume ตื้นแค่ชั้นเดียว<br><br><b>path ทั้งหมดที่มี</b><br><code>{{.Name}}</code> ชื่อ volume<br><code>{{.Mountpoint}}</code> <b>โฟลเดอร์จริงบนเครื่อง host</b> ที่เก็บข้อมูล (ใช้บ่อยที่สุด)<br><code>{{.Driver}}</code> ตัวจัดการพื้นที่ (ปกติคือ <code>local</code>)<br><code>{{.CreatedAt}}</code> เวลาที่สร้าง · <code>{{.Scope}}</code> ขอบเขตการใช้งาน<br><code>{{.Labels}}</code> / <code>{{.Options}}</code> ป้ายกำกับและตัวเลือกตอนสร้าง (ปกติเป็น <code>null</code>)</td><td><pre><span class="comment"># ดูว่าไฟล์จริงถูกเก็บไว้ตรงไหน (ไม่ใส่ --format จะได้ JSON ทั้งก้อน)</span>
+<span class="cmd">docker volume inspect app-data</span>
+[
+    {
+        &quot;CreatedAt&quot;: &quot;2026-08-13T22:26:24Z&quot;,
+        &quot;Driver&quot;: &quot;local&quot;,
+        &quot;Labels&quot;: null,
+        &quot;Mountpoint&quot;: &quot;/var/lib/docker/volumes/app-data/_data&quot;,
+        &quot;Name&quot;: &quot;app-data&quot;,
+        &quot;Options&quot;: null,
+        &quot;Scope&quot;: &quot;local&quot;
+    }
+]
+<span class="comment"># Mountpoint คือโฟลเดอร์จริงบนเครื่อง host ที่ Docker เก็บข้อมูลให้</span>
+
+<span class="comment"># ใช้ --format ดึงมาเฉพาะบรรทัดที่ต้องการ อ่านง่ายกว่ามาก</span>
+<span class="cmd">docker volume inspect --format '{{.Mountpoint}}' insp-demo</span>
+/var/lib/docker/volumes/insp-demo/_data
+
+<span class="comment"># หยิบหลายค่าพร้อมกันได้ คั่นด้วยอะไรก็ได้</span>
+<span class="cmd">docker volume inspect --format '{{.Name}} | {{.Driver}} | {{.CreatedAt}}' insp-demo</span>
+insp-demo | local | 2026-08-13T23:00:41Z</pre></td></tr>
+<tr><td><code>docker volume rm</code></td><td>ลบ volume ทิ้ง — <b>ข้อมูลข้างในหายถาวร</b></td><td>ลบไม่ได้ถ้ายังมี container ใช้อยู่ ต้องลบ container ก่อน</td><td><pre><span class="comment"># ลบ volume ที่ไม่ใช้แล้ว</span>
+<span class="cmd">docker volume rm app-data</span>
+app-data
+<span class="comment"># พิมพ์ชื่อกลับมา = ลบสำเร็จ ข้อมูลใน note.txt หายไปด้วย เอาคืนไม่ได้</span></pre></td></tr>
+<tr><td><code>docker network ls</code></td><td>ดู network ทั้งหมด รวม 3 ตัวที่ Docker สร้างให้ตั้งแต่แรก</td><td><code>bridge</code> คือ network เริ่มต้นที่ container ได้ถ้าไม่ระบุอะไร</td><td><pre><span class="comment"># ตอนเพิ่งติดตั้ง จะมีมาให้ 3 ตัว</span>
+<span class="cmd">docker network ls</span>
+NETWORK ID     NAME      DRIVER    SCOPE
+0cddec865df0   bridge    bridge    local
+176d5bfd5108   host      host      local
+61aec0f834d7   none      null      local
+<span class="comment"># bridge = ค่าเริ่มต้น, host = ใช้เน็ตของเครื่องตรงๆ, none = ไม่ต่อเน็ตเลย</span></pre></td></tr>
+<tr><td><code>docker network create</code></td><td>สร้าง network เอง เพื่อให้ container คุยกันด้วย &quot;ชื่อ&quot; แทนการจำ IP</td><td><code>docker network create app-net</code> แล้วใช้ <code>docker run --network app-net ...</code></td><td><pre><span class="comment"># สร้าง network ใหม่ (ได้ ID ยาวกลับมา)</span>
+<span class="cmd">docker network create app-net</span>
+4d13f5dd2d367ae6b0832c45050d72622d454bec3ea6e506e7f38ab07ab33e50
+<span class="cmd">docker network ls</span>
+NETWORK ID     NAME      DRIVER    SCOPE
+4d13f5dd2d36   app-net   bridge    local
+0cddec865df0   bridge    bridge    local
+176d5bfd5108   host      host      local
+61aec0f834d7   none      null      local
+<span class="comment"># container ใน network เดียวกันเรียกกันด้วยชื่อได้เลย</span>
+<span class="cmd">docker run -d --name api --network app-net nginx:alpine</span>
+<span class="cmd">docker run --rm --network app-net alpine:3.20 nslookup api</span>
+Name:	api
+Address: 172.19.0.2
+<span class="comment"># ชื่อ api ถูกแปลงเป็น IP ให้อัตโนมัติ — ไม่ต้องจำ IP เอง</span></pre></td></tr>
+<tr><td><code>docker network inspect</code></td><td>ดูว่ามี container ไหนต่ออยู่ใน network นี้บ้าง และได้ IP อะไร</td><td><code>--format</code> / <code>-f</code> ใช้ได้เหมือนกัน<br><br><b>path ที่ใช้บ่อย</b><br><code>{{.Name}}</code> · <code>{{.Driver}}</code> · <code>{{.Scope}}</code> ข้อมูลพื้นฐาน<br><code>{{.Containers}}</code> = <b>map</b> ของ container ที่ต่ออยู่ ต้องใช้ <code>range</code> วน แล้วหยิบ <code>{{.Name}}</code> กับ <code>{{.IPv4Address}}</code><br><code>{{.IPAM.Config}}</code> = <b>list</b> ของช่วง IP ต้องใช้ <code>range</code> เช่นกัน ข้างในมี <code>{{.Subnet}}</code> และ <code>{{.Gateway}}</code><br><br><b>ทำไมต้อง <code>range</code>:</b> เพราะ container ต่อได้หลายตัว และ network มีได้หลายช่วง IP ค่าจึงไม่ใช่ค่าเดี่ยว เขียน <code>{{.Containers.Name}}</code> ตรงๆ ไม่ได้</td><td><pre><span class="comment"># .Containers เป็น map ต้องใช้ range วน แล้วหยิบชื่อกับ IP</span>
+<span class="cmd">docker network inspect -f '{{range .Containers}}{{.Name}} = {{.IPv4Address}}{{println}}{{end}}' insp-net</span>
+insp-web = 172.20.0.2/16
+<span class="comment"># /16 คือขนาดของช่วง IP ที่ network นี้ใช้</span>
+
+<span class="comment"># .IPAM.Config เป็น list ของช่วง IP — ดู subnet และ gateway ของ network</span>
+<span class="cmd">docker network inspect -f '{{range .IPAM.Config}}subnet={{.Subnet}} gateway={{.Gateway}}{{end}}' insp-net</span>
+subnet=172.20.0.0/16 gateway=172.20.0.1
+<span class="comment"># gateway คือ IP ของ Docker เองที่ทำหน้าที่เป็นทางออกของ network นี้</span>
+
+<span class="comment"># ข้อมูลพื้นฐานของ network (ค่าเดี่ยว ไม่ต้องใช้ range)</span>
+<span class="cmd">docker network inspect -f '{{.Name}} | {{.Driver}} | {{.Scope}}' insp-net</span>
+insp-net | bridge | local</pre></td></tr>
+<tr><td><code>docker network rm</code></td><td>ลบ network ที่ไม่ใช้แล้ว — ลบไม่ได้ถ้ายังมี container ต่ออยู่</td><td>ต้องหยุด/ลบ container ที่ต่ออยู่ก่อน</td><td><pre><span class="comment"># ลบตอนยังมี container ต่ออยู่ -&gt; error จริง</span>
+<span class="cmd">docker network rm app-net</span>
+Error response from daemon: error while removing network: network app-net id 4d13f5dd2d36... has active endpoints
+<span class="comment"># หยุด/ลบ container ก่อน แล้วค่อยลบ network อีกครั้ง</span>
+<span class="cmd">docker network rm app-net</span>
+app-net</pre></td></tr>
+<tr><td><code>docker system df</code></td><td>ดูว่า image / container / volume / build cache กินพื้นที่ไปเท่าไร และเรียกคืนได้เท่าไร</td><td>เติม <code>-v</code> เพื่อดูรายตัวว่าอันไหนกินพื้นที่</td><td><pre><span class="comment"># ดูภาพรวมพื้นที่ก่อนตัดสินใจล้าง</span>
+<span class="cmd">docker system df</span>
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          3         2         95.6MB    7.808MB (8%)
+Containers      3         3         2.19kB    0B (0%)
+Local Volumes   1         1         3.633MB   0B (0%)
+Build Cache     4         0         139B      139B
+<span class="comment"># ดูคอลัมน์ RECLAIMABLE = พื้นที่ที่ล้างแล้วได้คืนจริง</span></pre></td></tr>
+<tr><td><code>docker container prune</code></td><td>ล้าง container ที่<b>หยุดแล้ว</b>ทั้งหมดในครั้งเดียว</td><td>ไม่แตะ container ที่กำลังรันอยู่ — <b>อ่านคำเตือนก่อนพิมพ์ y เสมอ</b></td><td><pre><span class="comment"># ล้าง container ที่หยุดแล้วทั้งหมด — อ่านบรรทัด WARNING ให้จบก่อนพิมพ์ y</span>
+<span class="cmd">docker container prune</span>
+WARNING! This will remove all stopped containers.
+Are you sure you want to continue? [y/N] y
+Deleted Containers:
+8ebb9c612d9284df2d8b532f5dba25f885d96cd903cf388e0b720e552db5fe2f
+96c49bc331c58164622bc6e79ec75353730ef19ed8053841929920be0e237ae6
+
+Total reclaimed space: 2.186kB
+<span class="comment"># ลบแล้วเอาคืนไม่ได้ ถ้ายังไม่แน่ใจให้ docker ps -a ดูก่อน</span></pre></td></tr>
+<tr><td><code>docker image prune</code></td><td>ล้าง image ที่ไม่มีชื่อ (dangling) — พวกที่โผล่เป็น <code>&lt;none&gt;</code></td><td>เกิดจาก build ทับ tag เดิม; ไม่แตะ image ที่ยังมีชื่ออยู่</td><td><pre><span class="comment"># ล้างเฉพาะ image ที่ไม่มีชื่อแล้ว</span>
+<span class="cmd">docker image prune</span>
+WARNING! This will remove all dangling images.
+Are you sure you want to continue? [y/N] y
+Total reclaimed space: 0B
+<span class="comment"># ได้ 0B เพราะรอบนี้ไม่มี dangling image ค้างอยู่</span>
+<span class="comment"># ระวัง: docker image prune -a จะลบ image ที่ไม่มี container ใช้ทั้งหมด</span></pre></td></tr>
+<tr><td><code>docker builder prune</code></td><td>ล้าง build cache ที่ค้างจากการ build — มักคืนพื้นที่ได้เยอะที่สุด</td><td>ล้างแล้ว build ครั้งถัดไปจะช้าลง เพราะต้องสร้าง cache ใหม่</td><td><pre><span class="comment"># ล้าง cache ที่เหลือจากการ build</span>
+<span class="cmd">docker builder prune</span>
+WARNING! This will remove all dangling build cache. Are you sure you want to continue? [y/N] y
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+db5aiwikvfsiqacdfi97y6cbg               	true 		34B       	About a minute ago
+g9truswdggu4tfv6z29yxwv7c*              	true 	105B      	About a minute ago
+Total:	139B
+<span class="comment"># Total: คือพื้นที่ที่ถูกล้างไปทั้งหมด (รอบนี้ค่อนข้างน้อยเพราะเพิ่ง build ไปไม่กี่ครั้ง)</span></pre></td></tr>
+</tbody></table></div>
+          <div class="note"><b>ก่อนเรียนต่อ:</b> ถ้าตารางใดยังไม่คุ้น ให้กลับไปดูสไลด์ครั้งที่ 1 ก่อน</div><div class="think"><b>ชวนคิด:</b> <code>docker rm</code> กับ <code>docker rmi</code> ลบสิ่งเดียวกันหรือไม่?</div>
+        </div>
+      </section>
+      <section class="section" data-level="พื้นฐาน" id="flow">
+        <div class="wrap">
+          <div class="section-meta">
+            <span class="chapter">ตอนที่ 2 จาก 12</span
+            ><span class="badge level-basic">พื้นฐาน</span>
+          </div>
+          <h2>2. Dockerfile → Image → Container</h2>
+          <p class="learning">
+            <b>จะได้อะไรจากตอนนี้:</b> แยกให้ออกว่าอะไรคือสูตร
+            อะไรคือผลที่สร้างเสร็จ และอะไรคือโปรแกรมที่กำลังทำงาน พร้อมเข้าใจว่า
+            build กับ run เกิดคนละช่วงเวลา
+          </p>
+          <p class="lead">
+            Dockerfile คือไฟล์ข้อความธรรมดาที่บอก Docker ว่าให้ประกอบ
+            <b>image</b> อย่างไรทีละขั้นตอน โดยทั่วไปตั้งชื่อไฟล์ว่า
+            <code>Dockerfile</code> และเก็บไว้ที่รากของโปรเจกต์
+          </p>
+          <div class="grid3">
+            <article class="card">
+              <h3>Dockerfile = สูตร</h3>
+              <p>
+                ชุดคำสั่งที่ทำซ้ำได้: ใช้ระบบตั้งต้น, คัดลอกไฟล์, ติดตั้งแพ็กเกจ
+                และตั้งคำสั่งเริ่มแอป
+              </p>
+            </article>
+            <article class="card">
+              <h3>Image = ผลที่อบเสร็จ</h3>
+              <p>
+                แม่แบบแบบอ่านอย่างเดียว เก็บเป็น layers และนำไปใช้สร้าง
+                container ได้หลายครั้ง
+              </p>
+            </article>
+            <article class="card">
+              <h3>Container = สิ่งที่กำลังรัน</h3>
+              <p>
+                อินสแตนซ์ของ image ที่มีสถานะการรัน เครือข่าย และ filesystem
+                เขียนได้ของตนเอง
+              </p>
+            </article>
+          </div>
+          <figure class="diagram">
+            <img
+              alt="ภาพ Excalidraw แสดง Dockerfile ถูก build เป็น image แล้ว run เป็น container"
+              src="slides_assets/03-build-flow.svg"
+            />
+            <figcaption class="caption">
+              เส้นทางหลักที่ต้องจำ: Dockerfile → <code>docker build</code> →
+              Image → <code>docker run</code> → Container
+            </figcaption>
+          </figure>
+          <div class="note">
+            <b>จำประโยคเดียว:</b> Dockerfile ไม่ใช่ container และไม่ใช่ image —
+            มันคือ “คำสั่งสร้าง” image ที่ Docker อ่านจากบนลงล่าง
+          </div>
+          <div class="grid">
+            <article class="card">
+              <h3>เกิดอะไรขึ้นตอน build?</h3>
+              <ol>
+                <li>Docker อ่านสูตรและรับชุดไฟล์จากโฟลเดอร์ที่เราเลือก</li>
+                <li>เตรียมระบบตั้งต้นตามบรรทัดแรกของสูตร</li>
+                <li>ทำตามสูตรจากบนลงล่าง และนำผลเดิมกลับมาใช้เมื่อทำได้</li>
+                <li>บันทึกผลเป็น image พร้อมชื่อและรุ่น</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>เกิดอะไรขึ้นตอน run?</h3>
+              <ol>
+                <li>Docker สร้างพื้นที่เขียนข้อมูลชั่วคราวเพิ่มบน image</li>
+                <li>เตรียมเครือข่าย ค่าที่แอปต้องใช้ และทางเชื่อมพอร์ต</li>
+                <li>เริ่มโปรแกรมจากคำสั่งเริ่มต้นที่บันทึกไว้ใน image</li>
+                <li>container หยุดเมื่อโปรแกรมหลักจบ</li>
+              </ol>
+            </article>
+          </div>
+          <figure class="diagram">
+            <img
+              alt="ภาพแสดง image เดียวถูกใช้สร้างหลาย container โดยแต่ละตัวมี writable layer ของตัวเอง"
+              src="slides_assets/01-image-vs-container.svg"
+            />
+            <figcaption class="caption">
+              Image เดียวใช้สร้าง Container ได้หลายตัว โดยแต่ละตัวมีสถานะและ
+              writable layer ของตนเอง
+            </figcaption>
+          </figure>
+          <div class="note warn">
+            <b>จุดที่ผู้เริ่มต้นมักสับสน:</b> การแก้ source code
+            บนเครื่องไม่ได้เปลี่ยน image เดิม ต้อง build image ใหม่ก่อน
+            เว้นแต่ว่าตอนพัฒนาใช้ bind mount เพื่อเชื่อมไฟล์จาก host เข้า
+            container
+          </div>
+          <div class="think">
+            <b>ชวนคิด:</b> ถ้าใช้ image เดียวกันสร้าง container 3 ตัว เรามี
+            “สูตร” กี่ชุด “ผลที่อบเสร็จ” กี่ชิ้น และ “สิ่งที่กำลังรัน” กี่ตัว?
+          </div>
+        </div>
+      </section>
+      <section class="section" data-level="พื้นฐาน" id="first-file">
+        <div class="wrap">
+          <div class="section-meta">
+            <span class="chapter">ตอนที่ 3 จาก 12</span
+            ><span class="badge level-basic">พื้นฐาน</span>
+          </div>
+          <h2>3. อ่าน Dockerfile ตัวแรกทีละบรรทัด</h2>
+          <p class="learning">
+            <b>จะได้อะไรจากตอนนี้:</b> อ่าน Dockerfile ของ Flask 8
+            บรรทัดจากบนลงล่าง
+            และตอบได้ว่าแต่ละบรรทัดจำเป็นต่อการสร้างหรือเริ่มแอปอย่างไร
+          </p>
+          <p class="lead">
+            ตัวอย่างนี้เป็น Flask app ขนาดเล็ก
+            แต่รูปแบบเดียวกันใช้ได้กับแอปจริงจำนวนมาก
+          </p>
+          <p>ก่อนอ่านสูตร ดูก่อนว่าในครัวมีอะไร:</p>
+          <h4>โครงสร้างไฟล์โปรเจกต์</h4>
+          <pre class="filetree">
+flask-project/
+├── Dockerfile          ← สูตรที่ใช้ COPY ไฟล์เหล่านี้
+├── .dockerignore       ← ตัดไฟล์ที่ไม่ควรส่งเข้า build context
+├── requirements.txt    ← COPY ก่อนเพื่อใช้ cache
+└── app.py              ← COPY เข้า /app เพื่อให้ CMD เริ่มแอป</pre
+          >
+          <pre><span class="instruction">FROM</span> python:3.12-slim
+
+<span class="instruction">WORKDIR</span> /app
+
+<span class="instruction">COPY</span> requirements.txt .
+<span class="instruction">RUN</span> pip install --no-cache-dir -r requirements.txt
+
+<span class="instruction">COPY</span> app.py .
+<span class="instruction">ENV</span> APP_VERSION=1.0
+<span class="instruction">EXPOSE</span> 5000
+<span class="instruction">CMD</span> ["python", "app.py"]</pre>
+          <figure class="diagram">
+            <img
+              alt="ภาพ Excalidraw อธิบายคำสั่งแต่ละบรรทัดใน Dockerfile"
+              src="slides_assets/02-dockerfile-anatomy.svg"
+            />
+            <figcaption class="caption">
+              ภาพ Excalidraw: แต่ละบรรทัดสร้าง layer หรือ metadata ใน image
+            </figcaption>
+          </figure>
+          <h3>เดินตาม 8 บรรทัด โดยรู้จักเพียง 7 คำสั่ง</h3>
+<p>ไฟล์นี้มี 8 บรรทัด แต่ใช้คำสั่งจริงแค่ 7 ตัว (<code>COPY</code> ถูกใช้ 2 ครั้ง) ตารางนี้ไล่ทีละบรรทัดว่าทำอะไร และมีอะไรที่คนมักพลาด</p>
+<div class="table-wrap"><table class="tbl"><thead><tr><th>บรรทัด</th><th>คำสั่งในไฟล์นี้</th><th>ทำหน้าที่อะไร</th><th>ข้อควรรู้ / ที่มักพลาด</th></tr></thead><tbody>
+<tr><td>1</td><td><code><span class="instruction">FROM</span> python:3.12-slim</code></td><td>เลือกจุดตั้งต้นที่มี Python พร้อมใช้งาน จึงไม่ต้องติดตั้งระบบภาษาเองตั้งแต่ศูนย์</td><td>ระบุ tag ให้ชัดเจนเสมอ เช่น <code>python:3.12-slim</code> อย่าใช้ <code>latest</code> ลอยๆ<br>ทุก Dockerfile ต้องขึ้นต้นด้วย <code>FROM</code> เป็นบรรทัดแรก</td></tr>
+<tr><td>2</td><td><code><span class="instruction">WORKDIR</span> /app</code></td><td>กำหนด &quot;โต๊ะทำงาน&quot; ใน image ให้คำสั่งถัดไปอ้างพาธเดียวกันและอ่านง่าย</td><td>คำสั่งถัดไปอย่าง <code>COPY</code>, <code>RUN</code>, <code>CMD</code> ใช้ตำแหน่งนี้เป็นจุดอ้างอิง<br>ถ้าโฟลเดอร์ยังไม่มี Docker สร้างให้เอง</td></tr>
+<tr><td>3</td><td><code><span class="instruction">COPY</span> requirements.txt .</code></td><td>นำ<b>รายการแพ็กเกจ</b>เข้ามาก่อน เพราะบรรทัดถัดไปต้องใช้ไฟล์นี้เป็นข้อมูลในการติดตั้ง</td><td>คัดลอกเฉพาะสิ่งจำเป็น และอย่าลืมทำ <code>.dockerignore</code> กันไฟล์ขยะหลุดเข้า image</td></tr>
+<tr><td>4</td><td><code><span class="instruction">RUN</span> pip install --no-cache-dir -r requirements.txt</code></td><td>ติดตั้งแพ็กเกจใน<b>ช่วง build</b> ผลที่ติดตั้งแล้วจึงถูกอบติดไปกับ image</td><td>ผลลัพธ์ของ <code>RUN</code> ถูกบันทึกลง image เป็น layer<br>รันตอน build เท่านั้น ไม่ได้รันตอน <code>docker run</code></td></tr>
+<tr><td>5</td><td><code><span class="instruction">COPY</span> app.py .</code></td><td>นำ<b>โค้ดแอป</b>เข้ามาหลังติดตั้งแพ็กเกจเสร็จแล้ว</td><td>ลำดับนี้ตั้งใจ — โค้ดแอปแก้บ่อยกว่ารายการแพ็กเกจ วางทีหลังจึงใช้ cache ได้คุ้มกว่า (เหตุผลเต็มอยู่ในตอนที่ 5)</td></tr>
+<tr><td>6</td><td><code><span class="instruction">ENV</span> APP_VERSION=1.0</code></td><td>ตั้งค่าตัวแปรสภาพแวดล้อมเริ่มต้นที่แอปอ่านได้ตอนทำงาน</td><td>เปลี่ยนค่าตอน run ได้ด้วย <code>-e</code><br><b>ห้ามฝัง secret</b> (รหัสผ่าน/ API key) ไว้ใน <code>ENV</code> เพราะติดไปกับ image</td></tr>
+<tr><td>7</td><td><code><span class="instruction">EXPOSE</span> 5000</code></td><td>บันทึกไว้ว่าแอปตั้งใจฟังพอร์ต 5000</td><td><b>ไม่ได้เปิดพอร์ตจริง</b> — เป็นแค่เอกสารกำกับ image<br>การเปิดทางจากเครื่องเราเข้า container ต้องใช้ <code>docker run -p</code></td></tr>
+<tr><td>8</td><td><code><span class="instruction">CMD</span> [&quot;python&quot;, &quot;app.py&quot;]</code></td><td>ระบุคำสั่งเริ่มต้นที่จะทำงานเมื่อ container ถูกสร้างขึ้นมา</td><td>ควรเขียนแบบ exec form <code>[&quot;python&quot;,&quot;app.py&quot;]</code> เพื่อแยกชื่อโปรแกรมกับ argument ให้ชัด<br>ผู้ใช้ override ได้ด้วยการพิมพ์คำสั่งต่อท้ายชื่อ image ตอน <code>docker run</code></td></tr>
+</tbody></table></div>
+<h3>อีก 2 คำสั่งที่เป็นญาติกับที่เพิ่งเรียน</h3>
+<p>7 คำสั่งข้างบนพอสำหรับไฟล์แรกแล้ว แต่มีอีก 2 ตัวที่ต้องรู้จักไว้ เพราะ<b>หน้าตาคล้ายกับคำสั่งที่เพิ่งอ่านไป</b>จนสับสนกันบ่อย ตอนนี้แค่จำไว้ว่าต่างกันตรงไหน ยังไม่ต้องใช้</p>
+<div class="table-wrap"><table class="tbl"><thead><tr><th>คำสั่ง</th><th>คล้ายกับตัวไหน</th><th>ต่างกันตรงไหน</th><th>เรียนเต็มๆ ตอนไหน</th></tr></thead><tbody>
+<tr><td><code><span class="instruction">ENTRYPOINT</span></code></td><td><code>CMD</code> (บรรทัดที่ 8)</td><td>ทั้งคู่บอกว่า container เริ่มทำงานแล้วรันอะไร แต่<br><code>CMD</code> = ค่า<b>เริ่มต้น</b> ผู้ใช้พิมพ์คำสั่งต่อท้ายชื่อ image เพื่อ<b>แทนที่</b>ได้ทั้งหมด<br><code>ENTRYPOINT</code> = ตัวโปรแกรม<b>หลัก</b>ที่ยึดไว้ สิ่งที่ผู้ใช้พิมพ์มักถูก<b>ต่อท้าย</b>เป็น argument แทน<br>เหมาะเมื่ออยากให้ container ทำตัวเหมือนโปรแกรมหนึ่งตัว</td><td><b>ตอนที่ 6</b> — ทดลองเทียบ RUN vs CMD vs ENTRYPOINT ให้เห็นผลจริง</td></tr>
+<tr><td><code><span class="instruction">ARG</span></code></td><td><code>ENV</code> (บรรทัดที่ 6)</td><td>ทั้งคู่คือการตั้งค่าตัวแปร แต่คนละช่วงเวลา<br><code>ENV</code> = อยู่<b>ตอน run</b> แอปอ่านค่าได้ และติดไปกับ image<br><code>ARG</code> = มีเฉพาะ<b>ตอน build</b> เท่านั้น ส่งค่าด้วย <code>--build-arg</code> พอ build เสร็จก็หายไป แอปอ่านไม่เห็น<br>ถ้าอยากให้ค่าอยู่ต่อ ต้องคัดลอกไปใส่ <code>ENV</code> อีกที</td><td><b>ตอนที่ 7</b> — เทียบ ARG กับ ENV</td></tr>
+</tbody></table></div>
+<div class="note"><b>สรุปตอนนี้:</b> คำสั่งที่ต้องรู้จักจริงๆ มีแค่ 7 ตัว — <code>FROM</code>, <code>WORKDIR</code>, <code>COPY</code>, <code>RUN</code>, <code>ENV</code>, <code>EXPOSE</code> และ <code>CMD</code> เท่านี้เขียน Dockerfile ใช้งานได้จริงแล้ว ที่เหลือค่อยเก็บระหว่างทาง</div>
+<div class="think">
+            <b>ชวนคิด:</b> ถ้าไม่มีบรรทัด <code>CMD</code> image ยัง build
+            สำเร็จได้หรือไม่ แล้ว container
+            จะรู้ได้อย่างไรว่าควรเริ่มโปรแกรมอะไร?
+          </div>
+        </div>
+      </section>
+      <section class="section" data-level="ลงมือทำ" id="build-run">
+        <div class="wrap">
+          <div class="section-meta"><span class="chapter">ตอนที่ 4 จาก 12</span><span class="badge level-practice">ลงมือทำ</span></div>
+          <h2>4. Build ตั้งชื่อ Run และตรวจสถานะหลัง build</h2>
+          <p class="learning"><b>จะได้อะไรจากตอนนี้:</b> สร้าง image ที่มีชื่อ สร้าง container ตรวจสถานะ และคืนพื้นที่อย่างระมัดระวัง</p>
+          <div class="note"><b>เส้นทางของบทนี้:</b> <code>build → run → ตรวจสถานะ → cleanup</code> แต่ละช่วงใช้ผลลัพธ์จากช่วงก่อนหน้า จึงควรเรียนตามลำดับ</div>
+        <h3>รูปแบบคำสั่ง <code>docker build</code></h3>
+        <p>
+          คำสั่งนี้อ่าน Dockerfile แล้วสร้าง image จากไฟล์ที่อยู่ใน
+          <b>build context</b> โดยมีรูปแบบหลักดังนี้
+        </p>
+        <pre><span class="cmd">docker build [OPTIONS] PATH | URL | -</span></pre>
+        <div class="note">
+          <b>นี่คือรูปแบบคำสั่ง ไม่ใช่คำสั่งที่พิมพ์ตามทั้งบรรทัด:</b>
+          เครื่องหมาย <code>|</code> หมายถึง “เลือกอย่างใดอย่างหนึ่ง” ระหว่าง
+          path, URL หรือ <code>-</code> และค่าที่เลือกต้องอยู่ท้ายคำสั่งเสมอ
+        </div>
+
+        <div class="grid3" style="margin-top: 14px">
+          <article class="card">
+            <h3>1) คำสั่ง</h3>
+            <p><code>docker build</code> เริ่มกระบวนการสร้าง image</p>
+          </article>
+          <article class="card">
+            <h3>2) Options</h3>
+            <p>
+              ส่วนที่กำหนดเพิ่ม เช่น <code>-t</code>, <code>-f</code>,
+              <code>--build-arg</code> หรือ <code>--target</code>
+            </p>
+          </article>
+          <article class="card">
+            <h3>3) Build context</h3>
+            <p>
+              อาร์กิวเมนต์สุดท้าย เช่น <code>.</code> หรือ <code>./app</code>
+              เป็นไฟล์ที่ Docker มีสิทธินำไปใช้ระหว่าง build
+            </p>
+          </article>
+        </div>
+
+        <h3>รูปแบบที่ใช้บ่อย</h3>
+        <div class="grid">
+          <article class="card">
+            <h3>สร้างจากโฟลเดอร์ปัจจุบัน</h3>
+            <pre><span class="cmd">docker build .</span></pre>
+            <p class="mini">
+              Docker ใช้ <code>./Dockerfile</code> โดยอัตโนมัติ และ
+              <code>.</code> คือ build context
+            </p>
+          </article>
+          <article class="card">
+            <h3>สร้างพร้อมตั้งชื่อและ tag</h3>
+            <pre><span class="cmd">docker build -t myapp:1.0 .</span></pre>
+            <p class="mini">
+              <code>-t</code> ใช้รูปแบบ
+              <code>[registry/]repository[:tag]</code>
+            </p>
+          </article>
+          <article class="card">
+            <h3>เลือก Dockerfile ชื่ออื่น</h3>
+            <pre><span class="cmd">docker build -f Dockerfile.prod -t myapp:1.0 .</span></pre>
+            <p class="mini">
+              <code>-f</code> เลือกไฟล์ Dockerfile ส่วน <code>.</code>
+              ยังเป็น build context
+            </p>
+          </article>
+          <article class="card">
+            <h3>ติดหลาย tag จากการ build ครั้งเดียว</h3>
+            <pre><span class="cmd">docker build -t myapp:1.0 -t myapp:latest .</span></pre>
+            <p class="mini">
+              ระบุ <code>-t</code> ซ้ำได้ เหมาะกับ version และ
+              <code>latest</code>
+            </p>
+          </article>
+          <article class="card">
+            <h3>ส่งค่าตอน build</h3>
+            <pre><span class="cmd">docker build --build-arg APP_ENV=production -t myapp:1.0 .</span></pre>
+            <p class="mini">
+              Dockerfile ต้องประกาศ <code>ARG APP_ENV</code>
+              ก่อนจึงจะอ่านค่านี้ได้
+            </p>
+          </article>
+          <article class="card">
+            <h3>เลือก stage ใน multi-stage build</h3>
+            <pre><span class="cmd">docker build --target test -t myapp:test .</span></pre>
+            <p class="mini">
+              <code>--target test</code> สร้างถึง stage ที่เขียนว่า
+              <code>FROM ... AS test</code>
+            </p>
+          </article>
+        </div>
+
+        <details>
+          <summary>Options เพิ่มเติมที่ควรรู้</summary>
+          <div class="table-wrap" style="margin-top: 10px">
+            <table class="tbl" style="min-width: 720px">
+              <thead>
+                <tr>
+                  <th>Option</th>
+                  <th>ใช้เมื่อ</th>
+                  <th>ตัวอย่าง</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>--no-cache</code></td>
+                  <td>ต้องการ build ทุก layer ใหม่โดยไม่ใช้ cache</td>
+                  <td><code>docker build --no-cache -t myapp:1.0 .</code></td>
+                </tr>
+                <tr>
+                  <td><code>--pull</code></td>
+                  <td>ตรวจและดึง base image รุ่นใหม่กว่าก่อน build</td>
+                  <td><code>docker build --pull -t myapp:1.0 .</code></td>
+                </tr>
+                <tr>
+                  <td><code>--platform</code></td>
+                  <td>ระบุ platform เป้าหมายเมื่อ builder รองรับ</td>
+                  <td><code>docker build --platform linux/amd64 -t myapp:1.0 .</code></td>
+                </tr>
+                <tr>
+                  <td><code>--progress=plain</code></td>
+                  <td>แสดง log แบบข้อความละเอียดเพื่อช่วยตรวจปัญหา</td>
+                  <td><code>docker build --progress=plain -t myapp:1.0 .</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <div class="note warn">
+          <b>ข้อควรระวัง:</b> อย่าส่ง password หรือ token ผ่าน
+          <code>--build-arg</code> เพราะค่าอาจปรากฏในประวัติของ image
+          และ <code>--no-cache</code> ไม่ได้ดึง base image ใหม่โดยอัตโนมัติ
+          หากต้องการทั้งสองอย่างให้ใช้ <code>--pull --no-cache</code>
+        </div>
+
+        <h3>ตัวอย่างหลักของบทนี้: Build แล้ว Run</h3>
+        <div class="grid">
+          <div>
+            <p>
+                เปิด terminal ที่โฟลเดอร์เดียวกับ Dockerfile แล้ว build image:
+              </p>
+              <pre><span class="cmd">docker build -t myapp:1.0 .</span>
+<span class="comment"># -t = ชื่อ:tag ของ image</span>
+<span class="comment"># .  = build context ที่ส่งให้ Docker</span></pre>
+              <p>จากนั้นสร้าง container และ map พอร์ต:</p>
+              <pre><span class="cmd">docker run -d --name myapp -p 8081:5000 myapp:1.0</span>
+<span class="comment"># host:container = 8081:5000</span>
+<span class="cmd">curl http://localhost:8081</span></pre>
+            </div>
+            <aside class="card">
+              <h3>Build context คืออะไร?</h3>
+              <p>
+                คือชุดไฟล์/โฟลเดอร์ที่ Docker client ส่งให้ build engine
+                เมื่อใช้ <code>.</code> หมายถึง “โฟลเดอร์ปัจจุบัน”
+              </p>
+              <h4>ไฟล์ที่เข้า build context</h4>
+              <pre class="filetree">
+flask-project/
+├── Dockerfile
+├── .dockerignore       ← ใช้กำหนดไฟล์ที่ไม่ส่งเข้า context
+├── requirements.txt    ← ถูกส่งเข้า context เพื่อให้ COPY หยิบได้
+├── app.py              ← ถูกส่งเข้า context เพื่อให้ COPY หยิบได้
+├── .git/               ← ถูกกันออกด้วย .dockerignore
+└── .env                ← ถูกกันออกด้วย .dockerignore</pre
+              >
+              <p>
+                Dockerfile จะ <code>COPY</code> ไฟล์ที่อยู่นอก context ไม่ได้
+                ดังนั้นอย่าส่ง context ใหญ่เกินจำเป็น เพราะจะช้าและอาจพา secret
+                เข้า image
+              </p>
+              <div class="note warn">
+                <b>กับดักยอดนิยม:</b> ลืมจุด <code>.</code> ท้าย
+                <code>docker build</code> หรือรันคำสั่งผิดโฟลเดอร์จนหา
+                Dockerfile ไม่เจอ
+              </div>
+            </aside>
+          </div>
+          <ol class="steps">
+            <li>
+              <b>ตรวจ image:</b> <code>docker image ls</code> แสดง repository,
+              tag, image ID, เวลาที่สร้าง และขนาด
+            </li>
+            <li>
+              <b>ดู container ที่กำลังรัน:</b> <code>docker ps</code>; เติม
+              <code>-a</code> เพื่อรวม container ที่หยุดแล้ว
+            </li>
+            <li>
+              <b>ดู log:</b> <code>docker logs -f myapp</code> โดย
+              <code>-f</code> หมายถึงติดตาม log ต่อเนื่อง
+            </li>
+            <li>
+              <b>ตรวจจากข้างใน:</b> <code>docker exec -it myapp sh</code> เปิด
+              shell ใน container ที่กำลังทำงาน
+            </li>
+            <li>
+              <b>หยุดและลบ container:</b> <code>docker rm -f myapp</code>; image
+              ยังอยู่และนำมาสร้าง container ใหม่ได้
+            </li>
+          </ol>
+          <h3>อ่าน option ของ docker run</h3>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>ส่วนของคำสั่ง</th>
+                  <th>ความหมาย</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>-d</code></td>
+                  <td>
+                    Detached mode ให้ container ทำงานเบื้องหลังและคืน prompt ให้
+                    terminal
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>--name myapp</code></td>
+                  <td>
+                    ตั้งชื่อที่จำง่าย ใช้แทน container ID ในคำสั่ง logs, exec,
+                    stop และ rm
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>-p 8081:5000</code></td>
+                  <td>
+                    ส่ง traffic จากพอร์ต 8081 ของ host ไปพอร์ต 5000 ใน container
+                    แอปข้างในต้องฟังที่ <code>0.0.0.0:5000</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>-e KEY=value</code></td>
+                  <td>
+                    ส่ง environment variable เข้า container ตอนเริ่มทำงาน
+                    โดยทับค่า default จาก <code>ENV</code> ได้
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>--rm</code></td>
+                  <td>
+                    ลบ container อัตโนมัติเมื่อหยุด เหมาะกับการทดลอง
+                    แต่ไม่เหมาะเมื่ออยากเก็บ container ไว้ตรวจภายหลัง
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="lab">
+            <span class="lab-status">ผ่านการทดลองจริง · 13 ส.ค. 2026</span>
+            <h3>LAB จริง: Build Flask ผ่าน DevTools server</h3>
+            <p>
+              LAB นี้ใช้ไฟล์จากตอนที่ 3 และแยกพอร์ตเป็น 3 ชั้น: เครื่องผู้เรียน
+              <code>8088</code> → DevTools server <code>8081</code> → Flask
+              container <code>5000</code> จึงไม่ชนกับ LAB ที่ใช้พอร์ตอื่น
+            </p>
+            <h4>1) สร้าง server สำหรับทดลอง แล้วเชื่อมต่อด้วย SSH</h4>
+            <p class="mini"><b>Docker — รันบนเครื่องผู้เรียน</b></p>
+            <pre><span class="comment"># ลบ server เดิมถ้ามี แล้วสร้าง DevTools server</span>
+<span class="cmd">docker rm -f devtools-dockerfile-media 2&gt;/dev/null</span>
+<span class="cmd">docker run -dit --name devtools-dockerfile-media --privileged \</span>
+  <span class="cmd">-p 2224:22 -p 8088:8081 tuchsanai/devtools:2569_1</span></pre>
+            <p class="mini"><b>SSH — รันบนเครื่องผู้เรียนหลัง server พร้อมทำงาน</b></p>
+            <pre><span class="cmd">ssh root@localhost -p 2224</span></pre>
+            <p class="mini">
+              เมื่อ SSH ถามรหัสผ่าน ให้ใส่รหัสผ่าน LAB ตามที่ผู้สอนกำหนด:
+              <code>&lt;LAB_PASSWORD&gt;</code>
+            </p>
+            <div class="note warn">
+              <b>ห้ามคัดลอก credential ลงเอกสาร:</b> ชื่อจริง อีเมล GitHub token
+              และ Docker access token ต้องใช้ placeholder เช่น
+              <code>&lt;YOUR_NAME&gt;</code>,
+              <code>&lt;YOUR_EMAIL&gt;</code> และ
+              <code>&lt;YOUR_TOKEN&gt;</code> เสมอ
+            </div>
+            <h4>2) Build และ Run ภายใน DevTools server</h4>
+            <p class="mini"><b>Docker — รันหลัง SSH เข้า DevTools server</b></p>
+            <pre><span class="comment"># cd ไปยังโฟลเดอร์ที่มี Dockerfile ก่อน</span>
+<span class="cmd">docker build -t dockerfile-lab:1.0 .</span>
+<span class="cmd">docker run -d --name dockerfile-lab-web -p 8081:5000 dockerfile-lab:1.0</span></pre>
+            <p class="mini"><b>HTTP — ตรวจว่า Flask ตอบสนองจากภายใน DevTools server</b></p>
+            <pre><span class="cmd">curl -i http://localhost:8081/</span></pre>
+            <p class="mini"><b>Docker — ตรวจ metadata ของ image</b></p>
+            <pre><span class="cmd">docker image inspect dockerfile-lab:1.0</span></pre>
+            <div class="proof">
+              <div>
+                <h4>ผลที่ได้จากการรันจริง</h4>
+                <pre class="result">
+# แก้เฉพาะ app.py แล้ว build รอบที่สอง
+#6 [2/5] WORKDIR /app             CACHED
+#7 [3/5] COPY requirements.txt .  CACHED
+#8 [4/5] RUN pip install ...      CACHED
+#9 [5/5] COPY app.py .            DONE
+
+HTTP 200
+"Cmd": ["python", "app.py"]
+"ExposedPorts": {"5000/tcp": {}}</pre
+                >
+                <p class="mini">
+                  ผลนี้ยืนยัน 3 เรื่องพร้อมกัน: dependency layers ถูก cache,
+                  แอปตอบ HTTP 200 และ metadata ใน image ตรงกับ Dockerfile
+                </p>
+              </div>
+              <figure>
+                <img
+                  alt="ภาพหน้าจอจาก Playwright แสดง Flask Dockerfile LAB ตอบสนองจริง พร้อมค่า APP_VERSION และชื่อ container"
+                  src="slides_assets/lab-dockerfile-browser.png"
+                />
+                <figcaption class="caption">
+                  ภาพจาก Playwright CLI หลังเปิดแอปที่ build และ run จริงใน
+                  container
+                </figcaption>
+              </figure>
+            </div>
+            <h4>3) Cleanup ทุกครั้งเมื่อจบ LAB</h4>
+            <p class="mini"><b>Docker — รันภายใน DevTools server</b></p>
+            <pre><span class="comment"># ลบ container ของ Flask app</span>
+<span class="cmd">docker rm -f dockerfile-lab-web</span></pre>
+            <p class="mini"><b>Shell — ออกจาก DevTools server</b></p>
+            <pre><span class="cmd">exit</span></pre>
+            <p class="mini"><b>Docker — กลับมารันบนเครื่องผู้เรียน</b></p>
+            <pre><span class="comment"># ลบ DevTools server แล้วตรวจว่าไม่มี container ค้าง</span>
+<span class="cmd">docker rm -f devtools-dockerfile-media</span>
+<span class="cmd">docker ps -a --filter "name=^devtools-"</span></pre>
+            <div class="note good">
+              <b>เกณฑ์ผ่าน LAB:</b> build จบโดยไม่มี error, หน้าเว็บตอบ
+              <code>HTTP 200</code>, ค่า <code>APP_VERSION=1.0</code> ปรากฏ
+              และคำสั่งตรวจสุดท้ายไม่พบ container ชื่อ
+              <code>devtools-dockerfile-media</code>
+            </div>
+          </div>
+          <h3>4.1 หลัง Build: ตรวจสถานะ แก้ปัญหา และคืนพื้นที่</h3>
+          <p>
+            ตารางทบทวนในตอนที่ 1 รวบรวมคำสั่ง <code>ps</code>, <code>logs</code>,
+            <code>exec</code>, <code>stop</code> และ <code>rm</code> แล้ว
+            ส่วนนี้จัดคำสั่งเดิมให้เป็นลำดับตรวจปัญหาหลัง build
+            และเติมคำสั่งจากเอกสาร PDF ที่ยังขาด
+          </p>
+
+          <h4>ลำดับตรวจปัญหา: มี image → container รันไหม → log ว่าอะไร → config ถูกไหม</h4>
+          <div class="grid">
+            <article class="card">
+              <h3>1) ดู image ที่ build แล้ว</h3>
+              <pre><span class="cmd">docker image ls</span></pre>
+              <p class="mini">
+                เป็นรูปแบบจัดกลุ่มคำสั่งของ <code>docker images</code>
+                ใช้ตรวจชื่อ, tag, image ID และขนาด
+              </p>
+            </article>
+            <article class="card">
+              <h3>2) ดู container รวมตัวที่หยุด</h3>
+              <pre><span class="cmd">docker ps -a</span></pre>
+              <p class="mini">
+                ดูคอลัมน์ <code>STATUS</code> และชื่อ container ก่อนใช้คำสั่งถัดไป
+              </p>
+            </article>
+            <article class="card">
+              <h3>3) อ่าน log ของ process หลัก</h3>
+              <pre><span class="cmd">docker logs dockerfile-lab-web</span></pre>
+              <p class="mini">
+                ถ้าต้องการติดตาม log ใหม่แบบต่อเนื่องจึงเพิ่ม <code>-f</code>
+                และกด <kbd>Ctrl+C</kbd> เพื่อหยุดติดตาม
+              </p>
+            </article>
+            <article class="card">
+              <h3>4) เข้าไปตรวจภายใน container</h3>
+              <pre><span class="cmd">docker exec -it dockerfile-lab-web sh</span></pre>
+              <p class="mini">
+                ใช้ได้เมื่อ container ยังรันอยู่ และ image มีโปรแกรม
+                <code>sh</code>
+              </p>
+            </article>
+          </div>
+
+          <h4>Inspect ให้ตรงชนิด object</h4>
+          <div class="grid">
+            <article class="card">
+              <h3>ตรวจ image</h3>
+              <pre><span class="cmd">docker image inspect dockerfile-lab:1.0</span></pre>
+              <p class="mini">
+                ใช้ดูค่าใน image เช่น <code>Config.Cmd</code>,
+                <code>Config.Env</code>, exposed ports และ layers
+              </p>
+            </article>
+            <article class="card">
+              <h3>ตรวจ container</h3>
+              <pre><span class="cmd">docker container inspect dockerfile-lab-web</span></pre>
+              <p class="mini">
+                ใช้ดูสถานะจริง, mounts, port bindings และ network settings
+                ของ container ที่สร้างแล้ว
+              </p>
+            </article>
+          </div>
+          <div class="note">
+            <b>ทำไมไม่ใช้เพียง <code>docker inspect</code>?</b>
+            คำสั่งแบบสั้นใช้ได้ แต่การเขียน <code>docker image inspect</code>
+            หรือ <code>docker container inspect</code> ทำให้ผู้เรียนเห็นชัดว่า
+            กำลังตรวจ object ชนิดใดและลดความสับสนเมื่อชื่อซ้ำกัน
+          </div>
+
+          <h4>ตรวจพื้นที่ก่อน Cleanup</h4>
+          <pre><span class="cmd">docker system df</span></pre>
+          <p class="mini">
+            คำสั่งนี้อ่านอย่างเดียว แสดงพื้นที่ของ images, containers,
+            local volumes และ build cache รวมถึงส่วนที่ reclaim ได้
+          </p>
+
+          <div class="table-wrap">
+            <table class="tbl" style="min-width: 780px">
+              <thead>
+                <tr>
+                  <th>คำสั่ง Cleanup</th>
+                  <th>ลบอะไร</th>
+                  <th>ไม่ลบอะไร / สิ่งที่ต้องรู้</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>docker container prune</code></td>
+                  <td>container ทุกตัวที่หยุดอยู่</td>
+                  <td>ไม่ลบ container ที่กำลังรัน และไม่ลบ volume; ต้องจัดการ volume แยกต่างหาก</td>
+                </tr>
+                <tr>
+                  <td><code>docker image prune</code></td>
+                  <td>dangling images ที่ไม่มี tag ตามค่าเริ่มต้น</td>
+                  <td><code>-a</code> ขยายขอบเขตเป็น image ที่ไม่มี container อ้างถึง จึงต้องตรวจให้ดีก่อนใช้</td>
+                </tr>
+                <tr>
+                  <td><code>docker builder prune</code></td>
+                  <td>build cache ที่ไม่ใช้งาน</td>
+                  <td>ไม่ใช่การลบ image แต่ build ครั้งถัดไปอาจช้าลงเพราะต้องสร้าง cache ใหม่</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="grid3" style="margin-top: 14px">
+            <article class="card">
+              <h3>ลบ stopped containers</h3>
+              <pre><span class="cmd">docker container prune</span></pre>
+            </article>
+            <article class="card">
+              <h3>ลบ dangling images</h3>
+              <pre><span class="cmd">docker image prune</span></pre>
+            </article>
+            <article class="card">
+              <h3>ลบ build cache</h3>
+              <pre><span class="cmd">docker builder prune</span></pre>
+            </article>
+          </div>
+          <div class="note warn">
+            <b>อย่าเติม <code>-f</code> ตอนเรียน:</b> ให้ Docker แสดงรายการเตือน
+            และถามยืนยันก่อน คำสั่ง prune มีขอบเขตกว้างกว่า
+            <code>docker rm ชื่อ</code> หรือ <code>docker image rm ชื่อ:tag</code>
+            ซึ่งระบุเป้าหมายชัดเจน
+          </div>
+        </div>
+      </section>
+      <section class="section" data-level="ลงมือทำ" id="cache">
+        <div class="wrap">
+          <div class="section-meta">
+            <span class="chapter">ตอนที่ 5 จาก 12</span
+            ><span class="badge level-practice">ลงมือทำ</span>
+          </div>
+          <h2>5. Layer cache: เรียงคำสั่งให้ build เร็ว</h2>
+          <p class="learning">
+            <b>จะได้อะไรจากตอนนี้:</b> เห็นความสัมพันธ์ระหว่างลำดับคำสั่งกับ
+            layer cache และพิสูจน์ด้วย log
+            จริงว่าขั้นติดตั้งแพ็กเกจถูกนำกลับมาใช้ได้
+          </p>
+          <p class="lead">
+            Docker build Dockerfile จากบนลงล่าง และเก็บผลแต่ละขั้นเป็น layer
+            หากขั้นใดหรือไฟล์ที่มันอ้างถึงเปลี่ยน layer นั้นและทุก layer
+            ถัดลงไปจะต้อง build ใหม่
+          </p>
+          <figure class="diagram">
+            <img
+              alt="ภาพ Excalidraw แสดง layer cache ของ Dockerfile"
+              src="slides_assets/04-layer-cache.svg"
+            />
+            <figcaption class="caption">
+              ภาพ Excalidraw: วาง dependency ที่เปลี่ยนน้อยก่อน source code
+              ที่เปลี่ยนบ่อย
+            </figcaption>
+          </figure>
+          <div class="grid">
+            <article class="card">
+              <h3>ลำดับที่ดี</h3>
+              <pre><span class="instruction">COPY</span> requirements.txt .
+<span class="instruction">RUN</span> pip install -r requirements.txt
+<span class="instruction">COPY</span> . .</pre>
+              <p>แก้โค้ดแอปแล้ว dependency layer ยังใช้ cache ได้</p>
+            </article>
+            <article class="card">
+              <h3>ลำดับที่ควรเลี่ยง</h3>
+              <pre><span class="instruction">COPY</span> . .
+<span class="instruction">RUN</span> pip install -r requirements.txt</pre>
+              <p>
+                แก้ไฟล์ใดก็ได้ในโปรเจกต์ อาจทำให้ติดตั้ง dependency ใหม่ทั้งหมด
+              </p>
+            </article>
+          </div>
+          <div class="note good">
+            <b>ตรวจ cache ด้วยตัวเอง:</b> build ครั้งแรก แล้วแก้เฉพาะ
+            <code>app.py</code> และ build อีกครั้ง; ใน log ควรเห็น
+            <code>CACHED</code> ที่ขั้นติดตั้งแพ็กเกจ
+          </div>
+          <h3>ย้อนดูขั้น build แบบละเอียดหลังรู้จัก cache แล้ว</h3>
+          <article class="card">
+            <h3>เกิดอะไรขึ้นตอน build?</h3>
+            <ol>
+              <li>Docker อ่าน Dockerfile และรับ build context</li>
+              <li>ดึง base image ที่ระบุใน <code>FROM</code></li>
+              <li>ประมวลผลคำสั่งตามลำดับและตรวจ cache</li>
+              <li>สร้าง image พร้อมชื่อและ tag</li>
+            </ol>
+          </article>
+          <div class="think">
+            <b>ชวนคิด:</b> ระหว่างไฟล์รายการ dependency กับไฟล์ source code
+            อย่างไหนเปลี่ยนบ่อยกว่า และควรวางอย่างไหนไว้ก่อน?
+          </div>
+        </div>
+      </section>
+      <section class="section" data-level="ลงมือทำ" id="runtime">
+        <div class="wrap">
+          <div class="section-meta">
+            <span class="chapter">ตอนที่ 6 จาก 12</span
+            ><span class="badge level-practice">ลงมือทำ</span>
+          </div>
+          <h2>6. ทดลอง RUN vs CMD vs ENTRYPOINT</h2>
+          <p class="learning">
+            <b>จะได้อะไรจากตอนนี้:</b> ตอบได้ว่าคำสั่งใดทำงานตอน build คำสั่งใดทำงานตอน run และสิ่งที่พิมพ์ต่อท้ายชื่อ image ตอน docker run ไปแทนที่หรือไปต่อท้ายอะไร ผ่านการทดลองจริง 4 ชุด
+          </p>
+          <p class="lead">
+            Dockerfile มีคำสั่งสองกลุ่มตามเส้นเวลา — กลุ่มที่ทำงาน "ตอน build"
+            (<code>RUN</code> บันทึกผลลง image) กับกลุ่มที่ทำงาน "ตอนเริ่ม
+            container" (<code>CMD</code>, <code>ENTRYPOINT</code>)
+          </p>
+          <p>
+            ครั้งที่ 1 เราเคย "ต่อท้ายคำสั่ง" หลังชื่อ image แล้ว container
+            ทำตามนั้น — ตอนนี้จะได้เห็นกลไกว่ามันคือการแทนที่ <code>CMD</code>
+            ส่วน Dockerfile ของ Flask ในตอนที่ 3 ปิดท้ายด้วย
+            <code>CMD ["python", "app.py"]</code>; ตอนนี้จะเข้าใจว่าบรรทัดนั้น
+            ทำงานเมื่อไรและเปลี่ยนได้อย่างไร
+          </p>
+          <div class="note">
+            <b>เตรียมไฟล์ทดลอง:</b> การทดลอง 4 ชุดใช้ Dockerfile 4 ไฟล์เก็บใน
+            โฟลเดอร์เดียวกัน จึงต้องใช้ <code>-f</code> เลือกไฟล์ (ทบทวนจากตอนที่
+            4) และใช้ base image <code>alpine:3.20</code> ที่เล็กและเริ่มเร็ว
+            <pre class="filetree">cmd-lab/
+├── Dockerfile.run          ← 6.1 ทดลอง RUN
+├── Dockerfile.cmd          ← 6.2 ทดลอง CMD
+├── Dockerfile.entrypoint   ← 6.3 ทดลอง ENTRYPOINT
+└── Dockerfile.both         ← 6.4 ทดลอง ENTRYPOINT + CMD</pre>
+          </div>
+          <article class="card">
+            <h3>6.1 RUN — ทำงานตอน docker build</h3>
+            <p>
+              <code>RUN</code> ใช้ติดตั้งโปรแกรม สร้างไฟล์ หรือ compile source
+              ผลลัพธ์ถูกบันทึกเป็น layer ของ image และไม่ต้องทำซ้ำทุกครั้งที่
+              container เริ่ม
+            </p>
+            <pre><span class="comment"># Dockerfile.run</span>
+<span class="instruction">FROM</span> alpine:3.20
+<span class="instruction">RUN</span> echo "สร้างไฟล์ในขั้น Build" &gt; /message.txt
+<span class="instruction">RUN</span> apk add --no-cache curl
+<span class="instruction">CMD</span> ["cat", "/message.txt"]</pre>
+            <h4>Build image</h4>
+            <pre><span class="cmd">docker build -f Dockerfile.run -t demo-run .</span></pre>
+            <p>ระหว่าง build จะเห็นขั้น RUN ใน log:</p>
+            <pre class="result">
+... RUN echo "สร้างไฟล์ในขั้น Build" &gt; /message.txt
+... RUN apk add --no-cache curl
+... exporting to image
+... naming to docker.io/library/demo-run</pre
+            >
+            <h4>ทดลองรันและผลลัพธ์</h4>
+            <pre><span class="cmd">docker run --rm demo-run</span>
+<span class="cmd">docker run --rm demo-run curl --version</span></pre>
+            <pre class="result">
+สร้างไฟล์ในขั้น Build
+
+curl 8.x.x (...) libcurl/8.x.x ...</pre
+            >
+            <div class="note">
+              <b>วิเคราะห์:</b> คำสั่งแรกใช้ CMD อ่านไฟล์ที่ RUN สร้างไว้
+              ส่วนคำสั่งที่สองแทนที่ CMD ด้วย <code>curl --version</code> แต่
+              curl ยังใช้ได้เพราะถูกติดตั้งถาวรใน image จาก RUN
+            </div>
+          </article>
+          <br />
+          <article class="card">
+            <h3>6.2 CMD — ค่าเริ่มต้นที่แทนที่ได้</h3>
+            <p>
+              <code>CMD</code> กำหนด default command ให้ image
+              หากผู้ใช้ใส่คำสั่งหลังชื่อ image คำสั่งนั้นจะแทน CMD ทั้งชุด
+            </p>
+            <pre><span class="comment"># Dockerfile.cmd</span>
+<span class="instruction">FROM</span> alpine:3.20
+<span class="instruction">CMD</span> ["echo", "ข้อความเริ่มต้นจาก CMD"]</pre>
+            <h4>Build และทดลองรัน</h4>
+            <pre><span class="cmd">docker build -f Dockerfile.cmd -t demo-cmd .</span>
+<span class="cmd">docker run --rm demo-cmd</span>
+<span class="cmd">docker run --rm demo-cmd echo "แทนที่ CMD แล้ว"</span></pre>
+            <h4>ผลลัพธ์</h4>
+            <pre class="result">
+ข้อความเริ่มต้นจาก CMD
+แทนที่ CMD แล้ว</pre
+            >
+            <div class="table-wrap">
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th>docker run</th>
+                    <th>คำสั่งจริง</th>
+                    <th>เหตุผล</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>docker run demo-cmd</code></td>
+                    <td><code>echo "ข้อความเริ่มต้นจาก CMD"</code></td>
+                    <td>ไม่ได้ส่งคำสั่งใหม่ จึงใช้ CMD</td>
+                  </tr>
+                  <tr>
+                    <td><code>docker run demo-cmd echo hello</code></td>
+                    <td><code>echo hello</code></td>
+                    <td>ค่าหลังชื่อ image แทน CMD ทั้งชุด</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="note warn">
+              <b>ข้อควรจำ:</b> หากมี CMD หลายบรรทัด จะมีผลเฉพาะบรรทัดสุดท้าย
+              จึงควรเขียนเพียงหนึ่ง CMD
+            </div>
+          </article>
+          <br />
+          <article class="card">
+            <h3>6.3 ENTRYPOINT — โปรแกรมหลักที่รับ argument เพิ่ม</h3>
+            <p>
+              <code>ENTRYPOINT</code> เหมาะเมื่อ image
+              ทำหน้าที่เป็นโปรแกรมหนึ่งตัว ค่าหลังชื่อ image จะถูกต่อเป็น
+              arguments แทนที่จะเปลี่ยนโปรแกรมหลัก
+            </p>
+            <pre><span class="comment"># Dockerfile.entrypoint</span>
+<span class="instruction">FROM</span> alpine:3.20
+<span class="instruction">ENTRYPOINT</span> ["echo", "ข้อความจาก ENTRYPOINT:"]</pre>
+            <h4>Build และทดลองรัน</h4>
+            <pre><span class="cmd">docker build -f Dockerfile.entrypoint -t demo-entrypoint .</span>
+<span class="cmd">docker run --rm demo-entrypoint</span>
+<span class="cmd">docker run --rm demo-entrypoint สวัสดี Docker</span></pre>
+            <h4>ผลลัพธ์</h4>
+            <pre class="result">
+ข้อความจาก ENTRYPOINT:
+ข้อความจาก ENTRYPOINT: สวัสดี Docker</pre
+            >
+            <p>
+              คำสั่งครั้งที่สองถูกประกอบเป็น
+              <code>echo "ข้อความจาก ENTRYPOINT:" "สวัสดี" "Docker"</code>
+            </p>
+            <div class="note warn">
+              <b>แทน ENTRYPOINT:</b> ต้องระบุ <code>--entrypoint</code> เช่น
+              <code
+                >docker run --rm --entrypoint sh demo-entrypoint -c "echo
+                เปลี่ยนโปรแกรมหลัก"</code
+              >
+            </div>
+          </article>
+          <br />
+          <p>
+            ตอนนี้รู้จักทั้งสองตัวแล้ว ภาพนี้เทียบพฤติกรรมเมื่อพิมพ์คำสั่งต่อท้าย
+            ชื่อ image — <code>CMD</code> ถูก "แทนที่" แต่
+            <code>ENTRYPOINT</code> ถูก "ต่อท้าย" ซึ่งนำไปสู่การใช้คู่กันใน 6.4
+          </p>
+          <figure class="diagram">
+            <img
+              alt="ภาพเปรียบเทียบการทำงานของ CMD และ ENTRYPOINT"
+              src="slides_assets/05-cmd-entrypoint.svg"
+            />
+            <figcaption class="caption">
+              ภาพเปรียบเทียบ: คำสั่งหลังชื่อ image แทน CMD แต่ทำหน้าที่เป็น
+              argument ให้ ENTRYPOINT
+            </figcaption>
+          </figure>
+          <article class="card">
+            <h3>6.4 ENTRYPOINT + CMD — โปรแกรมหลักและ default arguments</h3>
+            <p>
+              เมื่อใช้ exec form ร่วมกัน ENTRYPOINT เป็นโปรแกรมหลัก ส่วน CMD
+              เป็น arguments เริ่มต้น ผู้ใช้จึงเปลี่ยนเฉพาะ arguments
+              ได้โดยไม่ต้องพิมพ์ชื่อโปรแกรมซ้ำ
+            </p>
+            <pre><span class="comment"># Dockerfile.both</span>
+<span class="instruction">FROM</span> alpine:3.20
+<span class="instruction">ENTRYPOINT</span> ["ping"]
+<span class="instruction">CMD</span> ["-c", "2", "127.0.0.1"]</pre>
+            <h4>Build และทดลองรัน</h4>
+            <pre><span class="cmd">docker build -f Dockerfile.both -t demo-both .</span>
+<span class="cmd">docker run --rm demo-both</span>
+<span class="cmd">docker run --rm demo-both -c 1 localhost</span></pre>
+            <h4>ผลลัพธ์</h4>
+            <pre class="result">
+PING 127.0.0.1 (...): 56 data bytes
+64 bytes from 127.0.0.1: seq=0 ...
+64 bytes from 127.0.0.1: seq=1 ...
+2 packets transmitted, 2 packets received, 0% packet loss
+
+PING localhost (...): 56 data bytes
+64 bytes from ...: seq=0 ...
+1 packets transmitted, 1 packet received, 0% packet loss</pre
+            >
+            <div class="table-wrap">
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th>การรัน</th>
+                    <th>ENTRYPOINT</th>
+                    <th>CMD/argument</th>
+                    <th>คำสั่งจริง</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>ไม่ส่ง argument</td>
+                    <td><code>ping</code></td>
+                    <td><code>-c 2 127.0.0.1</code></td>
+                    <td><code>ping -c 2 127.0.0.1</code></td>
+                  </tr>
+                  <tr>
+                    <td>ส่ง <code>-c 1 localhost</code></td>
+                    <td><code>ping</code></td>
+                    <td>CMD เดิมถูกแทน</td>
+                    <td><code>ping -c 1 localhost</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+          <br />
+          <article class="card">
+            <h3>6.5 รูปแบบที่เจอในแอปจริง: ENTRYPOINT + CMD</h3>
+            <p>
+              <code>RUN</code> เกิดตอน build และมีได้หลายบรรทัด ส่วน
+              <code>CMD</code>/<code>ENTRYPOINT</code> มีผลเมื่อเริ่ม container
+              โดยค่าล่าสุดเป็นค่าที่ใช้งาน
+            </p>
+            <pre><span class="instruction">ENTRYPOINT</span> ["python", "app.py"]
+<span class="instruction">CMD</span> ["--port", "5000"]</pre>
+            <p>
+              เมื่อรัน <code>docker run image --port 8000</code> ค่า CMD
+              เดิมถูกแทน แต่ ENTRYPOINT ยังอยู่ จึงได้คำสั่งจริงเป็น
+              <code>python app.py --port 8000</code>
+            </p>
+            <p>
+              Dockerfile ของ Flask ตอนที่ 3 เลือกใช้ CMD เดี่ยวเพราะต้องการให้
+              แทนคำสั่งได้ง่ายตอนพัฒนา ส่วน image ที่เป็นเครื่องมือสำเร็จรูปนิยม
+              ENTRYPOINT + CMD แบบนี้
+            </p>
+          </article>
+          <div class="table-wrap summary-table">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>คำสั่ง</th>
+                  <th>เกิดเมื่อใด</th>
+                  <th>หน้าที่หลัก</th>
+                  <th>เมื่อใส่ค่าหลังชื่อ image</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>RUN</code></td>
+                  <td>ตอน build</td>
+                  <td>ติดตั้งหรือสร้างสิ่งที่จะเก็บใน image</td>
+                  <td>ไม่เกี่ยวข้อง</td>
+                </tr>
+                <tr>
+                  <td><code>CMD</code></td>
+                  <td>ตอน run</td>
+                  <td>คำสั่งหรือ argument เริ่มต้น</td>
+                  <td>ถูกแทนที่</td>
+                </tr>
+                <tr>
+                  <td><code>ENTRYPOINT</code></td>
+                  <td>ตอน run</td>
+                  <td>โปรแกรมหลักของ container</td>
+                  <td>ค่าถูกต่อเป็น argument</td>
+                </tr>
+                <tr>
+                  <td><code>ENTRYPOINT + CMD</code></td>
+                  <td>ตอน run</td>
+                  <td>โปรแกรมหลัก + argument เริ่มต้น</td>
+                  <td>แทน CMD แต่คง ENTRYPOINT</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note good">
+            <b>เลือกใช้ให้ตรงงาน:</b> CMD อย่างเดียว = แอปทั่วไปที่อยากให้ผู้ใช้
+            แทนคำสั่งได้ง่าย (เช่น เปิด shell เข้าไปดู); ENTRYPOINT อย่างเดียว =
+            image ที่ทำตัวเป็นโปรแกรม CLI หนึ่งตัว; ENTRYPOINT + CMD = โปรแกรมหลัก
+            ตายตัวแต่มี option เริ่มต้นที่ผู้ใช้ปรับได้
+          </div>
+          <h3>ย้อนดูขั้น run แบบละเอียดหลังรู้จัก CMD และ ENTRYPOINT แล้ว</h3>
+          <article class="card">
+            <h3>เกิดอะไรขึ้นตอน run?</h3>
+            <ol>
+              <li>Docker สร้าง writable layer บน image</li>
+              <li>ตั้งค่า network, environment และ port mapping</li>
+              <li>
+                เริ่ม process จาก <code>ENTRYPOINT</code>/<code>CMD</code>
+              </li>
+              <li>container หยุดเมื่อ process หลักจบ</li>
+            </ol>
+          </article>
+          <div class="think">
+            <b>ชวนคิด:</b> Dockerfile ของ Flask ในตอนที่ 3 ใช้
+            <code>CMD ["python", "app.py"]</code> ถ้าเปลี่ยนเป็น
+            <code>ENTRYPOINT ["python", "app.py"]</code> แล้วเรารัน
+            <code>docker run -it image sh</code> ผลจะต่างจากเดิมอย่างไร และแบบไหน
+            สะดวกกว่าตอนต้องเข้าไป debug?
+          </div>
+        </div>
+      </section>
+      <section class="section" data-level="ลงมือทำ" id="env-vars">
+        <div class="wrap">
+          <div class="section-meta"><span class="chapter">ตอนที่ 7 จาก 12</span><span class="badge level-practice">ลงมือทำ</span></div>
+          <h2>7. Environment Variables ใน Docker</h2>
+          <p class="learning"><b>จะได้อะไรจากตอนนี้:</b> แยกค่า default ใน image ออกจากค่าที่ส่งตอน run และใช้ ENV, -e, --env-file ได้อย่างปลอดภัย</p>
+          <p class="lead">แอปเดียวกันรันได้หลายสภาพแวดล้อม เช่น dev/prod โดยไม่แก้โค้ดและไม่ต้อง build image ใหม่ ค่าที่ต่างกันคือ config เช่น พอร์ต, database host และโหมด debug</p><h3>แหล่งที่มาของค่า 3 ชั้น</h3><div class="grid3"><article class="card"><h3>ENV ใน Dockerfile</h3><p>ค่า default ฝังใน image</p></article><article class="card"><h3><code>docker run -e</code></h3><p>ทับค่า default สำหรับการรันครั้งนั้น</p></article><article class="card"><h3><code>--env-file .env</code></h3><p>โหลดหลายค่าแบบ <code>KEY=value</code></p></article></div><div class="note good"><b>ลำดับความสำคัญ:</b> <code>-e KEY=value</code> ชนะ <code>ENV</code> ใน image</div><h3>ต่อจาก Flask ในตอนที่ 3–4</h3><p>Dockerfile ของ Flask มี <code>ENV APP_VERSION=1.0</code> เมื่อต้องการทับค่าตอน run:</p><pre><span class="cmd">docker run -d --name myapp -e APP_VERSION=2.0 -p 8081:5000 myapp:1.0</span>
+<span class="cmd">docker exec myapp env</span></pre><p>แอปจะเห็น <code>APP_VERSION=2.0</code>; Python อ่านค่าได้ด้วย <code>os.environ.get("APP_VERSION")</code></p><h3>โหลดหลายค่าด้วย --env-file</h3><pre>APP_VERSION=2.0
+DEBUG=false
+DATABASE_HOST=redis</pre><pre><span class="cmd">docker run --env-file .env --name myapp -p 8081:5000 myapp:1.0</span></pre><div class="note warn"><b>อย่า COPY .env เข้า image:</b> ใส่ <code>.env</code> ใน <code>.dockerignore</code> และเก็บ secret ด้วยกลไกตอน deploy</div>
+          <article class="card">
+            <h3>ARG กับ ENV — ทดลองให้เห็นความต่าง</h3>
+            <p>
+              <code>ARG</code> และ <code>ENV</code> หน้าตาคล้ายกัน
+              แต่มีอายุคนละช่วง: ARG มีไว้ส่งค่าระหว่างสร้าง image ส่วน ENV
+              เป็นค่าเริ่มต้นที่ติดไปกับ container เพื่อให้แอปอ่านตอนรัน
+            </p>
+            <div class="table-wrap">
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th>ประเด็น</th>
+                    <th>ARG</th>
+                    <th>ENV</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>มีผลช่วงไหน</td>
+                    <td>เฉพาะ build</td>
+                    <td>build และ run</td>
+                  </tr>
+                  <tr>
+                    <td>วิธีตั้งค่า</td>
+                    <td><code>--build-arg</code></td>
+                    <td>
+                      <code>ENV</code> ใน Dockerfile หรือ <code>-e</code> ตอน
+                      run
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>ใครอ่านได้</td>
+                    <td>คำสั่ง <code>RUN</code> ระหว่าง build</td>
+                    <td>คำสั่ง <code>RUN</code> และแอปใน container ตอนรัน</td>
+                  </tr>
+                  <tr>
+                    <td>ติดใน image history</td>
+                    <td>เห็นได้ จึงห้ามใส่ secret</td>
+                    <td>เห็นได้ จึงห้ามใส่ secret</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <h4>ไฟล์ Dockerfile.args</h4>
+            <pre><span class="instruction">FROM</span> alpine:3.20
+<span class="instruction">ARG</span> APP_VERSION=dev
+<span class="instruction">ARG</span> BUILD_TOOL=manual
+<span class="instruction">ENV</span> APP_VERSION=$APP_VERSION
+<span class="instruction">RUN</span> echo "build เห็น: APP_VERSION=$APP_VERSION BUILD_TOOL=$BUILD_TOOL"
+<span class="instruction">CMD</span> ["sh", "-c", "echo run เห็น: APP_VERSION=$APP_VERSION BUILD_TOOL=$BUILD_TOOL"]</pre>
+            <h4>ทดลอง 1: ค่า default</h4>
+            <p class="mini"><code>--progress=plain</code> ทำให้ log ของ build แสดงผลลัพธ์ <code>echo</code> จาก <code>RUN</code> เป็นข้อความธรรมดา จึงใช้ดูผลการทดลองนี้ได้</p>
+            <pre><span class="cmd">docker build --progress=plain -f Dockerfile.args -t demo-args .</span>
+<span class="cmd">docker run --rm demo-args</span></pre>
+            <pre class="result">
+# RUN echo "build เห็น: APP_VERSION=dev BUILD_TOOL=manual"
+build เห็น: APP_VERSION=dev BUILD_TOOL=manual
+run เห็น: APP_VERSION=dev BUILD_TOOL=</pre
+            >
+            <p>
+              ARG <code>BUILD_TOOL</code> ใช้ได้ใน
+              <code>RUN</code> แต่ไม่ได้ถูกคัดลอกไป ENV จึงหายไปเมื่อ container
+              เริ่ม
+            </p>
+            <h4>ทดลอง 2: ส่ง APP_VERSION ตอน build</h4>
+            <pre><span class="cmd">docker build --build-arg APP_VERSION=2.5 -f Dockerfile.args -t demo-args:2.5 .</span>
+<span class="cmd">docker run --rm demo-args:2.5</span></pre>
+            <pre class="result">
+# RUN echo "build เห็น: APP_VERSION=2.5 BUILD_TOOL=manual"
+build เห็น: APP_VERSION=2.5 BUILD_TOOL=manual
+run เห็น: APP_VERSION=2.5 BUILD_TOOL=</pre
+            >
+            <h4>ทดลอง 3: -e ชนะค่า ENV ตอน run</h4>
+            <pre><span class="cmd">docker run --rm -e APP_VERSION=override demo-args:2.5</span></pre>
+            <pre class="result">run เห็น: APP_VERSION=override BUILD_TOOL=</pre>
+            <p>
+              <b>ไทม์ไลน์:</b> <code>--build-arg</code> ส่งค่าเข้า
+              <code>ARG</code> ระหว่าง build; บรรทัด
+              <code>ENV APP_VERSION=$APP_VERSION</code>
+              คัดลอกเฉพาะค่านี้เป็นค่าเริ่มต้นใน image; จากนั้น container รับ
+              ENV และ <code>-e</code> สามารถทับได้. ARG ที่ไม่ถูกคัดลอกไป ENV
+              ตายเมื่อ build จบ
+            </p>
+            <div class="note">
+              <b>ARG ก่อน FROM:</b> ถ้าต้องใช้ ARG เพื่อเลือก base image เช่น
+              <code>ARG ALPINE_VERSION=3.20</code> ก่อน
+              <code>FROM alpine:$ALPINE_VERSION</code> ต้องประกาศ
+              <code>ARG ALPINE_VERSION</code> ซ้ำหลัง
+              <code>FROM</code> หากจะใช้ค่านั้นในคำสั่งของ stage นั้น
+            </div>
+            <p>ก่อนตรวจผล <code>docker history</code> แสดงว่าแต่ละ layer ถูกสร้างด้วยคำสั่งอะไร</p>
+            <h4>ตรวจจาก docker history</h4>
+            <pre><span class="cmd">docker history demo-args:2.5 | head</span></pre>
+            <pre class="result">
+IMAGE          CREATED BY
+&lt;missing&gt;      RUN |2 APP_VERSION=2.5 BUILD_TOOL=manual /bin/sh -c echo ...
+&lt;missing&gt;      ENV APP_VERSION=2.5
+&lt;missing&gt;      ARG BUILD_TOOL=manual
+&lt;missing&gt;      ARG APP_VERSION=2.5</pre
+            >
+            <div class="note warn">
+              <b>ห้ามฝัง secret:</b> ค่า ARG และ ENV มองเห็นได้จาก layer,
+              metadata หรือ history ได้ รหัสผ่าน, API token และ private key
+              จึงไม่ควรอยู่ใน Dockerfile หรือ image; ให้ใช้ secret manager
+              หรือกลไก secret ตอน deploy
+            </div>
+            <div class="note good">
+              <b>เลือกใช้ให้ตรงงาน:</b> <code>ARG</code> = ค่าที่ใช้เฉพาะตอน
+              build เช่น เวอร์ชันหรือทางเลือก build; <code>ENV</code> =
+              configuration ที่แอปต้องอ่านตอนรัน
+            </div>
+          </article>
+          <div class="think"><b>ชวนคิด:</b> ทำไม database password ไม่ควรเป็น <code>ENV</code> ใน Dockerfile แม้ส่งด้วย <code>-e</code> ได้?</div>
+        </div>
+      </section>
+      <section class="section" data-level="ลงมือทำ" id="registry">
+        <div class="wrap">
+          <div class="section-meta"><span class="chapter">ตอนที่ 8 จาก 12</span><span class="badge level-practice">ลงมือทำ</span></div>
+          <h2>8. ส่ง Image เข้า Registry: Tag → Push → Pull</h2>
+          <p class="learning"><b>จะได้อะไรจากตอนนี้:</b> ตั้งชื่อ image ส่งขึ้น registry อย่างปลอดภัย และ pull กลับมารัน</p>
+          <div class="lab" id="registry-cycle">
+            <span class="lab-status">ปิดวงจร Image · ทดลองกับ Registry จริง</span>
+            <h3>8.1 Tag → Push → Registry → Pull → Run</h3>
+            <p>
+              เมื่อ image รันบนเครื่องเราได้แล้ว ขั้นต่อไปคือกำหนดชื่อที่บอก
+              “จะส่งไป registry ใด อยู่ namespace ไหน และเป็นรุ่นอะไร” จากนั้น
+              push เพื่อให้เครื่องอื่น pull image เดียวกันไปสร้าง container ได้
+            </p>
+
+            <h3>เตรียม Docker Hub และ Personal Access Token จากรูป ./tag</h3>
+            <p>
+              รูปจริงชุดนี้มี 7 ขั้นตอนต่อเนื่อง ตั้งแต่เข้าสู่ Docker Hub
+              จนได้ Personal Access Token (PAT) สำหรับยืนยันตัวตนของ Docker CLI
+              ก่อน <code>tag</code> และ <code>push</code> ข้อมูลบัญชี อีเมล
+              namespace และ token ถูกปิดทับในสำเนาที่ใช้สอน
+            </p>
+            <div class="walkthrough">
+              <figure class="walk-step">
+                <a href="slides_assets/tag-walkthrough/1.png" target="_blank">
+                  <img alt="รูป tag ขั้นตอน 1 เปิด hub docker com และกด Sign in" src="slides_assets/tag-walkthrough/1.png" />
+                </a>
+                <figcaption>
+                  <h4>ขั้นตอน 1 — เปิด Docker Hub และเลือก Sign in</h4>
+                  <p>
+                    เข้า <code>hub.docker.com</code> แล้วตรวจ domain ใน address bar
+                    ก่อนกด <b>Sign in</b> มุมขวาบน เพื่อลดความเสี่ยงกรอกข้อมูลในเว็บปลอม
+                    หากยังไม่มีบัญชีให้เลือก <b>Sign up</b> ก่อน
+                  </p>
+                </figcaption>
+              </figure>
+
+              <figure class="walk-step">
+                <a href="slides_assets/tag-walkthrough/2.png" target="_blank">
+                  <img alt="รูป tag ขั้นตอน 2 กรอกรหัสผ่านเพื่อเข้าสู่ Docker Hub โดยปิดอีเมลแล้ว" src="slides_assets/tag-walkthrough/2.png" />
+                </a>
+                <figcaption>
+                  <h4>ขั้นตอน 2 — ยืนยันตัวตนผ่านเว็บ</h4>
+                  <p>
+                    กรอก password หรือใช้ผู้ให้บริการที่ผูกไว้แล้วกด <b>Continue</b>
+                    นี่คือการ login หน้าเว็บเพื่อจัดการบัญชี ยังไม่ใช่
+                    <code>docker login</code> ที่ใช้ให้ CLI push image
+                  </p>
+                </figcaption>
+              </figure>
+
+              <figure class="walk-step">
+                <a href="slides_assets/tag-walkthrough/3.png" target="_blank">
+                  <img alt="รูป tag ขั้นตอน 3 หน้า My Hub Repositories แสดง namespace และ avatar โดยปิดข้อมูลบัญชีแล้ว" src="slides_assets/tag-walkthrough/3.png" />
+                </a>
+                <figcaption>
+                  <h4>ขั้นตอน 3 — คลิก avatar เพื่อเปิดเมนูบัญชี</h4>
+                  <p>
+                    หลัง login จะเข้าสู่หน้า <b>My Hub → Repositories</b>
+                    ให้คลิก <b>avatar ที่วงกลมสีแดงบริเวณมุมขวาบน</b>
+                    เพื่อเปิดเมนูของบัญชี แล้วทำขั้นตอน 4 ต่อไป
+                  </p>
+                </figcaption>
+              </figure>
+
+              <figure class="walk-step">
+                <a href="slides_assets/tag-walkthrough/4.png" target="_blank">
+                  <img alt="รูป tag ขั้นตอน 4 เปิดเมนู avatar และเลือก Account settings โดยปิดชื่อบัญชีแล้ว" src="slides_assets/tag-walkthrough/4.png" />
+                </a>
+                <figcaption>
+                  <h4>ขั้นตอน 4 — เปิด Account settings</h4>
+                  <p>
+                    คลิก avatar มุมขวาบน แล้วเลือก <b>Account settings</b>
+                    เพื่อจัดการข้อมูลความปลอดภัยของบัญชี เมนูนี้แยกจาก Settings
+                    ในหน้า repository ซึ่งใช้ตั้งค่า repository ไม่ใช่ credential ของ CLI
+                  </p>
+                </figcaption>
+              </figure>
+
+              <figure class="walk-step">
+                <a href="slides_assets/tag-walkthrough/5.png" target="_blank">
+                  <img alt="รูป tag ขั้นตอน 5 เลือก Personal access tokens และ Generate new token โดยปิดชื่อบัญชีแล้ว" src="slides_assets/tag-walkthrough/5.png" />
+                </a>
+                <figcaption>
+                  <h4>ขั้นตอน 5 — เปิด Personal access tokens</h4>
+                  <p>
+                    เลือก <b>Personal access tokens</b> จากแถบซ้าย แล้วกด
+                    <b>Generate new token</b> ควรสร้าง token แยกตามเครื่องหรืองาน
+                    เพื่อ revoke เฉพาะตัวได้โดยไม่กระทบระบบอื่น
+                  </p>
+                </figcaption>
+              </figure>
+
+              <figure class="walk-step">
+                <a href="slides_assets/tag-walkthrough/6.png" target="_blank">
+                  <img alt="รูป tag ขั้นตอน 6 ตั้ง description expiration และสิทธิ Read and Write ก่อน Generate" src="slides_assets/tag-walkthrough/6.png" />
+                </a>
+                <figcaption>
+                  <h4>ขั้นตอน 6 — กำหนดรายละเอียดและสิทธิของ token</h4>
+                  <p>
+                    ตั้ง <b>Access token description</b> ให้สื่อถึงผู้ใช้ เครื่อง หรือ LAB;
+                    ตั้ง <b>Expiration date</b> ตามอายุงานแทนการเลือกไม่หมดอายุโดยไม่จำเป็น;
+                    เลือก <b>Read &amp; Write</b> เพราะ LAB ต้อง pull และ push แล้วกด
+                    <b>Generate</b>
+                  </p>
+                  <p class="mini">
+                    ใช้หลัก least privilege: ถ้าต้อง pull อย่างเดียวให้เลือก Read-only
+                    และอย่าให้ Delete เมื่อ workflow ไม่ต้องลบ image
+                  </p>
+                </figcaption>
+              </figure>
+
+              <figure class="walk-step">
+                <a href="slides_assets/tag-walkthrough/7.png" target="_blank">
+                  <img alt="รูป tag ขั้นตอน 7 หน้า Copy access token แสดงคำสั่ง docker login และ token ที่ปิดแล้ว" src="slides_assets/tag-walkthrough/7.png" />
+                </a>
+                <figcaption>
+                  <h4>ขั้นตอน 7 — คัดลอก token ซึ่งแสดงเพียงครั้งเดียว</h4>
+                  <p>
+                    กด <b>Copy</b> และเก็บ token ใน password/secret manager ทันที
+                    เพราะออกจากหน้านี้แล้วเรียกดูค่าเดิมไม่ได้ หากทำหายให้ revoke
+                    หรือ delete token เดิมและสร้างใหม่
+                  </p>
+                  <p>
+                    ห้ามวาง token ใน Dockerfile, HTML, source code, Git, screenshot,
+                    chat หรือคำสั่งที่บันทึกลง shell history
+                  </p>
+                </figcaption>
+              </figure>
+            </div>
+            <div class="note good">
+              <b>ผลลัพธ์ของขั้นตอน 1–7:</b> เรามี
+              <code>&lt;DOCKER_USER&gt;</code>, namespace ที่ถูกต้อง และ
+              <code>&lt;DOCKER_TOKEN&gt;</code> สำหรับ login CLI จากนั้นจึงทำวงจร
+              <code>build → tag → login → push → pull → run</code> ต่อได้
+            </div>
+
+            <figure class="diagram">
+              <img
+                alt="ภาพ Excalidraw แยกส่วนชื่อ image เป็น registry namespace repository และ tag"
+                src="slides_assets/07-image-naming.svg"
+              />
+              <figcaption class="caption">
+                ชื่อเต็มของ image:
+                <code>[REGISTRY/][NAMESPACE/]REPOSITORY[:TAG][@DIGEST]</code>
+              </figcaption>
+            </figure>
+
+            <div class="table-wrap">
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th>ส่วน</th>
+                    <th>ตัวอย่าง</th>
+                    <th>หน้าที่</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Registry</td>
+                    <td><code>docker.io</code></td>
+                    <td>server ที่เก็บ manifest และ layers; ถ้าไม่ระบุ Docker ใช้ Docker Hub เป็นค่าเริ่มต้น</td>
+                  </tr>
+                  <tr>
+                    <td>Namespace</td>
+                    <td><code>&lt;DOCKER_USER&gt;</code></td>
+                    <td>เจ้าของหรือองค์กรที่มีสิทธิ push repository</td>
+                  </tr>
+                  <tr>
+                    <td>Repository</td>
+                    <td><code>dockerfile-lab</code></td>
+                    <td>ชื่อชุด image ของแอป</td>
+                  </tr>
+                  <tr>
+                    <td>Tag</td>
+                    <td><code>1.0</code></td>
+                    <td>ชื่ออ้างอิงรุ่นที่เปลี่ยนให้ชี้ image ใหม่ได้</td>
+                  </tr>
+                  <tr>
+                    <td>Digest</td>
+                    <td><code>sha256:…</code></td>
+                    <td>รหัสจากเนื้อหา ใช้อ้าง image แบบเจาะจงและไม่เปลี่ยนตาม tag</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="grid3" style="margin-top: 20px">
+              <article class="card">
+                <h3>1. Build</h3>
+                <p><code>docker build -t dockerfile-lab:1.0 .</code></p>
+              </article>
+              <article class="card">
+                <h3>2. Tag</h3>
+                <p>
+                  เพิ่มชื่อใหม่ให้ image เดิม ไม่ได้ copy layers เป็นอีกชุด
+                </p>
+              </article>
+              <article class="card">
+                <h3>3. Push</h3>
+                <p>ส่ง manifest และเฉพาะ layers ที่ registry ยังไม่มี</p>
+              </article>
+              <article class="card">
+                <h3>4. Pull</h3>
+                <p>เครื่องปลายทางดาวน์โหลด manifest และ layers ที่ขาด</p>
+              </article>
+              <article class="card">
+                <h3>5. Run</h3>
+                <p>สร้าง container จาก image ที่ดึงกลับมาแล้ว</p>
+              </article>
+            </div>
+
+            <figure class="diagram">
+              <img
+                alt="ภาพ Excalidraw แสดง developer tag และ push image ไป registry แล้ว server pull ไป run"
+                src="slides_assets/06-registry-flow.svg"
+              />
+              <figcaption class="caption">
+                Registry เป็นจุดส่งต่อ image ระหว่างเครื่อง ไม่ใช่ที่รัน
+                container
+              </figcaption>
+            </figure>
+
+            <h3>8.2 ส่ง image ไป Docker Hub อย่างปลอดภัย</h3>
+            <p>
+              เริ่มจาก login ให้สำเร็จและตรวจว่าเป็นบัญชีที่ถูกต้อง
+              จากนั้นจึงตั้งชื่อ image ให้ตรงกับ namespace ก่อน push
+            </p>
+
+            <h4>ขั้นตอน 1 — Login Docker Hub</h4>
+            <p>
+              วิธีแนะนำสำหรับเครื่องผู้เรียนคือ device-code login
+              เพราะไม่ต้องพิมพ์ password หรือ token ลงในคำสั่ง
+            </p>
+            <pre><span class="cmd">docker login</span></pre>
+            <p class="mini">
+              เปิด URL ที่ CLI แสดง ใส่รหัสแบบใช้ครั้งเดียว แล้วอนุมัติด้วยบัญชี
+              Docker Hub ที่ต้องการใช้ รอจน CLI แสดง <code>Login Succeeded</code>
+            </p>
+            <details>
+              <summary>กรณีผู้สอนกำหนดให้ login ด้วย Personal Access Token</summary>
+              <div class="note" style="margin-top: 10px">
+                สร้าง token ที่มีเฉพาะสิทธิ <b>Read &amp; Write</b>
+                และกำหนดวันหมดอายุ จากนั้นใช้คำสั่งด้านล่าง เมื่อขึ้น
+                <code>Password:</code> ให้วาง token แทน password
+              </div>
+              <pre><span class="cmd">docker login --username '&lt;DOCKER_USER&gt;'</span>
+<span class="comment"># Password: วาง &lt;DOCKER_TOKEN&gt; ที่ prompt — ค่าไม่แสดงบนหน้าจอ</span></pre>
+              <p class="mini">
+                ห้ามเขียน token ต่อท้ายคำสั่ง ห้ามเก็บไว้ใน Dockerfile, HTML,
+                source code, Git, screenshot หรือ chat
+              </p>
+            </details>
+
+            <h4>ขั้นตอน 2 — ตรวจ account และ namespace</h4>
+            <p>
+              หลัง login ให้เปิด Docker Hub แล้วกด <b>avatar → My Hub →
+              Repositories</b> ตรวจว่าเป็นบัญชีหรือองค์กรที่มีสิทธิ push
+              ชื่อด้านหน้า repository ต้องตรงกับ namespace เช่น
+              <code>&lt;DOCKER_USER&gt;/dockerfile-lab:1.0</code>
+            </p>
+            <p class="mini">
+              ปุ่ม <b>Create repository</b> ใช้สร้าง repository ล่วงหน้าเมื่อจำเป็น
+              และ visibility เป็นตัวกำหนดว่า image เป็น public หรือ private
+            </p>
+
+            <h4>ขั้นตอน 3 — ตรวจ local image ก่อนตั้งชื่อ</h4>
+            <pre><span class="cmd">docker image inspect dockerfile-lab:1.0</span></pre>
+            <p class="mini">
+              หากคำสั่งนี้หา image ไม่พบ ให้ย้อนกลับไป build
+              <code>dockerfile-lab:1.0</code> ให้สำเร็จก่อน
+            </p>
+
+            <h4>ขั้นตอน 4 — Tag ให้ตรงกับ Docker Hub namespace</h4>
+            <pre><span class="cmd">docker tag dockerfile-lab:1.0 &lt;DOCKER_USER&gt;/dockerfile-lab:1.0</span></pre>
+            <p class="mini">
+              ชื่อซ้ายคือ local image ที่มีอยู่ ส่วนชื่อขวาคือชื่อสำหรับ Docker Hub;
+              การ tag เป็นการเพิ่มชื่ออ้างอิง ไม่ได้คัดลอก layers
+            </p>
+
+            <h4>ขั้นตอน 5 — Push image</h4>
+            <pre><span class="cmd">docker push &lt;DOCKER_USER&gt;/dockerfile-lab:1.0</span></pre>
+            <p class="mini">
+              สำเร็จเมื่อคำสั่งแสดง digest และไม่มีข้อความ
+              <code>requested access to the resource is denied</code>
+            </p>
+
+            <h4>ขั้นตอน 6 — ตรวจบน Docker Hub</h4>
+            <p>
+              ไปที่ <b>My Hub → Repositories → dockerfile-lab → Tags</b>
+              แล้วตรวจว่ามี tag <code>1.0</code> และ digest ตรงกับผลจากการ push
+            </p>
+
+            <h4>ขั้นตอน 7 — พิสูจน์ด้วย Pull และ Run</h4>
+            <pre><span class="comment"># ลบเฉพาะชื่อที่ผูกกับ Docker Hub เพื่อบังคับให้ pull กลับมาใหม่</span>
+<span class="cmd">docker image rm &lt;DOCKER_USER&gt;/dockerfile-lab:1.0</span>
+<span class="cmd">docker pull &lt;DOCKER_USER&gt;/dockerfile-lab:1.0</span>
+<span class="cmd">docker run --rm -p 8081:5000 &lt;DOCKER_USER&gt;/dockerfile-lab:1.0</span></pre>
+
+            <h4>ขั้นตอน 8 — Logout เมื่อใช้เครื่องร่วมกัน</h4>
+            <pre><span class="cmd">docker logout</span></pre>
+            <div class="note good">
+              <b>เกณฑ์ผ่าน:</b> login สำเร็จ, namespace ถูกต้อง, push แสดง digest,
+              หน้า Tags พบ <code>1.0</code> และ image ที่ pull กลับมาสามารถ run ได้
+            </div>
+            <div class="note warn">
+              <b><code>latest</code> ไม่ได้แปลว่าใหม่ที่สุดโดยอัตโนมัติ:</b>
+              มันเป็น tag ธรรมดาที่ผู้ push เปลี่ยนปลายทางได้ งาน deploy
+              ที่ต้องทำซ้ำอย่างแน่นอนควรใช้ version tag และเมื่อเข้มงวดมากให้ pin
+              ด้วย digest เช่น <code>image@sha256:…</code>
+            </div>
+
+            <h3>8.3 LAB จริงแบบไม่แตะ Registry ภายนอก</h3>
+            <p>
+              LAB นี้เปิด Distribution Registry ภายใน DevTools server แล้ว
+              push/pull ผ่าน <code>localhost:5000</code> จึงฝึกวงจรได้โดยไม่ใช้
+              Docker Hub token และไม่สร้าง repository ภายนอก
+            </p>
+            <h4>สร้าง DevTools server สำหรับ Registry LAB</h4>
+            <p class="mini"><b>Docker — รันบนเครื่องผู้เรียน</b></p>
+            <pre><span class="comment"># ใช้ชื่อและพอร์ตแยกจาก LAB ก่อนหน้า</span>
+<span class="cmd">docker rm -f devtools-registry-cycle 2&gt;/dev/null</span>
+<span class="cmd">docker run -dit --name devtools-registry-cycle --privileged \</span>
+  <span class="cmd">-p 2225:22 -p 5009:5000 tuchsanai/devtools:2569_1</span></pre>
+
+            <p class="mini"><b>SSH — รันบนเครื่องผู้เรียน</b></p>
+            <pre><span class="cmd">ssh root@localhost -p 2225</span>
+<span class="comment"># ใส่รหัสผ่าน LAB ตามที่ผู้สอนกำหนด: &lt;LAB_PASSWORD&gt;</span></pre>
+
+            <h4>เปิด Registry แล้วปิดวงจร image</h4>
+            <p class="mini"><b>Docker — รันภายใน DevTools server</b></p>
+            <pre><span class="comment"># รันหลัง SSH สำเร็จ</span>
+<span class="cmd">docker run -d --name lab-registry -p 5000:5000 registry:2</span>
+<span class="cmd">docker pull alpine:3.22</span>
+<span class="cmd">docker tag alpine:3.22 localhost:5000/workshop/alpine:1.0</span>
+<span class="cmd">docker push localhost:5000/workshop/alpine:1.0</span>
+
+<span class="comment"># ลบชื่อ local เพื่อบังคับให้ pull กลับจาก Registry จริง</span>
+<span class="cmd">docker image rm localhost:5000/workshop/alpine:1.0</span>
+<span class="cmd">docker pull localhost:5000/workshop/alpine:1.0</span>
+<span class="cmd">docker run --rm localhost:5000/workshop/alpine:1.0 \</span>
+  <span class="cmd">sh -c 'echo REGISTRY_CYCLE_OK; cat /etc/alpine-release'</span></pre>
+
+            <p class="mini"><b>HTTP — รันภายใน DevTools server</b></p>
+            <pre><span class="comment"># ตรวจ catalog และ tags ผ่าน Registry HTTP API</span>
+<span class="cmd">curl http://localhost:5000/v2/_catalog</span>
+<span class="cmd">curl http://localhost:5000/v2/workshop/alpine/tags/list</span></pre>
+
+            <div class="proof">
+              <div>
+                <h4>ผลที่ได้จากการรันจริง</h4>
+                <pre class="result">1.0: digest: sha256:7c8cb692… size: 1022
+Status: Downloaded newer image for
+localhost:5000/workshop/alpine:1.0
+
+REGISTRY_CYCLE_OK
+3.22.5
+{"repositories":["workshop/alpine"]}
+{"name":"workshop/alpine","tags":["1.0"]}</pre>
+                <p class="mini">
+                  ผลนี้ยืนยันว่า push สำเร็จ, pull หลังลบ local tag สำเร็จ,
+                  image ที่ pull มารันได้ และ Registry API พบ tag จริง
+                </p>
+              </div>
+              <figure>
+                <img
+                  alt="ภาพ Playwright ของ Registry API แสดง repository workshop alpine และ tag 1.0 จากการ push จริง"
+                  src="slides_assets/lab-registry-tags.png"
+                />
+                <figcaption class="caption">
+                  Playwright เปิด Registry API หลัง push สำเร็จ
+                </figcaption>
+              </figure>
+            </div>
+
+            <h4>Cleanup Registry LAB</h4>
+            <p class="mini"><b>Docker — รันภายใน DevTools server</b></p>
+            <pre><span class="cmd">docker rm -f lab-registry</span></pre>
+
+            <p class="mini"><b>Shell — ออกจาก DevTools server</b></p>
+            <pre><span class="cmd">exit</span></pre>
+
+            <p class="mini"><b>Docker — รันบนเครื่องผู้เรียน</b></p>
+            <pre><span class="comment"># ลบ DevTools server และตรวจว่าไม่มี container ค้างอยู่</span>
+<span class="cmd">docker rm -f devtools-registry-cycle</span>
+<span class="cmd">docker ps -a --filter "name=^devtools-"</span></pre>
+            <div class="note good">
+              <b>เกณฑ์ผ่านวงจร:</b> push แสดง digest, pull ดาวน์โหลด image
+              กลับมา, run แสดง <code>REGISTRY_CYCLE_OK</code>, API คืน tag
+              <code>1.0</code> และหลัง cleanup ไม่เหลือ container
+              <code>devtools-registry-cycle</code>
+            </div>
+            <div class="note warn">
+              <b>ขอบเขตของ local LAB:</b> HTTP registry เหมาะกับ
+              <code>localhost</code> ในการทดลองเท่านั้น Registry
+              ที่ให้เครื่องอื่นเชื่อมต่อควรใช้ TLS, authentication
+              และการกำหนดสิทธิ ไม่ควรปิดการตรวจความปลอดภัยเพื่อความสะดวก
+            </div>
+          </div>
+          <div class="think">
+            <b>ชวนคิด:</b> ถ้า tag <code>1.0</code> ถูก push ซ้ำให้ชี้ image
+            คนละตัว การ pull ด้วย tag กับการ pull ด้วย digest
+            จะให้ความแน่นอนต่างกันอย่างไร?
+          </div>
+        </div>
+      </section>
+      <section class="section" data-level="ลงมือทำ" id="network">
+        <div class="wrap">
+          <div class="section-meta"><span class="chapter">ตอนที่ 9 จาก 12</span><span class="badge level-practice">ลงมือทำ</span></div>
+          <h2>9. Network: ให้ container คุยกันด้วยชื่อ</h2>
+          <p class="learning"><b>จะได้อะไรจากตอนนี้:</b> ให้ container สื่อสารกันด้วยชื่อแทน IP ที่เปลี่ยนได้</p>
+          <p class="lead">ครั้งที่ 1 เราใช้ <code>-p</code> ให้คนภายนอกเข้าถึง container แต่เมื่อ web ต้องคุยกับ redis ไม่ควรอ้อมออก host</p><div class="table-wrap"><table class="tbl"><thead><tr><th>ชนิด</th><th>แนวคิด</th><th>ใช้เมื่อ</th></tr></thead><tbody><tr><td><code>bridge</code></td><td>network มาตรฐาน</td><td>container ทั่วไป</td></tr><tr><td><code>host</code></td><td>ใช้ stack ของ host</td><td>กรณีเฉพาะ</td></tr><tr><td><code>none</code></td><td>ไม่ต่อ network</td><td>ตัดการสื่อสาร</td></tr></tbody></table></div>
+          <figure class="diagram">
+            <img alt="ภาพ Excalidraw เปรียบเทียบ network 3 ชนิดของ Docker ได้แก่ bridge ที่เป็นวง NAT มาตรฐานต้องใช้ -p, host ที่ใช้ network ของเครื่องตรง ๆ และ none ที่ตัดการสื่อสารเหลือแค่ loopback" src="slides_assets/20-network-modes.svg" />
+            <figcaption class="caption">ภาพ Excalidraw: network ที่ Docker ติดตั้งมาให้ 3 ชนิด — <code>bridge</code> (ค่าเริ่มต้น), <code>host</code> และ <code>none</code></figcaption>
+          </figure>
+          <div class="note"><b>จุดสำคัญ:</b> default bridge ไม่มี DNS ชื่อ container แต่ <b>user-defined bridge</b> resolve ชื่อ container เป็น IP อัตโนมัติ จึงต้องใช้ <code>docker network create</code></div>
+          <figure class="diagram">
+            <img alt="ภาพ Excalidraw แสดง user-defined bridge app-net ที่ busybox เรียก web ด้วยชื่อผ่าน DNS ของ Docker เทียบกับ default bridge ที่ไม่มี DNS ชื่อ" src="slides_assets/18-appnet-dns.svg" />
+            <figcaption class="caption">ภาพ Excalidraw: ใน network <code>app-net</code> DNS ของ Docker (127.0.0.11) แปลงชื่อ <code>web</code> เป็น IP ให้อัตโนมัติ ส่วน default bridge ไม่มีบริการนี้</figcaption>
+          </figure>
+          <h3>9.1 ลงมือทำ: สร้าง user-defined network แล้วให้ container เรียกกันด้วยชื่อ</h3>
+          <p>จากตารางด้านบน เราจะลงมือกับ <b>user-defined bridge</b> เพราะ container ใน network เดียวกัน resolve ชื่อกันได้</p>
+          <div class="grid">
+            <article class="card">
+              <h3>ดูและสร้าง network</h3>
+              <pre><span class="cmd">docker network ls</span></pre>
+              <pre><span class="cmd">docker network create app-net</span></pre>
+              <p class="mini">
+                หากไม่ระบุ driver Docker จะสร้าง network แบบ
+                <code>bridge</code> ให้โดยอัตโนมัติ
+              </p>
+            </article>
+            <article class="card">
+              <h3>ต่อ container เข้า network</h3>
+              <pre><span class="cmd">docker run -d --name web --network app-net nginx:1.27-alpine</span></pre>
+              <pre><span class="cmd">docker run --rm --network app-net busybox:1.36 wget -qO- http://web</span></pre>
+              <p class="mini">
+                คำว่า <code>web</code> ถูก resolve เป็น IP ของ container
+                โดย DNS ภายใน Docker ไม่ต้องจำ IP ที่เปลี่ยนได้
+              </p>
+            </article>
+          </div>
+          <h4>ตรวจแล้ว Cleanup network LAB</h4>
+          <pre><span class="cmd">docker network inspect app-net</span>
+<span class="cmd">docker rm -f web</span>
+<span class="cmd">docker network rm app-net</span></pre>
+          <div class="note warn">
+            <b>อย่าใช้ IP ของ container เป็นค่าถาวร:</b> IP อาจเปลี่ยนเมื่อสร้างใหม่
+            ให้ใช้ชื่อ container หรือชื่อ service บน user-defined network
+          </div>
+
+
+          <div class="think"><b>ชวนคิด:</b> web กับ redis อยู่ network เดียวกัน ต้อง <code>-p</code> redis ออก host ไหม?</div>
+        </div>
+      </section>
+      <section class="section" data-level="ลงมือทำ" id="compose">
+        <div class="wrap">
+          <div class="section-meta"><span class="chapter">ตอนที่ 10 จาก 12</span><span class="badge level-practice">ลงมือทำ</span></div>
+          <h2>10. Docker Compose: จัดการหลาย container ด้วยไฟล์เดียว</h2>
+          <p class="learning"><b>จะได้อะไรจากตอนนี้:</b> อ่านและเขียน <code>compose.yaml</code> ได้ครบทั้ง service, port, volume, network, environment, healthcheck และวงจรคำสั่งของหลาย container</p>
+          <p class="lead">Docker Compose รวบรวมการตั้งค่าของหลาย service ไว้ในไฟล์ YAML เดียว เพื่อสั่งขึ้น ลง และดูแลระบบทั้งชุดได้พร้อมกัน</p><p>Compose สร้าง network ของ project อัตโนมัติตามตอนที่ 9 และตั้งค่า environment ได้ตามตอนที่ 7</p>
+          <div class="grid3">
+            <article class="card">
+              <h3>Project</h3>
+              <p>หนึ่งชุดระบบจาก <code>compose.yaml</code> หนึ่งไฟล์ ชื่อ project มาจากชื่อโฟลเดอร์ และกลายเป็น prefix ของชื่อ container, network และ volume ทั้งหมด</p>
+            </article>
+            <article class="card">
+              <h3>Service</h3>
+              <p>นิยาม “แบบพิมพ์” ของ container หนึ่งชนิด เช่น <code>web</code>, <code>redis</code>; หนึ่ง service สร้างเป็น container ได้ และสเกลได้มากกว่าหนึ่ง</p>
+            </article>
+            <article class="card">
+              <h3>compose.yaml</h3>
+              <p>ไฟล์ประกาศแบบ declarative: บอก “สภาพปลายทางที่ต้องการ” แล้ว Compose คำนวณเองว่าต้องสร้าง แก้ หรือลบอะไร จึงรันซ้ำได้ผลเหมือนเดิม</p>
+            </article>
+          </div>
+
+          <h3>10.1 จาก docker run หลายบรรทัด สู่ compose.yaml หนึ่งไฟล์</h3>
+          <p>เมื่อระบบมีมากกว่าหนึ่ง container การจำคำสั่งทีละบรรทัดทั้งสร้าง network, ตั้งค่า และเปิดพอร์ตทำซ้ำยากและผิดง่าย ลองดูผลลัพธ์ก่อน–หลังที่เท่ากัน</p>
+          <div class="grid"><article class="card"><h3>ก่อน: จำคำสั่งเอง</h3><pre><span class="cmd">docker network create myproj_default</span>
+<span class="cmd">docker run -d --name web --network myproj_default -p 8081:5000 -e REDIS_HOST=redis dockerfile-lab:compose</span>
+<span class="cmd">docker run -d --name redis --network myproj_default redis:7-alpine</span></pre></article><article class="card"><h3>หลัง: ประกาศในไฟล์เดียว</h3><pre><span class="instruction">services:</span>
+  <span class="instruction">web:</span>
+    <span class="instruction">build:</span> .
+    <span class="instruction">ports:</span> ["8081:5000"]
+    <span class="instruction">environment:</span> { REDIS_HOST: redis }
+  <span class="instruction">redis:</span>
+    <span class="instruction">image:</span> redis:7-alpine</pre></article></div>
+          <p>เริ่มจาก 4 key ที่จำเป็นก่อน: <code>services:</code> รวม service, <code>image:</code> หรือ <code>build:</code> เลือกสิ่งที่จะรัน, <code>ports:</code> เปิดทางเข้า และ <code>environment:</code> ส่งค่าตั้งค่าเข้าแอป</p>
+          <div class="card"><h3>โครงไฟล์ YAML ขั้นต่ำ</h3><pre><span class="instruction">services:</span>
+  <span class="instruction">web:</span>
+    <span class="instruction">image:</span> myapp:1.0
+    <span class="instruction">build:</span> .
+    <span class="instruction">ports:</span>
+      - "8081:5000"
+    <span class="instruction">environment:</span>
+      <span class="instruction">APP_VERSION:</span> "1.0"</pre><p class="mini"><code>services:</code> → ชื่อ service → <code>image:</code>/<code>build:</code>/<code>ports:</code>/<code>environment:</code>; indent สื่อความเป็นลูก</p></div>
+          <div class="note warn"><b>กฎ YAML ที่พลาดบ่อย:</b> ใช้ space เท่านั้น ห้าม tab และนิยมเยื้อง 2 ช่อง; <code>key: value</code> คือ map ส่วน <code>- item</code> คือ list. ค่าที่มี <code>:</code> หรืออาจถูกตีความเป็นตัวเลข/boolean ให้ครอบด้วยเครื่องหมายคำพูด เช่น <code>"8081:5000"</code>, <code>"yes"</code>, <code>"no"</code> เพื่อไม่ให้ YAML อ่านผิดความหมาย</div>
+          <h3>10.2 ลงมือทำครั้งแรก: เขียนไฟล์ แล้ว up ให้ขึ้นจริง</h3>
+          <p>ตอนนี้มีภาพของไฟล์ขั้นต่ำแล้ว ลองรันระบบจริงก่อน แล้วค่อยแกะ option เพิ่มทีละอย่าง</p>
+          <p>
+            ใน PDF รุ่นเดิมใช้ไฟล์ <code>docker-compose.yml</code> และคำสั่ง
+            <code>docker-compose up</code> ปัจจุบันให้ใช้ Compose plugin
+            รูปแบบ <code>docker compose</code> และนิยมตั้งไฟล์ว่า
+            <code>compose.yaml</code>
+          </p>
+          <p class="mini"><b>ไฟล์ compose.yaml — วางข้าง Dockerfile</b></p>
+          <pre><span class="instruction">version:</span> "3.8"
+<span class="instruction">services:</span>
+  <span class="instruction">web:</span>
+    <span class="instruction">build:</span>
+      <span class="instruction">context:</span> .
+      <span class="instruction">dockerfile:</span> Dockerfile
+    <span class="instruction">image:</span> dockerfile-lab:compose
+    <span class="instruction">ports:</span>
+      - "8081:5000"
+    <span class="instruction">environment:</span>
+      <span class="instruction">REDIS_HOST:</span> redis
+  <span class="instruction">redis:</span>
+    <span class="instruction">image:</span> redis:7-alpine</pre>
+          <div class="explain">
+            <ol>
+              <li><code>version: "3.8"</code> กำหนดรูปแบบ Compose file ตระกูล version 3</li>
+              <li><code>build.context: .</code> ใช้โฟลเดอร์ปัจจุบันเป็น build context</li>
+              <li><code>dockerfile: Dockerfile</code> ระบุไฟล์สูตรของ service web</li>
+              <li><code>image</code> ตั้งชื่อผลลัพธ์หลัง Compose build</li>
+              <li>Compose สร้าง network ของ project และให้ service เรียกกันด้วยชื่อ <code>web</code> หรือ <code>redis</code></li>
+              <li>ไม่ได้กำหนดลำดับเริ่ม service; แอป web ต้อง retry เมื่อ Redis ยังไม่พร้อม และควรมี healthcheck ตามความเหมาะสม</li>
+            </ol>
+          </div>
+          <div class="note">
+            <b>หมายเหตุสำหรับ Compose รุ่นใหม่:</b> คำสั่ง
+            <code>docker compose</code> ใช้ Compose Specification และอาจแจ้งว่า
+            top-level <code>version</code> เป็นข้อมูลแบบเก่า แต่ยังอ่านไฟล์
+            <code>version: "3.8"</code> ได้ ตัวอย่างนี้คง version 3.8
+            เพื่อให้ตรงกับรูปแบบที่ใช้ในรายวิชา
+          </div>
+          <div class="note warn">
+            <b>ตัวอย่างนี้สอนการเชื่อมโครงสร้างหลาย service:</b>
+            หากใช้ <code>app.py</code> จาก Flask LAB เดิมโดยยังไม่ได้เพิ่ม Redis
+            client ตัว Redis จะรันอยู่แต่ web ยังไม่ส่งข้อมูลไปหา Redis
+            โค้ดแอปต้องอ่าน <code>REDIS_HOST=redis</code> และจัดการ retry เอง
+            จึงจะเป็นการเชื่อมต่อจริง
+          </div>
+          <div class="grid"><article class="card"><h3>1) Build และเริ่มทุก service</h3><pre><span class="cmd">docker compose up -d --build</span></pre><p class="mini">สร้าง image ที่มี <code>build:</code> แล้วรันเบื้องหลัง</p></article><article class="card"><h3>2) ดูสถานะ</h3><pre><span class="cmd">docker compose ps</span></pre><p class="mini">แสดง service, container, health และ port ของ project นี้</p></article><article class="card"><h3>3) ติดตาม log ของ web</h3><pre><span class="cmd">docker compose logs -f web</span></pre><p class="mini">กด <kbd>Ctrl+C</kbd> เพื่อหยุดติดตาม โดย container ยังรันต่อ</p></article><article class="card"><h3>4) รันคำสั่งใน service</h3><pre><span class="cmd">docker compose exec web sh</span></pre><p class="mini">แนวคิดเดียวกับ <code>docker exec</code> แต่ใช้ชื่อ service</p></article><article class="card"><h3>5) ปิดและลบ project</h3><pre><span class="cmd">docker compose down</span></pre><p class="mini">ลบ containers และ network ที่ Compose สร้าง แต่ไม่ลบ named volumes ตามค่าเริ่มต้น</p></article></div>
+          <h3>10.3 อ่านผลที่ Compose สร้างให้: project, ชื่อ container และ network</h3>
+          <p>จาก <code>docker compose ps</code> ที่เพิ่งรัน ชื่อ container และ network ไม่ได้เกิดขึ้นสุ่ม ๆ แต่ Compose ตั้งจากชื่อ project และ service ให้เรา</p>
+          <figure class="diagram">
+            <img alt="ภาพ Excalidraw แสดง docker compose up แปลงไฟล์ compose.yaml เป็น network ของ project พร้อม container web และ redis ที่เรียกกันด้วยชื่อ service" src="slides_assets/19-compose-project.svg" />
+            <figcaption class="caption">ภาพ Excalidraw: <code>docker compose up</code> อ่าน <code>compose.yaml</code> แล้วสร้าง network + container ทั้งชุดในคำสั่งเดียว</figcaption>
+          </figure>
+          <div class="note"><b>การตั้งชื่ออัตโนมัติ:</b> project ชื่อ <code>myproj</code> → container ชื่อ <code>myproj-web-1</code> (ขีดกลาง) แต่ network/volume ชื่อ <code>myproj_default</code> (ขีดล่าง) — เวลาอ่านผล <code>docker ps</code> หรือ <code>docker network ls</code> จะได้ไม่งง</div>
+          <p>Compose สร้าง <code>&lt;project&gt;_default</code> เป็น user-defined bridge ตามตอนที่ 9 ทุก service จึงเรียกกันด้วยชื่อ service ผ่าน DNS ภายใน เช่น web เรียก <code>redis</code> ได้ทันที ไม่ต้องหา IP</p>
+          <h3>10.4 ports: เปิดประตูจาก host เข้า container</h3>
+          <p>ในไฟล์เมื่อครู่เราเขียน <code>"8081:5000"</code> ไปแล้ว ตอนนี้มาดูรูปแบบหลักที่ใช้ได้<br><code>ports:</code> คือรูปแบบไฟล์ของ <code>docker run -p host:container</code> จากตอนที่ 1 และ 4; พอร์ตซ้ายเป็นของ host พอร์ตขวาเป็นของ container</p>
+          <pre><span class="instruction">ports:</span>
+  - "8081:5000"                # host 8081 → container 5000
+  - "127.0.0.1:8081:5000"      # รับเฉพาะจาก localhost</pre>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th>วิธี</th><th>คนภายนอกเข้าถึงได้หรือไม่</th><th>ใช้เมื่อ</th></tr></thead><tbody><tr><td><code>ports:</code></td><td>ได้ ผ่าน host port</td><td>web หรือ API ที่ผู้ใช้เรียก</td></tr><tr><td>ไม่ประกาศเลย</td><td>ไม่ได้จาก host แต่ service ใน network เดียวกันยังเรียกพอร์ตที่แอปฟังได้</td><td>redis หรือ db ใน network เดียวกัน</td></tr></tbody></table></div>
+          <div class="think"><b>ชวนคิด:</b> redis ไม่ได้ประกาศ <code>ports:</code> เลย แล้วทำไม web ยังต่อ <code>redis:6379</code> ได้?</div>
+          <h3>10.5 environment / env_file</h3>
+          <p>เราเพิ่งส่ง <code>REDIS_HOST: redis</code> ใน LAB ไปแล้ว หัวข้อนี้ต่อยอดจาก <code>ENV</code> และ <code>-e</code> ในตอนที่ 7: <code>environment:</code> ส่งค่าเข้า container แบบ map ส่วน <code>env_file:</code> เหมาะกับค่าจำนวนมาก</p>
+          <pre><span class="instruction">services:</span>
+  <span class="instruction">web:</span>
+    <span class="instruction">environment:</span>
+      <span class="instruction">APP_ENV:</span> production
+      <span class="instruction">PORT:</span> "5000"
+    <span class="instruction">env_file:</span>
+      - .env.app</pre>
+          <div class="note">ค่าที่กำหนดใน <code>environment:</code> ชนะ <code>env_file:</code> และทั้งคู่ชนะ <code>ENV</code> ใน Dockerfile (ตรงกับหลักตอนที่ 7)</div>
+          <div class="note warn"><b>ห้าม commit:</b> ไฟล์ <code>.env</code> หรือ <code>.env.app</code> ที่มีรหัสผ่านจริงต้องอยู่ใน <code>.gitignore</code> ตามหลัก Git ของรายวิชา</div>
+          <h3>10.6 volumes: เก็บข้อมูลไม่ให้หายเมื่อลบ container</h3>
+          <p>เมื่อครู่เราสั่ง <code>down</code> ไป ถ้า redis เก็บข้อมูลไว้ ข้อมูลจะหายไหม? filesystem ใน container เป็นชั้นชั่วคราว เมื่อสร้างหรือลบ container ใหม่ ข้อมูลที่เขียนไว้ในชั้นนั้นอาจหายไป จึงใช้ volume แยกข้อมูลออกมา</p>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th>ชนิด</th><th>ตัวอย่าง</th><th>ใครจัดการ / เห็นจาก host ไหม</th><th>ใช้เมื่อ</th></tr></thead><tbody><tr><td>bind mount</td><td><code>./src:/app</code></td><td>ผู้ใช้จัดการ / เห็นเป็นไฟล์จริง</td><td>พัฒนา source</td></tr><tr><td>named volume</td><td><code>dbdata:/var/lib/mysql</code></td><td>Docker จัดการ / ไม่แก้ตรง ๆ</td><td>ข้อมูลฐานข้อมูลถาวร</td></tr></tbody></table></div>
+          <pre><span class="instruction">services:</span>
+  <span class="instruction">db:</span>
+    <span class="instruction">volumes:</span>
+      - dbdata:/var/lib/mysql
+      - ./config:/etc/myapp:ro
+<span class="instruction">volumes:</span>
+  <span class="instruction">dbdata:</span></pre>
+          <p class="mini">named volume ต้องประกาศที่ top-level และชื่อจริงมักเป็น <code>&lt;project&gt;_dbdata</code>; suffix <code>:ro</code> ทำให้ mount แบบอ่านอย่างเดียว</p>
+          <pre><span class="cmd">docker volume ls</span>
+<span class="cmd">docker compose down</span>
+<span class="cmd">docker compose down -v</span></pre>
+          <div class="note warn"><b>ระวัง:</b> <code>down</code> ปกติไม่ลบ named volume แต่ <code>down -v</code> จะลบ named volume ของ project ด้วย ข้อมูลฐานข้อมูลอาจหายถาวร</div>
+          <h3>10.7 networks แบบกำหนดเอง: เมื่อ default network เดียวไม่พอ</h3>
+          <p>จาก default network และชื่อ service ในหัวข้อ 10.3 จะประกาศ network เองเมื่อต้องการแยกชั้นการเข้าถึง เช่น frontend กับ backend</p>
+          <pre><span class="instruction">services:</span>
+  <span class="instruction">web:</span>
+    <span class="instruction">networks:</span> [frontend, backend]
+  <span class="instruction">db:</span>
+    <span class="instruction">networks:</span> [backend]
+<span class="instruction">networks:</span>
+  <span class="instruction">frontend:</span>
+  <span class="instruction">backend:</span>
+    <span class="instruction">internal:</span> true</pre>
+          <p class="mini">แยกชั้นเพื่อให้ service ที่ไม่จำเป็นต้องคุยกันเข้าถึงกันไม่ได้; <code>internal: true</code> ลดการออกสู่ภายนอกจาก network นั้น และชื่อ service คือ hostname ที่ใช้เรียกกัน</p>
+          <div class="note">การแยก frontend/backend ทำให้ db อยู่เฉพาะ backend และ web เป็นตัวกลาง จึงลดพื้นที่การเข้าถึงที่ไม่จำเป็น</div>
+          <h3>10.8 depends_on, healthcheck และ restart: ลำดับการเริ่มและความทนทาน</h3>
+          <p>ใน LAB เราพบว่า web อาจขึ้นก่อน redis พร้อม — แก้ด้วยอะไร? <code>depends_on</code> แบบ list คุมเพียงลำดับที่ Compose สั่งเริ่ม ไม่ได้แปลว่า database พร้อมรับงาน หากต้องรอจริงให้มี healthcheck และใช้ long form</p>
+          <pre><span class="instruction">services:</span>
+  <span class="instruction">db:</span>
+    <span class="instruction">image:</span> mysql:8
+    <span class="instruction">healthcheck:</span>
+      <span class="instruction">test:</span> ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      <span class="instruction">interval:</span> 10s
+      <span class="instruction">timeout:</span> 5s
+      <span class="instruction">retries:</span> 5
+      <span class="instruction">start_period:</span> 30s
+  <span class="instruction">web:</span>
+    <span class="instruction">depends_on:</span>
+      <span class="instruction">db:</span>
+        <span class="instruction">condition:</span> service_healthy
+    <span class="instruction">restart:</span> unless-stopped</pre>
+          <div class="explain"><ol><li><code>test</code> คือคำสั่งตรวจสุขภาพ; Compose ประเมินซ้ำตาม <code>interval</code></li><li><code>timeout</code>, <code>retries</code>, <code>start_period</code> กำหนดเวลารอ จำนวนครั้ง และช่วงผ่อนผันตอนเริ่ม</li><li><code>condition: service_healthy</code> รอให้ db healthy ก่อนจึงสร้าง web</li><li><code>restart</code> เลือก <code>no</code>, <code>always</code>, <code>on-failure</code> หรือ <code>unless-stopped</code> ตามนโยบาย</li></ol></div>
+          <div class="note">healthcheck ช่วย Compose รอความพร้อม แต่โค้ดแอปควร retry เองด้วย เพราะเครือข่ายหรือ service อาจล้มหลังจากเริ่มแล้ว</div>
+          <h3>10.9 ประกอบร่าง: compose.yaml ที่ใช้ทุกอย่างที่เรียนมา</h3>
+          <p>ทุก key ในไฟล์นี้ผ่านตาแล้วในหัวข้อ 10.4–10.8 ไม่มีของใหม่</p>
+          <pre><span class="instruction">services:</span>
+  <span class="instruction">web:</span>
+    <span class="instruction">build:</span>
+      <span class="instruction">context:</span> .
+      <span class="instruction">args:</span>
+        <span class="instruction">APP_MODE:</span> production
+    <span class="instruction">ports:</span>
+      - "8081:5000"
+    <span class="instruction">env_file:</span> .env.app
+    <span class="instruction">depends_on:</span>
+      <span class="instruction">redis:</span>
+        <span class="instruction">condition:</span> service_healthy
+    <span class="instruction">networks:</span> [frontend, backend]
+    <span class="instruction">restart:</span> unless-stopped
+  <span class="instruction">redis:</span>
+    <span class="instruction">image:</span> redis:7-alpine
+    <span class="instruction">volumes:</span> [redisdata:/data]
+    <span class="instruction">networks:</span> [backend]
+    <span class="instruction">healthcheck:</span>
+      <span class="instruction">test:</span> ["CMD", "redis-cli", "ping"]
+      <span class="instruction">interval:</span> 10s
+      <span class="instruction">timeout:</span> 5s
+      <span class="instruction">retries:</span> 5
+<span class="instruction">volumes:</span>
+  <span class="instruction">redisdata:</span>
+<span class="instruction">networks:</span>
+  <span class="instruction">frontend:</span>
+  <span class="instruction">backend:</span>
+    <span class="instruction">internal:</span> true</pre>
+          <div class="explain"><ol><li>web ใช้ <code>build.context</code> และ build arg ตาม LAB แล้วเปิด <code>"8081:5000"</code> ตามหัวข้อ 10.4</li><li><code>env_file</code> แยกค่า runtime ออกจากไฟล์หลักตาม 10.5</li><li>redis ไม่ publish port ออก host แต่ web เรียกผ่าน backend network ได้ตาม 10.7</li><li><code>redisdata</code> ทำให้ข้อมูล Redis อยู่ข้ามการสร้าง container ใหม่ตาม 10.6</li><li>web รอ healthcheck ของ redis และมี restart policy ตาม 10.8</li></ol></div>
+          <h3>10.10 สรุปท้ายบท: เปิดดูตอนทำงานจริง</h3>
+          <p>ไม่ต้องท่อง เปิดดูเมื่อลืม</p>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead><tr><th>สิ่งที่ทำด้วย <code>docker run</code></th><th>key ใน <code>compose.yaml</code></th><th>หมายเหตุ</th></tr></thead>
+              <tbody>
+                <tr><td><code>docker build -t ...</code></td><td><code>build:</code></td><td>Compose build ให้ตอน <code>up --build</code></td></tr>
+                <tr><td><code>docker run</code> ชื่อ image</td><td><code>image:</code></td><td>ใช้ image สำเร็จรูป หรือเป็นชื่อผลลัพธ์เมื่อมี <code>build:</code></td></tr>
+                <tr><td><code>-p 8081:5000</code></td><td><code>ports:</code></td><td>ความหมาย host:container เหมือนเดิม</td></tr>
+                <tr><td><code>-e KEY=value</code></td><td><code>environment:</code></td><td>ตามทฤษฎีตอนที่ 7</td></tr>
+                <tr><td><code>-v</code></td><td><code>volumes:</code></td><td>ทั้ง bind mount และ named volume</td></tr>
+                <tr><td><code>--network</code></td><td>ไม่ต้องเขียนเอง</td><td>Compose สร้าง network ของ project และต่อทุก service ให้อัตโนมัติ (กำหนดเองได้ด้วย <code>networks:</code>)</td></tr>
+                <tr><td><code>--name</code></td><td>Compose ตั้งให้อัตโนมัติ</td><td>เป็น <code>&lt;project&gt;-&lt;service&gt;-1</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th>คำสั่ง</th><th>ใช้เมื่อ</th></tr></thead><tbody><tr><td><code>docker compose up -d --build</code></td><td>build image ที่ระบุด้วย <code>build:</code> และเริ่มทุก service เบื้องหลัง</td></tr><tr><td><code>docker compose ps</code></td><td>ดู service, container, health และ port ของ project นี้</td></tr><tr><td><code>docker compose logs -f web</code></td><td>ติดตาม log ของ service web</td></tr><tr><td><code>docker compose exec web sh</code></td><td>รันคำสั่งใน service; แนวคิดเดียวกับ <code>docker exec</code> แต่ใช้ชื่อ service</td></tr><tr><td><code>docker compose down</code></td><td>ลบ containers และ network ของ project โดยคง named volumes ไว้</td></tr><tr><td><code>docker compose down -v</code></td><td>ลบ project พร้อม named volumes</td></tr></tbody></table></div>
+
+          <h3>10.11 กับดักที่พบบ่อย</h3>
+          <div class="grid3"><article class="card"><h3>YAML อ่านผิด</h3><p>tab ใช้ไม่ได้ และ port ที่ไม่ครอบ <code>" "</code> อาจถูก YAML ตีความผิด ให้เยื้องด้วย space และเขียน <code>"8081:5000"</code></p></article><article class="card"><h3>แก้แล้วไม่เปลี่ยน</h3><p>แก้ Dockerfile แล้วต้อง <code>docker compose up -d --build</code>; เปลี่ยนเพียง Compose config ใช้ <code>up -d</code> เพื่อให้ Compose reconcile</p></article><article class="card"><h3>ตั้งชื่อชนกัน</h3><p>อย่าฝืนตั้งชื่อ container เองผ่าน <code>container_name</code> — ชื่อจะชนกันเมื่อรันหลายชุดและ scale ไม่ได้ ปล่อยให้ Compose ตั้ง <code>&lt;project&gt;-&lt;service&gt;-N</code> ให้อัตโนมัติ</p></article><article class="card"><h3>ข้อมูลหาย</h3><p>ตรวจให้แน่ใจก่อนใช้ <code>docker compose down -v</code> เพราะคำสั่งนี้ลบ named volume ด้วย</p></article><article class="card"><h3>เปิด db เกินจำเป็น</h3><p>ไม่ต้อง publish port ของ db หรือ redis หากมีเพียง service ใน project ใช้งาน; ใช้ชื่อ service บน network แทน</p></article><article class="card"><h3>คำสั่งรุ่นเก่า</h3><p>ใช้ <code>docker compose</code> (เว้นวรรค) ซึ่งเป็น Compose plugin ปัจจุบัน แทน <code>docker-compose</code> แบบขีดกลาง</p></article></div>
+
+          <div class="think">
+            <b>ชวนคิด:</b> Compose ช่วยจัดการ build, network, environment, ports, volumes,
+            healthcheck และ lifecycle ของหลาย service ได้อย่างไร เมื่อเทียบกับการเก็บ
+            <code>docker run</code> หลายบรรทัดไว้ในเอกสารหรือ shell history?
+          </div>
+        </div>
+      </section>
+      <section class="section" data-level="เจาะลึก" id="multi-stage">
+        <div class="wrap">
+          <div class="section-meta">
+            <span class="chapter">ตอนที่ 11 จาก 12</span
+            ><span class="badge level-deep">เจาะลึก</span>
+          </div>
+          <h2>11. Multi-stage build และเลือก Dockerfile ให้ตรงแอป</h2>
+          <p class="learning">
+            <b>จะได้อะไรจากตอนนี้:</b> แยกขั้น “สร้างชิ้นงาน” ออกจากขั้น
+            “รันชิ้นงาน” แล้วเลือก runtime image
+            ตามชนิดแอปแทนการยัดเครื่องมือทุกอย่างไว้ใน image เดียว
+          </p>
+          <p class="lead">
+            <b>Multi-stage build</b> คือ Dockerfile ที่มี
+            <code>FROM</code> มากกว่าหนึ่งช่วง แต่ละช่วงเรียกว่า stage เราใช้
+            stage แรกติดตั้งเครื่องมือหนักและ build งาน แล้วใช้
+            <code>COPY --from=...</code> คัดลอกเฉพาะผลลัพธ์ที่จำเป็นเข้าสู่
+            stage สุดท้าย
+          </p>
+          <div class="grid">
+            <article class="card">
+              <h3>ช่วงสร้างชิ้นงาน</h3>
+              <p>
+                มี compiler, Maven, Node หรือเครื่องมือ build ครบ จึงอาจใหญ่
+                แต่มีหน้าที่ชั่วคราวและไม่ใช่ image ที่นำไปรันจริง
+              </p>
+            </article>
+            <article class="card">
+              <h3>ช่วงรันชิ้นงาน</h3>
+              <p>
+                เก็บเพียง artifact กับ runtime ที่จำเป็น เช่น ไฟล์ static +
+                Nginx หรือ JAR + JRE ทำให้ image
+                สุดท้ายเล็กและมีสิ่งที่ไม่จำเป็นน้อยลง
+              </p>
+            </article>
+          </div>
+          <figure class="diagram">
+            <img
+              alt="ภาพ Excalidraw multi-stage Docker build"
+              src="slides_assets/15-multi-stage.svg"
+            />
+            <figcaption class="caption">
+              ภาพ Excalidraw: multi-stage build เก็บเฉพาะ artifact ที่จำเป็นใน
+              runtime image
+            </figcaption>
+          </figure>
+          <p class="lead">
+            ให้เริ่มจากคำถามว่า “แอปต้อง build ก่อนหรือไม่” และ “ตอนรันต้องมี
+            runtime ภาษาใดอยู่ใน image” ไม่ใช่เลือก image
+            ที่เล็กที่สุดเพียงอย่างเดียว
+          </p>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>ประเภทแอป</th>
+                  <th>สิ่งที่เกิดตอน build</th>
+                  <th>runtime ที่ควรได้</th>
+                  <th>ตัวอย่างด้านล่าง</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Python API</td>
+                  <td>ติดตั้ง pip dependencies</td>
+                  <td>Python + package ที่ต้องใช้</td>
+                  <td>Flask / FastAPI</td>
+                </tr>
+                <tr>
+                  <td>React SPA</td>
+                  <td><code>npm run build</code> สร้างไฟล์ static</td>
+                  <td>Nginx เท่านั้น</td>
+                  <td>React + Nginx</td>
+                </tr>
+                <tr>
+                  <td>Next.js</td>
+                  <td><code>next build</code></td>
+                  <td>Node.js เฉพาะ output ที่ deploy</td>
+                  <td>Next.js standalone</td>
+                </tr>
+                <tr>
+                  <td>Node.js API</td>
+                  <td>ติดตั้ง production dependencies</td>
+                  <td>Node.js</td>
+                  <td>Express</td>
+                </tr>
+                <tr>
+                  <td>Static HTML</td>
+                  <td>ไม่ต้อง compile</td>
+                  <td>Nginx</td>
+                  <td>HTML/CSS/JS</td>
+                </tr>
+                <tr>
+                  <td>Database (PostgreSQL)</td>
+                  <td>ไม่ compile — ใช้ official image + init script</td>
+                  <td>official image ของ postgres</td>
+                  <td>PostgreSQL</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note warn">
+            <b>หลักสำคัญ:</b> ถ้าขั้น build ต้องใช้เครื่องมือหนัก เช่น Node,
+            Maven หรือ compiler ให้ใช้
+            <b>multi-stage build</b> แล้วคัดลอกเฉพาะผลลัพธ์ไปยัง runtime stage
+          </div>
+          <div class="think">
+            <b>ชวนคิด:</b> ถ้า React ต้องใช้ Node แค่ตอน build
+            แต่ตอนรันเหลือเพียง HTML/CSS/JavaScript เหตุใด runtime image
+            จึงไม่จำเป็นต้องมี Node?
+          </div>
+        </div>
+      </section>
+      <section class="section" data-level="ลงมือทำ" id="examples">
+        <div class="wrap">
+          <div class="section-meta">
+            <span class="chapter">ตอนที่ 12 จาก 12</span
+            ><span class="badge level-practice">ลงมือทำ</span>
+          </div>
+          <h2>12. ตัวอย่าง Dockerfile 7 เทคโนโลยี</h2>
+          <p class="learning">
+            <b>จะได้อะไรจากตอนนี้:</b>
+            เลือกตัวอย่างที่ใกล้กับงานของตนเองและอ่านจากแบบไม่มี build step
+            ไปจนถึง multi-stage สามขั้น โดยยังเห็นโครงสร้างไฟล์ เหตุผล
+            และข้อควรระวังครบ ปิดท้ายด้วย database สำเร็จรูปที่ไม่ต้อง build
+            แอปเอง
+          </p>
+          <p class="lead">
+            ทุกตัวอย่างสมมติว่าไฟล์ Dockerfile อยู่ที่ root ของโปรเจกต์
+            คัดลอกไปเริ่มต้นได้ แล้วปรับชื่อไฟล์และพอร์ตตามแอปของคุณ
+          </p>
+          <article class="card">
+            <h3>13.1 Static HTML/CSS/JavaScript — ง่ายสุด ไม่มี build step</h3>
+            <p>
+              ไม่มี build step: คัดลอกไฟล์เว็บไปยัง document root ของ Nginx
+              ได้ทันที
+            </p>
+            <h4>โครงสร้างไฟล์โปรเจกต์</h4>
+            <pre class="filetree">
+static-site/
+├── Dockerfile
+└── public/             ← COPY ./public/ ไปยัง Nginx
+    ├── index.html
+    ├── style.css
+    └── app.js</pre
+            >
+            <pre><span class="instruction">FROM</span> nginx:1.27-alpine
+<span class="instruction">COPY</span> ./public/ /usr/share/nginx/html/
+<span class="instruction">EXPOSE</span> 80
+<span class="instruction">CMD</span> ["nginx", "-g", "daemon off;"]</pre>
+            <pre><span class="cmd">docker build -t static-site .</span>
+<span class="cmd">docker run --rm -p 8080:80 static-site</span></pre>
+            <div class="explain">
+              <ol>
+                <li>
+                  <code>./public/</code> คือแหล่งไฟล์บน host เช่น
+                  <code>index.html</code>, <code>style.css</code> และ
+                  <code>app.js</code>
+                </li>
+                <li>
+                  <code>/usr/share/nginx/html/</code> คือ document root
+                  เริ่มต้นของ official Nginx image
+                </li>
+                <li>
+                  พอร์ตภายในคือ 80 แต่ผู้ใช้เลือกพอร์ต host เป็น 8080
+                  เพื่อไม่ชนกับ service อื่น
+                </li>
+                <li>
+                  เหมาะกับเว็บที่ไม่ต้อง render ฝั่ง server และไม่มี API process
+                  ใน container เดียวกัน
+                </li>
+              </ol>
+              <div class="note">
+                <b>ถ้ามี API:</b> ให้แยก API เป็นอีก container แล้วใช้ Docker
+                Compose หรือ orchestration เชื่อมบริการ ไม่ควรรัน Nginx และ
+                application server หลาย process ใน container
+                เดียวโดยไม่มีเหตุผลเฉพาะ
+              </div>
+            </div>
+          </article>
+          <br />
+          <article class="card">
+            <h3>13.2 Python Flask — เริ่มต้นง่าย</h3>
+            <p>
+              เหมาะกับ Flask หรือ WSGI app เล็ก ๆ ที่เริ่มด้วย
+              <code>python app.py</code>. แยก
+              <code>requirements.txt</code> ก่อนเพื่อใช้ cache.
+            </p>
+            <h4>โครงสร้างไฟล์โปรเจกต์</h4>
+            <pre class="filetree">
+flask-project/
+├── Dockerfile          ← สูตรที่ใช้ COPY ไฟล์เหล่านี้
+├── .dockerignore       ← ตัดไฟล์ที่ไม่ควรส่งเข้า build context
+├── requirements.txt    ← COPY ก่อนเพื่อใช้ cache
+└── app.py              ← COPY เข้า /app เพื่อให้ CMD เริ่มแอป</pre
+            >
+            <pre><span class="instruction">FROM</span> python:3.12-slim
+<span class="instruction">WORKDIR</span> /app
+<span class="instruction">ENV</span> PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+<span class="instruction">COPY</span> requirements.txt .
+<span class="instruction">RUN</span> pip install --no-cache-dir -r requirements.txt
+<span class="instruction">COPY</span> . .
+<span class="instruction">EXPOSE</span> 5000
+<span class="instruction">CMD</span> ["python", "app.py"]</pre>
+            <pre><span class="cmd">docker build -t flask-demo:1.0 .</span>
+<span class="cmd">docker run --rm -p 5000:5000 flask-demo:1.0</span></pre>
+            <div class="explain">
+              <h4>อธิบายทีละช่วง</h4>
+              <ol>
+                <li>
+                  <code>python:3.12-slim</code> มี Python พร้อม Debian ชุดเล็ก
+                  เป็นจุดสมดุลระหว่างขนาดและความเข้ากันได้ของ package
+                </li>
+                <li>
+                  <code>PYTHONDONTWRITEBYTECODE=1</code> ไม่สร้างไฟล์
+                  <code>.pyc</code>; <code>PYTHONUNBUFFERED=1</code> ทำให้ log
+                  ออกทันที เหมาะกับ container logs
+                </li>
+                <li>
+                  คัดลอก <code>requirements.txt</code> และติดตั้งก่อน source
+                  เพื่อให้แก้ <code>app.py</code> แล้วไม่ต้องติดตั้ง package ซ้ำ
+                </li>
+                <li>
+                  <code>COPY . .</code> คัดลอกไฟล์ที่ไม่ถูกตัดออกด้วย
+                  <code>.dockerignore</code> ไปยัง <code>/app</code>
+                </li>
+                <li>
+                  แอป Flask ต้อง bind ที่ <code>0.0.0.0</code> ไม่ใช่
+                  <code>127.0.0.1</code> จึงจะรับ traffic จากนอก container ได้
+                </li>
+              </ol>
+              <div class="note warn">
+                <b>Production:</b> Flask development server
+                เหมาะกับการเรียนและพัฒนา งานจริงควรใช้ WSGI server เช่น Gunicorn
+                และเปลี่ยนคำสั่งเป็น
+                <code>CMD ["gunicorn","-b","0.0.0.0:5000","app:app"]</code>
+              </div>
+            </div>
+          </article>
+          <br />
+          <article class="card">
+            <h3>13.3 Python FastAPI — ใช้ Uvicorn</h3>
+            <p>
+              เหมาะกับ API ที่ไฟล์ <code>main.py</code> มีตัวแปร
+              <code>app</code>. ใช้ exec form เพื่อส่ง signal หยุดไปยัง Uvicorn
+              ได้ถูกต้อง
+            </p>
+            <h4>โครงสร้างไฟล์โปรเจกต์</h4>
+            <pre class="filetree">
+fastapi-project/
+├── Dockerfile
+├── .dockerignore       ← ตัดไฟล์ที่ไม่ควร COPY เข้า image
+├── requirements.txt    ← COPY ก่อนเพื่อติดตั้ง dependencies
+└── main.py             ← ต้องมีตัวแปร app สำหรับ main:app</pre
+            >
+            <pre><span class="instruction">FROM</span> python:3.12-slim
+<span class="instruction">WORKDIR</span> /app
+<span class="instruction">COPY</span> requirements.txt .
+<span class="instruction">RUN</span> pip install --no-cache-dir -r requirements.txt
+<span class="instruction">COPY</span> . .
+<span class="instruction">EXPOSE</span> 8000
+<span class="instruction">CMD</span> ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]</pre>
+            <pre><span class="cmd">docker build -t fastapi-demo .</span>
+<span class="cmd">docker run --rm -p 8000:8000 fastapi-demo</span></pre>
+            <div class="explain">
+              <h4>สิ่งที่ต้องมี</h4>
+              <p>
+                <code>requirements.txt</code> ต้องมีอย่างน้อย
+                <code>fastapi</code> และ <code>uvicorn[standard]</code>; ส่วน
+                <code>main:app</code> แปลว่า “นำตัวแปรชื่อ
+                <code>app</code> จากโมดูล <code>main.py</code>”
+              </p>
+              <ol>
+                <li>
+                  <code>--host 0.0.0.0</code> ให้ server ฟังทุก network
+                  interface ภายใน container
+                </li>
+                <li>
+                  <code>--port 8000</code> ต้องตรงกับพอร์ตด้านขวาของ
+                  <code>-p 8000:8000</code>
+                </li>
+                <li>
+                  เปิด <code>http://localhost:8000/docs</code> เพื่อตรวจ Swagger
+                  UI หลัง container เริ่มทำงาน
+                </li>
+                <li>
+                  ไม่ควรใช้ <code>--reload</code> ใน production เพราะสร้าง
+                  process เฝ้าดูไฟล์เพิ่มและออกแบบมาสำหรับ development
+                </li>
+              </ol>
+              <details>
+                <summary>ถ้าต้องการหลาย worker</summary>
+                <p>
+                  เพิ่ม <code>--workers 4</code> ได้ แต่จำนวนที่เหมาะสมขึ้นกับ
+                  CPU และรูปแบบ workload; บน Kubernetes มักเลือกเพิ่มจำนวน
+                  replicas แทนการใส่ worker จำนวนมากใน container เดียว
+                </p>
+              </details>
+            </div>
+          </article>
+          <br />
+          <article class="card">
+            <h3>13.4 Node.js / Express — production dependencies เท่านั้น</h3>
+            <p>
+              เริ่มจาก <code>package-lock.json</code> เพื่อให้
+              <code>npm ci</code> ติดตั้งตามเวอร์ชันที่ล็อกไว้ ใช้
+              <code>--omit=dev</code> สำหรับ runtime image
+            </p>
+            <h4>โครงสร้างไฟล์โปรเจกต์</h4>
+            <pre class="filetree">
+express-project/
+├── Dockerfile
+├── .dockerignore       ← ตัด node_modules และไฟล์ลับออก
+├── package.json
+├── package-lock.json   ← จำเป็นสำหรับ npm ci
+└── server.js           ← CMD ใช้เริ่ม Express</pre
+            >
+            <pre><span class="instruction">FROM</span> node:22-alpine
+<span class="instruction">WORKDIR</span> /app
+<span class="instruction">ENV</span> NODE_ENV=production
+<span class="instruction">COPY</span> package*.json ./
+<span class="instruction">RUN</span> npm ci --omit=dev
+<span class="instruction">COPY</span> . .
+<span class="instruction">USER</span> node
+<span class="instruction">EXPOSE</span> 3000
+<span class="instruction">CMD</span> ["node", "server.js"]</pre>
+            <pre><span class="cmd">docker build -t express-api .</span>
+<span class="cmd">docker run --rm -p 3000:3000 express-api</span></pre>
+            <div class="explain">
+              <ol>
+                <li>
+                  <code>npm ci</code> ต้องมี lockfile และติดตั้งแบบทำซ้ำได้
+                  เหมาะกับ CI/CD มากกว่า <code>npm install</code>
+                </li>
+                <li>
+                  <code>--omit=dev</code> ไม่ติดตั้ง test runner, linter และ
+                  build tools ที่ไม่จำเป็นตอนรัน
+                </li>
+                <li>
+                  <code>USER node</code> ลดสิทธิของ process โดยใช้ user ที่มีใน
+                  official Node image
+                </li>
+                <li>
+                  Express ต้องฟัง <code>0.0.0.0</code> เช่น
+                  <code>app.listen(3000, "0.0.0.0")</code>
+                </li>
+              </ol>
+              <div class="note warn">
+                <b>Alpine และ native modules:</b> package บางตัวที่มี native
+                binary อาจต้องใช้ build tools หรือเข้ากันกับ glibc มากกว่า musl
+                หากติดตั้งไม่ผ่าน ให้พิจารณา <code>node:22-slim</code> หรือใช้
+                multi-stage compile dependencies
+              </div>
+              <p class="mini">
+                หากโปรเจกต์ TypeScript ต้องมี build stage รัน
+                <code>npm run build</code> แล้ว runtime ควรคัดลอกเฉพาะ
+                <code>dist</code>, production dependencies และ package metadata
+              </p>
+            </div>
+          </article>
+          <br />
+          <article class="card">
+            <h3>13.5 React + Nginx — multi-stage 2 ขั้น</h3>
+            <p>
+              React SPA เป็นไฟล์ static หลังสั่ง build ดังนั้นไม่ควรเก็บ Node
+              และ <code>node_modules</code> ไว้ใน image ที่นำไปรันจริง
+            </p>
+            <h4>โครงสร้างไฟล์โปรเจกต์</h4>
+            <pre class="filetree">
+react-project/
+├── Dockerfile
+├── .dockerignore       ← ตัด node_modules ออกจาก build context
+├── package.json
+├── package-lock.json   ← COPY ก่อนเพื่อใช้ cache ของ npm ci
+├── src/                ← source ที่ npm run build ใช้สร้าง dist
+└── public/</pre
+            >
+            <pre><span class="comment"># Stage 1: สร้าง production assets</span>
+<span class="instruction">FROM</span> node:22-alpine AS build
+<span class="instruction">WORKDIR</span> /app
+<span class="instruction">COPY</span> package*.json ./
+<span class="instruction">RUN</span> npm ci
+<span class="instruction">COPY</span> . .
+<span class="instruction">RUN</span> npm run build
+
+<span class="comment"># Stage 2: เก็บเฉพาะไฟล์ที่ build แล้ว</span>
+<span class="instruction">FROM</span> nginx:1.27-alpine
+<span class="instruction">COPY</span> --from=build /app/dist /usr/share/nginx/html
+<span class="instruction">EXPOSE</span> 80
+<span class="instruction">CMD</span> ["nginx", "-g", "daemon off;"]</pre>
+            <pre><span class="cmd">docker build -t react-web .</span>
+<span class="cmd">docker run --rm -p 8080:80 react-web</span></pre>
+            <div class="note">
+              Vite ใช้ output ที่ <code>dist</code>; Create React App มักใช้
+              <code>build</code> — เปลี่ยน path ใน
+              <code>COPY --from=build</code> ให้ตรงกับ build tool
+            </div>
+            <div class="explain">
+              <h4>ทำไมต้องมี 2 stages?</h4>
+              <ol>
+                <li>
+                  <b>build stage:</b> Node อ่าน <code>package-lock.json</code>,
+                  ติดตั้ง dependencies และแปลง JSX/TypeScript เป็น HTML, CSS,
+                  JavaScript สำหรับ browser
+                </li>
+                <li>
+                  <b>runtime stage:</b> Nginx ให้บริการไฟล์ static เท่านั้น
+                  จึงไม่ต้องมี Node, source code หรือ dev dependencies
+                </li>
+                <li>
+                  <code>AS build</code> ตั้งชื่อ stage;
+                  <code>--from=build</code> เลือกคัดลอกไฟล์ข้าม stage
+                </li>
+                <li>
+                  <code>daemon off;</code> ทำให้ Nginx อยู่ foreground เป็น
+                  process หลัก หาก process นี้จบ container ก็หยุด
+                </li>
+              </ol>
+              <div class="note warn">
+                <b>React Router:</b> หากใช้ client-side routing การ refresh หน้า
+                <code>/products/1</code> อาจได้ 404 ต้องเพิ่ม Nginx config
+                ที่ใช้ <code>try_files $uri $uri/ /index.html;</code> แล้ว
+                <code>COPY nginx.conf /etc/nginx/conf.d/default.conf</code>
+              </div>
+            </div>
+          </article>
+          <br />
+          <article class="card">
+            <h3>13.6 Next.js standalone — multi-stage 3 ขั้น ยากสุด</h3>
+            <p>
+              ตั้งค่า <code>output: 'standalone'</code> ใน
+              <code>next.config.js</code> ก่อน แล้วใช้ multi-stage เพื่อให้
+              runtime มีเพียง Next server, public และ static assets ที่จำเป็น
+            </p>
+            <pre><span class="comment">// next.config.js</span>
+module.exports = { output: "standalone" }</pre>
+            <h4>โครงสร้างไฟล์โปรเจกต์</h4>
+            <pre class="filetree">
+next-project/
+├── Dockerfile
+├── .dockerignore       ← ตัด node_modules และไฟล์ที่ไม่จำเป็น
+├── next.config.js      ← ต้องตั้ง output: standalone
+├── package.json
+├── package-lock.json   ← COPY ก่อนเพื่อใช้ cache ของ npm ci
+├── app/                ← หรือใช้ pages/ สำหรับ route
+└── public/             ← ต้องมี เพราะ Dockerfile COPY public</pre
+            >
+            <pre><span class="instruction">FROM</span> node:22-alpine AS deps
+<span class="instruction">WORKDIR</span> /app
+<span class="instruction">COPY</span> package*.json ./
+<span class="instruction">RUN</span> npm ci
+
+<span class="instruction">FROM</span> node:22-alpine AS build
+<span class="instruction">WORKDIR</span> /app
+<span class="instruction">COPY</span> --from=deps /app/node_modules ./node_modules
+<span class="instruction">COPY</span> . .
+<span class="instruction">RUN</span> npm run build
+
+<span class="instruction">FROM</span> node:22-alpine AS runner
+<span class="instruction">WORKDIR</span> /app
+<span class="instruction">ENV</span> NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
+<span class="instruction">COPY</span> --from=build /app/public ./public
+<span class="instruction">COPY</span> --from=build /app/.next/standalone ./
+<span class="instruction">COPY</span> --from=build /app/.next/static ./.next/static
+<span class="instruction">EXPOSE</span> 3000
+<span class="instruction">CMD</span> ["node", "server.js"]</pre>
+            <pre><span class="cmd">docker build -t next-web .</span>
+<span class="cmd">docker run --rm -p 3000:3000 next-web</span></pre>
+            <div class="explain">
+              <h4>หน้าที่ของแต่ละ stage</h4>
+              <ol>
+                <li>
+                  <b>deps:</b> ติดตั้ง dependency จาก lockfile ครั้งเดียว แยกจาก
+                  source เพื่อให้ใช้ cache ได้
+                </li>
+                <li>
+                  <b>build:</b> นำ <code>node_modules</code> และ source
+                  มาสร้างผลลัพธ์ใน <code>.next</code>
+                </li>
+                <li>
+                  <b>runner:</b> เก็บเฉพาะ standalone server, static chunks และ
+                  public assets สำหรับ production
+                </li>
+              </ol>
+              <p>
+                <code>NODE_ENV=production</code> เปิดพฤติกรรม production ของ
+                Node/Next; <code>HOSTNAME=0.0.0.0</code> ทำให้รับ request
+                จากภายนอก container; <code>PORT=3000</code> กำหนดพอร์ตของ server
+              </p>
+              <div class="note warn">
+                <b>Build-time vs runtime environment:</b> ตัวแปรที่ขึ้นต้นด้วย
+                <code>NEXT_PUBLIC_</code> มักถูกฝังลง JavaScript ตอน build
+                การเปลี่ยนด้วย
+                <code>docker run -e</code> ภายหลังอาจไม่เปลี่ยนค่าที่ browser
+                ได้รับ ส่วน secret ฝั่ง server ไม่ควรใช้ prefix นี้
+              </div>
+              <details>
+                <summary>ถ้าโปรเจกต์ไม่มีโฟลเดอร์ public</summary>
+                <p>
+                  คำสั่ง
+                  <code>COPY --from=build /app/public ./public</code> จะล้มเหลว
+                  ให้สร้างโฟลเดอร์ว่างไว้หรือถอดบรรทัดนี้ออก
+                </p>
+              </details>
+            </div>
+          </article>
+          <br />
+          <article class="card">
+            <h3>13.7 PostgreSQL — database สำเร็จรูป: ปรับแต่งด้วย ENV, init script และ volume</h3>
+            <p>
+              database ไม่เหมือนแอปของเรา — เราไม่ compile Postgres เอง แต่ต่อยอดจาก
+              official image แล้วปรับแต่ง 3 อย่าง: ค่าเริ่มต้นผ่าน ENV, สคีมาเริ่มต้นผ่าน
+              โฟลเดอร์ <code>/docker-entrypoint-initdb.d/</code> และที่เก็บข้อมูลผ่าน
+              named volume
+            </p>
+            <h4>โครงสร้างไฟล์โปรเจกต์</h4>
+            <pre class="filetree">
+postgres-db/
+├── Dockerfile
+└── initdb/
+    └── 01-schema.sql   ← รันอัตโนมัติตอน database ว่างครั้งแรก</pre
+            >
+            <pre><span class="instruction">FROM</span> postgres:17-alpine
+<span class="instruction">ENV</span> POSTGRES_DB=appdb
+<span class="instruction">COPY</span> ./initdb/ /docker-entrypoint-initdb.d/
+<span class="instruction">EXPOSE</span> 5432</pre>
+            <pre><span class="cmd">docker build -t app-db .</span>
+<span class="cmd">docker run -d --name app-db \
+  -e POSTGRES_PASSWORD=&lt;DB_PASSWORD&gt; \
+  -v pgdata:/var/lib/postgresql/data \
+  -p 5432:5432 app-db</span></pre>
+            <div class="explain">
+              <h4>อธิบายทีละช่วง</h4>
+              <ol>
+                <li>
+                  ไม่มีบรรทัด <code>CMD</code>/<code>ENTRYPOINT</code> — image นี้สืบทอดคำสั่งเริ่ม PostgreSQL จาก base image (โยงความรู้ตอนที่ 6)
+                </li>
+                <li>
+                  <code>POSTGRES_DB=appdb</code> ให้ image สร้าง database ชื่อนี้ตอนเริ่มครั้งแรก ส่วน <code>POSTGRES_PASSWORD</code> เป็น secret จึงไม่ฝังใน Dockerfile แต่ส่งตอน run ด้วย <code>-e</code> (โยงตอนที่ 7)
+                </li>
+                <li>
+                  ไฟล์ .sql/.sh ใน <code>/docker-entrypoint-initdb.d/</code> ถูกรันเรียงตามชื่อไฟล์ เฉพาะครั้งแรกที่ data directory ยังว่าง
+                </li>
+                <li>
+                  <code>-v pgdata:/var/lib/postgresql/data</code> ใช้ named volume — ลบ container แล้วข้อมูลยังอยู่ สร้างใหม่ต่อได้ (โยงตารางทบทวน volume ตอนที่ 1)
+                </li>
+                <li>
+                  <code>-p 5432:5432</code> ใช้ตอนต้องต่อจากเครื่องเราเช่นผ่าน DBeaver/psql; ถ้าใช้ใน Compose ให้แอปต่อผ่านชื่อ service ใน network เดียวกันโดยไม่ต้องเปิดพอร์ต (โยงตอนที่ 10 และรูป compose ที่ redis ไม่มี ports:)
+                </li>
+              </ol>
+            </div>
+            <p>
+              ตรวจสอบด้วย <code>docker logs app-db</code> ซึ่งควรเห็นบรรทัด
+              <code>database system is ready to accept connections</code> และใช้
+              <code>docker exec -it app-db psql -U postgres -d appdb -c "\\dt"</code>
+              เพื่อแสดงตารางที่ <code>01-schema.sql</code> สร้างไว้
+            </p>
+            <div class="note">
+              แอปใน network เดียวกันต่อด้วยชื่อ เช่น connection string
+              <code>postgresql://postgres:&lt;DB_PASSWORD&gt;@app-db:5432/appdb</code>
+              (หรือชื่อ service <code>db</code> ใน Compose)
+            </div>
+            <div class="note warn">
+              <b>กับดักที่เจอบ่อย:</b> init script รันเฉพาะเมื่อ volume ยังว่างครั้งแรก แก้
+              <code>01-schema.sql</code> แล้ว build/run ใหม่จะไม่มีผล ต้องลบ volume ก่อน
+              (<code>docker rm -f app-db &amp;&amp; docker volume rm pgdata</code>) ซึ่งทำให้ข้อมูลหายทั้งหมด
+              จึงเหมาะกับ dev เท่านั้น ส่วนระบบจริงใช้เครื่องมือ migration
+            </div>
+          </article>
+          <div class="note bad">
+            <b>ไฟล์ .dockerignore ที่ควรมีเกือบทุกโปรเจกต์:</b>
+            <pre>
+node_modules/
+__pycache__/
+*.pyc
+.git/
+.env
+coverage/
+dist/
+build/</pre
+            >
+            อย่า copy secrets เข้า image; ส่งค่า secret ผ่าน secret manager
+            หรือกลไกของแพลตฟอร์มตอน deploy แทน
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="wrap">
+        <b>Dockerfile จากพื้นฐานสู่ใช้งานจริง</b><br />สื่อการสอนฉบับเรียงใหม่
+        12 ตอน ภาพประกอบทั้งหมดโหลดจากโฟลเดอร์
+        <code>slides_assets/</code> ภายในชุดสื่อนี้
+      </div>
+    </footer>
+  </body>
+</html>
