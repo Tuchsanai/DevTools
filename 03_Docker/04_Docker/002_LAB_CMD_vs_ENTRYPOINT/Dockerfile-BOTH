@@ -1,8 +1,0 @@
-# ── ENTRYPOINT + CMD ใช้ร่วมกัน : สูตรมาตรฐานของ image ดี ๆ ──
-# ENTRYPOINT = โปรแกรมหลัก (คงที่)   CMD = argument เริ่มต้น (เปลี่ยนได้)
-
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y figlet && rm -rf /var/lib/apt/lists/*
-
-ENTRYPOINT ["figlet"]
-CMD ["Hello Docker"]

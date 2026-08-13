@@ -1,7 +1,0 @@
-# ── ENTRYPOINT อย่างเดียว : กำหนด "โปรแกรมหลัก" ที่รันเสมอ ──
-# argument ที่พิมพ์ท้าย docker run จะถูก "ต่อท้าย" ไม่ใช่แทนที่
-
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y figlet && rm -rf /var/lib/apt/lists/*
-
-ENTRYPOINT ["figlet", "Hello"]
