@@ -199,15 +199,20 @@ Container 004_lab_canary_mirroring-v2-1 Started
 Container 004_lab_canary_mirroring-traefik-1 Started
 ```
 
-รอ API พร้อมแล้วดูสถานะ:
+รอ API และ router จาก file provider พร้อม เก็บสำเนาต้นฉบับของ `routes.yml` แล้วดูสถานะ:
 
 ```bash
-until curl -fsS http://localhost:8080/api/overview >/dev/null 2>&1; do sleep 1; done
+for i in $(seq 1 60); do
+  curl -fsS http://localhost:8080/api/http/routers/canary@file >/dev/null 2>&1 && \
+  curl -fsS http://localhost:8080/api/http/routers/mirror@file >/dev/null 2>&1 && break
+  sleep 1
+done
 echo 'Traefik API: ready'
+cp dynamic/routes.yml /tmp/routes.yml.orig
 docker compose ps --format 'table {{.Service}}\t{{.Image}}\t{{.Status}}'
 ```
 
-> 📝 **คำอธิบาย:** container สถานะ `Up` ยังไม่รับประกันว่า application พร้อม ลูปจึงลอง dashboard API ทุก 1 วินาที · `-f` ให้ HTTP error ถือว่าล้มเหลว · `-sS` ซ่อน progress แต่เก็บ error · หลังพร้อมจึงพิมพ์ตาราง service/image/status
+> 📝 **คำอธิบาย:** container สถานะ `Up` ยังไม่รับประกันว่า application พร้อม ลูปจึงถาม dashboard API ทุก 1 วินาที จนเห็น router `canary@file` และ `mirror@file` ทั้งคู่ (ไม่ใช่แค่ API เปิด) และเลิกรอเองใน 60 วินาทีถ้ามีอะไรผิด · `-f` ให้ HTTP error ถือว่าล้มเหลว · `-sS` ซ่อน progress แต่เก็บ error · `cp` เก็บ **ต้นฉบับ** `routes.yml` ไว้ก่อน เพราะขั้นถัด ๆ ไปจะใช้ `sed -i` แก้ไฟล์จริง (9:1→5:5, percent 100→10) — สำเนานี้ใช้กู้ไฟล์ตอน clean re-run และตอนเก็บกวาด · หลังพร้อมจึงพิมพ์ตาราง service/image/status
 
 ✅ **Expected output** — ต้องเห็นครบสาม service (เวลาของแต่ละคนไม่ตรงกัน):
 
@@ -442,16 +447,21 @@ status":"enabled"
 
 ## 11. พิสูจน์ clean re-run
 
-ปิดทั้ง stack แล้วเปิดใหม่หนึ่งรอบ:
+ปิดทั้ง stack กู้ `routes.yml` กลับเป็นต้นฉบับ แล้วเปิดใหม่หนึ่งรอบ:
 
 ```bash
 docker compose down
+cp /tmp/routes.yml.orig dynamic/routes.yml
 docker compose up -d
-until curl -fsS http://localhost:8080/api/overview >/dev/null 2>&1; do sleep 1; done
+for i in $(seq 1 60); do
+  curl -fsS http://localhost:8080/api/http/routers/canary@file >/dev/null 2>&1 && \
+  curl -fsS http://localhost:8080/api/http/routers/mirror@file >/dev/null 2>&1 && break
+  sleep 1
+done
 echo 'clean re-run: ready'
 ```
 
-> 📝 **คำอธิบาย:** `down` ลบ container และ network ของโปรเจกต์เพื่อจำลองการเริ่มใหม่สะอาด · `up -d` สร้างจากไฟล์ปัจจุบันอีกครั้ง · image ยัง cache อยู่จึงไม่ต้อง download · readiness loop ยืนยันว่ารอบใหม่ใช้งานได้จริง ไม่ใช่แค่ container ถูกสร้าง
+> 📝 **คำอธิบาย:** `down` ลบ container และ network ของโปรเจกต์เพื่อจำลองการเริ่มใหม่สะอาด · `cp` กู้ไฟล์กลับเป็น **ต้นฉบับ 9:1 / percent 100** ที่เก็บไว้ในข้อ 3 — ถ้าไม่กู้ รอบใหม่จะเริ่มจากไฟล์ที่ถูก `sed` แก้ค้างไว้ (5:5 / percent 10) ซึ่งไม่ตรงกับเอกสารช่วงต้น · `up -d` สร้างจากไฟล์ปัจจุบันอีกครั้ง · image ยัง cache อยู่จึงไม่ต้อง download · readiness loop รอจน router จาก file provider ทั้งสองตัวพร้อม และเลิกรอเองใน 60 วินาที
 
 ✅ **Expected output** — ผลรันจริงรอบนี้ (ลำดับ stop/start อาจสลับ):
 
@@ -488,14 +498,15 @@ clean re-run: ready
 
 ## เก็บกวาด (Cleanup)
 
-ปิด port forwarding ใน VS Code แล้วลบ stack:
+ปิด port forwarding ใน VS Code ลบ stack แล้วคืน `routes.yml` เป็นต้นฉบับ:
 
 ```bash
 docker compose down
+cp /tmp/routes.yml.orig dynamic/routes.yml 2>/dev/null || git checkout -- dynamic/routes.yml
 docker compose ps -a
 ```
 
-> 📝 **คำอธิบาย:** `down` หยุดและลบ container พร้อม network `labnet` เพื่อไม่ให้ port 8000/8080 และชื่อ network ชนกับ LAB ถัดไป · `docker compose ps -a` รวม container ที่หยุดแล้วด้วย จึงควรเหลือเพียงหัวตาราง · image ยังอยู่ใน cache เพื่อใช้ครั้งหน้าได้ ไม่ต้องลบ
+> 📝 **คำอธิบาย:** `down` หยุดและลบ container พร้อม network `labnet` เพื่อไม่ให้ port 8000/8080 และชื่อ network ชนกับ LAB ถัดไป · บรรทัด `cp ... || git checkout` คืนไฟล์ที่ถูก `sed` แก้ระหว่างแล็บกลับเป็นต้นฉบับ เพื่อให้การทำแล็บรอบหน้าเริ่มที่ 9:1 / percent 100 ตรงกับเอกสารเสมอ (ถ้าสำเนาใน `/tmp` หายไปแล้ว ใช้ git กู้แทน) · `docker compose ps -a` รวม container ที่หยุดแล้วด้วย จึงควรเหลือเพียงหัวตาราง · image ยังอยู่ใน cache เพื่อใช้ครั้งหน้าได้ ไม่ต้องลบ
 
 ✅ **Expected output** — ผลจริงรอบนี้; Compose อาจสลับลำดับการหยุด แต่ท้ายสุดตารางว่าง:
 
