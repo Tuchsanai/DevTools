@@ -118,5 +118,6 @@ docker ps -a --filter "name=^devtools-"        # ต้องเหลือแ�
 
 ## ของเดิมในโฟลเดอร์นี้
 
-- [`01_RabbitMQ/`](./01_RabbitMQ/readme.md) — ชุดแล็บ Message Queue (คนละเรื่อง ใช้เป็นต้นแบบรูปแบบเอกสารของชุดนี้)
 - [`backup/`](./backup/) — แล็บชุดก่อนหน้าและไฟล์ต้นฉบับเก่า เก็บไว้อ้างอิงเท่านั้น
+- รูปแบบเอกสารของชุดนี้ถอดแบบมาจากชุดแล็บ RabbitMQ ซึ่งอยู่ที่
+  [`03_Application_Docker/07_Message_Brokers/01_RabbitMQ/`](../../03_Application_Docker/07_Message_Brokers/01_RabbitMQ/readme.md)

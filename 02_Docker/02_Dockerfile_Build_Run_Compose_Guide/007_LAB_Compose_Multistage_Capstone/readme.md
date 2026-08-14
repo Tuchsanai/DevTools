@@ -35,6 +35,43 @@
 7. **พิสูจน์ healthcheck / env / network / volume / init script** ทีละเรื่อง โดยมีหลักฐานจากคำสั่งจริง
 8. **ทำให้พัง** — YAML ผิด 3 แบบ, ถอด network ผิดจนพอร์ตหายเงียบ ๆ, `--scale` ชนพอร์ต และปิดท้ายด้วย `down -v` ที่ลบข้อมูลทิ้ง
 
+### ภาพรวมสถาปัตยกรรม — มี service อะไรบ้าง และเชื่อมกันอย่างไร
+
+ก่อนพิมพ์คำสั่งใด ๆ ให้ดูภาพนี้ก่อน แล้วย้อนกลับมาดูซ้ำได้ทุกครั้งที่หลงทางว่าอะไรต่อกับอะไร :
+
+![สถาปัตยกรรมระบบ devopsboard: เบราว์เซอร์เข้าทางพอร์ต 8187 ไปยัง web (nginx) และ 8087 ไปยัง api (Flask) · web ทำ reverse proxy /api/ ไปยัง api:5000 · api ต่อ redis:6379 และ db:5432 · redis และ db อยู่เฉพาะ network backend ที่ตั้ง internal: true และผูกกับ named volume redisdata กับ pgdata](./images/architecture.png)
+
+> ไฟล์ต้นฉบับของภาพคือ [`images/architecture.excalidraw`](./images/architecture.excalidraw) — เปิดแก้ได้ที่ [excalidraw.com](https://excalidraw.com) แล้ว export ทับไฟล์ `.png` เดิม
+
+**อ่านภาพนี้ยังไง** — มี 4 service, 2 network และ 2 named volume :
+
+| service | สร้างจาก | ports (host → container) | อยู่ใน network | volume | เริ่มได้เมื่อ |
+|---|---|---|---|---|---|
+| **`web`** | `build: ./web` — **multi-stage** จบที่ `nginx:1.27-alpine` | `8187:80` | frontend + backend | — | `api` **healthy** |
+| **`api`** | `build: ./api` — `python:3.12-slim` + Flask | `8087:5000` | frontend + backend | — | `db` และ `redis` **healthy** |
+| **`redis`** | `redis:7-alpine` (image สำเร็จรูป) | **ไม่เปิดออก host** | backend | `redisdata` → `/data` | — |
+| **`db`** | `postgres:17-alpine` (image สำเร็จรูป) | **ไม่เปิดออก host** | backend | `pgdata` → `/var/lib/postgresql/data` | — |
+
+**เดินตาม request หนึ่งครั้ง** ตอนผู้เรียนกดรีเฟรชหน้า `http://localhost:8187` :
+
+1. เบราว์เซอร์ยิงเข้าพอร์ต **8187** ของเครื่องเรียน → Docker ส่งต่อเข้าพอร์ต **80** ของ container `web`
+2. `web` (nginx) ส่งไฟล์ `index.html` ที่ **stage build สร้างไว้ตั้งแต่ตอน build** กลับไป
+3. JavaScript ในหน้านั้นเรียก `/api/stats` ต่อ → nginx เห็น prefix `/api/` จึงทำ **reverse proxy** ไปที่ `http://api:5000/stats`
+   (ชื่อ `api` ถูกแปลงเป็น IP ด้วย DNS ภายในของ Compose — หลักการเดียวกับ LAB 6)
+4. `api` (Flask) สั่ง `INCR` ที่ **`redis:6379`** เพื่อนับผู้เข้าชม แล้ว `SELECT` จาก **`db:5432`** เพื่อดึงรายการ
+5. `redis` เขียนลง volume `redisdata` · `db` เขียนลง volume `pgdata` — **ข้อมูลจึงอยู่รอดแม้ลบ container ทิ้ง**
+6. ผลลัพธ์ย้อนกลับทางเดิม → หน้า dashboard แสดงตัวเลขจริง
+
+**จุดที่ต้องสังเกตในภาพ (และเป็นข้อสอบของแล็บนี้)** :
+
+- **วงสีฟ้า `frontend` กับวงสีชมพู `backend` ซ้อนทับกัน** — ตรงพื้นที่ซ้อนคือ service ที่อยู่ **ทั้งสอง** วง (`web` และ `api`)
+- **`db` และ `redis` อยู่นอกวงสีฟ้า** และไม่มี `ports:` → เครื่องผู้เรียนเข้าไม่ถึงเลย มีแต่ service ใน `backend` ที่คุยด้วยได้
+- `backend` ตั้ง **`internal: true`** ซึ่งทำให้ **publish port ออก host ไม่ได้** — นี่คือเหตุผลที่ `api` ต้องอยู่ `frontend` ด้วย
+  ไม่งั้นพอร์ต `8087` จะ **หายเงียบ ๆ โดยไม่มี error** (พิสูจน์ใน "ทดลองที่ 2")
+- ลูกศรเส้นประไปยัง volume คือข้อมูลที่ `docker compose down` **ไม่ลบ** แต่ `docker compose down -v` **ลบ**
+
+---
+
 > **คำถามก่อนเริ่ม:** ถ้า `db` ใช้เวลา boot 8 วินาที แต่ `api` ต่อฐานข้อมูลทันทีที่ start — `depends_on` แบบธรรมดาช่วยได้ไหม? และถ้าเราลบ container ทั้งหมดด้วย `docker compose down` ข้อมูลใน PostgreSQL จะหายหรือไม่? แล้ว `down -v` ล่ะ? แล็บนี้จะพิสูจน์ทั้งสามคำถามด้วยผลรันจริง
 
 ### Terminal Map
