@@ -1,0 +1,7 @@
+# Dockerfile.multicmd
+# ใช้ Alpine Linux เวอร์ชัน 3.20 เป็น base image
+FROM alpine:3.20
+# CMD ตัวแรกนี้จะถูก CMD ที่อยู่ภายหลังแทนที่
+CMD ["echo","CMD ตัวแรก - จะไม่ถูกใช้"]
+# มีผลเฉพาะ CMD ตัวสุดท้ายใน Dockerfile เท่านั้น
+CMD ["echo","CMD ตัวสุดท้าย - ตัวนี้เท่านั้นที่มีผล"]

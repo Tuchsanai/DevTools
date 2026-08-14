@@ -1,0 +1,14 @@
+# ใช้อิมเมจ Python รุ่นเล็กเป็นฐาน
+FROM python:3.12-slim
+# กำหนดโฟลเดอร์ทำงานภายในคอนเทนเนอร์
+WORKDIR /app
+# คัดลอกทุกไฟล์ก่อนทำให้ cache เสียได้ง่าย
+COPY . .
+# ติดตั้ง dependency หลังคัดลอก source code
+RUN pip install --no-cache-dir -r requirements.txt
+# กำหนดรหัส build สำหรับตัวอย่างที่ควรเลี่ยง
+ENV BUILD_ID=bad-1
+# ระบุพอร์ตที่แอปใช้งาน
+EXPOSE 8182
+# สั่งรัน Flask app เมื่อเริ่มคอนเทนเนอร์
+CMD ["python","app.py"]

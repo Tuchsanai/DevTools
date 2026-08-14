@@ -1,0 +1,7 @@
+# Dockerfile.sigshell
+# ใช้ Alpine Linux เวอร์ชัน 3.20 เป็น base image
+FROM alpine:3.20
+# คัดลอกแอปจำลองตัวเดียวกันกับ Dockerfile.sigexec
+COPY app.sh /app.sh
+# shell form ที่มีคำสั่งต่อกันด้วย && — shell ต้องอยู่ต่อ จึงกลายเป็น PID 1 แทนแอป
+CMD /app.sh && echo "app.sh จบแล้ว"

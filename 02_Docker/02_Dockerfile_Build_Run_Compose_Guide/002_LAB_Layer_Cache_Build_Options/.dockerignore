@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.git/
+test_logs/
+images/
+notes.md
+*.log
+readme.md
+verify.sh
+Dockerfile.*
