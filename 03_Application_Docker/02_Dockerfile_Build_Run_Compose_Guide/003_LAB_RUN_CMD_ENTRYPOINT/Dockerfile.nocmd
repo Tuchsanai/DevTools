@@ -1,0 +1,5 @@
+# Dockerfile.nocmd
+# ใช้ Alpine Linux เวอร์ชัน 3.20 เป็น base image
+FROM alpine:3.20
+# สร้างไฟล์ระหว่าง build โดยไม่ประกาศ CMD หรือ ENTRYPOINT เพิ่มเลย
+RUN echo "no default command" > /note.txt

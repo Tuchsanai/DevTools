@@ -1,0 +1,7 @@
+# Dockerfile.nocmd_reset
+# ใช้ Alpine Linux เวอร์ชัน 3.20 เป็น base image
+FROM alpine:3.20
+RUN echo "no default command" > /note.txt
+# ล้างค่าที่สืบทอดมาจาก base image ให้ว่างจริง ๆ
+ENTRYPOINT []
+CMD []

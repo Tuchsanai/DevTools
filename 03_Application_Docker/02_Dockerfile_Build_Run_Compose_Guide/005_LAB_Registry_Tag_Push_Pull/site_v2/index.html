@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#24101f">
+  <title>Image Delivery Console</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --magenta: #f472b6;
+      --violet: #c084fc;
+      --amber: #fbbf24;
+      --ink: #fff7ed;
+      --muted: #e9b9ce;
+      --panel: rgba(39, 12, 35, 0.72);
+      --line: rgba(251, 191, 36, 0.2);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      overflow-x: hidden;
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(236, 72, 153, 0.27), transparent 32rem),
+        radial-gradient(circle at 88% 82%, rgba(251, 191, 36, 0.24), transparent 35rem),
+        linear-gradient(145deg, #160712 0%, #3a1233 50%, #3a2105 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.2;
+      background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, black, transparent 85%);
+    }
+
+    main {
+      position: relative;
+      width: min(1040px, calc(100% - 2rem));
+      margin: 2rem auto;
+      padding: clamp(1.25rem, 4vw, 3rem);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--panel);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.46), inset 0 1px rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(22px);
+    }
+
+    header, .release-row, .steps { display: flex; align-items: center; }
+    header { justify-content: space-between; gap: 1rem; }
+
+    .brand {
+      margin: 0;
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+      font-weight: 750;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .status, .badge, .step {
+      border: 1px solid rgba(244, 114, 182, 0.34);
+      background: rgba(190, 24, 93, 0.14);
+    }
+
+    .status {
+      padding: 0.45rem 0.75rem;
+      border-radius: 999px;
+      color: #f9a8d4;
+      font-size: 0.78rem;
+    }
+
+    .status::before { content: "●"; margin-right: 0.4rem; }
+
+    .release-row {
+      min-height: 39vh;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 2rem 0 0.75rem;
+      font-size: clamp(3rem, 12vw, 8rem);
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.065em;
+      color: transparent;
+      background: linear-gradient(110deg, #fdf2f8 2%, var(--magenta) 34%, var(--violet) 57%, var(--amber) 88%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      filter: drop-shadow(0 0 25px rgba(236, 72, 153, 0.38));
+    }
+
+    .badge {
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      color: #fcd34d;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+    }
+
+    .notice {
+      width: min(680px, 100%);
+      margin: -0.2rem auto 1.35rem;
+      padding: 0.72rem 1rem;
+      border-left: 3px solid var(--amber);
+      border-radius: 8px;
+      color: #fde68a;
+      background: rgba(120, 53, 15, 0.23);
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    .steps {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 0 0 1.5rem;
+    }
+
+    .step {
+      padding: 0.48rem 0.75rem;
+      border-radius: 999px;
+      color: #fce7f3;
+      font-size: 0.84rem;
+      font-weight: 650;
+    }
+
+    .arrow { color: var(--amber); font-weight: 900; }
+
+    .details {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(20, 4, 17, 0.46);
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--line); text-align: left; }
+    tr:last-child th, tr:last-child td { border-bottom: 0; }
+    th { width: 36%; color: var(--muted); font-size: 0.8rem; font-weight: 650; text-transform: uppercase; letter-spacing: 0.08em; }
+    td { color: #fff7ed; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+
+    @media (max-width: 560px) {
+      main { width: min(100% - 1rem, 1040px); margin: 0.5rem; padding: 1.1rem; border-radius: 20px; }
+      header { align-items: flex-start; flex-direction: column; }
+      .release-row { min-height: 34vh; }
+      .steps { gap: 0.35rem; }
+      .arrow { display: none; }
+      th, td { display: block; width: 100%; border: 0; }
+      th { padding-bottom: 0.2rem; }
+      td { padding-top: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="brand">Image Delivery Console</p>
+      <span class="status">REGISTRY UPDATED</span>
+    </header>
+
+    <section class="release-row" aria-labelledby="release-title">
+      <h1 id="release-title">RELEASE 2.0</h1>
+      <span class="badge">BUILD 2</span>
+    </section>
+
+    <p class="notice">tag เดิม 1.0 ถูก push ทับให้ชี้ image ตัวนี้</p>
+
+    <nav class="steps" aria-label="วงจรส่งมอบ Docker image">
+      <span class="step">BUILD</span><span class="arrow">→</span>
+      <span class="step">TAG</span><span class="arrow">→</span>
+      <span class="step">PUSH</span><span class="arrow">→</span>
+      <span class="step">PULL</span><span class="arrow">→</span>
+      <span class="step">RUN</span>
+    </nav>
+
+    <section class="details" aria-label="รายละเอียดอิมเมจ">
+      <table>
+        <tbody>
+          <tr><th scope="row">Repository</th><td>workshop/regdemo</td></tr>
+          <tr><th scope="row">Tag</th><td>1.0</td></tr>
+          <tr><th scope="row">Registry</th><td>localhost:5000</td></tr>
+          <tr><th scope="row">Base image</th><td>nginx:1.27-alpine</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Dockerfile.shellform
+# ใช้ Alpine Linux เวอร์ชัน 3.20 เป็น base image
+FROM alpine:3.20
+# shell form (ไม่ใช่ JSON array) — Docker ห่อเป็น /bin/sh -c "sleep 300"
+CMD sleep 300
