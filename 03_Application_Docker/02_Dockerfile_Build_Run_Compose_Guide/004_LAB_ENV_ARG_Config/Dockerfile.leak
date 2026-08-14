@@ -1,7 +1,0 @@
-# ตัวอย่าง "วิธีที่ผิด" — สร้างไว้เพื่อพิสูจน์ว่า secret รั่วออกทาง docker history
-# ห้ามทำแบบนี้กับ token จริงเด็ดขาด ค่าที่ใช้ในแล็บเป็นข้อความปลอมล้วน ๆ
-FROM alpine:3.20
-ARG FAKE_TOKEN=none
-ENV FAKE_TOKEN=$FAKE_TOKEN
-RUN echo "กำลังใช้ token ระหว่าง build: $FAKE_TOKEN" > /token-usage.txt
-CMD ["sh","-c","echo FAKE_TOKEN=$FAKE_TOKEN"]

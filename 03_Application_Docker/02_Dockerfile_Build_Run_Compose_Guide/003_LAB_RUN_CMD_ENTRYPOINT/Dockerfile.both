@@ -1,7 +1,0 @@
-# Dockerfile.both
-# ใช้ Alpine Linux เวอร์ชัน 3.20 เป็น base image
-FROM alpine:3.20
-# กำหนดคำสั่งหลักของ container เป็น ping
-ENTRYPOINT ["ping"]
-# กำหนดอาร์กิวเมนต์เริ่มต้นให้ ENTRYPOINT และแทนที่ได้ตอน docker run
-CMD ["-c", "2", "127.0.0.1"]

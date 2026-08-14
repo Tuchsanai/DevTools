@@ -1,5 +1,0 @@
-# Dockerfile.entrypoint
-# ใช้ Alpine Linux เวอร์ชัน 3.20 เป็น base image
-FROM alpine:3.20
-# กำหนดคำสั่งหลัก โดยอาร์กิวเมนต์จาก docker run จะถูกนำมาต่อท้าย
-ENTRYPOINT ["echo", "ข้อความจาก ENTRYPOINT:"]

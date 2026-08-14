@@ -1,5 +1,0 @@
-# Dockerfile.execform
-# ใช้ Alpine Linux เวอร์ชัน 3.20 เป็น base image
-FROM alpine:3.20
-# exec form (JSON array) — Docker เรียกโปรแกรมตรง ๆ ไม่ผ่าน shell
-CMD ["sleep", "300"]

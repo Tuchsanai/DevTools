@@ -1,9 +1,0 @@
-# Dockerfile.run
-# ใช้ Alpine Linux เวอร์ชัน 3.20 เป็น base image
-FROM alpine:3.20
-# สร้างไฟล์นี้ถาวรใน image ระหว่างขั้นตอน build
-RUN echo "สร้างไฟล์ในขั้น Build" > /message.txt
-# ติดตั้ง curl ระหว่างขั้นตอน build โดยไม่เก็บ package cache
-RUN apk add --no-cache curl
-# กำหนดคำสั่งเริ่มต้น ซึ่งผู้ใช้สามารถแทนที่ตอน docker run ได้
-CMD ["cat", "/message.txt"]
