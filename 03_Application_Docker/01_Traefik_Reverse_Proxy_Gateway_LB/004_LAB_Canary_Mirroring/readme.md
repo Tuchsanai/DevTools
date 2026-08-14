@@ -190,21 +190,28 @@ docker compose up -d
 ✅ **Expected output** — ผลสร้างครั้งแรกจากรอบนี้ (ลำดับบรรทัดอาจสลับกันตาม scheduler):
 
 ```text
+Network labnet Creating
 Network labnet Created
-Container 004_lab_canary_mirroring-v1-1 Created
+Container 004_lab_canary_mirroring-v2-1 Creating
+Container 004_lab_canary_mirroring-traefik-1 Creating
+Container 004_lab_canary_mirroring-v1-1 Creating
 Container 004_lab_canary_mirroring-v2-1 Created
+Container 004_lab_canary_mirroring-v1-1 Created
 Container 004_lab_canary_mirroring-traefik-1 Created
-Container 004_lab_canary_mirroring-v1-1 Started
-Container 004_lab_canary_mirroring-v2-1 Started
+Container 004_lab_canary_mirroring-v1-1 Starting
+Container 004_lab_canary_mirroring-traefik-1 Starting
+Container 004_lab_canary_mirroring-v2-1 Starting
 Container 004_lab_canary_mirroring-traefik-1 Started
+Container 004_lab_canary_mirroring-v2-1 Started
+Container 004_lab_canary_mirroring-v1-1 Started
 ```
 
 รอ API และ router จาก file provider พร้อม เก็บสำเนาต้นฉบับของ `routes.yml` แล้วดูสถานะ:
 
 ```bash
 for i in $(seq 1 60); do
-  curl -fsS http://localhost:8080/api/http/routers/canary@file >/dev/null 2>&1 && \
-  curl -fsS http://localhost:8080/api/http/routers/mirror@file >/dev/null 2>&1 && break
+  curl -fsS http://localhost:8080/api/http/routers/canary-router@file >/dev/null 2>&1 && \
+  curl -fsS http://localhost:8080/api/http/routers/mirror-router@file >/dev/null 2>&1 && break
   sleep 1
 done
 echo 'Traefik API: ready'
@@ -212,7 +219,7 @@ cp dynamic/routes.yml /tmp/routes.yml.orig
 docker compose ps --format 'table {{.Service}}\t{{.Image}}\t{{.Status}}'
 ```
 
-> 📝 **คำอธิบาย:** container สถานะ `Up` ยังไม่รับประกันว่า application พร้อม ลูปจึงถาม dashboard API ทุก 1 วินาที จนเห็น router `canary@file` และ `mirror@file` ทั้งคู่ (ไม่ใช่แค่ API เปิด) และเลิกรอเองใน 60 วินาทีถ้ามีอะไรผิด · `-f` ให้ HTTP error ถือว่าล้มเหลว · `-sS` ซ่อน progress แต่เก็บ error · `cp` เก็บ **ต้นฉบับ** `routes.yml` ไว้ก่อน เพราะขั้นถัด ๆ ไปจะใช้ `sed -i` แก้ไฟล์จริง (9:1→5:5, percent 100→10) — สำเนานี้ใช้กู้ไฟล์ตอน clean re-run และตอนเก็บกวาด · หลังพร้อมจึงพิมพ์ตาราง service/image/status
+> 📝 **คำอธิบาย:** container สถานะ `Up` ยังไม่รับประกันว่า application พร้อม ลูปจึงถาม dashboard API ทุก 1 วินาที จนเห็น router `canary-router@file` และ `mirror-router@file` ทั้งคู่ (ไม่ใช่แค่ API เปิด) และเลิกรอเองใน 60 วินาทีถ้ามีอะไรผิด · `-f` ให้ HTTP error ถือว่าล้มเหลว · `-sS` ซ่อน progress แต่เก็บ error · `cp` เก็บ **ต้นฉบับ** `routes.yml` ไว้ก่อน เพราะขั้นถัด ๆ ไปจะใช้ `sed -i` แก้ไฟล์จริง (9:1→5:5, percent 100→10) — สำเนานี้ใช้กู้ไฟล์ตอน clean re-run และตอนเก็บกวาด · หลังพร้อมจึงพิมพ์ตาราง service/image/status
 
 ✅ **Expected output** — ต้องเห็นครบสาม service (เวลาของแต่ละคนไม่ตรงกัน):
 
@@ -454,8 +461,8 @@ docker compose down
 cp /tmp/routes.yml.orig dynamic/routes.yml
 docker compose up -d
 for i in $(seq 1 60); do
-  curl -fsS http://localhost:8080/api/http/routers/canary@file >/dev/null 2>&1 && \
-  curl -fsS http://localhost:8080/api/http/routers/mirror@file >/dev/null 2>&1 && break
+  curl -fsS http://localhost:8080/api/http/routers/canary-router@file >/dev/null 2>&1 && \
+  curl -fsS http://localhost:8080/api/http/routers/mirror-router@file >/dev/null 2>&1 && break
   sleep 1
 done
 echo 'clean re-run: ready'
@@ -466,16 +473,33 @@ echo 'clean re-run: ready'
 ✅ **Expected output** — ผลรันจริงรอบนี้ (ลำดับ stop/start อาจสลับ):
 
 ```text
-Container 004_lab_canary_mirroring-v1-1 Removed
+Container 004_lab_canary_mirroring-traefik-1 Stopping
+Container 004_lab_canary_mirroring-v2-1 Stopping
+Container 004_lab_canary_mirroring-v1-1 Stopping
+Container 004_lab_canary_mirroring-v2-1 Stopped
+Container 004_lab_canary_mirroring-v2-1 Removing
 Container 004_lab_canary_mirroring-v2-1 Removed
+Container 004_lab_canary_mirroring-traefik-1 Stopped
+Container 004_lab_canary_mirroring-traefik-1 Removing
 Container 004_lab_canary_mirroring-traefik-1 Removed
+Container 004_lab_canary_mirroring-v1-1 Stopped
+Container 004_lab_canary_mirroring-v1-1 Removing
+Container 004_lab_canary_mirroring-v1-1 Removed
+Network labnet Removing
 Network labnet Removed
+Network labnet Creating
 Network labnet Created
+Container 004_lab_canary_mirroring-v2-1 Creating
+Container 004_lab_canary_mirroring-traefik-1 Creating
+Container 004_lab_canary_mirroring-v1-1 Creating
 Container 004_lab_canary_mirroring-v1-1 Created
 Container 004_lab_canary_mirroring-v2-1 Created
 Container 004_lab_canary_mirroring-traefik-1 Created
-Container 004_lab_canary_mirroring-v1-1 Started
+Container 004_lab_canary_mirroring-traefik-1 Starting
+Container 004_lab_canary_mirroring-v1-1 Starting
+Container 004_lab_canary_mirroring-v2-1 Starting
 Container 004_lab_canary_mirroring-v2-1 Started
+Container 004_lab_canary_mirroring-v1-1 Started
 Container 004_lab_canary_mirroring-traefik-1 Started
 clean re-run: ready
 ```
@@ -511,9 +535,19 @@ docker compose ps -a
 ✅ **Expected output** — ผลจริงรอบนี้; Compose อาจสลับลำดับการหยุด แต่ท้ายสุดตารางว่าง:
 
 ```text
+Container 004_lab_canary_mirroring-v2-1 Stopping
+Container 004_lab_canary_mirroring-traefik-1 Stopping
+Container 004_lab_canary_mirroring-v1-1 Stopping
+Container 004_lab_canary_mirroring-v1-1 Stopped
+Container 004_lab_canary_mirroring-v1-1 Removing
 Container 004_lab_canary_mirroring-v1-1 Removed
+Container 004_lab_canary_mirroring-v2-1 Stopped
+Container 004_lab_canary_mirroring-v2-1 Removing
 Container 004_lab_canary_mirroring-v2-1 Removed
+Container 004_lab_canary_mirroring-traefik-1 Stopped
+Container 004_lab_canary_mirroring-traefik-1 Removing
 Container 004_lab_canary_mirroring-traefik-1 Removed
+Network labnet Removing
 Network labnet Removed
 NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
 ```

@@ -76,6 +76,8 @@ cd DevTools/03_Application_Docker/01_Traefik_Reverse_Proxy_Gateway_LB
 มีแอป Python stdlib ที่ build เองเพิ่ม) · Traefik เปิด entrypoint `web` ที่ `8000:80` และ dashboard ที่ `8080:8080`
 เหมือนกันทุกแล็บ — จึงต้อง **`docker compose down` ก่อนย้ายไปแล็บถัดไปเสมอ**
 
+> ⚠️ **หมายเหตุความปลอดภัย:** ชุดนี้ pin `traefik:v3.7.4` เพื่อให้ผลตรงกับเอกสาร/ภาพทุกจุด — เวอร์ชันนี้อยู่ในช่วงที่ได้รับผลกระทบจาก advisory เรื่อง header spoofing ผ่าน underscore header (CVE-2026-54763 กระทบ `basicAuth`/`forwardAuth`; แก้ใน `v3.7.6`) ใช้ในกล่องเรียนแบบปิดได้ แต่**งานจริงให้ใช้ 3.7.x รุ่นล่าสุดเสมอ**
+
 | แล็บ | โฟลเดอร์ | บทบาทที่เล่น | ไฮไลต์ |
 |---|---|---|---|
 | 1 | [`001_LAB_Traefik_Reverse_Proxy`](./001_LAB_Traefik_Reverse_Proxy/) | Reverse Proxy | PathPrefix · backend ไม่ publish port · `X-Forwarded-*` · dashboard |

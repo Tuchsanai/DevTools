@@ -110,8 +110,8 @@ docker compose config --services
 ✅ **Expected output** — ต้องมีสองบรรทัดนี้:
 
 ```text
-app
 traefik
+app
 ```
 
 ### อ่าน Compose ก่อนรัน
@@ -119,6 +119,7 @@ traefik
 - Traefik pin ที่ `traefik:v3.7.4` และรับ static config ผ่าน command flags
 - `--providers.docker.exposedByDefault=false` หมายความว่า container จะไม่ถูกเปิดออกเอง ต้องมี `traefik.enable=true`
 - router หลักใช้ ``PathPrefix(`/`)`` บน entrypoint `web`; TCP forward ไม่แก้ HTTP `Host` header
+- router เสริม ``Host(`app.lab`)`` ตั้ง `priority: 100` และติด header `X-Served-Via` — จะพิสูจน์ในข้อ 8
 - service label ระบุ port `8000` เสมอ เพราะ Traefik ต้องรู้ container port ที่แอปรอฟัง
 - Traefik และ app อยู่บน user-defined network ชื่อคงที่ `labnet`
 - service `app` ไม่มี `container_name` เพราะชื่อคงที่ชื่อเดียวจะทำให้ scale หลายตัวไม่ได้
@@ -151,14 +152,18 @@ Container 002_lab_load_balancing-app-2 Started
 Container 002_lab_load_balancing-app-3 Started
 ```
 
-รอจน route ใช้งานได้ แล้วดูสถานะ:
+รอจน Traefik เห็น server ครบ **3 ตัวและเป็น UP ทั้งหมด** แล้วดูสถานะ:
 
 ```bash
-until curl -fsS http://localhost:8000/health >/dev/null 2>&1; do sleep 1; done
+for i in $(seq 1 60); do
+  [ "$(curl -s http://localhost:8080/api/http/services/lab2-app@docker \
+      | grep -o '"UP"' | wc -l)" -eq 3 ] && break
+  sleep 1
+done
 docker compose ps
 ```
 
-> 📝 **คำอธิบาย:** loop ใช้ `/health` ผ่าน Traefik เป็น readiness gate แทนการเดาเวลารอ · `-f` ให้ curl ถือ HTTP 4xx/5xx เป็น error, `-sS` ลด progress แต่ยังรักษา error, redirect ทั้ง stdout/stderr ไป `/dev/null` เพราะเราต้องการแค่ exit code · `docker compose ps` ตรวจว่ามี app 3 แถวและ Traefik 1 แถว
+> 📝 **คำอธิบาย:** การรอแค่ `/health` ตอบ 200 หนึ่งครั้งพิสูจน์ได้เพียงว่า *อย่างน้อยหนึ่ง* replica พร้อม — replica ที่เหลืออาจยังไม่เข้า pool แล้วทำให้รอบยิง 9 ครั้งถัดไปเห็น hostname ไม่ครบ · loop นี้จึงถาม Dashboard API ของ service `lab2-app@docker` แล้วนับข้อความ `"UP"` (สถานะรายตัวใน `serverStatus`) จนได้ 3 (เท่าจำนวน replicas) · เพดาน 60 รอบ (~1 นาที) กัน loop ค้าง — ถ้าครบแล้วยังไม่ผ่าน ดู `docker compose ps` และ `docker compose logs traefik` · `docker compose ps` ตรวจว่ามี app 3 แถวและ Traefik 1 แถว
 
 ✅ **Expected output** — ทั้ง 4 containers เป็น `Up`; ID และเวลาจะไม่ตรงกับเอกสาร:
 
@@ -247,20 +252,30 @@ root@<container-id>:~#
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.sticky.yml up -d --scale app=3
-until curl -fsS http://localhost:8000/health >/dev/null 2>&1; do sleep 1; done
+for i in $(seq 1 60); do
+  [ "$(curl -s http://localhost:8080/api/http/services/lab2-app@docker \
+      | grep -o '"UP"' | wc -l)" -eq 3 ] && break
+  sleep 1
+done
 ```
 
-> 📝 **คำอธิบาย:** `-f` เรียงจาก base ไป overlay ดังนั้น labels sticky ถูก merge เข้า service `app` · `up -d` recreate เฉพาะ containers ที่ config เปลี่ยน · ยังคง `--scale app=3` ชัดเจนเพื่อไม่ให้จำนวน replicas ขึ้นกับ state เก่า · loop รอจน router ใหม่พร้อม เพราะช่วง recreate สั้น ๆ อาจได้ 404
+> 📝 **คำอธิบาย:** `-f` เรียงจาก base ไป overlay ดังนั้น labels sticky ถูก merge เข้า service `app` · `up -d` recreate เฉพาะ containers ที่ config เปลี่ยน · ยังคง `--scale app=3` ชัดเจนเพื่อไม่ให้จำนวน replicas ขึ้นกับ state เก่า · loop รอจนทั้ง 3 replicas กลับมาเป็น `UP` ใน pool (ไม่ใช่แค่ตัวเดียวตอบ) เพราะช่วง recreate สั้น ๆ อาจได้ 404 หรือ pool ไม่ครบ · เพดาน 60 วินาที
 
-✅ **Expected output** — Traefik ยัง Running ส่วน app ทั้งสามถูก Recreate/Started (ลำดับอาจต่างกัน):
+✅ **Expected output** — ผลรันจริงรอบนี้ Traefik ยัง `Running` ส่วน app ทั้งสามผ่าน `Recreate` → `Recreated` → `Starting` → `Started` (ลำดับของแต่ละ replica อาจต่างกัน):
 
 ```text
 Container 002_lab_load_balancing-traefik-1 Running
+Container 002_lab_load_balancing-app-1 Recreate
+Container 002_lab_load_balancing-app-2 Recreate
+Container 002_lab_load_balancing-app-3 Recreate
 Container 002_lab_load_balancing-app-1 Recreated
 Container 002_lab_load_balancing-app-2 Recreated
 Container 002_lab_load_balancing-app-3 Recreated
+Container 002_lab_load_balancing-app-1 Starting
 Container 002_lab_load_balancing-app-1 Started
+Container 002_lab_load_balancing-app-2 Starting
 Container 002_lab_load_balancing-app-2 Started
+Container 002_lab_load_balancing-app-3 Starting
 Container 002_lab_load_balancing-app-3 Started
 ```
 
@@ -400,11 +415,11 @@ docker compose ps -a app
 
 > 📝 **คำอธิบาย:** `docker compose ps -q app` ใช้ Compose หา replicas แต่ `docker compose stop app` จะหยุด **ทุก replica ของ service** จึงใช้ `docker stop` กับ ID ที่เลือกเพื่อหยุดเพียงหนึ่งตัว · `-t 2` ให้เวลาปิด 2 วินาทีก่อน force · `ps -a` แสดงทั้งตัวที่รันและตัวที่หยุด · เมื่อ Docker ส่ง stop event, Traefik Docker provider จะลบ server นั้นจาก dynamic config โดยไม่ต้องรอ health endpoint
 
-✅ **Expected output** — มีหนึ่งแถว `Exited` และอีกสองแถว `Up`; เวลาและ exit code อาจต่างกันตามจังหวะปิด:
+✅ **Expected output** — ผลรันจริงรอบนี้บรรทัดที่สองเป็น full container ID เพราะส่ง `$STOP_ID` ให้ `docker stop`; จากนั้นมีหนึ่งแถว `Exited` และอีกสองแถว `Up` (ID, เวลา และ exit code อาจต่างกันตามจังหวะปิด):
 
 ```text
 Stopping 002_lab_load_balancing-app-1
-002_lab_load_balancing-app-1
+e43d690d52ddf8135b0fb4cb8b62fa761b13e15811d17e9433147780ecebc0fe
 NAME                           IMAGE                        COMMAND                 SERVICE   CREATED              STATUS                       PORTS
 002_lab_load_balancing-app-1   002_lab_load_balancing-app   "python -u server.py"   app       About a minute ago   Exited (137) 8 seconds ago
 002_lab_load_balancing-app-2   002_lab_load_balancing-app   "python -u server.py"   app       About a minute ago   Up About a minute            8000/tcp
@@ -418,11 +433,15 @@ NAME                           IMAGE                        COMMAND             
 ```bash
 STOP_ID=$(docker compose ps -aq app | head -1)
 docker start "$STOP_ID"
-until [ "$(curl -s http://localhost:8080/api/http/services/lab2-app@docker | grep -o '"UP"' | wc -l)" -eq 3 ]; do sleep 1; done
+for i in $(seq 1 60); do
+  [ "$(curl -s http://localhost:8080/api/http/services/lab2-app@docker \
+      | grep -o '"UP"' | wc -l)" -eq 3 ] && break
+  sleep 1
+done
 docker compose ps app
 ```
 
-> 📝 **คำอธิบาย:** `-a` ทำให้ `ps -q` คืน ID ของตัวที่หยุดด้วย · `docker start` เปิด container เดิม · loop อ่าน Traefik API แล้วนับสถานะ `"UP"` จนครบ 3 จึงไม่ต้องเดาเวลา · ปิดท้ายด้วย Compose status
+> 📝 **คำอธิบาย:** `-a` ทำให้ `ps -q` คืน ID ของตัวที่หยุดด้วย · `docker start` เปิด container เดิม · loop อ่าน Traefik API แล้วนับข้อความ `"UP"` (สถานะรายตัวใน `serverStatus`) จนครบ 3 จึงไม่ต้องเดาเวลา (เพดาน 60 วินาที) · ปิดท้ายด้วย Compose status
 
 ✅ **Expected output** — บรรทัดแรกเป็น full container ID แล้ว app ทั้ง 3 กลับมา `Up`; ID/เวลาจะต่างกัน:
 
@@ -438,18 +457,23 @@ NAME                           IMAGE                        COMMAND             
 
 ## 8. แบบฝึกสั้น: Host rule กับ TCP port forwarding
 
-Compose มี router เสริม ``Host(`app.lab`)`` ให้ลองส่ง Host header โดยไม่แก้ DNS:
+Compose มี router เสริม ``Host(`app.lab`)`` ให้ลองส่ง Host header โดยไม่แก้ DNS — แต่มีปัญหาคลาสสิกซ่อนอยู่: request ที่ส่ง `Host: app.lab` เข้ามานั้น **match ทั้งสอง router** (``Host(`app.lab`)`` และ ``PathPrefix(`/`)``) แล้ว Traefik จะเลือกตัวไหน?
+
+Traefik v3 จัดลำดับด้วย **priority** ซึ่งค่า default = ความยาวของ rule — บังเอิญ ``Host(`app.lab`)`` และ ``PathPrefix(`/`)`` ยาว 15 ตัวอักษรเท่ากันพอดี ผลเสมอกันทำให้เลือกไม่แน่นอน แล็บนี้จึงประกาศ `priority: 100` ให้ router เสริมชนะอย่างชัดเจน และติด middleware `headers` ที่เพิ่ม response header `X-Served-Via: host-router` ไว้เป็น "ลายนิ้วมือ" เฉพาะเส้นทางนี้ (สอง router ชี้ service เดียวกัน — ถ้าไม่มี header ก็แยกไม่ออกว่าใคร match)
 
 ```bash
-curl -s -H 'Host: app.lab' http://localhost:8000/api/whoami
+curl -si -H 'Host: app.lab' http://localhost:8000/api/whoami | sed -n '1p;/^X-Served-Via/Ip'
+curl -si http://localhost:8000/api/whoami | sed -n '1p;/^X-Served-Via/Ip'
 ```
 
-> 📝 **คำอธิบาย:** `-H` เปลี่ยน HTTP `Host` header ให้ตรง rule ของ router เสริม · TCP port forwarding ของ Docker/SSH ส่ง byte ไปอีก port แต่ **ไม่แก้ Host header ให้** ดังนั้นการเปิด `http://localhost:8000` ปกติยังส่ง Host เป็น `localhost:8000`; ถ้าจะทดสอบ Host rule ต้องใช้ `-H`, DNS หรือ hosts file เอง · routing หลักของ LAB ยังเป็น ``PathPrefix(`/`)`` เพื่อให้เข้าผ่าน port forward ได้โดยไม่ตั้ง DNS
+> 📝 **คำอธิบาย:** `-H` เปลี่ยน HTTP `Host` header ให้ตรง rule ของ router เสริม · `-i` ขอ response headers มาดูด้วย และ `sed` กรองเฉพาะบรรทัด status กับ `X-Served-Via` · คำสั่งแรกต้องเห็น `X-Served-Via: host-router` = พิสูจน์ว่า router ``Host(`app.lab`)`` (priority 100) เป็นผู้ match · คำสั่งที่สองไม่ส่ง `-H` — TCP port forwarding ของ Docker/SSH ส่ง byte ไปอีก port แต่ **ไม่แก้ Host header ให้** Host จึงเป็น `localhost:8000` ไม่ตรง rule → ตกไปที่ ``PathPrefix(`/`)`` และไม่มี header พิเศษ · ดู priority ของทั้งสอง router ได้ที่ `curl -s http://localhost:8080/api/http/routers | python3 -m json.tool | grep -A2 rule`
 
-✅ **Expected output** — ได้ JSON ปกติจากหนึ่งใน replicas; hostname, สี และ counter เปลี่ยนตาม runtime:
+✅ **Expected output** — คำสั่งแรกมีบรรทัด `X-Served-Via` คำสั่งที่สองไม่มี:
 
-```json
-{"hostname":"6e05080e025c","color":"hsl(211 78% 60%)","served_count":1}
+```text
+HTTP/1.1 200 OK
+X-Served-Via: host-router
+HTTP/1.1 200 OK
 ```
 
 ---
@@ -458,7 +482,7 @@ curl -s -H 'Host: app.lab' http://localhost:8000/api/whoami
 
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
-| `404 page not found` ทันทีหลัง `up` | Docker provider กำลังรับ event ของ containers ที่ recreate | รัน readiness loop `until curl -fsS .../health; do sleep 1; done` ก่อนทดลอง |
+| `404 page not found` ทันทีหลัง `up` | Docker provider กำลังรับ event ของ containers ที่ recreate | รัน readiness loop ของข้อ 3 (นับ `"UP"` ครบ 3 จาก Dashboard API) ก่อนทดลอง |
 | เห็น hostname เดียวตั้งแต่ก่อนเปิด sticky | curl ส่ง cookie เก่าหรือ scale ไม่ครบ | ล้าง `cookies.txt`, ใช้ curl โดยไม่ `-b`, และตรวจ `docker compose ps` ให้ app ครบ 3 |
 | เปิด sticky แล้ว curl ยังกระจาย | curl ไม่ได้เก็บ/ส่ง cookie กลับ | ใช้ `-c cookies.txt -b cookies.txt` ในทุก request หลังบรรทัดแรก |
 | เปิด `secure=true` แล้ว sticky ไม่ทำงาน | Secure cookie ไม่ถูกส่งผ่าน HTTP | LAB นี้ห้ามตั้ง secure; production ควรใช้ HTTPS แล้วค่อยเปิด Secure |
@@ -477,13 +501,26 @@ docker compose ps -a
 
 > 📝 **คำอธิบาย:** `down` หยุดและลบ containers ของ project พร้อม network `labnet` เพื่อไม่ให้ชื่อ network กับ port 8000/8080 ชน LAB ถัดไป · image ที่ build และ base images ยังเก็บเป็น cache จึงเปิดใหม่เร็ว · `ps -a` ตรวจว่า project ไม่มี container ค้าง · ปิด port forwarding 8000/8080 ใน VS Code หรือ `exit` จาก SSH tunnel ด้วย
 
-✅ **Expected output** — resources ถูก Removed และตารางสุดท้ายเหลือแต่หัว:
+✅ **Expected output** — ผลรันจริงรอบนี้ Compose รายงานแต่ละช่วงตั้งแต่ `Stopping` ถึง `Removed` แล้วตารางสุดท้ายเหลือแต่หัว (ลำดับของ containers อาจต่างกัน):
 
 ```text
-Container 002_lab_load_balancing-app-1 Removed
-Container 002_lab_load_balancing-app-2 Removed
-Container 002_lab_load_balancing-app-3 Removed
+Container 002_lab_load_balancing-traefik-1 Stopping
+Container 002_lab_load_balancing-app-1 Stopping
+Container 002_lab_load_balancing-app-2 Stopping
+Container 002_lab_load_balancing-app-3 Stopping
+Container 002_lab_load_balancing-traefik-1 Stopped
+Container 002_lab_load_balancing-traefik-1 Removing
 Container 002_lab_load_balancing-traefik-1 Removed
+Container 002_lab_load_balancing-app-1 Stopped
+Container 002_lab_load_balancing-app-1 Removing
+Container 002_lab_load_balancing-app-1 Removed
+Container 002_lab_load_balancing-app-2 Stopped
+Container 002_lab_load_balancing-app-2 Removing
+Container 002_lab_load_balancing-app-2 Removed
+Container 002_lab_load_balancing-app-3 Stopped
+Container 002_lab_load_balancing-app-3 Removing
+Container 002_lab_load_balancing-app-3 Removed
+Network labnet Removing
 Network labnet Removed
 NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
 ```

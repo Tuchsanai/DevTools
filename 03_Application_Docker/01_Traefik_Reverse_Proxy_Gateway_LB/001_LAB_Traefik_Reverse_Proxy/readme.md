@@ -232,10 +232,13 @@ services:
 
 ```bash
 docker compose up -d
-until curl -fsS http://localhost:8000/app1 >/dev/null 2>&1; do sleep 1; done
+for i in $(seq 1 60); do
+  curl -fsS http://localhost:8000/app1 >/dev/null 2>&1 && break
+  sleep 1
+done
 ```
 
-> 📝 **คำอธิบาย:** `docker compose up -d` เปิด Traefik, `app1`, `app2` พร้อม network · loop ใช้ `curl -f` ซึ่งคืน error เมื่อ HTTP ไม่ใช่ 2xx/3xx แล้วลองซ้ำทุก 1 วินาที ป้องกัน race ที่ container ขึ้นแล้วแต่ Traefik ยังโหลด config ไม่เสร็จ · redirect ทั้ง stdout/stderr ไป `/dev/null` เพราะใช้เป็น readiness check ไม่ใช่ผลทดลอง
+> 📝 **คำอธิบาย:** `docker compose up -d` เปิด Traefik, `app1`, `app2` พร้อม network · loop ใช้ `curl -f` ซึ่งคืน error เมื่อ HTTP ไม่ใช่ 2xx/3xx แล้วลองซ้ำทุก 1 วินาที ป้องกัน race ที่ container ขึ้นแล้วแต่ Traefik ยังโหลด config ไม่เสร็จ · เพดาน 60 รอบ (~1 นาที) กัน loop ค้างไม่รู้จบเมื่อระบบผิดจริง — ถ้าครบแล้วยังไม่ได้ 200 ให้ไปดู `docker compose logs traefik` · redirect ทั้ง stdout/stderr ไป `/dev/null` เพราะใช้เป็น readiness check ไม่ใช่ผลทดลอง
 
 ✅ **Expected output** — คำสั่ง `up` สร้าง 3 container ส่วน readiness loop สำเร็จแบบเงียบ ๆ (ลำดับ container อาจสลับกัน):
 
@@ -410,11 +413,14 @@ services:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.host.yml up -d
-until curl -s http://localhost:8080/api/http/routers/app1-host@docker | \
-  grep -q 'Host(`app1.lab`)'; do sleep 1; done
+for i in $(seq 1 60); do
+  curl -s http://localhost:8080/api/http/routers/app1-host@docker | \
+    grep -q 'Host(`app1.lab`)' && break
+  sleep 1
+done
 ```
 
-> 📝 **คำอธิบาย:** Compose merge labels จากสองไฟล์และ recreate เฉพาะ `app1` ที่ config เปลี่ยน · loop ถาม API ทุกวินาทีจน Traefik โหลด `Host(`app1.lab`)` แล้ว จึงไม่ยิงทดสอบเร็วเกินไป · router ใหม่นี้ใช้ service `app1` ตัวเดิม
+> 📝 **คำอธิบาย:** Compose merge labels จากสองไฟล์และ recreate เฉพาะ `app1` ที่ config เปลี่ยน · loop ถาม API ทุกวินาทีจน Traefik โหลด `Host(`app1.lab`)` แล้ว จึงไม่ยิงทดสอบเร็วเกินไป (เพดาน 60 วินาที) · router ใหม่นี้ใช้ service `app1` ตัวเดิม
 
 ✅ **Expected output** — `app1` ถูก recreate ส่วน service อื่นยัง Running; readiness loop สำเร็จแบบเงียบ ๆ:
 
@@ -503,17 +509,20 @@ for attempt in $(seq 1 30); do
 done
 ```
 
-> 📝 **คำอธิบาย:** override เปลี่ยน `traefik.enable` ของ `app2` เป็น false โดย container ยังรันอยู่ · เพราะ Traefik ใช้ `exposedByDefault=false` จึงไม่สร้าง router/service ให้ container ที่ไม่ได้ opt in · loop รอพร้อมกัน 3 เงื่อนไขเพื่อกันช่วงสั้น ๆ ที่ container `Started` แล้วแต่ dynamic config ยังอัปเดตไม่ครบ
+> 📝 **คำอธิบาย:** override เปลี่ยน `traefik.enable` ของ `app2` เป็น false โดย container ยังรันอยู่ · คำสั่งนี้ไม่ได้รวม `docker-compose.host.yml` จากข้อ 6 จึง recreate `app1` เพื่อถอด Host router พร้อมกับ recreate `app2` เพื่อใช้ label ใหม่ · เพราะ Traefik ใช้ `exposedByDefault=false` จึงไม่สร้าง router/service ให้ container ที่ไม่ได้ opt in · loop รอพร้อมกัน 3 เงื่อนไขเพื่อกันช่วงสั้น ๆ ที่ container `Started` แล้วแต่ dynamic config ยังอัปเดตไม่ครบ
 
-✅ **Expected output** — รอบทดสอบที่ state เดิมเป็น compose หลัก recreate เฉพาะ `app2`; loop สำเร็จแบบเงียบ ๆ:
+✅ **Expected output** — ผลรันจริงรอบนี้ต่อจากข้อ 6 recreate ทั้ง `app1` และ `app2`; loop สำเร็จแบบเงียบ ๆ (ลำดับ container อาจสลับกัน):
 
 ```text
  Container 001_lab_traefik_reverse_proxy-traefik-1 Running
- Container 001_lab_traefik_reverse_proxy-app1-1 Running
  Container 001_lab_traefik_reverse_proxy-app2-1 Recreate
+ Container 001_lab_traefik_reverse_proxy-app1-1 Recreate
+ Container 001_lab_traefik_reverse_proxy-app1-1 Recreated
  Container 001_lab_traefik_reverse_proxy-app2-1 Recreated
  Container 001_lab_traefik_reverse_proxy-app2-1 Starting
+ Container 001_lab_traefik_reverse_proxy-app1-1 Starting
  Container 001_lab_traefik_reverse_proxy-app2-1 Started
+ Container 001_lab_traefik_reverse_proxy-app1-1 Started
 ```
 
 พิสูจน์ว่า `app1` ยังปกติ แต่ route ของ `app2` หาย:
@@ -539,12 +548,13 @@ app2@docker -> HTTP 404
 
 ```bash
 docker compose up -d
-until [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/app2)" = "200" ]; do
+for i in $(seq 1 60); do
+  [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/app2)" = "200" ] && break
   sleep 1
 done
 ```
 
-> 📝 **คำอธิบาย:** การรัน compose หลักคืน `traefik.enable=true` ให้ `app2` จึง recreate ตัวนั้นและให้ Docker provider สร้าง router กลับมา · readiness loop รอ HTTP 200 ก่อนตรวจผล
+> 📝 **คำอธิบาย:** การรัน compose หลักคืน `traefik.enable=true` ให้ `app2` จึง recreate ตัวนั้นและให้ Docker provider สร้าง router กลับมา · readiness loop รอ HTTP 200 ก่อนตรวจผล (เพดาน 60 วินาที)
 
 ✅ **Expected output** — `app2` ถูก recreate และ loop จบเงียบ ๆ:
 
@@ -628,8 +638,9 @@ NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
 
 ```bash
 docker compose up -d
-until [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/app1)" = "200" ] && \
-      [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/app2)" = "200" ]; do
+for i in $(seq 1 60); do
+  [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/app1)" = "200" ] && \
+  [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/app2)" = "200" ] && break
   sleep 1
 done
 curl -s -o /dev/null -w '/app1 -> HTTP %{http_code}\n' http://localhost:8000/app1

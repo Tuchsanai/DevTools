@@ -23,6 +23,22 @@ fail() {
 
 printf "${CYAN}LAB005 acceptance check${RESET}  %s\n\n" "$BASE_URL"
 
+# wait for the Traefik control plane before judging routes (starter's bugs are
+# at the routing layer — Traefik itself must be up or every AC fails spuriously)
+DASH_URL="${DASH_URL:-http://localhost:8080}"
+control_plane_ready=0
+for _ in $(seq 1 30); do
+  overview_code="$(curl --max-time 2 -sS -o /dev/null -w '%{http_code}' "$DASH_URL/api/overview" 2>/dev/null || true)"
+  if [[ "$overview_code" == "200" ]]; then
+    control_plane_ready=1
+    break
+  fi
+  sleep 1
+done
+if [[ "$control_plane_ready" -eq 0 ]]; then
+  printf "WARN  Traefik API at %s not ready after 30s - results below may be startup noise\n\n" "$DASH_URL"
+fi
+
 tmp_body="$(mktemp)"
 trap 'rm -f "$tmp_body"' EXIT
 
@@ -42,20 +58,19 @@ else
 fi
 
 declare -A HOSTS=()
-orders_ok=1
+orders_success=0
 for request_no in {1..12}; do
   response="$(curl --max-time 4 -fsS "$BASE_URL/api/orders?check=$request_no" 2>/dev/null || true)"
   hostname="$(printf '%s' "$response" | sed -n 's/.*"hostname":"\([^"]*\)".*/\1/p')"
   if [[ -n "$hostname" ]]; then
     HOSTS["$hostname"]=1
-  else
-    orders_ok=0
+    orders_success=$((orders_success + 1))
   fi
 done
-if [[ "$orders_ok" -eq 1 && "${#HOSTS[@]}" -ge 2 ]]; then
+if [[ "$orders_success" -eq 12 && "${#HOSTS[@]}" -ge 2 ]]; then
   pass "AC3  /api/orders reached ${#HOSTS[@]} hostnames in 12 requests: ${!HOSTS[*]}"
 else
-  fail "AC3  /api/orders expected >=2 hostnames, found ${#HOSTS[@]}"
+  fail "AC3  /api/orders expected 12/12 OK and >=2 hostnames, got $orders_success/12 OK, ${#HOSTS[@]} hostnames"
 fi
 
 sleep 2

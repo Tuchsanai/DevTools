@@ -164,10 +164,13 @@ grep 'basicauth.users' docker-compose.yml
 ```bash
 docker compose pull
 docker compose -f docker-compose.yml -f compose.stage0.yml up -d
-until curl -sf http://localhost:8080/api/overview >/dev/null; do sleep 1; done
+for i in $(seq 1 60); do
+  curl -sf http://localhost:8080/api/overview >/dev/null && break
+  sleep 1
+done
 ```
 
-> 📝 **คำอธิบาย:** `pull` ดึง image ตาม tag ที่ล็อกไว้ · `-f` เรียงจากไฟล์ฐานไปไฟล์ override ค่าจาก `stage0` จึงชนะเฉพาะ label middleware · `up -d` สร้าง network/container แล้วคืน prompt · ลูป `until` ถาม Dashboard API ทุก 1 วินาทีแทนการเดาเวลาบูต
+> 📝 **คำอธิบาย:** `pull` ดึง image ตาม tag ที่ล็อกไว้ · `-f` เรียงจากไฟล์ฐานไปไฟล์ override ค่าจาก `stage0` จึงชนะเฉพาะ label middleware · `up -d` สร้าง network/container แล้วคืน prompt · readiness loop ถาม Dashboard API ทุก 1 วินาทีแทนการเดาเวลาบูต และเลิกรอเองใน 60 วินาทีถ้าระบบผิดจริง
 
 ✅ **Expected output** — ครั้งแรกมีข้อความ pull/create หลายบรรทัด จุดสำคัญคือ image ทั้งคู่ `Pulled` และ container ทั้งสี่ `Started` (layer ID กับลำดับบรรทัดต่างได้):
 
@@ -228,7 +231,10 @@ GET /api/users/profile HTTP/1.1
 
 ```bash
 docker compose -f docker-compose.yml -f compose.stage1-strip.yml up -d
-until curl -sf http://localhost:8000/api/users/profile | grep -q '^GET'; do sleep 1; done
+for i in $(seq 1 60); do
+  curl -sf http://localhost:8000/api/users/profile | grep -q '^GET' && break
+  sleep 1
+done
 curl -s http://localhost:8000/api/users/profile | grep '^GET'
 curl -s http://localhost:8000/api/orders/42 | grep '^GET'
 curl -s http://localhost:8000/api/products/7 | grep '^GET'
@@ -252,7 +258,10 @@ GET /7 HTTP/1.1
 
 ```bash
 docker compose -f docker-compose.yml -f compose.stage2-auth.yml up -d
-until [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/api/users/profile)" = 401 ]; do sleep 1; done
+for i in $(seq 1 60); do
+  [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/api/users/profile)" = 401 ] && break
+  sleep 1
+done
 printf 'without credentials: '
 curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8000/api/users/profile
 printf 'with credentials:    '
@@ -290,8 +299,11 @@ X-Powered-By before headers: 0
 
 ```bash
 docker compose -f docker-compose.yml -f compose.stage3-headers.yml up -d
-until curl -si -u student:student123 http://localhost:8000/api/users/profile | \
-  grep -qi '^X-Powered-By: DevTools-Gateway'; do sleep 1; done
+for i in $(seq 1 60); do
+  curl -si -u student:student123 http://localhost:8000/api/users/profile | \
+    grep -qi '^X-Powered-By: DevTools-Gateway' && break
+  sleep 1
+done
 curl -si -u student:student123 http://localhost:8000/api/users/profile | \
   sed -n '1p;/^X-Powered-By:/Ip;/^X-Content-Type-Options:/Ip'
 ```
@@ -356,7 +368,10 @@ Routing หลักของ LAB ยังเป็น PathPrefix เพรา�
 ```bash
 docker compose up -d
 docker compose restart traefik
-until curl -sf http://localhost:8080/api/overview >/dev/null; do sleep 1; done
+for i in $(seq 1 60); do
+  curl -sf http://localhost:8080/api/overview >/dev/null && break
+  sleep 1
+done
 sleep 1
 ```
 
@@ -429,14 +444,21 @@ docker compose logs --no-log-prefix traefik | \
 
 > 📝 **คำอธิบาย:** `--accesslog=true` บันทึกทุก request ที่ Traefik รับ · `--no-log-prefix` เอาชื่อ Compose service ด้านหน้าออกให้อ่านง่าย · field หลัง request line คือ HTTP status · เครื่องหมาย `-` แทน user ที่ยังไม่ authenticate ส่วน `student` ปรากฏเมื่อ Basic Auth สำเร็จ
 
-✅ **Expected output** — IP, เวลา, request counter และ latency ของผู้เรียนต่างได้; รอบนี้เห็นทั้งสาม status จริง:
+✅ **Expected output** — IP, เวลา, request counter และ latency ของผู้เรียนต่างได้; ผลรันจริงรอบนี้ `tail -12` เห็น `200` และ `429` ส่วน `401` จาก stage ก่อนหน้าอยู่เกินช่วง 12 บรรทัดท้าย:
 
 ```text
-172.19.0.1 - - [14/Aug/2026:09:00:58 +0000] "GET /api/users/profile HTTP/1.1" 401 17 "-" "-" 21 "users@docker" "-" 0ms
-172.19.0.1 - student [14/Aug/2026:09:01:02 +0000] "GET /api/users/profile HTTP/1.1" 429 17 "-" "-" 1 "users@docker" "-" 0ms
-172.19.0.1 - student [14/Aug/2026:09:01:02 +0000] "GET /api/users/profile HTTP/1.1" 200 444 "-" "-" 2 "users@docker" "http://172.19.0.5:80" 1ms
-        ... (รอบยิงพร้อมกันมี 200 รวม 2 บรรทัด และ 429 รวม 8 บรรทัด) ...
-172.19.0.1 - student [14/Aug/2026:09:01:18 +0000] "GET /api/users/profile HTTP/1.1" 200 444 "-" "-" 11 "users@docker" "http://172.19.0.5:80" 0ms
+172.19.0.1 - student [14/Aug/2026:12:51:23 +0000] "GET /api/users/profile HTTP/1.1" 200 444 "-" "-" 30 "users@docker" "http://172.19.0.4:80" 0ms
+172.19.0.1 - student [14/Aug/2026:12:51:46 +0000] "GET /api/users/profile HTTP/1.1" 429 17 "-" "-" 3 "users@docker" "-" 0ms
+172.19.0.1 - student [14/Aug/2026:12:51:46 +0000] "GET /api/users/profile HTTP/1.1" 429 17 "-" "-" 4 "users@docker" "-" 0ms
+172.19.0.1 - student [14/Aug/2026:12:51:46 +0000] "GET /api/users/profile HTTP/1.1" 200 444 "-" "-" 2 "users@docker" "http://172.19.0.2:80" 0ms
+172.19.0.1 - student [14/Aug/2026:12:51:46 +0000] "GET /api/users/profile HTTP/1.1" 429 17 "-" "-" 6 "users@docker" "-" 0ms
+172.19.0.1 - student [14/Aug/2026:12:51:46 +0000] "GET /api/users/profile HTTP/1.1" 429 17 "-" "-" 5 "users@docker" "-" 0ms
+172.19.0.1 - student [14/Aug/2026:12:51:46 +0000] "GET /api/users/profile HTTP/1.1" 200 444 "-" "-" 1 "users@docker" "http://172.19.0.2:80" 1ms
+172.19.0.1 - student [14/Aug/2026:12:51:46 +0000] "GET /api/users/profile HTTP/1.1" 429 17 "-" "-" 7 "users@docker" "-" 0ms
+172.19.0.1 - student [14/Aug/2026:12:51:46 +0000] "GET /api/users/profile HTTP/1.1" 429 17 "-" "-" 8 "users@docker" "-" 0ms
+172.19.0.1 - student [14/Aug/2026:12:51:46 +0000] "GET /api/users/profile HTTP/1.1" 429 17 "-" "-" 9 "users@docker" "-" 0ms
+172.19.0.1 - student [14/Aug/2026:12:51:46 +0000] "GET /api/users/profile HTTP/1.1" 429 17 "-" "-" 10 "users@docker" "-" 0ms
+172.19.0.1 - student [14/Aug/2026:12:52:03 +0000] "GET /api/users/profile HTTP/1.1" 200 444 "-" "-" 11 "users@docker" "http://172.19.0.2:80" 0ms
 ```
 
 สังเกตว่า `401` และ `429` มี upstream เป็น `"-"` เพราะ middleware ตอบกลับก่อนถึง backend ส่วน `200` แสดง URL ของ whoami ปลายทาง
@@ -507,7 +529,10 @@ attached: users-strip@docker, security-headers@docker, api-rate-limit@docker
 
 ```bash
 docker compose up -d
-until [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/api/users/profile)" = 401 ]; do sleep 1; done
+for i in $(seq 1 60); do
+  [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/api/users/profile)" = 401 ] && break
+  sleep 1
+done
 printf 'without credentials after fix: '
 curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8000/api/users/profile
 ```
@@ -531,7 +556,10 @@ without credentials after fix: 401
 ```bash
 docker compose down
 docker compose up -d
-until [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/api/users/profile)" = 401 ]; do sleep 1; done
+for i in $(seq 1 60); do
+  [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/api/users/profile)" = 401 ] && break
+  sleep 1
+done
 docker compose ps --format 'table {{.Service}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
 printf 'clean re-run without credentials: '
 curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8000/api/users/profile

@@ -1,7 +1,8 @@
 # LAB 5 — Gateway Capstone: DevTools Mini Shop
 
 > โฟลเดอร์ `005_LAB_Gateway_Capstone` = ภารกิจจบชุด Traefik
-> ไฟล์หลัก: `starter/docker-compose.yml` · `solution/docker-compose.yml` · `check.sh` · `shop-ui/` · `orders/`
+> ไฟล์หลัก: `starter/docker-compose.yml` · `check.sh` · `shop-ui/` · `orders/`
+> โฟลเดอร์ `solution/` เป็นชุดเฉลยเสริมจากผู้สอน จึงอาจไม่มีใน repo ของผู้เรียน
 
 LAB นี้ไม่ใช่ walkthrough ที่บอกว่าต้องแก้บรรทัดไหนตั้งแต่ต้น แต่เป็น **mission debug**: บริษัทจำลอง `Example Commerce` ส่ง mini API platform ที่เปิดไม่สมบูรณ์มาให้ทีมเรา ระบบมีจุดพัง 3 จุดจากสาม LAB ก่อนหน้า หน้าที่ของเราคืออ่านอาการ สร้างสมมติฐาน แก้ทีละจุด และใช้ acceptance test เป็นหลักฐาน
 
@@ -87,7 +88,7 @@ chmod +x check.sh
 005_LAB_Gateway_Capstone/
 ├── check.sh
 ├── starter/docker-compose.yml       # มีบั๊ก 3 จุด
-├── solution/
+├── solution/                        # อาจมีเมื่อผู้สอนแจกชุดเฉลยเสริม
 │   ├── docker-compose.yml           # ระบบที่แก้ครบ
 │   └── README.md                    # เฉลยพร้อมเหตุผล
 ├── shop-ui/                         # HTML/CSS/JS inline + Python stdlib
@@ -123,7 +124,7 @@ Acceptance criteria ที่ `check.sh` ตรวจมี 4 ข้อ:
 sed -n '1,240p' check.sh
 ```
 
-> 📝 **คำอธิบาย:** checker เป็น Bash + `curl` ล้วน แต่ละข้อยิงผ่าน entrypoint เดียวกับผู้ใช้จริง · `BASE_URL` มี default เป็น `http://localhost:8000` · associative array นับ hostname โดยไม่ต้องติดตั้ง `jq` · exit code เป็น 0 เมื่อผ่านครบและเป็น 1 เมื่อมี FAIL จึงใช้ใน CI ได้
+> 📝 **คำอธิบาย:** checker เป็น Bash + `curl` ล้วน แต่ละข้อยิงผ่าน entrypoint เดียวกับผู้ใช้จริง · `BASE_URL` มี default เป็น `http://localhost:8000` · ก่อนตรวจ checker จะรอ Traefik control plane (`:8080/api/overview`) พร้อมก่อน สูงสุด 30 วินาที เพื่อกันผลตรวจเพี้ยนจากการรันทันทีหลัง `up -d` — ถ้าไม่พร้อมจะพิมพ์ `WARN` แล้วตรวจต่อ · associative array นับ hostname โดยไม่ต้องติดตั้ง `jq` · AC3 ต้องยิงสำเร็จครบ 12 ครั้ง **และ** เห็นอย่างน้อย 2 hostname · exit code เป็น 0 เมื่อผ่านครบและเป็น 1 เมื่อมี FAIL จึงใช้ใน CI ได้
 
 ✅ **Expected output:** เห็นฟังก์ชัน `pass`/`fail`, การตรวจ AC1–AC4 และบรรทัดสุดท้าย `[[ "$FAIL_COUNT" -eq 0 ]]` โดยไม่มีการแก้ไฟล์
 
@@ -167,7 +168,7 @@ LAB005 acceptance check  http://localhost:8000
 
 FAIL  AC1  GET / expected shop-ui HTTP 200, got HTTP 000
 FAIL  AC2  /api/users expected 401 -> 200, got 200 -> 200
-FAIL  AC3  /api/orders expected >=2 hostnames, found 0
+FAIL  AC3  /api/orders expected 12/12 OK and >=2 hostnames, got 0/12 OK, 0 hostnames
 FAIL  AC4  /api/users expected at least one HTTP 429, found 0 of 10
 
 Result: 0 PASS, 4 FAIL
@@ -216,7 +217,7 @@ starter-orders-3
 
 ดู `EXPOSE`/ค่า `PORT` ใน `orders/Dockerfile` และ `orders/server.py` แล้วเทียบกับ `traefik.http.services.orders.loadbalancer.server.port` ค่า service port คือปลายทางภายใน `labnet` ไม่ใช่ `8000:80` ของ Traefik
 
-> ถ้าติดเกิน 15 นาที ให้เปิด `../solution/README.md` ซึ่งเฉลยทีละบรรทัดพร้อมเหตุผล ไม่ควร copy ทั้งไฟล์โดยไม่อธิบายสาเหตุได้
+> ถ้าติดเกิน 15 นาทีและผู้สอนแจกชุดเฉลยเสริม ให้เปิด `../solution/README.md` ซึ่งเฉลยทีละบรรทัดพร้อมเหตุผล · ถ้าไม่มีโฟลเดอร์นี้ ให้ย้อนอ่าน Hint 1–3 และเทียบหลักฐานทีละชั้น ไม่ควร copy ทั้งไฟล์โดยไม่อธิบายสาเหตุได้
 
 ---
 
@@ -226,17 +227,18 @@ starter-orders-3
 
 ```bash
 docker compose up -d --build --scale orders=3
+sleep 2
 ../check.sh
 ```
 
-> 📝 **คำอธิบาย:** `docker compose up` เป็น idempotent — service ที่ config เปลี่ยนจะถูก recreate ส่วนที่ไม่เปลี่ยนใช้ต่อ · checker เดิมทำหน้าที่ regression test ป้องกันไม่ให้การแก้ AC หนึ่งทำอีก AC พัง · ผลด้านล่างอ้างลำดับแก้ network → middleware → service port; ถ้าเลือกคนละลำดับ จำนวน PASS ระหว่างทางย่อมต่างได้
+> 📝 **คำอธิบาย:** `docker compose up` เป็น idempotent — service ที่ config เปลี่ยนจะถูก recreate ส่วนที่ไม่เปลี่ยนใช้ต่อ · `sleep 2` เว้นให้ Docker provider รับ event และสร้าง router ใหม่หลัง live recreate; readiness wait ใน checker รอ control plane ตอนเริ่มระบบ แต่ Traefik ที่รันอยู่เดิมอาจตอบ overview พร้อมก่อน dynamic config ชุดใหม่ · checker เดิมทำหน้าที่ regression test ป้องกันไม่ให้การแก้ AC หนึ่งทำอีก AC พัง · ผลด้านล่างอ้างลำดับแก้ network → middleware → service port; ถ้าเลือกคนละลำดับ จำนวน PASS ระหว่างทางย่อมต่างได้
 
 ✅ **Expected output หลังแก้เส้นทาง network** — ผลจริงรอบนี้:
 
 ```text
 PASS  AC1  GET / returns the shop-ui (HTTP 200)
 FAIL  AC2  /api/users expected 401 -> 200, got 200 -> 200
-FAIL  AC3  /api/orders expected >=2 hostnames, found 0
+FAIL  AC3  /api/orders expected 12/12 OK and >=2 hostnames, got 0/12 OK, 0 hostnames
 FAIL  AC4  /api/users expected at least one HTTP 429, found 0 of 10
 
 Result: 1 PASS, 3 FAIL
@@ -247,7 +249,7 @@ Result: 1 PASS, 3 FAIL
 ```text
 PASS  AC1  GET / returns the shop-ui (HTTP 200)
 PASS  AC2  /api/users requires basicAuth (401 -> 200)
-FAIL  AC3  /api/orders expected >=2 hostnames, found 0
+FAIL  AC3  /api/orders expected 12/12 OK and >=2 hostnames, got 0/12 OK, 0 hostnames
 PASS  AC4  /api/users returned HTTP 429 (8 of 10 requests)
 
 Result: 3 PASS, 1 FAIL
@@ -264,18 +266,27 @@ PASS  AC4  /api/users returned HTTP 429 (8 of 10 requests)
 Result: 4 PASS, 0 FAIL
 ```
 
-ถ้าต้องการเทียบกับเฉลยโดยไม่ทับงานที่แก้เอง:
+ถ้าผู้สอนแจกโฟลเดอร์ `solution/` และต้องการเทียบกับเฉลยโดยไม่ทับงานที่แก้เอง ให้รัน block นี้; ถ้าไม่มี checker จะพิมพ์ข้อความแล้วใช้ starter ที่แก้ครบทำขั้นต่อไป:
 
 ```bash
-docker compose down --remove-orphans
-cd ../solution
-docker compose up -d --build --scale orders=3
-../check.sh
+if [[ -f ../solution/docker-compose.yml ]]; then
+  docker compose down --remove-orphans
+  cd ../solution
+  docker compose up -d --build --scale orders=3
+  sleep 2
+  ../check.sh
+else
+  echo "ไม่พบ ../solution/docker-compose.yml — ใช้ starter ที่แก้ครบแล้วทำขั้นต่อไป"
+fi
 ```
 
-> 📝 **คำอธิบาย:** down starter ก่อน เพราะ starter กับ solution จอง host port `8000`/`8080` และ network ชื่อคงที่ `labnet` ชุดเดียวกัน · จากนั้นเปิด compose เฉลยเป็น project ใหม่และตรวจด้วย checker ตัวเดิม · `--remove-orphans` เก็บ container ที่อาจเหลือจากการเปลี่ยน service
+> 📝 **คำอธิบาย:** ตรวจไฟล์ก่อนเพื่อไม่ให้ flow หยุดเมื่อ repo ไม่มีชุดเฉลยเสริม · ถ้ามี solution ต้อง down starter ก่อน เพราะทั้งสองชุดจอง host port `8000`/`8080` และ network ชื่อคงที่ `labnet` ชุดเดียวกัน · จากนั้นเปิด compose เฉลยเป็น project ใหม่ เว้นให้ provider รับ event แล้วตรวจด้วย checker ตัวเดิม · `--remove-orphans` เก็บ container ที่อาจเหลือจากการเปลี่ยน service
 
-✅ **Expected output:** solution จบด้วย `Result: 4 PASS, 0 FAIL` และ exit code 0 เช่นเดียวกับผลด้านบน
+✅ **Expected output:** ถ้ามี solution จะจบด้วย `Result: 4 PASS, 0 FAIL` และ exit code 0 เช่นเดียวกับผลด้านบน · ถ้าไม่มีจะได้ข้อความนี้และ starter ที่แก้ครบยังทำงานต่อ:
+
+```text
+ไม่พบ ../solution/docker-compose.yml — ใช้ starter ที่แก้ครบแล้วทำขั้นต่อไป
+```
 
 ---
 
@@ -315,7 +326,7 @@ curl -sS -o /dev/null -D - -H 'Host: app.lab' http://localhost:8000/ \
 
 > 📝 **คำอธิบาย:** `-H 'Host: app.lab'` เปลี่ยน HTTP Host ที่ Traefik ใช้ match rule · `-D -` ส่ง response headers มาที่ stdout และ `-o /dev/null` ไม่พิมพ์ HTML · marker middleware ใส่ `X-Lab-Router` เฉพาะเมื่อ Host router ถูกเลือก · TCP/SSH port forwarding ส่ง byte ต่อ แต่ไม่แก้ Host ให้เรา จึงต้องกำหนด header เอง (หรือเพิ่ม DNS/hosts entry)
 
-✅ **Expected output** — ผลจริงจาก solution:
+✅ **Expected output** — ผลรันจริง (เหมือนกันไม่ว่าจะรันจาก `solution/` หรือ `starter/` ที่แก้ครบ เพราะ label ชุด Host router เหมือนกัน):
 
 ```text
 HTTP/1.1 200 OK
@@ -334,10 +345,11 @@ X-Lab-Router: host-rule
 
 ```bash
 docker compose up -d
+sleep 2
 curl -sS -o /dev/null -w 'without auth = %{http_code}\n' http://localhost:8000/api/users
 ```
 
-> 📝 **คำอธิบาย:** การลบ attachment ไม่ได้ลบ middleware definition จึงเห็น component อยู่ใน config/dashboard ได้ แต่ request ของ router ไม่ผ่าน component นั้น · `curl -w` พิมพ์เฉพาะ status เพื่อให้เห็น security regression ชัด ๆ
+> 📝 **คำอธิบาย:** การลบ attachment ไม่ได้ลบ middleware definition จึงเห็น component อยู่ใน config/dashboard ได้ แต่ request ของ router ไม่ผ่าน component นั้น · `sleep 2` กันช่วงสั้น ๆ ที่ router ถูกถอดแล้ว Docker provider ยังประกอบ config ใหม่ไม่เสร็จ · `curl -w` พิมพ์เฉพาะ status เพื่อให้เห็น security regression ชัด ๆ
 
 ✅ **Expected output** — ผลจริงเมื่อไม่มี attachment:
 
@@ -349,10 +361,11 @@ without auth = 200
 
 ```bash
 docker compose up -d
+sleep 2
 curl -sS -o /dev/null -w 'without auth = %{http_code}\n' http://localhost:8000/api/users
 ```
 
-> 📝 **คำอธิบาย:** เมื่อ router attach `users-auth@docker` อีกครั้ง request ที่ไม่มี Authorization header จะถูก middleware หยุดก่อนถึง whoami · suffix `@docker` ระบุ provider ให้ชัดเจน
+> 📝 **คำอธิบาย:** เมื่อ router attach `users-auth@docker` อีกครั้ง request ที่ไม่มี Authorization header จะถูก middleware หยุดก่อนถึง whoami · `sleep 2` เว้นให้ attachment ใหม่ถูก apply ก่อนยิงหลักฐาน · suffix `@docker` ระบุ provider ให้ชัดเจน
 
 ✅ **Expected output** — ระบบกลับมาปลอดภัย:
 
@@ -375,7 +388,7 @@ sleep 2
 
 > 📝 **คำอธิบาย:** `down` หยุดและลบ container/network ของ project แต่เก็บ image ไว้ · `up` รอบใหม่จึงสร้าง topology จาก compose ล้วน ๆ โดยไม่พึ่ง container เก่า · `--scale orders=3` ทำให้จำนวน replica เห็นชัดในคำสั่งและตรงกับ default `deploy.replicas` ใน compose · `sleep 2` เว้นให้ provider รับ Docker events ก่อน checker ยิง
 
-✅ **Expected output** — clean re-run จริงรอบนี้ (ชื่อ hostname และจำนวน 429 เปลี่ยนได้ตาม timing):
+✅ **Expected output** — clean re-run จริงรอบนี้ (รันจากโฟลเดอร์ `solution/`; ถ้าทำต่อใน `starter/` ชื่อ container จะขึ้นต้นด้วย `starter-` แทน `solution-` ตามชื่อโฟลเดอร์ compose · hostname และจำนวน 429 เปลี่ยนได้ตาม timing):
 
 ```text
 Network labnet Removed
@@ -422,7 +435,7 @@ docker compose ps
 
 > 📝 **คำอธิบาย:** `down` ลบ Traefik, shop-ui, users, orders ทั้งสาม replicas และ network `labnet` เพื่อไม่ให้ชนกับ LAB อื่น · `docker compose ps` ตรวจซ้ำว่าตารางว่าง · image ยังอยู่เพื่อให้เปิดรอบหน้าเร็วขึ้น · ปิด port forwarding 8000/8080 ในแท็บ PORTS ด้วย
 
-✅ **Expected output** — ช่วงท้ายจากการ cleanup จริง; ลำดับ container อาจสลับกัน:
+✅ **Expected output** — ช่วงท้ายจากการ cleanup จริง; ลำดับ container อาจสลับกัน และ prefix ชื่อ (`solution-`/`starter-`) เป็นไปตามโฟลเดอร์ compose ที่ใช้อยู่:
 
 ```text
 Container solution-traefik-1 Removed
