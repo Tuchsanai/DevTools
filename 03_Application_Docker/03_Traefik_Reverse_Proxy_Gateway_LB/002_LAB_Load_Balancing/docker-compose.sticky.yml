@@ -1,5 +1,0 @@
-services:
-  app:
-    labels:
-      traefik.http.services.lab2-app.loadbalancer.sticky.cookie: "true"
-      traefik.http.services.lab2-app.loadbalancer.sticky.cookie.name: "lab_sticky"

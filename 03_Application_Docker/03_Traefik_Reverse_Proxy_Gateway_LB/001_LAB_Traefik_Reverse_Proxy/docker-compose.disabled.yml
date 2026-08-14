@@ -1,4 +1,0 @@
-services:
-  app2:
-    labels:
-      traefik.enable: "false"
