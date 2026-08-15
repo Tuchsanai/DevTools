@@ -1,0 +1,44 @@
+global:
+  # ค่า default ของ Prometheus คือ 1 นาที ทั้งคู่ — ช้าเกินไปสำหรับคาบเรียน
+  # ตั้ง 5 วินาทีเพื่อให้ alert เปลี่ยนสถานะทันเห็นในห้อง
+  scrape_interval: 5s
+  scrape_timeout: 3s
+  evaluation_interval: 5s
+  external_labels:
+    monitor: monlab5
+
+# ไฟล์กฎ alert — path นี้คือ path ข้างใน container ของ Prometheus
+rule_files:
+  - /etc/prometheus/rules/alerts.yml
+
+# ส่ง alert ที่ firing ไปที่ Alertmanager (Prometheus 3 ใช้ API v2 เท่านั้น)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+
+  - job_name: app
+    static_configs:
+      - targets:
+          - app:8000
+        labels:
+          env: classroom
+
+  - job_name: node
+    static_configs:
+      - targets:
+          - node-exporter:9100
+        labels:
+          env: classroom
+
+  - job_name: alertmanager
+    static_configs:
+      - targets:
+          - alertmanager:9093

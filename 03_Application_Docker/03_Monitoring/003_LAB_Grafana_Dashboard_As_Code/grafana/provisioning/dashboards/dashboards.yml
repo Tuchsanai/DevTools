@@ -1,0 +1,18 @@
+apiVersion: 1
+
+# provider แบบ file: Grafana จะ "อ่านไฟล์ JSON ในโฟลเดอร์" แล้วสร้าง dashboard ให้
+providers:
+  - name: monlab3-files
+    orgId: 1
+    # โฟลเดอร์ที่จะเห็นในหน้า Dashboards ของ Grafana
+    folder: Monitoring LAB3
+    type: file
+    disableDeletion: false
+    # สแกนโฟลเดอร์ซ้ำทุก 10 วินาที → แก้ไฟล์ JSON แล้วเห็นผลโดยไม่ต้อง restart
+    updateIntervalSeconds: 10
+    # false = กด Save ทับจาก UI ไม่ได้ ของจริงอยู่ในไฟล์เสมอ (dashboard as code)
+    allowUiUpdates: false
+    options:
+      # path นี้คือ path "ข้างในคอนเทนเนอร์" ที่ compose mount ./grafana/dashboards เข้ามา
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

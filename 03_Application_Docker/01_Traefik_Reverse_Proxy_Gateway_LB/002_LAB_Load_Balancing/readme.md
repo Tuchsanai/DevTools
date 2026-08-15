@@ -116,6 +116,8 @@ app
 
 ### อ่าน Compose ก่อนรัน
 
+> 🔎 อ่าน compose ไม่ออกทีละบรรทัด? มีแล็บที่ประกอบ compose ของ Traefik ทีละชั้นพร้อมหลักฐานทุกขั้น ที่ [`007_LAB_Compose_Anatomy`](../007_LAB_Compose_Anatomy/)
+
 - Traefik pin ที่ `traefik:v3.7.4` และรับ static config ผ่าน command flags
 - `--providers.docker.exposedByDefault=false` หมายความว่า container จะไม่ถูกเปิดออกเอง ต้องมี `traefik.enable=true`
 - router หลักใช้ ``PathPrefix(`/`)`` บน entrypoint `web`; TCP forward ไม่แก้ HTTP `Host` header

@@ -1,0 +1,511 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "t",
+      "type": "text",
+      "x": 40,
+      "y": 24,
+      "strokeColor": "#0b2545",
+      "text": "LAB 7 — ประกอบ compose ของ Traefik ทีละชั้น แล้วดูหลักฐานทุกขั้น",
+      "fontSize": 26,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "s0",
+      "type": "rectangle",
+      "x": 40,
+      "y": 100,
+      "width": 350,
+      "height": 96,
+      "backgroundColor": "#f1f3f5",
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "STEP 1\ntraefik เปล่า ๆ   ไม่มี provider"
+      },
+      "fontSize": 15,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "e0",
+      "type": "rectangle",
+      "x": 60,
+      "y": 216,
+      "width": 310,
+      "height": 74,
+      "backgroundColor": "transparent",
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "en0",
+      "type": "text",
+      "x": 74,
+      "y": 230,
+      "strokeColor": "#5b6b7f",
+      "text": "หลักฐาน : ทุก request → 404",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "s1",
+      "type": "rectangle",
+      "x": 425,
+      "y": 100,
+      "width": 350,
+      "height": 96,
+      "backgroundColor": "#fff4e6",
+      "strokeColor": "#c2410c",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "STEP 2\n+ providers.docker   + mount docker.sock"
+      },
+      "fontSize": 15,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "e1",
+      "type": "rectangle",
+      "x": 445,
+      "y": 216,
+      "width": 310,
+      "height": 74,
+      "backgroundColor": "transparent",
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "en1",
+      "type": "text",
+      "x": 459,
+      "y": 230,
+      "strokeColor": "#5b6b7f",
+      "text": "หลักฐาน : โผล่ router อัตโนมัติ\nแม้แต่ตัว traefik เอง",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "s2",
+      "type": "rectangle",
+      "x": 810,
+      "y": 100,
+      "width": 350,
+      "height": 96,
+      "backgroundColor": "#e8f4ff",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "STEP 3\n+ exposedByDefault=false   + traefik.enable=true"
+      },
+      "fontSize": 15,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "e2",
+      "type": "rectangle",
+      "x": 830,
+      "y": 216,
+      "width": 310,
+      "height": 74,
+      "backgroundColor": "transparent",
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "en2",
+      "type": "text",
+      "x": 844,
+      "y": 230,
+      "strokeColor": "#5b6b7f",
+      "text": "หลักฐาน : เหลือเฉพาะตัวที่ยกมือ",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "s3",
+      "type": "rectangle",
+      "x": 40,
+      "y": 340,
+      "width": 350,
+      "height": 96,
+      "backgroundColor": "#f3f0ff",
+      "strokeColor": "#6741d9",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "STEP 4\n+ rule / entrypoints   + services...server.port"
+      },
+      "fontSize": 15,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "e3",
+      "type": "rectangle",
+      "x": 60,
+      "y": 456,
+      "width": 310,
+      "height": 74,
+      "backgroundColor": "transparent",
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "en3",
+      "type": "text",
+      "x": 74,
+      "y": 470,
+      "strokeColor": "#5b6b7f",
+      "text": "หลักฐาน : เลือกด้วย path ได้\nและเจอ error port is missing",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "s4",
+      "type": "rectangle",
+      "x": 425,
+      "y": 340,
+      "width": 350,
+      "height": 96,
+      "backgroundColor": "#ffe9e9",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "STEP 5\n+ network ที่สอง   (ปักหมุดผิดโดยตั้งใจ)"
+      },
+      "fontSize": 15,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:33:55.556Z",
+      "updatedAt": "2026-08-15T17:33:55.556Z",
+      "version": 1
+    },
+    {
+      "id": "e4",
+      "type": "rectangle",
+      "x": 445,
+      "y": 456,
+      "width": 310,
+      "height": 74,
+      "backgroundColor": "transparent",
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:33:55.557Z",
+      "updatedAt": "2026-08-15T17:33:55.557Z",
+      "version": 1
+    },
+    {
+      "id": "en4",
+      "type": "text",
+      "x": 459,
+      "y": 470,
+      "strokeColor": "#5b6b7f",
+      "text": "หลักฐาน : ชี้ไป network ที่ไปไม่ถึง → 504",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:33:55.557Z",
+      "updatedAt": "2026-08-15T17:33:55.557Z",
+      "version": 1
+    },
+    {
+      "id": "s5",
+      "type": "rectangle",
+      "x": 810,
+      "y": 340,
+      "width": 350,
+      "height": 96,
+      "backgroundColor": "#eaf8ef",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "STEP 6\n+ traefik.docker.network   + middleware + file provider"
+      },
+      "fontSize": 15,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:33:55.557Z",
+      "updatedAt": "2026-08-15T17:33:55.557Z",
+      "version": 1
+    },
+    {
+      "id": "e5",
+      "type": "rectangle",
+      "x": 830,
+      "y": 456,
+      "width": 310,
+      "height": 74,
+      "backgroundColor": "transparent",
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:33:55.557Z",
+      "updatedAt": "2026-08-15T17:33:55.557Z",
+      "version": 1
+    },
+    {
+      "id": "en5",
+      "type": "text",
+      "x": 844,
+      "y": 470,
+      "strokeColor": "#5b6b7f",
+      "text": "หลักฐาน : ครบและคาดเดาได้ทุกครั้ง",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:33:55.557Z",
+      "updatedAt": "2026-08-15T17:33:55.557Z",
+      "version": 1
+    },
+    {
+      "id": "ar0",
+      "type": "arrow",
+      "x": 398,
+      "y": 148,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          19,
+          2.842170943040401e-14
+        ]
+      ],
+      "start": {
+        "id": "s0"
+      },
+      "end": {
+        "id": "s1"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T17:33:55.557Z",
+      "updatedAt": "2026-08-15T17:33:55.557Z",
+      "version": 1
+    },
+    {
+      "id": "ar1",
+      "type": "arrow",
+      "x": 783,
+      "y": 148,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          19,
+          2.842170943040401e-14
+        ]
+      ],
+      "start": {
+        "id": "s1"
+      },
+      "end": {
+        "id": "s2"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T17:33:55.557Z",
+      "updatedAt": "2026-08-15T17:33:55.557Z",
+      "version": 1
+    },
+    {
+      "id": "ar3",
+      "type": "arrow",
+      "x": 398,
+      "y": 388,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          19,
+          0
+        ]
+      ],
+      "start": {
+        "id": "s3"
+      },
+      "end": {
+        "id": "s4"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T17:33:55.557Z",
+      "updatedAt": "2026-08-15T17:33:55.557Z",
+      "version": 1
+    },
+    {
+      "id": "ar4",
+      "type": "arrow",
+      "x": 783,
+      "y": 388,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          19,
+          0
+        ]
+      ],
+      "start": {
+        "id": "s4"
+      },
+      "end": {
+        "id": "s5"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T17:33:55.557Z",
+      "updatedAt": "2026-08-15T17:33:55.557Z",
+      "version": 1
+    },
+    {
+      "id": "foot",
+      "type": "text",
+      "x": 40,
+      "y": 580,
+      "strokeColor": "#0b2545",
+      "text": "ทุกขั้นตรวจด้วยของจริงสามอย่าง :  curl (ผลลัพธ์) · /api/rawdata (สิ่งที่ Traefik เข้าใจ) · docker compose logs traefik (เหตุผล)",
+      "fontSize": 16,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:33:55.557Z",
+      "updatedAt": "2026-08-15T17:33:55.557Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

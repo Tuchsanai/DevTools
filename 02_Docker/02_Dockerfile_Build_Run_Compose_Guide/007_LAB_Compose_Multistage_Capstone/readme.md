@@ -85,6 +85,65 @@
 
 ---
 
+## ทฤษฎีก่อนลงมือ
+
+### ภาพจำหลัก
+
+Compose เปลี่ยนงานประกอบระบบจากการจำขั้นตอนแล้วสั่งทีละชิ้น ให้เป็นการประกาศ “สภาพปลายทาง” ของทั้งระบบไว้ในไฟล์เดียวแล้วปล่อยให้เครื่องมือจัดลำดับให้
+
+![เปรียบเทียบการสั่ง docker run หลายบรรทัดกับการประกาศระบบ devopsboard ใน compose.yaml แล้วสั่ง docker compose up ครั้งเดียว](./images/theory-why-compose.svg)
+
+> 🖼 **วิธีอ่านรูปนี้:** มองฝั่งซ้ายเป็นรายการงานแบบ imperative ที่ผู้ใช้ต้องจำทั้ง network, volume และลำดับของ container เอง ส่วนฝั่งขวารวมความสัมพันธ์เดียวกันไว้ใน `compose.yaml` (ในรูปตัดมาเฉพาะบางส่วน — ไฟล์จริงมี `db`, healthcheck และ `depends_on` ครบตามข้อ 3) แล้วให้ `docker compose up` อ่านแบบจำลองนั้น จุดสำคัญไม่ใช่แค่คำสั่งสั้นลง แต่คือสภาพที่ต้องการถูกบันทึก ตรวจซ้ำ และส่งต่อให้คนอื่นได้
+
+### กลไกจริง
+
+วิธี imperative เหมือนหัวหน้าที่แจกคำสั่งคนงานทีละข้อ: สร้าง network ก่อน สร้าง volume ต่อ แล้วค่อยเปิด `db`, `redis`, `api` และ `web` หากข้ามขั้น สลับลำดับ หรือตั้งชื่อไม่ตรง ระบบก็เปลี่ยนไปตามสิ่งที่พิมพ์จริง และ shell history ไม่ได้อธิบายชัดว่าสุดท้ายระบบควรหน้าตาอย่างไร
+
+วิธี declarative ใน `compose.yaml` กลับกัน เราระบุ service, image หรือ build context, network, volume, environment, port และ dependency ที่ต้องการ Compose จึงมองทั้งหมดเป็น project เดียว เปรียบเทียบสภาพที่มีอยู่กับแบบที่ประกาศ แล้วสร้างหรือปรับเฉพาะสิ่งจำเป็น การสั่ง `up` ซ้ำจึงเป็นการพาระบบกลับเข้าหาสภาพเดียวกัน ไม่ใช่การท่องขั้นตอนเดิมใหม่ทุกครั้ง ซึ่งจะเห็นผลจริงตั้งแต่ข้อ 2–4
+
+เมื่อเริ่ม `docker compose up -d --build` Compose อ่านและตรวจไฟล์ก่อน แล้วสร้างกราฟความสัมพันธ์ระหว่าง service จากนั้น build image ของ `web` และ `api` จาก build context เตรียม network เพื่อให้แต่ละ service มีวงสื่อสารตามที่ประกาศ เตรียม named volume สำหรับข้อมูลถาวร แล้วสร้าง container พร้อมค่า mount, environment และ port ของแต่ละตัว สุดท้ายจึง start ตาม dependency graph (ลำดับนี้ตรงกับ output จริงของข้อ 4 ที่ขึ้นบรรทัด Built ก่อน Network/Volume Created) ขั้นเหล่านี้อาจมีบางงานทำคู่ขนานกันได้ แต่ service ที่มีเงื่อนไขรอจะยังข้ามเส้นกั้นไปไม่ได้ หลักฐานลำดับทั้งหมดอยู่ใน output ของข้อ 4
+
+รากของกราฟนี้คือ `db` กับ `redis` ซึ่งเริ่มได้ก่อน เมื่อ process ภายในเริ่มทำงานไม่ได้แปลว่าบริการพร้อมรับ request ทันที `healthcheck` จึงทำหน้าที่เหมือนพนักงานตรวจประตูที่กลับมาลองทุกช่วงเวลาและรายงานสถานะ `starting`, `healthy` หรือ `unhealthy` ในแล็บนี้ `api` ระบุ `condition: service_healthy` จึงรอทั้งสอง service ผ่านการตรวจ แล้ว `web` จึงรอ `api` ผ่านอีกทอดหนึ่ง
+
+ถ้าใช้ `depends_on` เปล่า Compose รับรองเพียงลำดับการสร้างและเริ่ม process ของ service ต้นทาง ไม่ได้รับรองว่า PostgreSQL เปิดรับ connection หรือ Redis ตอบสนองแล้ว ความต่างนี้อธิบายว่าทำไม timeline ในข้อ 8 มีช่วงรอ และทำไมแอปจริงยังควรมี retry: healthcheck ช่วยประสานการเริ่มระบบ แต่ไม่ซ่อม connection ที่หลุดหลังระบบทำงานไปแล้ว
+
+ฝั่ง build ของ `web` ใช้ multi-stage ซึ่งเหมือนแยก “โรงครัว” ออกจาก “จานเสิร์ฟ” stage `build` มี Python, Jinja2 และเครื่องมือเตรียมหน้าเว็บ จึงหนักแต่จำเป็นระหว่างผลิต เมื่อได้ `index.html` แล้ว `COPY --from=build` ยกเฉพาะอาหารที่เสร็จขึ้นจานของ stage สุดท้ายซึ่งมี nginx ไม่ได้ยกเตา วัตถุดิบ และเครื่องมือทั้งหมดไปด้วย ข้อ 7 จึงวัดได้ว่า runtime image เล็กลง และตรวจได้ว่าไม่มี Python ติดไป
+
+named volume แยกอายุข้อมูลออกจากอายุ container อีกชั้นหนึ่ง เมื่อ mount `pgdata` ที่ data directory การเขียนฐานข้อมูลจะลงพื้นที่ซึ่ง Docker ดูแลอยู่นอก writable layer ของ container ดังนั้น `down` ลบ container กับ network แต่ volume ยังอยู่ พอ `up` รอบใหม่ container ตัวใหม่จึงอ่านข้อมูลเดิมได้ อย่างไรก็ตาม `down -v` ระบุให้ลบพื้นที่นี้ด้วย ผลในข้อ 11–12 จึงต่างกันอย่างตั้งใจ
+
+จุดที่เชื่อม volume กับ init script คือ “ความว่างครั้งแรก” PostgreSQL official image ตรวจ data directory ตอนเริ่ม ถ้าว่างจึงสร้างฐานข้อมูลและรันไฟล์ใน `/docker-entrypoint-initdb.d/` แต่ถ้า volume เดิมมีข้อมูล การ recreate container ไม่ทำให้ directory ว่างและ init จะถูกข้าม การเปลี่ยน schema ของระบบจริงจึงควรใช้ migration ไม่ควรหวังให้ init script รันซ้ำ
+
+การเลือกโครง Dockerfile จึงเริ่มจากถามว่า build สร้าง artifact แยกจากเครื่องมือได้หรือไม่ และตอนรันยังต้องใช้ runtime ภาษาเดิมหรือไม่ หน้า static ที่ build เสร็จแล้วเสิร์ฟด้วย nginx เหมาะกับ multi-stage ส่วน Flask ของ `api` ยังต้องใช้ Python ตอนรับ request จึงใช้ single-stage ได้อย่างตรงไปตรงมา แนวคิดนี้จะถูกสรุปเป็น decision tree ในข้อ 14
+
+dependency graph บอกว่า service ใดต้องผ่านเงื่อนไขก่อน service ใด แต่ไม่ได้เป็นสายส่งข้อมูล และไม่ได้ให้สิทธิ์เชื่อมต่อ network โดยอัตโนมัติ ตัวอย่างเช่น `api` รอ `db` เพราะ dependency และคุยกับ `db` ได้เพราะทั้งคู่เป็นสมาชิก `backend` ซึ่งเป็นคนละหน้าที่กัน ส่วน `web` อยู่สอง network เพื่อรับ request จากด้านหน้าและส่งต่อไปด้านหลัง การแยกแนวคิด “ใครเริ่มก่อน” ออกจาก “ใครคุยกับใครได้” จะช่วยอ่านผลข้อ 4, 8 และ 10 โดยไม่สับสน
+
+ควรแยกวงจรชีวิตออกเป็นสามชั้นด้วย: image คือแม่แบบที่ build หรือ pull มา container คือ process พร้อม writable layer ที่สร้างจากแม่แบบ และ named volume คือพื้นที่ข้อมูลที่นำไปผูกกับ container ได้หลายรุ่น เมื่อ config ของ service เปลี่ยน Compose อาจสร้าง container ใหม่โดยยังใช้ image หรือ volume เดิมได้ เมื่อ source เปลี่ยนจึงต้องสั่งให้ build image ใหม่ตามที่ข้อ 4 เน้น และเมื่ออยากเริ่มข้อมูลใหม่จริง ๆ จึงต้องจัดการ volume อย่างตั้งใจตามข้อ 12
+
+คำว่า declarative ก็ไม่ได้หมายความว่า Compose เฝ้าปรับทุกอย่างตลอดเวลา ไฟล์เป็นแบบจำลอง ส่วนการ reconcile เกิดเมื่อเราเรียกการทำงาน เช่น `up` ในเวลานั้น Compose จะตรวจของเดิม ใช้ resource ที่ยังตรง และสร้างสิ่งที่ขาดหรือเปลี่ยนไป ความสามารถนี้ลดความคลาดเคลื่อนจากคำสั่งมือ แต่ความถูกต้องยังขึ้นกับสิ่งที่เราประกาศ เช่น healthcheck ต้องตรวจ readiness ที่มีความหมาย และ volume ต้อง mount ไปยัง path ที่แอปเขียนข้อมูลจริง
+
+### กฎที่ต้องจำ
+
+| กฎ | เหตุผลที่มีผลในแล็บนี้ |
+|---|---|
+| ประกาศสภาพและความสัมพันธ์ให้ครบ | Compose จึงสร้าง project ซ้ำได้โดยไม่พึ่งลำดับที่คนจำ |
+| readiness ต้องใช้ `healthcheck` คู่กับ `service_healthy` | แค่ process เริ่ม ไม่ได้แปลว่าบริการพร้อม |
+| stage สุดท้ายควรมีเฉพาะของที่ใช้ตอนรัน | ลดขนาด image และลดเครื่องมือที่ไม่จำเป็นใน production |
+| named volume ไม่ตายตาม container | ข้อมูลรอดการ recreate และ `down` แต่ไม่รอดการลบ volume |
+| เลือก Dockerfile จาก artifact และ runtime | ภาษาหรือ framework เดียวกันอาจใช้โครงต่างกันตามวิธี deploy |
+
+### สิ่งที่มักเข้าใจผิด
+
+- **คิดว่า** `depends_on` เปล่ารอฐานข้อมูลพร้อม **แต่จริง ๆ** รอเพียงลำดับเริ่มต้น ต้องมี healthcheck และเงื่อนไข readiness จึงจะรอผลตรวจ
+- **คิดว่า** multi-stage ทำให้ทุกแอปเล็กลงโดยอัตโนมัติ **แต่จริง ๆ** ต้องคัด artifact ที่จำเป็นเข้าสู่ stage สุดท้าย และ runtime ที่แอปต้องใช้ยังต้องอยู่
+- **คิดว่า** recreate container จะทำให้ init script รันใหม่ **แต่จริง ๆ** ตัวตัดสินคือ data directory ใน volume ว่างหรือไม่ ไม่ใช่อายุของ container
+
+### ทายผลก่อนทดลอง
+
+1. ในข้อ 4 และข้อ 8 ถ้าตัด `condition: service_healthy` ออก แต่ยังคง `depends_on` ไว้ บรรทัดสถานะของ `api` และ `web` จะเรียงต่างจากเดิมตรงไหน และ service ใดเสี่ยงเริ่มเร็วเกินไป?
+2. ในข้อ 11–12 ถ้าแก้ init script แล้ว recreate เฉพาะ `db` โดยไม่ลบ `pgdata` จำนวนแถวควรเปลี่ยนหรือไม่ และเมื่อทดลองลบ volume ผลของข้อมูล PostgreSQL กับตัวนับ Redis จะสัมพันธ์กันอย่างไร?
+
+---
+
 ## 0. เตรียมเครื่องเรียน
 
 ทำบนเครื่องของเราเอง (ไม่ใช้ cloud) — เปิด container ที่ติดตั้ง Docker มาให้แล้ว :
@@ -505,6 +564,10 @@ $ curl -sS http://localhost:8087/health
 
 `web/Dockerfile` มี `FROM` **สองครั้ง** = สอง stage :
 
+![การทำงานของ web Dockerfile แบบ multi-stage จาก stage build ที่มี Python และ Jinja2 ไปยัง stage final ที่เหลือ nginx กับไฟล์ static](./images/theory-multi-stage.svg)
+
+> 🖼 **วิธีอ่านรูปนี้:** ไล่จาก stage `build` ทางซ้ายซึ่งมีเครื่องมือสร้าง `index.html` ขนาด image 196 MB ไปตามลูกศร `COPY --from=build` ตรงกลาง ลูกศรขนเฉพาะ artifact ไม่ได้รวม Python หรือ Jinja2 ไป stage final ทางขวา ตัวเลข 73.7 MB และลดลง 62% คือผลที่คำสั่งชั่งขนาดในข้อ 7 จะใช้พิสูจน์
+
 ```dockerfile
 # Stage 1: ใช้ Python image เป็น build environment ซึ่งจะไม่ติดไปกับ runtime image
 FROM python:3.12-slim AS build
@@ -582,6 +645,10 @@ drwxr-xr-x    1 root     root          4096 Apr 16  2025 ..
 ---
 
 ## 8. healthcheck ทำงานจริงแค่ไหน
+
+![เส้นเวลาสถานะ Redis จาก Created ผ่าน Starting และการตรวจทุก 5 วินาทีจน Healthy ก่อนที่ api และ web ซึ่งรอ service_healthy จะเริ่ม](./images/theory-healthcheck-timeline.svg)
+
+> 🖼 **วิธีอ่านรูปนี้:** อ่านซ้ายไปขวาและสังเกตว่าการสร้าง container กับการพร้อมให้บริการเป็นคนละจังหวะ จุดตรวจทุก 5 วินาทีทำให้สถานะยังเป็น `starting` จนผลผ่านและเปลี่ยนเป็น `healthy` จากนั้นจึงปลดเงื่อนไขให้ `api` เริ่ม และ `web` รอต่ออีกทอดตาม dependency ที่ประกาศไว้
 
 ```bash
 docker compose -p devopsboard ps
@@ -793,6 +860,10 @@ visits = 4
 
 `db/initdb/01-schema.sql` ถูก mount เข้าไปที่ `/docker-entrypoint-initdb.d/` ของ official image :
 
+![วงจร named volume และ PostgreSQL init ตั้งแต่ up ครั้งแรก down up ซ้ำ การลบด้วย down -v และการ init ใหม่](./images/theory-volume-init-lifecycle.svg)
+
+> 🖼 **วิธีอ่านรูปนี้:** ไล่หมายเลขทั้งห้าจังหวะและจับตาว่า volume ยังอยู่หรือถูกลบ ไม่ใช่ดูเพียงว่า container ถูกสร้างใหม่หรือไม่ รอบ `up` แรก volume ว่างจึงรัน init ส่วนรอบหลัง `down` ข้อมูลเดิมทำให้ init ถูกข้าม จนเมื่อข้อ 12 ลบ volume แล้ว `up` ใหม่เท่านั้นที่เงื่อนไข “ว่างครั้งแรก” กลับมา
+
 ```sql
 -- สคริปต์นี้ทำงานเฉพาะครั้งแรกที่ PostgreSQL volume ยังว่าง
 CREATE TABLE items (
@@ -952,6 +1023,12 @@ api      1   root  29624  29602  3   09:20  ?    00:00:00  python app.py
 | 7 | PostgreSQL | ไม่ compile | official image + init script + named volume | ไม่ต้อง — **นี่คือ `db/` ของเรา** |
 
 > 📝 **คำอธิบาย:** `web/` ของแล็บนี้ใช้แนวเดียวกับแถวที่ 5 (React SPA) ในตารางข้างบนเป๊ะ ๆ เพียงแต่เปลี่ยน build tool จาก Node/Vite เป็น Python/Jinja2 เพื่อให้เครื่องเรียนไม่ต้องดาวน์โหลด `node_modules` — **หลักการเหมือนกันทุกประการ**: stage แรกมีเครื่องมือหนัก stage สุดท้ายเหลือแต่ nginx + ไฟล์ static
+
+**แนวทางแนะนำในการเลือกโครง Dockerfile** — ใช้คำถามในภาพช่วยเริ่มออกแบบ แล้วปรับตาม dependency, security และวิธี deploy ของแอปจริง ไม่ใช่กฎตายตัว :
+
+![แนวทางแนะนำแบบ decision tree สำหรับเลือก single-stage หรือ multi-stage จากความจำเป็นในการ build และ runtime ภาษาที่ต้องมีตอนรัน](./images/theory-dockerfile-decision.svg)
+
+> 🖼 **วิธีอ่านรูปนี้:** เริ่มจากคำถามบนสุดว่าแอปต้อง build เพื่อสร้าง artifact หรือไม่ แล้วตามกิ่งไปดูว่าตอนรันยังต้องมี runtime ภาษาเดิมอยู่หรือเปล่า เทียบปลายทางกับ `api/` ที่ต้องมี Python และ `web/` ที่ส่งต่อเพียงไฟล์ static ภาพนี้ช่วยตั้งต้นตัดสินใจในข้อ 14 แต่ข้อจำกัดของ framework และ production environment ยังเป็นตัวกำหนดสุดท้าย
 
 **`.dockerignore` ที่ควรมีเกือบทุกโปรเจกต์** (ไฟล์ `.dockerignore` ของแล็บนี้) :
 

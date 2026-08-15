@@ -1,0 +1,110 @@
+name: monlab2
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.7.3
+    container_name: monlab2-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - promdata:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - monnet
+
+  node-exporter:
+    image: prom/node-exporter:v1.10.2
+    container_name: monlab2-node-exporter
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/rootfs
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    ports:
+      - "9100:9100"
+    networks:
+      - monnet
+
+  cadvisor:
+    image: ghcr.io/google/cadvisor:v0.57.0
+    container_name: monlab2-cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg
+    command:
+      - --containerd=/var/run/docker/containerd/containerd.sock
+      - --docker_only=true
+      - --store_container_labels=false
+      - --whitelisted_container_labels=com.docker.compose.service,com.docker.compose.project
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - monnet
+
+  burner1:
+    image: python:3.13-alpine
+    container_name: monlab2-burner1
+    cpuset: "0"
+    stop_grace_period: 3s
+    command:
+      - sh
+      - -c
+      - |
+        python -c 'while True: pass' &
+        python -c 'while True: pass' &
+        wait
+    networks:
+      - monnet
+
+  burner2:
+    image: python:3.13-alpine
+    container_name: monlab2-burner2
+    cpuset: "1,2"
+    stop_grace_period: 3s
+    command:
+      - sh
+      - -c
+      - |
+        python -c 'while True: pass' &
+        python -c 'while True: pass' &
+        wait
+    networks:
+      - monnet
+
+  hog:
+    image: python:3.13-alpine
+    container_name: monlab2-hog
+    stop_grace_period: 3s
+    command:
+      - python
+      - -c
+      - |
+        import time
+        SIZE = 150 * 1024 * 1024
+        buf = bytearray(SIZE)
+        for i in range(0, SIZE, 4096):
+            buf[i] = 1
+        print("allocated and touched %d MiB" % (SIZE // 1024 // 1024), flush=True)
+        while True:
+            time.sleep(60)
+    networks:
+      - monnet
+
+volumes:
+  promdata:
+
+networks:
+  monnet:
+    name: monnet

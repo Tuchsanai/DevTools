@@ -1,0 +1,17 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    # uid ต้องคงที่ เพราะ dashboard JSON อ้างถึง uid นี้ตรง ๆ
+    uid: monprom
+    access: proxy
+    # ชื่อ host "prometheus" = ชื่อ service ใน compose (ห้ามใช้ localhost
+    # เพราะ localhost ในมุมของ Grafana คือ container ของ Grafana เอง)
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      # ตั้งให้เท่ากับ scrape_interval เพื่อให้ $__rate_interval ที่ Grafana คำนวณให้ถูกต้อง
+      timeInterval: 5s
+      httpMethod: POST

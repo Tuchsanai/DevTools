@@ -1,0 +1,134 @@
+<!-- ============ SECTION 11 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">11</div>
+    <h1>จากห้องเรียน<br>สู่งานจริง</h1>
+    <div class="m">สิ่งที่ต่างจากแล็บ และสิ่งที่ควรระวังก่อนเอาไปใช้กับระบบที่มีผู้ใช้จริง</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · งานจริง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ dashboard design ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ออกแบบ dashboard ให้คนใช้จริง</h2><div class="sub">dashboard ที่มี 40 panel = dashboard ที่ไม่มีใครดู</div></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div class="card g"><h4>เรียงจากบนลงล่างตามลำดับการไล่ปัญหา</h4><p><b>แถวบน :</b> ผู้ใช้เจ็บไหม (RED — rate, error, p95)<br><b>แถวกลาง :</b> service ไหนเป็นต้นเหตุ<br><b>แถวล่าง :</b> ทรัพยากร (USE — CPU, RAM, disk)<br><br>คนเปิดดูจะได้กวาดตาจากบนลงล่างแล้วเจอคำตอบ</p></div>
+      <div class="card"><h4>กฎเล็ก ๆ ที่ช่วยได้มาก</h4><p>• 1 dashboard = 1 คำถาม อย่ายัดทุกอย่างไว้หน้าเดียว<br>• ตั้งหน่วยให้ถูก (percent · bytes(IEC) · seconds) อย่าปล่อยเป็นตัวเลขดิบ<br>• ใส่ threshold สี ให้เห็นว่า "เท่าไรถึงเรียกว่าแย่"<br>• ใช้ variable แทนการ copy dashboard ทีละ service<br>• เก็บ JSON ลง git เสมอ</p></div>
+    </div>
+    <div class="callout warn" style="margin-top:18px"><b>ข้อควรจำจาก LAB 3 :</b> dashboard ที่คลิกสร้างด้วยมือใน UI จะหายเมื่อ volume ถูกลบ และไม่มีประวัติว่าใครแก้อะไร<br>ในทางกลับกัน dashboard ที่ <b>provision มาจากไฟล์จะแก้ใน UI ไม่ได้</b> (Grafana ตอบ <code>Cannot save provisioned dashboard</code>) — วิธีทำงานคือ แก้ที่ไฟล์ → commit → ให้ Grafana โหลดใหม่</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · งานจริง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ ข้อควรระวัง production ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ก่อนเอาไปใช้จริง ต้องรู้ 5 เรื่องนี้</h2><div class="sub">แล็บจงใจข้ามไปเพื่อให้เรียนง่าย — แต่งานจริงข้ามไม่ได้</div></div>
+  <div class="s-body top">
+    <table class="tbl sm">
+      <tr><th style="width:210px">เรื่อง</th><th style="width:330px">ในแล็บนี้</th><th>ในงานจริงต้องทำ</th></tr>
+      <tr><td><b>ความปลอดภัย</b></td><td>Grafana เปิด anonymous · Prometheus ไม่มี auth</td><td>ปิด anonymous · ตั้งรหัสผ่าน admin จริง · ให้ทุก UI อยู่หลัง reverse proxy + TLS ไม่เปิดสู่อินเทอร์เน็ตตรง ๆ</td></tr>
+      <tr><td><b>Docker socket</b></td><td>cAdvisor mount socket และรัน privileged</td><td>จำกัดสิทธิ์ให้น้อยที่สุด · ใครเข้าถึง Docker socket ได้ = ควบคุมเครื่องได้ทั้งเครื่อง</td></tr>
+      <tr><td><b>เก็บข้อมูลนาน</b></td><td>ตั้ง retention สั้น ๆ (LAB 1 ใช้ <code>2h</code>) บนดิสก์เครื่องเดียว — ค่า default ของ Prometheus คือ 15 วัน</td><td>ต่อ remote write ไป Thanos / Mimir / VictoriaMetrics ถ้าต้องเก็บเป็นเดือนหรือปี</td></tr>
+      <tr><td><b>ความทนทาน</b></td><td>Prometheus ตัวเดียว</td><td>รัน 2 ตัวขนานกัน (ดึงข้อมูลชุดเดียวกัน) แล้วให้ Alertmanager ตัด alert ซ้ำ</td></tr>
+      <tr><td><b>ปลายทาง alert</b></td><td>webhook ภายในเครื่อง</td><td>ต่อเข้าช่องทางที่ทีมใช้จริง + มี on-call rotation · และต้องทดสอบว่าส่งถึงจริงเป็นระยะ</td></tr>
+    </table>
+  </div>
+  <div class="s-foot"><span>Monitoring · งานจริง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ next steps ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ก้าวต่อไปหลังจากชุดนี้</h2><div class="sub">metrics คือเสาแรก — เมื่อพร้อมแล้วค่อยต่อเสาที่เหลือ</div></div>
+  <div class="s-body">
+    <div class="grid3">
+      <div class="card o"><h4>Logs</h4><p>เมื่อ metric บอกว่า "error พุ่งตอน 10:45" แต่ไม่บอกว่าทำไม → ถึงเวลาต่อ log<br><br><b>Loki</b> ใช้แนวคิด label แบบเดียวกับ Prometheus จึงเรียนต่อได้ง่าย</p></div>
+      <div class="card p"><h4>Traces</h4><p>เมื่อระบบมีหลาย service แล้ว "ช้าตรงไหน" ตอบไม่ได้จาก metric อีกต่อไป<br><br><b>Tempo / Jaeger</b> + <b>OpenTelemetry</b> เป็นมาตรฐานกลางที่ควรเริ่มจากตรงนั้น</p></div>
+      <div class="card g"><h4>ขยายขนาด</h4><p>เมื่อมีหลายเครื่อง หลายทีม<br><br><b>Service discovery</b> (Docker / Kubernetes) แทน <code>static_configs</code><br><b>Recording rules</b> คำนวณล่วงหน้าให้ dashboard เร็วขึ้น<br><b>Federation / remote write</b> รวมข้อมูลหลายที่</p></div>
+    </div>
+    <div class="callout good" style="margin-top:20px"><b>คำแนะนำ :</b> อย่าเพิ่งรีบต่อทั้งสามเสาพร้อมกัน — ระบบส่วนใหญ่ได้ประโยชน์ 80% จากการมี metrics + alert ที่ตั้งไว้ดี ๆ เท่านั้น ทำเสาแรกให้แน่นก่อน แล้วค่อยขยาย</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · งานจริง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ สรุป ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>สรุปทั้งหมดในหน้าเดียว</h2><div class="sub">ถ้าจำได้ 6 ข้อนี้ ก็ถือว่าได้แก่นของวิชานี้ครบแล้ว</div></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div class="card"><h4><span class="n">1</span>metric คือเส้น ไม่ใช่ตัวเลข</h4><p>ชื่อ + ชุด label = 1 time series · label ทำให้หั่นดูได้ทุกมุม แต่ต้องมีค่าที่จำกัด</p></div>
+      <div class="card"><h4><span class="n">2</span>Prometheus ไปดึงเอง</h4><p>แอปแค่เปิด <code>/metrics</code> · ผลพลอยได้คือ <code>up</code> ที่บอกว่า target ยังอยู่ไหม</p></div>
+      <div class="card o"><h4><span class="n">3</span>อย่าอ่านค่าดิบของ counter</h4><p>ถามเรื่องอัตราใช้ <code>rate()</code> · ถามยอดในช่วงใช้ <code>increase()</code> · หน้าต่างควร ≥ 4 เท่าของ scrape interval · <code>rate</code> ก่อน <code>sum</code> เสมอ</p></div>
+      <div class="card o"><h4><span class="n">4</span>ดู p95 ไม่ใช่ค่าเฉลี่ย</h4><p>ค่าเฉลี่ยซ่อนคนที่เจ็บที่สุดไว้ · histogram รวมข้าม instance ได้ summary ทำไม่ได้</p></div>
+      <div class="card g"><h4><span class="n">5</span>dashboard คือโค้ด</h4><p>provision ด้วยไฟล์ · fix datasource uid · commit ลง git</p></div>
+      <div class="card g"><h4><span class="n">6</span>เตือนที่อาการ ไม่ใช่สาเหตุ</h4><p>เตือนเมื่อผู้ใช้เจ็บ (error / latency) และเกือบทุกตัวควรมี <code>for:</code> เพื่อกรองอาการชั่วคราวออก</p></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · สรุป</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ cheat sheet ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge">CHEAT SHEET</span><h2>คำสั่งและ query ที่ใช้บ่อย</h2><div class="sub">หน้านี้เอาไว้เปิดตอนทำแล็บ</div></div>
+  <div class="s-body top">
+    <div class="grid2">
+      <div>
+        <pre class="code xs" style="font-size:13.5px; line-height:1.45"><span class="c"># ---ตรวจสภาพระบบ ---</span>
+curl -s localhost:9090/-/ready
+curl -s localhost:9090/api/v1/targets | head
+curl -s localhost:9100/metrics | head -20
+
+<span class="c"># --- reload config โดยไม่ restart ---</span>
+<span class="c"># (ต้องเปิด --web.enable-lifecycle ก่อน)</span>
+curl -X POST localhost:9090/-/reload
+
+<span class="c"># --- ตรวจไฟล์ก่อนใช้ ---</span>
+docker compose exec prometheus \
+  promtool check config /etc/prometheus/prometheus.yml
+docker compose exec prometheus \
+  promtool check rules /etc/prometheus/rules/alerts.yml
+
+<span class="c"># --- ถาม query ผ่าน API ---</span>
+curl -s --data-urlencode 'query=up' \
+  localhost:9090/api/v1/query</pre>
+      </div>
+      <div>
+        <pre class="code xs" style="font-size:13.5px; line-height:1.45"><span class="c"># ---PromQL ที่ใช้บ่อย ---</span>
+up == 0
+
+100 - (avg by (instance)
+  (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100)
+
+(1 - node_memory_MemAvailable_bytes
+   / node_memory_MemTotal_bytes) * 100
+
+rate(container_cpu_usage_seconds_total{name!=""}[1m])
+
+container_memory_working_set_bytes{name!=""}
+
+sum(rate(app_requests_total[1m]))
+
+sum(rate(app_requests_total{status=~"5.."}[1m]))
+  / sum(rate(app_requests_total[1m]))
+
+histogram_quantile(0.95, sum by (le)
+  (rate(app_request_duration_seconds_bucket[5m])))
+
+prometheus_tsdb_head_series</pre>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Cheat sheet</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ ปิดท้าย ============ -->
+<div class="slot"><section class="slide cover">
+  <div class="s-body">
+    <div style="text-align:center; width:100%">
+      <div class="k" style="justify-self:center">จบชุด Monitoring</div>
+      <h1 style="font-size:52px; margin-top:14px">ระบบที่ดี<br>ไม่ใช่ระบบที่ไม่เคยพัง<br><span style="color:#ffa94d">แต่คือระบบที่บอกเราได้ว่ามันกำลังพัง</span></h1>
+      <div class="m" style="max-width:900px; margin:26px auto 0">ลองกลับไปเปิดโปรเจกต์ที่ทำอยู่ แล้วถามตัวเองว่า —<br>ถ้ามันล่มตอนนี้ เราจะรู้ภายในกี่นาที? และเราจะมีหลักฐานอะไรให้ไล่บ้าง?</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring — Prometheus · PromQL · Grafana · Alertmanager</span><span class="pg"></span></div>
+</section></div>

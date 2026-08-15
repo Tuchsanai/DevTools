@@ -1,0 +1,6 @@
+# override สำหรับช่วง "ทำให้พัง" เท่านั้น — เปลี่ยน label endpoint เป็น path ดิบ
+# ใช้คู่กับไฟล์หลัก:  docker compose -f docker-compose.yml -f docker-compose.rawpath.yml up -d app
+services:
+  app:
+    environment:
+      RAW_PATH_LABEL: "1"

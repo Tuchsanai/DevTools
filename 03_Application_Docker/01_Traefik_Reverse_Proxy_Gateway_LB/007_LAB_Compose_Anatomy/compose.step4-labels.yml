@@ -1,0 +1,55 @@
+# ═══ STEP 4 — ไวยากรณ์ของ label : ประกาศ router / service ด้วยตัวเอง ═══
+#
+#   traefik . http . routers  . <ชื่อที่เราตั้ง> . rule / entrypoints / service / middlewares
+#   traefik . http . services . <ชื่อที่เราตั้ง> . loadbalancer.server.port / healthcheck....
+#   traefik . http . middlewares . <ชื่อที่เราตั้ง> . <ชนิด> . <ค่า>
+#     └─ ชั้นที่ 4 คือ "ชื่อ object" ที่เราตั้งเอง ไม่จำเป็นต้องเท่ากับชื่อ service ใน Compose
+#
+# บริการ bare ในไฟล์นี้ใช้ image ที่ "ลืม EXPOSE" ไว้ดูข้อความ error จริงของ Traefik
+name: lab007
+
+services:
+  traefik:
+    image: traefik:v3.7.4
+    command:
+      - --entrypoints.web.address=:80
+      - --api.insecure=true
+      - --log.level=INFO
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - labnet
+
+  app:
+    build: ./app
+    labels:
+      traefik.enable: "true"
+      # router : "request นี้ของใคร"
+      traefik.http.routers.myapp.rule: PathPrefix(`/app`)
+      traefik.http.routers.myapp.entrypoints: web
+      traefik.http.routers.myapp.service: myapp
+      # service : "ส่งไปเครื่องจริงตัวไหน port อะไร" — port ของ container ไม่ใช่ port ของ host
+      traefik.http.services.myapp.loadbalancer.server.port: "8080"
+    networks:
+      - labnet
+
+  bare:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.noexpose
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.bare.rule: PathPrefix(`/bare`)
+      traefik.http.routers.bare.entrypoints: web
+      # ไม่มีทั้ง EXPOSE ใน image และไม่มี label บอก port → Traefik จะเดาไม่ออก
+    networks:
+      - labnet
+
+networks:
+  labnet:
+    name: lab007net

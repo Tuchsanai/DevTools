@@ -102,6 +102,8 @@ Cloning into 'DevTools'...
 
 ## 2. อ่าน config ให้เข้าใจ: static กับ dynamic
 
+> 🔎 อ่าน compose ไม่ออกทีละบรรทัด? มีแล็บที่ประกอบ compose ของ Traefik ทีละชั้นพร้อมหลักฐานทุกขั้น ที่ [`007_LAB_Compose_Anatomy`](../007_LAB_Compose_Anatomy/)
+
 Traefik ในแล็บนี้รับ config จากสอง provider พร้อมกัน:
 
 - **Static config** อยู่ใน `command:` ของ service `traefik` — เปิด entrypoint `web`, dashboard/API, Docker provider และ file provider ค่านี้กำหนดตอน process เริ่ม จึงต้อง restart/recreate หากแก้

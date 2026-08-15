@@ -1,0 +1,23 @@
+# ไฟล์นี้จงใจเขียนผิดสำหรับหัวข้อ "ทำให้พังแล้วแก้"
+# ผิดตรงบรรทัด targets ของ job "node": ใช้ localhost:9100
+# ในมุมของ container prometheus คำว่า localhost = ตัวมันเอง ไม่ใช่เครื่องเรียน และไม่ใช่ container node-exporter
+# ห้ามใช้ไฟล์นี้เป็น config หลักของแล็บ
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: monlab1
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+
+  - job_name: node
+    static_configs:
+      - targets:
+          - localhost:9100      # ← ผิด: ต้องเป็นชื่อ service บน network monnet คือ node-exporter:9100
+        labels:
+          env: classroom

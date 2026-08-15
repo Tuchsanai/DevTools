@@ -1,0 +1,26 @@
+# dynamic config ที่มาจาก "file provider" — คนละ provider กับ Docker labels
+# object ทุกตัวในไฟล์นี้จะมีนามสกุล @file ส่วนที่มาจาก label จะเป็น @docker
+#
+# แก้ไฟล์นี้แล้วบันทึก → Traefik โหลดใหม่เองทันที (ไม่ต้อง restart, container id ไม่เปลี่ยน)
+http:
+  middlewares:
+    file-stamp:
+      headers:
+        customResponseHeaders:
+          X-Config-Source-File: "file-provider"
+
+  routers:
+    # เส้นทางไปยัง "port ที่ label ตั้งใจไม่เปิดให้" — พิสูจน์ว่า file provider
+    # ชี้ไปที่ URL อะไรก็ได้ ไม่จำเป็นต้องผูกกับ container ที่มี label
+    metrics-router:
+      entryPoints:
+        - web
+      rule: PathPrefix(`/metrics`)
+      service: metrics-svc
+
+  services:
+    metrics-svc:
+      loadBalancer:
+        servers:
+          # ใช้ชื่อ service ของ Compose เป็นชื่อโฮสต์ได้ เพราะอยู่ network เดียวกัน
+          - url: "http://app:9090"

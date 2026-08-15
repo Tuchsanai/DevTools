@@ -1,0 +1,363 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "msum5przea6nuqihr7v",
+      "type": "text",
+      "x": 30,
+      "y": 18,
+      "strokeColor": "#0b2545",
+      "text": "วงจรชีวิตของ Alert — ทำไมต้องมี for:",
+      "fontSize": 28,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "s1",
+      "type": "rectangle",
+      "x": 40,
+      "y": 130,
+      "width": 230,
+      "height": 90,
+      "backgroundColor": "#f1f3f5",
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Inactive\nเงื่อนไขยังไม่จริง"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "s2",
+      "type": "rectangle",
+      "x": 340,
+      "y": 130,
+      "width": 230,
+      "height": 90,
+      "backgroundColor": "#ffe8cc",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Pending\nจริงแล้ว แต่ยังไม่ครบเวลา"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "s3",
+      "type": "rectangle",
+      "x": 640,
+      "y": 130,
+      "width": 230,
+      "height": 90,
+      "backgroundColor": "#ffe3e3",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Firing\nส่งให้ Alertmanager"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "s4",
+      "type": "rectangle",
+      "x": 940,
+      "y": 130,
+      "width": 200,
+      "height": 90,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Resolved\nกลับมาปกติ"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "msum5ps07k9iv8vkb0w",
+      "type": "arrow",
+      "x": 278,
+      "y": 175,
+      "width": 60,
+      "height": 0,
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          54,
+          0
+        ]
+      ],
+      "start": {
+        "id": "s1"
+      },
+      "end": {
+        "id": "s2"
+      },
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "msum5ps0d22sqhjxkph",
+      "type": "arrow",
+      "x": 578,
+      "y": 175,
+      "width": 60,
+      "height": 0,
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          54,
+          0
+        ]
+      ],
+      "start": {
+        "id": "s2"
+      },
+      "end": {
+        "id": "s3"
+      },
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "msum5ps0nlckh98gnf",
+      "type": "arrow",
+      "x": 878,
+      "y": 175,
+      "width": 60,
+      "height": 0,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          54,
+          0
+        ]
+      ],
+      "start": {
+        "id": "s3"
+      },
+      "end": {
+        "id": "s4"
+      },
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "msum5ps0q147nu4kwg",
+      "type": "text",
+      "x": 272,
+      "y": 100,
+      "strokeColor": "#e8590c",
+      "text": "expr เป็นจริง",
+      "fontSize": 15,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "msum5ps0bcvwjhy31g5",
+      "type": "text",
+      "x": 575,
+      "y": 100,
+      "strokeColor": "#c92a2a",
+      "text": "ครบ for:",
+      "fontSize": 15,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "msum5ps0xkovzf9n1w",
+      "type": "text",
+      "x": 878,
+      "y": 100,
+      "strokeColor": "#2f9e44",
+      "text": "expr เท็จ",
+      "fontSize": 15,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "msum5ps0si0b1bvjgk8",
+      "type": "text",
+      "x": 40,
+      "y": 265,
+      "strokeColor": "#16212f",
+      "text": "ตัวอย่าง :  expr: error_ratio > 0.05   for: 1m",
+      "fontSize": 20,
+      "fontFamily": 3,
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "msum5ps01l0bro5hygm",
+      "type": "line",
+      "x": 60,
+      "y": 340,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          1060,
+          0
+        ]
+      ],
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "msum5ps0hdkbju4qvb",
+      "type": "line",
+      "x": 260,
+      "y": 330,
+      "strokeColor": "#e8590c",
+      "strokeWidth": 3,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "msum5ps0436htnb92fe",
+      "type": "line",
+      "x": 660,
+      "y": 330,
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 3,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "msum5ps0v7alaph56dl",
+      "type": "text",
+      "x": 180,
+      "y": 355,
+      "strokeColor": "#e8590c",
+      "text": "10:00:00\nerror พุ่งเกิน 5%\n→ Pending",
+      "fontSize": 15,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "msum5ps0epvxvs2r5dl",
+      "type": "text",
+      "x": 590,
+      "y": 355,
+      "strokeColor": "#c92a2a",
+      "text": "10:01:00\nยังเกินอยู่ครบ 1 นาที\n→ Firing (แจ้งเตือนออก)",
+      "fontSize": 15,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    },
+    {
+      "id": "why",
+      "type": "rectangle",
+      "x": 40,
+      "y": 435,
+      "width": 1100,
+      "height": 105,
+      "backgroundColor": "#e7f5ff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ทำไมต้องรอ for: — เพราะ error กระตุกวินาทีเดียวไม่ควรปลุกใครตอนตี 3\nfor: คือตัวกรอง \"เสียงรบกวน\" ออกจาก \"ปัญหาจริง\" · ตั้งสั้นไป = เตือนพร่ำเพรื่อ · ตั้งยาวไป = รู้ช้าเกินแก้\n\n⏱ การเปลี่ยนสถานะเกิดเฉพาะ \"รอบประเมิน\" (evaluation_interval) เท่านั้น — จึง firing ช้ากว่า for: ที่ตั้งไว้ได้เล็กน้อย"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:51:59.042Z",
+      "updatedAt": "2026-08-15T16:51:59.042Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

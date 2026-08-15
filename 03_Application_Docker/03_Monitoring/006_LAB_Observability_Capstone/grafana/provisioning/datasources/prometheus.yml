@@ -1,0 +1,15 @@
+# Grafana อ่านไฟล์นี้ตอน start เท่านั้น (ไม่ใช่ตอนกดปุ่มใน UI)
+# uid ตรงนี้คือ "ชื่อจริง" ที่ dashboard JSON ต้องอ้างให้ตรงกันเป๊ะ
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: monprom
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: 5s
+      httpMethod: POST

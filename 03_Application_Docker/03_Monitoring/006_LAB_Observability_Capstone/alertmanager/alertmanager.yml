@@ -1,0 +1,22 @@
+# LAB 6 — Alertmanager
+# ค่าเวลาทั้งหมดตั้งให้สั้นกว่าปกติ เพราะต้องเห็นผลภายในคาบเรียน
+# (ระบบจริงมักใช้ group_wait 30s, group_interval 5m, repeat_interval 4h)
+global:
+  resolve_timeout: 1m
+
+route:
+  receiver: lab-webhook
+  group_by: ["alertname"]
+  group_wait: 5s
+  group_interval: 10s
+  # ตั้ง 2 นาที (ระบบจริงมัก 4 ชั่วโมง) ด้วยเหตุผลที่จำเป็นกับแล็บนี้:
+  # receiver เก็บ alert ไว้ในหน่วยความจำ ถ้าคอนเทนเนอร์ถูก recreate ประวัติจะหายไปทั้งหมด
+  # ถ้า repeat_interval ยาว Alertmanager จะไม่ส่งซ้ำอีกนาน ทั้งที่ alert ยัง firing อยู่
+  # → check.sh ข้อ 5 จะตกทั้งที่ระบบถูกต้อง (false fail) จึงย่อให้สั้นกว่างบเวลาที่ checker รอ
+  repeat_interval: 2m
+
+receivers:
+  - name: lab-webhook
+    webhook_configs:
+      - url: "http://receiver:5001/webhook"
+        send_resolved: true

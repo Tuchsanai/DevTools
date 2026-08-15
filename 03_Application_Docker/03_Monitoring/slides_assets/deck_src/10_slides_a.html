@@ -1,0 +1,447 @@
+<!-- ============ 1 : Cover ============ -->
+<div class="slot"><section class="slide cover">
+  <div class="s-body">
+    <div style="display:grid; grid-template-columns:1.02fr .98fr; gap:50px; align-items:center; width:100%">
+      <div>
+        <div class="k">Software Development Tools and Environments</div>
+        <h1>Monitoring<br>ด้วย Prometheus<br>+ Grafana</h1>
+        <div class="rule"></div>
+        <div class="m">จาก "ระบบล่มแล้วรู้ทีหลัง" ไปสู่ "รู้ก่อนผู้ใช้โทรมา"<br>ทฤษฎี + ปฏิบัติการ 6 แล็บ <span style="font-size:19px">(ผลการรันทั้งหมดในสไลด์นี้ รันจริงบนเครื่องเรียน)</span></div>
+      </div>
+      <div style="background:rgba(255,255,255,.94); border-radius:14px; padding:16px"><img data-a="d01" alt="เปรียบเทียบระบบที่ไม่มี monitoring ซึ่งรู้ปัญหาตอนลูกค้าโทรมาแจ้ง กับระบบที่มี monitoring ซึ่งเก็บตัวเลขทุก 15 วินาทีและมี alert ปลุกทีมก่อนผู้ใช้รู้ตัว" style="width:100%;height:auto;display:block"></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring — Prometheus · PromQL · Grafana · Alertmanager</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 2 : Agenda ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>สิ่งที่จะเรียนวันนี้</h2><div class="sub">ครึ่งแรกคือ "ตัวเลขมาจากไหน" ครึ่งหลังคือ "เอาตัวเลขไปทำอะไร"</div></div>
+  <div class="s-body">
+    <div class="agenda">
+      <div class="it"><div class="ix">01</div><div class="tt">ทำไมระบบต้องมี Monitoring<s>ต้นทุนของการ "ไม่รู้" · monitoring ต่างจาก observability อย่างไร</s></div></div>
+      <div class="it"><div class="ix">02</div><div class="tt">Metrics 101 — ตัวเลขหน้าตาเป็นอย่างไร<s>time series · labels · counter / gauge / histogram · cardinality</s></div></div>
+      <div class="it"><div class="ix">03</div><div class="tt">Prometheus ทำงานอย่างไร<s>pull model · exporter · scrape · TSDB · prometheus.yml</s></div></div>
+      <div class="it"><div class="ix">04</div><div class="tt">PromQL — ภาษาที่ใช้ถามตัวเลข<s>selector · range vector · rate() · aggregation · histogram_quantile</s></div></div>
+      <div class="it lab"><div class="ix">05</div><div class="tt"><b>LAB 1-2</b> : scrape ครั้งแรก + ตัวเลขของ container<s>/targets · expression browser · cAdvisor · rate() บนของจริง</s></div></div>
+      <div class="it lab"><div class="ix">06</div><div class="tt"><b>LAB 3</b> : Grafana และ dashboard as code<s>datasource · panel · variable · provisioning ด้วยไฟล์</s></div></div>
+      <div class="it lab"><div class="ix">07</div><div class="tt"><b>LAB 4</b> : ติดตัววัดในแอปของเราเอง<s>client library · RED method · p95 จาก histogram · cardinality</s></div></div>
+      <div class="it lab"><div class="ix">08</div><div class="tt"><b>LAB 5-6</b> : Alert ที่ใช้งานได้จริง + Capstone<s>for: · Alertmanager · silence · ตามล่าบั๊ก 3 จุด · check.sh</s></div></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · ภาพรวมของคาบ</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 3 : Learning loop ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge">LEARNING LOOP</span><h2>ทุกแล็บเรียนแบบนักทดลอง</h2><div class="sub">Monitoring คือวิชาของการ "อ่านหลักฐาน" — อย่าเพิ่งเชื่อกราฟ ให้ตั้งสมมติฐานก่อนเสมอ</div></div>
+  <div class="s-body">
+    <div class="loop4">
+      <div class="loop-step"><span class="ln">1</span><h4>Predict — ทาย</h4><p>ถ้าปิด node-exporter ค่า <code>up</code> จะเป็นเท่าไร? กราฟจะว่างทันทีหรือค่อย ๆ หาย?</p></div>
+      <div class="loop-step"><span class="ln">2</span><h4>Run — ลงมือ</h4><p>รันตามลำดับใน readme รอจนถึงจุดตรวจ readiness ก่อนขยับขั้นถัดไป</p></div>
+      <div class="loop-step"><span class="ln">3</span><h4>Observe — ดูหลักฐาน</h4><p>เทียบ 3 มุมเสมอ : <code>/metrics</code> ดิบ · หน้า <code>/targets</code> · ผล PromQL ใน <code>/graph</code></p></div>
+      <div class="loop-step"><span class="ln">4</span><h4>Explain — อธิบาย</h4><p>ชี้ให้ได้ว่าตัวเลขนี้ถูกวัดที่ไหน เก็บอย่างไร และ query แปลงมันเป็นอะไร</p></div>
+    </div>
+    <div class="grid12" style="margin-top:20px; align-items:center">
+      <div class="fig" style="height:185px"><img data-a="d13" alt="ภาพรวม stack ของทั้ง 6 แล็บ: node-exporter, cAdvisor, แอปของเรา และ load generator ส่งตัวเลขให้ Prometheus แล้ว Prometheus ส่งต่อให้ Grafana และ Alertmanager ซึ่งยิง webhook ไปยัง receiver"></div>
+      <div class="callout good" style="font-size:19px"><b>ผ่านหนึ่งรอบเมื่อตอบได้ครบ 3 คำถาม :</b><br>ตัวเลขนี้ <b>ใครเป็นคนวัด</b> · Prometheus <b>ไปเอามาตอนไหน</b> · query ที่เขียน <b>แปลงมันเป็นอะไร</b> — ถ้าตอบไม่ได้ครบ ให้ย้อนกลับไปดู <code>/metrics</code> ดิบเสมอ</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · วิธีเรียนในห้อง LAB</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 4 : SECTION 01 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">01</div>
+    <h1>ทำไมระบบต้องมี<br>Monitoring?</h1>
+    <div class="m">ทุกระบบพังได้เสมอ — สิ่งที่ต่างกันคือ "เรารู้ตอนไหน" และ "เรามีหลักฐานให้ไล่หรือเปล่า"</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · ปัญหาตั้งต้น</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 5 : ต้นทุนของการไม่รู้ ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ต้นทุนที่แท้จริงของการ "ไม่รู้"</h2><div class="sub">ระบบเดียวกัน เหตุการณ์เดียวกัน — ต่างกันแค่มีตัวเลขเก็บไว้หรือไม่</div></div>
+  <div class="s-body"><div class="fig"><img data-a="d01" alt="ด้านซ้ายไม่มี monitoring: ระบบล่มตอนตี 2 แล้วลูกค้าโทรมาแจ้ง ทำให้รู้ตอนเสียหายแล้ว ไม่รู้ว่าเริ่มพังเมื่อไรและพังตรงไหน กู้คืนช้า ด้านขวามี monitoring: เก็บตัวเลขทุก 15 วินาที มี alert ปลุกทีม เห็นแนวโน้มก่อนพัง มีหลักฐานย้อนหลัง แก้ตรงจุด"></div></div>
+  <div class="s-foot"><span>Monitoring · ปัญหาตั้งต้น</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 6 : 4 คำถาม ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Monitoring ที่ดีต้องตอบ 4 คำถามนี้ได้</h2><div class="sub">ถ้า dashboard ที่ทำอยู่ตอบไม่ได้สักข้อ แปลว่ามันสวยแต่ใช้งานจริงไม่ได้</div></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div class="card"><h4><span class="n">1</span>ตอนนี้ปกติไหม?</h4><p>ต้องดูจบภายใน 10 วินาทีว่าระบบยังรับงานได้อยู่ — ไม่ใช่ไล่เปิดทีละ service</p></div>
+      <div class="card o"><h4><span class="n">2</span>เริ่มผิดปกติเมื่อไร?</h4><p>ต้องย้อนดูอดีตได้ เพื่อผูกกับ "เราทำอะไรตอนนั้น" เช่น deploy เวอร์ชันใหม่ 10:45 น.</p></div>
+      <div class="card p"><h4><span class="n">3</span>ผิดปกติตรงไหน?</h4><p>ต้องแคบลงได้จาก "ทั้งระบบ" → service → container → endpoint ที่เป็นต้นเหตุ</p></div>
+      <div class="card g"><h4><span class="n">4</span>ผู้ใช้เจ็บแค่ไหน?</h4><p>CPU 90% แต่ผู้ใช้ไม่รู้สึกอะไร ≠ CPU 40% แต่ 30% ของ request ได้ error</p></div>
+    </div>
+    <div class="callout" style="margin-top:20px"><b>คำถามนำของทั้งชุดนี้ :</b> เราจะทำให้ระบบ "บอกอาการของตัวเองได้" อย่างไร โดยไม่ต้องเข้าไปนั่งเฝ้า และไม่ต้องรอให้ผู้ใช้เป็นคนแจ้ง</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · ปัญหาตั้งต้น</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 7 : 3 pillars ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Monitoring vs Observability</h2><div class="sub">Monitoring = เฝ้าสิ่งที่เรารู้ว่าต้องเฝ้า · Observability = ความสามารถตอบคำถามที่ยังไม่เคยถาม</div></div>
+  <div class="s-body"><div class="fig"><img data-a="d02" alt="สามเสาหลักของ observability: Metrics ตอบว่าตอนนี้เป็นอย่างไร เป็นตัวเลขตามเวลา เล็ก เก็บได้นาน เหมาะกับ dashboard และ alert; Logs ตอบว่าเกิดอะไรขึ้น มีรายละเอียดแต่กินที่เก็บ; Traces ตอบว่า request ช้าตรงไหน ตามข้าม service"></div></div>
+  <div class="s-foot"><span>Monitoring · ปัญหาตั้งต้น</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 8 : SECTION 02 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">02</div>
+    <h1>Metrics 101</h1>
+    <div class="m">ก่อนจะใช้เครื่องมือใด ๆ ต้องอ่าน "ตัวเลขหนึ่งบรรทัด" ให้ออกก่อน — ทั้งวิชานี้ต่อยอดจากตรงนี้ทั้งหมด</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Metrics 101</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 9 : metric anatomy ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>อ่าน metric หนึ่งบรรทัดให้ออก</h2><div class="sub">ทุกอย่างใน Prometheus คือรูปแบบเดียวกันหมด ไม่ว่ามาจาก exporter ตัวไหน</div></div>
+  <div class="s-body"><div class="fig"><img data-a="d05" alt="การผ่าโครงสร้าง metric หนึ่งบรรทัด แยกเป็นชื่อ metric, labels ที่เป็นมิติ, ค่า และเวลา พร้อมอธิบายว่าหนึ่งชุด label เท่ากับหนึ่ง time series"></div></div>
+  <div class="s-foot"><span>Monitoring · Metrics 101</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 10 : time series ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Time series คืออะไรกันแน่</h2><div class="sub">ไม่ใช่ "ตัวเลข 1 ค่า" แต่คือ "เส้น 1 เส้น" ที่มีค่าเรียงตามเวลา</div></div>
+  <div class="s-body top">
+    <div class="grid21" style="align-items:start">
+      <div>
+        <pre class="code sm"><span class="c"># เวลา            ค่า</span>
+<span class="o">10:00:00</span>   <span class="y">1000</span>
+<span class="o">10:00:15</span>   <span class="y">1030</span>   <span class="c">← scrape ทุก 15 วินาที</span>
+<span class="o">10:00:30</span>   <span class="y">1075</span>
+<span class="o">10:00:45</span>   <span class="y">1105</span></pre>
+        <div class="callout" style="margin-top:16px; font-size:18px"><b>1 series</b> = ชื่อ metric + ชุด label ที่ไม่ซ้ำกัน 1 ชุด<br>เปลี่ยนค่า label แม้ตัวเดียว = กลายเป็นคนละเส้นทันที</div>
+      </div>
+      <div>
+        <table class="tbl sm">
+          <tr><th>series</th><th>เก็บอะไร</th></tr>
+          <tr><td><code>app_requests_total{status="200"}</code></td><td>เส้นของ request ที่สำเร็จ</td></tr>
+          <tr><td><code>app_requests_total{status="500"}</code></td><td>เส้นของ request ที่พัง</td></tr>
+          <tr><td><code>app_requests_total{status="404"}</code></td><td>อีกเส้นแยกออกไป</td></tr>
+        </table>
+        <div class="callout warn" style="margin-top:16px; font-size:18px"><b>นี่คือจุดที่ทรงพลังและอันตรายพร้อมกัน :</b> label ทำให้เราหั่นดูข้อมูลได้ทุกมุม แต่ก็ทำให้จำนวนเส้นระเบิดได้ถ้าเลือกผิด (เดี๋ยวเจอในหัวข้อ cardinality)</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Metrics 101</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 11 : 4 metric types ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ชนิดของ metric มี 4 แบบ</h2><div class="sub">เลือกผิดชนิดตั้งแต่ต้น = query ยังไงก็ได้คำตอบที่ไม่มีความหมาย</div></div>
+  <div class="s-body">
+    <table class="tbl">
+      <tr><th style="width:130px">ชนิด</th><th style="width:250px">พฤติกรรม</th><th>ใช้เมื่อ</th><th style="width:290px">ตัวอย่างจริงในแล็บ</th></tr>
+      <tr><td><b style="color:#1864ab">Counter</b></td><td>ขึ้นอย่างเดียว รีเซ็ตเป็น 0 เมื่อ restart</td><td>นับ "จำนวนครั้งสะสม" ของเหตุการณ์</td><td><code>app_requests_total</code></td></tr>
+      <tr><td><b style="color:#2f9e44">Gauge</b></td><td>ขึ้นก็ได้ ลงก็ได้</td><td>วัด "ค่า ณ ขณะนี้" ที่แกว่งไปมา</td><td><code>node_memory_MemAvailable_bytes</code></td></tr>
+      <tr><td><b style="color:#e8590c">Histogram</b></td><td>นับลงถังตามช่วงค่า (สะสม)</td><td>ดูการกระจายตัว เช่น เวลาตอบสนอง</td><td><code>app_request_duration_seconds</code></td></tr>
+      <tr><td><b style="color:#6741d9">Summary</b></td><td>คำนวณ quantile ที่ฝั่งแอปเลย</td><td>เมื่อต้องการ quantile แม่นของ instance เดียว</td><td>(ชุดนี้ไม่ใช้ — เหตุผลอยู่สไลด์ถัดไป)</td></tr>
+    </table>
+    <div class="callout warn" style="margin-top:18px"><b>ธรรมเนียมการตั้งชื่อที่ควรทำตาม :</b> counter ลงท้ายด้วย <code>_total</code> · ใส่หน่วยไว้ในชื่อเสมอ (<code>_seconds</code>, <code>_bytes</code>) · ใช้หน่วยฐาน (วินาที ไม่ใช่มิลลิวินาที · byte ไม่ใช่ MB) แล้วค่อยไปแปลงหน่วยตอนแสดงผลใน Grafana</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Metrics 101</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 12 : counter vs gauge ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Counter vs Gauge — ต่างกันที่ทิศทาง</h2><div class="sub">เป็นความสับสนอันดับหนึ่งของคนเริ่มใช้ Prometheus</div></div>
+  <div class="s-body"><div class="fig"><img data-a="d06" alt="กราฟเปรียบเทียบ counter ที่ขึ้นอย่างเดียวและรีเซ็ตเป็นศูนย์เมื่อ restart กับ gauge ที่ขึ้นลงได้ พร้อมตัวอย่าง metric ของแต่ละชนิด"></div></div>
+  <div class="s-foot"><span>Monitoring · Metrics 101</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 13 : ทำไม counter ถึงออกแบบให้ขึ้นอย่างเดียว ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ทำไม counter ถึงไม่เก็บเป็น "ต่อวินาที" ไปเลย?</h2><div class="sub">คำถามที่ดีมาก — คำตอบคือเรื่องการทนต่อการ scrape ที่หลุด</div></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div class="card r"><h4>ถ้าแอปเก็บเป็นอัตราให้เลย</h4><p>แอปต้องเลือกช่วงเฉลี่ยเอง (1 นาที? 5 นาที?) แล้วทุกคนติดอยู่กับช่วงนั้นตลอดไป<br><br>ถ้า scrape หลุดไป 1 รอบ ข้อมูลช่วงนั้น<b>หายถาวร</b> เพราะค่าที่หายคือค่าเฉลี่ยของช่วงนั้น</p></div>
+      <div class="card g"><h4>เก็บเป็นค่าสะสม (แบบที่ Prometheus ใช้)</h4><p>แอปแค่บวกเพิ่มอย่างเดียว ไม่ต้องรู้จักเวลา ไม่ต้องเก็บประวัติย้อนหลังเอง<br><br>ถ้า scrape หลุด 1 รอบ <b>ยอดรวมไม่หาย</b> — ค่าสะสมรอบถัดไปรวมของที่หายไว้ให้แล้ว (เสียแค่ความละเอียดว่าช่วงนั้นเกิดอะไรขึ้นบ้าง)</p></div>
+    </div>
+    <div class="callout good" style="margin-top:20px"><b>สรุปเป็นประโยคเดียว :</b> counter เก็บ "ผลรวมตั้งแต่ process เริ่มทำงาน" แล้วปล่อยให้ <b>คนถาม</b> เป็นผู้เลือกช่วงเวลาเองตอน query ด้วย <code>rate(...[1m])</code> — ความยืดหยุ่นนี้คือเหตุผลที่ Prometheus ไม่เก็บเป็นอัตราตั้งแต่ต้นทาง</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Metrics 101</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 14 : histogram ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Histogram — ทำไมค่าเฉลี่ยถึงหลอกเรา</h2><div class="sub">ค่าเฉลี่ย 200ms ฟังดูดี แต่ถ้า 1% ของผู้ใช้รอ 8 วินาที เราจะไม่มีวันเห็นคนกลุ่มนั้นเลย</div></div>
+  <div class="s-body"><div class="fig"><img data-a="d07" alt="ภาพอธิบาย histogram bucket แบบสะสม แสดงจำนวนครั้งที่ตกในแต่ละถัง le และวิธีที่ Prometheus ประมาณค่า p95 จากขอบถัง"></div></div>
+  <div class="s-foot"><span>Monitoring · Metrics 101</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 15 : histogram บน /metrics จริง ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Histogram หน้าตาจริงบน <code>/metrics</code></h2><div class="sub">histogram 1 ตัว = หลาย series : <code>_bucket</code> หลายเส้น + <code>_sum</code> + <code>_count</code></div></div>
+  <div class="s-body top">
+    <pre class="code sm"><span class="c"># HELP app_request_duration_seconds เวลาที่ใช้ต่อ request</span>
+<span class="c"># TYPE app_request_duration_seconds histogram</span>
+app_request_duration_seconds_bucket{endpoint="/api/items",<span class="y">le="0.01"</span>}  <span class="k">12</span>
+app_request_duration_seconds_bucket{endpoint="/api/items",<span class="y">le="0.05"</span>}  <span class="k">88</span>
+app_request_duration_seconds_bucket{endpoint="/api/items",<span class="y">le="0.1"</span>}   <span class="k">140</span>
+app_request_duration_seconds_bucket{endpoint="/api/items",<span class="y">le="+Inf"</span>}  <span class="k">200</span>   <span class="c">← เท่ากับ _count เสมอ</span>
+app_request_duration_seconds_sum{endpoint="/api/items"}    <span class="k">14.7</span>    <span class="c">← เวลารวมทุก request (วินาที)</span>
+app_request_duration_seconds_count{endpoint="/api/items"}  <span class="k">200</span>     <span class="c">← จำนวน request ทั้งหมด</span></pre>
+    <div class="grid2" style="margin-top:16px">
+      <div class="callout" style="font-size:17px"><b>ค่าเฉลี่ยตลอดอายุ process :</b> <code>_sum / _count</code> = 14.7 / 200 ≈ <b>0.073 วินาที</b><br>ถ้าอยากได้ค่าเฉลี่ย<b>เฉพาะ 5 นาทีล่าสุด</b> ต้องใช้ <code>rate(_sum[5m]) / rate(_count[5m])</code> (คนละเลขกัน)</div>
+      <div class="callout warn" style="font-size:17px"><b>p95 จากตัวเลขชุดนี้ได้ 0.1 วินาที :</b> อันดับที่ 95% ของ 200 คือครั้งที่ 190 ซึ่ง<b>เกินถัง <code>le="0.1"</code> (140 ครั้ง) ไปแล้ว</b> จึงตกอยู่ในถัง <code>+Inf</code><br>Prometheus จะคืน<b>ขอบบนของถังจำกัดใบสุดท้าย</b> = 0.1 → สัญญาณว่า <b>ถังหยาบเกินไป</b> ต้องเพิ่มถังที่สูงกว่านี้</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Metrics 101</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 16 : histogram vs summary ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Histogram หรือ Summary ดี?</h2><div class="sub">กฎง่าย ๆ คือ "เกือบทุกกรณีใช้ Histogram" — และนี่คือเหตุผล</div></div>
+  <div class="s-body">
+    <table class="tbl">
+      <tr><th style="width:250px">ประเด็น</th><th>Histogram</th><th>Summary</th></tr>
+      <tr><td>คำนวณ quantile ที่ไหน</td><td>ที่ Prometheus ตอน query</td><td>ที่ตัวแอป ตอนบันทึก</td></tr>
+      <tr><td><b>รวมหลาย instance ได้ไหม</b></td><td><b style="color:#2f9e44">ได้</b> — บวก bucket กันตรง ๆ แล้วค่อยคิด quantile</td><td><b style="color:#c92a2a">ไม่ได้</b> — ค่าเฉลี่ยของ p95 ไม่ใช่ p95 ของทั้งระบบ</td></tr>
+      <tr><td>เปลี่ยน quantile ทีหลัง</td><td>ได้ทันที (p50/p90/p99 จากข้อมูลเดิม)</td><td>ไม่ได้ ต้องแก้โค้ดแล้ว deploy ใหม่</td></tr>
+      <tr><td>ความแม่นยำ</td><td>ประมาณตามขอบ bucket ที่เลือก</td><td>แม่นกว่าสำหรับ instance เดียว</td></tr>
+      <tr><td>ภาระตอน query</td><td>หนักกว่าเล็กน้อย</td><td>เบา</td></tr>
+    </table>
+    <div class="callout bad" style="margin-top:18px"><b>ข้อผิดพลาดคลาสสิก :</b> มีแอป 3 replica แล้วเอา p95 ของแต่ละตัวมาเฉลี่ยกัน — <b>ผลลัพธ์ไม่มีความหมายทางสถิติ</b><br>ถ้าใช้ histogram จะรวมได้อย่างถูกต้องด้วย <code>sum by (le) (rate(..._bucket[5m]))</code> ก่อนแล้วค่อยหา quantile</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Metrics 101</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 17 : cardinality ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">ข้อควรระวังใหญ่ที่สุด</span><h2>Cardinality — label ที่เลือกผิดฆ่า Prometheus ได้</h2><div class="sub">เรื่องนี้จะได้ลงมือทำให้ระเบิดจริงใน LAB 4</div></div>
+  <div class="s-body"><div class="fig"><img data-a="d09" alt="เปรียบเทียบ label ที่ดีซึ่งใช้ path แบบ template ทำให้ได้ 60 series กับ label ที่พังซึ่งใส่ id ของสินค้าเป็น label ทำให้ได้กว่าหนึ่งล้าน series พร้อมผลกระทบต่อ RAM และการ query"></div></div>
+  <div class="s-foot"><span>Monitoring · Metrics 101</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 18 : SECTION 03 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">03</div>
+    <h1>Prometheus<br>ทำงานอย่างไร</h1>
+    <div class="m">รู้จักเครื่องมือที่จะใช้ตลอดทั้ง 6 แล็บ — และเข้าใจว่าทำไมมันถึงเลือกออกแบบแบบ "ไปดึงเอง"</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Prometheus</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 19 : pull vs push ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Pull model — Prometheus ไปดึงเอง</h2><div class="sub">แอปไม่ต้องรู้จัก Prometheus เลย แค่เปิดหน้าเว็บ <code>/metrics</code> ทิ้งไว้</div></div>
+  <div class="s-body"><div class="fig"><img data-a="d03" alt="เปรียบเทียบ pull model ที่ Prometheus ยิง HTTP GET ไปดึง /metrics จากแอปทุก 15 วินาที กับ push model ที่แอปส่งข้อมูลไปยังตัวรับกลางเอง พร้อมข้อดีข้อเสียและข้อยกเว้นเรื่อง Pushgateway"></div></div>
+  <div class="s-foot"><span>Monitoring · Prometheus</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 20 : architecture ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ใครทำอะไรตรงไหน</h2><div class="sub">Prometheus ไม่ได้ทำทุกอย่าง — มันตั้งใจทำแค่ 3 อย่าง แล้วส่งต่อที่เหลือ</div></div>
+  <div class="s-body"><div class="fig"><img data-a="d04" alt="สถาปัตยกรรม Prometheus: exporter สามตัวคือ node-exporter, cAdvisor และแอปของเรา เปิด /metrics ให้ Prometheus ดึง จากนั้น Prometheus เก็บลง TSDB และประเมิน rule แล้วส่งกราฟให้ Grafana ผ่าน PromQL และส่ง alert ที่ firing ให้ Alertmanager เพื่อกระจายไปยัง webhook อีเมล หรือแชท"></div></div>
+  <div class="s-foot"><span>Monitoring · Prometheus</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 21 : exposition format ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>"หน้าเว็บที่พ่นตัวเลข" หน้าตาเป็นแบบนี้</h2><div class="sub">นี่คือผลจริงของ <code>curl localhost:9100/metrics</code> ใน LAB 1 — เป็นแค่ text ธรรมดา</div></div>
+  <div class="s-body top">
+    <pre class="code sm"><span class="c"># HELP node_memory_MemAvailable_bytes Memory information field MemAvailable_bytes.</span>
+<span class="c"># TYPE node_memory_MemAvailable_bytes gauge</span>
+<span class="k">node_memory_MemAvailable_bytes</span> <span class="y">6.2762907648e+10</span>
+
+<span class="c"># HELP node_cpu_seconds_total Seconds the CPUs spent in each mode.</span>
+<span class="c"># TYPE node_cpu_seconds_total counter</span>
+<span class="k">node_cpu_seconds_total</span>{cpu=<span class="r">"0"</span>,mode=<span class="r">"idle"</span>} <span class="y">223099.81</span>
+<span class="k">node_cpu_seconds_total</span>{cpu=<span class="r">"0"</span>,mode=<span class="r">"system"</span>} <span class="y">1180.4</span>
+<span class="k">node_cpu_seconds_total</span>{cpu=<span class="r">"1"</span>,mode=<span class="r">"idle"</span>} <span class="y">223411.02</span></pre>
+    <div class="grid2" style="margin-top:18px">
+      <div class="callout" style="font-size:18px"><b><code># HELP</code></b> = คำอธิบายสำหรับมนุษย์<br><b><code># TYPE</code></b> = บอกชนิด (counter / gauge / histogram)<br>ที่เหลือคือ <b>ชื่อ + labels + ค่า</b> บรรทัดละ 1 series</div>
+      <div class="callout good" style="font-size:18px"><b>ประเด็นสำคัญ :</b> exporter <b>ไม่ได้ส่งอะไรออกไปไหนเลย</b> มันแค่ตอบเมื่อถูกถาม<br>เราจึงทดสอบมันด้วย <code>curl</code> ได้ตรง ๆ โดยไม่ต้องมี Prometheus</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Prometheus</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 22 : prometheus.yml ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2><code>prometheus.yml</code> — อ่านทีละบรรทัด</h2><div class="sub">ไฟล์เดียวนี้ตอบคำถามว่า "ไปดึงจากใคร บ่อยแค่ไหน"</div></div>
+  <div class="s-body top">
+    <pre class="code sm"><span class="k">global</span>:
+  <span class="k">scrape_interval</span>: <span class="y">15s</span>       <span class="c"># ดึงทุก 15 วิ — ถ้าไม่ใส่ ค่า default คือ 1 นาที!</span>
+  <span class="k">evaluation_interval</span>: <span class="y">15s</span>   <span class="c"># ประเมิน alert rule ทุก 15 วิ</span>
+
+<span class="k">scrape_configs</span>:
+  - <span class="k">job_name</span>: <span class="r">"node"</span>          <span class="c"># กลายเป็น label job="node" ติดไปกับทุก series</span>
+    <span class="k">static_configs</span>:
+      - <span class="k">targets</span>: [<span class="r">"node-exporter:9100"</span>]   <span class="c"># ← ชื่อ service ใน compose ไม่ใช่ localhost</span>
+
+  - <span class="k">job_name</span>: <span class="r">"prometheus"</span>    <span class="c"># Prometheus เฝ้าตัวเองด้วย</span>
+    <span class="k">static_configs</span>:
+      - <span class="k">targets</span>: [<span class="r">"localhost:9090"</span>]</pre>
+    <div class="callout bad" style="margin-top:16px"><b>ความผิดพลาดอันดับหนึ่งของคนเริ่มใช้ :</b> ใส่ <code>localhost:9100</code> เป็น target<br>เพราะ <code>localhost</code> ในสายตาของ container ชื่อ <code>prometheus</code> คือ <b>ตัวมันเอง</b> ไม่ใช่เครื่อง host และไม่ใช่ container ตัวอื่น → target จะ DOWN ทันที (เรื่องนี้จะได้ลองทำให้พังจริงใน LAB 1)</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Prometheus</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 23 : target + labels อัตโนมัติ ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Prometheus แถม label ให้อัตโนมัติ</h2><div class="sub">และแถม metric พิเศษชื่อ <code>up</code> ที่สำคัญที่สุดตัวหนึ่งในระบบ</div></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div>
+        <div class="card"><h4>label ที่ติดมาให้เอง</h4><p><code>job</code> — มาจาก <code>job_name</code> ใน config<br><code>instance</code> — คือ host:port ของ target ตัวนั้น</p></div>
+        <pre class="code xs" style="margin-top:14px">node_load1{<span class="y">job="node"</span>, <span class="y">instance="node-exporter:9100"</span>} 0.42</pre>
+      </div>
+      <div>
+        <div class="card g"><h4><code>up</code> — metric ที่ Prometheus สร้างเอง</h4><p><code>up = 1</code> → scrape รอบล่าสุดสำเร็จ<br><code>up = 0</code> → ติดต่อ target ไม่ได้ / ตอบไม่ถูกรูปแบบ<br><br>นี่คือสิ่งที่ push model ให้ไม่ได้ เพราะ "เงียบไป" กับ "ตายไป" แยกกันไม่ออก</p></div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:18px"><b>alert แรกที่ทุกระบบควรมีคือ :</b> <code>up == 0</code> — ก่อนจะไปสนใจ CPU หรือ memory ใด ๆ ให้แน่ใจก่อนว่า "เรายังเห็นระบบอยู่ไหม" (ถ้า exporter ตายแล้วเราไม่รู้ กราฟจะดูสวยงามทั้งที่ระบบล่มไปแล้ว)</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Prometheus</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 24 : storage / retention ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Prometheus เก็บข้อมูลอย่างไร</h2><div class="sub">รู้ข้อจำกัดไว้ก่อน จะได้ไม่ตั้งความหวังผิด</div></div>
+  <div class="s-body">
+    <div class="grid3">
+      <div class="card"><h4>TSDB บนดิสก์ในเครื่อง</h4><p>เก็บเป็น block ละ 2 ชั่วโมง แล้วค่อยยุบรวม · ออกแบบมาให้เขียนเร็วและกินที่น้อย (ประมาณ 1-2 byte ต่อ 1 จุดข้อมูล)</p></div>
+      <div class="card o"><h4>เก็บ 15 วันโดย default</h4><p>ปรับด้วย <code>--storage.tsdb.retention.time</code> · ไม่ได้ออกแบบมาเก็บเป็นปี ถ้าต้องเก็บยาวให้ต่อ Thanos / Mimir / VictoriaMetrics</p></div>
+      <div class="card r"><h4>ไม่มี HA ในตัว</h4><p>Prometheus 1 ตัวคือ 1 จุดตาย · วิธีปฏิบัติจริงคือรัน 2 ตัวขนานกันดึงข้อมูลชุดเดียวกัน แล้วให้ Alertmanager ตัด alert ซ้ำออกให้</p></div>
+    </div>
+    <div class="callout warn" style="margin-top:20px"><b>สิ่งที่ Prometheus จงใจไม่ทำ :</b> ไม่เก็บ log · ไม่เก็บ event รายรายการ · ไม่รับประกันว่าข้อมูลครบ 100% (ถ้า scrape หลุดก็คือหลุด)<br>มันแลกความสมบูรณ์แบบกับ "ความเรียบง่ายและอยู่รอดตอนระบบกำลังพัง" — ซึ่งเป็นตอนที่เราต้องการมันที่สุด</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Prometheus</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 25 : SECTION 04 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">04</div>
+    <h1>PromQL</h1>
+    <div class="m">ภาษาที่ใช้ถามตัวเลข — เข้าใจ 5 เรื่องนี้แล้วจะเขียน query ได้ 90% ของงานจริง</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · PromQL</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 26 : ชนิดข้อมูลใน PromQL ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>PromQL มีข้อมูล 2 ชนิดที่ต้องแยกให้ออก</h2><div class="sub">(ทั้งหมดมี 4 ชนิด — แต่ scalar กับ string เจอน้อยมาก) สับสนตรงนี้ = เจอ error "expected type instant vector" ตลอดกาล</div></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div class="card"><h4>Instant vector — ค่า ณ จุดเวลาเดียว</h4>
+        <pre class="code xs" style="margin-top:10px">node_load1
+node_load1{job="node"}</pre>
+        <p style="margin-top:10px">ได้ค่าล่าสุด 1 ค่าต่อ 1 series · <b>เอาไปวาดกราฟได้เลย</b></p></div>
+      <div class="card o"><h4>Range vector — ค่าหลายจุดในช่วงเวลา</h4>
+        <pre class="code xs" style="margin-top:10px">node_load1[5m]
+node_cpu_seconds_total[1m]</pre>
+        <p style="margin-top:10px">ได้ชุดค่าย้อนหลัง 5 นาที · <b>วาดกราฟตรง ๆ ไม่ได้</b> ต้องผ่านฟังก์ชันอย่าง <code>rate()</code> ก่อน</p></div>
+    </div>
+    <div class="callout bad" style="margin-top:20px"><b>กฎจำง่าย :</b> เห็น <code>[...]</code> เมื่อไร แปลว่าผลลัพธ์ยัง<b>วาดไม่ได้</b> ต้องมีฟังก์ชันมาห่ออีกชั้นเสมอ<br><code>rate()</code> · <code>increase()</code> · <code>avg_over_time()</code> · <code>max_over_time()</code> ล้วนกิน range vector แล้วคืน instant vector</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · PromQL</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 27 : selector ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>เลือก series ด้วย label matcher</h2><div class="sub">4 ตัวดำเนินการนี้ใช้ได้กับทุก query</div></div>
+  <div class="s-body top">
+    <table class="tbl sm">
+      <tr><th style="width:80px">ตัว</th><th style="width:200px">ความหมาย</th><th>ตัวอย่าง</th></tr>
+      <tr><td><code>=</code></td><td>เท่ากับ</td><td><code>app_requests_total{status="500"}</code></td></tr>
+      <tr><td><code>!=</code></td><td>ไม่เท่ากับ</td><td><code>container_cpu_usage_seconds_total{name!=""}</code> ← ใช้บ่อยมากใน LAB 2</td></tr>
+      <tr><td><code>=~</code></td><td>ตรงกับ regex</td><td><code>app_requests_total{status=~"5.."}</code> ← จับ 500, 502, 503 ทั้งหมด</td></tr>
+      <tr><td><code>!~</code></td><td>ไม่ตรงกับ regex</td><td><code>node_cpu_seconds_total{mode!~"idle|iowait"}</code> ← เอาเฉพาะเวลาที่ CPU ทำงานจริง</td></tr>
+    </table>
+    <div class="grid2" style="margin-top:18px">
+      <div class="callout warn" style="font-size:18px"><b>regex ของ PromQL ยึดเต็มสตริงเสมอ</b> (anchored)<br><code>status=~"5"</code> จะ<b>ไม่</b>ตรงกับ <code>"500"</code><br>ต้องเขียน <code>status=~"5.."</code> หรือ <code>status=~"5.*"</code></div>
+      <div class="callout" style="font-size:18px"><b>ชื่อ metric ก็คือ label ตัวหนึ่ง</b> ชื่อว่า <code>__name__</code><br><code>{__name__=~"node_cpu.*"}</code> ใช้ค้นหาแบบกวาดได้ (แต่ช้า อย่าใช้ใน dashboard จริง)</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · PromQL</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 28 : rate ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2><code>rate()</code> — ฟังก์ชันที่ใช้บ่อยที่สุด</h2><div class="sub">แปลง counter ที่ขึ้นเรื่อย ๆ ให้กลายเป็น "ต่อวินาที" ที่มีความหมาย</div></div>
+  <div class="s-body"><div class="fig"><img data-a="d08" alt="ไทม์ไลน์แสดงจุด scrape ทุก 15 วินาทีพร้อมค่าสะสม และการคำนวณ rate จากผลต่างหารด้วยเวลา พร้อมกฎว่าหน้าต่าง rate ต้องมีอย่างน้อยสี่เท่าของ scrape interval"></div></div>
+  <div class="s-foot"><span>Monitoring · PromQL</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 29 : rate vs irate vs increase ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2><code>rate</code> · <code>irate</code> · <code>increase</code> ต่างกันอย่างไร</h2><div class="sub">ทั้งสามตัวกิน range vector เหมือนกัน แต่ให้คำตอบคนละแบบ</div></div>
+  <div class="s-body">
+    <table class="tbl">
+      <tr><th style="width:150px">ฟังก์ชัน</th><th style="width:260px">คำนวณอย่างไร</th><th>ใช้เมื่อไร</th></tr>
+      <tr><td><code>rate(x[5m])</code></td><td>ค่าเฉลี่ยต่อวินาที ตลอดทั้งหน้าต่าง</td><td><b style="color:#2f9e44">ค่าเริ่มต้นที่ควรใช้เสมอ</b> — เรียบ ทนต่อ scrape ที่หลุด เหมาะกับ dashboard และ alert</td></tr>
+      <tr><td><code>irate(x[5m])</code></td><td>ใช้แค่ 2 จุดสุดท้ายในหน้าต่าง</td><td>อยากเห็นการกระตุกแบบละเอียด · <b style="color:#c92a2a">โดยทั่วไปไม่ควรใช้กับ alert</b> เพราะไวเกินจนเตือนพร่ำเพรื่อ</td></tr>
+      <tr><td><code>increase(x[1h])</code></td><td>จำนวนที่เพิ่มขึ้นรวมในช่วงนั้น</td><td>ตอบคำถามแบบ "ชั่วโมงที่ผ่านมามี error กี่ครั้ง" · เท่ากับ <code>rate × วินาทีในช่วง</code></td></tr>
+    </table>
+    <div class="callout good" style="margin-top:18px"><b>ทั้งสามตัวรู้จัก counter reset :</b> ถ้า container restart แล้วค่าตกจาก 5000 กลับเป็น 0 ทั้งสามฟังก์ชันจะเข้าใจว่านี่คือการรีเซ็ต ไม่ใช่ค่าติดลบ แล้วชดเชยให้อัตโนมัติ — นี่คือเหตุผลว่าทำไมห้ามคำนวณผลต่างเองด้วยมือ</div>
+    <div class="callout bad" style="margin-top:14px"><b>และทั้งสามตัวไม่ควรใช้กับ gauge</b> — <code>rate(node_memory_MemAvailable_bytes[5m])</code> เขียนได้แต่<b>ผลไม่มีความหมาย</b> เพราะ gauge ลดลงได้ตามปกติ ระบบจะตีความว่าเป็น reset · ถ้าอยากรู้ว่า gauge เปลี่ยนไปเท่าไรให้ใช้ <code>delta()</code> หรือ <code>deriv()</code></div>
+  </div>
+  <div class="s-foot"><span>Monitoring · PromQL</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 30 : aggregation ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ยุบหลายเส้นให้เหลือเส้นที่อยากดู</h2><div class="sub"><code>by</code> = เก็บ label นี้ไว้ · <code>without</code> = ทิ้ง label นี้ ที่เหลือเก็บหมด</div></div>
+  <div class="s-body top">
+    <pre class="code sm"><span class="c"># มี 12 เส้น แยกตาม endpoint × status × method</span>
+rate(app_requests_total[1m])
+
+<span class="c"># ยุบเหลือเส้นเดียว = อัตรารวมทั้งแอป</span>
+<span class="k">sum</span>(rate(app_requests_total[1m]))
+
+<span class="c"># ยุบให้เหลือแยกตาม status เท่านั้น (รวมทุก endpoint เข้าด้วยกัน)</span>
+<span class="k">sum by (status)</span> (rate(app_requests_total[1m]))
+
+<span class="c"># เอา 3 container ที่กิน CPU มากที่สุด</span>
+<span class="k">topk</span>(3, rate(container_cpu_usage_seconds_total{name!=""}[1m]))</pre>
+    <div class="grid2" style="margin-top:16px">
+      <div class="callout" style="font-size:18px"><b>ตัวที่ใช้บ่อย :</b> <code>sum</code> · <code>avg</code> · <code>max</code> · <code>min</code> · <code>count</code> · <code>topk</code> / <code>bottomk</code></div>
+      <div class="callout bad" style="font-size:18px"><b>ลำดับสำคัญมาก :</b> ต้อง <code>rate()</code> <b>ก่อน</b> แล้วค่อย <code>sum()</code><br><code>sum(rate(x[5m]))</code> ✅ ถูก<br><code>rate(sum(x)[5m])</code> ❌ <b>เขียนไม่ผ่านตั้งแต่ parse</b> (ใส่ <code>[5m]</code> ท้ายผลของ <code>sum()</code> ไม่ได้) — และต่อให้ดัดให้ผ่าน ค่าก็เพี้ยน เพราะพอ sum แล้ว counter reset ของแต่ละเส้นจะถูกกลบไป</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · PromQL</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 31 : PromQL recipes ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>สูตร PromQL ที่ใช้จริงบ่อยที่สุด</h2><div class="sub">คัดลอกไปใช้ได้เลย — ทุกบรรทัดจะได้รันจริงในแล็บ</div></div>
+  <div class="s-body top">
+    <table class="tbl sm" style="font-size:15.5px">
+      <tr><th style="width:260px">อยากรู้อะไร</th><th>PromQL</th></tr>
+      <tr><td>target ไหนตายบ้าง</td><td><code>up == 0</code></td></tr>
+      <tr><td>%CPU ที่ใช้ของทั้งเครื่อง</td><td><code>100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100)</code></td></tr>
+      <tr><td>%RAM ที่ใช้</td><td><code>(1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100</code></td></tr>
+      <tr><td>CPU ที่แต่ละ container ใช้ (หน่วย core)</td><td><code>rate(container_cpu_usage_seconds_total{name!=""}[1m])</code></td></tr>
+      <tr><td>RAM ที่แต่ละ container ใช้</td><td><code>container_memory_working_set_bytes{name!=""}</code></td></tr>
+      <tr><td>อัตรา request ต่อวินาที</td><td><code>sum(rate(app_requests_total[1m]))</code></td></tr>
+      <tr><td>สัดส่วน error</td><td><code>sum(rate(app_requests_total{status=~"5.."}[1m])) / sum(rate(app_requests_total[1m]))</code></td></tr>
+      <tr><td>p95 ของเวลาตอบสนอง</td><td><code>histogram_quantile(0.95, sum by (le) (rate(app_request_duration_seconds_bucket[5m])))</code></td></tr>
+      <tr><td>จำนวน series ที่ยังเขียนอยู่ (เช็ค cardinality)</td><td><code>prometheus_tsdb_head_series</code> ← นับเฉพาะใน head block ไม่ใช่ทั้งที่เก็บย้อนหลัง</td></tr>
+    </table>
+  </div>
+  <div class="s-foot"><span>Monitoring · PromQL</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ 32 : PromQL pitfalls ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>กับดัก PromQL ที่ทุกคนต้องเจอ</h2><div class="sub">รู้ไว้ก่อนจะประหยัดเวลาไล่ปัญหาไปได้เป็นชั่วโมง</div></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div class="card r"><h4><span class="n">1</span>กราฟว่างเปล่า (No data)</h4><p>หน้าต่าง <code>rate()</code> แคบเกินจนมีไม่ถึง 2 จุด → คำนวณอัตราไม่ได้<br><b>แก้ :</b> ขยายเป็น <code>[1m]</code> ขึ้นไปเมื่อ scrape ทุก 15 วิ (เผื่อ scrape หลุดด้วย)</p></div>
+      <div class="card r"><h4><span class="n">2</span>ตัวเลขสูงเกินจริงเป็นเท่าตัว</h4><p>ลืมกรอง series ที่เป็นค่ารวมของทั้งเครื่องออก เช่น cAdvisor มีเส้น <code>id="/"</code> ปนอยู่ · <code>sum(node_filesystem_avail_bytes)</code> ก็นับดิสก์ก้อนเดียวซ้ำได้หลายเท่าเพราะ mount หลายจุด<br><b>แก้ :</b> ใส่ <code>{name!=""}</code> · ใช้ <code>min()</code> หรือระบุ <code>mountpoint</code> แทนการ <code>sum()</code> มั่ว</p></div>
+      <div class="card o"><h4><span class="n">3</span>หารกันแล้วได้ผลว่าง</h4><p>ตัวเศษกับตัวส่วนมี label ไม่ตรงกัน PromQL จับคู่ไม่ได้เลยคืนค่าว่าง<br><b>แก้ :</b> <code>sum()</code> ทั้งสองฝั่งก่อน หรือใช้ <code>on(...)</code> / <code>ignoring(...)</code></p></div>
+      <div class="card o"><h4><span class="n">4</span>ตัวส่วนเป็น 0 ตอนไม่มี traffic</h4><p>error ratio กลายเป็น <code>NaN</code> แล้ว alert เงียบหรือเด้งมั่ว<br><b>แก้ :</b> เพิ่มเงื่อนไขว่าต้องมี traffic ขั้นต่ำก่อน เช่น <code>and sum(rate(...)) &gt; 0.1</code></p></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · PromQL</span><span class="pg"></span></div>
+</section></div>

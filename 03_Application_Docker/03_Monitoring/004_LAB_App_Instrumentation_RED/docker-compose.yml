@@ -1,0 +1,68 @@
+name: monlab4
+
+services:
+  # แอปที่เรา "ติดมิเตอร์" เอง — build จาก ./app
+  app:
+    build: ./app
+    image: monlab4/app:1.0.0
+    container_name: monlab4-app
+    environment:
+      APP_VERSION: "1.0.0"
+      ERROR_RATE: "0.5"        # /api/error พัง 1 ใน 2 ครั้ง (นับรอบ ไม่ได้สุ่ม)
+      RAW_PATH_LABEL: "0"      # 0 = label เป็น template (ถูกต้อง), 1 = path ดิบ (ของเสีย)
+    ports:
+      - "8000:8000"
+    networks: [monnet]
+
+  # ตัวยิงโหลด — build จาก ./loadgen (ใช้ stdlib ล้วน ไม่ต้อง pip)
+  loadgen:
+    build: ./loadgen
+    image: monlab4/loadgen:1.0.0
+    container_name: monlab4-loadgen
+    environment:
+      TARGET: "http://app:8000"
+      RPS: "10"
+      ERROR_MIX: "0.20"        # 20% ของ request ไป /api/error
+      SLOW_MIX: "0.10"         # 10% ของ request ไป /api/slow
+      ITEM_IDS: "200"
+      SEED: "2569"
+    depends_on: [app]
+    networks: [monnet]
+
+  prometheus:
+    image: prom/prometheus:v3.7.3
+    container_name: monlab4-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prom-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks: [monnet]
+
+  grafana:
+    image: grafana/grafana:12.3.1
+    container_name: monlab4-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"      # ห้องเรียนเท่านั้น — production ห้ามทำ
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_USERS_DEFAULT_THEME: dark
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on: [prometheus]
+    networks: [monnet]
+
+volumes:
+  prom-data:
+
+networks:
+  monnet:
+    name: monnet

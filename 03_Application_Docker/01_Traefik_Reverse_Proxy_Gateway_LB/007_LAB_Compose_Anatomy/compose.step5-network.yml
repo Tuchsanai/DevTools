@@ -1,0 +1,48 @@
+# ═══ STEP 5 — บั๊กที่ตามยากที่สุด : container อยู่หลาย network ═══
+#
+# app ถูกต่อเข้าสอง network แต่ Traefik อยู่แค่ labnet
+# ไฟล์นี้ "ปักหมุดผิดโดยตั้งใจ" (ชี้ไป lab007-backoffice ที่ Traefik ไปไม่ถึง)
+#   → request จะค้างแล้วหมดเวลาเป็น 504 ทุกครั้ง ทั้งที่ dashboard เขียวหมด
+#   → ของจริงที่เจอบ่อยกว่าคือ "ไม่ใส่ label เลย" แล้ว Traefik เลือกเอง
+#      ซึ่งตามยากกว่าเพราะบางรอบถูก บางรอบผิด
+#
+# วิธีแก้อยู่ใน docker-compose.yml ฉบับสมบูรณ์ : label traefik.docker.network
+name: lab007
+
+services:
+  traefik:
+    image: traefik:v3.7.4
+    command:
+      - --entrypoints.web.address=:80
+      - --api.insecure=true
+      - --log.level=INFO
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - labnet
+
+  app:
+    build: ./app
+    labels:
+      traefik.enable: "true"
+      # จงใจชี้ผิด network เพื่อให้ทุกคนเห็นอาการเดียวกัน (ถ้าไม่ใส่บรรทัดนี้เลย
+      # Traefik จะเลือกเอง และเลือกแบบไม่แน่นอน — บางรอบถูก บางรอบผิด)
+      traefik.docker.network: lab007-backoffice
+      traefik.http.routers.myapp.rule: PathPrefix(`/app`)
+      traefik.http.routers.myapp.entrypoints: web
+      traefik.http.routers.myapp.service: myapp
+      traefik.http.services.myapp.loadbalancer.server.port: "8080"
+    networks:
+      - labnet
+      - backoffice          # ← network ที่สอง ที่ Traefik ไม่ได้ต่ออยู่
+
+networks:
+  labnet:
+    name: lab007net
+  backoffice:
+    name: lab007-backoffice

@@ -1,0 +1,36 @@
+# ไฟล์กฎที่ "พังตั้งใจ" — ใช้ในช่วงทำให้พังแล้วแก้ของ LAB 5
+# ห้ามให้ Prometheus โหลดไฟล์นี้ตอนเริ่มแล็บ (prometheus.yml ชี้ไปที่ alerts.yml เท่านั้น)
+#
+# มีความผิด 3 จุด ให้หาให้ครบด้วย promtool:
+#   1. for: 1minute        -> หน่วยเวลาไม่ถูกต้อง (ต้องเป็น 1m)
+#   2. วงเล็บไม่สมดุล      -> PromQL parse ไม่ผ่าน
+#   3. annotaions          -> สะกดผิด ไม่ใช่ field ที่ Prometheus รู้จัก
+
+groups:
+  - name: monlab5-availability
+    interval: 5s
+    rules:
+      - alert: TargetDown
+        expr: up == 0
+        for: 1minute
+        labels:
+          severity: critical
+          stack: monlab5
+        annotations:
+          summary: 'target {{ $labels.job }} scrape ไม่สำเร็จ'
+
+  - name: monlab5-red
+    interval: 5s
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(app_requests_total{status=~"5[0-9]{2}"}[2m])
+            /
+          sum(rate(app_requests_total[2m]))
+            > 0.05
+        for: 30s
+        labels:
+          severity: warning
+          stack: monlab5
+        annotaions:
+          summary: 'อัตรา error ของแอปสูงเกิน 5%'

@@ -1,0 +1,397 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "msukacbvux49p94f7no",
+      "type": "text",
+      "x": 30,
+      "y": 18,
+      "strokeColor": "#0b2545",
+      "text": "Counter vs Gauge — ต่างกันที่ทิศทางของตัวเลข",
+      "fontSize": 28,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvszipla62o7",
+      "type": "rectangle",
+      "x": 30,
+      "y": 80,
+      "width": 545,
+      "height": 320,
+      "backgroundColor": "#e7f5ff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvyzzw5potnlb",
+      "type": "rectangle",
+      "x": 605,
+      "y": 80,
+      "width": 545,
+      "height": 320,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvtiokqfan1lg",
+      "type": "text",
+      "x": 55,
+      "y": 95,
+      "strokeColor": "#1864ab",
+      "text": "COUNTER — ขึ้นอย่างเดียว",
+      "fontSize": 22,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvz0q907ybav",
+      "type": "text",
+      "x": 630,
+      "y": 95,
+      "strokeColor": "#2f9e44",
+      "text": "GAUGE — ขึ้นก็ได้ ลงก็ได้",
+      "fontSize": 22,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvw4flcmv02hc",
+      "type": "line",
+      "x": 70,
+      "y": 340,
+      "strokeColor": "#1864ab",
+      "strokeWidth": 3,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          60,
+          -20
+        ],
+        [
+          120,
+          -45
+        ],
+        [
+          180,
+          -60
+        ],
+        [
+          240,
+          -95
+        ],
+        [
+          300,
+          -125
+        ],
+        [
+          360,
+          -150
+        ],
+        [
+          420,
+          -190
+        ]
+      ],
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbv4z0vqezsbxl",
+      "type": "line",
+      "x": 70,
+      "y": 350,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          430,
+          0
+        ]
+      ],
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvlf2rkv1hu7h",
+      "type": "line",
+      "x": 70,
+      "y": 350,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -220
+        ]
+      ],
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvehw6n0dqwqi",
+      "type": "text",
+      "x": 60,
+      "y": 355,
+      "strokeColor": "#5b6b7f",
+      "text": "เวลา →",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvlkl3u6763kk",
+      "type": "text",
+      "x": 500,
+      "y": 140,
+      "strokeColor": "#c92a2a",
+      "text": "restart\n↓ กลับเป็น 0",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvn5hx7v3nmjm",
+      "type": "line",
+      "x": 505,
+      "y": 175,
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          45
+        ]
+      ],
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvrz24ud1ny9l",
+      "type": "text",
+      "x": 55,
+      "y": 145,
+      "strokeColor": "#1864ab",
+      "text": "ค่าสะสมตั้งแต่เริ่มโปรเซส\nถามว่า \"ตอนนี้เท่าไร\" ไม่มีความหมาย\nต้องดู \"เพิ่มเร็วแค่ไหน\" ด้วย rate()",
+      "fontSize": 16,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvqu405xb32ph",
+      "type": "line",
+      "x": 645,
+      "y": 250,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 3,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          50,
+          -55
+        ],
+        [
+          100,
+          -20
+        ],
+        [
+          150,
+          -80
+        ],
+        [
+          200,
+          -35
+        ],
+        [
+          250,
+          -95
+        ],
+        [
+          300,
+          -50
+        ],
+        [
+          350,
+          -70
+        ],
+        [
+          400,
+          -25
+        ]
+      ],
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvvc22ueeekh",
+      "type": "line",
+      "x": 645,
+      "y": 350,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          430,
+          0
+        ]
+      ],
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvepe9n1wj5ce",
+      "type": "line",
+      "x": 645,
+      "y": 350,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -220
+        ]
+      ],
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvu2ujb2z9aa",
+      "type": "text",
+      "x": 635,
+      "y": 355,
+      "strokeColor": "#5b6b7f",
+      "text": "เวลา →",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "msukacbvfw6wjr40jnj",
+      "type": "text",
+      "x": 630,
+      "y": 145,
+      "strokeColor": "#2f9e44",
+      "text": "ค่า ณ ขณะนั้น อ่านตรง ๆ ได้เลย\nไม่ต้องใช้ rate()",
+      "fontSize": 16,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "cex",
+      "type": "rectangle",
+      "x": 30,
+      "y": 415,
+      "width": 545,
+      "height": 100,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ตัวอย่าง\nnode_cpu_seconds_total · container_cpu_usage_seconds_total\napp_requests_total · prometheus_http_requests_total"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    },
+    {
+      "id": "gex",
+      "type": "rectangle",
+      "x": 605,
+      "y": 415,
+      "width": 545,
+      "height": 100,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ตัวอย่าง\nnode_memory_MemAvailable_bytes · node_load1\ncontainer_memory_working_set_bytes · app_inflight_requests"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:35.662Z",
+      "updatedAt": "2026-08-15T15:59:35.662Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

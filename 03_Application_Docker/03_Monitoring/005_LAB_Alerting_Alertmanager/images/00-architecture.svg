@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="620" viewBox="0 0 1240 620" role="img" aria-label="สถาปัตยกรรม LAB 5: loadgen ยิงแอป, Prometheus scrape แล้วประเมิน alert rule, ส่งให้ Alertmanager, Alertmanager ส่ง webhook ต่อไปยัง receiver">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/>
+    </marker>
+    <style>
+      .t   { font-family:"Segoe UI","Noto Sans Thai",Tahoma,sans-serif; }
+      .ttl { font-size:15px; font-weight:700; fill:#0f172a; }
+      .sub { font-size:12px; fill:#475569; }
+      .mono{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px; fill:#334155; }
+      .lbl { font-size:12px; fill:#334155; }
+      .lblb{ font-size:12px; fill:#c2410c; font-weight:600; }
+      .h   { font-size:13px; font-weight:700; fill:#0f172a; }
+      .cap { font-size:11.5px; fill:#64748b; }
+    </style>
+  </defs>
+
+  <rect width="1240" height="620" fill="#ffffff"/>
+  <text x="30" y="34" class="t ttl" font-size="18">LAB 5 — เส้นทางของการแจ้งเตือน: จากตัวเลข → กฎ → Alertmanager → คนที่ต้องรู้</text>
+  <text x="30" y="54" class="t cap">ทุกกล่องคือ container หนึ่งตัวใน `docker-compose.yml` (project name: monlab5) บน network `monnet`</text>
+
+  <!-- loadgen -->
+  <rect x="30" y="112" width="150" height="76" rx="12" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="105" y="140" class="t ttl" text-anchor="middle">loadgen</text>
+  <text x="105" y="160" class="t sub" text-anchor="middle">ยิงโหลดคงที่</text>
+  <text x="105" y="177" class="t mono" text-anchor="middle">RPS / ERROR_MIX</text>
+
+  <!-- app -->
+  <rect x="215" y="96" width="180" height="108" rx="12" fill="#eff6ff" stroke="#3b82f6"/>
+  <text x="305" y="122" class="t ttl" text-anchor="middle">app  :8000</text>
+  <text x="305" y="143" class="t sub" text-anchor="middle">แอปที่ติด metric เอง</text>
+  <text x="305" y="163" class="t mono" text-anchor="middle">app_requests_total</text>
+  <text x="305" y="180" class="t mono" text-anchor="middle">app_request_duration…</text>
+  <text x="305" y="196" class="t mono" text-anchor="middle">app_inflight_requests</text>
+
+  <!-- node-exporter -->
+  <rect x="215" y="246" width="180" height="82" rx="12" fill="#eff6ff" stroke="#3b82f6"/>
+  <text x="305" y="272" class="t ttl" text-anchor="middle">node-exporter  :9100</text>
+  <text x="305" y="292" class="t sub" text-anchor="middle">ตัวที่เราจะ “หยุด”</text>
+  <text x="305" y="312" class="t sub" text-anchor="middle">เพื่อให้ up == 0</text>
+
+  <!-- prometheus -->
+  <rect x="440" y="86" width="250" height="252" rx="14" fill="#fff7ed" stroke="#f97316"/>
+  <text x="565" y="112" class="t ttl" text-anchor="middle">Prometheus  :9090</text>
+  <text x="565" y="131" class="t sub" text-anchor="middle">scrape ทุก 5s · ประเมินกฎทุก 5s</text>
+  <rect x="462" y="146" width="206" height="176" rx="10" fill="#ffffff" stroke="#fdba74"/>
+  <text x="565" y="168" class="t h" text-anchor="middle">rules/alerts.yml</text>
+  <text x="478" y="192" class="t mono">TargetDown</text>
+  <text x="478" y="208" class="t cap">up == 0 · for: 20s · critical</text>
+  <text x="478" y="234" class="t mono">HighErrorRate</text>
+  <text x="478" y="250" class="t cap">5xx ratio &gt; 0.05 · for: 30s</text>
+  <text x="478" y="276" class="t mono">HighLatencyP95</text>
+  <text x="478" y="292" class="t cap">p95 &gt; 1s · for: 30s</text>
+  <text x="478" y="312" class="t cap">ตัดสินว่า “อะไรผิดปกติ”</text>
+
+  <!-- alertmanager -->
+  <rect x="750" y="86" width="250" height="252" rx="14" fill="#f5f3ff" stroke="#8b5cf6"/>
+  <text x="875" y="112" class="t ttl" text-anchor="middle">Alertmanager  :9093</text>
+  <text x="875" y="131" class="t sub" text-anchor="middle">ตัดสินว่า “ใครควรรู้ เมื่อไร”</text>
+  <rect x="772" y="146" width="206" height="176" rx="10" fill="#ffffff" stroke="#c4b5fd"/>
+  <text x="788" y="168" class="t h">route / group_by</text>
+  <text x="788" y="185" class="t cap">group_wait 5s · repeat 1h</text>
+  <text x="788" y="209" class="t h">silence</text>
+  <text x="788" y="226" class="t cap">ปิดเสียงชั่วคราวตาม matcher</text>
+  <text x="788" y="250" class="t h">inhibit</text>
+  <text x="788" y="267" class="t cap">critical กลบ warning ที่ซ้ำซ้อน</text>
+  <text x="788" y="291" class="t h">resolved</text>
+  <text x="788" y="308" class="t cap">ส่งซ้ำเมื่อเหตุคลี่คลาย</text>
+
+  <!-- receiver -->
+  <rect x="1055" y="112" width="160" height="200" rx="12" fill="#ecfdf5" stroke="#10b981"/>
+  <text x="1135" y="138" class="t ttl" text-anchor="middle">receiver  :5001</text>
+  <text x="1135" y="160" class="t sub" text-anchor="middle">ปลายทางของ webhook</text>
+  <text x="1135" y="186" class="t mono" text-anchor="middle">POST /webhook</text>
+  <text x="1135" y="206" class="t mono" text-anchor="middle">GET  /</text>
+  <text x="1135" y="226" class="t mono" text-anchor="middle">GET  /api/alerts</text>
+  <text x="1135" y="254" class="t sub" text-anchor="middle">หน้า UI แสดงการ์ด</text>
+  <text x="1135" y="272" class="t sub" text-anchor="middle">firing / resolved</text>
+  <text x="1135" y="296" class="t cap" text-anchor="middle">(แทนที่ Slack / อีเมลจริง)</text>
+
+  <!-- arrows -->
+  <line x1="180" y1="150" x2="211" y2="150" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+  <text x="196" y="140" class="t cap" text-anchor="middle">HTTP</text>
+
+  <line x1="438" y1="150" x2="399" y2="150" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+  <text x="418" y="140" class="t cap" text-anchor="middle">pull</text>
+  <line x1="438" y1="287" x2="399" y2="287" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+  <text x="418" y="277" class="t cap" text-anchor="middle">pull</text>
+  <text x="418" y="222" class="t cap" text-anchor="middle">GET</text>
+  <text x="418" y="238" class="t cap" text-anchor="middle">/metrics</text>
+
+  <line x1="692" y1="212" x2="746" y2="212" stroke="#c2410c" stroke-width="2.5" marker-end="url(#ahb)"/>
+  <text x="719" y="200" class="t lblb" text-anchor="middle">push</text>
+  <text x="719" y="232" class="t cap" text-anchor="middle">POST</text>
+  <text x="719" y="248" class="t cap" text-anchor="middle">/api/v2/alerts</text>
+
+  <line x1="1002" y1="212" x2="1051" y2="212" stroke="#c2410c" stroke-width="2.5" marker-end="url(#ahb)"/>
+  <text x="1026" y="200" class="t lblb" text-anchor="middle">push</text>
+  <text x="1026" y="232" class="t cap" text-anchor="middle">POST</text>
+  <text x="1026" y="248" class="t cap" text-anchor="middle">/webhook</text>
+
+  <!-- lifecycle strip -->
+  <rect x="30" y="406" width="1185" height="182" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="52" y="436" class="t h" font-size="14">วงจรชีวิตของ alert หนึ่งใบ — ตัวเลขคือค่าที่วัดได้จริงตอนหยุด node-exporter</text>
+
+  <rect x="52" y="456" width="200" height="72" rx="10" fill="#ffffff" stroke="#22c55e"/>
+  <text x="152" y="484" class="t ttl" text-anchor="middle">Inactive</text>
+  <text x="152" y="506" class="t cap" text-anchor="middle">expr ไม่มีผลลัพธ์</text>
+
+  <line x1="256" y1="492" x2="292" y2="492" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+  <text x="274" y="480" class="t cap" text-anchor="middle">~6s</text>
+
+  <rect x="296" y="456" width="200" height="72" rx="10" fill="#ffffff" stroke="#f59e0b"/>
+  <text x="396" y="484" class="t ttl" text-anchor="middle">Pending</text>
+  <text x="396" y="506" class="t cap" text-anchor="middle">เงื่อนไขจริงแล้ว แต่ยังไม่ครบ for</text>
+
+  <line x1="500" y1="492" x2="536" y2="492" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+  <text x="518" y="480" class="t cap" text-anchor="middle">for: 20s</text>
+
+  <rect x="540" y="456" width="200" height="72" rx="10" fill="#ffffff" stroke="#ef4444"/>
+  <text x="640" y="484" class="t ttl" text-anchor="middle">Firing</text>
+  <text x="640" y="506" class="t cap" text-anchor="middle">Prometheus ส่งเข้า Alertmanager</text>
+
+  <line x1="744" y1="492" x2="780" y2="492" stroke="#c2410c" stroke-width="2" marker-end="url(#ahb)"/>
+  <text x="762" y="480" class="t cap" text-anchor="middle">~2s</text>
+
+  <rect x="784" y="456" width="200" height="72" rx="10" fill="#ffffff" stroke="#8b5cf6"/>
+  <text x="884" y="484" class="t ttl" text-anchor="middle">แจ้งเตือนออก</text>
+  <text x="884" y="506" class="t cap" text-anchor="middle">group_wait แล้วยิง webhook</text>
+
+  <line x1="988" y1="492" x2="1024" y2="492" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+
+  <rect x="1028" y="456" width="165" height="72" rx="10" fill="#ffffff" stroke="#10b981"/>
+  <text x="1110" y="484" class="t ttl" text-anchor="middle">Resolved</text>
+  <text x="1110" y="506" class="t cap" text-anchor="middle">เหตุหาย ส่งซ้ำสถานะปิด</text>
+
+  <text x="52" y="556" class="t cap">รวมเวลาตั้งแต่ container ดับจนหน้า receiver ขึ้นการ์ดใบแรก ≈ 28 วินาที (วัดจริงในเครื่องเรียน) · ส่วน Silence และ Inhibition เกิดที่ Alertmanager เท่านั้น</text>
+  <text x="52" y="576" class="t cap">Prometheus จะยังขึ้น Firing เหมือนเดิม แม้เราจะ silence ที่ Alertmanager แล้ว — เพราะเป็นคนละชั้นของระบบ</text>
+</svg>

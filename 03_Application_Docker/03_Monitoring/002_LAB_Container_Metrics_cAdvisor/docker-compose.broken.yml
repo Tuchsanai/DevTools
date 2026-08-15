@@ -1,0 +1,9 @@
+# override สำหรับช่วง "ทำให้พังแล้วแก้" ของ LAB 2
+# ตัด flag --containerd ออก เพื่อให้ cAdvisor ใช้ค่า default /run/containerd/containerd.sock
+# ซึ่งไม่มีอยู่จริงบน Docker 29 -> docker factory ลงทะเบียนไม่ได้ -> metric ไม่มี label name=
+services:
+  cadvisor:
+    command:
+      - --docker_only=true
+      - --store_container_labels=false
+      - --whitelisted_container_labels=com.docker.compose.service,com.docker.compose.project

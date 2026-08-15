@@ -192,6 +192,8 @@ exit=1
 
 ### Hint 1 — ตรวจ topology ก่อนแก้
 
+> 🔎 อ่าน compose ไม่ออกทีละบรรทัด? มีแล็บที่ประกอบ compose ของ Traefik ทีละชั้นพร้อมหลักฐานทุกขั้น ที่ [`007_LAB_Compose_Anatomy`](../007_LAB_Compose_Anatomy/)
+
 ```bash
 docker compose ps
 docker network inspect labnet --format '{{range $id, $c := .Containers}}{{println $c.Name}}{{end}}'

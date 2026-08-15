@@ -1,0 +1,163 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "msukbobkou1l720oxk",
+      "type": "text",
+      "x": 30,
+      "y": 18,
+      "strokeColor": "#0b2545",
+      "text": "SLI / SLO / Error Budget — ตั้งเป้าเป็นตัวเลขที่เถียงกันไม่ได้",
+      "fontSize": 28,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:00:37.859Z",
+      "updatedAt": "2026-08-15T16:00:37.859Z",
+      "version": 1
+    },
+    {
+      "id": "sli",
+      "type": "rectangle",
+      "x": 30,
+      "y": 100,
+      "width": 355,
+      "height": 130,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "SLI — ตัววัด\n\n\"สัดส่วน request ที่สำเร็จ\nและเร็วกว่า 1 วินาที\"\n\nคือ PromQL หนึ่งบรรทัด"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:37.859Z",
+      "updatedAt": "2026-08-15T16:00:37.859Z",
+      "version": 1
+    },
+    {
+      "id": "slo",
+      "type": "rectangle",
+      "x": 405,
+      "y": 100,
+      "width": 355,
+      "height": 130,
+      "backgroundColor": "#ffe8cc",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "SLO — เป้าหมาย\n\n\"SLI ต้อง ≥ 99.9%\nวัดต่อเนื่อง 30 วัน\"\n\nคือสัญญาที่ทีมให้ไว้"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:37.859Z",
+      "updatedAt": "2026-08-15T16:00:37.859Z",
+      "version": 1
+    },
+    {
+      "id": "eb",
+      "type": "rectangle",
+      "x": 780,
+      "y": 100,
+      "width": 360,
+      "height": 130,
+      "backgroundColor": "#ffe3e3",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Error Budget — โควตาพัง\n\n100% − 99.9% = 0.1%\nของ 30 วัน = 43 นาที\n\nคือ \"งบ\" ที่ใช้ได้ต่อเดือน"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:37.859Z",
+      "updatedAt": "2026-08-15T16:00:37.859Z",
+      "version": 1
+    },
+    {
+      "id": "msukbobksgmv1oq9c1j",
+      "type": "text",
+      "x": 30,
+      "y": 265,
+      "strokeColor": "#16212f",
+      "text": "งบพังของเดือนนี้ (43 นาที)",
+      "fontSize": 19,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:00:37.859Z",
+      "updatedAt": "2026-08-15T16:00:37.859Z",
+      "version": 1
+    },
+    {
+      "id": "used",
+      "type": "rectangle",
+      "x": 30,
+      "y": 300,
+      "width": 420,
+      "height": 55,
+      "backgroundColor": "#ffe3e3",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ใช้ไปแล้ว 28 นาที"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:37.859Z",
+      "updatedAt": "2026-08-15T16:00:37.859Z",
+      "version": 1
+    },
+    {
+      "id": "left",
+      "type": "rectangle",
+      "x": 450,
+      "y": 300,
+      "width": 690,
+      "height": 55,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "เหลือ 15 นาที"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:37.859Z",
+      "updatedAt": "2026-08-15T16:00:37.859Z",
+      "version": 1
+    },
+    {
+      "id": "use14",
+      "type": "rectangle",
+      "x": 30,
+      "y": 390,
+      "width": 1110,
+      "height": 125,
+      "backgroundColor": "#e7f5ff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ทำไมต้องมีงบ : ระบบที่ไม่เคยพังเลย = ลงทุนเกินจำเป็น (99.99% แพงกว่า 99.9% หลายเท่า)\nError budget เปลี่ยนคำถามจาก \"ห้ามพัง\" เป็น \"พังได้เท่าไร แล้วเราจะใช้โควตานั้นทำอะไร\"\n\nงบเหลือเยอะ → ปล่อยฟีเจอร์ใหม่ได้เร็ว กล้าทดลอง       งบใกล้หมด → หยุดปล่อยของ หันมาแก้ความเสถียรก่อน\nและมันคือเหตุผลว่าทำไม alert ควรผูกกับ \"อาการที่ผู้ใช้เจอ\" ไม่ใช่ \"CPU สูง\" ที่ผู้ใช้อาจไม่รู้สึกอะไรเลย"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:37.859Z",
+      "updatedAt": "2026-08-15T16:00:37.859Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

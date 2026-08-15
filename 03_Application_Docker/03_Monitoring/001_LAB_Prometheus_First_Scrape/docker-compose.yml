@@ -1,0 +1,43 @@
+name: monlab1
+
+services:
+  node-exporter:
+    image: prom/node-exporter:v1.10.2
+    container_name: monlab1-node-exporter
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/rootfs
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    ports:
+      - "9100:9100"
+    networks:
+      - monnet
+
+  prometheus:
+    image: prom/prometheus:v3.7.3
+    container_name: monlab1-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=2h
+      - --web.enable-lifecycle
+    volumes:
+      - ./:/etc/prometheus:ro
+      - prom-data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - node-exporter
+    networks:
+      - monnet
+
+volumes:
+  prom-data:
+
+networks:
+  monnet:
+    name: monnet

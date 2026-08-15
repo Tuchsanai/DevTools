@@ -1,0 +1,173 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "msuka6dybtichs74zws",
+      "type": "text",
+      "x": 30,
+      "y": 18,
+      "strokeColor": "#0b2545",
+      "text": "หน้าตาของ metric หนึ่งบรรทัด — อ่านให้ออกทีละส่วน",
+      "fontSize": 28,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:27.961Z",
+      "updatedAt": "2026-08-15T15:59:27.961Z",
+      "version": 1
+    },
+    {
+      "id": "codebox",
+      "type": "rectangle",
+      "x": 40,
+      "y": 95,
+      "width": 1100,
+      "height": 90,
+      "backgroundColor": "#0d1626",
+      "strokeColor": "#0d1626",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "fontSize": 19,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:27.961Z",
+      "updatedAt": "2026-08-15T15:59:27.961Z",
+      "version": 1
+    },
+    {
+      "id": "msuka6dywttq7rt0nfq",
+      "type": "text",
+      "x": 70,
+      "y": 120,
+      "strokeColor": "#dbe6f5",
+      "text": "app_requests_total{method=\"GET\", endpoint=\"/api/items\", status=\"200\"}   1234",
+      "fontSize": 22,
+      "fontFamily": 3,
+      "createdAt": "2026-08-15T15:59:27.961Z",
+      "updatedAt": "2026-08-15T15:59:27.961Z",
+      "version": 1
+    },
+    {
+      "id": "msuka6dyefijrfim60w",
+      "type": "text",
+      "x": 70,
+      "y": 152,
+      "strokeColor": "#7d8ea3",
+      "text": "└──── ชื่อ metric ────┘└─────────── labels (มิติ) ───────────┘   └ ค่า ┘",
+      "fontSize": 15,
+      "fontFamily": 3,
+      "createdAt": "2026-08-15T15:59:27.961Z",
+      "updatedAt": "2026-08-15T15:59:27.961Z",
+      "version": 1
+    },
+    {
+      "id": "n1",
+      "type": "rectangle",
+      "x": 40,
+      "y": 220,
+      "width": 250,
+      "height": 120,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ชื่อ metric\n\nบอกว่าวัดอะไร\nลงท้าย _total = counter\nตามธรรมเนียม"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:27.961Z",
+      "updatedAt": "2026-08-15T15:59:27.961Z",
+      "version": 1
+    },
+    {
+      "id": "n2",
+      "type": "rectangle",
+      "x": 310,
+      "y": 220,
+      "width": 380,
+      "height": 120,
+      "backgroundColor": "#ffe8cc",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "labels — หัวใจของ Prometheus\n\nแยกมิติของตัวเลขเดียวกัน เช่น แยกตาม\nmethod / endpoint / status\n1 ชุด label = 1 time series แยกกัน"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:27.961Z",
+      "updatedAt": "2026-08-15T15:59:27.961Z",
+      "version": 1
+    },
+    {
+      "id": "n3",
+      "type": "rectangle",
+      "x": 710,
+      "y": 220,
+      "width": 200,
+      "height": 120,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ค่า (value)\n\nเป็นตัวเลข\nfloat64 เสมอ"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:27.961Z",
+      "updatedAt": "2026-08-15T15:59:27.961Z",
+      "version": 1
+    },
+    {
+      "id": "n4",
+      "type": "rectangle",
+      "x": 930,
+      "y": 220,
+      "width": 210,
+      "height": 120,
+      "backgroundColor": "#f3f0ff",
+      "strokeColor": "#6741d9",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "เวลา (timestamp)\n\nPrometheus เติมให้\nตอน scrape"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:27.961Z",
+      "updatedAt": "2026-08-15T15:59:27.961Z",
+      "version": 1
+    },
+    {
+      "id": "ser",
+      "type": "rectangle",
+      "x": 40,
+      "y": 370,
+      "width": 1100,
+      "height": 145,
+      "backgroundColor": "#fff9db",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ทำไม labels ถึงสำคัญ : เมื่อรวมกันแล้ว metric ชื่อเดียวกลายเป็นหลายเส้น (series) ที่ query แยกหรือรวมก็ได้\n\napp_requests_total{endpoint=\"/api/items\", status=\"200\"}    ← เส้นที่ 1\napp_requests_total{endpoint=\"/api/items\", status=\"500\"}    ← เส้นที่ 2\napp_requests_total{endpoint=\"/api/slow\",  status=\"200\"}    ← เส้นที่ 3\n\nsum by (status) (rate(app_requests_total[1m]))  →  ยุบทุก endpoint เหลือมองแยกตาม status"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:27.961Z",
+      "updatedAt": "2026-08-15T15:59:27.961Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

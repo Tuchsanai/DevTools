@@ -1,0 +1,395 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "t",
+      "type": "text",
+      "x": 40,
+      "y": 24,
+      "strokeColor": "#0b2545",
+      "text": "Traefik ใน docker-compose ทำงานยังไง — แยกให้ออก 3 ชั้น",
+      "fontSize": 26,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l1",
+      "type": "rectangle",
+      "x": 40,
+      "y": 92,
+      "width": 340,
+      "height": 430,
+      "backgroundColor": "transparent",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l1t",
+      "type": "text",
+      "x": 60,
+      "y": 106,
+      "strokeColor": "#1769aa",
+      "text": "ชั้นที่ 1 · Docker / Compose",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l1a",
+      "type": "rectangle",
+      "x": 62,
+      "y": 146,
+      "width": 296,
+      "height": 92,
+      "backgroundColor": "#e8f4ff",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "สร้าง container\nnetwork · port · volume"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l1b",
+      "type": "rectangle",
+      "x": 62,
+      "y": 254,
+      "width": 296,
+      "height": 92,
+      "backgroundColor": "#e8f4ff",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "ติด labels ให้ container\n(ข้อความเฉย ๆ)"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l1n",
+      "type": "text",
+      "x": 64,
+      "y": 366,
+      "strokeColor": "#5b6b7f",
+      "text": "compose ไม่ได้ “แปล” label ให้ Traefik\nมันแค่เก็บ label ไว้กับ container\nเปลี่ยน label = ต้องสร้าง container ใหม่\n(docker compose up -d ไม่ใช่ restart)",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l2",
+      "type": "rectangle",
+      "x": 420,
+      "y": 92,
+      "width": 340,
+      "height": 430,
+      "backgroundColor": "transparent",
+      "strokeColor": "#c2410c",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l2t",
+      "type": "text",
+      "x": 440,
+      "y": 106,
+      "strokeColor": "#c2410c",
+      "text": "ชั้นที่ 2 · static config",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l2a",
+      "type": "rectangle",
+      "x": 442,
+      "y": 146,
+      "width": 296,
+      "height": 92,
+      "backgroundColor": "#fff4e6",
+      "strokeColor": "#c2410c",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "command: / traefik.yml / env\nentryPoints · providers · api"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l2b",
+      "type": "rectangle",
+      "x": 442,
+      "y": 254,
+      "width": 296,
+      "height": 92,
+      "backgroundColor": "#fff4e6",
+      "strokeColor": "#c2410c",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "อ่านครั้งเดียวตอนสตาร์ท"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l2n",
+      "type": "text",
+      "x": 444,
+      "y": 366,
+      "strokeColor": "#5b6b7f",
+      "text": "เปลี่ยนอะไรในชั้นนี้ = Traefik ต้องเกิดใหม่\nเลือกวิธีเดียวพอ (flags หรือไฟล์ หรือ env)\nports: กับ entryPoint คนละเรื่อง\nต้องมีคู่กันถึงจะเข้าจากเครื่องเราได้",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l3",
+      "type": "rectangle",
+      "x": 800,
+      "y": 92,
+      "width": 360,
+      "height": 430,
+      "backgroundColor": "transparent",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l3t",
+      "type": "text",
+      "x": 820,
+      "y": 106,
+      "strokeColor": "#27864a",
+      "text": "ชั้นที่ 3 · dynamic config",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l3a",
+      "type": "rectangle",
+      "x": 822,
+      "y": 146,
+      "width": 316,
+      "height": 92,
+      "backgroundColor": "#eaf8ef",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "routers · services\nmiddlewares"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l3b",
+      "type": "rectangle",
+      "x": 822,
+      "y": 254,
+      "width": 316,
+      "height": 92,
+      "backgroundColor": "#eaf8ef",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "มาจาก provider\n@docker · @file"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "l3n",
+      "type": "text",
+      "x": 824,
+      "y": 366,
+      "strokeColor": "#5b6b7f",
+      "text": "เปลี่ยนได้ระหว่างรัน ไม่ต้อง restart\nไฟล์ dynamic = แก้แล้วมีผลทันที\nlabel = มีผลเมื่อ container ถูกสร้างใหม่\nดูของจริงได้ที่ /api/rawdata",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "p1",
+      "type": "arrow",
+      "x": 365.69524084075954,
+      "y": 255.74977365578414,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 3,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          68.60951831848092,
+          -19.49954731156828
+        ]
+      ],
+      "start": {
+        "id": "l1b"
+      },
+      "end": {
+        "id": "l2a"
+      },
+      "endArrowhead": null,
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "p2",
+      "type": "arrow",
+      "x": 745.709840175016,
+      "y": 256.880351951534,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 3,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          68.58031964996803,
+          -18.991473133837275
+        ]
+      ],
+      "start": {
+        "id": "l2b"
+      },
+      "end": {
+        "id": "l3a"
+      },
+      "endArrowhead": null,
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    },
+    {
+      "id": "foot",
+      "type": "text",
+      "x": 40,
+      "y": 546,
+      "strokeColor": "#0b2545",
+      "text": "อ่านเส้นทางจริง :  curl → port ที่ publish → entryPoint → router (rule) → middlewares → service → IP:port ของ container",
+      "fontSize": 16,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:33.371Z",
+      "updatedAt": "2026-08-15T16:01:33.371Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

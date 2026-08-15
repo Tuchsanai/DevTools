@@ -1,0 +1,123 @@
+name: monlab3
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.7.3
+    container_name: monlab3-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=2h
+      - --web.enable-lifecycle
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prom-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - monnet
+
+  node-exporter:
+    image: prom/node-exporter:v1.10.2
+    container_name: monlab3-node-exporter
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/rootfs
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    ports:
+      - "9100:9100"
+    networks:
+      - monnet
+
+  cadvisor:
+    image: ghcr.io/google/cadvisor:v0.57.0
+    container_name: monlab3-cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg
+    command:
+      - --containerd=/var/run/docker/containerd/containerd.sock
+      - --docker_only=true
+      - --store_container_labels=false
+      - --whitelisted_container_labels=com.docker.compose.service,com.docker.compose.project
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - monnet
+
+  grafana:
+    image: grafana/grafana:12.3.1
+    container_name: monlab3-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_USERS_DEFAULT_THEME: dark
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - monnet
+
+  worker:
+    image: python:3.13-alpine
+    container_name: monlab3-worker
+    cpuset: "0"
+    command:
+      - python
+      - -c
+      - |
+        import math, time
+        t0 = time.time()
+        while True:
+            duty = 0.35 + 0.30 * math.sin((time.time() - t0) / 120.0 * 2 * math.pi)
+            cycle_end = time.time() + 1.0
+            busy_end = time.time() + duty
+            while time.time() < busy_end:
+                pass
+            time.sleep(max(0.0, cycle_end - time.time()))
+    networks:
+      - monnet
+
+  cache:
+    image: python:3.13-alpine
+    container_name: monlab3-cache
+    command:
+      - python
+      - -c
+      - |
+        import time
+        BLOCK = 128 * 1024 * 1024
+        while True:
+            blocks = []
+            for _ in range(20):
+                blocks.append(bytearray(BLOCK))
+                time.sleep(3)
+            time.sleep(30)
+            blocks = []
+            time.sleep(30)
+    networks:
+      - monnet
+
+networks:
+  monnet:
+    name: monnet
+
+volumes:
+  prom-data:
+  grafana-data:

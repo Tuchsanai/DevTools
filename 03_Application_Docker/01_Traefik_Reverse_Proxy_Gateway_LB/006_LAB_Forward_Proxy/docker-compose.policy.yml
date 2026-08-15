@@ -1,0 +1,7 @@
+# override ชั้นที่ 2 : ฝ่าย IT ประกาศนโยบายบล็อก social.lab ที่ประตูขาออก
+# ใช้คู่กับไฟล์หลักเสมอ:
+#   docker compose -f docker-compose.yml -f docker-compose.policy.yml up -d proxy
+services:
+  proxy:
+    environment:
+      PROXY_DENY: "social.lab"

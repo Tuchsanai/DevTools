@@ -1,0 +1,131 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "msukau7ttggkoqze2j",
+      "type": "text",
+      "x": 30,
+      "y": 18,
+      "strokeColor": "#0b2545",
+      "text": "Cardinality — label ที่เลือกผิด ฆ่า Prometheus ได้",
+      "fontSize": 28,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:58.844Z",
+      "updatedAt": "2026-08-15T15:59:58.844Z",
+      "version": 1
+    },
+    {
+      "id": "msukau7tn095ox08qn",
+      "type": "rectangle",
+      "x": 30,
+      "y": 80,
+      "width": 545,
+      "height": 250,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:58.844Z",
+      "updatedAt": "2026-08-15T15:59:58.844Z",
+      "version": 1
+    },
+    {
+      "id": "msukau7tj4iqmjcedyr",
+      "type": "rectangle",
+      "x": 605,
+      "y": 80,
+      "width": 545,
+      "height": 250,
+      "backgroundColor": "#fff5f5",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:58.844Z",
+      "updatedAt": "2026-08-15T15:59:58.844Z",
+      "version": 1
+    },
+    {
+      "id": "msukau7t293sstxltsj",
+      "type": "text",
+      "x": 55,
+      "y": 95,
+      "strokeColor": "#2f9e44",
+      "text": "✅ label ที่ดี — ค่าจำกัด",
+      "fontSize": 21,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:58.844Z",
+      "updatedAt": "2026-08-15T15:59:58.844Z",
+      "version": 1
+    },
+    {
+      "id": "msukau7t5zrfq3tm9zi",
+      "type": "text",
+      "x": 630,
+      "y": 95,
+      "strokeColor": "#c92a2a",
+      "text": "❌ label ที่พัง — ค่าไม่จำกัด",
+      "fontSize": 21,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:58.844Z",
+      "updatedAt": "2026-08-15T15:59:58.844Z",
+      "version": 1
+    },
+    {
+      "id": "msukau7tr437dewla4m",
+      "type": "text",
+      "x": 55,
+      "y": 140,
+      "strokeColor": "#16212f",
+      "text": "endpoint=\"/api/items/:id\"\n\nไม่ว่าจะมีสินค้ากี่ล้านชิ้น\nendpoint ก็ยังมีค่าเดียว\n\n5 endpoint × 4 status × 3 method\n= 60 series",
+      "fontSize": 17,
+      "fontFamily": 3,
+      "createdAt": "2026-08-15T15:59:58.844Z",
+      "updatedAt": "2026-08-15T15:59:58.844Z",
+      "version": 1
+    },
+    {
+      "id": "msukau7tw9q8xzt0qx",
+      "type": "text",
+      "x": 630,
+      "y": 140,
+      "strokeColor": "#16212f",
+      "text": "endpoint=\"/api/items/48213\"\n\nสินค้าใหม่ 1 ชิ้น = series ใหม่ 1 เส้น\nและมันไม่มีวันหายไปเอง\n\n100,000 id × 4 status × 3 method\n= 1,200,000 series",
+      "fontSize": 17,
+      "fontFamily": 3,
+      "createdAt": "2026-08-15T15:59:58.844Z",
+      "updatedAt": "2026-08-15T15:59:58.844Z",
+      "version": 1
+    },
+    {
+      "id": "res",
+      "type": "rectangle",
+      "x": 30,
+      "y": 355,
+      "width": 1120,
+      "height": 160,
+      "backgroundColor": "#fff9db",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ผลที่ตามมาเมื่อ series ระเบิด : RAM ของ Prometheus พุ่ง → query ช้าลงทุกอัน → สุดท้าย OOM ตายทั้งตัว\n(กระทบ dashboard และ alert ทั้งระบบ ไม่ใช่แค่ metric ตัวที่ผิด)\n\nกฎ : label ต้องมีค่าที่ \"นับได้\" และ \"ไม่โตตามข้อมูล\"\nห้ามใส่เป็น label : user id · order id · email · request id · session id · timestamp · full URL ที่มีพารามิเตอร์\nตรวจได้ด้วย :  count(count by (endpoint) (app_requests_total))   และ   prometheus_tsdb_head_series"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:58.844Z",
+      "updatedAt": "2026-08-15T15:59:58.844Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

@@ -1,0 +1,37 @@
+# LAB 6 — การตั้งค่า Prometheus ของ capstone
+#
+# ⚠️ ไฟล์นี้มี "บั๊กจงใจ #1" ซ่อนอยู่หนึ่งจุด — อย่าเพิ่งไล่หาจนกว่าจะรัน ./check.sh
+global:
+  # ค่า default ของ Prometheus คือ 1 นาที ซึ่งช้าเกินไปสำหรับคาบเรียน
+  # ตั้ง 5 วินาทีเพื่อให้กราฟและ alert ขยับให้เห็นภายในไม่กี่สิบวินาที
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: node
+    static_configs:
+      - targets: ["node-exporter:9100"]
+
+  - job_name: cadvisor
+    static_configs:
+      - targets: ["cadvisor:8080"]
+
+  - job_name: alertmanager
+    static_configs:
+      - targets: ["alertmanager:9093"]
+
+  - job_name: app
+    static_configs:
+      - targets: ["app:8001"]

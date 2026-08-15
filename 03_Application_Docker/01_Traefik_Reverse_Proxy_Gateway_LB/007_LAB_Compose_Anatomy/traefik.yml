@@ -1,0 +1,22 @@
+# static config รูปแบบที่ 2 : เขียนเป็นไฟล์ YAML แทน command: flags
+# ทุกบรรทัดในไฟล์นี้ให้ผลเท่ากับ flag ใน docker-compose.yml ฉบับสมบูรณ์
+#
+# กติกา: เลือกวิธีเดียวพอ (flags หรือไฟล์ หรือ env) — ผสมกันแล้วตามยากว่าค่าไหนชนะ
+entryPoints:
+  web:
+    address: ":80"
+
+providers:
+  docker:
+    exposedByDefault: false
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+
+api:
+  insecure: true
+
+accessLog: {}
+
+log:
+  level: INFO

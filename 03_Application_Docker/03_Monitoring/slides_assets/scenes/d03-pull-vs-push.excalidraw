@@ -1,0 +1,505 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "msuk9umqzf1ex4fjr6",
+      "type": "text",
+      "x": 30,
+      "y": 18,
+      "strokeColor": "#0b2545",
+      "text": "Pull vs Push — ใครเป็นฝ่ายเริ่มติดต่อ?",
+      "fontSize": 28,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umqrfsedwemmma",
+      "type": "rectangle",
+      "x": 20,
+      "y": 80,
+      "width": 545,
+      "height": 310,
+      "backgroundColor": "#e7f5ff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umqe5wblrb0z3s",
+      "type": "rectangle",
+      "x": 590,
+      "y": 80,
+      "width": 545,
+      "height": 310,
+      "backgroundColor": "#fff9db",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umqh3ovy3fgw4u",
+      "type": "text",
+      "x": 45,
+      "y": 95,
+      "strokeColor": "#1864ab",
+      "text": "PULL — Prometheus ไปดึงเอง",
+      "fontSize": 21,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umq9au13zp785r",
+      "type": "text",
+      "x": 45,
+      "y": 122,
+      "strokeColor": "#5b6b7f",
+      "text": "(ชุดนี้ใช้แบบนี้)",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umqdx2jhyjk3gc",
+      "type": "text",
+      "x": 615,
+      "y": 95,
+      "strokeColor": "#c2410c",
+      "text": "PUSH — แอปส่งออกเอง",
+      "fontSize": 21,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "p1",
+      "type": "rectangle",
+      "x": 50,
+      "y": 170,
+      "width": 165,
+      "height": 75,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Prometheus"
+      },
+      "fontSize": 19,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "a1",
+      "type": "rectangle",
+      "x": 360,
+      "y": 150,
+      "width": 175,
+      "height": 50,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "app A  /metrics"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "a2",
+      "type": "rectangle",
+      "x": 360,
+      "y": 215,
+      "width": 175,
+      "height": 50,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "app B  /metrics"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "a3",
+      "type": "rectangle",
+      "x": 360,
+      "y": 280,
+      "width": 175,
+      "height": 50,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "app C  /metrics"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umqsds7r347dri",
+      "type": "arrow",
+      "x": 222.95775696523407,
+      "y": 198.16705682104728,
+      "width": 135,
+      "height": -15,
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          129.08448606953186,
+          -13.318240626221524
+        ]
+      ],
+      "start": {
+        "id": "p1"
+      },
+      "end": {
+        "id": "a1"
+      },
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umqtgmwnou2wcb",
+      "type": "arrow",
+      "x": 222.95775696523407,
+      "y": 216.83294317895272,
+      "width": 135,
+      "height": 30,
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          129.08448606953186,
+          13.318240626221524
+        ]
+      ],
+      "start": {
+        "id": "p1"
+      },
+      "end": {
+        "id": "a2"
+      },
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umq7u8dl255m1x",
+      "type": "arrow",
+      "x": 222.64228712553077,
+      "y": 235.4011841102833,
+      "width": 135,
+      "height": 80,
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          136.44619497970777,
+          42.23334606514763
+        ]
+      ],
+      "start": {
+        "id": "p1"
+      },
+      "end": {
+        "id": "a3"
+      },
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umq0jabkkrd5vxt",
+      "type": "text",
+      "x": 232,
+      "y": 128,
+      "strokeColor": "#1864ab",
+      "text": "HTTP GET ทุก 15 วิ",
+      "fontSize": 15,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umqejpf6ilakx8",
+      "type": "text",
+      "x": 45,
+      "y": 265,
+      "strokeColor": "#1864ab",
+      "text": "✓ Prometheus คุมจังหวะเอง\n✓ รู้ทันทีว่า target ตาย (up=0)\n✓ แอปแค่เปิดหน้าเว็บไว้เฉย ๆ\n✓ ทดสอบด้วย curl ได้เลย",
+      "fontSize": 16,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "p2",
+      "type": "rectangle",
+      "x": 940,
+      "y": 170,
+      "width": 165,
+      "height": 75,
+      "backgroundColor": "#ffe8cc",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ตัวรับกลาง"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "b1",
+      "type": "rectangle",
+      "x": 620,
+      "y": 150,
+      "width": 150,
+      "height": 50,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "app A"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "b2",
+      "type": "rectangle",
+      "x": 620,
+      "y": 215,
+      "width": 150,
+      "height": 50,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "app B"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "b3",
+      "type": "rectangle",
+      "x": 620,
+      "y": 280,
+      "width": 150,
+      "height": 50,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "app C"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:12.725Z",
+      "updatedAt": "2026-08-15T15:59:12.725Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umqlz7mbx29x7g",
+      "type": "arrow",
+      "x": 777.9608969329415,
+      "y": 183.2327607643377,
+      "width": 160,
+      "height": 25,
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          154.07820613411695,
+          15.290203662164288
+        ]
+      ],
+      "start": {
+        "id": "b1"
+      },
+      "end": {
+        "id": "p2"
+      },
+      "createdAt": "2026-08-15T15:59:12.726Z",
+      "updatedAt": "2026-08-15T15:59:12.726Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umqca0684idyi4",
+      "type": "arrow",
+      "x": 777.9608969329415,
+      "y": 231.7672392356623,
+      "width": 160,
+      "height": -30,
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          154.07820613411695,
+          -15.290203662164288
+        ]
+      ],
+      "start": {
+        "id": "b2"
+      },
+      "end": {
+        "id": "p2"
+      },
+      "createdAt": "2026-08-15T15:59:12.726Z",
+      "updatedAt": "2026-08-15T15:59:12.726Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umq03hs2dv0xmos",
+      "type": "arrow",
+      "x": 777.6674260983713,
+      "y": 280.38908688674445,
+      "width": 160,
+      "height": -90,
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          154.66514780325747,
+          -46.04534934600795
+        ]
+      ],
+      "start": {
+        "id": "b3"
+      },
+      "end": {
+        "id": "p2"
+      },
+      "createdAt": "2026-08-15T15:59:12.726Z",
+      "updatedAt": "2026-08-15T15:59:12.726Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9umqkgdljezwyn",
+      "type": "text",
+      "x": 615,
+      "y": 345,
+      "strokeColor": "#c2410c",
+      "text": "✗ แอปเงียบไป = ตาย หรือแค่ไม่ส่ง? แยกไม่ออก\n✗ แอปต้องรู้จัก address ของเซิร์ฟเวอร์กลาง",
+      "fontSize": 16,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:12.726Z",
+      "updatedAt": "2026-08-15T15:59:12.726Z",
+      "version": 1
+    },
+    {
+      "id": "note3",
+      "type": "rectangle",
+      "x": 20,
+      "y": 415,
+      "width": 1115,
+      "height": 100,
+      "backgroundColor": "#fff9db",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ข้อยกเว้น : งานที่อยู่สั้น ๆ (batch job) จบไปก่อน Prometheus จะมาดึง — กรณีนี้ใช้ Pushgateway มาคั่น\nแต่อย่าใช้กับ service ที่รันค้าง เพราะจะเสียความสามารถสำคัญที่สุดของ pull ไป นั่นคือการรู้ว่า target ตาย (up = 0)"
+      },
+      "fontSize": 19,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:12.726Z",
+      "updatedAt": "2026-08-15T15:59:12.726Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

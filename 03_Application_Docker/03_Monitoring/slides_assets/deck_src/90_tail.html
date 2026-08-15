@@ -1,0 +1,99 @@
+<div id="ui"><div id="bar"><i></i></div></div>
+<div id="counter"><span id="cur">1</span> / <span id="tot">0</span></div>
+<div id="ctl">
+  <button id="bPrev" aria-label="สไลด์ก่อนหน้า" title="ก่อนหน้า (←)">‹</button>
+  <button id="bNext" aria-label="สไลด์ถัดไป" title="ถัดไป (→)">›</button>
+  <button id="bOv" aria-label="ดูสไลด์ทั้งหมด" title="ดูทั้งหมด (O)">▦</button>
+  <button id="bFs" aria-label="เต็มจอ" title="เต็มจอ (F)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M2.2 5.8V2.2h3.6M13.8 5.8V2.2h-3.6M2.2 10.2v3.6h3.6M13.8 10.2v3.6h-3.6"/></svg></button>
+  <button id="bHelp" aria-label="ปุ่มลัด" title="ปุ่มลัด (?)">?</button>
+</div>
+<div id="help" role="dialog" aria-modal="true" aria-label="ปุ่มลัด"><div class="box">
+  <h3>ปุ่มลัด</h3>
+  <table>
+    <tr><td><kbd>→</kbd><kbd>Space</kbd><kbd>PgDn</kbd></td><td>สไลด์ถัดไป</td></tr>
+    <tr><td><kbd>←</kbd><kbd>PgUp</kbd></td><td>สไลด์ก่อนหน้า</td></tr>
+    <tr><td><kbd>Home</kbd> / <kbd>End</kbd></td><td>สไลด์แรก / สุดท้าย</td></tr>
+    <tr><td><kbd>O</kbd></td><td>ดูสไลด์ทั้งหมด (คลิกเพื่อกระโดด)</td></tr>
+    <tr><td><kbd>F</kbd></td><td>เต็มจอ</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td>พิมพ์ / บันทึกเป็น PDF (แนวนอน)</td></tr>
+    <tr><td><kbd>Esc</kbd></td><td>ปิดหน้าต่างนี้ / ออกจากมุมมองรวม</td></tr>
+  </table>
+</div></div>
+<script>
+(function(){
+  // ---- assets ----
+  var A = window.ASSETS || {};
+  document.querySelectorAll('img[data-a]').forEach(function(im){
+    var k = im.getAttribute('data-a');
+    if(A[k]) im.src = A[k];
+  });
+
+  // ---- slides ----
+  var slots = Array.prototype.slice.call(document.querySelectorAll('.slot'));
+  var n = slots.length, i = 0;
+  document.getElementById('tot').textContent = n;
+  slots.forEach(function(s, k){
+    var pg = s.querySelector('.pg');
+    if(pg) pg.textContent = (k+1) + ' / ' + n;
+  });
+
+  function fit(){
+    var s = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    document.documentElement.style.setProperty('--s', s);
+  }
+  function show(k){
+    i = Math.max(0, Math.min(n-1, k));
+    slots.forEach(function(s, x){ s.classList.toggle('active', x === i); });
+    document.getElementById('cur').textContent = i+1;
+    document.querySelector('#bar i').style.width = ((i+1)/n*100) + '%';
+    if(location.hash !== '#'+(i+1)) history.replaceState(null,'','#'+(i+1));
+  }
+  function next(){ show(i+1); } function prev(){ show(i-1); }
+  function ov(on){
+    var el = document.body;
+    if(on === undefined) on = !el.classList.contains('ov');
+    el.classList.toggle('ov', on);
+    if(!on){ show(i); window.scrollTo(0,0); }
+  }
+
+	  window.addEventListener('resize', fit);
+	  window.addEventListener('hashchange', function(){
+	    var k = parseInt((location.hash || '').replace('#',''), 10);
+	    if(!isNaN(k)) show(k - 1);
+	  });
+  document.addEventListener('keydown', function(e){
+    var h = document.getElementById('help');
+    if(e.key === 'Escape'){ if(h.classList.contains('on')){ h.classList.remove('on'); return; }
+                            if(document.body.classList.contains('ov')){ ov(false); return; } }
+    if(h.classList.contains('on')) return;
+    switch(e.key){
+      case 'ArrowRight': case ' ': case 'PageDown': e.preventDefault(); if(!document.body.classList.contains('ov')) next(); break;
+      case 'ArrowLeft': case 'PageUp': e.preventDefault(); if(!document.body.classList.contains('ov')) prev(); break;
+      case 'Home': e.preventDefault(); show(0); break;
+      case 'End': e.preventDefault(); show(n-1); break;
+      case 'o': case 'O': ov(); break;
+      case 'f': case 'F': if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); break;
+      case '?': h.classList.add('on'); break;
+    }
+  });
+  slots.forEach(function(s, k){
+    s.addEventListener('click', function(){
+      if(document.body.classList.contains('ov')){ show(k); ov(false); }
+    });
+  });
+  document.getElementById('bNext').onclick = next;
+  document.getElementById('bPrev').onclick = prev;
+  document.getElementById('bOv').onclick = function(){ ov(); };
+  document.getElementById('bFs').onclick = function(){
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen();
+  };
+  document.getElementById('bHelp').onclick = function(){ document.getElementById('help').classList.add('on'); };
+  document.getElementById('help').onclick = function(){ this.classList.remove('on'); };
+
+  fit();
+  var start = parseInt((location.hash||'').replace('#',''), 10);
+  show(isNaN(start) ? 0 : start-1);
+})();
+</script>
+</body>
+</html>

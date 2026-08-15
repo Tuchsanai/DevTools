@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="660" viewBox="0 0 1060 660" role="img" aria-label="สถาปัตยกรรม LAB 2: cAdvisor อ่าน cgroup ของทุก container แล้ว Prometheus ดึง metric ไปเก็บเป็นอนุกรมเวลา">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b45309"/>
+    </marker>
+    <style>
+      .t   { font-family: "Noto Sans Thai","Sarabun",Tahoma,"DejaVu Sans",sans-serif; fill:#0f172a; }
+      .ttl { font-size: 19px; font-weight: 700; }
+      .h   { font-size: 15px; font-weight: 700; }
+      .s   { font-size: 12.5px; }
+      .m   { font-family: "DejaVu Sans Mono",Consolas,monospace; font-size: 12px; fill:#1e293b; }
+      .mb  { font-family: "DejaVu Sans Mono",Consolas,monospace; font-size: 12px; font-weight:700; fill:#b45309; }
+      .lbl { font-size: 12px; fill:#334155; }
+      .box { stroke-width: 1.6; rx: 10; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1060" height="660" fill="#f8fafc"/>
+
+  <!-- classroom container -->
+  <rect x="18" y="52" width="1024" height="590" fill="#ffffff" stroke="#94a3b8" stroke-width="2" stroke-dasharray="7 5" rx="14"/>
+  <text class="t ttl" x="30" y="34">LAB 2 — cAdvisor: metric ระดับ container</text>
+  <text class="t lbl" x="34" y="76">เครื่องเรียน (classroom container) · Docker 29 · cgroup v2 · network `monnet`</text>
+
+  <!-- workloads column -->
+  <rect class="box" x="42" y="104" width="300" height="286" fill="#fff7ed" stroke="#fdba74"/>
+  <text class="t h" x="58" y="130">Workload ที่ถูกวัด</text>
+
+  <rect class="box" x="58" y="144" width="268" height="66" fill="#ffffff" stroke="#fb923c"/>
+  <text class="t h" x="72" y="167">monlab2-burner1</text>
+  <text class="t s" x="72" y="187">busy loop 2 process · <tspan class="m">cpuset: "0"</tspan></text>
+  <text class="t s" x="72" y="203">เพดาน = 1 logical CPU</text>
+
+  <rect class="box" x="58" y="218" width="268" height="66" fill="#ffffff" stroke="#fb923c"/>
+  <text class="t h" x="72" y="241">monlab2-burner2</text>
+  <text class="t s" x="72" y="261">busy loop 2 process · <tspan class="m">cpuset: "1,2"</tspan></text>
+  <text class="t s" x="72" y="277">เพดาน = 2 logical CPU</text>
+
+  <rect class="box" x="58" y="292" width="268" height="66" fill="#ffffff" stroke="#fb923c"/>
+  <text class="t h" x="72" y="315">monlab2-hog</text>
+  <text class="t s" x="72" y="335">python จอง bytearray 150 MiB</text>
+  <text class="t s" x="72" y="351">แล้วแตะทุก page และถือค้างไว้</text>
+
+  <!-- kernel / cgroup -->
+  <rect class="box" x="42" y="410" width="300" height="106" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text class="t h" x="58" y="436">Kernel — cgroup v2 + containerd</text>
+  <text class="m" x="58" y="458">/sys/fs/cgroup/... (cpu.stat, memory.*)</text>
+  <text class="m" x="58" y="478">/var/run/docker/containerd/</text>
+  <text class="m" x="58" y="494">        containerd.sock</text>
+
+  <!-- exporters -->
+  <rect class="box" x="392" y="104" width="286" height="180" fill="#eff6ff" stroke="#93c5fd"/>
+  <text class="t h" x="408" y="130">monlab2-cadvisor :8080</text>
+  <text class="t s" x="408" y="152">อ่าน cgroup ของทุก container</text>
+  <text class="t s" x="408" y="170">แล้วแปลงเป็น exposition format</text>
+  <text class="mb" x="408" y="196">--containerd=/var/run/docker/</text>
+  <text class="mb" x="408" y="212">    containerd/containerd.sock</text>
+  <text class="t s" x="408" y="236">ถ้าไม่ใส่ flag นี้ → ไม่มี label</text>
+  <text class="m" x="408" y="254">name=  /  image=</text>
+  <text class="t s" x="408" y="272">→ PromQL ทุกข้อได้ผลว่าง</text>
+
+  <rect class="box" x="392" y="300" width="286" height="90" fill="#eff6ff" stroke="#93c5fd"/>
+  <text class="t h" x="408" y="326">monlab2-node-exporter :9100</text>
+  <text class="t s" x="408" y="348">metric ระดับ “ทั้งเครื่อง”</text>
+  <text class="m" x="408" y="370">node_memory_MemTotal_bytes</text>
+
+  <!-- prometheus -->
+  <rect class="box" x="728" y="104" width="290" height="286" fill="#f0fdf4" stroke="#86efac"/>
+  <text class="t h" x="744" y="130">monlab2-prometheus :9090</text>
+  <text class="t s" x="744" y="152">ดึง (pull) ทุก <tspan class="m">scrape_interval: 15s</tspan></text>
+  <text class="t s" x="744" y="174">เก็บเป็นอนุกรมเวลา (TSDB)</text>
+  <text class="t s" x="744" y="200">job: <tspan class="m">cadvisor</tspan> · <tspan class="m">node</tspan> · <tspan class="m">prometheus</tspan></text>
+  <text class="t s" x="744" y="228">counter ที่โตขึ้นเรื่อย ๆ:</text>
+  <text class="m" x="744" y="248">container_cpu_usage_seconds_total</text>
+  <text class="t s" x="744" y="272">อ่านค่าจริงด้วย</text>
+  <text class="m" x="744" y="292">rate(...[1m])  → หน่วยเป็น “core”</text>
+  <text class="t s" x="744" y="318">กฎ: window ≥ 4 × scrape_interval</text>
+  <text class="t s" x="744" y="340">และต้องกรอง <tspan class="m">{name!=""}</tspan> เสมอ</text>
+  <text class="t s" x="744" y="362">เพราะ series <tspan class="m">name=""</tspan> คือทั้งเครื่อง</text>
+
+  <!-- browser -->
+  <rect class="box" x="728" y="410" width="290" height="106" fill="#ffffff" stroke="#94a3b8"/>
+  <text class="t h" x="744" y="436">เบราว์เซอร์ของผู้เรียน</text>
+  <text class="t s" x="744" y="458">VS Code forward port → เปิด</text>
+  <text class="m" x="744" y="478">localhost:9090/query  (PromQL)</text>
+  <text class="m" x="744" y="498">localhost:8080/docker/ (cAdvisor UI)</text>
+
+  <!-- arrows -->
+  <path d="M 342 250 L 388 200" stroke="#334155" stroke-width="1.8" fill="none" marker-end="url(#ar)"/>
+  <path d="M 342 460 L 388 232" stroke="#b45309" stroke-width="1.8" fill="none" marker-end="url(#arb)"/>
+  <text class="t lbl" x="348" y="424">อ่าน cgroup + ถาม containerd</text>
+  <text class="t lbl" x="348" y="442">ว่า cgroup ไหน = container ชื่ออะไร</text>
+
+  <path d="M 724 180 L 682 180" stroke="#334155" stroke-width="1.8" fill="none" marker-end="url(#ar)"/>
+  <text class="t lbl" x="686" y="170">scrape</text>
+  <path d="M 724 330 L 682 330" stroke="#334155" stroke-width="1.8" fill="none" marker-end="url(#ar)"/>
+  <text class="t lbl" x="686" y="320">scrape</text>
+
+  <path d="M 873 394 L 873 406" stroke="#334155" stroke-width="1.8" fill="none" marker-end="url(#ar)"/>
+
+  <!-- footer note -->
+  <rect class="box" x="42" y="536" width="976" height="86" fill="#fefce8" stroke="#fde047"/>
+  <text class="t h" x="58" y="560">จุดที่แล็บนี้ทำให้พังก่อนแล้วค่อยแก้</text>
+  <text class="t s" x="58" y="582">Docker 29 วาง containerd socket ไว้ที่ <tspan class="m">/var/run/docker/containerd/containerd.sock</tspan> แต่ค่า default ของ cAdvisor ชี้ไปที่ <tspan class="m">/run/containerd/containerd.sock</tspan></text>
+  <text class="t s" x="58" y="602">→ docker factory ลงทะเบียนไม่ได้ → cAdvisor ตกไปใช้ Raw factory → เหลือ series เดียวคือ <tspan class="m">id="/"</tspan> ที่ไม่มีชื่อ container</text>
+  <text class="t s" x="58" y="618">วิธีแก้คือชี้ path ด้วย flag (ห้าม bind-mount ไปที่ <tspan class="m">/run/containerd/containerd.sock</tspan> เพราะ mount point เป็น read-only file system)</text>
+</svg>

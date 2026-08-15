@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 640" width="1020" height="640" role="img" aria-label="สถาปัตยกรรม LAB 1: Prometheus ดึง metric จาก node-exporter แบบ pull ทุก 15 วินาที">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-end">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c2410c"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-end">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1d4ed8"/>
+    </marker>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-end">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1020" height="640" fill="#ffffff"/>
+
+  <text x="20" y="36" font-family="system-ui, sans-serif" font-size="22" font-weight="700" fill="#0f172a">LAB 1 — Prometheus ดึง metric แบบ Pull</text>
+  <text x="20" y="60" font-family="system-ui, sans-serif" font-size="13.5" fill="#475569">exporter ไม่ได้ส่งข้อมูลออกไปไหน มันแค่เปิดหน้าเว็บ /metrics รอให้ Prometheus เข้ามาดึงตามรอบ scrape_interval</text>
+
+  <rect x="20" y="84" width="980" height="450" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" stroke-dasharray="8 5"/>
+  <text x="38" y="110" font-family="system-ui, sans-serif" font-size="13.5" font-weight="600" fill="#334155">classroom container — tuchsanai/devtools:2569_1 (Docker-in-Docker)</text>
+
+  <rect x="300" y="126" width="680" height="330" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="2"/>
+  <text x="318" y="150" font-family="system-ui, sans-serif" font-size="13.5" font-weight="600" fill="#4338ca">docker network: monnet (compose project monlab1)</text>
+
+  <!-- prometheus -->
+  <rect x="320" y="176" width="260" height="170" rx="10" fill="#ffffff" stroke="#c2410c" stroke-width="2"/>
+  <text x="338" y="204" font-family="system-ui, sans-serif" font-size="15.5" font-weight="700" fill="#9a3412">monlab1-prometheus</text>
+  <text x="338" y="228" font-family="system-ui, sans-serif" font-size="12.5" fill="#334155">prom/prometheus:v3.7.3</text>
+  <text x="338" y="250" font-family="system-ui, sans-serif" font-size="12.5" fill="#334155">UI + API ที่พอร์ต 9090</text>
+  <text x="338" y="272" font-family="system-ui, sans-serif" font-size="12.5" fill="#334155">config: prometheus.yml</text>
+  <text x="338" y="294" font-family="system-ui, sans-serif" font-size="12.5" fill="#334155">scrape_interval: 15s</text>
+  <text x="338" y="318" font-family="system-ui, sans-serif" font-size="12" fill="#64748b">--web.enable-lifecycle</text>
+  <text x="338" y="336" font-family="system-ui, sans-serif" font-size="12" fill="#64748b">→ POST /-/reload ได้</text>
+
+  <!-- node exporter -->
+  <rect x="700" y="176" width="260" height="170" rx="10" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+  <text x="718" y="204" font-family="system-ui, sans-serif" font-size="15.5" font-weight="700" fill="#115e59">monlab1-node-exporter</text>
+  <text x="718" y="228" font-family="system-ui, sans-serif" font-size="12.5" fill="#334155">prom/node-exporter:v1.10.2</text>
+  <text x="718" y="250" font-family="system-ui, sans-serif" font-size="12.5" fill="#334155">อ่าน /proc, /sys ของเครื่อง</text>
+  <text x="718" y="272" font-family="system-ui, sans-serif" font-size="12.5" fill="#334155">เปิด GET /metrics พอร์ต 9100</text>
+  <text x="718" y="294" font-family="system-ui, sans-serif" font-size="12.5" fill="#334155">ตอบเป็นข้อความล้วน</text>
+  <text x="718" y="318" font-family="system-ui, sans-serif" font-size="12" fill="#64748b">รอบทดสอบจริง ≈ 1,279 บรรทัด</text>
+
+  <!-- pull arrow -->
+  <path d="M 586 240 L 692 240" stroke="#c2410c" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <text x="639" y="226" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#9a3412" text-anchor="middle">pull</text>
+  <text x="639" y="262" font-family="system-ui, sans-serif" font-size="11.5" fill="#9a3412" text-anchor="middle">GET /metrics</text>
+  <text x="639" y="278" font-family="system-ui, sans-serif" font-size="11.5" fill="#9a3412" text-anchor="middle">ทุก 15 วินาที</text>
+
+  <!-- self scrape -->
+  <path d="M 360 346 L 360 372 L 430 372 L 430 346" stroke="#c2410c" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <text x="444" y="376" font-family="system-ui, sans-serif" font-size="11.5" fill="#9a3412">job "prometheus" ดึง metric ของตัวเอง (localhost:9090)</text>
+
+  <!-- tsdb -->
+  <ellipse cx="360" cy="400" rx="46" ry="11" fill="#fed7aa" stroke="#c2410c" stroke-width="2"/>
+  <path d="M 314 400 L 314 422 A 46 11 0 0 0 406 422 L 406 400" fill="#fed7aa" stroke="#c2410c" stroke-width="2"/>
+  <text x="360" y="418" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#7c2d12" text-anchor="middle">TSDB</text>
+  <text x="420" y="418" font-family="system-ui, sans-serif" font-size="11.5" fill="#7c2d12">เก็บเป็นอนุกรมเวลาไว้ใน volume prom-data</text>
+
+  <!-- browser -->
+  <rect x="48" y="176" width="212" height="180" rx="10" fill="#ffffff" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="66" y="204" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#1e3a8a">เบราว์เซอร์ / curl</text>
+  <text x="66" y="230" font-family="system-ui, sans-serif" font-size="12" fill="#334155">:9090/targets</text>
+  <text x="66" y="250" font-family="system-ui, sans-serif" font-size="12" fill="#334155">:9090/graph</text>
+  <text x="66" y="270" font-family="system-ui, sans-serif" font-size="12" fill="#334155">:9090/api/v1/query</text>
+  <text x="66" y="290" font-family="system-ui, sans-serif" font-size="12" fill="#334155">:9090/config</text>
+  <text x="66" y="312" font-family="system-ui, sans-serif" font-size="12" fill="#334155">:9100/metrics (ของดิบ)</text>
+  <text x="66" y="336" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">ผ่าน VS Code port forwarding</text>
+
+  <path d="M 262 240 L 314 218" stroke="#1d4ed8" stroke-width="2.5" fill="none" marker-end="url(#arrowBlue)"/>
+  <path d="M 154 358 C 210 500, 620 502, 828 352" stroke="#475569" stroke-width="2" stroke-dasharray="6 4" fill="none" marker-end="url(#arrowGray)"/>
+  <text x="510" y="516" font-family="system-ui, sans-serif" font-size="11.5" fill="#475569" text-anchor="middle">เปิด /metrics เองได้ตรง ๆ — สิ่งที่เราเห็นคือสิ่งเดียวกับที่ Prometheus ดึงไป</text>
+
+  <rect x="20" y="552" width="980" height="66" rx="10" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="40" y="578" font-family="system-ui, sans-serif" font-size="12.5" fill="#0f172a">พอร์ตที่ publish ในเครื่องเรียน: 9090 = Prometheus · 9100 = node-exporter</text>
+  <text x="40" y="602" font-family="system-ui, sans-serif" font-size="12.5" fill="#0f172a">ช่วง "ทำให้พัง": เปลี่ยน target เป็น localhost:9100 → DOWN เพราะ localhost ของ container คือตัวมันเอง → แก้แล้ว POST /-/reload โดยไม่ restart</text>
+</svg>

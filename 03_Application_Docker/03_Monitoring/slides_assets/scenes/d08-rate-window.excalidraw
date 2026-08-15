@@ -1,0 +1,298 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "msukao73ev607czxvpg",
+      "type": "text",
+      "x": 30,
+      "y": 18,
+      "strokeColor": "#0b2545",
+      "text": "rate() — แปลง counter ที่ขึ้นเรื่อย ๆ ให้เป็น \"ต่อวินาที\"",
+      "fontSize": 28,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:51.042Z",
+      "updatedAt": "2026-08-15T15:59:51.042Z",
+      "version": 1
+    },
+    {
+      "id": "msukao73ky2xr6s0zho",
+      "type": "text",
+      "x": 40,
+      "y": 80,
+      "strokeColor": "#5b6b7f",
+      "text": "scrape ทุก 15 วินาที — แต่ละจุดคือค่าสะสมที่อ่านได้",
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:51.042Z",
+      "updatedAt": "2026-08-15T15:59:51.042Z",
+      "version": 1
+    },
+    {
+      "id": "msukao73vfpkvpbgpwn",
+      "type": "line",
+      "x": 60,
+      "y": 200,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          1040,
+          0
+        ]
+      ],
+      "createdAt": "2026-08-15T15:59:51.042Z",
+      "updatedAt": "2026-08-15T15:59:51.042Z",
+      "version": 1
+    },
+    {
+      "id": "t1",
+      "type": "rectangle",
+      "x": 60,
+      "y": 120,
+      "width": 110,
+      "height": 55,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "t=0s\n1000"
+      },
+      "fontSize": 15,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:51.042Z",
+      "updatedAt": "2026-08-15T15:59:51.042Z",
+      "version": 1
+    },
+    {
+      "id": "t2",
+      "type": "rectangle",
+      "x": 210,
+      "y": 120,
+      "width": 110,
+      "height": 55,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "t=15s\n1030"
+      },
+      "fontSize": 15,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:51.042Z",
+      "updatedAt": "2026-08-15T15:59:51.042Z",
+      "version": 1
+    },
+    {
+      "id": "t3",
+      "type": "rectangle",
+      "x": 360,
+      "y": 120,
+      "width": 110,
+      "height": 55,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "t=30s\n1075"
+      },
+      "fontSize": 15,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:51.042Z",
+      "updatedAt": "2026-08-15T15:59:51.042Z",
+      "version": 1
+    },
+    {
+      "id": "t4",
+      "type": "rectangle",
+      "x": 510,
+      "y": 120,
+      "width": 110,
+      "height": 55,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "t=45s\n1105"
+      },
+      "fontSize": 15,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:51.043Z",
+      "updatedAt": "2026-08-15T15:59:51.043Z",
+      "version": 1
+    },
+    {
+      "id": "t5",
+      "type": "rectangle",
+      "x": 660,
+      "y": 120,
+      "width": 110,
+      "height": 55,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "t=60s\n1150"
+      },
+      "fontSize": 15,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:51.043Z",
+      "updatedAt": "2026-08-15T15:59:51.043Z",
+      "version": 1
+    },
+    {
+      "id": "msukao732b3u5ey7i5v",
+      "type": "line",
+      "x": 60,
+      "y": 235,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 3,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          30
+        ]
+      ],
+      "createdAt": "2026-08-15T15:59:51.043Z",
+      "updatedAt": "2026-08-15T15:59:51.043Z",
+      "version": 1
+    },
+    {
+      "id": "msukao73szokdqjwwwi",
+      "type": "line",
+      "x": 770,
+      "y": 235,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 3,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          30
+        ]
+      ],
+      "createdAt": "2026-08-15T15:59:51.043Z",
+      "updatedAt": "2026-08-15T15:59:51.043Z",
+      "version": 1
+    },
+    {
+      "id": "msukao73vp0839cbchm",
+      "type": "line",
+      "x": 60,
+      "y": 265,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 3,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          710,
+          0
+        ]
+      ],
+      "createdAt": "2026-08-15T15:59:51.043Z",
+      "updatedAt": "2026-08-15T15:59:51.043Z",
+      "version": 1
+    },
+    {
+      "id": "msukao7327sr2hxo4oj",
+      "type": "text",
+      "x": 300,
+      "y": 275,
+      "strokeColor": "#2f9e44",
+      "text": "หน้าต่าง [1m] — มี 5 จุด ใช้ได้",
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:59:51.043Z",
+      "updatedAt": "2026-08-15T15:59:51.043Z",
+      "version": 1
+    },
+    {
+      "id": "msukao73vyiejnboi18",
+      "type": "text",
+      "x": 60,
+      "y": 315,
+      "strokeColor": "#2f9e44",
+      "text": "rate = (1150 − 1000) ÷ 60 วินาที = 2.5 ครั้ง/วินาที",
+      "fontSize": 20,
+      "fontFamily": 3,
+      "createdAt": "2026-08-15T15:59:51.043Z",
+      "updatedAt": "2026-08-15T15:59:51.043Z",
+      "version": 1
+    },
+    {
+      "id": "bad",
+      "type": "rectangle",
+      "x": 40,
+      "y": 365,
+      "width": 545,
+      "height": 150,
+      "backgroundColor": "#ffe3e3",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "❌ หน้าต่างสั้นเกินไป : rate(...[15s])\n\nในหน้าต่าง 15 วิ อาจมีแค่ 1 จุด — คำนวณอัตราไม่ได้\nผลลัพธ์จะว่างเปล่า (No data) หรือกระโดดไปมา\n\nนี่คือสาเหตุอันดับหนึ่งที่ \"กราฟว่าง\" ทั้งที่ metric มีอยู่"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:51.043Z",
+      "updatedAt": "2026-08-15T15:59:51.043Z",
+      "version": 1
+    },
+    {
+      "id": "good",
+      "type": "rectangle",
+      "x": 605,
+      "y": 365,
+      "width": 545,
+      "height": 150,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "✅ กฎง่าย ๆ ที่ควรจำ\n\nหน้าต่าง rate ≥ 4 × scrape_interval\n\nscrape 15s → ใช้ [1m]     scrape 5s → ใช้ [30s]\n\nเผื่อไว้ให้ scrape หลุดไป 1-2 รอบแล้วยังคำนวณได้"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:59:51.043Z",
+      "updatedAt": "2026-08-15T15:59:51.043Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

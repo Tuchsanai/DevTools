@@ -1,0 +1,67 @@
+# กฎ alert ของ LAB 5
+#
+# โครงของไฟล์กฎ: groups -> rules -> (alert, expr, for, labels, annotations)
+#   expr        เงื่อนไข PromQL — "มีผลลัพธ์" = เงื่อนไขเป็นจริง
+#   for         ต้องเป็นจริงติดต่อกันนานเท่านี้ก่อน จึงเปลี่ยน Pending -> Firing
+#   labels      ติดไปกับ alert ใช้ทำ routing / grouping / inhibition ที่ Alertmanager
+#   annotations ข้อความสำหรับคน ใช้ template {{ $labels.x }} และ {{ $value }} ได้
+#
+# ทุกกฎติด label 2 ตัวไว้ให้ inhibit_rules ใช้จับคู่ด้วย equal: ["stack", "service"]
+#   stack   = ชุดระบบ (ทั้งแล็บนี้เป็น monlab5 เหมือนกันหมด)
+#   service = "ตัวไหน" ในชุดนั้น  <-- ตัวนี้ต่างหากที่ทำให้ inhibition ไม่กลบข้าม service
+# ค่าของ labels ใส่ template ได้เหมือน annotations: TargetDown จึงหยิบ job ของ target
+# ที่ล่มมาเป็น service ได้เอง (job=app -> service=app, job=node -> service=node)
+
+groups:
+  - name: monlab5-availability
+    interval: 5s
+    rules:
+      - alert: TargetDown
+        expr: up == 0
+        for: 20s
+        labels:
+          severity: critical
+          stack: monlab5
+          service: '{{ $labels.job }}'
+        annotations:
+          summary: 'target {{ $labels.job }} ({{ $labels.instance }}) scrape ไม่สำเร็จ'
+          description: 'Prometheus ดึง /metrics ของ {{ $labels.instance }} ไม่ได้ ค่า up = {{ $value }} ติดต่อกันเกิน 20 วินาที'
+
+  - name: monlab5-red
+    interval: 5s
+    rules:
+      - alert: HighErrorRate
+        # rate() ต้องมีอย่างน้อย 2 จุดในหน้าต่าง — [2m] = 24 จุด เมื่อ scrape ทุก 5 วินาที
+        # ที่เลือก 2 นาที (ไม่ใช่ 30 วินาที) เพราะอยากให้กฎนี้ยัง "มีค่าให้คำนวณ" อีกพักหนึ่ง
+        # แม้แอปจะตายไปแล้ว — ข้อ 9 จะใช้ช่วงนั้นสาธิต inhibition
+        # ตัวเศษคือ error ต่อวินาที ตัวส่วนคือ request ต่อวินาที -> ได้ "สัดส่วน" ไม่ใช่ค่าดิบ
+        # regex ของ PromQL ถูก anchor เต็มสตริงเสมอ "5[0-9]{2}" จึงอ่านได้ตรงว่า "เลข 3 หลักขึ้นต้นด้วย 5"
+        expr: |
+          sum(rate(app_requests_total{status=~"5[0-9]{2}"}[2m]))
+            /
+          sum(rate(app_requests_total[2m]))
+            > 0.05
+        for: 30s
+        labels:
+          severity: warning
+          stack: monlab5
+          service: app          # กฎฝั่ง RED เป็นเรื่องของ "แอป" จึงปักไว้ตรง ๆ
+        annotations:
+          summary: 'อัตรา error ของแอปสูงเกิน 5%'
+          description: 'สัดส่วน HTTP 5xx อยู่ที่ {{ $value | humanizePercentage }} ของ request ทั้งหมด (เกณฑ์ 5%) ติดต่อกันเกิน 30 วินาที'
+
+      - alert: HighLatencyP95
+        # bucket ของ histogram เป็นแบบสะสม histogram_quantile จึงประมาณ p95 จากขอบ bucket
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (le) (rate(app_request_duration_seconds_bucket[2m]))
+          ) > 1
+        for: 30s
+        labels:
+          severity: warning
+          stack: monlab5
+          service: app          # ต้องตรงกับ service ของ TargetDown ถึงจะถูกกลบได้
+        annotations:
+          summary: 'p95 latency ของแอปเกิน 1 วินาที'
+          description: 'p95 ของ app_request_duration_seconds อยู่ที่ {{ $value | printf "%.2f" }} วินาที (เกณฑ์ 1 วินาที) ติดต่อกันเกิน 30 วินาที'

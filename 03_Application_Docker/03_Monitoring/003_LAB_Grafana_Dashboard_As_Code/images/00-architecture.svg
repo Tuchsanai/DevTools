@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 830" width="1180" height="830" font-family="'Noto Sans Thai','Sarabun','Segoe UI',Tahoma,sans-serif">
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <marker id="arwBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1d4ed8"/>
+    </marker>
+    <marker id="arwGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1180" height="830" fill="#f8fafc"/>
+
+  <text x="30" y="44" font-size="25" font-weight="700" fill="#0f172a">LAB 3 — Grafana Dashboard as Code</text>
+  <text x="30" y="72" font-size="15" fill="#475569">ทุกอย่างที่เห็นใน Grafana (datasource + dashboard) เกิดจาก “ไฟล์ในโฟลเดอร์แล็บ” ไม่ได้กดสร้างด้วยมือใน UI</text>
+
+  <!-- classroom container -->
+  <rect x="25" y="90" width="1130" height="620" rx="14" fill="#ffffff" stroke="#94a3b8" stroke-width="2" stroke-dasharray="9 6"/>
+  <text x="46" y="118" font-size="14" font-weight="700" fill="#64748b">classroom container : devtools  ( --privileged → Docker in Docker )</text>
+
+  <!-- why provisioning note -->
+  <rect x="48" y="136" width="312" height="266" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
+  <text x="66" y="163" font-size="15" font-weight="700" fill="#9a3412">ทำไมต้อง provisioning ?</text>
+  <text x="66" y="192" font-size="13.5" fill="#7c2d12">• กดสร้างใน UI = ข้อมูลอยู่ใน sqlite ของ Grafana</text>
+  <text x="66" y="214" font-size="13.5" fill="#7c2d12">  พอ docker compose down -v แล้ว “หายหมด”</text>
+  <text x="66" y="243" font-size="13.5" fill="#7c2d12">• เขียนเป็นไฟล์ = เข้า git ได้ · review ได้</text>
+  <text x="66" y="265" font-size="13.5" fill="#7c2d12">  ทุกคนในทีมได้ dashboard เดียวกันเป๊ะ</text>
+  <text x="66" y="294" font-size="13.5" fill="#7c2d12">• สร้างเครื่องใหม่กี่ครั้งก็เหมือนเดิม</text>
+  <text x="66" y="316" font-size="13.5" fill="#7c2d12">  (reproducible) ไม่ต้องนั่งคลิกซ้ำ</text>
+  <text x="66" y="349" font-size="13.5" font-weight="700" fill="#9a3412">กติกาเดียวที่ห้ามพลาด :</text>
+  <text x="66" y="373" font-size="13.5" fill="#7c2d12">uid ของ datasource ต้องตรงกับที่ทุก panel</text>
+  <text x="66" y="391" font-size="13.5" fill="#7c2d12">ใน dashboard JSON อ้างถึง → ที่นี่คือ monprom</text>
+
+  <!-- lab files -->
+  <rect x="48" y="424" width="312" height="258" rx="10" fill="#eef2ff" stroke="#818cf8" stroke-width="1.5"/>
+  <text x="66" y="451" font-size="15" font-weight="700" fill="#3730a3">ไฟล์จริงในโฟลเดอร์แล็บ</text>
+  <text x="66" y="479" font-size="13" fill="#312e81" font-family="ui-monospace,Menlo,Consolas,monospace">docker-compose.yml</text>
+  <text x="66" y="501" font-size="13" fill="#312e81" font-family="ui-monospace,Menlo,Consolas,monospace">prometheus.yml</text>
+  <text x="66" y="527" font-size="13" fill="#312e81" font-family="ui-monospace,Menlo,Consolas,monospace">grafana/provisioning/</text>
+  <text x="80" y="547" font-size="12.5" fill="#4338ca" font-family="ui-monospace,Menlo,Consolas,monospace">datasources/prometheus.yml</text>
+  <text x="94" y="565" font-size="12" fill="#6d28d9">→ uid: monprom</text>
+  <text x="80" y="585" font-size="12.5" fill="#4338ca" font-family="ui-monospace,Menlo,Consolas,monospace">dashboards/dashboards.yml</text>
+  <text x="94" y="603" font-size="12" fill="#6d28d9">→ path: /var/lib/grafana/dashboards</text>
+  <text x="66" y="627" font-size="13" fill="#312e81" font-family="ui-monospace,Menlo,Consolas,monospace">grafana/dashboards/</text>
+  <text x="80" y="647" font-size="12.5" fill="#4338ca" font-family="ui-monospace,Menlo,Consolas,monospace">docker-host.json  (13 panel)</text>
+  <text x="80" y="667" font-size="12.5" fill="#b91c1c" font-family="ui-monospace,Menlo,Consolas,monospace">broken-uid.json  (uid ผิด)</text>
+
+  <!-- monnet -->
+  <rect x="392" y="136" width="738" height="546" rx="12" fill="#f0f9ff" stroke="#38bdf8" stroke-width="2"/>
+  <text x="410" y="160" font-size="13.5" font-weight="700" fill="#0369a1">docker network : monnet</text>
+
+  <!-- host sources -->
+  <rect x="414" y="180" width="186" height="82" rx="9" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="507" y="207" font-size="13.5" font-weight="700" fill="#334155" text-anchor="middle">เครื่องเรียน</text>
+  <text x="507" y="228" font-size="12.5" fill="#475569" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">/proc  /sys  /rootfs</text>
+  <text x="507" y="248" font-size="12" fill="#64748b" text-anchor="middle">CPU · RAM · ดิสก์ ของทั้งเครื่อง</text>
+
+  <!-- workloads -->
+  <rect x="414" y="290" width="186" height="126" rx="9" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.5"/>
+  <text x="507" y="314" font-size="13" font-weight="700" fill="#991b1b" text-anchor="middle">workload ตัวอย่าง</text>
+  <rect x="428" y="326" width="158" height="36" rx="6" fill="#ffffff" stroke="#fca5a5"/>
+  <text x="507" y="343" font-size="12" fill="#7f1d1d" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">monlab3-worker</text>
+  <text x="507" y="356" font-size="10.5" fill="#b91c1c" text-anchor="middle">busy loop เป็นคลื่น · cpuset 0</text>
+  <rect x="428" y="368" width="158" height="36" rx="6" fill="#ffffff" stroke="#fca5a5"/>
+  <text x="507" y="385" font-size="12" fill="#7f1d1d" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">monlab3-cache</text>
+  <text x="507" y="398" font-size="10.5" fill="#b91c1c" text-anchor="middle">จอง RAM 2.5 GiB เป็นรอบ</text>
+
+  <!-- exporters -->
+  <rect x="646" y="180" width="204" height="82" rx="9" fill="#ecfdf5" stroke="#34d399" stroke-width="1.8"/>
+  <text x="748" y="206" font-size="13.5" font-weight="700" fill="#065f46" text-anchor="middle">node-exporter</text>
+  <text x="748" y="226" font-size="12" fill="#047857" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">:9100/metrics</text>
+  <text x="748" y="247" font-size="11.5" fill="#059669" text-anchor="middle">node_cpu · node_memory · node_filesystem</text>
+
+  <rect x="646" y="290" width="204" height="82" rx="9" fill="#ecfdf5" stroke="#34d399" stroke-width="1.8"/>
+  <text x="748" y="316" font-size="13.5" font-weight="700" fill="#065f46" text-anchor="middle">cAdvisor</text>
+  <text x="748" y="336" font-size="12" fill="#047857" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">:8080/metrics</text>
+  <text x="748" y="357" font-size="11.5" fill="#059669" text-anchor="middle">container_cpu · container_network</text>
+
+  <!-- prometheus -->
+  <rect x="898" y="196" width="210" height="176" rx="10" fill="#fff1f2" stroke="#fb7185" stroke-width="2"/>
+  <text x="1003" y="224" font-size="15" font-weight="700" fill="#9f1239" text-anchor="middle">Prometheus</text>
+  <text x="1003" y="246" font-size="12.5" fill="#be123c" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">:9090</text>
+  <text x="1003" y="272" font-size="12" fill="#9f1239" text-anchor="middle">ดึง (pull) เองทุก 15 วินาที</text>
+  <text x="1003" y="293" font-size="12" fill="#9f1239" text-anchor="middle">เก็บลง TSDB เป็นอนุกรมเวลา</text>
+  <text x="1003" y="320" font-size="11.5" fill="#e11d48" text-anchor="middle">job: prometheus · node · cadvisor</text>
+  <text x="1003" y="345" font-size="11.5" fill="#e11d48" text-anchor="middle">ตอบ PromQL ที่ /api/v1/query</text>
+
+  <!-- grafana -->
+  <rect x="646" y="470" width="290" height="170" rx="10" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+  <text x="791" y="500" font-size="15" font-weight="700" fill="#92400e" text-anchor="middle">Grafana</text>
+  <text x="791" y="521" font-size="12.5" fill="#b45309" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">:3000</text>
+  <text x="791" y="547" font-size="12" fill="#92400e" text-anchor="middle">อ่าน provisioning ตอน start</text>
+  <text x="791" y="568" font-size="12" fill="#92400e" text-anchor="middle">สร้าง datasource + dashboard ให้เอง</text>
+  <rect x="664" y="582" width="254" height="44" rx="7" fill="#ffffff" stroke="#fbbf24"/>
+  <text x="791" y="600" font-size="12" fill="#92400e" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">datasource uid = monprom</text>
+  <text x="791" y="617" font-size="11.5" fill="#b45309" text-anchor="middle">panel ทุกใบใน JSON ต้องอ้าง uid นี้</text>
+
+  <!-- arrows: sources -> exporters -->
+  <line x1="600" y1="221" x2="640" y2="221" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arwGray)"/>
+  <line x1="600" y1="353" x2="640" y2="331" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arwGray)"/>
+  <text x="620" y="212" font-size="10.5" fill="#64748b" text-anchor="middle">อ่าน</text>
+
+  <!-- arrows: exporters -> prometheus -->
+  <line x1="850" y1="221" x2="892" y2="248" stroke="#334155" stroke-width="2.2" marker-end="url(#arw)"/>
+  <line x1="850" y1="331" x2="892" y2="304" stroke="#334155" stroke-width="2.2" marker-end="url(#arw)"/>
+  <text x="871" y="288" font-size="11.5" fill="#334155" text-anchor="middle" font-weight="600">scrape</text>
+  <text x="871" y="303" font-size="10.5" fill="#475569" text-anchor="middle">HTTP GET /metrics</text>
+
+  <!-- arrow prometheus -> grafana -->
+  <path d="M 1003 372 L 1003 545 L 942 545" fill="none" stroke="#1d4ed8" stroke-width="2.4" marker-end="url(#arwBlue)"/>
+  <text x="1012" y="432" font-size="12" fill="#1d4ed8" font-weight="600">PromQL</text>
+  <text x="1012" y="450" font-size="11" fill="#1e40af">Grafana ถามข้อมูล</text>
+  <text x="1012" y="466" font-size="11" fill="#1e40af">จาก backend container</text>
+  <text x="1012" y="482" font-size="11" fill="#1e40af">ไม่ใช่จากเบราว์เซอร์</text>
+
+  <!-- arrow files -> grafana -->
+  <line x1="362" y1="553" x2="640" y2="553" stroke="#4f46e5" stroke-width="2.4" marker-end="url(#arwBlue)"/>
+  <text x="500" y="542" font-size="12" fill="#4338ca" text-anchor="middle" font-weight="600">bind mount → อ่านตอน start</text>
+  <text x="500" y="573" font-size="11" fill="#4f46e5" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">/etc/grafana/provisioning</text>
+
+  <!-- browser -->
+  <rect x="646" y="742" width="290" height="62" rx="9" fill="#ffffff" stroke="#0f172a" stroke-width="2"/>
+  <text x="791" y="768" font-size="13.5" font-weight="700" fill="#0f172a" text-anchor="middle">เบราว์เซอร์ของผู้เรียน</text>
+  <text x="791" y="790" font-size="12" fill="#334155" text-anchor="middle">forward port 3000 → http://localhost:3000</text>
+  <line x1="791" y1="740" x2="791" y2="646" stroke="#0f172a" stroke-width="2.2" marker-end="url(#arw)"/>
+
+  <text x="30" y="822" font-size="11.5" fill="#94a3b8">พิสูจน์ว่าเป็น as-code: docker compose down -v (ลบ volume ทิ้งทั้งหมด) แล้ว up -d ใหม่ → datasource และ dashboard ต้องกลับมาครบเหมือนเดิม</text>
+</svg>

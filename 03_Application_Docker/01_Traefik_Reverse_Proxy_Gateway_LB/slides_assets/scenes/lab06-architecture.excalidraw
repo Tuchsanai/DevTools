@@ -1,0 +1,432 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "t",
+      "type": "text",
+      "x": 40,
+      "y": 24,
+      "strokeColor": "#0b2545",
+      "text": "LAB 6 — ออฟฟิศที่ออกเน็ตตรง ๆ ไม่ได้ ต้องผ่าน forward proxy เท่านั้น",
+      "fontSize": 26,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "n1",
+      "type": "rectangle",
+      "x": 40,
+      "y": 100,
+      "width": 350,
+      "height": 400,
+      "backgroundColor": "transparent",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "n1t",
+      "type": "text",
+      "x": 60,
+      "y": 114,
+      "strokeColor": "#1769aa",
+      "text": "officenet  (lab006-officenet)",
+      "fontSize": 16,
+      "fontFamily": 3,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "cl",
+      "type": "rectangle",
+      "x": 70,
+      "y": 150,
+      "width": 290,
+      "height": 84,
+      "backgroundColor": "#e8f4ff",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "client\ncurl อยู่ในนี้"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "gw",
+      "type": "rectangle",
+      "x": 70,
+      "y": 330,
+      "width": 290,
+      "height": 84,
+      "backgroundColor": "#eaf8ef",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "gateway (Traefik)\nต่อทั้งสองวง — ใช้ตอนท้ายแล็บ"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "n1n",
+      "type": "text",
+      "x": 62,
+      "y": 428,
+      "strokeColor": "#5b6b7f",
+      "text": "client ต่อ news.lab ตรง ๆ ไม่ได้\nDNS ก็ไม่รู้จัก · ยิงด้วย IP ก็ timeout",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "px",
+      "type": "rectangle",
+      "x": 470,
+      "y": 190,
+      "width": 250,
+      "height": 110,
+      "backgroundColor": "#fff4e6",
+      "strokeColor": "#c2410c",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "label": {
+        "text": "proxy :8888\nconsole :8899"
+      },
+      "fontSize": 18,
+      "fontFamily": 3,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "pxn",
+      "type": "text",
+      "x": 452,
+      "y": 312,
+      "strokeColor": "#c2410c",
+      "text": "ตัวเดียวที่ต่อทั้งสองเครือข่าย",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "n2",
+      "type": "rectangle",
+      "x": 800,
+      "y": 100,
+      "width": 360,
+      "height": 400,
+      "backgroundColor": "transparent",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "n2t",
+      "type": "text",
+      "x": 820,
+      "y": 114,
+      "strokeColor": "#27864a",
+      "text": "internetnet  (lab006-internetnet)",
+      "fontSize": 16,
+      "fontFamily": 3,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "s2",
+      "type": "rectangle",
+      "x": 830,
+      "y": 150,
+      "width": 300,
+      "height": 70,
+      "backgroundColor": "#eaf8ef",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "secure.lab : 443"
+      },
+      "fontSize": 18,
+      "fontFamily": 3,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "s1",
+      "type": "rectangle",
+      "x": 830,
+      "y": 240,
+      "width": 300,
+      "height": 70,
+      "backgroundColor": "#ffe9e9",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "social.lab"
+      },
+      "fontSize": 18,
+      "fontFamily": 3,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "s0",
+      "type": "rectangle",
+      "x": 830,
+      "y": 330,
+      "width": 300,
+      "height": 70,
+      "backgroundColor": "#eaf8ef",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "news.lab"
+      },
+      "fontSize": 18,
+      "fontFamily": 3,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "n2n",
+      "type": "text",
+      "x": 822,
+      "y": 420,
+      "strokeColor": "#5b6b7f",
+      "text": "ทั้งสามไซต์ไม่ publish port ออกมาเลย",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "a1",
+      "type": "arrow",
+      "x": 367.9233055172541,
+      "y": 213.3287768221433,
+      "strokeColor": "#c2410c",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          94.15338896549179,
+          13.13192003992387
+        ]
+      ],
+      "start": {
+        "id": "cl"
+      },
+      "end": {
+        "id": "px"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "a2",
+      "type": "arrow",
+      "x": 727.6376026758987,
+      "y": 286.341590444436,
+      "strokeColor": "#27864a",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          132.4331279815359,
+          41.277858072166964
+        ]
+      ],
+      "start": {
+        "id": "px"
+      },
+      "end": {
+        "id": "s0"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "a3",
+      "type": "arrow",
+      "x": 727.9045849582646,
+      "y": 224.28759714936135,
+      "strokeColor": "#27864a",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          94.1908300834707,
+          -14.679090402618783
+        ]
+      ],
+      "start": {
+        "id": "px"
+      },
+      "end": {
+        "id": "s2"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "a4",
+      "type": "arrow",
+      "x": 367.9996651071079,
+      "y": 370.6000030643794,
+      "strokeColor": "#27864a",
+      "strokeWidth": 3,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          454.00066978578417,
+          -4.154254494771919
+        ]
+      ],
+      "start": {
+        "id": "gw"
+      },
+      "end": {
+        "id": "s0"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "gl",
+      "type": "text",
+      "x": 420,
+      "y": 372,
+      "strokeColor": "#27864a",
+      "text": "เส้นประ = ทางของ reverse proxy (client ไม่ต้องตั้งค่าอะไร)",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    },
+    {
+      "id": "foot",
+      "type": "text",
+      "x": 40,
+      "y": 528,
+      "strokeColor": "#5b6b7f",
+      "text": "หลักฐานที่ต้องเห็นในแล็บ :  curl ตรง = ล้มเหลว · curl -x = สำเร็จ · proxy log เห็น GET http://news.lab/ เต็ม URL · HTTPS เห็นแค่ CONNECT secure.lab:443",
+      "fontSize": 15,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T17:06:09.235Z",
+      "updatedAt": "2026-08-15T17:06:09.235Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

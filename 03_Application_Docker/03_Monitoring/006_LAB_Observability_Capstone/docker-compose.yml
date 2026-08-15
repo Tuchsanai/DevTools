@@ -1,0 +1,148 @@
+# LAB 6 — Observability Capstone (stack เต็ม)
+# ระบบนี้ "จงใจมีบั๊ก 3 จุด" ที่ไฟล์ config ไม่ใช่ที่ compose นี้
+#   บั๊ก #1 อยู่ใน prometheus/prometheus.yml
+#   บั๊ก #2 อยู่ใน grafana/dashboards/overview.json
+#   บั๊ก #3 อยู่ใน prometheus/rules/alerts.yml
+name: monlab6
+
+networks:
+  monnet:
+    name: monnet
+
+volumes:
+  prom-data:
+  grafana-data:
+
+services:
+  # ---------------------------------------------------------------- แอปที่ถูกมอนิเตอร์
+  app:
+    build: ./app
+    image: monlab6-app:1.0
+    container_name: monlab6-app
+    environment:
+      APP_PORT: "8000"
+      APP_VERSION: "1.0.0"
+      ERROR_EVERY: "2"          # /api/error ตอบ 500 ทุก ๆ 2 ครั้ง = error 10% ของทราฟฟิกทั้งหมด
+    ports:
+      - "8000:8000"
+    networks: [monnet]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8000/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  loadgen:
+    build: ./loadgen
+    image: monlab6-loadgen:1.0
+    container_name: monlab6-loadgen
+    environment:
+      TARGET: "http://app:8000"
+      WORKERS: "3"
+      PACE: "0.12"
+    depends_on:
+      app:
+        condition: service_healthy
+    networks: [monnet]
+
+  # ---------------------------------------------------------------- เก็บและประเมินผล
+  prometheus:
+    image: prom/prometheus:v3.7.3
+    container_name: monlab6-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    volumes:
+      # mount ทั้ง "โฟลเดอร์" ไม่ใช่ไฟล์เดี่ยว — เพราะ bind mount ของไฟล์เดี่ยวจะผูกกับ inode
+      # พอแก้ไฟล์ด้วย editor หรือ sed -i (ซึ่งสร้างไฟล์ใหม่แล้ว rename ทับ) container จะยังเห็นของเก่า
+      - ./prometheus:/etc/prometheus:ro
+      - prom-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks: [monnet]
+
+  node-exporter:
+    image: prom/node-exporter:v1.10.2
+    container_name: monlab6-node-exporter
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/rootfs
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    ports:
+      - "9100:9100"
+    networks: [monnet]
+
+  cadvisor:
+    image: ghcr.io/google/cadvisor:v0.57.0
+    container_name: monlab6-cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg
+    command:
+      - --containerd=/var/run/docker/containerd/containerd.sock
+      - --docker_only=true
+      - --store_container_labels=false
+      - --whitelisted_container_labels=com.docker.compose.service,com.docker.compose.project
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - "8080:8080"
+    networks: [monnet]
+
+  # ---------------------------------------------------------------- แสดงผลและแจ้งเตือน
+  grafana:
+    image: grafana/grafana:12.3.1
+    container_name: monlab6-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_USERS_DEFAULT_THEME: dark
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on: [prometheus]
+    networks: [monnet]
+
+  alertmanager:
+    image: prom/alertmanager:v0.29.0
+    container_name: monlab6-alertmanager
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    volumes:
+      - ./alertmanager:/etc/alertmanager:ro
+    ports:
+      - "9093:9093"
+    networks: [monnet]
+
+  receiver:
+    build: ./receiver
+    image: monlab6-receiver:1.0
+    container_name: monlab6-receiver
+    environment:
+      RECEIVER_PORT: "5001"
+      PROM_URL: "http://prometheus:9090"
+      GRAFANA_URL: "http://grafana:3000"
+      GRAFANA_USER: admin
+      GRAFANA_PASSWORD: admin
+      AM_URL: "http://alertmanager:9093"
+      # ชุดชื่อ job ที่ต้องมีครบพอดี (ชุดเดียวกับที่ check.sh ใช้ — ขาดก็ไม่ผ่าน เกินก็ไม่ผ่าน)
+      EXPECTED_JOBS: "alertmanager,app,cadvisor,node,prometheus"
+      DASH_UID: "monlab6"
+      ALERT_NAME: "HighErrorRate"
+    ports:
+      - "5001:5001"
+    networks: [monnet]

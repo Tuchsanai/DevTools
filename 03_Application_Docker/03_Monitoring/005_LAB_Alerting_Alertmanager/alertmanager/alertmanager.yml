@@ -1,0 +1,60 @@
+# Alertmanager ของ LAB 5
+#
+# หน้าที่ของ Alertmanager (คนละชั้นกับ Prometheus):
+#   Prometheus   = ตัดสินว่า "อะไรผิดปกติ" (rule + for) แล้ว POST alert เข้ามา
+#   Alertmanager = ตัดสินว่า "ใครควรรู้ เมื่อไร และควรเงียบเมื่อไร"
+#                  (route / group / silence / inhibit / repeat)
+#
+# ห้องเรียนนี้ส่งออกทาง webhook ภายในเท่านั้น ไม่มี SMTP/Slack จริง
+
+global:
+  # ใช้เมื่อ alert ที่ส่งเข้ามาไม่มี EndsAt — Prometheus ส่ง EndsAt มาให้อยู่แล้ว
+  resolve_timeout: 1m
+
+route:
+  receiver: webhook-default
+  # จัด alert ที่มี label เหล่านี้เหมือนกันให้อยู่ "ก้อนเดียวกัน" แล้วส่งเป็นข้อความเดียว
+  group_by: ["alertname", "severity"]
+  # รอ 5 วินาทีหลังเจอก้อนใหม่ เผื่อมี alert พี่น้องตามมา (default 30s ช้าเกินไปสำหรับคาบเรียน)
+  group_wait: 5s
+  # ก้อนเดิมมีสมาชิกเปลี่ยน จะรออย่างน้อยเท่านี้ก่อนส่งซ้ำ (default 5m)
+  group_interval: 10s
+  # ก้อนเดิมไม่เปลี่ยนอะไรเลย จะเตือนซ้ำทุก ๆ เท่านี้
+  repeat_interval: 1h
+
+  routes:
+    # route ลูก: อะไรที่ critical แยกไปอีก receiver และรีบกว่าเดิม
+    - matchers:
+        - severity = "critical"
+      receiver: webhook-critical
+      group_wait: 2s
+
+receivers:
+  - name: webhook-default
+    webhook_configs:
+      # ต้องเป็นชื่อ service ใน network เดียวกัน ห้ามใช้ localhost หรือ port ที่ forward มา
+      - url: http://receiver:5001/webhook
+        send_resolved: true      # ถ้าไม่เปิด จะไม่มีทางเห็น lifecycle ตอน resolved
+
+  - name: webhook-critical
+    webhook_configs:
+      - url: http://receiver:5001/webhook
+        send_resolved: true
+
+inhibit_rules:
+  # ถ้า TargetDown (critical) ของ "service ตัวเดียวกัน" กำลัง firing อยู่
+  # ให้กลบ HighLatencyP95 (warning) ของ service นั้นทิ้ง
+  #
+  # เหตุผลที่สมเหตุสมผลจริง: ถ้าแอปล่มจน Prometheus ขูด /metrics ไม่ได้
+  # ตัวเลข latency ของแอปตัวนั้นก็มาจากข้อมูลเก่าที่ค้างอยู่ในหน้าต่าง rate()
+  # เตือนซ้ำไปก็ไม่ได้บอกอะไรใหม่ เพราะ "แอปล่ม" ครอบเรื่อง "แอปช้า" อยู่แล้ว
+  #
+  # equal ต้องมี label ที่ "ระบุตัว service" เสมอ (ที่นี่คือ service)
+  # ถ้าใส่แค่ stack ซึ่งทุก alert ในระบบมีค่าเท่ากันหมด จะกลายเป็นว่า
+  # node-exporter ล่ม -> ไปกลบ latency ของแอปที่ยังทำงานดี ๆ อยู่ = ปิดตาตัวเอง
+  - source_matchers:
+      - alertname = "TargetDown"
+      - severity = "critical"
+    target_matchers:
+      - alertname = "HighLatencyP95"
+    equal: ["stack", "service"]

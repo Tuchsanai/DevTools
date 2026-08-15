@@ -1,0 +1,16 @@
+global:
+  # 5 วินาที ถี่กว่าค่า default (1 นาที) เพื่อให้กราฟมีจุดพอในเวลาเรียน
+  # แลกกับพื้นที่เก็บที่มากขึ้น — production ส่วนใหญ่ใช้ 15-60s
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  # Prometheus ขูด metric ของตัวเอง — ใช้ดู prometheus_tsdb_head_series ตอนสาธิต cardinality
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # แอปของเรา: ชื่อ host "app" มาจากชื่อ service ใน compose (Docker DNS ภายใน monnet)
+  - job_name: app
+    static_configs:
+      - targets: ["app:8000"]

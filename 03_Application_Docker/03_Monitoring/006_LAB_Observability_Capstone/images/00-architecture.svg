@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 720" width="1180" height="720" font-family="'Segoe UI',system-ui,sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5b6b8c"/>
+    </marker>
+    <marker id="arrRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#d43f4b"/>
+    </marker>
+    <marker id="arrGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f9d63"/>
+    </marker>
+    <style>
+      .box   { rx:10; ry:10; stroke-width:1.6; }
+      .t     { font-size:15px; font-weight:600; fill:#16203a; }
+      .s     { font-size:11.5px; fill:#5b6b8c; }
+      .p     { font-size:11px; fill:#7b88a8; font-family:ui-monospace,Menlo,monospace; }
+      .lbl   { font-size:11.5px; fill:#5b6b8c; }
+      .bug   { font-size:11.5px; font-weight:700; fill:#ffffff; }
+      .bugt  { font-size:11.5px; fill:#8c2f38; font-weight:600; }
+      .head  { font-size:20px; font-weight:700; fill:#16203a; }
+      .sub   { font-size:12.5px; fill:#5b6b8c; }
+      .zone  { font-size:12px; font-weight:700; fill:#93a0be; letter-spacing:1px; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1180" height="720" fill="#f6f8fc"/>
+  <text class="head" x="34" y="42">LAB 6 — Observability Capstone : เส้นทางของข้อมูลตั้งแต่แอปจนถึงคนที่ต้องรู้เรื่อง</text>
+  <text class="sub" x="34" y="64">ทุกกล่องอยู่ใน network เดียวกันชื่อ monnet · ตัวเลขสีแดง = จุดที่จงใจทำพังไว้ 3 จุด</text>
+
+  <!-- zones -->
+  <rect x="30" y="92" width="266" height="250" fill="#eef2fa" stroke="#dbe3f2" class="box"/>
+  <text class="zone" x="46" y="114">1. ตัวที่ถูกวัด</text>
+
+  <rect x="330" y="92" width="266" height="250" fill="#eef2fa" stroke="#dbe3f2" class="box"/>
+  <text class="zone" x="346" y="114">2. คนเก็บตัวเลข</text>
+
+  <rect x="30" y="380" width="566" height="300" fill="#eef2fa" stroke="#dbe3f2" class="box"/>
+  <text class="zone" x="46" y="402">3. คนตัดสินใจและส่งข่าว</text>
+
+  <rect x="630" y="92" width="520" height="588" fill="#eef2fa" stroke="#dbe3f2" class="box"/>
+  <text class="zone" x="646" y="114">4. หน้าจอที่มนุษย์ดู</text>
+
+  <!-- app -->
+  <rect x="52" y="130" width="222" height="74" fill="#ffffff" stroke="#c9d4ea" class="box"/>
+  <text class="t" x="68" y="156">monlab6-app</text>
+  <text class="s" x="68" y="176">Python + prometheus_client</text>
+  <text class="p" x="68" y="194">:8000/metrics · RED metrics</text>
+
+  <!-- loadgen -->
+  <rect x="52" y="216" width="222" height="52" fill="#ffffff" stroke="#c9d4ea" class="box"/>
+  <text class="t" x="68" y="240">monlab6-loadgen</text>
+  <text class="p" x="68" y="258">ยิงรอบละ 20 request · error 10%</text>
+
+  <!-- exporters -->
+  <rect x="52" y="280" width="106" height="46" fill="#ffffff" stroke="#c9d4ea" class="box"/>
+  <text class="t" x="64" y="302" font-size="11.5">node-exporter</text>
+  <text class="p" x="64" y="318">:9100</text>
+
+  <rect x="168" y="280" width="106" height="46" fill="#ffffff" stroke="#c9d4ea" class="box"/>
+  <text class="t" x="180" y="302" font-size="13">cAdvisor</text>
+  <text class="p" x="180" y="318">:8080</text>
+
+  <!-- prometheus -->
+  <rect x="352" y="130" width="222" height="120" fill="#ffffff" stroke="#c9d4ea" class="box"/>
+  <text class="t" x="368" y="156">monlab6-prometheus</text>
+  <text class="s" x="368" y="176">scrape_interval 5s</text>
+  <text class="p" x="368" y="194">:9090 · TSDB</text>
+  <text class="s" x="368" y="216">อ่าน prometheus.yml</text>
+  <text class="s" x="368" y="234">ประเมิน rules/alerts.yml ทุก 5s</text>
+
+  <!-- rules box -->
+  <rect x="352" y="264" width="222" height="60" fill="#ffffff" stroke="#c9d4ea" class="box"/>
+  <text class="t" x="368" y="288" font-size="13">rules/alerts.yml</text>
+  <text class="p" x="368" y="308">TargetDown · HighErrorRate · P95</text>
+
+  <!-- alertmanager -->
+  <rect x="52" y="424" width="240" height="96" fill="#ffffff" stroke="#c9d4ea" class="box"/>
+  <text class="t" x="68" y="450">monlab6-alertmanager</text>
+  <text class="s" x="68" y="470">จัดกลุ่ม · หน่วง · ส่งซ้ำ · silence</text>
+  <text class="p" x="68" y="490">:9093 · group_wait 5s</text>
+  <text class="p" x="68" y="508">route → receiver ชื่อ lab-webhook</text>
+
+  <!-- receiver -->
+  <rect x="332" y="424" width="240" height="96" fill="#ffffff" stroke="#c9d4ea" class="box"/>
+  <text class="t" x="348" y="450">monlab6-receiver</text>
+  <text class="s" x="348" y="470">POST /webhook เก็บ alert</text>
+  <text class="p" x="348" y="490">:5001 · GET /api/alerts</text>
+  <text class="p" x="348" y="508">GET / = Status Wall</text>
+
+  <!-- check.sh -->
+  <rect x="52" y="556" width="520" height="96" fill="#ffffff" stroke="#c9d4ea" class="box"/>
+  <text class="t" x="68" y="582">./check.sh — ผู้ตัดสินว่า “แล็บนี้ผ่านหรือยัง”</text>
+  <text class="s" x="68" y="604">ถามผ่าน HTTP API ล้วน ๆ ไม่เดาจากชื่อ container และไม่อ่านหน้า HTML</text>
+  <text class="p" x="68" y="624">1 targets ครบ · 2 rate(app_requests_total) &gt; 0 · 3 datasource uid ตรง</text>
+  <text class="p" x="68" y="642">4 rule HighErrorRate เป็นสัดส่วนของ rate() · 5 receiver ได้ HighErrorRate</text>
+
+  <!-- grafana -->
+  <rect x="656" y="140" width="468" height="120" fill="#ffffff" stroke="#c9d4ea" class="box"/>
+  <text class="t" x="672" y="166">monlab6-grafana :3000</text>
+  <text class="s" x="672" y="188">datasource provisioning → uid: monprom (url http://prometheus:9090)</text>
+  <text class="s" x="672" y="208">dashboard provisioning → /var/lib/grafana/dashboards/overview.json</text>
+  <text class="p" x="672" y="230">11 panel : Rate · Errors · Duration · CPU ต่อ container · RAM ของเครื่อง</text>
+  <text class="s" x="672" y="250">ทุก panel ต้องอ้าง uid เดียวกับ datasource เป๊ะ ๆ ไม่งั้นขึ้น not found</text>
+
+  <!-- status wall -->
+  <rect x="656" y="292" width="468" height="104" fill="#ffffff" stroke="#c9d4ea" class="box"/>
+  <text class="t" x="672" y="318">Status Wall (หน้าเว็บของ receiver เอง)</text>
+  <text class="s" x="672" y="340">การ์ด 5 ใบสะท้อนผลตรวจชุดเดียวกับ check.sh + ฟีด alert ล่าสุด</text>
+  <text class="s" x="672" y="360">receiver ไปถาม Prometheus/Grafana เองฝั่ง server แล้ววาดใหม่ทุก 3 วินาที</text>
+  <text class="p" x="672" y="380">HTML/CSS/JS เขียนฝังในไฟล์เดียว ไม่มี CDN</text>
+
+  <!-- ports note -->
+  <rect x="656" y="428" width="468" height="224" fill="#ffffff" stroke="#c9d4ea" class="box"/>
+  <text class="t" x="672" y="454">port ที่เปิดจากเครื่องเรียน</text>
+  <text class="p" x="672" y="480">:8000  แอปตัวอย่าง (ลองเรียก /api/items เองได้)</text>
+  <text class="p" x="672" y="502">:9090  Prometheus — /targets /alerts /rules /graph</text>
+  <text class="p" x="672" y="524">:9100  node-exporter — เมตริกของเครื่อง</text>
+  <text class="p" x="672" y="546">:8080  cAdvisor — เมตริกของ container</text>
+  <text class="p" x="672" y="568">:3000  Grafana — admin / admin</text>
+  <text class="p" x="672" y="590">:9093  Alertmanager — Alerts / Silences / Status</text>
+  <text class="p" x="672" y="612">:5001  receiver — Status Wall</text>
+  <text class="s" x="672" y="640">เปิดจากเครื่องตัวเองด้วย VS Code Remote-SSH แท็บ PORTS (forward ทีละ port)</text>
+
+  <!-- arrows: scrape -->
+  <path d="M274 168 L 352 168" stroke="#5b6b8c" stroke-width="2" fill="none" marker-start="url(#arr)"/>
+  <text class="lbl" x="282" y="160">scrape</text>
+  <path d="M274 300 C 316 300 316 210 352 200" stroke="#5b6b8c" stroke-width="2" fill="none" marker-start="url(#arr)"/>
+  <path d="M163 216 L 163 204" stroke="#5b6b8c" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+  <text class="lbl" x="172" y="214">ยิงโหลดใส่แอป</text>
+
+  <!-- prometheus -> alertmanager -->
+  <path d="M420 324 L 420 424" stroke="#d43f4b" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+  <text class="lbl" x="238" y="360">เมื่อ rule เป็น firing → ส่งต่อให้ Alertmanager (API v2)</text>
+  <path d="M292 472 L 332 472" stroke="#d43f4b" stroke-width="2" fill="none" marker-end="url(#arrRed)"/>
+  <text class="lbl" x="288" y="464">webhook</text>
+
+  <!-- prometheus -> grafana -->
+  <path d="M574 176 L 656 176" stroke="#1f9d63" stroke-width="2" fill="none" marker-start="url(#arrGreen)"/>
+  <text class="lbl" x="580" y="168">query</text>
+
+  <!-- receiver -> status wall -->
+  <path d="M572 452 C 616 452 616 344 656 344" stroke="#5b6b8c" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+
+  <!-- check.sh arrows -->
+  <path d="M574 604 L 656 604" stroke="#5b6b8c" stroke-width="1.6" fill="none" stroke-dasharray="5 4" marker-end="url(#arr)"/>
+
+  <!-- bug markers -->
+  <circle cx="352" cy="130" r="15" fill="#d43f4b"/>
+  <text class="bug" x="347" y="135">1</text>
+  <text class="bugt" x="372" y="126">prometheus.yml ชี้ port ผิด</text>
+
+  <circle cx="656" cy="140" r="15" fill="#d43f4b"/>
+  <text class="bug" x="651" y="145">2</text>
+  <text class="bugt" x="676" y="134">dashboard อ้าง datasource uid ผิด</text>
+
+  <circle cx="352" cy="264" r="15" fill="#d43f4b"/>
+  <text class="bug" x="347" y="269">3</text>
+  <text class="bugt" x="372" y="260">expr ที่ไม่มีวันเป็น firing</text>
+</svg>

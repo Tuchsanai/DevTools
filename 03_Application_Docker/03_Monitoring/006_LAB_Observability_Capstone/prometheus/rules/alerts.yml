@@ -1,0 +1,39 @@
+# LAB 6 — กฎแจ้งเตือน
+#
+# ⚠️ ไฟล์นี้มี "บั๊กจงใจ #3" ซ่อนอยู่หนึ่งจุด
+#    คำใบ้: promtool บอกว่าไฟล์นี้ถูกต้อง และ Prometheus โหลดสำเร็จ
+#           แต่มี alert หนึ่งใบที่ไม่มีทางเปลี่ยนเป็น firing ได้เลย
+groups:
+  - name: capstone
+    interval: 5s
+    rules:
+      - alert: TargetDown
+        expr: up == 0
+        for: 20s
+        labels:
+          severity: critical
+        annotations:
+          summary: "target {{ $labels.job }} ({{ $labels.instance }}) scrape ไม่สำเร็จ"
+          description: "Prometheus ดึงเมตริกจาก {{ $labels.instance }} ของ job {{ $labels.job }} ไม่ได้เกิน 20 วินาที"
+
+      - alert: HighErrorRate
+        expr: sum(app_requests_total{status=~"5.."}) by (endpoint) / sum(app_requests_total) > 0.05
+        for: 20s
+        labels:
+          severity: warning
+        annotations:
+          summary: "สัดส่วน error ของแอปเกิน 5%"
+          description: "อัตรา HTTP 5xx ของ monlab6-app สูงกว่าเกณฑ์ 5% ติดต่อกันเกิน 20 วินาที"
+
+      # เกณฑ์ 0.75 วินาที ไม่ใช่ 1 วินาที เพราะ p95 จริงของแล็บนี้วิ่งอยู่ราว 0.99-1.09 วินาที
+      # ถ้าตั้งเกณฑ์ทับค่าจริงพอดี alert จะกะพริบเข้าออก (flapping) จนไม่มีใครเชื่อถือ
+      - alert: HighLatencyP95
+        expr: histogram_quantile(0.95, sum by (le) (rate(app_request_duration_seconds_bucket[30s]))) > 0.75
+        for: 20s
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 ของเวลาตอบสนองเกิน 0.75 วินาที"
+          # ระวังคำ: expr ตรวจว่า "ค่า p95 สูงกว่า 0.75 วินาที" ไม่ใช่ "95% ของ request ช้ากว่า 0.75 วินาที"
+          # สองประโยคนี้คนละความหมาย — อย่างหลังแปลว่าเกือบทุก request ช้า ซึ่งไม่ใช่สิ่งที่กฎนี้วัด
+          description: "ค่า p95 ของเวลาตอบสนอง (request ที่ช้าที่สุด 5% เริ่มต้นที่ค่านี้) สูงกว่า 0.75 วินาที ติดต่อกันเกิน 20 วินาที"

@@ -1,0 +1,356 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "msuk9ivs9bpgiqn1pxp",
+      "type": "text",
+      "x": 30,
+      "y": 18,
+      "strokeColor": "#0b2545",
+      "text": "ทำไมต้องมี Monitoring — ต่างกันที่ \"รู้ก่อน\" หรือ \"รู้ตอนสาย\"",
+      "fontSize": 28,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:58:57.499Z",
+      "updatedAt": "2026-08-15T15:58:57.499Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9ivs3qiarpequ9n",
+      "type": "rectangle",
+      "x": 20,
+      "y": 80,
+      "width": 540,
+      "height": 440,
+      "backgroundColor": "#fff5f5",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:58:57.499Z",
+      "updatedAt": "2026-08-15T15:58:57.499Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9ivslekpit4q0v",
+      "type": "rectangle",
+      "x": 580,
+      "y": 80,
+      "width": 560,
+      "height": 440,
+      "backgroundColor": "#f4fce3",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:58:57.499Z",
+      "updatedAt": "2026-08-15T15:58:57.499Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9ivsrdwikmcvse9",
+      "type": "text",
+      "x": 45,
+      "y": 95,
+      "strokeColor": "#c92a2a",
+      "text": "ไม่มี Monitoring",
+      "fontSize": 24,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9ivsy2k10v7dvf",
+      "type": "text",
+      "x": 605,
+      "y": 95,
+      "strokeColor": "#2f9e44",
+      "text": "มี Monitoring",
+      "fontSize": 24,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    },
+    {
+      "id": "prod1",
+      "type": "rectangle",
+      "x": 50,
+      "y": 150,
+      "width": 230,
+      "height": 75,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ระบบ Production"
+      },
+      "fontSize": 20,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    },
+    {
+      "id": "boom1",
+      "type": "rectangle",
+      "x": 50,
+      "y": 270,
+      "width": 230,
+      "height": 75,
+      "backgroundColor": "#ffe3e3",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ล่มตอนตี 2"
+      },
+      "fontSize": 20,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    },
+    {
+      "id": "user1",
+      "type": "rectangle",
+      "x": 50,
+      "y": 390,
+      "width": 230,
+      "height": 75,
+      "backgroundColor": "#ffe3e3",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ลูกค้าโทรมาแจ้ง"
+      },
+      "fontSize": 20,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9ivsbronznbkl6",
+      "type": "arrow",
+      "x": 165,
+      "y": 233,
+      "width": 0,
+      "height": 35,
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          29
+        ]
+      ],
+      "start": {
+        "id": "prod1"
+      },
+      "end": {
+        "id": "boom1"
+      },
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9ivt890i2paeza",
+      "type": "arrow",
+      "x": 165,
+      "y": 353,
+      "width": 0,
+      "height": 35,
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          29
+        ]
+      ],
+      "start": {
+        "id": "boom1"
+      },
+      "end": {
+        "id": "user1"
+      },
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9ivtrllhi5e6iqs",
+      "type": "text",
+      "x": 310,
+      "y": 165,
+      "strokeColor": "#a02020",
+      "text": "• รู้ตอนเสียหายไปแล้ว\n\n• ไม่รู้ว่าเริ่มพังเมื่อไร\n\n• ไม่รู้ว่าพังตรงไหน\n\n• เดาสาเหตุ ลองแก้มั่ว\n\n• กู้คืนช้า (MTTR ยาว)",
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    },
+    {
+      "id": "prod2",
+      "type": "rectangle",
+      "x": 610,
+      "y": 150,
+      "width": 220,
+      "height": 75,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ระบบ Production"
+      },
+      "fontSize": 20,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    },
+    {
+      "id": "prom2",
+      "type": "rectangle",
+      "x": 610,
+      "y": 270,
+      "width": 220,
+      "height": 75,
+      "backgroundColor": "#ffe8cc",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "เก็บตัวเลขทุก 15 วิ"
+      },
+      "fontSize": 20,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    },
+    {
+      "id": "alert2",
+      "type": "rectangle",
+      "x": 610,
+      "y": 390,
+      "width": 220,
+      "height": 75,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Alert ปลุกทีม"
+      },
+      "fontSize": 20,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9ivtqkhze6v1pr",
+      "type": "arrow",
+      "x": 720,
+      "y": 233,
+      "width": 0,
+      "height": 35,
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          29
+        ]
+      ],
+      "start": {
+        "id": "prod2"
+      },
+      "end": {
+        "id": "prom2"
+      },
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9ivtth32r16e5rd",
+      "type": "arrow",
+      "x": 720,
+      "y": 353,
+      "width": 0,
+      "height": 35,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          29
+        ]
+      ],
+      "start": {
+        "id": "prom2"
+      },
+      "end": {
+        "id": "alert2"
+      },
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    },
+    {
+      "id": "msuk9ivtgeau2vnv1c",
+      "type": "text",
+      "x": 860,
+      "y": 165,
+      "strokeColor": "#2b8a3e",
+      "text": "• เห็นแนวโน้มก่อนพัง\n\n• รู้เวลาเริ่มผิดปกติ\n\n• ชี้ได้ว่า service ไหน\n\n• มีหลักฐานย้อนหลัง\n\n• แก้ตรงจุด กู้คืนเร็ว",
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T15:58:57.500Z",
+      "updatedAt": "2026-08-15T15:58:57.500Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

@@ -1,0 +1,223 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "msukb0a0kaz2wmwjei",
+      "type": "text",
+      "x": 30,
+      "y": 18,
+      "strokeColor": "#0b2545",
+      "text": "จะวัดอะไรดี? — RED สำหรับบริการ · USE สำหรับทรัพยากร",
+      "fontSize": 28,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:00:06.699Z",
+      "updatedAt": "2026-08-15T16:00:06.699Z",
+      "version": 1
+    },
+    {
+      "id": "msukb0a10fldx3yz4c9",
+      "type": "rectangle",
+      "x": 30,
+      "y": 80,
+      "width": 545,
+      "height": 400,
+      "backgroundColor": "#e7f5ff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:06.699Z",
+      "updatedAt": "2026-08-15T16:00:06.699Z",
+      "version": 1
+    },
+    {
+      "id": "msukb0a1c8dq2lep8pp",
+      "type": "rectangle",
+      "x": 605,
+      "y": 80,
+      "width": 545,
+      "height": 400,
+      "backgroundColor": "#fff9db",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:06.699Z",
+      "updatedAt": "2026-08-15T16:00:06.699Z",
+      "version": 1
+    },
+    {
+      "id": "msukb0a1v3lk20wddj",
+      "type": "text",
+      "x": 55,
+      "y": 95,
+      "strokeColor": "#1864ab",
+      "text": "RED — สำหรับสิ่งที่ \"รับ request\"",
+      "fontSize": 21,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:00:06.699Z",
+      "updatedAt": "2026-08-15T16:00:06.699Z",
+      "version": 1
+    },
+    {
+      "id": "msukb0a17ryvsakgmrk",
+      "type": "text",
+      "x": 630,
+      "y": 95,
+      "strokeColor": "#c2410c",
+      "text": "USE — สำหรับ \"ทรัพยากร\"",
+      "fontSize": 21,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:00:06.699Z",
+      "updatedAt": "2026-08-15T16:00:06.699Z",
+      "version": 1
+    },
+    {
+      "id": "r1",
+      "type": "rectangle",
+      "x": 55,
+      "y": 140,
+      "width": 495,
+      "height": 95,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "R — Rate : รับงานเข้ามาเท่าไร\nsum(rate(app_requests_total[1m]))"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:06.699Z",
+      "updatedAt": "2026-08-15T16:00:06.699Z",
+      "version": 1
+    },
+    {
+      "id": "r2",
+      "type": "rectangle",
+      "x": 55,
+      "y": 250,
+      "width": 495,
+      "height": 95,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "E — Errors : พังกี่เปอร์เซ็นต์\nsum(rate(app_requests_total{status=~\"5..\"}[1m]))\n  / sum(rate(app_requests_total[1m]))"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:06.699Z",
+      "updatedAt": "2026-08-15T16:00:06.699Z",
+      "version": 1
+    },
+    {
+      "id": "r3",
+      "type": "rectangle",
+      "x": 55,
+      "y": 360,
+      "width": 495,
+      "height": 100,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "D — Duration : ช้าแค่ไหน (ดู p95 ไม่ใช่ค่าเฉลี่ย)\nhistogram_quantile(0.95, sum by (le)\n  (rate(app_request_duration_seconds_bucket[5m])))"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:06.699Z",
+      "updatedAt": "2026-08-15T16:00:06.699Z",
+      "version": 1
+    },
+    {
+      "id": "u1",
+      "type": "rectangle",
+      "x": 630,
+      "y": 140,
+      "width": 495,
+      "height": 95,
+      "backgroundColor": "#ffe8cc",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "U — Utilization : ใช้ไปกี่ % ของที่มี\nrate(container_cpu_usage_seconds_total[1m])"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:06.699Z",
+      "updatedAt": "2026-08-15T16:00:06.699Z",
+      "version": 1
+    },
+    {
+      "id": "u2",
+      "type": "rectangle",
+      "x": 630,
+      "y": 250,
+      "width": 495,
+      "height": 95,
+      "backgroundColor": "#ffe8cc",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "S — Saturation : คิวล้นแค่ไหน รอคิวเท่าไร\nnode_load1 · app_inflight_requests"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:06.699Z",
+      "updatedAt": "2026-08-15T16:00:06.699Z",
+      "version": 1
+    },
+    {
+      "id": "u3",
+      "type": "rectangle",
+      "x": 630,
+      "y": 360,
+      "width": 495,
+      "height": 100,
+      "backgroundColor": "#ffe8cc",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "E — Errors : ตัวทรัพยากรเองพังกี่ครั้ง\nnode_network_receive_errs_total\ncontainer OOM kill"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:06.699Z",
+      "updatedAt": "2026-08-15T16:00:06.699Z",
+      "version": 1
+    },
+    {
+      "id": "msukb0a1tu379wbxjc",
+      "type": "text",
+      "x": 30,
+      "y": 495,
+      "strokeColor": "#2f9e44",
+      "text": "ใช้คู่กัน : RED บอกว่า \"ผู้ใช้เจ็บไหม\" (อาการ) · USE บอกว่า \"เพราะทรัพยากรตัวไหน\" (สาเหตุ) — ตั้ง alert ที่อาการ แล้วใช้ USE หาสาเหตุ",
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:00:06.699Z",
+      "updatedAt": "2026-08-15T16:00:06.699Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

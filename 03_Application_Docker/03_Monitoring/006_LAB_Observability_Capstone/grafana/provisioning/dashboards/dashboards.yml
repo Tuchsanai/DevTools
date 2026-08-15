@@ -1,0 +1,15 @@
+# provider นี้บอก Grafana ว่า "ไปอ่าน dashboard JSON จากโฟลเดอร์ไหนในคอนเทนเนอร์"
+# path ต้องตรงกับ volume ที่ mount ไว้ใน docker-compose.yml (./grafana/dashboards -> /var/lib/grafana/dashboards)
+apiVersion: 1
+
+providers:
+  - name: monlab6
+    orgId: 1
+    folder: Capstone
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

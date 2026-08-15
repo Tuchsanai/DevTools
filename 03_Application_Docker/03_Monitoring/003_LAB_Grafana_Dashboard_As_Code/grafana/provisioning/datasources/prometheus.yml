@@ -1,0 +1,19 @@
+apiVersion: 1
+
+# ไฟล์นี้ถูกอ่านตอน Grafana "start" เท่านั้น (path ในคอนเทนเนอร์คือ
+# /etc/grafana/provisioning/datasources/) แก้ไฟล์แล้วต้อง restart Grafana
+datasources:
+  - name: Prometheus
+    # uid ต้อง "ตายตัว" เพราะ dashboard JSON ทุก panel อ้างถึง uid นี้
+    uid: monprom
+    type: prometheus
+    access: proxy
+    # ชื่อ host = ชื่อ service ใน compose (DNS ของ network monnet)
+    url: http://prometheus:9090
+    isDefault: true
+    # false = แก้จาก UI ไม่ได้ ป้องกันคนแก้มือจนไม่ตรงกับไฟล์ในโค้ด
+    editable: false
+    jsonData:
+      httpMethod: POST
+      # ให้ Grafana รู้ว่า scrape ทุก 15s → $__rate_interval คำนวณถูก
+      timeInterval: 15s

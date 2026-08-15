@@ -1,0 +1,312 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "msukbcckyghm0k0zcr",
+      "type": "text",
+      "x": 30,
+      "y": 18,
+      "strokeColor": "#0b2545",
+      "text": "Alertmanager — ทำไมไม่ให้ Prometheus ส่งอีเมลเองเลย?",
+      "fontSize": 28,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    },
+    {
+      "id": "pr",
+      "type": "rectangle",
+      "x": 30,
+      "y": 150,
+      "width": 175,
+      "height": 110,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Prometheus\n\nประเมิน rule\nแล้วส่ง alert ที่\nfiring ออกมา"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    },
+    {
+      "id": "msukbccleb7rqxbfik9",
+      "type": "rectangle",
+      "x": 240,
+      "y": 110,
+      "width": 640,
+      "height": 200,
+      "backgroundColor": "#fff5f5",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    },
+    {
+      "id": "msukbcclafnloe3zt3e",
+      "type": "text",
+      "x": 258,
+      "y": 122,
+      "strokeColor": "#c92a2a",
+      "text": "Alertmanager — งานทั้งหมดอยู่ที่นี่",
+      "fontSize": 19,
+      "fontFamily": 2,
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    },
+    {
+      "id": "d1",
+      "type": "rectangle",
+      "x": 258,
+      "y": 160,
+      "width": 140,
+      "height": 130,
+      "backgroundColor": "#ffe3e3",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "1. Dedup\n\nalert เดียวกัน\nจากหลาย\nPrometheus\nรวมเป็นใบเดียว"
+      },
+      "fontSize": 14,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    },
+    {
+      "id": "d2",
+      "type": "rectangle",
+      "x": 410,
+      "y": 160,
+      "width": 140,
+      "height": 130,
+      "backgroundColor": "#ffe3e3",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "2. Group\n\n50 container\nล่มพร้อมกัน\n= แจ้ง 1 ใบ\nไม่ใช่ 50 ใบ"
+      },
+      "fontSize": 14,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    },
+    {
+      "id": "d3",
+      "type": "rectangle",
+      "x": 562,
+      "y": 160,
+      "width": 140,
+      "height": 130,
+      "backgroundColor": "#ffe3e3",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "3. Inhibit\n\nถ้าทั้งเครื่องล่ม\nแล้ว ก็ไม่ต้อง\nเตือนว่าแอป\nบนเครื่องช้า"
+      },
+      "fontSize": 14,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    },
+    {
+      "id": "d4",
+      "type": "rectangle",
+      "x": 714,
+      "y": 160,
+      "width": 150,
+      "height": 130,
+      "backgroundColor": "#ffe3e3",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "4. Silence\n\nช่วง maintenance\nปิดเสียงชั่วคราว\nโดยไม่ต้องแก้\n rule"
+      },
+      "fontSize": 14,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    },
+    {
+      "id": "rt",
+      "type": "rectangle",
+      "x": 915,
+      "y": 130,
+      "width": 225,
+      "height": 75,
+      "backgroundColor": "#f3f0ff",
+      "strokeColor": "#6741d9",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "5. Route\nเลือกปลายทางตาม label\nเช่น severity"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    },
+    {
+      "id": "rv",
+      "type": "rectangle",
+      "x": 915,
+      "y": 230,
+      "width": 225,
+      "height": 80,
+      "backgroundColor": "#ebfbee",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "6. ส่งจริง\nWebhook / Email / Chat"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    },
+    {
+      "id": "msukbcclr7zj2705rrb",
+      "type": "arrow",
+      "x": 212.96413362269783,
+      "y": 214.07022647246535,
+      "width": 42,
+      "height": 0,
+      "strokeColor": "#1864ab",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          37.07173275460434,
+          3.5222548935491034
+        ]
+      ],
+      "start": {
+        "id": "pr"
+      },
+      "end": {
+        "id": "d1"
+      },
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    },
+    {
+      "id": "msukbcclxo4xakec2a",
+      "type": "arrow",
+      "x": 871.7771703237754,
+      "y": 205.04323985904784,
+      "width": 40,
+      "height": -35,
+      "strokeColor": "#6741d9",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          35.445659352449184,
+          -8.54559921495104
+        ]
+      ],
+      "start": {
+        "id": "d4"
+      },
+      "end": {
+        "id": "rt"
+      },
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    },
+    {
+      "id": "msukbccl4r02dbot35r",
+      "type": "arrow",
+      "x": 1027.5,
+      "y": 213,
+      "width": 0,
+      "height": 15,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          9
+        ]
+      ],
+      "start": {
+        "id": "rt"
+      },
+      "end": {
+        "id": "rv"
+      },
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    },
+    {
+      "id": "why12",
+      "type": "rectangle",
+      "x": 30,
+      "y": 340,
+      "width": 1110,
+      "height": 175,
+      "backgroundColor": "#fff9db",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "ถ้า Prometheus ส่งเองตรง ๆ จะเจอปัญหานี้ทันที :\n\n• Node ล่ม 1 เครื่องที่มี 40 container → อีเมล 41 ฉบับใน 5 วินาที (คนอ่านไม่ไหว แล้วจะเริ่มเมินทุกฉบับ)\n• ช่วง deploy ตั้งใจให้ล่ม → ไม่มีทางปิดเสียงชั่วคราวโดยไม่แก้ rule\n• อยากให้ critical เข้าโทรศัพท์ แต่ warning เข้าแชท → ต้องเขียน logic เองในทุก rule\n\nแยกหน้าที่กันชัด : Prometheus = \"ตัดสินว่าผิดปกติไหม\" · Alertmanager = \"จะบอกใคร อย่างไร เมื่อไร\""
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:00:22.344Z",
+      "updatedAt": "2026-08-15T16:00:22.344Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

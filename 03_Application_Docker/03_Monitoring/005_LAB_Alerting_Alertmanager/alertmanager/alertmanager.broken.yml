@@ -1,0 +1,30 @@
+# Alertmanager ที่ "พังตั้งใจ" — ใช้ในช่วงทำให้พังแล้วแก้ ตอนที่ 2 ของ LAB 5
+#
+# ไฟล์นี้ syntax ถูกต้องทุกบรรทัด amtool check-config ก็ผ่าน
+# แต่ตรรกะผิด: route ราก ส่งไป receiver ที่ไม่มี webhook_configs เลย
+# ส่วน route ลูกดักด้วย severity = "page" ซึ่ง "ไม่มี alert ใบไหนในแล็บนี้มี label นั้น"
+#
+# ผลที่ผู้เรียนจะเจอ: Prometheus ขึ้น Firing, Alertmanager UI เห็น alert
+# แต่ receiver ไม่ได้รับอะไรเลย — บทเรียนว่า Prometheus กับ Alertmanager เป็นคนละชั้น
+
+global:
+  resolve_timeout: 1m
+
+route:
+  receiver: blackhole
+  group_by: ["alertname", "severity"]
+  group_wait: 5s
+  group_interval: 10s
+  repeat_interval: 1h
+  routes:
+    - matchers:
+        - severity = "page"
+      receiver: webhook-default
+
+receivers:
+  - name: blackhole          # ไม่มี webhook_configs = ส่งเข้าถังขยะ
+
+  - name: webhook-default
+    webhook_configs:
+      - url: http://receiver:5001/webhook
+        send_resolved: true

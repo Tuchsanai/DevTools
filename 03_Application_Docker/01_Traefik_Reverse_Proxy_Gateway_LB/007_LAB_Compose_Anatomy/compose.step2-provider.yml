@@ -1,0 +1,35 @@
+# ═══ STEP 2 — เปิด Docker provider : Traefik เริ่ม "มองเห็น" ทุก container ═══
+#
+# เพิ่มจาก STEP 1 แค่สองอย่าง
+#   1. --providers.docker=true            ให้ Traefik ไปอ่าน Docker API
+#   2. mount /var/run/docker.sock         ช่องทางที่จะไปอ่าน Docker API นั้น
+#
+# ระวัง: exposedByDefault มีค่าปริยายเป็น true — ขั้นนี้จึงยังไม่ต้องมี label ใด ๆ
+# แต่ทุก container จะถูกสร้าง router ให้อัตโนมัติด้วย defaultRule = Host(`{{ normalize .Name }}`)
+name: lab007
+
+services:
+  traefik:
+    image: traefik:v3.7.4
+    command:
+      - --entrypoints.web.address=:80
+      - --api.insecure=true
+      - --log.level=INFO
+      - --providers.docker=true
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    volumes:
+      # อ่านอย่างเดียวในระดับไฟล์ แต่ "ไม่ได้" ทำให้ Docker API เป็น read-only
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - labnet
+
+  app:
+    build: ./app
+    networks:
+      - labnet
+
+networks:
+  labnet:
+    name: lab007net

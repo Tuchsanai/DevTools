@@ -1,0 +1,105 @@
+name: monlab5
+
+services:
+  app:
+    build: ./app
+    image: monlab5-app:1.0
+    container_name: monlab5-app
+    environment:
+      PORT: "8000"
+      # สัดส่วนที่ /api/error ตอบ 500 (ทำงานแบบนับรอบ ไม่สุ่ม)
+      ERROR_RATE: "${ERROR_RATE:-1.0}"
+      SEED: "2569"
+    ports:
+      - "8000:8000"
+    networks:
+      - monnet
+
+  loadgen:
+    build: ./loadgen
+    image: monlab5-loadgen:1.0
+    container_name: monlab5-loadgen
+    environment:
+      TARGET_URL: "http://app:8000"
+      RPS: "${RPS:-8}"
+      # ค่าเริ่มต้น = ระบบสุขภาพดี ไม่มี alert ยิง
+      # เปลี่ยนตอนรันได้: ERROR_MIX=0.35 SLOW_MIX=0.40 docker compose up -d loadgen
+      ERROR_MIX: "${ERROR_MIX:-0}"
+      SLOW_MIX: "${SLOW_MIX:-0}"
+      SEED: "2569"
+    depends_on:
+      - app
+    networks:
+      - monnet
+
+  node-exporter:
+    image: prom/node-exporter:v1.10.2
+    container_name: monlab5-node-exporter
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/rootfs
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    ports:
+      - "9100:9100"
+    networks:
+      - monnet
+
+  prometheus:
+    image: prom/prometheus:v3.7.3
+    container_name: monlab5-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=2h
+      - --web.enable-lifecycle
+    volumes:
+      - ./:/etc/prometheus:ro
+      - prom-data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - app
+      - node-exporter
+      - alertmanager
+    networks:
+      - monnet
+
+  alertmanager:
+    image: prom/alertmanager:v0.29.0
+    container_name: monlab5-alertmanager
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+      - --web.external-url=http://localhost:9093
+    volumes:
+      - ./alertmanager:/etc/alertmanager:ro
+      - am-data:/alertmanager
+    ports:
+      - "9093:9093"
+    depends_on:
+      - receiver
+    networks:
+      - monnet
+
+  receiver:
+    build: ./receiver
+    image: monlab5-receiver:1.0
+    container_name: monlab5-receiver
+    environment:
+      PORT: "5001"
+    ports:
+      - "5001:5001"
+    networks:
+      - monnet
+
+volumes:
+  prom-data:
+  am-data:
+
+networks:
+  monnet:
+    name: monnet

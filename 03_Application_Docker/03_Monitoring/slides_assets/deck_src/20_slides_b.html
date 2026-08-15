@@ -1,0 +1,343 @@
+<!-- ============ SECTION 05 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">05</div>
+    <h1>ลงมือจริง<br>LAB 1-2</h1>
+    <div class="m">จากนี้ไปทุกอย่างรันบนเครื่องเรียนของเราเอง — เริ่มจาก scrape ครั้งแรก ไปจนถึงอ่านตัวเลขของ container</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · ลงมือจริง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ เตรียมเครื่องเรียน ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">เตรียมเครื่องครั้งเดียว</span><h2>เปิดเครื่องเรียนแล้ว clone โค้ด</h2><div class="sub">ทุกแล็บใช้เครื่องเดียวกันนี้ ไม่ต้องสร้างใหม่ทุกครั้ง</div></div>
+  <div class="s-body top">
+    <pre class="code sm"><span class="c"># บนเครื่องของเราเอง — เปิด classroom container (มี Docker พร้อมใช้ข้างใน)</span>
+docker start devtools <span class="o">2&gt;/dev/null</span> || \
+  docker run -dit --name devtools --privileged -p 2222:22 tuchsanai/devtools:2569_1
+
+ssh root@localhost -p 2222        <span class="c"># password : passwd</span>
+
+<span class="c"># ข้างในเครื่องเรียน</span>
+mkdir -p ~/labwork &amp;&amp; cd ~/labwork
+git clone https://github.com/Tuchsanai/DevTools.git
+cd DevTools/03_Application_Docker/03_Monitoring</pre>
+    <div class="grid2" style="margin-top:18px">
+      <div class="callout warn" style="font-size:18px"><b>ทุกแล็บใช้ port ชุดเดียวกัน</b> (9090 · 3000 · 9093 · 9100 · 8080 · 8000 · 5001)<br>จึงต้อง <code>docker compose down</code> ของแล็บเดิม<b>ก่อน</b>ขึ้นแล็บใหม่เสมอ ไม่งั้นจะเจอ port ชนกัน</div>
+      <div class="callout" style="font-size:18px"><b>เปิดหน้าเว็บอย่างไร :</b> ใช้ VS Code <b>Remote-SSH</b> ต่อไปที่ <code>root@localhost:2222</code> แล้วให้ VS Code forward port ให้ จากนั้นเปิด <code>localhost:9090</code> บนเบราว์เซอร์ของเราได้ตามปกติ</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · ลงมือจริง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ LAB 1 ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">LAB 1</span><h2>Prometheus scrape ครั้งแรก</h2><div class="sub"><code>001_LAB_Prometheus_First_Scrape</code> — node-exporter + Prometheus + PromQL ชุดแรก</div></div>
+  <div class="s-body top">
+    <div class="grid21">
+      <div class="fig shot" style="height:400px"><img data-a="l1a" alt="หน้า Targets ของ Prometheus แสดง job node และ job prometheus ที่มีสถานะ UP พร้อมเวลา scrape ล่าสุดและระยะเวลาที่ใช้"></div>
+      <div>
+        <ul class="bul" style="font-size:20px">
+          <li>อ่าน <code>/metrics</code> ดิบก่อน<span class="s">ให้เห็นว่า exporter คือหน้าเว็บที่พ่น text ไม่ใช่ตัวส่งข้อมูล</span></li>
+          <li>เขียน <code>prometheus.yml</code> เอง<span class="s">แล้วดูผลที่หน้า <code>/targets</code></span></li>
+          <li>รัน PromQL ชุดแรก<span class="s"><code>up</code> · <code>node_load1</code> · %CPU จาก <code>rate()</code></span></li>
+          <li><b>ทำให้พังแล้วแก้</b><span class="s">ตั้ง target เป็น <code>localhost:9100</code> → DOWN แล้วแก้เป็นชื่อ service</span></li>
+          <li>Reload โดยไม่ restart<span class="s"><code>curl -X POST /-/reload</code> กับ <code>--web.enable-lifecycle</code></span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · LAB 1</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ LAB 1 : expression browser ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">LAB 1</span><h2>Expression browser — สนามซ้อม PromQL</h2><div class="sub">พิมพ์ query แล้วเห็นผลทันที ทั้งแบบตารางและกราฟ — ใช้ที่นี่ก่อนเอาไปใส่ Grafana เสมอ</div></div>
+  <div class="s-body"><div class="fig shot"><img data-a="l1b" alt="หน้า Graph ของ Prometheus แสดงผลการรัน query คำนวณเปอร์เซ็นต์การใช้ CPU จาก rate ของ node_cpu_seconds_total"></div></div>
+  <div class="s-foot"><span>Monitoring · LAB 1</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ SECTION 06 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">06</div>
+    <h1>ตัวเลขของ Container</h1>
+    <div class="m">node-exporter บอกเรื่องของ "ทั้งเครื่อง" — แต่เราอยากรู้ว่า container ตัวไหนกินทรัพยากร</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Container metrics</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ cAdvisor ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>cAdvisor — ตาที่มองเห็นทุก container</h2><div class="sub">อ่านค่าจาก cgroup ของเคอร์เนล แล้วแปลงเป็น metric ให้ Prometheus ดึงไป</div></div>
+  <div class="s-body top">
+    <div class="grid2">
+      <div>
+        <table class="tbl sm">
+          <tr><th>metric</th><th>บอกอะไร</th></tr>
+          <tr><td><code>container_cpu_usage_seconds_total</code></td><td>counter · CPU ที่ใช้สะสม</td></tr>
+          <tr><td><code>container_memory_working_set_bytes</code></td><td>gauge · RAM ที่ใช้จริง</td></tr>
+          <tr><td><code>container_network_receive_bytes_total</code></td><td>counter · ข้อมูลขาเข้า</td></tr>
+        </table>
+        <div class="callout good" style="margin-top:12px; font-size:17px"><code>rate(container_cpu_usage_seconds_total[1m])</code> อ่านว่า <b>"ใช้ไปกี่ core"</b> — ได้ 1.0 คือกินเต็ม 1 core</div>
+        <div class="callout warn" style="margin-top:10px; font-size:16px">ในกล่องเรียนที่ซ้อนหลายชั้น ค่า <b>memory รายตัว</b> อาจอ่านได้ <code>0</code> เพราะ kernel ไม่ได้ส่ง controller <code>memory</code> ลงมาให้ container — LAB 2 จะพิสูจน์ให้เห็นว่านี่ไม่ใช่ความผิดของ cAdvisor</div>
+      </div>
+      <div>
+        <div class="callout bad" style="font-size:18px"><b>กับดักที่จะเจอจริงใน LAB 2 :</b><br>ถ้า cAdvisor ต่อกับ containerd ไม่ได้ มันจะยังรันได้และยังมี metric ออกมา — แต่ <b>ไม่มี label <code>name=</code></b> เหลือแค่ <code>id="/docker/&lt;hash&gt;"</code><br>ผลคือ query ทุกอันที่กรองด้วย <code>{name="..."}</code> จะว่างเปล่า ทั้งที่ทุกอย่างดู "รันปกติ"</div>
+        <pre class="code xs" style="margin-top:14px">command:
+  <span class="c"># Docker 29 วาง socket ไว้คนละที่กับค่า default</span>
+  - --containerd=/var/run/docker/containerd/containerd.sock
+  - --docker_only=true
+  - --store_container_labels=false</pre>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Container metrics</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ LAB 2 ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">LAB 2</span><h2>อ่านตัวเลขของ container จริง</h2><div class="sub"><code>002_LAB_Container_Metrics_cAdvisor</code> — สร้าง workload แล้วดู <code>rate()</code> ขยับตามจริง</div></div>
+  <div class="s-body top">
+    <div class="grid21">
+      <div class="fig shot" style="height:400px"><img data-a="l2a" alt="กราฟใน Prometheus จาก query rate ของ container_cpu_usage_seconds_total ของ burner สองตัว เส้นหนึ่งคงที่ที่ 2.00 core เพราะปักหมุดไว้ 2 core อีกเส้นแกว่งต่ำกว่า 1.0 เพราะถูกจำกัดไว้ที่ core เดียว"></div>
+      <div>
+        <ul class="bul" style="font-size:20px">
+          <li>รัน cAdvisor แบบผิดก่อน<span class="s">เห็นกับดัก <code>name=</code> หายด้วยตาตัวเอง แล้วค่อยแก้ให้ถูก</span></li>
+          <li>สร้าง workload กิน CPU<span class="s">ปักหมุด <code>cpuset</code> แล้วพิสูจน์ว่า <code>rate()</code> ไม่เกินจำนวน core ที่ให้ (และต่ำกว่าได้ถ้าโดนแย่ง)</span></li>
+          <li>เทียบกับ <code>docker stats</code><span class="s">ต่างกันที่ cAdvisor เก็บย้อนหลังได้</span></li>
+          <li><b>กับดัก <code>{name!=""}</code></b><span class="s">ถ้าลืมกรอง จะรวมเส้นของ "ทั้งเครื่อง" เข้าไปด้วย ทำให้ผลรวมเบิ้ล</span></li>
+          <li>กฎหน้าต่าง <code>rate()</code><span class="s">ลองใช้ <code>[15s]</code> แล้วดูกราฟว่างจริง ๆ</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · LAB 2</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ SECTION 07 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">07</div>
+    <h1>Grafana</h1>
+    <div class="m">Prometheus เก็บและตอบคำถามได้เก่ง แต่หน้าตาของมันไม่ได้ทำมาให้เฝ้าทั้งวัน — นั่นคืองานของ Grafana</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Grafana</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ Grafana concepts ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ศัพท์ 4 คำที่ต้องแยกให้ออก</h2><div class="sub">Grafana ไม่ได้เก็บข้อมูลเอง — มันเป็นแค่ "หน้าจอ" ที่ไปถามคนอื่น</div></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div class="card"><h4><span class="n">1</span>Data source</h4><p>แหล่งข้อมูลที่ Grafana จะไปถาม เช่น Prometheus ที่ <code>http://prometheus:9090</code><br><b>สำคัญ :</b> ต้องใช้ชื่อ service ไม่ใช่ <code>localhost</code> เพราะ Grafana ถามจากฝั่ง server ไม่ใช่จากเบราว์เซอร์</p></div>
+      <div class="card o"><h4><span class="n">2</span>Panel</h4><p>กล่องหนึ่งกล่องบนจอ = query 1 ชุด + วิธีแสดงผล 1 แบบ (time series / stat / gauge / table)</p></div>
+      <div class="card g"><h4><span class="n">3</span>Dashboard</h4><p>ชุดของ panel ที่จัดวางไว้ด้วยกัน — เบื้องหลังคือ <b>ไฟล์ JSON</b> ก้อนเดียว</p></div>
+      <div class="card p"><h4><span class="n">4</span>Variable</h4><p>ตัวแปรที่กลายเป็น dropdown ด้านบน เช่น <code>$container</code> ทำให้ dashboard เดียวใช้ดูได้ทุก container</p></div>
+    </div>
+    <div class="callout" style="margin-top:18px"><b>ลำดับการทำงานเวลาเปิด dashboard :</b> เบราว์เซอร์ขอ Grafana → Grafana แปลง panel เป็น PromQL → ยิงไปที่ Prometheus → ได้ตัวเลขกลับมา → วาดกราฟ<br>ดังนั้นถ้า panel ขึ้น No data ให้ไปทดสอบ query เดียวกันนั้นที่ <code>/graph</code> ของ Prometheus ก่อนเสมอ</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Grafana</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ dashboard as code ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Dashboard as Code — ทำไมต้องเก็บเป็นไฟล์</h2><div class="sub">dashboard ที่คลิกสร้างด้วยมือจะหายไปพร้อม <code>docker compose down -v</code></div></div>
+  <div class="s-body top">
+    <pre class="code xs"><span class="c"># grafana/provisioning/datasources/prometheus.yml</span>
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    <span class="y">uid: monprom</span>              <span class="c"># ← ต้อง fix ไว้ ให้ dashboard JSON อ้างตัวนี้ได้</span>
+    url: http://prometheus:9090   <span class="c"># ← ชื่อ service ไม่ใช่ localhost</span>
+    jsonData:
+      timeInterval: 15s           <span class="c"># ← ให้ตรงกับ scrape_interval</span>
+
+<span class="c"># grafana/provisioning/dashboards/dashboards.yml</span>
+apiVersion: 1
+providers:
+  - name: monitoring
+    options:
+      <span class="y">path: /var/lib/grafana/dashboards</span>   <span class="c"># ← ที่ที่ JSON ถูก mount ไว้จริง</span></pre>
+    <div class="callout bad" style="margin-top:16px"><b>บั๊กยอดฮิตที่จะได้เจอทั้งใน LAB 3 และ LAB 6 :</b> dashboard JSON อ้าง <code>uid</code> ที่ไม่ตรงกับ datasource ที่มีจริง → ทุก panel ขึ้น <code>Datasource ... not found</code> ทั้งที่ Prometheus ทำงานปกติดี<br>วิธีไล่ : เปิด JSON ดูค่า <code>uid</code> แล้วเทียบกับ <code>/api/datasources</code> ของ Grafana</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Grafana</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ LAB 3 ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">LAB 3</span><h2>Dashboard ที่ใช้เฝ้าได้จริง</h2><div class="sub"><code>003_LAB_Grafana_Dashboard_As_Code</code> — provision datasource + dashboard ด้วยไฟล์ แล้วพิสูจน์ว่า <code>down -v</code> แล้วยังอยู่</div></div>
+  <div class="s-body"><div class="fig shot"><img data-a="l3a" alt="Grafana dashboard ที่ provision มาจากไฟล์ แสดง stat panel ของเปอร์เซ็นต์ CPU และ RAM ของทั้งเครื่อง จำนวน container ที่รัน กราฟ CPU แยกตาม container กราฟ RAM ระดับเครื่องแยก used กับ cache เกจพื้นที่ดิสก์ และตารางสรุป container เรียงตาม CPU"></div></div>
+  <div class="s-foot"><span>Monitoring · LAB 3</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ SECTION 08 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">08</div>
+    <h1>ติดตัววัด<br>ในแอปของเราเอง</h1>
+    <div class="m">exporter สำเร็จรูปบอกได้แค่เรื่องเครื่องกับ container — แต่ "ผู้ใช้เจ็บไหม" มีแต่แอปของเราเท่านั้นที่ตอบได้</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Instrumentation</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ client library ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ติดตัววัดใช้โค้ดแค่ไม่กี่บรรทัด</h2><div class="sub">client library จัดการเรื่องรูปแบบและ <code>/metrics</code> ให้หมด เราแค่บอกว่าจะนับอะไร</div></div>
+  <div class="s-body top">
+    <pre class="code sm" style="font-size:16.5px; line-height:1.5"><span class="c"># 1) ประกาศตัววัด — ทำครั้งเดียวตอนแอปเริ่ม</span>
+REQS = <span class="k">Counter</span>(<span class="r">"app_requests_total"</span>, <span class="r">"จำนวน request ทั้งหมด"</span>, [<span class="r">"method"</span>, <span class="r">"endpoint"</span>, <span class="r">"status"</span>])
+DUR  = <span class="k">Histogram</span>(<span class="r">"app_request_duration_seconds"</span>, <span class="r">"เวลาที่ใช้ต่อ request"</span>, [<span class="r">"endpoint"</span>],
+                buckets=[.01,.025,.05,.1,.25,.5,1,2.5,5])
+INFL = <span class="k">Gauge</span>(<span class="r">"app_inflight_requests"</span>, <span class="r">"request ที่กำลังทำอยู่ตอนนี้"</span>)
+
+<span class="c"># 2) บันทึกรอบ request — ต้องอยู่ใน try/finally เสมอ</span>
+start, status = time.perf_counter(), <span class="r">"500"</span>   <span class="c"># ตั้งไว้ก่อนว่าพัง ถ้ารอดค่อยเปลี่ยน</span>
+INFL.inc()
+<span class="k">try</span>:
+    ...                                       <span class="c"># ทำงานจริง</span>
+    status = <span class="r">"200"</span>
+<span class="k">finally</span>:                                     <span class="c"># ← ถึงจะ exception ก็ยังนับครบ</span>
+    INFL.dec()
+    DUR.labels(endpoint=<span class="r">"/api/items/:id"</span>).observe(time.perf_counter() - start)
+    REQS.labels(method=<span class="r">"GET"</span>, endpoint=<span class="r">"/api/items/:id"</span>, status=status).inc()</pre>
+    <div class="callout bad" style="margin-top:14px; font-size:18px"><b>บรรทัดที่อันตรายที่สุดคือ <code>endpoint=</code> :</b> ต้องใส่เป็น <b>รูปแบบ</b> (<code>/api/items/:id</code>) ไม่ใช่ path จริงที่ผู้ใช้เรียก (<code>/api/items/48213</code>) — ถ้าใส่ path จริง = สร้าง series ใหม่ทุกครั้งที่มี id ใหม่ → cardinality ระเบิด (จะได้ลองทำให้พังจริงใน LAB 4)</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Instrumentation</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ RED / USE ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>จะวัดอะไรดี? ใช้ RED และ USE เป็นเช็คลิสต์</h2><div class="sub">ไม่ต้องนั่งคิดเอง — สองสูตรนี้ครอบคลุมเกือบทุกระบบ</div></div>
+  <div class="s-body"><div class="fig"><img data-a="d10" alt="ตารางเปรียบเทียบ RED สำหรับบริการที่รับ request ประกอบด้วย Rate Errors Duration พร้อม PromQL ของแต่ละตัว กับ USE สำหรับทรัพยากรประกอบด้วย Utilization Saturation Errors"></div></div>
+  <div class="s-foot"><span>Monitoring · Instrumentation</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ SLO ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>SLI · SLO · Error Budget</h2><div class="sub">วิธีเปลี่ยนคำว่า "ระบบต้องเสถียร" ให้กลายเป็นตัวเลขที่วัดได้</div></div>
+  <div class="s-body"><div class="fig"><img data-a="d14" alt="อธิบาย SLI ที่เป็นตัววัด SLO ที่เป็นเป้าหมายเช่น 99.9 เปอร์เซ็นต์ และ error budget ที่คำนวณได้เป็น 43 นาทีต่อเดือน พร้อมแถบแสดงงบที่ใช้ไปแล้วและที่เหลือ"></div></div>
+  <div class="s-foot"><span>Monitoring · Instrumentation</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ LAB 4 ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">LAB 4</span><h2>RED บนแอปที่เราติดตัววัดเอง</h2><div class="sub"><code>004_LAB_App_Instrumentation_RED</code> — เขียนแอป ยิงโหลด แล้วอ่าน Rate / Errors / Duration ของจริง</div></div>
+  <div class="s-body"><div class="fig shot"><img data-a="l4a" alt="Grafana dashboard แบบ RED แสดงอัตรา request ต่อวินาที สัดส่วน error และ p95 ของเวลาตอบสนองที่คำนวณจาก histogram ของแอปที่ติดตัววัดเอง"></div></div>
+  <div class="s-foot"><span>Monitoring · LAB 4</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ SECTION 09 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">09</div>
+    <h1>Alerting</h1>
+    <div class="m">dashboard มีค่าก็ต่อเมื่อมีคนดู — alert คือสิ่งที่ทำงานตอนตี 3 ที่ไม่มีใครดู</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Alerting</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ rule file ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Alert rule คือ PromQL + เงื่อนไขเวลา</h2><div class="sub">ถ้าเขียน query เป็นแล้ว ก็เขียน alert เป็นทันที</div></div>
+  <div class="s-body top">
+    <pre class="code sm">groups:
+  - name: service-alerts
+    rules:
+      - <span class="k">alert</span>: HighErrorRate
+        <span class="k">expr</span>: <span class="o">sum(rate(app_requests_total{status=~"5[0-9]{2}"}[2m]))
+              / sum(rate(app_requests_total[2m])) &gt; 0.05</span>
+        <span class="k">for</span>: <span class="y">30s</span>                <span class="c"># ต้องจริงต่อเนื่องครบเวลานี้ก่อนถึงจะ firing</span>
+        <span class="k">labels</span>:
+          severity: warning     <span class="c"># ← Alertmanager ใช้เลือกปลายทาง</span>
+          service: app          <span class="c"># ← ใช้จับคู่ตอน inhibit (ดูสไลด์ถัดไป)</span>
+        <span class="k">annotations</span>:
+          summary: <span class="r">"error เกิน 5% ต่อเนื่อง"</span>
+          description: <span class="r">"ค่าปัจจุบัน {{ $value | humanizePercentage }}"</span></pre>
+    <div class="grid3" style="margin-top:14px">
+      <div class="callout" style="font-size:16px"><b><code>labels</code> = ใช้ตัดสินใจ</b> (ส่งหาใคร ด่วนแค่ไหน จัดกลุ่มกับใคร)<br><b><code>annotations</code> = ข้อความให้คนอ่าน</b> ไม่มีผลต่อการ route</div>
+      <div class="callout warn" style="font-size:16px">regex ของ PromQL ยึดเต็มสตริง <code>5[0-9]{2}</code> จึงอ่านตรงว่า "เลข 3 หลักขึ้นต้นด้วย 5"<br>(เขียนสั้นเป็น <code>5..</code> ก็ได้ แต่ <code>.</code> รับอักขระที่ไม่ใช่ตัวเลขด้วย)</div>
+      <div class="callout good" style="font-size:16px"><b>ตรวจไฟล์ก่อนเสมอ :</b><br><code>docker compose exec prometheus \<br>&nbsp;&nbsp;promtool check rules /etc/prometheus/rules/alerts.yml</code></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Alerting</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ alert lifecycle ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>ทำไมต้องมี <code>for:</code></h2><div class="sub">ความต่างระหว่าง "เตือนที่มีประโยชน์" กับ "เตือนจนไม่มีใครอ่าน" อยู่ที่บรรทัดนี้</div></div>
+  <div class="s-body"><div class="fig"><img data-a="d11" alt="วงจรชีวิตของ alert จาก Inactive ไป Pending เมื่อ expr เป็นจริง แล้วไป Firing เมื่อครบเวลา for และกลับเป็น Resolved เมื่อ expr เป็นเท็จ พร้อมไทม์ไลน์ตัวอย่าง"></div></div>
+  <div class="s-foot"><span>Monitoring · Alerting</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ alertmanager ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Alertmanager ทำอะไรที่ Prometheus ไม่ทำ</h2><div class="sub">Prometheus ตัดสินว่า "ผิดปกติไหม" · Alertmanager ตัดสินว่า "จะบอกใคร อย่างไร เมื่อไร"</div></div>
+  <div class="s-body"><div class="fig"><img data-a="d12" alt="ไปป์ไลน์ของ Alertmanager จาก Prometheus ส่ง alert ที่ firing เข้ามาผ่านขั้นตอน dedup, group, inhibit, silence แล้วจึง route ตาม label และส่งจริงไปยัง webhook อีเมล หรือแชท"></div></div>
+  <div class="s-foot"><span>Monitoring · Alerting</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ alert ที่ดี ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><h2>Alert ที่ดีต่างจาก alert ที่แย่อย่างไร</h2><div class="sub">กฎข้อเดียวที่สำคัญที่สุด — <b>เตือนที่อาการ ไม่ใช่ที่สาเหตุ</b></div></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div class="card r"><h4>❌ alert ที่แย่</h4>
+        <ul class="bul" style="font-size:18px; margin-top:8px">
+          <li style="margin-bottom:8px">"CPU &gt; 80%"<span class="s">แล้วไง? ถ้าผู้ใช้ยังใช้งานได้ปกติ นี่คือการปลุกคนโดยไม่มีเหตุ</span></li>
+          <li style="margin-bottom:8px">"disk ใช้ไป 70%"<span class="s">ไม่บอกว่าเหลือเวลาอีกกี่วัน — ควรเตือนที่ "จะเต็มใน 4 ชั่วโมง" แทน</span></li>
+          <li>ไม่มี <code>for:</code><span class="s">กระตุกวินาทีเดียวก็ปลุกคนแล้ว</span></li>
+        </ul>
+      </div>
+      <div class="card g"><h4>✅ alert ที่ดี</h4>
+        <ul class="bul" style="font-size:18px; margin-top:8px">
+          <li style="margin-bottom:8px">"error เกิน 5% นาน 5 นาที"<span class="s">ผู้ใช้เจ็บจริง และเจ็บนานพอที่จะไม่ใช่เรื่องบังเอิญ</span></li>
+          <li style="margin-bottom:8px">"p95 เกิน 1 วินาที นาน 10 นาที"<span class="s">ผูกกับ SLO ที่สัญญาไว้กับผู้ใช้โดยตรง</span></li>
+          <li>"<code>up == 0</code> นาน 1 นาที"<span class="s">เราตาบอดอยู่ — ต้องรู้ก่อนเรื่องอื่นทั้งหมด</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout warn" style="margin-top:18px"><b>ทดสอบง่าย ๆ ว่า alert ตัวนี้ควรมีไหม :</b> ถ้ามันดังตอนตี 3 คนที่ถูกปลุก<b>ต้องลุกขึ้นมาทำอะไรบางอย่างทันที</b>หรือเปล่า? ถ้าคำตอบคือ "ดูพรุ่งนี้ก็ได้" — มันไม่ควรเป็น alert ให้ทำเป็น dashboard หรือรายงานแทน</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Alerting</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ LAB 5 ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">LAB 5</span><h2>Alert ที่ยิงถึงปลายทางจริง</h2><div class="sub"><code>005_LAB_Alerting_Alertmanager</code> — เห็น Pending → Firing → Resolved ครบวงจร พร้อม silence และ inhibition</div></div>
+  <div class="s-body"><div class="fig shot"><img data-a="l5a" alt="หน้าเว็บของ receiver ที่รับ webhook จาก Alertmanager แสดงการ์ด alert ที่กำลัง firing แยกสีตามระดับความรุนแรง พร้อม label และเวลาที่ได้รับ"></div></div>
+  <div class="s-foot"><span>Monitoring · LAB 5</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ SECTION 10 ============ -->
+<div class="slot"><section class="slide section">
+  <div class="s-body">
+    <div class="num">10</div>
+    <h1>Capstone</h1>
+    <div class="m">ประกอบทุกอย่างเข้าด้วยกัน แล้วตามล่าบั๊กที่ซ่อนอยู่ 3 จุด — เหมือนตอนรับระบบที่คนอื่นวางไว้ให้</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · Capstone</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ LAB 6 ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">LAB 6</span><h2>ตามล่าบั๊ก 3 จุดใน stack เต็ม</h2><div class="sub"><code>006_LAB_Observability_Capstone</code> — บั๊กคนละชั้น อาการคนละแบบ ตรวจด้วย <code>check.sh</code></div></div>
+  <div class="s-body top">
+    <div class="grid2">
+      <div class="card r"><h4><span class="n">1</span>ชั้นเก็บข้อมูล</h4><p><b>อาการ :</b> panel ว่างทั้งแผง แต่ Grafana ปกติดี<br><b>ตรวจที่ :</b> <code>/targets</code> ของ Prometheus</p></div>
+      <div class="card o"><h4><span class="n">2</span>ชั้นแสดงผล</h4><p><b>อาการ :</b> panel ขึ้น <code>Datasource not found</code> แต่ข้อมูลใน Prometheus ครบ<br><b>ตรวจที่ :</b> <code>uid</code> ใน dashboard JSON</p></div>
+      <div class="card p"><h4><span class="n">3</span>ชั้นแจ้งเตือน</h4><p><b>อาการ :</b> ทุกอย่างดูดี แต่ alert ไม่เคยดังเลยแม้ error พุ่ง<br><b>ตรวจที่ :</b> <code>/rules</code> และ expr ของ rule</p></div>
+      <div class="card g"><h4><span class="n">4</span><code>./check.sh</code></h4><p>ตรวจอัตโนมัติ 5 ข้อ ตั้งแต่ target ขึ้นครบ ไปจนถึง alert ถึง receiver จริง — ต้องได้ <b>5/5 OK</b> ถึงจะผ่าน</p></div>
+    </div>
+    <div class="callout" style="margin-top:18px"><b>วิธีทำที่อยากให้ลอง :</b> อ่านอาการก่อน → <b>เดาว่าน่าจะพังชั้นไหน</b> → ค่อยเปิดไฟล์ไปดู — การไล่จาก "อาการ" ไปหา "ชั้นที่พัง" คือทักษะที่ใช้จริงตอนระบบมีปัญหา</div>
+  </div>
+  <div class="s-foot"><span>Monitoring · LAB 6</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ============ LAB 6 : status wall ============ -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><span class="badge lab">LAB 6</span><h2>เป้าหมายปลายทาง : ระบบที่รายงานตัวเองได้</h2><div class="sub">หน้าสรุปสถานะของ capstone หลังแก้บั๊กครบ — <code>./check.sh</code> ผ่าน 5/5 และ alert เดินทางถึงปลายทางจริง</div></div>
+  <div class="s-body"><div class="fig shot"><img data-a="l6a" alt="หน้าเว็บสรุปสถานะของ capstone แสดงการ์ดผลตรวจครบทุกข้อเป็นสีเขียว พร้อมรายการ alert ล่าสุดที่ Alertmanager ส่งมาถึง webhook receiver"></div></div>
+  <div class="s-foot"><span>Monitoring · LAB 6</span><span class="pg"></span></div>
+</section></div>

@@ -112,6 +112,8 @@ users
 
 ### อ่าน Compose ก่อนรัน
 
+> 🔎 อ่าน compose ไม่ออกทีละบรรทัด? มีแล็บที่ประกอบ compose ของ Traefik ทีละชั้นพร้อมหลักฐานทุกขั้น ที่ [`007_LAB_Compose_Anatomy`](../007_LAB_Compose_Anatomy/)
+
 - `traefik:v3.7.4` เปิด Docker provider, entrypoint `web=:80`, insecure dashboard และ access log
 - publish `8000:80` สำหรับ API และ `8080:8080` สำหรับ Dashboard
 - ทุก backend ใช้ `traefik/whoami:v1.11`, มี `traefik.enable=true` และระบุ service port `80`

@@ -227,6 +227,8 @@ services:
 > `traefik.http.services.app1.loadbalancer.server.port=80` บอก port ภายในของ backend อย่างชัดเจน แม้ image จะประกาศ port ไว้แล้ว · `traefik.docker.network=labnet` กัน Traefik เลือก network ผิดเมื่อ container มีหลาย network · `labnet` ใช้ `name: labnet` ให้ชื่อคงที่และทุก service อยู่ network เดียวกัน
 >
 > ⚠️ `--api.insecure=true` เปิด Dashboard โดยไม่มีการยืนยันตัวตน ใช้เฉพาะ LAB; production ต้อง route dashboard อย่างปลอดภัยและใส่ auth/TLS · การ mount `/var/run/docker.sock:ro` ทำให้ไฟล์ mount เป็น read-only แต่ **ไม่ได้ทำให้ Docker API เป็น read-only** — ผู้ที่เข้าถึง socket ยังมีอำนาจควบคุม daemon ได้ จึงไม่ควร mount ตรงแบบนี้ใน production โดยไม่มีมาตรการแยกสิทธิ์
+>
+> 🔎 **อยากรู้ว่าแต่ละบรรทัดของ compose ทำงานยังไง** — ทำไมต้องมี `providers.docker`, `exposedByDefault` ปิดแล้วเกิดอะไรขึ้น, Traefik เลือก port ปลายทางยังไง — มีแล็บที่ผ่าให้ดูทีละขั้นที่ [`007_LAB_Compose_Anatomy`](../007_LAB_Compose_Anatomy/)
 
 เปิด reverse proxy และรอจน route แรกพร้อม:
 
@@ -717,6 +719,8 @@ NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
 | `docker compose down` | หยุดและลบ stack พร้อมคืน port/network |
 
 ## ✅ เช็กลิสต์ก่อนจบแล็บ
+
+> 🧭 **ต่อยอด:** แล็บนี้คือ *reverse* proxy (ตัวกลางฝั่งเซิร์ฟเวอร์) — ส่วนตัวกลางอีกแบบที่ยืนฝั่ง client และ *ผู้ใช้* เป็นคนตั้งค่าเอง อยู่ที่ [`006_LAB_Forward_Proxy`](../006_LAB_Forward_Proxy/)
 
 - [ ] อธิบายได้ว่าทำไมการเปิด backend ตรง ๆ ทำให้จำนวน port โตตามจำนวน service
 - [ ] `docker compose ps` เห็น Traefik มี `8000->80`, `8080->8080` แต่ `app1`/`app2` ไม่มีลูกศร port mapping
