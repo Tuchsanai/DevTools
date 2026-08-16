@@ -1,5 +1,15 @@
 # LAB 6 — Network & DNS : ให้ container คุยกันด้วย "ชื่อ" ไม่ใช่ IP
-> โฟลเดอร์ `006_LAB_Network_DNS` = **LAB 6** ของชุด "Dockerfile → Build → Run → Compose" (ตรงกับ **ตอนที่ 9** ของคู่มือ) ไฟล์ในโฟลเดอร์นี้: `Dockerfile` · `site/index.html.tpl` (หน้า **Container Network Console**) · `docker/netlab.conf` · `docker/40-render-console.sh` · `secret/flag.txt` (ข้อความลับของภารกิจ) · `verify.sh` (ตรวจอัตโนมัติ 12 ข้อ) · `images/` (ภาพหน้าจอจริง) · `test_logs/` (log ดิบของการรันจริง)
+> โฟลเดอร์ `006_LAB_Network_DNS` = **LAB 6** ของชุด "Dockerfile → Build → Run → Compose" (ตรงกับ **ตอนที่ 9** ของคู่มือ) ไฟล์ในโฟลเดอร์นี้: `Dockerfile` · `site/index.html.tpl` (หน้า **Container Network Console**) · `docker/netlab.conf` · `docker/40-render-console.sh` · `secret/flag.txt` (ข้อความลับของภารกิจ) · `verify.sh` (ตรวจอัตโนมัติ 12 ข้อ) · `images/` (ภาพหน้าจอจริง)
+
+### 🎯 แล็บนี้ใน 30 วินาที
+
+| | |
+|---|---|
+| **คำถามเดียวที่ตอบให้จบ** | container สองตัวบนเครื่องเดียวกัน เรียกกันด้วย **ชื่อ** ได้ไหม — ถ้าไม่ได้ ต้องแก้ตรงไหน |
+| **ต้องผ่านอะไรมาก่อน** | **LAB 1** (โดยเฉพาะข้อ 9 : `EXPOSE` ไม่ได้เปิดพอร์ต · `-p` ต่างหากที่เปิด) |
+| **เวลา** | ~35 นาที (แกนหลัก ข้อ 0–12 ประมาณ 27 นาที · ทดลองเพิ่มเติม ~8 นาที) |
+| **จบแล้วต้องทำได้เอง** | สร้าง user-defined network แล้วให้ service เรียกกันด้วยชื่อ · ต่อ/ถอด network ตอน container กำลังรัน · บอกได้ว่าเมื่อไรต้อง `-p` และเมื่อไรไม่ต้อง |
+| **แล็บนี้ยัง *ไม่* สอน** | การประกาศ network ในไฟล์เดียวพร้อม `internal: true` → **LAB 7** ข้อ 10 (ที่นี่ทำด้วย `docker network` ล้วน ๆ เพื่อให้เห็นกลไก) |
 
 ## สิ่งที่จะได้เรียนรู้
 - Docker ติดตั้ง network มาให้ **3 ตัวตั้งแต่แรก** — `bridge` · `host` · `none` — และแต่ละตัวใช้เมื่อไร
@@ -559,7 +569,9 @@ wget: can't connect to remote host (172.19.0.2): Connection refused
 docker rm -f filler
 ```
 
-## ทดลองเพิ่มเติม
+## ทดลองเพิ่มเติม (~8 นาที)
+
+> แกนหลักของแล็บจบแล้ว — หัวข้อต่อจากนี้เลือกทำตามเวลาที่มี แต่ข้อ 💥 **ทำให้พัง** อยู่ในเช็กลิสต์ท้ายแล็บ เพราะการอ่าน error ให้ออกคือทักษะที่ใช้จริงมากที่สุด · **`verify.sh` ของแล็บนี้อยู่ถัดจากหัวข้อนี้** ให้รันด้วยเสมอก่อนเก็บกวาด
 ### 1) ทำให้พัง : ลบ network ทั้งที่ยังมีคนต่ออยู่
 ```bash
 docker network rm app-net
@@ -647,6 +659,22 @@ aliases=[frontend]
 ```
 > เก็บกวาดตัวทดลอง: `docker rm -f lost`
 
+## ตรวจงานอัตโนมัติด้วย `verify.sh`
+รันจากในโฟลเดอร์ของแล็บ **ในเครื่องเรียน** และ **ต้องรันก่อนหัวข้อ Cleanup** — สคริปต์สร้างของใช้เองชื่อขึ้นต้นด้วย `vfy-` แล้วลบเฉพาะของตัวเองทิ้งเมื่อจบ จึงไม่กระทบ `web`/`api`/`app-net` ที่เราสร้างระหว่างทำแล็บ:
+```bash
+cd ~/labwork/DevTools/02_Docker/02_Dockerfile_Build_Run_Compose_Guide/006_LAB_Network_DNS
+bash verify.sh
+```
+✅ **Expected output** — 12 ข้อ ผ่านหมด แล้วปิดท้ายด้วย `ALL CHECKS PASSED` (exit code 0):
+```
+[PASS] c1 default networks bridge, host, none exist
+[PASS] c2 build netlab-web:1.0
+[PASS] c3 embedded DNS resolves vfy-web
+        ... (ตัดท่อนกลาง c4–c11) ...
+[PASS] c12 host mode shares the host network stack (no port mapping)
+ALL CHECKS PASSED
+```
+
 ## แก้ปัญหาที่พบบ่อย
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
@@ -699,22 +727,6 @@ docker ps -a --filter "name=^devtools-"
 ```
 devtools-df-lab6
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-```
-
-## ตรวจงานอัตโนมัติด้วย `verify.sh`
-รันจากในโฟลเดอร์ของแล็บ **ในเครื่องเรียน** (ก่อน cleanup หรือรันใหม่ทีหลังก็ได้ — สคริปต์สร้างของใช้เองชื่อขึ้นต้นด้วย `vfy-` และลบเฉพาะของตัวเองทิ้งเมื่อจบ):
-```bash
-cd ~/labwork/DevTools/02_Docker/02_Dockerfile_Build_Run_Compose_Guide/006_LAB_Network_DNS
-bash verify.sh
-```
-✅ **Expected output** — 12 ข้อ ผ่านหมด แล้วปิดท้ายด้วย `ALL CHECKS PASSED` (exit code 0):
-```
-[PASS] c1 default networks bridge, host, none exist
-[PASS] c2 build netlab-web:1.0
-[PASS] c3 embedded DNS resolves vfy-web
-        ... (ตัดท่อนกลาง c4–c11) ...
-[PASS] c12 host mode shares the host network stack (no port mapping)
-ALL CHECKS PASSED
 ```
 
 ## สรุปคำสั่งของแล็บนี้

@@ -2,6 +2,16 @@
 
 > โฟลเดอร์ `004_LAB_ENV_ARG_Config` = **LAB 4** ของชุด "Dockerfile → Build → Run → Compose" (ตอนที่ 7 ของคู่มือ) ไฟล์โค้ดของแล็บนี้ : `Dockerfile` · `app.py` · `requirements.txt` · `.env.lab` · `.dockerignore` · `Dockerfile.args` · `Dockerfile.argfrom` · `Dockerfile.leak` · `verify.sh`
 
+### 🎯 แล็บนี้ใน 30 วินาที
+
+| | |
+|---|---|
+| **คำถามเดียวที่ตอบให้จบ** | ใส่ค่าเดียวกันไว้ทั้ง `ENV`, `--env-file` และ `-e` — **แอปจะเห็นค่าไหน** |
+| **ต้องผ่านอะไรมาก่อน** | **LAB 1** (build/run · ทดลอง ค. ที่ใช้ `-e` ครั้งแรก) |
+| **เวลา** | ~35 นาที (แกนหลัก ข้อ 0–11 ประมาณ 27 นาที · ทดลองเพิ่มเติม ~8 นาที) |
+| **จบแล้วต้องทำได้เอง** | รัน image **ตัวเดียว** เป็น dev/staging/production โดยไม่ build ใหม่ · แยก `ARG` ออกจาก `ENV` ได้ · ชี้ให้เห็นว่า secret รั่วออกทาง `docker history` ได้อย่างไร |
+| **แล็บนี้ยัง *ไม่* สอน** | `.dockerignore` ฉบับเต็ม (พิสูจน์การรั่วแล้วที่ **LAB 1** ข้อ 6 — ที่นี่แค่ยืนยันกับ `.env.*`) · การส่ง config ผ่าน Compose → **LAB 7** ข้อ 9 |
+
 ## สิ่งที่จะได้เรียนรู้
 
 - **image เดียว รันได้หลายสภาพแวดล้อม** — เปลี่ยนแค่ค่า config ตอน `docker run` ไม่ต้อง build ใหม่ ไม่ต้องแก้โค้ด
@@ -24,7 +34,8 @@
 8. **`ARG` vs `ENV` ด้วย `Dockerfile.args`** — ทดลอง 3 รอบ จนเห็นว่า `BUILD_TOOL` **หายไปตอน run**
 9. **`docker history`** — เห็นบรรทัด `ARG`/`ENV` แล้วสาธิต **secret รั่ว** ด้วยค่าปลอม
 10. **`ARG` ก่อน `FROM`** — พิสูจน์ว่าต้องประกาศซ้ำหลัง `FROM` ถึงจะใช้ในคำสั่งของ stage นั้นได้
-11. **`.dockerignore` กับ `.env`** — พิสูจน์ว่าไฟล์ลับไม่หลุดเข้า image แม้จะ `COPY . .`
+11. **`.dockerignore` กับ `.env.*`** — ยืนยันว่าไฟล์ config ไม่หลุดเข้า image แม้จะ `COPY . .`
+12. **`verify.sh`** — ตรวจผลทั้งแล็บอัตโนมัติ 21 ข้อ
 
 > **คำถามก่อนเริ่ม:** ถ้าใส่ค่าเดียวกันทั้งใน `ENV` ของ Dockerfile · ใน `--env-file` · และใน `-e` พร้อมกันหมด **แอปจะเห็นค่าไหน?** และถ้าส่ง token ผ่าน `--build-arg` โดยไม่ `ENV` ต่อ มันจะ "หายไป" จริงหรือไม่? ข้อ 3–5 และข้อ 9 จะใช้ผลรันจริงตอบให้ครบ
 
@@ -530,7 +541,7 @@ $ docker run --rm demo-argfrom:3.19
 3.19.9
 ```
 
-## 11. `.dockerignore` กับ `.env` — กันไฟล์ลับไม่ให้หลุดเข้า image
+## 11. `.dockerignore` กับ `.env.*` — ทำไมไฟล์ config ไม่ต้องอยู่ใน image
 
 ```bash
 cat .dockerignore
@@ -547,12 +558,11 @@ readme.md
 ```
 
 > 📝 **คำอธิบาย:** `.dockerignore` บอกว่า **อะไรบ้างที่ห้ามส่งเข้า build context** — ไฟล์ที่ถูกกันไว้ `COPY` ไม่เห็นเลย ต่อให้เขียน `COPY . .` ก็ตาม ·
-> `.env` กันไฟล์ชื่อตรงตัว · `.env.*` กันทุกไฟล์ที่ขึ้นต้นด้วย `.env.` รวม `.env.lab` ของเราด้วย — **ไม่เป็นปัญหา** เพราะ `--env-file` อ่านไฟล์จาก **เครื่องที่พิมพ์คำสั่ง** ไม่ได้อ่านจากใน image ไฟล์ config จึงไม่ต้องอยู่ใน image เลย
+> `.env` กันไฟล์ชื่อตรงตัว · `.env.*` กันทุกไฟล์ที่ขึ้นต้นด้วย `.env.` **รวม `.env.lab` ของเราด้วย** — ฟังดูเหมือนจะพัง แต่**ไม่เป็นปัญหาเลย** เพราะ `--env-file` อ่านไฟล์จาก **เครื่องที่พิมพ์คำสั่ง** ไม่ได้อ่านจากในกล่อง image · **นี่คือประเด็นของข้อนี้ทั้งข้อ**: ไฟล์ config ที่ใช้ตอนรัน **ไม่ต้องอยู่ใน image** ตั้งแต่แรก
 
-พิสูจน์ด้วยการสร้างไฟล์ลับปลอมขึ้นมาแล้วลอง `COPY . .` :
+> 🔁 **ของที่พิสูจน์ไปแล้วใน LAB 1 ข้อ 6** (จะไม่ทำซ้ำที่นี่) : ถ้า **ไม่มี** `.dockerignore` แล้วเขียน `COPY . .` ไฟล์ `.env` จะถูกอบติดไปกับ image จริง ๆ จน `cat /app/.env` อ่าน secret ออกมาได้ · ที่นี่เราตรวจแค่ด้านตรงข้าม คือ **ยืนยันว่ากติกา `.env.*` ทำงานจริงในโฟลเดอร์ของแล็บนี้**
 
 ```bash
-printf "DB_PASSWORD=super-secret-not-real\n" > .env
 cat > Dockerfile.copyall <<'EOF'
 FROM alpine:3.20
 WORKDIR /ctx
@@ -565,7 +575,7 @@ docker build -q -f Dockerfile.copyall -t demo-copyall . && docker run --rm demo-
 > 📝 **คำอธิบาย:** `cat > ไฟล์ <<'EOF' ... EOF` คือ heredoc ของ shell ใช้เขียนไฟล์หลายบรรทัดรวดเดียว (ครอบ `EOF` ด้วย `'` เพื่อไม่ให้ shell แทนค่าตัวแปรข้างใน) ·
 > `Dockerfile.copyall` จงใจเขียน `COPY . .` แบบกวาดทั้งโฟลเดอร์ ซึ่งเป็นวิธีที่คนทำหลุดบ่อยที่สุด · `-q` ให้ build เงียบ ๆ เหลือแค่ image ID
 
-✅ **Expected output** — ในกล่อง image **ไม่มี `.env` และไม่มี `.env.lab`** ทั้งที่ทั้งสองไฟล์อยู่ในโฟลเดอร์จริง (ลองเทียบกับ `ls -a` บนเครื่องดู):
+✅ **Expected output** — ในกล่อง image **ไม่มี `.env.lab`** ทั้งที่ไฟล์นี้อยู่ในโฟลเดอร์จริง (ลองเทียบกับ `ls -a` บนเครื่องดู):
 
 ```
 .
@@ -578,14 +588,36 @@ requirements.txt
 verify.sh
 ```
 
-เก็บกวาดของทดลองข้อนี้ : `rm -f .env Dockerfile.copyall && docker rmi -f demo-copyall`
+เก็บกวาดของทดลองข้อนี้ : `rm -f Dockerfile.copyall && docker rmi -f demo-copyall`
 
 > **สรุปกฎง่าย ๆ :** ไฟล์ config/secret ให้อยู่ **นอก image** เสมอ · ใส่ `.env` ใน `.dockerignore` **และ** ใน `.gitignore` ของโปรเจกต์ด้วย
 > (รีโพวิชานี้เก็บ `.env.lab` ไว้ให้เรียนได้ เพราะข้างในเป็นค่าปลอมทั้งหมด — ของจริงห้ามทำแบบนี้)
 
 ---
 
-## ทดลองเพิ่มเติม
+## 12. ตรวจงานอัตโนมัติด้วย `verify.sh`
+
+```bash
+./verify.sh; echo "EXIT=$?"
+```
+
+> 📝 **คำอธิบาย:** สคริปต์จะ build image ของแล็บใหม่ (`Dockerfile` · `Dockerfile.args` · `Dockerfile.argfrom` — ไม่แตะ `Dockerfile.leak` เพราะเป็นตัวอย่างวิธีที่ผิด) แล้วรัน container ตรวจค่า ENV ทีละข้อ · ใช้ชื่อ container ของตัวเอง (`lab4-check`, `lab4-env-file`, `lab4-env-override`) และ **ลบเฉพาะ container ที่ตัวเองสร้าง** ทิ้งให้ ไม่ยุ่งกับ `web`/`cfg-*` ของเรา · ต้องรันจาก **ในโฟลเดอร์แล็บ** เพราะอ่าน `.env.lab` และ `Dockerfile*` แบบ relative path · ถ้ามีข้อไหน `[FAIL]` จะจบด้วย exit code `1` เพื่อให้ต่อกับ CI ได้
+
+✅ **Expected output** — ต้องได้ `ALL CHECKS PASSED` และ `EXIT=0`:
+
+```
+[PASS] มีไฟล์ LAB ครบ
+[PASS] .dockerignore มี .env
+        ... (ตัดท่อนกลาง — รวมทั้งหมด 21 ข้อ ต้องเป็น [PASS] ทุกข้อ) ...
+[PASS] ก่อนประกาศซ้ำ ค่าว่าง
+[PASS] หลังประกาศซ้ำ มีค่า 3.20
+ALL CHECKS PASSED
+EXIT=0
+```
+
+## ทดลองเพิ่มเติม (~8 นาที)
+
+> แกนหลักของแล็บจบแล้ว — หัวข้อต่อจากนี้เลือกทำตามเวลาที่มี แต่ข้อ 💥 **ทำให้พัง** อยู่ในเช็กลิสต์ท้ายแล็บ เพราะการอ่าน error ให้ออกคือทักษะที่ใช้จริงมากที่สุด
 
 ### ก. `-e` ทับ `--env-file` ทีละตัวแปร (ไม่ใช่ทับทั้งไฟล์)
 
@@ -654,28 +686,6 @@ $ docker run --rm demo-args:nc sh -c "echo [$NOT_DECLARED]"
 
 > **บทเรียน:** ถ้าพิมพ์ชื่อ build arg ผิด (เช่น `--build-arg APP_VERISON=2.5`) **จะไม่มีอะไรเตือนเราเลย** image จะ build ผ่านแล้วได้ค่า default แทน · วิธีกันคือ **ตรวจผลเสมอ** ด้วย `docker run` หรือ `docker history` หลัง build อย่างที่ `verify.sh` ทำ
 
-### ง. ตรวจอัตโนมัติทั้งแล็บด้วย `verify.sh`
-
-```bash
-./verify.sh; echo "EXIT=$?"
-```
-
-> 📝 **คำอธิบาย:** สคริปต์จะ build image ของแล็บใหม่ (`Dockerfile` · `Dockerfile.args` · `Dockerfile.argfrom` — ไม่แตะ `Dockerfile.leak` เพราะเป็นตัวอย่างวิธีที่ผิด) แล้วรัน container ตรวจค่า ENV ทีละข้อ · ใช้ชื่อ container ของตัวเอง (`lab4-check`, `lab4-env-file`, `lab4-env-override`) และ **ลบเฉพาะ container ที่ตัวเองสร้าง** ทิ้งให้ ไม่ยุ่งกับ `web`/`cfg-*` ของเรา · ต้องรันจาก **ในโฟลเดอร์แล็บ** เพราะอ่าน `.env.lab` และ `Dockerfile*` แบบ relative path · ถ้ามีข้อไหน `[FAIL]` จะจบด้วย exit code `1` เพื่อให้ต่อกับ CI ได้
-
-✅ **Expected output** — ต้องได้ `ALL CHECKS PASSED` และ `EXIT=0`:
-
-```
-[PASS] มีไฟล์ LAB ครบ
-[PASS] .dockerignore มี .env
-        ... (ตัดท่อนกลาง — รวมทั้งหมด 21 ข้อ ต้องเป็น [PASS] ทุกข้อ) ...
-[PASS] ก่อนประกาศซ้ำ ค่าว่าง
-[PASS] หลังประกาศซ้ำ มีค่า 3.20
-ALL CHECKS PASSED
-EXIT=0
-```
-
----
-
 ## แก้ปัญหาที่พบบ่อย
 
 | อาการ | สาเหตุ | วิธีแก้ |
@@ -697,7 +707,7 @@ EXIT=0
 docker rm -f web cfg-a cfg-b cfg-c 2>/dev/null
 docker rmi -f lab4-config:1.0 demo-args demo-args:2.5 demo-args:nc \
   demo-argfrom demo-argfrom:3.19 demo-leak 2>/dev/null
-rm -f .env .env.bad Dockerfile.copyall
+rm -f .env.bad Dockerfile.copyall
 docker ps -a
 ```
 
@@ -751,7 +761,7 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 - [ ] `docker history` เห็นบรรทัด `ARG APP_VERSION=2.5` และ `ENV APP_VERSION=2.5` ด้วยตาตัวเอง
 - [ ] เห็นค่า `FAKE_TOKEN` ปลอมรั่วออกมาทาง `docker history` และ `docker image inspect` พร้อมคำเตือน `SecretsUsedInArgOrEnv`
 - [ ] `Dockerfile.argfrom` แสดง `ALPINE_VERSION=[]` ก่อนประกาศซ้ำ และ `[3.20]` หลังประกาศซ้ำ
-- [ ] `COPY . .` แล้ว `.env` / `.env.lab` **ไม่หลุดเข้า image** เพราะ `.dockerignore`
+- [ ] `COPY . .` แล้ว `.env.lab` **ไม่หลุดเข้า image** เพราะกติกา `.env.*` ใน `.dockerignore` (ส่วนการรั่วจริงเห็นมาแล้วที่ LAB 1 ข้อ 6)
 - [ ] เห็น error จริงของ `--env-file .env.missing` (exit code `125`) และรู้วิธีแก้
 - [ ] `./verify.sh` ขึ้น `ALL CHECKS PASSED` และ `EXIT=0` · `docker ps -a --filter "name=^devtools-"` เหลือแค่หัวตาราง
 

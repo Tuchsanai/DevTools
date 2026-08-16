@@ -1,6 +1,16 @@
 # LAB 5 — ส่ง Image เข้า Registry : Tag → Push → Pull
 
-> โฟลเดอร์ `005_LAB_Registry_Tag_Push_Pull` = **LAB 5** ของชุด "Dockerfile → Build → Run → Compose" (ตอนที่ 8 ของคู่มือ) ไฟล์ในโฟลเดอร์นี้: `Dockerfile` · `site/index.html` (รุ่น 1) · `site_v2/index.html` (รุ่น 2) · `verify.sh` · `images/` (ภาพประกอบและ screenshot จริง) · `test_logs/` (log ดิบของการรันจริงทุกขั้น)
+> โฟลเดอร์ `005_LAB_Registry_Tag_Push_Pull` = **LAB 5** ของชุด "Dockerfile → Build → Run → Compose" (ตอนที่ 8 ของคู่มือ) ไฟล์ในโฟลเดอร์นี้: `Dockerfile` · `site/index.html` (รุ่น 1) · `site_v2/index.html` (รุ่น 2) · `verify.sh` · `images/` (ภาพประกอบและ screenshot จริง)
+
+### 🎯 แล็บนี้ใน 30 วินาที
+
+| | |
+|---|---|
+| **คำถามเดียวที่ตอบให้จบ** | ถ้ามีคน `push` ทับ tag `1.0` ด้วย image คนละตัว — พรุ่งนี้เรา `pull` แล้วได้อะไร |
+| **ต้องผ่านอะไรมาก่อน** | **LAB 1** (build/run) · **LAB 4** (`--build-arg` ที่ใช้สร้างรุ่นที่ 2) |
+| **เวลา** | ~45 นาที (แกนหลัก ข้อ 0–13 ประมาณ 35 นาที · ทดลองเพิ่มเติม ~10 นาที · ข้อ 12 Docker Hub เป็นเอกสารอ่านอย่างเดียว) |
+| **จบแล้วต้องทำได้เอง** | แกะชื่อ image ครบทุกส่วน · เดินวงจร build → tag → push → pull → run · เลือกระหว่าง tag กับ digest ได้อย่างมีเหตุผล |
+| **แล็บนี้ยัง *ไม่* สอน** | เราจะใช้ **local registry** ทั้งแล็บ — ไม่ต้องมีบัญชี Docker Hub และ **ห้ามใส่ token จริง** ลงเอกสารใด ๆ (ข้อ 12 ใช้ `<DOCKER_USER>` / `<DOCKER_TOKEN>` เป็น placeholder) |
 
 ## สิ่งที่จะได้เรียนรู้
 
@@ -605,7 +615,7 @@ docker logout
 
 > 📝 **คำอธิบาย:** เกณฑ์ผ่านคือ login สำเร็จ (`Login Succeeded`), namespace ตรงกับบัญชี, push แสดง digest, หน้า **Tags** ของ repository เห็น tag ที่เพิ่ง push และ image ที่ pull กลับมารันได้ · **ห้ามพิมพ์ token ต่อท้ายคำสั่งเด็ดขาด** (เช่น `docker login -u ... -p <token>`) เพราะมันจะถูกบันทึกลง `~/.bash_history` · ถ้าจำเป็นต้องอัตโนมัติให้ใช้ `--password-stdin` · **ข้อผิดพลาดที่เจอบ่อยที่สุด** คือลืมข้อ 2 แล้วสั่ง `docker push regdemo:1.0` ตรง ๆ ซึ่งจะวิ่งไป `docker.io/library/` ที่เราไม่มีสิทธิ์ — ดูผลจริงในหัวข้อถัดไป
 
-## 13. รัน verify.sh
+## 13. ตรวจงานอัตโนมัติด้วย `verify.sh`
 
 ```bash
 cd ~/labwork/DevTools/02_Docker/02_Dockerfile_Build_Run_Compose_Guide/005_LAB_Registry_Tag_Push_Pull
@@ -629,7 +639,9 @@ cd ~/labwork/DevTools/02_Docker/02_Dockerfile_Build_Run_Compose_Guide/005_LAB_Re
 ALL CHECKS PASSED
 ```
 
-## ทดลองเพิ่มเติม
+## ทดลองเพิ่มเติม (~10 นาที)
+
+> แกนหลักของแล็บจบแล้ว — หัวข้อต่อจากนี้เลือกทำตามเวลาที่มี แต่ข้อ 💥 **ทำให้พัง** อยู่ในเช็กลิสต์ท้ายแล็บ เพราะการอ่าน error ให้ออกคือทักษะที่ใช้จริงมากที่สุด
 
 ### 1) 🔥 ทำให้พัง — `docker push` โดยลืมตั้งชื่อให้ตรง registry
 

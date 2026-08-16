@@ -1,7 +1,7 @@
 # LAB 7 — Docker Compose + Multi-stage build : ประกอบร่างระบบ 4 service ด้วยไฟล์เดียว (capstone)
 
 > โฟลเดอร์ `007_LAB_Compose_Multistage_Capstone` = **LAB สุดท้าย** ของชุด "Dockerfile → Build → Run → Compose" ครอบคลุม **ตอนที่ 10 (Docker Compose)** · **ตอนที่ 11 (Multi-stage build)** · **ตอนที่ 12 (ตัวอย่าง Dockerfile 7 เทคโนโลยี)**
-> ไฟล์ในโฟลเดอร์นี้ : `compose.yaml` · `.env.app` · `.dockerignore` · `web/` (Dockerfile multi-stage + `build_site.py` + `template.html` + `nginx.conf`) · `api/` (Dockerfile + `app.py` + `requirements.txt`) · `db/initdb/01-schema.sql` · `verify.sh` · `images/` · `test_logs/`
+> ไฟล์ในโฟลเดอร์นี้ : `compose.yaml` · `.env.app` · `.dockerignore` · `web/` (Dockerfile multi-stage + `build_site.py` + `template.html` + `nginx.conf`) · `api/` (Dockerfile + `app.py` + `requirements.txt`) · `db/initdb/01-schema.sql` · `verify.sh` · `images/`
 
 ระบบที่เราจะสร้างชื่อ **`devopsboard`** — หน้า dashboard ที่ดึงข้อมูล **จริง** จาก Redis และ PostgreSQL :
 
@@ -11,6 +11,16 @@
 | `api` | build จาก `python:3.12-slim` (Flask + redis + psycopg) | `8087:5000` | frontend + backend |
 | `redis` | `redis:7-alpine` | **ไม่เปิด** | backend เท่านั้น |
 | `db` | `postgres:17-alpine` + init script | **ไม่เปิด** | backend เท่านั้น |
+
+### 🎯 แล็บนี้ใน 30 วินาที
+
+| | |
+|---|---|
+| **คำถามเดียวที่ตอบให้จบ** | ระบบ **4 service** ที่ต้องรอกันตอนบูตและมีข้อมูลถาวร ประกาศไว้ใน **ไฟล์เดียว** ได้อย่างไร |
+| **ต้องผ่านอะไรมาก่อน** | ครบ **LAB 1–6** — แล็บนี้เป็น capstone ที่หยิบทุกเรื่องมาใช้พร้อมกัน |
+| **เวลา** | ~70 นาที (แกนหลัก ข้อ 0–14 ประมาณ 50 นาที · ทดลองเพิ่มเติม ~20 นาที) |
+| **จบแล้วต้องทำได้เอง** | อ่าน/เขียน `compose.yaml` ทีละ key · ใช้ `healthcheck` + `service_healthy` ให้ระบบ **รอ** จริง · แยกชั้น network · รู้ว่าข้อมูลหายตอนไหน · เลือกใช้ multi-stage เป็น |
+| **แล็บนี้ยัง *ไม่* สอน** | Compose หลายเครื่อง / orchestrator (Kubernetes) อยู่นอกขอบเขต · เรื่องพื้นฐานที่ **ไม่อธิบายซ้ำ** : DNS ของชื่อ service (**LAB 6**) · ลำดับชั้น env (**LAB 4**) · layer cache (**LAB 2**) |
 
 ## สิ่งที่จะได้เรียนรู้
 
@@ -1051,7 +1061,9 @@ images/
 
 ---
 
-## ทดลองเพิ่มเติม
+## ทดลองเพิ่มเติม (~20 นาที)
+
+> แกนหลักของแล็บจบแล้ว — หัวข้อต่อจากนี้เลือกทำตามเวลาที่มี แต่ข้อ 💥 **ทำให้พัง** อยู่ในเช็กลิสต์ท้ายแล็บ เพราะการอ่าน error ให้ออกคือทักษะที่ใช้จริงมากที่สุด · **`verify.sh` ของแล็บนี้อยู่ถัดจากหัวข้อนี้** ให้รันด้วยเสมอก่อนเก็บกวาด
 
 ### ทดลองที่ 1 — ทำให้พัง : เขียน YAML ผิด 3 แบบ แล้วอ่าน error จริง
 
