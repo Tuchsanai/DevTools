@@ -1,1153 +1,635 @@
-# LAB 7 — Docker Compose + Multi-stage build : ประกอบร่างระบบ 4 service ด้วยไฟล์เดียว (capstone)
+# LAB 7 — Docker Compose + Multi-stage build (capstone)
 
-> โฟลเดอร์ `007_LAB_Compose_Multistage_Capstone` = **LAB สุดท้าย** ของชุด "Dockerfile → Build → Run → Compose" ครอบคลุม **ตอนที่ 10 (Docker Compose)** · **ตอนที่ 11 (Multi-stage build)** · **ตอนที่ 12 (ตัวอย่าง Dockerfile 7 เทคโนโลยี)**
-> ไฟล์ในโฟลเดอร์นี้ : `compose.yaml` · `.env.app` · `.dockerignore` · `web/` (Dockerfile multi-stage + `build_site.py` + `template.html` + `nginx.conf`) · `api/` (Dockerfile + `app.py` + `requirements.txt`) · `db/initdb/01-schema.sql` · `verify.sh` · `images/`
-
-ระบบที่เราจะสร้างชื่อ **`devopsboard`** — หน้า dashboard ที่ดึงข้อมูล **จริง** จาก Redis และ PostgreSQL :
-
-| service | สร้างจาก | พอร์ตที่เปิดออก host | network |
-|---|---|---|---|
-| `web` | **multi-stage build** : stage `build` เป็น `python:3.12-slim` สร้างไฟล์ static → runtime เป็น `nginx:1.27-alpine` | `8187:80` | frontend + backend |
-| `api` | build จาก `python:3.12-slim` (Flask + redis + psycopg) | `8087:5000` | frontend + backend |
-| `redis` | `redis:7-alpine` | **ไม่เปิด** | backend เท่านั้น |
-| `db` | `postgres:17-alpine` + init script | **ไม่เปิด** | backend เท่านั้น |
+> โฟลเดอร์ `007_LAB_Compose_Multistage_Capstone` · ไฟล์ของแล็บ : `compose.yaml` · `.env.app` · `.dockerignore` · `web/` · `api/` · `db/initdb/01-schema.sql` · `verify.sh`
 
 ### 🎯 แล็บนี้ใน 30 วินาที
 
 | | |
 |---|---|
 | **คำถามเดียวที่ตอบให้จบ** | ระบบ **4 service** ที่ต้องรอกันตอนบูตและมีข้อมูลถาวร ประกาศไว้ใน **ไฟล์เดียว** ได้อย่างไร |
-| **ต้องผ่านอะไรมาก่อน** | ครบ **LAB 1–6** — แล็บนี้เป็น capstone ที่หยิบทุกเรื่องมาใช้พร้อมกัน |
-| **เวลา** | ~50 นาที (ข้อ 0–14) |
-| **จบแล้วต้องทำได้เอง** | อ่าน/เขียน `compose.yaml` ทีละ key · ใช้ `healthcheck` + `service_healthy` ให้ระบบ **รอ** จริง · แยกชั้น network · รู้ว่าข้อมูลหายตอนไหน · เลือกใช้ multi-stage เป็น |
-| **แล็บนี้ยัง *ไม่* สอน** | Compose หลายเครื่อง / orchestrator (Kubernetes) อยู่นอกขอบเขต · เรื่องพื้นฐานที่ **ไม่อธิบายซ้ำ** : DNS ของชื่อ service (**LAB 6**) · ลำดับชั้น env (**LAB 4**) · layer cache (**LAB 2**) |
-
-## สิ่งที่จะได้เรียนรู้
-
-- แปลง `docker run` หลายบรรทัดให้เป็น **`compose.yaml` ไฟล์เดียว** และอ่านออกทีละ key : `build` · `image` · `ports` · `environment` · `env_file` · `volumes` · `networks` · `depends_on` · `healthcheck` · `restart`
-- **กฎ YAML ที่พลาดบ่อย** — ห้าม tab, เยื้องด้วย space, `-` คือ list, ค่าที่มี `:` ควรครอบเครื่องหมายคำพูด
-- **ชื่อที่ Compose ตั้งให้** : container `devopsboard-web-1` (ขีดกลาง) แต่ network/volume `devopsboard_frontend` / `devopsboard_pgdata` (ขีดล่าง)
-- **Multi-stage build** : พิสูจน์ด้วยตัวเลขขนาด image จริง ว่า `COPY --from=build` คัดมาเฉพาะ artifact ทำให้ runtime image เล็กลง **62%**
-- **healthcheck + `condition: service_healthy`** ทำให้ Compose **รอ** จริง ไม่ใช่แค่เรียงลำดับการ start
-- **named volume** ทำให้ข้อมูลรอด `docker compose down` แต่ **หายถาวร** เมื่อ `down -v`
-- **แยกชั้น network** ด้วย `internal: true` — คอนเทนเนอร์ที่อยู่แค่ `frontend` มองไม่เห็น `db` เลย แม้แต่ชื่อ DNS
-- **PostgreSQL init script** (`/docker-entrypoint-initdb.d/`) รันเฉพาะตอน volume ว่างครั้งแรก พร้อมกับดักที่ทุกคนต้องเจอ
-- `environment:` ชนะ `env_file:` และการเก็บรหัสผ่านไว้นอก `compose.yaml`
-
-## ภาพรวมของแล็บนี้
-
-1. **เทียบ "ก่อน–หลัง"** — เขียน `docker run` 7 บรรทัดสำหรับระบบ 4 service เทียบกับ `compose.yaml` ไฟล์เดียว แล้วดูตารางแปลง option ต่อ key
-2. **อ่าน `compose.yaml` ของ devopsboard ทีละบรรทัด** — ทุก key ที่จะใช้ในแล็บนี้อยู่ในไฟล์เดียว
-3. **`docker compose up -d --build`** — ดู Compose build 2 image, สร้าง network 2 วง, สร้าง volume 2 ก้อน และ **รอ healthcheck** ก่อนเริ่ม service ถัดไป
-4. **อ่านชื่อที่ Compose ตั้งให้** ด้วย `docker ps` / `docker network ls` / `docker volume ls`
-5. **เปิดหน้า DevOps Board ที่ `http://localhost:8187`** — ตัวนับผู้เข้าชมจาก Redis, ตารางจาก PostgreSQL, ไฟสถานะ service, และฟอร์มเพิ่มรายการที่เขียนลงฐานข้อมูลจริง
-6. **พิสูจน์ multi-stage** — build เฉพาะ stage `build` ออกมาเทียบขนาดกับ image สุดท้าย
-7. **พิสูจน์ healthcheck / env / network / volume / init script** ทีละเรื่อง โดยมีหลักฐานจากคำสั่งจริง
-8. **ปิดท้ายด้วย `down` เทียบกับ `down -v`** — เห็นกับตาว่าข้อมูลรอดตอนไหน และหายถาวรตอนไหน
-
-### ภาพรวมสถาปัตยกรรม — มี service อะไรบ้าง และเชื่อมกันอย่างไร
-
-ก่อนพิมพ์คำสั่งใด ๆ ให้ดูภาพนี้ก่อน แล้วย้อนกลับมาดูซ้ำได้ทุกครั้งที่หลงทางว่าอะไรต่อกับอะไร :
-
-![สถาปัตยกรรมระบบ devopsboard: เบราว์เซอร์เข้าทางพอร์ต 8187 ไปยัง web (nginx) และ 8087 ไปยัง api (Flask) · web ทำ reverse proxy /api/ ไปยัง api:5000 · api ต่อ redis:6379 และ db:5432 · redis และ db อยู่เฉพาะ network backend ที่ตั้ง internal: true และผูกกับ named volume redisdata กับ pgdata](./images/architecture.png)
-
-> ไฟล์ต้นฉบับของภาพคือ [`images/architecture.excalidraw`](./images/architecture.excalidraw) — เปิดแก้ได้ที่ [excalidraw.com](https://excalidraw.com) แล้ว export ทับไฟล์ `.png` เดิม
-
-**อ่านภาพนี้ยังไง** — มี 4 service, 2 network และ 2 named volume :
-
-| service | สร้างจาก | ports (host → container) | อยู่ใน network | volume | เริ่มได้เมื่อ |
-|---|---|---|---|---|---|
-| **`web`** | `build: ./web` — **multi-stage** จบที่ `nginx:1.27-alpine` | `8187:80` | frontend + backend | — | `api` **healthy** |
-| **`api`** | `build: ./api` — `python:3.12-slim` + Flask | `8087:5000` | frontend + backend | — | `db` และ `redis` **healthy** |
-| **`redis`** | `redis:7-alpine` (image สำเร็จรูป) | **ไม่เปิดออก host** | backend | `redisdata` → `/data` | — |
-| **`db`** | `postgres:17-alpine` (image สำเร็จรูป) | **ไม่เปิดออก host** | backend | `pgdata` → `/var/lib/postgresql/data` | — |
-
-**เดินตาม request หนึ่งครั้ง** ตอนผู้เรียนกดรีเฟรชหน้า `http://localhost:8187` :
-
-1. เบราว์เซอร์ยิงเข้าพอร์ต **8187** ของเครื่องเรียน → Docker ส่งต่อเข้าพอร์ต **80** ของ container `web`
-2. `web` (nginx) ส่งไฟล์ `index.html` ที่ **stage build สร้างไว้ตั้งแต่ตอน build** กลับไป
-3. JavaScript ในหน้านั้นเรียก `/api/stats` ต่อ → nginx เห็น prefix `/api/` จึงทำ **reverse proxy** ไปที่ `http://api:5000/stats`
-   (ชื่อ `api` ถูกแปลงเป็น IP ด้วย DNS ภายในของ Compose — หลักการเดียวกับ LAB 6)
-4. `api` (Flask) สั่ง `INCR` ที่ **`redis:6379`** เพื่อนับผู้เข้าชม แล้ว `SELECT` จาก **`db:5432`** เพื่อดึงรายการ
-5. `redis` เขียนลง volume `redisdata` · `db` เขียนลง volume `pgdata` — **ข้อมูลจึงอยู่รอดแม้ลบ container ทิ้ง**
-6. ผลลัพธ์ย้อนกลับทางเดิม → หน้า dashboard แสดงตัวเลขจริง
-
-**จุดที่ต้องสังเกตในภาพ (และเป็นข้อสอบของแล็บนี้)** :
-
-- **วงสีฟ้า `frontend` กับวงสีชมพู `backend` ซ้อนทับกัน** — ตรงพื้นที่ซ้อนคือ service ที่อยู่ **ทั้งสอง** วง (`web` และ `api`)
-- **`db` และ `redis` อยู่นอกวงสีฟ้า** และไม่มี `ports:` → เครื่องผู้เรียนเข้าไม่ถึงเลย มีแต่ service ใน `backend` ที่คุยด้วยได้
-- `backend` ตั้ง **`internal: true`** ซึ่งทำให้ **publish port ออก host ไม่ได้** — นี่คือเหตุผลที่ `api` ต้องอยู่ `frontend` ด้วย
-  ไม่งั้นพอร์ต `8087` จะ **หายเงียบ ๆ โดยไม่มี error** (อาการนี้อยู่ในตาราง "แก้ปัญหาที่พบบ่อย" ท้ายแล็บ)
-- ลูกศรเส้นประไปยัง volume คือข้อมูลที่ `docker compose down` **ไม่ลบ** แต่ `docker compose down -v` **ลบ**
-
----
-
-> **คำถามก่อนเริ่ม:** ถ้า `db` ใช้เวลา boot 8 วินาที แต่ `api` ต่อฐานข้อมูลทันทีที่ start — `depends_on` แบบธรรมดาช่วยได้ไหม? และถ้าเราลบ container ทั้งหมดด้วย `docker compose down` ข้อมูลใน PostgreSQL จะหายหรือไม่? แล้ว `down -v` ล่ะ? แล็บนี้จะพิสูจน์ทั้งสามคำถามด้วยผลรันจริง
-
-### Terminal Map
-
-| หน้าต่าง | หน้าที่ |
-|---|---|
-| **T1** | หน้าต่างหลัก — `docker compose` ทุกคำสั่ง, `curl`, `psql` |
-| **T2** | (ใช้เฉพาะข้อ 13) ติดตาม log แบบ `docker compose logs -f api` ซึ่งเป็นคำสั่ง blocking |
-
-แล็บนี้ใช้ **หน้าต่างเดียวก็จบได้** ยกเว้นตอนที่อยากดู log ไหลสด ๆ พร้อมยิง request จากอีกหน้าต่าง
+| **ต้องผ่านอะไรมาก่อน** | ครบ **LAB 1–6** — แล็บนี้หยิบทุกเรื่องมาใช้พร้อมกัน |
+| **เวลา** | ~50 นาที · การทดลอง **12 อัน** อันละ 3–5 นาที |
+| **จบแล้วต้องทำได้เอง** | อ่าน/เขียน `compose.yaml` ทีละ key · ใช้ `healthcheck` ให้ระบบ **รอ** จริง · แยกชั้น network · รู้ว่าข้อมูลหายตอนไหน |
+| **แล็บนี้ยัง *ไม่* สอน** | Compose หลายเครื่อง / Kubernetes อยู่นอกขอบเขต · พื้นฐานที่ไม่อธิบายซ้ำ : DNS ของชื่อ service (**LAB 6**) · ลำดับชั้น env (**LAB 4**) · layer cache (**LAB 2**) |
 
 ---
 
 ## ทฤษฎีก่อนลงมือ
 
-### ภาพจำหลัก
+### ระบบที่จะสร้าง : `devopsboard`
 
-Compose เปลี่ยนงานประกอบระบบจากการจำขั้นตอนแล้วสั่งทีละชิ้น ให้เป็นการประกาศ “สภาพปลายทาง” ของทั้งระบบไว้ในไฟล์เดียวแล้วปล่อยให้เครื่องมือจัดลำดับให้
+![สถาปัตยกรรมระบบ devopsboard: เบราว์เซอร์เข้าทางพอร์ต 8187 ไปยัง web (nginx) และ 8087 ไปยัง api (Flask) · web ทำ reverse proxy /api/ ไปยัง api:5000 · api ต่อ redis:6379 และ db:5432 · redis และ db อยู่เฉพาะ network backend ที่ตั้ง internal: true และผูกกับ named volume redisdata กับ pgdata](./images/architecture.png)
+
+> 🖼 **วิธีอ่านรูปนี้:** วงสีฟ้า `frontend` กับวงสีชมพู `backend` **ซ้อนทับกัน** — ตรงพื้นที่ซ้อนคือ service ที่อยู่ทั้งสองวง (`web` และ `api`) · `db` กับ `redis` อยู่นอกวงฟ้าและไม่มี `ports:` เครื่องเราจึงเข้าไม่ถึงเลย
+
+| service | สร้างจาก | เปิดออก host | network | volume |
+|---|---|---|---|---|
+| `web` | **multi-stage** : `python` สร้างไฟล์ static → runtime เป็น `nginx:1.27-alpine` | `8187:80` | frontend + backend | — |
+| `api` | `python:3.12-slim` + Flask | `8087:5000` | frontend + backend | — |
+| `redis` | `redis:7-alpine` | **ไม่เปิด** | backend | `redisdata` |
+| `db` | `postgres:17-alpine` + init script | **ไม่เปิด** | backend | `pgdata` |
+
+### ทำไมต้อง Compose
 
 ![เปรียบเทียบการสั่ง docker run หลายบรรทัดกับการประกาศระบบ devopsboard ใน compose.yaml แล้วสั่ง docker compose up ครั้งเดียว](./images/theory-why-compose.svg)
 
-> 🖼 **วิธีอ่านรูปนี้:** มองฝั่งซ้ายเป็นรายการงานแบบ imperative ที่ผู้ใช้ต้องจำทั้ง network, volume และลำดับของ container เอง ส่วนฝั่งขวารวมความสัมพันธ์เดียวกันไว้ใน `compose.yaml` (ในรูปตัดมาเฉพาะบางส่วน — ไฟล์จริงมี `db`, healthcheck และ `depends_on` ครบตามข้อ 3) แล้วให้ `docker compose up` อ่านแบบจำลองนั้น จุดสำคัญไม่ใช่แค่คำสั่งสั้นลง แต่คือสภาพที่ต้องการถูกบันทึก ตรวจซ้ำ และส่งต่อให้คนอื่นได้
+> 🖼 **วิธีอ่านรูปนี้:** ฝั่งซ้ายคือรายการงานที่ผู้ใช้ต้องจำเองทั้ง network, volume และลำดับ · ฝั่งขวารวมความสัมพันธ์เดียวกันไว้ในไฟล์เดียวที่ **commit ลง git ได้**
 
-### กลไกจริง
-
-วิธี imperative เหมือนหัวหน้าที่แจกคำสั่งคนงานทีละข้อ: สร้าง network ก่อน สร้าง volume ต่อ แล้วค่อยเปิด `db`, `redis`, `api` และ `web` หากข้ามขั้น สลับลำดับ หรือตั้งชื่อไม่ตรง ระบบก็เปลี่ยนไปตามสิ่งที่พิมพ์จริง และ shell history ไม่ได้อธิบายชัดว่าสุดท้ายระบบควรหน้าตาอย่างไร
-
-วิธี declarative ใน `compose.yaml` กลับกัน เราระบุ service, image หรือ build context, network, volume, environment, port และ dependency ที่ต้องการ Compose จึงมองทั้งหมดเป็น project เดียว เปรียบเทียบสภาพที่มีอยู่กับแบบที่ประกาศ แล้วสร้างหรือปรับเฉพาะสิ่งจำเป็น การสั่ง `up` ซ้ำจึงเป็นการพาระบบกลับเข้าหาสภาพเดียวกัน ไม่ใช่การท่องขั้นตอนเดิมใหม่ทุกครั้ง ซึ่งจะเห็นผลจริงตั้งแต่ข้อ 2–4
-
-เมื่อเริ่ม `docker compose up -d --build` Compose อ่านและตรวจไฟล์ก่อน แล้วสร้างกราฟความสัมพันธ์ระหว่าง service จากนั้น build image ของ `web` และ `api` จาก build context เตรียม network เพื่อให้แต่ละ service มีวงสื่อสารตามที่ประกาศ เตรียม named volume สำหรับข้อมูลถาวร แล้วสร้าง container พร้อมค่า mount, environment และ port ของแต่ละตัว สุดท้ายจึง start ตาม dependency graph (ลำดับนี้ตรงกับ output จริงของข้อ 4 ที่ขึ้นบรรทัด Built ก่อน Network/Volume Created) ขั้นเหล่านี้อาจมีบางงานทำคู่ขนานกันได้ แต่ service ที่มีเงื่อนไขรอจะยังข้ามเส้นกั้นไปไม่ได้ หลักฐานลำดับทั้งหมดอยู่ใน output ของข้อ 4
-
-รากของกราฟนี้คือ `db` กับ `redis` ซึ่งเริ่มได้ก่อน เมื่อ process ภายในเริ่มทำงานไม่ได้แปลว่าบริการพร้อมรับ request ทันที `healthcheck` จึงทำหน้าที่เหมือนพนักงานตรวจประตูที่กลับมาลองทุกช่วงเวลาและรายงานสถานะ `starting`, `healthy` หรือ `unhealthy` ในแล็บนี้ `api` ระบุ `condition: service_healthy` จึงรอทั้งสอง service ผ่านการตรวจ แล้ว `web` จึงรอ `api` ผ่านอีกทอดหนึ่ง
-
-ถ้าใช้ `depends_on` เปล่า Compose รับรองเพียงลำดับการสร้างและเริ่ม process ของ service ต้นทาง ไม่ได้รับรองว่า PostgreSQL เปิดรับ connection หรือ Redis ตอบสนองแล้ว ความต่างนี้อธิบายว่าทำไม timeline ในข้อ 8 มีช่วงรอ และทำไมแอปจริงยังควรมี retry: healthcheck ช่วยประสานการเริ่มระบบ แต่ไม่ซ่อม connection ที่หลุดหลังระบบทำงานไปแล้ว
-
-ฝั่ง build ของ `web` ใช้ multi-stage ซึ่งเหมือนแยก “โรงครัว” ออกจาก “จานเสิร์ฟ” stage `build` มี Python, Jinja2 และเครื่องมือเตรียมหน้าเว็บ จึงหนักแต่จำเป็นระหว่างผลิต เมื่อได้ `index.html` แล้ว `COPY --from=build` ยกเฉพาะอาหารที่เสร็จขึ้นจานของ stage สุดท้ายซึ่งมี nginx ไม่ได้ยกเตา วัตถุดิบ และเครื่องมือทั้งหมดไปด้วย ข้อ 7 จึงวัดได้ว่า runtime image เล็กลง และตรวจได้ว่าไม่มี Python ติดไป
-
-named volume แยกอายุข้อมูลออกจากอายุ container อีกชั้นหนึ่ง เมื่อ mount `pgdata` ที่ data directory การเขียนฐานข้อมูลจะลงพื้นที่ซึ่ง Docker ดูแลอยู่นอก writable layer ของ container ดังนั้น `down` ลบ container กับ network แต่ volume ยังอยู่ พอ `up` รอบใหม่ container ตัวใหม่จึงอ่านข้อมูลเดิมได้ อย่างไรก็ตาม `down -v` ระบุให้ลบพื้นที่นี้ด้วย ผลในข้อ 11–12 จึงต่างกันอย่างตั้งใจ
-
-จุดที่เชื่อม volume กับ init script คือ “ความว่างครั้งแรก” PostgreSQL official image ตรวจ data directory ตอนเริ่ม ถ้าว่างจึงสร้างฐานข้อมูลและรันไฟล์ใน `/docker-entrypoint-initdb.d/` แต่ถ้า volume เดิมมีข้อมูล การ recreate container ไม่ทำให้ directory ว่างและ init จะถูกข้าม การเปลี่ยน schema ของระบบจริงจึงควรใช้ migration ไม่ควรหวังให้ init script รันซ้ำ
-
-การเลือกโครง Dockerfile จึงเริ่มจากถามว่า build สร้าง artifact แยกจากเครื่องมือได้หรือไม่ และตอนรันยังต้องใช้ runtime ภาษาเดิมหรือไม่ หน้า static ที่ build เสร็จแล้วเสิร์ฟด้วย nginx เหมาะกับ multi-stage ส่วน Flask ของ `api` ยังต้องใช้ Python ตอนรับ request จึงใช้ single-stage ได้อย่างตรงไปตรงมา แนวคิดนี้จะถูกสรุปเป็น decision tree ในข้อ 14
-
-dependency graph บอกว่า service ใดต้องผ่านเงื่อนไขก่อน service ใด แต่ไม่ได้เป็นสายส่งข้อมูล และไม่ได้ให้สิทธิ์เชื่อมต่อ network โดยอัตโนมัติ ตัวอย่างเช่น `api` รอ `db` เพราะ dependency และคุยกับ `db` ได้เพราะทั้งคู่เป็นสมาชิก `backend` ซึ่งเป็นคนละหน้าที่กัน ส่วน `web` อยู่สอง network เพื่อรับ request จากด้านหน้าและส่งต่อไปด้านหลัง การแยกแนวคิด “ใครเริ่มก่อน” ออกจาก “ใครคุยกับใครได้” จะช่วยอ่านผลข้อ 4, 8 และ 10 โดยไม่สับสน
-
-ควรแยกวงจรชีวิตออกเป็นสามชั้นด้วย: image คือแม่แบบที่ build หรือ pull มา container คือ process พร้อม writable layer ที่สร้างจากแม่แบบ และ named volume คือพื้นที่ข้อมูลที่นำไปผูกกับ container ได้หลายรุ่น เมื่อ config ของ service เปลี่ยน Compose อาจสร้าง container ใหม่โดยยังใช้ image หรือ volume เดิมได้ เมื่อ source เปลี่ยนจึงต้องสั่งให้ build image ใหม่ตามที่ข้อ 4 เน้น และเมื่ออยากเริ่มข้อมูลใหม่จริง ๆ จึงต้องจัดการ volume อย่างตั้งใจตามข้อ 12
-
-คำว่า declarative ก็ไม่ได้หมายความว่า Compose เฝ้าปรับทุกอย่างตลอดเวลา ไฟล์เป็นแบบจำลอง ส่วนการ reconcile เกิดเมื่อเราเรียกการทำงาน เช่น `up` ในเวลานั้น Compose จะตรวจของเดิม ใช้ resource ที่ยังตรง และสร้างสิ่งที่ขาดหรือเปลี่ยนไป ความสามารถนี้ลดความคลาดเคลื่อนจากคำสั่งมือ แต่ความถูกต้องยังขึ้นกับสิ่งที่เราประกาศ เช่น healthcheck ต้องตรวจ readiness ที่มีความหมาย และ volume ต้อง mount ไปยัง path ที่แอปเขียนข้อมูลจริง
-
-### กฎที่ต้องจำ
-
-| กฎ | เหตุผลที่มีผลในแล็บนี้ |
+| สิ่งที่ทำด้วย `docker run` | key ใน `compose.yaml` |
 |---|---|
-| ประกาศสภาพและความสัมพันธ์ให้ครบ | Compose จึงสร้าง project ซ้ำได้โดยไม่พึ่งลำดับที่คนจำ |
-| readiness ต้องใช้ `healthcheck` คู่กับ `service_healthy` | แค่ process เริ่ม ไม่ได้แปลว่าบริการพร้อม |
-| stage สุดท้ายควรมีเฉพาะของที่ใช้ตอนรัน | ลดขนาด image และลดเครื่องมือที่ไม่จำเป็นใน production |
-| named volume ไม่ตายตาม container | ข้อมูลรอดการ recreate และ `down` แต่ไม่รอดการลบ volume |
-| เลือก Dockerfile จาก artifact และ runtime | ภาษาหรือ framework เดียวกันอาจใช้โครงต่างกันตามวิธี deploy |
+| `docker build -t ...` | `build:` |
+| `-p 8187:80` | `ports:` |
+| `-e KEY=value` / `--env-file` | `environment:` / `env_file:` |
+| `-v pgdata:/var/lib/...` | `volumes:` |
+| `--network ...` | `networks:` |
+| `--health-cmd` | `healthcheck:` |
+| *(ทำไม่ได้)* | `depends_on: condition: service_healthy` |
+
+### กฎ 4 ข้อที่ใช้ตลอดแล็บ
+
+| กฎ | เหตุผล |
+|---|---|
+| `depends_on` เปล่า ๆ ไม่ได้ "รอ" | รอแค่ลำดับ start ต้องมี `healthcheck` + `condition: service_healthy` ถึงจะรอผลตรวจ |
+| stage สุดท้ายควรมีเฉพาะของที่ใช้ตอนรัน | ลด image และลดเครื่องมือที่ไม่จำเป็นใน production |
+| named volume ไม่ตายตาม container | ข้อมูลรอด `down` แต่ไม่รอด `down -v` |
+| init script รันเฉพาะตอน data directory **ว่าง** | recreate container ไม่ทำให้ script รันซ้ำ |
 
 ### สิ่งที่มักเข้าใจผิด
 
-- **คิดว่า** `depends_on` เปล่ารอฐานข้อมูลพร้อม **แต่จริง ๆ** รอเพียงลำดับเริ่มต้น ต้องมี healthcheck และเงื่อนไข readiness จึงจะรอผลตรวจ
-- **คิดว่า** multi-stage ทำให้ทุกแอปเล็กลงโดยอัตโนมัติ **แต่จริง ๆ** ต้องคัด artifact ที่จำเป็นเข้าสู่ stage สุดท้าย และ runtime ที่แอปต้องใช้ยังต้องอยู่
-- **คิดว่า** recreate container จะทำให้ init script รันใหม่ **แต่จริง ๆ** ตัวตัดสินคือ data directory ใน volume ว่างหรือไม่ ไม่ใช่อายุของ container
-
-### ทายผลก่อนทดลอง
-
-1. ในข้อ 4 และข้อ 8 ถ้าตัด `condition: service_healthy` ออก แต่ยังคง `depends_on` ไว้ บรรทัดสถานะของ `api` และ `web` จะเรียงต่างจากเดิมตรงไหน และ service ใดเสี่ยงเริ่มเร็วเกินไป?
-2. ในข้อ 11–12 ถ้าแก้ init script แล้ว recreate เฉพาะ `db` โดยไม่ลบ `pgdata` จำนวนแถวควรเปลี่ยนหรือไม่ และเมื่อทดลองลบ volume ผลของข้อมูล PostgreSQL กับตัวนับ Redis จะสัมพันธ์กันอย่างไร?
+- **คิดว่า** `depends_on` เปล่ารอฐานข้อมูลพร้อม → **จริง ๆ** รอเพียงลำดับเริ่มต้น (การทดลองที่ 7)
+- **คิดว่า** multi-stage ทำให้ทุกแอปเล็กลงอัตโนมัติ → **จริง ๆ** ต้องคัด artifact เข้า stage สุดท้ายเอง
+- **คิดว่า** recreate container ทำให้ init script รันใหม่ → **จริง ๆ** ตัวตัดสินคือ volume ว่างหรือไม่ (การทดลองที่ 11)
 
 ---
 
-## 0. เตรียมเครื่องเรียน
+## เตรียมเครื่องเรียน
 
-ทำบนเครื่องของเราเอง (ไม่ใช้ cloud) — เปิด container ที่ติดตั้ง Docker มาให้แล้ว :
+### ขั้นที่ 1 — เปิดกล่องเรียน
+
+รันบน **เครื่องของเราเอง** — แล็บนี้ใช้ **2 พอร์ตแอป** :
 
 ```bash
 docker rm -f devtools-df-lab7 2>/dev/null
 docker run -dit --name devtools-df-lab7 --privileged \
-  -p 2237:22 -p 8187:8187 -p 8087:8087 \
-  tuchsanai/devtools:2569_1
+  -p 2237:22 -p 8187:8187 -p 8087:8087 tuchsanai/devtools:2569_1
 ssh root@localhost -p 2237        # password : passwd
 ```
 
-> 📝 **คำอธิบาย:** `--privileged` จำเป็นสำหรับ **Docker-in-Docker** ในเครื่องเรียนแบบใช้แล้วทิ้ง (ไม่ใช่ค่าที่ควรใช้ใน production) · `-p 2237:22` คือทางเข้า SSH · `-p 8187:8187` และ `-p 8087:8087` ส่งพอร์ตของ **หน้าเว็บ** และ **API** ทะลุออกมาถึงเบราว์เซอร์บนเครื่องเรา · ถ้าพอร์ตใดถูกใช้อยู่แล้ว ให้เปลี่ยนเลขทางซ้ายแล้วจำไว้ว่าเปลี่ยนเป็นอะไร · คำสั่งที่เหลือทั้งหมดพิมพ์ **ข้างในเครื่องเรียน**
+### ขั้นที่ 2 — โหลดโค้ดแล็บ
 
-ใน VS Code ใช้ **Remote-SSH** ต่อไปที่ `root@localhost:2237` แล้วทำแล็บทั้งหมดข้างใน — ตรวจว่าพร้อมใช้งาน :
-
-```bash
-docker --version
-docker compose version
-docker info --format 'Docker daemon: {{.ServerVersion}}'
-```
-
-> 📝 **คำอธิบาย:** สิ่งที่ต้องดูคือ "มีเลขเวอร์ชันขึ้นครบสามบรรทัดไหม" ไม่ใช่ "เลขตรงกับเอกสารไหม" · สังเกตว่า **`docker compose` เขียนแบบเว้นวรรค** ซึ่งคือ Compose plugin รุ่นปัจจุบัน ไม่ใช่ `docker-compose` แบบขีดกลางของรุ่นเก่า · ถ้าขึ้น `Cannot connect to the Docker daemon` แปลว่า daemon ข้างในยังตื่นไม่เสร็จ รอสักครู่แล้วลองใหม่
-
-✅ **Expected output** — เลขเวอร์ชันของแต่ละคนอาจไม่ตรงกับเอกสารนี้ ขอแค่ไม่ใช่ error :
-
-```
-$ docker --version
-Docker version 29.6.2, build dfc4efb
-
-$ docker compose version
-Docker Compose version v5.3.1
-
-$ docker info --format 'Docker daemon: {{.ServerVersion}}'
-Docker daemon: 29.6.2
-```
-
----
-
-## 1. Clone โค้ดแล็บและดูโครงสร้างโปรเจกต์
+**คำสั่งทุกอันหลังจากนี้พิมพ์ข้างในกล่องเรียน**
 
 ```bash
 mkdir -p ~/labwork && cd ~/labwork
 git clone https://github.com/Tuchsanai/DevTools.git
 cd DevTools/02_Docker/02_Dockerfile_Build_Run_Compose_Guide/007_LAB_Compose_Multistage_Capstone
-ls -a
+docker compose version
 ```
 
-> 📝 **คำอธิบาย:** ถ้าเคย clone ไว้แล้วจาก LAB ก่อนหน้า ให้ข้ามบรรทัด `git clone` แล้ว `cd` เข้าโฟลเดอร์ได้เลย (git จะฟ้องว่าโฟลเดอร์ปลายทางไม่ว่างถ้าสั่งซ้ำ) · `ls -a` ต้องใช้ `-a` เพราะไฟล์สำคัญสองไฟล์ของแล็บนี้ขึ้นต้นด้วยจุด (`.env.app` และ `.dockerignore`) จึงถูกซ่อนจาก `ls` ธรรมดา
-
-โครงสร้างของโปรเจกต์ `devopsboard` :
+✅ **สิ่งที่ต้องเห็น** — เลขเวอร์ชันของ Compose plugin :
 
 ```
-007_LAB_Compose_Multistage_Capstone/
-├── compose.yaml            ← หัวใจของแล็บ: ประกาศทั้ง 4 service ไว้ที่นี่
-├── .env.app                ← ค่าตั้งค่า + รหัสผ่าน (ห้าม commit ในงานจริง)
-├── .dockerignore           ← ตัดไฟล์ที่ไม่ควรเข้า build context
-├── web/
-│   ├── Dockerfile          ← multi-stage 2 stage (python → nginx)
-│   ├── build_site.py       ← "build tool" ที่ render หน้าเว็บด้วย Jinja2
-│   ├── template.html       ← template ของ dashboard (CSS/JS inline ทั้งหมด)
-│   ├── nginx.conf          ← เสิร์ฟ static + reverse proxy /api/ → api:5000
-│   └── .dockerignore
-├── api/
-│   ├── Dockerfile          ← Flask API (single stage)
-│   ├── app.py              ← /health · /stats · POST /items
-│   ├── requirements.txt
-│   └── .dockerignore
-├── db/initdb/
-│   └── 01-schema.sql       ← สร้างตาราง items + seed 4 แถว (รันครั้งแรกครั้งเดียว)
-└── verify.sh               ← ตรวจผลแล็บอัตโนมัติ
+Docker Compose version v5.3.1
 ```
+
+> 📝 สังเกตว่าเขียน **`docker compose` แบบเว้นวรรค** ซึ่งคือ Compose plugin รุ่นปัจจุบัน ไม่ใช่ `docker-compose` แบบขีดกลางของรุ่นเก่า
 
 ---
 
-## 2. ก่อน–หลัง : `docker run` หลายบรรทัด เทียบกับ `compose.yaml` ไฟล์เดียว
+## การทดลองที่ 1 — อ่าน `compose.yaml` ทีละ key
 
-**ก่อน** — ถ้าไม่มี Compose เราต้องจำและพิมพ์เองแบบนี้ (อย่าเพิ่งรัน อ่านให้เห็นภาพก่อน) :
-
-```bash
-docker network create devopsboard_frontend
-docker network create --internal devopsboard_backend
-docker volume create devopsboard_pgdata
-docker volume create devopsboard_redisdata
-docker run -d --name devopsboard-db-1 --network devopsboard_backend \
-  --env-file .env.app -e POSTGRES_DB=appdb -e POSTGRES_USER=appuser \
-  -v devopsboard_pgdata:/var/lib/postgresql/data \
-  -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" \
-  --health-cmd 'pg_isready -U appuser -d appdb' --restart unless-stopped postgres:17-alpine
-docker run -d --name devopsboard-redis-1 --network devopsboard_backend \
-  -v devopsboard_redisdata:/data --health-cmd 'redis-cli ping' redis:7-alpine
-# ...แล้วต้องนั่งรอเองว่า db พร้อมหรือยัง ก่อนจะ run api และ web ต่ออีก 2 บรรทัดยาว ๆ
-```
-
-**หลัง** — ทั้งหมดข้างบนเหลือคำสั่งเดียว เพราะทุกอย่างถูกประกาศไว้ใน `compose.yaml` :
-
-```bash
-docker compose -p devopsboard up -d --build
-```
-
-> 📝 **คำอธิบาย:** ความต่างไม่ได้อยู่ที่ "พิมพ์สั้นลง" อย่างเดียว แต่อยู่ที่ `compose.yaml` เป็นไฟล์ **declarative** — เราบอก "สภาพปลายทางที่ต้องการ" แล้ว Compose คำนวณเองว่าต้องสร้าง/แก้/ลบอะไร จึงรันซ้ำกี่ครั้งก็ได้ผลเหมือนเดิม และ **commit ลง git ได้** ต่างจาก `docker run` ที่อยู่ใน shell history ของคนเดียว · อีกจุดที่ `docker run` ทำไม่ได้เลยคือ **"รอจนกว่า db จะ healthy ค่อยเริ่ม api"** ซึ่ง Compose ทำให้ด้วย `depends_on` + `condition: service_healthy`
-
-**ตารางแปลง — สิ่งที่ทำด้วย `docker run` ↔ key ใน `compose.yaml`**
-
-| สิ่งที่ทำด้วย `docker run` | key ใน `compose.yaml` | หมายเหตุ |
-|---|---|---|
-| `docker build -t ...` | `build:` | Compose build ให้ตอน `up --build` |
-| `docker run <image>` | `image:` | ใช้ image สำเร็จรูป หรือเป็น "ชื่อผลลัพธ์" เมื่อมี `build:` ด้วย |
-| `-p 8187:80` | `ports:` | ความหมาย `host:container` เหมือนเดิม |
-| `-e KEY=value` | `environment:` | map ของค่าตั้งค่า |
-| `--env-file .env.app` | `env_file:` | ค่าใน `environment:` **ชนะ** `env_file:` |
-| `-v pgdata:/var/lib/...` | `volumes:` | ทั้ง bind mount และ named volume |
-| `--network ...` | `networks:` | ถ้าไม่เขียนเลย Compose สร้าง `<project>_default` ให้อัตโนมัติ |
-| `--name` | *(ไม่ต้องเขียน)* | Compose ตั้งให้เป็น `<project>-<service>-N` |
-| `--health-cmd` / `--health-interval` | `healthcheck:` | และใช้คู่กับ `depends_on: condition: service_healthy` |
-| `--restart unless-stopped` | `restart:` | `no` / `always` / `on-failure` / `unless-stopped` |
-| *(ทำไม่ได้)* | `depends_on: condition: service_healthy` | **รอ** ให้ service อื่นพร้อมก่อนจริง ๆ |
-
----
-
-## 3. อ่าน `compose.yaml` ทีละ key
+**คำถาม:** ไฟล์เดียวนี้ประกาศอะไรไว้บ้าง
 
 ```bash
 cat compose.yaml
 ```
 
-ส่วนสำคัญของไฟล์ (ในไฟล์จริงมีคอมเมนต์ภาษาไทยกำกับทุกบรรทัด) :
+ส่วนสำคัญของไฟล์ :
 
 ```yaml
 services:
   web:
     build:
-      context: ./web            # โฟลเดอร์ที่ใช้เป็น build context (มี Dockerfile multi-stage อยู่)
-    image: devopsboard-web:1.0  # ชื่อ image ที่ Compose จะตั้งให้หลัง build เสร็จ
+      context: ./web            # โฟลเดอร์ที่ใช้เป็น build context
+    image: devopsboard-web:1.0  # ชื่อ image ที่ Compose จะตั้งให้หลัง build
     ports:
       - "8187:80"               # host 8187 → container 80 (nginx)
-    networks:
-      - frontend
-      - backend
+    networks: [frontend, backend]
     depends_on:
       api:
-        condition: service_healthy
+        condition: service_healthy   # รอจนกว่า api จะ healthy จริง
     restart: unless-stopped
 
   api:
-    build:
-      context: ./api
+    build: { context: ./api }
     image: devopsboard-api:1.0
     ports:
       - "8087:5000"
-    networks:                   # ต้องมี frontend ด้วย ไม่งั้น ports: ข้างบนจะไม่ทำงาน
-      - frontend
-      - backend
-    env_file:
-      - .env.app                # ค่าจำนวนมาก + รหัสผ่าน อยู่ในไฟล์แยก
+    networks: [frontend, backend]   # ต้องมี frontend ไม่งั้น ports: ไม่ทำงาน
+    env_file: [.env.app]            # ค่าจำนวนมาก + รหัสผ่าน อยู่ในไฟล์แยก
     environment:
-      APP_ENV: production       # ค่านี้ "ชนะ" APP_ENV ที่อยู่ใน .env.app
+      APP_ENV: production           # ค่านี้ "ชนะ" APP_ENV ที่อยู่ใน .env.app
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    restart: unless-stopped
+      db:    { condition: service_healthy }
+      redis: { condition: service_healthy }
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:5000/health',timeout=3).status==200 else 1)"]
+      test: ["CMD", "python", "-c", "..."]
       interval: 5s
-      timeout: 3s
       retries: 12
       start_period: 5s
 
   redis:
     image: redis:7-alpine
-    volumes:
-      - redisdata:/data         # named volume: ตัวนับผู้เข้าชมจะไม่หายตอนลบ container
-    networks:                   # ไม่มี ports: → เข้าจาก host ไม่ได้เลย
-      - backend
+    volumes: [ "redisdata:/data" ]
+    networks: [backend]             # ไม่มี ports: → เข้าจาก host ไม่ได้เลย
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-    restart: unless-stopped
 
   db:
     image: postgres:17-alpine
-    env_file:
-      - .env.app                # POSTGRES_PASSWORD มาจากที่นี่ที่เดียว
-    environment:
-      POSTGRES_DB: appdb
-      POSTGRES_USER: appuser
+    env_file: [.env.app]
+    environment: { POSTGRES_DB: appdb, POSTGRES_USER: appuser }
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./db/initdb:/docker-entrypoint-initdb.d:ro   # bind mount แบบอ่านอย่างเดียว
-    networks:
-      - backend
+      - ./db/initdb:/docker-entrypoint-initdb.d:ro   # bind mount อ่านอย่างเดียว
+    networks: [backend]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
-      interval: 5s
-      timeout: 3s
-      retries: 12
-      start_period: 5s
-    restart: unless-stopped
 
-volumes:
-  pgdata:
-  redisdata:
+volumes: { pgdata: , redisdata: }
 
 networks:
   frontend:
   backend:
-    internal: true              # network วงนี้ออกอินเทอร์เน็ตไม่ได้ และ publish port ออก host ไม่ได้
+    internal: true                  # ออกอินเทอร์เน็ตไม่ได้ และ publish port ไม่ได้
 ```
 
-> 📝 **คำอธิบาย option ที่โผล่ใหม่:**
-> - `build.context: ./web` — โฟลเดอร์ที่จะถูกส่งเป็น build context ให้ daemon (ไฟล์ที่ถูกตัดด้วย `web/.dockerignore` จะไม่ถูกส่ง)
-> - `image:` เมื่อมาคู่กับ `build:` จะกลายเป็น **ชื่อที่ตั้งให้ผลลัพธ์** ไม่ใช่ image ที่จะไป pull
-> - `depends_on` แบบ **list ธรรมดา** คุมแค่ *ลำดับที่สั่ง start* — ต้องเขียนเป็น **long form** พร้อม `condition: service_healthy` เท่านั้นจึงจะ "รอ" จริง
-> - `healthcheck.test` มีสองแบบ : `["CMD", ...]` รันคำสั่งตรง ๆ ส่วน `["CMD-SHELL", "..."]` รันผ่าน shell (จึงใช้ pipe/ตัวแปรได้) · `start_period` คือช่วงผ่อนผันตอน boot ที่ยัง fail ได้โดยไม่นับเป็น unhealthy
-> - `:ro` ท้าย bind mount ทำให้ container แก้ไฟล์ init script ของเราไม่ได้
-> - `internal: true` ตัด gateway ออกจาก network วงนั้น — เป็นการ "ล้อมรั้ว" ให้ `db` และ `redis` คุยได้เฉพาะกับ service ในวงเดียวกัน
-> - **`POSTGRES_PASSWORD` ไม่ปรากฏใน `compose.yaml` เลยแม้แต่ครั้งเดียว** มันอยู่ใน `.env.app` ซึ่งถูกใส่ไว้ใน `.dockerignore` แล้ว และในงานจริงต้องอยู่ใน `.gitignore` ด้วย
-
-**กฎ YAML ที่พลาดบ่อย (จำ 4 ข้อนี้พอ)**
+**กฎ YAML ที่พลาดบ่อย — จำ 4 ข้อนี้พอ**
 
 | กฎ | ถูก | ผิด |
 |---|---|---|
-| เยื้องด้วย **space** เท่านั้น นิยม 2 ช่อง | `␣␣image: nginx:1.27-alpine` | ใช้ปุ่ม Tab |
-| `key: value` = map · `- item` = list | `ports:` แล้วบรรทัดถัดไป `␣␣- "8187:80"` | `ports:` แล้ว `␣␣8187:80` |
+| เยื้องด้วย **space** เท่านั้น | `␣␣image: nginx` | ใช้ปุ่ม Tab |
+| `key: value` = map · `- item` = list | `ports:` แล้ว `␣␣- "8187:80"` | `ports:` แล้ว `␣␣8187:80` |
 | ค่าที่มี `:` ให้ครอบเครื่องหมายคำพูด | `- "8187:80"` | `- 8187:80` |
-| ค่าที่อาจถูกอ่านเป็น boolean/ตัวเลข ให้ครอบด้วย | `PORT: "5000"` · `DEBUG: "yes"` | `PORT: 5000` · `DEBUG: yes` |
+| ค่าที่อาจถูกอ่านเป็น boolean/ตัวเลข ให้ครอบ | `PORT: "5000"` | `PORT: 5000` |
 
-ตรวจไฟล์ก่อนรันจริงได้เสมอ :
+> 📝 **`POSTGRES_PASSWORD` ไม่ปรากฏใน `compose.yaml` เลย** — อยู่ใน `.env.app` ซึ่งถูกใส่ไว้ใน `.dockerignore` แล้ว และในงานจริงต้องอยู่ใน `.gitignore` ด้วย
+
+---
+
+## การทดลองที่ 2 — ตรวจไฟล์ก่อนรันจริง
+
+**คำถาม:** เขียน YAML ถูกไหม รู้ได้ก่อนไหม
 
 ```bash
 docker compose -p devopsboard config --quiet && echo 'YAML OK'
 docker compose -p devopsboard config --services
-docker compose -p devopsboard config --volumes
 ```
 
-> 📝 **คำอธิบาย:** `-p devopsboard` ตั้ง **ชื่อ project** เอง · ปกติ Compose ใช้ **ชื่อโฟลเดอร์** เป็นชื่อ project แต่โฟลเดอร์ของเราชื่อ `007_LAB_Compose_Multistage_Capstone` ซึ่งยาวและขึ้นต้นด้วยตัวเลข ชื่อ container จะกลายเป็น `007_lab_compose_multistage_capstone-web-1` — ตั้งเองด้วย `-p` จึงอ่านง่ายกว่ามาก และ **ต้องใส่ `-p devopsboard` ทุกคำสั่ง** ในแล็บนี้ · `config --quiet` แปลงไฟล์เป็น config เต็มโดยไม่พิมพ์ออกมา ใช้เป็น "ตัวตรวจ syntax" ที่เร็วที่สุด
-
-✅ **Expected output** — ต้องได้ `YAML OK` และเห็นชื่อ service ครบ 4 กับ volume ครบ 2 (ลำดับที่แสดงอาจสลับกันได้) :
+✅ **สิ่งที่ต้องเห็น** — `YAML OK` และชื่อ service ครบ 4 (ลำดับอาจสลับ) :
 
 ```
-$ docker compose -p devopsboard config --quiet && echo 'YAML OK'
 YAML OK
-
-$ docker compose -p devopsboard config --services
 db
 redis
 api
 web
-
-$ docker compose -p devopsboard config --volumes
-pgdata
-redisdata
 ```
+
+> 📝 `-p devopsboard` ตั้ง **ชื่อ project** เอง — ปกติ Compose ใช้ชื่อโฟลเดอร์ ซึ่งของเราคือ `007_LAB_...` ยาวและขึ้นต้นด้วยตัวเลข · **ต้องใส่ `-p devopsboard` ทุกคำสั่งในแล็บนี้** · `config --quiet` คือ "ตัวตรวจ syntax" ที่เร็วที่สุด
 
 ---
 
-## 4. `docker compose up -d --build` — สั่งครั้งเดียว ขึ้นทั้งระบบ
+## การทดลองที่ 3 — สั่งครั้งเดียว ขึ้นทั้งระบบ
 
-**ทายก่อนรัน:** Compose ต้องทำอะไรบ้างกว่าจะได้ระบบครบ 4 service? และมันจะเริ่ม `api` ก่อนหรือหลัง `db` พร้อม?
+**คำถาม:** Compose ต้องทำอะไรบ้างกว่าจะได้ระบบครบ 4 service
 
 ```bash
 docker compose -p devopsboard up -d --build
 ```
 
-> 📝 **คำอธิบาย:** `up` = ทำให้สภาพจริงตรงกับที่ประกาศไว้ในไฟล์ · `-d` (detached) รันเบื้องหลังแล้วคืน prompt · `--build` บังคับให้ **build image ที่มี `build:` ใหม่ก่อนเสมอ** — ถ้าแก้ Dockerfile หรือ source แล้วสั่ง `up -d` เฉย ๆ Compose จะใช้ image เดิม นี่คือกับดักอันดับหนึ่งของมือใหม่ · ครั้งแรก Docker จะ pull base image (`python:3.12-slim`, `nginx:1.27-alpine`, `postgres:17-alpine`, `redis:7-alpine`) จึงใช้เวลาสักครู่
-
-✅ **Expected output (ช่วง build)** — สังเกตว่า Compose build **ทั้งสอง image พร้อมกัน** และในฝั่ง `web` มีบรรทัด `[build 5/5] RUN python build_site.py` ซึ่งคือ **stage build ของ multi-stage** กำลังสร้างหน้าเว็บ (เลข layer/digest/เวลาของแต่ละคนจะไม่ตรงกับเอกสาร) :
+✅ **สิ่งที่ต้องเห็น** — สร้าง network 2 วง · volume 2 ก้อน · แล้ว start **ตามลำดับ dependency** โดย `api` รอ `db`/`redis` เป็น `Healthy` ก่อน :
 
 ```
-$ docker compose -p devopsboard up -d --build
- Image devopsboard-web:1.0 Building
- Image devopsboard-api:1.0 Building
-#2 [api internal] load build definition from Dockerfile
-#3 [web internal] load build definition from Dockerfile
-        ... (โหลด metadata และ pull base image) ...
-#16 [web build 4/5] RUN pip install --no-cache-dir jinja2==3.1.4 csscompressor==0.9.5
-#17 [api 4/6] RUN pip install --no-cache-dir -r requirements.txt
-#17 2.206 Successfully installed Jinja2-3.1.6 MarkupSafe-3.0.3 Werkzeug-3.1.8 blinker-1.9.0 click-8.4.2 flask-3.1.0 itsdangerous-2.2.0 psycopg-3.2.3 psycopg-binary-3.2.3 redis-5.2.1 typing-extensions-4.16.0
-#19 [web build 5/5] RUN python build_site.py /out/index.html
-#19 0.426 [build] rendered /out/index.html (28462 bytes) at 2026-08-14 02:18:46 UTC
-#19 DONE 0.5s
-#22 [web stage-1 2/3] COPY --from=build /out/index.html /usr/share/nginx/html/index.html
-#22 DONE 0.2s
-#23 [web stage-1 3/3] COPY nginx.conf /etc/nginx/conf.d/default.conf
-#23 DONE 0.1s
-#21 naming to docker.io/library/devopsboard-api:1.0 done
-#24 naming to docker.io/library/devopsboard-web:1.0 0.0s done
+ Container devopsboard-db-1     Created
+ Container devopsboard-api-1    Created
+ Container devopsboard-web-1    Created
+ Container devopsboard-db-1     Started
+ Container devopsboard-redis-1  Started
+ Container devopsboard-db-1     Healthy      ← ผ่าน healthcheck แล้ว
+ Container devopsboard-redis-1  Healthy
+ Container devopsboard-api-1    Started      ← เพิ่งได้เริ่ม หลังสองตัวบน Healthy
+ Container devopsboard-api-1    Healthy
+ Container devopsboard-web-1    Started      ← เริ่มเป็นตัวสุดท้าย
 ```
 
-✅ **Expected output (ช่วงสร้างและ start)** — **นี่คือหลักฐานสำคัญที่สุดของแล็บนี้** อ่านบรรทัดล่างสุดจากบนลงล่างแล้วจะเห็นลำดับ `Waiting` → `Healthy` → ค่อย `Starting` ตัวถัดไป :
-
-```
- Network devopsboard_frontend Created
- Network devopsboard_backend Created
- Volume devopsboard_redisdata Created
- Volume devopsboard_pgdata Created
- Container devopsboard-redis-1 Created
- Container devopsboard-db-1 Created
- Container devopsboard-api-1 Created
- Container devopsboard-web-1 Created
- Container devopsboard-redis-1 Starting
- Container devopsboard-db-1 Starting
- Container devopsboard-redis-1 Started
- Container devopsboard-db-1 Started
- Container devopsboard-db-1 Waiting          ← Compose รอ healthcheck ของ db
- Container devopsboard-redis-1 Waiting       ← และของ redis
- Container devopsboard-db-1 Healthy
- Container devopsboard-redis-1 Healthy
- Container devopsboard-api-1 Starting        ← api เพิ่งได้เริ่มหลังทั้งคู่ healthy
- Container devopsboard-api-1 Started
- Container devopsboard-api-1 Waiting
- Container devopsboard-api-1 Healthy
- Container devopsboard-web-1 Starting        ← web เริ่มเป็นตัวสุดท้าย
- Container devopsboard-web-1 Started
-```
-
-> **อ่านให้เป็น :** ถ้า `depends_on` เขียนแบบ list ธรรมดา (`depends_on: [db, redis]`) จะ **ไม่มี** บรรทัด `Waiting` / `Healthy` เลย — Compose จะยิง `api` ขึ้นทันทีหลังสั่ง start `db` แล้วแอปจะพัง เพราะ PostgreSQL ยัง boot ไม่เสร็จ
+> 📝 `--build` **บังคับ build image ใหม่ก่อนเสมอ** — ถ้าแก้ Dockerfile หรือ source แล้วสั่ง `up -d` เฉย ๆ Compose จะใช้ image เดิม **นี่คือกับดักอันดับหนึ่งของมือใหม่** · สังเกตคำว่า `Healthy` ไม่ใช่แค่ `Started` — นั่นคือ `condition: service_healthy` ทำงาน
 
 ---
 
-## 5. ชื่อที่ Compose ตั้งให้ : ขีดกลาง vs ขีดล่าง
+## การทดลองที่ 4 — Compose ตั้งชื่อให้อย่างไร
+
+**คำถาม:** container / network / volume ได้ชื่อว่าอะไร
 
 ```bash
-docker compose -p devopsboard ps
-docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
-docker network ls
-docker volume ls
+docker compose -p devopsboard ps --format 'table {{.Service}}\t{{.Name}}\t{{.Ports}}'
+docker network ls --filter name=devopsboard
+docker volume ls --filter name=devopsboard
 ```
 
-> 📝 **คำอธิบาย:** `docker compose ps` แสดงเฉพาะของ project นี้ พร้อมคอลัมน์ `SERVICE` และสถานะ health ส่วน `docker ps` แสดงทุก container ในเครื่อง · จุดที่ให้จำคือ **Compose ใช้เครื่องหมายไม่เหมือนกัน** : container ใช้ `-` (ขีดกลาง) แต่ network และ volume ใช้ `_` (ขีดล่าง) เวลาไปค้นด้วย `grep` หรือ `docker network inspect` จะได้ไม่พิมพ์ผิด
-
-✅ **Expected output** — สังเกต 4 จุด : (1) ชื่อ container ลงท้าย `-1` ทุกตัว (2) `STATUS` ของ db/redis/api มีคำว่า `(healthy)` (3) `web` และ `api` เท่านั้นที่มี `0.0.0.0:...->` ใน `PORTS` (4) network/volume ใช้ `_` (เวลา `CREATED` และ NETWORK ID ของแต่ละคนจะต่างกัน) :
+✅ **สิ่งที่ต้องเห็น** — **container ใช้ขีดกลาง** แต่ **network/volume ใช้ขีดล่าง** :
 
 ```
-$ docker compose -p devopsboard ps
-NAME                  IMAGE                 COMMAND                  SERVICE   CREATED          STATUS                    PORTS
-devopsboard-api-1     devopsboard-api:1.0   "python app.py"          api       11 seconds ago   Up 5 seconds (healthy)    0.0.0.0:8087->5000/tcp, [::]:8087->5000/tcp
-devopsboard-db-1      postgres:17-alpine    "docker-entrypoint.s…"   db        11 seconds ago   Up 11 seconds (healthy)   5432/tcp
-devopsboard-redis-1   redis:7-alpine        "docker-entrypoint.s…"   redis     11 seconds ago   Up 11 seconds (healthy)   6379/tcp
-devopsboard-web-1     devopsboard-web:1.0   "/docker-entrypoint.…"   web       11 seconds ago   Up Less than a second     0.0.0.0:8187->80/tcp, [::]:8187->80/tcp
+SERVICE   NAME                   PORTS
+api       devopsboard-api-1      0.0.0.0:8087->5000/tcp
+db        devopsboard-db-1       5432/tcp
+redis     devopsboard-redis-1    6379/tcp
+web       devopsboard-web-1      0.0.0.0:8187->80/tcp
 
-$ docker network ls
-NETWORK ID     NAME                   DRIVER    SCOPE
-d42ee97a6a01   bridge                 bridge    local
-aa33227144ae   devopsboard_backend    bridge    local
-8650b0e0989d   devopsboard_frontend   bridge    local
-2772a44f685e   host                   host      local
-6f3e681abc6b   none                   null      local
+NAME                     DRIVER
+devopsboard_backend      bridge
+devopsboard_frontend     bridge
 
-$ docker volume ls
-DRIVER    VOLUME NAME
-local     devopsboard_pgdata
-local     devopsboard_redisdata
+VOLUME NAME
+devopsboard_pgdata
+devopsboard_redisdata
 ```
 
-> **กฎการตั้งชื่อของ Compose :** project `devopsboard` → container `devopsboard-web-1` (**ขีดกลาง** และมีเลขลำดับเพราะ scale ได้) · network `devopsboard_frontend` และ volume `devopsboard_pgdata` (**ขีดล่าง**) · **อย่าไปตั้ง `container_name:` เอง** เพราะจะชนกันเมื่อรันหลายชุดและ `--scale` ไม่ได้
+> 📝 **กฎการตั้งชื่อ:** container = `<project>-<service>-<N>` (ขีดกลาง มีเลขลำดับเผื่อ scale) · network/volume = `<project>_<ชื่อ>` (ขีดล่าง) · สังเกตว่า `db` กับ `redis` มีแต่พอร์ตฝั่ง container **ไม่มี `0.0.0.0:...->`**
 
 ---
 
-## 6. เปิดหน้า DevOps Board — ข้อมูลจริงจาก Redis + PostgreSQL
+## การทดลองที่ 5 — เปิดหน้า DevOps Board
 
-หน้าเว็บอยู่ที่พอร์ต `8187` ซึ่งเรา publish ออกมาจากเครื่องเรียนแล้ว เปิดเบราว์เซอร์ไปที่ **`http://localhost:8187`**
+**คำถาม:** ข้อมูลบนหน้าเว็บมาจากไหน
 
-![หน้า DevOps Board แสดงตัวนับผู้เข้าชมจาก Redis · ตาราง 4 รายการจาก PostgreSQL · และไฟสถานะ service ทั้งสี่](./images/dashboard.png)
+เปิดในเบราว์เซอร์ที่ **`http://localhost:8187`** :
 
-> 📝 **จุดที่ต้องดูในหน้านี้:**
-> - **ผู้เข้าชม** — มาจาก `INCR devopsboard:visits` ใน **Redis** กดปุ่ม "รีเฟรช" แล้วตัวเลขต้องเพิ่มขึ้นจริง
-> - **รายการทั้งหมด / ตาราง Board items** — `SELECT` จาก **PostgreSQL** ตาราง `items` ที่ `db/initdb/01-schema.sql` seed ไว้ 4 แถว
-> - **CONTAINER HOST** — `hostname` ของ container `devopsboard-api-1` ที่ตอบ request นี้ (ตรงกับ container ID)
-> - **APP_ENV = production** — พิสูจน์ว่า `environment:` ชนะ `env_file:` (ในไฟล์ `.env.app` เขียนไว้ว่า `from-env-file`)
-> - **Service health** — ไฟของ `redis` และ `db` มาจากผลตรวจจริงที่ API รายงานใน `/stats` · ไฟของ `api` เขียวเมื่อเบราว์เซอร์เรียก `/api/stats` สำเร็จ (ถ้า API ล่มจะกลายเป็นแดงทั้งแถว) · ส่วน `web` แสดงเขียวเสมอ เพราะถ้าโหลดหน้านี้ได้ แปลว่า nginx ทำงานอยู่แล้ว
-> - **Build info** — `API build time` และ `Web build time` คือเวลาที่ **แต่ละ image ถูก build** ไม่ใช่เวลาปัจจุบัน; `Web build time` ถูก **ฝังลงไฟล์ HTML ตั้งแต่ stage build** ของ multi-stage
-> - ทั้งหน้าไม่มี CDN เลย CSS/JS ฝัง inline ในไฟล์เดียว จึงเปิดได้แม้เครื่องเรียนไม่มีอินเทอร์เน็ต
+![หน้า DevOps Board หลังเพิ่มรายการ แสดง 6 rows โดยสองแถวล่างมี badge สีเขียว new](./images/dashboard-after-insert.png)
 
-ตรวจด้วย `curl` ว่าเส้นทาง **reverse proxy** ทำงานจริง :
+**เดินตาม request หนึ่งครั้ง:**
+
+1. เบราว์เซอร์ → พอร์ต **8187** ของกล่องเรียน → พอร์ต **80** ของ container `web`
+2. `web` (nginx) ส่งไฟล์ `index.html` ที่ **stage build สร้างไว้ตั้งแต่ตอน build**
+3. JavaScript เรียก `/api/stats` → nginx **reverse proxy** ไปที่ `http://api:5000/stats` (ชื่อ `api` แปลงเป็น IP ด้วย DNS ภายในของ Compose — หลักการเดียวกับ **LAB 6**)
+4. `api` (Flask) สั่ง `INCR` ที่ `redis:6379` แล้ว `SELECT` จาก `db:5432`
+5. ผลย้อนกลับทางเดิม → หน้า dashboard แสดงตัวเลขจริง
+
+ตรวจจาก terminal ได้เหมือนกัน :
 
 ```bash
-curl -s http://localhost:8187/api/stats
-for i in 1 2 3; do curl -s http://localhost:8187/api/stats; done
-curl -sS http://localhost:8087/health
+curl -s http://localhost:8187/api/stats | head -c 200; echo
 ```
 
-> 📝 **คำอธิบาย:** เบราว์เซอร์เรียก `/api/stats` ที่ **พอร์ต 8187 ของ nginx** แล้ว `web/nginx.conf` ส่งต่อไปยัง `http://api:5000/stats` ผ่าน **ชื่อ service `api`** ที่ Compose DNS แปลงให้ — เราจึงไม่ต้องแตะเรื่อง CORS เลย และได้พิสูจน์ DNS ของ Compose ไปในตัว · ส่วน `http://localhost:8087` คือการเข้า API **ตรง ๆ** ไม่ผ่าน nginx (path จึงเป็น `/health` ไม่ใช่ `/api/health`) ใช้ตอน debug
-
-✅ **Expected output** — `visits` เพิ่มขึ้นทีละ 1 ทุกครั้งที่เรียก คือหลักฐานว่า Redis ทำงานจริง (ค่า `hostname`, เวลา, และเลข visits ของแต่ละคนจะไม่ตรงกับเอกสาร) :
-
-```
-$ curl -s http://localhost:8187/api/stats
-{
-  "api_build_time": "2026-08-14 02:18:46 UTC",
-  "app_env": "production",
-  "env_file_only": "DevOps Board Team 2569",
-  "hostname": "dc0ac4e09bdc",
-  "item_count": 4,
-  "services": [
-        ... (redis: status up, detail PONG · db: status up, detail PostgreSQL 17.x) ...
-  ],
-  "visits": 1
-}
-items[0] = {"created_at": "2026-08-14 02:18:49", "id": 1, "name": "เขียน Dockerfile ให้ web", "owner": "stage build", "status": "seed"}
-
-$ for i in 1 2 3; do curl -s http://localhost:8187/api/stats; done
-visits = 2
-visits = 3
-visits = 4
-
-$ curl -sS http://localhost:8087/health
-{"status":"ok"}
-```
+> 📝 ทุกค่าบนหน้าเว็บถูกอ่านสดจาก Redis และ PostgreSQL จริง ไม่มีค่าไหน hard-code
 
 ---
 
-## 7. Multi-stage build — พิสูจน์ด้วยขนาด image จริง
+## การทดลองที่ 6 — multi-stage ลดขนาด image ได้เท่าไร
+
+**คำถาม:** stage แรกที่มี Python + Jinja2 ติดไปกับ image สุดท้ายไหม
 
 `web/Dockerfile` มี `FROM` **สองครั้ง** = สอง stage :
 
-![การทำงานของ web Dockerfile แบบ multi-stage จาก stage build ที่มี Python และ Jinja2 ไปยัง stage final ที่เหลือ nginx กับไฟล์ static](./images/theory-multi-stage.svg)
-
-> 🖼 **วิธีอ่านรูปนี้:** ไล่จาก stage `build` ทางซ้ายซึ่งมีเครื่องมือสร้าง `index.html` ขนาด image 196 MB ไปตามลูกศร `COPY --from=build` ตรงกลาง ลูกศรขนเฉพาะ artifact ไม่ได้รวม Python หรือ Jinja2 ไป stage final ทางขวา ตัวเลข 73.7 MB และลดลง 62% คือผลที่คำสั่งชั่งขนาดในข้อ 7 จะใช้พิสูจน์
-
 ```dockerfile
-# Stage 1: ใช้ Python image เป็น build environment ซึ่งจะไม่ติดไปกับ runtime image
+# Stage 1: build environment — จะไม่ติดไปกับ runtime image
 FROM python:3.12-slim AS build
 WORKDIR /src
 COPY build_site.py template.html ./
-ARG BUILD_TIME=unknown
-ENV BUILD_TIME=${BUILD_TIME}
 RUN pip install --no-cache-dir jinja2==3.1.4 csscompressor==0.9.5   # toolchain ที่หนัก
 RUN python build_site.py /out/index.html                            # สร้าง artifact
 
-# Stage 2: nginx Alpine ขนาดเล็ก ไม่มี Python และไม่มี build toolchain
+# Stage 2: nginx Alpine ขนาดเล็ก ไม่มี Python
 FROM nginx:1.27-alpine
 COPY --from=build /out/index.html /usr/share/nginx/html/index.html  # คัดเฉพาะ artifact
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx","-g","daemon off;"]
 ```
 
-**ทายก่อนรัน:** ถ้า stage `build` ต้องลง Python + Jinja2 ทั้งชุด แต่ stage สุดท้ายมีแค่ nginx + ไฟล์ HTML หนึ่งไฟล์ — ขนาดจะต่างกันกี่เท่า?
+ชั่งน้ำหนักทั้งสอง stage :
 
 ```bash
 docker build --target build -t devopsboard-web:builder ./web
-docker images --format 'table {{.Repository}}:{{.Tag}}\t{{.Size}}'
+docker images --format 'table {{.Repository}}:{{.Tag}}\t{{.Size}}' | grep devopsboard
 ```
 
-> 📝 **คำอธิบาย:** `--target build` สั่งให้ build **หยุดที่ stage ชื่อ `build`** แล้วเอา stage นั้นออกมาเป็น image จริง ๆ ปกติเราไม่ทำแบบนี้ (stage แรกเป็นแค่ตัวกลาง) แต่ทำครั้งนี้เพื่อ **ชั่งน้ำหนัก** ให้เห็นกับตา · `AS build` คือการตั้งชื่อ stage และ `--from=build` คือการเลือกคัดไฟล์ข้าม stage
-
-✅ **Expected output** — ขนาดของแต่ละคนอาจต่างเล็กน้อยตาม base image ที่ pull มา แต่สัดส่วนจะใกล้เคียงกัน :
+✅ **สิ่งที่ต้องเห็น** — stage build **196MB** แต่ image ที่ deploy จริงเหลือ **73.7MB** :
 
 ```
-$ docker images --format 'table {{.Repository}}:{{.Tag}}\t{{.Size}}'
 REPOSITORY:TAG            SIZE
-devopsboard-web:builder   196MB
-devopsboard-api:1.0       207MB
-devopsboard-web:1.0       73.7MB
-postgres:17-alpine        424MB
-redis:7-alpine            57.8MB
+devopsboard-web:1.0       73.7MB     ← image ที่ deploy จริง
+devopsboard-web:builder   196MB      ← stage build ที่ถูกทิ้ง
+devopsboard-api:1.0       207MB      ← single stage เพราะ runtime คือ Python
 ```
 
-| image | คืออะไร | ขนาดจริง | ผลของ multi-stage |
-|---|---|---|---|
-| `devopsboard-web:builder` | stage `build` (Python + Jinja2 + csscompressor + template) | **196 MB** | ถูกทิ้งหลัง build ไม่ถูก deploy |
-| `devopsboard-web:1.0` | stage runtime (nginx + `index.html` 28 KB) | **73.7 MB** | **เล็กลง 122 MB ≈ 62%** |
-| `devopsboard-api:1.0` | Flask API แบบ single stage (ต้องมี Python ตอนรันจริง) | 207 MB | ไม่ต้อง multi-stage เพราะ runtime *คือ* Python |
+![การทำงานของ web Dockerfile แบบ multi-stage จาก stage build ที่มี Python และ Jinja2 ไปยัง stage final ที่เหลือ nginx กับไฟล์ static](./images/theory-multi-stage.svg)
 
-พิสูจน์อีกชั้นว่า runtime image **ไม่มี** เครื่องมือ build ติดไปด้วย :
+> 🖼 **วิธีอ่านรูปนี้:** ลูกศร `COPY --from=build` ขน **เฉพาะ artifact** ไม่ได้ขน Python หรือ Jinja2 ไปด้วย — **เล็กลง 122 MB ≈ 62%**
+
+พิสูจน์อีกชั้นว่าเครื่องมือ build ไม่ติดไปด้วย :
 
 ```bash
-docker run --rm devopsboard-web:builder python -c 'import jinja2; print("jinja2", jinja2.__version__)'
 docker run --rm devopsboard-web:1.0 python --version
-docker run --rm devopsboard-web:1.0 ls -la /usr/share/nginx/html/
 ```
 
-> 📝 **คำอธิบาย:** คำสั่งแรกรันใน **stage build** ซึ่งมี Jinja2 อยู่ · คำสั่งที่สองรันใน **image สุดท้าย** แล้ว **ต้อง error** — นั่นคือสิ่งที่เราต้องการ เพราะแปลว่า Python ไม่ได้ติดไปกับ image ที่จะขึ้น production · คำสั่งที่สามแสดงว่าสิ่งเดียวที่ข้าม stage มาคือ `index.html`
-
-✅ **Expected output** — บรรทัด `python: not found` ในคำสั่งที่สองคือ "ผลลัพธ์ที่ถูกต้อง" ของแล็บนี้ :
+✅ **สิ่งที่ต้องเห็น** — **error คือผลลัพธ์ที่ถูกต้อง** เพราะแปลว่า Python ไม่ได้ติดไปกับ image ที่จะขึ้น production :
 
 ```
-$ docker run --rm devopsboard-web:builder python -c 'import jinja2; print("jinja2", jinja2.__version__)'
-jinja2 3.1.4
-
-$ docker run --rm devopsboard-web:1.0 python --version
 /docker-entrypoint.sh: exec: line 47: python: not found
-
-$ docker run --rm devopsboard-web:1.0 ls -la /usr/share/nginx/html/
-total 40
-drwxr-xr-x    1 root     root          4096 Aug 14 02:18 .
-drwxr-xr-x    1 root     root          4096 Apr 16  2025 ..
--rw-r--r--    1 root     root           497 Apr 16  2025 50x.html
--rw-r--r--    1 root     root         28462 Aug 14 02:18 index.html
 ```
 
-> **หลักสำคัญ (ตอนที่ 11) :** ถามตัวเองสองข้อ — *"แอปต้อง build ก่อนไหม"* และ *"ตอนรันต้องมี runtime ภาษาอะไรอยู่ใน image"* · ถ้าคำตอบคือ "build ด้วยเครื่องมือหนัก แต่รันด้วยไฟล์ static" ให้ใช้ multi-stage ทันที · React/Next.js/Java เข้าเงื่อนไขนี้เต็ม ๆ ส่วน Flask API ของเราไม่เข้า เพราะตอนรันก็ยังต้องมี Python อยู่ดี
+> 📝 **หลักการเลือก:** ถามสองข้อ — *"แอปต้อง build ก่อนไหม"* และ *"ตอนรันต้องมี runtime ภาษาอะไรใน image"* · ถ้าคำตอบคือ "build ด้วยเครื่องมือหนัก แต่รันด้วยไฟล์ static" ให้ใช้ multi-stage ทันที (React/Next.js/Java เข้าเงื่อนไขนี้เต็ม ๆ) · ส่วน `api/` ของเราไม่เข้า เพราะตอนรันก็ยังต้องมี Python อยู่ดี
 
 ---
 
-## 8. healthcheck ทำงานจริงแค่ไหน
+## การทดลองที่ 7 — `healthcheck` ทำให้ระบบรอจริงไหม
 
-![เส้นเวลาสถานะ Redis จาก Created ผ่าน Starting และการตรวจทุก 5 วินาทีจน Healthy ก่อนที่ api และ web ซึ่งรอ service_healthy จะเริ่ม](./images/theory-healthcheck-timeline.svg)
-
-> 🖼 **วิธีอ่านรูปนี้:** อ่านซ้ายไปขวาและสังเกตว่าการสร้าง container กับการพร้อมให้บริการเป็นคนละจังหวะ จุดตรวจทุก 5 วินาทีทำให้สถานะยังเป็น `starting` จนผลผ่านและเปลี่ยนเป็น `healthy` จากนั้นจึงปลดเงื่อนไขให้ `api` เริ่ม และ `web` รอต่ออีกทอดตาม dependency ที่ประกาศไว้
+**คำถาม:** Compose รู้ได้อย่างไรว่า `db` พร้อมรับ connection แล้ว
 
 ```bash
-docker compose -p devopsboard ps
 docker inspect --format '{{.Name}} => {{.State.Health.Status}}' \
   devopsboard-db-1 devopsboard-redis-1 devopsboard-api-1
 docker inspect --format '{{json (index .State.Health.Log 0)}}' devopsboard-db-1
-docker inspect --format '{{json (index .State.Health.Log 0)}}' devopsboard-redis-1
 ```
 
-> 📝 **คำอธิบาย:** `docker compose ps` แสดง health ในคอลัมน์ `STATUS` แบบย่อ ส่วน `docker inspect` เจาะเข้าไปดูของจริง · `.State.Health.Log` เก็บ **ผลการตรวจย้อนหลัง** พร้อม `ExitCode` และ `Output` ของคำสั่ง healthcheck — `ExitCode: 0` = ผ่าน · `index ... 0` คือหยิบรายการแรกในลิสต์ (ไวยากรณ์ของ Go template)
-
-✅ **Expected output** — สิ่งที่ต้องเห็นคือ `healthy` ครบสามตัว และ `ExitCode` เป็น `0` พร้อมข้อความจริงจากคำสั่งตรวจ (เวลาของแต่ละคนจะต่างกัน) :
+✅ **สิ่งที่ต้องเห็น** — `healthy` ครบสามตัว และเห็น **ผลการตรวจจริง** พร้อม `ExitCode: 0` :
 
 ```
-$ docker inspect --format '{{.Name}} => {{.State.Health.Status}}' devopsboard-db-1 devopsboard-redis-1 devopsboard-api-1
 /devopsboard-db-1 => healthy
 /devopsboard-redis-1 => healthy
 /devopsboard-api-1 => healthy
 
-$ docker inspect --format '{{json (index .State.Health.Log 0)}}' devopsboard-db-1
-{"Start":"2026-08-14T09:18:53.472552575+07:00","End":"2026-08-14T09:18:53.523524263+07:00","ExitCode":0,"Output":"/var/run/postgresql:5432 - accepting connections\n"}
-
-$ docker inspect --format '{{json (index .State.Health.Log 0)}}' devopsboard-redis-1
-{"Start":"2026-08-14T09:18:53.44999917+07:00","End":"2026-08-14T09:18:53.516855381+07:00","ExitCode":0,"Output":"PONG\n"}
+{"Start":"2026-08-16T21:27:56...","ExitCode":0,"Output":"/var/run/postgresql:5432 - accepting connections\n"}
 ```
 
-> **ขอบเขตที่ต้องรู้ :** `healthcheck` + `service_healthy` ช่วยเรื่อง **ลำดับตอนเริ่ม** เท่านั้น · หลังจากระบบขึ้นแล้ว database ยังล่มกลางทางได้ ดังนั้น **โค้ดแอปต้อง retry เอง** ด้วย (ใน `api/app.py` มีฟังก์ชัน `retry_startup_services()` และทุก endpoint ดักข้อผิดพลาดไว้ ไม่ปล่อยให้ 500)
+![เส้นเวลาสถานะ Redis จาก Created ผ่าน Starting และการตรวจทุก 5 วินาทีจน Healthy ก่อนที่ api และ web ซึ่งรอ service_healthy จะเริ่ม](./images/theory-healthcheck-timeline.svg)
+
+> 🖼 **วิธีอ่านรูปนี้:** การสร้าง container กับการพร้อมให้บริการเป็น **คนละจังหวะ** — จุดตรวจทุก 5 วินาทีทำให้สถานะยังเป็น `starting` จนผลผ่านจึงเปลี่ยนเป็น `healthy` แล้วจึงปลดล็อกให้ `api` เริ่ม
+
+> 📝 **ขอบเขตที่ต้องรู้:** `healthcheck` + `service_healthy` ช่วยเรื่อง **ลำดับตอนเริ่ม** เท่านั้น — หลังระบบขึ้นแล้ว database ยังล่มกลางทางได้ ดังนั้น **โค้ดแอปต้อง retry เอง** ด้วย
 
 ---
 
-## 9. `environment:` ชนะ `env_file:`
+## การทดลองที่ 8 — `environment:` ชนะ `env_file:`
+
+**คำถาม:** ประกาศค่าเดียวกันทั้งสองที่ จะได้ค่าไหน (ทบทวนจาก **LAB 4**)
 
 ```bash
-grep -n 'APP_ENV' .env.app compose.yaml
-docker compose -p devopsboard exec api env | sort | grep -E 'APP_ENV|BOARD_TEAM|POSTGRES_|REDIS_HOST|DB_HOST'
+grep -n 'APP_ENV' .env.app
+docker compose -p devopsboard exec api env | grep -E 'APP_ENV|BOARD_TEAM'
 ```
 
-> 📝 **คำอธิบาย:** `.env.app` ประกาศ `APP_ENV=from-env-file` ส่วน `compose.yaml` ประกาศ `APP_ENV: production` — ค่าที่ container ได้จริงจะเป็นตัวไหน? · `docker compose exec <service> <คำสั่ง>` ใช้ **ชื่อ service** แทนชื่อ container (แนวคิดเดียวกับ `docker exec` แต่ไม่ต้องจำเลข `-1`)
-
-✅ **Expected output** — `APP_ENV=production` คือคำตอบ : **`environment:` ชนะ `env_file:`** ส่วน `BOARD_TEAM` ที่ไม่ได้ประกาศซ้ำก็ไหลมาจาก `.env.app` ตามปกติ :
+✅ **สิ่งที่ต้องเห็น** — ไฟล์บอก `from-env-file` แต่ container เห็น `production` :
 
 ```
-$ grep -n 'APP_ENV' .env.app compose.yaml
-.env.app:7:APP_ENV=from-env-file
-compose.yaml:43:    # ค่านี้ทับ APP_ENV จาก env_file
-compose.yaml:45:      APP_ENV: production
+7:APP_ENV=from-env-file
 
-$ docker compose -p devopsboard exec api env | sort | grep -E 'APP_ENV|BOARD_TEAM|POSTGRES_|REDIS_HOST|DB_HOST'
-APP_ENV=production
 BOARD_TEAM=DevOps Board Team 2569
-DB_HOST=db
-POSTGRES_DB=appdb
-POSTGRES_PASSWORD=devopsboard_pw_2569
-POSTGRES_USER=appuser
-REDIS_HOST=redis
+APP_ENV=production
 ```
 
-> **ลำดับความสำคัญ (ตรงกับตอนที่ 7) :** `docker compose run -e` → `environment:` → `env_file:` → `ENV` ใน Dockerfile
-> **ข้อควรระวังเรื่องความปลอดภัย :** สังเกตว่า `POSTGRES_PASSWORD` โผล่ทั้งใน `docker compose exec api env` และใน `docker compose config` — อย่าวางผลลัพธ์สองคำสั่งนี้ลงในที่สาธารณะหรือ issue tracker · และในงานจริง `.env.app` ต้องอยู่ใน **`.gitignore`** (แล็บนี้ commit ไว้เพื่อการเรียนเท่านั้น) ส่วน `.dockerignore` มีบรรทัด `.env.app` อยู่แล้วเพื่อกันไม่ให้ไฟล์หลุดเข้าไปใน image
+> 📝 **ลำดับความสำคัญ:** `docker compose run -e` → `environment:` → `env_file:` → `ENV` ใน Dockerfile · `BOARD_TEAM` ที่ไม่ได้ประกาศซ้ำก็ไหลมาจาก `.env.app` ตามปกติ
+>
+> ⚠️ `POSTGRES_PASSWORD` โผล่ใน `docker compose exec api env` และ `docker compose config` — **อย่าวางผลสองคำสั่งนี้ในที่สาธารณะ**
 
 ---
 
-## 10. network แยกชั้น — `db` และ `redis` ถูกล้อมรั้วจริงไหม
+## การทดลองที่ 9 — `internal: true` ล้อมรั้วได้จริงไหม
 
-**ทายก่อนรัน:** ถ้าเราเปิด container ใหม่ที่ต่อกับ `devopsboard_frontend` อย่างเดียว มันจะ `ping db` ติดไหม?
+**คำถาม:** container ที่อยู่แค่ `frontend` จะเห็น `db` ไหม
 
 ```bash
-docker run --rm --network devopsboard_frontend busybox:1.36 nslookup db
-docker run --rm --network devopsboard_frontend busybox:1.36 sh -c 'nc -z -w 3 db 5432; echo exit=$?'
-docker run --rm --network devopsboard_backend  busybox:1.36 sh -c 'nc -z -w 3 db 5432; echo "db:5432 exit=$?"; nc -z -w 3 redis 6379; echo "redis:6379 exit=$?"'
+docker run --rm --network devopsboard_frontend busybox:1.36 \
+  sh -c 'nc -z -w 3 db 5432; echo "จาก frontend exit=$?"'
+docker run --rm --network devopsboard_backend busybox:1.36 \
+  sh -c 'nc -z -w 3 db 5432; echo "จาก backend exit=$?"'
 ```
 
-> 📝 **คำอธิบาย:** `--network <ชื่อ network>` ต่อ container ใหม่เข้ากับ network ที่ Compose สร้างไว้ (ต้องใช้ชื่อเต็มที่มี prefix project และเป็น **ขีดล่าง**) · `nc -z -w 3 host port` = ลองเปิด TCP connection แล้วปิดทันที `-z` คือไม่ส่งข้อมูล `-w 3` คือ timeout 3 วินาที · `echo exit=$?` พิมพ์ exit code ของคำสั่งก่อนหน้า — `0` แปลว่าต่อติด
-
-✅ **Expected output** — จาก `frontend` แม้แต่ **ชื่อ `db` ก็ยังแปลงเป็น IP ไม่ได้** (`bad address 'db'`) ส่วนจาก `backend` ต่อติดทั้งคู่ :
+✅ **สิ่งที่ต้องเห็น** — จาก `frontend` **แม้แต่ชื่อ `db` ก็แปลงเป็น IP ไม่ได้** ส่วนจาก `backend` ต่อติด :
 
 ```
-### 1) จาก network frontend (ที่ db ไม่ได้อยู่)
-$ docker run --rm --network devopsboard_frontend busybox:1.36 nslookup db
-Server:		127.0.0.11
-Address:	127.0.0.11:53
-
-;; connection timed out; no servers could be reached
-
-$ docker run --rm --network devopsboard_frontend busybox:1.36 sh -c 'nc -z -w 3 db 5432; echo exit=$?'
 nc: bad address 'db'
-exit=1
+จาก frontend exit=1
 
-### 2) จาก network backend (ที่ db และ redis อยู่)
-$ docker run --rm --network devopsboard_backend busybox:1.36 sh -c 'nc -z -w 3 db 5432; ...'
-db:5432 exit=0
-redis:6379 exit=0
+จาก backend exit=0
 ```
 
-แล้วจาก **host** ล่ะ?
+แล้วจาก **host** ล่ะ :
 
 ```bash
-docker compose -p devopsboard ps --format 'table {{.Service}}\t{{.Ports}}'
 curl -sS -m 3 http://localhost:5432 ; curl -sS -m 3 http://localhost:6379
 ```
 
-✅ **Expected output** — `db` และ `redis` มีแต่พอร์ตฝั่ง container (`5432/tcp`) ไม่มี `0.0.0.0:...->` จึงเข้าจากเครื่องเราไม่ได้เลย :
+✅ **สิ่งที่ต้องเห็น** — เข้าไม่ได้ทั้งคู่ :
 
 ```
-$ docker compose -p devopsboard ps --format 'table {{.Service}}\t{{.Ports}}'
-SERVICE   PORTS
-api       0.0.0.0:8087->5000/tcp, [::]:8087->5000/tcp
-db        5432/tcp
-redis     6379/tcp
-web       0.0.0.0:8187->80/tcp, [::]:8187->80/tcp
-
-$ curl -sS -m 3 http://localhost:5432 ; curl -sS -m 3 http://localhost:6379
 curl: (7) Failed to connect to localhost port 5432 after 0 ms: Couldn't connect to server
 curl: (7) Failed to connect to localhost port 6379 after 0 ms: Couldn't connect to server
 ```
 
-> **บทเรียน :** database ที่มีแค่ service ใน project เดียวกันใช้งาน **ไม่ต้อง publish port ออก host เลย** · แค่ไม่เขียน `ports:` ก็ปิดประตูจากภายนอกได้แล้ว และการแยก `frontend` / `backend` (พร้อม `internal: true`) ทำให้ container ที่ไม่เกี่ยวข้องมองไม่เห็น `db` แม้แต่ชื่อ
+> 📝 **บทเรียน:** database ที่มีแค่ service ใน project เดียวกันใช้ **ไม่ต้อง publish port ออก host เลย** · แค่ไม่เขียน `ports:` ก็ปิดประตูจากภายนอกได้แล้ว และการแยก `frontend`/`backend` + `internal: true` ทำให้ container ที่ไม่เกี่ยวข้องมองไม่เห็น `db` แม้แต่ชื่อ
+>
+> ⚠️ **กับดัก:** `internal: true` ทำให้ **publish port ไม่ได้และไม่ฟ้อง error** — นี่คือเหตุผลที่ `api` ต้องอยู่ `frontend` ด้วย ไม่งั้นพอร์ต `8087` จะหายเงียบ ๆ
 
 ---
 
-## 11. named volume — ข้อมูลรอด `down` แต่ไม่รอด `down -v`
+## การทดลองที่ 10 — ข้อมูลรอด `down` ไหม
 
-เพิ่มรายการใหม่ 2 รายการ (กดปุ่ม **"+ เพิ่มลง PostgreSQL"** บนหน้าเว็บก็ได้ ผลเหมือนกัน) :
+**คำถาม:** ลบ container ทั้งหมดแล้วข้อมูลใน PostgreSQL หายไหม
+
+เพิ่มข้อมูลใหม่ก่อน (กดปุ่มบนหน้าเว็บก็ได้ ผลเหมือนกัน) :
 
 ```bash
 docker compose -p devopsboard exec db psql -U appuser -d appdb -c 'SELECT count(*) FROM items;'
 curl -sS -X POST http://localhost:8187/api/items -H 'Content-Type: application/json' \
-  -d '{"name":"ทดสอบ volume ให้ข้อมูลรอด down","owner":"student"}'
-curl -sS -X POST http://localhost:8187/api/items -H 'Content-Type: application/json' \
-  -d '{"name":"เขียน readme ของ LAB 7","owner":"teacher"}'
-docker compose -p devopsboard exec db psql -U appuser -d appdb -c 'SELECT id,name,owner,status FROM items ORDER BY id;'
+  -d '{"name":"ทดสอบ volume","owner":"student"}' >/dev/null
+docker compose -p devopsboard exec db psql -U appuser -d appdb -c 'SELECT count(*) FROM items;'
 ```
 
-> 📝 **คำอธิบาย:** `docker compose exec db psql -U appuser -d appdb -c "<SQL>"` เข้าไปรัน `psql` **ข้างใน container db** — เราเข้าถึงฐานข้อมูลได้ทั้งที่ไม่ได้ publish port 5432 ออกมาเลย · `POST /api/items` เข้าผ่าน nginx แล้วถูกส่งต่อไปยัง Flask ซึ่ง `INSERT` ลงตาราง `items` ด้วย `status='new'`
-
-✅ **Expected output** — จาก 4 แถว (seed) เพิ่มเป็น 6 แถว โดยสองแถวใหม่มี `status = new` :
+✅ **สิ่งที่ต้องเห็น** — จาก **4 แถว (seed)** เพิ่มเป็น **5 แถว** :
 
 ```
-$ docker compose -p devopsboard exec db psql -U appuser -d appdb -c "SELECT count(*) FROM items;"
  count
 -------
      4
-(1 row)
 
-$ curl -sS -X POST http://localhost:8187/api/items ...
-{"item":{"created_at":"2026-08-14 02:20:14","id":5,"name":"...","owner":"student","status":"new"},"ok":true}
-{"item":{"created_at":"2026-08-14 02:20:14","id":6,"name":"...","owner":"teacher","status":"new"},"ok":true}
-
-$ docker compose -p devopsboard exec db psql -U appuser -d appdb -c "SELECT id,name,owner,status FROM items ORDER BY id;"
- id |            name             |     owner     | status
-----+-----------------------------+---------------+--------
-  1 | เขียน Dockerfile ให้ web      | stage build   | seed
-  2 | สร้าง Flask API image        | backend team  | seed
-  3 | เชื่อม Redis ด้วย Compose      | platform team | seed
-  4 | เตรียม PostgreSQL volume     | database team | seed
-  5 | ทดสอบ volume ให้ข้อมูลรอด down | student       | new
-  6 | เขียน readme ของ LAB 7       | teacher       | new
-(6 rows)
+ count
+-------
+     5
 ```
 
-รีเฟรชหน้าเว็บ จะเห็นรายการใหม่ขึ้นทันทีพร้อม badge สีเขียว `new` :
-
-![หน้า DevOps Board หลังเพิ่มรายการ แสดง 6 rows โดยสองแถวล่างมี badge สีเขียว new](./images/dashboard-after-insert.png)
-
-**ทายก่อนรัน:** ถ้าเราลบ container ทั้งหมดด้วย `docker compose down` แล้ว `up -d` ใหม่ — 6 แถวนี้จะยังอยู่ไหม?
+ทีนี้ลบทั้งระบบแล้วสร้างใหม่ :
 
 ```bash
 docker compose -p devopsboard down
-docker volume ls
+docker volume ls --filter name=devopsboard
 docker compose -p devopsboard up -d
-curl -s http://localhost:8187/api/stats
+sleep 8
+docker compose -p devopsboard exec db psql -U appuser -d appdb -c 'SELECT count(*) FROM items;'
 ```
 
-> 📝 **คำอธิบาย:** `down` ลบ **container + network** ของ project แต่ **ไม่ลบ named volume** ตามค่าเริ่มต้น · `docker volume ls` ตรงกลางคือหลักฐานว่า `devopsboard_pgdata` และ `devopsboard_redisdata` ยังอยู่ทั้งที่ container หายไปหมดแล้ว · `up -d` ที่ตามมาไม่มี `--build` เพราะ image ยังอยู่และไม่ได้แก้โค้ด
-
-✅ **Expected output** — container ถูกลบครบ แต่ volume ยังอยู่ พอ `up` กลับมา **ข้อมูลครบ 6 แถวเหมือนเดิม** และ `visits` ก็ไม่ได้เริ่มนับใหม่ (เพราะ `redisdata` ก็รอดเช่นกัน) :
+✅ **สิ่งที่ต้องเห็น** — container ถูกลบครบ แต่ **volume ยังอยู่** และข้อมูลครบ 5 แถวเหมือนเดิม :
 
 ```
-$ docker compose -p devopsboard down
  Container devopsboard-web-1 Removed
- Container devopsboard-api-1 Removed
- Container devopsboard-redis-1 Removed
- Container devopsboard-db-1 Removed
  Network devopsboard_frontend Removed
- Network devopsboard_backend Removed
 
-$ docker volume ls
-DRIVER    VOLUME NAME
-local     devopsboard_pgdata
-local     devopsboard_redisdata
+VOLUME NAME
+devopsboard_pgdata
+devopsboard_redisdata
 
-$ curl -s http://localhost:8187/api/stats  # นับจำนวนรายการหลัง down/up
-item_count = 6
-visits = 4
-  1 เขียน Dockerfile ให้ web | seed
-  2 สร้าง Flask API image | seed
-  3 เชื่อม Redis ด้วย Compose | seed
-  4 เตรียม PostgreSQL volume | seed
-  5 ทดสอบ volume ให้ข้อมูลรอด down | new
-  6 เขียน readme ของ LAB 7 | new
+ count
+-------
+     5
 ```
 
-> **นี่คือเหตุผลที่ database ต้องใช้ named volume :** filesystem ของ container เป็นชั้นชั่วคราว — ลบ container เมื่อไหร่ข้อมูลในชั้นนั้นหายทันที · `pgdata:/var/lib/postgresql/data` ย้ายข้อมูลออกมาไว้ใน volume ที่ Docker ดูแล อายุของข้อมูลจึงไม่ผูกกับอายุของ container
-> ⚠️ ส่วนคำสั่งที่ **ลบ** volume ด้วยคือ `docker compose down -v` — เก็บไว้ทดลองท้ายบทใน "ทดลองเพิ่มเติม" เพราะข้อมูลจะหายจริง
+> 📝 **นี่คือเหตุผลที่ database ต้องใช้ named volume:** filesystem ของ container เป็นชั้นชั่วคราว ลบ container เมื่อไหร่ข้อมูลในชั้นนั้นหายทันที · `pgdata:/var/lib/postgresql/data` ย้ายข้อมูลออกมาไว้ในพื้นที่ที่ Docker ดูแล **อายุข้อมูลจึงไม่ผูกกับอายุ container**
 
 ---
 
-## 12. PostgreSQL init script และกับดักที่ทุกคนต้องเจอ
+## การทดลองที่ 11 — `down -v` กับ init script
 
-`db/initdb/01-schema.sql` ถูก mount เข้าไปที่ `/docker-entrypoint-initdb.d/` ของ official image :
-
-![วงจร named volume และ PostgreSQL init ตั้งแต่ up ครั้งแรก down up ซ้ำ การลบด้วย down -v และการ init ใหม่](./images/theory-volume-init-lifecycle.svg)
-
-> 🖼 **วิธีอ่านรูปนี้:** ไล่หมายเลขทั้งห้าจังหวะและจับตาว่า volume ยังอยู่หรือถูกลบ ไม่ใช่ดูเพียงว่า container ถูกสร้างใหม่หรือไม่ รอบ `up` แรก volume ว่างจึงรัน init ส่วนรอบหลัง `down` ข้อมูลเดิมทำให้ init ถูกข้าม จนเมื่อข้อ 12 ลบ volume แล้ว `up` ใหม่เท่านั้นที่เงื่อนไข “ว่างครั้งแรก” กลับมา
-
-```sql
--- สคริปต์นี้ทำงานเฉพาะครั้งแรกที่ PostgreSQL volume ยังว่าง
-CREATE TABLE items (
-  id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  owner TEXT NOT NULL DEFAULT 'student',
-  status TEXT NOT NULL DEFAULT 'seed',
-  created_at TIMESTAMP NOT NULL DEFAULT now()
-);
-
-INSERT INTO items (name, owner, status) VALUES
-  ('เขียน Dockerfile ให้ web', 'stage build', 'seed'),
-  ... (รวม 4 แถว) ...
-```
-
-**ทายก่อนรัน:** ถ้าเราแก้ไฟล์นี้เพิ่มอีก 1 แถว แล้วสั่ง `up -d --force-recreate db` แถวใหม่จะขึ้นไหม?
+**คำถาม:** แก้ init script แล้ว recreate `db` แถวใหม่จะขึ้นไหม
 
 ```bash
 printf "\nINSERT INTO items (name, owner, status) VALUES ('รายการใหม่จาก init script', 'ops team', 'seed');\n" >> db/initdb/01-schema.sql
 docker compose -p devopsboard up -d --force-recreate db
 sleep 6
 docker compose -p devopsboard exec db psql -U appuser -d appdb -c 'SELECT count(*) FROM items;'
-docker compose -p devopsboard logs --tail 4 db
 ```
 
-> 📝 **คำอธิบาย:** `--force-recreate db` บังคับให้ **ลบแล้วสร้าง container `db` ใหม่** ทั้งที่ config ไม่เปลี่ยน — ถือเป็นการทดสอบที่หนักที่สุดเท่าที่ทำได้โดยไม่แตะ volume · `sleep 6` รอ PostgreSQL boot · แล้วนับแถวดูว่ามีผลหรือไม่
-
-✅ **Expected output** — **ไม่มีผลเลย** ยังเป็น 6 แถวเท่าเดิม (4 seed + 2 ที่เราเพิ่มเองในข้อ 11) และใน log ไม่มีบรรทัดที่บอกว่ารัน init script :
+✅ **สิ่งที่ต้องเห็น** — **ไม่มีผลเลย** ยังเป็น 5 แถวเท่าเดิม :
 
 ```
-$ docker compose -p devopsboard exec db psql -U appuser -d appdb -c "SELECT count(*) FROM items;"   # ยังเท่าเดิม!
  count
 -------
-     6
-(1 row)
-
-$ docker compose -p devopsboard logs --tail 4 db   # ไม่มีบรรทัดรัน init script
-db-1  | 2026-08-14 02:20:53.153 UTC [1] LOG:  listening on IPv6 address "::", port 5432
-db-1  | 2026-08-14 02:20:53.160 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
-db-1  | 2026-08-14 02:20:53.168 UTC [29] LOG:  database system was shut down at 2026-08-14 02:20:52 UTC
-db-1  | 2026-08-14 02:20:53.177 UTC [1] LOG:  database system is ready to accept connections
+     5
 ```
 
-> 📝 **คำอธิบายกับดัก:** ไฟล์ `.sql` / `.sh` ใน `/docker-entrypoint-initdb.d/` ถูกรัน **เฉพาะครั้งที่ data directory ยังว่างเท่านั้น** · ตอนนี้ `devopsboard_pgdata` มีข้อมูลอยู่แล้ว entrypoint ของ PostgreSQL จึงข้ามขั้นตอน init ไปเลย ต่อให้เรา recreate container กี่ครั้งก็ตาม · จะให้มีผลต้อง **ลบ volume ทิ้งก่อน** ซึ่งแปลว่า **ข้อมูลทั้งหมดหาย** — เหมาะกับ dev เท่านั้น ระบบจริงต้องใช้เครื่องมือ **migration** (Alembic, Flyway, Liquibase ฯลฯ)
+![วงจร named volume และ PostgreSQL init ตั้งแต่ up ครั้งแรก down up ซ้ำ การลบด้วย down -v และการ init ใหม่](./images/theory-volume-init-lifecycle.svg)
 
-ทดลองต่อให้จบ — ลบ volume แล้วดูว่า init script กลับมาทำงาน :
+> 🖼 **วิธีอ่านรูปนี้:** จับตาว่า **volume ยังอยู่หรือถูกลบ** ไม่ใช่ดูว่า container ถูกสร้างใหม่หรือไม่ — รอบ `up` แรก volume ว่างจึงรัน init ส่วนรอบหลังข้อมูลเดิมทำให้ init ถูกข้าม
+
+ทีนี้ลบ volume ทิ้งจริง ๆ :
 
 ```bash
 docker compose -p devopsboard down -v
-docker volume ls
 docker compose -p devopsboard up -d
-sleep 5
-docker compose -p devopsboard exec db psql -U appuser -d appdb -c 'SELECT id,name,status FROM items ORDER BY id;'
-curl -s http://localhost:8187/api/stats
+sleep 10
+docker compose -p devopsboard exec db psql -U appuser -d appdb -c 'SELECT count(*) FROM items;'
 ```
 
-✅ **Expected output** — `down -v` ลบ volume ทั้งสองก้อน (`docker volume ls` เหลือแต่หัวตาราง) พอ `up` ใหม่ init script รันอีกครั้งได้ **5 แถว** (4 seed เดิม + 1 แถวที่เราเพิ่งเพิ่มในไฟล์) — และ **2 แถวที่เราเพิ่มผ่านหน้าเว็บหายไปถาวร** ส่วน `visits` กลับไปเริ่มที่ 1 เพราะ `redisdata` ถูกลบด้วย :
+✅ **สิ่งที่ต้องเห็น** — init script รันอีกครั้งได้ **5 แถว** (4 seed เดิม + 1 แถวที่เพิ่งเพิ่มในไฟล์) — และ **แถวที่เราเพิ่มผ่าน API หายไปถาวร** :
 
 ```
-$ docker compose -p devopsboard down -v
- Container devopsboard-web-1 Removed
-        ... (ลบ container ครบทั้ง 4) ...
  Volume devopsboard_pgdata Removed
  Volume devopsboard_redisdata Removed
- Network devopsboard_backend Removed
- Network devopsboard_frontend Removed
 
-$ docker volume ls
-DRIVER    VOLUME NAME
-
-$ docker compose -p devopsboard exec db psql -U appuser -d appdb -c "SELECT id,name,status FROM items ORDER BY id;"
- id |           name           | status
-----+--------------------------+--------
-  1 | เขียน Dockerfile ให้ web   | seed
-  2 | สร้าง Flask API image     | seed
-  3 | เชื่อม Redis ด้วย Compose   | seed
-  4 | เตรียม PostgreSQL volume  | seed
-  5 | รายการใหม่จาก init script | seed
-(5 rows)
-
-$ curl -s http://localhost:8187/api/stats   # visits กลับไปเริ่มนับใหม่เพราะ redisdata ถูกลบด้วย
-visits = 1 | item_count = 5
+ count
+-------
+     5
 ```
 
-อย่าลืมแก้ไฟล์กลับให้เหมือนเดิม :
+> 📝 **กับดักที่ทุกคนต้องเจอ:** ไฟล์ใน `/docker-entrypoint-initdb.d/` ถูกรัน **เฉพาะครั้งที่ data directory ยังว่างเท่านั้น** · จะให้มีผลต้องลบ volume ทิ้งก่อน ซึ่งแปลว่า **ข้อมูลทั้งหมดหาย** — เหมาะกับ dev เท่านั้น ระบบจริงต้องใช้เครื่องมือ **migration** (Alembic, Flyway, Liquibase)
+
+คืนไฟล์กลับ :
 
 ```bash
 git checkout -- db/initdb/01-schema.sql
-tail -3 db/initdb/01-schema.sql
 ```
 
 ---
 
-## 13. `logs` · `exec` · `top` — เครื่องมือประจำวัน
+## การทดลองที่ 12 — เครื่องมือประจำวัน
+
+**คำถาม:** ระบบขึ้นแล้ว ดูอะไรได้บ้าง
 
 ```bash
-docker compose -p devopsboard logs --tail 8 api
-docker compose -p devopsboard exec api sh -c 'hostname; env | grep APP_ENV; ls /app'
 docker compose -p devopsboard exec api sh -c 'getent hosts redis; getent hosts db; getent hosts web'
+curl -s http://localhost:8187/api/stats > /dev/null      # เรียกหนึ่งครั้งให้ตัวนับขยับ
 docker compose -p devopsboard exec redis redis-cli GET devopsboard:visits
-docker compose -p devopsboard top api
+docker compose -p devopsboard logs --tail 3 api
 ```
 
-> 📝 **คำอธิบาย:** `logs --tail N <service>` ดู log ท้าย ๆ · เปลี่ยนเป็น `logs -f api` เพื่อ **ติดตามสด** (เป็นคำสั่ง blocking — เปิดไว้ที่ **T2** แล้วยิง `curl` จาก **T1** จะเห็น log ไหลแบบเรียลไทม์ กด `Ctrl+C` เพื่อหยุดดู โดย container ยังรันต่อ) · `exec <service> <คำสั่ง>` เข้าไปรันข้างใน; ถ้าอยากได้ shell แบบโต้ตอบใช้ `docker compose -p devopsboard exec api sh` · `getent hosts <ชื่อ>` ถาม DNS ของระบบ — ใช้พิสูจน์ว่า **ชื่อ service = hostname** ที่เรียกกันได้ · `top` แสดง process ข้างใน container
-
-✅ **Expected output** — จุดที่ต้องดู : `api` มองเห็นทั้ง `redis`, `db` (ผ่าน backend) และ `web` (ผ่าน frontend) โดยไม่ต้องรู้ IP เลย และค่า `devopsboard:visits` ใน Redis ตรงกับตัวเลขบนหน้าเว็บ (IP · hostname · PID · เวลา ของแต่ละคนจะต่างกัน) :
-
-> ⚠️ **เรื่องตัวเลข `visits`:** บล็อกด้านล่างเก็บมาตอนที่ยังไม่ได้สั่ง `down -v` จึงเป็น `4` · ถ้าคุณเพิ่งทำข้อ 12 จบ (ซึ่งสั่ง `down -v` ไปแล้ว) ตัวนับจะ **เริ่มใหม่จาก 1** — สิ่งที่ต้องดูคือ "ตัวเลขนี้เท่ากับจำนวนครั้งที่เรียก `/stats` นับจาก volume ถูกสร้างใหม่" ไม่ใช่ตัวเลข `4` ตรง ๆ
+✅ **สิ่งที่ต้องเห็น** — `api` มองเห็นทั้ง `redis`, `db` (ผ่าน backend) และ `web` (ผ่าน frontend) **โดยไม่ต้องรู้ IP เลย** :
 
 ```
-$ docker compose -p devopsboard logs --tail 8 api
-api-1  |  * Debug mode: off
-api-1  | WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
-api-1  |  * Running on all addresses (0.0.0.0)
-api-1  |  * Running on http://127.0.0.1:5000
-api-1  |  * Running on http://172.19.0.2:5000
-api-1  | 127.0.0.1 - - [14/Aug/2026 02:20:45] "GET /health HTTP/1.1" 200 -
-api-1  | 172.19.0.3 - - [14/Aug/2026 02:20:49] "GET /stats HTTP/1.0" 200 -
-
-$ docker compose -p devopsboard exec api sh -c 'hostname; env | grep APP_ENV; ls /app'
-d18ec72e5276
-APP_ENV=production
-BUILD_TIME
-Dockerfile
-app.py
-requirements.txt
-
-$ docker compose -p devopsboard exec api sh -c 'getent hosts redis; getent hosts db; getent hosts web'
 172.20.0.3      redis
 172.20.0.2      db
 172.19.0.3      web
 
-$ docker compose -p devopsboard exec redis redis-cli GET devopsboard:visits
-4
+6
 
-$ docker compose -p devopsboard top api
-SERVICE  #   UID   PID    PPID   C   STIME  TTY  TIME      CMD
-api      1   root  29624  29602  3   09:20  ?    00:00:00  python app.py
+api-1  | 172.19.0.3 - - [16/Aug/2026 14:30:33] "GET /stats HTTP/1.0" 200 -
 ```
 
-> 📝 **สังเกต:** `redis` และ `db` อยู่คนละ subnet กับ `web` (ในการรันนี้คือ `172.20.x` = `devopsboard_backend` และ `172.19.x` = `devopsboard_frontend` — เลข subnet ของแต่ละคนจะไม่ตรงกับเอกสาร) ตัวเลขนี้ยืนยันการแยกชั้นที่เราพิสูจน์ไปในข้อ 10 อีกครั้ง · บรรทัด `WARNING: This is a development server` ใน log ของ Flask เป็นเรื่องปกติของแล็บ งานจริงให้เปลี่ยน `CMD` เป็น `gunicorn`
+> 📝 **ตัวเลข `visits` ของแต่ละคนไม่ตรงกัน** — มันคือจำนวนครั้งที่ `/stats` ถูกเรียกนับจาก `redisdata` ถูกสร้างใหม่ (การทดลองที่ 11 เพิ่ง `down -v` ไป) · การเปิดหน้าเว็บและ `verify.sh` ก็ทำให้ขยับด้วย · สังเกตว่า `redis`/`db` อยู่คนละ subnet กับ `web` (`172.20.x` = backend · `172.19.x` = frontend) — ยืนยันการแยกชั้นจากการทดลองที่ 9 อีกครั้ง · `docker compose exec <service>` ใช้ **ชื่อ service** แทนชื่อ container ไม่ต้องจำเลข `-1` · เปลี่ยนเป็น `logs -f api` เพื่อติดตามสด (กด `Ctrl+C` เพื่อหยุดดู container ยังรันต่อ)
 
 ---
 
-## 14. เลือก Dockerfile ให้ตรงกับแอป (ตอนที่ 12 ฉบับย่อ)
+## เลือก Dockerfile ให้ตรงกับแอป
 
-คู่มือตอนที่ 12 ให้ตัวอย่างครบ 7 เทคโนโลยี — สรุปเป็นตารางไว้เปิดดูตอนทำงานจริง :
-
-| # | ประเภทแอป | สิ่งที่เกิดตอน build | runtime image ที่ควรได้ | ต้อง multi-stage ไหม |
-|---|---|---|---|---|
-| 1 | Static HTML/CSS/JS | ไม่ต้อง compile | `nginx:1.27-alpine` + `COPY ./public/` | ไม่ต้อง |
-| 2 | Python Flask | `pip install -r requirements.txt` | `python:3.12-slim` (งานจริงใช้ Gunicorn) | ไม่ต้อง — **นี่คือ `api/` ของเรา** |
-| 3 | Python FastAPI | `pip install` | `python:3.12-slim` + `uvicorn main:app --host 0.0.0.0` | ไม่ต้อง |
-| 4 | Node.js / Express | `npm ci --omit=dev` | `node:22-alpine` + `USER node` | ไม่ต้อง (ยกเว้นใช้ TypeScript) |
-| 5 | React SPA | `npm run build` → ไฟล์ static | **`nginx:1.27-alpine` เท่านั้น** | **ต้อง** — แนวเดียวกับ `web/` ของเรา |
-| 6 | Next.js standalone | `next build` (ตั้ง `output: 'standalone'`) | `node:22-alpine` เฉพาะ output ที่ deploy | **ต้อง (3 stage)** |
-| 7 | PostgreSQL | ไม่ compile | official image + init script + named volume | ไม่ต้อง — **นี่คือ `db/` ของเรา** |
-
-> 📝 **คำอธิบาย:** `web/` ของแล็บนี้ใช้แนวเดียวกับแถวที่ 5 (React SPA) ในตารางข้างบนเป๊ะ ๆ เพียงแต่เปลี่ยน build tool จาก Node/Vite เป็น Python/Jinja2 เพื่อให้เครื่องเรียนไม่ต้องดาวน์โหลด `node_modules` — **หลักการเหมือนกันทุกประการ**: stage แรกมีเครื่องมือหนัก stage สุดท้ายเหลือแต่ nginx + ไฟล์ static
-
-**แนวทางแนะนำในการเลือกโครง Dockerfile** — ใช้คำถามในภาพช่วยเริ่มออกแบบ แล้วปรับตาม dependency, security และวิธี deploy ของแอปจริง ไม่ใช่กฎตายตัว :
+| ประเภทแอป | ตอน build เกิดอะไร | runtime image ที่ควรได้ | ต้อง multi-stage ไหม |
+|---|---|---|---|
+| Static HTML/CSS/JS | ไม่ต้อง compile | `nginx:1.27-alpine` + `COPY ./public/` | ไม่ต้อง |
+| Python Flask | `pip install` | `python:3.12-slim` (งานจริงใช้ Gunicorn) | ไม่ต้อง — **นี่คือ `api/` ของเรา** |
+| Node.js / Express | `npm ci --omit=dev` | `node:22-alpine` + `USER node` | ไม่ต้อง (ยกเว้นใช้ TypeScript) |
+| React SPA | `npm run build` → ไฟล์ static | **`nginx:1.27-alpine` เท่านั้น** | **ต้อง** — แนวเดียวกับ `web/` ของเรา |
+| Next.js standalone | `next build` (`output: 'standalone'`) | `node:22-alpine` เฉพาะ output ที่ deploy | **ต้อง (3 stage)** |
+| PostgreSQL | ไม่ compile | official image + init script + named volume | ไม่ต้อง — **นี่คือ `db/` ของเรา** |
 
 ![แนวทางแนะนำแบบ decision tree สำหรับเลือก single-stage หรือ multi-stage จากความจำเป็นในการ build และ runtime ภาษาที่ต้องมีตอนรัน](./images/theory-dockerfile-decision.svg)
 
-> 🖼 **วิธีอ่านรูปนี้:** เริ่มจากคำถามบนสุดว่าแอปต้อง build เพื่อสร้าง artifact หรือไม่ แล้วตามกิ่งไปดูว่าตอนรันยังต้องมี runtime ภาษาเดิมอยู่หรือเปล่า เทียบปลายทางกับ `api/` ที่ต้องมี Python และ `web/` ที่ส่งต่อเพียงไฟล์ static ภาพนี้ช่วยตั้งต้นตัดสินใจในข้อ 14 แต่ข้อจำกัดของ framework และ production environment ยังเป็นตัวกำหนดสุดท้าย
-
-**`.dockerignore` ที่ควรมีเกือบทุกโปรเจกต์** (ไฟล์ `.dockerignore` ของแล็บนี้) :
-
-```
-node_modules/
-__pycache__/
-*.pyc
-.git/
-.env
-.env.app
-coverage/
-dist/
-build/
-test_logs/
-images/
-*.log
-```
-
-> 📝 **คำอธิบาย:** `.dockerignore` ตัดไฟล์ออกจาก **build context** ที่ถูกส่งให้ daemon — ทำให้ build เร็วขึ้นและ **กัน secret หลุดเข้า image** · จุดที่ต้องรู้: Docker อ่าน `.dockerignore` **ที่รากของ build context** ดังนั้นโปรเจกต์นี้จึงมี `.dockerignore` แยกอีกใบใน `web/` และ `api/` (ซึ่งเป็น context จริง) ส่วนใบที่รากโปรเจกต์เป็นตัวอย่างมาตรฐาน · **ห้าม copy secret เข้า image เด็ดขาด** ให้ส่งผ่าน environment ตอน deploy หรือใช้ secret manager
+> 🖼 **วิธีอ่านรูปนี้:** เริ่มจากคำถามบนสุดว่าแอปต้อง build เพื่อสร้าง artifact หรือไม่ แล้วตามกิ่งไปดูว่าตอนรันยังต้องมี runtime ภาษาเดิมอยู่หรือเปล่า
 
 ---
 
-## ตรวจงานอัตโนมัติด้วย `verify.sh`
+## ตรวจงานด้วย `verify.sh`
 
 ```bash
-docker compose -p devopsboard up -d --build
-./verify.sh
+bash verify.sh ; echo "exit code = $?"
 ```
 
-> 📝 **คำอธิบาย:** สคริปต์ตรวจ 25 ข้อ ตั้งแต่ไฟล์ครบ · YAML ไม่มี tab · รหัสผ่านไม่ได้ hardcode · container ครบและ healthy · หน้าเว็บไม่มี CDN · `visits` เพิ่มขึ้นจริง · `app_env` เป็น `production` · runtime image ไม่มี Python · จนถึงการแยกชั้น network · **สคริปต์อ่านอย่างเดียว ไม่ลบทรัพยากรใด ๆ ของเรา** (สร้างแค่ item ทดสอบ 1 แถวผ่าน API)
+✅ **สิ่งที่ต้องเห็น** — `[PASS]` ทุกบรรทัด ปิดท้าย `ALL CHECKS PASSED`
 
-✅ **Expected output** — ต้องได้ `[PASS]` ครบทุกบรรทัดและปิดท้ายด้วย `ALL CHECKS PASSED` :
-
-```
-[PASS] ไฟล์ที่กำหนดครบถ้วน
-[PASS] compose.yaml ไม่มีอักขระแท็บ
-[PASS] Compose YAML ถูกต้อง
-[PASS] รหัสผ่าน PostgreSQL มาจาก .env.app
-[PASS] .dockerignore กันไฟล์ .env.app
-[PASS] เครือข่าย backend เป็น internal
-[PASS] คอนเทนเนอร์ทั้ง 4 ตัวกำลังทำงาน
-[PASS] db, redis และ api มีสถานะ healthy
-[PASS] เครือข่าย frontend และ backend มีครบ
-[PASS] volume pgdata และ redisdata มีครบ
-[PASS] db และ redis ไม่เปิดพอร์ตสู่ host
-[PASS] หน้าเว็บตอบ 200 และมี DevOps Board
-[PASS] HTML ไม่มีลิงก์ http:// หรือ https://
-[PASS] API stats ตอบ 200 และมี key ครบ
-[PASS] สถานะ redis และ db เป็น up
-[PASS] ค่า visits เพิ่มขึ้นจาก Redis INCR
-[PASS] app_env เป็น production
-[PASS] env_file_only มีค่าจาก .env.app
-[PASS] ฐานข้อมูลมี seed อย่างน้อย 4 รายการ
-[PASS] POST สร้าง item และจำนวนเพิ่มขึ้น 1
-[PASS] API health โดยตรงตอบ status ok
-[PASS] web runtime ไม่มี Python และมี Nginx
-[PASS] image web เล็กกว่า image api
-[PASS] Compose DNS หา db และ redis ได้
-[PASS] แยกชั้น network ถูกต้อง
-ALL CHECKS PASSED
-```
+> 📝 สคริปต์ใช้ชื่อ project ของตัวเองและเก็บกวาดของตัวเองทิ้งเมื่อจบ
 
 ---
 
 ## แก้ปัญหาที่พบบ่อย
 
-(ตารางนี้รวม "กับดักที่พบบ่อย" ของคู่มือตอนที่ 10.11 ไว้ด้วยแล้ว)
-
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
-| `Conflict. The container name ... is already in use` | ไปตั้ง `container_name:` เองใน `compose.yaml` หรือมี container ชื่อซ้ำค้างอยู่ | อย่าใส่ `container_name:` ปล่อยให้ Compose ตั้ง `<project>-<service>-N` ให้ (แล้ว `--scale` ได้ด้วย) · ถ้าเป็นของค้างให้ `docker rm -f <ชื่อ>` |
-| `go-yaml load error in scanner ... found character that cannot start any token` | มี **tab** ใน `compose.yaml` (บ่อยมากเวลา copy จาก PDF/เว็บ) | หาด้วย `grep -Pn '\t' compose.yaml` หรือ `cat -A compose.yaml` แล้วแทน `^I` ด้วย space · ตั้ง editor ให้ใช้ space |
-| `services.<ชื่อ> must be a mapping` / `services.web.ports must be a array` | เยื้องผิดชั้น หรือลืมขีด `-` หน้า item ของ list | ตรวจด้วย `docker compose -p devopsboard config --quiet` ก่อนรัน `up` เสมอ · เยื้อง 2 ช่องต่อชั้นให้สม่ำเสมอ |
-| แก้โค้ดใน `api/app.py` หรือ `web/template.html` แล้ว `up -d` แต่ผลไม่เปลี่ยน | Compose ใช้ image เดิมที่ build ไว้แล้ว | ใช้ `docker compose -p devopsboard up -d --build` (แก้ Dockerfile/source ต้องมี `--build` เสมอ) |
-| `Bind for 0.0.0.0:8187 failed: port is already allocated` | พอร์ตซ้ำกับ container อื่น (เช่น LAB ก่อนหน้าที่ยังไม่ได้ลบ) หรือสั่ง `--scale` ทั้งที่มี `ports:` | `docker ps` หาว่าใครถือพอร์ตอยู่แล้ว `docker rm -f <ชื่อ>` · หรือเปลี่ยนเลขพอร์ตทางซ้ายใน `compose.yaml` |
-| ประกาศ `ports:` แล้วแต่ `docker compose ps` ไม่ขึ้น `0.0.0.0:...->` และไม่มี error | service นั้นอยู่แต่ใน network ที่ตั้ง `internal: true` | เพิ่ม network ที่ไม่ internal (เช่น `frontend`) เข้าไปในรายการ `networks:` ของ service นั้น (ดูทดลองที่ 2) |
-| หน้าเว็บขึ้น `502 Bad Gateway` | `api` ยังไม่พร้อม หรือ nginx จำ IP เก่าไว้หลัง recreate `api` | รอ healthcheck ให้ผ่าน (`docker compose -p devopsboard ps` ต้องขึ้น `(healthy)`) · `web/nginx.conf` ของแล็บนี้ใส่ `resolver 127.0.0.11 valid=10s` ไว้แล้วเพื่อให้ถาม DNS ใหม่ทุก 10 วินาที ถ้ายังค้างให้ `docker compose -p devopsboard restart web` |
-| แก้ `db/initdb/01-schema.sql` แล้ว `up -d` ใหม่ ตารางไม่เปลี่ยน | init script รันเฉพาะตอน data directory **ว่างครั้งแรก** เท่านั้น | ⚠️ `docker compose -p devopsboard down -v` แล้ว `up -d` (ข้อมูลเดิมหายทั้งหมด) · งานจริงใช้เครื่องมือ migration แทน |
-| ข้อมูลใน PostgreSQL หายเกลี้ยงโดยไม่ตั้งใจ | เผลอสั่ง `docker compose down -v` | ไม่มีทางกู้ — ป้องกันด้วยการพิมพ์ `down` เฉย ๆ เป็นนิสัย และสำรอง `pg_dump` ก่อนทดลองอะไรที่เสี่ยง |
-| `psql: error: ... fe_sendauth: no password supplied` | ตัวแปร `PGHOST` ถูกตั้งไว้ ทำให้ `psql` ในเครื่อง `db` วิ่งออก TCP แทน local socket | ใช้ชื่อตัวแปรอื่น (แล็บนี้ใช้ `DB_HOST=db`) หรือสั่ง `psql -h /var/run/postgresql -U appuser -d appdb` |
-| `docker compose: 'compose' is not a docker command` | เครื่องมีแต่ `docker-compose` รุ่นเก่า (v1) | ใช้เครื่องเรียน `tuchsanai/devtools:2569_1` ที่มี Compose plugin v5 · ตรวจด้วย `docker compose version` |
+| `docker compose: 'compose' is not a docker command` | เครื่องมีแต่ `docker-compose` รุ่นเก่า (v1) | ใช้เครื่องเรียน `tuchsanai/devtools:2569_1` ที่มี Compose plugin |
+| แก้โค้ดแล้ว `up -d` แต่ผลไม่เปลี่ยน | ไม่ได้ใส่ `--build` Compose จึงใช้ image เดิม | `docker compose -p devopsboard up -d --build` |
+| ประกาศ `ports:` แล้วแต่ `ps` ไม่ขึ้น `0.0.0.0:...->` และ **ไม่มี error** | service นั้นอยู่แต่ network ที่ `internal: true` | เพิ่ม network ที่ไม่ internal (เช่น `frontend`) ให้ service นั้นด้วย |
+| `Conflict. The container name ... is already in use` | มี container ชื่อชนจาก project อื่น | ใช้ `-p <project>` ให้ต่างกัน หรือ `docker rm -f <ชื่อ>` |
+| `Bind for 0.0.0.0:8187 failed: port is already allocated` | พอร์ตซ้ำกับ container อื่น (เช่น LAB ก่อนหน้าที่ยังไม่ได้ลบ) | `docker ps` หาว่าใครจอง แล้วลบ หรือเปลี่ยนเลขพอร์ตซ้าย |
+| `api` ขึ้นแล้วแต่ต่อ `db` ไม่ได้ตอนบูต | ใช้ `depends_on` เปล่า ๆ ซึ่งไม่รอ readiness | ใส่ `healthcheck` ที่ `db` + `condition: service_healthy` ที่ `api` |
+| แก้ init script แล้วแถวใหม่ไม่ขึ้น | volume ไม่ว่าง init script จึงถูกข้าม | `down -v` แล้ว `up` ใหม่ (**ข้อมูลหายหมด**) หรือใช้ migration tool |
+| ข้อมูลหายหลัง `down` | เผลอสั่ง `down -v` | `down` เฉย ๆ ไม่ลบ volume · ตรวจด้วย `docker volume ls` ก่อนเสมอ |
+| YAML error `did not find expected key` | เยื้องด้วย Tab หรือเยื้องผิดชั้น | ใช้ space เท่านั้น · ตรวจด้วย `docker compose config --quiet` ก่อนรัน |
 
 ---
 
-## เก็บกวาด (Cleanup)
+## เก็บกวาด
 
-ลบทรัพยากรของ LAB นี้ตามลำดับ (จากในสุดออกนอกสุด) :
+**ในกล่องเรียน:**
 
 ```bash
 docker compose -p devopsboard down -v
-docker rmi devopsboard-web:1.0 devopsboard-api:1.0 devopsboard-web:builder
+docker image rm devopsboard-web:1.0 devopsboard-api:1.0 devopsboard-web:builder 2>/dev/null
 docker ps -a
 docker volume ls
 ```
 
-> 📝 **คำอธิบาย:** `down -v` ลบ container + network + **named volume ทั้งสองก้อน** — ตรงนี้ตั้งใจให้ข้อมูลหาย เพราะจบแล็บแล้ว · `docker rmi` ลบ image ที่เรา build เอง (base image อย่าง `postgres:17-alpine` ปล่อยไว้ได้ ไม่กินที่มากและ LAB อื่นอาจใช้ต่อ)
+> 📝 `down -v` ลบ container + network + **volume** ทั้งหมดของ project · ตรวจว่า `docker volume ls` ไม่เหลือ `devopsboard_*`
 
-จากนั้นออกจาก SSH แล้วลบ **เครื่องเรียน** ทิ้งจากเครื่องเราเอง :
+**ออกจากกล่องแล้วลบกล่องบนเครื่องเรา:**
 
 ```bash
 exit
 docker rm -f devtools-df-lab7
 docker ps -a --filter "name=^devtools-"
-```
-
-✅ **Expected output** — คำสั่งสุดท้ายต้องเหลือแค่หัวตาราง ไม่มีแถวข้อมูล :
-
-```
-CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 ```
 
 ---
@@ -1156,36 +638,31 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
 | คำสั่ง | ความหมาย |
 |---|---|
-| `docker compose -p devopsboard up -d --build` | build image ที่มี `build:` แล้วสร้าง network/volume/container ทั้งชุด |
-| `docker compose -p devopsboard ps` | ดูสถานะ service พร้อม health และพอร์ตที่ publish |
-| `docker compose -p devopsboard config --quiet` | ตรวจ syntax ของ YAML ก่อนรันจริง |
-| `docker compose -p devopsboard logs -f api` | ติดตาม log ของ service `api` แบบสด |
-| `docker compose -p devopsboard exec api sh` | เข้าไปทำงานใน container ของ service `api` |
-| `docker compose -p devopsboard down` | ลบ container + network **แต่คง named volume** |
-| `docker compose -p devopsboard down -v` | ⚠️ ลบทุกอย่าง **รวมถึง named volume** |
-| `docker build --target build -t <ชื่อ>:builder ./web` | build หยุดที่ stage `build` เพื่อเทียบขนาดกับ image สุดท้าย |
-| `COPY --from=build /out/index.html ...` | คัดเฉพาะ artifact ข้าม stage — หัวใจของ multi-stage |
-| `depends_on: <svc>: condition: service_healthy` | **รอ** ให้ service อื่น healthy ก่อนจึงเริ่ม (ต้องคู่กับ `healthcheck:`) |
-| `networks: backend: internal: true` | ล้อมรั้ว network ไม่ให้ออกภายนอก (และ publish port ไม่ได้) |
-| `docker run --rm --network devopsboard_backend busybox:1.36 nc -z db 5432` | ทดสอบการเข้าถึงข้ามชั้น network |
-| `docker compose -p devopsboard exec db psql -U appuser -d appdb -c '<SQL>'` | รัน SQL ในฐานข้อมูลโดยไม่ต้อง publish พอร์ต 5432 |
+| `docker compose -p <project> up -d --build` | build แล้วทำให้สภาพจริงตรงกับที่ประกาศไว้ในไฟล์ |
+| `docker compose -p <project> ps` | ดูสถานะทุก service พร้อม health |
+| `docker compose -p <project> config --quiet` | ตรวจ syntax ของ YAML โดยไม่รันอะไร |
+| `docker compose -p <project> logs --tail N <service>` | ดู log ท้าย ๆ (`-f` เพื่อติดตามสด) |
+| `docker compose -p <project> exec <service> <คำสั่ง>` | สั่งงานข้างใน service (ใช้ **ชื่อ service** ไม่ใช่ชื่อ container) |
+| `docker compose -p <project> up -d --force-recreate <service>` | ลบแล้วสร้าง container ของ service นั้นใหม่ |
+| `docker compose -p <project> down` | ลบ container + network — **ไม่ลบ volume** |
+| `docker compose -p <project> down -v` | ลบ **รวม volume** ด้วย — ข้อมูลหายถาวร |
+| `docker build --target <stage> -t <ชื่อ> <path>` | build หยุดที่ stage ที่ระบุ (ใช้ชั่งขนาด stage กลาง) |
+| `docker inspect --format '{{.State.Health.Status}}' <container>` | อ่านสถานะ health จริงของ container |
 
-> **จำให้ครบ:** `compose.yaml` = **สภาพปลายทางที่ต้องการ** (declarative) · `--build` เมื่อโค้ดเปลี่ยน · `service_healthy` = รอจริง ส่วน `depends_on` เปล่า ๆ = แค่เรียงลำดับ · `named volume` = อายุข้อมูลไม่ผูกกับ container · `internal: true` = ล้อมรั้ว · `multi-stage` = build ด้วยเครื่องมือหนัก แต่ deploy เฉพาะ artifact
+> **จำ 4 อย่าง:** `--build` ไม่ใส่ = ได้ของเก่า · `depends_on` เปล่า ๆ ไม่ได้รอ · `internal: true` ทำให้ publish port ไม่ได้แบบเงียบ ๆ · `down` ≠ `down -v`
 
 ## ✅ เช็กลิสต์ก่อนจบแล็บ
 
-- [ ] อธิบายได้ว่า `compose.yaml` แทน `docker run` กี่บรรทัด และ key ไหนแทน option ไหน (ดูตารางข้อ 2)
-- [ ] `docker compose -p devopsboard config --quiet` ผ่านก่อนสั่ง `up` ทุกครั้ง
-- [ ] เห็นลำดับ `Waiting` → `Healthy` → `Starting` ใน output ของ `up -d --build` และอธิบายได้ว่าเกิดจาก `condition: service_healthy`
-- [ ] แยกออกว่า container ใช้ `-` (`devopsboard-web-1`) แต่ network/volume ใช้ `_` (`devopsboard_pgdata`)
-- [ ] เปิด `http://localhost:8187` เห็นตัวเลขผู้เข้าชมเพิ่มขึ้นทุกครั้งที่รีเฟรช (Redis) และตารางข้อมูลจาก PostgreSQL
-- [ ] เพิ่มรายการผ่านฟอร์มบนหน้าเว็บแล้วเห็นแถวใหม่ badge `new` โผล่ในตาราง
-- [ ] `docker build --target build` แล้วเทียบขนาดได้ว่า stage build **196 MB** vs runtime **73.7 MB** และรัน `python --version` ใน runtime image แล้ว **ต้อง** ไม่พบคำสั่ง
-- [ ] พิสูจน์ได้ว่า container ที่อยู่แค่ `devopsboard_frontend` แปลงชื่อ `db` เป็น IP ไม่ได้ ส่วนจาก `devopsboard_backend` ต่อ `db:5432` ติด
-- [ ] ยืนยันว่า `db` และ `redis` ไม่มี `0.0.0.0:...->` ใน `docker compose ps` และ `curl localhost:5432` ต่อไม่ติด
-- [ ] `docker compose down` แล้ว `up -d` ข้อมูลยังครบ — จากนั้น `down -v` แล้วข้อมูลหายจริง (ทดลองครบทั้งสองกรณี)
-- [ ] แก้ `01-schema.sql` แล้ว recreate `db` เห็นว่าไม่มีผล จนกว่าจะลบ volume ทิ้ง
-- [ ] `./verify.sh` ผ่านครบ 25 ข้อ ขึ้น `ALL CHECKS PASSED`
-- [ ] เก็บกวาดครบ : `down -v` → `docker rmi` → `docker rm -f devtools-df-lab7` และ `docker ps -a --filter "name=^devtools-"` ไม่เหลือแถวข้อมูล
+- [ ] อธิบายได้ว่า key ไหนใน `compose.yaml` แทน option ไหนของ `docker run`
+- [ ] `up -d --build` แล้วเห็น `Healthy` ก่อน `Started` และอธิบายลำดับได้
+- [ ] บอกได้ว่าทำไม container ใช้ **ขีดกลาง** แต่ network/volume ใช้ **ขีดล่าง**
+- [ ] เปิด `http://localhost:8187` เห็นข้อมูลจริงจาก Redis + PostgreSQL
+- [ ] `--target build` แล้วเทียบขนาดได้ **196MB → 73.7MB** และ `python --version` ใน image สุดท้าย **ต้อง error**
+- [ ] `docker inspect` เห็น `healthy` ครบสามตัว พร้อม `ExitCode: 0` ของคำสั่งตรวจ
+- [ ] `APP_ENV` ที่ container เห็นคือ `production` ไม่ใช่ `from-env-file`
+- [ ] จาก `frontend` ต่อ `db` ไม่ได้ (`bad address`) แต่จาก `backend` ต่อได้
+- [ ] เพิ่มข้อมูล → `down` → `up` แล้วข้อมูล **ยังอยู่** · `down -v` แล้ว **หายถาวร**
+- [ ] แก้ init script แล้ว `--force-recreate db` **ไม่มีผล** จนกว่าจะลบ volume
+- [ ] `bash verify.sh` ขึ้น `ALL CHECKS PASSED` และเก็บกวาดจนไม่เหลือ volume `devopsboard_*`
 
-*ผลลัพธ์ทั้งหมดในเอกสารนี้มาจากการรันจริงในเครื่องเรียน `tuchsanai/devtools:2569_1` เมื่อ 14 ส.ค. 2026*
+*ผลลัพธ์ทั้งหมดในเอกสารนี้มาจากการรันจริงในเครื่องเรียน `tuchsanai/devtools:2569_1`*

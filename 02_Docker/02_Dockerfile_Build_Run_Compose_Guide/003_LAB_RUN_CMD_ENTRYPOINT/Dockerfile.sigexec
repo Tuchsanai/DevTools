@@ -2,6 +2,6 @@
 # ใช้ Alpine Linux เวอร์ชัน 3.20 เป็น base image
 FROM alpine:3.20
 # คัดลอกแอปจำลองที่ดักจับ SIGTERM เข้าไปใน image
-COPY app.sh /app.sh
+COPY --chmod=755 app.sh /app.sh
 # exec form — app.sh จะได้เป็น PID 1 และรับ SIGTERM ตรง ๆ
 CMD ["/app.sh"]

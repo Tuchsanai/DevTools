@@ -25,19 +25,21 @@
 
 ## เส้นทางแล็บ (ทำเรียงจาก 1 → 7)
 
-| LAB | เวลาโดยประมาณ | โฟลเดอร์ | ตอนในคู่มือ | คำถามที่ทดลองตอบ |
-|---|---:|---|---|---|
-| **1** | 35 นาที | [`001_LAB_Dockerfile_First_Image`](./001_LAB_Dockerfile_First_Image/readme.md) | 2, 3, 4 | Dockerfile 8 บรรทัดกลายเป็นเว็บที่ตอบ HTTP 200 ได้อย่างไร และ `.dockerignore` กัน secret หลุดเข้า image ได้จริงไหม |
-| **2** | 32 นาที | [`002_LAB_Layer_Cache_Build_Options`](./002_LAB_Layer_Cache_Build_Options/readme.md) | 5, 4.1 | สลับแค่ 2 บรรทัดทำให้ build เร็วขึ้นกี่เท่า และ `CACHED` หายไปตอนไหน |
-| **3** | 29 นาที | [`003_LAB_RUN_CMD_ENTRYPOINT`](./003_LAB_RUN_CMD_ENTRYPOINT/readme.md) | 6 | พิมพ์คำสั่งต่อท้ายชื่อ image แล้วมันไปแทนที่หรือไปต่อท้ายอะไร และทำไม container บางตัวหยุดช้า 10 วินาที |
-| **4** | 30 นาที | [`004_LAB_ENV_ARG_Config`](./004_LAB_ENV_ARG_Config/readme.md) | 7 | image ตัวเดียวเปลี่ยนเป็น dev/staging/production ได้โดยไม่ build ใหม่อย่างไร และ secret รั่วออกทาง `docker history` ได้จริงไหม |
-| **5** | 35 นาที | [`005_LAB_Registry_Tag_Push_Pull`](./005_LAB_Registry_Tag_Push_Pull/readme.md) | 8 | push ทับ tag `1.0` ด้วย image คนละตัวแล้วเกิดอะไรขึ้น และ digest ช่วยอะไร |
-| **6** | 32 นาที | [`006_LAB_Network_DNS`](./006_LAB_Network_DNS/readme.md) | 9 | ทำไม container บน default bridge เรียกกันด้วยชื่อไม่ได้ และต่อ network เพิ่มระหว่างที่รันอยู่ได้อย่างไร |
-| **7** | 50 นาที | [`007_LAB_Compose_Multistage_Capstone`](./007_LAB_Compose_Multistage_Capstone/readme.md) | 10, 11, 12 | 4 service (web · api · redis · postgres) ขึ้นพร้อมกันด้วยไฟล์เดียวอย่างไร และ `down -v` ทำข้อมูลหายจริงไหม |
+| LAB | การทดลอง | เวลา | โฟลเดอร์ | คำถามที่ทดลองตอบ |
+|---|---:|---:|---|---|
+| **1** | 9 อัน | 35 นาที | [`001_LAB_Dockerfile_First_Image`](./001_LAB_Dockerfile_First_Image/readme.md) | ไฟล์ข้อความ 8 บรรทัดกลายเป็นเว็บที่ตอบ HTTP 200 ได้อย่างไร |
+| **2** | 11 อัน | 35 นาที | [`002_LAB_Layer_Cache_Build_Options`](./002_LAB_Layer_Cache_Build_Options/readme.md) | สลับแค่ 2 บรรทัดทำให้ build เร็วขึ้นกี่เท่า และ `CACHED` หายไปตอนไหน |
+| **3** | 9 อัน | 30 นาที | [`003_LAB_RUN_CMD_ENTRYPOINT`](./003_LAB_RUN_CMD_ENTRYPOINT/readme.md) | พิมพ์คำสั่งต่อท้ายชื่อ image แล้วมันไปแทนที่หรือต่อท้ายอะไร และทำไม `docker stop` บางตัวช้า 10 วินาที |
+| **4** | 11 อัน | 35 นาที | [`004_LAB_ENV_ARG_Config`](./004_LAB_ENV_ARG_Config/readme.md) | image ตัวเดียวเปลี่ยนเป็น dev/staging/production ได้โดยไม่ build ใหม่อย่างไร |
+| **5** | 10 อัน | 35 นาที | [`005_LAB_Registry_Tag_Push_Pull`](./005_LAB_Registry_Tag_Push_Pull/readme.md) | push ทับ tag `1.0` ด้วย image คนละตัวแล้วเกิดอะไรขึ้น และ digest ช่วยอะไร |
+| **6** | 11 อัน | 35 นาที | [`006_LAB_Network_DNS`](./006_LAB_Network_DNS/readme.md) | ทำไม container บน default bridge เรียกกันด้วยชื่อไม่ได้ และต่อ network เพิ่มระหว่างรันได้อย่างไร |
+| **7** | 12 อัน | 50 นาที | [`007_LAB_Compose_Multistage_Capstone`](./007_LAB_Compose_Multistage_Capstone/readme.md) | 4 service ขึ้นพร้อมกันด้วยไฟล์เดียวอย่างไร และ `down -v` ทำข้อมูลหายจริงไหม |
 
-แต่ละแล็บมีครบ: ภาพรวม · Terminal Map · **ทฤษฎีก่อนลงมือ** (ภาพจำหลัก · กลไกจริง · กฎที่ต้องจำ · สิ่งที่มักเข้าใจผิด · ทายผลก่อนทดลอง) ·
-คำสั่งพร้อม 📝 คำอธิบายทุก option · ✅ Expected output จากการรันจริง · ทดลองเพิ่มเติม ·
-ตารางแก้ปัญหาที่พบบ่อย · Cleanup · สรุปคำสั่ง · เช็กลิสต์ก่อนจบ
+**ทุกแล็บใช้โครงเดียวกัน** — `🎯 แล็บนี้ใน 30 วินาที` → `ทฤษฎีก่อนลงมือ` (สั้น + รูป) → `เตรียมเครื่องเรียน` →
+**`การทดลองที่ 1..N`** → `ตรวจงานด้วย verify.sh` → `แก้ปัญหาที่พบบ่อย` → `เก็บกวาด` → `สรุปคำสั่ง` → `เช็กลิสต์`
+
+> **การทดลองแต่ละอันคือ 1 คำถาม 1 ประเด็น** : หัวข้อบอกคำถาม → พิมพ์ 1–2 คำสั่ง → ดู **สิ่งที่ต้องเห็น** → อ่านคำอธิบายสั้น ๆ
+> ไม่มีบล็อกที่อัดหลายเรื่องรวมกัน จะได้โฟกัสทีละอย่างและหยุดพักตรงไหนก็ได้
 
 ## หัวข้อนี้เรียนที่แล็บไหน — ดัชนีกันเรียนซ้ำ
 
@@ -46,37 +48,34 @@
 
 | หัวข้อ | 🏠 เรียนเต็มที่ | แวะใช้ (ไม่สอนซ้ำ) |
 |---|---|---|
-| Dockerfile / image / container ต่างกันอย่างไร | **LAB 1** ข้อ 2–3 | ทุกแล็บใช้ต่อ |
-| `docker build` + build context (จุด `.`) | **LAB 1** ข้อ 4 | ทุกแล็บใช้ต่อ |
-| `EXPOSE` ไม่ได้เปิดพอร์ต · `-p` ต่างหากที่เปิด | **LAB 1** ข้อ 9 | LAB 6 ข้อ 8 (ทำไม backend ไม่ต้อง `-p`) |
-| ลำดับตรวจปัญหา `image ls → ps -a → logs → exec` | **LAB 1** ข้อ 7 | LAB 7 ข้อ 13 (ฉบับ `docker compose`) |
-| `.dockerignore` : ลดขนาด context + กัน secret หลุด | **LAB 1** ข้อ 6 | LAB 4 ข้อ 11 (ยืนยันกับ `.env.*`) · LAB 7 ข้อ 14 (เทมเพลตที่ควรมี) |
-| `.dockerignore` : กัน **cache แตก** โดยไม่จำเป็น | **LAB 2** ข้อ 8 | — |
-| layer cache · ลำดับบรรทัดมีผลกับเวลา build | **LAB 2** ข้อ 3–4 | LAB 1 ข้อ 3 (เหตุผลที่ `COPY` แยกสองบรรทัด) |
-| Options ของ build : `--no-cache` · `--pull` · `-t` หลายอัน | **LAB 2** ข้อ 5 | LAB 1 ข้อ 4 (ใช้แค่ `-t` · `-f` · `--progress=plain`) |
-| `docker history` · dangling image · คืนพื้นที่ | **LAB 2** ข้อ 6–7 | LAB 1 ข้อ 10 (`system df` อ่านอย่างเดียว) · LAB 4 ข้อ 9 (history เพื่อดู secret) |
-| `RUN` vs `CMD` vs `ENTRYPOINT` | **LAB 3** ข้อ 2–6 | LAB 1 ทดลอง ก. (ชิมลาง: แทน `CMD` ตอน run) |
-| exec form vs shell form · PID 1 · SIGTERM | **LAB 3** ข้อ 7–8 | — |
-| ลำดับชั้น `ENV` < `--env-file` < `-e` | **LAB 4** ข้อ 3–5 | LAB 1 ทดลอง ค. (ชิมลาง) · LAB 7 ข้อ 9 (ฉบับ Compose) |
-| `ARG` vs `ENV` · `ARG` ก่อน `FROM` | **LAB 4** ข้อ 8, 10 | LAB 2 ข้อ 5.4 (รู้จักรูปแบบ) · LAB 5 ข้อ 9 (ใช้ `--build-arg` จริง) |
-| ห้ามเก็บ secret ใน `ARG`/`ENV` | **LAB 4** ข้อ 9 | LAB 7 ข้อ 9 (รหัสผ่านอยู่ `.env.app`) |
-| ชื่อเต็มของ image · tag ย้ายได้ · digest ไม่เปลี่ยน | **LAB 5** ข้อ 2, 9–10 | — |
-| `Untagged` ต่างจาก `Deleted` | **LAB 5** ข้อ 11 | LAB 2 ข้อ 7 (มุมของ dangling image) |
-| user-defined network · DNS ของชื่อ container | **LAB 6** ข้อ 4–5 | LAB 7 ข้อ 10 (ฉบับ Compose + `internal: true`) |
-| `docker compose` · healthcheck · named volume · init script | **LAB 7** ข้อ 3–4, 8, 11–12 | — |
-| multi-stage build | **LAB 7** ข้อ 7, 14 | LAB 2 ข้อ 5.4 (`--target`) · LAB 4 ข้อ 9 (เป็นทางแก้เรื่อง secret) |
+| Dockerfile / image / container ต่างกันอย่างไร | **LAB 1** ทฤษฎีก่อนลงมือ | ทุกแล็บใช้ต่อ |
+| `docker build` + build context (จุด `.`) | **LAB 1** การทดลองที่ 2 | ทุกแล็บใช้ต่อ |
+| `EXPOSE` ไม่ได้เปิดพอร์ต · `-p` ต่างหากที่เปิด | **LAB 1** การทดลองที่ 6 | LAB 6 การทดลองที่ 7 (ทำไม backend ไม่ต้อง `-p`) |
+| ลำดับตรวจปัญหา `image ls → ps -a → logs → exec` | **LAB 1** หัวข้อ "เมื่อของไม่ทำงาน" | LAB 7 การทดลองที่ 12 (ฉบับ `docker compose`) |
+| `.dockerignore` : ลดขนาด context + กัน secret หลุด | **LAB 1** การทดลองที่ 8 | LAB 4 การทดลองที่ 11 (ยืนยันกับ `.env.*`) |
+| `.dockerignore` : กัน **cache แตก** โดยไม่จำเป็น | **LAB 2** การทดลองที่ 8 | — |
+| layer cache · ลำดับบรรทัดมีผลกับเวลา build | **LAB 2** การทดลองที่ 3–4 | LAB 1 การทดลองที่ 1 (เหตุผลที่ `COPY` แยกสองบรรทัด) |
+| Options ของ build : `--no-cache` · `--pull` · `-t` หลายอัน | **LAB 2** การทดลองที่ 6–7 | LAB 1 การทดลองที่ 2 (ใช้แค่ `-t`) |
+| `docker history` · dangling image · คืนพื้นที่ | **LAB 2** การทดลองที่ 5, 9–10 | LAB 4 การทดลองที่ 9 (history เพื่อดู secret) |
+| `RUN` vs `CMD` vs `ENTRYPOINT` | **LAB 3** การทดลองที่ 1–7 | LAB 1 (ชิมลาง: แทน `CMD` ตอน run) |
+| exec form vs shell form · PID 1 · SIGTERM | **LAB 3** การทดลองที่ 8–9 | — |
+| ลำดับชั้น `ENV` < `--env-file` < `-e` | **LAB 4** การทดลองที่ 2–4 | LAB 1 การทดลองที่ 7 (ชิมลาง) · LAB 7 การทดลองที่ 8 (ฉบับ Compose) |
+| `ARG` vs `ENV` · `ARG` ก่อน `FROM` | **LAB 4** การทดลองที่ 7–8, 10 | LAB 5 (ใช้ `--build-arg` สร้างสองรุ่น) |
+| ห้ามเก็บ secret ใน `ARG`/`ENV` | **LAB 4** การทดลองที่ 9 | LAB 7 การทดลองที่ 8 (รหัสผ่านอยู่ `.env.app`) |
+| ชื่อเต็มของ image · tag ย้ายได้ · digest ไม่เปลี่ยน | **LAB 5** การทดลองที่ 1, 8–9 | — |
+| `Untagged` ต่างจาก `Deleted` | **LAB 5** การทดลองที่ 10 | LAB 2 การทดลองที่ 9 (มุมของ dangling image) |
+| user-defined network · DNS ของชื่อ container | **LAB 6** การทดลองที่ 2–4 | LAB 7 การทดลองที่ 9 (ฉบับ Compose + `internal: true`) |
+| `docker compose` · healthcheck · named volume · init script | **LAB 7** การทดลองที่ 1–5, 7, 10–11 | — |
+| multi-stage build | **LAB 7** การทดลองที่ 6 | LAB 4 การทดลองที่ 9 (เป็นทางแก้เรื่อง secret) |
 
-## เวลาที่ใช้ — เส้นทางเต็ม vs เส้นทางเร่งรัด
+## เวลาที่ใช้
 
-ทุกแล็บแบ่งเป็น **แกนหลัก** (ข้อที่มีเลข) กับ **ทดลองเพิ่มเติม** (ท้ายไฟล์ · เป็นการต่อยอดจากแกนหลัก ไม่ใช่เนื้อหาใหม่)
+**รวมทั้งชุด ~4 ชั่วโมง 15 นาที · การทดลองทั้งหมด 73 อัน** อันละ 2–5 นาที
 
-| เส้นทาง | ทำอะไร | เวลารวม |
-|---|---:|---:|
-| **เร่งรัด** | เฉพาะข้อที่มีเลขของทั้ง 7 แล็บ + `verify.sh` | ~3 ชั่วโมง 40 นาที |
-| **เต็ม** | แกนหลัก + ทดลองเพิ่มเติมทุกข้อ | ~4 ชั่วโมง 5 นาที |
+แต่ละการทดลองจบในตัวเอง จึงหยุดพักระหว่างอันได้โดยไม่เสียความต่อเนื่อง
+เวลาข้างต้นไม่รวมการ pull base image ครั้งแรกของแต่ละเครื่อง (ครั้งแรกอาจนานกว่านี้มากถ้าเน็ตช้า)
 
-> เวลาข้างต้นไม่รวมการ pull base image ครั้งแรกของแต่ละเครื่อง · **LAB 5 และ LAB 7 ไม่มีหัวข้อทดลองเพิ่มเติม**
-> ส่วน error ที่เจอบ่อยพร้อมวิธีแก้รวมไว้ในตาราง **"แก้ปัญหาที่พบบ่อย"** ท้ายทุกแล็บแล้ว
+> error ที่เจอบ่อยพร้อมวิธีแก้รวมไว้ในตาราง **"แก้ปัญหาที่พบบ่อย"** ท้ายทุกแล็บแล้ว
 
 ## เตรียมเครื่องเรียน
 
