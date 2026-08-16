@@ -746,7 +746,7 @@
           <a class="ov-card" href="#registry">
             <span class="badge level-practice">ลงมือทำ</span>
             <div class="ov-head"><span class="ov-num">8</span><h3>Registry: Tag → Push → Pull</h3></div>
-            <p>ตั้งชื่อ image, push ขึ้น Docker Hub อย่างปลอดภัย แล้ว pull กลับมารัน</p>
+            <p>ตั้งชื่อ image, push ขึ้น Docker Hub อย่างปลอดภัย, pull กลับมารัน และติดป้าย <code>LABEL</code> ให้ image</p>
           </a>
           <a class="ov-card" href="#network">
             <span class="badge level-practice">ลงมือทำ</span>
@@ -1368,11 +1368,12 @@ flask-project/
 <tr><td>7</td><td><code><span class="instruction">EXPOSE</span> 5000</code></td><td>บันทึกไว้ว่าแอปตั้งใจฟังพอร์ต 5000</td><td><b>ไม่ได้เปิดพอร์ตจริง</b> — เป็นแค่เอกสารกำกับ image<br>การเปิดทางจากเครื่องเราเข้า container ต้องใช้ <code>docker run -p</code></td></tr>
 <tr><td>8</td><td><code><span class="instruction">CMD</span> [&quot;python&quot;, &quot;app.py&quot;]</code></td><td>ระบุคำสั่งเริ่มต้นที่จะทำงานเมื่อ container ถูก start (ผ่าน <code>docker run</code> หรือ <code>docker start</code>)</td><td>ควรเขียนแบบ exec form <code>[&quot;python&quot;,&quot;app.py&quot;]</code> เพื่อแยกชื่อโปรแกรมกับ argument ให้ชัด<br>ผู้ใช้ override ได้ด้วยการพิมพ์คำสั่งต่อท้ายชื่อ image ตอน <code>docker run</code></td></tr>
 </tbody></table></div>
-<h3>อีก 2 คำสั่งที่เป็นญาติกับที่เพิ่งเรียน</h3>
-<p>7 คำสั่งข้างบนพอสำหรับไฟล์แรกแล้ว แต่มีอีก 2 ตัวที่ต้องรู้จักไว้ เพราะ<b>หน้าตาคล้ายกับคำสั่งที่เพิ่งอ่านไป</b>จนสับสนกันบ่อย ตอนนี้แค่จำไว้ว่าต่างกันตรงไหน ยังไม่ต้องใช้</p>
+<h3>อีก 3 คำสั่งที่เป็นญาติกับที่เพิ่งเรียน</h3>
+<p>7 คำสั่งข้างบนพอสำหรับไฟล์แรกแล้ว แต่มีอีก 3 ตัวที่ต้องรู้จักไว้ เพราะ<b>หน้าตาคล้ายกับคำสั่งที่เพิ่งอ่านไป</b>จนสับสนกันบ่อย ตอนนี้แค่จำไว้ว่าต่างกันตรงไหน ยังไม่ต้องใช้</p>
 <div class="table-wrap"><table class="tbl"><thead><tr><th>คำสั่ง</th><th>คล้ายกับตัวไหน</th><th>ต่างกันตรงไหน</th><th>เรียนเต็มๆ ตอนไหน</th></tr></thead><tbody>
 <tr><td><code><span class="instruction">ENTRYPOINT</span></code></td><td><code>CMD</code> (บรรทัดที่ 8)</td><td>ทั้งคู่บอกว่า container เริ่มทำงานแล้วรันอะไร แต่<br><code>CMD</code> = ค่า<b>เริ่มต้น</b> ผู้ใช้พิมพ์คำสั่งต่อท้ายชื่อ image เพื่อ<b>แทนที่</b>ได้ทั้งหมด<br><code>ENTRYPOINT</code> = ตัวโปรแกรม<b>หลัก</b>ที่ยึดไว้ สิ่งที่ผู้ใช้พิมพ์มักถูก<b>ต่อท้าย</b>เป็น argument แทน (พฤติกรรมนี้เป็นของ exec form — ดู 6.6)<br>เหมาะเมื่ออยากให้ container ทำตัวเหมือนโปรแกรมหนึ่งตัว</td><td><b>ตอนที่ 6</b> — ทดลองเทียบ RUN vs CMD vs ENTRYPOINT ให้เห็นผลจริง</td></tr>
 <tr><td><code><span class="instruction">ARG</span></code></td><td><code>ENV</code> (บรรทัดที่ 6)</td><td>ทั้งคู่คือการตั้งค่าตัวแปร แต่คนละช่วงเวลา<br><code>ENV</code> = อยู่<b>ตอน run</b> แอปอ่านค่าได้ และติดไปกับ image<br><code>ARG</code> = มีเฉพาะ<b>ตอน build</b> เท่านั้น ส่งค่าด้วย <code>--build-arg</code> พอ build เสร็จก็หายไป แอปอ่านไม่เห็น<br>ถ้าอยากให้ค่าอยู่ต่อ ต้องคัดลอกไปใส่ <code>ENV</code> อีกที</td><td><b>ตอนที่ 7</b> — เทียบ ARG กับ ENV</td></tr>
+<tr><td><code><span class="instruction">LABEL</span></code></td><td><code>ENV</code> (บรรทัดที่ 6)</td><td>ทั้งคู่เขียนเป็น <code>key=value</code> และติดไปกับ image เหมือนกัน แต่คนละหน้าที่<br><code>ENV</code> = ค่าที่ <b>โปรเซสในคอนเทนเนอร์อ่านได้</b> จึงใช้ตั้งค่าให้แอปทำงาน<br><code>LABEL</code> = <b>ป้ายข้อมูลของตัว image เอง</b> เช่น ชื่อ เวอร์ชัน ผู้ดูแล commit ต้นทาง คนและเครื่องมือภายนอกอ่านผ่าน <code>docker image inspect</code> แต่<b>แอปข้างในมองไม่เห็น</b><br>ไม่ได้ทำให้ image ทำงานต่างไป แต่ทำให้ image <b>ตรวจสอบย้อนกลับได้</b></td><td><b>ตอนที่ 8</b> — 8.4 ติดป้ายให้ image ก่อนส่งขึ้น registry</td></tr>
 </tbody></table></div>
 <div class="note"><b>สรุปตอนนี้:</b> คำสั่งที่ต้องรู้จักจริงๆ มีแค่ 7 ตัว — <code>FROM</code>, <code>WORKDIR</code>, <code>COPY</code>, <code>RUN</code>, <code>ENV</code>, <code>EXPOSE</code> และ <code>CMD</code> เท่านี้เขียน Dockerfile ใช้งานได้จริงแล้ว ที่เหลือค่อยเก็บระหว่างทาง</div>
 <div class="think">
@@ -2601,7 +2602,7 @@ IMAGE          CREATED BY
         <div class="wrap">
           <div class="section-meta"><span class="chapter">ตอนที่ 8 จาก 12</span><span class="badge level-practice">ลงมือทำ</span></div>
           <h2>8. ส่ง Image เข้า Registry: Tag → Push → Pull</h2>
-          <p class="learning"><b>จะได้อะไรจากตอนนี้:</b> ตั้งชื่อ image ส่งขึ้น registry อย่างปลอดภัย และ pull กลับมารัน</p>
+          <p class="learning"><b>จะได้อะไรจากตอนนี้:</b> ตั้งชื่อ image ส่งขึ้น registry อย่างปลอดภัย pull กลับมารัน และติดป้าย <code>LABEL</code> บอกว่า image นี้คืออะไร</p>
           <div class="lab" id="registry-cycle">
             <span class="lab-status">ปิดวงจร Image · ทดลองกับ Registry จริง</span>
             <h3>8.1 Tag → Push → Registry → Pull → Run</h3>
@@ -2994,6 +2995,205 @@ REGISTRY_CYCLE_OK
               ที่ให้เครื่องอื่นเชื่อมต่อควรใช้ TLS, authentication
               และการกำหนดสิทธิ ไม่ควรปิดการตรวจความปลอดภัยเพื่อความสะดวก
             </div>
+          </div>
+          <h3>8.4 LABEL: ติดป้ายข้อมูลให้ image ก่อนส่งต่อให้คนอื่น</h3>
+          <p>
+            ถึงตรงนี้เรา push image ขึ้น registry เป็นแล้ว
+            แต่ลองคิดในมุมของ<b>คนที่ pull ไปใช้</b>: เขาได้ก้อนข้อมูลมาก้อนหนึ่ง
+            แล้วจะรู้ได้อย่างไรว่ามันคือแอปอะไร รุ่นไหน build มาจาก commit ใด
+            ใครเป็นคนดูแล และใช้สัญญาอนุญาตแบบไหน
+            คำสั่ง <code><span class="instruction">LABEL</span></code>
+            คือช่องทางมาตรฐานสำหรับตอบคำถามเหล่านี้
+          </p>
+          <h4>LABEL คืออะไร และต่างจาก ENV ตรงไหน</h4>
+          <p>
+            <code>LABEL</code> คือ <b>metadata แบบ key=value ที่ผูกกับตัว image</b>
+            ถูกบันทึกไว้ใน image config เดินทางไปพร้อม image ทุกครั้งที่ push และ pull
+            เครื่องมือรอบ ๆ Docker (registry UI, scanner, CI, Kubernetes)
+            อ่านค่าเหล่านี้เพื่อจัดกลุ่มและตรวจสอบย้อนกลับได้
+          </p>
+          <div class="note">
+            <b>จุดที่สับสนกับ <code>ENV</code> บ่อยที่สุด:</b> ทั้งคู่เขียนเป็น
+            <code>key=value</code> และติดไปกับ image เหมือนกัน แต่คนละหน้าที่ —
+            <code>ENV</code> คือ<b>ค่าที่โปรเซสในคอนเทนเนอร์อ่านได้</b>
+            (เช่น <code>os.environ.get("APP_VERSION")</code>) จึงใช้ตั้งค่าให้แอปทำงาน ·
+            ส่วน <code>LABEL</code> คือ<b>ป้ายข้อมูลของตัว image เอง</b>
+            ที่คนและเครื่องมือภายนอกอ่าน — <b>แอปข้างในมองไม่เห็นและอ่านไม่ได้</b>
+          </div>
+          <h4>เขียนได้ 3 แบบ ผลเหมือนกัน</h4>
+          <pre><span class="comment"># 1) หนึ่งคู่ต่อหนึ่งบรรทัด — อ่านง่ายแต่ได้หลายบรรทัดใน history</span>
+<span class="instruction">LABEL</span> org.opencontainers.image.title="regdemo"
+<span class="instruction">LABEL</span> org.opencontainers.image.licenses="MIT"
+
+<span class="comment"># 2) หลายคู่ในบรรทัดเดียว</span>
+<span class="instruction">LABEL</span> org.opencontainers.image.title="regdemo" org.opencontainers.image.licenses="MIT"
+
+<span class="comment"># 3) หลายคู่ ตัดบรรทัดด้วย \ — แบบที่นิยมที่สุดเพราะอ่านง่ายและรวมเป็นชั้นเดียว</span>
+<span class="instruction">LABEL</span> org.opencontainers.image.title="regdemo" \
+      org.opencontainers.image.licenses="MIT"</pre>
+          <p>
+            ค่าที่มีช่องว่างหรือภาษาไทย <b>ต้องครอบด้วยเครื่องหมายคำพูด</b>
+            ไม่งั้น Docker จะตัดคำผิดตำแหน่ง
+          </p>
+          <h4>ตัวอย่างจริง: ติดป้ายให้ image ของบทนี้</h4>
+          <pre><span class="instruction">FROM</span> nginx:1.27-alpine
+
+<span class="instruction">ARG</span> RELEASE=1.0
+<span class="instruction">ARG</span> VCS_REF=unknown
+
+<span class="instruction">LABEL</span> org.opencontainers.image.title="regdemo" \
+      org.opencontainers.image.description="หน้าเว็บสาธิตวงจร Registry ของวิชานี้" \
+      org.opencontainers.image.authors="devops-team" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.source="https://github.com/&lt;OWNER&gt;/&lt;REPO&gt;"
+
+<span class="instruction">COPY</span> index.html /usr/share/nginx/html/
+
+<span class="comment"># ค่าที่เปลี่ยนทุกครั้งที่ build รับมาจาก --build-arg</span>
+<span class="instruction">LABEL</span> org.opencontainers.image.version="${RELEASE}" \
+      org.opencontainers.image.revision="${VCS_REF}"
+<span class="instruction">EXPOSE</span> 80</pre>
+          <h4>อ่านค่ากลับจาก image</h4>
+          <p class="mini"><b>Docker — รันภายใน DevTools server</b></p>
+          <pre><span class="comment"># build โดยส่งเลขรุ่นและ commit เข้าไป</span>
+<span class="cmd">docker build --build-arg RELEASE=2.0 --build-arg VCS_REF=9f3c1ab -t labeldemo:2.0 .</span>
+
+<span class="comment"># 1) ดู label ทั้งชุดเป็น JSON</span>
+<span class="cmd">docker image inspect --format '{{json .Config.Labels}}' labeldemo:2.0</span>
+
+<span class="comment"># 2) หยิบทีละตัว — ชื่อ label มีจุดคั่น จึงต้องใช้ index ไม่ใช่ .Config.Labels.org...</span>
+<span class="cmd">docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.version"}}' labeldemo:2.0</span>
+
+<span class="comment"># 3) ค้นหา image จาก label</span>
+<span class="cmd">docker image ls --filter "label=org.opencontainers.image.title=regdemo"</span></pre>
+          <h4>ผลที่ได้จากการรันจริง</h4>
+          <pre class="result">{"maintainer":"NGINX Docker Maintainers &lt;…&gt;",
+ "org.opencontainers.image.authors":"devops-team",
+ "org.opencontainers.image.description":"หน้าเว็บสาธิตวงจร Registry ของวิชานี้",
+ "org.opencontainers.image.licenses":"MIT",
+ "org.opencontainers.image.revision":"9f3c1ab",
+ "org.opencontainers.image.source":"https://github.com/&lt;OWNER&gt;/&lt;REPO&gt;",
+ "org.opencontainers.image.title":"regdemo",
+ "org.opencontainers.image.version":"2.0"}
+
+2.0
+
+IMAGE           ID             DISK USAGE   CONTENT SIZE
+labeldemo:2.0   8253bfc3d77c       73.6MB           21MB</pre>
+          <p class="mini">
+                สังเกตสองอย่าง: ค่าที่ส่งผ่าน <code>--build-arg</code> ไปโผล่ใน label จริง
+                และมี <code>maintainer</code> ที่<b>เราไม่ได้เขียนเอง</b>ติดมาด้วย —
+                มันสืบทอดมาจาก base image <code>nginx</code> (อธิบายต่อด้านล่าง)
+              </p>
+          <h4>ชื่อ label มาตรฐาน (OCI Image Spec)</h4>
+          <p>
+            ตั้งชื่อ key เองได้อิสระ แต่ถ้าใช้ชุดมาตรฐาน
+            <code>org.opencontainers.image.*</code>
+            เครื่องมืออื่นจะอ่านและแสดงผลให้อัตโนมัติ จึงควรใช้ชุดนี้เป็นหลัก
+          </p>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead>
+                <tr><th>ชื่อ label</th><th>ใส่อะไร</th><th>ตัวอย่าง</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>…image.title</code></td><td>ชื่อที่คนอ่าน</td><td><code>regdemo</code></td></tr>
+                <tr><td><code>…image.description</code></td><td>คำอธิบายสั้น ๆ ว่า image นี้ทำอะไร</td><td><code>หน้าเว็บสาธิตวงจร Registry</code></td></tr>
+                <tr><td><code>…image.version</code></td><td>เวอร์ชันของซอฟต์แวร์ข้างใน</td><td><code>2.0</code></td></tr>
+                <tr><td><code>…image.revision</code></td><td>commit ที่ใช้ build — ตัวเชื่อมกลับไปหา source</td><td><code>9f3c1ab</code></td></tr>
+                <tr><td><code>…image.source</code></td><td>URL ของ repository ต้นทาง</td><td><code>https://github.com/&lt;OWNER&gt;/&lt;REPO&gt;</code></td></tr>
+                <tr><td><code>…image.created</code></td><td>เวลาที่ build รูปแบบ RFC 3339</td><td><code>2026-08-16T04:00:00Z</code></td></tr>
+                <tr><td><code>…image.licenses</code></td><td>สัญญาอนุญาต (รหัส SPDX)</td><td><code>MIT</code></td></tr>
+                <tr><td><code>…image.authors</code></td><td>ทีมหรือผู้ดูแล</td><td><code>devops-team</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="mini">
+            ในตารางย่อ <code>org.opencontainers.</code> เป็น <code>…</code> เพื่อให้อ่านง่าย
+            ตอนเขียนจริงต้องพิมพ์ชื่อเต็ม
+          </p>
+          <div class="note warn">
+            <b>ห้ามใส่ secret ใน LABEL เด็ดขาด:</b> label อ่านได้ด้วย
+            <code>docker image inspect</code> โดย<b>ไม่ต้องรัน container ด้วยซ้ำ</b>
+            ใครที่ pull image ไปได้ก็อ่านได้ทันที — ข้อห้ามเดียวกับ
+            <code>ARG</code> และ <code>ENV</code> ในตอนที่ 7
+          </div>
+          <h4>LABEL ที่ติดมากับ base image</h4>
+          <p>
+            label <b>สืบทอดจาก base image</b> เหมือน <code>ENV</code> และ <code>CMD</code>
+            ตัวอย่างข้างบนจึงมี <code>maintainer</code> ของ nginx ติดมาโดยที่เราไม่ได้เขียน
+            ตรวจได้ว่าอันไหนมาจากไหนโดยเทียบกับ base image ตรง ๆ
+          </p>
+          <p class="mini"><b>Docker — รันภายใน DevTools server</b></p>
+          <pre><span class="cmd">docker image inspect --format '{{json .Config.Labels}}' nginx:1.27-alpine</span>
+<span class="comment"># -> {"maintainer":"NGINX Docker Maintainers &lt;…&gt;"}</span></pre>
+          <div class="note warn">
+            <b>ผลจริงที่ต่างจากที่หลายคนเข้าใจ:</b> การเขียน
+            <code><span class="instruction">LABEL</span> maintainer=""</code>
+            <b>ไม่ได้ลบ</b> label ที่สืบทอดมา แต่ทำให้มันกลายเป็น
+            <b>ค่าว่าง</b> — ทดสอบแล้วได้ <code>"maintainer":""</code> ไม่ใช่หายไปจากรายการ ·
+            Dockerfile ไม่มีคำสั่งลบ label ถ้าต้องการรายการที่สะอาดจริง ๆ
+            ต้องเปลี่ยน base image หรือทับด้วยค่าของเราเอง
+          </div>
+          <h4>LABEL กับ layer cache บน Docker 29</h4>
+          <p>
+            คำแนะนำเก่าที่พบบ่อยคือ "วาง <code>LABEL</code> ที่เปลี่ยนบ่อยไว้ท้ายไฟล์
+            ไม่งั้น cache จะแตกทั้งไฟล์" — บน BuildKit ที่มากับ Docker 29
+            <b>เรื่องนี้ไม่จริงแล้ว</b> เพราะ <code>LABEL</code> เป็นงานระดับ metadata
+            ไม่ได้เปลี่ยน filesystem ที่ขั้นถัดไปใช้อ้างอิง
+          </p>
+          <h4>ผลที่ได้จากการรันจริง</h4>
+          <pre class="result">#  แก้ LABEL ที่อยู่ "ก่อน" ขั้น RUN แล้ว build ใหม่
+#6 [2/3] RUN echo "expensive step" &gt; /marker.txt &amp;&amp; sleep 1
+#6 CACHED
+#7 [3/3] COPY index.html /site.html
+#7 CACHED
+
+#  แต่ IMAGE ID เปลี่ยน เพราะ image config เปลี่ยน
+sha256:31a1bc5fad2cac13d29…
+sha256:a4ccc9b03ed59de1b7e…</pre>
+          <p class="mini">
+                ขั้นที่ทำงานจริงยัง <code>CACHED</code> ครบ แต่ได้ image คนละก้อน —
+                แปลว่าแก้ label แล้ว <b>ต้อง push ใหม่</b> และ digest จะเปลี่ยนตามด้วย
+                (เชื่อมกับเรื่อง tag กับ digest ในข้อ 8.1)
+              </p>
+          <p>
+            ถึงอย่างนั้นการวาง label ที่เปลี่ยนทุก build (เช่น <code>revision</code>,
+            <code>created</code>) ไว้ท้ายไฟล์ก็ยัง<b>เป็นนิสัยที่ดี</b>
+            เพราะ builder รุ่นเก่าและ registry บางตัวยังคิดเป็นชั้นแยก
+            และทำให้อ่าน Dockerfile ง่ายกว่า
+          </p>
+          <h4>label ของ container เป็นคนละชุดกับของ image</h4>
+          <p>
+            ตอน <code>docker run</code> ติด label เพิ่มให้เฉพาะ container ตัวนั้นได้
+            โดยไม่แตะ image — เหมาะกับการจัดกลุ่มของที่รันอยู่
+            (Compose ก็ใช้กลไกนี้ตั้ง label ของ project ให้อัตโนมัติ)
+          </p>
+          <p class="mini"><b>Docker — รันภายใน DevTools server</b></p>
+          <pre><span class="cmd">docker run -d --name lbl-web --label owner=student --label env=demo labeldemo:2.0</span>
+<span class="cmd">docker ps --filter "label=env=demo" --format "table {{.Names}}\t{{.Labels}}"</span>
+<span class="comment"># container จะเห็น label ของ image ที่สืบทอดมา + ที่เพิ่งใส่ตอน run</span></pre>
+          <h4>สรุป: ARG vs ENV vs LABEL</h4>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead>
+                <tr><th></th><th><code>ARG</code></th><th><code>ENV</code></th><th><code>LABEL</code></th></tr>
+              </thead>
+              <tbody>
+                <tr><td>มีชีวิตช่วงไหน</td><td>เฉพาะตอน build</td><td>build และ run</td><td>ติดกับ image ตลอดอายุของ image</td></tr>
+                <tr><td>แอปใน container อ่านได้ไหม</td><td><b>ไม่ได้</b></td><td><b>ได้</b> ผ่าน environment</td><td><b>ไม่ได้</b></td></tr>
+                <tr><td>เปลี่ยนตอน run ได้ไหม</td><td>ไม่ได้</td><td>ได้ ด้วย <code>-e</code> / <code>--env-file</code></td><td>ไม่ได้ ต้อง build ใหม่</td></tr>
+                <tr><td>ใช้ทำอะไร</td><td>ค่าที่ใช้ระหว่างประกอบ image</td><td>config ของแอปตอนทำงาน</td><td>ข้อมูลกำกับว่า image นี้คืออะไร</td></tr>
+                <tr><td>อ่านด้วยคำสั่งอะไร</td><td><code>docker history</code></td><td><code>docker image inspect</code> → <code>.Config.Env</code></td><td><code>docker image inspect</code> → <code>.Config.Labels</code></td></tr>
+                <tr><td>ใส่ secret ได้ไหม</td><td colspan="3" style="text-align:center"><b>ไม่ได้ทั้งสามตัว</b> — ทุกตัวอ่านย้อนหลังได้จาก image ที่ push ไปแล้ว</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note good">
+            <b>เกณฑ์ผ่านของหัวข้อนี้:</b> อธิบายได้ว่า <code>LABEL</code> ต่างจาก
+            <code>ENV</code> อย่างไร · เขียน label ชุด OCI ให้ image ของตัวเองได้ ·
+            อ่านกลับด้วย <code>docker image inspect --format '{{json .Config.Labels}}'</code> ·
+            และรู้ว่า label ใดสืบทอดมาจาก base image
           </div>
           <div class="think">
             <b>ชวนคิด:</b> ถ้า tag <code>1.0</code> ถูก push ซ้ำให้ชี้ image

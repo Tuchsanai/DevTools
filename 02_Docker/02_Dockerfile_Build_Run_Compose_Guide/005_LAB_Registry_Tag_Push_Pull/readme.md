@@ -8,7 +8,7 @@
 |---|---|
 | **คำถามเดียวที่ตอบให้จบ** | ถ้ามีคน `push` ทับ tag `1.0` ด้วย image คนละตัว — พรุ่งนี้เรา `pull` แล้วได้อะไร |
 | **ต้องผ่านอะไรมาก่อน** | **LAB 1** (build/run) · **LAB 4** (`--build-arg` ที่ใช้สร้างรุ่นที่ 2) |
-| **เวลา** | ~45 นาที (แกนหลัก ข้อ 0–13 ประมาณ 35 นาที · ทดลองเพิ่มเติม ~10 นาที · ข้อ 12 Docker Hub เป็นเอกสารอ่านอย่างเดียว) |
+| **เวลา** | ~35 นาที (ข้อ 0–13 · ข้อ 12 Docker Hub เป็นเอกสารอ่านอย่างเดียว ไม่ต้องทำในคาบ) |
 | **จบแล้วต้องทำได้เอง** | แกะชื่อ image ครบทุกส่วน · เดินวงจร build → tag → push → pull → run · เลือกระหว่าง tag กับ digest ได้อย่างมีเหตุผล |
 | **แล็บนี้ยัง *ไม่* สอน** | เราจะใช้ **local registry** ทั้งแล็บ — ไม่ต้องมีบัญชี Docker Hub และ **ห้ามใส่ token จริง** ลงเอกสารใด ๆ (ข้อ 12 ใช้ `<DOCKER_USER>` / `<DOCKER_TOKEN>` เป็น placeholder) |
 
@@ -63,7 +63,7 @@
 
 ### กลไกจริง
 
-ชื่อเต็ม `docker.io/<DOCKER_USER>/regdemo:1.0` มี `docker.io` เป็น registry · `<DOCKER_USER>` เป็น namespace · `regdemo` เป็น repository · `1.0` เป็น tag — ถ้าไม่เขียน registry Docker จะเติม `docker.io` ให้ ชื่อสั้นที่ไม่มี namespace จะถูกมองเป็นของ `library` และชื่อที่ไม่ระบุ tag จะใช้ `latest` · default เหล่านี้ทำให้ pull official image พิมพ์สั้นลง แต่ก็ทำให้ `push regdemo:1.0` ในหัวข้อทดลองเพิ่มเติมพุ่งไปยังพื้นที่ที่เราไม่มีสิทธิ์
+ชื่อเต็ม `docker.io/<DOCKER_USER>/regdemo:1.0` มี `docker.io` เป็น registry · `<DOCKER_USER>` เป็น namespace · `regdemo` เป็น repository · `1.0` เป็น tag — ถ้าไม่เขียน registry Docker จะเติม `docker.io` ให้ ชื่อสั้นที่ไม่มี namespace จะถูกมองเป็นของ `library` และชื่อที่ไม่ระบุ tag จะใช้ `latest` · default เหล่านี้ทำให้ pull official image พิมพ์สั้นลง แต่ก็ทำให้ `push regdemo:1.0` ที่ไม่ได้ตั้งชื่อให้ตรง registry ปลายทาง พุ่งไปยังพื้นที่ที่เราไม่มีสิทธิ์
 
 ข้อ 4 สร้าง image จาก config, metadata และ layers ที่ระบุตัวตนด้วย hash ของเนื้อหา · ข้อ 5 ใช้ `docker tag` เพิ่มความสัมพันธ์ระหว่าง "ชื่อ" กับ image เดิม ไม่ได้คัดลอก bytes หรือ layers — ให้นึกถึงกระเป๋าใบเดียวที่ติดป้ายได้หลายใบ ป้ายเพิ่มแต่ของข้างในไม่เพิ่ม จึงเห็น IMAGE ID เดียวกัน
 
@@ -260,7 +260,7 @@ docker image inspect --format "{{.Id}}" regdemo:1.0 localhost:5000/workshop/regd
 docker system df
 ```
 
-> 📝 **คำอธิบาย:** `docker tag <ชื่อเดิม> <ชื่อใหม่>` — ซ้ายคือ image ที่มีอยู่ ขวาคือชื่อที่จะเพิ่ม · ชื่อใหม่ `localhost:5000/workshop/regdemo:1.0` มีครบสูตร: registry = `localhost:5000`, namespace = `workshop`, repository = `regdemo`, tag = `1.0` · **นี่คือขั้นที่คนพลาดบ่อยที่สุด**: `docker push` จะดูจาก "ชื่อ" เท่านั้นว่าจะส่งไปที่ไหน ถ้าไม่ตั้งชื่อให้ขึ้นต้นด้วย registry ปลายทาง มันจะวิ่งไป Docker Hub เสมอ (ดูผลจริงในหัวข้อ "ทดลองเพิ่มเติม") · `docker system df` สรุปการใช้พื้นที่ — ดูช่อง **Images / TOTAL** ว่าเพิ่มขึ้นไหม
+> 📝 **คำอธิบาย:** `docker tag <ชื่อเดิม> <ชื่อใหม่>` — ซ้ายคือ image ที่มีอยู่ ขวาคือชื่อที่จะเพิ่ม · ชื่อใหม่ `localhost:5000/workshop/regdemo:1.0` มีครบสูตร: registry = `localhost:5000`, namespace = `workshop`, repository = `regdemo`, tag = `1.0` · **นี่คือขั้นที่คนพลาดบ่อยที่สุด**: `docker push` จะดูจาก "ชื่อ" เท่านั้นว่าจะส่งไปที่ไหน ถ้าไม่ตั้งชื่อให้ขึ้นต้นด้วย registry ปลายทาง มันจะวิ่งไป Docker Hub เสมอ (ถ้าตั้งชื่อไม่ตรง จะได้ error `push access denied … insufficient_scope` — วิธีแก้อยู่ในตาราง "แก้ปัญหาที่พบบ่อย" ท้ายแล็บ) · `docker system df` สรุปการใช้พื้นที่ — ดูช่อง **Images / TOTAL** ว่าเพิ่มขึ้นไหม
 
 ✅ **Expected output** — **หลักฐานชิ้นเอก**: สองแถว ชื่อคนละชื่อ แต่ **ID เดียวกัน** (`46671988cbe0`) และ `docker system df` นับ `Images` แค่ **2** ก้อน (คือ `registry:2` + `regdemo` ก้อนเดียว ไม่ใช่ 3):
 
@@ -613,7 +613,7 @@ docker run --rm -d -p 8185:80 <DOCKER_USER>/regdemo:1.0
 docker logout
 ```
 
-> 📝 **คำอธิบาย:** เกณฑ์ผ่านคือ login สำเร็จ (`Login Succeeded`), namespace ตรงกับบัญชี, push แสดง digest, หน้า **Tags** ของ repository เห็น tag ที่เพิ่ง push และ image ที่ pull กลับมารันได้ · **ห้ามพิมพ์ token ต่อท้ายคำสั่งเด็ดขาด** (เช่น `docker login -u ... -p <token>`) เพราะมันจะถูกบันทึกลง `~/.bash_history` · ถ้าจำเป็นต้องอัตโนมัติให้ใช้ `--password-stdin` · **ข้อผิดพลาดที่เจอบ่อยที่สุด** คือลืมข้อ 2 แล้วสั่ง `docker push regdemo:1.0` ตรง ๆ ซึ่งจะวิ่งไป `docker.io/library/` ที่เราไม่มีสิทธิ์ — ดูผลจริงในหัวข้อถัดไป
+> 📝 **คำอธิบาย:** เกณฑ์ผ่านคือ login สำเร็จ (`Login Succeeded`), namespace ตรงกับบัญชี, push แสดง digest, หน้า **Tags** ของ repository เห็น tag ที่เพิ่ง push และ image ที่ pull กลับมารันได้ · **ห้ามพิมพ์ token ต่อท้ายคำสั่งเด็ดขาด** (เช่น `docker login -u ... -p <token>`) เพราะมันจะถูกบันทึกลง `~/.bash_history` · ถ้าจำเป็นต้องอัตโนมัติให้ใช้ `--password-stdin` · **ข้อผิดพลาดที่เจอบ่อยที่สุด** คือลืมข้อ 2 แล้วสั่ง `docker push regdemo:1.0` ตรง ๆ ซึ่งจะวิ่งไป `docker.io/library/` ที่เราไม่มีสิทธิ์ จึงถูกปฏิเสธด้วย `push access denied … insufficient_scope`
 
 ## 13. ตรวจงานอัตโนมัติด้วย `verify.sh`
 
@@ -638,63 +638,6 @@ cd ~/labwork/DevTools/02_Docker/02_Dockerfile_Build_Run_Compose_Guide/005_LAB_Re
 [PASS] docker tag เพิ่มชื่อใหม่โดยไม่สำเนา image (IMAGE ID ตรงกัน)
 ALL CHECKS PASSED
 ```
-
-## ทดลองเพิ่มเติม (~10 นาที)
-
-> แกนหลักของแล็บจบแล้ว — หัวข้อต่อจากนี้เลือกทำตามเวลาที่มี แต่ข้อ 💥 **ทำให้พัง** อยู่ในเช็กลิสต์ท้ายแล็บ เพราะการอ่าน error ให้ออกคือทักษะที่ใช้จริงมากที่สุด
-
-### 1) 🔥 ทำให้พัง — `docker push` โดยลืมตั้งชื่อให้ตรง registry
-
-นี่คือ error อันดับหนึ่งของเรื่อง registry ลองทำให้พังเองแล้วอ่านให้เข้าใจ :
-
-```bash
-docker tag localhost:5000/workshop/regdemo:1.0 regdemo:1.0
-docker push regdemo:1.0
-```
-
-> 📝 **คำอธิบาย:** `regdemo:1.0` ไม่มี registry นำหน้า Docker จึงเติม `docker.io/library/` ให้อัตโนมัติ — แปลว่าเรากำลังพยายาม push เข้า **พื้นที่ official image ของ Docker Hub** ซึ่งไม่มีใครในห้องมีสิทธิ์ ทายก่อนดูเฉลย: error จะบอกว่า "หา repository ไม่เจอ" หรือ "ไม่มีสิทธิ์"?
-
-✅ **Expected output** — บรรทัดแรกเฉลยทุกอย่าง: **`repository [docker.io/library/regdemo]`** แล้วจบด้วย error สิทธิ์ (exit code 1):
-
-```
-The push refers to repository [docker.io/library/regdemo]
-        ... (layer ทั้งหมดขึ้น Waiting อยู่พักหนึ่ง) ...
-push access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed
-exit code = 1
-```
-
-> 📝 **อ่าน error ยังไง:** ประโยคนี้รวมสองความเป็นไปได้ไว้ด้วยกัน — "repository ไม่มีอยู่จริง" **หรือ** "มีอยู่แต่คุณไม่มีสิทธิ์" registry จงใจไม่บอกให้ชัดเพื่อไม่ให้คนภายนอกใช้ error เดารายชื่อ repository ส่วนตัวได้ · ท่อน `insufficient_scope` แปลว่า token ที่เราถืออยู่ (ในที่นี้คือ "ไม่มี token เลย") ไม่ครอบคลุมสิทธิ์ `push` ของ repository นี้ · **วิธีแก้มีทางเดียว: ตั้งชื่อให้ถูกก่อน push** — `docker tag regdemo:1.0 localhost:5000/workshop/regdemo:1.0` (หรือ `<DOCKER_USER>/regdemo:1.0` ถ้าจะขึ้น Docker Hub จริง)
->
-> เก็บกวาดชื่อทดลองทิ้ง : `docker rmi regdemo:1.0` → ได้ `Untagged: regdemo:1.0` เฉย ๆ (image ก้อนจริงยังอยู่ เพราะยังมีชื่อ registry ชี้อยู่)
-
-### 2) push ซ้ำครั้งที่สอง — พิสูจน์ว่า push เฉพาะ layer ที่ registry ยังไม่มี
-
-```bash
-docker push localhost:5000/workshop/regdemo:1.0
-```
-
-> 📝 **คำอธิบาย:** สั่ง push ชื่อเดิม image เดิมซ้ำอีกครั้ง · ถ้า Docker ส่งทุกอย่างใหม่ทุกรอบ การ deploy จะช้ามาก — กลไกจริงคือ Docker ถาม registry ก่อนว่ามี blob ของ digest นี้แล้วหรือยัง ถ้ามีก็ **ข้าม** · เทียบกับผลของข้อ 9 ที่เราเปลี่ยนแค่ไฟล์ HTML แล้วมีเพียง 2 layer ที่ต้องส่งจริง ที่เหลือขึ้น `Layer already exists` ทั้งหมด
-
-✅ **Expected output** — เมื่อ push ซ้ำด้วย image เดิม **ทุกบรรทัดจะเป็น `Layer already exists`** และได้ digest ตัวเดิม (D2) กลับมา · บล็อกด้านล่างนี้คือการ**ตัดเฉพาะบรรทัด `Layer already exists`** ออกมาจากผลรันจริงของข้อ 9 (รอบนั้น layer ฐานถูกส่งไปแล้วตั้งแต่ push ครั้งแรก จึงขึ้นข้อความนี้อยู่ก่อนแล้ว):
-
-```
-f18232174bc9: Layer already exists
-61ca4f733c80: Layer already exists
-        ... (ทุก layer ขึ้นข้อความเดียวกัน) ...
-d7e507024086: Layer already exists
-1.0: digest: sha256:dfe0e5478b18341e4ff0c5c23e28e419e3332cd1f3f3c46604113fc3e751ac59 size: 856
-```
-
-### 3) ถาม registry ว่ามี "ของที่ไม่มี tag" อยู่จริงไหม
-
-```bash
-curl -s http://localhost:5000/v2/workshop/regdemo/tags/list
-curl -sI -H "Accept: application/vnd.oci.image.index.v1+json" \
-  http://localhost:5000/v2/workshop/regdemo/manifests/sha256:46671988cbe09ac29df40a6f182b054cb091f114ec9c7b62fbb8b4be871c6df4 \
-  | head -3
-```
-
-> 📝 **คำอธิบาย:** `tags/list` เห็นแค่ `1.0` ตัวเดียว — แต่การขอ manifest **ด้วย digest** ยังได้ `200 OK` กลับมา พิสูจน์ว่า image รุ่น 1 **ยังอยู่บน registry** เพียงแต่ไม่มี tag ชี้ · นี่คือเหตุผลที่ระบบจริงต้องมี **garbage collection** ของ registry ไม่งั้นดิสก์จะบวมจาก image ที่ไม่มีใครอ้างถึง
 
 ## แก้ปัญหาที่พบบ่อย
 
@@ -770,7 +713,6 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 - [ ] push รุ่น 2 ทับ tag `1.0` แล้วเห็น `Layer already exists` กับ digest ตัวใหม่ (D2) ที่ต่างจาก D1
 - [ ] pull ด้วย tag `1.0` ได้ **RELEASE 2.0** แต่ pull ด้วย `@sha256:<D1>` ยังได้ **RELEASE 1.0** — และอธิบายได้ว่าทำไม `latest` ไม่ได้แปลว่าใหม่ที่สุด
 - [ ] `docker rmi` ชื่อแรกได้แค่ `Untagged:` · ลบชื่อสุดท้ายจึงได้ `Deleted:` และ `docker system df` เห็นจำนวน image ลดลง
-- [ ] ทดลอง `docker push regdemo:1.0` แล้วอ่าน error `docker.io/library/...` + `insufficient_scope` ออกว่าเกิดจากตั้งชื่อไม่ตรง registry
 - [ ] อธิบายได้ว่า registry เป็น **จุดส่งต่อ image** ไม่ใช่ที่รัน container และ HTTP registry ใช้ได้เฉพาะ localhost ทดลอง (ของจริงต้อง TLS + authentication)
 - [ ] `./verify.sh` ขึ้น `ALL CHECKS PASSED` แล้วเก็บกวาดด้วย `docker rm -f lab-registry` + `docker rm -f devtools-df-lab5` จน `docker ps -a --filter "name=^devtools-"` ไม่เหลือแถวของแล็บนี้
 
