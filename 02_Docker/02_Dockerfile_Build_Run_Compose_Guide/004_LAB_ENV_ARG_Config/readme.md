@@ -8,7 +8,7 @@
 |---|---|
 | **คำถามเดียวที่ตอบให้จบ** | ใส่ค่าเดียวกันไว้ทั้ง `ENV`, `--env-file` และ `-e` — **แอปจะเห็นค่าไหน** |
 | **ต้องผ่านอะไรมาก่อน** | **LAB 1** (build/run · ทดลอง ค. ที่ใช้ `-e` ครั้งแรก) |
-| **เวลา** | ~35 นาที (แกนหลัก ข้อ 0–11 ประมาณ 27 นาที · ทดลองเพิ่มเติม ~8 นาที) |
+| **เวลา** | ~30 นาที (แกนหลัก ข้อ 0–12 ประมาณ 27 นาที · ทดลองเพิ่มเติม ~3 นาที) |
 | **จบแล้วต้องทำได้เอง** | รัน image **ตัวเดียว** เป็น dev/staging/production โดยไม่ build ใหม่ · แยก `ARG` ออกจาก `ENV` ได้ · ชี้ให้เห็นว่า secret รั่วออกทาง `docker history` ได้อย่างไร |
 | **แล็บนี้ยัง *ไม่* สอน** | `.dockerignore` ฉบับเต็ม (พิสูจน์การรั่วแล้วที่ **LAB 1** ข้อ 6 — ที่นี่แค่ยืนยันกับ `.env.*`) · การส่ง config ผ่าน Compose → **LAB 7** ข้อ 9 |
 
@@ -441,6 +441,8 @@ $ docker run --rm -e BUILD_TOOL=github-actions demo-args:2.5
 run เห็น: APP_VERSION=2.5 BUILD_TOOL=github-actions
 ```
 
+> ⚠️ **กับดักเงียบ:** ถ้าพิมพ์ชื่อ build arg ผิด (เช่น `--build-arg APP_VERISON=2.5`) BuildKit ที่มากับ Docker 29 **ไม่เตือนอะไรเลย** — build ผ่านฉลุยแล้วได้ค่า default แทน (ต่างจากตำราเก่าที่บอกว่าจะขึ้น `build-args were not consumed`) · จึงต้อง **ตรวจผลเสมอ** ด้วย `docker run` หรือ `docker history` หลัง build อย่างที่ `verify.sh` ทำ
+
 > **ไทม์ไลน์ที่ควรจำ :** `--build-arg` ส่งค่าเข้า `ARG` ระหว่าง build → `ENV APP_VERSION=$APP_VERSION` คัดลอก **เฉพาะค่านี้** ไปเป็น default ใน image → ตอน run container ได้ `ENV` มา และ `-e` ทับได้อีกที
 > ส่วน `ARG` ที่ไม่ถูกคัดลอกไป `ENV` **ตายคาที่เมื่อ build จบ**
 
@@ -615,9 +617,9 @@ ALL CHECKS PASSED
 EXIT=0
 ```
 
-## ทดลองเพิ่มเติม (~8 นาที)
+## ทดลองเพิ่มเติม (~3 นาที)
 
-> แกนหลักของแล็บจบแล้ว — หัวข้อต่อจากนี้เลือกทำตามเวลาที่มี แต่ข้อ 💥 **ทำให้พัง** อยู่ในเช็กลิสต์ท้ายแล็บ เพราะการอ่าน error ให้ออกคือทักษะที่ใช้จริงมากที่สุด
+> แกนหลักของแล็บจบแล้ว — หัวข้อนี้ต่อยอดจากข้อ 5 เลือกทำตามเวลาที่มี
 
 ### ก. `-e` ทับ `--env-file` ทีละตัวแปร (ไม่ใช่ทับทั้งไฟล์)
 
@@ -635,56 +637,6 @@ APP_ENV=staging
 DATABASE_HOST=db.staging.internal
 LOG_LEVEL=warn
 ```
-
-### ข. 💥 ทำให้พัง — `--env-file` ที่หาไฟล์ไม่เจอ
-
-```bash
-docker run --rm --env-file .env.missing lab4-config:1.0 env
-echo "exit code = $?"
-printf "BAD LINE NO EQUALS\n" > .env.bad
-docker run --rm --env-file .env.bad lab4-config:1.0 env
-rm -f .env.bad
-```
-
-> 📝 **คำอธิบาย:** `echo "exit code = $?"` พิมพ์รหัสจบของคำสั่งก่อนหน้า (`0` = สำเร็จ) — ต้องพิมพ์ **ต่อทันที** ไม่งั้นค่าจะถูกทับ ·
-> จุดที่ต้องอ่าน: ข้อความบอกชัดว่าเป็นเรื่องของ **`--env-file`** และ `open .env.missing` คือ "เปิดไฟล์ไม่ได้" ไม่ใช่ปัญหาของ image หรือของแอปเลย · สามบรรทัดท้ายลองอีกแบบ: ไฟล์มีจริงแต่รูปแบบข้างในผิด Docker ก็ตรวจไวยากรณ์ให้ด้วย
-
-✅ **Expected output** — Docker หยุดตั้งแต่ยังไม่สร้าง container คืน exit code `125` และกรณีไฟล์ผิดรูปแบบก็บอกตรง ๆ ว่าบรรทัดไหนผิด:
-
-```
-docker: --env-file: open .env.missing: no such file or directory
-Run 'docker run --help' for more information
-exit code = 125
-docker: --env-file: invalid env file (.env.bad): variable 'BAD LINE NO EQUALS' contains whitespaces
-```
-
-> 📝 **แก้กลับ:** สาเหตุยอดฮิตคือ **อยู่ผิดโฟลเดอร์** (path เป็น relative) หรือพิมพ์ชื่อไฟล์ผิด · เช็กด้วย `ls -a` แล้วรันใหม่ด้วย `--env-file .env.lab` ต้องกลับมาทำงานปกติ ·
-> `125` เป็นรหัสเฉพาะของ Docker แปลว่า **"ตัว docker CLI/daemon เองมีปัญหา"** (ต่างจาก `126` = สั่งรันไม่ได้ และ `127` = หาคำสั่งไม่เจอ ซึ่งเป็นปัญหาข้างใน container) ·
-> เกร็ด: กรณีที่สอง (ไฟล์มีจริงแต่รูปแบบผิด) docker CLI ตรวจเจอตั้งแต่ยังไม่ได้คุยกับ daemon จึงคืน exit code **`1`** ไม่ใช่ `125` — ทั้งสองกรณีเหมือนกันตรงที่ **ยังไม่มี container ถูกสร้างเลย** ลองพิมพ์ `echo "exit code = $?"` ต่อท้ายทั้งสองคำสั่งเทียบกันดูได้
-
-### ค. 💥 ทำให้พังแบบเงียบ ๆ — `--build-arg` ที่ไม่ได้ประกาศไว้
-
-```bash
-docker build --no-cache --build-arg NOT_DECLARED=1 -f Dockerfile.args -t demo-args:nc . 2>&1 | grep -ic warning
-docker history --no-trunc --format "{{.CreatedBy}}" demo-args:nc | grep -c NOT_DECLARED
-docker run --rm demo-args:nc sh -c 'echo [$NOT_DECLARED]'
-```
-
-> 📝 **คำอธิบาย:** `grep -c` นับจำนวนบรรทัดที่เจอ (`-i` = ไม่สนตัวพิมพ์) จึงตอบคำถาม "มีคำเตือนกี่บรรทัด" ได้ตรง ๆ ·
-> **ผลที่ได้อาจไม่ตรงกับที่หลายคนจำมา:** ตำราเก่ามักบอกว่าจะขึ้น warning `one or more build-args ... were not consumed` ซึ่งเป็นพฤติกรรมของ **builder รุ่นเก่า** · BuildKit ที่มากับ Docker 29 ในเครื่องเรียนนี้ **ไม่เตือนเลย** — build ผ่านฉลุยและค่าที่ส่งไปหายเงียบ ๆ
-
-✅ **Expected output** — คำเตือน `0` บรรทัด · ไม่มีร่องรอยใน history · และตัวแปรว่างเปล่าตอนรัน:
-
-```
-$ ... | grep -ic warning
-0
-$ docker history --no-trunc --format "{{.CreatedBy}}" demo-args:nc | grep -c NOT_DECLARED
-0
-$ docker run --rm demo-args:nc sh -c "echo [$NOT_DECLARED]"
-[]
-```
-
-> **บทเรียน:** ถ้าพิมพ์ชื่อ build arg ผิด (เช่น `--build-arg APP_VERISON=2.5`) **จะไม่มีอะไรเตือนเราเลย** image จะ build ผ่านแล้วได้ค่า default แทน · วิธีกันคือ **ตรวจผลเสมอ** ด้วย `docker run` หรือ `docker history` หลัง build อย่างที่ `verify.sh` ทำ
 
 ## แก้ปัญหาที่พบบ่อย
 
@@ -762,7 +714,6 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 - [ ] เห็นค่า `FAKE_TOKEN` ปลอมรั่วออกมาทาง `docker history` และ `docker image inspect` พร้อมคำเตือน `SecretsUsedInArgOrEnv`
 - [ ] `Dockerfile.argfrom` แสดง `ALPINE_VERSION=[]` ก่อนประกาศซ้ำ และ `[3.20]` หลังประกาศซ้ำ
 - [ ] `COPY . .` แล้ว `.env.lab` **ไม่หลุดเข้า image** เพราะกติกา `.env.*` ใน `.dockerignore` (ส่วนการรั่วจริงเห็นมาแล้วที่ LAB 1 ข้อ 6)
-- [ ] เห็น error จริงของ `--env-file .env.missing` (exit code `125`) และรู้วิธีแก้
 - [ ] `./verify.sh` ขึ้น `ALL CHECKS PASSED` และ `EXIT=0` · `docker ps -a --filter "name=^devtools-"` เหลือแค่หัวตาราง
 
 *ผลลัพธ์ทั้งหมดในเอกสารนี้มาจากการรันจริงในเครื่องเรียน `tuchsanai/devtools:2569_1` เมื่อ 14 ส.ค. 2026*

@@ -9,7 +9,7 @@
 |---|---|
 | **คำถามเดียวที่ตอบให้จบ** | Dockerfile สองไฟล์ที่ต่างกันแค่ **ลำดับ 2 บรรทัด** ทำให้ build ต่างกันกี่เท่า และต่างตอนไหน |
 | **ต้องผ่านอะไรมาก่อน** | **LAB 1** (build · run · build context) |
-| **เวลา** | ~35 นาที (แกนหลัก ข้อ 0–10 ประมาณ 27 นาที · ทดลองเพิ่มเติม ~8 นาที) |
+| **เวลา** | ~32 นาที (แกนหลัก ข้อ 0–10 ประมาณ 27 นาที · ทดลองเพิ่มเติม ~5 นาที) |
 | **จบแล้วต้องทำได้เอง** | ชี้ได้ว่า cache แตกที่ขั้นไหนและเพราะอะไร · เรียง Dockerfile จาก "เปลี่ยนน้อย → เปลี่ยนบ่อย" · คืนพื้นที่โดยรู้ว่ากำลังลบอะไร |
 | **แล็บนี้ยัง *ไม่* สอน** | `--build-arg` เต็มรูปแบบ → **LAB 4** · `--target` และ multi-stage → **LAB 7** · `.dockerignore` มุมกัน secret หลุด → **LAB 1** ข้อ 6 (ที่นี่ดูเฉพาะมุม cache) |
 
@@ -612,9 +612,9 @@ CONTAINER ID   IMAGE               COMMAND           CREATED         STATUS     
 ALL CHECKS PASSED
 ```
 
-## ทดลองเพิ่มเติม (~8 นาที)
+## ทดลองเพิ่มเติม (~5 นาที)
 
-> แกนหลักของแล็บจบแล้ว — หัวข้อต่อจากนี้เลือกทำตามเวลาที่มี แต่ข้อ 💥 **ทำให้พัง** อยู่ในเช็กลิสต์ท้ายแล็บ เพราะการอ่าน error ให้ออกคือทักษะที่ใช้จริงมากที่สุด
+> แกนหลักของแล็บจบแล้ว — หัวข้อนี้ต่อยอดจากข้อ 4 เลือกทำตามเวลาที่มี
 
 ### 1) แก้ `requirements.txt` — cache แตกตั้งแต่ขั้นไหน?
 
@@ -642,36 +642,6 @@ real	0m19.240s
 > **อ่านให้เป็น :** นี่ไม่ใช่ข้อเสียของ `Dockerfile.good` — **มันถูกต้องแล้ว** เพราะรายการ dependency เปลี่ยนจริง จึงต้องติดตั้งใหม่จริง · ประเด็นคือ dependency เปลี่ยน **เดือนละครั้ง** ส่วน source code เปลี่ยน **วันละสิบครั้ง** เราจึงวางสิ่งที่เปลี่ยนน้อยไว้ก่อน เพื่อจ่ายค่าติดตั้งใหม่ให้น้อยที่สุด
 
 คืนไฟล์กลับ : `cp /tmp/req.bak requirements.txt`
-
-### 2) ทำให้พัง — สั่ง `docker build` แบบผิด ๆ แล้วอ่าน error จริง
-
-> เคส "ลืมจุด `.` ท้ายคำสั่ง" ทำไปแล้วใน **LAB 1 ทดลอง ง.** — ที่นี่ต่อยอดเป็นอีกสองเคสที่ทำให้ error หน้าตาเดียวกันโผล่มาได้
-
-```bash
-docker build . -t myapp:1.0 extra                # มี argument เกินมา (context ต้องมีตัวเดียว)
-docker build -f Dockerfile.prod -t myapp:1.0 .   # -f ชี้ไฟล์ที่ไม่มีอยู่
-```
-
-> 📝 **คำอธิบาย:** บรรทัดแรกให้ error **ตัวเดียวกับตอนลืมจุด** ทั้งที่เราใส่จุดครบ — เพราะกติกาคือ **context มีได้ตัวเดียวและต้องอยู่ท้ายสุด** พอมี `extra` ต่อท้าย Docker จึงนับว่าได้ argument มา 2 ตัว · บรรทัดที่สองคือเคสที่เจอบ่อยพอกัน คือพิมพ์ชื่อไฟล์ผิดตัวอักษรเดียว หรือสั่ง build จากคนละโฟลเดอร์กับที่คิด (ในโฟลเดอร์นี้มีแต่ `Dockerfile.good` กับ `Dockerfile.bad`)
-
-✅ **Expected output** — บรรทัดแรกยังไม่ทันเริ่ม build เลย ส่วนบรรทัดที่สอง **เริ่ม build ไปแล้ว** (มีขั้น `#1`) ก่อนจะพังตอนอ่านไฟล์ · ทั้งคู่คืน exit code 1:
-
-```
-ERROR: docker: 'docker buildx build' requires 1 argument
-
-Usage:  docker buildx build [OPTIONS] PATH | URL | -
-
-Run 'docker buildx build --help' for more information
-exit code = 1
-
-#1 [internal] load build definition from Dockerfile.prod
-#1 transferring dockerfile: 2B done
-#1 DONE 0.0s
-ERROR: failed to build: failed to solve: failed to read dockerfile: open Dockerfile.prod: no such file or directory
-exit code = 1
-```
-
-> 📝 **แปล error ให้เป็น:** `requires 1 argument` = "ต้องมี argument **1 ตัวพอดี**" — จึงฟ้องทั้งตอน **ขาด** (ลืมจุด ตามที่เจอใน LAB 1) และตอน **เกิน** (มี `extra` ต่อท้ายอย่างในบรรทัดแรก) และบรรทัด `Usage:` ที่ตามมาคือคำใบ้ว่า `PATH | URL | -` ต้องอยู่**ท้ายสุดตัวเดียว** → **แก้โดยลบ argument ส่วนเกินออก** · ส่วน `transferring dockerfile: 2B` แปลว่า "ไฟล์เปล่า" เป็นสัญญาณแรกว่าผิดปกติ แล้ว `open Dockerfile.prod: no such file or directory` ก็บอกชัดว่าหาไฟล์ไม่เจอ → **แก้โดย `ls Dockerfile*` แล้วสะกดให้ตรง** · ระวังว่า path ของ `-f` อ้างอิงจาก**โฟลเดอร์ที่เรายืนอยู่** ไม่ใช่จาก build context
 
 ## แก้ปัญหาที่พบบ่อย
 
@@ -760,7 +730,6 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 - [ ] build โดยไม่ใส่ `-t` แล้วเห็น image `<untagged>` จากนั้น `docker image prune` เก็บทิ้ง และอธิบายได้ว่าทำไมคืนพื้นที่ได้น้อย
 - [ ] `docker system df` ก่อน/หลัง `docker builder prune` แล้วจดตัวเลข Build Cache ที่ลดลงได้
 - [ ] แก้ไฟล์ที่อยู่ใน `.dockerignore` แล้ว build ใหม่ → `COPY . .` **ยัง `CACHED`** และเอาออกจาก `.dockerignore` แล้ว **cache แตกจริง**
-- [ ] ทำให้พังครบ 2 แบบ (argument เกิน · `-f` ชี้ไฟล์ที่ไม่มี) แล้วอ่าน error ออกว่าต้องแก้ตรงไหน
 - [ ] `./verify.sh` ขึ้น `ALL CHECKS PASSED` และเก็บกวาดจน `docker ps -a --filter "name=^devtools-"` เหลือแค่หัวตาราง
 
 *ผลลัพธ์ทั้งหมดในเอกสารนี้มาจากการรันจริงในเครื่องเรียน `tuchsanai/devtools:2569_1` เมื่อ 14 ส.ค. 2026*

@@ -9,8 +9,8 @@
 |---|---|
 | **คำถามเดียวที่ตอบให้จบ** | ไฟล์ข้อความ **8 บรรทัด** กลายเป็นเว็บที่ตอบ `HTTP 200` ได้อย่างไร |
 | **ต้องผ่านอะไรมาก่อน** | ไม่ต้อง — นี่คือแล็บแรกของชุด |
-| **เวลา** | ~40 นาที (แกนหลัก ข้อ 0–10 ประมาณ 30 นาที · ทดลองเพิ่มเติม ~10 นาที) |
-| **จบแล้วต้องทำได้เอง** | อ่าน Dockerfile ทีละบรรทัดออก · `build` → `run -p` → `curl` ได้ `200` · ไล่ปัญหาครบ 4 ขั้น · อ่าน error ของ `COPY` ออก |
+| **เวลา** | ~35 นาที (แกนหลัก ข้อ 0–10 ประมาณ 28 นาที · ทดลองเพิ่มเติม ~7 นาที) |
+| **จบแล้วต้องทำได้เอง** | อ่าน Dockerfile ทีละบรรทัดออก · `build` → `run -p` → `curl` ได้ `200` · ไล่ปัญหาครบ 4 ขั้น |
 | **แล็บนี้ยัง *ไม่* สอน** | layer cache และ options ของ build → **LAB 2** · `CMD`/`ENTRYPOINT` แบบลึก → **LAB 3** · `ENV` หลายชั้น → **LAB 4** |
 
 ## สิ่งที่จะได้เรียนรู้
@@ -56,7 +56,7 @@ Dockerfile คือสูตรที่ถูก build เป็น image แ�
 
 ### กลไกจริง
 
-ในข้อ 4 Docker CLI ตีความ `.` เป็นรากของ **build context** รวบรวมไฟล์ แล้วตัดรายการใน `.dockerignore` ก่อนส่งให้ daemon หรือ BuildKit ลองนึกว่า context คือกล่องพัสดุ: ฝั่ง build หยิบได้เฉพาะของในกล่อง แม้เครื่องเรามีไฟล์อื่น `COPY` ก็เอื้อมออกนอกขอบเขตไม่ได้ ข้อ 6 และทดลองเพิ่มเติม จ. จะพิสูจน์ด้วยขนาดข้อมูลและ error จริง
+ในข้อ 4 Docker CLI ตีความ `.` เป็นรากของ **build context** รวบรวมไฟล์ แล้วตัดรายการใน `.dockerignore` ก่อนส่งให้ daemon หรือ BuildKit ลองนึกว่า context คือกล่องพัสดุ: ฝั่ง build หยิบได้เฉพาะของในกล่อง แม้เครื่องเรามีไฟล์อื่น `COPY` ก็เอื้อมออกนอกขอบเขตไม่ได้ ข้อ 6 จะพิสูจน์ด้วยขนาดข้อมูลจริง
 
 Builder อ่าน Dockerfile จากบนลงล่าง `FROM` กำหนดฐาน ส่วน `RUN` และ `COPY` เปลี่ยน filesystem จนเกิด layer ใหม่ ขณะที่ `ENV`, `EXPOSE` และ `CMD` เป็นข้อมูลกำกับ เมื่อจบแล้ว read-only layers ถูกผูกกับชื่อ `dockerfile-lab:1.0` การแก้ `app.py` บนเครื่องจึงไม่เปลี่ยน image เดิม ต้อง build ใหม่จึงได้เนื้อหาใหม่
 
@@ -206,7 +206,7 @@ docker build [OPTIONS] PATH | URL | -
 | Option | ใช้เมื่อ | ตัวอย่าง | ใช้ที่ข้อไหนในแล็บนี้ |
 |---|---|---|---|
 | `-t` | ตั้งชื่อ`:tag` ให้ image ที่ได้ | `docker build -t myapp:1.0 .` | ข้อ 4 |
-| `-f` | Dockerfile ชื่ออื่นหรืออยู่คนละที่ | `docker build -f Dockerfile.prod -t myapp:1.0 .` | ทดลอง จ. · ฉ. |
+| `-f` | Dockerfile ชื่ออื่นหรืออยู่คนละที่ | `docker build -f Dockerfile.prod -t myapp:1.0 .` | LAB 3 ที่มี Dockerfile หลายไฟล์ |
 | `--progress=plain` | อยากเห็น log แบบข้อความละเอียด ไม่ให้ทับบรรทัด | `docker build --progress=plain -t myapp:1.0 .` | ข้อ 6 |
 
 > 📌 **option ที่เหลือรอไว้ที่ LAB 2** — `--no-cache` · `--pull` · `--target` และการติดหลาย tag ในครั้งเดียว
@@ -217,7 +217,7 @@ docker build [OPTIONS] PATH | URL | -
 docker build -t dockerfile-lab:1.0 .
 ```
 
-> 📝 **คำอธิบาย:** `-t dockerfile-lab:1.0` ตั้งชื่อ repository `dockerfile-lab` และ tag `1.0` (รูปแบบเต็ม `[registry/]repository[:tag]`) · **จุด `.` ท้ายคำสั่งคือ build context** ไม่ใช่เครื่องหมายวรรคตอน — ห้ามลืมเด็ดขาด (ทดลอง ง. จะโชว์ error ตัวจริง) · เพราะไม่ได้ใส่ `-f` Docker จึงหยิบไฟล์ชื่อ `./Dockerfile` อัตโนมัติ
+> 📝 **คำอธิบาย:** `-t dockerfile-lab:1.0` ตั้งชื่อ repository `dockerfile-lab` และ tag `1.0` (รูปแบบเต็ม `[registry/]repository[:tag]`) · **จุด `.` ท้ายคำสั่งคือ build context** ไม่ใช่เครื่องหมายวรรคตอน — ห้ามลืมเด็ดขาด — ถ้าลืม Docker จะฟ้อง `requires 1 argument` ทันที · เพราะไม่ได้ใส่ `-f` Docker จึงหยิบไฟล์ชื่อ `./Dockerfile` อัตโนมัติ
 
 ✅ **Expected output** — ไล่จากบนลงล่าง : โหลดสูตร → โหลด `.dockerignore` → ส่ง context → ทำ 5 ขั้น `[1/5]`…`[5/5]` → `naming to docker.io/library/dockerfile-lab:1.0` (digest · จำนวนวินาทีของแต่ละคนจะไม่ตรงกับเอกสารนี้ และครั้งแรกจะช้ากว่าเพราะต้อง pull `python:3.12-slim` มาก่อน):
 
@@ -521,9 +521,9 @@ Build Cache     28        2         216.3MB   12.64MB
 
 > 📝 `Images 3` = `dockerfile-lab:1.0` + `ctx-demo:before` + `ctx-demo:after` จากข้อ 6 · `ACTIVE 1` แปลว่ามีแค่ image เดียวที่ยังมี container ใช้อยู่ · `Build Cache 216.3MB` เยอะกว่าที่คิดเสมอ LAB 2 จะอธิบายว่ามันคืออะไรและทำไมคุ้มที่จะเก็บไว้
 
-## ทดลองเพิ่มเติม (~10 นาที)
+## ทดลองเพิ่มเติม (~7 นาที)
 
-> แกนหลักของแล็บจบแล้ว — หัวข้อต่อจากนี้เลือกทำตามเวลาที่มี แต่ข้อ 💥 **ทำให้พัง** อยู่ในเช็กลิสต์ท้ายแล็บ เพราะการอ่าน error ให้ออกคือทักษะที่ใช้จริงมากที่สุด · **`verify.sh` ของแล็บนี้อยู่ถัดจากหัวข้อนี้** ให้รันด้วยเสมอก่อนเก็บกวาด
+> แกนหลักของแล็บจบแล้ว — สามข้อนี้ต่อยอดจากสิ่งที่เพิ่งทำ เลือกทำตามเวลาที่มี · **`verify.sh` อยู่ถัดจากหัวข้อนี้** ให้รันด้วยเสมอก่อนเก็บกวาด
 
 ### ก. แทนที่ `CMD` ตอน run — สิ่งที่พิมพ์ต่อท้ายชื่อ image ชนะเสมอ
 
@@ -588,80 +588,6 @@ APP_VERSION=1.0
 
 > **บทเรียน :** `ENV` ใน Dockerfile คือ **ค่าเริ่มต้น** ไม่ใช่ค่าตายตัว · image เดียวจึงเอาไปใช้ได้หลาย environment (dev/staging/prod) โดยเปลี่ยนแค่ `-e` ตอน run — LAB 4 จะลงลึกเรื่องนี้ ·
 > **กลับสู่สภาพเดิมก่อนไปข้อถัดไป (ข้ามไม่ได้ — ไม่งั้น `dockerfile-lab-v2` จะยังจองพอร์ต 8181 ไว้ แล้ว `verify.sh` จะฟ้อง `port is already allocated`)** : `docker rm -f dockerfile-lab-v2` แล้ว `docker run -d --name dockerfile-lab-web -p 8181:5000 dockerfile-lab:1.0`
-
-### ง. 💥 ทำให้พัง #1 — ลืมจุด `.` ท้ายคำสั่ง build
-
-นี่คือกับดักอันดับหนึ่งของมือใหม่ ลองทำให้พังโดยตั้งใจ :
-
-```bash
-cd $LAB
-docker build -t dockerfile-lab:1.0
-echo "exit code = $?"
-```
-
-✅ **Expected output** — Docker ไม่ยอมเริ่ม build เลย พร้อมบอกรูปแบบที่ถูกต้องให้:
-
-```
-ERROR: docker: 'docker buildx build' requires 1 argument
-
-Usage:  docker buildx build [OPTIONS] PATH | URL | -
-
-Run 'docker buildx build --help' for more information
-exit code = 1
-```
-
-> 📝 **วิธีอ่าน error:** `requires 1 argument` = ขาดอาร์กิวเมนต์ **ตัวสุดท้าย** ซึ่งก็คือ build context · บรรทัด `Usage:` ยืนยันรูปแบบเดียวกับที่อ่านในข้อ 4 คือ `PATH | URL | -` · **แก้กลับ:** เติมจุดท้ายคำสั่ง `docker build -t dockerfile-lab:1.0 .` แล้ว build จะผ่านทันที · ญาติของบั๊กนี้คือรันคำสั่งผิดโฟลเดอร์จนหา `Dockerfile` ไม่เจอ — ตรวจด้วย `pwd` และ `ls -a` ก่อนเสมอ
-
-### จ. 💥 ทำให้พัง #2 — `COPY` ไฟล์ที่อยู่นอก build context
-
-```bash
-printf 'SECRET=outside-the-context\n' > ~/secret-outside.txt
-printf 'FROM python:3.12-slim\nWORKDIR /app\nCOPY ../secret-outside.txt .\nCMD ["python","-V"]\n' > Dockerfile.broken
-docker build -f Dockerfile.broken -t dockerfile-lab:broken .
-```
-
-✅ **Expected output** — build ล้มที่ขั้น `[3/3]` พร้อมชี้บรรทัดที่ผิดใน Dockerfile ให้ (รหัส ref แบบสุ่มของแต่ละคนจะไม่ตรงกับเอกสารนี้):
-
-```
-#4 [internal] load build context
-#4 transferring context: 2B done
-#6 [3/3] COPY ../secret-outside.txt .
-#6 ERROR: failed to calculate checksum of ref d67clj37kd3jgclho5bdhnq9v::xdl1ks61oe31f8wyl6fvxa2ce: "/secret-outside.txt": not found
-------
- > [3/3] COPY ../secret-outside.txt .:
-------
-Dockerfile.broken:3
---------------------
-   2 |     WORKDIR /app
-   3 | >>> COPY ../secret-outside.txt .
-   4 |     CMD ["python","-V"]
---------------------
-ERROR: failed to build: failed to solve: failed to compute cache key: ...: "/secret-outside.txt": not found
-```
-
-> 📝 **วิธีอ่าน error:** `failed to compute cache key ... "/secret-outside.txt": not found` แปลว่า Docker หาไฟล์นี้ **ใน build context** ไม่เจอ · สังเกตว่ามันตัด `../` ทิ้งแล้วมองหาที่ราก context เพราะ **`COPY` ออกนอก context ไม่ได้เด็ดขาด** (ไม่ใช่เรื่องสิทธิ์ แต่คือ engine ไม่เคยได้รับไฟล์นั้นมาเลย) · ส่วนบรรทัด `transferring context: 2B` ในรอบนี้ **ไม่ได้แปลว่า context ว่างเปล่า** — โฟลเดอร์นี้เพิ่ง build ไปเมื่อกี้ BuildKit จึงจำ context เดิมไว้แล้วส่งมาเฉพาะส่วนต่าง (เหตุผลเดียวกับที่ข้อ 6 ต้องคัดลอกโฟลเดอร์ใหม่ก่อนวัดตัวเลข) · เครื่องหมาย `>>>` ชี้บรรทัดที่ผิดตรง ๆ ใช้ได้กับทุก error ของ build · **แก้กลับ:** ย้ายไฟล์เข้ามาใน context ก่อน (`cp ~/secret-outside.txt .`) หรือเปลี่ยนไปใช้ context ที่ครอบทั้งสองโฟลเดอร์แล้วปรับ path ใน `COPY` ให้ตรง
-
-### ฉ. 💥 ทำให้พัง #3 — `COPY` ไฟล์ที่ถูก `.dockerignore` ตัดไปแล้ว
-
-อาการเดียวกันแต่คนละสาเหตุ — ไฟล์อยู่ในโฟลเดอร์แท้ ๆ แต่ไม่เคยถึงมือ build engine :
-
-```bash
-printf 'FROM python:3.12-slim\nWORKDIR /app\nCOPY verify.sh .\nCMD ["python","-V"]\n' > Dockerfile.broken2
-docker build -f Dockerfile.broken2 -t dockerfile-lab:broken2 .
-rm -f Dockerfile.broken Dockerfile.broken2 ~/secret-outside.txt
-```
-
-✅ **Expected output** — `ls` เห็นไฟล์ แต่ build บอก `not found` พร้อม **คำเตือนที่บอกสาเหตุตรง ๆ**:
-
-```
-#7 [3/3] COPY verify.sh .
-#7 ERROR: failed to calculate checksum of ref ...: "/verify.sh": not found
- 1 warning found (use docker --debug to expand):
- - CopyIgnoredFile: Attempting to Copy file "verify.sh" that is excluded by .dockerignore (line 3)
-ERROR: failed to build: failed to solve: failed to compute cache key: ...: "/verify.sh": not found
-```
-
-> 📝 **วิธีอ่าน error:** ข้อความ `CopyIgnoredFile: Attempting to Copy file "verify.sh" that is excluded by .dockerignore` คือคำใบ้ที่ตรงที่สุด — **ไฟล์มีอยู่จริงบนดิสก์ แต่ไม่ได้อยู่ใน context** เพราะ `.dockerignore` กันไว้ · อาการนี้หลอกคนบ่อยมากเพราะ `ls` เห็นไฟล์ชัด ๆ · เจอ `not found` ตอน `COPY` เมื่อไร ให้เปิด `.dockerignore` อ่านก่อนเสมอ · **เลขบรรทัดที่ Docker รายงานท้ายคำเตือน (`line 3`) อาจไม่ตรงกับบรรทัดจริงในไฟล์** (ในไฟล์ของเรา `verify.sh` อยู่บรรทัดสุดท้าย) ให้ยึด **ชื่อไฟล์** ในข้อความเป็นหลัก แล้วค้นหาเอาในไฟล์ · **แก้กลับ:** ลบรูปแบบนั้นออกจาก `.dockerignore` หรือเพิ่มบรรทัดยกเว้นด้วย `!verify.sh`
 
 ## แก้ปัญหาที่พบบ่อย
 
@@ -769,7 +695,6 @@ docker ps -a --filter "name=^devtools-"
 - [ ] ไล่ลำดับตรวจปัญหาครบ 4 ขั้น (`image ls` → `ps -a` → `logs` → `exec`) และเข้าไปเห็น `/app` ข้างใน container
 - [ ] `docker image inspect` เห็น `["python","app.py"]` · `{"5000/tcp":{}}` · `APP_VERSION=1.0` และ `docker container inspect` เห็น `running` + port binding `8181`
 - [ ] รันโดยไม่ใส่ `-p` แล้ว `curl` ได้ `exit code 7` แต่เรียกจากข้างใน container ยังได้ `200` — อธิบายได้ว่าทำไม
-- [ ] ทำให้พังครบทั้ง 3 แบบ (ลืมจุด · `COPY` นอก context · `COPY` ไฟล์ที่ถูก ignore) และอ่าน error ออก
 - [ ] `bash verify.sh` ขึ้น `ALL CHECKS PASSED` และ exit code `0` · `docker ps -a` ในกล่องเรียนเหลือแค่หัวตาราง และ `docker ps -a --filter "name=^devtools-"` บนเครื่องเราไม่มี `devtools-df-lab1` เหลือ
 
 *ผลลัพธ์ทั้งหมดในเอกสารนี้มาจากการรันจริงในเครื่องเรียน `tuchsanai/devtools:2569_1` เมื่อ 14 ส.ค. 2026*

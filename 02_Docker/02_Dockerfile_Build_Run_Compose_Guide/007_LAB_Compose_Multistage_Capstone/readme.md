@@ -18,14 +18,14 @@
 |---|---|
 | **คำถามเดียวที่ตอบให้จบ** | ระบบ **4 service** ที่ต้องรอกันตอนบูตและมีข้อมูลถาวร ประกาศไว้ใน **ไฟล์เดียว** ได้อย่างไร |
 | **ต้องผ่านอะไรมาก่อน** | ครบ **LAB 1–6** — แล็บนี้เป็น capstone ที่หยิบทุกเรื่องมาใช้พร้อมกัน |
-| **เวลา** | ~70 นาที (แกนหลัก ข้อ 0–14 ประมาณ 50 นาที · ทดลองเพิ่มเติม ~20 นาที) |
+| **เวลา** | ~50 นาที (ข้อ 0–14) |
 | **จบแล้วต้องทำได้เอง** | อ่าน/เขียน `compose.yaml` ทีละ key · ใช้ `healthcheck` + `service_healthy` ให้ระบบ **รอ** จริง · แยกชั้น network · รู้ว่าข้อมูลหายตอนไหน · เลือกใช้ multi-stage เป็น |
 | **แล็บนี้ยัง *ไม่* สอน** | Compose หลายเครื่อง / orchestrator (Kubernetes) อยู่นอกขอบเขต · เรื่องพื้นฐานที่ **ไม่อธิบายซ้ำ** : DNS ของชื่อ service (**LAB 6**) · ลำดับชั้น env (**LAB 4**) · layer cache (**LAB 2**) |
 
 ## สิ่งที่จะได้เรียนรู้
 
 - แปลง `docker run` หลายบรรทัดให้เป็น **`compose.yaml` ไฟล์เดียว** และอ่านออกทีละ key : `build` · `image` · `ports` · `environment` · `env_file` · `volumes` · `networks` · `depends_on` · `healthcheck` · `restart`
-- **กฎ YAML ที่พลาดบ่อย** — ห้าม tab, เยื้องด้วย space, `-` คือ list, ค่าที่มี `:` ควรครอบเครื่องหมายคำพูด — พร้อมทำให้พังจริงแล้วอ่าน error
+- **กฎ YAML ที่พลาดบ่อย** — ห้าม tab, เยื้องด้วย space, `-` คือ list, ค่าที่มี `:` ควรครอบเครื่องหมายคำพูด
 - **ชื่อที่ Compose ตั้งให้** : container `devopsboard-web-1` (ขีดกลาง) แต่ network/volume `devopsboard_frontend` / `devopsboard_pgdata` (ขีดล่าง)
 - **Multi-stage build** : พิสูจน์ด้วยตัวเลขขนาด image จริง ว่า `COPY --from=build` คัดมาเฉพาะ artifact ทำให้ runtime image เล็กลง **62%**
 - **healthcheck + `condition: service_healthy`** ทำให้ Compose **รอ** จริง ไม่ใช่แค่เรียงลำดับการ start
@@ -43,7 +43,7 @@
 5. **เปิดหน้า DevOps Board ที่ `http://localhost:8187`** — ตัวนับผู้เข้าชมจาก Redis, ตารางจาก PostgreSQL, ไฟสถานะ service, และฟอร์มเพิ่มรายการที่เขียนลงฐานข้อมูลจริง
 6. **พิสูจน์ multi-stage** — build เฉพาะ stage `build` ออกมาเทียบขนาดกับ image สุดท้าย
 7. **พิสูจน์ healthcheck / env / network / volume / init script** ทีละเรื่อง โดยมีหลักฐานจากคำสั่งจริง
-8. **ทำให้พัง** — YAML ผิด 3 แบบ, ถอด network ผิดจนพอร์ตหายเงียบ ๆ, `--scale` ชนพอร์ต และปิดท้ายด้วย `down -v` ที่ลบข้อมูลทิ้ง
+8. **ปิดท้ายด้วย `down` เทียบกับ `down -v`** — เห็นกับตาว่าข้อมูลรอดตอนไหน และหายถาวรตอนไหน
 
 ### ภาพรวมสถาปัตยกรรม — มี service อะไรบ้าง และเชื่อมกันอย่างไร
 
@@ -77,7 +77,7 @@
 - **วงสีฟ้า `frontend` กับวงสีชมพู `backend` ซ้อนทับกัน** — ตรงพื้นที่ซ้อนคือ service ที่อยู่ **ทั้งสอง** วง (`web` และ `api`)
 - **`db` และ `redis` อยู่นอกวงสีฟ้า** และไม่มี `ports:` → เครื่องผู้เรียนเข้าไม่ถึงเลย มีแต่ service ใน `backend` ที่คุยด้วยได้
 - `backend` ตั้ง **`internal: true`** ซึ่งทำให้ **publish port ออก host ไม่ได้** — นี่คือเหตุผลที่ `api` ต้องอยู่ `frontend` ด้วย
-  ไม่งั้นพอร์ต `8087` จะ **หายเงียบ ๆ โดยไม่มี error** (พิสูจน์ใน "ทดลองที่ 2")
+  ไม่งั้นพอร์ต `8087` จะ **หายเงียบ ๆ โดยไม่มี error** (อาการนี้อยู่ในตาราง "แก้ปัญหาที่พบบ่อย" ท้ายแล็บ)
 - ลูกศรเส้นประไปยัง volume คือข้อมูลที่ `docker compose down` **ไม่ลบ** แต่ `docker compose down -v` **ลบ**
 
 ---
@@ -1061,163 +1061,6 @@ images/
 
 ---
 
-## ทดลองเพิ่มเติม (~20 นาที)
-
-> แกนหลักของแล็บจบแล้ว — หัวข้อต่อจากนี้เลือกทำตามเวลาที่มี แต่ข้อ 💥 **ทำให้พัง** อยู่ในเช็กลิสต์ท้ายแล็บ เพราะการอ่าน error ให้ออกคือทักษะที่ใช้จริงมากที่สุด · **`verify.sh` ของแล็บนี้อยู่ถัดจากหัวข้อนี้** ให้รันด้วยเสมอก่อนเก็บกวาด
-
-### ทดลองที่ 1 — ทำให้พัง : เขียน YAML ผิด 3 แบบ แล้วอ่าน error จริง
-
-```bash
-printf 'services:\n  web:\n\timage: nginx:1.27-alpine\n' > /tmp/broken-tab.yaml
-cat -A /tmp/broken-tab.yaml
-docker compose -f /tmp/broken-tab.yaml config
-```
-
-> 📝 **คำอธิบาย:** `printf` เขียนไฟล์ทดสอบโดย `\t` คืออักขระ **tab** จริง ๆ · `cat -A` แสดงอักขระที่มองไม่เห็น — **`^I` คือ tab** และ `$` คือท้ายบรรทัด เป็นวิธีจับ tab ที่แน่นอนที่สุด · `-f <ไฟล์>` ให้ Compose ใช้ไฟล์อื่นแทน `compose.yaml` ในโฟลเดอร์ปัจจุบัน (จึงไม่กระทบระบบที่รันอยู่)
-
-✅ **Expected output** — YAML parser ตายตั้งแต่ระดับ scanner โดยบอกตำแหน่ง `L3.C1` (บรรทัด 3 คอลัมน์ 1) :
-
-```
-$ cat -A /tmp/broken-tab.yaml
-services:$
-  web:$
-^Iimage: nginx:1.27-alpine$
-
-$ docker compose -f /tmp/broken-tab.yaml config
-go-yaml load error in scanner (while scanning for the next token) at L3.C1: found character that cannot start any token
-```
-
-```bash
-printf 'services:\n  web:\n  image: nginx:1.27-alpine\n' > /tmp/broken-indent.yaml
-docker compose -f /tmp/broken-indent.yaml config
-printf 'services:\n  web:\n    image: nginx:1.27-alpine\n    ports:\n      8187:80\n' > /tmp/broken-ports.yaml
-docker compose -f /tmp/broken-ports.yaml config
-```
-
-> 📝 **คำอธิบาย:** แบบที่สอง `image:` ถูกเยื้องเท่ากับ `web:` YAML จึงอ่านว่ามันเป็น **service ชื่อ `image`** ไม่ใช่ key ของ `web` · แบบที่สามลืมขีด `-` หน้าพอร์ต ทำให้ `ports:` กลายเป็น map แทนที่จะเป็น list
-
-✅ **Expected output** — สังเกตว่า error สองอันนี้เป็น **error ระดับ schema** ไม่ใช่ระดับ YAML แล้ว จึงอ่านเข้าใจง่ายกว่า :
-
-```
-$ docker compose -f /tmp/broken-indent.yaml config
-services.image must be a mapping
-
-$ docker compose -f /tmp/broken-ports.yaml config
-validating /tmp/broken-ports.yaml: services.web.ports must be a array
-```
-
-แล้วเรื่องครอบเครื่องหมายคำพูดล่ะ? ทดสอบทั้งสองแบบ :
-
-```bash
-printf 'services:\n  web:\n    image: nginx:1.27-alpine\n    ports:\n      - 8187:80\n' > /tmp/unquoted.yaml
-docker compose -f /tmp/unquoted.yaml config | grep -A4 'ports:'
-printf 'services:\n  web:\n    image: nginx:1.27-alpine\n    environment:\n      PORT: 5000\n      DEBUG: yes\n' > /tmp/types.yaml
-docker compose -f /tmp/types.yaml config | grep -A3 'environment:'
-```
-
-✅ **Expected output** — Compose v5 (go-yaml v3) **อ่าน `- 8187:80` ที่ไม่ครอบคำพูดได้ถูกต้อง** และแปลง `PORT: 5000` เป็น string ให้เอง :
-
-```
-$ docker compose -f /tmp/unquoted.yaml config | grep -A4 'ports:'
-    ports:
-      - mode: ingress
-        target: 80
-        published: "8187"
-        protocol: tcp
-
-$ docker compose -f /tmp/types.yaml config | grep -A3 'environment:'
-    environment:
-      DEBUG: 'yes'
-      PORT: "5000"
-```
-
-> 📝 **สรุปให้ตรงกับความจริง:** เครื่องมือรุ่นใหม่ฉลาดขึ้นแล้ว จึงยังทำงานได้ทั้งสองแบบ · **แต่ยังควรครอบเครื่องหมายคำพูดเสมอ** ด้วย 3 เหตุผล : (1) YAML 1.1 ตัวอื่น (Kubernetes manifest, Ansible, CI บางตัว) ยังตีความ `22:22` เป็นเลขฐาน 60 และ `yes` เป็น boolean (2) สังเกตเองว่า Compose ยัง **แปลงชนิดกลับเป็น string ให้** ซึ่งแปลว่ามันอ่านเข้าไปเป็นชนิดอื่นก่อนจริง ๆ (3) การครอบทำให้ **เจตนาชัด** ต่อคนอ่านโค้ด · ส่วน **tab กับการเยื้องผิดชั้นนั้นพังแน่นอนทุกเวอร์ชัน**
-
-### ทดลองที่ 2 — ทำให้พัง : ถอด `frontend` ออกจาก `api` แล้วพอร์ต 8087 หายเงียบ ๆ
-
-**ทายก่อนรัน:** ตามทฤษฎีแล้ว `api` ควรอยู่แค่ `backend` ก็พอ (เพราะ nginx คุยกับมันทาง backend) — ถ้าเอา `- frontend` ออก จะเกิดอะไรขึ้นกับ `ports: - "8087:5000"` ?
-
-แก้ `compose.yaml` ให้ `api` เหลือ network เดียว :
-
-```yaml
-  api:
-    ...
-    networks:
-      - backend        # ← ลบบรรทัด "- frontend" ออก
-```
-
-```bash
-docker compose -p devopsboard up -d --force-recreate api
-docker compose -p devopsboard ps --format 'table {{.Service}}\t{{.Ports}}'
-curl -sS -m 3 http://localhost:8087/health
-curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8187/api/stats
-```
-
-✅ **Expected output** — **`ports:` ยังอยู่ในไฟล์ แต่พอร์ต 8087 หายไปจาก `docker compose ps` โดยไม่มี error ใด ๆ** — ในขณะที่หน้าเว็บยังใช้ได้ปกติเพราะ nginx คุยกับ `api` ผ่าน `backend` :
-
-```
-$ docker compose -p devopsboard ps --format 'table {{.Service}}\t{{.Ports}}'   # 8087 หายไปเงียบ ๆ
-SERVICE   PORTS
-api       5000/tcp
-db        5432/tcp
-redis     6379/tcp
-web       0.0.0.0:8187->80/tcp, [::]:8187->80/tcp
-
-$ curl -sS -m 3 http://localhost:8087/health
-curl: (7) Failed to connect to localhost port 8087 after 0 ms: Couldn't connect to server
-
-$ curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8187/api/stats   # หน้าเว็บยังใช้ได้
-200
-```
-
-> 📝 **คำอธิบาย:** `internal: true` ตัดเส้นทางออกสู่ภายนอกของ network วงนั้น — Docker จึง **publish พอร์ตออก host ไม่ได้** สำหรับ container ที่อยู่ในวง internal อย่างเดียว และมันจะ **เงียบ** ไม่ฟ้อง error ซึ่งอันตรายกว่าพังดัง ๆ · นี่คือเหตุผลที่ `compose.yaml` ของเราให้ `api` อยู่ทั้ง `frontend` และ `backend` — ต้องมีขาข้างหนึ่งอยู่ใน network ที่ไม่ internal จึงจะเปิดพอร์ตออกมาได้ · ส่วน `db` และ `redis` ที่ไม่ต้องการพอร์ตออก host อยู่แค่ `backend` ก็ถูกต้องแล้ว
-
-แก้กลับ (ใส่ `- frontend` คืน) แล้วยืนยัน :
-
-```bash
-git checkout -- compose.yaml
-docker compose -p devopsboard up -d --force-recreate api
-sleep 8 && curl -sS http://localhost:8087/health
-```
-
-✅ **Expected output:**
-
-```
-{"status":"ok"}
-```
-
-### ทดลองที่ 3 — `--scale api=2` ชนพอร์ต
-
-```bash
-docker compose -p devopsboard up -d --scale api=2
-docker compose -p devopsboard ps
-```
-
-> 📝 **คำอธิบาย:** `--scale <service>=<n>` สั่งให้ Compose สร้าง container ของ service นั้น `n` ตัว (`devopsboard-api-1`, `devopsboard-api-2`) — นี่คือเหตุผลที่ Compose ต่อท้ายชื่อด้วยเลขลำดับ · แต่ `api` ของเราประกาศ `ports: - "8087:5000"` ไว้ ซึ่งพอร์ต 8087 บน host มีได้ตัวเดียว
-
-✅ **Expected output** — Compose สร้าง `api-2` ได้ แต่ start ไม่สำเร็จเพราะพอร์ตชนกัน (`api-1` ยังทำงานปกติ) :
-
-```
-$ docker compose -p devopsboard up -d --scale api=2
- Container devopsboard-api-2 Creating
- Container devopsboard-api-2 Created
- Container devopsboard-db-1 Healthy
- Container devopsboard-redis-1 Healthy
- Container devopsboard-api-2 Starting
-Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint devopsboard-api-2 (69e9024...): Bind for 0.0.0.0:8087 failed: port is already allocated
-```
-
-> 📝 **คำอธิบาย:** จะ scale ได้ ต้อง **ลบ `ports:` ของ `api` ออกก่อน** แล้วให้ทุกคนเข้าผ่าน `web` (nginx) อย่างเดียว — ซึ่งเป็นสถาปัตยกรรมที่ถูกต้องกว่าอยู่แล้ว เพราะ Compose DNS จะ **หมุนเวียน IP** ของทั้งสองตัวให้เอง กลายเป็น load balancing ง่าย ๆ · แล็บนี้คง `ports:` ไว้เพื่อให้เรา debug API ตรง ๆ ได้ จึงยอมแลกกับการ scale ไม่ได้
-
-กลับสู่สภาพเดิม :
-
-```bash
-docker compose -p devopsboard up -d --scale api=1
-docker compose -p devopsboard ps
-```
-
----
-
 ## ตรวจงานอัตโนมัติด้วย `verify.sh`
 
 ```bash
@@ -1342,7 +1185,6 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 - [ ] ยืนยันว่า `db` และ `redis` ไม่มี `0.0.0.0:...->` ใน `docker compose ps` และ `curl localhost:5432` ต่อไม่ติด
 - [ ] `docker compose down` แล้ว `up -d` ข้อมูลยังครบ — จากนั้น `down -v` แล้วข้อมูลหายจริง (ทดลองครบทั้งสองกรณี)
 - [ ] แก้ `01-schema.sql` แล้ว recreate `db` เห็นว่าไม่มีผล จนกว่าจะลบ volume ทิ้ง
-- [ ] ทำ YAML ให้พังด้วย tab / เยื้องผิด / ลืมขีด `-` แล้วอ่าน error ทั้งสามแบบออก จากนั้นแก้กลับ
 - [ ] `./verify.sh` ผ่านครบ 25 ข้อ ขึ้น `ALL CHECKS PASSED`
 - [ ] เก็บกวาดครบ : `down -v` → `docker rmi` → `docker rm -f devtools-df-lab7` และ `docker ps -a --filter "name=^devtools-"` ไม่เหลือแถวข้อมูล
 

@@ -7,7 +7,7 @@
 |---|---|
 | **คำถามเดียวที่ตอบให้จบ** | container สองตัวบนเครื่องเดียวกัน เรียกกันด้วย **ชื่อ** ได้ไหม — ถ้าไม่ได้ ต้องแก้ตรงไหน |
 | **ต้องผ่านอะไรมาก่อน** | **LAB 1** (โดยเฉพาะข้อ 9 : `EXPOSE` ไม่ได้เปิดพอร์ต · `-p` ต่างหากที่เปิด) |
-| **เวลา** | ~35 นาที (แกนหลัก ข้อ 0–12 ประมาณ 27 นาที · ทดลองเพิ่มเติม ~8 นาที) |
+| **เวลา** | ~32 นาที (แกนหลัก ข้อ 0–12 ประมาณ 27 นาที · ทดลองเพิ่มเติม ~5 นาที) |
 | **จบแล้วต้องทำได้เอง** | สร้าง user-defined network แล้วให้ service เรียกกันด้วยชื่อ · ต่อ/ถอด network ตอน container กำลังรัน · บอกได้ว่าเมื่อไรต้อง `-p` และเมื่อไรไม่ต้อง |
 | **แล็บนี้ยัง *ไม่* สอน** | การประกาศ network ในไฟล์เดียวพร้อม `internal: true` → **LAB 7** ข้อ 10 (ที่นี่ทำด้วย `docker network` ล้วน ๆ เพื่อให้เห็นกลไก) |
 
@@ -24,7 +24,7 @@
 1. **เตรียมเครื่องเรียน** — เปิด container `devtools-df-lab6` (Docker-in-Docker) แล้ว ssh เข้าไป
 2. **Clone โค้ดแล็บ แล้ว build image `netlab-web:1.0`** — nginx ที่ **render หน้าเว็บใหม่ทุกครั้งที่ start** โดยอ่าน hostname / IP / DNS resolver จริงจากในตัวเอง
 3. **`docker network ls`** — ดู network 3 ตัวที่ Docker แถมมาให้ พร้อมตารางสรุปว่าใช้เมื่อไร
-4. **ทายผลแล้วทำให้พังก่อน** — รัน 2 container บน **default bridge** แล้วเรียกกันด้วยชื่อ → `wget: bad address` (แต่เรียกด้วย IP ได้)
+4. **ทายผลแล้วทดสอบ** — รัน 2 container บน **default bridge** แล้วเรียกกันด้วยชื่อ → `wget: bad address` (แต่เรียกด้วย IP ได้)
 5. **`docker network create app-net`** — ย้ายมา user-defined bridge → `nslookup web` ได้ IP จาก `127.0.0.11` และ `wget -qO- http://web` ได้หน้าเว็บจริง
 6. **เปิดหน้า Container Network Console ในเบราว์เซอร์** แล้วอ่านค่า DNS resolver ของ container จากหน้าเว็บโดยตรง จากนั้นใช้ **`docker network inspect --format`** ดึงรายชื่อ container + IP, subnet/gateway
 7. **`api` ที่ไม่มี `-p` เลย** — พิสูจน์ว่า service ใน network เดียวกันคุยกันได้โดยไม่ต้องเปิด port ออก host
@@ -168,7 +168,7 @@ efbc654b43bf   bridge    bridge    local
 | **host** | ใช้ network stack ของเครื่อง host ตรง ๆ ไม่มี IP แยก ไม่ต้อง `-p` | กรณีเฉพาะที่ต้องการ performance สูงสุด หรือต้องฟังทุก port ของ host (Linux เท่านั้น) |
 | **none** | ไม่ต่อ network เลย เหลือแค่ `lo` | งานประมวลผลออฟไลน์ / ต้องการตัดการสื่อสารเพื่อความปลอดภัย |
 
-## 4. ทำให้พังก่อน : บน default bridge เรียกกันด้วยชื่อ **ไม่ได้**
+## 4. ทดสอบบน default bridge : เรียกกันด้วยชื่อได้หรือไม่
 **ทายผลก่อนรัน:** เราจะเปิด `web-legacy` ไว้เฉย ๆ (ไม่ระบุ `--network` = ได้ default bridge) แล้วให้อีก container ยิง `http://web-legacy` — จะได้หน้าเว็บไหม?
 ```bash
 docker run -d --name web-legacy -e SERVICE_NAME=web-legacy netlab-web:1.0
@@ -438,7 +438,7 @@ ping: sendto: Network is unreachable
 > ใช้จริงเมื่อไร: งานที่รับ input เป็นไฟล์แล้วประมวลผลอย่างเดียว เช่น แปลงรูป/รัน batch — ตัดเน็ตทิ้งไปเลยปลอดภัยกว่า
 
 ## 11. `--network host` : ใช้ network ของเครื่องตรง ๆ (ไม่ต้อง `-p`)
-**ลองแบบผิดก่อน** — ตอนนี้ `web` จอง port 8186 ของเครื่องอยู่ (จาก `-p 8186:8186`) แล้วเราจะยัด container host mode ที่ฟัง 8186 เข้าไปอีกตัว:
+**พอร์ตชนกันได้จริง** — ตอนนี้ `web` จอง port 8186 ของเครื่องอยู่ (จาก `-p 8186:8186`) แล้วเราจะยัด container host mode ที่ฟัง 8186 เข้าไปอีกตัว:
 ```bash
 docker run -d --name host-web --network host -e SERVICE_NAME=host-web netlab-web:1.0
 sleep 2
@@ -569,52 +569,12 @@ wget: can't connect to remote host (172.19.0.2): Connection refused
 docker rm -f filler
 ```
 
-## ทดลองเพิ่มเติม (~8 นาที)
+## ทดลองเพิ่มเติม (~5 นาที)
 
-> แกนหลักของแล็บจบแล้ว — หัวข้อต่อจากนี้เลือกทำตามเวลาที่มี แต่ข้อ 💥 **ทำให้พัง** อยู่ในเช็กลิสต์ท้ายแล็บ เพราะการอ่าน error ให้ออกคือทักษะที่ใช้จริงมากที่สุด · **`verify.sh` ของแล็บนี้อยู่ถัดจากหัวข้อนี้** ให้รันด้วยเสมอก่อนเก็บกวาด
-### 1) ทำให้พัง : ลบ network ทั้งที่ยังมีคนต่ออยู่
+> แกนหลักของแล็บจบแล้ว — หัวข้อนี้ต่อยอดจากข้อ 10 · **`verify.sh` อยู่ถัดจากหัวข้อนี้** ให้รันด้วยเสมอก่อนเก็บกวาด
+### กู้ container ที่เกิดมาแบบ `none` + ตั้งชื่อเล่นด้วย `--alias`
+`web` กับ `app-net` จากข้อ 12 ยังอยู่ — คราวนี้ปล่อย container ที่ "เกิดมาไม่มีเน็ต" เข้าไปอีกตัว:
 ```bash
-docker network rm app-net
-```
-> 📝 **คำอธิบาย:** ตอนนี้ `web`, `api`, `agent` ยังเสียบอยู่บน `app-net` — Docker จะไม่ยอมลบให้ เพราะจะทำให้ endpoint ของ container เหล่านั้นเป็นหมัน
-
-✅ **Expected output** — error จริง พร้อม**บอกชื่อตัวการมาให้ครบ** (ID ของแต่ละคนจะไม่ตรงกับเอกสารนี้):
-```
-Error response from daemon: error while removing network: network app-net has active endpoints (name:"agent" id:"5082eeea139f", name:"web" id:"f3718e10c16c", name:"api" id:"950741ac132e")
-exit status 1
-```
-**แก้ให้ถูกวิธี** — ดูก่อนว่าใครต่ออยู่ แล้วค่อยเอาออก (จะ `docker rm -f` ทิ้ง หรือ `docker network disconnect` ทีละตัวก็ได้):
-```bash
-docker network inspect -f '{{range .Containers}}{{.Name}} = {{.IPv4Address}}{{println}}{{end}}' app-net
-docker rm -f web api agent
-docker network rm app-net
-docker network ls
-```
-✅ **Expected output** — คราวนี้ลบผ่าน (Docker คืนชื่อ network ที่ลบสำเร็จมาให้):
-```
-agent = 172.19.0.4/16
-api = 172.19.0.3/16
-web = 172.19.0.5/16
-
-web
-api
-agent
-
-app-net
-
-NETWORK ID     NAME        DRIVER    SCOPE
-efbc654b43bf   bridge      bridge    local
-5d944a33c501   host        host      local
-11f8ea3d2c95   none        null      local
-3d9858994f58   vault-net   bridge    local
-```
-> ทางลัดเวลาเครื่องรก: `docker network prune` ลบ network ที่**ไม่มีใครใช้**ทั้งหมดในทีเดียว (ระวัง — ลบของ project อื่นด้วย)
-
-### 2) กู้ container ที่เกิดมาแบบ `none` + ตั้งชื่อเล่นด้วย `--alias`
-สร้าง network กับ `web` ขึ้นมาใหม่ แล้วปล่อย container ที่ "เกิดมาไม่มีเน็ต":
-```bash
-docker network create app-net
-docker run -d --name web --network app-net -e SERVICE_NAME=web -p 8186:8186 netlab-web:1.0
 docker run -d --name lost --network none busybox:1.36 sleep 600
 docker exec lost ip -o addr
 docker exec lost wget -T 5 -qO- http://web/healthz
@@ -626,15 +586,8 @@ docker exec lost wget -T 5 -qO- http://web/healthz
 
 wget: bad address 'web'
 ```
-**ลองต่อ network ให้มันตรง ๆ (อันนี้จะพัง):**
-```bash
-docker network connect --alias frontend app-net lost
-```
-✅ **Expected output** — Docker ปฏิเสธ เพราะ `none` เป็นโหมด "ส่วนตัว" ที่อยู่ร่วมกับ network อื่นไม่ได้:
-```
-Error response from daemon: container cannot be connected to multiple networks with one of the networks in private (none) mode
-```
-**แก้โดยถอด `none` ออกก่อน แล้วค่อยต่อ:**
+> 📝 **คำอธิบาย:** container ที่เกิดด้วย `--network none` **ต่อ network อื่นเพิ่มทันทีไม่ได้** — Docker ถือว่า `none` เป็นโหมด "ส่วนตัว" ที่อยู่ร่วมกับวงอื่นไม่ได้ (ถ้าสั่ง `docker network connect` เลยจะได้ `container cannot be connected to multiple networks with one of the networks in private (none) mode`) · ต้อง **ถอด `none` ออกก่อน** แล้วค่อยต่อวงจริง
+
 ```bash
 docker network disconnect none lost
 docker network connect --alias frontend app-net lost
@@ -645,9 +598,10 @@ docker inspect -f '{{range .NetworkSettings.Networks}}aliases={{.Aliases}}{{end}
 ```
 > 📝 **คำอธิบาย:** `--alias <ชื่อเล่น>` ตั้ง **ชื่อเพิ่ม** ให้ container ใน network นั้น — เพื่อนใน network เดียวกันเรียกได้ทั้งชื่อจริง (`lost`) และชื่อเล่น (`frontend`) · มีประโยชน์มากตอนสลับตัวจริงเบื้องหลัง (blue/green) โดยไม่ต้องแก้โค้ดฝั่งผู้เรียก
 
-✅ **Expected output** — `eth0` โผล่มาแล้ว เรียก `web` ได้ และชื่อเล่น `frontend` ก็ resolve ได้ด้วย:
+✅ **Expected output** — `eth0` โผล่มาแล้ว เรียก `web` ได้ และชื่อเล่น `frontend` ก็ resolve ได้ด้วย (IP ของแต่ละคนจะไม่ตรงกับเอกสารนี้):
 ```
 1: lo    inet 127.0.0.1/8 scope host lo\       valid_lft forever preferred_lft forever
+1: lo    inet6 ::1/128 scope host \       valid_lft forever preferred_lft forever
 2: eth0    inet 172.19.0.3/16 brd 172.19.255.255 scope global eth0\       valid_lft forever preferred_lft forever
 
 ok

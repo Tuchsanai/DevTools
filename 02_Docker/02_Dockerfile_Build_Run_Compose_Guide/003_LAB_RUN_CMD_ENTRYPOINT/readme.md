@@ -12,7 +12,7 @@
 |---|---|
 | **คำถามเดียวที่ตอบให้จบ** | สิ่งที่พิมพ์ต่อท้ายชื่อ image ไป **แทนที่** หรือไป **ต่อท้าย** อะไรกันแน่ |
 | **ต้องผ่านอะไรมาก่อน** | **LAB 1** (โดยเฉพาะ `-f` และการแทนคำสั่งตอน run ในทดลอง ก.) |
-| **เวลา** | ~35 นาที (แกนหลัก ข้อ 0–10 ประมาณ 25 นาที · ทดลองเพิ่มเติม ~10 นาที) |
+| **เวลา** | ~29 นาที (แกนหลัก ข้อ 0–10 ประมาณ 25 นาที · ทดลองเพิ่มเติม ~4 นาที) |
 | **จบแล้วต้องทำได้เอง** | เลือก `CMD` / `ENTRYPOINT` / ทั้งคู่ ให้ตรงงาน · อ่าน `.Config.Cmd` กับ `.Config.Entrypoint` แทนการเดา · บอกได้ว่าทำไม `docker stop` บางตัวช้า 10 วินาที |
 | **แล็บนี้ยัง *ไม่* สอน** | `ENV`/`ARG` → **LAB 4** · แล็บนี้ **ไม่มีหน้าเว็บและไม่ต้องเปิดพอร์ต** ใช้เทอร์มินัลเดียวจบ |
 
@@ -597,9 +597,9 @@ ALL CHECKS PASSED
 
 ---
 
-## ทดลองเพิ่มเติม (~10 นาที)
+## ทดลองเพิ่มเติม (~4 นาที)
 
-> แกนหลักของแล็บจบแล้ว — หัวข้อต่อจากนี้เลือกทำตามเวลาที่มี แต่ข้อ 💥 **ทำให้พัง** อยู่ในเช็กลิสต์ท้ายแล็บ เพราะการอ่าน error ให้ออกคือทักษะที่ใช้จริงมากที่สุด
+> แกนหลักของแล็บจบแล้ว — หัวข้อนี้ต่อยอดจากข้อ 4 เลือกทำตามเวลาที่มี
 
 ### 1. ทำไม image ที่มี ENTRYPOINT ถึง debug ยากกว่า
 
@@ -626,77 +626,9 @@ docker run --rm --entrypoint sh demo-entrypoint -c "echo ได้ shell แล�
 > จะไม่ได้ shell แต่จะได้ `python app.py sh` — คือ `app.py` ตัวเดิมถูกรันตามปกติ โดยมีคำว่า `sh` ไหลไปเป็น argument ตัวหนึ่งใน `sys.argv` (แอปส่วนใหญ่จะเมินทิ้งหรือฟ้องว่า argument ไม่ถูกต้อง) ·
 > ตอน dev จึงสะดวกกว่าถ้าใช้ `CMD` แต่ production ที่อยากล็อกโปรแกรมหลักไว้ `ENTRYPOINT` ปลอดภัยกว่า
 
-### 2. 💥 ทำให้พัง — Dockerfile ที่ไม่มี `CMD` และไม่มี `ENTRYPOINT` เลย
-
-**ทายก่อนรัน :** image ที่ไม่ได้บอกว่าจะรันอะไร ควรจะ error ตั้งแต่ `docker run` ใช่ไหม?
-`Dockerfile.nocmd` มีแค่ `FROM alpine:3.20` + `RUN echo "no default command" > /note.txt` — ไม่มี `CMD` ไม่มี `ENTRYPOINT` สักบรรทัด
-
-```bash
-docker build -f Dockerfile.nocmd -t demo-nocmd .
-docker image inspect --format '{{.Config.Entrypoint}} | {{.Config.Cmd}}' demo-nocmd
-docker run --rm demo-nocmd
-echo "exit code = $?"
-docker image inspect --format '{{.Config.Cmd}}' alpine:3.20
-```
-
-> 📝 **คำอธิบาย:** `echo "exit code = $?"` พิมพ์รหัสจบของคำสั่งก่อนหน้า — เครื่องมือชิ้นสำคัญเวลาสิ่งที่พังไม่พิมพ์ error ให้เห็น · บรรทัดสุดท้ายเปิดดู metadata ของ **base image** เพื่อหาคำตอบว่าค่ามันโผล่มาจากไหน
-
-✅ **Expected output** — **ไม่พัง!** และ `Cmd` ดันมีค่า `[/bin/sh]` ทั้งที่ Dockerfile ไม่ได้เขียนไว้:
-
-```
-[] | [/bin/sh]          <-- ของ demo-nocmd
-exit code = 0           <-- docker run ไม่ error เลย
-[/bin/sh]               <-- ของ alpine:3.20 : ต้นตออยู่ตรงนี้
-```
-
-> 📝 **เฉลย:** `CMD`/`ENTRYPOINT` เป็น metadata ที่ **สืบทอดจาก base image** — `alpine:3.20` ตั้ง `CMD ["/bin/sh"]` มาให้แล้ว พอ `docker run`
-> โดยไม่มี terminal (`-it`) `sh` ก็อ่าน stdin ที่ว่างเปล่าแล้วจบทันทีด้วย exit code 0 · **บทเรียน :** อย่าเชื่อสายตาว่า Dockerfile เขียนอะไรไว้ — ให้เชื่อ `docker image inspect`
-
-ทีนี้ล้างค่าที่สืบทอดมาให้ว่างจริง ๆ ด้วย `Dockerfile.nocmd_reset` (เหมือนเดิมแต่เติม `ENTRYPOINT []` และ `CMD []` ท้ายไฟล์) :
-
-```bash
-docker build -f Dockerfile.nocmd_reset -t demo-nocmd-reset .
-docker image inspect --format '{{.Config.Entrypoint}} | {{.Config.Cmd}}' demo-nocmd-reset
-docker run --rm demo-nocmd-reset ; echo "exit code = $?"
-```
-
-> 📝 **คำอธิบาย:** `ENTRYPOINT []` และ `CMD []` (array ว่าง) เป็นวิธีมาตรฐานในการ **ล้างค่าที่สืบทอดมา** — ใช้จริงเวลาสร้าง base image ให้ทีมอื่นต่อยอด แล้วอยากบังคับว่าห้ามรันโดยไม่ระบุคำสั่ง
-
-✅ **Expected output** — คราวนี้ **พังจริง** ตั้งแต่ยังไม่ทันสร้าง container (สังเกต exit code `125` = Docker daemon ปฏิเสธคำสั่ง ไม่ใช่แอปข้างในพัง):
-
-```
-[] | []
-docker: Error response from daemon: no command specified
-
-Run 'docker run --help' for more information
-exit code = 125
-```
-
-### 3. 💥 ทำให้พัง — ส่ง argument ผิดให้ `ENTRYPOINT`
-
-`demo-both` ล็อกโปรแกรมหลักไว้เป็น `ping` แล้วให้ผู้ใช้ใส่ argument เอง — ถ้าใส่มั่วจะเป็นอย่างไร?
-```bash
-docker run --rm demo-both -c abc                    ; echo "exit code = $?"
-docker run --rm demo-both -c 1 no-such-host.invalid ; echo "exit code = $?"
-```
-
-> 📝 **คำอธิบาย:** `-c abc` ผิดเพราะ `-c` ต้องการ **จำนวนครั้ง** เป็นตัวเลข · กรณีที่สองใส่ชื่อโฮสต์ที่ไม่มีจริง · **จุดที่ต้องอ่านให้เป็น** : error ขึ้นต้นด้วย
-> `ping:` ไม่ใช่ `docker:` แปลว่า container **เริ่มได้สำเร็จ** แล้วโปรแกรมข้างในเป็นฝ่ายบ่นเอง คนละเรื่องกับข้อ 2 ที่ container ไม่ได้เกิดด้วยซ้ำ
-
-✅ **Expected output** — error มาจาก `ping` โดยตรง และ exit code เป็น `1` (ไม่ใช่ 125):
-
-```
-ping: invalid number 'abc'
-exit code = 1
-ping: bad address 'no-such-host.invalid'
-exit code = 1
-```
-
-> **สรุปวิธีอ่าน error 3 ระดับ :** `docker: Error response from daemon: ...` = daemon ปฏิเสธ (exit 125) · `docker: ... executable file not found` = หาโปรแกรมไม่เจอ (exit 127) · `<ชื่อโปรแกรม>: ...` = แอปข้างในบ่นเอง
-
----
-
 ## แก้ปัญหาที่พบบ่อย
+
+> **อ่าน error ให้ออกก่อน 3 ระดับ :** `docker: Error response from daemon: ...` = daemon ปฏิเสธ (exit 125) · `docker: ... executable file not found` = หาโปรแกรมไม่เจอ (exit 127) · `<ชื่อโปรแกรม>: ...` = แอปข้างในบ่นเอง
 
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
@@ -720,11 +652,11 @@ exit code = 1
 docker rm -f c-exec c-shell c-sigexec c-sigshell 2>/dev/null
 docker rmi demo-run demo-cmd demo-entrypoint demo-both demo-multicmd \
            demo-execform demo-shellform demo-sigexec demo-sigshell \
-           demo-nocmd demo-nocmd-reset
+           demo-nocmd demo-nocmd-reset 2>/dev/null
 docker images --filter "reference=demo-*"
 ```
 
-> 📝 **คำอธิบาย:** `docker rm -f` ลบ container ทดลองที่อาจค้างอยู่ (`-f` เพราะบางตัวอาจยังรัน) · `docker rmi` ลบ image ของแล็บทั้ง 11 ตัว · **image `alpine:3.20`
+> 📝 **คำอธิบาย:** `docker rm -f` ลบ container ทดลองที่อาจค้างอยู่ (`-f` เพราะบางตัวอาจยังรัน) · `docker rmi` ลบ image ของแล็บทั้ง 11 ตัว (สองตัวท้าย `demo-nocmd*` เกิดจาก `verify.sh` — ถ้ายังไม่ได้รัน `2>/dev/null` จะกลืน error ให้เอง) · **image `alpine:3.20`
 > เก็บไว้ได้** ไม่ต้องลบ — LAB ถัดไปใช้ต่อ ไม่ต้อง pull ใหม่ · `docker images --filter "reference=demo-*"` ตรวจซ้ำว่าเหลือแค่หัวตาราง
 
 จากนั้นออกจาก ssh (`exit`) แล้วลบเครื่องเรียนบนเครื่องเราเอง :
@@ -764,7 +696,6 @@ docker ps -a --filter "name=^devtools-"
 - [ ] `ps -o pid,args` ของ `c-sigexec` เห็น `app.sh` เป็น **PID 1** ส่วน `c-sigshell` เห็น `/bin/sh -c` เป็น PID 1
 - [ ] วัดเวลา `docker stop` ได้จริง : exec form หลักร้อย ms · shell form ~10,000 ms และอธิบาย exit code `137` ได้
 - [ ] อธิบายได้ว่าทำไม `CMD sleep 300` บน Alpine ถึงยังได้ PID 1 เป็น `sleep` (BusyBox `ash` exec optimization)
-- [ ] ทำให้พังครบ : `demo-nocmd` **ไม่พัง** เพราะสืบทอด `CMD [/bin/sh]` · `demo-nocmd-reset` พังด้วย `no command specified` (exit 125) · `demo-both -c abc` พังที่ `ping` เอง (exit 1)
 - [ ] `bash verify.sh` ขึ้น `ALL CHECKS PASSED`
 - [ ] เก็บกวาดครบ : `docker images --filter "reference=demo-*"` เหลือแค่หัวตาราง และ `docker ps -a --filter "name=^devtools-"` ไม่มี `devtools-df-lab3` แล้ว
 
