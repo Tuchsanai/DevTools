@@ -25,7 +25,8 @@ cleanup() {
   if [ -n "$tmp_dir" ] && [ -f "$tmp_dir/verify-override.yaml" ]; then
     docker compose -p "$VP" -f compose.yaml -f "$tmp_dir/verify-override.yaml" down -v >/dev/null 2>&1
   fi
-  docker rm -f vops5-registry >/dev/null 2>&1
+  # -v ด้วย เพราะ registry:2 ประกาศ VOLUME /var/lib/registry ไว้ ถ้าไม่ใส่จะเหลือ anonymous volume ค้าง
+  docker rm -f -v vops5-registry >/dev/null 2>&1
   docker image rm -f localhost:$VREG_PORT/vops5-api:1.0 localhost:$VREG_PORT/vops5-web:1.0 >/dev/null 2>&1
   docker image rm -f vops5-api vops5-web >/dev/null 2>&1
   [ -n "$tmp_dir" ] && [ -d "$tmp_dir" ] && rm -rf "$tmp_dir"
@@ -213,7 +214,7 @@ else
 fi
 
 # ---------- 14) ส่งมอบ : tag -> push -> pull ผ่าน registry ในเครื่อง ----------
-docker rm -f vops5-registry >/dev/null 2>&1
+docker rm -f -v vops5-registry >/dev/null 2>&1
 if docker run -d --name vops5-registry -p "$VREG_PORT:5000" registry:2 >/dev/null 2>&1; then
   reg_ok=0
   for _ in $(seq 1 20); do

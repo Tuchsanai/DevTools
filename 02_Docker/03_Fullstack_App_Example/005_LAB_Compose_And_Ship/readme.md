@@ -18,7 +18,7 @@
 
 ## ทฤษฎีก่อนลงมือ
 
-**โจทย์จากลูกค้า** : *"ไม่มีฝ่าย IT ประจำ — ติดตั้งต้องง่าย ย้ายเครื่องต้องได้"* (`00_story.md` §ข้อจำกัด)
+**โจทย์จากลูกค้า** : *"ไม่มีฝ่าย IT ประจำ — ติดตั้งต้องง่าย ย้ายเครื่องต้องได้"* ([`docs/00_story.md`](../docs/00_story.md) §ข้อจำกัด)
 → กลายเป็น **NFR-1** ใน [`docs/01_requirements.md`](../docs/01_requirements.md) : *"`docker compose up -d` แล้วระบบพร้อมใช้งาน โดยไม่ต้องติดตั้ง Python/Node/Postgres บนเครื่อง"*
 
 ### `compose.yaml` คือ `docker run` ที่เขียนเป็นไฟล์
@@ -36,11 +36,11 @@
 | `--build-arg NEXT_PUBLIC_SITE_NAME=CampusOps` | `build: args:` | LAB 3 |
 | `-p 3000:3000` | `ports:` (มีที่ `web` ที่เดียว) | LAB 2 · LAB 3 |
 | `docker network create` + `--network` | *ไม่ต้องเขียน* — compose สร้าง network ชื่อ `<project>_default` ให้เอง | LAB 4 |
-| *(ทำไม่ได้)* พิมพ์ `sleep 10` เดาเอาเอง | `healthcheck:` + `depends_on: condition: service_healthy` | **ใหม่ในแล็บนี้** |
+| *(`docker run` ทำไม่ได้)* พิมพ์ `sleep 10` เดาเอาเอง | `healthcheck:` + `depends_on: condition: service_healthy` | **02_Dockerfile Guide LAB 7** |
 
 ### `healthcheck` คือคนตอบ · `depends_on` คือคนรอ
 
-![เส้นเวลาสามแถว db api web จากการรันจริง แถว db เริ่มด้วยช่วง initdb แล้วเปลี่ยนเป็น healthy ที่วินาที 10.2 แถว api เป็นกรอบเส้นประจนถึงวินาที 13.7 จึงเริ่ม แถว web เป็นกรอบเส้นประจนถึงวินาที 19.4 จึงเริ่ม มีลูกศรสีเขียวสองเส้นชี้จากจุดที่กล่องก่อนหน้า healthy ไปยังจุดที่กล่องถัดไปเกิด](./images/theory-healthcheck-order.svg)
+![เส้นเวลาสามแถว db api web จากการรันจริง แถว db เริ่มด้วยช่วง initdb แล้วเปลี่ยนเป็น healthy ที่วินาที 17.3 แถว api เป็นกรอบเส้นประจนถึงวินาที 21.2 จึงเริ่ม แถว web เป็นกรอบเส้นประจนถึงวินาที 26.9 จึงเริ่ม มีลูกศรสีเขียวสองเส้นชี้จากจุดที่กล่องก่อนหน้า healthy ไปยังจุดที่กล่องถัดไปเกิด](./images/theory-healthcheck-order.svg)
 
 > 🖼 **วิธีอ่านรูปนี้:** กรอบ**เส้นประ**แปลว่ากล่องนั้น *ยังไม่ถูกสร้างขึ้นเลย* ไม่ใช่สร้างแล้วรออยู่ · ลูกศรสีเขียวสองเส้นคือ "ใบอนุญาตให้เกิด" ที่ออกให้ก็ต่อเมื่อกล่องก่อนหน้าตอบว่า `healthy` แล้วเท่านั้น
 
@@ -81,7 +81,7 @@ compose ตั้งชื่อของทุกอย่างด้วย **
 
 ### ขั้นที่ 1 — เปิดกล่องเรียน
 
-รันบน **เครื่องของเราเอง** — แล็บนี้เปิดสองพอร์ต : `8191` สำหรับหน้าเว็บ และ `5039` สำหรับ registry :
+รันบน **เครื่องของเราเอง** — นอกจากพอร์ต SSH แล้ว แล็บนี้เปิดพอร์ตของงานอีกสองพอร์ต : `8191` สำหรับหน้าเว็บ และ `5039` สำหรับ registry :
 
 ```bash
 docker rm -f devtools-ops-lab5 2>/dev/null
@@ -108,6 +108,7 @@ api
 compose.yaml
 db
 images
+readme.md
 verify.sh
 web
 ```
@@ -125,7 +126,7 @@ docker compose -p campusops config --services
 grep -nE "^ {4}(image|build|environment|volumes|ports|depends_on|healthcheck|restart):" compose.yaml
 ```
 
-✅ **สิ่งที่ต้องเห็น** — สาม service และแผนที่ของ key ทั้งไฟล์ · สังเกตว่า **`ports:` มีบรรทัดเดียวคือบรรทัด 82 ของ `web`** และ `db` ไม่มีเลย (เลขบรรทัดจะตรงกันทุกเครื่องเพราะเป็นไฟล์เดียวกัน) :
+✅ **สิ่งที่ต้องเห็น** — สาม service และแผนที่ของ key ทั้งไฟล์ · สังเกตว่า **`ports:` มีบรรทัดเดียวคือบรรทัด 82 ของ `web`** และ `db` ไม่มีเลย (เลขบรรทัดตรงกันทุกเครื่องเพราะเป็นไฟล์เดียวกัน · ลำดับชื่อ service ออกตามลำดับที่เขียนในไฟล์ ไม่ใช่เรียงตัวอักษร) :
 
 ```
 db
@@ -149,7 +150,7 @@ web
 95:    restart: unless-stopped
 ```
 
-เทียบกับตารางในหัวข้อทฤษฎีข้างบน จะเห็นว่าทุก key มีต้นทางเป็น flag ที่เราพิมพ์มาแล้ว ยกเว้น `healthcheck:` กับ `depends_on:`
+เทียบกับตารางในหัวข้อทฤษฎีข้างบน จะเห็นว่าทุก key มีต้นทางเป็น flag ที่เราพิมพ์มาแล้วใน LAB 1–4 ส่วน `healthcheck:` กับ `depends_on:` เคยเขียนแล้วที่ **02_Dockerfile Guide LAB 7**
 
 > 📝 **บทเรียน:** `db` เป็น service เดียวที่ไม่มี `ports:` เลย นั่นคือ NFR-3 ที่เขียนเป็นไฟล์ · `build:` แทน `docker build` ส่วน `image:` แทนการหยิบ image สำเร็จรูปมาใช้
 
@@ -177,7 +178,7 @@ time docker compose -p campusops up -d --build
  Container campusops-web-1 Starting
  Container campusops-web-1 Started
 
-real	1m13.073s
+real	1m10.147s
 ```
 
 > 📝 **บทเรียน:** **1 คำสั่ง · 1 นาทีเศษ** จากเครื่องเปล่าถึงระบบพร้อมใช้ — นี่คือคำตอบของ NFR-1 · เวลาส่วนใหญ่หมดไปกับ pull `postgres:17-alpine` และ `npm ci` ครั้งแรกเท่านั้น
@@ -189,16 +190,17 @@ real	1m13.073s
 **คำถาม:** ทั้งสามกล่องอยู่ในสถานะไหน และมีใครเปิดประตูออกนอกเครื่องบ้าง
 
 ```bash
+sleep 20
 docker compose -p campusops ps
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ทั้งสามขึ้น `(healthy)` และคอลัมน์ `PORTS` มีบรรทัด `0.0.0.0:...->` **แค่ `web` เท่านั้น** (เวลาใน `STATUS` และลำดับแถวของแต่ละคนต่างกัน) :
+✅ **สิ่งที่ต้องเห็น** — ทั้งสามขึ้น `(healthy)` และคอลัมน์ `PORTS` มีบรรทัด `0.0.0.0:...->` **แค่ `web` เท่านั้น** (เวลาใน `STATUS` ของแต่ละคนต่างกัน · ที่ต้อง `sleep 20` ก่อนเพราะ `web` เป็นตัวสุดท้ายที่ไม่มีใครรอ `up -d` จึงคืน prompt ตั้งแต่ `web Started` ทั้งที่ `start_period: 20s` ยังไม่หมด ถามเร็วกว่านี้จะเห็น `health: starting`) :
 
 ```
 NAME              IMAGE                COMMAND                  SERVICE   CREATED          STATUS                    PORTS
-campusops-api-1   campusops-api        "uvicorn main:app --…"   api       19 seconds ago   Up 13 seconds (healthy)   8000/tcp
-campusops-db-1    postgres:17-alpine   "docker-entrypoint.s…"   db        19 seconds ago   Up 18 seconds (healthy)   5432/tcp
-campusops-web-1   campusops-web        "docker-entrypoint.s…"   web       19 seconds ago   Up 7 seconds (healthy)    0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+campusops-api-1   campusops-api        "uvicorn main:app --…"   api       36 seconds ago   Up 29 seconds (healthy)   8000/tcp
+campusops-db-1    postgres:17-alpine   "docker-entrypoint.s…"   db        36 seconds ago   Up 35 seconds (healthy)   5432/tcp
+campusops-web-1   campusops-web        "docker-entrypoint.s…"   web       36 seconds ago   Up 24 seconds (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
 ```
 
 > 📝 **บทเรียน:** `5432/tcp` เฉย ๆ คือ `EXPOSE` ของ image (LAB 2) ไม่ใช่ประตู · **NFR-3 ผ่านเพราะเราไม่เขียน `ports:` ให้ `db`** ไม่ใช่เพราะตั้งค่าอะไรเพิ่ม
@@ -218,15 +220,15 @@ docker compose -p campusops logs db 2>&1 | grep -E 'init process complete|ready 
 ✅ **สิ่งที่ต้องเห็น** — เวลาสตาร์ตเรียงกัน `db` → `api` → `web` โดย `api` เกิด **หลัง** บรรทัด `ready to accept connections` ของ `db` (นาฬิกาและระยะห่างของแต่ละเครื่องต่างกัน ให้ดูที่**ลำดับ** ไม่ใช่ตัวเลข) :
 
 ```
-/campusops-db-1 start=2026-08-17T13:30:07.986769552Z health=healthy
-/campusops-api-1 start=2026-08-17T13:30:13.679695171Z health=healthy
-/campusops-web-1 start=2026-08-17T13:30:19.383782196Z health=healthy
-db-1  | 2026-08-17 13:30:09.723 UTC [41] LOG:  database system is ready to accept connections
+/campusops-db-1 start=2026-08-17T14:08:15.569729292Z health=healthy
+/campusops-api-1 start=2026-08-17T14:08:21.243317855Z health=healthy
+/campusops-web-1 start=2026-08-17T14:08:26.927619109Z health=healthy
+db-1  | 2026-08-17 14:08:16.846 UTC [41] LOG:  database system is ready to accept connections
 db-1  | PostgreSQL init process complete; ready for start up.
-db-1  | 2026-08-17 13:30:10.240 UTC [1] LOG:  database system is ready to accept connections
+db-1  | 2026-08-17 14:08:17.345 UTC [1] LOG:  database system is ready to accept connections
 ```
 
-> 📝 **บทเรียน:** `api` เกิดตอน `13:30:13.6` ซึ่งช้ากว่าบรรทัด `ready to accept connections` ของจริงที่ `13:30:10.2` — compose หยุดรอให้เอง เราจึงลบ `sleep 10` ที่พิมพ์มาตลอด 4 แล็บทิ้งได้
+> 📝 **บทเรียน:** `api` เกิดตอน `14:08:21.2` ซึ่งช้ากว่าบรรทัด `ready to accept connections` ของจริงที่ `14:08:17.3` — compose หยุดรอให้เอง เราจึงลบ `sleep 10` ที่พิมพ์มาตลอด 4 แล็บทิ้งได้
 
 ---
 
@@ -320,16 +322,16 @@ DRIVER    VOLUME NAME
 **คำถาม:** ระบบไม่ตอบสนอง จะรู้ได้อย่างไรว่ากล่องไหนเป็นต้นเหตุ
 
 ```bash
-docker compose -p campusops logs --tail=2
+docker compose -p campusops logs --tail=1
 docker compose -p campusops exec -T web wget -qO- http://api:8000/health; echo
 ```
 
-✅ **สิ่งที่ต้องเห็น** — `logs` เอา log ของทั้งสามกล่องมาเรียงกันโดยมี **ชื่อ service นำหน้าทุกบรรทัด** และ `exec` ทำให้เรายิงจากในกล่องหนึ่งไปอีกกล่องได้ (บรรทัดและเวลาของแต่ละคนต่างกัน) :
+✅ **สิ่งที่ต้องเห็น** — `--tail=1` คืน **บรรทัดล่าสุดของทุก service กล่องละ 1 บรรทัด** โดยมี **ชื่อ service นำหน้า** และ `exec` ทำให้เรายิงจากในกล่องหนึ่งไปอีกกล่องได้ (ข้อความและเวลาของแต่ละคนต่างกัน · ลำดับสามบรรทัดก็ต่างกันได้เพราะเรียงตามเวลาที่ log ออก) :
 
 ```
-db-1  | 2026-08-17 13:33:28.191 UTC [1] LOG:  database system is ready to accept connections
-api-1  | INFO:     127.0.0.1:45084 - "GET /health HTTP/1.1" 200 OK
-web-1  | ✓ Ready in 0ms
+api-1  | INFO:     172.19.0.4:57704 - "GET /api/dashboard HTTP/1.1" 200 OK
+db-1   | 2026-08-17 14:09:57.553 UTC [1] LOG:  database system is ready to accept connections
+web-1  | ✓ Running next.config took 0.7ms
 {"status":"ok","db":"up"}
 ```
 
@@ -343,7 +345,7 @@ web-1  | ✓ Ready in 0ms
 
 ```bash
 docker run -d --name ops-registry -p 5000:5000 registry:2 >/dev/null
-sleep 3 && curl -s http://localhost:5000/v2/_catalog; echo
+sleep 3 && curl -s http://localhost:5000/v2/_catalog
 docker tag campusops-api:latest localhost:5000/campusops-api:1.0
 docker tag campusops-web:latest localhost:5000/campusops-web:1.0
 docker images --filter reference="localhost:5000/*" --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}"
@@ -354,8 +356,8 @@ docker images --filter reference="localhost:5000/*" --format "table {{.Repositor
 ```
 {"repositories":[]}
 REPOSITORY                     TAG       IMAGE ID
-localhost:5000/campusops-web   1.0       a45ffe35e244
-localhost:5000/campusops-api   1.0       bea42cdc6f1d
+localhost:5000/campusops-web   1.0       a9189f2357b5
+localhost:5000/campusops-api   1.0       108314af56b0
 ```
 
 ส่งขึ้น registry แล้วถามคลังว่ามีอะไรอยู่บ้าง :
@@ -363,17 +365,17 @@ localhost:5000/campusops-api   1.0       bea42cdc6f1d
 ```bash
 docker push localhost:5000/campusops-api:1.0 | tail -2
 docker push localhost:5000/campusops-web:1.0 | tail -2
-curl -s http://localhost:5000/v2/_catalog; echo
-curl -s http://localhost:5000/v2/campusops-web/tags/list; echo
+curl -s http://localhost:5000/v2/_catalog
+curl -s http://localhost:5000/v2/campusops-web/tags/list
 ```
 
-✅ **สิ่งที่ต้องเห็น** — บรรทัด `Pushed` ตามด้วย digest และคลังมี repository ครบสองก้อนพร้อมแท็ก `1.0` (ค่า `digest` ของแต่ละคนคนละค่า) :
+✅ **สิ่งที่ต้องเห็น** — บรรทัด `Pushed` ตามด้วย digest และคลังมี repository ครบสองก้อนพร้อมแท็ก `1.0` (ค่า `digest` ของแต่ละคนคนละค่า · บน Docker 29 ที่เก็บ image ด้วย containerd ตัว `IMAGE ID` **คือ** manifest digest ก้อนเดียวกัน 12 ตัวแรกจึงตรงกับตารางข้างบน) :
 
 ```
-fa18dfb1257a: Pushed
-1.0: digest: sha256:bea42cdc6f1d604244cdc9f385529ceddeed624708a9c7d29107297089043b2e size: 856
-d0f330891812: Pushed
-1.0: digest: sha256:a45ffe35e2445b56781317e58ec10b06dfd50c94cc165bc9bbaf377d404ef774 size: 856
+aa8b3e865ce3: Pushed
+1.0: digest: sha256:108314af56b0704f91416acbdec3fb76217c6b9d54dc3a1e5f4b6f2cf67503ca size: 856
+16da5a640377: Pushed
+1.0: digest: sha256:a9189f2357b588924c9a8a338068e319429e01e2cbba013243c812708b297fa9 size: 856
 {"repositories":["campusops-api","campusops-web"]}
 {"name":"campusops-web","tags":["1.0"]}
 ```
@@ -399,9 +401,9 @@ docker images --filter reference="*campusops-*"
 Untagged: campusops-api:latest
 Untagged: campusops-web:latest
 Untagged: localhost:5000/campusops-api:1.0
-Deleted: sha256:bea42cdc6f1d604244cdc9f385529ceddeed624708a9c7d29107297089043b2e
+Deleted: sha256:108314af56b0704f91416acbdec3fb76217c6b9d54dc3a1e5f4b6f2cf67503ca
 Untagged: localhost:5000/campusops-web:1.0
-Deleted: sha256:a45ffe35e2445b56781317e58ec10b06dfd50c94cc165bc9bbaf377d404ef774
+Deleted: sha256:a9189f2357b588924c9a8a338068e319429e01e2cbba013243c812708b297fa9
 IMAGE   ID             DISK USAGE   CONTENT SIZE   EXTRA
 ```
 
@@ -414,6 +416,8 @@ docker tag localhost:5000/campusops-api:1.0 campusops-api:latest
 docker tag localhost:5000/campusops-web:1.0 campusops-web:latest
 docker compose -p campusops up -d --no-build
 ```
+
+log ของคำสั่งข้างบนต้องไม่มีบรรทัด `Building` เลย · ถามสถานะและยิงหน้าเว็บซ้ำ :
 
 ```bash
 docker compose -p campusops ps --format "table {{.Service}}\t{{.Image}}\t{{.Status}}"
@@ -440,24 +444,40 @@ GET / -> 200
 bash verify.sh ; echo "exit code = $?"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — `[PASS]` ทุกบรรทัด ปิดท้ายด้วย `ALL CHECKS PASSED` และ `exit code = 0` :
+✅ **สิ่งที่ต้องเห็น** — `[PASS]` ครบทั้ง **22 บรรทัด** ปิดท้ายด้วย `ALL CHECKS PASSED` และ `exit code = 0` (ผลเต็มไม่ตัดทอน) :
 
 ```
+==============================================
+ LAB 5 — Compose And Ship : verify
+==============================================
+[PASS] ต่อกับ Docker daemon ได้
+[PASS] ไฟล์ของแล็บครบ (compose.yaml · api/ · web/ · db/initdb/)
+[PASS] compose.yaml ประกาศครบ 3 service : api db web
+[PASS] ไม่มี container_name ในไฟล์ — ปล่อยให้ compose ตั้งชื่อเป็น <project>-<service>-<n>
+[PASS] มี healthcheck ครบทั้ง 3 service
+[PASS] depends_on ใช้ condition: service_healthy 2 จุด (api รอ db · web รอ api)
 [PASS] NFR-3 : service db ไม่มี published port ในไฟล์
 [PASS] NFR-2 : ประกาศ named volume ชื่อ pgdata ไว้แล้ว
 [PASS] NFR-1 : docker compose up -d --build ขึ้นครบด้วยคำสั่งเดียว
 [PASS] ทั้ง 3 service ขึ้นสถานะ healthy
 [PASS] ลำดับการสตาร์ตเป็น db -> api -> web ตาม depends_on: service_healthy
+[PASS] NFR-3 : กล่อง db ที่รันอยู่ไม่มี port mapping ออกนอกเครื่อง
+[PASS] หน้าเว็บตอบ 200 ที่ http://localhost:13191/
+[PASS] หน้า /tickets · /loans · /parts ตอบ 200 ครบทั้ง 3 โมดูล
+[PASS] web เรียก http://api:8000/health ด้วยชื่อ service แล้วได้ db up
 [PASS] NFR-2 : down แล้ว up ข้อมูลยังอยู่ครบ (9 ใบเท่าเดิม)
 [PASS] down -v แล้ว up ข้อมูลกลับไปเป็น seed ตั้งต้น (8 ใบ)
+[PASS] ยก registry ในเครื่อง (registry:2) ขึ้นที่พอร์ต 15000 ได้
+[PASS] docker push image ทั้งสองก้อนขึ้น registry สำเร็จ
 [PASS] registry มี repository ครบสองก้อน : {"repositories":["vops5-api","vops5-web"]}
 [PASS] ลบ image ในเครื่องแล้ว docker pull กลับมาจาก registry ได้
+[PASS] image ที่ pull กลับมารันได้จริง (เห็นไฟล์ผลลัพธ์ของหน้าเว็บใน image)
 ----------------------------------------------
 ALL CHECKS PASSED
 exit code = 0
 ```
 
-> 📝 ใช้เวลาราว 3 นาที เพราะยกระบบของตัวเองขึ้นทั้งชุด · สคริปต์ใช้ project ชื่อ `vops5` · กล่อง `vops5-registry` · พอร์ต `13191` และ `15000` แล้วลบทิ้งเองเมื่อจบ — project `campusops` กับกล่อง `ops-registry` ของเราไม่ถูกแตะ
+> 📝 ใช้เวลาราว 1 นาที เพราะ BuildKit ใช้ cache จากตอนการทดลองที่ 2 ต่อ (ถ้ายังไม่เคย build จะนานกว่านี้) · สคริปต์ใช้ project ชื่อ `vops5` · กล่อง `vops5-registry` · พอร์ต `13191` และ `15000` แล้วลบทิ้งเองเมื่อจบ — project `campusops` กับกล่อง `ops-registry` ของเราไม่ถูกแตะ
 
 ---
 
@@ -466,13 +486,13 @@ exit code = 0
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
 | `no configuration file provided: not found` | สั่ง compose จากโฟลเดอร์ที่ไม่มี `compose.yaml` | `cd` กลับเข้าโฟลเดอร์ `005_LAB_Compose_And_Ship` ก่อน |
-| `failed to parse compose.yaml: go-yaml load error in scanner at L21.C16: mapping values are not allowed in this context` | เยื้องช่องว่างใน YAML ผิด (เช่นเหลือ 3 ช่องแทน 4) | นับช่องว่างให้เท่าเดิมทุกบรรทัดในบล็อกนั้น · ห้ามใช้ Tab |
+| `failed to parse /root/labwork/.../compose.yaml: go-yaml load error in parser (while parsing a block mapping) at L19.C3-L21.C4: did not find expected key` | เยื้องช่องว่างใน YAML ผิด (บรรทัด 21 เหลือ 3 ช่องแทน 4) | เปิดบรรทัดที่ข้อความบอก แล้วนับช่องว่างให้เท่าบรรทัดพี่น้องในบล็อกเดียวกัน · ห้ามใช้ Tab |
 | `Bind for 0.0.0.0:3000 failed: port is already allocated` | ลืม `-p campusops` compose จึงสร้าง project ซ้อนขึ้นมาแย่งพอร์ต 3000 | `docker compose -p 005_lab_compose_and_ship down -v` แล้วสั่งใหม่โดยใส่ `-p campusops` ให้ครบ |
 | `dependency failed to start: container campusops-db-1 is unhealthy` | healthcheck ของ `db` ไม่ผ่านภายในจำนวน `retries` ที่ตั้งไว้ | `docker compose -p campusops logs db` อ่านสาเหตุ · ถ้า volume เก่าสร้างด้วย user คนละชื่อ ให้ `down -v` แล้ว `up` ใหม่ |
 | `service "db" is not running` | สั่ง `exec` ตอน project นั้นยังไม่ขึ้น หรือพิมพ์ `-p` ผิดชื่อ | `docker compose -p campusops ps` ดูก่อนว่าขึ้นอยู่จริงไหม แล้วค่อย `exec` |
 | `docker compose ps` ขึ้นแต่หัวตาราง `NAME IMAGE COMMAND SERVICE CREATED STATUS PORTS` ทั้งที่ระบบรันอยู่ | ลืม `-p campusops` compose จึงไปดู project ชื่อตามโฟลเดอร์ | ใส่ `-p campusops` ทุกคำสั่ง ไม่มียกเว้น |
-| `failed to do request: Head "https://localhost:5999/v2/x/blobs/sha256:...": dial tcp [::1]:5999: connect: connection refused` | `docker push` ไปยังพอร์ตที่ไม่มี registry รันอยู่ | `docker ps --filter name=ops-registry` เช็กก่อน · ถ้ายังไม่ขึ้นให้ `docker run -d --name ops-registry -p 5000:5000 registry:2` |
-| `Error response from daemon: No such image: campusops-api-missing:1.0` | สั่ง `up -d --no-build` ทั้งที่ image ยังไม่ได้ pull ลงเครื่อง | `docker pull` ให้ครบทั้งสองก้อนก่อน แล้ว `docker tag` เป็นชื่อที่ compose มองหา |
+| `failed to do request: Head "https://localhost:5000/v2/campusops-api/blobs/sha256:d563aa9edc73...": dial tcp [::1]:5000: connect: connection refused` | `docker push` ตอนกล่อง `ops-registry` ไม่ได้รันอยู่ | `docker ps --filter name=ops-registry` เช็กก่อน · ถ้ายังไม่ขึ้นให้ `docker run -d --name ops-registry -p 5000:5000 registry:2` |
+| `Error response from daemon: No such image: campusops-api:latest` | สั่ง `up -d --no-build` ทั้งที่ image ยังไม่ได้ pull ลงเครื่อง | `docker pull` ให้ครบทั้งสองก้อนก่อน แล้ว `docker tag` เป็นชื่อที่ compose มองหา |
 
 ---
 
@@ -482,14 +502,12 @@ exit code = 0
 
 ```bash
 docker compose -p campusops down -v
-docker rm -f ops-registry
+docker rm -f -v ops-registry
 docker image rm -f campusops-api:latest campusops-web:latest \
   localhost:5000/campusops-api:1.0 localhost:5000/campusops-web:1.0
-docker ps -a
-docker volume ls --filter name=campusops
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ไม่เหลือกล่องและไม่เหลือ volume ของแล็บนี้ (ค่า `sha256:` ของแต่ละคนคนละค่า) :
+✅ **สิ่งที่ต้องเห็น** — `down -v` เก็บทั้งกล่อง · network และ volume ในคำสั่งเดียว แล้วชื่อ image ทั้งสี่ถูกถอดออกหมด (ค่า `sha256:` ของแต่ละคนคนละค่า · `docker rm -f -v` ต้องมี `-v` เพราะ `registry:2` ประกาศ `VOLUME` ไว้ ไม่งั้นจะเหลือ anonymous volume ค้าง) :
 
 ```
  Volume campusops_pgdata Removed
@@ -497,11 +515,27 @@ docker volume ls --filter name=campusops
 ops-registry
 Untagged: campusops-api:latest
 Untagged: campusops-web:latest
+Untagged: localhost:5000/campusops-api:1.0
+Deleted: sha256:108314af56b0704f91416acbdec3fb76217c6b9d54dc3a1e5f4b6f2cf67503ca
+Untagged: localhost:5000/campusops-web:1.0
+Deleted: sha256:a9189f2357b588924c9a8a338068e319429e01e2cbba013243c812708b297fa9
+```
+
+ยืนยันว่าเครื่องกลับไปสะอาดจริง :
+
+```bash
+docker ps -a
+docker volume ls
+```
+
+✅ **สิ่งที่ต้องเห็น** — ทั้งสองตารางเหลือแค่หัวตาราง ไม่มีกล่องและไม่มี volume ค้างเลยแม้แต่ก้อนเดียว :
+
+```
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 DRIVER    VOLUME NAME
 ```
 
-> 📝 `down -v` ลบทั้งกล่อง · network `campusops_default` และ volume `campusops_pgdata` ในคำสั่งเดียว · ตารางสุดท้ายทั้งสองเหลือแค่หัวตาราง
+> 📝 `docker volume ls` แบบไม่กรองคือคำสั่งที่บอกความจริง — ถ้าลืม `-v` ตอนลบ `ops-registry` จะเห็น volume ชื่อยาว ๆ ที่ไม่มีใครใช้ค้างอยู่
 
 **ออกจากกล่องแล้วลบกล่องบนเครื่องเรา:**
 
@@ -521,11 +555,11 @@ docker ps -a --filter "name=^devtools-"
 | `docker compose -p campusops up -d --build` | build ทุก image ที่มี `build:` แล้วยกทั้งระบบขึ้นเบื้องหลัง |
 | `docker compose -p campusops up -d --no-build` | ยกระบบขึ้นจาก image ที่มีอยู่แล้ว ห้าม build ใหม่ (แบบเครื่องลูกค้า) |
 | `docker compose -p campusops ps` | ดูสถานะ · สุขภาพ · พอร์ตของทุก service ในตารางเดียว |
-| `docker compose -p campusops logs --tail=2` | อ่าน log ของทุกกล่องพร้อมกัน โดยมีชื่อ service นำหน้า |
+| `docker compose -p campusops logs --tail=1` | อ่าน log บรรทัดล่าสุดของทุกกล่องพร้อมกัน โดยมีชื่อ service นำหน้า |
 | `docker compose -p campusops exec -T <service> <คำสั่ง>` | สั่งงานข้างในกล่องของ service นั้น (`-T` เมื่อไม่ต้องการ terminal) |
 | `docker compose -p campusops down` | ลบกล่องกับ network · **ข้อมูลใน volume ยังอยู่** |
 | `docker compose -p campusops down -v` | ลบ volume ไปด้วย · **ข้อมูลหายถาวร** |
-| `docker run -d --name ops-registry -p 5000:5000 registry:2` | ยัง registry ส่วนตัวขึ้นในเครื่อง ใช้เป็นคลัง image |
+| `docker run -d --name ops-registry -p 5000:5000 registry:2` | ยก registry ส่วนตัวขึ้นในเครื่อง ใช้เป็นคลัง image |
 | `docker tag <image> localhost:5000/<ชื่อ>:1.0` | ตั้งชื่อใหม่ให้ image ก้อนเดิม โดยมีโฮสต์ของ registry นำหน้า |
 | `docker push localhost:5000/<ชื่อ>:1.0` | ส่ง image ขึ้น registry |
 | `docker pull localhost:5000/<ชื่อ>:1.0` | ดึง image จาก registry ลงเครื่องปลายทาง |
@@ -533,9 +567,7 @@ docker ps -a --filter "name=^devtools-"
 
 > **จำ 3 อย่าง:** `-p campusops` ทุกคำสั่งไม่มียกเว้น · `down` ไม่ลบข้อมูล `down -v` ลบ · ไม่มีโฮสต์นำหน้าชื่อ image = push ขึ้น registry ในเครื่องไม่ได้
 
----
-
-## ข้อจำกัดของลูกค้า แก้ด้วยเทคนิค Docker ตัวไหน ในแล็บไหน
+**และย้อนกลับไปที่โจทย์ตั้งต้น** — ข้อจำกัดของลูกค้าข้อไหน ทำให้ต้องเลือกคำสั่งข้างบนตัวไหน :
 
 | ข้อจำกัดที่ลูกค้าพูดเอง | กลายเป็น | เทคนิค Docker ที่ใช้แก้ | สอน/พิสูจน์ที่ไหน |
 |---|---|---|---|
@@ -544,7 +576,7 @@ docker ps -a --filter "name=^devtools-"
 | "ข้อมูลยืม-คืนย้อนหลังห้ามหาย แม้ต้อง restart" | **NFR-2** | named volume ผูกกับ `/var/lib/postgresql/data` · `down` ไม่แตะ volume | เจอปัญหาและแก้ครั้งแรกที่ **LAB 1** · ยืนยันในระดับระบบที่ **LAB 5** การทดลองที่ 6 |
 | "ฐานข้อมูลต้องเข้าถึงจากภายนอกไม่ได้" | **NFR-3** | ไม่เขียน `ports:` ให้ `db` · ให้กล่องคุยกันด้วย **ชื่อ service** บน network ภายในแทน IP | ต่อกล่องด้วยชื่อที่ **LAB 4** · ยืนยันทั้งไฟล์และของจริงที่ **LAB 5** การทดลองที่ 1 · 3 |
 
-> 🎯 นี่คือคำตอบของทั้งชุดแล็บ — **ข้อจำกัดทางธุรกิจข้อไหน ทำให้ต้องเลือกเทคนิค Docker ตัวไหน** ซึ่งเป็นคนละเรื่องกับการท่องคำสั่ง
+> 🎯 นี่คือคำตอบของทั้งชุดแล็บ — **ข้อจำกัดทางธุรกิจข้อไหน ทำให้ต้องเลือกเทคนิค Docker ตัวไหน** ซึ่งเป็นคนละเรื่องกับการท่องคำสั่ง เพราะข้อจำกัดของลูกค้ารายถัดไปจะไม่เหมือนเดิม
 
 ---
 
@@ -552,14 +584,14 @@ docker ps -a --filter "name=^devtools-"
 
 - [ ] `grep -nE "^ {4}(image|build|...)" compose.yaml` แล้วชี้ได้ว่าบรรทัด `82:    ports:` เป็นของ `web` และ `db` ไม่มี `ports:` เลย
 - [ ] `time docker compose -p campusops up -d --build` จบด้วยบรรทัด `campusops-web-1 Started` และมีเวลา `real` ของตัวเอง
-- [ ] `docker compose -p campusops ps` เห็น `(healthy)` ครบ 3 แถว และมี `0.0.0.0:3000->3000/tcp` แถวเดียวคือ `web`
+- [ ] `sleep 20` แล้ว `docker compose -p campusops ps` เห็น `(healthy)` ครบ 3 แถว และมี `0.0.0.0:3000->3000/tcp` แถวเดียวคือ `web`
 - [ ] `docker inspect -f '{{.State.StartedAt}}' ...` แล้วเวลาเรียง `db` < `api` < `web` และ `api` เกิดหลัง `ready to accept connections` ของ `db`
 - [ ] `curl` ได้ `200` ครบทั้ง `/` · `/tickets` · `/loans` · `/parts` และเปิด `http://localhost:8191` บนเครื่องเราเห็นหน้าสรุปจริง
 - [ ] เพิ่มใบแจ้งซ่อมเป็น 9 → `down` → `up -d` แล้ว `SELECT count(*) FROM tickets;` ยังได้ **9**
 - [ ] `down -v` → `up -d` แล้วนับได้ **8** และ `docker volume ls --filter name=campusops` เคยว่างจริงตอนหลัง `down -v`
-- [ ] `docker compose -p campusops logs --tail=2` เห็นคำนำหน้า `db-1 |` · `api-1 |` · `web-1 |` และ `exec -T web wget ... http://api:8000/health` ได้ `{"status":"ok","db":"up"}`
+- [ ] `docker compose -p campusops logs --tail=1` ได้ 3 บรรทัดพร้อมคำนำหน้า `db-1 |` · `api-1 |` · `web-1 |` และ `exec -T web wget ... http://api:8000/health` ได้ `{"status":"ok","db":"up"}`
 - [ ] `docker push` สำเร็จ และ `curl -s http://localhost:5000/v2/_catalog` คืน `{"repositories":["campusops-api","campusops-web"]}`
-- [ ] ลบ image ทิ้ง → `docker pull` → `up -d --no-build` แล้วหน้าเว็บยังตอบ `200` · `bash verify.sh ; echo "exit code = $?"` ขึ้น `ALL CHECKS PASSED` และ `exit code = 0`
+- [ ] ลบ image ทิ้ง → `docker pull` → `up -d --no-build` แล้วหน้าเว็บยังตอบ `200` · `bash verify.sh ; echo "exit code = $?"` ขึ้น `[PASS]` ครบ 22 บรรทัด · `ALL CHECKS PASSED` และ `exit code = 0`
 
 ---
 
