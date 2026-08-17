@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 430" width="800" height="430" font-family="sans-serif">
+  <rect x="0" y="0" width="800" height="430" fill="#ffffff"/>
+
+  <text x="400" y="30" text-anchor="middle" font-size="19" font-weight="bold" fill="#0f172a">เส้นเวลาจริงของ docker compose up : db พร้อมก่อน api จึงเกิด</text>
+  <text x="400" y="52" text-anchor="middle" font-size="13" fill="#64748b">ตัวเลขวินาทีมาจาก docker inspect ของรอบที่ใช้เขียนเอกสารนี้ ของแต่ละเครื่องจะไม่ตรงกัน</text>
+
+  <defs>
+    <marker id="tip" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M 0 0 L 10 4 L 0 8 z" fill="#334155"/>
+    </marker>
+    <marker id="tipg" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <path d="M 0 0 L 9 3.5 L 0 7 z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <line x1="120" y1="360" x2="770" y2="360" stroke="#334155" stroke-width="2" marker-end="url(#tip)"/>
+  <text x="770" y="382" text-anchor="end" font-size="12" fill="#334155">เวลา</text>
+
+  <g font-size="11.5" fill="#475569">
+    <line x1="150" y1="96" x2="150" y2="366" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="150" y="382" text-anchor="middle">13:30:07.9</text>
+    <line x1="330" y1="96" x2="330" y2="366" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="330" y="382" text-anchor="middle">13:30:10.2</text>
+    <line x1="500" y1="96" x2="500" y2="366" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="500" y="382" text-anchor="middle">13:30:13.7</text>
+    <line x1="670" y1="96" x2="670" y2="366" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="670" y="382" text-anchor="middle">13:30:19.4</text>
+  </g>
+
+  <text x="24" y="122" font-size="15" font-weight="bold" fill="#065f46">db</text>
+  <rect x="150" y="104" width="180" height="34" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="240" y="126" text-anchor="middle" font-size="12" fill="#92400e">initdb รัน 01-schema · 02-seed</text>
+  <rect x="330" y="104" width="440" height="34" rx="6" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
+  <text x="550" y="126" text-anchor="middle" font-size="12.5" fill="#047857">healthy · pg_isready ตอบ accepting connections</text>
+  <text x="768" y="156" text-anchor="end" font-size="11.5" fill="#059669">log บรรทัด init process complete โผล่ตรงนี้</text>
+
+  <text x="24" y="202" font-size="15" font-weight="bold" fill="#4c1d95">api</text>
+  <rect x="150" y="184" width="350" height="34" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="325" y="206" text-anchor="middle" font-size="12.5" fill="#64748b">ยังไม่ถูกสร้างขึ้นเลย · compose ค้างที่บรรทัด "db Waiting"</text>
+  <rect x="500" y="184" width="270" height="34" rx="6" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="635" y="206" text-anchor="middle" font-size="12.5" fill="#4c1d95">api Started แล้ว healthy</text>
+
+  <text x="24" y="282" font-size="15" font-weight="bold" fill="#1e3a8a">web</text>
+  <rect x="150" y="264" width="520" height="34" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="410" y="286" text-anchor="middle" font-size="12.5" fill="#64748b">ยังไม่ถูกสร้างขึ้นเลย · compose ค้างที่บรรทัด "api Waiting"</text>
+  <rect x="670" y="264" width="100" height="34" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="720" y="286" text-anchor="middle" font-size="12.5" fill="#1e3a8a">web Started</text>
+
+  <path d="M 330 140 C 380 156 420 168 496 186" fill="none" stroke="#059669" stroke-width="2.2" marker-end="url(#tipg)"/>
+  <text x="352" y="169" font-size="11.5" font-weight="bold" fill="#047857">db healthy จึงปล่อย api</text>
+
+  <path d="M 500 220 C 560 236 600 248 666 266" fill="none" stroke="#059669" stroke-width="2.2" marker-end="url(#tipg)"/>
+  <text x="520" y="249" font-size="11.5" font-weight="bold" fill="#047857">api healthy จึงปล่อย web</text>
+
+  <rect x="24" y="316" width="746" height="34" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="40" y="338" font-size="12.5" fill="#1e3a8a">healthcheck: คือคนตอบว่า "พร้อมหรือยัง" · depends_on: condition: service_healthy คือคนที่ยอมรออยู่ตรงนั้น</text>
+</svg>
