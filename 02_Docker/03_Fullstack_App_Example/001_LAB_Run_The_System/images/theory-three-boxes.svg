@@ -3,55 +3,55 @@
 
   <defs>
     <marker id="ar" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
-      <path d="M 0 0 L 13 5 L 0 10 z" fill="#64748b"/>
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#52606d"/>
     </marker>
     <marker id="arg" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
-      <path d="M 0 0 L 13 5 L 0 10 z" fill="#059669"/>
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#2e8b57"/>
     </marker>
   </defs>
 
-  <text x="400" y="34" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f172a">ระบบของลูกค้า CampusOps = 3 กล่อง · LAB 1 ทำเฉพาะกล่องขวาสุด</text>
+  <text x="400" y="34" text-anchor="middle" font-size="19" font-weight="bold" fill="#1f2933">ระบบของลูกค้า CampusOps = 3 กล่อง · LAB 1 ทำเฉพาะกล่องขวาสุด</text>
 
   <!-- browser -->
-  <text x="42" y="132" text-anchor="middle" font-size="13" fill="#475569">เบราว์เซอร์</text>
-  <text x="42" y="152" text-anchor="middle" font-size="13" fill="#475569">ที่สำนักงาน</text>
-  <path d="M 82 140 L 128 140" stroke="#64748b" stroke-width="2.5" marker-end="url(#ar)"/>
+  <text x="42" y="132" text-anchor="middle" font-size="13" fill="#52606d">เบราว์เซอร์</text>
+  <text x="42" y="152" text-anchor="middle" font-size="13" fill="#52606d">ที่สำนักงาน</text>
+  <path d="M 82 140 L 128 140" stroke="#52606d" stroke-width="3" marker-end="url(#ar)"/>
 
   <!-- web -->
-  <rect x="134" y="86" width="180" height="108" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
-  <text x="224" y="114" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a">web</text>
-  <text x="224" y="138" text-anchor="middle" font-size="13" fill="#1e3a8a">หน้าเว็บ Next.js</text>
-  <text x="224" y="158" text-anchor="middle" font-size="13" fill="#1e3a8a">พอร์ตในกล่อง 3000</text>
-  <text x="224" y="180" text-anchor="middle" font-size="12" fill="#64748b">สร้างใน LAB 3</text>
+  <rect x="134" y="86" width="180" height="108" rx="10" fill="#eef6ff" stroke="#8fb8dc" stroke-width="2"/>
+  <text x="224" y="114" text-anchor="middle" font-size="15" font-weight="bold" fill="#1c4f80">web</text>
+  <text x="224" y="138" text-anchor="middle" font-size="13" fill="#1c4f80">หน้าเว็บ Next.js</text>
+  <text x="224" y="158" text-anchor="middle" font-size="13" fill="#1c4f80">พอร์ตในกล่อง 3000</text>
+  <text x="224" y="180" text-anchor="middle" font-size="12" fill="#52606d">สร้างใน LAB 3</text>
 
-  <path d="M 318 140 L 360 140" stroke="#64748b" stroke-width="2.5" marker-end="url(#ar)"/>
+  <path d="M 318 140 L 360 140" stroke="#52606d" stroke-width="3" marker-end="url(#ar)"/>
 
   <!-- api -->
-  <rect x="364" y="86" width="180" height="108" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="2"/>
-  <text x="454" y="114" text-anchor="middle" font-size="17" font-weight="bold" fill="#4c1d95">api</text>
-  <text x="454" y="138" text-anchor="middle" font-size="13" fill="#4c1d95">บริการเบื้องหลัง FastAPI</text>
-  <text x="454" y="158" text-anchor="middle" font-size="13" fill="#4c1d95">พอร์ตในกล่อง 8000</text>
-  <text x="454" y="180" text-anchor="middle" font-size="12" fill="#64748b">สร้างใน LAB 2</text>
+  <rect x="364" y="86" width="180" height="108" rx="10" fill="#f3f0fb" stroke="#b3a4d6" stroke-width="2"/>
+  <text x="454" y="114" text-anchor="middle" font-size="15" font-weight="bold" fill="#4b3480">api</text>
+  <text x="454" y="138" text-anchor="middle" font-size="13" fill="#4b3480">บริการเบื้องหลัง FastAPI</text>
+  <text x="454" y="158" text-anchor="middle" font-size="13" fill="#4b3480">พอร์ตในกล่อง 8000</text>
+  <text x="454" y="180" text-anchor="middle" font-size="12" fill="#52606d">สร้างใน LAB 2</text>
 
-  <path d="M 548 140 L 590 140" stroke="#64748b" stroke-width="2.5" marker-end="url(#ar)"/>
+  <path d="M 548 140 L 590 140" stroke="#52606d" stroke-width="3" marker-end="url(#ar)"/>
 
   <!-- db (highlight) -->
-  <rect x="594" y="78" width="184" height="124" rx="12" fill="#ecfdf5" stroke="#059669" stroke-width="4"/>
-  <text x="686" y="108" text-anchor="middle" font-size="17" font-weight="bold" fill="#065f46">db</text>
-  <text x="686" y="132" text-anchor="middle" font-size="13" fill="#065f46">postgres:17-alpine</text>
-  <text x="686" y="152" text-anchor="middle" font-size="13" fill="#065f46">พอร์ตในกล่อง 5432</text>
-  <text x="686" y="176" text-anchor="middle" font-size="13" font-weight="bold" fill="#047857">แล็บนี้ทำกล่องนี้</text>
-  <text x="686" y="192" text-anchor="middle" font-size="12" fill="#64748b">5 ตาราง + ข้อมูลตั้งต้น</text>
+  <rect x="594" y="78" width="184" height="124" rx="10" fill="#f2fbf5" stroke="#2e8b57" stroke-width="4"/>
+  <text x="686" y="108" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e6b41">db</text>
+  <text x="686" y="132" text-anchor="middle" font-size="13" fill="#1e6b41">postgres:17-alpine</text>
+  <text x="686" y="152" text-anchor="middle" font-size="13" fill="#1e6b41">พอร์ตในกล่อง 5432</text>
+  <text x="686" y="176" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e6b41">แล็บนี้ทำกล่องนี้</text>
+  <text x="686" y="192" text-anchor="middle" font-size="12" fill="#52606d">5 ตาราง + ข้อมูลตั้งต้น</text>
 
   <!-- volume -->
-  <path d="M 686 206 L 686 252" stroke="#059669" stroke-width="2.5" marker-end="url(#arg)"/>
-  <rect x="586" y="256" width="200" height="52" rx="26" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
-  <text x="686" y="278" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">named volume : ops-pgdata</text>
-  <text x="686" y="297" text-anchor="middle" font-size="12" fill="#065f46">ที่ที่ข้อมูลอยู่จริง (NFR-2)</text>
+  <path d="M 686 206 L 686 252" stroke="#2e8b57" stroke-width="3" marker-end="url(#arg)"/>
+  <rect x="586" y="256" width="200" height="52" rx="26" fill="#e6f5ec" stroke="#2e8b57" stroke-width="2"/>
+  <text x="686" y="278" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e6b41">named volume : ops-pgdata</text>
+  <text x="686" y="297" text-anchor="middle" font-size="12" fill="#1e6b41">ที่ที่ข้อมูลอยู่จริง (NFR-2)</text>
 
   <!-- notes -->
-  <rect x="24" y="232" width="520" height="76" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-  <text x="44" y="256" font-size="13" fill="#334155">· ลูกศรคือทิศทางการเรียก — เบราว์เซอร์ไม่เคยคุยกับ api หรือ db ตรง ๆ</text>
-  <text x="44" y="278" font-size="13" fill="#334155">· db ไม่เคย publish พอร์ตออกจากเครื่องเลย (NFR-3)</text>
-  <text x="44" y="300" font-size="13" fill="#334155">· LAB 1 ยังไม่ต่อกล่องเข้าหากัน — เรื่องนั้นอยู่ใน LAB 4</text>
+  <rect x="24" y="232" width="520" height="76" rx="10" fill="#f6f8fa" stroke="#9aa5b1" stroke-width="1"/>
+  <text x="44" y="256" font-size="13" fill="#1f2933">· ลูกศรคือทิศทางการเรียก — เบราว์เซอร์ไม่เคยคุยกับ api หรือ db ตรง ๆ</text>
+  <text x="44" y="278" font-size="13" fill="#1f2933">· db ไม่เคย publish พอร์ตออกจากเครื่องเลย (NFR-3)</text>
+  <text x="44" y="300" font-size="13" fill="#1f2933">· LAB 1 ยังไม่ต่อกล่องเข้าหากัน — เรื่องนั้นอยู่ใน LAB 4</text>
 </svg>

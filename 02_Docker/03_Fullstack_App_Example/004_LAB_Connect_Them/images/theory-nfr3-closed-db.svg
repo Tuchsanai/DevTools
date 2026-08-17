@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 430" width="920" height="430" font-family="sans-serif">
   <rect x="0" y="0" width="920" height="430" fill="#ffffff"/>
-  <text x="24" y="32" font-size="19" font-weight="bold" fill="#1f2933">NFR-3 : ใครเข้าถึงฐานข้อมูลได้บ้าง</text>
-  <text x="24" y="54" font-size="13" fill="#52606d">กล่องที่อยู่บน ops-net คุยกับ db ได้ · คนที่อยู่นอก network ไม่มีประตูเข้าเลยเพราะไม่เคยมี -p</text>
+  <text text-anchor="middle" x="460" y="32" font-size="19" font-weight="bold" fill="#1f2933">NFR-3 : ใครเข้าถึงฐานข้อมูลได้บ้าง</text>
+  <text text-anchor="middle" x="460" y="54" font-size="13" fill="#52606d">กล่องที่อยู่บน ops-net คุยกับ db ได้ · คนที่อยู่นอก network ไม่มีประตูเข้าเลยเพราะไม่เคยมี -p</text>
 
   <defs>
-    <marker id="inArrow" markerWidth="11" markerHeight="8" refX="10" refY="4" orient="auto">
-      <path d="M0,0 L11,4 L0,8 z" fill="#2e8b57"/>
+    <marker id="inArrow" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#2e8b57"/>
     </marker>
-    <marker id="blockArrow" markerWidth="11" markerHeight="8" refX="10" refY="4" orient="auto">
-      <path d="M0,0 L11,4 L0,8 z" fill="#c04a4a"/>
+    <marker id="blockArrow" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#c04a4a"/>
     </marker>
   </defs>
 

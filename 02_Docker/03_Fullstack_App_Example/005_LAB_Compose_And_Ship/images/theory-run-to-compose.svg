@@ -1,79 +1,79 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" font-family="sans-serif">
   <rect x="0" y="0" width="800" height="500" fill="#ffffff"/>
 
-  <text x="400" y="30" text-anchor="middle" font-size="19" font-weight="bold" fill="#0f172a">ทุก flag ที่พิมพ์มาแล้ว 4 แล็บ ย้ายไปอยู่ key ไหนใน compose.yaml</text>
-  <text x="400" y="52" text-anchor="middle" font-size="13" fill="#64748b">ไม่มีอะไรใหม่เลย มีแค่ย้ายที่เก็บ จากบรรทัดคำสั่งที่ต้องจำเอง ไปเป็นไฟล์ที่ commit ลง git ได้</text>
+  <text x="400" y="30" text-anchor="middle" font-size="19" font-weight="bold" fill="#1f2933">ทุก flag ที่พิมพ์มาแล้ว 4 แล็บ ย้ายไปอยู่ key ไหนใน compose.yaml</text>
+  <text x="400" y="52" text-anchor="middle" font-size="13" fill="#52606d">ไม่มีอะไรใหม่เลย มีแค่ย้ายที่เก็บ จากบรรทัดคำสั่งที่ต้องจำเอง ไปเป็นไฟล์ที่ commit ลง git ได้</text>
 
   <defs>
-    <marker id="arr" markerWidth="8" markerHeight="6.4" refX="8" refY="3.2" orient="auto">
-      <path d="M 0 0 L 8 3.2 L 0 6.4 z" fill="#64748b"/>
+    <marker id="arr" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#52606d"/>
     </marker>
   </defs>
 
-  <rect x="24" y="70" width="352" height="34" rx="8" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
-  <text x="200" y="93" text-anchor="middle" font-size="15" font-weight="bold" fill="#9a3412">สิ่งที่พิมพ์ตอน docker run / docker build</text>
+  <rect x="24" y="70" width="352" height="34" rx="8" fill="#fff4e5" stroke="#d98324" stroke-width="2"/>
+  <text x="200" y="93" text-anchor="middle" font-size="15" font-weight="bold" fill="#a35a10">สิ่งที่พิมพ์ตอน docker run / docker build</text>
 
-  <rect x="424" y="70" width="352" height="34" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
-  <text x="600" y="93" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e3a8a">key ใน compose.yaml</text>
+  <rect x="424" y="70" width="352" height="34" rx="8" fill="#eef6ff" stroke="#8fb8dc" stroke-width="2"/>
+  <text x="600" y="93" text-anchor="middle" font-size="15" font-weight="bold" fill="#1c4f80">key ใน compose.yaml</text>
 
-  <g font-size="12.5">
-    <rect x="24" y="114" width="352" height="42" rx="7" fill="#fffbeb" stroke="#fde68a"/>
-    <text x="36" y="132" fill="#78350f" font-weight="bold">LAB 1</text>
-    <text x="100" y="132" fill="#0f172a">-e POSTGRES_PASSWORD=labpass</text>
-    <text x="100" y="149" fill="#78716c">ส่งค่าตั้งต้นเข้ากล่อง</text>
-    <path d="M 380 135 L 422 135" stroke="#64748b" stroke-width="2.6" marker-end="url(#arr)"/>
-    <rect x="424" y="114" width="352" height="42" rx="7" fill="#f8fafc" stroke="#cbd5e1"/>
-    <text x="436" y="132" fill="#1d4ed8" font-weight="bold">environment:</text>
-    <text x="436" y="149" fill="#64748b">POSTGRES_PASSWORD: labpass</text>
+  <g font-size="13">
+    <rect x="24" y="114" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
+    <text x="36" y="132" fill="#a35a10" font-weight="bold">LAB 1</text>
+    <text x="100" y="132" fill="#1f2933">-e POSTGRES_PASSWORD=labpass</text>
+    <text x="100" y="149" fill="#52606d">ส่งค่าตั้งต้นเข้ากล่อง</text>
+    <path d="M 380 135 L 422 135" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>
+    <rect x="424" y="114" width="352" height="42" rx="6" fill="#f6f8fa" stroke="#9aa5b1"/>
+    <text x="436" y="132" fill="#1c4f80" font-weight="bold">environment:</text>
+    <text x="436" y="149" fill="#52606d">POSTGRES_PASSWORD: labpass</text>
 
-    <rect x="24" y="162" width="352" height="42" rx="7" fill="#fffbeb" stroke="#fde68a"/>
-    <text x="36" y="180" fill="#78350f" font-weight="bold">LAB 1</text>
-    <text x="100" y="180" fill="#0f172a">-v ops-pgdata:/var/lib/postgresql/data</text>
-    <text x="100" y="197" fill="#78716c">named volume · NFR-2 ข้อมูลห้ามหาย</text>
-    <path d="M 380 183 L 422 183" stroke="#64748b" stroke-width="2.6" marker-end="url(#arr)"/>
-    <rect x="424" y="162" width="352" height="42" rx="7" fill="#f8fafc" stroke="#cbd5e1"/>
-    <text x="436" y="180" fill="#1d4ed8" font-weight="bold">volumes:</text>
-    <text x="436" y="197" fill="#64748b">pgdata:/var/lib/postgresql/data</text>
+    <rect x="24" y="162" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
+    <text x="36" y="180" fill="#a35a10" font-weight="bold">LAB 1</text>
+    <text x="100" y="180" fill="#1f2933">-v ops-pgdata:/var/lib/postgresql/data</text>
+    <text x="100" y="197" fill="#52606d">named volume · NFR-2 ข้อมูลห้ามหาย</text>
+    <path d="M 380 183 L 422 183" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>
+    <rect x="424" y="162" width="352" height="42" rx="6" fill="#f6f8fa" stroke="#9aa5b1"/>
+    <text x="436" y="180" fill="#1c4f80" font-weight="bold">volumes:</text>
+    <text x="436" y="197" fill="#52606d">pgdata:/var/lib/postgresql/data</text>
 
-    <rect x="24" y="210" width="352" height="42" rx="7" fill="#fffbeb" stroke="#fde68a"/>
-    <text x="36" y="228" fill="#78350f" font-weight="bold">LAB 2</text>
-    <text x="100" y="228" fill="#0f172a">docker build -t ops-api:1.0 ./api</text>
-    <text x="100" y="245" fill="#78716c">จุดท้ายคำสั่งคือ build context</text>
-    <path d="M 380 231 L 422 231" stroke="#64748b" stroke-width="2.6" marker-end="url(#arr)"/>
-    <rect x="424" y="210" width="352" height="42" rx="7" fill="#f8fafc" stroke="#cbd5e1"/>
-    <text x="436" y="228" fill="#1d4ed8" font-weight="bold">build:</text>
-    <text x="436" y="245" fill="#64748b">context: ./api</text>
+    <rect x="24" y="210" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
+    <text x="36" y="228" fill="#a35a10" font-weight="bold">LAB 2</text>
+    <text x="100" y="228" fill="#1f2933">docker build -t ops-api:1.0 ./api</text>
+    <text x="100" y="245" fill="#52606d">จุดท้ายคำสั่งคือ build context</text>
+    <path d="M 380 231 L 422 231" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>
+    <rect x="424" y="210" width="352" height="42" rx="6" fill="#f6f8fa" stroke="#9aa5b1"/>
+    <text x="436" y="228" fill="#1c4f80" font-weight="bold">build:</text>
+    <text x="436" y="245" fill="#52606d">context: ./api</text>
 
-    <rect x="24" y="258" width="352" height="42" rx="7" fill="#fffbeb" stroke="#fde68a"/>
-    <text x="36" y="276" fill="#78350f" font-weight="bold">LAB 2·3</text>
-    <text x="100" y="276" fill="#0f172a">-p 3000:3000</text>
-    <text x="100" y="293" fill="#78716c">มีแค่ web ที่ควรมีบรรทัดนี้ · NFR-3</text>
-    <path d="M 380 279 L 422 279" stroke="#64748b" stroke-width="2.6" marker-end="url(#arr)"/>
-    <rect x="424" y="258" width="352" height="42" rx="7" fill="#f8fafc" stroke="#cbd5e1"/>
-    <text x="436" y="276" fill="#1d4ed8" font-weight="bold">ports:</text>
-    <text x="436" y="293" fill="#64748b">"3000:3000"  (db ไม่มี key นี้เลย)</text>
+    <rect x="24" y="258" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
+    <text x="36" y="276" fill="#a35a10" font-weight="bold">LAB 2·3</text>
+    <text x="100" y="276" fill="#1f2933">-p 3000:3000</text>
+    <text x="100" y="293" fill="#52606d">มีแค่ web ที่ควรมีบรรทัดนี้ · NFR-3</text>
+    <path d="M 380 279 L 422 279" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>
+    <rect x="424" y="258" width="352" height="42" rx="6" fill="#f6f8fa" stroke="#9aa5b1"/>
+    <text x="436" y="276" fill="#1c4f80" font-weight="bold">ports:</text>
+    <text x="436" y="293" fill="#52606d">"3000:3000"  (db ไม่มี key นี้เลย)</text>
 
-    <rect x="24" y="306" width="352" height="42" rx="7" fill="#fffbeb" stroke="#fde68a"/>
-    <text x="36" y="324" fill="#78350f" font-weight="bold">LAB 3</text>
-    <text x="100" y="324" fill="#0f172a">--build-arg NEXT_PUBLIC_SITE_NAME=...</text>
-    <text x="100" y="341" fill="#78716c">ค่าที่ต้องมาตั้งแต่ตอน build</text>
-    <path d="M 380 327 L 422 327" stroke="#64748b" stroke-width="2.6" marker-end="url(#arr)"/>
-    <rect x="424" y="306" width="352" height="42" rx="7" fill="#f8fafc" stroke="#cbd5e1"/>
-    <text x="436" y="324" fill="#1d4ed8" font-weight="bold">build: &gt; args:</text>
-    <text x="436" y="341" fill="#64748b">NEXT_PUBLIC_SITE_NAME: CampusOps</text>
+    <rect x="24" y="306" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
+    <text x="36" y="324" fill="#a35a10" font-weight="bold">LAB 3</text>
+    <text x="100" y="324" fill="#1f2933">--build-arg NEXT_PUBLIC_SITE_NAME=...</text>
+    <text x="100" y="341" fill="#52606d">ค่าที่ต้องมาตั้งแต่ตอน build</text>
+    <path d="M 380 327 L 422 327" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>
+    <rect x="424" y="306" width="352" height="42" rx="6" fill="#f6f8fa" stroke="#9aa5b1"/>
+    <text x="436" y="324" fill="#1c4f80" font-weight="bold">build: &gt; args:</text>
+    <text x="436" y="341" fill="#52606d">NEXT_PUBLIC_SITE_NAME: CampusOps</text>
 
-    <rect x="24" y="354" width="352" height="42" rx="7" fill="#fffbeb" stroke="#fde68a"/>
-    <text x="36" y="372" fill="#78350f" font-weight="bold">LAB 4</text>
-    <text x="100" y="372" fill="#0f172a">docker network create + --network</text>
-    <text x="100" y="389" fill="#78716c">เพื่อให้เรียกกันด้วยชื่อได้</text>
-    <path d="M 380 375 L 422 375" stroke="#64748b" stroke-width="2.6" marker-end="url(#arr)"/>
-    <rect x="424" y="354" width="352" height="42" rx="7" fill="#ecfdf5" stroke="#6ee7b7"/>
-    <text x="436" y="372" fill="#047857" font-weight="bold">ไม่ต้องเขียนอะไรเลย</text>
-    <text x="436" y="389" fill="#059669">compose สร้าง network ให้เอง</text>
+    <rect x="24" y="354" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
+    <text x="36" y="372" fill="#a35a10" font-weight="bold">LAB 4</text>
+    <text x="100" y="372" fill="#1f2933">docker network create + --network</text>
+    <text x="100" y="389" fill="#52606d">เพื่อให้เรียกกันด้วยชื่อได้</text>
+    <path d="M 380 375 L 422 375" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>
+    <rect x="424" y="354" width="352" height="42" rx="6" fill="#f2fbf5" stroke="#9ad0b0"/>
+    <text x="436" y="372" fill="#1e6b41" font-weight="bold">ไม่ต้องเขียนอะไรเลย</text>
+    <text x="436" y="389" fill="#2e8b57">compose สร้าง network ให้เอง</text>
   </g>
 
-  <rect x="24" y="406" width="752" height="72" rx="9" fill="#fef2f2" stroke="#fca5a5" stroke-width="2"/>
-  <text x="40" y="428" font-size="13.5" font-weight="bold" fill="#991b1b">สิ่งเดียวที่ docker run ทำไม่ได้เลย :  รอให้กล่องก่อนหน้า "พร้อมจริง" ก่อนค่อยสตาร์ตกล่องถัดไป</text>
-  <text x="40" y="450" font-size="12.5" fill="#7f1d1d">4 แล็บที่ผ่านมาเราแก้ด้วยการพิมพ์ sleep 10 เอง ซึ่งเดาเวลาและพังเมื่อเครื่องช้าลง</text>
-  <text x="40" y="470" font-size="13" font-weight="bold" fill="#1d4ed8">compose มี  healthcheck:  +  depends_on: condition: service_healthy  มาแทน sleep</text>
+  <rect x="24" y="406" width="752" height="72" rx="8" fill="#fdf3f3" stroke="#e0a5a5" stroke-width="2"/>
+  <text x="40" y="428" font-size="13" font-weight="bold" fill="#8f2020">สิ่งเดียวที่ docker run ทำไม่ได้เลย :  รอให้กล่องก่อนหน้า "พร้อมจริง" ก่อนค่อยสตาร์ตกล่องถัดไป</text>
+  <text x="40" y="450" font-size="13" fill="#8f2020">4 แล็บที่ผ่านมาเราแก้ด้วยการพิมพ์ sleep 10 เอง ซึ่งเดาเวลาและพังเมื่อเครื่องช้าลง</text>
+  <text x="40" y="470" font-size="13" font-weight="bold" fill="#1c4f80">compose มี  healthcheck:  +  depends_on: condition: service_healthy  มาแทน sleep</text>
 </svg>

@@ -2,33 +2,33 @@
   <rect x="0" y="0" width="880" height="452" fill="#ffffff"/>
 
   <defs>
-    <marker id="arB" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
-      <path d="M0,0 L12,5 L0,10 z" fill="#b06a12"/>
+    <marker id="arB" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#a35a10"/>
     </marker>
-    <marker id="arG" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
-      <path d="M0,0 L12,5 L0,10 z" fill="#2e8b57"/>
+    <marker id="arG" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#2e8b57"/>
     </marker>
   </defs>
 
-  <text x="424" y="32" fill="#1f2933" font-size="18" font-weight="bold" text-anchor="middle">เส้นเวลาเดียวกัน สองค่าที่ถูกกำหนดคนละจังหวะ</text>
+  <text x="424" y="32" fill="#1f2933" font-size="19" font-weight="bold" text-anchor="middle">เส้นเวลาเดียวกัน สองค่าที่ถูกกำหนดคนละจังหวะ</text>
 
   <!-- timeline -->
   <line x1="60" y1="100" x2="790" y2="100" stroke="#9aa5b1" stroke-width="3"/>
-  <circle cx="150" cy="100" r="8" fill="#f59e0b" stroke="#92400e" stroke-width="1.5"/>
+  <circle cx="150" cy="100" r="8" fill="#d98324" stroke="#a35a10" stroke-width="1.5"/>
   <circle cx="430" cy="100" r="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="2"/>
   <circle cx="690" cy="100" r="8" fill="#2e8b57" stroke="#1e6b41" stroke-width="1.5"/>
-  <text x="150" y="80" fill="#92400e" font-size="13" font-weight="bold" text-anchor="middle">docker build</text>
+  <text x="150" y="80" fill="#a35a10" font-size="13" font-weight="bold" text-anchor="middle">docker build</text>
   <text x="430" y="80" fill="#52606d" font-size="13" text-anchor="middle">image เสร็จ · เก็บไว้เฉย ๆ</text>
   <text x="690" y="80" fill="#1e6b41" font-size="13" font-weight="bold" text-anchor="middle">docker run</text>
 
   <!-- ARG lane -->
-  <path d="M150 110 L150 152" stroke="#b06a12" stroke-width="3" fill="none" marker-end="url(#arB)"/>
-  <rect x="24" y="156" width="800" height="116" rx="10" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-  <text x="44" y="182" fill="#92400e" font-size="14" font-weight="bold">ARG NEXT_PUBLIC_SITE_NAME  →  ENV  →  npm run build</text>
+  <path d="M150 110 L150 152" stroke="#a35a10" stroke-width="3" fill="none" marker-end="url(#arB)"/>
+  <rect x="24" y="156" width="800" height="116" rx="10" fill="#fff4e5" stroke="#d98324" stroke-width="2"/>
+  <text x="44" y="182" fill="#a35a10" font-size="14" font-weight="bold">ARG NEXT_PUBLIC_SITE_NAME  →  ENV  →  npm run build</text>
   <text x="44" y="206" fill="#1f2933" font-size="13">ค่าถูก "ฝัง" ลงไฟล์ผลลัพธ์ตอน next build จึงกลายเป็นตัวหนังสือคงที่ในไฟล์ .js</text>
-  <rect x="44" y="218" width="330" height="38" rx="8" fill="#fdf3f3" stroke="#c04a4a" stroke-width="1.5"/>
+  <rect x="44" y="218" width="330" height="38" rx="8" fill="#fdf3f3" stroke="#c04a4a" stroke-width="1"/>
   <text x="58" y="242" fill="#8f2020" font-size="12">docker run -e NEXT_PUBLIC_SITE_NAME=... → ไม่มีผล</text>
-  <rect x="386" y="218" width="420" height="38" rx="8" fill="#f2fbf5" stroke="#2e8b57" stroke-width="1.5"/>
+  <rect x="386" y="218" width="420" height="38" rx="8" fill="#f2fbf5" stroke="#2e8b57" stroke-width="1"/>
   <text x="400" y="242" fill="#1e6b41" font-size="12">docker build --build-arg NEXT_PUBLIC_SITE_NAME=... → เปลี่ยน</text>
 
   <!-- ENV lane : connector routed around the ARG lane -->
@@ -36,9 +36,9 @@
   <rect x="24" y="290" width="800" height="116" rx="10" fill="#f2fbf5" stroke="#2e8b57" stroke-width="2"/>
   <text x="44" y="316" fill="#1e6b41" font-size="14" font-weight="bold">ENV API_BASE_URL  →  process.env ตอนกล่องเริ่มทำงาน</text>
   <text x="44" y="340" fill="#1f2933" font-size="13">ค่าอยู่ในตัวแปรสภาพแวดล้อมของ process จึงอ่านใหม่ทุกครั้งที่สร้างกล่อง</text>
-  <rect x="44" y="352" width="330" height="38" rx="8" fill="#e6f5ec" stroke="#2e8b57" stroke-width="1.5"/>
+  <rect x="44" y="352" width="330" height="38" rx="8" fill="#e6f5ec" stroke="#2e8b57" stroke-width="1"/>
   <text x="58" y="376" fill="#1e6b41" font-size="12">docker run -e API_BASE_URL=... → เปลี่ยนทันที</text>
-  <rect x="386" y="352" width="420" height="38" rx="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="1.5"/>
+  <rect x="386" y="352" width="420" height="38" rx="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="1"/>
   <text x="400" y="376" fill="#52606d" font-size="12">ไม่ต้อง build ใหม่ · image ก้อนเดิมใช้ได้ทุกสภาพแวดล้อม</text>
 
   <text x="424" y="434" fill="#52606d" font-size="13" text-anchor="middle">เส้นแบ่ง : ค่าที่ผู้ใช้ต้องเห็นในหน้าเว็บถูกฝังตอน build · ค่าที่ระบบใช้ต่อกันเองอ่านตอน run</text>

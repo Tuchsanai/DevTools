@@ -2,15 +2,15 @@
   <rect x="0" y="0" width="860" height="480" fill="#ffffff"/>
 
   <defs>
-    <marker id="arOk" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
-      <path d="M0,0 L12,5 L0,10 z" fill="#2e8b57"/>
+    <marker id="arOk" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#2e8b57"/>
     </marker>
-    <marker id="arNo" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
-      <path d="M0,0 L12,5 L0,10 z" fill="#c04a4a"/>
+    <marker id="arNo" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#c04a4a"/>
     </marker>
   </defs>
 
-  <text x="430" y="32" fill="#1f2933" font-size="18" font-weight="bold" text-anchor="middle">กับดัก : Next.js 16 ไม่ได้วางไฟล์ CSS ไว้ที่ .next/static/css</text>
+  <text x="430" y="32" fill="#1f2933" font-size="19" font-weight="bold" text-anchor="middle">กับดัก : Next.js 16 ไม่ได้วางไฟล์ CSS ไว้ที่ .next/static/css</text>
 
   <!-- what builder produced -->
   <rect x="24" y="52" width="812" height="100" rx="10" fill="#f6f8fa" stroke="#9aa5b1" stroke-width="2"/>
@@ -47,7 +47,7 @@
   <text x="466" y="260" fill="#8f2020" font-size="12">COPY --from=builder /app/.next/static/css ./.next/static/css</text>
   <text x="454" y="296" fill="#1f2933" font-size="13">ทางแรก : build ล้มทันที</text>
   <text x="454" y="318" fill="#8f2020" font-size="12">"/app/.next/static/css": not found</text>
-  <rect x="454" y="332" width="364" height="34" rx="8" fill="#f7e3e3" stroke="#c04a4a" stroke-width="2"/>
+  <rect x="454" y="332" width="364" height="34" rx="8" fill="#fdecec" stroke="#c04a4a" stroke-width="2"/>
   <text x="636" y="354" fill="#8f2020" font-size="13" font-weight="bold" text-anchor="middle">ทางที่แย่กว่า : เจาะ chunks เฉพาะ *.js</text>
   <text x="636" y="390" fill="#8f2020" font-size="13" text-anchor="middle">build ผ่าน · หน้าเว็บขึ้น 200 · แต่ไม่มี CSS เลย</text>
 

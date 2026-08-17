@@ -1,22 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 430" width="860" height="430" font-family="sans-serif">
   <rect x="0" y="0" width="860" height="430" fill="#ffffff"/>
-  <text x="24" y="34" font-size="19" font-weight="bold" fill="#1f2933">จุด `.` ท้ายคำสั่ง build คือ "โฟลเดอร์ที่ยกให้ daemon" ไม่ใช่ "ที่อยู่ของ Dockerfile"</text>
-  <text x="24" y="58" font-size="14" fill="#52606d">docker build -t ops-api:1.0 .    ← สั่งจากในโฟลเดอร์ api/</text>
+  <text text-anchor="middle" x="430" y="34" font-size="19" font-weight="bold" fill="#1f2933">จุด `.` ท้ายคำสั่ง build คือ "โฟลเดอร์ที่ยกให้ daemon" ไม่ใช่ "ที่อยู่ของ Dockerfile"</text>
+  <text text-anchor="middle" x="430" y="58" font-size="14" fill="#52606d">docker build -t ops-api:1.0 .    ← สั่งจากในโฟลเดอร์ api/</text>
 
   <!-- context box -->
   <rect x="24" y="80" width="300" height="290" rx="10" fill="#eef6ff" stroke="#2f6fb2" stroke-width="2"/>
   <text x="40" y="106" font-size="15" font-weight="bold" fill="#1c4f80">โฟลเดอร์ api/ = build context</text>
 
-  <rect x="40" y="120" width="268" height="30" rx="5" fill="#ffffff" stroke="#8fb8dc"/>
+  <rect x="40" y="120" width="268" height="30" rx="6" fill="#ffffff" stroke="#8fb8dc"/>
   <text x="52" y="140" font-size="13" fill="#1f2933">Dockerfile              2.54 kB</text>
-  <rect x="40" y="156" width="268" height="30" rx="5" fill="#ffffff" stroke="#8fb8dc"/>
+  <rect x="40" y="156" width="268" height="30" rx="6" fill="#ffffff" stroke="#8fb8dc"/>
   <text x="52" y="176" font-size="13" fill="#1f2933">requirements.txt        374 B</text>
-  <rect x="40" y="192" width="268" height="30" rx="5" fill="#ffffff" stroke="#8fb8dc"/>
+  <rect x="40" y="192" width="268" height="30" rx="6" fill="#ffffff" stroke="#8fb8dc"/>
   <text x="52" y="212" font-size="13" fill="#1f2933">main.py                 28.1 kB</text>
 
-  <rect x="40" y="234" width="268" height="30" rx="5" fill="#fdecec" stroke="#d05353" stroke-dasharray="5 3"/>
+  <rect x="40" y="234" width="268" height="30" rx="6" fill="#fdecec" stroke="#c04a4a" stroke-dasharray="5 3"/>
   <text x="52" y="254" font-size="13" fill="#8f2020">smoke.sh      ✗ .dockerignore</text>
-  <rect x="40" y="270" width="268" height="30" rx="5" fill="#fdecec" stroke="#d05353" stroke-dasharray="5 3"/>
+  <rect x="40" y="270" width="268" height="30" rx="6" fill="#fdecec" stroke="#c04a4a" stroke-dasharray="5 3"/>
   <text x="52" y="290" font-size="13" fill="#8f2020">api-debug.log ✗ .dockerignore</text>
 
   <text x="40" y="320" font-size="13" fill="#52606d">ทุกไฟล์ที่ไม่ถูก ignore ถูกมัดเป็นก้อนเดียว</text>
@@ -25,8 +25,8 @@
 
   <!-- arrow -->
   <defs>
-    <marker id="ar" markerWidth="11" markerHeight="8" refX="10" refY="4" orient="auto">
-      <path d="M0,0 L11,4 L0,8 z" fill="#2f6fb2"/>
+    <marker id="ar" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#2f6fb2"/>
     </marker>
   </defs>
   <line x1="330" y1="200" x2="490" y2="200" stroke="#2f6fb2" stroke-width="3" marker-end="url(#ar)"/>

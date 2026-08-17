@@ -2,54 +2,54 @@
   <rect x="0" y="0" width="800" height="440" fill="#ffffff"/>
   <defs>
     <marker id="rd" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
-      <path d="M 0 0 L 13 5 L 0 10 z" fill="#dc2626"/>
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#c04a4a"/>
     </marker>
     <marker id="gr" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
-      <path d="M 0 0 L 13 5 L 0 10 z" fill="#059669"/>
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#2e8b57"/>
     </marker>
   </defs>
 
-  <text x="400" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f172a">ข้อมูลของ PostgreSQL ไปนอนอยู่ที่ไหน</text>
+  <text x="400" y="32" text-anchor="middle" font-size="19" font-weight="bold" fill="#1f2933">ข้อมูลของ PostgreSQL ไปนอนอยู่ที่ไหน</text>
 
   <!-- LEFT : no volume -->
-  <rect x="20" y="52" width="368" height="356" rx="14" fill="#fef2f2" stroke="#fca5a5" stroke-width="2"/>
-  <text x="204" y="80" text-anchor="middle" font-size="16" font-weight="bold" fill="#991b1b">แบบที่ 1 — ไม่ผูก volume</text>
-  <text x="204" y="102" text-anchor="middle" font-size="13" fill="#991b1b">docker run -e ... postgres:17-alpine</text>
+  <rect x="20" y="52" width="368" height="356" rx="10" fill="#fdf3f3" stroke="#e0a5a5" stroke-width="2"/>
+  <text x="204" y="80" text-anchor="middle" font-size="15" font-weight="bold" fill="#8f2020">แบบที่ 1 — ไม่ผูก volume</text>
+  <text x="204" y="102" text-anchor="middle" font-size="13" fill="#8f2020">docker run -e ... postgres:17-alpine</text>
 
-  <rect x="52" y="118" width="304" height="118" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
-  <text x="204" y="141" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f172a">กล่อง ops-db</text>
-  <rect x="72" y="152" width="264" height="70" rx="8" fill="#fee2e2" stroke="#f87171" stroke-width="2" stroke-dasharray="6 4"/>
-  <text x="204" y="176" text-anchor="middle" font-size="13" font-weight="bold" fill="#991b1b">writable layer ของกล่อง</text>
-  <text x="204" y="197" text-anchor="middle" font-size="12" fill="#991b1b">/var/lib/postgresql/data</text>
-  <text x="204" y="215" text-anchor="middle" font-size="12" fill="#991b1b">(เกิดพร้อมกล่อง ตายพร้อมกล่อง)</text>
+  <rect x="52" y="118" width="304" height="118" rx="10" fill="#ffffff" stroke="#9aa5b1" stroke-width="2"/>
+  <text x="204" y="141" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2933">กล่อง ops-db</text>
+  <rect x="72" y="152" width="264" height="70" rx="8" fill="#fdecec" stroke="#e0a5a5" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="204" y="176" text-anchor="middle" font-size="13" font-weight="bold" fill="#8f2020">writable layer ของกล่อง</text>
+  <text x="204" y="197" text-anchor="middle" font-size="12" fill="#8f2020">/var/lib/postgresql/data</text>
+  <text x="204" y="215" text-anchor="middle" font-size="12" fill="#8f2020">(เกิดพร้อมกล่อง ตายพร้อมกล่อง)</text>
 
-  <path d="M 204 240 L 204 286" stroke="#dc2626" stroke-width="2.5" marker-end="url(#rd)"/>
-  <text x="218" y="268" font-size="13" font-weight="bold" fill="#dc2626">docker rm -f ops-db</text>
+  <path d="M 204 240 L 204 286" stroke="#c04a4a" stroke-width="3" marker-end="url(#rd)"/>
+  <text x="218" y="268" font-size="13" font-weight="bold" fill="#c04a4a">docker rm -f ops-db</text>
 
-  <rect x="52" y="290" width="304" height="94" rx="10" fill="#ffffff" stroke="#fca5a5" stroke-width="2" stroke-dasharray="6 4"/>
-  <text x="204" y="318" text-anchor="middle" font-size="15" font-weight="bold" fill="#dc2626">กล่องหาย · ข้อมูลหายตามไปด้วย</text>
-  <text x="204" y="342" text-anchor="middle" font-size="13" fill="#991b1b">ใบแจ้งซ่อมที่เพิ่มเข้ามาเอง 9 → 8 ใบ</text>
-  <text x="204" y="366" text-anchor="middle" font-size="13" fill="#991b1b">เหลือแค่ข้อมูลตั้งต้นที่ init script ใส่ใหม่</text>
+  <rect x="52" y="290" width="304" height="94" rx="10" fill="#ffffff" stroke="#e0a5a5" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="204" y="318" text-anchor="middle" font-size="15" font-weight="bold" fill="#c04a4a">กล่องหาย · ข้อมูลหายตามไปด้วย</text>
+  <text x="204" y="342" text-anchor="middle" font-size="13" fill="#8f2020">ใบแจ้งซ่อมที่เพิ่มเข้ามาเอง 9 → 8 ใบ</text>
+  <text x="204" y="366" text-anchor="middle" font-size="13" fill="#8f2020">เหลือแค่ข้อมูลตั้งต้นที่ init script ใส่ใหม่</text>
 
   <!-- RIGHT : named volume -->
-  <rect x="412" y="52" width="368" height="356" rx="14" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
-  <text x="596" y="80" text-anchor="middle" font-size="16" font-weight="bold" fill="#065f46">แบบที่ 2 — ผูก named volume</text>
-  <text x="596" y="102" text-anchor="middle" font-size="13" fill="#065f46">-v ops-pgdata:/var/lib/postgresql/data</text>
+  <rect x="412" y="52" width="368" height="356" rx="10" fill="#f2fbf5" stroke="#9ad0b0" stroke-width="2"/>
+  <text x="596" y="80" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e6b41">แบบที่ 2 — ผูก named volume</text>
+  <text x="596" y="102" text-anchor="middle" font-size="13" fill="#1e6b41">-v ops-pgdata:/var/lib/postgresql/data</text>
 
-  <rect x="444" y="118" width="304" height="118" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
-  <text x="596" y="141" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f172a">กล่อง ops-db</text>
-  <rect x="464" y="152" width="264" height="70" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
-  <text x="596" y="178" text-anchor="middle" font-size="13" fill="#475569">/var/lib/postgresql/data</text>
-  <text x="596" y="200" text-anchor="middle" font-size="12" fill="#475569">เป็นแค่ "ประตู" ชี้ออกไปข้างนอก</text>
-  <path d="M 729 187 L 770 187 L 770 337 L 748 337" stroke="#059669" stroke-width="2.5" fill="none" marker-end="url(#gr)"/>
+  <rect x="444" y="118" width="304" height="118" rx="10" fill="#ffffff" stroke="#9aa5b1" stroke-width="2"/>
+  <text x="596" y="141" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2933">กล่อง ops-db</text>
+  <rect x="464" y="152" width="264" height="70" rx="8" fill="#f6f8fa" stroke="#9aa5b1" stroke-width="2"/>
+  <text x="596" y="178" text-anchor="middle" font-size="13" fill="#52606d">/var/lib/postgresql/data</text>
+  <text x="596" y="200" text-anchor="middle" font-size="12" fill="#52606d">เป็นแค่ "ประตู" ชี้ออกไปข้างนอก</text>
+  <path d="M 729 187 L 770 187 L 770 337 L 748 337" stroke="#2e8b57" stroke-width="3" fill="none" marker-end="url(#gr)"/>
 
-  <path d="M 596 240 L 596 286" stroke="#059669" stroke-width="2.5" marker-end="url(#gr)"/>
-  <text x="610" y="268" font-size="13" font-weight="bold" fill="#047857">docker rm -f ops-db</text>
+  <path d="M 596 240 L 596 286" stroke="#2e8b57" stroke-width="3" marker-end="url(#gr)"/>
+  <text x="610" y="268" font-size="13" font-weight="bold" fill="#1e6b41">docker rm -f ops-db</text>
 
-  <rect x="444" y="290" width="304" height="94" rx="10" fill="#d1fae5" stroke="#059669" stroke-width="3"/>
-  <text x="596" y="318" text-anchor="middle" font-size="15" font-weight="bold" fill="#065f46">volume ops-pgdata ยังอยู่</text>
-  <text x="596" y="342" text-anchor="middle" font-size="13" fill="#065f46">สร้างกล่องใหม่ ผูก volume เดิม</text>
-  <text x="596" y="366" text-anchor="middle" font-size="13" fill="#065f46">ใบแจ้งซ่อมยังครบ 9 ใบเหมือนเดิม</text>
+  <rect x="444" y="290" width="304" height="94" rx="10" fill="#e6f5ec" stroke="#2e8b57" stroke-width="2"/>
+  <text x="596" y="318" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e6b41">volume ops-pgdata ยังอยู่</text>
+  <text x="596" y="342" text-anchor="middle" font-size="13" fill="#1e6b41">สร้างกล่องใหม่ ผูก volume เดิม</text>
+  <text x="596" y="366" text-anchor="middle" font-size="13" fill="#1e6b41">ใบแจ้งซ่อมยังครบ 9 ใบเหมือนเดิม</text>
 
-  <text x="400" y="430" text-anchor="middle" font-size="13" fill="#334155">อายุของข้อมูลผูกกับ volume ไม่ได้ผูกกับกล่อง — นี่คือคำตอบของ NFR-2 "ข้อมูลห้ามหาย"</text>
+  <text x="400" y="430" text-anchor="middle" font-size="13" fill="#1f2933">อายุของข้อมูลผูกกับ volume ไม่ได้ผูกกับกล่อง — นี่คือคำตอบของ NFR-2 "ข้อมูลห้ามหาย"</text>
 </svg>

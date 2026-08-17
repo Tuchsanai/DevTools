@@ -2,16 +2,16 @@
   <rect x="0" y="0" width="900" height="452" fill="#ffffff"/>
 
   <defs>
-    <marker id="arC" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="11" refX="13" refY="5.5" orient="auto">
-      <path d="M0,0 L14,5.5 L0,11 z" fill="#1c4f80"/>
+    <marker id="arC" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#1c4f80"/>
     </marker>
   </defs>
 
-  <text x="450" y="32" fill="#1f2933" font-size="18" font-weight="bold" text-anchor="middle">multi-stage : ของที่ใช้ตอน build ไม่ต้องติดไปกับ image ที่ส่งมอบ</text>
+  <text x="450" y="32" fill="#1f2933" font-size="19" font-weight="bold" text-anchor="middle">multi-stage : ของที่ใช้ตอน build ไม่ต้องติดไปกับ image ที่ส่งมอบ</text>
 
   <!-- builder side -->
-  <rect x="24" y="56" width="360" height="326" rx="10" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-  <text x="204" y="82" fill="#92400e" font-size="14" font-weight="bold" text-anchor="middle">stage deps + builder — ถูกทิ้งทั้งก้อน</text>
+  <rect x="24" y="56" width="360" height="326" rx="10" fill="#fff4e5" stroke="#d98324" stroke-width="2"/>
+  <text x="204" y="82" fill="#a35a10" font-size="14" font-weight="bold" text-anchor="middle">stage deps + builder — ถูกทิ้งทั้งก้อน</text>
 
   <rect x="42" y="96" width="324" height="48" rx="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="1"/>
   <text x="56" y="117" fill="#1f2933" font-size="13">node_modules ครบทุกตัว (RUN npm ci)</text>
@@ -25,17 +25,17 @@
   <text x="56" y="229" fill="#1f2933" font-size="13">source .tsx + cache ของ next build</text>
   <text x="56" y="248" fill="#8f2020" font-size="13" font-weight="bold">100 MB</text>
 
-  <rect x="42" y="264" width="324" height="52" rx="8" fill="#eef4fb" stroke="#1c4f80" stroke-width="2"/>
+  <rect x="42" y="264" width="324" height="52" rx="8" fill="#eef6ff" stroke="#1c4f80" stroke-width="2"/>
   <text x="56" y="286" fill="#1c4f80" font-size="13">ผลลัพธ์ที่ต้องใช้จริงตอนรัน</text>
   <text x="56" y="306" fill="#1c4f80" font-size="12" font-weight="bold">.next/standalone · .next/static</text>
 
-  <text x="204" y="342" fill="#92400e" font-size="13" text-anchor="middle">ทุกอย่างในกรอบนี้อยู่แค่ตอน build</text>
+  <text x="204" y="342" fill="#a35a10" font-size="13" text-anchor="middle">ทุกอย่างในกรอบนี้อยู่แค่ตอน build</text>
   <text x="204" y="364" fill="#52606d" font-size="12" text-anchor="middle">ไม่มี layer ไหนของ 2 stage นี้ไปโผล่ใน docker history</text>
 
   <!-- arrow -->
-  <path d="M388 290 L482 290" stroke="#1c4f80" stroke-width="3.5" fill="none" marker-end="url(#arC)"/>
+  <path d="M388 290 L482 290" stroke="#1c4f80" stroke-width="3" fill="none" marker-end="url(#arC)"/>
   <text x="435" y="274" fill="#1c4f80" font-size="12" font-weight="bold" text-anchor="middle">COPY</text>
-  <text x="435" y="314" fill="#1c4f80" font-size="11.5" text-anchor="middle">--from=builder</text>
+  <text x="435" y="314" fill="#1c4f80" font-size="12" text-anchor="middle">--from=builder</text>
 
   <!-- runner side -->
   <rect x="486" y="56" width="390" height="326" rx="10" fill="#f2fbf5" stroke="#2e8b57" stroke-width="2"/>
@@ -58,7 +58,7 @@
   <text x="518" y="288" fill="#52606d" font-size="12">ไม่มี typescript · ไม่มี tailwindcss · ไม่มี .tsx</text>
 
   <rect x="504" y="302" width="354" height="42" rx="8" fill="#e6f5ec" stroke="#2e8b57" stroke-width="2"/>
-  <text x="681" y="329" fill="#1e6b41" font-size="16" font-weight="bold" text-anchor="middle">รวม 298 MB</text>
+  <text x="681" y="329" fill="#1e6b41" font-size="15" font-weight="bold" text-anchor="middle">รวม 298 MB</text>
 
   <text x="681" y="364" fill="#1e6b41" font-size="12" text-anchor="middle">เทียบกับ stage เดียว 1.09 GB = เล็กลง ~73%</text>
 
