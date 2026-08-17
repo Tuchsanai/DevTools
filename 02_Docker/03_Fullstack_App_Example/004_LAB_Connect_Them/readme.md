@@ -38,7 +38,7 @@
 
 ![แผนภาพเทียบสองฝั่ง ฝั่งซ้าย default bridge เรียก ops-db ด้วยชื่อไม่สำเร็จ getent ตอบ exit 2 ฝั่งขวาบน ops-net getent ตอบ 172.19.0.3 และ health ตอบ db up](./images/theory-bridge-vs-usernet.svg)
 
-> 🖼 **วิธีอ่านรูปนี้:** เทียบสองฝั่งที่ **บรรทัดคำสั่งบนสุด** — ต่างกันแค่ `--network ops-net` · แล้วเลื่อนลงมาดูกล่องผลลัพธ์ล่างสุดของแต่ละฝั่ง ซึ่งเป็นข้อความจริงที่เราจะได้เห็นเองในการทดลองที่ 1 และ 5
+> 🖼 **วิธีอ่านรูปนี้:** เทียบสองฝั่งที่ **บรรทัดคำสั่งบนสุด** — ต่างกันแค่ `--network ops-net` · แล้วเลื่อนลงมาดูกล่องผลลัพธ์ล่างสุดของแต่ละฝั่ง ซึ่งเป็นข้อความจริงที่เราจะได้เห็นเองในการทดลองที่ 1 และ 6 (ฝั่งขวาเป็นเคสที่ `ops-api` เข้ามาอยู่บน network ก่อน จึงได้ `.2` ไป และ `ops-db` ได้ `.3`)
 
 | สิ่งที่อยากได้ | default bridge | `ops-net` (user-defined) |
 |---|---|---|
@@ -102,17 +102,21 @@ verify.sh
 web
 ```
 
-แล็บนี้ไม่มีอะไรให้ build ใหม่ — `api/` กับ `web/` คือของเดิมจาก LAB 2 และ LAB 3 · ทำ image ให้พร้อมใช้ก่อน :
+แล็บนี้ไม่มีอะไรให้ build ใหม่ — `api/` กับ `web/` คือของเดิมจาก LAB 2 และ LAB 3 · ดึงและทำ image ทั้งสามให้พร้อมใช้ก่อน :
 
 ```bash
+docker pull -q postgres:17-alpine
 docker build -q -t campusops-api:lab4 ./api
 docker build -q -t campusops-web:lab4 ./web
 docker images --format 'table {{.Repository}}:{{.Tag}}\t{{.Size}}' | grep -E 'campusops|postgres'
 ```
 
-✅ **สิ่งที่ต้องเห็น** — สอง image ของเราพร้อมแล้ว (ครั้งแรกใช้เวลาหลายนาทีเพราะต้องดึง base image และ `npm ci` · ค่า `sha256:` และขนาดของแต่ละคนไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — ครบสาม image ก่อนเริ่มการทดลอง (ครั้งแรกใช้เวลาหลายนาทีเพราะต้องดึง base image และ `npm ci` · ค่า `sha256:` และขนาดของแต่ละคนไม่ตรงกัน) :
 
 ```
+docker.io/library/postgres:17-alpine
+sha256:ac85caaba2697ff266cad559a962d7e5a6f7a7cd57ef0281c89f8c04b099e2ab
+sha256:8b89e5a1325975105adc713e793d98077bef2b05f0411ebe3d0d7457df43ff58
 campusops-web:lab4   298MB
 campusops-api:lab4   251MB
 postgres:17-alpine   424MB
@@ -129,7 +133,7 @@ postgres:17-alpine   424MB
 ```bash
 docker run -d --name ops-db -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass postgres:17-alpine
 docker run -d --name ops-api -e DATABASE_URL="postgresql://opsuser:labpass@ops-db:5432/campusops" campusops-api:lab4
-sleep 65        # api มี retry รอฐานข้อมูล 60 วินาทีตอนบูต ต้องรอให้มันยอมแพ้ก่อน
+sleep 70        # api มี retry รอฐานข้อมูล 60 วินาทีตอนบูต ต้องรอให้มันยอมแพ้ก่อน
 docker logs ops-api 2>&1 | grep -v 'รออีก 2 วินาที' | head -4
 ```
 
@@ -145,13 +149,14 @@ INFO:     Application startup complete.
 ถามที่ `/health` ให้เห็นกับตาว่าแอปขึ้นแล้วแต่ต่อฐานข้อมูลไม่ได้ :
 
 ```bash
-curl -s "http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-api):8000/health"; echo
+curl -s -w '\nHTTP %{http_code}\n' "http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-api):8000/health"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — `503` ตามสัญญาใน [`docs/02_contract.md`](../docs/02_contract.md) พร้อมสาเหตุจริงว่าเป็นเรื่องของ **ชื่อ** ไม่ใช่รหัสผ่าน :
+✅ **สิ่งที่ต้องเห็น** — บรรทัดล่างคือ `HTTP 503` ตามสัญญาใน [`docs/02_contract.md`](../docs/02_contract.md) และ body บอกสาเหตุจริงว่าเป็นเรื่องของ **ชื่อ** ไม่ใช่รหัสผ่าน :
 
 ```
 {"detail":"ฐานข้อมูลไม่ตอบสนอง: [Errno -2] Name or service not known","code":"DB_DOWN"}
+HTTP 503
 ```
 
 > 📝 **บทเรียน:** ทั้งสองกล่องอยู่บนเครื่องเดียวกัน เห็น IP กันด้วยซ้ำ แต่ default bridge ไม่มีบริการ DNS ชื่อ `ops-db` จึงไม่มีความหมายกับใครเลย นี่คือเหตุผลที่ LAB 2/3 ต้องใช้ IP
@@ -165,25 +170,18 @@ curl -s "http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddres
 ```bash
 docker network create ops-net
 docker network ls
-```
-
-✅ **สิ่งที่ต้องเห็น** — `ops-net` ต่อท้ายของที่ Docker มีมาแต่เดิมสามอัน และเป็น `DRIVER` แบบ `bridge` เหมือน `bridge` ตัวแรก (`NETWORK ID` ของแต่ละคนไม่ตรงกัน) :
-
-```
-NETWORK ID     NAME      DRIVER    SCOPE
-e958e64d6bd3   bridge    bridge    local
-1962f619305c   host      host      local
-5f4f00bd7ef6   none      null      local
-1680735b22af   ops-net   bridge    local
-```
-
-```bash
 docker network inspect ops-net --format '{{.Name}} · driver={{.Driver}} · scope={{.Scope}} · subnet={{(index .IPAM.Config 0).Subnet}} · gateway={{(index .IPAM.Config 0).Gateway}}'
 ```
 
-✅ **สิ่งที่ต้องเห็น** — Docker เลือกช่วง IP ให้เองหนึ่งช่วง โดยเราไม่ต้องกรอกอะไรเลย (ช่วงของแต่ละคนไม่ตรงกัน ขึ้นกับว่ามี network อยู่ก่อนกี่วง) :
+✅ **สิ่งที่ต้องเห็น** — `ops-net` ต่อท้ายของที่ Docker มีมาแต่เดิมสามอัน เป็น `DRIVER` แบบ `bridge` เหมือน `bridge` ตัวแรก และได้ช่วง IP มาเองหนึ่งช่วงโดยเราไม่ต้องกรอกอะไรเลย (`NETWORK ID` และช่วง IP ของแต่ละคนไม่ตรงกัน ขึ้นกับว่ามี network อยู่ก่อนกี่วง) :
 
 ```
+27bfbc9f460a1795e81133ccf38766643a0dcbc27dea79b5458408aed46cddf1
+NETWORK ID     NAME      DRIVER    SCOPE
+4aeff02c8b64   bridge    bridge    local
+4aed08682b4f   host      host      local
+2fa1a3f5ffe4   none      null      local
+27bfbc9f460a   ops-net   bridge    local
 ops-net · driver=bridge · scope=local · subnet=172.19.0.0/16 · gateway=172.19.0.1
 ```
 
@@ -260,8 +258,7 @@ docker inspect -f '{{index .NetworkSettings.Networks "ops-net" "IPAddress"}}' op
 **คำถาม:** ยกระบบขึ้นใหม่โดยสลับลำดับ (api ก่อน db) แล้ว `api` ที่ยังใช้คำสั่งเดิมจะหาฐานข้อมูลเจอไหม
 
 ```bash
-docker rm -f ops-api ops-db
-docker run -d --name ops-api --network ops-net -e DATABASE_URL="postgresql://opsuser:labpass@ops-db:5432/campusops" campusops-api:lab4
+docker rm -f ops-api ops-db && docker run -d --name ops-api --network ops-net -e DATABASE_URL="postgresql://opsuser:labpass@ops-db:5432/campusops" campusops-api:lab4
 docker run -d --name ops-db --network ops-net -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
   -v ops-pgdata:/var/lib/postgresql/data -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine
 sleep 15
@@ -298,7 +295,7 @@ sleep 8
 for p in / /tickets /loans /parts; do curl -s -o /dev/null -w "GET $p -> HTTP %{http_code} · %{size_download} ไบต์\n" "http://localhost:3000$p"; done
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ทั้งสี่หน้าตอบ `200` และมีเนื้อหาจริงหลักหมื่นไบต์ (จำนวนไบต์ของแต่ละคนไม่ตรงกันเพราะข้อมูลในฐานข้อมูลต่างกัน) :
+✅ **สิ่งที่ต้องเห็น** — ทั้งสี่หน้าตอบ `200` และมีเนื้อหาจริงหลักหมื่นไบต์ (ตัวเลขไบต์จะตรงกันทุกคนตราบใดที่ยังใช้ seed เดิม · จะขยับทันทีที่แก้ข้อมูลในฐานข้อมูล) :
 
 ```
 GET / -> HTTP 200 · 31260 ไบต์
@@ -322,32 +319,21 @@ GET /parts -> HTTP 200 · 70876 ไบต์
 **คำถาม:** มีทางไหนที่คนนอก `ops-net` จะยิงเข้าพอร์ต 5432 ได้บ้าง
 
 ```bash
-docker port ops-db
+docker port ops-db; echo "(ว่างเปล่า = ไม่มีพอร์ตถูก publish)"
+curl -sS -m 5 http://localhost:5432; echo "curl exit = $?"
 docker ps --filter name=ops- --format 'table {{.Names}}\t{{.Ports}}'
 ```
 
-✅ **สิ่งที่ต้องเห็น** — `docker port ops-db` **ไม่คืนบรรทัดใดเลย** และมีแค่ `ops-web` ที่มี `0.0.0.0:...->` :
+✅ **สิ่งที่ต้องเห็น** — `docker port ops-db` **ไม่คืนบรรทัดใดเลย** · ยิงจากเชลล์ของกล่องเรียนซึ่งอยู่นอก `ops-net` ก็ต่อไม่ติด (`exit 7`) · และในตารางมีแค่ `ops-web` ที่มี `0.0.0.0:...->` :
 
 ```
+(ว่างเปล่า = ไม่มีพอร์ตถูก publish)
+curl: (7) Failed to connect to localhost port 5432 after 0 ms: Couldn't connect to server
+curl exit = 7
 NAMES     PORTS
 ops-web   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
 ops-db    5432/tcp
 ops-api   8000/tcp
-```
-
-ลองยิงจากเชลล์ของกล่องเรียนซึ่งอยู่นอก `ops-net` แล้วเทียบกับที่ `api` ทำได้ :
-
-```bash
-curl -sS -m 5 http://localhost:5432; echo "curl exit = $?"
-curl -s "http://$(docker inspect -f '{{index .NetworkSettings.Networks "ops-net" "IPAddress"}}' ops-api):8000/health"; echo
-```
-
-✅ **สิ่งที่ต้องเห็น** — คนนอกต่อไม่ติด (`exit 7`) แต่ `api` ที่อยู่ในวงเดียวกันยังคุยกับฐานข้อมูลได้ตามปกติ :
-
-```
-curl: (7) Failed to connect to localhost port 5432 after 0 ms: Couldn't connect to server
-curl exit = 7
-{"status":"ok","db":"up"}
 ```
 
 > 📝 **บทเรียน:** NFR-3 ผ่านโดยไม่ต้องตั้ง firewall หรือแก้ `pg_hba.conf` เลย — แค่ไม่ publish พอร์ต · `5432/tcp` ที่เห็นในตารางคือป้าย `EXPOSE` ของ image ไม่ใช่ประตูที่เปิดจริง
@@ -367,8 +353,8 @@ docker network inspect ops-net --format '{{range .Containers}}{{.Name}} → {{.I
 
 ```
 ops-db → 172.19.0.3/16
-ops-api → 172.19.0.2/16
 ops-web → 172.19.0.4/16
+ops-api → 172.19.0.2/16
 ```
 
 ทีนี้สร้างกล่องเครื่องมือไว้บน default bridge ก่อน แล้วค่อยพามันเข้า `ops-net` ทีหลัง :
@@ -396,22 +382,36 @@ docker exec ops-tools psql "postgresql://opsuser:labpass@ops-db:5432/campusops" 
 
 ## ตรวจงานด้วย `verify.sh`
 
+สคริปต์ **build image ของตัวเอง** (`vops4-api:verify` · `vops4-web:verify`) แล้วยกฐานข้อมูลขึ้นสองรอบ จึงเงียบไปพักหนึ่งระหว่างทาง — ถ้าเพิ่งทำการทดลองจบใหม่ ๆ layer cache ยังอยู่ครบจะใช้เวลา ~30 วินาที · ถ้า cache ว่างจะนานหลายนาที
+
 ```bash
 bash verify.sh ; echo "exit code = $?"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — `[PASS]` ทุกบรรทัด ปิดท้ายด้วย `ALL CHECKS PASSED` และ `exit code = 0` (เลข IP ของแต่ละคนไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — แบนเนอร์สามบรรทัด แล้ว `[PASS]` ครบ **19 บรรทัด** ปิดท้ายด้วย `ALL CHECKS PASSED` และ `exit code = 0` (เลข IP ของแต่ละคนไม่ตรงกัน) :
 
 ```
+==============================================
+ LAB 4 — Connect Them (network + ชื่อ) : verify
+==============================================
+[PASS] ต่อกับ Docker daemon ได้
+[PASS] ไฟล์ของแล็บครบ (api/ · web/ · db/initdb/)
 [PASS] docker network create ได้ network ชนิด bridge (vops4-net)
+[PASS] ยกกล่องฐานข้อมูล vops4-db ขึ้นบน vops4-net ได้ (ไม่ใส่ -p)
+[PASS] ฐานข้อมูลรัน init script เสร็จและพร้อมรับ connection แล้ว
 [PASS] docker port vops4-db ไม่คืนบรรทัดใดเลย — ไม่มีพอร์ตถูก publish (NFR-3)
+[PASS] NetworkSettings.Ports ของ vops4-db ไม่มี HostPort ผูกไว้เลย
 [PASS] ยิง curl http://localhost:5432 จากกล่องเรียนแล้วต่อไม่ติด (ตามที่ NFR-3 ต้องการ)
+[PASS] ยกกล่อง vops4-api ขึ้นบน vops4-net โดยใส่ชื่อกล่อง vops4-db ใน DATABASE_URL
 [PASS] /health ตอบ db up ทั้งที่ DATABASE_URL ไม่มีเลข IP อยู่เลย
 [PASS] getent hosts vops4-db ในกล่อง api ได้ 172.20.0.2 ตรงกับ IP จริงของ vops4-db
 [PASS] กล่องบน default bridge แปลชื่อ vops4-db ไม่ได้ (ยืนยันว่า default bridge ไม่มี DNS)
 [PASS] docker network connect กับกล่องที่รันอยู่แล้ว ทำให้แปลชื่อ vops4-db ได้ทันที
 [PASS] สร้าง vops4-db ใหม่แล้ว ชื่อเดิมยังชี้ไปที่กล่องใหม่ได้ถูกต้อง (172.20.0.2)
+[PASS] api กล่องเดิม (ไม่ได้สร้างใหม่ ไม่ได้แก้ค่าใด ๆ) ต่อ db ตัวใหม่ได้เอง
+[PASS] หน้าเว็บตอบ 200 โดยตั้ง API_BASE_URL=http://vops4-api:8000 (ชื่อล้วน ๆ)
 [PASS] หน้าแรกมีเนื้อหาที่วิ่งครบสายจริง : เบราว์เซอร์ → web → api → db
+[PASS] หน้า /tickets · /loans · /parts ตอบ 200 ครบ
 [PASS] docker network inspect เห็นครบทั้ง vops4-db · vops4-api · vops4-web
 ----------------------------------------------
 ALL CHECKS PASSED
@@ -429,11 +429,11 @@ exit code = 0
 | `[api] รอฐานข้อมูลไม่สำเร็จ: [Errno -2] Name or service not known` | `api` กับ `db` ไม่ได้อยู่บน network เดียวกัน (กล่องใดกล่องหนึ่งลืม `--network ops-net`) | `docker rm -f ops-api` แล้ว `docker run` ใหม่พร้อม `--network ops-net` · ตรวจสมาชิกด้วย `docker network inspect ops-net` |
 | `Error response from daemon: network with name ops-net already exists` | สั่ง `docker network create ops-net` ซ้ำ | ใช้ของเดิมต่อได้เลย หรือลบก่อนด้วย `docker network rm ops-net` แล้วค่อยสร้างใหม่ |
 | `docker: Error response from daemon: failed to set up container networking: network ops-network not found` | พิมพ์ชื่อ network ผิด (`ops-network` ไม่ใช่ `ops-net`) | `docker network ls` ดูชื่อจริง แล้วแก้ค่าหลัง `--network` ให้ตรง |
-| `Error response from daemon: error while removing network: network ops-net has active endpoints (name:"ops-web" ...)` | ยังมีกล่องต่ออยู่บน network นั้น | `docker rm -f ops-web ops-api ops-db ops-tools` ให้หมดก่อน แล้วค่อย `docker network rm ops-net` |
+| `Error response from daemon: error while removing network: network ops-net has active endpoints (name:"ops-db" id:"a2106b852805", name:"ops-web" id:"8ef74b558ace", ...)` | ยังมีกล่องต่ออยู่บน network นั้น | `docker rm -f ops-web ops-api ops-db ops-tools` ให้หมดก่อน แล้วค่อย `docker network rm ops-net` |
 | `Error response from daemon: endpoint with name ops-tools already exists in network ops-net` | สั่ง `docker network connect` กล่องเดิมเข้า network เดิมซ้ำ | ข้ามได้เลย ไม่ต้องแก้ · ตรวจว่าอยู่แล้วจริงด้วย `docker network inspect ops-net` |
 | `psql: error: could not translate host name "ops-db" to address: Try again` | กล่องที่ยิง `psql` ไม่ได้อยู่บน `ops-net` | ตอนสร้างใส่ `--network ops-net` หรือกล่องที่รันอยู่แล้วใช้ `docker network connect ops-net <ชื่อกล่อง>` |
-| `⨯ TypeError: fetch failed` ตามด้วย `[cause]: Error: getaddrinfo ENOTFOUND api` ใน `docker logs ops-web` | `API_BASE_URL` ชี้ไปชื่อที่ไม่มีอยู่บน network (เช่น `http://api:8000` ตามชื่อ service ใน contract แต่กล่องจริงชื่อ `ops-api`) | สร้าง `ops-web` ใหม่โดยตั้ง `-e API_BASE_URL="http://ops-api:8000"` ให้ตรงกับ **ชื่อกล่อง** จริง |
-| `docker: Error response from daemon: ... Bind for :::3000 failed: port is already allocated` | มีกล่องอื่นในกล่องเรียนจองพอร์ต 3000 อยู่แล้ว | `docker ps --filter publish=3000` หาตัวที่จองอยู่ แล้ว `docker rm -f` หรือเปลี่ยนเลขฝั่งซ้ายของ `-p` |
+| `⨯ TypeError: fetch failed` ตามด้วย `[cause]: Error: getaddrinfo EAI_AGAIN api` ใน `docker logs ops-web` | `API_BASE_URL` ชี้ไปชื่อที่ไม่มีอยู่บน network (เช่น `http://api:8000` ตามชื่อ service ใน contract แต่กล่องจริงชื่อ `ops-api`) | สร้าง `ops-web` ใหม่โดยตั้ง `-e API_BASE_URL="http://ops-api:8000"` ให้ตรงกับ **ชื่อกล่อง** จริง |
+| `docker: Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint ops-web (...): Bind for 0.0.0.0:3000 failed: port is already allocated` | มีกล่องอื่นในกล่องเรียนจองพอร์ต 3000 อยู่แล้ว | `docker ps --filter publish=3000` หาตัวที่จองอยู่ แล้ว `docker rm -f` หรือเปลี่ยนเลขฝั่งซ้ายของ `-p` |
 
 ---
 
@@ -484,7 +484,7 @@ docker ps -a --filter "name=^devtools-"
 - [ ] บน default bridge : `docker logs ops-api 2>&1 | grep -v 'รออีก 2 วินาที' | head -4` เจอ `[api] รอฐานข้อมูลไม่สำเร็จ: [Errno -2] Name or service not known`
 - [ ] `curl .../health` ของกล่องเดียวกันตอบ `{"detail":"ฐานข้อมูลไม่ตอบสนอง: ...","code":"DB_DOWN"}`
 - [ ] `docker network create ops-net` แล้ว `docker network ls` เห็น `ops-net` เป็น `DRIVER` แบบ `bridge`
-- [ ] `docker ps --filter name=ops-db` แสดง `NETWORKS` = `ops-net` และ `PORTS` มีแค่ `5432/tcp`
+- [ ] `docker ps --filter name=ops-db --format 'table {{.Names}}\t{{.Networks}}\t{{.Status}}\t{{.Ports}}'` แสดง `NETWORKS` = `ops-net` และ `PORTS` มีแค่ `5432/tcp` (คอลัมน์ `NETWORKS` ไม่มีในรูปแบบ default ของ `docker ps` ต้องใส่ `--format` เอง)
 - [ ] ตั้ง `DATABASE_URL=...@ops-db:5432/...` (ไม่มีเลข IP) แล้ว `/health` ตอบ `{"status":"ok","db":"up"}`
 - [ ] `docker exec ops-api getent hosts ops-db` ได้เลขตรงกับ `docker inspect` ของ `ops-db`
 - [ ] ยกใหม่โดยสลับลำดับ (api ก่อน db) แล้ว `getent hosts ops-db` ได้ **เลขใหม่** แต่ `/health` ยังตอบ `db up`
