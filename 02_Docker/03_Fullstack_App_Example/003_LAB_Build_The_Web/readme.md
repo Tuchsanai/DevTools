@@ -502,7 +502,7 @@ Untagged: campusops-web:single
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 ```
 
-> 📝 เก็บ `node:22-alpine` · `python:3.12-slim` · `postgres:17-alpine` ไว้ใช้ต่อใน LAB 4–5 ได้ ไม่ต้องลบ
+> 📝 สั่ง `docker image ls` ต่อจะเหลือ **`postgres:17-alpine` ตัวเดียว** เก็บไว้ใช้ต่อใน LAB 4–5 ได้ · `node:22-alpine` กับ `python:3.12-slim` ไม่โผล่ในตาราง เพราะ Docker 29 เก็บ base ที่ buildkit ดึงมาใช้ไว้ใน build cache แยกต่างหาก
 
 **ออกจากกล่องแล้วลบกล่องบนเครื่องเรา:**
 
