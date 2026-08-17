@@ -1,6 +1,6 @@
 # LAB 2 — สร้าง image ของบริการเบื้องหลัง
 
-> โฟลเดอร์ `002_LAB_Build_The_API` · ไฟล์ของแล็บ : `api/Dockerfile` · `api/Dockerfile.bad` · `api/main.py` · `api/requirements.txt` · `api/.dockerignore` · `db/initdb/` · `.env.db` · `verify.sh`
+> โฟลเดอร์ `002_LAB_Build_The_API` · ไฟล์ของแล็บ : `api/Dockerfile` · `api/Dockerfile.bad` · `api/main.py` · `api/requirements.txt` · `api/.dockerignore` · `api/smoke.sh` · `db/initdb/` · `.env.db` · `verify.sh`
 
 ---
 
@@ -30,7 +30,7 @@
 
 ทุกบรรทัดที่เปลี่ยนไฟล์กลายเป็น **layer** หนึ่งชั้น · กฎเดียวที่ต้องจำคือ **ขั้นไหนเปลี่ยน ขั้นนั้นและทุกขั้นใต้ลงไปต้องทำใหม่**
 
-![เทียบ Dockerfile ที่เรียงถูกกับ Dockerfile.bad หลังแก้ main.py หนึ่งบรรทัด ฝั่งเรียงถูก pip install ยัง CACHED ใช้เวลา 2.035 วินาที ฝั่งเรียงผิดต้อง pip install ใหม่ 4.6 วินาที รวม 8.103 วินาที](./images/theory-layer-cache-api.svg)
+![เทียบ Dockerfile ที่เรียงถูกกับ Dockerfile.bad หลังแก้ main.py หนึ่งบรรทัด ฝั่งเรียงถูก pip install ยัง CACHED ใช้เวลา 2.199 วินาที ฝั่งเรียงผิดต้อง pip install ใหม่ 8.9 วินาที รวม 12.672 วินาที](./images/theory-layer-cache-api.svg)
 
 > 🖼 **วิธีอ่านรูปนี้:** หา **แถวสีแรกที่ไม่ใช่ CACHED** ของแต่ละฝั่ง นั่นคือจุดที่ cache แตก · ฝั่งซ้ายจุดแตกอยู่ **ใต้** `RUN pip install` ขั้นแพงจึงรอด · ฝั่งขวาจุดแตกอยู่ **เหนือ** ขั้นนั้น ทุกอย่างใต้ลงไปจึงต้องทำใหม่
 
@@ -80,9 +80,11 @@ ssh root@localhost -p 2239        # password : passwd
 
 ```bash
 mkdir -p ~/labwork && cd ~/labwork
-git clone https://github.com/Tuchsanai/DevTools.git
+git clone --depth 1 https://github.com/Tuchsanai/DevTools.git
 cd DevTools/02_Docker/03_Fullstack_App_Example/002_LAB_Build_The_API
 ```
+
+> `--depth 1` โหลดเฉพาะ commit ล่าสุด ไม่ต้องขนประวัติทั้งหมด · ถึงอย่างนั้นก็ยัง **ใช้เวลา 1–4 นาที** — อย่าปิดหน้าต่างหรือกด `Ctrl-C` ระหว่างโหลด ถ้าโดนตัดกลางคันให้ `rm -rf ~/labwork/DevTools` แล้ว clone ใหม่
 
 ---
 
@@ -114,7 +116,7 @@ smoke.sh
 cat Dockerfile
 ```
 
-✅ **สิ่งที่ต้องเห็น** — 7 คำสั่งเรียงจาก "เปลี่ยนน้อย" ไป "เปลี่ยนบ่อย" (คอมเมนต์ในไฟล์จริงยาวกว่านี้) :
+✅ **สิ่งที่ต้องเห็น** — **10 คำสั่ง** (ในจำนวนนี้ **6 คำสั่งสร้าง layer** จึงเห็น `[1/6]`–`[6/6]` ตอน build) เรียงจาก "เปลี่ยนน้อย" ไป "เปลี่ยนบ่อย" (ตัดคอมเมนต์กับบรรทัด `# syntax=` ในไฟล์จริงออก) :
 
 ```dockerfile
 FROM python:3.12-slim
@@ -130,6 +132,8 @@ EXPOSE 8000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
+สองบรรทัด `RUN useradd ...` กับ `USER appuser` มีไว้ให้แอปรันด้วยผู้ใช้ธรรมดาแทน root — แล็บนี้ไม่ได้สอนเรื่องนี้ อ่านผ่านไปได้ ขอแค่รู้ว่ามันเป็น **1 layer** ที่จะโผล่เป็น `[6/6]` ตอน build
+
 > 📝 **บทเรียน:** `.` คือโฟลเดอร์ที่ยกให้ daemon ทั้งก้อน ไม่ใช่ที่อยู่ของ Dockerfile · ไฟล์นอกโฟลเดอร์นี้ `COPY` ไม่ได้เลย ต่อให้เขียน `../` ก็ตาม
 
 ---
@@ -142,29 +146,31 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 time docker build -t ops-api:1.0 .
 ```
 
-✅ **สิ่งที่ต้องเห็น** — 6 ขั้นตามบรรทัดใน Dockerfile ทุกขั้นขึ้น `DONE` ไม่มี `CACHED` เลย (เวลาของแต่ละคนต่างกันตามความเร็วเน็ต) :
+✅ **สิ่งที่ต้องเห็น** — 6 ขั้นตามบรรทัดใน Dockerfile ทุกขั้นขึ้น `DONE` ไม่มี `CACHED` เลย (log จริงยาวกว่านี้ ตัดมาเฉพาะบรรทัดที่ต้องมอง · **เลข `#N` กับตัวเลขเวลาของแต่ละคนไม่ตรงกัน** ให้ดูที่ `[N/6]` แทน) :
 
 ```
 #5 [internal] load .dockerignore
 #5 transferring context: 521B done
-#7 [internal] load build context
-#7 transferring context: 28.54kB done
-#6 [1/6] FROM docker.io/library/python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
-#6 DONE 6.9s
+#6 [internal] load build context
+#6 transferring context: 28.54kB done
+#7 [1/6] FROM docker.io/library/python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
+#7 DONE 5.4s
 #8 [2/6] WORKDIR /app
 #8 DONE 0.1s
 #9 [3/6] COPY requirements.txt .
 #9 DONE 0.1s
 #10 [4/6] RUN pip install --no-cache-dir -r requirements.txt
-#10 DONE 4.8s
+#10 DONE 4.6s
 #11 [5/6] COPY main.py .
 #11 DONE 0.1s
 #12 [6/6] RUN useradd --create-home --uid 10001 appuser && chown -R appuser:appuser /app
 #12 DONE 0.3s
 #13 naming to docker.io/library/ops-api:1.0 done
 
-real	0m21.885s
+real	0m23.295s
 ```
+
+รอบแรกจะมีขั้น `resolve image config for docker-image://docker.io/docker/dockerfile:1` แล้วดาวน์โหลดสิบกว่าบรรทัดโผล่ **ก่อน** ขั้นข้างบน — มาจากบรรทัด `# syntax=docker/dockerfile:1` บรรทัดแรกของไฟล์ ปกติ ไม่ใช่ error และรอบถัดไปจะไม่มีแล้ว
 
 > 📝 **บทเรียน:** `[4/6]` = ขั้นที่ 4 จากทั้งหมด 6 ขั้นที่สร้าง layer · `transferring context: 28.54kB` คือขนาดที่ส่งไปให้ daemon จริง ๆ · รอบแรกไม่มีอะไรให้ใช้ซ้ำ ทุกขั้นจึงต้องทำเอง
 
@@ -179,7 +185,7 @@ sed -i 's/version="1.0.0"/version="1.0.1"/' main.py
 time docker build -t ops-api:1.0 .
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ขั้น `RUN pip install` ขึ้น **`CACHED`** และมีแค่สองขั้นล่างสุดที่ทำใหม่ :
+✅ **สิ่งที่ต้องเห็น** — ขั้น `RUN pip install` ขึ้น **`CACHED`** และมีแค่สองขั้นล่างสุดที่ทำใหม่ (ตัวเลข `real` ของแต่ละเครื่องไม่ตรงกัน ให้ดู **สัดส่วน** ว่าลดลงหลายเท่า) :
 
 ```
 #8 [2/6] WORKDIR /app
@@ -191,12 +197,12 @@ time docker build -t ops-api:1.0 .
 #11 [5/6] COPY main.py .
 #11 DONE 0.1s
 #12 [6/6] RUN useradd --create-home --uid 10001 appuser && chown -R appuser:appuser /app
-#12 DONE 0.5s
+#12 DONE 0.3s
 
-real	0m3.220s
+real	0m3.051s
 ```
 
-> 📝 **บทเรียน:** จาก **21.885 s เหลือ 3.220 s** เพราะ `requirements.txt` ไม่เปลี่ยน checksum ของขั้น `COPY requirements.txt .` จึงเท่าเดิม ขั้น `pip install` ที่ต่อจากมันเลยใช้ของเก่าได้
+> 📝 **บทเรียน:** จาก **23.295 s เหลือ 3.051 s** เพราะ `requirements.txt` ไม่เปลี่ยน checksum ของขั้น `COPY requirements.txt .` จึงเท่าเดิม ขั้น `pip install` ที่ต่อจากมันเลยใช้ของเก่าได้
 
 ---
 
@@ -210,11 +216,13 @@ real	0m3.220s
 docker build -f Dockerfile.bad -t ops-api-bad:1.0 .
 ```
 
-✅ **สิ่งที่ต้องเห็น** — build ผ่านและได้ image ชื่อ `ops-api-bad:1.0` :
+✅ **สิ่งที่ต้องเห็น** — build ผ่านและได้ image ชื่อ `ops-api-bad:1.0` (เลข `#N` และเวลาของแต่ละคนไม่ตรงกัน) :
 
 ```
+#10 [4/5] RUN pip install --no-cache-dir -r requirements.txt
+#10 DONE 6.1s
 #12 naming to docker.io/library/ops-api-bad:1.0 done
-#12 DONE 2.0s
+#12 DONE 1.9s
 ```
 
 ทีนี้แก้ `main.py` อีกบรรทัดเดียว แล้ว build **ไฟล์ bad** :
@@ -224,15 +232,15 @@ sed -i 's/version="1.0.1"/version="1.0.2"/' main.py
 time docker build -f Dockerfile.bad -t ops-api-bad:1.0 .
 ```
 
-✅ **สิ่งที่ต้องเห็น** — cache แตกตั้งแต่ `COPY . .` ทำให้ `RUN pip install` ต้องติดตั้งใหม่ทั้งชุด :
+✅ **สิ่งที่ต้องเห็น** — cache แตกตั้งแต่ `COPY . .` ทำให้ `RUN pip install` ต้องติดตั้งใหม่ทั้งชุด (ตัวเลขวินาทีของแต่ละเครื่องไม่ตรงกัน) :
 
 ```
 #9 [3/5] COPY . .
-#9 DONE 0.1s
+#9 DONE 0.0s
 #10 [4/5] RUN pip install --no-cache-dir -r requirements.txt
-#10 DONE 4.6s
+#10 DONE 8.9s
 
-real	0m8.103s
+real	0m12.672s
 ```
 
 แก้ไฟล์เดียวกันนี้แล้ว build **ไฟล์ที่เรียงถูก** เทียบในนาทีเดียวกัน :
@@ -241,34 +249,29 @@ real	0m8.103s
 time docker build -t ops-api:1.0 .
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ขั้นเดียวกันขึ้น `CACHED` และเวลารวมน้อยกว่าเกือบ 4 เท่า :
+✅ **สิ่งที่ต้องเห็น** — ขั้นเดียวกันขึ้น `CACHED` และเวลารวมน้อยกว่าหลายเท่า (ตัวเลขวินาทีของแต่ละเครื่องไม่ตรงกัน) :
 
 ```
 #10 [4/6] RUN pip install --no-cache-dir -r requirements.txt
 #10 CACHED
 
-real	0m2.035s
+real	0m2.199s
 ```
 
-| Dockerfile | ขั้น `pip install` หลังแก้ `main.py` | เวลารวม (`real`) |
+| Dockerfile | ขั้น `pip install` หลังแก้ `main.py` | เวลารวม (`real`) ในรอบที่ใช้เขียนเอกสารนี้ |
 |---|---|---|
-| `api/Dockerfile` | `CACHED` — ไม่ทำอะไรเลย | **2.035 s** |
-| `api/Dockerfile.bad` | ติดตั้งใหม่ 4.6 s | **8.103 s** |
+| `api/Dockerfile` | `CACHED` — ไม่ทำอะไรเลย | **2.199 s** |
+| `api/Dockerfile.bad` | ติดตั้งใหม่ 8.9 s | **12.672 s** |
 
-คืน `main.py` กลับเป็นของเดิมก่อนไปต่อ :
+ก่อนไปต่อ คืน `main.py` เป็น `1.0.0` แล้ว **build `ops-api:1.0` ใหม่อีกรอบ** เพื่อให้ image ที่จะใช้ในการทดลองที่ 6–9 ตรงกับไฟล์จริง — บรรทัด `grep` ต้องคืน `version="1.0.0"` กลับมา ถ้าทำซ้ำการทดลองนี้อีกรอบแล้วฝั่ง `bad` ขึ้น `CACHED` แปลว่า BuildKit เคยเห็นเนื้อไฟล์ชุดนี้แล้ว ให้เปลี่ยนเป็นเลขเวอร์ชันที่ไม่เคยใช้
 
 ```bash
 sed -i 's/version="1.0.2"/version="1.0.0"/' main.py
+docker build -q -t ops-api:1.0 . >/dev/null
 grep -n 'app = FastAPI' main.py
 ```
 
-✅ **สิ่งที่ต้องเห็น** — บรรทัดกลับมาเป็น `1.0.0` เหมือนตอนโคลนมา :
-
-```
-94:app = FastAPI(title="CampusOps API", version="1.0.0", lifespan=lifespan)
-```
-
-> 📝 **บทเรียน:** ในแล็บนี้ต่างกัน ~4 เท่า เพราะ dependency มีแค่ 4 ตัว · ของจริงที่มี package หนัก ๆ ต่างกันหลายสิบเท่า และเราจ่ายค่านี้ **ทุกครั้งที่แก้โค้ด**
+> 📝 **บทเรียน:** ในแล็บนี้ต่างกัน ~6 เท่า เพราะ dependency มีแค่ 4 ตัว · ของจริงที่มี package หนัก ๆ ต่างกันหลายสิบเท่า และเราจ่ายค่านี้ **ทุกครั้งที่แก้โค้ด**
 
 ---
 
@@ -280,15 +283,23 @@ grep -n 'app = FastAPI' main.py
 cat .dockerignore
 ```
 
-✅ **สิ่งที่ต้องเห็น** — รายการนี้ตัดทั้งของที่ Python สร้างเอง ของลับ และสคริปต์ทดสอบ :
+✅ **สิ่งที่ต้องเห็น** — ทั้งไฟล์ 17 บรรทัด ตัดทั้งของที่ Python สร้างเอง ของลับ และสคริปต์ทดสอบ :
 
 ```
+# ไฟล์ที่ไม่ควรถูกส่งเข้า build context
+# ยิ่ง context เล็ก build ยิ่งเร็ว และไม่มีของที่ไม่เกี่ยวหลุดเข้า image
 __pycache__/
 *.pyc
+*.pyo
+.pytest_cache/
 .venv/
+venv/
 .env
 *.log
 .git/
+.gitignore
+.DS_Store
+.ipynb_checkpoints/
 
 # สคริปต์ทดสอบไม่ต้องอยู่ใน image ของ production
 smoke.sh
@@ -302,14 +313,16 @@ du -sh .
 docker build -t ops-api:1.0 . 2>&1 | grep -A2 "load build context"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — โฟลเดอร์โต 4.9M แต่ context ที่ส่งจริงยังเป็นหลัก **kB** :
+✅ **สิ่งที่ต้องเห็น** — โฟลเดอร์โต 4.9M แต่ context ที่ส่งจริงยังเป็นหลัก **B / kB** ไม่ใช่ MB :
 
 ```
 4.9M	.
 #7 [internal] load build context
-#7 transferring context: 28.15kB done
+#7 transferring context: 66B done
 #7 DONE 0.0s
 ```
+
+> ตัวเลขนี้เป็น `66B` เพราะไฟล์ในโฟลเดอร์ไม่ได้เปลี่ยนตั้งแต่ build รอบที่แล้ว BuildKit จึงส่งเฉพาะส่วนต่าง · ถ้าเพิ่งแก้ `main.py` มาจะเห็นราว `28.15kB` แทน — จุดที่ต้องมองคือ **ไม่มีคำว่า MB** ทั้งที่เพิ่งสร้างไฟล์ 5MB ทิ้งไว้
 
 ```bash
 rm -f api-debug.log
@@ -329,16 +342,27 @@ docker run -d --name ops-db --env-file .env.db \
   -v ops-pgdata:/var/lib/postgresql/data \
   -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" \
   postgres:17-alpine
+```
+
+✅ **สิ่งที่ต้องเห็น** — id ของกล่องฐานข้อมูล (ครั้งแรกจะมีบรรทัด pull ของ `postgres:17-alpine` นำหน้า · id ของแต่ละคนคนละค่า) :
+
+```
+4e15c59a1f3c39897fdda88fa3dea97b3d7a1a3d9ffc7a98b9b02dcddde4b48f
+```
+
+รอให้ entrypoint รันไฟล์ SQL เสร็จก่อน แล้วถามฐานข้อมูลว่าพร้อมหรือยัง :
+
+```bash
 sleep 12 && docker exec ops-db pg_isready -U opsuser -d campusops
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ฐานข้อมูลพร้อมรับ connection (ครั้งแรกต้องรอโหลด image ก่อน) :
+✅ **สิ่งที่ต้องเห็น** — ฐานข้อมูลพร้อมรับ connection :
 
 ```
 /var/run/postgresql:5432 - accepting connections
 ```
 
-ลองให้กล่องหนึ่งเรียกอีกกล่องด้วย **ชื่อ** ดูก่อน แล้วค่อยอ่าน IP :
+ลองให้กล่องหนึ่งเรียกอีกกล่องด้วย **ชื่อ** ดูก่อน แล้วค่อยอ่าน IP — **คำสั่งแรกตั้งใจให้พัง** จึงพ่น traceback ออกมาเป็นเรื่องปกติ ไม่ได้ทำอะไรผิด :
 
 ```bash
 docker run --rm ops-api:1.0 python -c 'import socket; print(socket.gethostbyname("ops-db"))'
@@ -348,6 +372,8 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ops
 ✅ **สิ่งที่ต้องเห็น** — ชื่อ `ops-db` แปลไม่ออก แต่ `inspect` ให้ IP มาได้ (ตัวเลข IP ของแต่ละเครื่องไม่ตรงกัน) :
 
 ```
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
 socket.gaierror: [Errno -2] Name or service not known
 172.18.0.2
 ```
@@ -369,7 +395,7 @@ docker run -d --name ops-api \
 ✅ **สิ่งที่ต้องเห็น** — id ของกล่องที่เพิ่งสร้าง (ของแต่ละคนคนละค่า) :
 
 ```
-59b0fd78de9185480ba57f5b688820dd9a483ec01b2716ab2fca9339929f0070
+e0b5e3f2cee9537eeb2e4d3091ff0fc6b4334704b6c2d3c364b015f64a7c0401
 ```
 
 ยังไม่ได้ใส่ `-p` จึงต้องเรียกผ่าน IP ของกล่อง `api` เอง :
@@ -410,10 +436,13 @@ curl exit=7
 
 ```bash
 docker rm -f ops-api
+DB_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ops-db)
 docker run -d --name ops-api -p 8088:8000 \
   -e DATABASE_URL="postgresql://opsuser:labpass@${DB_IP}:5432/campusops" ops-api:1.0
 sleep 6 && docker port ops-api && curl -s http://localhost:8088/health; echo
 ```
+
+> อ่าน `DB_IP` ซ้ำอีกครั้งเพราะตัวแปรอยู่แค่ใน shell เดิม — ถ้า SSH หลุดหรือเปิดหน้าต่างใหม่ ค่าจะว่างจนกลายเป็น `...@:5432/...` แล้วกล่อง `api` จะวน retry เงียบ ๆ
 
 ✅ **สิ่งที่ต้องเห็น** — คราวนี้มีบรรทัด mapping และเข้าถึงได้จาก `localhost` :
 
@@ -423,7 +452,7 @@ sleep 6 && docker port ops-api && curl -s http://localhost:8088/health; echo
 {"status":"ok","db":"up"}
 ```
 
-เปิดหน้าเอกสารของ API ที่ **`http://localhost:8088/docs`** ในเบราว์เซอร์บนเครื่องเราได้เลย :
+พอร์ต 8088 ถูกต่อทะลุถึงเครื่องเราตั้งแต่ตอน `docker run` กล่องเรียน (`-p 8088:8088`) — **เปิดเบราว์เซอร์บนเครื่องเรา** ที่ `http://localhost:8088/docs` จะเห็นหน้า Swagger UI ส่วนบล็อกข้างล่างนี้ยัง **พิมพ์ในกล่องเรียน** เหมือนเดิม :
 
 ```bash
 curl -s -o /dev/null -w 'GET /docs -> %{http_code}\n' http://localhost:8088/docs
@@ -444,22 +473,23 @@ GET /docs -> 200
 **คำถาม:** REQ-01 กับ REQ-02 ที่เขียนไว้ในเอกสาร ทำงานจริงในกล่องนี้ไหม
 
 ```bash
-curl -s -w '\nHTTP %{http_code}\n' -X POST http://localhost:8088/api/tickets \
+curl -s -o /tmp/ticket.json -w 'HTTP %{http_code}\n' -X POST http://localhost:8088/api/tickets \
   -H 'Content-Type: application/json' \
   -d '{"asset_id":1,"title":"แอร์ห้อง 301 ไม่เย็น","detail":"เปิดแล้วมีแต่ลมร้อน","priority":"HIGH"}'
+TID=$(python3 -c 'import json; print(json.load(open("/tmp/ticket.json"))["id"])'); cat /tmp/ticket.json; echo " (TID=$TID)"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — **REQ-01** : ได้ `201` และใบใหม่มีสถานะ `NEW` (หมายเลข `id` และเวลาของแต่ละคนไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — **REQ-01** : ได้ `201` และใบใหม่มีสถานะ `NEW` (หมายเลข `id` · `TID` และเวลาของแต่ละคนไม่ตรงกัน — เลขวิ่งตาม sequence ของฐานข้อมูล) :
 
 ```
-{"id":9,"asset_id":1,"title":"แอร์ห้อง 301 ไม่เย็น","detail":"เปิดแล้วมีแต่ลมร้อน","priority":"HIGH","status":"NEW","assignee":null,"created_at":"2026-08-17T12:48:42.312171+00:00","closed_at":null}
 HTTP 201
+{"id":9,"asset_id":1,"title":"แอร์ห้อง 301 ไม่เย็น","detail":"เปิดแล้วมีแต่ลมร้อน","priority":"HIGH","status":"NEW","assignee":null,"created_at":"2026-08-17T13:32:28.990944+00:00","closed_at":null} (TID=9)
 ```
 
-ลองข้ามลำดับสถานะจาก `NEW` ไป `DONE` ตรง ๆ :
+เก็บเลขใบไว้ในตัวแปร `TID` แล้วจึงสั่งต่อ — ไม่ต้องพิมพ์เลขเอง · ลองข้ามลำดับสถานะจาก `NEW` ไป `DONE` ตรง ๆ :
 
 ```bash
-curl -s -w '\nHTTP %{http_code}\n' -X PATCH http://localhost:8088/api/tickets/9/status \
+curl -s -w '\nHTTP %{http_code}\n' -X PATCH "http://localhost:8088/api/tickets/${TID}/status" \
   -H 'Content-Type: application/json' -d '{"status":"DONE"}'
 ```
 
@@ -477,7 +507,7 @@ curl -s "http://localhost:8088/api/tickets?status=NEW" | python3 -c 'import sys,
 for t in json.load(sys.stdin): print(t["id"], t["status"], t["title"])'
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ใบหมายเลข 9 ยังอยู่ในกลุ่ม `NEW` ร่วมกับใบจาก seed :
+✅ **สิ่งที่ต้องเห็น** — ใบที่เพิ่งสร้าง (`TID`) ยังอยู่ในกลุ่ม `NEW` ร่วมกับใบ 1 · 2 · 3 จาก seed (เลขบรรทัดสุดท้ายคือ `TID` ของแต่ละคน) :
 
 ```
 1 NEW โปรเจกเตอร์ห้อง 205 ภาพวูบดับ
@@ -497,23 +527,37 @@ cd ~/labwork/DevTools/02_Docker/03_Fullstack_App_Example/002_LAB_Build_The_API
 bash verify.sh ; echo "exit code = $?"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — `[PASS]` ทุกบรรทัด ปิดท้ายด้วย `ALL CHECKS PASSED` :
+✅ **สิ่งที่ต้องเห็น** — `[PASS]` ครบ **17 บรรทัด** ปิดท้ายด้วย `ALL CHECKS PASSED` (หมายเลข IP · เลข kB · หมายเลขใบของแต่ละคนไม่ตรงกัน) :
 
 ```
+==============================================
+ LAB 2 — สร้าง image ของบริการเบื้องหลัง : verify
+==============================================
+[PASS] docker daemon ตอบสนอง
+[PASS] ไฟล์ของแล็บครบ (api/ · db/initdb/ · .env.db)
 [PASS] api/Dockerfile เรียงถูก : COPY requirements.txt -> RUN pip install -> COPY main.py
+[PASS] build image vops-api:verify จาก api/Dockerfile สำเร็จ
+[PASS] image ประกาศ EXPOSE 8000 ไว้ใน metadata
 [PASS] api/Dockerfile : แก้ main.py แล้วขั้น RUN pip install ยังเป็น CACHED
 [PASS] api/Dockerfile.bad : ขั้น RUN pip install ถูกทำใหม่ (cache แตกจริงเพราะเรียงผิดลำดับ)
+[PASS] .dockerignore ระบุ *.log และ smoke.sh ไว้
 [PASS] ไฟล์ 3MB ที่ตรงกับ *.log ไม่ถูกส่งเข้า build context (transferring context: 66B done)
+[PASS] ฐานข้อมูล vops-db พร้อมรับ connection
+[PASS] docker inspect อ่าน IP ของ vops-db ได้ : 172.18.0.4
 [PASS] รันโดยไม่ใส่ -p แล้ว docker port ไม่มีรายการ — EXPOSE ไม่ได้เปิดพอร์ตให้
 [PASS] GET /health ตอบ {"status":"ok","db":"up"} ผ่านพอร์ต 18088
+[PASS] หน้า /docs ของ FastAPI เปิดได้ผ่านพอร์ต 18088
 [PASS] REQ-01 : POST /api/tickets ได้ 201 และใบใหม่มีสถานะ NEW
 [PASS] REQ-02 : สั่ง NEW -> DONE ได้ 409 INVALID_TRANSITION
+[PASS] REQ-02 : ใบหมายเลข 9 ยังอยู่ในสถานะ NEW เหมือนเดิม
 ----------------------------------------------
 ALL CHECKS PASSED
 exit code = 0
 ```
 
-> 📝 ใช้เวลาราว 30 วินาที เพราะต้องยกฐานข้อมูลของตัวเองขึ้นมาทดสอบจริง · สคริปต์สร้างของด้วย prefix `vops-` และพอร์ต `18088` แล้วลบทิ้งเอง — ของที่ชื่อ `ops-` ของเราไม่ถูกแตะ
+สคริปต์สร้างของด้วย prefix `vops-` และพอร์ต `18088` แล้วลบทิ้งเอง — ของที่ชื่อ `ops-` ไม่ถูกแตะ รันตอนที่ `ops-api` · `ops-db` ยังทำงานอยู่ก็ผ่าน
+
+> 📝 รอบที่ใช้เขียนเอกสารนี้ใช้เวลา **28.4 วินาที** เพราะเพิ่งทำการทดลองที่ 1–9 มา build cache กับ `postgres:17-alpine` พร้อมอยู่แล้ว · ถ้ารันบนกล่องที่เพิ่งเปิดใหม่จะนานกว่านี้มาก เพราะต้องโหลด image เองทั้งหมด
 
 ---
 
@@ -528,7 +572,7 @@ exit code = 0
 | `curl: (7) Failed to connect to localhost port 8088` | รันกล่องโดยไม่ใส่ `-p` (มีแต่ `EXPOSE`) | สร้างกล่องใหม่พร้อม `-p 8088:8000` |
 | `docker logs ops-api` วน `[api] ฐานข้อมูลยังไม่พร้อม รออีก 2 วินาที...` ไม่หยุด | `DATABASE_URL` ชี้ IP ผิด หรือ `ops-db` ถูกสร้างใหม่จน IP เปลี่ยน | อ่าน IP ใหม่ด้วย `docker inspect` แล้วสร้างกล่อง `api` ใหม่ |
 | `{"detail":"ข้อมูลที่ส่งมาไม่ถูกต้อง: ฟิลด์ 'body' ...","code":"VALIDATION_ERROR"}` | ลืม `-H 'Content-Type: application/json'` ตอน `curl` | ใส่ header ให้ครบทุกครั้งที่ส่ง JSON |
-| ทำการทดลองที่ 4 ซ้ำ แล้วฝั่ง `bad` กลับขึ้น `CACHED` | เคย build เนื้อหาชุดนี้ไปแล้ว BuildKit จึงหยิบ cache เก่ามาใช้ | แก้ด้วยค่าที่ไม่เคยใช้ : `sed -i -E "s/version=\"[^\"]+\"/version=\"1.0.$(date +%s)\"/" main.py` แล้วคืนกลับเป็น `1.0.0` ทีหลัง |
+| `Error response from daemon: remove ops-pgdata: volume is in use - [...]` | สั่ง `docker volume rm ops-pgdata` ทั้งที่กล่อง `ops-db` ยังใช้ volume นั้นอยู่ | `docker rm -f ops-db` ก่อน แล้วค่อย `docker volume rm ops-pgdata` |
 
 ---
 
@@ -543,20 +587,20 @@ docker image rm ops-api:1.0 ops-api-bad:1.0
 docker ps -a
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ไม่เหลือกล่องของแล็บนี้ เหลือแค่หัวตาราง :
+✅ **สิ่งที่ต้องเห็น** — ไม่เหลือกล่องของแล็บนี้ เหลือแค่หัวตาราง (ค่า `sha256:` ของแต่ละคนคนละค่า) :
 
 ```
 ops-api
 ops-db
 ops-pgdata
 Untagged: ops-api:1.0
-Deleted: sha256:e65518f9e0f71fca7e25c74e0e90bd0dc96c42aa4f933cd8e81d5c32275a0029
+Deleted: sha256:f827aea86b8637682beaad8988b0a40c58a695499608ceabefee42fee71c6996
 Untagged: ops-api-bad:1.0
-Deleted: sha256:ba0e2a6adcf945a020d38a7549ed138d5e070c48fd1e13f563150783818ad3a3
+Deleted: sha256:d88a11561e496352259b850169f2edc67cf0ce48b471bd205f6d2fd06ddc509e
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 ```
 
-> 📝 เก็บ `postgres:17-alpine` กับ `python:3.12-slim` ไว้ใช้ต่อใน LAB ถัดไปได้ ไม่ต้องลบ
+> 📝 `docker images` จะเหลือ `postgres:17-alpine` — เก็บไว้ใช้ต่อใน LAB ถัดไปได้ ไม่ต้องลบ · ส่วน `python:3.12-slim` จะ **ไม่โผล่ในรายการ** เพราะ BuildKit เก็บ base image ไว้ใน build cache ของตัวเอง ไม่ได้ tag เป็น image ในเครื่อง
 
 **ออกจากกล่องแล้วลบกล่องบนเครื่องเรา:**
 
@@ -594,9 +638,9 @@ docker ps -a --filter "name=^devtools-"
 
 - [ ] อธิบายได้ว่าจุด `.` ใน `docker build -t ops-api:1.0 .` คือ build context ไม่ใช่ที่อยู่ของ Dockerfile
 - [ ] อ่าน log รอบแรกแล้วชี้ได้ว่า `[4/6]` คือขั้นไหนใน `api/Dockerfile`
-- [ ] แก้ `main.py` 1 บรรทัด แล้วเห็นขั้น `RUN pip install` ขึ้น `CACHED` (เวลาลดจาก 21.885 s เหลือ 3.220 s)
-- [ ] build `Dockerfile.bad` หลังแก้ไฟล์เดียวกัน แล้วเห็น `pip install` ทำใหม่ (8.103 s เทียบกับ 2.035 s)
-- [ ] คืน `main.py` กลับเป็น `version="1.0.0"` แล้วด้วย `grep -n 'app = FastAPI' main.py`
+- [ ] แก้ `main.py` 1 บรรทัด แล้วเห็นขั้น `RUN pip install` ขึ้น `CACHED` และเวลา `real` ลดลงหลายเท่า
+- [ ] build `Dockerfile.bad` หลังแก้ไฟล์เดียวกัน แล้วเห็น `pip install` ทำใหม่ · เวลา `real` แพงกว่าฝั่งที่เรียงถูกหลายเท่า
+- [ ] คืน `main.py` กลับเป็น `version="1.0.0"` · build `ops-api:1.0` ใหม่ · `grep -n 'app = FastAPI' main.py` ยืนยันได้
 - [ ] สร้างไฟล์ `.log` 5MB แล้ว `transferring context` ยังเป็นหลัก kB
 - [ ] ยก `ops-db` ขึ้นได้ · `pg_isready` ตอบ `accepting connections` · อ่าน IP ด้วย `docker inspect` ได้
 - [ ] `curl` `/health` ได้ `{"status":"ok","db":"up"}` จาก IP ของกล่อง `api` ตอนที่ยังไม่ใส่ `-p`

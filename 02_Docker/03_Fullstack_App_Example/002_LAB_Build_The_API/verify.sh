@@ -124,7 +124,14 @@ fi
 
 head -c 3000000 /dev/urandom >"$ctx/api-debug.log"
 docker build --progress=plain -t vops-api:verify -f "$ctx/Dockerfile" "$ctx" >"$tmp_dir/ctx.log" 2>&1
-ctx_line=$(grep -E '^#[0-9]+ transferring context: ' "$tmp_dir/ctx.log" | grep -v 'dockerfile' | tail -1)
+# หาเลข step ของ "[internal] load build context" ก่อน แล้วค่อยอ่านบรรทัด transferring ของ step นั้น
+# (ขั้น load .dockerignore ก็พิมพ์คำว่า context เหมือนกัน — เลือกด้วย tail -1 เฉย ๆ ไม่ปลอดภัย)
+ctx_step=$(grep -E '^#[0-9]+ \[internal\] load build context' "$tmp_dir/ctx.log" | head -1 | sed -E 's/^#([0-9]+) .*/\1/')
+if [ -n "$ctx_step" ]; then
+  ctx_line=$(grep -E "^#${ctx_step} transferring context: " "$tmp_dir/ctx.log" | tail -1)
+else
+  ctx_line=""
+fi
 if printf '%s' "$ctx_line" | grep -qE 'transferring context: [0-9.]+(B|kB) '; then
   pass "ไฟล์ 3MB ที่ตรงกับ *.log ไม่ถูกส่งเข้า build context ($(printf '%s' "$ctx_line" | sed -E 's/^#[0-9]+ //'))"
 else
