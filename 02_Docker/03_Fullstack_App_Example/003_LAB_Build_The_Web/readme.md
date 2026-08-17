@@ -485,14 +485,14 @@ bash verify.sh ; echo "exit code = $?"
 [PASS] web/Dockerfile มี FROM 3 ครั้ง = 3 stage (deps · builder · runner)
 [PASS] stage runner หยิบเฉพาะ .next/standalone และ .next/static ทั้งก้อน
 [PASS] ไม่มีบรรทัดที่เจาะ COPY เฉพาะโฟลเดอร์ย่อยของ .next/static
-[PASS] build image multi-stage (vops-web:verify) สำเร็จ
-[PASS] build image stage เดียว (vops-web:single) สำเร็จ
+[PASS] build image multi-stage (vops3-web:verify) สำเร็จ
+[PASS] build image stage เดียว (vops3-web:single) สำเร็จ
 [PASS] multi-stage เล็กกว่า stage เดียวอย่างน้อย 2 เท่า (content size 73MB vs 310MB)
 [PASS] docker history ของ image สุดท้ายไม่มีขั้น npm ci / npm run build เลย
 [PASS] image สุดท้ายไม่มี node_modules/typescript — ไม่ได้แบก toolchain ไปด้วย
 [PASS] CMD เป็น exec form : ["node","server.js"]
 [PASS] image ตั้ง USER เป็น webapp (ไม่ใช่ root)
-[PASS] ยกกล่องฐานข้อมูล vops-db ขึ้นได้
+[PASS] ยกกล่องฐานข้อมูล vops3-db ขึ้นได้
 [PASS] ฐานข้อมูลพร้อมรับ connection แล้ว
 [PASS] บริการเบื้องหลังตอบ /health ว่า db up (ต่อ db ด้วย IP 172.18.0.5)
 [PASS] หน้าเว็บตอบ 200 ที่ http://172.18.0.7:3000/ (ต่อ api ด้วย IP 172.18.0.6)
@@ -507,7 +507,7 @@ ALL CHECKS PASSED
 exit code = 0
 ```
 
-> 📝 สคริปต์สร้างของของตัวเองด้วย prefix `vops-` ทั้งหมด (`vops-db` · `vops-api` · `vops-web`) แล้วลบทิ้งเมื่อจบ — **ไม่แตะกล่อง `ops-` ของเรา** และไม่ต้องใช้พอร์ตบนเครื่องเลยเพราะต่อกันด้วย IP
+> 📝 สคริปต์สร้างของของตัวเองด้วย prefix `vops3-` ทั้งหมด (`vops3-db` · `vops3-api` · `vops3-web`) แล้วลบทิ้งเมื่อจบ — **ไม่แตะกล่อง `ops-` ของเรา** และไม่ต้องใช้พอร์ตบนเครื่องเลยเพราะต่อกันด้วย IP
 
 ---
 

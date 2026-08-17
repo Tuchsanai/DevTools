@@ -13,7 +13,7 @@ pass() { printf '[PASS] %s\n' "$1"; }
 fail() { printf '[FAIL] %s\n' "$1"; failures=$((failures + 1)); }
 
 cleanup() {
-  docker rm -f vops-db1 vops-db2 vops-db3 vops-db4 vops-db5 vops-nopass >/dev/null 2>&1
+  docker rm -f -v vops-db1 vops-db2 vops-db3 vops-db4 vops-db5 vops-nopass >/dev/null 2>&1
   docker volume rm vops1-pgdata >/dev/null 2>&1
   return 0
 }
@@ -91,7 +91,7 @@ if docker logs vops-nopass 2>&1 | grep -q 'You must specify POSTGRES_PASSWORD'; 
 else
   fail "คาดว่าไม่ใส่ POSTGRES_PASSWORD แล้วต้องมีข้อความ 'You must specify POSTGRES_PASSWORD' แต่ไม่พบ (state=$nopass_state)"
 fi
-docker rm -f vops-nopass >/dev/null 2>&1
+docker rm -f -v vops-nopass >/dev/null 2>&1
 
 # ---------- 3) initdb สร้างตารางครบ 5 ตาราง ----------
 run_db vops-db1
@@ -147,7 +147,7 @@ else
   fail "หลังเพิ่ม 1 ใบ ต้องนับได้ 9 แต่ได้ '$after_insert'"
 fi
 
-docker rm -f vops-db1 >/dev/null 2>&1
+docker rm -f -v vops-db1 >/dev/null 2>&1
 run_db vops-db2
 if wait_pg vops-db2; then
   lost=$(count_of vops-db2 tickets)
@@ -159,7 +159,7 @@ if wait_pg vops-db2; then
 else
   fail "กล่อง vops-db2 ไม่พร้อมรับ connection"
 fi
-docker rm -f vops-db2 >/dev/null 2>&1
+docker rm -f -v vops-db2 >/dev/null 2>&1
 
 # ---------- 6) มี named volume → ข้อมูลอยู่ ----------
 docker volume rm vops1-pgdata >/dev/null 2>&1
@@ -176,7 +176,7 @@ if wait_pg vops-db3; then
 else
   fail "กล่อง vops-db3 ไม่พร้อมรับ connection"
 fi
-docker rm -f vops-db3 >/dev/null 2>&1
+docker rm -f -v vops-db3 >/dev/null 2>&1
 
 if docker volume ls --format '{{.Name}}' | grep -qx 'vops1-pgdata'; then
   pass "ลบกล่องแล้ว volume vops1-pgdata ยังอยู่ (อายุ volume ไม่ผูกกับอายุกล่อง)"
@@ -208,7 +208,7 @@ if docker logs vops-db4 2>&1 | grep -q 'running /docker-entrypoint-initdb.d/02-s
 else
   pass "vops-db4 ไม่ได้รัน 02-seed.sql ซ้ำ ข้อมูลจึงไม่ถูกเติมซ้ำซ้อน"
 fi
-docker rm -f vops-db4 >/dev/null 2>&1
+docker rm -f -v vops-db4 >/dev/null 2>&1
 
 # ---------- 8) --env-file ให้ผลเท่ากับ -e หลายตัว ----------
 docker run -d --name vops-db5 \
@@ -227,7 +227,7 @@ if wait_pg vops-db5; then
 else
   fail "กล่อง vops-db5 ที่ใช้ --env-file ไม่พร้อมรับ connection"
 fi
-docker rm -f vops-db5 >/dev/null 2>&1
+docker rm -f -v vops-db5 >/dev/null 2>&1
 
 echo "----------------------------------------------"
 if [ "$failures" -eq 0 ]; then

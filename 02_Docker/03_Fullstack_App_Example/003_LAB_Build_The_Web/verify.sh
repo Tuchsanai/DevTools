@@ -2,7 +2,7 @@
 # verify.sh — ตรวจว่า LAB 3 (สร้าง image ของหน้าเว็บด้วย multi-stage) ทำได้ครบจริง
 # รันจากในโฟลเดอร์ LAB บนกล่องเรียน :  bash verify.sh
 #
-# สคริปต์นี้สร้างของของตัวเองด้วย prefix "vops-" เท่านั้น และลบเฉพาะของตัวเองตอนจบ
+# สคริปต์นี้สร้างของของตัวเองด้วย prefix "vops3-" เท่านั้น และลบเฉพาะของตัวเองตอนจบ
 # ไม่แตะ container / image / volume ที่ผู้เรียนสร้างไว้ (prefix "ops-") เด็ดขาด
 
 set -u
@@ -16,9 +16,9 @@ pass() { printf '[PASS] %s\n' "$1"; }
 fail() { printf '[FAIL] %s\n' "$1"; failures=$((failures + 1)); }
 
 cleanup() {
-  docker rm -f vops-web vops-api vops-db >/dev/null 2>&1
-  docker volume rm vops-pgdata >/dev/null 2>&1
-  docker image rm vops-web:verify vops-web:single vops-api:verify >/dev/null 2>&1
+  docker rm -f -v vops3-web vops3-api vops3-db >/dev/null 2>&1
+  docker volume rm vops3-pgdata >/dev/null 2>&1
+  docker image rm vops3-web:verify vops3-web:single vops3-api:verify >/dev/null 2>&1
   [ -n "$tmp_dir" ] && [ -d "$tmp_dir" ] && rm -rf "$tmp_dir"
   return 0
 }
@@ -79,21 +79,21 @@ else
 fi
 
 # ---------- 3) build ทั้งสองแบบ ----------
-if docker build -t vops-web:verify ./web >"$tmp_dir/multi.log" 2>&1; then
-  pass "build image multi-stage (vops-web:verify) สำเร็จ"
+if docker build -t vops3-web:verify ./web >"$tmp_dir/multi.log" 2>&1; then
+  pass "build image multi-stage (vops3-web:verify) สำเร็จ"
 else
   fail "build image multi-stage ไม่สำเร็จ (ดู $tmp_dir/multi.log)"
 fi
 
-if docker build -f web/Dockerfile.single -t vops-web:single ./web >"$tmp_dir/single.log" 2>&1; then
-  pass "build image stage เดียว (vops-web:single) สำเร็จ"
+if docker build -f web/Dockerfile.single -t vops3-web:single ./web >"$tmp_dir/single.log" 2>&1; then
+  pass "build image stage เดียว (vops3-web:single) สำเร็จ"
 else
   fail "build image stage เดียวไม่สำเร็จ (ดู $tmp_dir/single.log)"
 fi
 
 # ---------- 4) ขนาดต้องต่างกันอย่างมีนัย ----------
-size_multi=$(docker image inspect vops-web:verify  --format '{{.Size}}' 2>/dev/null)
-size_single=$(docker image inspect vops-web:single --format '{{.Size}}' 2>/dev/null)
+size_multi=$(docker image inspect vops3-web:verify  --format '{{.Size}}' 2>/dev/null)
+size_single=$(docker image inspect vops3-web:single --format '{{.Size}}' 2>/dev/null)
 if [ -n "$size_multi" ] && [ -n "$size_single" ] && [ "$size_multi" -gt 0 ]; then
   ratio=$((size_single * 10 / size_multi))
   human_multi=$((size_multi / 1000000))
@@ -108,27 +108,27 @@ else
 fi
 
 # ---------- 5) toolchain ต้องไม่ติดไปกับ image ที่ส่งมอบ ----------
-if docker history --no-trunc --format '{{.CreatedBy}}' vops-web:verify 2>/dev/null | grep -q 'npm run build'; then
+if docker history --no-trunc --format '{{.CreatedBy}}' vops3-web:verify 2>/dev/null | grep -q 'npm run build'; then
   fail "docker history ของ image สุดท้ายยังมีขั้น npm run build ติดมา"
 else
   pass "docker history ของ image สุดท้ายไม่มีขั้น npm ci / npm run build เลย"
 fi
 
-if docker run --rm vops-web:verify sh -c 'ls node_modules/typescript' >/dev/null 2>&1; then
+if docker run --rm vops3-web:verify sh -c 'ls node_modules/typescript' >/dev/null 2>&1; then
   fail "image สุดท้ายยังมี node_modules/typescript (แบก devDependencies ไปด้วย)"
 else
   pass "image สุดท้ายไม่มี node_modules/typescript — ไม่ได้แบก toolchain ไปด้วย"
 fi
 
 # ---------- 6) CMD ต้องเป็น exec form และไม่รันด้วย root ----------
-cmd_json=$(docker image inspect vops-web:verify --format '{{json .Config.Cmd}}' 2>/dev/null)
+cmd_json=$(docker image inspect vops3-web:verify --format '{{json .Config.Cmd}}' 2>/dev/null)
 if [ "$cmd_json" = '["node","server.js"]' ]; then
   pass "CMD เป็น exec form : $cmd_json"
 else
   fail "CMD ควรเป็น [\"node\",\"server.js\"] แต่ได้ $cmd_json"
 fi
 
-img_user=$(docker image inspect vops-web:verify --format '{{.Config.User}}' 2>/dev/null)
+img_user=$(docker image inspect vops3-web:verify --format '{{.Config.User}}' 2>/dev/null)
 if [ -n "$img_user" ] && [ "$img_user" != "root" ] && [ "$img_user" != "0" ]; then
   pass "image ตั้ง USER เป็น $img_user (ไม่ใช่ root)"
 else
@@ -136,35 +136,35 @@ else
 fi
 
 # ---------- 7) ยกสามกล่องขึ้นจริง แล้วต่อกันด้วย IP ----------
-docker rm -f vops-db vops-api vops-web >/dev/null 2>&1
-docker volume rm vops-pgdata >/dev/null 2>&1
+docker rm -f -v vops3-db vops3-api vops3-web >/dev/null 2>&1
+docker volume rm vops3-pgdata >/dev/null 2>&1
 
-if docker run -d --name vops-db \
+if docker run -d --name vops3-db \
      -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
-     -v vops-pgdata:/var/lib/postgresql/data \
+     -v vops3-pgdata:/var/lib/postgresql/data \
      -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" \
      postgres:17-alpine >/dev/null 2>&1; then
-  pass "ยกกล่องฐานข้อมูล vops-db ขึ้นได้"
+  pass "ยกกล่องฐานข้อมูล vops3-db ขึ้นได้"
 else
-  fail "ยกกล่องฐานข้อมูล vops-db ไม่ขึ้น"
+  fail "ยกกล่องฐานข้อมูล vops3-db ไม่ขึ้น"
 fi
 
 db_ok=0
 for _ in $(seq 1 30); do
-  if docker exec vops-db pg_isready -U opsuser -d campusops >/dev/null 2>&1; then db_ok=1; break; fi
+  if docker exec vops3-db pg_isready -U opsuser -d campusops >/dev/null 2>&1; then db_ok=1; break; fi
   sleep 1
 done
 [ "$db_ok" -eq 1 ] && pass "ฐานข้อมูลพร้อมรับ connection แล้ว" || fail "ฐานข้อมูลไม่พร้อมภายใน 30 วินาที"
 
-docker build -t vops-api:verify ./api >"$tmp_dir/api.log" 2>&1
-DB_IP=$(ip_of vops-db)
-docker run -d --name vops-api \
+docker build -t vops3-api:verify ./api >"$tmp_dir/api.log" 2>&1
+DB_IP=$(ip_of vops3-db)
+docker run -d --name vops3-api \
   -e DATABASE_URL="postgresql://opsuser:labpass@${DB_IP}:5432/campusops" \
-  vops-api:verify >/dev/null 2>&1
+  vops3-api:verify >/dev/null 2>&1
 API_IP=""
 api_ok=0
 for _ in $(seq 1 30); do
-  API_IP=$(ip_of vops-api)
+  API_IP=$(ip_of vops3-api)
   if [ -n "$API_IP" ] && curl -fsS "http://$API_IP:8000/health" 2>/dev/null | grep -q '"db":"up"'; then
     api_ok=1; break
   fi
@@ -173,11 +173,11 @@ done
 [ "$api_ok" -eq 1 ] && pass "บริการเบื้องหลังตอบ /health ว่า db up (ต่อ db ด้วย IP $DB_IP)" \
                     || fail "บริการเบื้องหลังไม่ตอบ /health"
 
-docker run -d --name vops-web -e API_BASE_URL="http://${API_IP}:8000" vops-web:verify >/dev/null 2>&1
+docker run -d --name vops3-web -e API_BASE_URL="http://${API_IP}:8000" vops3-web:verify >/dev/null 2>&1
 WEB_IP=""
 web_ok=0
 for _ in $(seq 1 30); do
-  WEB_IP=$(ip_of vops-web)
+  WEB_IP=$(ip_of vops3-web)
   if [ -n "$WEB_IP" ] && curl -fsS -o "$tmp_dir/home.html" "http://$WEB_IP:3000/" 2>/dev/null; then
     web_ok=1; break
   fi
@@ -223,13 +223,13 @@ if [ "$web_ok" -eq 1 ]; then
     fi
   fi
 
-  if docker exec vops-web sh -c 'ls .next/static/chunks/*.css' >/dev/null 2>&1; then
+  if docker exec vops3-web sh -c 'ls .next/static/chunks/*.css' >/dev/null 2>&1; then
     pass "ไฟล์ CSS อยู่จริงใน image ที่ .next/static/chunks/"
   else
     fail "ไม่พบไฟล์ .css ใต้ .next/static/chunks/ ใน image"
   fi
 
-  if docker exec vops-web sh -c 'ls .next/static/css' >/dev/null 2>&1; then
+  if docker exec vops3-web sh -c 'ls .next/static/css' >/dev/null 2>&1; then
     fail "พบโฟลเดอร์ .next/static/css — ผิดจากที่เอกสารอธิบายไว้ ต้องทบทวนเอกสาร"
   else
     pass "ไม่มีโฟลเดอร์ .next/static/css จริง — ยืนยันว่าห้าม COPY เจาะ subfolder"

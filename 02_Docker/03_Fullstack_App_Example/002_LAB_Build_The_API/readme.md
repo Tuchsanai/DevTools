@@ -10,8 +10,8 @@
 |---|---|
 | **คำถามเดียวที่ตอบให้จบ** | โค้ด `api` ที่รันได้บนเครื่องคนเขียน จะกลายเป็น **image ที่ลูกค้าเอาไปรันเองได้** อย่างไร |
 | **ต้องผ่านอะไรมาก่อน** | **LAB 1** (ยกฐานข้อมูลขึ้นด้วย `docker run` · `-v` · `-e`) และเรื่อง Dockerfile · layer cache · `.dockerignore` จากชุด `02_Dockerfile_Build_Run_Compose_Guide` |
-| **เวลา** | ~45 นาที · การทดลอง **9 อัน** อันละ 3–5 นาที |
-| **จบแล้วต้องทำได้เอง** | build image ของ `api` จาก Dockerfile จริง · ชี้จุดที่ cache แตกได้ · หา IP ของกล่องด้วย `docker inspect` · เปิดพอร์ตด้วย `-p` แล้วยิง REQ-01 · REQ-02 ผ่าน `curl` |
+| **เวลา** | ~50 นาที · การทดลอง **10 อัน** อันละ 3–5 นาที |
+| **จบแล้วต้องทำได้เอง** | build image ของ `api` จาก Dockerfile จริง · ชี้จุดที่ cache แตกได้ · หา IP ของกล่องด้วย `docker inspect` · เปิดพอร์ตด้วย `-p` แล้วยิงข้อกำหนดของลูกค้า REQ-01…REQ-12 ผ่าน `curl` และ `api/smoke.sh` |
 | **แล็บนี้ยัง *ไม่* สอน** | multi-stage ของ `web` → **LAB 3** · เรียกกันด้วย**ชื่อ**แทน IP → **LAB 4** · `compose.yaml` และการ push ขึ้น registry → **LAB 5** |
 
 ---
@@ -475,7 +475,7 @@ GET /docs -> 200
 ```bash
 curl -s -o /tmp/ticket.json -w 'HTTP %{http_code}\n' -X POST http://localhost:8088/api/tickets \
   -H 'Content-Type: application/json' \
-  -d '{"asset_id":1,"title":"แอร์ห้อง 301 ไม่เย็น","detail":"เปิดแล้วมีแต่ลมร้อน","priority":"HIGH"}'
+  -d '{"asset_id":12,"title":"ลำโพงห้องเรียน 402 เสียงขาดหาย","detail":"เปิดแล้วเสียงดังบ้างหายบ้าง","priority":"HIGH"}'
 TID=$(python3 -c 'import json; print(json.load(open("/tmp/ticket.json"))["id"])'); cat /tmp/ticket.json; echo " (TID=$TID)"
 ```
 
@@ -483,8 +483,13 @@ TID=$(python3 -c 'import json; print(json.load(open("/tmp/ticket.json"))["id"])'
 
 ```
 HTTP 201
-{"id":9,"asset_id":1,"title":"แอร์ห้อง 301 ไม่เย็น","detail":"เปิดแล้วมีแต่ลมร้อน","priority":"HIGH","status":"NEW","assignee":null,"created_at":"2026-08-17T13:32:28.990944+00:00","closed_at":null} (TID=9)
+{"id":9,"asset_id":12,"title":"ลำโพงห้องเรียน 402 เสียงขาดหาย","detail":"เปิดแล้วเสียงดังบ้างหายบ้าง","priority":"HIGH","status":"NEW","assignee":null,"created_at":"2026-08-17T15:33:09.627044+00:00","closed_at":null} (TID=9)
 ```
+
+> 📝 **ทำไมต้องเป็น `asset_id` 12** — `A-012` (ลำโพงห้องเรียน 402) เป็นครุภัณฑ์ที่ seed **ไม่ได้** ผูกใบซ่อมหรือสัญญายืมค้างไว้
+> ถ้าไปแจ้งซ่อมชิ้นที่ถูกยืมค้างอยู่ (เช่น `A-001`) ครุภัณฑ์ชิ้นนั้นจะกลายเป็นทั้ง "ถูกยืม" และ "ซ่อมอยู่" พร้อมกัน
+> ทำให้แยกเคส `ASSET_ON_LOAN` (REQ-10) ออกจาก `ASSET_IN_REPAIR` (REQ-11) ไม่ออกในการทดลองถัดไป
+> — `db/initdb/02-seed.sql` เขียนคอมเมนต์กำกับเจตนานี้ไว้แล้ว
 
 เก็บเลขใบไว้ในตัวแปร `TID` แล้วจึงสั่งต่อ — ไม่ต้องพิมพ์เลขเอง · ลองข้ามลำดับสถานะจาก `NEW` ไป `DONE` ตรง ๆ :
 
@@ -513,10 +518,65 @@ for t in json.load(sys.stdin): print(t["id"], t["status"], t["title"])'
 1 NEW โปรเจกเตอร์ห้อง 205 ภาพวูบดับ
 2 NEW แอร์ห้องแล็บ 2 ไม่เย็น
 3 NEW เครื่องพิมพ์ป้อนกระดาษซ้อน
-9 NEW แอร์ห้อง 301 ไม่เย็น
+9 NEW ลำโพงห้องเรียน 402 เสียงขาดหาย
 ```
 
 > 📝 **บทเรียน:** กฎธุรกิจของลูกค้าอยู่ใน image ไปแล้ว · แต่ที่อยู่ของฐานข้อมูลยังเป็น IP ที่เราจำเองและ **เปลี่ยนทุกครั้งที่สร้างกล่องใหม่** — **LAB 4** จะเปลี่ยนไปเรียกด้วยชื่อแทน
+
+---
+
+## การทดลองที่ 10 — ยิงข้อกำหนดครบทั้ง 12 ข้อด้วย `api/smoke.sh`
+
+**คำถาม:** การทดลองที่ 9 ยิงมือได้แค่ REQ-01 กับ REQ-02 — แล้วอีก 10 ข้อที่เหลือใน
+[`docs/01_requirements.md`](../docs/01_requirements.md) ทำงานจริงในกล่องนี้หรือเปล่า
+
+ไม่ต้องพิมพ์ `curl` ทีละข้อ เพราะแล็บแถม `api/smoke.sh` มาให้แล้ว — มันคือ REQ-01…REQ-12
+แปลงเป็น `curl` จริงทั้งชุด ทั้ง **เคสสำเร็จ** และ **เคส error code ตามสัญญาใน**
+[`docs/02_contract.md`](../docs/02_contract.md) :
+
+```bash
+API=http://localhost:8088 bash api/smoke.sh ; echo "exit code = $?"
+```
+
+✅ **สิ่งที่ต้องเห็น** — ทุกข้อขึ้น `[PASS]` และปิดท้ายด้วย `exit code = 0` (ตัวอย่างข้อ REQ-03 ที่การทดลองที่ 9 ยังไม่ได้แตะเลย) :
+
+```
+──────── REQ-03 : เปลี่ยนเป็น ASSIGNED โดยไม่ส่งชื่อช่าง ต้องได้ 400
+    ok   HTTP (ไม่ส่ง assignee)           = 400
+    ok   code                                         = ASSIGNEE_REQUIRED
+    ok   detail เป็นข้อความ ไม่ใช่ array = True
+    ok   HTTP (assignee เป็นช่องว่าง) = 400
+    ok   HTTP (ส่งชื่อช่างมาด้วย) = 200
+    ok   status                                       = ASSIGNED
+    ok   assignee                                     = TECH-01
+[PASS] REQ-03
+```
+
+ข้อที่น่าดูที่สุดคือ REQ-06 — มันเบิกอะไหล่สองรายการในคำขอเดียว โดยจงใจวางตัวที่ **ของพอ** ไว้ก่อนตัวที่ **ของไม่พอ** :
+
+```
+──────── REQ-06 : เบิกเกินยอด ต้องได้ 409 และยอดคงเหลือไม่เปลี่ยน
+    (ก่อนเบิก: part#1 = 2 · part#5 = 20)
+    ok   HTTP                                         = 409
+    ok   code                                         = INSUFFICIENT_STOCK
+    ok   part#1 ยอดไม่เปลี่ยน = 2
+    ok   part#5 ยอดไม่เปลี่ยน (rollback) = 20
+[PASS] REQ-06
+```
+
+`part#5` ที่ของพอ **ต้องไม่ถูกหัก** ทั้งที่ถูกประมวลผลไปก่อนแล้ว — เพราะทั้งคำขออยู่ใน transaction เดียว
+ถ้าฝั่ง `api` เขียนผิดเป็นหักทีละรายการ ยอดจะเพี้ยนโดยไม่มีใครรู้
+
+บรรทัดสุดท้ายของสคริปต์ :
+
+```
+=====================================================
+SUMMARY: ผ่านครบทุกข้อ REQ-01..REQ-12 (0 FAIL)
+exit code = 0
+```
+
+> 📝 **บทเรียน:** `smoke.sh` อยู่ใน `.dockerignore` (การทดลองที่ 5) จึง **ไม่เคยถูกส่งเข้า build context และไม่มีอยู่ใน image**
+> — สคริปต์ทดสอบยิงระบบ **จากข้างนอก** ผ่านพอร์ตที่ `-p` เปิดไว้ เหมือนที่ผู้ใช้จริงเรียก ไม่ต้องแอบเข้าไปอยู่ในกล่อง
 
 ---
 
@@ -536,14 +596,14 @@ bash verify.sh ; echo "exit code = $?"
 [PASS] docker daemon ตอบสนอง
 [PASS] ไฟล์ของแล็บครบ (api/ · db/initdb/ · .env.db)
 [PASS] api/Dockerfile เรียงถูก : COPY requirements.txt -> RUN pip install -> COPY main.py
-[PASS] build image vops-api:verify จาก api/Dockerfile สำเร็จ
+[PASS] build image vops2-api:verify จาก api/Dockerfile สำเร็จ
 [PASS] image ประกาศ EXPOSE 8000 ไว้ใน metadata
 [PASS] api/Dockerfile : แก้ main.py แล้วขั้น RUN pip install ยังเป็น CACHED
 [PASS] api/Dockerfile.bad : ขั้น RUN pip install ถูกทำใหม่ (cache แตกจริงเพราะเรียงผิดลำดับ)
 [PASS] .dockerignore ระบุ *.log และ smoke.sh ไว้
 [PASS] ไฟล์ 3MB ที่ตรงกับ *.log ไม่ถูกส่งเข้า build context (transferring context: 66B done)
-[PASS] ฐานข้อมูล vops-db พร้อมรับ connection
-[PASS] docker inspect อ่าน IP ของ vops-db ได้ : 172.18.0.4
+[PASS] ฐานข้อมูล vops2-db พร้อมรับ connection
+[PASS] docker inspect อ่าน IP ของ vops2-db ได้ : 172.18.0.4
 [PASS] รันโดยไม่ใส่ -p แล้ว docker port ไม่มีรายการ — EXPOSE ไม่ได้เปิดพอร์ตให้
 [PASS] GET /health ตอบ {"status":"ok","db":"up"} ผ่านพอร์ต 18088
 [PASS] หน้า /docs ของ FastAPI เปิดได้ผ่านพอร์ต 18088
@@ -555,7 +615,7 @@ ALL CHECKS PASSED
 exit code = 0
 ```
 
-สคริปต์สร้างของด้วย prefix `vops-` และพอร์ต `18088` แล้วลบทิ้งเอง — ของที่ชื่อ `ops-` ไม่ถูกแตะ รันตอนที่ `ops-api` · `ops-db` ยังทำงานอยู่ก็ผ่าน
+สคริปต์สร้างของด้วย prefix `vops2-` และพอร์ต `18088` แล้วลบทิ้งเอง — ของที่ชื่อ `ops-` ไม่ถูกแตะ รันตอนที่ `ops-api` · `ops-db` ยังทำงานอยู่ก็ผ่าน
 
 > 📝 รอบที่ใช้เขียนเอกสารนี้ใช้เวลา **28.4 วินาที** เพราะเพิ่งทำการทดลองที่ 1–9 มา build cache กับ `postgres:17-alpine` พร้อมอยู่แล้ว · ถ้ารันบนกล่องที่เพิ่งเปิดใหม่จะนานกว่านี้มาก เพราะต้องโหลด image เองทั้งหมด
 
@@ -628,6 +688,7 @@ docker ps -a --filter "name=^devtools-"
 | `docker run -d --name ops-api -p 8088:8000 ops-api:1.0` | เปิดประตูจริง : พอร์ต 8088 ของเครื่อง → 8000 ในกล่อง |
 | `docker port ops-api` | ดูว่ากล่องนี้ถูก map พอร์ตอะไรไว้บ้าง (ว่าง = ไม่ได้ใส่ `-p`) |
 | `curl -s http://localhost:8088/health` | เช็กว่าแอปขึ้นและต่อฐานข้อมูลติดจริง |
+| `API=http://localhost:8088 bash api/smoke.sh` | ยิงข้อกำหนดของลูกค้า REQ-01…REQ-12 ทั้งชุดจากนอกกล่อง |
 | `docker volume rm ops-pgdata` | ลบ volume ของฐานข้อมูล (ข้อมูลหายถาวร) |
 
 > **จำให้ครบ:** `.` = build context ทั้งก้อน · เรียง Dockerfile จาก **เปลี่ยนน้อย → เปลี่ยนบ่อย** · `.dockerignore` ตัดตั้งแต่ก่อนส่ง · `EXPOSE` เป็นป้าย `-p` เป็นประตู · default bridge เรียกด้วยชื่อไม่ได้
@@ -645,7 +706,9 @@ docker ps -a --filter "name=^devtools-"
 - [ ] ยก `ops-db` ขึ้นได้ · `pg_isready` ตอบ `accepting connections` · อ่าน IP ด้วย `docker inspect` ได้
 - [ ] `curl` `/health` ได้ `{"status":"ok","db":"up"}` จาก IP ของกล่อง `api` ตอนที่ยังไม่ใส่ `-p`
 - [ ] รันใหม่พร้อม `-p 8088:8000` แล้ว `docker port` มีบรรทัด mapping และเปิด `http://localhost:8088/docs` ได้
-- [ ] REQ-01 ได้ `201` · REQ-02 ได้ `409 INVALID_TRANSITION` · `bash verify.sh` ขึ้น `ALL CHECKS PASSED` และเก็บกวาดจนไม่เหลือกล่องของแล็บ
+- [ ] REQ-01 ได้ `201` · REQ-02 ได้ `409 INVALID_TRANSITION`
+- [ ] `API=http://localhost:8088 bash api/smoke.sh` ขึ้น `[PASS]` ครบ REQ-01…REQ-12 และ `exit code = 0`
+- [ ] `bash verify.sh` ขึ้น `ALL CHECKS PASSED` และเก็บกวาดจนไม่เหลือกล่องของแล็บ
 
 ---
 

@@ -14,18 +14,19 @@ import {
   type Ticket,
   type TicketStatus,
 } from "../lib/api";
+import { IconAlert, IconCheck, IconChevron } from "../ui/icons";
 import {
   buttonClass,
-  Chip,
   Flash,
   ghostButtonClass,
   inputClass,
   labelClass,
+  PageHead,
   Panel,
   PanelHead,
-  PRIORITY_LABEL,
-  PRIORITY_STYLE,
-  STATUS_ACCENT,
+  PriorityBadge,
+  smallButtonClass,
+  STATUS_HINT,
   STATUS_LABEL,
   thaiDate,
 } from "../ui/kit";
@@ -33,6 +34,14 @@ import {
 export const dynamic = "force-dynamic";
 
 const COLUMNS: TicketStatus[] = ["NEW", "ASSIGNED", "IN_PROGRESS", "DONE"];
+
+/** แถบสีบนหัวคอลัมน์ = ordinal ramp ของขั้นงาน (อ่อน→เข้ม) ไม่ใช่สี่สีที่ไม่เกี่ยวกัน */
+const STAGE_BAR: Record<TicketStatus, string> = {
+  NEW: "bg-stage-1",
+  ASSIGNED: "bg-stage-2",
+  IN_PROGRESS: "bg-stage-3",
+  DONE: "bg-stage-4",
+};
 
 export default async function TicketsPage({
   searchParams,
@@ -43,7 +52,7 @@ export default async function TicketsPage({
   const assignee = (sp.assignee ?? "").trim();
 
   // ต้อง encodeURIComponent เสมอ : ชื่อช่างเป็นภาษาไทยได้
-  // และ uvicorn จะปฏิเสธไบต์ non-ASCII ดิบใน URL ตั้งแต่ชั้นแยกวิเคราะห์ HTTP (ได้ 400 เป็น plain text)
+  // และ uvicorn ปฏิเสธไบต์ non-ASCII ดิบใน URL ตั้งแต่ชั้นแยกวิเคราะห์ HTTP
   const ticketsPath = assignee
     ? `/api/tickets?assignee=${encodeURIComponent(assignee)}`
     : "/api/tickets";
@@ -68,57 +77,57 @@ export default async function TicketsPage({
     <>
       <Flash tone={sp.t} message={sp.m} />
 
-      <section className="animate-rise mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-xs font-medium tracking-[0.2em] text-brand-400 uppercase">Board</p>
-          <h1 className="mt-1.5 text-3xl font-bold tracking-tight text-slate-50">กระดานงานซ่อม</h1>
-          <p className="mt-1.5 text-sm text-slate-400">
-            ใบแจ้งซ่อมเดินหน้าทีละขั้น รอรับเรื่อง → มอบหมายแล้ว → กำลังซ่อม → ปิดงาน · ข้ามขั้นไม่ได้
-          </p>
-        </div>
-
-        {/* ---------- ตัวกรองตามช่าง (REQ-04) ---------- */}
-        <form action={filterTicketsAction} className="flex flex-wrap items-end gap-2">
-          <div>
-            <label className={labelClass} htmlFor="filter-assignee">
-              กรองตามช่างผู้รับผิดชอบ
-            </label>
-            <input
-              id="filter-assignee"
-              name="assignee"
-              defaultValue={assignee}
-              list="technicians"
-              placeholder="เช่น TECH-01"
-              className={`${inputClass} sm:w-56`}
-            />
-            <datalist id="technicians">
-              {technicians.map((name) => (
-                <option key={name} value={name} />
-              ))}
-            </datalist>
-          </div>
-          <button type="submit" className={buttonClass}>
-            กรอง
-          </button>
-          {assignee ? (
-            <Link href="/tickets" className={ghostButtonClass}>
-              ล้างตัวกรอง
-            </Link>
-          ) : null}
-        </form>
-      </section>
+      <PageHead
+        eyebrow="กระดานงานซ่อม"
+        title="งานเดินทีละขั้น ข้ามขั้นไม่ได้"
+        right={
+          // ---------- REQ-04 : ตัวกรองตามช่างผู้รับผิดชอบ ----------
+          <form action={filterTicketsAction} className="flex items-end gap-2">
+            <div>
+              <label className={labelClass} htmlFor="filter-assignee">
+                กรองตามช่างผู้รับผิดชอบ
+              </label>
+              <input
+                id="filter-assignee"
+                name="assignee"
+                defaultValue={assignee}
+                list="technicians"
+                placeholder="เช่น TECH-01"
+                className={`${inputClass} sm:w-48`}
+              />
+              <datalist id="technicians">
+                {technicians.map((name) => (
+                  <option key={name} value={name} />
+                ))}
+              </datalist>
+            </div>
+            <button type="submit" className={ghostButtonClass}>
+              กรอง
+            </button>
+            {assignee ? (
+              <Link href="/tickets" className={ghostButtonClass}>
+                ล้าง
+              </Link>
+            ) : null}
+          </form>
+        }
+      />
 
       {assignee ? (
-        <p className="mb-5 text-sm text-slate-300">
-          กำลังแสดงเฉพาะงานของ{" "}
-          <span className="font-semibold text-brand-400">{assignee}</span> — พบ {tickets.length} ใบ
+        <p className="mb-4 rounded border border-l-[3px] border-accent-line border-l-accent bg-accent-wash px-4 py-2 text-[14px] text-ink">
+          กำลังแสดงเฉพาะงานของ <span className="font-bold">{assignee}</span> — พบ{" "}
+          <span className="num font-bold">{tickets.length}</span> ใบ จากทั้งหมด{" "}
+          <span className="num font-bold">{allTickets.length}</span> ใบ
         </p>
       ) : null}
 
-      {/* ---------- ฟอร์มแจ้งซ่อม (REQ-01) ---------- */}
-      <Panel className="animate-rise mb-6">
-        <PanelHead title="แจ้งซ่อมใหม่" hint="ใบใหม่จะเข้าคอลัมน์ “รอรับเรื่อง” เสมอ" />
-        <form action={createTicketAction} className="grid gap-4 px-5 py-5 lg:grid-cols-12">
+      {/* ================= REQ-01 · ฟอร์มแจ้งซ่อม ================= */}
+      <Panel className="mb-4">
+        <PanelHead
+          title="แจ้งซ่อมใหม่"
+          sub="ใบใหม่เข้าคอลัมน์ “รอรับเรื่อง” เสมอ — จะข้ามไปมอบหมายทันทีไม่ได้"
+        />
+        <form action={createTicketAction} className="grid gap-4 px-6 py-4 lg:grid-cols-12">
           <input type="hidden" name="back" value={back} />
           <div className="lg:col-span-3">
             <label className={labelClass} htmlFor="asset_id">
@@ -144,7 +153,7 @@ export default async function TicketsPage({
               className={inputClass}
             />
           </div>
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-3">
             <label className={labelClass} htmlFor="detail">
               รายละเอียดอาการ
             </label>
@@ -155,7 +164,7 @@ export default async function TicketsPage({
               className={inputClass}
             />
           </div>
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-2">
             <label className={labelClass} htmlFor="priority">
               ความเร่งด่วน
             </label>
@@ -166,131 +175,163 @@ export default async function TicketsPage({
             </select>
           </div>
           <div className="flex items-end lg:col-span-1">
-            <button type="submit" className={`${buttonClass} w-full`}>
+            <button type="submit" className={`${buttonClass} w-full px-2 whitespace-nowrap`}>
               แจ้งซ่อม
             </button>
           </div>
         </form>
       </Panel>
 
-      {/* ---------- กระดาน 4 คอลัมน์ ---------- */}
-      <div className="grid gap-4 lg:grid-cols-4">
+      {/* ================= กระดาน 4 คอลัมน์ (REQ-02, REQ-03, REQ-05) ================= */}
+      <div className="grid gap-4 xl:grid-cols-4">
         {COLUMNS.map((status) => {
           const items = tickets.filter((t) => t.status === status);
           return (
-            <section key={status} className="animate-rise flex min-w-0 flex-col">
-              <header className="mb-3 flex items-center gap-2.5 px-1">
-                <span className={`h-2.5 w-2.5 rounded-full ${STATUS_ACCENT[status]}`} />
-                <h2 className="text-sm font-semibold text-slate-100">{STATUS_LABEL[status]}</h2>
-                <span className="ml-auto rounded-full bg-white/8 px-2 py-0.5 text-xs font-semibold tabular-nums text-slate-300">
-                  {items.length}
-                </span>
+            <section key={status} className="flex min-w-0 flex-col">
+              <header className="rounded-t border border-rule bg-card">
+                <span className={`block h-[2px] rounded-t ${STAGE_BAR[status]}`} />
+                <div className="flex items-start justify-between gap-3 px-4 py-2">
+                  <div className="min-w-0">
+                    <h2 className="flex items-center gap-2 text-[15px] leading-[1.4] font-bold tracking-tight text-ink">
+                      <span
+                        className={`h-2.5 w-2.5 shrink-0 rounded-[2px] ${STAGE_BAR[status]}`}
+                        aria-hidden="true"
+                      />
+                      <span className="truncate">{STATUS_LABEL[status]}</span>
+                    </h2>
+                    <p className="truncate text-[12px] text-ink-3">{STATUS_HINT[status]}</p>
+                  </div>
+                  <span className="num shrink-0 text-[22px] leading-tight font-bold text-ink">
+                    {items.length}
+                  </span>
+                </div>
               </header>
 
-              <div className="flex flex-col gap-3 rounded-2xl bg-white/3 p-3 ring-1 ring-white/6">
+              <div className="flex flex-col gap-3 rounded-b border border-t-0 border-rule bg-wash p-3">
                 {items.length === 0 ? (
-                  <p className="rounded-xl border border-dashed border-white/10 px-3 py-8 text-center text-xs text-slate-500">
-                    ไม่มีงานในคอลัมน์นี้
+                  <p className="rounded border border-dashed border-rule-strong px-3 py-6 text-center text-[13px] leading-[1.5] text-ink-3">
+                    {assignee ? "ช่างคนนี้ไม่มีงานในขั้นนี้" : "ยังไม่มีใบแจ้งซ่อมค้างอยู่ในขั้นนี้"}
                   </p>
                 ) : (
                   items.map((ticket) => {
                     const asset = assetById.get(ticket.asset_id);
                     const overdue = overdueById.get(ticket.id);
-                    const style = PRIORITY_STYLE[ticket.priority];
                     return (
                       <article
                         key={ticket.id}
-                        className="relative overflow-hidden rounded-xl border border-white/8 bg-ink-850 p-3.5 pl-4 transition hover:border-white/18 hover:bg-ink-800"
+                        className="rounded border border-rule bg-card transition-colors hover:border-rule-strong"
                       >
-                        {/* แถบสีความเร่งด่วนที่ขอบซ้ายของการ์ด */}
-                        <span className={`absolute inset-y-0 left-0 w-1 ${style.bar}`} />
-
-                        <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
-                          <Chip className={style.chip}>{PRIORITY_LABEL[ticket.priority]}</Chip>
-                          {overdue ? (
-                            <Chip className="animate-pulse border-rose-400/60 bg-rose-500/25 font-semibold text-rose-100">
-                              เกินกำหนด {overdue.days_open}/{overdue.sla_days} วัน
-                            </Chip>
-                          ) : null}
-                          <span className="ml-auto text-[11px] tabular-nums text-slate-500">
-                            #{ticket.id}
-                          </span>
-                        </div>
-
-                        <h3 className="text-sm leading-snug font-semibold text-slate-100">
-                          {ticket.title}
-                        </h3>
-                        {ticket.detail ? (
-                          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-400">
-                            {ticket.detail}
+                        {/* แถบเตือนเกินกำหนด — สี + ไอคอน + คำ ครบสามอย่าง ไม่ได้สื่อด้วยสีอย่างเดียว */}
+                        {overdue ? (
+                          <p className="num flex items-center gap-1.5 rounded-t border-b border-crit-line bg-crit-wash px-3 py-1 text-[12px] font-semibold text-crit-ink">
+                            <IconAlert className="h-3.5 w-3.5 shrink-0" />
+                            ค้าง {overdue.days_open} วัน · กำหนด {overdue.sla_days} วัน
                           </p>
                         ) : null}
 
-                        <p className="mt-2 text-[11px] text-slate-500">
-                          {asset ? `${asset.code} · ${asset.name}` : `ครุภัณฑ์ #${ticket.asset_id}`}
-                          <br />
-                          {asset?.location}
-                        </p>
+                        <div className="px-3 py-2">
+                          <div className="mb-1 flex items-start justify-between gap-2">
+                            <PriorityBadge priority={ticket.priority} />
+                            <span className="num shrink-0 font-mono text-[12px] text-ink-3">
+                              #{ticket.id}
+                            </span>
+                          </div>
 
-                        <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-white/8 pt-2.5 text-[11px] text-slate-400">
-                          <span>
-                            {ticket.assignee ? (
-                              <>
-                                ช่าง <span className="font-semibold text-slate-200">{ticket.assignee}</span>
-                              </>
-                            ) : (
-                              "ยังไม่มีผู้รับผิดชอบ"
-                            )}
-                          </span>
-                          <span className="tabular-nums">{thaiDate(ticket.created_at)}</span>
+                          <h3 className="text-[15px] leading-[1.5] font-semibold text-ink">
+                            {ticket.title}
+                          </h3>
+
+                          {/* ครุภัณฑ์ + ที่ตั้ง อยู่บรรทัดเดียว (บีบความสูงของการ์ดลง 1 แถว) */}
+                          <p className="mt-0.5 truncate text-[13px] leading-[1.5] text-ink-2">
+                            <span className="font-mono text-[12px]">
+                              {asset ? asset.code : `#${ticket.asset_id}`}
+                            </span>
+                            {asset ? ` · ${asset.name}` : ""}
+                          </p>
+
+                          {ticket.detail ? (
+                            <p className="mt-1 line-clamp-2 text-[13px] leading-[1.5] text-ink-2">
+                              {ticket.detail}
+                            </p>
+                          ) : null}
+
+                          {/* บรรทัด meta : ที่ตั้ง (ช่างต้องรู้ว่าไปที่ไหน) · ช่าง · วันที่แจ้ง */}
+                          <p className="mt-2 flex items-baseline justify-between gap-2 border-t border-rule pt-1.5 text-[12px]">
+                            <span className="min-w-0 truncate text-ink-3">
+                              {ticket.assignee ? (
+                                <span className="font-semibold text-ink-2">{ticket.assignee}</span>
+                              ) : (
+                                <span className="italic">ยังไม่มอบหมาย</span>
+                              )}
+                              {asset ? ` · ${asset.location}` : ""}
+                            </span>
+                            <span className="num shrink-0 text-ink-3">
+                              {thaiDate(ticket.created_at)}
+                            </span>
+                          </p>
                         </div>
 
-                        {/* ---------- ปุ่มตามสถานะ ---------- */}
+                        {/* ---------- ปุ่มของขั้นนั้น ---------- */}
                         {ticket.status === "NEW" ? (
-                          <form action={assignTicketAction} className="mt-3 flex gap-2">
+                          <form
+                            action={assignTicketAction}
+                            className="flex gap-2 border-t border-rule bg-wash px-3 py-2"
+                          >
                             <input type="hidden" name="back" value={back} />
                             <input type="hidden" name="id" value={ticket.id} />
                             <input
                               name="assignee"
                               list="technicians"
                               placeholder="ชื่อช่าง"
-                              className={`${inputClass} py-1.5 text-xs`}
+                              aria-label={`ชื่อช่างสำหรับใบ #${ticket.id}`}
+                              className={`${inputClass} h-8 text-[13px]`}
                             />
-                            <button type="submit" className={`${buttonClass} shrink-0 px-2.5 py-1.5 text-xs`}>
+                            <button type="submit" className={`${smallButtonClass} shrink-0`}>
                               มอบหมาย
                             </button>
                           </form>
                         ) : null}
 
                         {ticket.status === "ASSIGNED" ? (
-                          <form action={advanceTicketAction} className="mt-3">
+                          <form
+                            action={advanceTicketAction}
+                            className="border-t border-rule bg-wash px-3 py-2"
+                          >
                             <input type="hidden" name="back" value={back} />
                             <input type="hidden" name="id" value={ticket.id} />
                             <input type="hidden" name="status" value="IN_PROGRESS" />
-                            <button type="submit" className={`${buttonClass} w-full py-1.5 text-xs`}>
+                            <button type="submit" className={`${smallButtonClass} w-full`}>
                               เริ่มลงมือซ่อม
                             </button>
                           </form>
                         ) : null}
 
                         {ticket.status === "IN_PROGRESS" ? (
-                          // ใช้ <details> ของ HTML แท้ ๆ ในการพับ/กางฟอร์ม — ไม่ต้องมี JavaScript ฝั่ง client เลย
-                          <details className="group mt-3">
-                            <summary className={`${buttonClass} w-full cursor-pointer list-none py-1.5 text-xs`}>
+                          // <details> ของ HTML แท้ ๆ คือกลไกพับ-กางเดียวที่ใช้ได้ — ไม่มี JS ฝั่ง browser
+                          <details className="group border-t border-rule bg-wash">
+                            <summary
+                              className={`${smallButtonClass} m-2 w-[calc(100%-1rem)] cursor-pointer`}
+                            >
                               ปิดงาน + บันทึกอะไหล่
+                              <IconChevron className="h-3 w-3 transition-transform group-open:rotate-90" />
                             </summary>
-                            <form action={closeTicketAction} className="mt-2.5 space-y-2 rounded-lg bg-ink-950/60 p-2.5">
+                            <form
+                              action={closeTicketAction}
+                              className="space-y-2 border-t border-rule px-3 py-2"
+                            >
                               <input type="hidden" name="back" value={back} />
                               <input type="hidden" name="id" value={ticket.id} />
-                              <p className="text-[11px] text-slate-500">
-                                เว้นว่างได้ถ้าไม่ได้ใช้อะไหล่ · ถ้าอะไหล่ตัวใดไม่พอ ระบบจะไม่ตัดสต็อกเลยสักตัว
+                              <p className="text-[12px] leading-[1.5] text-ink-3">
+                                เว้นว่างได้ถ้าไม่ได้ใช้อะไหล่ · ถ้าอะไหล่ตัวใดไม่พอ
+                                ระบบจะไม่ตัดสต็อกเลยสักตัว
                               </p>
                               {["1", "2"].map((row) => (
                                 <div key={row} className="flex gap-2">
                                   <select
                                     name={`part_id_${row}`}
                                     defaultValue=""
-                                    className={`${inputClass} py-1.5 text-xs`}
+                                    aria-label={`อะไหล่ช่องที่ ${row}`}
+                                    className={`${inputClass} h-8 text-[13px]`}
                                   >
                                     <option value="">— ไม่ใช้อะไหล่ —</option>
                                     {parts.map((p) => (
@@ -304,11 +345,12 @@ export default async function TicketsPage({
                                     type="number"
                                     min={0}
                                     defaultValue={0}
-                                    className={`${inputClass} w-16 shrink-0 py-1.5 text-xs`}
+                                    aria-label={`จำนวนช่องที่ ${row}`}
+                                    className={`${inputClass} num h-8 w-14 shrink-0 text-right text-[13px]`}
                                   />
                                 </div>
                               ))}
-                              <button type="submit" className={`${buttonClass} w-full py-1.5 text-xs`}>
+                              <button type="submit" className={`${smallButtonClass} w-full`}>
                                 ยืนยันปิดงาน
                               </button>
                             </form>
@@ -316,7 +358,9 @@ export default async function TicketsPage({
                         ) : null}
 
                         {ticket.status === "DONE" ? (
-                          <p className="mt-3 rounded-lg bg-emerald-400/10 px-2.5 py-1.5 text-[11px] text-emerald-200">
+                          // "ปิดงานแล้ว" เป็น *สถานะ* (ไม่ใช่ *ขั้น*) จึงใช้ชุดสี ok ได้
+                          <p className="num flex items-center gap-1.5 border-t border-ok-line bg-ok-wash px-3 py-2 text-[12px] font-medium text-ok-ink">
+                            <IconCheck className="h-3.5 w-3.5 shrink-0" />
                             ปิดงานเมื่อ {thaiDate(ticket.closed_at)}
                           </p>
                         ) : null}

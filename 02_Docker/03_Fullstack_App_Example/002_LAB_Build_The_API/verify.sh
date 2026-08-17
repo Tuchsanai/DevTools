@@ -2,7 +2,7 @@
 # verify.sh — ตรวจว่า LAB 2 (สร้าง image ของ api) ทำได้ครบจริง
 # รันจากในโฟลเดอร์ LAB บนกล่องเรียน :  bash verify.sh
 #
-# สคริปต์นี้สร้างของของตัวเองด้วย prefix  vops-  เท่านั้น และลบเฉพาะของตัวเองตอนจบ
+# สคริปต์นี้สร้างของของตัวเองด้วย prefix  vops2-  เท่านั้น และลบเฉพาะของตัวเองตอนจบ
 # ของผู้เรียน (ops-db · ops-api · ops-api:1.0 · ops-pgdata) ไม่ถูกแตะเลย
 
 set -u
@@ -16,9 +16,9 @@ pass() { printf '[PASS] %s\n' "$1"; }
 fail() { printf '[FAIL] %s\n' "$1"; failures=$((failures + 1)); }
 
 cleanup() {
-  docker rm -f vops-api vops-api-p vops-db >/dev/null 2>&1
-  docker volume rm vops-pgdata >/dev/null 2>&1
-  docker image rm -f vops-api:verify vops-api-bad:verify >/dev/null 2>&1
+  docker rm -f -v vops2-api vops2-api-p vops2-db >/dev/null 2>&1
+  docker volume rm vops2-pgdata >/dev/null 2>&1
+  docker image rm -f vops2-api:verify vops2-api-bad:verify >/dev/null 2>&1
   [ -n "$tmp_dir" ] && [ -d "$tmp_dir" ] && rm -rf "$tmp_dir"
   return 0
 }
@@ -74,14 +74,14 @@ fi
 
 # ---------- 3) build image ของ api ----------
 tmp_dir=$(mktemp -d)
-if docker build --progress=plain -t vops-api:verify api >"$tmp_dir/build1.log" 2>&1; then
-  pass "build image vops-api:verify จาก api/Dockerfile สำเร็จ"
+if docker build --progress=plain -t vops2-api:verify api >"$tmp_dir/build1.log" 2>&1; then
+  pass "build image vops2-api:verify จาก api/Dockerfile สำเร็จ"
 else
-  fail "build image vops-api:verify ไม่สำเร็จ (ดู $tmp_dir/build1.log)"
+  fail "build image vops2-api:verify ไม่สำเร็จ (ดู $tmp_dir/build1.log)"
 fi
 
 # ---------- 4) EXPOSE 8000 ต้องอยู่ใน image ----------
-if docker image inspect vops-api:verify --format '{{json .Config.ExposedPorts}}' 2>/dev/null | grep -q '8000/tcp'; then
+if docker image inspect vops2-api:verify --format '{{json .Config.ExposedPorts}}' 2>/dev/null | grep -q '8000/tcp'; then
   pass "image ประกาศ EXPOSE 8000 ไว้ใน metadata"
 else
   fail "image ไม่มี EXPOSE 8000 ใน metadata"
@@ -94,11 +94,11 @@ mkdir -p "$ctx"
 cp api/Dockerfile api/Dockerfile.bad api/requirements.txt api/main.py api/.dockerignore "$ctx/"
 printf '\n# verify build marker %s\n' "$(date +%s)" >>"$ctx/main.py"
 
-docker build --progress=plain -t vops-api-bad:verify -f "$ctx/Dockerfile.bad" "$ctx" >"$tmp_dir/bad1.log" 2>&1
+docker build --progress=plain -t vops2-api-bad:verify -f "$ctx/Dockerfile.bad" "$ctx" >"$tmp_dir/bad1.log" 2>&1
 printf '\n# verify build marker %s-second\n' "$(date +%s)" >>"$ctx/main.py"
 
-docker build --progress=plain -t vops-api:verify     -f "$ctx/Dockerfile"     "$ctx" >"$tmp_dir/good2.log" 2>&1
-docker build --progress=plain -t vops-api-bad:verify -f "$ctx/Dockerfile.bad" "$ctx" >"$tmp_dir/bad2.log"  2>&1
+docker build --progress=plain -t vops2-api:verify     -f "$ctx/Dockerfile"     "$ctx" >"$tmp_dir/good2.log" 2>&1
+docker build --progress=plain -t vops2-api-bad:verify -f "$ctx/Dockerfile.bad" "$ctx" >"$tmp_dir/bad2.log"  2>&1
 
 good_pip=$(step_status "$tmp_dir/good2.log" 'RUN pip install')
 bad_pip=$(step_status "$tmp_dir/bad2.log" 'RUN pip install')
@@ -123,7 +123,7 @@ else
 fi
 
 head -c 3000000 /dev/urandom >"$ctx/api-debug.log"
-docker build --progress=plain -t vops-api:verify -f "$ctx/Dockerfile" "$ctx" >"$tmp_dir/ctx.log" 2>&1
+docker build --progress=plain -t vops2-api:verify -f "$ctx/Dockerfile" "$ctx" >"$tmp_dir/ctx.log" 2>&1
 # หาเลข step ของ "[internal] load build context" ก่อน แล้วค่อยอ่านบรรทัด transferring ของ step นั้น
 # (ขั้น load .dockerignore ก็พิมพ์คำว่า context เหมือนกัน — เลือกด้วย tail -1 เฉย ๆ ไม่ปลอดภัย)
 ctx_step=$(grep -E '^#[0-9]+ \[internal\] load build context' "$tmp_dir/ctx.log" | head -1 | sed -E 's/^#([0-9]+) .*/\1/')
@@ -140,50 +140,50 @@ fi
 rm -f "$ctx/api-debug.log"
 
 # ---------- 7) ยกฐานข้อมูลของ verify เอง ----------
-docker rm -f vops-db >/dev/null 2>&1
-docker volume rm vops-pgdata >/dev/null 2>&1
-if docker run -d --name vops-db --env-file .env.db \
-     -v vops-pgdata:/var/lib/postgresql/data \
+docker rm -f -v vops2-db >/dev/null 2>&1
+docker volume rm vops2-pgdata >/dev/null 2>&1
+if docker run -d --name vops2-db --env-file .env.db \
+     -v vops2-pgdata:/var/lib/postgresql/data \
      -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" \
      postgres:17-alpine >/dev/null 2>&1; then
   db_ready=0
   for _ in $(seq 1 30); do
-    if docker exec vops-db pg_isready -U opsuser -d campusops >/dev/null 2>&1; then db_ready=1; break; fi
+    if docker exec vops2-db pg_isready -U opsuser -d campusops >/dev/null 2>&1; then db_ready=1; break; fi
     sleep 2
   done
   if [ "$db_ready" -eq 1 ]; then
-    pass "ฐานข้อมูล vops-db พร้อมรับ connection"
+    pass "ฐานข้อมูล vops2-db พร้อมรับ connection"
   else
-    fail "ฐานข้อมูล vops-db ไม่พร้อมภายในเวลาที่รอ"
+    fail "ฐานข้อมูล vops2-db ไม่พร้อมภายในเวลาที่รอ"
   fi
 else
-  fail "สร้าง container vops-db ไม่สำเร็จ"
+  fail "สร้าง container vops2-db ไม่สำเร็จ"
 fi
 
-db_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' vops-db 2>/dev/null)
+db_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' vops2-db 2>/dev/null)
 if printf '%s' "$db_ip" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'; then
-  pass "docker inspect อ่าน IP ของ vops-db ได้ : $db_ip"
+  pass "docker inspect อ่าน IP ของ vops2-db ได้ : $db_ip"
 else
-  fail "docker inspect อ่าน IP ของ vops-db ไม่ได้"
+  fail "docker inspect อ่าน IP ของ vops2-db ไม่ได้"
 fi
 
 # ---------- 8) EXPOSE ไม่ได้เปิดพอร์ต ----------
-docker rm -f vops-api >/dev/null 2>&1
-docker run -d --name vops-api \
+docker rm -f -v vops2-api >/dev/null 2>&1
+docker run -d --name vops2-api \
   -e DATABASE_URL="postgresql://opsuser:labpass@${db_ip}:5432/campusops" \
-  vops-api:verify >/dev/null 2>&1
+  vops2-api:verify >/dev/null 2>&1
 sleep 1
-if [ -z "$(docker port vops-api 2>/dev/null)" ]; then
+if [ -z "$(docker port vops2-api 2>/dev/null)" ]; then
   pass "รันโดยไม่ใส่ -p แล้ว docker port ไม่มีรายการ — EXPOSE ไม่ได้เปิดพอร์ตให้"
 else
   fail "รันโดยไม่ใส่ -p แต่ docker port กลับมีรายการ"
 fi
-docker rm -f vops-api >/dev/null 2>&1
+docker rm -f -v vops2-api >/dev/null 2>&1
 
 # ---------- 9) รันจริงพร้อม -p แล้ว /health ต้องเขียว ----------
-if docker run -d --name vops-api-p -p "${VPORT}:8000" \
+if docker run -d --name vops2-api-p -p "${VPORT}:8000" \
      -e DATABASE_URL="postgresql://opsuser:labpass@${db_ip}:5432/campusops" \
-     vops-api:verify >/dev/null 2>&1; then
+     vops2-api:verify >/dev/null 2>&1; then
   health_ok=0
   for _ in $(seq 1 20); do
     if curl -fsS "http://localhost:${VPORT}/health" 2>/dev/null | grep -q '"db":"up"'; then health_ok=1; break; fi
@@ -195,7 +195,7 @@ if docker run -d --name vops-api-p -p "${VPORT}:8000" \
     fail "GET /health ไม่ตอบว่า db up ผ่านพอร์ต ${VPORT}"
   fi
 else
-  fail "รัน container vops-api-p พร้อม -p ${VPORT}:8000 ไม่สำเร็จ"
+  fail "รัน container vops2-api-p พร้อม -p ${VPORT}:8000 ไม่สำเร็จ"
 fi
 
 if curl -fsS -o /dev/null "http://localhost:${VPORT}/docs" 2>/dev/null; then

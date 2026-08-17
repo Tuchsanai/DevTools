@@ -16,7 +16,7 @@ pass() { printf '[PASS] %s\n' "$1"; }
 fail() { printf '[FAIL] %s\n' "$1"; failures=$((failures + 1)); }
 
 cleanup() {
-  docker rm -f vops4-web vops4-api vops4-db vops4-probe >/dev/null 2>&1
+  docker rm -f -v vops4-web vops4-api vops4-db vops4-probe >/dev/null 2>&1
   docker network rm vops4-net >/dev/null 2>&1
   docker volume rm vops4-pgdata >/dev/null 2>&1
   docker image rm vops4-web:verify vops4-api:verify >/dev/null 2>&1
@@ -75,7 +75,7 @@ else
 fi
 
 # ---------- 2) สร้าง network ของตัวเอง ----------
-docker rm -f vops4-web vops4-api vops4-db vops4-probe >/dev/null 2>&1
+docker rm -f -v vops4-web vops4-api vops4-db vops4-probe >/dev/null 2>&1
 docker network rm vops4-net >/dev/null 2>&1
 docker volume rm vops4-pgdata >/dev/null 2>&1
 
@@ -175,7 +175,7 @@ else
 fi
 
 # ---------- 9) สร้าง db ใหม่แล้วชื่อยังใช้ได้ แม้ IP เปลี่ยน ----------
-docker rm -f vops4-db >/dev/null 2>&1
+docker rm -f -v vops4-db >/dev/null 2>&1
 docker run -d --name vops4-db --network vops4-net \
   -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
   -v vops4-pgdata:/var/lib/postgresql/data \

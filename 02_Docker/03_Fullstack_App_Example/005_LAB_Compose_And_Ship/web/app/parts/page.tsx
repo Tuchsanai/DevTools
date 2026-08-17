@@ -1,18 +1,27 @@
 import { movePartAction } from "../actions";
 import { apiGet, type Part, type StockMove } from "../lib/api";
+import { IconAlert, IconDot } from "../ui/icons";
 import {
+  Badge,
   buttonClass,
-  Chip,
+  Empty,
   Flash,
+  ghostButtonClass,
   inputClass,
   labelClass,
+  PageHead,
   Panel,
   PanelHead,
-  StockBar,
-  thaiDate,
+  StockMeter,
+  thaiDateTime,
+  thClass,
+  thNumClass,
+  trClass,
 } from "../ui/kit";
 
 export const dynamic = "force-dynamic";
+
+const LEDGER_LIMIT = 12;
 
 export default async function PartsPage({
   searchParams,
@@ -32,6 +41,12 @@ export default async function PartsPage({
     ),
   );
 
+  const partById = new Map(parts.map((p) => [p.id, p]));
+  // REQ-07 : รวมความเคลื่อนไหวของทุกอะไหล่เป็นสมุดบัญชีเล่มเดียว เรียงใหม่→เก่า
+  const ledger = [...movesByPart.values()]
+    .flat()
+    .sort((a, b) => b.created_at.localeCompare(a.created_at));
+
   const low = parts.filter((p) => p.below_reorder);
   const totalQty = parts.reduce((sum, p) => sum + p.qty_on_hand, 0);
 
@@ -39,167 +54,233 @@ export default async function PartsPage({
     <>
       <Flash tone={sp.t} message={sp.m} />
 
-      <section className="animate-rise mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-xs font-medium tracking-[0.2em] text-brand-400 uppercase">Inventory</p>
-          <h1 className="mt-1.5 text-3xl font-bold tracking-tight text-slate-50">คลังอะไหล่</h1>
-          <p className="mt-1.5 max-w-3xl text-sm text-slate-400">
-            ทุกการรับเข้าและเบิกออกถูกบันทึกไว้ย้อนดูได้ · เบิกเกินยอดคงเหลือไม่ได้ ยอดจึงไม่มีทางติดลบ
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Chip className="border-white/12 bg-white/6 px-3 py-1 text-xs text-slate-200">
-            อะไหล่ {parts.length} รายการ · รวม {totalQty} ชิ้น
-          </Chip>
-          <Chip
-            className={
-              low.length
-                ? "border-rose-400/40 bg-rose-500/15 px-3 py-1 text-xs text-rose-200"
-                : "border-emerald-400/40 bg-emerald-400/12 px-3 py-1 text-xs text-emerald-200"
-            }
-          >
-            ต่ำกว่าจุดสั่งซื้อ {low.length} รายการ
-          </Chip>
-        </div>
-      </section>
+      <PageHead eyebrow="คลังอะไหล่" title="เหลือเท่าไหร่ และตัวไหนต้องสั่งก่อน" />
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        {parts.map((part) => {
-          const moves = movesByPart.get(part.id) ?? [];
-          return (
-            <Panel key={part.id} className="animate-rise overflow-hidden">
-              {/* ---------- หัวการ์ด + แถบสัดส่วน ---------- */}
-              <div className="px-5 pt-5">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="text-base font-semibold text-slate-50">{part.name}</h2>
-                    <p className="mt-0.5 font-mono text-[11px] tracking-wide text-slate-500">
-                      {part.sku}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p
-                      className={`text-4xl leading-none font-bold tabular-nums ${
-                        part.below_reorder ? "text-rose-300" : "text-slate-50"
-                      }`}
-                    >
-                      {part.qty_on_hand}
-                    </p>
-                    <p className="mt-1 text-[11px] text-slate-500">จุดสั่งซื้อ {part.reorder_point}</p>
-                  </div>
-                </div>
+      {/* ================= REQ-06 · บันทึกการเคลื่อนไหว ================= */}
+      <Panel className="mb-4">
+        <PanelHead
+          title="บันทึกการเคลื่อนไหว"
+          sub="กรอกจำนวนเป็นเลขบวกเสมอ แล้วเลือกทิศทางที่ปุ่ม — เบิกเกินยอดคงเหลือระบบจะปฏิเสธ และยอดไม่เปลี่ยน"
+        />
+        <form action={movePartAction} className="grid gap-4 px-6 py-4 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <label className={labelClass} htmlFor="part-id">
+              อะไหล่
+            </label>
+            <select id="part-id" name="id" required className={inputClass}>
+              {parts.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.sku} · {p.name} (เหลือ {p.qty_on_hand})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="lg:col-span-2">
+            <label className={labelClass} htmlFor="move-qty">
+              จำนวน
+            </label>
+            <input
+              id="move-qty"
+              name="qty"
+              type="number"
+              min={1}
+              defaultValue={1}
+              required
+              className={`${inputClass} num text-right`}
+            />
+          </div>
+          <div className="lg:col-span-3">
+            <label className={labelClass} htmlFor="move-reason">
+              เหตุผล
+            </label>
+            <input
+              id="move-reason"
+              name="reason"
+              placeholder="เช่น รับเข้าจากผู้ขาย"
+              className={inputClass}
+            />
+          </div>
+          {/* ปุ่มสองปุ่มใช้ฟอร์มเดียวกัน แยกกันที่ค่า name="direction" ที่ปุ่มส่งไปเอง */}
+          <div className="flex items-end gap-2 lg:col-span-3">
+            <button type="submit" name="direction" value="in" className={`${buttonClass} flex-1`}>
+              รับเข้า
+            </button>
+            <button
+              type="submit"
+              name="direction"
+              value="out"
+              className={`${ghostButtonClass} flex-1`}
+            >
+              เบิกออก
+            </button>
+          </div>
+        </form>
+      </Panel>
 
-                <div className="mt-4">
-                  <StockBar
-                    qty={part.qty_on_hand}
-                    reorder={part.reorder_point}
-                    below={part.below_reorder}
-                  />
-                  <div className="mt-1.5 flex items-center justify-between text-[11px]">
-                    <span className="text-slate-500">
-                      ขีดขาวคือจุดสั่งซื้อ · แถบเลยขีดไปทางขวา = ยอดปลอดภัย
-                    </span>
+      {/* ================= REQ-12 · ยอดคงเหลือรายอะไหล่ ================= */}
+      <Panel className="mb-4">
+        <PanelHead
+          title="ยอดคงเหลือรายอะไหล่"
+          sub="รางของมิเตอร์ยาวสองเท่าของจุดสั่งซื้อ ขีดดำจึงอยู่กึ่งกลางทุกแถว — แถบสั้นกว่าครึ่ง แปลว่าต้องสั่งเพิ่ม"
+          right={
+            <Badge
+              tone={low.length ? "crit" : "neutral"}
+              icon={low.length ? <IconAlert className="h-3 w-3" /> : undefined}
+            >
+              ต่ำกว่าจุดสั่งซื้อ <span className="num font-bold">{low.length}</span> รายการ
+            </Badge>
+          }
+        />
+        <table className="w-full">
+          <thead>
+            <tr>
+              <th className={`${thClass} w-32`}>รหัส</th>
+              <th className={thClass}>ชื่ออะไหล่</th>
+              <th className={thNumClass}>คงเหลือ</th>
+              <th className={thNumClass}>จุดสั่งซื้อ</th>
+              <th className={thNumClass}>ส่วนต่าง</th>
+              <th className={`${thClass} w-[220px]`}>ระดับเทียบจุดสั่งซื้อ</th>
+              <th className={thClass}>สถานะ</th>
+              <th className={thNumClass}>เคลื่อนไหว</th>
+            </tr>
+          </thead>
+          <tbody>
+            {parts.map((part) => {
+              const diff = part.qty_on_hand - part.reorder_point;
+              const moves = movesByPart.get(part.id) ?? [];
+              return (
+                <tr key={part.id} className={trClass}>
+                  <td className="px-4 py-2 font-mono text-[12px] whitespace-nowrap text-ink-3">
+                    {part.sku}
+                  </td>
+                  <td className="px-4 py-2 text-[14px] font-semibold text-ink">{part.name}</td>
+                  <td
+                    className={`num px-4 py-2 text-right text-[17px] font-bold ${
+                      part.below_reorder ? "text-crit-ink" : "text-ink"
+                    }`}
+                  >
+                    {part.qty_on_hand}
+                  </td>
+                  <td className="num px-4 py-2 text-right text-[14px] text-ink-2">
+                    {part.reorder_point}
+                  </td>
+                  {/* ส่วนต่างใช้หมึกกลาง ยกเว้นค่าติดลบที่เป็นสัญญาณต้องลงมือจริง ๆ */}
+                  <td
+                    className={`num px-4 py-2 text-right text-[14px] font-semibold ${
+                      diff < 0 ? "text-crit-ink" : "text-ink-2"
+                    }`}
+                  >
+                    {diff > 0 ? `+${diff}` : diff}
+                  </td>
+                  <td className="px-4 py-2">
+                    <StockMeter
+                      qty={part.qty_on_hand}
+                      reorder={part.reorder_point}
+                      below={part.below_reorder}
+                    />
+                  </td>
+                  <td className="px-4 py-2">
                     {part.below_reorder ? (
-                      <Chip className="border-rose-400/50 bg-rose-500/20 text-rose-100">
+                      <Badge tone="crit" icon={<IconAlert className="h-3 w-3" />}>
                         ต้องสั่งเพิ่ม
-                      </Chip>
+                      </Badge>
                     ) : (
-                      <Chip className="border-emerald-400/40 bg-emerald-400/12 text-emerald-200">
+                      // "เพียงพอ" ห้ามเป็นสีเขียว — ไม่งั้นทั้งตารางเขียวจนแถวที่ต้องสั่งไม่เด่น
+                      <Badge tone="neutral" icon={<IconDot className="h-2.5 w-2.5" />}>
                         เพียงพอ
-                      </Chip>
+                      </Badge>
                     )}
-                  </div>
-                </div>
-              </div>
+                  </td>
+                  <td className="num px-4 py-2 text-right text-[13px] text-ink-3">
+                    {moves.length}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+          {/* แถวรวม — คั่นด้วยเส้นหนา 2px ตามธรรมเนียมงบดุล */}
+          <tfoot>
+            <tr className="border-t-2 border-rule-strong bg-wash">
+              <td className="px-4 py-2 text-[11px] font-semibold tracking-[0.12em] text-ink-3" colSpan={2}>
+                รวมทุกรายการ · {parts.length} รายการในทะเบียนคลัง
+              </td>
+              <td className="num px-4 py-2 text-right whitespace-nowrap">
+                <span className="text-[17px] font-bold text-ink">{totalQty}</span>
+                <span className="ml-1 text-[12px] font-medium text-ink-3">ชิ้น</span>
+              </td>
+              <td colSpan={4} />
+              <td className="num px-4 py-2 text-right text-[13px] text-ink-3">{ledger.length}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </Panel>
 
-              {/* ---------- ฟอร์มรับเข้า / เบิกออก ---------- */}
-              <form
-                action={movePartAction}
-                className="mt-4 grid grid-cols-2 gap-3 border-t border-white/8 bg-white/3 px-5 py-4 sm:grid-cols-12"
-              >
-                <input type="hidden" name="id" value={part.id} />
-                <div className="col-span-1 sm:col-span-2">
-                  <label className={labelClass} htmlFor={`qty-${part.id}`}>
-                    จำนวน
-                  </label>
-                  <input
-                    id={`qty-${part.id}`}
-                    name="qty"
-                    type="number"
-                    min={1}
-                    defaultValue={1}
-                    required
-                    className={inputClass}
-                  />
-                </div>
-                <div className="col-span-1 sm:col-span-6">
-                  <label className={labelClass} htmlFor={`reason-${part.id}`}>
-                    เหตุผล
-                  </label>
-                  <input
-                    id={`reason-${part.id}`}
-                    name="reason"
-                    placeholder="เช่น รับเข้าจากผู้ขาย"
-                    className={inputClass}
-                  />
-                </div>
-                {/* ปุ่มสองปุ่มใช้ฟอร์มเดียวกัน แยกกันด้วยค่า name="direction" ที่ปุ่มส่งไปเอง */}
-                <div className="col-span-2 flex items-end gap-2 sm:col-span-4">
-                  <button
-                    type="submit"
-                    name="direction"
-                    value="in"
-                    className={`${buttonClass} flex-1 bg-emerald-400 hover:bg-emerald-300`}
-                  >
-                    รับเข้า
-                  </button>
-                  <button
-                    type="submit"
-                    name="direction"
-                    value="out"
-                    className={`${buttonClass} flex-1 bg-amber-400 hover:bg-amber-300`}
-                  >
-                    เบิกออก
-                  </button>
-                </div>
-              </form>
-
-              {/* ---------- ประวัติการเคลื่อนไหว ---------- */}
-              <details className="border-t border-white/8">
-                <summary className="cursor-pointer px-5 py-3 text-xs font-medium text-slate-400 transition hover:text-slate-200">
-                  ประวัติการเคลื่อนไหว ({moves.length} รายการ)
-                </summary>
-                <ul className="divide-y divide-white/6 border-t border-white/8">
-                  {moves.length === 0 ? (
-                    <li className="px-5 py-4 text-center text-xs text-slate-500">ยังไม่มีการเคลื่อนไหว</li>
-                  ) : (
-                    moves.map((move) => (
-                      <li key={move.id} className="flex items-center gap-3 px-5 py-2.5 text-xs">
-                        <span
-                          className={`w-12 shrink-0 text-right font-semibold tabular-nums ${
-                            move.delta > 0 ? "text-emerald-300" : "text-amber-300"
-                          }`}
-                        >
-                          {move.delta > 0 ? `+${move.delta}` : move.delta}
-                        </span>
-                        <span className="min-w-0 flex-1 truncate text-slate-300">
-                          {move.reason}
-                          {move.ticket_id ? (
-                            <span className="text-slate-500"> · ใบซ่อม #{move.ticket_id}</span>
-                          ) : null}
-                        </span>
-                        <span className="shrink-0 tabular-nums text-slate-500">
-                          {thaiDate(move.created_at)}
-                        </span>
-                      </li>
-                    ))
-                  )}
-                </ul>
-              </details>
-            </Panel>
-          );
-        })}
-      </div>
+      {/* ================= REQ-07 · สมุดความเคลื่อนไหว ================= */}
+      <Panel>
+        <PanelHead
+          title="ความเคลื่อนไหวของคลัง"
+          sub="รวมทุกอะไหล่ไว้เล่มเดียว เรียงจากใหม่ไปเก่า — รายการที่มีเลขใบซ่อมคือของที่ถูกตัดตอนช่างปิดงาน"
+          right={
+            <Badge tone="neutral">
+              ทั้งหมด <span className="num font-bold text-ink">{ledger.length}</span> รายการ
+            </Badge>
+          }
+        />
+        {ledger.length === 0 ? (
+          <Empty
+            title="ยังไม่มีความเคลื่อนไหว"
+            hint="เมื่อมีการรับเข้า เบิกออก หรือปิดใบซ่อมที่ใช้อะไหล่ รายการจะมาปรากฏที่นี่"
+          />
+        ) : (
+          <>
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th className={`${thClass} w-40`}>เวลา</th>
+                  <th className={thClass}>อะไหล่</th>
+                  <th className={thClass}>เหตุผล</th>
+                  <th className={`${thClass} w-32`}>อ้างอิงใบซ่อม</th>
+                  <th className={`${thClass} w-24`}>ทิศทาง</th>
+                  <th className={thNumClass}>จำนวน</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ledger.slice(0, LEDGER_LIMIT).map((move) => {
+                  const part = partById.get(move.part_id);
+                  const inbound = move.delta > 0;
+                  return (
+                    <tr key={move.id} className={trClass}>
+                      <td className="num px-4 py-1.5 text-[13px] whitespace-nowrap text-ink-3">
+                        {thaiDateTime(move.created_at)}
+                      </td>
+                      <td className="px-4 py-1.5 text-[14px] font-medium whitespace-nowrap text-ink">
+                        {part?.name ?? `อะไหล่ #${move.part_id}`}
+                      </td>
+                      <td className="px-4 py-1.5 text-[13px] text-ink-2">{move.reason}</td>
+                      <td className="px-4 py-1.5 font-mono text-[12px] text-ink-3">
+                        {move.ticket_id ? `#${move.ticket_id}` : "—"}
+                      </td>
+                      {/* รับเข้า/เบิกออก คืองานปกติ ไม่ใช่สถานะเตือน — อ่านจากคำ + เครื่องหมาย ไม่ย้อมสี */}
+                      <td className="px-4 py-1.5 text-[13px] text-ink-2">
+                        {inbound ? "รับเข้า" : "เบิกออก"}
+                      </td>
+                      <td className="num px-4 py-1.5 text-right text-[14px] font-bold text-ink">
+                        {inbound ? `+${move.delta}` : `−${Math.abs(move.delta)}`}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            {ledger.length > LEDGER_LIMIT ? (
+              <p className="border-t border-rule px-6 py-2 text-[13px] text-ink-3">
+                แสดง {LEDGER_LIMIT} รายการล่าสุด จากทั้งหมด{" "}
+                <span className="num font-semibold text-ink-2">{ledger.length}</span> รายการ
+              </p>
+            ) : null}
+          </>
+        )}
+      </Panel>
     </>
   );
 }

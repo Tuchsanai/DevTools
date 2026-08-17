@@ -6,7 +6,7 @@ node_modules
 npm-debug.log*
 .git
 .gitignore
-Dockerfile
+Dockerfile*
 .dockerignore
 README.md
 .env*.local
