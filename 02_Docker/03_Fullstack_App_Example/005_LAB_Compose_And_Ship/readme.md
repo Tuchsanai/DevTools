@@ -33,8 +33,8 @@
 | `-v ops-pgdata:/var/lib/postgresql/data` | `volumes:` + บล็อก `volumes:` ล่างสุดของไฟล์ | LAB 1 |
 | `-v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro"` | `volumes:` แบบ bind mount | LAB 1 |
 | `docker build -t ops-api:1.0 ./api` | `build: context: ./api` | LAB 2 |
-| `--build-arg NEXT_PUBLIC_SITE_NAME=CampusOps` | `build: args:` | LAB 3 |
 | `-p 3000:3000` | `ports:` (มีที่ `web` ที่เดียว) | LAB 2 · LAB 3 |
+| `--build-arg NEXT_PUBLIC_SITE_NAME=CampusOps` | `build: args:` | LAB 3 |
 | `docker network create` + `--network` | *ไม่ต้องเขียน* — compose สร้าง network ชื่อ `<project>_default` ให้เอง | LAB 4 |
 | *(`docker run` ทำไม่ได้)* พิมพ์ `sleep 10` เดาเอาเอง | `healthcheck:` + `depends_on: condition: service_healthy` | **02_Dockerfile Guide LAB 7** |
 
@@ -477,7 +477,7 @@ ALL CHECKS PASSED
 exit code = 0
 ```
 
-> 📝 ใช้เวลาราว 1 นาที เพราะ BuildKit ใช้ cache จากตอนการทดลองที่ 2 ต่อ (ถ้ายังไม่เคย build จะนานกว่านี้) · สคริปต์ใช้ project ชื่อ `vops5` · กล่อง `vops5-registry` · พอร์ต `13191` และ `15000` แล้วลบทิ้งเองเมื่อจบ — project `campusops` กับกล่อง `ops-registry` ของเราไม่ถูกแตะ
+> 📝 ใช้เวลาราว 1 นาที เพราะ BuildKit ใช้ cache จากการทดลองที่ 2 ต่อ (ถ้ายังไม่เคย build จะนานกว่านี้) · สคริปต์ใช้ project `vops5` · กล่อง `vops5-registry` · พอร์ต `13191` และ `15000` แล้วลบทิ้งเองเมื่อจบ — project `campusops` กับกล่อง `ops-registry` ของเราไม่ถูกแตะ
 
 ---
 

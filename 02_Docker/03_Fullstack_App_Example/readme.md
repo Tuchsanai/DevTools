@@ -168,9 +168,9 @@ bash verify.sh ; echo "exit code = $?"
 
 | LAB | จำนวนบรรทัด `[PASS]` | ของที่สคริปต์สร้างเอง (แล้วลบทิ้งเอง) |
 |---|---:|---|
-| 1 | 16 | กล่อง `vops-db*` · volume `vops1-pgdata` |
-| 2 | 17 | image `vops-api:verify` · กล่อง `vops-*` · พอร์ต `18088` |
-| 3 | 22 | image `vops-web:verify` · `vops-web:single` · กล่อง `vops-db` · `vops-api` · `vops-web` |
+| 1 | 16 | กล่อง `vops1-db*` · volume `vops1-pgdata` |
+| 2 | 17 | image `vops2-api:verify` · กล่อง `vops2-*` · พอร์ต `18088` |
+| 3 | 22 | image `vops3-web:verify` · `vops3-web:single` · กล่อง `vops3-db` · `vops3-api` · `vops3-web` |
 | 4 | 19 | network `vops4-net` · กล่อง `vops4-db` · `vops4-api` · `vops4-web` · `vops4-probe` |
 | 5 | 22 | project `vops5` · กล่อง `vops5-registry` · พอร์ต `13191` · `15000` |
 

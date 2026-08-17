@@ -5,8 +5,8 @@
   <text x="400" y="52" text-anchor="middle" font-size="13" fill="#64748b">ไม่มีอะไรใหม่เลย มีแค่ย้ายที่เก็บ จากบรรทัดคำสั่งที่ต้องจำเอง ไปเป็นไฟล์ที่ commit ลง git ได้</text>
 
   <defs>
-    <marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-      <path d="M 0 0 L 10 4 L 0 8 z" fill="#94a3b8"/>
+    <marker id="arr" markerWidth="8" markerHeight="6.4" refX="8" refY="3.2" orient="auto">
+      <path d="M 0 0 L 8 3.2 L 0 6.4 z" fill="#64748b"/>
     </marker>
   </defs>
 
@@ -19,54 +19,54 @@
   <g font-size="12.5">
     <rect x="24" y="114" width="352" height="42" rx="7" fill="#fffbeb" stroke="#fde68a"/>
     <text x="36" y="132" fill="#78350f" font-weight="bold">LAB 1</text>
-    <text x="86" y="132" fill="#0f172a">-e POSTGRES_PASSWORD=labpass</text>
-    <text x="86" y="149" fill="#78716c">ส่งค่าตั้งต้นเข้ากล่อง</text>
-    <path d="M 382 135 L 418 135" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+    <text x="100" y="132" fill="#0f172a">-e POSTGRES_PASSWORD=labpass</text>
+    <text x="100" y="149" fill="#78716c">ส่งค่าตั้งต้นเข้ากล่อง</text>
+    <path d="M 380 135 L 422 135" stroke="#64748b" stroke-width="2.6" marker-end="url(#arr)"/>
     <rect x="424" y="114" width="352" height="42" rx="7" fill="#f8fafc" stroke="#cbd5e1"/>
     <text x="436" y="132" fill="#1d4ed8" font-weight="bold">environment:</text>
     <text x="436" y="149" fill="#64748b">POSTGRES_PASSWORD: labpass</text>
 
     <rect x="24" y="162" width="352" height="42" rx="7" fill="#fffbeb" stroke="#fde68a"/>
     <text x="36" y="180" fill="#78350f" font-weight="bold">LAB 1</text>
-    <text x="86" y="180" fill="#0f172a">-v ops-pgdata:/var/lib/postgresql/data</text>
-    <text x="86" y="197" fill="#78716c">named volume · NFR-2 ข้อมูลห้ามหาย</text>
-    <path d="M 382 183 L 418 183" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+    <text x="100" y="180" fill="#0f172a">-v ops-pgdata:/var/lib/postgresql/data</text>
+    <text x="100" y="197" fill="#78716c">named volume · NFR-2 ข้อมูลห้ามหาย</text>
+    <path d="M 380 183 L 422 183" stroke="#64748b" stroke-width="2.6" marker-end="url(#arr)"/>
     <rect x="424" y="162" width="352" height="42" rx="7" fill="#f8fafc" stroke="#cbd5e1"/>
     <text x="436" y="180" fill="#1d4ed8" font-weight="bold">volumes:</text>
     <text x="436" y="197" fill="#64748b">pgdata:/var/lib/postgresql/data</text>
 
     <rect x="24" y="210" width="352" height="42" rx="7" fill="#fffbeb" stroke="#fde68a"/>
     <text x="36" y="228" fill="#78350f" font-weight="bold">LAB 2</text>
-    <text x="86" y="228" fill="#0f172a">docker build -t ops-api:1.0 ./api</text>
-    <text x="86" y="245" fill="#78716c">จุดท้ายคำสั่งคือ build context</text>
-    <path d="M 382 231 L 418 231" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+    <text x="100" y="228" fill="#0f172a">docker build -t ops-api:1.0 ./api</text>
+    <text x="100" y="245" fill="#78716c">จุดท้ายคำสั่งคือ build context</text>
+    <path d="M 380 231 L 422 231" stroke="#64748b" stroke-width="2.6" marker-end="url(#arr)"/>
     <rect x="424" y="210" width="352" height="42" rx="7" fill="#f8fafc" stroke="#cbd5e1"/>
     <text x="436" y="228" fill="#1d4ed8" font-weight="bold">build:</text>
     <text x="436" y="245" fill="#64748b">context: ./api</text>
 
     <rect x="24" y="258" width="352" height="42" rx="7" fill="#fffbeb" stroke="#fde68a"/>
-    <text x="36" y="276" fill="#78350f" font-weight="bold">LAB 3</text>
-    <text x="86" y="276" fill="#0f172a">--build-arg NEXT_PUBLIC_SITE_NAME=...</text>
-    <text x="86" y="293" fill="#78716c">ค่าที่ต้องมาตั้งแต่ตอน build</text>
-    <path d="M 382 279 L 418 279" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+    <text x="36" y="276" fill="#78350f" font-weight="bold">LAB 2·3</text>
+    <text x="100" y="276" fill="#0f172a">-p 3000:3000</text>
+    <text x="100" y="293" fill="#78716c">มีแค่ web ที่ควรมีบรรทัดนี้ · NFR-3</text>
+    <path d="M 380 279 L 422 279" stroke="#64748b" stroke-width="2.6" marker-end="url(#arr)"/>
     <rect x="424" y="258" width="352" height="42" rx="7" fill="#f8fafc" stroke="#cbd5e1"/>
-    <text x="436" y="276" fill="#1d4ed8" font-weight="bold">build: &gt; args:</text>
-    <text x="436" y="293" fill="#64748b">NEXT_PUBLIC_SITE_NAME: CampusOps</text>
+    <text x="436" y="276" fill="#1d4ed8" font-weight="bold">ports:</text>
+    <text x="436" y="293" fill="#64748b">"3000:3000"  (db ไม่มี key นี้เลย)</text>
 
     <rect x="24" y="306" width="352" height="42" rx="7" fill="#fffbeb" stroke="#fde68a"/>
-    <text x="36" y="324" fill="#78350f" font-weight="bold">LAB 2</text>
-    <text x="86" y="324" fill="#0f172a">-p 3000:3000</text>
-    <text x="86" y="341" fill="#78716c">มีแค่ web ที่ควรมีบรรทัดนี้ · NFR-3</text>
-    <path d="M 382 327 L 418 327" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+    <text x="36" y="324" fill="#78350f" font-weight="bold">LAB 3</text>
+    <text x="100" y="324" fill="#0f172a">--build-arg NEXT_PUBLIC_SITE_NAME=...</text>
+    <text x="100" y="341" fill="#78716c">ค่าที่ต้องมาตั้งแต่ตอน build</text>
+    <path d="M 380 327 L 422 327" stroke="#64748b" stroke-width="2.6" marker-end="url(#arr)"/>
     <rect x="424" y="306" width="352" height="42" rx="7" fill="#f8fafc" stroke="#cbd5e1"/>
-    <text x="436" y="324" fill="#1d4ed8" font-weight="bold">ports:</text>
-    <text x="436" y="341" fill="#64748b">"3000:3000"  (db ไม่มี key นี้เลย)</text>
+    <text x="436" y="324" fill="#1d4ed8" font-weight="bold">build: &gt; args:</text>
+    <text x="436" y="341" fill="#64748b">NEXT_PUBLIC_SITE_NAME: CampusOps</text>
 
     <rect x="24" y="354" width="352" height="42" rx="7" fill="#fffbeb" stroke="#fde68a"/>
     <text x="36" y="372" fill="#78350f" font-weight="bold">LAB 4</text>
-    <text x="86" y="372" fill="#0f172a">docker network create + --network</text>
-    <text x="86" y="389" fill="#78716c">เพื่อให้เรียกกันด้วยชื่อได้</text>
-    <path d="M 382 375 L 418 375" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+    <text x="100" y="372" fill="#0f172a">docker network create + --network</text>
+    <text x="100" y="389" fill="#78716c">เพื่อให้เรียกกันด้วยชื่อได้</text>
+    <path d="M 380 375 L 422 375" stroke="#64748b" stroke-width="2.6" marker-end="url(#arr)"/>
     <rect x="424" y="354" width="352" height="42" rx="7" fill="#ecfdf5" stroke="#6ee7b7"/>
     <text x="436" y="372" fill="#047857" font-weight="bold">ไม่ต้องเขียนอะไรเลย</text>
     <text x="436" y="389" fill="#059669">compose สร้าง network ให้เอง</text>

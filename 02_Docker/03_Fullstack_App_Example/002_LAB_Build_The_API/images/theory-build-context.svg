@@ -19,9 +19,9 @@
   <rect x="40" y="270" width="268" height="30" rx="5" fill="#fdecec" stroke="#d05353" stroke-dasharray="5 3"/>
   <text x="52" y="290" font-size="13" fill="#8f2020">api-debug.log ✗ .dockerignore</text>
 
-  <text x="40" y="326" font-size="13" fill="#52606d">ทุกไฟล์ที่ไม่ถูก ignore ถูกมัดเป็นก้อนเดียว</text>
-  <text x="40" y="346" font-size="13" fill="#52606d">แล้วส่งข้ามไปให้ daemon ก่อน build เริ่ม</text>
-  <text x="40" y="364" font-size="13" font-weight="bold" fill="#1c4f80">รวมที่ส่งจริง : 28.54 kB</text>
+  <text x="40" y="320" font-size="13" fill="#52606d">ทุกไฟล์ที่ไม่ถูก ignore ถูกมัดเป็นก้อนเดียว</text>
+  <text x="40" y="340" font-size="13" fill="#52606d">แล้วส่งข้ามไปให้ daemon ก่อน build เริ่ม</text>
+  <text x="40" y="358" font-size="13" font-weight="bold" fill="#1c4f80">รวมที่ส่งจริง : 28.54 kB</text>
 
   <!-- arrow -->
   <defs>

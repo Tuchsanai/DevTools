@@ -394,16 +394,26 @@ docker run -d --name ops-db -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e
   && docker build -q -t campusops-api:lab3 ./api && docker run -d --name ops-api \
   -e DATABASE_URL="postgresql://opsuser:labpass@$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-db):5432/campusops" \
   campusops-api:lab3 && sleep 6
-curl -s http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-api):8000/health; echo
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ท้ายผลการดึง image จะมี ID ของ `ops-db` · `sha256:` ของ `campusops-api:lab3` · ID ของ `ops-api` แล้วปิดท้ายด้วยคำตอบของ `/health` (ID และ sha256 ของแต่ละคนไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — ท้ายผลการดึง image จะมี ID ของ `ops-db` · `sha256:` ของ `campusops-api:lab3` · ID ของ `ops-api` (ID และ sha256 ของแต่ละคนไม่ตรงกัน) :
 
 ```
 Status: Downloaded newer image for postgres:17-alpine
 04e230112688dd251169ef28c4c3096d7f4c60f65c03adbdc1f9fe279bfb5d35
 sha256:4c00c36f83b5b312a8e7d62f2a08dba109413b375b709dacead64f81a1038bb5
 a3ae2b7ad72ec96cf2dd11df99a85d8e78901ca5a68075e818265f9ad66cc3b8
+```
+
+สองกล่องขึ้นแล้ว ถาม `/health` ของ `ops-api` ว่าต่อฐานข้อมูลติดจริงไหม :
+
+```bash
+curl -s http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-api):8000/health; echo
+```
+
+✅ **สิ่งที่ต้องเห็น** — `"db":"up"` แปลว่า `ops-api` ต่อ `ops-db` ติดแล้ว :
+
+```
 {"status":"ok","db":"up"}
 ```
 
@@ -446,6 +456,12 @@ curl -s -o /dev/null -w "GET $CSS -> HTTP %{http_code} · %{size_download} ไ�
 CSS = /_next/static/chunks/3sqcqigw583ti.css
 GET /_next/static/chunks/3sqcqigw583ti.css -> HTTP 200 · 35235 ไบต์
 ```
+
+เปิดหน้า `/tickets` ในเบราว์เซอร์เทียบด้วยตา — ไฟล์ CSS ก้อนนั้นทำงานอยู่ในหน้านี้ :
+
+![หน้ากระดานงานซ่อมของ CampusOps ที่ path /tickets เปิดจากเบราว์เซอร์จริง มีแถบเมนูซ้ายพื้นดำ ฟอร์มแจ้งซ่อมใหม่ และคอลัมน์สี่ขั้น รอรับเรื่อง 3 มอบหมายแล้ว 2 กำลังซ่อม 1 ปิดงานแล้ว 2 การ์ดแต่ละใบมีป้ายความเร่งด่วนสีแดงหรือเทาและปุ่มสีน้ำเงิน](./images/app-tickets-board.png)
+
+> 🖼 **วิธีอ่านรูปนี้:** ทุกจุดที่ **มีสีและมีการจัดวาง** คือ CSS ที่โหลดสำเร็จ — แถบเมนูซ้ายพื้นดำ · การ์ดสี่คอลัมน์ที่เรียงข้างกัน · ป้าย `เร่งด่วน` สีแดง · ปุ่ม `มอบหมาย` สีน้ำเงิน · ถ้า `web/Dockerfile` เจาะ `COPY` แค่ `.next/static/css` ตามที่ตำราส่วนใหญ่สอน หน้านี้จะยัง **ตอบ 200 เหมือนเดิม** แต่กลายเป็นตัวหนังสือดำล้วนเรียงลงมาเป็นแถวเดียวไม่มีสีสักจุด — นั่นคือกับดักที่การทดลองนี้กำลังพิสูจน์
 
 ดูของจริงในกล่องว่าไฟล์วางอยู่ตรงไหน :
 

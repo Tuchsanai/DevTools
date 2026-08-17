@@ -46,11 +46,11 @@
   <rect x="670" y="264" width="100" height="34" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
   <text x="720" y="286" text-anchor="middle" font-size="12.5" fill="#1e3a8a">web Started</text>
 
-  <path d="M 330 140 C 380 156 420 168 496 186" fill="none" stroke="#059669" stroke-width="2.2" marker-end="url(#tipg)"/>
-  <text x="352" y="169" font-size="11.5" font-weight="bold" fill="#047857">db healthy จึงปล่อย api</text>
+  <path d="M 330 140 C 380 156 420 168 496 186" fill="none" stroke="#059669" stroke-width="2.6" marker-end="url(#tipg)"/>
+  <text x="326" y="165" text-anchor="end" font-size="11.5" font-weight="bold" fill="#047857">db healthy จึงปล่อย api</text>
 
-  <path d="M 500 220 C 560 236 600 248 666 266" fill="none" stroke="#059669" stroke-width="2.2" marker-end="url(#tipg)"/>
-  <text x="520" y="249" font-size="11.5" font-weight="bold" fill="#047857">api healthy จึงปล่อย web</text>
+  <path d="M 500 220 C 560 236 600 248 666 266" fill="none" stroke="#059669" stroke-width="2.6" marker-end="url(#tipg)"/>
+  <text x="496" y="245" text-anchor="end" font-size="11.5" font-weight="bold" fill="#047857">api healthy จึงปล่อย web</text>
 
   <rect x="24" y="316" width="746" height="34" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
   <text x="40" y="338" font-size="12.5" fill="#1e3a8a">healthcheck: คือคนตอบว่า "พร้อมหรือยัง" · depends_on: condition: service_healthy คือคนที่ยอมรออยู่ตรงนั้น</text>

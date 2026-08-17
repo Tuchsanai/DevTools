@@ -464,6 +464,12 @@ curl -s -o /dev/null -w 'GET /docs -> %{http_code}\n' http://localhost:8088/docs
 GET /docs -> 200
 ```
 
+หน้าที่เบราว์เซอร์จะเห็นที่ `http://localhost:8088/docs` หน้าตาแบบนี้ :
+
+![หน้า Swagger UI ของ FastAPI ชื่อ CampusOps API เวอร์ชัน 1.0.0 OAS 3.1 ไล่รายการ endpoint ตั้งแต่ GET /health, GET /api/assets, GET กับ POST /api/tickets, PATCH /api/tickets/{ticket_id}/status, POST /api/tickets/{ticket_id}/close, /api/loans, /api/parts จนถึง GET /api/dashboard และบล็อก Schemas ด้านล่าง](./images/api-docs-swagger.png)
+
+> 🖼 **วิธีอ่านรูปนี้:** หน้านี้คือหลักฐานว่า `-p 8088:8000` เปิดประตูจริง — ก่อนใส่ `-p` `curl` เพิ่งตอบ `exit=7` ทั้งที่ `EXPOSE 8000` อยู่ใน image มาตั้งแต่ต้น · แถบซ้ายของทุกแถวคือ method (`GET` ฟ้า · `POST`/`PATCH` เขียว) และรายการที่เห็นคือ endpoint ชุดเดียวกับที่จะยิงด้วย `curl` ในการทดลองที่ 9 และ `api/smoke.sh` ในการทดลองที่ 10 · ถ้าเปิดแล้วเบราว์เซอร์ขึ้น "ต่อไม่ได้" แปลว่ากล่องยังไม่มี `-p` ไม่ใช่ `EXPOSE` หาย
+
 > 📝 **บทเรียน:** `EXPOSE` = เอกสารในตัว image · `-p 8088:8000` = ประตูจริง (ซ้ายพอร์ตเครื่อง ขวาพอร์ตในกล่อง) · นี่คือเหตุผลที่ `db` ไม่มี `-p` ตาม NFR-3 ทั้งที่ image ของมันก็มี `EXPOSE 5432`
 
 ---
