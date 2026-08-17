@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 440" width="800" height="440" font-family="sans-serif">
+  <rect x="0" y="0" width="800" height="440" fill="#0f172a"/>
+
+  <text x="400" y="30" fill="#e2e8f0" font-size="17" font-weight="bold" text-anchor="middle">กับดัก : Next.js 16 ไม่ได้วางไฟล์ CSS ไว้ที่ .next/static/css</text>
+
+  <!-- what builder produced -->
+  <rect x="24" y="50" width="752" height="96" rx="10" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+  <text x="44" y="74" fill="#cbd5e1" font-size="14" font-weight="bold">ของจริงที่ stage builder สร้างไว้ (ตรวจด้วย ls .next/static)</text>
+  <rect x="44" y="86" width="230" height="44" rx="6" fill="#334155"/>
+  <text x="58" y="106" fill="#e2e8f0" font-size="13">.next/static/chunks/</text>
+  <text x="58" y="123" fill="#5eead4" font-size="12">*.js และ *.css อยู่รวมกันที่นี่</text>
+  <rect x="288" y="86" width="230" height="44" rx="6" fill="#334155"/>
+  <text x="302" y="106" fill="#e2e8f0" font-size="13">.next/static/&lt;build-id&gt;/</text>
+  <text x="302" y="123" fill="#94a3b8" font-size="12">ไฟล์ประจำรอบ build</text>
+  <rect x="532" y="86" width="230" height="44" rx="6" fill="#3f1d1d" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="546" y="106" fill="#fca5a5" font-size="13">.next/static/css/</text>
+  <text x="546" y="123" fill="#fca5a5" font-size="12">ไม่มีโฟลเดอร์นี้อยู่จริง</text>
+
+  <!-- good -->
+  <rect x="24" y="162" width="368" height="216" rx="10" fill="#1e293b" stroke="#22c55e" stroke-width="2"/>
+  <text x="208" y="186" fill="#86efac" font-size="14" font-weight="bold" text-anchor="middle">คัดลอก .next/static ทั้งก้อน</text>
+  <rect x="44" y="198" width="328" height="34" rx="6" fill="#0f172a"/>
+  <text x="56" y="220" fill="#86efac" font-size="11.5">COPY --from=builder /app/.next/static ./.next/static</text>
+  <text x="44" y="256" fill="#e2e8f0" font-size="13">HTML ที่ server ส่งออกมา :</text>
+  <text x="44" y="278" fill="#5eead4" font-size="11.5">&lt;link rel="stylesheet" href="/_next/static/chunks/xxx.css"&gt;</text>
+  <rect x="44" y="292" width="328" height="34" rx="6" fill="#166534"/>
+  <text x="208" y="314" fill="#dcfce7" font-size="13" font-weight="bold" text-anchor="middle">GET ไฟล์นั้น → HTTP 200 · 35 kB</text>
+  <text x="208" y="348" fill="#86efac" font-size="13" text-anchor="middle">หน้าเว็บมีสี มีการ์ด มีตาราง ครบตามที่ออกแบบ</text>
+
+  <!-- bad -->
+  <rect x="408" y="162" width="368" height="216" rx="10" fill="#1e293b" stroke="#ef4444" stroke-width="2"/>
+  <text x="592" y="186" fill="#fca5a5" font-size="14" font-weight="bold" text-anchor="middle">เจาะเฉพาะโฟลเดอร์ย่อยตามตำราเก่า</text>
+  <rect x="428" y="198" width="328" height="34" rx="6" fill="#0f172a"/>
+  <text x="440" y="220" fill="#fca5a5" font-size="11.5">COPY --from=builder /app/.next/static/css ./.next/static/css</text>
+  <text x="428" y="256" fill="#e2e8f0" font-size="13">ทางแรก : build ล้มทันที</text>
+  <text x="428" y="278" fill="#fca5a5" font-size="11.5">"/app/.next/static/css": not found</text>
+  <rect x="428" y="292" width="328" height="34" rx="6" fill="#7f1d1d"/>
+  <text x="592" y="314" fill="#fecaca" font-size="13" font-weight="bold" text-anchor="middle">ทางที่แย่กว่า : เจาะ chunks เฉพาะ *.js</text>
+  <text x="592" y="348" fill="#fca5a5" font-size="13" text-anchor="middle">build ผ่าน · หน้าเว็บขึ้น 200 · แต่ไม่มี CSS เลย</text>
+
+  <text x="400" y="404" fill="#cbd5e1" font-size="13" text-anchor="middle">อาการที่ผู้ใช้เห็น : ตัวหนังสือกองซ้อนกันขาวดำ ทั้งที่ทุกหน้าตอบ HTTP 200 และ log ไม่มี error</text>
+  <text x="400" y="426" fill="#64748b" font-size="12" text-anchor="middle">วิธีตรวจที่สั้นที่สุด : หา &lt;link rel="stylesheet"&gt; ใน HTML แล้ว curl ไฟล์นั้นดูว่าได้ 200 หรือ 404</text>
+</svg>

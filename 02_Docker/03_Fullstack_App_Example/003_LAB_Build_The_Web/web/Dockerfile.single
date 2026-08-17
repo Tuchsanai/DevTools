@@ -1,0 +1,34 @@
+# syntax=docker/dockerfile:1
+# ---------------------------------------------------------------------
+# CampusOps Web image — เวอร์ชัน "stage เดียว" ไว้เทียบขนาดเท่านั้น
+#
+# ไฟล์นี้ทำงานได้จริง หน้าเว็บขึ้นครบเหมือนกัน แต่ image ที่ได้แบก
+# toolchain ทั้งชุดไปด้วย : devDependencies (TypeScript, Tailwind),
+# node_modules เต็มก้อน, source .tsx และ cache ของ next build
+#
+# อย่าใช้ไฟล์นี้ส่งมอบลูกค้า — ใช้ Dockerfile (3 stage) เท่านั้น
+# ---------------------------------------------------------------------
+FROM node:22-alpine
+WORKDIR /app
+
+ARG NEXT_PUBLIC_SITE_NAME=CampusOps
+ENV NEXT_PUBLIC_SITE_NAME=$NEXT_PUBLIC_SITE_NAME
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0
+
+# ลำดับ COPY/RUN เหมือน Dockerfile ตัวจริงทุกประการ (layer cache ของ LAB 2)
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+# ตั้ง NODE_ENV หลัง build เท่านั้น — ถ้าตั้งไว้ก่อน npm ci จะข้าม devDependencies
+# แล้ว next build จะล้มที่ Tailwind (Cannot find module '@tailwindcss/postcss')
+ENV NODE_ENV=production
+
+EXPOSE 3000
+
+# ไม่มี stage runtime ให้หยิบ .next/standalone ไปวาง จึงต้องรันด้วยตัว next ที่อยู่ใน node_modules
+CMD ["node_modules/.bin/next", "start"]

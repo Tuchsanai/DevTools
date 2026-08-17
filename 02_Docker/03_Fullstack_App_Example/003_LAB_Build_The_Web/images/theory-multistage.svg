@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 440" width="800" height="440" font-family="sans-serif">
+  <rect x="0" y="0" width="800" height="440" fill="#0f172a"/>
+
+  <text x="400" y="30" fill="#e2e8f0" font-size="17" font-weight="bold" text-anchor="middle">multi-stage : ของที่ใช้ตอน build ไม่ต้องติดไปกับ image ที่ส่งมอบ</text>
+
+  <!-- builder side -->
+  <rect x="24" y="52" width="330" height="330" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+  <text x="189" y="78" fill="#fbbf24" font-size="14" font-weight="bold" text-anchor="middle">stage deps + builder — ถูกทิ้งทั้งก้อน</text>
+
+  <rect x="44" y="92" width="290" height="46" rx="6" fill="#334155"/>
+  <text x="58" y="112" fill="#e2e8f0" font-size="13">node_modules ครบทุกตัว (RUN npm ci)</text>
+  <text x="58" y="130" fill="#fca5a5" font-size="13" font-weight="bold">505 MB</text>
+
+  <rect x="44" y="146" width="290" height="46" rx="6" fill="#334155"/>
+  <text x="58" y="166" fill="#e2e8f0" font-size="13">devDependencies : typescript · tailwindcss</text>
+  <text x="58" y="184" fill="#94a3b8" font-size="12">รวมอยู่ในก้อน 505 MB ข้างบน</text>
+
+  <rect x="44" y="200" width="290" height="46" rx="6" fill="#334155"/>
+  <text x="58" y="220" fill="#e2e8f0" font-size="13">source .tsx + cache ของ next build</text>
+  <text x="58" y="238" fill="#fca5a5" font-size="13" font-weight="bold">100 MB</text>
+
+  <rect x="44" y="254" width="290" height="52" rx="6" fill="#0f766e"/>
+  <text x="58" y="274" fill="#ccfbf1" font-size="13">ผลลัพธ์ที่ต้องใช้จริงตอนรัน</text>
+  <text x="58" y="294" fill="#5eead4" font-size="12">.next/standalone · .next/static</text>
+
+  <text x="189" y="336" fill="#f59e0b" font-size="13" text-anchor="middle">ทุกอย่างในกรอบนี้อยู่แค่ตอน build</text>
+  <text x="189" y="358" fill="#94a3b8" font-size="12" text-anchor="middle">ไม่มี layer ไหนของ 2 stage นี้ไปโผล่ใน docker history</text>
+
+  <!-- arrow -->
+  <path d="M362 280 L440 280" stroke="#5eead4" stroke-width="3" fill="none"/>
+  <path d="M440 280 l-12 -7 v14 z" fill="#5eead4"/>
+  <text x="401" y="266" fill="#5eead4" font-size="12" text-anchor="middle">COPY</text>
+  <text x="401" y="304" fill="#5eead4" font-size="11" text-anchor="middle">--from=builder</text>
+
+  <!-- runner side -->
+  <rect x="448" y="52" width="330" height="330" rx="12" fill="#1e293b" stroke="#22c55e" stroke-width="2"/>
+  <text x="613" y="78" fill="#86efac" font-size="14" font-weight="bold" text-anchor="middle">stage runner — image ที่ส่งให้ลูกค้า</text>
+
+  <rect x="468" y="92" width="290" height="42" rx="6" fill="#334155"/>
+  <text x="482" y="112" fill="#e2e8f0" font-size="13">base : node:22-alpine</text>
+  <text x="482" y="128" fill="#94a3b8" font-size="12">232 MB (มี node ไว้รัน server.js)</text>
+
+  <rect x="468" y="142" width="290" height="42" rx="6" fill="#334155"/>
+  <text x="482" y="162" fill="#e2e8f0" font-size="13">.next/standalone (server.js + node_modules เท่าที่ใช้)</text>
+  <text x="482" y="178" fill="#5eead4" font-size="12" font-weight="bold">49.7 MB · node_modules เหลือ 12 รายการ</text>
+
+  <rect x="468" y="192" width="290" height="42" rx="6" fill="#334155"/>
+  <text x="482" y="212" fill="#e2e8f0" font-size="13">.next/static (JS + CSS ที่เบราว์เซอร์โหลด)</text>
+  <text x="482" y="228" fill="#5eead4" font-size="12" font-weight="bold">680 kB</text>
+
+  <rect x="468" y="242" width="290" height="40" rx="6" fill="#334155"/>
+  <text x="482" y="262" fill="#e2e8f0" font-size="13">USER webapp · CMD ["node","server.js"]</text>
+  <text x="482" y="276" fill="#94a3b8" font-size="12">ไม่มี typescript · ไม่มี tailwindcss · ไม่มี .tsx</text>
+
+  <rect x="468" y="292" width="290" height="42" rx="6" fill="#166534"/>
+  <text x="613" y="319" fill="#dcfce7" font-size="16" font-weight="bold" text-anchor="middle">รวม 298 MB</text>
+
+  <text x="613" y="358" fill="#86efac" font-size="12" text-anchor="middle">เทียบกับ stage เดียว 1.09 GB = เล็กลง ~73%</text>
+
+  <text x="400" y="410" fill="#cbd5e1" font-size="13" text-anchor="middle">คำถามที่ใช้ตัดสินใจ : "ของชิ้นนี้ต้องมีตอนรันไหม" — ถ้าไม่ ก็ปล่อยให้ตายไปกับ stage build</text>
+  <text x="400" y="430" fill="#64748b" font-size="12" text-anchor="middle">ตัวเลขทั้งหมดวัดจาก docker history และ docker image ls ในกล่องเรียนจริง</text>
+</svg>

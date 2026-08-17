@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   ธีมของ CampusOps — โทนมืด
+   ห้ามโหลดฟอนต์จาก CDN (ข้อกำหนดของแล็บ + ทำให้หน้าเว็บใช้งานได้แม้ไม่มีเน็ต)
+   จึงไล่ฟอนต์ไทยที่มักติดมากับเครื่องก่อน แล้วค่อยตกไปที่ sans-serif ของระบบ
+   ------------------------------------------------------------------ */
+@theme {
+  --font-sans: "IBM Plex Sans Thai", "Noto Sans Thai", "Sarabun", "Leelawadee UI",
+    "Tahoma", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink-950: #070b14;
+  --color-ink-900: #0b1120;
+  --color-ink-850: #101827;
+  --color-ink-800: #162034;
+  --color-ink-700: #1f2b45;
+  --color-ink-600: #2c3a58;
+
+  --color-brand-400: #4dd4f0;
+  --color-brand-500: #22b8db;
+
+  /* จังหวะไล่สีของหัวหน้าเว็บ ใช้ซ้ำหลายที่จึงตั้งเป็นตัวแปร */
+  --animate-rise: rise 0.45s ease-out both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-ink-950);
+  color: #e6edf7;
+  /* ลายพื้นหลังเป็น radial-gradient สองจุด ทำให้หน้าจอไม่ดูแบนทื่อ
+     ใช้ CSS ล้วน ไม่ต้องโหลดรูป (ลด payload และไม่ต้องพึ่ง CDN) */
+  background-image:
+    radial-gradient(60rem 40rem at 12% -10%, rgba(34, 184, 219, 0.13), transparent 60%),
+    radial-gradient(50rem 35rem at 95% 0%, rgba(129, 90, 240, 0.12), transparent 55%);
+  background-attachment: fixed;
+}
+
+/* แถบเลื่อนให้เข้ากับโทนมืด (กระดานงานเลื่อนแนวนอนได้บนจอแคบ) */
+* {
+  scrollbar-color: #2c3a58 transparent;
+  scrollbar-width: thin;
+}
