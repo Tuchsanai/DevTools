@@ -153,16 +153,20 @@ time docker build -f web/Dockerfile.single -t campusops-web:single ./web
 docker image ls campusops-web
 ```
 
-✅ **สิ่งที่ต้องเห็น** — build ผ่าน และ **`DISK USAGE` ทะลุ 1 GB** (เวลาและ ID ของแต่ละคนไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — build ผ่าน และ **`DISK USAGE` ทะลุ 1 GB** — ด้านล่างตัดมาเฉพาะ **ท้าย** ผลลัพธ์ ของจริงจะมี log ของทุกขั้นยาวนับร้อยบรรทัดก่อนหน้านี้ (เวลาและ ID ของแต่ละคนไม่ตรงกัน) :
 
 ```
 #13 naming to docker.io/library/campusops-web:single done
-#13 DONE 11.8s
+#13 unpacking to docker.io/library/campusops-web:single
+#13 unpacking to docker.io/library/campusops-web:single 2.7s done
+#13 DONE 11.7s
 
-real	0m36.686s
+real	0m43.418s
+user	0m0.133s
+sys	0m0.131s
 
 IMAGE                  ID             DISK USAGE   CONTENT SIZE   EXTRA
-campusops-web:single   da97f9ae8dcd       1.09GB          310MB
+campusops-web:single   631e54fa1e93       1.09GB          310MB
 ```
 
 > 📝 ไฟล์นี้ทำงานได้จริง หน้าเว็บขึ้นครบเหมือนกัน — ปัญหาคือมันแบก `node_modules` เต็มก้อน · `typescript` · `tailwindcss` · source `.tsx` และ cache ของ `next build` ไปด้วยทั้งหมด
@@ -178,13 +182,19 @@ time docker build -t campusops-web:lab3 ./web
 docker image ls campusops-web
 ```
 
-✅ **สิ่งที่ต้องเห็น** — **1.09GB → 298MB** จากไฟล์ source ชุดเดียวกันเป๊ะ :
+✅ **สิ่งที่ต้องเห็น** — **1.09GB → 298MB** จากไฟล์ source ชุดเดียวกันเป๊ะ — ด้านล่างตัดมาเฉพาะ **ท้าย** ผลลัพธ์เช่นเดียวกับการทดลองที่ 2 (เวลาและ ID ของแต่ละคนไม่ตรงกัน) :
 
 ```
+real	0m25.102s
+user	0m0.092s
+sys	0m0.090s
+
 IMAGE                  ID             DISK USAGE   CONTENT SIZE   EXTRA
-campusops-web:lab3     9d74ea055358        298MB         73.2MB
-campusops-web:single   da97f9ae8dcd       1.09GB          310MB
+campusops-web:lab3     868d8275b540        298MB         73.2MB
+campusops-web:single   631e54fa1e93       1.09GB          310MB
 ```
+
+บรรทัด `real` รอบนี้เร็วกว่าการทดลองที่ 2 (25.1 วิ เทียบกับ 43.4 วิ) เพราะ base `node:22-alpine` ถูกดึงมาไว้ในเครื่องเรียนตั้งแต่ครั้งก่อนแล้ว — ตัวเลขนี้ของแต่ละคนไม่ตรงกัน
 
 > 📝 **เล็กลง ~73%** · Docker 29 แยกสองคอลัมน์ : `DISK USAGE` คือพื้นที่จริงบนดิสก์ (นับ layer ของ base ที่ใช้ร่วมกันด้วย) ส่วน `CONTENT SIZE` คือเนื้อของ image เอง — ดูคอลัมน์ไหนก็ได้ ขอให้เทียบคอลัมน์เดียวกัน
 
@@ -202,13 +212,13 @@ docker history campusops-web:lab3
 
 ```
 IMAGE          CREATED              CREATED BY                                      SIZE      COMMENT
-9d74ea055358   6 seconds ago        CMD ["node" "server.js"]                        0B        buildkit.dockerfile.v0
-<missing>      6 seconds ago        EXPOSE [3000/tcp]                               0B        buildkit.dockerfile.v0
-<missing>      6 seconds ago        USER webapp                                     0B        buildkit.dockerfile.v0
-<missing>      6 seconds ago        COPY --chown=webapp:webapp /app/.next/static…   680kB     buildkit.dockerfile.v0
-<missing>      6 seconds ago        COPY --chown=webapp:webapp /app/.next/standa…   49.7MB    buildkit.dockerfile.v0
-<missing>      25 seconds ago       RUN /bin/sh -c addgroup -g 10001 -S webapp &…   41kB      buildkit.dockerfile.v0
-<missing>      25 seconds ago       ENV NODE_ENV=production NEXT_TELEMETRY_DISAB…   0B        buildkit.dockerfile.v0
+868d8275b540   7 seconds ago        CMD ["node" "server.js"]                        0B        buildkit.dockerfile.v0
+<missing>      7 seconds ago        EXPOSE [3000/tcp]                               0B        buildkit.dockerfile.v0
+<missing>      7 seconds ago        USER webapp                                     0B        buildkit.dockerfile.v0
+<missing>      7 seconds ago        COPY --chown=webapp:webapp /app/.next/static…   680kB     buildkit.dockerfile.v0
+<missing>      7 seconds ago        COPY --chown=webapp:webapp /app/.next/standa…   49.7MB    buildkit.dockerfile.v0
+<missing>      28 seconds ago       RUN /bin/sh -c addgroup -g 10001 -S webapp &…   41kB      buildkit.dockerfile.v0
+<missing>      28 seconds ago       ENV NODE_ENV=production NEXT_TELEMETRY_DISAB…   0B        buildkit.dockerfile.v0
 <missing>      About a minute ago   WORKDIR /app                                    8.19kB    buildkit.dockerfile.v0
 <missing>      2 weeks ago          CMD ["node"]                                    0B        buildkit.dockerfile.v0
 <missing>      2 weeks ago          ENTRYPOINT ["docker-entrypoint.sh"]             0B        buildkit.dockerfile.v0
@@ -230,7 +240,7 @@ docker run --rm campusops-web:lab3 sh -c 'ls node_modules | wc -l; ls -d node_mo
 docker run --rm campusops-web:single sh -c 'ls node_modules | wc -l; ls -d node_modules/typescript'
 ```
 
-✅ **สิ่งที่ต้องเห็น** — image ที่ส่งมอบมี `node_modules` แค่ **12 รายการ** และ **error คือคำตอบที่ถูกต้อง** ส่วน image แบบ stage เดียวมี 35 รายการ รวม `typescript` :
+✅ **สิ่งที่ต้องเห็น** — image ที่ส่งมอบมี `node_modules` แค่ **12 รายการ** และ **error คือคำตอบที่ถูกต้อง** (คำสั่งบรรทัดแรกจึงออก exit code 1 เป็นเรื่องปกติ) ส่วน image แบบ stage เดียวมี 35 รายการ รวม `typescript` :
 
 ```
 12
@@ -252,9 +262,10 @@ docker run -d --name ops-web-try -e NEXT_PUBLIC_SITE_NAME='ศูนย์ซ่
 curl -s http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-web-try):3000/no-such-page | grep -o '<title>[^<]*</title>' | head -1
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ยังเป็น `CampusOps` เหมือนเดิม **ไม่สนใจค่าที่เพิ่งส่งเข้าไป** (IP ของแต่ละคนไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — `docker run -d` พิมพ์ ID ของกล่องออกมาก่อน แล้ว `<title>` ยังเป็น `CampusOps` เหมือนเดิม **ไม่สนใจค่าที่เพิ่งส่งเข้าไป** (ID และ IP ของแต่ละคนไม่ตรงกัน) :
 
 ```
+1032a68b16d5e4b6e35da2d17cf4d57712b8856ba4a2fa29fe6642a3359dca82
 <title>CampusOps · ระบบงานซ่อมและครุภัณฑ์</title>
 ```
 
@@ -265,9 +276,11 @@ docker build -q --build-arg NEXT_PUBLIC_SITE_NAME='ศูนย์ซ่อม�
 curl -s http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-web-try2):3000/no-such-page | grep -o '<title>[^<]*</title>' | head -1
 ```
 
-✅ **สิ่งที่ต้องเห็น** — คราวนี้เปลี่ยนจริง :
+✅ **สิ่งที่ต้องเห็น** — `-q` ทำให้ `docker build` พิมพ์แค่ `sha256:` ของ image ตามด้วย ID ของกล่อง แล้วคราวนี้ `<title>` เปลี่ยนจริง (sha256 และ ID ของแต่ละคนไม่ตรงกัน) :
 
 ```
+sha256:d7dc51f655e0cff6cc6cfd63f5b0ae32e5c6f3507a6b081fa8c91024fdb3b780
+ae8989f2b5ad6eaffcd5a44af1758ad1fe6f1472028691095b52954f11ba95e1
 <title>ศูนย์ซ่อมบำรุง · ระบบงานซ่อมและครุภัณฑ์</title>
 ```
 
@@ -287,6 +300,7 @@ curl -s -o /dev/null -w 'GET / -> HTTP %{http_code}\n' http://$(docker inspect -
 ✅ **สิ่งที่ต้องเห็น** — image ก้อน**เดิม** ตอบ `500` เพราะไปตามหาโฮสต์ชื่อใหม่ที่ไม่มีอยู่ (ID ของแต่ละคนไม่ตรงกัน) :
 
 ```
+f0a8e0cd1db204e889cee7afcf892e5764911bbcb41948b61be0b4a1f8fffa15
 GET / -> HTTP 500
 ```
 
@@ -320,13 +334,15 @@ docker build -q -f web/Dockerfile.shellform -t campusops-web:shellform ./web && 
 docker exec ops-web-exec ps -o pid,args; docker exec ops-web-shell ps -o pid,args
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ฝั่ง exec form `node` เป็น PID 1 · ฝั่ง shell form มี `/bin/sh` คั่นอยู่ที่ PID 1 แล้ว `node` ไปเป็น PID 8 :
+✅ **สิ่งที่ต้องเห็น** — บรรทัดแรก ๆ คือ `sha256:` ของ image กับ ID ของสองกล่อง แล้วฝั่ง exec form `node` เป็น PID 1 · ฝั่ง shell form มี `/bin/sh` คั่นอยู่ที่ PID 1 แล้ว `node` ไปเป็น PID 8 (sha256 · ID · เลข PID ของ `ps` เองของแต่ละคนไม่ตรงกัน) :
 
 ```
+sha256:d8b6931029950662c8847f6da856b5a082c743f522d71f4f1a1eadf446bfe672
+4e188318e82ccdd9ef9d1749b3cc6efc9ae2c0ffbd7bfab0e7154f916f864c5d
+55a5ecec9dd7082f203540e0917ddcec6c5e650b0b68c350dc745861b0861a12
 PID   COMMAND
     1 next-server (v
    19 ps -o pid,args
-
 PID   COMMAND
     1 /bin/sh -c node server.js; echo stopped
     8 next-server (v
@@ -344,10 +360,16 @@ time docker stop ops-web-shell
 
 ```
 ops-web-exec
-real	0m0.248s
+
+real	0m0.244s
+user	0m0.004s
+sys	0m0.012s
 
 ops-web-shell
-real	0m10.239s
+
+real	0m10.281s
+user	0m0.011s
+sys	0m0.006s
 ```
 
 > 📝 `/bin/sh` รับ `SIGTERM` แล้วไม่ส่งต่อให้ลูก Docker จึงรอครบ **10 วินาที** แล้ว `SIGKILL` ทิ้ง — แอปไม่ได้ปิดงานให้เรียบร้อย · exec form ตัดปัญหานี้ทั้งหมด
@@ -364,7 +386,7 @@ docker rm -f ops-web-try ops-web-try2 ops-web-noapi ops-web-exec ops-web-shell
 
 **คำถาม:** ต่อ `web` เข้ากับ `api` และ `db` ด้วย IP แบบ LAB 2 แล้วหน้าเว็บขึ้นจริงไหม
 
-> ครั้งแรกช้าประมาณ **2 นาที** เพราะกล่องเรียนต้องดึง `postgres:17-alpine` (~424 MB) กับ `python:3.12-slim` มาก่อน แล้วยัง `pip install` ตอน build `campusops-api:lab3` อีก · เงียบไปนานเป็นเรื่องปกติ ยังไม่ค้าง
+> ครั้งแรกช้าประมาณ **1–2 นาที** (รอบที่ใช้เขียนเอกสารนี้ 53 วินาที) เพราะกล่องเรียนต้องดึง `postgres:17-alpine` (~424 MB) กับ `python:3.12-slim` มาก่อน แล้วยัง `pip install` ตอน build `campusops-api:lab3` อีก · เงียบไปนานเป็นเรื่องปกติ ยังไม่ค้าง
 
 ```bash
 docker run -d --name ops-db -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
@@ -375,9 +397,13 @@ docker run -d --name ops-db -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e
 curl -s http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-api):8000/health; echo
 ```
 
-✅ **สิ่งที่ต้องเห็น** — บริการเบื้องหลังต่อฐานข้อมูลติดแล้ว (ID ของแต่ละคนไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — ท้ายผลการดึง image จะมี ID ของ `ops-db` · `sha256:` ของ `campusops-api:lab3` · ID ของ `ops-api` แล้วปิดท้ายด้วยคำตอบของ `/health` (ID และ sha256 ของแต่ละคนไม่ตรงกัน) :
 
 ```
+Status: Downloaded newer image for postgres:17-alpine
+04e230112688dd251169ef28c4c3096d7f4c60f65c03adbdc1f9fe279bfb5d35
+sha256:4c00c36f83b5b312a8e7d62f2a08dba109413b375b709dacead64f81a1038bb5
+a3ae2b7ad72ec96cf2dd11df99a85d8e78901ca5a68075e818265f9ad66cc3b8
 {"status":"ok","db":"up"}
 ```
 
@@ -389,13 +415,14 @@ docker run -d --name ops-web -p 3000:3000 \
 for p in / /tickets /loans /parts; do curl -s -o /dev/null -w "GET $p -> HTTP %{http_code} · %{size_download} ไบต์\n" "http://localhost:3000$p"; done
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ทั้งสี่หน้าตอบ `200` และหน้าแรกมีเนื้อหาจริง ~31 kB (จำนวนไบต์ของแต่ละคนไม่ตรงกันเพราะข้อมูลในฐานข้อมูลต่างกัน) :
+✅ **สิ่งที่ต้องเห็น** — ID ของ `ops-web` แล้วทั้งสี่หน้าตอบ `200` พร้อมเนื้อหาจริงหลักหมื่นไบต์ (ID และจำนวนไบต์ของแต่ละคนไม่ตรงกันเพราะข้อมูลในฐานข้อมูลต่างกัน) :
 
 ```
+2b33edcf1ff7dba9853b29a492f186bca20abf28774a6a32ecb6ec53f6fe6eec
 GET / -> HTTP 200 · 31260 ไบต์
-GET /tickets -> HTTP 200
-GET /loans -> HTTP 200
-GET /parts -> HTTP 200
+GET /tickets -> HTTP 200 · 71881 ไบต์
+GET /loans -> HTTP 200 · 46734 ไบต์
+GET /parts -> HTTP 200 · 70876 ไบต์
 ```
 
 เปิดในเบราว์เซอร์บนเครื่องเราที่ **`http://localhost:8189`** ได้เลย — พอร์ต `3000` ของกล่องเรียนถูกต่อออกมาไว้ตั้งแต่ตอนสร้างกล่อง
@@ -426,14 +453,16 @@ GET /_next/static/chunks/3sqcqigw583ti.css -> HTTP 200 · 35235 ไบต์
 docker exec ops-web sh -c 'ls .next/static; ls .next/static/chunks/*.css; ls .next/static/css'
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ไฟล์ `.css` อยู่ปนกับ `.js` ใน `chunks/` และ **โฟลเดอร์ `css/` ไม่มีอยู่จริง** (ชื่อโฟลเดอร์ build-id ของแต่ละคนไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — ไฟล์ `.css` อยู่ปนกับ `.js` ใน `chunks/` และ **บรรทัดสุดท้ายต้องเป็น error** เพราะโฟลเดอร์ `css/` ไม่มีอยู่จริง (ชื่อโฟลเดอร์ build-id และชื่อไฟล์ `.css` ของแต่ละคนไม่ตรงกัน) :
 
 ```
-ls: .next/static/css: No such file or directory
-HOYpGTajBdkgQ8UcQh0NS
+MSNQsmyr5kNYjY_0lTySQ
 chunks
 .next/static/chunks/3sqcqigw583ti.css
+ls: .next/static/css: No such file or directory
 ```
+
+คำสั่งนี้ออก **exit code 1** เป็นเรื่องปกติ เพราะ `ls` ตัวสุดท้ายตั้งใจให้หาไม่เจอ
 
 > 📝 **นี่คือเหตุผลที่ `web/Dockerfile` ต้อง `COPY` `.next/static` ทั้งก้อน** — ตำราส่วนใหญ่สอนให้เจาะ `.next/static/css` ซึ่ง Next.js 16 ไม่มีแล้ว ผลคือ build ล้ม หรือแย่กว่านั้นคือได้หน้าเว็บที่ตอบ `200` ทุกหน้าแต่ไม่มีสีสักจุด
 
@@ -445,15 +474,33 @@ chunks
 bash verify.sh ; echo "exit code = $?"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — `[PASS]` ทุกบรรทัด ปิดท้าย `ALL CHECKS PASSED` (IP และชื่อไฟล์ CSS ของแต่ละคนไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — หัวเรื่อง 3 บรรทัด แล้ว `[PASS]` ครบ **22 บรรทัด** ปิดท้าย `ALL CHECKS PASSED` (IP · ชื่อไฟล์ CSS · ขนาดไบต์ ของแต่ละคนไม่ตรงกัน) :
 
 ```
+==============================================
+ LAB 3 — Build The Web (multi-stage) : verify
+==============================================
+[PASS] ต่อกับ Docker daemon ได้
+[PASS] ไฟล์ของแล็บครบ (web/ · api/ · db/initdb/)
 [PASS] web/Dockerfile มี FROM 3 ครั้ง = 3 stage (deps · builder · runner)
+[PASS] stage runner หยิบเฉพาะ .next/standalone และ .next/static ทั้งก้อน
+[PASS] ไม่มีบรรทัดที่เจาะ COPY เฉพาะโฟลเดอร์ย่อยของ .next/static
+[PASS] build image multi-stage (vops-web:verify) สำเร็จ
+[PASS] build image stage เดียว (vops-web:single) สำเร็จ
 [PASS] multi-stage เล็กกว่า stage เดียวอย่างน้อย 2 เท่า (content size 73MB vs 310MB)
 [PASS] docker history ของ image สุดท้ายไม่มีขั้น npm ci / npm run build เลย
 [PASS] image สุดท้ายไม่มี node_modules/typescript — ไม่ได้แบก toolchain ไปด้วย
 [PASS] CMD เป็น exec form : ["node","server.js"]
+[PASS] image ตั้ง USER เป็น webapp (ไม่ใช่ root)
+[PASS] ยกกล่องฐานข้อมูล vops-db ขึ้นได้
+[PASS] ฐานข้อมูลพร้อมรับ connection แล้ว
+[PASS] บริการเบื้องหลังตอบ /health ว่า db up (ต่อ db ด้วย IP 172.18.0.5)
+[PASS] หน้าเว็บตอบ 200 ที่ http://172.18.0.7:3000/ (ต่อ api ด้วย IP 172.18.0.6)
+[PASS] หน้า /tickets · /loans · /parts ตอบ 200 ครบ
+[PASS] หน้าแรกมีเนื้อหาจริงจากฐานข้อมูล (บล็อก 'งานค้างเกินกำหนด')
+[PASS] HTML ชี้ไฟล์ CSS ไปที่ /_next/static/chunks/3sqcqigw583ti.css (อยู่ใต้ chunks/ ตามที่ Next.js 16 วางจริง)
 [PASS] โหลดไฟล์ CSS ได้ HTTP 200 ขนาด 35235 ไบต์
+[PASS] ไฟล์ CSS อยู่จริงใน image ที่ .next/static/chunks/
 [PASS] ไม่มีโฟลเดอร์ .next/static/css จริง — ยืนยันว่าห้าม COPY เจาะ subfolder
 ----------------------------------------------
 ALL CHECKS PASSED
@@ -490,7 +537,7 @@ docker image rm campusops-web:lab3 campusops-web:single campusops-web:rename cam
 docker ps -a
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ตารางสุดท้ายเหลือแค่หัวตาราง :
+✅ **สิ่งที่ต้องเห็น** — ชื่อของที่ถูกลบทีละบรรทัด · คู่ `Untagged:` กับ `Deleted:` อย่างละ **5 บรรทัด** แล้วตารางสุดท้ายเหลือแค่หัวตาราง (sha256 ของแต่ละคนไม่ตรงกัน) :
 
 ```
 ops-web
@@ -498,7 +545,15 @@ ops-api
 ops-db
 ops-pgdata
 Untagged: campusops-web:lab3
+Deleted: sha256:868d8275b5403c6695f9a17e02903c744aeb93bc4bc55a411d3f338df1d917ce
 Untagged: campusops-web:single
+Deleted: sha256:631e54fa1e930d2a6616d03e9262ba190549dafb6db911277e3a84035e161420
+Untagged: campusops-web:rename
+Deleted: sha256:d7dc51f655e0cff6cc6cfd63f5b0ae32e5c6f3507a6b081fa8c91024fdb3b780
+Untagged: campusops-web:shellform
+Deleted: sha256:d8b6931029950662c8847f6da856b5a082c743f522d71f4f1a1eadf446bfe672
+Untagged: campusops-api:lab3
+Deleted: sha256:4c00c36f83b5b312a8e7d62f2a08dba109413b375b709dacead64f81a1038bb5
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 ```
 
@@ -520,6 +575,7 @@ docker ps -a --filter "name=^devtools-"
 |---|---|
 | `docker build -t <ชื่อ:tag> ./web` | build จาก `Dockerfile` ในโฟลเดอร์ที่เป็น build context |
 | `docker build -f web/Dockerfile.single -t <ชื่อ:tag> ./web` | เลือกไฟล์ Dockerfile เองด้วย `-f` โดย context ยังเป็น `./web` |
+| `docker build -q -f <ไฟล์> -t <ชื่อ:tag> <context>` | build เงียบ ๆ พิมพ์ออกมาแค่ `sha256:` ของ image ที่ได้ |
 | `docker build --build-arg KEY=value ...` | ส่งค่าให้ `ARG` ใช้ **ตอน build** — วิธีเดียวที่เปลี่ยนค่าที่ถูกฝังไปแล้ว |
 | `docker image ls <repo>` | ดู `DISK USAGE` และ `CONTENT SIZE` ของ image |
 | `docker history <image>` | ดูทุก layer ของ image พร้อมขนาดที่แต่ละ layer เพิ่มเข้ามา |

@@ -44,7 +44,7 @@ tmp_dir=$(mktemp -d)
 
 # ---------- 1) ไฟล์ของแล็บครบไหม ----------
 missing=""
-for f in web/Dockerfile web/Dockerfile.single web/package.json web/next.config.ts \
+for f in web/Dockerfile web/Dockerfile.single web/Dockerfile.shellform web/package.json web/next.config.ts \
          api/Dockerfile api/main.py db/initdb/01-schema.sql db/initdb/02-seed.sql; do
   [ -f "$f" ] || missing="$missing $f"
 done
