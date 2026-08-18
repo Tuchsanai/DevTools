@@ -1,0 +1,25 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "checkpointId": "ff906714d8d74984ae",
+  "elements": [
+    {"type":"text","id":"t1","x":175,"y":28,"width":450,"height":34,"text":"Scale + Active Health Check","fontSize":28,"strokeColor":"#382018"},
+    {"type":"text","id":"t2","x":208,"y":66,"width":390,"height":22,"text":"Traefik sends traffic only to healthy replicas","fontSize":16,"strokeColor":"#757575"},
+    {"type":"rectangle","id":"client","x":35,"y":210,"width":145,"height":85,"roundness":{"type":3},"backgroundColor":"#fff3bf","fillStyle":"solid","strokeColor":"#f59e0b","label":{"text":"Browser\none URL :8000","fontSize":18}},
+    {"type":"arrow","id":"a1","x":180,"y":252,"width":75,"height":0,"points":[[0,0],[75,0]],"endArrowhead":"arrow","strokeColor":"#f59e0b","label":{"text":"GET /api","fontSize":14}},
+    {"type":"rectangle","id":"gateway","x":255,"y":180,"width":175,"height":145,"roundness":{"type":3},"backgroundColor":"#d0bfff","fillStyle":"solid","strokeColor":"#8b5cf6","label":{"text":"Traefik\nload balancer\nhealth: /api/health","fontSize":18}},
+    {"type":"arrow","id":"a2","x":430,"y":215,"width":105,"height":-105,"points":[[0,0],[105,-105]],"endArrowhead":"arrow","strokeColor":"#22c55e"},
+    {"type":"rectangle","id":"api1","x":535,"y":72,"width":190,"height":76,"roundness":{"type":3},"backgroundColor":"#b2f2bb","fillStyle":"solid","strokeColor":"#22c55e","label":{"text":"API replica 1\n200 HEALTHY","fontSize":17}},
+    {"type":"arrow","id":"a3","x":430,"y":252,"width":105,"height":0,"points":[[0,0],[105,0]],"endArrowhead":"bar","strokeColor":"#ef4444","strokeStyle":"dashed","label":{"text":"withdraw","fontSize":14}},
+    {"type":"rectangle","id":"api2","x":535,"y":214,"width":190,"height":76,"roundness":{"type":3},"backgroundColor":"#ffc9c9","fillStyle":"solid","strokeColor":"#ef4444","label":{"text":"API replica 2\n503 DOWN (still running)","fontSize":17}},
+    {"type":"arrow","id":"a4","x":430,"y":290,"width":105,"height":105,"points":[[0,0],[105,105]],"endArrowhead":"arrow","strokeColor":"#22c55e"},
+    {"type":"rectangle","id":"api3","x":535,"y":356,"width":190,"height":76,"roundness":{"type":3},"backgroundColor":"#b2f2bb","fillStyle":"solid","strokeColor":"#22c55e","label":{"text":"API replica 3\n200 HEALTHY","fontSize":17}},
+    {"type":"arrow","id":"db1","x":630,"y":148,"width":0,"height":300,"points":[[0,0],[0,300]],"endArrowhead":"arrow","strokeColor":"#06b6d4","strokeStyle":"dashed"},
+    {"type":"rectangle","id":"db","x":535,"y":448,"width":190,"height":68,"roundness":{"type":3},"backgroundColor":"#c3fae8","fillStyle":"solid","strokeColor":"#06b6d4","label":{"text":"PostgreSQL\nshared state","fontSize":17}},
+    {"type":"rectangle","id":"toggle","x":55,"y":390,"width":310,"height":92,"roundness":{"type":3},"backgroundColor":"#ffd8a8","fillStyle":"solid","strokeColor":"#f59e0b","label":{"text":"Direct replica IP toggle\n/fail -> 503   /ok -> 200\ncontainer stays Running","fontSize":17}},
+    {"type":"arrow","id":"a5","x":365,"y":424,"width":170,"height":-172,"points":[[0,0],[170,-172]],"endArrowhead":"arrow","strokeColor":"#ef4444","label":{"text":"memory flag","fontSize":14}}
+  ],
+  "appState": {"viewBackgroundColor":"#ffffff"},
+  "files": {}
+}

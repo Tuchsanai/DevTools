@@ -1,0 +1,227 @@
+name: lab004
+
+services:
+  traefik:
+    image: traefik:v3.7.4
+    command:
+      - --api.insecure=true
+      - --ping=true
+      - --entrypoints.web.address=:80
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --accesslog=true
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks: [cafenet]
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 5s
+      timeout: 3s
+      start_period: 5s
+      retries: 20
+    restart: unless-stopped
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: cafedb
+      POSTGRES_USER: student
+      POSTGRES_PASSWORD: student123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/initdb:/docker-entrypoint-initdb.d:ro
+    networks: [cafenet]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U student -d cafedb"]
+      interval: 5s
+      timeout: 3s
+      start_period: 10s
+      retries: 20
+    restart: unless-stopped
+
+  rabbit:
+    image: rabbitmq:4.3.4-management
+    environment:
+      RABBITMQ_DEFAULT_USER: student
+      RABBITMQ_DEFAULT_PASS: student123
+    ports:
+      - "15672:15672"
+    volumes:
+      - rabbitdata:/var/lib/rabbitmq
+    networks: [cafenet]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 5s
+      timeout: 5s
+      start_period: 20s
+      retries: 18
+    restart: unless-stopped
+
+  kafka:
+    image: apache/kafka:4.1.0
+    environment:
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+    volumes:
+      - kafkadata:/var/lib/kafka/data
+    networks: [cafenet]
+    healthcheck:
+      test: ["CMD", "/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "127.0.0.1:9092"]
+      interval: 5s
+      timeout: 10s
+      start_period: 15s
+      retries: 12
+    restart: unless-stopped
+
+  api:
+    build: {context: ./api}
+    environment:
+      DATABASE_URL: postgresql://student:student123@db:5432/cafedb
+      RABBIT_URL: amqp://student:student123@rabbit:5672/%2F
+      KAFKA_BOOTSTRAP: kafka:9092
+      ORDER_TRANSPORT: rabbit
+      EVENTS_ENABLED: "1"
+      API_VERSION: "1"
+    depends_on:
+      db: {condition: service_healthy}
+      rabbit: {condition: service_healthy}
+      kafka: {condition: service_healthy}
+    networks: [cafenet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.api.loadbalancer.server.port=8000
+      - traefik.http.services.api.loadbalancer.healthcheck.path=/api/health
+      - traefik.http.services.api.loadbalancer.healthcheck.interval=3s
+      - traefik.http.services.api.loadbalancer.healthcheck.timeout=1s
+      - traefik.http.routers.cafe-orders.rule=PathPrefix(`/api/orders`)
+      - traefik.http.routers.cafe-orders.priority=320
+      - traefik.http.routers.cafe-orders.entrypoints=web
+      - traefik.http.routers.cafe-orders.middlewares=orders-rate
+      - traefik.http.routers.cafe-orders.service=api
+      - traefik.http.routers.cafe-report.rule=PathPrefix(`/api/report`)
+      - traefik.http.routers.cafe-report.priority=310
+      - traefik.http.routers.cafe-report.entrypoints=web
+      - traefik.http.routers.cafe-report.middlewares=manager-auth
+      - traefik.http.routers.cafe-report.service=api
+      - traefik.http.routers.cafe-api.rule=PathPrefix(`/api`)
+      - traefik.http.routers.cafe-api.priority=200
+      - traefik.http.routers.cafe-api.entrypoints=web
+      - traefik.http.routers.cafe-api.service=api
+      - traefik.http.middlewares.orders-rate.ratelimit.average=2
+      - traefik.http.middlewares.orders-rate.ratelimit.period=1s
+      - traefik.http.middlewares.orders-rate.ratelimit.burst=5
+      - traefik.http.middlewares.manager-auth.basicauth.users=manager:$$apr1$$d3IFwbOQ$$khBdiU.59.9ljExK/4xAw0
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/ping')"]
+      interval: 5s
+      timeout: 3s
+      start_period: 10s
+      retries: 22
+    restart: unless-stopped
+
+  worker:
+    build: {context: ./worker}
+    environment:
+      DATABASE_URL: postgresql://student:student123@db:5432/cafedb
+      RABBIT_URL: amqp://student:student123@rabbit:5672/%2F
+      KAFKA_BOOTSTRAP: kafka:9092
+      EVENTS_ENABLED: "1"
+      BREW_SECONDS: "3"
+    depends_on:
+      db: {condition: service_healthy}
+      rabbit: {condition: service_healthy}
+      kafka: {condition: service_healthy}
+    networks: [cafenet]
+    healthcheck:
+      test: ["CMD", "python", "-c", "from pathlib import Path; assert Path('/tmp/worker.ready').exists()"]
+      interval: 5s
+      timeout: 3s
+      start_period: 15s
+      retries: 20
+    restart: unless-stopped
+
+  analytics:
+    build: {context: ./analytics}
+    environment:
+      DATABASE_URL: postgresql://student:student123@db:5432/cafedb
+      KAFKA_BOOTSTRAP: kafka:9092
+    depends_on:
+      db: {condition: service_healthy}
+      kafka: {condition: service_healthy}
+    networks: [cafenet]
+    healthcheck:
+      test: ["CMD", "python", "-c", "from pathlib import Path; assert Path('/tmp/analytics.ready').exists()"]
+      interval: 5s
+      timeout: 3s
+      start_period: 15s
+      retries: 20
+    restart: unless-stopped
+
+  web:
+    build: {context: ./web}
+    environment:
+      API_BASE_URL: http://traefik
+    depends_on:
+      traefik: {condition: service_healthy}
+      api: {condition: service_healthy}
+    networks: [cafenet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.web.loadbalancer.server.port=3000
+      - traefik.http.routers.cafe-web-dashboard.rule=PathPrefix(`/dashboard`)
+      - traefik.http.routers.cafe-web-dashboard.priority=300
+      - traefik.http.routers.cafe-web-dashboard.entrypoints=web
+      - traefik.http.routers.cafe-web-dashboard.middlewares=manager-auth
+      - traefik.http.routers.cafe-web-dashboard.service=web
+      - traefik.http.routers.cafe-web.rule=PathPrefix(`/`)
+      - traefik.http.routers.cafe-web.priority=1
+      - traefik.http.routers.cafe-web.entrypoints=web
+      - traefik.http.routers.cafe-web.service=web
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/"]
+      interval: 5s
+      timeout: 5s
+      start_period: 20s
+      retries: 18
+    restart: unless-stopped
+
+  kafka-ui:
+    image: kafbat/kafka-ui:v1.5.0
+    environment:
+      KAFKA_CLUSTERS_0_NAME: chongjai
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      kafka: {condition: service_healthy}
+    ports:
+      - "8085:8080"
+    networks: [cafenet]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/actuator/health"]
+      interval: 5s
+      timeout: 5s
+      start_period: 30s
+      retries: 16
+    restart: unless-stopped
+
+networks:
+  cafenet:
+
+volumes:
+  pgdata:
+  rabbitdata:
+  kafkadata:

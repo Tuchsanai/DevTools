@@ -1,0 +1,159 @@
+name: lab003
+
+services:
+  traefik:
+    image: traefik:v3.7.4
+    command:
+      - --api.insecure=true
+      - --ping=true
+      - --entrypoints.web.address=:80
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --accesslog=true
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks: [cafenet]
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 5s
+      timeout: 3s
+      start_period: 5s
+      retries: 20
+    restart: unless-stopped
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: cafedb
+      POSTGRES_USER: student
+      POSTGRES_PASSWORD: student123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/initdb:/docker-entrypoint-initdb.d:ro
+    networks: [cafenet]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U student -d cafedb"]
+      interval: 5s
+      timeout: 3s
+      start_period: 10s
+      retries: 20
+    restart: unless-stopped
+
+  rabbit:
+    image: rabbitmq:4.3.4-management
+    environment:
+      RABBITMQ_DEFAULT_USER: student
+      RABBITMQ_DEFAULT_PASS: student123
+    ports:
+      - "15672:15672"
+    volumes:
+      - rabbitdata:/var/lib/rabbitmq
+    networks: [cafenet]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 5s
+      timeout: 5s
+      start_period: 20s
+      retries: 18
+    restart: unless-stopped
+
+  api:
+    build: {context: ./api}
+    environment:
+      DATABASE_URL: postgresql://student:student123@db:5432/cafedb
+      RABBIT_URL: amqp://student:student123@rabbit:5672/%2F
+      ORDER_TRANSPORT: rabbit
+      EVENTS_ENABLED: "0"
+      API_VERSION: "1"
+    depends_on:
+      db: {condition: service_healthy}
+      rabbit: {condition: service_healthy}
+    networks: [cafenet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.api.loadbalancer.server.port=8000
+      - traefik.http.services.api.loadbalancer.healthcheck.path=/api/health
+      - traefik.http.services.api.loadbalancer.healthcheck.interval=3s
+      - traefik.http.services.api.loadbalancer.healthcheck.timeout=1s
+      - traefik.http.routers.cafe-orders.rule=PathPrefix(`/api/orders`)
+      - traefik.http.routers.cafe-orders.priority=320
+      - traefik.http.routers.cafe-orders.entrypoints=web
+      - traefik.http.routers.cafe-orders.middlewares=orders-rate
+      - traefik.http.routers.cafe-orders.service=api
+      - traefik.http.routers.cafe-report.rule=PathPrefix(`/api/report`)
+      - traefik.http.routers.cafe-report.priority=310
+      - traefik.http.routers.cafe-report.entrypoints=web
+      - traefik.http.routers.cafe-report.middlewares=manager-auth
+      - traefik.http.routers.cafe-report.service=api
+      - traefik.http.routers.cafe-api.rule=PathPrefix(`/api`)
+      - traefik.http.routers.cafe-api.priority=200
+      - traefik.http.routers.cafe-api.entrypoints=web
+      - traefik.http.routers.cafe-api.service=api
+      - traefik.http.middlewares.orders-rate.ratelimit.average=2
+      - traefik.http.middlewares.orders-rate.ratelimit.period=1s
+      - traefik.http.middlewares.orders-rate.ratelimit.burst=5
+      - traefik.http.middlewares.manager-auth.basicauth.users=manager:$$apr1$$d3IFwbOQ$$khBdiU.59.9ljExK/4xAw0
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/ping')"]
+      interval: 5s
+      timeout: 3s
+      start_period: 10s
+      retries: 22
+    restart: unless-stopped
+
+  worker:
+    build: {context: ./worker}
+    environment:
+      DATABASE_URL: postgresql://student:student123@db:5432/cafedb
+      RABBIT_URL: amqp://student:student123@rabbit:5672/%2F
+      EVENTS_ENABLED: "0"
+      BREW_SECONDS: "3"
+    depends_on:
+      db: {condition: service_healthy}
+      rabbit: {condition: service_healthy}
+    networks: [cafenet]
+    healthcheck:
+      test: ["CMD", "python", "-c", "from pathlib import Path; assert Path('/tmp/worker.ready').exists()"]
+      interval: 5s
+      timeout: 3s
+      start_period: 15s
+      retries: 20
+    restart: unless-stopped
+
+  web:
+    build: {context: ./web}
+    environment:
+      API_BASE_URL: http://traefik
+    depends_on:
+      traefik: {condition: service_healthy}
+      api: {condition: service_healthy}
+    networks: [cafenet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.web.loadbalancer.server.port=3000
+      - traefik.http.routers.cafe-web-dashboard.rule=PathPrefix(`/dashboard`)
+      - traefik.http.routers.cafe-web-dashboard.priority=300
+      - traefik.http.routers.cafe-web-dashboard.entrypoints=web
+      - traefik.http.routers.cafe-web-dashboard.middlewares=manager-auth
+      - traefik.http.routers.cafe-web-dashboard.service=web
+      - traefik.http.routers.cafe-web.rule=PathPrefix(`/`)
+      - traefik.http.routers.cafe-web.priority=1
+      - traefik.http.routers.cafe-web.entrypoints=web
+      - traefik.http.routers.cafe-web.service=web
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/"]
+      interval: 5s
+      timeout: 5s
+      start_period: 20s
+      retries: 18
+    restart: unless-stopped
+
+networks:
+  cafenet:
+
+volumes:
+  pgdata:
+  rabbitdata:

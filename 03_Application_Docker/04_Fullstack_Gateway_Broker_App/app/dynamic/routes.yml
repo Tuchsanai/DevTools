@@ -1,0 +1,9 @@
+http:
+  services:
+    weighted:
+      weighted:
+        services:
+          - name: api-v1@docker
+            weight: 9
+          - name: api-v2@docker
+            weight: 1

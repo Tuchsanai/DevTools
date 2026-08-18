@@ -1,0 +1,28 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "checkpointId": "793b672013eb42a180",
+  "elements": [
+    {"type":"text","id":"mt1","x":180,"y":25,"width":440,"height":34,"text":"Routers decide before middleware","fontSize":28,"strokeColor":"#382018"},
+    {"type":"text","id":"mt2","x":170,"y":64,"width":420,"height":22,"text":"PathPrefix + priority selects one policy chain","fontSize":16,"strokeColor":"#757575"},
+    {"type":"rectangle","id":"req","x":35,"y":216,"width":140,"height":82,"roundness":{"type":3},"backgroundColor":"#fff3bf","fillStyle":"solid","strokeColor":"#f59e0b","label":{"text":"Request\n:8000","fontSize":19}},
+    {"type":"arrow","id":"ma1","x":175,"y":257,"width":72,"height":0,"points":[[0,0],[72,0]],"endArrowhead":"arrow","strokeColor":"#f59e0b"},
+    {"type":"diamond","id":"router","x":247,"y":177,"width":165,"height":165,"backgroundColor":"#a5d8ff","fillStyle":"solid","strokeColor":"#4a9eed","label":{"text":"Router\npriority","fontSize":18}},
+    {"type":"arrow","id":"ordersA","x":390,"y":205,"width":95,"height":-90,"points":[[0,0],[95,-90]],"endArrowhead":"arrow","strokeColor":"#8b5cf6","label":{"text":"orders 320","fontSize":14}},
+    {"type":"rectangle","id":"rate","x":485,"y":80,"width":170,"height":70,"roundness":{"type":3},"backgroundColor":"#d0bfff","fillStyle":"solid","strokeColor":"#8b5cf6","label":{"text":"orders-rate\n2/s, burst 5","fontSize":17}},
+    {"type":"arrow","id":"rateok","x":655,"y":110,"width":100,"height":0,"points":[[0,0],[100,0]],"endArrowhead":"arrow","strokeColor":"#22c55e","label":{"text":"pass","fontSize":14}},
+    {"type":"arrow","id":"ratelimit","x":570,"y":150,"width":0,"height":55,"points":[[0,0],[0,55]],"endArrowhead":"arrow","strokeColor":"#ef4444"},
+    {"type":"rectangle","id":"e429","x":465,"y":185,"width":125,"height":58,"roundness":{"type":3},"backgroundColor":"#ffc9c9","fillStyle":"solid","strokeColor":"#ef4444","label":{"text":"429\ngateway","fontSize":16}},
+    {"type":"arrow","id":"reportA","x":408,"y":250,"width":72,"height":0,"points":[[0,0],[72,0]],"endArrowhead":"arrow","strokeColor":"#f59e0b","label":{"text":"report 310","fontSize":14}},
+    {"type":"rectangle","id":"auth","x":480,"y":267,"width":150,"height":68,"roundness":{"type":3},"backgroundColor":"#ffd8a8","fillStyle":"solid","strokeColor":"#f59e0b","label":{"text":"manager-auth\nbasicAuth","fontSize":17}},
+    {"type":"arrow","id":"authfail","x":515,"y":335,"width":0,"height":48,"points":[[0,0],[0,48]],"endArrowhead":"arrow","strokeColor":"#ef4444"},
+    {"type":"rectangle","id":"api","x":610,"y":228,"width":155,"height":85,"roundness":{"type":3},"backgroundColor":"#b2f2bb","fillStyle":"solid","strokeColor":"#22c55e","label":{"text":"API replicas\napp headers\n201 / 200","fontSize":17}},
+    {"type":"rectangle","id":"e401","x":455,"y":383,"width":120,"height":58,"roundness":{"type":3},"backgroundColor":"#ffc9c9","fillStyle":"solid","strokeColor":"#ef4444","label":{"text":"401\ngateway","fontSize":16}},
+    {"type":"arrow","id":"apiA","x":370,"y":323,"width":225,"height":128,"points":[[0,0],[225,128]],"endArrowhead":"arrow","strokeColor":"#4a9eed","label":{"text":"api 200 (no middleware)","fontSize":14}},
+    {"type":"rectangle","id":"note","x":70,"y":425,"width":330,"height":105,"roundness":{"type":3},"backgroundColor":"#fff3bf","fillStyle":"solid","strokeColor":"#f59e0b","label":{"text":"Teaching signal\n401 / 429 have NO X-Served-By\nbecause API was never reached","fontSize":17}},
+    {"type":"arrow","id":"noteA","x":400,"y":475,"width":115,"height":-34,"points":[[0,0],[115,-34]],"endArrowhead":"arrow","strokeColor":"#ef4444","strokeStyle":"dashed"}
+  ],
+  "appState": {"viewBackgroundColor":"#ffffff"},
+  "files": {}
+}

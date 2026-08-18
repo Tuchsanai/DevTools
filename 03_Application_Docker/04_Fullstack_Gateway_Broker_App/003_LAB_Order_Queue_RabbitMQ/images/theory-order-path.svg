@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 800 600" role="img" aria-labelledby="title desc">
+  <title id="title">เส้นทางออเดอร์ผ่าน RabbitMQ work queue</title>
+  <desc id="desc">Web ส่ง HTTP ไป API, API publish persistent message, worker อัปเดตฐานข้อมูลเป็น READY แล้วจึง ack</desc>
+  <rect width="800" height="600" rx="28" fill="#fffdf8"/>
+  <g font-family="Tahoma, sans-serif" fill="#382018">
+    <text x="400" y="55" text-anchor="middle" font-size="30" font-weight="700">เส้นทางออเดอร์หนึ่งใบ</text>
+    <text x="400" y="84" text-anchor="middle" font-size="16" fill="#744838">one order = one persistent message</text>
+    <rect x="35" y="120" width="730" height="250" rx="28" fill="#fff3bf" fill-opacity=".42" stroke="#f59e0b" stroke-width="2" stroke-dasharray="8 7"/>
+    <text x="58" y="150" font-size="16" font-weight="700" fill="#9a5c08">cafenet</text>
+    <g stroke-width="3">
+      <rect x="60" y="205" width="125" height="82" rx="18" fill="#a5d8ff" stroke="#4a9eed"/>
+      <rect x="245" y="205" width="125" height="82" rx="18" fill="#d0bfff" stroke="#8b5cf6"/>
+      <rect x="430" y="185" width="140" height="122" rx="18" fill="#ffd8a8" stroke="#f59e0b"/>
+      <rect x="630" y="205" width="125" height="82" rx="18" fill="#b2f2bb" stroke="#22c55e"/>
+    </g>
+    <g text-anchor="middle" font-size="18" font-weight="700">
+      <text x="122" y="238">Web</text><text x="122" y="263" font-size="15" font-weight="400">order form</text>
+      <text x="307" y="238">API</text><text x="307" y="263" font-size="15" font-weight="400">producer</text>
+      <text x="500" y="222">RabbitMQ</text><text x="500" y="249" font-size="15">order_queue</text><text x="500" y="276" font-size="14" font-weight="400">durable</text>
+      <text x="692" y="238">Worker</text><text x="692" y="263" font-size="15" font-weight="400">barista</text>
+    </g>
+    <g fill="none" stroke-linecap="round" stroke-width="3">
+      <path d="M185 246 H238" stroke="#4a9eed"/><path d="m230 238 8 8-8 8" stroke="#4a9eed"/>
+      <path d="M370 246 H423" stroke="#f59e0b"/><path d="m415 238 8 8-8 8" stroke="#f59e0b"/>
+      <path d="M570 246 H623" stroke="#22c55e"/><path d="m615 238 8 8-8 8" stroke="#22c55e"/>
+    </g>
+    <g font-size="14" text-anchor="middle" font-weight="700"><text x="212" y="229" fill="#2563a9">HTTP</text><text x="397" y="229" fill="#9a5c08">publish</text><text x="597" y="229" fill="#15803d">deliver</text></g>
+    <rect x="328" y="405" width="180" height="78" rx="18" fill="#c3fae8" stroke="#06b6d4" stroke-width="3"/>
+    <text x="418" y="438" text-anchor="middle" font-size="18" font-weight="700">PostgreSQL</text><text x="418" y="463" text-anchor="middle" font-size="15">orders</text>
+    <path d="M692 287 V353 H510 V397" fill="none" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+    <path d="m502 389 8 8 8-8" fill="none" stroke="#06b6d4" stroke-width="3"/>
+    <text x="607" y="345" text-anchor="middle" font-size="14" font-weight="700" fill="#08768a">UPDATE BREWING → READY</text>
+    <path d="M630 300 C600 326 590 330 570 330" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round"/>
+    <path d="m579 322-9 8 10 6" fill="none" stroke="#22c55e" stroke-width="3"/>
+    <text x="637" y="351" text-anchor="middle" font-size="14" font-weight="700" fill="#15803d">ack หลัง READY</text>
+    <rect x="105" y="515" width="590" height="55" rx="16" fill="#ffc9c9" stroke="#ef4444" stroke-width="2"/>
+    <text x="400" y="549" text-anchor="middle" font-size="17" font-weight="700">Worker หายก่อน ack → RabbitMQ ส่ง order เดิมซ้ำ</text>
+  </g>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="810" viewBox="0 0 1440 810" role="img" aria-labelledby="title desc">
+  <title id="title">สถาปัตยกรรมเต็ม ChongJai Cafe LAB5</title>
+  <desc id="desc">เว็บและ API อยู่หลัง Traefik ออเดอร์ผ่าน RabbitMQ ไป worker เหตุการณ์ผ่าน Kafka ไป analytics และผลอยู่ใน PostgreSQL</desc>
+  <defs><linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2b1711"/><stop offset="1" stop-color="#70412e"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-opacity=".25"/></filter><marker id="a" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto"><path d="M0 0L11 5.5L0 11Z" fill="#f2b35e"/></marker></defs>
+  <rect width="1440" height="810" fill="url(#bg2)"/>
+  <text x="75" y="85" font-family="sans-serif" font-size="38" font-weight="800" fill="#fff9ec">Grand finale: หนึ่งออเดอร์ไหลครบทุกชั้น</text>
+  <text x="75" y="125" font-family="sans-serif" font-size="20" fill="#edd7c4">เส้นทึบ = request/งาน · เส้นประ = event · PostgreSQL เป็น state ร่วม</text>
+  <g font-family="sans-serif" text-anchor="middle" filter="url(#s)">
+    <rect x="65" y="275" width="190" height="130" rx="28" fill="#fff9ec"/><text x="160" y="330" font-size="25" font-weight="800" fill="#3c2016">Browser</text><text x="160" y="368" font-size="17" fill="#755044">4 หน้าหลัก</text>
+    <rect x="325" y="245" width="220" height="190" rx="28" fill="#f2b35e"/><text x="435" y="315" font-size="28" font-weight="800" fill="#3c2016">Traefik</text><text x="435" y="352" font-size="17" fill="#523224">router · auth · rate</text><text x="435" y="382" font-size="17" fill="#523224">weighted 90/10</text>
+    <rect x="620" y="190" width="215" height="120" rx="27" fill="#8f6655"/><text x="727" y="242" font-size="25" font-weight="800" fill="#fff">Web</text><text x="727" y="275" font-size="16" fill="#fae8d7">Next.js SSR/action</text>
+    <rect x="620" y="370" width="215" height="150" rx="27" fill="#d97706"/><text x="727" y="426" font-size="25" font-weight="800" fill="#fff">API v1 + v2</text><text x="727" y="462" font-size="16" fill="#fff3dc">contract เดียวกัน</text><text x="727" y="490" font-size="16" fill="#fff3dc">ORDER_PLACED</text>
+    <rect x="920" y="215" width="205" height="120" rx="27" fill="#fff9ec"/><text x="1022" y="267" font-size="25" font-weight="800" fill="#3c2016">RabbitMQ</text><text x="1022" y="301" font-size="16" fill="#755044">order_queue</text>
+    <rect x="920" y="405" width="205" height="120" rx="27" fill="#fff9ec"/><text x="1022" y="457" font-size="25" font-weight="800" fill="#3c2016">Worker</text><text x="1022" y="491" font-size="16" fill="#755044">manual ack</text>
+    <rect x="1200" y="215" width="180" height="120" rx="27" fill="#fff9ec"/><text x="1290" y="267" font-size="25" font-weight="800" fill="#3c2016">Kafka</text><text x="1290" y="301" font-size="16" fill="#755044">3 partitions</text>
+    <rect x="1200" y="405" width="180" height="120" rx="27" fill="#fff9ec"/><text x="1290" y="457" font-size="24" font-weight="800" fill="#3c2016">Analytics</text><text x="1290" y="491" font-size="16" fill="#755044">trend-level</text>
+    <rect x="760" y="650" width="340" height="105" rx="28" fill="#6c9a73"/><text x="930" y="696" font-size="26" font-weight="800" fill="#fff">PostgreSQL</text><text x="930" y="728" font-size="16" fill="#e9f6eb">orders · menus · sales_stats</text>
+  </g>
+  <g fill="none" stroke="#f2b35e" stroke-width="6" marker-end="url(#a)"><path d="M255 340H325"/><path d="M545 300L620 250"/><path d="M545 380L620 435"/><path d="M835 430L920 290"/><path d="M1022 335V405"/><path d="M1125 465L1200 315"/><path d="M1290 335V405"/><path d="M1020 525L965 650"/><path d="M1240 525L1045 650"/></g>
+  <g fill="none" stroke="#f8d7a5" stroke-width="4" stroke-dasharray="12 11" marker-end="url(#a)"><path d="M835 465C980 590 1150 130 1200 260"/><path d="M1125 430C1180 400 1170 310 1200 290"/></g>
+  <path d="M760 650C650 610 650 535 690 520" fill="none" stroke="#9fd0a6" stroke-width="6" marker-end="url(#a)"/>
+</svg>

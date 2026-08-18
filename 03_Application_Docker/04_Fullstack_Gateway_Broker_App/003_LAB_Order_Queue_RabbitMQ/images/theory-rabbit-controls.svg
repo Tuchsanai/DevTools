@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 800 600" role="img" aria-labelledby="title desc">
+  <title id="title">กลไก durable prefetch และ manual ack</title>
+  <desc id="desc">สามกลไกแก้คนละปัญหาและมีขอบเขตเป็น at-least-once</desc>
+  <rect width="800" height="600" rx="28" fill="#fffdf8"/>
+  <g font-family="Tahoma, sans-serif" fill="#382018">
+    <text x="400" y="58" text-anchor="middle" font-size="29" font-weight="700">สามกลไก แก้สามปัญหา</text>
+    <g stroke-width="3">
+      <rect x="45" y="115" width="220" height="145" rx="22" fill="#ffd8a8" stroke="#f59e0b"/>
+      <rect x="290" y="115" width="220" height="145" rx="22" fill="#a5d8ff" stroke="#4a9eed"/>
+      <rect x="535" y="115" width="220" height="145" rx="22" fill="#b2f2bb" stroke="#22c55e"/>
+    </g>
+    <g text-anchor="middle"><text x="155" y="155" font-size="20" font-weight="700">DURABLE + PERSISTENT</text><text x="155" y="190" font-size="16">queue + message</text><text x="155" y="218" font-size="16">รอด broker restart</text>
+    <text x="400" y="155" font-size="20" font-weight="700">PREFETCH = 1</text><text x="400" y="190" font-size="16">worker ถือได้ครั้งละ</text><text x="400" y="218" font-size="16">หนึ่งงานที่ยังไม่จบ</text>
+    <text x="645" y="155" font-size="20" font-weight="700">MANUAL ACK</text><text x="645" y="190" font-size="16">ยืนยันเฉพาะหลัง</text><text x="645" y="218" font-size="16">order เป็น READY</text></g>
+    <g fill="none" stroke-width="3"><path d="M155 260 V325" stroke="#f59e0b"/><path d="m147 317 8 8 8-8" stroke="#f59e0b"/><path d="M400 260 V325" stroke="#4a9eed"/><path d="m392 317 8 8 8-8" stroke="#4a9eed"/><path d="M645 260 V325" stroke="#22c55e"/><path d="m637 317 8 8 8-8" stroke="#22c55e"/></g>
+    <g stroke-width="2"><rect x="55" y="325" width="200" height="85" rx="18" fill="#fff3bf" stroke="#f59e0b"/><rect x="300" y="325" width="200" height="85" rx="18" fill="#dbe4ff" stroke="#4a9eed"/><rect x="545" y="325" width="200" height="85" rx="18" fill="#d3f9d8" stroke="#22c55e"/></g>
+    <g text-anchor="middle" font-size="16" font-weight="700"><text x="155" y="360">restart RabbitMQ</text><text x="155" y="387">ข้อความยัง ready</text><text x="400" y="360">บาริสต้าสองคน</text><text x="400" y="387">แบ่งงานได้ยุติธรรมขึ้น</text><text x="645" y="360">ล่มกลางแก้ว</text><text x="645" y="387">ข้อความถูก redeliver</text></g>
+    <rect x="120" y="485" width="560" height="70" rx="20" fill="#ffc9c9" stroke="#ef4444" stroke-width="3"/>
+    <text x="400" y="515" text-anchor="middle" font-size="20" font-weight="700">ขอบเขต: at-least-once</text><text x="400" y="542" text-anchor="middle" font-size="16">ไม่ใช่ exactly-once และไม่ใช่ zero-loss</text>
+  </g>
+</svg>

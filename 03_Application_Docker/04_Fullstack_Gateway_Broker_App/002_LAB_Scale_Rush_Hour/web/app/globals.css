@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Sans Thai", "Leelawadee UI", Tahoma, ui-sans-serif, system-ui, sans-serif;
+  --color-cream-50: #fffdf8;
+  --color-cream-100: #fff8e8;
+  --color-cream-200: #f8e8ca;
+  --color-coffee-950: #25140e;
+  --color-coffee-900: #382018;
+  --color-coffee-800: #543126;
+  --color-coffee-700: #744838;
+  --color-caramel-400: #ee9a55;
+  --color-caramel-500: #dd7833;
+  --animate-float-in: float-in .5s ease-out both;
+}
+
+@keyframes float-in { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }
+@keyframes steam { 0%,100% { transform: translateY(3px); opacity:.3 } 50% { transform: translateY(-4px); opacity:.8 } }
+
+html { color-scheme: light; }
+body {
+  color: var(--color-coffee-950);
+  background-color: var(--color-cream-50);
+  background-image: radial-gradient(55rem 32rem at -5% -10%, rgba(238,154,85,.2), transparent 65%), radial-gradient(40rem 28rem at 100% 8%, rgba(248,214,147,.32), transparent 60%);
+  background-attachment: fixed;
+}
+.steam { animation: steam 2s ease-in-out infinite; }
+.paper-noise { background-image: linear-gradient(rgba(84,49,38,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(84,49,38,.025) 1px, transparent 1px); background-size: 24px 24px; }
+* { scrollbar-color: #d8b78f transparent; scrollbar-width: thin; }

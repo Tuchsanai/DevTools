@@ -1,0 +1,25 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "checkpointId": "1f9a575fddd24b4f82",
+  "elements": [
+    {"type":"text","id":"p_title","x":315,"y":35,"width":570,"height":40,"text":"Sales Analytics Event Pipeline","fontSize":32,"strokeColor":"#1e1e1e"},
+    {"type":"rectangle","id":"p_api","x":80,"y":235,"width":150,"height":90,"backgroundColor":"#a5d8ff","fillStyle":"solid","strokeColor":"#4a9eed","roundness":{"type":3},"label":{"text":"FastAPI\nORDER_PLACED","fontSize":18}},
+    {"type":"rectangle","id":"p_worker","x":80,"y":360,"width":150,"height":90,"backgroundColor":"#ffd8a8","fillStyle":"solid","strokeColor":"#f59e0b","roundness":{"type":3},"label":{"text":"Worker\nORDER_READY","fontSize":18}},
+    {"type":"rectangle","id":"p_topic","x":340,"y":270,"width":180,"height":130,"backgroundColor":"#d0bfff","fillStyle":"solid","strokeColor":"#8b5cf6","roundness":{"type":3},"label":{"text":"Kafka topic\ncafe.events\n3 partitions","fontSize":20}},
+    {"type":"arrow","id":"p_a1","x":230,"y":280,"width":110,"height":40,"points":[[0,0],[110,40]],"endArrowhead":"arrow","strokeColor":"#4a9eed","label":{"text":"key=menu_code","fontSize":14}},
+    {"type":"arrow","id":"p_a2","x":230,"y":405,"width":110,"height":-40,"points":[[0,0],[110,-40]],"endArrowhead":"arrow","strokeColor":"#f59e0b"},
+    {"type":"rectangle","id":"p_analytics","x":630,"y":220,"width":170,"height":100,"backgroundColor":"#eebefa","fillStyle":"solid","strokeColor":"#ec4899","roundness":{"type":3},"label":{"text":"Analytics group\ncontinuous","fontSize":18}},
+    {"type":"arrow","id":"p_a3","x":520,"y":315,"width":110,"height":-45,"points":[[0,0],[110,-45]],"endArrowhead":"arrow","strokeColor":"#8b5cf6"},
+    {"type":"rectangle","id":"p_audit","x":630,"y":370,"width":170,"height":100,"backgroundColor":"#fff3bf","fillStyle":"solid","strokeColor":"#f59e0b","roundness":{"type":3},"label":{"text":"Audit group\nearliest replay","fontSize":18}},
+    {"type":"arrow","id":"p_a4","x":520,"y":355,"width":110,"height":65,"points":[[0,0],[110,65]],"endArrowhead":"arrow","strokeColor":"#8b5cf6"},
+    {"type":"rectangle","id":"p_db","x":900,"y":220,"width":190,"height":100,"backgroundColor":"#c3fae8","fillStyle":"solid","strokeColor":"#22c55e","roundness":{"type":3},"label":{"text":"PostgreSQL\nsales_stats","fontSize":20}},
+    {"type":"arrow","id":"p_a5","x":800,"y":270,"width":100,"height":0,"points":[[0,0],[100,0]],"endArrowhead":"arrow","strokeColor":"#22c55e","label":{"text":"UPDATE","fontSize":14}},
+    {"type":"rectangle","id":"p_dash","x":900,"y":390,"width":190,"height":100,"backgroundColor":"#a5d8ff","fillStyle":"solid","strokeColor":"#4a9eed","roundness":{"type":3},"label":{"text":"Owner dashboard\ntrend-level","fontSize":20}},
+    {"type":"arrow","id":"p_a6","x":995,"y":320,"width":0,"height":70,"points":[[0,0],[0,70]],"endArrowhead":"arrow","strokeColor":"#4a9eed","label":{"text":"report","fontSize":14}},
+    {"type":"rectangle","id":"p_note","x":150,"y":590,"width":900,"height":120,"backgroundColor":"#fff3bf","fillStyle":"solid","strokeColor":"#f59e0b","roundness":{"type":3},"label":{"text":"RabbitMQ carries work until manual ack. Kafka retains events for replay within retention.\nAnalytics counts only ORDER_PLACED; audit prints history and never writes the database.","fontSize":20}}
+  ],
+  "appState": {"viewBackgroundColor":"#ffffff"},
+  "files": {}
+}

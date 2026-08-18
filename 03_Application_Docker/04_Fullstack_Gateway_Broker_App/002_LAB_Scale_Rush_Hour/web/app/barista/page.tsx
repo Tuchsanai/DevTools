@@ -1,0 +1,9 @@
+import { apiGet, type OrderStatus, type Queue } from "../lib/api";
+import { OrderCard, STATUS_LABEL } from "../ui";
+
+export const dynamic="force-dynamic";
+const COLUMNS:OrderStatus[]=["QUEUED","BREWING","READY"];
+export default async function Barista(){const queue=await apiGet<Queue>("/api/queue");return <><meta httpEquiv="refresh" content="3"/>
+  <section className="mb-7 rounded-[1.8rem] bg-coffee-900 px-7 py-6 text-white"><p className="text-xs font-bold tracking-[.22em] text-caramel-400">BARISTA STATION</p><div className="mt-1 flex flex-wrap items-end justify-between gap-3"><div><h1 className="text-4xl font-black">จังหวะชงวันนี้</h1><p className="mt-1 text-cream-200">งานสดจาก RabbitMQ · หนึ่งออเดอร์ต่อหนึ่งข้อความ</p></div><div className="rounded-2xl bg-white/10 px-5 py-3 text-center"><b className="block text-3xl">{queue.count}</b><span className="text-xs text-cream-200">งานระหว่างทำ</span></div></div></section>
+  <section className="grid gap-5 lg:grid-cols-3">{COLUMNS.map(status=>{const orders=queue.items.filter(x=>x.status===status);return <div key={status} className="min-h-[28rem] rounded-[1.6rem] border border-coffee-900/10 bg-cream-100/70 p-4"><header className="mb-4 flex items-center justify-between"><h2 className="text-lg font-black">{status==="QUEUED"?"🧾":status==="BREWING"?"🔥":"✅"} {STATUS_LABEL[status]}</h2><span className="grid h-8 w-8 place-items-center rounded-full bg-white text-sm font-black shadow-sm">{orders.length}</span></header><div className="space-y-3">{orders.map(order=><OrderCard key={order.id} order={order}/>) }{orders.length===0&&<div className="rounded-2xl border border-dashed border-coffee-900/15 bg-white/50 px-4 py-10 text-center text-sm text-coffee-700">{status==="READY"?"ออเดอร์ READY จะออกจากคิวสด":"ยังไม่มีออเดอร์ในช่องนี้"}</div>}</div></div>})}</section>
+  </>}
