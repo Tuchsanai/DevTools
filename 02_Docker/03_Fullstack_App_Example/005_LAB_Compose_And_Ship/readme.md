@@ -1,98 +1,48 @@
-# LAB 5 — ยุบทุกอย่างเป็นไฟล์เดียว แล้วส่งมอบให้ลูกค้า
+# LAB 5 — รวมระบบด้วย Compose และส่งมอบผ่าน Docker Hub
 
-> โฟลเดอร์ `005_LAB_Compose_And_Ship` · ไฟล์ของแล็บ : `compose.yaml` · `api/` · `web/` · `db/initdb/` · `verify.sh`
+> โฟลเดอร์ `005_LAB_Compose_And_Ship` · ใช้ `compose.yaml`, `api/`, `web/`, `db/initdb/` และ `verify.sh`
 
----
+แล็บนี้ตอบ NFR-1–NFR-3 ของ CampusOps: ยกระบบสาม service ด้วยคำสั่งเดียว รักษาข้อมูลใน named volume ไม่เปิดพอร์ตฐานข้อมูล และส่ง image รุ่น `1.0` ให้เครื่องปลายทางโดยไม่ต้องมีซอร์สโค้ด
 
-### 🎯 แล็บนี้ใน 30 วินาที
-
-| | |
+| ประเด็น | ผลลัพธ์ที่ต้องพิสูจน์ |
 |---|---|
-| **คำถามเดียวที่ตอบให้จบ** | ระบบสามกล่องที่เราต่อมือมา 4 แล็บ ทำอย่างไรให้ **ขึ้นด้วยคำสั่งเดียว** (NFR-1) และ **ส่งมอบให้ลูกค้าเอาไปรันเองได้** |
-| **ต้องผ่านอะไรมาก่อน** | **LAB 1–4** ครบ · แล็บนี้ไม่มีเทคนิคใหม่เลย มีแต่ย้ายทุก flag ที่พิมพ์มาแล้วไปอยู่ในไฟล์เดียว |
-| **เวลา** | ~50 นาที · การทดลอง **9 อัน** อันละ 3–5 นาที |
-| **จบแล้วต้องทำได้เอง** | อ่าน `compose.yaml` ทีละ key แล้วชี้ได้ว่าแต่ละบรรทัดมาจาก `docker run` ตัวไหน · ใช้ `healthcheck` + `depends_on` ให้ระบบรอกันเอง · บอกได้ว่า `down` กับ `down -v` ต่างกันตรงไหน · `tag`/`push`/`pull` ผ่าน registry ในเครื่อง |
-| **แล็บนี้ยัง *ไม่* สอน** | network สร้างมือ → **LAB 4** สอนไปแล้ว (compose สร้างให้เอง) · ORM / migration tool · การเก็บรหัสผ่านแบบ secret · การจำกัด CPU/RAM ของกล่อง — ทั้งหมดอยู่นอกขอบเขตของชุดนี้ |
-
----
+| Compose | `db` → `api` → `web` ขึ้นตาม healthcheck |
+| Persistence | `down` รักษาข้อมูล แต่ `down -v` คืนฐานข้อมูลเป็น seed |
+| Security | มีเพียง `web` ที่ publish port |
+| Shipping | push/pull image สองก้อนผ่าน Docker Hub แบบ public |
 
 ## ทฤษฎีก่อนลงมือ
 
-**โจทย์จากลูกค้า** : *"ไม่มีฝ่าย IT ประจำ — ติดตั้งต้องง่าย ย้ายเครื่องต้องได้"* ([`docs/00_story.md`](../docs/00_story.md) §ข้อจำกัด)
-→ กลายเป็น **NFR-1** ใน [`docs/01_requirements.md`](../docs/01_requirements.md) : *"`docker compose up -d` แล้วระบบพร้อมใช้งาน โดยไม่ต้องติดตั้ง Python/Node/Postgres บนเครื่อง"*
+### `compose.yaml` แทนคำสั่งที่กระจายอยู่หลายบรรทัด
 
-### `compose.yaml` คือ `docker run` ที่เขียนเป็นไฟล์
+![แผนภาพจับคู่คำสั่ง docker run และ docker build กับ key ใน compose.yaml](./images/theory-run-to-compose.svg)
 
-![ตารางเทียบสองคอลัมน์ ฝั่งซ้ายคือ flag ที่พิมพ์ตอน docker run และ docker build จาก LAB 1 ถึง LAB 4 ฝั่งขวาคือ key ใน compose.yaml ที่ทำงานแทน ปิดท้ายด้วยกล่องสีแดงว่าสิ่งเดียวที่ docker run ทำไม่ได้คือรอให้กล่องก่อนหน้าพร้อมจริง](./images/theory-run-to-compose.svg)
+`build`, `environment`, `volumes`, `ports` และ `depends_on` ทำให้ข้อกำหนดการติดตั้งอยู่ในไฟล์ที่ตรวจทานและทำซ้ำได้ ส่วน `condition: service_healthy` ทำให้ service ถัดไปรอจน service ต้นทางพร้อมใช้งานจริง
 
-> 🖼 **วิธีอ่านรูปนี้:** อ่านทีละแถวจากซ้ายไปขวา — ฝั่งซ้ายคือสิ่งที่**เราพิมพ์มาแล้วจริง ๆ** ใน 4 แล็บที่ผ่านมา ฝั่งขวาคือที่อยู่ใหม่ของมัน · แถวสุดท้ายฝั่งขวาเป็นสีเขียวเพราะ **ไม่ต้องเขียนอะไรเลย** · กล่องสีแดงล่างสุดคือของชิ้นเดียวที่ compose ให้เพิ่มมาจริง ๆ
+![เส้นเวลา healthcheck แสดงลำดับ db api และ web](./images/theory-healthcheck-order.svg)
 
-| สิ่งที่ทำด้วย `docker run` มาแล้ว | key ใน `compose.yaml` | มาจากแล็บ |
-|---|---|---|
-| `-e POSTGRES_PASSWORD=labpass` | `environment:` | LAB 1 |
-| `-v ops-pgdata:/var/lib/postgresql/data` | `volumes:` + บล็อก `volumes:` ล่างสุดของไฟล์ | LAB 1 |
-| `-v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro"` | `volumes:` แบบ bind mount | LAB 1 |
-| `docker build -t ops-api:1.0 ./api` | `build: context: ./api` | LAB 2 |
-| `-p 3000:3000` | `ports:` (มีที่ `web` ที่เดียว) | LAB 2 · LAB 3 |
-| `--build-arg NEXT_PUBLIC_SITE_NAME=CampusOps` | `build: args:` | LAB 3 |
-| `docker network create` + `--network` | *ไม่ต้องเขียน* — compose สร้าง network ชื่อ `<project>_default` ให้เอง | LAB 4 |
-| *(`docker run` ทำไม่ได้)* พิมพ์ `sleep 10` เดาเอาเอง | `healthcheck:` + `depends_on: condition: service_healthy` | **02_Dockerfile Guide LAB 7** |
+`docker compose down` ลบ container และ network แต่ไม่ลบ named volume; `docker compose down -v` ลบ volume และข้อมูลอย่างถาวร จึงใช้เฉพาะเมื่อต้องการ reset เป็น seed
 
-### `healthcheck` คือคนตอบ · `depends_on` คือคนรอ
+### ส่งมอบ image ผ่าน Docker Hub
 
-![เส้นเวลาสามแถว db api web จากการรันจริง แถว db เริ่มด้วยช่วง initdb แล้วเปลี่ยนเป็น healthy ที่วินาที 17.3 แถว api เป็นกรอบเส้นประจนถึงวินาที 21.2 จึงเริ่ม แถว web เป็นกรอบเส้นประจนถึงวินาที 26.9 จึงเริ่ม มีลูกศรสีเขียวสองเส้นชี้จากจุดที่กล่องก่อนหน้า healthy ไปยังจุดที่กล่องถัดไปเกิด](./images/theory-healthcheck-order.svg)
+![แผนภาพทีมพัฒนา build tag และ push image ไปยัง Docker Hub แบบ public ก่อนเครื่องลูกค้า pull และรันด้วย compose โดยไม่มีซอร์สโค้ด](./images/theory-ship-registry.svg)
 
-> 🖼 **วิธีอ่านรูปนี้:** กรอบ**เส้นประ**แปลว่ากล่องนั้น *ยังไม่ถูกสร้างขึ้นเลย* ไม่ใช่สร้างแล้วรออยู่ · ลูกศรสีเขียวสองเส้นคือ "ใบอนุญาตให้เกิด" ที่ออกให้ก็ต่อเมื่อกล่องก่อนหน้าตอบว่า `healthy` แล้วเท่านั้น
+ชื่อ `<DOCKER_USER>/campusops-web:1.0` ประกอบด้วย namespace เจ้าของ, repository และ tag เวอร์ชัน Docker Hub สร้าง repository อัตโนมัติเมื่อ push ครั้งแรก แต่ต้องตรวจให้เป็น **Public** เพื่อให้เครื่องลูกค้า pull ได้โดยไม่ต้องรับ credential ของผู้พัฒนา
 
-| | `depends_on: [db]` แบบสั้น | `depends_on: db: condition: service_healthy` |
-|---|---|---|
-| รออะไร | รอแค่ "กล่อง `db` ถูกสตาร์ตแล้ว" | รอจน **healthcheck ของ `db` ตอบว่าผ่าน** |
-| ตอนที่ `api` เกิด | postgres อาจยังรัน initdb อยู่ | postgres รับ connection ได้จริงแล้ว |
-| ใช้ในระบบนี้ | ไม่พอ — `api` จะวน retry ตอนบูต | ✅ ที่เราใช้ |
-
-### `down` กับ `down -v` ต่างกันหนึ่งตัวอักษร แต่ต่างกันทั้ง NFR-2
-
-compose ตั้งชื่อของทุกอย่างด้วย **ชื่อ project** นำหน้า — เราบังคับตั้งเองด้วย `-p campusops` ทุกคำสั่ง
-เพราะชื่อโฟลเดอร์ `005_LAB_Compose_And_Ship` ขึ้นต้นด้วยตัวเลข ถ้าปล่อยให้ compose เดาเอง project จะชื่อ `005_lab_compose_and_ship`
-
-| ของที่ compose สร้าง | ชื่อจริง | `down` ลบไหม | `down -v` ลบไหม |
-|---|---|---|---|
-| กล่อง | `campusops-db-1` · `campusops-api-1` · `campusops-web-1` | ✅ ลบ | ✅ ลบ |
-| network | `campusops_default` | ✅ ลบ | ✅ ลบ |
-| named volume | `campusops_pgdata` | ❌ **ไม่ลบ** | ✅ ลบ (ข้อมูลหายถาวร) |
-| image ที่ build | `campusops-api` · `campusops-web` | ❌ ไม่ลบ | ❌ ไม่ลบ |
-
-### ส่งมอบให้ลูกค้า = ส่ง image ไม่ใช่ส่งซอร์สโค้ด
-
-![แผนภาพสองเครื่อง ฝั่งซ้ายคือเครื่องของทีมพัฒนาที่ build แล้ว tag แล้ว push ฝั่งขวาคือเครื่องที่คณะของลูกค้าที่ pull แล้ว run โดยมีกล่อง registry ตรงกลาง และมีแถบล่างอธิบายว่าชื่อเต็มของ image ประกอบด้วยโฮสต์ของ registry ชื่อ repository และแท็กเวอร์ชัน](./images/theory-ship-registry.svg)
-
-> 🖼 **วิธีอ่านรูปนี้:** ลูกศรฟ้าสองเส้นวิ่งผ่าน `registry` ตรงกลางเสมอ — ไม่มีเส้นไหนวิ่งตรงจากซ้ายไปขวา นั่นคือเหตุผลที่ต้องมี registry · แถบเหลืองล่างสุดอธิบายว่าทำไมต้อง `docker tag` ก่อน `docker push` ทุกครั้ง
-
-### สิ่งที่มักเข้าใจผิด
-
-- **คิดว่า** `docker compose down` ลบข้อมูลของลูกค้าไปด้วย → **จริง ๆ** ลบแค่กล่องกับ network · volume ยังอยู่ครบ (การทดลองที่ 6)
-- **คิดว่า** `depends_on` เฉย ๆ ก็พอแล้ว เพราะมันแปลว่า "รอ" → **จริง ๆ** รอแค่กล่องถูกสตาร์ต ต้องมี `condition: service_healthy` ถึงจะรอจนใช้งานได้จริง (การทดลองที่ 4)
-- **คิดว่า** `-p campusops` เป็นแค่ความสวยงาม → **จริง ๆ** ถ้าไม่ใส่ compose จะเดาชื่อ project จากชื่อโฟลเดอร์ แล้วเรากับ compose จะพูดถึงคนละระบบกัน (การทดลองที่ 2)
-- **คิดว่า** `docker push` ส่ง image ตามชื่อที่ build มาได้เลย → **จริง ๆ** ชื่อ image ต้องมีโฮสต์ของ registry นำหน้า จึงต้อง `docker tag` ใหม่ก่อนเสมอ (การทดลองที่ 8)
-
----
+บัญชี Personal รองรับ private repository ได้หนึ่งแห่ง จึงกำหนด repository ของแล็บทั้งสองเป็น Public อัตรา pull ที่กำหนดในชุดสอนนี้คือ 100 ครั้งต่อ 6 ชั่วโมงต่อ IP เมื่อไม่ login และ 200 ครั้งต่อ 6 ชั่วโมงต่อบัญชีเมื่อ login หากพบ `429 Too Many Requests` ให้รอรอบโควตา, login ก่อน pull และหลีกเลี่ยงการ pull ซ้ำโดยไม่จำเป็น
 
 ## เตรียมเครื่องเรียน
 
-### ขั้นที่ 1 — เปิดกล่องเรียน
-
-รันบน **เครื่องของเราเอง** — นอกจากพอร์ต SSH แล้ว แล็บนี้เปิดพอร์ตของงานอีกสองพอร์ต : `8191` สำหรับหน้าเว็บ และ `5039` สำหรับ registry :
+รันบนเครื่องโฮสต์:
 
 ```bash
-docker rm -f devtools-ops-lab5 2>/dev/null
-docker run -dit --name devtools-ops-lab5 --privileged \
-  -p 2242:22 -p 8191:3000 -p 5039:5000 tuchsanai/devtools:2569_1
-ssh root@localhost -p 2242        # password : passwd
+docker rm -f devtools-fs-lab5 2>/dev/null
+docker run -dit --name devtools-fs-lab5 --privileged \
+  -p 2255:22 -p 8255:3000 tuchsanai/devtools:2569_1
+ssh root@localhost -p 2255        # password : passwd
 ```
 
-### ขั้นที่ 2 — โหลดโค้ดแล็บ
-
-**คำสั่งทุกอันหลังจากนี้พิมพ์ข้างในกล่องเรียน**
+คำสั่งทั้งหมดหลังจากนี้รันภายในกล่องเรียน:
 
 ```bash
 mkdir -p ~/labwork && cd ~/labwork
@@ -101,352 +51,472 @@ cd DevTools/02_Docker/03_Fullstack_App_Example/005_LAB_Compose_And_Ship
 ls
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ซอร์สของทั้งสามกล่องมาครบในโฟลเดอร์เดียว พร้อม `compose.yaml` ที่จะสั่งงานมันทั้งหมด :
+ผลรันต้องมีไฟล์และโฟลเดอร์ต่อไปนี้:
 
-```
-api
-compose.yaml
-db
-images
-readme.md
-verify.sh
-web
+```text
+api  compose.yaml  db  images  readme.md  verify.sh  web
 ```
 
-> 📝 **ทุกคำสั่ง compose ในแล็บนี้ต้องมี `-p campusops`** — พิมพ์ตกเมื่อไร compose จะไปคุยกับ project อีกอันทันที ซึ่งเป็นสาเหตุของปัญหาที่พบบ่อยที่สุดในแล็บนี้
+> ทุกคำสั่ง Compose ในแล็บนี้ระบุ `-p campusops` เพื่อให้ชื่อ project คงที่
 
----
+### Walkthrough เตรียมบัญชี Docker Hub และ Access Token
 
-## การทดลองที่ 1 — อ่าน `compose.yaml` ทีละ key
+ใช้รหัสผ่านบัญชีเฉพาะหน้า Sign in ของเว็บ แต่ใช้ **Personal Access Token** แทนรหัสผ่านบัญชีเมื่อคำสั่ง `docker login` ถาม `Password:` ห้ามบันทึก token ลงเอกสารหรือไฟล์สคริปต์
 
-**คำถาม:** ไฟล์นี้พูดอะไรบ้าง ที่เราไม่เคยพิมพ์ด้วยมือมาก่อน
+#### ขั้นที่ ①–② — เปิด Docker Hub และเริ่ม Sign in
+
+เปิด `https://hub.docker.com` แล้วคลิก **Sign in**
+
+![หน้า Docker Hub พร้อม marker ที่โลโก้และปุ่ม Sign in](./images/ui-hub-01-home.png)
+
+*ภาพที่ 1 — เปิด Docker Hub และเข้าสู่ขั้นตอน Sign in*
+
+#### ขั้นที่ ③–④ — กรอกชื่อบัญชี
+
+คลิกช่องชื่อบัญชี กรอก `<DOCKER_USER>` แล้วคลิก **Continue**
+
+![หน้า Sign in พร้อม marker ที่ช่องชื่อบัญชีและปุ่ม Continue](./images/ui-hub-02-username.png)
+
+*ภาพที่ 2 — ชื่อบัญชีถูกแทนด้วย `<DOCKER_USER>` ในสื่อการสอน*
+
+#### ขั้นที่ ⑤–⑥ — กรอกรหัสผ่านบัญชี
+
+คลิกช่องรหัสผ่าน กรอกรหัสผ่านบัญชี แล้วคลิก **Continue**
+
+![หน้ารหัสผ่านพร้อม marker ที่ช่องรหัสผ่านและปุ่ม Continue](./images/ui-hub-03-password.png)
+
+*ภาพที่ 3 — รหัสผ่านใช้สำหรับเว็บเท่านั้น ไม่ใช้กับคำสั่ง docker login*
+
+#### ขั้นที่ ⑦ — เปิดเมนูบัญชี
+
+คลิก avatar มุมขวาบน
+
+![หน้า My Hub พร้อม marker ที่ avatar ซึ่งปิดอักษรย่อบัญชีแล้ว](./images/ui-hub-04-avatar.png)
+
+*ภาพที่ 4 — avatar ถูกปิดข้อมูลระบุตัวบัญชี แต่ตำแหน่งคลิกยังชัดเจน*
+
+#### ขั้นที่ ⑧ — เปิด Account settings
+
+คลิก **Account settings**
+
+![เมนูบัญชีพร้อม marker ที่ Account settings](./images/ui-hub-05-account-settings.png)
+
+*ภาพที่ 5 — เปิดหน้าตั้งค่าบัญชีจากเมนู avatar*
+
+#### ขั้นที่ ⑨–⑩ — เปิดรายการและเริ่มสร้าง token
+
+คลิก **Personal access tokens** แล้วคลิก **Generate new token**
+
+![หน้า Personal access tokens พร้อม marker ที่เมนูและปุ่มสร้าง token](./images/ui-hub-06-token-list.png)
+
+*ภาพที่ 6 — เปิดรายการ token และเริ่มสร้าง token ใหม่*
+
+#### ขั้นที่ ⑪ — กำหนด description
+
+คลิกช่อง description แล้วกรอก `lab5-capture-20260820-083133`
+
+![ฟอร์ม token พร้อม marker ที่ช่อง description](./images/ui-hub-07-description.png)
+
+*ภาพที่ 7 — description ช่วยระบุ token ที่ต้อง revoke หลังจบแล็บ*
+
+#### ขั้นที่ ⑫ — กำหนดวันหมดอายุ
+
+คลิกรายการ Expiration แล้วเลือก **30 days**
+
+![รายการ expiration พร้อม marker ที่ตัวเลือก 30 days](./images/ui-hub-08-expiration.png)
+
+*ภาพที่ 8 — กำหนดอายุ token ให้สั้นตามระยะเวลาการใช้งาน*
+
+#### ขั้นที่ ⑬ — กำหนด permission
+
+คลิกรายการ permission แล้วเลือก **Read & Write**
+
+![รายการ permission พร้อม marker ที่ Read and Write](./images/ui-hub-09-permission.png)
+
+*ภาพที่ 9 — สิทธิ์ Write จำเป็นสำหรับ push และสิทธิ์ Read จำเป็นสำหรับ pull*
+
+#### ขั้นที่ ⑭ — สร้าง token
+
+คลิก **Generate**
+
+![ฟอร์มพร้อม marker ที่ปุ่ม Generate](./images/ui-hub-10-generate.png)
+
+*ภาพที่ 10 — สร้าง token หลังตรวจ description, expiration และ permission*
+
+#### ขั้นที่ ⑮ — คัดลอก token
+
+คลิก **Copy** และเก็บค่าเป็น `<DOCKER_TOKEN>` ใน password manager ชั่วคราว
+
+![หน้าคัดลอก token พร้อม marker ที่ปุ่ม Copy และปิดค่าจริงแล้ว](./images/ui-hub-11-copy.png)
+
+*ภาพที่ 11 — Docker Hub แสดง token ครั้งเดียว สื่อการสอนแทนค่าด้วย `<DOCKER_TOKEN>`*
+
+## การทดลองที่ 1 — Compose ประกาศ service อะไร
+
+**คำถาม:** `compose.yaml` อ่านได้และประกาศระบบครบสาม service หรือไม่
 
 ```bash
 docker compose -p campusops config --services
-grep -nE "^ {4}(image|build|environment|volumes|ports|depends_on|healthcheck|restart):" compose.yaml
 ```
 
-✅ **สิ่งที่ต้องเห็น** — สาม service และแผนที่ของ key ทั้งไฟล์ · สังเกตว่า **`ports:` มีบรรทัดเดียวคือบรรทัด 82 ของ `web`** และ `db` ไม่มีเลย (เลขบรรทัดตรงกันทุกเครื่องเพราะเป็นไฟล์เดียวกัน · ลำดับชื่อ service ออกตามลำดับที่เขียนในไฟล์ ไม่ใช่เรียงตัวอักษร) :
+✅ **สิ่งที่ต้องเห็น**
 
-```
+```text
 db
 api
 web
-20:    image: postgres:17-alpine
-21:    environment:
-25:    volumes:
-33:    healthcheck:
-42:    restart: unless-stopped
-49:    build:
-51:    environment:
-55:    depends_on:
-60:    healthcheck:
-68:    restart: unless-stopped
-74:    build:
-80:    environment:
-82:    ports:
-85:    depends_on:
-88:    healthcheck:
-95:    restart: unless-stopped
 ```
 
-เทียบกับตารางในหัวข้อทฤษฎีข้างบน จะเห็นว่าทุก key มีต้นทางเป็น flag ที่เราพิมพ์มาแล้วใน LAB 1–4 ส่วน `healthcheck:` กับ `depends_on:` เคยเขียนแล้วที่ **02_Dockerfile Guide LAB 7**
+> 📝 ผลลัพธ์ยืนยัน schema ขั้นต้นและชื่อ service ที่ Compose DNS ใช้ภายใน network เดียวกัน โดยยังไม่สร้าง container
 
-> 📝 **บทเรียน:** `db` เป็น service เดียวที่ไม่มี `ports:` เลย นั่นคือ NFR-3 ที่เขียนเป็นไฟล์ · `build:` แทน `docker build` ส่วน `image:` แทนการหยิบ image สำเร็จรูปมาใช้
+## การทดลองที่ 2 — คำสั่งเดียวสร้างระบบครบไหม
 
----
-
-## การทดลองที่ 2 — คำสั่งเดียวจบ (NFR-1)
-
-**คำถาม:** จาก 4 แล็บที่พิมพ์กันหลายสิบบรรทัด เหลือกี่คำสั่ง และใช้เวลาเท่าไร
+**คำถาม:** Compose สามารถ build และยกทั้งระบบตาม NFR-1 ด้วยคำสั่งเดียวหรือไม่
 
 ```bash
-time docker compose -p campusops up -d --build
+docker compose -p campusops down -v
+docker compose -p campusops up -d --build
 ```
 
-✅ **สิ่งที่ต้องเห็น** — บรรทัดท้ายสุดของ log ที่เดินเป็นลำดับ `Started → Waiting → Healthy` แล้วปิดด้วยเวลารวม (log จริงยาวหลายร้อยบรรทัดเพราะต้อง pull และ build ตัดมาเฉพาะช่วงท้าย · **ตัวเลข `real` ของแต่ละเครื่องไม่ตรงกัน** ขึ้นกับความเร็วเน็ต) :
+✅ **สิ่งที่ต้องเห็น**
 
-```
- Container campusops-db-1 Starting
- Container campusops-db-1 Started
- Container campusops-db-1 Waiting
- Container campusops-db-1 Healthy
- Container campusops-api-1 Starting
- Container campusops-api-1 Started
- Container campusops-api-1 Waiting
- Container campusops-api-1 Healthy
- Container campusops-web-1 Starting
- Container campusops-web-1 Started
-
-real	1m10.147s
+```text
+Image campusops-api Built
+Image campusops-web Built
+Container campusops-db-1 Started
+Container campusops-db-1 Healthy
+Container campusops-api-1 Started
+Container campusops-api-1 Healthy
+Container campusops-web-1 Started
 ```
 
-> 📝 **บทเรียน:** **1 คำสั่ง · 1 นาทีเศษ** จากเครื่องเปล่าถึงระบบพร้อมใช้ — นี่คือคำตอบของ NFR-1 · เวลาส่วนใหญ่หมดไปกับ pull `postgres:17-alpine` และ `npm ci` ครั้งแรกเท่านั้น
+> 📝 ลำดับ Started และ Healthy เกิดจาก healthcheck กับ depends_on ไม่ใช่การกำหนดเวลารอแบบคงที่ จึงรองรับเครื่องที่มีความเร็วต่างกัน
 
----
+## การทดลองที่ 3 — ฐานข้อมูลไม่เปิดพอร์ตออกนอกระบบจริงไหม
 
-## การทดลองที่ 3 — สามกล่องขึ้นครบและไม่มีพอร์ตของฐานข้อมูลหลุด
-
-**คำถาม:** ทั้งสามกล่องอยู่ในสถานะไหน และมีใครเปิดประตูออกนอกเครื่องบ้าง
+**คำถาม:** service ทั้งสาม healthy และมีเพียง web ที่ publish port หรือไม่
 
 ```bash
 sleep 20
 docker compose -p campusops ps
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ทั้งสามขึ้น `(healthy)` และคอลัมน์ `PORTS` มีบรรทัด `0.0.0.0:...->` **แค่ `web` เท่านั้น** (เวลาใน `STATUS` ของแต่ละคนต่างกัน · ที่ต้อง `sleep 20` ก่อนเพราะ `web` เป็นตัวสุดท้ายที่ไม่มีใครรอ `up -d` จึงคืน prompt ตั้งแต่ `web Started` ทั้งที่ `start_period: 20s` ยังไม่หมด ถามเร็วกว่านี้จะเห็น `health: starting`) :
+✅ **สิ่งที่ต้องเห็น**
 
-```
+```text
 NAME              IMAGE                COMMAND                  SERVICE   CREATED          STATUS                    PORTS
-campusops-api-1   campusops-api        "uvicorn main:app --…"   api       36 seconds ago   Up 29 seconds (healthy)   8000/tcp
-campusops-db-1    postgres:17-alpine   "docker-entrypoint.s…"   db        36 seconds ago   Up 35 seconds (healthy)   5432/tcp
-campusops-web-1   campusops-web        "docker-entrypoint.s…"   web       36 seconds ago   Up 24 seconds (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+campusops-api-1   campusops-api        "uvicorn main:app --…"   api       32 seconds ago   Up 25 seconds (healthy)   8000/tcp
+campusops-db-1    postgres:17-alpine   "docker-entrypoint.s…"   db        32 seconds ago   Up 31 seconds (healthy)   5432/tcp
+campusops-web-1   campusops-web        "docker-entrypoint.s…"   web       32 seconds ago   Up 20 seconds (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
 ```
 
-> 📝 **บทเรียน:** `5432/tcp` เฉย ๆ คือ `EXPOSE` ของ image (LAB 2) ไม่ใช่ประตู · **NFR-3 ผ่านเพราะเราไม่เขียน `ports:` ให้ `db`** ไม่ใช่เพราะตั้งค่าอะไรเพิ่ม
+> 📝 `5432/tcp` เป็น metadata จาก EXPOSE ไม่ใช่ published port หลักฐานของ NFR-3 คือมี mapping `0.0.0.0:3000->3000/tcp` เฉพาะ web
 
----
+## การทดลองที่ 4 — Service เริ่มตามลำดับที่กำหนดไหม
 
-## การทดลองที่ 4 — `api` รอ `db` จริงไหม
-
-**คำถาม:** สามกล่องเกิดพร้อมกัน หรือเกิดทีละกล่องตามลำดับที่เราสั่ง
+**คำถาม:** เวลาเริ่มของ container เรียงจาก db ไป api และ web หรือไม่
 
 ```bash
 docker inspect -f '{{.Name}} start={{.State.StartedAt}} health={{.State.Health.Status}}' \
   campusops-db-1 campusops-api-1 campusops-web-1
-docker compose -p campusops logs db 2>&1 | grep -E 'init process complete|ready to accept connections'
 ```
 
-✅ **สิ่งที่ต้องเห็น** — เวลาสตาร์ตเรียงกัน `db` → `api` → `web` โดย `api` เกิด **หลัง** บรรทัด `ready to accept connections` ของ `db` (นาฬิกาและระยะห่างของแต่ละเครื่องต่างกัน ให้ดูที่**ลำดับ** ไม่ใช่ตัวเลข) :
+คำสั่งนี้ยาวเพราะต้องอ่านเวลาและ health status ของ container ทั้งสามพร้อมกันเพื่อเปรียบเทียบลำดับโดยตรง
 
+✅ **สิ่งที่ต้องเห็น**
+
+```text
+/campusops-db-1 start=2026-08-20T08:32:52.694233813Z health=healthy
+/campusops-api-1 start=2026-08-20T08:32:58.374800112Z health=healthy
+/campusops-web-1 start=2026-08-20T08:33:04.049456156Z health=healthy
 ```
-/campusops-db-1 start=2026-08-17T14:08:15.569729292Z health=healthy
-/campusops-api-1 start=2026-08-17T14:08:21.243317855Z health=healthy
-/campusops-web-1 start=2026-08-17T14:08:26.927619109Z health=healthy
-db-1  | 2026-08-17 14:08:16.846 UTC [41] LOG:  database system is ready to accept connections
-db-1  | PostgreSQL init process complete; ready for start up.
-db-1  | 2026-08-17 14:08:17.345 UTC [1] LOG:  database system is ready to accept connections
-```
 
-> 📝 **บทเรียน:** `api` เกิดตอน `14:08:21.2` ซึ่งช้ากว่าบรรทัด `ready to accept connections` ของจริงที่ `14:08:17.3` — compose หยุดรอให้เอง เราจึงลบ `sleep 10` ที่พิมพ์มาตลอด 4 แล็บทิ้งได้
+> 📝 เวลา UTC จากรอบทดสอบเรียง db < api < web และทุกกล่อง healthy จึงยืนยันว่าลำดับรอพร้อมทำงานตามที่ compose.yaml กำหนด
 
----
+## การทดลองที่ 5 — หน้าเว็บทั้งสี่ส่วนตอบสนองไหม
 
-## การทดลองที่ 5 — เปิดหน้าเว็บของลูกค้า
-
-**คำถาม:** ระบบที่ขึ้นด้วยคำสั่งเดียว ครบทั้งสามส่วนงานตาม requirements หรือยัง
+**คำถาม:** หน้า overview, tickets, loans และ parts ตอบ HTTP 200 ครบหรือไม่
 
 ```bash
-for p in / /tickets /loans /parts; do
-  curl -s -o /dev/null -w "GET $p -> %{http_code}\n" http://localhost:3000$p
-done
+curl -s -o /dev/null -w "GET / -> %{http_code}\n" http://localhost:3000/
+curl -s -o /dev/null -w "GET /tickets -> %{http_code}\n" http://localhost:3000/tickets
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ทั้ง 4 หน้าตอบ `200` ครบ ตามตารางหน้าเว็บใน [`docs/02_contract.md`](../docs/02_contract.md) :
-
+```bash
+curl -s -o /dev/null -w "GET /loans -> %{http_code}\n" http://localhost:3000/loans
+curl -s -o /dev/null -w "GET /parts -> %{http_code}\n" http://localhost:3000/parts
 ```
+
+✅ **สิ่งที่ต้องเห็น**
+
+```text
 GET / -> 200
 GET /tickets -> 200
 GET /loans -> 200
 GET /parts -> 200
 ```
 
-พอร์ต 3000 ในกล่องเรียนถูกต่อทะลุถึงเครื่องเราตั้งแต่ตอนสร้างกล่อง (`-p 8191:3000`) — **เปิดเบราว์เซอร์บนเครื่องเรา** ที่ `http://localhost:8191` จะได้หน้านี้ :
+> 📝 จุดนี้ต้องตรวจรหัสสถานะจริงจึงคงรูปแบบ curl ที่มี `-w` ไว้ ส่วนการตรวจเนื้อหาและการเชื่อมฐานข้อมูลแสดงผ่าน walkthrough ถัดไป
 
-![หน้าสรุปของ CampusOps ที่พอร์ต 8191 แสดงการ์ดจำนวนใบแจ้งซ่อมแยกตามสถานะ รอรับเรื่อง 3 มอบหมายแล้ว 2 กำลังซ่อม 1 ปิดงานแล้ว 2 ครุภัณฑ์ที่ถูกยืมอยู่ 2 พร้อมบล็อกงานค้างเกินกำหนด 2 ใบ และบล็อกอะไหล่ต่ำกว่าจุดสั่งซื้อ 2 รายการ](./images/app-compose-running.png)
+### Walkthrough หน้า CampusOps ที่ Compose ยกขึ้น
 
-> 🖼 **วิธีอ่านรูปนี้:** แถบเมนูบนสุดคือ **สามส่วนงาน** ที่ [`docs/01_requirements.md`](../docs/01_requirements.md) §4 กำหนดไว้ — กระดานงานซ่อม · ยืม-คืนครุภัณฑ์ · คลังอะไหล่ · การ์ดห้าใบกลางหน้าคือ REQ-08 · บล็อกซ้ายล่างคือ REQ-09 · บล็อกขวาล่างคือ REQ-12 · ตัวเลขทั้งหมดมาจาก seed ใน `db/initdb/02-seed.sql` จึงตรงกันทุกเครื่อง
+เปิดเบราว์เซอร์บนเครื่องโฮสต์ที่ `http://localhost:8255` แล้วตรวจ UI ตามลำดับต่อไปนี้
 
-> 📝 **บทเรียน:** ระบบเดียวกับที่ค่อย ๆ ต่อมือมา 4 แล็บ ตอนนี้ขึ้นได้จาก `compose.yaml` ไฟล์เดียว · เบราว์เซอร์คุยกับ `web` เท่านั้น ส่วน `api` กับ `db` ไม่มีประตูออกนอกเครื่องเลย
+#### ขั้นที่ ① — เปิดหน้า CampusOps
 
----
+เปิดหน้า CampusOps ที่พอร์ต 8255
 
-## การทดลองที่ 6 — ข้อมูลของลูกค้ารอด `down` ไหม (NFR-2)
+![หน้า CampusOps พร้อม marker ที่ชื่อระบบ](./images/ui-compose-01-overview.png)
 
-**คำถาม:** ปิดระบบแล้วเปิดใหม่ ใบแจ้งซ่อมที่รับเข้ามาหลังส่งมอบยังอยู่หรือเปล่า
+*ภาพที่ 12 — หน้าแรกจากระบบที่ Compose ยกขึ้นจริงด้วยข้อมูล seed 8 ใบ*
+
+#### ขั้นที่ ② — เปิดกระดานงานซ่อม
+
+คลิก **กระดานงานซ่อม** และตรวจงาน seed ในสี่คอลัมน์
+
+![กระดานงานซ่อมพร้อม marker ที่เมนูซึ่งถูกคลิก](./images/ui-compose-02-tickets.png)
+
+*ภาพที่ 13 — กระดานแสดงรอรับเรื่อง 3, มอบหมายแล้ว 2, กำลังซ่อม 1 และปิดงานแล้ว 2 รวม 8 ใบ*
+
+#### ขั้นที่ ③ — กลับหน้าสรุปภาพรวม
+
+คลิก **สรุปภาพรวม** เพื่อกลับหน้าแรกและตรวจตัวเลข requirements
+
+![หน้าสรุปภาพรวมพร้อม marker ที่เมนูสรุปภาพรวม](./images/ui-compose-03-back-overview.png)
+
+*ภาพที่ 14 — งานที่ยังไม่ปิด 6 ใบ, เกินกำหนด 2 ใบ, ครุภัณฑ์ถูกยืม 2 ชิ้น และอะไหล่ต้องสั่งเพิ่ม 2 รายการ*
+
+## การทดลองที่ 6 — ข้อมูลคงอยู่หลัง down แต่ reset หลัง down -v ไหม
+
+**คำถาม:** named volume รักษาใบแจ้งซ่อมหลังปิดระบบและคืน seed เมื่อสั่งลบ volume หรือไม่
 
 ```bash
-docker compose -p campusops exec -T db psql -U opsuser -d campusops -c \
-"INSERT INTO tickets (asset_id,title,detail,priority) VALUES (4,'ไมโครโฟนห้องประชุมใหญ่เสียงขาด','แจ้งหลังส่งมอบระบบ','HIGH');"
+docker compose -p campusops exec -T db psql -U opsuser -d campusops -c "INSERT INTO tickets (asset_id,title,detail,priority) VALUES (4,'ไมโครโฟนห้องประชุมใหญ่เสียงขาด','แจ้งหลังส่งมอบระบบ','HIGH');"
 docker compose -p campusops exec -T db psql -U opsuser -d campusops -tAc "SELECT count(*) FROM tickets;"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — จาก 8 ใบตาม seed เพิ่มเป็น **9 ใบ** :
+✅ **สิ่งที่ต้องเห็น**
 
-```
+```text
 INSERT 0 1
 9
 ```
 
-ปิดระบบด้วย `down` เฉย ๆ แล้วเปิดใหม่ :
+ปิดและเปิดระบบโดยไม่ลบ volume แล้วนับอีกครั้ง:
 
 ```bash
 docker compose -p campusops down
-docker volume ls --filter name=campusops
-docker compose -p campusops up -d
-sleep 12
-docker compose -p campusops exec -T db psql -U opsuser -d campusops -tAc "SELECT count(*) FROM tickets;"
+docker compose -p campusops up -d --no-build
 ```
-
-✅ **สิ่งที่ต้องเห็น** — volume `campusops_pgdata` **ไม่ถูกลบ** ตอน `down` และข้อมูลกลับมาครบ **9 ใบ** (ตัดบรรทัด `Stopping` / `Removing` / `Starting` ของ compose ออก เหลือเฉพาะจุดที่ต้องมอง) :
-
-```
-DRIVER    VOLUME NAME
-local     campusops_pgdata
-9
-```
-
-ทีนี้ล้างทิ้งจริง ๆ ด้วย `-v` แล้วเปิดใหม่ด้วยคำสั่งเดิม :
 
 ```bash
-docker compose -p campusops down -v
-docker volume ls --filter name=campusops
-docker compose -p campusops up -d
 sleep 20
 docker compose -p campusops exec -T db psql -U opsuser -d campusops -tAc "SELECT count(*) FROM tickets;"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — รายการ volume ว่างเปล่าเหลือแต่หัวตาราง และจำนวนกลับไปเป็น **8 ใบ** ของ seed (ตัดบรรทัดของ compose ออกเช่นเดิม · จะมีบรรทัด `Volume campusops_pgdata Removed` เพิ่มมาให้เห็นด้วย) :
+✅ **สิ่งที่ต้องเห็น**
 
+```text
+9
 ```
-DRIVER    VOLUME NAME
+
+ลบ volume เปิดระบบใหม่ และนับ seed:
+
+```bash
+docker compose -p campusops down -v
+docker compose -p campusops up -d --no-build
+```
+
+```bash
+sleep 20
+docker compose -p campusops exec -T db psql -U opsuser -d campusops -tAc "SELECT count(*) FROM tickets;"
+```
+
+✅ **สิ่งที่ต้องเห็น**
+
+```text
 8
 ```
 
-> 📝 **บทเรียน:** เลข 8 ที่กลับมาไม่ใช่ข้อมูลเดิม แต่เป็น seed ที่ `db/initdb/` ใส่ให้ใหม่เพราะ volume ว่าง (กฎเดียวกับ LAB 1) · `-v` คือคำสั่งเดียวในแล็บนี้ที่ลบข้อมูลลูกค้าได้จริง
+> 📝 จำนวน 9 หลัง down พิสูจน์ persistence ส่วนจำนวน 8 หลัง down -v เป็น seed ชุดใหม่ ไม่ใช่ข้อมูลเดิม จึงต้องระวัง -v ในระบบจริง
 
----
+## การทดลองที่ 7 — จะตรวจหาต้นเหตุข้าม service อย่างไร
 
-## การทดลองที่ 7 — หาปัญหาเมื่อมีหลายกล่องพร้อมกัน
-
-**คำถาม:** ระบบไม่ตอบสนอง จะรู้ได้อย่างไรว่ากล่องไหนเป็นต้นเหตุ
+**คำถาม:** อ่าน log รวมและทดสอบ DNS จาก web ไป api ได้หรือไม่
 
 ```bash
 docker compose -p campusops logs --tail=1
 docker compose -p campusops exec -T web wget -qO- http://api:8000/health; echo
 ```
 
-✅ **สิ่งที่ต้องเห็น** — `--tail=1` คืน **บรรทัดล่าสุดของทุก service กล่องละ 1 บรรทัด** โดยมี **ชื่อ service นำหน้า** และ `exec` ทำให้เรายิงจากในกล่องหนึ่งไปอีกกล่องได้ (ข้อความและเวลาของแต่ละคนต่างกัน · ลำดับสามบรรทัดก็ต่างกันได้เพราะเรียงตามเวลาที่ log ออก) :
+✅ **สิ่งที่ต้องเห็น**
 
-```
-api-1  | INFO:     172.19.0.4:57704 - "GET /api/dashboard HTTP/1.1" 200 OK
-db-1   | 2026-08-17 14:09:57.553 UTC [1] LOG:  database system is ready to accept connections
-web-1  | ✓ Running next.config took 0.7ms
+```text
+api-1  | INFO:     172.19.0.4:37254 - "GET /api/dashboard HTTP/1.1" 200 OK
+web-1  | ✓ Running next.config took 0.8ms
+db-1   | 2026-08-20 08:34:01.570 UTC [1] LOG:  database system is ready to accept connections
 {"status":"ok","db":"up"}
 ```
 
-> 📝 **บทเรียน:** คำนำหน้า `db-1 |` · `api-1 |` คือสิ่งที่ `docker logs` ธรรมดาให้ไม่ได้ · `exec` ยิงจาก `web` ไปที่ **ชื่อ** `api:8000` ได้ เพราะ compose วางทุกกล่องไว้บน network เดียวกันให้แล้ว (LAB 4)
+> 📝 คำนำหน้า service ช่วยแยกแหล่ง log และชื่อ `api` ถูกแก้ผ่าน Compose DNS ภายใน จึงไม่ผูกระบบกับ IP ที่เปลี่ยนเมื่อสร้าง container ใหม่
 
----
+## การทดลองที่ 8 — ติดเวอร์ชันและส่งขึ้น Docker Hub ได้ไหม
 
-## การทดลองที่ 8 — ติดเวอร์ชันแล้วส่งขึ้น registry
-
-**คำถาม:** image ที่ build อยู่ในเครื่องเรา จะย้ายไปเครื่องลูกค้าได้อย่างไร
+**คำถาม:** image ที่ build ในเครื่องพัฒนาสามารถติด tag `1.0` และ push ไปยัง repository แบบ public ได้หรือไม่
 
 ```bash
-docker run -d --name ops-registry -p 5000:5000 registry:2 >/dev/null
-sleep 3 && curl -s http://localhost:5000/v2/_catalog
-docker tag campusops-api:latest localhost:5000/campusops-api:1.0
-docker tag campusops-web:latest localhost:5000/campusops-web:1.0
-docker images --filter reference="localhost:5000/*" --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}"
+docker login -u <DOCKER_USER>            # วาง Access Token ตอนถาม Password
+docker tag campusops-api:latest <DOCKER_USER>/campusops-api:1.0
 ```
 
-✅ **สิ่งที่ต้องเห็น** — registry เปล่า ๆ ขึ้นมาแล้ว และ image เดิมได้ **ชื่อใหม่ที่มีโฮสต์นำหน้า** โดย `IMAGE ID` เท่าเดิม (รอบแรกจะมีบรรทัด pull ของ `registry:2` สิบกว่าบรรทัดโผล่ก่อน ปกติ · ค่า `IMAGE ID` ของแต่ละคนคนละค่า) :
-
-```
-{"repositories":[]}
-REPOSITORY                     TAG       IMAGE ID
-localhost:5000/campusops-web   1.0       a9189f2357b5
-localhost:5000/campusops-api   1.0       108314af56b0
-```
-
-ส่งขึ้น registry แล้วถามคลังว่ามีอะไรอยู่บ้าง :
+แทน `<DOCKER_USER>` ด้วยชื่อบัญชีจริงเฉพาะใน terminal และวาง Access Token เมื่อคำสั่งถาม `Password:`
 
 ```bash
-docker push localhost:5000/campusops-api:1.0 | tail -2
-docker push localhost:5000/campusops-web:1.0 | tail -2
-curl -s http://localhost:5000/v2/_catalog
-curl -s http://localhost:5000/v2/campusops-web/tags/list
+docker tag campusops-web:latest <DOCKER_USER>/campusops-web:1.0
+docker images <DOCKER_USER>/campusops-api
 ```
 
-✅ **สิ่งที่ต้องเห็น** — บรรทัด `Pushed` ตามด้วย digest และคลังมี repository ครบสองก้อนพร้อมแท็ก `1.0` (ค่า `digest` ของแต่ละคนคนละค่า · บน Docker 29 ที่เก็บ image ด้วย containerd ตัว `IMAGE ID` **คือ** manifest digest ก้อนเดียวกัน 12 ตัวแรกจึงตรงกับตารางข้างบน) :
+✅ **สิ่งที่ต้องเห็น**
 
+```text
+Login Succeeded
+
+WARNING! Your credentials are stored unencrypted in '/root/.docker/config.json'.
+IMAGE                              ID             DISK USAGE   CONTENT SIZE   EXTRA
+<DOCKER_USER>/campusops-api:1.0   2c737965a208        251MB         60.3MB   U
 ```
-aa8b3e865ce3: Pushed
-1.0: digest: sha256:108314af56b0704f91416acbdec3fb76217c6b9d54dc3a1e5f4b6f2cf67503ca size: 856
-16da5a640377: Pushed
-1.0: digest: sha256:a9189f2357b588924c9a8a338068e319429e01e2cbba013243c812708b297fa9 size: 856
-{"repositories":["campusops-api","campusops-web"]}
-{"name":"campusops-web","tags":["1.0"]}
+
+push แยกสองคำสั่งเพื่อให้ระบุ image ที่ล้มเหลวได้ชัดเจน:
+
+```bash
+docker push <DOCKER_USER>/campusops-api:1.0
+docker push <DOCKER_USER>/campusops-web:1.0
 ```
 
-> 📝 **บทเรียน:** `docker tag` ไม่ได้ copy image — มันแค่ตั้งชื่อใหม่ให้ก้อนเดิม (`IMAGE ID` เท่ากัน) · ชื่อที่ไม่มีโฮสต์นำหน้า docker จะเดาว่าเป็น Docker Hub เสมอ จึง push ขึ้น registry ในเครื่องไม่ได้
+✅ **สิ่งที่ต้องเห็น** — ส่วนท้ายของผลรันจริงรอบนี้
 
----
+```text
+1.0: digest: sha256:2c737965a208b50cf56f68da0e03933af5d1fdc33dbe5721b6921f54c55279ae size: 856
+1.0: digest: sha256:ceb28834907df500a84ac02e1432f9b2d9b0df3cb55b864fe0fbc73a387be481 size: 856
+```
 
-## การทดลองที่ 9 — เครื่องลูกค้าที่ไม่มีซอร์สโค้ด
+> 📝 tag ไม่ได้คัดลอก image แต่เพิ่มชื่อให้ IMAGE ID เดิม ส่วน push ครั้งแรกสร้าง repository อัตโนมัติ ต้องตรวจ Visibility เป็น Public ทั้งสองก้อน
 
-**คำถาม:** ถ้าเครื่องปลายทางมีแค่ `compose.yaml` กับ image จาก registry ระบบขึ้นได้ไหม
+### Walkthrough ยืนยัน image บนหน้า Docker Hub
+
+#### ขั้นที่ ①–② — เปิด repository ทั้งสองจาก My Hub
+
+คลิก **My Hub → Repositories** ตรวจค่า **Public** ของทั้งสองรายการ แล้วคลิก `campusops-api` ก่อน `campusops-web` ตาม marker
+
+![รายการ Docker Hub พร้อม marker ที่ repository ทั้งสอง](./images/ui-hub-push-01-repositories.png)
+
+*ภาพที่ 15 — repository ทั้งสองถูกสร้างจาก push และแสดง Visibility เป็น Public*
+
+#### ขั้นที่ ③ — เปิดแท็บ Tags ของ API
+
+ในหน้า `campusops-api` คลิกแท็บ **Tags**
+
+![หน้า repository API พร้อม marker ที่แท็บ Tags](./images/ui-hub-push-02-api.png)
+
+*ภาพที่ 16 — เปิดแท็บ Tags ของ `<DOCKER_USER>/campusops-api`*
+
+#### ขั้นที่ ④–⑤ — อ่าน tag และ digest ของ API
+
+ตรวจ tag `1.0`, digest, เวลาที่ push และขนาด
+
+![แท็บ API Tags พร้อม marker ที่ tag และ digest](./images/ui-hub-push-03-api-tags.png)
+
+*ภาพที่ 17 — API แสดง Last pushed 6 minutes ago, repository size 57.5 MB และ compressed size 57.49 MB*
+
+#### ขั้นที่ ⑥ — เปิดแท็บ Tags ของ Web
+
+กลับ Repositories คลิก `campusops-web` แล้วคลิกแท็บ **Tags**
+
+![หน้า repository Web พร้อม marker ที่แท็บ Tags](./images/ui-hub-push-04-web.png)
+
+*ภาพที่ 18 — เปิดแท็บ Tags ของ `<DOCKER_USER>/campusops-web`*
+
+#### ขั้นที่ ⑦–⑧ — อ่าน tag และ digest ของ Web
+
+ตรวจ tag `1.0`, digest, เวลาที่ push และขนาด
+
+![แท็บ Web Tags พร้อม marker ที่ tag และ digest](./images/ui-hub-push-05-web-tags.png)
+
+*ภาพที่ 19 — Web แสดง Last pushed 6 minutes ago, repository size 69.9 MB และ compressed size 69.87 MB*
+
+## การทดลองที่ 9 — เครื่องลูกค้าที่ไม่มีซอร์สโค้ดยกระบบได้ไหม
+
+**คำถาม:** หลังลบ image แอปทั้งหมด เครื่องปลายทางสามารถ pull แล้ว `up --no-build` โดยไม่มีขั้น build หรือไม่
 
 ```bash
 docker compose -p campusops down
-docker image rm campusops-api:latest campusops-web:latest \
-  localhost:5000/campusops-api:1.0 localhost:5000/campusops-web:1.0
-docker images --filter reference="*campusops-*"
+docker image rm campusops-api:latest campusops-web:latest <DOCKER_USER>/campusops-api:1.0 <DOCKER_USER>/campusops-web:1.0
 ```
 
-✅ **สิ่งที่ต้องเห็น** — image ทั้งหมดหายจากเครื่องแล้ว เหลือแต่หัวตาราง (ค่า `sha256:` ของแต่ละคนคนละค่า) :
-
+```bash
+docker images <DOCKER_USER>/campusops-api
 ```
+
+✅ **สิ่งที่ต้องเห็น**
+
+```text
 Untagged: campusops-api:latest
 Untagged: campusops-web:latest
-Untagged: localhost:5000/campusops-api:1.0
-Deleted: sha256:108314af56b0704f91416acbdec3fb76217c6b9d54dc3a1e5f4b6f2cf67503ca
-Untagged: localhost:5000/campusops-web:1.0
-Deleted: sha256:a9189f2357b588924c9a8a338068e319429e01e2cbba013243c812708b297fa9
+Untagged: <DOCKER_USER>/campusops-api:1.0
+Deleted: sha256:2c737965a208b50cf56f68da0e03933af5d1fdc33dbe5721b6921f54c55279ae
+Untagged: <DOCKER_USER>/campusops-web:1.0
+Deleted: sha256:ceb28834907df500a84ac02e1432f9b2d9b0df3cb55b864fe0fbc73a387be481
 IMAGE   ID             DISK USAGE   CONTENT SIZE   EXTRA
 ```
 
-ทีนี้ทำตัวเป็นเครื่องลูกค้า : ดึง image จาก registry มาแล้วสั่งขึ้นโดย **ห้าม build** :
+pull ต้องเขียนแยกสองคำสั่ง ห้ามใช้ wildcard:
 
 ```bash
-docker pull -q localhost:5000/campusops-api:1.0
-docker pull -q localhost:5000/campusops-web:1.0
-docker tag localhost:5000/campusops-api:1.0 campusops-api:latest
-docker tag localhost:5000/campusops-web:1.0 campusops-web:latest
-docker compose -p campusops up -d --no-build
+docker pull <DOCKER_USER>/campusops-api:1.0
+docker pull <DOCKER_USER>/campusops-web:1.0
 ```
 
-log ของคำสั่งข้างบนต้องไม่มีบรรทัด `Building` เลย · ถามสถานะและยิงหน้าเว็บซ้ำ :
+```bash
+docker tag <DOCKER_USER>/campusops-api:1.0 campusops-api:latest
+docker tag <DOCKER_USER>/campusops-web:1.0 campusops-web:latest
+```
 
 ```bash
-docker compose -p campusops ps --format "table {{.Service}}\t{{.Image}}\t{{.Status}}"
+docker compose -p campusops up -d --no-build
+sleep 20
+```
+
+ตรวจสถานะและรหัส HTTP:
+
+```bash
+docker compose -p campusops ps
 curl -s -o /dev/null -w "GET / -> %{http_code}\n" http://localhost:3000/
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ระบบขึ้นครบโดย **ไม่มีขั้น build เลย** และหน้าเว็บตอบ `200` (แถว `web` อาจยังเป็น `health: starting` ถ้าถามเร็วเกินไป รออีก 10 วินาทีแล้วถามใหม่) :
+✅ **สิ่งที่ต้องเห็น** — log ของ `up` ไม่มีบรรทัด `Building`
 
-```
-SERVICE   IMAGE                STATUS
-api       campusops-api        Up 10 seconds (healthy)
-db        postgres:17-alpine   Up 15 seconds (healthy)
-web       campusops-web        Up 4 seconds (health: starting)
+```text
+NAME              IMAGE                COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+campusops-api-1   campusops-api        "uvicorn main:app --…"   api       32 seconds ago   Up 25 seconds (healthy)   8000/tcp
+campusops-db-1    postgres:17-alpine   "docker-entrypoint.s…"   db        32 seconds ago   Up 31 seconds (healthy)   5432/tcp
+campusops-web-1   campusops-web        "docker-entrypoint.s…"   web       32 seconds ago   Up 20 seconds (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
 GET / -> 200
 ```
 
-> 📝 **บทเรียน:** `--no-build` พิสูจน์ว่าเครื่องนี้ไม่ได้แตะซอร์สโค้ดเลย · สิ่งที่ลูกค้าต้องได้จริง ๆ มีแค่ **image ใน registry** + `compose.yaml` + `db/initdb/` — ไม่ต้องมี Node หรือ Python บนเครื่อง
-
----
+> 📝 --no-build พิสูจน์ว่าเครื่องปลายทางใช้ image ที่ pull มาโดยไม่อ่าน Dockerfile หรือ build source แต่ยังต้องมี compose.yaml และ db/initdb สำหรับระบบนี้
 
 ## ตรวจงานด้วย `verify.sh`
 
+สคริปต์ไม่ push และไม่ลบ repository จริง การส่งมอบส่วนบังคับใช้ namespace ทดสอบในเครื่อง, `docker save`, ลบ image, `docker load` และ `up --no-build`; การตรวจ Docker Hub จริงเป็น opt-in ด้วย `HUB_USER`
+
 ```bash
-bash verify.sh ; echo "exit code = $?"
+bash verify.sh
+echo "exit code = $?"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — `[PASS]` ครบทั้ง **22 บรรทัด** ปิดท้ายด้วย `ALL CHECKS PASSED` และ `exit code = 0` (ผลเต็มไม่ตัดทอน) :
+✅ **สิ่งที่ต้องเห็น** — `[PASS]` 26 บรรทัด, `[SKIP]` 1 บรรทัด และ exit code 0
 
-```
+```text
 ==============================================
  LAB 5 — Compose And Ship : verify
 ==============================================
@@ -467,132 +537,179 @@ bash verify.sh ; echo "exit code = $?"
 [PASS] web เรียก http://api:8000/health ด้วยชื่อ service แล้วได้ db up
 [PASS] NFR-2 : down แล้ว up ข้อมูลยังอยู่ครบ (9 ใบเท่าเดิม)
 [PASS] down -v แล้ว up ข้อมูลกลับไปเป็น seed ตั้งต้น (8 ใบ)
-[PASS] ยก registry ในเครื่อง (registry:2) ขึ้นที่พอร์ต 15000 ได้
-[PASS] docker push image ทั้งสองก้อนขึ้น registry สำเร็จ
-[PASS] registry มี repository ครบสองก้อน : {"repositories":["vops5-api","vops5-web"]}
-[PASS] ลบ image ในเครื่องแล้ว docker pull กลับมาจาก registry ได้
-[PASS] image ที่ pull กลับมารันได้จริง (เห็นไฟล์ผลลัพธ์ของหน้าเว็บใน image)
+[PASS] tag repository ให้ api แล้ว IMAGE ID ยังเป็นก้อนเดิม
+[PASS] tag repository ให้ web แล้ว IMAGE ID ยังเป็นก้อนเดิม
+[PASS] docker save รวม image ทั้งสองก้อนเป็นไฟล์ส่งมอบได้
+[PASS] ลบ image ต้นทางและชื่อสำหรับส่งมอบออกจากเครื่องแล้ว
+[PASS] docker load คืน image ทั้งสองก้อนจากไฟล์ส่งมอบได้
+[PASS] docker compose up -d --no-build ขึ้นครบจาก image ที่ load กลับมา
+[PASS] ระบบที่ load กลับมามีสถานะ healthy ครบ 3 service
+[PASS] ระบบที่ส่งมอบแบบออฟไลน์ตอบ HTTP 200
+[PASS] log ของ --no-build ไม่มีบรรทัด Building
+[SKIP] ไม่ตรวจ Docker Hub จริง — ตั้ง HUB_USER แล้ว tag/push ตามการทดลองที่ 8 เพื่อเปิดการตรวจ
 ----------------------------------------------
 ALL CHECKS PASSED
 exit code = 0
 ```
 
-> 📝 ใช้เวลาราว 1 นาที เพราะ BuildKit ใช้ cache จากการทดลองที่ 2 ต่อ (ถ้ายังไม่เคย build จะนานกว่านี้) · สคริปต์ใช้ project `vops5` · กล่อง `vops5-registry` · พอร์ต `13191` และ `15000` แล้วลบทิ้งเองเมื่อจบ — project `campusops` กับกล่อง `ops-registry` ของเราไม่ถูกแตะ
-
----
+> 📝 verify ใช้ project vops5 และพอร์ต 13191 แยกจากงานของผู้เรียน ลบเฉพาะทรัพยากรของตนเอง และถือ SKIP ของ Docker Hub เป็นผลปกติ
 
 ## แก้ปัญหาที่พบบ่อย
 
-| อาการ | สาเหตุ | วิธีแก้ |
+| ข้อความจริง | สาเหตุ | วิธีแก้ |
 |---|---|---|
-| `no configuration file provided: not found` | สั่ง compose จากโฟลเดอร์ที่ไม่มี `compose.yaml` | `cd` กลับเข้าโฟลเดอร์ `005_LAB_Compose_And_Ship` ก่อน |
-| `failed to parse /root/labwork/.../compose.yaml: go-yaml load error in parser (while parsing a block mapping) at L19.C3-L21.C4: did not find expected key` | เยื้องช่องว่างใน YAML ผิด (บรรทัด 21 เหลือ 3 ช่องแทน 4) | เปิดบรรทัดที่ข้อความบอก แล้วนับช่องว่างให้เท่าบรรทัดพี่น้องในบล็อกเดียวกัน · ห้ามใช้ Tab |
-| `Bind for 0.0.0.0:3000 failed: port is already allocated` | ลืม `-p campusops` compose จึงสร้าง project ซ้อนขึ้นมาแย่งพอร์ต 3000 | `docker compose -p 005_lab_compose_and_ship down -v` แล้วสั่งใหม่โดยใส่ `-p campusops` ให้ครบ |
-| `dependency failed to start: container campusops-db-1 is unhealthy` | healthcheck ของ `db` ไม่ผ่านภายในจำนวน `retries` ที่ตั้งไว้ | `docker compose -p campusops logs db` อ่านสาเหตุ · ถ้า volume เก่าสร้างด้วย user คนละชื่อ ให้ `down -v` แล้ว `up` ใหม่ |
-| `service "db" is not running` | สั่ง `exec` ตอน project นั้นยังไม่ขึ้น หรือพิมพ์ `-p` ผิดชื่อ | `docker compose -p campusops ps` ดูก่อนว่าขึ้นอยู่จริงไหม แล้วค่อย `exec` |
-| `docker compose ps` ขึ้นแต่หัวตาราง `NAME IMAGE COMMAND SERVICE CREATED STATUS PORTS` ทั้งที่ระบบรันอยู่ | ลืม `-p campusops` compose จึงไปดู project ชื่อตามโฟลเดอร์ | ใส่ `-p campusops` ทุกคำสั่ง ไม่มียกเว้น |
-| `failed to do request: Head "https://localhost:5000/v2/campusops-api/blobs/sha256:d563aa9edc73...": dial tcp [::1]:5000: connect: connection refused` | `docker push` ตอนกล่อง `ops-registry` ไม่ได้รันอยู่ | `docker ps --filter name=ops-registry` เช็กก่อน · ถ้ายังไม่ขึ้นให้ `docker run -d --name ops-registry -p 5000:5000 registry:2` |
-| `Error response from daemon: No such image: campusops-api:latest` | สั่ง `up -d --no-build` ทั้งที่ image ยังไม่ได้ pull ลงเครื่อง | `docker pull` ให้ครบทั้งสองก้อนก่อน แล้ว `docker tag` เป็นชื่อที่ compose มองหา |
-
----
+| `no configuration file provided: not found` | รันจากโฟลเดอร์ที่ไม่มี `compose.yaml` | เข้า `005_LAB_Compose_And_Ship` แล้วสั่งใหม่ |
+| `Bind for 0.0.0.0:3000 failed: port is already allocated` | มี project อื่นใช้พอร์ต 3000 | ตรวจด้วย `docker ps` แล้วหยุดเฉพาะ project ที่ตนสร้าง |
+| `dependency failed to start: container campusops-db-1 is unhealthy` | healthcheck ของ db ไม่ผ่าน | อ่าน `docker compose -p campusops logs db`; หากเป็น volume ฝึกที่สร้างผิด ให้ reset ด้วย `down -v` |
+| `denied: requested access to the resource is denied` | tag ไม่มีชื่อบัญชีนำหน้า หรือยังไม่ได้ login | tag เป็น `<DOCKER_USER>/campusops-api:1.0` และ login ด้วย token |
+| `unauthorized: incorrect username or password` | ใช้รหัสผ่านบัญชีแทน Access Token หรือ token หมดอายุ | สร้าง token ใหม่แบบ Read & Write แล้ว login ใหม่ |
+| `pull access denied for <DOCKER_USER>/campusops-api, repository does not exist or may require 'docker login'` | repository เป็น Private หรือพิมพ์ชื่อผิด | ตรวจชื่อและ Visibility; login หากตั้งใจใช้ Private |
+| `429 Too Many Requests` | เกิน pull rate limit | รอรอบโควตา, login ก่อน pull และใช้ image cache ที่มีอยู่ |
+| `Error response from daemon: No such image: campusops-api:latest` | สั่ง `up --no-build` ก่อน pull/tag | pull ให้ครบสองก้อนแล้ว tag กลับเป็นชื่อที่ compose.yaml ใช้ |
 
 ## เก็บกวาด
 
-**ในกล่องเรียน:**
+ภายในกล่องเรียน ลบ project, volume, image และ credential ที่ Docker CLI เขียนไว้ใน `/root/.docker/config.json`:
 
 ```bash
 docker compose -p campusops down -v
-docker rm -f -v ops-registry
-docker image rm -f campusops-api:latest campusops-web:latest \
-  localhost:5000/campusops-api:1.0 localhost:5000/campusops-web:1.0
+docker image rm -f campusops-api:latest campusops-web:latest <DOCKER_USER>/campusops-api:1.0 <DOCKER_USER>/campusops-web:1.0
 ```
-
-✅ **สิ่งที่ต้องเห็น** — `down -v` เก็บทั้งกล่อง · network และ volume ในคำสั่งเดียว แล้วชื่อ image ทั้งสี่ถูกถอดออกหมด (ค่า `sha256:` ของแต่ละคนคนละค่า · `docker rm -f -v` ต้องมี `-v` เพราะ `registry:2` ประกาศ `VOLUME` ไว้ ไม่งั้นจะเหลือ anonymous volume ค้าง) :
-
-```
- Volume campusops_pgdata Removed
- Network campusops_default Removed
-ops-registry
-Untagged: campusops-api:latest
-Untagged: campusops-web:latest
-Untagged: localhost:5000/campusops-api:1.0
-Deleted: sha256:108314af56b0704f91416acbdec3fb76217c6b9d54dc3a1e5f4b6f2cf67503ca
-Untagged: localhost:5000/campusops-web:1.0
-Deleted: sha256:a9189f2357b588924c9a8a338068e319429e01e2cbba013243c812708b297fa9
-```
-
-ยืนยันว่าเครื่องกลับไปสะอาดจริง :
 
 ```bash
-docker ps -a
-docker volume ls
+docker logout
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ทั้งสองตารางเหลือแค่หัวตาราง ไม่มีกล่องและไม่มี volume ค้างเลยแม้แต่ก้อนเดียว :
+`docker logout` ลบ credential ออกจากกล่องเรียน แต่ **ไม่ทำให้ Access Token หมดอายุ** จึงต้อง revoke token บน Docker Hub ด้วย หากต้องการเก็บ repository เป็นผลงาน สามารถข้ามเฉพาะขั้นลบ repository แต่ยังต้อง logout และ revoke token
 
-```
-CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-DRIVER    VOLUME NAME
-```
+### Revoke Personal Access Token
 
-> 📝 `docker volume ls` แบบไม่กรองคือคำสั่งที่บอกความจริง — ถ้าลืม `-v` ตอนลบ `ops-registry` จะเห็น volume ชื่อยาว ๆ ที่ไม่มีใครใช้ค้างอยู่
+ใช้เส้นทาง avatar → Account settings → Personal access tokens ตามภาพที่ 4–6 แล้วดำเนินการต่อ:
 
-**ออกจากกล่องแล้วลบกล่องบนเครื่องเรา:**
+#### ขั้นที่ ⑯ — เปิดเมนูของ token
+
+คลิกเมนูของ token ที่สร้างสำหรับแล็บ
+
+![รายการ token พร้อม marker ที่ปุ่มเมนู](./images/ui-hub-12-revoke-menu.png)
+
+*ภาพที่ 20 — เลือกเฉพาะ token จาก description ของแล็บ*
+
+#### ขั้นที่ ⑰ — เปิดหน้ายืนยันการลบ
+
+คลิก **Delete**
+
+![เมนู token พร้อม marker ที่ Delete](./images/ui-hub-13-revoke-delete.png)
+
+*ภาพที่ 21 — เปิดหน้าลบ token ที่เลือก*
+
+#### ขั้นที่ ⑱ — ยืนยันการลบ token
+
+คลิก **Delete token** เพื่อยืนยัน
+
+![หน้ายืนยันพร้อม marker ที่ Delete token](./images/ui-hub-14-revoke-confirm.png)
+
+*ภาพที่ 22 — token ชั่วคราวของรอบถ่ายภาพถูก revoke จริงหลังคลิก*
+
+### ลบ repository ทั้งสองบน Docker Hub
+
+ทำลำดับต่อไปนี้กับ `campusops-api`:
+
+#### ขั้นที่ ①–③ — เปิด repository API
+
+คลิก **My Hub → Repositories → campusops-api**
+
+![หน้า Repositories พร้อม marker สามขั้นสำหรับ API](./images/ui-hub-delete-01-api-list.png)
+
+*ภาพที่ 23 — เปิด repository API จาก My Hub ตามลำดับไม่ข้ามขั้น*
+
+#### ขั้นที่ ④ — เปิด Settings ของ API
+
+คลิกแท็บ **Settings**
+
+![หน้า API พร้อม marker ที่ Settings](./images/ui-hub-delete-02-api-repository.png)
+
+*ภาพที่ 24 — เปิด Settings ของ campusops-api*
+
+#### ขั้นที่ ⑤ — เริ่มลบ repository API
+
+คลิก **Delete repository**
+
+![หน้า Settings API พร้อม marker ที่ Delete repository](./images/ui-hub-delete-03-api-settings.png)
+
+*ภาพที่ 25 — เริ่มขั้นลบ campusops-api*
+
+#### ขั้นที่ ⑥–⑦ — ยืนยันชื่อและลบ repository API
+
+พิมพ์ `campusops-api` แล้วคลิก **Delete repository forever**
+
+![กล่องยืนยัน API พร้อม marker ที่ช่องชื่อและปุ่มลบถาวร](./images/ui-hub-delete-04-api-confirm.png)
+
+*ภาพที่ 26 — ยืนยันชื่อให้ตรงก่อนลบ campusops-api อย่างถาวร*
+
+ทำลำดับเดียวกันกับ `campusops-web`:
+
+#### ขั้นที่ ⑧–⑩ — เปิด repository Web
+
+คลิก **My Hub → Repositories → campusops-web**
+
+![หน้า Repositories พร้อม marker สามขั้นสำหรับ Web](./images/ui-hub-delete-05-web-list.png)
+
+*ภาพที่ 27 — เปิด repository Web จาก My Hub*
+
+#### ขั้นที่ ⑪ — เปิด Settings ของ Web
+
+คลิกแท็บ **Settings**
+
+![หน้า Web พร้อม marker ที่ Settings](./images/ui-hub-delete-06-web-repository.png)
+
+*ภาพที่ 28 — เปิด Settings ของ campusops-web*
+
+#### ขั้นที่ ⑫ — เริ่มลบ repository Web
+
+คลิก **Delete repository**
+
+![หน้า Settings Web พร้อม marker ที่ Delete repository](./images/ui-hub-delete-07-web-settings.png)
+
+*ภาพที่ 29 — เริ่มขั้นลบ campusops-web*
+
+#### ขั้นที่ ⑬–⑭ — ยืนยันชื่อและลบ repository Web
+
+พิมพ์ `campusops-web` แล้วคลิก **Delete repository forever**
+
+![กล่องยืนยัน Web พร้อม marker ที่ช่องชื่อและปุ่มลบถาวร](./images/ui-hub-delete-08-web-confirm.png)
+
+*ภาพที่ 30 — ยืนยันชื่อให้ตรงก่อนลบ campusops-web อย่างถาวร*
+
+ออกจากกล่องเรียนและลบเฉพาะ container ของ LAB 5:
 
 ```bash
 exit
-docker rm -f devtools-ops-lab5
-docker ps -a --filter "name=^devtools-"
+docker rm -f devtools-fs-lab5
 ```
-
----
 
 ## สรุปคำสั่งของแล็บนี้
 
-| คำสั่ง | ความหมาย |
+| คำสั่ง | หน้าที่ |
 |---|---|
-| `docker compose -p campusops config --services` | อ่านไฟล์แล้วบอกว่ามี service อะไรบ้าง (ใช้เช็กว่าไฟล์ไม่พัง) |
-| `docker compose -p campusops up -d --build` | build ทุก image ที่มี `build:` แล้วยกทั้งระบบขึ้นเบื้องหลัง |
-| `docker compose -p campusops up -d --no-build` | ยกระบบขึ้นจาก image ที่มีอยู่แล้ว ห้าม build ใหม่ (แบบเครื่องลูกค้า) |
-| `docker compose -p campusops ps` | ดูสถานะ · สุขภาพ · พอร์ตของทุก service ในตารางเดียว |
-| `docker compose -p campusops logs --tail=1` | อ่าน log บรรทัดล่าสุดของทุกกล่องพร้อมกัน โดยมีชื่อ service นำหน้า |
-| `docker compose -p campusops exec -T <service> <คำสั่ง>` | สั่งงานข้างในกล่องของ service นั้น (`-T` เมื่อไม่ต้องการ terminal) |
-| `docker compose -p campusops down` | ลบกล่องกับ network · **ข้อมูลใน volume ยังอยู่** |
-| `docker compose -p campusops down -v` | ลบ volume ไปด้วย · **ข้อมูลหายถาวร** |
-| `docker run -d --name ops-registry -p 5000:5000 registry:2` | ยก registry ส่วนตัวขึ้นในเครื่อง ใช้เป็นคลัง image |
-| `docker tag <image> localhost:5000/<ชื่อ>:1.0` | ตั้งชื่อใหม่ให้ image ก้อนเดิม โดยมีโฮสต์ของ registry นำหน้า |
-| `docker push localhost:5000/<ชื่อ>:1.0` | ส่ง image ขึ้น registry |
-| `docker pull localhost:5000/<ชื่อ>:1.0` | ดึง image จาก registry ลงเครื่องปลายทาง |
-| `curl -s http://localhost:5000/v2/_catalog` | ถาม registry ว่ามี repository อะไรอยู่บ้าง |
-
-> **จำ 3 อย่าง:** `-p campusops` ทุกคำสั่งไม่มียกเว้น · `down` ไม่ลบข้อมูล `down -v` ลบ · ไม่มีโฮสต์นำหน้าชื่อ image = push ขึ้น registry ในเครื่องไม่ได้
-
-**และย้อนกลับไปที่โจทย์ตั้งต้น** — ข้อจำกัดของลูกค้าข้อไหน ทำให้ต้องเลือกคำสั่งข้างบนตัวไหน :
-
-| ข้อจำกัดที่ลูกค้าพูดเอง | กลายเป็น | เทคนิค Docker ที่ใช้แก้ | สอน/พิสูจน์ที่ไหน |
-|---|---|---|---|
-| "ไม่มีฝ่าย IT ประจำ ติดตั้งต้องง่าย ย้ายเครื่องต้องได้" | **NFR-1** | `compose.yaml` ไฟล์เดียว + `docker compose up -d --build` · `healthcheck` + `depends_on: service_healthy` แทนการเดาเวลาเอง | **LAB 5** การทดลองที่ 2 · 4 |
-| "ไม่มีฝ่าย IT ประจำ" (ต่อ) — เครื่องปลายทางห้ามต้องติดตั้ง Node/Python | **NFR-1** | Dockerfile + multi-stage ทำ image ให้จบตั้งแต่ต้นทาง แล้วส่งด้วย `tag` → `push` → `pull` | สร้างที่ **LAB 2 · LAB 3** · ส่งมอบที่ **LAB 5** การทดลองที่ 8 · 9 |
-| "ข้อมูลยืม-คืนย้อนหลังห้ามหาย แม้ต้อง restart" | **NFR-2** | named volume ผูกกับ `/var/lib/postgresql/data` · `down` ไม่แตะ volume | เจอปัญหาและแก้ครั้งแรกที่ **LAB 1** · ยืนยันในระดับระบบที่ **LAB 5** การทดลองที่ 6 |
-| "ฐานข้อมูลต้องเข้าถึงจากภายนอกไม่ได้" | **NFR-3** | ไม่เขียน `ports:` ให้ `db` · ให้กล่องคุยกันด้วย **ชื่อ service** บน network ภายในแทน IP | ต่อกล่องด้วยชื่อที่ **LAB 4** · ยืนยันทั้งไฟล์และของจริงที่ **LAB 5** การทดลองที่ 1 · 3 |
-
-> 🎯 นี่คือคำตอบของทั้งชุดแล็บ — **ข้อจำกัดทางธุรกิจข้อไหน ทำให้ต้องเลือกเทคนิค Docker ตัวไหน** ซึ่งเป็นคนละเรื่องกับการท่องคำสั่ง เพราะข้อจำกัดของลูกค้ารายถัดไปจะไม่เหมือนเดิม
-
----
+| `docker compose -p campusops up -d --build` | build และยกระบบจาก source |
+| `docker compose -p campusops up -d --no-build` | ยกระบบจาก image ที่มีอยู่โดยห้าม build |
+| `docker compose -p campusops ps` | แสดงสถานะ health และ port ของทุก service |
+| `docker compose -p campusops down` | ลบ container กับ network แต่รักษา volume |
+| `docker compose -p campusops down -v` | ลบ volume และข้อมูล |
+| `docker login -u <DOCKER_USER>` | login ด้วย Access Token |
+| `docker tag <image> <DOCKER_USER>/<repository>:1.0` | เพิ่มชื่อสำหรับ Docker Hub ให้ image เดิม |
+| `docker push <DOCKER_USER>/<repository>:1.0` | ส่ง image ไป Docker Hub |
+| `docker pull <DOCKER_USER>/<repository>:1.0` | รับ image ลงเครื่องปลายทาง |
+| `docker logout` | ลบ credential ในกล่อง แต่ไม่ revoke token |
 
 ## ✅ เช็กลิสต์ก่อนจบแล็บ
 
-- [ ] `grep -nE "^ {4}(image|build|...)" compose.yaml` แล้วชี้ได้ว่าบรรทัด `82:    ports:` เป็นของ `web` และ `db` ไม่มี `ports:` เลย
-- [ ] `time docker compose -p campusops up -d --build` จบด้วยบรรทัด `campusops-web-1 Started` และมีเวลา `real` ของตัวเอง
-- [ ] `sleep 20` แล้ว `docker compose -p campusops ps` เห็น `(healthy)` ครบ 3 แถว และมี `0.0.0.0:3000->3000/tcp` แถวเดียวคือ `web`
-- [ ] `docker inspect -f '{{.State.StartedAt}}' ...` แล้วเวลาเรียง `db` < `api` < `web` และ `api` เกิดหลัง `ready to accept connections` ของ `db`
-- [ ] `curl` ได้ `200` ครบทั้ง `/` · `/tickets` · `/loans` · `/parts` และเปิด `http://localhost:8191` บนเครื่องเราเห็นหน้าสรุปจริง
-- [ ] เพิ่มใบแจ้งซ่อมเป็น 9 → `down` → `up -d` แล้ว `SELECT count(*) FROM tickets;` ยังได้ **9**
-- [ ] `down -v` → `up -d` แล้วนับได้ **8** และ `docker volume ls --filter name=campusops` เคยว่างจริงตอนหลัง `down -v`
-- [ ] `docker compose -p campusops logs --tail=1` ได้ 3 บรรทัดพร้อมคำนำหน้า `db-1 |` · `api-1 |` · `web-1 |` และ `exec -T web wget ... http://api:8000/health` ได้ `{"status":"ok","db":"up"}`
-- [ ] `docker push` สำเร็จ และ `curl -s http://localhost:5000/v2/_catalog` คืน `{"repositories":["campusops-api","campusops-web"]}`
-- [ ] ลบ image ทิ้ง → `docker pull` → `up -d --no-build` แล้วหน้าเว็บยังตอบ `200` · `bash verify.sh ; echo "exit code = $?"` ขึ้น `[PASS]` ครบ 22 บรรทัด · `ALL CHECKS PASSED` และ `exit code = 0`
+- [ ] `docker compose -p campusops ps` แสดง healthy ครบ 3 service และ publish port เฉพาะ web
+- [ ] หน้า `/`, `/tickets`, `/loans` และ `/parts` ตอบ 200
+- [ ] `down` แล้วยังมี 9 ใบ แต่ `down -v` แล้วกลับเป็น seed 8 ใบ
+- [ ] push `campusops-api:1.0` และ `campusops-web:1.0` สำเร็จ และทั้งสอง repository เป็น Public
+- [ ] ลบ image แล้ว pull แยกสองคำสั่ง ก่อน `up -d --no-build` โดยไม่มี `Building`
+- [ ] `verify.sh` แสดง `[PASS]` 26 บรรทัด, `[SKIP]` สำหรับ Hub เมื่อไม่ตั้ง `HUB_USER`, `ALL CHECKS PASSED` และ exit code 0
+- [ ] logout, revoke token และตัดสินใจว่าจะเก็บหรือลบ repository เป็นผลงาน
 
----
-
-*ผลลัพธ์ทั้งหมดในเอกสารนี้มาจากการรันจริงในเครื่องเรียน `tuchsanai/devtools:2569_1`*
+*ผลลัพธ์ในเอกสารนี้มาจากการรันจริงวันที่ 20 สิงหาคม 2026 ภายในเครื่องเรียน `tuchsanai/devtools:2569_1`*

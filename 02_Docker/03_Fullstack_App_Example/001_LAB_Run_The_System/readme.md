@@ -20,7 +20,7 @@
 
 ![หน้าสรุปภาพรวมของ CampusOps ที่เปิดจากเบราว์เซอร์จริง หัวข้อ ตอนนี้งานอะไรอยู่ในมือใคร แสดงงานที่ยังไม่ปิด 6 ใบ ค้างเกินกำหนด 2 ใบ ครุภัณฑ์ถูกยืมอยู่ 2 ชิ้น อะไหล่ต้องสั่งเพิ่ม 2 รายการ พร้อมแถบสัดส่วนใบแจ้งซ่อมตามขั้นของงาน รอรับเรื่อง 3 มอบหมายแล้ว 2 กำลังซ่อม 1 ปิดงานแล้ว 2](./images/app-target-system.png)
 
-> 🖼 **วิธีอ่านรูปนี้:** ยังไม่ต้องทำหน้าเว็บวันนี้ — ดูไว้เพื่อรู้ว่า **ตัวเลขทุกตัวบนหน้านี้งอกมาจากงานของแล็บนี้** · การ์ด "งานที่ยังไม่ปิด 6 ใบ · ทั้งหมด 8 ใบ" กับแถบ `รอรับเรื่อง 3 · มอบหมายแล้ว 2 · กำลังซ่อม 1 · ปิดงานแล้ว 2` คือแถวใน `02-seed.sql` ที่เราจะโหลดเข้า 5 ตารางในการทดลองที่ 4 แล้วนับซ้ำด้วย `psql` ในการทดลองที่ 5 · ถ้าฐานข้อมูลว่างเปล่า หน้านี้จะเหลือแต่เลข 0 ทั้งจอ
+> 🖼 **วิธีอ่านรูปนี้:** ตัวเลขบนหน้าเว็บมีที่มาจากข้อมูลของแล็บนี้ · การ์ด "งานที่ยังไม่ปิด 6 ใบ · ทั้งหมด 8 ใบ" กับแถบ `รอรับเรื่อง 3 · มอบหมายแล้ว 2 · กำลังซ่อม 1 · ปิดงานแล้ว 2` มาจากแถวใน `02-seed.sql` ซึ่งจะถูกโหลดเข้า 5 ตารางในการทดลองที่ 5 และตรวจนับด้วย `psql` ในการทดลองที่ 6 · หากฐานข้อมูลว่าง หน้าเว็บจะแสดงค่า 0
 
 ### ระบบของลูกค้ามี 3 กล่อง — แล็บนี้ทำกล่องเดียว
 
@@ -42,9 +42,9 @@
 | `stock_moves` | ประวัติเบิก/รับเข้าอะไหล่ | REQ-05, REQ-07 |
 
 ทั้งหมดอยู่ในไฟล์ `db/initdb/01-schema.sql` และข้อมูลตั้งต้นอยู่ใน `db/initdb/02-seed.sql`
-**เราไม่แก้สองไฟล์นี้ในแล็บ** — หน้าที่ของเราคือทำให้มันถูกรันถูกที่ถูกเวลา
+**แล็บนี้ไม่แก้ไขสองไฟล์ดังกล่าว** — เป้าหมายคือทำให้ไฟล์ถูกรันในตำแหน่งและเวลาที่ถูกต้อง
 
-### ข้อมูลของ PostgreSQL ไปนอนอยู่ที่ไหน
+### PostgreSQL จัดเก็บข้อมูลไว้ที่ใด
 
 ![แผนภาพเปรียบเทียบสองแบบ ซ้ายคือกล่องที่ไม่ผูก volume ข้อมูลอยู่ใน writable layer และหายเมื่อ docker rm ขวาคือกล่องที่ผูก named volume ops-pgdata แล้วข้อมูลยังอยู่หลังลบกล่อง](./images/theory-where-is-data.svg)
 
@@ -54,14 +54,14 @@
 
 ![ผังตัดสินใจของ entrypoint ของ postgres ถ้า data directory ว่างจะรันไฟล์ใน docker-entrypoint-initdb.d เรียงตามชื่อ ถ้ามีข้อมูลอยู่แล้วจะขึ้น Skipping initialization และข้ามไฟล์ทั้งหมด](./images/theory-initdb-when.svg)
 
-> 🖼 **วิธีอ่านรูปนี้:** จุดตัดสินอยู่ที่สี่เหลี่ยมข้าวหลามตัดกลางรูป — คำถามคือ *"data directory ว่างไหม"* ไม่ใช่ *"กล่องนี้ใหม่หรือเก่า"* · สองกิ่งซ้าย-ขวาให้ log คนละบรรทัด ซึ่งเราจะเห็นทั้งคู่ในแล็บนี้
+> 🖼 **วิธีอ่านรูปนี้:** จุดตัดสินอยู่ที่สี่เหลี่ยมข้าวหลามตัดกลางรูป — คำถามคือ *"data directory ว่างหรือไม่"* ไม่ใช่ *"กล่องนี้ใหม่หรือเก่า"* · สองกิ่งให้ข้อความ log ต่างกัน ซึ่งจะปรากฏในการทดลองของแล็บนี้
 
 ### สิ่งที่มักเข้าใจผิด
 
-- **คิดว่า** ไม่ใส่ `POSTGRES_PASSWORD` ก็รันได้ เดี๋ยว image ตั้งค่า default ให้เอง → **จริง ๆ** กล่องหยุดทันทีตั้งแต่วินาทีแรก (การทดลองที่ 1)
-- **คิดว่า** ลบกล่องแล้วข้อมูลยังอยู่ เพราะ image ยังอยู่ → **จริง ๆ** ข้อมูลอยู่ใน writable layer ที่ตายพร้อมกล่อง ส่วน image เป็นแค่แม่พิมพ์ (การทดลองที่ 6)
-- **คิดว่า** แก้ไฟล์ใน `db/initdb/` แล้วสร้างกล่องใหม่ก็มีผลเสมอ → **จริง ๆ** ถูกข้ามทันทีที่ volume ไม่ว่าง (การทดลองที่ 9)
-- **คิดว่า** `--env-file` ให้ผลต่างจาก `-e` → **จริง ๆ** ได้ตัวแปรชุดเดียวกันเป๊ะ ต่างแค่ที่เก็บค่า (การทดลองที่ 8)
+- **ความเข้าใจคลาดเคลื่อน:** image จะกำหนด `POSTGRES_PASSWORD` ให้โดยอัตโนมัติ → **ข้อเท็จจริง:** ต้องกำหนดค่านี้ก่อนเริ่ม container (ดูตารางแก้ปัญหาที่พบบ่อย)
+- **ความเข้าใจคลาดเคลื่อน:** ข้อมูลยังอยู่หลังลบ container เพราะ image ยังอยู่ → **ข้อเท็จจริง:** ข้อมูลใน writable layer จะหายไปพร้อม container ส่วน image เป็นแม่แบบ (การทดลองที่ 7)
+- **ความเข้าใจคลาดเคลื่อน:** การแก้ไฟล์ใน `db/initdb/` มีผลทุกครั้งที่สร้าง container ใหม่ → **ข้อเท็จจริง:** init script ถูกข้ามเมื่อ volume ไม่ว่าง (การทดลองที่ 10)
+- **ความเข้าใจคลาดเคลื่อน:** `--env-file` ให้ผลต่างจาก `-e` → **ข้อเท็จจริง:** ทั้งสองวิธีส่งตัวแปรชุดเดียวกัน แต่จัดเก็บค่าคนละตำแหน่ง (การทดลองที่ 9)
 
 ---
 
@@ -69,23 +69,58 @@
 
 ### ขั้นที่ 1 — เปิดกล่องเรียน
 
-รันบน **เครื่องของเราเอง** — แล็บนี้ไม่ต้องเปิดพอร์ตแอปเลย เพราะเราคุยกับฐานข้อมูลผ่าน `docker exec` :
+รันบน **เครื่องของผู้เรียน** — แล็บนี้ไม่ต้องเปิดพอร์ตแอป เนื่องจากเข้าถึงฐานข้อมูลผ่าน `docker exec` :
 
 ```bash
-docker rm -f devtools-ops-lab1 2>/dev/null
-docker run -dit --name devtools-ops-lab1 --privileged -p 2238:22 tuchsanai/devtools:2569_1
-ssh root@localhost -p 2238        # password : passwd
+docker rm -f devtools-fs-lab1 2>/dev/null
+docker run -dit --name devtools-fs-lab1 --privileged -p 2251:22 tuchsanai/devtools:2569_1
+ssh root@localhost -p 2251        # password : passwd
 ```
 
-### ขั้นที่ 2 — โหลดโค้ดแล็บ
-
-**คำสั่งทุกอันหลังจากนี้พิมพ์ข้างในกล่องเรียน**
+ภายในกล่องเรียน เตรียมโฟลเดอร์รับ source code ก่อนเปิด walkthrough:
 
 ```bash
-mkdir -p ~/labwork && cd ~/labwork
+mkdir -p ~/labwork
+cd ~/labwork
+```
+
+---
+
+## การทดลองที่ 1 — จะเปิด repository และคัดลอก URL จาก GitHub อย่างไร
+
+**คำถาม:** จะเข้าถึง source code ชุดเดียวกับเอกสารผ่านหน้า GitHub และคัดลอก URL แบบ HTTPS อย่างไร
+
+### Walkthrough หน้า GitHub
+
+#### ขั้นที่ ① — เปิดหน้า repository
+
+เปิด <https://github.com/Tuchsanai/DevTools> แล้วตรวจว่าชื่อ repository คือ `DevTools`
+
+![หน้า repository DevTools บน GitHub พร้อมกรอบหมายเลข 1 ที่ชื่อ repository](./images/ui-github-01-repo.png)
+
+*ภาพที่ 1 — หน้าแรกของ repository `DevTools` และตำแหน่งชื่อ repository ที่ต้องตรวจสอบ*
+
+#### ขั้นที่ ②–③ — เข้าโฟลเดอร์ของชุดสอน
+
+ในรายการไฟล์ คลิก `02_Docker` แล้วคลิก `03_Fullstack_App_Example` ตามลำดับ
+
+![หน้าโฟลเดอร์ Fullstack App Example พร้อมกรอบหมายเลข 2 ที่ 02 Docker และหมายเลข 3 ที่ 03 Fullstack App Example](./images/ui-github-02-folder.png)
+
+*ภาพที่ 2 — เส้นทางคลิกจากโฟลเดอร์ `02_Docker` เข้าสู่ `03_Fullstack_App_Example`*
+
+#### ขั้นที่ ④–⑥ — คัดลอก URL แบบ HTTPS
+
+คลิก `Code` เลือกแท็บ `HTTPS` แล้วคลิกไอคอนคัดลอก URL
+
+![เมนู Code บน GitHub พร้อมกรอบหมายเลข 4 ที่ปุ่ม Code หมายเลข 5 ที่แท็บ HTTPS และหมายเลข 6 ที่ปุ่มคัดลอก](./images/ui-github-03-code.png)
+
+*ภาพที่ 3 — ลำดับเปิดเมนู `Code` เลือก `HTTPS` และคัดลอก URL สำหรับ clone repository*
+
+จากนั้นโหลดโค้ดแล็บด้วย URL ที่คัดลอก โดยรันคำสั่งต่อไปนี้ **ภายในกล่องเรียน**
+
+```bash
 git clone https://github.com/Tuchsanai/DevTools.git
-cd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System
-ls db/initdb
+cd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System && ls db/initdb
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — ไฟล์ SQL สองไฟล์ที่จะกลายเป็นฐานข้อมูลของลูกค้า :
@@ -94,50 +129,34 @@ ls db/initdb
 01-schema.sql  02-seed.sql
 ```
 
-> 📝 **ชื่อไฟล์ขึ้นต้นด้วยตัวเลขโดยตั้งใจ** — entrypoint ของ postgres รันไฟล์เรียงตามชื่อ ถ้า seed รันก่อน schema ตารางยังไม่มี งานพัง
+> 📝 **ชื่อไฟล์ขึ้นต้นด้วยตัวเลขโดยตั้งใจ** — entrypoint ของ PostgreSQL รันไฟล์ตามลำดับชื่อ หาก seed รันก่อน schema การเริ่มต้นฐานข้อมูลจะล้มเหลว
 
 ---
 
-## การทดลองที่ 1 — ยกฐานข้อมูลขึ้นด้วย `docker run`
+## การทดลองที่ 2 — ต้องกำหนดค่าเพื่อยกฐานข้อมูลด้วย `docker run` อย่างไร
 
 **คำถาม:** ต้องบอกอะไร `postgres:17-alpine` บ้าง กล่องถึงจะยอมขึ้น
 
 ```bash
-docker run -d --name ops-db-nopass postgres:17-alpine   # จงใจไม่ใส่ -e อะไรเลย
-sleep 3
-docker logs ops-db-nopass 2>&1 | head -3
-```
-
-✅ **สิ่งที่ต้องเห็น** — กล่อง **ไม่ขึ้น** เพราะ image ปฏิเสธที่จะสร้างฐานข้อมูลให้ พร้อมบอกวิธีแก้มาในข้อความเดียวกัน :
-
-```
-Error: Database is uninitialized and superuser password is not specified.
-       You must specify POSTGRES_PASSWORD to a non-empty value for the
-       superuser. For example, "-e POSTGRES_PASSWORD=password" on "docker run".
-```
-
-ใส่ค่าให้ครบตามที่ [`docs/02_contract.md`](../docs/02_contract.md) กำหนด แล้วรันใหม่ :
-
-```bash
-docker rm -f ops-db-nopass
 docker run -d --name ops-db \
   -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass postgres:17-alpine
 sleep 8
-docker ps --filter name=ops-db --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+docker ps
 ```
 
-✅ **สิ่งที่ต้องเห็น** — คราวนี้กล่อง **ขึ้นแล้ว** : `STATUS` เป็น `Up ...` (เวลาที่ขึ้นของแต่ละคนต่างกัน · คอลัมน์ `PORTS` มีแค่ `5432/tcp` ไม่มี `0.0.0.0:...->` เพราะเราไม่ได้สั่ง `-p` เลย ตาม NFR-3) :
+✅ **สิ่งที่ต้องเห็น** — กล่องขึ้นแล้ว โดย `STATUS` เป็น `Up ...` และ `PORTS` มีเพียง `5432/tcp` ไม่มีพอร์ตที่ publish ออกสู่เครื่องภายนอกตาม NFR-3 (container ID และเวลาอาจต่างกัน) :
 
 ```
-NAMES     IMAGE                STATUS         PORTS
-ops-db    postgres:17-alpine   Up 8 seconds   5432/tcp
+5dc9a1257a393844341ed8058d064845569e74c58af0556ebca395fed1115550
+CONTAINER ID   IMAGE                COMMAND                  CREATED         STATUS         PORTS      NAMES
+5dc9a1257a39   postgres:17-alpine   "docker-entrypoint.s…"   9 seconds ago   Up 8 seconds   5432/tcp   ops-db
 ```
 
-> 📝 **บทเรียน:** `-e` คือช่องทางเดียวที่เราตั้งค่า image สำเร็จรูปได้ · `docker logs` ของกล่องที่ดับต้องอ่านด้วย `2>&1` เพราะข้อความเตือนออกทาง stderr
+> 📝 **บทเรียน:** PostgreSQL ต้องได้รับชื่อฐานข้อมูล ชื่อผู้ใช้ และรหัสผ่านผ่าน `-e` ก่อนเริ่มทำงาน ส่วนการไม่ใช้ `-p` ทำให้ฐานข้อมูลไม่เปิดพอร์ตสู่ภายนอก
 
 ---
 
-## การทดลองที่ 2 — อ่าน log ตอนบูต
+## การทดลองที่ 3 — ระหว่างบูต PostgreSQL ทำอะไร
 
 **คำถาม:** ระหว่างที่เรารอ 8 วินาที postgres ทำอะไรไปบ้าง
 
@@ -148,16 +167,16 @@ docker logs ops-db 2>&1 | grep -E 'init process complete|ready to accept connect
 ✅ **สิ่งที่ต้องเห็น** — คำว่า `ready to accept connections` โผล่ **สองครั้ง** โดยมี `init process complete` คั่นกลาง (เวลาและเลข process ของแต่ละคนต่างกัน) :
 
 ```
-2026-08-17 13:15:23.566 UTC [41] LOG:  database system is ready to accept connections
+2026-08-20 08:09:35.055 UTC [41] LOG:  database system is ready to accept connections
 PostgreSQL init process complete; ready for start up.
-2026-08-17 13:15:24.236 UTC [1] LOG:  database system is ready to accept connections
+2026-08-20 08:09:35.731 UTC [1] LOG:  database system is ready to accept connections
 ```
 
-> 📝 **บทเรียน:** ครั้งแรกคือเซิร์ฟเวอร์ชั่วคราวที่เปิดไว้เพื่อสร้างฐานข้อมูล ครั้งที่สองคือของจริงที่เรารอ · ถ้าเห็นแค่ครั้งแรกแปลว่าตอน init มีอะไรพัง
+> 📝 **บทเรียน:** ครั้งแรกคือเซิร์ฟเวอร์ชั่วคราวสำหรับสร้างฐานข้อมูล ส่วนครั้งที่สองคือเซิร์ฟเวอร์หลัก หากพบเพียงครั้งแรกแสดงว่ากระบวนการ init มีข้อผิดพลาด
 
 ---
 
-## การทดลองที่ 3 — เข้าไปใช้ `psql` ในกล่อง
+## การทดลองที่ 4 — ฐานข้อมูลที่เพิ่งสร้างมีตารางอะไร
 
 **คำถาม:** ฐานข้อมูล `campusops` ที่เพิ่งเกิด มีตารางของลูกค้าอยู่แล้วหรือยัง
 
@@ -171,11 +190,11 @@ docker exec -it ops-db psql -U opsuser -d campusops -c '\dt'
 Did not find any relations.
 ```
 
-> 📝 **บทเรียน:** `-e POSTGRES_DB` สร้างได้แค่ฐานข้อมูล**เปล่า** · ตารางกับข้อมูลเป็นหน้าที่ของเราที่ต้องหาทางส่งเข้าไป
+> 📝 **บทเรียน:** `-e POSTGRES_DB` สร้างได้เฉพาะฐานข้อมูลเปล่า ส่วนตารางและข้อมูลต้องถูกส่งเข้าไปด้วยกลไกอื่น
 
 ---
 
-## การทดลองที่ 4 — ส่ง schema + seed เข้าไปด้วย bind mount
+## การทดลองที่ 5 — จะรัน schema และ seed ตอนเริ่มต้นอย่างไร
 
 **คำถาม:** ทำอย่างไรให้ไฟล์ `.sql` ของเราถูกรันตอนฐานข้อมูลเกิด
 
@@ -209,9 +228,11 @@ docker exec ops-db psql -U opsuser -d campusops -c '\dt'
 
 ---
 
-## การทดลองที่ 5 — ข้อมูลตั้งต้นตรงกับที่ requirements บอกไหม
+## การทดลองที่ 6 — จำนวนข้อมูลตั้งต้นตรงกับ requirements ไหม
 
-**คำถาม:** seed ที่เพิ่งถูกรัน ให้จำนวนตรงกับที่เขียนไว้ใน [`docs/01_requirements.md`](../docs/01_requirements.md) หรือเปล่า
+**คำถาม:** seed ที่เพิ่งถูกรันมีจำนวนตรงกับ [`docs/01_requirements.md`](../docs/01_requirements.md) หรือไม่
+
+คำสั่ง `SELECT` รวมการนับ 4 ตารางไว้ในผลลัพธ์เดียว จึงยาวกว่าคำสั่งตรวจสอบทั่วไป แต่จำเป็นต่อการเปรียบเทียบสัญญาข้อมูลระหว่างแล็บ
 
 ```bash
 docker exec ops-db psql -U opsuser -d campusops -c \
@@ -227,13 +248,13 @@ docker exec ops-db psql -U opsuser -d campusops -c \
 (1 row)
 ```
 
-> 📝 **บทเรียน:** ตัวเลขชุดนี้คือ "สัญญา" ระหว่างแล็บ — LAB 2 จะเอาไปทดสอบ API ต่อ ถ้าตัวเลขเพี้ยนตั้งแต่ตรงนี้ แล็บถัดไปจะพังทั้งชุด
+> 📝 **บทเรียน:** ตัวเลขชุดนี้คือสัญญาระหว่างแล็บ และ LAB 2 จะใช้ทดสอบ API ต่อ หากตัวเลขคลาดเคลื่อน แล็บถัดไปจะให้ผลไม่ถูกต้อง
 
 ---
 
-## การทดลองที่ 6 — ลบกล่องแล้วสร้างใหม่ ข้อมูลที่เพิ่มเองยังอยู่ไหม
+## การทดลองที่ 7 — ข้อมูลที่เพิ่มเองรอดจากการสร้างกล่องใหม่ไหม
 
-**คำถาม:** ใบแจ้งซ่อมที่ลูกค้าแจ้งเข้ามาหลังระบบขึ้นแล้ว รอดการสร้างกล่องใหม่ไหม
+**คำถาม:** ใบแจ้งซ่อมที่เพิ่มหลังระบบเริ่มทำงานยังคงอยู่หลังสร้าง container ใหม่หรือไม่
 
 ```bash
 docker exec ops-db psql -U opsuser -d campusops -c \
@@ -241,17 +262,7 @@ docker exec ops-db psql -U opsuser -d campusops -c \
 docker exec ops-db psql -U opsuser -d campusops -c 'SELECT count(*) FROM tickets;'
 ```
 
-✅ **สิ่งที่ต้องเห็น** — จาก 8 ใบเป็น **9 ใบ** :
-
-```
-INSERT 0 1
- count
--------
-     9
-(1 row)
-```
-
-ทีนี้ลบกล่องแล้วสร้างใหม่ด้วยคำสั่งเดิมทุกตัวอักษร :
+จากนั้นลบ container แล้วสร้างใหม่ด้วยคำสั่งเดิม :
 
 ```bash
 docker rm -f ops-db
@@ -265,12 +276,18 @@ sleep 10        # รอกล่องใหม่บูตและรัน i
 docker exec ops-db psql -U opsuser -d campusops -c 'SELECT count(*) FROM tickets;'
 ```
 
-✅ **สิ่งที่ต้องเห็น** — กลับมาเป็น **8 ใบ** · ใบที่ลูกค้าแจ้งเข้ามา **หายถาวร** :
+✅ **สิ่งที่ต้องเห็น** — หลังเพิ่มข้อมูลมี **9 ใบ** แต่หลังสร้าง container ใหม่โดยไม่มี volume จะกลับมาเป็น **8 ใบ** :
 
 ```
+INSERT 0 1
  count
 -------
-     8
+    9
+(1 row)
+
+ count
+-------
+    8
 (1 row)
 ```
 
@@ -278,9 +295,9 @@ docker exec ops-db psql -U opsuser -d campusops -c 'SELECT count(*) FROM tickets
 
 ---
 
-## การทดลองที่ 7 — ผูก named volume แล้วทำซ้ำ
+## การทดลองที่ 8 — Named volume ทำให้ข้อมูลคงอยู่ไหม
 
-**คำถาม:** ย้ายข้อมูลออกไปไว้นอกกล่อง แล้วผลจะต่างไหม
+**คำถาม:** การย้ายข้อมูลออกไปไว้นอก container ทำให้ผลลัพธ์ต่างจากเดิมหรือไม่
 
 ```bash
 docker rm -f ops-db
@@ -318,13 +335,13 @@ docker exec ops-db psql -U opsuser -d campusops -c 'SELECT id, title, status FRO
 (1 row)
 ```
 
-> 📝 **บทเรียน:** `-v ops-pgdata:/var/lib/postgresql/data` ต่างกับการทดลองที่ 6 แค่บรรทัดเดียว แต่เปลี่ยนคำตอบของ NFR-2 ทั้งข้อ
+> 📝 **บทเรียน:** `-v ops-pgdata:/var/lib/postgresql/data` ต่างจากการทดลองที่ 7 เพียงบรรทัดเดียว แต่ทำให้ระบบผ่านข้อกำหนด NFR-2
 
 ---
 
-## การทดลองที่ 8 — เก็บค่า env ไว้ในไฟล์เดียว
+## การทดลองที่ 9 — ไฟล์ env ให้ผลเหมือนการกำหนด `-e` ไหม
 
-**คำถาม:** `-e` สามตัวย้ายไปอยู่ในไฟล์แล้วได้ผลเหมือนกันไหม
+**คำถาม:** การย้ายค่า `-e` สามตัวไปไว้ในไฟล์ให้ผลเหมือนเดิมหรือไม่
 
 ไฟล์ `.env.db` ของแล็บมีอยู่แล้ว — ใช้แทน `-e` ทั้งสามตัว :
 
@@ -348,9 +365,9 @@ POSTGRES_PASSWORD=labpass
 
 ---
 
-## การทดลองที่ 9 — init script รันซ้ำไหมเมื่อ volume ไม่ว่าง
+## การทดลองที่ 10 — เมื่อ volume ไม่ว่าง init script รันซ้ำไหม
 
-**คำถาม:** กล่องล่าสุดเป็นกล่องใหม่เอี่ยม แล้ว `02-seed.sql` ถูกรันอีกรอบหรือเปล่า
+**คำถาม:** เมื่อสร้าง container ใหม่โดยใช้ volume เดิม `02-seed.sql` จะถูกรันซ้ำหรือไม่
 
 ```bash
 docker logs ops-db 2>&1 | grep -E 'Skipping initialization|running /docker-entrypoint-initdb.d'
@@ -380,7 +397,32 @@ bash verify.sh ; echo "exit code = $?"
 
 ✅ **สิ่งที่ต้องเห็น** — `[PASS]` ทุกบรรทัด ปิดท้ายด้วย `ALL CHECKS PASSED` และ `exit code = 0`
 
-> 📝 สคริปต์สร้างกล่องของตัวเองชื่อขึ้นต้น `vops1-` และ volume `vops1-pgdata` แล้วลบทิ้งเองเมื่อจบ — กล่อง `ops-db` กับ volume `ops-pgdata` ของเราจะไม่ถูกแตะ
+```text
+==============================================
+ LAB 1 — Run The System (CampusOps db) : verify
+==============================================
+[PASS] ต่อ Docker daemon ได้
+[PASS] ไฟล์ของแล็บครบ (db/initdb/01-schema.sql, db/initdb/02-seed.sql, .env.db, readme.md)
+[PASS] ไม่ใส่ POSTGRES_PASSWORD แล้วกล่องหยุดพร้อมข้อความเตือน (state=exited:1)
+[PASS] กล่อง vops1-db1 ขึ้นและรับ connection ได้
+[PASS] initdb สร้างตารางครบ 5 ตาราง : assets,loans,parts,stock_moves,tickets
+[PASS] log บอกว่ารันไฟล์ /docker-entrypoint-initdb.d/01-schema.sql จริง
+[PASS] จำนวน seed ตรงตามข้อกำหนด (assets 12 · tickets 8 · loans 3 · parts 6 · stock_moves 6)
+[PASS] อะไหล่ต่ำกว่าจุดสั่งซื้อ 2 รายการตามที่ contract ระบุ (REQ-12)
+[PASS] เพิ่มใบแจ้งซ่อม 1 ใบแล้วนับได้ 9 ใบ
+[PASS] ไม่มี volume : ลบกล่องแล้วสร้างใหม่ ข้อมูลที่เพิ่มเองหายจริง (กลับเป็น 8 ใบตาม seed)
+[PASS] กล่องที่ผูก volume vops1-pgdata เพิ่มข้อมูลแล้วนับได้ 9 ใบ
+[PASS] ลบกล่องแล้ว volume vops1-pgdata ยังอยู่ (อายุ volume ไม่ผูกกับอายุกล่อง)
+[PASS] มี volume : สร้างกล่องใหม่แล้วข้อมูลยังอยู่ครบ 9 ใบ (NFR-2 ผ่าน)
+[PASS] volume ไม่ว่าง : log ขึ้น 'Skipping initialization' — init script ถูกข้าม
+[PASS] vops1-db4 ไม่ได้รัน 02-seed.sql ซ้ำ ข้อมูลจึงไม่ถูกเติมซ้ำซ้อน
+[PASS] --env-file .env.db ส่งค่าเข้ากล่องครบ 3 ตัว และเข้าฐานข้อมูลเดิมได้ (9 ใบ)
+----------------------------------------------
+ALL CHECKS PASSED
+exit code = 0
+```
+
+> 📝 สคริปต์สร้าง container ชื่อขึ้นต้น `vops1-` และ volume `vops1-pgdata` แล้วลบเมื่อทำงานเสร็จ โดยไม่แตะต้อง `ops-db` และ `ops-pgdata`
 
 ---
 
@@ -389,13 +431,14 @@ bash verify.sh ; echo "exit code = $?"
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
 | `Error: Database is uninitialized and superuser password is not specified.` | ไม่ได้ส่ง `POSTGRES_PASSWORD` เข้ากล่อง | เพิ่ม `-e POSTGRES_PASSWORD=labpass` หรือใช้ `--env-file .env.db` |
+| ต้องการอ่านข้อความเตือนของกล่องที่หยุดทำงาน | ข้อความเตือนของ PostgreSQL ส่งออกทาง stderr | ใช้ `docker logs <ชื่อกล่อง> 2>&1` เพื่อรวม stdout และ stderr ก่อนอ่านผล |
 | `docker: Error response from daemon: Conflict. The container name "/ops-db" is already in use by container ...` | ยังมีกล่องชื่อเดิมค้างอยู่ | `docker rm -f ops-db` ก่อนแล้วค่อย `docker run` ใหม่ |
 | `Did not find any relations.` ทั้งที่ผูก initdb แล้ว | ไม่ได้ `cd` อยู่ในโฟลเดอร์แล็บ `$PWD` จึงชี้ผิดที่ | `cd` เข้าโฟลเดอร์ `001_LAB_Run_The_System` แล้วลบกล่อง+`docker volume rm ops-pgdata` ก่อนรันใหม่ |
-| `psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "opsuser" does not exist` | volume เดิมถูกสร้างด้วย `POSTGRES_USER` คนละชื่อ และ init ไม่รันซ้ำ | `docker rm -f ops-db && docker volume rm ops-pgdata` แล้วสร้างใหม่ให้ชื่อ user ตรงกัน |
+| `psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "opsuser" does not exist` | volume เดิมถูกสร้างด้วย `POSTGRES_USER` คนละชื่อ และ init ไม่รันซ้ำ | รัน `docker rm -f ops-db` แล้วรัน `docker volume rm ops-pgdata` ก่อนสร้างใหม่ให้ชื่อ user ตรงกัน |
 | `ERROR:  relation "tickets" does not exist` | ต่อผิดฐานข้อมูล (ลืม `-d campusops` จึงไปโดน `postgres`) | ใส่ `-d campusops` ทุกครั้งที่เรียก `psql` |
 | `Error response from daemon: container ... is not running` | `docker exec` ใส่กล่องที่หยุดไปแล้ว | `docker ps -a` ดูสถานะ แล้วอ่านเหตุผลจาก `docker logs <ชื่อกล่อง>` |
 | `Error response from daemon: remove ops-pgdata: volume is in use - [...]` | ยังมีกล่องผูก volume ก้อนนั้นอยู่ | `docker rm -f ops-db` ก่อน แล้วค่อย `docker volume rm ops-pgdata` |
-| `PostgreSQL Database directory appears to contain a database; Skipping initialization` ทั้งที่อยากให้ seed ใหม่ | volume ไม่ว่าง init script จึงถูกข้าม | ลบ volume ด้วย `docker volume rm ops-pgdata` แล้วสร้างกล่องใหม่ (**ข้อมูลเดิมหายหมด**) |
+| `PostgreSQL Database directory appears to contain a database; Skipping initialization` เมื่อต้องการใช้ seed ใหม่ | volume ไม่ว่าง init script จึงถูกข้าม | ลบ volume ด้วย `docker volume rm ops-pgdata` แล้วสร้าง container ใหม่ (**ข้อมูลเดิมหายทั้งหมด**) |
 
 ---
 
@@ -410,14 +453,14 @@ docker ps -a
 docker volume ls --filter name=ops-pgdata
 ```
 
-> 📝 ต้องลบกล่องก่อนเสมอ ไม่งั้น `docker volume rm` จะฟ้อง `volume is in use` · `docker volume ls` เปล่า ๆ จะเห็น volume ชื่อเป็นรหัสยาวอีกหลายก้อน — เป็น volume นิรนามที่ postgres สร้างให้ทุกครั้งที่รันโดยไม่ระบุ `-v` และหายไปพร้อมกล่องเรียน
+> 📝 ต้องลบ container ก่อนเสมอ มิฉะนั้น `docker volume rm` จะแสดง `volume is in use` ส่วน volume ชื่อเป็นรหัสยาวคือ volume นิรนามที่ PostgreSQL สร้างเมื่อไม่ระบุ `-v`
 
 **ออกจากกล่องแล้วลบกล่องบนเครื่องเรา:**
 
 ```bash
 exit
-docker rm -f devtools-ops-lab1
-docker ps -a --filter "name=^devtools-"
+docker rm -f devtools-fs-lab1
+docker ps -a --filter name=devtools-fs-lab1
 ```
 
 ---
@@ -431,7 +474,7 @@ docker ps -a --filter "name=^devtools-"
 | `docker run -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" ...` | bind mount โฟลเดอร์บนเครื่องเข้าไปแบบอ่านอย่างเดียว |
 | `docker run -v ops-pgdata:/var/lib/postgresql/data ...` | ผูก named volume ให้ข้อมูลอยู่นอกกล่อง |
 | `docker ps` / `docker ps -a` | ดูกล่องที่รันอยู่ / รวมกล่องที่หยุดแล้ว |
-| `docker logs <ชื่อกล่อง>` | อ่านสิ่งที่โปรแกรมในกล่องพิมพ์ออกมา (ใช้หาสาเหตุตอนกล่องดับ) |
+| `docker logs <ชื่อกล่อง>` | อ่านข้อความที่โปรแกรมใน container ส่งออกมา เพื่อหาสาเหตุเมื่อ container หยุดทำงาน |
 | `docker exec <ชื่อกล่อง> <คำสั่ง>` | สั่งงานข้างในกล่องที่กำลังรันอยู่ |
 | `docker exec -it <ชื่อกล่อง> psql -U opsuser -d campusops` | เปิด psql แบบโต้ตอบ (ออกด้วย `\q`) |
 | `docker rm -f <ชื่อกล่อง>` | ลบกล่องทิ้งทันทีแม้ยังรันอยู่ |
@@ -443,7 +486,7 @@ docker ps -a --filter "name=^devtools-"
 
 ## ✅ เช็กลิสต์ก่อนจบแล็บ
 
-- [ ] ไม่ใส่ `-e` แล้ว `docker logs ops-db-nopass 2>&1 | head -3` เจอ `You must specify POSTGRES_PASSWORD` · ใส่ครบแล้ว `docker ps` เห็น `ops-db` เป็น `Up` และ `PORTS` มีแค่ `5432/tcp`
+- [ ] `docker ps` เห็น `ops-db` เป็น `Up` และ `PORTS` มีเพียง `5432/tcp`
 - [ ] `docker logs ops-db 2>&1` เจอ `ready to accept connections` สองครั้ง โดยมี `init process complete` คั่นกลาง
 - [ ] ก่อนผูก initdb : `docker exec -it ops-db psql -U opsuser -d campusops -c '\dt'` ตอบ `Did not find any relations.`
 - [ ] หลังผูก `-v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro"` : `\dt` เห็นครบ **5 ตาราง** เจ้าของ `opsuser`

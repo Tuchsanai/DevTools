@@ -21,27 +21,27 @@
   <rect x="40" y="168" width="290" height="64" rx="8" fill="#fff4e5" stroke="#d98324" stroke-width="1"/>
   <text x="54" y="188" font-size="13" font-weight="bold" fill="#a35a10">2 · tag</text>
   <text x="54" y="207" font-size="12" fill="#a35a10">docker tag campusops-web:latest</text>
-  <text x="68" y="224" font-size="12" fill="#a35a10">localhost:5000/campusops-web:1.0</text>
+  <text x="68" y="224" font-size="12" fill="#a35a10">&lt;DOCKER_USER&gt;/campusops-web:1.0</text>
 
   <rect x="40" y="240" width="290" height="48" rx="8" fill="#eef6ff" stroke="#8fb8dc" stroke-width="1"/>
   <text x="54" y="260" font-size="13" font-weight="bold" fill="#1c4f80">3 · push</text>
-  <text x="54" y="279" font-size="12" fill="#1c4f80">docker push localhost:5000/campusops-web:1.0</text>
+  <text x="54" y="279" font-size="12" fill="#1c4f80">docker push &lt;DOCKER_USER&gt;/campusops-web:1.0</text>
 
   <text x="185" y="310" text-anchor="middle" font-size="12" fill="#52606d">ซอร์สโค้ด web/ กับ api/ อยู่แค่ฝั่งนี้</text>
 
   <rect x="360" y="142" width="90" height="120" rx="10" fill="#f3f0fb" stroke="#6b4fa8" stroke-width="2"/>
-  <text x="405" y="170" text-anchor="middle" font-size="13" font-weight="bold" fill="#4b3480">registry</text>
-  <text x="405" y="190" text-anchor="middle" font-size="12" fill="#4b3480">registry:2</text>
-  <text x="405" y="208" text-anchor="middle" font-size="12" fill="#4b3480">พอร์ต 5000</text>
-  <text x="405" y="232" text-anchor="middle" font-size="12" fill="#6b4fa8">คลังกลาง</text>
-  <text x="405" y="248" text-anchor="middle" font-size="12" fill="#6b4fa8">ของ image</text>
+  <text x="405" y="170" text-anchor="middle" font-size="13" font-weight="bold" fill="#4b3480">Docker Hub</text>
+  <text x="405" y="190" text-anchor="middle" font-size="12" fill="#4b3480">docker.io</text>
+  <text x="405" y="208" text-anchor="middle" font-size="12" fill="#4b3480">ผ่าน HTTPS</text>
+  <text x="405" y="232" text-anchor="middle" font-size="12" fill="#6b4fa8">repository</text>
+  <text x="405" y="248" text-anchor="middle" font-size="12" fill="#6b4fa8">แบบ public</text>
 
   <rect x="460" y="76" width="320" height="252" rx="10" fill="#f2fbf5" stroke="#2e8b57" stroke-width="2"/>
   <text x="620" y="102" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e6b41">เครื่องที่คณะของลูกค้า</text>
 
   <rect x="478" y="112" width="286" height="48" rx="8" fill="#f2fbf5" stroke="#9ad0b0" stroke-width="1"/>
   <text x="492" y="132" font-size="13" font-weight="bold" fill="#1e6b41">4 · pull</text>
-  <text x="492" y="151" font-size="12" fill="#1e6b41">docker pull localhost:5000/campusops-web:1.0</text>
+  <text x="492" y="151" font-size="12" fill="#1e6b41">docker pull &lt;DOCKER_USER&gt;/campusops-web:1.0</text>
 
   <rect x="478" y="168" width="286" height="64" rx="8" fill="#f2fbf5" stroke="#9ad0b0" stroke-width="1"/>
   <text x="492" y="196" font-size="13" font-weight="bold" fill="#1e6b41">5 · run</text>
@@ -58,7 +58,7 @@
 
   <rect x="20" y="344" width="760" height="98" rx="10" fill="#fff4e5" stroke="#d98324" stroke-width="2"/>
   <text x="36" y="368" font-size="13" font-weight="bold" fill="#a35a10">ชื่อเต็มของ image คือที่อยู่ ไม่ใช่แค่ชื่อเล่น</text>
-  <text x="36" y="392" font-size="13" fill="#1f2933">localhost:5000 / campusops-web : 1.0</text>
-  <text x="36" y="412" font-size="12" fill="#52606d">โฮสต์ของ registry · ชื่อ repository · แท็กเวอร์ชัน</text>
-  <text x="36" y="432" font-size="12" fill="#52606d">ไม่มีส่วนหน้า docker จะเดาว่าเป็น docker.io เสมอ จึงต้อง docker tag ใหม่ก่อน push ทุกครั้ง</text>
+  <text x="36" y="392" font-size="13" fill="#1f2933">docker.io / &lt;DOCKER_USER&gt; / campusops-web : 1.0</text>
+  <text x="36" y="412" font-size="12" fill="#52606d">Docker Hub · namespace บัญชี · ชื่อ repository · แท็กเวอร์ชัน</text>
+  <text x="36" y="432" font-size="12" fill="#52606d">ชื่อบัญชีนำหน้าทำให้ Docker Hub ระบุเจ้าของ repository และตรวจสิทธิ์ตอน push ได้</text>
 </svg>

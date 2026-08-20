@@ -21,7 +21,7 @@
 สองแล็บที่ผ่านมาเราต้องทำท่านี้ทุกครั้งที่ยกระบบขึ้น
 
 ```
--e DATABASE_URL="postgresql://opsuser:labpass@$(docker inspect -f '...' ops-db):5432/campusops"
+postgresql://opsuser:labpass@172.17.0.2:5432/campusops
 ```
 
 มันได้ผล แต่ IP เป็นเลขที่ Docker **แจกให้ตามลำดับที่กล่องเข้ามาอยู่บน network** ไม่ได้จองไว้ให้ใคร
@@ -72,13 +72,13 @@
 รันบน **เครื่องของเราเอง** :
 
 ```bash
-docker rm -f devtools-ops-lab4 2>/dev/null
-docker run -dit --name devtools-ops-lab4 --privileged \
-  -p 2241:22 -p 8190:3000 tuchsanai/devtools:2569_1
-ssh root@localhost -p 2241        # password : passwd
+docker rm -f devtools-fs-lab4 2>/dev/null
+docker run -dit --name devtools-fs-lab4 --privileged \
+  -p 2254:22 -p 8254:3000 tuchsanai/devtools:2569_1
+ssh root@localhost -p 2254        # password : passwd
 ```
 
-> พอร์ต `8190` ของเครื่องเราต่อเข้ากับพอร์ต `3000` ของกล่องเรียน — พอถึงการทดลองที่ 7 กล่อง `ops-web` จะจองพอร์ต `3000` ในกล่องเรียน ทำให้เปิด `http://localhost:8190` บนเบราว์เซอร์ของเราได้
+> พอร์ต `8254` ของเครื่องเราต่อเข้ากับพอร์ต `3000` ของกล่องเรียน — พอถึงการทดลองที่ 7 กล่อง `ops-web` จะจองพอร์ต `3000` ในกล่องเรียน ทำให้เปิด `http://localhost:8254` บนเบราว์เซอร์ของเราได้
 
 ### ขั้นที่ 2 — โหลดโค้ดแล็บ
 
@@ -108,25 +108,30 @@ web
 docker pull -q postgres:17-alpine
 docker build -q -t campusops-api:lab4 ./api
 docker build -q -t campusops-web:lab4 ./web
-docker images --format 'table {{.Repository}}:{{.Tag}}\t{{.Size}}' | grep -E 'campusops|postgres'
+docker images campusops-api:lab4
+docker images campusops-web:lab4
+docker images postgres:17-alpine
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — ครบสาม image ก่อนเริ่มการทดลอง (ครั้งแรกใช้เวลาหลายนาทีเพราะต้องดึง base image และ `npm ci` · ค่า `sha256:` และขนาดของแต่ละคนไม่ตรงกัน) :
 
 ```
 docker.io/library/postgres:17-alpine
-sha256:ac85caaba2697ff266cad559a962d7e5a6f7a7cd57ef0281c89f8c04b099e2ab
-sha256:8b89e5a1325975105adc713e793d98077bef2b05f0411ebe3d0d7457df43ff58
-campusops-web:lab4   298MB
-campusops-api:lab4   251MB
-postgres:17-alpine   424MB
+sha256:bc7da143bb5fbf1372893a3fe28be76e3c67087bcbc443c9d7a9c964f5943ca1
+sha256:61a74632fedd3ee407c1fc57492325e1a8b8ccf3039bce4245335d8781256146
+IMAGE                ID             DISK USAGE   CONTENT SIZE   EXTRA
+campusops-api:lab4   bc7da143bb5f        251MB         60.3MB
+IMAGE                ID             DISK USAGE   CONTENT SIZE   EXTRA
+campusops-web:lab4   61a74632fedd        298MB         73.3MB
+IMAGE                ID             DISK USAGE   CONTENT SIZE   EXTRA
+postgres:17-alpine   18cfe3ef5e68        424MB          118MB
 ```
 
 > 📝 ถ้าเพิ่งทำ LAB 2/3 มาในกล่องเรียนใบเดียวกัน สอง `docker build` นี้จะจบใน ~4 วินาทีเพราะ layer cache ยังอยู่ครบ
 
 ---
 
-## การทดลองที่ 1 — เรียก `ops-db` ด้วยชื่อบน default bridge
+## การทดลองที่ 1 — เรียก `ops-db` ด้วยชื่อบน default bridge ได้ไหม
 
 **คำถาม:** ถ้าเขียน `DATABASE_URL` ด้วยชื่อกล่องโดยไม่ระบุ network `api` จะหาฐานข้อมูลเจอไหม
 
@@ -136,6 +141,8 @@ docker run -d --name ops-api -e DATABASE_URL="postgresql://opsuser:labpass@ops-d
 sleep 70        # api มี retry รอฐานข้อมูล 60 วินาทีตอนบูต ต้องรอให้มันยอมแพ้ก่อน
 docker logs ops-api 2>&1 | grep -v 'รออีก 2 วินาที' | head -4
 ```
+
+คำสั่งอ่าน log ยาวกว่าปกติเพราะตัดบรรทัด retry ที่ซ้ำกันออก ให้เหลือเฉพาะสาเหตุและสถานะการเริ่มแอปที่ต้องวิเคราะห์
 
 ✅ **สิ่งที่ต้องเห็น** — บรรทัดกลางบอกว่ารอจนหมดเวลาแล้วก็ยัง **แปลชื่อ `ops-db` ไม่ออก** (เลข process ของแต่ละคนไม่ตรงกัน) :
 
@@ -149,7 +156,8 @@ INFO:     Application startup complete.
 ถามที่ `/health` ให้เห็นกับตาว่าแอปขึ้นแล้วแต่ต่อฐานข้อมูลไม่ได้ :
 
 ```bash
-curl -s -w '\nHTTP %{http_code}\n' "http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-api):8000/health"
+API_IP=$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-api)
+curl -s -w '\nHTTP %{http_code}\n' "http://$API_IP:8000/health"
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — บรรทัดล่างคือ `HTTP 503` ตามสัญญาใน [`docs/02_contract.md`](../docs/02_contract.md) และ body บอกสาเหตุจริงว่าเป็นเรื่องของ **ชื่อ** ไม่ใช่รหัสผ่าน :
@@ -163,33 +171,39 @@ HTTP 503
 
 ---
 
-## การทดลองที่ 2 — สร้าง network ของระบบด้วย `docker network create`
+## การทดลองที่ 2 — จะสร้าง network ของระบบด้วย `docker network create` อย่างไร
 
 **คำถาม:** สั่งสร้าง network หนึ่งบรรทัดแล้วเราได้อะไรมาบ้าง
 
 ```bash
 docker network create ops-net
 docker network ls
-docker network inspect ops-net --format '{{.Name}} · driver={{.Driver}} · scope={{.Scope}} · subnet={{(index .IPAM.Config 0).Subnet}} · gateway={{(index .IPAM.Config 0).Gateway}}'
+docker network inspect ops-net | grep -E '"Name":|"Scope":|"Driver": "bridge"|"Subnet":|"Gateway":'
 ```
+
+ใช้ `grep` หนึ่งชั้นเพื่อคงเฉพาะชื่อ ชนิด ขอบเขต subnet และ gateway เนื่องจาก JSON เต็มของ `docker network inspect` ยาวและรายละเอียดอื่นยังไม่ใช่หัวใจของการทดลองนี้
 
 ✅ **สิ่งที่ต้องเห็น** — `ops-net` ต่อท้ายของที่ Docker มีมาแต่เดิมสามอัน เป็น `DRIVER` แบบ `bridge` เหมือน `bridge` ตัวแรก และได้ช่วง IP มาเองหนึ่งช่วงโดยเราไม่ต้องกรอกอะไรเลย (`NETWORK ID` และช่วง IP ของแต่ละคนไม่ตรงกัน ขึ้นกับว่ามี network อยู่ก่อนกี่วง) :
 
 ```
-27bfbc9f460a1795e81133ccf38766643a0dcbc27dea79b5458408aed46cddf1
+14425b9287d3f198ae07594f812c5cc980e58a0070127140544af0918d6b1a01
 NETWORK ID     NAME      DRIVER    SCOPE
-4aeff02c8b64   bridge    bridge    local
-4aed08682b4f   host      host      local
-2fa1a3f5ffe4   none      null      local
-27bfbc9f460a   ops-net   bridge    local
-ops-net · driver=bridge · scope=local · subnet=172.19.0.0/16 · gateway=172.19.0.1
+00e0eb128368   bridge    bridge    local
+158effec8021   host      host      local
+370a188d3f55   none      null      local
+14425b9287d3   ops-net   bridge    local
+        "Name": "ops-net",
+        "Scope": "local",
+        "Driver": "bridge",
+                    "Subnet": "172.19.0.0/16",
+                    "Gateway": "172.19.0.1"
 ```
 
 > 📝 **บทเรียน:** `bridge` ตัวแรกในตารางคือ default bridge ที่กล่องในการทดลองที่ 1 ไปอยู่ · `ops-net` เป็น driver เดียวกันแต่เป็นของที่ **เราสร้างเอง** จึงได้ DNS ในตัวมาด้วย
 
 ---
 
-## การทดลองที่ 3 — ยกฐานข้อมูลขึ้นบน `ops-net` โดยไม่ใส่ `-p`
+## การทดลองที่ 3 — จะยกฐานข้อมูลบน `ops-net` โดยไม่ใส่ `-p` อย่างไร
 
 **คำถาม:** ฐานข้อมูลที่ไม่เปิดพอร์ตออกมาเลย จะยังขึ้นและทำงานได้ไหม
 
@@ -198,21 +212,29 @@ docker rm -f ops-db ops-api
 docker run -d --name ops-db --network ops-net -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
   -v ops-pgdata:/var/lib/postgresql/data -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine
 sleep 12
-docker ps --filter name=ops-db --format 'table {{.Names}}\t{{.Networks}}\t{{.Status}}\t{{.Ports}}'
+docker ps
+docker network inspect ops-net | grep -A4 '"Containers"'
 ```
 
-✅ **สิ่งที่ต้องเห็น** — กล่องขึ้นปกติ · `NETWORKS` เป็น `ops-net` · `PORTS` มีแค่ `5432/tcp` **ไม่มี** `0.0.0.0:...->` (เวลาที่ขึ้นของแต่ละคนต่างกัน) :
+ใช้ `grep -A4` เพื่อแสดงเฉพาะสมาชิกต้นรายการของ network แทน JSON ทั้งก้อน; ในจุดนี้มีสมาชิกเพียง `ops-db` กล่องเดียว
+
+✅ **สิ่งที่ต้องเห็น** — กล่องขึ้นปกติและ `PORTS` มีแค่ `5432/tcp` **ไม่มี** `0.0.0.0:...->` · ผล inspect ระบุชื่อ `ops-db` ใต้สมาชิกของ `ops-net` (`CONTAINER ID`, `EndpointID`, `MacAddress` และเวลาที่ขึ้นของแต่ละคนต่างกัน) :
 
 ```
-NAMES     NETWORKS   STATUS          PORTS
-ops-db    ops-net    Up 12 seconds   5432/tcp
+CONTAINER ID   IMAGE                COMMAND                  CREATED          STATUS          PORTS      NAMES
+2a1f0fc0a145   postgres:17-alpine   "docker-entrypoint.s…"   12 seconds ago   Up 12 seconds   5432/tcp   ops-db
+        "Containers": {
+            "2a1f0fc0a145a8fd7ca0887ee1f6086accfb24da93078ee299d806edfa5bd2ff": {
+                "Name": "ops-db",
+                "EndpointID": "4c3749544853d23f613d5324d98be2e472c536ac27c6ae09ef69f6a378015754",
+                "MacAddress": "5e:35:1b:5d:88:65",
 ```
 
 > 📝 **บทเรียน:** `-v ops-pgdata:...` และ `-v "$PWD/db/initdb:..."` คือของที่ LAB 1 สอนไว้ทั้งคู่ ของใหม่ในบรรทัดนี้มีแค่ `--network ops-net` เท่านั้น · NFR-3 ได้มาจากการ **ไม่พิมพ์** `-p` ไม่ใช่จากการตั้งค่าอะไรเพิ่ม
 
 ---
 
-## การทดลองที่ 4 — ให้ `api` ต่อฐานข้อมูลด้วยชื่อกล่อง
+## การทดลองที่ 4 — จะให้ `api` ต่อฐานข้อมูลด้วยชื่อกล่องอย่างไร
 
 **คำถาม:** `DATABASE_URL` ที่ไม่มีเลข IP อยู่เลย ใช้งานได้จริงไหม
 
@@ -233,7 +255,7 @@ curl -s "http://$API_IP:8000/health"; echo
 
 ---
 
-## การทดลองที่ 5 — ใครเป็นคนแปลชื่อเป็น IP
+## การทดลองที่ 5 — กลไกที่แปลชื่อเป็น IP คืออะไร
 
 **คำถาม:** ในกล่อง `ops-api` ชื่อ `ops-db` ถูกแปลเป็นเลขอะไร และตรงกับของจริงไหม
 
@@ -253,7 +275,7 @@ docker inspect -f '{{index .NetworkSettings.Networks "ops-net" "IPAddress"}}' op
 
 ---
 
-## การทดลองที่ 6 — สร้างฐานข้อมูลใหม่แล้ว IP เปลี่ยน
+## การทดลองที่ 6 — เมื่อสร้างฐานข้อมูลใหม่ IP เปลี่ยนไหม
 
 **คำถาม:** ยกระบบขึ้นใหม่โดยสลับลำดับ (api ก่อน db) แล้ว `api` ที่ยังใช้คำสั่งเดิมจะหาฐานข้อมูลเจอไหม
 
@@ -272,7 +294,8 @@ docker exec ops-api getent hosts ops-db
 ```
 
 ```bash
-curl -s "http://$(docker inspect -f '{{index .NetworkSettings.Networks "ops-net" "IPAddress"}}' ops-api):8000/health"; echo
+API_IP=$(docker inspect -f '{{index .NetworkSettings.Networks "ops-net" "IPAddress"}}' ops-api)
+curl -s "http://$API_IP:8000/health"; echo
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — ระบบยังทำงานได้ทั้งที่เลขเปลี่ยน เพราะไม่มีใครจดเลขไว้เลย :
@@ -285,32 +308,67 @@ curl -s "http://$(docker inspect -f '{{index .NetworkSettings.Networks "ops-net"
 
 ---
 
-## การทดลองที่ 7 — ยกหน้าเว็บขึ้นแล้วเปิดดูของจริง
+## การทดลองที่ 7 — จะยกหน้าเว็บและตรวจผ่าน UI อย่างไร
 
 **คำถาม:** `web` ที่ชี้ `API_BASE_URL` ไปที่ชื่อ `ops-api` เรนเดอร์ข้อมูลจากฐานข้อมูลได้ครบไหม
 
 ```bash
 docker run -d --name ops-web --network ops-net -p 3000:3000 -e API_BASE_URL="http://ops-api:8000" campusops-web:lab4
 sleep 8
-for p in / /tickets /loans /parts; do curl -s -o /dev/null -w "GET $p -> HTTP %{http_code} · %{size_download} ไบต์\n" "http://localhost:3000$p"; done
+curl -s -o /dev/null -w "GET / -> HTTP %{http_code} · %{size_download} ไบต์\n" http://localhost:3000/
+curl -s -o /dev/null -w "GET /tickets -> HTTP %{http_code} · %{size_download} ไบต์\n" http://localhost:3000/tickets
+curl -s -o /dev/null -w "GET /loans -> HTTP %{http_code} · %{size_download} ไบต์\n" http://localhost:3000/loans
+curl -s -o /dev/null -w "GET /parts -> HTTP %{http_code} · %{size_download} ไบต์\n" http://localhost:3000/parts
 ```
+
+คำสั่งตรวจ HTTP คงไว้สี่บรรทัด เพราะแต่ละ URL เป็นหน้าตามข้อกำหนดคนละข้อ และรหัสสถานะเป็นหลักฐานโดยตรงของการทดลองนี้
 
 ✅ **สิ่งที่ต้องเห็น** — ทั้งสี่หน้าตอบ `200` และมีเนื้อหาจริงหลักหมื่นไบต์ (ตัวเลขไบต์จะตรงกันทุกคนตราบใดที่ยังใช้ seed เดิม · จะขยับทันทีที่แก้ข้อมูลในฐานข้อมูล) :
 
 ```
-GET / -> HTTP 200 · 31260 ไบต์
-GET /tickets -> HTTP 200 · 71881 ไบต์
-GET /loans -> HTTP 200 · 46734 ไบต์
-GET /parts -> HTTP 200 · 70876 ไบต์
+GET / -> HTTP 200 · 82975 ไบต์
+GET /tickets -> HTTP 200 · 97407 ไบต์
+GET /loans -> HTTP 200 · 87590 ไบต์
+GET /parts -> HTTP 200 · 75242 ไบต์
 ```
 
-เปิดในเบราว์เซอร์บนเครื่องเราที่ **`http://localhost:8190`** ได้เลย :
+### Walkthrough หน้า CampusOps ผ่านชื่อกล่อง
 
-![หน้าสรุปของ CampusOps ที่เปิดจากเบราว์เซอร์จริง แสดงการ์ดจำนวนใบแจ้งซ่อมตามสถานะ รอรับเรื่อง 3 มอบหมายแล้ว 2 กำลังซ่อม 1 ปิดงานแล้ว 2 ครุภัณฑ์ถูกยืมอยู่ 2 พร้อมบล็อกงานค้างเกินกำหนดและอะไหล่ต่ำกว่าจุดสั่งซื้อ](./images/app-via-service-name.png)
+เปิดเบราว์เซอร์บนเครื่องเราที่ **`http://localhost:8254`** แล้วดำเนินการตามลำดับต่อไปนี้ ข้อมูลในภาพมาจากฐานข้อมูลที่สร้างใหม่จาก seed ก่อนถ่ายภาพ
 
-> 🖼 **วิธีอ่านรูปนี้:** ตัวเลขบนการ์ดทั้งห้าใบมาจากฐานข้อมูลจริงผ่านสาย `web → ops-api → ops-db` ที่เป็น **ชื่อล้วน ๆ** · ถ้า DNS ของ `ops-net` ไม่ทำงาน หน้านี้จะขึ้น error ทันทีเพราะทุกหน้าเรนเดอร์ฝั่ง server · บรรทัดล่างสุดของหน้าย้ำว่าหน้าเว็บคุยกับบริการเบื้องหลังผ่านเครือข่ายภายในของ Docker เท่านั้น
+#### ขั้นที่ ① — เปิดหน้าสรุปภาพรวม
 
-> 📝 **บทเรียน:** `-p 3000:3000` มีอยู่ที่กล่องเดียวคือ `web` · เบราว์เซอร์ไม่เคยเรียก `api` ตรง ๆ (ทุกหน้าเป็น server component ตาม [`docs/02_contract.md`](../docs/02_contract.md)) จึงไม่ต้องเปิดพอร์ตให้ `api` เลย
+เปิด `http://localhost:8254` แล้วคลิกเมนู **สรุปภาพรวม** ที่แถบซ้าย
+
+![ขั้นที่ 1 กรอบแดงล้อมเมนูสรุปภาพรวม หน้าแสดงงานที่ยังไม่ปิด 6 ใบ ค้างเกินกำหนด 2 ใบ ครุภัณฑ์ถูกยืม 2 ชิ้น และอะไหล่ต้องสั่งเพิ่ม 2 รายการ](./images/ui-net-01-overview.png)
+
+*ภาพที่ 1 — seed มีใบแจ้งซ่อม 8 ใบ ปิดแล้ว 2 ใบ จึงเหลืองานไม่ปิด 6 ใบ ค้างเกินกำหนด 2 ใบ ยืมอยู่ 2 ชิ้น และอะไหล่ต้องสั่งเพิ่ม 2 รายการ*
+
+#### ขั้นที่ ② — เปิดหน้ายืม-คืนครุภัณฑ์
+
+คลิกเมนู **ยืม-คืนครุภัณฑ์** ที่แถบซ้าย
+
+![ขั้นที่ 2 กรอบแดงล้อมเมนูยืม-คืนครุภัณฑ์ หน้าแสดงครุภัณฑ์ที่ยังไม่คืน 2 รายการ ได้แก่ A-001 และ A-002](./images/ui-net-02-loans.png)
+
+*ภาพที่ 2 — ตารางแสดงรายการที่ยังไม่คืน 2 รายการ คือ `A-001` โน้ตบุ๊ก Dell Latitude และ `A-002` โปรเจกเตอร์ Epson EB-X51 ตรงกับ seed*
+
+#### ขั้นที่ ③ — เปิดหน้าคลังอะไหล่
+
+คลิกเมนู **คลังอะไหล่** ที่แถบซ้าย
+
+![ขั้นที่ 3 กรอบแดงล้อมเมนูคลังอะไหล่ หน้าแสดงอะไหล่ต่ำกว่าจุดสั่งซื้อ 2 รายการ คือ LAMP-EPS-01 คงเหลือ 2 จุดสั่งซื้อ 5 และ CBL-HDMI-3M คงเหลือ 1 จุดสั่งซื้อ 6](./images/ui-net-03-parts.png)
+
+*ภาพที่ 3 — ต่ำกว่าจุดสั่งซื้อ 2 รายการ: `LAMP-EPS-01` เหลือ 2 จากจุดสั่งซื้อ 5 และ `CBL-HDMI-3M` เหลือ 1 จากจุดสั่งซื้อ 6; รวม 52 ชิ้น*
+
+#### ขั้นที่ ④ — กลับหน้าสรุปภาพรวม
+
+คลิกเมนู **สรุปภาพรวม** ที่แถบซ้ายอีกครั้ง
+
+![ขั้นที่ 4 กรอบแดงล้อมเมนูสรุปภาพรวมหลังกลับจากคลังอะไหล่ ตัวเลขยังเป็นงานไม่ปิด 6 ค้างเกินกำหนด 2 ยืมอยู่ 2 และอะไหล่ต้องสั่งเพิ่ม 2](./images/ui-net-04-back.png)
+
+*ภาพที่ 4 — ตัวเลขยังเป็นงานไม่ปิด 6 ใบ ค้างเกินกำหนด 2 ใบ ยืมอยู่ 2 ชิ้น และอะไหล่ต้องสั่งเพิ่ม 2 รายการ เพราะ walkthrough ไม่ได้แก้ seed*
+
+> 📝 `-p 3000:3000` มีเฉพาะ `web` ส่วนทุกหน้าดึงข้อมูลฝั่ง server ผ่าน `http://ops-api:8000` และ API ต่อ PostgreSQL ที่ชื่อ `ops-db`; เบราว์เซอร์จึงไม่ต้องเข้าถึง API หรือฐานข้อมูลโดยตรง
 
 ---
 
@@ -321,7 +379,7 @@ GET /parts -> HTTP 200 · 70876 ไบต์
 ```bash
 docker port ops-db; echo "(ว่างเปล่า = ไม่มีพอร์ตถูก publish)"
 curl -sS -m 5 http://localhost:5432; echo "curl exit = $?"
-docker ps --filter name=ops- --format 'table {{.Names}}\t{{.Ports}}'
+docker ps
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — `docker port ops-db` **ไม่คืนบรรทัดใดเลย** · ยิงจากเชลล์ของกล่องเรียนซึ่งอยู่นอก `ops-net` ก็ต่อไม่ติด (`exit 7`) · และในตารางมีแค่ `ops-web` ที่มี `0.0.0.0:...->` :
@@ -330,31 +388,35 @@ docker ps --filter name=ops- --format 'table {{.Names}}\t{{.Ports}}'
 (ว่างเปล่า = ไม่มีพอร์ตถูก publish)
 curl: (7) Failed to connect to localhost port 5432 after 0 ms: Couldn't connect to server
 curl exit = 7
-NAMES     PORTS
-ops-web   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
-ops-db    5432/tcp
-ops-api   8000/tcp
+CONTAINER ID   IMAGE                COMMAND                  CREATED              STATUS              PORTS                                         NAMES
+79200a79f3ff   campusops-web:lab4   "docker-entrypoint.s…"   15 seconds ago       Up 15 seconds       0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp   ops-web
+dfe738e68714   campusops-api:lab4   "uvicorn main:app --…"   About a minute ago   Up About a minute   8000/tcp                                      ops-api
+db446dad4052   postgres:17-alpine   "docker-entrypoint.s…"   About a minute ago   Up About a minute   5432/tcp                                      ops-db
 ```
 
 > 📝 **บทเรียน:** NFR-3 ผ่านโดยไม่ต้องตั้ง firewall หรือแก้ `pg_hba.conf` เลย — แค่ไม่ publish พอร์ต · `5432/tcp` ที่เห็นในตารางคือป้าย `EXPOSE` ของ image ไม่ใช่ประตูที่เปิดจริง
 
 ---
 
-## การทดลองที่ 9 — ดูสมาชิกของ network และเพิ่มกล่องเข้าทีหลัง
+## การทดลองที่ 9 — จะดูสมาชิกของ network และเพิ่มกล่องภายหลังอย่างไร
 
 **คำถาม:** ตอนนี้มีใครอยู่บน `ops-net` บ้าง และกล่องที่รันไปแล้วยังเข้ามาร่วมวงได้ไหม
 
 ```bash
-docker network inspect ops-net --format '{{range .Containers}}{{.Name}} → {{.IPv4Address}}
-{{end}}'
+docker network inspect ops-net | grep -E '"Name": "ops-(db|api|web)"|"IPv4Address"'
 ```
+
+ใช้ `grep` หนึ่งชั้นเพื่อตัด metadata ของ endpoint ออก เนื่องจากคำถามนี้ต้องการอ่านเพียงชื่อสมาชิกและ IPv4 ของสมาชิกทั้งสามกล่อง
 
 ✅ **สิ่งที่ต้องเห็น** — ครบสามกล่องของระบบพร้อมเลขที่แต่ละกล่องได้รับ (ลำดับและเลขของแต่ละคนไม่ตรงกัน) :
 
 ```
-ops-db → 172.19.0.3/16
-ops-web → 172.19.0.4/16
-ops-api → 172.19.0.2/16
+                "Name": "ops-web",
+                "IPv4Address": "172.19.0.4/16",
+                "Name": "ops-db",
+                "IPv4Address": "172.19.0.2/16",
+                "Name": "ops-api",
+                "IPv4Address": "172.19.0.3/16",
 ```
 
 ทีนี้สร้างกล่องเครื่องมือไว้บน default bridge ก่อน แล้วค่อยพามันเข้า `ops-net` ทีหลัง :
@@ -454,8 +516,8 @@ docker network ls
 
 ```bash
 exit
-docker rm -f devtools-ops-lab4
-docker ps -a --filter "name=^devtools-"
+docker rm -f devtools-fs-lab4
+docker ps -a --filter "name=^devtools-fs-lab4$"
 ```
 
 ---
@@ -473,7 +535,7 @@ docker ps -a --filter "name=^devtools-"
 | `docker network rm ops-net` | ลบ network (ต้องไม่มีกล่องต่ออยู่) |
 | `docker exec <กล่อง> getent hosts <ชื่อกล่อง>` | ถาม DNS จากในกล่องว่าชื่อนี้แปลเป็น IP อะไร |
 | `docker port <กล่อง>` | ดูว่ากล่องนี้ publish พอร์ตอะไรออกมาบ้าง (ว่าง = ไม่มีทางเข้าจากภายนอก) |
-| `docker ps --format 'table {{.Names}}\t{{.Networks}}\t{{.Ports}}'` | ดูพร้อมกันว่ากล่องไหนอยู่ network ไหน และเปิดพอร์ตอะไรจริง |
+| `docker ps` | ดูสถานะและพอร์ตของกล่องทั้งหมดด้วยตารางมาตรฐาน |
 
 > **จำ 3 อย่าง:** default bridge ไม่มี DNS · บน network ที่เราสร้างเองให้เรียกกันด้วย **ชื่อกล่อง** เสมอ · ไม่มี `-p` = ไม่มีประตูจากภายนอก
 
@@ -484,11 +546,11 @@ docker ps -a --filter "name=^devtools-"
 - [ ] บน default bridge : `docker logs ops-api 2>&1 | grep -v 'รออีก 2 วินาที' | head -4` เจอ `[api] รอฐานข้อมูลไม่สำเร็จ: [Errno -2] Name or service not known`
 - [ ] `curl .../health` ของกล่องเดียวกันตอบ `{"detail":"ฐานข้อมูลไม่ตอบสนอง: ...","code":"DB_DOWN"}`
 - [ ] `docker network create ops-net` แล้ว `docker network ls` เห็น `ops-net` เป็น `DRIVER` แบบ `bridge`
-- [ ] `docker ps --filter name=ops-db --format 'table {{.Names}}\t{{.Networks}}\t{{.Status}}\t{{.Ports}}'` แสดง `NETWORKS` = `ops-net` และ `PORTS` มีแค่ `5432/tcp` (คอลัมน์ `NETWORKS` ไม่มีในรูปแบบ default ของ `docker ps` ต้องใส่ `--format` เอง)
+- [ ] `docker ps` แสดง `ops-db` ทำงานอยู่และ `PORTS` มีแค่ `5432/tcp` พร้อมใช้ `docker network inspect ops-net` ยืนยันว่าเป็นสมาชิก `ops-net`
 - [ ] ตั้ง `DATABASE_URL=...@ops-db:5432/...` (ไม่มีเลข IP) แล้ว `/health` ตอบ `{"status":"ok","db":"up"}`
 - [ ] `docker exec ops-api getent hosts ops-db` ได้เลขตรงกับ `docker inspect` ของ `ops-db`
 - [ ] ยกใหม่โดยสลับลำดับ (api ก่อน db) แล้ว `getent hosts ops-db` ได้ **เลขใหม่** แต่ `/health` ยังตอบ `db up`
-- [ ] `-e API_BASE_URL="http://ops-api:8000"` แล้วทั้ง 4 หน้าตอบ `200` และเปิด `http://localhost:8190` เห็นการ์ดสรุปจริง
+- [ ] `-e API_BASE_URL="http://ops-api:8000"` แล้วทั้ง 4 หน้าตอบ `200` และเปิด `http://localhost:8254` เห็นการ์ดสรุปจริง
 - [ ] `docker port ops-db` ไม่มีบรรทัดใดเลย · `curl -sS -m 5 http://localhost:5432` ได้ `curl exit = 7` · แต่ `/health` ยัง `db up`
 - [ ] `bash verify.sh ; echo "exit code = $?"` ขึ้น `ALL CHECKS PASSED` และ `exit code = 0`
 

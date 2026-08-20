@@ -20,6 +20,8 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 # ---------- helper ----------
+# ส่วนตรวจอัตโนมัติต้องแปลงผลคำสั่งเป็นค่าที่เปรียบเทียบได้ จึงคง command
+# substitution เฉพาะภายใน verify.sh; ผู้เรียนไม่ต้องพิมพ์ one-liner เหล่านี้เอง
 # รอจน postgres ในกล่องพร้อมใช้งานจริง
 # สองจังหวะ เพราะระหว่าง init postgres เปิดเซิร์ฟเวอร์ "ชั่วคราว" ไว้ก่อน
 # ถ้าเช็กแค่ pg_isready จะผ่านตั้งแต่ seed ยังไม่ถูกรัน แล้วนับแถวได้ค่าว่าง
@@ -178,7 +180,7 @@ else
 fi
 docker rm -f -v vops1-db3 >/dev/null 2>&1
 
-if docker volume ls --format '{{.Name}}' | grep -qx 'vops1-pgdata'; then
+if docker volume inspect vops1-pgdata >/dev/null 2>&1; then
   pass "ลบกล่องแล้ว volume vops1-pgdata ยังอยู่ (อายุ volume ไม่ผูกกับอายุกล่อง)"
 else
   fail "volume vops1-pgdata หายไปหลังลบกล่อง ซึ่งไม่ควรเกิด"

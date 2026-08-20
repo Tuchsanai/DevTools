@@ -1,0 +1,106 @@
+{
+  "images": [
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-01-home.png",
+      "source": "tools/ui/raw/hub-auth-01-home.png",
+      "shapes": [
+        {"type": "round_rect", "label": "① เปิด hub.docker.com", "box": [19, 12, 109, 53], "label_at": [150, 84]},
+        {"type": "round_rect", "label": "② กด Sign in", "box": [1268, 8, 1344, 57], "label_at": [1060, 84]}
+      ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-02-username.png",
+      "source": "tools/ui/raw/hub-auth-02-username.png",
+      "shapes": [
+        {"type": "round_rect", "label": "③ กรอกชื่อบัญชี", "box": [555, 297, 885, 361], "label_at": [210, 295]},
+        {"type": "round_rect", "label": "④ กด Continue", "box": [555, 373, 885, 437], "label_at": [930, 380]}
+      ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-03-password.png",
+      "source": "tools/ui/raw/hub-auth-03-password.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑤ กรอกรหัสผ่าน", "box": [556, 425, 840, 489], "label_at": [220, 425]},
+        {"type": "round_rect", "label": "⑥ กด Continue", "box": [555, 539, 885, 603], "label_at": [930, 545]}
+      ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-04-avatar.png",
+      "source": "tools/ui/raw/hub-auth-04-avatar.png",
+      "shapes": [
+        {"type": "ellipse", "label": "⑦ คลิก avatar", "box": [1353, 0, 1421, 67], "label_at": [1080, 100]}
+      ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-05-account-settings.png",
+      "source": "tools/ui/raw/hub-auth-05-account-settings.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑧ เลือก Account settings", "box": [1081, 279, 1421, 323], "label_at": [750, 394]}
+      ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-06-token-list.png",
+      "source": "tools/ui/raw/hub-auth-06-token-list.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑨ เปิด Personal access tokens", "box": [18, 381, 254, 425], "label_at": [300, 394]},
+        {"type": "round_rect", "label": "⑩ กด Generate new token", "box": [1244, 197, 1422, 246], "label_at": [880, 259]}
+      ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-07-description.png",
+      "source": "tools/ui/raw/hub-auth-07-description.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑪ ตั้ง description", "box": [298, 241, 910, 293], "label_at": [950, 244]}
+      ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-08-expiration.png",
+      "source": "tools/ui/raw/hub-auth-08-expiration.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑫ เลือกหมดอายุ 30 วัน", "box": [298, 398, 910, 442], "label_at": [950, 399]}
+      ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-09-permission.png",
+      "source": "tools/ui/raw/hub-auth-09-permission.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑬ เลือก Read & Write", "box": [298, 506, 910, 550], "label_at": [950, 504]}
+      ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-10-generate.png",
+      "source": "tools/ui/raw/hub-auth-10-generate.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑭ กด Generate", "box": [383, 468, 489, 517], "label_at": [560, 474]}
+      ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-11-copy.png",
+      "source": "tools/ui/raw/hub-auth-11-copy.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑮ คัดลอก token", "box": [828, 598, 906, 643], "label_at": [950, 599]}
+      ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-12-revoke-menu.png",
+      "source": "tools/ui/raw/hub-auth-12-revoke-menu.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑯ เปิดเมนู token", "box": [1358, 410, 1406, 458], "label_at": [1050, 400]}
+      ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-13-revoke-delete.png",
+      "source": "tools/ui/raw/hub-auth-13-revoke-delete.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑰ เลือก Delete", "box": [1333, 518, 1440, 562], "label_at": [1050, 580]}
+      ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-14-revoke-confirm.png",
+      "source": "tools/ui/raw/hub-auth-14-revoke-confirm.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑱ ยืนยัน Delete token", "box": [391, 493, 520, 542], "label_at": [560, 490]}
+      ]
+    }
+  ]
+}

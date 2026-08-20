@@ -1,0 +1,58 @@
+{
+  "images": [
+    {
+      "path": "001_LAB_Run_The_System/images/ui-github-01-repo.png",
+      "source": "tools/ui/raw/gh-01-repo.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "label": "① เปิดหน้า repository",
+          "box": [155, 86, 255, 120],
+          "label_at": [300, 90]
+        }
+      ]
+    },
+    {
+      "path": "001_LAB_Run_The_System/images/ui-github-02-folder.png",
+      "source": "tools/ui/raw/gh-02-folder.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "label": "② คลิกเข้าโฟลเดอร์ 02_Docker",
+          "box": [422, 199, 511, 228],
+          "label_at": [830, 90]
+        },
+        {
+          "type": "round_rect",
+          "label": "③ คลิก 03_Fullstack_App_Example",
+          "box": [499, 196, 763, 232],
+          "label_at": [830, 150]
+        }
+      ]
+    },
+    {
+      "path": "001_LAB_Run_The_System/images/ui-github-03-code.png",
+      "source": "tools/ui/raw/gh-03-code.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "label": "④ กดปุ่ม Code",
+          "box": [902, 200, 1022, 244],
+          "label_at": [1050, 180]
+        },
+        {
+          "type": "round_rect",
+          "label": "⑤ เลือกแท็บ HTTPS",
+          "box": [626, 285, 709, 329],
+          "label_at": [1040, 270]
+        },
+        {
+          "type": "round_rect",
+          "label": "⑥ คัดลอก URL",
+          "box": [962, 325, 1006, 369],
+          "label_at": [1040, 340]
+        }
+      ]
+    }
+  ]
+}

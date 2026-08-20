@@ -17,7 +17,7 @@ fail() { printf '[FAIL] %s\n' "$1"; failures=$((failures + 1)); }
 
 VP=vops5                      # ชื่อ compose project ของสคริปต์นี้
 VWEB_PORT=13191               # พอร์ตของสคริปต์นี้ ไม่ชนกับ 3000 ที่ผู้เรียนใช้
-VREG_PORT=15000               # พอร์ต registry ของสคริปต์นี้
+SHIP_NS=localverify           # namespace ทดสอบเฉพาะใน Docker daemon ไม่ติดต่อ registry จริง
 
 dc() { docker compose -p "$VP" -f compose.yaml -f "$tmp_dir/verify-override.yaml" "$@"; }
 
@@ -25,9 +25,7 @@ cleanup() {
   if [ -n "$tmp_dir" ] && [ -f "$tmp_dir/verify-override.yaml" ]; then
     docker compose -p "$VP" -f compose.yaml -f "$tmp_dir/verify-override.yaml" down -v >/dev/null 2>&1
   fi
-  # -v ด้วย เพราะ registry:2 ประกาศ VOLUME /var/lib/registry ไว้ ถ้าไม่ใส่จะเหลือ anonymous volume ค้าง
-  docker rm -f -v vops5-registry >/dev/null 2>&1
-  docker image rm -f localhost:$VREG_PORT/vops5-api:1.0 localhost:$VREG_PORT/vops5-web:1.0 >/dev/null 2>&1
+  docker image rm -f "$SHIP_NS/campusops-api:1.0" "$SHIP_NS/campusops-web:1.0" >/dev/null 2>&1
   docker image rm -f vops5-api vops5-web >/dev/null 2>&1
   [ -n "$tmp_dir" ] && [ -d "$tmp_dir" ] && rm -rf "$tmp_dir"
   return 0
@@ -213,49 +211,89 @@ else
   fail "หลัง down -v แล้ว up ควรได้ 8 ใบตาม seed แต่ได้ '$seeded'"
 fi
 
-# ---------- 14) ส่งมอบ : tag -> push -> pull ผ่าน registry ในเครื่อง ----------
-docker rm -f -v vops5-registry >/dev/null 2>&1
-if docker run -d --name vops5-registry -p "$VREG_PORT:5000" registry:2 >/dev/null 2>&1; then
-  reg_ok=0
-  for _ in $(seq 1 20); do
-    curl -fsS "http://localhost:$VREG_PORT/v2/" >/dev/null 2>&1 && { reg_ok=1; break; }
-    sleep 1
-  done
-  [ "$reg_ok" = "1" ] && pass "ยก registry ในเครื่อง (registry:2) ขึ้นที่พอร์ต $VREG_PORT ได้" \
-                      || fail "registry ไม่ตอบที่พอร์ต $VREG_PORT"
+# ---------- 14) ส่งมอบแบบออฟไลน์ : tag -> save -> remove -> load ----------
+api_id=$(docker image inspect -f '{{.Id}}' "${VP}-api" 2>/dev/null)
+web_id=$(docker image inspect -f '{{.Id}}' "${VP}-web" 2>/dev/null)
+docker tag "${VP}-api" "$SHIP_NS/campusops-api:1.0" >/dev/null 2>&1
+docker tag "${VP}-web" "$SHIP_NS/campusops-web:1.0" >/dev/null 2>&1
+
+tagged_api_id=$(docker image inspect -f '{{.Id}}' "$SHIP_NS/campusops-api:1.0" 2>/dev/null)
+tagged_web_id=$(docker image inspect -f '{{.Id}}' "$SHIP_NS/campusops-web:1.0" 2>/dev/null)
+[ -n "$api_id" ] && [ "$api_id" = "$tagged_api_id" ] \
+  && pass "tag repository ให้ api แล้ว IMAGE ID ยังเป็นก้อนเดิม" \
+  || fail "tag api แล้ว IMAGE ID เปลี่ยนหรือหา image ไม่พบ"
+[ -n "$web_id" ] && [ "$web_id" = "$tagged_web_id" ] \
+  && pass "tag repository ให้ web แล้ว IMAGE ID ยังเป็นก้อนเดิม" \
+  || fail "tag web แล้ว IMAGE ID เปลี่ยนหรือหา image ไม่พบ"
+
+archive="$tmp_dir/campusops-images.tar"
+if docker save -o "$archive" "$SHIP_NS/campusops-api:1.0" "$SHIP_NS/campusops-web:1.0" \
+   && [ -s "$archive" ]; then
+  pass "docker save รวม image ทั้งสองก้อนเป็นไฟล์ส่งมอบได้"
 else
-  fail "ยกกล่อง registry:2 ไม่ขึ้น"
+  fail "docker save สร้างไฟล์ส่งมอบไม่สำเร็จ"
 fi
 
-docker tag "${VP}-api" "localhost:$VREG_PORT/vops5-api:1.0" >/dev/null 2>&1
-docker tag "${VP}-web" "localhost:$VREG_PORT/vops5-web:1.0" >/dev/null 2>&1
-push_ok=1
-docker push "localhost:$VREG_PORT/vops5-api:1.0" >/dev/null 2>&1 || push_ok=0
-docker push "localhost:$VREG_PORT/vops5-web:1.0" >/dev/null 2>&1 || push_ok=0
-if [ "$push_ok" = "1" ]; then
-  pass "docker push image ทั้งสองก้อนขึ้น registry สำเร็จ"
+dc down >/dev/null 2>&1
+docker image rm "${VP}-api" "${VP}-web" >/dev/null 2>&1
+docker image rm "$SHIP_NS/campusops-api:1.0" "$SHIP_NS/campusops-web:1.0" >/dev/null 2>&1
+if ! docker image inspect "${VP}-api" "${VP}-web" "$SHIP_NS/campusops-api:1.0" "$SHIP_NS/campusops-web:1.0" >/dev/null 2>&1; then
+  pass "ลบ image ต้นทางและชื่อสำหรับส่งมอบออกจากเครื่องแล้ว"
 else
-  fail "docker push ไม่สำเร็จ"
+  fail "ยังมี image ทดสอบเหลือก่อน docker load"
 fi
 
-catalog=$(curl -fsS "http://localhost:$VREG_PORT/v2/_catalog" 2>/dev/null)
-if printf '%s' "$catalog" | grep -q 'vops5-api' && printf '%s' "$catalog" | grep -q 'vops5-web'; then
-  pass "registry มี repository ครบสองก้อน : $catalog"
+if docker load -i "$archive" >/dev/null 2>&1; then
+  pass "docker load คืน image ทั้งสองก้อนจากไฟล์ส่งมอบได้"
 else
-  fail "registry ไม่มี repository ที่ push ไป (ได้ '$catalog')"
+  fail "docker load ไฟล์ส่งมอบไม่สำเร็จ"
 fi
 
-docker image rm -f "localhost:$VREG_PORT/vops5-web:1.0" >/dev/null 2>&1
-if docker pull -q "localhost:$VREG_PORT/vops5-web:1.0" >/dev/null 2>&1; then
-  pass "ลบ image ในเครื่องแล้ว docker pull กลับมาจาก registry ได้"
+docker tag "$SHIP_NS/campusops-api:1.0" "${VP}-api:latest" >/dev/null 2>&1
+docker tag "$SHIP_NS/campusops-web:1.0" "${VP}-web:latest" >/dev/null 2>&1
+if dc up -d --no-build >"$tmp_dir/no-build.log" 2>&1; then
+  pass "docker compose up -d --no-build ขึ้นครบจาก image ที่ load กลับมา"
 else
-  fail "docker pull กลับมาจาก registry ไม่สำเร็จ"
+  fail "docker compose up -d --no-build ไม่สำเร็จ"
 fi
 
-if docker run --rm "localhost:$VREG_PORT/vops5-web:1.0" ls .next/static >/dev/null 2>&1; then
-  pass "image ที่ pull กลับมารันได้จริง (เห็นไฟล์ผลลัพธ์ของหน้าเว็บใน image)"
+healthy_loaded=0
+for _ in $(seq 1 60); do
+  n=$(docker inspect -f '{{.State.Health.Status}}' "${VP}-db-1" "${VP}-api-1" "${VP}-web-1" 2>/dev/null | grep -c '^healthy$')
+  if [ "$n" = "3" ]; then healthy_loaded=1; break; fi
+  sleep 2
+done
+[ "$healthy_loaded" = "1" ] \
+  && pass "ระบบที่ load กลับมามีสถานะ healthy ครบ 3 service" \
+  || fail "ระบบที่ load กลับมามี service ไม่ healthy ภายใน 120 วินาที"
+
+if curl -fsS -o /dev/null "http://localhost:$VWEB_PORT/"; then
+  pass "ระบบที่ส่งมอบแบบออฟไลน์ตอบ HTTP 200"
 else
-  fail "image ที่ pull กลับมารันไม่ได้"
+  fail "ระบบที่ส่งมอบแบบออฟไลน์ไม่ตอบ HTTP 200"
+fi
+
+if grep -q 'Building' "$tmp_dir/no-build.log"; then
+  fail "log ของ --no-build มีบรรทัด Building"
+else
+  pass "log ของ --no-build ไม่มีบรรทัด Building"
+fi
+
+# ---------- 15) Docker Hub จริงเป็น opt-in และไม่มี push/delete ----------
+if [ -z "${HUB_USER:-}" ]; then
+  echo "[SKIP] ไม่ตรวจ Docker Hub จริง — ตั้ง HUB_USER แล้ว tag/push ตามการทดลองที่ 8 เพื่อเปิดการตรวจ"
+elif [ ! -f /root/.docker/config.json ] \
+     || ! grep -q 'https://index.docker.io/v1/' /root/.docker/config.json; then
+  echo "[SKIP] ยังไม่ได้ docker login ในกล่องเรียน — login ด้วย Access Token แล้วรันใหม่"
+else
+  hub_local=0
+  docker image inspect "$HUB_USER/campusops-api:1.0" "$HUB_USER/campusops-web:1.0" >/dev/null 2>&1 \
+    && hub_local=1
+  if [ "$hub_local" = "1" ]; then
+    pass "ติดชื่อ repository ของ Docker Hub ให้ image ทั้งสองก้อนแล้ว"
+  else
+    echo "[SKIP] ไม่พบ $HUB_USER/campusops-api:1.0 และ campusops-web:1.0 ในเครื่อง — ทำการทดลองที่ 8 ก่อน"
+  fi
 fi
 
 echo "----------------------------------------------"

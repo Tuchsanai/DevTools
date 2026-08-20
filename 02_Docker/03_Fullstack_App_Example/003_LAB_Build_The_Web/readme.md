@@ -29,7 +29,7 @@
 
 ### สาม stage ของ `web/Dockerfile`
 
-![แผนภาพ multi-stage : ฝั่งซ้ายคือ stage deps กับ builder ที่มี node_modules 505MB devDependencies typescript tailwindcss และ cache ของ next build 100MB ซึ่งถูกทิ้งทั้งก้อน ฝั่งขวาคือ stage runner ที่มี node:22-alpine 232MB บวก .next/standalone 49.7MB และ .next/static 680kB รวมเป็น image 298MB](./images/theory-multistage.svg)
+![แผนภาพ multi-stage : ฝั่งซ้ายคือ stage deps กับ builder ที่มี node_modules, devDependencies, typescript, tailwindcss และ cache ของ next build ซึ่งถูกทิ้งทั้งก้อน ฝั่งขวาคือ stage runner ที่มี base image บวก .next/standalone และ .next/static รวมเป็น image 298MB](./images/theory-multistage.svg)
 
 > 🖼 **วิธีอ่านรูปนี้:** ลูกศร `COPY --from=builder` ตรงกลางขน **เฉพาะผลลัพธ์** ข้ามฝั่ง — ทุกอย่างในกรอบสีส้มฝั่งซ้ายไม่มีอะไรตามไปเลยแม้แต่ layer เดียว
 
@@ -85,13 +85,13 @@
 รันบน **เครื่องของเราเอง** :
 
 ```bash
-docker rm -f devtools-ops-lab3 2>/dev/null
-docker run -dit --name devtools-ops-lab3 --privileged \
-  -p 2240:22 -p 8189:3000 tuchsanai/devtools:2569_1
-ssh root@localhost -p 2240        # password : passwd
+docker rm -f devtools-fs-lab3 2>/dev/null
+docker run -dit --name devtools-fs-lab3 --privileged \
+  -p 2253:22 -p 8253:3000 tuchsanai/devtools:2569_1
+ssh root@localhost -p 2253        # password : passwd
 ```
 
-> พอร์ต `8189` ของเครื่องเราถูกต่อเข้ากับพอร์ต `3000` ของกล่องเรียน — พอถึงการทดลองที่ 8 กล่องหน้าเว็บจะจองพอร์ต `3000` ในกล่องเรียน ทำให้เปิด `http://localhost:8189` บนเบราว์เซอร์ของเราได้
+> พอร์ต `8253` ของเครื่องเราถูกต่อเข้ากับพอร์ต `3000` ของกล่องเรียน เมื่อถึงการทดลองที่ 8 กล่องหน้าเว็บจะจองพอร์ต `3000` ในกล่องเรียน จึงเปิด `http://localhost:8253` จากเบราว์เซอร์บนเครื่องได้
 
 ### ขั้นที่ 2 — โหลดโค้ดแล็บ
 
@@ -121,7 +121,7 @@ web
 
 ---
 
-## การทดลองที่ 1 — สาม stage ในไฟล์เดียว
+## การทดลองที่ 1 — โครงสร้าง Dockerfile แบบสาม stage เป็นอย่างไร
 
 **คำถาม:** `web/Dockerfile` แบ่งเป็นกี่ stage และ stage สุดท้ายหยิบอะไรข้ามมาบ้าง
 
@@ -144,13 +144,13 @@ grep -n '^FROM\|^COPY --from' web/Dockerfile
 
 ---
 
-## การทดลองที่ 2 — build แบบ stage เดียวก่อน
+## การทดลองที่ 2 — ขนาดของ image แบบ stage เดียวเป็นอย่างไร
 
 **คำถาม:** ถ้าไม่แยก stage เลย image จะใหญ่แค่ไหน
 
 ```bash
 time docker build -f web/Dockerfile.single -t campusops-web:single ./web
-docker image ls campusops-web
+docker images campusops-web
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — build ผ่าน และ **`DISK USAGE` ทะลุ 1 GB** — ด้านล่างตัดมาเฉพาะ **ท้าย** ผลลัพธ์ ของจริงจะมี log ของทุกขั้นยาวนับร้อยบรรทัดก่อนหน้านี้ (เวลาและ ID ของแต่ละคนไม่ตรงกัน) :
@@ -158,49 +158,49 @@ docker image ls campusops-web
 ```
 #13 naming to docker.io/library/campusops-web:single done
 #13 unpacking to docker.io/library/campusops-web:single
-#13 unpacking to docker.io/library/campusops-web:single 2.7s done
-#13 DONE 11.7s
+#13 unpacking to docker.io/library/campusops-web:single 3.1s done
+#13 DONE 12.4s
 
-real	0m43.418s
-user	0m0.133s
-sys	0m0.131s
+real	0m41.207s
+user	0m0.135s
+sys	0m0.142s
 
 IMAGE                  ID             DISK USAGE   CONTENT SIZE   EXTRA
-campusops-web:single   631e54fa1e93       1.09GB          310MB
+campusops-web:single   6cf455d56831        1.1GB          314MB
 ```
 
 > 📝 ไฟล์นี้ทำงานได้จริง หน้าเว็บขึ้นครบเหมือนกัน — ปัญหาคือมันแบก `node_modules` เต็มก้อน · `typescript` · `tailwindcss` · source `.tsx` และ cache ของ `next build` ไปด้วยทั้งหมด
 
 ---
 
-## การทดลองที่ 3 — build แบบ multi-stage แล้วเทียบขนาด
+## การทดลองที่ 3 — multi-stage ลดขนาด image ได้อย่างไร
 
 **คำถาม:** ผลลัพธ์เหมือนกัน แต่ image ต่างกันเท่าไร
 
 ```bash
 time docker build -t campusops-web:lab3 ./web
-docker image ls campusops-web
+docker images campusops-web
 ```
 
-✅ **สิ่งที่ต้องเห็น** — **1.09GB → 298MB** จากไฟล์ source ชุดเดียวกันเป๊ะ — ด้านล่างตัดมาเฉพาะ **ท้าย** ผลลัพธ์เช่นเดียวกับการทดลองที่ 2 (เวลาและ ID ของแต่ละคนไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — **1.1GB → 298MB** จากไฟล์ source ชุดเดียวกัน — ด้านล่างตัดมาเฉพาะ **ท้าย** ผลลัพธ์เช่นเดียวกับการทดลองที่ 2 (เวลาและ ID ของแต่ละคนไม่ตรงกัน) :
 
 ```
-real	0m25.102s
-user	0m0.092s
-sys	0m0.090s
+real	0m23.112s
+user	0m0.086s
+sys	0m0.100s
 
 IMAGE                  ID             DISK USAGE   CONTENT SIZE   EXTRA
-campusops-web:lab3     868d8275b540        298MB         73.2MB
-campusops-web:single   631e54fa1e93       1.09GB          310MB
+campusops-web:lab3     ee2d124d03a1        298MB         73.3MB
+campusops-web:single   6cf455d56831        1.1GB          314MB
 ```
 
-บรรทัด `real` รอบนี้เร็วกว่าการทดลองที่ 2 (25.1 วิ เทียบกับ 43.4 วิ) เพราะ base `node:22-alpine` ถูกดึงมาไว้ในเครื่องเรียนตั้งแต่ครั้งก่อนแล้ว — ตัวเลขนี้ของแต่ละคนไม่ตรงกัน
+บรรทัด `real` รอบนี้เร็วกว่าการทดลองที่ 2 (23.1 วินาที เทียบกับ 41.2 วินาที) เพราะ base `node:22-alpine` ถูกดึงมาไว้ในเครื่องเรียนตั้งแต่ครั้งก่อนแล้ว ตัวเลขนี้อาจต่างกันตามเครื่อง
 
 > 📝 **เล็กลง ~73%** · Docker 29 แยกสองคอลัมน์ : `DISK USAGE` คือพื้นที่จริงบนดิสก์ (นับ layer ของ base ที่ใช้ร่วมกันด้วย) ส่วน `CONTENT SIZE` คือเนื้อของ image เอง — ดูคอลัมน์ไหนก็ได้ ขอให้เทียบคอลัมน์เดียวกัน
 
 ---
 
-## การทดลองที่ 4 — stage สุดท้ายเหลืออะไรบ้าง
+## การทดลองที่ 4 — stage สุดท้ายยังมี toolchain ไหม
 
 **คำถาม:** ขั้น `npm ci` กับ `npm run build` ติดมากับ image ที่จะส่งมอบไหม
 
@@ -212,11 +212,11 @@ docker history campusops-web:lab3
 
 ```
 IMAGE          CREATED              CREATED BY                                      SIZE      COMMENT
-868d8275b540   7 seconds ago        CMD ["node" "server.js"]                        0B        buildkit.dockerfile.v0
+ee2d124d03a1   7 seconds ago        CMD ["node" "server.js"]                        0B        buildkit.dockerfile.v0
 <missing>      7 seconds ago        EXPOSE [3000/tcp]                               0B        buildkit.dockerfile.v0
 <missing>      7 seconds ago        USER webapp                                     0B        buildkit.dockerfile.v0
-<missing>      7 seconds ago        COPY --chown=webapp:webapp /app/.next/static…   680kB     buildkit.dockerfile.v0
-<missing>      7 seconds ago        COPY --chown=webapp:webapp /app/.next/standa…   49.7MB    buildkit.dockerfile.v0
+<missing>      7 seconds ago        COPY --chown=webapp:webapp /app/.next/static…   668kB     buildkit.dockerfile.v0
+<missing>      8 seconds ago        COPY --chown=webapp:webapp /app/.next/standa…   49.9MB    buildkit.dockerfile.v0
 <missing>      28 seconds ago       RUN /bin/sh -c addgroup -g 10001 -S webapp &…   41kB      buildkit.dockerfile.v0
 <missing>      28 seconds ago       ENV NODE_ENV=production NEXT_TELEMETRY_DISAB…   0B        buildkit.dockerfile.v0
 <missing>      About a minute ago   WORKDIR /app                                    8.19kB    buildkit.dockerfile.v0
@@ -231,56 +231,54 @@ IMAGE          CREATED              CREATED BY                                  
 <missing>      2 months ago         ADD alpine-minirootfs-3.24.1-x86_64.tar.gz /…   9.07MB    buildkit.dockerfile.v0
 ```
 
-เก้าบรรทัดล่างสุดคือ base `node:22-alpine` · แปดบรรทัดบนคือของ `web/Dockerfile` เอง ซึ่ง **มีขนาดจริงแค่ 4 บรรทัด** : `680kB` · `49.7MB` · `41kB` · `8.19kB`
+เก้าบรรทัดล่างสุดคือ base `node:22-alpine` · แปดบรรทัดบนคือของ `web/Dockerfile` เอง ซึ่ง **มีขนาดจริงแค่ 4 บรรทัด** : `668kB` · `49.9MB` · `41kB` · `8.19kB`
 
-พิสูจน์อีกชั้นว่าเครื่องมือ build ไม่ตามมา :
+ตรวจการมีอยู่ของ TypeScript โดยไม่ทำให้คำสั่งล้มเหลว :
 
 ```bash
-docker run --rm campusops-web:lab3 sh -c 'ls node_modules | wc -l; ls -d node_modules/typescript'
-docker run --rm campusops-web:single sh -c 'ls node_modules | wc -l; ls -d node_modules/typescript'
+docker run --rm campusops-web:lab3 sh -c 'if [ -d node_modules/typescript ]; then echo "typescript = found"; else echo "typescript = not found"; fi'
+docker run --rm campusops-web:single sh -c 'if [ -d node_modules/typescript ]; then echo "typescript = found"; else echo "typescript = not found"; fi'
 ```
 
-✅ **สิ่งที่ต้องเห็น** — image ที่ส่งมอบมี `node_modules` แค่ **12 รายการ** และ **error คือคำตอบที่ถูกต้อง** (คำสั่งบรรทัดแรกจึงออก exit code 1 เป็นเรื่องปกติ) ส่วน image แบบ stage เดียวมี 35 รายการ รวม `typescript` :
+✅ **สิ่งที่ต้องเห็น** — image multi-stage ไม่มี TypeScript ส่วน image แบบ stage เดียวมี TypeScript :
 
 ```
-12
-ls: node_modules/typescript: No such file or directory
-35
-node_modules/typescript
+typescript = not found
+typescript = found
 ```
 
 > 📝 นี่คือคำตอบให้ลูกค้าโดยตรง — **image ที่ส่งมอบไม่มี compiler ไม่มี devDependencies** เหลือแต่ `server.js` กับ dependency ที่ Next รวมมาให้เท่าที่ใช้จริง
 
 ---
 
-## การทดลองที่ 5 — ชื่อระบบบนหัวเว็บถูกฝังตั้งแต่ตอน build
+## การทดลองที่ 5 — ชื่อระบบเปลี่ยนตอน run ได้ไหม
 
 **คำถาม:** ตั้ง `NEXT_PUBLIC_SITE_NAME` ใหม่ตอน `docker run` แล้วหน้าเว็บเปลี่ยนตามไหม
 
 ```bash
-docker run -d --name ops-web-try -e NEXT_PUBLIC_SITE_NAME='ศูนย์ซ่อมบำรุง' campusops-web:lab3 && sleep 4
-curl -s http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-web-try):3000/no-such-page | grep -o '<title>[^<]*</title>' | head -1
+docker run -d --name ops-web-try -p 3001:3000 -e NEXT_PUBLIC_SITE_NAME='ศูนย์ซ่อมบำรุง' campusops-web:lab3 && sleep 4
+curl -s http://localhost:3001/no-such-page | grep -o '<title>[^<]*</title>' | head -1
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — `docker run -d` พิมพ์ ID ของกล่องออกมาก่อน แล้ว `<title>` ยังเป็น `CampusOps` เหมือนเดิม **ไม่สนใจค่าที่เพิ่งส่งเข้าไป** (ID และ IP ของแต่ละคนไม่ตรงกัน) :
 
 ```
-1032a68b16d5e4b6e35da2d17cf4d57712b8856ba4a2fa29fe6642a3359dca82
+b585493978d0d2949704d5f4625a8021d484cf9c262cd198b69b03ec35d2f904
 <title>CampusOps · ระบบงานซ่อมและครุภัณฑ์</title>
 ```
 
 ทีนี้ส่งค่าเดียวกันตอน **build** :
 
 ```bash
-docker build -q --build-arg NEXT_PUBLIC_SITE_NAME='ศูนย์ซ่อมบำรุง' -t campusops-web:rename ./web && docker run -d --name ops-web-try2 campusops-web:rename && sleep 4
-curl -s http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-web-try2):3000/no-such-page | grep -o '<title>[^<]*</title>' | head -1
+docker build -q --build-arg NEXT_PUBLIC_SITE_NAME='ศูนย์ซ่อมบำรุง' -t campusops-web:rename ./web && docker run -d --name ops-web-try2 -p 3002:3000 campusops-web:rename && sleep 4
+curl -s http://localhost:3002/no-such-page | grep -o '<title>[^<]*</title>' | head -1
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — `-q` ทำให้ `docker build` พิมพ์แค่ `sha256:` ของ image ตามด้วย ID ของกล่อง แล้วคราวนี้ `<title>` เปลี่ยนจริง (sha256 และ ID ของแต่ละคนไม่ตรงกัน) :
 
 ```
-sha256:d7dc51f655e0cff6cc6cfd63f5b0ae32e5c6f3507a6b081fa8c91024fdb3b780
-ae8989f2b5ad6eaffcd5a44af1758ad1fe6f1472028691095b52954f11ba95e1
+sha256:fd85a9fcb0c2bfe3e95706a1133e95769df3b5aacbf47b6693157d12c8af92ec
+26296fd23de25b7803eb4fc2af1f8cae485ae7c8b603cf2bb3b8490f5666d77f
 <title>ศูนย์ซ่อมบำรุง · ระบบงานซ่อมและครุภัณฑ์</title>
 ```
 
@@ -288,42 +286,27 @@ ae8989f2b5ad6eaffcd5a44af1758ad1fe6f1472028691095b52954f11ba95e1
 
 ---
 
-## การทดลองที่ 6 — ที่อยู่ของบริการเบื้องหลังเปลี่ยนได้ตอน run
+## การทดลองที่ 6 — API_BASE_URL เปลี่ยนตอน run ได้ไหม
 
 **คำถาม:** `API_BASE_URL` ต้อง build ใหม่ไหมถ้าอยากเปลี่ยน
 
 ```bash
-docker run -d --name ops-web-noapi -e API_BASE_URL=http://no-api-yet:8000 campusops-web:lab3 && sleep 4
-curl -s -o /dev/null -w 'GET / -> HTTP %{http_code}\n' http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-web-noapi):3000/
+docker run -d --name ops-web-env -e API_BASE_URL=http://api.example.invalid:8000 campusops-web:lab3
+docker exec ops-web-env printenv API_BASE_URL
 ```
 
-✅ **สิ่งที่ต้องเห็น** — image ก้อน**เดิม** ตอบ `500` เพราะไปตามหาโฮสต์ชื่อใหม่ที่ไม่มีอยู่ (ID ของแต่ละคนไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — image ก้อนเดิมรับค่าใหม่ไว้ใน environment โดยไม่ต้อง build ซ้ำ (ID ของแต่ละคนไม่ตรงกัน) :
 
 ```
-f0a8e0cd1db204e889cee7afcf892e5764911bbcb41948b61be0b4a1f8fffa15
-GET / -> HTTP 500
-```
-
-เปิด log ดูว่ามันไปตามหาที่ไหน :
-
-```bash
-docker logs ops-web-noapi 2>&1 | grep -A3 'cause'
-```
-
-✅ **สิ่งที่ต้องเห็น** — ชื่อโฮสต์ใหม่โผล่ใน log ทันทีโดยไม่ต้อง build ใหม่ (รหัสอาจเป็น `EAI_AGAIN` หรือ `ENOTFOUND` แล้วแต่จังหวะ DNS) :
-
-```
-  [cause]: Error: getaddrinfo EAI_AGAIN no-api-yet
-      at ignore-listed frames {
-    errno: -3001,
-    code: 'EAI_AGAIN',
+f3b2153bcedb136cfa175b1ddf7d3779cf9a4b81ce9e04d37212478ea3223b44
+http://api.example.invalid:8000
 ```
 
 > 📝 ค่านี้อยู่ในตัวแปรสภาพแวดล้อมของ process จึงถูกอ่านใหม่ทุกครั้งที่สร้างกล่อง — **image ก้อนเดียวจึงใช้ได้ทั้งเครื่อง dev และเครื่องลูกค้า** เปลี่ยนแค่ `-e` ตอนติดตั้ง
 
 ---
 
-## การทดลองที่ 7 — ใครเป็น PID 1 ในกล่อง
+## การทดลองที่ 7 — process ที่เป็น PID 1 คืออะไร
 
 **คำถาม:** เขียน `CMD` คนละรูปแบบ แล้วใครได้รับ `SIGTERM` ตอน `docker stop`
 
@@ -337,9 +320,9 @@ docker exec ops-web-exec ps -o pid,args; docker exec ops-web-shell ps -o pid,arg
 ✅ **สิ่งที่ต้องเห็น** — บรรทัดแรก ๆ คือ `sha256:` ของ image กับ ID ของสองกล่อง แล้วฝั่ง exec form `node` เป็น PID 1 · ฝั่ง shell form มี `/bin/sh` คั่นอยู่ที่ PID 1 แล้ว `node` ไปเป็น PID 8 (sha256 · ID · เลข PID ของ `ps` เองของแต่ละคนไม่ตรงกัน) :
 
 ```
-sha256:d8b6931029950662c8847f6da856b5a082c743f522d71f4f1a1eadf446bfe672
-4e188318e82ccdd9ef9d1749b3cc6efc9ae2c0ffbd7bfab0e7154f916f864c5d
-55a5ecec9dd7082f203540e0917ddcec6c5e650b0b68c350dc745861b0861a12
+sha256:b15aeb15730f51cf7ec5cc888c03440b148fcf5e88d14d81b82a631960b2b8eb
+b42b75940bcb81f5215cd19d700677b80956b6c3be4809183d3e8b45983907fe
+f7d27c80b8614225dc4fa85640b167e9a2a84bf2378f5037b8e399889a42f5bc
 PID   COMMAND
     1 next-server (v
    19 ps -o pid,args
@@ -356,20 +339,20 @@ time docker stop ops-web-exec
 time docker stop ops-web-shell
 ```
 
-✅ **สิ่งที่ต้องเห็น** — **0.2 วินาที กับ 10.2 วินาที** (ทศนิยมของแต่ละคนไม่ตรงกัน แต่ตัวหน้าต้องเป็น 0 กับ 10) :
+✅ **สิ่งที่ต้องเห็น** — **0.3 วินาที กับ 10.3 วินาที** (ทศนิยมอาจต่างกัน แต่ตัวหน้าต้องเป็น 0 กับ 10) :
 
 ```
 ops-web-exec
 
-real	0m0.244s
+real	0m0.307s
 user	0m0.004s
-sys	0m0.012s
+sys	0m0.011s
 
 ops-web-shell
 
-real	0m10.281s
-user	0m0.011s
-sys	0m0.006s
+real	0m10.317s
+user	0m0.005s
+sys	0m0.009s
 ```
 
 > 📝 `/bin/sh` รับ `SIGTERM` แล้วไม่ส่งต่อให้ลูก Docker จึงรอครบ **10 วินาที** แล้ว `SIGKILL` ทิ้ง — แอปไม่ได้ปิดงานให้เรียบร้อย · exec form ตัดปัญหานี้ทั้งหมด
@@ -377,67 +360,162 @@ sys	0m0.006s
 เก็บกล่องทดลองของการทดลองที่ 5–7 ออกก่อนไปต่อ :
 
 ```bash
-docker rm -f ops-web-try ops-web-try2 ops-web-noapi ops-web-exec ops-web-shell
+docker rm -f ops-web-try ops-web-try2 ops-web-env ops-web-exec ops-web-shell
 ```
 
 ---
 
-## การทดลองที่ 8 — ยกครบสามกล่องแล้วเปิดหน้าเว็บ
+## การทดลองที่ 8 — สามกล่องทำงานร่วมกันได้ไหม
 
 **คำถาม:** ต่อ `web` เข้ากับ `api` และ `db` ด้วย IP แบบ LAB 2 แล้วหน้าเว็บขึ้นจริงไหม
 
-> ครั้งแรกช้าประมาณ **1–2 นาที** (รอบที่ใช้เขียนเอกสารนี้ 53 วินาที) เพราะกล่องเรียนต้องดึง `postgres:17-alpine` (~424 MB) กับ `python:3.12-slim` มาก่อน แล้วยัง `pip install` ตอน build `campusops-api:lab3` อีก · เงียบไปนานเป็นเรื่องปกติ ยังไม่ค้าง
+> ครั้งแรกอาจใช้เวลา **1–2 นาที** เพราะต้องดึง `postgres:17-alpine` กับ `python:3.12-slim` และติดตั้ง dependency ตอน build `campusops-api:lab3`
 
 ```bash
+docker volume rm ops-pgdata 2>/dev/null
 docker run -d --name ops-db -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
-  -v ops-pgdata:/var/lib/postgresql/data -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine && sleep 10 \
-  && docker build -q -t campusops-api:lab3 ./api && docker run -d --name ops-api \
-  -e DATABASE_URL="postgresql://opsuser:labpass@$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-db):5432/campusops" \
-  campusops-api:lab3 && sleep 6
+  -v ops-pgdata:/var/lib/postgresql/data -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine && sleep 10
+DB_IP=$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-db); echo "DB_IP = $DB_IP"
+docker build -q -t campusops-api:lab3 ./api
+docker run -d --name ops-api -e DATABASE_URL="postgresql://opsuser:labpass@$DB_IP:5432/campusops" campusops-api:lab3 && sleep 6
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ท้ายผลการดึง image จะมี ID ของ `ops-db` · `sha256:` ของ `campusops-api:lab3` · ID ของ `ops-api` (ID และ sha256 ของแต่ละคนไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — ท้ายผลการดึง image มี ID ของ `ops-db`, IP บน default bridge, `sha256:` ของ image API และ ID ของ `ops-api` :
 
 ```
 Status: Downloaded newer image for postgres:17-alpine
-04e230112688dd251169ef28c4c3096d7f4c60f65c03adbdc1f9fe279bfb5d35
-sha256:4c00c36f83b5b312a8e7d62f2a08dba109413b375b709dacead64f81a1038bb5
-a3ae2b7ad72ec96cf2dd11df99a85d8e78901ca5a68075e818265f9ad66cc3b8
+64fd9d232b1896e9d4ecce14c9aec309767f33ad8cf4060a3b7d64fa13119171
+DB_IP = 172.18.0.2
+sha256:61139577519a1af84792e3dd44151a4d0090bb9cd18092eba6f56b48da3e6744
+cfa1f50ab31ca271cd3ff0c546c81ce500ecde18c5c992af661d98185629fbff
 ```
 
 สองกล่องขึ้นแล้ว ถาม `/health` ของ `ops-api` ว่าต่อฐานข้อมูลติดจริงไหม :
 
 ```bash
-curl -s http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-api):8000/health; echo
+API_IP=$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-api); echo "API_IP = $API_IP"
+curl -s "http://$API_IP:8000/health"; echo
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — `"db":"up"` แปลว่า `ops-api` ต่อ `ops-db` ติดแล้ว :
 
 ```
+API_IP = 172.18.0.3
 {"status":"ok","db":"up"}
 ```
 
 ทีนี้ยกหน้าเว็บขึ้น แล้วชี้ `API_BASE_URL` ไปที่ IP ของ `ops-api` :
 
 ```bash
-docker run -d --name ops-web -p 3000:3000 \
-  -e API_BASE_URL="http://$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-api):8000" campusops-web:lab3 && sleep 6
-for p in / /tickets /loans /parts; do curl -s -o /dev/null -w "GET $p -> HTTP %{http_code} · %{size_download} ไบต์\n" "http://localhost:3000$p"; done
+docker run -d --name ops-web -p 3000:3000 -e API_BASE_URL="http://$API_IP:8000" campusops-web:lab3 && sleep 6
+curl -s -o /dev/null -w 'GET / -> HTTP %{http_code}\n' http://localhost:3000/
+curl -s -o /dev/null -w 'GET /tickets -> HTTP %{http_code}\n' http://localhost:3000/tickets
+curl -s -o /dev/null -w 'GET /loans -> HTTP %{http_code}\n' http://localhost:3000/loans
+curl -s -o /dev/null -w 'GET /parts -> HTTP %{http_code}\n' http://localhost:3000/parts
+docker ps
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ID ของ `ops-web` แล้วทั้งสี่หน้าตอบ `200` พร้อมเนื้อหาจริงหลักหมื่นไบต์ (ID และจำนวนไบต์ของแต่ละคนไม่ตรงกันเพราะข้อมูลในฐานข้อมูลต่างกัน) :
+✅ **สิ่งที่ต้องเห็น** — ID ของ `ops-web`, ทั้งสี่หน้าตอบ `200` และ `docker ps` แสดงสามกล่อง โดยมีเพียง `ops-web` ที่ publish พอร์ต :
 
 ```
-2b33edcf1ff7dba9853b29a492f186bca20abf28774a6a32ecb6ec53f6fe6eec
-GET / -> HTTP 200 · 31260 ไบต์
-GET /tickets -> HTTP 200 · 71881 ไบต์
-GET /loans -> HTTP 200 · 46734 ไบต์
-GET /parts -> HTTP 200 · 70876 ไบต์
+0fd788687e62ea35cf8ca09c352972a8e37f3cc4f7d62985a9f4bbd0d9d0b4fc
+GET / -> HTTP 200
+GET /tickets -> HTTP 200
+GET /loans -> HTTP 200
+GET /parts -> HTTP 200
+CONTAINER ID   IMAGE                COMMAND                  CREATED          STATUS          PORTS                                         NAMES
+0fd788687e62   campusops-web:lab3   "docker-entrypoint.s…"   7 seconds ago    Up 6 seconds    0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp   ops-web
+cfa1f50ab31c   campusops-api:lab3   "uvicorn main:app --…"   28 seconds ago   Up 27 seconds   8000/tcp                                      ops-api
+64fd9d232b18   postgres:17-alpine   "docker-entrypoint.s…"   53 seconds ago   Up 52 seconds   5432/tcp                                      ops-db
 ```
 
-เปิดในเบราว์เซอร์บนเครื่องเราที่ **`http://localhost:8189`** ได้เลย — พอร์ต `3000` ของกล่องเรียนถูกต่อออกมาไว้ตั้งแต่ตอนสร้างกล่อง
+เปิดในเบราว์เซอร์บนเครื่องที่ **`http://localhost:8253`** พอร์ต `3000` ของกล่องเรียนถูก publish ออกมาตั้งแต่ขั้นเตรียมเครื่อง
 
-> 📝 `web` เรียก `api` จาก **ฝั่ง server** เท่านั้น เบราว์เซอร์จึงไม่ต้องเข้าถึง `api` เลย · `-p 3000:3000` มีที่ `web` กล่องเดียว ส่วน `db` ไม่เคย publish พอร์ตตาม NFR-3
+> 📝 ตัวแปร `DB_IP` และ `API_IP` จำเป็นใน LAB 3 เพราะ default bridge ยังไม่แปลงชื่อกล่อง; `web` กล่องเดียวที่ publish พอร์ต ส่วน `db` ไม่ publish ตาม NFR-3
+
+### Walkthrough หน้าเว็บ CampusOps
+
+ข้อมูลในภาพเริ่มจาก seed เดียวกันทุกครั้ง: `NEW = 3`, `ASSIGNED = 2`, `IN_PROGRESS = 1`, `DONE = 2` แล้วสร้างใบ `#9` ด้วยข้อความชุดคงที่
+
+#### ขั้นที่ ① — เปิดหน้าสรุปภาพรวม
+
+พิมพ์ `http://localhost:8253` ในแถบที่อยู่ของเบราว์เซอร์ แล้วกด Enter หน้าแรกต้องแสดงเมนูซ้ายครบ 4 รายการและเนื้อหาสรุปภาพรวม
+
+![หน้าแรก CampusOps มีกรอบแดงรอบเมนูสรุปภาพรวมและป้าย ① เปิดหน้าสรุป](./images/ui-web-01-overview.png)
+
+*ภาพที่ 1 — หน้า `/` จากข้อมูล seed โดยเมนู “สรุปภาพรวม” เป็นหน้าปัจจุบัน*
+
+#### ขั้นที่ ② — เปิดกระดานงานซ่อม
+
+คลิกเมนู **กระดานงานซ่อม** ที่แถบด้านซ้าย
+
+![หน้ากระดานงานซ่อมมีกรอบแดงรอบเมนูและป้าย ② กระดานงานซ่อม](./images/ui-web-02-tickets.png)
+
+*ภาพที่ 2 — หน้า `/tickets` เริ่มต้นมีรอรับเรื่อง 3, มอบหมายแล้ว 2, กำลังซ่อม 1 และปิดงานแล้ว 2 ใบ*
+
+#### ขั้นที่ ③ — เลือกครุภัณฑ์
+
+คลิกช่อง **ครุภัณฑ์** ในฟอร์มแจ้งซ่อมใหม่ แล้วเลือก `A-003 · กล้อง Sony ZV-1`
+
+![ฟอร์มแจ้งซ่อมมีกรอบแดงรอบช่องครุภัณฑ์และป้าย ③ เลือกครุภัณฑ์](./images/ui-web-03-asset.png)
+
+*ภาพที่ 3 — ช่องครุภัณฑ์แสดง `A-003 · กล้อง Sony ZV-1` ตามชุดข้อมูลสำหรับ walkthrough*
+
+#### ขั้นที่ ④ — กรอกหัวข้อและรายละเอียดอาการ
+
+คลิกช่อง **หัวข้อ** แล้วพิมพ์ `กล้องถ่ายวิดีโอเปิดไม่ติด` จากนั้นคลิกช่อง **รายละเอียดอาการ** แล้วพิมพ์ `กดปุ่มเปิดแล้วไฟสถานะไม่ทำงาน`
+
+![ฟอร์มแจ้งซ่อมมีกรอบแดงรอบช่องหัวข้อและรายละเอียดพร้อมป้าย ④](./images/ui-web-04-details.png)
+
+*ภาพที่ 4 — ข้อความทั้งสองช่องเป็นค่าคงที่ เพื่อให้ผลการสร้างการ์ดและ caption ตรวจสอบซ้ำได้*
+
+#### ขั้นที่ ⑤ — กำหนดความเร่งด่วน
+
+คลิกช่อง **ความเร่งด่วน** แล้วเลือก **เร่งด่วน**
+
+![ฟอร์มแจ้งซ่อมมีกรอบแดงรอบช่องความเร่งด่วนและป้าย ⑤ เลือกเร่งด่วน](./images/ui-web-05-priority.png)
+
+*ภาพที่ 5 — ค่าในช่องความเร่งด่วนเปลี่ยนจาก “ปกติ” เป็น “เร่งด่วน”*
+
+#### ขั้นที่ ⑥ — ส่งฟอร์มแจ้งซ่อม
+
+คลิกปุ่ม **แจ้งซ่อม** ที่ด้านขวาของฟอร์ม
+
+![ฟอร์มแจ้งซ่อมมีกรอบแดงรอบปุ่มและป้าย ⑥ กดแจ้งซ่อม](./images/ui-web-06-submit.png)
+
+*ภาพที่ 6 — ปุ่ม “แจ้งซ่อม” ส่งข้อมูลทั้งสี่ช่องไปยัง server action*
+
+#### ขั้นที่ ⑦ — ตรวจการ์ดใบใหม่
+
+หลังคลิกปุ่ม ให้ตรวจคอลัมน์ **รอรับเรื่อง** ซึ่งต้องเพิ่มจาก 3 เป็น 4 และมีการ์ด `#9` ชื่อ `กล้องถ่ายวิดีโอเปิดไม่ติด`
+
+![กระดานงานซ่อมมีกรอบแดงรอบหัวคอลัมน์รอรับเรื่องจำนวน 4 และการ์ดใหม่พร้อมป้าย ⑦](./images/ui-web-07-new-card.png)
+
+*ภาพที่ 7 — การ์ด `#9` ปรากฏใน “รอรับเรื่อง” และตัวเลขหัวคอลัมน์เพิ่มเป็น 4 ตรงกับข้อมูลจริง*
+
+#### ขั้นที่ ⑧ — ระบุชื่อช่าง
+
+คลิกช่อง **ชื่อช่าง** บนการ์ด `#9` แล้วพิมพ์ `TECH-04`
+
+![การ์ดใหม่มีกรอบแดงรอบช่องชื่อช่างและป้าย ⑧ กรอกชื่อช่าง](./images/ui-web-08-assignee.png)
+
+*ภาพที่ 8 — ช่องบนการ์ด `#9` แสดงชื่อช่าง `TECH-04` ก่อนส่งคำสั่งมอบหมาย*
+
+#### ขั้นที่ ⑨ — มอบหมายงาน
+
+คลิกปุ่ม **มอบหมาย** ข้างช่องชื่อช่าง ปุ่มจริงใช้คำว่า “มอบหมาย”; คำว่า “มอบหมายแล้ว” เป็นชื่อสถานะ
+
+![การ์ดใหม่มีกรอบแดงรอบปุ่มและป้าย ⑨ กดมอบหมาย](./images/ui-web-09-assign.png)
+
+*ภาพที่ 9 — ปุ่ม “มอบหมาย” ส่งใบ `#9` พร้อมชื่อช่างไปยัง server action*
+
+#### ขั้นที่ ⑩ — ตรวจสถานะหลังมอบหมาย
+
+หลังคลิกปุ่ม ให้ตรวจว่าการ์ด `#9` ย้ายไปคอลัมน์ **มอบหมายแล้ว** และแสดงชื่อ `TECH-04`
+
+![กระดานงานซ่อมมีกรอบแดงรอบคอลัมน์มอบหมายแล้วและการ์ดที่ย้ายมาพร้อมป้าย ⑩](./images/ui-web-10-assigned.png)
+
+*ภาพที่ 10 — รอรับเรื่องลดเป็น 3, มอบหมายแล้วเพิ่มเป็น 3 และการ์ด `#9` อยู่กับ `TECH-04`*
 
 ---
 
@@ -446,41 +524,20 @@ GET /parts -> HTTP 200 · 70876 ไบต์
 **คำถาม:** HTML บอกให้โหลดไฟล์ CSS จากที่ไหน และไฟล์นั้นมีอยู่จริงไหม
 
 ```bash
-CSS=$(curl -s http://localhost:3000/ | grep -o '<link rel="stylesheet" href="[^"]*"' | head -1 | sed 's/.*href="//; s/"$//'); echo "CSS = $CSS"
-curl -s -o /dev/null -w "GET $CSS -> HTTP %{http_code} · %{size_download} ไบต์\n" "http://localhost:3000$CSS"
+curl -s http://localhost:3000/ | grep -o '/_next/static/chunks/[^"]*\.css' | head -1
+docker exec ops-web sh -c 'ls .next/static/chunks/*.css'
 ```
 
-✅ **สิ่งที่ต้องเห็น** — เส้นทางอยู่ใต้ **`chunks/`** และโหลดได้ `200` ขนาดหลักหมื่นไบต์ (ชื่อไฟล์ของแต่ละคนไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — HTML อ้าง path ใต้ `chunks/` และไฟล์ชื่อเดียวกันอยู่ใน image จริง (ชื่อไฟล์อาจต่างกันเมื่อ source เปลี่ยน) :
 
 ```
-CSS = /_next/static/chunks/3sqcqigw583ti.css
-GET /_next/static/chunks/3sqcqigw583ti.css -> HTTP 200 · 35235 ไบต์
+/_next/static/chunks/1_h8a4gxzvgbi.css
+.next/static/chunks/1_h8a4gxzvgbi.css
 ```
 
-เปิดหน้า `/tickets` ในเบราว์เซอร์เทียบด้วยตา — ไฟล์ CSS ก้อนนั้นทำงานอยู่ในหน้านี้ :
+ภาพที่ 2–10 ใน walkthrough แสดงสี การจัดวางสี่คอลัมน์ และปุ่มครบถ้วน จึงเป็นหลักฐานจากเบราว์เซอร์ว่าไฟล์ CSS ถูกโหลดและนำไปใช้จริง
 
-![หน้ากระดานงานซ่อมของ CampusOps ที่ path /tickets เปิดจากเบราว์เซอร์จริง มีแถบเมนูซ้ายพื้นดำ ฟอร์มแจ้งซ่อมใหม่ และคอลัมน์สี่ขั้น รอรับเรื่อง 3 มอบหมายแล้ว 2 กำลังซ่อม 1 ปิดงานแล้ว 2 การ์ดแต่ละใบมีป้ายความเร่งด่วนสีแดงหรือเทาและปุ่มสีน้ำเงิน](./images/app-tickets-board.png)
-
-> 🖼 **วิธีอ่านรูปนี้:** ทุกจุดที่ **มีสีและมีการจัดวาง** คือ CSS ที่โหลดสำเร็จ — แถบเมนูซ้ายพื้นดำ · การ์ดสี่คอลัมน์ที่เรียงข้างกัน · ป้าย `เร่งด่วน` สีแดง · ปุ่ม `มอบหมาย` สีน้ำเงิน · ถ้า `web/Dockerfile` เจาะ `COPY` แค่ `.next/static/css` ตามที่ตำราส่วนใหญ่สอน หน้านี้จะยัง **ตอบ 200 เหมือนเดิม** แต่กลายเป็นตัวหนังสือดำล้วนเรียงลงมาเป็นแถวเดียวไม่มีสีสักจุด — นั่นคือกับดักที่การทดลองนี้กำลังพิสูจน์
-
-ดูของจริงในกล่องว่าไฟล์วางอยู่ตรงไหน :
-
-```bash
-docker exec ops-web sh -c 'ls .next/static; ls .next/static/chunks/*.css; ls .next/static/css'
-```
-
-✅ **สิ่งที่ต้องเห็น** — ไฟล์ `.css` อยู่ปนกับ `.js` ใน `chunks/` และ **บรรทัดสุดท้ายต้องเป็น error** เพราะโฟลเดอร์ `css/` ไม่มีอยู่จริง (ชื่อโฟลเดอร์ build-id และชื่อไฟล์ `.css` ของแต่ละคนไม่ตรงกัน) :
-
-```
-MSNQsmyr5kNYjY_0lTySQ
-chunks
-.next/static/chunks/3sqcqigw583ti.css
-ls: .next/static/css: No such file or directory
-```
-
-คำสั่งนี้ออก **exit code 1** เป็นเรื่องปกติ เพราะ `ls` ตัวสุดท้ายตั้งใจให้หาไม่เจอ
-
-> 📝 **นี่คือเหตุผลที่ `web/Dockerfile` ต้อง `COPY` `.next/static` ทั้งก้อน** — ตำราส่วนใหญ่สอนให้เจาะ `.next/static/css` ซึ่ง Next.js 16 ไม่มีแล้ว ผลคือ build ล้ม หรือแย่กว่านั้นคือได้หน้าเว็บที่ตอบ `200` ทุกหน้าแต่ไม่มีสีสักจุด
+> 📝 HTML และ image ชี้ไฟล์ `.css` ชื่อเดียวกันใต้ `chunks/` จึงยืนยันเหตุผลที่ Dockerfile ต้องคัดลอก `.next/static` ทั้งก้อน โดยไม่ต้องใช้ one-liner แยก path ที่ซับซ้อน
 
 ---
 
@@ -503,7 +560,7 @@ bash verify.sh ; echo "exit code = $?"
 [PASS] ไม่มีบรรทัดที่เจาะ COPY เฉพาะโฟลเดอร์ย่อยของ .next/static
 [PASS] build image multi-stage (vops3-web:verify) สำเร็จ
 [PASS] build image stage เดียว (vops3-web:single) สำเร็จ
-[PASS] multi-stage เล็กกว่า stage เดียวอย่างน้อย 2 เท่า (content size 73MB vs 310MB)
+[PASS] multi-stage เล็กกว่า stage เดียวอย่างน้อย 2 เท่า (content size 73MB vs 314MB)
 [PASS] docker history ของ image สุดท้ายไม่มีขั้น npm ci / npm run build เลย
 [PASS] image สุดท้ายไม่มี node_modules/typescript — ไม่ได้แบก toolchain ไปด้วย
 [PASS] CMD เป็น exec form : ["node","server.js"]
@@ -514,8 +571,8 @@ bash verify.sh ; echo "exit code = $?"
 [PASS] หน้าเว็บตอบ 200 ที่ http://172.18.0.7:3000/ (ต่อ api ด้วย IP 172.18.0.6)
 [PASS] หน้า /tickets · /loans · /parts ตอบ 200 ครบ
 [PASS] หน้าแรกมีเนื้อหาจริงจากฐานข้อมูล (บล็อก 'งานค้างเกินกำหนด')
-[PASS] HTML ชี้ไฟล์ CSS ไปที่ /_next/static/chunks/3sqcqigw583ti.css (อยู่ใต้ chunks/ ตามที่ Next.js 16 วางจริง)
-[PASS] โหลดไฟล์ CSS ได้ HTTP 200 ขนาด 35235 ไบต์
+[PASS] HTML ชี้ไฟล์ CSS ไปที่ /_next/static/chunks/1_h8a4gxzvgbi.css (อยู่ใต้ chunks/ ตามที่ Next.js 16 วางจริง)
+[PASS] โหลดไฟล์ CSS ได้ HTTP 200 ขนาด 21048 ไบต์
 [PASS] ไฟล์ CSS อยู่จริงใน image ที่ .next/static/chunks/
 [PASS] ไม่มีโฟลเดอร์ .next/static/css จริง — ยืนยันว่าห้าม COPY เจาะ subfolder
 ----------------------------------------------
@@ -561,26 +618,26 @@ ops-api
 ops-db
 ops-pgdata
 Untagged: campusops-web:lab3
-Deleted: sha256:868d8275b5403c6695f9a17e02903c744aeb93bc4bc55a411d3f338df1d917ce
+Deleted: sha256:ee2d124d03a135abe18d4067b6e415ecf7f5a5ae07fd18c72b52611b0d960222
 Untagged: campusops-web:single
-Deleted: sha256:631e54fa1e930d2a6616d03e9262ba190549dafb6db911277e3a84035e161420
+Deleted: sha256:6cf455d568319f1817fb73e4c5fb72694c83ac5bd2adb5bd41c776ce2592e15f
 Untagged: campusops-web:rename
-Deleted: sha256:d7dc51f655e0cff6cc6cfd63f5b0ae32e5c6f3507a6b081fa8c91024fdb3b780
+Deleted: sha256:fd85a9fcb0c2bfe3e95706a1133e95769df3b5aacbf47b6693157d12c8af92ec
 Untagged: campusops-web:shellform
-Deleted: sha256:d8b6931029950662c8847f6da856b5a082c743f522d71f4f1a1eadf446bfe672
+Deleted: sha256:b15aeb15730f51cf7ec5cc888c03440b148fcf5e88d14d81b82a631960b2b8eb
 Untagged: campusops-api:lab3
-Deleted: sha256:4c00c36f83b5b312a8e7d62f2a08dba109413b375b709dacead64f81a1038bb5
+Deleted: sha256:61139577519a1af84792e3dd44151a4d0090bb9cd18092eba6f56b48da3e6744
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 ```
 
-> 📝 สั่ง `docker image ls` ต่อจะเหลือ **`postgres:17-alpine` ตัวเดียว** เก็บไว้ใช้ต่อใน LAB 4–5 ได้ · `node:22-alpine` กับ `python:3.12-slim` ไม่โผล่ในตาราง เพราะ Docker 29 เก็บ base ที่ buildkit ดึงมาใช้ไว้ใน build cache แยกต่างหาก
+> 📝 สั่ง `docker images` ต่อจะเหลือ **`postgres:17-alpine` ตัวเดียว** เก็บไว้ใช้ต่อใน LAB 4–5 ได้ · `node:22-alpine` กับ `python:3.12-slim` ไม่โผล่ในตาราง เพราะ Docker 29 เก็บ base ที่ buildkit ดึงมาใช้ไว้ใน build cache แยกต่างหาก
 
 **ออกจากกล่องแล้วลบกล่องบนเครื่องเรา:**
 
 ```bash
 exit
-docker rm -f devtools-ops-lab3
-docker ps -a --filter "name=^devtools-"
+docker rm -f devtools-fs-lab3
+docker ps -a --filter "name=^devtools-fs-lab3$"
 ```
 
 ---
@@ -593,7 +650,7 @@ docker ps -a --filter "name=^devtools-"
 | `docker build -f web/Dockerfile.single -t <ชื่อ:tag> ./web` | เลือกไฟล์ Dockerfile เองด้วย `-f` โดย context ยังเป็น `./web` |
 | `docker build -q -f <ไฟล์> -t <ชื่อ:tag> <context>` | build เงียบ ๆ พิมพ์ออกมาแค่ `sha256:` ของ image ที่ได้ |
 | `docker build --build-arg KEY=value ...` | ส่งค่าให้ `ARG` ใช้ **ตอน build** — วิธีเดียวที่เปลี่ยนค่าที่ถูกฝังไปแล้ว |
-| `docker image ls <repo>` | ดู `DISK USAGE` และ `CONTENT SIZE` ของ image |
+| `docker images <repo>` | ดู `DISK USAGE` และ `CONTENT SIZE` ของ image |
 | `docker history <image>` | ดูทุก layer ของ image พร้อมขนาดที่แต่ละ layer เพิ่มเข้ามา |
 | `docker run --rm <image> sh -c '<คำสั่ง>'` | เปิดกล่องชั่วคราวเพื่อส่องข้างใน image แล้วลบทิ้งทันที |
 | `docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' <กล่อง>` | อ่าน IP ของกล่องบน default bridge |
@@ -612,11 +669,11 @@ docker ps -a --filter "name=^devtools-"
 - [ ] build `campusops-web:single` แล้วเห็น `DISK USAGE` ระดับ **1 GB**
 - [ ] build `campusops-web:lab3` แล้วเทียบได้ว่าเหลือ **298MB** จาก source ชุดเดียวกัน
 - [ ] `docker history campusops-web:lab3` ไม่มีบรรทัด `npm ci` / `npm run build` เลย
-- [ ] `ls -d node_modules/typescript` ใน image ที่ส่งมอบ **ต้อง error** แต่ใน `:single` **ต้องเจอ**
+- [ ] image ที่ส่งมอบรายงาน `typescript = not found` แต่ image `:single` รายงาน `typescript = found`
 - [ ] `-e NEXT_PUBLIC_SITE_NAME=...` ตอน run **ไม่เปลี่ยน** `<title>` แต่ `--build-arg` **เปลี่ยน**
-- [ ] `-e API_BASE_URL=...` ตอน run มีผลทันทีโดยไม่ต้อง build ใหม่ (เห็นชื่อโฮสต์ใหม่ใน `docker logs`)
+- [ ] `-e API_BASE_URL=...` ตอน run มีผลทันทีโดยไม่ต้อง build ใหม่ (`printenv` แสดงค่าที่ส่งเข้าไป)
 - [ ] `ps -o pid,args` เห็น `node` เป็น PID 1 ฝั่ง exec form และ `time docker stop` ได้ **0.x วิ กับ 10.x วิ**
-- [ ] สามกล่องขึ้นครบ ต่อกันด้วย IP · เปิด `http://localhost:8189` เห็นหน้าเว็บจริง · ทั้งสี่หน้าได้ `200`
+- [ ] สามกล่องขึ้นครบ ต่อกันด้วย IP · เปิด `http://localhost:8253` เห็นหน้าเว็บจริง · ทั้งสี่หน้าได้ `200`
 - [ ] `bash verify.sh` ขึ้น `ALL CHECKS PASSED` และเก็บกวาดจนไม่เหลือกล่อง `ops-` กับ volume `ops-pgdata`
 
 *ผลลัพธ์ทั้งหมดในเอกสารนี้มาจากการรันจริงในเครื่องเรียน `tuchsanai/devtools:2569_1`*

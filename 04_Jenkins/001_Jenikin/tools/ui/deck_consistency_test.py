@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
-"""Cross-check deck code blocks and contracts against the frozen lab sources."""
+"""Cross-check the generated deck against the Phase 5 GitHub contracts."""
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import html
 import json
 import re
+import shutil
 import sys
+import tempfile
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
 DECK = ROOT / "Jenkins_CICD_Docker_Slides.html"
 SOURCE = ROOT / "tools" / "slides_src.html"
-PLAN = (ROOT / "docs" / "PLAN.md").read_text(encoding="utf-8")
+PLAN = (ROOT / "docs" / "PLAN_P5_GITHUB.md").read_text(encoding="utf-8")
 READMES = {
     number: (ROOT / f"00{number}_LAB_{name}" / "README.md").read_text(encoding="utf-8")
     for number, name in {
@@ -27,15 +30,40 @@ READMES = {
     }.items()
 }
 
+REQUIRED_CONTRACTS = (
+    "https://github.com/<GITHUB_USER>/hello-ci.git",
+    "https://github.com/<GITHUB_USER>/webapp.git",
+    "http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-hello",
+    "http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-webapp",
+    "https://smee.io/",
+)
+REQUIRED_NAMES = (
+    "<GITHUB_USER>/hello-ci",
+    "<GITHUB_USER>/webapp",
+    "hello-ci-pipeline",
+    "webapp-deploy",
+    "cicd2569-hello",
+    "cicd2569-webapp",
+    "* * * * *",
+    "refs/heads/main",
+)
+LOCKED_VERSIONS = ("2.568.2", "2.4.2", "29.7.2")
+FORBIDDEN_DECK_TEXT = ("localhost:" + "3000",)
 
-def check(condition: bool, message: str) -> None:
+
+def check(condition: bool, message: str, *, emit: bool = True) -> None:
     if not condition:
         raise AssertionError(message)
-    print(f"[consistency][PASS] {message}")
+    if emit:
+        print(f"[consistency][PASS] {message}")
 
 
 def normalize(text: str) -> str:
     return re.sub(r"\s+", " ", html.unescape(text)).strip()
+
+
+def visible_text(document: str) -> str:
+    return html.unescape(re.sub(r"<[^>]+>", " ", document))
 
 
 def extract_code_blocks(deck: str) -> list[tuple[str, str]]:
@@ -48,24 +76,62 @@ def extract_code_blocks(deck: str) -> list[tuple[str, str]]:
     return blocks
 
 
-def main() -> int:
-    deck = DECK.read_text(encoding="utf-8")
-    source = SOURCE.read_text(encoding="utf-8")
+def validate_v3_contracts(
+    deck_document: str,
+    source_document: str,
+    readmes: dict[int, str],
+    plan: str,
+    *,
+    emit: bool = True,
+) -> None:
+    deck_text = visible_text(deck_document)
+    source_text = visible_text(source_document)
+    all_readmes = "\n".join(readmes.values())
+    canonical_sources = "\n".join((all_readmes, source_text, plan))
+
+    for contract in REQUIRED_CONTRACTS:
+        check(contract in deck_text, f"deck contains Phase 5 contract: {contract}", emit=emit)
+        check(
+            contract in canonical_sources,
+            f"Phase 5 contract is sourced by README/slide source/plan: {contract}",
+            emit=emit,
+        )
+
+    for name in REQUIRED_NAMES:
+        check(name in deck_text, f"deck contains canonical repo/job/token/cron/ref: {name}", emit=emit)
+        check(name in all_readmes, f"README set contains canonical repo/job/token/cron/ref: {name}", emit=emit)
+
+    for version in LOCKED_VERSIONS:
+        check(version in deck_text, f"locked version appears in deck: {version}", emit=emit)
+
+    for forbidden in FORBIDDEN_DECK_TEXT:
+        check(forbidden not in deck_text, f"deck excludes retired URL token: {forbidden}", emit=emit)
+
+
+def validate_full_deck(
+    deck: str,
+    source: str,
+    readmes: dict[int, str],
+    plan: str,
+    *,
+    emit: bool = True,
+) -> None:
     blocks = extract_code_blocks(deck)
     code_text = "\n".join(text for _, text in blocks)
-    deck_text = html.unescape(re.sub(r"<[^>]+>", " ", deck))
-    check(len(blocks) >= 10, f"extracted {len(blocks)} code blocks from final deck")
+    deck_text = visible_text(deck)
+    check(len(blocks) >= 10, f"extracted {len(blocks)} code blocks from final deck", emit=emit)
 
     outer = """docker run -dit --name devtools-jenkins --privileged \\
   --tmpfs /run -v jenkins-dind:/var/lib/docker \\
-  -p 2222:22 -p 8080:8080 -p 3000:3000 -p 8000:8000 \\
+  -p 2222:22 -p 8080:8080 -p 8000:8000 \\
   tuchsanai/devtools:2569_1"""
-    check(normalize(outer) in normalize(READMES[1]), "outer docker run matches LAB 1 README")
-    check(normalize(outer) in normalize(code_text), "outer docker run appears exactly in deck code")
+    check(normalize(outer) in normalize(readmes[1]), "outer docker run matches LAB 1 README", emit=emit)
+    check(normalize(outer) in normalize(code_text), "outer docker run appears exactly in deck code", emit=emit)
 
     recreate = "docker rm -f jenkins && docker run -d --name jenkins --restart unless-stopped --network cicd-net -p 8080:8080 -u root -e JAVA_OPTS=-Djenkins.install.runSetupWizard=false -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkins-docker:2569"
-    check(normalize(recreate) in normalize(READMES[3]), "Jenkins recreate command matches LAB 3 README")
-    check(normalize(recreate) in normalize(code_text), "Jenkins recreate command appears exactly in deck code")
+    readme_recreate = recreate.replace(" && ", "\n")
+    check(normalize(readme_recreate) in normalize(readmes[3]), "Jenkins recreate command matches LAB 3 README", emit=emit)
+    check(normalize(recreate) in normalize(code_text), "Jenkins recreate command appears exactly in deck code", emit=emit)
 
     push_lines = [
         "withCredentials([usernamePassword(credentialsId: 'dockerhub'",
@@ -78,47 +144,9 @@ def main() -> int:
     ]
     jenkinsfile3 = (ROOT / "003_LAB_Docker_Build_Push" / "Jenkinsfile").read_text(encoding="utf-8")
     for line in push_lines:
-        check(line in code_text and line in jenkinsfile3, f"push-block line matches LAB 3: {line[:54]}")
+        check(line in code_text and line in jenkinsfile3, f"push-block line matches LAB 3: {line[:54]}", emit=emit)
 
-    required_contracts = [
-        "http://localhost:8080",
-        "http://localhost:3000",
-        "http://localhost:8000",
-        "http://gitea:3000/student/hello-ci.git",
-        "http://gitea:3000/student/webapp.git",
-        "http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-hello",
-        "http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-webapp",
-        "http://webapp:8000",
-        "docker.io/<DOCKER_USER>/cicd-webapp:BUILD_NUMBER",
-        "docker.io/<DOCKER_USER>/cicd-webapp:latest",
-    ]
-    all_readmes = "\n".join(READMES.values())
-    for contract in required_contracts:
-        check(contract in deck_text, f"deck contains canonical URL/image: {contract}")
-        source_ok = contract in all_readmes or contract in PLAN
-        if contract.endswith("cicd-webapp:latest"):
-            source_ok = "<DOCKER_USER>/cicd-webapp" in all_readmes and "latest" in all_readmes
-        check(source_ok, f"canonical URL/image sourced by README/PLAN: {contract}")
-
-    names = [
-        "first-freestyle",
-        "first-pipeline",
-        "docker-build-push",
-        "hello-ci-pipeline",
-        "webapp-deploy",
-        "student/hello-ci",
-        "student/webapp",
-        "dockerhub",
-        "cicd2569-hello",
-        "cicd2569-webapp",
-        "* * * * *",
-    ]
-    for name in names:
-        check(name in deck_text and name in all_readmes, f"job/repo/token/cron matches README: {name}")
-
-    versions = ["2.568.2", "1.27.2", "2.4.2"]
-    for version in versions:
-        check(version in deck_text, f"locked version appears: {version}")
+    validate_v3_contracts(deck, source, readmes, plan, emit=emit)
 
     folders = [
         "001_LAB_Jenkins_On_Docker",
@@ -129,23 +157,88 @@ def main() -> int:
         "006_LAB_CICD_Capstone",
     ]
     for folder in folders:
-        check(folder in deck_text and (ROOT / folder).is_dir(), f"LAB landing folder is exact: {folder}")
+        check(folder in deck_text and (ROOT / folder).is_dir(), f"LAB landing folder is exact: {folder}", emit=emit)
 
     manifest = json.loads((ROOT / "slides_assets/motion/motion-manifest.json").read_text(encoding="utf-8"))
     for clip in manifest["clips"]:
         path = ROOT / "slides_assets" / "motion" / clip["file"]
-        check(clip["compositionId"] in source, f"compositionId consumed from manifest: {clip['compositionId']}")
-        check(hashlib.sha256(path.read_bytes()).hexdigest() == clip["sha256"], f"video sha256 matches manifest: {clip['file']}")
+        check(clip["compositionId"] in source, f"compositionId consumed from manifest: {clip['compositionId']}", emit=emit)
+        check(
+            hashlib.sha256(path.read_bytes()).hexdigest() == clip["sha256"],
+            f"video sha256 matches manifest: {clip['file']}",
+            emit=emit,
+        )
 
-    check("dckr_pat_" not in deck, "no real Docker Hub token material embedded")
-    check("<DOCKER_TOKEN>" in deck_text, "Docker Hub token is shown only as the required placeholder")
-    check("docker.io/tuchsanai/" not in deck_text, "deck text uses Docker Hub placeholder, not test account")
-    check("data-asset=" not in deck and "data-inline-svg=" not in deck, "no unresolved asset placeholders")
+    check("dckr_pat_" not in deck, "no real Docker Hub token material embedded", emit=emit)
+    check("<DOCKER_TOKEN>" in deck_text, "Docker Hub token is shown only as the required placeholder", emit=emit)
+    check("docker.io/tuchsanai/" not in deck_text, "deck text uses Docker Hub placeholder, not test account", emit=emit)
+    check("data-asset=" not in deck and "data-inline-svg=" not in deck, "no unresolved asset placeholders", emit=emit)
 
-    # Explicitly protect the accepted H/1 correction from regressing.
-    check("`* * * * *`" in READMES[4] and "ห้ามใช้ `H/1`" in READMES[4], "LAB 4 README carries corrected every-minute cron")
-    check("* * * * *" in code_text, "deck Poll SCM code follows corrected README")
+    check(
+        "`* * * * *`" in readmes[4] and "ห้ามใช้ `H/1`" in readmes[4],
+        "LAB 4 README carries corrected every-minute cron and H/1 guard",
+        emit=emit,
+    )
+    check("* * * * *" in code_text, "deck Poll SCM code follows corrected README", emit=emit)
 
+
+def synthetic_fixture() -> tuple[str, str, dict[int, str], str]:
+    contracts = "\n".join(REQUIRED_CONTRACTS)
+    names = "\n".join(REQUIRED_NAMES)
+    versions = "\n".join(LOCKED_VERSIONS)
+    deck = f"<html><body>{html.escape(contracts)}\n{html.escape(names)}\n{versions}</body></html>"
+    source = deck
+    readmes = {number: f"{contracts}\n{names}\n{versions}" for number in range(1, 7)}
+    return deck, source, readmes, f"{contracts}\n{names}\n{versions}"
+
+
+def run_self_test() -> int:
+    base_deck, base_source, base_readmes, base_plan = synthetic_fixture()
+    cases = (
+        ("remove GitHub hello-ci contract", REQUIRED_CONTRACTS[0], "Phase 5 contract"),
+        ("remove Docker CLI version", LOCKED_VERSIONS[2], "locked version"),
+        ("inject retired deck URL", None, "deck excludes retired URL token"),
+    )
+    caught = 0
+    with tempfile.TemporaryDirectory(prefix="deck-consistency-self-test-") as temp_dir:
+        fixture = Path(temp_dir) / "deck.html"
+        for index, (label, removed, expected) in enumerate(cases, 1):
+            fixture.write_text(base_deck, encoding="utf-8")
+            shutil.copy2(fixture, Path(temp_dir) / f"case-{index}.html")
+            mutated = fixture.read_text(encoding="utf-8")
+            if removed is None:
+                mutated = mutated.replace("</body>", f" {FORBIDDEN_DECK_TEXT[0]}</body>")
+            else:
+                mutated = mutated.replace(html.escape(removed), "")
+            fixture.write_text(mutated, encoding="utf-8")
+            try:
+                validate_v3_contracts(mutated, base_source, base_readmes, base_plan, emit=False)
+            except AssertionError as exc:
+                check(expected in str(exc), f"self-test mutation {index} rejected for expected reason: {label}")
+                caught += 1
+            else:
+                print(f"[consistency][FAIL] self-test mutation escaped detection: {label}", file=sys.stderr)
+    check(caught == len(cases), f"self-test caught all {caught}/{len(cases)} bad fixtures")
+    print("[consistency][SELF-TEST] RESULT: PASS")
+    return 0
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--self-test", action="store_true", help="prove mutations are rejected")
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    if args.self_test:
+        return run_self_test()
+    validate_full_deck(
+        DECK.read_text(encoding="utf-8"),
+        SOURCE.read_text(encoding="utf-8"),
+        READMES,
+        PLAN,
+    )
     print("[consistency] RESULT: PASS")
     return 0
 

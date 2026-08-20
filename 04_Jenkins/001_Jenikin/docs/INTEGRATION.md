@@ -114,3 +114,80 @@
 - gates รอบ U-FINAL จาก course root copy ที่รักษา input ปัจจุบันและแยก screenshot output ออกจากไฟล์ส่งมอบ: `deck_offline_test.py` exit **0**, `deck_consistency_test.py` exit **0**, `int_consistency.py` exit **0** และสรุป `PASS (12/12)`
 - fresh `devtools-jkF` ทำ sparse clone, ตั้ง `COURSE_ROOT`, ผ่าน LAB 1 restart/readiness, replay LAB 4–5, LAB 6 v1→v2 และ acceptance checks; หลักฐานคำสั่ง/exit code อยู่ที่ [`logs/UFINAL.log`](../logs/UFINAL.log)
 - inventory cleanup ที่ orchestrator จัดการก่อนรอบนี้และ U-FINAL ตรวจยืนยันตาม scope: course test volume **0**, U-FINAL container/volume filter **0**, generated cache/temporary junk ของ U-FINAL **0**; ignored backup/checkpoint ที่ระบบภายนอกหรือผู้ใช้สร้างภายหลังไม่อยู่ใน ship artifact และไม่ถูกลบข้าม scope
+
+## Phase 5 — GitHub migration handoff (2026-08-20)
+
+ส่วนนี้ supersede ข้อมูล SCM/webhook ของรายงาน Phase 3 ด้านบน การทดสอบ Phase 5 ใช้ GitHub.com, relay แยกสองเส้นทาง และ API/runtime postcondition ตาม `docs/PLAN_P5_GITHUB.md`
+
+### ทะเบียนภาพ Phase 5
+
+คอลัมน์ “mask” ระบุการปกปิดก่อนเขียนไฟล์ final; `n/a` หมายถึง viewport ไม่มี account/channel identifier ที่ต้องปกปิด ภาพ mock เป็นสื่อสอนลำดับคลิกเท่านั้นและไม่ใช่ runtime evidence
+
+| LAB | file | ชนิด | mask / สถานะ |
+|---:|---|---|---|
+| 4 | `slides_assets/lab4_s01_github_new_repo.png` | mock auth-only จาก `slides_assets/mock/github_new_repo_hello.png` | placeholder `<GITHUB_USER>`; pending real authenticated capture |
+| 4 | `slides_assets/lab4_s02_github_empty_repo.png` | real GitHub public | owner → `<GITHUB_USER>` ก่อน save |
+| 4 | `slides_assets/lab4_s03_github_repo_files.png` | real GitHub public | owner → `<GITHUB_USER>` ก่อน save |
+| 4 | `slides_assets/lab4_s04_jenkins_new_item.png` | real Jenkins | n/a; private-match scan = 0 |
+| 4 | `slides_assets/lab4_s05_jenkins_scm_config.png` | real Jenkins | repository URL → `<GITHUB_USER>` ก่อน save |
+| 4 | `slides_assets/lab4_s06_manual_build_console.png` | real Jenkins | n/a; private-match scan = 0 |
+| 4 | `slides_assets/lab4_s07_poll_scm_trigger.png` | real Jenkins | n/a; private-match scan = 0 |
+| 4 | `slides_assets/lab4_s08_git_polling_log.png` | real Jenkins | owner/URL → `<GITHUB_USER>` ก่อน save |
+| 4 | `slides_assets/lab4_s09_scm_build_cause.png` | real Jenkins | owner/URL → `<GITHUB_USER>` ก่อน save |
+| 5 | `slides_assets/lab5_s01_available_plugin.png` | real Jenkins | n/a |
+| 5 | `slides_assets/lab5_s02_plugin_download_restart.png` | real Jenkins | n/a |
+| 5 | `slides_assets/lab5_s03_smee_channel.png` | real smee | channel URL/id → `<SMEE_HELLO_URL>` ก่อน save |
+| 5 | `slides_assets/lab5_s04_gwt_parameters.png` | real Jenkins | n/a |
+| 5 | `slides_assets/lab5_s04b_gwt_after.png` | real Jenkins | n/a |
+| 5 | `slides_assets/lab5_s04c_gwt_token_cause.png` | real Jenkins | n/a |
+| 5 | `slides_assets/lab5_s05_gwt_filter.png` | real Jenkins | n/a |
+| 5 | `slides_assets/lab5_s06_github_add_webhook.png` | mock auth-only จาก `slides_assets/mock/github_add_webhook_hello.png` | placeholders `<GITHUB_USER>`/`<SMEE_HELLO_URL>`; pending real authenticated capture |
+| 5 | `slides_assets/lab5_s07_smee_ping.png` | real smee | account → `<GITHUB_USER>`; channel ไม่อยู่ใน viewport |
+| 5 | `slides_assets/lab5_s08_smee_push.png` | real smee | account → `<GITHUB_USER>`; channel ไม่อยู่ใน viewport |
+| 5 | `slides_assets/lab5_s08a_smee_commit_files.png` | real smee | account → `<GITHUB_USER>` ก่อน save |
+| 5 | `slides_assets/lab5_s08b_smee_head_commit.png` | real smee | account → `<GITHUB_USER>` ก่อน save |
+| 5 | `slides_assets/lab5_s09_github_push_build.png` | real Jenkins | account → `<GITHUB_USER>` ก่อน save |
+| 5 | `slides_assets/lab5_s10_checkout_sha.png` | real Jenkins | account → `<GITHUB_USER>` ก่อน save |
+| 6 | `slides_assets/lab6_s01_github_new_repo.png` | mock auth-only จาก `slides_assets/mock/github_new_repo_webapp.png` | placeholder `<GITHUB_USER>`; pending real authenticated capture |
+| 6 | `slides_assets/lab6_s02_github_repo_after_push.png` | real GitHub public | account → `<GITHUB_USER>` ก่อน save |
+| 6 | `slides_assets/lab6_s03_smee_channel.png` | real smee | channel URL/id → `<SMEE_WEBAPP_URL>` ก่อน save |
+| 6 | `slides_assets/lab6_s04a_gwt_parameters.png` | real Jenkins | n/a |
+| 6 | `slides_assets/lab6_s04b_gwt_token_cause.png` | real Jenkins | n/a |
+| 6 | `slides_assets/lab6_s04c_gwt_filter.png` | real Jenkins | n/a |
+| 6 | `slides_assets/lab6_s05_job_scm.png` | real Jenkins | repository URL → `<GITHUB_USER>` ก่อน save |
+| 6 | `slides_assets/lab6_s05b_job_script_path.png` | real Jenkins | n/a |
+| 6 | `slides_assets/lab6_s06_github_add_webhook.png` | mock auth-only จาก `slides_assets/mock/github_add_webhook_webapp.png` | placeholders `<GITHUB_USER>`/`<SMEE_WEBAPP_URL>`; pending real authenticated capture |
+| 6 | `slides_assets/lab6_s07_smee_ping.png` | real smee | sensitive fields ไม่อยู่ใน viewport |
+| 6 | `slides_assets/lab6_s08_pipeline_graph.png` | real Jenkins | n/a |
+| 6 | `slides_assets/lab6_s09_console_pytest.png` | real Jenkins | account → `<GITHUB_USER>` ก่อน save |
+| 6 | `slides_assets/lab6_s09b_console_verify.png` | real Jenkins | n/a |
+| 6 | `slides_assets/lab6_s10_dashboard_v1.png` | real webapp | n/a |
+| 6 | `slides_assets/lab6_s11_dashboard_v2.png` | real webapp | n/a |
+| 6 | `slides_assets/lab6_s12_hub_public_tags.png` | real Docker Hub public | account → `<DOCKER_USER>` ก่อน save |
+
+ทะเบียนต้นทาง `docs/IMAGE_REGISTRY_P5.md` มี mock auth-only **4 ไฟล์** และถูกนำไปสร้างภาพ final 4 ไฟล์ตามตาราง ไม่ใช่ 3 ไฟล์ ดังนั้น handoff ที่ระบุ “mock 3 ภาพ” ยังต้อง reconcile กับ registry; ทั้ง 4 ภาพรอสลับเป็น real masked capture เมื่อมี authenticated GitHub session cookie ตาม D5v2 ระหว่างนี้ทุก caption ต้องระบุ “ภาพจำลอง — UI จริงอาจต่างเล็กน้อย” พร้อม GitHub Docs link และ API postcondition
+
+### ทะเบียน asset SCM เดิมที่ลบ
+
+`logs/U-P5-6.log` บันทึกการลบ explicit 11 ไฟล์ และ commit หลักฐาน `1f768f7` แสดงรายชื่อดังนี้:
+
+| file ที่ลบ | เหตุผล |
+|---|---|
+| `slides_assets/lab6_s01_gitea_repo_form.png` | หน้าสร้าง repository ของ SCM เดิม |
+| `slides_assets/lab6_s02_gitea_repo_after_push.png` | หน้า repository ของ SCM เดิม |
+| `slides_assets/lab6_s03_job_scm.png` | ลำดับ/ชื่อภาพเดิม ถูกแทนด้วยภาพ Phase 5 |
+| `slides_assets/lab6_s04_job_trigger.png` | ลำดับ/ชื่อภาพเดิม ถูกแทนด้วยภาพ GWT แยก field |
+| `slides_assets/lab6_s05_gitea_webhook.png` | หน้า webhook ของ SCM เดิม |
+| `slides_assets/lab6_s06_pipeline_graph.png` | ลำดับภาพเดิม ถูกแทนด้วย `lab6_s08_pipeline_graph.png` |
+| `slides_assets/lab6_s07_console_pytest.png` | ลำดับภาพเดิม ถูกแทนด้วย `lab6_s09_console_pytest.png` |
+| `slides_assets/lab6_s08_console_verify.png` | ลำดับภาพเดิม ถูกแทนด้วย `lab6_s09b_console_verify.png` |
+| `slides_assets/lab6_s09_dashboard_v1.png` | ลำดับภาพเดิม ถูกแทนด้วย `lab6_s10_dashboard_v1.png` |
+| `slides_assets/lab6_s10_dashboard_v2.png` | ลำดับภาพเดิม ถูกแทนด้วย `lab6_s11_dashboard_v2.png` |
+| `slides_assets/lab6_s11_hub_public_tags.png` | ลำดับภาพเดิม ถูกแทนด้วย `lab6_s12_hub_public_tags.png` |
+
+### สถานะ handoff ปัจจุบัน
+
+- คง `devtools-jk-lab` ให้ทำงานต่อ โดย `jenkins`, `smee-hello`, `smee-webapp` และ `webapp` ยัง Up บน network `cicd-net`
+- คง relay สองตัวพร้อม channel/target/token แบบ 1:1 และ restart policy `unless-stopped`; restart/reconnect ของ `smee-hello` ผ่านแล้วและใช้ channel เดิม
+- คง GitHub repositories `hello-ci`, `webapp`, hooks จริง, Jenkins jobs `hello-ci-pipeline`, `webapp-deploy` และ Docker Hub tags ไว้รอ U-P5-INT
+- ไม่เก็บ token หรือ smee channel id จริงลงไฟล์/log; mock auth-only 4 ภาพเป็น pending เดียวที่ต้องใช้ session จากผู้ใช้เพื่อสลับเป็น real masked capture

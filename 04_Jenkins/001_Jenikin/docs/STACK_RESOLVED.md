@@ -1,6 +1,6 @@
-# Stack resolved — U0 v2
+# Stack resolved — Phase 5 GitHub contract
 
-Resolved and verified on **2026-08-20 (UTC)** in `devtools-jk0` using the PLAN §7 shifted ports. The final clean chain used SSH `2230`, Jenkins `10080→8080`, Gitea `10300→3000`, and webapp `10800→8000`.
+Resolved and verified on **2026-08-20 (UTC)**. Base Jenkins/Docker measurements came from the clean `devtools-jk0` chain; the Phase 5 GitHub relay and reconnect proof came from `devtools-jk-lab` with Jenkins `20080→8080` and webapp `20800→8000`.
 
 ## Image resolution
 
@@ -8,7 +8,7 @@ Resolved and verified on **2026-08-20 (UTC)** in `devtools-jk0` using the PLAN �
 |---|---|---|
 | `tuchsanai/devtools:2569_1` | `sha256:d8050fe96efdfa8c716b3c0e2d6d092afc73fb610143a92d13a5063f5d29b858` | Outer DinD lab environment |
 | `jenkins/jenkins:lts-jdk21` | `sha256:8547df3b0db2803d158ecc9499207a056bb30c23fddc18bb5b4a4dc14e77dd09` | Jenkins **2.568.2** base |
-| `gitea/gitea:1.27.2` | `sha256:d20286ca2b2e170fdf628e7231b8a31a3220ade39ff462b55041d43d1fc757dd` | Gitea **1.27.2** |
+| `deltaprojects/smee-client@sha256:20ea24c8c81bb3f3aa332c8939503e3c5bee048bb5a98ba2249d73a41a556e33` | `sha256:20ea24c8c81bb3f3aa332c8939503e3c5bee048bb5a98ba2249d73a41a556e33` | GitHub webhook relay; smee-client **1.2.2**, Node **v14.15.0**, `linux/amd64` only |
 | `python:3.12-slim` | `sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a` | LAB 3 smoke image base |
 | `jenkins-bootstrap-u0:2569` | local image `sha256:7d621d329f05e823cad732390b1942c8c0f25e0c29a0617b43af465fb7ac45f8` | Frozen suggested plugins + skip-wizard Groovy init |
 | `jenkins-docker:2569` | local image `sha256:ad52d02280f2ea1dd7c5b5f7d84f4ecf2298e9b7b038b705d0abe43bd187ba5c` | Jenkins base + Docker CLI **29.7.2** |
@@ -18,9 +18,16 @@ The custom-image values are local content IDs from the final clean build; upstre
 ## Runtime versions
 
 - Jenkins: `2.568.2`
-- Gitea: `1.27.2` (Go `1.26.5-X:jsonv2`)
 - Docker CLI inside Jenkins: `29.7.2`
 - Generic Webhook Trigger: `2.4.2` and active
+- smee-client CLI: `1.2.2`; Node: `v14.15.0`; image architecture: **amd64-only** (`linux/amd64`, accepted classroom risk)
+
+## External API and relay contract
+
+| Interface | Locked version / authentication | Runtime result |
+|---|---|---|
+| GitHub REST API | `X-GitHub-Api-Version: 2022-11-28`; PAT classic scopes `public_repo` + `admin:repo_hook` | Authenticated helper checks `/user`, repository and hook state without logging the token |
+| smee relay | `smee-hello` / `smee-webapp`, one channel and token per repository, `--restart unless-stopped` on `cicd-net` | Restart test exit 0: args/channel unchanged, `Connected` count advanced to 2, and the following push produced exactly one successful build ([`logs/U-P5-5.log`](../logs/U-P5-5.log)) |
 
 ## Active Jenkins plugins
 
@@ -142,9 +149,6 @@ The repository was created idempotently through Docker Hub API v2 when absent. C
 | Final clean `up_to_lab1.sh` | 42.1 s |
 | Final clean `up_to_lab2.sh` | 11.3 s |
 | Final clean `up_to_lab3.sh` including Hub push | 44.4 s |
-| Final clean `up_to_lab4.sh` including Gitea pull | 42.3 s |
-| Final clean `up_to_lab5.sh` including plugin install/webhook | 38.3 s |
-| Immediate idempotency rerun of `up_to_lab5.sh` | 17.5 s |
+| Phase 5 relay restart/reconnect test | about 10 s |
 
-Full commands, UTC timestamps, exit codes, intermediate failed-debug attempts, and final assertions are in `logs/U0.log`.
-
+Base-stack commands and timings are in `logs/U0.log`. Phase 5 image pull/bootstrap evidence is in `logs/U-P5-1.log`; relay restart/reconnect and the subsequent exactly-one-build proof are in `logs/U-P5-5.log`.

@@ -1,0 +1,74 @@
+{
+  "images": [
+    {
+      "path": "003_LAB_Build_The_Web/images/ui-web-01-overview.png",
+      "source": "tools/ui/raw/ui-web-01-overview.png",
+      "shapes": [
+        {"type": "round_rect", "label": "① เปิดหน้าสรุป", "box": [8, 107, 240, 168], "label_at": [260, 110]}
+      ]
+    },
+    {
+      "path": "003_LAB_Build_The_Web/images/ui-web-02-tickets.png",
+      "source": "tools/ui/raw/ui-web-02-tickets.png",
+      "shapes": [
+        {"type": "round_rect", "label": "② กระดานงานซ่อม", "box": [8, 164, 240, 224], "label_at": [260, 166]}
+      ]
+    },
+    {
+      "path": "003_LAB_Build_The_Web/images/ui-web-03-asset.png",
+      "source": "tools/ui/raw/ui-web-03-asset.png",
+      "shapes": [
+        {"type": "round_rect", "label": "③ เลือกครุภัณฑ์", "box": [293, 255, 562, 299], "label_at": [300, 310]}
+      ]
+    },
+    {
+      "path": "003_LAB_Build_The_Web/images/ui-web-04-details.png",
+      "source": "tools/ui/raw/ui-web-04-details.png",
+      "shapes": [
+        {"type": "round_rect", "label": "④ กรอกหัวข้อและรายละเอียด", "box": [570, 255, 1118, 299], "label_at": [760, 320], "target": [840, 302]}
+      ]
+    },
+    {
+      "path": "003_LAB_Build_The_Web/images/ui-web-05-priority.png",
+      "source": "tools/ui/raw/ui-web-05-priority.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑤ เลือกเร่งด่วน", "box": [1126, 255, 1302, 299], "label_at": [1040, 310]}
+      ]
+    },
+    {
+      "path": "003_LAB_Build_The_Web/images/ui-web-06-submit.png",
+      "source": "tools/ui/raw/ui-web-06-submit.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑥ กดแจ้งซ่อม", "box": [1310, 255, 1395, 299], "label_at": [1080, 310]}
+      ]
+    },
+    {
+      "path": "003_LAB_Build_The_Web/images/ui-web-07-new-card.png",
+      "source": "tools/ui/raw/ui-web-07-new-card.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑦ จำนวน 4 และการ์ดใหม่", "box": [355, 233, 576, 853], "label_at": [600, 490], "target": [580, 540]}
+      ]
+    },
+    {
+      "path": "003_LAB_Build_The_Web/images/ui-web-08-assignee.png",
+      "source": "tools/ui/raw/ui-web-08-assignee.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑧ กรอกชื่อช่าง", "box": [372, 815, 500, 847], "label_at": [600, 795]}
+      ]
+    },
+    {
+      "path": "003_LAB_Build_The_Web/images/ui-web-09-assign.png",
+      "source": "tools/ui/raw/ui-web-09-assign.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑨ กดมอบหมาย", "box": [498, 815, 558, 844], "label_at": [600, 795]}
+      ]
+    },
+    {
+      "path": "003_LAB_Build_The_Web/images/ui-web-10-assigned.png",
+      "source": "tools/ui/raw/ui-web-10-assigned.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑩ สถานะและการ์ดย้ายแล้ว", "box": [578, 252, 799, 726], "label_at": [830, 480], "target": [805, 500]}
+      ]
+    }
+  ]
+}

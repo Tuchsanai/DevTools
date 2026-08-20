@@ -1,3 +1,5 @@
+> Phase 5 (2026-08-20): contract SCM/webhook ถูก supersede โดย docs/PLAN_P5_GITHUB.md (FROZEN)
+
 # PLAN v2 (FROZEN) — CI/CD ด้วย Jenkins บน Docker (ชุด 001_Jenikin)
 
 > **สถานะ: FROZEN 2026-08-19** หลังผ่าน Codex critique (`docs/CRITIQUE_PHASE1.md`) และคำตัดสินครบทุกข้อ (`docs/LEDGER.md`)

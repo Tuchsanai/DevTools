@@ -58,6 +58,6 @@ docker ps --format '{{.Names}}\t{{.Status}}'   # ต้องเห็น: <ร�
 3. จำนวนการทดลองต่อแล็บ: 5–9 ข้อ · ความยาว README ทั้งไฟล์ ~150–300 บรรทัด
 4. คำสั่งทุกบล็อกต้อง copy-paste ได้ทันที (ไม่มี placeholder ที่ต้องแทนเอง ยกเว้นจุดที่ตั้งใจสอน)
 5. "✅ สิ่งที่ต้องเห็น" ต้องมาจากผลรันจริงเท่านั้น (ตัดให้สั้น แต่ห้ามแต่งขึ้น) — คนตรวจจะ diff กับ log
-6. creds ที่ใช้: Jenkins `admin/admin2569` · Gitea `student/student2569` (email `student@example.com`) · webhook token แยกต่อ job: `cicd2569-hello` / `cicd2569-webapp` · Docker Hub ใช้ **placeholder เท่านั้น**: `<DOCKER_USER>` `<DOCKER_TOKEN>` — ห้ามใช้ค่าอื่น ห้ามใส่ creds จริงทุกชนิด
-7. ชื่อทรัพยากรตาม interface map: network `cicd-net` · containers `jenkins`,`gitea`,`webapp` · volumes `jenkins_home`,`gitea_data` · Gitea repos `hello-ci` (LAB 4–5), `webapp` (LAB 6) · Docker Hub repos `<DOCKER_USER>/ci-demo` (LAB 3), `<DOCKER_USER>/cicd-webapp` (LAB 6)
+6. creds ที่ใช้: Jenkins `admin/admin2569` · GitHub ใช้ **placeholder เท่านั้น**: `<GITHUB_USER>` `<GITHUB_TOKEN>` · webhook token แยกต่อ job: `cicd2569-hello` / `cicd2569-webapp` · Docker Hub ใช้ **placeholder เท่านั้น**: `<DOCKER_USER>` `<DOCKER_TOKEN>` — ห้ามใช้ค่าอื่น ห้ามใส่ creds จริงทุกชนิด
+7. ชื่อทรัพยากรตาม interface map: network `cicd-net` · containers `jenkins`,`smee-hello`,`smee-webapp`,`webapp` · volume `jenkins_home` · GitHub repos `<GITHUB_USER>/hello-ci` (LAB 4–5), `<GITHUB_USER>/webapp` (LAB 6) · Docker Hub repos `<DOCKER_USER>/ci-demo` (LAB 3), `<DOCKER_USER>/cicd-webapp` (LAB 6)
 8. หัวเรื่อง/อีโมจิ: ใช้ได้พอประมาณ (🎯 ✅ 📝 เท่าที่ template กำหนด) — อย่าเติมสีสันเกิน

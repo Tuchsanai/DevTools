@@ -10,7 +10,7 @@
 |---|---|
 | **คำถามเดียวที่ตอบให้จบ** | โค้ด `api` ที่รันได้บนเครื่องคนเขียน จะกลายเป็น **image ที่ลูกค้าเอาไปรันเองได้** อย่างไร |
 | **ต้องผ่านอะไรมาก่อน** | **LAB 1** (ยกฐานข้อมูลขึ้นด้วย `docker run` · `-v` · `-e`) และเรื่อง Dockerfile · layer cache · `.dockerignore` จากชุด `02_Dockerfile_Build_Run_Compose_Guide` |
-| **เวลา** | ~50 นาที · การทดลอง **10 อัน** อันละ 3–5 นาที |
+| **เวลา** | ~75 นาที · การทดลอง **11 อัน** |
 | **จบแล้วต้องทำได้เอง** | build image ของ `api` จาก Dockerfile จริง · ชี้จุดที่ cache แตกได้ · หา IP ของกล่องด้วย `docker inspect` · เปิดพอร์ตด้วย `-p` แล้วยิงข้อกำหนดของลูกค้า REQ-01…REQ-12 ผ่าน `curl` และ `api/smoke.sh` |
 | **แล็บนี้ยัง *ไม่* สอน** | multi-stage ของ `web` → **LAB 3** · เรียกกันด้วย**ชื่อ**แทน IP → **LAB 4** · `compose.yaml` และการ push ขึ้น registry → **LAB 5** |
 
@@ -30,7 +30,7 @@
 
 ทุกบรรทัดที่เปลี่ยนไฟล์กลายเป็น **layer** หนึ่งชั้น · กฎเดียวที่ต้องจำคือ **ขั้นไหนเปลี่ยน ขั้นนั้นและทุกขั้นใต้ลงไปต้องทำใหม่**
 
-![เทียบ Dockerfile ที่เรียงถูกกับ Dockerfile.bad หลังแก้ main.py หนึ่งบรรทัด ฝั่งเรียงถูก pip install ยัง CACHED ใช้เวลา 2.199 วินาที ฝั่งเรียงผิดต้อง pip install ใหม่ 8.9 วินาที รวม 12.672 วินาที](./images/theory-layer-cache-api.svg)
+![เทียบ Dockerfile ที่เรียงถูกกับ Dockerfile.bad หลังแก้ main.py หนึ่งบรรทัด ฝั่งเรียงถูก pip install ยัง CACHED ใช้เวลา 2.683 วินาที ฝั่งเรียงผิดต้อง pip install ใหม่ 4.5 วินาที รวม 9.409 วินาที](./images/theory-layer-cache-api.svg)
 
 > 🖼 **วิธีอ่านรูปนี้:** หา **แถวสีแรกที่ไม่ใช่ CACHED** ของแต่ละฝั่ง นั่นคือจุดที่ cache แตก · ฝั่งซ้ายจุดแตกอยู่ **ใต้** `RUN pip install` ขั้นแพงจึงรอด · ฝั่งขวาจุดแตกอยู่ **เหนือ** ขั้นนั้น ทุกอย่างใต้ลงไปจึงต้องทำใหม่
 
@@ -68,10 +68,10 @@
 รันบน **เครื่องของเราเอง** :
 
 ```bash
-docker rm -f devtools-ops-lab2 2>/dev/null
-docker run -dit --name devtools-ops-lab2 --privileged \
-  -p 2239:22 -p 8088:8088 tuchsanai/devtools:2569_1
-ssh root@localhost -p 2239        # password : passwd
+docker rm -f devtools-fs-lab2 2>/dev/null
+docker run -dit --name devtools-fs-lab2 --privileged \
+  -p 2252:22 -p 8252:8088 tuchsanai/devtools:2569_1
+ssh root@localhost -p 2252        # password : passwd
 ```
 
 ### ขั้นที่ 2 — โหลดโค้ดแล็บ
@@ -138,7 +138,7 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 ---
 
-## การทดลองที่ 2 — build ครั้งแรก ทีละขั้น
+## การทดลองที่ 2 — จะ build image ครั้งแรกทีละขั้นอย่างไร
 
 **คำถาม:** log ที่ขึ้นเป็น `[N/M]` กำลังบอกอะไรเรา
 
@@ -151,23 +151,24 @@ time docker build -t ops-api:1.0 .
 ```
 #5 [internal] load .dockerignore
 #5 transferring context: 521B done
-#6 [internal] load build context
-#6 transferring context: 28.54kB done
-#7 [1/6] FROM docker.io/library/python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
-#7 DONE 5.4s
+#7 [internal] load build context
+#7 transferring context: 28.54kB done
+#6 [1/6] FROM docker.io/library/python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
+#6 DONE 3.7s
 #8 [2/6] WORKDIR /app
 #8 DONE 0.1s
 #9 [3/6] COPY requirements.txt .
 #9 DONE 0.1s
 #10 [4/6] RUN pip install --no-cache-dir -r requirements.txt
-#10 DONE 4.6s
+#10 DONE 4.3s
 #11 [5/6] COPY main.py .
 #11 DONE 0.1s
 #12 [6/6] RUN useradd --create-home --uid 10001 appuser && chown -R appuser:appuser /app
-#12 DONE 0.3s
+#12 DONE 0.4s
 #13 naming to docker.io/library/ops-api:1.0 done
+#13 DONE 1.9s
 
-real	0m23.295s
+real	0m14.882s
 ```
 
 รอบแรกจะมีขั้น `resolve image config for docker-image://docker.io/docker/dockerfile:1` แล้วดาวน์โหลดสิบกว่าบรรทัดโผล่ **ก่อน** ขั้นข้างบน — มาจากบรรทัด `# syntax=docker/dockerfile:1` บรรทัดแรกของไฟล์ ปกติ ไม่ใช่ error และรอบถัดไปจะไม่มีแล้ว
@@ -176,7 +177,7 @@ real	0m23.295s
 
 ---
 
-## การทดลองที่ 3 — แก้โค้ด 1 บรรทัดแล้ว build ใหม่
+## การทดลองที่ 3 — เมื่อแก้โค้ดหนึ่งบรรทัด layer cache ทำงานอย่างไร
 
 **คำถาม:** แก้ `main.py` บรรทัดเดียว ต้องติดตั้ง dependency ใหม่ทั้งชุดไหม
 
@@ -197,16 +198,16 @@ time docker build -t ops-api:1.0 .
 #11 [5/6] COPY main.py .
 #11 DONE 0.1s
 #12 [6/6] RUN useradd --create-home --uid 10001 appuser && chown -R appuser:appuser /app
-#12 DONE 0.3s
+#12 DONE 0.5s
 
-real	0m3.051s
+real	0m2.236s
 ```
 
-> 📝 **บทเรียน:** จาก **23.295 s เหลือ 3.051 s** เพราะ `requirements.txt` ไม่เปลี่ยน checksum ของขั้น `COPY requirements.txt .` จึงเท่าเดิม ขั้น `pip install` ที่ต่อจากมันเลยใช้ของเก่าได้
+> 📝 **บทเรียน:** จาก **14.882 s เหลือ 2.236 s** เพราะ `requirements.txt` ไม่เปลี่ยน checksum ของขั้น `COPY requirements.txt .` จึงเท่าเดิม ขั้น `pip install` ที่ต่อจากมันจึงใช้ cache ได้
 
 ---
 
-## การทดลองที่ 4 — เทียบกับ `Dockerfile.bad` ที่เรียงสลับกัน
+## การทดลองที่ 4 — `Dockerfile.bad` ที่เรียงสลับกันทำให้ build ต่างอย่างไร
 
 **คำถาม:** ถ้าย้าย `COPY . .` ขึ้นไปก่อน `pip install` จะเสียเวลาเพิ่มเท่าไร
 
@@ -220,9 +221,9 @@ docker build -f Dockerfile.bad -t ops-api-bad:1.0 .
 
 ```
 #10 [4/5] RUN pip install --no-cache-dir -r requirements.txt
-#10 DONE 6.1s
+#10 DONE 4.0s
 #12 naming to docker.io/library/ops-api-bad:1.0 done
-#12 DONE 1.9s
+#12 DONE 2.5s
 ```
 
 ทีนี้แก้ `main.py` อีกบรรทัดเดียว แล้ว build **ไฟล์ bad** :
@@ -236,11 +237,11 @@ time docker build -f Dockerfile.bad -t ops-api-bad:1.0 .
 
 ```
 #9 [3/5] COPY . .
-#9 DONE 0.0s
+#9 DONE 0.2s
 #10 [4/5] RUN pip install --no-cache-dir -r requirements.txt
-#10 DONE 8.9s
+#10 DONE 4.5s
 
-real	0m12.672s
+real	0m9.409s
 ```
 
 แก้ไฟล์เดียวกันนี้แล้ว build **ไฟล์ที่เรียงถูก** เทียบในนาทีเดียวกัน :
@@ -255,15 +256,15 @@ time docker build -t ops-api:1.0 .
 #10 [4/6] RUN pip install --no-cache-dir -r requirements.txt
 #10 CACHED
 
-real	0m2.199s
+real	0m2.683s
 ```
 
 | Dockerfile | ขั้น `pip install` หลังแก้ `main.py` | เวลารวม (`real`) ในรอบที่ใช้เขียนเอกสารนี้ |
 |---|---|---|
-| `api/Dockerfile` | `CACHED` — ไม่ทำอะไรเลย | **2.199 s** |
-| `api/Dockerfile.bad` | ติดตั้งใหม่ 8.9 s | **12.672 s** |
+| `api/Dockerfile` | `CACHED` — ไม่ทำอะไรเลย | **2.683 s** |
+| `api/Dockerfile.bad` | ติดตั้งใหม่ 4.5 s | **9.409 s** |
 
-ก่อนไปต่อ คืน `main.py` เป็น `1.0.0` แล้ว **build `ops-api:1.0` ใหม่อีกรอบ** เพื่อให้ image ที่จะใช้ในการทดลองที่ 6–9 ตรงกับไฟล์จริง — บรรทัด `grep` ต้องคืน `version="1.0.0"` กลับมา ถ้าทำซ้ำการทดลองนี้อีกรอบแล้วฝั่ง `bad` ขึ้น `CACHED` แปลว่า BuildKit เคยเห็นเนื้อไฟล์ชุดนี้แล้ว ให้เปลี่ยนเป็นเลขเวอร์ชันที่ไม่เคยใช้
+ก่อนไปต่อ คืน `main.py` เป็น `1.0.0` แล้ว **build `ops-api:1.0` ใหม่อีกรอบ** เพื่อให้ image ที่ใช้ในการทดลองที่ 6–11 ตรงกับไฟล์จริง — บรรทัด `grep` ต้องคืน `version="1.0.0"` กลับมา ถ้าทำซ้ำแล้วฝั่ง `bad` ขึ้น `CACHED` แสดงว่า BuildKit เคยเห็นเนื้อไฟล์ชุดนี้แล้ว ให้เปลี่ยนเป็นเลขเวอร์ชันที่ไม่เคยใช้
 
 ```bash
 sed -i 's/version="1.0.2"/version="1.0.0"/' main.py
@@ -271,11 +272,11 @@ docker build -q -t ops-api:1.0 . >/dev/null
 grep -n 'app = FastAPI' main.py
 ```
 
-> 📝 **บทเรียน:** ในแล็บนี้ต่างกัน ~6 เท่า เพราะ dependency มีแค่ 4 ตัว · ของจริงที่มี package หนัก ๆ ต่างกันหลายสิบเท่า และเราจ่ายค่านี้ **ทุกครั้งที่แก้โค้ด**
+> 📝 **บทเรียน:** รอบนี้ต่างกันประมาณ 3.5 เท่า เพราะ dependency มีเพียง 4 ตัว ระบบจริงที่มี package ขนาดใหญ่อาจเห็นผลต่างมากกว่านี้ทุกครั้งที่แก้โค้ด
 
 ---
 
-## การทดลองที่ 5 — `.dockerignore` กันอะไรออกจาก build context
+## การทดลองที่ 5 — จะกันไฟล์ออกจาก build context ด้วย `.dockerignore` อย่างไร
 
 **คำถาม:** ไฟล์ที่อยู่ในโฟลเดอร์เดียวกันแต่ไม่เกี่ยวกับแอป ถูกส่งไปด้วยไหม
 
@@ -332,7 +333,7 @@ rm -f api-debug.log
 
 ---
 
-## การทดลองที่ 6 — ยกฐานข้อมูลขึ้นแล้วหา IP ของมัน
+## การทดลองที่ 6 — จะยกฐานข้อมูลและหา IP ของกล่องอย่างไร
 
 **คำถาม:** `api` จะบอกที่อยู่ของฐานข้อมูลได้อย่างไร ในเมื่อยังไม่มี network ของเราเอง
 
@@ -347,7 +348,7 @@ docker run -d --name ops-db --env-file .env.db \
 ✅ **สิ่งที่ต้องเห็น** — id ของกล่องฐานข้อมูล (ครั้งแรกจะมีบรรทัด pull ของ `postgres:17-alpine` นำหน้า · id ของแต่ละคนคนละค่า) :
 
 ```
-4e15c59a1f3c39897fdda88fa3dea97b3d7a1a3d9ffc7a98b9b02dcddde4b48f
+c7a72207b572bcbf39876e28e1edf01bd7bb3b835efc5450f5e1c5942cbb5d8b
 ```
 
 รอให้ entrypoint รันไฟล์ SQL เสร็จก่อน แล้วถามฐานข้อมูลว่าพร้อมหรือยัง :
@@ -362,27 +363,23 @@ sleep 12 && docker exec ops-db pg_isready -U opsuser -d campusops
 /var/run/postgresql:5432 - accepting connections
 ```
 
-ลองให้กล่องหนึ่งเรียกอีกกล่องด้วย **ชื่อ** ดูก่อน แล้วค่อยอ่าน IP — **คำสั่งแรกตั้งใจให้พัง** จึงพ่น traceback ออกมาเป็นเรื่องปกติ ไม่ได้ทำอะไรผิด :
+อ่าน IP ของฐานข้อมูลเพื่อนำไปสร้าง `DATABASE_URL` ในการทดลองถัดไป :
 
 ```bash
-docker run --rm ops-api:1.0 python -c 'import socket; print(socket.gethostbyname("ops-db"))'
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ops-db
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ชื่อ `ops-db` แปลไม่ออก แต่ `inspect` ให้ IP มาได้ (ตัวเลข IP ของแต่ละเครื่องไม่ตรงกัน) :
+✅ **สิ่งที่ต้องเห็น** — `inspect` ให้ IP ของกล่องฐานข้อมูลบน default bridge (ตัวเลข IP ของแต่ละเครื่องไม่ตรงกัน) :
 
 ```
-Traceback (most recent call last):
-  File "<string>", line 1, in <module>
-socket.gaierror: [Errno -2] Name or service not known
 172.18.0.2
 ```
 
-> 📝 **บทเรียน:** บน default bridge ไม่มี DNS ให้ ชื่อกล่องจึงใช้เรียกกันไม่ได้ · ตอนนี้ต้องพึ่ง IP จาก `docker inspect` ไปก่อน — **LAB 4** จะแก้เรื่องนี้ให้จบ
+> 📝 **บทเรียน:** แล็บนี้ใช้ default bridge จึงส่ง IP ที่อ่านจาก `docker inspect` เข้า `DATABASE_URL` โดยตรง ส่วน LAB 4 จะสร้าง network ที่เรียกบริการด้วยชื่อได้
 
 ---
 
-## การทดลองที่ 7 — รัน `api` แล้วให้มันต่อฐานข้อมูลติด
+## การทดลองที่ 7 — จะให้ `api` ต่อฐานข้อมูลได้อย่างไร
 
 **คำถาม:** ใส่ `DATABASE_URL` เป็น IP ที่เพิ่งได้มา แล้ว `/health` จะเขียวไหม
 
@@ -395,7 +392,7 @@ docker run -d --name ops-api \
 ✅ **สิ่งที่ต้องเห็น** — id ของกล่องที่เพิ่งสร้าง (ของแต่ละคนคนละค่า) :
 
 ```
-e0b5e3f2cee9537eeb2e4d3091ff0fc6b4334704b6c2d3c364b015f64a7c0401
+70d266f7af607b3c38794c55a0851b4095b19ba7e722bcefb0e6ddc94ef136b3
 ```
 
 ยังไม่ได้ใส่ `-p` จึงต้องเรียกผ่าน IP ของกล่อง `api` เอง :
@@ -415,20 +412,20 @@ sleep 6 && curl -s http://$API_IP:8000/health; echo
 
 ---
 
-## การทดลองที่ 8 — `EXPOSE` ไม่ได้เปิดพอร์ตให้
+## การทดลองที่ 8 — `EXPOSE` เปิดพอร์ตให้จริงไหม
 
 **คำถาม:** image มี `EXPOSE 8000` อยู่แล้ว ทำไมยังเข้าจาก `localhost` ไม่ได้
 
 ```bash
-docker image inspect ops-api:1.0 --format '{{json .Config.ExposedPorts}}'
+grep '^EXPOSE' api/Dockerfile
 docker port ops-api
 curl -s -m 3 http://localhost:8088/health; echo "curl exit=$?"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — image ประกาศ `8000/tcp` ไว้จริง แต่ `docker port` ว่างเปล่า และ `curl` ต่อไม่ติด :
+✅ **สิ่งที่ต้องเห็น** — Dockerfile ประกาศพอร์ต 8000 แต่ `docker port` ว่างเปล่า และ `curl` ต่อไม่ติด :
 
 ```
-{"8000/tcp":{}}
+EXPOSE 8000
 curl exit=7
 ```
 
@@ -447,34 +444,118 @@ sleep 6 && docker port ops-api && curl -s http://localhost:8088/health; echo
 ✅ **สิ่งที่ต้องเห็น** — คราวนี้มีบรรทัด mapping และเข้าถึงได้จาก `localhost` :
 
 ```
+4350074c476f8025a116048333d33910b8557c4cbcb60026007011901a987224
 8000/tcp -> 0.0.0.0:8088
 8000/tcp -> [::]:8088
 {"status":"ok","db":"up"}
 ```
 
-พอร์ต 8088 ถูกต่อทะลุถึงเครื่องเราตั้งแต่ตอน `docker run` กล่องเรียน (`-p 8088:8088`) — **เปิดเบราว์เซอร์บนเครื่องเรา** ที่ `http://localhost:8088/docs` จะเห็นหน้า Swagger UI ส่วนบล็อกข้างล่างนี้ยัง **พิมพ์ในกล่องเรียน** เหมือนเดิม :
+> 📝 **บทเรียน:** `EXPOSE` เป็น metadata ใน image ส่วน `-p 8088:8000` สร้างเส้นทางรับส่งจริง เลขซ้ายคือพอร์ตเครื่องและเลขขวาคือพอร์ตในกล่อง
 
-```bash
-curl -s -o /dev/null -w 'GET /docs -> %{http_code}\n' http://localhost:8088/docs
-```
+### ภาพรวม Swagger UI
 
-✅ **สิ่งที่ต้องเห็น** — หน้า Swagger UI ของ FastAPI ตอบ 200 :
+ภาพต่อไปนี้ใช้ดูโครงสร้างทั้งหน้า ไม่ใช่ขั้นปฏิบัติใน walkthrough :
 
-```
-GET /docs -> 200
-```
+![ภาพรวม Swagger UI แสดง endpoint ของ CampusOps API ตั้งแต่ GET health ถึง GET dashboard](./images/api-docs-swagger.png)
 
-หน้าที่เบราว์เซอร์จะเห็นที่ `http://localhost:8088/docs` หน้าตาแบบนี้ :
-
-![หน้า Swagger UI ของ FastAPI ชื่อ CampusOps API เวอร์ชัน 1.0.0 OAS 3.1 ไล่รายการ endpoint ตั้งแต่ GET /health, GET /api/assets, GET กับ POST /api/tickets, PATCH /api/tickets/{ticket_id}/status, POST /api/tickets/{ticket_id}/close, /api/loans, /api/parts จนถึง GET /api/dashboard และบล็อก Schemas ด้านล่าง](./images/api-docs-swagger.png)
-
-> 🖼 **วิธีอ่านรูปนี้:** หน้านี้คือหลักฐานว่า `-p 8088:8000` เปิดประตูจริง — ก่อนใส่ `-p` `curl` เพิ่งตอบ `exit=7` ทั้งที่ `EXPOSE 8000` อยู่ใน image มาตั้งแต่ต้น · แถบซ้ายของทุกแถวคือ method (`GET` ฟ้า · `POST`/`PATCH` เขียว) และรายการที่เห็นคือ endpoint ชุดเดียวกับที่จะยิงด้วย `curl` ในการทดลองที่ 9 และ `api/smoke.sh` ในการทดลองที่ 10 · ถ้าเปิดแล้วเบราว์เซอร์ขึ้น "ต่อไม่ได้" แปลว่ากล่องยังไม่มี `-p` ไม่ใช่ `EXPOSE` หาย
-
-> 📝 **บทเรียน:** `EXPOSE` = เอกสารในตัว image · `-p 8088:8000` = ประตูจริง (ซ้ายพอร์ตเครื่อง ขวาพอร์ตในกล่อง) · นี่คือเหตุผลที่ `db` ไม่มี `-p` ตาม NFR-3 ทั้งที่ image ของมันก็มี `EXPOSE 5432`
+*ภาพรวมรายการ endpoint แยกสีตาม HTTP method; ขั้นปฏิบัติจริงเริ่มจากภาพที่ ① และมี marker กำกับทุกจุดต่อเนื่อง*
 
 ---
 
-## การทดลองที่ 9 — ยิงข้อกำหนดจริงของลูกค้าด้วย `curl`
+## การทดลองที่ 9 — จะเรียก API จากหน้าเอกสาร Swagger UI อย่างไร
+
+**คำถาม:** Swagger UI ส่ง `GET /api/dashboard` และ `POST /api/tickets` ไปยัง API ที่กำลังรันและแสดงผลตอบกลับอย่างไร
+
+### Walkthrough หน้า Swagger UI
+
+#### ขั้นที่ ① — เปิดหน้าเอกสาร API
+
+เปิดเบราว์เซอร์บนเครื่องของตนเองที่ `http://localhost:8252/docs`
+
+![หน้า Swagger UI ที่มีกรอบแดงรอบชื่อ CampusOps API และ marker ① เปิดหน้าเอกสาร](./images/ui-swagger-01-docs.png)
+
+*ภาพที่ ① — ส่วนหัวยืนยันว่าเป็น CampusOps API 1.0.0 และมีรายการ endpoint จริง*
+
+#### ขั้นที่ ② — กาง `GET /api/dashboard`
+
+เลื่อนถึงแถวสีน้ำเงิน `GET /api/dashboard` แล้วคลิกแถวนั้น
+
+![แถว GET api dashboard ที่กางรายละเอียดแล้ว มีกรอบแดงและ marker ② กาง GET dashboard](./images/ui-swagger-02-dashboard.png)
+
+*ภาพที่ ② — รายละเอียดเชื่อม endpoint นี้กับ REQ-08, REQ-09 และ REQ-12 และระบุว่าไม่มีพารามิเตอร์*
+
+#### ขั้นที่ ③ — เปิดโหมดส่งคำขอ GET
+
+คลิก `Try it out` ทางขวาของส่วน Parameters
+
+![ปุ่ม Try it out ของ GET dashboard มีกรอบแดงและ marker ③ กด Try it out](./images/ui-swagger-03-try-dashboard.png)
+
+*ภาพที่ ③ — Swagger เปลี่ยนจากโหมดอ่านเอกสารเป็นโหมดเตรียมส่งคำขอ*
+
+#### ขั้นที่ ④ — ส่งคำขอ GET
+
+คลิกปุ่มสีน้ำเงิน `Execute`
+
+![ปุ่ม Execute ของ GET dashboard มีกรอบแดงและ marker ④ กด Execute](./images/ui-swagger-04-execute-dashboard.png)
+
+*ภาพที่ ④ — Swagger ส่ง GET จริงและเปิดส่วน Curl, Request URL และ Server response*
+
+#### ขั้นที่ ⑤ — อ่านผลตอบกลับ `200`
+
+เลื่อนลงในส่วน `Server response` แล้วอ่าน `Code` และ `Response body`
+
+![response ของ dashboard มีกรอบแดงรอบรหัส 200 และ Response body พร้อม marker ⑤](./images/ui-swagger-05-dashboard-200.png)
+
+*ภาพที่ ⑤ — ได้ `200`; งานตามสถานะเป็น 3/2/1/2 งานเกิน SLA 2 ใบ สัญญายืมค้าง 2 รายการ และอะไหล่ใกล้หมด 2 รายการ*
+
+#### ขั้นที่ ⑥ — กาง `POST /api/tickets`
+
+เลื่อนไปที่แถวสีเขียว `POST /api/tickets` แล้วคลิกแถวนั้น
+
+![แถว POST api tickets ที่กางรายละเอียดแล้ว มีกรอบแดงและ marker ⑥ กาง POST tickets](./images/ui-swagger-06-post-ticket.png)
+
+*ภาพที่ ⑥ — แถว POST กางส่วน Request body ซึ่งเป็นข้อมูลบังคับของ endpoint*
+
+#### ขั้นที่ ⑦ — เปิดโหมดส่งคำขอ POST
+
+คลิก `Try it out` ทางขวาของแถว POST
+
+![ปุ่ม Try it out ของ POST tickets มีกรอบแดงและ marker ⑦ กด Try it out](./images/ui-swagger-07-try-ticket.png)
+
+*ภาพที่ ⑦ — ช่องตัวอย่าง JSON เปลี่ยนเป็นแบบแก้ไขได้และมีปุ่ม Execute*
+
+#### ขั้นที่ ⑧ — กรอก Request body
+
+คลิกช่อง `Request body` กด `Ctrl+A` แล้วแทนที่ด้วย JSON นี้ทั้งก้อน
+
+```json
+{
+  "asset_id": 12,
+  "title": "ลำโพงห้องเรียน 402 เสียงขาดหาย",
+  "detail": "เปิดแล้วเสียงดังบ้างหายบ้าง",
+  "priority": "HIGH"
+}
+```
+
+![ช่อง Request body มี JSON คงที่และกรอบแดงพร้อม marker ⑧ แก้ Request body](./images/ui-swagger-08-request-body.png)
+
+*ภาพที่ ⑧ — กรอก `asset_id`, `title` และ `priority` ซึ่งเป็นฟิลด์บังคับ พร้อม `detail` ให้ข้อมูลสมบูรณ์*
+
+#### ขั้นที่ ⑨ — ส่งคำขอและอ่านผลตอบกลับ `201`
+
+คลิก `Execute` แล้วเลื่อนอ่าน `Code` และ `Response body`
+
+![ปุ่ม Execute และ response 201 ของ ticket หมายเลข 9 มีกรอบแดงพร้อม marker ⑨](./images/ui-swagger-09-created.png)
+
+*ภาพที่ ⑨ — ได้ `201`; ticket หมายเลข 9 ผูกกับ asset 12 และเริ่มที่สถานะ `NEW`*
+
+✅ **สิ่งที่ต้องเห็น** — dashboard ตอบ `200` พร้อมค่าจาก seed (`NEW/ASSIGNED/IN_PROGRESS/DONE = 3/2/1/2`) และ POST ตอบ `201` พร้อม `id=9`, `asset_id=12`, `priority=HIGH`, `status=NEW`
+
+> 📝 ค่าชุดนี้มาจากฐานข้อมูล seed ที่ reset ก่อน walkthrough; ถ้าข้อมูลเดิมยังอยู่ เลข `id` และยอดสรุปอาจเปลี่ยน
+
+---
+
+## การทดลองที่ 10 — จะทดสอบข้อกำหนดจริงของลูกค้าด้วย `curl` อย่างไร
 
 **คำถาม:** REQ-01 กับ REQ-02 ที่เขียนไว้ในเอกสาร ทำงานจริงในกล่องนี้ไหม
 
@@ -482,14 +563,18 @@ GET /docs -> 200
 curl -s -o /tmp/ticket.json -w 'HTTP %{http_code}\n' -X POST http://localhost:8088/api/tickets \
   -H 'Content-Type: application/json' \
   -d '{"asset_id":12,"title":"ลำโพงห้องเรียน 402 เสียงขาดหาย","detail":"เปิดแล้วเสียงดังบ้างหายบ้าง","priority":"HIGH"}'
-TID=$(python3 -c 'import json; print(json.load(open("/tmp/ticket.json"))["id"])'); cat /tmp/ticket.json; echo " (TID=$TID)"
+python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["id"])' /tmp/ticket.json > /tmp/tid.txt
+read TID < /tmp/tid.txt
+cat /tmp/ticket.json
+echo "TID=$TID"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — **REQ-01** : ได้ `201` และใบใหม่มีสถานะ `NEW` (หมายเลข `id` · `TID` และเวลาของแต่ละคนไม่ตรงกัน — เลขวิ่งตาม sequence ของฐานข้อมูล) :
+✅ **สิ่งที่ต้องเห็น** — **REQ-01** : ได้ `201` และใบใหม่มีสถานะ `NEW`; รอบนี้ได้ `id=10` เพราะ walkthrough สร้าง ticket หมายเลข 9 ไปก่อนแล้ว :
 
 ```
 HTTP 201
-{"id":9,"asset_id":12,"title":"ลำโพงห้องเรียน 402 เสียงขาดหาย","detail":"เปิดแล้วเสียงดังบ้างหายบ้าง","priority":"HIGH","status":"NEW","assignee":null,"created_at":"2026-08-17T15:33:09.627044+00:00","closed_at":null} (TID=9)
+{"id":10,"asset_id":12,"title":"ลำโพงห้องเรียน 402 เสียงขาดหาย","detail":"เปิดแล้วเสียงดังบ้างหายบ้าง","priority":"HIGH","status":"NEW","assignee":null,"created_at":"2026-08-20T08:01:09.749983+00:00","closed_at":null}
+TID=10
 ```
 
 > 📝 **ทำไมต้องเป็น `asset_id` 12** — `A-012` (ลำโพงห้องเรียน 402) เป็นครุภัณฑ์ที่ seed **ไม่ได้** ผูกใบซ่อมหรือสัญญายืมค้างไว้
@@ -518,22 +603,23 @@ curl -s "http://localhost:8088/api/tickets?status=NEW" | python3 -c 'import sys,
 for t in json.load(sys.stdin): print(t["id"], t["status"], t["title"])'
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ใบที่เพิ่งสร้าง (`TID`) ยังอยู่ในกลุ่ม `NEW` ร่วมกับใบ 1 · 2 · 3 จาก seed (เลขบรรทัดสุดท้ายคือ `TID` ของแต่ละคน) :
+✅ **สิ่งที่ต้องเห็น** — ใบ 1–3 จาก seed, ใบ 9 จาก Swagger UI และใบ 10 จาก `curl` ยังอยู่ในกลุ่ม `NEW` :
 
 ```
 1 NEW โปรเจกเตอร์ห้อง 205 ภาพวูบดับ
 2 NEW แอร์ห้องแล็บ 2 ไม่เย็น
 3 NEW เครื่องพิมพ์ป้อนกระดาษซ้อน
 9 NEW ลำโพงห้องเรียน 402 เสียงขาดหาย
+10 NEW ลำโพงห้องเรียน 402 เสียงขาดหาย
 ```
 
 > 📝 **บทเรียน:** กฎธุรกิจของลูกค้าอยู่ใน image ไปแล้ว · แต่ที่อยู่ของฐานข้อมูลยังเป็น IP ที่เราจำเองและ **เปลี่ยนทุกครั้งที่สร้างกล่องใหม่** — **LAB 4** จะเปลี่ยนไปเรียกด้วยชื่อแทน
 
 ---
 
-## การทดลองที่ 10 — ยิงข้อกำหนดครบทั้ง 12 ข้อด้วย `api/smoke.sh`
+## การทดลองที่ 11 — จะทดสอบข้อกำหนดครบทั้ง 12 ข้อด้วย `api/smoke.sh` อย่างไร
 
-**คำถาม:** การทดลองที่ 9 ยิงมือได้แค่ REQ-01 กับ REQ-02 — แล้วอีก 10 ข้อที่เหลือใน
+**คำถาม:** การทดลองที่ 10 ยิงมือได้แค่ REQ-01 กับ REQ-02 — แล้วอีก 10 ข้อที่เหลือใน
 [`docs/01_requirements.md`](../docs/01_requirements.md) ทำงานจริงในกล่องนี้หรือเปล่า
 
 ไม่ต้องพิมพ์ `curl` ทีละข้อ เพราะแล็บแถม `api/smoke.sh` มาให้แล้ว — มันคือ REQ-01…REQ-12
@@ -544,7 +630,7 @@ for t in json.load(sys.stdin): print(t["id"], t["status"], t["title"])'
 API=http://localhost:8088 bash api/smoke.sh ; echo "exit code = $?"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — ทุกข้อขึ้น `[PASS]` และปิดท้ายด้วย `exit code = 0` (ตัวอย่างข้อ REQ-03 ที่การทดลองที่ 9 ยังไม่ได้แตะเลย) :
+✅ **สิ่งที่ต้องเห็น** — ทุกข้อขึ้น `[PASS]` และปิดท้ายด้วย `exit code = 0` (ตัวอย่างข้อ REQ-03 ที่การทดลองที่ 10 ยังไม่ได้แตะ) :
 
 ```
 ──────── REQ-03 : เปลี่ยนเป็น ASSIGNED โดยไม่ส่งชื่อช่าง ต้องได้ 400
@@ -609,7 +695,7 @@ bash verify.sh ; echo "exit code = $?"
 [PASS] .dockerignore ระบุ *.log และ smoke.sh ไว้
 [PASS] ไฟล์ 3MB ที่ตรงกับ *.log ไม่ถูกส่งเข้า build context (transferring context: 66B done)
 [PASS] ฐานข้อมูล vops2-db พร้อมรับ connection
-[PASS] docker inspect อ่าน IP ของ vops2-db ได้ : 172.18.0.4
+[PASS] docker inspect อ่าน IP ของ vops2-db ได้ : 172.18.0.2
 [PASS] รันโดยไม่ใส่ -p แล้ว docker port ไม่มีรายการ — EXPOSE ไม่ได้เปิดพอร์ตให้
 [PASS] GET /health ตอบ {"status":"ok","db":"up"} ผ่านพอร์ต 18088
 [PASS] หน้า /docs ของ FastAPI เปิดได้ผ่านพอร์ต 18088
@@ -623,7 +709,7 @@ exit code = 0
 
 สคริปต์สร้างของด้วย prefix `vops2-` และพอร์ต `18088` แล้วลบทิ้งเอง — ของที่ชื่อ `ops-` ไม่ถูกแตะ รันตอนที่ `ops-api` · `ops-db` ยังทำงานอยู่ก็ผ่าน
 
-> 📝 รอบที่ใช้เขียนเอกสารนี้ใช้เวลา **28.4 วินาที** เพราะเพิ่งทำการทดลองที่ 1–9 มา build cache กับ `postgres:17-alpine` พร้อมอยู่แล้ว · ถ้ารันบนกล่องที่เพิ่งเปิดใหม่จะนานกว่านี้มาก เพราะต้องโหลด image เองทั้งหมด
+> 📝 รอบตรวจล่าสุดในกล่องเรียนที่เพิ่งเปิดใหม่ใช้เวลา **54.858 วินาที** รวมการดาวน์โหลด image; รอบที่มี build cache พร้อมแล้วจะเร็วกว่านี้
 
 ---
 
@@ -660,9 +746,9 @@ ops-api
 ops-db
 ops-pgdata
 Untagged: ops-api:1.0
-Deleted: sha256:f827aea86b8637682beaad8988b0a40c58a695499608ceabefee42fee71c6996
+Deleted: sha256:57a01686cc2ff79ba43233eedcb19c15fa64b482113382e0f9e675756f982ad7
 Untagged: ops-api-bad:1.0
-Deleted: sha256:d88a11561e496352259b850169f2edc67cf0ce48b471bd205f6d2fd06ddc509e
+Deleted: sha256:d9ee551820b16ebceae043f59eb7586030e25c594d569221a5fb135ac0878668
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 ```
 
@@ -672,8 +758,8 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
 ```bash
 exit
-docker rm -f devtools-ops-lab2
-docker ps -a --filter "name=^devtools-"
+docker rm -f devtools-fs-lab2
+docker ps -a --filter "name=devtools-fs-lab2"
 ```
 
 ✅ ตารางสุดท้ายต้องเหลือแค่หัวตาราง
@@ -688,7 +774,7 @@ docker ps -a --filter "name=^devtools-"
 | `docker build -f Dockerfile.bad -t ops-api-bad:1.0 .` | เลือกไฟล์ Dockerfile ด้วย `-f` เมื่อชื่อไฟล์ไม่ใช่ `Dockerfile` |
 | `time docker build ...` | จับเวลา build จริง — ดูบรรทัด `real` |
 | `cat .dockerignore` | ดูรายการไฟล์ที่จะ **ไม่** ถูกส่งเข้า build context |
-| `docker image inspect <image> --format '{{json .Config.ExposedPorts}}'` | ดูว่า image ประกาศ `EXPOSE` พอร์ตอะไรไว้ |
+| `grep '^EXPOSE' api/Dockerfile` | อ่านพอร์ตที่ Dockerfile ประกาศไว้โดยไม่ต้องจัดรูปผลจาก metadata |
 | `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <กล่อง>` | อ่าน IP ของกล่องบน default bridge |
 | `docker run -d --name ops-api -e DATABASE_URL=... ops-api:1.0` | ส่งค่าตั้งค่าตอนรันด้วย `-e` |
 | `docker run -d --name ops-api -p 8088:8000 ops-api:1.0` | เปิดประตูจริง : พอร์ต 8088 ของเครื่อง → 8000 ในกล่อง |
