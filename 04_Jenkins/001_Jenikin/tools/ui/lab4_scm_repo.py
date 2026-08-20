@@ -1,70 +1,93 @@
 #!/usr/bin/env python3
-"""Create and verify the public hello-ci repository through the Gitea UI."""
+"""Create or assert the public hello-ci repository through the GitHub API."""
 
 from __future__ import annotations
 
 import argparse
+import json
 import os
-from pathlib import Path
+import urllib.error
+import urllib.request
 
-from common import browser_page, gitea_login, log, require, run_main, screenshot, wait_visible
-
-
-ROOT = Path(__file__).resolve().parents[2]
-REPO_SHOT = ROOT / "slides_assets" / "lab4_gitea_repo.png"
+from common import log, require, run_main
 
 
-def create_repo(page, base_url: str) -> None:
-    response = page.goto(f"{base_url}/student/hello-ci", wait_until="domcontentloaded")
-    if response is not None and response.status == 200:
-        log("student/hello-ci already exists; keeping the current repository")
-        return
-
-    page.goto(f"{base_url}/repo/create", wait_until="domcontentloaded")
-    repo_name = wait_visible(page.locator("input[name='repo_name']"), "repository name field")
-    repo_name.fill("hello-ci")
-
-    private = page.locator("input[name='private']")
-    if private.count() and private.first.is_checked():
-        private.first.uncheck()
-    auto_init = page.locator("input[name='auto_init']")
-    if auto_init.count() and auto_init.first.is_checked():
-        auto_init.first.uncheck()
-
-    page.get_by_role("button", name="Create Repository").click()
-    page.wait_for_url(lambda url: "/student/hello-ci" in url and "/repo/create" not in url)
-    require(page.url.rstrip("/").endswith("/student/hello-ci"), "public hello-ci repository was created")
+API = "https://api.github.com"
+FILES = {"Jenkinsfile", "hello.sh", "expected.txt"}
 
 
-def assert_public_repo(page, base_url: str, require_files: bool) -> None:
-    response = page.request.get(f"{base_url}/api/v1/repos/student/hello-ci")
-    require(response.ok, f"Gitea repository API returned HTTP {response.status}")
-    data = response.json()
-    require(data.get("full_name") == "student/hello-ci", "repository full name is student/hello-ci")
+def github_request(method: str, path: str, token: str, payload: dict | None = None) -> tuple[int, object]:
+    body = None if payload is None else json.dumps(payload).encode("utf-8")
+    request = urllib.request.Request(
+        f"{API}{path}",
+        data=body,
+        method=method,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "Content-Type": "application/json",
+            "User-Agent": "cicd2569-lab4-helper",
+        },
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            raw = response.read()
+            return response.status, json.loads(raw) if raw else {}
+    except urllib.error.HTTPError as error:
+        raw = error.read()
+        try:
+            data: object = json.loads(raw) if raw else {}
+        except json.JSONDecodeError:
+            data = {}
+        return error.code, data
+
+
+def assert_repo(data: object, user: str) -> None:
+    require(isinstance(data, dict), "GitHub API returned a repository object")
+    assert isinstance(data, dict)
+    owner = str((data.get("owner") or {}).get("login", ""))
+    require(owner.casefold() == user.casefold(), "repository owner matches GITHUB_USER")
+    require(data.get("name") == "hello-ci", "repository name is hello-ci")
     require(data.get("private") is False, "hello-ci is public")
 
-    page.goto(f"{base_url}/student/hello-ci", wait_until="domcontentloaded")
-    wait_visible(page.locator("body"), "hello-ci repository page")
-    if require_files:
-        body = page.locator("body").inner_text()
-        for filename in ("Jenkinsfile", "hello.sh", "expected.txt"):
-            require(filename in body, f"repository page lists {filename}")
-        require("main" in body, "repository page shows branch main")
-        screenshot(page, REPO_SHOT, "Gitea hello-ci main branch with project files and Jenkinsfile")
+
+def assert_files(user: str, token: str, expected_empty: bool) -> None:
+    status, data = github_request("GET", f"/repos/{user}/hello-ci/contents?ref=main", token)
+    if expected_empty:
+        require(status in {404, 409}, "new repository has no initialized main branch")
+        return
+    require(status == 200 and isinstance(data, list), "GitHub contents API returned branch main")
+    assert isinstance(data, list)
+    names = {str(item.get("name")) for item in data if isinstance(item, dict)}
+    require(FILES <= names, "main lists Jenkinsfile, hello.sh, and expected.txt")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base-url", default=os.getenv("GITEA_BASE_URL", "http://host.docker.internal:14300"))
-    parser.add_argument("--action", choices=("create", "verify"), required=True)
+    parser.add_argument("--action", choices=("create", "empty", "files", "verify"), required=True)
     args = parser.parse_args()
-    base_url = args.base_url.rstrip("/")
+    user = os.environ.get("GITHUB_USER", "")
+    token = os.environ.get("GITHUB_TOKEN", "")
+    require(bool(user), "GITHUB_USER is set")
+    require(bool(token), "GITHUB_TOKEN is set without printing it")
 
-    with browser_page() as (_, _, _, page):
-        gitea_login(page, base_url)
+    status, data = github_request("GET", f"/repos/{user}/hello-ci", token)
+    if args.action == "create" and status == 404:
+        status, data = github_request(
+            "POST", "/user/repos", token, {"name": "hello-ci", "private": False, "auto_init": False}
+        )
+        require(status == 201, "GitHub API created hello-ci")
+    else:
+        require(status == 200, "GitHub API found hello-ci")
         if args.action == "create":
-            create_repo(page, base_url)
-        assert_public_repo(page, base_url, require_files=args.action == "verify")
+            log("hello-ci already exists; preserving it")
+
+    assert_repo(data, user)
+    if args.action in {"create", "empty"}:
+        assert_files(user, token, expected_empty=True)
+    elif args.action in {"files", "verify"}:
+        assert_files(user, token, expected_empty=False)
 
 
 if __name__ == "__main__":

@@ -1,313 +1,294 @@
-# LAB 4 — Pipeline จาก Git ด้วย Gitea และ Poll SCM
+# LAB 4 — Pipeline จาก GitHub และ Poll SCM
 
-แล็บ 40 นาทีนี้ศึกษาการจัดเก็บ `Jenkinsfile` ร่วมกับ source code ใน Git และการกำหนดให้ Jenkins checkout pipeline จาก Gitea โดยตรง เมื่อจบแล็บ นักศึกษาจะสร้าง public repository, เชื่อม Pipeline script from SCM และอธิบายได้ว่า Poll SCM ตรวจพบ commit ใหม่และสร้าง build โดยอัตโนมัติอย่างไร
+แล็บประมาณ 40 นาทีนี้ศึกษาการเก็บ `Jenkinsfile` ร่วมกับ source code บน GitHub การให้ Jenkins checkout public repository โดยไม่ใช้ credential และการใช้ Poll SCM ตรวจ commit ใหม่ เมื่อจบแล็บ นักศึกษาจะอธิบายเส้นทาง push กับ checkout ที่ใช้ URL เดียวกันแต่ยืนยันตัวตนต่างกัน และพิสูจน์ได้ว่า build อัตโนมัติ checkout SHA เดียวกับที่ push
 
 ## ทฤษฎีก่อนลงมือ
 
-Pipeline-as-Code คือการจัดเก็บนิยาม pipeline เป็นไฟล์ที่ควบคุมเวอร์ชันร่วมกับ source code แนวทางนี้ทำให้การเปลี่ยน pipeline ผ่านการ review, ตรวจสอบประวัติ และ rollback ด้วย Git ได้เช่นเดียวกับโค้ด ทั้งยังทำให้ pipeline แต่ละ revision สัมพันธ์กับ commit ที่นำไป build
+Pipeline-as-Code คือการเก็บนิยาม pipeline ไว้ใน version control ร่วมกับ source code การแก้ pipeline จึงผ่าน review, history และ rollback แบบเดียวกับโค้ด และ Jenkins สามารถโหลด `Jenkinsfile` ของ revision ที่กำลัง build ได้โดยตรง
 
-Gitea คือ Git server แบบ self-hosted ที่สามารถรันเป็น container ภายในสภาพแวดล้อมแล็บได้ ต่างจาก GitHub ซึ่งเป็นบริการ hosted บนอินเทอร์เน็ต แล็บนี้ใช้ public repository ภายใน network `cicd-net` เพื่อให้ Jenkins checkout โดยไม่ต้องใช้ credential
+public repository ทำให้การอ่านผ่าน HTTPS ไม่ต้องมี credential แต่การเขียนยังต้องยืนยันสิทธิ์ เจ้าของ repository จึงมอง URL เดียวกันได้สองแบบดังนี้
 
-ผู้เรียกแต่ละรายมองคำว่า `localhost` ต่างกัน คำสั่ง Git ที่รันใน devtools จึงใช้ `http://localhost:3000` แต่ Jenkins container ต้องใช้ DNS ของ Docker คือ `http://gitea:3000` ความแตกต่างนี้เป็นผลจาก network namespace ไม่ใช่การกำหนด URL ที่ขัดแย้งกัน
+| ผู้เรียก | URL | การยืนยันตัวตน | การกระทำ |
+|---|---|---|---|
+| Git ใน devtools | `https://github.com/<GITHUB_USER>/hello-ci.git` | Username=`<GITHUB_USER>`, Password=`<GITHUB_TOKEN>` ที่ prompt | push commit ขึ้น `main` |
+| Jenkins | `https://github.com/<GITHUB_USER>/hello-ci.git` | `- none -` | checkout public repository |
 
-Poll SCM คือ trigger ที่ให้ Jenkins ตรวจ revision ของ remote repository ตามตาราง cron แล้วสร้าง build เฉพาะเมื่อ revision เปลี่ยน แล็บนี้กำหนด `* * * * *` เพื่อ poll ทุกนาทีจริง จึงสังเกตทั้งความล่าช้าถึงรอบถัดไปและต้นทุนของการตรวจซ้ำที่ส่วนใหญ่ไม่พบการเปลี่ยนแปลง รายละเอียด Pipeline-as-Code, SCM และ trigger ดู slide ตอนที่ 5
+Poll SCM เป็น pull model: Jenkins เป็นฝ่ายติดต่อ GitHub ตาม cron แล้วเริ่ม build เมื่อ revision เปลี่ยน จึงมีความหน่วงถึงรอบตรวจถัดไปและมี outbound request แม้รอบนั้นไม่มี commit ใหม่
 
-## 🎯 ขอบเขตและผลลัพธ์การเรียนรู้
+## ผลลัพธ์การเรียนรู้
 
-- ติดตั้ง Gitea ด้วย Domain และ Base URL ตาม SCM contract
-- สร้างบัญชี `student` และ public repository `student/hello-ci` บน branch `main`
-- กำหนด job `hello-ci-pipeline` ให้โหลด `Jenkinsfile` ผ่าน Pipeline script from SCM
-- ตรวจหลักฐาน checkout และผลทดสอบจาก Console Output
-- เปิด Poll SCM และยืนยัน build ที่มีสาเหตุ `Started by an SCM change`
+- สร้าง public repository `<GITHUB_USER>/hello-ci` โดยไม่ initialize จากหน้าเว็บ
+- push `Jenkinsfile`, `hello.sh` และ `expected.txt` โดยไม่ใส่ PAT ใน URL
+- สร้าง `hello-ci-pipeline` แบบ Pipeline script from SCM โดยไม่มี `credentialsId`
+- เปิด Poll SCM ด้วย `* * * * *` และแยกหลักฐาน polling decision ออกจาก build cause
+- ยืนยันว่า SHA ที่ Jenkins checkout ตรงกับ `origin/main`
 
-## สภาพตั้งต้น
+## การทดลองที่ 1 — สภาพจบ LAB 3 และ GitHub พร้อมหรือไม่? (~3 นาที)
 
-ต้องมีสถานะจบ LAB 3: devtools ยังทำงาน, network `cicd-net`, container `jenkins` และ volume `jenkins_home` อยู่ครบ แต่ **ยังไม่มี container `gitea`**
+**คำถาม:** Jenkins จาก LAB 3 ยังทำงาน และ PAT เป็นของบัญชีที่ระบุพร้อม scope สำหรับแล็บต่อเนื่องหรือไม่?
 
-```bash
-docker ps --format '{{.Names}}\t{{.Status}}'
-```
-
-✅ **สิ่งที่ต้องเห็น** :
-
-```text
-jenkins    Up ...
-```
-
-> ยังไม่มี? ย้อนไปทำ [LAB 3](../003_LAB_Docker_Build_Push/README.md) ก่อน (ใช้เวลา ~45 นาที)
-
-## การทดลองที่ 1 — Git server จะอยู่ที่ใด?
-
-**คำถาม:** Gitea 1.27.2 จะทำงานบน network, volume และ restart policy ตาม contract พร้อมเปิดพอร์ต 3000 ได้หรือไม่?
-
-การแยก Gitea เป็น container ทำให้ Git service มีวงจรชีวิตและพื้นที่ข้อมูลของตนเอง ขณะที่การเชื่อม `cicd-net` ทำให้ Jenkins เรียก service ด้วยชื่อ `gitea` ได้
+รันใน devtools โดยแทน placeholder ด้วยค่าจริงเฉพาะใน shell; ห้ามบันทึก token ลงไฟล์หรือ command history ที่เผยแพร่
 
 ```bash
-docker run -d --name gitea --restart unless-stopped --network cicd-net -p 3000:3000 -e GITEA__webhook__ALLOWED_HOST_LIST=private -e GITEA__server__DISABLE_SSH=true -v gitea_data:/data gitea/gitea:1.27.2
-docker ps --filter name=^gitea$ --format '{{.Names}}\t{{.Image}}\t{{.Status}}'
+docker ps
 ```
 
-✅ **สิ่งที่ต้องเห็น** :
+✅ **ผลที่สังเกตได้จากการรันจริง**
 
 ```text
-gitea    gitea/gitea:1.27.2    Up ...
+CONTAINER ID   IMAGE                 COMMAND                  CREATED          STATUS          PORTS                                                    NAMES
+c49cc54fbb9e   jenkins-docker:2569   "/usr/bin/tini -- /u…"   <เวลา>           Up <เวลา>       0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp, 50000/tcp   jenkins
 ```
-
-> 📝 `--restart unless-stopped` และ `gitea_data` ทำให้ service กับ repository กลับมาหลัง restart; แล็บนี้ปิด SSH และใช้ Git ผ่าน HTTP เท่านั้น
-
-## การทดลองที่ 2 — Installer และบัญชีแรกต้องกำหนดค่าอย่างไร?
-
-**คำถาม:** Gitea จะสร้าง clone URL แบบ canonical และมีบัญชี `student` สำหรับทั้งเว็บกับ Git HTTP ได้หรือไม่?
-
-หน้า installer กำหนด URL ที่ Gitea ใช้สร้าง clone link และ callback ภายในระบบ แม้ agent ทดสอบจะเข้าผ่าน shifted port แต่ค่าที่ผู้เรียนกรอกต้องอ้าง URL canonical เสมอ
-
-1. เปิด `http://localhost:3000` และเลือก **Database Type → SQLite3**
-2. กรอก **Server Domain** เป็น `localhost` และ **Gitea Base URL** เป็น `http://localhost:3000/`
-3. ตรวจว่า Gitea HTTP Listen Port เป็น `3000` แล้วกด **Install Gitea**
-
-![หน้า Initial Configuration ที่กรอกค่า canonical](../slides_assets/lab4_s01_gitea_install_form.png)
-
-*ภาพที่ 1 ต้องสังเกตค่า SQLite3, Server Domain `localhost`, HTTP port `3000` และ Gitea Base URL `http://localhost:3000/`*
-
-บัญชีแรกได้รับสิทธิ์ administrator ของ Gitea จึงใช้บัญชี `student` ตาม fixture ของชุดแล็บ และใช้บัญชีเดียวกันสำหรับลงชื่อเข้าเว็บกับยืนยันตัวตนตอน `git push`
-
-1. เมื่อ installer ทำงานเสร็จ เลือก **Register**
-2. กรอก Username `student`, Email Address `student@example.com` และ Password `student2569`
-3. ยืนยัน password เดิม แล้วกด **Register Account**
-
-![แบบฟอร์มลงทะเบียนบัญชี student](../slides_assets/lab4_s02_student_registration.png)
-
-*ภาพที่ 2 ต้องสังเกต Username และ Email Address ตาม fixture ส่วน password ถูกปิดบังโดยแบบฟอร์ม*
-
-✅ **สิ่งที่ต้องเห็น** :
-
-```text
-หน้า Dashboard ของ student เปิดได้ และ URL ที่ Gitea แสดงขึ้นต้นด้วย http://localhost:3000/
-```
-
-> 📝 แม้ agent ใช้ shifted port ค่าใน form ต้องเป็น `localhost:3000` ตาม URL canonical
-
-ขณะนี้ Gitea พร้อมใช้งานและบัญชี `student` อยู่ในระบบ การทดลองถัดไปจะสร้าง repository ว่างเพื่อรับไฟล์จาก Git client
-
-## การทดลองที่ 3 — Repository สำหรับ CI ต้องเริ่มแบบใด?
-
-**คำถาม:** เราจะสร้าง repository ว่างแบบ public เพื่อให้ Jenkins checkout โดยไม่ใช้ credential ได้หรือไม่?
-
-repository ต้องเป็น public ตาม SCM contract และไม่ควร initialize จากหน้าเว็บ เพราะไฟล์ต้นฉบับจะถูก push จาก working tree ใน devtools โดยตรง
-
-1. ที่แถบนำทางของ Gitea กด **+ → New Repository**
-2. กรอก **Repository Name** เป็น `hello-ci` และไม่เลือก **Make repository private**
-3. ไม่เลือก **Initialize Repository** แล้วกด **Create Repository**
-
-![แบบฟอร์มสร้าง public repository hello-ci](../slides_assets/lab4_s03_hello_repo_form.png)
-
-*ภาพที่ 3 ต้องสังเกต owner `student`, ชื่อ `hello-ci`, branch `main` และช่อง Private/Initialize ที่ไม่ถูกเลือก*
-
-> **ทางเลือกอัตโนมัติ (รันจากเครื่อง host ของผู้สอน):** helper ใต้ `tools/ui` ใช้ Playwright ซึ่งไม่มีใน devtools image นักศึกษาจึงทำขั้น UI ตามรายการด้านบนตามปกติ ส่วนผู้สอนที่ติดตั้ง Playwright และมี course tree บน host ให้กำหนด `COURSE_ROOT` บน host ก่อนใช้คำสั่งอัตโนมัติใน LAB นี้
-
-เส้นทางเดียวกันตรวจอัตโนมัติจาก host ได้ด้วย:
 
 ```bash
-(cd "$COURSE_ROOT" && GITEA_BASE_URL=http://localhost:3000 python3 tools/ui/lab4_scm_repo.py --action create)
+export GITHUB_USER='<GITHUB_USER>' && export GITHUB_TOKEN='<GITHUB_TOKEN>' && (cd "$COURSE_ROOT" && bash tools/bootstrap/github_preflight.sh)
 ```
 
-✅ **สิ่งที่ต้องเห็น** :
+✅ **ผลที่สังเกตได้จากการรันจริง**
 
 ```text
-[ui]... assert: repository full name is student/hello-ci
-[ui]... assert: hello-ci is public
-[ui]... PASS
+[github-preflight] กำลังตรวจบัญชีและสิทธิ์ของ GitHub token...
+[github-preflight][ผ่าน] login ตรงกับ GITHUB_USER และ scope ผ่านชุด repo
 ```
 
-## การทดลองที่ 4 — Jenkinsfile จะขึ้น Git พร้อมโค้ดได้อย่างไร?
+ผล `public_repo + admin:repo_hook` ก็ผ่าน contract เช่นกัน preflight เรียก `GET /user` และตรวจ scope จาก response header โดยไม่สร้าง probe repository และไม่พิมพ์ token
 
-**คำถาม:** branch `main` จะเก็บ script, expected output และ Jenkinsfile ชุดเดียวกับแล็บได้หรือไม่?
+## การทดลองที่ 2 — เหตุใด push ต้องใช้ PAT แต่ checkout ไม่ต้องใช้? (~3 นาที)
 
-การ commit ไฟล์ทั้งสามร่วมกันทำให้ pipeline definition, โปรแกรมที่ทดสอบ และผลที่คาดหวังอ้าง revision เดียวกัน ก่อนรันคำสั่งให้เปิด terminal ที่ root ของชุดสอนภายใน devtools
+**คำถาม:** สิทธิ์ของผู้เขียนกับผู้อ่าน public repository ต่างกันอย่างไร และ Poll SCM เริ่มการตรวจจากฝั่งใด?
+
+ใช้ตารางในหัวข้อทฤษฎีไล่เส้นทางข้อมูล: push เป็น write จึงต้องใช้ PAT ที่ prompt ส่วน Jenkins checkout เป็น anonymous read และ Poll SCM เริ่ม request จาก Jenkins ไม่ใช่ GitHub
+
+✅ **สิ่งที่ต้องสรุปได้**
+
+```text
+git push = authenticated write
+Jenkins checkout = anonymous read
+Poll SCM = Jenkins-initiated pull model
+```
+
+## การทดลองที่ 3 — Repository ว่างบน GitHub ต้องกำหนดอย่างไร? (~5 นาที)
+
+**คำถาม:** เราจะสร้าง public repository ว่างชื่อ `hello-ci` เพื่อรับ commit แรกจาก devtools ได้หรือไม่?
+
+1. ลงชื่อเข้า GitHub แล้วกด **+ → New repository**
+2. เลือก Owner เป็น `<GITHUB_USER>` และกรอก **Repository name** เป็น `hello-ci`
+3. เลือก **Public** และไม่เลือก **Add a README file**, `.gitignore` หรือ license
+4. กด **Create repository**
+
+![ลำดับสร้าง public repository hello-ci](../slides_assets/lab4_s01_github_new_repo.png)
+
+*ภาพที่ 1: ภาพจำลอง — UI จริงอาจต่างเล็กน้อย; กรอกชื่อ `hello-ci`, เลือก Public, ไม่ initialize แล้วกด Create repository ดูขั้นตอนอ้างอิงจาก [GitHub Docs: Creating a new repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository)*
+
+เปิด `https://github.com/<GITHUB_USER>/hello-ci` หลังสร้างสำเร็จ หน้า public ต้องระบุว่า repository ยังว่าง
+
+![หน้า public repository ก่อนมี commit](../slides_assets/lab4_s02_github_empty_repo.png)
+
+*ภาพที่ 2: หลักฐานจริงจากหน้า public repository ที่ว่าง โดย mask ชื่อเจ้าของเป็น `<GITHUB_USER>` ตั้งแต่ตอน capture*
+
+> **ทางเลือกอัตโนมัติสำหรับผู้สอน (รันจาก host):** Playwright อยู่ใน `/opt/venv` และ helper ใช้ GitHub API จึงไม่ login ผ่านหน้าเว็บ ให้กำหนด `COURSE_ROOT`, `GITHUB_USER` และ `GITHUB_TOKEN` ใน environment ก่อนรัน; วิธีนี้แทนขั้นคลิกสำหรับการเตรียม/ตรวจชั้นเรียน แต่ภาพจำลองยังใช้สอนลำดับ UI
+>
+> ```bash
+> (cd "$COURSE_ROOT" && /opt/venv/bin/python tools/ui/lab4_scm_repo.py --action create)
+> ```
+>
+> ✅ **ผลที่สังเกตได้จากการรันจริง**
+>
+> ```text
+> [ui][<เวลา>] assert: GitHub API created hello-ci
+> [ui][<เวลา>] assert: repository owner matches GITHUB_USER
+> [ui][<เวลา>] assert: repository name is hello-ci
+> [ui][<เวลา>] assert: hello-ci is public
+> [ui][<เวลา>] assert: new repository has no initialized main branch
+> [ui][<เวลา>] PASS
+> ```
+
+## การทดลองที่ 4 — สามไฟล์จะขึ้น branch main โดยไม่เก็บ PAT ได้อย่างไร? (~6 นาที)
+
+**คำถาม:** working tree ใหม่จะ commit ไฟล์ของแล็บด้วย identity ระดับ repository แล้ว push ไป GitHub อย่างปลอดภัยได้หรือไม่?
 
 ```bash
-git config --global init.defaultBranch main && git config --global user.name 'Student' && git config --global user.email 'student@example.com'
-mkdir "$HOME/hello-ci" && cp 004_LAB_Pipeline_From_Git/{Jenkinsfile,hello.sh,expected.txt} "$HOME/hello-ci/" && cd "$HOME/hello-ci" && chmod +x hello.sh && git init && git add . && git commit -m 'Add Pipeline as Code' && git remote add origin http://localhost:3000/student/hello-ci.git && git push -u origin main
+mkdir "$HOME/hello-ci" && cp "$COURSE_ROOT"/004_LAB_Pipeline_From_Git/{Jenkinsfile,hello.sh,expected.txt} "$HOME/hello-ci/"
+cd "$HOME/hello-ci" && chmod +x hello.sh && git init -b main && git config user.name Student && git config user.email student@example.invalid && git add Jenkinsfile hello.sh expected.txt && git commit -m 'Add Pipeline as Code' && git remote add origin https://github.com/<GITHUB_USER>/hello-ci.git && git push -u origin main
 ```
 
-เมื่อ Git ขอ credential ให้กรอก username `student` และ password `student2569` จากนั้นตรวจสถานะผ่านหน้า repository ซึ่งเป็นหลักฐานว่า remote branch รับ commit แล้ว
+เมื่อ Git ถาม credential ให้กรอก **Username** เป็น `<GITHUB_USER>` และ **Password** เป็น `<GITHUB_TOKEN>` GitHub ใช้ PAT แทน account password สำหรับ HTTPS push
 
-1. เปิด `http://localhost:3000/student/hello-ci`
-2. เลือก branch **main**
-3. ตรวจรายการไฟล์ว่ามี `Jenkinsfile`, `hello.sh` และ `expected.txt`
-
-![หน้า repository hello-ci ที่มีไฟล์ครบ](../slides_assets/lab4_s04_repo_files.png)
-
-*ภาพที่ 4 ต้องสังเกต public repository `student/hello-ci`, branch `main`, commit แรก และไฟล์โครงการครบสามไฟล์*
-
-✅ **สิ่งที่ต้องเห็น** :
+✅ **ผลที่สังเกตได้จากการรันจริง**
 
 ```text
+Initialized empty Git repository in /root/hello-ci/.git/
+[main (root-commit) <SHA>] Add Pipeline as Code
+ 3 files changed, 31 insertions(+)
+ create mode 100644 Jenkinsfile
+ create mode 100644 expected.txt
+ create mode 100755 hello.sh
+To https://github.com/<GITHUB_USER>/hello-ci.git
+ * [new branch]      main -> main
 branch 'main' set up to track 'origin/main'.
-Jenkinsfile    expected.txt    hello.sh
 ```
 
-> 📝 URL ตอน push คือ `localhost` เพราะคำสั่งรันใน devtools shell; password ที่ prompt ใช้เพื่อ push เท่านั้น ไม่ได้เขียนใน remote URL
+ห้ามเขียน token ลง URL เช่น `https://<GITHUB_TOKEN>@...` และห้ามใช้ `credential.helper store` เพราะทั้งสองแบบทำให้ secret คงอยู่บนดิสก์ หลัง push ให้ refresh หน้า repository และตรวจ branch `main` กับไฟล์ทั้งสาม
 
-ขณะนี้ source code และ `Jenkinsfile` อยู่บน Gitea แล้ว ขั้นต่อไปจะสร้าง Jenkins job ที่อ้าง repository นี้แทนการวาง pipeline script ในหน้า Jenkins
+![หน้า public repository หลัง push ไฟล์โครงการ](../slides_assets/lab4_s03_github_repo_files.png)
 
-## การทดลองที่ 5 — ทำไม Jenkins ใช้ URL คนละแบบ?
+*ภาพที่ 3: หลักฐานจริงว่า branch `main` มี `Jenkinsfile`, `hello.sh` และ `expected.txt` โดย mask ชื่อเจ้าของก่อนบันทึกภาพ*
 
-**คำถาม:** Job แบบ Pipeline script from SCM จะ checkout public repository ผ่าน DNS ภายใน Docker ได้อย่างไร?
+## การทดลองที่ 5 — Jenkins จะโหลด Pipeline จาก GitHub อย่างไร? (~7 นาที)
 
-เริ่มจากสร้าง job ชนิด Pipeline เพื่อให้ Jenkins เตรียมส่วน Definition สำหรับ Pipeline-as-Code ชื่อ job ต้องตรง contract เพราะ LAB 5 จะปรับ trigger ของ job เดิมต่อไป
+**คำถาม:** Job `hello-ci-pipeline` จะบันทึก anonymous GitHub checkout, branch และ Script Path ตรง contract ได้หรือไม่?
 
 1. เปิด `http://localhost:8080` แล้วเลือก **New Item**
-2. กรอกชื่อ `hello-ci-pipeline`
-3. เลือก **Pipeline** แล้วกด **OK**
+2. กรอก `hello-ci-pipeline`, เลือก **Pipeline** แล้วกด **OK**
 
-![หน้า New Item สำหรับ hello-ci-pipeline](../slides_assets/lab4_s05_new_pipeline_item.png)
+![หน้า New Item สำหรับ hello-ci-pipeline](../slides_assets/lab4_s04_jenkins_new_item.png)
 
-*ภาพที่ 5 ต้องสังเกตชื่อ `hello-ci-pipeline`, ชนิด Pipeline ที่เลือก และปุ่ม OK ที่พร้อมดำเนินการ*
-
-หน้า Configure เชื่อม job กับ public repository ผ่านชื่อ service บน `cicd-net` จึงเลือก Credentials เป็น `- none -` และระบุ branch กับ Script Path ให้ตรงไฟล์จริง
+*ภาพที่ 4: เลือกชื่อ `hello-ci-pipeline` และชนิด Pipeline ก่อนกด OK*
 
 1. ในส่วน **Pipeline** เลือก Definition → **Pipeline script from SCM** และ SCM → **Git**
-2. กรอก Repository URL `http://gitea:3000/student/hello-ci.git` และเลือก Credentials → **- none -**
-3. กรอก Branch Specifier `*/main`, Script Path `Jenkinsfile` แล้วกด **Save**
+2. กรอก Repository URL `https://github.com/<GITHUB_USER>/hello-ci.git`
+3. เลือก Credentials → **- none -**, กรอก Branch Specifier `*/main` และ Script Path `Jenkinsfile`
+4. กด **Save**
 
-![ส่วน Pipeline script from SCM ที่กรอก Gitea URL](../slides_assets/lab4_s06_pipeline_from_scm.png)
+![ส่วน Pipeline script from SCM ที่ชี้ GitHub](../slides_assets/lab4_s05_jenkins_scm_config.png)
 
-*ภาพที่ 6 ต้องสังเกต Definition, SCM, URL ภายใน `gitea:3000`, credential ว่าง และ branch `*/main`*
+*ภาพที่ 5: URL ถูก mask เป็น placeholder; ต้องสังเกต GitHub HTTPS, credential ว่าง, branch `*/main` และ `Jenkinsfile`*
 
-```bash
-(cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab4_scm_job.py --action configure)
-```
+> **ทางเลือกอัตโนมัติสำหรับผู้สอน (รันจาก host):** helper เปิด Jenkins UI จริงผ่าน Playwright สร้าง New Item และกรอก Pipeline section ตามลำดับเดียวกับนักศึกษา
+>
+> ```bash
+> (cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 /opt/venv/bin/python tools/ui/lab4_scm_job.py --action configure)
+> ```
+>
+> ✅ **ผลที่สังเกตได้จากการรันจริง**
+>
+> ```text
+> [ui][<เวลา>] assert: job definition is Pipeline script from SCM
+> [ui][<เวลา>] assert: saved SCM URL is the anonymous GitHub HTTPS URL
+> [ui][<เวลา>] assert: saved branch is main
+> [ui][<เวลา>] assert: saved Script Path is Jenkinsfile
+> [ui][<เวลา>] assert: public repository checkout has no credentialsId
+> [ui][<เวลา>] PASS
+> ```
 
-| ผู้เรียก | URL | เหตุผล |
-|---|---|---|
-| Git ใน devtools shell | `http://localhost:3000/student/hello-ci.git` | `localhost` คือ devtools ที่ publish Gitea |
-| Jenkins container | `http://gitea:3000/student/hello-ci.git` | `localhost` ของ Jenkins คือ Jenkins เอง; ต้องใช้ชื่อ container บน `cicd-net` |
+## การทดลองที่ 6 — Manual build พิสูจน์ checkout และ test ได้หรือไม่? (~4 นาที)
 
-✅ **สิ่งที่ต้องเห็น** :
-
-```text
-[ui]... assert: job definition is Pipeline script from SCM
-[ui]... assert: saved SCM URL uses the gitea container DNS name
-[ui]... PASS
-```
-
-## การทดลองที่ 6 — Build นี้ checkout จริงหรือไม่?
-
-**คำถาม:** Build Now จะโหลด Jenkinsfile และโค้ดจาก commit แล้วรันทุก stage จนสำเร็จได้หรือไม่?
-
-build แรกทำหน้าที่พิสูจน์ SCM contract ก่อนเปิด trigger หาก checkout หรือ test ผิดพลาดจะวิเคราะห์ได้โดยไม่ปะปนกับกลไก polling
+**คำถาม:** Build Now จะโหลด `Jenkinsfile` จาก GitHub และรันผลทดสอบจนจบ SUCCESS หรือไม่?
 
 1. ที่หน้า `hello-ci-pipeline` กด **Build Now**
-2. เลือก build ล่าสุดจากรายการ **Builds**
-3. เปิด **Console Output** และตรวจผลจาก Git checkout กับ stage Test
+2. เปิด build ล่าสุด → **Console Output**
+3. ตรวจ revision, ข้อความจาก `hello.sh` และสถานะบรรทัดสุดท้าย
 
-```bash
-(cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab4_scm_job.py --action build)
-```
+![Console Output ของ manual build](../slides_assets/lab4_s06_manual_build_console.png)
 
-![Console Output ของ manual build จาก SCM](../slides_assets/lab4_s07_manual_build_console.png)
+*ภาพที่ 6: หลักฐานจริงของ Git checkout, `Hello from GitHub` และ `Finished: SUCCESS`; capture ผ่านขั้น mask ก่อนบันทึก*
 
-*ภาพที่ 7 ต้องสังเกต `Hello from Gitea`, ผล lightweight test และ `Finished: SUCCESS` จากไฟล์ใน repository*
-
-✅ **สิ่งที่ต้องเห็น** :
+✅ **ผลที่สังเกตได้จากการรันจริง**
 
 ```text
-Checking out Revision ... (origin/main)
-Hello from Gitea
+Checking out Revision <SHA> (refs/remotes/origin/main)
+Hello from GitHub
 Lightweight test passed; no image was pushed
 Finished: SUCCESS
 ```
 
-> 📝 ก่อนเริ่ม stage Jenkins มี Declarative checkout เพิ่มเอง เพราะ definition ของ job โหลด Jenkinsfile และ workspace จาก SCM
+## การทดลองที่ 7 — Poll SCM ทุกนาทีบันทึกใน job ได้หรือไม่? (~4 นาที)
 
-## การทดลองที่ 7 — จะเปิด Poll SCM ทุกนาทีได้อย่างไร?
-
-**คำถาม:** Trigger ของ job จะบันทึก schedule `* * * * *` ผ่านหน้า Configure ได้หรือไม่?
-
-Poll SCM ต้องกำหนดผ่าน job UI ตาม contract ไม่ใส่ `triggers {}` ใน `Jenkinsfile` เพื่อให้ LAB 5 สามารถเปลี่ยน trigger เป็น webhook โดยไม่แก้ source code
+**คำถาม:** Jenkins จะบันทึก trigger หนึ่งตัวด้วย schedule `* * * * *` ผ่านหน้า Configure ได้หรือไม่?
 
 1. ไปที่ **hello-ci-pipeline → Configure → Triggers**
 2. เลือก **Poll SCM** และกรอก Schedule `* * * * *`
-3. ตรวจคำเตือน **Do you really mean “every minute”** แล้วกด **Save**
+3. อ่านคำเตือน **Do you really mean “every minute”** แล้วกด **Save**
 
-![Build Triggers ที่เปิด Poll SCM ทุกนาที](../slides_assets/lab4_s08_poll_scm_trigger.png)
+![Poll SCM ทุกนาทีในหน้า Configure](../slides_assets/lab4_s07_poll_scm_trigger.png)
 
-*ภาพที่ 8 ต้องสังเกต Poll SCM ที่ถูกเลือก, schedule ห้าช่องเป็น `*` และคำเตือน every minute ของ Jenkins*
+*ภาพที่ 7: Poll SCM ถูกเลือกและ schedule มีเครื่องหมาย `*` ห้าช่อง พร้อมคำเตือน every minute*
+
+> **ทางเลือกอัตโนมัติสำหรับผู้สอน (รันจาก host):**
+>
+> ```bash
+> (cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins /opt/venv/bin/python tools/ui/lab4_scm_poll.py --action enable)
+> ```
+>
+> ✅ **ผลที่สังเกตได้จากการรันจริง**
+>
+> ```text
+> [ui][<เวลา>] assert: exactly one Poll SCM trigger is present in config.xml
+> [ui][<เวลา>] assert: Poll SCM schedule is * * * * *
+> [ui][<เวลา>] baseline: build #N; timer started for the next SCM change
+> [ui][<เวลา>] PASS
+> ```
+
+`* * * * *` ตั้งใจใช้เพื่อสังเกตทุกนาทีในแล็บและมี outbound request จริง จึงไม่ควรเปิดทิ้งโดยไม่จำเป็น ห้ามใช้ `H/1`: Jenkins ตีความเป็นนาทีที่ hash ได้หนึ่งครั้งต่อชั่วโมง ไม่ใช่ทุกหนึ่งนาที
+
+## การทดลองที่ 8 — Commit ใหม่ทำให้เกิด SCM build ที่ SHA ตรงกันหรือไม่? (~6 นาที)
+
+**คำถาม:** หลัง push แล้ว Poll SCM จะรายงาน `Changes found`, สร้าง build อัตโนมัติ และ checkout SHA เดียวกับ `origin/main` ได้หรือไม่?
 
 ```bash
-(cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins python3 tools/ui/lab4_scm_poll.py --action enable)
+cd "$HOME/hello-ci" && printf '\n# Poll SCM probe\n' >> hello.sh && git add hello.sh && git commit -m 'Observe Poll SCM delay' && git push origin main
+(cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins /opt/venv/bin/python tools/ui/lab4_scm_poll.py --action wait --timeout 180)
 ```
 
-✅ **สิ่งที่ต้องเห็น** :
+เมื่อ push ถาม credential ให้กรอก Username=`<GITHUB_USER>` และ Password=`<GITHUB_TOKEN>` เช่นเดิม แล้วรอ helper; ห้ามกด Build Now ระหว่างรอ
+
+✅ **ผลที่สังเกตได้จากการรันจริง**
 
 ```text
-[ui]... assert: Poll SCM trigger is present in config.xml
-[ui]... assert: Poll SCM schedule is * * * * *
-[ui]... PASS
+[main <SHA>] Observe Poll SCM delay
+ 1 file changed, 2 insertions(+)
+To https://github.com/<GITHUB_USER>/hello-ci.git
+   <SHA>..<SHA>  main -> main
+[ui][<เวลา>] assert: SCM-caused build #N+1 finished SUCCESS
+[ui][<เวลา>] assert: build cause is Started by an SCM change
+[ui][<เวลา>] assert: Git Polling Log contains Changes found
+[ui][<เวลา>] assert: checkout SHA equals the pushed origin/main SHA
+[ui][<เวลา>] observed: Poll SCM created build #N+1 after <เวลา> seconds from timer start
+[ui][<เวลา>] PASS
 ```
 
-> 📝 ห้ามใช้ `H/1` ในแล็บนี้ เพราะ Jenkins hash ค่า `H` เป็นนาทีตายตัวของชั่วโมง ไม่ได้หมายถึงทุก 1 นาที
+เปิด **hello-ci-pipeline → Git Polling Log** เพื่อดูการตัดสินใจของ scheduler
 
-ขณะนี้ Jenkins พร้อมตรวจ revision ทุกนาที แต่ยังไม่มีเหตุให้สร้าง build ใหม่ การทดลองสุดท้ายจะ push commit และตรวจทั้ง polling decision กับ build cause
+![Git Polling Log หลังพบ commit ใหม่](../slides_assets/lab4_s08_git_polling_log.png)
 
-## การทดลองที่ 8 — Push แล้วต้องรอนานเท่าใด?
+*ภาพที่ 8: หลักฐานจริงของ `Changes found`; ชื่อเจ้าของและ GitHub URL ถูก mask ก่อนบันทึก แล้ว marker ชี้ข้อความตัดสินใจ*
 
-**คำถาม:** Commit ใหม่จะทำให้ Poll SCM สร้าง build เองและบันทึกเหตุผลใน Git Polling Log ได้หรือไม่?
+จากรายการ Builds เปิด build ที่เกิดหลัง push แล้วตรวจ cause แยกจาก polling log
 
-การแก้ comment ไม่เปลี่ยนผลโปรแกรม แต่สร้าง revision ใหม่ที่เหมาะสำหรับทดสอบ trigger หลัง push ให้รอ cron รอบถัดไปโดยไม่กด Build Now
+![Build ที่เริ่มจาก SCM change](../slides_assets/lab4_s09_scm_build_cause.png)
 
-```bash
-cd "$HOME/hello-ci" && printf '\n# poll probe %s\n' "$(date -u +%Y%m%dT%H%M%SZ)" >> hello.sh && git add hello.sh && git commit -m 'Observe Poll SCM delay' && git push origin main
-```
+*ภาพที่ 9: หลักฐานจริงว่า build สำเร็จและเริ่มด้วย `Started by an SCM change`; ชื่อ/URL ถูก mask ก่อนบันทึก*
 
-จากนั้นรันตัวรอและ assertion ต่อไปนี้จาก host ของผู้สอน:
-
-```bash
-(cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins python3 tools/ui/lab4_scm_poll.py --action wait --timeout 120)
-```
-
-หลังตัวตรวจรายงาน build สำเร็จ ให้ตรวจหลักฐานของ scheduler และ build แยกกัน เพราะ Git Polling Log อธิบายการตัดสินใจ ส่วนหน้ารายละเอียด build ระบุสาเหตุที่เริ่มงาน
-
-1. ที่หน้า job เลือก **Git Polling Log**
-2. ตรวจ revision เดิมกับ revision ใหม่ และข้อความ **Changes found**
-
-![Git Polling Log หลังตรวจพบ revision ใหม่](../slides_assets/lab4_s09_git_polling_log.png)
-
-*ภาพที่ 9 ต้องสังเกต remote `gitea:3000/student/hello-ci.git`, branch `main` และผล `Changes found`*
-
-1. จากรายการ **Builds** เปิด build ที่เกิดหลัง push
-2. ตรวจสถานะสำเร็จและข้อความ **Started by an SCM change**
-
-![รายละเอียด build ที่เริ่มจาก SCM change](../slides_assets/lab4_s10_scm_build_history.png)
-
-*ภาพที่ 10 ต้องสังเกต build สีเขียว, revision/commit ที่ตรวจพบ และ cause `Started by an SCM change`*
-
-✅ **สิ่งที่ต้องเห็น** :
-
-```text
-[ui]... assert: SCM-caused build #... finished SUCCESS
-[ui]... observed: Poll SCM created build #... after ... seconds from timer start
-[ui]... assert: Git Polling Log contains a completed polling decision
-[ui]... PASS
-```
-
-เมื่อใช้ `* * * * *` build จะเริ่มในรอบ cron ถัดไป จึงรอไม่เกินประมาณ 1 นาทีตาม contract ส่วนเวลารัน pipeline อาจเพิ่มจากระยะรอดังกล่าว จากนั้นตรวจสถานะจบแล็บ:
+## ตรวจสถานะจบแล็บ
 
 ```bash
 (cd "$COURSE_ROOT/004_LAB_Pipeline_From_Git" && bash check.sh)
 ```
 
-ผลที่ถูกต้องคือ `[PASS]` ครบ 6 จุดและ `ผลรวม: PASS` การทดลองนี้แสดงข้อจำกัดว่า push แล้วต้องรอ ส่วน LAB 5 จะเปลี่ยนเป็น webhook เพื่อแจ้ง Jenkins ทันที
+✅ **ผลที่สังเกตได้จากการรันจริง**
+
+```text
+[PASS] ยืนยัน GITHUB_TOKEN และเจ้าของบัญชีตรงกับ GITHUB_USER
+[PASS] GitHub repo <GITHUB_USER>/hello-ci เป็น public
+[PASS] branch main มี Jenkinsfile, hello.sh และ expected.txt ครบ
+[INFO] ไม่พบ .course-cicd2569 (อนุญาตสำหรับ repo ที่นักศึกษาสร้างเอง)
+[PASS] job hello-ci-pipeline ใช้ Pipeline from SCM, GitHub URL, main และ Jenkinsfile ตรง contract
+[PASS] job hello-ci-pipeline ไม่มี credentialsId ใดๆ
+[PASS] Poll SCM มีหนึ่ง trigger และ schedule * * * * *
+[PASS] build ล่าสุด #<BUILD_NUMBER> = SUCCESS, จบแล้ว และ cause เป็น SCM change
+[PASS] checkout SHA ของ build ล่าสุดตรงกับ origin/main
+[INFO] GitHub API requests ใน run นี้: 3
+ผลรวม: PASS
+```
+
+LAB 5 จะใช้ repository และ job เดิมเพื่อเปลี่ยนจาก polling เป็น webhook จึงไม่ลบ `hello-ci` และไม่ลบ `hello-ci-pipeline` หลังจบ LAB นี้
 
 ## แก้ปัญหาที่พบบ่อย
 
-| อาการ | สาเหตุ | วิธีแก้ |
+| อาการ | สาเหตุที่เป็นไปได้ | วิธีตรวจและแก้ |
 |---|---|---|
-| clone URL ที่ Gitea แสดงเป็น host/port อื่น | installer ตั้ง Domain หรือ Gitea Base URL ผิด | แก้ `/data/gitea/conf/app.ini` ให้ `DOMAIN = localhost`, `ROOT_URL = http://localhost:3000/` แล้ว `docker restart gitea`; ถ้ายังไม่มีข้อมูลให้ลบเฉพาะทรัพยากรของแล็บแล้วติดตั้งใหม่ |
-| Jenkins แจ้ง `Could not resolve host: gitea` | Jenkins หรือ Gitea ไม่ได้อยู่ `cicd-net` | ตรวจ `docker network inspect cicd-net` แล้วเชื่อม container ที่ขาดด้วย `docker network connect cicd-net <ชื่อ>` |
-| Jenkins ต่อ `localhost:3000` ไม่ได้ | นำ URL สำหรับ devtools shell ไปใส่ใน job | เปลี่ยน Repository URL เป็น `http://gitea:3000/student/hello-ci.git` |
-| `git push` ถาม password ทุกครั้ง | Git ไม่ได้เก็บ HTTP credential | ในแล็บ disposable ใช้ `git config --global credential.helper store` ได้ แต่ข้อมูลจะเก็บแบบ plaintext จึงห้ามใช้กับเครื่อง shared หรือ production |
-| Polling ไม่สร้าง build | ไม่มี commit ใหม่หรือยังไม่ถึงรอบ cron | ตรวจ remote commit, รอรอบถัดไป แล้วเปิด **Git Polling Log**; schedule ต้องเป็น `* * * * *` |
-| ใช้ `H/1` แล้วรอนานกว่า 1 นาที | Jenkins hash `H` เป็นนาทีตายตัวของชั่วโมงสำหรับ job | เปลี่ยนเป็น `* * * * *` เพื่อให้ poll ทุกนาทีจริง |
-| restart แล้ว Jenkins หรือ Gitea ไม่กลับมา | outer devtools หรือ restart policy ไม่พร้อม | start devtools, รอ inner Docker แล้วตรวจ `docker ps`; Gitea และ Jenkins ต้องใช้ `--restart unless-stopped` |
+| `git push` ถูกปฏิเสธด้วย 401 หรือ 403 | PAT ผิด/หมดอายุ, Username ไม่ตรงเจ้าของ token หรือ scope ไม่พอ | รัน `github_preflight.sh` ใหม่; PAT classic ต้องมี `public_repo + admin:repo_hook` หรือ `repo` แล้วกรอก PAT ที่ Password prompt ห้ามใส่ใน URL |
+| GitHub แจ้งว่า repository ชื่อ `hello-ci` มีอยู่แล้ว | บัญชีมี repository ชื่อนี้อยู่ก่อน | ตรวจเจ้าของและข้อมูลเดิม; ถ้าเป็นงานอื่นให้เปลี่ยนชื่อ repository เดิมก่อน ห้าม overwrite หรือ force-push ข้อมูลที่ไม่ใช่ของแล็บ |
+| Jenkins ติดต่อ GitHub ไม่ได้ | DNS, TLS หรือ outbound proxy จาก Jenkins มีปัญหา (ความเสี่ยง K3) | จากใน Jenkins container ทดสอบ `git ls-remote https://github.com/<GITHUB_USER>/hello-ci.git refs/heads/main`; แก้ DNS/CA/proxy ก่อน Build Now |
+| Polling ไม่สร้าง build | ยังไม่มี commit ใหม่, schedule ไม่ถูก save, ยังไม่ถึงรอบ หรือ GitHub rate limit | ตรวจ `origin/main`, ตรวจ config เป็น `* * * * *`, รอรอบถัดไป และเปิด **Git Polling Log** เพื่ออ่าน decision |
+| ใช้ `H/1` แล้วรอนานเกินหนึ่งนาที | `H/1` คือหนึ่งนาทีที่ hash ได้ในแต่ละชั่วโมง | เปลี่ยนกลับเป็น `* * * * *` สำหรับแล็บนี้ แล้ว Save และ push commit ใหม่ |
