@@ -21,6 +21,41 @@ EXPECTED_COMPOSITIONS = {
     "mo-polling-vs-webhook",
     "mo-pipeline-flow",
 }
+EXPECTED_EMBEDDED_ASSETS = [
+    "slides_assets/motion/mo_intro.mp4",
+    "slides_assets/motion/mo_manual_vs_ci.mp4",
+    "slides_assets/lab1_unlock.png",
+    "slides_assets/lab1_plugins.png",
+    "slides_assets/lab1_dashboard.png",
+    "slides_assets/lab1_first_build.png",
+    "slides_assets/lab2_params.png",
+    "slides_assets/lab2_pipeline_graph.png",
+    "slides_assets/motion/mo_dood_socket.mp4",
+    "slides_assets/lab3_pipeline_docker.png",
+    "slides_assets/lab3_push_log.png",
+    "slides_assets/lab3_hub_tags.png",
+    "slides_assets/lab4_s03_github_repo_files.png",
+    "slides_assets/lab4_s05_jenkins_scm_config.png",
+    "slides_assets/lab4_s08_git_polling_log.png",
+    "slides_assets/motion/mo_polling_vs_webhook.mp4",
+    "slides_assets/lab5_s04c_gwt_token_cause.png",
+    "slides_assets/lab5_s05_gwt_filter.png",
+    "slides_assets/lab5_s08_smee_push.png",
+    "slides_assets/lab5_s09_github_push_build.png",
+    "slides_assets/motion/mo_pipeline_flow.mp4",
+    "slides_assets/lab6_pipeline_full.png",
+    "slides_assets/lab6_app_v1.png",
+    "slides_assets/lab6_app_v2.png",
+    "slides_assets/lab6_hub_tags.png",
+]
+LEGACY_SCREENSHOT_ASSETS = {
+    "slides_assets/lab4_gitea_repo.png",
+    "slides_assets/lab4_jenkins_scm.png",
+    "slides_assets/lab5_webhook_config.png",
+    "slides_assets/lab5_delivery.png",
+    "slides_assets/lab4_poll_build.png",
+    "slides_assets/lab5_auto_build.png",
+}
 
 
 def check(condition: bool, message: str) -> None:
@@ -73,9 +108,21 @@ def main() -> int:
         check(page.locator("#counter").inner_text() == "1/80", "initial counter is 1/80")
         check(page.url.endswith("#page-1"), "initial URL hash is #page-1")
         check(page.locator(".diagram svg").count() == 8, "8 inline SVG diagrams")
-        check(page.locator("img[data-embedded-from]").count() == 19, "19 embedded lab screenshots")
+        check(page.locator("img[data-embedded-from]").count() == 20, "20 embedded lab screenshots")
         check(page.locator("video").count() == 5, "5 embedded videos")
         check(page.locator('video[src^="data:video/mp4;base64,"]').count() == 5, "all videos use data URIs")
+        embedded_assets = page.locator("[data-embedded-from]").evaluate_all(
+            "els => els.map(el => el.dataset.embeddedFrom)"
+        )
+        check(embedded_assets == EXPECTED_EMBEDDED_ASSETS, "data-embedded-from asset list matches exactly")
+        check(
+            not (set(embedded_assets) & LEGACY_SCREENSHOT_ASSETS),
+            "0 legacy SCM/webhook screenshot assets embedded",
+        )
+        check(
+            not any("gitea" in asset.lower() for asset in embedded_assets),
+            "0 embedded asset names contain gitea",
+        )
         capture(page, "U7_cover.png")
 
         # Walk every page using the public keyboard control and verify counter/hash.
