@@ -69,12 +69,7 @@ def restore_pristine(repo: Path, image_spec: dict[str, Any]) -> str:
             f"untracked target {relative!r} needs a pristine 'source' until it is committed"
         )
     source = safe_repo_path(repo, source_relative)
-    source_tracked = git(
-        repo, "ls-files", "--error-unmatch", "--", source_relative, check=False
-    )
-    if source_tracked.returncode == 0:
-        git(repo, "checkout", "--", source_relative)
-    elif not source.is_file():
+    if not source.is_file():
         raise ValueError(f"pristine source is missing: {source_relative}")
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, target)

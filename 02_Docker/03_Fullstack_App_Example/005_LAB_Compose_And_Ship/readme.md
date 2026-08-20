@@ -205,9 +205,9 @@ docker compose -p campusops ps
 
 ```text
 NAME              IMAGE                COMMAND                  SERVICE   CREATED          STATUS                    PORTS
-campusops-api-1   campusops-api        "uvicorn main:app --…"   api       32 seconds ago   Up 25 seconds (healthy)   8000/tcp
-campusops-db-1    postgres:17-alpine   "docker-entrypoint.s…"   db        32 seconds ago   Up 31 seconds (healthy)   5432/tcp
-campusops-web-1   campusops-web        "docker-entrypoint.s…"   web       32 seconds ago   Up 20 seconds (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+campusops-api-1   campusops-api        "uvicorn main:app --…"   api       About a minute ago   Up About a minute (healthy)   8000/tcp
+campusops-db-1    postgres:17-alpine   "docker-entrypoint.s…"   db        About a minute ago   Up About a minute (healthy)   5432/tcp
+campusops-web-1   campusops-web        "docker-entrypoint.s…"   web       About a minute ago   Up About a minute (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
 ```
 
 > 📝 `5432/tcp` เป็น metadata จาก EXPOSE ไม่ใช่ published port หลักฐานของ NFR-3 คือมี mapping `0.0.0.0:3000->3000/tcp` เฉพาะ web
@@ -226,9 +226,9 @@ docker inspect -f '{{.Name}} start={{.State.StartedAt}} health={{.State.Health.S
 ✅ **สิ่งที่ต้องเห็น**
 
 ```text
-/campusops-db-1 start=2026-08-20T08:32:52.694233813Z health=healthy
-/campusops-api-1 start=2026-08-20T08:32:58.374800112Z health=healthy
-/campusops-web-1 start=2026-08-20T08:33:04.049456156Z health=healthy
+/campusops-db-1 start=2026-08-20T09:59:03.174952566Z health=healthy
+/campusops-api-1 start=2026-08-20T09:59:08.841823466Z health=healthy
+/campusops-web-1 start=2026-08-20T09:59:14.518776291Z health=healthy
 ```
 
 > 📝 เวลา UTC จากรอบทดสอบเรียง db < api < web และทุกกล่อง healthy จึงยืนยันว่าลำดับรอพร้อมทำงานตามที่ compose.yaml กำหนด
@@ -352,9 +352,9 @@ docker compose -p campusops exec -T web wget -qO- http://api:8000/health; echo
 ✅ **สิ่งที่ต้องเห็น**
 
 ```text
-api-1  | INFO:     172.19.0.4:37254 - "GET /api/dashboard HTTP/1.1" 200 OK
-web-1  | ✓ Running next.config took 0.8ms
-db-1   | 2026-08-20 08:34:01.570 UTC [1] LOG:  database system is ready to accept connections
+api-1  | INFO:     127.0.0.1:57508 - "GET /health HTTP/1.1" 200 OK
+db-1   | 2026-08-20 10:01:16.890 UTC [1] LOG:  database system is ready to accept connections
+web-1  | ✓ Running next.config took 0.7ms
 {"status":"ok","db":"up"}
 ```
 
@@ -371,6 +371,8 @@ docker tag campusops-api:latest <DOCKER_USER>/campusops-api:1.0
 
 แทน `<DOCKER_USER>` ด้วยชื่อบัญชีจริงเฉพาะใน terminal และวาง Access Token เมื่อคำสั่งถาม `Password:`
 
+repository ที่เกิดจาก `docker push` ครั้งแรกจะใช้ค่า **Default privacy** ของบัญชี หากบัญชีตั้งเป็น Private ให้เปลี่ยนที่ **My Hub → Settings → Default privacy** เป็น Public ก่อน push แล้วตรวจ Visibility ของทั้งสองรายการบนหน้า Repositories
+
 ```bash
 docker tag campusops-web:latest <DOCKER_USER>/campusops-web:1.0
 docker images <DOCKER_USER>/campusops-api
@@ -383,7 +385,7 @@ Login Succeeded
 
 WARNING! Your credentials are stored unencrypted in '/root/.docker/config.json'.
 IMAGE                              ID             DISK USAGE   CONTENT SIZE   EXTRA
-<DOCKER_USER>/campusops-api:1.0   2c737965a208        251MB         60.3MB   U
+<DOCKER_USER>/campusops-api:1.0   70b4a206b898        251MB         60.3MB   U
 ```
 
 push แยกสองคำสั่งเพื่อให้ระบุ image ที่ล้มเหลวได้ชัดเจน:
@@ -396,11 +398,13 @@ docker push <DOCKER_USER>/campusops-web:1.0
 ✅ **สิ่งที่ต้องเห็น** — ส่วนท้ายของผลรันจริงรอบนี้
 
 ```text
-1.0: digest: sha256:2c737965a208b50cf56f68da0e03933af5d1fdc33dbe5721b6921f54c55279ae size: 856
-1.0: digest: sha256:ceb28834907df500a84ac02e1432f9b2d9b0df3cb55b864fe0fbc73a387be481 size: 856
+1.0: digest: sha256:70b4a206b8985587928c58d0c8b0caa843d83b3d827f745ee57f91d95fbb4fd1 size: 856
+1.0: digest: sha256:fbe3305af016b0dbfbeb7b8092ac5b8aa57611bd16f89d24aa4526be6ccdbb46 size: 856
 ```
 
-> 📝 tag ไม่ได้คัดลอก image แต่เพิ่มชื่อให้ IMAGE ID เดิม ส่วน push ครั้งแรกสร้าง repository อัตโนมัติ ต้องตรวจ Visibility เป็น Public ทั้งสองก้อน
+`docker push` รายงาน digest ของ **manifest list** ซึ่งรวม platform manifest `linux/amd64` และ provenance ส่วนตาราง Tags ของ Hub แสดง digest ของ **platform manifest** แยกตาม OS/ARCH จึงเป็นค่าคนละระดับและไม่ควรเทียบว่าเท่ากัน
+
+> 📝 tag เพิ่มชื่อให้ image เดิม ส่วน push ส่ง manifest list ขึ้น Hub และสร้าง repository ตาม Default privacy จึงต้องยืนยัน Public ทั้งสองก้อน
 
 ### Walkthrough ยืนยัน image บนหน้า Docker Hub
 
@@ -426,7 +430,7 @@ docker push <DOCKER_USER>/campusops-web:1.0
 
 ![แท็บ API Tags พร้อม marker ที่ tag และ digest](./images/ui-hub-push-03-api-tags.png)
 
-*ภาพที่ 17 — API แสดง Last pushed 6 minutes ago, repository size 57.5 MB และ compressed size 57.49 MB*
+*ภาพที่ 17 — API แสดง Last pushed 1 minute ago, repository size 57.5 MB, platform digest `fefaf1acf1b2…` และ compressed size 57.49 MB*
 
 #### ขั้นที่ ⑥ — เปิดแท็บ Tags ของ Web
 
@@ -442,13 +446,21 @@ docker push <DOCKER_USER>/campusops-web:1.0
 
 ![แท็บ Web Tags พร้อม marker ที่ tag และ digest](./images/ui-hub-push-05-web-tags.png)
 
-*ภาพที่ 19 — Web แสดง Last pushed 6 minutes ago, repository size 69.9 MB และ compressed size 69.87 MB*
+*ภาพที่ 19 — Web แสดง Last pushed less than a minute ago, repository size 69.9 MB, platform digest `f4eaea747ea5…` และ compressed size 69.87 MB*
+
+ค่า digest เต็มจากรอบเดียวกับภาพมีดังนี้:
+
+| image | `docker push` — manifest list | Docker Hub Tags — `linux/amd64` platform manifest |
+|---|---|---|
+| campusops-api | `sha256:70b4a206b8985587928c58d0c8b0caa843d83b3d827f745ee57f91d95fbb4fd1` | `sha256:fefaf1acf1b2bad1e9ae45b1566ecf931805f68a00cd0e610673793f1f358e25` |
+| campusops-web | `sha256:fbe3305af016b0dbfbeb7b8092ac5b8aa57611bd16f89d24aa4526be6ccdbb46` | `sha256:f4eaea747ea5b4f5feffea551db00807e1f478704ec0eca75b5caeb7a9acf711` |
 
 ## การทดลองที่ 9 — เครื่องลูกค้าที่ไม่มีซอร์สโค้ดยกระบบได้ไหม
 
-**คำถาม:** หลังลบ image แอปทั้งหมด เครื่องปลายทางสามารถ pull แล้ว `up --no-build` โดยไม่มีขั้น build หรือไม่
+**คำถาม:** เครื่องปลายทางที่ logout และไม่มี image แอปสามารถ pull แบบไม่ใช้ credential แล้ว `up --no-build` โดยไม่มีขั้น build หรือไม่
 
 ```bash
+docker logout
 docker compose -p campusops down
 docker image rm campusops-api:latest campusops-web:latest <DOCKER_USER>/campusops-api:1.0 <DOCKER_USER>/campusops-web:1.0
 ```
@@ -460,12 +472,13 @@ docker images <DOCKER_USER>/campusops-api
 ✅ **สิ่งที่ต้องเห็น**
 
 ```text
+Removing login credentials for https://index.docker.io/v1/
 Untagged: campusops-api:latest
 Untagged: campusops-web:latest
 Untagged: <DOCKER_USER>/campusops-api:1.0
-Deleted: sha256:2c737965a208b50cf56f68da0e03933af5d1fdc33dbe5721b6921f54c55279ae
+Deleted: sha256:70b4a206b8985587928c58d0c8b0caa843d83b3d827f745ee57f91d95fbb4fd1
 Untagged: <DOCKER_USER>/campusops-web:1.0
-Deleted: sha256:ceb28834907df500a84ac02e1432f9b2d9b0df3cb55b864fe0fbc73a387be481
+Deleted: sha256:fbe3305af016b0dbfbeb7b8092ac5b8aa57611bd16f89d24aa4526be6ccdbb46
 IMAGE   ID             DISK USAGE   CONTENT SIZE   EXTRA
 ```
 
@@ -474,6 +487,15 @@ pull ต้องเขียนแยกสองคำสั่ง ห้า�
 ```bash
 docker pull <DOCKER_USER>/campusops-api:1.0
 docker pull <DOCKER_USER>/campusops-web:1.0
+```
+
+✅ **สิ่งที่ต้องเห็น** — pull สำเร็จทั้งที่ logout แล้ว จึงพิสูจน์ว่า repository ทั้งสองเป็น Public
+
+```text
+Digest: sha256:70b4a206b8985587928c58d0c8b0caa843d83b3d827f745ee57f91d95fbb4fd1
+Status: Downloaded newer image for <DOCKER_USER>/campusops-api:1.0
+Digest: sha256:fbe3305af016b0dbfbeb7b8092ac5b8aa57611bd16f89d24aa4526be6ccdbb46
+Status: Downloaded newer image for <DOCKER_USER>/campusops-web:1.0
 ```
 
 ```bash
@@ -497,17 +519,17 @@ curl -s -o /dev/null -w "GET / -> %{http_code}\n" http://localhost:3000/
 
 ```text
 NAME              IMAGE                COMMAND                  SERVICE   CREATED          STATUS                    PORTS
-campusops-api-1   campusops-api        "uvicorn main:app --…"   api       32 seconds ago   Up 25 seconds (healthy)   8000/tcp
-campusops-db-1    postgres:17-alpine   "docker-entrypoint.s…"   db        32 seconds ago   Up 31 seconds (healthy)   5432/tcp
-campusops-web-1   campusops-web        "docker-entrypoint.s…"   web       32 seconds ago   Up 20 seconds (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+campusops-api-1   campusops-api        "uvicorn main:app --…"   api       18 seconds ago   Up 12 seconds (healthy)   8000/tcp
+campusops-db-1    postgres:17-alpine   "docker-entrypoint.s…"   db        18 seconds ago   Up 17 seconds (healthy)   5432/tcp
+campusops-web-1   campusops-web        "docker-entrypoint.s…"   web       17 seconds ago   Up 6 seconds (healthy)    0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
 GET / -> 200
 ```
 
-> 📝 --no-build พิสูจน์ว่าเครื่องปลายทางใช้ image ที่ pull มาโดยไม่อ่าน Dockerfile หรือ build source แต่ยังต้องมี compose.yaml และ db/initdb สำหรับระบบนี้
+> 📝 logout ก่อน pull ตัด credential ออกจากการทดลอง ส่วน pull สำเร็จและ --no-build ไม่มี Building พิสูจน์การส่งมอบผ่าน public repository โดยไม่ build source
 
 ## ตรวจงานด้วย `verify.sh`
 
-สคริปต์ไม่ push และไม่ลบ repository จริง การส่งมอบส่วนบังคับใช้ namespace ทดสอบในเครื่อง, `docker save`, ลบ image, `docker load` และ `up --no-build`; การตรวจ Docker Hub จริงเป็น opt-in ด้วย `HUB_USER`
+สคริปต์ไม่ push และไม่ลบ repository จริง การส่งมอบส่วนบังคับใช้ namespace ทดสอบในเครื่อง, `docker save`, ลบ image, `docker load` และ `up --no-build`; ส่วน opt-in ใช้ `docker manifest inspect` อ่าน manifest จาก Docker Hub จริงเมื่อกำหนด `HUB_USER` และคืน `[SKIP]` หาก repository ไม่มีหรือเข้าถึงไม่ได้
 
 ```bash
 bash verify.sh
@@ -546,13 +568,21 @@ echo "exit code = $?"
 [PASS] ระบบที่ load กลับมามีสถานะ healthy ครบ 3 service
 [PASS] ระบบที่ส่งมอบแบบออฟไลน์ตอบ HTTP 200
 [PASS] log ของ --no-build ไม่มีบรรทัด Building
-[SKIP] ไม่ตรวจ Docker Hub จริง — ตั้ง HUB_USER แล้ว tag/push ตามการทดลองที่ 8 เพื่อเปิดการตรวจ
+[SKIP] ไม่ตรวจ Docker Hub จริง — ตั้ง HUB_USER เพื่อเปิดการตรวจ manifest แบบ read-only
 ----------------------------------------------
 ALL CHECKS PASSED
 exit code = 0
 ```
 
-> 📝 verify ใช้ project vops5 และพอร์ต 13191 แยกจากงานของผู้เรียน ลบเฉพาะทรัพยากรของตนเอง และถือ SKIP ของ Docker Hub เป็นผลปกติ
+เมื่อกำหนด `HUB_USER` หลังลบ repository แล้ว สคริปต์ติดต่อ Hub จริงและรายงานผลรันดังนี้โดยยังคืน exit code 0:
+
+```text
+[SKIP] ติดต่อ Docker Hub แล้วแต่ไม่พบหรือเข้าถึงไม่ได้: campusops-api:1.0 campusops-web:1.0 — ตรวจชื่อ repository และตั้ง Visibility เป็น Public
+ALL CHECKS PASSED
+exit code = 0
+```
+
+> 📝 verify ใช้ project vops5 และพอร์ต 13191 แยกจากงานผู้เรียน ส่วน opt-in ติดต่อ Hub แบบ read-only โดยไม่ push หรือลบ repository
 
 ## แก้ปัญหาที่พบบ่อย
 
@@ -569,18 +599,14 @@ exit code = 0
 
 ## เก็บกวาด
 
-ภายในกล่องเรียน ลบ project, volume, image และ credential ที่ Docker CLI เขียนไว้ใน `/root/.docker/config.json`:
+ภายในกล่องเรียน ลบ project, volume และ image ของแล็บ; credential ใน `/root/.docker/config.json` ถูกลบด้วย `docker logout` ตั้งแต่ต้นการทดลองที่ 9 แล้ว:
 
 ```bash
 docker compose -p campusops down -v
 docker image rm -f campusops-api:latest campusops-web:latest <DOCKER_USER>/campusops-api:1.0 <DOCKER_USER>/campusops-web:1.0
 ```
 
-```bash
-docker logout
-```
-
-`docker logout` ลบ credential ออกจากกล่องเรียน แต่ **ไม่ทำให้ Access Token หมดอายุ** จึงต้อง revoke token บน Docker Hub ด้วย หากต้องการเก็บ repository เป็นผลงาน สามารถข้ามเฉพาะขั้นลบ repository แต่ยังต้อง logout และ revoke token
+`docker logout` ลบ credential ออกจากกล่องเรียน แต่ **ไม่ทำให้ Access Token หมดอายุ** จึงต้อง revoke token บน Docker Hub ด้วย หากต้องการเก็บ repository เป็นผลงาน สามารถข้ามเฉพาะขั้นลบ repository แต่ยังต้อง revoke token
 
 ### Revoke Personal Access Token
 
@@ -608,7 +634,15 @@ docker logout
 
 ![หน้ายืนยันพร้อม marker ที่ Delete token](./images/ui-hub-14-revoke-confirm.png)
 
-*ภาพที่ 22 — token ชั่วคราวของรอบถ่ายภาพถูก revoke จริงหลังคลิก*
+*ภาพที่ 22 — กล่องยืนยันก่อนคลิก Delete token; ภาพถัดไปเป็นหลักฐานผลหลังยืนยัน*
+
+#### ขั้นที่ ⑲ — ตรวจผลหลัง revoke
+
+หลังคลิก **Delete token** ตรวจว่ารายการไม่มี token ที่มี description `lab5-capture-20260820-083133` และมีข้อความ **Token deleted successfully.**
+
+![รายการ token หลัง revoke พร้อม marker ที่ตาราง](./images/ui-hub-15-revoke-done.png)
+
+*ภาพที่ 23 — token ชั่วคราวหายจากรายการและ Docker Hub แสดงผลลบสำเร็จ*
 
 ### ลบ repository ทั้งสองบน Docker Hub
 
@@ -620,7 +654,7 @@ docker logout
 
 ![หน้า Repositories พร้อม marker สามขั้นสำหรับ API](./images/ui-hub-delete-01-api-list.png)
 
-*ภาพที่ 23 — เปิด repository API จาก My Hub ตามลำดับไม่ข้ามขั้น*
+*ภาพที่ 24 — เปิด repository API จาก My Hub ตามลำดับไม่ข้ามขั้น*
 
 #### ขั้นที่ ④ — เปิด Settings ของ API
 
@@ -628,7 +662,7 @@ docker logout
 
 ![หน้า API พร้อม marker ที่ Settings](./images/ui-hub-delete-02-api-repository.png)
 
-*ภาพที่ 24 — เปิด Settings ของ campusops-api*
+*ภาพที่ 25 — เปิด Settings ของ campusops-api*
 
 #### ขั้นที่ ⑤ — เริ่มลบ repository API
 
@@ -636,7 +670,7 @@ docker logout
 
 ![หน้า Settings API พร้อม marker ที่ Delete repository](./images/ui-hub-delete-03-api-settings.png)
 
-*ภาพที่ 25 — เริ่มขั้นลบ campusops-api*
+*ภาพที่ 26 — เริ่มขั้นลบ campusops-api*
 
 #### ขั้นที่ ⑥–⑦ — ยืนยันชื่อและลบ repository API
 
@@ -644,7 +678,7 @@ docker logout
 
 ![กล่องยืนยัน API พร้อม marker ที่ช่องชื่อและปุ่มลบถาวร](./images/ui-hub-delete-04-api-confirm.png)
 
-*ภาพที่ 26 — ยืนยันชื่อให้ตรงก่อนลบ campusops-api อย่างถาวร*
+*ภาพที่ 27 — ยืนยันชื่อให้ตรงก่อนลบ campusops-api อย่างถาวร*
 
 ทำลำดับเดียวกันกับ `campusops-web`:
 
@@ -654,7 +688,7 @@ docker logout
 
 ![หน้า Repositories พร้อม marker สามขั้นสำหรับ Web](./images/ui-hub-delete-05-web-list.png)
 
-*ภาพที่ 27 — เปิด repository Web จาก My Hub*
+*ภาพที่ 28 — เปิด repository Web จาก My Hub*
 
 #### ขั้นที่ ⑪ — เปิด Settings ของ Web
 
@@ -662,7 +696,7 @@ docker logout
 
 ![หน้า Web พร้อม marker ที่ Settings](./images/ui-hub-delete-06-web-repository.png)
 
-*ภาพที่ 28 — เปิด Settings ของ campusops-web*
+*ภาพที่ 29 — เปิด Settings ของ campusops-web*
 
 #### ขั้นที่ ⑫ — เริ่มลบ repository Web
 
@@ -670,7 +704,7 @@ docker logout
 
 ![หน้า Settings Web พร้อม marker ที่ Delete repository](./images/ui-hub-delete-07-web-settings.png)
 
-*ภาพที่ 29 — เริ่มขั้นลบ campusops-web*
+*ภาพที่ 30 — เริ่มขั้นลบ campusops-web*
 
 #### ขั้นที่ ⑬–⑭ — ยืนยันชื่อและลบ repository Web
 
@@ -678,7 +712,7 @@ docker logout
 
 ![กล่องยืนยัน Web พร้อม marker ที่ช่องชื่อและปุ่มลบถาวร](./images/ui-hub-delete-08-web-confirm.png)
 
-*ภาพที่ 30 — ยืนยันชื่อให้ตรงก่อนลบ campusops-web อย่างถาวร*
+*ภาพที่ 31 — ยืนยันชื่อให้ตรงก่อนลบ campusops-web อย่างถาวร*
 
 ออกจากกล่องเรียนและลบเฉพาะ container ของ LAB 5:
 
@@ -710,6 +744,6 @@ docker rm -f devtools-fs-lab5
 - [ ] push `campusops-api:1.0` และ `campusops-web:1.0` สำเร็จ และทั้งสอง repository เป็น Public
 - [ ] ลบ image แล้ว pull แยกสองคำสั่ง ก่อน `up -d --no-build` โดยไม่มี `Building`
 - [ ] `verify.sh` แสดง `[PASS]` 26 บรรทัด, `[SKIP]` สำหรับ Hub เมื่อไม่ตั้ง `HUB_USER`, `ALL CHECKS PASSED` และ exit code 0
-- [ ] logout, revoke token และตัดสินใจว่าจะเก็บหรือลบ repository เป็นผลงาน
+- [ ] logout ในการทดลองที่ 9, revoke token และตัดสินใจว่าจะเก็บหรือลบ repository เป็นผลงาน
 
 *ผลลัพธ์ในเอกสารนี้มาจากการรันจริงวันที่ 20 สิงหาคม 2026 ภายในเครื่องเรียน `tuchsanai/devtools:2569_1`*

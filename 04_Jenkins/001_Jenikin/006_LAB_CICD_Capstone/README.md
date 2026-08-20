@@ -126,7 +126,7 @@ mkdir -p "$HOME/webapp"
 cp -r "$COURSE_ROOT/006_LAB_CICD_Capstone/app" "$HOME/webapp/"
 cp "$COURSE_ROOT/006_LAB_CICD_Capstone/Dockerfile" "$HOME/webapp/"
 cp "$COURSE_ROOT/006_LAB_CICD_Capstone/Jenkinsfile" "$HOME/webapp/"
-printf '%s' 'course fixture — safe to delete' > "$HOME/webapp/.course-cicd2569"
+cp "$COURSE_ROOT/006_LAB_CICD_Capstone/.course-cicd2569" "$HOME/webapp/"
 
 cd "$HOME/webapp"
 git init -b main
@@ -364,7 +364,13 @@ curl -fsS http://localhost:8000/api/info
 **ทิศที่ 1:** push `webapp` ในการทดลองก่อนหน้าต้องเพิ่มเฉพาะ `webapp-deploy`; `hello-ci-pipeline` ต้องคง build number เดิม
 
 ```bash
-curl -fsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/api/json?tree=lastBuild[number]'
+curl -gfsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/api/json?tree=lastBuild[number]'
+```
+
+✅ response จริงมีรูปแบบนี้ และ `number` ต้องเท่ากับ baseline ก่อน push webapp:
+
+```text
+{"_class":"org.jenkinsci.plugins.workflow.job.WorkflowJob","lastBuild":{"_class":"org.jenkinsci.plugins.workflow.job.WorkflowRun","number":<BUILD_NUMBER>}}
 ```
 
 ✅ `hello-ci-pipeline` หลัง push webapp ต้องเท่ากับ baseline ก่อน push
@@ -372,7 +378,7 @@ curl -fsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/api/js
 **ทิศที่ 2:** push `hello-ci` แล้ว `webapp-deploy` ต้องไม่ขยับ
 
 ```bash
-curl -fsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/api/json?tree=lastBuild[number]'
+curl -gfsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/api/json?tree=lastBuild[number]'
 
 cd "$HOME/hello-ci"
 git pull --ff-only origin main
@@ -381,8 +387,10 @@ git config user.email student@example.invalid
 git commit --allow-empty -m 'Verify reverse webhook isolation'
 time git push origin main
 
-curl -fsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/api/json?tree=lastBuild[number]'
+curl -gfsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/api/json?tree=lastBuild[number]'
 ```
+
+✅ curl ทั้งก่อนและหลัง push ต้องคืน JSON รูปแบบเดียวกับด้านบน และ `webapp-deploy.lastBuild.number` ต้องเป็นค่าเดิมทั้งสองครั้ง
 
 ✅ **Isolation acceptance**
 
@@ -456,6 +464,7 @@ bash check.sh
 ✅ ต้องเห็น `[PASS]` ครบและจบด้วย:
 
 ```text
+[PASS] ownership marker ของ webapp มีค่า canonical safe-to-delete
 [PASS] GitHub hook ตรง relay channel, json, push-only, active, SSL verify และ secret ว่าง
 [PASS] delivery SHA, origin/main และ checkout SHA ของ build ล่าสุดตรงกัน
 [PASS] console ยืนยัน BUILD_NUMBER และ latest push digest เดียวกัน

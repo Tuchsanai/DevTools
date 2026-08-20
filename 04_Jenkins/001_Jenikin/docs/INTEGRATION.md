@@ -191,3 +191,65 @@
 - คง relay สองตัวพร้อม channel/target/token แบบ 1:1 และ restart policy `unless-stopped`; restart/reconnect ของ `smee-hello` ผ่านแล้วและใช้ channel เดิม
 - คง GitHub repositories `hello-ci`, `webapp`, hooks จริง, Jenkins jobs `hello-ci-pipeline`, `webapp-deploy` และ Docker Hub tags ไว้รอ U-P5-INT
 - ไม่เก็บ token หรือ smee channel id จริงลงไฟล์/log; mock auth-only 4 ภาพเป็น pending เดียวที่ต้องใช้ session จากผู้ใช้เพื่อสลับเป็น real masked capture
+
+### U-P5-INT final integration (2026-08-20)
+
+ส่วนนี้ supersede สถานะ handoff ที่ให้คง runtime ด้านบน: Track B และ Track A cleanup เสร็จแล้ว หลักฐานคำสั่ง/exit code แบบ redact อยู่ที่ [`logs/U-P5-INT.log`](../logs/U-P5-INT.log)
+
+สถานะรวม: **FAIL ตาม frozen acceptance matrix** แม้ runtime, checks, gates และ cleanup ผ่านทั้งหมด เพราะ student path ของ LAB 4 ไม่สร้าง ownership marker ที่ acceptance matrix บังคับ (`P5-INT-F01`)
+
+#### ผล Track B และ Track A
+
+| Track | ผล |
+|---|---|
+| B restart/reconnect | PASS — restart `devtools-jk-lab`; inner dockerd/Jenkins พร้อม; relay ทั้งสองมี `Connected` รอบใหม่และ reuse URL เดิม |
+| B push/isolation | PASS — webapp SHA `c8dcf720334d9ab5f28673e9554bcc8ae5c910d2` สร้าง `webapp-deploy` #4 เพียง build เดียว, SUCCESS/cause/checkout ตรง; hello คง #8 |
+| B checks | PASS — LAB 5 และ LAB 6 `check.sh` exit 0 |
+| B cleanup | PASS พร้อม finding marker — hooks 2 ตัวลบแล้ว, repos ยืนยัน 404, `devtools-jk-lab`/`jk-lab-dind` ลบแล้ว; `hello-ci` ใช้ creation provenance เพราะ marker ไม่มี |
+| A setup/replay | PASS ด้าน runtime — fresh `devtools-jk-int`, `up_to_lab3.sh`, ทุก applicable command/UI/API step LAB 4→6 และ check หลังแต่ละ LAB |
+| A cleanup/scan | PASS — hooks/repos/container/volume/temp เป็น 0; secret scan active tree เป็น 0 matches |
+
+#### Acceptance matrix
+
+| Gate | ผล | หลักฐานย่อ |
+|---|---|---|
+| Preflight | PASS | owner/scope ผ่าน; env-only; ไม่ echo/store token; final secret scan 0 |
+| LAB 4 | **FAIL** | public SCM/no credentials/SCM cause/SHA ผ่าน แต่ README push เพียง 3 ไฟล์และไม่มี marker; check ยอมผ่านด้วย INFO |
+| LAB 5 ping | PASS | clean rerun: automatic ping 2xx และ build คง #3; พบ sequence race ก่อน recovery |
+| LAB 5 push | PASS | SHA `639824c87a6118ee58275fa32b374dfdbdd22f26` ผูก delivery→relay 200→build #4→checkout; exactly one; Poll off |
+| Relay resilience | PASS | Track B outer restart ทำให้ relay สองตัว reconnect ด้วย URL เดิม; Track A restart `smee-hello` ก็ reuse URL; no-replay ระบุใน README |
+| LAB 6 isolation | PASS | webapp v1 ทำให้ webapp +1/hello +0; reverse hello push ทำให้ hello +1/webapp +0; channels/targets/tokens distinct; v1 #1 และ v2 #2 ผูก SHA/build/digest ผ่าน check |
+| Checks/gates | PASS | LAB 4/5/6 positive exit 0; stopped-relay/invalid-token negative fail ตามคาดและ restore positive; deck/int gates PASS; self-tests 3/3 และ 4/4; zero legacy SCM; exact asset map |
+| Cleanup | PASS | hooks/relay/temp/repos ที่สร้าง = 0; authenticated repo GET = 404; containers/volumes = 0; channels เหลือ inert เท่านั้น |
+
+#### เวลาจริงและข้อเสนอ timebox
+
+เวลานี้เป็น automated replay บน network/cache ของเครื่อง integration ไม่ใช่เวลาผู้เรียนจริง ทุก LAB คลาดจาก student timebox เกิน 20% จึงเสนอ timebox แยกสำหรับ integration automation และยังไม่แก้ student timebox จนมี human timing
+
+| LAB | README | รอบนี้ | คลาดเคลื่อน | integration timebox แนะนำ |
+|---:|---:|---:|---:|---:|
+| 4 | 40 นาที | 3:41 นาที | -90.8% | 5 นาที |
+| 5 | 30 นาที | 3:12 นาที | -89.3% | 5 นาที |
+| 6 | 45 นาที | 4:47 นาที | -89.4% | 7 นาที |
+
+#### Findings ที่ตีกลับ (ไม่แก้ README/helper ในรอบ INT)
+
+| ID | ตีกลับ | expected | actual / diff |
+|---|---|---|---|
+| P5-INT-F01 | LAB 4 README/check + bootstrap contract owner | frozen D9/LAB 4 acceptance ต้องมี `.course-cicd2569` | student block push แค่ 3 ไฟล์; check ระบุ marker absent แต่ exit 0; cleanup ต้องใช้ integration creation provenance |
+| P5-INT-F02 | `tools/ui/lab4_scm_job.py` | `--action configure` PASS | fail ซ้ำ `form has no select with exact option 'Git'`; fallback ที่รอ dynamic form 5 วินาทีผ่าน |
+| P5-INT-F03 | LAB 5 README/UI helper | main probe settle ก่อน ping baseline | curl ตอบ `triggered:true` แต่ build ยัง queued; helper จึงนับ local build #3 เป็น ping increment; ต้อง wait build settle ก่อน Add hook |
+| P5-INT-F04 | LAB 6 README | isolation curl คืน JSON | `curl -fsS ...lastBuild[number]` exit 3 `bad range in URL`; ใช้ `curl -gfsS` หรือ encode brackets แล้วผ่าน |
+
+#### Final inventory
+
+| resource | คงค้าง |
+|---|---:|
+| `devtools-*` containers | 0 |
+| `jk-lab-dind` / `jk-int-dind` volumes | 0 |
+| GitHub `hello-ci` / `webapp` | 0 (GET 404 ทั้งคู่) |
+| GitHub hooks / relay clients | 0 |
+| temporary helper tree | 0 |
+| active-tree secret matches (ไม่รวม `backup/`, `logs/`, `.git`) | 0 |
+
+Pending มีเฉพาะการแก้ `P5-INT-F01..F04`; ไม่มี external runtime/resource ค้าง และ U-P5-INT ไม่สร้าง git commit

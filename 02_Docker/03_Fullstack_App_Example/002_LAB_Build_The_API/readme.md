@@ -506,7 +506,7 @@ sleep 6 && docker port ops-api && curl -s http://localhost:8088/health; echo
 
 ![response ของ dashboard มีกรอบแดงรอบรหัส 200 และ Response body พร้อม marker ⑤](./images/ui-swagger-05-dashboard-200.png)
 
-*ภาพที่ ⑤ — ได้ `200`; งานตามสถานะเป็น 3/2/1/2 งานเกิน SLA 2 ใบ สัญญายืมค้าง 2 รายการ และอะไหล่ใกล้หมด 2 รายการ*
+*ภาพที่ ⑤ — ได้ `200`; ส่วนล่างของผลตอบกลับแสดง `loans_active: 2` และ `parts_low` ครบ 2 รายการ (`id` 1 และ 4)*
 
 #### ขั้นที่ ⑥ — กาง `POST /api/tickets`
 
@@ -573,7 +573,7 @@ echo "TID=$TID"
 
 ```
 HTTP 201
-{"id":10,"asset_id":12,"title":"ลำโพงห้องเรียน 402 เสียงขาดหาย","detail":"เปิดแล้วเสียงดังบ้างหายบ้าง","priority":"HIGH","status":"NEW","assignee":null,"created_at":"2026-08-20T08:01:09.749983+00:00","closed_at":null}
+{"id":10,"asset_id":12,"title":"ลำโพงห้องเรียน 402 เสียงขาดหาย","detail":"เปิดแล้วเสียงดังบ้างหายบ้าง","priority":"HIGH","status":"NEW","assignee":null,"created_at":"2026-08-20T09:57:58.990723+00:00","closed_at":null}
 TID=10
 ```
 

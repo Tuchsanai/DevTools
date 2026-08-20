@@ -98,6 +98,21 @@ then
 fi
 pass 'ยืนยัน GITHUB_TOKEN และเจ้าของบัญชีตรงกับ GITHUB_USER'
 
+marker_json="$tmp_dir/marker.json"
+if gh_api GET "/repos/$GITHUB_USER/webapp/contents/.course-cicd2569?ref=main" "$marker_json" \
+  && [ "$GH_API_STATUS" = '200' ] \
+  && python3 - "$marker_json" <<'PY'
+import base64, json, sys
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+content = base64.b64decode(data.get("content", "")).decode("utf-8")
+raise SystemExit(0 if content == "course fixture — safe to delete" else 1)
+PY
+then
+  pass 'ownership marker ของ webapp มีค่า canonical safe-to-delete'
+else
+  fail 'ownership marker ของ webapp ต้องมีค่า canonical safe-to-delete'
+fi
+
 job_config="$tmp_dir/job-config.xml"
 if curl -fsS -u "$JENKINS_AUTH" "$JENKINS_URL/job/$JOB_NAME/config.xml" \
     -o "$job_config" 2>/dev/null \

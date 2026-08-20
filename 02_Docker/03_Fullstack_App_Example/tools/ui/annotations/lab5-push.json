@@ -4,8 +4,8 @@
       "path": "005_LAB_Compose_And_Ship/images/ui-hub-push-01-repositories.png",
       "source": "tools/ui/raw/hub-push-01-repositories.png",
       "shapes": [
-        {"type": "round_rect", "label": "① เปิด campusops-api", "box": [306, 368, 490, 400], "label_at": [540, 390]},
-        {"type": "round_rect", "label": "② เปิด campusops-web", "box": [306, 331, 496, 363], "label_at": [540, 315]}
+        {"type": "round_rect", "label": "① เปิด campusops-api", "box": [306, 331, 490, 363], "label_at": [540, 350]},
+        {"type": "round_rect", "label": "② เปิด campusops-web", "box": [306, 294, 496, 326], "label_at": [540, 275]}
       ]
     },
     {
@@ -20,7 +20,7 @@
       "source": "tools/ui/raw/hub-push-03-campusops-api-tags.png",
       "shapes": [
         {"type": "round_rect", "label": "④ ตรวจแท็ก 1.0", "box": [379, 479, 411, 507], "label_at": [900, 420], "target": [418, 493]},
-        {"type": "round_rect", "label": "⑤ ตรวจ digest", "box": [377, 594, 548, 626], "label_at": [900, 650], "target": [555, 610]}
+        {"type": "round_rect", "label": "⑤ ตรวจ digest", "box": [377, 594, 536, 626], "label_at": [900, 650], "target": [543, 610]}
       ]
     },
     {
@@ -35,7 +35,7 @@
       "source": "tools/ui/raw/hub-push-05-campusops-web-tags.png",
       "shapes": [
         {"type": "round_rect", "label": "⑦ ตรวจแท็ก 1.0", "box": [379, 479, 411, 507], "label_at": [900, 420], "target": [418, 493]},
-        {"type": "round_rect", "label": "⑧ ตรวจ digest", "box": [377, 594, 549, 626], "label_at": [900, 650], "target": [556, 610]}
+        {"type": "round_rect", "label": "⑧ ตรวจ digest", "box": [377, 594, 545, 626], "label_at": [900, 650], "target": [552, 610]}
       ]
     }
   ]

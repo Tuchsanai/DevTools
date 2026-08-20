@@ -2,9 +2,8 @@
 """Capture the public DevTools repository walkthrough for LAB 1.
 
 The script uses the live GitHub UI at 1440x900, hides cookie/marketing chrome,
-and records measured element bounding boxes in tools/ui/raw/boxes.json. GitHub
-repository owners, commit authors, and contributors remain visible because this
-walkthrough captures a public repository while signed out.
+masks account names, and records measured element bounding boxes in
+tools/ui/raw/boxes.json.
 """
 
 from __future__ import annotations
@@ -29,6 +28,28 @@ HIDE_CHROME = """
 .js-notice, .flash-banner, [class*='marketing-banner'] {
   display: none !important;
 }
+img.avatar, img.Avatar {
+  visibility: hidden !important;
+}
+"""
+
+MASK_ACCOUNTS = """
+() => {
+  const replacements = [
+    [/Tuchsanai/gi, '<DOCKER_USER>'],
+    [/Claude/gi, '<DOCKER_USER>']
+  ];
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const node of nodes) {
+    let value = node.nodeValue;
+    for (const [pattern, replacement] of replacements) {
+      value = value.replace(pattern, replacement);
+    }
+    node.nodeValue = value;
+  }
+}
 """
 
 
@@ -48,6 +69,7 @@ def measured_box(locator: Locator, pad: int = 6) -> list[int]:
 def settle(page: Page, wait: int = 1_000) -> None:
     page.add_style_tag(content=HIDE_CHROME)
     page.wait_for_timeout(wait)
+    page.evaluate(MASK_ACCOUNTS)
 
 
 def shot(page: Page, name: str, targets: list[tuple[str, Locator]]) -> list[dict]:
@@ -104,6 +126,11 @@ def main() -> int:
         captures["gh-01-repo"] = shot(
             page, "gh-01-repo", [("① เปิดหน้า repository", repo_name)]
         )
+        captures["gh-02-folder"] = shot(
+            page,
+            "gh-02-folder",
+            [("② คลิกโฟลเดอร์ 02_Docker", docker_folder)],
+        )
         clicks.append({"action": "click 02_Docker", "box": measured_box(docker_folder)})
         docker_folder.click()
         page.wait_for_url("**/02_Docker", timeout=30_000)
@@ -116,6 +143,11 @@ def main() -> int:
         clicks.append(
             {"action": "click 03_Fullstack_App_Example", "box": measured_box(project_folder)}
         )
+        captures["gh-03-project"] = shot(
+            page,
+            "gh-03-project",
+            [("③ คลิก 03_Fullstack_App_Example", project_folder)],
+        )
         project_folder.click()
         page.wait_for_url("**/02_Docker/03_Fullstack_App_Example", timeout=30_000)
         settle(page, 1_500)
@@ -124,24 +156,6 @@ def main() -> int:
             page.locator(f"a[title^='00{lab}_LAB_']:visible").first.wait_for(
                 state="visible", timeout=15_000
             )
-        docker_crumb = page.locator("a[href$='/02_Docker']:visible").first
-        project_crumb = first_visible(
-            page,
-            [
-                "[data-testid='breadcrumbs-filename']",
-                "h1 strong:has-text('03_Fullstack_App_Example')",
-                "span:has-text('03_Fullstack_App_Example')",
-            ],
-        )
-        captures["gh-02-folder"] = shot(
-            page,
-            "gh-02-folder",
-            [
-                ("② คลิกเข้าโฟลเดอร์ 02_Docker", docker_crumb),
-                ("③ คลิก 03_Fullstack_App_Example", project_crumb),
-            ],
-        )
-
         # GitHub's current public folder view uses the new Files layout and no
         # longer displays the green repository-level Code button. Return to the
         # repository root to capture the real clone menu.
@@ -181,9 +195,9 @@ def main() -> int:
             ],
         )
         clicks.append({"action": "click copy URL", "box": measured_box(copy_button)})
-        captures["gh-03-code"] = shot(
+        captures["gh-04-code"] = shot(
             page,
-            "gh-03-code",
+            "gh-04-code",
             [
                 ("④ กดปุ่ม Code", code_button),
                 ("⑤ เลือกแท็บ HTTPS", https_tab),

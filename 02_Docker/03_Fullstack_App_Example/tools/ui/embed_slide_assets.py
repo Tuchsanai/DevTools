@@ -17,15 +17,15 @@ DECK = ROOT / "Fullstack_App_Example.html"
 SOURCES = {
     "ui_github_code": (
         ROOT / "001_LAB_Run_The_System/images/ui-github-03-code.png",
-        (580, 165, 1320, 510),
+        (580, 180, 1320, 510),
     ),
     "ui_swagger_created": (
         ROOT / "002_LAB_Build_The_API/images/ui-swagger-09-created.png",
-        (180, 65, 1260, 610),
+        (180, 0, 1260, 610),
     ),
     "ui_web_new_card": (
         ROOT / "003_LAB_Build_The_Web/images/ui-web-07-new-card.png",
-        (330, 205, 920, 875),
+        (330, 225, 920, 875),
     ),
     "ui_hub_api_tags": (
         ROOT / "005_LAB_Compose_And_Ship/images/ui-hub-push-03-api-tags.png",

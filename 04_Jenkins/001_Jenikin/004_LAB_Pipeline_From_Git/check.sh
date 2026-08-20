@@ -109,22 +109,28 @@ if gh_api GET "/repos/$GITHUB_USER/hello-ci/contents?ref=main" "$contents_json" 
   && python3 - "$contents_json" <<'PY'
 import json, sys
 names = {item.get("name") for item in json.load(open(sys.argv[1], encoding="utf-8"))}
-raise SystemExit(0 if {"Jenkinsfile", "hello.sh", "expected.txt"} <= names else 1)
+required = {".course-cicd2569", "Jenkinsfile", "hello.sh", "expected.txt"}
+raise SystemExit(0 if required <= names else 1)
 PY
 then
-  pass 'branch main มี Jenkinsfile, hello.sh และ expected.txt ครบ'
-  if python3 - "$contents_json" <<'PY'
-import json, sys
-names = {item.get("name") for item in json.load(open(sys.argv[1], encoding="utf-8"))}
-raise SystemExit(0 if ".course-cicd2569" in names else 1)
-PY
-  then
-    printf '[INFO] พบ ownership marker .course-cicd2569 จาก bootstrap\n'
-  else
-    printf '[INFO] ไม่พบ .course-cicd2569 (อนุญาตสำหรับ repo ที่นักศึกษาสร้างเอง)\n'
-  fi
+  pass 'branch main มี .course-cicd2569, Jenkinsfile, hello.sh และ expected.txt ครบ'
 else
-  fail 'branch main ยังไม่มี Jenkinsfile/hello.sh/expected.txt ครบ'
+  fail 'branch main ยังไม่มี .course-cicd2569/Jenkinsfile/hello.sh/expected.txt ครบ'
+fi
+
+marker_json="$tmp_dir/marker.json"
+if gh_api GET "/repos/$GITHUB_USER/hello-ci/contents/.course-cicd2569?ref=main" "$marker_json" \
+  && [ "$GH_API_STATUS" = '200' ] \
+  && python3 - "$marker_json" <<'PY'
+import base64, json, sys
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+content = base64.b64decode(data.get("content", "")).decode("utf-8")
+raise SystemExit(0 if content == "course fixture — safe to delete" else 1)
+PY
+then
+  pass 'ownership marker มีค่า canonical safe-to-delete'
+else
+  fail 'ownership marker ต้องมีค่า canonical safe-to-delete'
 fi
 
 config_xml="$tmp_dir/config.xml"

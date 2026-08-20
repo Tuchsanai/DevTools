@@ -101,6 +101,13 @@
       "shapes": [
         {"type": "round_rect", "label": "⑱ ยืนยัน Delete token", "box": [391, 493, 520, 542], "label_at": [560, 490]}
       ]
+    },
+    {
+      "path": "005_LAB_Compose_And_Ship/images/ui-hub-15-revoke-done.png",
+      "source": "tools/ui/raw/hub-auth-15-revoke-done.png",
+      "shapes": [
+        {"type": "round_rect", "label": "⑲ ตรวจรายการหลัง revoke", "box": [298, 266, 1422, 404], "label_at": [900, 445]}
+      ]
     }
   ]
 }

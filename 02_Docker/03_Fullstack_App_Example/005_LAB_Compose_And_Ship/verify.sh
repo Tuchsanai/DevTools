@@ -279,20 +279,21 @@ else
   pass "log ของ --no-build ไม่มีบรรทัด Building"
 fi
 
-# ---------- 15) Docker Hub จริงเป็น opt-in และไม่มี push/delete ----------
+# ---------- 15) Docker Hub จริงเป็น opt-in และตรวจแบบ read-only ----------
 if [ -z "${HUB_USER:-}" ]; then
-  echo "[SKIP] ไม่ตรวจ Docker Hub จริง — ตั้ง HUB_USER แล้ว tag/push ตามการทดลองที่ 8 เพื่อเปิดการตรวจ"
-elif [ ! -f /root/.docker/config.json ] \
-     || ! grep -q 'https://index.docker.io/v1/' /root/.docker/config.json; then
-  echo "[SKIP] ยังไม่ได้ docker login ในกล่องเรียน — login ด้วย Access Token แล้วรันใหม่"
+  echo "[SKIP] ไม่ตรวจ Docker Hub จริง — ตั้ง HUB_USER เพื่อเปิดการตรวจ manifest แบบ read-only"
 else
-  hub_local=0
-  docker image inspect "$HUB_USER/campusops-api:1.0" "$HUB_USER/campusops-web:1.0" >/dev/null 2>&1 \
-    && hub_local=1
-  if [ "$hub_local" = "1" ]; then
-    pass "ติดชื่อ repository ของ Docker Hub ให้ image ทั้งสองก้อนแล้ว"
+  api_remote=0
+  web_remote=0
+  docker manifest inspect "$HUB_USER/campusops-api:1.0" >/dev/null 2>&1 && api_remote=1
+  docker manifest inspect "$HUB_USER/campusops-web:1.0" >/dev/null 2>&1 && web_remote=1
+  if [ "$api_remote" = "1" ] && [ "$web_remote" = "1" ]; then
+    pass "Docker Hub มี manifest รุ่น 1.0 ของ campusops-api และ campusops-web จริง"
   else
-    echo "[SKIP] ไม่พบ $HUB_USER/campusops-api:1.0 และ campusops-web:1.0 ในเครื่อง — ทำการทดลองที่ 8 ก่อน"
+    missing_remote=""
+    [ "$api_remote" = "1" ] || missing_remote="$missing_remote campusops-api:1.0"
+    [ "$web_remote" = "1" ] || missing_remote="$missing_remote campusops-web:1.0"
+    echo "[SKIP] ติดต่อ Docker Hub แล้วแต่ไม่พบหรือเข้าถึงไม่ได้:$missing_remote — ตรวจชื่อ repository และตั้ง Visibility เป็น Public"
   fi
 fi
 

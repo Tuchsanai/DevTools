@@ -17,7 +17,7 @@
   <text x="40" y="104" font-size="14" font-weight="bold" fill="#8f2020">นอก network</text>
   <rect x="40" y="118" width="164" height="52" rx="8" fill="#ffffff" stroke="#9aa5b1"/>
   <text x="56" y="140" font-size="13" font-weight="bold" fill="#1f2933">เบราว์เซอร์ของเรา</text>
-  <text x="56" y="158" font-size="12" fill="#52606d">localhost:8190</text>
+  <text x="56" y="158" font-size="12" fill="#52606d">localhost:8254</text>
   <rect x="40" y="182" width="164" height="70" rx="8" fill="#ffffff" stroke="#9aa5b1"/>
   <text x="56" y="204" font-size="13" font-weight="bold" fill="#1f2933">เชลล์ในกล่องเรียน</text>
   <text x="56" y="224" font-size="12" fill="#52606d">curl localhost:5432</text>

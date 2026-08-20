@@ -72,6 +72,8 @@ def configure_scm(page, base_url: str, user: str) -> None:
     form = wait_visible(page.locator("form[name='config']"), "hello-ci-pipeline configuration form")
     definition = form.locator("select").filter(has_text="Pipeline script from SCM").last
     choose_option_containing(wait_visible(definition, "Pipeline Definition selector"), "Pipeline script from SCM")
+    git_option = form.locator("select option").filter(has_text=re.compile(r"^\s*Git\s*$")).first
+    git_option.wait_for(state="attached", timeout=10000)
     scm = select_with_exact_option(form, "Git")
     choose_option_containing(wait_visible(scm, "SCM selector"), "Git")
 

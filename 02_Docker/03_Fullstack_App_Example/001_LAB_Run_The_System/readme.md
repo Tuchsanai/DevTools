@@ -100,21 +100,29 @@ cd ~/labwork
 
 *ภาพที่ 1 — หน้าแรกของ repository `DevTools` และตำแหน่งชื่อ repository ที่ต้องตรวจสอบ*
 
-#### ขั้นที่ ②–③ — เข้าโฟลเดอร์ของชุดสอน
+#### ขั้นที่ ② — เข้าโฟลเดอร์ `02_Docker`
 
-ในรายการไฟล์ คลิก `02_Docker` แล้วคลิก `03_Fullstack_App_Example` ตามลำดับ
+ในรายการไฟล์หน้าแรกของ repository คลิกแถว `02_Docker`
 
-![หน้าโฟลเดอร์ Fullstack App Example พร้อมกรอบหมายเลข 2 ที่ 02 Docker และหมายเลข 3 ที่ 03 Fullstack App Example](./images/ui-github-02-folder.png)
+![หน้าแรกของ repository DevTools พร้อมกรอบหมายเลข 2 ล้อมแถวโฟลเดอร์ 02 Docker ที่ต้องคลิก](./images/ui-github-02-folder.png)
 
-*ภาพที่ 2 — เส้นทางคลิกจากโฟลเดอร์ `02_Docker` เข้าสู่ `03_Fullstack_App_Example`*
+*ภาพที่ 2 — แถว `02_Docker` ในรายการไฟล์คือเป้าหมายที่ต้องคลิก ไม่ใช่ breadcrumb ของหน้าปลายทาง*
+
+#### ขั้นที่ ③ — เข้าโฟลเดอร์ชุดสอน
+
+ในรายการไฟล์ของ `02_Docker` คลิกแถว `03_Fullstack_App_Example`
+
+![หน้าโฟลเดอร์ 02 Docker พร้อมกรอบหมายเลข 3 ล้อมแถว 03 Fullstack App Example ที่ต้องคลิก](./images/ui-github-03-project.png)
+
+*ภาพที่ 3 — แถว `03_Fullstack_App_Example` เป็นขั้นถัดไปก่อนเข้าสู่ไฟล์ของชุดสอน*
 
 #### ขั้นที่ ④–⑥ — คัดลอก URL แบบ HTTPS
 
 คลิก `Code` เลือกแท็บ `HTTPS` แล้วคลิกไอคอนคัดลอก URL
 
-![เมนู Code บน GitHub พร้อมกรอบหมายเลข 4 ที่ปุ่ม Code หมายเลข 5 ที่แท็บ HTTPS และหมายเลข 6 ที่ปุ่มคัดลอก](./images/ui-github-03-code.png)
+![เมนู Code บน GitHub พร้อมกรอบหมายเลข 4 ที่ปุ่ม Code หมายเลข 5 ที่แท็บ HTTPS และหมายเลข 6 ที่ปุ่มคัดลอก](./images/ui-github-04-code.png)
 
-*ภาพที่ 3 — ลำดับเปิดเมนู `Code` เลือก `HTTPS` และคัดลอก URL สำหรับ clone repository*
+*ภาพที่ 4 — ลำดับเปิดเมนู `Code` เลือก `HTTPS` และคัดลอก URL สำหรับ clone repository*
 
 จากนั้นโหลดโค้ดแล็บด้วย URL ที่คัดลอก โดยรันคำสั่งต่อไปนี้ **ภายในกล่องเรียน**
 

@@ -15,7 +15,6 @@ from __future__ import annotations
 import json
 import os
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 
 from playwright.sync_api import Locator, Page, sync_playwright
@@ -52,7 +51,7 @@ def mask(page: Page, user: str, email: str) -> None:
           const tokenPrefix = ['dckr', 'pat'].join('_') + '_';
           const tokenPattern = new RegExp(tokenPrefix + '[A-Za-z0-9_-]+', 'g');
           const replace = (value) => value
-            .split(email).join('<EMAIL>')
+            .split(email).join('<DOCKER_USER>')
             .split(user).join('<DOCKER_USER>')
             .replace(tokenPattern, '<DOCKER_TOKEN>');
           const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -65,6 +64,14 @@ def mask(page: Page, user: str, email: str) -> None:
           for (const avatar of document.querySelectorAll("button[aria-label$='account menu']")) {
             avatar.textContent = '';
             avatar.style.background = '#475569';
+          }
+          const cornerAccount = document.elementsFromPoint(1390, 32).find((element) => {
+            const text = (element.textContent || '').trim();
+            return element instanceof HTMLElement && text.length > 0 && text.length <= 2;
+          });
+          if (cornerAccount) {
+            cornerAccount.textContent = '';
+            cornerAccount.style.background = '#475569';
           }
           for (const link of document.querySelectorAll("a[href*='/repository/docker/']")) {
             const match = (link.getAttribute('href') || '').match(
@@ -154,6 +161,12 @@ def cleanup_token(session: Session, description: str) -> None:
     page.wait_for_timeout(1_000)
     if page.get_by_text(description, exact=True).count():
         raise RuntimeError("created token still appears after deletion")
+    token_table = page.locator("table").first
+    session.shot(
+        "hub-auth-15-revoke-done",
+        [("⑲ ตรวจรายการหลัง revoke", token_table)],
+        wait=1_000,
+    )
     print("- created walkthrough token deleted")
 
 

@@ -65,6 +65,36 @@ def last_build(base_url: str) -> int:
     return 0 if item is None else int(item["number"])
 
 
+def settled_build_baseline(base_url: str, timeout_seconds: int) -> int:
+    """Wait for an earlier local probe to leave the queue and finish."""
+    deadline = time.monotonic() + timeout_seconds
+    stable_number = None
+    stable_since = None
+    while time.monotonic() < deadline:
+        queue = jenkins(base_url, "/queue/api/json?tree=items[task[name],cancelled]")
+        queued = any(
+            not item.get("cancelled", False) and (item.get("task") or {}).get("name") == JOB
+            for item in queue.get("items", [])
+        )
+        build = jenkins(
+            base_url, f"/job/{JOB}/api/json?tree=lastBuild[number,building]"
+        ).get("lastBuild") or {}
+        number = int(build.get("number", 0))
+        idle = not queued and not build.get("building", False)
+        if idle and number == stable_number:
+            if stable_since is not None and time.monotonic() - stable_since >= 2:
+                log(f"settled pre-ping baseline: build #{number}; queue empty")
+                return number
+        elif idle:
+            stable_number = number
+            stable_since = time.monotonic()
+        else:
+            stable_number = None
+            stable_since = None
+        time.sleep(1)
+    raise AssertionError("timed out waiting for the local main probe to settle before ping baseline")
+
+
 def find_hook(user: str, channel: str) -> dict | None:
     status, hooks = api("GET", f"/repos/{user}/hello-ci/hooks?per_page=100")
     require(status == 200 and isinstance(hooks, list), "GitHub hook list is readable")
@@ -76,7 +106,7 @@ def find_hook(user: str, channel: str) -> dict | None:
 
 def add_hook(args: argparse.Namespace, user: str, channel: str) -> None:
     require(find_hook(user, channel) is None, "fresh smee channel is not already registered")
-    baseline = last_build(args.jenkins_base_url)
+    baseline = settled_build_baseline(args.jenkins_base_url, args.timeout)
     status, hook = api(
         "POST",
         f"/repos/{user}/hello-ci/hooks",

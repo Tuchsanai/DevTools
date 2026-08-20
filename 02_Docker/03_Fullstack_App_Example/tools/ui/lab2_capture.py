@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 from pathlib import Path
 
 from playwright.sync_api import Locator, Page, sync_playwright
@@ -13,6 +14,12 @@ from playwright.sync_api import Locator, Page, sync_playwright
 PROJECT = Path(__file__).resolve().parents[2]
 RAW = PROJECT / "tools/ui/raw"
 BASE_URL = os.environ.get("LAB2_BASE_URL", "http://localhost:8252")
+BACKEND_URL = os.environ.get("LAB2_BACKEND_URL", BASE_URL)
+OUTER_CONTAINER = os.environ.get("LAB2_CONTAINER", "devtools-fs-lab2")
+LAB_DIR = os.environ.get(
+    "LAB2_PROJECT_DIR",
+    "/root/labwork/DevTools/02_Docker/03_Fullstack_App_Example/002_LAB_Build_The_API",
+)
 VIEWPORT = {"width": 1440, "height": 900}
 TICKET = {
     "asset_id": 12,
@@ -20,6 +27,22 @@ TICKET = {
     "detail": "เปิดแล้วเสียงดังบ้างหายบ้าง",
     "priority": "HIGH",
 }
+
+
+def reset_seed() -> None:
+    """คืนฐานข้อมูลเป็น seed ชุดคงที่ก่อนเริ่ม walkthrough ทุกครั้ง."""
+    command = (
+        f"cd {LAB_DIR} && "
+        "docker exec ops-db psql -U opsuser -d campusops -v ON_ERROR_STOP=1 "
+        "-c 'TRUNCATE stock_moves, loans, tickets, parts, assets RESTART IDENTITY CASCADE;' && "
+        "docker exec -i ops-db psql -U opsuser -d campusops -v ON_ERROR_STOP=1 "
+        "< db/initdb/02-seed.sql"
+    )
+    subprocess.run(
+        ["docker", "exec", OUTER_CONTAINER, "bash", "-lc", command],
+        check=True,
+        stdout=subprocess.DEVNULL,
+    )
 
 
 def visible(page: Page, target: Locator, top_padding: int = 150) -> None:
@@ -48,11 +71,19 @@ def capture(page: Page, name: str, targets: dict[str, Locator]) -> None:
 
 def main() -> None:
     RAW.mkdir(parents=True, exist_ok=True)
+    reset_seed()
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True)
         page = browser.new_page(viewport=VIEWPORT, device_scale_factor=1)
 
-        dashboard = page.request.get(f"{BASE_URL}/api/dashboard")
+        if BACKEND_URL != BASE_URL:
+            def forward_to_backend(route) -> None:
+                target = route.request.url.replace(BASE_URL, BACKEND_URL, 1)
+                route.fulfill(response=route.fetch(url=target))
+
+            page.route(f"{BASE_URL}/**", forward_to_backend)
+
+        dashboard = page.request.get(f"{BACKEND_URL}/api/dashboard")
         dashboard_data = dashboard.json()
         expected = {
             "tickets": {"NEW": 3, "ASSIGNED": 2, "IN_PROGRESS": 1, "DONE": 2},
@@ -70,6 +101,8 @@ def main() -> None:
             raise RuntimeError(f"ฐานข้อมูลไม่ใช่ seed: คาด {expected} แต่ได้ {actual}")
 
         page.goto(f"{BASE_URL}/docs", wait_until="networkidle")
+        if page.url != f"{BASE_URL}/docs":
+            raise RuntimeError(f"Swagger UI เปิด URL ผิด: {page.url}")
         page.locator(".opblock-summary").first.wait_for(state="visible")
         page.evaluate("window.scrollTo(0, 0)")
         capture(
@@ -103,6 +136,8 @@ def main() -> None:
         response_code = dashboard_block.locator(".response-col_status").filter(has_text="200").last
         response_body = dashboard_block.locator(".response-col_description pre").first
         visible(page, response_body, 80)
+        response_body.evaluate("element => { element.scrollTop = element.scrollHeight; }")
+        page.wait_for_timeout(250)
         capture(
             page,
             "ui-swagger-05-dashboard-200.png",
@@ -134,6 +169,8 @@ def main() -> None:
             ticket_execute.click()
         created_response = response_info.value
         created = created_response.json()
+        if created_response.url != f"{BASE_URL}/api/tickets":
+            raise RuntimeError(f"Swagger UI ส่งคำขอไป URL ผิด: {created_response.url}")
         if created_response.status != 201 or created.get("id") != 9 or created.get("status") != "NEW":
             raise RuntimeError(
                 f"POST /api/tickets ไม่ตรงผลคงที่: HTTP {created_response.status}, body={created}"

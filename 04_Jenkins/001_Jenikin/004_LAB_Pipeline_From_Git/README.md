@@ -112,13 +112,16 @@ Poll SCM = Jenkins-initiated pull model
 > [ui][<เวลา>] PASS
 > ```
 
-## การทดลองที่ 4 — สามไฟล์จะขึ้น branch main โดยไม่เก็บ PAT ได้อย่างไร? (~6 นาที)
+## การทดลองที่ 4 — ไฟล์ของแล็บจะขึ้น branch main โดยไม่เก็บ PAT ได้อย่างไร? (~6 นาที)
 
 **คำถาม:** working tree ใหม่จะ commit ไฟล์ของแล็บด้วย identity ระดับ repository แล้ว push ไป GitHub อย่างปลอดภัยได้หรือไม่?
 
 ```bash
 mkdir "$HOME/hello-ci"
-cp "$COURSE_ROOT"/004_LAB_Pipeline_From_Git/{Jenkinsfile,hello.sh,expected.txt} "$HOME/hello-ci/"
+cp "$COURSE_ROOT"/004_LAB_Pipeline_From_Git/Jenkinsfile "$HOME/hello-ci/"
+cp "$COURSE_ROOT"/004_LAB_Pipeline_From_Git/hello.sh "$HOME/hello-ci/"
+cp "$COURSE_ROOT"/004_LAB_Pipeline_From_Git/expected.txt "$HOME/hello-ci/"
+cp "$COURSE_ROOT"/004_LAB_Pipeline_From_Git/.course-cicd2569 "$HOME/hello-ci/"
 cd "$HOME/hello-ci"
 chmod +x hello.sh
 
@@ -126,7 +129,7 @@ git init -b main
 git config user.name Student
 git config user.email student@example.invalid
 
-git add Jenkinsfile hello.sh expected.txt
+git add .course-cicd2569 Jenkinsfile hello.sh expected.txt
 git commit -m 'Add Pipeline as Code'
 
 git remote add origin https://github.com/<GITHUB_USER>/hello-ci.git
@@ -140,7 +143,8 @@ git push -u origin main
 ```text
 Initialized empty Git repository in /root/hello-ci/.git/
 [main (root-commit) <SHA>] Add Pipeline as Code
- 3 files changed, 31 insertions(+)
+ 4 files changed, 32 insertions(+)
+ create mode 100644 .course-cicd2569
  create mode 100644 Jenkinsfile
  create mode 100644 expected.txt
  create mode 100755 hello.sh
@@ -149,11 +153,13 @@ To https://github.com/<GITHUB_USER>/hello-ci.git
 branch 'main' set up to track 'origin/main'.
 ```
 
-ห้ามเขียน token ลง URL เช่น `https://<GITHUB_TOKEN>@...` และห้ามใช้ `credential.helper store` เพราะทั้งสองแบบทำให้ secret คงอยู่บนดิสก์ หลัง push ให้ refresh หน้า repository และตรวจ branch `main` กับไฟล์ทั้งสาม
+`.course-cicd2569` เป็นไฟล์ประจำชุดแล็บ เพื่อให้สคริปต์ bootstrap รู้ว่า repo นี้เป็นของแล็บและกู้สถานะได้ปลอดภัย
+
+ห้ามเขียน token ลง URL เช่น `https://<GITHUB_TOKEN>@...` และห้ามใช้ `credential.helper store` เพราะทั้งสองแบบทำให้ secret คงอยู่บนดิสก์ หลัง push ให้ refresh หน้า repository และตรวจ branch `main` กับไฟล์ทั้งสี่
 
 ![หน้า public repository หลัง push ไฟล์โครงการ](../slides_assets/lab4_s03_github_repo_files.png)
 
-*ภาพที่ 3: หลักฐานจริงว่า branch `main` มี `Jenkinsfile`, `hello.sh` และ `expected.txt` โดย mask ชื่อเจ้าของก่อนบันทึกภาพ*
+*ภาพที่ 3: หลักฐานจริงว่า branch `main` มี source files โดย mask ชื่อเจ้าของก่อนบันทึกภาพ; ตัวตรวจ authenticated API ยืนยัน marker เพิ่มอีกชั้น*
 
 ## การทดลองที่ 5 — Jenkins จะโหลด Pipeline จาก GitHub อย่างไร? (~7 นาที)
 
@@ -309,14 +315,14 @@ To https://github.com/<GITHUB_USER>/hello-ci.git
 ```text
 [PASS] ยืนยัน GITHUB_TOKEN และเจ้าของบัญชีตรงกับ GITHUB_USER
 [PASS] GitHub repo <GITHUB_USER>/hello-ci เป็น public
-[PASS] branch main มี Jenkinsfile, hello.sh และ expected.txt ครบ
-[INFO] ไม่พบ .course-cicd2569 (อนุญาตสำหรับ repo ที่นักศึกษาสร้างเอง)
+[PASS] branch main มี .course-cicd2569, Jenkinsfile, hello.sh และ expected.txt ครบ
+[PASS] ownership marker มีค่า canonical safe-to-delete
 [PASS] job hello-ci-pipeline ใช้ Pipeline from SCM, GitHub URL, main และ Jenkinsfile ตรง contract
 [PASS] job hello-ci-pipeline ไม่มี credentialsId ใดๆ
 [PASS] Poll SCM มีหนึ่ง trigger และ schedule * * * * *
 [PASS] build ล่าสุด #<BUILD_NUMBER> = SUCCESS, จบแล้ว และ cause เป็น SCM change
 [PASS] checkout SHA ของ build ล่าสุดตรงกับ origin/main
-[INFO] GitHub API requests ใน run นี้: 3
+[INFO] GitHub API requests ใน run นี้: 4
 ผลรวม: PASS
 ```
 

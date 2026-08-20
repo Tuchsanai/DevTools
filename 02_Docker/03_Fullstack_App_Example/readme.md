@@ -172,7 +172,7 @@ bash verify.sh ; echo "exit code = $?"
 | 2 | 17 | image `vops2-api:verify` · กล่อง `vops2-*` · พอร์ต `18088` |
 | 3 | 22 | image `vops3-web:verify` · `vops3-web:single` · กล่อง `vops3-db` · `vops3-api` · `vops3-web` |
 | 4 | 19 | network `vops4-net` · กล่อง `vops4-db` · `vops4-api` · `vops4-web` · `vops4-probe` |
-| 5 | 22 | project `vops5` · กล่อง `vops5-registry` · พอร์ต `13191` · `15000` |
+| 5 | 26 `[PASS]` + 1 `[SKIP]` | project `vops5` · กล่อง `vops5-db-1` · `vops5-api-1` · `vops5-web-1` · พอร์ต `13191` |
 
 สคริปต์ **สร้างและลบของทดสอบของตัวเองเท่านั้น** (prefix `vops`) ไม่แตะกล่อง `ops-` · volume `ops-pgdata` ·
 network `ops-net` หรือ project `campusops` ที่ผู้เรียนสร้างระหว่างทำแล็บ — รันตอนระบบของตัวเองยังขึ้นอยู่ก็ผ่าน
