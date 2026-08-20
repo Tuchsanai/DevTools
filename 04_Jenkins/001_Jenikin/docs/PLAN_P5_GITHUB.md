@@ -26,7 +26,8 @@
 | D2 | LAB 5: GWT ต้องตั้ง **Post content parameter** `ref=$.ref`, `after=$.after` + **Optional filter** text=`$ref` expression=`^refs/heads/main$` + causeString `GitHub push $after` — เพื่อกัน `ping` และ branch อื่น; acceptance: สร้าง hook แล้ว build count ต้องไม่เพิ่ม, push แล้วเกิด exactly one build | **B01** |
 | D3 | สอง relay แยกขาด: env `SMEE_HELLO_URL`/`SMEE_WEBAPP_URL` · mapping 1:1 repo↔hook↔channel↔container(`smee-hello`/`smee-webapp`)↔token · URL persist ใน docker args (recover ด้วย `docker inspect`) · rerun ต้อง converge ไม่ mint ใหม่ | **B05** |
 | D4 | หลักฐาน payload = หน้า smee channel (เปิด tab **ก่อน** Add webhook) + `docker logs smee-*` + Jenkins build; ลำดับบังคับ: เปิด tab → รัน relay → รอ `Connected` → Add webhook → push; เอกสารระบุชัด: smee ไม่ replay event ที่พลาด — recovery คือ push commit ใหม่ | **B06** |
-| D5 | ภาพหน้า GitHub auth-only: **HTML/CSS mock render ผ่าน Playwright** (ตัวหนังสือคมและตรงค่า contract) เป็นวิธีหลัก, codex-gen เป็น fallback; ทุกภาพติด caption "ภาพจำลอง — UI จริงอาจต่างเล็กน้อย" + ลิงก์ GitHub Docs + มี API postcondition; ห้ามใช้เป็นหลักฐาน runtime | **B08, M12** |
+| D5v2 (USR 2026-08-20) | ภาพ GitHub UI ใช้**ของจริงทั้งหมด**: ผู้ใช้ให้ session cookie → capture หน้า auth จริง (New repo, Add webhook, Recent Deliveries) แบบ mask username/URL ตอน capture; cookie ใช้ local เท่านั้น ห้ามเขียนลงไฟล์/log/repo; mock ที่ทำไว้เป็น fallback ชั่วคราวจนกว่า capture จริงครบ | (แทน D5 เดิม) |
+| D5-เดิม | ภาพหน้า GitHub auth-only: **HTML/CSS mock render ผ่าน Playwright** (ตัวหนังสือคมและตรงค่า contract) เป็นวิธีหลัก, codex-gen เป็น fallback; ทุกภาพติด caption "ภาพจำลอง — UI จริงอาจต่างเล็กน้อย" + ลิงก์ GitHub Docs + มี API postcondition; ห้ามใช้เป็นหลักฐาน runtime | **B08, M12** |
 | D6 | masking ทำ **ตอน capture** (ไฟล์ที่ commit ต้อง mask แล้ว): `<GITHUB_USER>` และ `<SMEE_URL>`/channel id; annotate_steps เพิ่ม op `mask` (schema: `type:"mask"`, `box`, `text`, `fill`; วาดก่อน marker; idempotent) + unit test; git identity ในแล็บใช้ระดับ repo `Student <student@example.invalid>` | M04, M14 |
 | D7 | Prereq ก่อนคาบ: บัญชี GitHub + PAT classic scope **`public_repo` + `admin:repo_hook`** (แคบกว่า `repo`); preflight script ตรวจ `GET /user` + `X-OAuth-Scopes` header — ไม่สร้าง probe repo | M06 |
 | D8 | check.sh: ทุกการเรียก `api.github.com` ต้อง **authenticated** (`GITHUB_USER`/`GITHUB_TOKEN` จำเป็นทั้ง LAB 4/5/6); ดึง response ครั้งเดียว cache ลง temp; หลักฐาน webhook ต้อง correlate ≥4 hop ด้วย SHA เดียวกัน: GitHub delivery(`event=push`,`payload.after=SHA`) → relay log `POST … 200` หลัง timestamp → Jenkins cause GWT + checkout SHA → build SUCCESS; hook assert ครบ field (`content_type=json`,`events=[push]`,`active`,`insecure_ssl=0`, secret ว่าง+เหตุผลใน README) | **B02, B03**, M02 |
@@ -46,6 +47,7 @@
 - R4: ไฟล์ที่ต้องใช้ให้ตัวเต็มหรือ `cp` จาก `$COURSE_ROOT`
 - R5: ไม่มีหัวข้อ "ทำให้พัง"; error อยู่ตาราง troubleshoot
 - R6: placeholder เท่านั้น: `<GITHUB_USER>` `<GITHUB_TOKEN>` `<DOCKER_USER>` `<DOCKER_TOKEN>` `<SMEE_HELLO_URL>` `<SMEE_WEBAPP_URL>`
+- R8 (USR 2026-08-20): **ห้ามอัดหลายคำสั่งต่อกันด้วย `&&` ในบรรทัดเดียว** — code block ให้เขียนทีละคำสั่งทีละบรรทัด (คำสั่งเดียวที่ยาวใช้ `\` ต่อบรรทัดได้) แบ่งกลุ่มตามขั้นตอนเชิงตรรกะ · ใช้กับทุก LAB
 - R7: normalization ของ expected output: มาจาก log จริง แทนเฉพาะ `<GITHUB_USER>`,`<SMEE_*_URL>`,`<SHA>`,`<BUILD_NUMBER>`, เวลา; เลข build ในเนื้อความใช้แบบ baseline-relative (`#N`,`#N+1`) — caption ของภาพจริงคงเลขจริงได้ [m03, m06]
 
 ## Contract (interface map v3)

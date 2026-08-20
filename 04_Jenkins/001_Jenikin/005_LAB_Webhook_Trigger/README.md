@@ -1,247 +1,331 @@
-# LAB 5 — Push แล้ว Build ทันทีด้วย Webhook
+# LAB 5 — Push แล้ว Build ทันทีด้วย GitHub webhook ผ่าน smee.io
 
-แล็บ 30 นาทีนี้ศึกษาการเปลี่ยนกลไก trigger ของ `hello-ci-pipeline` จากการที่ Jenkins ตรวจ repository เป็นระยะ ไปเป็นการที่ Gitea แจ้งเหตุการณ์ `push` ทันที เมื่อสิ้นสุดแล็บ ผู้เรียนจะติดตั้ง plugin กำหนด token สร้าง webhook และตรวจสอบ delivery, payload และ build cause ได้จากหลักฐานจริง
+แล็บประมาณ 30 นาทีนี้เปลี่ยน `hello-ci-pipeline` จาก Poll SCM เป็น push model: เมื่อ GitHub รับ commit จะส่ง webhook ผ่าน smee.io เข้าสู่ Jenkins ที่อยู่ใน Docker หลัง NAT แล้ว Generic Webhook Trigger (GWT) จะสร้าง build เฉพาะ push ของ branch `main` เมื่อจบแล็บ นักศึกษาจะผูก SHA เดียวกันได้ครบ GitHub delivery → relay HTTP 200 → Jenkins cause → checkout
 
 ## ทฤษฎีก่อนลงมือ
 
-Webhook คือการแจ้งเหตุการณ์แบบ **push model** เมื่อ Gitea รับ commit ใหม่ ระบบจะส่ง HTTP POST พร้อม payload ไปยัง endpoint ของ Jenkins ทันที ผู้รับจึงไม่ต้องส่ง request เพื่อตรวจสอบ repository ซ้ำในช่วงที่ไม่มีการเปลี่ยนแปลง รายละเอียดเปรียบเทียบและวิดีโอ `polling vs webhook` อยู่ในสไลด์ตอนที่ 5
+Poll SCM กับ webhook ตรวจการเปลี่ยนแปลงเดียวกัน แต่ผู้เริ่มการสื่อสารต่างกัน
 
-Poll SCM เป็น **pull model** ซึ่ง Jenkins ทำงานตามตารางเวลาแล้วตรวจว่า revision เปลี่ยนหรือไม่ วิธีนี้ไม่ต้องให้ระบบต้นทางเข้าถึง endpoint ของ Jenkins แต่มีความหน่วงตามรอบ polling และเกิด request แม้ repository ไม่มี commit ใหม่ LAB 4 ใช้ `* * * * *`; LAB นี้จะปิด polling และให้ Gitea เป็นผู้แจ้งเหตุการณ์แทน
+| แบบ | ผู้เริ่ม | พฤติกรรม | ข้อแลกเปลี่ยน |
+|---|---|---|---|
+| Pull: Poll SCM | Jenkins ถาม GitHub ตามเวลา | มี request แม้ไม่มี commit และรอถึงรอบถัดไป | ตั้งง่ายเมื่อ Jenkins ออก internet ได้ |
+| Push: webhook | GitHub แจ้งเมื่อเกิด event | ไม่มี polling delay และส่งเฉพาะเมื่อมีเหตุการณ์ | GitHub ต้องเข้าถึง receiver ได้ |
 
-Generic Webhook Trigger plugin เพิ่ม endpoint `/generic-webhook-trigger/invoke` และเลือก job ด้วย token ตามสัญญา I-05 แล็บนี้ใช้ `cicd2569-hello` เฉพาะ `hello-ci-pipeline` หากหลาย job ใช้ token เดียวกัน request หนึ่งครั้งอาจ trigger ทุก job ที่ผูก token นั้น จึงต้องแยก token ต่อ job
-
-Gitea รันด้วย `GITEA__webhook__ALLOWED_HOST_LIST=private` ตั้งแต่ LAB 4 เพื่ออนุญาตปลายทาง private network เช่น `jenkins` บน `cicd-net` โดยไม่เปิดให้ webhook ติดต่อทุก host การกำหนด allow-list ช่วยลดความเสี่ยงที่ server จะถูกใช้เรียกปลายทางที่ไม่ได้ตั้งใจ
-
-> **Safety:** token webhook คือรหัสเปิดประตูให้สั่ง build แล็บนี้ใช้ค่าคงที่เพื่อ copy-paste ง่าย; production ต้องสุ่มค่าแรง แยก token/credential ต่อ job จำกัด scope/เครือข่าย และเก็บด้วยระบบ secrets ส่วน `ALLOWED_HOST_LIST=private` จำกัดพื้นที่ปลายทางแทน wildcard แต่ยังควรใช้ least privilege และแยก build agent
-
-## 🎯 ขอบเขตและผลลัพธ์การเรียนรู้
-
-- ติดตั้ง Generic Webhook Trigger 2.4.2 และยืนยันว่า Jenkins กลับมาทำงานหลัง restart
-- ปิด Poll SCM และกำหนด token เฉพาะ `hello-ci-pipeline`
-- ทดสอบ endpoint โดยตรงเพื่อแยกปัญหาฝั่ง Jenkins ออกจาก Gitea
-- สร้าง Gitea webhook ด้วย URL canonical และตรวจ delivery HTTP 200
-- push commit จริงแล้วตรวจ build cause และ payload ของเหตุการณ์
-
-## สภาพตั้งต้น
-
-ก่อนคาบต้องมีสถานะจบ LAB 4: devtools ทำงานอยู่, inner container `jenkins` และ `gitea` อยู่บน `cicd-net`, repository `student/hello-ci` มี branch `main` และ job `hello-ci-pipeline` เปิด Poll SCM หากต้องกู้สถานะ ต้องเตรียม `DOCKER_USER`/`DOCKER_TOKEN` ใน environment สำหรับ bootstrap เท่านั้น
-
-```bash
-docker ps --format '{{.Names}}\t{{.Status}}'
-```
-
-✅ **สิ่งที่ต้องเห็น** :
+ปัญหาใหม่ของแล็บคือ GitHub อยู่บน internet แต่ Jenkins อยู่ใน Docker หลัง NAT: GitHub เปิด connection เข้าชื่อ `jenkins` บน `cicd-net` โดยตรงไม่ได้ เราจึงใช้ relay pattern ของ smee.io ซึ่งเป็นบริการสำหรับงานพัฒนา/แล็บของโครงการ GitHub:
 
 ```text
-jenkins    Up ...
-gitea      Up ...
+GitHub.com                    internet                   Docker: cicd-net
+push/ping ──POST──> smee.io channel <──SSE── smee-client ──POST──> Jenkins GWT
+                                                     smee-hello       token + filter
 ```
 
-> ยังไม่มี? ย้อนไปทำ [LAB 4](../004_LAB_Pipeline_From_Git/README.md) ก่อน (ใช้เวลา ~40 นาที) หรือกู้สถานะด้วย `(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab4.sh)`
+| Hop | ต้นทาง → ปลายทาง | หลักฐาน |
+|---:|---|---|
+| 1 | GitHub → `<SMEE_HELLO_URL>` | GitHub delivery เป็น 2xx และ payload มี `ref`/`after` |
+| 2 | smee.io → `smee-client` | tab smee ที่เปิดค้างเห็น event สด |
+| 3 | `smee-hello` → `http://jenkins:8080/...` | `docker logs smee-hello` มี POST และ 200 |
+| 4 | GWT → `hello-ci-pipeline` | cause `GitHub push <SHA>` และ checkout `<SHA>` |
 
-## การทดลองที่ 1 — Jenkins รับ webhook ได้อย่างไร
+GWT ใช้ token แยกต่อ job (`cicd2569-hello`) เพื่อไม่ให้ request เดียวเลือกหลาย job และอ่าน `ref`/`after` จาก JSON จากนั้น filter `$ref` ด้วย `^refs/heads/main$` จึงกัน GitHub `ping` และ push จาก branch อื่น
 
-**คำถาม:** plugin รุ่นใดเพิ่ม Generic Webhook Trigger ให้ job และจะยืนยันการ restart ได้อย่างไร?
+> **Safety — อ่านก่อนสร้าง channel:** URL ของ smee channel เป็น capability; ผู้ที่รู้ URL สามารถส่ง/อ่าน traffic ของ channel ได้ ห้ามแชร์ URL จริง ห้ามใส่ใน README, screenshot ดิบ หรือ log ที่ส่งต่อ และเปิดใช้เฉพาะแล็บนี้ Topology นี้เว้น GitHub webhook Secret ว่าง เพราะ smee-client ส่งต่อ payload แต่ไม่มี receiver ในเส้นทางนี้ที่ตรวจ `X-Hub-Signature-256`; ใส่ secret จึงสร้างความมั่นใจผิด ใน production ให้ใช้ public HTTPS endpoint ที่ควบคุมเอง ตรวจ signature ด้วย secret จำกัด source/rate และจัดการ secret ในระบบที่เหมาะสม
 
-Plugin ทำให้ Jenkins มี endpoint สำหรับรับ HTTP request จาก Gitea ขั้นนี้จึงติดตั้ง plugin ก่อนแก้ job เพื่อให้รายการ trigger ใหม่ปรากฏในหน้า Configure
+## ผลลัพธ์การเรียนรู้
 
-1. เปิด `http://localhost:8080` แล้วเลือก **Manage Jenkins → Plugins → Available plugins**
-2. ค้นหา `generic-webhook-trigger` เลือกผลลัพธ์ **Generic Webhook Trigger 2.4.2**
-3. กด **Install** และตรวจสถานะในหน้า **Download progress**
-4. เลือก **Restart Jenkins when installation is complete and no jobs are running** แล้วรอให้หน้า login กลับมา
+- ติดตั้ง Generic Webhook Trigger 2.4.2 ผ่าน Jenkins UI
+- เปิด smee channel และรัน relay แบบ pinned image บน `cicd-net`
+- ปิด Poll SCM แล้วกำหนด GWT token, `ref`/`after`, cause และ main filter
+- พิสูจน์ว่า GitHub ping ได้ 2xx แต่ไม่สร้าง build
+- push จริงหนึ่งครั้งแล้ว correlate SHA ครบสี่ hop
 
-![ผลค้น Generic Webhook Trigger ใน Available plugins](../slides_assets/lab5_s01_available_plugin.png)
+## การทดลองที่ 1 — สภาพจบ LAB 4 พร้อมหรือไม่? (~2 นาที)
 
-*ภาพที่ 1 ผลค้น `generic-webhook-trigger` แสดงรุ่น 2.4.2 และช่องเลือกของ plugin ก่อนติดตั้ง*
-
-![หน้า Download progress และตัวเลือก restart](../slides_assets/lab5_s02_plugin_download_restart.png)
-
-*ภาพที่ 2 หน้า Download progress แสดงรายการติดตั้งและตัวเลือก restart Jenkins ด้านล่าง*
+**คำถาม:** inner Jenkins ยังทำงานและ `hello-ci-pipeline` อยู่ในสถานะ Poll SCM จาก LAB 4 หรือไม่?
 
 ```bash
-until curl -fsS http://localhost:8080/login >/dev/null; do sleep 2; done
+docker ps
 ```
 
-✅ **สิ่งที่ต้องเห็น** :
+✅ **ผลที่สังเกตได้จากการรันจริง**
 
 ```text
-Generic Webhook Trigger 2.4.2    Enabled
+CONTAINER ID   IMAGE                 COMMAND                  STATUS       PORTS                                                    NAMES
+<id>           jenkins-docker:2569   "/usr/bin/tini -- /u…"   Up <เวลา>    0.0.0.0:8080->8080/tcp, 50000/tcp                       jenkins
 ```
 
-> 📝 หากหน้า restart ยังไม่ตอบสนอง ให้รอผลจาก `curl` ก่อน ไม่ควรส่งคำสั่ง restart ซ้ำระหว่างที่ Jenkins กำลังโหลด plugin
+หากยังไม่จบ LAB 4 ให้กู้จาก devtools โดยเก็บค่าจริงเฉพาะ shell:
 
-ขณะนี้ Jenkins มี plugin ที่ต้องใช้แล้ว ขั้นถัดไปจะเปลี่ยน trigger ของ job โดยไม่แก้ Jenkinsfile
+```bash
+export GITHUB_USER='<GITHUB_USER>'
+export GITHUB_TOKEN='<GITHUB_TOKEN>'
 
-## การทดลองที่ 2 — จะเปลี่ยนจาก polling เป็น webhook โดยไม่แก้ Jenkinsfile อย่างไร
+(
+  cd "$COURSE_ROOT"
+  bash tools/bootstrap/up_to_lab4.sh
+)
+```
 
-**คำถาม:** trigger ของ `hello-ci-pipeline` ต้องตั้งค่าอย่างไรเพื่อให้ token เลือก job นี้เพียงตัวเดียว?
+✅ ต้องจบด้วยข้อความว่า LAB 4 verified และ job เปิด Poll SCM; token ต้องไม่ถูกพิมพ์หรือเขียนลงไฟล์
 
-Trigger เป็นคุณสมบัติของ job และมีผลหลังบันทึก configuration การปิด Poll SCM ป้องกัน build ซ้ำจากสองกลไก ส่วน token ใช้ระบุ job ที่ endpoint ต้อง trigger
+## การทดลองที่ 2 — ติดตั้ง GWT 2.4.2 อย่างไร? (~4 นาที)
 
-1. เลือก **Jenkins → hello-ci-pipeline → Configure → Triggers**
-2. เอาเครื่องหมาย **Poll SCM** ออก
-3. เลือก **Generic Webhook Trigger**
-4. กรอกช่อง **Token** เป็น `cicd2569-hello` แล้วกด **Save**
+**คำถาม:** จะเพิ่ม webhook endpoint ให้ Jenkins และยืนยันว่า plugin active หลัง restart ได้อย่างไร?
 
-![Build Triggers และ token ของ job](../slides_assets/lab5_s03_build_trigger_token.png)
+1. เปิด `http://localhost:8080` แล้วไป **Manage Jenkins → Plugins → Available plugins**
+2. ค้นหา `generic-webhook-trigger` แล้วเลือก **Generic Webhook Trigger 2.4.2**
+3. กด **Install** และรอหน้า Download progress จนติดตั้งครบ
+4. เลือก **Restart Jenkins when installation is complete and no jobs are running** แล้วรอหน้า login กลับมา
 
-*ภาพที่ 3 Generic Webhook Trigger ถูกเลือก และช่อง Token มีค่า `cicd2569-hello` ก่อนบันทึก*
+![เลือก Generic Webhook Trigger 2.4.2](../slides_assets/lab5_s01_available_plugin.png)
 
-✅ **สิ่งที่ต้องเห็น** :
+*ภาพที่ 1: หน้า Jenkins จริง แสดงผลค้น รุ่น 2.4.2 ช่องเลือก และปุ่ม Install*
+
+![ผลติดตั้ง plugin ก่อน restart](../slides_assets/lab5_s02_plugin_download_restart.png)
+
+*ภาพที่ 2: หน้า Download progress จริงก่อนสั่ง restart Jenkins*
+
+```bash
+until curl -fsS http://localhost:8080/login >/dev/null
+do
+  sleep 2
+done
+```
+
+✅ **สิ่งที่ต้องเห็นใน Installed plugins**
+
+```text
+Generic Webhook Trigger  2.4.2  Enabled
+```
+
+## การทดลองที่ 3 — เปิด channel ก่อน event แรกทำไม? (~2 นาที)
+
+**คำถาม:** เราจะมี public URL ให้ GitHub ส่งเข้าและไม่พลาด ping แรกได้อย่างไร?
+
+1. เปิด [https://smee.io](https://smee.io) แล้วกด **Start a new channel**
+2. เก็บ URL ที่ได้ไว้ใน shell เป็น `SMEE_HELLO_URL='<SMEE_HELLO_URL>'`
+3. **เปิด tab channel นี้ค้างไว้ตลอดการทดลอง** แล้วจึงไปขั้น relay และ Add webhook
+
+![smee channel ใหม่ก่อนรับ event](../slides_assets/lab5_s03_smee_channel.png)
+
+*ภาพที่ 3: หน้า smee.io จริง โดย mask channel id เป็น `<SMEE_HELLO_URL>` ตั้งแต่ capture และเปิด tab ไว้ก่อนสร้าง hook*
+
+> smee.io ส่ง event สดและไม่ replay event ที่มาก่อนเปิด tab หรือเกิดตอน relay หลุด หากพลาดหลักฐาน ห้ามใช้ event เก่าแทน: เปิด tab/ต่อ relay ให้ `Connected` แล้ว push commit ใหม่
+
+## การทดลองที่ 4 — relay จะเข้าถึง Jenkins หลัง NAT ได้อย่างไร? (~3 นาที)
+
+**คำถาม:** smee-client ต้องอยู่ network ใดและ forward ไป target ใด?
+
+```bash
+docker run -d --name smee-hello --restart unless-stopped --network cicd-net deltaprojects/smee-client@sha256:20ea24c8c81bb3f3aa332c8939503e3c5bee048bb5a98ba2249d73a41a556e33 --url <SMEE_HELLO_URL> --target 'http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-hello'
+docker logs smee-hello
+```
+
+✅ **ผลที่สังเกตได้จากการรันจริง**
+
+```text
+Forwarding <SMEE_HELLO_URL> to http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-hello
+Connected
+```
+
+image ถูก pin ด้วย digest เพื่อให้ห้องเรียนใช้ artifact เดียวกัน `--restart unless-stopped` ทำให้ relay ต่อ channel เดิมหลัง container/Jenkins กลับมา และ URL กู้ได้จาก `docker inspect smee-hello` โดยไม่ต้อง mint ใหม่
+
+## การทดลองที่ 5 — ตั้ง GWT ให้ ping และ branch อื่นไม่ build อย่างไร? (~5 นาที)
+
+**คำถาม:** Job ต้องอ่าน field ใดจาก payload ก่อนตัดสินใจ trigger?
+
+1. ไป **Jenkins → hello-ci-pipeline → Configure → Triggers**
+2. เอาเครื่องหมาย **Poll SCM** ออก แล้วเลือก **Generic Webhook Trigger**
+3. ใต้ **Post content parameters** กด **Add** สองครั้ง: กรอก `ref` → `$.ref` และ `after` → `$.after` โดยคง Expression type เป็น JSONPath
+4. กรอก **Token** เป็น `cicd2569-hello` และ **Cause** เป็น `GitHub push $after`
+5. เลื่อนถึง **Optional filter** กรอก **Expression** เป็น `^refs/heads/main$` และ **Text** เป็น `$ref`
+6. ตรวจค่าทั้งหมดแล้วกด **Save**
+
+![Post content parameters ของ GWT](../slides_assets/lab5_s04_gwt_parameters.png)
+
+*ภาพที่ 4: หน้า Jenkins จริง แสดง Post content parameter ตัวแรก `ref=$.ref`*
+
+![Post content parameter after](../slides_assets/lab5_s04b_gwt_after.png)
+
+*ภาพที่ 4.1: หน้า Jenkins จริง แสดง parameter ตัวที่สอง `after=$.after` และเลือก JSONPath*
+
+![Token และ cause ของ GWT](../slides_assets/lab5_s04c_gwt_token_cause.png)
+
+*ภาพที่ 4.2: หน้า Jenkins จริง แสดง token ต่อ job และ cause `GitHub push $after`*
+
+![Optional filter เฉพาะ main](../slides_assets/lab5_s05_gwt_filter.png)
+
+*ภาพที่ 5: หน้า Jenkins จริง แสดง expression `^refs/heads/main$` และ text `$ref` ก่อน Save*
+
+✅ **ค่าหลัง Save**
 
 ```text
 Poll SCM: off
-Generic Webhook Trigger: on
+Post content parameters: ref=$.ref, after=$.after
 Token: cicd2569-hello
+Cause: GitHub push $after
+Filter: $ref matches ^refs/heads/main$
 ```
 
-> 📝 Trigger ที่ตั้งผ่าน job UI มีผลเมื่อกด Save จึงไม่ต้องกด Build Now หรือทำ seed build ก่อนทดสอบ endpoint
+## การทดลองที่ 6 — endpoint กับ filter ทำงานจริงไหม? (~2 นาที)
 
-ขณะนี้ job พร้อมรับ request แล้ว แต่ยังไม่เกี่ยวข้องกับ Gitea ขั้นถัดไปจึงทดสอบ endpoint จาก shell เพื่อแยกขอบเขตปัญหา
+**คำถาม:** จะพิสูจน์ว่า request ไม่มี `ref` ถูกกัน แต่ payload main ถูก trigger โดยยังไม่เกี่ยวกับ internet ได้อย่างไร?
 
-## การทดลองที่ 3 — token เลือก job ถูกจริงไหม
-
-**คำถาม:** ก่อนเชื่อม Gitea จะทดสอบ endpoint โดยตรงจาก devtools shell ได้อย่างไร?
-
-การเรียก endpoint โดยตรงพิสูจน์ว่า plugin, token และ job configuration ทำงานครบ หากขั้นนี้ไม่ผ่าน ปัญหายังอยู่ฝั่ง Jenkins ไม่ใช่การตั้งค่า webhook ของ Gitea
+รันจาก devtools; คำสั่งแรกไม่มี JSON body จึงไม่ match filter:
 
 ```bash
-curl -s 'http://localhost:8080/generic-webhook-trigger/invoke?token=cicd2569-hello'
+curl -s -X POST 'http://localhost:8080/generic-webhook-trigger/invoke?token=cicd2569-hello'
 ```
 
-✅ **สิ่งที่ต้องเห็น** :
+✅ **response จริงของ GWT 2.4.2**: job ถูกพบด้วย token แต่ `triggered:false` เพราะ `$ref` ว่าง
+
+```json
+{"jobs":{"hello-ci-pipeline":{"triggered":false,"resolvedVariables":{"after":"","ref":""}}},"message":"Triggered jobs."}
+```
+
+บางรุ่น/กรณีที่ token หา job ไม่พบอาจใช้ข้อความ `Did not find any jobs to trigger!`; ในแล็บนี้ให้ตัดสิน filter จาก `triggered:false` และ build number ไม่เพิ่ม ไม่ใช่จาก message รวมเพียง field เดียว
+
+```bash
+curl -s -X POST -H 'Content-Type: application/json' -d '{"ref":"refs/heads/main","after":"test"}' 'http://localhost:8080/generic-webhook-trigger/invoke?token=cicd2569-hello'
+```
+
+✅ **ผลที่สังเกตได้จากการรันจริง**
 
 ```json
 {"jobs":{"hello-ci-pipeline":{"triggered":true}},"message":"Triggered jobs."}
 ```
 
-ค่าจริงมี field รายละเอียดเพิ่ม เช่น queue id แต่ต้องพบ `hello-ci-pipeline`, `triggered:true` และ `Triggered jobs.` เมื่อ endpoint ผ่านแล้วจึงกำหนดให้ Gitea เรียก URL เดียวกันผ่าน network ภายใน
+response จริงมี field เพิ่มได้ แต่ต้องมี `hello-ci-pipeline`, `triggered:true` และ `Triggered jobs.`
 
-## การทดลองที่ 4 — Gitea ส่ง delivery ถึง Jenkins ได้ไหม
+## การทดลองที่ 7 — เพิ่ม GitHub webhook แล้ว ping ต้องไม่ build (~4 นาที)
 
-**คำถาม:** URL ใดทำให้ Gitea container เรียก Jenkins container ผ่าน `cicd-net` ได้?
+**คำถาม:** GitHub เข้าถึง channel ได้ แต่ GWT กัน event ที่ไม่ใช่ push main จริงหรือไม่?
 
-Webhook ต้องใช้ DNS ภายใน Docker network เพราะ request ถูกส่งจาก Gitea container ไม่ใช่จาก browser ของผู้เรียน URL canonical จึงใช้ชื่อ service `jenkins` แทน `localhost`
+1. ยืนยันว่า tab smee จากการทดลองที่ 3 ยังเปิดและ `docker logs smee-hello` มี `Connected`
+2. ไป repository `hello-ci` แล้วเลือก **Settings → Webhooks → Add webhook**
+3. กรอก Payload URL=`<SMEE_HELLO_URL>`, Content type=`application/json`, Secret=ว่าง และเปิด SSL verification
+4. เลือก **Just the push event**, เปิด **Active** แล้วกด **Add webhook**
 
-1. เปิด `http://localhost:3000` แล้วเลือก **student/hello-ci → Settings → Webhooks**
-2. กด **Add Webhook → Gitea**
-3. กรอก **Target URL** เป็น `http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-hello`
-4. คง **HTTP Method = POST**, **POST Content Type = application/json**, **Active** และ **Push Events**
-5. กด **Add Webhook** แล้วตรวจว่ารายการใหม่แสดง URL canonical
-6. เปิด webhook ที่สร้าง กด **Test Push Event** แล้วกาง delivery ล่าสุดที่แท็บ **Response**
+![Add webhook สำหรับ hello-ci](../slides_assets/lab5_s06_github_add_webhook.png)
 
-![แบบฟอร์ม Add Webhook ที่กรอก URL แล้ว](../slides_assets/lab5_s04_add_webhook_form.png)
+*ภาพที่ 6: ภาพจำลอง — UI จริงอาจต่างเล็กน้อย; marker แสดง Payload URL, JSON, Secret ว่าง, SSL verify, push-only, Active และ Add webhook ดู [GitHub Docs: Creating webhooks](https://docs.github.com/en/webhooks/using-webhooks/creating-webhooks); หลังบันทึกต้องตรวจ postcondition ผ่าน delivery/API*
 
-*ภาพที่ 4 แบบฟอร์ม Gitea แสดง Target URL canonical พร้อม POST, application/json และ Active*
+GitHub ส่ง `ping` ทันทีหลังสร้าง hook ให้ดู delivery เป็น 2xx และกลับ tab smee:
 
-![แบบฟอร์ม webhook จากภาพชุดเดิม](../slides_assets/lab5_webhook_config.png)
+![GitHub ping ใน smee tab](../slides_assets/lab5_s07_smee_ping.png)
 
-*ภาพที่ 5 ภาพอ้างอิงเดิมของหน้า Add Webhook ซึ่งใช้ค่า configuration เดียวกัน*
+*ภาพที่ 7: หลักฐานจริงว่า tab ที่เปิดค้างรับ ping; channel และชื่อบัญชีถูก mask ตอน capture*
 
-![รายการ webhook หลังบันทึก](../slides_assets/lab5_s05_webhook_list.png)
-
-*ภาพที่ 6 รายการ Webhooks หลังบันทึกแสดงจุดสถานะและ URL ที่ใช้ชื่อ container `jenkins`*
-
-![Delivery ล่าสุดพร้อม HTTP 200 และ response](../slides_assets/lab5_s06_delivery_response.png)
-
-*ภาพที่ 7 delivery ที่กางอยู่แสดง Response 200 และ body ซึ่งระบุ `hello-ci-pipeline` ว่าถูก trigger*
-
-![Delivery HTTP 200 จากภาพชุดเดิม](../slides_assets/lab5_delivery.png)
-
-*ภาพที่ 8 ภาพอ้างอิงเดิมยืนยัน HTTP 200 และข้อความ `Triggered jobs.` จาก Jenkins*
-
-✅ **สิ่งที่ต้องเห็น** :
+✅ **Ping acceptance**
 
 ```text
-HTTP Status: 200
-Response: ... "hello-ci-pipeline" ... "Triggered jobs."
+GitHub ping delivery: 2xx
+smee tab: ping event appears
+Jenkins build number before ping = after ping
 ```
 
-> 📝 ใน URL นี้ `jenkins` คือ DNS ของ container บน `cicd-net`; `localhost` ภายใน Gitea หมายถึง Gitea เอง จึงใช้แทนกันไม่ได้
+ping ไม่มี `ref=refs/heads/main` จึงผ่าน relay ด้วย HTTP ได้ แต่ filter ไม่สร้าง build นี่คือคนละคำถามระหว่าง “delivery ถึงหรือไม่” กับ “event ควร build หรือไม่”
 
-เมื่อ test delivery ได้ HTTP 200 แล้ว เส้นทาง Gitea → Jenkins พร้อมใช้งาน ขั้นถัดไปจะสร้างเหตุการณ์จาก `git push` จริง
+> **ทางเลือกอัตโนมัติสำหรับผู้สอน:** ขั้น GitHub ที่ต้อง login ใช้ API แทน UI โดยยังเก็บภาพจำลองไว้สอนลำดับคลิก
+>
+> ```bash
+> (
+>   cd "$COURSE_ROOT"
+>   /opt/venv/bin/python tools/ui/lab5_payload.py --action add-hook
+> )
+> ```
 
-## การทดลองที่ 5 — push จริงเร็วกว่า polling แค่ไหน
-
-**คำถาม:** เมื่อแก้ไฟล์แล้ว push Jenkins จะพบ build ใหม่ในกี่วินาที และจะพิสูจน์ build cause ได้อย่างไร?
-
-การทดลองนี้ใช้ commit จริงเพื่อยืนยันว่าการแจ้งเตือนไม่ได้เกิดจากปุ่ม Test Push Event หลัง push ให้เปิด build ล่าสุดและตรวจทั้งผลลัพธ์, revision และข้อความ cause
+## การทดลองที่ 8 — relay restart แล้วยังใช้ channel เดิมหรือไม่? (~2 นาที)
 
 ```bash
-LAB5_WORKDIR=$(mktemp -d) && git clone http://student:student2569@localhost:3000/student/hello-ci.git "$LAB5_WORKDIR/hello-ci"
-cd "$LAB5_WORKDIR/hello-ci" && git config user.name student && git config user.email student@example.com && date -u +"webhook proof %Y-%m-%dT%H:%M:%SZ" >> webhook-proof.txt && git add webhook-proof.txt && git commit -m 'Verify immediate webhook build' && time git push origin main
+docker restart smee-hello
+docker logs --tail 5 smee-hello
 ```
 
-1. เปิด **Jenkins → hello-ci-pipeline** ทันทีหลัง `git push`
-2. เปิด build ใหม่ที่ปรากฏ แล้วตรวจหน้า **Status** และ **Console Output**
-3. ยืนยันว่าหน้า build แสดง **Generic Cause** และ revision ตรงกับ commit ที่ push
+✅ ต้องเห็น `Connected` รอบใหม่และ `docker inspect smee-hello` ยังคง URL เดิม เหตุการณ์ที่เกิดระหว่าง disconnect จะไม่ replay จึงต้องรอ Connected ก่อน push ใหม่
 
-![Build ที่เกิดจาก webhook และ Generic Cause](../slides_assets/lab5_s07_webhook_build_cause.png)
+## การทดลองที่ 9 — push หนึ่งครั้งสร้าง exactly one build หรือไม่? (~4 นาที)
 
-*ภาพที่ 9 build #6 สำเร็จ แสดง Generic Cause, revision `401ab4f0ded0...` และข้อความ commit ที่ใช้ทดสอบ*
-
-![Build อัตโนมัติจากภาพชุดเดิม](../slides_assets/lab5_auto_build.png)
-
-*ภาพที่ 10 ภาพอ้างอิงเดิมของ build อัตโนมัติ ซึ่งแสดง cause จาก Generic Webhook Trigger เช่นเดียวกัน*
-
-✅ **สิ่งที่ต้องเห็น** :
-
-```text
-new build #6 detected 11.59s after push
-build #6 = SUCCESS
-cause: Generic Cause
-```
-
-ผลรอบตรวจนี้พบ build ใหม่ภายใน 11.59 วินาที จึงไม่ต้องรอหน้าต่าง 0–60 วินาทีของ Poll SCM เลข build และระยะเวลาของแต่ละเครื่องอาจต่างกัน แต่ cause ต้องมาจาก Generic Webhook Trigger
-
-ขณะนี้มี push delivery จริงและ build ที่สัมพันธ์กันแล้ว ขั้นถัดไปจะอ่าน request payload ของ delivery ล่าสุด
-
-## การทดลองที่ 6 — payload บอกเรื่อง commit อะไร
-
-**คำถาม:** Gitea ส่งข้อมูลใดให้ Jenkins พร้อม push event?
-
-Payload เป็นหลักฐานระดับเหตุการณ์ที่ใช้ตรวจ branch, commit และไฟล์ที่เปลี่ยน แม้แล็บนี้ใช้ token เลือก job เพียงอย่างเดียว ข้อมูลเดียวกันสามารถนำไปกำหนด filter หรือใช้ audit ได้
-
-1. กลับไป **Gitea → hello-ci → Settings → Webhooks** แล้วเปิด webhook เดิม
-2. กาง delivery ล่าสุดจากการ push จริง
-3. เลือกแท็บ **Request** แล้วตรวจ Headers และ Content
-4. ค้นหา `ref`, `after`, `head_commit.id`, `head_commit.message` และ `commits[].added`
-
-![Request payload ของ push delivery ล่าสุด](../slides_assets/lab5_s08_delivery_request.png)
-
-*ภาพที่ 11 delivery จาก push จริงแสดง request URL, event type, `refs/heads/main`, commit `401ab4f0ded0...` และข้อความ `Verify immediate webhook build`*
-
-✅ **สิ่งที่ต้องเห็น** :
-
-```text
-head_commit.id: 401ab4f0ded0...
-head_commit.message: Verify immediate webhook build
-commits[0].added: webhook-proof.txt
-```
-
-Payload จึงระบุได้ว่า branch ใดชี้ไป commit ใด ผู้ใด push ข้อความ commit คืออะไร และไฟล์ใดเปลี่ยน เมื่อหลักฐานครบแล้วจึงตรวจสถานะรวมด้วยสคริปต์ของแล็บ
-
-> **ทางเลือกอัตโนมัติ (รันจากเครื่อง host ของผู้สอน):** helper นี้ใช้ Playwright ซึ่งไม่มีใน devtools image ให้ผู้สอนกำหนด `COURSE_ROOT` บน host แล้วตรวจว่า delivery ล่าสุดมี `webhook-proof.txt` อยู่ใน `commits[].added`; นักศึกษาตรวจผ่านแท็บ Request ตามขั้นด้านบนได้โดยไม่ต้องใช้ helper
+**คำถาม:** SHA จาก push จะเดินทางครบสี่ hopและเกิด build เพียงหนึ่งรายการได้หรือไม่?
 
 ```bash
-(cd "$COURSE_ROOT" && GITEA_BASE_URL=http://localhost:3000 DT_NAME=devtools-jenkins python3 tools/ui/lab5_payload.py)
+cd "$HOME/hello-ci"
+git pull --ff-only origin main
+
+git config user.name Student
+git config user.email student@example.invalid
+
+printf '\n# Webhook probe %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> hello.sh
+printf 'GitHub webhook payload proof\n' > webhook-proof.txt
+
+git add hello.sh webhook-proof.txt
+git commit -m 'Verify immediate GitHub webhook build'
+time git push origin main
 ```
 
-## การทดลองที่ 7 — สถานะจบ LAB 5 ครบหรือยัง
+เมื่อถาม credential ให้กรอก Username=`<GITHUB_USER>` และ Password=`<GITHUB_TOKEN>` ที่ prompt ห้ามใส่ PAT ใน URL และห้ามใช้ `credential.helper store`
 
-**คำถาม:** จะตรวจ plugin, trigger, webhook และ build ล่าสุดพร้อมกันได้อย่างไร?
+ไล่หลักฐานตาม SHA เดียวกัน:
 
-```bash
-(cd "$COURSE_ROOT/005_LAB_Webhook_Trigger" && bash check.sh)
-```
+1. tab smee มี push payload: `ref=refs/heads/main`, `after=<SHA>`, `head_commit.id=<SHA>`, `commits[].modified` มี `hello.sh` และ `commits[].added` มี `webhook-proof.txt`
+2. `docker logs smee-hello` มี POST ไป canonical target และ status 200 หลังเวลา delivery
+3. Jenkins มี build ใหม่ **หนึ่งรายการเท่านั้น** cause `GitHub push <SHA>` และจบ SUCCESS
+4. Console มี `Checking out Revision <SHA>` เดียวกับ origin/main
 
-✅ **สิ่งที่ต้องเห็น** :
+![Push payload ใน smee tab](../slides_assets/lab5_s08_smee_push.png)
+
+*ภาพที่ 8: หลักฐานจริงจาก smee แสดง `ref`, `after`, `head_commit` และไฟล์ที่เปลี่ยน; mask capability/บัญชีก่อนบันทึก*
+
+![ไฟล์ที่เพิ่มและแก้ใน commits](../slides_assets/lab5_s08a_smee_commit_files.png)
+
+*ภาพที่ 8.1: ขยาย `commits[]` แล้วเห็น proof file ใน `added`; helper/API postcondition ตรวจ `modified=hello.sh` เพิ่มอีกชั้น*
+
+![รายละเอียด head_commit](../slides_assets/lab5_s08b_smee_head_commit.png)
+
+*ภาพที่ 8.2: ขยาย `head_commit` เพื่อเทียบ id และข้อความ commit กับหลักฐาน hop อื่น*
+
+![Build ที่เกิดจาก GitHub push](../slides_assets/lab5_s09_github_push_build.png)
+
+*ภาพที่ 9: หน้า Jenkins จริง แสดง SUCCESS และ cause `GitHub push <SHA>` ของ build ใหม่เพียงรายการเดียว*
+
+![Checkout SHA ใน Console Output](../slides_assets/lab5_s10_checkout_sha.png)
+
+*ภาพที่ 10: Console Output จริง แสดง checkout revision ที่ตรงกับ delivery/origin/main*
+
+✅ **ผล normalize จากการรันจริง**
 
 ```text
+push completed in <เวลา>s; commit=<SHA>
+new build #N+1 detected <เวลา>s after push
+GitHub push <SHA>
+Checking out Revision <SHA> (refs/remotes/origin/main)
+Finished: SUCCESS
+```
+
+## ตรวจสถานะจบแล็บ
+
+```bash
+(
+  cd "$COURSE_ROOT/005_LAB_Webhook_Trigger"
+  bash check.sh
+)
+```
+
+✅ **ผลที่ต้องเห็นครบ**
+
+```text
+[PASS] ยืนยัน GITHUB_TOKEN และเจ้าของบัญชีตรงกับ GITHUB_USER
 [PASS] Generic Webhook Trigger 2.4.2 ติดตั้งและ active
+[PASS] GenericTrigger มี token, ref/after และ main-branch regexp filter ตรง contract
 [PASS] job hello-ci-pipeline ปิด Poll SCM แล้ว
-[PASS] Gitea มี active push webhook ไป canonical Jenkins URL
-[PASS] build ล่าสุด #6 มี cause จาก Generic Webhook Trigger
+[PASS] smee-hello กำลังรัน และ url/target args ตรง canonical contract
+[PASS] smee-hello log มีหลักฐาน Connected
+[PASS] อ่าน SHA ปัจจุบันของ origin/main ได้
+[PASS] GitHub hook ตรง relay channel, json, push-only, active, SSL verify และ secret ว่าง
+[PASS] GitHub push delivery ล่าสุดตอบ 200 และ payload.after ตรง origin/main
+[PASS] build ล่าสุด #<BUILD_NUMBER> = SUCCESS และ cause มี GitHub push
+[PASS] delivery SHA, origin/main และ checkout SHA ของ build ล่าสุดตรงกัน
+[PASS] smee-hello log มี POST canonical target ได้ 200 หลังเวลา delivery
+[INFO] GitHub API requests ใน run นี้: 4
 ผลรวม: PASS — LAB 5 พร้อมใช้งาน
 ```
 
@@ -249,9 +333,12 @@ Payload จึงระบุได้ว่า branch ใดชี้ไป com
 
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
-| Delivery ได้ 404 และ `Did not find any jobs` | ยังไม่ Save trigger หรือ token ใน URL/หน้า job สะกดไม่ตรง | กลับไป Configure ตรวจ `cicd2569-hello`, กด Save แล้วเรียก endpoint ตรงซ้ำ |
-| Delivery timeout | ใช้ `http://localhost:8080/...` ทำให้ Gitea เรียกตัวเอง | เปลี่ยนเป็น `http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-hello` |
-| Delivery 200 แต่ build ที่ต้องการไม่เกิด | token ซ้ำกับ job อื่นหรือผูกผิด job | แยก token ต่อ job และใช้ `cicd2569-hello` เฉพาะ `hello-ci-pipeline` |
-| Plugin restart ค้าง | Jenkins ยังติดตั้ง dependency หรือ browser รอ connection เดิม | รอด้วย `until curl -fsS http://localhost:8080/login; do sleep 2; done`; หากยังไม่กลับให้ดู `docker logs --tail 100 jenkins` |
-| Gitea แจ้ง URL not allowed | container ไม่ได้อนุญาต webhook ไป private network | recreate Gitea ตาม LAB 4 ด้วย `GITEA__webhook__ALLOWED_HOST_LIST=private` หรือกู้ด้วย `(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab4.sh)` |
-| ตามไม่ทันหรือสถานะไม่ตรง | ขั้น LAB 5 ค้างกลางทาง | รัน `(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab5.sh)` แล้วตรวจด้วย `(cd "$COURSE_ROOT/005_LAB_Webhook_Trigger" && bash check.sh)` |
+| relay หลุดหรือสร้าง channel ใหม่ | tab/client เก่าหยุด และ smee ไม่ replay | สร้าง channel ใหม่ เปิด tab → update GitHub hook URL → recreate relay ด้วย URL เดียวกัน → รอ `Connected` → push commit ใหม่ |
+| GitHub ping ไม่มา | เปิด tab หลัง Add hook, hook inactive หรือ URL ผิด | เปิด tab ก่อน, ตรวจ Active/SSL/Payload URL แล้วกด **Redeliver** เฉพาะ ping เพื่อวินิจฉัย; acceptance รอบสอนให้สร้าง hook ตามลำดับใหม่ |
+| `Did not find any jobs to trigger!` | request ไม่มี `ref`, ref ไม่ใช่ main, token/filter ยังไม่ตรง | ถ้าเป็น pingหรือ curl แรกถือว่าถูกต้อง; ถ้าเป็น push ให้ตรวจ `ref`, token, `$ref` และ `^refs/heads/main$` |
+| delivery 200 แต่ build ไม่เกิด | relay ถึง Jenkinsแล้ว แต่ token เลือก job ไม่ได้หรือ filter ปฏิเสธ payload | เทียบ URL token กับ job, ตรวจ Post content parameters และ delivery payload; HTTP 200 อย่างเดียวไม่รับประกัน build |
+| delivery ไม่ถึง smee | hook URL ผิด, channel/tab ไม่เปิด หรือ GitHub ส่งไม่ได้ | ตรวจ Recent Deliveries, เปิด channel URL จริงแบบไม่แชร์ และตรวจ hook เป็น push-only/active/SSL verify |
+| ต้องให้ build ต่อชั่วคราวเมื่อ smee ล่ม | continuity จำเป็น แต่ webhook chain ยังไม่ผ่าน | เปิด Poll SCM `* * * * *` ชั่วคราว; เมื่อ smee กลับให้รอ Connected, push ใหม่ยืนยัน webhook แล้ว **ปิด Poll SCMและ Save** ก่อนรัน `check.sh` |
+| restart แล้วไม่มี `Connected` | relay image/network/args ผิด | ตรวจ `docker inspect smee-hello`, ต้องอยู่ `cicd-net`, restart policy `unless-stopped`, pinned digest และ canonical target |
+
+Poll SCM fallback เป็นเพียงทางผ่าน: `check.sh` จะไม่ PASS จน Poll ปิดและ chain webhook จริงครบ

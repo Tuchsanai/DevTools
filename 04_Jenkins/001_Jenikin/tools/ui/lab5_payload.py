@@ -1,88 +1,167 @@
 #!/usr/bin/env python3
-"""Open the latest Gitea delivery request and verify its pushed-commit payload."""
+"""Create/inspect the GitHub hook and correlate its delivery payload with Git."""
 
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
-from pathlib import Path
 import re
 import subprocess
+import time
+import urllib.error
+import urllib.request
 
-from common import browser_page, gitea_login, log, require, run_main, wait_visible
+from common import log, require, run_main
 
 
-HOOK_URL = "http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-hello"
+JOB = "hello-ci-pipeline"
 
 
-def remote_head(devtools_name: str) -> str:
-    output = subprocess.check_output(
-        [
-            "docker", "exec", devtools_name, "git", "ls-remote",
-            "http://student:student2569@localhost:3000/student/hello-ci.git", "refs/heads/main",
-        ],
-        text=True,
+def api(method: str, path: str, payload: dict | None = None) -> tuple[int, object]:
+    token = os.environ.get("GITHUB_TOKEN", "")
+    require(bool(token), "GITHUB_TOKEN is set in the current shell")
+    body = None if payload is None else json.dumps(payload).encode()
+    request = urllib.request.Request(
+        f"https://api.github.com{path}",
+        data=body,
+        method=method,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "Content-Type": "application/json",
+        },
     )
-    return output.split()[0]
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            return response.status, json.load(response)
+    except urllib.error.HTTPError as exc:
+        raise AssertionError(f"GitHub API {method} {path} returned HTTP {exc.code}") from exc
 
 
-def flow(args: argparse.Namespace) -> None:
-    base_url = args.base_url.rstrip("/")
-    commit = remote_head(args.devtools_name)
-    require(len(commit) == 40, "read current main commit from Gitea")
+def channel_from_relay(devtools_name: str) -> str:
+    raw = subprocess.check_output(
+        ["docker", "exec", devtools_name, "docker", "inspect", "smee-hello"], text=True
+    )
+    args = json.loads(raw)[0]["Config"]["Cmd"]
+    channel = args[args.index("--url") + 1]
+    require(bool(re.fullmatch(r"https://smee\.io/[^/?#]+", channel)), "relay stores one valid smee channel URL")
+    return channel
 
-    with browser_page(headless=not args.headed) as (_, _, _, page):
-        gitea_login(page, base_url)
-        page.goto(f"{base_url}/student/hello-ci/settings/hooks", wait_until="domcontentloaded")
-        require(HOOK_URL in page.locator("body").inner_text(), "canonical webhook is listed")
-        page.locator("a[href*='/settings/hooks/']").filter(has_text="Unnamed Webhook").first.click()
-        page.wait_for_load_state("domcontentloaded")
 
-        delivery = page.get_by_text(
-            re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
-        ).first
-        wait_visible(delivery, "latest push delivery UUID")
-        delivery.click()
-        page.wait_for_timeout(500)
-        request_tab = page.locator("a.item[data-tab^='request-']:visible").first
-        wait_visible(request_tab, "delivery Request tab")
-        request_tab.click()
-        page.wait_for_timeout(500)
-        # Scope assertions to the expanded delivery. Other collapsed deliveries
-        # remain in the DOM and must not satisfy evidence for the latest push.
-        payload_source = page.locator("pre.webhook-info:visible").last.inner_text()
-        payload = json.loads(payload_source)
-        head_commit = payload.get("head_commit") or {}
-        commits = payload.get("commits") or []
-        require(head_commit.get("id") == commit, "payload head commit matches Gitea main")
-        require(
-            "Verify immediate webhook build" in str(head_commit.get("message", "")),
-            "payload contains the pushed commit message",
+def jenkins(base_url: str, path: str) -> dict:
+    auth = base64.b64encode(b"admin:admin2569").decode()
+    request = urllib.request.Request(
+        f"{base_url.rstrip('/')}{path}", headers={"Authorization": f"Basic {auth}"}
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return json.load(response)
+
+
+def last_build(base_url: str) -> int:
+    item = jenkins(base_url, f"/job/{JOB}/api/json?tree=lastBuild[number]").get("lastBuild")
+    return 0 if item is None else int(item["number"])
+
+
+def find_hook(user: str, channel: str) -> dict | None:
+    status, hooks = api("GET", f"/repos/{user}/hello-ci/hooks?per_page=100")
+    require(status == 200 and isinstance(hooks, list), "GitHub hook list is readable")
+    for hook in hooks:
+        if (hook.get("config") or {}).get("url") == channel:
+            return hook
+    return None
+
+
+def add_hook(args: argparse.Namespace, user: str, channel: str) -> None:
+    require(find_hook(user, channel) is None, "fresh smee channel is not already registered")
+    baseline = last_build(args.jenkins_base_url)
+    status, hook = api(
+        "POST",
+        f"/repos/{user}/hello-ci/hooks",
+        {
+            "name": "web",
+            "active": True,
+            "events": ["push"],
+            "config": {"url": channel, "content_type": "json", "insecure_ssl": "0"},
+        },
+    )
+    require(status == 201 and isinstance(hook, dict), "GitHub API created the push-only webhook")
+    hook_id = int(hook["id"])
+    log(f"GitHub API replacement for Settings -> Webhooks -> Add webhook: hook_id={hook_id}")
+
+    deadline = time.monotonic() + args.timeout
+    ping = None
+    while time.monotonic() < deadline:
+        status, deliveries = api(
+            "GET", f"/repos/{user}/hello-ci/hooks/{hook_id}/deliveries?per_page=10"
         )
-        require(
-            any("webhook-proof.txt" in (item.get("added") or []) for item in commits),
-            "payload commits[].added contains webhook-proof.txt",
-        )
-        log(f"payload head_commit={commit[:12]} message='Verify immediate webhook build'")
-        request_tab.scroll_into_view_if_needed()
-        page.mouse.wheel(0, 700)
-        page.wait_for_timeout(300)
-        page.screenshot(
-            path=str(Path(args.screenshot_dir) / "lab5_s08_delivery_request.png"),
-            full_page=False,
-        )
-        log("screenshot: latest delivery Request payload")
+        require(status == 200 and isinstance(deliveries, list), "GitHub deliveries are readable")
+        ping = next((item for item in deliveries if item.get("event") == "ping"), None)
+        if ping and 200 <= int(ping.get("status_code") or 0) < 300:
+            break
+        time.sleep(1)
+    require(ping is not None, "GitHub sent the automatic ping delivery")
+    require(200 <= int(ping.get("status_code") or 0) < 300, "automatic ping delivery returned 2xx")
+    time.sleep(5)
+    require(last_build(args.jenkins_base_url) == baseline, "ping did not increase the Jenkins build number")
+    log(f"ping acceptance: delivery 2xx; build remained #{baseline}")
 
 
-def parse_args() -> argparse.Namespace:
+def origin_sha(user: str) -> str:
+    output = subprocess.check_output(
+        ["git", "ls-remote", f"https://github.com/{user}/hello-ci.git", "refs/heads/main"],
+        text=True,
+        timeout=60,
+    )
+    sha = output.split()[0] if output.split() else ""
+    require(bool(re.fullmatch(r"[0-9a-f]{40}", sha)), "origin/main resolves to a full SHA")
+    return sha
+
+
+def verify_push(args: argparse.Namespace, user: str, channel: str) -> None:
+    hook = find_hook(user, channel)
+    require(hook is not None, "GitHub hook points to the running smee channel")
+    assert hook is not None
+    status, deliveries = api(
+        "GET", f"/repos/{user}/hello-ci/hooks/{hook['id']}/deliveries?per_page=10"
+    )
+    require(status == 200 and isinstance(deliveries, list), "GitHub deliveries are readable")
+    item = next((entry for entry in deliveries if entry.get("event") == "push"), None)
+    require(item is not None, "latest delivery set contains a push")
+    assert item is not None
+    status, delivery = api(
+        "GET", f"/repos/{user}/hello-ci/hooks/{hook['id']}/deliveries/{item['id']}"
+    )
+    require(status == 200 and isinstance(delivery, dict), "full push delivery is readable")
+    payload = (delivery.get("request") or {}).get("payload") or {}
+    sha = origin_sha(user)
+    require(200 <= int(delivery.get("status_code") or 0) < 300, "push delivery returned 2xx")
+    require(payload.get("ref") == "refs/heads/main", "payload ref is refs/heads/main")
+    require(payload.get("after") == sha, "payload after equals origin/main")
+    require((payload.get("head_commit") or {}).get("id") == sha, "head_commit.id equals origin/main")
+    commits = payload.get("commits") or []
+    require(any("hello.sh" in (item.get("modified") or []) for item in commits), "commits[].modified contains hello.sh")
+    require(any(any(name.startswith("webhook-proof") for name in (item.get("added") or [])) for item in commits), "commits[].added contains a webhook proof file")
+    log(f"correlation: delivery.after=head_commit.id=origin/main={sha[:12]}")
+
+
+def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base-url", default=os.getenv("GITEA_BASE_URL", "http://host.docker.internal:15300"))
-    parser.add_argument("--devtools-name", default=os.getenv("DT_NAME", "devtools-jk5"))
-    parser.add_argument("--screenshot-dir", default="slides_assets")
-    parser.add_argument("--headed", action="store_true")
-    return parser.parse_args()
+    parser.add_argument("--action", choices=("add-hook", "verify-push"), required=True)
+    parser.add_argument("--devtools-name", default=os.getenv("DT_NAME", "devtools-jk-lab"))
+    parser.add_argument("--jenkins-base-url", default=os.getenv("JENKINS_BASE_URL", "http://host.docker.internal:20080"))
+    parser.add_argument("--timeout", type=int, default=90)
+    args = parser.parse_args()
+    user = os.environ.get("GITHUB_USER", "")
+    require(bool(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{0,38}", user)), "GITHUB_USER has a valid login form")
+    channel = channel_from_relay(args.devtools_name)
+    if args.action == "add-hook":
+        add_hook(args, user, channel)
+    else:
+        verify_push(args, user, channel)
 
 
 if __name__ == "__main__":
-    run_main(lambda: flow(parse_args()))
+    run_main(main)

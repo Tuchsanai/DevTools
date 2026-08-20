@@ -41,7 +41,13 @@ c49cc54fbb9e   jenkins-docker:2569   "/usr/bin/tini -- /u…"   <เวลา>  
 ```
 
 ```bash
-export GITHUB_USER='<GITHUB_USER>' && export GITHUB_TOKEN='<GITHUB_TOKEN>' && (cd "$COURSE_ROOT" && bash tools/bootstrap/github_preflight.sh)
+export GITHUB_USER='<GITHUB_USER>'
+export GITHUB_TOKEN='<GITHUB_TOKEN>'
+
+(
+  cd "$COURSE_ROOT"
+  bash tools/bootstrap/github_preflight.sh
+)
 ```
 
 ✅ **ผลที่สังเกตได้จากการรันจริง**
@@ -89,7 +95,10 @@ Poll SCM = Jenkins-initiated pull model
 > **ทางเลือกอัตโนมัติสำหรับผู้สอน (รันจาก host):** Playwright อยู่ใน `/opt/venv` และ helper ใช้ GitHub API จึงไม่ login ผ่านหน้าเว็บ ให้กำหนด `COURSE_ROOT`, `GITHUB_USER` และ `GITHUB_TOKEN` ใน environment ก่อนรัน; วิธีนี้แทนขั้นคลิกสำหรับการเตรียม/ตรวจชั้นเรียน แต่ภาพจำลองยังใช้สอนลำดับ UI
 >
 > ```bash
-> (cd "$COURSE_ROOT" && /opt/venv/bin/python tools/ui/lab4_scm_repo.py --action create)
+> (
+>   cd "$COURSE_ROOT"
+>   /opt/venv/bin/python tools/ui/lab4_scm_repo.py --action create
+> )
 > ```
 >
 > ✅ **ผลที่สังเกตได้จากการรันจริง**
@@ -108,8 +117,20 @@ Poll SCM = Jenkins-initiated pull model
 **คำถาม:** working tree ใหม่จะ commit ไฟล์ของแล็บด้วย identity ระดับ repository แล้ว push ไป GitHub อย่างปลอดภัยได้หรือไม่?
 
 ```bash
-mkdir "$HOME/hello-ci" && cp "$COURSE_ROOT"/004_LAB_Pipeline_From_Git/{Jenkinsfile,hello.sh,expected.txt} "$HOME/hello-ci/"
-cd "$HOME/hello-ci" && chmod +x hello.sh && git init -b main && git config user.name Student && git config user.email student@example.invalid && git add Jenkinsfile hello.sh expected.txt && git commit -m 'Add Pipeline as Code' && git remote add origin https://github.com/<GITHUB_USER>/hello-ci.git && git push -u origin main
+mkdir "$HOME/hello-ci"
+cp "$COURSE_ROOT"/004_LAB_Pipeline_From_Git/{Jenkinsfile,hello.sh,expected.txt} "$HOME/hello-ci/"
+cd "$HOME/hello-ci"
+chmod +x hello.sh
+
+git init -b main
+git config user.name Student
+git config user.email student@example.invalid
+
+git add Jenkinsfile hello.sh expected.txt
+git commit -m 'Add Pipeline as Code'
+
+git remote add origin https://github.com/<GITHUB_USER>/hello-ci.git
+git push -u origin main
 ```
 
 เมื่อ Git ถาม credential ให้กรอก **Username** เป็น `<GITHUB_USER>` และ **Password** เป็น `<GITHUB_TOKEN>` GitHub ใช้ PAT แทน account password สำหรับ HTTPS push
@@ -157,7 +178,10 @@ branch 'main' set up to track 'origin/main'.
 > **ทางเลือกอัตโนมัติสำหรับผู้สอน (รันจาก host):** helper เปิด Jenkins UI จริงผ่าน Playwright สร้าง New Item และกรอก Pipeline section ตามลำดับเดียวกับนักศึกษา
 >
 > ```bash
-> (cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 /opt/venv/bin/python tools/ui/lab4_scm_job.py --action configure)
+> (
+>   cd "$COURSE_ROOT"
+>   JENKINS_BASE_URL=http://localhost:8080 /opt/venv/bin/python tools/ui/lab4_scm_job.py --action configure
+> )
 > ```
 >
 > ✅ **ผลที่สังเกตได้จากการรันจริง**
@@ -207,7 +231,10 @@ Finished: SUCCESS
 > **ทางเลือกอัตโนมัติสำหรับผู้สอน (รันจาก host):**
 >
 > ```bash
-> (cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins /opt/venv/bin/python tools/ui/lab4_scm_poll.py --action enable)
+> (
+>   cd "$COURSE_ROOT"
+>   JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins /opt/venv/bin/python tools/ui/lab4_scm_poll.py --action enable
+> )
 > ```
 >
 > ✅ **ผลที่สังเกตได้จากการรันจริง**
@@ -226,8 +253,17 @@ Finished: SUCCESS
 **คำถาม:** หลัง push แล้ว Poll SCM จะรายงาน `Changes found`, สร้าง build อัตโนมัติ และ checkout SHA เดียวกับ `origin/main` ได้หรือไม่?
 
 ```bash
-cd "$HOME/hello-ci" && printf '\n# Poll SCM probe\n' >> hello.sh && git add hello.sh && git commit -m 'Observe Poll SCM delay' && git push origin main
-(cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins /opt/venv/bin/python tools/ui/lab4_scm_poll.py --action wait --timeout 180)
+cd "$HOME/hello-ci"
+printf '\n# Poll SCM probe\n' >> hello.sh
+
+git add hello.sh
+git commit -m 'Observe Poll SCM delay'
+git push origin main
+
+(
+  cd "$COURSE_ROOT"
+  JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins /opt/venv/bin/python tools/ui/lab4_scm_poll.py --action wait --timeout 180
+)
 ```
 
 เมื่อ push ถาม credential ให้กรอก Username=`<GITHUB_USER>` และ Password=`<GITHUB_TOKEN>` เช่นเดิม แล้วรอ helper; ห้ามกด Build Now ระหว่างรอ
@@ -262,7 +298,10 @@ To https://github.com/<GITHUB_USER>/hello-ci.git
 ## ตรวจสถานะจบแล็บ
 
 ```bash
-(cd "$COURSE_ROOT/004_LAB_Pipeline_From_Git" && bash check.sh)
+(
+  cd "$COURSE_ROOT/004_LAB_Pipeline_From_Git"
+  bash check.sh
+)
 ```
 
 ✅ **ผลที่สังเกตได้จากการรันจริง**

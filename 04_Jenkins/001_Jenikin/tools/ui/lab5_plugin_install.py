@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install Generic Webhook Trigger 2.4.2 through Jenkins UI and restart."""
+"""Install Generic Webhook Trigger 2.4.2 through the real Jenkins UI."""
 
 from __future__ import annotations
 
@@ -17,6 +17,8 @@ from common import browser_page, jenkins_login, log, require, run_main, wait_vis
 
 PLUGIN_ID = "generic-webhook-trigger"
 PLUGIN_VERSION = "2.4.2"
+ROOT = Path(__file__).resolve().parents[2]
+ASSETS = ROOT / "slides_assets"
 
 
 def plugin_state(base_url: str) -> tuple[str, bool] | None:
@@ -63,7 +65,11 @@ def wait_for_restart(base_url: str, timeout_seconds: int) -> None:
 
 def flow(args: argparse.Namespace) -> None:
     base_url = args.base_url.rstrip("/")
-    require(plugin_state(base_url) is None, f"{PLUGIN_ID} is absent before the UI experiment")
+    initial = plugin_state(base_url)
+    if initial == (PLUGIN_VERSION, True):
+        log(f"assert: {PLUGIN_ID}:{PLUGIN_VERSION} is already active; no restart needed")
+        return
+    require(initial is None, f"no conflicting {PLUGIN_ID} version is installed")
 
     with browser_page(headless=not args.headed) as (_, _, _, page):
         jenkins_login(page, base_url)
@@ -114,10 +120,10 @@ def flow(args: argparse.Namespace) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base-url", default=os.getenv("JENKINS_BASE_URL", "http://host.docker.internal:15080"))
+    parser.add_argument("--base-url", default=os.getenv("JENKINS_BASE_URL", "http://host.docker.internal:20080"))
     parser.add_argument("--install-timeout", type=int, default=600)
     parser.add_argument("--restart-timeout", type=int, default=300)
-    parser.add_argument("--screenshot-dir", default="slides_assets")
+    parser.add_argument("--screenshot-dir", default=str(ASSETS))
     parser.add_argument("--headed", action="store_true")
     return parser.parse_args()
 

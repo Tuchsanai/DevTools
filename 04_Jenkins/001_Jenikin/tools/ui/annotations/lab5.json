@@ -4,133 +4,108 @@
     {
       "path": "slides_assets/lab5_s01_available_plugin.png",
       "shapes": [
-        {
-          "type": "round_rect",
-          "box": [364, 63, 1015, 115],
-          "label": "① ค้นหาปลั๊กอิน",
-          "label_at": [380, 370],
-          "target": [690, 108]
-        },
-        {
-          "type": "round_rect",
-          "box": [385, 188, 412, 216],
-          "label": "② เลือกปลั๊กอิน",
-          "label_at": [700, 370],
-          "target": [405, 210]
-        },
-        {
-          "type": "round_rect",
-          "box": [1225, 69, 1353, 111],
-          "label": "③ กด Install",
-          "label_at": [1040, 370],
-          "target": [1285, 105]
-        }
+        {"type": "round_rect", "box": [364, 63, 1015, 115], "label": "① ค้นหาปลั๊กอิน", "label_at": [380, 370], "target": [690, 108]},
+        {"type": "round_rect", "box": [385, 188, 412, 216], "label": "② เลือกรุ่น 2.4.2", "label_at": [700, 370], "target": [405, 210]},
+        {"type": "round_rect", "box": [1225, 69, 1353, 111], "label": "③ กด Install", "label_at": [1040, 370], "target": [1285, 105]}
       ]
     },
     {
       "path": "slides_assets/lab5_s02_plugin_download_restart.png",
       "shapes": [
-        {
-          "type": "round_rect",
-          "box": [393, 354, 416, 378],
-          "label": "เลือก Restart Jenkins",
-          "label_at": [650, 430],
-          "target": [405, 370]
-        }
+        {"type": "round_rect", "box": [370, 130, 1315, 690], "label": "① ตรวจว่าติดตั้งสำเร็จ", "label_at": [40, 720], "target": [375, 600]}
       ]
     },
     {
-      "path": "slides_assets/lab5_s03_build_trigger_token.png",
+      "path": "slides_assets/lab5_s03_smee_channel.png",
       "shapes": [
-        {
-          "type": "round_rect",
-          "box": [365, 90, 389, 115],
-          "label": "① เลือก Webhook Trigger",
-          "label_at": [30, 350],
-          "target": [380, 108]
-        },
-        {
-          "type": "round_rect",
-          "box": [398, 790, 1305, 828],
-          "label": "② กรอก Token",
-          "label_at": [1050, 700],
-          "target": [1100, 805]
-        },
-        {
-          "type": "round_rect",
-          "box": [365, 946, 470, 987],
-          "label": "③ กด Save",
-          "label_at": [610, 900],
-          "target": [460, 965]
-        }
+        {"type": "round_rect", "box": [363, 103, 1077, 182], "label": "① เก็บ URL ไว้ใน shell", "label_at": [1060, 225], "target": [1070, 145]},
+        {"type": "round_rect", "box": [1068, 12, 1090, 34], "label": "② เปิด tab นี้ค้างไว้", "label_at": [1010, 70], "target": [1080, 23]}
       ]
     },
     {
-      "path": "slides_assets/lab5_s04_add_webhook_form.png",
+      "path": "slides_assets/lab5_s04_gwt_parameters.png",
       "shapes": [
-        {
-          "type": "round_rect",
-          "box": [350, 270, 1347, 310],
-          "label": "① กรอก Target URL",
-          "label_at": [30, 550],
-          "target": [355, 290]
-        },
-        {
-          "type": "round_rect",
-          "box": [350, 347, 1347, 387],
-          "label": "② เลือก POST",
-          "label_at": [30, 630],
-          "target": [355, 367]
-        },
-        {
-          "type": "round_rect",
-          "box": [350, 426, 1347, 466],
-          "label": "③ เลือก JSON",
-          "label_at": [30, 710],
-          "target": [355, 446]
-        },
-        {
-          "type": "round_rect",
-          "box": [349, 583, 465, 607],
-          "label": "④ เปิด Active",
-          "label_at": [30, 790],
-          "target": [355, 596]
-        }
+        {"type": "round_rect", "box": [413, 528, 1287, 565], "label": "① ตั้งตัวแปร ref", "label_at": [35, 500], "target": [417, 547]},
+        {"type": "round_rect", "box": [413, 621, 1287, 658], "label": "② อ่าน $.ref", "label_at": [35, 620], "target": [417, 639]}
       ]
     },
     {
-      "path": "slides_assets/lab5_s05_webhook_list.png",
+      "path": "slides_assets/lab5_s04b_gwt_after.png",
       "shapes": [
-        {
-          "type": "round_rect",
-          "box": [373, 250, 520, 278],
-          "label": "เปิด webhook ที่สร้าง",
-          "label_at": [520, 350],
-          "target": [510, 266]
-        }
+        {"type": "round_rect", "box": [413, 528, 1287, 565], "label": "① ตั้งตัวแปร after", "label_at": [35, 500], "target": [417, 547]},
+        {"type": "round_rect", "box": [413, 621, 1287, 658], "label": "② อ่าน $.after", "label_at": [35, 620], "target": [417, 639]},
+        {"type": "ellipse", "box": [412, 658, 435, 681], "label": "③ เลือก JSONPath", "label_at": [35, 740], "target": [423, 669]}
       ]
     },
     {
-      "path": "slides_assets/lab5_s06_delivery_response.png",
-      "reason": "Delivery Response เป็นหลักฐาน HTTP 200 และผล trigger จึงไม่มีจุดให้กดต่อ",
-      "shapes": []
-    },
-    {
-      "path": "slides_assets/lab5_s07_webhook_build_cause.png",
+      "path": "slides_assets/lab5_s04c_gwt_token_cause.png",
       "shapes": [
-        {
-          "type": "round_rect",
-          "box": [18, 145, 157, 185],
-          "label": "เปิด Console Output",
-          "label_at": [370, 410],
-          "target": [145, 165]
-        }
+        {"type": "round_rect", "box": [398, 172, 1302, 211], "label": "① token เฉพาะ job", "label_at": [35, 150], "target": [402, 191]},
+        {"type": "round_rect", "box": [398, 527, 1302, 566], "label": "② cause ผูก after", "label_at": [35, 530], "target": [402, 546]}
       ]
     },
     {
-      "path": "slides_assets/lab5_s08_delivery_request.png",
-      "reason": "Delivery Request เป็นหลักฐาน payload ที่ใช้ตรวจข้อมูล ไม่ใช่ขั้นคลิกหรือกรอก",
-      "shapes": []
+      "path": "slides_assets/lab5_s05_gwt_filter.png",
+      "shapes": [
+        {"type": "round_rect", "box": [398, 528, 1302, 566], "label": "① รับเฉพาะ main", "label_at": [35, 500], "target": [402, 547]},
+        {"type": "round_rect", "box": [398, 648, 1302, 689], "label": "② เทียบค่า $ref", "label_at": [35, 650], "target": [402, 668]},
+        {"type": "round_rect", "box": [366, 805, 495, 831], "label": "③ Poll SCM ต้องปิด", "label_at": [35, 830], "target": [370, 818]}
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s06_github_add_webhook.png",
+      "source": "slides_assets/mock/github_add_webhook_hello.png",
+      "shapes": [
+        {"type": "round_rect", "box": [442, 392, 1132, 428], "label": "① ใส่ smee URL", "label_at": [1160, 375], "target": [1128, 410]},
+        {"type": "round_rect", "box": [442, 500, 1132, 536], "label": "② เลือก JSON", "label_at": [1160, 490], "target": [1128, 518]},
+        {"type": "round_rect", "box": [442, 582, 1132, 618], "label": "③ เว้น Secret ว่าง", "label_at": [1160, 575], "target": [1128, 600]},
+        {"type": "round_rect", "box": [450, 738, 691, 780], "label": "④ เปิด SSL verify", "label_at": [80, 730], "target": [455, 758]},
+        {"type": "round_rect", "box": [443, 868, 753, 916], "label": "⑤ เลือก push เท่านั้น", "label_at": [80, 860], "target": [448, 885]},
+        {"type": "round_rect", "box": [443, 1045, 731, 1092], "label": "⑥ เปิด Active", "label_at": [80, 1035], "target": [448, 1065]},
+        {"type": "round_rect", "box": [442, 1128, 571, 1164], "label": "⑦ กด Add webhook", "label_at": [650, 1120], "target": [568, 1146]}
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s07_smee_ping.png",
+      "shapes": [
+        {"type": "round_rect", "box": [368, 165, 1087, 515], "label": "① ping ถึง channel", "label_at": [1090, 310], "target": [1082, 335]},
+        {"type": "round_rect", "box": [458, 385, 856, 415], "label": "② payload ไม่มี ref", "label_at": [1090, 430], "target": [850, 400]}
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s08_smee_push.png",
+      "shapes": [
+        {"type": "round_rect", "box": [455, 378, 843, 456], "label": "① เทียบ ref และ after", "label_at": [1090, 380], "target": [840, 420]},
+        {"type": "round_rect", "box": [397, 698, 613, 763], "label": "② ขยาย commits", "label_at": [1090, 690], "target": [610, 730]},
+        {"type": "round_rect", "box": [397, 744, 632, 772], "label": "③ ขยาย head_commit", "label_at": [1090, 790], "target": [630, 757]}
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s08a_smee_commit_files.png",
+      "shapes": [
+        {"type": "round_rect", "box": [450, 461, 871, 536], "label": "① commits[].added", "label_at": [900, 460], "target": [865, 500]}
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s08b_smee_head_commit.png",
+      "shapes": [
+        {"type": "round_rect", "box": [421, 642, 899, 784], "label": "① id และ message", "label_at": [930, 700], "target": [895, 725]}
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s09_github_push_build.png",
+      "shapes": [
+        {"type": "ellipse", "box": [364, 75, 393, 104], "label": "① build สำเร็จ", "label_at": [800, 65], "target": [390, 90]},
+        {"type": "round_rect", "box": [435, 136, 890, 170], "label": "② cause มี SHA", "label_at": [800, 200], "target": [885, 153]},
+        {"type": "round_rect", "box": [435, 184, 872, 209], "label": "③ revision เดียวกัน", "label_at": [800, 270], "target": [868, 196]}
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s10_checkout_sha.png",
+      "shapes": [
+        {"type": "round_rect", "box": [384, 626, 1248, 654], "label": "① Checkout SHA เดียวกัน", "label_at": [1050, 700], "target": [1040, 640]},
+        {"type": "round_rect", "box": [384, 673, 1044, 704], "label": "② git checkout commit นี้", "label_at": [1050, 760], "target": [1038, 688]}
+      ]
     }
   ]
 }
