@@ -10,10 +10,11 @@ import urllib.request
 from pathlib import Path
 
 from common import browser_page, log, require, run_main, wait_visible
+from lab6_capture import masked_screenshot
 
 
 ROOT = Path(__file__).resolve().parents[2]
-TARGET = ROOT / "slides_assets" / "lab6_s11_hub_public_tags.png"
+TARGET = ROOT / "slides_assets" / "lab6_s12_hub_public_tags.png"
 
 
 def latest_build_number(jenkins_url: str) -> str:
@@ -26,7 +27,7 @@ def latest_build_number(jenkins_url: str) -> str:
 
 def main() -> None:
     docker_user = os.environ.get("DOCKER_USER", "")
-    jenkins_url = os.getenv("JENKINS_BASE_URL", "http://host.docker.internal:16080").rstrip("/")
+    jenkins_url = os.getenv("JENKINS_BASE_URL", "http://host.docker.internal:20080").rstrip("/")
     require(bool(docker_user), "public Docker Hub username is present")
     build_number = latest_build_number(jenkins_url)
     url = f"https://hub.docker.com/r/{docker_user}/cicd-webapp/tags"
@@ -39,7 +40,12 @@ def main() -> None:
         wait_visible(page.get_by_text(build_number, exact=True).first, f"new build tag {build_number}", 120000)
         wait_visible(page.get_by_text("latest", exact=True).first, "latest tag", 120000)
         require("/cicd-webapp/tags" in page.url, "browser remains on the public cicd-webapp Tags page")
-        page.screenshot(path=str(TARGET), full_page=False)
+        masked_screenshot(
+            page,
+            TARGET,
+            "real public Hub page with current build and latest tags",
+            masks=((docker_user, "<DOCKER_USER>"),),
+        )
         log(f"screenshot: real public Hub page with current build and latest tags -> {TARGET}")
 
 

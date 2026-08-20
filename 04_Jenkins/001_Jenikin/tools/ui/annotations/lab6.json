@@ -2,122 +2,94 @@
   "lab": "lab6",
   "images": [
     {
-      "path": "slides_assets/lab6_s01_gitea_repo_form.png",
+      "path": "slides_assets/lab6_s01_github_new_repo.png",
+      "source": "slides_assets/mock/github_new_repo_webapp.png",
       "shapes": [
-        {
-          "type": "round_rect",
-          "box": [598, 287, 984, 325],
-          "label": "① กรอกชื่อ Repository",
-          "label_at": [1020, 270],
-          "target": [975, 306]
-        },
-        {
-          "type": "round_rect",
-          "box": [597, 410, 790, 434],
-          "label": "② คงสถานะ Public",
-          "label_at": [1020, 400],
-          "target": [780, 422]
-        }
+        {"type": "round_rect", "box": [374, 386, 624, 422], "label": "① เลือก Owner", "label_at": [70, 350], "target": [374, 404]},
+        {"type": "round_rect", "box": [669, 359, 1290, 396], "label": "② ตั้งชื่อ webapp", "label_at": [1250, 290], "target": [1250, 377]},
+        {"type": "round_rect", "box": [382, 594, 690, 640], "label": "③ เลือก Public", "label_at": [70, 570], "target": [385, 612]},
+        {"type": "round_rect", "box": [382, 828, 700, 872], "label": "④ ไม่เพิ่ม README", "label_at": [70, 800], "target": [385, 847]},
+        {"type": "round_rect", "box": [1135, 1003, 1292, 1042], "label": "⑤ สร้าง repository", "label_at": [1290, 970], "target": [1288, 1022]}
       ]
     },
     {
-      "path": "slides_assets/lab6_s02_gitea_repo_after_push.png",
-      "reason": "หน้า Code เป็นหลักฐานรายการไฟล์และ branch main หลัง push ไม่มีจุดให้กดต่อ",
-      "shapes": []
-    },
-    {
-      "path": "slides_assets/lab6_s03_job_scm.png",
+      "path": "slides_assets/lab6_s02_github_repo_after_push.png",
       "shapes": [
-        {
-          "type": "round_rect",
-          "box": [366, 193, 1301, 230],
-          "label": "① เลือก Pipeline SCM",
-          "label_at": [30, 350],
-          "target": [375, 212]
-        },
-        {
-          "type": "round_rect",
-          "box": [398, 285, 1301, 323],
-          "label": "② เลือก Git",
-          "label_at": [30, 450],
-          "target": [405, 304]
-        },
-        {
-          "type": "round_rect",
-          "box": [446, 461, 1287, 499],
-          "label": "③ กรอก Repository URL",
-          "label_at": [30, 550],
-          "target": [452, 480]
-        },
-        {
-          "type": "round_rect",
-          "box": [446, 867, 1287, 906],
-          "label": "④ กรอก Branch",
-          "label_at": [30, 650],
-          "target": [452, 886]
-        },
-        {
-          "type": "round_rect",
-          "box": [365, 946, 470, 987],
-          "label": "⑤ กด Save",
-          "label_at": [30, 750],
-          "target": [460, 965]
-        }
+        {"type": "round_rect", "box": [112, 308, 1016, 472], "label": "① ตรวจ source ครบ", "label_at": [540, 520], "target": [570, 390]}
       ]
     },
     {
-      "path": "slides_assets/lab6_s04_job_trigger.png",
+      "path": "slides_assets/lab6_s03_smee_channel.png",
       "shapes": [
-        {
-          "type": "round_rect",
-          "box": [398, 527, 1302, 566],
-          "label": "① กรอก Token",
-          "label_at": [30, 550],
-          "target": [405, 547]
-        },
-        {
-          "type": "round_rect",
-          "box": [365, 946, 470, 987],
-          "label": "② กด Save",
-          "label_at": [30, 750],
-          "target": [460, 965]
-        }
+        {"type": "round_rect", "box": [363, 103, 1077, 182], "label": "① เก็บ URL ใน shell", "label_at": [1060, 225], "target": [1070, 145]},
+        {"type": "round_rect", "box": [1068, 12, 1090, 34], "label": "② เปิด tab ค้างไว้", "label_at": [1010, 70], "target": [1080, 23]}
       ]
     },
     {
-      "path": "slides_assets/lab6_s05_gitea_webhook.png",
-      "reason": "รายการ Webhooks เป็นหลักฐาน endpoint ที่บันทึกและสถานะ active ไม่มีจุดให้กดต่อ",
-      "shapes": []
+      "path": "slides_assets/lab6_s04a_gwt_parameters.png",
+      "shapes": [
+        {"type": "round_rect", "box": [414, 211, 1286, 248], "label": "① ตั้ง ref", "label_at": [40, 200], "target": [418, 229]},
+        {"type": "round_rect", "box": [414, 303, 1286, 340], "label": "② อ่าน $.ref", "label_at": [40, 310], "target": [418, 321]},
+        {"type": "ellipse", "box": [414, 343, 436, 365], "label": "③ เลือก JSONPath", "label_at": [40, 400], "target": [425, 354]},
+        {"type": "round_rect", "box": [414, 885, 1286, 923], "label": "④ เพิ่ม after", "label_at": [40, 860], "target": [418, 904]}
+      ]
     },
     {
-      "path": "slides_assets/lab6_s06_pipeline_graph.png",
-      "reason": "Pipeline Graph เป็นหลักฐานผลลัพธ์ของทุก stage และไม่มีจุดให้กดต่อ",
-      "shapes": []
+      "path": "slides_assets/lab6_s04b_gwt_token_cause.png",
+      "shapes": [
+        {"type": "round_rect", "box": [398, 242, 1302, 280], "label": "① token เฉพาะ job", "label_at": [35, 230], "target": [402, 261]},
+        {"type": "round_rect", "box": [398, 598, 1302, 634], "label": "② cause ผูก after", "label_at": [35, 590], "target": [402, 616]}
+      ]
     },
     {
-      "path": "slides_assets/lab6_s07_console_pytest.png",
-      "reason": "Console Output เป็นหลักฐานผล pytest และไม่มีจุดให้กดต่อ",
-      "shapes": []
+      "path": "slides_assets/lab6_s04c_gwt_filter.png",
+      "shapes": [
+        {"type": "round_rect", "box": [398, 273, 1302, 310], "label": "① รับเฉพาะ main", "label_at": [35, 260], "target": [402, 291]},
+        {"type": "round_rect", "box": [398, 394, 1302, 432], "label": "② เทียบ $ref", "label_at": [35, 390], "target": [402, 413]},
+        {"type": "ellipse", "box": [365, 551, 388, 574], "label": "③ Poll SCM ปิด", "label_at": [35, 550], "target": [377, 562]}
+      ]
     },
     {
-      "path": "slides_assets/lab6_s08_console_verify.png",
-      "reason": "Console Output เป็นหลักฐานผล Verify และไม่มีจุดให้กดต่อ",
-      "shapes": []
+      "path": "slides_assets/lab6_s05_job_scm.png",
+      "shapes": [
+        {"type": "round_rect", "box": [398, 177, 1302, 214], "label": "① เลือก Git", "label_at": [35, 170], "target": [402, 195]},
+        {"type": "round_rect", "box": [442, 350, 1292, 394], "label": "② GitHub URL", "label_at": [35, 350], "target": [446, 372]},
+        {"type": "round_rect", "box": [445, 445, 1188, 483], "label": "③ ไม่ใช้ credential", "label_at": [35, 450], "target": [449, 464]},
+        {"type": "round_rect", "box": [445, 758, 1288, 795], "label": "④ ระบุ */main", "label_at": [35, 750], "target": [449, 776]}
+      ]
     },
     {
-      "path": "slides_assets/lab6_s09_dashboard_v1.png",
-      "reason": "Dashboard v1 เป็นหลักฐาน deployment และ auto-refresh ไม่มีจุดให้กดต่อ",
-      "shapes": []
+      "path": "slides_assets/lab6_s05b_job_script_path.png",
+      "shapes": [
+        {"type": "round_rect", "box": [445, 408, 1287, 445], "label": "① ยืนยัน */main", "label_at": [35, 400], "target": [449, 426]},
+        {"type": "round_rect", "box": [398, 787, 1302, 823], "label": "② ระบุ Jenkinsfile", "label_at": [35, 780], "target": [402, 805]},
+        {"type": "round_rect", "box": [365, 948, 470, 987], "label": "③ กด Save", "label_at": [620, 920], "target": [465, 967]}
+      ]
     },
     {
-      "path": "slides_assets/lab6_s10_dashboard_v2.png",
-      "reason": "Dashboard v2 เป็นหลักฐาน deployment หลัง auto-refresh และไม่มีจุดให้กดต่อ",
-      "shapes": []
+      "path": "slides_assets/lab6_s06_github_add_webhook.png",
+      "source": "slides_assets/mock/github_add_webhook_webapp.png",
+      "shapes": [
+        {"type": "round_rect", "box": [442, 392, 1132, 428], "label": "① ใส่ smee URL", "label_at": [1160, 375], "target": [1128, 410]},
+        {"type": "round_rect", "box": [442, 500, 1132, 536], "label": "② เลือก JSON", "label_at": [1160, 490], "target": [1128, 518]},
+        {"type": "round_rect", "box": [442, 582, 1132, 618], "label": "③ เว้น Secret", "label_at": [1160, 575], "target": [1128, 600]},
+        {"type": "round_rect", "box": [450, 738, 691, 780], "label": "④ เปิด SSL verify", "label_at": [80, 730], "target": [455, 758]},
+        {"type": "round_rect", "box": [443, 868, 753, 916], "label": "⑤ push เท่านั้น", "label_at": [80, 860], "target": [448, 885]},
+        {"type": "round_rect", "box": [443, 1045, 731, 1092], "label": "⑥ เปิด Active", "label_at": [80, 1035], "target": [448, 1065]},
+        {"type": "round_rect", "box": [442, 1128, 571, 1164], "label": "⑦ Add webhook", "label_at": [650, 1120], "target": [568, 1146]}
+      ]
     },
     {
-      "path": "slides_assets/lab6_s11_hub_public_tags.png",
-      "reason": "Docker Hub public tags เป็นหลักฐาน tag และ digest ไม่มีจุดให้กดต่อ",
-      "shapes": []
-    }
+      "path": "slides_assets/lab6_s07_smee_ping.png",
+      "shapes": [
+        {"type": "round_rect", "box": [352, 156, 1088, 211], "label": "① ping ถึง channel", "label_at": [1080, 260], "target": [1080, 183]}
+      ]
+    },
+    {"path": "slides_assets/lab6_s08_pipeline_graph.png", "reason": "Pipeline Graph เป็นหลักฐานผลทุก stage", "shapes": []},
+    {"path": "slides_assets/lab6_s09_console_pytest.png", "reason": "Console เป็นหลักฐาน pytest ไม่มีจุดให้กดต่อ", "shapes": []},
+    {"path": "slides_assets/lab6_s09b_console_verify.png", "reason": "Console เป็นหลักฐาน Verify ผ่าน Docker DNS", "shapes": []},
+    {"path": "slides_assets/lab6_s10_dashboard_v1.png", "reason": "Dashboard v1 เป็นหลักฐาน deployment", "shapes": []},
+    {"path": "slides_assets/lab6_s11_dashboard_v2.png", "reason": "Dashboard v2 เป็นหลักฐาน auto-refresh", "shapes": []},
+    {"path": "slides_assets/lab6_s12_hub_public_tags.png", "reason": "Docker Hub tags เป็นหลักฐาน public tags", "shapes": []}
   ]
 }

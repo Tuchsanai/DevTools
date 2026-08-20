@@ -9,16 +9,18 @@ import time
 from pathlib import Path
 
 from common import browser_page, jenkins_login, log, require, run_main, wait_visible
+from lab6_capture import masked_screenshot
 
 
 ROOT = Path(__file__).resolve().parents[2]
-TARGET = ROOT / "slides_assets" / "lab6_s06_pipeline_graph.png"
-PYTEST_TARGET = ROOT / "slides_assets" / "lab6_s07_console_pytest.png"
-VERIFY_TARGET = ROOT / "slides_assets" / "lab6_s08_console_verify.png"
+TARGET = ROOT / "slides_assets" / "lab6_s08_pipeline_graph.png"
+PYTEST_TARGET = ROOT / "slides_assets" / "lab6_s09_console_pytest.png"
+VERIFY_TARGET = ROOT / "slides_assets" / "lab6_s09b_console_verify.png"
 
 
 def main() -> None:
-    base_url = os.getenv("JENKINS_BASE_URL", "http://host.docker.internal:16080").rstrip("/")
+    base_url = os.getenv("JENKINS_BASE_URL", "http://host.docker.internal:20080").rstrip("/")
+    github_user = os.getenv("GITHUB_USER", "")
     minimum = int(os.getenv("EXPECTED_MIN_BUILD", "1"))
     requested_build = os.getenv("CAPTURE_BUILD", "")
 
@@ -42,7 +44,7 @@ def main() -> None:
                         for action in build.get("actions", [])
                         for cause in action.get("causes", [])
                     ]
-                    webhook = any(any(word in cause.lower() for word in ("webhook", "gitea", "generic")) for cause in causes)
+                    webhook = any(cause.lower().startswith("github push ") for cause in causes)
                     if build.get("number", 0) >= minimum and webhook and not build.get("building"):
                         break
             page.wait_for_timeout(2000)
@@ -63,12 +65,12 @@ def main() -> None:
         page.set_viewport_size({"width": 1440, "height": 70})
         require(page.evaluate("window.find('3 passed')"), "browser located successful pytest output")
         page.evaluate("window.scrollBy(0, -25)")
-        page.screenshot(path=str(PYTEST_TARGET), full_page=False)
+        masked_screenshot(page, PYTEST_TARGET, "console around successful pytest output", masks=((github_user, "<GITHUB_USER>"),))
         log(f"screenshot: console around successful pytest output -> {PYTEST_TARGET}")
 
         page.set_viewport_size({"width": 1440, "height": 280})
         require(page.evaluate("window.find('http://webapp:8000/health')"), "browser located canonical Verify URL")
-        page.screenshot(path=str(VERIFY_TARGET), full_page=False)
+        masked_screenshot(page, VERIFY_TARGET, "console around canonical Verify URL", masks=((github_user, "<GITHUB_USER>"),))
         log(f"screenshot: console around canonical Verify URL -> {VERIFY_TARGET}")
 
         page.set_viewport_size({"width": 1440, "height": 1000})
@@ -76,7 +78,7 @@ def main() -> None:
         for stage in ("Build-Test-Push", "Deploy", "Verify"):
             wait_visible(page.get_by_text(stage, exact=True).first, f"{stage} stage")
         require(page.locator(".PWGx-pipeline-node--success").count() >= 3, "full Pipeline graph has green successful nodes")
-        page.screenshot(path=str(TARGET), full_page=False)
+        masked_screenshot(page, TARGET, "full green capstone Pipeline graph", masks=((github_user, "<GITHUB_USER>"),))
         log(f"screenshot: full green capstone Pipeline graph -> {TARGET}")
 
 

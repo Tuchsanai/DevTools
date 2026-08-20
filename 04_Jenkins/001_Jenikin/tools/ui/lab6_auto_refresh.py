@@ -10,11 +10,11 @@ from common import browser_page, log, require, run_main, screenshot, wait_visibl
 
 
 ROOT = Path(__file__).resolve().parents[2]
-TARGET = ROOT / "slides_assets" / "lab6_s10_dashboard_v2.png"
+TARGET = ROOT / "slides_assets" / "lab6_s11_dashboard_v2.png"
 
 
 def main() -> None:
-    base_url = os.getenv("WEBAPP_BASE_URL", "http://host.docker.internal:16800").rstrip("/")
+    base_url = os.getenv("WEBAPP_BASE_URL", "http://host.docker.internal:20800").rstrip("/")
 
     with browser_page() as (_, _, _, page):
         response = page.goto(base_url, wait_until="networkidle")

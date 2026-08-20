@@ -1,96 +1,213 @@
 #!/usr/bin/env python3
-"""Create/configure LAB 6 Pipeline from SCM and GWT through Jenkins UI."""
+"""Converge LAB 6 job contract, assert it, and capture the real Jenkins UI."""
 
 from __future__ import annotations
 
+import base64
+import http.cookiejar
+import html
+import json
 import os
 from pathlib import Path
+import urllib.error
+import urllib.parse
+import urllib.request
+import xml.etree.ElementTree as ET
 
 from common import browser_page, jenkins_login, log, require, run_main, wait_visible
+from lab6_capture import masked_screenshot
 
 
-JOB_NAME = "webapp-deploy"
-SCM_URL = "http://gitea:3000/student/webapp.git"
+JOB = "webapp-deploy"
 TOKEN = "cicd2569-webapp"
+ROOT = Path(__file__).resolve().parents[2]
 
 
-def select_option_by_text(locator, text: str) -> None:
-    locator.select_option(label=text)
+def auth_headers() -> dict[str, str]:
+    encoded = base64.b64encode(b"admin:admin2569").decode("ascii")
+    return {"Authorization": f"Basic {encoded}"}
 
 
-def assert_and_capture(page, scm_target: Path, trigger_target: Path) -> None:
-    token_input = wait_visible(page.locator("input[name='_.token']"), "GWT token field")
-    definition = page.locator("select").filter(has=page.locator("option", has_text="Pipeline script from SCM")).last
-    wait_visible(definition, "Pipeline definition selector")
-    require(token_input.input_value() == TOKEN, "Generic Webhook Trigger token is cicd2569-webapp")
-    require(page.locator("input[name='_.url']").last.input_value() == SCM_URL, "Pipeline from SCM uses the canonical Gitea URL and main branch")
-    require(page.locator("input[name='_.name']").last.input_value() == "*/main", "SCM branch is main")
-    require(page.locator("input[name='_.scriptPath']").input_value() == "Jenkinsfile", "SCM script path is Jenkinsfile")
+def request(base_url: str, path: str, *, method: str = "GET", body: bytes | None = None, headers: dict[str, str] | None = None, opener=None) -> tuple[int, bytes]:
+    merged = auth_headers()
+    merged.update(headers or {})
+    req = urllib.request.Request(f"{base_url}{path}", data=body, method=method, headers=merged)
+    try:
+        response_context = (
+            opener.open(req, timeout=60)
+            if opener is not None
+            else urllib.request.urlopen(req, timeout=60)
+        )
+        with response_context as response:
+            return response.status, response.read()
+    except urllib.error.HTTPError as error:
+        return error.code, error.read()
 
-    trigger_target.parent.mkdir(parents=True, exist_ok=True)
-    definition.evaluate("el => el.scrollIntoView({block: 'start'})")
-    page.evaluate("window.scrollBy(0, -100)")
-    page.screenshot(path=str(scm_target), full_page=False)
-    log(f"screenshot: Pipeline from SCM configuration section -> {scm_target}")
 
-    token_input.evaluate("el => el.scrollIntoView({block: 'center'})")
-    page.screenshot(path=str(trigger_target), full_page=False)
-    log(f"screenshot: Generic Webhook Trigger token section -> {trigger_target}")
+def config_xml(user: str) -> bytes:
+    url = html.escape(f"https://github.com/{user}/webapp.git")
+    return f"""<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job">
+  <actions/>
+  <description>LAB 6 GitHub to Docker Hub deployment pipeline</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers>
+        <org.jenkinsci.plugins.gwt.GenericTrigger plugin="generic-webhook-trigger@2.4.2">
+          <spec></spec>
+          <genericVariables>
+            <org.jenkinsci.plugins.gwt.GenericVariable>
+              <expressionType>JSONPath</expressionType><key>ref</key><value>$.ref</value>
+              <regexpFilter></regexpFilter><defaultValue></defaultValue>
+            </org.jenkinsci.plugins.gwt.GenericVariable>
+            <org.jenkinsci.plugins.gwt.GenericVariable>
+              <expressionType>JSONPath</expressionType><key>after</key><value>$.after</value>
+              <regexpFilter></regexpFilter><defaultValue></defaultValue>
+            </org.jenkinsci.plugins.gwt.GenericVariable>
+          </genericVariables>
+          <regexpFilterText>$ref</regexpFilterText>
+          <regexpFilterExpression>^refs/heads/main$</regexpFilterExpression>
+          <printPostContent>false</printPostContent>
+          <printContributedVariables>false</printContributedVariables>
+          <causeString>GitHub push $after</causeString>
+          <token>{TOKEN}</token>
+          <tokenCredentialId></tokenCredentialId>
+          <silentResponse>false</silentResponse>
+          <overrideQuietPeriod>false</overrideQuietPeriod>
+          <shouldNotFlattern>false</shouldNotFlattern>
+          <allowSeveralTriggersPerBuild>false</allowSeveralTriggersPerBuild>
+        </org.jenkinsci.plugins.gwt.GenericTrigger>
+      </triggers>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps">
+    <scm class="hudson.plugins.git.GitSCM" plugin="git">
+      <configVersion>2</configVersion>
+      <userRemoteConfigs><hudson.plugins.git.UserRemoteConfig><url>{url}</url></hudson.plugins.git.UserRemoteConfig></userRemoteConfigs>
+      <branches><hudson.plugins.git.BranchSpec><name>*/main</name></hudson.plugins.git.BranchSpec></branches>
+      <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+      <submoduleCfg class="empty-list"/><extensions/>
+    </scm>
+    <scriptPath>Jenkinsfile</scriptPath><lightweight>true</lightweight>
+  </definition>
+  <triggers/><disabled>false</disabled>
+</flow-definition>
+""".encode("utf-8")
+
+
+def converge(base_url: str, user: str) -> None:
+    opener = urllib.request.build_opener(
+        urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar())
+    )
+    status, crumb_raw = request(base_url, "/crumbIssuer/api/json", opener=opener)
+    require(status == 200, "Jenkins crumb issuer is available")
+    crumb = json.loads(crumb_raw)
+    headers = {crumb["crumbRequestField"]: crumb["crumb"], "Content-Type": "application/xml"}
+    status, _ = request(base_url, f"/job/{JOB}/config.xml")
+    if status == 200:
+        path = f"/job/{JOB}/config.xml"
+        action = "updated"
+    else:
+        require(status == 404, "webapp-deploy is either present or absent")
+        path = f"/createItem?name={urllib.parse.quote(JOB)}"
+        action = "created"
+    status, _ = request(
+        base_url,
+        path,
+        method="POST",
+        body=config_xml(user),
+        headers=headers,
+        opener=opener,
+    )
+    require(status in {200, 302}, f"Jenkins {action} webapp-deploy from the canonical contract (HTTP {status})")
+
+
+def assert_xml(base_url: str, user: str) -> None:
+    status, raw = request(base_url, f"/job/{JOB}/config.xml")
+    require(status == 200, "saved webapp-deploy config.xml is readable")
+    root = ET.fromstring(raw)
+    definition = root.find("definition")
+    scm = None if definition is None else definition.find("scm")
+    trigger = root.find(".//org.jenkinsci.plugins.gwt.GenericTrigger")
+    require(definition is not None and scm is not None and trigger is not None, "Pipeline SCM and one GWT trigger exist")
+    assert definition is not None and scm is not None and trigger is not None
+    require(scm.findtext("./userRemoteConfigs/hudson.plugins.git.UserRemoteConfig/url") == f"https://github.com/{user}/webapp.git", "SCM uses the canonical public GitHub URL")
+    require(scm.findtext("./branches/hudson.plugins.git.BranchSpec/name") == "*/main", "SCM branch is */main")
+    require(definition.findtext("scriptPath") == "Jenkinsfile", "SCM script path is Jenkinsfile")
+    require(not root.findall(".//credentialsId") and not root.findall(".//hudson.triggers.SCMTrigger"), "SCM has no credentials and Poll SCM is off")
+    variables = {item.findtext("key"): item.findtext("value") for item in trigger.findall("./genericVariables/*")}
+    require(variables == {"ref": "$.ref", "after": "$.after"}, "GWT reads ref and after with JSONPath")
+    require(trigger.findtext("token") == TOKEN, "GWT token is cicd2569-webapp")
+    require(trigger.findtext("causeString") == "GitHub push $after", "GWT cause is GitHub push $after")
+    require(trigger.findtext("regexpFilterText") == "$ref" and trigger.findtext("regexpFilterExpression") == "^refs/heads/main$", "GWT filter accepts only refs/heads/main")
+
+
+def capture(page, user: str) -> None:
+    masks = ((user, "<GITHUB_USER>"),)
+    page.set_viewport_size({"width": 1440, "height": 1000})
+    first_key = wait_visible(page.locator("input[name='_.key']").first, "first GWT JSONPath key")
+    first_key.evaluate("el => el.scrollIntoView({block: 'start'})")
+    page.evaluate("window.scrollBy(0, -120)")
+    masked_screenshot(
+        page,
+        ROOT / "slides_assets/lab6_s04a_gwt_parameters.png",
+        "GWT ref and after JSONPath parameters",
+        masks=masks,
+    )
+
+    token = wait_visible(page.locator("input[name='_.token']"), "GWT token field")
+    token.evaluate("el => el.scrollIntoView({block: 'start'})")
+    page.evaluate("window.scrollBy(0, -150)")
+    masked_screenshot(
+        page,
+        ROOT / "slides_assets/lab6_s04b_gwt_token_cause.png",
+        "GWT token and GitHub SHA cause",
+        masks=masks,
+    )
+
+    expression = wait_visible(page.locator("input[name='_.regexpFilterExpression']"), "GWT main-only expression")
+    expression.evaluate("el => el.scrollIntoView({block: 'start'})")
+    page.evaluate("window.scrollBy(0, -180)")
+    masked_screenshot(
+        page,
+        ROOT / "slides_assets/lab6_s04c_gwt_filter.png",
+        "GWT main-only optional filter",
+        masks=masks,
+    )
+
+    url = wait_visible(page.locator("input[name='_.url']").last, "SCM repository URL")
+    url.evaluate("el => el.scrollIntoView({block: 'start'})")
+    page.evaluate("window.scrollBy(0, -260)")
+    masked_screenshot(
+        page,
+        ROOT / "slides_assets/lab6_s05_job_scm.png",
+        "canonical GitHub Pipeline from SCM",
+        masks=masks,
+        mask_locators=((url, "https://github.com/<GITHUB_USER>/webapp.git"),),
+    )
+
+    script_path = wait_visible(page.locator("input[name='_.scriptPath']"), "Jenkinsfile script path")
+    script_path.evaluate("el => el.scrollIntoView({block: 'start'})")
+    page.evaluate("window.scrollBy(0, -260)")
+    masked_screenshot(
+        page,
+        ROOT / "slides_assets/lab6_s05b_job_script_path.png",
+        "main branch and Jenkinsfile script path",
+        masks=masks,
+    )
 
 
 def main() -> None:
-    base_url = os.getenv("JENKINS_BASE_URL", "http://host.docker.internal:16080").rstrip("/")
-    scm_target = Path(os.environ.get("SCM_SCREENSHOT", "slides_assets/lab6_s03_job_scm.png"))
-    trigger_target = Path(os.environ.get("TRIGGER_SCREENSHOT", "slides_assets/lab6_s04_job_trigger.png"))
-
+    base_url = os.getenv("JENKINS_BASE_URL", "http://host.docker.internal:20080").rstrip("/")
+    user = os.environ.get("GITHUB_USER", "")
+    require(bool(user), "GITHUB_USER is set")
+    converge(base_url, user)
+    assert_xml(base_url, user)
     with browser_page() as (_, _, _, page):
         jenkins_login(page, base_url)
-        response = page.goto(f"{base_url}/job/{JOB_NAME}/", wait_until="domcontentloaded")
-        if response is not None and response.status == 200:
-            page.goto(f"{base_url}/job/{JOB_NAME}/configure", wait_until="domcontentloaded")
-            assert_and_capture(page, scm_target, trigger_target)
-            return
-        else:
-            page.goto(f"{base_url}/view/all/newJob", wait_until="domcontentloaded")
-            wait_visible(page.locator("input[name='name']"), "new item name").fill(JOB_NAME)
-            page.get_by_text("Pipeline", exact=True).click()
-            page.get_by_role("button", name="OK").click()
-            page.wait_for_load_state("domcontentloaded")
-
-        trigger_text = page.get_by_text("Generic Webhook Trigger", exact=True).first
-        wait_visible(trigger_text, "Generic Webhook Trigger option")
-        trigger_checkbox = trigger_text.locator("xpath=ancestor::label[1]//input[@type='checkbox']")
-        if trigger_checkbox.count() == 0:
-            trigger_checkbox = trigger_text.locator("xpath=preceding::input[@type='checkbox'][1]")
-        if not trigger_checkbox.is_checked():
-            trigger_text.click()
-
-        token_input = wait_visible(page.locator("input[name='_.token']"), "GWT token field")
-        token_input.fill(TOKEN)
-
-        # Jenkins 2.568 renders this hetero-list selector without a name.
-        definition = page.locator("select").filter(has=page.locator("option", has_text="Pipeline script from SCM")).last
-        wait_visible(definition, "Pipeline definition selector")
-        select_option_by_text(definition, "Pipeline script from SCM")
-
-        scm = page.locator("select").filter(has=page.locator("option", has_text="Git")).last
-        wait_visible(scm, "SCM selector")
-        select_option_by_text(scm, "Git")
-        url_input = wait_visible(page.locator("input[name='_.url']"), "Git repository URL").last
-        url_input.fill(SCM_URL)
-
-        branch_inputs = page.locator("input[name='_.name']")
-        branch_input = branch_inputs.last
-        wait_visible(branch_input, "Git branch field").fill("*/main")
-        script_path = wait_visible(page.locator("input[name='_.scriptPath']"), "Jenkinsfile path")
-        script_path.fill("Jenkinsfile")
-
-        page.locator("button[name='Submit']").click()
-        page.wait_for_load_state("domcontentloaded")
-        require(f"/job/{JOB_NAME}/" in page.url, "webapp-deploy job was saved")
-
-        page.goto(f"{base_url}/job/{JOB_NAME}/configure", wait_until="domcontentloaded")
-        assert_and_capture(page, scm_target, trigger_target)
+        page.goto(f"{base_url}/job/{JOB}/configure", wait_until="domcontentloaded")
+        capture(page, user)
 
 
 if __name__ == "__main__":

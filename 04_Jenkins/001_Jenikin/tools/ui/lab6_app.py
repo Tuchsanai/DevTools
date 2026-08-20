@@ -10,10 +10,10 @@ from common import browser_page, require, run_main, screenshot, wait_visible
 
 
 def main() -> None:
-    base_url = os.getenv("WEBAPP_BASE_URL", "http://host.docker.internal:16800").rstrip("/")
+    base_url = os.getenv("WEBAPP_BASE_URL", "http://host.docker.internal:20800").rstrip("/")
     version = os.environ.get("EXPECTED_VERSION", "1.0.0")
     theme = os.environ.get("EXPECTED_THEME", "blue")
-    sequence = "s10" if version.startswith("2") else "s09"
+    sequence = "s11" if version.startswith("2") else "s10"
     target = Path(os.environ.get("SCREENSHOT", f"slides_assets/lab6_{sequence}_dashboard_{'v2' if version.startswith('2') else 'v1'}.png"))
 
     with browser_page() as (_, _, _, page):
