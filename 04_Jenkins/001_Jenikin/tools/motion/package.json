@@ -1,0 +1,21 @@
+{
+  "name": "jenkins-cicd-motion",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio src/index.ts --no-open",
+    "render": "./render.sh",
+    "typecheck": "tsc --noEmit",
+    "validate": "/opt/venv/bin/python validate.py"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.513",
+    "@remotion/fonts": "4.0.513",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "remotion": "4.0.513",
+    "typescript": "5.9.3"
+  }
+}

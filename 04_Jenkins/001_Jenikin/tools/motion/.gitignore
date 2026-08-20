@@ -1,0 +1,6 @@
+node_modules/
+out/
+.remotion/
+.npm-cache/
+.validate-tmp/
+__pycache__/

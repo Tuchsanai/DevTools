@@ -1,0 +1,16 @@
+# ไฟล์ prompt ส่วนตัว — มี credential จริง ห้าม commit
+prompt1md
+xprompt1.md
+
+# ขยะชั่วคราว
+excalidraw.log
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# Remotion build artifacts (สร้างใหม่ได้ด้วย npm ci + render.sh)
+tools/motion/node_modules/
+tools/motion/out/
+tools/motion/.remotion/

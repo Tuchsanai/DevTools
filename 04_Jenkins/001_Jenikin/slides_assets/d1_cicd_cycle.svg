@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" role="img" aria-labelledby="t d">
+  <title id="t">วงจร CI/CD</title><desc id="d">วงจรจากเขียนโค้ดไปสู่การส่งมอบและ feedback</desc>
+  <defs><marker id="a1" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6L0 12z" fill="#147d92"/></marker></defs>
+  <rect width="1200" height="440" rx="28" fill="#f6fbfc"/>
+  <path d="M255 220C255 95 390 52 535 98" fill="none" stroke="#147d92" stroke-width="10" marker-end="url(#a1)"/>
+  <path d="M665 98C810 52 945 95 945 220" fill="none" stroke="#147d92" stroke-width="10" marker-end="url(#a1)"/>
+  <path d="M945 220C945 345 810 388 665 342" fill="none" stroke="#147d92" stroke-width="10" marker-end="url(#a1)"/>
+  <path d="M535 342C390 388 255 345 255 220" fill="none" stroke="#147d92" stroke-width="10" marker-end="url(#a1)"/>
+  <g font-family="Leelawadee UI,Segoe UI,sans-serif" text-anchor="middle">
+    <g><circle cx="260" cy="220" r="76" fill="#e8f4ff" stroke="#1676b8" stroke-width="4"/><text x="260" y="213" font-size="28" font-weight="700" fill="#125b8c">เขียนโค้ด</text><text x="260" y="248" font-size="20" fill="#496879">commit</text></g>
+    <g><circle cx="600" cy="95" r="76" fill="#e9fbf6" stroke="#169b72" stroke-width="4"/><text x="600" y="88" font-size="28" font-weight="700" fill="#087457">รวมและทดสอบ</text><text x="600" y="123" font-size="20" fill="#496879">CI</text></g>
+    <g><circle cx="940" cy="220" r="76" fill="#eff8e9" stroke="#56a53d" stroke-width="4"/><text x="940" y="213" font-size="28" font-weight="700" fill="#337a25">ส่งมอบ</text><text x="940" y="248" font-size="20" fill="#496879">CD</text></g>
+    <g><circle cx="600" cy="345" r="76" fill="#fff7df" stroke="#d99013" stroke-width="4"/><text x="600" y="338" font-size="28" font-weight="700" fill="#a36200">Feedback</text><text x="600" y="373" font-size="20" fill="#496879">เร็วและทำซ้ำได้</text></g>
+    <text x="600" y="214" font-size="34" font-weight="800" fill="#173d52">เล็ก • บ่อย • ตรวจได้</text><text x="600" y="252" font-size="21" fill="#527080">ทุกครั้งที่โค้ดเปลี่ยน</text>
+  </g>
+</svg>

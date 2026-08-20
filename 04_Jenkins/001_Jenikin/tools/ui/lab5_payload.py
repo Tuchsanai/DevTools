@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+"""Open the latest Gitea delivery request and verify its pushed-commit payload."""
+
+from __future__ import annotations
+
+import argparse
+import os
+import re
+import subprocess
+
+from common import browser_page, gitea_login, log, require, run_main, wait_visible
+
+
+HOOK_URL = "http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-hello"
+
+
+def remote_head(devtools_name: str) -> str:
+    output = subprocess.check_output(
+        [
+            "docker", "exec", devtools_name, "git", "ls-remote",
+            "http://student:student2569@localhost:3000/student/hello-ci.git", "refs/heads/main",
+        ],
+        text=True,
+    )
+    return output.split()[0]
+
+
+def flow(args: argparse.Namespace) -> None:
+    base_url = args.base_url.rstrip("/")
+    commit = remote_head(args.devtools_name)
+    require(len(commit) == 40, "read current main commit from Gitea")
+
+    with browser_page(headless=not args.headed) as (_, _, _, page):
+        gitea_login(page, base_url)
+        page.goto(f"{base_url}/student/hello-ci/settings/hooks", wait_until="domcontentloaded")
+        require(HOOK_URL in page.locator("body").inner_text(), "canonical webhook is listed")
+        page.locator("a[href*='/settings/hooks/']").filter(has_text="Unnamed Webhook").first.click()
+        page.wait_for_load_state("domcontentloaded")
+
+        delivery = page.get_by_text(
+            re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+        ).first
+        wait_visible(delivery, "latest push delivery UUID")
+        delivery.click()
+        page.wait_for_timeout(500)
+        request_tab = page.locator("a.item[data-tab^='request-']:visible").first
+        wait_visible(request_tab, "delivery Request tab")
+        request_tab.click()
+        page.wait_for_timeout(500)
+        # Gitea renders JSON with a client-side editor. Read its visible/editor
+        # backing nodes because the pretty payload is not plain body text.
+        editor_values = page.locator(
+            "textarea, .CodeMirror, .CodeMirror-code, .cm-editor, .cm-content, .monaco-editor"
+        ).evaluate_all("els => els.map(e => e.value || e.innerText || e.textContent || '').filter(Boolean)")
+        payload_source = page.content() + "\n" + "\n".join(editor_values)
+        require("head_commit" in payload_source, "payload contains head_commit")
+        require(commit in payload_source, "payload head commit matches Gitea main")
+        require("Verify immediate webhook build" in payload_source, "payload contains the pushed commit message")
+        log(f"payload head_commit={commit[:12]} message='Verify immediate webhook build'")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--base-url", default=os.getenv("GITEA_BASE_URL", "http://host.docker.internal:15300"))
+    parser.add_argument("--devtools-name", default=os.getenv("DT_NAME", "devtools-jk5"))
+    parser.add_argument("--headed", action="store_true")
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    run_main(lambda: flow(parse_args()))

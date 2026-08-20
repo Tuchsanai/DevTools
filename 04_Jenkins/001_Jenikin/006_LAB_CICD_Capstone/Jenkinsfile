@@ -1,0 +1,51 @@
+pipeline {
+  agent any
+
+  stages {
+    stage('Build-Test-Push') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub',
+            usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+          sh '''set +x
+            export DOCKER_CONFIG=$(mktemp -d)
+            trap 'docker logout >/dev/null 2>&1; rm -rf "$DOCKER_CONFIG"' EXIT
+            echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
+            docker build -t docker.io/$DOCKER_USER/cicd-webapp:$BUILD_NUMBER .
+            docker run --rm docker.io/$DOCKER_USER/cicd-webapp:$BUILD_NUMBER pytest -q
+            docker push docker.io/$DOCKER_USER/cicd-webapp:$BUILD_NUMBER
+            docker tag docker.io/$DOCKER_USER/cicd-webapp:$BUILD_NUMBER docker.io/$DOCKER_USER/cicd-webapp:latest
+            docker push docker.io/$DOCKER_USER/cicd-webapp:latest
+          '''
+        }
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub',
+            usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+          sh '''docker rm -f webapp || true
+            docker run -d --name webapp --network cicd-net -p 8000:8000 \
+              -e BUILD_NUMBER=$BUILD_NUMBER --restart unless-stopped \
+              docker.io/$DOCKER_USER/cicd-webapp:$BUILD_NUMBER
+          '''
+        }
+      }
+    }
+
+    stage('Verify') {
+      steps {
+        sh '''set -eu
+          curl -fsS --retry 20 --retry-connrefused --retry-delay 1 http://webapp:8000/health
+          curl -fsS http://webapp:8000/api/info | grep -F '"build_number":"'$BUILD_NUMBER'"'
+        '''
+      }
+    }
+  }
+
+  post {
+    failure {
+      echo 'Pipeline ล้ม: เปิด stage สีแดงและอ่านบรรทัด error แรกใน Console Output'
+    }
+  }
+}

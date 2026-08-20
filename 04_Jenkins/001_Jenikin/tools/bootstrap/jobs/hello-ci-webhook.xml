@@ -1,0 +1,44 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job">
+  <actions/>
+  <description>Pipeline from public Gitea SCM with Generic Webhook Trigger for LAB 5</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps">
+    <scm class="hudson.plugins.git.GitSCM" plugin="git">
+      <configVersion>2</configVersion>
+      <userRemoteConfigs>
+        <hudson.plugins.git.UserRemoteConfig>
+          <url>http://gitea:3000/student/hello-ci.git</url>
+        </hudson.plugins.git.UserRemoteConfig>
+      </userRemoteConfigs>
+      <branches>
+        <hudson.plugins.git.BranchSpec><name>*/main</name></hudson.plugins.git.BranchSpec>
+      </branches>
+      <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+      <submoduleCfg class="empty-list"/>
+      <extensions/>
+    </scm>
+    <scriptPath>Jenkinsfile</scriptPath>
+    <lightweight>true</lightweight>
+  </definition>
+  <triggers>
+    <org.jenkinsci.plugins.gwt.GenericTrigger plugin="generic-webhook-trigger@2.4.2">
+      <spec></spec>
+      <genericVariables/>
+      <genericRequestVariables/>
+      <genericHeaderVariables/>
+      <regexpFilterText></regexpFilterText>
+      <regexpFilterExpression></regexpFilterExpression>
+      <printPostContent>false</printPostContent>
+      <printContributedVariables>false</printContributedVariables>
+      <causeString></causeString>
+      <token>cicd2569-hello</token>
+      <tokenCredentialId></tokenCredentialId>
+      <silentResponse>false</silentResponse>
+      <shouldNotFlattern>false</shouldNotFlattern>
+      <allowSeveralTriggersPerBuild>false</allowSeveralTriggersPerBuild>
+    </org.jenkinsci.plugins.gwt.GenericTrigger>
+  </triggers>
+  <disabled>false</disabled>
+</flow-definition>

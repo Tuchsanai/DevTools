@@ -1,0 +1,53 @@
+pipeline {
+  agent any
+
+  parameters {
+    string(name: 'APP_ENV', defaultValue: 'dev', description: 'Environment to deploy')
+  }
+
+  environment {
+    LAB_NAME = 'Declarative Pipeline'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        echo 'Checkout (simulated)'
+        sleep 1
+      }
+    }
+
+    stage('Build') {
+      steps {
+        echo "Building ${env.LAB_NAME}: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+        sleep 1
+      }
+    }
+
+    stage('Test') {
+      steps {
+        echo 'Tests passed'
+        sleep 1
+      }
+    }
+
+    stage('Deploy') {
+      when {
+        expression { params.APP_ENV == 'prod' }
+      }
+      steps {
+        echo "Deploying to ${params.APP_ENV}"
+        sleep 1
+      }
+    }
+  }
+
+  post {
+    always {
+      echo "Finished ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+    }
+    success {
+      echo 'Pipeline succeeded'
+    }
+  }
+}

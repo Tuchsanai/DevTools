@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "clips": [
+    {
+      "file": "mo_intro.mp4",
+      "compositionId": "mo-intro",
+      "durationSec": 8.0,
+      "fps": 30.0,
+      "width": 1280,
+      "height": 720,
+      "codec": "h264",
+      "hasAudio": false,
+      "bytes": 125364,
+      "sha256": "0fc2da8142afbbab6de156d911ad23ee42f06b1fcfa0755632445dd1089540d3"
+    },
+    {
+      "file": "mo_manual_vs_ci.mp4",
+      "compositionId": "mo-manual-vs-ci",
+      "durationSec": 12.0,
+      "fps": 30.0,
+      "width": 1280,
+      "height": 720,
+      "codec": "h264",
+      "hasAudio": false,
+      "bytes": 206110,
+      "sha256": "49c0734e3ca81b2fec4ee2951b3d8dbeac133c6b8426c781b24c4734c482c8db"
+    },
+    {
+      "file": "mo_pipeline_flow.mp4",
+      "compositionId": "mo-pipeline-flow",
+      "durationSec": 12.0,
+      "fps": 30.0,
+      "width": 1280,
+      "height": 720,
+      "codec": "h264",
+      "hasAudio": false,
+      "bytes": 167606,
+      "sha256": "3b648ea841c6ab5de499d59facd010c96a8582415ce7017a0a3a7194128d7638"
+    },
+    {
+      "file": "mo_polling_vs_webhook.mp4",
+      "compositionId": "mo-polling-vs-webhook",
+      "durationSec": 12.0,
+      "fps": 30.0,
+      "width": 1280,
+      "height": 720,
+      "codec": "h264",
+      "hasAudio": false,
+      "bytes": 100837,
+      "sha256": "4c5d51de9bbed9f2929880b30894e4c177577412c55daf7ca08d8cea4bf211ca"
+    },
+    {
+      "file": "mo_dood_socket.mp4",
+      "compositionId": "mo-dood-socket",
+      "durationSec": 12.0,
+      "fps": 30.0,
+      "width": 1280,
+      "height": 720,
+      "codec": "h264",
+      "hasAudio": false,
+      "bytes": 141843,
+      "sha256": "950300a1897ec564d16773a320107a75e053a936fe6c68404c86ae9a2dd6856f"
+    }
+  ]
+}

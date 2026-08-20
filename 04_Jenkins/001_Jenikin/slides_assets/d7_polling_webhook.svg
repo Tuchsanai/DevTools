@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460" role="img" aria-labelledby="t d">
+  <title id="t">เส้นเวลา Polling กับ Webhook</title><desc id="d">Polling ถามซ้ำตามเวลา ส่วน webhook ส่งเหตุการณ์เมื่อ push</desc>
+  <defs><marker id="a7b" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6L0 12z" fill="#147d92"/></marker><marker id="a7g" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6L0 12z" fill="#169b72"/></marker></defs>
+  <rect width="1200" height="460" rx="28" fill="#f7fbfc"/>
+  <g font-family="Leelawadee UI,Segoe UI,sans-serif">
+    <text x="70" y="90" font-size="29" font-weight="800" fill="#125b8c">Polling — Jenkins ถามเป็นรอบ</text><line x1="90" y1="150" x2="1110" y2="150" stroke="#147d92" stroke-width="6" marker-end="url(#a7b)"/>
+    <g fill="#e8f4ff" stroke="#1676b8" stroke-width="3"><circle cx="250" cy="150" r="22"/><circle cx="480" cy="150" r="22"/><circle cx="710" cy="150" r="22"/><circle cx="940" cy="150" r="22"/></g>
+    <g font-size="18" fill="#527080" text-anchor="middle"><text x="250" y="195">ถาม: ไม่เปลี่ยน</text><text x="480" y="195">ถาม: ไม่เปลี่ยน</text><text x="710" y="195">push แล้ว</text><text x="940" y="195">รอบถัดไปจึง build</text></g>
+    <path d="M710 115v70" stroke="#cf4b45" stroke-width="5" stroke-dasharray="7 6"/><text x="710" y="105" text-anchor="middle" font-size="19" font-weight="700" fill="#a3322d">commit</text>
+    <text x="70" y="285" font-size="29" font-weight="800" fill="#087457">Webhook — Gitea บอกเมื่อเกิดเหตุการณ์</text><line x1="90" y1="345" x2="1110" y2="345" stroke="#169b72" stroke-width="6" marker-end="url(#a7g)"/>
+    <path d="M430 310v70" stroke="#169b72" stroke-width="7"/><circle cx="430" cy="345" r="25" fill="#e9fbf6" stroke="#169b72" stroke-width="4"/><path d="M455 345H700" stroke="#169b72" stroke-width="7" marker-end="url(#a7g)"/><text x="430" y="300" text-anchor="middle" font-size="19" font-weight="700" fill="#087457">push</text><text x="575" y="328" text-anchor="middle" font-size="19" fill="#527080">HTTP POST</text><rect x="715" y="305" width="230" height="80" rx="18" fill="#e9fbf6" stroke="#169b72" stroke-width="4"/><text x="830" y="355" text-anchor="middle" font-size="24" font-weight="800" fill="#087457">build ทันที</text>
+    <text x="600" y="430" text-anchor="middle" font-size="23" font-weight="700" fill="#173d52">Pull model มี request ตอนเงียบ • Push model เปิด endpoint รับเหตุการณ์</text>
+  </g>
+</svg>

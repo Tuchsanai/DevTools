@@ -1,0 +1,62 @@
+pipeline {
+  agent any
+
+  stages {
+    stage('Prepare app') {
+      steps {
+        writeFile file: 'main.py', text: '''from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        body = b"ci-demo is ready\\n"
+        self.send_response(200)
+        self.send_header("Content-Type", "text/plain; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+    def log_message(self, *_args):
+        return
+
+ThreadingHTTPServer(("0.0.0.0", 8000), Handler).serve_forever()
+'''
+        writeFile file: 'Dockerfile', text: '''FROM python:3.12-slim
+WORKDIR /app
+COPY main.py .
+EXPOSE 8000
+CMD ["python", "main.py"]
+'''
+      }
+    }
+
+    stage('Build & Push') {
+      steps {
+        echo 'Docker token in console: **** (masking is best-effort)'
+        withCredentials([usernamePassword(credentialsId: 'dockerhub',
+            usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+          sh '''set +x
+            export DOCKER_CONFIG=$(mktemp -d)
+            trap 'docker logout >/dev/null 2>&1; rm -rf "$DOCKER_CONFIG"' EXIT
+            echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
+            docker build -t docker.io/$DOCKER_USER/ci-demo:$BUILD_NUMBER .
+            docker push docker.io/$DOCKER_USER/ci-demo:$BUILD_NUMBER
+          '''
+        }
+      }
+    }
+
+    stage('Smoke test') {
+      steps {
+        sh '''set -eu
+            image=$(docker image ls --format '{{.Repository}}:{{.Tag}}' \
+              | grep "/ci-demo:$BUILD_NUMBER$" | head -1)
+            name="ci-demo-smoke-$BUILD_NUMBER"
+            trap 'docker rm -f "$name" >/dev/null 2>&1 || true' EXIT
+            docker run -d --name "$name" --network cicd-net \
+              "$image"
+            curl -fsS --retry 15 --retry-connrefused --retry-delay 1 \
+              "http://$name:8000/"
+        '''
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job">
+  <actions/>
+  <description>First Declarative Pipeline for LAB 2</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>APP_ENV</name>
+          <description>Environment to deploy</description>
+          <defaultValue>dev</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps">
+    <script>pipeline {
+  agent any
+
+  parameters {
+    string(name: 'APP_ENV', defaultValue: 'dev', description: 'Environment to deploy')
+  }
+
+  environment {
+    LAB_NAME = 'Declarative Pipeline'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        echo 'Checkout (simulated)'
+        sleep 1
+      }
+    }
+
+    stage('Build') {
+      steps {
+        echo "Building ${env.LAB_NAME}: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+        sleep 1
+      }
+    }
+
+    stage('Test') {
+      steps {
+        echo 'Tests passed'
+        sleep 1
+      }
+    }
+
+    stage('Deploy') {
+      when {
+        expression { params.APP_ENV == 'prod' }
+      }
+      steps {
+        echo "Deploying to ${params.APP_ENV}"
+        sleep 1
+      }
+    }
+  }
+
+  post {
+    always {
+      echo "Finished ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+    }
+    success {
+      echo 'Pipeline succeeded'
+    }
+  }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
