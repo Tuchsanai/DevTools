@@ -1,0 +1,123 @@
+{
+  "lab": "lab6",
+  "images": [
+    {
+      "path": "slides_assets/lab6_s01_gitea_repo_form.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [598, 287, 984, 325],
+          "label": "① กรอกชื่อ Repository",
+          "label_at": [1020, 270],
+          "target": [975, 306]
+        },
+        {
+          "type": "round_rect",
+          "box": [597, 410, 790, 434],
+          "label": "② คงสถานะ Public",
+          "label_at": [1020, 400],
+          "target": [780, 422]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab6_s02_gitea_repo_after_push.png",
+      "reason": "หน้า Code เป็นหลักฐานรายการไฟล์และ branch main หลัง push ไม่มีจุดให้กดต่อ",
+      "shapes": []
+    },
+    {
+      "path": "slides_assets/lab6_s03_job_scm.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [366, 193, 1301, 230],
+          "label": "① เลือก Pipeline SCM",
+          "label_at": [30, 350],
+          "target": [375, 212]
+        },
+        {
+          "type": "round_rect",
+          "box": [398, 285, 1301, 323],
+          "label": "② เลือก Git",
+          "label_at": [30, 450],
+          "target": [405, 304]
+        },
+        {
+          "type": "round_rect",
+          "box": [446, 461, 1287, 499],
+          "label": "③ กรอก Repository URL",
+          "label_at": [30, 550],
+          "target": [452, 480]
+        },
+        {
+          "type": "round_rect",
+          "box": [446, 867, 1287, 906],
+          "label": "④ กรอก Branch",
+          "label_at": [30, 650],
+          "target": [452, 886]
+        },
+        {
+          "type": "round_rect",
+          "box": [365, 946, 470, 987],
+          "label": "⑤ กด Save",
+          "label_at": [30, 750],
+          "target": [460, 965]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab6_s04_job_trigger.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [398, 527, 1302, 566],
+          "label": "① กรอก Token",
+          "label_at": [30, 550],
+          "target": [405, 547]
+        },
+        {
+          "type": "round_rect",
+          "box": [365, 946, 470, 987],
+          "label": "② กด Save",
+          "label_at": [30, 750],
+          "target": [460, 965]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab6_s05_gitea_webhook.png",
+      "reason": "รายการ Webhooks เป็นหลักฐาน endpoint ที่บันทึกและสถานะ active ไม่มีจุดให้กดต่อ",
+      "shapes": []
+    },
+    {
+      "path": "slides_assets/lab6_s06_pipeline_graph.png",
+      "reason": "Pipeline Graph เป็นหลักฐานผลลัพธ์ของทุก stage และไม่มีจุดให้กดต่อ",
+      "shapes": []
+    },
+    {
+      "path": "slides_assets/lab6_s07_console_pytest.png",
+      "reason": "Console Output เป็นหลักฐานผล pytest และไม่มีจุดให้กดต่อ",
+      "shapes": []
+    },
+    {
+      "path": "slides_assets/lab6_s08_console_verify.png",
+      "reason": "Console Output เป็นหลักฐานผล Verify และไม่มีจุดให้กดต่อ",
+      "shapes": []
+    },
+    {
+      "path": "slides_assets/lab6_s09_dashboard_v1.png",
+      "reason": "Dashboard v1 เป็นหลักฐาน deployment และ auto-refresh ไม่มีจุดให้กดต่อ",
+      "shapes": []
+    },
+    {
+      "path": "slides_assets/lab6_s10_dashboard_v2.png",
+      "reason": "Dashboard v2 เป็นหลักฐาน deployment หลัง auto-refresh และไม่มีจุดให้กดต่อ",
+      "shapes": []
+    },
+    {
+      "path": "slides_assets/lab6_s11_hub_public_tags.png",
+      "reason": "Docker Hub public tags เป็นหลักฐาน tag และ digest ไม่มีจุดให้กดต่อ",
+      "shapes": []
+    }
+  ]
+}

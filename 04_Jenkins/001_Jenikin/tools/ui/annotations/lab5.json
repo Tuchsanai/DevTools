@@ -1,0 +1,136 @@
+{
+  "lab": "lab5",
+  "images": [
+    {
+      "path": "slides_assets/lab5_s01_available_plugin.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [364, 63, 1015, 115],
+          "label": "① ค้นหาปลั๊กอิน",
+          "label_at": [380, 370],
+          "target": [690, 108]
+        },
+        {
+          "type": "round_rect",
+          "box": [385, 188, 412, 216],
+          "label": "② เลือกปลั๊กอิน",
+          "label_at": [700, 370],
+          "target": [405, 210]
+        },
+        {
+          "type": "round_rect",
+          "box": [1225, 69, 1353, 111],
+          "label": "③ กด Install",
+          "label_at": [1040, 370],
+          "target": [1285, 105]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s02_plugin_download_restart.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [393, 354, 416, 378],
+          "label": "เลือก Restart Jenkins",
+          "label_at": [650, 430],
+          "target": [405, 370]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s03_build_trigger_token.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [365, 90, 389, 115],
+          "label": "① เลือก Webhook Trigger",
+          "label_at": [30, 350],
+          "target": [380, 108]
+        },
+        {
+          "type": "round_rect",
+          "box": [398, 790, 1305, 828],
+          "label": "② กรอก Token",
+          "label_at": [1050, 700],
+          "target": [1100, 805]
+        },
+        {
+          "type": "round_rect",
+          "box": [365, 946, 470, 987],
+          "label": "③ กด Save",
+          "label_at": [610, 900],
+          "target": [460, 965]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s04_add_webhook_form.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [350, 270, 1347, 310],
+          "label": "① กรอก Target URL",
+          "label_at": [30, 550],
+          "target": [355, 290]
+        },
+        {
+          "type": "round_rect",
+          "box": [350, 347, 1347, 387],
+          "label": "② เลือก POST",
+          "label_at": [30, 630],
+          "target": [355, 367]
+        },
+        {
+          "type": "round_rect",
+          "box": [350, 426, 1347, 466],
+          "label": "③ เลือก JSON",
+          "label_at": [30, 710],
+          "target": [355, 446]
+        },
+        {
+          "type": "round_rect",
+          "box": [349, 583, 465, 607],
+          "label": "④ เปิด Active",
+          "label_at": [30, 790],
+          "target": [355, 596]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s05_webhook_list.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [373, 250, 520, 278],
+          "label": "เปิด webhook ที่สร้าง",
+          "label_at": [520, 350],
+          "target": [510, 266]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s06_delivery_response.png",
+      "reason": "Delivery Response เป็นหลักฐาน HTTP 200 และผล trigger จึงไม่มีจุดให้กดต่อ",
+      "shapes": []
+    },
+    {
+      "path": "slides_assets/lab5_s07_webhook_build_cause.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [18, 145, 157, 185],
+          "label": "เปิด Console Output",
+          "label_at": [370, 410],
+          "target": [145, 165]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s08_delivery_request.png",
+      "reason": "Delivery Request เป็นหลักฐาน payload ที่ใช้ตรวจข้อมูล ไม่ใช่ขั้นคลิกหรือกรอก",
+      "shapes": []
+    }
+  ]
+}

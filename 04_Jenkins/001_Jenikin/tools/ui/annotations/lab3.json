@@ -1,0 +1,115 @@
+{
+  "lab": "lab3",
+  "images": [
+    {
+      "path": "slides_assets/lab3_s01_manage_jenkins.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [495, 741, 950, 820],
+          "label": "เลือก Credentials",
+          "label_at": [1010, 725],
+          "target": [930, 780]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab3_s02_global_credentials.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [634, 311, 807, 352],
+          "label": "เลือก Add Credentials",
+          "label_at": [850, 290],
+          "target": [795, 332]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab3_s03_add_credential_form.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [454, 337, 986, 731],
+          "label": "① กรอกข้อมูล Credential",
+          "label_at": [90, 430],
+          "target": [456, 520]
+        },
+        {
+          "type": "round_rect",
+          "box": [463, 763, 977, 803],
+          "label": "② กด Create",
+          "label_at": [160, 735],
+          "target": [465, 783]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab3_s04_new_item_pipeline.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [344, 154, 1096, 193],
+          "label": "① กรอกชื่อ Pipeline",
+          "label_at": [1110, 120],
+          "target": [1090, 173]
+        },
+        {
+          "type": "round_rect",
+          "box": [344, 247, 1096, 346],
+          "label": "② เลือก Pipeline",
+          "label_at": [1110, 255],
+          "target": [1090, 295]
+        },
+        {
+          "type": "round_rect",
+          "box": [344, 947, 451, 988],
+          "label": "③ กด OK",
+          "label_at": [490, 930],
+          "target": [445, 967]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab3_s05_pipeline_script.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [365, 277, 1303, 316],
+          "label": "① ตรวจ Pipeline script",
+          "label_at": [30, 300],
+          "target": [370, 297]
+        },
+        {
+          "type": "round_rect",
+          "box": [397, 370, 1303, 723],
+          "label": "② วาง Jenkinsfile",
+          "label_at": [30, 430],
+          "target": [400, 500]
+        },
+        {
+          "type": "round_rect",
+          "box": [365, 946, 471, 988],
+          "label": "③ กด Save",
+          "label_at": [650, 920],
+          "target": [465, 967]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab3_s06_console_login.png",
+      "reason": "Console Output เป็นหลักฐานการ login สำเร็จและไม่มีจุดให้กดต่อ",
+      "shapes": []
+    },
+    {
+      "path": "slides_assets/lab3_s07_console_digest.png",
+      "reason": "Console Output เป็นหลักฐาน digest หลัง push และไม่มีจุดให้กดต่อ",
+      "shapes": []
+    },
+    {
+      "path": "slides_assets/lab3_s08_hub_public_tag.png",
+      "reason": "หน้า public Tags เป็นหลักฐาน tag ของ build และไม่มีจุดให้กดต่อ",
+      "shapes": []
+    }
+  ]
+}

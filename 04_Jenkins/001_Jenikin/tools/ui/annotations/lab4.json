@@ -1,0 +1,209 @@
+{
+  "lab": "lab4",
+  "images": [
+    {
+      "path": "slides_assets/lab4_s01_gitea_install_form.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [588, 95, 995, 130],
+          "label": "① เลือก SQLite3",
+          "label_at": [190, 80],
+          "target": [590, 112]
+        },
+        {
+          "type": "round_rect",
+          "box": [588, 561, 995, 594],
+          "label": "② กรอก Server Domain",
+          "label_at": [1040, 530],
+          "target": [990, 578]
+        },
+        {
+          "type": "round_rect",
+          "box": [588, 695, 995, 729],
+          "label": "③ ตรวจ HTTP Port",
+          "label_at": [1040, 665],
+          "target": [990, 712]
+        },
+        {
+          "type": "round_rect",
+          "box": [588, 763, 995, 797],
+          "label": "④ กรอก Gitea Base URL",
+          "label_at": [1030, 775],
+          "target": [990, 780]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab4_s02_student_registration.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [496, 225, 945, 533],
+          "label": "① กรอกข้อมูลบัญชี",
+          "label_at": [110, 350],
+          "target": [498, 400]
+        },
+        {
+          "type": "round_rect",
+          "box": [506, 540, 935, 580],
+          "label": "② กด Register Account",
+          "label_at": [980, 530],
+          "target": [930, 560]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab4_s03_hello_repo_form.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [640, 187, 893, 215],
+          "label": "① กรอกชื่อ Repository",
+          "label_at": [120, 175],
+          "target": [642, 201]
+        },
+        {
+          "type": "round_rect",
+          "box": [638, 264, 790, 288],
+          "label": "② ไม่เลือก Private",
+          "label_at": [1030, 245],
+          "target": [785, 276]
+        },
+        {
+          "type": "round_rect",
+          "box": [638, 668, 937, 691],
+          "label": "③ ไม่เลือก Initialize",
+          "label_at": [80, 650],
+          "target": [640, 679]
+        },
+        {
+          "type": "round_rect",
+          "box": [640, 855, 753, 885],
+          "label": "④ กด Create Repository",
+          "label_at": [1010, 840],
+          "target": [750, 870]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab4_s04_repo_files.png",
+      "reason": "หน้า repository เป็นหลักฐาน branch และไฟล์หลัง push ไม่มีจุดให้กดต่อ",
+      "shapes": []
+    },
+    {
+      "path": "slides_assets/lab4_s05_new_pipeline_item.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [344, 154, 1096, 193],
+          "label": "① กรอกชื่อ Pipeline",
+          "label_at": [1110, 120],
+          "target": [1090, 173]
+        },
+        {
+          "type": "round_rect",
+          "box": [344, 247, 1096, 346],
+          "label": "② เลือก Pipeline",
+          "label_at": [1110, 255],
+          "target": [1090, 295]
+        },
+        {
+          "type": "round_rect",
+          "box": [344, 947, 451, 988],
+          "label": "③ กด OK",
+          "label_at": [490, 930],
+          "target": [445, 967]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab4_s06_pipeline_from_scm.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [255, 254, 911, 281],
+          "label": "① เลือก Pipeline from SCM",
+          "label_at": [970, 230],
+          "target": [905, 268]
+        },
+        {
+          "type": "round_rect",
+          "box": [278, 319, 911, 347],
+          "label": "② เลือก Git",
+          "label_at": [970, 310],
+          "target": [905, 333]
+        },
+        {
+          "type": "round_rect",
+          "box": [309, 442, 902, 470],
+          "label": "③ กรอก Repository URL",
+          "label_at": [960, 410],
+          "target": [895, 456]
+        },
+        {
+          "type": "round_rect",
+          "box": [309, 507, 834, 536],
+          "label": "④ เลือก - none -",
+          "label_at": [960, 500],
+          "target": [830, 521]
+        },
+        {
+          "type": "round_rect",
+          "box": [309, 726, 902, 755],
+          "label": "⑤ กรอก Branch main",
+          "label_at": [960, 700],
+          "target": [895, 741]
+        },
+        {
+          "type": "round_rect",
+          "box": [255, 962, 330, 991],
+          "label": "⑥ กด Save",
+          "label_at": [500, 930],
+          "target": [325, 977]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab4_s07_manual_build_console.png",
+      "reason": "Console Output เป็นหลักฐาน checkout และผล build สำเร็จ ไม่มีจุดให้กดต่อ",
+      "shapes": []
+    },
+    {
+      "path": "slides_assets/lab4_s08_poll_scm_trigger.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [364, 708, 480, 738],
+          "label": "① เลือก Poll SCM",
+          "label_at": [710, 690],
+          "target": [475, 723]
+        },
+        {
+          "type": "round_rect",
+          "box": [397, 770, 1303, 841],
+          "label": "② กรอก Schedule",
+          "label_at": [1000, 675],
+          "target": [1100, 773]
+        },
+        {
+          "type": "round_rect",
+          "box": [365, 947, 471, 988],
+          "label": "③ กด Save",
+          "label_at": [700, 920],
+          "target": [465, 967]
+        }
+      ]
+    },
+    {
+      "path": "slides_assets/lab4_s09_git_polling_log.png",
+      "reason": "Git Polling Log เป็นหลักฐาน revision และ Changes found ไม่มีจุดให้กดต่อ",
+      "shapes": []
+    },
+    {
+      "path": "slides_assets/lab4_s10_scm_build_history.png",
+      "reason": "หน้ารายละเอียด build เป็นหลักฐาน SCM cause และสถานะสำเร็จ ไม่มีจุดให้กดต่อ",
+      "shapes": []
+    }
+  ]
+}

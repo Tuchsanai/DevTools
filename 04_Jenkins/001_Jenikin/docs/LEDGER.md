@@ -74,6 +74,8 @@
 | U4R | **PASS** | README LAB 4 วิชาการ 306 บรรทัด + ภาพ 10 (installer→repo→SCM config→Poll→SCM change) · anchor `* * * * *`/ห้ามใช้ H/1 คงอยู่ · check.sh ผ่าน · โทน clean |
 | U5R | **PASS** | README LAB 5 วิชาการ 252 บรรทัด + ภาพ 8 (plugin→trigger token→webhook form→delivery 200→cause) · check.sh ผ่าน · leakage 0 · โทน clean |
 | U6R | **PASS** | README LAB 6 วิชาการ 333 บรรทัด + ภาพ 11 (s01–s11 ครบวง v1→v2 รวม console pytest/verify) · anchors ครบ · check.sh acceptance ผ่าน · ภาพเดิม hash เดิม · leakage 0 |
+| UA1 | **PASS** | เครื่องมือ annotate + LAB 1–2 (idempotent ยืนยัน SHA) · ผมตรวจตัวอย่างเอง: marker 3 จุด+เลขลำดับ+ป้ายไทยตรงเป้า · commit 8d66902 |
+| UA3 | **PASS** | LAB 5–6: annotate 5 ภาพ action, เว้นภาพหลักฐาน 8 พร้อมเหตุผลราย ภาพ (vision-verified) |
 | U8 | **FAIL → FIX เฉพาะจุด** | ผ่าน: chain 1→6 + check.sh ทุกแล็บ + restart checkpoint ×2 + capstone e2e + consistency 12/12 + cleanup global · Findings: **U3-01** (lab3_credential.py แพ้ race รอบแรก) และ **VER-01** (Docker CLI 26.1.5 Debian repo ใน bootstrap vs 29.7.2 official repo ใน LAB 3 → STACK/LAB6/deck คัดค่าเก่า) · คำตัดสิน: canonical = official Docker repo · แก้โดย U-FIX3 + re-proof เฉพาะจุด (ไม่ re-run เต็มเพราะ findings จำกัดวง มีหลักฐาน chain ส่วนอื่นครบแล้ว) |
 | U7 | **PASS** | ตรวจไขว้ภาพหลักฐาน: ปก+overview grid+D8 topology ถูกต้องสวยงาม · 80 หน้า 6.0MiB · offline test 0 external req/0 error · วิดีโอ 5 เล่น/หยุดตามหน้า · consistency 17 code blocks ผ่าน + guard กัน H/1 ถดถอย · polish item (Phase 4, minor): ป้ายลูกศร push/verify ใน D8 ทับกันเล็กน้อย |
 | U-PATCH2 | **PASS** | เศษ `H/1` ในโค้ดหมดแล้ว (เหลือเฉพาะบรรทัดสอน/guard ที่ตั้งใจ) · py_compile ผ่าน |
