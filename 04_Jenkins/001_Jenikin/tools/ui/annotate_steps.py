@@ -19,8 +19,10 @@ from PIL import Image, ImageDraw, ImageFont
 ROSE = "#e11d48"
 SLATE = "#1e293b"
 WHITE = "#ffffff"
+MASK_FILL = "#0d1117"
 LINE_WIDTH = 5
 FONT_SIZE = 28
+MASK_PADDING = 4
 LABEL_PADDING_X = 14
 LABEL_PADDING_Y = 8
 LABEL_RADIUS = 10
@@ -138,6 +140,44 @@ def draw_label_text(
         x += bbox[2] - bbox[0]
 
 
+def fit_mask_font(
+    draw: ImageDraw.ImageDraw,
+    font: ImageFont.FreeTypeFont,
+    text: str,
+    box: list[int],
+) -> ImageFont.FreeTypeFont:
+    available_width = box[2] - box[0] - MASK_PADDING * 2
+    available_height = box[3] - box[1] - MASK_PADDING * 2
+    if available_width <= 0 or available_height <= 0:
+        raise ValueError(f"mask box {box} is too small for text")
+    for size in range(font.size, 0, -1):
+        candidate = font.font_variant(size=size)
+        bounds = draw.textbbox((0, 0), text, font=candidate)
+        if (
+            bounds[2] - bounds[0] <= available_width
+            and bounds[3] - bounds[1] <= available_height
+        ):
+            return candidate
+    raise ValueError(f"mask text does not fit inside box {box}: {text!r}")
+
+
+def draw_mask(
+    draw: ImageDraw.ImageDraw,
+    shape: dict[str, Any],
+    font: ImageFont.FreeTypeFont,
+) -> None:
+    box = shape["box"]
+    text = shape["text"]
+    fitted = fit_mask_font(draw, font, text, box)
+    draw.rectangle(box, fill=shape.get("fill", MASK_FILL))
+    bounds = draw.textbbox((0, 0), text, font=fitted)
+    text_width = bounds[2] - bounds[0]
+    text_height = bounds[3] - bounds[1]
+    x = box[0] + (box[2] - box[0] - text_width) / 2 - bounds[0]
+    y = box[1] + (box[3] - box[1] - text_height) / 2 - bounds[1]
+    draw.text((x, y), text, font=fitted, fill=WHITE)
+
+
 def arrow(draw: ImageDraw.ImageDraw, start: tuple[float, float], end: tuple[float, float]) -> None:
     draw.line((start, end), fill=ROSE, width=4)
     angle = math.atan2(end[1] - start[1], end[0] - start[0])
@@ -166,19 +206,36 @@ def annotate_image(
         return f"SKIP ({spec.get('reason', 'no interactive target')}); restored by {restore_mode}"
 
     with Image.open(path) as source:
+        original_mode = source.mode
         image = source.convert("RGBA")
     draw = ImageDraw.Draw(image)
     width, height = image.size
 
+    masks: list[dict[str, Any]] = []
     prepared: list[tuple[dict[str, Any], tuple[int, int, int, int]]] = []
     for index, shape in enumerate(shapes, start=1):
+        kind = shape.get("type", "round_rect")
+        if kind not in {"mask", "ellipse", "round_rect"}:
+            raise ValueError(f"unsupported shape type: {kind}")
+        check_box(shape["box"], width, height, f"shape {index} box")
+        if kind == "mask":
+            text = shape["text"]
+            if not isinstance(text, str) or not text:
+                raise ValueError(f"shape {index} mask text must be a non-empty string")
+            fit_mask_font(draw, fonts[0], text, shape["box"])
+            masks.append(shape)
+            continue
         text = shape["label"]
         if len(text) > 25:
             raise ValueError(f"label exceeds 25 characters: {text!r}")
-        check_box(shape["box"], width, height, f"shape {index} box")
         box = label_box(draw, fonts, text, shape["label_at"])
         check_box(list(box), width, height, f"shape {index} label")
         prepared.append((shape, box))
+
+    # Privacy masks always precede every leader, outline, and label, regardless
+    # of their order in the annotation schema.
+    for shape in masks:
+        draw_mask(draw, shape, fonts[0])
 
     # Leaders remain behind both target outlines and labels.
     for shape, box in prepared:
@@ -199,8 +256,6 @@ def annotate_image(
             draw.ellipse(box, outline=ROSE, width=LINE_WIDTH)
         elif kind == "round_rect":
             draw.rounded_rectangle(box, radius=shape.get("radius", 12), outline=ROSE, width=LINE_WIDTH)
-        else:
-            raise ValueError(f"unsupported shape type: {kind}")
 
     for shape, box in prepared:
         draw.rounded_rectangle(box, radius=LABEL_RADIUS, fill=SLATE)
@@ -212,9 +267,13 @@ def annotate_image(
         )
 
     temporary = path.with_name(f".{path.name}.annotating")
-    image.convert("RGB").save(temporary, format="PNG", optimize=True)
+    rendered = image if original_mode == "RGBA" else image.convert(original_mode)
+    rendered.save(temporary, format="PNG", optimize=True)
     temporary.replace(path)
-    return f"OK; {len(shapes)} marker(s); restored by {restore_mode}"
+    return (
+        f"OK; {len(masks)} mask(s); {len(prepared)} marker(s); "
+        f"restored by {restore_mode}"
+    )
 
 
 def append_log(repo: Path, command: str, results: list[tuple[str, str]]) -> None:

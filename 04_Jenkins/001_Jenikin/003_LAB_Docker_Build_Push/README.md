@@ -8,10 +8,20 @@
 >
 > ```bash
 > echo '<DOCKER_TOKEN>' | docker login -u '<DOCKER_USER>' --password-stdin && docker logout
-> for repo in ci-demo cicd-webapp; do curl -fsS -o /dev/null -w "$repo: HTTP %{http_code}\n" "https://hub.docker.com/r/<DOCKER_USER>/$repo"; done
+> curl -fsS -o /dev/null -w 'ci-demo: HTTP %{http_code}\n' 'https://hub.docker.com/r/<DOCKER_USER>/ci-demo'
+> curl -fsS -o /dev/null -w 'cicd-webapp: HTTP %{http_code}\n' 'https://hub.docker.com/r/<DOCKER_USER>/cicd-webapp'
 > ```
 >
-> ต้องเห็น `Login Succeeded` และ `HTTP 200` ของทั้งสอง repository ก่อนเริ่มคาบ
+> ✅ **สิ่งที่ต้องเห็น**:
+>
+> ```text
+> Login Succeeded
+> WARNING! Your credentials are stored unencrypted in '/root/.docker/config.json'.
+> ...
+> Removing login credentials for https://index.docker.io/v1/
+> ci-demo: HTTP 200
+> cicd-webapp: HTTP 200
+> ```
 
 ## ทฤษฎีก่อนลงมือ
 
@@ -23,26 +33,7 @@ Jenkins image มาตรฐานไม่มี Docker CLI แม้จะ mo
 
 Jenkins Credentials store แยกข้อมูลลับออกจาก Pipeline และส่งค่าให้เฉพาะ scope ของ `withCredentials` การ masking ช่วยลดโอกาสที่ข้อมูลจะปรากฏใน console แต่ไม่ใช่การรับประกัน จึงต้องใช้ Groovy single-quoted shell, `set +x`, `--password-stdin` และ `DOCKER_CONFIG` ชั่วคราวร่วมกัน
 
-บล็อกต่อไปนี้เป็นรูปแบบ canonical สำหรับการ push ในแล็บนี้ โดย login ก่อน build เพื่อให้การ pull base image ผูกกับบัญชี และใช้ `trap` ลบ Docker config ไม่ว่าขั้นตอนจะสำเร็จหรือล้มเหลว
-
-ชื่อ artifact ปลายทางตาม naming contract คือ `docker.io/<DOCKER_USER>/ci-demo:<BUILD_NUMBER>` โดยแทน `<DOCKER_USER>` ด้วย namespace ของผู้เรียนและ `<BUILD_NUMBER>` ด้วยเลข build ที่ Jenkins กำหนด:
-
-```groovy
-stage('Build & Push') {
-  steps {
-    withCredentials([usernamePassword(credentialsId: 'dockerhub',
-        usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
-      sh '''set +x
-        export DOCKER_CONFIG=$(mktemp -d)
-        trap 'docker logout >/dev/null 2>&1; rm -rf "$DOCKER_CONFIG"' EXIT
-        echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
-        docker build -t docker.io/$DOCKER_USER/ci-demo:$BUILD_NUMBER .
-        docker push docker.io/$DOCKER_USER/ci-demo:$BUILD_NUMBER
-      '''
-    }
-  }
-}
-```
+รูปแบบ canonical ของแล็บ login ก่อน build เพื่อให้การ pull base image ผูกกับบัญชี และใช้ `trap` ลบ Docker config ไม่ว่าขั้นตอนจะสำเร็จหรือล้มเหลว สคริปต์ฉบับเต็มอยู่ใน [`Jenkinsfile`](./Jenkinsfile) และจะคัดลอกจาก `$COURSE_ROOT` ในการทดลองที่ 5 ชื่อ artifact ปลายทางคือ `docker.io/<DOCKER_USER>/ci-demo:<BUILD_NUMBER>`
 
 > **Safety:** การ mount Docker socket ทำให้ Jenkins มีอำนาจใกล้เคียง root ของ inner host และการใช้ `-u root` เพิ่มผลกระทบเมื่อเกิดข้อผิดพลาด จึงใช้เฉพาะแล็บ disposable เท่านั้น ระบบ production ควรใช้ build agent แยกและจำกัดสิทธิ์กับเครือข่ายตามหลัก least privilege ส่วน Access Token ใช้เพียง Read/Write ไม่ใช้ Delete/Admin และ revoke หลังคาบได้ทันที
 
@@ -59,7 +50,7 @@ stage('Build & Push') {
 ต้องมีสถานะจบ LAB 2: devtools container ยังทำงาน, network `cicd-net`, container `jenkins`, volume `jenkins_home` และ job จากสองแล็บแรกต้องพร้อมใช้งาน
 
 ```bash
-docker ps --format '{{.Names}}\t{{.Status}}'
+docker ps
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
@@ -97,6 +88,7 @@ exit=127
 การสร้าง image แยกทำให้ dependency ของ Jenkins ทำซ้ำได้ และไม่แก้ไข container ที่กำลังทำงานโดยตรง
 
 ```bash
+cd "$COURSE_ROOT"
 docker build -t jenkins-docker:2569 -f 003_LAB_Docker_Build_Push/Dockerfile.jenkins 003_LAB_Docker_Build_Push
 docker run --rm --entrypoint docker jenkins-docker:2569 --version
 ```
@@ -116,14 +108,18 @@ Docker version 29.7.2, build a7dcaa6
 การ recreate container แยก lifecycle ของ process ออกจากข้อมูลถาวร พร้อมเพิ่ม Docker socket และสิทธิ์ที่จำเป็นสำหรับท่าแล็บ
 
 ```bash
-docker rm -f jenkins && docker run -d --name jenkins --restart unless-stopped --network cicd-net -p 8080:8080 -u root -e JAVA_OPTS=-Djenkins.install.runSetupWizard=false -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkins-docker:2569
-curl -fsS -u admin:admin2569 http://localhost:8080/job/first-pipeline/api/json | grep -o '"name":"first-pipeline"'
+docker rm -f jenkins
+docker run -d --name jenkins --restart unless-stopped --network cicd-net -p 8080:8080 -u root -e JAVA_OPTS=-Djenkins.install.runSetupWizard=false -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkins-docker:2569
+sleep 20
+curl -fsS -u admin:admin2569 'http://localhost:8080/job/first-pipeline/api/json?tree=name'
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-"name":"first-pipeline"
+jenkins
+...
+{"_class":"org.jenkinsci.plugins.workflow.job.WorkflowJob","name":"first-pipeline"}
 ```
 
 > 📝 หาก `curl` ทำงานก่อน Jenkins พร้อม ให้รอจนหน้า `/login` ตอบสนองแล้วจึงรันคำสั่งตรวจซ้ำ การเริ่ม service อาจใช้เวลาประมาณ 20–40 วินาที
@@ -185,7 +181,19 @@ JENKINS_BASE_URL=http://localhost:8080 DOCKER_USER='<DOCKER_USER>' DOCKER_TOKEN=
 *สังเกตชื่อ `docker-build-push`, ชนิด Pipeline และปุ่ม OK ที่พร้อมสร้าง job*
 
 3. เลื่อนไปส่วน **Pipeline** และคง Definition เป็น **Pipeline script**
-4. วางเนื้อหา `003_LAB_Docker_Build_Push/Jenkinsfile` ลงช่อง Script แล้วกด **Save**
+4. คัดลอก Jenkinsfile ฉบับเต็มจากชุดสอน:
+
+```bash
+cp "$COURSE_ROOT/003_LAB_Docker_Build_Push/Jenkinsfile" /tmp/Jenkinsfile
+```
+
+✅ **สิ่งที่ต้องเห็น**:
+
+```text
+(ไม่มี stdout)
+```
+
+5. เปิด `/tmp/Jenkinsfile` วางเนื้อหาทั้งหมดลงช่อง Script แล้วกด **Save**
 
 ![ช่อง Pipeline script ที่กรอก Jenkinsfile แล้ว](../slides_assets/lab3_s05_pipeline_script.png)
 
@@ -220,13 +228,13 @@ Pipeline Graph แสดงความสัมพันธ์ระหว่�
 *สังเกต `Prepare app`, `Build & Push` และ `Smoke test` เป็นสถานะสำเร็จทั้งหมด*
 
 ```bash
-curl -fsS -u admin:admin2569 'http://localhost:8080/job/docker-build-push/lastBuild/api/json?tree=result' | grep -o '"result":"SUCCESS"'
+curl -fsS -u admin:admin2569 'http://localhost:8080/job/docker-build-push/lastBuild/api/json?tree=result'
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-"result":"SUCCESS"
+{"_class":"org.jenkinsci.plugins.workflow.job.WorkflowRun","result":"SUCCESS"}
 ```
 
 build เสร็จสมบูรณ์แล้ว ขั้นถัดไปจะอ่านเฉพาะหลักฐานที่ยืนยันการ login และ push จาก console ของ build เดียวกัน
@@ -271,8 +279,13 @@ Finished: SUCCESS
 การเปิดหน้า public Tags ใน browser context ที่ไม่ได้ login พิสูจน์ว่า repository เป็น Public และผู้ใช้อื่นสามารถอ่าน manifest ของ tag นี้ได้ ห้ามเปิดหรือจับภาพหน้า Docker Hub ที่ login แล้วหรือหน้าสร้าง token
 
 ```bash
-BUILD_NUMBER=$(curl -fsS -u admin:admin2569 'http://localhost:8080/job/docker-build-push/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')
-printf 'เปิด https://hub.docker.com/r/<DOCKER_USER>/ci-demo/tags แล้วหา tag %s\n' "$BUILD_NUMBER"
+curl -fsS -u admin:admin2569 'http://localhost:8080/job/docker-build-push/lastBuild/api/json?tree=number'
+```
+
+✅ **สิ่งที่ต้องเห็น**:
+
+```json
+{"_class":"org.jenkinsci.plugins.workflow.job.WorkflowRun","number":<BUILD_NUMBER>}
 ```
 
 1. เปิดหน้าต่าง browser แบบไม่เข้าสู่ระบบ
@@ -292,11 +305,25 @@ Tags    <BUILD_NUMBER>    ...    sha256:...
 ตรวจสถานะจบแล็บจาก shell ใหม่โดยไม่ส่ง token ให้ตัวตรวจ:
 
 ```bash
-cd 003_LAB_Docker_Build_Push
-DOCKER_USER=<id> bash check.sh
+(cd "$COURSE_ROOT/003_LAB_Docker_Build_Push" && DOCKER_USER='<DOCKER_USER>' bash check.sh)
 ```
 
-ผลที่ถูกต้องคือ `[PASS]` ทุกบรรทัด, pattern count เป็น 0 และ `ผลรวม: PASS`
+✅ **สิ่งที่ต้องเห็น**:
+
+```text
+[PASS] jenkins ใช้ image jenkins-docker:2569
+[PASS] jenkins mount Docker socket ถูกต้อง
+[PASS] Jenkins Credentials API พบ id dockerhub
+[PASS] docker-build-push build #<BUILD_NUMBER> = SUCCESS
+[PASS] อ่าน digest ของ push จาก Jenkins console ได้
+[PASS] anonymous client อ่าน manifest และ Hub tag API ได้
+[PASS] Hub digest ตรงกับ build นี้ และ last_updated ใหม่กว่าเวลาเริ่ม build
+[INFO] Docker token pattern count: lab_files=0 console=0
+[PASS] ไม่พบรูปแบบ Docker Hub token ในไฟล์แล็บหรือ console
+[INFO] retained Docker auth entry count: 0
+[PASS] ไม่พบ Docker auth entry ค้างใน jenkins container
+ผลรวม: PASS
+```
 
 ## แก้ปัญหาที่พบบ่อย
 

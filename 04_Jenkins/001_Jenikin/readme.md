@@ -1,6 +1,6 @@
 # CI/CD ด้วย Jenkins บน Docker
 
-ชุดแล็บภาษาไทยนี้พาจากการกด build ด้วยตนเอง ไปจนถึงวงจร `git push → test → build → push → deploy → verify` อัตโนมัติ โดยใช้ Jenkins, Gitea และ Docker ภายใน devtools container ตัวเดียว เรียนภาพรวมและสถาปัตยกรรมจาก [Jenkins_CICD_Docker_Slides.html](./Jenkins_CICD_Docker_Slides.html) แล้วลงมือทำ LAB 1–6 ตามลำดับ
+ชุดแล็บภาษาไทยนี้พาจากการกด build ด้วยตนเอง ไปจนถึงวงจร `git push → test → build → push → deploy → verify` อัตโนมัติ โดยใช้ Jenkins, GitHub และ Docker ภายใน devtools container ตัวเดียว เรียนภาพรวมและสถาปัตยกรรมจาก [Jenkins_CICD_Docker_Slides.html](./Jenkins_CICD_Docker_Slides.html) แล้วลงมือทำ LAB 1–6 ตามลำดับ
 
 ## สิ่งที่ต้องมีก่อนเรียน
 
@@ -22,6 +22,15 @@
 
 ดูขั้นตรวจความพร้อมและอาการผิดพลาดที่ [LAB 3 — Docker Build & Push](./003_LAB_Docker_Build_Push/README.md)
 
+## เตรียม GitHub ก่อนคาบ
+
+ทำรายการนี้ล่วงหน้าก่อนเริ่ม LAB 4:
+
+1. สมัครบัญชี GitHub และยืนยันอีเมล
+2. สร้าง Personal access token (classic) โดยเลือก scope `public_repo` และ `admin:repo_hook`
+3. เก็บ username/token ไว้ใน password manager; ในเอกสารใช้ placeholder `<GITHUB_USER>` และ `<GITHUB_TOKEN>` เท่านั้น
+4. ห้ามจับภาพหรือบันทึกหน้าที่แสดง token
+
 ## เริ่มระบบ
 
 รันคำสั่ง canonical นี้บนเครื่องหลัก:
@@ -29,8 +38,17 @@
 ```bash
 docker run -dit --name devtools-jenkins --privileged \
   --tmpfs /run -v jenkins-dind:/var/lib/docker \
-  -p 2222:22 -p 8080:8080 -p 3000:3000 -p 8000:8000 \
+  -p 2222:22 -p 8080:8080 -p 8000:8000 \
   tuchsanai/devtools:2569_1
+docker ps
+```
+
+✅ **สิ่งที่ต้องเห็น** (ตัดเฉพาะแถวที่เกี่ยวข้อง):
+
+```text
+...
+CONTAINER ID   IMAGE                         ...   NAMES
+...            tuchsanai/devtools:2569_1    ...   devtools-jenkins
 ```
 
 เข้า shell ของ devtools:
@@ -39,21 +57,36 @@ docker run -dit --name devtools-jenkins --privileged \
 ssh root@localhost -p 2222
 ```
 
-เมื่อ SSH ถามรหัสผ่าน ใช้ `passwd` จากนั้นจัดเตรียมชุดสอนจาก public repository แบบ sparse clone เพื่อลดข้อมูลที่ต้องดาวน์โหลด:
+✅ **สิ่งที่ต้องเห็น**:
 
-```bash
-git clone --depth 1 --filter=blob:none --sparse https://github.com/Tuchsanai/DevTools.git ~/DevTools && cd ~/DevTools && git sparse-checkout set 04_Jenkins/001_Jenikin
-export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"
-grep -qxF 'export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"' ~/.bashrc || echo 'export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"' >> ~/.bashrc
-test -f "$COURSE_ROOT/readme.md" || echo 'คำเตือน: ไม่พบชุดสอน โปรดตรวจ clone และ COURSE_ROOT ก่อนเริ่ม LAB'
+```text
+root@...:~#
 ```
 
-image `tuchsanai/devtools:2569_1` มี Git 2.54.0 ซึ่งรองรับ sparse checkout คำสั่งนี้จึงดาวน์โหลดเฉพาะประวัติล่าสุดและ materialize เฉพาะ `04_Jenkins/001_Jenikin` เมื่อ preflight ไม่แสดงคำเตือน ให้ทำ LAB ตามลำดับโดยใช้ container เดิมตลอดชุด
+เมื่อ SSH ถามรหัสผ่าน ใช้ `passwd` จากนั้นจัดเตรียมชุดสอนจาก public repository:
+
+```bash
+if [ -d "$HOME/DevTools/.git" ]; then
+  git -C "$HOME/DevTools" pull
+else
+  git clone --depth 1 https://github.com/Tuchsanai/DevTools.git "$HOME/DevTools"
+fi
+export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"
+echo 'export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"' > /etc/profile.d/course.sh
+```
+
+✅ **สิ่งที่ต้องเห็น** (รันครั้งแรก):
+
+```text
+Cloning into '/root/DevTools'...
+...
+```
+
+ถ้ามี `~/DevTools` อยู่แล้ว ต้องเห็นผลจาก `git pull` เช่น `Already up to date.` แทน การวัดใน container ทดสอบพบว่า shallow clone ทั้ง repository มีขนาด `221M` ซึ่งไม่เกิน 300 MB จึงใช้ clone ธรรมดาและไม่ต้อง sparse checkout
 
 URL สำหรับผู้เรียน:
 
 - Jenkins: `http://localhost:8080`
-- Gitea: `http://localhost:3000`
 - Webapp: `http://localhost:8000`
 
 > `--privileged` ใช้สำหรับแล็บ disposable เท่านั้น ไม่ใช่รูปแบบ production
@@ -77,17 +110,43 @@ URL สำหรับผู้เรียน:
 
 ```bash
 docker start devtools-jenkins
-docker exec devtools-jenkins sh -c \
-  'until docker info >/dev/null 2>&1; do sleep 2; done; docker ps'
+sleep 20
+docker exec devtools-jenkins docker ps
 ```
 
-Jenkins, Gitea และ webapp ที่สร้างด้วย `--restart unless-stopped` จะกลับมาเอง งาน, build history และ repo อยู่ใน named volumes จึงไม่ต้องทำ wizard ซ้ำ
+✅ **สิ่งที่ต้องเห็น** (ตัดเฉพาะแถวที่เกี่ยวข้อง):
+
+```text
+devtools-jenkins
+CONTAINER ID   IMAGE   ...   NAMES
+...            ...     ...   jenkins
+```
+
+Jenkins และ webapp ที่สร้างด้วย `--restart unless-stopped` จะกลับมาเอง งานและ build history อยู่ใน named volumes จึงไม่ต้องทำ wizard ซ้ำ
 
 ถ้าตามไม่ทัน ให้เข้า devtools แล้วใช้ bootstrap ไปยังสถานะจบ LAB ที่ต้องการ:
 
 ```bash
 docker exec -it devtools-jenkins bash
+```
+
+✅ **สิ่งที่ต้องเห็น**:
+
+```text
+root@...:~#
+```
+
+จากนั้นรัน bootstrap ภายใน shell ของ devtools:
+
+```bash
 (cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab2.sh)
+```
+
+✅ **สิ่งที่ต้องเห็น**:
+
+```text
+...
+[assert] LAB 2 ready: first-pipeline last build is SUCCESS
 ```
 
 ตั้งแต่สถานะ LAB 3 ขึ้นไป ต้องส่ง Docker Hub credential ผ่าน environment ด้วย placeholder เท่านั้น:
@@ -99,7 +158,32 @@ export DOCKER_TOKEN='<DOCKER_TOKEN>'
 unset DOCKER_TOKEN
 ```
 
-เปลี่ยนเลขท้ายเป็น `up_to_lab4.sh` หรือ `up_to_lab5.sh` ตามจุดที่ต้องการกู้ และรัน `check.sh` ของ LAB ล่าสุดเพื่อยืนยัน
+✅ **สิ่งที่ต้องเห็น**:
+
+```text
+...
+[assert] LAB 3 ready: Docker socket, dockerhub credential, green job, and Hub manifest verified
+```
+
+ตั้งแต่สถานะ LAB 4 ขึ้นไป ต้องส่ง GitHub credential เพิ่มด้วย:
+
+```bash
+export DOCKER_USER='<DOCKER_USER>'
+export DOCKER_TOKEN='<DOCKER_TOKEN>'
+export GITHUB_USER='<GITHUB_USER>'
+export GITHUB_TOKEN='<GITHUB_TOKEN>'
+(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab4.sh)
+unset DOCKER_TOKEN GITHUB_TOKEN
+```
+
+✅ **สิ่งที่ต้องเห็น**:
+
+```text
+...
+[assert] LAB 4 ready: ...
+```
+
+เปลี่ยนเลขท้ายเป็น `up_to_lab5.sh` ตามจุดที่ต้องการกู้ และรัน `check.sh` ของ LAB ล่าสุดเพื่อยืนยัน
 
 ## โครงสร้างชุดสอน
 

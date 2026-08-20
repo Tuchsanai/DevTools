@@ -1,7 +1,7 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <flow-definition plugin="workflow-job">
   <actions/>
-  <description>Pipeline from public Gitea SCM with Generic Webhook Trigger for LAB 5</description>
+  <description>Pipeline from public GitHub SCM with Generic Webhook Trigger for LAB 5</description>
   <keepDependencies>false</keepDependencies>
   <properties/>
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps">
@@ -9,7 +9,7 @@
       <configVersion>2</configVersion>
       <userRemoteConfigs>
         <hudson.plugins.git.UserRemoteConfig>
-          <url>http://gitea:3000/student/hello-ci.git</url>
+          <url>https://github.com/__GITHUB_USER__/hello-ci.git</url>
         </hudson.plugins.git.UserRemoteConfig>
       </userRemoteConfigs>
       <branches>
@@ -25,14 +25,29 @@
   <triggers>
     <org.jenkinsci.plugins.gwt.GenericTrigger plugin="generic-webhook-trigger@2.4.2">
       <spec></spec>
-      <genericVariables/>
+      <genericVariables>
+        <org.jenkinsci.plugins.gwt.GenericVariable>
+          <expressionType>JSONPath</expressionType>
+          <key>ref</key>
+          <value>$.ref</value>
+          <regexpFilter></regexpFilter>
+          <defaultValue></defaultValue>
+        </org.jenkinsci.plugins.gwt.GenericVariable>
+        <org.jenkinsci.plugins.gwt.GenericVariable>
+          <expressionType>JSONPath</expressionType>
+          <key>after</key>
+          <value>$.after</value>
+          <regexpFilter></regexpFilter>
+          <defaultValue></defaultValue>
+        </org.jenkinsci.plugins.gwt.GenericVariable>
+      </genericVariables>
       <genericRequestVariables/>
       <genericHeaderVariables/>
-      <regexpFilterText></regexpFilterText>
-      <regexpFilterExpression></regexpFilterExpression>
+      <regexpFilterText>$ref</regexpFilterText>
+      <regexpFilterExpression>^refs/heads/main$</regexpFilterExpression>
       <printPostContent>false</printPostContent>
       <printContributedVariables>false</printContributedVariables>
-      <causeString></causeString>
+      <causeString>GitHub push $after</causeString>
       <token>cicd2569-hello</token>
       <tokenCredentialId></tokenCredentialId>
       <silentResponse>false</silentResponse>

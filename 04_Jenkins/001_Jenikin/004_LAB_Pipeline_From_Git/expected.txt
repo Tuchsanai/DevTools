@@ -1,1 +1,1 @@
-Hello from Gitea
+Hello from GitHub

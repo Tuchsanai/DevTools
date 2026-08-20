@@ -25,8 +25,17 @@ Declarative Pipeline เริ่มด้วย `pipeline {}` ภายใน�
 ต้องมีสถานะจบ LAB 1: container `devtools-jenkins` ทำงาน และมี Jenkins container ชื่อ `jenkins` อยู่ภายใน
 
 ```bash
-docker ps --format '{{.Names}}\t{{.Status}}'   # ต้องเห็น: devtools-jenkins
-docker exec devtools-jenkins docker ps --format '{{.Names}}\t{{.Status}}'   # ต้องเห็น: jenkins
+docker ps
+docker exec devtools-jenkins docker ps
+```
+
+✅ **สิ่งที่ต้องเห็น** (ตัดเฉพาะแถวที่เกี่ยวข้อง):
+
+```text
+CONTAINER ID   IMAGE                         ...   NAMES
+...            tuchsanai/devtools:2569_1    ...   devtools-jenkins
+CONTAINER ID   IMAGE                       ...   NAMES
+...            jenkins/jenkins:lts-jdk21   ...   jenkins
 ```
 
 เปิด `http://localhost:8080` และเข้าใช้ด้วย `admin` / `admin2569`
@@ -108,10 +117,12 @@ pipeline {
 
 Pipeline Graph แสดง stage ตามลำดับการทำงานและใช้สถานะสีช่วยระบุผลของแต่ละช่วง จึงตรวจได้ทั้งโครงสร้างและจุดที่เกิดความล้มเหลวโดยไม่ต้องอ่าน console ทั้งหมด
 
+ต่อไปเรียกเลข build แรกที่พบว่า `#N`; build ถัดไปใช้ `#N+1`, `#N+2` ตามลำดับ
+
 ลำดับคลิก:
 
 1. ที่หน้า `first-pipeline` เลือก **Build Now**
-2. รอจน build `#1` แสดงสถานะสำเร็จ แล้วเลือก **#1**
+2. รอจน build `#N` แสดงสถานะสำเร็จ แล้วเลือก **#N**
 3. เลือก **Stages** จากเมนูด้านซ้าย
 4. ตรวจลำดับ `Checkout` → `Build` → `Test`
 
@@ -122,10 +133,10 @@ Pipeline Graph แสดง stage ตามลำดับการทำงา�
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-#1 SUCCESS: Checkout=success, Build=success, Test=success
+#N SUCCESS: Checkout=success, Build=success, Test=success
 ```
 
-หน้า build-level **Stages** แสดงผลของ run เดียว จึงเชื่อมโยงสถานะกับเลข build ได้โดยไม่ปะปนกับ run อื่น ขณะนี้ build `#1` สิ้นสุดแล้ว การทดลองถัดไปจะปรับสคริปต์เดิมและสร้าง build `#2`
+หน้า build-level **Stages** แสดงผลของ run เดียว จึงเชื่อมโยงสถานะกับเลข build ได้โดยไม่ปะปนกับ run อื่น ขณะนี้ build `#N` สิ้นสุดแล้ว การทดลองถัดไปจะปรับสคริปต์เดิมและสร้าง build `#N+1`
 
 ## การทดลองที่ 3 — environment ทำให้ข้อความรู้จัก build ได้อย่างไร
 
@@ -133,22 +144,46 @@ Pipeline Graph แสดง stage ตามลำดับการทำงา�
 
 ตัวแปรใน `environment` ช่วยรวมค่าที่ Pipeline ใช้ร่วมกันไว้ในตำแหน่งเดียว ขณะที่ `env.JOB_NAME` และ `env.BUILD_NUMBER` เชื่อมข้อความกับ run ที่ Jenkins กำลังดำเนินการจริง
 
-```groovy
-environment {
-  LAB_NAME = 'Declarative Pipeline'
-}
+วางสคริปต์ฉบับเต็มสำหรับขั้นนี้แทน Script เดิม:
 
-// ภายใน stage('Build')
-echo "Building ${env.LAB_NAME}: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+```groovy
+pipeline {
+  agent any
+
+  environment {
+    LAB_NAME = 'Declarative Pipeline'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        echo 'Checkout (simulated)'
+        sleep 1
+      }
+    }
+    stage('Build') {
+      steps {
+        echo "Building ${env.LAB_NAME}: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+        sleep 1
+      }
+    }
+    stage('Test') {
+      steps {
+        echo 'Tests passed'
+        sleep 1
+      }
+    }
+  }
+}
 ```
 
 ลำดับคลิก:
 
 1. กลับหน้า `first-pipeline` แล้วเลือก **Configure**
-2. เพิ่มบล็อก `environment` ถัดจาก `agent any`
-3. เปลี่ยน `echo` ภายใน stage `Build` ตามโค้ดข้างต้น
+2. วางสคริปต์ฉบับเต็มข้างต้นแทนทั้งหมด
+3. ตรวจบล็อก `environment` และ `echo` ภายใน stage `Build`
 4. เลือก **Save** แล้วเลือก **Build Now**
-5. เปิด build `#2` และเลือก **Console Output**
+5. เปิด build `#N+1` และเลือก **Console Output**
 6. ค้นหาบรรทัดที่ขึ้นต้นด้วย `Building Declarative Pipeline`
 
 ![Console Output ที่แสดงค่าจาก environment และ Jenkins](../slides_assets/lab2_s04_environment_console.png)
@@ -158,13 +193,13 @@ echo "Building ${env.LAB_NAME}: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-Building Declarative Pipeline: first-pipeline #2
+Building Declarative Pipeline: first-pipeline #N+1
 Finished: SUCCESS
 ```
 
 > 📝 `LAB_NAME` เป็นตัวแปรที่กำหนดในสคริปต์ ส่วน `JOB_NAME` และ `BUILD_NUMBER` เป็นค่าที่ Jenkins กำหนดให้แต่ละ run
 
-ขณะนี้ build `#2` พิสูจน์แล้วว่าสคริปต์อ่าน environment ได้ ขั้นถัดไปจะเพิ่มข้อมูลนำเข้าจากผู้สั่ง build
+ขณะนี้ build `#N+1` พิสูจน์แล้วว่าสคริปต์อ่าน environment ได้ ขั้นถัดไปจะเพิ่มข้อมูลนำเข้าจากผู้สั่ง build
 
 ## การทดลองที่ 4 — Build with Parameters ส่งค่าเข้า Pipeline อย่างไร
 
@@ -172,20 +207,49 @@ Finished: SUCCESS
 
 Parameter แยกค่าที่เปลี่ยนตามการใช้งานออกจากโครงสร้าง Pipeline ทำให้ผู้ใช้เลือก environment ได้จากแบบฟอร์มโดยรักษาสคริปต์ชุดเดียวไว้ Jenkins ต้องประมวลผลสคริปต์หนึ่งครั้งเพื่อสร้าง parameter definition ของ job
 
-```groovy
-parameters {
-  string(name: 'APP_ENV', defaultValue: 'dev', description: 'Environment to deploy')
-}
+วางสคริปต์ฉบับเต็มสำหรับขั้นนี้แทน Script เดิม:
 
-// ภายใน stage('Build')
-echo "APP_ENV=${params.APP_ENV}"
+```groovy
+pipeline {
+  agent any
+
+  parameters {
+    string(name: 'APP_ENV', defaultValue: 'dev', description: 'Environment to deploy')
+  }
+
+  environment {
+    LAB_NAME = 'Declarative Pipeline'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        echo 'Checkout (simulated)'
+        sleep 1
+      }
+    }
+    stage('Build') {
+      steps {
+        echo "Building ${env.LAB_NAME}: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+        echo "APP_ENV=${params.APP_ENV}"
+        sleep 1
+      }
+    }
+    stage('Test') {
+      steps {
+        echo 'Tests passed'
+        sleep 1
+      }
+    }
+  }
+}
 ```
 
 ลำดับคลิกเพื่อเพิ่ม parameter:
 
 1. กลับหน้า `first-pipeline` แล้วเลือก **Configure**
-2. เพิ่มบล็อก `parameters` ถัดจาก `agent any`
-3. เพิ่มบรรทัด `echo` ภายใน stage `Build` ตามโค้ดข้างต้น
+2. วางสคริปต์ฉบับเต็มข้างต้นแทนทั้งหมด
+3. ตรวจบล็อก `parameters` และบรรทัด `APP_ENV`
 4. เลือก **Save** แล้วเลือก **Build Now** หนึ่งครั้ง เพื่อให้ Jenkins ลงทะเบียน `APP_ENV`
 5. เปิด **Configure** อีกครั้งและตรวจส่วน **This project is parameterized**
 
@@ -203,18 +267,18 @@ echo "APP_ENV=${params.APP_ENV}"
 
 *ภาพที่ 6 ต้องสังเกตช่อง `APP_ENV` มีค่า `staging` และปุ่ม Build พร้อมใช้งาน*
 
-4. เลือก **Build** แล้วเปิด **Console Output** ของ build `#4`
+4. เลือก **Build** แล้วเปิด **Console Output** ของ build `#N+3`
 
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-APP_ENV=dev      (#3 ครั้งแรก)
-APP_ENV=staging  (#4 จาก Build with Parameters)
+APP_ENV=dev      (#N+2 ครั้งแรก)
+APP_ENV=staging  (#N+3 จาก Build with Parameters)
 ```
 
 > 📝 หากยังไม่เห็น Build with Parameters ให้กด Build Now หลัง Save หนึ่งครั้ง เพื่อให้ Jenkins อ่าน `parameters` จากสคริปต์
 
-ขณะนี้ job รับค่า `APP_ENV` ผ่านแบบฟอร์มและ build `#4` ใช้ค่า `staging` สำเร็จแล้ว การทดลองถัดไปจะกำหนดการทำงานหลัง stages สิ้นสุด
+ขณะนี้ job รับค่า `APP_ENV` ผ่านแบบฟอร์มและ build `#N+3` ใช้ค่า `staging` สำเร็จแล้ว การทดลองถัดไปจะกำหนดการทำงานหลัง stages สิ้นสุด
 
 ## การทดลองที่ 5 — post ทำงานหลัง stages แบบใด
 
@@ -222,13 +286,49 @@ APP_ENV=staging  (#4 จาก Build with Parameters)
 
 บล็อก `post` แยกงานหลังการประมวลผลออกจาก stages หลัก จึงเหมาะกับการรายงานผลหรือการเก็บหลักฐานที่ต้องเกิดตามสถานะของ Pipeline การใช้ `always` ร่วมกับ `success` ทำให้เห็นความแตกต่างของเงื่อนไขทั้งสองแบบ
 
+วางสคริปต์ฉบับเต็มสำหรับขั้นนี้แทน Script เดิม:
+
 ```groovy
-post {
-  always {
-    echo "Finished ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+pipeline {
+  agent any
+
+  parameters {
+    string(name: 'APP_ENV', defaultValue: 'dev', description: 'Environment to deploy')
   }
-  success {
-    echo 'Pipeline succeeded'
+
+  environment {
+    LAB_NAME = 'Declarative Pipeline'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        echo 'Checkout (simulated)'
+        sleep 1
+      }
+    }
+    stage('Build') {
+      steps {
+        echo "Building ${env.LAB_NAME}: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+        echo "APP_ENV=${params.APP_ENV}"
+        sleep 1
+      }
+    }
+    stage('Test') {
+      steps {
+        echo 'Tests passed'
+        sleep 1
+      }
+    }
+  }
+
+  post {
+    always {
+      echo "Finished ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+    }
+    success {
+      echo 'Pipeline succeeded'
+    }
   }
 }
 ```
@@ -236,10 +336,10 @@ post {
 ลำดับคลิก:
 
 1. กลับหน้า `first-pipeline` แล้วเลือก **Configure**
-2. เพิ่มบล็อก `post` ต่อจาก `stages` ภายใน `pipeline`
+2. วางสคริปต์ฉบับเต็มข้างต้นแทนทั้งหมด และตรวจบล็อก `post`
 3. เลือก **Save** แล้วเลือก **Build with Parameters**
 4. คงค่า `APP_ENV` เป็น `dev` แล้วเลือก **Build**
-5. เปิด build `#5` และเลือก **Console Output**
+5. เปิด build `#N+4` และเลือก **Console Output**
 6. ตรวจข้อความภายในส่วน `Declarative: Post Actions`
 
 ![Console Output ของ post actions ใน build 5](../slides_assets/lab2_s07_post_console.png)
@@ -249,7 +349,7 @@ post {
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-Finished first-pipeline #5
+Finished first-pipeline #N+4
 Pipeline succeeded
 Finished: SUCCESS
 ```
@@ -325,7 +425,7 @@ pipeline {
 1. เลือก **Configure** และวางสคริปต์ฉบับเต็มแทน Script เดิม
 2. เลือก **Save** แล้วเลือก **Build with Parameters**
 3. คงค่า `APP_ENV` เป็น `dev` แล้วเลือก **Build**
-4. เปิด build `#6` และเลือก **Stages**
+4. เปิด build `#N+5` และเลือก **Stages**
 
 ![Pipeline Graph ของ APP_ENV dev ที่ข้าม Deploy](../slides_assets/lab2_s08_dev_graph.png)
 
@@ -335,7 +435,7 @@ pipeline {
 
 1. กลับหน้า `first-pipeline` แล้วเลือก **Build with Parameters**
 2. เปลี่ยน `APP_ENV` เป็น `prod` แล้วเลือก **Build**
-3. เปิด build `#7` และเลือก **Stages**
+3. เปิด build `#N+6` และเลือก **Stages**
 4. ตรวจว่า `Checkout`, `Build`, `Test`, `Deploy` และ `Post Actions` เป็นสีเขียว
 
 ![Pipeline Graph ของ APP_ENV prod ที่ Deploy สำเร็จ](../slides_assets/lab2_s09_prod_graph.png)
@@ -345,13 +445,13 @@ pipeline {
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-#6 APP_ENV=dev: Deploy=skipped
-#7 APP_ENV=prod: Checkout, Build, Test, Deploy และ Post Actions เป็นสีเขียว
+#N+5 APP_ENV=dev: Deploy=skipped
+#N+6 APP_ENV=prod: Checkout, Build, Test, Deploy และ Post Actions เป็นสีเขียว
 ```
 
 > 📝 Jenkins รุ่นนี้ใช้เมนู Stages เพื่อเปิด Pipeline Graph จึงไม่ต้องติดตั้ง Stage View แบบที่ปรากฏในเอกสารรุ่นเก่า
 
-ขณะนี้ build ล่าสุดคือ `#7` ซึ่งใช้ `APP_ENV=prod` และทุก stage สำเร็จ สถานะนี้เป็นข้อมูลนำเข้าของตัวตรวจในขั้นสุดท้าย
+ขณะนี้ build ล่าสุดคือ `#N+6` ซึ่งใช้ `APP_ENV=prod` และทุก stage สำเร็จ สถานะนี้เป็นข้อมูลนำเข้าของตัวตรวจในขั้นสุดท้าย
 
 ## การทดลองที่ 7 — ตรวจผลจบแล็บอัตโนมัติได้อย่างไร
 
@@ -360,13 +460,13 @@ pipeline {
 การตรวจด้วยสคริปต์ลดความคลาดเคลื่อนจากการพิจารณาสีใน UI เพียงอย่างเดียว ตัวตรวจอ่านผล build จาก Jenkins core API และอ่าน stage จาก endpoint `/stages/tree` ของ Pipeline Graph ที่ติดตั้งอยู่จริง
 
 ```bash
-cd 002_LAB_Declarative_Pipeline && bash check.sh
+(cd "$COURSE_ROOT/002_LAB_Declarative_Pipeline" && bash check.sh)
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-PASS: job=first-pipeline build=#7 result=SUCCESS
+PASS: job=first-pipeline build=#N+6 result=SUCCESS
 PASS: stages: Checkout=SUCCESS, Build=SUCCESS, Test=SUCCESS, Deploy=SUCCESS
 ```
 

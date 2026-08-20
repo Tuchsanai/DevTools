@@ -29,22 +29,41 @@ container สามารถลบและสร้างใหม่ได้ 
 ```bash
 docker run -dit --name devtools-jenkins --privileged \
   --tmpfs /run -v jenkins-dind:/var/lib/docker \
-  -p 2222:22 -p 8080:8080 -p 3000:3000 -p 8000:8000 \
+  -p 2222:22 -p 8080:8080 -p 8000:8000 \
   tuchsanai/devtools:2569_1
-docker ps --filter name=^devtools-jenkins$ --format '{{.Names}}\t{{.Status}}'
+docker ps
 ssh root@localhost -p 2222
 ```
 
-เมื่อ SSH ขอรหัสผ่าน ให้ใช้ `passwd` แล้ว sparse clone public repository และกำหนด course root ภายใน devtools ดังนี้:
+✅ **สิ่งที่ต้องเห็น** (ตัดเฉพาะแถวที่เกี่ยวข้อง):
 
-```bash
-git clone --depth 1 --filter=blob:none --sparse https://github.com/Tuchsanai/DevTools.git ~/DevTools && cd ~/DevTools && git sparse-checkout set 04_Jenkins/001_Jenikin
-export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"
-grep -qxF 'export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"' ~/.bashrc || echo 'export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"' >> ~/.bashrc
-test -f "$COURSE_ROOT/readme.md" || echo 'คำเตือน: ไม่พบชุดสอน โปรดตรวจ clone และ COURSE_ROOT ก่อนเริ่ม LAB'
+```text
+...
+CONTAINER ID   IMAGE                         ...   NAMES
+...            tuchsanai/devtools:2569_1    ...   devtools-jenkins
+root@...:~#
 ```
 
-Git 2.54.0 ใน image รองรับ sparse checkout จึงใช้วิธีนี้เพื่อลดทั้งประวัติและ blob ที่ไม่เกี่ยวข้อง หลัง preflight ไม่แสดงคำเตือน การทดลองที่ 1–6 และ 8 ดำเนินการใน shell ของ devtools ส่วนการทดลองที่ 7 ดำเนินการจาก terminal ของเครื่องหลัก
+เมื่อ SSH ขอรหัสผ่าน ให้ใช้ `passwd` แล้ว clone public repository และกำหนด course root ภายใน devtools ดังนี้:
+
+```bash
+if [ -d "$HOME/DevTools/.git" ]; then
+  git -C "$HOME/DevTools" pull
+else
+  git clone --depth 1 https://github.com/Tuchsanai/DevTools.git "$HOME/DevTools"
+fi
+export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"
+echo 'export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"' > /etc/profile.d/course.sh
+```
+
+✅ **สิ่งที่ต้องเห็น** (รันครั้งแรก):
+
+```text
+Cloning into '/root/DevTools'...
+...
+```
+
+ถ้ามี `~/DevTools` อยู่แล้ว ต้องเห็นผลจาก `git pull` เช่น `Already up to date.` แทน การวัดใน container ทดสอบพบว่า shallow clone ทั้ง repository มีขนาด `221M` ซึ่งไม่เกิน 300 MB จึงใช้ clone ธรรมดาและไม่ต้อง sparse checkout การทดลองที่ 1–6 และ 8 ดำเนินการใน shell ของ devtools ส่วนการทดลองที่ 7 ดำเนินการจาก terminal ของเครื่องหลัก
 
 > LAB 1 ไม่มีสถานะจากแล็บก่อนหน้า หาก `docker run` แจ้งว่าชื่อซ้ำ ให้เริ่ม container เดิมด้วย `docker start devtools-jenkins` แล้วเชื่อมต่อผ่าน SSH
 
@@ -55,13 +74,15 @@ Git 2.54.0 ใน image รองรับ sparse checkout จึงใช้ว
 ```bash
 docker network create cicd-net
 docker run -d --name jenkins --network cicd-net --restart unless-stopped -p 8080:8080 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk21
+docker ps
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-c0c39ebdcfc7292c277decf8881c3e29b7902c867bb4d4903753bcf304d20532
-10aec58bd39d863c9b8f85f01cce6f92a97acf2660b36081a980f2406ff82791
+...
+CONTAINER ID   IMAGE                       ...   NAMES
+...            jenkins/jenkins:lts-jdk21   ...   jenkins
 ```
 
 > 📝 การดาวน์โหลด image ครั้งแรกใช้เวลาตามเครือข่าย รอจน `docker ps` แสดงสถานะ `Up` ก่อนเปิดเว็บ
@@ -77,7 +98,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-<32-character secret>
+...
 ```
 
 บรรทัดตัวอย่างแทน stdout จริงด้วยข้อความ redact เท่านั้น; คำสั่ง `cat` พิมพ์สตริงดิบ 32 ตัวอักษรโดยไม่มี prefix และค่าของแต่ละเครื่องจะแตกต่างกัน
@@ -146,6 +167,14 @@ Freestyle job เหมาะสำหรับศึกษาความสั
 echo "Hello from Jenkins!"; date; hostname
 ```
 
+✅ **สิ่งที่ต้องเห็นใน Console Output**:
+
+```text
+Hello from Jenkins!
+...
+...
+```
+
 ![Execute shell ที่กรอกคำสั่งแล้ว](../slides_assets/lab1_s03_build_step.png)
 
 *ส่วน Build Steps แสดง Execute shell และคำสั่งสามส่วนก่อนบันทึก config*
@@ -170,13 +199,15 @@ echo "Hello from Jenkins!"; date; hostname
 
 Console Output เป็นหลักฐานว่าคำสั่งใดถูกรัน ใน workspace ใด และจบด้วยสถานะใด ส่วน workspace แสดงตำแหน่งข้อมูลทำงานของ job ภายใน volume
 
-1. จากหน้า Status เลือก **Build Now** แล้วรอจน build `#1` แสดงเครื่องหมายสีเขียว
+ต่อไปเรียกเลข build แรกที่พบว่า `#N` เพื่อให้คำแนะนำใช้ได้แม้มี build history เดิม
+
+1. จากหน้า Status เลือก **Build Now** แล้วรอจน build `#N` แสดงเครื่องหมายสีเขียว
 
 ![ผล build แรกของ first-freestyle](../slides_assets/lab1_s05_build_result.png)
 
 *หน้า job แสดง build #1 เป็น Last successful build และมีเครื่องหมายสถานะสีเขียว*
 
-2. เลือก `#1 → Console Output` และตรวจว่ามีข้อความ `Hello from Jenkins!` กับ `Finished: SUCCESS`
+2. เลือก `#N → Console Output` และตรวจว่ามีข้อความ `Hello from Jenkins!` กับ `Finished: SUCCESS`
 
 ![Console Output ของ build แรก](../slides_assets/lab1_s06_console_output.png)
 
@@ -194,7 +225,7 @@ docker exec jenkins sh -c 'ls -ld /var/jenkins_home/workspace/first-freestyle'
 Building in workspace /var/jenkins_home/workspace/first-freestyle
 Hello from Jenkins!
 Finished: SUCCESS
-drwxr-xr-x 2 jenkins jenkins 4096 Aug 20 03:01 /var/jenkins_home/workspace/first-freestyle
+drwxr-xr-x 2 jenkins jenkins 4096 Aug 20 ... /var/jenkins_home/workspace/first-freestyle
 ```
 
 ![Console Output ของ build แรก](../slides_assets/lab1_first_build.png)
@@ -209,14 +240,14 @@ drwxr-xr-x 2 jenkins jenkins 4096 Aug 20 03:01 /var/jenkins_home/workspace/first
 
 ```bash
 docker restart jenkins
-until curl -fsS http://localhost:8080/login >/dev/null; do sleep 2; done
+sleep 20
 curl -fsS -u admin:admin2569 'http://localhost:8080/job/first-freestyle/lastBuild/api/json?tree=number,result'
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```json
-{"_class":"hudson.model.FreeStyleBuild","number":1,"result":"SUCCESS"}
+{"_class":"hudson.model.FreeStyleBuild","number":<BUILD_NUMBER>,"result":"SUCCESS"}
 ```
 
 สถานะยังคงอยู่เพราะ `jenkins_home` ถูก mount กลับเข้าตำแหน่งเดิมและไม่ผูกกับอายุของ container process ขณะนี้ job และ build history พร้อมสำหรับการทดสอบ restart ชั้นนอก
@@ -229,13 +260,15 @@ curl -fsS -u admin:admin2569 'http://localhost:8080/job/first-freestyle/lastBuil
 
 ```bash
 docker restart devtools-jenkins
-docker exec devtools-jenkins sh -c 'until docker info >/dev/null 2>&1; do sleep 2; done; docker ps --format "{{.Names}} {{.Status}}"'
+sleep 20
+docker exec devtools-jenkins docker ps
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-jenkins Up Less than a second
+CONTAINER ID   IMAGE   ...   NAMES
+...            ...     ...   jenkins
 ```
 
 `--tmpfs /run` ป้องกัน PID เก่าของ dockerd ค้าง ส่วน `--restart unless-stopped` ทำให้ Jenkins กลับมา และ named volume `jenkins-dind` เก็บ inner image/volume ไว้
@@ -247,7 +280,7 @@ jenkins Up Less than a second
 SSH กลับเข้า devtools แล้วรอ Jenkins HTTP พร้อมก่อนตรวจชุดสอนที่ clone ไว้ในขั้นสภาพตั้งต้น:
 
 ```bash
-until curl -fsS http://localhost:8080/login >/dev/null; do sleep 2; done
+sleep 20
 (cd "$COURSE_ROOT/001_LAB_Jenkins_On_Docker" && bash check.sh)
 ```
 
@@ -259,7 +292,7 @@ readiness loop รอให้หน้า login ตอบสำเร็จจ�
 PASS: container jenkins is Up
 PASS: volume jenkins_home exists
 PASS: job first-freestyle exists
-PASS: latest build #1 is SUCCESS
+PASS: latest build #N is SUCCESS
 LAB 1 CHECK: PASS
 ```
 
@@ -271,7 +304,16 @@ LAB 1 CHECK: PASS
 
 ```bash
 docker start devtools-jenkins
-docker exec devtools-jenkins sh -c 'until docker info >/dev/null 2>&1; do sleep 2; done; docker ps'
+sleep 20
+docker exec devtools-jenkins docker ps
+```
+
+✅ **สิ่งที่ต้องเห็น** (ตัดเฉพาะแถวที่เกี่ยวข้อง):
+
+```text
+devtools-jenkins
+CONTAINER ID   IMAGE   ...   NAMES
+...            ...     ...   jenkins
 ```
 
 ต้องเห็น `jenkins` กลับมา `Up` โดยไม่ต้องทำ wizard ซ้ำ จากนั้น SSH เข้าและรัน `bash check.sh` หากต้องสร้าง devtools ใหม่ ให้ใช้คำสั่ง canonical เดิมพร้อม `-v jenkins-dind:/var/lib/docker` เพื่อผูกสถานะเดิมกลับมา
@@ -280,7 +322,7 @@ docker exec devtools-jenkins sh -c 'until docker info >/dev/null 2>&1; do sleep 
 
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
-| `Bind for 0.0.0.0:8080 failed` | พอร์ต 8080 ของเครื่องหลักถูกใช้ | ดูตัวที่ใช้ด้วย `docker ps --format '{{.Names}} {{.Ports}}'`; หยุดเฉพาะตัวที่คุณเป็นเจ้าของ แล้วรัน canonical command ใหม่ |
+| `Bind for 0.0.0.0:8080 failed` | พอร์ต 8080 ของเครื่องหลักถูกใช้ | รัน `docker ps` แล้วดูคอลัมน์ PORTS; หยุดเฉพาะตัวที่คุณเป็นเจ้าของ แล้วรัน canonical command ใหม่ |
 | Wizard ช้ามากหรือ update center ล้ม | อินเทอร์เน็ตช้า/บริการ update center สะดุด | รอ 2–3 นาทีแล้วกด **Retry**; ตรวจอินเทอร์เน็ตและลองใหม่โดยไม่ลบ `jenkins_home` |
 | ลืม `initialAdminPassword` หลังตั้ง admin แล้ว | รหัส initial ใช้เฉพาะ unlock ครั้งแรก | เข้าด้วย `admin/admin2569`; ไม่ต้องอ่าน initial password อีก |
 | Restart แล้ว dockerd ใน devtools ไม่ขึ้น | ตอนสร้าง devtools ขาด `--tmpfs /run` จึงมี PID เก่าค้าง | สร้าง devtools ใหม่ด้วยคำสั่ง canonical ที่มี `--tmpfs /run` และผูก `jenkins-dind` เดิม |

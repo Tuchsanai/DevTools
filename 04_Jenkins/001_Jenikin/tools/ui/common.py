@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Small Playwright helpers shared by the Jenkins/Gitea teaching flows."""
+"""Small Playwright helpers shared by the Jenkins teaching flows."""
 
 from __future__ import annotations
 
@@ -47,7 +47,7 @@ def browser_page(*, headless: bool = True) -> Iterator[tuple[Playwright, Browser
     # Chromium otherwise blocks PLAN §7's shifted 10080 port as an unsafe port.
     browser = playwright.chromium.launch(
         headless=headless,
-        args=["--explicitly-allowed-ports=10080,10300,10800"],
+        args=["--explicitly-allowed-ports=10080,10800"],
     )
     context = browser.new_context(ignore_https_errors=True, viewport={"width": 1440, "height": 1000})
     context.set_default_timeout(DEFAULT_TIMEOUT_MS)
@@ -69,18 +69,6 @@ def jenkins_login(page: Page, base_url: str, username: str = "admin", password: 
         page.get_by_role("button", name="Sign in").click()
     wait_visible(page.locator("#jenkins-head-icon"), "Jenkins authenticated header")
     require("login" not in page.url.lower(), "Jenkins login reached an authenticated page")
-
-
-def gitea_login(page: Page, base_url: str, username: str = "student", password: str = "student2569") -> None:
-    page.goto(f"{base_url.rstrip('/')}/user/login", wait_until="domcontentloaded")
-    user = page.locator("input[name='user_name']")
-    if user.is_visible():
-        user.fill(username)
-        page.locator("input[name='password']").fill(password)
-        page.get_by_role("button", name="Sign In").click()
-    wait_visible(page.locator("body"), "Gitea page after login")
-    require("/user/login" not in page.url, "Gitea login reached an authenticated page")
-
 
 def run_main(function) -> None:
     """Turn every UI failure into a clear non-zero process exit."""

@@ -4,7 +4,7 @@ pipeline {
   stages {
     stage('Source') {
       steps {
-        echo 'Jenkinsfile loaded from student/hello-ci on branch main'
+        echo 'Jenkinsfile loaded from hello-ci on branch main'
         sh 'git log -1 --oneline'
       }
     }

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add webhook · hello-ci · GitHub UI mock</title>
+  <link rel="stylesheet" href="github.css">
+</head>
+<body>
+  <header class="global-header" aria-label="GitHub global navigation">
+    <button class="icon-button hamburger" aria-label="Open global navigation">☰</button>
+    <svg class="github-logo" viewBox="0 0 16 16" aria-label="GitHub"><path d="M8 0C3.58 0 0 3.64 0 8.13c0 3.59 2.29 6.64 5.47 7.71.4.08.55-.18.55-.39 0-.19-.01-.83-.01-1.51-2.01.38-2.53-.5-2.69-.96-.09-.23-.48-.95-.82-1.14-.28-.15-.68-.53-.01-.54.63-.01 1.08.59 1.23.83.72 1.23 1.87.88 2.33.67.07-.53.28-.88.51-1.08-1.78-.2-3.64-.9-3.64-4.01 0-.89.31-1.62.82-2.19-.08-.2-.36-1.04.08-2.16 0 0 .67-.22 2.2.84A7.55 7.55 0 0 1 8 3.94c.68 0 1.36.09 2 .27 1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.96.08 2.16.51.57.82 1.3.82 2.19 0 3.12-1.87 3.81-3.65 4.01.29.25.54.74.54 1.5 0 1.08-.01 1.95-.01 2.22 0 .21.15.47.55.39A8.14 8.14 0 0 0 16 8.13C16 3.64 12.42 0 8 0Z"/></svg>
+    <span class="header-context">&lt;GITHUB_USER&gt; / hello-ci</span>
+    <div class="header-spacer"></div>
+    <div class="search-box" aria-label="Search"><span>⌕</span><span>Type / to search</span><span class="search-key">/</span></div>
+    <div class="divider-v"></div>
+    <button class="icon-button" aria-label="Create new">＋⌄</button>
+    <button class="icon-button" aria-label="Issues">◉</button>
+    <button class="icon-button" aria-label="Pull requests">⑂</button>
+    <button class="icon-button" aria-label="Notifications">♢</button>
+    <button class="avatar-button" aria-label="Profile"><span class="avatar">GU</span></button>
+  </header>
+
+  <section class="repo-context" aria-label="Repository navigation">
+    <div class="repo-title-row">
+      <svg class="tiny-octicon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2H4.5c-.69 0-1.25.56-1.25 1.25S3.81 13 4.5 13H8a.75.75 0 0 1 0 1.5H4.5A2.5 2.5 0 0 1 2 12V2.5Zm1.5 6.82c.3-.12.64-.2 1-.2h8V1.5h-8a1 1 0 0 0-1 1v6.82Z"/></svg>
+      <span class="repo-owner">&lt;GITHUB_USER&gt;</span><span>/</span><span class="repo-name">hello-ci</span><span class="public-pill">Public</span>
+    </div>
+    <nav class="repo-tabs">
+      <span class="repo-tab">⌘ Code</span><span class="repo-tab">◉ Issues</span><span class="repo-tab">⑂ Pull requests</span><span class="repo-tab">▶ Actions</span><span class="repo-tab">▦ Projects</span><span class="repo-tab">⌁ Security</span><span class="repo-tab">◫ Insights</span><span class="repo-tab active">⚙ Settings</span>
+    </nav>
+  </section>
+
+  <div class="mock-badge" data-contract="mock-badge">ภาพจำลอง UI</div>
+
+  <div class="settings-layout">
+    <aside class="settings-sidebar" aria-label="Settings navigation">
+      <div class="settings-group-title">General</div>
+      <a class="settings-nav-item" href="#">General</a>
+      <a class="settings-nav-item" href="#">Collaborators</a>
+      <hr class="sidebar-rule">
+      <div class="settings-group-title">Code and automation</div>
+      <a class="settings-nav-item" href="#">Branches</a>
+      <a class="settings-nav-item" href="#">Tags</a>
+      <a class="settings-nav-item" href="#">Rules</a>
+      <a class="settings-nav-item" href="#">Actions</a>
+      <a class="settings-nav-item active" href="#">Webhooks</a>
+      <a class="settings-nav-item" href="#">Environments</a>
+      <a class="settings-nav-item" href="#">Pages</a>
+      <hr class="sidebar-rule">
+      <div class="settings-group-title">Security</div>
+      <a class="settings-nav-item" href="#">Code security</a>
+      <a class="settings-nav-item" href="#">Deploy keys</a>
+    </aside>
+
+    <main class="settings-main">
+      <div class="breadcrumbs"><span>Webhooks</span> / Add webhook</div>
+      <h1 class="settings-heading">Add webhook</h1>
+      <div class="webhook-note"><strong>Webhooks</strong> allow external services to be notified when certain events happen in this repository.</div>
+
+      <form class="webhook-form">
+        <div class="webhook-field">
+          <label class="form-label" for="payload-url">Payload URL <span class="required">*</span></label>
+          <input class="form-control" id="payload-url" type="text" value="&lt;SMEE_HELLO_URL&gt;" readonly>
+          <p class="help-text">We'll send a POST request to this URL with details of any subscribed events.</p>
+        </div>
+
+        <div class="webhook-field">
+          <label class="form-label" for="content-type">Content type <span class="required">*</span></label>
+          <select class="form-select" id="content-type">
+            <option>application/x-www-form-urlencoded</option>
+            <option selected>application/json</option>
+          </select>
+        </div>
+
+        <div class="webhook-field">
+          <label class="form-label" for="secret">Secret</label>
+          <input class="form-control secret-control" id="secret" type="password" value="" readonly>
+          <p class="help-text">A secret is not configured for this classroom relay topology.</p>
+        </div>
+
+        <section class="ssl-panel">
+          <h3>SSL verification</h3>
+          <p class="muted">By default, we verify SSL certificates when delivering payloads.</p>
+          <div class="ssl-state">
+            <label><input id="ssl-enable" type="radio" name="ssl" checked> Enable SSL verification</label>
+            <label><input id="ssl-disable" type="radio" name="ssl"> Disable</label>
+          </div>
+        </section>
+
+        <section class="event-section">
+          <h3>Which events would you like to trigger this webhook?</h3>
+          <label class="event-choice"><input id="event-push" type="radio" name="events" checked><span><strong>Just the push event.</strong><br><span class="muted">Only repository pushes will trigger this webhook.</span></span></label>
+          <label class="event-choice"><input id="event-all" type="radio" name="events"><span><strong>Send me everything.</strong></span></label>
+          <label class="event-choice"><input id="event-select" type="radio" name="events"><span><strong>Let me select individual events.</strong></span></label>
+
+          <div class="active-box">
+            <label class="event-choice"><input id="active" type="checkbox" checked><span><strong>Active</strong><br><span class="muted">We will deliver event details when this hook is triggered.</span></span></label>
+          </div>
+        </section>
+
+        <div class="webhook-actions"><button class="btn btn-primary" id="add-webhook" type="button">Add webhook</button></div>
+      </form>
+    </main>
+  </div>
+</body>
+</html>

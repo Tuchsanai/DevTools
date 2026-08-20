@@ -113,3 +113,45 @@
 2. Timebox ต่อแล็บมาจากการประเมิน + การรันของ agent ไม่ใช่ผู้เรียนจริง — ปรับหลังสอนรอบแรก
 3. Consistency slide↔README ใช้การตรวจ Phase 3/4 (สคริปต์เทียบจุดสำคัญ + อ่านทาน) ไม่สร้าง shared manifest
 4. Demo credentials คงที่ + publish 0.0.0.0 — ยอมรับสำหรับแล็บ disposable บนเครื่องนักศึกษา มี callout กำกับ
+
+## Phase 5 — Gitea → GitHub migration (critique: docs/CRITIQUE_P5.md, 2026-08-20)
+
+คำตัดสินต่อ finding (แผนฉบับแก้ = PLAN_P5_GITHUB.md v2 FROZEN):
+
+| id | ระดับ | คำตัดสิน | สาระ/ผลต่อแผน |
+|---|---|---|---|
+| P5-B01 | blocker | **ยอมรับ** | GWT เพิ่ม param `ref=$.ref`,`after=$.after` + filter `^refs/heads/main$` บน `$ref` + causeString `GitHub push $after` → ping/branch อื่นไม่ trigger · acceptance "hook สร้างแล้ว build ไม่เพิ่ม" เข้า D2/I-05v4 |
+| P5-B02 | blocker | **ยอมรับ** | หลักฐาน webhook ต้อง correlate ≥4 hop ด้วย SHA เดียวกัน (delivery→relay log→cause+checkout→SUCCESS) เข้า D8 · ห้ามใช้ "delivery ล่าสุด" เปล่าๆ |
+| P5-B03 | blocker | **ยอมรับ** | check.sh ทุก LAB เรียก GitHub API แบบ authenticated เท่านั้น + cache response ครั้งเดียว + ข้อความเฉพาะ 403/429 (D8, D11) |
+| P5-B04 | blocker | **บางส่วน** | ยอมรับ: marker `.course-cicd2569` + fail-closed + `created_by_this_run` + ห้าม force-push/auto-delete (D9) · ปฏิเสธ: เปลี่ยนชื่อ repo เป็น course-specific (กระทบ contract/เอกสารทั้งชุด — marker ป้องกันได้เพียงพอ) |
+| P5-B05 | blocker | **ยอมรับ** | env แยก `SMEE_HELLO_URL`/`SMEE_WEBAPP_URL` + mapping 1:1 + persist ใน docker args + rerun converge (D3) |
+| P5-B06 | blocker | **ยอมรับ** | ลำดับบังคับ: เปิด tab channel → relay Connected → Add webhook → push · docs ระบุ no-replay · resilience test ใน INT Track B (D4) · recovery canonical = push commit ใหม่ |
+| P5-B07 | blocker | **ยอมรับ** | U-P5-0 ทำ migration manifest ระดับไฟล์จาก rg ก่อนเริ่ม + rg-zero gate ใน U-P5-9 (allowlist: LEDGER/CRITIQUE/logs/backup) |
+| P5-B08 | blocker | **บางส่วน** | ยอมรับ: INT แยก Track A (student replay จากจบ LAB 3 ทุก block) / Track B (bootstrap+restart) + ledger exception สำหรับ GitHub auth-only UI (ภาพจำลอง+manual path+API postcondition) · ปฏิเสธ: Playwright assertion บนหน้า GitHub auth (เป็นไปไม่ได้ — E5) |
+| P5-M01 | major | **บางส่วน** | คง image เดิม (พิสูจน์ใน spike) + บันทึก node/smee version+arch จริงใน STACK_RESOLVED + reconnect test บังคับ · fallback: build image เองถ้า reconnect ล้ม (K2) · ปฏิเสธ build เองทันที (supply-chain งานเพิ่มโดยไม่มีหลักฐานปัญหา) |
+| P5-M02 | major | **ยอมรับ** | hook ล็อกครบ field + secret ว่างพร้อมเหตุผลใน README + check assert ทุก field (I-05v4) |
+| P5-M03 | major | **ยอมรับ** | sentinel `__GITHUB_USER__` + render ลง mktemp + `git diff --exit-code` หลัง bootstrap (D9) |
+| P5-M04 | major | **ยอมรับ** | mask ครอบ `<SMEE_URL>` ด้วย + git identity ระดับ repo `student@example.invalid` + secret scan ขยาย pattern + ลบ hook/relay ก่อน publish (D6, I-10, D12) |
+| P5-M05 | major | **ยอมรับ** | manual: user+PAT ที่ prompt เท่านั้น · ห้าม token-in-URL, ห้าม credential.helper store (ลบคำแนะนำเก่า LAB 4) · bootstrap ใช้ GIT_ASKPASS temp (D9, D14) |
+| P5-M06 | major | **บางส่วน** | ยอมรับ: scope แคบ `public_repo`+`admin:repo_hook` + preflight script ตรวจ /user + X-OAuth-Scopes (D7, I-08) · ปฏิเสธ: probe repo ทดลองสร้าง/ลบ (นักศึกษาไม่มี delete_repo — สร้างขยะ) |
+| P5-M07 | major | **บางส่วน** | ยอมรับ: checks ผูก SHA/timestamp ของ run ปัจจุบัน + negative mutation set รันตอน INT (relay หยุด, token ผิด, ping-only, stale SHA) · ปฏิเสธ: shipping negative fixtures เต็ม matrix ในตัว check นักศึกษา (นอกเวลาเรียน/ความซับซ้อนเกิน G3) |
+| P5-M08 | major | **ยอมรับ** | helper `gh_api` เดียว: Accept+API-Version header, ไม่ echo token, อ่าน Retry-After, นับ request (D11, I-12) |
+| P5-M09 | major | **ยอมรับ** | reframe K3 เป็น accepted risk + preflight `git ls-remote` จากใน Jenkins container + troubleshoot แถว DNS/TLS/proxy/429 |
+| P5-M10 | major | **ยอมรับ** | INT Track B เพิ่ม restart outer devtools หลัง LAB 5 → relay reconnect → push ใหม่ = exactly one build + ทดสอบไม่ cross-trigger หลัง LAB 6 |
+| P5-M11 | major | **ยอมรับ** | นิยาม cleanup ใหม่ = ไม่มี active route ที่ควบคุมได้ (hooks/relay/repo ที่สร้าง = 0; channel = inert identifier) (D12) |
+| P5-M12 | major | **บางส่วน** | ยอมรับ: caption "ภาพจำลอง" บังคับ + ลิงก์ GitHub docs + API postcondition + เปลี่ยนวิธีเป็น HTML mock render ผ่าน Playwright (ตัวอักษรคม/ตรงค่า) (D5) · codex-gen เหลือเป็น fallback |
+| P5-M13 | major | **ยอมรับ** | screenshot matrix ต่อการทดลอง (action→file→real/mock→marker→caption→assertion) เป็น DoD ของ U-P5-4..6/8 |
+| P5-M14 | major | **บางส่วน** | ยอมรับ: mask ทำตอน capture (ไฟล์เข้า git ต้อง mask แล้ว — ไม่มี raw จริงใน repo) + op `mask` มี schema/ลำดับ (ก่อน marker) + unit test (D6) · ปฏิเสธ: OCR-based leak gate (เกินจำเป็น — ใช้ reviewer vision ตอน P4) |
+| P5-M15 | major | **บางส่วน** | ยอมรับ: คง 80 หน้าเป็น invariant + assert รายชื่อ embedded asset แบบ exact + zero gitea assets (U-P5-8) · ปฏิเสธ semantic page ID rework (โครง deck ไม่เปลี่ยน) |
+| P5-M16 | major | **บางส่วน** | ยอมรับ: mutation self-test ของ gates (`--self-test` ต้อง fail บน bad fixture) + rg-zero gate + Track A เก็บ log ทุก command block เป็น evidence · ปฏิเสธ: automated README block→log manifest gate (งานเครื่องมือเกิน scope; ใช้ Track A + P4 review) |
+| P5-M17 | major | **ยอมรับ** | แยก 2 wave commit (D13) + R2 แก้เป็น profile.d (idempotent ไม่มี grep) + วัดขนาด clone ก่อนเลือกวิธี + รองรับ ~/DevTools เดิม |
+| P5-M18 | major | **ยอมรับ** | fallback Poll = continuity เท่านั้น + ขั้น revert + check ไม่ผ่านจนมี webhook chain จริง (D15) |
+| P5-m01 | minor | **ยอมรับ** | digest เต็มทุกจุด canonical + STACK_RESOLVED บันทึก version/arch/reconnect result |
+| P5-m02 | minor | **ยอมรับ** | P5 = frozen canonical; PLAN.md ใส่ pointer supersede (หัวไฟล์ P5 ระบุแล้ว) |
+| P5-m03 | minor | **ยอมรับ** | R7 normalization policy (`<SHA>`,`<BUILD_NUMBER>`,`<GITHUB_USER>`,`<SMEE_*_URL>`, เวลา) |
+| P5-m04 | minor | **ยอมรับ** | mint channel ใช้ HEAD + validate Location scheme/host + fail ชัด + log เป็น placeholder |
+| P5-m05 | minor | **ยอมรับ** | asset reachability report + ลบ asset Gitea เก่าออกจาก active tree + ทะเบียนใน INTEGRATION.md |
+| P5-m06 | minor | **ยอมรับ** | เอกสารใช้เลข build แบบ baseline-relative; caption ภาพจริงคงเลขจริงได้ (R7) |
+| P5-m07 | minor | **ยอมรับ** | Track A จับเวลา student replay จริง → ปรับ timebox LAB 4/5/6 ตามผล |
+
+**สรุป: FREEZE PLAN_P5_GITHUB.md v2** — blocker ทั้ง 8 ถูกตอบครบ (6 ยอมรับเต็ม, 2 บางส่วนพร้อมเหตุผล)

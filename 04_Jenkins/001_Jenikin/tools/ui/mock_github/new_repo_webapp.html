@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create a new repository · GitHub UI mock</title>
+  <link rel="stylesheet" href="github.css">
+</head>
+<body>
+  <header class="global-header" aria-label="GitHub global navigation">
+    <button class="icon-button hamburger" aria-label="Open global navigation">☰</button>
+    <svg class="github-logo" viewBox="0 0 16 16" aria-label="GitHub"><path d="M8 0C3.58 0 0 3.64 0 8.13c0 3.59 2.29 6.64 5.47 7.71.4.08.55-.18.55-.39 0-.19-.01-.83-.01-1.51-2.01.38-2.53-.5-2.69-.96-.09-.23-.48-.95-.82-1.14-.28-.15-.68-.53-.01-.54.63-.01 1.08.59 1.23.83.72 1.23 1.87.88 2.33.67.07-.53.28-.88.51-1.08-1.78-.2-3.64-.9-3.64-4.01 0-.89.31-1.62.82-2.19-.08-.2-.36-1.04.08-2.16 0 0 .67-.22 2.2.84A7.55 7.55 0 0 1 8 3.94c.68 0 1.36.09 2 .27 1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.96.08 2.16.51.57.82 1.3.82 2.19 0 3.12-1.87 3.81-3.65 4.01.29.25.54.74.54 1.5 0 1.08-.01 1.95-.01 2.22 0 .21.15.47.55.39A8.14 8.14 0 0 0 16 8.13C16 3.64 12.42 0 8 0Z"/></svg>
+    <span class="header-context">Dashboard</span>
+    <div class="header-spacer"></div>
+    <div class="search-box" aria-label="Search"><span>⌕</span><span>Type / to search</span><span class="search-key">/</span></div>
+    <div class="divider-v"></div>
+    <button class="icon-button" aria-label="Create new">＋⌄</button>
+    <button class="icon-button" aria-label="Issues">◉</button>
+    <button class="icon-button" aria-label="Pull requests">⑂</button>
+    <button class="icon-button" aria-label="Notifications">♢</button>
+    <button class="avatar-button" aria-label="Profile"><span class="avatar">GU</span></button>
+  </header>
+
+  <div class="mock-badge" data-contract="mock-badge">ภาพจำลอง UI</div>
+
+  <main class="repo-create-main">
+    <section class="page-intro">
+      <h1>Create a new repository</h1>
+      <p>A repository contains all project files, including the revision history.</p>
+      <div class="required-note"><span class="required">*</span> Required fields</div>
+    </section>
+
+    <section class="step-row">
+      <div class="step-rail"><div class="step-number">1</div></div>
+      <div class="step-content">
+        <h2>General</h2>
+        <div class="owner-name-grid">
+          <div>
+            <label class="form-label" for="owner">Owner <span class="required">*</span></label>
+            <select class="form-select" id="owner" aria-label="Owner">
+              <option selected>&lt;GITHUB_USER&gt;</option>
+            </select>
+          </div>
+          <div class="slash">/</div>
+          <div>
+            <label class="form-label" for="repo-name">Repository name <span class="required">*</span></label>
+            <input class="form-control repo-name-control" id="repo-name" value="webapp" readonly>
+            <p class="available"><span class="available-mark">✓</span>webapp is available.</p>
+          </div>
+        </div>
+
+        <div class="description-row">
+          <label class="form-label" for="description">Description <span class="muted">(optional)</span></label>
+          <input class="form-control" id="description" value="" readonly>
+        </div>
+
+        <hr class="section-divider">
+        <h3>Choose visibility</h3>
+        <label class="choice-card">
+          <input id="visibility-public" type="radio" name="visibility" checked>
+          <span class="choice-icon">◉</span>
+          <span><span class="choice-title">Public</span><span class="choice-description">Anyone on the internet can see this repository. You choose who can commit.</span></span>
+        </label>
+        <label class="choice-card">
+          <input id="visibility-private" type="radio" name="visibility">
+          <span class="choice-icon">▣</span>
+          <span><span class="choice-title">Private</span><span class="choice-description">You choose who can see and commit to this repository.</span></span>
+        </label>
+
+        <hr class="section-divider">
+        <div class="initialize-section">
+          <h3>Initialize this repository</h3>
+          <p class="muted">Add optional files now. You can add them later if you are importing an existing repository.</p>
+          <label class="checkbox-line">
+            <input id="add-readme" type="checkbox">
+            <span><span class="choice-title">Add a README file</span><span class="choice-description">This is where you can write a long description for your project.</span></span>
+          </label>
+          <label class="form-label" for="gitignore" style="margin-top: 18px;">Add .gitignore</label>
+          <select class="form-select" id="gitignore" style="max-width: 300px;"><option selected>None</option></select>
+        </div>
+
+        <div class="create-actions">
+          <button class="btn btn-primary" id="create-repository">Create repository</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
