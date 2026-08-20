@@ -1,0 +1,253 @@
+{
+  "auth": {
+    "hub-token-01-signin": [
+      {
+        "label": "① กรอกชื่อบัญชี Docker",
+        "box": [
+          555,
+          297,
+          885,
+          361
+        ]
+      },
+      {
+        "label": "② กด Continue",
+        "box": [
+          555,
+          373,
+          885,
+          437
+        ]
+      }
+    ],
+    "hub-token-02-password": [
+      {
+        "label": "③ กรอกรหัสผ่าน",
+        "box": [
+          556,
+          425,
+          840,
+          489
+        ]
+      },
+      {
+        "label": "④ กด Continue",
+        "box": [
+          555,
+          539,
+          885,
+          603
+        ]
+      }
+    ],
+    "hub-token-03-avatar": [
+      {
+        "label": "⑤ คลิกรูปโปรไฟล์",
+        "box": [
+          1353,
+          35,
+          1421,
+          103
+        ]
+      }
+    ],
+    "hub-token-04-menu": [
+      {
+        "label": "⑥ เลือก Account settings",
+        "box": [
+          1081,
+          335,
+          1421,
+          379
+        ]
+      }
+    ],
+    "hub-token-05-list": [
+      {
+        "label": "⑦ เมนู Personal access tokens",
+        "box": [
+          18,
+          417,
+          254,
+          461
+        ]
+      },
+      {
+        "label": "⑧ กด Generate new token",
+        "box": [
+          1244,
+          233,
+          1422,
+          282
+        ]
+      }
+    ],
+    "hub-token-06-form": [
+      {
+        "label": "⑨ ตั้งชื่อ token",
+        "box": [
+          298,
+          277,
+          910,
+          329
+        ]
+      },
+      {
+        "label": "⑩ ตั้งวันหมดอายุ",
+        "box": [
+          298,
+          353,
+          910,
+          405
+        ]
+      }
+    ],
+    "hub-token-07-scope": [
+      {
+        "label": "⑪ เลือก Read & Write",
+        "box": [
+          298,
+          542,
+          910,
+          586
+        ]
+      }
+    ],
+    "hub-token-08-generate": [
+      {
+        "label": "⑫ กด Generate",
+        "box": [
+          383,
+          504,
+          489,
+          553
+        ]
+      }
+    ],
+    "hub-token-09-copy": [
+      {
+        "label": "⑬ คัดลอก token เก็บทันที",
+        "box": [
+          828,
+          634,
+          906,
+          679
+        ]
+      }
+    ]
+  },
+  "push1": {
+    "hub-repo-01-list": [
+      {
+        "label": "① repository ที่ push สร้างให้เอง",
+        "box": [
+          306,
+          330,
+          494,
+          362
+        ]
+      }
+    ],
+    "hub-repo-02-general": [
+      {
+        "label": "② เปิดแท็บ Tags",
+        "box": [
+          315,
+          632,
+          367,
+          660
+        ]
+      }
+    ],
+    "hub-repo-03-tag": [
+      {
+        "label": "③ tag 1.0 ที่เพิ่ง push",
+        "box": [
+          379,
+          515,
+          411,
+          543
+        ]
+      },
+      {
+        "label": "④ digest ตรงกับผล push",
+        "box": [
+          377,
+          630,
+          550,
+          662
+        ]
+      }
+    ]
+  },
+  "push2": {
+    "hub-repo-04-overwrite": [
+      {
+        "label": "⑤ digest ใหม่แม้ tag ชื่อเดิม",
+        "box": [
+          377,
+          630,
+          549,
+          662
+        ]
+      }
+    ]
+  },
+  "delete": {
+    "hub-del-01-settings": [
+      {
+        "label": "① กด Delete repository",
+        "box": [
+          315,
+          425,
+          469,
+          473
+        ]
+      }
+    ],
+    "hub-del-02-confirm": [
+      {
+        "label": "① พิมพ์ชื่อ repository",
+        "box": [
+          439,
+          464,
+          1001,
+          516
+        ]
+      },
+      {
+        "label": "② กดยืนยันการลบ",
+        "box": [
+          814,
+          536,
+          1017,
+          584
+        ]
+      }
+    ],
+    "hub-del-03-gone": [
+      {
+        "label": "① ไม่มี regdemo ในรายการแล้ว",
+        "box": [
+          290,
+          283,
+          1422,
+          889
+        ]
+      }
+    ]
+  },
+  "gone": {
+    "hub-del-03-gone": [
+      {
+        "label": "① ไม่มี regdemo แล้ว",
+        "box": [
+          290,
+          283,
+          1422,
+          852
+        ]
+      }
+    ]
+  }
+}

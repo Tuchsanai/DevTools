@@ -245,20 +245,21 @@ round-trip min/avg/max = 0.030/0.037/0.045 ms    round-trip min/avg/max = 0.025/
 **คำถาม:** พฤติกรรม "แทนที่ vs ต่อท้าย" ตัดสินจากอะไร
 
 ```bash
-for i in run cmd entrypoint both; do
-  printf "%-16s %s\n" "demo-$i" \
-    "$(docker image inspect --format '{{.Config.Entrypoint}} | {{.Config.Cmd}}' demo-$i)"
-done
+docker image inspect \
+  --format '{{index .RepoTags 0}} → ENTRYPOINT {{.Config.Entrypoint}} | CMD {{.Config.Cmd}}' \
+  demo-run demo-cmd demo-entrypoint demo-both
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — `demo-cmd` กับ `demo-entrypoint` เก็บข้อความไว้ **คนละช่อง** ทั้งที่ผลตอนรันเปล่า ๆ เหมือนกัน :
 
 ```
-demo-run         [] | [cat /message.txt]
-demo-cmd         [] | [echo ข้อความเริ่มต้นจาก CMD]
-demo-entrypoint  [echo ข้อความจาก ENTRYPOINT:] | []
-demo-both        [ping] | [-c 2 127.0.0.1]
+demo-run:latest → ENTRYPOINT [] | CMD [cat /message.txt]
+demo-cmd:latest → ENTRYPOINT [] | CMD [echo ข้อความเริ่มต้นจาก CMD]
+demo-entrypoint:latest → ENTRYPOINT [echo ข้อความจาก ENTRYPOINT:] | CMD []
+demo-both:latest → ENTRYPOINT [ping] | CMD [-c 2 127.0.0.1]
 ```
+
+> 📝 `docker image inspect` รับชื่อ image ได้หลายตัวในครั้งเดียว แล้วใช้ `--format` เดิมกับทุกตัว จึงไม่ต้องเขียนลูป
 
 > 📝 **นี่คือหลักฐานชิ้นสำคัญ:** พฤติกรรมไม่ได้ขึ้นกับคำที่เราพิมพ์ตอน `docker run` แต่ขึ้นกับว่าข้อความนั้นถูกเก็บไว้ในช่อง **Cmd** (ทับได้) หรือช่อง **Entrypoint** (ทับไม่ได้ ต้องใช้ `--entrypoint`) · `[]` = ไม่ได้ตั้งไว้
 

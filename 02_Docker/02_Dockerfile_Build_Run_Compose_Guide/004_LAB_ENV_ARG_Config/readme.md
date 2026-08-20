@@ -245,6 +245,8 @@ docker run -d --name web -p 8184:8184 lab4-config:1.0
 
 ![หน้า Configuration Console ธีม development สีฟ้า-ม่วง](./images/env-development.png)
 
+*ภาพ 6.1 — รอบที่ 1 ไม่ส่ง env ใด ๆ · หน้าเว็บใช้ค่า `ENV` ที่อบไว้ใน image จึงได้ธีม development*
+
 **รอบที่ 2 — staging** แล้วรีเฟรชหน้าเดิม :
 
 ```bash
@@ -253,6 +255,8 @@ docker run -d --name web -p 8184:8184 --env-file .env.lab lab4-config:1.0
 ```
 
 ![หน้า Configuration Console ธีม staging สีส้ม-เหลือง](./images/env-staging.png)
+
+*ภาพ 6.2 — รอบที่ 2 เพิ่ม `--env-file .env.lab` · image ตัวเดิมกลายเป็นธีม staging ทันทีโดยไม่ build ใหม่*
 
 **รอบที่ 3 — production** :
 
@@ -265,6 +269,8 @@ curl -s http://localhost:8184/healthz; echo
 ```
 
 ![หน้า Configuration Console ธีม production สีเขียวเข้ม](./images/env-production.png)
+
+*ภาพ 6.3 — รอบที่ 3 เพิ่ม `-e` ทับ `--env-file` · ค่าที่ชนะคือค่าจาก `-e` จึงได้ธีม production*
 
 ✅ **สิ่งที่ต้องเห็น** — JSON สะท้อนค่าที่ส่งเข้าไปด้วย `-e` :
 

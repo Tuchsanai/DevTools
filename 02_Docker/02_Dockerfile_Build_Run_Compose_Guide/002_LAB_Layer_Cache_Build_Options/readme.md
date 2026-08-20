@@ -442,19 +442,21 @@ docker build -f Dockerfile.good -t cachelab-good:1.0 .
 docker run -d --name cachelab-web -p 8182:8182 cachelab-good:1.0
 sleep 3
 curl -s http://localhost:8182/health; echo
-docker image inspect cachelab-good:1.0 --format '{{json .Config.Env}}' | tr ',' '\n' | grep BUILD_ID
+docker exec cachelab-web env | grep BUILD_ID
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — แอปตอบ `ok` และ `BUILD_ID` บอกที่มาของ image :
 
 ```
 {"status":"ok"}
-"BUILD_ID=good-1"]
+BUILD_ID=good-1
 ```
 
 เปิดในเบราว์เซอร์ที่ **`http://localhost:8182`** :
 
 ![หน้าเว็บของแอปแสดง BUILD_ID กับเวอร์ชันของ dependency ที่ติดตั้งอยู่ใน layer](./images/app-8182.png)
+
+*ภาพ 11 — หน้าเว็บบอก `BUILD_ID` ว่า image นี้ build มาจาก `Dockerfile.good` และแสดงเวอร์ชัน dependency ที่อยู่ใน layer ใหญ่*
 
 > 📝 เวอร์ชัน **Flask 3.1.2 · pandas 2.2.3 · requests 2.32.3 · matplotlib 3.9.2** ที่โชว์บนหน้าเว็บ คือเนื้อหาของ layer 269MB ที่เห็นใน `docker history` นั่นเอง
 

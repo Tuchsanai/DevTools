@@ -184,6 +184,8 @@ ok
 
 ![Container Network Console แสดง service, hostname, container IP, DNS resolver 127.0.0.11, interfaces และแผนผัง network ทั้ง 3 ชนิด](./images/network-console.png)
 
+*ภาพ 5 — Container Network Console · ① `DNS RESOLVER 127.0.0.11` คือ DNS ภายในของ Docker ที่แปลชื่อ container เป็น IP · ② `CONTAINER IP` เป็นค่าที่ Docker แจกให้เอง จึงห้าม hardcode ลงโค้ด*
+
 หรือเช็กจาก terminal :
 
 ```bash
@@ -333,7 +335,7 @@ wget: can't connect to remote host (1.1.1.1): Network is unreachable
 docker stop web
 docker run -d --name host-web --network host -e SERVICE_NAME=host-web netlab-web:1.0
 sleep 2
-docker ps --filter name=host-web --format 'table {{.Names}}\t{{.Ports}}'
+docker ps --filter name=host-web
 docker port host-web ; echo "^^^ ว่างเปล่าเช่นกัน"
 curl -s -m 3 http://localhost:8186/healthz
 ```
@@ -341,8 +343,8 @@ curl -s -m 3 http://localhost:8186/healthz
 ✅ **สิ่งที่ต้องเห็น** — คอลัมน์ `PORTS` **ว่างเปล่า** และไม่มี mapping เลย แต่ curl ได้ `ok` :
 
 ```
-NAMES      PORTS
-host-web   
+CONTAINER ID   IMAGE            COMMAND                  CREATED         STATUS         PORTS     NAMES
+e7b02272614b   netlab-web:1.0   "/docker-entrypoint.…"   2 seconds ago   Up 2 seconds             host-web
 
 ^^^ ว่างเปล่าเช่นกัน
 ok

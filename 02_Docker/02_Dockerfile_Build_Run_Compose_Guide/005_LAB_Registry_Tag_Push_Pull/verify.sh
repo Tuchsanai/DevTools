@@ -5,8 +5,9 @@ set -u
 
 fail_count=0
 verify_container="regdemo-verify"
-verify_image="localhost:5000/workshop/regdemo:1.0"
 verify_tmp_tag="regdemo:verify-tmp"
+hub_user="${DOCKER_USER:-}"
+verify_image="${hub_user}/regdemo:1.0"
 
 # รันคำสั่งตรวจสอบที่รับเข้ามา แล้วสะสมจำนวนข้อที่ไม่ผ่านเพื่อรายงานพร้อมกันตอนจบ
 check() {
@@ -26,35 +27,46 @@ image_exists() {
   docker image inspect "$1" >/dev/null 2>&1
 }
 
-# ลบเฉพาะคอนเทนเนอร์ชั่วคราวของสคริปต์เมื่อสคริปต์จบ โดยไม่แตะ image หรือ registry
+# ลบเฉพาะของชั่วคราวของสคริปต์เมื่อสคริปต์จบ โดยไม่แตะ image หรือ repository ของผู้เรียน
 cleanup() {
   docker rm -f "$verify_container" >/dev/null 2>&1 || true
   docker rmi "$verify_tmp_tag" >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
 
-# เตือนล่วงหน้าถ้ายังไม่ได้ทำแล็บถึงขั้น push — ไม่งั้นข้อ 4 เป็นต้นไปจะ FAIL แบบไม่บอกสาเหตุ
-if ! docker ps --filter "name=^lab-registry$" --format '{{.Names}}' | grep -q .; then
-  printf '\n%s\n' "[HINT] ยังไม่พบคอนเทนเนอร์ 'lab-registry' ที่กำลังทำงาน"
-  printf '%s\n' "       สคริปต์นี้ต้องรัน **หลังทำแล็บถึงข้อ 9** (registry เปิดอยู่ + push tag 1.0 แล้ว)"
-  printf '%s\n\n' "       ถ้าเก็บกวาดไปแล้ว ให้ย้อนทำข้อ 3 → 9 ใหม่ก่อนรัน verify.sh"
+# ถาม Docker Hub ว่า tag ที่ระบุชี้ไป digest ไหน (repository ที่เป็น public ถามได้โดยไม่ต้องล็อกอิน)
+hub_digest() {
+  curl -fsS --max-time 20 \
+    "https://hub.docker.com/v2/repositories/${hub_user}/regdemo/tags/1.0/" 2>/dev/null |
+    python3 -c 'import sys, json; print(json.load(sys.stdin)["digest"])' 2>/dev/null
+}
+
+if test -z "$hub_user"; then
+  printf '\n%s\n' "[HINT] ยังไม่ได้ตั้งตัวแปร DOCKER_USER"
+  printf '%s\n\n' "       สั่ง  export DOCKER_USER=<ชื่อบัญชี Docker Hub ของคุณ>  ก่อนแล้วรันสคริปต์ใหม่"
 fi
 
-check "พบไฟล์ Dockerfile" test -f Dockerfile
-check "พบไฟล์ site/index.html" test -f site/index.html
-check "พบไฟล์ site_v2/index.html" test -f site_v2/index.html
+check "c1 พบไฟล์ Dockerfile" test -f Dockerfile
+check "c2 พบไฟล์ site/index.html" test -f site/index.html
+check "c3 พบไฟล์ site_v2/index.html" test -f site_v2/index.html
+check "c4 ตั้งตัวแปร DOCKER_USER แล้ว" test -n "$hub_user"
 
-check "คอนเทนเนอร์ lab-registry กำลังทำงาน" \
-  sh -c 'test "$(docker inspect -f "{{.State.Running}}" lab-registry 2>/dev/null)" = "true"'
+check "c5 พบ image \$DOCKER_USER/regdemo:1.0 ในเครื่อง" image_exists "$verify_image"
 
-check "registry catalog มี repository workshop/regdemo" \
-  sh -c 'curl -fsS http://localhost:5000/v2/_catalog 2>/dev/null | grep -Fq '"'"'"workshop/regdemo"'"'"''
+# ถามครั้งเดียวแล้วเก็บผลไว้ใช้ทั้งสองข้อ เพื่อไม่ยิง API ซ้ำ
+remote_digest="$(hub_digest)"
+local_digests="$(docker image inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$verify_image" 2>/dev/null)"
 
-check "repository workshop/regdemo มี tag 1.0" \
-  sh -c 'curl -fsS http://localhost:5000/v2/workshop/regdemo/tags/list 2>/dev/null | grep -Fq '"'"'"1.0"'"'"''
+check "c6 repository \$DOCKER_USER/regdemo บน Docker Hub มี tag 1.0" \
+  test -n "$remote_digest"
 
-check "พบ image localhost:5000/workshop/regdemo:1.0 ในเครื่อง" \
-  image_exists "$verify_image"
+digest_match=false
+if test -n "$remote_digest"; then
+  case "$local_digests" in
+    *"$remote_digest"*) digest_match=true ;;
+  esac
+fi
+check "c7 digest บน Docker Hub ตรงกับ image ในเครื่อง" test "$digest_match" = true
 
 # ป้องกันชื่อคอนเทนเนอร์ชั่วคราวซ้ำจากการรันครั้งก่อน
 docker rm -f "$verify_container" >/dev/null 2>&1 || true
@@ -74,7 +86,7 @@ if docker image inspect "$verify_image" >/dev/null 2>&1; then
     fi
   fi
 fi
-check "รัน image ชั่วคราวแล้วหน้าเว็บมีคำว่า RELEASE" test "$web_check_passed" = true
+check "c8 รัน image ชั่วคราวแล้วหน้าเว็บมีคำว่า RELEASE" test "$web_check_passed" = true
 
 # พิสูจน์ว่า docker tag แค่ "เพิ่มชื่อ" ไม่ได้สำเนา layers
 # ทำแบบ self-contained: ตั้งชื่อชั่วคราวเอง เทียบ IMAGE ID แล้วถอนชื่อชั่วคราวคืน (ไม่แตะของผู้เรียน)
@@ -89,7 +101,7 @@ if docker image inspect "$verify_image" >/dev/null 2>&1; then
     docker rmi "$verify_tmp_tag" >/dev/null 2>&1 || true
   fi
 fi
-check "docker tag เพิ่มชื่อใหม่โดยไม่สำเนา image (IMAGE ID ตรงกัน)" test "$tag_proof" = true
+check "c9 docker tag เพิ่มชื่อใหม่โดยไม่สำเนา image (IMAGE ID ตรงกัน)" test "$tag_proof" = true
 
 if test "$fail_count" -eq 0; then
   printf 'ALL CHECKS PASSED\n'

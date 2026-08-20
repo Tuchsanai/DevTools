@@ -232,7 +232,7 @@ docker compose -p devopsboard up -d --build
 **คำถาม:** container / network / volume ได้ชื่อว่าอะไร
 
 ```bash
-docker compose -p devopsboard ps --format 'table {{.Service}}\t{{.Name}}\t{{.Ports}}'
+docker compose -p devopsboard ps
 docker network ls --filter name=devopsboard
 docker volume ls --filter name=devopsboard
 ```
@@ -240,11 +240,11 @@ docker volume ls --filter name=devopsboard
 ✅ **สิ่งที่ต้องเห็น** — **container ใช้ขีดกลาง** แต่ **network/volume ใช้ขีดล่าง** :
 
 ```
-SERVICE   NAME                   PORTS
-api       devopsboard-api-1      0.0.0.0:8087->5000/tcp
-db        devopsboard-db-1       5432/tcp
-redis     devopsboard-redis-1    6379/tcp
-web       devopsboard-web-1      0.0.0.0:8187->80/tcp
+NAME                  IMAGE                 SERVICE   STATUS                    PORTS
+devopsboard-api-1     devopsboard-api:1.0   api       Up 31 seconds (healthy)   0.0.0.0:8087->5000/tcp
+devopsboard-db-1      postgres:17-alpine    db        Up 36 seconds (healthy)   5432/tcp
+devopsboard-redis-1   redis:7-alpine        redis     Up 36 seconds (healthy)   6379/tcp
+devopsboard-web-1     devopsboard-web:1.0   web       Up 25 seconds             0.0.0.0:8187->80/tcp
 
 NAME                     DRIVER
 devopsboard_backend      bridge
@@ -256,6 +256,8 @@ devopsboard_redisdata
 ```
 
 > 📝 **กฎการตั้งชื่อ:** container = `<project>-<service>-<N>` (ขีดกลาง มีเลขลำดับเผื่อ scale) · network/volume = `<project>_<ชื่อ>` (ขีดล่าง) · สังเกตว่า `db` กับ `redis` มีแต่พอร์ตฝั่ง container **ไม่มี `0.0.0.0:...->`**
+>
+> ผลจริงจะมีคอลัมน์ `COMMAND` กับ `CREATED` คั่นอยู่ด้วย และคอลัมน์ PORTS มีบรรทัด IPv6 (`[::]:8087->5000/tcp`) ต่อท้าย — ตารางข้างบนตัดออกเพื่อให้อ่านง่าย
 
 ---
 
@@ -266,6 +268,8 @@ devopsboard_redisdata
 เปิดในเบราว์เซอร์ที่ **`http://localhost:8187`** :
 
 ![หน้า DevOps Board หลังเพิ่มรายการ แสดง 6 rows โดยสองแถวล่างมี badge สีเขียว new](./images/dashboard-after-insert.png)
+
+*ภาพ 5 — DevOps Board · ตัวเลขทุกช่องอ่านสดจาก Redis และ PostgreSQL ผ่าน `api` ที่ nginx proxy ให้*
 
 **เดินตาม request หนึ่งครั้ง:**
 
@@ -309,16 +313,15 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 ```bash
 docker build --target build -t devopsboard-web:builder ./web
-docker images --format 'table {{.Repository}}:{{.Tag}}\t{{.Size}}' | grep devopsboard
+docker images | grep devopsboard
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — stage build **196MB** แต่ image ที่ deploy จริงเหลือ **73.7MB** :
 
 ```
-REPOSITORY:TAG            SIZE
-devopsboard-web:1.0       73.7MB     ← image ที่ deploy จริง
-devopsboard-web:builder   196MB      ← stage build ที่ถูกทิ้ง
-devopsboard-api:1.0       207MB      ← single stage เพราะ runtime คือ Python
+devopsboard-api:1.0       24db96afa02d        207MB         50.5MB      ← single stage เพราะ runtime คือ Python
+devopsboard-web:1.0       8529816ea14b       73.7MB           21MB      ← image ที่ deploy จริง
+devopsboard-web:builder   562f94adb76b        196MB         48.5MB      ← stage build ที่ถูกทิ้ง
 ```
 
 ![การทำงานของ web Dockerfile แบบ multi-stage จาก stage build ที่มี Python และ Jinja2 ไปยัง stage final ที่เหลือ nginx กับไฟล์ static](./images/theory-multi-stage.svg)

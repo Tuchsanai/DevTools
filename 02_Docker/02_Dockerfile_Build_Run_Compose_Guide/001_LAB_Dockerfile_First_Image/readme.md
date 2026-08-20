@@ -80,13 +80,20 @@ ssh root@localhost -p 2231        # password : passwd
 **คำสั่งทุกอันหลังจากนี้พิมพ์ข้างในกล่องเรียน**
 
 ```bash
-docker info --format 'Docker daemon: {{.ServerVersion}}'
+docker version
 ```
 
-✅ **ต้องได้เลขเวอร์ชัน ไม่ใช่ error** (เลขของแต่ละคนอาจต่างกัน) :
+✅ **ต้องเห็นทั้งท่อน `Client:` และ `Server:` ไม่ใช่ error** (เลขของแต่ละคนอาจต่างกัน) :
 
 ```
-Docker daemon: 29.6.2
+Client: Docker Engine - Community
+ Version:           29.6.2
+ API version:       1.55
+ ...
+Server: Docker Engine - Community
+ Engine:
+  Version:          29.6.2
+ ...
 ```
 
 > 📝 ถ้าขึ้น `Cannot connect to the Docker daemon` แปลว่า daemon ข้างในยังตื่นไม่เสร็จ — รอ 10–20 วินาทีแล้วลองใหม่
@@ -230,6 +237,8 @@ Server: Werkzeug/3.1.8 Python/3.12.14
 
 ![หน้า dashboard ที่ Flask ใน container เสิร์ฟออกมา แสดง hostname, APP_VERSION, Python, Flask, เวลา และจำนวน request](./images/app-dashboard.png)
 
+*ภาพ 4 — dashboard ที่ Flask ใน container เสิร์ฟออกมา · ทุกค่าบนหน้านี้อ่านสดจากตัว container เอง ไม่มีค่าไหน hard-code*
+
 | ค่าบนหน้าเว็บ | มาจากไหน |
 |---|---|
 | **HOSTNAME** | container ID 12 ตัวแรก (Docker ตั้งให้เอง) |
@@ -277,15 +286,15 @@ docker rm -f dockerfile-lab-web2
 ```bash
 docker run -d --name dockerfile-lab-noport dockerfile-lab:1.0
 sleep 2
-docker ps --filter name=dockerfile-lab-noport --format "table {{.Names}}\t{{.Ports}}"
+docker ps --filter name=dockerfile-lab-noport
 curl -sS --max-time 5 http://localhost:5000/ ; echo "curl exit code = $?"
 ```
 
-✅ **สิ่งที่ต้องเห็น** — คอลัมน์ PORTS ขึ้น `5000/tcp` แต่ **ไม่มีลูกศร** และ `curl` ต่อไม่ติด :
+✅ **สิ่งที่ต้องเห็น** — คอลัมน์ PORTS ขึ้น `5000/tcp` แต่ **ไม่มีลูกศร `->`** และ `curl` ต่อไม่ติด :
 
 ```
-NAMES                   PORTS
-dockerfile-lab-noport   5000/tcp
+CONTAINER ID   IMAGE                COMMAND           CREATED         STATUS         PORTS      NAMES
+34c36c219461   dockerfile-lab:1.0   "python app.py"   2 seconds ago   Up 2 seconds   5000/tcp   dockerfile-lab-noport
 
 curl: (7) Failed to connect to localhost port 5000 after 0 ms: Couldn't connect to server
 curl exit code = 7
@@ -329,6 +338,8 @@ curl -s http://localhost:8181/health; echo
 ```
 
 ![หน้า dashboard ที่ APP VERSION เปลี่ยนเป็น 2.0-hotfix ด้วย -e ตอน run โดยไม่ได้ build image ใหม่](./images/app-version-override.png)
+
+*ภาพ 7 — ① ช่อง `APP VERSION` บนหน้าเว็บเป็น `2.0-hotfix` แล้ว · ② แต่บรรทัด `ENV APP_VERSION=1.0` ที่อบไว้ใน image ยังเท่าเดิม — `-e` เปลี่ยนเฉพาะตอน `run` ไม่ได้แก้ image*
 
 **แล้ว image เปลี่ยนไปด้วยไหม?**
 

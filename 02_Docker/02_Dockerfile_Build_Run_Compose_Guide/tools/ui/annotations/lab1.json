@@ -1,0 +1,38 @@
+{
+  "lab": "lab1",
+  "images": [
+    {
+      "path": "001_LAB_Dockerfile_First_Image/images/app-version-override.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [
+            922,
+            794,
+            1645,
+            960
+          ],
+          "label": "① หน้าเว็บเป็น 2.0-hotfix",
+          "label_at": [
+            1700,
+            800
+          ]
+        },
+        {
+          "type": "round_rect",
+          "box": [
+            256,
+            1878,
+            640,
+            1930
+          ],
+          "label": "② แต่ ENV ใน image ยังเป็น 1.0",
+          "label_at": [
+            700,
+            1960
+          ]
+        }
+      ]
+    }
+  ]
+}

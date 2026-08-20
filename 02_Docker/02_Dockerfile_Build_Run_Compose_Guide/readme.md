@@ -31,7 +31,7 @@
 | **2** | 11 อัน | 35 นาที | [`002_LAB_Layer_Cache_Build_Options`](./002_LAB_Layer_Cache_Build_Options/readme.md) | สลับแค่ 2 บรรทัดทำให้ build เร็วขึ้นกี่เท่า และ `CACHED` หายไปตอนไหน |
 | **3** | 9 อัน | 30 นาที | [`003_LAB_RUN_CMD_ENTRYPOINT`](./003_LAB_RUN_CMD_ENTRYPOINT/readme.md) | พิมพ์คำสั่งต่อท้ายชื่อ image แล้วมันไปแทนที่หรือต่อท้ายอะไร และทำไม `docker stop` บางตัวช้า 10 วินาที |
 | **4** | 11 อัน | 35 นาที | [`004_LAB_ENV_ARG_Config`](./004_LAB_ENV_ARG_Config/readme.md) | image ตัวเดียวเปลี่ยนเป็น dev/staging/production ได้โดยไม่ build ใหม่อย่างไร |
-| **5** | 10 อัน | 35 นาที | [`005_LAB_Registry_Tag_Push_Pull`](./005_LAB_Registry_Tag_Push_Pull/readme.md) | push ทับ tag `1.0` ด้วย image คนละตัวแล้วเกิดอะไรขึ้น และ digest ช่วยอะไร |
+| **5** | 12 อัน | 40 นาที | [`005_LAB_Registry_Tag_Push_Pull`](./005_LAB_Registry_Tag_Push_Pull/readme.md) | push ทับ tag `1.0` **บน Docker Hub จริง** ด้วย image คนละตัวแล้วเกิดอะไรขึ้น และ digest ช่วยอะไร |
 | **6** | 11 อัน | 35 นาที | [`006_LAB_Network_DNS`](./006_LAB_Network_DNS/readme.md) | ทำไม container บน default bridge เรียกกันด้วยชื่อไม่ได้ และต่อ network เพิ่มระหว่างรันได้อย่างไร |
 | **7** | 12 อัน | 50 นาที | [`007_LAB_Compose_Multistage_Capstone`](./007_LAB_Compose_Multistage_Capstone/readme.md) | 4 service ขึ้นพร้อมกันด้วยไฟล์เดียวอย่างไร และ `down -v` ทำข้อมูลหายจริงไหม |
 
@@ -62,15 +62,16 @@
 | ลำดับชั้น `ENV` < `--env-file` < `-e` | **LAB 4** การทดลองที่ 2–4 | LAB 1 การทดลองที่ 7 (ชิมลาง) · LAB 7 การทดลองที่ 8 (ฉบับ Compose) |
 | `ARG` vs `ENV` · `ARG` ก่อน `FROM` | **LAB 4** การทดลองที่ 7–8, 10 | LAB 5 (ใช้ `--build-arg` สร้างสองรุ่น) |
 | ห้ามเก็บ secret ใน `ARG`/`ENV` | **LAB 4** การทดลองที่ 9 | LAB 7 การทดลองที่ 8 (รหัสผ่านอยู่ `.env.app`) |
-| ชื่อเต็มของ image · tag ย้ายได้ · digest ไม่เปลี่ยน | **LAB 5** การทดลองที่ 1, 8–9 | — |
-| `Untagged` ต่างจาก `Deleted` | **LAB 5** การทดลองที่ 10 | LAB 2 การทดลองที่ 9 (มุมของ dangling image) |
+| ชื่อเต็มของ image · tag ย้ายได้ · digest ไม่เปลี่ยน | **LAB 5** การทดลองที่ 1, 9–11 | — |
+| Docker Hub : access token · `login`/`push`/`pull` · ลบ repository | **LAB 5** เตรียมเครื่องเรียน ขั้นที่ 3–4 · การทดลองที่ 4–8 | — |
+| `Untagged` ต่างจาก `Deleted` | **LAB 5** การทดลองที่ 12 | LAB 2 การทดลองที่ 9 (มุมของ dangling image) |
 | user-defined network · DNS ของชื่อ container | **LAB 6** การทดลองที่ 2–4 | LAB 7 การทดลองที่ 9 (ฉบับ Compose + `internal: true`) |
 | `docker compose` · healthcheck · named volume · init script | **LAB 7** การทดลองที่ 1–5, 7, 10–11 | — |
 | multi-stage build | **LAB 7** การทดลองที่ 6 | LAB 4 การทดลองที่ 9 (เป็นทางแก้เรื่อง secret) |
 
 ## เวลาที่ใช้
 
-**รวมทั้งชุด ~4 ชั่วโมง 15 นาที · การทดลองทั้งหมด 73 อัน** อันละ 2–5 นาที
+**รวมทั้งชุด ~4 ชั่วโมง 20 นาที · การทดลองทั้งหมด 75 อัน** อันละ 2–5 นาที
 
 แต่ละการทดลองจบในตัวเอง จึงหยุดพักระหว่างอันได้โดยไม่เสียความต่อเนื่อง
 เวลาข้างต้นไม่รวมการ pull base image ครั้งแรกของแต่ละเครื่อง (ครั้งแรกอาจนานกว่านี้มากถ้าเน็ตช้า)
@@ -88,9 +89,11 @@
 | 2 | `devtools-df-lab2` | 2232 | 8182 (เว็บ) |
 | 3 | `devtools-df-lab3` | 2233 | — |
 | 4 | `devtools-df-lab4` | 2234 | 8184 (เว็บ) |
-| 5 | `devtools-df-lab5` | 2235 | 5035 (registry) · 8185 (เว็บ) |
+| 5 | `devtools-df-lab5` | 2235 | 8185 (เว็บ) |
 | 6 | `devtools-df-lab6` | 2236 | 8186 (เว็บ) |
 | 7 | `devtools-df-lab7` | 2237 | 8187 (เว็บ) · 8087 (API) |
+
+> **ต้องเตรียมก่อนเข้าคาบ LAB 5:** สมัครบัญชี **Docker Hub** ที่ `hub.docker.com` (ฟรี) — แล็บนี้ `push`/`pull` กับ Docker Hub ของจริง
 
 ตัวอย่างของ LAB 1 (แล็บอื่นเปลี่ยนชื่อและพอร์ตตามตาราง) :
 
@@ -137,7 +140,7 @@ bash verify.sh ; echo "exit code = $?"
 
 ## ขอบเขตของสิ่งที่แล็บพิสูจน์
 
-- registry ในแล็บเป็น **HTTP บน localhost** เพื่อการเรียนเท่านั้น — ของจริงต้องมี TLS, authentication และการกำหนดสิทธิ์
+- **LAB 5 ใช้ Docker Hub ของจริง** ผู้เรียนจึงต้องมีบัญชี (สมัครฟรี) และสร้าง access token เอง — repository ที่ push จะเป็น **public** ตามค่าเริ่มต้น จึงห้ามใส่ข้อมูลลับลงใน image
 - บัญชี/รหัสผ่านทั้งหมดในเอกสารเป็น **ค่าสำหรับแล็บ** และใช้ placeholder (`<DOCKER_USER>`, `<DOCKER_TOKEN>`) ทุกที่ที่เป็นของจริง
 - `healthcheck` + `depends_on` ช่วยเรื่องลำดับการเริ่ม แต่ **โค้ดแอปยังต้อง retry เอง** เพราะ service ล้มหลังเริ่มแล้วได้
 - named volume พิสูจน์การอยู่รอดข้ามการสร้าง container ใหม่ แต่ไม่ได้พิสูจน์ความทนทานต่อ disk/node failure

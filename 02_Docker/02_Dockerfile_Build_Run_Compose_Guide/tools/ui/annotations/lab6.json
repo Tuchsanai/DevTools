@@ -1,0 +1,38 @@
+{
+  "lab": "lab6",
+  "images": [
+    {
+      "path": "006_LAB_Network_DNS/images/network-console.png",
+      "shapes": [
+        {
+          "type": "round_rect",
+          "box": [
+            130,
+            812,
+            520,
+            928
+          ],
+          "label": "① DNS ภายในของ Docker",
+          "label_at": [
+            560,
+            900
+          ]
+        },
+        {
+          "type": "round_rect",
+          "box": [
+            1700,
+            618,
+            2000,
+            732
+          ],
+          "label": "② IP ที่ Docker แจกให้เอง",
+          "label_at": [
+            1420,
+            470
+          ]
+        }
+      ]
+    }
+  ]
+}
