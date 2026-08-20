@@ -31,14 +31,20 @@ docker run -dit --name devtools-jenkins --privileged \
   --tmpfs /run -v jenkins-dind:/var/lib/docker \
   -p 2222:22 -p 8080:8080 -p 3000:3000 -p 8000:8000 \
   tuchsanai/devtools:2569_1
+docker ps --filter name=^devtools-jenkins$ --format '{{.Names}}\t{{.Status}}'
 ssh root@localhost -p 2222
 ```
 
-เมื่อ SSH ขอรหัสผ่าน ให้ใช้ `passwd` การทดลองที่ 1–6 และ 8 ดำเนินการใน shell ของ devtools ส่วนการทดลองที่ 7 ดำเนินการจาก terminal ของเครื่องหลัก
+เมื่อ SSH ขอรหัสผ่าน ให้ใช้ `passwd` แล้ว sparse clone public repository และกำหนด course root ภายใน devtools ดังนี้:
 
 ```bash
-docker ps --format '{{.Names}}\t{{.Status}}'   # ต้องเห็น: devtools-jenkins
+git clone --depth 1 --filter=blob:none --sparse https://github.com/Tuchsanai/DevTools.git ~/DevTools && cd ~/DevTools && git sparse-checkout set 04_Jenkins/001_Jenikin
+export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"
+grep -qxF 'export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"' ~/.bashrc || echo 'export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"' >> ~/.bashrc
+test -f "$COURSE_ROOT/readme.md" || echo 'คำเตือน: ไม่พบชุดสอน โปรดตรวจ clone และ COURSE_ROOT ก่อนเริ่ม LAB'
 ```
+
+Git 2.54.0 ใน image รองรับ sparse checkout จึงใช้วิธีนี้เพื่อลดทั้งประวัติและ blob ที่ไม่เกี่ยวข้อง หลัง preflight ไม่แสดงคำเตือน การทดลองที่ 1–6 และ 8 ดำเนินการใน shell ของ devtools ส่วนการทดลองที่ 7 ดำเนินการจาก terminal ของเครื่องหลัก
 
 > LAB 1 ไม่มีสถานะจากแล็บก่อนหน้า หาก `docker run` แจ้งว่าชื่อซ้ำ ให้เริ่ม container เดิมด้วย `docker start devtools-jenkins` แล้วเชื่อมต่อผ่าน SSH
 
@@ -71,10 +77,10 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-initialAdminPassword=6631...a0a1 (length=32)
+<32-character secret>
 ```
 
-บรรทัดนี้ตัดจากการรันจริงโดยปิดรหัสช่วงกลางไว้; ค่าของแต่ละเครื่องจะต่างกัน แต่ต้องยาว 32 ตัว
+บรรทัดตัวอย่างแทน stdout จริงด้วยข้อความ redact เท่านั้น; คำสั่ง `cat` พิมพ์สตริงดิบ 32 ตัวอักษรโดยไม่มี prefix และค่าของแต่ละเครื่องจะแตกต่างกัน
 
 > 📝 คัดลอกรหัสนี้เฉพาะตอน unlock; หลังสร้าง `admin` แล้วให้ใช้ `admin2569` แทน
 
@@ -203,6 +209,7 @@ drwxr-xr-x 2 jenkins jenkins 4096 Aug 20 03:01 /var/jenkins_home/workspace/first
 
 ```bash
 docker restart jenkins
+until curl -fsS http://localhost:8080/login >/dev/null; do sleep 2; done
 curl -fsS -u admin:admin2569 'http://localhost:8080/job/first-freestyle/lastBuild/api/json?tree=number,result'
 ```
 
@@ -237,12 +244,14 @@ jenkins Up Less than a second
 
 **คำถาม:** จะตรวจ container, volume, job และผล build ล่าสุดพร้อมกันได้อย่างไร?
 
-SSH กลับเข้า devtools แล้วไปยังโฟลเดอร์ชุดสอนซึ่งผู้สอนได้เตรียมไว้ จากนั้นรัน:
+SSH กลับเข้า devtools แล้วรอ Jenkins HTTP พร้อมก่อนตรวจชุดสอนที่ clone ไว้ในขั้นสภาพตั้งต้น:
 
 ```bash
-cd /workspace/001_Jenikin/001_LAB_Jenkins_On_Docker
-bash check.sh
+until curl -fsS http://localhost:8080/login >/dev/null; do sleep 2; done
+(cd "$COURSE_ROOT/001_LAB_Jenkins_On_Docker" && bash check.sh)
 ```
+
+readiness loop รอให้หน้า login ตอบสำเร็จจริงก่อน acceptance จึงไม่ตัดสินจากสถานะ container `Up` เพียงอย่างเดียว
 
 ✅ **สิ่งที่ต้องเห็น** :
 

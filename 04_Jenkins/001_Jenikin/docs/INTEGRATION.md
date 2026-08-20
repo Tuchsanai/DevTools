@@ -105,3 +105,12 @@
 - helper credential มี race/selector หลัง Create; ผู้เรียนอาจเห็น automation fail ทั้งที่ credential ถูกสร้างแล้ว
 - เวลาทดสอบเป็น automation บน cache/network ณ รอบนี้ ไม่แทนเวลาผู้เรียนจริง
 - ต้องให้ U0/U3/U6 ตัดสิน version contract และ U3 แก้ helper แล้ว rerun U8 เฉพาะ chain ที่ได้รับผลกระทบก่อนประกาศ PASS
+
+## Final status (2026-08-20 — supersedes ผลรอบแรก)
+
+สถานะรวมปัจจุบัน: **PASS** สำหรับ integration scope ของชุดสอน ผล FAIL และ findings ในรายงาน U8 ด้านบนเก็บไว้เป็น historical record และถูก supersede โดยสถานะส่วนนี้
+
+- `U3-01` และ `VER-01` ปิดโดย U-FIX3 แล้ว หลักฐานอยู่ที่ [`logs/UFIX3.log`](../logs/UFIX3.log); Docker CLI canonical และ runtime ที่พิสูจน์ซ้ำคือ **29.7.2**
+- gates รอบ U-FINAL จาก course root copy ที่รักษา input ปัจจุบันและแยก screenshot output ออกจากไฟล์ส่งมอบ: `deck_offline_test.py` exit **0**, `deck_consistency_test.py` exit **0**, `int_consistency.py` exit **0** และสรุป `PASS (12/12)`
+- fresh `devtools-jkF` ทำ sparse clone, ตั้ง `COURSE_ROOT`, ผ่าน LAB 1 restart/readiness, replay LAB 4–5, LAB 6 v1→v2 และ acceptance checks; หลักฐานคำสั่ง/exit code อยู่ที่ [`logs/UFINAL.log`](../logs/UFINAL.log)
+- inventory cleanup ที่ orchestrator จัดการก่อนรอบนี้และ U-FINAL ตรวจยืนยันตาม scope: course test volume **0**, U-FINAL container/volume filter **0**, generated cache/temporary junk ของ U-FINAL **0**; ignored backup/checkpoint ที่ระบบภายนอกหรือผู้ใช้สร้างภายหลังไม่อยู่ใน ship artifact และไม่ถูกลบข้าม scope

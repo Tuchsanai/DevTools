@@ -37,7 +37,7 @@ jenkins    Up ...
 gitea      Up ...
 ```
 
-> ยังไม่มี? ย้อนไปทำ [LAB 4](../004_LAB_Pipeline_From_Git/README.md) ก่อน (ใช้เวลา ~40 นาที) หรือกู้สถานะด้วย `bash tools/bootstrap/up_to_lab4.sh`
+> ยังไม่มี? ย้อนไปทำ [LAB 4](../004_LAB_Pipeline_From_Git/README.md) ก่อน (ใช้เวลา ~40 นาที) หรือกู้สถานะด้วย `(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab4.sh)`
 
 ## การทดลองที่ 1 — Jenkins รับ webhook ได้อย่างไร
 
@@ -205,7 +205,7 @@ Payload เป็นหลักฐานระดับเหตุการณ
 1. กลับไป **Gitea → hello-ci → Settings → Webhooks** แล้วเปิด webhook เดิม
 2. กาง delivery ล่าสุดจากการ push จริง
 3. เลือกแท็บ **Request** แล้วตรวจ Headers และ Content
-4. ค้นหา `ref`, `after`, `head_commit.id`, `head_commit.message` และ `commits[].modified`
+4. ค้นหา `ref`, `after`, `head_commit.id`, `head_commit.message` และ `commits[].added`
 
 ![Request payload ของ push delivery ล่าสุด](../slides_assets/lab5_s08_delivery_request.png)
 
@@ -216,18 +216,23 @@ Payload เป็นหลักฐานระดับเหตุการณ
 ```text
 head_commit.id: 401ab4f0ded0...
 head_commit.message: Verify immediate webhook build
-commits[0].modified: webhook-proof.txt
+commits[0].added: webhook-proof.txt
 ```
 
 Payload จึงระบุได้ว่า branch ใดชี้ไป commit ใด ผู้ใด push ข้อความ commit คืออะไร และไฟล์ใดเปลี่ยน เมื่อหลักฐานครบแล้วจึงตรวจสถานะรวมด้วยสคริปต์ของแล็บ
+
+> **ทางเลือกอัตโนมัติ (รันจากเครื่อง host ของผู้สอน):** helper นี้ใช้ Playwright ซึ่งไม่มีใน devtools image ให้ผู้สอนกำหนด `COURSE_ROOT` บน host แล้วตรวจว่า delivery ล่าสุดมี `webhook-proof.txt` อยู่ใน `commits[].added`; นักศึกษาตรวจผ่านแท็บ Request ตามขั้นด้านบนได้โดยไม่ต้องใช้ helper
+
+```bash
+(cd "$COURSE_ROOT" && GITEA_BASE_URL=http://localhost:3000 DT_NAME=devtools-jenkins python3 tools/ui/lab5_payload.py)
+```
 
 ## การทดลองที่ 7 — สถานะจบ LAB 5 ครบหรือยัง
 
 **คำถาม:** จะตรวจ plugin, trigger, webhook และ build ล่าสุดพร้อมกันได้อย่างไร?
 
 ```bash
-cd 005_LAB_Webhook_Trigger
-bash check.sh
+(cd "$COURSE_ROOT/005_LAB_Webhook_Trigger" && bash check.sh)
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
@@ -248,5 +253,5 @@ bash check.sh
 | Delivery timeout | ใช้ `http://localhost:8080/...` ทำให้ Gitea เรียกตัวเอง | เปลี่ยนเป็น `http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-hello` |
 | Delivery 200 แต่ build ที่ต้องการไม่เกิด | token ซ้ำกับ job อื่นหรือผูกผิด job | แยก token ต่อ job และใช้ `cicd2569-hello` เฉพาะ `hello-ci-pipeline` |
 | Plugin restart ค้าง | Jenkins ยังติดตั้ง dependency หรือ browser รอ connection เดิม | รอด้วย `until curl -fsS http://localhost:8080/login; do sleep 2; done`; หากยังไม่กลับให้ดู `docker logs --tail 100 jenkins` |
-| Gitea แจ้ง URL not allowed | container ไม่ได้อนุญาต webhook ไป private network | recreate Gitea ตาม LAB 4 ด้วย `GITEA__webhook__ALLOWED_HOST_LIST=private` หรือกู้ด้วย `bash tools/bootstrap/up_to_lab4.sh` |
-| ตามไม่ทันหรือสถานะไม่ตรง | ขั้น LAB 5 ค้างกลางทาง | รัน `bash tools/bootstrap/up_to_lab5.sh` แล้วตรวจด้วย `bash 005_LAB_Webhook_Trigger/check.sh` |
+| Gitea แจ้ง URL not allowed | container ไม่ได้อนุญาต webhook ไป private network | recreate Gitea ตาม LAB 4 ด้วย `GITEA__webhook__ALLOWED_HOST_LIST=private` หรือกู้ด้วย `(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab4.sh)` |
+| ตามไม่ทันหรือสถานะไม่ตรง | ขั้น LAB 5 ค้างกลางทาง | รัน `(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab5.sh)` แล้วตรวจด้วย `(cd "$COURSE_ROOT/005_LAB_Webhook_Trigger" && bash check.sh)` |

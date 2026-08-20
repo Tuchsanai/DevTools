@@ -59,7 +59,7 @@ gitea      Up ...
 29.7.2
 ```
 
-> ยังไม่มี? ย้อนไปทำ [LAB 5](../005_LAB_Webhook_Trigger/README.md) ก่อน (ใช้เวลา ~30 นาที) หรือกู้สถานะด้วย `bash tools/bootstrap/up_to_lab5.sh`
+> ยังไม่มี? ย้อนไปทำ [LAB 5](../005_LAB_Webhook_Trigger/README.md) ก่อน (ใช้เวลา ~30 นาที) หรือกู้สถานะด้วย `(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab5.sh)`
 
 ## การทดลองที่ 1 — Repository ของ application ควรอยู่ที่ใด?
 
@@ -76,10 +76,12 @@ Public repository ทำให้ Jenkins อ่าน source code ผ่าน 
 
 *ภาพที่ 1 ฟอร์ม New Repository แสดง owner `student`, ชื่อ `webapp` และไม่เลือกสถานะ private*
 
-รัน UI automation เพื่อสร้าง repository และตรวจ assertion เดียวกันได้ดังนี้
+> **ทางเลือกอัตโนมัติ (รันจากเครื่อง host ของผู้สอน):** helper ใต้ `tools/ui` ใช้ Playwright ซึ่งไม่มีใน devtools image นักศึกษาจึงทำขั้น UI ตามรายการของแต่ละการทดลอง ส่วนผู้สอนที่ติดตั้ง Playwright และมี course tree บน host ให้กำหนด `COURSE_ROOT` บน host ก่อนใช้คำสั่งอัตโนมัติใน LAB นี้
+
+รัน UI automation จาก host เพื่อสร้าง repository และตรวจ assertion เดียวกันได้ดังนี้
 
 ```bash
-GITEA_BASE_URL=http://localhost:3000 python3 tools/ui/lab6_gitea_repo.py
+(cd "$COURSE_ROOT" && GITEA_BASE_URL=http://localhost:3000 python3 tools/ui/lab6_gitea_repo.py)
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
@@ -100,7 +102,7 @@ GITEA_BASE_URL=http://localhost:3000 python3 tools/ui/lab6_gitea_repo.py
 Pipeline from SCM ต้องอ่านทั้ง source code และคำสั่งส่งมอบจาก revision เดียวกัน จึงคัดลอกไฟล์ capstone ทั้งหมดก่อนสร้าง initial commit และ push ไปยัง Gitea
 
 ```bash
-mkdir -p ~/webapp && cp -r 006_LAB_CICD_Capstone/app 006_LAB_CICD_Capstone/Dockerfile 006_LAB_CICD_Capstone/Jenkinsfile ~/webapp/
+mkdir -p ~/webapp && cp -r "$COURSE_ROOT/006_LAB_CICD_Capstone/app" "$COURSE_ROOT/006_LAB_CICD_Capstone/Dockerfile" "$COURSE_ROOT/006_LAB_CICD_Capstone/Jenkinsfile" ~/webapp/
 cd ~/webapp && git init -b main && git config user.name student && git config user.email student@example.com && git add . && git commit -m 'Deploy dashboard v1' && git remote add origin http://student:student2569@localhost:3000/student/webapp.git && git push -u origin main
 ```
 
@@ -146,7 +148,7 @@ Pipeline from SCM แยกการกำหนด job ออกจากเน
 รัน UI automation เพื่อตั้งค่าและตรวจค่าที่บันทึกได้ดังนี้
 
 ```bash
-JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab6_job.py
+(cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab6_job.py)
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
@@ -179,7 +181,7 @@ Gitea และ Jenkins อยู่บน `cicd-net` จึงต้องใ�
 รัน UI automation เพื่อสร้างและตรวจ webhook ได้ดังนี้
 
 ```bash
-GITEA_BASE_URL=http://localhost:3000 python3 tools/ui/lab6_webhook.py
+(cd "$COURSE_ROOT" && GITEA_BASE_URL=http://localhost:3000 python3 tools/ui/lab6_webhook.py)
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
@@ -199,7 +201,12 @@ Empty commit สร้าง push event โดยไม่เปลี่ยน 
 
 ```bash
 cd ~/webapp && git commit --allow-empty -m 'Trigger v1 deployment' && git push origin main
-JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab6_pipeline.py
+```
+
+จากนั้นรอและตรวจ pipeline ด้วย helper บน host ของผู้สอน:
+
+```bash
+(cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab6_pipeline.py)
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
@@ -239,7 +246,12 @@ Endpoint `/api/info` เป็นหลักฐานแบบ machine-readable
 
 ```bash
 curl -fsS http://localhost:8000/api/info
-WEBAPP_BASE_URL=http://localhost:8000 EXPECTED_VERSION=1.0.0 EXPECTED_THEME=blue SCREENSHOT=slides_assets/lab6_s09_dashboard_v1.png python3 tools/ui/lab6_app.py
+```
+
+ตรวจ dashboard ผ่าน browser automation บน host ของผู้สอน:
+
+```bash
+(cd "$COURSE_ROOT" && WEBAPP_BASE_URL=http://localhost:8000 EXPECTED_VERSION=1.0.0 EXPECTED_THEME=blue SCREENSHOT=slides_assets/lab6_s09_dashboard_v1.png python3 tools/ui/lab6_app.py)
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
@@ -300,11 +312,16 @@ To http://localhost:3000/student/webapp.git
 
 *ภาพที่ 11 หน้า public tags แบบ anonymous แสดง tag `2` และ `latest` ซึ่งมี digest เดียวกัน*
 
-รัน automation สำหรับหน้า public tags แล้วปิดวงด้วย acceptance check ดังนี้
+รัน automation สำหรับหน้า public tags จาก host ของผู้สอน:
 
 ```bash
-DOCKER_USER='<DOCKER_USER>' JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab6_hub_tags.py
-cd 006_LAB_CICD_Capstone && DOCKER_USER='<DOCKER_USER>' bash check.sh
+(cd "$COURSE_ROOT" && DOCKER_USER='<DOCKER_USER>' JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab6_hub_tags.py)
+```
+
+จากนั้นปิดวงด้วย acceptance check ภายใน devtools:
+
+```bash
+(cd "$COURSE_ROOT/006_LAB_CICD_Capstone" && DOCKER_USER='<DOCKER_USER>' bash check.sh)
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
@@ -330,4 +347,4 @@ cd 006_LAB_CICD_Capstone && DOCKER_USER='<DOCKER_USER>' bash check.sh
 | `denied: requested access` ตอน push | namespace/repository ผิดหรือ token ไม่มี Write | ตรวจ public repository `<DOCKER_USER>/cicd-webapp` และ Access Token สิทธิ์ Read/Write |
 | `429` จาก Docker Hub | ถึง pull limit หรือ abuse limit | ตรวจข้อความตอบกลับ แยกชนิด limit แล้วรอตามเวลาที่ Hub ระบุ; canonical push block ต้อง login ก่อน build |
 | หน้า tags ว่างหรือ 404 | repository เป็น private หรือ URL ผิด | ตรวจว่า `<DOCKER_USER>/cicd-webapp` เป็น public และเปิด path `/tags` แบบไม่ login |
-| restart devtools แล้ว service หาย | outer container หรือ inner service ไม่กลับมาทำงาน | `docker start devtools-jenkins`, รอประมาณ 20 วินาทีแล้วรัน `docker ps`; หากต้องกู้สถานะใช้ `bash tools/bootstrap/up_to_lab5.sh` |
+| restart devtools แล้ว service หาย | outer container หรือ inner service ไม่กลับมาทำงาน | `docker start devtools-jenkins`, รอประมาณ 20 วินาทีแล้วรัน `docker ps`; หากต้องกู้สถานะใช้ `(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab5.sh)` |

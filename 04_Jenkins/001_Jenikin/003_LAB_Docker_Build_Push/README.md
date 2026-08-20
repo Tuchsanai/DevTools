@@ -23,7 +23,9 @@ Jenkins image มาตรฐานไม่มี Docker CLI แม้จะ mo
 
 Jenkins Credentials store แยกข้อมูลลับออกจาก Pipeline และส่งค่าให้เฉพาะ scope ของ `withCredentials` การ masking ช่วยลดโอกาสที่ข้อมูลจะปรากฏใน console แต่ไม่ใช่การรับประกัน จึงต้องใช้ Groovy single-quoted shell, `set +x`, `--password-stdin` และ `DOCKER_CONFIG` ชั่วคราวร่วมกัน
 
-บล็อกต่อไปนี้เป็นรูปแบบ canonical สำหรับการ push ในแล็บนี้ โดย login ก่อน build เพื่อให้การ pull base image ผูกกับบัญชี และใช้ `trap` ลบ Docker config ไม่ว่าขั้นตอนจะสำเร็จหรือล้มเหลว:
+บล็อกต่อไปนี้เป็นรูปแบบ canonical สำหรับการ push ในแล็บนี้ โดย login ก่อน build เพื่อให้การ pull base image ผูกกับบัญชี และใช้ `trap` ลบ Docker config ไม่ว่าขั้นตอนจะสำเร็จหรือล้มเหลว
+
+ชื่อ artifact ปลายทางตาม naming contract คือ `docker.io/<DOCKER_USER>/ci-demo:<BUILD_NUMBER>` โดยแทน `<DOCKER_USER>` ด้วย namespace ของผู้เรียนและ `<BUILD_NUMBER>` ด้วยเลข build ที่ Jenkins กำหนด:
 
 ```groovy
 stage('Build & Push') {

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 from pathlib import Path
 import re
@@ -51,9 +52,18 @@ def flow(args: argparse.Namespace) -> None:
         # Scope assertions to the expanded delivery. Other collapsed deliveries
         # remain in the DOM and must not satisfy evidence for the latest push.
         payload_source = page.locator("pre.webhook-info:visible").last.inner_text()
-        require("head_commit" in payload_source, "payload contains head_commit")
-        require(commit in payload_source, "payload head commit matches Gitea main")
-        require("Verify immediate webhook build" in payload_source, "payload contains the pushed commit message")
+        payload = json.loads(payload_source)
+        head_commit = payload.get("head_commit") or {}
+        commits = payload.get("commits") or []
+        require(head_commit.get("id") == commit, "payload head commit matches Gitea main")
+        require(
+            "Verify immediate webhook build" in str(head_commit.get("message", "")),
+            "payload contains the pushed commit message",
+        )
+        require(
+            any("webhook-proof.txt" in (item.get("added") or []) for item in commits),
+            "payload commits[].added contains webhook-proof.txt",
+        )
         log(f"payload head_commit={commit[:12]} message='Verify immediate webhook build'")
         request_tab.scroll_into_view_if_needed()
         page.mouse.wheel(0, 700)

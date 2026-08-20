@@ -103,10 +103,12 @@ repository ต้องเป็น public ตาม SCM contract และไ�
 
 *ภาพที่ 3 ต้องสังเกต owner `student`, ชื่อ `hello-ci`, branch `main` และช่อง Private/Initialize ที่ไม่ถูกเลือก*
 
-เส้นทางเดียวกันตรวจอัตโนมัติได้ด้วย:
+> **ทางเลือกอัตโนมัติ (รันจากเครื่อง host ของผู้สอน):** helper ใต้ `tools/ui` ใช้ Playwright ซึ่งไม่มีใน devtools image นักศึกษาจึงทำขั้น UI ตามรายการด้านบนตามปกติ ส่วนผู้สอนที่ติดตั้ง Playwright และมี course tree บน host ให้กำหนด `COURSE_ROOT` บน host ก่อนใช้คำสั่งอัตโนมัติใน LAB นี้
+
+เส้นทางเดียวกันตรวจอัตโนมัติจาก host ได้ด้วย:
 
 ```bash
-GITEA_BASE_URL=http://localhost:3000 python3 tools/ui/lab4_scm_repo.py --action create
+(cd "$COURSE_ROOT" && GITEA_BASE_URL=http://localhost:3000 python3 tools/ui/lab4_scm_repo.py --action create)
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
@@ -174,7 +176,7 @@ Jenkinsfile    expected.txt    hello.sh
 *ภาพที่ 6 ต้องสังเกต Definition, SCM, URL ภายใน `gitea:3000`, credential ว่าง และ branch `*/main`*
 
 ```bash
-JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab4_scm_job.py --action configure
+(cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab4_scm_job.py --action configure)
 ```
 
 | ผู้เรียก | URL | เหตุผล |
@@ -201,7 +203,7 @@ build แรกทำหน้าที่พิสูจน์ SCM contract ก
 3. เปิด **Console Output** และตรวจผลจาก Git checkout กับ stage Test
 
 ```bash
-JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab4_scm_job.py --action build
+(cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab4_scm_job.py --action build)
 ```
 
 ![Console Output ของ manual build จาก SCM](../slides_assets/lab4_s07_manual_build_console.png)
@@ -234,7 +236,7 @@ Poll SCM ต้องกำหนดผ่าน job UI ตาม contract ไ�
 *ภาพที่ 8 ต้องสังเกต Poll SCM ที่ถูกเลือก, schedule ห้าช่องเป็น `*` และคำเตือน every minute ของ Jenkins*
 
 ```bash
-JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins python3 tools/ui/lab4_scm_poll.py --action enable
+(cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins python3 tools/ui/lab4_scm_poll.py --action enable)
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
@@ -257,7 +259,12 @@ JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins python3 tools/ui
 
 ```bash
 cd "$HOME/hello-ci" && printf '\n# poll probe %s\n' "$(date -u +%Y%m%dT%H%M%SZ)" >> hello.sh && git add hello.sh && git commit -m 'Observe Poll SCM delay' && git push origin main
-JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins python3 tools/ui/lab4_scm_poll.py --action wait --timeout 120
+```
+
+จากนั้นรันตัวรอและ assertion ต่อไปนี้จาก host ของผู้สอน:
+
+```bash
+(cd "$COURSE_ROOT" && JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins python3 tools/ui/lab4_scm_poll.py --action wait --timeout 120)
 ```
 
 หลังตัวตรวจรายงาน build สำเร็จ ให้ตรวจหลักฐานของ scheduler และ build แยกกัน เพราะ Git Polling Log อธิบายการตัดสินใจ ส่วนหน้ารายละเอียด build ระบุสาเหตุที่เริ่มงาน
@@ -288,7 +295,7 @@ JENKINS_BASE_URL=http://localhost:8080 DT_NAME=devtools-jenkins python3 tools/ui
 เมื่อใช้ `* * * * *` build จะเริ่มในรอบ cron ถัดไป จึงรอไม่เกินประมาณ 1 นาทีตาม contract ส่วนเวลารัน pipeline อาจเพิ่มจากระยะรอดังกล่าว จากนั้นตรวจสถานะจบแล็บ:
 
 ```bash
-cd 004_LAB_Pipeline_From_Git && bash check.sh
+(cd "$COURSE_ROOT/004_LAB_Pipeline_From_Git" && bash check.sh)
 ```
 
 ผลที่ถูกต้องคือ `[PASS]` ครบ 6 จุดและ `ผลรวม: PASS` การทดลองนี้แสดงข้อจำกัดว่า push แล้วต้องรอ ส่วน LAB 5 จะเปลี่ยนเป็น webhook เพื่อแจ้ง Jenkins ทันที

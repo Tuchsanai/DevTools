@@ -39,7 +39,16 @@ docker run -dit --name devtools-jenkins --privileged \
 ssh root@localhost -p 2222
 ```
 
-เมื่อ SSH ถามรหัสผ่าน ใช้ `passwd` จากนั้นทำ LAB ตามลำดับโดยใช้ container เดิมตลอดชุด
+เมื่อ SSH ถามรหัสผ่าน ใช้ `passwd` จากนั้นจัดเตรียมชุดสอนจาก public repository แบบ sparse clone เพื่อลดข้อมูลที่ต้องดาวน์โหลด:
+
+```bash
+git clone --depth 1 --filter=blob:none --sparse https://github.com/Tuchsanai/DevTools.git ~/DevTools && cd ~/DevTools && git sparse-checkout set 04_Jenkins/001_Jenikin
+export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"
+grep -qxF 'export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"' ~/.bashrc || echo 'export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"' >> ~/.bashrc
+test -f "$COURSE_ROOT/readme.md" || echo 'คำเตือน: ไม่พบชุดสอน โปรดตรวจ clone และ COURSE_ROOT ก่อนเริ่ม LAB'
+```
+
+image `tuchsanai/devtools:2569_1` มี Git 2.54.0 ซึ่งรองรับ sparse checkout คำสั่งนี้จึงดาวน์โหลดเฉพาะประวัติล่าสุดและ materialize เฉพาะ `04_Jenkins/001_Jenikin` เมื่อ preflight ไม่แสดงคำเตือน ให้ทำ LAB ตามลำดับโดยใช้ container เดิมตลอดชุด
 
 URL สำหรับผู้เรียน:
 
@@ -78,8 +87,7 @@ Jenkins, Gitea และ webapp ที่สร้างด้วย `--restart 
 
 ```bash
 docker exec -it devtools-jenkins bash
-cd /workspace/001_Jenikin
-bash tools/bootstrap/up_to_lab2.sh
+(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab2.sh)
 ```
 
 ตั้งแต่สถานะ LAB 3 ขึ้นไป ต้องส่ง Docker Hub credential ผ่าน environment ด้วย placeholder เท่านั้น:
@@ -87,7 +95,7 @@ bash tools/bootstrap/up_to_lab2.sh
 ```bash
 export DOCKER_USER='<DOCKER_USER>'
 export DOCKER_TOKEN='<DOCKER_TOKEN>'
-bash tools/bootstrap/up_to_lab3.sh
+(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab3.sh)
 unset DOCKER_TOKEN
 ```
 
