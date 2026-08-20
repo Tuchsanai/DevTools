@@ -1,41 +1,60 @@
-# LAB 3 — Docker Build & Push ขึ้น Docker Hub จริง
+# LAB 3 — Build และ Push Docker image ขึ้น Docker Hub
 
-แล็บ 45 นาทีนี้ตอบคำถามว่า Jenkins ที่รันใน Docker จะ build image, ตรวจว่าแอปตอบจริง และ push tag ตาม `BUILD_NUMBER` ขึ้น Docker Hub ของเราได้อย่างไร เมื่อจบแล้วจะตรวจหลักฐานได้ทั้งจาก Jenkins console และหน้า Tags สาธารณะ
+แล็บ 45 นาทีนี้ศึกษาวิธีทำให้ Jenkins ที่รันใน container สร้าง Docker image, ตรวจสอบการทำงานของแอป และ push tag ที่สัมพันธ์กับ `BUILD_NUMBER` ขึ้น Docker Hub เมื่อจบแล็บ ผู้เรียนจะตรวจสอบผลได้จาก Pipeline Graph, Jenkins console และหน้า Tags สาธารณะ
 
-> **Prerequisite ก่อนคาบ (ทำล่วงหน้าอย่างน้อย 24 ชั่วโมง):** สมัคร Docker Hub และยืนยันอีเมล จากนั้นไปที่ **Account Settings → Personal access tokens** สร้าง Access Token สิทธิ์ **Read & Write** แล้วสร้าง repository `ci-demo` เป็น **Public** บนเว็บ ห้ามใช้ token กลางของผู้สอน; ถ้ายังไม่พร้อมให้จับคู่สังเกตการณ์และกลับมาทำ make-up ด้วยบัญชีตนเอง
+> **Prerequisite ก่อนคาบ (ดำเนินการล่วงหน้าอย่างน้อย 24 ชั่วโมง):** สมัคร Docker Hub, ยืนยันอีเมล, สร้าง Access Token สิทธิ์ **Read & Write** และสร้าง repository `ci-demo` กับ `cicd-webapp` เป็น **Public** บนเว็บ Docker Hub ไม่มี token กลางของผู้สอนให้ใช้ทดแทน
 >
-> ตรวจความพร้อมโดยแทน placeholder เฉพาะใน shell (อย่าบันทึก token ลงไฟล์):
+> ตรวจความพร้อมด้วย 2 คำสั่งต่อไปนี้ โดยแทน placeholder เฉพาะใน shell และห้ามบันทึก token ลงไฟล์:
 >
 > ```bash
 > echo '<DOCKER_TOKEN>' | docker login -u '<DOCKER_USER>' --password-stdin && docker logout
-> curl -fsS -o /dev/null -w 'HTTP %{http_code}\n' 'https://hub.docker.com/r/<DOCKER_USER>/ci-demo'
+> for repo in ci-demo cicd-webapp; do curl -fsS -o /dev/null -w "$repo: HTTP %{http_code}\n" "https://hub.docker.com/r/<DOCKER_USER>/$repo"; done
 > ```
 >
-> ต้องเห็น `Login Succeeded` และ `HTTP 200` ก่อนเริ่มคาบ
+> ต้องเห็น `Login Succeeded` และ `HTTP 200` ของทั้งสอง repository ก่อนเริ่มคาบ
 
 ## ทฤษฎีก่อนลงมือ
 
-Docker-outside-of-Docker (DooD) คือให้ Jenkins container ใช้ Docker daemon ตัวเดิมผ่าน `/var/run/docker.sock` จึง build และรัน sibling container ได้ ส่วน Docker-in-Docker (DinD) เปิด daemon ซ้อนใน container อีกชั้น แล็บนี้ใช้ DooD เพราะต้องการใช้ image cache, network และ lifecycle ชุดเดียวกับ service ภายใน devtools โดยไม่เพิ่ม daemon อีกตัว รายละเอียดภาพรวมดู slide ตอนที่ 3
+Docker-outside-of-Docker (DooD) คือการให้ Jenkins container ติดต่อ Docker daemon ของระบบชั้นในผ่าน `/var/run/docker.sock` จึงสร้าง image และ sibling container ใน daemon เดียวกันได้ ส่วน Docker-in-Docker (DinD) สร้าง daemon ซ้อนอีกชั้น แล็บนี้ใช้ DooD เพื่อใช้ image cache, network และวงจรชีวิตของ service ชุดเดียวกัน รายละเอียดสถาปัตยกรรมดู slide ตอนที่ 3
 
-Jenkins image เดิมเน้นรัน Jenkins จึงไม่มี Docker CLI ต่อให้ mount socket ก็ยังส่งคำสั่งไม่ได้ เราจึง build `jenkins-docker:2569` จาก `Dockerfile.jenkins` โดยเพิ่ม Docker apt repository และติดตั้ง `docker-ce-cli` แล้วคง `USER root` เพื่อเข้าถึง socket ในท่าแล็บนี้
+Jenkins image มาตรฐานไม่มี Docker CLI แม้จะ mount socket แล้วก็ยังส่งคำสั่งไปยัง daemon ไม่ได้ จึงต้องสร้าง `jenkins-docker:2569` จาก `Dockerfile.jenkins` ซึ่งติดตั้ง `docker-ce-cli` และใช้ `USER root` สำหรับเข้าถึง socket ในสภาพแวดล้อมแล็บ
 
-งาน, ผู้ใช้, plugin และ build history อยู่ใน named volume `jenkins_home` ไม่ได้อยู่ใน writable layer ของ container ดังนั้นเราลบ container เดิมแล้วสร้างจาก image ใหม่โดย mount volume ชื่อเดิมได้ สถานะ Jenkins จึงยังอยู่ครบ นี่คือจุดต่างระหว่าง lifecycle ของ container กับ persistent state
+ข้อมูลถาวรของ Jenkins เช่น ผู้ใช้, plugin, job และ build history อยู่ใน named volume `jenkins_home` ไม่ได้ผูกกับ writable layer ของ container การสร้าง Jenkins container ใหม่จาก image ใหม่โดยใช้ volume เดิมจึงรักษาสถานะจาก LAB 2 ไว้ได้
 
-Jenkins Credentials store เก็บข้อมูลลับแยกจาก Jenkinsfile แล้ว inject ให้ stage ที่ต้องใช้ผ่าน `withCredentials` การ masking ช่วย **ลดการหลุดโดยไม่ตั้งใจใน console แต่ไม่รับประกันว่าจะปิดบังได้ทุกกรณี** จึงยังต้องใช้ Groovy single-quoted shell, `set +x`, `--password-stdin` และ `DOCKER_CONFIG` ชั่วคราว รายละเอียด credential และการ push ดู slide ตอนที่ 5
+Jenkins Credentials store แยกข้อมูลลับออกจาก Pipeline และส่งค่าให้เฉพาะ scope ของ `withCredentials` การ masking ช่วยลดโอกาสที่ข้อมูลจะปรากฏใน console แต่ไม่ใช่การรับประกัน จึงต้องใช้ Groovy single-quoted shell, `set +x`, `--password-stdin` และ `DOCKER_CONFIG` ชั่วคราวร่วมกัน
 
-> **Safety:** การ mount Docker socket ให้ Jenkins มีอำนาจใกล้เคียง root ของ inner host และ `-u root` ยิ่งขยายผลกระทบ ใช้เฉพาะแล็บ disposable เท่านั้น; production ควรแยก build agent, จำกัดสิทธิ์/เครือข่าย และจัดการ config ด้วยแนวทาง least privilege. Token ใช้เพียง Read/Write (ไม่ใช้ Delete/Admin) และ revoke หลังคาบได้ทันที
+บล็อกต่อไปนี้เป็นรูปแบบ canonical สำหรับการ push ในแล็บนี้ โดย login ก่อน build เพื่อให้การ pull base image ผูกกับบัญชี และใช้ `trap` ลบ Docker config ไม่ว่าขั้นตอนจะสำเร็จหรือล้มเหลว:
 
-## 🎯 แล็บนี้ใน 30 วินาที
+```groovy
+stage('Build & Push') {
+  steps {
+    withCredentials([usernamePassword(credentialsId: 'dockerhub',
+        usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+      sh '''set +x
+        export DOCKER_CONFIG=$(mktemp -d)
+        trap 'docker logout >/dev/null 2>&1; rm -rf "$DOCKER_CONFIG"' EXIT
+        echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
+        docker build -t docker.io/$DOCKER_USER/ci-demo:$BUILD_NUMBER .
+        docker push docker.io/$DOCKER_USER/ci-demo:$BUILD_NUMBER
+      '''
+    }
+  }
+}
+```
 
-- สังเกตว่า Jenkins image เดิมยังไม่มี Docker CLI
-- build `jenkins-docker:2569` และ recreate โดยใช้ `jenkins_home` เดิมพร้อม socket
-- เพิ่ม credential `dockerhub` แล้วสร้าง Pipeline จาก Jenkinsfile
-- build, push, smoke test และอ่านหลักฐาน digest จาก console
-- เปิด Docker Hub Tags เพื่อเห็น tag ของ build นี้จริง
+> **Safety:** การ mount Docker socket ทำให้ Jenkins มีอำนาจใกล้เคียง root ของ inner host และการใช้ `-u root` เพิ่มผลกระทบเมื่อเกิดข้อผิดพลาด จึงใช้เฉพาะแล็บ disposable เท่านั้น ระบบ production ควรใช้ build agent แยกและจำกัดสิทธิ์กับเครือข่ายตามหลัก least privilege ส่วน Access Token ใช้เพียง Read/Write ไม่ใช้ Delete/Admin และ revoke หลังคาบได้ทันที
+
+## 🎯 ขอบเขตและผลลัพธ์การเรียนรู้
+
+- อธิบายความแตกต่างระหว่าง Docker CLI, Docker daemon และ socket ได้
+- สร้าง `jenkins-docker:2569` และเปลี่ยน Jenkins container โดยรักษา `jenkins_home` เดิมได้
+- เพิ่ม credential ชนิด Username with password ด้วย ID `dockerhub` ใน Global domain ได้
+- สร้างและรัน Pipeline ที่ login, build, push และล้าง Docker config ตามรูปแบบ canonical ได้
+- เชื่อมโยง `BUILD_NUMBER`, push digest และ tag บน Docker Hub ของ build ปัจจุบันได้
 
 ## สภาพตั้งต้น
 
-ต้องมีสถานะจบ LAB 2: devtools ยังทำงาน, network `cicd-net`, container `jenkins` และ volume `jenkins_home` ต้องอยู่ โดย job/user เดิมพร้อมใช้งาน
+ต้องมีสถานะจบ LAB 2: devtools container ยังทำงาน, network `cicd-net`, container `jenkins`, volume `jenkins_home` และ job จากสองแล็บแรกต้องพร้อมใช้งาน
 
 ```bash
 docker ps --format '{{.Names}}\t{{.Status}}'
@@ -47,11 +66,13 @@ docker ps --format '{{.Names}}\t{{.Status}}'
 jenkins    Up ...
 ```
 
-> ยังไม่มี? ย้อนไปทำ [LAB 2](../002_LAB_Declarative_Pipeline/README.md) ก่อน (ใช้เวลา ~30 นาที) หรือกู้สถานะด้วย `bash tools/bootstrap/up_to_lab2.sh`
+> ยังไม่มี? ย้อนกลับไปทำ [LAB 2](../002_LAB_Declarative_Pipeline/README.md) ก่อน (ใช้เวลา ~30 นาที) หรือกู้สถานะด้วย `bash tools/bootstrap/up_to_lab2.sh`
 
-## การทดลองที่ 1 — Jenkins เห็น Docker ไหม?
+## การทดลองที่ 1 — Jenkins image เดิมมี Docker CLI หรือไม่?
 
-**คำถาม:** Jenkins container จาก LAB 2 มี Docker CLI ให้เรียกแล้วหรือยัง?
+**คำถาม:** Jenkins container จาก LAB 2 เรียกคำสั่ง Docker ได้แล้วหรือยัง?
+
+การตรวจ capability ก่อนเปลี่ยน image ทำให้แยกได้ชัดเจนว่าปัญหาเกิดจากการไม่มี CLI ไม่ใช่การเชื่อมต่อ socket
 
 ```bash
 docker exec jenkins sh -c 'docker version'
@@ -65,11 +86,13 @@ sh: 1: docker: not found
 exit=127
 ```
 
-> 📝 นี่คือการสังเกต capability ของ image ปัจจุบัน ไม่ใช่ปัญหาของ socket เพราะยังไม่ได้ติดตั้งคำสั่ง `docker` เลย
+> 📝 ผลลัพธ์นี้เป็นสถานะที่คาดหมายของ Jenkins image เดิม การ mount socket เพียงอย่างเดียวไม่ทำให้คำสั่ง `docker` ปรากฏใน container
 
 ## การทดลองที่ 2 — จะเพิ่ม Docker CLI ให้ Jenkins อย่างไร?
 
-**คำถาม:** image ใหม่ติดตั้ง Docker CLI จาก apt repository ของ Docker และยังรันเป็น root ได้หรือไม่?
+**คำถาม:** image ใหม่มี Docker CLI ตามที่ `Dockerfile.jenkins` กำหนดหรือไม่?
+
+การสร้าง image แยกทำให้ dependency ของ Jenkins ทำซ้ำได้ และไม่แก้ไข container ที่กำลังทำงานโดยตรง
 
 ```bash
 docker build -t jenkins-docker:2569 -f 003_LAB_Docker_Build_Push/Dockerfile.jenkins 003_LAB_Docker_Build_Push
@@ -82,9 +105,13 @@ docker run --rm --entrypoint docker jenkins-docker:2569 --version
 Docker version 29.7.2, build a7dcaa6
 ```
 
-## การทดลองที่ 3 — เปลี่ยน image แล้ว state เดิมยังอยู่ไหม?
+ขณะนี้ image ใหม่พร้อมใช้งาน แต่ Jenkins service ยังใช้ image เดิม ขั้นถัดไปจะเปลี่ยน container โดยคง persistent state ไว้
 
-**คำถาม:** เมื่อ recreate Jenkins ด้วย volume เดิม งานและผู้ใช้จาก LAB 2 ยังอยู่ครบหรือไม่?
+## การทดลองที่ 3 — เปลี่ยน image โดยรักษาสถานะเดิมได้หรือไม่?
+
+**คำถาม:** เมื่อสร้าง Jenkins container ใหม่ด้วย `jenkins_home` เดิม job จาก LAB 2 ยังอยู่หรือไม่?
+
+การ recreate container แยก lifecycle ของ process ออกจากข้อมูลถาวร พร้อมเพิ่ม Docker socket และสิทธิ์ที่จำเป็นสำหรับท่าแล็บ
 
 ```bash
 docker rm -f jenkins && docker run -d --name jenkins --restart unless-stopped --network cicd-net -p 8080:8080 -u root -e JAVA_OPTS=-Djenkins.install.runSetupWizard=false -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkins-docker:2569
@@ -97,39 +124,37 @@ curl -fsS -u admin:admin2569 http://localhost:8080/job/first-pipeline/api/json |
 "name":"first-pipeline"
 ```
 
-เปิด `http://localhost:8080` แล้วลงชื่อเข้าใช้ด้วย `admin / admin2569`: ต้องเห็น job `first-freestyle`, `first-pipeline` และ build history เดิม
+> 📝 หาก `curl` ทำงานก่อน Jenkins พร้อม ให้รอจนหน้า `/login` ตอบสนองแล้วจึงรันคำสั่งตรวจซ้ำ การเริ่ม service อาจใช้เวลาประมาณ 20–40 วินาที
 
-> 📝 ถ้า curl เร็วเกินไป ให้รอหน้า `/login` ตอบก่อน Jenkins อาจใช้เวลาประมาณ 20–40 วินาทีหลัง recreate
+ขณะนี้ Jenkins ใช้ `jenkins-docker:2569` และยังมี state เดิม ขั้นถัดไปจะเพิ่ม credential โดยไม่บันทึก token ใน Jenkinsfile
 
-## การทดลองที่ 4 — Docker ทำงานจากใน Pipeline หรือไม่?
+## การทดลองที่ 4 — จะบันทึก Docker Hub credential ใน Jenkins อย่างไร?
 
-**คำถาม:** Jenkins agent เรียกทั้ง Docker client และ daemon ผ่าน socket ได้จริงหรือไม่?
+**คำถาม:** credential ชนิด Username with password และ ID `dockerhub` ถูกเก็บใน Global domain แล้วหรือไม่?
 
-รัน UI automation ของบทเรียน ซึ่งสร้าง job `docker-version-check`, กด Build และ assert console:
+Global credentials ทำให้ Pipeline อ้างอิงข้อมูลลับผ่าน ID ได้โดยไม่ฝังค่าไว้ใน source code ภาพต่อไปนี้ใช้ placeholder ใน form; เมื่อลงมือจริงให้กรอกค่าจากบัญชีของตนก่อนกด Create
 
-```bash
-JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab3_docker_version.py
-```
+1. เปิด `http://localhost:8080` และลงชื่อเข้าใช้ด้วย `admin / admin2569`
+2. เลือก **Manage Jenkins → Credentials** ในหมวด Security
 
-✅ **สิ่งที่ต้องเห็น** :
+![เมนู Manage Jenkins ที่มีรายการ Credentials](../slides_assets/lab3_s01_manage_jenkins.png)
 
-```text
-[ui]... assert: docker version reports both client and server
-[ui]... PASS
-```
+*สังเกตรายการ Credentials ในหมวด Security ซึ่งเป็นทางเข้าสู่ credential store ของ Jenkins*
 
-## การทดลองที่ 5 — จะให้ Jenkins ใช้ token โดยไม่เขียนใน Jenkinsfile อย่างไร?
+3. เลือก **System → Global credentials (unrestricted)**
 
-**คำถาม:** credential แบบ Username with password และ id `dockerhub` ถูกเก็บใน Global domain แล้วหรือไม่?
+![หน้า Global credentials](../slides_assets/lab3_s02_global_credentials.png)
 
-ใน Jenkins ไปที่ **Manage Jenkins → Credentials → System → Global credentials (unrestricted) → Add Credentials** แล้วเลือก **Username with password**:
+*สังเกต breadcrumb `Credentials / System / Global` และปุ่ม Add Credentials ใน Global domain*
 
-- Username: `<DOCKER_USER>`
-- Password: `<DOCKER_TOKEN>`
-- ID: `dockerhub`
-- กด **Create**
+4. เลือก **Add Credentials → Username with password → Next**
+5. กรอก Username=`<DOCKER_USER>`, Password=`<DOCKER_TOKEN>`, ID=`dockerhub` และ Description ตามภาพ แล้วกด **Create** หลังแทนค่าจริงแล้วเท่านั้น
 
-สำหรับการทดสอบอัตโนมัติ ใช้สคริปต์เดียวกับเส้นทาง UI นี้:
+![แบบฟอร์ม Add Credentials ที่กรอก placeholder ครบ](../slides_assets/lab3_s03_add_credential_form.png)
+
+*สังเกต Username เป็น `<DOCKER_USER>`, ID เป็น `dockerhub` และ Password ถูกปิดบังใน form*
+
+สำหรับการทดสอบเส้นทาง UI อัตโนมัติ ให้ส่งค่าผ่าน environment ของ process เท่านั้น:
 
 ```bash
 JENKINS_BASE_URL=http://localhost:8080 DOCKER_USER='<DOCKER_USER>' DOCKER_TOKEN='<DOCKER_TOKEN>' python3 tools/ui/lab3_credential.py
@@ -142,13 +167,29 @@ JENKINS_BASE_URL=http://localhost:8080 DOCKER_USER='<DOCKER_USER>' DOCKER_TOKEN=
 [ui]... PASS
 ```
 
-> 📝 Jenkins masking ลด accidental disclosure เท่านั้น ห้าม `echo` token, `printenv`, archive workspace หรือเก็บ Docker config เป็น artifact
+> 📝 Jenkins masking ลดการเปิดเผยโดยไม่ตั้งใจเท่านั้น ห้ามพิมพ์ token, ใช้ `printenv`, archive Docker config หรือเก็บ credential เป็น artifact
 
-## การทดลองที่ 6 — Pipeline จะ build และ push แบบปลอดภัยขึ้นอย่างไร?
+## การทดลองที่ 5 — จะสร้าง Pipeline จาก Jenkinsfile อย่างไร?
 
-**คำถาม:** Pipeline จาก `Jenkinsfile` ใช้ credential เฉพาะ stage, login ก่อน build และล้าง Docker config เสมอหรือไม่?
+**คำถาม:** job `docker-build-push` ใช้ Pipeline script ที่ตรงกับ Jenkinsfile ของแล็บหรือไม่?
 
-ใน Jenkins กด **New Item → Pipeline**, ตั้งชื่อ `docker-build-push`, เลือก **Pipeline script**, วางเนื้อหา `003_LAB_Docker_Build_Push/Jenkinsfile` ตรงตัว แล้วกด **Save → Build Now** หรือใช้ UI automation:
+การกำหนด job เป็น Pipeline ทำให้ลำดับ prepare, build, push และ smoke test ตรวจสอบย้อนหลังได้จาก build เดียว
+
+1. กลับ Jenkins Dashboard แล้วเลือก **New Item**
+2. กรอกชื่อ `docker-build-push`, เลือก **Pipeline** แล้วกด **OK**
+
+![หน้า New Item ที่เลือก Pipeline](../slides_assets/lab3_s04_new_item_pipeline.png)
+
+*สังเกตชื่อ `docker-build-push`, ชนิด Pipeline และปุ่ม OK ที่พร้อมสร้าง job*
+
+3. เลื่อนไปส่วน **Pipeline** และคง Definition เป็น **Pipeline script**
+4. วางเนื้อหา `003_LAB_Docker_Build_Push/Jenkinsfile` ลงช่อง Script แล้วกด **Save**
+
+![ช่อง Pipeline script ที่กรอก Jenkinsfile แล้ว](../slides_assets/lab3_s05_pipeline_script.png)
+
+*สังเกต Definition เป็น Pipeline script และ editor มี stage `Prepare app` จาก Jenkinsfile*
+
+ใช้ UI automation ต่อไปนี้เพื่อตรวจว่า script ใน editor ตรงกับไฟล์ทุกอักขระ:
 
 ```bash
 JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab3_job.py
@@ -157,43 +198,88 @@ JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab3_job.py
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-Prepare app       SUCCESS
-Build & Push      SUCCESS
-Smoke test        SUCCESS
+[ui]... assert: UI script equals the saved Jenkinsfile byte-for-byte
+[ui]... PASS
 ```
 
-![Stage View ของ docker-build-push](../slides_assets/lab3_pipeline_docker.png)
+ขณะนี้ job ถูกบันทึกและพร้อมรัน ขั้นถัดไปจะเริ่ม build และตรวจสถานะของแต่ละ stage
 
-## การทดลองที่ 7 — Console พิสูจน์อะไรได้บ้าง?
+## การทดลองที่ 6 — Pipeline build และ push สำเร็จครบทุก stage หรือไม่?
 
-**คำถาม:** build ล่าสุดแสดง login ที่ถูก mask, layer push, digest และผล smoke testครบหรือไม่?
+**คำถาม:** build ล่าสุดผ่าน `Prepare app`, `Build & Push` และ `Smoke test` ครบหรือไม่?
+
+Pipeline Graph แสดงความสัมพันธ์ระหว่าง stage และสถานะของ build เดียว จึงช่วยระบุจุดที่ล้มเหลวโดยไม่ต้องอ่าน console ทั้งหมด
+
+1. เปิด job `docker-build-push` แล้วเลือก **Build Now**
+2. เปิด build ล่าสุดและเลือก **Pipeline Overview** หลัง build จบ
+
+![Pipeline Graph ของ docker-build-push](../slides_assets/lab3_pipeline_docker.png)
+
+*สังเกต `Prepare app`, `Build & Push` และ `Smoke test` เป็นสถานะสำเร็จทั้งหมด*
 
 ```bash
-curl -fsS -u admin:admin2569 http://localhost:8080/job/docker-build-push/lastBuild/consoleText | grep -E 'Login Succeeded|\*\*\*\*|Pushed|digest: sha256:|ci-demo is ready|Finished:'
+curl -fsS -u admin:admin2569 'http://localhost:8080/job/docker-build-push/lastBuild/api/json?tree=result' | grep -o '"result":"SUCCESS"'
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-Docker token in console: **** (masking is best-effort)
+"result":"SUCCESS"
+```
+
+build เสร็จสมบูรณ์แล้ว ขั้นถัดไปจะอ่านเฉพาะหลักฐานที่ยืนยันการ login และ push จาก console ของ build เดียวกัน
+
+## การทดลองที่ 7 — Console ยืนยัน login และ push digest ได้หรือไม่?
+
+**คำถาม:** console ของ build ล่าสุดมี `Login Succeeded`, token masking และ push digest หรือไม่?
+
+Console เป็นหลักฐานลำดับเหตุการณ์ของ Pipeline การตรวจบรรทัด login กับ digest ยืนยันว่า stage ติดต่อ registry และได้รับ content digest จากการ push จริง
+
+1. จาก build ล่าสุดเลือก **Console Output**
+2. ค้นหา `Login Succeeded` และ `digest: sha256:` โดยไม่แสดงค่าของ credential
+
+![Console ช่วง Docker Hub login สำเร็จ](../slides_assets/lab3_s06_console_login.png)
+
+*สังเกตบรรทัด `Login Succeeded` จากการใช้ `--password-stdin` โดยไม่มี token ปรากฏในภาพ*
+
+![Console ช่วง push digest](../slides_assets/lab3_s07_console_digest.png)
+
+*สังเกต tag ของ build ปัจจุบันตามด้วย `digest: sha256:...` และขนาด manifest*
+
+```bash
+curl -fsS -u admin:admin2569 http://localhost:8080/job/docker-build-push/lastBuild/consoleText | grep -E 'Login Succeeded|Masking supported|digest: sha256:|ci-demo is ready|Finished:'
+```
+
+✅ **สิ่งที่ต้องเห็น** :
+
+```text
 Masking supported pattern matches of $DOCKER_TOKEN
 Login Succeeded
-... docker.io/<DOCKER_USER>/ci-demo:...
 ... digest: sha256:...
 ci-demo is ready
 Finished: SUCCESS
 ```
 
-![Console ช่วง login, push และ digest](../slides_assets/lab3_push_log.png)
+> 📝 Digest ระบุเนื้อหา image ไม่ใช่ข้อมูลลับ และใช้เชื่อมหลักฐานระหว่าง Jenkins build กับ tag บน registry ได้
 
-## การทดลองที่ 8 — Tag นี้ขึ้น Docker Hub จริงหรือไม่?
+## การทดลองที่ 8 — Tag ของ build ปัจจุบันปรากฏบน Docker Hub หรือไม่?
 
-**คำถาม:** หน้า public Tags แสดง `BUILD_NUMBER` ของ build ที่เพิ่งจบหรือไม่?
+**คำถาม:** หน้า Tags สาธารณะแสดง tag ที่ตรงกับ `BUILD_NUMBER` ล่าสุดหรือไม่?
+
+การเปิดหน้า public Tags ใน browser context ที่ไม่ได้ login พิสูจน์ว่า repository เป็น Public และผู้ใช้อื่นสามารถอ่าน manifest ของ tag นี้ได้ ห้ามเปิดหรือจับภาพหน้า Docker Hub ที่ login แล้วหรือหน้าสร้าง token
 
 ```bash
 BUILD_NUMBER=$(curl -fsS -u admin:admin2569 'http://localhost:8080/job/docker-build-push/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')
 printf 'เปิด https://hub.docker.com/r/<DOCKER_USER>/ci-demo/tags แล้วหา tag %s\n' "$BUILD_NUMBER"
 ```
+
+1. เปิดหน้าต่าง browser แบบไม่เข้าสู่ระบบ
+2. ไปที่ `https://hub.docker.com/r/<DOCKER_USER>/ci-demo/tags`
+3. เลือกแท็บ **Tags** และตรวจว่า tag ตรงกับค่าที่คำสั่งแสดง
+
+![หน้า Docker Hub public Tags ที่แสดง tag ปัจจุบัน](../slides_assets/lab3_s08_hub_public_tag.png)
+
+*สังเกตแท็บ Tags และเลข tag ของ build ปัจจุบัน โดย crop ไม่แสดงข้อมูลบัญชีหรือหน้าที่ต้อง login*
 
 ✅ **สิ่งที่ต้องเห็น** :
 
@@ -201,9 +287,7 @@ printf 'เปิด https://hub.docker.com/r/<DOCKER_USER>/ci-demo/tags แล�
 Tags    <BUILD_NUMBER>    ...    sha256:...
 ```
 
-![Docker Hub Tags ของจริง](../slides_assets/lab3_hub_tags.png)
-
-ตรวจจบแล็บจาก shell ใหม่โดยไม่ต้องส่ง token ให้ตัวตรวจ:
+ตรวจสถานะจบแล็บจาก shell ใหม่โดยไม่ส่ง token ให้ตัวตรวจ:
 
 ```bash
 cd 003_LAB_Docker_Build_Push
@@ -216,11 +300,11 @@ DOCKER_USER=<id> bash check.sh
 
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
-| `401 Unauthorized` | token ผิด, หมดอายุ หรือถูก revoke | สร้าง PAT Read/Write ใหม่ใน Account Settings แล้วอัปเดต credential `dockerhub`; ทดสอบด้วย `--password-stdin` โดยไม่พิมพ์ token |
-| `denied: requested access` | namespace/repo ผิด หรือ token ไม่มี Write | ตรวจ `printf 'namespace=%s\n' "$DOCKER_USER"`, ชื่อ public repo `ci-demo` และสิทธิ์ PAT |
-| `429 ... pull rate limit` | quota pull image ของบัญชี/เครือข่ายเต็ม | ยืนยันว่า login เกิดก่อน `docker build`, รอ reset ตามข้อความ และคง Docker volume/cache |
-| `429 Too Many Requests` แบบไม่มีข้อความ pull limit | Docker Hub abuse limit | หยุด loop/retry ถี่ ๆ แล้ว backoff ก่อนลองใหม่ ไม่สร้าง polling script รัว ๆ |
-| หน้า Tags 404 หรือว่าง | repo เป็น private, URL/username ผิด หรือหน้า UI ยัง sync | ตรวจว่า `ci-demo` เป็น Public, เปิด URL canonical และลอง refresh หลัง API เห็น tag |
-| `docker: not found` ใน Pipeline | Jenkins ยังใช้ image เก่า | ตรวจ `docker inspect -f '{{.Config.Image}}' jenkins` แล้วทำการทดลองที่ 2–3 ใหม่ |
-| Jenkins เปิดไม่ขึ้นหลัง recreate | service ยังเริ่มไม่เสร็จหรือ mount/port ผิด | `docker logs --tail 50 jenkins` แล้วเทียบคำสั่ง canonical ในการทดลองที่ 3 |
-| restart devtools แล้ว service หาย | outer container ไม่ได้ใช้ `--tmpfs /run` หรือ inner service ไม่มี restart policy | `docker start devtools-jenkins`, รอ ~20 วินาที แล้ว `docker ps`; ถ้าต้องกู้ให้รัน `bash tools/bootstrap/up_to_lab2.sh` ก่อนทำ LAB 3 ต่อ |
+| `401 Unauthorized` | token ผิด, หมดอายุ หรือถูก revoke | สร้าง Access Token สิทธิ์ Read/Write ใหม่ แล้วอัปเดต credential `dockerhub`; ทดสอบด้วย `--password-stdin` โดยไม่พิมพ์ token |
+| `denied: requested access` | namespace/repository ไม่ตรง หรือ token ไม่มี Write | ตรวจ `printf 'namespace=%s\n' "$DOCKER_USER"`, ชื่อ public repository `ci-demo` และสิทธิ์ของ token |
+| `429 ... pull rate limit` | quota การ pull image ของบัญชีหรือเครือข่ายเต็ม | ยืนยันว่า login เกิดก่อน `docker build`, รอเวลาที่ข้อความกำหนด และคง Docker volume/cache |
+| `429 Too Many Requests` ที่ไม่มีข้อความ pull limit | Docker Hub abuse limit | หยุด loop หรือ retry ที่ถี่เกินไป แล้วเพิ่มระยะ backoff ก่อนรันใหม่ |
+| หน้า Tags ว่างหรือ 404 | repository เป็น Private, URL/username ผิด หรือ UI ยังไม่ปรับสถานะ | ตรวจว่า `ci-demo` เป็น Public, ใช้ URL canonical และ refresh หลัง Hub API พบ tag |
+| `docker: not found` ใน Pipeline | Jenkins ยังใช้ image เดิม | ตรวจ `docker inspect -f '{{.Config.Image}}' jenkins` แล้วทำการทดลองที่ 2–3 ใหม่ |
+| Jenkins ไม่พร้อมหลัง recreate | service ยังเริ่มไม่เสร็จ หรือ mount/port ไม่ตรง | ตรวจ `docker logs --tail 50 jenkins` และเปรียบเทียบคำสั่ง canonical ในการทดลองที่ 3 |
+| service หายหลัง restart devtools | outer container ไม่มี `--tmpfs /run` หรือ inner service ไม่มี restart policy | รัน `docker start devtools-jenkins`, รอประมาณ 20 วินาที แล้วตรวจ `docker ps`; หากต้องกู้สถานะให้รัน `bash tools/bootstrap/up_to_lab2.sh` |

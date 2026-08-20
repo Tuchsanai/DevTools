@@ -11,6 +11,14 @@ from pathlib import Path
 from common import jenkins_login, log, require, run_main, wait_visible
 
 
+def capture_viewport(page, target: Path, description: str, *, height: int = 900) -> None:
+    """Capture a sharp, horizontally complete UI state without an unrelated long page."""
+    target.parent.mkdir(parents=True, exist_ok=True)
+    page.set_viewport_size({"width": 1440, "height": height})
+    page.screenshot(path=str(target), full_page=False)
+    log(f"screenshot: {description} -> {target}")
+
+
 def job_api(page, base_url: str) -> dict | None:
     response = page.request.get(
         f"{base_url.rstrip('/')}/job/first-freestyle/api/json?tree=name,lastBuild[number,url]"
@@ -21,7 +29,7 @@ def job_api(page, base_url: str) -> dict | None:
     return response.json()
 
 
-def configure_job(page, base_url: str, *, create: bool) -> None:
+def configure_job(page, base_url: str, screenshot_dir: Path, *, create: bool) -> None:
     if not create:
         page.goto(
             f"{base_url.rstrip('/')}/job/first-freestyle/configure",
@@ -52,22 +60,39 @@ def configure_job(page, base_url: str, *, create: bool) -> None:
         shell,
     )
     wait_visible(page.locator(".CodeMirror").last, "shell command editor")
+    page.locator(".CodeMirror").last.scroll_into_view_if_needed()
+    capture_viewport(
+        page,
+        screenshot_dir / "lab1_s03_build_step.png",
+        "Build Steps with the completed Execute shell command",
+    )
     page.get_by_role("button", name="Save").click()
     page.wait_for_url("**/job/first-freestyle/**")
     wait_visible(page.locator("#main-panel"), "saved first-freestyle job page")
+    capture_viewport(
+        page,
+        screenshot_dir / "lab1_s04_job_saved.png",
+        "saved first-freestyle job page",
+    )
     log("configured first-freestyle with echo, date, and hostname")
 
 
-def create_job(page, base_url: str) -> None:
+def create_job(page, base_url: str, screenshot_dir: Path) -> None:
     page.goto(f"{base_url.rstrip('/')}/newJob", wait_until="domcontentloaded")
     name = wait_visible(page.locator("input[name='name']"), "new item name")
     name.fill("first-freestyle")
     project_type = page.get_by_text("Freestyle project", exact=True)
     wait_visible(project_type, "Freestyle project type").click()
+    require(name.input_value() == "first-freestyle", "new item has the canonical job name")
+    capture_viewport(
+        page,
+        screenshot_dir / "lab1_s02_new_item.png",
+        "New Item with first-freestyle and Freestyle project selected",
+    )
     ok = page.get_by_role("button", name="OK")
     wait_visible(ok, "create item OK button").click()
 
-    configure_job(page, base_url, create=True)
+    configure_job(page, base_url, screenshot_dir, create=True)
 
 
 def start_build(page, base_url: str) -> tuple[int, str]:
@@ -121,6 +146,13 @@ def start_build(page, base_url: str) -> tuple[int, str]:
     return build_number, build_url
 
 
+def capture_build_result(page, base_url: str, build_number: int, screenshot_path: Path) -> None:
+    page.goto(f"{base_url.rstrip('/')}/job/first-freestyle/", wait_until="domcontentloaded")
+    wait_visible(page.locator("#main-panel"), "first-freestyle job result page")
+    wait_visible(page.get_by_text(f"#{build_number}", exact=False).first, "successful build history entry")
+    capture_viewport(page, screenshot_path, f"first-freestyle build #{build_number} result")
+
+
 def capture_console(page, build_number: int, build_url: str, screenshot_path: Path) -> None:
     page.goto(f"{build_url}console", wait_until="domcontentloaded")
     console = wait_visible(page.locator("#main-panel"), "Console Output")
@@ -129,10 +161,7 @@ def capture_console(page, build_number: int, build_url: str, screenshot_path: Pa
     require("Hello from Jenkins!" in text, "console contains the echo output")
     require("Finished: SUCCESS" in text, "console contains Finished: SUCCESS")
     require(len([line for line in text.splitlines() if line.strip()]) >= 5, "console contains command output")
-    page.set_viewport_size({"width": 1280, "height": 900})
-    screenshot_path.parent.mkdir(parents=True, exist_ok=True)
-    page.screenshot(path=str(screenshot_path), full_page=False)
-    log(f"screenshot: first build #{build_number} console -> {screenshot_path}")
+    capture_viewport(page, screenshot_path, f"first build #{build_number} console")
 
 
 def flow(args: argparse.Namespace) -> None:
@@ -140,17 +169,29 @@ def flow(args: argparse.Namespace) -> None:
     from common import browser_page
 
     with browser_page(headless=not args.headed) as (_, _, _, page):
-        page.set_viewport_size({"width": 1280, "height": 900})
+        page.set_viewport_size({"width": 1440, "height": 900})
         jenkins_login(page, args.base_url)
+        screenshot_dir = Path(args.screenshot_dir)
         payload = job_api(page, args.base_url)
         if payload is None:
-            create_job(page, args.base_url)
+            create_job(page, args.base_url, screenshot_dir)
         else:
             require(payload.get("name") == "first-freestyle", "existing job has the canonical name")
-            configure_job(page, args.base_url, create=False)
+            configure_job(page, args.base_url, screenshot_dir, create=False)
             log("first-freestyle already exists; canonical shell step was refreshed")
         build_number, build_url = start_build(page, args.base_url)
-        capture_console(page, build_number, build_url, Path(args.screenshot))
+        capture_build_result(
+            page,
+            args.base_url,
+            build_number,
+            screenshot_dir / "lab1_s05_build_result.png",
+        )
+        capture_console(
+            page,
+            build_number,
+            build_url,
+            screenshot_dir / "lab1_s06_console_output.png",
+        )
 
 
 def parse_args() -> argparse.Namespace:
@@ -159,10 +200,7 @@ def parse_args() -> argparse.Namespace:
         "--base-url",
         default=os.getenv("JENKINS_BASE_URL", "http://host.docker.internal:11080"),
     )
-    parser.add_argument(
-        "--screenshot",
-        default="slides_assets/lab1_first_build.png",
-    )
+    parser.add_argument("--screenshot-dir", default="slides_assets")
     parser.add_argument("--headed", action="store_true")
     return parser.parse_args()
 

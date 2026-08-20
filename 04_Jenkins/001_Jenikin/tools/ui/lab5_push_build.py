@@ -12,7 +12,7 @@ import subprocess
 import time
 import urllib.request
 
-from common import browser_page, jenkins_login, log, require, run_main, screenshot, wait_visible
+from common import browser_page, jenkins_login, log, require, run_main, wait_visible
 
 
 JOB = "hello-ci-pipeline"
@@ -112,7 +112,11 @@ def flow(args: argparse.Namespace) -> None:
         body = wait_visible(page.locator("body"), "webhook-caused build page").inner_text()
         require(str(number) in body, f"build page shows #{number}")
         require("Generic" in body, "build page visibly identifies the Generic webhook cause")
-        screenshot(page, Path(args.screenshot_dir) / "lab5_auto_build.png", "automatic build and cause after push")
+        page.screenshot(
+            path=str(Path(args.screenshot_dir) / "lab5_s07_webhook_build_cause.png"),
+            full_page=False,
+        )
+        log("screenshot: automatic build page with Generic webhook cause")
 
 
 def parse_args() -> argparse.Namespace:

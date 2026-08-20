@@ -1,26 +1,26 @@
-# LAB 1 — ยก Jenkins ขึ้นด้วย Docker
+# LAB 1 — เริ่มต้น Jenkins บน Docker
 
-แล็บ 40 นาทีนี้ตอบคำถามว่า “จะเริ่ม Jenkins บน Docker และเก็บงานให้รอดจากการ restart ได้อย่างไร” เมื่อจบแล้วคุณจะติดตั้ง Jenkins ผ่านหน้าเว็บ สร้างและรัน Freestyle job แรก อ่าน Console Output และพิสูจน์ได้ว่างานยังอยู่เพราะใช้ volume
+แล็บ 40 นาทีนี้ตอบคำถามว่า “จะติดตั้ง Jenkins บน Docker และรักษาสถานะงานผ่านการ restart ได้อย่างไร” เมื่อสิ้นสุดการทดลอง นักศึกษาจะสามารถติดตั้ง Jenkins ผ่านหน้าเว็บ สร้างและรัน Freestyle job อ่าน Console Output และอธิบายบทบาทของ volume ต่อการคงอยู่ของข้อมูลได้
 
 ## ทฤษฎีก่อนลงมือ
 
-Jenkins คือ automation server ที่รับเหตุการณ์หรือคำสั่งแล้วทำงานซ้ำ ๆ ให้แทนเรา ในวง CI/CD มันมัก checkout โค้ด รันทดสอบ build artifact และส่งต่อไป deploy แทนการให้คนกดคำสั่งทุกขั้น รายละเอียดภาพรวมดู slide **ตอนที่ 1 — จากงานมือสู่ CI/CD**
+Jenkins คือ automation server ที่รับเหตุการณ์หรือคำสั่งและดำเนินกระบวนการซ้ำตามที่กำหนด ในระบบ CI/CD มักใช้ checkout โค้ด รันทดสอบ สร้าง artifact และส่งต่อไป deploy เพื่อลดการดำเนินงานด้วยมือ รายละเอียดภาพรวมดู slide **ตอนที่ 1 — จากงานมือสู่ CI/CD**
 
 คำว่า **controller** หมายถึง Jenkins ตัวที่เก็บการตั้งค่าและจัดคิวงาน, **job** คือสูตรงานหนึ่งชุด, **build** คือการรันสูตรนั้นแต่ละครั้ง และ **workspace** คือไดเรกทอรีทำงานของ job ระหว่าง build ดูความสัมพันธ์ของคำเหล่านี้ใน slide **ตอนที่ 2 — รู้จัก Jenkins**
 
-เราใส่ Jenkins ไว้ใน Docker เพื่อสร้างสภาพแวดล้อมซ้ำได้ เริ่ม/หยุด/เปลี่ยนเวอร์ชันได้โดยไม่ติดตั้ง Java ลงเครื่องหลัก พอร์ต `8080` เปิดหน้าเว็บและ HTTP API ส่วน `50000` มีไว้รับ inbound Jenkins agents; แล็บนี้ใช้ built-in node จึงไม่เปิดพอร์ตนั้น ดูสถาปัตยกรรมใน slide **ตอนที่ 3 — Jenkins บน Docker**
+การรัน Jenkins ใน Docker ทำให้สร้างสภาพแวดล้อมซ้ำ เริ่ม หยุด และเปลี่ยนเวอร์ชันได้โดยไม่ต้องติดตั้ง Java บนเครื่องหลัก พอร์ต `8080` ให้บริการหน้าเว็บและ HTTP API ส่วนพอร์ต `50000` ใช้รับ inbound Jenkins agents; แล็บนี้ใช้ built-in node จึงไม่เผยแพร่พอร์ตดังกล่าว ดูสถาปัตยกรรมใน slide **ตอนที่ 3 — Jenkins บน Docker**
 
-container ลบแล้วสร้างใหม่ได้ แต่ข้อมูลใน writable layer อาจหาย จึงผูก named volume `jenkins_home` ที่ `/var/jenkins_home` ซึ่งเก็บ config, users, jobs, build history และ workspaces กล่าวสั้น ๆ คือ **container เป็นตัวรัน ส่วน volume เป็นหัวใจของสถานะ**
+container สามารถลบและสร้างใหม่ได้ แต่ข้อมูลใน writable layer อาจสูญหาย จึงต้องผูก named volume `jenkins_home` ที่ `/var/jenkins_home` เพื่อเก็บ config, users, jobs, build history และ workspaces ดังนั้น container ทำหน้าที่ประมวลผล ส่วน volume ทำหน้าที่เก็บสถานะถาวร
 
 > **คำเตือนความปลอดภัย:** `--privileged` ให้สิทธิ์สูงมากและเหมาะกับ devtools แบบ disposable ของแล็บเท่านั้น ระบบ production ควรแยก agent, ใช้ least privilege และจัด config/secret ด้วย JCasC หรือ secret manager
 
-## 🎯 แล็บนี้ใน 30 วินาที
+## 🎯 ขอบเขตและผลลัพธ์การเรียนรู้
 
-- เปิด devtools แบบ Docker-in-Docker แล้วเข้า shell ผ่าน SSH
-- สร้าง network, volume และ Jenkins controller
-- unlock Jenkins ติดตั้ง suggested plugins และสร้างผู้ดูแล
-- สร้าง Freestyle job แล้วอ่านผล build แรก
-- restart สองชั้นและตรวจว่า job กับประวัติยังอยู่
+- อธิบายหน้าที่ของ controller, job, build, workspace และ `jenkins_home` ได้
+- สร้าง network, volume และ Jenkins controller ด้วยค่าที่กำหนดได้
+- unlock Jenkins ติดตั้ง suggested plugins และสร้างผู้ดูแลได้
+- สร้าง Freestyle job และตรวจผล build ผ่าน Console Output ได้
+- พิสูจน์ได้ว่า job และประวัติ build ยังคงอยู่หลัง restart สองชั้น
 
 ## สภาพตั้งต้น
 
@@ -34,13 +34,13 @@ docker run -dit --name devtools-jenkins --privileged \
 ssh root@localhost -p 2222
 ```
 
-เมื่อ SSH ถามรหัสผ่าน ใช้ `passwd` แล้วทำการทดลองที่ 1–6 และ 8 ใน shell ของ devtools นี้ ส่วนการทดลองที่ 7 รันจาก terminal ของเครื่องหลัก
+เมื่อ SSH ขอรหัสผ่าน ให้ใช้ `passwd` การทดลองที่ 1–6 และ 8 ดำเนินการใน shell ของ devtools ส่วนการทดลองที่ 7 ดำเนินการจาก terminal ของเครื่องหลัก
 
 ```bash
 docker ps --format '{{.Names}}\t{{.Status}}'   # ต้องเห็น: devtools-jenkins
 ```
 
-> ยังไม่มี LAB ก่อนหน้า — ถ้า `docker run` แจ้งว่าชื่อซ้ำ ให้ใช้ container เดิมด้วย `docker start devtools-jenkins` แล้ว SSH เข้าไป
+> LAB 1 ไม่มีสถานะจากแล็บก่อนหน้า หาก `docker run` แจ้งว่าชื่อซ้ำ ให้เริ่ม container เดิมด้วย `docker start devtools-jenkins` แล้วเชื่อมต่อผ่าน SSH
 
 ## การทดลองที่ 1 — Jenkins ต้องเชื่อมกับ network ใด
 
@@ -54,8 +54,8 @@ docker run -d --name jenkins --network cicd-net --restart unless-stopped -p 8080
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-e2201dd068b4156ead5570e0675ae8dd8fa4394e8f283ff9fd30f96c026a0cd3
-eef0f5cbbc82638edf28df8b866ff82d43e5a1c9508effe5b6dc52a4bb988d7c
+c0c39ebdcfc7292c277decf8881c3e29b7902c867bb4d4903753bcf304d20532
+10aec58bd39d863c9b8f85f01cce6f92a97acf2660b36081a980f2406ff82791
 ```
 
 > 📝 การดาวน์โหลด image ครั้งแรกใช้เวลาตามเครือข่าย รอจน `docker ps` แสดงสถานะ `Up` ก่อนเปิดเว็บ
@@ -71,7 +71,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-initialAdminPassword=8e0a...8cad (length=32)
+initialAdminPassword=6631...a0a1 (length=32)
 ```
 
 บรรทัดนี้ตัดจากการรันจริงโดยปิดรหัสช่วงกลางไว้; ค่าของแต่ละเครื่องจะต่างกัน แต่ต้องยาว 32 ตัว
@@ -82,9 +82,26 @@ initialAdminPassword=8e0a...8cad (length=32)
 
 **คำถาม:** จะ unlock ติดตั้ง plugins และสร้างผู้ดูแลผ่านหน้าเว็บอย่างไร?
 
+Setup Wizard ทำหน้าที่เปลี่ยน Jenkins จากสถานะติดตั้งใหม่ให้เป็นระบบที่ยืนยันตัวตนได้และมี plugin พื้นฐานพร้อมใช้งาน ลำดับต่อไปนี้ต้องดำเนินการต่อเนื่องจนถึง Dashboard
+
 1. เปิด `http://localhost:8080` วางรหัสจากการทดลองที่ 2 แล้วกด **Continue**
-2. กด **Install suggested plugins** และรอประมาณ 2–3 นาที; ถ้าช้ากว่านี้ให้ดูตารางแก้ปัญหา
-3. สร้างผู้ใช้ `admin` รหัสผ่าน `admin2569`, Full name `Admin`, Email `student@example.com`
+
+![หน้า Unlock Jenkins](../slides_assets/lab1_unlock.png)
+
+*ช่อง Administrator password รับรหัสเริ่มต้นจาก container ก่อนเข้าสู่ขั้นติดตั้ง plugin*
+
+2. เลือก **Install suggested plugins** และรอประมาณ 2–3 นาทีจนการติดตั้งเสร็จสมบูรณ์
+
+![หน้าเลือก Install suggested plugins](../slides_assets/lab1_plugins.png)
+
+*ตัวเลือก suggested plugins จัดเตรียมความสามารถพื้นฐาน รวมถึง Pipeline และ Git*
+
+3. กรอก Username `admin`, Password และ Confirm password เป็น `admin2569`, Full name `Admin`, Email `student@example.com` แล้วกด **Save and Continue**
+
+![แบบฟอร์มสร้างผู้ดูแลที่กรอกแล้ว](../slides_assets/lab1_s01_admin_user.png)
+
+*แบบฟอร์มผู้ดูแลกรอกค่าครบ โดยช่อง Password และ Confirm password แสดงเป็นจุดเพื่อปิดบังรหัสผ่าน*
+
 4. คง Jenkins URL เป็น `http://localhost:8080/` แล้วกด **Save and Finish → Start using Jenkins**
 
 ✅ **สิ่งที่ต้องเห็น** :
@@ -93,9 +110,9 @@ initialAdminPassword=8e0a...8cad (length=32)
 Welcome to Jenkins!
 ```
 
-![หน้า Unlock Jenkins](../slides_assets/lab1_unlock.png)
+![Jenkins Dashboard หลังจบ Setup Wizard](../slides_assets/lab1_dashboard.png)
 
-![หน้าเลือก Install suggested plugins](../slides_assets/lab1_plugins.png)
+*Dashboard แสดงว่า Setup Wizard เสร็จสมบูรณ์และ Jenkins พร้อมสร้าง job*
 
 > 📝 ถ้า plugin บางตัวขึ้น Retry ให้กด Retry; อย่าปิด container ระหว่างติดตั้ง
 
@@ -103,13 +120,31 @@ Welcome to Jenkins!
 
 **คำถาม:** จะสร้าง Freestyle job ที่รัน shell สามคำสั่งได้อย่างไร?
 
-1. จาก Dashboard ดูเมนู **New Item, Build History, Manage Jenkins** แล้วกด **New Item**
-2. ตั้งชื่อ `first-freestyle` เลือก **Freestyle project** แล้วกด **OK**
-3. ที่ **Build Steps → Add build step → Execute shell** ใส่ข้อความด้านล่าง แล้วกด **Save**
+Freestyle job เหมาะสำหรับศึกษาความสัมพันธ์ระหว่างการกำหนดค่า job กับ build ก่อนเข้าสู่ Pipeline การบันทึก job จะสร้าง config ภายใต้ `jenkins_home` และเปิดหน้าสถานะของ job นั้น
+
+1. จาก Dashboard ตรวจเมนู **New Item, Build History, Manage Jenkins** แล้วเลือก **New Item**
+
+![Jenkins Dashboard](../slides_assets/lab1_dashboard.png)
+
+*Dashboard เป็นจุดเริ่มต้นของการสร้าง job โดยใช้เมนู New Item ด้านซ้าย*
+
+2. กรอกชื่อ `first-freestyle` เลือก **Freestyle project** แล้วกด **OK**
+
+![หน้า New Item สำหรับ Freestyle job](../slides_assets/lab1_s02_new_item.png)
+
+*หน้า New Item แสดงชื่อ first-freestyle ประเภท Freestyle project และปุ่ม OK ที่พร้อมใช้งาน*
+
+3. ไปที่ **Build Steps → Add build step → Execute shell** แล้วกรอกคำสั่งต่อไปนี้ในช่อง Command
 
 ```bash
 echo "Hello from Jenkins!"; date; hostname
 ```
+
+![Execute shell ที่กรอกคำสั่งแล้ว](../slides_assets/lab1_s03_build_step.png)
+
+*ส่วน Build Steps แสดง Execute shell และคำสั่งสามส่วนก่อนบันทึก config*
+
+4. ตรวจข้อความในช่อง Command แล้วกด **Save**
 
 ✅ **สิ่งที่ต้องเห็น** :
 
@@ -117,14 +152,31 @@ echo "Hello from Jenkins!"; date; hostname
 หน้า job ชื่อ first-freestyle และมีเมนู Build Now
 ```
 
-![Jenkins Dashboard](../slides_assets/lab1_dashboard.png)
+![หน้า first-freestyle หลังบันทึก](../slides_assets/lab1_s04_job_saved.png)
+
+*หน้า Status หลัง Save แสดงชื่อ first-freestyle เมนู Build Now และยังไม่มี build history*
+
+ขณะนี้ระบบอยู่ที่หน้า Status ของ `first-freestyle` และพร้อมสร้าง build แรก การทดลองถัดไปจะใช้ config ที่บันทึกไว้นี้
 
 ## การทดลองที่ 5 — Build บอกอะไรเราได้บ้าง
 
 **คำถาม:** Console Output และ workspace ของ build แรกอยู่ที่ใด?
 
-1. กด **Build Now** รอให้ `#1` เป็นวงกลมสีเขียว แล้วกด `#1 → Console Output`
-2. กลับมาที่ shell ตรวจ workspace ที่ Jenkins เก็บใน volume
+Console Output เป็นหลักฐานว่าคำสั่งใดถูกรัน ใน workspace ใด และจบด้วยสถานะใด ส่วน workspace แสดงตำแหน่งข้อมูลทำงานของ job ภายใน volume
+
+1. จากหน้า Status เลือก **Build Now** แล้วรอจน build `#1` แสดงเครื่องหมายสีเขียว
+
+![ผล build แรกของ first-freestyle](../slides_assets/lab1_s05_build_result.png)
+
+*หน้า job แสดง build #1 เป็น Last successful build และมีเครื่องหมายสถานะสีเขียว*
+
+2. เลือก `#1 → Console Output` และตรวจว่ามีข้อความ `Hello from Jenkins!` กับ `Finished: SUCCESS`
+
+![Console Output ของ build แรก](../slides_assets/lab1_s06_console_output.png)
+
+*Console Output แสดง workspace คำสั่ง echo, date, hostname และผลลัพธ์ Finished: SUCCESS*
+
+3. กลับมาที่ shell แล้วตรวจ workspace ที่ Jenkins เก็บใน volume
 
 ```bash
 docker exec jenkins sh -c 'ls -ld /var/jenkins_home/workspace/first-freestyle'
@@ -136,10 +188,12 @@ docker exec jenkins sh -c 'ls -ld /var/jenkins_home/workspace/first-freestyle'
 Building in workspace /var/jenkins_home/workspace/first-freestyle
 Hello from Jenkins!
 Finished: SUCCESS
-drwxr-xr-x 2 jenkins jenkins 4096 Aug 20 00:48 /var/jenkins_home/workspace/first-freestyle
+drwxr-xr-x 2 jenkins jenkins 4096 Aug 20 03:01 /var/jenkins_home/workspace/first-freestyle
 ```
 
 ![Console Output ของ build แรก](../slides_assets/lab1_first_build.png)
+
+*ภาพ Console Output ชุดเดิมยืนยันรูปแบบผลลัพธ์ที่ต้องตรวจสอบหลัง build สำเร็จ*
 
 > 📝 Build number คือประวัติการรัน ไม่ใช่ job ใหม่; workspace นี้อยู่ใต้ `/var/jenkins_home` จึงอยู่ใน `jenkins_home`
 
@@ -158,7 +212,7 @@ curl -fsS -u admin:admin2569 'http://localhost:8080/job/first-freestyle/lastBuil
 {"_class":"hudson.model.FreeStyleBuild","number":1,"result":"SUCCESS"}
 ```
 
-สถานะยังอยู่เพราะ `jenkins_home` ถูก mount กลับเข้าที่เดิม ไม่ได้ฝากไว้กับอายุของ container process
+สถานะยังคงอยู่เพราะ `jenkins_home` ถูก mount กลับเข้าตำแหน่งเดิมและไม่ผูกกับอายุของ container process ขณะนี้ job และ build history พร้อมสำหรับการทดสอบ restart ชั้นนอก
 
 ## การทดลองที่ 7 — Restart devtools ทั้งตัวแล้วระบบกู้ตัวเองได้หรือไม่
 

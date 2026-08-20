@@ -7,6 +7,7 @@ import argparse
 import base64
 import json
 import os
+from pathlib import Path
 import time
 import urllib.error
 import urllib.request
@@ -68,7 +69,7 @@ def flow(args: argparse.Namespace) -> None:
         jenkins_login(page, base_url)
         page.goto(f"{base_url}/manage/pluginManager/available", wait_until="domcontentloaded")
         search = wait_visible(page.locator("#filter-box"), "Available plugins search", 60_000)
-        search.fill("Generic Webhook Trigger")
+        search.fill("generic-webhook-trigger")
         row = page.locator("#plugins tbody tr").filter(has_text="Generic Webhook Trigger")
         wait_visible(row, "Generic Webhook Trigger result", 120_000)
         row_text = row.inner_text()
@@ -76,6 +77,12 @@ def flow(args: argparse.Namespace) -> None:
         checkbox = row.locator("input[type='checkbox']")
         row.locator("label[for='plugin.generic-webhook-trigger.default']").click()
         require(checkbox.is_checked(), "Generic Webhook Trigger is selected")
+        row.scroll_into_view_if_needed()
+        page.screenshot(
+            path=str(Path(args.screenshot_dir) / "lab5_s01_available_plugin.png"),
+            full_page=False,
+        )
+        log("screenshot: Available plugins search result selected")
         page.locator("#button-install").click()
         log("plugin installation submitted from Available plugins UI")
 
@@ -86,6 +93,13 @@ def flow(args: argparse.Namespace) -> None:
             page.wait_for_timeout(2_000)
         else:
             raise TimeoutError("plugin installation did not finish")
+
+        page.locator("body").wait_for(state="visible")
+        page.screenshot(
+            path=str(Path(args.screenshot_dir) / "lab5_s02_plugin_download_restart.png"),
+            full_page=False,
+        )
+        log("screenshot: plugin download progress after successful installation")
 
         # Use Jenkins' own restart confirmation page so the restart is also a UI action.
         page.goto(f"{base_url}/restart", wait_until="domcontentloaded")
@@ -103,6 +117,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--base-url", default=os.getenv("JENKINS_BASE_URL", "http://host.docker.internal:15080"))
     parser.add_argument("--install-timeout", type=int, default=600)
     parser.add_argument("--restart-timeout", type=int, default=300)
+    parser.add_argument("--screenshot-dir", default="slides_assets")
     parser.add_argument("--headed", action="store_true")
     return parser.parse_args()
 

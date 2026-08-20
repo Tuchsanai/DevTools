@@ -4,8 +4,9 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
-from common import browser_page, gitea_login, require, run_main, wait_visible
+from common import browser_page, gitea_login, log, require, run_main, wait_visible
 
 
 TARGET_URL = "http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-webapp"
@@ -14,6 +15,7 @@ TARGET_URL = "http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-
 def main() -> None:
     base_url = os.getenv("GITEA_BASE_URL", "http://host.docker.internal:16300").rstrip("/")
     hooks_url = f"{base_url}/student/webapp/settings/hooks"
+    target = Path(os.environ.get("SCREENSHOT", "slides_assets/lab6_s05_gitea_webhook.png"))
 
     with browser_page() as (_, _, _, page):
         gitea_login(page, base_url)
@@ -39,6 +41,9 @@ def main() -> None:
             page.goto(hooks_url, wait_until="domcontentloaded")
 
         require(TARGET_URL in page.locator("body").inner_text(), "active webapp webhook uses the canonical Jenkins URL")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        page.screenshot(path=str(target), full_page=False)
+        log(f"screenshot: active canonical webapp webhook -> {target}")
 
 
 if __name__ == "__main__":

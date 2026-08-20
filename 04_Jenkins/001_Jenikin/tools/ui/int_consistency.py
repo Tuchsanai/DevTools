@@ -105,7 +105,7 @@ def main() -> int:
                          + ("" if not missing_labs else f"; missing={missing_labs}")))
 
     stack = (ROOT / "docs" / "STACK_RESOLVED.md").read_text(encoding="utf-8")
-    versions = ("2.568.2", "1.27.2", "26.1.5", "2.4.2")
+    versions = ("2.568.2", "1.27.2", "29.7.2", "2.4.2")
     version_drift = [v for v in versions if v not in stack or v not in deck_text]
     checks.append(report(not version_drift, "deck versions match STACK_RESOLVED (Jenkins/Gitea/Docker CLI/GWT)"
                          + ("" if not version_drift else f"; missing={version_drift}")))

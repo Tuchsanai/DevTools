@@ -41,6 +41,7 @@
 
 | id | ระดับ | คำตัดสิน | เหตุผล | ผลต่อแผน |
 |---|---|---|---|---|
+| USR-03 (2026-08-20) | คำสั่งผู้ใช้ | เรียบเรียง README ทุก LAB: โทนวิชาการ (ไม่เอาแนวเพื่อน) + เพิ่ม screenshot ขั้นตอน Jenkins แบบไม่ขาดช่วง + ตรวจภาพด้วย cyolo gpt-5.6-sol/medium (ประหยัด token Claude) → spec: docs/REWRITE_SPEC.md · fan-out U1R–U6R (medium) 2 ชุด · Phase 4 adversarial review เลื่อนไปตรวจฉบับหลังเรียบเรียง |
 | UM-01 | minor | **ยอมรับ** | Remotion 4.0.513 ห้าม `_` ใน Composition.id — พิสูจน์ตอน build | manifest ใช้ id แบบ dash (`mo-intro`) ชื่อไฟล์คง `mo_*.mp4` · U7 ต้องอ่านจาก manifest เท่านั้น |
 
 ## Delta critique — Docker Hub (docs/CRITIQUE_DELTA_HUB.md, 2026-08-20)
@@ -66,6 +67,13 @@
 | UM | **PASS** | ตรวจไขว้เองแล้ว: sha256 ตรง manifest, h264 720p30 ไม่มีเสียง, 5 คลิปรวม ~740KB · UM-01 ยอมรับ |
 | U4 | **PASS** | ทุก DoD ผ่าน + negative check · critique U4-01 **ยอมรับ**: `H/1 * * * *` ถูก Jenkins hash เป็นนาทีตายตัว (หลักฐาน polling log) → canonical เปลี่ยนเป็น `* * * * *` (แก้ PLAN แล้ว, U-PATCH แก้ README/check ของ LAB 4 + bootstrap) · critique U4-02 **ยอมรับ**: fixture hello-ci ของ U0 ต้อง sync กับของจริง LAB 4 (4 stages + hello.sh + expected.txt) → U-PATCH |
 | U-PATCH | **PASS** | drift ทุกจุดแก้แล้ว + เจอและแก้ drift LAB 1/2 เพิ่มเอง · fresh chain + **check.sh ไขว้ครบ 5 ชั้น exit 0 ทุกตัว** (ปิดเงื่อนไข U0 DoD ข้อ 1) · idempotent ✓ token ✓ cleanup ✓ · เศษ `H/1` เหลือ 2 ไฟล์นอก scope → U-PATCH2 (micro) |
+| U-FIX3 | **PASS** | U3-01: credential first-run exit 0 (ทดสอบซ้ำสด) · VER-01: Docker CLI 29.7.2 ตรงทั้ง bootstrap/STACK/LAB6/deck (rebuild + tests ผ่าน) · +micro-fix int_consistency.py → 12/12 PASS |
+| U1R | **PASS** | README LAB 1 ฉบับวิชาการ 279 บรรทัด + ภาพขั้นตอนใหม่ 6 (vision-verified โดย agent) · check.sh ผ่าน · hash คำสั่งเดิมตรง · สุ่มตรวจโทน: 0 คำ casual |
+| U2R | **PASS** | README LAB 2 วิชาการ 383 บรรทัด + ภาพขั้นตอน 9 (s01 New Item → s09 prod graph, vision-verified) · check.sh #7 SUCCESS 4 stages · Jenkinsfile/check ไม่ถูกแตะ · โทน clean |
+| U3R | **PASS** | README LAB 3 วิชาการ 310 บรรทัด + ภาพ 8 (เส้นทางเมนู Credentials ครบ, console login masked/digest, hub public tag) · token/auth ค้าง = 0 · ภาพเดิม SHA ไม่เปลี่ยน · check.sh ผ่าน |
+| U4R | **PASS** | README LAB 4 วิชาการ 306 บรรทัด + ภาพ 10 (installer→repo→SCM config→Poll→SCM change) · anchor `* * * * *`/ห้ามใช้ H/1 คงอยู่ · check.sh ผ่าน · โทน clean |
+| U5R | **PASS** | README LAB 5 วิชาการ 252 บรรทัด + ภาพ 8 (plugin→trigger token→webhook form→delivery 200→cause) · check.sh ผ่าน · leakage 0 · โทน clean |
+| U6R | **PASS** | README LAB 6 วิชาการ 333 บรรทัด + ภาพ 11 (s01–s11 ครบวง v1→v2 รวม console pytest/verify) · anchors ครบ · check.sh acceptance ผ่าน · ภาพเดิม hash เดิม · leakage 0 |
 | U8 | **FAIL → FIX เฉพาะจุด** | ผ่าน: chain 1→6 + check.sh ทุกแล็บ + restart checkpoint ×2 + capstone e2e + consistency 12/12 + cleanup global · Findings: **U3-01** (lab3_credential.py แพ้ race รอบแรก) และ **VER-01** (Docker CLI 26.1.5 Debian repo ใน bootstrap vs 29.7.2 official repo ใน LAB 3 → STACK/LAB6/deck คัดค่าเก่า) · คำตัดสิน: canonical = official Docker repo · แก้โดย U-FIX3 + re-proof เฉพาะจุด (ไม่ re-run เต็มเพราะ findings จำกัดวง มีหลักฐาน chain ส่วนอื่นครบแล้ว) |
 | U7 | **PASS** | ตรวจไขว้ภาพหลักฐาน: ปก+overview grid+D8 topology ถูกต้องสวยงาม · 80 หน้า 6.0MiB · offline test 0 external req/0 error · วิดีโอ 5 เล่น/หยุดตามหน้า · consistency 17 code blocks ผ่าน + guard กัน H/1 ถดถอย · polish item (Phase 4, minor): ป้ายลูกศร push/verify ใน D8 ทับกันเล็กน้อย |
 | U-PATCH2 | **PASS** | เศษ `H/1` ในโค้ดหมดแล้ว (เหลือเฉพาะบรรทัดสอน/guard ที่ตั้งใจ) · py_compile ผ่าน |

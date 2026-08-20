@@ -10,7 +10,7 @@ from common import browser_page, log, require, run_main, screenshot, wait_visibl
 
 
 ROOT = Path(__file__).resolve().parents[2]
-TARGET = ROOT / "slides_assets" / "lab6_app_v2.png"
+TARGET = ROOT / "slides_assets" / "lab6_s10_dashboard_v2.png"
 
 
 def main() -> None:

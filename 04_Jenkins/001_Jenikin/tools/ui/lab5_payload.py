@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import os
+from pathlib import Path
 import re
 import subprocess
 
@@ -47,22 +48,28 @@ def flow(args: argparse.Namespace) -> None:
         wait_visible(request_tab, "delivery Request tab")
         request_tab.click()
         page.wait_for_timeout(500)
-        # Gitea renders JSON with a client-side editor. Read its visible/editor
-        # backing nodes because the pretty payload is not plain body text.
-        editor_values = page.locator(
-            "textarea, .CodeMirror, .CodeMirror-code, .cm-editor, .cm-content, .monaco-editor"
-        ).evaluate_all("els => els.map(e => e.value || e.innerText || e.textContent || '').filter(Boolean)")
-        payload_source = page.content() + "\n" + "\n".join(editor_values)
+        # Scope assertions to the expanded delivery. Other collapsed deliveries
+        # remain in the DOM and must not satisfy evidence for the latest push.
+        payload_source = page.locator("pre.webhook-info:visible").last.inner_text()
         require("head_commit" in payload_source, "payload contains head_commit")
         require(commit in payload_source, "payload head commit matches Gitea main")
         require("Verify immediate webhook build" in payload_source, "payload contains the pushed commit message")
         log(f"payload head_commit={commit[:12]} message='Verify immediate webhook build'")
+        request_tab.scroll_into_view_if_needed()
+        page.mouse.wheel(0, 700)
+        page.wait_for_timeout(300)
+        page.screenshot(
+            path=str(Path(args.screenshot_dir) / "lab5_s08_delivery_request.png"),
+            full_page=False,
+        )
+        log("screenshot: latest delivery Request payload")
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-url", default=os.getenv("GITEA_BASE_URL", "http://host.docker.internal:15300"))
     parser.add_argument("--devtools-name", default=os.getenv("DT_NAME", "devtools-jk5"))
+    parser.add_argument("--screenshot-dir", default="slides_assets")
     parser.add_argument("--headed", action="store_true")
     return parser.parse_args()
 

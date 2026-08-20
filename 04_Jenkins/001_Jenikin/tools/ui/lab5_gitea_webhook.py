@@ -8,7 +8,7 @@ import os
 import re
 from pathlib import Path
 
-from common import browser_page, gitea_login, log, require, run_main, screenshot, wait_visible
+from common import browser_page, gitea_login, log, require, run_main, wait_visible
 
 
 HOOK_URL = "http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-hello"
@@ -31,12 +31,24 @@ def flow(args: argparse.Namespace) -> None:
             active = page.locator("input[name='active']")
             require(push_only.is_checked(), "Push Events is selected")
             require(active.is_checked(), "webhook is active")
-            screenshot(page, Path(args.screenshot_dir) / "lab5_webhook_config.png", "Gitea Add Webhook configuration")
+            target.scroll_into_view_if_needed()
+            page.screenshot(
+                path=str(Path(args.screenshot_dir) / "lab5_s04_add_webhook_form.png"),
+                full_page=False,
+            )
+            log("screenshot: Gitea Add Webhook form with canonical URL")
             page.get_by_role("button", name="Add Webhook", exact=True).click()
             page.wait_for_url(lambda url: "/settings/hooks" in url and "/new" not in url, timeout=60_000)
             log(f"webhook saved through UI at {page.url}")
 
         require(HOOK_URL in page.locator("body").inner_text(), "saved webhook URL is shown")
+        page.goto(f"{base_url}/student/hello-ci/settings/hooks", wait_until="domcontentloaded")
+        require(HOOK_URL in page.locator("body").inner_text(), "canonical webhook remains listed after save")
+        page.screenshot(
+            path=str(Path(args.screenshot_dir) / "lab5_s05_webhook_list.png"),
+            full_page=False,
+        )
+        log("screenshot: saved webhook in repository webhook list")
         saved = page.locator("a[href*='/settings/hooks/']").filter(has_text="Unnamed Webhook").first
         require(saved.count() == 1, "saved Gitea webhook entry is present")
         saved.click()
@@ -63,7 +75,14 @@ def flow(args: argparse.Namespace) -> None:
         for line in text.splitlines():
             if "200" in line or "Triggered" in line or "hello-ci-pipeline" in line:
                 log(f"delivery evidence: {line.strip()}")
-        screenshot(page, Path(args.screenshot_dir) / "lab5_delivery.png", "delivery HTTP 200 and Jenkins response")
+        delivery.scroll_into_view_if_needed()
+        page.mouse.wheel(0, 650)
+        page.wait_for_timeout(300)
+        page.screenshot(
+            path=str(Path(args.screenshot_dir) / "lab5_s06_delivery_response.png"),
+            full_page=False,
+        )
+        log("screenshot: expanded delivery with HTTP 200 and Jenkins response")
 
 
 def parse_args() -> argparse.Namespace:

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import os
+from pathlib import Path
 
 from common import browser_page, jenkins_login, log, require, run_main, wait_visible
 
@@ -36,6 +37,12 @@ def flow(args: argparse.Namespace) -> None:
         wait_visible(token, "Generic Webhook Trigger token field")
         token.fill(TOKEN)
         require(token.input_value() == TOKEN, "per-job token is cicd2569-hello")
+        trigger_block.scroll_into_view_if_needed()
+        page.screenshot(
+            path=str(Path(args.screenshot_dir) / "lab5_s03_build_trigger_token.png"),
+            full_page=False,
+        )
+        log("screenshot: Build Triggers with Generic Webhook Trigger token")
 
         page.get_by_role("button", name="Save", exact=True).click()
         page.wait_for_url(lambda url: f"/job/{JOB}/" in url and "configure" not in url, timeout=60_000)
@@ -52,6 +59,7 @@ def flow(args: argparse.Namespace) -> None:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-url", default=os.getenv("JENKINS_BASE_URL", "http://host.docker.internal:15080"))
+    parser.add_argument("--screenshot-dir", default="slides_assets")
     parser.add_argument("--headed", action="store_true")
     return parser.parse_args()
 

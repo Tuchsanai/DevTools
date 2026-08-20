@@ -9,11 +9,11 @@ import os
 import urllib.request
 from pathlib import Path
 
-from common import browser_page, require, run_main, screenshot, wait_visible
+from common import browser_page, log, require, run_main, wait_visible
 
 
 ROOT = Path(__file__).resolve().parents[2]
-TARGET = ROOT / "slides_assets" / "lab6_hub_tags.png"
+TARGET = ROOT / "slides_assets" / "lab6_s11_hub_public_tags.png"
 
 
 def latest_build_number(jenkins_url: str) -> str:
@@ -39,7 +39,8 @@ def main() -> None:
         wait_visible(page.get_by_text(build_number, exact=True).first, f"new build tag {build_number}", 120000)
         wait_visible(page.get_by_text("latest", exact=True).first, "latest tag", 120000)
         require("/cicd-webapp/tags" in page.url, "browser remains on the public cicd-webapp Tags page")
-        screenshot(page, TARGET, "real public Hub page with current build and latest tags")
+        page.screenshot(path=str(TARGET), full_page=False)
+        log(f"screenshot: real public Hub page with current build and latest tags -> {TARGET}")
 
 
 if __name__ == "__main__":

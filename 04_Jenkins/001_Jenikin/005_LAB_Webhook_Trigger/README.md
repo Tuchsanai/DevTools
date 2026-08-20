@@ -1,31 +1,30 @@
 # LAB 5 — Push แล้ว Build ทันทีด้วย Webhook
 
-แล็บ 30 นาทีนี้ตอบคำถามว่าเราจะเปลี่ยนจาก Jenkins คอยถาม Git ทุกนาทีเป็น Gitea แจ้ง Jenkins ทันทีเมื่อมี `push` ได้อย่างไร เมื่อจบแล้ว `hello-ci-pipeline` จะ build อัตโนมัติจาก webhook พร้อมหลักฐาน delivery, payload และ build cause
+แล็บ 30 นาทีนี้ศึกษาการเปลี่ยนกลไก trigger ของ `hello-ci-pipeline` จากการที่ Jenkins ตรวจ repository เป็นระยะ ไปเป็นการที่ Gitea แจ้งเหตุการณ์ `push` ทันที เมื่อสิ้นสุดแล็บ ผู้เรียนจะติดตั้ง plugin กำหนด token สร้าง webhook และตรวจสอบ delivery, payload และ build cause ได้จากหลักฐานจริง
 
 ## ทฤษฎีก่อนลงมือ
 
-Webhook คือการแจ้งเหตุการณ์แบบ **push model**: เมื่อ Gitea รับ commit ใหม่ มันส่ง HTTP POST พร้อม payload ไปยัง endpoint ของ Jenkins ทันที ผู้รับไม่ต้องถามซ้ำ ๆ จึงตอบสนองเร็วและไม่มี request ตอนที่ repository เงียบ ดูภาพเปรียบเทียบและวิดีโอ `polling vs webhook` ในสไลด์ **ตอนที่ 5**
+Webhook คือการแจ้งเหตุการณ์แบบ **push model** เมื่อ Gitea รับ commit ใหม่ ระบบจะส่ง HTTP POST พร้อม payload ไปยัง endpoint ของ Jenkins ทันที ผู้รับจึงไม่ต้องส่ง request เพื่อตรวจสอบ repository ซ้ำในช่วงที่ไม่มีการเปลี่ยนแปลง รายละเอียดเปรียบเทียบและวิดีโอ `polling vs webhook` อยู่ในสไลด์ตอนที่ 5
 
-Poll SCM เป็น **pull model**: Jenkins ตั้งเวลาแล้วถาม Git ว่า revision เปลี่ยนหรือยัง ข้อดีคือไม่ต้องเปิด endpoint ให้ระบบต้นทางเรียก แต่มีช่วงหน่วงสูงสุดตามรอบ polling และเกิด request แม้ไม่มีงานใหม่ LAB 4 ใช้ `* * * * *`; LAB นี้จะปิด polling แล้วให้ Gitea เป็นฝ่ายแจ้ง
+Poll SCM เป็น **pull model** ซึ่ง Jenkins ทำงานตามตารางเวลาแล้วตรวจว่า revision เปลี่ยนหรือไม่ วิธีนี้ไม่ต้องให้ระบบต้นทางเข้าถึง endpoint ของ Jenkins แต่มีความหน่วงตามรอบ polling และเกิด request แม้ repository ไม่มี commit ใหม่ LAB 4 ใช้ `* * * * *`; LAB นี้จะปิด polling และให้ Gitea เป็นผู้แจ้งเหตุการณ์แทน
 
-Generic Webhook Trigger plugin เพิ่ม endpoint กลาง `/generic-webhook-trigger/invoke` และเลือก job ด้วย token ตามสัญญา I-05 เราใช้ `cicd2569-hello` เฉพาะ `hello-ci-pipeline` เพราะถ้าหลาย job ใช้ token เดียวกัน การเรียกหนึ่งครั้งจะยิงโดนทุก job ที่ใช้ token นั้น ไม่ใช่การแบ่งงานตามชื่อ repository ให้อัตโนมัติ
+Generic Webhook Trigger plugin เพิ่ม endpoint `/generic-webhook-trigger/invoke` และเลือก job ด้วย token ตามสัญญา I-05 แล็บนี้ใช้ `cicd2569-hello` เฉพาะ `hello-ci-pipeline` หากหลาย job ใช้ token เดียวกัน request หนึ่งครั้งอาจ trigger ทุก job ที่ผูก token นั้น จึงต้องแยก token ต่อ job
 
-Gitea รันด้วย `GITEA__webhook__ALLOWED_HOST_LIST=private` ตั้งแต่เริ่ม container ใน LAB 4 เพื่ออนุญาตปลายทาง private network เช่น `jenkins` บน `cicd-net` แต่ไม่เปิดกว้างทุก host การ allow-list นี้ป้องกันไม่ให้ผู้ใช้ตั้ง webhook ให้ server ไปเรียกปลายทาง arbitrary บนอินเทอร์เน็ตหรือทรัพยากรที่ไม่ตั้งใจ
+Gitea รันด้วย `GITEA__webhook__ALLOWED_HOST_LIST=private` ตั้งแต่ LAB 4 เพื่ออนุญาตปลายทาง private network เช่น `jenkins` บน `cicd-net` โดยไม่เปิดให้ webhook ติดต่อทุก host การกำหนด allow-list ช่วยลดความเสี่ยงที่ server จะถูกใช้เรียกปลายทางที่ไม่ได้ตั้งใจ
 
 > **Safety:** token webhook คือรหัสเปิดประตูให้สั่ง build แล็บนี้ใช้ค่าคงที่เพื่อ copy-paste ง่าย; production ต้องสุ่มค่าแรง แยก token/credential ต่อ job จำกัด scope/เครือข่าย และเก็บด้วยระบบ secrets ส่วน `ALLOWED_HOST_LIST=private` จำกัดพื้นที่ปลายทางแทน wildcard แต่ยังควรใช้ least privilege และแยก build agent
 
-## 🎯 แล็บนี้ใน 30 วินาที
+## 🎯 ขอบเขตและผลลัพธ์การเรียนรู้
 
-- ติดตั้ง Generic Webhook Trigger 2.4.2 แล้ว restart Jenkins
-- ปิด Poll SCM และใส่ token เฉพาะ `hello-ci-pipeline`
-- เรียก endpoint ตรงเพื่อพิสูจน์ว่า token เลือก job ถูก
-- เพิ่ม Gitea webhook และอ่าน delivery HTTP 200
-- push commit จริง จับเวลา และตรวจ build cause/payload
-- รัน `check.sh` ตรวจสถานะจบแล็บ
+- ติดตั้ง Generic Webhook Trigger 2.4.2 และยืนยันว่า Jenkins กลับมาทำงานหลัง restart
+- ปิด Poll SCM และกำหนด token เฉพาะ `hello-ci-pipeline`
+- ทดสอบ endpoint โดยตรงเพื่อแยกปัญหาฝั่ง Jenkins ออกจาก Gitea
+- สร้าง Gitea webhook ด้วย URL canonical และตรวจ delivery HTTP 200
+- push commit จริงแล้วตรวจ build cause และ payload ของเหตุการณ์
 
 ## สภาพตั้งต้น
 
-ต้องมีสถานะจบ LAB 4: devtools ยังทำงาน และ inner container `jenkins`, `gitea` อยู่บน `cicd-net`; job `hello-ci-pipeline` checkout `student/hello-ci` branch `main` สำเร็จและยังเปิด Poll SCM
+ก่อนคาบต้องมีสถานะจบ LAB 4: devtools ทำงานอยู่, inner container `jenkins` และ `gitea` อยู่บน `cicd-net`, repository `student/hello-ci` มี branch `main` และ job `hello-ci-pipeline` เปิด Poll SCM หากต้องกู้สถานะ ต้องเตรียม `DOCKER_USER`/`DOCKER_TOKEN` ใน environment สำหรับ bootstrap เท่านั้น
 
 ```bash
 docker ps --format '{{.Names}}\t{{.Status}}'
@@ -42,12 +41,22 @@ gitea      Up ...
 
 ## การทดลองที่ 1 — Jenkins รับ webhook ได้อย่างไร
 
-**คำถาม:** plugin รุ่นใดเพิ่ม Generic Webhook Trigger ให้ job และเรารู้ได้อย่างไรว่า restart เสร็จแล้ว?
+**คำถาม:** plugin รุ่นใดเพิ่ม Generic Webhook Trigger ให้ job และจะยืนยันการ restart ได้อย่างไร?
 
-- เปิด `http://localhost:8080` แล้วไป **Manage Jenkins → Plugins → Available plugins**
-- ค้นหา **Generic Webhook Trigger** ตรวจว่าเป็นรุ่น **2.4.2** แล้วเลือก **Install**
-- หน้า installation progress เลือก **Restart Jenkins when installation is complete and no jobs are running**
-- รอหน้า Jenkins หายไปชั่วครู่ แล้วใช้คำสั่งนี้รอจน login page กลับมา
+Plugin ทำให้ Jenkins มี endpoint สำหรับรับ HTTP request จาก Gitea ขั้นนี้จึงติดตั้ง plugin ก่อนแก้ job เพื่อให้รายการ trigger ใหม่ปรากฏในหน้า Configure
+
+1. เปิด `http://localhost:8080` แล้วเลือก **Manage Jenkins → Plugins → Available plugins**
+2. ค้นหา `generic-webhook-trigger` เลือกผลลัพธ์ **Generic Webhook Trigger 2.4.2**
+3. กด **Install** และตรวจสถานะในหน้า **Download progress**
+4. เลือก **Restart Jenkins when installation is complete and no jobs are running** แล้วรอให้หน้า login กลับมา
+
+![ผลค้น Generic Webhook Trigger ใน Available plugins](../slides_assets/lab5_s01_available_plugin.png)
+
+*ภาพที่ 1 ผลค้น `generic-webhook-trigger` แสดงรุ่น 2.4.2 และช่องเลือกของ plugin ก่อนติดตั้ง*
+
+![หน้า Download progress และตัวเลือก restart](../slides_assets/lab5_s02_plugin_download_restart.png)
+
+*ภาพที่ 2 หน้า Download progress แสดงรายการติดตั้งและตัวเลือก restart Jenkins ด้านล่าง*
 
 ```bash
 until curl -fsS http://localhost:8080/login >/dev/null; do sleep 2; done
@@ -59,16 +68,24 @@ until curl -fsS http://localhost:8080/login >/dev/null; do sleep 2; done
 Generic Webhook Trigger 2.4.2    Enabled
 ```
 
-> 📝 ถ้าหน้า restart ค้าง อย่ากดซ้ำหลายครั้ง ให้รอด้วย `curl` ก่อน แล้วค่อยดูวิธีแก้ปัญหาท้ายแล็บ
+> 📝 หากหน้า restart ยังไม่ตอบสนอง ให้รอผลจาก `curl` ก่อน ไม่ควรส่งคำสั่ง restart ซ้ำระหว่างที่ Jenkins กำลังโหลด plugin
+
+ขณะนี้ Jenkins มี plugin ที่ต้องใช้แล้ว ขั้นถัดไปจะเปลี่ยน trigger ของ job โดยไม่แก้ Jenkinsfile
 
 ## การทดลองที่ 2 — จะเปลี่ยนจาก polling เป็น webhook โดยไม่แก้ Jenkinsfile อย่างไร
 
-**คำถาม:** trigger ของ `hello-ci-pipeline` ต้องตั้งค่าอย่างไรให้ webhook เลือก job นี้เพียงตัวเดียว?
+**คำถาม:** trigger ของ `hello-ci-pipeline` ต้องตั้งค่าอย่างไรเพื่อให้ token เลือก job นี้เพียงตัวเดียว?
 
-- ไปที่ **hello-ci-pipeline → Configure → Build Triggers**
-- เอาเครื่องหมาย **Poll SCM** ออก
-- เลือก **Generic Webhook Trigger** แล้วใส่ **Token** = `cicd2569-hello`
-- กด **Save**
+Trigger เป็นคุณสมบัติของ job และมีผลหลังบันทึก configuration การปิด Poll SCM ป้องกัน build ซ้ำจากสองกลไก ส่วน token ใช้ระบุ job ที่ endpoint ต้อง trigger
+
+1. เลือก **Jenkins → hello-ci-pipeline → Configure → Triggers**
+2. เอาเครื่องหมาย **Poll SCM** ออก
+3. เลือก **Generic Webhook Trigger**
+4. กรอกช่อง **Token** เป็น `cicd2569-hello` แล้วกด **Save**
+
+![Build Triggers และ token ของ job](../slides_assets/lab5_s03_build_trigger_token.png)
+
+*ภาพที่ 3 Generic Webhook Trigger ถูกเลือก และช่อง Token มีค่า `cicd2569-hello` ก่อนบันทึก*
 
 ✅ **สิ่งที่ต้องเห็น** :
 
@@ -78,11 +95,15 @@ Generic Webhook Trigger: on
 Token: cicd2569-hello
 ```
 
-> 📝 Trigger ที่ตั้งผ่าน job UI มีผลทันทีเมื่อ Save ไม่ต้อง Build Now หรือ seed-build ก่อนทดสอบ endpoint
+> 📝 Trigger ที่ตั้งผ่าน job UI มีผลเมื่อกด Save จึงไม่ต้องกด Build Now หรือทำ seed build ก่อนทดสอบ endpoint
+
+ขณะนี้ job พร้อมรับ request แล้ว แต่ยังไม่เกี่ยวข้องกับ Gitea ขั้นถัดไปจึงทดสอบ endpoint จาก shell เพื่อแยกขอบเขตปัญหา
 
 ## การทดลองที่ 3 — token เลือก job ถูกจริงไหม
 
-**คำถาม:** ก่อนต่อ Gitea เราจะทดสอบ endpoint ตรงจาก devtools shell ได้อย่างไร?
+**คำถาม:** ก่อนเชื่อม Gitea จะทดสอบ endpoint โดยตรงจาก devtools shell ได้อย่างไร?
+
+การเรียก endpoint โดยตรงพิสูจน์ว่า plugin, token และ job configuration ทำงานครบ หากขั้นนี้ไม่ผ่าน ปัญหายังอยู่ฝั่ง Jenkins ไม่ใช่การตั้งค่า webhook ของ Gitea
 
 ```bash
 curl -s 'http://localhost:8080/generic-webhook-trigger/invoke?token=cicd2569-hello'
@@ -94,18 +115,40 @@ curl -s 'http://localhost:8080/generic-webhook-trigger/invoke?token=cicd2569-hel
 {"jobs":{"hello-ci-pipeline":{"triggered":true}},"message":"Triggered jobs."}
 ```
 
-ค่าจริงมี field รายละเอียดเพิ่ม เช่น queue id แต่ต้องเห็น `hello-ci-pipeline`, `triggered:true` และ `Triggered jobs.`
+ค่าจริงมี field รายละเอียดเพิ่ม เช่น queue id แต่ต้องพบ `hello-ci-pipeline`, `triggered:true` และ `Triggered jobs.` เมื่อ endpoint ผ่านแล้วจึงกำหนดให้ Gitea เรียก URL เดียวกันผ่าน network ภายใน
 
 ## การทดลองที่ 4 — Gitea ส่ง delivery ถึง Jenkins ได้ไหม
 
 **คำถาม:** URL ใดทำให้ Gitea container เรียก Jenkins container ผ่าน `cicd-net` ได้?
 
-- เปิด `http://localhost:3000` แล้วไป **student/hello-ci → Settings → Webhooks → Add Webhook → Gitea**
-- ใส่ Target URL: `http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-hello`
-- คง **POST Content Type = application/json**, **Active** และ **Push Events** แล้วกด **Add Webhook**
-- เปิด webhook ที่สร้าง กด **Test Push Event** แล้วคลิก delivery ล่าสุดเพื่อดูแท็บ **Response**
+Webhook ต้องใช้ DNS ภายใน Docker network เพราะ request ถูกส่งจาก Gitea container ไม่ใช่จาก browser ของผู้เรียน URL canonical จึงใช้ชื่อ service `jenkins` แทน `localhost`
 
-![หน้า Add Webhook ใน Gitea](../slides_assets/lab5_webhook_config.png)
+1. เปิด `http://localhost:3000` แล้วเลือก **student/hello-ci → Settings → Webhooks**
+2. กด **Add Webhook → Gitea**
+3. กรอก **Target URL** เป็น `http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-hello`
+4. คง **HTTP Method = POST**, **POST Content Type = application/json**, **Active** และ **Push Events**
+5. กด **Add Webhook** แล้วตรวจว่ารายการใหม่แสดง URL canonical
+6. เปิด webhook ที่สร้าง กด **Test Push Event** แล้วกาง delivery ล่าสุดที่แท็บ **Response**
+
+![แบบฟอร์ม Add Webhook ที่กรอก URL แล้ว](../slides_assets/lab5_s04_add_webhook_form.png)
+
+*ภาพที่ 4 แบบฟอร์ม Gitea แสดง Target URL canonical พร้อม POST, application/json และ Active*
+
+![แบบฟอร์ม webhook จากภาพชุดเดิม](../slides_assets/lab5_webhook_config.png)
+
+*ภาพที่ 5 ภาพอ้างอิงเดิมของหน้า Add Webhook ซึ่งใช้ค่า configuration เดียวกัน*
+
+![รายการ webhook หลังบันทึก](../slides_assets/lab5_s05_webhook_list.png)
+
+*ภาพที่ 6 รายการ Webhooks หลังบันทึกแสดงจุดสถานะและ URL ที่ใช้ชื่อ container `jenkins`*
+
+![Delivery ล่าสุดพร้อม HTTP 200 และ response](../slides_assets/lab5_s06_delivery_response.png)
+
+*ภาพที่ 7 delivery ที่กางอยู่แสดง Response 200 และ body ซึ่งระบุ `hello-ci-pipeline` ว่าถูก trigger*
+
+![Delivery HTTP 200 จากภาพชุดเดิม](../slides_assets/lab5_delivery.png)
+
+*ภาพที่ 8 ภาพอ้างอิงเดิมยืนยัน HTTP 200 และข้อความ `Triggered jobs.` จาก Jenkins*
 
 ✅ **สิ่งที่ต้องเห็น** :
 
@@ -114,50 +157,69 @@ HTTP Status: 200
 Response: ... "hello-ci-pipeline" ... "Triggered jobs."
 ```
 
-![Delivery HTTP 200 และ response จาก Jenkins](../slides_assets/lab5_delivery.png)
+> 📝 ใน URL นี้ `jenkins` คือ DNS ของ container บน `cicd-net`; `localhost` ภายใน Gitea หมายถึง Gitea เอง จึงใช้แทนกันไม่ได้
 
-> 📝 ใน URL นี้ `jenkins` คือ DNS ของ container บน `cicd-net`; `localhost` ใน Gitea หมายถึง Gitea เอง จึงใช้แทนกันไม่ได้
+เมื่อ test delivery ได้ HTTP 200 แล้ว เส้นทาง Gitea → Jenkins พร้อมใช้งาน ขั้นถัดไปจะสร้างเหตุการณ์จาก `git push` จริง
 
 ## การทดลองที่ 5 — push จริงเร็วกว่า polling แค่ไหน
 
-**คำถาม:** เมื่อแก้ไฟล์แล้ว push Jenkins จะเห็น build ใหม่ในกี่วินาที และรู้ได้อย่างไรว่ามาจาก webhook?
+**คำถาม:** เมื่อแก้ไฟล์แล้ว push Jenkins จะพบ build ใหม่ในกี่วินาที และจะพิสูจน์ build cause ได้อย่างไร?
+
+การทดลองนี้ใช้ commit จริงเพื่อยืนยันว่าการแจ้งเตือนไม่ได้เกิดจากปุ่ม Test Push Event หลัง push ให้เปิด build ล่าสุดและตรวจทั้งผลลัพธ์, revision และข้อความ cause
 
 ```bash
 LAB5_WORKDIR=$(mktemp -d) && git clone http://student:student2569@localhost:3000/student/hello-ci.git "$LAB5_WORKDIR/hello-ci"
 cd "$LAB5_WORKDIR/hello-ci" && git config user.name student && git config user.email student@example.com && date -u +"webhook proof %Y-%m-%dT%H:%M:%SZ" >> webhook-proof.txt && git add webhook-proof.txt && git commit -m 'Verify immediate webhook build' && time git push origin main
 ```
 
-เปิด **Jenkins → hello-ci-pipeline** ทันที จับเวลาจาก `git push` ถึง build ใหม่ปรากฏ แล้วเปิด build ล่าสุดดูข้อความ cause และ Console Output
+1. เปิด **Jenkins → hello-ci-pipeline** ทันทีหลัง `git push`
+2. เปิด build ใหม่ที่ปรากฏ แล้วตรวจหน้า **Status** และ **Console Output**
+3. ยืนยันว่าหน้า build แสดง **Generic Cause** และ revision ตรงกับ commit ที่ push
+
+![Build ที่เกิดจาก webhook และ Generic Cause](../slides_assets/lab5_s07_webhook_build_cause.png)
+
+*ภาพที่ 9 build #6 สำเร็จ แสดง Generic Cause, revision `401ab4f0ded0...` และข้อความ commit ที่ใช้ทดสอบ*
+
+![Build อัตโนมัติจากภาพชุดเดิม](../slides_assets/lab5_auto_build.png)
+
+*ภาพที่ 10 ภาพอ้างอิงเดิมของ build อัตโนมัติ ซึ่งแสดง cause จาก Generic Webhook Trigger เช่นเดียวกัน*
 
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-new build #6 detected 10.54s after push
+new build #6 detected 11.59s after push
 build #6 = SUCCESS
 cause: Generic Cause
 ```
 
-ผลจริงของเครื่องทดสอบคือ 10.54 วินาที ซึ่งเกิดทันทีตาม event และไม่ต้องรอหน้าต่าง 0–60 วินาทีของ Poll SCM ใน LAB 4 เลข build และเวลาของแต่ละเครื่องอาจต่างกัน
+ผลรอบตรวจนี้พบ build ใหม่ภายใน 11.59 วินาที จึงไม่ต้องรอหน้าต่าง 0–60 วินาทีของ Poll SCM เลข build และระยะเวลาของแต่ละเครื่องอาจต่างกัน แต่ cause ต้องมาจาก Generic Webhook Trigger
 
-![Build ที่เกิดอัตโนมัติและ cause จาก webhook](../slides_assets/lab5_auto_build.png)
+ขณะนี้มี push delivery จริงและ build ที่สัมพันธ์กันแล้ว ขั้นถัดไปจะอ่าน request payload ของ delivery ล่าสุด
 
 ## การทดลองที่ 6 — payload บอกเรื่อง commit อะไร
 
-**คำถาม:** Gitea ส่งข้อมูลอะไรให้ Jenkins พร้อม push event?
+**คำถาม:** Gitea ส่งข้อมูลใดให้ Jenkins พร้อม push event?
 
-- กลับไป **Gitea → hello-ci → Settings → Webhooks** แล้วเปิด webhook เดิม
-- คลิก delivery ล่าสุดจากการ push จริง แล้วเลือกแท็บ **Request**
-- ค้นหา `ref`, `after`, `head_commit.id`, `head_commit.message` และ `commits[].modified`
+Payload เป็นหลักฐานระดับเหตุการณ์ที่ใช้ตรวจ branch, commit และไฟล์ที่เปลี่ยน แม้แล็บนี้ใช้ token เลือก job เพียงอย่างเดียว ข้อมูลเดียวกันสามารถนำไปกำหนด filter หรือใช้ audit ได้
+
+1. กลับไป **Gitea → hello-ci → Settings → Webhooks** แล้วเปิด webhook เดิม
+2. กาง delivery ล่าสุดจากการ push จริง
+3. เลือกแท็บ **Request** แล้วตรวจ Headers และ Content
+4. ค้นหา `ref`, `after`, `head_commit.id`, `head_commit.message` และ `commits[].modified`
+
+![Request payload ของ push delivery ล่าสุด](../slides_assets/lab5_s08_delivery_request.png)
+
+*ภาพที่ 11 delivery จาก push จริงแสดง request URL, event type, `refs/heads/main`, commit `401ab4f0ded0...` และข้อความ `Verify immediate webhook build`*
 
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-head_commit.id: 9464fc0039bc...
+head_commit.id: 401ab4f0ded0...
 head_commit.message: Verify immediate webhook build
 commits[0].modified: webhook-proof.txt
 ```
 
-payload จึงบอกได้ว่า branch ใดชี้ไป commit ใด ใคร push ข้อความ commit คืออะไร และไฟล์ใดเปลี่ยน แม้แล็บนี้ใช้ token เลือก job อย่างเดียว ข้อมูลเหล่านี้นำไปทำ filter หรือ audit ต่อได้
+Payload จึงระบุได้ว่า branch ใดชี้ไป commit ใด ผู้ใด push ข้อความ commit คืออะไร และไฟล์ใดเปลี่ยน เมื่อหลักฐานครบแล้วจึงตรวจสถานะรวมด้วยสคริปต์ของแล็บ
 
 ## การทดลองที่ 7 — สถานะจบ LAB 5 ครบหรือยัง
 
@@ -184,7 +246,7 @@ bash check.sh
 |---|---|---|
 | Delivery ได้ 404 และ `Did not find any jobs` | ยังไม่ Save trigger หรือ token ใน URL/หน้า job สะกดไม่ตรง | กลับไป Configure ตรวจ `cicd2569-hello`, กด Save แล้วเรียก endpoint ตรงซ้ำ |
 | Delivery timeout | ใช้ `http://localhost:8080/...` ทำให้ Gitea เรียกตัวเอง | เปลี่ยนเป็น `http://jenkins:8080/generic-webhook-trigger/invoke?token=cicd2569-hello` |
-| Delivery 200 แต่ build ที่ต้องการไม่เกิด | token ซ้ำกับ job อื่นหรือไปผูกผิด job | แยก token ต่อ job ตรวจ config ของทุก job และใช้ `cicd2569-hello` เฉพาะ `hello-ci-pipeline` |
-| Plugin restart ค้าง | Jenkins ยังติดตั้ง dependency หรือ browser รอ connection เก่า | รอด้วย `until curl -fsS http://localhost:8080/login; do sleep 2; done`; ยังไม่กลับให้ดู `docker logs --tail 100 jenkins` |
-| Gitea แจ้ง URL not allowed | container ไม่ได้ตั้ง webhook allow-list สำหรับ private network | recreate Gitea ตาม LAB 4 ด้วย `GITEA__webhook__ALLOWED_HOST_LIST=private` หรือกู้ด้วย `bash tools/bootstrap/up_to_lab4.sh` แล้วตั้ง webhook ใหม่ |
-| ตามไม่ทันหรือสถานะไม่ตรง | ขั้น LAB 5 ทำค้างกลางทาง | รัน `bash tools/bootstrap/up_to_lab5.sh` เพื่อกู้สถานะ แล้วรัน `bash 005_LAB_Webhook_Trigger/check.sh` |
+| Delivery 200 แต่ build ที่ต้องการไม่เกิด | token ซ้ำกับ job อื่นหรือผูกผิด job | แยก token ต่อ job และใช้ `cicd2569-hello` เฉพาะ `hello-ci-pipeline` |
+| Plugin restart ค้าง | Jenkins ยังติดตั้ง dependency หรือ browser รอ connection เดิม | รอด้วย `until curl -fsS http://localhost:8080/login; do sleep 2; done`; หากยังไม่กลับให้ดู `docker logs --tail 100 jenkins` |
+| Gitea แจ้ง URL not allowed | container ไม่ได้อนุญาต webhook ไป private network | recreate Gitea ตาม LAB 4 ด้วย `GITEA__webhook__ALLOWED_HOST_LIST=private` หรือกู้ด้วย `bash tools/bootstrap/up_to_lab4.sh` |
+| ตามไม่ทันหรือสถานะไม่ตรง | ขั้น LAB 5 ค้างกลางทาง | รัน `bash tools/bootstrap/up_to_lab5.sh` แล้วตรวจด้วย `bash 005_LAB_Webhook_Trigger/check.sh` |

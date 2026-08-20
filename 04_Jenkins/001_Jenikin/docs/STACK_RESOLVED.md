@@ -11,7 +11,7 @@ Resolved and verified on **2026-08-20 (UTC)** in `devtools-jk0` using the PLAN Â
 | `gitea/gitea:1.27.2` | `sha256:d20286ca2b2e170fdf628e7231b8a31a3220ade39ff462b55041d43d1fc757dd` | Gitea **1.27.2** |
 | `python:3.12-slim` | `sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a` | LAB 3 smoke image base |
 | `jenkins-bootstrap-u0:2569` | local image `sha256:7d621d329f05e823cad732390b1942c8c0f25e0c29a0617b43af465fb7ac45f8` | Frozen suggested plugins + skip-wizard Groovy init |
-| `jenkins-docker:2569` | local image `sha256:a0ce31ee6d9774120b4a895e0b20bebce9cafd1c9bdb98fc8e1b2de5f6ea7b3e` | Jenkins base + Docker CLI **26.1.5+dfsg1** |
+| `jenkins-docker:2569` | local image `sha256:ad52d02280f2ea1dd7c5b5f7d84f4ecf2298e9b7b038b705d0abe43bd187ba5c` | Jenkins base + Docker CLI **29.7.2** |
 
 The custom-image values are local content IDs from the final clean build; upstream values are pulled repository digests. There is no local registry image or container.
 
@@ -19,7 +19,7 @@ The custom-image values are local content IDs from the final clean build; upstre
 
 - Jenkins: `2.568.2`
 - Gitea: `1.27.2` (Go `1.26.5-X:jsonv2`)
-- Docker CLI inside Jenkins: `26.1.5+dfsg1`
+- Docker CLI inside Jenkins: `29.7.2`
 - Generic Webhook Trigger: `2.4.2` and active
 
 ## Active Jenkins plugins

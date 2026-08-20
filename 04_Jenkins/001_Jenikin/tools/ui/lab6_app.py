@@ -13,7 +13,8 @@ def main() -> None:
     base_url = os.getenv("WEBAPP_BASE_URL", "http://host.docker.internal:16800").rstrip("/")
     version = os.environ.get("EXPECTED_VERSION", "1.0.0")
     theme = os.environ.get("EXPECTED_THEME", "blue")
-    target = Path(os.environ.get("SCREENSHOT", f"slides_assets/lab6_app_{'v2' if version.startswith('2') else 'v1'}.png"))
+    sequence = "s10" if version.startswith("2") else "s09"
+    target = Path(os.environ.get("SCREENSHOT", f"slides_assets/lab6_{sequence}_dashboard_{'v2' if version.startswith('2') else 'v1'}.png"))
 
     with browser_page() as (_, _, _, page):
         response = page.goto(base_url, wait_until="networkidle")
