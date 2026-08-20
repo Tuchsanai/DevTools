@@ -86,15 +86,15 @@ Setup Wizard ทำหน้าที่เปลี่ยน Jenkins จาก�
 
 1. เปิด `http://localhost:8080` วางรหัสจากการทดลองที่ 2 แล้วกด **Continue**
 
-![หน้า Unlock Jenkins](../slides_assets/lab1_unlock.png)
+![หน้า Unlock Jenkins พร้อมเครื่องหมายลำดับ](../slides_assets/lab1_s07_unlock.png)
 
-*ช่อง Administrator password รับรหัสเริ่มต้นจาก container ก่อนเข้าสู่ขั้นติดตั้ง plugin*
+*เครื่องหมาย ① ชี้ช่อง Administrator password และ ② ชี้ปุ่ม Continue ตามลำดับการดำเนินการ*
 
 2. เลือก **Install suggested plugins** และรอประมาณ 2–3 นาทีจนการติดตั้งเสร็จสมบูรณ์
 
-![หน้าเลือก Install suggested plugins](../slides_assets/lab1_plugins.png)
+![หน้าเลือก Install suggested plugins พร้อมเครื่องหมาย](../slides_assets/lab1_s08_plugins.png)
 
-*ตัวเลือก suggested plugins จัดเตรียมความสามารถพื้นฐาน รวมถึง Pipeline และ Git*
+*กรอบสีแดงชี้ตัวเลือก suggested plugins ซึ่งจัดเตรียมความสามารถพื้นฐาน รวมถึง Pipeline และ Git*
 
 3. กรอก Username `admin`, Password และ Confirm password เป็น `admin2569`, Full name `Admin`, Email `student@example.com` แล้วกด **Save and Continue**
 
@@ -124,9 +124,9 @@ Freestyle job เหมาะสำหรับศึกษาความสั
 
 1. จาก Dashboard ตรวจเมนู **New Item, Build History, Manage Jenkins** แล้วเลือก **New Item**
 
-![Jenkins Dashboard](../slides_assets/lab1_dashboard.png)
+![Jenkins Dashboard พร้อมเครื่องหมาย New Item](../slides_assets/lab1_s09_dashboard_new_item.png)
 
-*Dashboard เป็นจุดเริ่มต้นของการสร้าง job โดยใช้เมนู New Item ด้านซ้าย*
+*กรอบและป้ายชี้เมนู New Item ด้านซ้าย ซึ่งเป็นจุดเริ่มต้นของการสร้าง job*
 
 2. กรอกชื่อ `first-freestyle` เลือก **Freestyle project** แล้วกด **OK**
 

@@ -1,0 +1,270 @@
+#!/usr/bin/env python3
+"""Annotate Jenkins UI screenshots from tools/ui/annotations/labN.json."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import shutil
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+from PIL import Image, ImageDraw, ImageFont
+
+
+ROSE = "#e11d48"
+SLATE = "#1e293b"
+WHITE = "#ffffff"
+LINE_WIDTH = 5
+FONT_SIZE = 28
+LABEL_PADDING_X = 14
+LABEL_PADDING_Y = 8
+LABEL_RADIUS = 10
+
+
+def git(repo: Path, *args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", *args], cwd=repo, check=check, text=True, capture_output=True
+    )
+
+
+def repo_root() -> Path:
+    # This teaching project is nested inside a larger Git worktree.  Specs and
+    # image paths are deliberately relative to the project, not the outer root.
+    project = Path(__file__).resolve().parents[2]
+    git(project, "rev-parse", "--show-toplevel")
+    return project
+
+
+def safe_repo_path(repo: Path, relative: str) -> Path:
+    path = (repo / relative).resolve()
+    if repo not in path.parents:
+        raise ValueError(f"path escapes repository: {relative}")
+    if path.suffix.lower() != ".png":
+        raise ValueError(f"target must be a PNG: {relative}")
+    return path
+
+
+def restore_pristine(repo: Path, image_spec: dict[str, Any]) -> str:
+    relative = image_spec["path"]
+    target = safe_repo_path(repo, relative)
+    tracked = git(repo, "ls-files", "--error-unmatch", "--", relative, check=False)
+    if tracked.returncode == 0:
+        git(repo, "checkout", "--", relative)
+        return "git checkout"
+
+    source_relative = image_spec.get("source")
+    if not source_relative:
+        raise ValueError(
+            f"untracked target {relative!r} needs a pristine 'source' until it is committed"
+        )
+    source = safe_repo_path(repo, source_relative)
+    source_tracked = git(
+        repo, "ls-files", "--error-unmatch", "--", source_relative, check=False
+    )
+    if source_tracked.returncode != 0:
+        raise ValueError(f"source is not tracked by git: {source_relative}")
+    git(repo, "checkout", "--", source_relative)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, target)
+    return f"copy pristine {source_relative}"
+
+
+def load_fonts(repo: Path, size: int) -> tuple[ImageFont.FreeTypeFont, ImageFont.FreeTypeFont]:
+    font_path = repo / "tools/motion/fonts/NotoSansThai-Variable.ttf"
+    if not font_path.is_file():
+        raise FileNotFoundError(f"Thai font not found: {font_path}")
+    symbol_path = Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
+    if not symbol_path.is_file():
+        raise FileNotFoundError(f"circled-number fallback font not found: {symbol_path}")
+    return (
+        ImageFont.truetype(str(font_path), size=size),
+        ImageFont.truetype(str(symbol_path), size=size - 1),
+    )
+
+
+def check_box(box: list[int], width: int, height: int, label: str) -> None:
+    if len(box) != 4:
+        raise ValueError(f"{label} must contain four coordinates")
+    x1, y1, x2, y2 = box
+    if not (0 <= x1 < x2 <= width and 0 <= y1 < y2 <= height):
+        raise ValueError(f"{label} {box} is outside {width}x{height}")
+
+
+def label_box(
+    draw: ImageDraw.ImageDraw,
+    fonts: tuple[ImageFont.FreeTypeFont, ImageFont.FreeTypeFont],
+    text: str,
+    at: list[int],
+) -> tuple[int, int, int, int]:
+    if len(at) != 2:
+        raise ValueError("label_at must contain x and y")
+    left, top = at
+    parts = label_parts(text, fonts)
+    boxes = [draw.textbbox((0, 0), part, font=font, anchor="lt") for part, font in parts]
+    text_width = sum(box[2] - box[0] for box in boxes)
+    text_height = max(box[3] - box[1] for box in boxes)
+    return (
+        left,
+        top,
+        left + text_width + LABEL_PADDING_X * 2,
+        top + text_height + LABEL_PADDING_Y * 2,
+    )
+
+
+def label_parts(
+    text: str, fonts: tuple[ImageFont.FreeTypeFont, ImageFont.FreeTypeFont]
+) -> list[tuple[str, ImageFont.FreeTypeFont]]:
+    thai_font, symbol_font = fonts
+    if text and text[0] in "①②③④⑤⑥⑦⑧⑨":
+        return [(text[0], symbol_font), (text[1:], thai_font)]
+    return [(text, thai_font)]
+
+
+def draw_label_text(
+    draw: ImageDraw.ImageDraw,
+    position: tuple[int, int],
+    text: str,
+    fonts: tuple[ImageFont.FreeTypeFont, ImageFont.FreeTypeFont],
+) -> None:
+    x, y = position
+    for part, font in label_parts(text, fonts):
+        draw.text((x, y), part, font=font, fill=WHITE, anchor="lt")
+        bbox = draw.textbbox((0, 0), part, font=font, anchor="lt")
+        x += bbox[2] - bbox[0]
+
+
+def arrow(draw: ImageDraw.ImageDraw, start: tuple[float, float], end: tuple[float, float]) -> None:
+    draw.line((start, end), fill=ROSE, width=4)
+    angle = math.atan2(end[1] - start[1], end[0] - start[0])
+    length = 15
+    spread = math.pi / 7
+    points = [end]
+    for delta in (spread, -spread):
+        points.append(
+            (
+                end[0] - length * math.cos(angle + delta),
+                end[1] - length * math.sin(angle + delta),
+            )
+        )
+    draw.polygon(points, fill=ROSE)
+
+
+def annotate_image(
+    repo: Path,
+    spec: dict[str, Any],
+    fonts: tuple[ImageFont.FreeTypeFont, ImageFont.FreeTypeFont],
+) -> str:
+    restore_mode = restore_pristine(repo, spec)
+    path = safe_repo_path(repo, spec["path"])
+    shapes = spec.get("shapes", [])
+    if not shapes:
+        return f"SKIP ({spec.get('reason', 'no interactive target')}); restored by {restore_mode}"
+
+    with Image.open(path) as source:
+        image = source.convert("RGBA")
+    draw = ImageDraw.Draw(image)
+    width, height = image.size
+
+    prepared: list[tuple[dict[str, Any], tuple[int, int, int, int]]] = []
+    for index, shape in enumerate(shapes, start=1):
+        text = shape["label"]
+        if len(text) > 25:
+            raise ValueError(f"label exceeds 25 characters: {text!r}")
+        check_box(shape["box"], width, height, f"shape {index} box")
+        box = label_box(draw, fonts, text, shape["label_at"])
+        check_box(list(box), width, height, f"shape {index} label")
+        prepared.append((shape, box))
+
+    # Leaders remain behind both target outlines and labels.
+    for shape, box in prepared:
+        target_box = shape["box"]
+        target = tuple(
+            shape.get(
+                "target",
+                [(target_box[0] + target_box[2]) / 2, (target_box[1] + target_box[3]) / 2],
+            )
+        )
+        start = ((box[0] + box[2]) / 2, (box[1] + box[3]) / 2)
+        arrow(draw, start, target)
+
+    for shape, _ in prepared:
+        kind = shape.get("type", "round_rect")
+        box = shape["box"]
+        if kind == "ellipse":
+            draw.ellipse(box, outline=ROSE, width=LINE_WIDTH)
+        elif kind == "round_rect":
+            draw.rounded_rectangle(box, radius=shape.get("radius", 12), outline=ROSE, width=LINE_WIDTH)
+        else:
+            raise ValueError(f"unsupported shape type: {kind}")
+
+    for shape, box in prepared:
+        draw.rounded_rectangle(box, radius=LABEL_RADIUS, fill=SLATE)
+        draw_label_text(
+            draw,
+            (box[0] + LABEL_PADDING_X, box[1] + LABEL_PADDING_Y),
+            shape["label"],
+            fonts,
+        )
+
+    temporary = path.with_name(f".{path.name}.annotating")
+    image.convert("RGB").save(temporary, format="PNG", optimize=True)
+    temporary.replace(path)
+    return f"OK; {len(shapes)} marker(s); restored by {restore_mode}"
+
+
+def append_log(repo: Path, command: str, results: list[tuple[str, str]]) -> None:
+    log = repo / "logs/UA1.log"
+    log.parent.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    with log.open("a", encoding="utf-8") as handle:
+        handle.write(f"\n[{timestamp}] DRAW {command}\n")
+        for path, result in results:
+            handle.write(f"- {path}: {result}\n")
+
+
+def spec_paths(repo: Path, selection: str) -> list[Path]:
+    directory = repo / "tools/ui/annotations"
+    if selection == "--all":
+        paths = sorted(directory.glob("lab*.json"))
+        if not paths:
+            raise FileNotFoundError(f"no annotation specs in {directory}")
+        return paths
+    if not selection.startswith("lab") or not selection[3:].isdigit():
+        raise ValueError("selection must be labN or --all")
+    path = directory / f"{selection}.json"
+    if not path.is_file():
+        raise FileNotFoundError(f"annotation spec not found: {path}")
+    return [path]
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("selection", nargs="?", help="labN (for example, lab1)")
+    group.add_argument("--all", action="store_true", help="render every lab*.json spec")
+    args = parser.parse_args()
+    selection = "--all" if args.all else args.selection
+    try:
+        repo = repo_root()
+        fonts = load_fonts(repo, FONT_SIZE)
+        results: list[tuple[str, str]] = []
+        for path in spec_paths(repo, selection):
+            data = json.loads(path.read_text(encoding="utf-8"))
+            for image_spec in data["images"]:
+                result = annotate_image(repo, image_spec, fonts)
+                results.append((image_spec["path"], result))
+                print(f"{image_spec['path']}: {result}")
+        append_log(repo, f"annotate_steps.py {selection}", results)
+        return 0
+    except (KeyError, OSError, ValueError, subprocess.CalledProcessError, json.JSONDecodeError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
