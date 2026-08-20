@@ -91,6 +91,20 @@
 
 หมายเหตุ cleanup: critique สร้าง repo ทดลอง `tuchsanai/critic-probe` ค้างบน Hub — **ต้องลบใน Phase 4/cleanup สุดท้าย** (repos `ci-demo`/`cicd-webapp` เก็บไว้เป็นหลักฐานจริงตามที่ผู้ใช้ขอ)
 
+## Phase 4 Final Review (docs/CRITIQUE_PHASE4.md @83c8cf7) — คำตัดสิน
+
+| id | ระดับ | คำตัดสิน | การจัดการ |
+|---|---|---|---|
+| P4-01 consistency gate exit 1 | blocker | **ยอมรับ (ทาง ก)** | LAB 3 README เพิ่มบรรทัด artifact canonical `docker.io/<DOCKER_USER>/ci-demo:<BUILD_NUMBER>` (สอน naming contract ไปในตัว) → gate ต้อง 12/12 |
+| P4-02 fresh devtools ไม่มี course tree | blocker | **ยอมรับ** | canonical ใหม่: หลัง SSH ให้ clone repo สาธารณะแบบ sparse/depth-1 → `COURSE_ROOT=~/DevTools/04_Jenkins/001_Jenikin` (readme + LAB 1) + preflight ตรวจ course root |
+| P4-03 cwd drift ทำ helper/check พัง | major | **ยอมรับ** | ใช้ `COURSE_ROOT` + รูปแบบ subshell `(cd "$COURSE_ROOT/..." && bash check.sh)` ทุกจุดใน LAB 4/5/6 |
+| P4-04 LAB 5 modified vs added | major | **ยอมรับ** | แก้ README/expected/helper เป็น `added` (ตรง delivery จริง+ภาพ) |
+| P4-05 LAB 1 expected แต่งรูปแบบ + ไม่มี readiness wait | major | **ยอมรับ** | expected เป็นรูปแบบ redacted ของ output จริง + เพิ่ม loop รอ Jenkins พร้อมหลัง restart ก่อน check |
+| P4-06 INTEGRATION.md ขัดสถานะจริง | major | **ยอมรับ** | เพิ่มส่วน "Final status (superseded)" อ้าง U-FIX3/UPATCH + เวอร์ชัน 29.7.2 + gate ปัจจุบัน |
+| P4-07 token จริงใน backup/ (3 สำเนา) | blocker | **บางส่วน** | ตรวจแล้ว: `backup/` ถูก ignore + ไม่เคยเข้า git history (0 tracked) → ไม่มี exposure ทาง repo · ไฟล์เป็นของผู้ใช้ — ไม่ลบเอง · **action ผู้ใช้: rotate DOCKER_TOKEN + GIT_TOKEN และลบสำเนา backup หลังจบงาน** (แจ้งในสรุปปิดงาน) |
+| P4-08 ป้าย D8 ทับกัน | minor | **ยอมรับ** | แก้ตำแหน่ง label ใน slides_src + rebuild + gates |
+| P4-09 volume/junk ค้าง + INTEGRATION กล่าวเกิน | major | **ยอมรับ** | orchestrator ลบ lab volumes 18 ลูก + junk dirs แล้ว (เหลือ 0) · INTEGRATION ส่วน Final ใส่ inventory จริง |
+
 ## Accepted risks (สรุป)
 
 1. เน็ตห้องเรียนล่มทั้งห้อง → คอร์สนี้เดินไม่ได้ (เหมือนทุกแล็บ Docker ก่อนหน้า) — ไม่ทำ mirror
