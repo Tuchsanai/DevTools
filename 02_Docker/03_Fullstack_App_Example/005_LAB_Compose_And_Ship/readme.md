@@ -482,7 +482,7 @@ Deleted: sha256:fbe3305af016b0dbfbeb7b8092ac5b8aa57611bd16f89d24aa4526be6ccdbb46
 IMAGE   ID             DISK USAGE   CONTENT SIZE   EXTRA
 ```
 
-pull ต้องเขียนแยกสองคำสั่ง ห้ามใช้ wildcard:
+`docker pull` รับชื่อ repository ได้ครั้งละหนึ่งชื่อ จึงต้องสั่งแยกทีละก้อน:
 
 ```bash
 docker pull <DOCKER_USER>/campusops-api:1.0

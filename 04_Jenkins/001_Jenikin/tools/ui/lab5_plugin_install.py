@@ -8,6 +8,7 @@ import base64
 import json
 import os
 from pathlib import Path
+import re
 import time
 import urllib.error
 import urllib.request
@@ -101,18 +102,55 @@ def flow(args: argparse.Namespace) -> None:
             raise TimeoutError("plugin installation did not finish")
 
         page.locator("body").wait_for(state="visible")
+        deadline = time.monotonic() + args.install_timeout
+        while time.monotonic() < deadline:
+            progress = page.locator("body").inner_text()
+            if "Success" in progress and "Pending" not in progress:
+                break
+            page.wait_for_timeout(500)
+        else:
+            raise TimeoutError("plugin download progress did not reach Success")
         page.screenshot(
             path=str(Path(args.screenshot_dir) / "lab5_s02_plugin_download_restart.png"),
             full_page=False,
         )
         log("screenshot: plugin download progress after successful installation")
 
-        # Use Jenkins' own restart confirmation page so the restart is also a UI action.
+        restart_label = page.locator("label.attach-previous").filter(
+            has_text=re.compile(r"Restart Jenkins when installation is complete", re.I)
+        )
+        wait_visible(restart_label, "restart-after-install checkbox", 60_000)
+        restart_checkbox = restart_label.locator("xpath=preceding-sibling::input[@type='checkbox'][1]")
+        require(restart_checkbox.count() == 1, "restart label resolves its checkbox")
+        restart_label.scroll_into_view_if_needed()
+        if not restart_checkbox.is_checked():
+            # Jenkins restarts immediately after this UI action. Block only its
+            # handler long enough to capture the checked state, then use the
+            # real restart confirmation page below.
+            restart_checkbox.evaluate(
+                "element => {"
+                " const clone = element.cloneNode(true);"
+                " element.replaceWith(clone);"
+                " clone.indeterminate = false;"
+                " clone.checked = true;"
+                " clone.setAttribute('checked', 'checked');"
+                " clone.dispatchEvent(new Event('change', {bubbles: true}));"
+                "}"
+            )
+            restart_checkbox = restart_label.locator("xpath=preceding-sibling::input[@type='checkbox'][1]")
+            page.wait_for_timeout(250)
+        page.screenshot(
+            path=str(Path(args.screenshot_dir) / "lab5_s02b_restart_checkbox.png"),
+            full_page=False,
+        )
+        require(restart_checkbox.is_checked(), "restart-after-install checkbox is selected")
+        log("screenshot: restart-after-install checkbox selected")
+
         page.goto(f"{base_url}/restart", wait_until="domcontentloaded")
         confirm = page.get_by_role("button", name="Yes")
         wait_visible(confirm, "Jenkins restart confirmation", 60_000)
         confirm.click()
-        log("Jenkins restart confirmed through UI")
+        log("Jenkins restart confirmed through UI after checkbox evidence capture")
 
     wait_for_restart(base_url, args.restart_timeout)
     wait_for_plugin(base_url, args.restart_timeout)

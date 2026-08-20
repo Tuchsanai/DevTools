@@ -96,7 +96,7 @@ def capture_github(page, user: str, require_files: bool) -> None:
     if require_files:
         page.wait_for_timeout(4000)
         body = page.locator("body").inner_text()
-        for name in ("Jenkinsfile", "hello.sh", "expected.txt"):
+        for name in (".course-cicd2569", "Jenkinsfile", "hello.sh", "expected.txt"):
             require(name in body, f"public repository page lists {name}")
         target = ASSETS / "lab4_s03_github_repo_files.png"
         description = "public GitHub repository after the first push"

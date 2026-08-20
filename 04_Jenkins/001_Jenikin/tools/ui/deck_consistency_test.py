@@ -128,10 +128,9 @@ def validate_full_deck(
     check(normalize(outer) in normalize(readmes[1]), "outer docker run matches LAB 1 README", emit=emit)
     check(normalize(outer) in normalize(code_text), "outer docker run appears exactly in deck code", emit=emit)
 
-    recreate = "docker rm -f jenkins && docker run -d --name jenkins --restart unless-stopped --network cicd-net -p 8080:8080 -u root -e JAVA_OPTS=-Djenkins.install.runSetupWizard=false -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkins-docker:2569"
-    readme_recreate = recreate.replace(" && ", "\n")
-    check(normalize(readme_recreate) in normalize(readmes[3]), "Jenkins recreate command matches LAB 3 README", emit=emit)
-    check(normalize(recreate) in normalize(code_text), "Jenkins recreate command appears exactly in deck code", emit=emit)
+    recreate = "docker rm -f jenkins\ndocker run -d --name jenkins --restart unless-stopped --network cicd-net -p 8080:8080 -u root -e JAVA_OPTS=-Djenkins.install.runSetupWizard=false -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkins-docker:2569"
+    check(normalize(recreate) in normalize(readmes[3]), "Jenkins recreate commands match LAB 3 README", emit=emit)
+    check(normalize(recreate) in normalize(code_text), "Jenkins recreate commands appear exactly in deck code", emit=emit)
 
     push_lines = [
         "withCredentials([usernamePassword(credentialsId: 'dockerhub'",
@@ -147,6 +146,15 @@ def validate_full_deck(
         check(line in code_text and line in jenkinsfile3, f"push-block line matches LAB 3: {line[:54]}", emit=emit)
 
     validate_v3_contracts(deck, source, readmes, plan, emit=emit)
+
+    by_key = {key: text for key, text in blocks}
+    webhook_contract = by_key.get("webhook-urls", "")
+    capstone_contract = by_key.get("capstone-contract", "")
+    for label, contract in (("hello-ci", webhook_contract), ("webapp", capstone_contract)):
+        check("Post content: ref=$.ref, after=$.after" in contract,
+              f"{label} slide contract contains ref/after JSONPath", emit=emit)
+        check("Cause: GitHub push $after" in contract,
+              f"{label} slide contract contains exact SHA-bearing cause", emit=emit)
 
     folders = [
         "001_LAB_Jenkins_On_Docker",

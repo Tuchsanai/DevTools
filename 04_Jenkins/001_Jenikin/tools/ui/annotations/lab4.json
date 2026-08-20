@@ -24,7 +24,7 @@
       "path": "slides_assets/lab4_s03_github_repo_files.png",
       "shapes": [
         {"type": "mask", "box": [52, 88, 190, 116], "text": "<GITHUB_USER>", "fill": "#0d1117"},
-        {"type": "round_rect", "box": [111, 301, 1018, 432], "label": "① ตรวจไฟล์ครบสามตัว", "label_at": [560, 470], "target": [570, 365]}
+        {"type": "round_rect", "box": [111, 270, 1018, 455], "label": "① 4 ไฟล์รวม marker", "label_at": [520, 500], "target": [570, 365]}
       ]
     },
     {
@@ -47,6 +47,25 @@
       ]
     },
     {
+      "path": "slides_assets/lab4_s05b_scm_save.png",
+      "shapes": [
+        {"type": "mask", "box": [445, 360, 1288, 400], "text": "https://github.com/<GITHUB_USER>/hello-ci.git", "fill": "#0d1117"},
+        {"type": "round_rect", "box": [365, 1148, 470, 1188], "label": "① กด Save SCM", "label_at": [650, 1105], "target": [418, 1168]}
+      ]
+    },
+    {
+      "path": "slides_assets/lab4_s06a_build_now.png",
+      "shapes": [
+        {"type": "round_rect", "box": [18, 145, 145, 185], "label": "① กด Build Now", "label_at": [365, 160], "target": [80, 165]}
+      ]
+    },
+    {
+      "path": "slides_assets/lab4_s06b_open_console.png",
+      "shapes": [
+        {"type": "round_rect", "box": [18, 145, 185, 185], "label": "① เปิด Console", "label_at": [365, 145], "target": [100, 165]}
+      ]
+    },
+    {
       "path": "slides_assets/lab4_s06_manual_build_console.png",
       "shapes": [
         {"type": "round_rect", "box": [382, 557, 562, 584], "label": "① ผลจาก hello.sh", "label_at": [55, 510], "target": [385, 570]},
@@ -59,6 +78,12 @@
         {"type": "round_rect", "box": [365, 432, 510, 464], "label": "① เลือก Poll SCM", "label_at": [35, 390], "target": [370, 447]},
         {"type": "round_rect", "box": [397, 496, 1303, 597], "label": "② กรอกทุกนาที", "label_at": [35, 510], "target": [400, 545]},
         {"type": "round_rect", "box": [398, 607, 1295, 642], "label": "③ อ่านคำเตือน", "label_at": [35, 650], "target": [402, 624]}
+      ]
+    },
+    {
+      "path": "slides_assets/lab4_s07b_poll_save.png",
+      "shapes": [
+        {"type": "round_rect", "box": [365, 947, 470, 988], "label": "① กด Save Poll", "label_at": [650, 900], "target": [418, 968]}
       ]
     },
     {

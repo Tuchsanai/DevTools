@@ -16,6 +16,12 @@
       ]
     },
     {
+      "path": "slides_assets/lab5_s02b_restart_checkbox.png",
+      "shapes": [
+        {"type": "round_rect", "box": [390, 374, 1080, 404], "label": "① เลือก Restart", "label_at": [760, 455], "target": [405, 389]}
+      ]
+    },
+    {
       "path": "slides_assets/lab5_s03_smee_channel.png",
       "shapes": [
         {"type": "round_rect", "box": [363, 103, 1077, 182], "label": "① เก็บ URL ไว้ใน shell", "label_at": [1060, 225], "target": [1070, 145]},
@@ -50,6 +56,12 @@
         {"type": "round_rect", "box": [398, 528, 1302, 566], "label": "① รับเฉพาะ main", "label_at": [35, 500], "target": [402, 547]},
         {"type": "round_rect", "box": [398, 648, 1302, 689], "label": "② เทียบค่า $ref", "label_at": [35, 650], "target": [402, 668]},
         {"type": "round_rect", "box": [366, 805, 495, 831], "label": "③ Poll SCM ต้องปิด", "label_at": [35, 830], "target": [370, 818]}
+      ]
+    },
+    {
+      "path": "slides_assets/lab5_s05b_gwt_save.png",
+      "shapes": [
+        {"type": "round_rect", "box": [365, 947, 470, 987], "label": "① กด Save GWT", "label_at": [650, 900], "target": [418, 967]}
       ]
     },
     {

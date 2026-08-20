@@ -155,3 +155,25 @@
 | P5-m07 | minor | **ยอมรับ** | Track A จับเวลา student replay จริง → ปรับ timebox LAB 4/5/6 ตามผล |
 
 **สรุป: FREEZE PLAN_P5_GITHUB.md v2** — blocker ทั้ง 8 ถูกตอบครบ (6 ยอมรับเต็ม, 2 บางส่วนพร้อมเหตุผล)
+
+## Phase 4b — Adversarial review หลัง P5 (docs/CRITIQUE_P5_PHASE4.md)
+
+| id | คำตัดสิน | สาระ |
+|---|---|---|
+| P4b-01 | **ยอมรับ** | ลบภาพ legacy Gitea ทุกไฟล์ออกจาก active tree + เปลี่ยน gate เป็น exact allowlist ของภาพ |
+| P4b-02 | **บางส่วน** | คง check เป็น observational (ตาม D15/M07 frozen) แต่เสริมให้ปิด false-pass: assert cause แบบ exact `GitHub push <SHA 40 hex>` กับทุก GWT build (build จาก ping จะไม่มี SHA — โดนจับ) + นับ build ที่ cause ตรง delivery SHA ปัจจุบันต้อง = 1 · ปฏิเสธให้ check สร้าง hook/push เอง |
+| P4b-03 | **ยอมรับ** | README ใช้ lastBuild.number ทั้งสอง job ก่อน/หลัง push · check เพิ่ม cross-assert: ไม่มี build ของ job ตรงข้ามที่ cause SHA == delivery SHA ของอีก job |
+| P4b-04 | **ยอมรับ** | ขั้น settled baseline (จดเลข build) เป็นขั้นบังคับก่อน Add webhook + ขั้นเทียบ delta หลัง push — คำสั่งง่ายระดับนักศึกษา |
+| P4b-05 | **ยอมรับ** | ตัด assert `config.secret is None` (field ไม่มีใน list response — หลักฐานเทียม) → ตรวจจาก delivery request headers ว่าไม่มี X-Hub-Signature-256 |
+| P4b-06 | **ยอมรับ** | assert exact causeString ใน XML + shortDescription runtime · slide webapp เติม ref/after/cause ให้ครบเท่า hello |
+| P4b-07 | **ยอมรับ** | recapture ภาพ repo files (4 ไฟล์รวม marker) + แก้ annotation/caption/slide |
+| P4b-08 | **บางส่วน** | แขนงใหม่: repo มีอยู่แต่**ว่างเปล่า (0 commits)** → อนุญาต initialize (ปลอดภัย ไม่มีทางเป็นงานนักศึกษา) — convergent โดยไม่ต้อง rollback-delete (student PAT ไม่มี delete_repo) · fail-closed คงเดิมสำหรับ repo ที่มี commit |
+| P4b-09 | **ยอมรับ** | check ตรวจ image digest/network/restart policy/args จาก docker inspect + Connected นับจาก StartedAt · README restart เพิ่มคำสั่ง inspect + push probe |
+| P4b-10 | **บางส่วน** | เติมภาพ/marker ฝั่ง Jenkins ที่ขาด (Save/Build Now/Console/restart checkbox — capture จริงได้) · GitHub Recent Deliveries เป็น auth-only: เปลี่ยนข้อความให้ชี้หลักฐาน smee tab + docker logs แทน (Recent Deliveries เป็น side-note; จะเพิ่มภาพจริงเมื่อได้ session cookie) |
+| P4b-11 | **ยอมรับ** | INTEGRATION.md: ประทับ SHA รันเก่าเป็น historical + เพิ่ม post-fix run |
+| P4b-12 | **ยอมรับ** | preflight ใช้มาตรฐานเดียวกับ gh_api (timeout, temp config 600, ไม่มี token ใน argv, Retry-After) |
+| P4b-13 | **ยอมรับ** | slide prereq เพิ่ม GitHub+PAT scopes · README รับ token ด้วย read -rsp (hidden) + คำเตือน history |
+| P4b-14 | **ยอมรับ** | กวาด R8 (`&&`, `;` ต่อคำสั่ง) ใน LAB1-3/root/deck + gate ตรวจ `&&` ใน bash block ของเอกสารนักศึกษา |
+| P4b-15 | **ยอมรับ** | expected ของ preflight/bootstrap ใช้บรรทัดจริง + `<SCOPE_PROFILE>` อธิบายสองค่าที่เป็นไปได้ |
+| P4b-16 | **ยอมรับ** | mask ภาพ smee ใหม่ให้กล่องครอบทั้งบรรทัด (แก้ `<SMEE_HELLO_<SMEE_HELLO_URL>` ที่อ่านเพี้ยน) |
+| P4b-17 | **บางส่วน** | เปลี่ยนข้อความ timebox เป็น "ประมาณการ" + แยก automation/human timing ใน INTEGRATION · ปฏิเสธ novice run 2-3 คน (ไม่มีผู้เรียนใน loop — accepted risk เดิม F-04) |

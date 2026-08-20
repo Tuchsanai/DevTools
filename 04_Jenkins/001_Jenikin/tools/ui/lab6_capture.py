@@ -114,9 +114,10 @@ def capture_github(page, user: str) -> None:
     )
 
 
-def capture_smee(page, channel: str, user: str, ready_file: str, timeout: int) -> None:
-    channel_id = channel.rsplit("/", 1)[-1]
-    masks = ((channel, "<SMEE_WEBAPP_URL>"), (channel_id, "<SMEE_WEBAPP_URL>"), (user, "<GITHUB_USER>"))
+def capture_smee(page, channel: str, user: str, ready_file: str, timeout: int, initial_only: bool) -> None:
+    # Mask the complete URL once so each CLI/Node example receives one box that
+    # covers the whole value instead of overlapping channel-id placeholders.
+    masks = ((channel, "<SMEE_WEBAPP_URL>"), (user, "<GITHUB_USER>"))
     response = page.goto(channel, wait_until="domcontentloaded")
     require(response is not None and response.status == 200, "smee channel page returned HTTP 200")
     page.wait_for_timeout(1500)
@@ -128,6 +129,9 @@ def capture_smee(page, channel: str, user: str, ready_file: str, timeout: int) -
         masks=masks,
         mask_locators=((url_input, "<SMEE_WEBAPP_URL>"),),
     )
+    if initial_only:
+        log("assert: initial channel capture completed without waiting for a delivery")
+        return
     if ready_file:
         Path(ready_file).write_text("ready\n", encoding="utf-8")
     deadline = time.monotonic() + timeout
@@ -195,6 +199,7 @@ def main() -> None:
     parser.add_argument("--devtools-name", default=os.getenv("DT_NAME", "devtools-jk-lab"))
     parser.add_argument("--ready-file", default="")
     parser.add_argument("--timeout", type=int, default=180)
+    parser.add_argument("--initial-only", action="store_true")
     args = parser.parse_args()
     if args.action == "annotate":
         annotate_all()
@@ -205,7 +210,9 @@ def main() -> None:
         if args.action == "github":
             capture_github(page, user)
         else:
-            capture_smee(page, relay_channel(args.devtools_name), user, args.ready_file, args.timeout)
+            channel = os.environ.get("SMEE_WEBAPP_URL", "") or relay_channel(args.devtools_name)
+            require(bool(re.fullmatch(r"https://smee\.io/[^/?#]+", channel)), "SMEE_WEBAPP_URL is one smee channel")
+            capture_smee(page, channel, user, args.ready_file, args.timeout, args.initial_only)
 
 
 if __name__ == "__main__":

@@ -10,6 +10,7 @@ JOB_NAME='webapp-deploy'
 TOKEN='cicd2569-webapp'
 RELAY='smee-webapp'
 TARGET="http://jenkins:8080/generic-webhook-trigger/invoke?token=$TOKEN"
+RELAY_IMAGE='deltaprojects/smee-client@sha256:20ea24c8c81bb3f3aa332c8939503e3c5bee048bb5a98ba2249d73a41a556e33'
 failures=0
 GH_API_REQUEST_COUNT=0
 GH_API_STATUS=''
@@ -139,6 +140,7 @@ ok = ok and trigger.findtext("token") == os.environ["EXPECTED_TOKEN"]
 ok = ok and variables.get("ref") == "$.ref" and variables.get("after") == "$.after"
 ok = ok and trigger.findtext("regexpFilterText") == "$ref"
 ok = ok and trigger.findtext("regexpFilterExpression") == "^refs/heads/main$"
+ok = ok and trigger.findtext("causeString") == "GitHub push $after"
 raise SystemExit(0 if ok else 1)
 PY
 then
@@ -150,13 +152,18 @@ fi
 relay_json="$tmp_dir/relay.json"
 relay_logs="$tmp_dir/relay.log"
 channel=''
+relay_started_at=''
 if docker inspect "$RELAY" >"$relay_json" 2>/dev/null; then
-  channel="$(EXPECTED_TARGET="$TARGET" python3 - "$relay_json" <<'PY'
+  read -r channel relay_started_at < <(EXPECTED_TARGET="$TARGET" EXPECTED_IMAGE="$RELAY_IMAGE" python3 - "$relay_json" <<'PY'
 import json, os, sys
 from urllib.parse import urlsplit
 d = json.load(open(sys.argv[1], encoding="utf-8"))[0]
 args = (d.get("Config") or {}).get("Cmd") or []
 running = ((d.get("State") or {}).get("Running") is True)
+started_at = str((d.get("State") or {}).get("StartedAt") or "")
+image = str((d.get("Config") or {}).get("Image") or "")
+restart = str((((d.get("HostConfig") or {}).get("RestartPolicy") or {}).get("Name")) or "")
+networks = (d.get("NetworkSettings") or {}).get("Networks") or {}
 try:
     url = args[args.index("--url") + 1]
     target = args[args.index("--target") + 1]
@@ -166,23 +173,27 @@ parsed = urlsplit(url)
 valid_url = parsed.scheme == "https" and parsed.hostname == "smee.io"
 valid_url = valid_url and bool(parsed.path.strip("/")) and parsed.path.count("/") == 1
 valid_url = valid_url and not parsed.query and not parsed.fragment
-if running and args == ["--url", url, "--target", target] and valid_url and target == os.environ["EXPECTED_TARGET"]:
-    print(url)
+valid = running and args == ["--url", url, "--target", target]
+valid = valid and valid_url and target == os.environ["EXPECTED_TARGET"]
+valid = valid and image == os.environ["EXPECTED_IMAGE"]
+valid = valid and restart == "unless-stopped" and "cicd-net" in networks
+if valid and started_at:
+    print(url, started_at)
 else:
     raise SystemExit(1)
 PY
-)"
+  )
 fi
 if [ -n "$channel" ]; then
-  pass "$RELAY กำลังรัน และ url/target args ตรง canonical contract"
+  pass "$RELAY ตรง image digest/network/restart/url/target contract"
 else
-  fail "$RELAY ต้องกำลังรันด้วย smee URL และ canonical Jenkins target ที่ถูกต้อง"
+  fail "$RELAY ต้องตรง pinned image, cicd-net, unless-stopped และ canonical args"
 fi
-docker logs --timestamps "$RELAY" >"$relay_logs" 2>&1 || :
+docker logs --timestamps --since "${relay_started_at:-1970-01-01T00:00:00Z}" "$RELAY" >"$relay_logs" 2>&1 || :
 if grep -q 'Connected' "$relay_logs"; then
-  pass "$RELAY log มีหลักฐาน Connected"
+  pass "$RELAY log มี Connected หลัง StartedAt"
 else
-  fail "$RELAY log ไม่มีหลักฐาน Connected"
+  fail "$RELAY log ไม่มี Connected หลัง StartedAt"
 fi
 
 repo_url="https://github.com/$GITHUB_USER/webapp.git"
@@ -204,7 +215,6 @@ for hook in json.load(open(sys.argv[1], encoding="utf-8")):
     ok = config.get("url") == os.environ["EXPECTED_URL"]
     ok = ok and config.get("content_type") == "json"
     ok = ok and str(config.get("insecure_ssl")) == "0"
-    ok = ok and config.get("secret") in (None, "")
     ok = ok and hook.get("events") == ["push"] and hook.get("active") is True
     if ok:
         print(hook.get("id", ""))
@@ -213,7 +223,7 @@ PY
 )"
 fi
 if [[ "$hook_id" =~ ^[0-9]+$ ]]; then
-  pass 'GitHub hook ตรง relay channel, json, push-only, active, SSL verify และ secret ว่าง'
+  pass 'GitHub hook ตรง relay channel, json, push-only, active และ SSL verify'
 else
   fail "ไม่พบ GitHub hook ของ webapp ที่ครบ contract (HTTP ${GH_API_STATUS:-ไม่ทราบ})"
 fi
@@ -224,6 +234,7 @@ delivery_id=''
 delivery_timestamp=''
 delivery_after=''
 delivery_status=''
+delivery_unsigned='false'
 if [[ "$hook_id" =~ ^[0-9]+$ ]] \
   && gh_api GET "/repos/$GITHUB_USER/webapp/hooks/$hook_id/deliveries?per_page=10" "$deliveries_json" \
   && [ "$GH_API_STATUS" = '200' ]; then
@@ -239,30 +250,35 @@ fi
 if [[ "$delivery_id" =~ ^[0-9]+$ ]] \
   && gh_api GET "/repos/$GITHUB_USER/webapp/hooks/$hook_id/deliveries/$delivery_id" "$delivery_json" \
   && [ "$GH_API_STATUS" = '200' ]; then
-  read -r delivery_timestamp delivery_after delivery_status < <(python3 - "$delivery_json" <<'PY'
+  read -r delivery_timestamp delivery_after delivery_status delivery_unsigned < <(python3 - "$delivery_json" <<'PY'
 import json, sys
 d = json.load(open(sys.argv[1], encoding="utf-8"))
-payload = ((d.get("request") or {}).get("payload") or {})
-print(d.get("delivered_at", ""), payload.get("after", ""), d.get("status_code", ""))
+request = d.get("request") or {}
+payload = request.get("payload") or {}
+headers = request.get("headers") or {}
+unsigned = not any(str(key).casefold() == "x-hub-signature-256" for key in headers)
+print(d.get("delivered_at", ""), payload.get("after", ""), d.get("status_code", ""), str(unsigned).lower())
 PY
   )
 fi
 if [[ "$delivery_status" =~ ^2[0-9][0-9]$ ]] \
-  && [ "$delivery_after" = "$origin_sha" ] && [ -n "$delivery_timestamp" ]; then
-  pass "GitHub push delivery ล่าสุดตอบ $delivery_status และ payload.after ตรง origin/main"
+  && [ "$delivery_after" = "$origin_sha" ] && [ -n "$delivery_timestamp" ] \
+  && [ "$delivery_unsigned" = 'true' ]; then
+  pass "GitHub push delivery ตอบ $delivery_status, after ตรง origin และไม่มี X-Hub-Signature-256"
 else
-  fail 'GitHub push delivery ล่าสุดต้องเป็น 2xx และ payload.after ต้องตรง origin/main'
+  fail 'GitHub push delivery ต้องเป็น 2xx, after ตรง origin และไม่มี X-Hub-Signature-256'
 fi
 
 build_json="$tmp_dir/build.json"
 if curl -gfsS -u "$JENKINS_AUTH" \
     "$JENKINS_URL/job/$JOB_NAME/lastBuild/api/json?tree=number,result,building,timestamp,url,actions[causes[shortDescription]]" \
     -o "$build_json" 2>/dev/null; then
-  read -r build_number build_result building build_started webhook_cause < <(python3 - "$build_json" <<'PY'
-import json, sys
+  read -r build_number build_result building build_started webhook_cause < <(EXPECTED_SHA="$origin_sha" python3 - "$build_json" <<'PY'
+import json, os, re, sys
 d = json.load(open(sys.argv[1], encoding="utf-8"))
 causes = [str(c.get("shortDescription", "")) for a in d.get("actions", []) for c in a.get("causes", [])]
-is_webhook = any("github push" in cause.casefold() for cause in causes)
+expected = "GitHub push " + os.environ["EXPECTED_SHA"]
+is_webhook = causes.count(expected) == 1 and bool(re.fullmatch(r"GitHub push [0-9a-f]{40}", expected))
 print(d.get("number", ""), d.get("result", ""), str(d.get("building", True)).lower(), d.get("timestamp", 0), str(is_webhook).lower())
 PY
   )
@@ -275,9 +291,114 @@ else
 fi
 if [ -n "$build_number" ] && [ "$build_result" = 'SUCCESS' ] \
   && [ "$building" = 'false' ] && [ "$webhook_cause" = 'true' ]; then
-  pass "build ล่าสุด #$build_number = SUCCESS และ cause มี GitHub push"
+  pass "build ล่าสุด #$build_number = SUCCESS และ cause ตรง GitHub push <SHA>"
 else
-  fail 'build ล่าสุดต้องจบ SUCCESS และ cause ต้องมี GitHub push'
+  fail 'build ล่าสุดต้องจบ SUCCESS และ cause ต้องเท่ากับ GitHub push <origin SHA>'
+fi
+
+web_builds_json="$tmp_dir/web-builds.json"
+if curl -gfsS -u "$JENKINS_AUTH" \
+    "$JENKINS_URL/job/$JOB_NAME/api/json?tree=builds[number,actions[causes[shortDescription]]]" \
+    -o "$web_builds_json" 2>/dev/null \
+  && EXPECTED_SHA="$origin_sha" python3 - "$web_builds_json" <<'PY'
+import json, os, re, sys
+d = json.load(open(sys.argv[1], encoding="utf-8"))
+causes = [str(c.get("shortDescription", "")) for b in d.get("builds", []) for a in b.get("actions", []) for c in a.get("causes", [])]
+gwt = [cause for cause in causes if cause.startswith("GitHub push")]
+expected = "GitHub push " + os.environ["EXPECTED_SHA"]
+raise SystemExit(0 if all(re.fullmatch(r"GitHub push [0-9a-f]{40}", c) for c in gwt) and causes.count(expected) == 1 else 1)
+PY
+then
+  pass 'ทุก webapp GWT build มี exact SHA cause และ build ที่ตรง delivery/origin SHA มี exactly 1'
+else
+  fail 'webapp GWT cause ต้องตรง regex และจำนวน build ของ delivery/origin SHA ต้องเท่ากับ 1'
+fi
+
+# Isolation is observational: correlate each repository's latest push delivery with
+# both jobs, without creating hooks or pushes from this checker.
+hello_relay_json="$tmp_dir/hello-relay.json"
+hello_hooks_json="$tmp_dir/hello-hooks.json"
+hello_deliveries_json="$tmp_dir/hello-deliveries.json"
+hello_delivery_json="$tmp_dir/hello-delivery.json"
+hello_builds_json="$tmp_dir/hello-builds.json"
+hello_channel=''
+hello_hook_id=''
+hello_delivery_id=''
+hello_delivery_after=''
+if docker inspect smee-hello >"$hello_relay_json" 2>/dev/null; then
+  hello_channel="$(python3 - "$hello_relay_json" <<'PY'
+import json, re, sys
+d = json.load(open(sys.argv[1], encoding="utf-8"))[0]
+args = (d.get("Config") or {}).get("Cmd") or []
+try:
+    value = args[args.index("--url") + 1]
+except (ValueError, IndexError):
+    raise SystemExit(1)
+if re.fullmatch(r"https://smee\.io/[^/?#]+", value):
+    print(value)
+else:
+    raise SystemExit(1)
+PY
+  )"
+fi
+if [ -n "$hello_channel" ] \
+  && gh_api GET "/repos/$GITHUB_USER/hello-ci/hooks?per_page=100" "$hello_hooks_json" \
+  && [ "$GH_API_STATUS" = '200' ]; then
+  hello_hook_id="$(EXPECTED_URL="$hello_channel" python3 - "$hello_hooks_json" <<'PY'
+import json, os, sys
+for hook in json.load(open(sys.argv[1], encoding="utf-8")):
+    if (hook.get("config") or {}).get("url") == os.environ["EXPECTED_URL"]:
+        print(hook.get("id", ""))
+        break
+PY
+  )"
+fi
+if [[ "$hello_hook_id" =~ ^[0-9]+$ ]] \
+  && gh_api GET "/repos/$GITHUB_USER/hello-ci/hooks/$hello_hook_id/deliveries?per_page=10" "$hello_deliveries_json" \
+  && [ "$GH_API_STATUS" = '200' ]; then
+  hello_delivery_id="$(python3 - "$hello_deliveries_json" <<'PY'
+import json, sys
+for item in json.load(open(sys.argv[1], encoding="utf-8")):
+    if item.get("event") == "push":
+        print(item.get("id", ""))
+        break
+PY
+  )"
+fi
+if [[ "$hello_delivery_id" =~ ^[0-9]+$ ]] \
+  && gh_api GET "/repos/$GITHUB_USER/hello-ci/hooks/$hello_hook_id/deliveries/$hello_delivery_id" "$hello_delivery_json" \
+  && [ "$GH_API_STATUS" = '200' ]; then
+  hello_delivery_after="$(python3 - "$hello_delivery_json" <<'PY'
+import json, sys
+d = json.load(open(sys.argv[1], encoding="utf-8"))
+print(((d.get("request") or {}).get("payload") or {}).get("after", ""))
+PY
+  )"
+fi
+if curl -gfsS -u "$JENKINS_AUTH" \
+    "$JENKINS_URL/job/hello-ci-pipeline/api/json?tree=builds[number,actions[causes[shortDescription]]]" \
+    -o "$hello_builds_json" 2>/dev/null \
+  && [[ "$hello_delivery_after" =~ ^[0-9a-f]{40}$ ]] \
+  && WEB_SHA="$delivery_after" HELLO_SHA="$hello_delivery_after" \
+    python3 - "$web_builds_json" "$hello_builds_json" <<'PY'
+import json, os, re, sys
+
+def causes(path):
+    data = json.load(open(path, encoding="utf-8"))
+    return [str(c.get("shortDescription", "")) for b in data.get("builds", []) for a in b.get("actions", []) for c in a.get("causes", [])]
+
+web = causes(sys.argv[1])
+hello = causes(sys.argv[2])
+hello_gwt = [cause for cause in hello if cause.startswith("GitHub push")]
+valid_hello = all(re.fullmatch(r"GitHub push [0-9a-f]{40}", cause) for cause in hello_gwt)
+cross = web.count("GitHub push " + os.environ["HELLO_SHA"]) == 0
+cross = cross and hello.count("GitHub push " + os.environ["WEB_SHA"]) == 0
+raise SystemExit(0 if valid_hello and cross else 1)
+PY
+then
+  pass 'isolation สองทิศ: ไม่มี job ตรงข้ามที่ cause SHA ตรง delivery ของอีก repo'
+else
+  fail 'isolation ต้องไม่มี hello/webapp cross-trigger ตาม delivery SHA ทั้งสองทิศ'
 fi
 
 stages_json="$tmp_dir/stages.json"

@@ -96,7 +96,16 @@ def configure_scm(page, base_url: str, user: str) -> None:
         mask_texts=(user,),
         mask_locators=((url, "https://github.com/<GITHUB_USER>/hello-ci.git"),),
     )
-    page.locator("button[name='Submit']").click()
+    submit = page.locator("button[name='Submit']")
+    submit.scroll_into_view_if_needed()
+    page.wait_for_timeout(500)
+    masked_screenshot(
+        page,
+        ASSETS / "lab4_s05b_scm_save.png",
+        "SCM configuration ready to save",
+        mask_texts=(user,),
+    )
+    submit.click()
     page.wait_for_url(re.compile(rf"/job/{JOB}/?$"))
     require(page.url.rstrip("/").endswith(f"/job/{JOB}"), "SCM job configuration saved through UI")
 
@@ -114,10 +123,13 @@ def assert_saved_contract(page, base_url: str, user: str) -> None:
     require(not definition.findall(".//credentialsId"), "public repository checkout has no credentialsId")
 
 
-def build_and_assert(page, base_url: str) -> None:
+def build_and_assert(page, base_url: str, user: str) -> None:
     baseline = last_build_number(page, base_url)
     page.goto(f"{base_url}/job/{JOB}/", wait_until="domcontentloaded")
-    page.get_by_role("link", name=re.compile(r"Build Now", re.I)).click()
+    build_now = page.get_by_role("link", name=re.compile(r"Build Now", re.I))
+    build_now.scroll_into_view_if_needed()
+    masked_screenshot(page, ASSETS / "lab4_s06a_build_now.png", "Build Now action", mask_texts=(user,))
+    build_now.click()
     deadline = time.monotonic() + 300
     number = baseline
     result = None
@@ -133,6 +145,15 @@ def build_and_assert(page, base_url: str) -> None:
     require(console.ok and "Checking out Revision" in console.text(), "console proves a real Git checkout")
     require("Hello from GitHub" in console.text(), "repository test script printed Hello from GitHub")
     require("Finished: SUCCESS" in console.text(), "console ended with SUCCESS")
+    page.goto(f"{base_url}/job/{JOB}/{number}/", wait_until="domcontentloaded")
+    console_link = page.get_by_role("link", name=re.compile(r"Console Output", re.I))
+    console_link.scroll_into_view_if_needed()
+    masked_screenshot(page, ASSETS / "lab4_s06b_open_console.png", "open Console Output action", mask_texts=(user,))
+    console_link.click()
+    page.wait_for_url(re.compile(rf"/job/{JOB}/{number}/console"))
+    evidence = page.get_by_text("Hello from GitHub", exact=False).last
+    evidence.scroll_into_view_if_needed()
+    masked_screenshot(page, ASSETS / "lab4_s06_manual_build_console.png", "manual SCM build console", mask_texts=(user,))
 
 
 def main() -> None:
@@ -150,7 +171,7 @@ def main() -> None:
             assert_saved_contract(page, base_url, user)
         else:
             assert_saved_contract(page, base_url, user)
-            build_and_assert(page, base_url)
+            build_and_assert(page, base_url, user)
 
 
 if __name__ == "__main__":

@@ -93,7 +93,7 @@ URL สำหรับผู้เรียน:
 
 ## เส้นทางการเรียน
 
-| ครั้ง | LAB | โฟลเดอร์ | คำถามหลัก | เวลา |
+| ครั้ง | LAB | โฟลเดอร์ | คำถามหลัก | เวลาประมาณการ |
 |---|---:|---|---|---:|
 | 1 | 1 | [`001_LAB_Jenkins_On_Docker`](./001_LAB_Jenkins_On_Docker/README.md) | ยก Jenkins ใน Docker อย่างไร | 40 นาที |
 | 1 | 2 | [`002_LAB_Declarative_Pipeline`](./002_LAB_Declarative_Pipeline/README.md) | เปลี่ยนคลิกเป็นโค้ดอย่างไร | 30 นาที |
@@ -139,7 +139,10 @@ root@...:~#
 จากนั้นรัน bootstrap ภายใน shell ของ devtools:
 
 ```bash
-(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab2.sh)
+(
+  cd "$COURSE_ROOT"
+  bash tools/bootstrap/up_to_lab2.sh
+)
 ```
 
 ✅ **สิ่งที่ต้องเห็น**:
@@ -154,7 +157,10 @@ root@...:~#
 ```bash
 export DOCKER_USER='<DOCKER_USER>'
 export DOCKER_TOKEN='<DOCKER_TOKEN>'
-(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab3.sh)
+(
+  cd "$COURSE_ROOT"
+  bash tools/bootstrap/up_to_lab3.sh
+)
 unset DOCKER_TOKEN
 ```
 
@@ -171,16 +177,23 @@ unset DOCKER_TOKEN
 export DOCKER_USER='<DOCKER_USER>'
 export DOCKER_TOKEN='<DOCKER_TOKEN>'
 export GITHUB_USER='<GITHUB_USER>'
-export GITHUB_TOKEN='<GITHUB_TOKEN>'
-(cd "$COURSE_ROOT" && bash tools/bootstrap/up_to_lab4.sh)
+read -rsp 'GitHub PAT: ' GITHUB_TOKEN
+printf '\n'
+export GITHUB_TOKEN
+(
+  cd "$COURSE_ROOT"
+  bash tools/bootstrap/up_to_lab4.sh
+)
 unset DOCKER_TOKEN GITHUB_TOKEN
 ```
+
+`read -rsp` ซ่อน PAT จากหน้าจอและไม่บันทึกค่าลง shell history; อย่าแทน token จริงในคำสั่ง `export` และต้อง `unset GITHUB_TOKEN` หลังใช้งาน
 
 ✅ **สิ่งที่ต้องเห็น**:
 
 ```text
 ...
-[assert] LAB 4 ready: ...
+[assert] LAB 4 พร้อม: public GitHub hello-ci/main, ownership marker, Poll SCM และ green SCM build ผ่าน
 ```
 
 เปลี่ยนเลขท้ายเป็น `up_to_lab5.sh` ตามจุดที่ต้องการกู้ และรัน `check.sh` ของ LAB ล่าสุดเพื่อยืนยัน

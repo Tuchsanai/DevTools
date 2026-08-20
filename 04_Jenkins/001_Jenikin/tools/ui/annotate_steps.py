@@ -198,8 +198,10 @@ def annotate_image(
     repo: Path,
     spec: dict[str, Any],
     fonts: tuple[ImageFont.FreeTypeFont, ImageFont.FreeTypeFont],
+    *,
+    restore: bool = True,
 ) -> str:
-    restore_mode = restore_pristine(repo, spec)
+    restore_mode = restore_pristine(repo, spec) if restore else "current capture"
     path = safe_repo_path(repo, spec["path"])
     shapes = spec.get("shapes", [])
     if not shapes:
@@ -306,6 +308,8 @@ def main() -> int:
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("selection", nargs="?", help="labN (for example, lab1)")
     group.add_argument("--all", action="store_true", help="render every lab*.json spec")
+    parser.add_argument("--current", action="store_true", help="annotate current captured pixels without git restore")
+    parser.add_argument("--image", action="append", default=[], help="limit rendering to one path from the selected spec")
     args = parser.parse_args()
     selection = "--all" if args.all else args.selection
     try:
@@ -315,7 +319,9 @@ def main() -> int:
         for path in spec_paths(repo, selection):
             data = json.loads(path.read_text(encoding="utf-8"))
             for image_spec in data["images"]:
-                result = annotate_image(repo, image_spec, fonts)
+                if args.image and image_spec["path"] not in args.image:
+                    continue
+                result = annotate_image(repo, image_spec, fonts, restore=not args.current)
                 results.append((image_spec["path"], result))
                 print(f"{image_spec['path']}: {result}")
         append_log(repo, f"annotate_steps.py {selection}", results)

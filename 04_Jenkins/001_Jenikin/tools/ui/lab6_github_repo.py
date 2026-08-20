@@ -98,8 +98,7 @@ def assert_hook(user: str, token: str, channel: str) -> None:
     valid = hook.get("active") is True and hook.get("events") == ["push"]
     valid = valid and config.get("content_type") == "json"
     valid = valid and str(config.get("insecure_ssl")) == "0"
-    valid = valid and config.get("secret") in (None, "")
-    require(valid, "hook is active, push-only, JSON, SSL-verifying, and has no secret")
+    require(valid, "hook is active, push-only, JSON, and SSL-verifying")
     status, deliveries = api(
         "GET", f"/repos/{user}/{REPO}/hooks/{hook['id']}/deliveries?per_page=20", token
     )
@@ -109,6 +108,14 @@ def assert_hook(user: str, token: str, channel: str) -> None:
     require(ping is not None, "automatic GitHub ping delivery exists")
     assert ping is not None
     require(200 <= int(ping.get("status_code") or 0) < 300, "automatic ping returned 2xx")
+    status, delivery = api(
+        "GET", f"/repos/{user}/{REPO}/hooks/{hook['id']}/deliveries/{ping['id']}", token
+    )
+    require(status == 200 and isinstance(delivery, dict), "full ping delivery is readable")
+    assert isinstance(delivery, dict)
+    headers = ((delivery.get("request") or {}).get("headers") or {})
+    unsigned = not any(str(key).casefold() == "x-hub-signature-256" for key in headers)
+    require(unsigned, "delivery request headers contain no X-Hub-Signature-256")
 
 
 def main() -> None:

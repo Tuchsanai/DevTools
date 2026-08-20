@@ -185,12 +185,17 @@ def listen(args: argparse.Namespace) -> None:
     user = os.environ.get("GITHUB_USER", "")
     require(channel.startswith("https://smee.io/") and channel.count("/") == 3, "SMEE_HELLO_URL is one smee channel")
     require(bool(user), "GITHUB_USER is set")
-    masks = ((channel, "<SMEE_HELLO_URL>"), (channel.rsplit("/", 1)[-1], "<SMEE_HELLO_URL>"), (user, "<GITHUB_USER>"))
+    # Mask the complete URL once. Masking the nested channel id separately would
+    # paint overlapping placeholders and leave an unreadable command example.
+    masks = ((channel, "<SMEE_HELLO_URL>"), (user, "<GITHUB_USER>"))
     with browser_page() as (_, _, _, page):
         page.goto(channel, wait_until="domcontentloaded")
         wait_for_text(page, lambda text: "webhook" in text or "smee" in text, "smee channel page loaded", 30)
         url_input = page.locator("#url")
         masked_screenshot(page, ASSETS / "lab5_s03_smee_channel.png", "new smee channel kept open", masks=masks, mask_locators=((url_input, "<SMEE_HELLO_URL>"),))
+        if args.initial_only:
+            log("assert: initial channel capture completed without waiting for a delivery")
+            return
         if args.ready_file:
             Path(args.ready_file).write_text("ready\n", encoding="utf-8")
         if args.redeliver_ping:
@@ -260,6 +265,7 @@ def main() -> None:
     parser.add_argument("--action", choices=("listen", "annotate"), default="listen")
     parser.add_argument("--ready-file")
     parser.add_argument("--redeliver-ping", action="store_true")
+    parser.add_argument("--initial-only", action="store_true")
     parser.add_argument("--timeout", type=int, default=300)
     args = parser.parse_args()
     if args.action == "annotate":

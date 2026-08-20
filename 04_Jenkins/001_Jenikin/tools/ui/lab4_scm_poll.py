@@ -71,7 +71,16 @@ def enable_poll(page, base_url: str, devtools_name: str, user: str) -> None:
     )
 
     baseline = last_build_number(page, base_url)
-    page.locator("button[name='Submit']").click()
+    submit = page.locator("button[name='Submit']")
+    submit.scroll_into_view_if_needed()
+    page.wait_for_timeout(500)
+    masked_screenshot(
+        page,
+        ASSETS / "lab4_s07b_poll_save.png",
+        "Poll SCM schedule ready to save",
+        mask_texts=(user,),
+    )
+    submit.click()
     page.wait_for_url(re.compile(rf"/job/{JOB}/?$"))
     assert_poll_config(page, base_url)
     state_path(devtools_name).write_text(json.dumps({"baseline": baseline, "enabled_at": time.time()}), encoding="utf-8")

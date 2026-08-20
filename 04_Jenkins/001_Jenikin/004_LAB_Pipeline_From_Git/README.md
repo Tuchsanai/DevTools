@@ -42,7 +42,9 @@ c49cc54fbb9e   jenkins-docker:2569   "/usr/bin/tini -- /u…"   <เวลา>  
 
 ```bash
 export GITHUB_USER='<GITHUB_USER>'
-export GITHUB_TOKEN='<GITHUB_TOKEN>'
+read -rsp 'GitHub PAT: ' GITHUB_TOKEN
+printf '\n'
+export GITHUB_TOKEN
 
 (
   cd "$COURSE_ROOT"
@@ -54,10 +56,11 @@ export GITHUB_TOKEN='<GITHUB_TOKEN>'
 
 ```text
 [github-preflight] กำลังตรวจบัญชีและสิทธิ์ของ GitHub token...
-[github-preflight][ผ่าน] login ตรงกับ GITHUB_USER และ scope ผ่านชุด repo
+[github-preflight][ผ่าน] login ตรงกับ GITHUB_USER และ scope ผ่านชุด <SCOPE_PROFILE>
+[github-preflight] GitHub API requests: 1
 ```
 
-ผล `public_repo + admin:repo_hook` ก็ผ่าน contract เช่นกัน preflight เรียก `GET /user` และตรวจ scope จาก response header โดยไม่สร้าง probe repository และไม่พิมพ์ token
+`<SCOPE_PROFILE>` ต้องเป็น `public_repo + admin:repo_hook` (ชุดแนะนำสำหรับ public repo) หรือ `repo`; preflight เรียก `GET /user` และตรวจ scope จาก response header โดยไม่สร้าง probe repositoryและไม่พิมพ์ token คำสั่ง `read -rsp` ป้องกัน PAT โผล่บนจอและใน history—ห้ามแทน token จริงในคำสั่ง `export`
 
 ## การทดลองที่ 2 — เหตุใด push ต้องใช้ PAT แต่ checkout ไม่ต้องใช้? (~3 นาที)
 
@@ -159,7 +162,7 @@ branch 'main' set up to track 'origin/main'.
 
 ![หน้า public repository หลัง push ไฟล์โครงการ](../slides_assets/lab4_s03_github_repo_files.png)
 
-*ภาพที่ 3: หลักฐานจริงว่า branch `main` มี source files โดย mask ชื่อเจ้าของก่อนบันทึกภาพ; ตัวตรวจ authenticated API ยืนยัน marker เพิ่มอีกชั้น*
+*ภาพที่ 3: หลักฐานจริงหลัง marker fix ว่า branch `main` มีไฟล์ครบ 4 รายการ: `.course-cicd2569`, `Jenkinsfile`, `hello.sh`, `expected.txt`; mask ชื่อเจ้าของก่อนบันทึกภาพ*
 
 ## การทดลองที่ 5 — Jenkins จะโหลด Pipeline จาก GitHub อย่างไร? (~7 นาที)
 
@@ -180,6 +183,10 @@ branch 'main' set up to track 'origin/main'.
 ![ส่วน Pipeline script from SCM ที่ชี้ GitHub](../slides_assets/lab4_s05_jenkins_scm_config.png)
 
 *ภาพที่ 5: URL ถูก mask เป็น placeholder; ต้องสังเกต GitHub HTTPS, credential ว่าง, branch `*/main` และ `Jenkinsfile`*
+
+![กด Save หลังตั้ง Pipeline from SCM](../slides_assets/lab4_s05b_scm_save.png)
+
+*ภาพที่ 5.1: หน้า Jenkins จริง มี marker ชี้ปุ่ม Save หลังกรอก SCM contract ครบ*
 
 > **ทางเลือกอัตโนมัติสำหรับผู้สอน (รันจาก host):** helper เปิด Jenkins UI จริงผ่าน Playwright สร้าง New Item และกรอก Pipeline section ตามลำดับเดียวกับนักศึกษา
 >
@@ -209,6 +216,14 @@ branch 'main' set up to track 'origin/main'.
 2. เปิด build ล่าสุด → **Console Output**
 3. ตรวจ revision, ข้อความจาก `hello.sh` และสถานะบรรทัดสุดท้าย
 
+![กด Build Now](../slides_assets/lab4_s06a_build_now.png)
+
+*ภาพที่ 6.1: หน้า Jenkins จริง มี marker ชี้ Build Now ก่อนสร้าง manual build*
+
+![เปิด Console Output](../slides_assets/lab4_s06b_open_console.png)
+
+*ภาพที่ 6.2: หน้า build จริง มี marker ชี้ลิงก์ Console Output*
+
 ![Console Output ของ manual build](../slides_assets/lab4_s06_manual_build_console.png)
 
 *ภาพที่ 6: หลักฐานจริงของ Git checkout, `Hello from GitHub` และ `Finished: SUCCESS`; capture ผ่านขั้น mask ก่อนบันทึก*
@@ -233,6 +248,10 @@ Finished: SUCCESS
 ![Poll SCM ทุกนาทีในหน้า Configure](../slides_assets/lab4_s07_poll_scm_trigger.png)
 
 *ภาพที่ 7: Poll SCM ถูกเลือกและ schedule มีเครื่องหมาย `*` ห้าช่อง พร้อมคำเตือน every minute*
+
+![กด Save หลังตั้ง Poll SCM](../slides_assets/lab4_s07b_poll_save.png)
+
+*ภาพที่ 7.1: หน้า Jenkins จริง มี marker ชี้ปุ่ม Save หลังตั้ง Poll SCM*
 
 > **ทางเลือกอัตโนมัติสำหรับผู้สอน (รันจาก host):**
 >
@@ -325,6 +344,12 @@ To https://github.com/<GITHUB_USER>/hello-ci.git
 [INFO] GitHub API requests ใน run นี้: 4
 ผลรวม: PASS
 ```
+
+```bash
+unset GITHUB_TOKEN
+```
+
+เปิดรับ PAT ด้วย `read -rsp` ใหม่เมื่อต้องทำ LAB 5; อย่าปล่อย token ค้างใน environment หลังจบงาน
 
 LAB 5 จะใช้ repository และ job เดิมเพื่อเปลี่ยนจาก polling เป็น webhook จึงไม่ลบ `hello-ci` และไม่ลบ `hello-ci-pipeline` หลังจบ LAB นี้
 

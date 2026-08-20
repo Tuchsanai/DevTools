@@ -505,7 +505,7 @@ raise SystemExit(0 if content == "course fixture — safe to delete" else 1)
 
 ensure_github_repo() {
   local name="$1"
-  local temporary_directory repository_url payload
+  local temporary_directory repository_url payload initialize=false
   require_github_env
   GITHUB_REPO_CREATED_BY_THIS_RUN=false
 
@@ -521,7 +521,30 @@ ensure_github_repo() {
       || die "GitHub repository $GITHUB_USER/$name ที่สร้างใหม่ไม่เป็น public"
     GITHUB_REPO_CREATED_BY_THIS_RUN=true
     step "created_by_this_run=true สำหรับ GitHub repository $GITHUB_USER/$name"
+    initialize=true
+  elif [ "$GH_API_STATUS" = '200' ]; then
+    printf '%s' "$GH_API_BODY" | python3 -c \
+      'import json,sys; d=json.load(sys.stdin); raise SystemExit(0 if not d.get("private", True) else 1)' \
+      || die "GitHub repository $GITHUB_USER/$name มีอยู่แต่ไม่เป็น public"
+    gh_api GET "/repos/$GITHUB_USER/$name/commits?per_page=1"
+    if [ "$GH_API_STATUS" = '409' ] \
+      || { [ "$GH_API_STATUS" = '200' ] && [ "$GH_API_BODY" = '[]' ]; }; then
+      initialize=true
+      step "repository $GITHUB_USER/$name มี 0 commits จึง initialize course fixture ได้อย่างปลอดภัย"
+    else
+      [ "$GH_API_STATUS" = '200' ] \
+        || die "ตรวจจำนวน commits ของ $GITHUB_USER/$name ไม่สำเร็จ (HTTP $GH_API_STATUS)"
+      gh_api GET "/repos/$GITHUB_USER/$name/contents/.course-cicd2569?ref=main"
+      if [ "$GH_API_STATUS" != '200' ] || ! github_marker_is_valid; then
+        die "พบ repository $GITHUB_USER/$name ที่มี commit แต่ไม่มี ownership marker ที่ถูกต้องบน main; ปิดการทำงานเพื่อความปลอดภัย กรุณา rename repository เดิมแล้วรันใหม่"
+      fi
+      step "created_by_this_run=false; ยืนยัน ownership marker ของ $GITHUB_USER/$name แล้ว"
+    fi
+  else
+    die "ตรวจ GitHub repository $GITHUB_USER/$name ไม่สำเร็จ (HTTP $GH_API_STATUS)"
+  fi
 
+  if [ "$initialize" = true ]; then
     temporary_directory="$(mktemp -d)" || die 'สร้าง working directory ชั่วคราวไม่สำเร็จ'
     trap 'rm -rf -- "$temporary_directory"' RETURN
     git -C "$temporary_directory" init -q -b main repo
@@ -540,17 +563,6 @@ ensure_github_repo() {
       || die "push fixture ไปยัง $GITHUB_USER/$name ไม่สำเร็จ"
     rm -rf -- "$temporary_directory"
     trap - RETURN
-  elif [ "$GH_API_STATUS" = '200' ]; then
-    printf '%s' "$GH_API_BODY" | python3 -c \
-      'import json,sys; d=json.load(sys.stdin); raise SystemExit(0 if not d.get("private", True) else 1)' \
-      || die "GitHub repository $GITHUB_USER/$name มีอยู่แต่ไม่เป็น public"
-    gh_api GET "/repos/$GITHUB_USER/$name/contents/.course-cicd2569?ref=main"
-    if [ "$GH_API_STATUS" != '200' ] || ! github_marker_is_valid; then
-      die "พบ repository $GITHUB_USER/$name แต่ไม่มี ownership marker ที่ถูกต้องบน main; ปิดการทำงานเพื่อความปลอดภัย กรุณา rename repository เดิมแล้วรันใหม่"
-    fi
-    step "created_by_this_run=false; ยืนยัน ownership marker ของ $GITHUB_USER/$name แล้ว"
-  else
-    die "ตรวจ GitHub repository $GITHUB_USER/$name ไม่สำเร็จ (HTTP $GH_API_STATUS)"
   fi
 
   gh_api GET "/repos/$GITHUB_USER/$name/contents/.course-cicd2569?ref=main"
@@ -738,7 +750,7 @@ ensure_smee_relay() {
   local name="$1"
   local channel="$2"
   local token="$3"
-  local image target current_args current_image restart network relay_logs recreate=false i
+  local image target current_args current_image restart network relay_logs started_at recreate=false i
   [[ "$name" =~ ^smee-(hello|webapp)$ ]] || die 'ชื่อ relay ต้องเป็น smee-hello หรือ smee-webapp'
   validate_smee_channel "$channel" || die 'smee channel สำหรับ relay มีรูปแบบไม่ถูกต้อง'
   image='deltaprojects/smee-client@sha256:20ea24c8c81bb3f3aa332c8939503e3c5bee048bb5a98ba2249d73a41a556e33'
@@ -772,10 +784,11 @@ raise SystemExit(0 if actual == expected else 1)
     step "สร้าง $name บน cicd-net ด้วย channel <SMEE_URL>"
   fi
 
+  started_at="$(docker inspect -f '{{.State.StartedAt}}' "$name")"
   for ((i = 1; i <= 90; i++)); do
-    relay_logs="$(docker logs "$name" 2>&1 || true)"
+    relay_logs="$(docker logs --since "$started_at" "$name" 2>&1 || true)"
     if grep -q 'Connected' <<<"$relay_logs"; then
-      step "$name Connected"
+      step "$name Connected หลัง StartedAt"
       return 0
     fi
     sleep 2
@@ -859,12 +872,15 @@ for delivery in json.load(sys.stdin):
       if [ "$GH_API_STATUS" = '200' ] && EXPECTED_SHA="$expected_sha" python3 -c '
 import json, os, sys
 delivery = json.load(sys.stdin)
-payload = ((delivery.get("request") or {}).get("payload") or {})
+request = delivery.get("request") or {}
+payload = request.get("payload") or {}
+headers = request.get("headers") or {}
 ok = delivery.get("event") == "push" and payload.get("after") == os.environ["EXPECTED_SHA"]
 ok = ok and delivery.get("status_code") == 200
+ok = ok and not any(str(key).casefold() == "x-hub-signature-256" for key in headers)
 raise SystemExit(0 if ok else 1)
 ' <<<"$GH_API_BODY"; then
-        step 'GitHub delivery event=push, after=<SHA>, status_code=200 ตรงกับ probe'
+        step 'GitHub delivery event=push, after=<SHA>, status_code=200 และไม่มี X-Hub-Signature-256'
         return 0
       fi
     done <<<"$delivery_ids"

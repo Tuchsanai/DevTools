@@ -84,6 +84,10 @@ export GITHUB_TOKEN='<GITHUB_TOKEN>'
 
 *ภาพที่ 2: หน้า Download progress จริงก่อนสั่ง restart Jenkins*
 
+![เลือก restart หลังติดตั้ง plugin](../slides_assets/lab5_s02b_restart_checkbox.png)
+
+*ภาพที่ 2.1: หน้า Jenkins จริง มี marker ชี้ checkbox Restart Jenkins after installation ก่อนรอหน้า login กลับมา*
+
 ```bash
 until curl -fsS http://localhost:8080/login >/dev/null
 do
@@ -156,6 +160,10 @@ image ถูก pin ด้วย digest เพื่อให้ห้องเ�
 
 *ภาพที่ 5: หน้า Jenkins จริง แสดง expression `^refs/heads/main$` และ text `$ref` ก่อน Save*
 
+![กด Save หลังตั้ง GWT](../slides_assets/lab5_s05b_gwt_save.png)
+
+*ภาพที่ 5.1: หน้า Jenkins จริง มี marker ชี้ปุ่ม Save หลังตั้ง ref/after/token/cause/filter ครบ*
+
 ✅ **ค่าหลัง Save**
 
 ```text
@@ -185,7 +193,7 @@ curl -s -X POST 'http://localhost:8080/generic-webhook-trigger/invoke?token=cicd
 บางรุ่น/กรณีที่ token หา job ไม่พบอาจใช้ข้อความ `Did not find any jobs to trigger!`; ในแล็บนี้ให้ตัดสิน filter จาก `triggered:false` และ build number ไม่เพิ่ม ไม่ใช่จาก message รวมเพียง field เดียว
 
 ```bash
-curl -s -X POST -H 'Content-Type: application/json' -d '{"ref":"refs/heads/main","after":"test"}' 'http://localhost:8080/generic-webhook-trigger/invoke?token=cicd2569-hello'
+curl -s -X POST -H 'Content-Type: application/json' -d '{"ref":"refs/heads/main","after":"0000000000000000000000000000000000000000"}' 'http://localhost:8080/generic-webhook-trigger/invoke?token=cicd2569-hello'
 ```
 
 ✅ **ผลที่สังเกตได้จากการรันจริง**
@@ -195,6 +203,19 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"ref":"refs/heads/main"
 ```
 
 response จริงมี field เพิ่มได้ แต่ต้องมี `hello-ci-pipeline`, `triggered:true` และ `Triggered jobs.`
+
+ก่อนเปิดหน้า Add webhook ต้องรอ local probe ด้านบนจบและจดเลข build ล่าสุดเป็น settled baseline:
+
+```bash
+until curl -gfsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/lastBuild/api/json?tree=building' | grep -q '"building":false'
+do
+  sleep 1
+done
+LAB5_BEFORE_PING="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+printf 'before ping: %s\n' "$LAB5_BEFORE_PING"
+```
+
+ห้ามข้าม baseline นี้และห้ามกด Build Now ระหว่างขั้น Add webhook/ping
 
 ## การทดลองที่ 7 — เพิ่ม GitHub webhook แล้ว ping ต้องไม่ build (~4 นาที)
 
@@ -209,11 +230,18 @@ response จริงมี field เพิ่มได้ แต่ต้อง
 
 *ภาพที่ 6: ภาพจำลอง — UI จริงอาจต่างเล็กน้อย; marker แสดง Payload URL, JSON, Secret ว่าง, SSL verify, push-only, Active และ Add webhook ดู [GitHub Docs: Creating webhooks](https://docs.github.com/en/webhooks/using-webhooks/creating-webhooks); หลังบันทึกต้องตรวจ postcondition ผ่าน delivery/API*
 
-GitHub ส่ง `ping` ทันทีหลังสร้าง hook ให้ดู delivery เป็น 2xx และกลับ tab smee:
+GitHub ส่ง `ping` ทันทีหลังสร้าง hook ให้กลับ tab smee และดู event/response จาก tab นั้นร่วมกับ `docker logs smee-hello`; หน้า GitHub **Recent Deliveries** ใช้เป็นหมายเหตุเสริมเมื่อ session ยัง login อยู่ ไม่ใช่หลักฐานบังคับ
 
 ![GitHub ping ใน smee tab](../slides_assets/lab5_s07_smee_ping.png)
 
 *ภาพที่ 7: หลักฐานจริงว่า tab ที่เปิดค้างรับ ping; channel และชื่อบัญชีถูก mask ตอน capture*
+
+```bash
+docker logs --tail 20 smee-hello
+LAB5_AFTER_PING="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+test "$LAB5_AFTER_PING" -eq "$LAB5_BEFORE_PING"
+printf 'ping delta: %s -> %s (+0)\n' "$LAB5_BEFORE_PING" "$LAB5_AFTER_PING"
+```
 
 ✅ **Ping acceptance**
 
@@ -238,14 +266,23 @@ ping ไม่มี `ref=refs/heads/main` จึงผ่าน relay ด้ว
 
 ```bash
 docker restart smee-hello
-docker logs --tail 5 smee-hello
+RELAY_STARTED_AT="$(docker inspect -f '{{.State.StartedAt}}' smee-hello)"
+docker inspect -f '{{.Config.Image}} {{.HostConfig.RestartPolicy.Name}} {{json .NetworkSettings.Networks}} {{json .Config.Cmd}}' smee-hello
+docker logs --since "$RELAY_STARTED_AT" smee-hello
 ```
 
-✅ ต้องเห็น `Connected` รอบใหม่และ `docker inspect smee-hello` ยังคง URL เดิม เหตุการณ์ที่เกิดระหว่าง disconnect จะไม่ replay จึงต้องรอ Connected ก่อน push ใหม่
+✅ ต้องเห็น pinned digest, `unless-stopped`, `cicd-net`, URL/target เดิม และ `Connected` หลัง `StartedAt` เหตุการณ์ที่เกิดระหว่าง disconnect จะไม่ replay จึงต้องรอ Connected ก่อน push probe ในการทดลองที่ 9
 
 ## การทดลองที่ 9 — push หนึ่งครั้งสร้าง exactly one build หรือไม่? (~4 นาที)
 
 **คำถาม:** SHA จาก push จะเดินทางครบสี่ hopและเกิด build เพียงหนึ่งรายการได้หรือไม่?
+
+จด baseline หลัง reconnect ก่อน push probe:
+
+```bash
+LAB5_BEFORE_PUSH="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+printf 'before push: %s\n' "$LAB5_BEFORE_PUSH"
+```
 
 ```bash
 cd "$HOME/hello-ci"
@@ -263,6 +300,18 @@ time git push origin main
 ```
 
 เมื่อถาม credential ให้กรอก Username=`<GITHUB_USER>` และ Password=`<GITHUB_TOKEN>` ที่ prompt ห้ามใส่ PAT ใน URL และห้ามใช้ `credential.helper store`
+
+รอ build จบแล้วบังคับเทียบ delta ว่า push นี้เพิ่มเพียงหนึ่ง build:
+
+```bash
+until curl -gfsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/lastBuild/api/json?tree=building' | grep -q '"building":false'
+do
+  sleep 1
+done
+LAB5_AFTER_PUSH="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+test "$LAB5_AFTER_PUSH" -eq "$((LAB5_BEFORE_PUSH + 1))"
+printf 'push delta: %s -> %s (+1)\n' "$LAB5_BEFORE_PUSH" "$LAB5_AFTER_PUSH"
+```
 
 ไล่หลักฐานตาม SHA เดียวกัน:
 
@@ -315,17 +364,18 @@ Finished: SUCCESS
 ```text
 [PASS] ยืนยัน GITHUB_TOKEN และเจ้าของบัญชีตรงกับ GITHUB_USER
 [PASS] Generic Webhook Trigger 2.4.2 ติดตั้งและ active
-[PASS] GenericTrigger มี token, ref/after และ main-branch regexp filter ตรง contract
+[PASS] GenericTrigger มี token, ref/after, filter และ causeString ตรง contract
 [PASS] job hello-ci-pipeline ปิด Poll SCM แล้ว
-[PASS] smee-hello กำลังรัน และ url/target args ตรง canonical contract
-[PASS] smee-hello log มีหลักฐาน Connected
+[PASS] smee-hello ตรง image digest/network/restart/url/target contract
+[PASS] smee-hello log มี Connected หลัง StartedAt
 [PASS] อ่าน SHA ปัจจุบันของ origin/main ได้
-[PASS] GitHub hook ตรง relay channel, json, push-only, active, SSL verify และ secret ว่าง
-[PASS] GitHub push delivery ล่าสุดตอบ 200 และ payload.after ตรง origin/main
-[PASS] build ล่าสุด #<BUILD_NUMBER> = SUCCESS และ cause มี GitHub push
+[PASS] GitHub hook ตรง relay channel, json, push-only, active และ SSL verify
+[PASS] GitHub push delivery ตอบ 200, after ตรง origin และไม่มี X-Hub-Signature-256
+[PASS] build ล่าสุด #<BUILD_NUMBER> = SUCCESS และ cause ตรง GitHub push <SHA>
+[PASS] ทุก GWT build มี exact SHA cause และ build ที่ตรง delivery/origin SHA มี exactly 1
 [PASS] delivery SHA, origin/main และ checkout SHA ของ build ล่าสุดตรงกัน
 [PASS] smee-hello log มี POST canonical target ได้ 200 หลังเวลา delivery
-[INFO] GitHub API requests ใน run นี้: 4
+[INFO] GitHub API requests ใน run นี้: <N>
 ผลรวม: PASS — LAB 5 พร้อมใช้งาน
 ```
 

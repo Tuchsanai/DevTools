@@ -96,6 +96,57 @@ SURFACE_FILES = (
     Path("Jenkins_CICD_Docker_Slides.html"),
     Path("docs/LAB_TEMPLATE.md"),
 )
+ALLOWED_LAB_SCREENSHOTS = {
+    "lab4_s01_github_new_repo.png",
+    "lab4_s02_github_empty_repo.png",
+    "lab4_s03_github_repo_files.png",
+    "lab4_s04_jenkins_new_item.png",
+    "lab4_s05_jenkins_scm_config.png",
+    "lab4_s05b_scm_save.png",
+    "lab4_s06_manual_build_console.png",
+    "lab4_s06a_build_now.png",
+    "lab4_s06b_open_console.png",
+    "lab4_s07_poll_scm_trigger.png",
+    "lab4_s07b_poll_save.png",
+    "lab4_s08_git_polling_log.png",
+    "lab4_s09_scm_build_cause.png",
+    "lab5_s01_available_plugin.png",
+    "lab5_s02_plugin_download_restart.png",
+    "lab5_s02b_restart_checkbox.png",
+    "lab5_s03_smee_channel.png",
+    "lab5_s04_gwt_parameters.png",
+    "lab5_s04b_gwt_after.png",
+    "lab5_s04c_gwt_token_cause.png",
+    "lab5_s05_gwt_filter.png",
+    "lab5_s05b_gwt_save.png",
+    "lab5_s06_github_add_webhook.png",
+    "lab5_s07_smee_ping.png",
+    "lab5_s08_smee_push.png",
+    "lab5_s08a_smee_commit_files.png",
+    "lab5_s08b_smee_head_commit.png",
+    "lab5_s09_github_push_build.png",
+    "lab5_s10_checkout_sha.png",
+    "lab6_app_v1.png",
+    "lab6_app_v2.png",
+    "lab6_hub_tags.png",
+    "lab6_pipeline_full.png",
+    "lab6_s01_github_new_repo.png",
+    "lab6_s02_github_repo_after_push.png",
+    "lab6_s03_smee_channel.png",
+    "lab6_s04a_gwt_parameters.png",
+    "lab6_s04b_gwt_token_cause.png",
+    "lab6_s04c_gwt_filter.png",
+    "lab6_s05_job_scm.png",
+    "lab6_s05b_job_script_path.png",
+    "lab6_s06_github_add_webhook.png",
+    "lab6_s07_smee_ping.png",
+    "lab6_s08_pipeline_graph.png",
+    "lab6_s09_console_pytest.png",
+    "lab6_s09b_console_verify.png",
+    "lab6_s10_dashboard_v1.png",
+    "lab6_s11_dashboard_v2.png",
+    "lab6_s12_hub_public_tags.png",
+}
 # Internal/history trees (docs except the live template, prompt, logs, and backup)
 # are intentionally out of scope for this student-facing surface guard.
 
@@ -201,6 +252,24 @@ def relative_link_findings(readmes: dict[str, str], root: Path = ROOT) -> tuple[
     return broken, link_count
 
 
+def screenshot_allowlist_findings(root: Path = ROOT) -> list[str]:
+    assets = root / "slides_assets"
+    actual = {path.name for path in assets.glob("lab[456]_*.png")} if assets.is_dir() else set()
+    return [*(f"unexpected:{name}" for name in sorted(actual - ALLOWED_LAB_SCREENSHOTS)),
+            *(f"missing:{name}" for name in sorted(ALLOWED_LAB_SCREENSHOTS - actual))]
+
+
+def bash_block_and_findings(documents: dict[str, str]) -> list[str]:
+    findings: list[str] = []
+    for name, document in documents.items():
+        for block in re.finditer(r"```bash[ \t]*\n(.*?)```", document, re.S):
+            first_line = document[:block.start(1)].count("\n") + 1
+            for offset, line in enumerate(block.group(1).splitlines()):
+                if "&&" in line:
+                    findings.append(f"{name}:{first_line + offset}:{line.strip()}")
+    return findings
+
+
 def deck_body_text(deck_path: Path) -> tuple[str, str, bool]:
     deck_html = deck_path.read_text(encoding="utf-8")
     with sync_playwright() as playwright:
@@ -259,8 +328,26 @@ def run_self_test() -> int:
         else:
             report(False, f"self-test mutation 4 escaped: findings={findings}, error={error}")
 
-    ok = caught == 4
-    report(ok, f"mutation self-test caught {caught}/4 bad fixtures")
+        assets = fixture_root / "slides_assets"
+        assets.mkdir()
+        for name in ALLOWED_LAB_SCREENSHOTS:
+            (assets / name).write_bytes(b"fixture")
+        (assets / "lab4_unapproved_legacy.png").write_bytes(b"fixture")
+        if "unexpected:lab4_unapproved_legacy.png" in screenshot_allowlist_findings(fixture_root):
+            report(True, "self-test mutation 5 rejected: unapproved LAB screenshot")
+            caught += 1
+        else:
+            report(False, "self-test mutation 5 escaped: unapproved LAB screenshot")
+
+        bad_docs = {"README.md": "```bash\necho one && echo two\n```\n"}
+        if bash_block_and_findings(bad_docs):
+            report(True, "self-test mutation 6 rejected: && in learner bash block")
+            caught += 1
+        else:
+            report(False, "self-test mutation 6 escaped: && in learner bash block")
+
+    ok = caught == 6
+    report(ok, f"mutation self-test caught {caught}/6 bad fixtures")
     print(f"CONSISTENCY SELF-TEST: {'PASS' if ok else 'FINDING'}")
     return 0 if ok else 1
 
@@ -295,6 +382,27 @@ def main() -> int:
     broken, link_count = relative_link_findings(readmes)
     checks.append(report(not broken, f"relative README links resolve ({link_count} links)"
                          + ("" if not broken else f"; broken={broken}")))
+
+    bash_documents = {"readme.md": (ROOT / "readme.md").read_text(encoding="utf-8")}
+    bash_documents.update({f"{name}/README.md": text for name, text in readmes.items()})
+    chained = bash_block_and_findings(bash_documents)
+    checks.append(report(not chained, "learner bash blocks contain no && command chaining"
+                         + ("" if not chained else f"; found={chained}")))
+
+    asset_findings = screenshot_allowlist_findings(ROOT)
+    checks.append(report(not asset_findings, "LAB 4/5/6 screenshots match the exact active allowlist"
+                         + ("" if not asset_findings else f"; found={asset_findings}")))
+
+    integration = (ROOT / "docs/INTEGRATION.md").read_text(encoding="utf-8")
+    lab4_annotations = (ROOT / "tools/ui/annotations/lab4.json").read_text(encoding="utf-8")
+    repo_visual_contract = (
+        "post-marker fixture commit `1f3f619`" in integration
+        and "① 4 ไฟล์รวม marker" in lab4_annotations
+        and "4 ไฟล์: .course-cicd2569" in (ROOT / "tools/slides_src.html").read_text(encoding="utf-8")
+        and "หลักฐานจริงหลัง marker fix" in readmes["004_LAB_Pipeline_From_Git"]
+    )
+    checks.append(report(repo_visual_contract,
+                         "LAB 4 repository visual is registered after the marker fix with four-file captions"))
 
     deck_path = ROOT / "Jenkins_CICD_Docker_Slides.html"
     deck_html, deck_text, deck_ok = deck_body_text(deck_path)

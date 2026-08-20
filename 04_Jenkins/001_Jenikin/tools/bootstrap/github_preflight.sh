@@ -17,12 +17,22 @@ temporary_directory="$(mktemp -d)" || fail 'สร้างพื้นที่
 trap 'rm -rf -- "$temporary_directory"' EXIT HUP INT TERM
 headers_file="$temporary_directory/headers"
 body_file="$temporary_directory/body"
+curl_config="$temporary_directory/curl.conf"
+request_count=0
+
+printf 'header = "Authorization: token %s"\n' "$GITHUB_TOKEN" >"$curl_config"
+chmod 600 "$curl_config"
 
 printf '[github-preflight] กำลังตรวจบัญชีและสิทธิ์ของ GitHub token...\n'
-if ! http_status="$(
-  curl --silent --show-error \
+tracing=0
+case $- in
+  *x*) tracing=1; set +x ;;
+esac
+if http_status="$(
+  curl --config "$curl_config" --silent --show-error \
+    --connect-timeout 15 \
+    --max-time 60 \
     --request GET \
-    --header "Authorization: Bearer ${GITHUB_TOKEN}" \
     --header 'Accept: application/vnd.github+json' \
     --header 'X-GitHub-Api-Version: 2022-11-28' \
     --dump-header "$headers_file" \
@@ -30,7 +40,25 @@ if ! http_status="$(
     --write-out '%{http_code}' \
     'https://api.github.com/user'
 )"; then
-  fail 'เชื่อมต่อ GitHub API ไม่สำเร็จ'
+  curl_status=0
+else
+  curl_status=$?
+fi
+request_count=$((request_count + 1))
+[ "$tracing" -eq 0 ] || set -x
+rm -f -- "$curl_config"
+[ "$curl_status" -eq 0 ] || fail 'เชื่อมต่อ GitHub API ไม่สำเร็จ'
+
+retry_after="$(awk '
+  tolower($0) ~ /^retry-after:/ {
+    sub(/^[^:]*:[[:space:]]*/, "")
+    sub(/\r$/, "")
+    print
+    exit
+  }
+' "$headers_file")"
+if [ "$http_status" = '403' ] || [ "$http_status" = '429' ]; then
+  fail "GitHub API จำกัดคำขอ (HTTP $http_status, Retry-After: ${retry_after:-ไม่ระบุ})"
 fi
 
 [ "$http_status" = '200' ] || fail "GitHub API ตอบ HTTP $http_status (ควรเป็น 200)"
@@ -83,4 +111,5 @@ else
 fi
 
 printf '[github-preflight][ผ่าน] login ตรงกับ GITHUB_USER และ scope ผ่านชุด %s\n' "$scope_profile"
+printf '[github-preflight] GitHub API requests: %d\n' "$request_count"
 exit 0

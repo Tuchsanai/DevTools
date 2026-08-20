@@ -13,7 +13,7 @@ from common import log, require, run_main
 
 
 API = "https://api.github.com"
-FILES = {"Jenkinsfile", "hello.sh", "expected.txt"}
+FILES = {".course-cicd2569", "Jenkinsfile", "hello.sh", "expected.txt"}
 
 
 def github_request(method: str, path: str, token: str, payload: dict | None = None) -> tuple[int, object]:
@@ -60,7 +60,7 @@ def assert_files(user: str, token: str, expected_empty: bool) -> None:
     require(status == 200 and isinstance(data, list), "GitHub contents API returned branch main")
     assert isinstance(data, list)
     names = {str(item.get("name")) for item in data if isinstance(item, dict)}
-    require(FILES <= names, "main lists Jenkinsfile, hello.sh, and expected.txt")
+    require(FILES <= names, "main lists marker, Jenkinsfile, hello.sh, and expected.txt")
 
 
 def main() -> None:

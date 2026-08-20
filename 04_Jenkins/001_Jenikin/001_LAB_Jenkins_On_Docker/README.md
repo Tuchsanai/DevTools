@@ -1,6 +1,6 @@
 # LAB 1 — เริ่มต้น Jenkins บน Docker
 
-แล็บ 40 นาทีนี้ตอบคำถามว่า “จะติดตั้ง Jenkins บน Docker และรักษาสถานะงานผ่านการ restart ได้อย่างไร” เมื่อสิ้นสุดการทดลอง นักศึกษาจะสามารถติดตั้ง Jenkins ผ่านหน้าเว็บ สร้างและรัน Freestyle job อ่าน Console Output และอธิบายบทบาทของ volume ต่อการคงอยู่ของข้อมูลได้
+แล็บใช้เวลาประมาณ 40 นาทีและตอบคำถามว่า “จะติดตั้ง Jenkins บน Docker และรักษาสถานะงานผ่านการ restart ได้อย่างไร” เมื่อสิ้นสุดการทดลอง นักศึกษาจะสามารถติดตั้ง Jenkins ผ่านหน้าเว็บ สร้างและรัน Freestyle job อ่าน Console Output และอธิบายบทบาทของ volume ต่อการคงอยู่ของข้อมูลได้
 
 ## ทฤษฎีก่อนลงมือ
 
@@ -164,7 +164,9 @@ Freestyle job เหมาะสำหรับศึกษาความสั
 3. ไปที่ **Build Steps → Add build step → Execute shell** แล้วกรอกคำสั่งต่อไปนี้ในช่อง Command
 
 ```bash
-echo "Hello from Jenkins!"; date; hostname
+echo "Hello from Jenkins!"
+date
+hostname
 ```
 
 ✅ **สิ่งที่ต้องเห็นใน Console Output**:
@@ -281,7 +283,10 @@ SSH กลับเข้า devtools แล้วรอ Jenkins HTTP พร้�
 
 ```bash
 sleep 20
-(cd "$COURSE_ROOT/001_LAB_Jenkins_On_Docker" && bash check.sh)
+(
+  cd "$COURSE_ROOT/001_LAB_Jenkins_On_Docker"
+  bash check.sh
+)
 ```
 
 readiness loop รอให้หน้า login ตอบสำเร็จจริงก่อน acceptance จึงไม่ตัดสินจากสถานะ container `Up` เพียงอย่างเดียว

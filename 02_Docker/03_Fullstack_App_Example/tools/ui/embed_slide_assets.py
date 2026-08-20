@@ -16,8 +16,8 @@ ROOT = Path(__file__).resolve().parents[2]
 DECK = ROOT / "Fullstack_App_Example.html"
 SOURCES = {
     "ui_github_code": (
-        ROOT / "001_LAB_Run_The_System/images/ui-github-03-code.png",
-        (580, 180, 1320, 510),
+        ROOT / "001_LAB_Run_The_System/images/ui-github-04-code.png",
+        (600, 170, 1320, 500),
     ),
     "ui_swagger_created": (
         ROOT / "002_LAB_Build_The_API/images/ui-swagger-09-created.png",

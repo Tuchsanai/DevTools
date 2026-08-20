@@ -259,7 +259,8 @@ Poll SCM: off
 จด baseline ก่อนสร้าง hook:
 
 ```bash
-curl -fsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/api/json?tree=nextBuildNumber'
+WEBAPP_BEFORE_PING="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+printf 'webapp before ping: %s\n' "$WEBAPP_BEFORE_PING"
 ```
 
 1. ไปที่ GitHub repository `webapp` แล้วเลือก **Settings → Webhooks → Add webhook**
@@ -281,6 +282,8 @@ Topology นี้เว้น Secret ว่าง เพราะ smee-client �
   cd "$COURSE_ROOT"
   python3 tools/ui/lab6_github_repo.py --action hook
 )
+WEBAPP_AFTER_PING="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+test "$WEBAPP_AFTER_PING" -eq "$WEBAPP_BEFORE_PING"
 ```
 
 ✅ **Ping acceptance**
@@ -298,8 +301,9 @@ ping ถึง Jenkins ได้ แต่ไม่มี `ref=refs/heads/main` 
 จด build number ของทั้งสอง job แล้วสร้าง empty commit เพื่อทดสอบ wiring โดยไม่เปลี่ยน source:
 
 ```bash
-curl -fsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/api/json?tree=nextBuildNumber'
-curl -fsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/api/json?tree=nextBuildNumber'
+HELLO_BEFORE_WEBAPP="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+WEBAPP_BEFORE_WEBAPP="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+printf 'before webapp push: hello=%s webapp=%s\n' "$HELLO_BEFORE_WEBAPP" "$WEBAPP_BEFORE_WEBAPP"
 
 cd "$HOME/webapp"
 git commit --allow-empty -m 'Trigger v1 deployment'
@@ -313,6 +317,16 @@ time git push origin main
   cd "$COURSE_ROOT"
   JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab6_pipeline.py
 )
+```
+
+อ่าน `lastBuild.number` ของทั้งสอง job หลัง build จบและเทียบกับ baseline ก่อน push:
+
+```bash
+HELLO_AFTER_WEBAPP="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+WEBAPP_AFTER_WEBAPP="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+test "$HELLO_AFTER_WEBAPP" -eq "$HELLO_BEFORE_WEBAPP"
+test "$WEBAPP_AFTER_WEBAPP" -eq "$((WEBAPP_BEFORE_WEBAPP + 1))"
+printf 'after webapp push: hello +0, webapp +1\n'
 ```
 
 ✅ **ผล normalize จากการรันจริง**
@@ -361,24 +375,13 @@ curl -fsS http://localhost:8000/api/info
 
 ## การทดลองที่ 8 — Isolation สองทิศพิสูจน์อย่างไร? (~4 นาที)
 
-**ทิศที่ 1:** push `webapp` ในการทดลองก่อนหน้าต้องเพิ่มเฉพาะ `webapp-deploy`; `hello-ci-pipeline` ต้องคง build number เดิม
+**ทิศที่ 1:** ผลเทียบหลัง push `webapp` ในการทดลองก่อนหน้าต้องเป็น `webapp-deploy +1` และ `hello-ci-pipeline +0`
+
+**ทิศที่ 2:** จด `lastBuild.number` ของทั้งสอง job ใหม่ก่อน push `hello-ci` แล้วเทียบทั้งคู่หลัง push
 
 ```bash
-curl -gfsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/api/json?tree=lastBuild[number]'
-```
-
-✅ response จริงมีรูปแบบนี้ และ `number` ต้องเท่ากับ baseline ก่อน push webapp:
-
-```text
-{"_class":"org.jenkinsci.plugins.workflow.job.WorkflowJob","lastBuild":{"_class":"org.jenkinsci.plugins.workflow.job.WorkflowRun","number":<BUILD_NUMBER>}}
-```
-
-✅ `hello-ci-pipeline` หลัง push webapp ต้องเท่ากับ baseline ก่อน push
-
-**ทิศที่ 2:** push `hello-ci` แล้ว `webapp-deploy` ต้องไม่ขยับ
-
-```bash
-curl -gfsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/api/json?tree=lastBuild[number]'
+HELLO_BEFORE_HELLO="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+WEBAPP_BEFORE_HELLO="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
 
 cd "$HOME/hello-ci"
 git pull --ff-only origin main
@@ -387,10 +390,29 @@ git config user.email student@example.invalid
 git commit --allow-empty -m 'Verify reverse webhook isolation'
 time git push origin main
 
-curl -gfsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/api/json?tree=lastBuild[number]'
+while true
+do
+  HELLO_BUILD_STATE="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/lastBuild/api/json?tree=number,building')"
+  HELLO_CURRENT="$(printf '%s' "$HELLO_BUILD_STATE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+  HELLO_BUILDING="$(printf '%s' "$HELLO_BUILD_STATE" | python3 -c 'import json,sys; print(str(json.load(sys.stdin)["building"]).lower())')"
+  if [ "$HELLO_CURRENT" -ge "$((HELLO_BEFORE_HELLO + 1))" ]
+  then
+    if [ "$HELLO_BUILDING" = 'false' ]
+    then
+      break
+    fi
+  fi
+  sleep 1
+done
+
+HELLO_AFTER_HELLO="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/hello-ci-pipeline/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+WEBAPP_AFTER_HELLO="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+test "$HELLO_AFTER_HELLO" -eq "$((HELLO_BEFORE_HELLO + 1))"
+test "$WEBAPP_AFTER_HELLO" -eq "$WEBAPP_BEFORE_HELLO"
+printf 'after hello push: hello +1, webapp +0\n'
 ```
 
-✅ curl ทั้งก่อนและหลัง push ต้องคืน JSON รูปแบบเดียวกับด้านบน และ `webapp-deploy.lastBuild.number` ต้องเป็นค่าเดิมทั้งสองครั้ง
+✅ ต้องอ่านเลขก่อน/หลังจาก `lastBuild.number` เท่านั้นและทดสอบครบทั้ง target `+1` กับ job ตรงข้าม `+0` ทุกทิศ
 
 ✅ **Isolation acceptance**
 
@@ -465,7 +487,9 @@ bash check.sh
 
 ```text
 [PASS] ownership marker ของ webapp มีค่า canonical safe-to-delete
-[PASS] GitHub hook ตรง relay channel, json, push-only, active, SSL verify และ secret ว่าง
+[PASS] GitHub hook ตรง relay channel, json, push-only, active และ SSL verify
+[PASS] GitHub push delivery ตอบ 200, after ตรง origin และไม่มี X-Hub-Signature-256
+[PASS] isolation สองทิศ: ไม่มี job ตรงข้ามที่ cause SHA ตรง delivery ของอีก repo
 [PASS] delivery SHA, origin/main และ checkout SHA ของ build ล่าสุดตรงกัน
 [PASS] console ยืนยัน BUILD_NUMBER และ latest push digest เดียวกัน
 [PASS] Hub build digest ตรง Jenkins, ใหม่กว่าเวลาเริ่ม build และ latest ชี้ digest เดียวกัน

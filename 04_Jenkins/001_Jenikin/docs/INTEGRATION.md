@@ -18,7 +18,7 @@
 
 เวลานี้เป็นเวลาของ automation บนเครื่อง integration ไม่ใช่เวลาของผู้เรียนจริง
 
-| LAB | timebox | เวลาจริง | check.sh | ผลการทดลอง |
+| LAB | เวลาเรียนประมาณการ (human) | เวลา automation ที่วัดได้ | check.sh | ผลการทดลอง |
 |---:|---:|---:|---:|---|
 | 1 | 40 นาที | 3:40 นาที | 0 | PASS ทั้ง 8 การทดลอง |
 | 2 | 30 นาที | 0:40 นาที | 0 | PASS ทั้ง 7 การทดลอง/build #1–#7 |
@@ -127,20 +127,26 @@
 |---:|---|---|---|
 | 4 | `slides_assets/lab4_s01_github_new_repo.png` | mock auth-only จาก `slides_assets/mock/github_new_repo_hello.png` | placeholder `<GITHUB_USER>`; pending real authenticated capture |
 | 4 | `slides_assets/lab4_s02_github_empty_repo.png` | real GitHub public | owner → `<GITHUB_USER>` ก่อน save |
-| 4 | `slides_assets/lab4_s03_github_repo_files.png` | real GitHub public | owner → `<GITHUB_USER>` ก่อน save |
+| 4 | `slides_assets/lab4_s03_github_repo_files.png` | real GitHub public | owner → `<GITHUB_USER>` ก่อน save; post-marker fixture commit `1f3f619` แสดง 4 ไฟล์รวม `.course-cicd2569` |
 | 4 | `slides_assets/lab4_s04_jenkins_new_item.png` | real Jenkins | n/a; private-match scan = 0 |
 | 4 | `slides_assets/lab4_s05_jenkins_scm_config.png` | real Jenkins | repository URL → `<GITHUB_USER>` ก่อน save |
+| 4 | `slides_assets/lab4_s05b_scm_save.png` | real Jenkins | repository URL → `<GITHUB_USER>` ก่อน save; marker ที่ปุ่ม Save |
+| 4 | `slides_assets/lab4_s06a_build_now.png` | real Jenkins | n/a; marker ที่ Build Now |
+| 4 | `slides_assets/lab4_s06b_open_console.png` | real Jenkins | account ถูกแทนก่อน save; marker ที่ Console Output |
 | 4 | `slides_assets/lab4_s06_manual_build_console.png` | real Jenkins | n/a; private-match scan = 0 |
 | 4 | `slides_assets/lab4_s07_poll_scm_trigger.png` | real Jenkins | n/a; private-match scan = 0 |
+| 4 | `slides_assets/lab4_s07b_poll_save.png` | real Jenkins | n/a; marker ที่ปุ่ม Save |
 | 4 | `slides_assets/lab4_s08_git_polling_log.png` | real Jenkins | owner/URL → `<GITHUB_USER>` ก่อน save |
 | 4 | `slides_assets/lab4_s09_scm_build_cause.png` | real Jenkins | owner/URL → `<GITHUB_USER>` ก่อน save |
 | 5 | `slides_assets/lab5_s01_available_plugin.png` | real Jenkins | n/a |
 | 5 | `slides_assets/lab5_s02_plugin_download_restart.png` | real Jenkins | n/a |
+| 5 | `slides_assets/lab5_s02b_restart_checkbox.png` | real Jenkins | n/a; checkbox restart แสดงสถานะเลือกและมี marker |
 | 5 | `slides_assets/lab5_s03_smee_channel.png` | real smee | channel URL/id → `<SMEE_HELLO_URL>` ก่อน save |
 | 5 | `slides_assets/lab5_s04_gwt_parameters.png` | real Jenkins | n/a |
 | 5 | `slides_assets/lab5_s04b_gwt_after.png` | real Jenkins | n/a |
 | 5 | `slides_assets/lab5_s04c_gwt_token_cause.png` | real Jenkins | n/a |
 | 5 | `slides_assets/lab5_s05_gwt_filter.png` | real Jenkins | n/a |
+| 5 | `slides_assets/lab5_s05b_gwt_save.png` | real Jenkins | n/a; marker ที่ปุ่ม Save |
 | 5 | `slides_assets/lab5_s06_github_add_webhook.png` | mock auth-only จาก `slides_assets/mock/github_add_webhook_hello.png` | placeholders `<GITHUB_USER>`/`<SMEE_HELLO_URL>`; pending real authenticated capture |
 | 5 | `slides_assets/lab5_s07_smee_ping.png` | real smee | account → `<GITHUB_USER>`; channel ไม่อยู่ใน viewport |
 | 5 | `slides_assets/lab5_s08_smee_push.png` | real smee | account → `<GITHUB_USER>`; channel ไม่อยู่ใน viewport |
@@ -192,7 +198,9 @@
 - คง GitHub repositories `hello-ci`, `webapp`, hooks จริง, Jenkins jobs `hello-ci-pipeline`, `webapp-deploy` และ Docker Hub tags ไว้รอ U-P5-INT
 - ไม่เก็บ token หรือ smee channel id จริงลงไฟล์/log; mock auth-only 4 ภาพเป็น pending เดียวที่ต้องใช้ session จากผู้ใช้เพื่อสลับเป็น real masked capture
 
-### U-P5-INT final integration (2026-08-20)
+### U-P5-INT final integration — historical baseline (2026-08-20)
+
+snapshot นี้ผูกกับ commit `592b28919f5ce8aee05f7c2f4c3fa66f49ea4d17` และเก็บไว้เป็น historical record ก่อน Phase 4b; ไม่ใช่สถานะ acceptance ปัจจุบันหลังแก้ P4b
 
 ส่วนนี้ supersede สถานะ handoff ที่ให้คง runtime ด้านบน: Track B และ Track A cleanup เสร็จแล้ว หลักฐานคำสั่ง/exit code แบบ redact อยู่ที่ [`logs/U-P5-INT.log`](../logs/U-P5-INT.log)
 
@@ -222,11 +230,11 @@
 | Checks/gates | PASS | LAB 4/5/6 positive exit 0; stopped-relay/invalid-token negative fail ตามคาดและ restore positive; deck/int gates PASS; self-tests 3/3 และ 4/4; zero legacy SCM; exact asset map |
 | Cleanup | PASS | hooks/relay/temp/repos ที่สร้าง = 0; authenticated repo GET = 404; containers/volumes = 0; channels เหลือ inert เท่านั้น |
 
-#### เวลาจริงและข้อเสนอ timebox
+#### เวลา automation เทียบกับเวลาเรียนประมาณการของมนุษย์
 
-เวลานี้เป็น automated replay บน network/cache ของเครื่อง integration ไม่ใช่เวลาผู้เรียนจริง ทุก LAB คลาดจาก student timebox เกิน 20% จึงเสนอ timebox แยกสำหรับ integration automation และยังไม่แก้ student timebox จนมี human timing
+ตัวเลข “รอบนี้” เป็น automated replay บน network/cache ของเครื่อง integration ไม่ใช่เวลาผู้เรียนจริง ส่วนเวลาใน README เป็นประมาณการสำหรับมนุษย์และต้องเก็บข้อมูล human timing แยกต่างหากก่อนปรับ
 
-| LAB | README | รอบนี้ | คลาดเคลื่อน | integration timebox แนะนำ |
+| LAB | เวลาเรียนประมาณการ (human) | automation ที่วัดได้ | คลาดเคลื่อน | automation budget แนะนำ |
 |---:|---:|---:|---:|---:|
 | 4 | 40 นาที | 3:41 นาที | -90.8% | 5 นาที |
 | 5 | 30 นาที | 3:12 นาที | -89.3% | 5 นาที |
@@ -253,3 +261,37 @@
 | active-tree secret matches (ไม่รวม `backup/`, `logs/`, `.git`) | 0 |
 
 Pending มีเฉพาะการแก้ `P5-INT-F01..F04`; ไม่มี external runtime/resource ค้าง และ U-P5-INT ไม่สร้าง git commit
+
+## Phase 4b post-fix verification (2026-08-20)
+
+รอบนี้ทดสอบ working tree หลังคำตัดสิน Phase 4b โดยมี baseline เป็น commit `592b28919f5ce8aee05f7c2f4c3fa66f49ea4d17`; ไม่มีการสร้าง commit ใหม่ หลักฐาน stdout และ exit code อยู่ที่ [`logs/P4b-fix.log`](../logs/P4b-fix.log)
+
+| ขั้นตรวจ | exit | ผลย่อ |
+|---|---:|---|
+| empty public `hello-ci` precondition | 0 | API ของ commits ตอบ 409/0 commits; `ensure_github_repo` initialize fixture 4 ไฟล์ได้ |
+| `up_to_lab4.sh` | 0 | public repo/marker/Poll SCM/green SCM build พร้อม |
+| LAB 4 `check.sh` | 0 | `lastBuild`, SCM cause และ checkout SHA ตรง origin |
+| `up_to_lab5.sh` | 0 | ping +0; push delivery 200; exactly-one GWT build |
+| LAB 5 `check.sh` | 0 | exact XML/runtime cause, delivery/origin SHA, unsigned request headers และ relay runtime contract ผ่าน |
+| static gates และ self-tests | 0 ทุกตัว | py_compile, bash -n, embed, offline deck, deck consistency และ integration consistency ผ่าน |
+| cleanup | 0 | `hello-ci`/`webapp` ตอบ 404; `devtools-jk-*` container เหลือ 0; volume `devtools-jk-p4b-dind` ถูกลบ |
+
+post-fix นี้ supersede สถานะ FAIL ของ historical snapshot ด้านบน และปิด findings เดิมเป็นรายข้อดังนี้:
+
+| finding เดิม | สถานะ post-fix | หลักฐานปิด |
+|---|---|---|
+| P5-INT-F01 | CLOSED | fixture/README/check บังคับ marker; รอบนี้ initialize จาก repo ว่างและ LAB 4 check ผ่าน |
+| P5-INT-F02 | CLOSED | helper Jenkins SCM ถูกใช้ capture ขั้น Configure/Save จริงและสร้างภาพ marker ใหม่ครบ |
+| P5-INT-F03 | CLOSED | README บังคับรอ settled baseline; `up_to_lab5.sh` พิสูจน์ ping +0 ก่อน push |
+| P5-INT-F04 | CLOSED | URL ที่มี brackets ใช้ `curl -gfsS`; bash syntax gate ผ่าน |
+
+### เวลา automation และเวลาเรียนประมาณการ
+
+เวลาทั้งสองชนิดไม่ใช้แทนกัน: ค่า automation ด้านล่างเป็นการสังเกตรอบเดียวบน cache/network ของเครื่องนี้ ส่วนค่ามนุษย์เป็นประมาณการใน README และยังไม่มี human timing study
+
+| LAB | เวลาเรียนประมาณการ (human) | automation ที่สังเกตรอบนี้ |
+|---:|---:|---:|
+| 4 | ประมาณ 40 นาที | bootstrap ประมาณ 30 วินาที; check ประมาณ 3 วินาที |
+| 5 | ประมาณ 30 นาที | bootstrap ต่อจาก LAB 4 ประมาณ 85 วินาที; check ประมาณ 3 วินาที |
+
+สถานะ post-fix: **PASS** สำหรับ verify matrix ที่กำหนดใน Phase 4b; pending จากรอบนี้ = ไม่มี

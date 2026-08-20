@@ -1,13 +1,14 @@
 # LAB 3 — Build และ Push Docker image ขึ้น Docker Hub
 
-แล็บ 45 นาทีนี้ศึกษาวิธีทำให้ Jenkins ที่รันใน container สร้าง Docker image, ตรวจสอบการทำงานของแอป และ push tag ที่สัมพันธ์กับ `BUILD_NUMBER` ขึ้น Docker Hub เมื่อจบแล็บ ผู้เรียนจะตรวจสอบผลได้จาก Pipeline Graph, Jenkins console และหน้า Tags สาธารณะ
+แล็บใช้เวลาประมาณ 45 นาทีและศึกษาวิธีทำให้ Jenkins ที่รันใน container สร้าง Docker image, ตรวจสอบการทำงานของแอป และ push tag ที่สัมพันธ์กับ `BUILD_NUMBER` ขึ้น Docker Hub เมื่อจบแล็บ ผู้เรียนจะตรวจสอบผลได้จาก Pipeline Graph, Jenkins console และหน้า Tags สาธารณะ
 
 > **Prerequisite ก่อนคาบ (ดำเนินการล่วงหน้าอย่างน้อย 24 ชั่วโมง):** สมัคร Docker Hub, ยืนยันอีเมล, สร้าง Access Token สิทธิ์ **Read & Write** และสร้าง repository `ci-demo` กับ `cicd-webapp` เป็น **Public** บนเว็บ Docker Hub ไม่มี token กลางของผู้สอนให้ใช้ทดแทน
 >
 > ตรวจความพร้อมด้วย 2 คำสั่งต่อไปนี้ โดยแทน placeholder เฉพาะใน shell และห้ามบันทึก token ลงไฟล์:
 >
 > ```bash
-> echo '<DOCKER_TOKEN>' | docker login -u '<DOCKER_USER>' --password-stdin && docker logout
+> echo '<DOCKER_TOKEN>' | docker login -u '<DOCKER_USER>' --password-stdin
+> docker logout
 > curl -fsS -o /dev/null -w 'ci-demo: HTTP %{http_code}\n' 'https://hub.docker.com/r/<DOCKER_USER>/ci-demo'
 > curl -fsS -o /dev/null -w 'cicd-webapp: HTTP %{http_code}\n' 'https://hub.docker.com/r/<DOCKER_USER>/cicd-webapp'
 > ```
@@ -305,7 +306,10 @@ Tags    <BUILD_NUMBER>    ...    sha256:...
 ตรวจสถานะจบแล็บจาก shell ใหม่โดยไม่ส่ง token ให้ตัวตรวจ:
 
 ```bash
-(cd "$COURSE_ROOT/003_LAB_Docker_Build_Push" && DOCKER_USER='<DOCKER_USER>' bash check.sh)
+(
+  cd "$COURSE_ROOT/003_LAB_Docker_Build_Push"
+  DOCKER_USER='<DOCKER_USER>' bash check.sh
+)
 ```
 
 ✅ **สิ่งที่ต้องเห็น**:

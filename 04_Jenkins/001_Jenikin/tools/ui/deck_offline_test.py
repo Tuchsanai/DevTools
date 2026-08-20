@@ -48,16 +48,6 @@ EXPECTED_EMBEDDED_ASSETS = [
     "slides_assets/lab6_app_v2.png",
     "slides_assets/lab6_hub_tags.png",
 ]
-LEGACY_SCREENSHOT_ASSETS = {
-    "slides_assets/lab4_gitea_repo.png",
-    "slides_assets/lab4_jenkins_scm.png",
-    "slides_assets/lab5_webhook_config.png",
-    "slides_assets/lab5_delivery.png",
-    "slides_assets/lab4_poll_build.png",
-    "slides_assets/lab5_auto_build.png",
-}
-
-
 def check(condition: bool, message: str) -> None:
     if not condition:
         raise AssertionError(message)
@@ -115,10 +105,6 @@ def main() -> int:
             "els => els.map(el => el.dataset.embeddedFrom)"
         )
         check(embedded_assets == EXPECTED_EMBEDDED_ASSETS, "data-embedded-from asset list matches exactly")
-        check(
-            not (set(embedded_assets) & LEGACY_SCREENSHOT_ASSETS),
-            "0 legacy SCM/webhook screenshot assets embedded",
-        )
         check(
             not any("gitea" in asset.lower() for asset in embedded_assets),
             "0 embedded asset names contain gitea",

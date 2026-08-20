@@ -116,7 +116,15 @@ def flow(args: argparse.Namespace) -> None:
         )
         log("screenshot: GWT main-branch optional filter")
 
-        form.locator("button[name='Submit']").click()
+        submit = form.locator("button[name='Submit']")
+        submit.scroll_into_view_if_needed()
+        page.wait_for_timeout(500)
+        page.screenshot(
+            path=str(Path(args.screenshot_dir) / "lab5_s05b_gwt_save.png"),
+            full_page=False,
+        )
+        log("screenshot: GWT configuration Save action")
+        submit.click()
         page.wait_for_url(re.compile(rf"/job/{JOB}/?$"), timeout=60_000)
         log("job configuration saved through UI")
 

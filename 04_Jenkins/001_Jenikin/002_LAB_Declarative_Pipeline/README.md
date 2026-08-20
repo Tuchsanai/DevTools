@@ -1,6 +1,6 @@
 # LAB 2 — เขียน Declarative Pipeline แรก
 
-แล็บ 30 นาทีนี้อธิบายวิธีเปลี่ยนลำดับงานที่เคยสั่งทีละขั้นให้เป็น Pipeline as Code เมื่อจบแล้วนักศึกษาจะสร้าง Pipeline job จากหน้า Jenkins แบ่งงานเป็น stage รับ parameter กำหนดเงื่อนไข Deploy และแปลผลการทำงานจาก Pipeline Graph ได้
+แล็บใช้เวลาประมาณ 30 นาทีและอธิบายวิธีเปลี่ยนลำดับงานที่เคยสั่งทีละขั้นให้เป็น Pipeline as Code เมื่อจบแล้วนักศึกษาจะสร้าง Pipeline job จากหน้า Jenkins แบ่งงานเป็น stage รับ parameter กำหนดเงื่อนไข Deploy และแปลผลการทำงานจาก Pipeline Graph ได้
 
 ## ทฤษฎีก่อนลงมือ
 
@@ -460,7 +460,10 @@ pipeline {
 การตรวจด้วยสคริปต์ลดความคลาดเคลื่อนจากการพิจารณาสีใน UI เพียงอย่างเดียว ตัวตรวจอ่านผล build จาก Jenkins core API และอ่าน stage จาก endpoint `/stages/tree` ของ Pipeline Graph ที่ติดตั้งอยู่จริง
 
 ```bash
-(cd "$COURSE_ROOT/002_LAB_Declarative_Pipeline" && bash check.sh)
+(
+  cd "$COURSE_ROOT/002_LAB_Declarative_Pipeline"
+  bash check.sh
+)
 ```
 
 ✅ **สิ่งที่ต้องเห็น** :
