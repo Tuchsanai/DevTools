@@ -29,7 +29,7 @@ postgresql://opsuser:labpass@172.17.0.2:5432/campusops
 
 ![แผนภาพเปรียบเทียบสองรอบการยกระบบ รอบแรก ops-db ได้ 172.19.0.2 รอบสองที่ยก api ก่อน ops-db กลายเป็น 172.19.0.3 พร้อมเทียบผลของการเขียน DATABASE_URL ด้วย IP กับด้วยชื่อกล่อง](./images/theory-name-not-ip.svg)
 
-> 🖼 **วิธีอ่านรูปนี้:** ดูเลขในกล่อง `ops-db` สองรอบบนสุด — คำสั่งเหมือนกันทุกตัวอักษร ต่างแค่ลำดับที่ยกขึ้น · แถบล่างซ้าย/ขวาคือผลที่ตามมาของการเขียน `DATABASE_URL` สองแบบ
+> 🖼 **วิธีอ่านรูปนี้:** ดูเลขในกล่อง `ops-db` สองรอบบนสุด — รอบแรกได้ `172.19.0.2` และรอบที่ยก `api` ก่อนได้ `172.19.0.3` · แถบล่างซ้าย/ขวาคือผลที่ตามมาของการเขียน `DATABASE_URL` ด้วย IP เทียบกับชื่อกล่อง
 
 ### user-defined network มี DNS ในตัว
 
@@ -38,7 +38,7 @@ postgresql://opsuser:labpass@172.17.0.2:5432/campusops
 
 ![แผนภาพเทียบสองฝั่ง ฝั่งซ้าย default bridge เรียก ops-db ด้วยชื่อไม่สำเร็จ getent ตอบ exit 2 ฝั่งขวาบน ops-net getent ตอบ 172.19.0.3 และ health ตอบ db up](./images/theory-bridge-vs-usernet.svg)
 
-> 🖼 **วิธีอ่านรูปนี้:** เทียบสองฝั่งที่ **บรรทัดคำสั่งบนสุด** — ต่างกันแค่ `--network ops-net` · แล้วเลื่อนลงมาดูกล่องผลลัพธ์ล่างสุดของแต่ละฝั่ง ซึ่งเป็นข้อความจริงที่เราจะได้เห็นเองในการทดลองที่ 1 และ 6 (ฝั่งขวาเป็นเคสที่ `ops-api` เข้ามาอยู่บน network ก่อน จึงได้ `.2` ไป และ `ops-db` ได้ `.3`)
+> 🖼 **วิธีอ่านรูปนี้:** เทียบสองฝั่งที่ **บรรทัดคำสั่งบนสุด** — default bridge ตอบ `exit 2` ส่วน `ops-net` แปล `ops-db` เป็น `172.19.0.3` และ health ตอบ `db up` (ฝั่งขวาเป็นเคสที่ `ops-api` ได้ `172.19.0.2` ก่อน)
 
 | สิ่งที่อยากได้ | default bridge | `ops-net` (user-defined) |
 |---|---|---|
@@ -85,7 +85,8 @@ ssh root@localhost -p 2254        # password : passwd
 **คำสั่งทุกอันหลังจากนี้พิมพ์ข้างในกล่องเรียน**
 
 ```bash
-mkdir -p ~/labwork && cd ~/labwork
+mkdir -p ~/labwork
+cd ~/labwork
 git clone --depth 1 https://github.com/Tuchsanai/DevTools.git
 cd DevTools/02_Docker/03_Fullstack_App_Example/004_LAB_Connect_Them
 ls
@@ -280,7 +281,8 @@ docker inspect -f '{{index .NetworkSettings.Networks "ops-net" "IPAddress"}}' op
 **คำถาม:** ยกระบบขึ้นใหม่โดยสลับลำดับ (api ก่อน db) แล้ว `api` ที่ยังใช้คำสั่งเดิมจะหาฐานข้อมูลเจอไหม
 
 ```bash
-docker rm -f ops-api ops-db && docker run -d --name ops-api --network ops-net -e DATABASE_URL="postgresql://opsuser:labpass@ops-db:5432/campusops" campusops-api:lab4
+docker rm -f ops-api ops-db
+docker run -d --name ops-api --network ops-net -e DATABASE_URL="postgresql://opsuser:labpass@ops-db:5432/campusops" campusops-api:lab4
 docker run -d --name ops-db --network ops-net -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
   -v ops-pgdata:/var/lib/postgresql/data -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine
 sleep 15

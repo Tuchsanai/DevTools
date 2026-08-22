@@ -1,1 +1,3 @@
 tools/ui/raw/.hub_state.json
+deck_build/_last_report.json
+logs/*.stdout

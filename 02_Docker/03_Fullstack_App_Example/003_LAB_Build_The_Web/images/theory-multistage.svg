@@ -47,11 +47,11 @@
 
   <rect x="504" y="148" width="354" height="44" rx="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="1"/>
   <text x="518" y="169" fill="#1f2933" font-size="13">.next/standalone (server.js + node_modules เท่าที่ใช้)</text>
-  <text x="518" y="186" fill="#1e6b41" font-size="12" font-weight="bold">49.7 MB · node_modules เหลือ 12 รายการ</text>
+  <text x="518" y="186" fill="#1e6b41" font-size="12" font-weight="bold">49.9 MB · node_modules เหลือ 12 รายการ</text>
 
   <rect x="504" y="200" width="354" height="44" rx="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="1"/>
   <text x="518" y="221" fill="#1f2933" font-size="13">.next/static (JS + CSS ที่เบราว์เซอร์โหลด)</text>
-  <text x="518" y="238" fill="#1e6b41" font-size="12" font-weight="bold">680 kB</text>
+  <text x="518" y="238" fill="#1e6b41" font-size="12" font-weight="bold">668 kB</text>
 
   <rect x="504" y="252" width="354" height="42" rx="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="1"/>
   <text x="518" y="272" fill="#1f2933" font-size="13">USER webapp · CMD ["node","server.js"]</text>
@@ -60,7 +60,7 @@
   <rect x="504" y="302" width="354" height="42" rx="8" fill="#e6f5ec" stroke="#2e8b57" stroke-width="2"/>
   <text x="681" y="329" fill="#1e6b41" font-size="15" font-weight="bold" text-anchor="middle">รวม 298 MB</text>
 
-  <text x="681" y="364" fill="#1e6b41" font-size="12" text-anchor="middle">เทียบกับ stage เดียว 1.09 GB = เล็กลง ~73%</text>
+  <text x="681" y="364" fill="#1e6b41" font-size="12" text-anchor="middle">เทียบกับ stage เดียว 1.1 GB = เล็กลง ~73%</text>
 
   <text x="450" y="414" fill="#1f2933" font-size="13" text-anchor="middle">คำถามที่ใช้ตัดสินใจ : "ของชิ้นนี้ต้องมีตอนรันไหม" — ถ้าไม่ ก็ปล่อยให้ตายไปกับ stage build</text>
   <text x="450" y="436" fill="#52606d" font-size="12" text-anchor="middle">ตัวเลขทั้งหมดวัดจาก docker history และ docker image ls ในกล่องเรียนจริง</text>

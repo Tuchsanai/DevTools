@@ -13,7 +13,7 @@ from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DECK = ROOT / "Fullstack_App_Example.html"
+TAIL = ROOT / "deck_build/_tail.html"   # parts คือ source of truth · เด็คเป็นไฟล์ที่ถูกสร้าง
 SOURCES = {
     "ui_github_code": (
         ROOT / "001_LAB_Run_The_System/images/ui-github-04-code.png",
@@ -63,7 +63,7 @@ def main() -> int:
         + json.dumps(assets, ensure_ascii=True, separators=(",", ":"))
         + ");</script>"
     )
-    html = DECK.read_text(encoding="utf-8")
+    html = TAIL.read_text(encoding="utf-8")
     existing = re.compile(r'<script id="ui-assets">.*?</script>', re.DOTALL)
     if existing.search(html):
         html = existing.sub(tag, html, count=1)
@@ -72,10 +72,9 @@ def main() -> int:
         if not anchor.search(html):
             raise RuntimeError("ASSETS script not found")
         html = anchor.sub(r"\1\n" + tag, html, count=1)
-    html = renumber_comments(html)
-    DECK.write_text(html, encoding="utf-8")
-    print(f"embedded {len(assets)} cropped UI assets")
-    print(f"slides: {html.count('<div class=\"slot\"')}")
+    TAIL.write_text(html, encoding="utf-8")
+    print(f"embedded {len(assets)} cropped UI assets -> deck_build/_tail.html")
+    print("รัน python3 deck_build/build_deck.py ต่อเพื่อประกอบเด็คใหม่")
     return 0
 
 

@@ -1,0 +1,218 @@
+<!-- ===== 14 : §3 divider ===== -->
+<div class="slot" data-sec="3"><section class="slide section">
+  <div class="s-body">
+    <div class="num-big">03</div>
+    <h1>ระบบที่จะสร้าง</h1>
+    <div class="m">สามกล่อง · ห้าตาราง · และเหตุผลที่เบราว์เซอร์ไม่เคยเรียก <code>api</code> ตรง ๆ เลยแม้แต่ครั้งเดียว</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · ระบบที่จะสร้าง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 15 : สามกล่อง ===== -->
+<div class="slot"><section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · ทฤษฎี · สถาปัตยกรรม</div><h2>สามกล่อง : <em>web · api · db</em></h2></div>
+  <div class="s-body">
+    <div class="fig fix" style="height:340px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 340" font-family="sans-serif" preserveAspectRatio="xMidYMid meet">
+  <rect x="0" y="0" width="800" height="340" fill="#ffffff"/>
+
+  <defs>
+    <marker id="sv15-ar" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#52606d"/>
+    </marker>
+    <marker id="sv15-arg" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#2e8b57"/>
+    </marker>
+  </defs>
+
+  <text x="400" y="34" text-anchor="middle" font-size="19" font-weight="bold" fill="#1f2933">ระบบของลูกค้า CampusOps = 3 กล่อง · LAB 1 ทำเฉพาะกล่องขวาสุด</text>
+
+  <!-- browser -->
+  <text x="42" y="132" text-anchor="middle" font-size="13" fill="#52606d">เบราว์เซอร์</text>
+  <text x="42" y="152" text-anchor="middle" font-size="13" fill="#52606d">ที่สำนักงาน</text>
+  <path d="M 82 140 L 128 140" stroke="#52606d" stroke-width="3" marker-end="url(#sv15-ar)"/>
+
+  <!-- web -->
+  <rect x="134" y="86" width="180" height="108" rx="10" fill="#eef6ff" stroke="#8fb8dc" stroke-width="2"/>
+  <text x="224" y="114" text-anchor="middle" font-size="15" font-weight="bold" fill="#1c4f80">web</text>
+  <text x="224" y="138" text-anchor="middle" font-size="13" fill="#1c4f80">หน้าเว็บ Next.js</text>
+  <text x="224" y="158" text-anchor="middle" font-size="13" fill="#1c4f80">พอร์ตในกล่อง 3000</text>
+  <text x="224" y="180" text-anchor="middle" font-size="12" fill="#52606d">สร้างใน LAB 3</text>
+
+  <path d="M 318 140 L 360 140" stroke="#52606d" stroke-width="3" marker-end="url(#sv15-ar)"/>
+
+  <!-- api -->
+  <rect x="364" y="86" width="180" height="108" rx="10" fill="#f3f0fb" stroke="#b3a4d6" stroke-width="2"/>
+  <text x="454" y="114" text-anchor="middle" font-size="15" font-weight="bold" fill="#4b3480">api</text>
+  <text x="454" y="138" text-anchor="middle" font-size="13" fill="#4b3480">บริการเบื้องหลัง FastAPI</text>
+  <text x="454" y="158" text-anchor="middle" font-size="13" fill="#4b3480">พอร์ตในกล่อง 8000</text>
+  <text x="454" y="180" text-anchor="middle" font-size="12" fill="#52606d">สร้างใน LAB 2</text>
+
+  <path d="M 548 140 L 590 140" stroke="#52606d" stroke-width="3" marker-end="url(#sv15-ar)"/>
+
+  <!-- db (highlight) -->
+  <rect x="594" y="78" width="184" height="124" rx="10" fill="#f2fbf5" stroke="#2e8b57" stroke-width="4"/>
+  <text x="686" y="108" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e6b41">db</text>
+  <text x="686" y="132" text-anchor="middle" font-size="13" fill="#1e6b41">postgres:17-alpine</text>
+  <text x="686" y="152" text-anchor="middle" font-size="13" fill="#1e6b41">พอร์ตในกล่อง 5432</text>
+  <text x="686" y="176" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e6b41">แล็บนี้ทำกล่องนี้</text>
+  <text x="686" y="192" text-anchor="middle" font-size="12" fill="#52606d">5 ตาราง + ข้อมูลตั้งต้น</text>
+
+  <!-- volume -->
+  <path d="M 686 206 L 686 252" stroke="#2e8b57" stroke-width="3" marker-end="url(#sv15-arg)"/>
+  <rect x="586" y="256" width="200" height="52" rx="26" fill="#e6f5ec" stroke="#2e8b57" stroke-width="2"/>
+  <text x="686" y="278" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e6b41">named volume : ops-pgdata</text>
+  <text x="686" y="297" text-anchor="middle" font-size="12" fill="#1e6b41">ที่ที่ข้อมูลอยู่จริง (NFR-2)</text>
+
+  <!-- notes -->
+  <rect x="24" y="232" width="520" height="76" rx="10" fill="#f6f8fa" stroke="#9aa5b1" stroke-width="1"/>
+  <text x="44" y="256" font-size="13" fill="#1f2933">· ลูกศรคือทิศทางการเรียก — เบราว์เซอร์ไม่เคยคุยกับ api หรือ db ตรง ๆ</text>
+  <text x="44" y="278" font-size="13" fill="#1f2933">· db ไม่เคย publish พอร์ตออกจากเครื่องเลย (NFR-3)</text>
+  <text x="44" y="300" font-size="13" fill="#1f2933">· LAB 1 ยังไม่ต่อกล่องเข้าหากัน — เรื่องนั้นอยู่ใน LAB 4</text>
+</svg></div>
+    <table class="tbl sm">
+      <tr><th style="width:78px">service</th><th style="width:250px">image ที่ใช้</th><th style="width:120px">พอร์ตในกล่อง</th><th>เข้าถึงจากภายนอกเครื่อง</th></tr>
+      <tr><td class="req">web</td><td>Next.js 16.3.1 standalone (build เอง)</td><td><code>3000</code></td><td><span class="tag o">เปิด</span> ตามพอร์ตของแต่ละแล็บ — กล่องเดียวที่มี <code>-p</code></td></tr>
+      <tr><td class="req">api</td><td>FastAPI + uvicorn (build เอง)</td><td><code>8000</code></td><td><span class="tag w">เฉพาะ LAB 2</span> เพื่อสาธิตหน้า <code>/docs</code> เท่านั้น</td></tr>
+      <tr><td class="req">db</td><td><code>postgres:17-alpine</code> (ใช้สำเร็จรูป)</td><td><code>5432</code></td><td><span class="tag c">ปิด</span> ไม่เคย publish เลยสักแล็บเดียว — <b>NFR-3</b></td></tr>
+    </table>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · ระบบที่จะสร้าง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 16 : schema 5 ตาราง ===== -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · ทฤษฎี · schema</div><h2>schema — <em>ห้าตารางจาก REQ ทั้ง 12 ข้อ</em></h2></div>
+  <div class="s-body">
+    <pre class="code sm">assets(id, code UNIQUE, name, location, …)
+
+tickets(id, asset_id<span class="d">→</span>assets, title, detail,
+        priority CHECK IN <span class="g">(LOW, NORMAL, HIGH)</span>,
+        status CHECK IN <span class="g">(NEW, ASSIGNED, IN_PROGRESS, DONE)</span>, …)
+
+loans(id, asset_id<span class="d">→</span>assets, borrower, borrowed_at, …)
+
+parts(id, sku UNIQUE, name, qty_on_hand CHECK <span class="g">(qty_on_hand &gt;= 0)</span>, …)
+
+stock_moves(id, part_id<span class="d">→</span>parts, ticket_id<span class="d">→</span>tickets NULL,
+            delta, reason, …)</pre>
+    <div class="note a">ละคอลัมน์รองด้วย <code>…</code> · schema ครบที่ <code>docs/02_contract.md</code> · หัวข้อ 3</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · ระบบที่จะสร้าง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 16 : ส่วนงาน seed และ SLA ===== -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · ทฤษฎี · ข้อมูลตั้งต้น</div><h2>ส่วนงาน → ตาราง → REQ — <em>แล้วล็อกด้วย seed</em></h2></div>
+  <div class="s-body top">
+    <table class="tbl sm">
+      <tr><th>ส่วนงาน</th><th>ตาราง</th><th>REQ</th></tr>
+      <tr><td>แจ้งซ่อม</td><td><code>assets</code> · <code>tickets</code></td><td>REQ-01…04 · 08 · 09</td></tr>
+      <tr><td>ยืม-คืนครุภัณฑ์</td><td><code>loans</code></td><td>REQ-10 · REQ-11</td></tr>
+      <tr><td>คลังอะไหล่</td><td><code>parts</code> · <code>stock_moves</code></td><td>REQ-05…07 · REQ-12</td></tr>
+    </table>
+    <div class="grid4">
+      <div class="stat"><div class="v d">12</div><div class="l">ครุภัณฑ์<div class="mut">assets</div></div></div>
+      <div class="stat"><div class="v d">8</div><div class="l">ใบแจ้งซ่อม<div class="mut">ค้างเกินกำหนด 2</div></div></div>
+      <div class="stat"><div class="v d">3</div><div class="l">สัญญายืม<div class="mut">ยังไม่คืน 2</div></div></div>
+      <div class="stat"><div class="v d">6</div><div class="l">อะไหล่<div class="mut">ต่ำกว่าจุดสั่งซื้อ 2</div></div></div>
+    </div>
+    <div class="note"><b>SLA</b> : <code>HIGH</code> = 1 วัน · <code>NORMAL</code> = 3 วัน · <code>LOW</code> = 7 วัน · สถานะครุภัณฑ์เป็นค่าที่คำนวณ ไม่ใช่คอลัมน์</div>
+    <div class="note a">รายละเอียดเต็มที่ <code>docs/02_contract.md</code> · หัวข้อ 3</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · ระบบที่จะสร้าง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 17 : browser ไม่เรียก api ตรง ๆ ===== -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · ทฤษฎี · ทิศทางการเรียก</div><h2>เบราว์เซอร์ <em>ไม่เคย</em> เรียก <code style="font-size:.86em">api</code> ตรง ๆ</h2></div>
+  <div class="s-body" style="gap:12px">
+    <div class="flow" style="margin:4px 0">
+      <div class="b"><div class="t">browser</div><div class="s">เครื่องผู้ใช้</div></div>
+      <div class="ar">→</div>
+      <div class="b a"><div class="t">web</div><div class="s">Next.js · 3000<br>กล่องเดียวที่มี <code>-p</code></div></div>
+      <div class="ar">→</div>
+      <div class="b k"><div class="t">api</div><div class="s">FastAPI · 8000<br>ไม่มี <code>-p</code></div></div>
+      <div class="ar">→</div>
+      <div class="b k"><div class="t">db</div><div class="s">postgres · 5432<br>ไม่มี <code>-p</code></div></div>
+    </div>
+    <div class="card o"><h4>ผลที่ตามมา 3 อย่าง</h4>
+      <ul class="bul sm" style="margin-top:6px">
+        <li><b>ไม่ต้องเปิดพอร์ต <code>api</code></b> ให้ใครเลย</li>
+        <li><b>ไม่มีเรื่อง CORS</b> ต้องตั้งค่า</li>
+        <li>ที่อยู่ของ <code>api</code> เป็นความลับภายในเครือข่าย Docker</li>
+      </ul></div>
+    <div class="note">contract เต็มที่ <code>docs/02_contract.md</code> · หัวข้อ 1</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · ระบบที่จะสร้าง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 17 : env และ server-rendered ===== -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · ทฤษฎี · ตัวแปรสภาพแวดล้อม</div><h2>ตัวแปร 4 กลุ่ม — <em>อ่านคนละจุดในสามกล่อง</em></h2></div>
+  <div class="s-body top">
+    <table class="tbl sm">
+      <tr><th style="width:260px">ตัวแปรสภาพแวดล้อม</th><th style="width:130px">ใช้ที่</th><th>ค่าที่ใช้จริงในชุดนี้</th></tr>
+      <tr><td><code>POSTGRES_DB / USER / PASSWORD</code></td><td>db</td><td><code>campusops</code> / <code>opsuser</code> / <code>labpass</code></td></tr>
+      <tr><td><code>DATABASE_URL</code></td><td>api</td><td><code>postgresql://opsuser:labpass@db:5432/campusops</code></td></tr>
+      <tr><td><code>API_BASE_URL</code></td><td>web (server-side)</td><td><code>http://api:8000</code> — ชื่อล้วน ๆ ไม่มี IP</td></tr>
+      <tr><td><code>NEXT_PUBLIC_SITE_NAME</code></td><td>web (ฝังตอน build)</td><td><code>CampusOps</code></td></tr>
+    </table>
+    <div class="card a"><h4>web เป็น server-rendered ทั้งหมด</h4>
+      <p>ทุกหน้าเป็น server component · ทุกการกดปุ่มคือ <b>form POST</b> ที่ประมวลผลฝั่ง server แล้วเรียก <code>API_BASE_URL</code> ภายใน</p>
+      <p style="margin-top:6px"><code>export const dynamic = "force-dynamic"</code> เพื่อไม่ให้ Next แคชหน้าไว้ตอน build</p></div>
+    <div class="note">ค่าครบที่ <code>docs/02_contract.md</code> · หัวข้อ 2</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · ระบบที่จะสร้าง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 18 : หน้าสรุปของจริง ===== -->
+<div class="slot"><section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · หลักฐาน · หน้าสรุป</div><h2>หน้าสรุป — <em>REQ-08 · REQ-09</em> บนหน้าจอเดียว</h2></div>
+  <div class="s-body">
+    <div class="fig shot fix" style="height:500px"><img data-a="dash" alt="หน้าสรุปของ CampusOps : แถบสัดส่วนใบแจ้งซ่อมตามขั้นของงาน การ์ดงานที่ยังไม่ปิดแยกตามผู้รับผิดชอบ และบล็อกงานค้างเกินกำหนด"></div>
+    <div class="figrow c11">
+      <div class="note a" style="font-size:13.5px"><b>REQ-08</b> รอรับเรื่อง 3 · มอบหมายแล้ว 2 · กำลังซ่อม 1 · ปิดงานแล้ว 2 &nbsp;·&nbsp; <b>REQ-09</b> ค้างเกินกำหนด 2 ใบ (แถบแดง = ส่วนที่สายไปแล้ว)</div>
+      <div class="note" style="font-size:13.5px">"อยากเห็นหน้าจอเดียวที่บอกว่า<b>ตอนนี้มีงานอะไรอยู่ในมือใครบ้าง</b>" — ตัวเลขทุกตัวมาจาก <code>db/initdb/02-seed.sql</code> จึงตรงกันทุกเครื่อง · <b>REQ-12</b> อยู่ถัดลงไปในหน้าเดียวกัน</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · ระบบที่จะสร้าง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 19 : /tickets ===== -->
+<div class="slot"><section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · หลักฐาน · หน้าที่ 1 ใน 3</div><h2><code style="font-size:.9em">/tickets</code> — กระดาน <em>4 คอลัมน์</em> ตามขั้นของงาน</h2></div>
+  <div class="s-body">
+    <div class="fig shot fix" style="height:455px"><img data-a="tickets" alt="กระดานงานซ่อมสี่คอลัมน์ตามสถานะ รอรับเรื่อง มอบหมายแล้ว กำลังซ่อม ปิดงานแล้ว พร้อมปุ่มเลื่อนสถานะบนการ์ดแต่ละใบ"></div>
+    <div class="figrow c11">
+      <div class="note a" style="font-size:13.5px"><b>REQ-01…REQ-05</b> — แจ้งซ่อม · มอบหมายช่าง · เลื่อนสถานะไปข้างหน้าเท่านั้น · ปิดงานพร้อมบันทึกวิธีแก้</div>
+      <div class="note" style="font-size:13.5px"><b>ไม่มีปุ่มล็อกอินสักปุ่ม</b> เพราะลูกค้าพูดเองว่ายังไม่ต้องการ · ทุกฟอร์มเป็น server action ที่ยิงไปที่ <code>API_BASE_URL</code> จากฝั่ง server เท่านั้น</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · ระบบที่จะสร้าง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 20 : /loans ===== -->
+<div class="slot"><section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · หลักฐาน · หน้าที่ 2 ใน 3</div><h2><code style="font-size:.9em">/loans</code> — ยืมซ้ำถูกปฏิเสธด้วย <em>ASSET_ON_LOAN</em></h2></div>
+  <div class="s-body">
+    <div class="fig shot fix" style="height:425px"><img data-a="loans" alt="หน้ายืม-คืนครุภัณฑ์ แถบแดงแจ้งว่ายืมไม่ได้เพราะครุภัณฑ์ถูกยืมอยู่ พร้อมฟอร์มยืมและตารางครุภัณฑ์ที่ยังไม่คืน"></div>
+    <div class="figrow c11">
+      <div class="note c" style="font-size:13.5px"><b>REQ-10 · REQ-11</b> — ครุภัณฑ์ที่ยังไม่คืนจะถูกยืมซ้ำไม่ได้ · api ตอบ <code>409</code> พร้อม <code>code: ASSET_ON_LOAN</code> ให้หน้าเว็บเอาไปแสดง</div>
+      <div class="note" style="font-size:13.5px">ตาราง "ครุภัณฑ์ที่ยังไม่คืน" ใต้แถบแดง<b>คือเหตุผลของการปฏิเสธ</b> — ผู้ใช้เห็นได้ทันทีว่าของชิ้นนั้นอยู่กับใคร ไม่ต้องเดา</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · ระบบที่จะสร้าง</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 21 : /parts ===== -->
+<div class="slot"><section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · หลักฐาน · หน้าที่ 3 ใน 3</div><h2><code style="font-size:.9em">/parts</code> — ยอดคงเหลือ เทียบกับ <em>จุดสั่งซื้อ</em></h2></div>
+  <div class="s-body">
+    <div class="fig shot fix" style="height:352px"><img data-a="parts" alt="ตารางคลังอะไหล่ แสดงยอดคงเหลือ จุดสั่งซื้อ แถบระดับคงเหลือ และป้ายเตือนว่ามีอะไหล่ต่ำกว่าจุดสั่งซื้อ 2 รายการ"></div>
+    <div class="figrow c11">
+      <div class="note a" style="font-size:13.5px"><b>REQ-06 · REQ-07</b> — เบิกอะไหล่เข้ากับใบแจ้งซ่อม แล้วยอดคงเหลือลดลงทันที · ทุกการเคลื่อนไหวถูกบันทึกเป็นประวัติ</div>
+      <div class="note w" style="font-size:13.5px"><b>REQ-12</b> — ป้าย "ต่ำกว่าจุดสั่งซื้อ 2 รายการ" คือแถวที่ <code>qty_on_hand &lt; reorder_point</code> ซึ่งเป็นบล็อกเดียวกับที่ขึ้นบนหน้าสรุป</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · ระบบที่จะสร้าง</span><span class="pg"></span></div>
+</section></div>

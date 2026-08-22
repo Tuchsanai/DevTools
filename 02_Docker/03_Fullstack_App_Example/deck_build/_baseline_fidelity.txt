@@ -1,0 +1,50 @@
+$ cat /tmp/ticket.json
+$ curl -s "http://localhost:8088/api/tickets?status=NEW" | python3 -c 'import sys,json
+$ curl -s -o /tmp/ticket.json -w 'HTTP %{http_code}\n' \
+$ curl -s -w '\nHTTP %{http_code}\n' -X PATCH \
+$ curl -s localhost:8088/health → {"status":"ok","db":"up"}
+$ curl -sS -m 5 http://localhost:5432 → curl: (7) exit = 7
+$ docker build --build-arg NEXT_PUBLIC_SITE_NAME='ศูนย์ซ่อมบำรุง' …
+$ docker build -t ops-api:1.0 ./api
+$ docker compose -p campusops down
+$ docker compose -p campusops down -v
+$ docker compose -p campusops ps # ตัดคอลัมน์ COMMAND · CREATED ออก
+$ docker compose -p campusops up -d
+$ docker compose -p campusops up -d --no-build → GET / -> 200
+$ docker exec ops-api getent hosts ops-db
+$ docker exec ops-db psql -U opsuser -d campusops -c '\dt'
+$ docker exec ops-db psql ... 'SELECT count(*) FROM tickets;'
+$ docker exec ops-db psql … 'SELECT count(*) FROM tickets;'
+$ docker exec ops-tools getent hosts ops-db
+$ docker exec ops-tools psql "postgresql://…@ops-db:5432/…"
+$ docker exec ops-web ls .next/static/chunks/*.css .next/static/css
+$ docker exec ops-web-exec ps -o pid,args
+$ docker exec ops-web-shell ps -o pid,args
+$ docker history campusops-web:lab3
+$ docker login -u <DOCKER_USER> → Login Succeeded
+$ docker logs ops-db 2>&1 | grep Skipping
+$ docker network connect ops-net ops-tools
+$ docker port ops-api # กล่องที่รันโดยไม่มี -p
+$ docker port ops-api → 8000/tcp -> 0.0.0.0:8088
+$ docker port ops-db → (ว่างเปล่า = ไม่มีพอร์ตถูก publish)
+$ docker ps --filter name=ops- --format 'table {{.Names}}\t{{.Ports}}'
+$ docker push <DOCKER_USER>/campusops-api:1.0 → manifest list: sha256:70b4a206b898…
+$ docker rm -f ops-db
+$ docker run --rm campusops-web:lab3 \
+$ docker run --rm campusops-web:single \
+$ docker run -d --name ops-api -p 8088:8000 …
+$ docker run -d --name ops-db ... (คำสั่งเดิมเป๊ะ)
+$ docker run -d -e API_BASE_URL=http://no-api-yet:8000 …
+$ docker tag campusops-api:latest <DOCKER_USER>/campusops-api:1.0
+$ docker volume ls --filter name=campusops
+docker build -t ops-api:1.0 . 2>&1 | grep -A2 "load build context"
+docker logs ops-db-nopass 2>&1 | head -3
+docker rm -f devtools-fs-lab1 2>/dev/null
+docker run -d --name ops-db \
+docker run -d --name ops-db-nopass postgres:17-alpine
+docker run -d --name ops-web --network ops-net -p 3000:3000 \
+docker run -dit --name devtools-fs-lab1 --privileged \
+ls: .next/static/css: No such file or directory
+ls: node_modules/typescript: No such file or directory
+sh -c 'ls node_modules | wc -l; ls -d node_modules/typescript'
+ssh root@localhost -p 2251 # password : passwd

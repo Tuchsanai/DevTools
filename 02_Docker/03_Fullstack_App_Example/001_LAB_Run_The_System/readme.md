@@ -8,7 +8,7 @@
 |---|---|
 | **คำถามเดียวที่ตอบให้จบ** | ทำอย่างไรให้ฐานข้อมูลของลูกค้าขึ้นมาพร้อมข้อมูลจริง และ **ข้อมูลไม่หาย** แม้ลบกล่องทิ้งแล้วสร้างใหม่ (NFR-2) |
 | **ต้องผ่านอะไรมาก่อน** | ชุด `01_Docker_Basics_Run_Port_Volume_Build` — แล็บนี้ใช้ของเดิมล้วน ๆ : `docker run` · `ps` · `logs` · `exec` · `rm` · `-e` · `-v` |
-| **เวลา** | ~40 นาที · การทดลอง **9 อัน** อันละ 3–5 นาที |
+| **เวลา** | ~40 นาที · การทดลอง **10 อัน** อันละ 3–5 นาที |
 | **จบแล้วต้องทำได้เอง** | ยก `postgres:17-alpine` ขึ้นพร้อม schema + ข้อมูลตั้งต้น · อ่าน log ตอนบูตเป็น · ชี้ได้ว่าข้อมูลหายตอนไหนและ named volume แก้อย่างไร |
 | **แล็บนี้ยัง *ไม่* สอน** | ต่อกล่องเข้าหากันด้วย network → **LAB 4** · `compose.yaml` → **LAB 5** (ดูแผนทั้งชุดที่ [`docs/01_requirements.md`](../docs/01_requirements.md)) · ไม่มี ORM / migration tool · ยังไม่ publish พอร์ตฐานข้อมูลออกเครื่องเลย (NFR-3) |
 
@@ -128,7 +128,8 @@ cd ~/labwork
 
 ```bash
 git clone https://github.com/Tuchsanai/DevTools.git
-cd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System && ls db/initdb
+cd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System
+ls db/initdb
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — ไฟล์ SQL สองไฟล์ที่จะกลายเป็นฐานข้อมูลของลูกค้า :

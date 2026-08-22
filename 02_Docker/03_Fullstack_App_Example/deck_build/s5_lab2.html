@@ -1,0 +1,369 @@
+<!-- ===== 29 : §5 divider ===== -->
+<div class="slot" data-sec="5"><section class="slide section">
+  <div class="s-body">
+    <div class="num-big">05</div>
+    <h1>LAB 2 — สร้าง image ของบริการเบื้องหลัง</h1>
+    <div class="m">โค้ดที่รันได้บนเครื่องคนเขียน กลายเป็น <b>image ที่ลูกค้าเอาไปรันเองได้</b> อย่างไร<br>
+      <span style="font-size:16px">build context · layer cache · <code>.dockerignore</code> · <code>EXPOSE</code> vs <code>-p</code> · REQ-01 · REQ-02</span></div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 2 · REQ-01 · REQ-02</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 30 : Dockerfile ของ api ===== -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 5 · ทฤษฎี · Dockerfile</div><h2>ใน 10 คำสั่ง มีเพียง <em>6 คำสั่งสร้าง layer</em></h2></div>
+  <div class="s-body">
+    <pre class="code sm"><span class="k">FROM</span> python:3.12-slim
+<span class="k">ENV</span> PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+<span class="k">WORKDIR</span> /app
+<span class="k">COPY</span> requirements.txt .
+<span class="k">RUN</span> pip install --no-cache-dir -r requirements.txt
+<span class="k">COPY</span> main.py .
+<span class="k">RUN</span> useradd --create-home --uid 10001 appuser \
+    &amp;&amp; chown -R appuser:appuser /app
+<span class="k">USER</span> appuser
+<span class="k">EXPOSE</span> 8000
+<span class="k">CMD</span> [<span class="y">"uvicorn"</span>, <span class="y">"main:app"</span>, <span class="y">"--host"</span>, <span class="y">"0.0.0.0"</span>, <span class="y">"--port"</span>, <span class="y">"8000"</span>]</pre>
+    <div class="note a"><code>FROM</code> · <code>WORKDIR</code> · <code>COPY</code> · <code>RUN</code> ทำให้เห็น <code>[1/6]</code>–<code>[6/6]</code> · <code>ENV</code> · <code>USER</code> · <code>EXPOSE</code> · <code>CMD</code> เขียน metadata</div>
+    <div class="note">ไฟล์เต็มที่ <code>002_LAB_Build_The_API/api/Dockerfile</code> · อธิบายที่ <code>002_LAB_Build_The_API/readme.md</code> · การทดลองที่ 2</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 2 · REQ-01 · REQ-02</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 30 : ผล build 6 layer ===== -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 5 · หลักฐาน · การทดลองที่ 2</div><h2>ผล build ยืนยัน <em>6 layer</em> และ context <em>28.54kB</em></h2></div>
+  <div class="s-body">
+    <pre class="code sm">#7 <span class="g">transferring context: 28.54kB done</span>
+#6 [1/6] FROM docker.io/library/python:3.12-slim
+#8 [2/6] WORKDIR /app
+#9 [3/6] COPY requirements.txt .
+#10 [4/6] RUN pip install --no-cache-dir -r requirements.txt
+#11 [5/6] COPY main.py .
+#12 [6/6] RUN useradd --create-home --uid 10001 appuser
+#13 naming to docker.io/library/ops-api:1.0 done</pre>
+    <div class="grid2">
+      <div class="note a"><code>[4/6]</code> = ขั้นที่ 4 จาก 6 ขั้นที่สร้าง layer · <code>28.54kB</code> คือ context ที่ส่งจริง ไม่ใช่ขนาด image</div>
+      <div class="note">คำสั่งที่ไม่สร้าง layer: <code>ENV</code> · <code>USER</code> · <code>EXPOSE</code> · <code>CMD</code></div>
+    </div>
+    <div class="note a">log เต็มที่ <code>002_LAB_Build_The_API/readme.md</code> · การทดลองที่ 2</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 2 · build layers</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 31 : build context ===== -->
+<div class="slot"><section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 5 · ทฤษฎี · การทดลองที่ 1 · 2</div><h2>จุด <code style="font-size:.9em">.</code> ท้ายคำสั่ง <code style="font-size:.9em">docker build</code> <em>ไม่ใช่</em> ที่อยู่ของ Dockerfile</h2></div>
+  <div class="s-body">
+    <div class="fig fix" style="height:430px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 430" font-family="sans-serif" preserveAspectRatio="xMidYMid meet">
+  <rect x="0" y="0" width="860" height="430" fill="#ffffff"/>
+  <text text-anchor="middle" x="430" y="34" font-size="19" font-weight="bold" fill="#1f2933">จุด `.` ท้ายคำสั่ง build คือ "โฟลเดอร์ที่ยกให้ daemon" ไม่ใช่ "ที่อยู่ของ Dockerfile"</text>
+  <text text-anchor="middle" x="430" y="58" font-size="14" fill="#52606d">docker build -t ops-api:1.0 .    ← สั่งจากในโฟลเดอร์ api/</text>
+
+  <!-- context box -->
+  <rect x="24" y="80" width="300" height="290" rx="10" fill="#eef6ff" stroke="#2f6fb2" stroke-width="2"/>
+  <text x="40" y="106" font-size="15" font-weight="bold" fill="#1c4f80">โฟลเดอร์ api/ = build context</text>
+
+  <rect x="40" y="120" width="268" height="30" rx="6" fill="#ffffff" stroke="#8fb8dc"/>
+  <text x="52" y="140" font-size="13" fill="#1f2933">Dockerfile              2.54 kB</text>
+  <rect x="40" y="156" width="268" height="30" rx="6" fill="#ffffff" stroke="#8fb8dc"/>
+  <text x="52" y="176" font-size="13" fill="#1f2933">requirements.txt        374 B</text>
+  <rect x="40" y="192" width="268" height="30" rx="6" fill="#ffffff" stroke="#8fb8dc"/>
+  <text x="52" y="212" font-size="13" fill="#1f2933">main.py                 28.1 kB</text>
+
+  <rect x="40" y="234" width="268" height="30" rx="6" fill="#fdecec" stroke="#c04a4a" stroke-dasharray="5 3"/>
+  <text x="52" y="254" font-size="13" fill="#8f2020">smoke.sh      ✗ .dockerignore</text>
+  <rect x="40" y="270" width="268" height="30" rx="6" fill="#fdecec" stroke="#c04a4a" stroke-dasharray="5 3"/>
+  <text x="52" y="290" font-size="13" fill="#8f2020">api-debug.log ✗ .dockerignore</text>
+
+  <text x="40" y="320" font-size="13" fill="#52606d">ทุกไฟล์ที่ไม่ถูก ignore ถูกมัดเป็นก้อนเดียว</text>
+  <text x="40" y="340" font-size="13" fill="#52606d">แล้วส่งข้ามไปให้ daemon ก่อน build เริ่ม</text>
+  <text x="40" y="358" font-size="13" font-weight="bold" fill="#1c4f80">รวมที่ส่งจริง : 28.54 kB</text>
+
+  <!-- arrow -->
+  <defs>
+    <marker id="sv27-ar" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#2f6fb2"/>
+    </marker>
+  </defs>
+  <line x1="330" y1="200" x2="490" y2="200" stroke="#2f6fb2" stroke-width="3" marker-end="url(#sv27-ar)"/>
+  <text x="336" y="188" font-size="13" fill="#1c4f80">ส่ง context ไปให้ daemon</text>
+  <text x="336" y="222" font-size="12" fill="#52606d">transferring context 28.54kB</text>
+
+  <!-- daemon box -->
+  <rect x="500" y="80" width="336" height="290" rx="10" fill="#f3f0fb" stroke="#6b4fa8" stroke-width="2"/>
+  <text x="518" y="106" font-size="15" font-weight="bold" fill="#4b3480">dockerd + BuildKit (ผู้สร้าง image)</text>
+  <text x="518" y="134" font-size="13" fill="#1f2933">1. อ่าน Dockerfile ทีละบรรทัด</text>
+  <text x="518" y="158" font-size="13" fill="#1f2933">2. `COPY requirements.txt .` หยิบไฟล์</text>
+  <text x="538" y="178" font-size="13" fill="#1f2933">จาก context ที่ได้รับมา</text>
+  <text x="518" y="204" font-size="13" fill="#1f2933">3. `RUN pip install` ทำงานในกล่องชั่วคราว</text>
+  <text x="518" y="230" font-size="13" fill="#1f2933">4. `COPY main.py .` หยิบไฟล์สุดท้าย</text>
+
+  <rect x="518" y="248" width="300" height="106" rx="8" fill="#ffffff" stroke="#b3a4d6"/>
+  <text x="532" y="272" font-size="13" font-weight="bold" fill="#4b3480">daemon เห็นเฉพาะของที่ส่งมาเท่านั้น</text>
+  <text x="532" y="296" font-size="13" fill="#1f2933">COPY ../db/initdb .  → ทำไม่ได้</text>
+  <text x="532" y="318" font-size="13" fill="#1f2933">เพราะอยู่นอกโฟลเดอร์ที่เป็น context</text>
+  <text x="532" y="342" font-size="12" fill="#52606d">context ยิ่งใหญ่ = ส่งนาน = build ช้าตั้งแต่ยังไม่เริ่ม</text>
+
+  <text x="24" y="400" font-size="13" fill="#52606d">`-t ops-api:1.0` = ชื่อและ tag ของ image ที่จะได้ · `.` = โฟลเดอร์ปัจจุบันคือ context · `-f` ใช้เมื่อชื่อไฟล์ไม่ใช่ Dockerfile</text>
+</svg></div>
+    <div class="figrow c11">
+      <div class="note a" style="font-size:13.5px"><b><code>.</code> คือโฟลเดอร์ที่ยกให้ daemon ทั้งก้อน</b> ไม่ใช่ที่อยู่ของ Dockerfile — ไฟล์นอกโฟลเดอร์นี้ <code>COPY</code> ไม่ได้เลย ต่อให้เขียน <code>../</code></div>
+      <div class="note" style="font-size:13.5px">อยากใช้ Dockerfile ที่อยู่คนละที่กับ context ให้ชี้ด้วย <code>-f</code> — context ยิ่งใหญ่ ยิ่งส่งนาน ยิ่ง build ช้าตั้งแต่ยังไม่เริ่ม</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 2 · REQ-01 · REQ-02</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 32 : layer cache ===== -->
+<div class="slot"><section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 5 · ทฤษฎี · การทดลองที่ 3 · 4</div><h2>ลำดับบรรทัดใน Dockerfile คือ <em>เรื่องของเวลา</em></h2></div>
+  <div class="s-body">
+    <div class="fig fix" style="height:470px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 470" font-family="sans-serif" preserveAspectRatio="xMidYMid meet">
+  <rect x="0" y="0" width="880" height="470" fill="#ffffff"/>
+  <text text-anchor="middle" x="440" y="32" font-size="19" font-weight="bold" fill="#1f2933">แก้ main.py 1 บรรทัด แล้ว build ใหม่ — ลำดับ COPY ตัดสินว่าต้อง pip install ซ้ำไหม</text>
+  <text text-anchor="middle" x="440" y="54" font-size="13" fill="#52606d">กฎเดียว : ขั้นไหนเปลี่ยน → ขั้นนั้นและทุกขั้นที่อยู่ใต้ลงไปต้องทำใหม่ทั้งหมด</text>
+
+  <!-- LEFT : good -->
+  <rect x="24" y="70" width="400" height="330" rx="10" fill="#f2fbf5" stroke="#2e8b57" stroke-width="2"/>
+  <text x="40" y="96" font-size="15" font-weight="bold" fill="#1e6b41">api/Dockerfile (ลำดับที่ใช้จริง)</text>
+
+  <rect x="40" y="110" width="368" height="34" rx="6" fill="#ffffff" stroke="#9ad0b0"/>
+  <text x="54" y="132" font-size="13" fill="#1f2933">[1/6] FROM python:3.12-slim</text>
+  <text x="330" y="132" font-size="12" font-weight="bold" fill="#1e6b41">CACHED</text>
+
+  <rect x="40" y="150" width="368" height="34" rx="6" fill="#ffffff" stroke="#9ad0b0"/>
+  <text x="54" y="172" font-size="13" fill="#1f2933">[3/6] COPY requirements.txt .</text>
+  <text x="330" y="172" font-size="12" font-weight="bold" fill="#1e6b41">CACHED</text>
+
+  <rect x="40" y="190" width="368" height="40" rx="6" fill="#e6f5ec" stroke="#2e8b57" stroke-width="2"/>
+  <text x="54" y="215" font-size="13" font-weight="bold" fill="#1f2933">[4/6] RUN pip install  ← ขั้นแพงที่สุด</text>
+  <text x="330" y="215" font-size="12" font-weight="bold" fill="#1e6b41">CACHED</text>
+
+  <rect x="40" y="236" width="368" height="34" rx="6" fill="#fff4e5" stroke="#d98324" stroke-width="2"/>
+  <text x="54" y="258" font-size="13" fill="#1f2933">[5/6] COPY main.py .  ← จุดที่ cache แตก</text>
+  <text x="336" y="258" font-size="12" font-weight="bold" fill="#a35a10">DONE</text>
+
+  <rect x="40" y="276" width="368" height="34" rx="6" fill="#fff4e5" stroke="#d98324"/>
+  <text x="54" y="298" font-size="13" fill="#1f2933">[6/6] RUN useradd ... chown</text>
+  <text x="336" y="298" font-size="12" font-weight="bold" fill="#a35a10">DONE</text>
+
+  <text x="40" y="336" font-size="13" fill="#52606d">จุดแตกอยู่ "ใต้" ขั้น pip install → ขั้นแพงไม่ต้องทำซ้ำ</text>
+  <text x="40" y="368" font-size="15" font-weight="bold" fill="#1e6b41">real 0m2.199s</text>
+  <text x="160" y="368" font-size="13" fill="#52606d">ทำใหม่แค่ 2 ขั้นล่างสุด</text>
+
+  <!-- RIGHT : bad -->
+  <rect x="456" y="70" width="400" height="330" rx="10" fill="#fdf3f3" stroke="#c04a4a" stroke-width="2"/>
+  <text x="472" y="96" font-size="15" font-weight="bold" fill="#8f2020">api/Dockerfile.bad (สลับแค่ลำดับ)</text>
+
+  <rect x="472" y="110" width="368" height="34" rx="6" fill="#ffffff" stroke="#e0a5a5"/>
+  <text x="486" y="132" font-size="13" fill="#1f2933">[1/5] FROM python:3.12-slim</text>
+  <text x="762" y="132" font-size="12" font-weight="bold" fill="#1e6b41">CACHED</text>
+
+  <rect x="472" y="150" width="368" height="34" rx="6" fill="#fdecec" stroke="#c04a4a" stroke-width="2"/>
+  <text x="486" y="172" font-size="13" fill="#1f2933">[3/5] COPY . .  ← จุดที่ cache แตก</text>
+  <text x="768" y="172" font-size="12" font-weight="bold" fill="#8f2020">DONE</text>
+
+  <rect x="472" y="190" width="368" height="40" rx="6" fill="#fdecec" stroke="#c04a4a" stroke-width="2"/>
+  <text x="486" y="215" font-size="13" font-weight="bold" fill="#1f2933">[4/5] RUN pip install  ← ทำใหม่ทั้งชุด</text>
+  <text x="748" y="215" font-size="12" font-weight="bold" fill="#8f2020">DONE 8.9s</text>
+
+  <rect x="472" y="236" width="368" height="34" rx="6" fill="#fdecec" stroke="#c04a4a"/>
+  <text x="486" y="258" font-size="13" fill="#1f2933">[5/5] RUN useradd ... chown</text>
+  <text x="768" y="258" font-size="12" font-weight="bold" fill="#8f2020">DONE</text>
+
+  <text x="472" y="336" font-size="13" fill="#52606d">จุดแตกอยู่ "เหนือ" ขั้น pip install → ลากทุกขั้นใต้ลงไปด้วย</text>
+  <text x="472" y="368" font-size="15" font-weight="bold" fill="#8f2020">real 0m12.672s</text>
+  <text x="596" y="368" font-size="13" fill="#52606d">ทำใหม่ตั้งแต่ COPY . . ลงมา</text>
+
+  <text x="24" y="428" font-size="13" fill="#1f2933">เนื้อหาของสองไฟล์เหมือนกันทุกบรรทัด ต่างกันแค่ว่า `COPY` ของ source code อยู่ก่อนหรือหลัง `RUN pip install`</text>
+  <text x="24" y="450" font-size="13" fill="#52606d">เรียงจาก "เปลี่ยนน้อยที่สุด → เปลี่ยนบ่อยที่สุด" เสมอ : base image → รายการ dependency → ติดตั้ง → โค้ด</text>
+</svg></div>
+    <div class="figrow c11">
+      <div class="note a" style="font-size:13.5px"><b>กฎเดียวที่ต้องจำ</b> — ขั้นไหนเปลี่ยน ขั้นนั้น<b>และทุกขั้นใต้ลงไป</b>ต้องทำใหม่ จึงเรียง <code>COPY</code> จาก "เปลี่ยนน้อยที่สุด → เปลี่ยนบ่อยที่สุด" เสมอ</div>
+      <div class="note w" style="font-size:13.5px">ในแล็บนี้ต่างกัน <b>~6 เท่า</b> เพราะ dependency มีแค่ 4 ตัว · ของจริงที่มี package หนัก ๆ ต่างกันหลายสิบเท่า และเรา<b>จ่ายค่านี้ทุกครั้งที่แก้โค้ด</b></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 2 · REQ-01 · REQ-02</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 33 : .dockerignore ===== -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 5 · ทฤษฎี · การทดลองที่ 5</div><h2><code style="font-size:.9em">.dockerignore</code> ตัดตั้งแต่ <em>ก่อน</em> context ถูกส่ง</h2></div>
+  <div class="s-body">
+    <pre class="code sm">__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+.env
+<span class="g">*.log</span>
+.git/
+.DS_Store
+.ipynb_checkpoints/
+<span class="g">smoke.sh</span></pre>
+    <div class="codecap"><code>api/.dockerignore</code> แสดงเฉพาะ pattern · ไฟล์จริง 17 บรรทัด</div>
+    <div class="note a">ไฟล์ที่ถูกกันจะ <b>ไม่กินเวลาส่ง · ไม่หลุดเข้า image · ไม่ทำให้ <code>COPY</code> แตก cache</b></div>
+    <div class="note">ไฟล์เต็มที่ <code>002_LAB_Build_The_API/api/.dockerignore</code> · อธิบายที่ <code>002_LAB_Build_The_API/readme.md</code> · การทดลองที่ 5</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 2 · REQ-01 · REQ-02</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 33 : log 5MB เทียบ context 66B ===== -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 5 · หลักฐาน · การทดลองที่ 5</div><h2>โฟลเดอร์โต <em>4.9M</em> แต่ context ยังเหลือ <em>66B</em></h2></div>
+  <div class="s-body">
+    <div class="g11">
+      <div><pre class="code sm"><span class="c"># สร้างไฟล์ log ขนาด 5MB</span>
+head -c 5000000 /dev/urandom &gt; api-debug.log
+du -sh .</pre>
+        <div class="note" style="margin-top:8px">จากนั้นรัน <code>docker build -t ops-api:1.0 .</code></div></div>
+      <pre class="code sm"><span class="r">4.9M</span>	.
+#7 [internal] load build context
+#7 <span class="g">transferring context: 66B done</span>
+#7 DONE 0.0s</pre>
+    </div>
+    <div class="note o">สั่ง <code>docker build</code> ธรรมดา แล้วชี้บรรทัด <code>transferring context</code> — ต้องไม่มีคำว่า MB</div>
+    <div class="note">ค่า <code>66B</code> เกิดเมื่อไฟล์อื่นไม่เปลี่ยน · ถ้าเพิ่งแก้ <code>main.py</code> จะเห็นราว <code>28.15kB</code></div>
+    <div class="note a">ขั้นตอนและ log เต็มที่ <code>002_LAB_Build_The_API/readme.md</code> · การทดลองที่ 5</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 2 · build context</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 34 : EXPOSE vs -p ===== -->
+<div class="slot"><section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 5 · ทฤษฎี · การทดลองที่ 8</div><h2><code style="font-size:.9em">EXPOSE</code> เป็น<em>ป้าย</em> ไม่ใช่<em>ประตู</em></h2></div>
+  <div class="s-body">
+    <div class="fig fix" style="height:440px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 450" font-family="sans-serif" preserveAspectRatio="xMidYMid meet">
+  <rect x="0" y="0" width="960" height="450" fill="#ffffff"/>
+  <text text-anchor="middle" x="480" y="32" font-size="19" font-weight="bold" fill="#1f2933">EXPOSE = ป้ายบอกทาง · -p = ประตูที่เปิดจริง</text>
+  <text text-anchor="middle" x="480" y="56" font-size="13" fill="#52606d">ทั้งสองอย่างพูดถึงพอร์ต 8000 เหมือนกัน แต่มีอันเดียวที่ทำให้เข้าถึงได้จากนอกกล่อง</text>
+
+  <defs>
+    <marker id="sv30-arGreen" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#2e8b57"/>
+    </marker>
+    <marker id="sv30-arRed" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
+      <path d="M 0 0 L 13 5 L 0 10 z" fill="#8f2020"/>
+    </marker>
+  </defs>
+
+  <!-- CASE A : run without -p -->
+  <rect x="24" y="76" width="440" height="176" rx="10" fill="#fdf3f3" stroke="#c04a4a" stroke-width="2"/>
+  <text x="40" y="102" font-size="14" font-weight="bold" fill="#8f2020">docker run -d --name ops-api ops-api:1.0   (ไม่ใส่ -p)</text>
+
+  <rect x="40" y="116" width="156" height="112" rx="8" fill="#ffffff" stroke="#9aa5b1"/>
+  <text x="56" y="140" font-size="13" font-weight="bold" fill="#1f2933">กล่องเรียน</text>
+  <text x="56" y="166" font-size="13" fill="#1f2933">curl localhost:8088</text>
+  <text x="56" y="200" font-size="13" font-weight="bold" fill="#8f2020">curl exit=7</text>
+
+  <line x1="200" y1="168" x2="250" y2="168" stroke="#8f2020" stroke-width="3" marker-end="url(#sv30-arRed)"/>
+  <line x1="262" y1="126" x2="262" y2="218" stroke="#8f2020" stroke-width="10" stroke-linecap="round"/>
+  <text x="262" y="244" font-size="13" font-weight="bold" fill="#8f2020" text-anchor="middle">ไม่มีทางเข้า</text>
+
+  <rect x="300" y="116" width="148" height="112" rx="8" fill="#ffffff" stroke="#9aa5b1"/>
+  <text x="316" y="140" font-size="13" font-weight="bold" fill="#1f2933">กล่อง ops-api</text>
+  <text x="316" y="164" font-size="12" fill="#1f2933">uvicorn ฟัง :8000</text>
+  <text x="316" y="188" font-size="12" fill="#2e8b57">EXPOSE 8000 (ป้าย)</text>
+  <text x="316" y="212" font-size="12" fill="#52606d">docker port = ว่าง</text>
+
+  <!-- CASE B : run with -p -->
+  <rect x="496" y="76" width="440" height="176" rx="10" fill="#f2fbf5" stroke="#2e8b57" stroke-width="2"/>
+  <text x="512" y="102" font-size="14" font-weight="bold" fill="#1e6b41">docker run -d --name ops-api -p 8088:8000 ops-api:1.0</text>
+
+  <rect x="512" y="116" width="156" height="112" rx="8" fill="#ffffff" stroke="#9aa5b1"/>
+  <text x="528" y="140" font-size="13" font-weight="bold" fill="#1f2933">กล่องเรียน</text>
+  <text x="528" y="166" font-size="13" fill="#1f2933">curl localhost:8088</text>
+  <text x="524" y="200" font-size="12" font-weight="bold" fill="#1e6b41">{"status":"ok","db":"up"}</text>
+
+  <line x1="672" y1="168" x2="768" y2="168" stroke="#2e8b57" stroke-width="3" marker-end="url(#sv30-arGreen)"/>
+  <text x="720" y="244" font-size="13" font-weight="bold" fill="#1e6b41" text-anchor="middle">ประตูที่ -p เปิดให้</text>
+
+  <rect x="772" y="116" width="148" height="112" rx="8" fill="#ffffff" stroke="#9aa5b1"/>
+  <text x="788" y="140" font-size="13" font-weight="bold" fill="#1f2933">กล่อง ops-api</text>
+  <text x="788" y="164" font-size="12" fill="#1f2933">uvicorn ฟัง :8000</text>
+  <text x="788" y="188" font-size="12" fill="#2e8b57">EXPOSE 8000 (ป้าย)</text>
+  <text x="788" y="212" font-size="12" fill="#52606d">docker port มีบรรทัด</text>
+
+  <!-- mapping detail -->
+  <rect x="24" y="272" width="912" height="96" rx="10" fill="#eef6ff" stroke="#2f6fb2" stroke-width="2"/>
+  <text x="44" y="298" font-size="15" font-weight="bold" fill="#1c4f80">อ่านเลขของ -p ให้ถูกด้าน</text>
+  <text x="44" y="326" font-size="15" fill="#1f2933">-p  8088  :  8000</text>
+  <text x="44" y="350" font-size="13" fill="#52606d">ซ้าย = พอร์ตของเครื่องที่รัน · ขวา = พอร์ตในกล่อง</text>
+  <text x="460" y="326" font-size="13" fill="#1f2933">docker port ops-api  →  8000/tcp -> 0.0.0.0:8088</text>
+  <text x="460" y="350" font-size="13" fill="#52606d">ใส่ EXPOSE แต่ไม่ใส่ -p = เข้าไม่ได้ · ไม่มี EXPOSE แต่ใส่ -p = เข้าได้</text>
+
+  <text x="24" y="398" font-size="13" fill="#1f2933">EXPOSE มีประโยชน์ตรงที่เป็น "เอกสารในตัว image" — คนที่หยิบ image ไปใช้เปิด docker image inspect แล้วรู้ว่าต้อง map พอร์ตไหน</text>
+  <text x="24" y="424" font-size="13" fill="#52606d">ฐานข้อมูลของระบบนี้จึงไม่เคยมี -p เลย (NFR-3) — image ของ postgres มี EXPOSE 5432 อยู่ก็จริง แต่ไม่มีใครเข้าถึงจากนอกเครื่องได้</text>
+</svg></div>
+    <div class="figrow c21">
+      <pre class="code xs">$ docker port ops-api            <span class="c"># กล่องที่รันโดยไม่มี -p</span>
+<span class="d">(ว่างเปล่า)</span>   ·   $ curl -m 3 localhost:8088/health → <span class="r">exit=7</span>
+$ docker run -d --name ops-api <span class="g">-p 8088:8000</span> <span class="d">…</span>
+$ docker port ops-api → <span class="g">8000/tcp -&gt; 0.0.0.0:8088</span>
+$ curl -s localhost:8088/health → <span class="g">{"status":"ok","db":"up"}</span></pre>
+      <div class="note c" style="font-size:13.5px"><b>image เดียวกัน</b> ที่ประกาศ <code>EXPOSE 8000</code> เหมือนกัน ต่างแค่มี <code>-p</code> หรือไม่ — <code>-p 8088:8000</code> = <b>ซ้ายพอร์ตเครื่อง · ขวาพอร์ตในกล่อง</b></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 2 · REQ-01 · REQ-02</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 35 : Swagger UI walkthrough ===== -->
+<div class="slot"><section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 5 · หลักฐาน · การทดลองที่ 9</div><h2>Swagger UI: กด <em>Execute</em> แล้วอ่าน <em>201</em></h2>
+    <div class="sub">ฐานข้อมูลถูก reset เป็น seed ก่อนกรอก JSON ชุดคงที่ จึงได้ ticket <code>#9</code> ทุกครั้ง</div></div>
+  <div class="s-body">
+    <div class="fig shot fix" style="height:470px"><img data-a="ui_swagger_created" alt="Swagger UI พร้อม marker ที่ Execute และผลตอบกลับ 201"></div>
+    <div class="note o" style="font-size:14px"><b>สิ่งที่ต้องอ่าน:</b> HTTP <code>201</code> · <code>id=9</code> · <code>asset_id=12</code> · <code>priority=HIGH</code> · <code>status=NEW</code></div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 2 · Swagger UI</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 36 : REQ-01 ด้วย curl ===== -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 5 · หลักฐาน · การทดลองที่ 10</div><h2>REQ-01 ผ่านเมื่อสร้างใบงานแล้วได้ <em>HTTP 201</em></h2></div>
+  <div class="s-body">
+    <div><span class="tag a">REQ-01</span> สร้างใบแจ้งซ่อมแล้วสถานะต้องเริ่มที่ <code>NEW</code></div>
+    <pre class="code sm">$ curl -s -o /tmp/ticket.json -w <span class="y">'HTTP %{http_code}\n'</span> \
+  -X POST http://localhost:8088/api/tickets \
+  -H <span class="y">'Content-Type: application/json'</span> \
+  -d <span class="y">'{"asset_id":12,"title":"ลำโพงห้องเรียน 402 เสียงขาดหาย","detail":"เปิดแล้วเสียงดังบ้างหายบ้าง","priority":"HIGH"}'</span>
+<span class="g">HTTP 201</span>
+{"id":10,"asset_id":12,"priority":"HIGH","status":<span class="g">"NEW"</span>}</pre>
+    <div class="note a">body เต็มและวิธีเก็บ <code>TID</code> อยู่ที่ <code>002_LAB_Build_The_API/readme.md</code> · การทดลองที่ 10</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 2 · REQ-01</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 36 : REQ-02 ด้วย curl ===== -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 5 · หลักฐาน · การทดลองที่ 10</div><h2>REQ-02 ผ่านเมื่อ <code>NEW → DONE</code> ถูกปฏิเสธด้วย <em>409</em></h2></div>
+  <div class="s-body">
+    <div><span class="tag a">REQ-02</span> ห้ามข้ามลำดับสถานะของงานซ่อม</div>
+    <pre class="code sm">$ TID=10
+$ curl -s -w <span class="y">'\nHTTP %{http_code}\n'</span> -X PATCH \
+  <span class="y">"http://localhost:8088/api/tickets/${TID}/status"</span> \
+  -H <span class="y">'Content-Type: application/json'</span> -d <span class="y">'{"status":"DONE"}'</span>
+{"detail":"เปลี่ยนสถานะจาก NEW ไป DONE ไม่ได้",
+ "code":<span class="r">"INVALID_TRANSITION"</span>}
+<span class="r">HTTP 409</span></pre>
+    <div class="note w">ตัดคำสั่งกรอง JSON ออกจากสไลด์ · วิธีตรวจว่าใบยังเป็น <code>NEW</code> อยู่ที่ <code>002_LAB_Build_The_API/readme.md</code> · การทดลองที่ 10</div>
+    <div class="note a">LAB 4 จะเปลี่ยนที่อยู่ฐานข้อมูลจาก IP เป็นชื่อบน user-defined network</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 2 · REQ-01 · REQ-02</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 36 : ปิดตอนที่ 5 ===== -->
+<div class="slot"><section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 5 · หลักฐาน · ปิด LAB 2</div><h2>ตอนนี้ได้อะไร → <em>ทำต่อที่แล็บไหน</em></h2></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div class="card"><h4>ทฤษฎีที่เพิ่งจบ</h4><ul class="bul sm"><li>จุด <code>.</code> คือ build context</li><li>ลำดับ <code>COPY</code> ตัดสิน cache</li><li><code>EXPOSE</code> เป็นป้าย · <code>-p</code> เปิดทางจริง</li></ul></div>
+      <div class="card a"><h4>ข้อกำหนดที่พิสูจน์แล้ว</h4><p><b>REQ-01</b> ได้ <code>201 NEW</code> · <b>REQ-02</b> ได้ <code>409 INVALID_TRANSITION</code> · ครบ REQ-01…12 ด้วย <code>api/smoke.sh</code></p></div>
+      <div class="card o"><h4>แล็บและหลักฐาน</h4><p><b>LAB 2</b> · 11 การทดลอง · ~75 นาที · <code>verify.sh</code> ได้ <b>17 [PASS]</b></p></div>
+      <div class="card w"><h4>เปิดแล็บ</h4><pre class="code path">cd DevTools/02_Docker/03_Fullstack_App_Example/002_LAB_Build_The_API</pre></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 2 · REQ-01…12</span><span class="pg"></span></div>
+</section></div>

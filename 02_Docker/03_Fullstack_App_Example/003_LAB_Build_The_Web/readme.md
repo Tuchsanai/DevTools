@@ -31,7 +31,7 @@
 
 ![แผนภาพ multi-stage : ฝั่งซ้ายคือ stage deps กับ builder ที่มี node_modules, devDependencies, typescript, tailwindcss และ cache ของ next build ซึ่งถูกทิ้งทั้งก้อน ฝั่งขวาคือ stage runner ที่มี base image บวก .next/standalone และ .next/static รวมเป็น image 298MB](./images/theory-multistage.svg)
 
-> 🖼 **วิธีอ่านรูปนี้:** ลูกศร `COPY --from=builder` ตรงกลางขน **เฉพาะผลลัพธ์** ข้ามฝั่ง — ทุกอย่างในกรอบสีส้มฝั่งซ้ายไม่มีอะไรตามไปเลยแม้แต่ layer เดียว
+> 🖼 **วิธีอ่านรูปนี้:** ลูกศร `COPY --from=builder` ขนเฉพาะผลลัพธ์ข้ามฝั่ง — ก้อน build `505 MB + 100 MB` ไม่ตามไป ส่วน image runner เหลือ `298 MB` จากแบบ stage เดียว `1.1 GB` หรือเล็กลงประมาณ `73%`
 
 | stage | ทำอะไร | อะไรตามไป stage สุดท้าย |
 |---|---|---|
@@ -67,7 +67,7 @@
 
 ![แผนภาพกับดักการ COPY ไฟล์ static : แถบบนบอกว่าของจริงมีโฟลเดอร์ chunks ที่เก็บทั้ง js และ css กับโฟลเดอร์ build-id ส่วน .next/static/css ไม่มีอยู่จริง ฝั่งซ้ายคัดลอกทั้งก้อนแล้วได้ CSS 200 ฝั่งขวาเจาะ subfolder แล้ว build ล้มหรือได้หน้าเว็บไม่มี CSS](./images/theory-static-copy-trap.svg)
 
-> 🖼 **วิธีอ่านรูปนี้:** กล่องแดงมุมขวาบนคือโฟลเดอร์ที่ตำราส่วนใหญ่บอกให้ copy — แต่ **ไม่มีอยู่จริง** ใน Next.js 16 · ไฟล์ `.css` ถูกวางปนอยู่กับ `.js` ใน `chunks/`
+> 🖼 **วิธีอ่านรูปนี้:** กล่องแดงมุมขวาบนคือ `.next/static/css` ที่ **ไม่มีอยู่จริง** ใน Next.js 16 · ของจริงอยู่ใน `chunks/` และรอบตรวจนี้โหลดไฟล์ CSS ได้ `HTTP 200` ขนาด `21048` ไบต์ ไม่ใช่ `404`
 
 ### สิ่งที่มักเข้าใจผิด
 
@@ -98,7 +98,8 @@ ssh root@localhost -p 2253        # password : passwd
 **คำสั่งทุกอันหลังจากนี้พิมพ์ข้างในกล่องเรียน**
 
 ```bash
-mkdir -p ~/labwork && cd ~/labwork
+mkdir -p ~/labwork
+cd ~/labwork
 git clone --depth 1 https://github.com/Tuchsanai/DevTools.git
 cd DevTools/02_Docker/03_Fullstack_App_Example/003_LAB_Build_The_Web
 ls
@@ -256,7 +257,8 @@ typescript = found
 **คำถาม:** ตั้ง `NEXT_PUBLIC_SITE_NAME` ใหม่ตอน `docker run` แล้วหน้าเว็บเปลี่ยนตามไหม
 
 ```bash
-docker run -d --name ops-web-try -p 3001:3000 -e NEXT_PUBLIC_SITE_NAME='ศูนย์ซ่อมบำรุง' campusops-web:lab3 && sleep 4
+docker run -d --name ops-web-try -p 3001:3000 -e NEXT_PUBLIC_SITE_NAME='ศูนย์ซ่อมบำรุง' campusops-web:lab3
+sleep 4
 curl -s http://localhost:3001/no-such-page | grep -o '<title>[^<]*</title>' | head -1
 ```
 
@@ -270,7 +272,9 @@ b585493978d0d2949704d5f4625a8021d484cf9c262cd198b69b03ec35d2f904
 ทีนี้ส่งค่าเดียวกันตอน **build** :
 
 ```bash
-docker build -q --build-arg NEXT_PUBLIC_SITE_NAME='ศูนย์ซ่อมบำรุง' -t campusops-web:rename ./web && docker run -d --name ops-web-try2 -p 3002:3000 campusops-web:rename && sleep 4
+docker build -q --build-arg NEXT_PUBLIC_SITE_NAME='ศูนย์ซ่อมบำรุง' -t campusops-web:rename ./web
+docker run -d --name ops-web-try2 -p 3002:3000 campusops-web:rename
+sleep 4
 curl -s http://localhost:3002/no-such-page | grep -o '<title>[^<]*</title>' | head -1
 ```
 
@@ -313,7 +317,10 @@ http://api.example.invalid:8000
 ไฟล์ `web/Dockerfile.shellform` มีมาให้แล้วในโฟลเดอร์ — ต่อยอดจาก `campusops-web:lab3` แล้วเปลี่ยนแค่บรรทัด `CMD` ให้เป็น shell form
 
 ```bash
-docker build -q -f web/Dockerfile.shellform -t campusops-web:shellform ./web && docker run -d --name ops-web-exec campusops-web:lab3 && docker run -d --name ops-web-shell campusops-web:shellform && sleep 4
+docker build -q -f web/Dockerfile.shellform -t campusops-web:shellform ./web
+docker run -d --name ops-web-exec campusops-web:lab3
+docker run -d --name ops-web-shell campusops-web:shellform
+sleep 4
 docker exec ops-web-exec ps -o pid,args; docker exec ops-web-shell ps -o pid,args
 ```
 
@@ -374,10 +381,12 @@ docker rm -f ops-web-try ops-web-try2 ops-web-env ops-web-exec ops-web-shell
 ```bash
 docker volume rm ops-pgdata 2>/dev/null
 docker run -d --name ops-db -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
-  -v ops-pgdata:/var/lib/postgresql/data -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine && sleep 10
+  -v ops-pgdata:/var/lib/postgresql/data -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine
+sleep 10
 DB_IP=$(docker inspect -f '{{.NetworkSettings.Networks.bridge.IPAddress}}' ops-db); echo "DB_IP = $DB_IP"
 docker build -q -t campusops-api:lab3 ./api
-docker run -d --name ops-api -e DATABASE_URL="postgresql://opsuser:labpass@$DB_IP:5432/campusops" campusops-api:lab3 && sleep 6
+docker run -d --name ops-api -e DATABASE_URL="postgresql://opsuser:labpass@$DB_IP:5432/campusops" campusops-api:lab3
+sleep 6
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — ท้ายผลการดึง image มี ID ของ `ops-db`, IP บน default bridge, `sha256:` ของ image API และ ID ของ `ops-api` :
@@ -407,7 +416,8 @@ API_IP = 172.18.0.3
 ทีนี้ยกหน้าเว็บขึ้น แล้วชี้ `API_BASE_URL` ไปที่ IP ของ `ops-api` :
 
 ```bash
-docker run -d --name ops-web -p 3000:3000 -e API_BASE_URL="http://$API_IP:8000" campusops-web:lab3 && sleep 6
+docker run -d --name ops-web -p 3000:3000 -e API_BASE_URL="http://$API_IP:8000" campusops-web:lab3
+sleep 6
 curl -s -o /dev/null -w 'GET / -> HTTP %{http_code}\n' http://localhost:3000/
 curl -s -o /dev/null -w 'GET /tickets -> HTTP %{http_code}\n' http://localhost:3000/tickets
 curl -s -o /dev/null -w 'GET /loans -> HTTP %{http_code}\n' http://localhost:3000/loans
@@ -443,7 +453,7 @@ cfa1f50ab31c   campusops-api:lab3   "uvicorn main:app --…"   28 seconds ago   
 
 ![หน้าแรก CampusOps มีกรอบแดงรอบเมนูสรุปภาพรวมและป้าย ① เปิดหน้าสรุป](./images/ui-web-01-overview.png)
 
-*ภาพที่ 1 — หน้า `/` จากข้อมูล seed โดยเมนู “สรุปภาพรวม” เป็นหน้าปัจจุบัน*
+*ภาพที่ 1 — หน้า `/` จากข้อมูล seed มีใบแจ้งซ่อมทั้งหมด 8 ใบ ปิดแล้ว 2 ใบ จึงเหลืองานยังไม่ปิด 6 ใบ และเมนู “สรุปภาพรวม” เป็นหน้าปัจจุบัน*
 
 #### ขั้นที่ ② — เปิดกระดานงานซ่อม
 
@@ -467,7 +477,7 @@ cfa1f50ab31c   campusops-api:lab3   "uvicorn main:app --…"   28 seconds ago   
 
 ![ฟอร์มแจ้งซ่อมมีกรอบแดงรอบช่องหัวข้อและรายละเอียดพร้อมป้าย ④](./images/ui-web-04-details.png)
 
-*ภาพที่ 4 — ข้อความทั้งสองช่องเป็นค่าคงที่ เพื่อให้ผลการสร้างการ์ดและ caption ตรวจสอบซ้ำได้*
+*ภาพที่ 4 — ฟอร์มของ `A-003` แสดงหัวข้อ `กล้องถ่ายวิดีโอเปิดไม่ติด` และรายละเอียด `กดปุ่มเปิดแล้วไฟสถานะไม่ทำงาน` ครบถ้วน*
 
 #### ขั้นที่ ⑤ — กำหนดความเร่งด่วน
 
@@ -475,7 +485,7 @@ cfa1f50ab31c   campusops-api:lab3   "uvicorn main:app --…"   28 seconds ago   
 
 ![ฟอร์มแจ้งซ่อมมีกรอบแดงรอบช่องความเร่งด่วนและป้าย ⑤ เลือกเร่งด่วน](./images/ui-web-05-priority.png)
 
-*ภาพที่ 5 — ค่าในช่องความเร่งด่วนเปลี่ยนจาก “ปกติ” เป็น “เร่งด่วน”*
+*ภาพที่ 5 — ค่าในช่องความเร่งด่วนเปลี่ยนจาก “ปกติ” เป็น “เร่งด่วน” ขณะจำนวนการ์ด seed ยังเป็น 3, 2, 1 และ 2 ตามลำดับคอลัมน์*
 
 #### ขั้นที่ ⑥ — ส่งฟอร์มแจ้งซ่อม
 
@@ -483,7 +493,7 @@ cfa1f50ab31c   campusops-api:lab3   "uvicorn main:app --…"   28 seconds ago   
 
 ![ฟอร์มแจ้งซ่อมมีกรอบแดงรอบปุ่มและป้าย ⑥ กดแจ้งซ่อม](./images/ui-web-06-submit.png)
 
-*ภาพที่ 6 — ปุ่ม “แจ้งซ่อม” ส่งข้อมูลทั้งสี่ช่องไปยัง server action*
+*ภาพที่ 6 — ปุ่ม “แจ้งซ่อม” พร้อมส่งข้อมูลทั้ง 4 ช่อง โดยก่อนส่งจำนวนการ์ด seed ยังเป็น 3, 2, 1 และ 2 ตามลำดับคอลัมน์*
 
 #### ขั้นที่ ⑦ — ตรวจการ์ดใบใหม่
 

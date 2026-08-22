@@ -11,15 +11,31 @@
 | Security | มีเพียง `web` ที่ publish port |
 | Shipping | push/pull image สองก้อนผ่าน Docker Hub แบบ public |
 
+### 🎯 แล็บนี้ใน 30 วินาที
+
+| | |
+|---|---|
+| **คำถามเดียวที่ตอบให้จบ** | ระบบ `db` → `api` → `web` จะขึ้นตามลำดับด้วย **คำสั่งเดียว** (NFR-1), รักษาข้อมูล (NFR-2), ปิดพอร์ตฐานข้อมูล (NFR-3) และส่งมอบให้เครื่องที่ไม่มีซอร์สโค้ดผ่าน Docker Hub แบบ Public ได้อย่างไร |
+| **ต้องผ่านอะไรมาก่อน** | **LAB 1–4** ครบ: named volume และ init script · build image ของ `api`/`web` · multi-stage · user-defined network และการเรียก service ด้วยชื่อ |
+| **เวลา** | ~50 นาที · การทดลอง **9 อัน** อันละ 3–5 นาที |
+| **จบแล้วต้องทำได้เอง** | อ่าน `compose.yaml` และยกระบบด้วย `up -d --build` · อธิบาย `healthcheck`/`depends_on` และ `down`/`down -v` · tag/push/pull image สองก้อน แล้วใช้ `up -d --no-build` บนเครื่องปลายทาง |
+| **แล็บนี้ยัง *ไม่* สอน** | การสร้าง network ด้วยมือ → **LAB 4** สอนไปแล้ว (Compose สร้าง network ให้เอง) · ORM/migration tool · secret management · การจำกัด CPU/RAM และระบบ orchestration อยู่นอกขอบเขตชุดนี้ |
+
+---
+
 ## ทฤษฎีก่อนลงมือ
 
 ### `compose.yaml` แทนคำสั่งที่กระจายอยู่หลายบรรทัด
 
 ![แผนภาพจับคู่คำสั่ง docker run และ docker build กับ key ใน compose.yaml](./images/theory-run-to-compose.svg)
 
+> 🖼 **วิธีอ่านรูปนี้:** เทียบ flag จาก LAB 1–4 กับ key ใน `compose.yaml` ทีละแถว; หลักฐานสำคัญคือมี `ports: "3000:3000"` เฉพาะ `web`, `db` ไม่มี key นี้ และ `healthcheck` + `condition: service_healthy` เข้ามาแทนการเดา `sleep 10`
+
 `build`, `environment`, `volumes`, `ports` และ `depends_on` ทำให้ข้อกำหนดการติดตั้งอยู่ในไฟล์ที่ตรวจทานและทำซ้ำได้ ส่วน `condition: service_healthy` ทำให้ service ถัดไปรอจน service ต้นทางพร้อมใช้งานจริง
 
 ![เส้นเวลา healthcheck แสดงลำดับ db api และ web](./images/theory-healthcheck-order.svg)
+
+> 🖼 **วิธีอ่านรูปนี้:** รอบที่บันทึกในภาพเริ่ม `db` เวลา 14:08:15.5, `db` healthy เวลา 14:08:17.3, `api` เริ่มเวลา 14:08:21.2 และ `web` เริ่มเวลา 14:08:26.9; กรอบเส้นประยืนยันว่า service ถัดไปยังไม่ถูกสร้างจน service ก่อนหน้า healthy
 
 `docker compose down` ลบ container และ network แต่ไม่ลบ named volume; `docker compose down -v` ลบ volume และข้อมูลอย่างถาวร จึงใช้เฉพาะเมื่อต้องการ reset เป็น seed
 
@@ -27,9 +43,20 @@
 
 ![แผนภาพทีมพัฒนา build tag และ push image ไปยัง Docker Hub แบบ public ก่อนเครื่องลูกค้า pull และรันด้วย compose โดยไม่มีซอร์สโค้ด](./images/theory-ship-registry.svg)
 
+> 🖼 **วิธีอ่านรูปนี้:** ตามลูกศร 5 ขั้น `build` → `tag` → `push` → `pull` → `run`; ฝั่งลูกค้าใช้ `up -d --no-build` แล้วยกครบ 3 กล่องจาก repository แบบ Public โดยไม่รัน `npm ci` หรือ `pip install`
+
 ชื่อ `<DOCKER_USER>/campusops-web:1.0` ประกอบด้วย namespace เจ้าของ, repository และ tag เวอร์ชัน Docker Hub สร้าง repository อัตโนมัติเมื่อ push ครั้งแรก แต่ต้องตรวจให้เป็น **Public** เพื่อให้เครื่องลูกค้า pull ได้โดยไม่ต้องรับ credential ของผู้พัฒนา
 
 บัญชี Personal รองรับ private repository ได้หนึ่งแห่ง จึงกำหนด repository ของแล็บทั้งสองเป็น Public อัตรา pull ที่กำหนดในชุดสอนนี้คือ 100 ครั้งต่อ 6 ชั่วโมงต่อ IP เมื่อไม่ login และ 200 ครั้งต่อ 6 ชั่วโมงต่อบัญชีเมื่อ login หากพบ `429 Too Many Requests` ให้รอรอบโควตา, login ก่อน pull และหลีกเลี่ยงการ pull ซ้ำโดยไม่จำเป็น
+
+### สิ่งที่มักเข้าใจผิด
+
+- **คิดว่า** `docker compose down` ลบข้อมูลในฐานข้อมูลด้วย → **จริง ๆ** ลบ container กับ network แต่ named volume ยังอยู่; `down -v` จึงจะลบ volume (การทดลองที่ 6)
+- **คิดว่า** `depends_on` แบบระบุชื่อ service ก็รอจนพร้อมใช้งาน → **จริง ๆ** ต้องใช้ `condition: service_healthy` จึงรอผล healthcheck ก่อนสร้าง service ถัดไป (การทดลองที่ 4)
+- **คิดว่า** `-p campusops` มีไว้ให้ชื่อสวยเท่านั้น → **จริง ๆ** flag นี้ตรึง project ที่ทุกคำสั่งต้องอ้างถึงให้เป็นระบบเดียวกัน (การทดลองที่ 2–7 และ 9)
+- **คิดว่า** image `campusops-api:latest` และ `campusops-web:latest` push ขึ้นบัญชีได้ทันที → **จริง ๆ** ต้อง tag เป็น `<DOCKER_USER>/campusops-api:1.0` และ `<DOCKER_USER>/campusops-web:1.0` ก่อน (การทดลองที่ 8)
+
+---
 
 ## เตรียมเครื่องเรียน
 
@@ -45,7 +72,8 @@ ssh root@localhost -p 2255        # password : passwd
 คำสั่งทั้งหมดหลังจากนี้รันภายในกล่องเรียน:
 
 ```bash
-mkdir -p ~/labwork && cd ~/labwork
+mkdir -p ~/labwork
+cd ~/labwork
 git clone --depth 1 https://github.com/Tuchsanai/DevTools.git
 cd DevTools/02_Docker/03_Fullstack_App_Example/005_LAB_Compose_And_Ship
 ls
@@ -151,6 +179,8 @@ api  compose.yaml  db  images  readme.md  verify.sh  web
 
 *ภาพที่ 11 — Docker Hub แสดง token ครั้งเดียว สื่อการสอนแทนค่าด้วย `<DOCKER_TOKEN>`*
 
+---
+
 ## การทดลองที่ 1 — Compose ประกาศ service อะไร
 
 **คำถาม:** `compose.yaml` อ่านได้และประกาศระบบครบสาม service หรือไม่
@@ -168,6 +198,8 @@ web
 ```
 
 > 📝 ผลลัพธ์ยืนยัน schema ขั้นต้นและชื่อ service ที่ Compose DNS ใช้ภายใน network เดียวกัน โดยยังไม่สร้าง container
+
+---
 
 ## การทดลองที่ 2 — คำสั่งเดียวสร้างระบบครบไหม
 
@@ -192,6 +224,8 @@ Container campusops-web-1 Started
 
 > 📝 ลำดับ Started และ Healthy เกิดจาก healthcheck กับ depends_on ไม่ใช่การกำหนดเวลารอแบบคงที่ จึงรองรับเครื่องที่มีความเร็วต่างกัน
 
+---
+
 ## การทดลองที่ 3 — ฐานข้อมูลไม่เปิดพอร์ตออกนอกระบบจริงไหม
 
 **คำถาม:** service ทั้งสาม healthy และมีเพียง web ที่ publish port หรือไม่
@@ -211,6 +245,8 @@ campusops-web-1   campusops-web        "docker-entrypoint.s…"   web       Abou
 ```
 
 > 📝 `5432/tcp` เป็น metadata จาก EXPOSE ไม่ใช่ published port หลักฐานของ NFR-3 คือมี mapping `0.0.0.0:3000->3000/tcp` เฉพาะ web
+
+---
 
 ## การทดลองที่ 4 — Service เริ่มตามลำดับที่กำหนดไหม
 
@@ -232,6 +268,8 @@ docker inspect -f '{{.Name}} start={{.State.StartedAt}} health={{.State.Health.S
 ```
 
 > 📝 เวลา UTC จากรอบทดสอบเรียง db < api < web และทุกกล่อง healthy จึงยืนยันว่าลำดับรอพร้อมทำงานตามที่ compose.yaml กำหนด
+
+---
 
 ## การทดลองที่ 5 — หน้าเว็บทั้งสี่ส่วนตอบสนองไหม
 
@@ -285,6 +323,8 @@ GET /parts -> 200
 ![หน้าสรุปภาพรวมพร้อม marker ที่เมนูสรุปภาพรวม](./images/ui-compose-03-back-overview.png)
 
 *ภาพที่ 14 — งานที่ยังไม่ปิด 6 ใบ, เกินกำหนด 2 ใบ, ครุภัณฑ์ถูกยืม 2 ชิ้น และอะไหล่ต้องสั่งเพิ่ม 2 รายการ*
+
+---
 
 ## การทดลองที่ 6 — ข้อมูลคงอยู่หลัง down แต่ reset หลัง down -v ไหม
 
@@ -340,6 +380,8 @@ docker compose -p campusops exec -T db psql -U opsuser -d campusops -tAc "SELECT
 
 > 📝 จำนวน 9 หลัง down พิสูจน์ persistence ส่วนจำนวน 8 หลัง down -v เป็น seed ชุดใหม่ ไม่ใช่ข้อมูลเดิม จึงต้องระวัง -v ในระบบจริง
 
+---
+
 ## การทดลองที่ 7 — จะตรวจหาต้นเหตุข้าม service อย่างไร
 
 **คำถาม:** อ่าน log รวมและทดสอบ DNS จาก web ไป api ได้หรือไม่
@@ -359,6 +401,8 @@ web-1  | ✓ Running next.config took 0.7ms
 ```
 
 > 📝 คำนำหน้า service ช่วยแยกแหล่ง log และชื่อ `api` ถูกแก้ผ่าน Compose DNS ภายใน จึงไม่ผูกระบบกับ IP ที่เปลี่ยนเมื่อสร้าง container ใหม่
+
+---
 
 ## การทดลองที่ 8 — ติดเวอร์ชันและส่งขึ้น Docker Hub ได้ไหม
 
@@ -455,6 +499,8 @@ docker push <DOCKER_USER>/campusops-web:1.0
 | campusops-api | `sha256:70b4a206b8985587928c58d0c8b0caa843d83b3d827f745ee57f91d95fbb4fd1` | `sha256:fefaf1acf1b2bad1e9ae45b1566ecf931805f68a00cd0e610673793f1f358e25` |
 | campusops-web | `sha256:fbe3305af016b0dbfbeb7b8092ac5b8aa57611bd16f89d24aa4526be6ccdbb46` | `sha256:f4eaea747ea5b4f5feffea551db00807e1f478704ec0eca75b5caeb7a9acf711` |
 
+---
+
 ## การทดลองที่ 9 — เครื่องลูกค้าที่ไม่มีซอร์สโค้ดยกระบบได้ไหม
 
 **คำถาม:** เครื่องปลายทางที่ logout และไม่มี image แอปสามารถ pull แบบไม่ใช้ credential แล้ว `up --no-build` โดยไม่มีขั้น build หรือไม่
@@ -527,6 +573,8 @@ GET / -> 200
 
 > 📝 logout ก่อน pull ตัด credential ออกจากการทดลอง ส่วน pull สำเร็จและ --no-build ไม่มี Building พิสูจน์การส่งมอบผ่าน public repository โดยไม่ build source
 
+---
+
 ## ตรวจงานด้วย `verify.sh`
 
 สคริปต์ไม่ push และไม่ลบ repository จริง การส่งมอบส่วนบังคับใช้ namespace ทดสอบในเครื่อง, `docker save`, ลบ image, `docker load` และ `up --no-build`; ส่วน opt-in ใช้ `docker manifest inspect` อ่าน manifest จาก Docker Hub จริงเมื่อกำหนด `HUB_USER` และคืน `[SKIP]` หาก repository ไม่มีหรือเข้าถึงไม่ได้
@@ -584,6 +632,8 @@ exit code = 0
 
 > 📝 verify ใช้ project vops5 และพอร์ต 13191 แยกจากงานผู้เรียน ส่วน opt-in ติดต่อ Hub แบบ read-only โดยไม่ push หรือลบ repository
 
+---
+
 ## แก้ปัญหาที่พบบ่อย
 
 | ข้อความจริง | สาเหตุ | วิธีแก้ |
@@ -596,6 +646,8 @@ exit code = 0
 | `pull access denied for <DOCKER_USER>/campusops-api, repository does not exist or may require 'docker login'` | repository เป็น Private หรือพิมพ์ชื่อผิด | ตรวจชื่อและ Visibility; login หากตั้งใจใช้ Private |
 | `429 Too Many Requests` | เกิน pull rate limit | รอรอบโควตา, login ก่อน pull และใช้ image cache ที่มีอยู่ |
 | `Error response from daemon: No such image: campusops-api:latest` | สั่ง `up --no-build` ก่อน pull/tag | pull ให้ครบสองก้อนแล้ว tag กลับเป็นชื่อที่ compose.yaml ใช้ |
+
+---
 
 ## เก็บกวาด
 
@@ -721,6 +773,8 @@ exit
 docker rm -f devtools-fs-lab5
 ```
 
+---
+
 ## สรุปคำสั่งของแล็บนี้
 
 | คำสั่ง | หน้าที่ |
@@ -735,6 +789,8 @@ docker rm -f devtools-fs-lab5
 | `docker push <DOCKER_USER>/<repository>:1.0` | ส่ง image ไป Docker Hub |
 | `docker pull <DOCKER_USER>/<repository>:1.0` | รับ image ลงเครื่องปลายทาง |
 | `docker logout` | ลบ credential ในกล่อง แต่ไม่ revoke token |
+
+---
 
 ## ✅ เช็กลิสต์ก่อนจบแล็บ
 

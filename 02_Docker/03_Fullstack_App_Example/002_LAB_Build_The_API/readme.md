@@ -24,7 +24,7 @@
 
 ![โฟลเดอร์ api ถูกมัดเป็น build context 28.54kB ส่งไปให้ dockerd โดยไฟล์ที่ตรงกับ .dockerignore ไม่ถูกส่ง และ COPY หยิบได้เฉพาะไฟล์ที่ส่งไปแล้วเท่านั้น](./images/theory-build-context.svg)
 
-> 🖼 **วิธีอ่านรูปนี้:** กล่องซ้ายคือโฟลเดอร์ `api/` — กรอบเส้นประสีแดงคือไฟล์ที่ `.dockerignore` กันไว้ **ไม่ถูกส่ง** · ลูกศรกลางคือบรรทัด `transferring context` ที่เห็นใน log จริง · กล่องขวาคือ daemon ซึ่ง `COPY` หยิบได้เฉพาะของที่ส่งไปถึงมือแล้วเท่านั้น
+> 🖼 **วิธีอ่านรูปนี้:** กล่องซ้ายคือโฟลเดอร์ `api/` — กรอบเส้นประสีแดงคือไฟล์ที่ `.dockerignore` กันไว้ **ไม่ถูกส่ง** · ลูกศรกลางคือ log `transferring context: 28.54kB` ที่วัดขนาด context ที่ส่งจริง · กล่องขวาคือ daemon ซึ่ง `COPY` หยิบได้เฉพาะของที่ส่งไปถึงมือแล้วเท่านั้น
 
 ### ลำดับบรรทัดใน Dockerfile คือเรื่องของเวลา
 
@@ -32,7 +32,7 @@
 
 ![เทียบ Dockerfile ที่เรียงถูกกับ Dockerfile.bad หลังแก้ main.py หนึ่งบรรทัด ฝั่งเรียงถูก pip install ยัง CACHED ใช้เวลา 2.683 วินาที ฝั่งเรียงผิดต้อง pip install ใหม่ 4.5 วินาที รวม 9.409 วินาที](./images/theory-layer-cache-api.svg)
 
-> 🖼 **วิธีอ่านรูปนี้:** หา **แถวสีแรกที่ไม่ใช่ CACHED** ของแต่ละฝั่ง นั่นคือจุดที่ cache แตก · ฝั่งซ้ายจุดแตกอยู่ **ใต้** `RUN pip install` ขั้นแพงจึงรอด · ฝั่งขวาจุดแตกอยู่ **เหนือ** ขั้นนั้น ทุกอย่างใต้ลงไปจึงต้องทำใหม่
+> 🖼 **วิธีอ่านรูปนี้:** หา **แถวสีแรกที่ไม่ใช่ CACHED** ของแต่ละฝั่ง นั่นคือจุดที่ cache แตก · ฝั่งซ้ายจุดแตกอยู่ **ใต้** `RUN pip install` จึงยัง `CACHED` และจบใน **2.683 วินาที** · ฝั่งขวาจุดแตกอยู่ **เหนือ** ขั้นนั้น จึงติดตั้งใหม่ **4.5 วินาที** และรวม **9.409 วินาที**
 
 ### `EXPOSE` เป็นป้าย ไม่ใช่ประตู
 
@@ -40,7 +40,7 @@
 
 ![กรณีไม่ใส่ -p curl จากกล่องเรียนได้ exit 7 เพราะไม่มีทางเข้า ส่วนกรณีใส่ -p 8088:8000 curl ได้ผลลัพธ์ health ok และ docker port แสดงบรรทัด mapping](./images/theory-expose-vs-p.svg)
 
-> 🖼 **วิธีอ่านรูปนี้:** สองกรณีนี้ใช้ **image เดียวกันที่มี `EXPOSE 8000` เหมือนกัน** ต่างกันแค่มี `-p` หรือไม่ · แถบล่างสอนวิธีอ่านเลข `-p 8088:8000` : ซ้ายคือพอร์ตฝั่งเครื่องที่รัน ขวาคือพอร์ตในกล่อง
+> 🖼 **วิธีอ่านรูปนี้:** สองกรณีนี้ใช้ **image เดียวกันที่มี `EXPOSE 8000` เหมือนกัน** ต่างกันแค่มี `-p` หรือไม่: ฝั่งไม่ใส่ต่อไม่ติดด้วย `curl exit=7` ส่วน `-p 8088:8000` ทำให้ `docker port` แสดง `8000/tcp -> 0.0.0.0:8088` และ `/health` ตอบ `ok`
 
 ### บน default bridge กล่องเรียกกันด้วยชื่อไม่ได้
 
@@ -79,7 +79,8 @@ ssh root@localhost -p 2252        # password : passwd
 **คำสั่งทุกอันหลังจากนี้พิมพ์ข้างในกล่องเรียน**
 
 ```bash
-mkdir -p ~/labwork && cd ~/labwork
+mkdir -p ~/labwork
+cd ~/labwork
 git clone --depth 1 https://github.com/Tuchsanai/DevTools.git
 cd DevTools/02_Docker/03_Fullstack_App_Example/002_LAB_Build_The_API
 ```
@@ -181,6 +182,8 @@ real	0m14.882s
 
 **คำถาม:** แก้ `main.py` บรรทัดเดียว ต้องติดตั้ง dependency ใหม่ทั้งชุดไหม
 
+คำสั่ง `sed -i` ถัดไปแก้เฉพาะเลข version หนึ่งบรรทัดจาก `1.0.0` เป็น `1.0.1` เพื่อให้ checksum ของ `main.py` เปลี่ยนแล้วสังเกตว่า layer ใดต้อง build ใหม่ :
+
 ```bash
 sed -i 's/version="1.0.0"/version="1.0.1"/' main.py
 time docker build -t ops-api:1.0 .
@@ -228,6 +231,8 @@ docker build -f Dockerfile.bad -t ops-api-bad:1.0 .
 
 ทีนี้แก้ `main.py` อีกบรรทัดเดียว แล้ว build **ไฟล์ bad** :
 
+คำสั่ง `sed -i` ถัดไปแก้เฉพาะเลข version หนึ่งบรรทัดจาก `1.0.1` เป็น `1.0.2` เพื่อสร้างการเปลี่ยนแปลงใหม่และพิสูจน์ว่า `Dockerfile.bad` ทำให้ layer `pip install` แตก :
+
 ```bash
 sed -i 's/version="1.0.1"/version="1.0.2"/' main.py
 time docker build -f Dockerfile.bad -t ops-api-bad:1.0 .
@@ -265,6 +270,8 @@ real	0m2.683s
 | `api/Dockerfile.bad` | ติดตั้งใหม่ 4.5 s | **9.409 s** |
 
 ก่อนไปต่อ คืน `main.py` เป็น `1.0.0` แล้ว **build `ops-api:1.0` ใหม่อีกรอบ** เพื่อให้ image ที่ใช้ในการทดลองที่ 6–11 ตรงกับไฟล์จริง — บรรทัด `grep` ต้องคืน `version="1.0.0"` กลับมา ถ้าทำซ้ำแล้วฝั่ง `bad` ขึ้น `CACHED` แสดงว่า BuildKit เคยเห็นเนื้อไฟล์ชุดนี้แล้ว ให้เปลี่ยนเป็นเลขเวอร์ชันที่ไม่เคยใช้
+
+คำสั่ง `sed -i` ถัดไปแก้เฉพาะเลข version หนึ่งบรรทัดจาก `1.0.2` กลับเป็น `1.0.0` เพื่อคืน source และ image สำหรับการทดลองถัดไปให้ตรงกับเวอร์ชันจริง :
 
 ```bash
 sed -i 's/version="1.0.2"/version="1.0.0"/' main.py
@@ -354,7 +361,8 @@ c7a72207b572bcbf39876e28e1edf01bd7bb3b835efc5450f5e1c5942cbb5d8b
 รอให้ entrypoint รันไฟล์ SQL เสร็จก่อน แล้วถามฐานข้อมูลว่าพร้อมหรือยัง :
 
 ```bash
-sleep 12 && docker exec ops-db pg_isready -U opsuser -d campusops
+sleep 12
+docker exec ops-db pg_isready -U opsuser -d campusops
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — ฐานข้อมูลพร้อมรับ connection :
@@ -399,7 +407,9 @@ docker run -d --name ops-api \
 
 ```bash
 API_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ops-api)
-sleep 6 && curl -s http://$API_IP:8000/health; echo
+sleep 6
+curl -s http://$API_IP:8000/health
+echo
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — `/health` ยิง `SELECT 1` ไปที่ฐานข้อมูลจริงแล้วตอบกลับมา :
@@ -436,7 +446,10 @@ docker rm -f ops-api
 DB_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ops-db)
 docker run -d --name ops-api -p 8088:8000 \
   -e DATABASE_URL="postgresql://opsuser:labpass@${DB_IP}:5432/campusops" ops-api:1.0
-sleep 6 && docker port ops-api && curl -s http://localhost:8088/health; echo
+sleep 6
+docker port ops-api
+curl -s http://localhost:8088/health
+echo
 ```
 
 > อ่าน `DB_IP` ซ้ำอีกครั้งเพราะตัวแปรอยู่แค่ใน shell เดิม — ถ้า SSH หลุดหรือเปิดหน้าต่างใหม่ ค่าจะว่างจนกลายเป็น `...@:5432/...` แล้วกล่อง `api` จะวน retry เงียบ ๆ
@@ -458,7 +471,7 @@ sleep 6 && docker port ops-api && curl -s http://localhost:8088/health; echo
 
 ![ภาพรวม Swagger UI แสดง endpoint ของ CampusOps API ตั้งแต่ GET health ถึง GET dashboard](./images/api-docs-swagger.png)
 
-*ภาพรวมรายการ endpoint แยกสีตาม HTTP method; ขั้นปฏิบัติจริงเริ่มจากภาพที่ ① และมี marker กำกับทุกจุดต่อเนื่อง*
+*ภาพรวม CampusOps API `1.0.0` แสดง endpoint ครบ **13 แถว** แยกสีตาม HTTP method; ขั้นปฏิบัติจริงเริ่มจากภาพที่ ① และมี marker กำกับทุกจุดต่อเนื่อง*
 
 ---
 
@@ -539,7 +552,7 @@ sleep 6 && docker port ops-api && curl -s http://localhost:8088/health; echo
 
 ![ช่อง Request body มี JSON คงที่และกรอบแดงพร้อม marker ⑧ แก้ Request body](./images/ui-swagger-08-request-body.png)
 
-*ภาพที่ ⑧ — กรอก `asset_id`, `title` และ `priority` ซึ่งเป็นฟิลด์บังคับ พร้อม `detail` ให้ข้อมูลสมบูรณ์*
+*ภาพที่ ⑧ — Request body มีฟิลด์บังคับ `asset_id: 12`, `title` และ `priority: "HIGH"` พร้อม `detail` ก่อนกด Execute*
 
 #### ขั้นที่ ⑨ — ส่งคำขอและอ่านผลตอบกลับ `201`
 
