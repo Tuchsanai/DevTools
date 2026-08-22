@@ -56,6 +56,35 @@ def _font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
     return ImageFont.truetype(str(path), size) if path.is_file() else ImageFont.load_default()
 
 
+def _fitted_font(draw: ImageDraw.ImageDraw, text: str, width: int, height: int):
+    """Largest font that keeps the placeholder inside its mask.
+
+    The mask may only cover the account name it replaces — growing the box would
+    swallow the repository name next to it — so the label shrinks to fit instead
+    of being cut off mid-word.
+    """
+    for size in range(min(16, max(7, height - 3)), 5, -1):
+        font = _font(size)
+        if draw.textlength(text, font=font) <= width - 4:
+            return font
+    return _font(6)
+
+
+def draw_masks(image: Image.Image, rectangles, label: str, scale: float = 1.0) -> None:
+    """Cover each rectangle and stamp the placeholder that replaces it."""
+    draw = ImageDraw.Draw(image)
+    for rect in rectangles:
+        box = [
+            max(0, int(rect["x"] * scale) - 3),
+            max(0, int(rect["y"] * scale) - 2),
+            min(image.width, int((rect["x"] + rect["width"]) * scale) + 3),
+            min(image.height, int((rect["y"] + rect["height"]) * scale) + 2),
+        ]
+        draw.rectangle(box, fill=MASK_FILL)
+        font = _fitted_font(draw, label, box[2] - box[0], box[3] - box[1])
+        draw.text((box[0] + 2, box[1] + 1), label, fill="white", font=font)
+
+
 def masked_screenshot(
     page,
     target: Path,
@@ -63,6 +92,7 @@ def masked_screenshot(
     *,
     mask_texts: tuple[str, ...] = (),
     mask_locators: tuple = (),
+    crop: tuple[int, int] | None = None,
 ) -> None:
     """Take an in-memory screenshot, mask rectangles, then write the first on-disk PNG."""
     rectangles: list[tuple[float, float, float, float, str]] = []
@@ -77,12 +107,10 @@ def masked_screenshot(
 
     raw = page.screenshot(full_page=False)
     image = Image.open(io.BytesIO(raw)).convert("RGB")
-    draw = ImageDraw.Draw(image)
     for x, y, width, height, label in rectangles:
-        box = [max(0, int(x) - 3), max(0, int(y) - 2), min(image.width, int(x + width) + 3), min(image.height, int(y + height) + 2)]
-        draw.rectangle(box, fill=MASK_FILL)
-        size = max(10, min(18, box[3] - box[1] - 3))
-        draw.text((box[0] + 4, box[1] + 1), label, fill="white", font=_font(size))
+        draw_masks(image, [{"x": x, "y": y, "width": width, "height": height}], label)
+    if crop is not None:
+        image = image.crop((0, max(0, crop[0]), image.width, min(image.height, crop[1])))
     target.parent.mkdir(parents=True, exist_ok=True)
     image.save(target, format="PNG", optimize=True)
     log(f"masked screenshot: {description} -> {target} ({len(rectangles)} mask(s))")
@@ -117,12 +145,46 @@ def capture_jenkins(page, base_url: str, action: str, user: str) -> None:
     jenkins_login(page, base_url)
     if action == "manual-console":
         page.goto(f"{base_url}/job/{JOB}/lastBuild/console", wait_until="domcontentloaded")
-        evidence = page.get_by_text("Hello from GitHub", exact=False).last
-        require(evidence.count() > 0, "manual console contains Hello from GitHub")
-        evidence.scroll_into_view_if_needed()
-        require("Finished: SUCCESS" in page.locator("body").inner_text(), "manual console contains Finished: SUCCESS")
+        body = page.locator("body").inner_text()
+        # The lab reads three things off this one screen: which revision was checked
+        # out, that hello.sh really ran, and the final result — so frame from the
+        # checkout line rather than from the greeting halfway down the log.
+        require("Checking out Revision" in body, "manual console contains Checking out Revision")
+        require("refs/remotes/origin/main" in body, "checkout is against refs/remotes/origin/main")
+        require("Hello from GitHub" in body, "manual console contains Hello from GitHub")
+        require("Finished: SUCCESS" in body, "manual console contains Finished: SUCCESS")
+        # All three proofs have to sit in one frame.  Rather than fight the page's
+        # scrolling, open a window tall enough to hold the whole console, then keep
+        # only the band from the checkout line to the final result.
+        doc_height = page.evaluate("() => document.documentElement.scrollHeight")
+        page.set_viewport_size({"width": VIEWPORT["width"], "height": min(3000, doc_height + 40)})
+        page.wait_for_timeout(500)
+
+        def band(needle: str) -> tuple[float, float]:
+            return page.evaluate(
+                """needle => {
+                     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+                     let node, last = null;
+                     while ((node = walker.nextNode()))
+                       if (node.nodeValue.includes(needle)) last = node;
+                     if (!last) throw new Error(needle);
+                     const range = document.createRange();
+                     range.selectNodeContents(last);
+                     const r = range.getBoundingClientRect();
+                     return [r.top + window.scrollY, r.bottom + window.scrollY];
+                   }""",
+                needle,
+            )
+
+        crop_top = max(0, int(band("Checking out Revision")[0]) - 96)
+        crop_bottom = int(band("Finished: SUCCESS")[1]) + 56
+        require(crop_bottom > crop_top, "console band has a positive height")
+
         target = ASSETS / "lab4_s06_manual_build_console.png"
         description = "manual SCM build console"
+        masked_screenshot(page, target, description, mask_texts=(user,),
+                          crop=(crop_top, crop_bottom))
+        return
     elif action == "poll-log":
         page.goto(f"{base_url}/job/{JOB}/scmPollLog/", wait_until="domcontentloaded")
         require("Changes found" in page.locator("body").inner_text(), "Git Polling Log contains Changes found")

@@ -2,6 +2,8 @@
 
 ชุดแล็บภาษาไทยนี้พาจากการกด build ด้วยตนเอง ไปจนถึงวงจร `git push → build → test → push → deploy → verify` อัตโนมัติ โดยใช้ Jenkins, GitHub และ Docker ภายใน devtools container ตัวเดียว เรียนภาพรวมและสถาปัตยกรรมจาก [Jenkins_CICD_Docker_Slides.html](./Jenkins_CICD_Docker_Slides.html) แล้วลงมือทำ LAB 1–6 ตามลำดับ
 
+สไลด์เดินตาม README ของแต่ละแล็บทีละขั้น ทุกแล็บเปิดด้วย **หน้าเปิดแล็บพื้นเข้มรูปแบบเดียวกัน** (เลข LAB · ชื่อ · โฟลเดอร์ · จำนวนการทดลอง · เวลา · เกณฑ์จบ · แผนที่ขั้นตอน) ตามด้วยหน้าการทดลองทีละข้อ ที่ใช้เลขเดียวกับหัวข้อ `## การทดลองที่ N` ใน README และมีภาพหน้าจอจริงครบทุกภาพ ปิดท้ายด้วยหน้าสรุปและหน้า “ลงมือทำ” โดยมีแถบบอกตำแหน่งบนทุกหน้าว่ากำลังอยู่การทดลองที่เท่าไรของแล็บใด
+
 ## สิ่งที่ต้องมีก่อนเรียน
 
 - เครื่อง 64-bit ที่รัน Docker ได้ และมี RAM ว่างอย่างน้อย 4 GB
@@ -209,6 +211,9 @@ unset DOCKER_TOKEN GITHUB_TOKEN
 ├── tools/diagrams.py                 # สร้าง diagram ทั้งชุดจาก visual kit เดียวกัน
 ├── tools/deck_crops.py               # ครอป screenshot เฉพาะที่ใช้ในสไลด์
 ├── tools/embed_assets.py             # ฝัง asset ทั้งหมดเป็นไฟล์เดียวแบบ offline
+├── tools/check_deck_labs.py          # gate: สไลด์ต้องเดินตาม README ครบทุกขั้นและทุกภาพ
+├── tools/check_deck_fit.py           # gate: ทุกหน้าต้องไม่มีเนื้อหาล้นกรอบ 1280×720
+├── tools/fit_shots.py                # ขยายกล่องภาพให้เต็มพื้นที่ว่างของแต่ละหน้า
 ├── tools/bootstrap/                  # สคริปต์กู้สถานะ
 ├── tools/ui/                         # UI automation และ assertions
 ├── docs/                             # แผน, stack และผล integration

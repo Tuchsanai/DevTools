@@ -303,13 +303,19 @@ curl -fsS -u admin:admin2569 'http://localhost:8080/job/docker-build-push/lastBu
 
 ![หน้า Docker Hub public Tags ที่แสดง tag ปัจจุบัน](../slides_assets/lab3_s08_hub_public_tag.png)
 
-*สังเกตแท็บ Tags และเลข tag ของ build ปัจจุบัน โดย crop ไม่แสดงข้อมูลบัญชีหรือหน้าที่ต้อง login*
+*สังเกตแท็บ Tags, เลข tag ของ build ปัจจุบัน และ digest แบบย่อในคอลัมน์ Digest โดย crop ไม่แสดงข้อมูลบัญชีหรือหน้าที่ต้อง login และ mask ชื่อเจ้าของก่อนบันทึกภาพ*
 
 ✅ **สิ่งที่ต้องเห็น** :
 
 ```text
-Tags    <BUILD_NUMBER>    ...    sha256:...
+TAG
+<BUILD_NUMBER>
+docker pull <DOCKER_USER>/ci-demo:<BUILD_NUMBER>
+Digest          OS/ARCH        Compressed size
+<DIGEST12>      linux/amd64    ...
 ```
+
+หน้า Tags แสดง digest แบบย่อ 12 ตัวอักษร ซึ่งต้องตรงกับ 12 ตัวแรกหลัง `sha256:` ที่ console ของ build เดียวกันพิมพ์ไว้ในการทดลองที่ 7
 
 ตรวจสถานะจบแล็บจาก shell ใหม่โดยไม่ส่ง token ให้ตัวตรวจ:
 

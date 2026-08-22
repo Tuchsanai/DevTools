@@ -53,21 +53,39 @@ def resolve_asset(relative: str) -> Path:
     return path
 
 
+WEBP_QUALITY = 92
+
+
 def raster_bytes(path: Path, max_width: int | None) -> tuple[bytes, str, str]:
+    """Return the smallest faithful encoding of a screenshot for the deck.
+
+    The deck carries ~90 UI screenshots as data URIs, so encoding matters: a
+    re-saved PNG is routinely *larger* than the capture it came from, while
+    WebP at q92 is visually identical at the size a slide shows it and several
+    times smaller.  Whatever ends up smaller wins, so a file is never inflated.
+    """
     raw = path.read_bytes()
     mime = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
-    note = "original"
-    if max_width:
-        with Image.open(io.BytesIO(raw)) as image:
-            if image.width > max_width:
-                height = round(image.height * max_width / image.width)
-                image = image.resize((max_width, height), Image.Resampling.LANCZOS)
-                buf = io.BytesIO()
-                image.save(buf, format="PNG", optimize=True)
-                raw = buf.getvalue()
-                mime = "image/png"
-                note = f"resized to {max_width}x{height}"
-    return raw, mime, note
+    with Image.open(io.BytesIO(raw)) as opened:
+        image = opened
+        if image.mode in ("RGBA", "LA", "P"):
+            image = image.convert("RGBA")
+            flat = Image.new("RGB", image.size, (255, 255, 255))
+            flat.paste(image, mask=image.split()[-1])
+            image = flat
+        else:
+            image = image.convert("RGB")
+        note = "original size"
+        if max_width and image.width > max_width:
+            height = round(image.height * max_width / image.width)
+            image = image.resize((max_width, height), Image.Resampling.LANCZOS)
+            note = f"{max_width}x{height}"
+        buf = io.BytesIO()
+        image.save(buf, format="WEBP", quality=WEBP_QUALITY, method=6)
+        candidate = buf.getvalue()
+    if len(candidate) < len(raw):
+        return candidate, "image/webp", f"webp q{WEBP_QUALITY} {note}"
+    return raw, mime, "original kept (already smaller)"
 
 
 def build(source: Path, output: Path) -> None:

@@ -13,7 +13,7 @@ public repository ทำให้การอ่านผ่าน HTTPS ไม�
 | Git ใน devtools | `https://github.com/<GITHUB_USER>/hello-ci.git` | Username=`<GITHUB_USER>`, Password=`<GITHUB_TOKEN>` ที่ prompt | push commit ขึ้น `main` |
 | Jenkins | `https://github.com/<GITHUB_USER>/hello-ci.git` | `- none -` | checkout public repository |
 
-Poll SCM เป็น pull model: Jenkins เป็นฝ่ายติดต่อ GitHub ตาม cron แล้วเริ่ม build เมื่อ revision เปลี่ยน จึงมีความหน่วงถึงรอบตรวจถัดไปและมี outbound request แม้รอบนั้นไม่มี commit ใหม่ เปรียบเทียบ pull model กับ push model ได้จาก slide **ตอนที่ 5.2 — GitHub + Pipeline from SCM** (diagram D9 ครึ่งบน)
+Poll SCM เป็น pull model: Jenkins เป็นฝ่ายติดต่อ GitHub ตาม cron แล้วเริ่ม build เมื่อ revision เปลี่ยน จึงมีความหน่วงถึงรอบตรวจถัดไปและมี outbound request แม้รอบนั้นไม่มี commit ใหม่ เปรียบเทียบ pull model กับ push model ได้จาก slide **ตอนที่ 5.3 — GitHub Webhook + smee relay** (diagram D9 ครึ่งบน)
 
 ## 🎯 Learning Objectives — ผลลัพธ์การเรียนรู้
 

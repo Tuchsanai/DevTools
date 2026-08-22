@@ -30,8 +30,8 @@ CROPS = {
     ),
     "lab4_s05_jenkins_scm_config.png": (
         "deck_lab4_scm_config.png",
-        (388, 55, 1322, 825),
-        "Definition, SCM, Repository URL, Credentials and Branch Specifier",
+        (350, 50, 1370, 830),
+        "Definition label included on the left, through Branch Specifier",
     ),
     "lab6_s12_hub_public_tags.png": (
         "deck_lab6_hub_tags.png",
