@@ -34,8 +34,8 @@
       "height": 720,
       "codec": "h264",
       "hasAudio": false,
-      "bytes": 167606,
-      "sha256": "3b648ea841c6ab5de499d59facd010c96a8582415ce7017a0a3a7194128d7638"
+      "bytes": 167585,
+      "sha256": "1944365056c558444280b9e1b8a104b4f3ce287ee2dd9f662610f228181c186b"
     },
     {
       "file": "mo_polling_vs_webhook.mp4",

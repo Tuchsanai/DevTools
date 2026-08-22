@@ -168,14 +168,25 @@ def validate_full_deck(
         check(folder in deck_text and (ROOT / folder).is_dir(), f"LAB landing folder is exact: {folder}", emit=emit)
 
     manifest = json.loads((ROOT / "slides_assets/motion/motion-manifest.json").read_text(encoding="utf-8"))
+    # The deck may use a subset of the rendered clips, but every clip it *does*
+    # use must be the exact bytes the manifest vouches for.
+    used = {clip["compositionId"] for clip in manifest["clips"] if clip["compositionId"] in source}
+    check(bool(used), f"deck consumes at least one manifest clip: {sorted(used)}", emit=emit)
     for clip in manifest["clips"]:
+        if clip["compositionId"] not in used:
+            continue
         path = ROOT / "slides_assets" / "motion" / clip["file"]
-        check(clip["compositionId"] in source, f"compositionId consumed from manifest: {clip['compositionId']}", emit=emit)
         check(
             hashlib.sha256(path.read_bytes()).hexdigest() == clip["sha256"],
             f"video sha256 matches manifest: {clip['file']}",
             emit=emit,
         )
+    declared = set(re.findall(r'data-composition="([^"]+)"', source))
+    check(
+        declared <= {clip["compositionId"] for clip in manifest["clips"]},
+        f"every deck video is declared by the motion manifest; extra={sorted(declared - used)}",
+        emit=emit,
+    )
 
     check("dckr_pat_" not in deck, "no real Docker Hub token material embedded", emit=emit)
     check("<DOCKER_TOKEN>" in deck_text, "Docker Hub token is shown only as the required placeholder", emit=emit)

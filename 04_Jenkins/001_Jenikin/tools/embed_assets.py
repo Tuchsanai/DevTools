@@ -133,9 +133,16 @@ def build(source: Path, output: Path) -> None:
         return f'<{tag}{attrs} data-embedded-from="{safe_path}" src="data:{mime};base64,{encoded}">'
 
     deck = tag_pattern.sub(embed_binary, deck)
-    missing = set(manifest) - used_videos
-    if missing:
-        raise ValueError(f"manifest video(s) not embedded: {', '.join(sorted(missing))}")
+    # Every embedded video is already proven against the manifest above
+    # (absent-from-manifest / sha / compositionId all raise).  The deck is
+    # allowed to use a subset of the rendered clips — slides that explain a
+    # concept better with a static diagram should not be forced to carry a
+    # video just because one was rendered once.
+    if not used_videos:
+        raise ValueError("no manifest video was embedded")
+    unused = sorted(set(manifest) - used_videos)
+    if unused:
+        print(f"note: manifest clips rendered but not used by this deck: {', '.join(unused)}")
     if re.search(r'\b(?:src|href)=["\'](?:https?:|//)', deck, re.I):
         raise ValueError("external URL found in src/href after build")
     if "data-asset=" in deck or "data-inline-svg=" in deck:

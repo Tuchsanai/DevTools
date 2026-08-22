@@ -13,40 +13,43 @@ from playwright.sync_api import ConsoleMessage, Page, sync_playwright
 ROOT = Path(__file__).resolve().parents[2]
 DECK = ROOT / "Jenkins_CICD_Docker_Slides.html"
 LOGS = ROOT / "logs"
-EXPECTED_PAGES = 80
+EXPECTED_PAGES = 112
 EXPECTED_COMPOSITIONS = {
-    "mo-intro",
-    "mo-manual-vs-ci",
     "mo-dood-socket",
     "mo-polling-vs-webhook",
     "mo-pipeline-flow",
 }
 EXPECTED_EMBEDDED_ASSETS = [
-    "slides_assets/motion/mo_intro.mp4",
-    "slides_assets/motion/mo_manual_vs_ci.mp4",
-    "slides_assets/lab1_unlock.png",
-    "slides_assets/lab1_plugins.png",
+    "slides_assets/lab1_s07_unlock.png",
+    "slides_assets/lab1_s08_plugins.png",
+    "slides_assets/lab1_s01_admin_user.png",
     "slides_assets/lab1_dashboard.png",
-    "slides_assets/lab1_first_build.png",
-    "slides_assets/lab2_params.png",
-    "slides_assets/lab2_pipeline_graph.png",
+    "slides_assets/lab1_s09_dashboard_new_item.png",
+    "slides_assets/lab1_s02_new_item.png",
+    "slides_assets/lab1_s03_build_step.png",
+    "slides_assets/lab1_s04_job_saved.png",
+    "slides_assets/lab1_s05_build_result.png",
+    "slides_assets/deck_lab1_console.png",
+    "slides_assets/lab2_s06_build_parameters.png",
+    "slides_assets/lab2_s08_dev_graph.png",
+    "slides_assets/lab2_s09_prod_graph.png",
     "slides_assets/motion/mo_dood_socket.mp4",
-    "slides_assets/lab3_pipeline_docker.png",
-    "slides_assets/lab3_push_log.png",
-    "slides_assets/lab3_hub_tags.png",
-    "slides_assets/lab4_s03_github_repo_files.png",
-    "slides_assets/lab4_s05_jenkins_scm_config.png",
+    "slides_assets/lab3_s03_add_credential_form.png",
+    "slides_assets/lab3_s07_console_digest.png",
+    "slides_assets/lab3_s08_hub_public_tag.png",
+    "slides_assets/deck_lab4_repo_files.png",
+    "slides_assets/deck_lab4_scm_config.png",
     "slides_assets/lab4_s08_git_polling_log.png",
+    "slides_assets/lab4_s09_scm_build_cause.png",
     "slides_assets/motion/mo_polling_vs_webhook.mp4",
     "slides_assets/lab5_s04c_gwt_token_cause.png",
     "slides_assets/lab5_s05_gwt_filter.png",
     "slides_assets/lab5_s08_smee_push.png",
-    "slides_assets/lab5_s09_github_push_build.png",
+    "slides_assets/lab5_s10_checkout_sha.png",
     "slides_assets/motion/mo_pipeline_flow.mp4",
-    "slides_assets/lab6_pipeline_full.png",
     "slides_assets/lab6_app_v1.png",
     "slides_assets/lab6_app_v2.png",
-    "slides_assets/lab6_hub_tags.png",
+    "slides_assets/deck_lab6_hub_tags.png",
 ]
 def check(condition: bool, message: str) -> None:
     if not condition:
@@ -95,12 +98,12 @@ def main() -> int:
 
         count = page.locator(".slot").count()
         check(count == EXPECTED_PAGES, f"page count = {EXPECTED_PAGES}")
-        check(page.locator("#counter").inner_text() == "1/80", "initial counter is 1/80")
+        check(page.locator("#counter").inner_text() == "1/112", "initial counter is 1/112")
         check(page.url.endswith("#page-1"), "initial URL hash is #page-1")
-        check(page.locator(".diagram svg").count() == 8, "8 inline SVG diagrams")
-        check(page.locator("img[data-embedded-from]").count() == 20, "20 embedded lab screenshots")
-        check(page.locator("video").count() == 5, "5 embedded videos")
-        check(page.locator('video[src^="data:video/mp4;base64,"]').count() == 5, "all videos use data URIs")
+        check(page.locator(".diagram svg").count() == 18, "18 inline SVG diagrams")
+        check(page.locator("img[data-embedded-from]").count() == 27, "27 embedded lab screenshots")
+        check(page.locator("video").count() == 3, "3 embedded videos")
+        check(page.locator('video[src^="data:video/mp4;base64,"]').count() == 3, "all videos use data URIs")
         embedded_assets = page.locator("[data-embedded-from]").evaluate_all(
             "els => els.map(el => el.dataset.embeddedFrom)"
         )
@@ -109,6 +112,19 @@ def main() -> int:
             not any("gitea" in asset.lower() for asset in embedded_assets),
             "0 embedded asset names contain gitea",
         )
+        duplicate_ids = page.evaluate(
+            "() => { const seen={}, dup=[];"
+            " document.querySelectorAll('[id]').forEach(el => {"
+            "   if (seen[el.id]) dup.push(el.id); else seen[el.id]=1; });"
+            " return [...new Set(dup)]; }"
+        )
+        check(not duplicate_ids, f"0 duplicate element ids across inlined diagrams; found={duplicate_ids}")
+        unresolved_markers = page.evaluate(
+            "() => Array.from(document.querySelectorAll('[marker-end]'))"
+            "  .map(el => el.getAttribute('marker-end').slice(5, -1))"
+            "  .filter(id => !document.getElementById(id))"
+        )
+        check(not unresolved_markers, f"every arrow marker-end resolves; unresolved={unresolved_markers}")
         capture(page, "U7_cover.png")
 
         # Walk every page using the public keyboard control and verify counter/hash.
@@ -119,9 +135,9 @@ def main() -> int:
             check(page.url.endswith(f"#page-{page_number}"), f"hash updates to #page-{page_number}")
 
         page.keyboard.press("Home")
-        check(page.locator("#counter").inner_text() == "1/80", "Home returns to cover")
+        check(page.locator("#counter").inner_text() == "1/112", "Home returns to cover")
         page.keyboard.press("End")
-        check(page.locator("#counter").inner_text() == "80/80", "End jumps to last page")
+        check(page.locator("#counter").inner_text() == "112/112", "End jumps to last page")
 
         # Overview button opens the thumbnail grid; clicking a thumbnail exits and jumps.
         page.locator("#overview").click()
@@ -129,18 +145,18 @@ def main() -> int:
         capture(page, "U7_overview.png")
         page.locator(".slot").nth(12).click()
         check("overview" not in (page.locator("body").get_attribute("class") or ""), "thumbnail click closes overview")
-        check(page.locator("#counter").inner_text() == "13/80", "thumbnail click jumps to selected page")
+        check(page.locator("#counter").inner_text() == "13/112", "thumbnail click jumps to selected page")
 
         # The course-map cards are independently clickable.
         page.goto(f"{uri}#page-2", wait_until="load")
-        page.locator('[data-goto="70"]').click()
-        check(page.locator("#counter").inner_text() == "70/80", "course-map card jumps to episode 6")
+        page.locator('[data-goto="97"]').click()
+        check(page.locator("#counter").inner_text() == "97/112", "course-map card jumps to episode 6")
 
         # Refresh must preserve the exact page through #page-N.
-        page.goto(f"{uri}#page-72", wait_until="load")
-        check(page.locator("#counter").inner_text() == "72/80", "direct #page-N navigation works")
+        page.goto(f"{uri}#page-100", wait_until="load")
+        check(page.locator("#counter").inner_text() == "100/112", "direct #page-N navigation works")
         page.reload(wait_until="load")
-        check(page.locator("#counter").inner_text() == "72/80", "refresh preserves current page")
+        check(page.locator("#counter").inner_text() == "100/112", "refresh preserves current page")
         capture(page, "U7_diagram.png")
 
         # Each manifest composition must advance only while its own slide is active.

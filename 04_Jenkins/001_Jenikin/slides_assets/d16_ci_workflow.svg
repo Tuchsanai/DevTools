@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 476" role="img" aria-labelledby="dt-d16 dd-d16">
+<title id="dt-d16">Workflow ของ Continuous Integration</title><desc id="dd-d16">นักพัฒนา commit เข้า mainline แล้ว CI server สร้าง build ทดสอบอัตโนมัติ และส่งผลเขียวหรือแดงกลับถึงผู้ commit ทันที</desc>
+<defs><marker id="ah-d16" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#6f97a6"/></marker><marker id="ahw-d16" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#d99013"/></marker><marker id="ahr-d16" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#cf4b45"/></marker><marker id="ahg-d16" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#169b72"/></marker><marker id="ahb-d16" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#4b95cc"/></marker></defs>
+<rect x="1" y="1" width="1198" height="474" rx="26" fill="#f7fbfd" stroke="#dcebf0" stroke-width="2"/>
+<g font-family=""Leelawadee UI","Noto Sans Thai","Segoe UI",sans-serif">
+<rect x="44" y="150" width="216" height="128" rx="18" fill="#eaf4ff" stroke="#4b95cc" stroke-width="3"/>
+<text x="152.0" y="199.4" text-anchor="middle" font-size="23" font-weight="700" fill="#12547f">นักพัฒนา</text>
+<text x="152.0" y="228.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">commit งานเล็ก ๆ</text>
+<text x="152.0" y="250.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">อย่างน้อยวันละครั้ง</text>
+<rect x="320" y="150" width="216" height="128" rx="18" fill="#eef3f6" stroke="#7d97a3" stroke-width="3"/>
+<text x="428.0" y="212.0" text-anchor="middle" font-size="23" font-weight="700" fill="#3d5865">mainline</text>
+<text x="428.0" y="238.1" text-anchor="middle" font-size="12.7" font-weight="400" fill="#57737f">สาขาหลักที่ทุกคนใช้ร่วมกัน</text>
+<path d="M270 214L312 214" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d16)"/>
+<text x="291" y="196" text-anchor="middle" font-size="14" font-weight="700" fill="#57737f">push</text>
+<rect x="610" y="62" width="546" height="304" rx="22" fill="#f2fafb" stroke="#147d92" stroke-width="3"/>
+<text x="883.0" y="96" text-anchor="middle" font-size="18" font-weight="800" fill="#0b5a6b">CI server — ทำงานเองทุกครั้งที่ mainline เปลี่ยน</text>
+<path d="M546 214L602 214" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d16)"/>
+<text x="578" y="196" text-anchor="middle" font-size="14" font-weight="700" fill="#57737f">trigger</text>
+<rect x="636" y="116" width="494" height="52" rx="14" fill="#ffffff" stroke="#6cc0a4" stroke-width="2.5"/>
+<text x="662" y="149" text-anchor="start" font-size="19" font-weight="800" fill="#07795a">1 · Checkout</text>
+<text x="1114" y="148" text-anchor="end" font-size="15" font-weight="400" fill="#57737f">ดึงโค้ดของ commit นั้น</text>
+<rect x="636" y="178" width="494" height="52" rx="14" fill="#ffffff" stroke="#6cc0a4" stroke-width="2.5"/>
+<text x="662" y="211" text-anchor="start" font-size="19" font-weight="800" fill="#07795a">2 · Build</text>
+<text x="1114" y="210" text-anchor="end" font-size="15" font-weight="400" fill="#57737f">สร้าง artifact จากศูนย์</text>
+<rect x="636" y="240" width="494" height="52" rx="14" fill="#ffffff" stroke="#6cc0a4" stroke-width="2.5"/>
+<text x="662" y="273" text-anchor="start" font-size="19" font-weight="800" fill="#07795a">3 · Test</text>
+<text x="1114" y="272" text-anchor="end" font-size="15" font-weight="400" fill="#57737f">รันชุดทดสอบอัตโนมัติ</text>
+<rect x="636" y="300" width="494" height="46" rx="23.0" fill="#147d92"/>
+<text x="883.0" y="329.3" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff">ผลลัพธ์: เขียว = รวมได้  •  แดง = หยุดแล้วแก้ก่อน</text>
+<path d="M883.0 374L883.0 424L152 424L152 286" fill="none" stroke="#d99013" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="9 8" marker-end="url(#ahw-d16)"/>
+<text x="430" y="450" text-anchor="middle" font-size="18" font-weight="700" fill="#95600b">ผลกลับถึงผู้ commit ภายในไม่กี่นาที</text>
+</g>
+</svg>

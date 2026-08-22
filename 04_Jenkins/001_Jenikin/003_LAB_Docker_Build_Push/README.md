@@ -26,25 +26,33 @@
 
 ## ทฤษฎีก่อนลงมือ
 
-Docker-outside-of-Docker (DooD) คือการให้ Jenkins container ติดต่อ Docker daemon ของระบบชั้นในผ่าน `/var/run/docker.sock` จึงสร้าง image และ sibling container ใน daemon เดียวกันได้ ส่วน Docker-in-Docker (DinD) สร้าง daemon ซ้อนอีกชั้น แล็บนี้ใช้ DooD เพื่อใช้ image cache, network และวงจรชีวิตของ service ชุดเดียวกัน รายละเอียดสถาปัตยกรรมดู slide ตอนที่ 3
+Docker-outside-of-Docker (DooD) คือการให้ Jenkins container ติดต่อ Docker daemon ของระบบชั้นในผ่าน `/var/run/docker.sock` จึงสร้าง image และ sibling container ใน daemon เดียวกันได้ ส่วน Docker-in-Docker (DinD) สร้าง daemon ซ้อนอีกชั้น แล็บนี้ใช้ DooD เพื่อใช้ image cache, network และวงจรชีวิตของ service ชุดเดียวกัน รายละเอียดสถาปัตยกรรมดู slide **ตอนที่ 5.1 — DooD + Credentials** (diagram D7)
 
 Jenkins image มาตรฐานไม่มี Docker CLI แม้จะ mount socket แล้วก็ยังส่งคำสั่งไปยัง daemon ไม่ได้ จึงต้องสร้าง `jenkins-docker:2569` จาก `Dockerfile.jenkins` ซึ่งติดตั้ง `docker-ce-cli` และใช้ `USER root` สำหรับเข้าถึง socket ในสภาพแวดล้อมแล็บ
 
 ข้อมูลถาวรของ Jenkins เช่น ผู้ใช้, plugin, job และ build history อยู่ใน named volume `jenkins_home` ไม่ได้ผูกกับ writable layer ของ container การสร้าง Jenkins container ใหม่จาก image ใหม่โดยใช้ volume เดิมจึงรักษาสถานะจาก LAB 2 ไว้ได้
 
-Jenkins Credentials store แยกข้อมูลลับออกจาก Pipeline และส่งค่าให้เฉพาะ scope ของ `withCredentials` การ masking ช่วยลดโอกาสที่ข้อมูลจะปรากฏใน console แต่ไม่ใช่การรับประกัน จึงต้องใช้ Groovy single-quoted shell, `set +x`, `--password-stdin` และ `DOCKER_CONFIG` ชั่วคราวร่วมกัน
+Jenkins Credentials store แยกข้อมูลลับออกจาก Pipeline (ดู slide diagram D8 — เส้นทางของ credential) และส่งค่าให้เฉพาะ scope ของ `withCredentials` การ masking ช่วยลดโอกาสที่ข้อมูลจะปรากฏใน console แต่ไม่ใช่การรับประกัน จึงต้องใช้ Groovy single-quoted shell, `set +x`, `--password-stdin` และ `DOCKER_CONFIG` ชั่วคราวร่วมกัน
 
 รูปแบบ canonical ของแล็บ login ก่อน build เพื่อให้การ pull base image ผูกกับบัญชี และใช้ `trap` ลบ Docker config ไม่ว่าขั้นตอนจะสำเร็จหรือล้มเหลว สคริปต์ฉบับเต็มอยู่ใน [`Jenkinsfile`](./Jenkinsfile) และจะคัดลอกจาก `$COURSE_ROOT` ในการทดลองที่ 5 ชื่อ artifact ปลายทางคือ `docker.io/<DOCKER_USER>/ci-demo:<BUILD_NUMBER>`
 
 > **Safety:** การ mount Docker socket ทำให้ Jenkins มีอำนาจใกล้เคียง root ของ inner host และการใช้ `-u root` เพิ่มผลกระทบเมื่อเกิดข้อผิดพลาด จึงใช้เฉพาะแล็บ disposable เท่านั้น ระบบ production ควรใช้ build agent แยกและจำกัดสิทธิ์กับเครือข่ายตามหลัก least privilege ส่วน Access Token ใช้เพียง Read/Write ไม่ใช้ Delete/Admin และ revoke หลังคาบได้ทันที
 
-## 🎯 ขอบเขตและผลลัพธ์การเรียนรู้
+## 🎯 Learning Objectives — ผลลัพธ์การเรียนรู้
 
 - อธิบายความแตกต่างระหว่าง Docker CLI, Docker daemon และ socket ได้
 - สร้าง `jenkins-docker:2569` และเปลี่ยน Jenkins container โดยรักษา `jenkins_home` เดิมได้
 - เพิ่ม credential ชนิด Username with password ด้วย ID `dockerhub` ใน Global domain ได้
 - สร้างและรัน Pipeline ที่ login, build, push และล้าง Docker config ตามรูปแบบ canonical ได้
 - เชื่อมโยง `BUILD_NUMBER`, push digest และ tag บน Docker Hub ของ build ปัจจุบันได้
+
+## Expected Result — ผลลัพธ์ที่ต้องได้เมื่อจบแล็บ
+
+- Jenkins ใช้ image `jenkins-docker:2569` ที่มี Docker CLI และ mount Docker socket แล้ว
+- Jenkins มี credential ชนิด Username with password ที่ ID `dockerhub`
+- job `docker-build-push` มี build ที่จบด้วย SUCCESS ครบทุก stage
+- tag ที่ตรงกับ `BUILD_NUMBER` ปรากฏบน Docker Hub จริง และ digest ตรงกับที่ console บันทึกไว้
+- `bash check.sh` ปิดท้ายด้วย `ผลรวม: PASS` และคืน exit code `0`
 
 ## สภาพตั้งต้น
 

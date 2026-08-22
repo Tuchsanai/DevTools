@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 476" role="img" aria-labelledby="dt-d0 dd-d0">
+<title id="dt-d0">วงจร CI/CD</title><desc id="dd-d0">หกขั้นของวงจรส่งมอบซอฟต์แวร์ Code Build Test Release Deploy Monitor แล้ววนกลับมาที่ Code</desc>
+<defs><marker id="ah-d0" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#6f97a6"/></marker><marker id="ahw-d0" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#d99013"/></marker><marker id="ahr-d0" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#cf4b45"/></marker><marker id="ahg-d0" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#169b72"/></marker><marker id="ahb-d0" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#4b95cc"/></marker></defs>
+<style>.d0-pill{animation:d0-pulse 9s linear infinite}@keyframes d0-pulse{0%,14%,100%{stroke-width:3}5%{stroke-width:6.5}}.d0-core{animation:d0-breathe 4.5s ease-in-out infinite}@keyframes d0-breathe{0%,100%{r:80}50%{r:83.5}}.d0-arc{stroke-dasharray:420;animation:d0-draw 9s linear infinite}@keyframes d0-draw{0%,100%{stroke-dashoffset:0;opacity:.55}6%{stroke-dashoffset:0;opacity:1}20%{opacity:.55}}@media (prefers-reduced-motion:reduce){.d0-pill,.d0-core,.d0-arc{animation:none}}</style>
+<rect x="1" y="1" width="618" height="474" rx="26" fill="#f7fbfd" stroke="#dcebf0" stroke-width="2"/>
+<g font-family=""Leelawadee UI","Noto Sans Thai","Segoe UI",sans-serif">
+<path class="d0-arc" style="animation-delay:0.0s" d="M347.0 85.9A143 143 0 0 1 411.1 122.9" fill="none" stroke="#169b72" stroke-width="4" stroke-linecap="round" marker-end="url(#ahg-d0)"/>
+<path class="d0-arc" style="animation-delay:1.5s" d="M448.1 187.0A143 143 0 0 1 448.1 261.0" fill="none" stroke="#169b72" stroke-width="4" stroke-linecap="round" marker-end="url(#ahg-d0)"/>
+<path class="d0-arc" style="animation-delay:3.0s" d="M411.1 325.1A143 143 0 0 1 347.0 362.1" fill="none" stroke="#7d97a3" stroke-width="4" stroke-linecap="round" marker-end="url(#ah-d0)"/>
+<path class="d0-arc" style="animation-delay:4.5s" d="M273.0 362.1A143 143 0 0 1 208.9 325.1" fill="none" stroke="#d99013" stroke-width="4" stroke-linecap="round" marker-end="url(#ahw-d0)"/>
+<path class="d0-arc" style="animation-delay:6.0s" d="M171.9 261.0A143 143 0 0 1 171.9 187.0" fill="none" stroke="#d99013" stroke-width="4" stroke-linecap="round" marker-end="url(#ahw-d0)"/>
+<path d="M208.9 122.9A143 143 0 0 1 273.0 85.9" fill="none" stroke="#4b95cc" stroke-width="4" stroke-linecap="round" stroke-dasharray="8 8" marker-end="url(#ahb-d0)"/>
+<rect class="d0-pill" style="animation-delay:0.0s" x="251.0" y="59.0" width="118" height="44" rx="22" fill="#eaf4ff" stroke="#4b95cc" stroke-width="3"/>
+<text x="310.0" y="88.0" text-anchor="middle" font-size="20" font-weight="800" fill="#12547f">Code</text>
+<rect class="d0-pill" style="animation-delay:1.5s" x="374.8" y="130.5" width="118" height="44" rx="22" fill="#e6fbf4" stroke="#169b72" stroke-width="3"/>
+<text x="433.8" y="159.5" text-anchor="middle" font-size="20" font-weight="800" fill="#07795a">Build</text>
+<rect class="d0-pill" style="animation-delay:3.0s" x="374.8" y="273.5" width="118" height="44" rx="22" fill="#e6fbf4" stroke="#169b72" stroke-width="3"/>
+<text x="433.8" y="302.5" text-anchor="middle" font-size="20" font-weight="800" fill="#07795a">Test</text>
+<rect class="d0-pill" style="animation-delay:4.5s" x="251.0" y="345.0" width="118" height="44" rx="22" fill="#fff5d9" stroke="#d99013" stroke-width="3"/>
+<text x="310.0" y="374.0" text-anchor="middle" font-size="20" font-weight="800" fill="#95600b">Release</text>
+<rect class="d0-pill" style="animation-delay:6.0s" x="127.2" y="273.5" width="118" height="44" rx="22" fill="#fff5d9" stroke="#d99013" stroke-width="3"/>
+<text x="186.2" y="302.5" text-anchor="middle" font-size="20" font-weight="800" fill="#95600b">Deploy</text>
+<rect class="d0-pill" style="animation-delay:7.5s" x="127.2" y="130.5" width="118" height="44" rx="22" fill="#eaf4ff" stroke="#4b95cc" stroke-width="3"/>
+<text x="186.2" y="159.5" text-anchor="middle" font-size="20" font-weight="800" fill="#12547f">Monitor</text>
+<circle class="d0-core" cx="310" cy="224" r="80" fill="#ffffff" stroke="#147d92" stroke-width="3"/>
+<text x="310" y="226" text-anchor="middle" font-size="40" font-weight="800" fill="#0b5a6b">CI/CD</text>
+<text x="310" y="254" text-anchor="middle" font-size="16" font-weight="700" fill="#57737f">ด้วย Jenkins</text>
+<g><circle cx="310" cy="81" r="13" fill="#169b72" fill-opacity="0.22"/><circle cx="310" cy="81" r="7.5" fill="#169b72" stroke="#ffffff" stroke-width="3"/><animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 310 224" to="360 310 224" dur="9s" repeatCount="indefinite"/></g>
+<rect x="62.2" y="418" width="247.2" height="32" rx="16" fill="#e6fbf4" stroke="#169b72" stroke-width="2"/>
+<circle cx="80.2" cy="434" r="6" fill="#169b72"/>
+<text x="92.2" y="440" text-anchor="start" font-size="13.5" font-weight="700" fill="#07795a">CI — build + test ทุก commit</text>
+<rect x="325.4" y="418" width="232.4" height="32" rx="16" fill="#fff5d9" stroke="#d99013" stroke-width="2"/>
+<circle cx="343.4" cy="434" r="6" fill="#d99013"/>
+<text x="355.4" y="440" text-anchor="start" font-size="13.5" font-weight="700" fill="#95600b">CD — ส่งถึงผู้ใช้อัตโนมัติ</text>
+</g>
+</svg>

@@ -1,6 +1,6 @@
 # CI/CD ด้วย Jenkins บน Docker
 
-ชุดแล็บภาษาไทยนี้พาจากการกด build ด้วยตนเอง ไปจนถึงวงจร `git push → test → build → push → deploy → verify` อัตโนมัติ โดยใช้ Jenkins, GitHub และ Docker ภายใน devtools container ตัวเดียว เรียนภาพรวมและสถาปัตยกรรมจาก [Jenkins_CICD_Docker_Slides.html](./Jenkins_CICD_Docker_Slides.html) แล้วลงมือทำ LAB 1–6 ตามลำดับ
+ชุดแล็บภาษาไทยนี้พาจากการกด build ด้วยตนเอง ไปจนถึงวงจร `git push → build → test → push → deploy → verify` อัตโนมัติ โดยใช้ Jenkins, GitHub และ Docker ภายใน devtools container ตัวเดียว เรียนภาพรวมและสถาปัตยกรรมจาก [Jenkins_CICD_Docker_Slides.html](./Jenkins_CICD_Docker_Slides.html) แล้วลงมือทำ LAB 1–6 ตามลำดับ
 
 ## สิ่งที่ต้องมีก่อนเรียน
 
@@ -204,7 +204,11 @@ unset DOCKER_TOKEN GITHUB_TOKEN
 001_Jenikin/
 ├── Jenkins_CICD_Docker_Slides.html   # สไลด์ self-contained
 ├── 001_LAB_... ถึง 006_LAB_...       # README, check.sh และไฟล์ทดลอง
-├── slides_assets/                    # ภาพและวิดีโอในสไลด์
+├── slides_assets/                    # ภาพ วิดีโอ และ diagram (d0–d12) ของสไลด์
+├── tools/slides_src.html             # ต้นฉบับสไลด์ก่อน embed asset
+├── tools/diagrams.py                 # สร้าง diagram ทั้งชุดจาก visual kit เดียวกัน
+├── tools/deck_crops.py               # ครอป screenshot เฉพาะที่ใช้ในสไลด์
+├── tools/embed_assets.py             # ฝัง asset ทั้งหมดเป็นไฟล์เดียวแบบ offline
 ├── tools/bootstrap/                  # สคริปต์กู้สถานะ
 ├── tools/ui/                         # UI automation และ assertions
 ├── docs/                             # แผน, stack และผล integration

@@ -15,6 +15,8 @@ push → GitHub webhook → smee-webapp → Jenkins GWT
      → pytest → docker build → push Docker Hub → deploy → verify
 ```
 
+ภาพ topology ของวงนี้อยู่ใน slide **ตอนที่ 6 — CI/CD เต็มวง** (diagram D10)
+
 Pipeline from SCM อ่าน application, tests, Dockerfile และ Jenkinsfile จาก commit เดียวกัน การทดสอบต้องผ่านก่อนเผยแพร่ image เพราะ artifact ที่ไม่ผ่าน quality gate ไม่ควรถูก deploy stage `Build-Test-Push` จึง build image และรัน `pytest` ภายใน image ก่อน push หาก test ล้ม pipeline จะหยุดทันที
 
 แต่ละ build ใช้ tag `BUILD_NUMBER` เป็นตัวระบุที่ไม่เปลี่ยนความหมายภายหลัง ส่วน `latest` ชี้ build ล่าสุด แล็บนี้ push ทั้งสอง tag และเทียบ digest เพื่อป้องกันการสรุปผลจาก tag เก่า
@@ -39,7 +41,7 @@ withCredentials([usernamePassword(credentialsId: 'dockerhub',
 
 Deploy stage จะ recreate container `webapp` บน `cicd-net`; Verify เรียก `http://webapp:8000` ผ่าน Docker DNS ไม่ใช่ `localhost` ระบบ production มักใช้ rolling หรือ canary deployment แต่แล็บนี้ใช้ recreate เพื่อเน้นกลไก CI/CD หลัก
 
-## ผลลัพธ์การเรียนรู้
+## 🎯 Learning Objectives — ผลลัพธ์การเรียนรู้
 
 - สร้าง public repository `<GITHUB_USER>/webapp` พร้อม ownership marker และ source บน `main`
 - ใช้ smee channel และ GWT token แยกจาก `hello-ci-pipeline`
@@ -470,7 +472,7 @@ time git push origin main
 
 ✅ tag `<BUILD_NUMBER>` และ `latest` ต้องมี digest เดียวกับบรรทัด push ใน Jenkins console และ container `webapp` ต้องรัน `docker.io/<DOCKER_USER>/cicd-webapp:<BUILD_NUMBER>`
 
-## Acceptance check
+## Expected Result — Acceptance check
 
 ตัวตรวจใช้ GitHub API แบบ authenticated, อ่าน Docker Hub แบบ anonymous และไม่ต้องรับ `DOCKER_TOKEN`:
 

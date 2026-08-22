@@ -4,7 +4,7 @@
 
 ## ทฤษฎีก่อนลงมือ
 
-Pipeline as Code คือการบันทึกลำดับงาน build เป็นโค้ดที่ตรวจสอบ ทำซ้ำ และปรับปรุงอย่างเป็นระบบได้ แทนการอาศัยความจำในการตั้งค่าผ่าน UI แล็บนี้เริ่มจากการเขียนสคริปต์ใน Jenkins เพื่อให้เห็นความสัมพันธ์ระหว่างโค้ดกับผลรันทันที และใช้ไฟล์ `Jenkinsfile` เป็นฉบับอ้างอิง รายละเอียดแนวคิดดู slide ตอนที่ 4
+Pipeline as Code คือการบันทึกลำดับงาน build เป็นโค้ดที่ตรวจสอบ ทำซ้ำ และปรับปรุงอย่างเป็นระบบได้ แทนการอาศัยความจำในการตั้งค่าผ่าน UI แล็บนี้เริ่มจากการเขียนสคริปต์ใน Jenkins เพื่อให้เห็นความสัมพันธ์ระหว่างโค้ดกับผลรันทันที และใช้ไฟล์ `Jenkinsfile` เป็นฉบับอ้างอิง รายละเอียดแนวคิดดู slide **ตอนที่ 4 — Declarative Pipeline** (diagram D6 กายวิภาคของ Jenkinsfile)
 
 Declarative Pipeline เริ่มด้วย `pipeline {}` ภายในมี `agent` ระบุ execution node และ `stages` แบ่งกระบวนการเป็นช่วงที่มีความหมาย แต่ละ `stage` ประกอบด้วย `steps` ซึ่งเป็นคำสั่งที่ Jenkins ดำเนินการ เช่น `echo` และ `sleep`
 
@@ -12,13 +12,25 @@ Declarative Pipeline เริ่มด้วย `pipeline {}` ภายใน�
 
 เงื่อนไข `when` กำหนดว่า stage จะทำงานหรือถูกข้าม ส่วน `post` ทำงานหลัง stages สิ้นสุด โดย `always` ทำงานทุกผลลัพธ์และ `success` ทำงานเฉพาะเมื่อ Pipeline สำเร็จ หน้า **Stages** ใน Jenkins ชุดนี้แสดงผลด้วย Pipeline Graph ซึ่งติดตั้งมากับ suggested plugins
 
-## 🎯 ขอบเขตและผลลัพธ์การเรียนรู้
+## 🎯 Learning Objectives — ผลลัพธ์การเรียนรู้
 
 - สร้าง Pipeline job ชื่อ `first-pipeline` และรันงาน 3 stages ได้
 - อธิบายลำดับและสถานะของ stage จาก Pipeline Graph ได้
 - ใช้ environment, parameter และ post actions ใน Declarative Pipeline ได้
 - กำหนดให้ Deploy ทำงานเฉพาะเมื่อ `APP_ENV=prod` ได้
 - ตรวจ build ล่าสุดและสถานะ stage ด้วย `check.sh` ได้
+
+## Expected Result — ผลลัพธ์ที่ต้องได้เมื่อจบแล็บ
+
+- มี Pipeline job ชื่อ `first-pipeline` ที่กำหนดงานด้วยสคริปต์ ไม่ใช่การคลิก
+- Pipeline Graph แสดงครบสี่ stage: Checkout, Build, Test, Deploy
+- รันด้วย `APP_ENV=dev` แล้ว Deploy ถูกข้าม • รันด้วย `APP_ENV=prod` แล้ว Deploy ทำงาน
+- `bash check.sh` แสดงผลต่อไปนี้และคืน exit code `0`
+
+```text
+PASS: job=first-pipeline build=#N result=SUCCESS
+PASS: stages: Checkout=SUCCESS, Build=SUCCESS, Test=SUCCESS, Deploy=SUCCESS
+```
 
 ## สภาพตั้งต้น
 

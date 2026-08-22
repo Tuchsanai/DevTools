@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 490" role="img" aria-labelledby="dt-d17 dd-d17">
+<title id="dt-d17">ลำดับการทำงานของ LAB 1</title><desc id="dd-d17">หกขั้นตอนตั้งแต่สร้างคอนเทนเนอร์ ตรวจสถานะ เข้าใช้งาน ตั้งค่า สร้างงานแรก จนถึงการยืนยันสถานะปิดท้าย</desc>
+<defs><marker id="ah-d17" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#6f97a6"/></marker><marker id="ahw-d17" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#d99013"/></marker><marker id="ahr-d17" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#cf4b45"/></marker><marker id="ahg-d17" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#169b72"/></marker><marker id="ahb-d17" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#4b95cc"/></marker></defs>
+<rect x="1" y="1" width="1198" height="488" rx="26" fill="#f7fbfd" stroke="#dcebf0" stroke-width="2"/>
+<g font-family=""Leelawadee UI","Noto Sans Thai","Segoe UI",sans-serif">
+<rect x="42.0" y="96" width="320" height="128" rx="18" fill="#eaf4ff" stroke="#4b95cc" stroke-width="3"/>
+<text x="202.0" y="145.4" text-anchor="middle" font-size="23" font-weight="700" fill="#12547f">1 · Start</text>
+<text x="202.0" y="174.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">สร้าง network และคอนเทนเนอร์</text>
+<text x="202.0" y="196.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">→ jenkins ทำงานบน cicd-net</text>
+<rect x="440.0" y="96" width="320" height="128" rx="18" fill="#eaf4ff" stroke="#4b95cc" stroke-width="3"/>
+<text x="600.0" y="145.4" text-anchor="middle" font-size="23" font-weight="700" fill="#12547f">2 · Verify</text>
+<text x="600.0" y="174.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">ตรวจสถานะและ log ของคอนเทนเนอร์</text>
+<text x="600.0" y="196.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">→ Up และเริ่มระบบเสร็จแล้ว</text>
+<path d="M372.0 160.0L432.0 160.0" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d17)"/>
+<rect x="838.0" y="96" width="320" height="128" rx="18" fill="#dff1f5" stroke="#147d92" stroke-width="3"/>
+<text x="998.0" y="145.4" text-anchor="middle" font-size="23" font-weight="700" fill="#0b5a6b">3 · Access</text>
+<text x="998.0" y="174.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">อ่านรหัสปลดล็อกแล้วเปิดหน้าเว็บ</text>
+<text x="998.0" y="196.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">→ เข้าหน้า Unlock ที่พอร์ต 8080</text>
+<path d="M770.0 160.0L830.0 160.0" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d17)"/>
+<rect x="42.0" y="292" width="320" height="128" rx="18" fill="#e6fbf4" stroke="#169b72" stroke-width="3"/>
+<text x="202.0" y="341.4" text-anchor="middle" font-size="23" font-weight="700" fill="#07795a">4 · Configure</text>
+<text x="202.0" y="370.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">ติดตั้ง plugin และสร้างผู้ดูแล</text>
+<text x="202.0" y="392.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">→ เข้าใช้งานด้วย admin ได้</text>
+<rect x="440.0" y="292" width="320" height="128" rx="18" fill="#e6fbf4" stroke="#169b72" stroke-width="3"/>
+<text x="600.0" y="341.4" text-anchor="middle" font-size="23" font-weight="700" fill="#07795a">5 · Test</text>
+<text x="600.0" y="370.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">สร้างและรัน job แรก</text>
+<text x="600.0" y="392.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">→ build #1 = SUCCESS</text>
+<path d="M372.0 356.0L432.0 356.0" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d17)"/>
+<rect x="838.0" y="292" width="320" height="128" rx="18" fill="#fff5d9" stroke="#d99013" stroke-width="3"/>
+<text x="998.0" y="341.4" text-anchor="middle" font-size="23" font-weight="700" fill="#95600b">6 · Verify state</text>
+<text x="998.0" y="370.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">restart แล้วรันสคริปต์ตรวจผล</text>
+<text x="998.0" y="392.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">→ LAB 1 CHECK: PASS</text>
+<path d="M770.0 356.0L830.0 356.0" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d17)"/>
+<path d="M998.0 234L998.0 258.0L202.0 258.0L202.0 284" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d17)"/>
+<text x="600.0" y="236.0" text-anchor="middle" font-size="16" font-weight="700" fill="#57737f">ติดตั้งเสร็จแล้วจึงตั้งค่าและพิสูจน์ว่าใช้งานได้จริง</text>
+<text x="600.0" y="470" text-anchor="middle" font-size="19" font-weight="700" fill="#173d52">ทุกขั้นตอนมีผลลัพธ์ที่ตรวจสอบได้ — หากขั้นใดไม่ได้ผลตามนี้ ห้ามข้ามไปขั้นถัดไป</text>
+</g>
+</svg>

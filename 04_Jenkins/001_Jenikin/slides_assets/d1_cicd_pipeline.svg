@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 512" role="img" aria-labelledby="dt-d1 dd-d1">
+<title id="dt-d1">สายพาน CI/CD เจ็ดขั้น</title><desc id="dd-d1">Code Commit Trigger Build Test Push Deploy เรียงต่อกัน โดยผลของทุกขั้นย้อนกลับถึงผู้พัฒนา</desc>
+<defs><marker id="ah-d1" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#6f97a6"/></marker><marker id="ahw-d1" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#d99013"/></marker><marker id="ahr-d1" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#cf4b45"/></marker><marker id="ahg-d1" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#169b72"/></marker><marker id="ahb-d1" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#4b95cc"/></marker></defs>
+<rect x="1" y="1" width="1198" height="510" rx="26" fill="#f7fbfd" stroke="#dcebf0" stroke-width="2"/>
+<g font-family=""Leelawadee UI","Noto Sans Thai","Segoe UI",sans-serif">
+<rect x="179.4" y="30" width="102.2" height="34" rx="17" fill="#eaf4ff" stroke="#4b95cc" stroke-width="2"/>
+<circle cx="198.4" cy="47" r="7" fill="#4b95cc"/>
+<text x="211.4" y="53" text-anchor="start" font-size="15" font-weight="700" fill="#12547f">คนทำเอง</text>
+<rect x="299.6" y="30" width="196.8" height="34" rx="17" fill="#dff1f5" stroke="#147d92" stroke-width="2"/>
+<circle cx="318.6" cy="47" r="7" fill="#147d92"/>
+<text x="331.6" y="53" text-anchor="start" font-size="15" font-weight="700" fill="#0b5a6b">Jenkins เริ่มทำงาน</text>
+<rect x="514.4" y="30" width="274.2" height="34" rx="17" fill="#e6fbf4" stroke="#169b72" stroke-width="2"/>
+<circle cx="533.4" cy="47" r="7" fill="#169b72"/>
+<text x="546.4" y="53" text-anchor="start" font-size="15" font-weight="700" fill="#07795a">CI — ยืนยันว่าโค้ดยังใช้ได้</text>
+<rect x="806.6" y="30" width="214.0" height="34" rx="17" fill="#fff5d9" stroke="#d99013" stroke-width="2"/>
+<circle cx="825.6" cy="47" r="7" fill="#d99013"/>
+<text x="838.6" y="53" text-anchor="start" font-size="15" font-weight="700" fill="#95600b">CD — ส่งของถึงผู้ใช้</text>
+<rect x="72.0" y="106" width="210" height="112" rx="18" fill="#eaf4ff" stroke="#4b95cc" stroke-width="3"/>
+<text x="177.0" y="158.4" text-anchor="middle" font-size="23" font-weight="700" fill="#12547f">Code</text>
+<text x="177.0" y="187.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">เขียน / แก้โค้ด</text>
+<rect x="354.0" y="106" width="210" height="112" rx="18" fill="#eaf4ff" stroke="#4b95cc" stroke-width="3"/>
+<text x="459.0" y="158.4" text-anchor="middle" font-size="23" font-weight="700" fill="#12547f">Commit</text>
+<text x="459.0" y="187.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">push ขึ้น Git</text>
+<rect x="636.0" y="106" width="210" height="112" rx="18" fill="#dff1f5" stroke="#147d92" stroke-width="3"/>
+<text x="741.0" y="158.4" text-anchor="middle" font-size="23" font-weight="700" fill="#0b5a6b">Trigger</text>
+<text x="741.0" y="187.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">webhook หรือ poll</text>
+<rect x="918.0" y="106" width="210" height="112" rx="18" fill="#e6fbf4" stroke="#169b72" stroke-width="3"/>
+<text x="1023.0" y="158.4" text-anchor="middle" font-size="23" font-weight="700" fill="#07795a">Build</text>
+<text x="1023.0" y="187.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">สร้าง artifact</text>
+<rect x="213.0" y="302" width="210" height="112" rx="18" fill="#e6fbf4" stroke="#169b72" stroke-width="3"/>
+<text x="318.0" y="354.4" text-anchor="middle" font-size="23" font-weight="700" fill="#07795a">Test</text>
+<text x="318.0" y="383.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">ต้องผ่านก่อนไปต่อ</text>
+<rect x="495.0" y="302" width="210" height="112" rx="18" fill="#fff5d9" stroke="#d99013" stroke-width="3"/>
+<text x="600.0" y="354.4" text-anchor="middle" font-size="23" font-weight="700" fill="#95600b">Push</text>
+<text x="600.0" y="383.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">เก็บขึ้น registry</text>
+<rect x="777.0" y="302" width="210" height="112" rx="18" fill="#fff5d9" stroke="#d99013" stroke-width="3"/>
+<text x="882.0" y="355.1" text-anchor="middle" font-size="23" font-weight="700" fill="#95600b">Deploy</text>
+<text x="882.0" y="383.0" text-anchor="middle" font-size="14.6" font-weight="400" fill="#57737f">รันของจริง แล้ว verify</text>
+<path d="M292.0 162.0L346.0 162.0" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d1)"/>
+<path d="M574.0 162.0L628.0 162.0" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d1)"/>
+<path d="M856.0 162.0L910.0 162.0" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d1)"/>
+<path d="M433.0 358.0L487.0 358.0" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d1)"/>
+<path d="M715.0 358.0L769.0 358.0" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d1)"/>
+<path d="M1023.0 228L1023.0 260.0L318.0 260.0L318.0 294" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d1)"/>
+<circle cx="96.0" cy="106" r="15" fill="#10364a"/>
+<text x="96.0" y="111.6" text-anchor="middle" font-size="16" font-weight="800" fill="#ffffff">1</text>
+<circle cx="378.0" cy="106" r="15" fill="#10364a"/>
+<text x="378.0" y="111.6" text-anchor="middle" font-size="16" font-weight="800" fill="#ffffff">2</text>
+<circle cx="660.0" cy="106" r="15" fill="#10364a"/>
+<text x="660.0" y="111.6" text-anchor="middle" font-size="16" font-weight="800" fill="#ffffff">3</text>
+<circle cx="942.0" cy="106" r="15" fill="#10364a"/>
+<text x="942.0" y="111.6" text-anchor="middle" font-size="16" font-weight="800" fill="#ffffff">4</text>
+<circle cx="237.0" cy="302" r="15" fill="#10364a"/>
+<text x="237.0" y="307.6" text-anchor="middle" font-size="16" font-weight="800" fill="#ffffff">5</text>
+<circle cx="519.0" cy="302" r="15" fill="#10364a"/>
+<text x="519.0" y="307.6" text-anchor="middle" font-size="16" font-weight="800" fill="#ffffff">6</text>
+<circle cx="801.0" cy="302" r="15" fill="#10364a"/>
+<text x="801.0" y="307.6" text-anchor="middle" font-size="16" font-weight="800" fill="#ffffff">7</text>
+<path d="M882.0 424L882.0 456L171.0 456L171.0 226" fill="none" stroke="#d99013" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="9 8" marker-end="url(#ahw-d1)"/>
+<text x="600.0" y="488" text-anchor="middle" font-size="19" font-weight="700" fill="#95600b">Feedback — ผลของทุกขั้นกลับถึงผู้พัฒนาในไม่กี่นาที ไม่ใช่ตอนผู้ใช้เจอปัญหา</text>
+</g>
+</svg>

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 470" role="img" aria-labelledby="dt-d6 dd-d6">
+<title id="dt-d6">กายวิภาคของ Jenkinsfile</title><desc id="dd-d6">โครง Declarative Pipeline ตั้งแต่ pipeline agent parameters environment stages steps when และ post</desc>
+<defs><marker id="ah-d6" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#6f97a6"/></marker><marker id="ahw-d6" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#d99013"/></marker><marker id="ahr-d6" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#cf4b45"/></marker><marker id="ahg-d6" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#169b72"/></marker><marker id="ahb-d6" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#4b95cc"/></marker></defs>
+<rect x="1" y="1" width="1198" height="468" rx="26" fill="#f7fbfd" stroke="#dcebf0" stroke-width="2"/>
+<g font-family=""Leelawadee UI","Noto Sans Thai","Segoe UI",sans-serif">
+<rect x="44" y="40" width="560" height="392" rx="20" fill="#122536" stroke="#2c4a5f" stroke-width="2"/>
+<text x="68" y="76" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#7ee0ad">pipeline {</text>
+<text x="88" y="100" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#dcecf3">agent any</text>
+<text x="88" y="124" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#dcecf3">parameters { string(name: 'APP_ENV', …) }</text>
+<text x="88" y="148" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#dcecf3">environment { LAB_NAME = '…' }</text>
+<text x="88" y="172" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#7ee0ad">stages {</text>
+<text x="108" y="196" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#dcecf3">stage('Test') {</text>
+<text x="128" y="220" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#ffd479">steps { echo 'Tests passed' }</text>
+<text x="108" y="244" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#dcecf3">}</text>
+<text x="108" y="268" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#dcecf3">stage('Deploy') {</text>
+<text x="128" y="292" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#91cfff">when { expression { … == 'prod' } }</text>
+<text x="128" y="316" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#ffd479">steps { echo 'Deploying' }</text>
+<text x="108" y="340" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#dcecf3">}</text>
+<text x="88" y="364" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#7ee0ad">}</text>
+<text x="88" y="388" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#91cfff">post { always { … }  success { … } }</text>
+<text x="68" y="412" font-size="16.5" font-family=""Cascadia Code",Consolas,monospace" fill="#7ee0ad">}</text>
+<rect x="672" y="46" width="484" height="62" rx="18" fill="#dff1f5" stroke="#147d92" stroke-width="3"/>
+<text x="914.0" y="73.2" text-anchor="middle" font-size="21" font-weight="700" fill="#0b5a6b">pipeline</text>
+<text x="914.0" y="100.9" text-anchor="middle" font-size="15" font-weight="400" fill="#57737f">บล็อกนอกสุด — ต้องมีเสมอ</text>
+<path d="M610 78L664 78" fill="none" stroke="#6f97a6" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 6" marker-end="url(#ah-d6)"/>
+<rect x="672" y="122" width="484" height="62" rx="18" fill="#eaf4ff" stroke="#4b95cc" stroke-width="3"/>
+<text x="914.0" y="149.2" text-anchor="middle" font-size="21" font-weight="700" fill="#12547f">agent</text>
+<text x="914.0" y="176.9" text-anchor="middle" font-size="15" font-weight="400" fill="#57737f">จะรันที่ node ไหน</text>
+<path d="M610 154L664 154" fill="none" stroke="#6f97a6" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 6" marker-end="url(#ah-d6)"/>
+<rect x="672" y="198" width="484" height="62" rx="18" fill="#eaf4ff" stroke="#4b95cc" stroke-width="3"/>
+<text x="914.0" y="225.2" text-anchor="middle" font-size="21" font-weight="700" fill="#12547f">parameters / environment</text>
+<text x="914.0" y="252.9" text-anchor="middle" font-size="15" font-weight="400" fill="#57737f">ค่าจากผู้กด Build • ค่าที่ใช้ร่วม</text>
+<path d="M610 230L664 230" fill="none" stroke="#6f97a6" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 6" marker-end="url(#ah-d6)"/>
+<rect x="672" y="274" width="484" height="62" rx="18" fill="#e6fbf4" stroke="#169b72" stroke-width="3"/>
+<text x="914.0" y="301.2" text-anchor="middle" font-size="21" font-weight="700" fill="#07795a">stages → stage → steps</text>
+<text x="914.0" y="328.9" text-anchor="middle" font-size="15" font-weight="400" fill="#57737f">ชื่อ stage เล่า flow • steps ลงมือ</text>
+<path d="M610 306L664 306" fill="none" stroke="#6f97a6" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 6" marker-end="url(#ah-d6)"/>
+<rect x="672" y="350" width="484" height="62" rx="18" fill="#fff5d9" stroke="#d99013" stroke-width="3"/>
+<text x="914.0" y="377.2" text-anchor="middle" font-size="21" font-weight="700" fill="#95600b">when / post</text>
+<text x="914.0" y="404.9" text-anchor="middle" font-size="15" font-weight="400" fill="#57737f">เงื่อนไขข้าม stage • งานปิดท้าย</text>
+<path d="M610 382L664 382" fill="none" stroke="#6f97a6" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 6" marker-end="url(#ah-d6)"/>
+</g>
+</svg>

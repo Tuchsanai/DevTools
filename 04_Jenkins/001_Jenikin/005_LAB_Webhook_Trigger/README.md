@@ -26,11 +26,13 @@ push/ping ──POST──> smee.io channel <──SSE── smee-client ──P
 | 3 | `smee-hello` → `http://jenkins:8080/...` | `docker logs smee-hello` มี POST และ 200 |
 | 4 | GWT → `hello-ci-pipeline` | cause `GitHub push <SHA>` และ checkout `<SHA>` |
 
+ภาพรวมของ relay ทั้งสี่ hop อยู่ใน slide **ตอนที่ 5.3 — GitHub Webhook + smee relay** (diagram D9 ครึ่งล่าง)
+
 GWT ใช้ token แยกต่อ job (`cicd2569-hello`) เพื่อไม่ให้ request เดียวเลือกหลาย job และอ่าน `ref`/`after` จาก JSON จากนั้น filter `$ref` ด้วย `^refs/heads/main$` จึงกัน GitHub `ping` และ push จาก branch อื่น
 
 > **Safety — อ่านก่อนสร้าง channel:** URL ของ smee channel เป็น capability; ผู้ที่รู้ URL สามารถส่ง/อ่าน traffic ของ channel ได้ ห้ามแชร์ URL จริง ห้ามใส่ใน README, screenshot ดิบ หรือ log ที่ส่งต่อ และเปิดใช้เฉพาะแล็บนี้ Topology นี้เว้น GitHub webhook Secret ว่าง เพราะ smee-client ส่งต่อ payload แต่ไม่มี receiver ในเส้นทางนี้ที่ตรวจ `X-Hub-Signature-256`; ใส่ secret จึงสร้างความมั่นใจผิด ใน production ให้ใช้ public HTTPS endpoint ที่ควบคุมเอง ตรวจ signature ด้วย secret จำกัด source/rate และจัดการ secret ในระบบที่เหมาะสม
 
-## ผลลัพธ์การเรียนรู้
+## 🎯 Learning Objectives — ผลลัพธ์การเรียนรู้
 
 - ติดตั้ง Generic Webhook Trigger 2.4.2 ผ่าน Jenkins UI
 - เปิด smee channel และรัน relay แบบ pinned image บน `cicd-net`
@@ -350,7 +352,7 @@ Checking out Revision <SHA> (refs/remotes/origin/main)
 Finished: SUCCESS
 ```
 
-## ตรวจสถานะจบแล็บ
+## Expected Result — ตรวจสถานะจบแล็บ
 
 ```bash
 (

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 490" role="img" aria-labelledby="dt-d5 dd-d5">
+<title id="dt-d5">container หายได้ แต่ state ต้องอยู่</title><desc id="dd-d5">ลบและสร้าง container ใหม่โดย mount named volume jenkins_home เดิม งานและประวัติ build จึงยังอยู่</desc>
+<defs><marker id="ah-d5" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#6f97a6"/></marker><marker id="ahw-d5" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#d99013"/></marker><marker id="ahr-d5" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#cf4b45"/></marker><marker id="ahg-d5" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#169b72"/></marker><marker id="ahb-d5" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="12" refX="13.5" refY="6" orient="auto"><path d="M0 0.5L15 6L0 11.5z" fill="#4b95cc"/></marker></defs>
+<rect x="1" y="1" width="1198" height="488" rx="26" fill="#f7fbfd" stroke="#dcebf0" stroke-width="2"/>
+<g font-family=""Leelawadee UI","Noto Sans Thai","Segoe UI",sans-serif">
+<rect x="40" y="96" width="340" height="140" rx="18" fill="#ffece9" stroke="#cf4b45" stroke-width="3"/>
+<text x="210.0" y="151.4" text-anchor="middle" font-size="23" font-weight="700" fill="#a2312c">1 · ลบ container</text>
+<text x="210.0" y="180.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">docker rm -f jenkins</text>
+<text x="210.0" y="202.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">writable layer หายไปด้วย</text>
+<rect x="430" y="96" width="340" height="140" rx="18" fill="#ffffff" stroke="#bcd5de" stroke-width="3"/>
+<text x="600.0" y="151.4" text-anchor="middle" font-size="23" font-weight="700" fill="#173d52">2 · ไม่มีอะไรรันอยู่</text>
+<text x="600.0" y="180.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">ไม่มี process ของ Jenkins</text>
+<text x="600.0" y="202.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">แต่ข้อมูลยังไม่ถูกลบ</text>
+<rect x="820" y="96" width="340" height="140" rx="18" fill="#e6fbf4" stroke="#169b72" stroke-width="3"/>
+<text x="990.0" y="151.4" text-anchor="middle" font-size="23" font-weight="700" fill="#07795a">3 · สร้างใหม่</text>
+<text x="990.0" y="180.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">docker run … -v jenkins_home:…</text>
+<text x="990.0" y="202.7" text-anchor="middle" font-size="16" font-weight="400" fill="#57737f">job และ build history กลับมาครบ</text>
+<path d="M386 166.0L422 166.0" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d5)"/>
+<path d="M776 166.0L812 166.0" fill="none" stroke="#6f97a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah-d5)"/>
+<rect x="40" y="302" width="1120" height="104" rx="18" fill="#fff5d9" stroke="#d99013" stroke-width="3"/>
+<text x="600" y="346" text-anchor="middle" font-size="24" font-weight="700" fill="#95600b">named volume  jenkins_home  →  /var/jenkins_home</text>
+<text x="600" y="378" text-anchor="middle" font-size="17" font-weight="400" fill="#57737f">users • jobs • build history • workspaces — อยู่ต่อไปทั้งสามขั้น</text>
+<path d="M210.0 242L210.0 296" fill="none" stroke="#6f97a6" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 7" marker-end="url(#ah-d5)"/>
+<path d="M600.0 242L600.0 296" fill="none" stroke="#6f97a6" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 7" marker-end="url(#ah-d5)"/>
+<path d="M990.0 242L990.0 296" fill="none" stroke="#6f97a6" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 7" marker-end="url(#ah-d5)"/>
+<text x="600.0" y="450" text-anchor="middle" font-size="19" font-weight="700" fill="#173d52">สิ่งที่ต้องรอด restart อยู่ใน volume ไม่ใช่ใน container — จึงไม่ต้องทำ Setup Wizard ซ้ำ</text>
+</g>
+</svg>

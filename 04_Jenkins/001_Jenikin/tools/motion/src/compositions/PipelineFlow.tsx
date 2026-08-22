@@ -6,8 +6,8 @@ const stages = [
   {label: 'commit', sub: 'Git'},
   {label: 'webhook', sub: 'trigger'},
   {label: 'checkout', sub: 'source'},
-  {label: 'test', sub: 'pytest'},
   {label: 'build image', sub: 'Docker'},
+  {label: 'test', sub: 'pytest'},
   {label: 'push', sub: 'registry'},
   {label: 'deploy', sub: 'app'},
 ];
