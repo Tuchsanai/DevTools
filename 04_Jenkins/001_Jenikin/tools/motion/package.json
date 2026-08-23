@@ -6,7 +6,8 @@
     "studio": "remotion studio src/index.ts --no-open",
     "render": "./render.sh",
     "typecheck": "tsc --noEmit",
-    "validate": "/opt/venv/bin/python validate.py"
+    "prevalidate": "PLAYWRIGHT_BROWSERS_PATH=./node_modules/.cache/ms-playwright playwright install chromium",
+    "validate": "PLAYWRIGHT_BROWSERS_PATH=./node_modules/.cache/ms-playwright /opt/venv/bin/python validate.py"
   },
   "dependencies": {
     "@remotion/cli": "4.0.513",
@@ -17,5 +18,8 @@
     "react-dom": "19.2.8",
     "remotion": "4.0.513",
     "typescript": "5.9.3"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
   }
 }

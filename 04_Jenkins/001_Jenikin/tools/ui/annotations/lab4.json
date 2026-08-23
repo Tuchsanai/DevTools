@@ -23,8 +23,9 @@
     {
       "path": "slides_assets/lab4_s03_github_repo_files.png",
       "shapes": [
-        {"type": "mask", "box": [52, 88, 190, 116], "text": "<GITHUB_USER>", "fill": "#0d1117"},
-        {"type": "round_rect", "box": [111, 270, 1018, 455], "label": "① 4 ไฟล์รวม marker", "label_at": [520, 500], "target": [570, 365]}
+        {"type": "mask", "box": [52, 88, 158, 116], "text": "<GITHUB_USER>", "fill": "#0d1117"},
+        {"type": "mask", "box": [1050, 590, 1235, 632], "text": "<GITHUB_USER>", "fill": "#0d1117"},
+        {"type": "round_rect", "box": [111, 254, 1018, 596], "label": "① source + marker ครบ", "label_at": [520, 642], "target": [570, 430]}
       ]
     },
     {
@@ -68,8 +69,10 @@
     {
       "path": "slides_assets/lab4_s06_manual_build_console.png",
       "shapes": [
-        {"type": "round_rect", "box": [382, 557, 562, 584], "label": "① ผลจาก hello.sh", "label_at": [55, 510], "target": [385, 570]},
-        {"type": "round_rect", "box": [382, 925, 555, 953], "label": "② Build สำเร็จ", "label_at": [55, 860], "target": [385, 940]}
+        {"type": "round_rect", "box": [82, 89, 151, 104], "label": "① Build local", "label_at": [75, 52], "target": [116, 96]},
+        {"type": "round_rect", "box": [677, 73, 745, 88], "label": "② Publish credential", "label_at": [675, 42], "target": [711, 80]},
+        {"type": "round_rect", "box": [89, 327, 178, 342], "label": "③ Verify public", "label_at": [75, 294], "target": [134, 334]},
+        {"type": "round_rect", "box": [608, 374, 690, 390], "label": "④ SUCCESS", "label_at": [610, 337], "target": [649, 382]}
       ]
     },
     {
@@ -100,6 +103,21 @@
         {"type": "mask", "box": [659, 203, 815, 232], "text": "<GITHUB_USER>", "fill": "#0d1117"},
         {"type": "round_rect", "box": [435, 140, 635, 168], "label": "① SCM change cause", "label_at": [810, 105], "target": [630, 154]},
         {"type": "ellipse", "box": [365, 74, 410, 106], "label": "② สถานะสำเร็จ", "label_at": [810, 220], "target": [405, 90]}
+      ]
+    },
+    {
+      "path": "slides_assets/lab4_s10_dockerhub_sha_tags.png",
+      "shapes": [
+        {"type": "mask", "box": [103, 128, 245, 158], "text": "<DOCKER_USER> / hello-ci", "fill": "#0d1117"},
+        {"type": "mask", "box": [178, 187, 425, 226], "text": "<DOCKER_USER>/hello-ci", "fill": "#0d1117"},
+        {"type": "mask", "box": [181, 230, 305, 261], "text": "By <DOCKER_USER>", "fill": "#0d1117"},
+        {"type": "mask", "box": [963, 572, 1340, 616], "text": "docker pull <DOCKER_USER>/hello-ci:<short SHA>", "fill": "#0d1117"},
+        {"type": "mask", "box": [61, 592, 292, 622], "text": "Last pushed ... by <DOCKER_USER>", "fill": "#0d1117"},
+        {"type": "mask", "box": [734, 810, 1340, 857], "text": "docker pull <DOCKER_USER>/hello-ci:<full SHA>", "fill": "#0d1117"},
+        {"type": "mask", "box": [61, 832, 292, 861], "text": "Last pushed ... by <DOCKER_USER>", "fill": "#0d1117"},
+        {"type": "round_rect", "box": [40, 528, 1415, 752], "label": "① short SHA tag", "label_at": [1160, 500], "target": [1360, 594]},
+        {"type": "round_rect", "box": [40, 768, 1415, 925], "label": "② full SHA tag", "label_at": [1160, 748], "target": [1360, 835]},
+        {"type": "round_rect", "box": [62, 627, 220, 728], "label": "③ digest", "label_at": [310, 700], "target": [210, 700]}
       ]
     }
   ]

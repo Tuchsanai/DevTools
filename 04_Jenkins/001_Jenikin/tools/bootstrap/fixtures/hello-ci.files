@@ -1,0 +1,7 @@
+.course-cicd2569
+.dockerignore
+Dockerfile
+Jenkinsfile
+hello.sh
+expected.txt
+app/index.html

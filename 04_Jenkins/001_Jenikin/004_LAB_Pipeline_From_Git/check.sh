@@ -2,230 +2,150 @@
 set -uo pipefail
 
 JENKINS_URL="${JENKINS_URL:-http://localhost:8080}"
-JENKINS_AUTH='admin:admin2569'
-GITHUB_API='https://api.github.com'
+JENKINS_AUTH="${JENKINS_AUTH:-admin:admin2569}"
 JOB='hello-ci-pipeline'
 failures=0
-GH_API_REQUEST_COUNT=0
-GH_API_STATUS=''
-GH_API_RETRY_AFTER=''
 
 pass() { printf '[PASS] %s\n' "$1"; }
 fail() { printf '[FAIL] %s\n' "$1"; failures=$((failures + 1)); }
 
-finish_early() {
-  fail "$1"
-  printf '[INFO] GitHub API requests ใน run นี้: %d\n' "$GH_API_REQUEST_COUNT"
-  printf 'ผลรวม: FAIL (%d จุด)\n' "$failures"
-  exit 1
-}
-
-if [ -z "${GITHUB_USER:-}" ] || [ -z "${GITHUB_TOKEN:-}" ]; then
-  finish_early 'ต้องกำหนด GITHUB_USER และ GITHUB_TOKEN ก่อนรัน check.sh'
-fi
-if [[ ! "$GITHUB_USER" =~ ^[A-Za-z0-9][A-Za-z0-9-]{0,38}$ ]]; then
-  finish_early 'GITHUB_USER มีรูปแบบไม่ถูกต้อง'
-fi
-
-tmp_dir="$(mktemp -d)" || finish_early 'สร้างพื้นที่ชั่วคราวไม่สำเร็จ'
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+tmp_dir="$(mktemp -d)" || exit 1
 chmod 700 "$tmp_dir"
 trap 'rm -rf -- "$tmp_dir"' EXIT
 
-# Usage: gh_api METHOD /path output-file
-# ทุก response ถูกเก็บใน tmp_dir แล้วนำไฟล์เดิมไปใช้กับหลาย assertion
-gh_api() {
-  local method="$1" path="$2" output_file="$3"
-  local headers_file config_file status curl_rc tracing=0
-  headers_file="$tmp_dir/gh-headers-$GH_API_REQUEST_COUNT"
-  config_file="$tmp_dir/gh-curl-$GH_API_REQUEST_COUNT.conf"
-  printf 'header = "Authorization: token %s"\n' "$GITHUB_TOKEN" >"$config_file"
-  chmod 600 "$config_file"
-  case $- in *x*) tracing=1; set +x ;; esac
-  if status="$(curl --config "$config_file" --silent --show-error \
-      --connect-timeout 15 --max-time 60 --request "$method" \
-      --header 'Accept: application/vnd.github+json' \
-      --header 'X-GitHub-Api-Version: 2022-11-28' \
-      --dump-header "$headers_file" --output "$output_file" \
-      --write-out '%{http_code}' "$GITHUB_API$path")"; then
-    curl_rc=0
-  else
-    curl_rc=$?
-  fi
-  [ "$tracing" -eq 0 ] || set -x
-  rm -f -- "$config_file"
-  GH_API_REQUEST_COUNT=$((GH_API_REQUEST_COUNT + 1))
-  GH_API_STATUS="$status"
-  GH_API_RETRY_AFTER="$(awk '
-    tolower($0) ~ /^retry-after:/ {
-      sub(/^[^:]*:[[:space:]]*/, ""); sub(/\r$/, ""); print; exit
-    }
-  ' "$headers_file")"
-  if [ "$GH_API_STATUS" = '403' ] || [ "$GH_API_STATUS" = '429' ]; then
-    finish_early "GitHub API จำกัดคำขอ (HTTP $GH_API_STATUS, Retry-After: ${GH_API_RETRY_AFTER:-ไม่ระบุ})"
-  fi
-  [ "$curl_rc" -eq 0 ]
-}
+for file in .course-cicd2569 .dockerignore Dockerfile Jenkinsfile app/index.html expected.txt hello.sh; do
+  if [ -s "$root/$file" ]; then pass "artifact $file พร้อม"; else fail "artifact $file หายหรือว่าง"; fi
+done
 
-auth_json="$tmp_dir/github-user.json"
-if ! gh_api GET '/user' "$auth_json"; then
-  finish_early 'เชื่อมต่อ GitHub API ไม่สำเร็จ'
-fi
-case "$GH_API_STATUS" in
-  200) ;;
-  401) finish_early 'GITHUB_TOKEN ไม่ถูกต้องหรือหมดอายุ (GitHub API ตอบ HTTP 401)' ;;
-  403|429) finish_early "GitHub API จำกัดคำขอ (HTTP $GH_API_STATUS, Retry-After: ${GH_API_RETRY_AFTER:-ไม่ระบุ})" ;;
-  *) finish_early "ตรวจสอบ GITHUB_TOKEN ไม่สำเร็จ (GitHub API ตอบ HTTP $GH_API_STATUS)" ;;
-esac
-if ! EXPECTED_USER="$GITHUB_USER" python3 - "$auth_json" <<'PY'
-import json, os, sys
-actual = str(json.load(open(sys.argv[1], encoding="utf-8")).get("login", ""))
-raise SystemExit(0 if actual.casefold() == os.environ["EXPECTED_USER"].casefold() else 1)
-PY
-then
-  finish_early 'GITHUB_USER ไม่ตรงกับเจ้าของ GITHUB_TOKEN'
-fi
-pass 'ยืนยัน GITHUB_TOKEN และเจ้าของบัญชีตรงกับ GITHUB_USER'
-
-repo_json="$tmp_dir/repo.json"
-if gh_api GET "/repos/$GITHUB_USER/hello-ci" "$repo_json" \
-  && [ "$GH_API_STATUS" = '200' ] \
-  && EXPECTED_OWNER="$GITHUB_USER" python3 - "$repo_json" <<'PY'
-import json, os, sys
-d = json.load(open(sys.argv[1], encoding="utf-8"))
-owner = str((d.get("owner") or {}).get("login", ""))
-ok = owner.casefold() == os.environ["EXPECTED_OWNER"].casefold()
-ok = ok and d.get("name") == "hello-ci" and d.get("private") is False
-raise SystemExit(0 if ok else 1)
-PY
-then
-  pass "GitHub repo $GITHUB_USER/hello-ci เป็น public"
-else
-  fail "ไม่พบ public GitHub repo $GITHUB_USER/hello-ci (HTTP ${GH_API_STATUS:-ไม่ทราบ})"
-fi
-
-contents_json="$tmp_dir/main-contents.json"
-if gh_api GET "/repos/$GITHUB_USER/hello-ci/contents?ref=main" "$contents_json" \
-  && [ "$GH_API_STATUS" = '200' ] \
-  && python3 - "$contents_json" <<'PY'
-import json, sys
-names = {item.get("name") for item in json.load(open(sys.argv[1], encoding="utf-8"))}
-required = {".course-cicd2569", "Jenkinsfile", "hello.sh", "expected.txt"}
-raise SystemExit(0 if required <= names else 1)
-PY
-then
-  pass 'branch main มี .course-cicd2569, Jenkinsfile, hello.sh และ expected.txt ครบ'
-else
-  fail 'branch main ยังไม่มี .course-cicd2569/Jenkinsfile/hello.sh/expected.txt ครบ'
-fi
-
-marker_json="$tmp_dir/marker.json"
-if gh_api GET "/repos/$GITHUB_USER/hello-ci/contents/.course-cicd2569?ref=main" "$marker_json" \
-  && [ "$GH_API_STATUS" = '200' ] \
-  && python3 - "$marker_json" <<'PY'
-import base64, json, sys
-data = json.load(open(sys.argv[1], encoding="utf-8"))
-content = base64.b64decode(data.get("content", "")).decode("utf-8")
-raise SystemExit(0 if content == "course fixture — safe to delete" else 1)
-PY
-then
+if [ "$(cat "$root/.course-cicd2569" 2>/dev/null)" = 'course fixture — safe to delete' ]; then
   pass 'ownership marker มีค่า canonical safe-to-delete'
 else
-  fail 'ownership marker ต้องมีค่า canonical safe-to-delete'
+  fail 'ownership marker ไม่ตรง contract'
 fi
 
-config_xml="$tmp_dir/config.xml"
-if curl -fsS -u "$JENKINS_AUTH" "$JENKINS_URL/job/$JOB/config.xml" \
-    -o "$config_xml" 2>/dev/null; then
-  if EXPECTED_URL="https://github.com/$GITHUB_USER/hello-ci.git" \
-      python3 - "$config_xml" <<'PY'
-import os, sys
-import xml.etree.ElementTree as ET
-root = ET.parse(sys.argv[1]).getroot()
-definition = root.find("definition")
-scm = None if definition is None else definition.find("scm")
-url = None if scm is None else scm.findtext("./userRemoteConfigs/hudson.plugins.git.UserRemoteConfig/url")
-branch = None if scm is None else scm.findtext("./branches/hudson.plugins.git.BranchSpec/name")
-kind = "" if definition is None else definition.attrib.get("class", "")
-ok = kind == "org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition"
-ok = ok and url == os.environ["EXPECTED_URL"] and branch in {"main", "*/main"}
-ok = ok and definition.findtext("scriptPath") == "Jenkinsfile"
-raise SystemExit(0 if ok else 1)
-PY
-  then
-    pass 'job hello-ci-pipeline ใช้ Pipeline from SCM, GitHub URL, main และ Jenkinsfile ตรง contract'
-  else
-    fail 'definition/SCM URL/branch/scriptPath ของ hello-ci-pipeline ไม่ตรง contract'
-  fi
-  if python3 - "$config_xml" <<'PY'
-import sys
-import xml.etree.ElementTree as ET
-root = ET.parse(sys.argv[1]).getroot()
-raise SystemExit(0 if not root.findall(".//credentialsId") else 1)
-PY
-  then
-    pass 'job hello-ci-pipeline ไม่มี credentialsId ใดๆ'
-  else
-    fail 'job hello-ci-pipeline ต้องไม่กำหนด credentialsId สำหรับ public repo'
-  fi
-  if python3 - "$config_xml" <<'PY'
-import sys
-import xml.etree.ElementTree as ET
-root = ET.parse(sys.argv[1]).getroot()
-triggers = root.findall(".//hudson.triggers.SCMTrigger")
-ok = len(triggers) == 1 and triggers[0].findtext("spec") == "* * * * *"
-raise SystemExit(0 if ok else 1)
-PY
-  then
-    pass 'Poll SCM มีหนึ่ง trigger และ schedule * * * * *'
-  else
-    fail 'Poll SCM ต้องมีหนึ่ง trigger และ schedule * * * * *'
-  fi
+if grep -Fq 'org.opencontainers.image.source' "$root/Dockerfile" \
+  && grep -Fq 'org.opencontainers.image.revision' "$root/Dockerfile"; then
+  pass 'Dockerfile มี OCI source และ revision labels'
 else
-  fail "อ่าน config.xml ของ job $JOB ไม่ได้"
+  fail 'Dockerfile ขาด OCI source/revision labels'
 fi
 
-build_json="$tmp_dir/build.json"
-build_number=''
-if curl -gfsS -u "$JENKINS_AUTH" \
-    "$JENKINS_URL/job/$JOB/lastBuild/api/json?tree=number,result,building,actions[causes[shortDescription]]" \
-    -o "$build_json" 2>/dev/null; then
-  build_number="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("number", ""))' "$build_json")"
-  if python3 - "$build_json" <<'PY'
-import json, sys
-d = json.load(open(sys.argv[1], encoding="utf-8"))
-causes = [str(c.get("shortDescription", "")) for a in d.get("actions", []) for c in a.get("causes", [])]
-ok = d.get("result") == "SUCCESS" and d.get("building") is False
-ok = ok and any("scm change" in cause.casefold() for cause in causes)
-raise SystemExit(0 if ok else 1)
-PY
-  then
-    pass "build ล่าสุด #$build_number = SUCCESS, จบแล้ว และ cause เป็น SCM change"
+for contract in \
+  "git rev-parse HEAD" \
+  "git remote get-url origin" \
+  "diff -u expected.txt actual.txt" \
+  'usernamePassword(credentialsId: env.DOCKER_CREDENTIALS' \
+  'LOCAL_IMAGE="hello-ci-local:$FULL_SHA"' \
+  'docker login --username "$DOCKER_USER" --password-stdin' \
+  'docker push "$IMAGE:$FULL_SHA"' \
+  'docker push "$IMAGE:$SHORT_SHA"' \
+  'IMAGE="$(cat image-name.txt)"' \
+  'DOCKER_CONFIG="$(mktemp -d)"' \
+  'test -z "$(find "$DOCKER_CONFIG" -mindepth 1 -print -quit)"' \
+  "anonymous Docker config: empty temporary directory" \
+  'docker pull "$IMAGE@$DIGEST"' \
+  'docker run --rm --entrypoint /usr/local/bin/hello-ci-test'; do
+  if grep -Fq "$contract" "$root/Jenkinsfile"; then
+    pass "Jenkinsfile contract: $contract"
   else
-    fail 'build ล่าสุดต้องจบ SUCCESS และมี cause เป็น SCM change'
+    fail "Jenkinsfile ขาด contract: $contract"
   fi
-else
-  fail "อ่าน build ล่าสุดของ $JOB ไม่ได้"
-fi
+done
 
-repo_url="https://github.com/$GITHUB_USER/hello-ci.git"
-origin_sha="$(timeout 60 git ls-remote "$repo_url" refs/heads/main 2>/dev/null | awk 'NR == 1 {print $1}')"
-console="$tmp_dir/console.txt"
-curl -fsS -u "$JENKINS_AUTH" \
-  "$JENKINS_URL/job/$JOB/${build_number:-0}/consoleText" -o "$console" 2>/dev/null || :
-if [[ "$origin_sha" =~ ^[0-9a-f]{40}$ ]] \
-  && EXPECTED_SHA="$origin_sha" python3 - "$console" <<'PY'
-import os, re, sys
-text = open(sys.argv[1], encoding="utf-8", errors="replace").read()
-checkouts = re.findall(r"Checking out Revision ([0-9a-f]{40})", text, re.I)
-raise SystemExit(0 if checkouts and checkouts[-1].lower() == os.environ["EXPECTED_SHA"].lower() else 1)
+if python3 - "$root/Jenkinsfile" <<'PY'
+from pathlib import Path
+import sys
+text = Path(sys.argv[1]).read_text(encoding="utf-8")
+build = text.index("stage('Build OCI image')")
+publish = text.index("stage('Publish image')")
+binding = text.index("withCredentials([")
+verify = text.index("stage('Verify public digest')")
+assert text.count("withCredentials([") == 1
+assert build < publish < binding < verify
+assert "DOCKER_TOKEN" not in text[verify:]
+verify_text = text[verify:]
+assert 'DOCKER_CONFIG="$(mktemp -d)"' in verify_text
+assert "trap 'rm -rf \"$DOCKER_CONFIG\"' EXIT" in verify_text
+assert 'test -z "$(find "$DOCKER_CONFIG" -mindepth 1 -print -quit)"' in verify_text
+assert verify_text.index('DOCKER_CONFIG="$(mktemp -d)"') < verify_text.index('docker pull "$IMAGE@$DIGEST"')
 PY
 then
-  pass 'checkout SHA ของ build ล่าสุดตรงกับ origin/main'
+  pass 'Docker credential binding มีครั้งเดียวและอยู่ใน Publish stage'
 else
-  fail 'checkout SHA ของ build ล่าสุดไม่ตรงกับ origin/main หรืออ่าน SHA ไม่ได้'
+  fail 'Docker credential ต้อง bind เฉพาะ Publish stage หนึ่งครั้ง'
 fi
 
-printf '[INFO] GitHub API requests ใน run นี้: %d\n' "$GH_API_REQUEST_COUNT"
+if grep -Eq '<(GITHUB|DOCKER)_(TOKEN|PASSWORD)>|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}' "$root/Jenkinsfile" "$root/Dockerfile" "$root/app/index.html"; then
+  fail 'พบรูปแบบ secret ใน implementation'
+else
+  pass 'implementation ไม่มี token/password literal'
+fi
+
+if [ -z "${GITHUB_USER:-}" ] || [ -z "${DOCKER_USER:-}" ]; then
+  fail 'ต้องกำหนด GITHUB_USER และ DOCKER_USER จาก runtime environment'
+  origin_sha=''
+else
+  repo_url="https://github.com/$GITHUB_USER/hello-ci.git"
+  origin_sha="$(timeout 60 git ls-remote "$repo_url" refs/heads/main 2>/dev/null | awk 'NR == 1 {print $1}')"
+  if [[ "$origin_sha" =~ ^[0-9a-f]{40}$ ]]; then
+    pass 'anonymous GitHub origin/main คืน full SHA'
+  else
+    fail 'anonymous GitHub origin/main ไม่พร้อม'
+  fi
+  marker_url="https://raw.githubusercontent.com/$GITHUB_USER/hello-ci/main/.course-cicd2569"
+  if [ "$(curl -fsS --max-time 30 "$marker_url" 2>/dev/null)" = 'course fixture — safe to delete' ]; then
+    pass 'GitHub main มี ownership marker canonical'
+  else
+    fail 'GitHub main ไม่มี ownership marker canonical'
+  fi
+fi
+
+config="$tmp_dir/config.xml"
+if curl -fsS --max-time 20 -u "$JENKINS_AUTH" "$JENKINS_URL/job/$JOB/config.xml" -o "$config"; then
+  if EXPECTED_URL="https://github.com/${GITHUB_USER:-<GITHUB_USER>}/hello-ci.git" python3 - "$config" <<'PY'
+import os, sys, xml.etree.ElementTree as ET
+root = ET.parse(sys.argv[1]).getroot()
+definition = root.find("definition")
+remote = definition.findtext(".//hudson.plugins.git.UserRemoteConfig/url") if definition is not None else None
+branch = definition.findtext(".//hudson.plugins.git.BranchSpec/name") if definition is not None else None
+script = definition.findtext("scriptPath") if definition is not None else None
+creds = definition.findall(".//credentialsId") if definition is not None else [1]
+ok = remote == os.environ["EXPECTED_URL"] and branch in ("*/main", "main") and script == "Jenkinsfile" and not creds
+raise SystemExit(0 if ok else 1)
+PY
+  then pass 'Jenkins job ใช้ anonymous GitHub SCM/main/Jenkinsfile'; else fail 'Jenkins SCM contract ไม่ตรง'; fi
+
+  if grep -Fq '<spec>* * * * *</spec>' "$config"; then pass 'Poll SCM schedule เป็น * * * * *'; else fail 'Poll SCM schedule ไม่ตรง'; fi
+
+  console="$tmp_dir/console.txt"
+  evidence="$tmp_dir/build-evidence.env"
+  if curl -fsS --max-time 30 -u "$JENKINS_AUTH" "$JENKINS_URL/job/$JOB/lastSuccessfulBuild/consoleText" -o "$console" \
+    && curl -fsS --max-time 30 -u "$JENKINS_AUTH" "$JENKINS_URL/job/$JOB/lastSuccessfulBuild/artifact/build-evidence.env" -o "$evidence"; then
+    full_sha="$(sed -n 's/^FULL_SHA=//p' "$evidence")"
+    short_sha="$(sed -n 's/^SHORT_SHA=//p' "$evidence")"
+    digest="$(sed -n 's/^DIGEST=//p' "$evidence")"
+    image="$(sed -n 's/^IMAGE=//p' "$evidence")"
+    if [[ "$full_sha" =~ ^[0-9a-f]{40}$ ]] && [ "$short_sha" = "${full_sha:0:12}" ]; then pass 'build artifact มี full/short SHA ที่สัมพันธ์กัน'; else fail 'full/short SHA ไม่สัมพันธ์กัน'; fi
+    if [ -n "$origin_sha" ] && [ "$full_sha" = "$origin_sha" ]; then pass 'build SHA ตรง origin/main'; else fail 'build SHA ไม่ตรง origin/main'; fi
+    if [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then pass 'build artifact มี immutable digest'; else fail 'digest ไม่ถูกต้อง'; fi
+    if grep -Fq 'Finished: SUCCESS' "$console" && grep -Fq 'Verify public digest' "$console" \
+      && grep -Fq 'anonymous Docker config: empty temporary directory' "$console"; then pass 'Jenkins build จบ SUCCESS หลัง anonymous verify ด้วย empty DOCKER_CONFIG'; else fail 'console ไม่มี SUCCESS/anonymous verify contract'; fi
+    if [[ "$image" == "${DOCKER_USER:-<DOCKER_USER>}/hello-ci" ]] && docker pull "$image@$digest" >/dev/null 2>&1; then
+      pulled_revision="$(docker inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$image@$digest" 2>/dev/null)"
+      pulled_output="$(docker run --rm --entrypoint /usr/local/bin/hello-ci-test "$image@$digest" 2>/dev/null)"
+      [ "$pulled_revision" = "$full_sha" ] && pass 'OCI revision label ตรง build SHA' || fail 'OCI revision label ไม่ตรง build SHA'
+      [ "$pulled_output" = 'Hello from GitHub' ] && pass 'pull-run by digest ให้ผล deterministic' || fail 'pull-run by digest ให้ผลไม่ตรง'
+    else
+      fail 'pull image by digest ไม่สำเร็จ'
+    fi
+  else
+    fail 'อ่าน last successful console/build-evidence.env ไม่สำเร็จ'
+  fi
+else
+  fail "เชื่อม Jenkins job $JOB ไม่สำเร็จที่ $JENKINS_URL"
+fi
+
 if [ "$failures" -eq 0 ]; then
   printf 'ผลรวม: PASS\n'
   exit 0

@@ -1,0 +1,6 @@
+.git
+.gitignore
+actual.txt
+pulled.txt
+*.env
+*.log

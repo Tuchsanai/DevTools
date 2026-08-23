@@ -503,6 +503,26 @@ raise SystemExit(0 if content == "course fixture — safe to delete" else 1)
 ' 2>/dev/null
 }
 
+# Copy the complete, versioned LAB 4 source fixture into a worktree.  This pure
+# helper is also exercised against a local bare repository by the integration
+# test, so clean bootstrap behavior never requires deleting the public repo.
+stage_hello_ci_fixture() {
+  local destination="$1"
+  local source_root="$BOOTSTRAP_DIR/../../004_LAB_Pipeline_From_Git"
+  local manifest="$BOOTSTRAP_DIR/fixtures/hello-ci.files"
+  local relative
+  [ -s "$manifest" ] || die "hello-ci fixture manifest is missing: $manifest"
+  while IFS= read -r relative || [ -n "$relative" ]; do
+    [ -n "$relative" ] || continue
+    [ -f "$source_root/$relative" ] || die "hello-ci fixture source is missing: $relative"
+    mkdir -p "$destination/$(dirname "$relative")"
+    cp "$source_root/$relative" "$destination/$relative"
+  done <"$manifest"
+  chmod +x "$destination/hello.sh"
+  [ "$(cat "$destination/.course-cicd2569")" = 'course fixture — safe to delete' ] \
+    || die 'hello-ci fixture ownership marker is not canonical'
+}
+
 ensure_github_repo() {
   local name="$1"
   local temporary_directory repository_url payload initialize=false
@@ -544,26 +564,33 @@ ensure_github_repo() {
     die "ตรวจ GitHub repository $GITHUB_USER/$name ไม่สำเร็จ (HTTP $GH_API_STATUS)"
   fi
 
+  temporary_directory="$(mktemp -d)" || die 'สร้าง working directory ชั่วคราวไม่สำเร็จ'
+  trap 'rm -rf -- "$temporary_directory"' RETURN
+  repository_url="https://github.com/$GITHUB_USER/$name.git"
   if [ "$initialize" = true ]; then
-    temporary_directory="$(mktemp -d)" || die 'สร้าง working directory ชั่วคราวไม่สำเร็จ'
-    trap 'rm -rf -- "$temporary_directory"' RETURN
     git -C "$temporary_directory" init -q -b main repo
-    cp "$BOOTSTRAP_DIR/fixtures/hello-ci.Jenkinsfile" "$temporary_directory/repo/Jenkinsfile"
-    cp "$BOOTSTRAP_DIR/fixtures/hello-ci.hello.sh" "$temporary_directory/repo/hello.sh"
-    cp "$BOOTSTRAP_DIR/fixtures/hello-ci.expected.txt" "$temporary_directory/repo/expected.txt"
-    printf '%s' 'course fixture — safe to delete' >"$temporary_directory/repo/.course-cicd2569"
-    chmod +x "$temporary_directory/repo/hello.sh"
-    git -C "$temporary_directory/repo" add .course-cicd2569 Jenkinsfile hello.sh expected.txt
+    git -C "$temporary_directory/repo" remote add origin "$repository_url"
+  else
+    github_git_with_askpass git clone -q --branch main --single-branch \
+      "$repository_url" "$temporary_directory/repo" \
+      || die "clone $GITHUB_USER/$name เพื่อ converge fixture ไม่สำเร็จ"
+    [ "$(cat "$temporary_directory/repo/.course-cicd2569" 2>/dev/null)" = 'course fixture — safe to delete' ] \
+      || die "ownership marker ของ $GITHUB_USER/$name เปลี่ยนระหว่างตรวจและ clone"
+  fi
+  stage_hello_ci_fixture "$temporary_directory/repo"
+  git -C "$temporary_directory/repo" add --pathspec-from-file="$BOOTSTRAP_DIR/fixtures/hello-ci.files"
+  if ! git -C "$temporary_directory/repo" diff --cached --quiet; then
     git -C "$temporary_directory/repo" \
       -c user.name=Student -c user.email=student@example.invalid \
-      commit -q -m 'Create GitHub hello-ci course fixture'
-    repository_url="https://github.com/$GITHUB_USER/$name.git"
-    git -C "$temporary_directory/repo" remote add origin "$repository_url"
+      commit -q -m 'Converge complete hello-ci course fixture'
     github_git_with_askpass git -C "$temporary_directory/repo" push -q -u origin main \
       || die "push fixture ไปยัง $GITHUB_USER/$name ไม่สำเร็จ"
-    rm -rf -- "$temporary_directory"
-    trap - RETURN
+    step "converged complete hello-ci fixture on $GITHUB_USER/$name"
+  else
+    step "complete hello-ci fixture already current on $GITHUB_USER/$name"
   fi
+  rm -rf -- "$temporary_directory"
+  trap - RETURN
 
   gh_api GET "/repos/$GITHUB_USER/$name/contents/.course-cicd2569?ref=main"
   [ "$GH_API_STATUS" = '200' ] && github_marker_is_valid \

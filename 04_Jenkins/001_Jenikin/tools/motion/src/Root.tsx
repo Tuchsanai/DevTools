@@ -4,6 +4,7 @@ import {ManualVsCi} from './compositions/ManualVsCi';
 import {PipelineFlow} from './compositions/PipelineFlow';
 import {PollingVsWebhook} from './compositions/PollingVsWebhook';
 import {DoodSocket} from './compositions/DoodSocket';
+import {Lab4ShaDigest} from './compositions/Lab4ShaDigest';
 
 export const MotionRoot = () => (
   <>
@@ -12,5 +13,6 @@ export const MotionRoot = () => (
     <Composition id="mo-pipeline-flow" component={PipelineFlow} durationInFrames={360} fps={30} width={1280} height={720} />
     <Composition id="mo-polling-vs-webhook" component={PollingVsWebhook} durationInFrames={360} fps={30} width={1280} height={720} />
     <Composition id="mo-dood-socket" component={DoodSocket} durationInFrames={360} fps={30} width={1280} height={720} />
+    <Composition id="mo-lab4-sha-digest" component={Lab4ShaDigest} durationInFrames={240} fps={30} width={1280} height={720} />
   </>
 );

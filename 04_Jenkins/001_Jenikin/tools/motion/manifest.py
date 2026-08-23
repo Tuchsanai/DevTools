@@ -16,6 +16,7 @@ SPECS = [
     ("mo_pipeline_flow.mp4", "mo-pipeline-flow"),
     ("mo_polling_vs_webhook.mp4", "mo-polling-vs-webhook"),
     ("mo_dood_socket.mp4", "mo-dood-socket"),
+    ("mo_lab4_sha_digest.mp4", "mo-lab4-sha-digest"),
 ]
 
 

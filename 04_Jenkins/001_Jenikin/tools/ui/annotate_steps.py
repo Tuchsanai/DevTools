@@ -200,6 +200,7 @@ def annotate_image(
     fonts: tuple[ImageFont.FreeTypeFont, ImageFont.FreeTypeFont],
     *,
     restore: bool = True,
+    validate_only: bool = False,
 ) -> str:
     restore_mode = restore_pristine(repo, spec) if restore else "current capture"
     path = safe_repo_path(repo, spec["path"])
@@ -268,6 +269,12 @@ def annotate_image(
             fonts,
         )
 
+    if validate_only:
+        return (
+            f"VALID; {width}x{height}; {len(masks)} mask(s); "
+            f"{len(prepared)} marker(s); source={restore_mode}; pixels unchanged"
+        )
+
     temporary = path.with_name(f".{path.name}.annotating")
     rendered = image if original_mode == "RGBA" else image.convert(original_mode)
     rendered.save(temporary, format="PNG", optimize=True)
@@ -309,6 +316,7 @@ def main() -> int:
     group.add_argument("selection", nargs="?", help="labN (for example, lab1)")
     group.add_argument("--all", action="store_true", help="render every lab*.json spec")
     parser.add_argument("--current", action="store_true", help="annotate current captured pixels without git restore")
+    parser.add_argument("--validate-only", action="store_true", help="validate schema against current pixels without writing")
     parser.add_argument("--image", action="append", default=[], help="limit rendering to one path from the selected spec")
     args = parser.parse_args()
     selection = "--all" if args.all else args.selection
@@ -321,10 +329,17 @@ def main() -> int:
             for image_spec in data["images"]:
                 if args.image and image_spec["path"] not in args.image:
                     continue
-                result = annotate_image(repo, image_spec, fonts, restore=not args.current)
+                result = annotate_image(
+                    repo,
+                    image_spec,
+                    fonts,
+                    restore=False if args.validate_only else not args.current,
+                    validate_only=args.validate_only,
+                )
                 results.append((image_spec["path"], result))
                 print(f"{image_spec['path']}: {result}")
-        append_log(repo, f"annotate_steps.py {selection}", results)
+        if not args.validate_only:
+            append_log(repo, f"annotate_steps.py {selection}", results)
         return 0
     except (KeyError, OSError, ValueError, subprocess.CalledProcessError, json.JSONDecodeError) as error:
         print(f"error: {error}", file=sys.stderr)

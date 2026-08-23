@@ -11,12 +11,12 @@ from fractions import Fraction
 from pathlib import Path
 
 from PIL import Image, ImageChops, ImageStat
-from playwright.sync_api import Page, sync_playwright
 
 PROJECT_DIR = Path(__file__).resolve().parent
 ASSET_DIR = (PROJECT_DIR / "../../slides_assets/motion").resolve()
 MANIFEST_PATH = ASSET_DIR / "motion-manifest.json"
 FFPROBE = Path("/opt/ffmpeg-safe/bin/ffprobe")
+PLAYBACK_SCRIPT = PROJECT_DIR / "validate_playback.cjs"
 HARD_CAP_BYTES = 2_500_000
 TARGET_BYTES = 1_500_000
 LOOP_MAE_LIMIT_PERCENT = 0.75
@@ -26,6 +26,7 @@ EXPECTED_FILES = {
     "mo_pipeline_flow.mp4": ("mo-pipeline-flow", 12.0),
     "mo_polling_vs_webhook.mp4": ("mo-polling-vs-webhook", 12.0),
     "mo_dood_socket.mp4": ("mo-dood-socket", 12.0),
+    "mo_lab4_sha_digest.mp4": ("mo-lab4-sha-digest", 8.0),
 }
 
 
@@ -94,24 +95,6 @@ def validate_metadata(entry: dict) -> float:
     return duration
 
 
-def seek(page: Page, time_sec: float) -> None:
-    page.evaluate(
-        """async (timeSec) => {
-          const video = document.querySelector('video');
-          await new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => reject(new Error('seek timeout')), 8000);
-            const done = () => { clearTimeout(timeout); resolve(); };
-            video.addEventListener('seeked', done, {once: true});
-            video.currentTime = timeSec;
-            if (Math.abs(video.currentTime - timeSec) < 0.002 && video.readyState >= 2) done();
-          });
-          video.pause();
-          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-        }""",
-        time_sec,
-    )
-
-
 def image_diff_percent(first_png: bytes, last_png: bytes) -> float:
     first = Image.open(io.BytesIO(first_png)).convert("RGB")
     last = Image.open(io.BytesIO(last_png)).convert("RGB")
@@ -121,42 +104,13 @@ def image_diff_percent(first_png: bytes, last_png: bytes) -> float:
     return sum(mean) / (3 * 255) * 100
 
 
-def validate_playback(page: Page, html_path: Path, entry: dict, duration: float) -> None:
-    filename = entry["file"]
-    source = (ASSET_DIR / filename).as_uri()
-    html_path.write_text(
-        f"""<!doctype html><html><head><meta charset="utf-8"><style>
-        html,body{{margin:0;width:1280px;height:720px;background:#f8fafc;overflow:hidden}}
-        video{{display:block;width:1280px;height:720px;object-fit:contain}}
-        </style></head><body><video id="video" src="{source}" autoplay muted loop playsinline></video></body></html>""",
-        encoding="utf-8",
-    )
-    page.goto(html_path.as_uri(), wait_until="load")
-    page.wait_for_function("document.querySelector('video').readyState >= 2")
-    page.evaluate("document.querySelector('video').play()")
-    start_time = float(page.locator("video").evaluate("video => video.currentTime"))
-    page.wait_for_timeout(650)
-    end_time = float(page.locator("video").evaluate("video => video.currentTime"))
-    paused = bool(page.locator("video").evaluate("video => video.paused"))
-    check(not paused, f"{filename}: autoplay video is paused")
-    check(end_time - start_time >= 0.25, f"{filename}: currentTime did not advance ({start_time:.3f}->{end_time:.3f})")
-
-    seek(page, 0.001)
-    first_png = page.locator("video").screenshot(type="png")
-    seek(page, max(0.001, duration - 0.05))
-    last_png = page.locator("video").screenshot(type="png")
-    mae_percent = image_diff_percent(first_png, last_png)
-    check(mae_percent <= LOOP_MAE_LIMIT_PERCENT, f"{filename}: loop MAE {mae_percent:.4f}% exceeds {LOOP_MAE_LIMIT_PERCENT:.2f}%")
-    print(f"PLAYBACK PASS {filename}: autoplay currentTime={start_time:.3f}->{end_time:.3f}s; loop t=0.001 vs t={duration - 0.05:.3f} MAE={mae_percent:.4f}% <= {LOOP_MAE_LIMIT_PERCENT:.2f}%")
-
-
 def main() -> None:
     check(FFPROBE.is_file(), f"ffprobe missing: {FFPROBE}")
     check(MANIFEST_PATH.is_file(), f"manifest missing: {MANIFEST_PATH}")
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     check(manifest.get("schemaVersion") == 1, "manifest schemaVersion must be 1")
     entries = manifest.get("clips")
-    check(isinstance(entries, list) and len(entries) == 5, "manifest must contain exactly 5 clips")
+    check(isinstance(entries, list) and len(entries) == 6, "manifest must contain exactly 6 clips")
     check({entry.get("file") for entry in entries} == set(EXPECTED_FILES), "manifest clip set mismatch")
 
     durations = {entry["file"]: validate_metadata(entry) for entry in entries}
@@ -164,20 +118,24 @@ def main() -> None:
     if temp_dir.exists():
         shutil.rmtree(temp_dir)
     temp_dir.mkdir(parents=True)
-    html_path = temp_dir / "probe.html"
     try:
-        with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(
-                headless=True,
-                args=["--allow-file-access-from-files", "--autoplay-policy=no-user-gesture-required"],
-            )
-            page = browser.new_page(viewport={"width": 1280, "height": 720})
-            for entry in entries:
-                validate_playback(page, html_path, entry, durations[entry["file"]])
-            browser.close()
+        check(PLAYBACK_SCRIPT.is_file(), f"playback validator missing: {PLAYBACK_SCRIPT}")
+        subprocess.run(
+            ["node", str(PLAYBACK_SCRIPT), str(MANIFEST_PATH), str(ASSET_DIR), str(temp_dir)],
+            cwd=PROJECT_DIR,
+            check=True,
+        )
+        for entry in entries:
+            filename = entry["file"]
+            first_png = (temp_dir / f"{filename}.first.png").read_bytes()
+            last_png = (temp_dir / f"{filename}.last.png").read_bytes()
+            mae_percent = image_diff_percent(first_png, last_png)
+            check(mae_percent <= LOOP_MAE_LIMIT_PERCENT, f"{filename}: loop MAE {mae_percent:.4f}% exceeds {LOOP_MAE_LIMIT_PERCENT:.2f}%")
+            duration = durations[filename]
+            print(f"LOOP PASS {filename}: t=0.001 vs t={duration - 0.05:.3f} MAE={mae_percent:.4f}% <= {LOOP_MAE_LIMIT_PERCENT:.2f}%")
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
-    print("VALIDATION PASS: 5/5 metadata + autoplay + currentTime + loop-frame checks")
+    print("VALIDATION PASS: 6/6 metadata + local-Playwright autoplay + currentTime + loop-frame checks")
 
 
 if __name__ == "__main__":

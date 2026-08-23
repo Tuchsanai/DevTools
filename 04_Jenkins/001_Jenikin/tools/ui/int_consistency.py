@@ -8,11 +8,9 @@ import html
 import os
 import re
 import shutil
+import subprocess
 import tempfile
 from pathlib import Path
-
-from playwright.sync_api import sync_playwright
-
 
 ROOT = Path(__file__).resolve().parents[2]
 LABS = [
@@ -110,6 +108,7 @@ ALLOWED_LAB_SCREENSHOTS = {
     "lab4_s07b_poll_save.png",
     "lab4_s08_git_polling_log.png",
     "lab4_s09_scm_build_cause.png",
+    "lab4_s10_dockerhub_sha_tags.png",
     "lab5_s01_available_plugin.png",
     "lab5_s02_plugin_download_restart.png",
     "lab5_s02b_restart_checkbox.png",
@@ -126,10 +125,6 @@ ALLOWED_LAB_SCREENSHOTS = {
     "lab5_s08b_smee_head_commit.png",
     "lab5_s09_github_push_build.png",
     "lab5_s10_checkout_sha.png",
-    "lab6_app_v1.png",
-    "lab6_app_v2.png",
-    "lab6_hub_tags.png",
-    "lab6_pipeline_full.png",
     "lab6_s01_github_new_repo.png",
     "lab6_s02_github_repo_after_push.png",
     "lab6_s03_smee_channel.png",
@@ -272,13 +267,13 @@ def bash_block_and_findings(documents: dict[str, str]) -> list[str]:
 
 def deck_body_text(deck_path: Path) -> tuple[str, str, bool]:
     deck_html = deck_path.read_text(encoding="utf-8")
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=True)
-        page = browser.new_page()
-        response = page.goto(deck_path.as_uri(), wait_until="domcontentloaded")
-        deck_text = page.locator("body").text_content() or ""
-        browser.close()
-    return deck_html, deck_text, response is not None and response.ok
+    result = subprocess.run(
+        ["node", str(ROOT / "tools/ui/deck_body_text.cjs"), str(deck_path)],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+    )
+    return deck_html, result.stdout, result.returncode == 0
 
 
 def run_self_test() -> int:
@@ -393,16 +388,17 @@ def main() -> int:
     checks.append(report(not asset_findings, "LAB 4/5/6 screenshots match the exact active allowlist"
                          + ("" if not asset_findings else f"; found={asset_findings}")))
 
-    integration = (ROOT / "docs/INTEGRATION.md").read_text(encoding="utf-8")
     lab4_annotations = (ROOT / "tools/ui/annotations/lab4.json").read_text(encoding="utf-8")
+    fixture_manifest = (ROOT / "tools/bootstrap/fixtures/hello-ci.files").read_text(encoding="utf-8")
+    bootstrap_common = (ROOT / "tools/bootstrap/common.sh").read_text(encoding="utf-8")
     repo_visual_contract = (
-        "post-marker fixture commit `1f3f619`" in integration
-        and "① 4 ไฟล์รวม marker" in lab4_annotations
-        and "4 ไฟล์: .course-cicd2569" in (ROOT / "tools/slides_src.html").read_text(encoding="utf-8")
-        and "หลักฐานจริงหลัง marker fix" in readmes["004_LAB_Pipeline_From_Git"]
+        all(name in fixture_manifest for name in (".course-cicd2569", ".dockerignore", "Dockerfile", "Jenkinsfile", "hello.sh", "expected.txt", "app/index.html"))
+        and "stage_hello_ci_fixture" in bootstrap_common
+        and "① source + marker ครบ" in lab4_annotations
+        and "ownership marker" in readmes["004_LAB_Pipeline_From_Git"]
     )
     checks.append(report(repo_visual_contract,
-                         "LAB 4 repository visual is registered after the marker fix with four-file captions"))
+                         "LAB 4 complete source fixture and marker visual contract are registered"))
 
     deck_path = ROOT / "Jenkins_CICD_Docker_Slides.html"
     deck_html, deck_text, deck_ok = deck_body_text(deck_path)

@@ -60,6 +60,18 @@
       "hasAudio": false,
       "bytes": 141843,
       "sha256": "950300a1897ec564d16773a320107a75e053a936fe6c68404c86ae9a2dd6856f"
+    },
+    {
+      "file": "mo_lab4_sha_digest.mp4",
+      "compositionId": "mo-lab4-sha-digest",
+      "durationSec": 8.0,
+      "fps": 30.0,
+      "width": 1280,
+      "height": 720,
+      "codec": "h264",
+      "hasAudio": false,
+      "bytes": 128583,
+      "sha256": "21ab42c756c0893e7fb813031ac0ac1539f2b509112ba2f848baf8ce746bc519"
     }
   ]
 }

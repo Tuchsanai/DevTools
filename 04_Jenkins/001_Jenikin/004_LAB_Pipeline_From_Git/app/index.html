@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pipeline จาก GitHub</title>
+  <style>
+    :root{color-scheme:dark;--ink:#e8fbff;--muted:#9cc5d0;--cyan:#38d9ff;--green:#5df2a0;--panel:#102735}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 18% 15%,#14506a 0,#07141d 40%,#040a0f 100%);font-family:system-ui,"Noto Sans Thai",sans-serif;color:var(--ink)}
+    main{width:min(960px,92vw);padding:56px;border:1px solid #2d6172;border-radius:30px;background:linear-gradient(145deg,#102735e8,#08131be8);box-shadow:0 30px 90px #000a}
+    .badge{display:inline-flex;gap:10px;align-items:center;padding:8px 14px;border-radius:999px;background:#103d36;color:var(--green);font-weight:800;letter-spacing:.06em}.dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 18px var(--green)}
+    h1{font-size:clamp(42px,7vw,82px);line-height:1.02;margin:28px 0 16px;letter-spacing:-.04em}p{font-size:clamp(19px,2.4vw,28px);color:var(--muted);line-height:1.5;margin:0 0 38px}
+    .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.step{padding:20px 14px;border:1px solid #286177;border-radius:18px;background:var(--panel);text-align:center}.step b{display:block;color:var(--cyan);font-size:22px;margin-bottom:6px}.step span{color:var(--muted)}
+    footer{margin-top:34px;padding-top:20px;border-top:1px solid #244453;color:#789daa;font-family:ui-monospace,monospace}@media(max-width:720px){main{padding:30px}.flow{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body><main>
+  <div class="badge"><span class="dot"></span> BUILD VERIFIED</div>
+  <h1>Pipeline จาก GitHub<br>ถึง Docker Hub</h1>
+  <p>หนึ่ง commit ระบุที่มาได้ด้วย SHA, OCI label และ immutable digest</p>
+  <section class="flow" aria-label="CI pipeline">
+    <div class="step"><b>01</b><span>Checkout</span></div><div class="step"><b>02</b><span>Test</span></div>
+    <div class="step"><b>03</b><span>Build + Push</span></div><div class="step"><b>04</b><span>Pull by digest</span></div>
+  </section>
+  <footer>Git SHA → image tag → sha256 digest</footer>
+</main></body>
+</html>

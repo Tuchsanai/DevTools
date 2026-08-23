@@ -39,8 +39,8 @@ def human_size(size: int) -> str:
 def read_manifest() -> dict[str, dict]:
     raw = json.loads(MANIFEST.read_text(encoding="utf-8"))
     clips = {clip["file"]: clip for clip in raw["clips"]}
-    if len(clips) != 5:
-        raise ValueError(f"expected 5 manifest clips, found {len(clips)}")
+    if len(clips) != 6:
+        raise ValueError(f"expected 6 manifest clips, found {len(clips)}")
     return clips
 
 
