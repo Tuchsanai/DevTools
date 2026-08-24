@@ -2,222 +2,493 @@
 
 ![PetTech × DevTools — จากแนวคิดสู่ระบบที่พร้อมส่งมอบ](../img/pettech-devtools-hero.png)
 
-พัฒนาระบบที่แก้ปัญหาเกี่ยวกับสัตว์เลี้ยง และสาธิตกระบวนการพัฒนาตั้งแต่จัดการ Source Code, Build, Test, Deploy จนถึงตรวจสอบการทำงานของระบบด้วยเครื่องมือที่เรียนในรายวิชา
+พัฒนาระบบที่แก้ปัญหาเกี่ยวกับสัตว์เลี้ยง และสาธิตกระบวนการพัฒนาตั้งแต่การจัดการ Source Code, Build, Test, Deploy จนถึงการตรวจสอบการทำงานของระบบด้วยเครื่องมือที่เรียนในรายวิชา
 
 [← README หลักและกำหนดการ](../readme.md)
 
-## เป้าหมาย
+> **หลักการกลาง:** ทุกสิ่งที่ทีมเสนอว่า “ระบบทำได้” จะกลายเป็น Acceptance Criteria ที่ต้อง Implementation และ Demonstrate ได้จริงจากรุ่นที่ส่ง
 
-ผลงานต้องตอบได้ 3 เรื่อง:
+## เส้นทางของเอกสาร
 
-1. ปัญหาคืออะไร เกิดกับใคร และมีหลักฐานใดสนับสนุน
-2. ระบบแก้ปัญหาอย่างไร และมี Demo ที่ใช้งานได้
-3. ทีมใช้ DevTools ทำให้การพัฒนาและ Deploy ทำซ้ำได้อย่างไร
+| ออกแบบและสร้าง | พิสูจน์และประเมิน | นำเสนอและส่งมอบ |
+|---|---|---|
+| [1. มาตรฐานผลงาน](#standards) | [4. Proposal → Verification](#traceability) | [5. การนำเสนอ](#presentation) |
+| [2. ระบบและ System Design](#system-design) | [6. Evaluation Matrix](#evaluation) | [8. การใช้ AI](#ai-tools) |
+| [3. Course Container](#course-container) | [7. มิติการประเมิน](#evaluation-dimensions) | [9. แนวทางตรวจ](#verification-guide) · [10. Checklist](#submission-checklist) |
 
-หัวข้ออาจเป็นระบบดูแลสุขภาพสัตว์เลี้ยง การนัดหมาย การติดตามสัตว์สูญหาย การหาบ้านหรือพี่เลี้ยง หรือแนวคิดอื่นภายใต้ธีม PetTech
+| Proposal | Implementation | Verification |
+|---|---|---|
+| ระบุปัญหา ผู้ใช้ Requirement และผลที่รับปาก | สร้างระบบจริงให้ทุกองค์ประกอบทำงานร่วมกัน | ตรวจจาก Acceptance Criteria และบันทึกผลจริง/Defect |
 
-## ข้อกำหนดทางเทคนิค
+---
 
-### ส่วนที่ทุกกลุ่มต้องมี
+<a id="standards"></a>
 
-#### 1. Git และ GitHub
+## 1. เป้าหมายและมาตรฐานของผลงาน
 
-- สมาชิกพัฒนางานผ่าน Branch และรวมงานด้วย Merge หรือ Pull Request
-- มี Commit history ที่แสดงการมีส่วนร่วมของสมาชิก
-- ใช้ `.gitignore` และห้ามเก็บ Password, Token หรือ Secret ใน Repository
+ผลงานต้องตอบได้อย่างเป็นเหตุเป็นผลว่า:
 
-#### 2. Docker และ Docker Compose
+1. ปัญหาคืออะไร เกิดกับใคร ในบริบทใด และมีหลักฐานใดยืนยันว่าควรแก้ไข
+2. ทีมเสนอ Solution, Use Case, Feature และผลลัพธ์อะไรไว้ และระบบทำได้จริงตรงตามนั้นหรือไม่
+3. สถาปัตยกรรมและ DevTools ทำให้ระบบ Build, Test, Deploy, Operate และกู้คืนได้อย่างไร
 
-- Service ที่ทีมพัฒนามี `Dockerfile`
-- ใช้ `compose.yaml` สำหรับรันระบบทั้งหมด
-- กำหนด Network, Port, Environment Variable และ Volume เท่าที่ระบบจำเป็นต้องใช้
-- ผู้ตรวจสามารถเริ่มระบบตามคำสั่งใน README ได้
+ระบบควรมีคุณภาพใกล้เคียง Production ภายในขอบเขตของ Mini Project: ผู้ใช้สามารถทำงานหลักได้จริง ข้อมูลถูกต้องและคงอยู่ องค์ประกอบเชื่อมต่อกันได้ รับมือกับกรณีผิดพลาดที่สำคัญ และสามารถส่งมอบซ้ำได้ ไม่ใช่เพียง Prototype, Mockup หรือหน้าจอที่แสดงผลได้
 
-#### 3. Jenkins CI/CD
+หัวข้ออาจเป็นระบบดูแลสุขภาพสัตว์เลี้ยง การนัดหมาย การติดตามสัตว์สูญหาย การหาบ้านหรือพี่เลี้ยง หรือแนวคิดอื่นภายใต้ธีม PetTech การเลือกเทคโนโลยีและรูปแบบ Implementation เป็นอิสระ ตราบใดที่ตอบ Requirement และพิสูจน์การทำงานได้
 
-- เก็บ `Jenkinsfile` ไว้ใน Repository
-- Pipeline อย่างน้อยต้องทำ `Checkout → Test → Build Image → Push Image → Deploy → Verify`
-- แสดงผล Pipeline ที่สำเร็จ และอธิบายการ Trigger จาก GitHub ด้วย SCM หรือ Webhook
+**Generated Image 1 — ทีมพัฒนาและทดสอบระบบให้พร้อมใช้งานจริง**
 
-### ส่วนประยุกต์: เลือกอย่างน้อย 2 หัวข้อ
+![ทีมพัฒนากำลังสร้างและทดสอบระบบ PetTech ที่มี Web, Automated Test, Container และ Deployment](images/pettech-production-team.png)
 
-เลือกเฉพาะเครื่องมือที่เหมาะกับปัญหาและสถาปัตยกรรมของระบบ พร้อมสาธิตผลการทำงานจริง
+**Diagram 1 — จากปัญหาสู่ผลลัพธ์ที่พิสูจน์ได้**
 
-| หัวข้อ | สิ่งที่ต้องแสดง |
-|---|---|
-| **Traefik** | Reverse Proxy, Routing, Load Balancing หรือ Middleware |
-| **RabbitMQ หรือ Kafka** | Queue/Event flow, Producer–Consumer และเหตุผลที่ระบบต้องใช้ Broker |
-| **Prometheus และ Grafana** | Metrics ของระบบและ Dashboard; เพิ่ม Alertmanager หากมีเงื่อนไขแจ้งเตือน |
-| **Kubernetes** | Manifest แบบ YAML และการ Deploy อย่างน้อยด้วย Pod และ Service |
-
-> ไม่จำเป็นต้องใส่ทุกเครื่องมือ หากเครื่องมือนั้นไม่ช่วยแก้ Requirement ของระบบ
-
-## หลักฐานที่ต้องมีใน Repository
-
-```text
-project/
-├── README.md              # ปัญหา วิธีรัน และวิธีทดสอบ
-├── compose.yaml
-├── Jenkinsfile
-├── src/                   # Source code ของระบบ
-├── tests/                 # Automated tests
-├── docs/
-│   ├── architecture.*     # System architecture
-│   └── pipeline.*         # CI/CD flow
-└── k8s/ หรือ monitoring/  # ตามหัวข้อประยุกต์ที่เลือก
+```mermaid
+flowchart LR
+    A["Problem + Evidence"] --> B["Target User + Use Case"]
+    B --> C["Solution + Requirements"]
+    C --> D["Production-like System"]
+    D --> E["Verification + Evidence"]
+    E --> F["Outcome ที่ยืนยันได้"]
+    F -.-> A
 ```
 
-ชื่อโฟลเดอร์ปรับได้ตามเทคโนโลยี แต่ต้องหาไฟล์สำคัญได้ง่าย และ README ของทีมต้องระบุ:
+---
 
-- Problem, Target User และขอบเขตของระบบ
-- Architecture และหน้าที่ของแต่ละ Service
-- เครื่องมือที่เลือกใช้และเหตุผล
-- ขั้นตอนรัน ทดสอบ และหยุดระบบ
-- URL, Port และบัญชีทดสอบที่จำเป็น
-- ข้อจำกัดหรือส่วนที่ยังไม่สมบูรณ์
+<a id="system-design"></a>
 
-## โครงสร้างการนำเสนอ 10 นาที
+## 2. ระบบที่ทุกกลุ่มต้องส่งมอบ
 
-| เวลาโดยประมาณ | หัวข้อ |
-|---:|---|
-| 1 นาที 30 วินาที | **Problem Statement** — ปัญหา หลักฐาน และผลกระทบหากไม่แก้ |
-| 1 นาที 30 วินาที | **Solution** — แนวทางแก้ ความแตกต่าง และ Prototype |
-| 1 นาที | **Target Users / Market** — ผู้ใช้ ขนาดกลุ่ม และช่องทางเข้าถึง |
-| 30 วินาที | **Social Impact** — ผลลัพธ์และวิธีวัด |
-| 30 วินาที | **Team** — บทบาท ความถนัด และเหตุผลที่ทีมเหมาะกับโจทย์ |
-| 1 นาที | **Sustainability** — รายได้ ค่าใช้จ่าย แผนระยะยาว และข้อได้เปรียบ |
-| 4 นาที | **Demo, DevTools & System Design** — Demo, Architecture และ Pipeline |
+### 2.1 องค์ประกอบหลักที่จำเป็น
 
-เวลาถาม–ตอบและลำดับการนำเสนอให้ยึดตาม [README หลัก](../readme.md#-กำหนดการนำเสนอผลงาน)
+กำหนดเฉพาะองค์ประกอบหลักต่อไปนี้ รายละเอียดการออกแบบให้แต่ละกลุ่มตัดสินใจตามบริบทของระบบ
 
-## เกณฑ์การให้คะแนน (100 คะแนน)
+1. **Requirement และ Acceptance Criteria ที่ตรวจสอบได้** — ระบุ Problem, Target User, Use Case, Feature, ผลลัพธ์ที่คาดหวัง และเงื่อนไขที่ใช้ตัดสินว่าทำสำเร็จอย่างชัดเจน
+2. **ระบบที่ใช้งานได้จริง** — มี Web Interface, Database และ Backend/Service ที่เหมาะกับโครงการ โดยเส้นทางหลักต้องทำงานแบบ End-to-End
+3. **Git และ GitHub** — ใช้จัดการเวอร์ชัน การทำงานร่วมกัน และการทบทวนการเปลี่ยนแปลงอย่างเหมาะสม พร้อมป้องกัน Secret และข้อมูลอ่อนไหว
+4. **Docker และ Docker Compose** — ระบบและ Dependency ที่จำเป็นถูกบรรจุและเชื่อมต่อกันอย่างทำซ้ำได้ แยก Configuration และข้อมูลที่ต้องคงอยู่ออกจาก Image อย่างเหมาะสม
+5. **Jenkins CI/CD และ Automated Verification** — Pipeline ตรวจสอบ Build และ Deploy หลังเกิดการเปลี่ยนแปลงโค้ด พร้อมยืนยันผลหลัง Deploy ได้ ขั้นตอนย่อยปรับได้ตามสถาปัตยกรรม
+6. **System Design, Integration และ Operability** — ออกแบบองค์ประกอบให้รองรับ Requirement สื่อสารกันถูกต้อง ตรวจสอบสถานะและวินิจฉัยปัญหาได้ รวมถึงจัดการ Error, Security, Privacy และกรณีบริการภายนอกขัดข้องตามความเสี่ยงของโครงการ
 
-| # | หัวข้อ | สิ่งที่ใช้พิจารณา | คะแนน |
-|---:|---|---|---:|
-| 1 | **Problem Statement** | ปัญหาชัด เข้าใจง่าย มีหลักฐานจากสถิติ บทสัมภาษณ์ Insight กรณีศึกษา หรือการลงพื้นที่ และอธิบายผลกระทบหากไม่แก้ | **15** |
-| 2 | **Solution** | Prototype ทำได้จริง แก้สาเหตุของปัญหา มีความแตกต่างจากทางเลือกเดิม และมี Feedback จากกลุ่มเป้าหมาย | **15** |
-| 3 | **Target Users / Market** | ระบุกลุ่มหลักด้วย Persona หรือ Segmentation มีข้อมูลขนาดกลุ่มเป้าหมาย ช่องทางเข้าถึง และเครือข่ายที่เกี่ยวข้อง | **10** |
-| 4 | **Social Impact & Assessment** | ระบุผลลัพธ์ที่ต้องการ ผู้ได้รับประโยชน์ ตัวชี้วัด และวิธีเก็บข้อมูลเพื่อประเมินผล | **10** |
-| 5 | **Team & Network** | บทบาทและจุดเด่นของสมาชิกสอดคล้องกับงาน มีเหตุผลหรือประสบการณ์ที่เชื่อมโยงกับปัญหา | **5** |
-| 6 | **Sustainability & Unfair Advantage** | มีรูปแบบรายได้หรือแหล่งสนับสนุน ประมาณรายได้–ค่าใช้จ่าย แผนระยะยาว และข้อได้เปรียบที่ทำให้โครงการดำเนินต่อได้ | **10** |
-| 7 | **Demo, DevTools & System Design** | ระบบทำงานจริง Architecture เหมาะสม และใช้เครื่องมือในรายวิชาเพื่อ Build, Test, Deploy และ Monitor ได้ | **35** |
-|  | **รวม** |  | **100** |
+สามารถเลือกใช้ Traefik, RabbitMQ, Kafka, Prometheus, Grafana, Kubernetes หรือเครื่องมืออื่นได้ตามความจำเป็น ไม่พิจารณาจากจำนวนเครื่องมือ แต่พิจารณาจากเหตุผลที่เลือก ความถูกต้องของ Integration และผลที่ตรวจสอบได้
 
-### วิธีอ่านเกณฑ์
+### 2.2 ตัวอย่าง User Flow และ System Architecture
 
-- **ได้คะแนนเต็ม:** เนื้อหาครบ มีหลักฐานตรวจสอบได้ ผลงานทำงานจริง และทีมอธิบายเหตุผลได้
-- **ได้คะแนนบางส่วน:** มีผลงานแต่ยังไม่ครบ หลักฐานไม่ชัด หรือสาธิตได้เพียงบางกรณี
-- **ไม่ได้คะแนนในรายการนั้น:** ไม่มีหลักฐาน ไม่สามารถเปิดผลงานให้ตรวจ หรืออธิบายไม่ได้ว่าใช้งานอย่างไร
-- หลักฐานสามารถอยู่ใน Slide, Report, Repository, Pipeline log หรือ Demo แต่ต้องระบุตำแหน่งให้ผู้ตรวจหาได้ง่าย
+ตัวอย่างต่อไปนี้แสดงระดับความชัดเจนที่คาดหวัง โดยเริ่มจากสิ่งที่ผู้ใช้ทำจริง แล้วติดตามข้อมูลผ่าน Frontend, Backend, Database และ Service ที่เกี่ยวข้องจนผู้ใช้ได้รับผลลัพธ์
 
-### 1. Problem Statement (15 คะแนน)
+**Generated Image 2 — ตัวอย่างผู้ใช้ใช้งานระบบในสถานการณ์จริง**
 
-| รายการย่อย | สิ่งที่ต้องแสดง | คะแนน |
-|---|---|---:|
-| **นิยามปัญหาและผู้ได้รับผลกระทบ** | ระบุปัญหา ขอบเขต สถานการณ์ที่เกิด และผู้ที่ประสบปัญหาอย่างเจาะจง | **3** |
-| **หลักฐานว่าปัญหามีอยู่จริง** | ใช้สถิติ งานวิจัย บทสัมภาษณ์ แบบสอบถาม กรณีศึกษา หรือข้อมูลจากการลงพื้นที่ พร้อมแหล่งอ้างอิง | **5** |
-| **Insight และ Root cause** | อธิบายสาเหตุเบื้องหลัง ไม่หยุดเพียงอาการของปัญหา และเชื่อมโยงกับความต้องการของผู้ใช้ | **4** |
-| **ความสำคัญและการสื่อสาร** | อธิบายผลกระทบหากไม่แก้ด้วยภาษาที่เข้าใจง่าย อาจใช้ Persona หรือเรื่องราวประกอบโดยไม่กล่าวเกินหลักฐาน | **3** |
-| **รวม** |  | **15** |
+![เจ้าของสัตว์เลี้ยงใช้งาน Web Application ร่วมกับสัตวแพทย์ในคลินิก](images/pettech-real-world-use.png)
 
-คะแนนเต็มต้องมีหลักฐานมากกว่า Assumption และระบุที่มา วันที่ หรือจำนวนผู้ให้ข้อมูลเท่าที่เหมาะสม โดยไม่เปิดเผยข้อมูลส่วนบุคคล
+**Generated Image 3A — User Journey และ Core Application**
 
-### 2. Solution (15 คะแนน)
+![เจ้าของสัตว์เลี้ยงจองนัดหมายผ่าน React Web โดยคำขอผ่าน Traefik, FastAPI, Business Rules และ PostgreSQL ก่อนส่งผลยืนยันกลับ](images/pettech-system-design-user-flow.png)
 
-| รายการย่อย | สิ่งที่ต้องแสดง | คะแนน |
-|---|---|---:|
-| **Problem–Solution Fit** | อธิบายกลไกว่าฟีเจอร์หรือกระบวนการใดแก้ Root cause ข้อใด | **4** |
-| **ความเป็นไปได้และ Prototype** | มี Prototype หรือระบบที่แสดง User flow หลักและผลลัพธ์ที่ผู้ใช้ได้รับ | **5** |
-| **ความแตกต่าง** | เปรียบเทียบกับวิธีเดิมหรือ Solution ที่มีอยู่ด้วยเกณฑ์ที่ยุติธรรม | **3** |
-| **User validation** | มีผลทดลองใช้ Feedback หรือข้อมูลที่ทำให้เห็นว่า Solution ช่วยผู้ใช้ได้จริง | **3** |
-| **รวม** |  | **15** |
+**Generated Image 3B — Optional Integration, Background Job และ LLM Guardrail**
 
-การมีฟีเจอร์จำนวนมากไม่เท่ากับคะแนนสูง หากฟีเจอร์เหล่านั้นไม่เชื่อมกับปัญหาหรือไม่มีหลักฐานว่าใช้งานได้
+![Business Rules เชื่อมกับ RabbitMQ, Celery Worker, PostgreSQL, External Service และเส้นทาง LLM ที่ตรวจผลผ่าน Guardrail ก่อนส่งกลับ](images/pettech-system-design-integrations.png)
 
-### 3. Target Users / Target Market (10 คะแนน)
+**Generated Image 3C — CI/CD, Course Container และ Observability**
 
-| รายการย่อย | สิ่งที่ต้องแสดง | คะแนน |
-|---|---|---:|
-| **กลุ่มเป้าหมายหลัก** | ระบุ Primary user และผู้เกี่ยวข้องด้วย Persona หรือ Segmentation ที่ชัดเจน | **3** |
-| **ความต้องการและพฤติกรรม** | อธิบายบริบท Pain point และพฤติกรรมจากข้อมูลที่ศึกษา | **2** |
-| **ขนาดกลุ่มเป้าหมาย** | ประมาณจำนวนผู้ใช้หรือตลาด พร้อมแหล่งข้อมูลและวิธีคำนวณ | **2** |
-| **ช่องทางเข้าถึง** | ระบุวิธีเข้าถึงผู้ใช้และเครือข่ายหรือพันธมิตรที่ช่วยให้เกิดการใช้งานจริง | **3** |
-| **รวม** |  | **10** |
+![GitHub ส่งงานผ่าน Jenkins, Build and Test และ Container Image ไปยัง Docker Compose ภายใน Course Container พร้อม Logs and Metrics](images/pettech-system-design-delivery.png)
 
-Market size ที่ไม่มีที่มาหรือคำนวณจากสมมติฐานที่ไม่ระบุ จะได้คะแนนเพียงบางส่วน
+> Generated Image 3A–3C แยก System Design เป็นสามมุมมองเพื่อให้อ่านง่าย ส่วน Mermaid ด้านล่างเป็นภาพรวมรวมและเป็นแหล่งอ้างอิงความสัมพันธ์เชิงเทคนิค
 
-### 4. Social Impact & Assessment (10 คะแนน)
+**Diagram 2 — ตัวอย่าง System Design และเส้นทางการใช้งานของผู้ใช้**
 
-| รายการย่อย | สิ่งที่ต้องแสดง | คะแนน |
-|---|---|---:|
-| **ผลลัพธ์ที่ต้องการ** | อธิบายการเปลี่ยนแปลงที่คาดว่าจะเกิดกับสัตว์เลี้ยง ผู้ใช้ ผู้ให้บริการ หรือสังคม | **3** |
-| **ตัวชี้วัดความสำเร็จ** | กำหนด KPI ที่วัดผลได้และเชื่อมกับ Problem เช่น เวลา ค่าใช้จ่าย อัตราความสำเร็จ หรือคุณภาพบริการ | **3** |
-| **แผนประเมินผล** | ระบุ Baseline, เป้าหมาย, ระยะเวลา แหล่งข้อมูล และวิธีเก็บข้อมูล | **3** |
-| **ความเสี่ยงและจริยธรรม** | คำนึงถึงผลกระทบที่ไม่ตั้งใจ ความเป็นส่วนตัว และสวัสดิภาพสัตว์ | **1** |
-| **รวม** |  | **10** |
+```mermaid
+flowchart TB
+    subgraph UserFlow["ตัวอย่าง User Flow"]
+        User["เจ้าของสัตว์เลี้ยง"] --> Action["จองนัดหมาย / บันทึกสุขภาพ / ขอคำแนะนำ"]
+        Action --> Web["Frontend: React Web"]
+        Web --> Result["แสดงสถานะ ผลลัพธ์ หรือคำแนะนำแก่ผู้ใช้"]
+        Result --> User
+    end
 
-ควรแยก **Output** เช่น จำนวนผู้ลงทะเบียน ออกจาก **Outcome** เช่น ระยะเวลาค้นหาสัตว์สูญหายลดลง
+    subgraph Application["Application และ Data Flow"]
+        Web --> Gateway["Gateway: Traefik (ถ้าใช้)"]
+        Gateway --> API["Backend/API: FastAPI"]
+        API --> Rule["Business Rule และ Authorization"]
+        Rule <--> DB[("Database: PostgreSQL")]
+        Rule -.->|งานเบื้องหลัง| Broker["Broker: RabbitMQ (ถ้าใช้)"]
+        Broker -.-> Worker["Worker: Celery (ถ้าใช้)"]
+        Worker -.-> DB
+        Rule -.->|Prompt + Context| LLM["LLM Adapter: Python Module (ถ้าใช้)"]
+        LLM -.->|API หรือ Local Call| Model["Model Provider / Local Runtime"]
+        Model -.->|Generated Output| Guard["Validate / Guardrail / Fallback"]
+        Guard -.->|Validated Result| Rule
+        Rule -.->|API Call| External["Notification / Map / External Service (ถ้าใช้)"]
+        Rule --> Web
+    end
 
-### 5. Team & Network (5 คะแนน)
+    subgraph Delivery["Delivery และ Operation"]
+        GitHub["Git + GitHub"] --> Jenkins["Jenkins CI/CD"]
+        Jenkins --> Tests["Automated Verification"]
+        Tests --> Image["Container Image"]
+        Image --> Course["Course Container: tuchsanai/devtools:2569_1"]
+        Course --> Deploy["Docker Compose / Deployment"]
+        Deploy --> Web
+        Deploy --> API
+        Web --> Observe["Prometheus / Grafana / Log (ตามที่ใช้)"]
+        API --> Observe
+        DB --> Observe
+    end
+```
 
-| รายการย่อย | สิ่งที่ต้องแสดง | คะแนน |
-|---|---|---:|
-| **บทบาทและทักษะ** | ระบุความรับผิดชอบของสมาชิกและเหตุผลที่ทักษะนั้นเหมาะกับงาน | **2** |
-| **การมีส่วนร่วม** | มีหลักฐานจาก Git history, Pull Request, Issue, เอกสาร หรือผลงานที่รับผิดชอบ | **2** |
-| **แรงจูงใจและเครือข่าย** | อธิบายความสนใจ ประสบการณ์ หรือเครือข่ายที่ช่วยให้ทีมเข้าใจและเข้าถึงปัญหา | **1** |
-| **รวม** |  | **5** |
+Diagram นี้เป็นเพียงตัวอย่างความสัมพันธ์โดยรวม ไม่ได้บังคับให้ทุกกลุ่มทำระบบ PetTech แบบเดียวกันหรือใช้ Architecture เดียวกัน แต่ Diagram ของแต่ละกลุ่มต้องแสดงตัวอย่างสิ่งที่ผู้ใช้ทำจริงอย่างน้อยหนึ่ง End-to-End User Flow ตั้งแต่ Action ของผู้ใช้ การส่งข้อมูลผ่านองค์ประกอบต่าง ๆ ไปจนถึงผลลัพธ์ที่ผู้ใช้ได้รับ
 
-สมาชิกทุกคนต้องอธิบายส่วนที่ตนรับผิดชอบและความเชื่อมโยงกับระบบส่วนอื่นได้
+### 2.3 สิ่งที่ System Design ของแต่ละกลุ่มต้องอธิบาย
 
-### 6. Sustainability & Unfair Advantage (10 คะแนน)
+แต่ละกลุ่มต้องนำเสนอ System Design ของระบบตนเองอย่างชัดเจน โดยระบุ Technology ที่เลือกใช้ หน้าที่ของแต่ละองค์ประกอบ และการเชื่อมต่อระหว่างองค์ประกอบ ระบบอาจเพิ่ม ลด หรือแทนที่องค์ประกอบจากตัวอย่างได้ตามเหตุผลเชิงวิศวกรรม แต่ต้องไม่ปล่อยให้ส่วนสำคัญเป็นเพียงกล่องที่ไม่ทราบหน้าที่หรือวิธีเชื่อมต่อ
 
-| รายการย่อย | สิ่งที่ต้องแสดง | คะแนน |
-|---|---|---:|
-| **รูปแบบการดำเนินงาน** | อธิบายว่าใครสร้างคุณค่า ใครได้รับประโยชน์ และระบบต้องพึ่งทรัพยากรใด | **2** |
-| **รายได้หรือแหล่งสนับสนุน** | ระบุ Revenue model, ผู้จ่าย หรือแหล่งทุนที่สมเหตุสมผล | **2** |
-| **รายได้และค่าใช้จ่าย** | ประมาณตัวเลขหลักพร้อมสมมติฐาน เช่น ค่า Server, บุคลากร, การตลาด และจุดคุ้มทุน | **2** |
-| **แผนระยะยาวและความเสี่ยง** | มี Roadmap และแนวทางรับมือความเสี่ยงสำคัญ | **2** |
-| **Unfair advantage** | ระบุข้อได้เปรียบที่สร้างและรักษาได้ เช่น Data, Network, Domain expertise หรือ Partnership | **2** |
-| **รวม** |  | **10** |
+| ส่วนที่ต้องอธิบาย | สิ่งที่ควรเห็นใน System Design |
+|---|---|
+| User / Actor และ User Flow | ใครใช้ระบบ ทำรายการอะไร ลำดับการใช้งานเป็นอย่างไร และได้รับผลลัพธ์ใดกลับไป |
+| Frontend / Interface | ใช้ Technology หรือ Framework ใด รับ Input และแสดง Output อะไร ติดต่อ Backend หรือ Service ใด |
+| Backend / API | ใช้ Language และ Framework ใด รับผิดชอบ Business Rule ใด มี Authentication/Authorization อย่างไร และเปิด Endpoint หรือ Interface แบบใด |
+| Database / Storage | ใช้ระบบจัดเก็บชนิดใด เก็บข้อมูลสำคัญอะไร ใครเป็นผู้เขียนหรืออ่านข้อมูล และจัดการ Schema/Migration/Persistence อย่างไร |
+| Integration และเครื่องมืออื่น | ระบุ Gateway, Message Broker, Cache, Object Storage, Worker, Monitoring หรือ External Service ที่ใช้ พร้อมหน้าที่และวิธีเชื่อมต่อ |
+| LLM / AI Module | ระบุให้ชัดว่า “ใช้” หรือ “ไม่ใช้” หากใช้ ต้องแสดง Model/Provider หรือ Runtime, Data/Prompt Flow, การตรวจสอบ Output, Guardrail, Fallback, Privacy และการจัดการ Secret |
+| Deployment และ Verification | ระบุ Container ของแต่ละองค์ประกอบ Network/Port/Health Check ที่จำเป็น เส้นทาง CI/CD และวิธีตรวจสอบระบบใน Course Container |
 
-ไม่จำเป็นต้องมีรายได้ในระยะแรก แต่ต้องอธิบายได้ว่าโครงการจะมีทรัพยากรเพียงพอสำหรับดำเนินงานต่ออย่างไร
+สำหรับทุกเส้นเชื่อมที่สำคัญ ควรอธิบายทิศทางการสื่อสาร ชนิดข้อมูลหรือคำสั่งที่ส่ง Protocol/Interface ที่ใช้ และพฤติกรรมเมื่อปลายทางผิดพลาด ไม่จำเป็นต้องมี LLM Module หากไม่เกี่ยวข้องกับปัญหา และการไม่ใช้ LLM ไม่ถือเป็นข้อเสีย แต่หากเสนอความสามารถ AI/LLM ความสามารถนั้นจะกลายเป็น Requirement และ Acceptance Criteria ที่ต้อง Demonstrate ได้จริงเช่นเดียวกับ Feature อื่น
 
-### 7. Demo, DevTools & System Design (35 คะแนน)
+### 2.4 หลักฐานใน Repository
 
-| ด้าน | รายการย่อยและหลักฐานที่ต้องแสดง | คะแนน |
-|---|---|---:|
-| **Demo และ System Design** | User flow หลักทำงานจริง (4), อธิบาย Frontend/Backend/Data flow (3), Architecture รองรับ Requirement (2), ระบุข้อจำกัดและกรณีผิดพลาด (1) | **10** |
-| **Git Collaboration** | ใช้ Branch และ Merge/Pull Request (2), Commit history สื่อความหมายและเห็นการมีส่วนร่วม (2), `.gitignore` ถูกต้อง (1) | **5** |
-| **Docker** | `Dockerfile` Build ซ้ำได้ (2), `compose.yaml` เชื่อม Service/Network/Environment/Volume ถูกต้อง (2), มีวิธีตรวจสถานะระบบ (1) | **5** |
-| **Jenkins CI/CD** | เก็บ `Jenkinsfile` ใน Repository และ Trigger จาก GitHub (1), Automated test (2), Build และ Push Image (2), Deploy และ Verify ผล (2) | **7** |
-| **เครื่องมือประยุกต์** | เลือกอย่างน้อย 2 หัวข้ออย่างมีเหตุผล (1), เชื่อมกับระบบจริง (2), สาธิตผลลัพธ์หรือ Failure case ได้ (2) | **5** |
-| **ทำซ้ำได้และปลอดภัย** | README ระบุขั้นตอนครบ (1), ไม่เก็บ Secret ใน Repository/Image (1), ผู้ตรวจเริ่มและทดสอบระบบตามเอกสารได้ (1) | **3** |
-| **รวม** |  | **35** |
+แต่ละกลุ่มออกแบบโครงสร้าง Repository และรูปแบบหลักฐานได้เองตามเทคโนโลยีและ Workflow ของทีม ไม่บังคับชื่อไฟล์ ชื่อโฟลเดอร์ โครงสร้างโค้ด หรือแบบ Diagram ตายตัว
 
-หลักฐานทางเทคนิคควรเป็นการสาธิตจาก Repository และระบบจริง ภาพหน้าจออย่างเดียวได้เพียงคะแนนบางส่วนหากไม่สามารถตรวจสอบการทำงานได้
+หลักฐานโดยรวมต้องทำให้ผู้ตรวจเข้าใจขอบเขตที่ทีมรับปาก เริ่มระบบ ทำซ้ำกระบวนการสำคัญ และตรวจสอบคำกล่าวอ้างได้ ทีมอาจใช้โค้ด เอกสาร Automated Test, Pipeline result, Log, ประวัติการทำงาน หรือหลักฐานอื่นที่เหมาะสมก็ได้ โดยระบุให้ผู้ตรวจหาพบได้ง่าย หลักฐานต้องสะท้อนสถานะปัจจุบันของระบบ ไม่ใช่เพียงภาพหรือผลลัพธ์จากรุ่นที่ไม่ตรงกับงานที่ส่ง
 
-### หลักการพิจารณาร่วม
+---
 
-- ข้ออ้างที่ไม่มีแหล่งข้อมูลหรือหลักฐานรองรับจะได้คะแนนไม่เท่ากับผลที่ตรวจสอบได้
-- Demo จากวิดีโอใช้เป็นแผนสำรองได้ แต่ต้องมี Repository, Log และหลักฐาน Pipeline ประกอบ
-- หากบริการภายนอกล่ม ทีมต้องใช้หลักฐานสำรองและอธิบายวิธีตรวจสอบหรือกู้ระบบ
-- การใส่เครื่องมือจำนวนมากไม่ทำให้ได้คะแนนเพิ่ม หากอธิบายเหตุผลหรือสาธิตการทำงานไม่ได้
-- ผลงานหรือข้อมูลที่นำมาจากแหล่งอื่นต้องระบุที่มาอย่างชัดเจน
+<a id="course-container"></a>
 
-## Checklist ก่อนส่งและนำเสนอ
+## 3. สภาพแวดล้อมมาตรฐานสำหรับทดสอบระบบ
 
-- [ ] มีหลักฐานยืนยันว่า Problem เกิดขึ้นจริง
-- [ ] ระบุ Target User, ขนาดกลุ่ม และช่องทางเข้าถึงได้
-- [ ] มี Prototype หรือ Feedback ที่สนับสนุนว่า Solution แก้ปัญหาได้
-- [ ] มีตัวชี้วัด Social Impact และวิธีประเมินผล
-- [ ] ระบุบทบาทสมาชิก รูปแบบรายได้ ค่าใช้จ่าย และแผนระยะยาว
-- [ ] Demo เส้นทางหลักทำงานได้
-- [ ] สมาชิกมีหลักฐานการทำงานใน Git history
-- [ ] `docker compose up` เริ่มระบบได้ตาม README
-- [ ] Automated tests ผ่าน
-- [ ] Jenkins Pipeline ผ่านครบทุก Stage
-- [ ] หัวข้อประยุกต์อย่างน้อย 2 หัวข้อมีหลักฐานและสาธิตได้
-- [ ] ไม่มี Secret หรือข้อมูลส่วนบุคคลใน Repository และ Docker Image
-- [ ] มี Architecture Diagram และ Pipeline Diagram
-- [ ] เตรียมวิดีโอหรือภาพสำรองกรณีระบบภายนอกใช้งานไม่ได้
+> **ข้อกำหนดสำคัญ:** การตรวจและทดสอบระบบอย่างเป็นทางการจะทำภายใน Container Environment ของรายวิชาที่กำหนดให้เท่านั้น
+
+ให้ใช้ภาพแวดล้อมและวิธีเตรียมจาก [Full-stack Gateway + Broker — ChongJai Café](../../03_Application_Docker/04_Fullstack_Gateway_Broker_App/readme.md#เตรียมเครื่องเรียนครั้งเดียว) ซึ่งปัจจุบันกำหนดให้ใช้ Image `tuchsanai/devtools:2569_1` เป็นกล่อง Docker-in-Docker ของรายวิชา โดย Clone หรือ Checkout รุ่นที่ส่งเข้าไปภายในกล่อง แล้วจึงรัน Container ของโครงการผ่าน Docker/Docker Compose ภายในนั้น
+
+- ทีมต้องทดสอบรุ่นที่ส่งในกล่องของรายวิชาก่อนส่งมอบ และต้องทำให้ขั้นตอนเริ่มระบบ ทดสอบ หยุด และเก็บกวาดทำซ้ำได้ใน Environment นี้
+- ระบบต้องไม่พึ่งไฟล์ Runtime, Package, Configuration หรือสถานะที่มีอยู่เฉพาะบนเครื่องของสมาชิก และต้องไม่กำหนดพอร์ตหรือทรัพยากรที่ชนกับข้อจำกัดของกล่อง
+- ผลจากเครื่องส่วนตัว Cloud หรือ Environment อื่นใช้เป็นหลักฐานประกอบได้ แต่ไม่ทดแทนผลการตรวจในกล่องของรายวิชา
+- ข้อกำหนดนี้กำหนดเฉพาะ Test Environment ไม่ได้บังคับให้ทุกกลุ่มใช้สถาปัตยกรรมหรือ Service แบบเดียวกับระบบตัวอย่าง ChongJai Café
+
+**Diagram 3 — ขอบเขตการทดสอบใน Container ของรายวิชา**
+
+```mermaid
+flowchart TB
+    Host["Host สำหรับเปิดกล่อง"] --> Course["Course Container: tuchsanai/devtools:2569_1"]
+    Course --> Repo["Checkout รุ่นที่ส่ง"]
+    Course --> Engine["Docker Engine ภายในกล่อง"]
+    Repo --> Compose["Docker Compose ของโครงการ"]
+    Compose --> Engine
+    Engine --> Services["Web + Backend + Database + Services"]
+    Services --> Verify["Acceptance + End-to-End Verification"]
+```
+
+---
+
+<a id="traceability"></a>
+
+## 4. กรอบ Proposal → Implementation → Verification
+
+**Generated Image 4 — เทียบสิ่งที่เสนอ สิ่งที่สร้าง และหลักฐานจากระบบจริง**
+
+![ทีมนักศึกษาเปรียบเทียบ Proposal กับระบบ PetTech ที่ทำงานจริง Automated Tests, Deployment และผล Verification](images/pettech-proposal-verification.png)
+
+**Diagram 4 — วงจรข้อผูกพันและการยืนยันผล**
+
+```mermaid
+flowchart LR
+    P["Proposal"] --> B["Requirement Baseline"]
+    B --> I["Implementation"]
+    I --> V["Verification"]
+    V --> Q{"Result ตรง Acceptance Criteria?"}
+    Q -->|"ตรง"| A["Accepted Result"]
+    Q -->|"ไม่ตรง"| D["Defect / Gap / Limitation"]
+    D --> C["Corrective Action หรือ Scope Change"]
+    C --> I
+```
+
+### 4.1 Proposal: สร้างข้อตกลงที่ชัดเจน
+
+ทีมต้องรวบรวมสิ่งที่เสนอว่าจะทำเป็น Requirement Baseline ก่อนตรวจผลงาน ควรมี Functional Requirement, Non-functional Requirement, Use Case, Feature, ข้อมูลเข้า, ผลลัพธ์, กรณีผิดพลาดสำคัญ และข้อจำกัด โดยใช้ภาษาที่ตรวจได้ เช่น “เมื่อ... ระบบต้อง... และจะถือว่าสำเร็จเมื่อ...”
+
+ขอบเขตต้องท้าทายแต่เป็นไปได้ สอดคล้องกับปัญหา จำนวนสมาชิก และระยะเวลา การรับปากขอบเขตที่น้อยเกินไปจะไม่เท่าเทียมกับระบบที่มีความซับซ้อนและความเสี่ยงสูงกว่า แม้จะทำงานครบตามที่เสนอทั้งคู่
+
+### 4.2 Implementation: สร้างตามข้อตกลง
+
+แต่ละ Requirement ต้องเชื่อมโยงไปยังส่วนของระบบที่ทำให้เกิดผลลัพธ์นั้นได้ หากมีการเปลี่ยนขอบเขตให้บันทึกสิ่งที่เปลี่ยน เหตุผล ผลกระทบ และการยอมรับจากผู้สอนหรือผู้เกี่ยวข้อง การลบ Feature ที่ทำไม่เสร็จออกก่อนนำเสนอโดยไม่แจ้ง ไม่ทำให้ข้อผูกพันเดิมหายไป
+
+### 4.3 Verification: พิสูจน์ผลจากระบบจริง
+
+ทุก Requirement, Feature หรือ Capability ที่ปรากฏใน Proposal, Slide, Report, README หรือคำอธิบายระหว่างนำเสนอ ถือเป็น Acceptance Criteria ที่อาจถูกตรวจได้ ทีมต้องแสดงผลจากระบบที่ส่งจริง โดยใช้ข้อมูลทดสอบที่เหมาะสม และทำให้ผู้ตรวจสามารถเทียบผลที่คาดหวังกับผลจริงได้
+
+ให้จัดทำ Traceability Matrix ในรูปแบบที่ทีมถนัด โดยอย่างน้อยควรตอบคำถามต่อไปนี้:
+
+| Requirement หรือคำกล่าวอ้าง | ผู้ใช้/สถานการณ์ | Acceptance Criteria | ส่วนที่นำไปใช้ | วิธีตรวจและผลจริง | สถานะ/ข้อจำกัด |
+|---|---|---|---|---|---|
+| ระบบรับและยืนยันการนัดหมาย | เจ้าของสัตว์เลี้ยงจองคิว | รายการถูกบันทึกเพียงครั้งเดียว แสดงให้ทั้งสองฝ่าย และไม่อนุญาตช่วงเวลาซ้ำ | ระบบจอง, API, Database | ทดสอบการจองปกติและจองช่วงเวลาซ้ำ แล้วตรวจ UI, API response และข้อมูล | บันทึกผลที่ตรวจพบตามจริง |
+
+ตารางนี้เป็นเพียงตัวอย่าง สามารถปรับรูปแบบได้ แต่ต้องรักษาความเชื่อมโยงจากสิ่งที่เสนอไปยังผลที่ตรวจได้
+
+**Diagram 5 — ความเชื่อมโยงของ Traceability**
+
+```mermaid
+flowchart LR
+    Problem["Problem"] --> Target["Target User"]
+    Target --> UseCase["Use Case"]
+    UseCase --> Req["Requirement"]
+    Req --> AC["Acceptance Criteria"]
+    Req --> Code["Implementation"]
+    AC --> Test["Verification Method"]
+    Code --> Runtime["Running System"]
+    Test --> Evidence["Evidence"]
+    Runtime --> Evidence
+    Evidence --> Result["Verified Result / Defect"]
+```
+
+---
+
+<a id="presentation"></a>
+
+## 5. รูปแบบและโครงสร้างการนำเสนอ
+
+> **การนำเสนอเป็นส่วนสำคัญของการประเมิน** เพราะเป็นช่วงที่ทีมต้องเชื่อม Problem, Proposal, ระบบจริง และหลักฐานเข้าด้วยกัน ผู้ตรวจไม่ได้พิจารณาเพียงความสวยของ Slide หรือความลื่นไหลในการพูด แต่พิจารณาว่าทีมทำให้คำกล่าวอ้างสำคัญเข้าใจได้ ตรวจสอบได้ และสอดคล้องกับระบบที่ส่งหรือไม่
+
+### 5.1 หลักการออกแบบ: เล่าเรื่องเดียวที่พิสูจน์ได้
+
+เลือก End-to-End User Flow หลักหนึ่งเส้นเป็นแกนของเรื่อง แล้วใช้ Problem, Solution, System Design, Demo และ Evidence สนับสนุนเส้นเรื่องเดียวกัน หลีกเลี่ยงการนำเสนอแต่ละหัวข้อแยกจากกันจนผู้ฟังไม่เห็นว่า Feature ใดแก้ปัญหาใด หรือหลักฐานใดยืนยันผลลัพธ์ใด
+
+| Story | System | Proof |
+|---|---|---|
+| ทำให้เข้าใจว่าใครมีปัญหา อะไรสำคัญ และทีมรับปากผลลัพธ์ใด | แสดงว่าผู้ใช้ทำอะไร ข้อมูลไหลผ่านองค์ประกอบใด และระบบตอบสนองอย่างไร | Demonstrate ผลจริง เทียบ Acceptance Criteria และเปิดเผย Defect/ข้อจำกัดตามจริง |
+
+### 5.2 Presentation Storyline
+
+ทีมปรับลำดับหรือรูปแบบได้ แต่เนื้อหาควรสร้างคำตอบครบทั้ง 6 ช่วงต่อไปนี้
+
+| ช่วงของเรื่อง | คำถามหลัก | สิ่งที่ควรสื่อสารและพิสูจน์ | สัญญาณของผลงานคุณภาพสูง |
+|---|---|---|---|
+| **WHY — Problem & Target** | ปัญหาอะไรสำคัญ และเกิดกับใคร | Problem Statement, Root cause, Target User, บริบท, หลักฐาน และผลกระทบหากไม่แก้ | ปัญหาเฉพาะเจาะจง หลักฐานสืบย้อนกลับได้ และ Use Case สะท้อนข้อจำกัดของผู้ใช้จริง |
+| **PROMISE — Solution & Scope** | ทีมรับปากว่าจะเปลี่ยนแปลงอะไร | กลไกของ Solution, Requirement, Feature, Acceptance Criteria, ขอบเขต และความแตกต่างจากวิธีเดิม | ทุก Feature เชื่อมกับปัญหา มีเงื่อนไขสำเร็จชัด และไม่กล่าวเกินสิ่งที่ระบบทำได้ |
+| **EXPERIENCE — Live User Journey** | ผู้ใช้ทำงานสำคัญสำเร็จอย่างไร | สาธิต User Flow จากระบบจริง ตั้งแต่ Input, Business Rule, การบันทึกข้อมูล จนถึงผลลัพธ์ รวม Failure Case ที่มีความหมาย | Demo ต่อเนื่อง ใช้ข้อมูลที่ตรวจสอบได้ แสดง State ก่อน–หลัง และผลตรงกับ Acceptance Criteria |
+| **ENGINEERING — System Design & DevTools** | ระบบทำงานและส่งมอบซ้ำได้อย่างไร | Technology ของ Frontend, Backend, Database และ Module อื่น, Data Flow, Integration, Security, Docker/Compose, Jenkins CI/CD และ Observability | Architecture ตรงกับระบบที่รันจริง อธิบาย Interface/Trade-off/Failure Mode ได้ และ Pipeline สร้างหลักฐานได้จริง |
+| **PROOF — Verification & Quality** | อะไรยืนยันว่าระบบทำได้ตามที่เสนอ | Traceability Matrix, Automated/Manual Test, Pipeline Result, Acceptance Result, Defect, Known Limitation และการตรวจใน Course Container | หลักฐานผูกกับ Requirement ระบุ Expected/Actual Result ทำซ้ำได้ และเปิดเผยส่วนที่ยังไม่ผ่านอย่างตรงไปตรงมา |
+| **VALUE — Impact, Adoption & Team** | หากนำไปใช้จริงจะเกิดคุณค่าและดูแลต่ออย่างไร | Outcome/Metric, Target Market, ช่องทางนำไปใช้, Sustainability, Unfair Advantage, Roadmap, Team Ownership และ Network | ตัวชี้วัดมีที่มา สมมติฐานสอดคล้องกัน Roadmap ตอบความเสี่ยง และสมาชิกเชื่อมงานของตนกับผลลัพธ์รวมได้ |
+
+### 5.3 Evidence Gates ที่ต้องผ่านในการนำเสนอ
+
+Evidence Gate ไม่ใช่รายการ Technology ตายตัว แต่เป็นจุดตรวจที่ทำให้ผู้ประเมินยืนยันคำกล่าวอ้างสำคัญได้ หาก Gate ใดขาดหาย ส่วนที่เกี่ยวข้องอาจถูกพิจารณาว่ายังไม่สามารถยืนยันได้ แม้ Slide จะระบุว่าทำเสร็จแล้ว
+
+| Evidence Gate | สิ่งที่ผู้ตรวจต้องเห็น | เมื่อหลักฐานไม่เพียงพอ |
+|---|---|---|
+| **Claim Gate** | คำกล่าวอ้างสำคัญเชื่อมไปยัง Requirement และ Acceptance Criteria ที่ตรวจได้ | ไม่สามารถตัดสินได้ว่าสิ่งที่แสดงตรงกับสิ่งที่รับปากหรือไม่ |
+| **Live System Gate** | User Flow และ Failure Case ทำงานจากรุ่นที่ส่ง โดยใช้ระบบจริงและข้อมูลที่ตรวจสอบได้ | Feature หรือ Integration ที่อ้างถึงอาจถือว่ายังไม่ได้รับการยืนยัน |
+| **Architecture Gate** | System Design ระบุ Technology, หน้าที่, Data Flow และการเชื่อมต่อที่ตรงกับ Runtime จริง | ไม่สามารถยืนยันความเข้าใจ การ Integration หรือเหตุผลเชิงวิศวกรรมของทีม |
+| **Reproducibility Gate** | ระบบเริ่ม ทดสอบ หยุด และตรวจซ้ำได้ภายใน Course Container ที่กำหนด | ผลจากเครื่องส่วนตัวหรือวิดีโอไม่สามารถทดแทน Formal Verification ได้ |
+| **Ownership Gate** | สมาชิกอธิบายการตัดสินใจ ติดตาม Data Flow วินิจฉัย Defect และเชื่อมส่วนที่รับผิดชอบกับระบบรวมได้ | ไม่สามารถยืนยันว่าทีมเข้าใจและดูแลระบบที่ส่งมอบได้ โดยเฉพาะส่วนที่ AI ช่วยสร้าง |
+
+### 5.4 วิธีทำให้การนำเสนอน่าสนใจโดยไม่เสียความตรวจสอบได้
+
+- เปิดด้วยสถานการณ์ของผู้ใช้และผลกระทบที่จับต้องได้ แทนการเริ่มจากรายชื่อ Technology
+- นำ Demo เข้ามาเป็นส่วนหนึ่งของเรื่อง แล้วอธิบาย System Design และ Evidence จากสิ่งที่เพิ่งสาธิต
+- ใช้ชื่อ Requirement, Feature และ Acceptance Criteria ให้สอดคล้องกันใน Proposal, Slide, Traceability Matrix และ Demo
+- ใช้ Diagram, State ก่อน–หลัง, Test Result หรือ Log เท่าที่ช่วยยืนยันคำกล่าวอ้าง ลดข้อความยาวที่ไม่มีหลักฐาน
+- เตรียมทั้ง Happy Path และ Failure Case ที่สะท้อน Business Rule หรือความเสี่ยงจริงของระบบ
+- ปิดท้ายด้วยสิ่งที่ยืนยันได้ Defect/Known Limitation ที่ยังมี และลำดับการพัฒนาต่อไป
+
+**Diagram 6 — Presentation Story Arc จากปัญหาสู่คุณค่าที่พิสูจน์ได้**
+
+```mermaid
+flowchart LR
+    Why["① WHY<br/>ปัญหาการจองคิวและผู้ใช้ที่ได้รับผลกระทบ"]
+    Promise["② PROMISE<br/>จองนัดหมายได้และป้องกันช่วงเวลาซ้ำ"]
+    Experience["③ EXPERIENCE<br/>Live Demo: จองสำเร็จ + ทดสอบเวลาซ้ำ"]
+    Engineering["④ ENGINEERING<br/>React → FastAPI → PostgreSQL + CI/CD"]
+    Proof["⑤ PROOF<br/>Acceptance Result + Test + Defect"]
+    Value["⑥ VALUE<br/>Outcome + Adoption + Team + Roadmap"]
+
+    Why --> Promise --> Experience --> Engineering --> Proof --> Value
+
+    classDef story fill:#E8F3FF,stroke:#2367A6,color:#102A43,stroke-width:2px;
+    classDef system fill:#E5F7F4,stroke:#138A7E,color:#123B37,stroke-width:2px;
+    classDef proof fill:#FFF0EA,stroke:#D9644A,color:#54281E,stroke-width:2px;
+    class Why,Promise story;
+    class Experience,Engineering system;
+    class Proof,Value proof;
+```
+
+กำหนดการรวมและช่วงนำเสนอของแต่ละกลุ่มให้ยึดตาม [README หลัก](../readme.md#-กำหนดการนำเสนอผลงาน) ส่วนลำดับ รูปแบบ และสัดส่วนเวลาของหัวข้อภายใน ให้แต่ละกลุ่มบริหารเองโดยไม่มีเวลาบังคับราย Section ผู้ตรวจอาจเลือก Requirement หรือสถานการณ์เพิ่มเติมเพื่อขอตรวจจากระบบจริงได้
+
+---
+
+<a id="evaluation"></a>
+
+## 6. Evaluation Matrix
+
+ผู้ตรวจพิจารณาความสอดคล้องของแต่ละข้อผูกพันในลำดับ Proposal → Implementation → Verification โดยใช้ระดับคุณภาพต่อไปนี้กับทุกมิติการประเมิน
+
+| ระดับคุณภาพ | Proposal | Implementation | Verification |
+|---|---|---|---|
+| **สอดคล้องครบถ้วน** | ข้อผูกพันชัด มีความสำคัญ มีขอบเขตและเกณฑ์สำเร็จที่วัดได้ | พบการทำงานครบตามข้อผูกพัน รวมถึงกรณีสำคัญนอกเส้นทางปกติ | สาธิตซ้ำได้ ผลตรงกับที่คาดหวัง และมีหลักฐานสนับสนุนตามความเสี่ยง |
+| **สอดคล้องเป็นส่วนใหญ่** | ข้อผูกพันชัดเป็นส่วนใหญ่ แต่บางเงื่อนไขหรือตัวชี้วัดยังคลุมเครือ | เส้นทางหลักทำงาน พบข้อจำกัดหรือ Defect ที่ไม่ทำลายผลลัพธ์หลัก | สาธิตผลหลักได้ แต่การทำซ้ำ ความครอบคลุม หรือหลักฐานบางส่วนยังไม่สมบูรณ์ |
+| **สอดคล้องบางส่วน** | สิ่งที่รับปากคลุมเครือ ขาดเกณฑ์สำเร็จ หรือไม่เชื่อมกับปัญหาหลัก | ทำได้เพียงบางขั้น ใช้ข้อมูลจำลองแทน Integration หรือมี Defect ที่กระทบผลลัพธ์สำคัญ | เห็นผลได้เพียง Happy path หรือต้องพึ่งภาพ วิดีโอ หรือคำอธิบายเป็นหลัก |
+| **ไม่สอดคล้องหรือไม่สามารถยืนยัน** | ไม่มีข้อผูกพันที่ตรวจได้ หรือคำกล่าวอ้างไม่มีหลักฐานรองรับ | ไม่พบความสามารถที่รับปาก เส้นทางหลักถูกขัดขวาง หรือส่วนต่างๆ ไม่ได้เชื่อมต่อจริง | ไม่สามารถรัน ทำซ้ำ ตรวจผล หรือหลักฐานขัดแย้งกับคำกล่าวอ้าง |
+
+### 6.1 ผลของ Defect และข้อจำกัด
+
+| ระดับ | ลักษณะ | ผลต่อการประเมิน |
+|---|---|---|
+| **Critical** | เส้นทางหลักใช้ไม่ได้ ข้อมูลสูญหาย/ผิดพลาดร้ายแรง หรือมีความเสี่ยงด้าน Security, Privacy หรือความปลอดภัย | Requirement นั้นถือว่ายังไม่บรรลุ และกระทบมิติการใช้งานจริง Integration, Reliability หรือ Security ที่เกี่ยวข้อง |
+| **Major** | ทำงานได้บางส่วน ผลลัพธ์หลักไม่ครบ มีขั้นตอนสำคัญที่ต้องทำแทนด้วยมือ หรือ Integration/Pipeline ขาดช่วง | พิจารณาว่าสอดคล้องได้เพียงบางส่วน ตามผลที่เสียหายและจำนวนข้อผูกพันที่ได้รับผล |
+| **Minor** | ผลหลักถูกต้อง แต่มีปัญหาจำกัดด้านการใช้งาน ข้อความ การแสดงผล หรือ Edge case ที่ไม่ทำลายงานหลัก | ยังยืนยันผลหลักได้ แต่สะท้อนในด้านความสมบูรณ์ ความละเอียด หรือความพร้อมใช้งาน |
+| **Known limitation** | ข้อจำกัดถูกเปิดเผยล่วงหน้า มีเหตุผล และไม่ขัดกับข้อผูกพันหลัก | ไม่ถือเป็น Defect โดยอัตโนมัติ แต่พิจารณาว่าขอบเขตที่เหลือยังมีคุณค่าและความท้าทายที่เหมาะสมหรือไม่ |
+
+การเสียหายหนึ่งจุดอาจกระทบหลายมิติเมื่อมีความสัมพันธ์กัน เช่น Database บันทึกผิดจะกระทบทั้ง Functional correctness, Integration และ Reliability ผู้ตรวจจะบันทึกผลกระทบตามที่เกิดขึ้นจริง โดยไม่นับ Defect เดียวซ้ำซ้อนโดยปราศจากเหตุผล
+
+**Diagram 7 — การตัดสินผลตามหลักฐานและ Defect**
+
+```mermaid
+flowchart TD
+    Claim["Requirement / Capability ที่รับปาก"] --> Criteria["Acceptance Criteria"]
+    Criteria --> Verify["Live Verification + Evidence"]
+    Verify --> Match{"Actual Result ตรงตามที่เสนอ?"}
+    Match -->|"ตรง"| Repeat["ตรวจความครบและการทำซ้ำ"]
+    Repeat --> Quality["จัดระดับความสอดคล้อง"]
+    Match -->|"ไม่ตรง"| Impact["พิจารณาผลกระทบ"]
+    Impact --> Critical["Critical"]
+    Impact --> Major["Major"]
+    Impact --> Minor["Minor"]
+    Impact --> Known["Known Limitation"]
+    Critical --> Quality
+    Major --> Quality
+    Minor --> Quality
+    Known --> Quality
+```
+
+---
+
+<a id="evaluation-dimensions"></a>
+
+## 7. มิติการประเมิน
+
+### 7.1 Problem Statement
+
+พิจารณาว่าทีมนิยามปัญหาอย่างเฉพาะเจาะจงหรือไม่ โดยแยกให้ออกว่าใครพบปัญหา ปัญหาเกิดเมื่อใด บ่อยหรือรุนแรงเพียงใด และผลกระทบถึงระดับใด ต้องแยก Symptom ออกจาก Root cause และระบุสมมติฐานที่ยังไม่ได้พิสูจน์
+
+ผลงานที่มีคุณภาพใช้หลักฐานหลายแหล่งตามความเหมาะสม เช่น ข้อมูลสถิติ งานวิจัย การสัมภาษณ์ แบบสอบถาม การสังเกต หรือข้อมูลการใช้งาน ระบุแหล่งที่มา ช่วงเวลา วิธีเก็บ ขนาดตัวอย่าง และข้อจำกัดเท่าที่จำเป็น ไม่กล่าวเกินกว่าหลักฐานที่มี
+
+### 7.2 Solution
+
+พิจารณาความเชื่อมโยงจาก Root cause ไปยังกลไกของ Solution และจากแต่ละกลไกไปยัง Feature ที่พัฒนา ทีมต้องอธิบายได้ว่าผู้ใช้จะได้รับผลลัพธ์ใด เหตุใดวิธีนี้จึงเหมาะกว่าวิธีเดิม และข้อได้เปรียบหรือ Trade-off ใดเกิดขึ้น
+
+พิจารณาทั้งความถูกต้องของ Business rule, ความครบของ User flow, คุณภาพของ Error handling และผลจาก User validation ระบุให้ชัดว่าส่วนใดใช้ได้แล้ว ส่วนใดยังเป็นแนวคิด และส่วนใดเป็นข้อจำกัด จำนวน Feature ไม่ชดเชยความไม่ครบหรือไม่ถูกต้องของ Feature หลัก
+
+### 7.3 Target Users / Target Market
+
+ระบุ Primary user, Secondary user, ผู้ดูแลระบบ และผู้มีส่วนได้เสียให้แยกจากกัน อธิบายบริบท พฤติกรรม ความต้องการ ทักษะ ข้อจำกัดในการเข้าถึง และเหตุผลที่เลือกกลุ่มนั้น พร้อมเชื่อมแต่ละกลุ่มกับ Use Case และสิทธิ์ที่ได้รับในระบบ
+
+หากกล่าวถึงขนาดตลาดหรือจำนวนผู้ใช้ ต้องแสดงแหล่งข้อมูล วิธีคำนวณ และสมมติฐาน รวมถึงระบุช่องทางที่เป็นไปได้ในการเข้าถึงและนำระบบไปใช้ ไม่ใช้ตัวเลขขนาดใหญ่ที่ไม่สามารถสืบย้อนได้
+
+### 7.4 Social Impact & Assessment
+
+ระบุการเปลี่ยนแปลงที่ต้องการให้เกิดกับสัตว์เลี้ยง ผู้ใช้ ผู้ให้บริการ หรือสังคม และแยก Output เช่น จำนวนผู้ลงทะเบียน ออกจาก Outcome เช่น ระยะเวลาค้นหาสัตว์สูญหายลดลง
+
+ตัวชี้วัดควรสัมพันธ์กับปัญหา มีนิยาม Baseline, เป้าหมาย แหล่งข้อมูล และวิธีเก็บที่เป็นไปได้ ทีมต้องพิจารณาผลกระทบที่ไม่ตั้งใจ ความเป็นส่วนตัว ความปลอดภัย ความเท่าเทียม และสวัสดิภาพสัตว์ตามลักษณะของโครงการ
+
+### 7.5 Team & Network
+
+พิจารณาการแบ่งความรับผิดชอบที่สอดคล้องกับขนาดและความเสี่ยงของงาน รวมถึงการสื่อสาร การ Review และการแก้ปัญหาร่วมกัน หลักฐานการมีส่วนร่วมอาจมาจาก Git history, Pull Request, Issue, การออกแบบ การทดสอบ การเก็บข้อมูล หรือผลงานอื่น โดยไม่ยึด Commit count เป็นตัวแทนคุณภาพเพียงอย่างเดียว
+
+สมาชิกทุกคนต้องอธิบายส่วนที่ตนรับผิดชอบ เหตุผลของการตัดสินใจ วิธีตรวจสอบ และความเชื่อมโยงกับระบบส่วนอื่นได้ รวมถึงอธิบายว่าเครือข่าย พันธมิตร หรือผู้เชี่ยวชาญช่วยให้ทีมเข้าใจปัญหาหรือนำระบบไปใช้ได้อย่างไร
+
+### 7.6 Sustainability & Unfair Advantage
+
+อธิบายว่าใครสร้างคุณค่า ใครได้รับประโยชน์ ใครจ่ายหรือสนับสนุน และระบบต้องใช้ทรัพยากรอะไรเพื่อดำเนินงานต่อ สมมติฐานด้านรายได้ ค่าใช้จ่าย ปริมาณการใช้งาน และค่าบริการภายนอกต้องสอดคล้องกันและสืบย้อนได้
+
+แผนระยะยาวควรระบุลำดับความสำคัญ ความเสี่ยงด้านเทคนิค ธุรกิจ จริยธรรม และการพึ่งพา Vendor รวมถึงแนวทางรับมือ Unfair advantage เช่น Data, Network, Domain expertise หรือ Partnership จะถือว่ามีคุณค่าเมื่อทีมอธิบายได้ว่าสร้าง รักษา และใช้ประโยชน์ได้อย่างไร ไม่ใช่เพียงคำกล่าวอ้าง
+
+### 7.7 Demo, DevTools & System Design
+
+พิจารณาจากระบบและกระบวนการที่ทำงานร่วมกันจริง ไม่ได้พิจารณาเพียงว่ามีไฟล์หรือมีเครื่องมือตามชื่อ โดยครอบคลุม:
+
+- **Functional completeness และ correctness:** User flow หลักและสำคัญทำงานครบตาม Acceptance Criteria, Business rule และสิทธิ์ของผู้ใช้
+- **Data และ Integration:** Frontend, Backend, Database และบริการอื่นแลกเปลี่ยนข้อมูลถูกต้อง รักษาความคงสภาพ และไม่ใช้ Mock แทนส่วนที่รับปากว่าเชื่อมต่อแล้ว
+- **Reliability และ usability:** รับมือกับ Invalid input, การทำงานซ้ำ บริการล่ม และการกลับมาทำงานได้ตามความเสี่ยง พร้อมแจ้งผู้ใช้อย่างเข้าใจได้
+- **Architecture และ engineering decisions:** ระบุ Technology และหน้าที่ของ Frontend, Backend, Database, Gateway/Broker/Worker/External Service หรือ Module อื่นที่ใช้ แสดงทิศทางและ Interface ของทุกการเชื่อมต่อที่สำคัญ และอธิบายเหตุผล Trade-off, Failure mode และข้อจำกัดได้
+- **AI/LLM capability (เมื่อมี):** แสดง Data/Prompt flow, การตรวจ Output, Guardrail, Fallback, Privacy/Secret และพฤติกรรมเมื่อ Model หรือ Provider ใช้งานไม่ได้ โดยความสามารถที่อ้างว่ามีต้องผ่าน Acceptance Criteria จากระบบจริง
+- **Delivery pipeline:** Git/GitHub สะท้อนการร่วมงานจริง Docker/Docker Compose ทำให้ Environment ทำซ้ำได้ และ Jenkins CI/CD ตรวจก่อนส่งมอบ Deploy และ Verify ผลได้จริง
+- **Test quality:** การทดสอบเลือกครอบคลุมความเสี่ยงและ Business rule ที่สำคัญ ตรวจทั้งกรณีสำเร็จและล้มเหลว และล้มเหลวเมื่อพบ Regression จริง
+- **Security, privacy และ operations:** จัดการ Secret, สิทธิ์, ข้อมูลอ่อนไหว, Health check, Log, Metric, Backup หรือการกู้คืนตามระดับที่เหมาะกับความเสี่ยงและขอบเขต
+- **Reproducibility:** ผู้ตรวจสามารถเริ่มระบบ ทดสอบ และตรวจสอบรุ่นที่ส่งภายใน Course Container ที่กำหนดได้จากคำแนะนำของทีม โดยไม่ต้องเดาขั้นตอนสำคัญ
+
+**Diagram 8 — ตัวอย่าง CI/CD และการยืนยันผลหลัง Deploy**
+
+```mermaid
+sequenceDiagram
+    participant Dev as Developer
+    participant Git as GitHub
+    participant CI as Jenkins
+    participant Test as Automated Tests
+    participant Reg as Image Registry
+    participant Run as Course Container Runtime
+
+    Dev->>Git: Push / Pull Request
+    Git->>CI: Trigger pipeline
+    CI->>Test: Build and test
+    Test-->>CI: Verification result
+    alt Verification passed
+        CI->>Reg: Publish image
+        CI->>Run: Deploy verified version
+        Run-->>CI: Health and smoke-test result
+        CI-->>Dev: Delivery result
+    else Verification failed
+        CI-->>Dev: Stop delivery and report defect
+    end
+```
+
+---
+
+<a id="ai-tools"></a>
+
+## 8. การใช้ AI Coding Tools
+
+**Generated Image 5 — AI ช่วยพัฒนา แต่มนุษย์ต้องตรวจสอบและรับผิดชอบคุณภาพ**
+
+![ทีมนักศึกษาตรวจสอบ Automated Test, Container และการ Deploy ของระบบที่มี AI ช่วยพัฒนา](images/pettech-ai-verification.png)
+
+อนุญาตให้ใช้ Codex และ AI Tools อื่นช่วยวิเคราะห์ ออกแบบ พัฒนา ทดสอบ และจัดทำเอกสารได้ ทีมต้องระบุโดยสรุปว่าใช้เครื่องมือใดช่วยงานประเภทใด โดยไม่จำเป็นต้องส่ง Prompt หรือบทสนทนาทั้งหมด เว้นแต่มีกติการายวิชากำหนดเพิ่มเติม
+
+การประเมินไม่พิจารณาจากปริมาณโค้ดหรือความเร็วในการสร้างระบบ แต่พิจารณาจากผลที่ทำงานได้จริง คุณภาพการตรวจสอบ และความเข้าใจของทีม ทีมยังคงรับผิดชอบต่อโค้ด ข้อมูล License, Security, Defect และผลกระทบที่เกิดจากผลลัพธ์ของ AI เช่นเดียวกับโค้ดที่เขียนเอง
+
+ระหว่างตรวจผลงาน ผู้ตรวจอาจให้สมาชิกอธิบายการตัดสินใจ ติดตาม Data flow วินิจฉัยปัญหา หรือปรับพฤติกรรมเล็กน้อยในขอบเขตที่ตนรับผิดชอบ เพื่อยืนยันว่าทีมสามารถดูแลระบบที่ส่งมอบได้
+
+---
+
+<a id="verification-guide"></a>
+
+## 9. แนวทางการสาธิตและตรวจผลงาน
+
+- ใช้ Requirement Baseline และ Traceability Matrix ฉบับเดียวกันในการตรวจทุกกลุ่ม
+- ทีมเลือก User flow หลักเพื่อเล่าภาพรวมได้ และผู้ตรวจอาจเลือก Requirement หรือกรณีทดสอบเพิ่มเติม โดยทุกข้อที่ทีมรับปากยังคงต้องพร้อมให้ตรวจ
+- การตรวจใช้รุ่นของระบบที่ส่ง และควรเริ่มจากสภาพแวดล้อมหรือชุดข้อมูลที่ทราบสถานะ เพื่อให้ทุกกลุ่มได้รับการตรวจอย่างเป็นธรรม
+- การแสดงจากระบบจริงเป็นหลัก ภาพหรือวิดีโอใช้เป็นแผนสำรองได้ แต่ไม่ยืนยันสถานะปัจจุบันได้เท่ากับ Live verification
+- หากบริการภายนอกขัดข้อง ให้พิจารณาทั้งการออกแบบรับมือ หลักฐานจากรุ่นที่ส่ง และความสามารถของทีมในการวินิจฉัย/กู้คืน ผู้ตรวจจะระบุว่าส่วนใดยืนยันได้และส่วนใดยังยืนยันไม่ได้
+- คำกล่าวอ้างที่ไม่มีหลักฐาน ไม่สามารถเปิดให้ตรวจ หรือผลจริงขัดกับสิ่งที่เสนอ ให้ถือว่ายังไม่ยืนยันความสำเร็จของข้อนั้น
+
+---
+
+<a id="submission-checklist"></a>
+
+## 10. Checklist ก่อนส่งและนำเสนอ
+
+- [ ] Requirement Baseline ครอบคลุมทุกสิ่งที่ทีมรับปาก และมี Acceptance Criteria ที่ตรวจได้
+- [ ] Traceability Matrix เชื่อม Proposal, Implementation, วิธีตรวจ และผลจริง
+- [ ] Web Interface, Database และเส้นทางหลักทำงาน End-to-End จากระบบที่ส่ง
+- [ ] System Design ระบุ Technology, หน้าที่ และการเชื่อมต่อของ Frontend, Backend, Database และ Module อื่น พร้อมตัวอย่าง User Flow ที่เห็น Input, Data Flow และผลลัพธ์
+- [ ] Git/GitHub, Docker/Docker Compose และ Jenkins CI/CD สะท้อน Workflow จริงของทีมและทำซ้ำได้
+- [ ] รุ่นที่ส่งสามารถเริ่ม ทดสอบ หยุด และเก็บกวาดได้ภายใน Course Container `tuchsanai/devtools:2569_1`
+- [ ] กรณีสำคัญทั้งสำเร็จและล้มเหลวมีผลตรวจที่ทำซ้ำได้ พร้อมเปิดเผย Defect และข้อจำกัดตามจริง
+- [ ] สมาชิกอธิบายส่วนที่ตนรับผิดชอบได้ และระบุการใช้ AI Tools ตามความเป็นจริง
 - [ ] ส่ง Slide, Source Code, Report และวิดีโอตามรายการใน [README หลัก](../readme.md#-รายการสิ่งที่ต้องส่งก่อนวันนำเสนอ)
