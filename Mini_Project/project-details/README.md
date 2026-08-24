@@ -3,7 +3,7 @@
 > **นวัตกรรมเพื่อเพื่อนที่ดีที่สุดของเรา**  
 > พัฒนาเทคโนโลยีที่ช่วยยกระดับคุณภาพชีวิตของสัตว์เลี้ยง และแก้ปัญหาของเจ้าของสัตว์เลี้ยงในยุคดิจิทัล
 
-[← README หลัก](../readme.md) · [กำหนดการนำเสนอ](../readme.md#-กำหนดการนำเสนอผลงาน) · [Google Docs ต้นฉบับ](https://docs.google.com/document/d/1ti1VC6ihqt2Gi5W0zZ22pgiTE7Xh3iJke13JUeYGaIw/edit?usp=sharing)
+[← README หลัก](../readme.md) · [กำหนดการนำเสนอ](../readme.md#-กำหนดการนำเสนอผลงาน)
 
 ---
 
@@ -253,6 +253,5 @@ Git → Unit Test → Build Docker Image → Deploy
 ## เอกสารที่เกี่ยวข้อง
 
 - [README หลักและกำหนดการ](../readme.md)
-- [Google Docs ต้นฉบับ](https://docs.google.com/document/d/1ti1VC6ihqt2Gi5W0zZ22pgiTE7Xh3iJke13JUeYGaIw/edit?usp=sharing) — ต้องลงชื่อเข้าใช้ด้วยอีเมล `@it.kmitl.ac.th`
 
 [↑ กลับไปด้านบน](#-mini-project-pet-tech)
