@@ -1,6 +1,6 @@
-# Prompt สำหรับ Gen รูป UI ตัวอย่าง — ภาษาไทย (9 รูป)
+# Prompt สำหรับ Gen รูป UI ตัวอย่าง — ภาษาไทย (13 รูป)
 
-ใช้กับ Codex / เครื่องมือ Gen รูปอื่น — รูปตรงกับตาราง "ตัวอย่างขั้นตอนการใช้งานบน UI" ใน `../README.md` §2.2 (8 หน้าจอ โดยแยกผลการจองเป็น 2 รูป: สำเร็จ / ถูกตัดหน้า)
+ใช้กับ Codex / เครื่องมือ Gen รูปอื่น — รูปตรงกับตาราง "ตัวอย่างขั้นตอนการใช้งานบน UI" ใน `../README.md` §2.2 (8 หน้าจอ โดยแยกผลการจองเป็น 2 รูป: สำเร็จ / ถูกตัดหน้า) พร้อมหน้าจอเพิ่มเติม: สมัครสมาชิก และมุมมองสัตวแพทย์/ผู้ดูแลแบบละเอียด (รูปที่ 10–13)
 
 **Style กลาง (ใส่นำหน้าทุก Prompt เพื่อให้ทั้งชุดหน้าตาเดียวกัน):**
 
@@ -44,6 +44,22 @@ A smartphone mockup showing a push notification "PetTech: ยืนยันน�
 
 A veterinarian admin dashboard titled "ตารางนัดวันนี้" with a table: columns "สัตว์เลี้ยง", "เจ้าของ", "เวลา", "สถานะ" and action buttons "ยืนยัน" (teal), "เลื่อนนัด" (outline), "ยกเลิก" (red outline) on each row. Status chips: "รอยืนยัน" (yellow) and "ยืนยันแล้ว" (green). Header shows "หมอสมหญิง" with an avatar.
 
+## รูปที่ 10 — `pettech-ui-th-10-register.png` (หน้าจอเพิ่มเติม: สมัครสมาชิก)
+
+A registration page in a browser window. Heading "สมัครสมาชิก", input fields labeled "ชื่อ-นามสกุล", "อีเมล", "เบอร์โทรศัพท์", "รหัสผ่าน", "ยืนยันรหัสผ่าน", a small red validation message under the password field reading "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร", a checkbox "ยอมรับเงื่อนไขการใช้งาน", a teal button "สมัครสมาชิก", and a bottom link "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ". PetTech logo at the top.
+
+## รูปที่ 11 — `pettech-ui-th-11-clinic-schedule.png` (มุมมองผู้ดูแล: ตารางนัดของคลินิกรายสัปดาห์)
+
+A clinic admin view titled "ตารางนัดของคลินิก" with a filter dropdown "สัตวแพทย์: ทุกคน" and month label "พ.ค. 2569". A weekly calendar grid with day columns "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์", containing small appointment cards showing a pet name and time (e.g. "ลูน่า 10:00", "โมจิ 11:00", "เต้าหู้ 14:00"), color-coded by status. Legend at the bottom: "รอยืนยัน" (yellow), "ยืนยันแล้ว" (green), "ยกเลิก" (red).
+
+## รูปที่ 12 — `pettech-ui-th-12-booking-detail.png` (มุมมองสัตวแพทย์: รายละเอียดนัดหมายและผู้จอง)
+
+An appointment detail page titled "รายละเอียดนัดหมาย" with booking code "PT-2569-1024" and a yellow status chip "รอยืนยัน". Three info cards: "ข้อมูลผู้จอง" listing "คุณสมชาย ใจดี", "โทร 081-234-5678", "somchai@email.com"; "ข้อมูลสัตว์เลี้ยง" listing "ลูน่า", "สุนัข โกลเดนรีทรีฟเวอร์", "อายุ 3 ปี" with a dog avatar; "รายละเอียดบริการ" listing "ตรวจสุขภาพ", "24 พ.ค. 2569 • 10:00 น.", "สัตวแพทย์: หมอสมหญิง". Bottom action buttons: "ยืนยันนัด" (teal), "เลื่อนนัด" (outline), "ยกเลิกนัด" (red outline).
+
+## รูปที่ 13 — `pettech-ui-th-13-status-board.png` (มุมมองสัตวแพทย์: บอร์ดสถานะแต่ละนัด)
+
+A kanban-style board titled "สถานะนัดหมายวันนี้" with four columns: "รอยืนยัน (2)" yellow header, "ยืนยันแล้ว (3)" green header, "เสร็จสิ้น (1)" teal header, "ยกเลิก (1)" grey header. Each column contains appointment cards showing a pet avatar, pet name, time, and owner name (e.g. "ลูน่า • 10:00 • คุณสมชาย", "โมจิ • 11:00 • คุณกรวิชญ์"). One card in the first column is highlighted with a coral border.
+
 ---
 
 ## Markdown ที่ใช้อ้างอิงใน README
@@ -66,4 +82,12 @@ A veterinarian admin dashboard titled "ตารางนัดวันนี�
 ![UI 8 — การแจ้งเตือนบนมือถือและอีเมล](images/pettech-ui-th-08-notification.png)
 
 ![UI 9 — ตารางนัดฝั่งสัตวแพทย์](images/pettech-ui-th-09-vet-dashboard.png)
+
+![UI 10 — สมัครสมาชิก](images/pettech-ui-th-10-register.png)
+
+![UI 11 — ตารางนัดของคลินิกรายสัปดาห์](images/pettech-ui-th-11-clinic-schedule.png)
+
+![UI 12 — รายละเอียดนัดหมายและผู้จอง](images/pettech-ui-th-12-booking-detail.png)
+
+![UI 13 — บอร์ดสถานะนัดหมาย](images/pettech-ui-th-13-status-board.png)
 ```
