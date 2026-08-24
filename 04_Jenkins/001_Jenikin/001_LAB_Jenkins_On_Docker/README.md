@@ -182,7 +182,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 จากนั้นเปิดเบราว์เซอร์บนเครื่องหลักไปที่ `http://localhost:8080` แล้ววางรหัสดังกล่าวในช่อง **Administrator password** และกด **Continue**
 
-![หน้า Unlock Jenkins พร้อมเครื่องหมายลำดับ](../slides_assets/lab1_s07_unlock.png)
+![หน้า Unlock Jenkins พร้อมเครื่องหมายลำดับ](./images/lab1_s07_unlock.png)
 
 *เครื่องหมาย ① ชี้ช่อง Administrator password และ ② ชี้ปุ่ม Continue ตามลำดับการดำเนินการ*
 
@@ -198,13 +198,13 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 **1) เลือก Install suggested plugins** แล้วรอประมาณ 2–3 นาทีจนติดตั้งเสร็จ
 
-![หน้าเลือก Install suggested plugins พร้อมเครื่องหมาย](../slides_assets/lab1_s08_plugins.png)
+![หน้าเลือก Install suggested plugins พร้อมเครื่องหมาย](./images/lab1_s08_plugins.png)
 
 *กรอบสีแดงชี้ตัวเลือก suggested plugins ซึ่งจัดเตรียมความสามารถพื้นฐาน รวมถึง Pipeline และ Git*
 
 **2) สร้างผู้ดูแลระบบ** โดยกรอก Username `admin`, Password และ Confirm password เป็น `admin2569`, Full name `Admin`, Email `student@example.com` แล้วกด **Save and Continue**
 
-![แบบฟอร์มสร้างผู้ดูแลที่กรอกแล้ว](../slides_assets/lab1_s01_admin_user.png)
+![แบบฟอร์มสร้างผู้ดูแลที่กรอกแล้ว](./images/lab1_s01_admin_user.png)
 
 *แบบฟอร์มผู้ดูแลกรอกค่าครบ โดยช่อง Password และ Confirm password แสดงเป็นจุดเพื่อปิดบังรหัสผ่าน*
 
@@ -216,7 +216,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 Welcome to Jenkins!
 ```
 
-![Jenkins Dashboard หลังจบ Setup Wizard](../slides_assets/lab1_dashboard.png)
+![Jenkins Dashboard หลังจบ Setup Wizard](./images/lab1_dashboard.png)
 
 *Dashboard แสดงว่า Setup Wizard เสร็จสมบูรณ์และ Jenkins พร้อมสร้าง job*
 
@@ -232,13 +232,13 @@ Welcome to Jenkins!
 
 **1) จาก Dashboard เลือกเมนู New Item**
 
-![Jenkins Dashboard พร้อมเครื่องหมาย New Item](../slides_assets/lab1_s09_dashboard_new_item.png)
+![Jenkins Dashboard พร้อมเครื่องหมาย New Item](./images/lab1_s09_dashboard_new_item.png)
 
 *กรอบและป้ายชี้เมนู New Item ด้านซ้าย ซึ่งเป็นจุดเริ่มต้นของการสร้าง job*
 
 **2) กรอกชื่อ `first-freestyle`** เลือก **Freestyle project** แล้วกด **OK**
 
-![หน้า New Item สำหรับ Freestyle job](../slides_assets/lab1_s02_new_item.png)
+![หน้า New Item สำหรับ Freestyle job](./images/lab1_s02_new_item.png)
 
 *หน้า New Item แสดงชื่อ first-freestyle ประเภท Freestyle project และปุ่ม OK ที่พร้อมใช้งาน*
 
@@ -250,25 +250,25 @@ date
 hostname
 ```
 
-![Execute shell ที่กรอกคำสั่งแล้ว](../slides_assets/lab1_s03_build_step.png)
+![Execute shell ที่กรอกคำสั่งแล้ว](./images/lab1_s03_build_step.png)
 
 *ส่วน Build Steps แสดง Execute shell และคำสั่งสามส่วนก่อนบันทึก config*
 
 **4) กด Save** ระบบจะเปิดหน้า Status ของ job
 
-![หน้า first-freestyle หลังบันทึก](../slides_assets/lab1_s04_job_saved.png)
+![หน้า first-freestyle หลังบันทึก](./images/lab1_s04_job_saved.png)
 
 *หน้า Status หลัง Save แสดงชื่อ first-freestyle เมนู Build Now และยังไม่มี build history*
 
 **5) กด Build Now** แล้วรอจน build `#N` แสดงเครื่องหมายสีเขียว
 
-![ผล build แรกของ first-freestyle](../slides_assets/lab1_s05_build_result.png)
+![ผล build แรกของ first-freestyle](./images/lab1_s05_build_result.png)
 
 *หน้า job แสดง build แรกเป็น Last successful build พร้อมเครื่องหมายสถานะสีเขียว*
 
 **6) เลือก `#N` → Console Output** เพื่ออ่านผลการทำงาน
 
-![Console Output ของ build แรก](../slides_assets/lab1_s06_console_output.png)
+![Console Output ของ build แรก](./images/lab1_s06_console_output.png)
 
 *Console Output แสดง workspace คำสั่ง echo, date, hostname และผลลัพธ์ Finished: SUCCESS*
 

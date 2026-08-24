@@ -67,7 +67,7 @@ Pipeline job เป็นหน่วยงานที่ Jenkins ใช้เ�
 3. เลือกชนิด **Pipeline**
 4. เลือก **OK** เพื่อเปิดหน้ากำหนดค่า
 
-![หน้า New Item ที่ระบุชื่อ first-pipeline และเลือก Pipeline](../slides_assets/lab2_s01_new_item.png)
+![หน้า New Item ที่ระบุชื่อ first-pipeline และเลือก Pipeline](./images/lab2_s01_new_item.png)
 
 *ภาพที่ 1 ต้องสังเกตชื่อ `first-pipeline` ในช่อง item name และชนิด `Pipeline` ที่ถูกเลือก*
 
@@ -107,7 +107,7 @@ pipeline {
 3. วางโค้ดทั้งหมดลงในช่อง **Script**
 4. ตรวจว่ามี stage `Checkout`, `Build` และ `Test`
 
-![ช่อง Pipeline script ที่มีโค้ด Checkout Build และ Test](../slides_assets/lab2_s02_initial_script.png)
+![ช่อง Pipeline script ที่มีโค้ด Checkout Build และ Test](./images/lab2_s02_initial_script.png)
 
 *ภาพที่ 2 ต้องสังเกต `Definition: Pipeline script` และโค้ด 3 stages ใน editor*
 
@@ -138,7 +138,7 @@ Pipeline Graph แสดง stage ตามลำดับการทำงา�
 3. เลือก **Stages** จากเมนูด้านซ้าย
 4. ตรวจลำดับ `Checkout` → `Build` → `Test`
 
-![Pipeline Graph ของ build แรกที่มีสาม stages](../slides_assets/lab2_s03_first_graph.png)
+![Pipeline Graph ของ build แรกที่มีสาม stages](./images/lab2_s03_first_graph.png)
 
 *ภาพที่ 3 ต้องสังเกต build `#1` สำเร็จและ node ของ Checkout, Build และ Test เป็นสีเขียว*
 
@@ -198,7 +198,7 @@ pipeline {
 5. เปิด build `#N+1` และเลือก **Console Output**
 6. ค้นหาบรรทัดที่ขึ้นต้นด้วย `Building Declarative Pipeline`
 
-![Console Output ที่แสดงค่าจาก environment และ Jenkins](../slides_assets/lab2_s04_environment_console.png)
+![Console Output ที่แสดงค่าจาก environment และ Jenkins](./images/lab2_s04_environment_console.png)
 
 *ภาพที่ 4 ต้องสังเกตข้อความ `Building Declarative Pipeline: first-pipeline #2` และผล `Finished: SUCCESS`*
 
@@ -265,7 +265,7 @@ pipeline {
 4. เลือก **Save** แล้วเลือก **Build Now** หนึ่งครั้ง เพื่อให้ Jenkins ลงทะเบียน `APP_ENV`
 5. เปิด **Configure** อีกครั้งและตรวจส่วน **This project is parameterized**
 
-![ส่วนกำหนดค่า This project is parameterized และ APP_ENV](../slides_assets/lab2_s05_parameters_config.png)
+![ส่วนกำหนดค่า This project is parameterized และ APP_ENV](./images/lab2_s05_parameters_config.png)
 
 *ภาพที่ 5 ต้องสังเกตว่า `This project is parameterized` ถูกเลือก พร้อม Name `APP_ENV`, Default Value `dev` และคำอธิบาย*
 
@@ -275,7 +275,7 @@ pipeline {
 2. เปลี่ยนค่า `APP_ENV` จาก `dev` เป็น `staging`
 3. ตรวจค่าก่อนเริ่ม build
 
-![หน้า Build with Parameters ที่กำหนด APP_ENV เป็น staging](../slides_assets/lab2_s06_build_parameters.png)
+![หน้า Build with Parameters ที่กำหนด APP_ENV เป็น staging](./images/lab2_s06_build_parameters.png)
 
 *ภาพที่ 6 ต้องสังเกตช่อง `APP_ENV` มีค่า `staging` และปุ่ม Build พร้อมใช้งาน*
 
@@ -354,7 +354,7 @@ pipeline {
 5. เปิด build `#N+4` และเลือก **Console Output**
 6. ตรวจข้อความภายในส่วน `Declarative: Post Actions`
 
-![Console Output ของ post actions ใน build 5](../slides_assets/lab2_s07_post_console.png)
+![Console Output ของ post actions ใน build 5](./images/lab2_s07_post_console.png)
 
 *ภาพที่ 7 ต้องสังเกต `Finished first-pipeline #5`, `Pipeline succeeded` และ `Finished: SUCCESS`*
 
@@ -439,7 +439,7 @@ pipeline {
 3. คงค่า `APP_ENV` เป็น `dev` แล้วเลือก **Build**
 4. เปิด build `#N+5` และเลือก **Stages**
 
-![Pipeline Graph ของ APP_ENV dev ที่ข้าม Deploy](../slides_assets/lab2_s08_dev_graph.png)
+![Pipeline Graph ของ APP_ENV dev ที่ข้าม Deploy](./images/lab2_s08_dev_graph.png)
 
 *ภาพที่ 8 ต้องสังเกต build `#6` สำเร็จ แต่ node Deploy ใช้สัญลักษณ์ข้าม ขณะที่ Post Actions สำเร็จ*
 
@@ -450,7 +450,7 @@ pipeline {
 3. เปิด build `#N+6` และเลือก **Stages**
 4. ตรวจว่า `Checkout`, `Build`, `Test`, `Deploy` และ `Post Actions` เป็นสีเขียว
 
-![Pipeline Graph ของ APP_ENV prod ที่ Deploy สำเร็จ](../slides_assets/lab2_s09_prod_graph.png)
+![Pipeline Graph ของ APP_ENV prod ที่ Deploy สำเร็จ](./images/lab2_s09_prod_graph.png)
 
 *ภาพที่ 9 ต้องสังเกต build `#7` และ node Deploy ปรากฏเป็นสีเขียวก่อน Post Actions*
 

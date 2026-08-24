@@ -1,168 +1,339 @@
-# LAB 4 — Pipeline จาก GitHub ถึง Docker Hub
+# LAB 4 — Pipeline from GitHub Repository ของนักศึกษา
 
-แล็บนี้ศึกษาความสัมพันธ์ระหว่าง Git revision, Jenkins Pipeline และ immutable image digest โดย Jenkins อ่าน public repository แบบไม่ใช้ credential, ทดสอบผลแบบ deterministic, สร้าง image สอง tag จาก SHA เดียวกัน, push ด้วย credential ที่ Jenkins ปกปิด และดึง image กลับมารันด้วย digest
+LAB นี้ฝึกให้ Jenkins อ่าน `Jenkinsfile` จาก GitHub Repository ของนักศึกษา แล้วรัน Pipeline แบบง่ายตามลำดับ **Check source → Build image → Run container → Push image** จุดเน้นคือความสัมพันธ์ระหว่าง GitHub, Jenkinsfile และ Jenkins Pipeline ไม่ใช่ shell script หรือระบบตรวจสอบ artifact ขั้นสูง
 
 ## ผลลัพธ์การเรียนรู้
 
-- อธิบายได้ว่า anonymous checkout ใช้ได้เฉพาะการอ่าน public repository
-- พิสูจน์ได้ว่า full SHA, short SHA, OCI revision label และ digest อ้างถึง build เดียวกัน
-- ใช้ Jenkins credential `dockerhub` ผ่าน `--password-stdin` เฉพาะ stage `Publish image` โดยไม่บันทึก secret ลง repository หรือ log
-- แยก Poll SCM ซึ่งตรวจทุกนาทีออกจากขั้น build และ push image
+- แยก Course Repository ที่ใช้อ้างอิงออกจาก Student Repository ที่ใช้ทำงานจริง
+- สร้าง Public GitHub Repository ของตนเองและ push source ก่อนสร้าง Pipeline
+- ตั้งค่า Jenkins แบบ Pipeline script from SCM ให้อ่าน `Jenkinsfile` จาก GitHub
+- อ่าน Declarative Pipeline และอธิบายหน้าที่ของ Stage ทั้งสี่ได้
+- ใช้ Poll SCM ให้ commit ใหม่เริ่ม Pipeline และตรวจผลจาก Console Output
 
-## สัญญาของระบบ
+## สัญญาของ LAB
 
-| ส่วน | ค่าที่ใช้ในเอกสาร |
+| ส่วน | ค่าที่ใช้ |
 |---|---|
-| GitHub repository | `https://github.com/<GITHUB_USER>/hello-ci.git` (Public) |
-| Jenkins job | `hello-ci-pipeline` / Pipeline script from SCM / Credentials `- none -` |
-| Docker Hub repository | `<DOCKER_USER>/hello-ci` (Public) |
-| Jenkins credential | ID `dockerhub`, Username `<DOCKER_USER>`, Password `<DOCKER_TOKEN>` |
+| Course reference | `$COURSE_ROOT/004_LAB_Pipeline_From_Git` — อ่านและคัดลอกเท่านั้น |
+| Student project | `$HOME/hello-ci` |
+| GitHub repository | `https://github.com/<GITHUB_USER>/hello-ci.git` — Public |
+| Jenkins job | `hello-ci-pipeline` / Pipeline script from SCM / `*/main` / `Jenkinsfile` |
+| Docker Hub repository | `<DOCKER_USER>/hello-ci` — Public |
+| Jenkins credential | Username with password, ID `dockerhub` |
 | Trigger | Poll SCM `* * * * *` |
 
-ค่าจริงอ่านจาก `DevTools/backup/.env` เฉพาะ runtime เท่านั้น ห้ามคัดลอกค่าจริงลงไฟล์ คำสั่งที่เผยแพร่ screenshot หรือ build parameter
-ก่อนเริ่ม ให้ผู้สอนใช้ `github_preflight.sh` ตรวจสิทธิ์ runtime โดยไม่พิมพ์ token ออกหน้าจอ
+กำหนดตัวแปรใน shell ที่ใช้ทำ LAB:
 
-## ภาพรวมสถาปัตยกรรม
+```bash
+COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"
+LAB_SRC="$COURSE_ROOT/004_LAB_Pipeline_From_Git"
+PROJECT_DIR="$HOME/hello-ci"
+```
+
+ใช้ `<GITHUB_USER>`, `<GITHUB_TOKEN>`, `<DOCKER_USER>`, `<DOCKER_TOKEN>`, `<JENKINS_USER>` และ `<JENKINS_API_TOKEN>` เป็น placeholder ในเอกสารเท่านั้น ห้ามเขียน token ลง Repository
+
+ไฟล์ `.course-cicd2569` เป็น guard สำหรับ instructor bootstrap ไม่ใช่ไฟล์ป้องกันการเขียนทับ ห้ามชี้ `tools/bootstrap/up_to_labN.sh` ไปยัง Personal Repository ที่มีงานสำคัญ
+
+## แผนที่การทดลอง
+
+| ขั้น | การทดลอง | ผลลัพธ์ |
+|---|---:|---|
+| 1. เตรียม Repository | 1–2 | ตรวจ 5 ไฟล์ → copy → `git init` → commit |
+| 2. Push Source Code | 3 | สร้าง Public `hello-ci` → push `main` |
+| 3. เข้าใจและตั้งค่า Pipeline | 4 | อ่าน Jenkinsfile → ตั้ง Pipeline from SCM |
+| 4. Run Pipeline | 5 | Check source → Build → Run → Push |
+| 5. ตรวจสอบ Trigger | 6 | push commit ใหม่ → Poll SCM → ตรวจผลลัพธ์จริง |
+
+## ขั้นที่ 1 — เตรียม Repository
+
+### การทดลองที่ 1 — ต้องคัดลอกไฟล์ใดบ้าง?
+
+**คำถาม:** LAB 4 ใช้เฉพาะไฟล์ใดจาก Course Repository?
+
+```bash
+cat "$LAB_SRC/project-files.txt"
+```
+
+```bash
+( cd "$LAB_SRC" && xargs -a project-files.txt ls -l )
+```
+
+✅ **สิ่งที่ต้องเห็น:** มี 5 รายการและทุกไฟล์ไม่ว่าง
 
 ```text
-GitHub main (anonymous read)
-        │ full SHA
-        ▼
-Jenkins: test → build → push ─────► Docker Hub :<full SHA> / :<short SHA>
-        │                                  │
-        └──────── pull + run by digest ◄───┘
+.course-cicd2569
+.dockerignore
+Dockerfile
+Jenkinsfile
+app/index.html
 ```
 
-## การทดลองที่ 1 — Repository นี้เป็นของแล็บและอ่านแบบ anonymous ได้หรือไม่?
+LAB ใหม่นี้ไม่มี `hello.sh`, `expected.txt` หรือไฟล์ผลลัพธ์ที่ Pipeline ต้องเขียน
 
-**คำถาม:** public repository `hello-ci` มี ownership marker ที่อนุญาตให้ปรับปรุงโดยไม่แตะ repository อื่นหรือไม่?
+### การทดลองที่ 2 — สร้าง Student Project และ First Commit
 
-```bash
-git clone https://github.com/<GITHUB_USER>/hello-ci.git "$HOME/hello-ci"
-test "$(cat "$HOME/hello-ci/.course-cicd2569")" = 'course fixture — safe to delete'
-```
-
-✅ **สิ่งที่ต้องสังเกต:** clone ไม่ถาม credential และ marker มีค่า canonical ตรงกันก่อนแก้ไฟล์
-
-![GitHub repository หลัง push source ของแล็บ](../slides_assets/lab4_s03_github_repo_files.png)
-
-*ภาพที่ 1: หน้า GitHub จริง มีกรอบแดงหมายเลข ① ล้อม branch `main` และรายการ source ที่ Jenkins จะ checkout; ชื่อบัญชีถูกแทนด้วย `<GITHUB_USER>` ก่อนบันทึก*
-
-## การทดลองที่ 2 — ผลทดสอบซ้ำได้โดยไม่ขึ้นกับ Jenkins หรือไม่?
-
-**คำถาม:** source revision เดียวกันให้ output ตรง `expected.txt` ทุกครั้งหรือไม่?
+**คำถาม:** Student Project แยกจาก Course Repository และมี source พร้อม push หรือไม่?
 
 ```bash
-bash -ceu 'cd "$1"; ./hello.sh > actual.txt; diff -u expected.txt actual.txt' -- "$HOME/hello-ci"
-```
-
-✅ **สิ่งที่ต้องสังเกต:** `diff` ไม่แสดงความแตกต่างและคืน exit code `0`
-
-## การทดลองที่ 3 — จะ push Pipeline-as-Code โดยไม่ฝัง PAT ได้อย่างไร?
-
-**คำถาม:** commit ที่มี `Jenkinsfile`, `Dockerfile`, web artifact และ marker จะขึ้น `main` โดยไม่เก็บ token ใน URL ได้หรือไม่?
-
-```bash
-git -C "$HOME/hello-ci" add .course-cicd2569 .dockerignore Dockerfile Jenkinsfile app expected.txt hello.sh
-git -C "$HOME/hello-ci" -c user.name=Student -c user.email=student@example.invalid commit -m 'Build immutable image from Git SHA'
+rm -rf "$PROJECT_DIR" && mkdir -p "$PROJECT_DIR"
+( cd "$LAB_SRC" && xargs -a project-files.txt cp --parents -t "$PROJECT_DIR" )
 ```
 
 ```bash
-git -C "$HOME/hello-ci" push origin main
+cd "$PROJECT_DIR"
+git init -q -b main
+git config user.name 'Student'
+git config user.email 'student@example.invalid'
+git add -A
+git commit -m 'LAB 4: simple Pipeline from Git'
+git log --oneline --name-only -1
 ```
 
-เมื่อ Git ถามให้กรอก Username `<GITHUB_USER>` และใช้ `<GITHUB_TOKEN>` เป็น Password; ห้ามใช้ token ใน remote URL และห้ามเปิด `credential.helper store`
+✅ **สิ่งที่ต้องเห็น:** commit แรกมี 5 ไฟล์ตาม manifest และ Repository root คือ `$HOME/hello-ci`
 
-✅ **สิ่งที่ต้องสังเกต:** GitHub แสดง commit บน `main` พร้อมไฟล์ทั้งหมด โดย marker ยังอยู่และไม่มี secret ใน history
+## ขั้นที่ 2 — Push Source Code
 
-## การทดลองที่ 4 — Jenkins จะ checkout GitHub โดยไม่ใช้ credential แล้วเก็บ Docker credential แยกกันได้หรือไม่?
+### การทดลองที่ 3 — สร้าง GitHub Repository ของนักศึกษา
 
-**คำถาม:** job definition แยก anonymous GitHub read ออกจาก credential `dockerhub` ที่ใช้เฉพาะ stage push ได้หรือไม่?
+**คำถาม:** จะ push Student Project ขึ้น Repository ใหม่โดยไม่บันทึก token ได้อย่างไร?
 
-1. เปิด **Jenkins → New Item**, กรอก `hello-ci-pipeline`, เลือก **Pipeline**, แล้วกด **OK**
-2. เลือก **Pipeline script from SCM → Git**, URL `https://github.com/<GITHUB_USER>/hello-ci.git`, Credentials `- none -`, Branch `*/main`, Script Path `Jenkinsfile`
-3. ที่ **Manage Jenkins → Credentials → System → Global credentials → Add Credentials** เลือก Username with password, ID `dockerhub`, Username `<DOCKER_USER>`, Password `<DOCKER_TOKEN>` แล้วกด **Create**
+1. เปิด `https://github.com/new`
+2. ตั้ง Repository name เป็น `hello-ci`
+3. เลือก **Public**
+4. ไม่เลือก README, `.gitignore` หรือ License
+5. กด **Create repository**
+
+หน้า Create Repository ต้องใช้ browser session ของนักศึกษา เอกสารนี้ไม่ใช้ภาพ generate หรือภาพจำลอง ภาพด้านล่างเป็น Repository จริงที่ใช้ใน LAB
 
 ```bash
-curl -fsS -u '<JENKINS_USER>:<JENKINS_API_TOKEN>' http://localhost:8080/job/hello-ci-pipeline/config.xml | grep -E 'github.com|credentialsId|scriptPath'
+git -C "$PROJECT_DIR" remote add origin "https://github.com/<GITHUB_USER>/hello-ci.git"
+git -C "$PROJECT_DIR" push -u origin main
 ```
 
-✅ **สิ่งที่ต้องสังเกต:** SCM XML มี GitHub URL และ `Jenkinsfile` แต่ไม่มี SCM `credentialsId`; `Jenkinsfile` มี `withCredentials` เพียงครั้งเดียวภายใน `Publish image`
+เมื่อ Git ถาม credential ให้ใช้ `<GITHUB_USER>` เป็น Username และ `<GITHUB_TOKEN>` เป็น Password ห้ามใส่ token ใน URL
 
-![ตั้งค่า Pipeline from SCM](../slides_assets/lab4_s05_jenkins_scm_config.png)
+✅ **สิ่งที่ต้องเห็น:** Repository จริงเริ่มจาก empty state และหลัง push แสดง branch `main`, commit แรก และ source 5 รายการ
 
-*ภาพที่ 2: หน้า Jenkins จริง ลำดับ ① Definition ② Git ③ URL ④ Credentials `- none -` ⑤ branch `*/main`; URL ถูกแทนบัญชีด้วย placeholder*
+![GitHub repository ใหม่ก่อน push](./images/lab4_s02_github_empty_repo.png)
 
-## การทดลองที่ 5 — Build หนึ่งครั้งผูก SHA, tag และ digest ได้ครบหรือไม่?
+*ภาพที่ 1: Public Repository จริงก่อน push*
 
-**คำถาม:** manual build จะทดสอบ สร้าง push และ pull-run image จนได้ digest ที่ตรวจสอบย้อนกลับได้หรือไม่?
+![GitHub repository หลัง push](./images/lab4_s03_github_repo_files.png)
 
-1. เปิด job `hello-ci-pipeline` แล้วกด **Build Now**
-2. เปิด build ล่าสุด → **Console Output** และตรวจ stage `Source SHA`, `Deterministic test`, `Build OCI image`, `Publish image`, `Verify public digest`
+*ภาพที่ 2: Source 5 รายการใน Student Repository จริง*
+
+![GitHub commit history](./images/lab4_s03b_github_commit_sha.png)
+
+*ภาพที่ 3: Commit history ที่ Jenkins ใช้ตรวจ revision ใหม่*
+
+## ขั้นที่ 3 — เข้าใจและตั้งค่า Pipeline
+
+### `Jenkinsfile` มีหน้าที่อะไร?
+
+`Jenkinsfile` คือ Pipeline as Code ซึ่งเก็บขั้นตอน CI/CD ไว้ร่วมกับ source code ไฟล์นี้อยู่ที่ root ของ Student Repository เมื่อ job ใช้ **Pipeline script from SCM** Jenkins จะ:
+
+1. checkout branch `main` จาก GitHub
+2. อ่าน `Jenkinsfile` ที่ root ของ revision นั้น
+3. รัน Stage จากบนลงล่าง
+4. หยุดทันทีถ้าคำสั่งใน Stage ใดคืน exit code ไม่ใช่ `0`
+
+### `Jenkinsfile` ที่ใช้จริงใน LAB 4
+
+```groovy
+pipeline {
+  agent any
+
+  environment {
+    IMAGE = 'hello-ci'
+  }
+
+  stages {
+    stage('Check source') {
+      steps {
+        echo 'ตรวจสอบ Source Code ที่ Jenkins ดึงมาจาก GitHub'
+        sh '''
+          git log -1 --oneline
+          ls -la
+          test -f Dockerfile
+          test -f app/index.html
+        '''
+      }
+    }
+
+    stage('Build image') {
+      steps {
+        sh 'docker build -t "$IMAGE:$BUILD_NUMBER" .'
+      }
+    }
+
+    stage('Run container') {
+      steps {
+        sh '''
+          docker run --rm "$IMAGE:$BUILD_NUMBER" \
+            sh -c "grep -Fq 'Pipeline จาก GitHub' /usr/share/nginx/html/index.html"
+        '''
+      }
+    }
+
+    stage('Push image') {
+      steps {
+        withCredentials([
+          usernamePassword(
+            credentialsId: 'dockerhub',
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_TOKEN'
+          )
+        ]) {
+          sh '''
+            printf '%s' "$DOCKER_TOKEN" | \
+              docker login --username "$DOCKER_USER" --password-stdin
+
+            docker tag \
+              "$IMAGE:$BUILD_NUMBER" \
+              "$DOCKER_USER/hello-ci:$BUILD_NUMBER"
+
+            docker push "$DOCKER_USER/hello-ci:$BUILD_NUMBER"
+            docker logout
+          '''
+        }
+      }
+    }
+  }
+}
+```
+
+### อ่าน Pipeline ทีละส่วน
+
+| ส่วน | หน้าที่ |
+|---|---|
+| `agent any` | ให้ Jenkins เลือก agent ที่พร้อมทำงาน |
+| `IMAGE = 'hello-ci'` | กำหนดชื่อ local Docker image ใช้ร่วมกันทุก Stage |
+| `Check source` | แสดง commit และตรวจว่า `Dockerfile` กับ `app/index.html` ถูก checkout แล้ว |
+| `Build image` | สร้าง image และใช้ Jenkins `BUILD_NUMBER` เป็น tag |
+| `Run container` | เปิด container ชั่วคราว ตรวจข้อความใน HTML แล้วลบ container ด้วย `--rm` |
+| `Push image` | bind Docker Hub credential เฉพาะ Stage นี้ แล้ว tag/push image |
+
+Pipeline ไม่สร้างไฟล์ `.txt`, ไม่ archive artifact และไม่มี SHA/digest logic เพิ่มเติม จุดที่ต้องเข้าใจคือ:
+
+```text
+GitHub main
+    ↓ Jenkins checkout และอ่าน Jenkinsfile
+Check source → Build image → Run container → Push image
+```
+
+### การทดลองที่ 4 — ตั้ง Pipeline from SCM
+
+**คำถาม:** Jenkins อ่าน `Jenkinsfile` จาก Public Student Repository โดยไม่ใช้ GitHub credential ได้หรือไม่?
+
+1. เปิด **Jenkins → New Item**
+2. กรอก `hello-ci-pipeline`, เลือก **Pipeline** แล้วกด **OK**
+3. เลือก **Pipeline script from SCM → Git**
+4. Repository URL = `https://github.com/<GITHUB_USER>/hello-ci.git`
+5. Credentials = `- none -`, Branch = `*/main`, Script Path = `Jenkinsfile`
+6. กด **Save**
+7. ตรวจว่ามี Jenkins credential ID `dockerhub`
 
 ```bash
-curl -fsS -u '<JENKINS_USER>:<JENKINS_API_TOKEN>' http://localhost:8080/job/hello-ci-pipeline/lastSuccessfulBuild/artifact/build-evidence.env
+curl -fsS -u '<JENKINS_USER>:<JENKINS_API_TOKEN>' \
+  http://localhost:8080/job/hello-ci-pipeline/config.xml \
+  | grep -E 'github.com|credentialsId|scriptPath'
 ```
 
-✅ **สิ่งที่ต้องสังเกต:** build ใช้ local tag โดยไม่ bind credential, `Publish image` เป็น stage เดียวที่ bind credential และ `Verify public digest` ดึง public image โดยไม่ใช้ credential; `FULL_SHA` เป็น 40 hex, `SHORT_SHA` คือ 12 ตัวแรก, `DIGEST` เป็น `sha256:` 64 hex และ build จบ `SUCCESS`
+✅ **สิ่งที่ต้องเห็น:** SCM ชี้ Student Repository, Script Path เป็น `Jenkinsfile` และ GitHub checkout ใช้ Credentials `- none -`
 
-![Console Output ของ build ที่ push image](../slides_assets/lab4_s06_manual_build_console.png)
+![สร้าง Jenkins Pipeline job](./images/lab4_s04_jenkins_new_item.png)
 
-*ภาพที่ 3: หน้า Jenkins จริง มี marker ล้อม Build local, Publish ที่ bind credential, Verify public digest ที่ไม่ bind และ `Finished: SUCCESS`; ไม่มี credential จริงในภาพ*
+*ภาพที่ 4: สร้าง job ชื่อ `hello-ci-pipeline`*
 
-![Docker Hub แสดง tag จาก Git SHA](../slides_assets/lab4_s10_dockerhub_sha_tags.png)
+![ตั้งค่า Pipeline from SCM](./images/lab4_s05_jenkins_scm_config.png)
 
-*ภาพที่ 4: หน้า Docker Hub จริง มี marker ① full SHA tag ② short SHA tag ③ digest; ชื่อบัญชีถูกแทนด้วย `<DOCKER_USER>` ก่อนบันทึก*
+*ภาพที่ 5: URL, branch และ Script Path ของ Student Repository*
 
-## การทดลองที่ 6 — Poll SCM สร้าง build เฉพาะเมื่อ revision เปลี่ยนหรือไม่?
+![บันทึก Pipeline from SCM](./images/lab4_s05b_scm_save.png)
 
-**คำถาม:** schedule ทุกนาทีจะตรวจ GitHub และสร้าง build จาก SCM change หลัง push commit ใหม่ได้หรือไม่?
+*ภาพที่ 6: บันทึก job configuration*
 
-1. เปิด **hello-ci-pipeline → Configure → Triggers**, เลือก **Poll SCM**, กรอก `* * * * *`, อ่านคำเตือน every minute แล้วกด **Save**
-2. เพิ่มบรรทัด `# Poll SCM probe` ใน `hello.sh`, commit และ push จากนั้นรอโดยไม่กด Build Now
+## ขั้นที่ 4 — Run Pipeline
 
-ห้ามใช้ `H/1` เพราะ Jenkins ตีความเป็นหนึ่งครั้งต่อชั่วโมง ไม่ใช่หนึ่งครั้งต่อนาที
+### การทดลองที่ 5 — Manual Build ทำงานครบสี่ Stage หรือไม่?
+
+**คำถาม:** Jenkins checkout, build, run และ push image ได้ตาม `Jenkinsfile` หรือไม่?
+
+1. เปิด `hello-ci-pipeline` แล้วกด **Build Now**
+2. เปิด build ล่าสุด → **Console Output**
+3. ตรวจ Stage `Check source`, `Build image`, `Run container`, `Push image`
 
 ```bash
-bash -ceu 'cd "$1"; printf "\n# Poll SCM probe\n" >> hello.sh; git add hello.sh; git commit -m "Observe Poll SCM"; git push origin main' -- "$HOME/hello-ci"
+curl -fsS -u '<JENKINS_USER>:<JENKINS_API_TOKEN>' \
+  http://localhost:8080/job/hello-ci-pipeline/lastBuild/api/json
 ```
 
-✅ **สิ่งที่ต้องสังเกต:** Git Polling Log แสดง `Changes found`, build cause เป็น `Started by an SCM change` และ checkout SHA ตรง `origin/main`
+✅ **สิ่งที่ต้องเห็น:** build จบ `SUCCESS`; การรันจริงได้ Manual build #2 ซึ่ง checkout `e074dfa...`, เดินครบสี่ Stage และ push `<DOCKER_USER>/hello-ci:2` สำเร็จ
 
-![ตั้ง Poll SCM ทุกนาที](../slides_assets/lab4_s07_poll_scm_trigger.png)
+![กด Build Now](./images/lab4_s06a_build_now.png)
 
-*ภาพที่ 5: หน้า Jenkins จริง ลำดับ ① เลือก Poll SCM ② กรอกดาวห้าช่อง ③ อ่านคำเตือน แล้วกด Save*
+*ภาพที่ 7: เริ่ม Manual Build*
 
-![Git Polling Log พบ revision ใหม่](../slides_assets/lab4_s08_git_polling_log.png)
+![เปิด Console Output](./images/lab4_s06b_open_console.png)
 
-*ภาพที่ 6: Git Polling Log จริง มี marker ① ล้อม `Changes found`; URL บัญชีถูกแทนด้วย `<GITHUB_USER>` ก่อนบันทึก*
+*ภาพที่ 8: เปิด Console Output ของ build*
 
-![ผล Poll SCM และ build cause](../slides_assets/lab4_s09_scm_build_cause.png)
+![Console Output ของ Pipeline](./images/lab4_s06_manual_build_console.png)
 
-*ภาพที่ 7: หน้า Jenkins build จริง มี marker ล้อม `Started by an SCM change` และสถานะสำเร็จ*
+*ภาพที่ 9: Console แสดง simple Pipeline ทั้งสี่ Stage และ `Finished: SUCCESS`*
 
-## การทดลองที่ 7 — Contract ทั้งชุดตรวจซ้ำอัตโนมัติได้หรือไม่?
+![Docker Hub แสดง BUILD_NUMBER tag](./images/lab4_s10_dockerhub_sha_tags.png)
 
-**คำถาม:** repository, Jenkins build, OCI labels, digest และ pull-run ผ่านเกณฑ์เดียวกันทั้งหมดหรือไม่?
+*ภาพที่ 10: Docker Hub Repository จริงแสดง tag ที่ตรงกับ Jenkins BUILD_NUMBER*
+
+## ขั้นที่ 5 — ตรวจสอบ Trigger
+
+### การทดลองที่ 6 — Poll SCM เริ่ม build หลัง commit ใหม่หรือไม่?
+
+**คำถาม:** เมื่อ `main` เปลี่ยน Jenkins เริ่ม Pipeline ใหม่โดยไม่กด Build Now หรือไม่?
+
+1. เปิด **hello-ci-pipeline → Configure → Triggers**
+2. เลือก **Poll SCM**, กรอก `* * * * *` แล้วกด **Save**
+3. เปลี่ยนหน้าเว็บและ push commit ใหม่:
 
 ```bash
-bash "$COURSE_ROOT/004_LAB_Pipeline_From_Git/check.sh"
+cd "$PROJECT_DIR"
+printf '\n<!-- Poll SCM probe -->\n' >> app/index.html
+git add app/index.html
+git commit -m 'Observe Poll SCM'
+git push origin main
 ```
 
-✅ **สิ่งที่ต้องสังเกต:** รายการตรวจจบด้วย `ผลรวม: PASS` และรายงาน GitHub SHA = image revision = build SHA พร้อม pull-run output `Hello from GitHub`
+✅ **สิ่งที่ต้องเห็น:** Git Polling Log แสดง `Changes found`; การรันจริงสร้าง build #4 จาก commit `832da4e...`, จบ `SUCCESS` ด้วย cause `Started by an SCM change` และ Docker Hub แสดง tag `4`
+
+![เปิด Poll SCM](./images/lab4_s07_poll_scm_trigger.png)
+
+*ภาพที่ 11: เปิด Poll SCM และกำหนด schedule ทุกนาที*
+
+![บันทึก Poll SCM](./images/lab4_s07b_poll_save.png)
+
+*ภาพที่ 12: บันทึก Trigger configuration*
+
+![Git Polling Log](./images/lab4_s08_git_polling_log.png)
+
+*ภาพที่ 13: Polling Log พบ revision ใหม่*
+
+![SCM-triggered build](./images/lab4_s09_scm_build_cause.png)
+
+*ภาพที่ 14: Build เกิดจาก SCM change และจบสำเร็จ*
 
 ## แก้ปัญหาที่พบบ่อย
 
-| อาการ | สาเหตุที่ตรวจ | วิธีแก้ที่ควบคุมความเสี่ยง |
+| อาการ | จุดตรวจ | วิธีแก้ |
 |---|---|---|
-| clone ถาม credential | repository ไม่เป็น Public หรือ URL ผิด | ตรวจ visibility และใช้ HTTPS URL ตาม contract |
-| Jenkins checkout ล้มเหลว | branch/Script Path ไม่ตรง | ตรวจ `*/main` และ `Jenkinsfile` โดยไม่เพิ่ม SCM credential |
-| `unauthorized` ตอน push image | credential ID หรือ token ผิด | แก้ credential `dockerhub`; ห้ามวาง token ใน Jenkinsfile |
-| tag มีค่า `latest` | Pipeline ไม่ได้อ่าน Git SHA | ตรวจ `git rev-parse HEAD` และห้ามใช้ mutable tag เป็นหลักฐาน |
-| digest ว่าง | push ไม่สำเร็จหรือ inspect ก่อน push | ตรวจ exit code ของ `docker push` แล้วอ่าน `RepoDigests` หลัง push |
-| Poll ไม่เกิด build | ยังไม่มี commit ใหม่หรือ cron ผิด | ตรวจ `* * * * *` และ Git Polling Log ก่อนแก้ trigger |
-| `Invalid option type "timestamps"` | Jenkins ไม่มี Timestamper plugin | ตัด option ที่ไม่จำเป็น หรือให้ผู้ดูแลติดตั้ง plugin ก่อนใช้ |
+| Repository name already in use | มี `hello-ci` เดิม | archive หรือ rename Repository เดิมก่อน |
+| Push ถูกปฏิเสธ | Repository ไม่ว่างหรือยังไม่มี commit | สร้าง empty Repository และทำ First Commit ก่อน push |
+| Jenkins checkout ล้มเหลว | URL, branch หรือ Script Path | ตรวจ Public URL, `*/main` และ `Jenkinsfile` |
+| `Dockerfile` not found | คัดลอกไฟล์ไม่ครบ | คัดลอกใหม่ตาม `project-files.txt` |
+| Run container ล้มเหลว | HTML ไม่มีข้อความตาม contract | ตรวจ `app/index.html` แล้ว build ใหม่ |
+| Push image unauthorized | credential ID หรือ token ผิด | ตรวจ Jenkins credential ID `dockerhub` |
+| Poll SCM ไม่เริ่ม build | ไม่มี commit ใหม่หรือ cron ผิด | ใช้ `* * * * *`, push revision ใหม่ แล้วดู Polling Log |
 
 ## สรุป
 
-Tag จาก SHA ช่วยให้ค้นหา image ตาม source revision ได้ ส่วน digest ยืนยัน content แบบ immutable; ทั้งสองค่าเสริมกัน แต่ไม่ใช้แทนกัน การ checkout public repository ไม่ต้องใช้ credential ขณะที่การ push Docker Hub ต้องจำกัด credential ให้เกิดเฉพาะ stage ที่ต้องเขียนเท่านั้น
+LAB 4 ใช้ Jenkinsfile แบบตั้งใจให้สั้น: Jenkins checkout source จาก GitHub ตรวจไฟล์ สร้าง Docker image รัน container เพื่อทดสอบ และ push image ด้วย `BUILD_NUMBER` tag นักศึกษาจึงเห็นเส้นทาง GitHub → Jenkins → Docker Hub ได้ครบโดยไม่ถูก SHA/digest หรือไฟล์หลักฐานขั้นสูงเบี่ยงความสนใจ

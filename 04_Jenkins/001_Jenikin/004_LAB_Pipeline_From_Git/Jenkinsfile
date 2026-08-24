@@ -1,104 +1,60 @@
 pipeline {
   agent any
-  options {
-    disableConcurrentBuilds()
-  }
+
   environment {
-    DOCKER_CREDENTIALS = 'dockerhub'
+    IMAGE = 'hello-ci'
   }
+
   stages {
-    stage('Source SHA') {
+    stage('Check source') {
       steps {
-        // The job performs an anonymous checkout from the public GitHub repository.
+        echo 'ตรวจสอบ Source Code ที่ Jenkins ดึงมาจาก GitHub'
         sh '''
-          set -eu
-          git rev-parse HEAD | tee full-sha.txt
-          cut -c1-12 full-sha.txt | tee short-sha.txt
-          git remote get-url origin | sed -E 's/[.]git$//' | tee source-url.txt
-          grep -Eq '^https://github[.]com/[^/]+/hello-ci$' source-url.txt
-          git status --porcelain
+          git log -1 --oneline
+          ls -la
+          test -f Dockerfile
+          test -f app/index.html
         '''
       }
     }
-    stage('Deterministic test') {
+
+    stage('Build image') {
+      steps {
+        sh 'docker build -t "$IMAGE:$BUILD_NUMBER" .'
+      }
+    }
+
+    stage('Run container') {
       steps {
         sh '''
-          set -eu
-          test -x hello.sh
-          ./hello.sh > actual.txt
-          diff -u expected.txt actual.txt
-          grep -Fq 'Pipeline จาก GitHub' app/index.html
+          docker run --rm "$IMAGE:$BUILD_NUMBER" \
+            sh -c "grep -Fq 'Pipeline จาก GitHub' /usr/share/nginx/html/index.html"
         '''
       }
     }
-    stage('Build OCI image') {
+
+    stage('Push image') {
       steps {
-        script {
-          env.FULL_SHA = readFile('full-sha.txt').trim()
-          env.SHORT_SHA = readFile('short-sha.txt').trim()
-        }
-        sh '''
-          set -eu
-          LOCAL_IMAGE="hello-ci-local:$FULL_SHA"
-          SOURCE_URL="$(cat source-url.txt)"
-          docker build \
-            --build-arg VCS_REF="$FULL_SHA" \
-            --build-arg BUILD_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            --build-arg SOURCE_URL="$SOURCE_URL" \
-            --label "org.opencontainers.image.source=$SOURCE_URL" \
-            --label "org.opencontainers.image.revision=$FULL_SHA" \
-            -t "$LOCAL_IMAGE" .
-        '''
-      }
-    }
-    stage('Publish image') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+        withCredentials([
+          usernamePassword(
+            credentialsId: 'dockerhub',
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_TOKEN'
+          )
+        ]) {
           sh '''
-            set -eu
-            LOCAL_IMAGE="hello-ci-local:$FULL_SHA"
-            IMAGE="${DOCKER_USER}/hello-ci"
-            printf '%s\n' "$IMAGE" > image-name.txt
-            docker tag "$LOCAL_IMAGE" "$IMAGE:$FULL_SHA"
-            docker tag "$LOCAL_IMAGE" "$IMAGE:$SHORT_SHA"
-            DOCKER_CONFIG="$(mktemp -d)"
-            export DOCKER_CONFIG
-            trap 'docker logout >/dev/null 2>&1 || true; rm -rf "$DOCKER_CONFIG"' EXIT
-            printf '%s' "$DOCKER_TOKEN" | docker login --username "$DOCKER_USER" --password-stdin
-            docker push "$IMAGE:$FULL_SHA"
-            docker push "$IMAGE:$SHORT_SHA"
-            docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE:$FULL_SHA" \
-              | awk -F@ 'NF == 2 {print $2}' | tee image-digest.txt
-            grep -Eq '^sha256:[0-9a-f]{64}$' image-digest.txt
-            DIGEST="$(cat image-digest.txt)"
-            printf 'IMAGE=%s\nFULL_SHA=%s\nSHORT_SHA=%s\nDIGEST=%s\n' \
-              "$IMAGE" "$FULL_SHA" "$SHORT_SHA" "$DIGEST" > build-evidence.env
+            printf '%s' "$DOCKER_TOKEN" | \
+              docker login --username "$DOCKER_USER" --password-stdin
+
+            docker tag \
+              "$IMAGE:$BUILD_NUMBER" \
+              "$DOCKER_USER/hello-ci:$BUILD_NUMBER"
+
+            docker push "$DOCKER_USER/hello-ci:$BUILD_NUMBER"
+            docker logout
           '''
         }
       }
-    }
-    stage('Verify public digest') {
-      steps {
-        sh '''
-          set -eu
-          IMAGE="$(cat image-name.txt)"
-          DIGEST="$(cat image-digest.txt)"
-          DOCKER_CONFIG="$(mktemp -d)"
-          export DOCKER_CONFIG
-          trap 'rm -rf "$DOCKER_CONFIG"' EXIT
-          test -z "$(find "$DOCKER_CONFIG" -mindepth 1 -print -quit)"
-          printf 'anonymous Docker config: empty temporary directory\n'
-          docker image rm "$IMAGE:$FULL_SHA" "$IMAGE:$SHORT_SHA" "hello-ci-local:$FULL_SHA" >/dev/null 2>&1 || true
-          docker pull "$IMAGE@$DIGEST"
-          docker run --rm --entrypoint /usr/local/bin/hello-ci-test "$IMAGE@$DIGEST" > pulled.txt
-          diff -u expected.txt pulled.txt
-        '''
-      }
-    }
-  }
-  post {
-    always {
-      archiveArtifacts artifacts: 'full-sha.txt,short-sha.txt,source-url.txt,image-name.txt,image-digest.txt,build-evidence.env', allowEmptyArchive: true
     }
   }
 }

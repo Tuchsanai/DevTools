@@ -32,6 +32,7 @@
 2. สร้าง Personal access token (classic) โดยเลือก scope `public_repo` และ `admin:repo_hook`
 3. เก็บ username/token ไว้ใน password manager; ในเอกสารใช้ placeholder `<GITHUB_USER>` และ `<GITHUB_TOKEN>` เท่านั้น
 4. ห้ามจับภาพหรือบันทึกหน้าที่แสดง token
+5. ใน LAB 4 นักศึกษาสร้าง public repository ชื่อ `hello-ci` ของตนเองและทำงานใน repository นั้น ไม่แก้ไข course repository โดยตรง
 
 ## เริ่มระบบ
 

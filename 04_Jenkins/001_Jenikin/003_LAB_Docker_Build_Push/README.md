@@ -144,20 +144,20 @@ Global credentials ทำให้ Pipeline อ้างอิงข้อมู
 1. เปิด `http://localhost:8080` และลงชื่อเข้าใช้ด้วย `admin / admin2569`
 2. เลือก **Manage Jenkins → Credentials** ในหมวด Security
 
-![เมนู Manage Jenkins ที่มีรายการ Credentials](../slides_assets/lab3_s01_manage_jenkins.png)
+![เมนู Manage Jenkins ที่มีรายการ Credentials](./images/lab3_s01_manage_jenkins.png)
 
 *สังเกตรายการ Credentials ในหมวด Security ซึ่งเป็นทางเข้าสู่ credential store ของ Jenkins*
 
 3. เลือก **System → Global credentials (unrestricted)**
 
-![หน้า Global credentials](../slides_assets/lab3_s02_global_credentials.png)
+![หน้า Global credentials](./images/lab3_s02_global_credentials.png)
 
 *สังเกต breadcrumb `Credentials / System / Global` และปุ่ม Add Credentials ใน Global domain*
 
 4. เลือก **Add Credentials → Username with password → Next**
 5. กรอก Username=`<DOCKER_USER>`, Password=`<DOCKER_TOKEN>`, ID=`dockerhub` และ Description ตามภาพ แล้วกด **Create** หลังแทนค่าจริงแล้วเท่านั้น
 
-![แบบฟอร์ม Add Credentials ที่กรอก placeholder ครบ](../slides_assets/lab3_s03_add_credential_form.png)
+![แบบฟอร์ม Add Credentials ที่กรอก placeholder ครบ](./images/lab3_s03_add_credential_form.png)
 
 *สังเกต Username เป็น `<DOCKER_USER>`, ID เป็น `dockerhub` และ Password ถูกปิดบังใน form*
 
@@ -185,7 +185,7 @@ JENKINS_BASE_URL=http://localhost:8080 DOCKER_USER='<DOCKER_USER>' DOCKER_TOKEN=
 1. กลับ Jenkins Dashboard แล้วเลือก **New Item**
 2. กรอกชื่อ `docker-build-push`, เลือก **Pipeline** แล้วกด **OK**
 
-![หน้า New Item ที่เลือก Pipeline](../slides_assets/lab3_s04_new_item_pipeline.png)
+![หน้า New Item ที่เลือก Pipeline](./images/lab3_s04_new_item_pipeline.png)
 
 *สังเกตชื่อ `docker-build-push`, ชนิด Pipeline และปุ่ม OK ที่พร้อมสร้าง job*
 
@@ -204,7 +204,7 @@ cp "$COURSE_ROOT/003_LAB_Docker_Build_Push/Jenkinsfile" /tmp/Jenkinsfile
 
 5. เปิด `/tmp/Jenkinsfile` วางเนื้อหาทั้งหมดลงช่อง Script แล้วกด **Save**
 
-![ช่อง Pipeline script ที่กรอก Jenkinsfile แล้ว](../slides_assets/lab3_s05_pipeline_script.png)
+![ช่อง Pipeline script ที่กรอก Jenkinsfile แล้ว](./images/lab3_s05_pipeline_script.png)
 
 *สังเกต Definition เป็น Pipeline script และ editor มี stage `Prepare app` จาก Jenkinsfile*
 
@@ -232,7 +232,7 @@ Pipeline Graph แสดงความสัมพันธ์ระหว่�
 1. เปิด job `docker-build-push` แล้วเลือก **Build Now**
 2. เปิด build ล่าสุดและเลือก **Pipeline Overview** หลัง build จบ
 
-![Pipeline Graph ของ docker-build-push](../slides_assets/lab3_pipeline_docker.png)
+![Pipeline Graph ของ docker-build-push](./images/lab3_pipeline_docker.png)
 
 *สังเกต `Prepare app`, `Build & Push` และ `Smoke test` เป็นสถานะสำเร็จทั้งหมด*
 
@@ -257,11 +257,11 @@ Console เป็นหลักฐานลำดับเหตุการณ
 1. จาก build ล่าสุดเลือก **Console Output**
 2. ค้นหา `Login Succeeded` และ `digest: sha256:` โดยไม่แสดงค่าของ credential
 
-![Console ช่วง Docker Hub login สำเร็จ](../slides_assets/lab3_s06_console_login.png)
+![Console ช่วง Docker Hub login สำเร็จ](./images/lab3_s06_console_login.png)
 
 *สังเกตบรรทัด `Login Succeeded` จากการใช้ `--password-stdin` โดยไม่มี token ปรากฏในภาพ*
 
-![Console ช่วง push digest](../slides_assets/lab3_s07_console_digest.png)
+![Console ช่วง push digest](./images/lab3_s07_console_digest.png)
 
 *สังเกต tag ของ build ปัจจุบันตามด้วย `digest: sha256:...` และขนาด manifest*
 
@@ -301,7 +301,7 @@ curl -fsS -u admin:admin2569 'http://localhost:8080/job/docker-build-push/lastBu
 2. ไปที่ `https://hub.docker.com/r/<DOCKER_USER>/ci-demo/tags`
 3. เลือกแท็บ **Tags** และตรวจว่า tag ตรงกับค่าที่คำสั่งแสดง
 
-![หน้า Docker Hub public Tags ที่แสดง tag ปัจจุบัน](../slides_assets/lab3_s08_hub_public_tag.png)
+![หน้า Docker Hub public Tags ที่แสดง tag ปัจจุบัน](./images/lab3_s08_hub_public_tag.png)
 
 *สังเกตแท็บ Tags, เลข tag ของ build ปัจจุบัน และ digest แบบย่อในคอลัมน์ Digest โดย crop ไม่แสดงข้อมูลบัญชีหรือหน้าที่ต้อง login และ mask ชื่อเจ้าของก่อนบันทึกภาพ*
 

@@ -97,7 +97,7 @@ docker manifest inspect "docker.io/$DOCKER_USER/cicd-webapp:latest"
 3. เลือก **Public** และไม่สร้าง README, `.gitignore` หรือ license
 4. กด **Create repository**
 
-![ฟอร์มสร้าง public repository webapp](../slides_assets/lab6_s01_github_new_repo.png)
+![ฟอร์มสร้าง public repository webapp](./images/lab6_s01_github_new_repo.png)
 
 *ภาพที่ 1: ภาพจำลอง — UI จริงอาจต่างเล็กน้อย; marker แสดง owner, ชื่อ `webapp`, Public และ Create repository ดู [GitHub Docs: Creating a new repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository); หลังบันทึกต้องตรวจ postcondition ผ่าน API*
 
@@ -152,7 +152,7 @@ branch 'main' set up to track 'origin/main'.
 
 เปิด `https://github.com/<GITHUB_USER>/webapp` และตรวจว่า branch `main` มี `app/`, `Dockerfile`, `Jenkinsfile` และ `.course-cicd2569`
 
-![GitHub repository webapp หลัง push](../slides_assets/lab6_s02_github_repo_after_push.png)
+![GitHub repository webapp หลัง push](./images/lab6_s02_github_repo_after_push.png)
 
 *ภาพที่ 2: หน้า public GitHub จริงหลัง push; ชื่อบัญชีถูก mask เป็น `<GITHUB_USER>` ตอน capture*
 
@@ -180,7 +180,7 @@ webapp  → <SMEE_WEBAPP_URL> → smee-webapp → token cicd2569-webapp
 2. เก็บ URL ใหม่เป็น `SMEE_WEBAPP_URL='<SMEE_WEBAPP_URL>'` ใน shell
 3. เปิด tab channel นี้ค้างไว้ **ก่อน** รัน relay และสร้าง GitHub hook
 
-![smee channel ของ webapp](../slides_assets/lab6_s03_smee_channel.png)
+![smee channel ของ webapp](./images/lab6_s03_smee_channel.png)
 
 *ภาพที่ 3: หน้า smee จริงก่อนรับ event; channel id ถูก mask เป็น `<SMEE_WEBAPP_URL>` ตอน capture*
 
@@ -216,23 +216,23 @@ Connected
 7. ใต้ **Pipeline** เลือก **Pipeline script from SCM → Git**
 8. กรอก Repository URL=`https://github.com/<GITHUB_USER>/webapp.git`, Branch=`*/main`, Script Path=`Jenkinsfile` โดยไม่เลือก credential แล้วกด **Save**
 
-![Post content parameters ของ webapp-deploy](../slides_assets/lab6_s04a_gwt_parameters.png)
+![Post content parameters ของ webapp-deploy](./images/lab6_s04a_gwt_parameters.png)
 
 *ภาพที่ 4.1: หน้า Jenkins จริง แสดง `ref=$.ref` และ `after=$.after` แบบ JSONPath*
 
-![Token และ cause ของ webapp-deploy](../slides_assets/lab6_s04b_gwt_token_cause.png)
+![Token และ cause ของ webapp-deploy](./images/lab6_s04b_gwt_token_cause.png)
 
 *ภาพที่ 4.2: หน้า Jenkins จริง แสดง token เฉพาะ job และ cause `GitHub push $after`*
 
-![Optional filter ของ webapp-deploy](../slides_assets/lab6_s04c_gwt_filter.png)
+![Optional filter ของ webapp-deploy](./images/lab6_s04c_gwt_filter.png)
 
 *ภาพที่ 4.3: หน้า Jenkins จริง แสดง expression `^refs/heads/main$`, text `$ref` และ Poll SCM ปิด*
 
-![Pipeline from SCM ของ webapp-deploy](../slides_assets/lab6_s05_job_scm.png)
+![Pipeline from SCM ของ webapp-deploy](./images/lab6_s05_job_scm.png)
 
 *ภาพที่ 5: หน้า Jenkins จริง แสดง public GitHub URL, branch `*/main` และไม่มี credential*
 
-![Script Path ของ webapp-deploy](../slides_assets/lab6_s05b_job_script_path.png)
+![Script Path ของ webapp-deploy](./images/lab6_s05b_job_script_path.png)
 
 *ภาพที่ 5.1: หน้า Jenkins จริงแสดง Script Path=`Jenkinsfile` ก่อน Save*
 
@@ -269,13 +269,13 @@ printf 'webapp before ping: %s\n' "$WEBAPP_BEFORE_PING"
 2. กรอก Payload URL=`<SMEE_WEBAPP_URL>`, Content type=`application/json`, Secret=ว่าง และเปิด SSL verification
 3. เลือก **Just the push event**, เปิด **Active** แล้วกด **Add webhook**
 
-![Add webhook สำหรับ webapp](../slides_assets/lab6_s06_github_add_webhook.png)
+![Add webhook สำหรับ webapp](./images/lab6_s06_github_add_webhook.png)
 
 *ภาพที่ 6: ภาพจำลอง — UI จริงอาจต่างเล็กน้อย; marker แสดง URL, JSON, Secret ว่าง, SSL verify, push-only, Active และ Add webhook ดู [GitHub Docs: Creating webhooks](https://docs.github.com/en/webhooks/using-webhooks/creating-webhooks); หลังบันทึกต้องตรวจ postcondition ผ่าน delivery/API*
 
 Topology นี้เว้น Secret ว่าง เพราะ smee-client ส่ง payload ต่อ แต่ receiver ไม่มีส่วนตรวจ `X-Hub-Signature-256`; การตั้ง secret โดยไม่มีการ verify จะสร้างความมั่นใจผิด ใน production ต้องใช้ endpoint ที่ควบคุมเองและตรวจ signature
 
-![GitHub ping บน smee channel ของ webapp](../slides_assets/lab6_s07_smee_ping.png)
+![GitHub ping บน smee channel ของ webapp](./images/lab6_s07_smee_ping.png)
 
 *ภาพที่ 7: tab smee จริงเห็น ping; channel และชื่อบัญชีถูก mask ตอน capture*
 
@@ -342,15 +342,15 @@ Verify             SUCCESS
 Finished: SUCCESS
 ```
 
-![Pipeline graph ของ deployment v1](../slides_assets/lab6_s08_pipeline_graph.png)
+![Pipeline graph ของ deployment v1](./images/lab6_s08_pipeline_graph.png)
 
 *ภาพที่ 8: Pipeline Graph จริงแสดง stage หลักสำเร็จครบ*
 
-![Console แสดง pytest ผ่าน](../slides_assets/lab6_s09_console_pytest.png)
+![Console แสดง pytest ผ่าน](./images/lab6_s09_console_pytest.png)
 
 *ภาพที่ 9: Console จริงแสดง `3 passed` ก่อน push image*
 
-![Console แสดง Verify ผ่าน Docker DNS](../slides_assets/lab6_s09b_console_verify.png)
+![Console แสดง Verify ผ่าน Docker DNS](./images/lab6_s09b_console_verify.png)
 
 *ภาพที่ 9.1: Console จริงแสดง Verify เรียก `http://webapp:8000/health`*
 
@@ -371,7 +371,7 @@ curl -fsS http://localhost:8000/api/info
 )
 ```
 
-![Deploy Dashboard v1 สีน้ำเงิน](../slides_assets/lab6_s10_dashboard_v1.png)
+![Deploy Dashboard v1 สีน้ำเงิน](./images/lab6_s10_dashboard_v1.png)
 
 *ภาพที่ 10: Dashboard จริงแสดง v1.0.0, BUILD, theme blue และ hostname*
 
@@ -451,7 +451,7 @@ time git push origin main
 )
 ```
 
-![Deploy Dashboard v2 สีเขียว](../slides_assets/lab6_s11_dashboard_v2.png)
+![Deploy Dashboard v2 สีเขียว](./images/lab6_s11_dashboard_v2.png)
 
 *ภาพที่ 11: Dashboard จริงหลัง push แสดง v2.0.0, build ใหม่ และ theme green*
 
@@ -459,7 +459,7 @@ time git push origin main
 
 เปิด `https://hub.docker.com/r/<DOCKER_USER>/cicd-webapp/tags` แบบไม่ sign in แล้วตรวจ tag `<BUILD_NUMBER>` และ `latest`
 
-![Docker Hub public tags ของ build ล่าสุด](../slides_assets/lab6_s12_hub_public_tags.png)
+![Docker Hub public tags ของ build ล่าสุด](./images/lab6_s12_hub_public_tags.png)
 
 *ภาพที่ 12: หน้า Docker Hub จริงแบบ anonymous แสดง build tag และ latest*
 

@@ -1,0 +1,5 @@
+.course-cicd2569
+.dockerignore
+Dockerfile
+Jenkinsfile
+app/index.html

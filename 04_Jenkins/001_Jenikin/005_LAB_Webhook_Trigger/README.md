@@ -78,15 +78,15 @@ export GITHUB_TOKEN='<GITHUB_TOKEN>'
 3. กด **Install** และรอหน้า Download progress จนติดตั้งครบ
 4. เลือก **Restart Jenkins when installation is complete and no jobs are running** แล้วรอหน้า login กลับมา
 
-![เลือก Generic Webhook Trigger 2.4.2](../slides_assets/lab5_s01_available_plugin.png)
+![เลือก Generic Webhook Trigger 2.4.2](./images/lab5_s01_available_plugin.png)
 
 *ภาพที่ 1: หน้า Jenkins จริง แสดงผลค้น รุ่น 2.4.2 ช่องเลือก และปุ่ม Install*
 
-![ผลติดตั้ง plugin ก่อน restart](../slides_assets/lab5_s02_plugin_download_restart.png)
+![ผลติดตั้ง plugin ก่อน restart](./images/lab5_s02_plugin_download_restart.png)
 
 *ภาพที่ 2: หน้า Download progress จริงก่อนสั่ง restart Jenkins*
 
-![เลือก restart หลังติดตั้ง plugin](../slides_assets/lab5_s02b_restart_checkbox.png)
+![เลือก restart หลังติดตั้ง plugin](./images/lab5_s02b_restart_checkbox.png)
 
 *ภาพที่ 2.1: หน้า Jenkins จริง มี marker ชี้ checkbox Restart Jenkins after installation ก่อนรอหน้า login กลับมา*
 
@@ -111,7 +111,7 @@ Generic Webhook Trigger  2.4.2  Enabled
 2. เก็บ URL ที่ได้ไว้ใน shell เป็น `SMEE_HELLO_URL='<SMEE_HELLO_URL>'`
 3. **เปิด tab channel นี้ค้างไว้ตลอดการทดลอง** แล้วจึงไปขั้น relay และ Add webhook
 
-![smee channel ใหม่ก่อนรับ event](../slides_assets/lab5_s03_smee_channel.png)
+![smee channel ใหม่ก่อนรับ event](./images/lab5_s03_smee_channel.png)
 
 *ภาพที่ 3: หน้า smee.io จริง โดย mask channel id เป็น `<SMEE_HELLO_URL>` ตั้งแต่ capture และเปิด tab ไว้ก่อนสร้าง hook*
 
@@ -146,23 +146,23 @@ image ถูก pin ด้วย digest เพื่อให้ห้องเ�
 5. เลื่อนถึง **Optional filter** กรอก **Expression** เป็น `^refs/heads/main$` และ **Text** เป็น `$ref`
 6. ตรวจค่าทั้งหมดแล้วกด **Save**
 
-![Post content parameters ของ GWT](../slides_assets/lab5_s04_gwt_parameters.png)
+![Post content parameters ของ GWT](./images/lab5_s04_gwt_parameters.png)
 
 *ภาพที่ 4: หน้า Jenkins จริง แสดง Post content parameter ตัวแรก `ref=$.ref`*
 
-![Post content parameter after](../slides_assets/lab5_s04b_gwt_after.png)
+![Post content parameter after](./images/lab5_s04b_gwt_after.png)
 
 *ภาพที่ 4.1: หน้า Jenkins จริง แสดง parameter ตัวที่สอง `after=$.after` และเลือก JSONPath*
 
-![Token และ cause ของ GWT](../slides_assets/lab5_s04c_gwt_token_cause.png)
+![Token และ cause ของ GWT](./images/lab5_s04c_gwt_token_cause.png)
 
 *ภาพที่ 4.2: หน้า Jenkins จริง แสดง token ต่อ job และ cause `GitHub push $after`*
 
-![Optional filter เฉพาะ main](../slides_assets/lab5_s05_gwt_filter.png)
+![Optional filter เฉพาะ main](./images/lab5_s05_gwt_filter.png)
 
 *ภาพที่ 5: หน้า Jenkins จริง แสดง expression `^refs/heads/main$` และ text `$ref` ก่อน Save*
 
-![กด Save หลังตั้ง GWT](../slides_assets/lab5_s05b_gwt_save.png)
+![กด Save หลังตั้ง GWT](./images/lab5_s05b_gwt_save.png)
 
 *ภาพที่ 5.1: หน้า Jenkins จริง มี marker ชี้ปุ่ม Save หลังตั้ง ref/after/token/cause/filter ครบ*
 
@@ -228,13 +228,13 @@ printf 'before ping: %s\n' "$LAB5_BEFORE_PING"
 3. กรอก Payload URL=`<SMEE_HELLO_URL>`, Content type=`application/json`, Secret=ว่าง และเปิด SSL verification
 4. เลือก **Just the push event**, เปิด **Active** แล้วกด **Add webhook**
 
-![Add webhook สำหรับ hello-ci](../slides_assets/lab5_s06_github_add_webhook.png)
+![Add webhook สำหรับ hello-ci](./images/lab5_s06_github_add_webhook.png)
 
 *ภาพที่ 6: ภาพจำลอง — UI จริงอาจต่างเล็กน้อย; marker แสดง Payload URL, JSON, Secret ว่าง, SSL verify, push-only, Active และ Add webhook ดู [GitHub Docs: Creating webhooks](https://docs.github.com/en/webhooks/using-webhooks/creating-webhooks); หลังบันทึกต้องตรวจ postcondition ผ่าน delivery/API*
 
 GitHub ส่ง `ping` ทันทีหลังสร้าง hook ให้กลับ tab smee และดู event/response จาก tab นั้นร่วมกับ `docker logs smee-hello`; หน้า GitHub **Recent Deliveries** ใช้เป็นหมายเหตุเสริมเมื่อ session ยัง login อยู่ ไม่ใช่หลักฐานบังคับ
 
-![GitHub ping ใน smee tab](../slides_assets/lab5_s07_smee_ping.png)
+![GitHub ping ใน smee tab](./images/lab5_s07_smee_ping.png)
 
 *ภาพที่ 7: หลักฐานจริงว่า tab ที่เปิดค้างรับ ping; channel และชื่อบัญชีถูก mask ตอน capture*
 
@@ -293,10 +293,10 @@ git pull --ff-only origin main
 git config user.name Student
 git config user.email student@example.invalid
 
-printf '\n# Webhook probe %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> hello.sh
+printf '\n<!-- Webhook probe %s -->\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> app/index.html
 printf 'GitHub webhook payload proof\n' > webhook-proof.txt
 
-git add hello.sh webhook-proof.txt
+git add app/index.html webhook-proof.txt
 git commit -m 'Verify immediate GitHub webhook build'
 time git push origin main
 ```
@@ -317,28 +317,28 @@ printf 'push delta: %s -> %s (+1)\n' "$LAB5_BEFORE_PUSH" "$LAB5_AFTER_PUSH"
 
 ไล่หลักฐานตาม SHA เดียวกัน:
 
-1. tab smee มี push payload: `ref=refs/heads/main`, `after=<SHA>`, `head_commit.id=<SHA>`, `commits[].modified` มี `hello.sh` และ `commits[].added` มี `webhook-proof.txt`
+1. tab smee มี push payload: `ref=refs/heads/main`, `after=<SHA>`, `head_commit.id=<SHA>`, `commits[].modified` มี `app/index.html` และ `commits[].added` มี `webhook-proof.txt`
 2. `docker logs smee-hello` มี POST ไป canonical target และ status 200 หลังเวลา delivery
 3. Jenkins มี build ใหม่ **หนึ่งรายการเท่านั้น** cause `GitHub push <SHA>` และจบ SUCCESS
 4. Console มี `Checking out Revision <SHA>` เดียวกับ origin/main
 
-![Push payload ใน smee tab](../slides_assets/lab5_s08_smee_push.png)
+![Push payload ใน smee tab](./images/lab5_s08_smee_push.png)
 
 *ภาพที่ 8: หลักฐานจริงจาก smee แสดง `ref`, `after`, `head_commit` และไฟล์ที่เปลี่ยน; mask capability/บัญชีก่อนบันทึก*
 
-![ไฟล์ที่เพิ่มและแก้ใน commits](../slides_assets/lab5_s08a_smee_commit_files.png)
+![ไฟล์ที่เพิ่มและแก้ใน commits](./images/lab5_s08a_smee_commit_files.png)
 
-*ภาพที่ 8.1: ขยาย `commits[]` แล้วเห็น proof file ใน `added`; helper/API postcondition ตรวจ `modified=hello.sh` เพิ่มอีกชั้น*
+*ภาพที่ 8.1: ขยาย `commits[]` แล้วเห็น proof file ใน `added`; helper/API postcondition ตรวจ `modified=app/index.html` เพิ่มอีกชั้น*
 
-![รายละเอียด head_commit](../slides_assets/lab5_s08b_smee_head_commit.png)
+![รายละเอียด head_commit](./images/lab5_s08b_smee_head_commit.png)
 
 *ภาพที่ 8.2: ขยาย `head_commit` เพื่อเทียบ id และข้อความ commit กับหลักฐาน hop อื่น*
 
-![Build ที่เกิดจาก GitHub push](../slides_assets/lab5_s09_github_push_build.png)
+![Build ที่เกิดจาก GitHub push](./images/lab5_s09_github_push_build.png)
 
 *ภาพที่ 9: หน้า Jenkins จริง แสดง SUCCESS และ cause `GitHub push <SHA>` ของ build ใหม่เพียงรายการเดียว*
 
-![Checkout SHA ใน Console Output](../slides_assets/lab5_s10_checkout_sha.png)
+![Checkout SHA ใน Console Output](./images/lab5_s10_checkout_sha.png)
 
 *ภาพที่ 10: Console Output จริง แสดง checkout revision ที่ตรงกับ delivery/origin/main*
 
