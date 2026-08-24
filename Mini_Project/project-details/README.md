@@ -1,6 +1,6 @@
 # Mini Project: PetTech × DevTools
 
-![PetTech × DevTools — จากแนวคิดสู่ระบบที่พร้อมส่งมอบ](../img/pettech-devtools-hero.png)
+![PetTech × DevTools](../img/pettech-devtools-hero.png)
 
 พัฒนาระบบที่แก้ปัญหาเกี่ยวกับสัตว์เลี้ยง และสาธิตกระบวนการพัฒนาตั้งแต่การจัดการ Source Code, Build, Test, Deploy จนถึงการตรวจสอบการทำงานของระบบด้วยเครื่องมือที่เรียนในรายวิชา
 
@@ -8,17 +8,20 @@
 
 > **หลักการกลาง:** ทุกสิ่งที่ทีมเสนอว่า “ระบบทำได้” จะกลายเป็น Acceptance Criteria ที่ต้อง Implementation และ Demonstrate ได้จริงจากรุ่นที่ส่ง
 
-## เส้นทางของเอกสาร
+**กรอบการทำงาน:** **Proposal** — ระบุปัญหา ผู้ใช้ Requirement และผลที่รับปาก → **Implementation** — สร้างระบบจริงให้ทุกองค์ประกอบทำงานร่วมกัน → **Verification** — ตรวจจาก Acceptance Criteria และบันทึกผลจริง/Defect
 
-| ออกแบบและสร้าง | พิสูจน์และประเมิน | นำเสนอและส่งมอบ |
-|---|---|---|
-| [1. มาตรฐานผลงาน](#standards) | [4. Proposal → Verification](#traceability) | [5. การนำเสนอ](#presentation) |
-| [2. ระบบและ System Design](#system-design) | [6. Evaluation Matrix](#evaluation) | [8. การใช้ AI](#ai-tools) |
-| [3. Course Container](#course-container) | [7. มิติการประเมิน](#evaluation-dimensions) | [9. แนวทางตรวจ](#verification-guide) · [10. Checklist](#submission-checklist) |
+**สารบัญ**
 
-| Proposal | Implementation | Verification |
-|---|---|---|
-| ระบุปัญหา ผู้ใช้ Requirement และผลที่รับปาก | สร้างระบบจริงให้ทุกองค์ประกอบทำงานร่วมกัน | ตรวจจาก Acceptance Criteria และบันทึกผลจริง/Defect |
+1. [เป้าหมายและมาตรฐานของผลงาน](#standards)
+2. [ระบบที่ทุกกลุ่มต้องส่งมอบ (System Design)](#system-design)
+3. [สภาพแวดล้อมมาตรฐานสำหรับทดสอบระบบ (Course Container)](#course-container)
+4. [กรอบ Proposal → Implementation → Verification](#traceability)
+5. [รูปแบบและโครงสร้างการนำเสนอ](#presentation)
+6. [Evaluation Matrix](#evaluation)
+7. [มิติการประเมิน](#evaluation-dimensions)
+8. [การใช้ AI Coding Tools](#ai-tools)
+9. [แนวทางการสาธิตและตรวจผลงาน](#verification-guide)
+10. [Checklist ก่อนส่งและนำเสนอ](#submission-checklist)
 
 ---
 
@@ -36,21 +39,7 @@
 
 หัวข้ออาจเป็นระบบดูแลสุขภาพสัตว์เลี้ยง การนัดหมาย การติดตามสัตว์สูญหาย การหาบ้านหรือพี่เลี้ยง หรือแนวคิดอื่นภายใต้ธีม PetTech การเลือกเทคโนโลยีและรูปแบบ Implementation เป็นอิสระ ตราบใดที่ตอบ Requirement และพิสูจน์การทำงานได้
 
-**Generated Image 1 — ทีมพัฒนาและทดสอบระบบให้พร้อมใช้งานจริง**
-
-![ทีมพัฒนากำลังสร้างและทดสอบระบบ PetTech ที่มี Web, Automated Test, Container และ Deployment](images/pettech-production-team.png)
-
-**Diagram 1 — จากปัญหาสู่ผลลัพธ์ที่พิสูจน์ได้**
-
-```mermaid
-flowchart LR
-    A["Problem + Evidence"] --> B["Target User + Use Case"]
-    B --> C["Solution + Requirements"]
-    C --> D["Production-like System"]
-    D --> E["Verification + Evidence"]
-    E --> F["Outcome ที่ยืนยันได้"]
-    F -.-> A
-```
+เส้นทางของงานโดยรวม: Problem + Evidence → Target User + Use Case → Solution + Requirements → Production-like System → Verification + Evidence → Outcome ที่ยืนยันได้
 
 ---
 
@@ -73,27 +62,23 @@ flowchart LR
 
 ### 2.2 ตัวอย่าง User Flow และ System Architecture
 
-ตัวอย่างต่อไปนี้แสดงระดับความชัดเจนที่คาดหวัง โดยเริ่มจากสิ่งที่ผู้ใช้ทำจริง แล้วติดตามข้อมูลผ่าน Frontend, Backend, Database และ Service ที่เกี่ยวข้องจนผู้ใช้ได้รับผลลัพธ์
+ตัวอย่างต่อไปนี้แสดงระดับความชัดเจนที่คาดหวัง โดยเริ่มจากสิ่งที่ผู้ใช้ทำจริง แล้วติดตามข้อมูลผ่าน Frontend, Backend, Database และ Service ที่เกี่ยวข้องจนผู้ใช้ได้รับผลลัพธ์ (ระบบตัวอย่างคือการจองนัดหมายสัตวแพทย์ — แต่ละกลุ่มใช้ Flow ของระบบตนเองแทนได้)
 
-**Generated Image 2 — ตัวอย่างผู้ใช้ใช้งานระบบในสถานการณ์จริง**
+**ตัวอย่าง User Flow: การจองนัดหมายแบบ End-to-End**
 
-![เจ้าของสัตว์เลี้ยงใช้งาน Web Application ร่วมกับสัตวแพทย์ในคลินิก](images/pettech-real-world-use.png)
+1. **ผู้ใช้เริ่มรายการ** — เจ้าของสัตว์เลี้ยงเข้าสู่ระบบผ่าน React Web เลือกสัตว์เลี้ยง วันเวลา และกดยืนยันการจอง
+2. **คำขอเดินทางเข้าระบบ** — Frontend ส่งคำขอ (เช่น REST + JSON ผ่าน HTTPS) ไปยัง Traefik ซึ่งทำหน้าที่ Reverse Proxy กำหนดเส้นทางไปยัง FastAPI
+3. **ตรวจสิทธิ์และกติกาธุรกิจ** — FastAPI ตรวจ Authentication/Authorization แล้วให้ Business Rule ตรวจเงื่อนไข เช่น ช่วงเวลาว่างจริง ไม่จองซ้ำ และผู้ใช้มีสิทธิ์จองให้สัตว์ตัวนั้น
+4. **บันทึกข้อมูล** — เมื่อผ่านเงื่อนไข ระบบบันทึกการนัดหมายลง PostgreSQL แบบ Transaction เดียว เพื่อรับประกันว่ารายการถูกบันทึกครั้งเดียวและไม่ชนกับการจองพร้อมกัน
+5. **งานเบื้องหลัง (ถ้าใช้)** — งานที่ไม่ต้องตอบทันที เช่น ส่งอีเมลหรือแจ้งเตือน ถูกส่งเข้า RabbitMQ ให้ Celery Worker ประมวลผลแยกจากเส้นทางหลัก เพื่อให้ผู้ใช้ไม่ต้องรอ
+6. **เส้นทาง LLM (ถ้าใช้)** — หากมี Feature คำแนะนำอัตโนมัติ Business Rule ส่ง Prompt + Context ผ่าน LLM Adapter ไปยัง Model แล้วผลลัพธ์ต้องผ่าน Validate/Guardrail ก่อนนำไปใช้ พร้อม Fallback เมื่อ Model หรือ Provider ใช้งานไม่ได้
+7. **ผู้ใช้ได้รับผลลัพธ์** — API ตอบผลยืนยันกลับไปแสดงบน React Web ทั้งกรณีสำเร็จ และกรณีไม่ผ่านเงื่อนไขที่ต้องแจ้ง Error ให้ผู้ใช้เข้าใจได้
 
-**Generated Image 3A — User Journey และ Core Application**
+**System Architecture อธิบายทีละชั้น** (สอดคล้องกับ Mermaid ด้านล่าง ซึ่งเป็นแหล่งอ้างอิงความสัมพันธ์เชิงเทคนิค — เส้นทึบคือเส้นทางหลักที่ทุกคำขอต้องผ่าน เส้นประคือองค์ประกอบที่เลือกใช้ตามความจำเป็น)
 
-![เจ้าของสัตว์เลี้ยงจองนัดหมายผ่าน React Web โดยคำขอผ่าน Traefik, FastAPI, Business Rules และ PostgreSQL ก่อนส่งผลยืนยันกลับ](images/pettech-system-design-user-flow.png)
-
-**Generated Image 3B — Optional Integration, Background Job และ LLM Guardrail**
-
-![Business Rules เชื่อมกับ RabbitMQ, Celery Worker, PostgreSQL, External Service และเส้นทาง LLM ที่ตรวจผลผ่าน Guardrail ก่อนส่งกลับ](images/pettech-system-design-integrations.png)
-
-**Generated Image 3C — CI/CD, Course Container และ Observability**
-
-![GitHub ส่งงานผ่าน Jenkins, Build and Test และ Container Image ไปยัง Docker Compose ภายใน Course Container พร้อม Logs and Metrics](images/pettech-system-design-delivery.png)
-
-> Generated Image 3A–3C แยก System Design เป็นสามมุมมองเพื่อให้อ่านง่าย ส่วน Mermaid ด้านล่างเป็นภาพรวมรวมและเป็นแหล่งอ้างอิงความสัมพันธ์เชิงเทคนิค
-
-**Diagram 2 — ตัวอย่าง System Design และเส้นทางการใช้งานของผู้ใช้**
+- **ชั้น Application และ Data Flow** — React Web เป็นจุดรับ Input และแสดงผล, Traefik รวมทางเข้าเดียวและกระจายคำขอ, FastAPI เป็นเจ้าของ Business Rule และ Authorization, PostgreSQL เป็นแหล่งความจริงของข้อมูล (Source of Truth) ที่ต้องคงสภาพแม้ Container ถูกสร้างใหม่ ส่วน RabbitMQ/Celery แยกงานช้าออกจากเส้นทางตอบสนองผู้ใช้ และ External Service เช่น Notification หรือ Map ต้องมีพฤติกรรมรองรับเมื่อปลายทางล่ม
+- **ชั้น Delivery และ Operation** — โค้ดถูกจัดการผ่าน Git/GitHub เมื่อมีการเปลี่ยนแปลง Jenkins จะ Build, รัน Automated Verification และสร้าง Container Image จากนั้น Deploy ด้วย Docker Compose ภายใน Course Container `tuchsanai/devtools:2569_1` โดย Log/Metric (เช่น Prometheus/Grafana) ใช้ตรวจสถานะและวินิจฉัยปัญหาหลัง Deploy
+- **จุดที่ต้องออกแบบให้ชัด** — ทุกรอยต่อระหว่างชั้นคือจุดที่มักล้มเหลว: การจองพร้อมกัน, Broker หรือ Worker ตาย, Model ตอบช้าหรือผิดรูปแบบ, Service ภายนอกไม่ตอบ ทีมต้องระบุว่าแต่ละกรณีระบบตอบสนองอย่างไรและผู้ใช้เห็นอะไร
 
 ```mermaid
 flowchart TB
@@ -166,25 +151,12 @@ Diagram นี้เป็นเพียงตัวอย่างความ
 
 > **ข้อกำหนดสำคัญ:** การตรวจและทดสอบระบบอย่างเป็นทางการจะทำภายใน Container Environment ของรายวิชาที่กำหนดให้เท่านั้น
 
-ให้ใช้ภาพแวดล้อมและวิธีเตรียมจาก [Full-stack Gateway + Broker — ChongJai Café](../../03_Application_Docker/04_Fullstack_Gateway_Broker_App/readme.md#เตรียมเครื่องเรียนครั้งเดียว) ซึ่งปัจจุบันกำหนดให้ใช้ Image `tuchsanai/devtools:2569_1` เป็นกล่อง Docker-in-Docker ของรายวิชา โดย Clone หรือ Checkout รุ่นที่ส่งเข้าไปภายในกล่อง แล้วจึงรัน Container ของโครงการผ่าน Docker/Docker Compose ภายในนั้น
+ปัจจุบันกำหนดให้ใช้ Image `tuchsanai/devtools:2569_1` เป็นกล่อง Docker-in-Docker ของรายวิชา โดย Clone หรือ Checkout รุ่นที่ส่งเข้าไปภายในกล่อง แล้วจึงรัน Container ของโครงการผ่าน Docker/Docker Compose ภายในนั้น (Host → Course Container → Checkout รุ่นที่ส่ง → Docker Compose ของโครงการ → Web + Backend + Database + Services → Acceptance/End-to-End Verification)
 
 - ทีมต้องทดสอบรุ่นที่ส่งในกล่องของรายวิชาก่อนส่งมอบ และต้องทำให้ขั้นตอนเริ่มระบบ ทดสอบ หยุด และเก็บกวาดทำซ้ำได้ใน Environment นี้
 - ระบบต้องไม่พึ่งไฟล์ Runtime, Package, Configuration หรือสถานะที่มีอยู่เฉพาะบนเครื่องของสมาชิก และต้องไม่กำหนดพอร์ตหรือทรัพยากรที่ชนกับข้อจำกัดของกล่อง
 - ผลจากเครื่องส่วนตัว Cloud หรือ Environment อื่นใช้เป็นหลักฐานประกอบได้ แต่ไม่ทดแทนผลการตรวจในกล่องของรายวิชา
 - ข้อกำหนดนี้กำหนดเฉพาะ Test Environment ไม่ได้บังคับให้ทุกกลุ่มใช้สถาปัตยกรรมหรือ Service แบบเดียวกับระบบตัวอย่าง ChongJai Café
-
-**Diagram 3 — ขอบเขตการทดสอบใน Container ของรายวิชา**
-
-```mermaid
-flowchart TB
-    Host["Host สำหรับเปิดกล่อง"] --> Course["Course Container: tuchsanai/devtools:2569_1"]
-    Course --> Repo["Checkout รุ่นที่ส่ง"]
-    Course --> Engine["Docker Engine ภายในกล่อง"]
-    Repo --> Compose["Docker Compose ของโครงการ"]
-    Compose --> Engine
-    Engine --> Services["Web + Backend + Database + Services"]
-    Services --> Verify["Acceptance + End-to-End Verification"]
-```
 
 ---
 
@@ -192,23 +164,9 @@ flowchart TB
 
 ## 4. กรอบ Proposal → Implementation → Verification
 
-**Generated Image 4 — เทียบสิ่งที่เสนอ สิ่งที่สร้าง และหลักฐานจากระบบจริง**
+![เทียบสิ่งที่เสนอ สิ่งที่สร้าง และหลักฐานจากระบบจริง](images/pettech-proposal-verification.png)
 
-![ทีมนักศึกษาเปรียบเทียบ Proposal กับระบบ PetTech ที่ทำงานจริง Automated Tests, Deployment และผล Verification](images/pettech-proposal-verification.png)
-
-**Diagram 4 — วงจรข้อผูกพันและการยืนยันผล**
-
-```mermaid
-flowchart LR
-    P["Proposal"] --> B["Requirement Baseline"]
-    B --> I["Implementation"]
-    I --> V["Verification"]
-    V --> Q{"Result ตรง Acceptance Criteria?"}
-    Q -->|"ตรง"| A["Accepted Result"]
-    Q -->|"ไม่ตรง"| D["Defect / Gap / Limitation"]
-    D --> C["Corrective Action หรือ Scope Change"]
-    C --> I
-```
+วงจรข้อผูกพัน: Proposal → Requirement Baseline → Implementation → Verification → หากผลตรง Acceptance Criteria ถือเป็น Accepted Result หากไม่ตรงให้บันทึกเป็น Defect/Gap/Limitation แล้วนำไปสู่ Corrective Action หรือ Scope Change
 
 ### 4.1 Proposal: สร้างข้อตกลงที่ชัดเจน
 
@@ -230,23 +188,7 @@ flowchart LR
 |---|---|---|---|---|---|
 | ระบบรับและยืนยันการนัดหมาย | เจ้าของสัตว์เลี้ยงจองคิว | รายการถูกบันทึกเพียงครั้งเดียว แสดงให้ทั้งสองฝ่าย และไม่อนุญาตช่วงเวลาซ้ำ | ระบบจอง, API, Database | ทดสอบการจองปกติและจองช่วงเวลาซ้ำ แล้วตรวจ UI, API response และข้อมูล | บันทึกผลที่ตรวจพบตามจริง |
 
-ตารางนี้เป็นเพียงตัวอย่าง สามารถปรับรูปแบบได้ แต่ต้องรักษาความเชื่อมโยงจากสิ่งที่เสนอไปยังผลที่ตรวจได้
-
-**Diagram 5 — ความเชื่อมโยงของ Traceability**
-
-```mermaid
-flowchart LR
-    Problem["Problem"] --> Target["Target User"]
-    Target --> UseCase["Use Case"]
-    UseCase --> Req["Requirement"]
-    Req --> AC["Acceptance Criteria"]
-    Req --> Code["Implementation"]
-    AC --> Test["Verification Method"]
-    Code --> Runtime["Running System"]
-    Test --> Evidence["Evidence"]
-    Runtime --> Evidence
-    Evidence --> Result["Verified Result / Defect"]
-```
+ตารางนี้เป็นเพียงตัวอย่าง สามารถปรับรูปแบบได้ แต่ต้องรักษาความเชื่อมโยงจากสิ่งที่เสนอไปยังผลที่ตรวจได้: Problem → Target User → Use Case → Requirement → Acceptance Criteria → Implementation/Running System → Verification Method → Evidence → Verified Result หรือ Defect
 
 ---
 
@@ -266,7 +208,7 @@ flowchart LR
 
 ### 5.2 Presentation Storyline
 
-ทีมปรับลำดับหรือรูปแบบได้ แต่เนื้อหาควรสร้างคำตอบครบทั้ง 6 ช่วงต่อไปนี้
+ทีมปรับลำดับหรือรูปแบบได้ แต่เนื้อหาควรสร้างคำตอบครบทั้ง 6 ช่วงต่อไปนี้ (เรียงเป็นเส้นเรื่อง WHY → PROMISE → EXPERIENCE → ENGINEERING → PROOF → VALUE)
 
 | ช่วงของเรื่อง | คำถามหลัก | สิ่งที่ควรสื่อสารและพิสูจน์ | สัญญาณของผลงานคุณภาพสูง |
 |---|---|---|---|
@@ -298,27 +240,6 @@ Evidence Gate ไม่ใช่รายการ Technology ตายตัว
 - เตรียมทั้ง Happy Path และ Failure Case ที่สะท้อน Business Rule หรือความเสี่ยงจริงของระบบ
 - ปิดท้ายด้วยสิ่งที่ยืนยันได้ Defect/Known Limitation ที่ยังมี และลำดับการพัฒนาต่อไป
 
-**Diagram 6 — Presentation Story Arc จากปัญหาสู่คุณค่าที่พิสูจน์ได้**
-
-```mermaid
-flowchart LR
-    Why["① WHY<br/>ปัญหาการจองคิวและผู้ใช้ที่ได้รับผลกระทบ"]
-    Promise["② PROMISE<br/>จองนัดหมายได้และป้องกันช่วงเวลาซ้ำ"]
-    Experience["③ EXPERIENCE<br/>Live Demo: จองสำเร็จ + ทดสอบเวลาซ้ำ"]
-    Engineering["④ ENGINEERING<br/>React → FastAPI → PostgreSQL + CI/CD"]
-    Proof["⑤ PROOF<br/>Acceptance Result + Test + Defect"]
-    Value["⑥ VALUE<br/>Outcome + Adoption + Team + Roadmap"]
-
-    Why --> Promise --> Experience --> Engineering --> Proof --> Value
-
-    classDef story fill:#E8F3FF,stroke:#2367A6,color:#102A43,stroke-width:2px;
-    classDef system fill:#E5F7F4,stroke:#138A7E,color:#123B37,stroke-width:2px;
-    classDef proof fill:#FFF0EA,stroke:#D9644A,color:#54281E,stroke-width:2px;
-    class Why,Promise story;
-    class Experience,Engineering system;
-    class Proof,Value proof;
-```
-
 กำหนดการรวมและช่วงนำเสนอของแต่ละกลุ่มให้ยึดตาม [README หลัก](../readme.md#-กำหนดการนำเสนอผลงาน) ส่วนลำดับ รูปแบบ และสัดส่วนเวลาของหัวข้อภายใน ให้แต่ละกลุ่มบริหารเองโดยไม่มีเวลาบังคับราย Section ผู้ตรวจอาจเลือก Requirement หรือสถานการณ์เพิ่มเติมเพื่อขอตรวจจากระบบจริงได้
 
 ---
@@ -347,31 +268,11 @@ flowchart LR
 
 การเสียหายหนึ่งจุดอาจกระทบหลายมิติเมื่อมีความสัมพันธ์กัน เช่น Database บันทึกผิดจะกระทบทั้ง Functional correctness, Integration และ Reliability ผู้ตรวจจะบันทึกผลกระทบตามที่เกิดขึ้นจริง โดยไม่นับ Defect เดียวซ้ำซ้อนโดยปราศจากเหตุผล
 
-**Diagram 7 — การตัดสินผลตามหลักฐานและ Defect**
-
-```mermaid
-flowchart TD
-    Claim["Requirement / Capability ที่รับปาก"] --> Criteria["Acceptance Criteria"]
-    Criteria --> Verify["Live Verification + Evidence"]
-    Verify --> Match{"Actual Result ตรงตามที่เสนอ?"}
-    Match -->|"ตรง"| Repeat["ตรวจความครบและการทำซ้ำ"]
-    Repeat --> Quality["จัดระดับความสอดคล้อง"]
-    Match -->|"ไม่ตรง"| Impact["พิจารณาผลกระทบ"]
-    Impact --> Critical["Critical"]
-    Impact --> Major["Major"]
-    Impact --> Minor["Minor"]
-    Impact --> Known["Known Limitation"]
-    Critical --> Quality
-    Major --> Quality
-    Minor --> Quality
-    Known --> Quality
-```
-
 ---
 
 <a id="evaluation-dimensions"></a>
 
-## 7. มิติการประเมิน
+## 7. มิติการประเมิน (คะแนน MIni Project)
 
 ### 7.1 Problem Statement
 
@@ -418,35 +319,10 @@ flowchart TD
 - **Reliability และ usability:** รับมือกับ Invalid input, การทำงานซ้ำ บริการล่ม และการกลับมาทำงานได้ตามความเสี่ยง พร้อมแจ้งผู้ใช้อย่างเข้าใจได้
 - **Architecture และ engineering decisions:** ระบุ Technology และหน้าที่ของ Frontend, Backend, Database, Gateway/Broker/Worker/External Service หรือ Module อื่นที่ใช้ แสดงทิศทางและ Interface ของทุกการเชื่อมต่อที่สำคัญ และอธิบายเหตุผล Trade-off, Failure mode และข้อจำกัดได้
 - **AI/LLM capability (เมื่อมี):** แสดง Data/Prompt flow, การตรวจ Output, Guardrail, Fallback, Privacy/Secret และพฤติกรรมเมื่อ Model หรือ Provider ใช้งานไม่ได้ โดยความสามารถที่อ้างว่ามีต้องผ่าน Acceptance Criteria จากระบบจริง
-- **Delivery pipeline:** Git/GitHub สะท้อนการร่วมงานจริง Docker/Docker Compose ทำให้ Environment ทำซ้ำได้ และ Jenkins CI/CD ตรวจก่อนส่งมอบ Deploy และ Verify ผลได้จริง
+- **Delivery pipeline:** Git/GitHub สะท้อนการร่วมงานจริง Docker/Docker Compose ทำให้ Environment ทำซ้ำได้ และ Jenkins CI/CD ตรวจก่อนส่งมอบ Deploy และ Verify ผลได้จริง — เส้นทางที่คาดหวัง: Push/Pull Request → Trigger Pipeline → Build and Test → หากผ่านจึง Publish Image และ Deploy พร้อม Health/Smoke-test หากไม่ผ่านต้องหยุดการส่งมอบและรายงาน Defect
 - **Test quality:** การทดสอบเลือกครอบคลุมความเสี่ยงและ Business rule ที่สำคัญ ตรวจทั้งกรณีสำเร็จและล้มเหลว และล้มเหลวเมื่อพบ Regression จริง
 - **Security, privacy และ operations:** จัดการ Secret, สิทธิ์, ข้อมูลอ่อนไหว, Health check, Log, Metric, Backup หรือการกู้คืนตามระดับที่เหมาะกับความเสี่ยงและขอบเขต
 - **Reproducibility:** ผู้ตรวจสามารถเริ่มระบบ ทดสอบ และตรวจสอบรุ่นที่ส่งภายใน Course Container ที่กำหนดได้จากคำแนะนำของทีม โดยไม่ต้องเดาขั้นตอนสำคัญ
-
-**Diagram 8 — ตัวอย่าง CI/CD และการยืนยันผลหลัง Deploy**
-
-```mermaid
-sequenceDiagram
-    participant Dev as Developer
-    participant Git as GitHub
-    participant CI as Jenkins
-    participant Test as Automated Tests
-    participant Reg as Image Registry
-    participant Run as Course Container Runtime
-
-    Dev->>Git: Push / Pull Request
-    Git->>CI: Trigger pipeline
-    CI->>Test: Build and test
-    Test-->>CI: Verification result
-    alt Verification passed
-        CI->>Reg: Publish image
-        CI->>Run: Deploy verified version
-        Run-->>CI: Health and smoke-test result
-        CI-->>Dev: Delivery result
-    else Verification failed
-        CI-->>Dev: Stop delivery and report defect
-    end
-```
 
 ---
 
@@ -454,41 +330,9 @@ sequenceDiagram
 
 ## 8. การใช้ AI Coding Tools
 
-**Generated Image 5 — AI ช่วยพัฒนา แต่มนุษย์ต้องตรวจสอบและรับผิดชอบคุณภาพ**
-
-![ทีมนักศึกษาตรวจสอบ Automated Test, Container และการ Deploy ของระบบที่มี AI ช่วยพัฒนา](images/pettech-ai-verification.png)
-
-อนุญาตให้ใช้ Codex และ AI Tools อื่นช่วยวิเคราะห์ ออกแบบ พัฒนา ทดสอบ และจัดทำเอกสารได้ ทีมต้องระบุโดยสรุปว่าใช้เครื่องมือใดช่วยงานประเภทใด โดยไม่จำเป็นต้องส่ง Prompt หรือบทสนทนาทั้งหมด เว้นแต่มีกติการายวิชากำหนดเพิ่มเติม
+อนุญาตให้ใช้ Claude หรือ Codex หรือ AI Tools อื่นช่วยวิเคราะห์ ออกแบบ พัฒนา ทดสอบ และจัดทำเอกสารได้ ทีมต้องระบุโดยสรุปว่าใช้เครื่องมือใดช่วยงานประเภทใด โดยไม่จำเป็นต้องส่ง Prompt หรือบทสนทนาทั้งหมด เว้นแต่มีกติการายวิชากำหนดเพิ่มเติม
 
 การประเมินไม่พิจารณาจากปริมาณโค้ดหรือความเร็วในการสร้างระบบ แต่พิจารณาจากผลที่ทำงานได้จริง คุณภาพการตรวจสอบ และความเข้าใจของทีม ทีมยังคงรับผิดชอบต่อโค้ด ข้อมูล License, Security, Defect และผลกระทบที่เกิดจากผลลัพธ์ของ AI เช่นเดียวกับโค้ดที่เขียนเอง
 
 ระหว่างตรวจผลงาน ผู้ตรวจอาจให้สมาชิกอธิบายการตัดสินใจ ติดตาม Data flow วินิจฉัยปัญหา หรือปรับพฤติกรรมเล็กน้อยในขอบเขตที่ตนรับผิดชอบ เพื่อยืนยันว่าทีมสามารถดูแลระบบที่ส่งมอบได้
 
----
-
-<a id="verification-guide"></a>
-
-## 9. แนวทางการสาธิตและตรวจผลงาน
-
-- ใช้ Requirement Baseline และ Traceability Matrix ฉบับเดียวกันในการตรวจทุกกลุ่ม
-- ทีมเลือก User flow หลักเพื่อเล่าภาพรวมได้ และผู้ตรวจอาจเลือก Requirement หรือกรณีทดสอบเพิ่มเติม โดยทุกข้อที่ทีมรับปากยังคงต้องพร้อมให้ตรวจ
-- การตรวจใช้รุ่นของระบบที่ส่ง และควรเริ่มจากสภาพแวดล้อมหรือชุดข้อมูลที่ทราบสถานะ เพื่อให้ทุกกลุ่มได้รับการตรวจอย่างเป็นธรรม
-- การแสดงจากระบบจริงเป็นหลัก ภาพหรือวิดีโอใช้เป็นแผนสำรองได้ แต่ไม่ยืนยันสถานะปัจจุบันได้เท่ากับ Live verification
-- หากบริการภายนอกขัดข้อง ให้พิจารณาทั้งการออกแบบรับมือ หลักฐานจากรุ่นที่ส่ง และความสามารถของทีมในการวินิจฉัย/กู้คืน ผู้ตรวจจะระบุว่าส่วนใดยืนยันได้และส่วนใดยังยืนยันไม่ได้
-- คำกล่าวอ้างที่ไม่มีหลักฐาน ไม่สามารถเปิดให้ตรวจ หรือผลจริงขัดกับสิ่งที่เสนอ ให้ถือว่ายังไม่ยืนยันความสำเร็จของข้อนั้น
-
----
-
-<a id="submission-checklist"></a>
-
-## 10. Checklist ก่อนส่งและนำเสนอ
-
-- [ ] Requirement Baseline ครอบคลุมทุกสิ่งที่ทีมรับปาก และมี Acceptance Criteria ที่ตรวจได้
-- [ ] Traceability Matrix เชื่อม Proposal, Implementation, วิธีตรวจ และผลจริง
-- [ ] Web Interface, Database และเส้นทางหลักทำงาน End-to-End จากระบบที่ส่ง
-- [ ] System Design ระบุ Technology, หน้าที่ และการเชื่อมต่อของ Frontend, Backend, Database และ Module อื่น พร้อมตัวอย่าง User Flow ที่เห็น Input, Data Flow และผลลัพธ์
-- [ ] Git/GitHub, Docker/Docker Compose และ Jenkins CI/CD สะท้อน Workflow จริงของทีมและทำซ้ำได้
-- [ ] รุ่นที่ส่งสามารถเริ่ม ทดสอบ หยุด และเก็บกวาดได้ภายใน Course Container `tuchsanai/devtools:2569_1`
-- [ ] กรณีสำคัญทั้งสำเร็จและล้มเหลวมีผลตรวจที่ทำซ้ำได้ พร้อมเปิดเผย Defect และข้อจำกัดตามจริง
-- [ ] สมาชิกอธิบายส่วนที่ตนรับผิดชอบได้ และระบุการใช้ AI Tools ตามความเป็นจริง
-- [ ] ส่ง Slide, Source Code, Report และวิดีโอตามรายการใน [README หลัก](../readme.md#-รายการสิ่งที่ต้องส่งก่อนวันนำเสนอ)
