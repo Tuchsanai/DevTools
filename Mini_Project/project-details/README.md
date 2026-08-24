@@ -1,5 +1,7 @@
 # Mini Project: PetTech × DevTools
 
+![PetTech × DevTools — จากแนวคิดสู่ระบบที่พร้อมส่งมอบ](../img/pettech-devtools-hero.png)
+
 พัฒนาระบบที่แก้ปัญหาเกี่ยวกับสัตว์เลี้ยง และสาธิตกระบวนการพัฒนาตั้งแต่จัดการ Source Code, Build, Test, Deploy จนถึงตรวจสอบการทำงานของระบบด้วยเครื่องมือที่เรียนในรายวิชา
 
 [← README หลักและกำหนดการ](../readme.md)
