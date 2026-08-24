@@ -89,21 +89,29 @@
 
 ![UI 1 — เข้าสู่ระบบ](images/pettech-ui-th-01-login.png)
 
-![UI 2 — หน้าหลักของเจ้าของสัตว์เลี้ยง](images/pettech-ui-th-02-dashboard.png)
+![UI 2 — สมัครสมาชิก](images/pettech-ui-th-10-register.png)
 
-![UI 3 — เลือกสัตว์เลี้ยงและบริการ](images/pettech-ui-th-03-select-pet-service.png)
+![UI 3 — หน้าหลักของเจ้าของสัตว์เลี้ยง](images/pettech-ui-th-02-dashboard.png)
 
-![UI 4 — เลือกช่วงเวลาว่าง](images/pettech-ui-th-04-timeslot.png)
+![UI 4 — เลือกสัตว์เลี้ยงและบริการ](images/pettech-ui-th-03-select-pet-service.png)
 
-![UI 5 — สรุปและยืนยันการจอง](images/pettech-ui-th-05-confirm.png)
+![UI 5 — เลือกช่วงเวลาว่าง](images/pettech-ui-th-04-timeslot.png)
 
-![UI 6 — จองสำเร็จ](images/pettech-ui-th-06-result-success.png)
+![UI 6 — สรุปและยืนยันการจอง](images/pettech-ui-th-05-confirm.png)
 
-![UI 7 — ช่วงเวลาถูกตัดหน้า พร้อมเวลาทดแทน](images/pettech-ui-th-07-result-conflict.png)
+![UI 7 — จองสำเร็จ](images/pettech-ui-th-06-result-success.png)
 
-![UI 8 — การแจ้งเตือนบนมือถือและอีเมล](images/pettech-ui-th-08-notification.png)
+![UI 8 — ช่วงเวลาถูกตัดหน้า พร้อมเวลาทดแทน](images/pettech-ui-th-07-result-conflict.png)
 
-![UI 9 — ตารางนัดฝั่งสัตวแพทย์](images/pettech-ui-th-09-vet-dashboard.png)
+![UI 9 — การแจ้งเตือนบนมือถือและอีเมล](images/pettech-ui-th-08-notification.png)
+
+![UI 10 — ตารางนัดวันนี้ฝั่งสัตวแพทย์](images/pettech-ui-th-09-vet-dashboard.png)
+
+![UI 11 — ตารางนัดของคลินิกรายสัปดาห์](images/pettech-ui-th-11-clinic-schedule.png)
+
+![UI 12 — รายละเอียดนัดหมายและผู้จอง](images/pettech-ui-th-12-booking-detail.png)
+
+![UI 13 — บอร์ดสถานะนัดหมาย](images/pettech-ui-th-13-status-board.png)
 
 ตารางนี้เป็นตัวอย่างระดับความละเอียดที่คาดหวัง ทีมปรับหน้าจอตามระบบของตนเองได้ สิ่งสำคัญคือทุกหน้าจอหลักต้องระบุได้ว่าผู้ใช้เห็นอะไร ทำอะไรได้ และเห็นอะไรเมื่อเกิดข้อผิดพลาด เพราะ State ก่อน–หลังบน UI เหล่านี้คือหลักฐานที่ใช้ใน Demo และการตรวจ Acceptance Criteria — Error ที่จัดการแล้วต้องเห็นได้จริงบนหน้าจอ ไม่ใช่ปรากฏเฉพาะใน Log
 
