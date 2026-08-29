@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # verify.sh — ตรวจว่า LAB 2 (สร้าง image ของ api) ทำได้ครบจริง
-# รันจากในโฟลเดอร์ LAB บนกล่องเรียน :  bash verify.sh
+# รันจากในโฟลเดอร์ LAB บน Container สำหรับการเรียน :  bash verify.sh
 #
 # สคริปต์นี้สร้างของของตัวเองด้วย prefix  vops2-  เท่านั้น และลบเฉพาะของตัวเองตอนจบ
 # ของผู้เรียน (ops-db · ops-api · ops-api:1.0 · ops-pgdata) ไม่ถูกแตะเลย
@@ -40,7 +40,7 @@ echo "=============================================="
 if docker info >/dev/null 2>&1; then
   pass "docker daemon ตอบสนอง"
 else
-  fail "docker daemon ไม่ตอบสนอง — เปิดกล่องเรียนแล้วหรือยัง"
+  fail "docker daemon ไม่ตอบสนอง — เปิด Container สำหรับการเรียนแล้วหรือยัง"
   echo "----------------------------------------------"
   echo "1 CHECK(S) FAILED"
   exit 1
@@ -198,17 +198,19 @@ else
   fail "รัน container vops2-api-p พร้อม -p ${VPORT}:8000 ไม่สำเร็จ"
 fi
 
-if curl -fsS -o /dev/null "http://localhost:${VPORT}/docs" 2>/dev/null; then
-  pass "หน้า /docs ของ FastAPI เปิดได้ผ่านพอร์ต ${VPORT}"
+if curl -fsS "http://localhost:${VPORT}/docs" 2>/dev/null >"$tmp_dir/docs.html" \
+   && grep -q 'CAMPUSOPS  /  API CONTROL PLANE' "$tmp_dir/docs.html" \
+   && grep -q 'displayRequestDuration' "$tmp_dir/docs.html"; then
+  pass "Swagger UI เปิดได้และมีคำแนะนำการใช้งานผ่านพอร์ต ${VPORT}"
 else
-  fail "หน้า /docs เปิดไม่ได้ผ่านพอร์ต ${VPORT}"
+  fail "Swagger UI เปิดไม่ได้หรือไม่มีคำแนะนำการใช้งานผ่านพอร์ต ${VPORT}"
 fi
 
 # ---------- 10) REQ-01 : สร้างใบแจ้งซ่อมได้ 201 ----------
 create_body=$(curl -s -o "$tmp_dir/create.json" -w '%{http_code}' \
   -X POST "http://localhost:${VPORT}/api/tickets" \
   -H 'Content-Type: application/json' \
-  -d '{"asset_id":1,"title":"verify ticket","detail":"สร้างโดย verify.sh","priority":"HIGH"}')
+  -d '{"asset_id":12,"title":"verify ticket","detail":"สร้างโดย verify.sh","priority":"HIGH"}')
 if [ "$create_body" = "201" ] && grep -q '"status":"NEW"' "$tmp_dir/create.json"; then
   pass "REQ-01 : POST /api/tickets ได้ 201 และใบใหม่มีสถานะ NEW"
 else
@@ -236,6 +238,15 @@ if printf '%s' "$new_id" | grep -qE '^[0-9]+$'; then
   fi
 else
   fail "อ่านหมายเลขใบแจ้งซ่อมที่เพิ่งสร้างไม่ได้ จึงตรวจ REQ-02 ต่อไม่ได้"
+fi
+
+# ---------- 12) ทดสอบ Requirement ครบทั้งชุดผ่าน public API ----------
+if API="http://localhost:${VPORT}" bash api/smoke.sh >"$tmp_dir/smoke.log" 2>&1 \
+   && grep -q 'SUMMARY: ผ่านครบทุกข้อ REQ-01..REQ-12 (0 FAIL)' "$tmp_dir/smoke.log"; then
+  pass "smoke.sh ตรวจ Requirement ครบ REQ-01..REQ-12 ผ่าน public API"
+else
+  fail "smoke.sh ตรวจ Requirement ไม่ผ่าน (ดูผลท้ายสคริปต์ด้านล่าง)"
+  tail -30 "$tmp_dir/smoke.log" 2>/dev/null
 fi
 
 echo "----------------------------------------------"

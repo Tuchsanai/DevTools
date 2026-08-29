@@ -15,7 +15,8 @@ import psycopg
 from psycopg.rows import dict_row
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 
 DATABASE_URL = os.environ.get(
@@ -91,7 +92,84 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="CampusOps API", version="1.0.0", lifespan=lifespan)
+API_DESCRIPTION = """
+บริการเบื้องหลังสำหรับระบบดูแลครุภัณฑ์ภายในสถานศึกษา
+
+**วิธีอ่านเอกสารนี้**
+
+1. เลือก endpoint ซึ่งหมายถึง URL ที่เปิดให้โปรแกรมอื่นเรียกใช้
+2. กด **Try it out** เพื่อเตรียมคำขอ และกด **Execute** เพื่อส่งคำขอจริง
+3. อ่านรหัส HTTP และ Response body ในส่วน **Server response**
+
+`REQ` ย่อมาจาก **Requirement** หรือข้อกำหนดที่ระบบต้องทำให้สำเร็จ
+ข้อความ REQ ในแต่ละ endpoint จึงเชื่อมสิ่งที่ผู้ใช้ต้องการกับจุดที่ตรวจสอบได้จริง
+"""
+
+app = FastAPI(
+    title="CampusOps API",
+    version="1.0.0",
+    description=API_DESCRIPTION,
+    lifespan=lifespan,
+    docs_url=None,
+)
+
+
+# ---------------------------------------------------------------------
+# Swagger UI — คงพฤติกรรมมาตรฐานไว้ แต่เพิ่มลำดับชั้นทางสายตาสำหรับการเรียน
+# ---------------------------------------------------------------------
+@app.get("/docs", include_in_schema=False)
+def custom_swagger_ui():
+    """หน้าเอกสาร API ที่เพิ่มธีม CampusOps โดยไม่เปลี่ยน endpoint หรือ OpenAPI"""
+    response = get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title="CampusOps API — Interactive Reference",
+        swagger_ui_parameters={
+            "docExpansion": "list",
+            "displayRequestDuration": True,
+            "filter": True,
+            "persistAuthorization": False,
+        },
+    )
+    theme = """
+    <style>
+      :root { color-scheme: light; --ink:#102a43; --navy:#0b2447; --cyan:#20c6d7; --paper:#f4f8fc; }
+      html { scroll-behavior:smooth; }
+      body { margin:0; background:
+        radial-gradient(circle at 86% 5%, rgba(32,198,215,.18), transparent 26rem),
+        linear-gradient(180deg, #eaf4fb 0, var(--paper) 25rem); }
+      body::before { content:"CAMPUSOPS  /  API CONTROL PLANE"; display:block; box-sizing:border-box;
+        padding:22px max(24px, calc((100vw - 1180px)/2)); color:#fff; font:700 13px/1.2 system-ui;
+        letter-spacing:.16em; background:linear-gradient(100deg,var(--navy),#123d6a 65%,#0b7582);
+        border-bottom:4px solid var(--cyan); box-shadow:0 10px 28px rgba(11,36,71,.18); }
+      .swagger-ui { color:var(--ink); }
+      .swagger-ui .topbar { display:none; }
+      .swagger-ui .wrapper { max-width:1180px; }
+      .swagger-ui .info { margin:34px 0 26px; padding:30px 34px; background:rgba(255,255,255,.94);
+        border:1px solid #d8e7f2; border-radius:18px; box-shadow:0 16px 45px rgba(37,65,86,.10); }
+      .swagger-ui .info .title { color:var(--navy); font-size:38px; letter-spacing:-.035em; }
+      .swagger-ui .info .title small { top:-4px; }
+      .swagger-ui .info .description { max-width:850px; color:#334e68; font-size:15px; line-height:1.7; }
+      .swagger-ui .scheme-container { margin:0 0 24px; padding:18px 24px; background:#fff;
+        border:1px solid #d8e7f2; border-radius:14px; box-shadow:none; }
+      .swagger-ui .opblock-tag { color:var(--navy); border-bottom:0; font-size:20px; }
+      .swagger-ui .opblock { overflow:hidden; margin:0 0 12px; border-width:1px; border-radius:12px;
+        box-shadow:0 7px 20px rgba(37,65,86,.07); }
+      .swagger-ui .opblock .opblock-summary { min-height:54px; padding:8px 12px; }
+      .swagger-ui .opblock .opblock-summary-method { min-width:82px; border-radius:8px;
+        text-shadow:none; font-weight:800; }
+      .swagger-ui .btn { border-radius:8px; }
+      .swagger-ui .btn.execute { border:0; background:linear-gradient(90deg,#1168a8,#0b8794); }
+      .swagger-ui textarea, .swagger-ui input[type=text] { border-radius:9px; }
+      .swagger-ui .responses-inner { background:#f8fbfd; }
+      @media (max-width: 720px) {
+        body::before { padding:18px 16px; }
+        .swagger-ui .info { margin:18px 0; padding:22px 18px; border-radius:12px; }
+        .swagger-ui .info .title { font-size:30px; }
+      }
+    </style>
+    """
+    html = response.body.decode("utf-8").replace("</head>", f"{theme}</head>")
+    return HTMLResponse(content=html)
 
 
 # ---------------------------------------------------------------------

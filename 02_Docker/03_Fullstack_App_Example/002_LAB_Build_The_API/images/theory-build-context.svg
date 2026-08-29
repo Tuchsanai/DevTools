@@ -39,7 +39,7 @@
   <text x="518" y="134" font-size="13" fill="#1f2933">1. อ่าน Dockerfile ทีละบรรทัด</text>
   <text x="518" y="158" font-size="13" fill="#1f2933">2. `COPY requirements.txt .` หยิบไฟล์</text>
   <text x="538" y="178" font-size="13" fill="#1f2933">จาก context ที่ได้รับมา</text>
-  <text x="518" y="204" font-size="13" fill="#1f2933">3. `RUN pip install` ทำงานในกล่องชั่วคราว</text>
+  <text x="518" y="204" font-size="13" fill="#1f2933">3. `RUN pip install` ทำงานใน Container ชั่วคราว</text>
   <text x="518" y="230" font-size="13" fill="#1f2933">4. `COPY main.py .` หยิบไฟล์สุดท้าย</text>
 
   <rect x="518" y="248" width="300" height="106" rx="8" fill="#ffffff" stroke="#b3a4d6"/>
