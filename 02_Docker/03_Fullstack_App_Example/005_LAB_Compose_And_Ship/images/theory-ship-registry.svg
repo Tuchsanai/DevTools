@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 456" width="800" height="456" font-family="sans-serif">
   <rect x="0" y="0" width="800" height="456" fill="#ffffff"/>
 
-  <text x="400" y="30" text-anchor="middle" font-size="19" font-weight="bold" fill="#1f2933">ส่งมอบระบบให้ลูกค้า : จากโค้ดบนเครื่องเรา ไปเป็นกล่องที่รันบนเครื่องลูกค้า</text>
+  <text x="400" y="30" text-anchor="middle" font-size="19" font-weight="bold" fill="#1f2933">ส่งมอบระบบให้ลูกค้า: จากโค้ด ไปเป็น Container บนเครื่องปลายทาง</text>
   <text x="400" y="52" text-anchor="middle" font-size="13" fill="#52606d">ลูกค้าไม่เคยได้ซอร์สโค้ด ไม่ต้องติดตั้ง Node หรือ Python เลย ได้แค่ image กับ compose.yaml</text>
 
   <defs>
@@ -48,7 +48,7 @@
   <text x="492" y="216" font-size="12" fill="#1e6b41">docker compose -p campusops up -d --no-build</text>
 
   <rect x="478" y="240" width="286" height="48" rx="8" fill="#ffffff" stroke="#9ad0b0" stroke-width="1"/>
-  <text x="492" y="260" font-size="12" fill="#1e6b41">สามกล่องขึ้นครบ · เปิดเบราว์เซอร์ใช้งานได้</text>
+  <text x="492" y="260" font-size="12" fill="#1e6b41">Container สามรายการทำงานครบ · เปิดเบราว์เซอร์ใช้งานได้</text>
   <text x="492" y="279" font-size="12" fill="#2e8b57">ไม่มี npm ci ไม่มี pip install บนเครื่องนี้เลย</text>
 
   <text x="620" y="310" text-anchor="middle" font-size="12" fill="#1e6b41">มีแค่ compose.yaml กับ db/initdb/ ติดมาด้วย</text>

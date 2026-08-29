@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 420" width="920" height="420" font-family="sans-serif">
   <rect x="0" y="0" width="920" height="420" fill="#ffffff"/>
-  <text text-anchor="middle" x="460" y="32" font-size="19" font-weight="bold" fill="#1f2933">default bridge ไม่มี DNS · user-defined network มีให้ในตัว</text>
-  <text text-anchor="middle" x="460" y="54" font-size="13" fill="#52606d">คำสั่ง docker run เหมือนกันทุกตัวอักษร ต่างกันแค่มี --network ops-net หรือไม่</text>
+  <text text-anchor="middle" x="460" y="32" font-size="19" font-weight="bold" fill="#1f2933">Default bridge ไม่มี DNS · User-defined Network มีให้ในตัว</text>
+  <text text-anchor="middle" x="460" y="54" font-size="13" fill="#52606d">คำสั่ง docker run เหมือนกันทุกตัวอักษร ต่างกันเพียงมี --network devtools-net หรือไม่</text>
 
   <defs>
     <marker id="okArrow" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
@@ -12,19 +12,19 @@
     </marker>
   </defs>
 
-  <!-- LEFT : default bridge -->
+  <!-- LEFT : Default bridge -->
   <rect x="24" y="72" width="422" height="252" rx="10" fill="#fdf3f3" stroke="#c04a4a" stroke-width="2"/>
-  <text x="40" y="98" font-size="14" font-weight="bold" fill="#8f2020">docker run -d --name ops-api ...   (ไม่ระบุ network)</text>
-  <text x="40" y="118" font-size="12" fill="#8f2020">กล่องไปอยู่บน default bridge โดยอัตโนมัติ</text>
+  <text x="40" y="98" font-size="14" font-weight="bold" fill="#8f2020">docker run -d --name devtools-api ...   (ไม่ระบุ Network)</text>
+  <text x="40" y="118" font-size="12" fill="#8f2020">Container ไปอยู่บน Default bridge โดยอัตโนมัติ</text>
 
   <rect x="40" y="134" width="164" height="88" rx="8" fill="#ffffff" stroke="#9aa5b1"/>
-  <text x="56" y="158" font-size="13" font-weight="bold" fill="#1f2933">ops-api</text>
+  <text x="56" y="158" font-size="13" font-weight="bold" fill="#1f2933">devtools-api</text>
   <text x="56" y="180" font-size="12" fill="#52606d">DATABASE_URL</text>
-  <text x="56" y="198" font-size="12" fill="#8f2020">... @ops-db:5432 ...</text>
+  <text x="56" y="198" font-size="12" fill="#8f2020">... @devtools-db:5432 ...</text>
   <text x="56" y="216" font-size="12" fill="#52606d">172.18.0.3</text>
 
   <rect x="282" y="134" width="148" height="88" rx="8" fill="#ffffff" stroke="#9aa5b1"/>
-  <text x="298" y="158" font-size="13" font-weight="bold" fill="#1f2933">ops-db</text>
+  <text x="298" y="158" font-size="13" font-weight="bold" fill="#1f2933">devtools-db</text>
   <text x="298" y="180" font-size="12" fill="#52606d">postgres ฟัง :5432</text>
   <text x="298" y="204" font-size="12" fill="#52606d">172.18.0.2</text>
 
@@ -32,34 +32,34 @@
   <rect x="272" y="146" width="10" height="64" rx="5" fill="#c04a4a"/>
 
   <rect x="40" y="238" width="390" height="70" rx="8" fill="#ffffff" stroke="#c04a4a"/>
-  <text x="56" y="260" font-size="12" fill="#1f2933">getent hosts ops-db  ->  ไม่มีบรรทัดตอบ · exit 2</text>
+  <text x="56" y="260" font-size="12" fill="#1f2933">getent hosts devtools-db  ->  ไม่มีบรรทัดตอบ · exit 2</text>
   <text x="56" y="282" font-size="12" fill="#8f2020">[Errno -2] Name or service not known</text>
   <text x="56" y="300" font-size="12" fill="#52606d">ทางรอดเดียวคือไปอ่าน IP ด้วย docker inspect มาใส่เอง</text>
 
-  <!-- RIGHT : user-defined -->
+  <!-- RIGHT : User-defined -->
   <rect x="474" y="72" width="422" height="252" rx="10" fill="#f2fbf5" stroke="#2e8b57" stroke-width="2"/>
-  <text x="490" y="98" font-size="14" font-weight="bold" fill="#1e6b41">docker run -d --name ops-api --network ops-net ...</text>
-  <text x="490" y="118" font-size="12" fill="#1e6b41">docker network create ops-net แล้วให้ทุกกล่องเข้ามาอยู่ด้วยกัน</text>
+  <text x="490" y="98" font-size="14" font-weight="bold" fill="#1e6b41">docker run -d --name devtools-api --network devtools-net ...</text>
+  <text x="490" y="118" font-size="12" fill="#1e6b41">docker network create devtools-net แล้วให้ทุก Container เข้ามาอยู่ด้วยกัน</text>
 
   <rect x="490" y="134" width="164" height="88" rx="8" fill="#ffffff" stroke="#9aa5b1"/>
-  <text x="506" y="158" font-size="13" font-weight="bold" fill="#1f2933">ops-api</text>
+  <text x="506" y="158" font-size="13" font-weight="bold" fill="#1f2933">devtools-api</text>
   <text x="506" y="180" font-size="12" fill="#52606d">DATABASE_URL</text>
-  <text x="506" y="198" font-size="12" fill="#1e6b41">... @ops-db:5432 ...</text>
+  <text x="506" y="198" font-size="12" fill="#1e6b41">... @devtools-db:5432 ...</text>
   <text x="506" y="216" font-size="12" fill="#52606d">172.19.0.2</text>
 
   <rect x="732" y="134" width="148" height="88" rx="8" fill="#ffffff" stroke="#9aa5b1"/>
-  <text x="748" y="158" font-size="13" font-weight="bold" fill="#1f2933">ops-db</text>
+  <text x="748" y="158" font-size="13" font-weight="bold" fill="#1f2933">devtools-db</text>
   <text x="748" y="180" font-size="12" fill="#52606d">postgres ฟัง :5432</text>
   <text x="748" y="204" font-size="12" fill="#52606d">172.19.0.3</text>
 
   <line x1="656" y1="178" x2="724" y2="178" stroke="#2e8b57" stroke-width="3" marker-end="url(#okArrow)"/>
 
   <rect x="490" y="238" width="390" height="70" rx="8" fill="#ffffff" stroke="#2e8b57"/>
-  <text x="506" y="260" font-size="12" fill="#1f2933">getent hosts ops-db  ->  172.19.0.3   ops-db</text>
+  <text x="506" y="260" font-size="12" fill="#1f2933">getent hosts devtools-db  ->  172.19.0.3   devtools-db</text>
   <text x="506" y="282" font-size="12" fill="#1e6b41">{"status":"ok","db":"up"}</text>
-  <text x="506" y="300" font-size="12" fill="#52606d">DNS ในตัวของ network แปลชื่อกล่องให้เองทุกครั้งที่ถาม</text>
+  <text x="506" y="300" font-size="12" fill="#52606d">DNS ภายใน Network แปลชื่อ Container ให้เองทุกครั้งที่ถาม</text>
 
-  <text x="24" y="352" font-size="13" font-weight="bold" fill="#1f2933">สิ่งที่เปลี่ยนไปมีอย่างเดียว : กล่องอยู่บน network ไหน</text>
-  <text x="24" y="374" font-size="12" fill="#52606d">image เดิม · ตัวแปรเดิม · พอร์ตเดิม — แต่ฝั่งซ้ายต้องจำ IP ฝั่งขวาจำแค่ชื่อกล่อง</text>
-  <text x="24" y="396" font-size="12" fill="#52606d">ทั้งสองฝั่งเป็น driver bridge เหมือนกัน ต่างกันที่ default bridge เป็นของที่ Docker แถมมา ไม่มีบริการ DNS ให้</text>
+  <text x="24" y="352" font-size="13" font-weight="bold" fill="#1f2933">สิ่งที่เปลี่ยนไปมีอย่างเดียว: Container อยู่บน Network ใด</text>
+  <text x="24" y="374" font-size="12" fill="#52606d">Image เดิม · ตัวแปรเดิม · Port เดิม — แต่ฝั่งซ้ายต้องจำ IP ฝั่งขวาจำเพียงชื่อ Container</text>
+  <text x="24" y="396" font-size="12" fill="#52606d">ทั้งสองฝั่งเป็น driver bridge เหมือนกัน ต่างกันที่ Default bridge เป็นของที่ Docker แถมมา ไม่มีบริการ DNS ให้</text>
 </svg>

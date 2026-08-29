@@ -20,7 +20,7 @@
     <rect x="24" y="114" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
     <text x="36" y="132" fill="#a35a10" font-weight="bold">LAB 1</text>
     <text x="100" y="132" fill="#1f2933">-e POSTGRES_PASSWORD=labpass</text>
-    <text x="100" y="149" fill="#52606d">ส่งค่าตั้งต้นเข้ากล่อง</text>
+    <text x="100" y="149" fill="#52606d">ส่งค่าตั้งต้นเข้า Container</text>
     <path d="M 380 135 L 422 135" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>
     <rect x="424" y="114" width="352" height="42" rx="6" fill="#f6f8fa" stroke="#9aa5b1"/>
     <text x="436" y="132" fill="#1c4f80" font-weight="bold">environment:</text>
@@ -73,7 +73,7 @@
   </g>
 
   <rect x="24" y="406" width="752" height="72" rx="8" fill="#fdf3f3" stroke="#e0a5a5" stroke-width="2"/>
-  <text x="40" y="428" font-size="13" font-weight="bold" fill="#8f2020">สิ่งเดียวที่ docker run ทำไม่ได้เลย :  รอให้กล่องก่อนหน้า "พร้อมจริง" ก่อนค่อยสตาร์ตกล่องถัดไป</text>
+  <text x="40" y="428" font-size="13" font-weight="bold" fill="#8f2020">สิ่งที่ docker run คำสั่งเดี่ยวไม่จัดการ: รอให้ Container ก่อนหน้า "พร้อมจริง" แล้วจึงเริ่มรายการถัดไป</text>
   <text x="40" y="450" font-size="13" fill="#8f2020">4 แล็บที่ผ่านมาเราแก้ด้วยการพิมพ์ sleep 10 เอง ซึ่งเดาเวลาและพังเมื่อเครื่องช้าลง</text>
   <text x="40" y="470" font-size="13" font-weight="bold" fill="#1c4f80">compose มี  healthcheck:  +  depends_on: condition: service_healthy  มาแทน sleep</text>
 </svg>

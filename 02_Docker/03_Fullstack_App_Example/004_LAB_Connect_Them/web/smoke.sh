@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# ตรวจรับหน้าเว็บ CampusOps (LAB 3) — รันภายในกล่องเรียน devtools-ops-u0b
+# ตรวจรับหน้าเว็บ CampusOps (LAB 3) — รันภายใน Container สำหรับเรียน
 WEB=http://localhost:3000
 FAIL=0
 pass() { echo "  [PASS] $*"; }
 fail() { echo "  [FAIL] $*"; FAIL=$((FAIL + 1)); }
 chk()  { if [ "$1" = "$2" ]; then pass "$3 (ได้ '$1')"; else fail "$3 (คาดหวัง '$2' แต่ได้ '$1')"; fi; }
 
-# เรียก API ผ่าน python ที่ติดมากับคอนเทนเนอร์ api เอง — ไม่ต้อง publish พอร์ตของ api ออกมาเลย
-apipy() { docker exec campusops-api python -c "$1"; }
+# เรียก API ผ่าน Python ที่ติดมากับ API Container จึงไม่ต้อง Publish Port ของ API
+apipy() { docker exec devtools-connect-api python -c "$1"; }
 
 # ดึงรหัส action ของฟอร์มที่ต้องการออกจาก HTML ที่ server เรนเดอร์มา
 # (โหมด "ไม่มี JavaScript" ของ Next คือ POST กลับมาที่ URL เดิม พร้อมฟิลด์ซ่อน $ACTION_ID_xxx)
@@ -34,10 +34,10 @@ echo
 echo "### ส่วนที่ 0 · สภาพแวดล้อมที่ใช้ทดสอบ"
 docker --version
 docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
-echo "--- network ที่สามกล่องใช้ร่วมกัน ---"
-docker network inspect campusops-net --format '{{range .Containers}}{{.Name}} {{end}}'
+echo "--- Network ที่ Container ทั้งสามใช้ร่วมกัน ---"
+docker network inspect devtools-connect-net --format '{{range .Containers}}{{.Name}} {{end}}'
 echo "--- NFR-3 : db ต้องไม่ publish พอร์ตออกมา (บรรทัดถัดไปต้องว่าง) ---"
-docker port campusops-db
+docker port devtools-connect-db
 echo "[db ไม่มีพอร์ตที่ publish — ถูกต้อง]"
 
 echo
@@ -221,10 +221,10 @@ docker image ls campusops-web:lab3 --format 'campusops-web:lab3  ขนาด {{
 docker image ls campusops-api:lab3 --format 'campusops-api:lab3  ขนาด {{.Size}}'
 echo "  --- ผู้ใช้และ CMD ที่ตั้งไว้ใน image ---"
 docker inspect campusops-web:lab3 --format 'USER = {{.Config.User}} · CMD = {{json .Config.Cmd}} · WorkingDir = {{.Config.WorkingDir}}'
-echo "  --- ผู้ใช้ที่รันจริงในคอนเทนเนอร์ (ต้องไม่ใช่ root) ---"
-docker exec campusops-web id
+echo "  --- ผู้ใช้ที่รันจริงใน Container (ต้องไม่ใช่ root) ---"
+docker exec devtools-connect-web id
 echo "  --- ไฟล์ CSS ที่ถูกคัดลอกเข้ามาใน image (อยู่ใต้ chunks/) ---"
-docker exec campusops-web sh -c 'ls .next/static/chunks/*.css'
+docker exec devtools-connect-web sh -c 'ls .next/static/chunks/*.css'
 echo "  --- สามคำสั่งท้ายสุดของ image ---"
 docker history campusops-web:lab3 --format '{{.CreatedBy}}' | head -3
 

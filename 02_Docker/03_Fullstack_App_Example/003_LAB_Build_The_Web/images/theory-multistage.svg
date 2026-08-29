@@ -63,5 +63,5 @@
   <text x="681" y="364" fill="#1e6b41" font-size="12" text-anchor="middle">เทียบกับ stage เดียว 1.1 GB = เล็กลง ~73%</text>
 
   <text x="450" y="414" fill="#1f2933" font-size="13" text-anchor="middle">คำถามที่ใช้ตัดสินใจ : "ของชิ้นนี้ต้องมีตอนรันไหม" — ถ้าไม่ ก็ปล่อยให้ตายไปกับ stage build</text>
-  <text x="450" y="436" fill="#52606d" font-size="12" text-anchor="middle">ตัวเลขทั้งหมดวัดจาก docker history และ docker image ls ในกล่องเรียนจริง</text>
+  <text x="450" y="436" fill="#52606d" font-size="12" text-anchor="middle">ตัวเลขทั้งหมดวัดจาก docker history และ docker image ls ใน Container สำหรับการทดลองจริง</text>
 </svg>

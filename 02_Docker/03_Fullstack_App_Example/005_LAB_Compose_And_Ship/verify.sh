@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# verify.sh — ตรวจว่า LAB 5 (ยุบทุกอย่างเป็นไฟล์เดียว แล้วส่งมอบให้ลูกค้า) ทำได้ครบจริง
-# รันจากในโฟลเดอร์ LAB บนกล่องเรียน :  bash verify.sh
+# verify.sh — ตรวจว่า LAB 5 (รวมทุก Service เป็นระบบเดียว แล้วส่งมอบให้ลูกค้า) ทำได้ครบจริง
+# รันจากในโฟลเดอร์ LAB บน Container สำหรับเรียน: bash verify.sh
 #
 # สคริปต์นี้สร้างของของตัวเองด้วย prefix "vops5-" / project "vops5" เท่านั้น และลบเฉพาะของตัวเองตอนจบ
 # ไม่แตะ project "campusops" · container "ops-*" · volume ของผู้เรียนเด็ดขาด
@@ -40,7 +40,7 @@ echo "=============================================="
 if docker info >/dev/null 2>&1; then
   pass "ต่อกับ Docker daemon ได้"
 else
-  fail "สั่ง docker info ไม่ผ่าน — ยังไม่ได้อยู่ในกล่องเรียนหรือ daemon ไม่ทำงาน"
+  fail "สั่ง docker info ไม่ผ่าน — ยังไม่ได้อยู่ใน Container สำหรับเรียนหรือ daemon ไม่ทำงาน"
   echo "----------------------------------------------"
   printf '%s CHECK(S) FAILED\n' "$failures"
   exit 1
@@ -113,7 +113,7 @@ else
   fail "NFR-2 : ไม่พบ named volume ชื่อ pgdata"
 fi
 
-# ---------- 7) NFR-1 : คำสั่งเดียวขึ้นครบสามกล่อง ----------
+# ---------- 7) NFR-1 : คำสั่งเดียวเริ่ม Container ครบสามรายการ ----------
 dc down -v >/dev/null 2>&1
 if dc up -d --build >"$tmp_dir/up.log" 2>&1; then
   pass "NFR-1 : docker compose up -d --build ขึ้นครบด้วยคำสั่งเดียว"
@@ -145,9 +145,9 @@ fi
 
 # ---------- 9) db ที่รันอยู่จริงต้องไม่มีพอร์ตทะลุออกมา ----------
 if [ -z "$(docker port "${VP}-db-1" 2>/dev/null)" ]; then
-  pass "NFR-3 : กล่อง db ที่รันอยู่ไม่มี port mapping ออกนอกเครื่อง"
+  pass "NFR-3 : Container db ที่รันอยู่ไม่มี port mapping ออกนอกเครื่อง"
 else
-  fail "NFR-3 : กล่อง db มี port mapping ออกนอกเครื่อง"
+  fail "NFR-3 : Container db มี port mapping ออกนอกเครื่อง"
 fi
 
 # ---------- 10) หน้าเว็บตอบจริงทั้ง 4 หน้า ----------
@@ -168,7 +168,7 @@ else
   fail "หน้าเว็บไม่ตอบที่พอร์ต $VWEB_PORT"
 fi
 
-# ---------- 11) เรียกกันด้วยชื่อ service ข้ามกล่องได้ ----------
+# ---------- 11) เรียกกันด้วยชื่อ Service ข้าม Container ได้ ----------
 if dc exec -T web wget -qO- http://api:8000/health 2>/dev/null | grep -q '"db":"up"'; then
   pass "web เรียก http://api:8000/health ด้วยชื่อ service แล้วได้ db up"
 else
@@ -220,16 +220,16 @@ docker tag "${VP}-web" "$SHIP_NS/campusops-web:1.0" >/dev/null 2>&1
 tagged_api_id=$(docker image inspect -f '{{.Id}}' "$SHIP_NS/campusops-api:1.0" 2>/dev/null)
 tagged_web_id=$(docker image inspect -f '{{.Id}}' "$SHIP_NS/campusops-web:1.0" 2>/dev/null)
 [ -n "$api_id" ] && [ "$api_id" = "$tagged_api_id" ] \
-  && pass "tag repository ให้ api แล้ว IMAGE ID ยังเป็นก้อนเดิม" \
+  && pass "tag repository ให้ api แล้ว IMAGE ID ยังเป็นอิมเมจเดิม" \
   || fail "tag api แล้ว IMAGE ID เปลี่ยนหรือหา image ไม่พบ"
 [ -n "$web_id" ] && [ "$web_id" = "$tagged_web_id" ] \
-  && pass "tag repository ให้ web แล้ว IMAGE ID ยังเป็นก้อนเดิม" \
+  && pass "tag repository ให้ web แล้ว IMAGE ID ยังเป็นอิมเมจเดิม" \
   || fail "tag web แล้ว IMAGE ID เปลี่ยนหรือหา image ไม่พบ"
 
 archive="$tmp_dir/campusops-images.tar"
 if docker save -o "$archive" "$SHIP_NS/campusops-api:1.0" "$SHIP_NS/campusops-web:1.0" \
    && [ -s "$archive" ]; then
-  pass "docker save รวม image ทั้งสองก้อนเป็นไฟล์ส่งมอบได้"
+  pass "docker save รวมอิมเมจทั้งสองรายการเป็นไฟล์ส่งมอบได้"
 else
   fail "docker save สร้างไฟล์ส่งมอบไม่สำเร็จ"
 fi
@@ -244,7 +244,7 @@ else
 fi
 
 if docker load -i "$archive" >/dev/null 2>&1; then
-  pass "docker load คืน image ทั้งสองก้อนจากไฟล์ส่งมอบได้"
+  pass "docker load คืนอิมเมจทั้งสองรายการจากไฟล์ส่งมอบได้"
 else
   fail "docker load ไฟล์ส่งมอบไม่สำเร็จ"
 fi

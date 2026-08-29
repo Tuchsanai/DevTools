@@ -49,7 +49,7 @@ COPY --from=builder --chown=webapp:webapp /app/.next/standalone ./
 # !! กับดักที่เจอมาแล้วกับ Next.js 16 !!
 # ไฟล์ CSS ถูกวางไว้ที่ .next/static/chunks/*.css ไม่ใช่ .next/static/css/
 # ถ้าเจาะ COPY เฉพาะโฟลเดอร์ย่อย (เช่น .next/static/css) จะได้หน้าเว็บที่ไม่มี CSS เลย
-# → ต้องคัดลอก .next/static ทั้งก้อนเท่านั้น
+# → ต้องคัดลอก .next/static ทั้งไดเรกทอรีเท่านั้น
 COPY --from=builder --chown=webapp:webapp /app/.next/static ./.next/static
 
 USER webapp

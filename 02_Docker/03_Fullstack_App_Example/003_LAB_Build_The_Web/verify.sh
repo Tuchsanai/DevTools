@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # verify.sh — ตรวจว่า LAB 3 (สร้าง image ของหน้าเว็บด้วย multi-stage) ทำได้ครบจริง
-# รันจากในโฟลเดอร์ LAB บนกล่องเรียน :  bash verify.sh
+# รันจากโฟลเดอร์ LAB ภายใน Container สำหรับการทดลอง :  bash verify.sh
 #
-# สคริปต์นี้สร้างของของตัวเองด้วย prefix "vops3-" เท่านั้น และลบเฉพาะของตัวเองตอนจบ
-# ไม่แตะ container / image / volume ที่ผู้เรียนสร้างไว้ (prefix "ops-") เด็ดขาด
+# สคริปต์สร้างทรัพยากรด้วย prefix "vops3-" เท่านั้น และลบเมื่อจบตามค่าเริ่มต้น
+# กำหนด KEEP_STACK=1 เพื่อคงระบบไว้ตรวจ UI; ไม่แตะ Container/image/volume prefix "ops-"
 
 set -u
 
@@ -11,14 +11,18 @@ cd "$(dirname "$0")" || exit 1
 
 failures=0
 tmp_dir=""
+keep_stack="${KEEP_STACK:-0}"
+web_port="${WEB_PORT:-}"
 
 pass() { printf '[PASS] %s\n' "$1"; }
 fail() { printf '[FAIL] %s\n' "$1"; failures=$((failures + 1)); }
 
 cleanup() {
-  docker rm -f -v vops3-web vops3-api vops3-db >/dev/null 2>&1
-  docker volume rm vops3-pgdata >/dev/null 2>&1
-  docker image rm vops3-web:verify vops3-web:single vops3-api:verify >/dev/null 2>&1
+  if [ "$keep_stack" != "1" ]; then
+    docker rm -f -v vops3-web vops3-api vops3-db >/dev/null 2>&1
+    docker volume rm vops3-pgdata >/dev/null 2>&1
+    docker image rm vops3-web:verify vops3-web:single vops3-api:verify >/dev/null 2>&1
+  fi
   [ -n "$tmp_dir" ] && [ -d "$tmp_dir" ] && rm -rf "$tmp_dir"
   return 0
 }
@@ -34,7 +38,7 @@ echo "=============================================="
 if docker info >/dev/null 2>&1; then
   pass "ต่อกับ Docker daemon ได้"
 else
-  fail "สั่ง docker info ไม่ผ่าน — ยังไม่ได้อยู่ในกล่องเรียนหรือ daemon ไม่ทำงาน"
+  fail "สั่ง docker info ไม่ผ่าน — Docker daemon ไม่ทำงานหรือไม่ได้รันภายใน Container สำหรับการทดลอง"
   echo "----------------------------------------------"
   printf '%s CHECK(S) FAILED\n' "$failures"
   exit 1
@@ -45,7 +49,13 @@ tmp_dir=$(mktemp -d)
 # ---------- 1) ไฟล์ของแล็บครบไหม ----------
 missing=""
 for f in web/Dockerfile web/Dockerfile.single web/Dockerfile.shellform web/package.json web/next.config.ts \
-         api/Dockerfile api/main.py db/initdb/01-schema.sql db/initdb/02-seed.sql; do
+         web/tests/capture-walkthrough.spec.js \
+         api/Dockerfile api/main.py db/initdb/01-schema.sql db/initdb/02-seed.sql \
+         images/ui-web-01-overview.png images/ui-web-02-tickets.png \
+         images/ui-web-03-asset.png images/ui-web-04-details.png \
+         images/ui-web-05-priority.png images/ui-web-06-submit.png \
+         images/ui-web-07-new-card.png images/ui-web-08-assignee.png \
+         images/ui-web-09-assign.png images/ui-web-10-assigned.png; do
   [ -f "$f" ] || missing="$missing $f"
 done
 if [ -z "$missing" ]; then
@@ -135,7 +145,7 @@ else
   fail "image ยังรันด้วย root (USER='$img_user')"
 fi
 
-# ---------- 7) ยกสามกล่องขึ้นจริง แล้วต่อกันด้วย IP ----------
+# ---------- 7) เริ่มสาม Container จริง แล้วเชื่อมต่อกันด้วย IP ----------
 docker rm -f -v vops3-db vops3-api vops3-web >/dev/null 2>&1
 docker volume rm vops3-pgdata >/dev/null 2>&1
 
@@ -144,9 +154,9 @@ if docker run -d --name vops3-db \
      -v vops3-pgdata:/var/lib/postgresql/data \
      -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" \
      postgres:17-alpine >/dev/null 2>&1; then
-  pass "ยกกล่องฐานข้อมูล vops3-db ขึ้นได้"
+  pass "เริ่ม Container ฐานข้อมูล vops3-db ได้"
 else
-  fail "ยกกล่องฐานข้อมูล vops3-db ไม่ขึ้น"
+  fail "เริ่ม Container ฐานข้อมูล vops3-db ไม่สำเร็จ"
 fi
 
 db_ok=0
@@ -173,7 +183,13 @@ done
 [ "$api_ok" -eq 1 ] && pass "บริการเบื้องหลังตอบ /health ว่า db up (ต่อ db ด้วย IP $DB_IP)" \
                     || fail "บริการเบื้องหลังไม่ตอบ /health"
 
-docker run -d --name vops3-web -e API_BASE_URL="http://${API_IP}:8000" vops3-web:verify >/dev/null 2>&1
+if [ -n "$web_port" ]; then
+  docker run -d --name vops3-web -p "${web_port}:3000" \
+    -e API_BASE_URL="http://${API_IP}:8000" vops3-web:verify >/dev/null 2>&1
+else
+  docker run -d --name vops3-web \
+    -e API_BASE_URL="http://${API_IP}:8000" vops3-web:verify >/dev/null 2>&1
+fi
 WEB_IP=""
 web_ok=0
 for _ in $(seq 1 30); do
@@ -239,6 +255,13 @@ fi
 echo "----------------------------------------------"
 if [ "$failures" -eq 0 ]; then
   echo "ALL CHECKS PASSED"
+  if [ "$keep_stack" = "1" ]; then
+    if [ -n "$web_port" ]; then
+      echo "STACK KEPT: เปิดหน้าเว็บผ่านพอร์ต $web_port และลบด้วยคำสั่งในหัวข้อเก็บกวาด"
+    else
+      echo "STACK KEPT: ทรัพยากร vops3-* ยังคงทำงานเพื่อการตรวจเพิ่มเติม"
+    fi
+  fi
   exit 0
 fi
 printf '%s CHECK(S) FAILED\n' "$failures"

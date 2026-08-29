@@ -37,7 +37,7 @@
   <text x="42" y="296" fill="#1f2933" font-size="13">HTML ที่ server ส่งออกมา :</text>
   <text x="42" y="318" fill="#1c4f80" font-size="12">&lt;link rel="stylesheet" href="/_next/static/chunks/xxx.css"&gt;</text>
   <rect x="42" y="332" width="368" height="34" rx="8" fill="#e6f5ec" stroke="#2e8b57" stroke-width="2"/>
-  <text x="226" y="354" fill="#1e6b41" font-size="13" font-weight="bold" text-anchor="middle">GET ไฟล์นั้น → HTTP 200 · 21048 bytes</text>
+  <text x="226" y="354" fill="#1e6b41" font-size="13" font-weight="bold" text-anchor="middle">GET ไฟล์นั้น → HTTP 200 · 21070 bytes</text>
   <text x="226" y="390" fill="#1e6b41" font-size="13" text-anchor="middle">หน้าเว็บมีสี มีการ์ด มีตาราง ครบตามที่ออกแบบ</text>
 
   <!-- bad -->

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ตรวจรับหน้าเว็บ CampusOps (LAB 3) — รันภายในกล่องเรียน devtools-ops-u0b
+# ตรวจรับหน้าเว็บ CampusOps (LAB 3) — รันภายใน Container สำหรับการทดลอง
 WEB=http://localhost:3000
 FAIL=0
 pass() { echo "  [PASS] $*"; }
@@ -34,7 +34,7 @@ echo
 echo "### ส่วนที่ 0 · สภาพแวดล้อมที่ใช้ทดสอบ"
 docker --version
 docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
-echo "--- network ที่สามกล่องใช้ร่วมกัน ---"
+echo "--- network ที่สาม Container ใช้ร่วมกัน ---"
 docker network inspect campusops-net --format '{{range .Containers}}{{.Name}} {{end}}'
 echo "--- NFR-3 : db ต้องไม่ publish พอร์ตออกมา (บรรทัดถัดไปต้องว่าง) ---"
 docker port campusops-db
@@ -194,7 +194,7 @@ echo "$LOC" | grep -q 't=err' && pass "ถูกปฏิเสธและเ�
 echo "$LOC" | grep -q 'ASSET_ON_LOAN' && pass "ข้อความบอกรหัสข้อผิดพลาด ASSET_ON_LOAN" || fail "ไม่พบรหัส ASSET_ON_LOAN ในข้อความ"
 ERRPATH=$(echo "$LOC" | sed 's/^[Ll]ocation: //')
 curl -s "$WEB$ERRPATH" > /tmp/err.html
-grep -q 'ASSET_ON_LOAN' /tmp/err.html && pass "หน้าเว็บแสดงกล่องข้อความผิดพลาดให้ผู้ใช้เห็น" || fail "หน้าเว็บไม่แสดงข้อความผิดพลาด"
+grep -q 'ASSET_ON_LOAN' /tmp/err.html && pass "หน้าเว็บแสดงกรอบข้อความผิดพลาดให้ผู้ใช้เห็น" || fail "หน้าเว็บไม่แสดงข้อความผิดพลาด"
 LSAME=$(apipy 'import json,urllib.request;print(json.load(urllib.request.urlopen("http://localhost:8000/api/dashboard"))["loans_active"])')
 chk "$LSAME" "$LAFTER" "จำนวนสัญญายืมไม่เปลี่ยนหลังถูกปฏิเสธ"
 

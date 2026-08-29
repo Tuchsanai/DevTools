@@ -68,7 +68,7 @@ def get_conn():
 
 def wait_for_db(timeout_seconds: int = 60) -> None:
     """รอจน db พร้อม — ตอน compose up ขึ้นพร้อมกัน api มักติดต่อได้ก่อน postgres จะพร้อม
-    ถ้าไม่ retry ตรงนี้ คอนเทนเนอร์ api จะตายทันทีแล้ววนรีสตาร์ตไม่จบ
+    ถ้าไม่ retry ตรงนี้ API Container จะหยุดทันทีแล้ววนเริ่มใหม่ไม่จบ
     """
     deadline = time.time() + timeout_seconds
     while True:

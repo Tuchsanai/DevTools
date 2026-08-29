@@ -13,31 +13,31 @@
 
   <!-- LEFT : no volume -->
   <rect x="20" y="52" width="368" height="356" rx="10" fill="#fdf3f3" stroke="#e0a5a5" stroke-width="2"/>
-  <text x="204" y="80" text-anchor="middle" font-size="15" font-weight="bold" fill="#8f2020">แบบที่ 1 — ไม่ผูก volume</text>
+  <text x="204" y="80" text-anchor="middle" font-size="15" font-weight="bold" fill="#8f2020">แบบที่ 1 — ไม่ใช้ Named Volume</text>
   <text x="204" y="102" text-anchor="middle" font-size="13" fill="#8f2020">docker run -e ... postgres:17-alpine</text>
 
   <rect x="52" y="118" width="304" height="118" rx="10" fill="#ffffff" stroke="#9aa5b1" stroke-width="2"/>
-  <text x="204" y="141" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2933">กล่อง ops-db</text>
+  <text x="204" y="141" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2933">Container ops-db</text>
   <rect x="72" y="152" width="264" height="70" rx="8" fill="#fdecec" stroke="#e0a5a5" stroke-width="2" stroke-dasharray="6 4"/>
-  <text x="204" y="176" text-anchor="middle" font-size="13" font-weight="bold" fill="#8f2020">writable layer ของกล่อง</text>
+  <text x="204" y="176" text-anchor="middle" font-size="13" font-weight="bold" fill="#8f2020">Writable Layer ของ Container</text>
   <text x="204" y="197" text-anchor="middle" font-size="12" fill="#8f2020">/var/lib/postgresql/data</text>
-  <text x="204" y="215" text-anchor="middle" font-size="12" fill="#8f2020">(เกิดพร้อมกล่อง ตายพร้อมกล่อง)</text>
+  <text x="204" y="215" text-anchor="middle" font-size="12" fill="#8f2020">(สร้างและลบพร้อม Container)</text>
 
   <path d="M 204 240 L 204 286" stroke="#c04a4a" stroke-width="3" marker-end="url(#rd)"/>
   <text x="218" y="268" font-size="13" font-weight="bold" fill="#c04a4a">docker rm -f ops-db</text>
 
   <rect x="52" y="290" width="304" height="94" rx="10" fill="#ffffff" stroke="#e0a5a5" stroke-width="2" stroke-dasharray="6 4"/>
-  <text x="204" y="318" text-anchor="middle" font-size="15" font-weight="bold" fill="#c04a4a">กล่องหาย · ข้อมูลหายตามไปด้วย</text>
+  <text x="204" y="318" text-anchor="middle" font-size="15" font-weight="bold" fill="#c04a4a">ลบ Container · ข้อมูลถูกลบตาม</text>
   <text x="204" y="342" text-anchor="middle" font-size="13" fill="#8f2020">ใบแจ้งซ่อมที่เพิ่มเข้ามาเอง 9 → 8 ใบ</text>
-  <text x="204" y="366" text-anchor="middle" font-size="13" fill="#8f2020">เหลือแค่ข้อมูลตั้งต้นที่ init script ใส่ใหม่</text>
+  <text x="204" y="366" text-anchor="middle" font-size="13" fill="#8f2020">เหลือข้อมูลตั้งต้นจาก Initialization Script ชุดใหม่</text>
 
   <!-- RIGHT : named volume -->
   <rect x="412" y="52" width="368" height="356" rx="10" fill="#f2fbf5" stroke="#9ad0b0" stroke-width="2"/>
-  <text x="596" y="80" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e6b41">แบบที่ 2 — ผูก named volume</text>
+  <text x="596" y="80" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e6b41">แบบที่ 2 — ใช้ Named Volume</text>
   <text x="596" y="102" text-anchor="middle" font-size="13" fill="#1e6b41">-v ops-pgdata:/var/lib/postgresql/data</text>
 
   <rect x="444" y="118" width="304" height="118" rx="10" fill="#ffffff" stroke="#9aa5b1" stroke-width="2"/>
-  <text x="596" y="141" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2933">กล่อง ops-db</text>
+  <text x="596" y="141" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2933">Container ops-db</text>
   <rect x="464" y="152" width="264" height="70" rx="8" fill="#f6f8fa" stroke="#9aa5b1" stroke-width="2"/>
   <text x="596" y="178" text-anchor="middle" font-size="13" fill="#52606d">/var/lib/postgresql/data</text>
   <text x="596" y="200" text-anchor="middle" font-size="12" fill="#52606d">เป็นแค่ "ประตู" ชี้ออกไปข้างนอก</text>
@@ -47,9 +47,9 @@
   <text x="610" y="268" font-size="13" font-weight="bold" fill="#1e6b41">docker rm -f ops-db</text>
 
   <rect x="444" y="290" width="304" height="94" rx="10" fill="#e6f5ec" stroke="#2e8b57" stroke-width="2"/>
-  <text x="596" y="318" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e6b41">volume ops-pgdata ยังอยู่</text>
-  <text x="596" y="342" text-anchor="middle" font-size="13" fill="#1e6b41">สร้างกล่องใหม่ ผูก volume เดิม</text>
+  <text x="596" y="318" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e6b41">Volume ops-pgdata ยังคงอยู่</text>
+  <text x="596" y="342" text-anchor="middle" font-size="13" fill="#1e6b41">สร้าง Container ใหม่และผูก Volume เดิม</text>
   <text x="596" y="366" text-anchor="middle" font-size="13" fill="#1e6b41">ใบแจ้งซ่อมยังครบ 9 ใบเหมือนเดิม</text>
 
-  <text x="400" y="430" text-anchor="middle" font-size="13" fill="#1f2933">อายุของข้อมูลผูกกับ volume ไม่ได้ผูกกับกล่อง — นี่คือคำตอบของ NFR-2 "ข้อมูลห้ามหาย"</text>
+  <text x="400" y="430" text-anchor="middle" font-size="13" fill="#1f2933">ข้อมูลมีอายุแยกจาก Container จึงผ่าน NFR-2: ข้อมูลต้องคงอยู่</text>
 </svg>

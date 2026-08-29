@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY main.py .
 
 # รันด้วยผู้ใช้ธรรมดา ไม่ใช่ root
-# ถ้ามีช่องโหว่ในแอป ผู้บุกรุกจะได้สิทธิ์แค่ appuser ไม่ใช่ root ของคอนเทนเนอร์
+# ถ้ามีช่องโหว่ในแอป ผู้บุกรุกจะได้สิทธิ์แค่ appuser ไม่ใช่ root ของ Container
 RUN useradd --create-home --uid 10001 appuser && chown -R appuser:appuser /app
 USER appuser
 

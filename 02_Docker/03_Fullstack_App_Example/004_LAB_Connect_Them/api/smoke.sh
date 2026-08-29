@@ -29,7 +29,7 @@ req() {
 }
 
 # Jf <file> <นิพจน์ python>  → อ่าน JSON เป็นตัวแปร d แล้ว print ผล
-# ใช้ python3 เพราะกล่องเรียนไม่มี jq ติดมา (และ python3 มีอยู่แล้วแน่นอน)
+# ใช้ python3 เพราะ Container สำหรับเรียนไม่มี jq ติดมา และมี python3 อยู่แล้ว
 Jf() {
     python3 -c 'import json,sys; print(eval(sys.argv[2], {"d": json.load(open(sys.argv[1]))}))' "$1" "$2"
 }

@@ -34,8 +34,8 @@
   <!-- ENV lane : connector routed around the ARG lane -->
   <path d="M690 110 L690 132 L852 132 L852 348 L836 348" stroke="#2e8b57" stroke-width="3" fill="none" stroke-dasharray="8 5" marker-end="url(#arG)"/>
   <rect x="24" y="290" width="800" height="116" rx="10" fill="#f2fbf5" stroke="#2e8b57" stroke-width="2"/>
-  <text x="44" y="316" fill="#1e6b41" font-size="14" font-weight="bold">ENV API_BASE_URL  →  process.env ตอนกล่องเริ่มทำงาน</text>
-  <text x="44" y="340" fill="#1f2933" font-size="13">ค่าอยู่ในตัวแปรสภาพแวดล้อมของ process จึงอ่านใหม่ทุกครั้งที่สร้างกล่อง</text>
+  <text x="44" y="316" fill="#1e6b41" font-size="14" font-weight="bold">ENV API_BASE_URL  →  process.env ตอน Container เริ่มทำงาน</text>
+  <text x="44" y="340" fill="#1f2933" font-size="13">ค่าอยู่ในตัวแปรสภาพแวดล้อมของ process จึงอ่านใหม่ทุกครั้งที่สร้าง Container</text>
   <rect x="44" y="352" width="330" height="38" rx="8" fill="#e6f5ec" stroke="#2e8b57" stroke-width="1"/>
   <text x="58" y="376" fill="#1e6b41" font-size="12">docker run -e API_BASE_URL=... → เปลี่ยนทันที</text>
   <rect x="386" y="352" width="420" height="38" rx="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="1"/>

@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" width="860" height="400" font-family="sans-serif">
   <rect x="0" y="0" width="860" height="400" fill="#ffffff"/>
-  <text text-anchor="middle" x="430" y="32" font-size="19" font-weight="bold" fill="#1f2933">IP เปลี่ยนได้ทุกครั้งที่สร้างกล่องใหม่ · ชื่อกล่องไม่เปลี่ยน</text>
-  <text text-anchor="middle" x="430" y="54" font-size="13" fill="#52606d">Docker แจก IP ให้ตามลำดับที่กล่องเข้ามาอยู่บน network ไม่ได้จองไว้ให้ใคร</text>
+  <text text-anchor="middle" x="430" y="32" font-size="19" font-weight="bold" fill="#1f2933">IP เปลี่ยนได้ทุกครั้งที่สร้าง Container ใหม่ · ชื่อ Container ไม่เปลี่ยน</text>
+  <text text-anchor="middle" x="430" y="54" font-size="13" fill="#52606d">Docker แจก IP ให้ตามลำดับที่ Container เข้ามาอยู่บน Network ไม่ได้จองไว้ให้ใคร</text>
 
   <defs>
     <marker id="tArrow" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
@@ -13,10 +13,10 @@
   <rect x="24" y="76" width="360" height="132" rx="10" fill="#f6f8fa" stroke="#9aa5b1" stroke-width="2"/>
   <text x="40" y="100" font-size="14" font-weight="bold" fill="#1f2933">รอบแรก : ยก db ก่อน แล้วค่อยยก api</text>
   <rect x="40" y="112" width="150" height="46" rx="8" fill="#ffffff" stroke="#2e8b57"/>
-  <text x="56" y="132" font-size="13" font-weight="bold" fill="#1f2933">ops-db</text>
+  <text x="56" y="132" font-size="13" font-weight="bold" fill="#1f2933">devtools-db</text>
   <text x="56" y="150" font-size="12" fill="#52606d">172.19.0.2</text>
   <rect x="218" y="112" width="150" height="46" rx="8" fill="#ffffff" stroke="#9aa5b1"/>
-  <text x="234" y="132" font-size="13" font-weight="bold" fill="#1f2933">ops-api</text>
+  <text x="234" y="132" font-size="13" font-weight="bold" fill="#1f2933">devtools-api</text>
   <text x="234" y="150" font-size="12" fill="#52606d">172.19.0.3</text>
   <text x="40" y="182" font-size="12" fill="#52606d">จดไว้ในสมุด : ฐานข้อมูลอยู่ที่ 172.19.0.2</text>
   <text x="40" y="200" font-size="12" fill="#1e6b41">ต่อติดทั้งแบบใส่ IP และแบบใส่ชื่อ</text>
@@ -28,26 +28,26 @@
   <rect x="452" y="76" width="384" height="132" rx="10" fill="#f6f8fa" stroke="#9aa5b1" stroke-width="2"/>
   <text x="468" y="100" font-size="14" font-weight="bold" fill="#1f2933">รอบสอง : ยก api ก่อน แล้วค่อยยก db</text>
   <rect x="468" y="112" width="150" height="46" rx="8" fill="#ffffff" stroke="#9aa5b1"/>
-  <text x="484" y="132" font-size="13" font-weight="bold" fill="#1f2933">ops-api</text>
+  <text x="484" y="132" font-size="13" font-weight="bold" fill="#1f2933">devtools-api</text>
   <text x="484" y="150" font-size="12" fill="#52606d">172.19.0.2</text>
   <rect x="646" y="112" width="174" height="46" rx="8" fill="#ffffff" stroke="#c04a4a"/>
-  <text x="662" y="132" font-size="13" font-weight="bold" fill="#1f2933">ops-db</text>
+  <text x="662" y="132" font-size="13" font-weight="bold" fill="#1f2933">devtools-db</text>
   <text x="662" y="150" font-size="12" font-weight="bold" fill="#8f2020">172.19.0.3 (เลขใหม่)</text>
-  <text x="468" y="182" font-size="12" fill="#8f2020">เลขที่จดไว้กลายเป็นของกล่องอื่นไปแล้ว</text>
+  <text x="468" y="182" font-size="12" fill="#8f2020">เลขที่จดไว้กลายเป็นของ Container อื่นไปแล้ว</text>
   <text x="468" y="200" font-size="12" fill="#52606d">ทั้งที่ไม่ได้แก้คำสั่งอะไรเลยสักตัวอักษร</text>
 
   <!-- COMPARISON -->
   <rect x="24" y="230" width="404" height="132" rx="10" fill="#fdf3f3" stroke="#c04a4a" stroke-width="2"/>
   <text x="40" y="254" font-size="14" font-weight="bold" fill="#8f2020">เขียน DATABASE_URL ด้วย IP</text>
-  <text x="40" y="278" font-size="12" fill="#1f2933">postgresql://opsuser:labpass@172.19.0.2:5432/...</text>
-  <text x="40" y="302" font-size="12" fill="#8f2020">รอบสองชี้ไปที่ ops-api ที่ไม่ได้พูดภาษา postgres</text>
+  <text x="40" y="278" font-size="12" fill="#1f2933">postgresql://&lt;DB_USER&gt;:&lt;DB_PASSWORD&gt;@172.19.0.2:5432/...</text>
+  <text x="40" y="302" font-size="12" fill="#8f2020">รอบสองชี้ไปที่ devtools-api ที่ไม่ได้พูดภาษา postgres</text>
   <text x="40" y="324" font-size="12" fill="#8f2020">ต้องกลับไป docker inspect แล้วสร้าง api ใหม่ทุกครั้ง</text>
   <text x="40" y="346" font-size="12" fill="#52606d">ทุกครั้งที่ db ถูกสร้างใหม่ = งานซ่อมของคนดูแลระบบ</text>
 
   <rect x="452" y="230" width="384" height="132" rx="10" fill="#f2fbf5" stroke="#2e8b57" stroke-width="2"/>
   <text x="468" y="254" font-size="14" font-weight="bold" fill="#1e6b41">เขียน DATABASE_URL ด้วยชื่อ</text>
-  <text x="468" y="278" font-size="12" fill="#1f2933">postgresql://opsuser:labpass@ops-db:5432/...</text>
-  <text x="468" y="302" font-size="12" fill="#1e6b41">DNS ของ ops-net ตอบเลขใหม่ให้เองตอนที่ถาม</text>
+  <text x="468" y="278" font-size="12" fill="#1f2933">postgresql://&lt;DB_USER&gt;:&lt;DB_PASSWORD&gt;@devtools-db:5432/...</text>
+  <text x="468" y="302" font-size="12" fill="#1e6b41">DNS ของ devtools-net ตอบเลขใหม่ให้เองตอนที่ถาม</text>
   <text x="468" y="324" font-size="12" fill="#1e6b41">คำสั่ง docker run ของ api ไม่ต้องแก้เลย</text>
   <text x="468" y="346" font-size="12" fill="#52606d">นี่คือค่าที่จะเขียนลง compose.yaml ใน LAB 5 ได้ตรง ๆ</text>
 </svg>
