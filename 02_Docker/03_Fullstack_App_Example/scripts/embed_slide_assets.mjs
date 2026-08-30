@@ -14,11 +14,6 @@ const files = {
   v_req: ['media/remotion/out/requirement-journey-web.mp4', 'video/mp4'],
   v_req_poster: ['media/remotion/out/requirement-journey-poster.png', 'image/png'],
 
-  ui_github_01: ['001_LAB_Run_The_System/images/ui-github-01-repo.png', 'image/png'],
-  ui_github_02: ['001_LAB_Run_The_System/images/ui-github-02-folder.png', 'image/png'],
-  ui_github_03: ['001_LAB_Run_The_System/images/ui-github-03-project.png', 'image/png'],
-  ui_github_04: ['001_LAB_Run_The_System/images/ui-github-04-code.png', 'image/png'],
-
   ui_swagger_01: ['002_LAB_Build_The_API/images/ui-swagger-01-docs.png', 'image/png'],
   ui_swagger_02: ['002_LAB_Build_The_API/images/ui-swagger-02-dashboard.png', 'image/png'],
   ui_swagger_03: ['002_LAB_Build_The_API/images/ui-swagger-03-try-dashboard.png', 'image/png'],
@@ -79,6 +74,9 @@ const match = html.match(pattern);
 if (!match) throw new Error('ไม่พบบล็อก window.ASSETS ในสไลด์');
 
 const assets = JSON.parse(match[1]);
+for (const obsoleteKey of ['ui_github_01', 'ui_github_02', 'ui_github_03', 'ui_github_04']) {
+  delete assets[obsoleteKey];
+}
 for (const [key, [relativePath, mime]] of Object.entries(files)) {
   const bytes = readFileSync(resolve(root, relativePath));
   assets[key] = `data:${mime};base64,${bytes.toString('base64')}`;

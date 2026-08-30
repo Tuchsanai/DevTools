@@ -10,7 +10,7 @@
     </marker>
   </defs>
 
-  <text x="400" y="34" text-anchor="middle" font-size="18" font-weight="bold" fill="#1f2933">สถาปัตยกรรม CampusOps มี 3 Container · LAB 1 พัฒนาเฉพาะฐานข้อมูล</text>
+  <text x="400" y="34" text-anchor="middle" font-size="18" font-weight="bold" fill="#1f2933">สถาปัตยกรรม SkillSpace · LAB 1 เรียน PostgreSQL เพียงชั้นเดียว</text>
 
   <!-- browser -->
   <text x="42" y="132" text-anchor="middle" font-size="13" fill="#52606d">เบราว์เซอร์</text>
@@ -49,9 +49,10 @@
   <text x="686" y="278" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e6b41">Named Volume: ops-pgdata</text>
   <text x="686" y="297" text-anchor="middle" font-size="12" fill="#1e6b41">ที่ที่ข้อมูลอยู่จริง (NFR-2)</text>
 
-  <!-- notes -->
-  <rect x="24" y="232" width="520" height="76" rx="10" fill="#f6f8fa" stroke="#9aa5b1" stroke-width="1"/>
-  <text x="44" y="256" font-size="13" fill="#1f2933">· ลูกศรแสดงทิศทางการเรียก: Browser → web → api → db</text>
-  <text x="44" y="278" font-size="13" fill="#1f2933">· db ไม่มีการ Publish พอร์ตออกสู่ Host (NFR-3)</text>
-  <text x="44" y="300" font-size="13" fill="#1f2933">· LAB 1 ยังไม่เชื่อม Container ด้วย Network; เนื้อหานี้อยู่ใน LAB 4</text>
+  <!-- temporary learning client -->
+  <rect x="24" y="232" width="520" height="76" rx="10" fill="#fff8e8" stroke="#d6a84b" stroke-width="2"/>
+  <text x="44" y="256" font-size="13" font-weight="bold" fill="#7a5200">LAB 1: Python learning client → PostgreSQL ผ่าน internal IP</text>
+  <text x="44" y="278" font-size="13" fill="#1f2933">เป็นตัวแทน data-access layer ของ FastAPI ชั่วคราวเพื่อให้เห็น SQL</text>
+  <text x="44" y="300" font-size="13" fill="#1f2933">Browser ไม่เชื่อม db โดยตรง · LAB 4 จึงค่อยสอน network และ DNS</text>
+  <path d="M 544 270 L 570 270 L 570 190 L 590 190" stroke="#2e8b57" stroke-width="2.5" stroke-dasharray="6 4" fill="none" marker-end="url(#arg)"/>
 </svg>
