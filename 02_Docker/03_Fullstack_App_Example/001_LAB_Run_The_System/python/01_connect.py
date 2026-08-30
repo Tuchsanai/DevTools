@@ -14,7 +14,6 @@ def connect_with_retry():
             time.sleep(1)
     raise RuntimeError("unreachable")
 
-
 try:
     with connect_with_retry() as conn:
         with conn.cursor() as cur:

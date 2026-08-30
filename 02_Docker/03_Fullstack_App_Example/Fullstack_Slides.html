@@ -259,7 +259,7 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
     <div class="m" style="font-size:23px; line-height:1.62; max-width:650px">จากโจทย์ธุรกิจ 3 สาขา<br>สู่ระบบ <b style="color:#fff">web · api · db</b> ที่ส่งมอบได้ด้วยคำสั่งเดียว</div>
     <div style="display:flex; gap:10px; margin-top:26px; flex-wrap:wrap">
       <span class="tag" style="color:#dbeafe; border-color:#4f79a8; background:rgba(24,58,94,.78); padding:5px 13px">5 HANDS-ON LABS</span>
-      <span class="tag" style="color:#dbeafe; border-color:#4f79a8; background:rgba(24,58,94,.78); padding:5px 13px">42 EXPERIMENTS</span>
+      <span class="tag" style="color:#dbeafe; border-color:#4f79a8; background:rgba(24,58,94,.78); padding:5px 13px">37 EXPERIMENTS</span>
       <span class="tag" style="color:#dbeafe; border-color:#4f79a8; background:rgba(24,58,94,.78); padding:5px 13px">3 CONTAINERS</span>
     </div>
   </div>
@@ -813,7 +813,7 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
 <!-- ===== 27 : แหล่งที่มาของ seed data ===== -->
 <div class="slot"><section class="slide">
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · SOURCE OF TRUTH · PostgreSQL</div><h2>หนึ่ง database · ห้า tables · <em>สองไฟล์ตามลำดับ</em></h2>
-    <div class="sub">LAB 1 ให้ผู้เรียนอ่าน SQL โดยตรงก่อนรัน เพื่อทำนายว่า schema และ seed จะสร้างผลลัพธ์ใด</div></div>
+    <div class="sub">LAB 1 ให้ Python อ่านโครงสร้างจริงผ่าน information_schema หลัง PostgreSQL ประมวลผล schema และ seed</div></div>
   <div class="s-body top">
     <div class="g11">
       <div class="card a"><h3><code>01-schema.sql</code></h3><p>สร้าง <code>assets</code>, <code>tickets</code>, <code>loans</code>, <code>parts</code>, <code>stock_moves</code> ภายใน database <code>skillspace</code></p></div>
@@ -1030,9 +1030,9 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
 <div class="slot" data-sec="4"><section class="slide section">
   <div class="s-body">
     <div class="num-big">04</div>
-    <h1>LAB 1 — PostgreSQL: จากแบบจำลองข้อมูลสู่คำสั่ง SQL</h1>
-    <div class="m">หนึ่ง database <code>skillspace</code> · ห้า tables · schema + seed · Python client ชั่วคราว · transaction · persistence<br>
-      <span style="font-size:16px">เตรียมเครื่องปฏิบัติการ → SSH → clone → PostgreSQL → เขียน Python → persistence · 10 การทดลอง</span></div>
+    <h1>LAB 1 — PostgreSQL: สร้างฐานข้อมูลและสำรวจด้วย Python</h1>
+    <div class="m">หนึ่ง database <code>skillspace</code> · ห้า tables · schema + seed · Python client<br>
+      <span style="font-size:16px">เตรียมเครื่องปฏิบัติการ → สร้าง PostgreSQL → เชื่อมต่อ → สำรวจข้อมูล → cleanup · 5 การทดลอง</span></div>
   </div>
   <div class="s-foot"><span>ตอนที่ 4 · LAB 1 · NFR-2</span><span class="pg"></span></div>
 </section></div>
@@ -1045,9 +1045,9 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
   <div class="s-head"><div class="eyebrow">ตอนที่ 4 · ทฤษฎี · LAB 1 ใน 30 วินาที</div><h2>LAB 1 ตอบว่า <em>PostgreSQL รับและเก็บข้อมูลอย่างไร</em></h2></div>
   <div class="s-body">
     <table class="tbl sm">
-      <tr><td style="width:210px"><b>คำถามเดียวที่ตอบให้จบ</b></td><td>schema + seed สร้าง database <code>skillspace</code> ที่มีห้า tables อย่างไร และ request ของระบบกลายเป็น SQL กับ transaction แบบใด</td></tr>
-      <tr><td><b>ต้องผ่านอะไรมาก่อน</b></td><td>ชุด <code>01_Docker_Basics_Run_Port_Volume_Build</code> — ใช้ <code>run</code> · <code>ps</code> · <code>logs</code> · <code>exec</code> · <code>rm</code> · <code>-e</code> · <code>-v</code></td></tr>
-      <tr><td><b>จบแล้วต้องทำได้เอง</b></td><td>ยก <code>postgres:17-alpine</code> พร้อมข้อมูล · ใช้ psycopg 3 อ่านทั้งห้า tables · อธิบาย request → SQL → table · พิสูจน์ rollback และ named volume</td></tr>
+      <tr><td style="width:210px"><b>คำถามเดียวที่ตอบให้จบ</b></td><td>schema + seed สร้าง database <code>skillspace</code> ที่มีห้า tables และ Python อ่านโครงสร้างกับข้อมูลจริงอย่างไร</td></tr>
+      <tr><td><b>ต้องผ่านอะไรมาก่อน</b></td><td>ใช้ <code>docker run</code> · <code>docker ps</code> · <code>docker rm</code> · environment file และ bind mount ได้</td></tr>
+      <tr><td><b>จบแล้วต้องทำได้เอง</b></td><td>สร้าง <code>postgres:17-alpine</code> พร้อมข้อมูล · ใช้ psycopg 3 ตรวจชื่อฐานข้อมูล ตาราง คอลัมน์ ชนิดข้อมูล จำนวนแถว และข้อมูลตัวอย่าง</td></tr>
       <tr><td><b>ยัง <i>ไม่</i> สอน</b></td><td>Browser ต่อ db โดยตรงไม่ได้ · network/DNS → <b>LAB 4</b> · <code>compose.yaml</code> → <b>LAB 5</b> · LAB 1 ให้ Python บนเครื่องปฏิบัติการต่อ <code>localhost:5432</code></td></tr>
     </table>
     <div class="note a">เต็ม ๆ ที่ <code>001_LAB_Run_The_System/readme.md</code> · แล็บนี้ใน 30 วินาที</div>
@@ -1063,7 +1063,7 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
       <div class="card w"><h4>สิ่งที่ต้องเข้าใจให้ตรง</h4>
         <ul class="bul sm" style="margin-top:6px">
           <li><b>หนึ่ง database</b> ชื่อ <code>skillspace</code><span class="s">ภายในมีห้า tables ไม่ใช่ห้าฐานข้อมูล</span></li>
-          <li><b>Schema ก่อน Seed</b><span class="s"><code>01-schema.sql</code> ต้องรันก่อน <code>02-seed.sql</code></span></li>
+          <li><b>Schema ก่อน Seed</b><span class="s">bind mount ไป <code>/docker-entrypoint-initdb.d</code>; <code>01-schema.sql</code> ทำงานก่อน <code>02-seed.sql</code></span></li>
           <li><b>Browser ไม่ต่อ db</b><span class="s">Python client ใน LAB 1 เป็นตัวแทน FastAPI data-access layer ชั่วคราว</span></li>
         </ul></div>
       <div>
@@ -1072,11 +1072,10 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
 docker run <span class="k">-dit</span> <span class="k">--name</span> devtools-fullstack-lab001 <span class="k">--privileged</span> <span class="k">-p</span> <span class="y">2222:22</span> tuchsanai/devtools:2569_1
 ssh root@localhost <span class="k">-p</span> 2222  <span class="c"># LAB password: passwd</span>
 docker --version <span class="k">&amp;&amp;</span> docker compose version
-mkdir <span class="k">-p</span> skillspace-lab
-cd skillspace-lab
+mkdir <span class="k">-p</span> /root/skillspace-lab <span class="k">&amp;&amp;</span> cd /root/skillspace-lab
 git clone https://github.com/Tuchsanai/DevTools.git
 cd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System</pre>
-        <div class="note" style="margin-top:10px; font-size:14.5px">ก่อน clone สร้างและเข้า <code>/root/skillspace-lab</code> เพื่อรวม repository และไฟล์ทดลองไว้ใต้ตำแหน่งเดียว</div>
+        <div class="note" style="margin-top:10px; font-size:14.5px">สองบรรทัดแรกคือขั้น 0.1: ลบชื่อเดิมแล้วสร้างเครื่องใหม่ · ก่อน clone ใช้คำสั่งเดียวสร้างและเข้า <code>/root/skillspace-lab</code></div>
       </div>
     </div>
     <div class="note a">เต็ม ๆ ที่ <code>001_LAB_Run_The_System/readme.md</code> · สิ่งที่มักเข้าใจผิด · เตรียมเครื่องเรียน</div>
@@ -1084,89 +1083,24 @@ cd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System</pre>
   <div class="s-foot"><span>ตอนที่ 4 · LAB 1 · NFR-2</span><span class="pg"></span></div>
 </section></div>
 
-<!-- ===== 31 : ข้อมูลอยู่ที่ไหน ===== -->
-<div class="slot"><section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · ทฤษฎี · ก่อนลงมือ</div><h2>ข้อมูลของ PostgreSQL <em>ไปนอนอยู่ที่ไหน</em></h2></div>
-  <div class="s-body">
-    <div class="fig fix" style="height:440px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 440" font-family="sans-serif" preserveAspectRatio="xMidYMid meet">
-  <rect x="0" y="0" width="800" height="440" fill="#ffffff"/>
-  <defs>
-    <marker id="sv22-rd" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
-      <path d="M 0 0 L 13 5 L 0 10 z" fill="#c04a4a"/>
-    </marker>
-    <marker id="sv22-gr" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
-      <path d="M 0 0 L 13 5 L 0 10 z" fill="#2e8b57"/>
-    </marker>
-  </defs>
-
-  <text x="400" y="32" text-anchor="middle" font-size="19" font-weight="bold" fill="#1f2933">ข้อมูลของ PostgreSQL ไปนอนอยู่ที่ไหน</text>
-
-  <!-- LEFT : no volume -->
-  <rect x="20" y="52" width="368" height="356" rx="10" fill="#fdf3f3" stroke="#e0a5a5" stroke-width="2"/>
-  <text x="204" y="80" text-anchor="middle" font-size="15" font-weight="bold" fill="#8f2020">แบบที่ 1 — ไม่ผูก volume</text>
-  <text x="204" y="102" text-anchor="middle" font-size="13" fill="#8f2020">docker run -e ... postgres:17-alpine</text>
-
-  <rect x="52" y="118" width="304" height="118" rx="10" fill="#ffffff" stroke="#9aa5b1" stroke-width="2"/>
-  <text x="204" y="141" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2933">Container ops-db</text>
-  <rect x="72" y="152" width="264" height="70" rx="8" fill="#fdecec" stroke="#e0a5a5" stroke-width="2" stroke-dasharray="6 4"/>
-  <text x="204" y="176" text-anchor="middle" font-size="13" font-weight="bold" fill="#8f2020">writable layer ของ Container</text>
-  <text x="204" y="197" text-anchor="middle" font-size="12" fill="#8f2020">/var/lib/postgresql/data</text>
-  <text x="204" y="215" text-anchor="middle" font-size="12" fill="#8f2020">(เกิดและถูกลบพร้อม Container)</text>
-
-  <path d="M 204 240 L 204 286" stroke="#c04a4a" stroke-width="3" marker-end="url(#sv22-rd)"/>
-  <text x="218" y="268" font-size="13" font-weight="bold" fill="#c04a4a">docker rm -f ops-db</text>
-
-  <rect x="52" y="290" width="304" height="94" rx="10" fill="#ffffff" stroke="#e0a5a5" stroke-width="2" stroke-dasharray="6 4"/>
-  <text x="204" y="318" text-anchor="middle" font-size="15" font-weight="bold" fill="#c04a4a">Container ถูกลบ · ข้อมูลถูกลบตาม</text>
-  <text x="204" y="342" text-anchor="middle" font-size="13" fill="#8f2020">ใบแจ้งซ่อมที่เพิ่มเข้ามาเอง 9 → 8 ใบ</text>
-  <text x="204" y="366" text-anchor="middle" font-size="13" fill="#8f2020">เหลือแค่ข้อมูลตั้งต้นที่ init script ใส่ใหม่</text>
-
-  <!-- RIGHT : named volume -->
-  <rect x="412" y="52" width="368" height="356" rx="10" fill="#f2fbf5" stroke="#9ad0b0" stroke-width="2"/>
-  <text x="596" y="80" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e6b41">แบบที่ 2 — ผูก named volume</text>
-  <text x="596" y="102" text-anchor="middle" font-size="13" fill="#1e6b41">-v ops-pgdata:/var/lib/postgresql/data</text>
-
-  <rect x="444" y="118" width="304" height="118" rx="10" fill="#ffffff" stroke="#9aa5b1" stroke-width="2"/>
-  <text x="596" y="141" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2933">Container ops-db</text>
-  <rect x="464" y="152" width="264" height="70" rx="8" fill="#f6f8fa" stroke="#9aa5b1" stroke-width="2"/>
-  <text x="596" y="178" text-anchor="middle" font-size="13" fill="#52606d">/var/lib/postgresql/data</text>
-  <text x="596" y="200" text-anchor="middle" font-size="12" fill="#52606d">เป็นแค่ "ประตู" ชี้ออกไปข้างนอก</text>
-  <path d="M 729 187 L 770 187 L 770 337 L 748 337" stroke="#2e8b57" stroke-width="3" fill="none" marker-end="url(#sv22-gr)"/>
-
-  <path d="M 596 240 L 596 286" stroke="#2e8b57" stroke-width="3" marker-end="url(#sv22-gr)"/>
-  <text x="610" y="268" font-size="13" font-weight="bold" fill="#1e6b41">docker rm -f ops-db</text>
-
-  <rect x="444" y="290" width="304" height="94" rx="10" fill="#e6f5ec" stroke="#2e8b57" stroke-width="2"/>
-  <text x="596" y="318" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e6b41">volume ops-pgdata ยังอยู่</text>
-  <text x="596" y="342" text-anchor="middle" font-size="13" fill="#1e6b41">สร้าง Container ใหม่ ผูก volume เดิม</text>
-  <text x="596" y="366" text-anchor="middle" font-size="13" fill="#1e6b41">ใบแจ้งซ่อมยังครบ 9 ใบเหมือนเดิม</text>
-
-  <text x="400" y="430" text-anchor="middle" font-size="13" fill="#1f2933">อายุของข้อมูลผูกกับ volume ไม่ได้ผูกกับ Container — นี่คือคำตอบของ NFR-2 "ข้อมูลห้ามหาย"</text>
-</svg></div>
-    <div class="note a" style="font-size:14px">ฝั่งซ้ายข้อมูลถูกลบพร้อม Container เพราะอยู่ใน writable layer · ฝั่งขวาข้อมูล<b>อยู่นอก Container ตั้งแต่แรก</b> — ต่างกันที่ <code>-v ops-pgdata:/var/lib/postgresql/data</code></div>
-  </div>
-  <div class="s-foot"><span>ตอนที่ 4 · LAB 1 · NFR-2</span><span class="pg"></span></div>
-</section></div>
-
 <!-- ===== 33 : คำสั่งที่ถูก + PORTS ===== -->
 <div class="slot"><section class="slide">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · ลงมือ · การทดลองที่ 2</div><h2>PostgreSQL เปิดให้ Python <em>ภายในเครื่องปฏิบัติการ</em></h2></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · ลงมือ · การทดลองที่ 1</div><h2>สร้าง PostgreSQL ด้วยคอนเทนเนอร์และ<em>ตรวจสอบสถานะ</em></h2></div>
   <div class="s-body">
-    <pre class="code sm">docker run -d --name ops-db <span class="k">-p</span> <span class="y">127.0.0.1:5432:5432</span> \
-  <span class="k">--env-file</span> .env.db \
-  <span class="k">-v</span> <span class="y">"$PWD/db/initdb:/docker-entrypoint-initdb.d:ro"</span> \
-  postgres:17-alpine</pre>
+    <pre class="code xs">docker rm -f ops-db <span class="d">2&gt;/dev/null</span>
+docker run -d --name ops-db <span class="k">-p</span> <span class="y">127.0.0.1:5432:5432</span> --env-file .env.db <span class="k">-v</span> <span class="y">"$PWD/db/initdb:/docker-entrypoint-initdb.d:ro"</span> postgres:17-alpine
+docker ps --filter name=ops-db</pre>
     <pre class="code xs" style="margin-top:8px">NAMES     IMAGE                STATUS         PORTS
 ops-db    postgres:17-alpine   Up 8 seconds   <span class="g">127.0.0.1:5432-&gt;5432/tcp</span></pre>
-    <div class="note o">mapping นี้อยู่ใน <code>devtools-fullstack-lab001</code> ซึ่งเป็นเครื่องปฏิบัติการชั้นใน · Python ต่อด้วย <code>localhost:5432</code> และเครื่องผู้ใช้ไม่ได้ publish พอร์ตฐานข้อมูลโดยตรง</div>
-    <div class="note a">เต็ม ๆ ที่ <code>001_LAB_Run_The_System/readme.md</code> · การทดลองที่ 2</div>
+    <div class="note o">bind mount ส่ง <code>01-schema.sql</code> และ <code>02-seed.sql</code> ไปยัง <code>/docker-entrypoint-initdb.d</code> จึงสร้าง schema ก่อนเติมข้อมูลครั้งแรก · Python ต่อผ่าน <code>localhost:5432</code> โดยไม่ใช้ <code>docker exec</code> หรือ <code>psql</code> จัดการข้อมูล</div>
+    <div class="note a">เต็ม ๆ ที่ <code>001_LAB_Run_The_System/readme.md</code> · การทดลองที่ 1</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 4 · LAB 1 · NFR-3</span><span class="pg"></span></div>
 </section></div>
 
 <!-- ===== 34 : initdb ส่ง schema + seed ===== -->
 <div class="slot"><section class="slide">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · หลักฐาน · การทดลองที่ 5</div><h2>Python เปิดให้เห็น <em>โครงสร้างและข้อมูลทั้งห้าตาราง</em></h2></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · หลักฐาน · การทดลองที่ 4</div><h2>Python เปิดให้เห็น <em>โครงสร้างและข้อมูลทั้งห้าตาราง</em></h2></div>
   <div class="s-body">
     <div class="g11">
       <pre class="code xs"><span class="k">from</span> psycopg <span class="k">import</span> sql
@@ -1200,97 +1134,7 @@ sample[1]: {"id": 1, "code": "A-001", <span class="d">…</span>}
         <div class="note a">ทุกตารางแสดงชื่อ/ชนิดคอลัมน์และข้อมูลจริงไม่เกิน 3 แถว · timestamp แปลงด้วย <code>json.dumps(..., default=str)</code></div>
       </div>
     </div>
-    <div class="note a">source เต็มและ output จริงอยู่ที่ <code>001_LAB_Run_The_System/readme.md</code> · การทดลองที่ 5</div>
-  </div>
-  <div class="s-foot"><span>ตอนที่ 4 · LAB 1 · NFR-2</span><span class="pg"></span></div>
-</section></div>
-
-<!-- ===== 35 : NFR-2 หายกับรอด ===== -->
-<div class="slot"><section class="slide cmp">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · หลักฐาน · การทดลองที่ 9 · 10</div><h2>มี volume เพียงบรรทัดเดียวก็ทำให้ <em>marker รอด</em></h2>
-    <div class="sub">ทั้งสองฝั่งใช้คำสั่งเดียวกันทุกตัวอักษร ต่างกัน <b>บรรทัดเดียว</b></div></div>
-  <div class="s-body">
-    <div class="g11">
-      <div>
-        <div style="margin-bottom:8px"><span class="tag c">ไม่มี volume</span></div>
-        <pre class="code xs">count <span class="g">9</span>
-$ docker rm -f ops-db
-count <span class="r">8</span></pre>
-        <div class="note c" style="margin-top:8px; font-size:14.5px"><b>marker หาย</b> · tickets กลับเป็น 8 เพราะ init script ใส่ seed ชุดใหม่</div>
-      </div>
-      <div>
-        <div style="margin-bottom:8px"><span class="tag o">มี named volume</span></div>
-        <pre class="code xs"><span class="k">-v</span> <span class="g">ops-pgdata:/var/lib/postgresql/data</span>
-$ docker rm -f ops-db
- title
- <span class="g">[LAB001-PERSISTENCE]</span></pre>
-        <div class="note o" style="margin-top:8px; font-size:14.5px"><b>marker ยังอยู่</b> — แล้ว client ลบ marker เพื่อคืนจำนวน seed เป็น 8</div>
-      </div>
-    </div>
-    <div class="note a"><b>NFR-2 →</b> <code>-v ops-pgdata:/var/lib/postgresql/data</code> · transcript เต็มที่ <code>001_LAB_Run_The_System/readme.md</code> · การทดลองที่ 9 · 10</div>
-  </div>
-  <div class="s-foot"><span>ตอนที่ 4 · LAB 1 · NFR-2</span><span class="pg"></span></div>
-</section></div>
-
-<!-- ===== 36 : initdb รันตอนไหน ===== -->
-<div class="slot"><section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · ทฤษฎี · การทดลองที่ 10</div><h2>init script รันตอนไหน — และทำไม<em>มันไม่รันซ้ำ</em></h2></div>
-  <div class="s-body">
-    <div class="fig fix" style="height:420px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" font-family="sans-serif" preserveAspectRatio="xMidYMid meet">
-  <rect x="0" y="0" width="800" height="420" fill="#ffffff"/>
-  <defs>
-    <marker id="sv25-a1" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto">
-      <path d="M 0 0 L 13 5 L 0 10 z" fill="#52606d"/>
-    </marker>
-  </defs>
-
-  <text x="400" y="32" text-anchor="middle" font-size="19" font-weight="bold" fill="#1f2933">ไฟล์ใน /docker-entrypoint-initdb.d รันตอนไหน</text>
-
-  <!-- start -->
-  <rect x="266" y="52" width="268" height="52" rx="26" fill="#eef6ff" stroke="#8fb8dc" stroke-width="2"/>
-  <text x="400" y="75" text-anchor="middle" font-size="14" font-weight="bold" fill="#1c4f80">docker run ... postgres:17-alpine</text>
-  <text x="400" y="94" text-anchor="middle" font-size="12" fill="#1c4f80">entrypoint เริ่มทำงาน</text>
-  <path d="M 400 105 L 400 148" stroke="#52606d" stroke-width="3" marker-end="url(#sv25-a1)"/>
-
-  <!-- decision diamond -->
-  <path d="M 400 152 L 596 210 L 400 268 L 204 210 z" fill="#fff4e5" stroke="#d98324" stroke-width="2.5"/>
-  <text x="400" y="204" text-anchor="middle" font-size="14" font-weight="bold" fill="#a35a10">/var/lib/postgresql/data</text>
-  <text x="400" y="226" text-anchor="middle" font-size="14" font-weight="bold" fill="#a35a10">ว่างหรือไม่</text>
-
-  <!-- yes branch -->
-  <path d="M 204 210 L 148 210 L 148 270" stroke="#52606d" stroke-width="3" fill="none" marker-end="url(#sv25-a1)"/>
-  <text x="176" y="200" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e6b41">ว่าง</text>
-  <rect x="24" y="274" width="248" height="118" rx="10" fill="#f2fbf5" stroke="#2e8b57" stroke-width="2"/>
-  <text x="148" y="300" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e6b41">สร้าง cluster ใหม่ แล้วรัน</text>
-  <text x="148" y="322" text-anchor="middle" font-size="13" fill="#1e6b41">01-schema.sql → 02-seed.sql</text>
-  <text x="148" y="342" text-anchor="middle" font-size="12" fill="#1e6b41">(เรียงตามชื่อไฟล์)</text>
-  <text x="148" y="366" text-anchor="middle" font-size="12" fill="#1f2933">log : running /docker-entrypoint-</text>
-  <text x="148" y="383" text-anchor="middle" font-size="12" fill="#1f2933">initdb.d/01-schema.sql</text>
-
-  <!-- no branch -->
-  <path d="M 596 210 L 652 210 L 652 270" stroke="#52606d" stroke-width="3" fill="none" marker-end="url(#sv25-a1)"/>
-  <text x="624" y="200" text-anchor="middle" font-size="13" font-weight="bold" fill="#8f2020">มีข้อมูลอยู่แล้ว</text>
-  <rect x="528" y="274" width="248" height="118" rx="10" fill="#fdf3f3" stroke="#c04a4a" stroke-width="2"/>
-  <text x="652" y="300" text-anchor="middle" font-size="14" font-weight="bold" fill="#8f2020">ข้ามไฟล์ทั้งหมด</text>
-  <text x="652" y="322" text-anchor="middle" font-size="13" fill="#8f2020">แก้ .sql กี่รอบก็ไม่มีผล</text>
-  <text x="652" y="342" text-anchor="middle" font-size="12" fill="#8f2020">(แม้ recreate เป็น Container ใหม่)</text>
-  <text x="652" y="366" text-anchor="middle" font-size="12" fill="#1f2933">log : Skipping initialization</text>
-  <text x="652" y="383" text-anchor="middle" font-size="12" fill="#1f2933">แล้ว start ต่อจากข้อมูลเดิม</text>
-
-  <!-- center note -->
-  <rect x="296" y="288" width="208" height="86" rx="10" fill="#f6f8fa" stroke="#9aa5b1" stroke-width="1"/>
-  <text x="400" y="312" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2933">ตัวตัดสินคือ</text>
-  <text x="400" y="334" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2933">"data directory ว่างไหม"</text>
-  <text x="400" y="358" text-anchor="middle" font-size="12" fill="#52606d">ไม่ใช่ "Container ใหม่หรือเดิม"</text>
-</svg></div>
-    <div class="figrow c21">
-      <pre class="code xs">$ docker logs ops-db <span class="k">2&gt;&amp;1</span> | grep Skipping
-<span class="r">PostgreSQL Database directory appears to contain a database;
-Skipping initialization</span>
-$ python python/05_persistence.py check
-marker_count=<span class="g">1</span>  <span class="c"># ผลจาก Python query ที่ execute จริง</span></pre>
-      <div class="note w" style="font-size:13.5px">ตัวตัดสินคือ <b>data directory ว่างหรือไม่</b> ไม่ใช่ "Container ใหม่หรือเดิม" — แก้ <code>db/initdb/*.sql</code> ทีหลังจึง<b>ไม่มีผล</b> จนกว่าจะลบ volume</div>
-    </div>
+    <div class="note a">source เต็มและ output จริงอยู่ที่ <code>001_LAB_Run_The_System/readme.md</code> · การทดลองที่ 4</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 4 · LAB 1 · NFR-2</span><span class="pg"></span></div>
 </section></div>
@@ -1300,10 +1144,10 @@ marker_count=<span class="g">1</span>  <span class="c"># ผลจาก Python 
   <div class="s-head"><div class="eyebrow">ตอนที่ 4 · หลักฐาน · ปิด LAB 1</div><h2>ตอนนี้ได้อะไร → <em>ทำต่อที่แล็บไหน</em></h2></div>
   <div class="s-body">
     <div class="grid2">
-      <div class="card"><h4>ทฤษฎีที่เพิ่งจบ</h4><ul class="bul sm"><li>หนึ่ง database · ห้า tables</li><li>request → SQL template → params → rows</li><li>rollback · commit · constraint · volume</li></ul></div>
+      <div class="card"><h4>ทฤษฎีที่เพิ่งจบ</h4><ul class="bul sm"><li>หนึ่ง database · ห้า tables</li><li>schema ก่อน seed</li><li>connection · cursor · query · result</li></ul></div>
       <div class="card a"><h4>ช่องทางข้อมูล</h4><p>Python บนเครื่องปฏิบัติการเป็น client เพียงช่องทางเดียว · ใช้ <code>localhost:5432</code> · Browser ไม่ต่อ PostgreSQL โดยตรง</p></div>
-      <div class="card o"><h4>แล็บและหลักฐาน</h4><p><b>LAB 1</b> · 10 การทดลอง · ~40 นาที · ตรวจจาก output ของ PostgreSQL/Python และ persistence marker โดยตรง</p></div>
-      <div class="card w"><h4>เปิดแล็บ</h4><pre class="code path">cd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System</pre></div>
+      <div class="card o"><h4>แล็บและหลักฐาน</h4><p><b>LAB 1</b> · 5 การทดลอง · ตรวจจากสถานะ <code>Up</code>, <code>database=skillspace</code> และ output ของทั้งห้าตาราง</p></div>
+      <div class="card w"><h4>Cleanup</h4><pre class="code path">docker rm -f ops-db</pre></div>
     </div>
   </div>
   <div class="s-foot"><span>ตอนที่ 4 · LAB 1 · NFR-2 · NFR-3</span><span class="pg"></span></div>
@@ -2688,7 +2532,7 @@ $ docker compose -p skillspace up -d <span class="g">--no-build</span> → GET /
       <tr><th style="width:250px">ลูกค้าพูดว่า</th><th style="width:120px">กลายเป็น</th><th>บังคับให้ใช้เทคนิค Docker ตัวไหน</th><th style="width:200px">พิสูจน์ที่</th></tr>
       <tr><td>"ไม่มีฝ่าย IT ประจำ — ติดตั้งต้องง่าย ย้ายเครื่องต้องได้"</td><td class="req">NFR-1<div class="mut">คำสั่งเดียว</div></td><td><code>compose.yaml</code> · <code>healthcheck</code> + <code>depends_on: service_healthy</code> แทนการเดา <code>sleep</code></td><td><b>LAB 5</b><br>การทดลองที่ 2 · 4</td></tr>
       <tr><td>เครื่องปลายทางห้ามต้องลง Node/Python</td><td class="req">NFR-1</td><td>Dockerfile + <b>multi-stage</b> สร้าง image แล้วส่งผ่าน Docker Hub แบบ Public ด้วย <code>tag → push → pull</code></td><td><b>LAB 2 · 3</b> สร้าง<br><b>LAB 5</b> การทดลองที่ 8–9 ส่งมอบ</td></tr>
-      <tr><td>"ข้อมูลยืม-คืนย้อนหลัง <b>ห้ามหาย</b> แม้ restart หรือย้ายเครื่อง"</td><td class="req">NFR-2<div class="mut">ข้อมูลห้ามหาย</div></td><td><b>named volume</b> · <code>down</code> ไม่แตะ volume · <code>down -v</code> ถึงลบ</td><td><b>LAB 1</b> การทดลองที่ 7–8<br><b>LAB 5</b> การทดลองที่ 6</td></tr>
+      <tr><td>"ข้อมูลยืม-คืนย้อนหลัง <b>ห้ามหาย</b> แม้ restart หรือย้ายเครื่อง"</td><td class="req">NFR-2<div class="mut">ข้อมูลห้ามหาย</div></td><td><b>named volume</b> · <code>down</code> ไม่แตะ volume · <code>down -v</code> ถึงลบ</td><td><b>LAB 5</b> การทดลองที่ 6</td></tr>
     </table>
     <div class="note a" style="margin-top:14px">ตารางเต็มอยู่ที่ <code>readme.md</code> · “ตารางแกน : ข้อจำกัดของลูกค้า → เทคนิค Docker → แล็บ”</div>
   </div>
@@ -2763,7 +2607,7 @@ $ docker compose -p skillspace up -d <span class="g">--no-build</span> → GET /
   <div class="s-body top">
     <ul class="bul sm">
       <li>แปลงคำบ่นของลูกค้าเป็น <b>REQ/NFR ที่ทดสอบได้</b> แล้วชี้เทคนิค Docker ที่รับผิดชอบ</li>
-      <li>ยกฐานข้อมูลพร้อม schema + seed ใช้ psycopg 3 ไล่ <b>request → SQL → table</b> และอธิบายว่าข้อมูลหาย · รอดตอนไหน</li>
+      <li>ยกฐานข้อมูลพร้อม schema + seed แล้วใช้ psycopg 3 ตรวจชื่อฐานข้อมูล โครงสร้าง และข้อมูลจริงของทั้งห้าตาราง</li>
       <li>build image ของ backend และ frontend โดยเรียง Dockerfile ให้ <b>layer cache ทำงาน</b></li>
       <li>ใช้ multi-stage ตัด toolchain ออกจาก image (<b>1.1GB → 298MB</b> จาก source เดียวกัน)</li>
       <li>แยกค่าตอน <b>build</b> (<code>ARG</code>) ออกจากค่าตอน <b>run</b> (<code>ENV</code>)</li>
@@ -2777,15 +2621,15 @@ $ docker compose -p skillspace up -d <span class="g">--no-build</span> → GET /
 
 <!-- ===== 85 : สถิติจริงทั้งชุด ===== -->
 <div class="slot"><section class="slide">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 9 · หลักฐาน · สถิติทั้งชุด</div><h2>42 การทดลอง · 4:15 ชั่วโมง · <em>หลักฐานสองรูปแบบ</em></h2></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 9 · หลักฐาน · สถิติทั้งชุด</div><h2>37 การทดลอง · <em>หลักฐานสองรูปแบบ</em></h2></div>
   <div class="s-body">
     <div class="grid2" style="gap:14px">
-      <div class="stat"><div class="v">42</div><div class="l">การทดลองทั้งหมด · ต่อแล็บ <b>10 · 11 · 7 · 5 · 9</b></div></div>
+      <div class="stat"><div class="v">37</div><div class="l">การทดลองทั้งหมด · ต่อแล็บ <b>5 · 11 · 7 · 5 · 9</b></div></div>
       <div class="stat"><div class="v">4:15</div><div class="l">ชั่วโมง : นาที รวมทั้งชุด</div></div>
       <div class="stat"><div class="v o">86</div><div class="l">บรรทัด <code>[PASS]</code> จาก verifier ของ LAB 2–5 รวมการตรวจ Hub</div></div>
       <div class="stat"><div class="v d">0</div><div class="l">คำสั่ง Docker ตัวใหม่ที่ชุดนี้สอนเพิ่ม</div></div>
     </div>
-    <div class="note a" style="margin-top:14px"><b>LAB 1</b> ตรวจด้วยหลักฐานที่สังเกตได้จาก PostgreSQL/Python และ persistence marker · <b>LAB 2–5</b> ยังคงใช้ <code>verify.sh</code> ของแต่ละแล็บ</div>
+    <div class="note a" style="margin-top:14px"><b>LAB 1</b> ตรวจจากสถานะคอนเทนเนอร์และผล query ของ Python · <b>LAB 2–5</b> ยังคงใช้ <code>verify.sh</code> ของแต่ละแล็บ</div>
     <div class="note" style="margin-top:10px">รายละเอียดคำสั่งและ cleanup อยู่ใน README ของแต่ละ LAB</div>
     <div class="quote" style="font-size:19px">ข้อจำกัดของลูกค้าข้อไหน บังคับให้ต้องใช้เทคนิค Docker ตัวไหน
       <span class="who">— ทุกคำสัญญาต่อลงมาถึงหลักฐานที่ตรวจสอบซ้ำได้</span></div>
@@ -2835,9 +2679,10 @@ $ docker compose -p skillspace up -d <span class="g">--no-build</span> → GET /
       steps:[
         [null,'ภารกิจ: หนึ่ง database · ห้า tables','อ่าน mental model ก่อนพิมพ์คำสั่ง','skillspace เป็น database เดียว; assets, tickets, loans, parts, stock_moves คือตาราง','Browser → Next.js web → FastAPI api → PostgreSQL db'],
         [null,'เตรียมเครื่องปฏิบัติการ','ขั้น 0.1 ลบชื่อเดิมและสร้างเครื่องใหม่ แล้วจึงเชื่อมต่อ SSH','ใช้ชื่อ devtools-fullstack-lab001 และพอร์ต 2222 คงที่; หลัง SSH ตรวจ Engine และ Compose ในบรรทัดเดียว','docker rm -f devtools-fullstack-lab001 2&gt;/dev/null\ndocker run -dit --name devtools-fullstack-lab001 --privileged -p 2222:22 tuchsanai/devtools:2569_1\nssh root@localhost -p 2222\ndocker --version &amp;&amp; docker compose version'],
-        [null,'รับ source code ภายในเครื่องปฏิบัติการ','สร้าง skillspace-lab แล้ว clone ด้วย HTTPS URL จริง','repository อยู่ที่ /root/skillspace-lab/DevTools ก่อนเข้า LAB 001','mkdir -p skillspace-lab\ncd skillspace-lab\ngit clone https://github.com/Tuchsanai/DevTools.git\ncd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System'],
-        [null,'Schema ก่อน Seed','อ่านสองไฟล์แล้วทำนายผลก่อนรัน','Entrypoint เรียงตามชื่อและรันเมื่อ data directory ว่าง','01-schema.sql → CREATE TABLE × 5\n02-seed.sql   → INSERT INTO ทั้ง 5 tables'],
-        [null,'เขียน Python ทีละส่วน','สร้าง connection, schema query, parameter และ transaction','Python เป็น database client เพียงช่องทางเดียว; Browser ไม่ต่อฐานข้อมูล','python python/01_connect.py\npython python/02_query.py\npython python/03_rollback.py\npython python/04_commit.py']
+        [null,'รับ source code ภายในเครื่องปฏิบัติการ','สร้างและเข้า /root/skillspace-lab ในคำสั่งเดียว แล้ว clone ด้วย HTTPS URL จริง','repository อยู่ที่ /root/skillspace-lab/DevTools ก่อนเข้า LAB 001','mkdir -p /root/skillspace-lab &amp;&amp; cd /root/skillspace-lab\ngit clone https://github.com/Tuchsanai/DevTools.git\ncd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System'],
+        [null,'สร้าง PostgreSQL และตรวจสอบสถานะ','ลบ ops-db เดิม สร้างใหม่พร้อม env, bind mount และ localhost port แล้วตรวจสถานะ','ops-db ต้องเป็น Up; 01-schema.sql สร้าง schema ก่อน 02-seed.sql เติมข้อมูลครั้งแรก','docker rm -f ops-db 2&gt;/dev/null\ndocker run -d --name ops-db -p 127.0.0.1:5432:5432 --env-file .env.db -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine\ndocker ps --filter name=ops-db'],
+        [null,'เชื่อมต่อและสำรวจด้วย Python','อ่าน source ของ connection, cursor, query และ result ก่อนรัน','database=skillspace; พบห้าตารางพร้อมคอลัมน์ ชนิดข้อมูล จำนวนแถว และตัวอย่างข้อมูล','python python/01_connect.py\npython python/02_query.py'],
+        [null,'ทำความสะอาด','ลบ ops-db หลังสำรวจเสร็จ แล้วออกจาก SSH เพื่อลบเครื่องปฏิบัติการ','ไม่มีคอนเทนเนอร์ของ LAB 001 ค้างอยู่','docker rm -f ops-db\nexit\ndocker rm -f devtools-fullstack-lab001']
       ]
     },
     swagger: {
@@ -2996,7 +2841,7 @@ $ docker compose -p skillspace up -d <span class="g">--no-build</span> → GET /
     '1': {t:'โจทย์จากลูกค้า', d:'ลูกค้าคือใคร · วันนี้ทำงานอย่างไร · ประโยคเด็ดจากบทสัมภาษณ์ · ข้อจำกัด 3 ข้อ'},
     '2': {t:'จากคำบ่นสู่ข้อกำหนด', d:'User Story 10 ข้อ → REQ-01…REQ-12 + คำสัญญา NFR 3 ข้อ · ขอบเขตที่ไม่ทำ'},
     '3': {t:'User Flow → System Design & Architecture', d:'ลำดับที่ผู้ใช้ทำ · 3 Container: web · api · db · กติกา API · ฐานข้อมูล 5 ตาราง'},
-    '4': {t:'LAB 1 — ยกฐานข้อมูลขึ้น', d:'ข้อมูลอยู่ที่ไหน · หายตอนไหน · ทำไมต้อง named volume (NFR-2)'},
+    '4': {t:'LAB 1 — PostgreSQL และ Python', d:'สร้างฐานข้อมูล · เชื่อมต่อ · สำรวจห้าตาราง · cleanup'},
     '5': {t:'LAB 2 — สร้าง image ของ api', d:'build context · layer cache · .dockerignore · EXPOSE ไม่ได้เปิดพอร์ต'},
     '6': {t:'LAB 3 — สร้าง image ของ web', d:'multi-stage 1.1GB → 298MB · ARG ตอน build vs ENV ตอน run · PID 1'},
     '7': {t:'LAB 4 — ต่อ 3 Container', d:'เรียกด้วยชื่อแทน IP · user-defined network · ปิด db จากภายนอก (NFR-3)'},
