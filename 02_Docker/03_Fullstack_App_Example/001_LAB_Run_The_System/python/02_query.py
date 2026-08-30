@@ -35,14 +35,14 @@ def inspect_table(cur, table):
     sample_query = sql.SQL("SELECT * FROM {} ORDER BY id LIMIT %s").format(
         sql.Identifier(table)
     )
-    cur.execute(sample_query, (3,))
-    samples = cur.fetchall()
+    cur.execute(sample_query, (15,))
+    rows = cur.fetchall()
     print(f"\n=== {table} ({count} rows) ===")
     print("columns: " + " | ".join(
         f"{column['column_name']}:{column['data_type']}" for column in columns
     ))
-    for index, row in enumerate(samples, start=1):
-        print(f"sample[{index}]: " + json.dumps(
+    for index, row in enumerate(rows, start=1):
+        print(f"row[{index}]: " + json.dumps(
             dict(row), ensure_ascii=False, default=str
         ))
 

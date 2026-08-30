@@ -1119,19 +1119,16 @@ TABLES = (<span class="y">"assets"</span>, <span class="y">"tickets"</span>, <sp
   )
   query = sql.SQL(<span class="y">"SELECT * FROM {} ORDER BY id LIMIT %s"</span>) \
              .format(sql.Identifier(table))
-  cur.execute(query, (3,))</pre>
+  cur.execute(query, (<span class="g">15</span>,))</pre>
       <div>
         <div class="card"><h4>ขอบเขตความปลอดภัย</h4><p>ค่าข้อมูลใช้ <code>%s</code> · identifier ต้องอยู่ใน allowlist และผ่าน <code>sql.Identifier</code> · ไม่ต่อ input ลง SQL โดยตรง</p></div>
-        <pre class="code xs" style="margin-top:8px"><span class="g">Expected output</span>
-=== assets (12 rows) ===
-columns: id:integer | code:text | name:text <span class="d">…</span>
-sample[1]: {"id": 1, "code": "A-001", <span class="d">…</span>}
-
-=== tickets (8 rows) ===
-=== loans (3 rows) ===
-=== parts (6 rows) ===
-=== stock_moves (6 rows) ===</pre>
-        <div class="note a">ทุกตารางแสดงชื่อ/ชนิดคอลัมน์และข้อมูลจริงไม่เกิน 3 แถว · timestamp แปลงด้วย <code>json.dumps(..., default=str)</code></div>
+        <pre class="code xs" style="margin-top:8px"><span class="g">Expected output · ค่าจริงจาก seed</span>
+assets (12)      row[1] A-001 · โน้ตบุ๊ก Dell Latitude
+tickets (8)     row[1] HIGH · NEW · โปรเจกเตอร์ห้อง 205 ภาพวูบดับ
+loans (3)       row[1] วิทยากรหลักสูตร Data 101 · returned_at=null
+parts (6)       row[1] LAMP-EPS-01 · qty_on_hand=2
+stock_moves (6) row[1] delta=5 · รับเข้าจากผู้ขาย</pre>
+        <div class="note a"><code>LIMIT 15</code> คือจำนวนสูงสุด · ตารางที่มีน้อยกว่า 15 แถวแสดงครบ · README แสดง <code>row[1]</code> ถึงแถวสุดท้ายของทั้งห้าตาราง</div>
       </div>
     </div>
     <div class="note a">source เต็มและ output จริงอยู่ที่ <code>001_LAB_Run_The_System/readme.md</code> · การทดลองที่ 4</div>
@@ -2681,7 +2678,7 @@ $ docker compose -p skillspace up -d <span class="g">--no-build</span> → GET /
         [null,'เตรียมเครื่องปฏิบัติการ','ขั้น 0.1 ลบชื่อเดิมและสร้างเครื่องใหม่ แล้วจึงเชื่อมต่อ SSH','ใช้ชื่อ devtools-fullstack-lab001 และพอร์ต 2222 คงที่; หลัง SSH ตรวจ Engine และ Compose ในบรรทัดเดียว','docker rm -f devtools-fullstack-lab001 2&gt;/dev/null\ndocker run -dit --name devtools-fullstack-lab001 --privileged -p 2222:22 tuchsanai/devtools:2569_1\nssh root@localhost -p 2222\ndocker --version &amp;&amp; docker compose version'],
         [null,'รับ source code ภายในเครื่องปฏิบัติการ','สร้างและเข้า /root/skillspace-lab ในคำสั่งเดียว แล้ว clone ด้วย HTTPS URL จริง','repository อยู่ที่ /root/skillspace-lab/DevTools ก่อนเข้า LAB 001','mkdir -p /root/skillspace-lab &amp;&amp; cd /root/skillspace-lab\ngit clone https://github.com/Tuchsanai/DevTools.git\ncd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System'],
         [null,'สร้าง PostgreSQL และตรวจสอบสถานะ','ลบ ops-db เดิม สร้างใหม่พร้อม env, bind mount และ localhost port แล้วตรวจสถานะ','ops-db ต้องเป็น Up; 01-schema.sql สร้าง schema ก่อน 02-seed.sql เติมข้อมูลครั้งแรก','docker rm -f ops-db 2&gt;/dev/null\ndocker run -d --name ops-db -p 127.0.0.1:5432:5432 --env-file .env.db -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine\ndocker ps --filter name=ops-db'],
-        [null,'เชื่อมต่อและสำรวจด้วย Python','อ่าน source ของ connection, cursor, query และ result ก่อนรัน','database=skillspace; พบห้าตารางพร้อมคอลัมน์ ชนิดข้อมูล จำนวนแถว และตัวอย่างข้อมูล','python python/01_connect.py\npython python/02_query.py'],
+        [null,'เชื่อมต่อและสำรวจด้วย Python','อ่าน source ของ connection, cursor, query และ result ก่อนรัน; LIMIT 15 คือจำนวนสูงสุดต่อตาราง','database=skillspace; assets row[1]=A-001, tickets row[1]=HIGH/NEW, loans row[1]=Data 101, parts row[1]=LAMP-EPS-01, stock_moves row[1]=delta 5','python python/01_connect.py\npython python/02_query.py'],
         [null,'ทำความสะอาด','ลบ ops-db หลังสำรวจเสร็จ แล้วออกจาก SSH เพื่อลบเครื่องปฏิบัติการ','ไม่มีคอนเทนเนอร์ของ LAB 001 ค้างอยู่','docker rm -f ops-db\nexit\ndocker rm -f devtools-fullstack-lab001']
       ]
     },
