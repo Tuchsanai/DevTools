@@ -3,7 +3,7 @@
 # รันจากในโฟลเดอร์ LAB บน Container สำหรับเรียน: bash verify.sh
 #
 # สคริปต์นี้สร้างของของตัวเองด้วย prefix "vops5-" / project "vops5" เท่านั้น และลบเฉพาะของตัวเองตอนจบ
-# ไม่แตะ project "campusops" · container "ops-*" · volume ของผู้เรียนเด็ดขาด
+# ไม่แตะ project "skillspace" · container "ops-*" · volume ของผู้เรียนเด็ดขาด
 
 set -u
 
@@ -25,7 +25,7 @@ cleanup() {
   if [ -n "$tmp_dir" ] && [ -f "$tmp_dir/verify-override.yaml" ]; then
     docker compose -p "$VP" -f compose.yaml -f "$tmp_dir/verify-override.yaml" down -v >/dev/null 2>&1
   fi
-  docker image rm -f "$SHIP_NS/campusops-api:1.0" "$SHIP_NS/campusops-web:1.0" >/dev/null 2>&1
+  docker image rm -f "$SHIP_NS/skillspace-api:1.0" "$SHIP_NS/skillspace-web:1.0" >/dev/null 2>&1
   docker image rm -f vops5-api vops5-web >/dev/null 2>&1
   [ -n "$tmp_dir" ] && [ -d "$tmp_dir" ] && rm -rf "$tmp_dir"
   return 0
@@ -176,17 +176,17 @@ else
 fi
 
 # ---------- 12) NFR-2 : down แล้ว up ข้อมูลต้องอยู่ ----------
-dc exec -T db psql -U opsuser -d campusops -c \
+dc exec -T db psql -U opsuser -d skillspace -c \
   "INSERT INTO tickets (asset_id,title,detail,priority) VALUES (4,'verify-ticket','จากสคริปต์ตรวจงาน','HIGH');" >/dev/null 2>&1
-before=$(dc exec -T db psql -U opsuser -d campusops -tAc 'SELECT count(*) FROM tickets;' 2>/dev/null | tr -d '\r')
+before=$(dc exec -T db psql -U opsuser -d skillspace -tAc 'SELECT count(*) FROM tickets;' 2>/dev/null | tr -d '\r')
 
 dc down >/dev/null 2>&1
 dc up -d --no-build >/dev/null 2>&1
 for _ in $(seq 1 40); do
-  dc exec -T db pg_isready -U opsuser -d campusops >/dev/null 2>&1 && break
+  dc exec -T db pg_isready -U opsuser -d skillspace >/dev/null 2>&1 && break
   sleep 2
 done
-after=$(dc exec -T db psql -U opsuser -d campusops -tAc 'SELECT count(*) FROM tickets;' 2>/dev/null | tr -d '\r')
+after=$(dc exec -T db psql -U opsuser -d skillspace -tAc 'SELECT count(*) FROM tickets;' 2>/dev/null | tr -d '\r')
 if [ -n "$before" ] && [ "$before" = "$after" ] && [ "$after" -gt 8 ]; then
   pass "NFR-2 : down แล้ว up ข้อมูลยังอยู่ครบ ($after ใบเท่าเดิม)"
 else
@@ -201,10 +201,10 @@ for _ in $(seq 1 40); do
   sleep 2
 done
 for _ in $(seq 1 20); do
-  dc exec -T db pg_isready -U opsuser -d campusops >/dev/null 2>&1 && break
+  dc exec -T db pg_isready -U opsuser -d skillspace >/dev/null 2>&1 && break
   sleep 2
 done
-seeded=$(dc exec -T db psql -U opsuser -d campusops -tAc 'SELECT count(*) FROM tickets;' 2>/dev/null | tr -d '\r')
+seeded=$(dc exec -T db psql -U opsuser -d skillspace -tAc 'SELECT count(*) FROM tickets;' 2>/dev/null | tr -d '\r')
 if [ "$seeded" = "8" ]; then
   pass "down -v แล้ว up ข้อมูลกลับไปเป็น seed ตั้งต้น (8 ใบ)"
 else
@@ -214,11 +214,11 @@ fi
 # ---------- 14) ส่งมอบแบบออฟไลน์ : tag -> save -> remove -> load ----------
 api_id=$(docker image inspect -f '{{.Id}}' "${VP}-api" 2>/dev/null)
 web_id=$(docker image inspect -f '{{.Id}}' "${VP}-web" 2>/dev/null)
-docker tag "${VP}-api" "$SHIP_NS/campusops-api:1.0" >/dev/null 2>&1
-docker tag "${VP}-web" "$SHIP_NS/campusops-web:1.0" >/dev/null 2>&1
+docker tag "${VP}-api" "$SHIP_NS/skillspace-api:1.0" >/dev/null 2>&1
+docker tag "${VP}-web" "$SHIP_NS/skillspace-web:1.0" >/dev/null 2>&1
 
-tagged_api_id=$(docker image inspect -f '{{.Id}}' "$SHIP_NS/campusops-api:1.0" 2>/dev/null)
-tagged_web_id=$(docker image inspect -f '{{.Id}}' "$SHIP_NS/campusops-web:1.0" 2>/dev/null)
+tagged_api_id=$(docker image inspect -f '{{.Id}}' "$SHIP_NS/skillspace-api:1.0" 2>/dev/null)
+tagged_web_id=$(docker image inspect -f '{{.Id}}' "$SHIP_NS/skillspace-web:1.0" 2>/dev/null)
 [ -n "$api_id" ] && [ "$api_id" = "$tagged_api_id" ] \
   && pass "tag repository ให้ api แล้ว IMAGE ID ยังเป็นอิมเมจเดิม" \
   || fail "tag api แล้ว IMAGE ID เปลี่ยนหรือหา image ไม่พบ"
@@ -226,8 +226,8 @@ tagged_web_id=$(docker image inspect -f '{{.Id}}' "$SHIP_NS/campusops-web:1.0" 2
   && pass "tag repository ให้ web แล้ว IMAGE ID ยังเป็นอิมเมจเดิม" \
   || fail "tag web แล้ว IMAGE ID เปลี่ยนหรือหา image ไม่พบ"
 
-archive="$tmp_dir/campusops-images.tar"
-if docker save -o "$archive" "$SHIP_NS/campusops-api:1.0" "$SHIP_NS/campusops-web:1.0" \
+archive="$tmp_dir/skillspace-images.tar"
+if docker save -o "$archive" "$SHIP_NS/skillspace-api:1.0" "$SHIP_NS/skillspace-web:1.0" \
    && [ -s "$archive" ]; then
   pass "docker save รวมอิมเมจทั้งสองรายการเป็นไฟล์ส่งมอบได้"
 else
@@ -236,8 +236,8 @@ fi
 
 dc down >/dev/null 2>&1
 docker image rm "${VP}-api" "${VP}-web" >/dev/null 2>&1
-docker image rm "$SHIP_NS/campusops-api:1.0" "$SHIP_NS/campusops-web:1.0" >/dev/null 2>&1
-if ! docker image inspect "${VP}-api" "${VP}-web" "$SHIP_NS/campusops-api:1.0" "$SHIP_NS/campusops-web:1.0" >/dev/null 2>&1; then
+docker image rm "$SHIP_NS/skillspace-api:1.0" "$SHIP_NS/skillspace-web:1.0" >/dev/null 2>&1
+if ! docker image inspect "${VP}-api" "${VP}-web" "$SHIP_NS/skillspace-api:1.0" "$SHIP_NS/skillspace-web:1.0" >/dev/null 2>&1; then
   pass "ลบ image ต้นทางและชื่อสำหรับส่งมอบออกจากเครื่องแล้ว"
 else
   fail "ยังมี image ทดสอบเหลือก่อน docker load"
@@ -249,8 +249,8 @@ else
   fail "docker load ไฟล์ส่งมอบไม่สำเร็จ"
 fi
 
-docker tag "$SHIP_NS/campusops-api:1.0" "${VP}-api:latest" >/dev/null 2>&1
-docker tag "$SHIP_NS/campusops-web:1.0" "${VP}-web:latest" >/dev/null 2>&1
+docker tag "$SHIP_NS/skillspace-api:1.0" "${VP}-api:latest" >/dev/null 2>&1
+docker tag "$SHIP_NS/skillspace-web:1.0" "${VP}-web:latest" >/dev/null 2>&1
 if dc up -d --no-build >"$tmp_dir/no-build.log" 2>&1; then
   pass "docker compose up -d --no-build ขึ้นครบจาก image ที่ load กลับมา"
 else
@@ -285,14 +285,14 @@ if [ -z "${HUB_USER:-}" ]; then
 else
   api_remote=0
   web_remote=0
-  docker manifest inspect "$HUB_USER/campusops-api:1.0" >/dev/null 2>&1 && api_remote=1
-  docker manifest inspect "$HUB_USER/campusops-web:1.0" >/dev/null 2>&1 && web_remote=1
+  docker manifest inspect "$HUB_USER/skillspace-api:1.0" >/dev/null 2>&1 && api_remote=1
+  docker manifest inspect "$HUB_USER/skillspace-web:1.0" >/dev/null 2>&1 && web_remote=1
   if [ "$api_remote" = "1" ] && [ "$web_remote" = "1" ]; then
-    pass "Docker Hub มี manifest รุ่น 1.0 ของ campusops-api และ campusops-web จริง"
+    pass "Docker Hub มี manifest รุ่น 1.0 ของ skillspace-api และ skillspace-web จริง"
   else
     missing_remote=""
-    [ "$api_remote" = "1" ] || missing_remote="$missing_remote campusops-api:1.0"
-    [ "$web_remote" = "1" ] || missing_remote="$missing_remote campusops-web:1.0"
+    [ "$api_remote" = "1" ] || missing_remote="$missing_remote skillspace-api:1.0"
+    [ "$web_remote" = "1" ] || missing_remote="$missing_remote skillspace-web:1.0"
     echo "[SKIP] ติดต่อ Docker Hub แล้วแต่ไม่พบหรือเข้าถึงไม่ได้:$missing_remote — ตรวจชื่อ repository และตั้ง Visibility เป็น Public"
   fi
 fi

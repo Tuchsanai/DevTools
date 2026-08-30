@@ -1,9 +1,9 @@
 # =====================================================================
-# CampusOps — Container สามรายการเริ่มด้วยคำสั่งเดียว (LAB 5)
+# SkillSpace — Container สามรายการเริ่มด้วยคำสั่งเดียว (LAB 5)
 #
-#   ขึ้นระบบ :  docker compose -p campusops up -d --build
-#   ปิดระบบ  :  docker compose -p campusops down        (ข้อมูลยังอยู่)
-#   ล้างทิ้ง :  docker compose -p campusops down -v     (ข้อมูลหายทั้งหมด)
+#   ขึ้นระบบ :  docker compose -p skillspace up -d --build
+#   ปิดระบบ  :  docker compose -p skillspace down        (ข้อมูลยังอยู่)
+#   ล้างทิ้ง :  docker compose -p skillspace down -v     (ข้อมูลหายทั้งหมด)
 #
 # ทำไมต้องมีไฟล์นี้ : ลูกค้าบอกว่า "ไม่มีฝ่าย IT ประจำ ติดตั้งต้องง่าย ย้ายเครื่องต้องได้"
 # NFR-1 (Non-Functional Requirement ข้อ 1) กำหนดให้คำสั่งเดียวเริ่มระบบครบสาม Container
@@ -19,7 +19,7 @@ services:
   db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_DB: campusops
+      POSTGRES_DB: skillspace
       POSTGRES_USER: opsuser
       POSTGRES_PASSWORD: labpass
     volumes:
@@ -33,7 +33,7 @@ services:
     healthcheck:
       # ระบุ -U/-d ให้ครบ เพราะ pg_isready แบบเปล่า ๆ จะใช้ user 'root' ของ container
       # แล้วได้ผลว่า "ไม่พร้อม" ทั้งที่ฐานข้อมูลขึ้นแล้ว
-      test: ["CMD-SHELL", "pg_isready -U opsuser -d campusops"]
+      test: ["CMD-SHELL", "pg_isready -U opsuser -d skillspace"]
       interval: 5s
       timeout: 3s
       retries: 12
@@ -51,7 +51,7 @@ services:
     environment:
       # เรียก db ด้วย "ชื่อ service" ไม่ใช่ IP — compose มี DNS ภายในเครือข่ายให้อยู่แล้ว
       # IP ของ container เปลี่ยนทุกครั้งที่สร้างใหม่ ชื่อไม่เปลี่ยน
-      DATABASE_URL: postgresql://opsuser:labpass@db:5432/campusops
+      DATABASE_URL: postgresql://opsuser:labpass@db:5432/skillspace
     depends_on:
       db:
         # service_healthy = รอจน healthcheck ของ db ผ่านจริง ไม่ใช่แค่ "process ขึ้นแล้ว"
@@ -76,7 +76,7 @@ services:
       args:
         # NEXT_PUBLIC_* ถูกฝังลงไฟล์ผลลัพธ์ตั้งแต่ตอน build จึงต้องส่งเป็น build arg
         # ถ้าส่งเป็น environment: ตอนรัน ค่าจะไม่ไปโผล่ในหน้าเว็บ
-        NEXT_PUBLIC_SITE_NAME: CampusOps
+        NEXT_PUBLIC_SITE_NAME: SkillSpace
     environment:
       API_BASE_URL: http://api:8000
     ports:

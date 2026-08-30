@@ -82,14 +82,14 @@ cd ~/labwork/004_LAB_Connect_Them
 
 ```bash
 docker pull postgres:17-alpine
-docker build -t campusops-api:lab4 ./api
-docker build -t campusops-web:lab4 ./web
+docker build -t skillspace-api:lab4 ./api
+docker build -t skillspace-web:lab4 ./web
 ```
 
 กำหนดข้อมูลทดสอบที่ไม่ใช่ข้อมูลบัญชีจริง
 
 ```bash
-export DB_NAME=campusops DB_USER=labuser DB_PASSWORD=labpass
+export DB_NAME=skillspace DB_USER=labuser DB_PASSWORD=labpass
 ```
 
 ---
@@ -148,7 +148,7 @@ docker port devtools-connect-db
 ```bash
 docker run -d --name devtools-connect-api --network devtools-connect-net \
   -e DATABASE_URL="postgresql://$DB_USER:$DB_PASSWORD@devtools-connect-db:5432/$DB_NAME" \
-  campusops-api:lab4
+  skillspace-api:lab4
 ```
 
 **คำสั่งที่ 2**
@@ -171,7 +171,7 @@ docker exec devtools-connect-api sh -lc 'getent hosts devtools-connect-db && pyt
 
 ```bash
 docker run -d --name devtools-connect-web --network devtools-connect-net \
-  -p 3000:3000 -e API_BASE_URL="http://devtools-connect-api:8000" campusops-web:lab4
+  -p 3000:3000 -e API_BASE_URL="http://devtools-connect-api:8000" skillspace-web:lab4
 ```
 
 **คำสั่งที่ 2**

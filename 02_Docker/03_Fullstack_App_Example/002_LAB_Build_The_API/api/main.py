@@ -1,5 +1,5 @@
 """
-CampusOps API — FastAPI + psycopg 3 (ไม่ใช้ ORM)
+SkillSpace API — FastAPI + psycopg 3 (ไม่ใช้ ORM)
 
 เขียนให้ "อ่านออกด้วยตาเปล่า" เป็นหลัก : SQL เห็นเต็ม ๆ กฎธุรกิจเป็น if/raise ธรรมดา
 ทุก endpoint ตรงกับ docs/02_contract.md §4 · ทุกกฎธุรกิจอ้าง REQ ได้ในคอมเมนต์
@@ -20,7 +20,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 
 DATABASE_URL = os.environ.get(
-    "DATABASE_URL", "postgresql://opsuser:labpass@db:5432/campusops"
+    "DATABASE_URL", "postgresql://opsuser:labpass@db:5432/skillspace"
 )
 
 # SLA ตามความเร่งด่วน (วัน) — ใช้คำนวณงานค้างเกินกำหนดของ REQ-09
@@ -106,7 +106,7 @@ API_DESCRIPTION = """
 """
 
 app = FastAPI(
-    title="CampusOps API",
+    title="SkillSpace API",
     version="1.0.0",
     description=API_DESCRIPTION,
     lifespan=lifespan,
@@ -119,10 +119,10 @@ app = FastAPI(
 # ---------------------------------------------------------------------
 @app.get("/docs", include_in_schema=False)
 def custom_swagger_ui():
-    """หน้าเอกสาร API ที่เพิ่มธีม CampusOps โดยไม่เปลี่ยน endpoint หรือ OpenAPI"""
+    """หน้าเอกสาร API ที่เพิ่มธีม SkillSpace โดยไม่เปลี่ยน endpoint หรือ OpenAPI"""
     response = get_swagger_ui_html(
         openapi_url=app.openapi_url,
-        title="CampusOps API — Interactive Reference",
+        title="SkillSpace API — Interactive Reference",
         swagger_ui_parameters={
             "docExpansion": "list",
             "displayRequestDuration": True,
@@ -137,7 +137,7 @@ def custom_swagger_ui():
       body { margin:0; background:
         radial-gradient(circle at 86% 5%, rgba(32,198,215,.18), transparent 26rem),
         linear-gradient(180deg, #eaf4fb 0, var(--paper) 25rem); }
-      body::before { content:"CAMPUSOPS  /  API CONTROL PLANE"; display:block; box-sizing:border-box;
+      body::before { content:"SKILLSPACE  /  API CONTROL PLANE"; display:block; box-sizing:border-box;
         padding:22px max(24px, calc((100vw - 1180px)/2)); color:#fff; font:700 13px/1.2 system-ui;
         letter-spacing:.16em; background:linear-gradient(100deg,var(--navy),#123d6a 65%,#0b7582);
         border-bottom:4px solid var(--cyan); box-shadow:0 10px 28px rgba(11,36,71,.18); }

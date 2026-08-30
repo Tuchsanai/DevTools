@@ -103,8 +103,8 @@ grep -nE '^FROM|^COPY --from' web/Dockerfile
 **คำถาม:** เมื่อใช้ source code เดียวกัน image แบบ multi-stage เล็กกว่า image แบบ stage เดียวหรือไม่
 
 ```bash
-docker build -f web/Dockerfile.single -t campusops-web:single ./web
-docker build -t campusops-web:lab3 ./web && docker images campusops-web
+docker build -f web/Dockerfile.single -t skillspace-web:single ./web
+docker build -t skillspace-web:lab3 ./web && docker images skillspace-web
 ```
 
 ✅ **สิ่งที่ต้องสังเกต:** ผลรันจริงได้ content size ประมาณ `322 MB` สำหรับ `:single` และ `73 MB` สำหรับ `:lab3`; multi-stage เล็กกว่ามากกว่า 2 เท่า ตัวเลขอาจต่างเล็กน้อยตามเวอร์ชัน base image
@@ -116,8 +116,8 @@ docker build -t campusops-web:lab3 ./web && docker images campusops-web
 **คำถาม:** ขั้น `npm ci`, `npm run build` และ TypeScript compiler ติดไปกับ image stage สุดท้ายหรือไม่
 
 ```bash
-docker history --format '{{.CreatedBy}}' campusops-web:lab3
-docker run --rm campusops-web:lab3 sh -c 'test ! -d node_modules/typescript && echo "typescript = not found"'
+docker history --format '{{.CreatedBy}}' skillspace-web:lab3
+docker run --rm skillspace-web:lab3 sh -c 'test ! -d node_modules/typescript && echo "typescript = not found"'
 ```
 
 ✅ **สิ่งที่ต้องสังเกต:** history ของ stage สุดท้ายไม่มีขั้น `npm ci` หรือ `npm run build` และคำสั่งตรวจภายใน image แสดง `typescript = not found`
@@ -129,8 +129,8 @@ docker run --rm campusops-web:lab3 sh -c 'test ! -d node_modules/typescript && e
 **คำถาม:** ชื่อระบบที่ส่งด้วย `--build-arg` ถูกบันทึกใน build artifact หรือไม่
 
 ```bash
-docker build -q --build-arg NEXT_PUBLIC_SITE_NAME='ศูนย์ซ่อมบำรุง' -t campusops-web:rename ./web
-docker run --rm --entrypoint sh campusops-web:rename -c "grep -Rao -m1 'ศูนย์ซ่อมบำรุง' .next | head -1"
+docker build -q --build-arg NEXT_PUBLIC_SITE_NAME='ศูนย์ซ่อมบำรุง' -t skillspace-web:rename ./web
+docker run --rm --entrypoint sh skillspace-web:rename -c "grep -Rao -m1 'ศูนย์ซ่อมบำรุง' .next | head -1"
 ```
 
 ✅ **สิ่งที่ต้องสังเกต:** พบข้อความ `ศูนย์ซ่อมบำรุง` ใน `.next` จึงยืนยันว่าค่า `ARG` ถูกฝังระหว่าง build และต้อง build image ใหม่เมื่อต้องการเปลี่ยนค่า
@@ -142,7 +142,7 @@ docker run --rm --entrypoint sh campusops-web:rename -c "grep -Rao -m1 'ศู�
 **คำถาม:** image เดิมรับ `API_BASE_URL` ใหม่โดยไม่ build ซ้ำได้หรือไม่
 
 ```bash
-docker run --rm -e API_BASE_URL=http://api.example.invalid:8000 --entrypoint printenv campusops-web:lab3 API_BASE_URL
+docker run --rm -e API_BASE_URL=http://api.example.invalid:8000 --entrypoint printenv skillspace-web:lab3 API_BASE_URL
 ```
 
 ✅ **สิ่งที่ต้องสังเกต:** ผลลัพธ์เป็น `http://api.example.invalid:8000` แสดงว่า process อ่านค่า `ENV` ตอนเริ่ม Container
@@ -178,7 +178,7 @@ LAB_BASE_URL=http://localhost:3000 npm run capture:walkthrough && cd ..
 
 พิมพ์ `http://localhost:8324` ในแถบที่อยู่ แล้วกด Enter ตรวจว่าเมนูหลักมี 4 รายการและหน้าแรกแสดงตัวเลขสรุป
 
-![หน้าแรก CampusOps มีกรอบแดงรอบเมนูสรุปภาพรวมและ marker ขั้นที่ 1](./images/ui-web-01-overview.png)
+![หน้าแรก SkillSpace มีกรอบแดงรอบเมนูสรุปภาพรวมและ marker ขั้นที่ 1](./images/ui-web-01-overview.png)
 
 *ภาพที่ 1 — หน้า `/` แสดงใบแจ้งซ่อม 8 ใบ ปิดแล้ว 2 ใบ และงานที่ยังไม่ปิด 6 ใบ*
 
@@ -306,7 +306,7 @@ exit code = 0
 
 ```bash
 docker rm -f vops3-web vops3-api vops3-db && docker volume rm vops3-pgdata
-docker image rm vops3-web:verify vops3-web:single vops3-api:verify campusops-web:lab3 campusops-web:single campusops-web:rename 2>/dev/null; docker ps -a
+docker image rm vops3-web:verify vops3-web:single vops3-api:verify skillspace-web:lab3 skillspace-web:single skillspace-web:rename 2>/dev/null; docker ps -a
 ```
 
 ✅ **สิ่งที่ต้องสังเกต:** ไม่เหลือ Container ชื่อ `vops3-web`, `vops3-api`, `vops3-db` และไม่เหลือ volume `vops3-pgdata`

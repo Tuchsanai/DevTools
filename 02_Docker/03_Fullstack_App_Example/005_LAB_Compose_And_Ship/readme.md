@@ -2,7 +2,7 @@
 
 > โฟลเดอร์ `005_LAB_Compose_And_Ship` · ใช้ `compose.yaml`, `api/`, `web/`, `db/initdb/` และ `verify.sh`
 
-แล็บนี้ตรวจสอบ **ข้อกำหนดที่ไม่ใช่หน้าที่โดยตรงของระบบ (Non-Functional Requirement: NFR)** ของ CampusOps ได้แก่ การเริ่มระบบด้วยคำสั่งเดียว (NFR-1), การรักษาข้อมูล (NFR-2) และการไม่เผยแพร่พอร์ตฐานข้อมูล (NFR-3) พร้อมส่ง **อิมเมจ (image)** รุ่น `1.0` ให้เครื่องปลายทางโดยไม่ต้องมีซอร์สโค้ด อิมเมจคือแม่แบบแบบอ่านอย่างเดียว ส่วน **Container** คืออินสแตนซ์ที่สร้างและทำงานจากอิมเมจ Service `db` คือฐานข้อมูล, `api` คือส่วนต่อประสานโปรแกรมประยุกต์ (Application Programming Interface: API) และ `web` คือส่วนติดต่อผู้ใช้ผ่านเว็บ
+แล็บนี้ตรวจสอบ **ข้อกำหนดที่ไม่ใช่หน้าที่โดยตรงของระบบ (Non-Functional Requirement: NFR)** ของ SkillSpace ได้แก่ การเริ่มระบบด้วยคำสั่งเดียว (NFR-1), การรักษาข้อมูล (NFR-2) และการไม่เผยแพร่พอร์ตฐานข้อมูล (NFR-3) พร้อมส่ง **อิมเมจ (image)** รุ่น `1.0` ให้เครื่องปลายทางโดยไม่ต้องมีซอร์สโค้ด อิมเมจคือแม่แบบแบบอ่านอย่างเดียว ส่วน **Container** คืออินสแตนซ์ที่สร้างและทำงานจากอิมเมจ Service `db` คือฐานข้อมูล, `api` คือส่วนต่อประสานโปรแกรมประยุกต์ (Application Programming Interface: API) และ `web` คือส่วนติดต่อผู้ใช้ผ่านเว็บ
 
 | ประเด็น | ผลลัพธ์ที่ต้องพิสูจน์ |
 |---|---|
@@ -45,7 +45,7 @@ Docker Compose คือเครื่องมืออ่านไฟล์ `
 
 > 🖼 **วิธีอ่านรูปนี้:** ตามลูกศร 5 ขั้น `build` → `tag` → `push` → `pull` → `run`; ฝั่งลูกค้าใช้ `up -d --no-build` แล้วเริ่ม Container ครบ 3 รายการจาก repository แบบ Public โดยไม่รัน `npm ci` หรือ `pip install`
 
-**Registry** คือบริการจัดเก็บและแจกจ่ายอิมเมจ โดย Docker Hub เป็น registry ที่ใช้ในแล็บนี้ ชื่อ `<DOCKER_USER>/campusops-web:1.0` ประกอบด้วย namespace หรือขอบเขตชื่อเจ้าของ, repository หรือคลังอิมเมจ และ tag หรือป้ายระบุรุ่น การ `push` คือส่งอิมเมจขึ้น registry และการ `pull` คือรับอิมเมจลงเครื่อง Docker Hub สร้าง repository อัตโนมัติเมื่อ push ครั้งแรก แต่ต้องตรวจให้เป็น **Public** เพื่อให้เครื่องลูกค้า pull ได้โดยไม่ต้องรับข้อมูลรับรอง (credential) ของผู้พัฒนา
+**Registry** คือบริการจัดเก็บและแจกจ่ายอิมเมจ โดย Docker Hub เป็น registry ที่ใช้ในแล็บนี้ ชื่อ `<DOCKER_USER>/skillspace-web:1.0` ประกอบด้วย namespace หรือขอบเขตชื่อเจ้าของ, repository หรือคลังอิมเมจ และ tag หรือป้ายระบุรุ่น การ `push` คือส่งอิมเมจขึ้น registry และการ `pull` คือรับอิมเมจลงเครื่อง Docker Hub สร้าง repository อัตโนมัติเมื่อ push ครั้งแรก แต่ต้องตรวจให้เป็น **Public** เพื่อให้เครื่องลูกค้า pull ได้โดยไม่ต้องรับข้อมูลรับรอง (credential) ของผู้พัฒนา
 
 กำหนด repository ของแล็บทั้งสองเป็น Public เพื่อให้ทดสอบจากเครื่องปลายทางโดยไม่ส่งต่อ credential หากพบ `429 Too Many Requests` ซึ่งเป็นรหัส HTTP ที่หมายถึงเรียกใช้เกินโควตา ให้รอรอบโควตา, login ก่อน pull และหลีกเลี่ยงการ pull ซ้ำโดยไม่จำเป็น อัตราใช้งานอาจเปลี่ยนแปลงได้ จึงควรตรวจเอกสาร Docker Hub ปัจจุบันก่อนใช้งานจริง
 
@@ -53,8 +53,8 @@ Docker Compose คือเครื่องมืออ่านไฟล์ `
 
 - `docker compose down` ไม่ลบข้อมูลในฐานข้อมูล เพราะ named volume ยังอยู่; `down -v` จึงจะลบ volume (ชุดการทดลองที่ 6)
 - `depends_on` แบบระบุชื่อ Service เพียงอย่างเดียวไม่รอความพร้อม ต้องใช้ `condition: service_healthy` เพื่อรอผล healthcheck (การทดลองที่ 4)
-- `-p campusops` ไม่ได้มีผลเฉพาะรูปแบบชื่อ แต่ตรึง project ที่ทุกคำสั่งต้องอ้างถึงให้เป็นระบบเดียวกัน (การทดลองที่ 2–7 และ 9)
-- อิมเมจ `campusops-api:latest` และ `campusops-web:latest` ยัง push ขึ้นบัญชีไม่ได้จนกว่าจะ tag เป็น `<DOCKER_USER>/campusops-api:1.0` และ `<DOCKER_USER>/campusops-web:1.0` (ชุดการทดลองที่ 8)
+- `-p skillspace` ไม่ได้มีผลเฉพาะรูปแบบชื่อ แต่ตรึง project ที่ทุกคำสั่งต้องอ้างถึงให้เป็นระบบเดียวกัน (การทดลองที่ 2–7 และ 9)
+- อิมเมจ `skillspace-api:latest` และ `skillspace-web:latest` ยัง push ขึ้นบัญชีไม่ได้จนกว่าจะ tag เป็น `<DOCKER_USER>/skillspace-api:1.0` และ `<DOCKER_USER>/skillspace-web:1.0` (ชุดการทดลองที่ 8)
 
 ---
 
@@ -85,7 +85,7 @@ ls
 api  compose.yaml  db  images  readme.md  verify.sh  web
 ```
 
-> ทุกคำสั่ง Compose ในแล็บนี้ระบุ `-p campusops` เพื่อให้ชื่อ project คงที่
+> ทุกคำสั่ง Compose ในแล็บนี้ระบุ `-p skillspace` เพื่อให้ชื่อ project คงที่
 
 ### Walkthrough เตรียมบัญชี Docker Hub และ Access Token
 
@@ -186,7 +186,7 @@ api  compose.yaml  db  images  readme.md  verify.sh  web
 **คำถาม:** `compose.yaml` อ่านได้และประกาศระบบครบสาม Service หรือไม่
 
 ```bash
-docker compose -p campusops config --services
+docker compose -p skillspace config --services
 ```
 
 ✅ **สิ่งที่ต้องเห็น**
@@ -206,20 +206,20 @@ web
 **คำถาม:** Compose สามารถ build อิมเมจและเริ่มระบบตาม NFR-1 ด้วยคำสั่งเดียวหรือไม่
 
 ```bash
-docker compose -p campusops down -v
-docker compose -p campusops up -d --build
+docker compose -p skillspace down -v
+docker compose -p skillspace up -d --build
 ```
 
 ✅ **สิ่งที่ต้องเห็น**
 
 ```text
-Image campusops-api Built
-Image campusops-web Built
-Container campusops-db-1 Started
-Container campusops-db-1 Healthy
-Container campusops-api-1 Started
-Container campusops-api-1 Healthy
-Container campusops-web-1 Started
+Image skillspace-api Built
+Image skillspace-web Built
+Container skillspace-db-1 Started
+Container skillspace-db-1 Healthy
+Container skillspace-api-1 Started
+Container skillspace-api-1 Healthy
+Container skillspace-web-1 Started
 ```
 
 > 📝 ลำดับ Started และ Healthy เกิดจาก `healthcheck` กับ `depends_on` ไม่ใช่การกำหนดเวลารอแบบคงที่ จึงรองรับเครื่องที่มีความเร็วต่างกัน
@@ -232,16 +232,16 @@ Container campusops-web-1 Started
 
 ```bash
 sleep 20
-docker compose -p campusops ps
+docker compose -p skillspace ps
 ```
 
 ✅ **สิ่งที่ต้องเห็น**
 
 ```text
 NAME              IMAGE                COMMAND                  SERVICE   CREATED          STATUS                    PORTS
-campusops-api-1   campusops-api        "uvicorn main:app --…"   api       About a minute ago   Up About a minute (healthy)   8000/tcp
-campusops-db-1    postgres:17-alpine   "docker-entrypoint.s…"   db        About a minute ago   Up About a minute (healthy)   5432/tcp
-campusops-web-1   campusops-web        "docker-entrypoint.s…"   web       About a minute ago   Up About a minute (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+skillspace-api-1   skillspace-api        "uvicorn main:app --…"   api       About a minute ago   Up About a minute (healthy)   8000/tcp
+skillspace-db-1    postgres:17-alpine   "docker-entrypoint.s…"   db        About a minute ago   Up About a minute (healthy)   5432/tcp
+skillspace-web-1   skillspace-web        "docker-entrypoint.s…"   web       About a minute ago   Up About a minute (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
 ```
 
 > 📝 `5432/tcp` เป็น metadata จาก `EXPOSE` ไม่ใช่ published port หลักฐานของ NFR-3 คือมีการจับคู่พอร์ต (port mapping) `0.0.0.0:3000->3000/tcp` เฉพาะ `web`
@@ -254,7 +254,7 @@ campusops-web-1   campusops-web        "docker-entrypoint.s…"   web       Abou
 
 ```bash
 docker inspect -f '{{.Name}} start={{.State.StartedAt}} health={{.State.Health.Status}}' \
-  campusops-db-1 campusops-api-1 campusops-web-1
+  skillspace-db-1 skillspace-api-1 skillspace-web-1
 ```
 
 คำสั่งนี้อ่านเวลาและสถานะสุขภาพ (health status) ของ Container ทั้งสามพร้อมกันเพื่อเปรียบเทียบลำดับโดยตรง
@@ -262,9 +262,9 @@ docker inspect -f '{{.Name}} start={{.State.StartedAt}} health={{.State.Health.S
 ✅ **สิ่งที่ต้องเห็น**
 
 ```text
-/campusops-db-1 start=2026-08-20T09:59:03.174952566Z health=healthy
-/campusops-api-1 start=2026-08-20T09:59:08.841823466Z health=healthy
-/campusops-web-1 start=2026-08-20T09:59:14.518776291Z health=healthy
+/skillspace-db-1 start=2026-08-20T09:59:03.174952566Z health=healthy
+/skillspace-api-1 start=2026-08-20T09:59:08.841823466Z health=healthy
+/skillspace-web-1 start=2026-08-20T09:59:14.518776291Z health=healthy
 ```
 
 > 📝 เวลาเวลาสากลเชิงพิกัด (Coordinated Universal Time: UTC) จากรอบทดสอบเรียง `db` < `api` < `web` และทุก Container healthy จึงยืนยันลำดับที่ `compose.yaml` กำหนด
@@ -290,15 +290,15 @@ GET /parts -> 200
 
 > 📝 จุดนี้ต้องตรวจรหัสสถานะจริงจึงคงรูปแบบ curl ที่มี `-w` ไว้ ส่วนการตรวจเนื้อหาและการเชื่อมฐานข้อมูลแสดงผ่าน walkthrough ถัดไป
 
-### Walkthrough หน้า CampusOps ที่ Compose ยกขึ้น
+### Walkthrough หน้า SkillSpace ที่ Compose ยกขึ้น
 
 เปิดเบราว์เซอร์บนเครื่องโฮสต์ที่ `http://localhost:8226` แล้วตรวจส่วนติดต่อผู้ใช้ (User Interface: UI) ตามลำดับต่อไปนี้
 
-#### ขั้นที่ ① — เปิดหน้า CampusOps
+#### ขั้นที่ ① — เปิดหน้า SkillSpace
 
-เปิดหน้า CampusOps ที่พอร์ต 8255
+เปิดหน้า SkillSpace ที่พอร์ต 8255
 
-![หน้า CampusOps พร้อม marker ที่ชื่อระบบ](./images/ui-compose-01-overview.png)
+![หน้า SkillSpace พร้อม marker ที่ชื่อระบบ](./images/ui-compose-01-overview.png)
 
 *ภาพที่ 12 — หน้าแรกจากระบบที่ Compose ยกขึ้นจริงด้วยข้อมูล seed 8 ใบ*
 
@@ -327,8 +327,8 @@ GET /parts -> 200
 **คำถาม:** เพิ่มใบแจ้งซ่อมหนึ่งรายการและตรวจจำนวนรวมเป็น 9 ได้หรือไม่
 
 ```bash
-docker compose -p campusops exec -T db psql -U opsuser -d campusops -c "INSERT INTO tickets (asset_id,title,detail,priority) VALUES (4,'ไมโครโฟนห้องประชุมใหญ่เสียงขาด','แจ้งหลังส่งมอบระบบ','HIGH');"
-docker compose -p campusops exec -T db psql -U opsuser -d campusops -tAc "SELECT count(*) FROM tickets;"
+docker compose -p skillspace exec -T db psql -U opsuser -d skillspace -c "INSERT INTO tickets (asset_id,title,detail,priority) VALUES (4,'ไมโครโฟนห้องประชุมใหญ่เสียงขาด','แจ้งหลังส่งมอบระบบ','HIGH');"
+docker compose -p skillspace exec -T db psql -U opsuser -d skillspace -tAc "SELECT count(*) FROM tickets;"
 ```
 
 ✅ **สิ่งที่ต้องเห็น**
@@ -343,8 +343,8 @@ INSERT 0 1
 **คำถาม:** ปิดและเปิดระบบโดยไม่ลบ named volume แล้วข้อมูล 9 รายการยังอยู่หรือไม่
 
 ```bash
-docker compose -p campusops down && docker compose -p campusops up -d --no-build
-sleep 20 && docker compose -p campusops exec -T db psql -U opsuser -d campusops -tAc "SELECT count(*) FROM tickets;"
+docker compose -p skillspace down && docker compose -p skillspace up -d --no-build
+sleep 20 && docker compose -p skillspace exec -T db psql -U opsuser -d skillspace -tAc "SELECT count(*) FROM tickets;"
 ```
 
 ✅ **สิ่งที่ต้องเห็น**
@@ -358,8 +358,8 @@ sleep 20 && docker compose -p campusops exec -T db psql -U opsuser -d campusops 
 **คำถาม:** ลบ named volume แล้วเปิดระบบใหม่จะได้ seed 8 รายการหรือไม่
 
 ```bash
-docker compose -p campusops down -v && docker compose -p campusops up -d --no-build
-sleep 20 && docker compose -p campusops exec -T db psql -U opsuser -d campusops -tAc "SELECT count(*) FROM tickets;"
+docker compose -p skillspace down -v && docker compose -p skillspace up -d --no-build
+sleep 20 && docker compose -p skillspace exec -T db psql -U opsuser -d skillspace -tAc "SELECT count(*) FROM tickets;"
 ```
 
 ✅ **สิ่งที่ต้องเห็น**
@@ -377,8 +377,8 @@ sleep 20 && docker compose -p campusops exec -T db psql -U opsuser -d campusops 
 **คำถาม:** อ่านบันทึกเหตุการณ์ (log) รวมและทดสอบ DNS จาก `web` ไป `api` ได้หรือไม่
 
 ```bash
-docker compose -p campusops logs --tail=1
-docker compose -p campusops exec -T web wget -qO- http://api:8000/health; echo
+docker compose -p skillspace logs --tail=1
+docker compose -p skillspace exec -T web wget -qO- http://api:8000/health; echo
 ```
 
 ✅ **สิ่งที่ต้องเห็น**
@@ -402,7 +402,7 @@ web-1  | ✓ Running next.config took 0.7ms
 
 ```bash
 docker login -u <DOCKER_USER>            # วาง Access Token ตอนถาม Password
-for service in api web; do docker tag "campusops-$service:latest" "<DOCKER_USER>/campusops-$service:1.0"; done
+for service in api web; do docker tag "skillspace-$service:latest" "<DOCKER_USER>/skillspace-$service:1.0"; done
 ```
 
 แทน `<DOCKER_USER>` ด้วยชื่อบัญชีจริงเฉพาะใน terminal และวาง Access Token เมื่อคำสั่งถาม `Password:`
@@ -420,8 +420,8 @@ Login Succeeded
 **คำถาม:** ส่งอิมเมจ `api` และ `web` ไปยัง repository แบบ Public ได้สำเร็จหรือไม่
 
 ```bash
-docker push <DOCKER_USER>/campusops-api:1.0
-docker push <DOCKER_USER>/campusops-web:1.0
+docker push <DOCKER_USER>/skillspace-api:1.0
+docker push <DOCKER_USER>/skillspace-web:1.0
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — ส่วนท้ายของผลรันจริงรอบนี้
@@ -439,7 +439,7 @@ docker push <DOCKER_USER>/campusops-web:1.0
 
 #### ขั้นที่ ①–② — เปิด repository ทั้งสองจาก My Hub
 
-คลิก **My Hub → Repositories** ตรวจค่า **Public** ของทั้งสองรายการ แล้วคลิก `campusops-api` ก่อน `campusops-web` ตาม marker
+คลิก **My Hub → Repositories** ตรวจค่า **Public** ของทั้งสองรายการ แล้วคลิก `skillspace-api` ก่อน `skillspace-web` ตาม marker
 
 ![รายการ Docker Hub พร้อม marker ที่ repository ทั้งสอง](./images/ui-hub-push-01-repositories.png)
 
@@ -447,11 +447,11 @@ docker push <DOCKER_USER>/campusops-web:1.0
 
 #### ขั้นที่ ③ — เปิดแท็บ Tags ของ API
 
-ในหน้า `campusops-api` คลิกแท็บ **Tags**
+ในหน้า `skillspace-api` คลิกแท็บ **Tags**
 
 ![หน้า repository API พร้อม marker ที่แท็บ Tags](./images/ui-hub-push-02-api.png)
 
-*ภาพที่ 16 — เปิดแท็บ Tags ของ `<DOCKER_USER>/campusops-api`*
+*ภาพที่ 16 — เปิดแท็บ Tags ของ `<DOCKER_USER>/skillspace-api`*
 
 #### ขั้นที่ ④–⑤ — อ่าน tag และ digest ของ API
 
@@ -463,11 +463,11 @@ docker push <DOCKER_USER>/campusops-web:1.0
 
 #### ขั้นที่ ⑥ — เปิดแท็บ Tags ของ Web
 
-กลับ Repositories คลิก `campusops-web` แล้วคลิกแท็บ **Tags**
+กลับ Repositories คลิก `skillspace-web` แล้วคลิกแท็บ **Tags**
 
 ![หน้า repository Web พร้อม marker ที่แท็บ Tags](./images/ui-hub-push-04-web.png)
 
-*ภาพที่ 18 — เปิดแท็บ Tags ของ `<DOCKER_USER>/campusops-web`*
+*ภาพที่ 18 — เปิดแท็บ Tags ของ `<DOCKER_USER>/skillspace-web`*
 
 #### ขั้นที่ ⑦–⑧ — อ่าน tag และ digest ของ Web
 
@@ -481,8 +481,8 @@ docker push <DOCKER_USER>/campusops-web:1.0
 
 | อิมเมจ | `docker push` — manifest list | Docker Hub Tags — `linux/amd64` platform manifest |
 |---|---|---|
-| campusops-api | `sha256:ed482a5c9245258b7173a63e669743d570dd9be45ca02344851b8e3d2eee2d24` | `sha256:363a16126b9ce47dbc1fe5516c58f9c7a61b015135d6e33af3ccc3668a39a559` |
-| campusops-web | `sha256:9afebca5a220acd0e18dacf627a57ae8dca2d8840e8362b85295e3474e6fa2ef` | `sha256:25d4630cb30ce2e5008e78cbdee4abb2838396c3659be9410c436fe09aff4bbb` |
+| skillspace-api | `sha256:ed482a5c9245258b7173a63e669743d570dd9be45ca02344851b8e3d2eee2d24` | `sha256:363a16126b9ce47dbc1fe5516c58f9c7a61b015135d6e33af3ccc3668a39a559` |
+| skillspace-web | `sha256:9afebca5a220acd0e18dacf627a57ae8dca2d8840e8362b85295e3474e6fa2ef` | `sha256:25d4630cb30ce2e5008e78cbdee4abb2838396c3659be9410c436fe09aff4bbb` |
 
 ---
 
@@ -494,18 +494,18 @@ docker push <DOCKER_USER>/campusops-web:1.0
 
 ```bash
 docker logout
-docker compose -p campusops down && docker image rm campusops-api:latest campusops-web:latest <DOCKER_USER>/campusops-api:1.0 <DOCKER_USER>/campusops-web:1.0
+docker compose -p skillspace down && docker image rm skillspace-api:latest skillspace-web:latest <DOCKER_USER>/skillspace-api:1.0 <DOCKER_USER>/skillspace-web:1.0
 ```
 
 ✅ **สิ่งที่ต้องเห็น**
 
 ```text
 Removing login credentials for https://index.docker.io/v1/
-Untagged: campusops-api:latest
-Untagged: campusops-web:latest
-Untagged: <DOCKER_USER>/campusops-api:1.0
+Untagged: skillspace-api:latest
+Untagged: skillspace-web:latest
+Untagged: <DOCKER_USER>/skillspace-api:1.0
 Deleted: sha256:<LOCAL_IMAGE_ID>
-Untagged: <DOCKER_USER>/campusops-web:1.0
+Untagged: <DOCKER_USER>/skillspace-web:1.0
 Deleted: sha256:<LOCAL_IMAGE_ID>
 ```
 
@@ -514,17 +514,17 @@ Deleted: sha256:<LOCAL_IMAGE_ID>
 **คำถาม:** รับอิมเมจ Public ทั้งสองรายการหลัง logout ได้สำเร็จหรือไม่
 
 ```bash
-docker pull <DOCKER_USER>/campusops-api:1.0
-docker pull <DOCKER_USER>/campusops-web:1.0
+docker pull <DOCKER_USER>/skillspace-api:1.0
+docker pull <DOCKER_USER>/skillspace-web:1.0
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — pull สำเร็จทั้งที่ logout แล้ว จึงพิสูจน์ว่า repository ทั้งสองเป็น Public
 
 ```text
 Digest: sha256:ed482a5c9245258b7173a63e669743d570dd9be45ca02344851b8e3d2eee2d24
-Status: Downloaded newer image for <DOCKER_USER>/campusops-api:1.0
+Status: Downloaded newer image for <DOCKER_USER>/skillspace-api:1.0
 Digest: sha256:9afebca5a220acd0e18dacf627a57ae8dca2d8840e8362b85295e3474e6fa2ef
-Status: Downloaded newer image for <DOCKER_USER>/campusops-web:1.0
+Status: Downloaded newer image for <DOCKER_USER>/skillspace-web:1.0
 ```
 
 ### การทดลองที่ 9.3 — เตรียมชื่ออิมเมจให้ Compose ได้หรือไม่
@@ -532,8 +532,8 @@ Status: Downloaded newer image for <DOCKER_USER>/campusops-web:1.0
 **คำถาม:** ติด tag ชื่อภายในที่ `compose.yaml` อ้างถึงให้ทั้งสองอิมเมจได้หรือไม่
 
 ```bash
-docker tag <DOCKER_USER>/campusops-api:1.0 campusops-api:latest
-docker tag <DOCKER_USER>/campusops-web:1.0 campusops-web:latest
+docker tag <DOCKER_USER>/skillspace-api:1.0 skillspace-api:latest
+docker tag <DOCKER_USER>/skillspace-web:1.0 skillspace-web:latest
 ```
 
 ✅ **สิ่งที่ต้องเห็น:** ทั้งสองคำสั่งคืน exit code `0` และไม่แสดงข้อผิดพลาด
@@ -543,17 +543,17 @@ docker tag <DOCKER_USER>/campusops-web:1.0 campusops-web:latest
 **คำถาม:** `up --no-build` เริ่มระบบจากอิมเมจที่ pull และหน้าแรกตอบ HTTP `200` โดยไม่มีบรรทัด `Building` หรือไม่
 
 ```bash
-docker compose -p campusops up -d --no-build && sleep 20
-docker compose -p campusops ps && curl -s -o /dev/null -w "GET / -> %{http_code}\n" http://localhost:3000/
+docker compose -p skillspace up -d --no-build && sleep 20
+docker compose -p skillspace ps && curl -s -o /dev/null -w "GET / -> %{http_code}\n" http://localhost:3000/
 ```
 
 ✅ **สิ่งที่ต้องเห็น** — log ของ `up` ไม่มีบรรทัด `Building`
 
 ```text
 NAME              IMAGE                COMMAND                  SERVICE   CREATED          STATUS                    PORTS
-campusops-api-1   campusops-api        "uvicorn main:app --…"   api       18 seconds ago   Up 12 seconds (healthy)   8000/tcp
-campusops-db-1    postgres:17-alpine   "docker-entrypoint.s…"   db        18 seconds ago   Up 17 seconds (healthy)   5432/tcp
-campusops-web-1   campusops-web        "docker-entrypoint.s…"   web       17 seconds ago   Up 6 seconds (healthy)    0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+skillspace-api-1   skillspace-api        "uvicorn main:app --…"   api       18 seconds ago   Up 12 seconds (healthy)   8000/tcp
+skillspace-db-1    postgres:17-alpine   "docker-entrypoint.s…"   db        18 seconds ago   Up 17 seconds (healthy)   5432/tcp
+skillspace-web-1   skillspace-web        "docker-entrypoint.s…"   web       17 seconds ago   Up 6 seconds (healthy)    0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
 GET / -> 200
 ```
 
@@ -611,7 +611,7 @@ exit code = 0
 เมื่อกำหนด `HUB_USER` หลังลบ repository แล้ว สคริปต์ติดต่อ Hub จริงและรายงานผลรันดังนี้โดยยังคืน exit code 0:
 
 ```text
-[SKIP] ติดต่อ Docker Hub แล้วแต่ไม่พบหรือเข้าถึงไม่ได้: campusops-api:1.0 campusops-web:1.0 — ตรวจชื่อ repository และตั้ง Visibility เป็น Public
+[SKIP] ติดต่อ Docker Hub แล้วแต่ไม่พบหรือเข้าถึงไม่ได้: skillspace-api:1.0 skillspace-web:1.0 — ตรวจชื่อ repository และตั้ง Visibility เป็น Public
 ALL CHECKS PASSED
 exit code = 0
 ```
@@ -630,12 +630,12 @@ exit code = 0
 |---|---|---|
 | `no configuration file provided: not found` | รันจากโฟลเดอร์ที่ไม่มี `compose.yaml` | เข้า `005_LAB_Compose_And_Ship` แล้วสั่งใหม่ |
 | `Bind for 0.0.0.0:3000 failed: port is already allocated` | มี project อื่นใช้พอร์ต 3000 | ตรวจด้วย `docker ps` แล้วหยุดเฉพาะ project ที่ตนสร้าง |
-| `dependency failed to start: container campusops-db-1 is unhealthy` | healthcheck ของ db ไม่ผ่าน | อ่าน `docker compose -p campusops logs db`; หากเป็น volume ฝึกที่สร้างผิด ให้ reset ด้วย `down -v` |
-| `denied: requested access to the resource is denied` | tag ไม่มีชื่อบัญชีนำหน้า หรือยังไม่ได้ login | tag เป็น `<DOCKER_USER>/campusops-api:1.0` และ login ด้วย token |
+| `dependency failed to start: container skillspace-db-1 is unhealthy` | healthcheck ของ db ไม่ผ่าน | อ่าน `docker compose -p skillspace logs db`; หากเป็น volume ฝึกที่สร้างผิด ให้ reset ด้วย `down -v` |
+| `denied: requested access to the resource is denied` | tag ไม่มีชื่อบัญชีนำหน้า หรือยังไม่ได้ login | tag เป็น `<DOCKER_USER>/skillspace-api:1.0` และ login ด้วย token |
 | `unauthorized: incorrect username or password` | ใช้รหัสผ่านบัญชีแทน Access Token หรือ token หมดอายุ | สร้าง token ใหม่แบบ Read & Write แล้ว login ใหม่ |
-| `pull access denied for <DOCKER_USER>/campusops-api, repository does not exist or may require 'docker login'` | repository เป็น Private หรือพิมพ์ชื่อผิด | ตรวจชื่อและ Visibility; login หากตั้งใจใช้ Private |
+| `pull access denied for <DOCKER_USER>/skillspace-api, repository does not exist or may require 'docker login'` | repository เป็น Private หรือพิมพ์ชื่อผิด | ตรวจชื่อและ Visibility; login หากตั้งใจใช้ Private |
 | `429 Too Many Requests` | เกิน pull rate limit | รอรอบโควตา, login ก่อน pull และใช้ image cache ที่มีอยู่ |
-| `Error response from daemon: No such image: campusops-api:latest` | สั่ง `up --no-build` ก่อน pull/tag | pull ให้ครบสองอิมเมจแล้ว tag กลับเป็นชื่อที่ compose.yaml ใช้ |
+| `Error response from daemon: No such image: skillspace-api:latest` | สั่ง `up --no-build` ก่อน pull/tag | pull ให้ครบสองอิมเมจแล้ว tag กลับเป็นชื่อที่ compose.yaml ใช้ |
 
 ---
 
@@ -644,8 +644,8 @@ exit code = 0
 ภายใน Container สำหรับเรียน ลบ project, volume และอิมเมจของแล็บ; credential ใน `/root/.docker/config.json` ถูกลบด้วย `docker logout` ตั้งแต่ต้นการทดลองที่ 9 แล้ว:
 
 ```bash
-docker compose -p campusops down -v
-docker image rm -f campusops-api:latest campusops-web:latest <DOCKER_USER>/campusops-api:1.0 <DOCKER_USER>/campusops-web:1.0
+docker compose -p skillspace down -v
+docker image rm -f skillspace-api:latest skillspace-web:latest <DOCKER_USER>/skillspace-api:1.0 <DOCKER_USER>/skillspace-web:1.0
 ```
 
 `docker logout` ลบ credential ออกจาก Container สำหรับเรียน แต่ **ไม่ทำให้ Access Token หมดอายุ** จึงต้อง revoke token บน Docker Hub ด้วย หากต้องการเก็บ repository เป็นผลงาน สามารถข้ามเฉพาะขั้นลบ repository แต่ยังต้อง revoke token
@@ -688,11 +688,11 @@ docker image rm -f campusops-api:latest campusops-web:latest <DOCKER_USER>/campu
 
 ### ลบ repository ทั้งสองบน Docker Hub
 
-ทำลำดับต่อไปนี้กับ `campusops-api`:
+ทำลำดับต่อไปนี้กับ `skillspace-api`:
 
 #### ขั้นที่ ①–③ — เปิด repository API
 
-คลิก **My Hub → Repositories → campusops-api**
+คลิก **My Hub → Repositories → skillspace-api**
 
 ![หน้า Repositories พร้อม marker สามขั้นสำหรับ API](./images/ui-hub-delete-01-api-list.png)
 
@@ -704,7 +704,7 @@ docker image rm -f campusops-api:latest campusops-web:latest <DOCKER_USER>/campu
 
 ![หน้า API พร้อม marker ที่ Settings](./images/ui-hub-delete-02-api-repository.png)
 
-*ภาพที่ 25 — เปิด Settings ของ campusops-api*
+*ภาพที่ 25 — เปิด Settings ของ skillspace-api*
 
 #### ขั้นที่ ⑤ — เริ่มลบ repository API
 
@@ -712,21 +712,21 @@ docker image rm -f campusops-api:latest campusops-web:latest <DOCKER_USER>/campu
 
 ![หน้า Settings API พร้อม marker ที่ Delete repository](./images/ui-hub-delete-03-api-settings.png)
 
-*ภาพที่ 26 — เริ่มขั้นลบ campusops-api*
+*ภาพที่ 26 — เริ่มขั้นลบ skillspace-api*
 
 #### ขั้นที่ ⑥–⑦ — ยืนยันชื่อและลบ repository API
 
-พิมพ์ `campusops-api` แล้วคลิก **Delete repository forever**
+พิมพ์ `skillspace-api` แล้วคลิก **Delete repository forever**
 
 ![หน้าต่างยืนยัน API พร้อม marker ที่ช่องชื่อและปุ่มลบถาวร](./images/ui-hub-delete-04-api-confirm.png)
 
-*ภาพที่ 27 — ยืนยันชื่อให้ตรงก่อนลบ campusops-api อย่างถาวร*
+*ภาพที่ 27 — ยืนยันชื่อให้ตรงก่อนลบ skillspace-api อย่างถาวร*
 
-ทำลำดับเดียวกันกับ `campusops-web`:
+ทำลำดับเดียวกันกับ `skillspace-web`:
 
 #### ขั้นที่ ⑧–⑩ — เปิด repository Web
 
-คลิก **My Hub → Repositories → campusops-web**
+คลิก **My Hub → Repositories → skillspace-web**
 
 ![หน้า Repositories พร้อม marker สามขั้นสำหรับ Web](./images/ui-hub-delete-05-web-list.png)
 
@@ -738,7 +738,7 @@ docker image rm -f campusops-api:latest campusops-web:latest <DOCKER_USER>/campu
 
 ![หน้า Web พร้อม marker ที่ Settings](./images/ui-hub-delete-06-web-repository.png)
 
-*ภาพที่ 29 — เปิด Settings ของ campusops-web*
+*ภาพที่ 29 — เปิด Settings ของ skillspace-web*
 
 #### ขั้นที่ ⑫ — เริ่มลบ repository Web
 
@@ -746,15 +746,15 @@ docker image rm -f campusops-api:latest campusops-web:latest <DOCKER_USER>/campu
 
 ![หน้า Settings Web พร้อม marker ที่ Delete repository](./images/ui-hub-delete-07-web-settings.png)
 
-*ภาพที่ 30 — เริ่มขั้นลบ campusops-web*
+*ภาพที่ 30 — เริ่มขั้นลบ skillspace-web*
 
 #### ขั้นที่ ⑬–⑭ — ยืนยันชื่อและลบ repository Web
 
-พิมพ์ `campusops-web` แล้วคลิก **Delete repository forever**
+พิมพ์ `skillspace-web` แล้วคลิก **Delete repository forever**
 
 ![หน้าต่างยืนยัน Web พร้อม marker ที่ช่องชื่อและปุ่มลบถาวร](./images/ui-hub-delete-08-web-confirm.png)
 
-*ภาพที่ 31 — ยืนยันชื่อให้ตรงก่อนลบ campusops-web อย่างถาวร*
+*ภาพที่ 31 — ยืนยันชื่อให้ตรงก่อนลบ skillspace-web อย่างถาวร*
 
 ออกจาก Container สำหรับเรียนและลบเฉพาะ Container ของ LAB 5:
 
@@ -769,11 +769,11 @@ docker rm -f devtools-compose-ship
 
 | คำสั่ง | หน้าที่ |
 |---|---|
-| `docker compose -p campusops up -d --build` | build และยกระบบจาก source |
-| `docker compose -p campusops up -d --no-build` | เริ่มระบบจากอิมเมจที่มีอยู่โดยห้าม build |
-| `docker compose -p campusops ps` | แสดงสถานะ health และ port ของทุก Service |
-| `docker compose -p campusops down` | ลบ Container กับ network แต่รักษา volume |
-| `docker compose -p campusops down -v` | ลบ volume และข้อมูล |
+| `docker compose -p skillspace up -d --build` | build และยกระบบจาก source |
+| `docker compose -p skillspace up -d --no-build` | เริ่มระบบจากอิมเมจที่มีอยู่โดยห้าม build |
+| `docker compose -p skillspace ps` | แสดงสถานะ health และ port ของทุก Service |
+| `docker compose -p skillspace down` | ลบ Container กับ network แต่รักษา volume |
+| `docker compose -p skillspace down -v` | ลบ volume และข้อมูล |
 | `docker login -u <DOCKER_USER>` | login ด้วย Access Token |
 | `docker tag <image> <DOCKER_USER>/<repository>:1.0` | เพิ่มชื่อสำหรับ Docker Hub ให้อิมเมจเดิม |
 | `docker push <DOCKER_USER>/<repository>:1.0` | ส่งอิมเมจไป Docker Hub |
@@ -784,10 +784,10 @@ docker rm -f devtools-compose-ship
 
 ## ✅ เช็กลิสต์ก่อนจบแล็บ
 
-- [ ] `docker compose -p campusops ps` แสดง healthy ครบ 3 service และ publish port เฉพาะ web
+- [ ] `docker compose -p skillspace ps` แสดง healthy ครบ 3 service และ publish port เฉพาะ web
 - [ ] หน้า `/`, `/tickets`, `/loans` และ `/parts` ตอบ 200
 - [ ] `down` แล้วยังมี 9 ใบ แต่ `down -v` แล้วกลับเป็น seed 8 ใบ
-- [ ] push `campusops-api:1.0` และ `campusops-web:1.0` สำเร็จ และทั้งสอง repository เป็น Public
+- [ ] push `skillspace-api:1.0` และ `skillspace-web:1.0` สำเร็จ และทั้งสอง repository เป็น Public
 - [ ] ลบ image แล้ว pull แยกสองคำสั่ง ก่อน `up -d --no-build` โดยไม่มี `Building`
 - [ ] `verify.sh` แสดง `[PASS]` 26 บรรทัด, `[SKIP]` สำหรับ Hub เมื่อไม่ตั้ง `HUB_USER`, `ALL CHECKS PASSED` และ exit code 0
 - [ ] logout ในการทดลองที่ 9, revoke token และตัดสินใจว่าจะเก็บหรือลบ repository เป็นผลงาน

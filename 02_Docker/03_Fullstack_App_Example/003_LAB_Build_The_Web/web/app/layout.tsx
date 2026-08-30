@@ -15,11 +15,11 @@ import {
 
 // NEXT_PUBLIC_* ถูกฝังเป็นค่าคงที่ตั้งแต่ตอน build (ARG → ENV ใน Dockerfile)
 // ต่างจาก API_BASE_URL ที่อ่านตอนรัน — เปลี่ยนได้โดยไม่ต้อง build image ใหม่
-const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "CampusOps";
+const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "SkillSpace";
 
 export const metadata: Metadata = {
   title: `${SITE_NAME} · ระบบงานซ่อมและครุภัณฑ์`,
-  description: "ระบบแจ้งซ่อม ยืม-คืนครุภัณฑ์ และคลังอะไหล่ ของสำนักงานคณะ",
+  description: "ระบบแจ้งซ่อม ยืม-คืนครุภัณฑ์ และคลังอะไหล่ของ SkillSpace",
 };
 
 type NavItem = {
@@ -90,7 +90,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   {SITE_NAME}
                 </span>
                 <span className="block truncate text-[12px] text-zinc-400">
-                  สำนักงานคณะเทคโนโลยีฯ
+                  SkillSpace Services
                 </span>
               </span>
             </Link>

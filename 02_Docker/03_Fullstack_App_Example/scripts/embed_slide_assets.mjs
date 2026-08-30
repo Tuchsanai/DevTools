@@ -5,6 +5,12 @@ const root = resolve(import.meta.dirname, '..');
 const target = resolve(root, process.argv[2] || 'Fullstack_Gateway_Broker_Slides.html');
 
 const files = {
+  skillspace_exterior: ['media/generated/skillspace-exterior.png', 'image/png'],
+  skillspace_training: ['media/generated/skillspace-training-room.png', 'image/png'],
+  skillspace_lab: ['media/generated/skillspace-computer-lab.png', 'image/png'],
+  github_seed_source: ['media/screenshots/github-seed-source.png', 'image/png'],
+  github_initdb_folder: ['media/screenshots/github-initdb-folder.png', 'image/png'],
+
   v_req: ['media/remotion/out/requirement-journey-web.mp4', 'video/mp4'],
   v_req_poster: ['media/remotion/out/requirement-journey-poster.png', 'image/png'],
 

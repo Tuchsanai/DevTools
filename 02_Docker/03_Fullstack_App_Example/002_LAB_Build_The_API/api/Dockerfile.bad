@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # ---------------------------------------------------------------------
-# CampusOps API image — "ฉบับเทียบ" ที่เรียงลำดับไม่ดี  (LAB 2 การทดลองที่ 4)
+# SkillSpace API image — "ฉบับเทียบ" ที่เรียงลำดับไม่ดี  (LAB 2 การทดลองที่ 4)
 #
 # คำสั่งทุกบรรทัดเหมือน Dockerfile ตัวจริงทุกประการ ต่างกันแค่ "ลำดับ" :
 #   ตัวจริง : COPY requirements.txt  →  RUN pip install  →  COPY main.py

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ตรวจรับหน้าเว็บ CampusOps (LAB 3) — รันภายใน Container สำหรับเรียน
+# ตรวจรับหน้าเว็บ SkillSpace (LAB 3) — รันภายใน Container สำหรับเรียน
 WEB=http://localhost:3000
 FAIL=0
 pass() { echo "  [PASS] $*"; }
@@ -7,7 +7,7 @@ fail() { echo "  [FAIL] $*"; FAIL=$((FAIL + 1)); }
 chk()  { if [ "$1" = "$2" ]; then pass "$3 (ได้ '$1')"; else fail "$3 (คาดหวัง '$2' แต่ได้ '$1')"; fi; }
 
 # เรียก API ผ่าน python ที่ติดมากับคอนเทนเนอร์ api เอง — ไม่ต้อง publish พอร์ตของ api ออกมาเลย
-apipy() { docker exec campusops-api python -c "$1"; }
+apipy() { docker exec skillspace-api python -c "$1"; }
 
 # ดึงรหัส action ของฟอร์มที่ต้องการออกจาก HTML ที่ server เรนเดอร์มา
 # (โหมด "ไม่มี JavaScript" ของ Next คือ POST กลับมาที่ URL เดิม พร้อมฟิลด์ซ่อน $ACTION_ID_xxx)
@@ -26,7 +26,7 @@ PY
 aid() { python3 /tmp/aid.py "$@"; }
 
 echo "======================================================================"
-echo "  CampusOps · web (Next.js 16.3.1) — บันทึกการตรวจรับ"
+echo "  SkillSpace · web (Next.js 16.3.1) — บันทึกการตรวจรับ"
 echo "  วันที่ทดสอบ : $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
 echo "======================================================================"
 
@@ -37,7 +37,7 @@ docker ps
 echo "--- network ที่ Container สามรายการใช้ร่วมกัน ---"
 docker network ls
 echo "--- NFR-3 : db ต้องไม่ publish พอร์ตออกมา (บรรทัดถัดไปต้องว่าง) ---"
-docker port campusops-db
+docker port skillspace-db
 echo "[db ไม่มีพอร์ตที่ publish — ถูกต้อง]"
 
 echo
@@ -217,16 +217,16 @@ grep -rn 'export const dynamic' /root/app/web/app --include=page.tsx
 
 echo
 echo "### ส่วนที่ 7 · คุณสมบัติของ image"
-docker images campusops-web:lab3
-docker images campusops-api:lab3
+docker images skillspace-web:lab3
+docker images skillspace-api:lab3
 echo "  --- ผู้ใช้และ CMD ที่ตั้งไว้ใน image ---"
-docker inspect campusops-web:lab3
+docker inspect skillspace-web:lab3
 echo "  --- ผู้ใช้ที่รันจริงในคอนเทนเนอร์ (ต้องไม่ใช่ root) ---"
-docker exec campusops-web id
+docker exec skillspace-web id
 echo "  --- ไฟล์ CSS ที่ถูกคัดลอกเข้ามาใน image (อยู่ใต้ chunks/) ---"
-docker exec campusops-web sh -c 'ls .next/static/chunks/*.css'
+docker exec skillspace-web sh -c 'ls .next/static/chunks/*.css'
 echo "  --- สามคำสั่งท้ายสุดของ image ---"
-docker history campusops-web:lab3 | head -3
+docker history skillspace-web:lab3 | head -3
 
 echo
 echo "======================================================================"

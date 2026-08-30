@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =====================================================================
-# smoke.sh — ทดสอบ REQ-01..REQ-12 ของ CampusOps API ด้วย curl จริง
+# smoke.sh — ทดสอบ REQ-01..REQ-12 ของ SkillSpace API ด้วย curl จริง
 #
 #   ใช้:  API=http://localhost:8000 ./smoke.sh
 #   ต้องรันกับฐานข้อมูลที่ initdb ตาม app/db/initdb/ (seed ตั้งต้น)
@@ -64,7 +64,7 @@ ck_err() {
     ck "detail เป็นข้อความ ไม่ใช่ array" "$(J 'isinstance(d.get("detail"), str) and len(d["detail"]) > 0')" "True"
 }
 
-echo "=== CampusOps API smoke test ==="
+echo "=== SkillSpace API smoke test ==="
 echo "API = $API"
 
 # ---------- รอให้ API พร้อม ----------

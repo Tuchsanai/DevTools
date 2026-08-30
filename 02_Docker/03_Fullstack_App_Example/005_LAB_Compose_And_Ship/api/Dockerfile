@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # ---------------------------------------------------------------------
-# CampusOps API image  (LAB 2)
+# SkillSpace API image  (LAB 2)
 # ---------------------------------------------------------------------
 FROM python:3.12-slim
 

@@ -37,13 +37,13 @@ User Story ที่เกี่ยวข้องกับแล็บนี้
 
 ### ปลายทางของทั้งชุด — จบ LAB 5 จะได้ระบบแบบนี้
 
-![หน้าสรุปภาพรวมของ CampusOps ที่เปิดจากเบราว์เซอร์จริง หัวข้อ ตอนนี้งานอะไรอยู่ในมือใคร แสดงงานที่ยังไม่ปิด 6 ใบ ค้างเกินกำหนด 2 ใบ ครุภัณฑ์ถูกยืมอยู่ 2 ชิ้น อะไหล่ต้องสั่งเพิ่ม 2 รายการ พร้อมแถบสัดส่วนใบแจ้งซ่อมตามขั้นของงาน รอรับเรื่อง 3 มอบหมายแล้ว 2 กำลังซ่อม 1 ปิดงานแล้ว 2](./images/app-target-system.png)
+![หน้าสรุปภาพรวมของ SkillSpace ที่เปิดจากเบราว์เซอร์จริง หัวข้อ ตอนนี้งานอะไรอยู่ในมือใคร แสดงงานที่ยังไม่ปิด 6 ใบ ค้างเกินกำหนด 2 ใบ ครุภัณฑ์ถูกยืมอยู่ 2 ชิ้น อะไหล่ต้องสั่งเพิ่ม 2 รายการ พร้อมแถบสัดส่วนใบแจ้งซ่อมตามขั้นของงาน รอรับเรื่อง 3 มอบหมายแล้ว 2 กำลังซ่อม 1 ปิดงานแล้ว 2](./images/app-target-system.png)
 
 > 🖼 **วิธีอ่านรูปนี้:** ตัวเลขบนหน้าเว็บมีที่มาจากข้อมูลของแล็บนี้ · การ์ด "งานที่ยังไม่ปิด 6 ใบ · ทั้งหมด 8 ใบ" กับแถบ `รอรับเรื่อง 3 · มอบหมายแล้ว 2 · กำลังซ่อม 1 · ปิดงานแล้ว 2` มาจากแถวใน `02-seed.sql` ซึ่งจะถูกโหลดเข้า 5 ตารางในการทดลองที่ 5 และตรวจนับด้วย `psql` ในการทดลองที่ 6 · หากฐานข้อมูลว่าง หน้าเว็บจะแสดงค่า 0
 
 ### ระบบประกอบด้วย 3 Container — แล็บนี้พัฒนาเฉพาะฐานข้อมูล
 
-![แผนภาพระบบ CampusOps สาม Container โดยเบราว์เซอร์เรียก web จากนั้น web เรียก api และ api เรียก db ส่วน Container db ผูกกับ Named Volume ชื่อ ops-pgdata](./images/theory-three-boxes.svg)
+![แผนภาพระบบ SkillSpace สาม Container โดยเบราว์เซอร์เรียก web จากนั้น web เรียก api และ api เรียก db ส่วน Container db ผูกกับ Named Volume ชื่อ ops-pgdata](./images/theory-three-boxes.svg)
 
 > 🖼 **วิธีอ่านรูปนี้:** Container `db` ด้านขวาที่มีกรอบหนาคือขอบเขตของแล็บนี้ ส่วน `web` และ `api` ยังไม่ต้องเริ่มทำงาน ลูกศรสีเขียวชี้ไปยัง Named Volume ซึ่งเป็นตำแหน่งเก็บข้อมูลตาม `NFR-2`
 
@@ -53,7 +53,7 @@ User Story ที่เกี่ยวข้องกับแล็บนี้
 
 | ตาราง | ข้อมูลที่จัดเก็บ | Requirement ที่รองรับ | Acceptance Criteria ของแล็บนี้ |
 |---|---|---|---|
-| `assets` | ครุภัณฑ์ 180 ชิ้นของคณะ (ข้อมูลสาธิต 12 ชิ้น) | `REQ-01`, `REQ-10`, `REQ-11` | คำสั่งนับแถวคืนค่า `12` |
+| `assets` | ครุภัณฑ์ 180 ชิ้นของ SkillSpace (ข้อมูลสาธิต 12 ชิ้น) | `REQ-01`, `REQ-10`, `REQ-11` | คำสั่งนับแถวคืนค่า `12` |
 | `tickets` | ใบแจ้งซ่อมและสถานะ `NEW → ASSIGNED → IN_PROGRESS → DONE` | `REQ-01` ถึง `REQ-04`, `REQ-08` | คำสั่งนับแถวคืนค่า `8` ก่อนเพิ่มข้อมูล |
 | `loans` | รายการยืม-คืน โดย `returned_at IS NULL` หมายถึงยังไม่คืน | `REQ-10` | คำสั่งนับแถวคืนค่า `3` |
 | `parts` | อะไหล่และจุดสั่งซื้อ | `REQ-06`, `REQ-12` | คำสั่งนับแถวคืนค่า `6` และพบรายการต่ำกว่าจุดสั่งซื้อ `2` รายการ |
@@ -167,7 +167,7 @@ cd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System && ls db/i
 
 ```bash
 docker run -d --name ops-db \
-  -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass postgres:17-alpine
+  -e POSTGRES_DB=skillspace -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass postgres:17-alpine
 sleep 8 && docker ps
 ```
 
@@ -205,10 +205,10 @@ PostgreSQL init process complete; ready for start up.
 
 ## การทดลองที่ 4 — ฐานข้อมูลเริ่มต้นมีตารางแล้วหรือไม่
 
-**คำถาม:** ฐานข้อมูล `campusops` ที่เพิ่งสร้างมีตารางของระบบแล้วหรือไม่
+**คำถาม:** ฐานข้อมูล `skillspace` ที่เพิ่งสร้างมีตารางของระบบแล้วหรือไม่
 
 ```bash
-docker exec -it ops-db psql -U opsuser -d campusops -c '\dt'
+docker exec -it ops-db psql -U opsuser -d skillspace -c '\dt'
 ```
 
 ✅ **สิ่งที่ต้องสังเกต** — เชื่อมต่อได้ แต่ยังไม่มีตาราง
@@ -228,9 +228,9 @@ Did not find any relations.
 ```bash
 docker rm -f ops-db
 docker run -d --name ops-db \
-  -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
+  -e POSTGRES_DB=skillspace -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
   -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine \
-  && sleep 10 && docker exec ops-db psql -U opsuser -d campusops -c '\dt'
+  && sleep 10 && docker exec ops-db psql -U opsuser -d skillspace -c '\dt'
 ```
 
 ✅ **สิ่งที่ต้องสังเกต** — พบ **5 ตาราง** ตามสัญญาข้อมูลใน [`docs/02_contract.md`](../docs/02_contract.md) และเจ้าของคือ `opsuser`
@@ -258,7 +258,7 @@ docker run -d --name ops-db \
 คำสั่ง `SELECT` รวมการนับ 4 ตารางไว้ในผลลัพธ์เดียว จึงยาวกว่าคำสั่งตรวจสอบทั่วไป แต่จำเป็นต่อการเปรียบเทียบสัญญาข้อมูลระหว่างแล็บ
 
 ```bash
-docker exec ops-db psql -U opsuser -d campusops -c \
+docker exec ops-db psql -U opsuser -d skillspace -c \
 "SELECT (SELECT count(*) FROM assets) AS assets, (SELECT count(*) FROM tickets) AS tickets, (SELECT count(*) FROM loans) AS loans, (SELECT count(*) FROM parts) AS parts;"
 ```
 
@@ -280,12 +280,12 @@ docker exec ops-db psql -U opsuser -d campusops -c \
 **คำถาม:** ใบแจ้งซ่อมที่เพิ่มหลังระบบเริ่มทำงานยังคงอยู่หลังสร้าง Container ใหม่โดยไม่ใช้ Volume หรือไม่
 
 ```bash
-docker exec ops-db psql -U opsuser -d campusops -c \
+docker exec ops-db psql -U opsuser -d skillspace -c \
 "INSERT INTO tickets (asset_id, title, detail, priority) VALUES (4, 'ไมโครโฟนห้องประชุมใหญ่เสียงขาด', 'แจ้งเข้ามาหลังระบบขึ้นแล้ว', 'HIGH'); SELECT count(*) FROM tickets;"
 docker rm -f ops-db && docker run -d --name ops-db \
-  -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
+  -e POSTGRES_DB=skillspace -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
   -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine \
-  && sleep 10 && docker exec ops-db psql -U opsuser -d campusops -c 'SELECT count(*) FROM tickets;'
+  && sleep 10 && docker exec ops-db psql -U opsuser -d skillspace -c 'SELECT count(*) FROM tickets;'
 ```
 
 ✅ **สิ่งที่ต้องสังเกต** — หลังเพิ่มข้อมูลมี **9 ใบ** แต่หลังสร้าง Container ใหม่โดยไม่มี Volume จะกลับมาเป็น **8 ใบ**
@@ -313,14 +313,14 @@ INSERT 0 1
 
 ```bash
 docker rm -f ops-db && docker run -d --name ops-db \
-  -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
+  -e POSTGRES_DB=skillspace -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
   -v ops-pgdata:/var/lib/postgresql/data -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine \
-  && sleep 10 && docker exec ops-db psql -U opsuser -d campusops -c \
+  && sleep 10 && docker exec ops-db psql -U opsuser -d skillspace -c \
   "INSERT INTO tickets (asset_id, title, detail, priority) VALUES (4, 'ไมโครโฟนห้องประชุมใหญ่เสียงขาด', 'แจ้งเข้ามาหลังระบบขึ้นแล้ว', 'HIGH');"
 docker rm -f ops-db && docker run -d --name ops-db \
-  -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
+  -e POSTGRES_DB=skillspace -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
   -v ops-pgdata:/var/lib/postgresql/data -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine \
-  && sleep 10 && docker exec ops-db psql -U opsuser -d campusops -c 'SELECT id, title, status FROM tickets ORDER BY id DESC LIMIT 1;'
+  && sleep 10 && docker exec ops-db psql -U opsuser -d skillspace -c 'SELECT id, title, status FROM tickets ORDER BY id DESC LIMIT 1;'
 ```
 
 ✅ **สิ่งที่ต้องสังเกต** — ใบแจ้งซ่อม `id = 9` ที่เพิ่มไว้ **ยังอยู่** (ความกว้างตัวอักษรไทยอาจทำให้แนวคอลัมน์ของ `psql` คลาดเคลื่อน)
@@ -352,7 +352,7 @@ docker run -d --name ops-db --env-file .env.db \
 ✅ **สิ่งที่ต้องสังเกต** — พบตัวแปรครบ 3 ตัวเช่นเดียวกับการกำหนด `-e`
 
 ```
-POSTGRES_DB=campusops
+POSTGRES_DB=skillspace
 POSTGRES_USER=opsuser
 POSTGRES_PASSWORD=labpass
 ```
@@ -367,7 +367,7 @@ POSTGRES_PASSWORD=labpass
 
 ```bash
 docker logs ops-db 2>&1 | grep -E 'Skipping initialization|running /docker-entrypoint-initdb.d'
-docker exec ops-db psql -U opsuser -d campusops -c 'SELECT count(*) FROM tickets;'
+docker exec ops-db psql -U opsuser -d skillspace -c 'SELECT count(*) FROM tickets;'
 ```
 
 ✅ **สิ่งที่ต้องสังเกต** — พบ `Skipping initialization` โดยไม่พบ `running /docker-entrypoint-initdb.d/...` และจำนวนใบแจ้งซ่อมยังเป็น 9 ใบ ไม่ใช่ 17 ใบ
@@ -395,7 +395,7 @@ bash verify.sh ; echo "exit code = $?"
 
 ```text
 ==============================================
- LAB 1 — Run The System (CampusOps db) : verify
+ LAB 1 — Run The System (SkillSpace db) : verify
 ==============================================
 [PASS] ต่อ Docker daemon ได้
 [PASS] ไฟล์ของแล็บครบ (db/initdb/01-schema.sql, db/initdb/02-seed.sql, .env.db, readme.md)
@@ -431,7 +431,7 @@ exit code = 0
 | `docker: Error response from daemon: Conflict. The container name "/ops-db" is already in use by container ...` | ยังมี Container ชื่อเดิมค้างอยู่ | `docker rm -f ops-db` ก่อนแล้วค่อย `docker run` ใหม่ |
 | `Did not find any relations.` ทั้งที่ผูก Initialization Script แล้ว | ไม่ได้ `cd` อยู่ใน Directory ของแล็บ ค่า `$PWD` จึงชี้ผิดที่ | `cd` เข้า `001_LAB_Run_The_System` แล้วลบ Container และ Volume ก่อนรันใหม่ |
 | `psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL: role "opsuser" does not exist` | Volume เดิมสร้างด้วย `POSTGRES_USER` คนละชื่อ และ Initialization Script ไม่รันซ้ำ | รัน `docker rm -f ops-db` แล้วรัน `docker volume rm ops-pgdata` ก่อนสร้างใหม่ให้ชื่อผู้ใช้ตรงกัน |
-| `ERROR:  relation "tickets" does not exist` | ต่อผิดฐานข้อมูล (ลืม `-d campusops` จึงไปโดน `postgres`) | ใส่ `-d campusops` ทุกครั้งที่เรียก `psql` |
+| `ERROR:  relation "tickets" does not exist` | ต่อผิดฐานข้อมูล (ลืม `-d skillspace` จึงไปโดน `postgres`) | ใส่ `-d skillspace` ทุกครั้งที่เรียก `psql` |
 | `Error response from daemon: container ... is not running` | `docker exec` อ้างถึง Container ที่หยุดแล้ว | `docker ps -a` ดูสถานะ แล้วอ่านเหตุผลจาก `docker logs <CONTAINER_NAME>` |
 | `Error response from daemon: remove ops-pgdata: volume is in use - [...]` | ยังมี Container ผูก Volume นั้นอยู่ | `docker rm -f ops-db` ก่อน แล้วค่อย `docker volume rm ops-pgdata` |
 | `PostgreSQL Database directory appears to contain a database; Skipping initialization` เมื่อต้องการใช้ Seed ใหม่ | Volume ไม่ว่าง Initialization Script จึงถูกข้าม | ลบ Volume ด้วย `docker volume rm ops-pgdata` แล้วสร้าง Container ใหม่ (**ข้อมูลเดิมหายทั้งหมด**) |
@@ -472,7 +472,7 @@ docker ps -a --filter name=devtools-lab001
 | `docker ps` / `docker ps -a` | แสดง Container ที่กำลังทำงาน / แสดงรวม Container ที่หยุดแล้ว |
 | `docker logs <CONTAINER_NAME>` | อ่าน Log ที่โปรแกรมใน Container ส่งออกมา |
 | `docker exec <CONTAINER_NAME> <COMMAND>` | รันคำสั่งภายใน Container ที่กำลังทำงาน |
-| `docker exec -it <CONTAINER_NAME> psql -U opsuser -d campusops` | เปิด `psql` แบบโต้ตอบและออกด้วย `\q` |
+| `docker exec -it <CONTAINER_NAME> psql -U opsuser -d skillspace` | เปิด `psql` แบบโต้ตอบและออกด้วย `\q` |
 | `docker rm -f <CONTAINER_NAME>` | ลบ Container ทันทีแม้กำลังทำงาน |
 | `docker volume ls` / `docker volume rm <VOLUME_NAME>` | แสดง / ลบ Named Volume โดยการลบทำให้ข้อมูลสูญหายถาวร |
 
@@ -484,7 +484,7 @@ docker ps -a --filter name=devtools-lab001
 
 - [ ] `docker ps` เห็น `ops-db` เป็น `Up` และ `PORTS` มีเพียง `5432/tcp`
 - [ ] `docker logs ops-db 2>&1` เจอ `ready to accept connections` สองครั้ง โดยมี `init process complete` คั่นกลาง
-- [ ] ก่อนผูก initdb : `docker exec -it ops-db psql -U opsuser -d campusops -c '\dt'` ตอบ `Did not find any relations.`
+- [ ] ก่อนผูก initdb : `docker exec -it ops-db psql -U opsuser -d skillspace -c '\dt'` ตอบ `Did not find any relations.`
 - [ ] หลังผูก `-v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro"` : `\dt` เห็นครบ **5 ตาราง** เจ้าของ `opsuser`
 - [ ] นับ seed ได้ `assets 12 · tickets 8 · loans 3 · parts 6` ตรงกับ [`docs/01_requirements.md`](../docs/01_requirements.md)
 - [ ] เพิ่มใบแจ้งซ่อมเป็น 9 → `docker rm -f ops-db` + `docker run` ใหม่ **โดยไม่มี Volume** แล้ว `SELECT count(*) FROM tickets;` เหลือ 8

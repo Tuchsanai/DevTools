@@ -89,7 +89,7 @@ export default async function LoansPage({
                 id="borrower"
                 name="borrower"
                 required
-                placeholder="เช่น อาจารย์ประจำวิชา 101"
+                placeholder="เช่น วิทยากรหลักสูตร Data 101"
                 className={inputClass}
               />
             </div>

@@ -1,5 +1,5 @@
 """
-CampusOps API — FastAPI + psycopg 3 (ไม่ใช้ ORM)
+SkillSpace API — FastAPI + psycopg 3 (ไม่ใช้ ORM)
 
 เขียนให้ "อ่านออกด้วยตาเปล่า" เป็นหลัก : SQL เห็นเต็ม ๆ กฎธุรกิจเป็น if/raise ธรรมดา
 ทุก endpoint ตรงกับ docs/02_contract.md §4 · ทุกกฎธุรกิจอ้าง REQ ได้ในคอมเมนต์
@@ -19,7 +19,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 DATABASE_URL = os.environ.get(
-    "DATABASE_URL", "postgresql://opsuser:labpass@db:5432/campusops"
+    "DATABASE_URL", "postgresql://opsuser:labpass@db:5432/skillspace"
 )
 
 # SLA ตามความเร่งด่วน (วัน) — ใช้คำนวณงานค้างเกินกำหนดของ REQ-09
@@ -91,7 +91,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="CampusOps API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="SkillSpace API", version="1.0.0", lifespan=lifespan)
 
 
 # ---------------------------------------------------------------------

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# verify.sh — ตรวจว่า LAB 1 (ยกฐานข้อมูล CampusOps ขึ้นและทำให้ข้อมูลไม่หาย) ทำได้ครบจริง
+# verify.sh — ตรวจว่า LAB 1 (ยกฐานข้อมูล SkillSpace ขึ้นและทำให้ข้อมูลไม่หาย) ทำได้ครบจริง
 # รันจากในโฟลเดอร์ LAB บนเครื่องเรียน :  bash verify.sh
 # สคริปต์นี้สร้างและลบเฉพาะ Container ชื่อขึ้นต้น devtools-lab001-verify-
 # และ Volume ชื่อ lab001-verify-pgdata โดยไม่แก้ไข ops-db หรือ ops-pgdata ของผู้เรียน
@@ -36,7 +36,7 @@ wait_pg() {
     sleep 1
   done
   for i in $(seq 1 40); do   # จังหวะที่ 2 : เซิร์ฟเวอร์ตัวจริงตอบคำถามได้
-    if [ "$(docker exec "$name" psql -U opsuser -d campusops -tAc 'SELECT 1' 2>/dev/null | tr -d '[:space:]')" = "1" ]; then
+    if [ "$(docker exec "$name" psql -U opsuser -d skillspace -tAc 'SELECT 1' 2>/dev/null | tr -d '[:space:]')" = "1" ]; then
       return 0
     fi
     sleep 1
@@ -46,20 +46,20 @@ wait_pg() {
 
 # นับแถวของตารางเดียว คืนตัวเลขล้วน (ว่าง = ถามไม่สำเร็จ)
 count_of() {
-  docker exec "$1" psql -U opsuser -d campusops -tAc "SELECT count(*) FROM $2;" 2>/dev/null | tr -d '[:space:]'
+  docker exec "$1" psql -U opsuser -d skillspace -tAc "SELECT count(*) FROM $2;" 2>/dev/null | tr -d '[:space:]'
 }
 
 run_db() {  # run_db <CONTAINER_NAME> <อาร์กิวเมนต์เพิ่มเติม...>
   local name="$1"; shift
   docker run -d --name "$name" \
-    -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
+    -e POSTGRES_DB=skillspace -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
     "$@" \
     -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" \
     postgres:17-alpine >/dev/null 2>&1
 }
 
 echo "=============================================="
-echo " LAB 1 — Run The System (CampusOps db) : verify"
+echo " LAB 1 — Run The System (SkillSpace db) : verify"
 echo "=============================================="
 
 # ---------- 0) preflight ----------
@@ -107,7 +107,7 @@ else
   exit 1
 fi
 
-tables=$(docker exec devtools-lab001-verify-db1 psql -U opsuser -d campusops -tAc \
+tables=$(docker exec devtools-lab001-verify-db1 psql -U opsuser -d skillspace -tAc \
   "SELECT string_agg(tablename, ',' ORDER BY tablename) FROM pg_tables WHERE schemaname='public';" 2>/dev/null | tr -d '[:space:]')
 if [ "$tables" = "assets,loans,parts,stock_moves,tickets" ]; then
   pass "initdb สร้างตารางครบ 5 ตาราง : $tables"
@@ -133,7 +133,7 @@ for pair in "assets:12" "tickets:8" "loans:3" "parts:6" "stock_moves:6"; do
 done
 [ "$seed_ok" -eq 1 ] && pass "จำนวน seed ตรงตามข้อกำหนด (assets 12 · tickets 8 · loans 3 · parts 6 · stock_moves 6)"
 
-low=$(docker exec devtools-lab001-verify-db1 psql -U opsuser -d campusops -tAc \
+low=$(docker exec devtools-lab001-verify-db1 psql -U opsuser -d skillspace -tAc \
   "SELECT count(*) FROM parts WHERE qty_on_hand < reorder_point;" 2>/dev/null | tr -d '[:space:]')
 if [ "$low" = "2" ]; then
   pass "อะไหล่ต่ำกว่าจุดสั่งซื้อ 2 รายการตามสัญญาข้อมูล (REQ-12)"
@@ -142,7 +142,7 @@ else
 fi
 
 # ---------- 5) ไม่มี Volume → ข้อมูลที่เพิ่มเองหาย ----------
-docker exec devtools-lab001-verify-db1 psql -U opsuser -d campusops -c \
+docker exec devtools-lab001-verify-db1 psql -U opsuser -d skillspace -c \
   "INSERT INTO tickets (asset_id, title, detail, priority) VALUES (4, 'ตรวจงานอัตโนมัติ', 'แถวที่ verify.sh เพิ่มเอง', 'HIGH');" >/dev/null 2>&1
 after_insert=$(count_of devtools-lab001-verify-db1 tickets)
 if [ "$after_insert" = "9" ]; then
@@ -169,7 +169,7 @@ docker rm -f -v devtools-lab001-verify-db2 >/dev/null 2>&1
 docker volume rm lab001-verify-pgdata >/dev/null 2>&1
 run_db devtools-lab001-verify-db3 -v lab001-verify-pgdata:/var/lib/postgresql/data
 if wait_pg devtools-lab001-verify-db3; then
-  docker exec devtools-lab001-verify-db3 psql -U opsuser -d campusops -c \
+  docker exec devtools-lab001-verify-db3 psql -U opsuser -d skillspace -c \
     "INSERT INTO tickets (asset_id, title, detail, priority) VALUES (4, 'ตรวจงานอัตโนมัติ', 'แถวที่ verify.sh เพิ่มเอง', 'HIGH');" >/dev/null 2>&1
   kept_before=$(count_of devtools-lab001-verify-db3 tickets)
   if [ "$kept_before" = "9" ]; then

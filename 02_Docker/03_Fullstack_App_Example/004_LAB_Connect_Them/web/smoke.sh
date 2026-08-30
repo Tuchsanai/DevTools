@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ตรวจรับหน้าเว็บ CampusOps (LAB 3) — รันภายใน Container สำหรับเรียน
+# ตรวจรับหน้าเว็บ SkillSpace (LAB 3) — รันภายใน Container สำหรับเรียน
 WEB=http://localhost:3000
 FAIL=0
 pass() { echo "  [PASS] $*"; }
@@ -26,7 +26,7 @@ PY
 aid() { python3 /tmp/aid.py "$@"; }
 
 echo "======================================================================"
-echo "  CampusOps · web (Next.js 16.3.1) — บันทึกการตรวจรับ"
+echo "  SkillSpace · web (Next.js 16.3.1) — บันทึกการตรวจรับ"
 echo "  วันที่ทดสอบ : $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
 echo "======================================================================"
 
@@ -217,16 +217,16 @@ grep -rn 'export const dynamic' /root/app/web/app --include=page.tsx
 
 echo
 echo "### ส่วนที่ 7 · คุณสมบัติของ image"
-docker image ls campusops-web:lab3 --format 'campusops-web:lab3  ขนาด {{.Size}}'
-docker image ls campusops-api:lab3 --format 'campusops-api:lab3  ขนาด {{.Size}}'
+docker image ls skillspace-web:lab3 --format 'skillspace-web:lab3  ขนาด {{.Size}}'
+docker image ls skillspace-api:lab3 --format 'skillspace-api:lab3  ขนาด {{.Size}}'
 echo "  --- ผู้ใช้และ CMD ที่ตั้งไว้ใน image ---"
-docker inspect campusops-web:lab3 --format 'USER = {{.Config.User}} · CMD = {{json .Config.Cmd}} · WorkingDir = {{.Config.WorkingDir}}'
+docker inspect skillspace-web:lab3 --format 'USER = {{.Config.User}} · CMD = {{json .Config.Cmd}} · WorkingDir = {{.Config.WorkingDir}}'
 echo "  --- ผู้ใช้ที่รันจริงใน Container (ต้องไม่ใช่ root) ---"
 docker exec devtools-connect-web id
 echo "  --- ไฟล์ CSS ที่ถูกคัดลอกเข้ามาใน image (อยู่ใต้ chunks/) ---"
 docker exec devtools-connect-web sh -c 'ls .next/static/chunks/*.css'
 echo "  --- สามคำสั่งท้ายสุดของ image ---"
-docker history campusops-web:lab3 --format '{{.CreatedBy}}' | head -3
+docker history skillspace-web:lab3 --format '{{.CreatedBy}}' | head -3
 
 echo
 echo "======================================================================"

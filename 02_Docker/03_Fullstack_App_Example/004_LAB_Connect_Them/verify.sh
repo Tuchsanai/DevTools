@@ -36,7 +36,7 @@ wait_db() {
   local name="$1" i
   for i in $(seq 1 90); do
     if docker logs "$name" 2>&1 | grep -qE 'init process complete|Skipping initialization'; then
-      if docker exec "$name" pg_isready -U opsuser -d campusops >/dev/null 2>&1; then return 0; fi
+      if docker exec "$name" pg_isready -U opsuser -d skillspace >/dev/null 2>&1; then return 0; fi
     fi
     sleep 1
   done
@@ -93,7 +93,7 @@ fi
 # NFR ย่อมาจาก Non-Functional Requirement; NFR-3 กำหนดให้ Database ไม่มี Published Port
 # ---------- 3) เริ่ม Database บน Network โดยไม่ Publish Port (NFR-3) ----------
 if docker run -d --name devtools-lab004-check-db --network devtools-lab004-check-net \
-     -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
+     -e POSTGRES_DB=skillspace -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
      -v devtools-lab004-check-pgdata:/var/lib/postgresql/data \
      -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" \
      postgres:17-alpine >/dev/null 2>&1; then
@@ -131,7 +131,7 @@ fi
 # ---------- 5) api ต่อ db ด้วย "ชื่อ" ไม่ใช่ IP ----------
 docker build -t devtools-lab004-check-api:verify ./api >"$tmp_dir/api.log" 2>&1
 if docker run -d --name devtools-lab004-check-api --network devtools-lab004-check-net \
-     -e DATABASE_URL="postgresql://opsuser:labpass@devtools-lab004-check-db:5432/campusops" \
+     -e DATABASE_URL="postgresql://opsuser:labpass@devtools-lab004-check-db:5432/skillspace" \
      devtools-lab004-check-api:verify >/dev/null 2>&1; then
   pass "เริ่ม API Container devtools-lab004-check-api บน devtools-lab004-check-net โดยใช้ชื่อ Container devtools-lab004-check-db ใน DATABASE_URL"
 else
@@ -178,7 +178,7 @@ fi
 # ---------- 9) สร้าง db ใหม่แล้วชื่อยังใช้ได้ แม้ IP เปลี่ยน ----------
 docker rm -f -v devtools-lab004-check-db >/dev/null 2>&1
 docker run -d --name devtools-lab004-check-db --network devtools-lab004-check-net \
-  -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
+  -e POSTGRES_DB=skillspace -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
   -v devtools-lab004-check-pgdata:/var/lib/postgresql/data \
   -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" \
   postgres:17-alpine >/dev/null 2>&1

@@ -150,7 +150,7 @@ docker rm -f -v vops3-db vops3-api vops3-web >/dev/null 2>&1
 docker volume rm vops3-pgdata >/dev/null 2>&1
 
 if docker run -d --name vops3-db \
-     -e POSTGRES_DB=campusops -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
+     -e POSTGRES_DB=skillspace -e POSTGRES_USER=opsuser -e POSTGRES_PASSWORD=labpass \
      -v vops3-pgdata:/var/lib/postgresql/data \
      -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" \
      postgres:17-alpine >/dev/null 2>&1; then
@@ -161,7 +161,7 @@ fi
 
 db_ok=0
 for _ in $(seq 1 30); do
-  if docker exec vops3-db pg_isready -U opsuser -d campusops >/dev/null 2>&1; then db_ok=1; break; fi
+  if docker exec vops3-db pg_isready -U opsuser -d skillspace >/dev/null 2>&1; then db_ok=1; break; fi
   sleep 1
 done
 [ "$db_ok" -eq 1 ] && pass "ฐานข้อมูลพร้อมรับ connection แล้ว" || fail "ฐานข้อมูลไม่พร้อมภายใน 30 วินาที"
@@ -169,7 +169,7 @@ done
 docker build -t vops3-api:verify ./api >"$tmp_dir/api.log" 2>&1
 DB_IP=$(ip_of vops3-db)
 docker run -d --name vops3-api \
-  -e DATABASE_URL="postgresql://opsuser:labpass@${DB_IP}:5432/campusops" \
+  -e DATABASE_URL="postgresql://opsuser:labpass@${DB_IP}:5432/skillspace" \
   vops3-api:verify >/dev/null 2>&1
 API_IP=""
 api_ok=0

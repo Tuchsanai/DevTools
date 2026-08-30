@@ -148,7 +148,7 @@ if docker run -d --name vops2-db --env-file .env.db \
      postgres:17-alpine >/dev/null 2>&1; then
   db_ready=0
   for _ in $(seq 1 30); do
-    if docker exec vops2-db pg_isready -U opsuser -d campusops >/dev/null 2>&1; then db_ready=1; break; fi
+    if docker exec vops2-db pg_isready -U opsuser -d skillspace >/dev/null 2>&1; then db_ready=1; break; fi
     sleep 2
   done
   if [ "$db_ready" -eq 1 ]; then
@@ -170,7 +170,7 @@ fi
 # ---------- 8) EXPOSE ไม่ได้เปิดพอร์ต ----------
 docker rm -f -v vops2-api >/dev/null 2>&1
 docker run -d --name vops2-api \
-  -e DATABASE_URL="postgresql://opsuser:labpass@${db_ip}:5432/campusops" \
+  -e DATABASE_URL="postgresql://opsuser:labpass@${db_ip}:5432/skillspace" \
   vops2-api:verify >/dev/null 2>&1
 sleep 1
 if [ -z "$(docker port vops2-api 2>/dev/null)" ]; then
@@ -182,7 +182,7 @@ docker rm -f -v vops2-api >/dev/null 2>&1
 
 # ---------- 9) รันจริงพร้อม -p แล้ว /health ต้องเขียว ----------
 if docker run -d --name vops2-api-p -p "${VPORT}:8000" \
-     -e DATABASE_URL="postgresql://opsuser:labpass@${db_ip}:5432/campusops" \
+     -e DATABASE_URL="postgresql://opsuser:labpass@${db_ip}:5432/skillspace" \
      vops2-api:verify >/dev/null 2>&1; then
   health_ok=0
   for _ in $(seq 1 20); do
@@ -199,7 +199,7 @@ else
 fi
 
 if curl -fsS "http://localhost:${VPORT}/docs" 2>/dev/null >"$tmp_dir/docs.html" \
-   && grep -q 'CAMPUSOPS  /  API CONTROL PLANE' "$tmp_dir/docs.html" \
+   && grep -q 'SKILLSPACE  /  API CONTROL PLANE' "$tmp_dir/docs.html" \
    && grep -q 'displayRequestDuration' "$tmp_dir/docs.html"; then
   pass "Swagger UI เปิดได้และมีคำแนะนำการใช้งานผ่านพอร์ต ${VPORT}"
 else

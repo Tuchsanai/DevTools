@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # ---------------------------------------------------------------------
-# CampusOps Web image  (LAB 3) — Next.js standalone แบบ multi-stage
+# SkillSpace Web image  (LAB 3) — Next.js standalone แบบ multi-stage
 #
 # แนวคิด : เครื่องมือที่ใช้ "ตอน build" (โค้ด TypeScript, devDependencies, ตัว compiler)
 # ไม่จำเป็นต้องติดไปกับ image ที่เอาไป "รัน" เลยแม้แต่นิดเดียว
@@ -23,7 +23,7 @@ WORKDIR /app
 
 # ARG อ่านได้เฉพาะตอน build · ENV ติดไปกับ image ตอนรันด้วย
 # ค่า NEXT_PUBLIC_* ถูก "ฝัง" ลงไฟล์ผลลัพธ์ตอน build จึงต้องมาถึงตรงนี้ก่อน npm run build
-ARG NEXT_PUBLIC_SITE_NAME=CampusOps
+ARG NEXT_PUBLIC_SITE_NAME=SkillSpace
 ENV NEXT_PUBLIC_SITE_NAME=$NEXT_PUBLIC_SITE_NAME
 ENV NEXT_TELEMETRY_DISABLED=1
 

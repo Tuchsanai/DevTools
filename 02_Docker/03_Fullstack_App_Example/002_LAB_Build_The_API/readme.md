@@ -104,8 +104,8 @@ sed -n '/^FROM\|^ENV\|^WORKDIR\|^COPY\|^RUN\|^USER\|^EXPOSE\|^CMD/p' Dockerfile
 **คำสั่ง — 2 คำสั่ง:**
 
 ```bash
-docker build --progress=plain -t campusops-api:1.0 .
-docker build --progress=plain -t campusops-api:1.0 .
+docker build --progress=plain -t skillspace-api:1.0 .
+docker build --progress=plain -t skillspace-api:1.0 .
 ```
 
 ✅ **สิ่งที่ต้องสังเกตเพียงข้อเดียว:** รอบที่สองแสดง `CACHED` ในขั้น `COPY`, `RUN pip install` และ `RUN useradd`; Image ยัง build สำเร็จเหมือนเดิม
@@ -133,7 +133,7 @@ docker build --progress=plain -t campusops-api:1.0 .
 
 ```bash
 truncate -s 5M api-debug.log
-docker build --progress=plain -t campusops-api:1.0 .
+docker build --progress=plain -t skillspace-api:1.0 .
 ```
 
 ✅ **สิ่งที่ต้องสังเกตเพียงข้อเดียว:** บรรทัด `transferring context` ยังเป็นหน่วย `B` หรือ `kB` ไม่ใช่ `MB` เพราะ `.dockerignore` มีรูปแบบ `*.log`
@@ -148,7 +148,7 @@ docker build --progress=plain -t campusops-api:1.0 .
 
 ```bash
 cd .. && docker run -d --name ops-db --env-file .env.db -v ops-pgdata:/var/lib/postgresql/data -v "$PWD/db/initdb:/docker-entrypoint-initdb.d:ro" postgres:17-alpine
-until docker exec ops-db pg_isready -U opsuser -d campusops; do sleep 2; done
+until docker exec ops-db pg_isready -U opsuser -d skillspace; do sleep 2; done
 ```
 
 ✅ **สิ่งที่ต้องสังเกตเพียงข้อเดียว:** `pg_isready` ตอบ `/var/run/postgresql:5432 - accepting connections`
@@ -164,7 +164,7 @@ until docker exec ops-db pg_isready -U opsuser -d campusops; do sleep 2; done
 **คำสั่ง — 2 คำสั่ง:**
 
 ```bash
-docker run -d --name ops-api -e DATABASE_URL="postgresql://opsuser:labpass@$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ops-db):5432/campusops" campusops-api:1.0
+docker run -d --name ops-api -e DATABASE_URL="postgresql://opsuser:labpass@$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ops-db):5432/skillspace" skillspace-api:1.0
 docker port ops-api
 ```
 
@@ -180,7 +180,7 @@ docker port ops-api
 
 ```bash
 docker rm -f ops-api
-docker run -d --name ops-api -p 8088:8000 -e DATABASE_URL="postgresql://opsuser:labpass@$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ops-db):5432/campusops" campusops-api:1.0 && until curl -fsS http://localhost:8088/health; do sleep 1; done
+docker run -d --name ops-api -p 8088:8000 -e DATABASE_URL="postgresql://opsuser:labpass@$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ops-db):5432/skillspace" skillspace-api:1.0 && until curl -fsS http://localhost:8088/health; do sleep 1; done
 ```
 
 ✅ **สิ่งที่ต้องสังเกตเพียงข้อเดียว:** API ตอบ `{"status":"ok","db":"up"}`; ค่า `db: up` ยืนยันว่า Health endpoint Query ฐานข้อมูลจริง
@@ -195,7 +195,7 @@ docker run -d --name ops-api -p 8088:8000 -e DATABASE_URL="postgresql://opsuser:
 
 ### ขั้นที่ ① — เปิดหน้าเอกสาร
 
-![กรอบแดงและ marker 1 ชี้ส่วนแนะนำ CampusOps API](./images/ui-swagger-01-docs.png)
+![กรอบแดงและ marker 1 ชี้ส่วนแนะนำ SkillSpace API](./images/ui-swagger-01-docs.png)
 
 *ภาพที่ ① — ตรวจชื่อ API, เวอร์ชัน, ความหมายของ endpoint และคำอธิบาย `REQ` ก่อนเริ่มใช้*
 
@@ -254,7 +254,7 @@ docker run -d --name ops-api -p 8088:8000 -e DATABASE_URL="postgresql://opsuser:
 ```json
 {
   "asset_id": 12,
-  "title": "ลำโพงห้องเรียน 402 เสียงขาดหาย",
+  "title": "ลำโพงห้องอบรม 402 เสียงขาดหาย",
   "detail": "เปิดแล้วเสียงดังบ้างหายบ้าง",
   "priority": "HIGH"
 }
@@ -300,18 +300,18 @@ API=http://localhost:8088 bash api/smoke.sh
 
 ```bash
 docker login -u <DOCKER_USER>
-docker tag campusops-api:1.0 <DOCKER_USER>/campusops-api:1.0 && docker push <DOCKER_USER>/campusops-api:1.0
+docker tag skillspace-api:1.0 <DOCKER_USER>/skillspace-api:1.0 && docker push <DOCKER_USER>/skillspace-api:1.0
 ```
 
 เมื่อคำสั่งแรกถาม Password ให้ใช้ Docker access token ที่ป้อนผ่านหน้าจอเท่านั้น ห้ามเขียน Token ลง README, shell script หรือ Screenshot
 
-เปิด `https://hub.docker.com/r/<DOCKER_USER>/campusops-api/tags` แล้วตรวจ tag `1.0`
+เปิด `https://hub.docker.com/r/<DOCKER_USER>/skillspace-api/tags` แล้วตรวจ tag `1.0`
 
 ![หน้า Docker Hub จริงที่แทนชื่อบัญชีด้วย placeholder และมี marker ชี้ tag 1.0](./images/ui-dockerhub-01-tag.png)
 
 *ภาพหลักฐาน Docker Hub — tag `1.0`, Digest, สถาปัตยกรรม `linux/amd64` และขนาดบีบอัดมาจาก Image ที่ Push จริง; ชื่อบัญชีถูกปกปิดด้วย placeholder*
 
-✅ **สิ่งที่ต้องสังเกตเพียงข้อเดียว:** หน้า Tags แสดง `1.0` และคำสั่ง `docker pull <DOCKER_USER>/campusops-api:1.0`
+✅ **สิ่งที่ต้องสังเกตเพียงข้อเดียว:** หน้า Tags แสดง `1.0` และคำสั่ง `docker pull <DOCKER_USER>/skillspace-api:1.0`
 
 ---
 
@@ -405,7 +405,7 @@ docker ps -a --filter "name=^devtools-build-api$"
 ## เช็กลิสต์ก่อนจบ LAB
 
 - [ ] อธิบายความแตกต่างระหว่าง Image, Container, `EXPOSE` และ `-p` ได้
-- [ ] build `campusops-api:1.0` และเห็น Layer cache ในรอบที่สอง
+- [ ] build `skillspace-api:1.0` และเห็น Layer cache ในรอบที่สอง
 - [ ] `GET /health` ตอบ `db: up`
 - [ ] ทำ Swagger UI ครบภาพที่ ①–⑨ โดยไม่ข้ามขั้น
 - [ ] `smoke.sh` ผ่าน `REQ-01` ถึง `REQ-12`

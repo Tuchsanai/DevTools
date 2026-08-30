@@ -1,5 +1,5 @@
 -- =====================================================================
--- CampusOps · ข้อมูลตั้งต้นสำหรับแล็บ (ตาม docs/02_contract.md §3)
+-- SkillSpace · ข้อมูลตั้งต้นสำหรับแล็บ (ตาม docs/02_contract.md §3)
 --   ครุภัณฑ์ 12 · ใบแจ้งซ่อม 8 (คละสถานะ ค้างเกินกำหนด 2)
 --   สัญญายืม 3 (ยังไม่คืน 2) · อะไหล่ 6 (ต่ำกว่าจุดสั่งซื้อ 2)
 --
@@ -10,25 +10,25 @@
 -- ---------- ครุภัณฑ์ 12 ชิ้น ----------
 INSERT INTO assets (code, name, location) VALUES
     ('A-001', 'โน้ตบุ๊ก Dell Latitude',       'ห้องพัสดุ ชั้น 1'),
-    ('A-002', 'โปรเจกเตอร์ Epson EB-X51',     'ห้องเรียน 301'),
+    ('A-002', 'โปรเจกเตอร์ Epson EB-X51',     'ห้องอบรม 301'),
     ('A-003', 'กล้อง Sony ZV-1',              'ห้องพัสดุ ชั้น 1'),
     ('A-004', 'ไมโครโฟนไร้สาย Shure',         'ห้องประชุมใหญ่'),
-    ('A-005', 'โปรเจกเตอร์ BenQ MW550',       'ห้องเรียน 205'),
+    ('A-005', 'โปรเจกเตอร์ BenQ MW550',       'ห้องอบรม 205'),
     ('A-006', 'เครื่องปรับอากาศ ห้องแล็บ 2',  'ห้องแล็บคอมพิวเตอร์ 2'),
     ('A-007', 'เครื่องพิมพ์ HP LaserJet',     'สำนักงาน ชั้น 2'),
     ('A-008', 'สวิตช์เครือข่าย 24 พอร์ต',     'ห้องเซิร์ฟเวอร์'),
     ('A-009', 'โน้ตบุ๊ก Lenovo ThinkPad',     'ห้องแล็บคอมพิวเตอร์ 4'),
     ('A-010', 'จอแสดงผล LG 27 นิ้ว',          'ห้องแล็บคอมพิวเตอร์ 1'),
     ('A-011', 'เครื่องสแกนเอกสาร Canon',      'สำนักงาน ชั้น 2'),
-    ('A-012', 'ลำโพงห้องเรียน 402',           'ห้องเรียน 402');
+    ('A-012', 'ลำโพงห้องอบรม 402',            'ห้องอบรม 402');
 
 -- ---------- สัญญายืม 3 รายการ (ยังไม่คืน 2) ----------
 -- A-001 กับ A-002 ยังไม่คืน → ยืมซ้ำต้องได้ 409 ASSET_ON_LOAN (REQ-10)
 -- A-003 คืนแล้ว → ยืมใหม่ได้ ใช้เป็นเคสสำเร็จของแล็บ
 INSERT INTO loans (asset_id, borrower, borrowed_at, returned_at) VALUES
-    ((SELECT id FROM assets WHERE code = 'A-001'), 'อาจารย์ประจำวิชา 101', now() - interval '4 days',  NULL),
+    ((SELECT id FROM assets WHERE code = 'A-001'), 'วิทยากรหลักสูตร Data 101', now() - interval '4 days',  NULL),
     ((SELECT id FROM assets WHERE code = 'A-002'), 'เจ้าหน้าที่ธุรการ',     now() - interval '1 day',   NULL),
-    ((SELECT id FROM assets WHERE code = 'A-003'), 'อาจารย์ประจำวิชา 204', now() - interval '10 days', now() - interval '6 days');
+    ((SELECT id FROM assets WHERE code = 'A-003'), 'วิทยากรหลักสูตร UX 204', now() - interval '10 days', now() - interval '6 days');
 
 -- ---------- ใบแจ้งซ่อม 8 ใบ ----------
 -- จงใจผูกกับครุภัณฑ์คนละชิ้นกับที่ถูกยืมค้าง (A-001/A-002)
@@ -91,7 +91,7 @@ INSERT INTO parts (sku, name, qty_on_hand, reorder_point) VALUES
 -- มีทั้งรับเข้า (delta บวก) และเบิกใช้ในงานซ่อม (delta ลบ) เพื่อให้ REQ-07 มีของให้ดู
 INSERT INTO stock_moves (part_id, ticket_id, delta, reason, created_at) VALUES
     ((SELECT id FROM parts WHERE sku = 'LAMP-EPS-01'), NULL, 5, 'รับเข้าจากผู้ขาย', now() - interval '30 days'),
-    ((SELECT id FROM parts WHERE sku = 'LAMP-EPS-01'), NULL, -3, 'เบิกใช้งานประจำภาคเรียน', now() - interval '20 days'),
+    ((SELECT id FROM parts WHERE sku = 'LAMP-EPS-01'), NULL, -3, 'เบิกใช้เตรียมห้องอบรมประจำเดือน', now() - interval '20 days'),
     ((SELECT id FROM parts WHERE sku = 'CBL-HDMI-3M'), NULL, 6, 'รับเข้าจากผู้ขาย', now() - interval '25 days'),
     ((SELECT id FROM parts WHERE sku = 'CBL-HDMI-3M'),
      (SELECT id FROM tickets WHERE title = 'ลำโพงห้อง 402 ไม่มีเสียง'),

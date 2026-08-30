@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:1
 # ---------------------------------------------------------------------
-# CampusOps Web image — เวอร์ชัน "CMD แบบ shell form" ไว้เทียบพฤติกรรมตอน docker stop
+# SkillSpace Web image — เวอร์ชัน "CMD แบบ shell form" ไว้เทียบพฤติกรรมตอน docker stop
 #
-# ต่อยอดจาก image ที่ build เสร็จแล้ว (campusops-web:lab3) แล้วเปลี่ยนแค่บรรทัด CMD
+# ต่อยอดจาก image ที่ build เสร็จแล้ว (skillspace-web:lab3) แล้วเปลี่ยนแค่บรรทัด CMD
 # shell form ทำให้ /bin/sh เป็น PID 1 แทน node → sh รับ SIGTERM แล้วไม่ส่งต่อให้ลูก
 # ผลคือ docker stop ต้องรอครบ 10 วินาทีแล้วจึง SIGKILL
 #
 # อย่าใช้ไฟล์นี้ส่งมอบลูกค้า — ใช้ Dockerfile (3 stage) เท่านั้น
 # ---------------------------------------------------------------------
-FROM campusops-web:lab3
+FROM skillspace-web:lab3
 CMD node server.js; echo stopped
