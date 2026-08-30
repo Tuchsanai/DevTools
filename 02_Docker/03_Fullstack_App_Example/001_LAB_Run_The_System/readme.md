@@ -23,19 +23,17 @@
 
 ## 0. เตรียมเครื่องปฏิบัติการ
 
-### 0.1 ลบเครื่องปฏิบัติการชื่อเดิม
+### 0.1 ลบเครื่องปฏิบัติการเดิมและสร้างเครื่องใหม่
 
-📝 **คำอธิบาย:** ขั้นนี้ทำให้รัน LAB ซ้ำได้โดยไม่เกิดชื่อคอนเทนเนอร์ซ้ำ รันบนเครื่องผู้ใช้
+📝 **คำอธิบาย:** รันบนเครื่องผู้ใช้ คำสั่งแรกลบคอนเทนเนอร์ชื่อเดิมแบบเจาะจงเพื่อป้องกันชื่อซ้ำและทำให้เริ่ม LAB จากสถานะที่คาดเดาได้ หากยังไม่มีคอนเทนเนอร์เดิมจะไม่แสดงข้อผิดพลาด
 
 ```bash
 docker rm -f devtools-fullstack-lab001 2>/dev/null
 ```
 
-✅ **ผลลัพธ์ที่คาดหวัง:** แสดง `devtools-fullstack-lab001` หากมีคอนเทนเนอร์เดิม หรือไม่แสดงข้อความหากไม่พบ
+✅ **ผลลัพธ์ที่คาดหวัง:** แสดง `devtools-fullstack-lab001` หากลบของเดิม หรือไม่แสดงข้อความหากไม่พบ
 
-### 0.2 สร้างเครื่องปฏิบัติการ
-
-📝 **คำอธิบาย:** `--privileged` อนุญาต Docker-in-Docker และ `-p 2222:22` ส่ง SSH จากเครื่องผู้ใช้ไปยังเครื่องปฏิบัติการ
+📝 **คำอธิบาย:** คำสั่งถัดมาสร้างเครื่องปฏิบัติการใหม่ `--privileged` อนุญาต Docker-in-Docker ส่วน `-p 2222:22` ส่งการเชื่อมต่อ SSH จากพอร์ต `2222` ของเครื่องผู้ใช้ไปยังพอร์ต `22` ภายในคอนเทนเนอร์
 
 ```bash
 docker run -dit --name devtools-fullstack-lab001 --privileged -p 2222:22 tuchsanai/devtools:2569_1
@@ -43,7 +41,7 @@ docker run -dit --name devtools-fullstack-lab001 --privileged -p 2222:22 tuchsan
 
 ✅ **ผลลัพธ์ที่คาดหวัง:** Docker แสดง container ID หนึ่งบรรทัด
 
-### 0.3 ตรวจสถานะเครื่องปฏิบัติการ
+### 0.2 ตรวจสถานะเครื่องปฏิบัติการ
 
 📝 **คำอธิบาย:** การสร้างสำเร็จยังไม่รับรองว่า process หลักทำงาน จึงตรวจสถานะแยกต่างหาก
 
@@ -53,7 +51,7 @@ docker ps --filter name=devtools-fullstack-lab001
 
 ✅ **ผลลัพธ์ที่คาดหวัง:** ชื่อ `devtools-fullstack-lab001` มีสถานะ `Up` และมี port mapping `2222->22`
 
-### 0.4 เชื่อมต่อ SSH
+### 0.3 เชื่อมต่อ SSH
 
 📝 **คำอธิบาย:** image สำหรับ LAB ใช้บัญชี `root` และรหัสผ่าน LAB-only คือ `passwd`
 
@@ -63,27 +61,35 @@ ssh root@localhost -p 2222
 
 ✅ **ผลลัพธ์ที่คาดหวัง:** prompt เปลี่ยนเป็น `root@<container-id>:~#` โดย container ID แตกต่างกันได้
 
-### 0.5 ตรวจ Docker ภายในเครื่องปฏิบัติการ
+### 0.4 ตรวจ Docker และ Docker Compose ภายในเครื่องปฏิบัติการ
 
-📝 **คำอธิบาย:** ยืนยันว่า Docker CLI ติดต่อ daemon ที่ทำงานอยู่ภายในเครื่องปฏิบัติการได้
-
-```bash
-docker --version
-```
-
-✅ **ผลลัพธ์ที่คาดหวัง:** แสดง Docker version โดยไม่มี `Cannot connect to the Docker daemon`
-
-📝 **คำอธิบาย:** ตรวจ Compose แยกอีกขั้นเพื่อเตรียมพื้นฐานสำหรับ LAB 005
+📝 **คำอธิบาย:** ตรวจ Docker Engine และ Compose ในขั้นเดียว คำสั่งแรกยืนยันว่า CLI ติดต่อ Docker daemon ภายในเครื่องปฏิบัติการได้ ส่วนคำสั่งที่สองยืนยันว่า Compose พร้อมสำหรับ LAB 005 เครื่องหมาย `&&` ทำให้ตรวจ Compose ต่อเมื่อ Docker พร้อมใช้งานแล้วเท่านั้น
 
 ```bash
-docker compose version
+docker --version && docker compose version
 ```
 
-✅ **ผลลัพธ์ที่คาดหวัง:** แสดง Docker Compose version เลขรุ่นอาจแตกต่างกัน
+✅ **ผลลัพธ์ที่คาดหวัง:** แสดง `Docker version ...` และ `Docker Compose version ...` ต่อเนื่องกัน โดยไม่มี `Cannot connect to the Docker daemon` เลขรุ่นอาจแตกต่างกัน
 
-### 0.6 รับ source code
+### 0.5 รับ source code
 
-📝 **คำอธิบาย:** clone repository จริงภายในเครื่องปฏิบัติการ เพื่อให้ schema, seed และ Python examples อยู่ใน environment เดียวกับ database client
+📝 **คำอธิบาย:** สร้างไดเรกทอรี `skillspace-lab` เป็นพื้นที่ทดลองเฉพาะ เพื่อให้ repository, virtual environment และไฟล์ที่เกิดจาก LAB อยู่ภายใต้ตำแหน่งเดียวกัน `-p` ทำให้รันซ้ำได้แม้ไดเรกทอรีมีอยู่แล้ว
+
+```bash
+mkdir -p skillspace-lab
+```
+
+✅ **ผลลัพธ์ที่คาดหวัง:** คำสั่งไม่แสดงข้อความ และมีไดเรกทอรี `/root/skillspace-lab`
+
+📝 **คำอธิบาย:** เปลี่ยน working directory เข้าสู่พื้นที่ทดลองก่อนรับ source code
+
+```bash
+cd skillspace-lab
+```
+
+✅ **ผลลัพธ์ที่คาดหวัง:** prompt อยู่ภายใต้ `/root/skillspace-lab` โดยไม่มี error
+
+📝 **คำอธิบาย:** clone repository จริงภายในไดเรกทอรีทดลอง เพื่อให้ schema, seed และ Python examples อยู่ใน environment เดียวกับ database client
 
 ```bash
 git clone https://github.com/Tuchsanai/DevTools.git
@@ -91,13 +97,13 @@ git clone https://github.com/Tuchsanai/DevTools.git
 
 ✅ **ผลลัพธ์ที่คาดหวัง:** แสดง `Cloning into 'DevTools'...` และดาวน์โหลดเสร็จสมบูรณ์
 
-📝 **คำอธิบาย:** เปลี่ยนไดเรกทอรีเข้าสู่ LAB 001 ก่อนรันคำสั่งถัดไป
+📝 **คำอธิบาย:** repository ถูกสร้างเป็น `/root/skillspace-lab/DevTools` จึงเปลี่ยน working directory จากพื้นที่ทดลองเข้าสู่ LAB 001 ด้วย path สัมพัทธ์นี้
 
 ```bash
 cd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System
 ```
 
-✅ **ผลลัพธ์ที่คาดหวัง:** คำสั่งไม่แสดง error
+✅ **ผลลัพธ์ที่คาดหวัง:** คำสั่งไม่แสดง error และ working directory คือ `/root/skillspace-lab/DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System`
 
 📝 **คำอธิบาย:** ตรวจไฟล์ที่เป็น input ของ PostgreSQL ก่อนเริ่มคอนเทนเนอร์
 

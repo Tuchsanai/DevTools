@@ -1071,9 +1071,12 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
         <pre class="code xs">docker rm -f devtools-fullstack-lab001 <span class="d">2&gt;/dev/null</span>
 docker run <span class="k">-dit</span> <span class="k">--name</span> devtools-fullstack-lab001 <span class="k">--privileged</span> <span class="k">-p</span> <span class="y">2222:22</span> tuchsanai/devtools:2569_1
 ssh root@localhost <span class="k">-p</span> 2222  <span class="c"># LAB password: passwd</span>
+docker --version <span class="k">&amp;&amp;</span> docker compose version
+mkdir <span class="k">-p</span> skillspace-lab
+cd skillspace-lab
 git clone https://github.com/Tuchsanai/DevTools.git
 cd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System</pre>
-        <div class="note" style="margin-top:10px; font-size:14.5px">ตรวจ <code>docker --version</code> และ <code>docker compose version</code> ภายในเครื่องปฏิบัติการก่อนเริ่มฐานข้อมูล</div>
+        <div class="note" style="margin-top:10px; font-size:14.5px">ก่อน clone สร้างและเข้า <code>/root/skillspace-lab</code> เพื่อรวม repository และไฟล์ทดลองไว้ใต้ตำแหน่งเดียว</div>
       </div>
     </div>
     <div class="note a">เต็ม ๆ ที่ <code>001_LAB_Run_The_System/readme.md</code> · สิ่งที่มักเข้าใจผิด · เตรียมเครื่องเรียน</div>
@@ -2831,8 +2834,8 @@ $ docker compose -p skillspace up -d <span class="g">--no-build</span> → GET /
       eyebrow:'ตอนที่ 4 · LAB 1 · PostgreSQL FIRST', foot:'LAB 1 · ปฐมนิเทศก่อนลงมือ',
       steps:[
         [null,'ภารกิจ: หนึ่ง database · ห้า tables','อ่าน mental model ก่อนพิมพ์คำสั่ง','skillspace เป็น database เดียว; assets, tickets, loans, parts, stock_moves คือตาราง','Browser → Next.js web → FastAPI api → PostgreSQL db'],
-        [null,'เตรียมเครื่องปฏิบัติการ','ลบชื่อเดิม รัน tuchsanai/devtools:2569_1 แล้วเชื่อมต่อ SSH','ใช้ชื่อ devtools-fullstack-lab001 และพอร์ต 2222 คงที่เพื่อคัดลอกคำสั่งได้ทันที','docker rm -f devtools-fullstack-lab001 2&gt;/dev/null\ndocker run -dit --name devtools-fullstack-lab001 --privileged -p 2222:22 tuchsanai/devtools:2569_1\nssh root@localhost -p 2222'],
-        [null,'รับ source code ภายในเครื่องปฏิบัติการ','clone ด้วย HTTPS URL จริง แล้วเข้า LAB 001','GitHub เป็นขั้นเตรียม; วัตถุประสงค์หลักคือ PostgreSQL','git clone https://github.com/Tuchsanai/DevTools.git\ncd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System'],
+        [null,'เตรียมเครื่องปฏิบัติการ','ขั้น 0.1 ลบชื่อเดิมและสร้างเครื่องใหม่ แล้วจึงเชื่อมต่อ SSH','ใช้ชื่อ devtools-fullstack-lab001 และพอร์ต 2222 คงที่; หลัง SSH ตรวจ Engine และ Compose ในบรรทัดเดียว','docker rm -f devtools-fullstack-lab001 2&gt;/dev/null\ndocker run -dit --name devtools-fullstack-lab001 --privileged -p 2222:22 tuchsanai/devtools:2569_1\nssh root@localhost -p 2222\ndocker --version &amp;&amp; docker compose version'],
+        [null,'รับ source code ภายในเครื่องปฏิบัติการ','สร้าง skillspace-lab แล้ว clone ด้วย HTTPS URL จริง','repository อยู่ที่ /root/skillspace-lab/DevTools ก่อนเข้า LAB 001','mkdir -p skillspace-lab\ncd skillspace-lab\ngit clone https://github.com/Tuchsanai/DevTools.git\ncd DevTools/02_Docker/03_Fullstack_App_Example/001_LAB_Run_The_System'],
         [null,'Schema ก่อน Seed','อ่านสองไฟล์แล้วทำนายผลก่อนรัน','Entrypoint เรียงตามชื่อและรันเมื่อ data directory ว่าง','01-schema.sql → CREATE TABLE × 5\n02-seed.sql   → INSERT INTO ทั้ง 5 tables'],
         [null,'เขียน Python ทีละส่วน','สร้าง connection, schema query, parameter และ transaction','Python เป็น database client เพียงช่องทางเดียว; Browser ไม่ต่อฐานข้อมูล','python python/01_connect.py\npython python/02_query.py\npython python/03_rollback.py\npython python/04_commit.py']
       ]
