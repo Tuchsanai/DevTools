@@ -1,0 +1,641 @@
+<!-- ===== 4.01 : ตอนที่ 4 divider ===== -->
+<div class="slot" data-sec="4">
+ <section class="slide section">
+  <div class="s-body"><div class="num-big">04</div><h1>การติดตามการพัฒนาผลิตภัณฑ์ — Jira &amp; Trello</h1>
+   <div class="m">เครื่องมือ tracking ตอบคำถามว่า "งานไปถึงไหน คอขวดอยู่ตรงไหน จะเสร็จเมื่อใด" — เรียนแนวคิดผ่าน Jira และ Trello แล้วเทียบกับ Plane ที่เรารันเอง ทั้งโมเดลข้อมูล รายงาน automation และ API</div></div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.02 : tracking loop ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · แนวคิด</div><h2>"การติดตาม" คือวงจร <em>Plan → Do → Measure → Adapt</em> ไม่ใช่การกรอกสถานะ</h2>
+    <div class="sub">เครื่องมือมีหน้าที่ทำให้วงจรนี้หมุนได้ทุกวันโดยไม่ต้องถามในที่ประชุม</div></div>
+  <div class="s-body">
+    <div class="g21 mid">
+      <div><div class="fig fix" style="height:380px"><img data-a="tracking_loop" alt="วงจร Plan Do Measure Adapt รอบ delivery dashboard พร้อม REST API Webhooks และ CSV"></div>
+        <div class="figcap">Plan = backlog + estimate · Do = งานเคลื่อนผ่าน state · Measure = burndown, velocity, lead time · Adapt = จัดลำดับใหม่, retrospective</div></div>
+      <div style="display:flex; flex-direction:column; gap:12px">
+        <div class="card a"><h4>Project tracking vs Product tracking</h4><p>Project tracking วัดว่างานตามแผนเสร็จทันเวลาและงบหรือไม่ (scope · time · cost) ส่วน Product tracking วัดว่าสิ่งที่ส่งมอบสร้างคุณค่าจริงหรือไม่ และปรับลำดับความสำคัญได้ต่อเนื่อง — ทีม Agile ต้องการทั้งสองในเครื่องมือเดียว</p></div>
+        <div class="card o"><h4>Leading vs Lagging indicators</h4><p><b>Leading</b> เห็นก่อนผลลัพธ์ เช่น WIP, งานที่ค้างเกิน 5 วัน, จำนวนงานที่ถูก block — แก้ได้ทันที<br><b>Lagging</b> สรุปผลย้อนหลัง เช่น velocity, lead time, bug หลังปล่อย — ใช้ประเมินและวางแผนรอบถัดไป</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.03 : Jira overview ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Jira</div><h2>Jira: <em>issue</em> คือหน่วยพื้นฐาน จัดเป็นลำดับชั้นและมีฟิลด์ที่ปรับแต่งได้</h2></div>
+  <div class="s-body">
+    <div class="grid3">
+      <div class="card a"><h4><span class="n">1</span>ที่มา</h4><p>Atlassian (ซิดนีย์) เปิดตัว Jira ปี 2002 เป็น bug tracker ก่อนขยายเป็นเครื่องมือ Agile เต็มรูปแบบ (ชื่อย่อจาก "Gojira") — ปัจจุบันมี Jira Cloud (SaaS) และ Data Center (ติดตั้งเอง)</p></div>
+      <div class="card"><h4><span class="n">2</span>ประเภทโปรเจกต์</h4><p><b>Software</b> — Scrum/Kanban สำหรับทีมพัฒนา · <b>Business</b> (Work Management) — งานทั่วไปขององค์กร · <b>Service Management</b> — ITSM: request, SLA, queue — ทุกประเภทใช้ issue เป็นหน่วยเดียวกัน</p></div>
+      <div class="card"><h4><span class="n">3</span>โครงสร้างเสริม</h4><p><b>Custom fields</b> เพิ่มฟิลด์เอง (ตัวเลข วันที่ รายการเลือก) · <b>Components</b> ส่วนย่อยของระบบพร้อม default assignee · <b>Versions / Releases</b> จัดกลุ่ม issue ตามรุ่นที่จะปล่อย และออก release notes</p></div>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px">ลำดับชั้นของ issue types</div>
+      <div class="flow"><div class="b k"><div class="t">Epic</div><div class="s">งานใหญ่ กินหลาย sprint</div></div><span class="ar">→</span><div class="b a"><div class="t">Story · Task · Bug</div><div class="s">หน่วยงานระดับ sprint</div></div><span class="ar">→</span><div class="b"><div class="t">Sub-task</div><div class="s">แตกย่อยภายในทีม</div></div></div>
+    </div>
+    <div class="note a"><b>เทียบ Plane CE</b> — Work item + Sub-work item (ฟิลด์ <code>parent</code>) แทน Story/Sub-task และใช้ <b>Module</b> รวมงานหลาย cycle แทน Epic; Epic แบบ issue type และ custom properties เป็นของรุ่นเสียเงิน (Pro+)</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.04 : Jira workflow ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Jira workflow</div><h2>Workflow = <em>สถานะ + กฎการเปลี่ยนสถานะ</em> ที่ทีมตกลงกันไว้ล่วงหน้า</h2></div>
+  <div class="s-body">
+    <div class="flow"><div class="b"><div class="t">To Do</div><div class="s">category: To Do</div></div><span class="ar">→</span><div class="b a"><div class="t">In Progress</div><div class="s">category: In Progress</div></div><span class="ar">→</span><div class="b a"><div class="t">In Review</div><div class="s">category: In Progress</div></div><span class="ar">→</span><div class="b k"><div class="t">Done</div><div class="s">category: Done · resolution</div></div><span class="ar">+</span><div class="b" style="border-color:var(--crit)"><div class="t" style="color:var(--crit)">Blocked</div><div class="s">เข้า/ออกได้จาก To Do และ In Progress</div></div></div>
+    <div class="g11" style="margin-top:4px">
+      <dl class="kv">
+        <dt>Status</dt><dd>สถานะหนึ่งใน workflow ทุกสถานะสังกัด category To Do / In Progress / Done</dd>
+        <dt>Transition</dt><dd>ลูกศรระหว่างสถานะ — ถ้าไม่มีลูกศร ผู้ใช้ย้ายไม่ได้</dd>
+        <dt>Resolution</dt><dd>เหตุผลที่ปิด (Done, Won't Do, Duplicate) — ต้องตั้งเมื่อเข้าสถานะสุดท้าย</dd>
+        <dt>Condition</dt><dd>ใครกดได้ เช่น เฉพาะ assignee หรือ role Reviewer</dd>
+        <dt>Validator</dt><dd>ตรวจข้อมูลก่อนย้าย เช่น ต้องมี fix version</dd>
+        <dt>Post-function</dt><dd>ทำอัตโนมัติหลังย้าย เช่น assign กลับผู้รายงาน, ยิง webhook</dd>
+      </dl>
+      <div>
+        <table class="tbl sm">
+          <thead><tr><th>Jira status category</th><th>Plane state group</th></tr></thead>
+          <tbody>
+            <tr><td><b>To Do</b></td><td><code>backlog</code> · <code>unstarted</code> (Backlog, Todo)</td></tr>
+            <tr><td><b>In Progress</b></td><td><code>started</code> (In Progress + state ที่เพิ่มเอง เช่น In Review)</td></tr>
+            <tr><td><b>Done</b></td><td><code>completed</code> · <code>cancelled</code> (Done, Cancelled)</td></tr>
+            <tr><td class="mut">— ไม่มี</td><td><code>triage</code> ซ่อนไว้ใช้กับ Intake</td></tr>
+          </tbody>
+        </table>
+        <div class="note w" style="margin-top:10px"><b>Plane CE ไม่มี transition rule</b> — ย้ายจาก state ใดไปใดก็ได้ ไม่มี condition/validator; "Automations and workflows" เป็นรุ่นเสียเงิน (Pro+)</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.05 : Jira boards ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Jira boards</div><h2>บอร์ดสองแบบ: <em>Scrum board</em> ผูกกับ sprint · <em>Kanban board</em> ผูกกับ WIP</h2></div>
+  <div class="s-body">
+    <div class="grid2">
+      <div class="card a"><h4>Scrum board</h4>
+        <ul class="bul sm">
+          <li><b>Backlog view</b> — จัดลำดับ ประมาณค่า แล้วลาก story เข้า sprint</li>
+          <li><b>Active sprint</b> — คอลัมน์ตาม workflow เห็นเฉพาะงานใน sprint ปัจจุบัน</li>
+          <li><b>Complete sprint</b> — งานที่ไม่เสร็จถูกส่งกลับ backlog หรือ sprint ถัดไป</li>
+          <li>รายงานประจำ: burndown, velocity, sprint report</li>
+        </ul></div>
+      <div class="card o"><h4>Kanban board</h4>
+        <ul class="bul sm">
+          <li><b>ไม่มี sprint</b> — งานไหลต่อเนื่องจาก backlog ผ่านคอลัมน์</li>
+          <li><b>Columns ↔ statuses</b> — หนึ่งคอลัมน์ผูกได้หลาย status (board settings → Columns)</li>
+          <li><b>WIP limit</b> ต่อคอลัมน์ (min/max) คอลัมน์เปลี่ยนสีเมื่อเกิน</li>
+          <li><b>Swimlanes</b> แบ่งแถวตาม epic, assignee หรือ JQL</li>
+          <li>รายงานประจำ: cumulative flow diagram, control chart</li>
+        </ul></div>
+    </div>
+    <div class="grid3">
+      <div class="card d"><h4>จังหวะเวลา</h4><p>Scrum: sprint 1–4 สัปดาห์ วางแผนและรีวิวเป็นรอบ · Kanban: ต่อเนื่อง ปล่อยงานได้ทุกเมื่อที่พร้อม</p></div>
+      <div class="card d"><h4>การประมาณค่า</h4><p>Scrum: story points เพื่อคำนวณ velocity · Kanban: ไม่บังคับ ใช้ cycle time และ throughput แทน</p></div>
+      <div class="card d"><h4>ใน Plane</h4><p>เปิด Cycles = ทำงานแบบ Scrum · ปิด Cycles แล้วใช้ Board + Intake = แบบ Kanban — เลือกได้ต่อโปรเจกต์</p></div>
+    </div>
+    <div class="note a"><b>Quick filters</b> — ปุ่มกรองบนบอร์ดที่นิยามด้วย JQL เช่น <code>assignee = currentUser()</code> · <b>Plane</b>: Board layout + Display (Group by / Sub-group by = swimlanes) + Views ที่บันทึกได้ — แต่ CE ไม่มี WIP limit ทีมต้องตกลงกันเอง</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.06 : JQL ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · JQL</div><h2>JQL — <em>ภาษาคิวรี</em> ที่อยู่เบื้องหลัง filter, board, report และ automation ของ Jira</h2></div>
+  <div class="s-body">
+    <div class="g11">
+      <pre class="code sm"><span class="c"># 1 งานของฉันที่ยังไม่ปิด</span>
+<span class="k">assignee</span> = currentUser() <span class="y">AND</span> <span class="k">resolution</span> = EMPTY
+<span class="c"># 2 bug ที่ต้องรีบทำในโปรเจกต์ PLAB</span>
+<span class="k">project</span> = PLAB <span class="y">AND</span> <span class="k">issuetype</span> = Bug <span class="y">AND</span> <span class="k">priority</span> in (Highest, High)
+<span class="c"># 3 งานใน sprint ที่กำลังทำ เรียงตามความสำคัญ</span>
+<span class="k">project</span> = PLAB <span class="y">AND</span> <span class="k">sprint</span> in openSprints() <span class="y">ORDER BY</span> priority DESC
+<span class="c"># 4 งานที่ค้างใน In Progress โดยไม่ขยับมา 7 วัน</span>
+<span class="k">status</span> = "In Progress" <span class="y">AND NOT</span> <span class="k">status</span> CHANGED AFTER -7d
+<span class="c"># 5 งานที่ปิดในสัปดาห์นี้ (ใช้ทำรายงาน)</span>
+<span class="k">resolved</span> &gt;= startOfWeek() <span class="y">AND</span> <span class="k">resolved</span> &lt;= endOfWeek()</pre>
+      <div style="display:flex; flex-direction:column; gap:12px">
+        <div>
+          <div class="eyebrow" style="margin-bottom:6px">ไวยากรณ์ <code>field operator value</code> เชื่อมด้วย AND / OR / NOT</div>
+          <table class="tbl xs">
+            <tbody>
+              <tr><td><b>เปรียบเทียบ</b></td><td><code>=</code> <code>!=</code> <code>&gt;</code> <code>&gt;=</code> <code>&lt;</code> <code>&lt;=</code></td></tr>
+              <tr><td><b>ข้อความ</b></td><td><code>~</code> contains · <code>!~</code> not contains</td></tr>
+              <tr><td><b>ชุดค่า / ค่าว่าง</b></td><td><code>IN</code> <code>NOT IN</code> · <code>IS EMPTY</code> <code>IS NOT EMPTY</code></td></tr>
+              <tr><td><b>ประวัติ</b></td><td><code>WAS</code> <code>WAS IN</code> <code>WAS NOT</code> <code>CHANGED</code> + AFTER / BEFORE / BY / FROM / TO</td></tr>
+              <tr><td><b>ฟังก์ชัน · เวลา</b></td><td><code>currentUser()</code> <code>openSprints()</code> <code>startOfWeek()</code> · สัมพัทธ์ <code>-7d</code> <code>-2w</code></td></tr>
+              <tr><td><b>เรียงลำดับ</b></td><td><code>ORDER BY</code> รับหลายคีย์ เช่น <code>priority DESC, created ASC</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card o"><h4>เทียบกับ Plane</h4><p><b>Views</b> = filter ที่บันทึกไว้ (state group, priority, assignee, label, cycle, module, วันที่) ด้วยตัวดำเนินการ is / is any of / between — ไม่มีภาษาคิวรี และ REST v1 ตอบ 400 เมื่อส่ง <code>?pql=</code> ใน CE · Workspace views แสดงได้เฉพาะ Table</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.07 : Jira reports ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Jira reports</div><h2>รายงานของ Jira: <em>แต่ละกราฟตอบคำถามเดียว</em></h2></div>
+  <div class="s-body">
+    <table class="tbl sm">
+      <thead><tr><th style="width:190px">รายงาน</th><th>คำถามที่ตอบ</th><th style="width:110px">ใช้กับ</th></tr></thead>
+      <tbody>
+        <tr><td><b>Burndown</b></td><td>งานคงเหลือใน sprint เทียบเส้น ideal — จะเสร็จทันไหม</td><td><span class="tag a">Scrum</span></td></tr>
+        <tr><td><b>Burnup</b></td><td>งานเสร็จสะสมเทียบเส้น scope — เห็นการเพิ่ม scope กลาง sprint</td><td><span class="tag a">Scrum</span></td></tr>
+        <tr><td><b>Velocity</b></td><td>คะแนนที่ commit เทียบที่ทำเสร็จต่อ sprint — ใช้วางแผนรอบถัดไป</td><td><span class="tag a">Scrum</span></td></tr>
+        <tr><td><b>Sprint report</b></td><td>รายการงานเสร็จ / ไม่เสร็จ / ถูกเพิ่มกลาง sprint</td><td><span class="tag a">Scrum</span></td></tr>
+        <tr><td><b>Cumulative flow</b></td><td>จำนวนงานในแต่ละสถานะตามเวลา — WIP และคอขวด</td><td><span class="tag o">Kanban</span></td></tr>
+        <tr><td><b>Control chart</b></td><td>cycle time ของแต่ละงาน พร้อมค่าเฉลี่ยและ rolling average</td><td><span class="tag o">Kanban</span></td></tr>
+        <tr><td><b>Epic / Release burndown</b></td><td>ความคืบหน้าของ epic หรือ version ข้ามหลาย sprint — จะปล่อยรุ่นได้เมื่อใด</td><td><span class="tag a">Scrum</span></td></tr>
+        <tr><td><b>Created vs Resolved</b></td><td>อัตรางานเข้าเทียบงานปิด — backlog กำลังโตหรือหด</td><td><span class="tag d">ทุกแบบ</span></td></tr>
+      </tbody>
+    </table>
+    <div class="note a"><b>Dashboards</b> — หน้ารวม <b>gadget</b> (Filter results, Pie chart, Two-dimensional statistics, Sprint health) ที่ผูกกับ filter/JQL แชร์ให้ผู้มีส่วนได้เสียดูได้โดยไม่ต้องเปิดบอร์ด</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.08 : Jira automation + REST ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Jira automation &amp; API</div><h2>Automation rules และ <em>REST API v3</em> — ให้ Jira ทำงานแทนคน</h2></div>
+  <div class="s-body">
+    <div class="g11">
+      <div style="display:flex; flex-direction:column; gap:12px">
+        <div class="card a"><h4>Automation rule = Trigger → Condition → Action</h4><p><b>Trigger</b> issue created / transitioned / scheduled / incoming webhook<br><b>Condition</b> JQL condition, ค่าฟิลด์, ผู้ใช้<br><b>Action</b> transition, assign, comment, แก้ฟิลด์, สร้าง sub-task, ส่ง Slack/อีเมล</p></div>
+        <div class="card o"><h4>ตัวอย่างที่ทีมใช้บ่อย</h4><p>เมื่อ sub-task ทุกตัวเป็น Done → ย้าย parent ไป Done · เมื่อ issue ค้างใน In Review เกิน 2 วัน → แจ้ง reviewer · เมื่อ PR ถูก merge (webhook) → transition ไป Ready for QA</p></div>
+        <div class="note w"><b>Plane CE</b> มี automation เพียง auto-archive และ auto-close ตามเวลา; rule แบบ trigger-action เป็นรุ่นเสียเงิน (Pro+)</div>
+      </div>
+      <pre class="code sm"><span class="c"># Basic auth = email:API token (สร้างที่ id.atlassian.com)</span>
+curl -u <span class="g">"you@example.com:$JIRA_TOKEN"</span> \
+  -H <span class="g">"Content-Type: application/json"</span> \
+  -X POST <span class="y">"https://your-site.atlassian.net/rest/api/3/issue"</span> \
+  -d '{"fields":{"project":{"key":"PLAB"},
+        "summary":"Build Docker image",
+        "issuetype":{"name":"Task"}}}'
+
+<span class="c"># อ่านด้วย JQL (แบ่งหน้าด้วย nextPageToken)</span>
+curl -u <span class="g">"you@example.com:$JIRA_TOKEN"</span> \
+  <span class="y">"https://your-site.atlassian.net/rest/api/3/search/jql?jql=project=PLAB"</span>
+
+<span class="c"># ย้ายสถานะ = POST transitions ไม่ใช่แก้ฟิลด์ status ตรง ๆ</span>
+curl -u <span class="g">"you@example.com:$JIRA_TOKEN"</span> -X POST \
+  <span class="y">".../rest/api/3/issue/PLAB-12/transitions"</span> -d '{"transition":{"id":"31"}}'</pre>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.09 : Trello ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Trello</div><h2>Trello: <em>Board › List › Card</em> — Kanban ที่เข้าใจได้ในห้านาที</h2></div>
+  <div class="s-body">
+    <div class="flow"><div class="b k"><div class="t">Board</div><div class="t" style="font-size:12.5px; font-weight:400; color:#a1a1aa">หนึ่งโปรเจกต์ / หนึ่งทีม</div></div><span class="ar">→</span><div class="b a"><div class="t">List</div><div class="s">คอลัมน์ = สถานะ หรือหมวด</div></div><span class="ar">→</span><div class="b a"><div class="t">Card</div><div class="s">หนึ่งงาน ลากข้ามคอลัมน์</div></div><span class="ar">→</span><div class="b"><div class="t">Checklist</div><div class="s">งานย่อยในการ์ด</div></div></div>
+    <div class="grid3">
+      <div class="card a"><h4><span class="n">1</span>ที่มา</h4><p>Fog Creek Software เปิดตัว Trello ปี 2011 แยกเป็นบริษัทปี 2014 และ Atlassian ซื้อกิจการต้นปี 2017 (ราว 425 ล้านดอลลาร์) — จึงอยู่ตระกูลเดียวกับ Jira แต่คงปรัชญา "เรียบง่าย" ไว้</p></div>
+      <div class="card"><h4><span class="n">2</span>สิ่งที่การ์ดเก็บ</h4><p><b>Labels</b> สี + ชื่อ · <b>Checklists</b> พร้อมเปอร์เซ็นต์ · <b>Due date</b> + การเตือน · <b>Members</b> · <b>Attachments</b> · comments · cover · custom fields (เดิมเป็น Power-Up)</p></div>
+      <div class="card w"><h4><span class="n">3</span>Card aging</h4><p>Power-Up ที่ทำให้การ์ดซีดจางหรือ "ผุ" ตามระยะเวลาที่ไม่ถูกแตะ — เป็น leading indicator ของงานค้างที่มองเห็นได้โดยไม่ต้องเปิดรายงาน</p></div>
+    </div>
+    <div class="note a"><b>Trello ยึด Kanban อย่างง่าย</b> — ไม่มี sprint, story point, workflow rule ในตัว ยืดหยุ่นสูง แต่วินัย (WIP, นิยามของ Done) ต้องมาจากทีมเอง</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.10 : Trello Power-Ups, Butler, API ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Trello ขยายได้</div><h2>Power-Ups · Butler · Views และ <em>Trello REST API</em></h2></div>
+  <div class="s-body">
+    <div class="g11">
+      <div style="display:flex; flex-direction:column; gap:12px">
+        <div class="card a"><h4>Power-Ups</h4><p>ส่วนขยายติดตั้งต่อบอร์ด เช่น Calendar, Card Aging, GitHub, Slack, Jira — เพิ่มความสามารถที่ Trello ตั้งใจไม่ใส่มาแต่แรก</p></div>
+        <div class="card o"><h4>Butler automation</h4><p><b>Rules</b> when … then … (เช่น การ์ดถูกย้ายไป Done → ติ๊ก due complete และโพสต์ Slack) · <b>Card / Board buttons</b> กดแล้วทำหลายขั้น · <b>Due-date commands</b> · <b>Scheduled commands</b> ทุกวันจันทร์สร้างการ์ดประชุม</p></div>
+        <div class="card"><h4>Views (แผน Premium)</h4><p>Calendar, Timeline, Table, Dashboard, Map — มองข้ามหลายบอร์ดในมุมเวลา ตาราง และสถิติ</p></div>
+      </div>
+      <pre class="code sm"><span class="c"># key ของแอป + token ที่ผู้ใช้อนุญาต ส่งใน query string</span>
+curl <span class="y">"https://api.trello.com/1/boards/$BOARD/lists?key=$KEY&amp;token=$TOKEN"</span>
+curl <span class="y">"https://api.trello.com/1/boards/$BOARD/cards?key=$KEY&amp;token=$TOKEN"</span> \
+  | jq '.[] | {id, name, idList, due, labels}'
+
+<span class="c"># สร้างการ์ดใน list</span>
+curl -X POST <span class="y">"https://api.trello.com/1/cards"</span> \
+  -d <span class="g">"idList=$LIST"</span> -d <span class="g">"name=Build Docker image"</span> \
+  -d <span class="g">"key=$KEY"</span> -d <span class="g">"token=$TOKEN"</span>
+
+<span class="c"># ลงทะเบียน webhook ให้ Trello ยิงกลับมาหาเรา</span>
+curl -X POST <span class="y">"https://api.trello.com/1/webhooks"</span> \
+  -d <span class="g">"callbackURL=https://example.com/hook"</span> -d <span class="g">"idModel=$BOARD"</span> \
+  -d <span class="g">"key=$KEY"</span> -d <span class="g">"token=$TOKEN"</span></pre>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.11 : สามเครื่องมือ สามปรัชญา ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · เปรียบเทียบ</div><h2>สามเครื่องมือ <em>สามปรัชญา</em>: เรียบง่าย · ครบเครื่อง · เป็นเจ้าของเอง</h2></div>
+  <div class="s-body">
+    <div class="g11 mid">
+      <div class="fig fix" style="height:320px"><img data-a="jira_trello_plane" alt="เปรียบเทียบหน้าต่างของ Trello Jira และ Plane"></div>
+      <table class="tbl sm">
+        <thead><tr><th>เครื่องมือ</th><th>License · การติดตั้ง · ราคา</th><th>เหมาะกับ</th></tr></thead>
+        <tbody>
+          <tr><td><b>Trello</b></td><td>proprietary · SaaS เท่านั้น · ฟรีถึง 10 บอร์ดต่อ Workspace</td><td>ทีมเล็ก งานทั่วไป การเรียนรู้ Kanban</td></tr>
+          <tr><td><b>Jira</b></td><td>proprietary · Cloud (ฟรีถึง 10 ผู้ใช้) หรือ Data Center (เสียเงิน)</td><td>องค์กรที่ต้องการ workflow, รายงาน และ compliance เข้มงวด</td></tr>
+          <tr><td><b>Plane</b></td><td>AGPL-3.0 (CE) · self-host ด้วย Docker ฟรี · Cloud ฟรี + Pro/Business/Enterprise เสียเงิน</td><td>ทีมที่ต้องการควบคุมข้อมูลเอง ต้นทุนต่ำ และต่อยอดผ่าน API</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note a"><b>ทำไมเรียนทั้งสาม</b> — แนวคิด (workflow, WIP, burndown, automation, API) เหมือนกัน ต่างกันที่ชื่อเรียกและระดับการควบคุม; รู้แนวคิดแล้วย้ายเครื่องมือได้โดยไม่ต้องเรียนใหม่</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.12 : ตารางเปรียบเทียบ ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · เปรียบเทียบ</div><h2>Trello · Jira · Plane <em>ความสามารถด้านการติดตาม</em></h2></div>
+  <div class="s-body">
+    <table class="tbl sm">
+      <thead><tr><th style="width:150px">หัวข้อ</th><th>Trello</th><th>Jira Software</th><th>Plane CE</th></tr></thead>
+      <tbody>
+        <tr><td><b>โมเดลข้อมูล</b></td><td>Board › List › Card (+ checklist)</td><td>Project › Epic › Issue › Sub-task; custom fields</td><td>Workspace › Project › Work item (+ parent) · Module · Cycle</td></tr>
+        <tr><td><b>Scrum / Kanban</b></td><td>Kanban อย่างง่าย; sprint ต้องจำลองด้วย list</td><td>ทั้งสอง: Scrum board + backlog, Kanban board + WIP limit</td><td>ทั้งสอง: Cycles (sprint) + Board layout; ไม่มี WIP limit</td></tr>
+        <tr><td><b>รายงาน</b></td><td>Dashboard view (Premium)</td><td>Burndown, Velocity, CFD, Control chart, Dashboards</td><td>Cycle burndown, Analytics (Created vs Resolved, Custom insights); ไม่มี velocity</td></tr>
+        <tr><td><b>Automation</b></td><td>Butler rules / buttons / scheduled</td><td>Rules: trigger → condition → action; workflow post-functions</td><td>auto-archive / auto-close; rules เป็นรุ่นเสียเงิน (Pro+)</td></tr>
+        <tr><td><b>API · Webhooks</b></td><td>REST /1 (key + token); webhook ลงนาม HMAC-SHA1</td><td>REST v3 (Basic email:token, OAuth 2.0); webhook + JQL filter</td><td>REST v1 (X-API-Key, cursor); webhook ลงนาม HMAC-SHA256</td></tr>
+        <tr><td><b>Estimates</b></td><td>— (custom field หรือ Power-Up)</td><td>Story points, time tracking, original estimate</td><td>Points (Fibonacci / Linear / Squares) หรือ Categories; Time เป็นรุ่นเสียเงิน (Pro+)</td></tr>
+        <tr><td><b>Intake / triage</b></td><td>list "Inbox", email-to-board</td><td>Jira Service Management: portal, queue, SLA</td><td>Intake: state Triage + สถานะ Pending / Accepted / Rejected / Snoozed / Duplicate</td></tr>
+        <tr><td><b>Import / Export</b></td><td>export JSON (CSV ใน Premium)</td><td>import CSV/JSON; export CSV/XML (JSON ผ่าน REST API)</td><td>export CSV/XLSX/JSON; ไม่มี importer ใน CE (Jira importer มีเฉพาะ Cloud)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.13 : ศัพท์เทียบเคียง d11 ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · ศัพท์เทียบเคียง</div><h2>ศัพท์เดียวกัน <em>คนละชื่อ</em> — อ่านเครื่องมือใหม่ให้ออกภายในหนึ่งตาราง</h2></div>
+  <div class="s-body">
+    <div class="fig fix" style="height:470px"><img data-a="d11" alt="ตารางเทียบศัพท์ Trello Jira Plane เช่น Card Issue Work item"></div>
+    <div class="figcap">Sprint ↔ Cycle · Epic ↔ Module · Column (ผูกได้หลาย status) / Status ↔ State (5 groups) · Butler / Automation ↔ Views + Webhooks + API</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.14 : metrics ภาพ ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Metrics</div><h2>สามกราฟหลัก: <em>Burndown · Cumulative Flow · Velocity</em> และสูตรเบื้องหลัง</h2></div>
+  <div class="s-body">
+    <div class="g21 mid">
+      <div class="fig fix" style="height:400px"><img data-a="burndown_cfd" alt="กราฟ sprint burndown cumulative flow และ velocity"></div>
+      <div style="display:flex; flex-direction:column; gap:11px">
+        <div class="card a"><h4>Burndown / Burn-up</h4><p>Remaining(d) = Total − Σ Done(≤ d) · เส้น ideal = Total × (1 − d/D) — Plane ใช้สูตรเดียวกันจาก <code>completed_at</code> · Burn-up วาด Done สะสมกับเส้น scope แยกกัน จึงเห็น scope creep</p></div>
+        <div class="card o"><h4>Velocity</h4><p>Velocity = Σ points ของงานที่ Done ใน sprint · ค่าเฉลี่ย 3 sprint ล่าสุดใช้พยากรณ์: sprint ที่เหลือ ≈ backlog points ÷ velocity เฉลี่ย</p></div>
+        <div class="card w"><h4>Cumulative flow (CFD)</h4><p>แต่ละแถบ = จำนวนงานในสถานะนั้น ณ สิ้นวัน · ความสูงแถบ In Progress = WIP · ความกว้างแนวนอน ≈ lead time · แถบที่อ้วนขึ้นเรื่อย ๆ = คอขวด</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.15 : flow metrics table ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Flow metrics</div><h2>Lead time · Cycle time · Throughput · WIP aging · Flow efficiency <em>— สูตรและวิธีอ่าน</em></h2></div>
+  <div class="s-body">
+    <table class="tbl sm">
+      <thead><tr><th style="width:170px">Metric</th><th style="width:400px">สูตร</th><th>อ่านอย่างไร</th></tr></thead>
+      <tbody>
+        <tr><td><b>Lead time</b></td><td><code>completed_at − created_at</code></td><td>เวลาที่ผู้ขอรอ ตั้งแต่ขอจนได้รับ</td></tr>
+        <tr><td><b>Cycle time</b></td><td><code>completed_at − started_at</code> (เข้ากลุ่ม started ครั้งแรก)</td><td>เวลาที่ทีมใช้ทำจริง — ส่วนที่ทีมควบคุมได้</td></tr>
+        <tr><td><b>Percentile 85</b></td><td>ค่าที่งาน 85% มี cycle time ไม่เกิน</td><td>ใช้เป็นข้อตกลงกับผู้ขอแทนค่าเฉลี่ย เพราะทนต่อ outlier</td></tr>
+        <tr><td><b>Throughput</b></td><td>จำนวนงานที่เสร็จต่อสัปดาห์</td><td>เทียบเท่า velocity แต่ไม่ต้องประมาณ point</td></tr>
+        <tr><td><b>WIP</b></td><td>จำนวนงานที่อยู่ระหว่างทำ ณ ขณะนี้</td><td>Little's law: Lead time ≈ WIP ÷ Throughput — ลด WIP แล้วเร็วขึ้น</td></tr>
+        <tr><td><b>WIP aging</b></td><td><code>now − started_at</code> ของงานที่ยังไม่เสร็จ</td><td>leading indicator: งานที่แก่กว่า P85 คือสัญญาณเตือนวันนี้</td></tr>
+        <tr><td><b>Flow efficiency</b></td><td>เวลาทำงานจริง ÷ cycle time × 100%</td><td>ต่ำ = รอคิว รอรีวิว รอ deploy มากกว่าลงมือทำ</td></tr>
+      </tbody>
+    </table>
+    <div class="grid2">
+      <div class="note w"><b>การกระจายของ cycle time เบ้ขวา</b> — งานส่วนใหญ่เสร็จเร็ว แต่มีหางยาวไม่กี่งานที่ดึงค่าเฉลี่ยขึ้น จึงรายงานเป็น percentile (P50 / P85 / P95) · อ่านจาก scatter / control chart: จุด = งานหนึ่ง แกน y = cycle time มีเส้น P85 อ้างอิง — จุดที่อยู่เหนือเส้นคือ outlier ที่ต้องถามว่า "ติดอะไร"</div>
+      <div class="note a"><b>ใน Plane</b> — <code>completed_at</code> ถูกตั้งอัตโนมัติเมื่อ state อยู่ในกลุ่ม completed (และล้างเมื่อย้ายกลับ) ส่วน <code>started_at</code> ไม่มีคอลัมน์ ต้องหาจาก activity log (field = state) — LAB 9 ทำสิ่งนี้</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.16 : dashboard 5 คำถาม ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Dashboard ที่ดี</div><h2>Dashboard ที่ดีตอบ <em>5 คำถาม</em> — หนึ่งคำถาม หนึ่ง metric หนึ่งกราฟ</h2></div>
+  <div class="s-body">
+    <table class="tbl sm">
+      <thead><tr><th style="width:230px">คำถาม</th><th>metric ที่ตอบ</th><th style="width:330px">สัญญาณเตือน</th></tr></thead>
+      <tbody>
+        <tr><td><b>1 เสร็จทันไหม</b></td><td>Burndown เทียบเส้น ideal · % completed ของ cycle</td><td>เส้นจริงอยู่เหนือ ideal ติดต่อกัน 3 วัน</td></tr>
+        <tr><td><b>2 คอขวดอยู่ไหน</b></td><td>CFD · จำนวนงานต่อ state</td><td>แถบใดแถบหนึ่งอ้วนขึ้นเรื่อย ๆ</td></tr>
+        <tr><td><b>3 งานค้างนานแค่ไหน</b></td><td>WIP aging · cycle time P85</td><td>มีงานที่อายุเกิน P85</td></tr>
+        <tr><td><b>4 คุณภาพเป็นอย่างไร</b></td><td>bug เปิดใหม่ vs ปิด · งานที่ถูกส่งกลับ (reopen)</td><td>Created &gt; Resolved หลายสัปดาห์ติดกัน</td></tr>
+        <tr><td><b>5 ความเสี่ยงอยู่ตรงไหน</b></td><td>งาน blocked · งาน urgent ที่ไม่มี assignee</td><td>blocked เกิน 10% ของ WIP</td></tr>
+      </tbody>
+    </table>
+    <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:12px">
+      <div class="stat"><div class="v">1</div><div class="l">Burndown + เส้น ideal</div></div>
+      <div class="stat"><div class="v">2</div><div class="l">CFD แยกตาม state</div></div>
+      <div class="stat"><div class="v">3</div><div class="l">WIP aging + เส้น P85</div></div>
+      <div class="stat"><div class="v">4</div><div class="l">Created vs Resolved (bug)</div></div>
+      <div class="stat"><div class="v c">5</div><div class="l">Blocked / unassigned urgent</div></div>
+    </div>
+    <div class="grid2">
+      <div class="note o"><b>One metric per question</b> — กราฟหนึ่งต้องอ่านออกใน 5 วินาที มีเส้นอ้างอิง (ideal, P85, WIP limit) ให้เทียบเสมอ</div>
+      <div class="note w"><b>หลีกเลี่ยง vanity metrics</b> — จำนวน comment, จำนวน issue ที่สร้าง หรือชั่วโมง log ไม่บอกว่าผลิตภัณฑ์ดีขึ้นหรือไม่</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.17 : Plane Analytics ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Plane Analytics</div><h2>Plane Analytics: <em>Overview · Work items · Customized insights</em> และสิ่งที่ CE ไม่มี</h2></div>
+  <div class="s-body">
+    <div class="g21 mid">
+      <div class="fig shot fix" style="height:400px"><img data-a="lab6:ui-analytics-workitems" alt="หน้า Analytics แท็บ Work items ของ Plane"></div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card a"><h4>สองแท็บที่ /analytics</h4><p>ระดับ workspace กรองด้วย <code>project_ids</code> และ <code>date_filter</code> · <b>Overview</b> นับผู้ใช้ · โปรเจกต์ · work items · cycles · intake · <b>Work items</b> สรุป total / started / backlog / unstarted / completed</p></div>
+        <div class="card"><h4>Created vs Resolved</h4><p>กราฟพื้นที่เทียบงานเข้ากับงานปิด — คำถามเดียวกับรายงานของ Jira</p></div>
+        <div class="card o"><h4>Customized insights</h4><p>X-axis 12 ตัวเลือก (state, state group, priority, label, assignee, estimate, cycle, module, วันที่) · Y-axis Work item / Estimate / Epic · ตารางดาวน์โหลด CSV</p></div>
+        <div class="card w"><h4>สิ่งที่ CE ไม่มี</h4><p>velocity chart, control chart, dashboard จัดเอง → LAB 9 คำนวณจาก API (<code>cycles/?cycle_view=completed</code> + activities)</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.18 : Roadmap & release ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Roadmap &amp; release</div><h2>ติดตามระดับ release: Jira versions · Trello timeline · <em>Plane Modules</em></h2></div>
+  <div class="s-body">
+    <div class="g21 mid">
+      <div class="fig shot fix" style="height:380px"><img data-a="lab6:ui-modules-timeline" alt="Plane Modules ในมุมมอง Timeline"></div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card"><h4>Jira</h4><p>Roadmap/Timeline วาง Epic บนแกนเวลา · Versions = release ที่มีวันปล่อย พร้อม release burndown และ release notes</p></div>
+        <div class="card"><h4>Trello</h4><p>Timeline view (Premium) วางการ์ดตามวันเริ่ม-วันครบกำหนด ไม่มีแนวคิด release ในตัว</p></div>
+        <div class="card a"><h4>Plane Modules</h4><p>ชุดงานที่มี lead, members, start/target date และ status <code>backlog · planned · in-progress · paused · completed · cancelled</code> · ดูแบบ List / Gallery / Timeline · burndown ต่อ module (งานหรือ points)</p></div>
+      </div>
+    </div>
+    <div class="note a"><b>Cycle = เวลา</b> (sprint สองสัปดาห์) · <b>Module = ขอบเขต</b> (feature หรือ release) — work item หนึ่งอยู่ได้ทั้งใน cycle และ module พร้อมกัน</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.19 : Intake & triage ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Intake &amp; triage</div><h2>รับเรื่องเข้าแล้ว <em>คัดกรองก่อน</em> — บอร์ดจึงมีแต่งานที่ทีมรับแล้ว</h2></div>
+  <div class="s-body">
+    <div class="g21 mid">
+      <div class="fig shot fix" style="height:380px"><img data-a="lab5:ui-intake" alt="หน้า Intake ของ Plane พร้อมรายการที่รอคัดกรอง"></div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card"><h4>Jira Service Management</h4><p>ลูกค้าส่งผ่าน portal เป็น request type → เข้า queue ของ agent พร้อม SLA; เชื่อมเป็น issue ของทีมพัฒนาได้</p></div>
+        <div class="card"><h4>Trello</h4><p>ใช้ list "Inbox" หรือ email-to-board แปลงอีเมลเป็นการ์ด แล้วผู้ดูแลลากเข้าคอลัมน์ทำงาน</p></div>
+        <div class="card a"><h4>Plane Intake</h4><p>เปิดใน Settings → Features · งานที่ส่งเข้าอยู่ใน state <code>Triage</code> จึงไม่โผล่บนบอร์ด · สถานะ Pending (−2) → Accepted (1) / Rejected (−1) / Snoozed (0) / Duplicate (2) · ผู้ที่ Accept/Decline/Snooze ได้คือ project Admin/Member (Guest ทำไม่ได้) · API <code>POST …/intake-issues/</code></p></div>
+      </div>
+    </div>
+    <div class="note o"><b>หลักการ triage</b> — รับทุกเรื่อง แต่ตัดสินใจ (รับ ปฏิเสธ เลื่อน ซ้ำ) ก่อนเข้า backlog เพื่อไม่ให้ backlog กลายเป็นกล่องรวมคำขอ</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.20 : REST API เทียบสามตัว ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · การเชื่อมต่อ</div><h2>REST API ของทั้งสาม: <em>auth · pagination · rate limit</em> ต่างกันแต่หลักเดียวกัน</h2></div>
+  <div class="s-body">
+    <table class="tbl sm">
+      <thead><tr><th style="width:120px">หัวข้อ</th><th>Trello</th><th>Jira Cloud</th><th>Plane CE</th></tr></thead>
+      <tbody>
+        <tr><td><b>Base URL</b></td><td><code>https://api.trello.com/1</code></td><td><code>https://&lt;site&gt;.atlassian.net/rest/api/3</code></td><td><code>http://localhost:8080/api/v1</code></td></tr>
+        <tr><td><b>Auth</b></td><td>key + token ใน query string</td><td>Basic <code>email:API token</code> หรือ OAuth 2.0</td><td>header <code>X-API-Key: plane_api_…</code></td></tr>
+        <tr><td><b>Pagination</b></td><td><code>limit</code> (≤ 1000) + <code>before</code>/<code>since</code> ตาม id</td><td><code>startAt</code>/<code>maxResults</code>; search/jql ใช้ <code>nextPageToken</code></td><td><code>cursor</code> "per_page:page:is_prev" + <code>next_page_results</code></td></tr>
+        <tr><td><b>Rate limit</b></td><td>300 req/10 s ต่อ key · 100 req/10 s ต่อ token → 429</td><td>คิดตามต้นทุน ไม่ระบุตัวเลขตายตัว → 429 + <code>Retry-After</code></td><td>60 req/นาที ต่อ token → 429 · header <code>X-RateLimit-Remaining/Reset</code></td></tr>
+        <tr><td><b>รูปแบบ ID</b></td><td>id 24 hex + shortLink</td><td>id ตัวเลข + key <code>PLAB-12</code></td><td>UUID + identifier <code>PLAB-12</code> (ใช้ได้เฉพาะ GET work-items)</td></tr>
+        <tr><td><b>Error</b></td><td>ข้อความล้วน 400/401/404</td><td><code>errorMessages[]</code> · <code>errors{}</code></td><td><code>{"error": "…"}</code> 400/404 · 409 ซ้ำ · 429 เกินโควตา</td></tr>
+      </tbody>
+    </table>
+    <div class="note a"><b>หลักเดียวกัน</b> — ทุก API ต้องมีตัวตน (token) แบ่งหน้า (pagination) และจำกัดอัตรา (rate limit); สคริปต์ที่ดีจึงต้องวนหน้าให้ครบ และหยุดรอเมื่อเจอ 429</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.21 : Webhooks ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Webhooks</div><h2>Webhook = เครื่องมือ <em>ยิงเหตุการณ์มาหาเรา</em> — ต้องตรวจลายเซ็นก่อนเชื่อ</h2></div>
+  <div class="s-body">
+    <div class="g11">
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card"><h4>Jira</h4><p>ลงทะเบียนใน Settings → System → Webhooks หรือผ่าน API · เลือก event (issue created / updated / deleted) และกรองด้วย JQL · payload มี <code>issue</code> + <code>changelog</code></p></div>
+        <div class="card"><h4>Trello</h4><p><code>POST /1/webhooks</code> ระบุ callbackURL + idModel · Trello ยิง HEAD ตรวจ URL ก่อน · header <code>X-Trello-Webhook</code> = base64(HMAC-SHA1(body + callbackURL))</p></div>
+        <div class="card a"><h4>Plane</h4><p>Workspace settings → Webhooks · เลือก event project / issue / module / cycle / issue_comment · header <code>X-Plane-Event</code>, <code>X-Plane-Delivery</code>, <code>X-Plane-Signature</code> (HMAC-SHA256 hex ด้วย secret <code>plane_wh_…</code>) · retry 5 ครั้งแล้วปิดเอง · URL localhost ไม่ผ่าน · ส่งไม่สำเร็จ retry สูงสุด 5 ครั้ง (backoff 600 s + jitter) แล้วปิด webhook อัตโนมัติ · URL <code>localhost</code> ถูกปฏิเสธตอนบันทึก และ private IP ถูกบล็อกตอนส่ง (log 400 ไม่ retry) เว้นแต่ hostname อยู่ใน <code>WEBHOOK_ALLOWED_HOSTS</code></p></div>
+      </div>
+      <div>
+        <pre class="code sm"><span class="c"># payload: event · action (create|update|delete) · webhook_id ·
+#          workspace_slug · data · activity</span>
+<span class="k">import</span> hmac, hashlib
+
+<span class="k">def</span> <span class="y">verify</span>(secret: str, raw_body: bytes, sig: str) -&gt; bool:
+    <span class="c"># คำนวณจาก raw bytes ตรง ๆ — ห้าม json.loads แล้ว dumps ใหม่ (ลำดับ/ช่องว่างเปลี่ยน = ลายเซ็นไม่ตรง)</span>
+    mac = hmac.new(secret.encode(), raw_body, hashlib.sha256).hexdigest()
+    <span class="k">return</span> hmac.compare_digest(mac, sig)
+
+<span class="c"># ใน hookwall receiver (stdlib http.server, LAB 8)</span>
+raw = self.rfile.read(<span class="k">int</span>(self.headers[<span class="g">"Content-Length"</span>]))
+ok = verify(SECRET, raw, self.headers.get(<span class="g">"X-Plane-Signature"</span>, <span class="g">""</span>))</pre>
+        <div class="note w" style="margin-top:10px"><b>ทำไมต้องตรวจ</b> — ใครก็ POST มาที่ URL เราได้; ลายเซ็นพิสูจน์ว่ามาจากระบบที่ถือ secret เดียวกัน และใช้ <code>compare_digest</code> กัน timing attack</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.22 : Import / Export d09 ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · Import / Export</div><h2>ย้ายข้อมูลระหว่างเครื่องมือ: <em>export ได้ทุกตัว แต่ Plane CE ต้อง import ผ่าน API</em></h2></div>
+  <div class="s-body">
+    <div class="g21 mid">
+      <div><div class="fig fix" style="height:350px"><img data-a="d09" alt="ผังการนำเข้าบอร์ดจาก Trello หรือ Jira เข้า Plane ผ่าน REST API และรับ webhook กลับ"></div>
+        <div class="figcap">ขาเข้า: สคริปต์อ่าน export → POST work items แบบ idempotent · ขาออก: Plane ยิง webhook พร้อมลายเซ็นกลับมา</div></div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card"><h4>Export</h4><p><b>Jira</b> CSV / XML (JSON ผ่าน REST API) · <b>Trello</b> JSON ทุกแผน (CSV ใน Premium) · <b>Plane CE</b> Settings → Exports เป็น CSV / XLSX / JSON ต่อโปรเจกต์ worker สร้าง zip เก็บใน MinIO ลิงก์อายุ 7 วัน</p></div>
+        <div class="card w"><h4>Import</h4><p><b>Jira</b> รับ CSV ในตัว · <b>Plane CE</b> ไม่มีตัวนำเข้าในตัว (Jira importer มีเฉพาะ Plane Cloud; Trello ไม่มีในทุกรุ่น) → LAB 7 เขียนสคริปต์เอง: list → state, card → work item, label → label</p></div>
+        <div class="card a"><h4>หลัก ETL ที่ใช้ได้ทุกเครื่องมือ</h4><p>map ฟิลด์ก่อนเขียนโค้ด · dry-run นับจำนวนก่อน · ทำให้ idempotent ด้วย <code>external_source</code>/<code>external_id</code> เพื่อรันซ้ำได้</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.23 : แนวคิด API ที่ต้องรู้ ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · API concepts</div><h2>ห้าแนวคิด API ที่นักศึกษาต้องรู้ <em>ก่อนเขียนสคริปต์ตัวแรก</em></h2></div>
+  <div class="s-body">
+    <div class="g12">
+      <ul class="bul sm">
+        <li><b>Token</b> — สร้างที่ Settings → Developer → Personal Access Tokens แสดงครั้งเดียว<span class="s">ขึ้นต้น plane_api_ ตั้งวันหมดอายุได้ อย่า commit ลง git</span></li>
+        <li><b>Cursor pagination</b> — วนจนกว่า <code>next_page_results</code> เป็น false<span class="s">ส่ง cursor=next_cursor ในหน้าถัดไป ไม่ใช่เลขหน้า</span></li>
+        <li><b>Rate limit 429</b> — 60 req/นาที ต่อ token<span class="s">อ่าน X-RateLimit-Remaining แล้วหยุดรอถึง X-RateLimit-Reset</span></li>
+        <li><b>Idempotency</b> — ส่ง <code>external_source</code> + <code>external_id</code><span class="s">รันซ้ำได้ 409 พร้อม id เดิม แทนที่จะสร้างซ้ำ</span></li>
+        <li><b>UUID vs human key</b> — path ต้องใช้ UUID ของโปรเจกต์<span class="s">PLAB-12 ใช้ได้เฉพาะ GET workspaces/&lt;ws&gt;/work-items/PLAB-12/</span></li>
+      </ul>
+      <pre class="code xs"><span class="k">import</span> os, requests, time
+BASE = <span class="g">"http://localhost:8080/api/v1"</span>; WS = <span class="g">"devtools"</span>
+H = {<span class="g">"X-API-Key"</span>: os.environ[<span class="g">"PLANE_TOKEN"</span>]}   <span class="c"># token จาก env ไม่ hard-code</span>
+projs = requests.get(f<span class="g">"{BASE}/workspaces/{WS}/projects/"</span>, headers=H).json()
+pid = [p[<span class="g">"id"</span>] <span class="k">for</span> p <span class="k">in</span> projs[<span class="g">"results"</span>] <span class="k">if</span> p[<span class="g">"identifier"</span>] == <span class="g">"PLAB"</span>][0]
+url = f<span class="g">"{BASE}/workspaces/{WS}/projects/{pid}/work-items/"</span>
+card = {<span class="g">"id"</span>: <span class="g">"64f1c0de"</span>, <span class="g">"name"</span>: <span class="g">"Build image"</span>}   <span class="c"># การ์ดจาก Trello export</span>
+<span class="k">while</span> <span class="k">True</span>:
+    body = {<span class="g">"name"</span>: card[<span class="g">"name"</span>],
+            <span class="g">"external_source"</span>: <span class="g">"trello"</span>, <span class="g">"external_id"</span>: card[<span class="g">"id"</span>]}
+    r = requests.post(url, headers=H, json=body)
+    <span class="k">if</span> r.status_code != 429: <span class="k">break</span>
+    time.sleep(int(r.headers[<span class="g">"X-RateLimit-Reset"</span>]) - time.time() + 1)  <span class="c"># แล้วส่งซ้ำ</span>
+<span class="k">if</span> r.status_code == 409: print(<span class="g">"มีอยู่แล้ว"</span>, r.json()[<span class="g">"id"</span>])
+cursor = <span class="k">None</span>
+<span class="k">while</span> <span class="k">True</span>:
+    q = {<span class="g">"per_page"</span>: 50, <span class="g">"cursor"</span>: cursor}
+    page = requests.get(url, headers=H, params=q).json()
+    <span class="k">for</span> it <span class="k">in</span> page[<span class="g">"results"</span>]: print(it[<span class="g">"sequence_id"</span>], it[<span class="g">"name"</span>])
+    <span class="k">if not</span> page[<span class="g">"next_page_results"</span>]: <span class="k">break</span>
+    cursor = page[<span class="g">"next_cursor"</span>]</pre>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.24 : Data governance ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · การกำกับดูแลข้อมูล</div><h2>ข้อมูลติดตามคือ <em>ประวัติขององค์กร</em>: บันทึก คุมสิทธิ์ เป็นเจ้าของ สำรอง และกำหนดอายุ</h2></div>
+  <div class="s-body">
+    <div class="grid3">
+      <div class="card a"><h4>Activity / audit log</h4><p>Plane บันทึกทุกการเปลี่ยนแปลงเป็น activity (field, old_value, new_value, actor) อ่านได้ทาง UI และ <code>/activities/</code> · การเรียก API และ webhook ถูก log ไว้ 14 วัน · Jira มี issue history + audit log ระดับไซต์ · Trello มี activity ต่อการ์ด/บอร์ด</p></div>
+      <div class="card"><h4>Permissions</h4><p>Plane: Admin 20 / Member 15 / Guest 5 ทั้งระดับ workspace และโปรเจกต์ · โปรเจกต์ Private (เชิญเท่านั้น) หรือ Public (คนใน workspace เข้าร่วมได้) · Guest ไม่เห็นแท็บ Cycles และ Modules (โปรเจกต์มีสวิตช์ <code>guest_view_all_features</code> ค่าเริ่มต้นปิด) · Views และ Pages ตั้ง access Private / Public ได้รายชิ้น · Jira ใช้ permission scheme + issue security</p></div>
+      <div class="card o"><h4>Data ownership</h4><p>Self-host = ข้อมูลอยู่ใน Postgres และ MinIO บนเครื่องเรา query ตรวจสอบได้เอง ไม่ผูกกับผู้ให้บริการ — แลกกับหน้าที่ upgrade, patch และดูแลความปลอดภัยเอง</p></div>
+    </div>
+    <div class="grid2">
+      <div class="card w"><h4>Backup / Restore</h4><p>install.sh มีคำสั่ง backup ที่ tar volume pgdata, MinIO, RabbitMQ, Redis เป็นไฟล์ตามเวลา · ควรเพิ่ม <code>pg_dump</code> รายวัน และซ้อม restore จริง — backup ที่ไม่เคย restore ถือว่าไม่มี</p></div>
+      <div class="card c"><h4>Retention</h4><p>ทุกตารางลบแบบ soft delete (<code>deleted_at</code>) แล้ว hard delete โดย task กลางคืนหลังผ่านไป 60 วัน · ไฟล์ export ถูกลบหลัง 8 วัน · auto-archive งานที่ปิดแล้วเกิน N เดือน · นโยบายเก็บข้อมูลส่วนบุคคลต้องเขียนไว้ชัด (PDPA)</p></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.25 : ความโปร่งใส Sites ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · ความโปร่งใส</div><h2>เปิดบอร์ดให้ผู้มีส่วนได้เสียดู: <em>Plane Sites</em> vs Trello public boards</h2></div>
+  <div class="s-body">
+    <div class="g21 mid">
+      <div class="fig shot fix" style="height:380px"><img data-a="lab6:ui-sites-public" alt="บอร์ดสาธารณะของ Plane Sites ที่เปิดดูได้โดยไม่ล็อกอิน"></div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card a"><h4>Plane Sites</h4><p>เมนูโปรเจกต์ → Publish · เลือก layout List / Kanban และเปิด comments, reactions, votes · ได้ URL <code>/spaces/issues/&lt;anchor&gt;</code> ที่ดูได้โดยไม่ล็อกอิน · เสิร์ฟจากคอนเทนเนอร์ <code>space</code> แยกจากแอปหลัก</p></div>
+        <div class="card"><h4>Trello public boards</h4><p>Visibility = Public: ใครก็ดูได้และถูก search engine จัดทำดัชนี แก้ไขได้เฉพาะสมาชิก — นิยมใช้เป็น public roadmap</p></div>
+        <div class="card"><h4>Jira</h4><p>เปิด anonymous access ผ่าน permission scheme หรือให้ลูกค้าติดตามผ่าน portal ของ Service Management</p></div>
+      </div>
+    </div>
+    <div class="note w"><b>โปร่งใสอย่างมีขอบเขต</b> — เผยเฉพาะสิ่งที่ตั้งใจเผย: ไม่ใส่ข้อมูลลูกค้า credential หรือรายละเอียดช่องโหว่ในงานที่อยู่บนบอร์ดสาธารณะ</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.26 : LAB 9 dashboard d10 ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · LAB 9</div><h2>Dashboard ที่เราจะสร้างเอง: <em>ดึงข้อมูลจริงจาก Plane แล้วคำนวณ metric</em></h2></div>
+  <div class="s-body">
+    <div class="g21 mid">
+      <div><div class="fig fix" style="height:350px"><img data-a="d10" alt="ผัง dashboard app ดึงข้อมูลจาก Plane API คำนวณ metric แล้วแสดงบนหน้าเว็บ"></div>
+        <div class="figcap">app.py (FastAPI poller ดึง work items · states · cycles · activities ทุก REFRESH s, งบ 40 req/นาที) → metrics.py (pure functions) → GET /api/metrics → static/index.html (inline SVG ไม่ใช้ CDN)</div></div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card a"><h4>สูตรที่ dashboard ใช้</h4><p>Burndown(d) = Σ estimate ของงานที่ยังไม่ completed ณ วัน d<br>Velocity(cycle) = Σ estimate ที่ completed ใน cycle<br>Lead time = completed_at − created_at<br>Cycle time = completed_at − started_at (จาก activity)<br>CFD(d, state) = จำนวนงานใน state นั้น ณ สิ้นวัน d (ย้อนจาก activity log)</p></div>
+        <div class="card w"><h4>ทำไมต้องคำนวณเอง</h4><p>Plane CE ให้ burndown ต่อ cycle และ Analytics แต่ไม่มี velocity, CFD และ control chart — ข้อมูลดิบมีครบ (completed_at, activities) จึงสร้างได้เองเหมือนรายงานของ Jira</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4.27 : สรุป + สะพานไป LAB 6–9 ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 4 · Product Tracking · สรุป</div><h2>สรุปตอนที่ 4 และ <em>สะพานไป LAB 6–9</em></h2></div>
+  <div class="s-body">
+    <div class="g11">
+      <ul class="bul">
+        <li>การติดตามคือวงจร Plan → Do → Measure → Adapt — เครื่องมือมีไว้ให้วงจรหมุนทุกวัน</li>
+        <li>Jira = workflow + JQL + รายงานครบ · Trello = บอร์ดเรียบง่าย + Butler · Plane = ทั้งสองแนวคิดแบบ open source ที่รันเอง</li>
+        <li>Metric ทุกตัวมีสูตร: burndown, velocity, CFD, lead/cycle time, P85, WIP aging — ต้องรู้ที่มาก่อนเชื่อกราฟ</li>
+        <li>Dashboard ที่ดีตอบ 5 คำถาม หนึ่งกราฟต่อหนึ่งคำถาม</li>
+        <li>API + webhooks ทำให้เครื่องมือไม่เป็นเกาะเดี่ยว — token, pagination, 429, idempotency, HMAC</li>
+      </ul>
+      <table class="tbl sm">
+        <thead><tr><th style="width:80px">LAB</th><th>สิ่งที่จะทำ</th><th>ทฤษฎีจากตอนนี้</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag a">LAB 6</span></td><td>Modules · Pages · Analytics · Exports · Sites</td><td>release tracking, Analytics, ความโปร่งใส</td></tr>
+          <tr><td><span class="tag a">LAB 7</span></td><td>นำเข้าบอร์ด Trello/Jira ผ่าน REST API</td><td>import แบบ idempotent, UUID vs key, 429</td></tr>
+          <tr><td><span class="tag a">LAB 8</span></td><td>Webhooks + event wall</td><td>ตรวจ X-Plane-Signature, retry</td></tr>
+          <tr><td><span class="tag a">LAB 9</span></td><td>Product tracking dashboard</td><td>สูตร burndown, velocity, CFD, lead/cycle time</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 4 · Product Development Tracking</span><span class="pg"></span></div>
+ </section>
+</div>

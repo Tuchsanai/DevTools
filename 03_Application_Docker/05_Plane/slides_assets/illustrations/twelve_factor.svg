@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">The Twelve-Factor App</title>
+  <desc id="desc">A four by three grid of the twelve factors. Config, backing services, processes, logs, and admin processes are highlighted.</desc>
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#18181b" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .label { font-family: 'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif; fill: #18181b; }
+      .roman { font-size: 18px; font-weight: 700; letter-spacing: 0.04em; }
+      .name { font-size: 20px; font-weight: 650; }
+      .icon { fill: none; stroke: #18181b; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+      .tile { fill: #ffffff; stroke: #d4d4d8; stroke-width: 2; }
+      .tile-highlight { fill: #ffffff; stroke: #1c5cab; stroke-width: 4; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+  <text class="label" x="48" y="49" font-size="30" font-weight="700">The Twelve-Factor App</text>
+  <rect x="1002" y="28" width="230" height="31" rx="15.5" fill="#e7f1fc"/>
+  <circle cx="1022" cy="43.5" r="5" fill="#1c5cab"/>
+  <text class="label" x="1035" y="50" font-size="18" font-weight="600" fill="#1c5cab">Plane-visible factor</text>
+
+  <!-- I Codebase -->
+  <g transform="translate(48 82)" filter="url(#shadow)">
+    <rect class="tile" width="272" height="150" rx="18"/>
+    <rect x="18" y="18" width="46" height="32" rx="16" fill="#e7f1fc"/>
+    <text class="label roman" x="41" y="41" text-anchor="middle">I</text>
+    <circle cx="226" cy="36" r="22" fill="#e7f1fc"/>
+    <g class="icon" transform="translate(212 23)">
+      <circle cx="5" cy="5" r="3"/>
+      <circle cx="23" cy="5" r="3"/>
+      <circle cx="14" cy="23" r="3"/>
+      <path d="M8 6.5h12M6.5 8l6 12M21.5 8l-6 12"/>
+    </g>
+    <text class="label name" x="18" y="96">Codebase</text>
+    <rect x="18" y="116" width="76" height="5" rx="2.5" fill="#1c5cab"/>
+  </g>
+
+  <!-- II Dependencies -->
+  <g transform="translate(352 82)" filter="url(#shadow)">
+    <rect class="tile" width="272" height="150" rx="18"/>
+    <rect x="18" y="18" width="46" height="32" rx="16" fill="#eaf5ea"/>
+    <text class="label roman" x="41" y="41" text-anchor="middle">II</text>
+    <circle cx="226" cy="36" r="22" fill="#eaf5ea"/>
+    <g class="icon" transform="translate(211 21)">
+      <path d="M4 9l11-6 11 6-11 6L4 9Z"/>
+      <path d="M4 15l11 6 11-6M4 21l11 6 11-6"/>
+    </g>
+    <text class="label name" x="18" y="96">Dependencies</text>
+    <rect x="18" y="116" width="112" height="5" rx="2.5" fill="#116b11"/>
+  </g>
+
+  <!-- III Config, highlighted -->
+  <g transform="translate(656 82)" filter="url(#shadow)">
+    <rect class="tile-highlight" width="272" height="150" rx="18"/>
+    <rect x="18" y="18" width="54" height="32" rx="16" fill="#dcecff"/>
+    <text class="label roman" x="45" y="41" text-anchor="middle" fill="#1c5cab">III</text>
+    <circle cx="226" cy="36" r="22" fill="#dcecff"/>
+    <g class="icon" transform="translate(211 21)" stroke="#1c5cab">
+      <path d="M15 2v5M15 23v5M2 15h5M23 15h5M6 6l3.5 3.5M20.5 20.5L24 24M24 6l-3.5 3.5M9.5 20.5L6 24"/>
+      <circle cx="15" cy="15" r="6"/>
+    </g>
+    <text class="label name" x="18" y="96">Config</text>
+    <rect x="18" y="116" width="63" height="5" rx="2.5" fill="#2a78d6"/>
+  </g>
+
+  <!-- IV Backing services, highlighted -->
+  <g transform="translate(960 82)" filter="url(#shadow)">
+    <rect class="tile-highlight" width="272" height="150" rx="18"/>
+    <rect x="18" y="18" width="54" height="32" rx="16" fill="#dcecff"/>
+    <text class="label roman" x="45" y="41" text-anchor="middle" fill="#1c5cab">IV</text>
+    <circle cx="226" cy="36" r="22" fill="#dcecff"/>
+    <g class="icon" transform="translate(211 21)" stroke="#1c5cab">
+      <ellipse cx="15" cy="6" rx="11" ry="4"/>
+      <path d="M4 6v9c0 2.2 4.9 4 11 4s11-1.8 11-4V6M4 15v8c0 2.2 4.9 4 11 4s11-1.8 11-4v-8"/>
+    </g>
+    <text class="label name" x="18" y="96">Backing services</text>
+    <rect x="18" y="116" width="136" height="5" rx="2.5" fill="#2a78d6"/>
+  </g>
+
+  <!-- V Build, release, run -->
+  <g transform="translate(48 252)" filter="url(#shadow)">
+    <rect class="tile" width="272" height="150" rx="18"/>
+    <rect x="18" y="18" width="46" height="32" rx="16" fill="#fff3d6"/>
+    <text class="label roman" x="41" y="41" text-anchor="middle">V</text>
+    <circle cx="226" cy="36" r="22" fill="#fff3d6"/>
+    <g class="icon" transform="translate(211 21)" stroke="#86590a">
+      <path d="M4 22l7-7 5 5 10-12"/>
+      <path d="M19 8h7v7"/>
+      <circle cx="5" cy="22" r="2.5" fill="#fff3d6"/>
+    </g>
+    <text class="label name" x="18" y="96">Build, release, run</text>
+    <rect x="18" y="116" width="151" height="5" rx="2.5" fill="#86590a"/>
+  </g>
+
+  <!-- VI Processes, highlighted -->
+  <g transform="translate(352 252)" filter="url(#shadow)">
+    <rect class="tile-highlight" width="272" height="150" rx="18"/>
+    <rect x="18" y="18" width="54" height="32" rx="16" fill="#dcecff"/>
+    <text class="label roman" x="45" y="41" text-anchor="middle" fill="#1c5cab">VI</text>
+    <circle cx="226" cy="36" r="22" fill="#dcecff"/>
+    <g class="icon" transform="translate(211 21)" stroke="#1c5cab">
+      <circle cx="15" cy="15" r="4"/>
+      <path d="M15 2v5M15 23v5M2 15h5M23 15h5M5.8 5.8l3.6 3.6M20.6 20.6l3.6 3.6M24.2 5.8l-3.6 3.6M9.4 20.6l-3.6 3.6"/>
+    </g>
+    <text class="label name" x="18" y="96">Processes</text>
+    <rect x="18" y="116" width="90" height="5" rx="2.5" fill="#2a78d6"/>
+  </g>
+
+  <!-- VII Port binding -->
+  <g transform="translate(656 252)" filter="url(#shadow)">
+    <rect class="tile" width="272" height="150" rx="18"/>
+    <rect x="18" y="18" width="58" height="32" rx="16" fill="#fde8e8"/>
+    <text class="label roman" x="47" y="41" text-anchor="middle">VII</text>
+    <circle cx="226" cy="36" r="22" fill="#fde8e8"/>
+    <g class="icon" transform="translate(211 21)" stroke="#a32222">
+      <path d="M8 3v8M22 3v8M5 11h20v4a10 10 0 0 1-20 0v-4ZM15 25v4"/>
+    </g>
+    <text class="label name" x="18" y="96">Port binding</text>
+    <rect x="18" y="116" width="104" height="5" rx="2.5" fill="#a32222"/>
+  </g>
+
+  <!-- VIII Concurrency -->
+  <g transform="translate(960 252)" filter="url(#shadow)">
+    <rect class="tile" width="272" height="150" rx="18"/>
+    <rect x="18" y="18" width="64" height="32" rx="16" fill="#eaf5ea"/>
+    <text class="label roman" x="50" y="41" text-anchor="middle">VIII</text>
+    <circle cx="226" cy="36" r="22" fill="#eaf5ea"/>
+    <g class="icon" transform="translate(211 21)" stroke="#116b11">
+      <path d="M4 8h15M15 4l4 4-4 4M26 22H11M15 18l-4 4 4 4"/>
+    </g>
+    <text class="label name" x="18" y="96">Concurrency</text>
+    <rect x="18" y="116" width="108" height="5" rx="2.5" fill="#116b11"/>
+  </g>
+
+  <!-- IX Disposability -->
+  <g transform="translate(48 422)" filter="url(#shadow)">
+    <rect class="tile" width="272" height="150" rx="18"/>
+    <rect x="18" y="18" width="50" height="32" rx="16" fill="#fff3d6"/>
+    <text class="label roman" x="43" y="41" text-anchor="middle">IX</text>
+    <circle cx="226" cy="36" r="22" fill="#fff3d6"/>
+    <g class="icon" transform="translate(211 21)" stroke="#86590a">
+      <path d="M15 3a12 12 0 1 1-9 4"/>
+      <path d="M5 2v6h6"/>
+      <path d="M15 9v7l5 3"/>
+    </g>
+    <text class="label name" x="18" y="96">Disposability</text>
+    <rect x="18" y="116" width="108" height="5" rx="2.5" fill="#86590a"/>
+  </g>
+
+  <!-- X Dev/prod parity -->
+  <g transform="translate(352 422)" filter="url(#shadow)">
+    <rect class="tile" width="272" height="150" rx="18"/>
+    <rect x="18" y="18" width="46" height="32" rx="16" fill="#fde8e8"/>
+    <text class="label roman" x="41" y="41" text-anchor="middle">X</text>
+    <circle cx="226" cy="36" r="22" fill="#fde8e8"/>
+    <g class="icon" transform="translate(211 21)" stroke="#a32222">
+      <rect x="3" y="5" width="10" height="20" rx="2"/>
+      <rect x="17" y="5" width="10" height="20" rx="2"/>
+      <path d="M7 10h2M21 10h2M7 15h2M21 15h2"/>
+    </g>
+    <text class="label name" x="18" y="96">Dev/prod parity</text>
+    <rect x="18" y="116" width="128" height="5" rx="2.5" fill="#a32222"/>
+  </g>
+
+  <!-- XI Logs, highlighted -->
+  <g transform="translate(656 422)" filter="url(#shadow)">
+    <rect class="tile-highlight" width="272" height="150" rx="18"/>
+    <rect x="18" y="18" width="50" height="32" rx="16" fill="#dcecff"/>
+    <text class="label roman" x="43" y="41" text-anchor="middle" fill="#1c5cab">XI</text>
+    <circle cx="226" cy="36" r="22" fill="#dcecff"/>
+    <g class="icon" transform="translate(211 21)" stroke="#1c5cab">
+      <path d="M5 4h20v22H5zM10 10h10M10 15h12M10 20h8"/>
+    </g>
+    <text class="label name" x="18" y="96">Logs</text>
+    <rect x="18" y="116" width="48" height="5" rx="2.5" fill="#2a78d6"/>
+  </g>
+
+  <!-- XII Admin processes, highlighted -->
+  <g transform="translate(960 422)" filter="url(#shadow)">
+    <rect class="tile-highlight" width="272" height="150" rx="18"/>
+    <rect x="18" y="18" width="56" height="32" rx="16" fill="#dcecff"/>
+    <text class="label roman" x="46" y="41" text-anchor="middle" fill="#1c5cab">XII</text>
+    <circle cx="226" cy="36" r="22" fill="#dcecff"/>
+    <g class="icon" transform="translate(211 21)" stroke="#1c5cab">
+      <circle cx="15" cy="9" r="5"/>
+      <path d="M5 27c.8-6 4.2-9 10-9s9.2 3 10 9M24 3v7M20.5 6.5h7"/>
+    </g>
+    <text class="label name" x="18" y="96">Admin processes</text>
+    <rect x="18" y="116" width="138" height="5" rx="2.5" fill="#2a78d6"/>
+  </g>
+
+  <!-- Caption band -->
+  <g transform="translate(48 606)">
+    <rect width="1184" height="78" rx="18" fill="#e7f1fc" stroke="#b8d5f5" stroke-width="2"/>
+    <circle cx="37" cy="39" r="17" fill="#1c5cab"/>
+    <path d="M29 39l5 5 11-12" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text class="label" x="68" y="47" font-size="21" font-weight="650" fill="#1c5cab">Highlighted factors are visible in Plane's docker-compose + plane.env</text>
+  </g>
+</svg>

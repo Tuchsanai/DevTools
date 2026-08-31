@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Course laboratory roadmap</title>
+  <desc id="desc">An S-shaped road crosses four learning zones and connects nine numbered course milestones from Setup to Dashboard.</desc>
+
+  <defs>
+    <filter id="roadShadow" x="-10%" y="-20%" width="120%" height="150%">
+      <feDropShadow dx="0" dy="6" stdDeviation="7" flood-color="#18181b" flood-opacity="0.12"/>
+    </filter>
+    <filter id="chipShadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#18181b" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      text {
+        font-family: 'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif;
+      }
+      .zone-title {
+        fill: #18181b;
+        font-size: 18px;
+        font-weight: 650;
+        letter-spacing: 0.1px;
+      }
+      .chip-text {
+        fill: #18181b;
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .marker-number {
+        fill: #ffffff;
+        font-size: 20px;
+        font-weight: 750;
+        text-anchor: middle;
+        dominant-baseline: middle;
+      }
+    </style>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+
+  <!-- Learning zones -->
+  <g>
+    <rect x="24" y="24" width="300" height="672" rx="26" fill="#2a78d6" opacity="0.065"/>
+    <rect x="336" y="24" width="144" height="672" rx="26" fill="#86590a" opacity="0.075"/>
+    <rect x="492" y="24" width="260" height="672" rx="26" fill="#116b11" opacity="0.060"/>
+    <rect x="764" y="24" width="492" height="672" rx="26" fill="#6d4aa2" opacity="0.065"/>
+
+    <circle cx="48" cy="53" r="6" fill="#2a78d6"/>
+    <text class="zone-title" x="62" y="59">Roles of applications</text>
+
+    <circle cx="354" cy="53" r="6" fill="#86590a"/>
+    <text class="zone-title" x="368" y="59">Ethics</text>
+
+    <circle cx="510" cy="53" r="6" fill="#116b11"/>
+    <text class="zone-title" x="524" y="59">Agile tools</text>
+
+    <circle cx="782" cy="53" r="6" fill="#6d4aa2"/>
+    <text class="zone-title" x="796" y="59">Product tracking</text>
+  </g>
+
+  <!-- Full-width S-shaped road -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#roadShadow)">
+    <path d="M60 610 C235 642 310 605 405 510 C500 415 552 392 665 407 C800 424 846 360 930 275 C1026 178 1114 131 1220 110" stroke="#d4d4d8" stroke-width="84"/>
+    <path d="M60 610 C235 642 310 605 405 510 C500 415 552 392 665 407 C800 424 846 360 930 275 C1026 178 1114 131 1220 110" stroke="#e7e7ea" stroke-width="74"/>
+  </g>
+  <path d="M60 610 C235 642 310 605 405 510 C500 415 552 392 665 407 C800 424 846 360 930 275 C1026 178 1114 131 1220 110"
+        fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-dasharray="18 17" opacity="0.96"/>
+
+  <!-- START flag, fully inside the canvas -->
+  <g filter="url(#chipShadow)">
+    <path d="M61 662 V558" fill="none" stroke="#18181b" stroke-width="5" stroke-linecap="round"/>
+    <path d="M61 558 H119 L108 578 L119 598 H61 Z" fill="#a32222"/>
+    <circle cx="61" cy="662" r="7" fill="#18181b"/>
+    <text x="71" y="584" fill="#ffffff" font-size="18" font-weight="750">START</text>
+  </g>
+
+  <!-- Alternating milestone label connectors -->
+  <g fill="none" stroke="#71717a" stroke-width="2.5" stroke-linecap="round" opacity="0.75">
+    <path d="M116 596 L145 574"/>
+    <path d="M255 627 L255 640"/>
+    <path d="M390 491 L390 482"/>
+    <path d="M515 455 L515 478"/>
+    <path d="M660 382 L660 376"/>
+    <path d="M800 421 L800 449"/>
+    <path d="M925 256 L925 256"/>
+    <path d="M1040 204 L1040 228"/>
+    <path d="M1155 102 L1155 104"/>
+  </g>
+
+  <!-- White rounded label chips, alternating above and below the road -->
+  <g filter="url(#chipShadow)">
+    <g>
+      <rect x="135" y="526" width="120" height="48" rx="16" fill="#ffffff" stroke="#d4d4d8"/>
+      <text class="chip-text" x="195" y="557" text-anchor="middle">1 Setup</text>
+    </g>
+    <g>
+      <rect x="185" y="640" width="140" height="48" rx="16" fill="#ffffff" stroke="#d4d4d8"/>
+      <text class="chip-text" x="255" y="671" text-anchor="middle">2 Architecture</text>
+    </g>
+    <g>
+      <rect x="300" y="434" width="190" height="48" rx="16" fill="#ffffff" stroke="#d4d4d8"/>
+      <text class="chip-text" x="395" y="465" text-anchor="middle">3 Work items &amp; team</text>
+    </g>
+    <g>
+      <rect x="443" y="478" width="144" height="48" rx="16" fill="#ffffff" stroke="#d4d4d8"/>
+      <text class="chip-text" x="515" y="509" text-anchor="middle">4 Scrum cycles</text>
+    </g>
+    <g>
+      <rect x="585" y="328" width="150" height="48" rx="16" fill="#ffffff" stroke="#d4d4d8"/>
+      <text class="chip-text" x="660" y="359" text-anchor="middle">5 Kanban flow</text>
+    </g>
+    <g>
+      <rect x="662" y="449" width="276" height="48" rx="16" fill="#ffffff" stroke="#d4d4d8"/>
+      <text class="chip-text" x="800" y="480" text-anchor="middle">6 Modules · Pages · Analytics</text>
+    </g>
+    <g>
+      <rect x="790" y="150" width="180" height="48" rx="16" fill="#ffffff" stroke="#d4d4d8"/>
+      <text class="chip-text" x="880" y="181" text-anchor="middle">7 REST API import</text>
+    </g>
+    <g>
+      <rect x="966" y="228" width="148" height="48" rx="16" fill="#ffffff" stroke="#d4d4d8"/>
+      <text class="chip-text" x="1040" y="259" text-anchor="middle">8 Webhooks</text>
+    </g>
+    <g>
+      <rect x="1081" y="56" width="148" height="48" rx="16" fill="#ffffff" stroke="#d4d4d8"/>
+      <text class="chip-text" x="1155" y="87" text-anchor="middle">9 Dashboard</text>
+    </g>
+  </g>
+
+  <!-- Numbered milestone markers -->
+  <g>
+    <g><circle cx="105" cy="615" r="25" fill="#1c5cab" stroke="#ffffff" stroke-width="5"/><text class="marker-number" x="105" y="616">1</text></g>
+    <g><circle cx="255" cy="604" r="25" fill="#2a78d6" stroke="#ffffff" stroke-width="5"/><text class="marker-number" x="255" y="605">2</text></g>
+    <g><circle cx="395" cy="515" r="25" fill="#86590a" stroke="#ffffff" stroke-width="5"/><text class="marker-number" x="395" y="516">3</text></g>
+    <g><circle cx="515" cy="432" r="25" fill="#116b11" stroke="#ffffff" stroke-width="5"/><text class="marker-number" x="515" y="433">4</text></g>
+    <g><circle cx="660" cy="406" r="25" fill="#116b11" stroke="#ffffff" stroke-width="5"/><text class="marker-number" x="660" y="407">5</text></g>
+    <g><circle cx="800" cy="398" r="25" fill="#6d4aa2" stroke="#ffffff" stroke-width="5"/><text class="marker-number" x="800" y="399">6</text></g>
+    <g><circle cx="925" cy="280" r="25" fill="#6d4aa2" stroke="#ffffff" stroke-width="5"/><text class="marker-number" x="925" y="281">7</text></g>
+    <g><circle cx="1040" cy="181" r="25" fill="#6d4aa2" stroke="#ffffff" stroke-width="5"/><text class="marker-number" x="1040" y="182">8</text></g>
+    <g><circle cx="1155" cy="126" r="25" fill="#6d4aa2" stroke="#ffffff" stroke-width="5"/><text class="marker-number" x="1155" y="127">9</text></g>
+  </g>
+
+  <!-- Paper plane just beyond milestone 9 -->
+  <g transform="translate(1183 79) rotate(-12)" filter="url(#chipShadow)">
+    <path d="M0 22 L48 0 L34 42 L22 27 L10 36 L13 25 Z" fill="#2a78d6" stroke="#1c5cab" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M13 25 L48 0 L22 27" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

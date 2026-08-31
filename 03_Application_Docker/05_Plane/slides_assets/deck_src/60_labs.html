@@ -1,0 +1,437 @@
+<!-- ===== ตอนที่ 5 : LAB 1–9 ===== -->
+<div class="slot" data-sec="5">
+ <section class="slide section">
+  <div class="s-body">
+    <div class="num-big">LAB</div>
+    <h1>LAB 1–9 — ลงมือทำบน Plane ที่รันเองใน Docker</h1>
+    <div class="m">เก้าแล็บต่อเนื่องกันบนเครื่องเรียนเดียว: ติดตั้ง → ผ่าสถาปัตยกรรม → work item มืออาชีพ → Sprint → Kanban → Roadmap/Analytics → REST import → Webhooks → Dashboard · ทุกภาพหน้าจอในตอนนี้มาจากการรันจริง</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 1–9</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 5 · เส้นทางของ LAB</div><h2>เก้าแล็บ หนึ่งเรื่องราว — <em>ทีม CampusEats ใช้ Plane ตั้งแต่วันแรกจนมี dashboard</em></h2></div>
+  <div class="s-body">
+    <div class="g21 mid">
+      <div class="fig fix" style="height:400px"><img data-a="lab_roadmap" alt="เส้นทาง LAB 1–9 แบ่งตามหัวข้อทฤษฎี"></div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a"><h4>กติกาเดียวกับชุด RabbitMQ</h4><p>เครื่องเรียน <code>devtools</code> (Docker-in-Docker) · Plane 13 container ที่ <code>localhost:8080</code> ผ่าน VS Code PORTS · เปิดค้างตั้งแต่ LAB 1 ถึง 9</p></div>
+        <div class="card o"><h4>ทุกแล็บมีหลักฐาน</h4><p>📝 คำอธิบายทุกคำสั่ง · ✅ Expected output จากการรันจริง · <code>check_labNN.sh</code> พิมพ์ <code>PASS</code> หนึ่งบรรทัด · ทดลองให้พังแล้วแก้กลับ</p></div>
+        <div class="card w"><h4>ค่าที่ใช้ทั้งชุด (placeholder)</h4><p>workspace <code>devtools-lab</code> · โปรเจกต์ <code>PLAB</code> · <code>admin@example.com</code> / <code>Plane-Lab-2569</code> · token ใน <code>~/.plane_token</code></p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · ภาพรวม LAB</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- LAB 1 -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">LAB 1 · 001_LAB_Plane_Setup · หัวข้อ 2</div><h2>ติดตั้งแอป 13 container ด้วยคำสั่งเดียว — <em>แล้ว "พร้อม" วัดจากอะไร</em></h2>
+    <div class="sub">คำถามก่อนเริ่ม: <code>docker compose ps</code> ขึ้น <code>Up</code> ครบแล้ว เปิดเว็บได้ทันทีหรือไม่?</div></div>
+  <div class="s-body top">
+    <div class="g11">
+      <div>
+        <ul class="bul sm">
+          <li><b>install_plane.sh</b> — ดาวน์โหลด compose + env ของ release <code>v1.4.2</code> แล้วแก้ 6 ค่า (<code>WEB_URL</code> ต้องมี <code>:8080</code>)<span class="s">อ่านทุกบรรทัดของ <code>plane.env</code> ก่อน <code>up -d</code></span></li>
+          <li><b>plane_status.sh</b> — ตารางสีสถานะ 13 service ระหว่างบูต<span class="s">migrator → Exited (0) ก่อน api จึงเริ่มฟัง</span></li>
+          <li><b>readiness</b> — <code>/api/instances/</code> ตอบ 502 → 200 ราว 110 วินาที<span class="s">"Up ≠ Ready" บทเรียนเดียวกับ RabbitMQ</span></li>
+          <li><b>god-mode → onboarding → โปรเจกต์ PLAB</b> พร้อมเปิด Cycles · Modules · Views<span class="s">พิสูจน์ด้วย SQL ว่า flag ถูกเขียนลง <code>projects</code></span></li>
+        </ul>
+      </div>
+      <div>
+        <pre class="code xs">$ bash install_plane.sh
+created /root/plane-selfhost/plane.env (secrets generated)
+$ pc config --services | wc -l
+<span class="g">13</span>
+$ pc up -d && bash wait_ready.sh
+migrator: Exited (0) after 92s — migrations applied
+<span class="g">READY after 107s</span>  (http://localhost:8080/api/instances/ = 200)
+$ curl -s localhost:8080/api/instances/ | python3 -c '...'
+<span class="y">False True False</span>   <span class="c"># setup ยังไม่ทำ · sign-up เปิด · ไม่มี SMTP</span></pre>
+        <div class="note a" style="margin-top:10px"><b>หลักฐานที่ต้องได้</b> — 12 <code>Up</code> + migrator <code>Exited (0)</code> · redirect ไป <code>/god-mode/general/</code> (พิสูจน์ WEB_URL) · <code>check_lab01.sh</code> = PASS</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 1 · Plane Setup</span><span class="pg"></span></div>
+ </section>
+</div>
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">LAB 1 · หลักฐานจากการรันจริง</div><h2>ครั้งแรกที่เปิด Plane: <em>Welcome → god-mode → workspace → โปรเจกต์</em></h2></div>
+  <div class="s-body">
+    <div class="figrow c11">
+      <div><div class="fig shot fix" style="height:300px"><img data-a="lab1:ui-godmode-setup" alt="ฟอร์ม Setup your Plane Instance ใน god-mode"></div><div class="figcap">god-mode: ตั้ง instance admin — รหัสผ่านต้องผ่าน zxcvbn ≥ 3</div></div>
+      <div><div class="fig shot fix" style="height:300px"><img data-a="lab1:ui-project-features" alt="modal Projects and work items เปิด Cycles Modules Views"></div><div class="figcap">หลังสร้างโปรเจกต์: เปิด Cycles · Modules · Views (ค่าเริ่มต้นปิด)</div></div>
+    </div>
+    <div class="note o" style="margin-top:8px"><b>ทดลองให้พัง</b> — แก้ <code>ENABLE_SIGNUP=0</code> ใน env แล้ว <code>pc up -d api</code>: ค่าไม่เปลี่ยน เพราะ <code>configure_instance</code> seed ค่าครั้งเดียว (<code>SKIP_ENV_VAR=1</code>) — ต้องแก้ใน god-mode → Authentication</div>
+  </div>
+  <div class="s-foot"><span>LAB 1 · Plane Setup</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- LAB 2 -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">LAB 2 · 002_LAB_Architecture_Tour · หัวข้อ 2</div><h2>ผ่า Plane: proxy → api → db · valkey · rabbitmq · minio · live — <em>และเกิดอะไรเมื่อ worker หยุด</em></h2>
+    <div class="sub">คำถามก่อนเริ่ม: ถ้า worker หยุด ผู้ใช้จะรู้สึกว่าเว็บพังหรือไม่?</div></div>
+  <div class="s-body top">
+    <div class="g11">
+      <div>
+        <ul class="bul sm">
+          <li><b>trace_request.sh</b> — curl 6 path เทียบกับ Caddyfile (ภาพ d07)<span class="s">Caddy ไม่มี access log → ใช้ "ลายเซ็นของคำตอบ" เป็นหลักฐาน</span></li>
+          <li><b>PostgreSQL</b> — 6 states รวม Triage ที่ UI ซ่อน · <code>issue_sequences</code> ไม่ใช้เลขซ้ำ · <code>completed_at</code> set/clear</li>
+          <li><b>RabbitMQ</b> — คิวเดียว <code>celery</code> (vhost <code>plane</code>) · stop worker → คิวโต ทั้งที่ UI ปกติ → start → ระบาย</li>
+          <li><b>MinIO / live</b> — presigned upload ผ่าน <code>/uploads/</code> · Page 2 แท็บ sync ผ่าน WebSocket <code>/live/</code></li>
+        </ul>
+      </div>
+      <div>
+        <pre class="code xs">$ pc exec plane-mq rabbitmqctl list_queues -p plane name messages consumers
+celery  <span class="g">0</span>  1
+$ pc stop worker        <span class="c"># แล้วแก้ work item 5 ครั้งใน UI</span>
+celery  <span class="r">27</span>  0     <span class="c"># งานกองอยู่ (≈5 task ต่อ 1 การแก้) — ผู้ใช้ไม่รู้</span>
+$ pc start worker
+celery  <span class="g">0</span>  1      <span class="c"># ระบาย 27 งานในวินาทีเดียว (~15 s หลัง start = เวลาบูต Celery)</span>
+worker | Task plane.bgtasks.issue_activities_task.issue_activity[...] <span class="g">succeeded</span></pre>
+        <div class="note a" style="margin-top:10px"><b>เชื่อมกับบทเรียนเดิม</b> — direct exchange <code>celery</code> → queue <code>celery</code> คือ pattern จาก LAB RabbitMQ · socat bridge เปิด Management UI (15672) และ MinIO console (9090) โดยไม่แตะ compose ทางการ</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 2 · Architecture Tour</span><span class="pg"></span></div>
+ </section>
+</div>
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">LAB 2 · หลักฐานจากการรันจริง</div><h2>Backpressure ที่มองเห็นได้ — <em>คิว celery โตเมื่อ worker หยุด</em></h2></div>
+  <div class="s-body">
+    <div class="figrow c11">
+      <div><div class="fig shot fix" style="height:300px"><img data-a="lab2:ui-rabbitmq-queue" alt="RabbitMQ Management UI แสดงคิว celery"></div><div class="figcap">RabbitMQ Management (ผ่าน socat bridge): คิว <code>celery</code> ของ vhost <code>plane</code></div></div>
+      <div><div class="fig shot fix" style="height:300px"><img data-a="lab2:ui-minio-console" alt="MinIO console แสดง object ใน bucket uploads"></div><div class="figcap">MinIO console: ไฟล์แนบของ work item อยู่ใน bucket <code>uploads</code></div></div>
+    </div>
+    <div class="note w" style="margin-top:8px"><b>ข้อสังเกต</b> — activity, notification, export, webhook ทั้งหมดเขียนโดย worker: ถ้า worker ตาย "ประวัติ" ของงานหยุดโดยที่หน้าเว็บยังตอบสนอง</div>
+  </div>
+  <div class="s-foot"><span>LAB 2 · Architecture Tour</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- LAB 3 -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">LAB 3 · 003_LAB_Professional_Work_Items · หัวข้อ 1</div><h2>work item มืออาชีพ · ทีมและสิทธิ์ · traceability · จรรยาบรรณ — <em>และ token ส่วนตัว</em></h2>
+    <div class="sub">คำถามก่อนเริ่ม: ไม่มี SMTP จะเพิ่มเพื่อนร่วมทีมได้ไหม และ PLAB-5 ที่เขียนแค่ชื่อ ผิดตรงไหน</div></div>
+  <div class="s-body top">
+    <div class="grid3">
+      <div class="card a"><h4><span class="n">1</span>เขียนให้ตรวจสอบได้</h4><p>PLAB-4 จาก template: บริบท · เกณฑ์การยอมรับ (checkbox) · DoD · ความเสี่ยง · priority/label/due · sub-work items 3 · Blocking (PLAB-5 Blocked by PLAB-4) · link ไป commit</p></div>
+      <div class="card o"><h4><span class="n">2</span>ทีมโดยไม่มี SMTP</h4><p>Members → Add member → Pending invites → <b>Copy link</b> → dev1 สมัครด้วยอีเมลเดียวกัน → Join invites · roles 20/15/5 ใน SQL · Guest เห็นน้อยกว่า</p></div>
+      <div class="card w"><h4><span class="n">3</span>จรรยาบรรณ + token</h4><p>Page สะท้อนคิด 3 กรณี (อ้างข้อย่อยตาม ethics_cases.md: 3.10 · 5.11 · 1.03 · 2.06 · 6.13 · 2.05 · 4.01) · Personal Access Token ของตัวเอง เก็บใน <code>~/.plane_token</code> (chmod 600) · <code>lint_work_items.py</code> ให้คะแนน "hygiene"</p></div>
+    </div>
+    <pre class="code xs" style="margin-top:12px">$ python lint_work_items.py --project PLAB
+Work-item hygiene — Plane Lab (PLAB)
+ID       AC  Assignee  Priority  Due  Labels  คะแนน  ชื่อ
+PLAB-1    ✗      ✗        ✓       ✗     ✗     1/5   ตั้งค่า Plane self-host ในเครื่องเรียน
+PLAB-2    ✗      ✗        ✓       ✗     ✗     1/5   เขียน README ของ LAB ให้ผู้เรียน
+PLAB-3    ✗      ✗        ✓       ✗     ✗     1/5   ตรวจว่า 13 container ทำงานครบ
+PLAB-4    ✓      ✓        ✓       ✓     ✓     <span class="g">5/5</span>   นักศึกษาสมัครบัญชีและเข้าสู่ระบบด้วยอีเมล
+PLAB-5    ✗      ✗        ✗       ✗     ✗     <span class="r">0/5</span>   แก้บั๊ก   <span class="c">← มีแค่ชื่อ ตอบคำถามไม่ได้</span>
+Team hygiene score: <span class="r">8/25 (32%)</span>  → แก้ PLAB-5 แล้วรันใหม่ → <span class="g">13/25 (52%)</span></pre>
+  </div>
+  <div class="s-foot"><span>LAB 3 · Professional Work Items</span><span class="pg"></span></div>
+ </section>
+</div>
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">LAB 3 · หลักฐานจากการรันจริง</div><h2>Activity log คือหลักฐานความรับผิดชอบ — <em>ใครเปลี่ยนอะไร เมื่อไร</em></h2></div>
+  <div class="s-body">
+    <div class="figrow c11">
+      <div><div class="fig shot fix" style="height:300px"><img data-a="lab3:ui-work-item-detail" alt="work item PLAB-4 พร้อม acceptance criteria sub-work items และ relation"></div><div class="figcap">PLAB-4: AC · sub-work items · Blocking (PLAB-5 Blocked by PLAB-4) · link — ครบในใบเดียว</div></div>
+      <div><div class="fig shot fix" style="height:300px"><img data-a="lab3:ui-members-invite" alt="หน้า Members พร้อม Pending invites และ Copy link"></div><div class="figcap">Members: คำเชิญยังอยู่แม้ไม่มี SMTP — ใช้ Copy link</div></div>
+    </div>
+    <div class="note c" style="margin-top:8px"><b>ทดลองให้พัง</b> — ปิด "Allow anyone to sign up" ใน god-mode → อีเมลใหม่สมัครไม่ได้ (SIGNUP_DISABLED) → เชิญก่อนแล้วสมัครได้ (invite bypass)</div>
+  </div>
+  <div class="s-foot"><span>LAB 3 · Professional Work Items</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- LAB 4 -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">LAB 4 · 004_LAB_Scrum_Cycles · หัวข้อ 3</div><h2>Sprint จริงด้วย Cycle — <em>estimates · planning · burndown · retro · transfer · velocity</em></h2>
+    <div class="sub">คำถามก่อนเริ่ม: burndown ของ Plane นับจากประวัติ state หรือจาก <code>completed_at</code>?</div></div>
+  <div class="s-body top">
+    <div class="g11">
+      <div>
+        <ul class="bul sm">
+          <li><b>Estimates</b> Points/Fibonacci (CE มีแค่ Points/Categories — Time เป็นของ EE) · <code>seed_backlog.py</code> ใส่ PBI 10 ใบแบบ idempotent (<code>external_id=PBI-01..10</code>)</li>
+          <li><b>Sprint 1</b> สร้างผ่าน API (<code>make_cycle.py --start -4 --end +9</code>) เพราะปฏิทินใน UI ไม่รับวันในอดีต · Add existing ≤ 20 points</li>
+          <li><b>time machine SQL</b> เลื่อน <code>completed_at</code> ของงาน Done ไป −3/−2/−1 วัน → กราฟ actual ลดหลายวันเทียบ ideal</li>
+          <li><b>ปิด sprint</b> PATCH end_date เป็นอดีต → Completed → <b>Transfer</b> งานค้างไป Sprint 2 → <code>progress_snapshot</code> ถูกแช่แข็ง · <code>velocity.py</code></li>
+        </ul>
+      </div>
+      <div>
+        <pre class="code xs">$ python cycle_report.py
+Cycle: Sprint 1  2026-08-27 → 2026-09-09  (14 วัน)   items=7  points=19
+day  date        ideal  done  remain   ideal  remain
+                 items  items  items  points  points
+  0  2026-08-27    7.0     0      7    19.0    19.0
+  1  2026-08-28    6.5     1      6    17.5    16.0    PLAB-1
+  2  2026-08-29    5.9     2      5    16.1    14.0    PLAB-2
+  3  2026-08-30    5.4     3      4    14.6    13.0    PLAB-10
+  4  2026-08-31    4.8     3      <span class="g">4</span>    13.2    <span class="g">13.0</span>   ◀ today
+วันนี้เหลือ 4 items / 13 points   <span class="c"># = จุดสุดท้ายของเส้น Current ใน UI</span>
+$ python velocity.py
+cycle      period                  committed  done  velocity  snapshot
+Sprint 1   2026-08-27 → 2026-08-30        21     6         <span class="y">6</span>  yes
+velocity เฉลี่ย = 6 points/sprint · ยังไม่ Done ทั้งโปรเจกต์ = 36 points
+forecast: เหลืออีก ≈ 6.0 sprint</pre>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 4 · Scrum Cycles</span><span class="pg"></span></div>
+ </section>
+</div>
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">LAB 4 · หลักฐานจากการรันจริง</div><h2>Burndown ใน sidebar ของ Cycle — <em>Current vs Ideal · Work items หรือ Estimates</em></h2></div>
+  <div class="s-body">
+    <div class="figrow c21">
+      <div><div class="fig shot fix" style="height:330px"><img data-a="lab4:ui-cycle-burndown" alt="กราฟ Progress ของ Sprint 1 หลัง time machine"></div><div class="figcap">เส้น ideal = total × (1 − day/(n−1)) · เส้น actual ขับด้วย <code>completed_at</code></div></div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a"><h4>Scrum ↔ Plane</h4><p>Sprint Goal = description ของ cycle · Sprint Backlog = work items ใน cycle · Increment = completed group · Review/Retro = Page</p></div>
+        <div class="card w"><h4>ข้อควรระวัง</h4><p>velocity ใช้วางแผน ไม่ใช่ KPI รายบุคคล · ปิดสวิตช์ Enable estimates แล้ว dropdown Work items/Estimates และแถว Points หายไป (เปิดกลับได้ ไม่ลบข้อมูล) — Categories ทำ burndown แบบ points ไม่ได้</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 4 · Scrum Cycles</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- LAB 5 -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">LAB 5 · 005_LAB_Kanban_Flow · หัวข้อ 3</div><h2>Kanban บน Plane — <em>states/groups · swimlanes · WIP policy + guard · Views · Intake · flow metrics</em></h2>
+    <div class="sub">คำถามก่อนเริ่ม: Plane CE ไม่มี WIP limit ในบอร์ด — แล้วทีมจะบังคับนโยบายอย่างไร</div></div>
+  <div class="s-body top">
+    <div class="g11">
+      <div>
+        <ul class="bul sm">
+          <li><b>States</b> เพิ่ม <code>Ready</code> (unstarted) และ <code>In Review</code> (started) → 7 คอลัมน์ · group กำหนดความหมายให้ metric</li>
+          <li><b>Board</b> Group by State × Sub-group by Assignees = swimlanes · Group by None แล้ว Sub-group หาย</li>
+          <li><b>WIP</b> นโยบายเขียนใน Page + <code>wip_guard.py</code> (exit 1 เมื่อเกิน · <code>--watch</code>) · Views บันทึก filter · Intake = triage (Pending/Accepted/Declined/Snoozed)</li>
+          <li><b>flow_metrics.py</b> lead/cycle time · throughput · p50/p85 · ตรวจ Little's Law จาก activity log</li>
+        </ul>
+      </div>
+      <div>
+        <pre class="code xs">$ python wip_guard.py
+state        wip  limit  status
+In Progress   4     3    <span class="r">VIOLATION (4 > 3)</span>
+In Review     1     2    <span class="g">OK</span>
+exit 1
+$ python flow_metrics.py --days 7
+item     created      started      done          lead(h) cycle(h)  name
+PLAB-9   08-24 22:04  08-27 10:04  08-29 22:04     120.0     60.0  นักศึกษาค้นหาร้านอาหาร…
+...
+lead time  p50 = 60.0 h  p85 = 72.0 h    cycle time  p50 = 36.0 h  p85 = 48.0 h
+throughput  6 ใบ / 7 วัน = 0.86 ใบ/วัน    WIP ตอนนี้  3 ใบ
+Little's Law: 0.86 ใบ/วัน × 1.67 วัน = <span class="y">1.43 ใบ</span>  เทียบ WIP จริง 3 ใบ → งานใหม่รอ ≈ 3.5 วัน</pre>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 5 · Kanban Flow</span><span class="pg"></span></div>
+ </section>
+</div>
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">LAB 5 · หลักฐานจากการรันจริง</div><h2>บอร์ดที่ออกแบบเอง — <em>7 คอลัมน์ × swimlane ต่อคน</em></h2></div>
+  <div class="s-body">
+    <div class="figrow c21">
+      <div><div class="fig shot fix" style="height:330px"><img data-a="lab5:ui-board-swimlanes" alt="Board layout จัดกลุ่มตาม State และ sub-group ตาม Assignee"></div><div class="figcap">Board: Group by State · Sub-group by Assignees · Display properties</div></div>
+      <div><div class="fig shot fix" style="height:330px"><img data-a="lab5:ui-intake" alt="แท็บ Intake พร้อมรายการ Pending/Accepted/Declined"></div><div class="figcap">Intake: รับเรื่องแล้วคัดกรองก่อน — งานอยู่ใน state Triage จนกว่าจะ Accept</div></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 5 · Kanban Flow</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- LAB 6 -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">LAB 6 · 006_LAB_Modules_Pages_Analytics · หัวข้อ 4</div><h2>Roadmap ด้วย Modules · PRD บน Pages · Analytics · Exports — <em>และบอร์ดสาธารณะ</em></h2>
+    <div class="sub">คำถามก่อนเริ่ม: Plane CE ส่งออกข้อมูลได้ แต่นำเข้าได้ไหม?</div></div>
+  <div class="s-body top">
+    <div class="grid3">
+      <div class="card a"><h4>Modules = Epic/roadmap</h4><p><code>seed_modules.py</code> สร้าง Ordering · Payments · Notifications พร้อม status/lead/dates · Gallery และ <b>Timeline</b> layout · progress ต่อ module</p></div>
+      <div class="card o"><h4>Pages + Analytics</h4><p>PRD ซ้อนหน้า · lock · public/private · Analytics Overview + Work items (Created vs Resolved · Customized insights → CSV)</p></div>
+      <div class="card w"><h4>Exports · ไม่มี importer · Sites</h4><p>CSV/XLSX/JSON → zip ใน MinIO (key ขึ้นต้นด้วย workspace id) · Billing บอกว่า importer เป็น cloud → เหตุผลของ LAB 7 · Publish บอร์ด: ดูได้โดยไม่ล็อกอิน แต่โหวต/comment ต้อง sign in เข้า Sites</p></div>
+    </div>
+    <pre class="code xs" style="margin-top:12px">$ pc exec plane-minio ls -R /export/uploads      <span class="c"># image ของ MinIO ไม่มี find</span>
+/export/uploads/<span class="d">&lt;workspace_id&gt;</span>:
+export-devtools-lab-079eb1-2026-08-31.zip
+export-devtools-lab-7e8b5e-2026-08-31.zip
+export-devtools-lab-d2c939-2026-08-31.zip
+$ docker cp plane-plane-minio-1:/export/uploads/<span class="d">&lt;key&gt;</span> out-csv.zip &amp;&amp; python export_inspect.py out-csv.zip --compare PLAB
+== devtools-lab-<span class="d">&lt;workspace_id&gt;</span>.csv  (4,550 bytes)
+   rows    : <span class="g">15</span>
+   columns : 25 → Project Name, Project Identifier, Parent, Identifier, Sequence Id, Name, State Name, Priority, Assignees, …, Estimate, Description
+== API  GET /work-items/ ของ PLAB → total_results = <span class="g">15</span></pre>
+  </div>
+  <div class="s-foot"><span>LAB 6 · Modules · Pages · Analytics</span><span class="pg"></span></div>
+ </section>
+</div>
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">LAB 6 · หลักฐานจากการรันจริง</div><h2>Analytics ใน CE ตอบได้บางคำถาม — <em>ที่เหลือคำนวณเองใน LAB 9</em></h2></div>
+  <div class="s-body">
+    <div class="figrow c11">
+      <div><div class="fig shot fix" style="height:300px"><img data-a="lab6:ui-analytics-workitems" alt="Analytics แท็บ Work items"></div><div class="figcap">Work items: Created vs Resolved + Customized insights (x-axis/y-axis/group by)</div></div>
+      <div><div class="fig shot fix" style="height:300px"><img data-a="lab6:ui-sites-public" alt="บอร์ดสาธารณะผ่าน Plane Sites"></div><div class="figcap">Sites: บอร์ดสาธารณะใน private window — ดูได้โดยไม่ล็อกอิน แต่โหวต/comment ต้อง sign in เข้า Sites (accountability)</div></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 6 · Modules · Pages · Analytics</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- LAB 7 -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">LAB 7 · 007_LAB_REST_API_Import · หัวข้อ 4</div><h2>Migration Day — <em>นำเข้า Trello JSON และ Jira CSV ด้วย REST API แบบ idempotent ภายใต้ rate limit</em></h2>
+    <div class="sub">คำถามก่อนเริ่ม: รันสคริปต์นำเข้าซ้ำสองครั้ง จะได้การ์ดซ้ำหรือไม่?</div></div>
+  <div class="s-body top">
+    <div class="g11">
+      <div>
+        <ul class="bul sm">
+          <li><b>api_tour.sh</b> — 401 ไม่มี key · <code>X-RateLimit-Remaining</code> · human key <code>PLAB-1</code> ใช้ได้เฉพาะ endpoint เดียว · path ต้องเป็น UUID · cursor <code>5:1:0</code></li>
+          <li><b>import_trello.py</b> — list→state (Done มีอยู่แล้ว → reuse) · card→work item (<code>external_source=trello</code>) · checklist→sub-work items · <code>--dry-run</code> แล้ว <code>--apply</code></li>
+          <li><b>import_jira.py</b> — Epic→Module · Sprint→Cycle · Story Points→estimate · Created→<code>created_at</code> override</li>
+          <li><b>rate_limit_demo.sh</b> — ครั้งที่ 61 ได้ 429 + <code>Retry-After</code> (ไม่มี X-RateLimit-* ใน 429) · client sleep ตาม Retry-After แล้วยิงใหม่ → 200</li>
+        </ul>
+      </div>
+      <div>
+        <pre class="code xs">$ python import_trello.py --apply
+1) states   ✔ To Do · Doing · Review → 200   ! Done → 409 → reuse id
+            ✔ DELETE state ว่างของ Plane 4 ตัว → 204
+2) labels   ✔ feature · bug · urgent · docs · design → 201
+3) cards → work items       [██████████]  12/12  created TRL-12
+4) checklist → sub-work items [████████]   8/8  created TRL-20
+== สรุป: created 20 · skipped 0 · total 20 (12 cards + 8 checklist)
+$ python import_trello.py --apply
+== สรุป: <span class="g">created 0 · skipped 20</span> · total 20   <span class="c"># idempotent: 409 → skip</span>
+$ bash rate_limit_demo.sh
+call 60 → HTTP 200  X-RateLimit-Remaining=0
+call 61 → HTTP <span class="r">429</span> Too Many Requests  Retry-After=58s
+หลังรอ → HTTP 200  X-RateLimit-Remaining=33</pre>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 7 · REST API Import</span><span class="pg"></span></div>
+ </section>
+</div>
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">LAB 7 · หลักฐานจากการรันจริง</div><h2>บอร์ดที่ย้ายมาจาก Trello — <em>คอลัมน์และการ์ดครบผ่าน API</em></h2></div>
+  <div class="s-body">
+    <div class="figrow c21">
+      <div><div class="fig shot fix" style="height:330px"><img data-a="lab7:ui-imported-board" alt="Board ของโปรเจกต์ TRL หลังนำเข้าจาก Trello"></div><div class="figcap">โปรเจกต์ TRL: To Do · Doing · Review · Done ตาม list ของ Trello</div></div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a"><h4>สิ่งที่ API สอน</h4><p>token ผูกกับคน · pagination แบบ cursor · rate limit ต่อ token · idempotency ด้วย <code>external_id</code> · UUID ≠ human key</p></div>
+        <div class="card o"><h4>เทียบ Jira/Trello</h4><p>Jira REST v3 ใช้ Basic auth + JQL · Trello REST ใช้ key & token · แนวคิดเดียวกัน: ทุกอย่างที่ UI ทำได้ API ทำได้</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 7 · REST API Import</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- LAB 8 -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">LAB 8 · 008_LAB_Webhooks_Automation · หัวข้อ 4</div><h2>Automation Wall — <em>webhook · HMAC · SSRF allowlist · rules แบบ Butler · retry · bot user</em></h2>
+    <div class="sub">คำถามก่อนเริ่ม: ถ้า receiver ล่ม Plane จะทิ้ง event หรือส่งซ้ำ และกี่ครั้ง?</div></div>
+  <div class="s-body top">
+    <div class="g11">
+      <div>
+        <ul class="bul sm">
+          <li><b>hookwall</b> — receiver stdlib ใน network <code>plane_default</code> (ภาพ d12): ตรวจ <code>X-Plane-Signature</code> กับ raw body · dedup ด้วย <code>X-Plane-Delivery</code> · UI SSE สด</li>
+          <li><b>SSRF guard</b> — ครั้งแรก UI ปฏิเสธ <code>http://hookwall.lab:9000/hook</code>: "Invalid or disallowed webhook URL" (hostname ต้องมีจุด) จนใส่ <code>WEBHOOK_ALLOWED_HOSTS=hookwall.lab,dashboard.lab</code> แล้ว <code>pc up -d api worker beat-worker</code></li>
+          <li><b>rules.json</b> — urgent ไม่มีเจ้าของ → comment + label · Done → ขอ demo link · <code>/eta</code> → ตั้ง target date · ทำโดย <b>bot user</b> ที่มี token ของตัวเอง (ตรวจสอบย้อนหลังได้)</li>
+          <li><b>retry</b> — <code>docker pause hookwall</code> → <code>500 Read timed out</code> ใน <code>webhook_logs</code> → <code>celery inspect scheduled</code> เห็น ETA (backoff 600 s + jitter, สูงสุด 5 ครั้งแล้วปิด webhook) → <code>docker unpause hookwall</code></li>
+        </ul>
+      </div>
+      <div>
+        <pre class="code xs">$ python verify_signature.py hookwall/data/events.jsonl | tail -3
+<span class="g">MATCH</span>     issue.updated  #2  delivery 2a4c9235  sig 4bf9a468dd57…
+<span class="g">10 match</span> · 0 mismatch  (hmac.new(secret, raw_body, sha256))
+$ bash replay_event.sh --tamper     <span class="c"># แก้ 1 ตัวอักษรใน body</span>
+HTTP <span class="r">401</span> {"error": "signature mismatch"}
+$ docker pause hookwall   <span class="c"># แก้ PLAB-1 → webhook_logs: 500 Read timed out</span>
+$ pc exec worker celery -A plane inspect scheduled | grep eta
+    * {'eta': '2026-08-31T13:00:55…', …
+       'name': 'plane.bgtasks.webhook_task.webhook_send_task' …}</pre>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 8 · Webhooks & Automation</span><span class="pg"></span></div>
+ </section>
+</div>
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">LAB 8 · หลักฐานจากการรันจริง</div><h2>กำแพง event แบบสด — <em>ลากการ์ดแล้วเห็น event พร้อมลายเซ็นใน 2 วินาที</em></h2></div>
+  <div class="s-body">
+    <div class="figrow c21">
+      <div><div class="fig shot fix" style="height:330px"><img data-a="lab8:ui-event-wall" alt="hookwall แสดง event สดพร้อมเครื่องหมายลายเซ็นถูกต้อง"></div><div class="figcap">hookwall (dark glass · SSE · inline SVG): event ล่าสุด ✔ signature · ตัวนับต่อชนิด</div></div>
+      <div><div class="fig shot fix" style="height:330px"><img data-a="lab8:ui-webhook-settings" alt="หน้า Workspace settings Webhooks"></div><div class="figcap">Workspace settings → Webhooks: URL ต้องเป็น hostname ในเครือข่าย ไม่ใช่ localhost</div></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 8 · Webhooks & Automation</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- LAB 9 -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">LAB 9 · 009_LAB_Tracking_Dashboard · หัวข้อ 4 + 3 + 1</div><h2>Mission Control — <em>dashboard ติดตามผลิตภัณฑ์จากข้อมูลจริงใน Plane</em></h2>
+    <div class="sub">คำถามก่อนเริ่ม: Plane CE ไม่มี velocity/CFD/lead time — จะได้มาจากข้อมูลไหน และต้องยิง API กี่ครั้งต่อนาที</div></div>
+  <div class="s-body top">
+    <div class="g11">
+      <div>
+        <ul class="bul sm">
+          <li><b>metrics.py</b> เป็น pure functions ทดสอบด้วย pytest ก่อนต่อข้อมูลจริง (ภาพ d10: สูตรทั้ง 6)</li>
+          <li><b>app.py (FastAPI poller)</b> ดึงทุก 60 s ภายใต้งบ ≤ 40 request/นาที · 429 → backoff · webhook <code>/hook</code> จาก Plane ทำให้ refresh ทันที</li>
+          <li><b>UI ไฟล์เดียว</b> dark glass · inline SVG · 6 panel (burndown · velocity · CFD · lead/cycle time · WIP vs policy · blockers) · pulse เมื่อข้อมูลเปลี่ยน</li>
+          <li><b>ตรวจกับความจริง</b> burndown = cycle_report (LAB 4) · WIP = wip_guard (LAB 5) · velocity ของ JRA Sprint 1 = 0 เพราะ completed_at คือวันนำเข้า (หลัง end_date) · lead/cycle p85 = flow_metrics (LAB 5)</li>
+        </ul>
+      </div>
+      <div>
+        <pre class="code xs">$ (cd dashboard &amp;&amp; python -m pytest -q test_metrics.py)
+<span class="g">12 passed</span> in 0.02s
+$ bash run_dashboard.sh &amp;&amp; docker logs -f dashboard
+13:06:15 refresh[poll] PLAB: items=13 cycles=2 requests=14 remaining=<span class="y">47</span>
+13:07:48 webhook: issue updated → refresh now       <span class="c"># งบ 40 req/นาที</span>
+13:07:49 refresh[webhook] PLAB: items=13 cycles=2 requests=7 remaining=45
+$ curl -s localhost:8090/api/health
+{"status":"ok","requests_last_minute":7,"budget_per_minute":40,
+ "ratelimit_remaining":"48","backoff_s":0,"freshness_s":{"PLAB":34},
+ "refresh_interval_s":60,"hooks_received":2,"errors":[]}</pre>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 9 · Tracking Dashboard</span><span class="pg"></span></div>
+ </section>
+</div>
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">LAB 9 · หลักฐานจากการรันจริง</div><h2>Dashboard ที่ตอบคำถาม 5 ข้อ — <em>หนึ่ง metric ต่อหนึ่งคำถาม</em></h2></div>
+  <div class="s-body">
+    <div class="figrow c21">
+      <div><div class="fig shot fix" style="height:330px"><img data-a="lab9:ui-dashboard" alt="dashboard ติดตามผลิตภัณฑ์ 6 panel"></div><div class="figcap">burndown · velocity · CFD · lead/cycle time · WIP vs policy · blockers — freshness badge + rate budget meter</div></div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a"><h4>เทียบเครื่องมือ</h4><p>Jira: burndown/velocity/CFD/control chart ในตัว · Trello: Dashboard Power-Up · Plane CE: Analytics + API → เราสร้างเอง</p></div>
+        <div class="card c"><h4>สะท้อนคิด (หัวข้อ 1)</h4><p>metric ใดใช้ตัดสินใจอะไร และ metric ใด "ห้าม" ใช้ให้คุณให้โทษรายบุคคล — เขียนลง Page "Sprint 2 Review"</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 9 · Tracking Dashboard</span><span class="pg"></span></div>
+ </section>
+</div>

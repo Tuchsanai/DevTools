@@ -230,3 +230,7 @@ pyrightconfig.json
 # Fullstack Gateway Broker working artifacts (session logs, stray copies)
 03_Application_Docker/04_Fullstack_Gateway_Broker_App/logs/
 03_Application_Docker/04_Fullstack_Gateway_Broker_App/*- Copy.html
+
+# Playwright storage state dropped by lab screenshot rigs (session cookies) — never commit
+.pw-state.json
+*.pw-state*

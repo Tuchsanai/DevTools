@@ -1,0 +1,13 @@
+# คอลัมน์ในไฟล์ CSV ที่ Jira export ออกมา (Issues → Export → CSV (all fields) — ตัดมาเฉพาะที่ใช้จริงใน LAB 7: jira_export.csv)
+Issue key
+Summary
+Issue Type
+Status
+Priority
+Assignee
+Story Points
+Sprint
+Labels
+Created
+Description
+Parent

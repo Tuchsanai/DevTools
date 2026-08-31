@@ -1,0 +1,6 @@
+# build/debug artifacts of the slide deck and labs
+slides_assets/deck_src/.deckshots/
+slides_assets/deck_src/.tmp_json/
+.ipynb_checkpoints/
+__pycache__/
+*.pyc

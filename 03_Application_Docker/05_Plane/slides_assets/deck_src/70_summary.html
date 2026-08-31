@@ -1,0 +1,124 @@
+<!-- ===== ตอนที่ 6 : สรุป ===== -->
+<div class="slot" data-sec="6">
+ <section class="slide section">
+  <div class="s-body">
+    <div class="num-big">06</div>
+    <h1>สรุป — ทฤษฎีข้อไหนถูกพิสูจน์ใน LAB ไหน</h1>
+    <div class="m">ดัชนีทฤษฎี ↔ LAB · ความเข้าใจผิดที่แล็บหักล้าง · สะพานสู่งานจริง · cheat sheet · แหล่งอ้างอิง</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 6 · สรุป</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 6 · ดัชนี</div><h2>หัวข้อ → สไลด์ → LAB → <em>หลักฐานที่ผู้เรียนต้องแสดง</em></h2></div>
+  <div class="s-body top">
+    <table class="tbl sm">
+      <thead><tr><th>หัวข้อของวิชา</th><th>ทฤษฎีหลัก (ตอน)</th><th>LAB</th><th>หลักฐาน</th></tr></thead>
+      <tbody>
+        <tr><td><b>1 Principles to Software Professionals</b></td><td>วิชาชีพ · SWEBOK · Code of Ethics 8 ข้อ · หลักการ SE · การสื่อสาร/traceability (ตอนที่ 1)</td><td>LAB 3 (+ bot user ใน LAB 8, reflection ใน LAB 9)</td><td>work item ที่มี AC/DoD · activity log · roles 20/15/5 · Page จรรยาบรรณ · token ส่วนตัว · hygiene score</td></tr>
+        <tr><td><b>2 Roles of Applications in SE Tasks</b></td><td>SDLC × เครื่องมือ · single source of truth · กายวิภาคเว็บแอป · config · security (ตอนที่ 2)</td><td>LAB 1, LAB 2</td><td>13 service + readiness · route map · คิว celery โต/ระบาย · MinIO/live · SQL</td></tr>
+        <tr><td><b>3 Agile Tools — Scrum &amp; Kanban</b></td><td>Manifesto · Scrum 3-5-3 · story points · burndown · Kanban · WIP · Little's Law (ตอนที่ 3)</td><td>LAB 4, LAB 5</td><td>Fibonacci · Sprint/Transfer/snapshot · burndown ตรงสูตร · swimlanes · WIP guard · Intake · flow metrics</td></tr>
+        <tr><td><b>4 Product Development Tracking — Jira &amp; Trello</b></td><td>Jira/Trello concepts · เปรียบเทียบ Plane · metrics · dashboards · API/webhooks/import (ตอนที่ 4)</td><td>LAB 6, 7, 8, 9</td><td>Modules/Analytics/Exports/Sites · import idempotent + 429 · webhook HMAC/retry/rules · dashboard 6 panel</td></tr>
+      </tbody>
+    </table>
+    <div class="note a" style="margin-top:12px"><b>วิธีให้คะแนน</b> — ทุก LAB จบด้วย <code>check_labNN.sh</code> ที่พิมพ์ <code>PASS</code> หนึ่งบรรทัด + เช็กลิสต์ในเอกสาร · ผู้สอนตรวจซ้ำได้ใน 1 นาทีต่อคน</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 6 · ดัชนี</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 6 · ความเข้าใจผิดที่แล็บหักล้าง</div><h2>เจ็ดประโยคที่ "ฟังดูถูก" — <em>แต่หลักฐานจากการรันจริงบอกอีกอย่าง</em></h2></div>
+  <div class="s-body top">
+    <div class="grid2">
+      <div class="card c"><h4>"container Up = แอปพร้อม"</h4><p>LAB 1: <code>/api/instances/</code> ตอบ 502 อีก ~110 วินาทีหลัง Up จน migrator เสร็จและ gunicorn ฟัง</p></div>
+      <div class="card c"><h4>"แก้ env แล้ว restart ก็เปลี่ยน"</h4><p>LAB 1: ค่า instance config seed ครั้งเดียว (SKIP_ENV_VAR=1) และ <code>restart</code> ไม่อ่าน env ใหม่ — ต้อง god-mode หรือ <code>up -d</code></p></div>
+      <div class="card c"><h4>"worker หยุด เว็บต้องพัง"</h4><p>LAB 2: UI ปกติ แต่คิว celery โต — activity/notification/webhook เงียบ</p></div>
+      <div class="card c"><h4>"burndown มาจากประวัติ state"</h4><p>LAB 4: มาจาก <code>completed_at</code> — ย้ายกลับจาก Done ค่าเป็น NULL กราฟเด้งขึ้น</p></div>
+      <div class="card c"><h4>"ส่ง identifier แทน UUID ได้"</h4><p>LAB 7: <code>/projects/PLAB/...</code> = 404 · human key ใช้ได้เฉพาะ <code>/work-items/PLAB-1/</code></p></div>
+      <div class="card c"><h4>"webhook ชี้ localhost ได้"</h4><p>LAB 8: ถูกปฏิเสธ/400 SSRF จนใส่ <code>WEBHOOK_ALLOWED_HOSTS</code> และ recreate api+worker</p></div>
+      <div class="card c" style="grid-column:1/3"><h4>"velocity สูง = ทีมเก่ง · เลขงานลบแล้วใช้ซ้ำได้"</h4><p>LAB 4/9: velocity ใช้ forecast ไม่ใช่ประเมินคน · LAB 2/3: <code>issue_sequences</code> ไม่ใช้เลขซ้ำ แม้ลบงานทิ้ง</p></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 6 · ความเข้าใจผิดที่แล็บหักล้าง</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 6 · สะพานสู่งานจริง</div><h2>จากห้องเรียนสู่ production — <em>สิ่งที่ต้องเติมก่อนใช้ Plane กับทีมจริง</em></h2></div>
+  <div class="s-body top">
+    <div class="grid3">
+      <div class="card w"><h4>ความปลอดภัย</h4><p>SECRET_KEY/LIVE_SERVER_SECRET_KEY สุ่มและเก็บนอก repo · เปลี่ยนรหัส MinIO/RabbitMQ/Postgres · TLS ผ่าน Caddy (CERT_EMAIL) · TRUSTED_PROXIES จริง · ปิด sign-up สาธารณะ</p></div>
+      <div class="card a"><h4>ความทนทาน</h4><p>backup volume (install.sh option 7) และทดสอบ restore · replicas ของ api/worker · monitoring (โมดูล Prometheus/Grafana) · log ไป central · อัปเกรดตาม release notes</p></div>
+      <div class="card o"><h4>กระบวนการทีม</h4><p>SMTP สำหรับคำเชิญ/แจ้งเตือน · นโยบาย WIP/DoD ใน Pages · token ต่อคน/ต่อเครื่องมือ · webhook → CI/chat · dashboard เป็น "คำถาม" ไม่ใช่ "การจับผิด"</p></div>
+    </div>
+    <div class="note a" style="margin-top:12px"><b>ทางเลือก</b> — ทีมเล็กใช้ Trello · องค์กรใหญ่ใช้ Jira · ทีมที่ต้องการเป็นเจ้าของข้อมูลและปรับแต่งได้ใช้ Plane self-hosted — โมเดลข้อมูลเดียวกัน ย้ายได้ผ่าน API/CSV (LAB 7)</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 6 · Production bridge</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 6 · Cheat sheet</div><h2>คำสั่งที่ใช้ซ้ำทั้งชุด — <em>จำได้แล้วทำทุก LAB เร็วขึ้น</em></h2></div>
+  <div class="s-body top">
+    <div class="g11">
+      <pre class="code xs"><span class="c"># เครื่องเรียน</span>
+docker start devtools 2>/dev/null || docker run -dit --name devtools \
+  --privileged -p 2222:22 -p 8080:8080 -p 9000:9000 -p 8090:8090 tuchsanai/devtools:2569_1
+ssh root@localhost -p 2222
+
+<span class="c"># Plane (pc = docker compose ของ ~/plane-selfhost)</span>
+pc ps            pc logs -f api        pc up -d api worker
+bash wait_ready.sh
+curl -s localhost:8080/api/instances/ | head -c 200
+pc exec -T -e PGPASSWORD=plane plane-db psql -U plane -d plane -c "select ...;"
+pc exec plane-mq rabbitmqctl list_queues -p plane name messages consumers</pre>
+      <pre class="code xs"><span class="c"># REST API v1</span>
+export T=$(cat ~/.plane_token)
+curl -s localhost:8080/api/v1/users/me/ -H "X-API-Key: $T"
+curl -s ".../workspaces/devtools-lab/projects/?per_page=50" -H "X-API-Key: $T"
+curl -s ".../projects/&lt;uuid&gt;/work-items/?per_page=25&cursor=25:1:0" ...
+curl -X POST ".../work-items/" -H "X-API-Key: $T" -H 'Content-Type: application/json' \
+  -d '{"name":"...","priority":"high","state":"&lt;state uuid&gt;",
+       "external_source":"trello","external_id":"card-1"}'
+
+<span class="c"># จบชุด</span>
+docker rm -f dashboard hookwall mq-ui minio-ui
+pc down        <span class="c"># เก็บ volume</span>   |   pc down -v   <span class="c"># ลบทั้งหมด</span></pre>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 6 · Cheat sheet</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 6 · แหล่งอ้างอิง</div><h2>อ่านต่อ — <em>ต้นฉบับของทฤษฎีและเครื่องมือในชุดนี้</em></h2></div>
+  <div class="s-body top">
+    <div class="g11">
+      <ul class="bul sm">
+        <li>Scrum Guide 2020 — Schwaber &amp; Sutherland (scrumguides.org)</li>
+        <li>Manifesto for Agile Software Development (2001) และ 12 หลักการ (agilemanifesto.org)</li>
+        <li>David J. Anderson, <i>Kanban: Successful Evolutionary Change</i> (2010) · Little's Law (1961)</li>
+        <li>ACM/IEEE-CS Software Engineering Code of Ethics and Professional Practice v5.2 (1999)</li>
+        <li>SWEBOK Guide v4 (IEEE Computer Society, 2024)</li>
+        <li>Ghezzi, Jazayeri, Mandrioli, <i>Fundamentals of Software Engineering</i> (2nd ed., 2003) · Hooker, <i>Seven Principles of Software Development</i> (1996)</li>
+      </ul>
+      <ul class="bul sm">
+        <li>Plane: github.com/makeplane/plane (AGPL-3.0) · docs.plane.so · developers.plane.so (REST API, webhooks, self-hosting)</li>
+        <li>Atlassian Jira Software docs · Jira REST API v3 · Trello REST API และ Butler automation docs</li>
+        <li>The Twelve-Factor App (12factor.net) · Caddy docs · Celery + RabbitMQ docs</li>
+        <li>โมดูลก่อนหน้าของวิชา: Docker · RabbitMQ · Reverse proxy · Monitoring (ใช้แนวคิดเดียวกันใน LAB 1–2, 8–9)</li>
+        <li>ชุดนี้: <code>03_Application_Docker/Plane/readme.md</code> · <code>scripts/check_materials.py</code> · <code>slides_assets/deck_src/</code></li>
+      </ul>
+    </div>
+    <div class="note o" style="margin-top:12px"><b>ปิดท้าย</b> — เครื่องมือเปลี่ยนได้ (Trello → Jira → Plane) แต่หลักการที่แล็บพิสูจน์ไม่เปลี่ยน: เขียนให้ตรวจสอบได้ · ทำงานเป็นรอบสั้น · จำกัด WIP · วัดด้วยข้อมูลจริง · และรับผิดชอบต่อสิ่งที่ส่งมอบ</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 6 · แหล่งอ้างอิง</span><span class="pg"></span></div>
+ </section>
+</div>

@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+/* ==================================================================
+   SkillSpace — ระบบออกแบบ "Editorial Data v2"
+
+   หลักคิดสี่ข้อ ที่ทุกไฟล์ในโปรเจกต์นี้ต้องเคารพ
+     1) พื้นสว่าง 3 ระนาบ (paper · card · wash) — เพราะหน้าจอนี้ต้องอ่านออกบนโปรเจกเตอร์
+     2) ยกระดับด้วย "เส้น 1px" ไม่ใช่เงา — ทั้งระบบไม่มี box-shadow แม้แต่บรรทัดเดียว
+     3) accent เดียว (น้ำเงินหมึก) ใช้ได้ 4 ที่เท่านั้น : ปุ่มหลัก · ลิงก์ · โฟกัสคีย์บอร์ด · หมึกของกราฟ
+     4) สีอื่นสงวนไว้บอก "สถานะ" เท่านั้น และต้องมีคำกำกับเสมอ ห้ามสื่อความหมายด้วยสีอย่างเดียว
+
+   ห้ามโหลดฟอนต์/ไอคอนจาก CDN — ไล่ฟอนต์ไทยที่ติดมากับเครื่อง และไอคอนเขียนเป็น SVG เอง
+   ================================================================== */
+@theme {
+  --font-sans: "IBM Plex Sans Thai", "Noto Sans Thai", "Sarabun", "Leelawadee UI",
+    "Tahoma", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "DejaVu Sans Mono", "SFMono-Regular", Menlo, Consolas,
+    monospace;
+
+  /* ---------- พื้นผิว 3 ระนาบ ---------- */
+  --color-paper: #fafafa; /* พื้นหน้าเว็บ */
+  --color-card: #ffffff; /* แผง / การ์ด / ตาราง */
+  --color-wash: #f4f4f5; /* หัวตาราง · แถวสรุป · พื้นรอง */
+
+  /* ---------- แถบนำทางด้านซ้าย ---------- */
+  --color-rail: #18181b;
+  --color-rail-2: #27272a; /* เส้นแบ่งใน sidebar */
+  --color-rail-3: #3f3f46; /* พื้นของ badge ตัวเลขคิวงาน */
+
+  /* ---------- เส้น : 1px ทุกที่ · 2px เฉพาะใต้ header กับแถวรวมของตาราง ---------- */
+  --color-rule: #e4e4e7;
+  --color-rule-strong: #d4d4d8;
+
+  /* ---------- หมึก 3 ระดับ ห้ามมีระดับที่ 4 ---------- */
+  --color-ink: #18181b; /* 16.9:1 บนขาว */
+  --color-ink-2: #52525b; /*  7.6:1 */
+  --color-ink-3: #71717a; /*  4.9:1 — ต่ำสุดที่ยอมให้ใช้ */
+
+  /* ---------- accent เดียวของทั้งระบบ ---------- */
+  --color-accent: #1c5cab; /* 6.4:1 บนขาว — ปุ่มหลัก ลิงก์ โฟกัส */
+  --color-accent-2: #2a78d6; /* หมึกของกราฟเท่านั้น ห้ามเป็นตัวอักษร */
+  --color-accent-wash: #eaf2fd;
+  --color-accent-line: #c6dbf6;
+
+  /* ---------- ordinal ramp ของขั้นงาน : สีเดียวไล่อ่อน→เข้ม ----------
+     ตรวจแล้ว : L ไล่ทางเดียว · ΔL ทุกช่วง ≥ 0.06 · hue spread 3°
+     "เข้มขึ้น = งานเดินไปไกลขึ้น" — ห้ามเอาสีเขียว/สีสถานะมาเป็นท่อนหนึ่งของ ramp */
+  --color-stage-1: #86b6ef; /* รอรับเรื่อง */
+  --color-stage-2: #5598e7; /* มอบหมายแล้ว */
+  --color-stage-3: #2a78d6; /* กำลังซ่อม */
+  --color-stage-4: #1c5cab; /* ปิดงานแล้ว */
+
+  /* ---------- สีสถานะ (สงวน · ห้ามใช้เป็น "สีที่ 2" · ห้ามใช้ตกแต่ง) ----------
+     mark = ใช้ระบายแถบ/จุด · ink = ใช้เป็นตัวอักษรได้ · wash = พื้น badge · line = ขอบ badge */
+  --color-ok: #0ca30c;
+  --color-ok-ink: #116b11; /* 4.9:1 */
+  --color-ok-wash: #e7f6e7;
+  --color-ok-line: #c3e2ca;
+
+  --color-warn: #fab219; /* 1.8:1 — เป็น mark เท่านั้น ห้ามเป็นตัวอักษรเด็ดขาด */
+  --color-warn-ink: #86590a; /* 5.4:1 */
+  --color-warn-wash: #fdf3dd;
+  --color-warn-line: #ecd8a8;
+
+  --color-crit: #d03b3b;
+  --color-crit-ink: #a32222; /* 6.0:1 */
+  --color-crit-wash: #fbeaea;
+  --color-crit-line: #f0cccc;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(42, 120, 214, 0.08), transparent 28rem),
+    linear-gradient(180deg, #ffffff 0, var(--color-paper) 18rem);
+  color: var(--color-ink);
+  font-size: 15px;
+  line-height: 1.55; /* ภาษาไทยต้อง ≥1.5 ไม่งั้นสระบนกับวรรณยุกต์ชนบรรทัดถัดไป */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ลาย grid บาง ๆ ทำให้พื้นที่ทำงานมีบุคลิก "Space" โดยไม่รบกวนการอ่านข้อมูล */
+main {
+  background-image:
+    linear-gradient(rgba(28, 92, 171, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28, 92, 171, 0.025) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: -1px -1px;
+}
+
+/* ตัวเลขที่เรียงเป็นแถว/คอลัมน์ต้องกว้างเท่ากันทุกหลัก จึงกวาดสายตาลงมาเทียบกันได้
+   ตัวเลขพาดหัว (hero) ไม่ใส่คลาสนี้ เพราะสัดส่วนจริงสวยกว่าเมื่ออยู่ตัวเดียวโดด ๆ */
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ป้ายกำกับเล็กสุดของสเกล — ใช้กับ eyebrow เหนือ H1 · หัวคอลัมน์ตาราง · หน่วย */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+  color: var(--color-ink-3);
+}
+
+/* โฟกัสด้วยคีย์บอร์ดต้องเห็นชัดทุกชิ้น — กติกาเดียวระดับ global ตกหล่นไม่ได้ */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* <details>/<summary> คือกลไกพับ-กางเดียวที่ใช้ได้ (CSS ล้วน ไม่มี JS ฝั่ง browser)
+   ลูกศรของเบราว์เซอร์ถูกปิด แล้ววาดเองด้วย SVG เพื่อคุมขนาด/สีให้เข้าระบบ */
+summary {
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+
+* {
+  scrollbar-color: var(--color-rule-strong) transparent;
+  scrollbar-width: thin;
+}

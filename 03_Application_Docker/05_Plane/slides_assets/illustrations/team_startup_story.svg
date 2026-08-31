@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img">
+  <defs>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="7" flood-color="#18181b" flood-opacity="0.12"/>
+    </filter>
+    <filter id="smallShadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#18181b" flood-opacity="0.13"/>
+    </filter>
+    <clipPath id="boardClip">
+      <rect x="406" y="180" width="468" height="212" rx="18"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#fafafa"/>
+  <circle cx="109" cy="118" r="76" fill="#2a78d6" opacity="0.07"/>
+  <circle cx="1179" cy="565" r="112" fill="#116b11" opacity="0.06"/>
+  <path d="M0 612 C220 584 322 650 515 623 S852 582 1028 620 S1176 640 1280 612 V720 H0Z" fill="#1c5cab" opacity="0.055"/>
+
+  <!-- Speech bubble -->
+  <g filter="url(#softShadow)">
+    <path d="M255 50 H1025 Q1045 50 1045 70 V117 Q1045 137 1025 137 H685 L652 163 L657 137 H255 Q235 137 235 117 V70 Q235 50 255 50Z" fill="#ffffff" stroke="#1c5cab" stroke-width="3"/>
+  </g>
+  <circle cx="278" cy="93" r="16" fill="#2a78d6"/>
+  <path d="M270 94 L276 100 L287 86" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="640" y="101" text-anchor="middle" fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="27" font-weight="700">We ship a campus food-delivery app in 6 sprints</text>
+
+  <!-- Whiteboard -->
+  <g filter="url(#softShadow)">
+    <rect x="390" y="164" width="500" height="244" rx="24" fill="#e4e4e7"/>
+    <rect x="406" y="180" width="468" height="212" rx="18" fill="#ffffff"/>
+  </g>
+  <g clip-path="url(#boardClip)">
+    <!-- Kanban columns -->
+    <rect x="430" y="204" width="78" height="8" rx="4" fill="#1c5cab"/>
+    <rect x="430" y="226" width="100" height="42" rx="8" fill="#dbeafe" stroke="#2a78d6" stroke-width="2"/>
+    <rect x="441" y="238" width="51" height="5" rx="2.5" fill="#2a78d6" opacity="0.65"/>
+    <rect x="441" y="251" width="71" height="5" rx="2.5" fill="#2a78d6" opacity="0.35"/>
+    <rect x="430" y="278" width="100" height="42" rx="8" fill="#fef3c7" stroke="#86590a" stroke-width="2"/>
+    <rect x="441" y="290" width="62" height="5" rx="2.5" fill="#86590a" opacity="0.58"/>
+    <rect x="441" y="303" width="44" height="5" rx="2.5" fill="#86590a" opacity="0.3"/>
+
+    <rect x="551" y="204" width="78" height="8" rx="4" fill="#86590a"/>
+    <rect x="551" y="226" width="100" height="42" rx="8" fill="#fef3c7" stroke="#86590a" stroke-width="2"/>
+    <rect x="562" y="238" width="70" height="5" rx="2.5" fill="#86590a" opacity="0.55"/>
+    <rect x="562" y="251" width="45" height="5" rx="2.5" fill="#86590a" opacity="0.3"/>
+    <rect x="551" y="278" width="100" height="42" rx="8" fill="#fee2e2" stroke="#a32222" stroke-width="2"/>
+    <rect x="562" y="290" width="58" height="5" rx="2.5" fill="#a32222" opacity="0.55"/>
+    <rect x="562" y="303" width="72" height="5" rx="2.5" fill="#a32222" opacity="0.3"/>
+
+    <rect x="672" y="204" width="78" height="8" rx="4" fill="#116b11"/>
+    <rect x="672" y="226" width="100" height="42" rx="8" fill="#dcfce7" stroke="#116b11" stroke-width="2"/>
+    <path d="M686 247 L694 254 L708 237" fill="none" stroke="#116b11" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="715" y="240" width="42" height="5" rx="2.5" fill="#116b11" opacity="0.42"/>
+    <rect x="672" y="278" width="100" height="42" rx="8" fill="#dcfce7" stroke="#116b11" stroke-width="2"/>
+    <path d="M686 299 L694 306 L708 289" fill="none" stroke="#116b11" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="715" y="292" width="42" height="5" rx="2.5" fill="#116b11" opacity="0.42"/>
+
+    <!-- Paper plane sketch -->
+    <path d="M793 235 L849 209 L830 264 L813 245 L793 235Z M813 245 L849 209 M813 245 L810 269 L823 253" fill="none" stroke="#1c5cab" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M784 289 C805 279 827 281 845 293" fill="none" stroke="#2a78d6" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 8" opacity="0.65"/>
+  </g>
+  <rect x="494" y="407" width="292" height="12" rx="6" fill="#52525b" opacity="0.2"/>
+
+  <!-- Rear left: Product Owner -->
+  <g>
+    <path d="M235 378 C235 327 270 300 313 300 C356 300 390 327 390 378 V483 H235Z" fill="#1c5cab"/>
+    <rect x="299" y="335" width="28" height="43" rx="12" fill="#9a5b43"/>
+    <circle cx="313" cy="303" r="48" fill="#a86448"/>
+    <path d="M266 301 C267 250 296 240 325 246 C357 252 368 275 360 310 C349 286 327 277 302 278 C286 279 275 288 266 301Z" fill="#18181b"/>
+    <path d="M270 294 C265 311 268 326 280 340 C275 320 279 303 290 285Z" fill="#18181b"/>
+    <circle cx="298" cy="307" r="3.3" fill="#18181b"/>
+    <circle cx="330" cy="307" r="3.3" fill="#18181b"/>
+    <path d="M303 326 Q314 334 326 325" fill="none" stroke="#6d362b" stroke-width="3" stroke-linecap="round"/>
+    <path d="M257 420 L304 454" fill="none" stroke="#a86448" stroke-width="17" stroke-linecap="round"/>
+    <path d="M369 418 L336 454" fill="none" stroke="#a86448" stroke-width="17" stroke-linecap="round"/>
+    <g filter="url(#smallShadow)">
+      <rect x="204" y="347" width="158" height="40" rx="20" fill="#ffffff" stroke="#1c5cab" stroke-width="2"/>
+      <circle cx="226" cy="367" r="8" fill="#1c5cab"/>
+      <text x="243" y="374" fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="20" font-weight="700">Product Owner</text>
+    </g>
+  </g>
+
+  <!-- Rear right: Scrum Master -->
+  <g>
+    <path d="M890 383 C890 332 926 305 969 305 C1012 305 1048 332 1048 383 V486 H890Z" fill="#116b11"/>
+    <rect x="955" y="338" width="28" height="43" rx="12" fill="#d99568"/>
+    <circle cx="969" cy="307" r="48" fill="#e2a477"/>
+    <path d="M923 305 C919 275 934 249 963 244 C991 239 1014 255 1019 286 C1005 273 984 267 963 270 C946 272 932 284 923 305Z" fill="#6b3f25"/>
+    <path d="M1013 272 C1027 288 1018 321 1006 337 C1011 315 1005 292 991 274Z" fill="#6b3f25"/>
+    <circle cx="953" cy="310" r="3.3" fill="#18181b"/>
+    <circle cx="984" cy="310" r="3.3" fill="#18181b"/>
+    <path d="M958 328 Q969 336 981 327" fill="none" stroke="#9a5b43" stroke-width="3" stroke-linecap="round"/>
+    <path d="M912 422 L952 456" fill="none" stroke="#e2a477" stroke-width="17" stroke-linecap="round"/>
+    <path d="M1025 422 L991 456" fill="none" stroke="#e2a477" stroke-width="17" stroke-linecap="round"/>
+    <g filter="url(#smallShadow)">
+      <rect x="892" y="350" width="169" height="40" rx="20" fill="#ffffff" stroke="#116b11" stroke-width="2"/>
+      <circle cx="914" cy="370" r="8" fill="#116b11"/>
+      <text x="931" y="377" fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="20" font-weight="700">Scrum Master</text>
+    </g>
+  </g>
+
+  <!-- Table -->
+  <ellipse cx="640" cy="659" rx="480" ry="27" fill="#18181b" opacity="0.09"/>
+  <g filter="url(#softShadow)">
+    <path d="M180 468 Q180 446 204 446 H1076 Q1100 446 1100 468 L1070 608 Q1066 626 1045 626 H235 Q214 626 210 608Z" fill="#f4c67d" stroke="#86590a" stroke-width="3"/>
+    <path d="M198 483 H1082 L1075 516 H205Z" fill="#fff7e8" opacity="0.72"/>
+  </g>
+  <path d="M278 626 L265 690" stroke="#86590a" stroke-width="18" stroke-linecap="round"/>
+  <path d="M1002 626 L1015 690" stroke="#86590a" stroke-width="18" stroke-linecap="round"/>
+
+  <!-- Rear laptops -->
+  <g filter="url(#smallShadow)">
+    <path d="M287 411 H431 Q441 411 439 421 L424 503 H279 L266 421 Q264 411 274 411Z" fill="#e4e4e7" stroke="#52525b" stroke-width="3"/>
+    <circle cx="353" cy="454" r="10" fill="#1c5cab" opacity="0.85"/>
+    <path d="M263 503 H440 Q435 516 420 516 H283 Q268 516 263 503Z" fill="#52525b"/>
+  </g>
+  <g filter="url(#smallShadow)">
+    <path d="M846 414 H990 Q1000 414 998 424 L983 503 H838 L825 424 Q823 414 833 414Z" fill="#e4e4e7" stroke="#52525b" stroke-width="3"/>
+    <circle cx="912" cy="456" r="10" fill="#116b11" opacity="0.85"/>
+    <path d="M822 503 H999 Q994 516 979 516 H842 Q827 516 822 503Z" fill="#52525b"/>
+  </g>
+
+  <!-- Table details -->
+  <rect x="575" y="478" width="116" height="28" rx="14" fill="#ffffff" stroke="#d4d4d8" stroke-width="2"/>
+  <circle cx="598" cy="492" r="7" fill="#a32222"/>
+  <circle cx="620" cy="492" r="7" fill="#86590a"/>
+  <circle cx="642" cy="492" r="7" fill="#116b11"/>
+  <path d="M719 477 C736 473 751 480 755 495 C759 510 746 521 729 518 C713 515 706 481 719 477Z" fill="#ffffff" stroke="#d4d4d8" stroke-width="2"/>
+  <path d="M755 489 Q776 489 772 504 Q769 514 754 510" fill="none" stroke="#d4d4d8" stroke-width="4"/>
+
+  <!-- Front left: Developer -->
+  <g>
+    <path d="M352 681 V583 C352 527 391 493 442 493 C493 493 532 527 532 583 V681Z" fill="#2a78d6"/>
+    <rect x="428" y="501" width="28" height="45" rx="12" fill="#6d4739"/>
+    <circle cx="442" cy="469" r="51" fill="#7d5141"/>
+    <path d="M392 468 C390 425 414 406 443 406 C476 406 497 429 493 471 C482 443 463 435 440 437 C421 439 405 449 392 468Z" fill="#27272a"/>
+    <circle cx="425" cy="473" r="3.5" fill="#18181b"/>
+    <circle cx="458" cy="473" r="3.5" fill="#18181b"/>
+    <path d="M430 492 Q442 500 455 491" fill="none" stroke="#4b2d25" stroke-width="3" stroke-linecap="round"/>
+    <path d="M379 573 L407 531" fill="none" stroke="#7d5141" stroke-width="18" stroke-linecap="round"/>
+    <path d="M506 573 L478 531" fill="none" stroke="#7d5141" stroke-width="18" stroke-linecap="round"/>
+    <g filter="url(#smallShadow)">
+      <rect x="357" y="530" width="137" height="40" rx="20" fill="#ffffff" stroke="#2a78d6" stroke-width="2"/>
+      <circle cx="379" cy="550" r="8" fill="#2a78d6"/>
+      <text x="396" y="557" fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="20" font-weight="700">Developer</text>
+    </g>
+  </g>
+
+  <!-- Front right: Developer -->
+  <g>
+    <path d="M748 681 V583 C748 527 787 493 838 493 C889 493 928 527 928 583 V681Z" fill="#a32222"/>
+    <rect x="824" y="500" width="28" height="46" rx="12" fill="#e2aa72"/>
+    <circle cx="838" cy="467" r="51" fill="#efbd83"/>
+    <path d="M788 466 C789 424 812 403 843 405 C875 407 894 430 888 470 C876 445 858 435 835 436 C815 437 801 449 788 466Z" fill="#18181b"/>
+    <path d="M790 451 Q799 419 822 411" fill="none" stroke="#18181b" stroke-width="13" stroke-linecap="round"/>
+    <circle cx="821" cy="472" r="3.5" fill="#18181b"/>
+    <circle cx="854" cy="472" r="3.5" fill="#18181b"/>
+    <path d="M826 491 Q838 499 851 490" fill="none" stroke="#a86448" stroke-width="3" stroke-linecap="round"/>
+    <path d="M775 573 L803 531" fill="none" stroke="#efbd83" stroke-width="18" stroke-linecap="round"/>
+    <path d="M902 573 L874 531" fill="none" stroke="#efbd83" stroke-width="18" stroke-linecap="round"/>
+    <g filter="url(#smallShadow)">
+      <rect x="753" y="530" width="137" height="40" rx="20" fill="#ffffff" stroke="#a32222" stroke-width="2"/>
+      <circle cx="775" cy="550" r="8" fill="#a32222"/>
+      <text x="792" y="557" fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="20" font-weight="700">Developer</text>
+    </g>
+  </g>
+
+  <!-- Front laptops -->
+  <g filter="url(#smallShadow)">
+    <path d="M393 571 H548 Q558 571 556 581 L540 654 H389 L376 581 Q374 571 384 571Z" fill="#f4f4f5" stroke="#52525b" stroke-width="3"/>
+    <path d="M438 610 L449 620 L470 598" fill="none" stroke="#2a78d6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M372 654 H560 Q555 668 538 668 H394 Q377 668 372 654Z" fill="#52525b"/>
+  </g>
+  <g filter="url(#smallShadow)">
+    <path d="M728 571 H883 Q893 571 891 581 L875 654 H724 L711 581 Q709 571 719 571Z" fill="#f4f4f5" stroke="#52525b" stroke-width="3"/>
+    <path d="M772 604 L780 596 L788 604 L796 596" fill="none" stroke="#a32222" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M707 654 H895 Q890 668 873 668 H729 Q712 668 707 654Z" fill="#52525b"/>
+  </g>
+
+  <!-- Friendly collaboration accents -->
+  <path d="M174 294 C151 274 157 246 180 244 C193 243 200 252 204 260 C208 251 216 243 229 245 C252 249 255 277 230 296 L204 315Z" fill="#a32222" opacity="0.12"/>
+  <path d="M1098 277 L1106 293 L1124 296 L1111 309 L1114 327 L1098 319 L1082 327 L1085 309 L1072 296 L1090 293Z" fill="#86590a" opacity="0.16"/>
+</svg>

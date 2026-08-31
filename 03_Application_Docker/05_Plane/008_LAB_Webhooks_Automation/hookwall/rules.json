@@ -1,0 +1,28 @@
+{
+  "_doc": "rules แบบ Butler: when = เงื่อนไขของ event ที่เข้ามา · then = การกระทำผ่าน REST API ด้วย token ของ bot user (automation@example.com) · hookwall ข้าม event ที่ actor เป็น bot เอง (loop guard)",
+  "rules": [
+    {
+      "name": "R1 urgent-needs-owner",
+      "when": {"event": "issue", "priority": "urgent", "no_assignee": true},
+      "then": [
+        {"do": "comment", "text": "🤖 งาน Urgent ต้องมีเจ้าของ — โปรดกำหนด assignee ภายในวันนี้ (rule R1)"},
+        {"do": "add_label", "label": "needs-owner"}
+      ]
+    },
+    {
+      "name": "R2 done-needs-demo",
+      "when": {"event": "issue", "action": "updated", "field": "state", "state_group": "completed"},
+      "then": [
+        {"do": "comment", "text": "🤖 ปิดงานแล้ว — แนบลิงก์ demo หรือ PR ไว้ที่ Links เพื่อ traceability (rule R2)"}
+      ]
+    },
+    {
+      "name": "R3 eta-command",
+      "when": {"event": "issue_comment", "action": "created", "comment_contains": "/eta"},
+      "then": [
+        {"do": "set_target_date", "days": 3},
+        {"do": "comment", "text": "🤖 ตั้ง Due date ให้แล้ว (+3 วัน) ตามคำสั่ง /eta (rule R3)"}
+      ]
+    }
+  ]
+}

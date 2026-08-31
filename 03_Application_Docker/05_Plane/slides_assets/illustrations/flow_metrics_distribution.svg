@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Flow metrics distribution</title>
+  <desc id="desc">A cycle time histogram with an eighty-fifth percentile marker, a WIP aging scatter chart with an aging item highlighted, and a flow efficiency formula.</desc>
+  <defs>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#18181b" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+
+  <!-- Header -->
+  <text x="56" y="58" fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="30" font-weight="700">Flow metrics at a glance</text>
+  <text x="56" y="88" fill="#52525b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18">Use distribution and aging signals to make delivery risk visible.</text>
+
+  <!-- Left card: histogram -->
+  <rect x="44" y="116" width="600" height="496" rx="22" fill="#ffffff" stroke="#e4e4e7" filter="url(#softShadow)"/>
+  <rect x="68" y="138" width="8" height="34" rx="4" fill="#1c5cab"/>
+  <text x="90" y="164" fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="24" font-weight="700">Cycle time distribution (days)</text>
+
+  <!-- Annotation -->
+  <rect x="90" y="190" width="510" height="56" rx="14" fill="#eef6ff" stroke="#bfdbfe"/>
+  <circle cx="116" cy="218" r="8" fill="#2a78d6"/>
+  <text x="136" y="225" fill="#1c5cab" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="19" font-weight="600">Forecast: 85% of items finish within 9 days</text>
+
+  <!-- Histogram grid -->
+  <g stroke="#e4e4e7" stroke-width="1">
+    <line x1="90" y1="306" x2="606" y2="306"/>
+    <line x1="90" y1="374" x2="606" y2="374"/>
+    <line x1="90" y1="442" x2="606" y2="442"/>
+  </g>
+  <line x1="90" y1="510" x2="606" y2="510" stroke="#71717a" stroke-width="2"/>
+
+  <!-- Bars: right-skewed distribution, days 1–14 -->
+  <g fill="#2a78d6">
+    <rect x="99"  y="322" width="25" height="188" rx="6"/>
+    <rect x="135" y="280" width="25" height="230" rx="6"/>
+    <rect x="171" y="268" width="25" height="242" rx="6"/>
+    <rect x="207" y="294" width="25" height="216" rx="6"/>
+    <rect x="243" y="332" width="25" height="178" rx="6"/>
+    <rect x="279" y="366" width="25" height="144" rx="6"/>
+    <rect x="315" y="396" width="25" height="114" rx="6"/>
+    <rect x="351" y="420" width="25" height="90" rx="6"/>
+  </g>
+  <g fill="#8ab9ee">
+    <rect x="387" y="440" width="25" height="70" rx="6"/>
+    <rect x="423" y="454" width="25" height="56" rx="6"/>
+    <rect x="459" y="466" width="25" height="44" rx="6"/>
+    <rect x="495" y="474" width="25" height="36" rx="6"/>
+    <rect x="531" y="482" width="25" height="28" rx="6"/>
+    <rect x="567" y="488" width="25" height="22" rx="6"/>
+  </g>
+
+  <!-- 85th percentile marker -->
+  <line x1="399.5" y1="272" x2="399.5" y2="516" stroke="#116b11" stroke-width="3" stroke-dasharray="9 7"/>
+  <rect x="342" y="258" width="246" height="38" rx="12" fill="#ecf8ec" stroke="#a7d7a7"/>
+  <text x="359" y="284" fill="#116b11" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" font-weight="700">85th percentile = 9 days</text>
+
+  <!-- Day labels -->
+  <g fill="#52525b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" text-anchor="middle">
+    <text x="111.5" y="540">1</text><text x="147.5" y="540">2</text>
+    <text x="183.5" y="540">3</text><text x="219.5" y="540">4</text>
+    <text x="255.5" y="540">5</text><text x="291.5" y="540">6</text>
+    <text x="327.5" y="540">7</text><text x="363.5" y="540">8</text>
+    <text x="399.5" y="540">9</text><text x="435.5" y="540">10</text>
+    <text x="471.5" y="540">11</text><text x="507.5" y="540">12</text>
+    <text x="543.5" y="540">13</text><text x="579.5" y="540">14</text>
+  </g>
+  <text x="348" y="576" fill="#52525b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" text-anchor="middle">Cycle time in days</text>
+
+  <!-- Right card: WIP aging -->
+  <rect x="668" y="116" width="568" height="496" rx="22" fill="#ffffff" stroke="#e4e4e7" filter="url(#softShadow)"/>
+  <rect x="692" y="138" width="8" height="34" rx="4" fill="#86590a"/>
+  <text x="714" y="164" fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="24" font-weight="700">WIP aging</text>
+  <text x="692" y="198" fill="#52525b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18">Age of every open work item</text>
+
+  <!-- Plot background bands -->
+  <rect x="742" y="230" width="444" height="292" rx="14" fill="#fafafa" stroke="#e4e4e7"/>
+  <rect x="742" y="230" width="148" height="292" rx="14" fill="#f4f8fd"/>
+  <rect x="890" y="230" width="148" height="292" fill="#f8fbff"/>
+  <path d="M1038 230h134a14 14 0 0 1 14 14v264a14 14 0 0 1-14 14h-134z" fill="#fffaf0"/>
+
+  <!-- Grid and Y axis -->
+  <g stroke="#d4d4d8" stroke-width="1">
+    <line x1="742" y1="484" x2="1186" y2="484"/>
+    <line x1="742" y1="420" x2="1186" y2="420"/>
+    <line x1="742" y1="356" x2="1186" y2="356"/>
+    <line x1="742" y1="292" x2="1186" y2="292"/>
+  </g>
+  <g fill="#52525b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" text-anchor="end">
+    <text x="730" y="490">0</text>
+    <text x="730" y="426">3</text>
+    <text x="730" y="362">6</text>
+    <text x="730" y="298">9</text>
+    <text x="730" y="240">12</text>
+  </g>
+  <text x="700" y="384" fill="#52525b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" text-anchor="middle" transform="rotate(-90 700 384)">Age (days)</text>
+
+  <!-- Scatter points -->
+  <g fill="#2a78d6" stroke="#ffffff" stroke-width="3">
+    <circle cx="784" cy="463" r="9"/>
+    <circle cx="820" cy="442" r="9"/>
+    <circle cx="850" cy="399" r="9"/>
+    <circle cx="925" cy="454" r="9"/>
+    <circle cx="962" cy="410" r="9"/>
+    <circle cx="993" cy="335" r="9"/>
+    <circle cx="1083" cy="432" r="9"/>
+    <circle cx="1125" cy="378" r="9"/>
+  </g>
+  <circle cx="1109" cy="240" r="12" fill="#a32222" stroke="#ffffff" stroke-width="4"/>
+  <circle cx="1109" cy="240" r="17" fill="none" stroke="#a32222" stroke-width="2" opacity="0.25"/>
+
+  <!-- Aging callout -->
+  <path d="M1100 253 L1066 282" fill="none" stroke="#a32222" stroke-width="2"/>
+  <rect x="900" y="272" width="268" height="48" rx="13" fill="#fff1f1" stroke="#e7aaaa"/>
+  <circle cx="922" cy="296" r="6" fill="#a32222"/>
+  <text x="938" y="303" fill="#a32222" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" font-weight="700">aging 12 d — investigate</text>
+
+  <!-- Column labels -->
+  <g fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" font-weight="600" text-anchor="middle">
+    <text x="816" y="556">To Do</text>
+    <text x="964" y="556">In Progress</text>
+    <text x="1112" y="556">Review</text>
+  </g>
+  <g fill="#52525b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" text-anchor="middle">
+    <text x="816" y="582">3 items</text>
+    <text x="964" y="582">3 items</text>
+    <text x="1112" y="582">3 items</text>
+  </g>
+
+  <!-- Bottom formula chip -->
+  <rect x="381" y="636" width="518" height="58" rx="29" fill="#eef7ee" stroke="#b9dbb9"/>
+  <circle cx="415" cy="665" r="11" fill="#116b11"/>
+  <path d="M410 665l4 4 7-9" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="442" y="672" fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="20" font-weight="700">Flow efficiency</text>
+  <text x="590" y="672" fill="#52525b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="20">= active time / lead time</text>
+</svg>

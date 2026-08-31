@@ -1,0 +1,4 @@
+name,description,status,start_offset,end_offset,lead,keywords
+Ordering,ค้นหาร้าน → ดูเมนู → ตะกร้า → ยืนยันออเดอร์ (เส้นทางหลักของ CampusEats ที่ต้องเสร็จก่อนเปิดใช้ในมหาวิทยาลัย),in-progress,-14,14,admin@example.com,ค้นหาร้าน|เมนู|ตะกร้า|สั่งอาหาร|ยืนยันรับออเดอร์|API
+Payments,ชำระเงินด้วย PromptPay QR และตรวจสอบยอดอัตโนมัติ (ต่อยอดจาก Ordering หลังเปิดใช้เฟสแรก),planned,7,35,dev1@example.com,PromptPay|ชำระเงิน
+Notifications,แจ้งเตือนสถานะออเดอร์แบบ realtime ให้นักศึกษา ร้านค้า และไรเดอร์,backlog,21,49,admin@example.com,realtime|ติดตามสถานะ|ไรเดอร์

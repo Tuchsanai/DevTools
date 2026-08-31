@@ -1,0 +1,16 @@
+﻿Issue key,Summary,Issue Type,Status,Priority,Assignee,Story Points,Sprint,Labels,Created,Description,Parent
+CAF-1,Ordering — สั่งอาหารและตะกร้า,Epic,In Progress,High,lab.admin,,,,05/Aug/26 9:00 AM,Epic รวมงานสั่งอาหารตั้งแต่ดูเมนูจนได้หมายเลขคิว,
+CAF-2,Payments — ชำระเงินและใบเสร็จ,Epic,To Do,Medium,lab.admin,,,,05/Aug/26 9:05 AM,Epic รวมงานชำระเงิน PromptPay และใบเสร็จ,
+CAF-3,นักศึกษาดูเมนูของร้านค้าในมหาวิทยาลัย,Story,Done,High,lab.admin,3,Sprint 1,ui,10/Aug/26 9:15 AM,"ในฐานะนักศึกษา ฉันต้องการเห็นเมนูพร้อมราคา เพื่อเลือกสั่งได้เร็ว",CAF-1
+CAF-4,เพิ่มเมนูลงตะกร้าและแก้ไขจำนวน,Story,Done,High,dev.one,5,Sprint 1,ui,10/Aug/26 9:20 AM,"เพิ่ม/ลด/ลบรายการในตะกร้า แสดงราคารวมทันที",CAF-1
+CAF-5,ออกแบบ schema ตารางออเดอร์,Task,Done,Medium,lab.admin,2,Sprint 1,,11/Aug/26 10:00 AM,ตาราง orders / order_items พร้อม index,CAF-1
+CAF-6,ตะกร้าว่างเปล่าหลัง refresh หน้า,Bug,Done,Highest,dev.one,1,Sprint 1,frontend,13/Aug/26 2:30 PM,"state ของตะกร้าหายเมื่อกด F5 ต้องเก็บใน localStorage",CAF-1
+CAF-7,ยืนยันออเดอร์และรับหมายเลขคิว,Story,Done,High,lab.admin,5,Sprint 1,,14/Aug/26 11:00 AM,"กดยืนยันแล้วได้หมายเลขคิว ร้านค้าเห็นออเดอร์ทันที",CAF-1
+CAF-8,ร้านค้าเห็นออเดอร์ใหม่แบบ realtime,Story,In Progress,High,dev.one,8,Sprint 2,,24/Aug/26 9:30 AM,"ใช้ WebSocket แจ้งร้านค้าเมื่อมีออเดอร์ใหม่",CAF-1
+CAF-9,หน้าเลือกวิธีชำระเงิน,Task,In Progress,Medium,lab.admin,3,Sprint 2,ui,24/Aug/26 9:35 AM,ตัวเลือก PromptPay / เงินสดหน้าร้าน,CAF-2
+CAF-10,ชำระเงินผ่าน PromptPay QR,Story,To Do,Highest,dev.one,8,Sprint 2,,24/Aug/26 9:40 AM,"สร้าง QR ตามยอด ตรวจสอบการชำระ แล้วเปลี่ยนสถานะออเดอร์",CAF-2
+CAF-11,บันทึกใบเสร็จเป็น PDF,Task,To Do,Low,,3,Sprint 2,,25/Aug/26 1:00 PM,ใบเสร็จอย่างย่อดาวน์โหลดได้,CAF-2
+CAF-12,ยอดรวมไม่ปัดเศษทศนิยม,Bug,In Review,High,lab.admin,2,Sprint 2,frontend,26/Aug/26 4:45 PM,"ราคา 35.5 + 12.25 แสดงเป็น 47.750000001",CAF-2
+CAF-13,แจ้งเตือนเมื่อชำระเงินสำเร็จ,Story,To Do,Medium,,5,Sprint 2,,27/Aug/26 10:10 AM,ส่งแจ้งเตือนในแอปและอีเมล,CAF-2
+CAF-14,เขียน test ของ API ชำระเงิน,Task,To Do,Lowest,dev.one,3,,,28/Aug/26 3:00 PM,pytest ครอบคลุม success / timeout / duplicate,CAF-2
+CAF-15,คืนเงินเมื่อร้านยกเลิกออเดอร์,Story,To Do,Low,,5,,,29/Aug/26 9:00 AM,"ร้านกดยกเลิก → คืนเงินอัตโนมัติภายใน 1 วัน",CAF-2

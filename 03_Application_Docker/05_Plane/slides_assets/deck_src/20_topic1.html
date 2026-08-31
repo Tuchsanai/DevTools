@@ -1,0 +1,553 @@
+<!-- ===== T1-01 : ตอนที่ 1 divider ===== -->
+<div class="slot" data-sec="1">
+ <section class="slide section">
+  <div class="s-body">
+    <div class="num-big">01</div>
+    <h1>หลักการเพื่อเป็นผู้เชี่ยวชาญด้านซอฟต์แวร์</h1>
+    <div class="m">ทำไมซอฟต์แวร์ต้องการ "วิศวกรรม" · วิชาชีพต่างจากอาชีพอย่างไร · SWEBOK · จรรยาบรรณ ACM/IEEE-CS · หลักการออกแบบคลาสสิก · และนิสัยของมืออาชีพที่มองเห็นได้จริงบน work item ใน Plane</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Principles to Software Professionals</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-02 : ทำไมต้องวิศวกรรมซอฟต์แวร์ ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · ทำไมต้อง "วิศวกรรม" ซอฟต์แวร์</div><h2>ซอฟต์แวร์ต้องการ <em>วิศวกรรม</em> ไม่ใช่แค่การเขียนโปรแกรม</h2></div>
+  <div class="s-body">
+    <div class="quote">"The application of a <mark>systematic, disciplined, quantifiable</mark> approach to the development, operation, and maintenance of software; that is, the application of engineering to software."<span class="who">— นิยาม Software Engineering · IEEE Std 610.12-1990 · ใช้ต่อใน SWEBOK (ISO/IEC TR 19759)</span></div>
+    <div class="grid3">
+      <div class="card w"><h4><span class="n">1</span>Software crisis (NATO 1968)</h4><p>การประชุม NATO Software Engineering Conference ที่ Garmisch ตั้งชื่อปัญหาที่ทุกคนเจอว่า "software crisis": โครงการล่าช้า เกินงบ คุณภาพต่ำ และดูแลรักษายาก เพราะขนาดของระบบโตเร็วกว่าวิธีทำงานที่มี</p></div>
+      <div class="card a"><h4><span class="n">2</span>คำตอบคือ "วิศวกรรม"</h4><p>เป็นระบบ (systematic) มีวินัย (disciplined) และวัดได้ (quantifiable) ครอบคลุมทั้งการพัฒนา การใช้งาน และการบำรุงรักษา ไม่ใช่เฉพาะช่วงเขียนโค้ด</p></div>
+      <div class="card o"><h4><span class="n">3</span>องค์ความรู้ที่ตกลงร่วมกัน</h4><p>SWEBOK (Software Engineering Body of Knowledge) รวบรวมสิ่งที่วิศวกรซอฟต์แวร์ควรรู้เป็น knowledge areas ใช้เป็นฐานของหลักสูตร การรับรอง และการประเมินตนเอง</p></div>
+    </div>
+    <div class="flow">
+      <div class="b a"><div class="t">systematic</div><div class="s">มีกระบวนการ: backlog → cycle → review → release</div></div><span class="ar">+</span>
+      <div class="b a"><div class="t">disciplined</div><div class="s">มีวินัย: test · code review · Definition of Done</div></div><span class="ar">+</span>
+      <div class="b a"><div class="t">quantifiable</div><div class="s">วัดได้: estimate · velocity · burndown · lead time</div></div>
+    </div>
+    <div class="note a"><b>ประเด็นของวิชานี้</b> — เครื่องมืออย่าง Plane ไม่ได้ทำให้ใครเป็นวิศวกร แต่ทำให้วินัยของวิศวกร (บันทึก ประเมิน ติดตาม ตรวจสอบย้อนหลัง) เกิดขึ้นได้จริงในทีม</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-03 : ต้นทุนของความผิดพลาด ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · ต้นทุนของความผิดพลาด</div><h2>เมื่อซอฟต์แวร์ผิดพลาด <em>ราคาที่จ่ายคือชีวิตและความไว้วางใจ</em></h2>
+    <div class="sub">สามกรณีศึกษาคลาสสิก — จุดร่วมไม่ใช่ "โปรแกรมเมอร์เก่งไม่พอ" แต่คือกระบวนการและความรับผิดชอบที่หายไป</div></div>
+  <div class="s-body">
+    <div class="grid3">
+      <div class="card c"><h4>Therac-25 (1985–1987)</h4><p><b>เกิดอะไร:</b> เครื่องฉายรังสีรักษามะเร็งให้ปริมาณรังสีเกินขนาดอย่างน้อย 6 ครั้ง มีผู้เสียชีวิต สาเหตุคือ race condition ในซอฟต์แวร์ควบคุม ขณะที่รุ่นนี้ถอด interlock ทางฮาร์ดแวร์ออกและพึ่งซอฟต์แวร์ล้วน</p><p style="margin-top:6px"><b>บทเรียน:</b> การใช้โค้ดเดิมซ้ำโดยไม่วิเคราะห์ความปลอดภัยใหม่ · ความมั่นใจเกินจริงในซอฟต์แวร์ · รายงานอุบัติเหตุถูกมองข้าม</p></div>
+      <div class="card w"><h4>Ariane 5 เที่ยวบิน 501 (1996)</h4><p><b>เกิดอะไร:</b> จรวดระเบิดหลังปล่อยราว 37 วินาที ซอฟต์แวร์นำร่องที่ยกมาจาก Ariane 4 แปลงค่าทศนิยม 64 บิตเป็นจำนวนเต็ม 16 บิตแล้ว overflow ระบบสำรองรันโค้ดเดียวกันจึงล้มพร้อมกัน</p><p style="margin-top:6px"><b>บทเรียน:</b> สมมติฐานของโค้ดเดิม (ช่วงค่าของ Ariane 4) ไม่ถูกทวนสอบใหม่ · การทดสอบไม่ครอบคลุมสภาพจริง · redundancy ที่ซ้ำข้อผิดพลาดเดิม</p></div>
+      <div class="card c"><h4>Boeing 737 MAX · MCAS (2018–2019)</h4><p><b>เกิดอะไร:</b> อุบัติเหตุ 2 ครั้ง มีผู้เสียชีวิต 346 คน ระบบ MCAS ปรับหัวเครื่องอัตโนมัติจากเซ็นเซอร์มุมปะทะเพียงตัวเดียว และนักบินไม่ได้รับข้อมูลเพียงพอว่าระบบนี้มีอยู่</p><p style="margin-top:6px"><b>บทเรียน:</b> single point of failure ในระบบวิกฤต · ความโปร่งใสต่อผู้ใช้และผู้กำกับดูแล · แรงกดดันด้านเวลาและต้นทุนเหนือความปลอดภัย</p></div>
+    </div>
+    <div class="flow">
+      <div class="b"><div class="t">การตัดสินใจเล็ก ๆ</div><div class="s">ยกโค้ดเดิมมาใช้ · ถอด interlock · ใช้เซ็นเซอร์ตัวเดียว</div></div><span class="ar">→</span>
+      <div class="b"><div class="t">ไม่มีใครบันทึก</div><div class="s">สมมติฐานอยู่ในหัวคน</div></div><span class="ar">→</span>
+      <div class="b"><div class="t">ไม่มีใครทวนสอบ</div><div class="s">ไม่มี review · test ไม่ครอบคลุม</div></div><span class="ar">→</span>
+      <div class="b c" style="border-color:var(--crit); background:var(--critw)"><div class="t" style="color:var(--crit)">ไม่มีใครกล้ารายงาน</div><div class="s">สัญญาณเตือนถูกมองข้าม</div></div>
+    </div>
+    <div class="note c"><b>บทเรียนร่วม</b> — ความผิดพลาดร้ายแรงเกิดจากการตัดสินใจเล็ก ๆ ที่ไม่มีใครบันทึก ไม่มีใครทวนสอบ และไม่มีใครกล้ารายงาน วิศวกรมืออาชีพจึงต้องรับผิดชอบทั้ง "โค้ด" และ "กระบวนการรอบโค้ด"</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-04 : วิชาชีพ vs อาชีพ ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · วิชาชีพ (profession) ต่างจากอาชีพ (occupation)</div><h2>"วิชาชีพ" ไม่ได้วัดที่รายได้ แต่วัดที่ <em>ความรับผิดชอบต่อคนอื่น</em></h2></div>
+  <div class="s-body">
+    <table class="tbl sm">
+      <thead><tr><th style="width:170px">มิติ</th><th>อาชีพทั่วไป</th><th>วิชาชีพ</th><th>ในงานซอฟต์แวร์</th></tr></thead>
+      <tbody>
+        <tr><td><b>องค์ความรู้</b></td><td>เรียนรู้จากการทำงาน ไม่จำเป็นต้องมีทฤษฎีร่วม</td><td>มี body of knowledge ที่ตกลงร่วมกันและถ่ายทอดอย่างเป็นระบบ</td><td>SWEBOK · หลักสูตร SE2014/CS2023 · มาตรฐาน IEEE/ISO</td></tr>
+        <tr><td><b>จรรยาบรรณ</b></td><td>ทำตามกฎของนายจ้างเป็นหลัก</td><td>มีหลักจริยธรรมของวิชาชีพที่อยู่เหนือคำสั่งนายจ้าง</td><td>ACM/IEEE-CS Software Engineering Code of Ethics (1999)</td></tr>
+        <tr><td><b>การรับรอง / ใบอนุญาต</b></td><td>ไม่จำเป็น</td><td>มีการรับรองความสามารถ บางสาขามีใบอนุญาตตามกฎหมาย</td><td>ยังไม่มีใบอนุญาตบังคับในประเทศส่วนใหญ่ (ตัวอย่างเดียวคือ PE สาขา software engineering ของรัฐ Texas 1998–2019 ซึ่ง NCEES เลิกจัดสอบเพราะผู้สอบน้อย) · ที่มีคือ certification เช่น ISTQB, PSM, cloud certs</td></tr>
+        <tr><td><b>การเรียนรู้ต่อเนื่อง</b></td><td>ตามความสนใจส่วนตัว</td><td>เป็นหน้าที่ เพราะองค์ความรู้เปลี่ยนตลอดเวลา</td><td>ภาษา เฟรมเวิร์ก และแนวปฏิบัติเปลี่ยนทุก 2–3 ปี · หลักการ Self ในจรรยาบรรณ</td></tr>
+        <tr><td><b>ความรับผิดชอบต่อสาธารณะ</b></td><td>รับผิดชอบต่อลูกค้าและนายจ้าง</td><td>รับผิดชอบต่อสังคมและผู้ที่ได้รับผลกระทบ แม้ไม่ใช่ลูกค้า</td><td>ระบบสุขภาพ การเงิน การขนส่ง ข้อมูลส่วนบุคคล — ผู้ใช้ไม่มีทางตรวจสอบโค้ดเอง</td></tr>
+      </tbody>
+    </table>
+    <div class="grid3">
+      <div class="card d"><h4>แพทย์</h4><p>องค์ความรู้ร่วม · แพทยสภา · ใบประกอบวิชาชีพ · จรรยาบรรณบังคับ · ต้องเรียนต่อเนื่อง</p></div>
+      <div class="card d"><h4>วิศวกรโยธา</h4><p>องค์ความรู้ร่วม · สภาวิศวกร · ใบอนุญาตประกอบวิชาชีพวิศวกรรมควบคุม · ลงนามรับผิดชอบแบบ</p></div>
+      <div class="card a"><h4>วิศวกรซอฟต์แวร์</h4><p>องค์ความรู้ร่วม (SWEBOK) · จรรยาบรรณของสมาคมวิชาชีพ · <b>ยังไม่มีใบอนุญาตบังคับ</b> — แต่ผลกระทบต่อสาธารณะไม่น้อยกว่า</p></div>
+    </div>
+    <div class="note w"><b>ผลที่ตามมา</b> — เมื่อกฎหมายยังไม่บังคับ ความเป็นมืออาชีพของวิศวกรซอฟต์แวร์จึงขึ้นกับวินัยของบุคคลและทีม: บันทึกสิ่งที่ตัดสินใจ ทดสอบสิ่งที่ส่งมอบ และรายงานสิ่งที่ผิดพลาด</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-05 : SWEBOK v4 (1/2) ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · SWEBOK v4 (2024) · Knowledge Areas 1–9</div><h2>SWEBOK v4: <em>18 knowledge areas</em> ที่วิศวกรซอฟต์แวร์ควรรู้ (1/2)</h2></div>
+  <div class="s-body top">
+    <table class="tbl sm">
+      <thead><tr><th style="width:40px">#</th><th style="width:340px">Knowledge Area</th><th>สาระสำคัญ</th><th style="width:250px">ตัวอย่างเครื่องมือ / แนวปฏิบัติ</th><th style="width:88px">วิชานี้</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><b>Software Requirements</b></td><td>เก็บ วิเคราะห์ ระบุ และตรวจสอบความต้องการ</td><td>user story · acceptance criteria · Plane work item / Intake</td><td><span class="tag a">แตะ</span></td></tr>
+        <tr><td>2</td><td><b>Software Architecture</b> <span class="tag d">ใหม่</span></td><td>โครงสร้างระดับระบบและการตัดสินใจเชิงสถาปัตยกรรม</td><td>C4 model · ADR (architecture decision record)</td><td></td></tr>
+        <tr><td>3</td><td><b>Software Design</b></td><td>ออกแบบส่วนประกอบ อินเทอร์เฟซ และรูปแบบการแก้ปัญหา</td><td>UML · design doc ใน Plane Pages</td><td><span class="tag a">แตะ</span></td></tr>
+        <tr><td>4</td><td><b>Software Construction</b></td><td>เขียนโค้ด unit test debug และ integrate</td><td>Git · IDE · linter · pre-commit</td><td><span class="tag a">แตะ</span></td></tr>
+        <tr><td>5</td><td><b>Software Testing</b></td><td>วางแผน ออกแบบ และรันการทดสอบทุกระดับ</td><td>pytest · Playwright · CI pipeline</td><td><span class="tag a">แตะ</span></td></tr>
+        <tr><td>6</td><td><b>Software Engineering Operations</b> <span class="tag d">ใหม่</span></td><td>deploy รัน และเฝ้าระวังระบบในสภาพจริง</td><td>Docker Compose · CI/CD · logs และ metrics</td><td></td></tr>
+        <tr><td>7</td><td><b>Software Maintenance</b></td><td>แก้ไขและปรับปรุงหลังส่งมอบ</td><td>issue tracker · changelog · semantic versioning</td><td></td></tr>
+        <tr><td>8</td><td><b>Software Configuration Management</b></td><td>ควบคุมเวอร์ชัน build และ release</td><td>Git branch/tag · release notes</td><td></td></tr>
+        <tr><td>9</td><td><b>Software Engineering Management</b></td><td>วางแผน ประเมิน ติดตาม และวัดผลโครงการ</td><td>Plane cycles · burndown · estimates</td><td><span class="tag a">แตะ</span></td></tr>
+      </tbody>
+    </table>
+    <div class="note"><b>หมายเหตุ</b> — SWEBOK v3 (2014) มี 15 KA; v4 (2024) เพิ่ม Architecture, Operations และ Security เป็น 18 KA · แท็ก "แตะ" = KA ที่วิชานี้ฝึกผ่าน Plane โดยตรง</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-06 : SWEBOK v4 (2/2) ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · SWEBOK v4 (2024) · Knowledge Areas 10–18</div><h2>SWEBOK v4: <em>18 knowledge areas</em> ที่วิศวกรซอฟต์แวร์ควรรู้ (2/2)</h2></div>
+  <div class="s-body top">
+    <table class="tbl sm">
+      <thead><tr><th style="width:40px">#</th><th style="width:340px">Knowledge Area</th><th>สาระสำคัญ</th><th style="width:250px">ตัวอย่างเครื่องมือ / แนวปฏิบัติ</th><th style="width:88px">วิชานี้</th></tr></thead>
+      <tbody>
+        <tr><td>10</td><td><b>Software Engineering Process</b></td><td>นิยาม วัด และปรับปรุงกระบวนการทำงาน</td><td>Scrum · Kanban · retrospective</td><td><span class="tag a">แตะ</span></td></tr>
+        <tr><td>11</td><td><b>Software Engineering Models and Methods</b></td><td>โมเดลและวิธีการ ทั้ง formal และ agile</td><td>UML · BPMN · formal specification</td><td></td></tr>
+        <tr><td>12</td><td><b>Software Quality</b></td><td>quality assurance การรีวิว และ metric</td><td>code review · static analysis</td><td></td></tr>
+        <tr><td>13</td><td><b>Software Security</b> <span class="tag d">ใหม่</span></td><td>ความมั่นคงปลอดภัยตลอดวงจรชีวิต</td><td>OWASP Top 10 · SAST · secret scan</td><td></td></tr>
+        <tr><td>14</td><td><b>Software Engineering Professional Practice</b></td><td>จรรยาบรรณ การสื่อสาร ทีม และความเป็นมืออาชีพ</td><td>Code of Ethics · work item ที่ครบถ้วน</td><td><span class="tag a">แตะ</span></td></tr>
+        <tr><td>15</td><td><b>Software Engineering Economics</b></td><td>ต้นทุน ผลตอบแทน และการตัดสินใจเชิงธุรกิจ</td><td>ROI · cost of delay · technical debt</td><td></td></tr>
+        <tr><td>16</td><td><b>Computing Foundations</b></td><td>อัลกอริทึม โครงสร้างข้อมูล OS เครือข่าย</td><td>วิชาพื้นฐานของหลักสูตร</td><td></td></tr>
+        <tr><td>17</td><td><b>Mathematical Foundations</b></td><td>ตรรกศาสตร์ เซต กราฟ ความน่าจะเป็น</td><td>discrete math · statistics</td><td></td></tr>
+        <tr><td>18</td><td><b>Engineering Foundations</b></td><td>วิธีเชิงประจักษ์ การวัด และการวิเคราะห์ทางสถิติ</td><td>experiment design · measurement</td><td></td></tr>
+      </tbody>
+    </table>
+    <div class="grid3">
+      <div class="card o"><h4>รู้ลึก</h4><p>ทำได้เองและสอนคนอื่นได้ (แกนตั้งของ T)</p></div>
+      <div class="card a"><h4>รู้ใช้</h4><p>ทำได้เมื่อมีตัวอย่างหรือมีคนช่วย</p></div>
+      <div class="card w"><h4>รู้ชื่อ</h4><p>เคยได้ยิน แต่ยังไม่เคยลงมือทำ</p></div>
+    </div>
+    <div class="note a"><b>ใช้ SWEBOK อย่างไร</b> — ไม่ใช่ท่องจำ แต่ใช้เป็นแผนที่ประเมินตนเอง: ไล่ทั้ง 18 KA แล้วจัดเข้าสามระดับข้างบน จากนั้นเลือก 1 KA ต่อภาคเรียนมายกระดับ</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-07 : คุณลักษณะมืออาชีพ 6 ด้าน ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · คุณลักษณะของมืออาชีพ 6 ด้าน</div><h2>มืออาชีพวัดจาก <em>พฤติกรรมที่สังเกตได้</em> ไม่ใช่จากตำแหน่ง</h2></div>
+  <div class="s-body">
+    <div class="figrow c21 mid">
+      <div class="fig fix" style="height:430px"><img data-a="software_professional" alt="วิศวกรซอฟต์แวร์ล้อมด้วยเสาหลัก 6 ด้าน และกราฟ T-shaped skills"></div>
+      <ul class="bul sm">
+        <li>Technical competence<span class="s">เลือกเครื่องมือได้ด้วยเหตุผล ทดสอบก่อนอ้างว่าเสร็จ</span></li>
+        <li>Ethics &amp; responsibility<span class="s">รายงานปัญหาทันทีแม้เป็นความผิดของตัวเอง</span></li>
+        <li>Communication &amp; teamwork<span class="s">เขียน work item ที่คนอื่นทำต่อได้โดยไม่ต้องถาม</span></li>
+        <li>Continuous learning<span class="s">มี roadmap ของตัวเอง อ่าน source code และ retro ทุกรอบ</span></li>
+        <li>Quality &amp; craftsmanship<span class="s">โค้ดสะอาด commit เล็ก ขอ review และรับ review อย่างเปิดใจ</span></li>
+        <li>Transparency &amp; traceability<span class="s">การตัดสินใจทุกครั้งมีร่องรอย: comment · commit · PR · activity log</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-07b : พฤติกรรมที่สังเกตได้ · ประเมินตนเอง ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · คุณลักษณะของมืออาชีพ 6 ด้าน · แบบประเมินตนเอง</div><h2>แต่ละด้านมี <em>พฤติกรรมที่ทำ</em> และ <em>สัญญาณเตือน</em> ที่คนรอบข้างสังเกตได้</h2></div>
+  <div class="s-body">
+    <table class="tbl sm">
+      <thead><tr><th style="width:200px">ด้าน</th><th>พฤติกรรมของมืออาชีพ (ทำ)</th><th>สัญญาณเตือน (anti-pattern)</th><th style="width:250px">ร่องรอยที่ตรวจได้ใน tracker</th></tr></thead>
+      <tbody>
+        <tr><td><b>Technical competence</b></td><td>ทดสอบก่อนบอกว่าเสร็จ · เลือกเครื่องมือด้วยเหตุผลที่อธิบายได้</td><td>"บนเครื่องผมรันได้" · เพิ่ม dependency เพราะเห็นในบล็อก</td><td>ลิงก์ผล test / CI แนบใน work item</td></tr>
+        <tr><td><b>Ethics &amp; responsibility</b></td><td>รายงานบั๊กของตัวเองทันที · บันทึก known issue ก่อนส่งมอบ</td><td>ซ่อนปัญหาไว้จนมีคนพบ · โทษเครื่องมือหรือคนอื่นก่อน</td><td>bug ที่ตัวเองเปิดเอง · comment แจ้งปัญหาก่อนถูกถาม</td></tr>
+        <tr><td><b>Communication &amp; teamwork</b></td><td>เขียน work item ที่คนอื่นทำต่อได้โดยไม่ต้องถาม · ตอบ review ในเวลาที่ตกลง</td><td>งานสำคัญอยู่ในแชตส่วนตัว · "เดี๋ยวอธิบายให้ฟัง" แทนการเขียน</td><td>description ครบ Why / What / AC · ตอบใน comment</td></tr>
+        <tr><td><b>Continuous learning</b></td><td>มี roadmap เขียนไว้ · อ่าน source code · สรุปสิ่งที่เรียนรู้ใน retro</td><td>ใช้วิธีเดิมเพราะ "เคยทำแบบนี้" · ไม่เคยเปลี่ยนอะไรหลัง retro</td><td>action item จาก retro กลายเป็น work item</td></tr>
+        <tr><td><b>Quality &amp; craftsmanship</b></td><td>commit เล็กที่มีเจตนาเดียว · ขอ review และตอบ review ด้วยเหตุผล</td><td>commit "fix" ก้อนเดียว 40 ไฟล์ · ปกป้องโค้ดตัวเองแทนการโต้แย้งด้วยเหตุผล</td><td>PR เล็กที่ลิงก์จาก work item · review comment</td></tr>
+        <tr><td><b>Transparency &amp; traceability</b></td><td>state บนบอร์ดตรงกับความจริงวันนี้ · ทุก PR อ้าง key ของ work item</td><td>In Progress ค้างสามสัปดาห์ · ปิดงานโดยไม่มีหลักฐาน</td><td>activity log · state ตรงกับสถานะ PR</td></tr>
+      </tbody>
+    </table>
+    <div class="note a"><b>วิธีใช้</b> — ให้คะแนนตัวเองด้านละ 0–2 จากพฤติกรรมใน 2 สัปดาห์ที่ผ่านมา (ไม่ใช่จากความตั้งใจ) แล้วเลือก 1 ด้านที่คะแนนต่ำสุดไปตั้งเป็นเป้าของ cycle ถัดไป — ทุกข้อในตารางนี้ทิ้งร่องรอยไว้บน tracker ให้เพื่อนร่วมทีมตรวจสอบได้</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-08 : Code of Ethics 8 หลักการ ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · จรรยาบรรณวิชาชีพ · ACM/IEEE-CS</div><h2>Software Engineering Code of Ethics — <em>8 หลักการ</em></h2></div>
+  <div class="s-body">
+    <div class="fig fix" style="height:425px"><img data-a="d05" alt="แผนภาพ 8 หลักการของจรรยาบรรณวิศวกรรมซอฟต์แวร์ ACM/IEEE-CS"></div>
+    <div class="note a"><b>ที่มา</b> — ACM/IEEE-CS Software Engineering Code of Ethics and Professional Practice เวอร์ชัน 5.2 (1999) มีฉบับย่อ 8 หลักการที่ใช้ท่องจำ และฉบับเต็มที่ขยายแต่ละหลักการเป็นข้อย่อย (สไลด์ถัดไป) · ลำดับสำคัญ: เมื่อประโยชน์ขัดกัน <b>Public มาก่อนเสมอ</b></div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-08b : Code of Ethics ฉบับเต็ม · ข้อย่อยตัวอย่าง ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · จรรยาบรรณวิชาชีพ · ฉบับเต็ม (v5.2)</div><h2>แต่ละหลักการมีข้อย่อยที่ <em>สั่งการได้จริง</em> — ตัวอย่างข้อที่ใช้บ่อยในงานพัฒนา</h2></div>
+  <div class="s-body">
+    <table class="tbl sm">
+      <thead><tr><th style="width:190px">หลักการ</th><th style="width:330px">ฉบับย่อ</th><th>ข้อย่อยตัวอย่างจากฉบับเต็ม</th></tr></thead>
+      <tbody>
+        <tr><td><b>1 Public</b></td><td>ทำงานโดยยึดประโยชน์สาธารณะ</td><td><b>1.03</b> อนุมัติซอฟต์แวร์เมื่อเชื่อได้อย่างมีเหตุผลว่าปลอดภัย ตรงสเปก และผ่านการทดสอบที่เหมาะสม</td></tr>
+        <tr><td><b>2 Client &amp; Employer</b></td><td>ทำเพื่อประโยชน์ของลูกค้าและนายจ้าง โดยไม่ขัดประโยชน์สาธารณะ</td><td><b>2.05</b> รักษาความลับที่รู้จากงาน · <b>2.06</b> รายงานทันทีเมื่อเห็นว่าโครงการมีแนวโน้มล้มเหลวหรือแพงเกินไป</td></tr>
+        <tr><td><b>3 Product</b></td><td>ผลิตภัณฑ์และการแก้ไขต้องได้มาตรฐานสูงสุดเท่าที่เป็นไปได้</td><td><b>3.09</b> ประเมินต้นทุน เวลา และคุณภาพอย่างสมจริง พร้อมระบุระดับความไม่แน่นอน · <b>3.10</b> ทดสอบ ดีบัก และรีวิวอย่างเพียงพอ</td></tr>
+        <tr><td><b>4 Judgment</b></td><td>รักษาความซื่อตรงและความเป็นอิสระในการตัดสินใจทางวิชาชีพ</td><td><b>4.01</b> ให้คุณค่าของมนุษย์กำกับการตัดสินใจทางเทคนิคทุกครั้ง</td></tr>
+        <tr><td><b>5 Management</b></td><td>ผู้บริหารต้องยึดและส่งเสริมแนวทางที่มีจริยธรรม</td><td><b>5.05</b> ประเมินอย่างสมจริงในฐานะผู้บริหาร (คู่กับ 3.09) · <b>5.11</b> ไม่สั่งให้วิศวกรทำสิ่งที่ขัดกับจรรยาบรรณ</td></tr>
+        <tr><td><b>6 Profession</b></td><td>ส่งเสริมความซื่อสัตย์และชื่อเสียงของวิชาชีพ</td><td><b>6.13</b> รายงานการละเมิดจรรยาบรรณที่ร้ายแรงต่อผู้มีอำนาจ เมื่อการพูดคุยกับผู้เกี่ยวข้องเป็นไปไม่ได้หรืออันตราย</td></tr>
+        <tr><td><b>7 Colleagues</b></td><td>ยุติธรรมและสนับสนุนเพื่อนร่วมวิชาชีพ</td><td><b>7.03</b> ให้เครดิตงานของผู้อื่นอย่างเต็มที่ · <b>7.04</b> รีวิวงานของผู้อื่นอย่างเป็นกลาง ตรงไปตรงมา และมีบันทึก</td></tr>
+        <tr><td><b>8 Self</b></td><td>เรียนรู้ตลอดชีวิตและส่งเสริมแนวทางที่มีจริยธรรม</td><td><b>8.02</b> พัฒนาความสามารถในการสร้างซอฟต์แวร์ที่ปลอดภัย เชื่อถือได้ และมีประโยชน์ ในต้นทุนและเวลาที่สมเหตุสมผล</td></tr>
+      </tbody>
+    </table>
+    <div class="note"><b>วิธีอ่าน</b> — เลขข้อย่อยคือ "หลักการ.ข้อ" ของฉบับเต็ม (รวมราว 80 ข้อ) ใช้อ้างอิงเมื่อต้องอธิบายว่าปฏิเสธคำขอเพราะอะไร — สไลด์ถัดไปและเรื่องการประเมินจะอ้างเลขเหล่านี้</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-09 : กรณีศึกษาจรรยาบรรณ ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · จรรยาบรรณในสถานการณ์จริง</div><h2>กรณีศึกษา: <em>หลักการข้อไหนถูกท้าทาย</em> และมืออาชีพควรทำอย่างไร</h2></div>
+  <div class="s-body">
+    <div class="grid3">
+      <div class="card w"><h4><span class="n">A</span>เร่งส่งงานโดยตัดการทดสอบ</h4><p>ผู้จัดการขอให้ข้าม integration test เพื่อให้ทัน demo วันศุกร์ โดยบอกว่า "ค่อยทดสอบทีหลัง" ระบบนี้เชื่อมกับการชำระเงินของลูกค้า</p></div>
+      <div class="card c"><h4><span class="n">B</span>ลูกค้าขอให้ปกปิดบั๊ก</h4><p>ทีมพบว่าฟีเจอร์คำนวณดอกเบี้ยให้ผลผิดในบางกรณี ลูกค้าขอให้ "ไม่ต้องบันทึกไว้ในรายงานส่งมอบ" เพราะกลัวผู้บริหารตำหนิ</p></div>
+      <div class="card a"><h4><span class="n">C</span>ข้อมูลส่วนบุคคลของผู้ใช้</h4><p>เพื่อนร่วมทีมคัดลอกฐานข้อมูล production ที่มีชื่อ อีเมล และเบอร์โทรของผู้ใช้ มาใช้ทดสอบบนเครื่องส่วนตัว เพราะ "สร้างข้อมูลปลอมเสียเวลา"</p></div>
+    </div>
+    <div class="note w"><b>คำถามให้จับคู่</b> — แต่ละกรณีขัดกับหลักการข้อใดบ้าง (1 Public · 2 Client &amp; Employer · 3 Product · 4 Judgment · 5 Management · 6 Profession · 7 Colleagues · 8 Self) และมืออาชีพต้องทำอะไรเป็นอย่างน้อย</div>
+    <div class="grid4">
+      <div class="card"><h4><span class="n">1</span>ปฏิเสธพร้อมเหตุผล</h4><p>ไม่ใช่ "ทำไม่ได้" แต่ "ทำแบบนี้แล้วเกิดความเสี่ยงอะไรกับใคร"</p></div>
+      <div class="card"><h4><span class="n">2</span>เสนอทางเลือก</h4><p>ลด scope · เลื่อนกำหนด · ใช้ข้อมูลสังเคราะห์ — ให้ผู้ตัดสินใจมีทางไปที่ถูกต้อง</p></div>
+      <div class="card"><h4><span class="n">3</span>บันทึกเป็นลายลักษณ์อักษร</h4><p>ความเสี่ยงและคำตัดสินใจอยู่ใน work item หรืออีเมล ไม่ใช่บทสนทนาที่หายไป</p></div>
+      <div class="card"><h4><span class="n">4</span>รายงานตามลำดับ</h4><p>หัวหน้าทีม → ผู้บริหาร → หน่วยงานกำกับ เมื่อความปลอดภัยของสาธารณะถูกกระทบ</p></div>
+    </div>
+    <div class="note"><b>แนวคำตอบ</b> — A: Product (3.10) และ Management (5.11) — เสนอ scope ที่เล็กลงพร้อม test แทนการตัด test · B: Client &amp; Employer (2.06), Public (1.03) และ Profession (6) — บันทึก known issue ไว้เสมอ ปกปิดไม่ได้ · C: Public (1), Client &amp; Employer (2.05) และ Judgment (4.01) — ใช้ข้อมูลที่ anonymize หรือสร้างขึ้น และแจ้งทีม</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-10 : หลักการ Ghezzi–Jazayeri–Mandrioli ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · หลักการวิศวกรรมซอฟต์แวร์ 7 ข้อ · Ghezzi, Jazayeri &amp; Mandrioli</div><h2>หลักการ 7 ข้อที่อยู่เบื้องหลัง <em>ทุกวิธีการและทุกเครื่องมือ</em></h2></div>
+  <div class="s-body">
+    <table class="tbl sm">
+      <thead><tr><th style="width:250px">หลักการ</th><th>ความหมาย</th><th style="width:300px">ตัวอย่างในงานจริง</th><th style="width:290px">ตัวอย่างใน tracker</th></tr></thead>
+      <tbody>
+        <tr><td><b>1 Rigor &amp; formality</b></td><td>ทำงานอย่างเคร่งครัด มีรูปแบบชัดเจนเท่าที่จำเป็น</td><td>type check · test ที่รันซ้ำได้ · spec ที่เขียนเป็นลายลักษณ์อักษร</td><td>acceptance criteria เป็นข้อ ๆ ที่ตรวจได้</td></tr>
+        <tr><td><b>2 Separation of concerns</b></td><td>แยกประเด็นออกจากกันเพื่อจัดการทีละเรื่อง</td><td>แยก UI / business logic / data access</td><td>work item หนึ่งใบ = ปัญหาหนึ่งเรื่อง</td></tr>
+        <tr><td><b>3 Modularity</b></td><td>แบ่งระบบเป็นโมดูลที่ cohesion สูง coupling ต่ำ</td><td>package และ service ที่มีขอบเขตชัด</td><td>Module ใน Plane รวมงานของฟีเจอร์เดียวกัน</td></tr>
+        <tr><td><b>4 Abstraction</b></td><td>มองเฉพาะสาระสำคัญ ซ่อนรายละเอียดที่ยังไม่จำเป็น</td><td>interface · API contract</td><td>ชื่อ work item บอกผลลัพธ์ ไม่บอกวิธีทำ</td></tr>
+        <tr><td><b>5 Anticipation of change</b></td><td>ออกแบบโดยรู้ว่าความต้องการจะเปลี่ยน</td><td>config แยกจากโค้ด · feature flag</td><td>backlog จัดลำดับใหม่ได้ทุกรอบ</td></tr>
+        <tr><td><b>6 Generality</b></td><td>แก้ปัญหาทั่วไปเมื่อคุ้มกว่าแก้เฉพาะกรณี</td><td>ไลบรารีกลาง แทนโค้ดซ้ำในหลายที่</td><td>label และ view ที่ใช้ร่วมกันทั้ง workspace</td></tr>
+        <tr><td><b>7 Incrementality</b></td><td>ส่งมอบทีละส่วนแล้วปรับจาก feedback</td><td>release เล็ก ๆ บ่อย ๆ</td><td>cycle 1–2 สัปดาห์ · sub-work items</td></tr>
+      </tbody>
+    </table>
+    <div class="note a"><b>ที่มา</b> — Ghezzi, Jazayeri &amp; Mandrioli, <i>Fundamentals of Software Engineering</i> (1991; 2nd ed. 2003) · หลักการเหล่านี้เป็นอิสระจากภาษาและยุคสมัย Agile และ DevOps คือการนำข้อ 5 และ 7 มาใช้อย่างจริงจัง</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-11 : หลักการของ David Hooker ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · Seven Principles of Software Development · David Hooker (1996)</div><h2>หลักการของ Hooker: <em>เหตุผลที่ทุกอย่างมีอยู่คือคุณค่าของผู้ใช้</em></h2></div>
+  <div class="s-body">
+    <table class="tbl sm">
+      <thead><tr><th style="width:320px">หลักการ</th><th>ความหมายในทางปฏิบัติ</th><th style="width:300px">เชื่อมกับแนวคิดที่คุ้นเคย</th></tr></thead>
+      <tbody>
+        <tr><td><b>1 The Reason It All Exists</b></td><td>ซอฟต์แวร์มีอยู่เพื่อส่งมอบคุณค่าให้ผู้ใช้ ทุกการตัดสินใจต้องตอบคำถามว่า "เพิ่มคุณค่าจริงหรือไม่"</td><td>user story เริ่มด้วย "ในฐานะ… ฉันต้องการ… เพื่อ…"</td></tr>
+        <tr><td><b>2 KISS — Keep It Simple, Stupid</b></td><td>การออกแบบที่เรียบง่ายที่สุดที่ยังใช้งานได้ ทำให้เข้าใจง่าย แก้ง่าย และมีบั๊กน้อย</td><td>KISS · YAGNI (You Aren't Gonna Need It)</td></tr>
+        <tr><td><b>3 Maintain the Vision</b></td><td>รักษาแนวคิดสถาปัตยกรรมให้เป็นหนึ่งเดียว มิฉะนั้นระบบจะกลายเป็นชิ้นส่วนที่ไม่เข้ากัน</td><td>ADR · design doc ใน Pages · architecture owner</td></tr>
+        <tr><td><b>4 What You Produce, Others Will Consume</b></td><td>เขียนโค้ด เอกสาร และ work item โดยคิดถึงคนที่ต้องอ่านและดูแลต่อ</td><td>clean code · commit message ที่มีความหมาย</td></tr>
+        <tr><td><b>5 Be Open to the Future</b></td><td>ระบบที่ดีต้องรองรับการเปลี่ยนแปลงโดยไม่ต้องรื้อใหม่</td><td>anticipation of change · loose coupling</td></tr>
+        <tr><td><b>6 Plan Ahead for Reuse</b></td><td>การใช้ซ้ำลดต้นทุนและความเสี่ยง แต่ต้องวางแผน ไม่ใช่คัดลอกโค้ด</td><td>DRY (Don't Repeat Yourself) · shared library</td></tr>
+        <tr><td><b>7 Think!</b></td><td>คิดให้ชัดก่อนลงมือ การคิดที่ดีเกิดผลดี และเมื่อผิดพลาดก็เรียนรู้ได้ว่าผิดตรงไหน</td><td>design review · spike ก่อน commit ทั้ง cycle</td></tr>
+      </tbody>
+    </table>
+    <div class="note"><b>KISS · YAGNI · DRY</b> — สามคำนี้เป็นเครื่องเตือนใจรายวัน แต่ต้องใช้คู่กัน: DRY ที่มากเกินไปทำลาย KISS และ YAGNI ที่แข็งเกินไปขัดกับ "Be Open to the Future" — มืออาชีพชั่งน้ำหนักด้วยบริบท ไม่ใช่ท่องคาถา</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-12 : Software Craftsmanship ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · Software Craftsmanship Manifesto (2009)</div><h2>ไม่ใช่แค่ซอฟต์แวร์ที่ทำงานได้ แต่ต้องเป็น <em>ซอฟต์แวร์ที่ประณีต</em></h2></div>
+  <div class="s-body top">
+    <div class="g11">
+      <div>
+        <div class="quote" style="font-size:17.5px; line-height:1.7">
+          Not only <b>working software</b>, but also <mark>well-crafted software</mark><br>
+          Not only <b>responding to change</b>, but also <mark>steadily adding value</mark><br>
+          Not only <b>individuals and interactions</b>, but also <mark>a community of professionals</mark><br>
+          Not only <b>customer collaboration</b>, but also <mark>productive partnerships</mark>
+          <span class="who">— Manifesto for Software Craftsmanship (2009) · ต่อยอดจาก Agile Manifesto (2001)</span>
+        </div>
+        <div class="note a" style="margin-top:14px"><b>สาระ</b> — Agile บอกว่า "ส่งของที่ใช้ได้เร็ว" Craftsmanship เติมว่า "ของนั้นต้องดูแลต่อได้" ความเร็วที่ได้จากโค้ดสกปรกคือหนี้ (technical debt) ที่ทีมต้องจ่ายคืนพร้อมดอกเบี้ย</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:11px">
+        <div class="card o"><h4><span class="n">1</span>ชื่อที่สื่อความ</h4><p>ตัวแปร ฟังก์ชัน และ work item ตั้งชื่อตามสิ่งที่ทำหรือผลที่ได้ อ่านแล้วไม่ต้องเปิดดูข้างใน</p></div>
+        <div class="card o"><h4><span class="n">2</span>ฟังก์ชันเล็ก ทำเรื่องเดียว</h4><p>ฟังก์ชันสั้นพอที่ทดสอบได้และเปลี่ยนได้โดยไม่กระทบเรื่องอื่น (separation of concerns ระดับโค้ด)</p></div>
+        <div class="card o"><h4><span class="n">3</span>commit เล็กและบ่อย</h4><p>หนึ่ง commit = หนึ่งเจตนา มีข้อความบอก "ทำไม" และอ้างอิง work item เสมอ ทำให้ย้อนกลับและรีวิวง่าย</p></div>
+        <div class="card o"><h4><span class="n">4</span>code review เป็นเรื่องปกติ</h4><p>ทุกการเปลี่ยนแปลงผ่านสายตาคนที่สอง รีวิวที่โค้ดไม่ใช่ที่คน (หลักการ Colleagues ในจรรยาบรรณ)</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-13 : การสื่อสารคือทักษะวิศวกร (d06) ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · การสื่อสารคือทักษะของวิศวกร</div><h2>เขียนดีกว่าพูด เพราะ <em>ตรวจสอบย้อนหลังได้</em> — work item คือหน่วยของการสื่อสาร</h2>
+    <div class="sub">work item = งานหนึ่งรายการใน tracker (Plane เรียก work item, Jira เรียก issue) — สไลด์ชุดนี้ใช้คำนี้เป็นคำนาม และใช้ "ใบ" เป็นลักษณนาม</div></div>
+  <div class="s-body">
+    <div class="figrow c21 mid">
+      <div class="fig fix" style="height:380px"><img data-a="d06" alt="กายวิภาคของ work item ที่ดี: ชื่อ ฟิลด์ คำอธิบาย acceptance criteria sub-items relations และ activity"></div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card a"><h4>ทำไมต้องเขียน</h4><p>คำพูดหายไปพร้อมการประชุม แต่ข้อความใน work item มีเวลา ผู้เขียน และประวัติการแก้ไข — เป็น traceability ในตัว และเป็นความยุติธรรมต่อคนที่ไม่ได้อยู่ในห้อง</p></div>
+        <div class="card"><h4>work item หนึ่งใบต้องตอบให้ครบ</h4><p>Why (คุณค่า) · What (ผลลัพธ์ที่ตรวจได้) · Who (assignee) · When (cycle / target date) · How big (estimate) · Where (module, links)</p></div>
+        <div class="card d"><h4>ใน Plane</h4><p>การเปลี่ยนฟิลด์หลักทุกตัว (state, assignee, priority, estimate, dates, labels, cycle, module, …) ถูกบันทึกเป็น activity โดยอัตโนมัติ (ผู้กระทำ ฟิลด์ ค่าเดิม ค่าใหม่ เวลา) ส่วน comment ใช้บันทึกเหตุผลของการตัดสินใจ</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-14 : User story · INVEST · AC · DoD ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · User story · INVEST · Acceptance criteria · Definition of Done</div><h2>เขียนความต้องการให้ <em>ทดสอบได้และจบได้</em></h2></div>
+  <div class="s-body">
+    <div class="g11">
+      <div>
+        <pre class="code"><span class="k">PLAB-12</span>  <span class="y">ผู้ใช้ต้องรีเซ็ตรหัสผ่านได้เองผ่านอีเมล</span>
+<span class="c"># User story (Why + What)</span>
+ในฐานะ <span class="g">ผู้ใช้ที่ลืมรหัสผ่าน</span>
+ฉันต้องการ <span class="g">ขอลิงก์รีเซ็ตทางอีเมล</span>
+เพื่อ <span class="g">กลับเข้าใช้งานได้เองโดยไม่ต้องรอแอดมิน</span>
+
+<span class="c"># Acceptance criteria (ตรวจได้ทีละข้อ)</span>
+[ ] กรอกอีเมลที่ลงทะเบียนแล้วได้รับลิงก์ภายใน 1 นาที
+[ ] ลิงก์ใช้ได้ครั้งเดียวและหมดอายุใน 15 นาที
+[ ] รหัสผ่านใหม่ต้องยาว >= 8 ตัวอักษร
+[ ] อีเมลที่ไม่มีในระบบได้ข้อความเดียวกัน (ไม่เปิดเผยว่ามีบัญชี)
+
+<span class="c"># Definition of Done (ระดับทีม ใช้กับทุกใบ)</span>
+<span class="d">test ผ่านใน CI · ผ่าน code review · อัปเดตเอกสาร API · deploy บน staging</span></pre>
+      </div>
+      <div>
+        <dl class="kv">
+          <dt><b style="display:inline-block; min-width:22px; text-align:center; background:var(--acc); color:#fff; border-radius:5px; margin-right:5px">I</b>ndependent</dt><dd>ทำและส่งมอบได้โดยไม่ต้องรอ work item อื่น (ถ้าต้องรอ ให้บันทึกเป็น relation)</dd>
+          <dt><b style="display:inline-block; min-width:22px; text-align:center; background:var(--acc); color:#fff; border-radius:5px; margin-right:5px">N</b>egotiable</dt><dd>เป็นจุดเริ่มต้นของการคุย ไม่ใช่สัญญาที่แก้ไม่ได้</dd>
+          <dt><b style="display:inline-block; min-width:22px; text-align:center; background:var(--acc); color:#fff; border-radius:5px; margin-right:5px">V</b>aluable</dt><dd>ผู้ใช้หรือธุรกิจได้อะไรจาก work item ใบนี้ — ถ้าตอบไม่ได้ ยังไม่ควรอยู่ใน backlog</dd>
+          <dt><b style="display:inline-block; min-width:22px; text-align:center; background:var(--acc); color:#fff; border-radius:5px; margin-right:5px">E</b>stimable</dt><dd>ทีมประเมินขนาดได้ ถ้าประเมินไม่ได้แสดงว่ายังไม่เข้าใจหรือใหญ่เกินไป</dd>
+          <dt><b style="display:inline-block; min-width:22px; text-align:center; background:var(--acc); color:#fff; border-radius:5px; margin-right:5px">S</b>mall</dt><dd>จบได้ภายในหนึ่ง cycle ใหญ่กว่านั้นให้แตกเป็น sub-work items</dd>
+          <dt><b style="display:inline-block; min-width:22px; text-align:center; background:var(--acc); color:#fff; border-radius:5px; margin-right:5px">T</b>estable</dt><dd>มี acceptance criteria ที่ตอบได้ว่า "ผ่าน" หรือ "ไม่ผ่าน"</dd>
+        </dl>
+        <div class="note a" style="margin-top:14px"><b>AC ไม่ใช่ DoD</b> — acceptance criteria เป็นของ work item แต่ละใบ (what) · Definition of Done เป็นมาตรฐานคุณภาพของทีมที่ใช้กับทุกใบ (how well)</div>
+        <div class="card d" style="margin-top:12px"><h4>ใน Plane</h4><p>story และ AC อยู่ใน description ของ work item (checklist ติ๊กได้) · DoD ของทีมเขียนไว้ใน Page ของโปรเจกต์ · งานที่ใหญ่เกิน "Small" แตกเป็น sub-work items · การพึ่งพากันบันทึกเป็น relation "blocked by"</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-15 : การประเมินอย่างซื่อสัตย์ ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · การประเมินอย่างซื่อสัตย์ · หลักการ Management ในจรรยาบรรณ</div><h2>ประเมินให้ <em>ตรงกับสิ่งที่รู้</em> ไม่ใช่ตรงกับสิ่งที่อยากได้ยิน</h2></div>
+  <div class="s-body">
+    <div class="g11">
+      <div>
+        <div class="eyebrow" style="margin-bottom:6px">Cone of uncertainty (Boehm 1981 · McConnell 2006)</div>
+        <table class="tbl sm">
+          <thead><tr><th>ช่วงของโครงการ</th><th style="text-align:right">ช่วงคลาดเคลื่อน</th></tr></thead>
+          <tbody>
+            <tr><td>แนวคิดเริ่มต้น (initial concept)</td><td style="text-align:right"><b>0.25x – 4x</b></td></tr>
+            <tr><td>นิยามผลิตภัณฑ์ที่อนุมัติแล้ว</td><td style="text-align:right">0.5x – 2x</td></tr>
+            <tr><td>requirements ครบ</td><td style="text-align:right">0.67x – 1.5x</td></tr>
+            <tr><td>ออกแบบผลิตภัณฑ์ / UI เสร็จ</td><td style="text-align:right">0.8x – 1.25x</td></tr>
+            <tr><td>ออกแบบละเอียดเสร็จ</td><td style="text-align:right">0.9x – 1.1x</td></tr>
+          </tbody>
+        </table>
+        <div class="note w" style="margin-top:12px"><b>นัย</b> — ตัวเลขเดียวที่ให้ตอนต้นโครงการคือการเดา มืออาชีพจึงให้ "ช่วง" พร้อมสมมติฐาน และ<b>ประเมินใหม่เมื่อรู้มากขึ้น</b></div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:11px">
+        <div class="card a"><h4>Relative estimation</h4><p>คนเทียบขนาดได้แม่นกว่าบอกค่าสัมบูรณ์: "work item ใบนี้ใหญ่กว่าใบนั้นสองเท่า" น่าเชื่อถือกว่า "ใช้เวลา 13 ชั่วโมง"</p></div>
+        <div class="card a"><h4>Story points · T-shirt size</h4><p>points (Fibonacci 1-2-3-5-8-13) รวมความยาก ปริมาณ และความไม่แน่นอน · T-shirt (XS–XL) ใช้เมื่อยังหยาบ · ใน Plane CE ตั้ง estimate ได้ทั้งแบบ points และ categories</p></div>
+        <div class="card w"><h4>ทำไมไม่ใช่ชั่วโมง</h4><p>ชั่วโมงผูกกับตัวบุคคลและถูกตีความเป็นคำสัญญา ทำให้คนเผื่อเวลาเกินจริงหรือรายงานตัวเลขที่ไม่ตรงความจริง ส่วน points วัดขนาดของงาน แล้วปล่อยให้ velocity ของทีมแปลงเป็นเวลาเอง</p></div>
+      </div>
+    </div>
+    <div class="note a"><b>ในจรรยาบรรณ</b> — ฉบับเต็มกำหนดให้ "ประเมินต้นทุน เวลา กำลังคน คุณภาพ และผลลัพธ์อย่างสมจริง พร้อมระบุระดับความไม่แน่นอน" ทั้งในฐานะผู้ทำ (Product 3.09) และในฐานะผู้บริหาร (Management 5.05) — การกดดันให้ทีมประเมินต่ำกว่าความจริงจึงเป็นปัญหาจริยธรรม ไม่ใช่แค่ปัญหาบริหาร</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-16 : Traceability & accountability ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · Traceability &amp; accountability</div><h2>ทุกบรรทัดของโค้ดต้องตอบได้ว่า <em>มาจากความต้องการข้อไหน ใครตัดสินใจ เมื่อไร</em></h2></div>
+  <div class="s-body">
+    <div class="flow">
+      <div class="b"><div class="t">Requirement</div><div class="s">user story · AC</div></div><span class="ar">→</span>
+      <div class="b a"><div class="t">Work item</div><div class="s">PLAB-12</div></div><span class="ar">→</span>
+      <div class="b"><div class="t">Branch / Commit</div><div class="s">อ้าง key ของ work item</div></div><span class="ar">→</span>
+      <div class="b"><div class="t">Pull request</div><div class="s">review · CI</div></div><span class="ar">→</span>
+      <div class="b k"><div class="t">Release</div><div class="s">changelog · tag</div></div>
+    </div>
+    <div class="figrow c11">
+      <div>
+        <pre class="code"><span class="c"># ชื่อ branch: ประเภท/key ของ work item-คำอธิบายสั้น</span>
+git switch -c <span class="g">feat/PLAB-12-reset-password</span>
+
+<span class="c"># commit message: key นำหน้า + บอกว่าทำอะไร (imperative)</span>
+git commit -m <span class="y">"PLAB-12: add reset-password endpoint"</span>
+git commit -m <span class="y">"PLAB-12: expire reset token after 15 min"</span>
+
+<span class="c"># PR title / description อ้าง key เดิม แล้วแนบลิงก์ PR กลับไปที่ work item</span></pre>
+        <div class="note a" style="margin-top:10px"><b>Key ของ work item</b> — Plane สร้าง key เป็น <code>&lt;identifier&gt;-&lt;ลำดับ&gt;</code> เช่น PLAB-12 ให้อัตโนมัติ และเลขไม่ถูกนำกลับมาใช้ซ้ำแม้ลบ work item จึงอ้างอิงได้ถาวร</div>
+      </div>
+      <div>
+        <div class="fig shot fix" style="height:360px"><img data-a="lab3:ui-activity-log" alt="Activity log ของ work item ใน Plane แสดงผู้กระทำ ฟิลด์ที่เปลี่ยน และเวลา"></div>
+        <div class="figcap">Activity ใน Plane บันทึกการเปลี่ยนฟิลด์หลัก (state, assignee, priority, estimate, dates, labels, cycle, module, …) โดยอัตโนมัติ: ใคร เปลี่ยนอะไร จากค่าไหนเป็นค่าไหน เมื่อไร — accountability โดยไม่ต้องพึ่งความจำ</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-17 : นิสัยมืออาชีพบน tracker ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · นิสัยมืออาชีพบน tracker · checklist 8 ข้อ</div><h2>ความเป็นมืออาชีพ <em>มองเห็นได้จากบอร์ด</em> ทุกวัน</h2></div>
+  <div class="s-body">
+    <div class="grid4">
+      <div class="card a"><h4><span class="n">1</span>บันทึกทันที</h4><p>งานใหม่ บั๊ก หรือคำขอ ลงเป็น work item ตอนที่รู้ ไม่ใช่ตอนที่ว่าง</p></div>
+      <div class="card a"><h4><span class="n">2</span>อัปเดต state ทุกวัน</h4><p>บอร์ดต้องสะท้อนความจริง ณ วันนี้ ไม่ใช่ความจริงของสัปดาห์ก่อน</p></div>
+      <div class="card a"><h4><span class="n">3</span>comment การตัดสินใจ</h4><p>เลือกทางไหน เพราะอะไร ปฏิเสธทางไหน — เขียนไว้ที่ work item ไม่ใช่ในแชต</p></div>
+      <div class="card a"><h4><span class="n">4</span>แนบหลักฐาน</h4><p>ลิงก์ PR ภาพหน้าจอ ผลการทดสอบ log — ให้คนอื่นตรวจได้โดยไม่ต้องเชื่อคำพูด</p></div>
+      <div class="card o"><h4><span class="n">5</span>ปิดงานพร้อมผล</h4><p>ย้ายไป Done เมื่อผ่าน acceptance criteria และ DoD จริง พร้อมสรุปสั้น ๆ ว่าได้อะไร</p></div>
+      <div class="card c"><h4><span class="n">6</span>ไม่แชร์ token</h4><p>API token และรหัสผ่านผูกกับคนเดียว ตั้งวันหมดอายุ ไม่ใส่ในโค้ดหรือแชต</p></div>
+      <div class="card w"><h4><span class="n">7</span>ประเมินใหม่เมื่อรู้มากขึ้น</h4><p>estimate เปลี่ยนได้เมื่อเข้าใจงานมากขึ้น — ปล่อยตัวเลขเดิมไว้ทั้งที่รู้ว่าผิด เท่ากับโกหกแผน</p></div>
+      <div class="card o"><h4><span class="n">8</span>retro ทุกรอบ</h4><p>ปิด cycle ด้วยการทบทวนกระบวนการ แล้วเปลี่ยนสิ่งที่ตกลงกันเป็น work item</p></div>
+    </div>
+    <div class="grid2">
+      <div class="note a"><b>เชื่อมกับจรรยาบรรณ</b> — ข้อ 1–4 คือ Product และ Judgment · ข้อ 5 และ 7 คือ Management · ข้อ 6 คือ Client &amp; Employer และ Public · ข้อ 8 คือ Self และ Colleagues</div>
+      <div class="note c"><b>สัญญาณเตือนบนบอร์ด</b> — work item ค้าง In Progress เกินหนึ่ง cycle · ปิดงานโดยไม่มี comment หรือหลักฐาน · ไม่มี assignee · estimate ไม่เคยเปลี่ยนแม้ scope เปลี่ยน · การตัดสินใจอยู่ในแชตแต่ไม่อยู่ใน work item</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-18 : T-shaped skills & lifelong learning ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · T-shaped skills · การเรียนรู้ตลอดชีวิต</div><h2>ลึกหนึ่งด้าน กว้างพอจะทำงานกับทุกคน — <em>และไม่หยุดเรียน</em></h2></div>
+  <div class="s-body">
+    <div class="g11">
+      <ul class="bul">
+        <li>T-shaped: แนวตั้งคือความเชี่ยวชาญลึก แนวนอนคือความรู้กว้างพอจะคุยกับ tester, ops และ product<span class="s">ทีม Agile ต้องการคนที่รับงานข้ามบทบาทได้ ไม่ใช่ผู้เชี่ยวชาญที่ทำได้เรื่องเดียว</span></li>
+        <li>Roadmap ส่วนตัว: เลือก 1 KA ของ SWEBOK ต่อภาคเรียน แล้วตั้งเป้าที่วัดได้<span class="s">เช่น "เขียน integration test ให้ทุก endpoint ที่ตัวเองสร้าง"</span></li>
+        <li>Kaizen: ปรับปรุงเล็ก ๆ ต่อเนื่อง ดีกว่าปฏิวัติปีละครั้ง<span class="s">retrospective ทุก cycle คือ Kaizen ของทีม; เลือกแก้ 1–2 เรื่องต่อรอบ</span></li>
+        <li>อ่าน source code ของ open source: วิธีเรียนรู้ที่ถูกที่สุดจากวิศวกรที่เก่งกว่า<span class="s">ดู test, commit history และ pull request discussion ไม่ใช่แค่โค้ด</span></li>
+        <li>สอนคนอื่นและเขียนสิ่งที่เรียนรู้: ความรู้ที่อธิบายไม่ได้คือความรู้ที่ยังไม่แน่น<span class="s">retro note · README · comment ใน work item ที่คนถัดไปทำต่อได้</span></li>
+      </ul>
+      <div>
+        <div class="card a"><h4>Plane เป็นตัวอย่าง: open source ภายใต้ AGPL-3.0</h4><p>ทั้ง backend (Django + DRF) และ frontend (React) เปิดให้อ่าน แก้ และรันเอง — วิชานี้ใช้ทั้งเป็นเครื่องมือและเป็นตำรา</p></div>
+        <pre class="code path" style="margin-top:11px"><span class="c"># ไฟล์ใน repo makeplane/plane ที่คุ้มค่าจะอ่านในตอนต่อ ๆ ไป</span>
+apps/api/plane/db/models/issue.py                <span class="d"># work item · sequence_id · completed_at</span>
+apps/api/plane/db/models/workspace.py            <span class="d"># role: Admin 20 · Member 15 · Guest 5</span>
+apps/api/plane/bgtasks/issue_activities_task.py  <span class="d"># activity log ถูกเขียนอย่างไร</span>
+apps/api/plane/utils/analytics_plot.py           <span class="d"># สูตร burndown</span>
+deployments/cli/community/docker-compose.yml     <span class="d"># services ที่ LAB 1 รัน</span></pre>
+        <div class="note" style="margin-top:11px"><b>ข้อสังเกต</b> — การอ่านโค้ดของคนอื่นคือการฝึก "What You Produce, Others Will Consume" จากฝั่งผู้บริโภค</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-19 : บทบาทในทีมและสิทธิ์ (d13) ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · บทบาทในทีมและสิทธิ์ · least privilege</div><h2>บทบาทในทีม = <em>สิทธิ์ในเครื่องมือ</em> — ให้เท่าที่จำเป็นต่อหน้าที่</h2></div>
+  <div class="s-body">
+    <div class="fig fix" style="height:495px"><img data-a="d13" alt="แผนภาพบทบาท Instance admin, Workspace Admin, Member, Guest และการแมปกับบทบาทใน Scrum"></div>
+    <div class="note a"><b>สามระดับใน Plane</b> — Instance admin (god-mode) ตั้งค่าเครื่อง · Workspace/Project role เก็บเป็นตัวเลข <b>Admin 20 · Member 15 · Guest 5</b> และค่าเริ่มต้นเมื่อเชิญคือ Guest — สิทธิ์น้อยที่สุดคือค่าตั้งต้น</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-19b : least privilege ใน Plane ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · บทบาทในทีมและสิทธิ์ · least privilege ใน Plane</div><h2><em>ใครควรเห็นอะไร</em> — Guest · Member · Admin และมุมจรรยาบรรณ</h2></div>
+  <div class="s-body">
+    <div class="grid3">
+      <div class="card o"><h4>Least privilege</h4><p>ลูกค้าและผู้มีส่วนได้เสียเป็น Guest (ดูและตอบกลับได้จำกัด) นักพัฒนาเป็น Member ผู้ดูแลกระบวนการเป็น Admin — สิทธิ์ที่มากเกินคือความเสี่ยงที่ไม่มีใครขอ</p></div>
+      <div class="card a"><h4>บทบาทไม่ใช่ตำแหน่ง</h4><p>คนเดียวกันอาจเป็น Admin ในโปรเจกต์ที่ตนดูแล และเป็น Member ในโปรเจกต์อื่น — สิทธิ์ผูกกับหน้าที่ในโปรเจกต์นั้น ไม่ใช่กับอาวุโส</p></div>
+      <div class="card w"><h4>มุมจรรยาบรรณ</h4><p>Guest เห็นเฉพาะที่ควรเห็น (รักษาความลับ 2.05) · activity log บอกว่าใครแก้อะไร (ตรวจสอบได้) · token ผูกกับคนและหมดอายุได้ (ไม่แชร์รหัส)</p></div>
+    </div>
+    <table class="tbl sm">
+      <thead><tr><th>สิ่งที่บทบาทมองเห็นหรือทำได้ (Plane CE)</th><th style="width:130px">Admin</th><th style="width:130px">Member</th><th style="width:130px">Guest</th></tr></thead>
+      <tbody>
+        <tr><td>เมนู workspace: Analytics · Archives · Your work · Drafts</td><td><span class="tag o">เห็น</span></td><td><span class="tag o">เห็น</span></td><td><span class="tag c">ซ่อน</span></td></tr>
+        <tr><td>แท็บโปรเจกต์: Cycles · Modules</td><td><span class="tag o">เห็น</span></td><td><span class="tag o">เห็น</span></td><td><span class="tag c">ซ่อน</span></td></tr>
+        <tr><td>เพิ่ม–ลบสมาชิกโปรเจกต์และกำหนด role (API ต้องเป็น Project Admin)</td><td><span class="tag o">ทำได้</span></td><td><span class="tag d">—</span></td><td><span class="tag d">—</span></td></tr>
+        <tr><td>ขยายสิ่งที่ Guest เห็นได้ด้วยสวิตช์ <code>guest_view_all_features</code> ของโปรเจกต์ — เปิดเฉพาะเมื่อมีเหตุผลที่บันทึกไว้</td><td colspan="3" class="mut">ตั้งค่าโดย Admin</td></tr>
+      </tbody>
+    </table>
+    <div class="note"><b>LAB 3</b> — เชิญ Guest (role 5) แล้วดูสิทธิ์ใน SQL (<code>workspace_member_invites</code>); เปรียบเทียบเมนูจริงกับบัญชี Member เป็นทดลองเพิ่มเติม (LAB 6 ง.): สิ่งที่หายไปคือขอบเขตของบทบาท ไม่ใช่บั๊ก</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== T1-20 : สรุปตอนที่ 1 + สะพานไป LAB 3 ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 1 · สรุป</div><h2>สรุปตอนที่ 1: มืออาชีพคือคนที่ <em>งานของเขาตรวจสอบได้</em></h2></div>
+  <div class="s-body">
+    <div class="g11">
+      <ul class="bul">
+        <li>วิศวกรรมซอฟต์แวร์เกิดจาก software crisis: ต้องเป็นระบบ มีวินัย และวัดได้<span class="s">ความผิดพลาดร้ายแรงมาจากกระบวนการที่หายไป ไม่ใช่โค้ดบรรทัดเดียว</span></li>
+        <li>วิชาชีพ = องค์ความรู้ (SWEBOK) + จรรยาบรรณ (8 หลักการ) + เรียนรู้ต่อเนื่อง + รับผิดชอบต่อสาธารณะ</li>
+        <li>หลักการคลาสสิก (GJM 7 ข้อ · Hooker 7 ข้อ · Craftsmanship) ใช้ได้ทั้งกับโค้ดและกับวิธีจัดการงาน</li>
+        <li>การสื่อสารที่เขียนไว้ = traceability: work item · INVEST · AC · DoD · commit ที่อ้าง key ของ work item</li>
+        <li>ประเมินอย่างซื่อสัตย์ด้วยช่วงและ relative estimation แล้วประเมินใหม่เมื่อรู้มากขึ้น</li>
+        <li>สิทธิ์เท่าที่จำเป็น และทุกการเปลี่ยนแปลงมีร่องรอยใน activity log</li>
+      </ul>
+      <div>
+        <div class="fig shot fix" style="height:290px"><img data-a="lab3:ui-work-item-detail" alt="หน้า work item detail ใน Plane ที่มี acceptance criteria, sub-work items และ activity"></div>
+        <div class="figcap">LAB 3 — Professional work items &amp; team</div>
+        <div class="note a" style="margin-top:8px"><b>สะพานไป LAB 3</b> — สร้าง work item ตามกายวิภาคในตอนนี้ (story · AC · estimate · relations) เชิญเพื่อนร่วมทีมด้วยบทบาทที่เหมาะสม แล้วอ่าน activity log เพื่อดูว่า accountability เกิดขึ้นเองอย่างไร</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 1 · Software Professional</span><span class="pg"></span></div>
+ </section>
+</div>

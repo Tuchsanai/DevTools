@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="svgTitle svgDesc">
+  <title id="svgTitle">Scrum accountabilities</title>
+  <desc id="svgDesc">Three cards explain the Product Owner, Scrum Master, and Developers accountabilities, connected as one Scrum Team with no hierarchy and a shared Sprint Goal.</desc>
+
+  <defs>
+    <filter id="cardShadow" x="-12%" y="-12%" width="124%" height="132%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#18181b" flood-opacity="0.10"/>
+    </filter>
+    <filter id="bandShadow" x="-8%" y="-20%" width="116%" height="150%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#18181b" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .type { font-family: 'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif; }
+      .card-title { font-size: 26px; font-weight: 700; fill: #18181b; }
+      .bullet-text { font-size: 18px; font-weight: 500; fill: #52525b; }
+      .band-text { font-size: 23px; font-weight: 700; fill: #18181b; }
+      .icon-stroke { stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <!-- Slide background -->
+  <rect width="1280" height="720" fill="#fafafa"/>
+  <circle cx="78" cy="55" r="24" fill="#2a78d6" opacity="0.08"/>
+  <circle cx="1208" cy="80" r="38" fill="#116b11" opacity="0.06"/>
+
+  <!-- Product Owner card -->
+  <g aria-label="Product Owner">
+    <rect x="52" y="52" width="368" height="528" rx="24" fill="#ffffff" filter="url(#cardShadow)"/>
+    <path d="M76 52h320a24 24 0 0 1 24 24v8H52v-8a24 24 0 0 1 24-24Z" fill="#1c5cab"/>
+
+    <!-- Person holding prioritized list -->
+    <g class="icon-stroke">
+      <circle cx="211" cy="143" r="31" fill="#f4c8a6"/>
+      <path d="M181 142c1-25 13-39 32-39 18 0 31 13 31 36-10-2-20-8-26-18-7 11-20 18-37 21Z" fill="#18181b"/>
+      <path d="M204 171h14v17h-14Z" fill="#eeb791"/>
+      <path d="M154 254v-40c0-20 16-36 36-36h40c20 0 36 16 36 36v40Z" fill="#2a78d6"/>
+      <path d="M177 253v-43M242 253v-43" fill="none" stroke="#1c5cab" stroke-width="8"/>
+      <path d="M180 208c-13 7-24 18-30 32" fill="none" stroke="#f4c8a6" stroke-width="14"/>
+      <path d="M246 207c11 6 20 14 26 24" fill="none" stroke="#f4c8a6" stroke-width="14"/>
+
+      <!-- Prioritized list -->
+      <rect x="258" y="173" width="92" height="110" rx="12" fill="#ffffff" stroke="#1c5cab" stroke-width="4"/>
+      <rect x="285" y="165" width="38" height="15" rx="7" fill="#1c5cab"/>
+      <circle cx="278" cy="204" r="7" fill="#a32222"/>
+      <path d="M274 204l3 3 6-7" fill="none" stroke="#ffffff" stroke-width="3"/>
+      <path d="M293 204h39" fill="none" stroke="#52525b" stroke-width="5"/>
+      <circle cx="278" cy="229" r="7" fill="#86590a"/>
+      <path d="M274 229l3 3 6-7" fill="none" stroke="#ffffff" stroke-width="3"/>
+      <path d="M293 229h33" fill="none" stroke="#52525b" stroke-width="5"/>
+      <circle cx="278" cy="254" r="7" fill="#116b11"/>
+      <path d="M274 254l3 3 6-7" fill="none" stroke="#ffffff" stroke-width="3"/>
+      <path d="M293 254h25" fill="none" stroke="#52525b" stroke-width="5"/>
+      <circle cx="274" cy="236" r="8" fill="#f4c8a6"/>
+    </g>
+
+    <text x="236" y="326" text-anchor="middle" class="type card-title">Product Owner</text>
+    <rect x="112" y="343" width="248" height="4" rx="2" fill="#1c5cab" opacity="0.18"/>
+
+    <g class="type bullet-text">
+      <circle cx="92" cy="388" r="6" fill="#1c5cab"/>
+      <text x="112" y="395">Owns the Product Backlog</text>
+      <circle cx="92" cy="442" r="6" fill="#1c5cab"/>
+      <text x="112" y="449">Orders by value</text>
+      <circle cx="92" cy="496" r="6" fill="#1c5cab"/>
+      <text x="112" y="503">One voice for stakeholders</text>
+    </g>
+  </g>
+
+  <!-- Scrum Master card -->
+  <g aria-label="Scrum Master">
+    <rect x="456" y="52" width="368" height="528" rx="24" fill="#ffffff" filter="url(#cardShadow)"/>
+    <path d="M480 52h320a24 24 0 0 1 24 24v8H456v-8a24 24 0 0 1 24-24Z" fill="#116b11"/>
+
+    <!-- Person holding compass shield -->
+    <g class="icon-stroke">
+      <circle cx="614" cy="143" r="31" fill="#dca77f"/>
+      <path d="M584 139c0-23 12-37 31-37 18 0 30 13 30 35-9-5-16-13-20-23-9 13-22 22-41 25Z" fill="#4b2f25"/>
+      <path d="M607 171h14v17h-14Z" fill="#cc936b"/>
+      <path d="M557 254v-40c0-20 16-36 36-36h42c20 0 36 16 36 36v40Z" fill="#116b11"/>
+      <path d="M581 253v-42M646 253v-42" fill="none" stroke="#0c520c" stroke-width="8"/>
+      <path d="M582 207c-12 6-22 17-29 29M648 206c12 5 21 14 27 24" fill="none" stroke="#dca77f" stroke-width="14"/>
+
+      <!-- Shield with compass -->
+      <path d="M665 177l45 16v36c0 28-18 48-45 58-27-10-45-30-45-58v-36Z" fill="#fff8e6" stroke="#86590a" stroke-width="4"/>
+      <circle cx="665" cy="229" r="25" fill="#ffffff" stroke="#86590a" stroke-width="4"/>
+      <path d="M674 213l-7 19-19 12 8-20Z" fill="#a32222"/>
+      <circle cx="665" cy="229" r="4" fill="#18181b"/>
+      <path d="M665 199v8M665 251v8M635 229h8M687 229h8" fill="none" stroke="#52525b" stroke-width="3"/>
+      <circle cx="673" cy="233" r="8" fill="#dca77f"/>
+    </g>
+
+    <text x="640" y="326" text-anchor="middle" class="type card-title">Scrum Master</text>
+    <rect x="516" y="343" width="248" height="4" rx="2" fill="#116b11" opacity="0.18"/>
+
+    <g class="type bullet-text">
+      <circle cx="496" cy="388" r="6" fill="#116b11"/>
+      <text x="516" y="395">Coaches the team in Scrum</text>
+      <circle cx="496" cy="442" r="6" fill="#116b11"/>
+      <text x="516" y="449">Removes impediments</text>
+      <circle cx="496" cy="496" r="6" fill="#116b11"/>
+      <text x="516" y="503">Facilitates events</text>
+    </g>
+  </g>
+
+  <!-- Developers card -->
+  <g aria-label="Developers">
+    <rect x="860" y="52" width="368" height="528" rx="24" fill="#ffffff" filter="url(#cardShadow)"/>
+    <path d="M884 52h320a24 24 0 0 1 24 24v8H860v-8a24 24 0 0 1 24-24Z" fill="#a32222"/>
+
+    <!-- Three developers -->
+    <g class="icon-stroke">
+      <!-- left -->
+      <circle cx="961" cy="159" r="25" fill="#f1bd96"/>
+      <path d="M937 156c0-21 10-32 25-32 14 0 24 10 24 29-10-4-18-11-23-20-6 11-14 18-26 23Z" fill="#533729"/>
+      <path d="M913 257v-48c0-18 14-32 32-32h31c18 0 32 14 32 32v48Z" fill="#2a78d6"/>
+      <path d="M935 255v-47M986 255v-47" fill="none" stroke="#1c5cab" stroke-width="7"/>
+      <!-- center -->
+      <circle cx="1044" cy="137" r="29" fill="#9b684c"/>
+      <path d="M1016 133c0-23 12-36 29-36 17 0 28 12 28 33-11-3-20-10-27-21-7 12-17 20-30 24Z" fill="#18181b"/>
+      <path d="M990 257v-55c0-20 16-36 36-36h36c20 0 36 16 36 36v55Z" fill="#1c5cab"/>
+      <path d="M1015 255v-52M1073 255v-52" fill="none" stroke="#164b8b" stroke-width="8"/>
+      <!-- right -->
+      <circle cx="1127" cy="159" r="25" fill="#e6aa80"/>
+      <path d="M1102 157c0-20 10-32 25-32 15 0 25 11 25 31-11-2-20-9-26-20-5 10-13 17-24 21Z" fill="#86590a"/>
+      <path d="M1080 257v-48c0-18 14-32 32-32h31c18 0 32 14 32 32v48Z" fill="#a32222"/>
+      <path d="M1102 255v-47M1153 255v-47" fill="none" stroke="#7f1919" stroke-width="7"/>
+      <!-- shared work tile -->
+      <rect x="1001" y="224" width="86" height="53" rx="10" fill="#ffffff" stroke="#86590a" stroke-width="4"/>
+      <path d="M1018 249l12 11 24-28M1059 240h12M1059 253h12" fill="none" stroke="#116b11" stroke-width="5"/>
+    </g>
+
+    <text x="1044" y="326" text-anchor="middle" class="type card-title">Developers</text>
+    <rect x="920" y="343" width="248" height="4" rx="2" fill="#a32222" opacity="0.18"/>
+
+    <g class="type bullet-text">
+      <circle cx="900" cy="388" r="6" fill="#a32222"/>
+      <text x="920" y="395">Create the Sprint Backlog</text>
+      <circle cx="900" cy="442" r="6" fill="#a32222"/>
+      <text x="920" y="449">Build the Increment</text>
+      <circle cx="900" cy="496" r="6" fill="#a32222"/>
+      <text x="920" y="503">Hold each other accountable</text>
+    </g>
+  </g>
+
+  <!-- Connectors into the shared team band -->
+  <path d="M236 580v29M640 580v29M1044 580v29" fill="none" stroke="#2a78d6" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="236" cy="604" r="6" fill="#2a78d6"/>
+  <circle cx="640" cy="604" r="6" fill="#2a78d6"/>
+  <circle cx="1044" cy="604" r="6" fill="#2a78d6"/>
+
+  <!-- One team band -->
+  <g aria-label="One Scrum Team">
+    <rect x="52" y="612" width="1176" height="76" rx="22" fill="#eaf3ff" stroke="#2a78d6" stroke-width="2" filter="url(#bandShadow)"/>
+    <g transform="translate(86 631)" aria-hidden="true">
+      <circle cx="15" cy="13" r="10" fill="#1c5cab"/>
+      <circle cx="38" cy="13" r="10" fill="#116b11"/>
+      <circle cx="61" cy="13" r="10" fill="#a32222"/>
+      <path d="M0 48v-8c0-9 7-16 16-16s16 7 16 16v8M23 48v-8c0-9 7-16 16-16s16 7 16 16v8M46 48v-8c0-9 7-16 16-16s16 7 16 16v8" fill="none" stroke="#18181b" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <text x="690" y="658" text-anchor="middle" class="type band-text">One Scrum Team — no hierarchy, shared Sprint Goal</text>
+  </g>
+</svg>

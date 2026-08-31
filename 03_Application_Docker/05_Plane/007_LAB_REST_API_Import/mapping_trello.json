@@ -1,0 +1,22 @@
+{
+  "_comment": "แผนที่ Trello → Plane สำหรับ import_trello.py (แก้ไฟล์นี้ ไม่ต้องแก้โค้ด)",
+  "project": {
+    "name": "Trello Import",
+    "identifier": "TRL",
+    "description": "บอร์ด Trello 'Campus Cafe App' ที่ย้ายเข้า Plane ด้วย REST API (LAB 7)",
+    "features": {"issue_views_view": true, "page_view": true}
+  },
+  "lists_to_states": {
+    "To Do":  {"name": "To Do",  "group": "unstarted", "color": "#3b82f6", "sequence": 15000, "default": true},
+    "Doing":  {"name": "Doing",  "group": "started",   "color": "#f59e0b", "sequence": 25000},
+    "Review": {"name": "Review", "group": "started",   "color": "#8b5cf6", "sequence": 35000},
+    "Done":   {"name": "Done",   "group": "completed", "color": "#22c55e", "sequence": 45000}
+  },
+  "delete_empty_default_states": ["Backlog", "Todo", "In Progress", "Cancelled"],
+  "label_colors": {
+    "green": "#22c55e", "red": "#ef4444", "orange": "#f97316", "blue": "#3b82f6",
+    "purple": "#a855f7", "yellow": "#eab308", "sky": "#0ea5e9", "lime": "#84cc16", "pink": "#ec4899", "black": "#334155"
+  },
+  "priority_from_labels": {"urgent": "urgent", "bug": "high"},
+  "checklist": {"complete_state": "Done", "incomplete_state": "To Do"}
+}

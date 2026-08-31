@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Trello-style project board with automation</title>
+  <desc id="desc">A generic four-list board showing a card dragged from Doing to Done and an automation rule that completes its due date and posts a comment.</desc>
+  <defs>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#18181b" flood-opacity="0.14"/>
+    </filter>
+    <filter id="dragShadow" x="-30%" y="-30%" width="170%" height="180%">
+      <feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#18181b" flood-opacity="0.24"/>
+    </filter>
+    <marker id="arrowHead" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M1,1 L9,5 L1,9 Z" fill="#2a78d6"/>
+    </marker>
+    <style>
+      text { font-family: 'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif; fill: #18181b; }
+      .list-title { font-size: 24px; font-weight: 700; }
+      .card-title { font-size: 18px; font-weight: 650; }
+      .meta { font-size: 18px; font-weight: 600; fill: #52525b; }
+      .panel-title { font-size: 23px; font-weight: 750; }
+      .rule-text { font-size: 18px; font-weight: 600; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+  <circle cx="1190" cy="78" r="145" fill="#2a78d6" opacity="0.05"/>
+  <circle cx="80" cy="670" r="180" fill="#1c5cab" opacity="0.04"/>
+
+  <g aria-label="Board header">
+    <rect x="52" y="34" width="1176" height="62" rx="18" fill="#1c5cab"/>
+    <text x="78" y="74" font-size="28" font-weight="750" fill="#ffffff">Product planning board</text>
+    <g transform="translate(780 47)">
+      <rect width="420" height="36" rx="18" fill="#ffffff" opacity="0.98"/>
+      <circle cx="22" cy="18" r="7" fill="#2a78d6"/>
+      <text x="40" y="25" font-size="18" font-weight="650" fill="#1c5cab">Power-Ups: calendar, custom fields, voting</text>
+    </g>
+  </g>
+
+  <g aria-label="Ideas list">
+    <rect x="52" y="116" width="270" height="548" rx="18" fill="#eef2f7" stroke="#d8dee8" stroke-width="2"/>
+    <text class="list-title" x="72" y="154">Ideas</text>
+    <rect x="272" y="134" width="30" height="28" rx="14" fill="#dce7f5"/>
+    <text x="287" y="154" text-anchor="middle" font-size="18" font-weight="700" fill="#1c5cab">2</text>
+
+    <g transform="translate(68 178)">
+      <rect width="238" height="124" rx="13" fill="#ffffff" filter="url(#softShadow)"/>
+      <rect x="16" y="14" width="70" height="9" rx="4.5" fill="#86590a"/>
+      <text class="card-title" x="16" y="53">Interview customers</text>
+      <text class="meta" x="16" y="83">Research notes</text>
+      <circle cx="202" cy="91" r="18" fill="#2a78d6"/>
+      <text x="202" y="98" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff">AL</text>
+    </g>
+
+    <g transform="translate(68 320)">
+      <rect width="238" height="116" rx="13" fill="#ffffff" filter="url(#softShadow)"/>
+      <rect x="16" y="14" width="50" height="9" rx="4.5" fill="#a32222"/>
+      <rect x="72" y="14" width="56" height="9" rx="4.5" fill="#2a78d6"/>
+      <text class="card-title" x="16" y="53">Mobile onboarding</text>
+      <g transform="translate(16 70)">
+        <rect width="96" height="30" rx="15" fill="#f4f4f5"/>
+        <text class="meta" x="48" y="22" text-anchor="middle">Vote · 6</text>
+      </g>
+    </g>
+    <text x="72" y="474" font-size="18" font-weight="650" fill="#52525b">＋ Add an idea</text>
+  </g>
+
+  <g aria-label="To Do list">
+    <rect x="340" y="116" width="270" height="548" rx="18" fill="#eef2f7" stroke="#d8dee8" stroke-width="2"/>
+    <text class="list-title" x="360" y="154">To Do</text>
+    <rect x="560" y="134" width="30" height="28" rx="14" fill="#dce7f5"/>
+    <text x="575" y="154" text-anchor="middle" font-size="18" font-weight="700" fill="#1c5cab">2</text>
+
+    <g transform="translate(356 178)">
+      <rect width="238" height="155" rx="13" fill="#ffffff" filter="url(#softShadow)"/>
+      <rect x="16" y="14" width="62" height="9" rx="4.5" fill="#116b11"/>
+      <text class="card-title" x="16" y="53">Write release notes</text>
+      <g transform="translate(16 72)">
+        <rect width="206" height="8" rx="4" fill="#e4e4e7"/>
+        <rect width="124" height="8" rx="4" fill="#116b11"/>
+        <text class="meta" x="0" y="34">☑ 3/5</text>
+      </g>
+      <circle cx="202" cy="119" r="18" fill="#86590a"/>
+      <text x="202" y="126" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff">MK</text>
+    </g>
+
+    <g transform="translate(356 352)">
+      <rect width="238" height="130" rx="13" fill="#ffffff" filter="url(#softShadow)"/>
+      <rect x="16" y="14" width="74" height="9" rx="4.5" fill="#2a78d6"/>
+      <text class="card-title" x="16" y="53">QA browser matrix</text>
+      <g transform="translate(16 72)">
+        <rect width="143" height="36" rx="10" fill="#fff1f1" stroke="#a32222" stroke-width="1.5"/>
+        <circle cx="18" cy="18" r="7" fill="none" stroke="#a32222" stroke-width="2"/>
+        <line x1="18" y1="18" x2="18" y2="13" stroke="#a32222" stroke-width="2" stroke-linecap="round"/>
+        <line x1="18" y1="18" x2="23" y2="18" stroke="#a32222" stroke-width="2" stroke-linecap="round"/>
+        <text x="34" y="25" font-size="18" font-weight="650" fill="#a32222">Due Sep 03</text>
+      </g>
+    </g>
+  </g>
+
+  <g aria-label="Doing list">
+    <rect x="628" y="116" width="270" height="548" rx="18" fill="#eef2f7" stroke="#d8dee8" stroke-width="2"/>
+    <text class="list-title" x="648" y="154">Doing</text>
+    <rect x="848" y="134" width="30" height="28" rx="14" fill="#dce7f5"/>
+    <text x="863" y="154" text-anchor="middle" font-size="18" font-weight="700" fill="#1c5cab">2</text>
+
+    <g transform="translate(644 178)">
+      <rect width="238" height="132" rx="13" fill="#ffffff" filter="url(#softShadow)"/>
+      <rect x="16" y="14" width="70" height="9" rx="4.5" fill="#86590a"/>
+      <text class="card-title" x="16" y="53">Design empty state</text>
+      <text class="meta" x="16" y="84">2 comments</text>
+      <circle cx="178" cy="96" r="18" fill="#1c5cab"/>
+      <text x="178" y="103" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff">JR</text>
+      <circle cx="210" cy="96" r="18" fill="#116b11" stroke="#ffffff" stroke-width="3"/>
+      <text x="210" y="103" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff">ST</text>
+    </g>
+
+    <g transform="translate(644 330)" opacity="0.72">
+      <rect width="238" height="138" rx="13" fill="#e5e9ef" stroke="#b7c0cc" stroke-width="2" stroke-dasharray="8 7"/>
+      <text x="119" y="63" text-anchor="middle" font-size="18" font-weight="650" fill="#52525b">Card picked up</text>
+      <path d="M92 84 H146" stroke="#9aa5b2" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <g aria-label="Done list">
+    <rect x="916" y="116" width="312" height="548" rx="18" fill="#eaf4ea" stroke="#bcd7bc" stroke-width="2"/>
+    <text class="list-title" x="936" y="154">Done</text>
+    <rect x="1178" y="134" width="30" height="28" rx="14" fill="#d5ead5"/>
+    <text x="1193" y="154" text-anchor="middle" font-size="18" font-weight="700" fill="#116b11">3</text>
+
+    <g transform="translate(932 178)">
+      <rect width="280" height="112" rx="13" fill="#ffffff" filter="url(#softShadow)"/>
+      <rect x="16" y="14" width="66" height="9" rx="4.5" fill="#116b11"/>
+      <text class="card-title" x="16" y="53">Approve copy deck</text>
+      <text x="16" y="85" font-size="18" font-weight="650" fill="#116b11">✓ Completed</text>
+      <circle cx="244" cy="76" r="18" fill="#a32222"/>
+      <text x="244" y="83" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff">DP</text>
+    </g>
+
+    <g transform="translate(932 308)">
+      <rect width="280" height="108" rx="13" fill="#ffffff" filter="url(#softShadow)"/>
+      <rect x="16" y="14" width="54" height="9" rx="4.5" fill="#2a78d6"/>
+      <text class="card-title" x="16" y="53">Archive sprint brief</text>
+      <text x="16" y="83" font-size="18" font-weight="650" fill="#116b11">✓ Completed</text>
+    </g>
+  </g>
+
+  <g aria-label="Movement path">
+    <path d="M821 416 C900 433 940 466 1018 488" fill="none" stroke="#2a78d6" stroke-width="4" stroke-linecap="round" stroke-dasharray="9 10" marker-end="url(#arrowHead)"/>
+    <text x="878" y="456" font-size="18" font-weight="700" fill="#2a78d6">move</text>
+  </g>
+
+  <g aria-label="Dragged card" transform="translate(817 367) rotate(-4 130 69)" filter="url(#dragShadow)">
+    <rect width="260" height="138" rx="14" fill="#ffffff" stroke="#2a78d6" stroke-width="3"/>
+    <rect x="16" y="14" width="72" height="9" rx="4.5" fill="#a32222"/>
+    <rect x="96" y="14" width="58" height="9" rx="4.5" fill="#116b11"/>
+    <text class="card-title" x="16" y="54">Ship help center</text>
+    <g transform="translate(16 72)">
+      <rect width="157" height="36" rx="10" fill="#fff8e8" stroke="#86590a" stroke-width="1.5"/>
+      <circle cx="18" cy="18" r="7" fill="none" stroke="#86590a" stroke-width="2"/>
+      <line x1="18" y1="18" x2="18" y2="13" stroke="#86590a" stroke-width="2" stroke-linecap="round"/>
+      <line x1="18" y1="18" x2="23" y2="18" stroke="#86590a" stroke-width="2" stroke-linecap="round"/>
+      <text x="34" y="25" font-size="18" font-weight="650" fill="#86590a">Due today</text>
+    </g>
+    <circle cx="224" cy="96" r="20" fill="#1c5cab" stroke="#ffffff" stroke-width="3"/>
+    <text x="224" y="103" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff">AL</text>
+  </g>
+
+  <g aria-label="Automation rule panel" transform="translate(646 520)" filter="url(#softShadow)">
+    <rect width="566" height="174" rx="18" fill="#ffffff" stroke="#1c5cab" stroke-width="2.5"/>
+    <rect width="566" height="50" rx="16" fill="#1c5cab"/>
+    <path d="M0 34 H566 V50 H0 Z" fill="#1c5cab"/>
+    <circle cx="27" cy="25" r="12" fill="#ffffff" opacity="0.2"/>
+    <path d="M22 25 h10 M27 20 v10" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+    <text class="panel-title" x="48" y="33" fill="#ffffff">Automation rule</text>
+
+    <g transform="translate(18 68)">
+      <rect width="163" height="72" rx="12" fill="#edf5ff" stroke="#2a78d6" stroke-width="1.5"/>
+      <text class="rule-text" x="14" y="28" fill="#1c5cab">when a card is</text>
+      <text class="rule-text" x="14" y="54" fill="#1c5cab">moved to Done</text>
+
+      <path d="M190 36 H214" stroke="#2a78d6" stroke-width="3" marker-end="url(#arrowHead)"/>
+
+      <rect x="224" width="141" height="72" rx="12" fill="#ecf8ec" stroke="#116b11" stroke-width="1.5"/>
+      <text class="rule-text" x="238" y="28" fill="#116b11">mark due date</text>
+      <text class="rule-text" x="238" y="54" fill="#116b11">complete</text>
+
+      <path d="M374 36 H398" stroke="#2a78d6" stroke-width="3" marker-end="url(#arrowHead)"/>
+
+      <rect x="408" width="122" height="72" rx="12" fill="#fff8e8" stroke="#86590a" stroke-width="1.5"/>
+      <text class="rule-text" x="422" y="28" fill="#86590a">post</text>
+      <text class="rule-text" x="422" y="54" fill="#86590a">comment</text>
+    </g>
+  </g>
+</svg>
