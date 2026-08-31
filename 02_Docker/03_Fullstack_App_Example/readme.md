@@ -1,6 +1,6 @@
 # Fullstack App Example — SkillSpace
 
-ชุดเรียนนี้ใช้ระบบแจ้งซ่อม **SkillSpace** เพื่อเชื่อมแนวคิด Requirement, User Flow, Architecture และ Docker และต่อยอดสู่การออกแบบระบบจองนัดหมายสัตวแพทย์ใน LAB 003
+ชุดเรียนนี้ใช้ระบบแจ้งซ่อม **SkillSpace** เพื่อเชื่อมแนวคิด Requirement, User Flow, Architecture และ Docker จากนั้นศึกษาตัวอย่าง Pet Clinic Booking ก่อนทำ LAB 003 เรื่อง Lost Pet Finder
 
 ## เส้นทางการเรียน
 
@@ -8,11 +8,15 @@
 |---|---|---|
 | 001 | [`001_LAB_PostgreSQL`](./001_LAB_PostgreSQL/readme.md) | สร้างฐานข้อมูล `skillspace`, schema 5 ตาราง, seed และเชื่อมต่อด้วย Python |
 | 002 | [`002_LAB_Fullstack_Compose`](./002_LAB_Fullstack_Compose/readme.md) | เปิดระบบ `web + api + db` ด้วย Docker Compose และทดลอง Flow ระบบแจ้งซ่อมทั้งชุด |
-| 003 | [`003_LAB_Pet_Clinic_Design`](./003_LAB_Pet_Clinic_Design/readme.md) | สกัด Evidence, Story และ Requirement เพื่อออกแบบ User Flow, หน้าจอ, Feature และ System Design |
+| 003 | [`003_LAB_Lost_Pet_Finder`](./003_LAB_Lost_Pet_Finder/readme.md) | ใช้ Evidence และ Requirements ออกแบบ User Flow กับ Wireframe ของระบบประกาศสัตว์หาย |
+
+### Worked Example ก่อนทำ LAB 003
+
+[`Example_Pet_Clinic_Design`](./Example_Pet_Clinic_Design/readme.md) เป็นตัวอย่างเฉลยสำหรับผู้สอนใช้สาธิตวิธีเปลี่ยน Interview Evidence ให้เป็น User Flow และ Wireframe ไม่ใช่งานที่นักศึกษาต้องส่ง
 
 ```text
-LAB 001                         LAB 002                              LAB 003
-PostgreSQL + schema + seed  →  Browser → web → api → db + volume  →  Evidence → Flow → System Design
+LAB 001                         LAB 002                         Worked Example                LAB 003
+PostgreSQL + schema + seed  →  Fullstack Docker Compose  →  Pet Clinic Booking  →  Lost Pet Finder Design
 ```
 
 ## สิ่งที่ผู้เรียนจะพิสูจน์
