@@ -104,7 +104,7 @@
 
 ### งานที่ 1 — End-to-End User Flow
 
-ออกแบบ Flow หลักตั้งแต่ผู้ใช้เริ่มจองจนเห็นผลยืนยัน พร้อมอย่างน้อย 1 Failure Branch เช่น ช่วงเวลาถูกจองไปแล้ว
+ออกแบบ Flow หลักตั้งแต่ผู้ใช้เริ่มจองจนเห็นผลยืนยัน
 
 Flow ต้องระบุ:
 
@@ -140,7 +140,7 @@ Flow ต้องระบุ:
 
 1. Evidence-to-Insight Table
 2. User Stories และ Requirements ที่เลือกใช้
-3. User Flow Diagram ทั้ง Happy Path และ Failure Case
+3. User Flow Diagram ตั้งแต่เริ่มจองจนเห็นผลยืนยัน
 4. Screen Inventory
 5. Wireframe ของหน้าจอสำคัญ — วาดกระดาษแล้วถ่ายรูปส่งได้
 6. AI Note สั้น ๆ หากมีการใช้ AI: ใช้เครื่องมือใด ช่วยส่วนไหน และปรับแก้อะไรเอง
