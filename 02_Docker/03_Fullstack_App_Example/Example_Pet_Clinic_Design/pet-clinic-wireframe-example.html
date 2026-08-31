@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pet Clinic Booking — Wireframe Example</title>
+<style>
+  *{box-sizing:border-box} body{margin:0;background:#f4f6f8;color:#202833;font-family:Arial,"Noto Sans Thai",sans-serif}
+  main{width:1480px;margin:0 auto;padding:38px 48px 48px}
+  h1{margin:0;font-size:32px} .sub{margin:8px 0 28px;color:#66717e;font-size:17px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .card{background:white;border:2px solid #c4cbd3;border-radius:18px;padding:18px;box-shadow:0 4px 16px rgba(32,40,51,.06)}
+  .step{font-weight:700;color:#4a5570;margin-bottom:10px}.phone{border:3px solid #252c35;border-radius:24px;padding:14px;background:#fff;min-height:420px}
+  .bar{height:12px;width:72px;border-radius:20px;background:#252c35;margin:0 auto 18px}
+  .title{height:24px;width:58%;background:#c7cdd4;border-radius:5px;margin-bottom:16px}
+  .line{height:12px;background:#e1e5e9;border-radius:4px;margin:9px 0}.line.s{width:58%}.line.m{width:78%}
+  .box{border:2px solid #9aa4af;border-radius:9px;height:66px;margin:12px 0;background:#fafbfc;display:flex;align-items:center;padding:10px;color:#7a8490;font-size:13px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .choice{height:55px;border:2px solid #9aa4af;border-radius:9px;background:#fafbfc}.choice.on{border-color:#344e75;background:#edf3fa}
+  .calendar{height:120px;border:2px solid #9aa4af;border-radius:9px;background:repeating-linear-gradient(90deg,#fff 0 44px,#dce1e6 45px),repeating-linear-gradient(0deg,transparent 0 29px,#dce1e6 30px)}
+  .btn{height:44px;border-radius:9px;background:#344e75;margin-top:18px;color:white;text-align:center;padding:12px;font-weight:700}.btn.secondary{background:white;border:2px solid #7b8794;color:#47515c}
+  .check{width:70px;height:70px;border:6px solid #2f855a;border-radius:50%;margin:35px auto 24px;position:relative}.check:after{content:"";position:absolute;width:30px;height:15px;border-left:6px solid #2f855a;border-bottom:6px solid #2f855a;transform:rotate(-45deg);left:15px;top:15px}
+  .caption{margin-top:13px;font-size:14px;color:#59636f;line-height:1.45}.arrow{font-weight:700;color:#344e75}
+</style>
+</head>
+<body><main>
+  <h1>Pet Clinic Booking — Low-Fidelity Wireframe Example</h1>
+  <div class="sub">ตัวอย่างเฉลย 6 หน้าจอ · เน้นข้อมูล ปุ่ม และเส้นทาง ไม่เน้นสีหรือความสวย</div>
+  <section class="grid">
+    <article class="card"><div class="step">1 · หน้าหลัก</div><div class="phone"><div class="bar"></div><div class="title"></div><div class="box">นัดหมายที่กำลังจะถึง</div><div class="box">สัตว์เลี้ยงของฉัน</div><div class="line m"></div><div class="line s"></div><div class="btn">จองนัดใหม่</div></div><div class="caption"><span class="arrow">Action:</span> เริ่มสร้างนัดหมาย</div></article>
+    <article class="card"><div class="step">2 · เลือกสัตว์และบริการ</div><div class="phone"><div class="bar"></div><div class="title"></div><div class="row"><div class="choice on"></div><div class="choice"></div></div><div class="line m"></div><div class="row3"><div class="choice on"></div><div class="choice"></div><div class="choice"></div></div><div class="btn">ถัดไป</div><div class="btn secondary">ย้อนกลับ</div></div><div class="caption"><span class="arrow">Input:</span> สัตว์ 1 ตัว + บริการ 1 รายการ</div></article>
+    <article class="card"><div class="step">3 · เลือกวันและเวลา</div><div class="phone"><div class="bar"></div><div class="title"></div><div class="calendar"></div><div class="line m"></div><div class="row3"><div class="choice"></div><div class="choice on"></div><div class="choice"></div></div><div class="btn">ถัดไป</div><div class="btn secondary">ย้อนกลับ</div></div><div class="caption"><span class="arrow">Input:</span> วันและช่วงเวลาว่าง</div></article>
+    <article class="card"><div class="step">4 · อาการหรือหมายเหตุ</div><div class="phone"><div class="bar"></div><div class="title"></div><div class="line s"></div><div class="box" style="height:150px">ช่องกรอกอาการเบื้องต้น</div><div class="btn">ตรวจสอบข้อมูล</div><div class="btn secondary">ย้อนกลับ</div></div><div class="caption"><span class="arrow">Input:</span> ข้อมูลช่วยให้สัตวแพทย์เตรียมตัว</div></article>
+    <article class="card"><div class="step">5 · ตรวจสอบข้อมูล</div><div class="phone"><div class="bar"></div><div class="title"></div><div class="box">สัตว์ + บริการ</div><div class="box">วัน + เวลา</div><div class="box">อาการหรือหมายเหตุ</div><div class="btn">ยืนยันการจอง</div><div class="btn secondary">แก้ไข</div></div><div class="caption"><span class="arrow">Action:</span> ตรวจทานก่อนสร้างรายการ</div></article>
+    <article class="card"><div class="step">6 · ยืนยันสำเร็จ</div><div class="phone"><div class="bar"></div><div class="check"></div><div class="title" style="margin:0 auto 18px;width:70%"></div><div class="box">เลขอ้างอิง + รายละเอียดนัด</div><div class="line m"></div><div class="line s"></div><div class="btn">ดูนัดหมาย</div></div><div class="caption"><span class="arrow">Result:</span> ผู้ใช้รู้ว่าการจองสำเร็จและตรวจสอบได้</div></article>
+  </section>
+</main></body>
+</html>
