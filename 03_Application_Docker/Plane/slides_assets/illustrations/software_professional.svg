@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">What makes a software professional?</title>
+  <desc id="desc">A software professional working at a laptop, surrounded by six pillars: technical competence, ethics and responsibility, communication and teamwork, continuous learning, quality and craftsmanship, and transparency and traceability. A T-shaped skills graphic shows deep expertise and broad collaboration.</desc>
+
+  <defs>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="7" flood-color="#18181b" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .font { font-family: 'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif; }
+      .tile-title { font-size: 19px; font-weight: 650; fill: #18181b; }
+      .icon-stroke { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+      .connector { fill: none; stroke: #cbd5e1; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 4 9; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+
+  <!-- Slide title -->
+  <text class="font" x="640" y="42" text-anchor="middle" font-size="30" font-weight="750" fill="#18181b">What makes a software professional?</text>
+
+  <!-- Ring connections -->
+  <g aria-hidden="true">
+    <path class="connector" d="M455 142 C500 150 522 167 548 193"/>
+    <path class="connector" d="M825 142 C780 150 758 167 732 193"/>
+    <path class="connector" d="M350 278 C404 278 444 278 490 278"/>
+    <path class="connector" d="M930 278 C876 278 836 278 790 278"/>
+    <path class="connector" d="M455 414 C500 404 522 390 548 365"/>
+    <path class="connector" d="M825 414 C780 404 758 390 732 365"/>
+    <circle cx="640" cy="278" r="211" fill="none" stroke="#e4e4e7" stroke-width="2" stroke-dasharray="2 12"/>
+  </g>
+
+  <!-- Central professional -->
+  <g filter="url(#softShadow)">
+    <rect x="490" y="135" width="300" height="292" rx="42" fill="#ffffff" stroke="#dbeafe" stroke-width="2"/>
+  </g>
+  <circle cx="640" cy="257" r="94" fill="#eef6ff"/>
+  <circle cx="640" cy="202" r="31" fill="#f0b98b"/>
+  <path d="M610 196 C612 164 670 158 674 199 C663 188 650 184 631 185 C625 194 618 199 610 202Z" fill="#18181b"/>
+  <path d="M577 307 C579 263 602 238 640 238 C678 238 701 263 703 307Z" fill="#1c5cab"/>
+  <path d="M613 242 L640 278 L667 242 C660 238 651 236 640 236 C629 236 620 238 613 242Z" fill="#ffffff"/>
+  <path d="M632 246 L640 257 L648 246 L645 281 L635 281Z" fill="#a32222"/>
+  <rect x="552" y="291" width="176" height="100" rx="10" fill="#334155"/>
+  <rect x="562" y="301" width="156" height="78" rx="5" fill="#eaf3ff"/>
+  <circle cx="640" cy="340" r="10" fill="#2a78d6"/>
+  <path d="M526 391 H754 L742 407 H538Z" fill="#18181b"/>
+  <text class="font" x="640" y="458" text-anchor="middle" font-size="20" font-weight="700" fill="#1c5cab">PROFESSIONAL PRACTICE</text>
+
+  <!-- Technical competence -->
+  <g filter="url(#softShadow)">
+    <rect x="160" y="72" width="300" height="104" rx="20" fill="#ffffff" stroke="#bfdbfe" stroke-width="2"/>
+  </g>
+  <g transform="translate(188 99)" color="#1c5cab" aria-hidden="true">
+    <circle cx="23" cy="23" r="10" class="icon-stroke"/>
+    <path class="icon-stroke" d="M23 2 V8 M23 38 V44 M2 23 H8 M38 23 H44 M8 8 L12 12 M34 34 L38 38 M38 8 L34 12 M12 34 L8 38"/>
+    <circle cx="23" cy="23" r="20" class="icon-stroke" stroke-dasharray="8 6"/>
+  </g>
+  <text class="font tile-title" x="252" y="123">
+    <tspan x="252" dy="0">Technical</tspan>
+    <tspan x="252" dy="26">competence</tspan>
+  </text>
+
+  <!-- Ethics and responsibility -->
+  <g filter="url(#softShadow)">
+    <rect x="820" y="72" width="300" height="104" rx="20" fill="#ffffff" stroke="#fecaca" stroke-width="2"/>
+  </g>
+  <g transform="translate(846 96)" color="#a32222" aria-hidden="true">
+    <path class="icon-stroke" d="M24 3 L43 10 V23 C43 34 36 42 24 47 C12 42 5 34 5 23 V10Z"/>
+    <path class="icon-stroke" d="M15 24 L21 30 L34 17"/>
+  </g>
+  <text class="font tile-title" x="910" y="111">
+    <tspan x="910" dy="0">Ethics &amp; responsibility</tspan>
+    <tspan x="910" dy="25">(ACM/IEEE Code)</tspan>
+  </text>
+
+  <!-- Communication and teamwork -->
+  <g filter="url(#softShadow)">
+    <rect x="50" y="226" width="300" height="104" rx="20" fill="#ffffff" stroke="#bfdbfe" stroke-width="2"/>
+  </g>
+  <g transform="translate(76 251)" color="#2a78d6" aria-hidden="true">
+    <path class="icon-stroke" d="M3 5 H34 A7 7 0 0 1 41 12 V23 A7 7 0 0 1 34 30 H18 L9 38 V30 H8 A5 5 0 0 1 3 25Z"/>
+    <path class="icon-stroke" d="M25 34 H39 L47 41 V34 A5 5 0 0 0 52 29 V18 A5 5 0 0 0 47 13 H45"/>
+  </g>
+  <text class="font tile-title" x="140" y="269">
+    <tspan x="140" dy="0">Communication</tspan>
+    <tspan x="140" dy="26">&amp; teamwork</tspan>
+  </text>
+
+  <!-- Continuous learning -->
+  <g filter="url(#softShadow)">
+    <rect x="930" y="226" width="300" height="104" rx="20" fill="#ffffff" stroke="#bbf7d0" stroke-width="2"/>
+  </g>
+  <g transform="translate(956 251)" color="#116b11" aria-hidden="true">
+    <path class="icon-stroke" d="M4 7 C16 4 23 8 26 13 V43 C23 38 16 35 4 38Z"/>
+    <path class="icon-stroke" d="M48 7 C36 4 29 8 26 13 V43 C29 38 36 35 48 38Z"/>
+    <path class="icon-stroke" d="M11 15 H20 M11 22 H20 M41 15 H32 M41 22 H32"/>
+  </g>
+  <text class="font tile-title" x="1020" y="269">
+    <tspan x="1020" dy="0">Continuous</tspan>
+    <tspan x="1020" dy="26">learning</tspan>
+  </text>
+
+  <!-- Quality and craftsmanship -->
+  <g filter="url(#softShadow)">
+    <rect x="160" y="380" width="300" height="104" rx="20" fill="#ffffff" stroke="#fde68a" stroke-width="2"/>
+  </g>
+  <g transform="translate(186 405)" color="#86590a" aria-hidden="true">
+    <path class="icon-stroke" d="M25 3 L31 10 L40 9 L41 18 L49 23 L44 31 L47 40 L38 43 L33 51 L25 47 L17 51 L12 43 L3 40 L6 31 L1 23 L9 18 L10 9 L19 10Z"/>
+    <path class="icon-stroke" d="M14 26 L22 34 L37 18"/>
+  </g>
+  <text class="font tile-title" x="252" y="423">
+    <tspan x="252" dy="0">Quality &amp;</tspan>
+    <tspan x="252" dy="26">craftsmanship</tspan>
+  </text>
+
+  <!-- Transparency and traceability -->
+  <g filter="url(#softShadow)">
+    <rect x="820" y="380" width="300" height="104" rx="20" fill="#ffffff" stroke="#fecaca" stroke-width="2"/>
+  </g>
+  <g transform="translate(846 405)" color="#a32222" aria-hidden="true">
+    <path class="icon-stroke" d="M20 34 L14 40 A10 10 0 0 1 0 26 L10 16 A10 10 0 0 1 24 16"/>
+    <path class="icon-stroke" d="M30 18 L36 12 A10 10 0 0 1 50 26 L40 36 A10 10 0 0 1 26 36"/>
+    <path class="icon-stroke" d="M17 27 L33 27"/>
+  </g>
+  <text class="font tile-title" x="910" y="423">
+    <tspan x="910" dy="0">Transparency &amp;</tspan>
+    <tspan x="910" dy="26">traceability</tspan>
+  </text>
+
+  <!-- T-shaped skills -->
+  <g aria-label="T-shaped skills graphic">
+    <rect x="368" y="524" width="544" height="48" rx="14" fill="#dbeafe" stroke="#2a78d6" stroke-width="2"/>
+    <path d="M604 572 H676 V639 Q676 648 667 648 H613 Q604 648 604 639Z" fill="#1c5cab"/>
+    <text class="font" x="640" y="556" text-anchor="middle" font-size="18" font-weight="700" fill="#1c5cab">BROAD COLLABORATION</text>
+    <text class="font" x="640" y="613" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff" transform="rotate(-90 640 613)">DEEP</text>
+    <text class="font" x="640" y="688" text-anchor="middle" font-size="22" font-weight="700" fill="#18181b">T-shaped skills: deep expertise + broad collaboration</text>
+  </g>
+</svg>

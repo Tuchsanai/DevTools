@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-labelledby="title desc">
+  <title id="title">Scrum Framework Cycle</title>
+  <desc id="desc">A lecture diagram showing Product Backlog, Sprint Backlog, a one to four week Sprint loop with Daily Scrum, an Increment, Scrum roles, and key Sprint events.</desc>
+
+  <defs>
+    <style>
+      text { font-family: 'IBM Plex Sans Thai', 'Noto Sans Thai', Sarabun, system-ui, sans-serif; fill: #18181b; }
+      .label { font-size: 20px; font-weight: 700; }
+      .small { font-size: 18px; font-weight: 600; }
+      .micro { font-size: 18px; font-weight: 500; }
+      .card { fill: #ffffff; stroke: #d9e2ef; stroke-width: 2; }
+      .line { fill: none; stroke: #1c5cab; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#18181b" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrowBlue" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M1 1 L11 6 L1 11 Z" fill="#1c5cab"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M1 1 L11 6 L1 11 Z" fill="#116b11"/>
+    </marker>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+  <text x="640" y="48" text-anchor="middle" font-size="32" font-weight="800">The Scrum Framework</text>
+  <path d="M470 61 H810" stroke="#2a78d6" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Product Backlog -->
+  <g filter="url(#shadow)">
+    <rect class="card" x="42" y="182" width="210" height="334" rx="22"/>
+  </g>
+  <rect x="42" y="182" width="210" height="68" rx="22" fill="#1c5cab"/>
+  <path d="M42 228 H252 V250 H42 Z" fill="#1c5cab"/>
+  <text x="147" y="224" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="800">Product Backlog</text>
+  <g>
+    <rect x="66" y="273" width="162" height="48" rx="10" fill="#eaf3ff" stroke="#2a78d6" stroke-width="2"/>
+    <circle cx="86" cy="297" r="6" fill="#2a78d6"/>
+    <path d="M101 291 H205 M101 303 H185" stroke="#1c5cab" stroke-width="4" stroke-linecap="round"/>
+    <rect x="66" y="337" width="162" height="48" rx="10" fill="#eaf3ff" stroke="#2a78d6" stroke-width="2"/>
+    <circle cx="86" cy="361" r="6" fill="#2a78d6"/>
+    <path d="M101 355 H198 M101 367 H176" stroke="#1c5cab" stroke-width="4" stroke-linecap="round"/>
+    <rect x="66" y="401" width="162" height="48" rx="10" fill="#eaf3ff" stroke="#2a78d6" stroke-width="2"/>
+    <circle cx="86" cy="425" r="6" fill="#2a78d6"/>
+    <path d="M101 419 H190 M101 431 H164" stroke="#1c5cab" stroke-width="4" stroke-linecap="round"/>
+    <path d="M88 477 H206" stroke="#b9c9dd" stroke-width="4" stroke-linecap="round" stroke-dasharray="5 10"/>
+  </g>
+
+  <!-- Product Owner role -->
+  <g transform="translate(66 548)">
+    <circle cx="28" cy="24" r="15" fill="#1c5cab"/>
+    <path d="M4 73 C5 47 15 40 28 40 C41 40 51 47 52 73 Z" fill="#2a78d6"/>
+    <circle cx="28" cy="24" r="7" fill="#fafafa" opacity=".35"/>
+    <text x="66" y="31" class="small">Product Owner</text>
+    <text x="66" y="55" class="micro" fill="#5b6472">Orders value</text>
+  </g>
+
+  <!-- Selection flow -->
+  <path d="M264 349 H304" class="line" marker-end="url(#arrowBlue)"/>
+  <text x="284" y="330" text-anchor="middle" class="micro" fill="#1c5cab">Select</text>
+
+  <!-- Sprint Backlog -->
+  <g filter="url(#shadow)">
+    <rect class="card" x="316" y="235" width="220" height="228" rx="22"/>
+  </g>
+  <rect x="316" y="235" width="220" height="63" rx="22" fill="#2a78d6"/>
+  <path d="M316 276 H536 V298 H316 Z" fill="#2a78d6"/>
+  <text x="426" y="275" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="800">Sprint Backlog</text>
+  <g fill="none" stroke="#1c5cab" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="342" y="321" width="26" height="26" rx="6" fill="#eaf3ff"/>
+    <path d="M349 334 L354 339 L363 328"/>
+    <path d="M383 329 H504 M383 341 H474"/>
+    <rect x="342" y="367" width="26" height="26" rx="6" fill="#eaf3ff"/>
+    <path d="M349 380 L354 385 L363 374"/>
+    <path d="M383 375 H495 M383 387 H460"/>
+    <rect x="342" y="413" width="26" height="26" rx="6" fill="#eaf3ff"/>
+    <path d="M383 421 H483 M383 433 H452"/>
+  </g>
+
+  <!-- Developers role -->
+  <g transform="translate(336 500)">
+    <circle cx="26" cy="24" r="13" fill="#2a78d6"/>
+    <circle cx="58" cy="24" r="13" fill="#1c5cab"/>
+    <circle cx="42" cy="17" r="14" fill="#116b11"/>
+    <path d="M4 67 C5 45 13 39 26 39 C31 39 35 40 39 43 C43 39 49 37 58 39 C70 41 78 49 80 67 Z" fill="#2a78d6" opacity=".95"/>
+    <path d="M19 67 C20 38 29 33 42 33 C55 33 64 38 65 67 Z" fill="#116b11"/>
+    <text x="96" y="31" class="small">Developers</text>
+    <text x="96" y="55" class="micro" fill="#5b6472">Create value</text>
+  </g>
+
+  <!-- Sprint Planning event -->
+  <g filter="url(#shadow)">
+    <rect x="449" y="89" width="196" height="62" rx="18" fill="#fff6df" stroke="#d79a2b" stroke-width="2"/>
+  </g>
+  <circle cx="478" cy="120" r="13" fill="none" stroke="#86590a" stroke-width="3"/>
+  <path d="M478 120 L478 111 M478 120 L486 124" stroke="#86590a" stroke-width="3" stroke-linecap="round"/>
+  <text x="502" y="127" class="small" fill="#86590a">Sprint Planning</text>
+  <path d="M547 151 C547 178 570 188 598 194" fill="none" stroke="#86590a" stroke-width="3" stroke-dasharray="6 7"/>
+
+  <!-- Main Sprint loop -->
+  <path d="M593 242 A188 188 0 1 1 615 493" fill="none" stroke="#d8e9fb" stroke-width="34" stroke-linecap="round"/>
+  <path d="M593 242 A188 188 0 1 1 615 493" fill="none" stroke="#2a78d6" stroke-width="7" stroke-linecap="round" marker-end="url(#arrowBlue)"/>
+  <circle cx="770" cy="354" r="126" fill="#ffffff" stroke="#b8d5f4" stroke-width="3"/>
+  <text x="770" y="311" text-anchor="middle" font-size="30" font-weight="800" fill="#1c5cab">SPRINT</text>
+  <rect x="692" y="326" width="156" height="42" rx="21" fill="#1c5cab"/>
+  <text x="770" y="354" text-anchor="middle" fill="#ffffff" class="small">1–4 weeks</text>
+
+  <!-- Daily Scrum loop -->
+  <path d="M712 401 A69 51 0 1 1 823 397" fill="none" stroke="#116b11" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowGreen)"/>
+  <path d="M823 397 A69 51 0 0 1 712 401" fill="none" stroke="#8fd18f" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowGreen)"/>
+  <circle cx="770" cy="409" r="20" fill="#e7f5e7" stroke="#116b11" stroke-width="3"/>
+  <path d="M770 409 L770 397 M770 409 L780 414" stroke="#116b11" stroke-width="3" stroke-linecap="round"/>
+  <text x="770" y="474" text-anchor="middle" class="small" fill="#116b11">Daily Scrum</text>
+
+  <!-- Review event -->
+  <g filter="url(#shadow)">
+    <rect x="894" y="104" width="190" height="62" rx="18" fill="#e8f6e8" stroke="#53a153" stroke-width="2"/>
+  </g>
+  <path d="M923 121 V149 M913 139 L923 149 L934 136" fill="none" stroke="#116b11" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="947" y="142" class="small" fill="#116b11">Sprint Review</text>
+  <path d="M942 166 C927 186 914 201 900 218" fill="none" stroke="#116b11" stroke-width="3" stroke-dasharray="6 7"/>
+
+  <!-- Retrospective event -->
+  <g filter="url(#shadow)">
+    <rect x="655" y="582" width="242" height="62" rx="18" fill="#fff6df" stroke="#d79a2b" stroke-width="2"/>
+  </g>
+  <path d="M683 614 A13 13 0 1 0 692 601" fill="none" stroke="#86590a" stroke-width="3" stroke-linecap="round"/>
+  <path d="M690 596 L693 602 L686 604" fill="none" stroke="#86590a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="711" y="620" class="small" fill="#86590a">Sprint Retrospective</text>
+  <path d="M776 582 V550" fill="none" stroke="#86590a" stroke-width="3" stroke-dasharray="6 7"/>
+
+  <!-- Increment flow and card -->
+  <path d="M963 350 H1015" class="line" marker-end="url(#arrowBlue)"/>
+  <text x="989" y="329" text-anchor="middle" class="micro" fill="#1c5cab">Done</text>
+  <g filter="url(#shadow)">
+    <rect class="card" x="1028" y="235" width="210" height="228" rx="22"/>
+  </g>
+  <rect x="1028" y="235" width="210" height="63" rx="22" fill="#116b11"/>
+  <path d="M1028 276 H1238 V298 H1028 Z" fill="#116b11"/>
+  <text x="1133" y="275" text-anchor="middle" fill="#ffffff" font-size="24" font-weight="800">Increment</text>
+  <circle cx="1133" cy="358" r="42" fill="#e7f5e7" stroke="#116b11" stroke-width="4"/>
+  <path d="M1112 358 L1127 373 L1156 342" fill="none" stroke="#116b11" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="1133" y="427" text-anchor="middle" class="small" fill="#116b11">Usable value</text>
+
+  <!-- Feedback path -->
+  <path d="M1133 480 C1133 535 1055 546 972 546 C924 546 906 530 898 509" fill="none" stroke="#116b11" stroke-width="4" stroke-dasharray="8 9" marker-end="url(#arrowGreen)"/>
+  <text x="1024" y="574" text-anchor="middle" class="micro" fill="#116b11">Inspect &amp; adapt</text>
+
+  <!-- Scrum Master role -->
+  <g transform="translate(1028 600)">
+    <circle cx="28" cy="20" r="15" fill="#86590a"/>
+    <path d="M4 69 C5 43 15 36 28 36 C41 36 51 43 52 69 Z" fill="#d79a2b"/>
+    <path d="M28 46 L20 53 L24 66 H32 L36 53 Z" fill="#fff6df"/>
+    <text x="66" y="27" class="small">Scrum Master</text>
+    <text x="66" y="51" class="micro" fill="#5b6472">Enables the team</text>
+  </g>
+</svg>

@@ -13,7 +13,6 @@ import {
   IconSkillSpace,
 } from "./ui/icons";
 
-// NEXT_PUBLIC_* ถูกฝังเป็นค่าคงที่ตั้งแต่ตอน build (ARG → ENV ใน Dockerfile)
 // ต่างจาก API_BASE_URL ที่อ่านตอนรัน — เปลี่ยนได้โดยไม่ต้อง build image ใหม่
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "SkillSpace";
 

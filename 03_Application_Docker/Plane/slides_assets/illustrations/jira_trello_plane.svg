@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Comparison of three product-tracking tools</title>
+  <desc id="desc">Three side-by-side generic app windows compare a simple visual Kanban board, an enterprise Scrum project, and an open-source self-hosted Kanban alternative.</desc>
+  <defs>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#18181b" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      text { font-family: 'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif; fill: #18181b; }
+      .window-title { font-size: 22px; font-weight: 700; }
+      .section-title { font-size: 20px; font-weight: 700; }
+      .body { font-size: 18px; font-weight: 500; }
+      .small { font-size: 18px; font-weight: 600; }
+      .caption { font-size: 21px; font-weight: 700; }
+      .muted { fill: #52525b; }
+      .white { fill: #ffffff; }
+      .panel { fill: #ffffff; stroke: #d4d4d8; stroke-width: 2; }
+      .column { fill: #f4f4f5; stroke: #e4e4e7; stroke-width: 1.5; }
+      .card { fill: #ffffff; stroke: #d4d4d8; stroke-width: 1.5; }
+      .tab { fill: #52525b; font-size: 18px; font-weight: 600; }
+      .tab.active { fill: #116b11; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+  <circle cx="75" cy="669" r="34" fill="#2a78d6" opacity="0.08"/>
+  <circle cx="1207" cy="60" r="46" fill="#116b11" opacity="0.07"/>
+
+  <!-- Left: simple board -->
+  <g aria-label="Trello-style board mockup">
+    <rect x="30" y="38" width="390" height="555" rx="18" class="panel" filter="url(#softShadow)"/>
+    <path d="M48 38h354a18 18 0 0 1 18 18v47H30V56a18 18 0 0 1 18-18z" fill="#1c5cab"/>
+    <circle cx="55" cy="70" r="6" fill="#ffffff" opacity="0.78"/>
+    <circle cx="75" cy="70" r="6" fill="#ffffff" opacity="0.55"/>
+    <circle cx="95" cy="70" r="6" fill="#ffffff" opacity="0.34"/>
+    <text x="118" y="78" class="window-title white">Trello-style board</text>
+
+    <rect x="48" y="119" width="112" height="397" rx="12" class="column"/>
+    <text x="60" y="150" class="section-title">To do</text>
+    <rect x="60" y="166" width="88" height="91" rx="9" class="card"/>
+    <rect x="70" y="179" width="40" height="8" rx="4" fill="#2a78d6"/>
+    <text x="70" y="211" class="body">Draft</text>
+    <text x="70" y="234" class="body">brief</text>
+    <circle cx="130" cy="241" r="7" fill="#2a78d6"/>
+    <rect x="60" y="269" width="88" height="114" rx="9" class="card"/>
+    <rect x="70" y="282" width="50" height="8" rx="4" fill="#86590a"/>
+    <text x="70" y="314" class="body">Plan</text>
+    <text x="70" y="337" class="body">release</text>
+    <path d="M72 360h31" stroke="#a1a1aa" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="130" cy="366" r="7" fill="#86590a"/>
+    <text x="60" y="486" class="small muted">+ Add</text>
+
+    <rect x="169" y="119" width="112" height="397" rx="12" class="column"/>
+    <text x="181" y="150" class="section-title">Doing</text>
+    <rect x="181" y="166" width="88" height="116" rx="9" class="card"/>
+    <rect x="191" y="179" width="44" height="8" rx="4" fill="#116b11"/>
+    <text x="191" y="211" class="body">Build</text>
+    <text x="191" y="234" class="body">view</text>
+    <rect x="191" y="250" width="49" height="7" rx="3.5" fill="#d4d4d8"/>
+    <circle cx="251" cy="263" r="7" fill="#116b11"/>
+    <rect x="181" y="294" width="88" height="91" rx="9" class="card"/>
+    <rect x="191" y="307" width="34" height="8" rx="4" fill="#a32222"/>
+    <text x="191" y="339" class="body">Test</text>
+    <text x="191" y="362" class="body">flow</text>
+    <text x="181" y="486" class="small muted">+ Add</text>
+
+    <rect x="290" y="119" width="112" height="397" rx="12" class="column"/>
+    <text x="302" y="150" class="section-title">Done</text>
+    <rect x="302" y="166" width="88" height="91" rx="9" class="card"/>
+    <rect x="312" y="179" width="40" height="8" rx="4" fill="#116b11"/>
+    <text x="312" y="211" class="body">Team</text>
+    <text x="312" y="234" class="body">setup</text>
+    <path d="M312 273l8 8 17-19" fill="none" stroke="#116b11" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="302" y="486" class="small muted">+ Add</text>
+
+    <rect x="48" y="530" width="188" height="42" rx="21" fill="#e8f1fc" stroke="#2a78d6" stroke-width="1.5"/>
+    <path d="M66 551h12m-6-6v12" stroke="#1c5cab" stroke-width="3" stroke-linecap="round"/>
+    <text x="88" y="558" class="small" fill="#1c5cab">Butler automation</text>
+  </g>
+
+  <!-- Middle: enterprise Scrum project -->
+  <g aria-label="Jira-style project mockup">
+    <rect x="445" y="38" width="390" height="555" rx="18" class="panel" filter="url(#softShadow)"/>
+    <path d="M463 38h354a18 18 0 0 1 18 18v47H445V56a18 18 0 0 1 18-18z" fill="#2a78d6"/>
+    <circle cx="470" cy="70" r="6" fill="#ffffff" opacity="0.78"/>
+    <circle cx="490" cy="70" r="6" fill="#ffffff" opacity="0.55"/>
+    <circle cx="510" cy="70" r="6" fill="#ffffff" opacity="0.34"/>
+    <text x="533" y="78" class="window-title white">Jira-style project</text>
+
+    <rect x="463" y="118" width="354" height="48" rx="10" fill="#eef5fd"/>
+    <text x="479" y="149" class="section-title" fill="#1c5cab">Sprint 08</text>
+    <rect x="703" y="127" width="98" height="30" rx="15" fill="#1c5cab"/>
+    <text x="719" y="149" class="small white">6 days</text>
+
+    <rect x="463" y="178" width="108" height="242" rx="11" class="column"/>
+    <text x="475" y="208" class="section-title">To do</text>
+    <rect x="475" y="224" width="84" height="84" rx="8" class="card"/>
+    <rect x="485" y="236" width="55" height="25" rx="12.5" fill="#f7e7bd"/>
+    <text x="493" y="255" class="small" fill="#86590a">Epic</text>
+    <text x="485" y="289" class="small">PROJ-12</text>
+    <rect x="475" y="319" width="84" height="84" rx="8" class="card"/>
+    <rect x="485" y="331" width="64" height="25" rx="12.5" fill="#def3de"/>
+    <text x="490" y="350" class="small" fill="#116b11">Story</text>
+    <text x="485" y="384" class="small">PROJ-18</text>
+
+    <rect x="585" y="178" width="108" height="242" rx="11" class="column"/>
+    <text x="597" y="208" class="section-title">Active</text>
+    <rect x="597" y="224" width="84" height="84" rx="8" class="card"/>
+    <rect x="607" y="236" width="58" height="25" rx="12.5" fill="#f9dddd"/>
+    <text x="617" y="255" class="small" fill="#a32222">Bug</text>
+    <text x="607" y="289" class="small">PROJ-21</text>
+    <rect x="597" y="319" width="84" height="84" rx="8" class="card"/>
+    <rect x="607" y="331" width="64" height="25" rx="12.5" fill="#def3de"/>
+    <text x="612" y="350" class="small" fill="#116b11">Story</text>
+    <text x="607" y="384" class="small">PROJ-25</text>
+
+    <rect x="707" y="178" width="110" height="242" rx="11" class="column"/>
+    <text x="719" y="208" class="section-title">Done</text>
+    <rect x="719" y="224" width="86" height="84" rx="8" class="card"/>
+    <rect x="729" y="236" width="64" height="25" rx="12.5" fill="#def3de"/>
+    <text x="734" y="255" class="small" fill="#116b11">Story</text>
+    <text x="729" y="289" class="small">PROJ-09</text>
+    <path d="M731 333l8 8 17-19" fill="none" stroke="#116b11" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="463" y="435" width="354" height="137" rx="12" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.5"/>
+    <text x="479" y="466" class="section-title">Burndown</text>
+    <text x="716" y="466" class="small muted">18 → 5</text>
+    <path d="M487 546V484M487 546H793" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round"/>
+    <path d="M493 490L552 503L611 505L670 526L730 531L787 541" fill="none" stroke="#a32222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M493 490L787 541" fill="none" stroke="#2a78d6" stroke-width="2" stroke-dasharray="7 7"/>
+    <circle cx="493" cy="490" r="4.5" fill="#a32222"/><circle cx="552" cy="503" r="4.5" fill="#a32222"/><circle cx="611" cy="505" r="4.5" fill="#a32222"/><circle cx="670" cy="526" r="4.5" fill="#a32222"/><circle cx="730" cy="531" r="4.5" fill="#a32222"/><circle cx="787" cy="541" r="4.5" fill="#a32222"/>
+  </g>
+
+  <!-- Right: open-source self-hosted board -->
+  <g aria-label="Plane open-source self-hosted mockup">
+    <rect x="860" y="38" width="390" height="555" rx="18" class="panel" filter="url(#softShadow)"/>
+    <path d="M878 38h354a18 18 0 0 1 18 18v47H860V56a18 18 0 0 1 18-18z" fill="#116b11"/>
+    <circle cx="885" cy="70" r="6" fill="#ffffff" opacity="0.78"/>
+    <circle cx="905" cy="70" r="6" fill="#ffffff" opacity="0.55"/>
+    <circle cx="925" cy="70" r="6" fill="#ffffff" opacity="0.34"/>
+    <text x="948" y="66" class="window-title white">Plane (open-source,</text>
+    <text x="948" y="89" class="window-title white">self-hosted)</text>
+
+    <g aria-label="Navigation tabs">
+      <text x="878" y="137" class="tab active">Modules</text>
+      <text x="970" y="137" class="tab">Pages</text>
+      <text x="1042" y="137" class="tab">Analytics</text>
+      <path d="M878 149h76" stroke="#116b11" stroke-width="4" stroke-linecap="round"/>
+    </g>
+
+    <rect x="878" y="164" width="354" height="48" rx="10" fill="#e8f5e8"/>
+    <text x="894" y="195" class="section-title" fill="#116b11">Cycle 1</text>
+    <text x="1126" y="195" class="small muted">12 issues</text>
+
+    <rect x="878" y="224" width="108" height="276" rx="11" class="column"/>
+    <text x="890" y="254" class="section-title">Backlog</text>
+    <rect x="890" y="270" width="84" height="91" rx="8" class="card"/>
+    <rect x="900" y="283" width="42" height="8" rx="4" fill="#2a78d6"/>
+    <text x="900" y="316" class="body">Import</text>
+    <text x="900" y="339" class="body">data</text>
+    <rect x="890" y="373" width="84" height="91" rx="8" class="card"/>
+    <rect x="900" y="386" width="36" height="8" rx="4" fill="#86590a"/>
+    <text x="900" y="419" class="body">Map</text>
+    <text x="900" y="442" class="body">roles</text>
+
+    <rect x="1000" y="224" width="108" height="276" rx="11" class="column"/>
+    <text x="1012" y="254" class="section-title">Started</text>
+    <rect x="1012" y="270" width="84" height="91" rx="8" class="card"/>
+    <rect x="1022" y="283" width="43" height="8" rx="4" fill="#116b11"/>
+    <text x="1022" y="316" class="body">Build</text>
+    <text x="1022" y="339" class="body">API</text>
+    <rect x="1012" y="373" width="84" height="91" rx="8" class="card"/>
+    <rect x="1022" y="386" width="38" height="8" rx="4" fill="#a32222"/>
+    <text x="1022" y="419" class="body">Fix</text>
+    <text x="1022" y="442" class="body">sync</text>
+
+    <rect x="1122" y="224" width="110" height="276" rx="11" class="column"/>
+    <text x="1134" y="254" class="section-title">Done</text>
+    <rect x="1134" y="270" width="86" height="91" rx="8" class="card"/>
+    <rect x="1144" y="283" width="41" height="8" rx="4" fill="#116b11"/>
+    <text x="1144" y="316" class="body">Setup</text>
+    <text x="1144" y="339" class="body">Docker</text>
+    <path d="M1145 384l8 8 17-19" fill="none" stroke="#116b11" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="878" y="516" width="190" height="42" rx="21" fill="#e8f5e8" stroke="#116b11" stroke-width="1.5"/>
+    <path d="M895 531h12v12h-12zM908 537h8" fill="none" stroke="#116b11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="926" y="544" class="small" fill="#116b11">API / Webhooks</text>
+    <rect x="1082" y="516" width="150" height="42" rx="21" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.5"/>
+    <circle cx="1101" cy="537" r="7" fill="#116b11"/>
+    <text x="1116" y="544" class="small muted">Self-hosted</text>
+  </g>
+
+  <!-- Caption row -->
+  <g aria-label="Comparison captions">
+    <rect x="30" y="620" width="390" height="72" rx="14" fill="#eef5fd"/>
+    <circle cx="60" cy="656" r="8" fill="#1c5cab"/>
+    <text x="80" y="664" class="caption">Simple visual Kanban</text>
+
+    <rect x="445" y="620" width="390" height="72" rx="14" fill="#fff7e6"/>
+    <circle cx="475" cy="656" r="8" fill="#86590a"/>
+    <text x="495" y="664" class="caption">Enterprise Agile tracking</text>
+
+    <rect x="860" y="610" width="390" height="92" rx="14" fill="#e8f5e8"/>
+    <circle cx="890" cy="656" r="8" fill="#116b11"/>
+    <text x="910" y="646" class="caption">Open-source Jira alternative</text>
+    <text x="910" y="674" class="caption">you can run in Docker</text>
+  </g>
+</svg>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Roles of applications across the software development life cycle</title>
+  <desc id="desc">A project management and tracking application spans six connected SDLC phases: Requirements, Design, Implementation, Testing, Deployment, and Maintenance. Each phase lists two supporting application categories.</desc>
+
+  <defs>
+    <filter id="softShadow" x="-15%" y="-20%" width="130%" height="150%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#18181b" flood-opacity="0.10"/>
+    </filter>
+    <filter id="tileShadow" x="-15%" y="-20%" width="130%" height="150%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#18181b" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+
+  <!-- Cross-phase project management application -->
+  <rect x="40" y="34" width="1200" height="96" rx="22" fill="#ffffff" stroke="#1c5cab" stroke-width="2" filter="url(#softShadow)"/>
+  <rect x="58" y="52" width="60" height="60" rx="16" fill="#e8f1fc"/>
+  <g fill="none" stroke="#1c5cab" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="73" y="65" width="30" height="34" rx="4"/>
+    <path d="M81 65v-4h14v4M80 77h16M80 86h11"/>
+    <path d="M68 76h-3v30h30v-3"/>
+  </g>
+  <text x="138" y="75" fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="24" font-weight="700">Project management &amp; tracking app (Plane / Jira / Trello)</text>
+  <text x="138" y="104" fill="#52525b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="19" font-weight="500">— single source of truth across all phases</text>
+
+  <!-- Connectors from the shared application layer to every phase -->
+  <g fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round">
+    <path d="M138 130V171"/>
+    <path d="M334 130V171"/>
+    <path d="M530 130V171"/>
+    <path d="M726 130V171"/>
+    <path d="M922 130V171"/>
+    <path d="M1118 130V171"/>
+  </g>
+  <g fill="#ffffff" stroke="#1c5cab" stroke-width="2">
+    <circle cx="138" cy="171" r="5"/>
+    <circle cx="334" cy="171" r="5"/>
+    <circle cx="530" cy="171" r="5"/>
+    <circle cx="726" cy="171" r="5"/>
+    <circle cx="922" cy="171" r="5"/>
+    <circle cx="1118" cy="171" r="5"/>
+  </g>
+
+  <!-- Connected SDLC chevrons -->
+  <g filter="url(#softShadow)">
+    <path d="M40 184H236L260 239L236 294H40Z" fill="#1c5cab"/>
+    <path d="M236 184H432L456 239L432 294H236L260 239Z" fill="#2a78d6"/>
+    <path d="M432 184H628L652 239L628 294H432L456 239Z" fill="#116b11"/>
+    <path d="M628 184H824L848 239L824 294H628L652 239Z" fill="#86590a"/>
+    <path d="M824 184H1020L1044 239L1020 294H824L848 239Z" fill="#a32222"/>
+    <path d="M1020 184H1216L1240 239L1216 294H1020L1044 239Z" fill="#3f3f46"/>
+  </g>
+  <g fill="#ffffff" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="22" font-weight="700" text-anchor="middle">
+    <text x="140" y="247">Requirements</text>
+    <text x="336" y="247">Design</text>
+    <text x="532" y="247">Implementation</text>
+    <text x="728" y="247">Testing</text>
+    <text x="924" y="247">Deployment</text>
+    <text x="1120" y="247">Maintenance</text>
+  </g>
+
+  <!-- Column guides -->
+  <g stroke="#d4d4d8" stroke-width="2" stroke-linecap="round">
+    <path d="M140 305V319"/><path d="M336 305V319"/><path d="M532 305V319"/>
+    <path d="M728 305V319"/><path d="M924 305V319"/><path d="M1120 305V319"/>
+  </g>
+
+  <!-- Requirements tools -->
+  <g filter="url(#tileShadow)">
+    <rect x="52" y="326" width="176" height="96" rx="16" fill="#ffffff" stroke="#b8d2f2" stroke-width="2"/>
+    <rect x="52" y="438" width="176" height="96" rx="16" fill="#ffffff" stroke="#b8d2f2" stroke-width="2"/>
+  </g>
+  <g fill="none" stroke="#1c5cab" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="69" y="354" width="32" height="28" rx="5"/>
+    <path d="M77 361h16M77 369h11M77 382l-5 7v-7"/>
+    <path d="M72 466h27a4 4 0 0 1 4 4v29H76a4 4 0 0 0-4 4Z"/>
+    <path d="M72 466v33M80 475h15M80 483h15"/>
+  </g>
+  <g fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" font-weight="600">
+    <text x="113" y="375">Issue tracker</text>
+    <text x="113" y="491">Docs/Wiki</text>
+  </g>
+
+  <!-- Design tools -->
+  <g filter="url(#tileShadow)">
+    <rect x="248" y="326" width="176" height="96" rx="16" fill="#ffffff" stroke="#b8d2f2" stroke-width="2"/>
+    <rect x="248" y="438" width="176" height="96" rx="16" fill="#ffffff" stroke="#b8d2f2" stroke-width="2"/>
+  </g>
+  <g fill="none" stroke="#2a78d6" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="264" y="353" width="15" height="13" rx="3"/><rect x="294" y="353" width="15" height="13" rx="3"/><rect x="279" y="380" width="15" height="13" rx="3"/>
+    <path d="M279 359h15M286.5 366v14"/>
+    <rect x="264" y="463" width="39" height="34" rx="5"/>
+    <path d="M271 470h25v20h-25Z"/><circle cx="276" cy="475" r="1.5" fill="#2a78d6" stroke="none"/><path d="m273 487 6-6 4 4 5-5 6 7"/>
+  </g>
+  <g fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" font-weight="600">
+    <text x="319" y="375">Diagrams</text>
+    <text x="313" y="491">Prototyping</text>
+  </g>
+
+  <!-- Implementation tools -->
+  <g filter="url(#tileShadow)">
+    <rect x="444" y="326" width="176" height="96" rx="16" fill="#ffffff" stroke="#b7d8b7" stroke-width="2"/>
+    <rect x="444" y="438" width="176" height="96" rx="16" fill="#ffffff" stroke="#b7d8b7" stroke-width="2"/>
+  </g>
+  <g fill="none" stroke="#116b11" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="461" y="351" width="39" height="34" rx="5"/>
+    <path d="m476 360-7 8 7 8M485 360l7 8-7 8M482 357l-4 22"/>
+    <circle cx="468" cy="475" r="5"/><circle cx="494" cy="466" r="5"/><circle cx="494" cy="493" r="5"/>
+    <path d="M473 475h9a12 12 0 0 0 12-9M473 475h9a12 12 0 0 1 12 18"/>
+  </g>
+  <g fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" font-weight="600">
+    <text x="514" y="375">IDE</text>
+    <text x="512" y="485">Git / GitHub</text>
+  </g>
+
+  <!-- Testing tools -->
+  <g filter="url(#tileShadow)">
+    <rect x="640" y="326" width="176" height="96" rx="16" fill="#ffffff" stroke="#e0c690" stroke-width="2"/>
+    <rect x="640" y="438" width="176" height="96" rx="16" fill="#ffffff" stroke="#e0c690" stroke-width="2"/>
+  </g>
+  <g fill="none" stroke="#86590a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M665 352h26M672 352v10l-9 18a5 5 0 0 0 4 7h22a5 5 0 0 0 4-7l-9-18v-10"/>
+    <path d="M668 376h20M673 371h10"/>
+    <circle cx="678" cy="486" r="16"/>
+    <path d="m670 486 6 6 11-13M695 470l5-5M699 477h7"/>
+  </g>
+  <g fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" font-weight="600">
+    <text x="705" y="375">Test runner</text>
+    <text x="706" y="492">CI</text>
+  </g>
+
+  <!-- Deployment tools -->
+  <g filter="url(#tileShadow)">
+    <rect x="836" y="326" width="176" height="96" rx="16" fill="#ffffff" stroke="#e6b6b6" stroke-width="2"/>
+    <rect x="836" y="438" width="176" height="96" rx="16" fill="#ffffff" stroke="#e6b6b6" stroke-width="2"/>
+  </g>
+  <g fill="none" stroke="#a32222" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M854 368h35c-1 10-7 17-18 17-10 0-16-5-17-13Z"/>
+    <path d="M860 359h8v8h-8zM870 359h8v8h-8zM880 359h8v8h-8zM870 350h8v8h-8z"/>
+    <path d="M889 366c4-1 6-3 7-6 3 4 2 9-3 11"/>
+    <rect x="854" y="465" width="22" height="15" rx="3"/><rect x="883" y="489" width="22" height="15" rx="3"/>
+    <path d="M876 472h11a7 7 0 0 1 7 7v10M890 484l4 5 5-5"/>
+  </g>
+  <g fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" font-weight="600">
+    <text x="908" y="375">Docker</text>
+    <text x="914" y="480">CD pipeline</text>
+  </g>
+
+  <!-- Maintenance tools -->
+  <g filter="url(#tileShadow)">
+    <rect x="1032" y="326" width="176" height="96" rx="16" fill="#ffffff" stroke="#cfcfd3" stroke-width="2"/>
+    <rect x="1032" y="438" width="176" height="96" rx="16" fill="#ffffff" stroke="#cfcfd3" stroke-width="2"/>
+  </g>
+  <g fill="none" stroke="#52525b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="1049" y="351" width="39" height="34" rx="5"/>
+    <path d="M1055 375h6l4-12 6 18 5-10h6"/>
+    <path d="M1051 469h35a4 4 0 0 1 4 4v22a4 4 0 0 1-4 4h-20l-9 7v-7h-6a4 4 0 0 1-4-4v-22a4 4 0 0 1 4-4Z"/>
+    <path d="M1056 478h25M1056 487h18"/>
+  </g>
+  <g fill="#18181b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" font-weight="600">
+    <text x="1097" y="375">Monitoring</text>
+    <text x="1099" y="480">Support</text>
+    <text x="1099" y="501">tickets</text>
+  </g>
+
+  <!-- Visual baseline -->
+  <path d="M52 574H1208" fill="none" stroke="#e4e4e7" stroke-width="2"/>
+  <g fill="#52525b" font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif" font-size="18" text-anchor="middle">
+    <text x="640" y="614">Specialized applications support each task; shared tracking keeps the lifecycle connected.</text>
+  </g>
+</svg>
