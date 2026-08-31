@@ -1220,6 +1220,37 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
   <div class="s-foot"><span>LAB 001 · ขอบเขตสถาปัตยกรรม</span><span class="pg"></span></div>
 </section></div>
 
+<!-- ===== 46 : §5 divider ===== -->
+<div class="slot" data-sec="5"><section class="slide section">
+  <div class="s-body">
+    <div class="num-big">05</div>
+    <h1>LAB 002 — Docker Compose</h1>
+    <div class="m">ประกอบ <code>web</code> · <code>api</code> · <code>db</code> เป็นระบบเดียว<br>
+      <span style="font-size:16px">เปิดระบบ → ทดลองงานซ่อม → ตรวจ Loans และ Parts → พิสูจน์ persistence · 10 การทดลอง</span></div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 5 · LAB 002 · NFR-1/2/3</span><span class="pg"></span></div>
+</section></div>
+
+<!-- ===== 47 : LAB 002 quick start ===== -->
+<div class="slot"><section class="slide figs">
+  <div class="s-head"><div class="eyebrow">LAB 002 · QUICK START</div><h2>เปิดระบบหนึ่งคำสั่ง แล้วเดินงานซ่อมให้ครบหนึ่งรอบ</h2>
+    <div class="sub">สไลด์ให้ภาพรวมเท่านั้น · ขั้นตอนพร้อมภาพผลลัพธ์อยู่ใน README ของ LAB 002</div></div>
+  <div class="s-body top">
+    <div class="grid2" style="grid-template-columns:.85fr 1.15fr; align-items:start">
+      <div>
+        <div class="flow" style="display:block">
+          <div class="b a" style="margin-bottom:10px"><div class="t">1 · เปิดระบบ</div><div class="s"><code>docker compose up -d --build</code></div></div>
+          <div class="b k" style="margin-bottom:10px"><div class="t">2 · ทดลอง User Flow</div><div class="s">Overview → Tickets → Create → Assign → Repair → Close</div></div>
+          <div class="b w"><div class="t">3 · ตรวจผล</div><div class="s">Loans · Parts · Persistence · <code>bash verify.sh</code></div></div>
+        </div>
+        <div class="note a" style="margin-top:12px"><b>คู่มือปฏิบัติ:</b> <code>002_LAB_Docker_Compose/readme.md</code></div>
+      </div>
+      <div class="fig shot fix" style="height:365px"><img data-a="ui_web_01" alt="หน้า Overview ของ SkillSpace หลังเปิดระบบด้วย Docker Compose"></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>LAB 002 · web + api + PostgreSQL · Docker Compose</span><span class="pg"></span></div>
+</section></div>
+
 </div><!-- /stage -->
 
 <div id="bar"><i></i></div>
@@ -1406,7 +1437,8 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
     '1': {t:'โจทย์จากลูกค้า', d:'ลูกค้าคือใคร · วันนี้ทำงานอย่างไร · ประโยคเด็ดจากบทสัมภาษณ์ · ข้อจำกัด 3 ข้อ'},
     '2': {t:'จากคำบ่นสู่ข้อกำหนด', d:'User Story 10 ข้อ → FR-01…FR-12 + คำสัญญา NFR 3 ข้อ · ขอบเขตที่ไม่ทำ'},
     '3': {t:'User Flow → System Architecture → System Design', d:'หน้าจอจริงทีละ State · request path ผ่าน web/api/db · API contract · state machine · ฐานข้อมูล 5 ตาราง'},
-    '4': {t:'LAB 001 — PostgreSQL และ Python', d:'สร้างฐานข้อมูล · เชื่อมต่อ · สำรวจห้าตาราง · cleanup'}
+    '4': {t:'LAB 001 — PostgreSQL และ Python', d:'สร้างฐานข้อมูล · เชื่อมต่อ · สำรวจห้าตาราง · cleanup'},
+    '5': {t:'LAB 002 — Docker Compose', d:'เปิด web, api และ db พร้อมกัน · ทดลอง User Flow · ตรวจ persistence และผลอัตโนมัติ'}
   };
   var starts = [{sec:'0', at:0}];
   slots.forEach(function(s, k){
