@@ -32,29 +32,31 @@ async function markAndCapture(page, step, label, locators, output) {
           top: `${Math.max(4, box.y - 5)}px`,
           width: `${Math.min(innerWidth - box.x - 8, box.width + 10)}px`,
           height: `${Math.min(innerHeight - box.y - 8, box.height + 10)}px`,
-          border: "4px solid #ef3340",
+          border: "3px solid #ef3340",
           borderRadius: "10px",
-          boxShadow: "0 0 0 3px rgba(255,255,255,.92), 0 12px 28px rgba(15,23,42,.32)",
+          boxShadow: "0 0 0 3px rgba(255,255,255,.96)",
         });
         layer.appendChild(frame);
       });
 
       const first = boxes[0];
+      // วงหมายเลขเล็กพอให้หาจุดคลิกเจอ แต่ไม่บังข้อความ/ข้อมูลเหมือน callout ขนาดใหญ่
       const badge = document.createElement("div");
-      badge.textContent = `${step} ${label}`;
-      const badgeTop = first.y > 62 ? first.y - 54 : first.y + first.height + 16;
+      badge.textContent = step;
       Object.assign(badge.style, {
         position: "absolute",
-        left: `${Math.min(Math.max(16, first.x), innerWidth - 360)}px`,
-        top: `${Math.min(Math.max(12, badgeTop), innerHeight - 54)}px`,
-        padding: "9px 14px",
+        left: `${Math.max(8, first.x - 16)}px`,
+        top: `${Math.max(8, first.y - 16)}px`,
+        display: "grid",
+        placeItems: "center",
+        width: "34px",
+        height: "34px",
         color: "#fff",
-        background: "#111827",
-        borderLeft: "8px solid #ef3340",
-        borderRadius: "7px",
-        boxShadow: "0 8px 24px rgba(15,23,42,.34)",
-        font: "700 21px/1.2 system-ui, sans-serif",
-        whiteSpace: "nowrap",
+        background: "#ef3340",
+        border: "3px solid #fff",
+        borderRadius: "999px",
+        boxShadow: "0 4px 12px rgba(15,23,42,.28)",
+        font: "800 18px/1 system-ui, sans-serif",
       });
       layer.appendChild(badge);
       document.body.appendChild(layer);
@@ -62,11 +64,12 @@ async function markAndCapture(page, step, label, locators, output) {
     { boxes, step, label },
   );
 
-  await page.screenshot({ path: output, animations: "disabled" });
+  await page.screenshot({ path: output, animations: "disabled", scale: "device" });
 }
 
 test("บันทึก walkthrough Web UI ครบ 10 ขั้น", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+  // 16:9 ตรงกับสไลด์ ทำให้ภาพกว้างขึ้น อ่านง่าย และเห็นเนื้อหาด้านล่างได้มากกว่าเดิม
+  await page.setViewportSize({ width: 1920, height: 1080 });
   await page.goto(baseURL, { waitUntil: "networkidle" });
 
   const overviewLink = page.locator('aside nav a[href="/"]');

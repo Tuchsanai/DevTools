@@ -60,7 +60,7 @@
     <path d="M 380 327 L 422 327" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>
     <rect x="424" y="306" width="352" height="42" rx="6" fill="#f6f8fa" stroke="#9aa5b1"/>
     <text x="436" y="324" fill="#1c4f80" font-weight="bold">build: &gt; args:</text>
-    <text x="436" y="341" fill="#52606d">NEXT_PUBLIC_SITE_NAME: CampusOps</text>
+    <text x="436" y="341" fill="#52606d">NEXT_PUBLIC_SITE_NAME: SkillSpace</text>
 
     <rect x="24" y="354" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
     <text x="36" y="372" fill="#a35a10" font-weight="bold">LAB 4</text>

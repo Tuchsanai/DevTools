@@ -17,9 +17,8 @@ async function addMarker(page, label, step, caption) {
       marker.id = "lab004-marker";
       marker.setAttribute("aria-hidden", "true");
       marker.innerHTML = `
-        <div style="position:fixed;left:${box.x - 6}px;top:${box.y - 6}px;width:${box.width + 12}px;height:${box.height + 12}px;border:5px solid #ef174b;border-radius:13px;box-sizing:border-box"></div>
-        <div style="position:fixed;left:${box.x + box.width + 24}px;top:${box.y + box.height / 2 - 24}px;background:#182238;color:#fff;padding:10px 16px;border-radius:9px;font:24px/1.2 Tahoma,sans-serif;white-space:nowrap;box-shadow:0 2px 8px #0004">${step} ${caption}</div>
-        <div style="position:fixed;left:${box.x + box.width - 8}px;top:${box.y + box.height / 2 - 2}px;width:36px;height:4px;background:#ef174b;transform:rotate(-8deg);transform-origin:left center"></div>
+        <div style="position:fixed;left:${box.x - 5}px;top:${box.y - 5}px;width:${box.width + 10}px;height:${box.height + 10}px;border:3px solid #ef3340;border-radius:11px;box-sizing:border-box;box-shadow:0 0 0 3px #fff"></div>
+        <div style="position:fixed;left:${Math.max(8, box.x - 16)}px;top:${Math.max(8, box.y - 16)}px;width:34px;height:34px;display:grid;place-items:center;background:#ef3340;color:#fff;border:3px solid #fff;border-radius:999px;font:800 18px/1 Tahoma,sans-serif;box-shadow:0 4px 12px #0f172a48">${step}</div>
       `;
       marker.style.cssText = "position:fixed;inset:0;z-index:2147483647;pointer-events:none";
       document.body.appendChild(marker);
@@ -38,7 +37,7 @@ async function capture(page, route, menu, step, caption, filename) {
 }
 
 test("บันทึก UI walkthrough พร้อม Marker", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.setViewportSize({ width: 1920, height: 1080 });
   await capture(page, "/", "สรุปภาพรวม", "①", "คลิกสรุปภาพรวม", "ui-net-01-overview.png");
   await capture(page, "/", "กระดานงานซ่อม", "②", "คลิกกระดานงานซ่อม", "ui-net-02-tickets.png");
   await capture(page, "/tickets", "ยืม-คืนครุภัณฑ์", "③", "คลิกยืม-คืนครุภัณฑ์", "ui-net-03-loans.png");

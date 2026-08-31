@@ -6,11 +6,11 @@ import { apiGet, type Dashboard } from "./lib/api";
 import {
   IconAlert,
   IconBoard,
-  IconBuilding,
   IconCheck,
   IconLoan,
   IconOverview,
   IconParts,
+  IconSkillSpace,
 } from "./ui/icons";
 
 // NEXT_PUBLIC_* ถูกฝังเป็นค่าคงที่ตั้งแต่ตอน build (ARG → ENV ใน Dockerfile)
@@ -77,20 +77,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-screen font-sans">
         <div className="flex min-h-screen">
           {/* ============ แถบนำทางถาวรด้านซ้าย ============ */}
-          <aside className="sticky top-0 hidden h-screen w-[248px] shrink-0 flex-col bg-rail lg:flex">
+          <aside className="sticky top-0 hidden h-screen w-[264px] shrink-0 flex-col overflow-hidden bg-rail lg:flex">
             <Link
               href="/"
-              className="flex items-center gap-3 border-b border-rail-2 px-6 py-4 transition-colors hover:bg-rail-2"
+              className="group relative flex items-center gap-3 border-b border-rail-2 px-6 py-5 transition-colors hover:bg-rail-2"
             >
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[4px] bg-white text-rail">
-                <IconBuilding className="h-5 w-5" />
+              <span className="absolute inset-x-0 top-0 h-1 bg-accent-2" aria-hidden="true" />
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] bg-accent text-white transition-colors group-hover:bg-accent-2">
+                <IconSkillSpace className="h-6 w-6" />
               </span>
               <span className="min-w-0 leading-[1.4]">
-                <span className="block text-[15px] font-bold tracking-tight text-white">
+                <span className="block text-[17px] font-bold tracking-tight text-white">
                   {SITE_NAME}
                 </span>
                 <span className="block truncate text-[12px] text-zinc-400">
-                  SkillSpace Services
+                  Learning Operations
                 </span>
               </span>
             </Link>
@@ -108,10 +109,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         href={item.href}
                         aria-current={active ? "page" : undefined}
                         className={[
-                          "flex items-center gap-3 rounded-[4px] px-3 py-2 transition-colors",
+                          "flex items-center gap-3 rounded-[8px] border px-3 py-2.5 transition-colors",
                           active
-                            ? "bg-card text-ink"
-                            : "text-zinc-400 hover:bg-rail-2 hover:text-white",
+                            ? "border-white bg-card text-ink"
+                            : "border-transparent text-zinc-400 hover:border-rail-3 hover:bg-rail-2 hover:text-white",
                         ].join(" ")}
                       >
                         <item.Icon className="h-[18px] w-[18px] shrink-0" />
@@ -147,7 +148,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               </ul>
             </nav>
 
-            <div className="border-t border-rail-2 px-6 py-3">
+            <div className="border-t border-rail-2 px-6 py-4">
+              <div className="mb-3 flex items-center justify-between text-[11px] font-semibold tracking-[0.08em] text-zinc-400">
+                <span>SKILLSPACE SERVICES</span>
+                <span className="rounded-full border border-rail-3 px-2 py-0.5 text-zinc-300">3 สาขา</span>
+              </div>
               <p className="flex items-center gap-2 text-[13px] leading-[1.5] text-zinc-400">
                 <span
                   className={`h-1.5 w-1.5 shrink-0 rounded-full ${
@@ -180,10 +185,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
             {/* แถบบน 48px — ซ้ายบอกความสดของข้อมูล ขวาเหลือเฉพาะ "สัญญาณที่ต้องลงมือ" สองตัว
                 (ไม่ใช่ตัวเลขทั้งสี่ตัว เพราะจะไปซ้ำกับ hero ของหน้าสรุป) */}
-            <div className="hidden h-12 shrink-0 items-center justify-between border-b border-rule bg-card px-6 lg:flex">
-              <p className="text-[13px] text-ink-3">
-                ข้อมูล ณ <span className="num font-medium text-ink-2">{stamp} น.</span>
-              </p>
+            <div className="hidden h-14 shrink-0 items-center justify-between border-b border-rule bg-card px-8 lg:flex">
+              <div className="flex items-center gap-3 text-[13px]">
+                <span className="font-semibold tracking-[0.08em] text-ink">OPERATIONS CONSOLE</span>
+                <span className="h-4 w-px bg-rule-strong" aria-hidden="true" />
+                <span className="text-ink-3">
+                  ข้อมูล ณ <span className="num font-medium text-ink-2">{stamp} น.</span>
+                </span>
+              </div>
               <div className="flex items-center gap-2">
                 <AlertLink
                   href="/tickets"
@@ -202,9 +211,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               </div>
             </div>
 
-            <main className="mx-auto w-full max-w-[88rem] flex-1 px-6 py-4">{children}</main>
+            <main className="mx-auto w-full max-w-[92rem] flex-1 px-6 py-5 lg:px-8">{children}</main>
 
-            <footer className="mx-auto w-full max-w-[88rem] px-6 pb-4">
+            <footer className="mx-auto w-full max-w-[92rem] px-6 pb-5 lg:px-8">
               <p className="border-t border-rule pt-3 text-[13px] text-ink-3">
                 {SITE_NAME} · ทุกการกดปุ่มคือ form POST ที่ประมวลผลฝั่งเซิร์ฟเวอร์ ·
                 หน้าเว็บคุยกับบริการเบื้องหลังผ่านเครือข่ายภายในของ Docker เท่านั้น

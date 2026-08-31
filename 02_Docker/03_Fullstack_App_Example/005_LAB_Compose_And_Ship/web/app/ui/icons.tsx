@@ -118,12 +118,11 @@ export const IconArrow = icon(
 
 export const IconChevron = icon(<path d="m9 5 7 7-7 7" />);
 
-/** อาคาร — โลโก้ของระบบในแถบนำทาง */
-export const IconBuilding = icon(
+/** ชั้นของพื้นที่เรียนรู้ 3 ระดับ — brand mark ของ SkillSpace */
+export const IconSkillSpace = icon(
   <>
-    <path d="M3 20h18" />
-    <path d="M6 20V9l6-4.5L18 9v11" />
-    <path d="M10 20v-4.5h4V20" />
-    <path d="M10 11h.01M14 11h.01" />
+    <path d="m12 3 7 4-7 4-7-4z" />
+    <path d="m5 12 7 4 7-4" />
+    <path d="m5 17 7 4 7-4" />
   </>,
 );

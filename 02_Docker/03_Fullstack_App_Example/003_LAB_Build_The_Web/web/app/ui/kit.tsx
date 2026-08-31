@@ -5,7 +5,7 @@
  * กติกาของระบบออกแบบ (ค่าตัวแปรทั้งหมดอยู่ใน globals.css ที่เดียว)
  *   สเกลระยะ   4 · 8 · 12 · 16 · 24 · 32 · 48 เท่านั้น
  *   สเกลอักษร  11 · 12 · 13 · 14 · 15 · 17 · 22 · 28 · 48 เท่านั้น (9 ขั้น)
- *   มุมโค้ง    2px (ป้าย) · 4px (ช่องกรอก ปุ่ม แผง ตาราง) — สองค่า ไม่มีที่สาม
+ *   มุมโค้ง    4px (ป้าย) · 8px (ช่องกรอก/ปุ่ม) · 10px (แผง) — ตามลำดับชั้นของพื้นที่
  *   เส้น       1px ทุกที่ · 2px เฉพาะใต้ header ของหน้า และเส้นบนแถวรวมของตาราง
  *   เงา        ไม่มีทั้งระบบ — ยกระดับด้วยเส้นและระนาบพื้นผิวเท่านั้น
  */
@@ -96,7 +96,7 @@ export function PageHead({
   );
 }
 
-/** แผงข้อมูล — ขอบ 1px ไม่มีเงา · hover ที่การ์ดคือขอบเข้มขึ้นเท่านั้น */
+/** แผงข้อมูล — ขอบ 1px ไม่มีเงา เพื่อให้กลมกลืนกับภาษาภาพของสไลด์ */
 export function Panel({
   children,
   className = "",
@@ -105,7 +105,7 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={`rounded border border-rule bg-card ${className}`}>{children}</section>
+    <section className={`rounded-[10px] border border-rule bg-card ${className}`}>{children}</section>
   );
 }
 
@@ -205,7 +205,7 @@ export function Badge({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-[2px] border px-1.5 py-[1px] text-[12px] leading-[1.5] font-medium whitespace-nowrap ${TONE_CLASS[tone]} ${className}`}
+      className={`inline-flex items-center gap-1 rounded-[4px] border px-1.5 py-[1px] text-[12px] leading-[1.5] font-medium whitespace-nowrap ${TONE_CLASS[tone]} ${className}`}
     >
       {icon ? <span className="shrink-0">{icon}</span> : null}
       {children}
@@ -310,19 +310,19 @@ export function AssetBadge({ status }: { status: Asset["status"] }) {
 export const labelClass = "mb-1 block text-[11px] font-semibold tracking-[0.12em] text-ink-3";
 
 export const inputClass =
-  "h-9 w-full rounded border border-rule-strong bg-card px-2.5 text-[14px] text-ink outline-none transition-colors placeholder:text-ink-3 hover:border-zinc-400 focus:border-accent";
+  "h-9 w-full rounded-[8px] border border-rule-strong bg-card px-2.5 text-[14px] text-ink outline-none transition-colors placeholder:text-ink-3 hover:border-zinc-400 focus:border-accent";
 
 export const buttonClass =
-  "inline-flex h-9 items-center justify-center gap-1.5 rounded border border-accent bg-accent px-4 text-[14px] font-semibold text-white transition-colors hover:border-ink hover:bg-ink";
+  "inline-flex h-9 items-center justify-center gap-1.5 rounded-[8px] border border-accent bg-accent px-4 text-[14px] font-semibold text-white transition-colors hover:border-ink hover:bg-ink";
 
 export const ghostButtonClass =
-  "inline-flex h-9 items-center justify-center gap-1.5 rounded border border-rule-strong bg-card px-3 text-[14px] font-medium text-ink-2 transition-colors hover:bg-wash hover:text-ink";
+  "inline-flex h-9 items-center justify-center gap-1.5 rounded-[8px] border border-rule-strong bg-card px-3 text-[14px] font-medium text-ink-2 transition-colors hover:bg-wash hover:text-ink";
 
 export const smallButtonClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded border border-accent bg-accent px-3 text-[13px] font-semibold text-white transition-colors hover:border-ink hover:bg-ink";
+  "inline-flex h-8 items-center justify-center gap-1.5 rounded-[8px] border border-accent bg-accent px-3 text-[13px] font-semibold text-white transition-colors hover:border-ink hover:bg-ink";
 
 export const smallGhostClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded border border-rule-strong bg-card px-2.5 text-[13px] font-medium text-ink-2 transition-colors hover:bg-wash hover:text-ink";
+  "inline-flex h-8 items-center justify-center gap-1.5 rounded-[8px] border border-rule-strong bg-card px-2.5 text-[13px] font-medium text-ink-2 transition-colors hover:bg-wash hover:text-ink";
 
 /* ==================================================================
    5. ตาราง — คลาสร่วม (หัวคอลัมน์เป็น eyebrow · ตัวเลขชิดขวาเสมอ)

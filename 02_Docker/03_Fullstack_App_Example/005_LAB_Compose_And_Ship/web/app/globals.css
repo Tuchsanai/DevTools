@@ -73,11 +73,22 @@ html {
 }
 
 body {
-  background-color: var(--color-paper);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(42, 120, 214, 0.08), transparent 28rem),
+    linear-gradient(180deg, #ffffff 0, var(--color-paper) 18rem);
   color: var(--color-ink);
   font-size: 15px;
   line-height: 1.55; /* ภาษาไทยต้อง ≥1.5 ไม่งั้นสระบนกับวรรณยุกต์ชนบรรทัดถัดไป */
   -webkit-font-smoothing: antialiased;
+}
+
+/* ลาย grid บาง ๆ ทำให้พื้นที่ทำงานมีบุคลิก "Space" โดยไม่รบกวนการอ่านข้อมูล */
+main {
+  background-image:
+    linear-gradient(rgba(28, 92, 171, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28, 92, 171, 0.025) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: -1px -1px;
 }
 
 /* ตัวเลขที่เรียงเป็นแถว/คอลัมน์ต้องกว้างเท่ากันทุกหลัก จึงกวาดสายตาลงมาเทียบกันได้
