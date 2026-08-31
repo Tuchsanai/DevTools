@@ -277,8 +277,8 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
     <div class="rule" style="width:126px"></div>
     <div class="m" style="font-size:23px; line-height:1.62; max-width:650px">จากโจทย์ธุรกิจ 3 สาขา<br>สู่ระบบ <b style="color:#fff">web · api · db</b> ที่ส่งมอบได้ด้วยคำสั่งเดียว</div>
     <div style="display:flex; gap:10px; margin-top:26px; flex-wrap:wrap">
-      <span class="tag" style="color:#dbeafe; border-color:#4f79a8; background:rgba(24,58,94,.78); padding:5px 13px">5 HANDS-ON LABS</span>
-      <span class="tag" style="color:#dbeafe; border-color:#4f79a8; background:rgba(24,58,94,.78); padding:5px 13px">37 EXPERIMENTS</span>
+      <span class="tag" style="color:#dbeafe; border-color:#4f79a8; background:rgba(24,58,94,.78); padding:5px 13px">2 HANDS-ON LABS</span>
+      <span class="tag" style="color:#dbeafe; border-color:#4f79a8; background:rgba(24,58,94,.78); padding:5px 13px">15 EXPERIMENTS</span>
       <span class="tag" style="color:#dbeafe; border-color:#4f79a8; background:rgba(24,58,94,.78); padding:5px 13px">3 CONTAINERS</span>
     </div>
   </div>
@@ -1002,7 +1002,7 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
       <div class="card a" style="grid-column:5; grid-row:3"><h4>อะไหล่ · parts</h4><p>รหัส · ชื่อ · ยอดคงเหลือ · จุดสั่งซื้อ</p><p style="margin-top:8px"><span class="tag a">FR-06 · FR-12</span></p></div>
     </div>
     <div class="note a"><b>อ่านภาพนี้ก่อน:</b> assets เชื่อมงานซ่อมและการยืม · tickets เชื่อมการเบิกอะไหล่ · stock_moves เป็นประวัติที่อธิบายว่าทำไมยอด parts จึงเปลี่ยน</div>
-    <div class="note">ชื่อคอลัมน์ กฎ <code>UNIQUE</code>/<code>CHECK</code> และ SQL เต็มจะค่อยเปิดใน LAB 1 เมื่อเริ่มสร้าง database จริง</div>
+    <div class="note">ชื่อคอลัมน์ กฎ <code>UNIQUE</code>/<code>CHECK</code> และ SQL เต็มจะค่อยเปิดใน LAB 001 เมื่อเริ่มสร้าง database จริง</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · จาก User Flow สู่ระบบ</span><span class="pg"></span></div>
 </section></div>
@@ -1071,7 +1071,7 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
 <!-- ===== 27 : แหล่งที่มาของ seed data ===== -->
 <div class="slot"><section class="slide">
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · SOURCE OF TRUTH · PostgreSQL</div><h2>หนึ่ง database · ห้า tables · <em>สองไฟล์ตามลำดับ</em></h2>
-    <div class="sub">LAB 1 ให้ Python อ่านโครงสร้างจริงผ่าน information_schema หลัง PostgreSQL ประมวลผล schema และ seed</div></div>
+    <div class="sub">LAB 001 ให้ Python อ่านโครงสร้างจริงผ่าน information_schema หลัง PostgreSQL ประมวลผล schema และ seed</div></div>
   <div class="s-body top">
     <div class="g11">
       <div class="card a"><h3><code>01-schema.sql</code></h3><p>สร้าง <code>assets</code>, <code>tickets</code>, <code>loans</code>, <code>parts</code>, <code>stock_moves</code> ภายใน database <code>skillspace</code></p></div>
@@ -1082,7 +1082,7 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
 └── <span class="y">02-seed.sql</span>     <span class="c"># INSERT INTO ทีหลัง</span></pre>
     <div class="note a"><b>คำที่ต้องใช้ให้ตรง:</b> มีฐานข้อมูล PostgreSQL หนึ่งฐานชื่อ <code>skillspace</code> และมีห้าตารางภายในฐานนั้น</div>
   </div>
-  <div class="s-foot"><span>ตอนที่ 3 · GitHub → LAB 1 → PostgreSQL</span><span class="pg"></span></div>
+  <div class="s-foot"><span>ตอนที่ 3 · GitHub → LAB 001 → PostgreSQL</span><span class="pg"></span></div>
 </section></div>
 
 <!-- ===== 29 : ตัวอย่าง assets ===== -->
@@ -1259,7 +1259,7 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
 (function(){
   var sequences = {
     github: {
-      eyebrow:'ตอนที่ 4 · LAB 1 · PostgreSQL FIRST', foot:'LAB 1 · ปฐมนิเทศก่อนลงมือ',
+      eyebrow:'ตอนที่ 4 · LAB 001 · PostgreSQL FIRST', foot:'LAB 001 · ปฐมนิเทศก่อนลงมือ',
       steps:[
         [null,'ภารกิจ: หนึ่ง database · ห้า tables','อ่าน mental model ก่อนพิมพ์คำสั่ง','skillspace เป็น database เดียว; assets, tickets, loans, parts, stock_moves คือตาราง','Browser → Next.js web → FastAPI api → PostgreSQL db'],
         [null,'เตรียมเครื่องปฏิบัติการ','ขั้น 0.1 ลบชื่อเดิมและสร้างเครื่องใหม่ แล้วจึงเชื่อมต่อ SSH','ใช้ชื่อ devtools-fullstack-lab001 และพอร์ต 2222 คงที่; หลัง SSH ตรวจ Engine และ Compose ในบรรทัดเดียว','docker rm -f devtools-fullstack-lab001 2&gt;/dev/null\ndocker run -dit --name devtools-fullstack-lab001 --privileged -p 2222:22 tuchsanai/devtools:2569_1\nssh root@localhost -p 2222\ndocker --version &amp;&amp; docker compose version'],
@@ -1270,7 +1270,7 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
       ]
     },
     swagger: {
-      eyebrow:'ตอนที่ 5 · LAB 2 · Swagger UI', foot:'LAB 2 · ลำดับทดสอบ API ผ่าน UI',
+      eyebrow:'LAB 002 · Swagger UI', foot:'LAB 002 · ลำดับทดสอบ API ผ่าน UI',
       steps:[
         ['ui_swagger_01','เปิดเอกสาร API','เปิด /docs เพื่อเข้าสู่ Swagger UI ซึ่งเป็นหน้าทดลอง API','เห็นรายการ endpoint ที่ API เปิดให้เรียก'],
         ['ui_swagger_02','ขยาย GET /dashboard','คลิกแถว GET /dashboard','เห็นคำอธิบาย พารามิเตอร์ และรูปแบบผลลัพธ์'],
@@ -1314,36 +1314,6 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
         ['ui_compose_01','เปิดระบบจาก Compose','รัน docker compose up -d แล้วเปิดหน้า Overview','ทั้ง db, api และ web ต้องมีสถานะ healthy ก่อนหน้าเว็บพร้อมใช้','8% 14%',2.1],
         ['ui_compose_02','ตรวจหน้า Tickets','คลิกเมนู “กระดานงานซ่อม”','ข้อมูล seed แสดงครบหลัง Compose สร้างระบบทั้งชุด','8% 20%',2.1],
         ['ui_compose_03','กลับสู่ Overview','คลิก “สรุปภาพรวม” เพื่อจบการตรวจ UI','ตัวเลขสรุปยังตรงกับข้อมูลหลังทดสอบ persistence','8% 14%',2.1]
-      ]
-    },
-    hub_auth: {
-      eyebrow:'ตอนที่ 8 · LAB 002 · Docker Hub UI', foot:'LAB 002 · สร้าง Access Token บน Docker Hub',
-      steps:[
-        ['ui_hub_01','เปิด Docker Hub','เปิด hub.docker.com','เข้าสู่หน้าแรกของ Docker Hub ผ่าน HTTPS'],
-        ['ui_hub_02','กรอกชื่อผู้ใช้','คลิกช่อง Username แล้วกรอก &lt;DOCKER_USER&gt;','สื่อการสอนต้องใช้ placeholder ไม่แสดงบัญชีจริง'],
-        ['ui_hub_03','กรอกรหัสผ่าน','คลิกช่อง Password แล้วกรอกค่าจริงเฉพาะระหว่างทดลอง','ห้ามบันทึกรหัสผ่านลง README ภาพ หรือประวัติคำสั่ง'],
-        ['ui_hub_04','เปิดเมนูบัญชี','คลิกรูป Avatar','เมนูบัญชีแสดงทางเข้าสู่ Account settings'],
-        ['ui_hub_05','เปิด Account settings','คลิก Account settings','เห็นหมวด Personal access tokens'],
-        ['ui_hub_06','เปิดรายการ Token','คลิก Personal access tokens','Token คือรหัสสำหรับ CLI และเพิกถอนได้โดยไม่เปลี่ยนรหัสผ่านหลัก'],
-        ['ui_hub_07','ตั้งคำอธิบาย Token','คลิก Generate new token แล้วกรอก Description','คำอธิบายควรระบุงานและวันหมดอายุ'],
-        ['ui_hub_08','กำหนดวันหมดอายุ','เลือก Expiration date','ใช้ช่วงเวลาสั้นเท่าที่การทดลองต้องใช้'],
-        ['ui_hub_09','กำหนด Permission','เลือก Read & Write','สิทธิ์นี้เพียงพอสำหรับ push และ pull image'],
-        ['ui_hub_10','สร้าง Token','ตรวจค่าทั้งหมดแล้วคลิก Generate','Docker Hub แสดง Token เพียงครั้งเดียว'],
-        ['ui_hub_11','คัดลอก Token','คลิก Copy แล้วเก็บในตัวจัดการความลับ','ใช้ &lt;DOCKER_TOKEN&gt; ในเอกสาร ห้ามจับภาพค่าจริง'],
-        ['ui_hub_12','เปิดเมนูเพิกถอน','หลังทดสอบเสร็จ คลิกเมนูของ Token','การเพิกถอนลดความเสี่ยงจาก Token ชั่วคราว'],
-        ['ui_hub_13','เลือก Delete','คลิก Delete access token','ระบบขอการยืนยันก่อนลบ'],
-        ['ui_hub_14','ยืนยันการเพิกถอน','อ่านชื่อ Token แล้วคลิกยืนยัน','หลังยืนยัน Token เดิมจะใช้ login ไม่ได้'],
-        ['ui_hub_15','ตรวจว่าลบแล้ว','กลับสู่รายการ Personal access tokens','ไม่พบ Token ของการทดลองในรายการ']
-      ]
-    },
-    hub_push: {
-      eyebrow:'ตอนที่ 8 · LAB 002 · หลักฐานบน Docker Hub', foot:'LAB 002 · ตรวจ image ที่ push จริง',
-      steps:[
-        ['ui_hub_push_01','เปิด Repositories','คลิก My Hub → Repositories','เห็น repository ของ API และ web ที่ push จริง'],
-        ['ui_hub_push_02','เปิด Repository ของ API','คลิก repository skillspace-api','หน้า Overview แสดงสถานะ Public และคำสั่ง pull'],
-        ['ui_hub_push_03','ตรวจ Tag ของ API','คลิกแท็บ Tags','tag 1.0 และ digest ระบุ image รุ่นที่ตรวจสอบซ้ำได้'],
-        ['ui_hub_push_04','เปิด Repository ของ Web','กลับรายการแล้วคลิก skillspace-web','หน้า Overview แสดง image ฝั่งเว็บที่ส่งมอบ'],
-        ['ui_hub_push_05','ตรวจ Tag ของ Web','คลิกแท็บ Tags','tag 1.0 มี digest และ platform ตรงกับผล docker push']
       ]
     }
   };
@@ -1436,12 +1406,7 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
     '1': {t:'โจทย์จากลูกค้า', d:'ลูกค้าคือใคร · วันนี้ทำงานอย่างไร · ประโยคเด็ดจากบทสัมภาษณ์ · ข้อจำกัด 3 ข้อ'},
     '2': {t:'จากคำบ่นสู่ข้อกำหนด', d:'User Story 10 ข้อ → FR-01…FR-12 + คำสัญญา NFR 3 ข้อ · ขอบเขตที่ไม่ทำ'},
     '3': {t:'User Flow → System Architecture → System Design', d:'หน้าจอจริงทีละ State · request path ผ่าน web/api/db · API contract · state machine · ฐานข้อมูล 5 ตาราง'},
-    '4': {t:'LAB 1 — PostgreSQL และ Python', d:'สร้างฐานข้อมูล · เชื่อมต่อ · สำรวจห้าตาราง · cleanup'},
-    '5': {t:'LAB 2 — สร้าง image ของ api', d:'build context · layer cache · .dockerignore · EXPOSE ไม่ได้เปิดพอร์ต'},
-    '6': {t:'LAB 002 — สร้าง image ของ web', d:'Dockerfile stage เดียว · npm ci · npm run build · npm start · ตรวจหน้าเว็บจริง'},
-    '7': {t:'LAB 002 — ต่อ 3 Container', d:'เรียกด้วยชื่อแทน IP · user-defined network · ปิด db จากภายนอก (NFR-3)'},
-    '8': {t:'LAB 002 — compose และส่งมอบ', d:'คำสั่งเดียวจบ (NFR-1) · healthcheck + depends_on · down vs down -v · tag/push'},
-    '9': {t:'สรุป', d:'ข้อจำกัดธุรกิจ → เทคนิค Docker → แล็บ · ดัชนีว่าเทคนิคแต่ละตัวเรียนมาจากไหน'}
+    '4': {t:'LAB 001 — PostgreSQL และ Python', d:'สร้างฐานข้อมูล · เชื่อมต่อ · สำรวจห้าตาราง · cleanup'}
   };
   var starts = [{sec:'0', at:0}];
   slots.forEach(function(s, k){
