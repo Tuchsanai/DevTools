@@ -18,7 +18,7 @@
 
   <g font-size="13">
     <rect x="24" y="114" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
-    <text x="36" y="132" fill="#a35a10" font-weight="bold">LAB 1</text>
+    <text x="36" y="132" fill="#a35a10" font-weight="bold">LAB 001</text>
     <text x="100" y="132" fill="#1f2933">-e POSTGRES_PASSWORD=labpass</text>
     <text x="100" y="149" fill="#52606d">ส่งค่าตั้งต้นเข้า Container</text>
     <path d="M 380 135 L 422 135" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>
@@ -27,7 +27,7 @@
     <text x="436" y="149" fill="#52606d">POSTGRES_PASSWORD: labpass</text>
 
     <rect x="24" y="162" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
-    <text x="36" y="180" fill="#a35a10" font-weight="bold">LAB 1</text>
+    <text x="36" y="180" fill="#a35a10" font-weight="bold">LAB 001</text>
     <text x="100" y="180" fill="#1f2933">-v ops-pgdata:/var/lib/postgresql/data</text>
     <text x="100" y="197" fill="#52606d">named volume · NFR-2 ข้อมูลห้ามหาย</text>
     <path d="M 380 183 L 422 183" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>
@@ -36,7 +36,7 @@
     <text x="436" y="197" fill="#52606d">pgdata:/var/lib/postgresql/data</text>
 
     <rect x="24" y="210" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
-    <text x="36" y="228" fill="#a35a10" font-weight="bold">LAB 2</text>
+    <text x="36" y="228" fill="#a35a10" font-weight="bold">LAB 002</text>
     <text x="100" y="228" fill="#1f2933">docker build -t ops-api:1.0 ./api</text>
     <text x="100" y="245" fill="#52606d">จุดท้ายคำสั่งคือ build context</text>
     <path d="M 380 231 L 422 231" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>
@@ -45,7 +45,7 @@
     <text x="436" y="245" fill="#52606d">context: ./api</text>
 
     <rect x="24" y="258" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
-    <text x="36" y="276" fill="#a35a10" font-weight="bold">LAB 2·3</text>
+    <text x="36" y="276" fill="#a35a10" font-weight="bold">LAB 002</text>
     <text x="100" y="276" fill="#1f2933">-p 3000:3000</text>
     <text x="100" y="293" fill="#52606d">มีแค่ web ที่ควรมีบรรทัดนี้ · NFR-3</text>
     <path d="M 380 279 L 422 279" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>
@@ -54,7 +54,7 @@
     <text x="436" y="293" fill="#52606d">"3000:3000"  (db ไม่มี key นี้เลย)</text>
 
     <rect x="24" y="306" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
-    <text x="36" y="324" fill="#a35a10" font-weight="bold">LAB 3</text>
+    <text x="36" y="324" fill="#a35a10" font-weight="bold">LAB 002</text>
     <text x="100" y="324" fill="#1f2933">--build-arg NEXT_PUBLIC_SITE_NAME=...</text>
     <text x="100" y="341" fill="#52606d">ค่าที่ต้องมาตั้งแต่ตอน build</text>
     <path d="M 380 327 L 422 327" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>
@@ -63,7 +63,7 @@
     <text x="436" y="341" fill="#52606d">NEXT_PUBLIC_SITE_NAME: SkillSpace</text>
 
     <rect x="24" y="354" width="352" height="42" rx="6" fill="#fff4e5" stroke="#e8c48a"/>
-    <text x="36" y="372" fill="#a35a10" font-weight="bold">LAB 4</text>
+    <text x="36" y="372" fill="#a35a10" font-weight="bold">LAB 002</text>
     <text x="100" y="372" fill="#1f2933">docker network create + --network</text>
     <text x="100" y="389" fill="#52606d">เพื่อให้เรียกกันด้วยชื่อได้</text>
     <path d="M 380 375 L 422 375" stroke="#52606d" stroke-width="3" marker-end="url(#arr)"/>

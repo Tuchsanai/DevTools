@@ -10,7 +10,7 @@
     </marker>
   </defs>
 
-  <text x="400" y="34" text-anchor="middle" font-size="18" font-weight="bold" fill="#1f2933">สถาปัตยกรรม SkillSpace · LAB 1 เรียน PostgreSQL เพียงชั้นเดียว</text>
+  <text x="400" y="34" text-anchor="middle" font-size="18" font-weight="bold" fill="#1f2933">สถาปัตยกรรม SkillSpace · LAB 001 เรียน PostgreSQL เพียงชั้นเดียว</text>
 
   <!-- browser -->
   <text x="42" y="132" text-anchor="middle" font-size="13" fill="#52606d">เบราว์เซอร์</text>
@@ -22,7 +22,7 @@
   <text x="224" y="114" text-anchor="middle" font-size="15" font-weight="bold" fill="#1c4f80">web</text>
   <text x="224" y="138" text-anchor="middle" font-size="13" fill="#1c4f80">หน้าเว็บ Next.js</text>
   <text x="224" y="158" text-anchor="middle" font-size="13" fill="#1c4f80">พอร์ตภายใน Container 3000</text>
-  <text x="224" y="180" text-anchor="middle" font-size="12" fill="#52606d">สร้างใน LAB 3</text>
+  <text x="224" y="180" text-anchor="middle" font-size="12" fill="#52606d">รวมใน LAB 002</text>
 
   <path d="M 318 140 L 360 140" stroke="#52606d" stroke-width="3" marker-end="url(#ar)"/>
 
@@ -31,7 +31,7 @@
   <text x="454" y="114" text-anchor="middle" font-size="15" font-weight="bold" fill="#4b3480">api</text>
   <text x="454" y="138" text-anchor="middle" font-size="13" fill="#4b3480">บริการเบื้องหลัง FastAPI</text>
   <text x="454" y="158" text-anchor="middle" font-size="13" fill="#4b3480">พอร์ตภายใน Container 8000</text>
-  <text x="454" y="180" text-anchor="middle" font-size="12" fill="#52606d">สร้างใน LAB 2</text>
+  <text x="454" y="180" text-anchor="middle" font-size="12" fill="#52606d">รวมใน LAB 002</text>
 
   <path d="M 548 140 L 590 140" stroke="#52606d" stroke-width="3" marker-end="url(#ar)"/>
 
@@ -40,7 +40,7 @@
   <text x="686" y="108" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e6b41">db</text>
   <text x="686" y="132" text-anchor="middle" font-size="13" fill="#1e6b41">postgres:17-alpine</text>
   <text x="686" y="152" text-anchor="middle" font-size="13" fill="#1e6b41">พอร์ตภายใน Container 5432</text>
-  <text x="686" y="176" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e6b41">ขอบเขตของ LAB 1</text>
+  <text x="686" y="176" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e6b41">ขอบเขตของ LAB 001</text>
   <text x="686" y="192" text-anchor="middle" font-size="12" fill="#52606d">5 ตาราง + ข้อมูลตั้งต้น</text>
 
   <!-- volume -->
@@ -51,8 +51,8 @@
 
   <!-- temporary learning client -->
   <rect x="24" y="232" width="520" height="76" rx="10" fill="#fff8e8" stroke="#d6a84b" stroke-width="2"/>
-  <text x="44" y="256" font-size="13" font-weight="bold" fill="#7a5200">LAB 1: Python learning client → PostgreSQL ผ่าน internal IP</text>
+  <text x="44" y="256" font-size="13" font-weight="bold" fill="#7a5200">LAB 001: Python learning client → PostgreSQL ผ่าน internal IP</text>
   <text x="44" y="278" font-size="13" fill="#1f2933">เป็นตัวแทน data-access layer ของ FastAPI ชั่วคราวเพื่อให้เห็น SQL</text>
-  <text x="44" y="300" font-size="13" fill="#1f2933">Browser ไม่เชื่อม db โดยตรง · LAB 4 จึงค่อยสอน network และ DNS</text>
+  <text x="44" y="300" font-size="13" fill="#1f2933">Browser ไม่เชื่อม db โดยตรง · LAB 002 จึงสอน Compose, network และ DNS</text>
   <path d="M 544 270 L 570 270 L 570 190 L 590 190" stroke="#2e8b57" stroke-width="2.5" stroke-dasharray="6 4" fill="none" marker-end="url(#arg)"/>
 </svg>

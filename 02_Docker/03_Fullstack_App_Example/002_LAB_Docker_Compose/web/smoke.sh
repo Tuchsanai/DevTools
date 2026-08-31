@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ตรวจรับหน้าเว็บ SkillSpace (LAB 3) — รันภายใน Container สำหรับเรียน
+# ตรวจรับหน้าเว็บ SkillSpace (LAB 002) — รันภายใน Container สำหรับเรียน
 WEB=http://localhost:3000
 FAIL=0
 pass() { echo "  [PASS] $*"; }
