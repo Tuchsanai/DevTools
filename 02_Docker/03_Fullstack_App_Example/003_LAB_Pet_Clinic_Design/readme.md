@@ -108,12 +108,10 @@
 
 Flow ต้องระบุ:
 
-- Actor และ Trigger
 - หน้าจอและ Action ของผู้ใช้
 - ข้อมูลที่ Web ส่งให้ API
 - Business Rule ที่ API ตรวจ
 - ข้อมูลที่อ่านหรือเขียนใน Database
-- Success result และ Error result
 
 ### งานที่ 2 — Screen Inventory
 
