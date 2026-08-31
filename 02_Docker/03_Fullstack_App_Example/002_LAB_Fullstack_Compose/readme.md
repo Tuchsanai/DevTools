@@ -33,7 +33,7 @@ db (PostgreSQL :5432) ── pgdata volume
 ## ไฟล์สำคัญ
 
 ```text
-002_LAB_Docker_Compose/
+002_LAB_Fullstack_Compose/
 ├── compose.yaml
 ├── verify.sh
 ├── api/
@@ -66,7 +66,7 @@ ssh root@localhost -p 2252
 ภายในเครื่องเรียน:
 
 ```bash
-cd ~/labwork/DevTools/02_Docker/03_Fullstack_App_Example/002_LAB_Docker_Compose
+cd ~/labwork/DevTools/02_Docker/03_Fullstack_App_Example/002_LAB_Fullstack_Compose
 docker version
 docker compose version
 ```

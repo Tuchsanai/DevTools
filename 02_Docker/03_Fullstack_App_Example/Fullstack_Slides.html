@@ -1243,9 +1243,45 @@ body.ui-on #ctl,body.ui-on #counter{opacity:1; pointer-events:auto}
           <div class="b k" style="margin-bottom:10px"><div class="t">2 · ทดลอง User Flow</div><div class="s">Overview → Tickets → Create → Assign → Repair → Close</div></div>
           <div class="b w"><div class="t">3 · ตรวจผล</div><div class="s">Loans · Parts · Persistence · <code>bash verify.sh</code></div></div>
         </div>
-        <div class="note a" style="margin-top:12px"><b>คู่มือปฏิบัติ:</b> <code>002_LAB_Docker_Compose/readme.md</code></div>
+        <div class="note a" style="margin-top:12px"><b>คู่มือปฏิบัติ:</b> <code>002_LAB_Fullstack_Compose/readme.md</code></div>
       </div>
-      <div class="fig shot fix" style="height:365px"><img data-a="ui_web_01" alt="หน้า Overview ของ SkillSpace หลังเปิดระบบด้วย Docker Compose"></div>
+      <div class="fig fix" style="height:365px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 340" font-family="sans-serif" preserveAspectRatio="xMidYMid meet" role="img" aria-label="สถาปัตยกรรมระบบ SkillSpace ประกอบด้วย web api และ db">
+        <rect x="0" y="0" width="800" height="340" fill="#ffffff"/>
+        <defs>
+          <marker id="sv47-ar" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto"><path d="M 0 0 L 13 5 L 0 10 z" fill="#52606d"/></marker>
+          <marker id="sv47-arg" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="10" refX="12.5" refY="5" orient="auto"><path d="M 0 0 L 13 5 L 0 10 z" fill="#2e8b57"/></marker>
+        </defs>
+        <text x="400" y="34" text-anchor="middle" font-size="19" font-weight="bold" fill="#1f2933">LAB 002 ประกอบระบบเต็มด้วย Docker Compose</text>
+        <text x="42" y="132" text-anchor="middle" font-size="13" fill="#52606d">เบราว์เซอร์</text>
+        <text x="42" y="152" text-anchor="middle" font-size="13" fill="#52606d">ศูนย์กลาง</text>
+        <path d="M 82 140 L 128 140" stroke="#52606d" stroke-width="3" marker-end="url(#sv47-ar)"/>
+        <rect x="134" y="86" width="180" height="108" rx="10" fill="#eef6ff" stroke="#8fb8dc" stroke-width="2"/>
+        <text x="224" y="114" text-anchor="middle" font-size="15" font-weight="bold" fill="#1c4f80">web</text>
+        <text x="224" y="138" text-anchor="middle" font-size="13" fill="#1c4f80">หน้าเว็บ Next.js</text>
+        <text x="224" y="158" text-anchor="middle" font-size="13" fill="#1c4f80">พอร์ตภายใน Container 3000</text>
+        <text x="224" y="180" text-anchor="middle" font-size="12" fill="#52606d">รวมใน LAB 002</text>
+        <path d="M 318 140 L 360 140" stroke="#52606d" stroke-width="3" marker-end="url(#sv47-ar)"/>
+        <rect x="364" y="86" width="180" height="108" rx="10" fill="#f3f0fb" stroke="#b3a4d6" stroke-width="2"/>
+        <text x="454" y="114" text-anchor="middle" font-size="15" font-weight="bold" fill="#4b3480">api</text>
+        <text x="454" y="138" text-anchor="middle" font-size="13" fill="#4b3480">บริการเบื้องหลัง FastAPI</text>
+        <text x="454" y="158" text-anchor="middle" font-size="13" fill="#4b3480">พอร์ตภายใน Container 8000</text>
+        <text x="454" y="180" text-anchor="middle" font-size="12" fill="#52606d">รวมใน LAB 002</text>
+        <path d="M 548 140 L 590 140" stroke="#52606d" stroke-width="3" marker-end="url(#sv47-ar)"/>
+        <rect x="594" y="78" width="184" height="124" rx="10" fill="#f2fbf5" stroke="#2e8b57" stroke-width="4"/>
+        <text x="686" y="108" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e6b41">db</text>
+        <text x="686" y="132" text-anchor="middle" font-size="13" fill="#1e6b41">postgres:17-alpine</text>
+        <text x="686" y="152" text-anchor="middle" font-size="13" fill="#1e6b41">พอร์ตภายใน Container 5432</text>
+        <text x="686" y="176" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e6b41">ฐานข้อมูลของระบบ</text>
+        <text x="686" y="192" text-anchor="middle" font-size="12" fill="#52606d">5 ตาราง + ข้อมูลตั้งต้น</text>
+        <path d="M 686 206 L 686 252" stroke="#2e8b57" stroke-width="3" marker-end="url(#sv47-arg)"/>
+        <rect x="586" y="256" width="200" height="52" rx="26" fill="#e6f5ec" stroke="#2e8b57" stroke-width="2"/>
+        <text x="686" y="278" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e6b41">named volume : ops-pgdata</text>
+        <text x="686" y="297" text-anchor="middle" font-size="12" fill="#1e6b41">เก็บข้อมูลให้คงอยู่</text>
+        <rect x="24" y="232" width="520" height="76" rx="10" fill="#f6f8fa" stroke="#9aa5b1" stroke-width="1"/>
+        <text x="44" y="256" font-size="13" fill="#1f2933">· Browser เรียก web → web เรียก api → api เรียก db</text>
+        <text x="44" y="278" font-size="13" fill="#1f2933">· api และ db อยู่ภายใน Docker network</text>
+        <text x="44" y="300" font-size="13" fill="#1f2933">· Compose เปิดและเชื่อมทั้งระบบด้วยคำสั่งเดียว</text>
+      </svg></div>
     </div>
   </div>
   <div class="s-foot"><span>LAB 002 · web + api + PostgreSQL · Docker Compose</span><span class="pg"></span></div>
