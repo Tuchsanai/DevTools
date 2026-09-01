@@ -4,7 +4,7 @@
   "source": "mcp-excalidraw-server",
   "elements": [
     {
-      "id": "mtiayxawwpmmus925dp",
+      "id": "mtimmulmkql11p1upqn",
       "type": "text",
       "x": 30,
       "y": 18,
@@ -29,19 +29,19 @@
       "originalText": "Workflow = states + transitions + policies : Plane จัด state เป็น 5 group",
       "roughness": 1,
       "roundness": null,
-      "seed": 1805445282,
+      "seed": 975301828,
       "strokeColor": "#0b2545",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "Workflow = states + transitions + policies : Plane จัด state เป็น 5 group",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706674,
       "version": 1,
-      "versionNonce": 306760764,
+      "versionNonce": 41104654,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiayxawwxezznlxv8",
+      "id": "mtimmulmn32tox42do",
       "type": "text",
       "x": 30,
       "y": 58,
@@ -66,15 +66,15 @@
       "originalText": "states = กล่อง · transitions = ลูกศร (ทึบ = เส้นทางปกติ, ประ = ย้อนกลับ / ยกเลิก) · policies = ข้อตกลงที่เครื่องมือไม่บังคับ",
       "roughness": 1,
       "roundness": null,
-      "seed": 131244637,
+      "seed": 2069101144,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "states = กล่อง · transitions = ลูกศร (ทึบ = เส้นทางปกติ, ประ = ย้อนกลับ / ยกเลิก) · policies = ข้อตกลงที่เครื่องมือไม่บังคับ",
       "textAlign": "left",
-      "updated": 1788245114652,
+      "updated": 1788264706674,
       "version": 1,
-      "versionNonce": 1679390057,
+      "versionNonce": 511914080,
       "verticalAlign": "middle"
     },
     {
@@ -103,12 +103,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706674,
       "version": 1,
       "versionNonce": 605825973
     },
     {
-      "id": "mtiayxawmu154255u0n",
+      "id": "mtimmulmtac9c8ojwmm",
       "type": "text",
       "x": 45,
       "y": 98,
@@ -133,19 +133,19 @@
       "originalText": "group: backlog",
       "roughness": 1,
       "roundness": null,
-      "seed": 1166984414,
+      "seed": 973892345,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "group: backlog",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706674,
       "version": 1,
-      "versionNonce": 1051366614,
+      "versionNonce": 708502103,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiayxawxzlhieyvtiq",
+      "id": "mtimmulmvhukwwjxzmi",
       "type": "text",
       "x": 45,
       "y": 124,
@@ -170,15 +170,15 @@
       "originalText": "ยังไม่วางแผน",
       "roughness": 1,
       "roundness": null,
-      "seed": 1344271054,
+      "seed": 2014578413,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "ยังไม่วางแผน",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706674,
       "version": 1,
-      "versionNonce": 28736952,
+      "versionNonce": 879822271,
       "verticalAlign": "middle"
     },
     {
@@ -207,12 +207,12 @@
       "strokeColor": "#1864ab",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706674,
       "version": 1,
       "versionNonce": 1482069628
     },
     {
-      "id": "mtiayxawq3434134vj9",
+      "id": "mtimmulm7jdzqpl3i4s",
       "type": "text",
       "x": 240,
       "y": 98,
@@ -237,19 +237,19 @@
       "originalText": "group: unstarted",
       "roughness": 1,
       "roundness": null,
-      "seed": 508270377,
+      "seed": 1967497798,
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "group: unstarted",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
-      "versionNonce": 2116232965,
+      "versionNonce": 967378000,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiayxawtfzrcbdz8a",
+      "id": "mtimmulmbpl3l7ded6a",
       "type": "text",
       "x": 240,
       "y": 124,
@@ -274,15 +274,15 @@
       "originalText": "วางแผนแล้ว ยังไม่เริ่ม",
       "roughness": 1,
       "roundness": null,
-      "seed": 313312777,
+      "seed": 605426879,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "วางแผนแล้ว ยังไม่เริ่ม",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
-      "versionNonce": 610617701,
+      "versionNonce": 1329162597,
       "verticalAlign": "middle"
     },
     {
@@ -311,12 +311,12 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 1666037195
     },
     {
-      "id": "mtiayxawmho1b26s6x",
+      "id": "mtimmulmfyxc7cd863g",
       "type": "text",
       "x": 435,
       "y": 98,
@@ -341,19 +341,19 @@
       "originalText": "group: started",
       "roughness": 1,
       "roundness": null,
-      "seed": 1007661575,
+      "seed": 996034885,
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "group: started",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
-      "versionNonce": 974930797,
+      "versionNonce": 1793873849,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiayxaxh5v56wuem4q",
+      "id": "mtimmulm886ryrnqwag",
       "type": "text",
       "x": 435,
       "y": 124,
@@ -378,15 +378,15 @@
       "originalText": "กำลังทำ = WIP",
       "roughness": 1,
       "roundness": null,
-      "seed": 290126009,
+      "seed": 1031382874,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "กำลังทำ = WIP",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
-      "versionNonce": 1611129117,
+      "versionNonce": 2038104484,
       "verticalAlign": "middle"
     },
     {
@@ -415,12 +415,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 1395193445
     },
     {
-      "id": "mtiayxaxdbfs5kyytz",
+      "id": "mtimmulm9pyfr3cqp9",
       "type": "text",
       "x": 660,
       "y": 98,
@@ -445,19 +445,19 @@
       "originalText": "group: completed",
       "roughness": 1,
       "roundness": null,
-      "seed": 2067868839,
+      "seed": 980645949,
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "group: completed",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
-      "versionNonce": 2075341707,
+      "versionNonce": 927528649,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiayxaxzjerbgy4d0l",
+      "id": "mtimmulmrosxloykgg",
       "type": "text",
       "x": 660,
       "y": 124,
@@ -482,15 +482,15 @@
       "originalText": "เสร็จแล้ว → นับใน burndown / velocity",
       "roughness": 1,
       "roundness": null,
-      "seed": 52155189,
+      "seed": 940851896,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "เสร็จแล้ว → นับใน burndown / velocity",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
-      "versionNonce": 12056321,
+      "versionNonce": 733971732,
       "verticalAlign": "middle"
     },
     {
@@ -519,12 +519,12 @@
       "strokeColor": "#c92a2a",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 746011101
     },
     {
-      "id": "mtiayxaxzjdkz527li",
+      "id": "mtimmulml7v6zej7cnh",
       "type": "text",
       "x": 1005,
       "y": 98,
@@ -549,19 +549,19 @@
       "originalText": "group: cancelled",
       "roughness": 1,
       "roundness": null,
-      "seed": 1514247656,
+      "seed": 230298673,
       "strokeColor": "#c92a2a",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "group: cancelled",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
-      "versionNonce": 348360050,
+      "versionNonce": 1541709907,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiayxax6ksc5kyxbuw",
+      "id": "mtimmulm2my88qs3k2w",
       "type": "text",
       "x": 1005,
       "y": 124,
@@ -586,15 +586,15 @@
       "originalText": "ปิดโดยไม่ทำ ไม่นับว่าเสร็จ",
       "roughness": 1,
       "roundness": null,
-      "seed": 1874243722,
+      "seed": 221583742,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "ปิดโดยไม่ทำ ไม่นับว่าเสร็จ",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
-      "versionNonce": 1887046564,
+      "versionNonce": 2046384888,
       "verticalAlign": "middle"
     },
     {
@@ -612,7 +612,7 @@
           "type": "text"
         },
         {
-          "id": "mtiayxax6acv9sqbkt",
+          "id": "mtimmulnagnpxmo0brh",
           "type": "arrow"
         }
       ],
@@ -634,7 +634,7 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 1336563093
     },
@@ -653,11 +653,11 @@
           "type": "text"
         },
         {
-          "id": "mtiayxax6acv9sqbkt",
+          "id": "mtimmulnagnpxmo0brh",
           "type": "arrow"
         },
         {
-          "id": "mtiayxax1j44dacimcx",
+          "id": "mtimmuln15e0k9hh9xh",
           "type": "arrow"
         }
       ],
@@ -679,7 +679,7 @@
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 338181881
     },
@@ -698,15 +698,15 @@
           "type": "text"
         },
         {
-          "id": "mtiayxax1j44dacimcx",
+          "id": "mtimmuln15e0k9hh9xh",
           "type": "arrow"
         },
         {
-          "id": "mtiayxaxwgppoyh2de",
+          "id": "mtimmulnz6zxjtzbkb",
           "type": "arrow"
         },
         {
-          "id": "mtiayxaxoyiu6hwg24",
+          "id": "mtimmuln0lwcy55o7yq",
           "type": "arrow"
         }
       ],
@@ -728,7 +728,7 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 1889509394
     },
@@ -747,11 +747,11 @@
           "type": "text"
         },
         {
-          "id": "mtiayxaxwgppoyh2de",
+          "id": "mtimmulnz6zxjtzbkb",
           "type": "arrow"
         },
         {
-          "id": "mtiayxaxqnbgiy3d2d",
+          "id": "mtimmulnb3wf3cx9b35",
           "type": "arrow"
         }
       ],
@@ -773,7 +773,7 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 1153889338
     },
@@ -810,7 +810,7 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 2144024244
     },
@@ -829,11 +829,11 @@
           "type": "text"
         },
         {
-          "id": "mtiayxaxqnbgiy3d2d",
+          "id": "mtimmulnb3wf3cx9b35",
           "type": "arrow"
         },
         {
-          "id": "mtiayxaxoyiu6hwg24",
+          "id": "mtimmuln0lwcy55o7yq",
           "type": "arrow"
         }
       ],
@@ -855,7 +855,7 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 1229258575
     },
@@ -874,7 +874,7 @@
           "type": "text"
         },
         {
-          "id": "mtiayxax2s22vr7juj7",
+          "id": "mtimmulnblhhgx9yiz6",
           "type": "arrow"
         }
       ],
@@ -896,7 +896,7 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 561466623
     },
@@ -915,7 +915,7 @@
           "type": "text"
         },
         {
-          "id": "mtiayxax2s22vr7juj7",
+          "id": "mtimmulnblhhgx9yiz6",
           "type": "arrow"
         }
       ],
@@ -937,7 +937,7 @@
       "strokeColor": "#c92a2a",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 882028737
     },
@@ -974,7 +974,7 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 1199740426
     },
@@ -1011,12 +1011,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788245114653,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 1936979191
     },
     {
-      "id": "mtiayxax6acv9sqbkt",
+      "id": "mtimmulnagnpxmo0brh",
       "type": "arrow",
       "x": 198,
       "y": 185,
@@ -1054,7 +1054,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1829886044,
+      "seed": 601682432,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "bl",
@@ -1065,12 +1065,12 @@
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788245114653,
+      "updated": 1788264706675,
       "version": 1,
-      "versionNonce": 1712333990
+      "versionNonce": 1058534172
     },
     {
-      "id": "mtiayxax1j44dacimcx",
+      "id": "mtimmuln15e0k9hh9xh",
       "type": "arrow",
       "x": 393,
       "y": 185,
@@ -1108,7 +1108,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 674289488,
+      "seed": 2112439276,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "todo",
@@ -1119,12 +1119,12 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788245114653,
+      "updated": 1788264706675,
       "version": 1,
-      "versionNonce": 609104696
+      "versionNonce": 2126905320
     },
     {
-      "id": "mtiayxaxwgppoyh2de",
+      "id": "mtimmulnz6zxjtzbkb",
       "type": "arrow",
       "x": 520,
       "y": 218,
@@ -1162,7 +1162,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 805352677,
+      "seed": 1363772671,
       "startArrowhead": "arrow",
       "startBinding": {
         "elementId": "inp",
@@ -1173,12 +1173,12 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788245114653,
+      "updated": 1788264706676,
       "version": 1,
-      "versionNonce": 288850291
+      "versionNonce": 884468645
     },
     {
-      "id": "mtiayxaxqnbgiy3d2d",
+      "id": "mtimmulnb3wf3cx9b35",
       "type": "arrow",
       "x": 618,
       "y": 291,
@@ -1216,7 +1216,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 15644509,
+      "seed": 1591435239,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "rev",
@@ -1227,12 +1227,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788245114653,
+      "updated": 1788264706676,
       "version": 1,
-      "versionNonce": 189695083
+      "versionNonce": 1400025715
     },
     {
-      "id": "mtiayxaxoyiu6hwg24",
+      "id": "mtimmuln0lwcy55o7yq",
       "type": "arrow",
       "x": 730.2848441838664,
       "y": 263.2112052052275,
@@ -1270,7 +1270,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 159496018,
+      "seed": 1721559525,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "done",
@@ -1281,12 +1281,12 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788245114653,
+      "updated": 1788264706676,
       "version": 1,
-      "versionNonce": 1948877660
+      "versionNonce": 153022579
     },
     {
-      "id": "mtiayxax2s22vr7juj7",
+      "id": "mtimmulnblhhgx9yiz6",
       "type": "arrow",
       "x": 1085,
       "y": 218,
@@ -1324,7 +1324,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1642256772,
+      "seed": 1385557150,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "anysrc",
@@ -1335,12 +1335,12 @@
       "strokeColor": "#c92a2a",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788245114653,
+      "updated": 1788264706676,
       "version": 1,
-      "versionNonce": 876729248
+      "versionNonce": 716310166
     },
     {
-      "id": "mtiayxaxk0zlboqqjka",
+      "id": "mtimmulnk879lq9osgs",
       "type": "text",
       "x": 538,
       "y": 226,
@@ -1365,19 +1365,19 @@
       "originalText": "ส่ง review\nส่งกลับแก้",
       "roughness": 1,
       "roundness": null,
-      "seed": 749002142,
+      "seed": 1594282079,
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "ส่ง review\nส่งกลับแก้",
       "textAlign": "left",
-      "updated": 1788245114653,
+      "updated": 1788264706676,
       "version": 1,
-      "versionNonce": 1882679702,
+      "versionNonce": 725475177,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiayxax2hxccv618c",
+      "id": "mtimmuln6ewvbij4ais",
       "type": "text",
       "x": 620,
       "y": 261,
@@ -1402,19 +1402,19 @@
       "originalText": "ผ่าน review",
       "roughness": 1,
       "roundness": null,
-      "seed": 1019942450,
+      "seed": 1327180896,
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "ผ่าน review",
       "textAlign": "center",
-      "updated": 1788245114653,
+      "updated": 1788264706676,
       "version": 1,
-      "versionNonce": 1218002828,
+      "versionNonce": 1913535738,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiayxaxaloja46eti9",
+      "id": "mtimmulnktnzund33q",
       "type": "text",
       "x": 653,
       "y": 207,
@@ -1439,15 +1439,15 @@
       "originalText": "reopen",
       "roughness": 1,
       "roundness": null,
-      "seed": 1322713668,
+      "seed": 117422283,
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "reopen",
       "textAlign": "center",
-      "updated": 1788245114653,
+      "updated": 1788264706676,
       "version": 1,
-      "versionNonce": 1322916704,
+      "versionNonce": 1366978081,
       "verticalAlign": "middle"
     },
     {
@@ -1483,7 +1483,7 @@
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788245114653,
+      "updated": 1788264706676,
       "version": 1,
       "versionNonce": 813636728
     },
@@ -1520,7 +1520,7 @@
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788245114653,
+      "updated": 1788264706676,
       "version": 1,
       "versionNonce": 9847215
     },
@@ -1557,7 +1557,7 @@
       "strokeColor": "#c92a2a",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788245114653,
+      "updated": 1788264706676,
       "version": 1,
       "versionNonce": 317068307
     },
@@ -1593,7 +1593,7 @@
       "strokeWidth": 1,
       "text": "Backlog",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 628985068,
       "verticalAlign": "middle"
@@ -1630,7 +1630,7 @@
       "strokeWidth": 1,
       "text": "Todo",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 1816264534,
       "verticalAlign": "middle"
@@ -1667,7 +1667,7 @@
       "strokeWidth": 1,
       "text": "In Progress",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 1372812987,
       "verticalAlign": "middle"
@@ -1704,7 +1704,7 @@
       "strokeWidth": 1,
       "text": "In Review",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 2081621905,
       "verticalAlign": "middle"
@@ -1741,7 +1741,7 @@
       "strokeWidth": 1,
       "text": "+ Testing …\n(เพิ่มเองได้)",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 1128778573,
       "verticalAlign": "middle"
@@ -1778,7 +1778,7 @@
       "strokeWidth": 1,
       "text": "Done",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 233731000,
       "verticalAlign": "middle"
@@ -1815,7 +1815,7 @@
       "strokeWidth": 1,
       "text": "จาก state ใดก็ได้",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 36537704,
       "verticalAlign": "middle"
@@ -1852,7 +1852,7 @@
       "strokeWidth": 1,
       "text": "Cancelled",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 1949087372,
       "verticalAlign": "middle"
@@ -1889,7 +1889,7 @@
       "strokeWidth": 1,
       "text": "เข้า group นี้\n→ ตั้ง completed_at\n(ใช้คำนวณ burndown)",
       "textAlign": "center",
-      "updated": 1788245114652,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 375486881,
       "verticalAlign": "middle"
@@ -1926,7 +1926,7 @@
       "strokeWidth": 1,
       "text": "ออกจาก completed →\ncompleted_at กลับเป็นค่าว่าง\n(ไม่นับว่าเสร็จอีก)",
       "textAlign": "center",
-      "updated": 1788245114653,
+      "updated": 1788264706675,
       "version": 1,
       "versionNonce": 2024860544,
       "verticalAlign": "middle"
@@ -1954,16 +1954,16 @@
       "link": null,
       "locked": false,
       "opacity": 100,
-      "originalText": "Policies = ข้อตกลงของทีม (Plane ไม่บังคับ → เขียนไว้ใน Page)\n• เข้า In Review ต้องมี PR link\n• เข้า Done ต้องผ่าน acceptance criteria ครบทุกข้อ\n• WIP ใน In Progress ≤ 3 ใบ/คน",
+      "originalText": "Policies = ข้อตกลงของทีม (Plane ไม่บังคับ → เขียนไว้ใน Page)\n• เข้า Done ต้องมี PR link และผ่าน acceptance criteria ครบทุกข้อ\n• WIP ใน In Progress ≤ 3 ใบ (ต่อคอลัมน์)",
       "roughness": 1,
       "roundness": null,
       "seed": 859455913,
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 1,
-      "text": "Policies = ข้อตกลงของทีม (Plane ไม่บังคับ → เขียนไว้ใน Page)\n• เข้า In Review ต้องมี PR link\n• เข้า Done ต้องผ่าน acceptance criteria ครบทุกข้อ\n• WIP ใน In Progress ≤ 3 ใบ/คน",
+      "text": "Policies = ข้อตกลงของทีม (Plane ไม่บังคับ → เขียนไว้ใน Page)\n• เข้า Done ต้องมี PR link และผ่าน acceptance criteria ครบทุกข้อ\n• WIP ใน In Progress ≤ 3 ใบ (ต่อคอลัมน์)",
       "textAlign": "center",
-      "updated": 1788245114653,
+      "updated": 1788264706676,
       "version": 1,
       "versionNonce": 416236173,
       "verticalAlign": "middle"
@@ -2000,7 +2000,7 @@
       "strokeWidth": 1,
       "text": "เทียบกับ Jira\nJira: ตั้ง transition + condition / validator ได้\nPlane: มีแค่ state + group → เรียบง่าย แต่ทีมต้องมีวินัย",
       "textAlign": "center",
-      "updated": 1788245114653,
+      "updated": 1788264706676,
       "version": 1,
       "versionNonce": 90825544,
       "verticalAlign": "middle"
@@ -2037,7 +2037,7 @@
       "strokeWidth": 1,
       "text": "Plane CE: ลากไป state ใดก็ได้ — ไม่มี transition rule / WIP limit → ทีมเขียน policy เอง",
       "textAlign": "center",
-      "updated": 1788245114653,
+      "updated": 1788264706676,
       "version": 1,
       "versionNonce": 1550691484,
       "verticalAlign": "middle"

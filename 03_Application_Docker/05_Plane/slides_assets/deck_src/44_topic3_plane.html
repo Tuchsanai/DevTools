@@ -121,7 +121,7 @@
   <div class="s-body top">
     <div class="figrow c11">
       <div><div class="fig shot fix" style="height:365px"><img data-a="lab4:ui-cycle-burndown" alt="หน้า Cycle ใน Plane แสดงกราฟ burndown เส้น Current work items กับเส้นประ Ideal work items"></div>
-        <div class="figcap">แผง Progress ของ cycle: เส้นทึบ = งานที่เหลือจริง, เส้นประ = ideal; สลับ Work items / Estimates ได้ (ต้องเปิด Cycles ที่ Settings › Projects › Features ก่อน)</div></div>
+        <div class="figcap">แผง Progress ของ cycle: เส้นทึบ = งานที่เหลือจริง, เส้นประ = ideal; สลับ Work items / Estimates ได้ (ต้องเปิด Cycles ที่ Settings › Projects › Features › Cycles ก่อน)</div></div>
       <div>
         <ul class="bul sm" style="font-size:15.5px">
           <li>Cycle มีแค่ <b>start_date / end_date</b> ไม่มีคอลัมน์สถานะ — In progress / Yet to start / Completed / Draft คำนวณจากวันที่ตอน query (timezone ของโปรเจกต์)</li>
@@ -240,7 +240,7 @@
       <div style="display:flex; flex-direction:column; gap:12px">
         <div class="card a"><h4><span class="tag a" style="margin-right:8px">LAB 4</span>Scrum บน Plane</h4><p style="font-size:16px">เปิด Estimates แบบ Fibonacci · สร้าง Cycle 2 สัปดาห์ผ่าน API · points จาก <code>backlog.csv</code> (<code>seed_backlog.py</code>) · time machine SQL กระจาย <code>completed_at</code> คนละวัน · อ่าน burndown ทั้งโหมด Work items และ Estimates · คำนวณ burndown/velocity เองด้วย <code>cycle_report.py</code> / <code>velocity.py</code></p></div>
         <div class="card o"><h4><span class="tag o" style="margin-right:8px">LAB 5</span>Kanban บน Plane</h4><p style="font-size:16px">เพิ่ม state In Review · ตั้ง Board ให้มี swimlanes ตาม assignee · เขียน explicit policies และ WIP limit เป็น Page · เขียนสคริปต์ผ่าน API นับงานใน started แล้วเตือนเมื่อเกิน · บันทึกเป็น View และตั้ง Intake</p></div>
-        <div class="note w" style="font-size:15px"><b>ก่อนเริ่ม LAB</b> — เปิด Cycles / Views / Intake ที่ Settings › Projects › Features (โปรเจกต์ที่สร้างจาก UI ปิดไว้ทั้งหมด) และตั้ง Estimates; ทบทวนตารางแปลศัพท์ Scrum ↔ Plane; เตรียม backlog อย่างน้อย 10 user stories ที่ผ่าน INVEST</div>
+        <div class="note w" style="font-size:15px"><b>ก่อนเริ่ม LAB</b> — เปิด Cycles / Views / Intake ที่ Settings › Projects › Features › หน้าของแต่ละฟีเจอร์ (โปรเจกต์ที่สร้างจาก UI ปิดไว้ทั้งหมด) และตั้ง Estimates; ทบทวนตารางแปลศัพท์ Scrum ↔ Plane; เตรียม backlog อย่างน้อย 10 user stories ที่ผ่าน INVEST</div>
       </div>
     </div>
   </div>

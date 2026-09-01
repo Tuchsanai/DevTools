@@ -100,8 +100,9 @@ els = [
     line(108, 548, [[0, 0], [0, -20]], TEAL, 3),
     line(108, 548, [[0, 0], [15, 0]], TEAL, 3),
     txt(156, 506, "กิจกรรมต่อเนื่อง ไม่ใช่อีเวนต์", 19, TEAL),
-    note(156, 538, "Scrum Guide ไม่กำหนดเป็นพิธีการ — ทีมทำทีละน้อยทุกสัปดาห์ (~10% ของเวลาทีม)\n"
-                   "ใน Plane : เขียน AC ในใบงาน · แตก sub-work items · ใส่ estimate · แก้ blocker", 14, INK),
+    note(156, 538, "~10% ของเวลาทีม = แนวทางใน Scrum Guide 2017\n"
+                   "(ฉบับ 2020 ไม่กำหนดตัวเลข) · ทีมทำทีละน้อยทุกสัปดาห์\n"
+                   "ใน Plane : เขียน AC · แตก sub-work items · ใส่ estimate · แก้ blocker", 13, INK),
 
     # ---- right column : DEEP
     zone(775, 66, 405, 270, PURPLE, PURPLEBG),

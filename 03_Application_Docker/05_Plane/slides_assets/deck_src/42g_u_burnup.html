@@ -1,18 +1,32 @@
-<!-- ===== U-BURNUP 1 : definition + mechanism ===== -->
+<!-- ===== U-BURNUP 1 : definition + mechanism + example ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burn-up · นิยาม · กลไก · ตัวอย่าง</div><h2>Burn-up — <em>แยก “ทำเสร็จแล้ว” ออกจาก “ขอบเขตทั้งหมด”</em></h2>
-    <div class="sub">แกนนอน = เวลา · แกนตั้ง = จำนวนงานหรือ points · ระยะห่างระหว่างสองเส้นคืองานที่ยังเหลือ</div></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burn-up · นิยาม · กลไก · ตัวอย่าง</div><h2>Burn-up — <em>แยก “งานที่เสร็จแล้ว” ออกจาก “ขอบเขตทั้งหมด”</em></h2>
+    <div class="sub">แกนนอน = เวลา · แกนตั้ง = จำนวนใบงานหรือ points · ระยะห่างแนวดิ่งระหว่างสองเส้น = งานที่ยังเหลือ</div></div>
   <div class="s-body top">
-    <div class="figrow c21" style="grid-template-columns:1.34fr .66fr; align-items:start">
-      <div><div class="fig fix" style="height:390px"><img data-a="d33" alt="กราฟเปรียบเทียบ Burndown กับ Burn-up โดยฝั่ง Burn-up แยกเส้น Done สะสมจากเส้น Scope รวมที่เพิ่มขึ้นกลาง Sprint"></div>
-        <div class="figcap">อ่านฝั่งขวา: เส้นเขียว = Done สะสม · เส้นม่วง = Scope รวม · Scope เพิ่มวันที่ 5 จึงมองเห็นเหตุของช่องว่างได้ทันที</div></div>
-      <div style="display:flex; flex-direction:column; gap:8px">
-        <div class="quote" style="font-size:17px; padding:10px 15px"><b>นิยาม</b> — Burn-up คือกราฟสองเส้น: <mark>งาน Done สะสม</mark> และ <mark>Scope รวม</mark> ณ แต่ละวัน จึงเห็นทั้งความคืบหน้าและการเปลี่ยนขอบเขตในภาพเดียว</div>
-        <div class="card a" style="padding:9px 13px"><h4>ทำไมสำคัญ · ปัญหาที่แก้</h4><p style="font-size:15.5px; line-height:1.42">เส้น Remaining เส้นเดียวอาจแยกไม่ออกว่าทีมเดินช้าหรือ scope เปลี่ยน; Burn-up แยกผลงานที่ Done ออกจากขอบเขต จึงคุยสาเหตุได้ตรงจุด</p></div>
-        <div class="card w" style="padding:9px 13px"><h4>องค์ประกอบ · กลไกการอ่าน</h4><p style="font-size:15.5px; line-height:1.42">ทุกวัน d บันทึก <b>Done(d)</b> กับ <b>Scope(d)</b> แล้ววาดสองเส้น; ช่องว่างคือ <b>Remaining(d) = Scope(d) − Done(d)</b>. เส้น Done อาจลดเมื่อเปิดงานกลับหรือแก้ข้อมูล</p></div>
-        <div class="card o" style="padding:9px 13px"><h4>ตัวอย่าง CampusEats · เข้าใจผิด</h4><p style="font-size:15.5px; line-height:1.42"><b>LAB 4:</b> Sprint 1 เริ่ม 7 ใบ แล้วเพิ่ม action item <code>tech-debt</code> 1 ใบ → Scope 8; เมื่อ Done 3 จึงเหลือ 5. <b>❌</b> เส้นสูงขึ้น = แย่ · <b>✅</b> Done สูงขึ้น = คืบหน้า; Scope สูงขึ้น = ขอบเขตเพิ่ม</p></div>
+    <div class="figrow" style="grid-template-columns:.70fr 1.30fr; gap:16px; align-items:start">
+      <div><div class="fig fix" style="height:322px; overflow:hidden"><img data-a="d33" alt="ครึ่งขวาของแผนภาพ d33: กราฟ Burn-up ที่มีเส้น Done สะสมไต่ขึ้นจากศูนย์ และเส้น Scope รวมคงที่ 40 points ก่อนขยับขึ้นเป็น 48 points ในวันที่ 5" style="object-view-box:inset(9.8% 0.3% 0.7% 50.6%)"></div>
+        <div class="figcap">ครึ่งขวาของ <code>d33</code> — เส้นเขียว = Done สะสม · เส้นม่วง = Scope รวม 40 pt ที่ขยับเป็น 48 pt ในวันที่ 5 · เส้นประในวันที่ 7 คือช่องว่าง “งานที่เหลือ”</div></div>
+      <div style="display:flex; flex-direction:column; gap:6px">
+        <div class="quote" style="font-size:16.5px; padding:10px 16px"><b>นิยาม</b> — Burn-up คือกราฟ <b>สองเส้น</b> ต่อรอบงานหนึ่งรอบ: <mark>งานที่ Done สะสม</mark> และ <mark>ขอบเขตรวม (scope)</mark> ณ แต่ละวัน จึงอ่านความคืบหน้าและการเปลี่ยนขอบเขตได้จากภาพเดียว</div>
+        <div class="card a" style="padding:8px 12px"><h4>ทำไมสำคัญ · ปัญหาที่แก้</h4><p style="font-size:15.5px; line-height:1.42">Burndown มีเส้นเดียว จึงบอกไม่ได้ว่า “ยังเหลือเยอะ” เพราะทีมช้าหรือเพราะมีงานเพิ่ม — Burn-up แยกสองสาเหตุออกจากกัน ทีมกับ PO จึงคุยกันถูกเรื่องตั้งแต่กลางรอบ</p></div>
+        <div class="card w" style="padding:8px 12px"><h4>องค์ประกอบ · กลไกการอ่าน</h4><p style="font-size:15.5px; line-height:1.42">ต้องมี 3 ค่า: <b>Done(d)</b> · <b>Scope(d)</b> · หน่วยเดียวกันทั้งกราฟ (ใบ หรือ points) — ช่องว่าง <b>เหลือ(d) = Scope(d) − Done(d)</b>; เส้น Done อาจลดลงได้ถ้าเปิดงานที่ปิดไปแล้วกลับมา</p></div>
+        <div class="card d" style="padding:8px 12px"><h4>Workflow · สร้างเส้นสองเส้นอย่างไร</h4><p style="font-size:15.5px; line-height:1.42">ทุกวัน d: ① นับใบที่เข้าสถานะเสร็จภายในวันนั้น แล้วสะสม = Done(d) ② นับใบที่อยู่ในรอบงาน ณ วันนั้น = Scope(d) ③ วาดสองเส้นบนแกนเดียวกัน แล้วอ่านทั้งความชันและช่องว่าง</p></div>
       </div>
+    </div>
+    <div class="g21" style="gap:16px; align-items:start">
+      <div>
+        <div class="eyebrow" style="margin-bottom:5px">ตัวอย่าง CampusEats · LAB 4 · Sprint 1 (หน่วย = ใบงาน)</div>
+        <table class="tbl xs" style="font-size:13.8px">
+          <thead><tr><th style="width:290px">วันของ Sprint 1</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+          <tbody>
+            <tr><td><b>Done สะสม</b> (เส้นล่างของ burn-up)</td><td>0</td><td>1</td><td>2</td><td>3</td><td>3</td></tr>
+            <tr><td><b>Scope ในวันนั้นจริง ๆ</b> (เส้นบน)</td><td>7</td><td>7</td><td>7</td><td>7</td><td><b>8</b></td></tr>
+            <tr><td>เส้น <b>remaining</b> ที่ Plane วาดหลังเพิ่มใบ</td><td><b>8</b></td><td>7</td><td>6</td><td>5</td><td>5</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card c" style="padding:10px 13px"><h4>❌ “เส้นในกราฟสูงขึ้น = ทีมทำได้แย่ลง”</h4><p style="font-size:15.5px; line-height:1.42"><b style="color:#16803c">✅ ที่ถูก:</b> วันที่ 4 ทีมแปลง action item จาก retro เป็นใบงาน <code>tech-debt</code> 2 pt → scope 7→8 ใบ (19→21 pt) เส้น <b>Scope</b> สูงขึ้น = ขอบเขตเพิ่ม ต้องคุยกับ PO ส่วนเส้น <b>Done</b> สูงขึ้นจึงจะแปลว่าคืบหน้า</p></div>
     </div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Burn-up</span><span class="pg"></span></div>
@@ -22,19 +36,19 @@
 <!-- ===== U-BURNUP 2 : Plane + labs ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burn-up · ใน Plane</div><h2>Plane CE ไม่มีกราฟ Burn-up — <em>ประกอบข้อมูลจาก Cycle เอง</em></h2>
-    <div class="sub">ใช้สมาชิกของ Cycle เป็น scope และ <code>issues.completed_at</code> เป็นเวลาล่าสุดที่งานเข้าสู่ state group <b>completed</b></div></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burn-up · ใน Plane</div><h2>Plane CE ไม่มีตัววาด Burn-up — <em>ประกอบเส้น Scope กับ Done เอง</em></h2>
+    <div class="sub"><b>Plane Lab › Cycles › Sprint 2</b> → แผง <b>Progress</b> สลับได้แค่ Work items / Estimates ซึ่งทั้งคู่เป็น burndown</div></div>
   <div class="s-body top">
-    <div class="figrow c21" style="grid-template-columns:1.35fr .65fr; align-items:start">
-      <div><div class="fig shot fix" style="height:372px"><img data-a="lab9:ui-dashboard" alt="Mission Control dashboard ของ LAB 9 แสดง metrics จากข้อมูล Plane API ได้แก่ burndown velocity cumulative flow lead และ cycle time WIP และ blockers"></div>
-        <div class="figcap">ภาพจริง · LAB 9 — Mission Control แสดง Burndown · Velocity · CFD · Lead/Cycle time · WIP · Blockers จาก Plane API; ภาพนี้ยังไม่มี Burn-up</div></div>
+    <div class="figrow" style="grid-template-columns:1.16fr .84fr; gap:16px; align-items:start">
+      <div><div class="fig shot fix" style="height:385px"><img data-a="lab9:ui-dashboard" alt="Mission Control ของ LAB 9 แสดง KPI หกช่องและ panel Burndown, Velocity, Cumulative Flow, Lead/Cycle time, WIP vs policy และ Blockers &amp; aging ที่คำนวณจาก Plane API"></div>
+        <div class="figcap"><b>ภาพจริง</b> · LAB 9 — Mission Control ของโปรเจกต์ PLAB: KPI 6 ช่อง แล้ว Burndown · Velocity · CFD · Lead/Cycle time · WIP vs policy · Blockers &amp; aging — ยังไม่มี panel Burn-up ให้ต่อยอด</div></div>
       <div style="display:flex; flex-direction:column; gap:9px">
-        <div class="card c" style="padding:10px 13px"><h4>ฟีเจอร์ที่เกี่ยวข้อง · ข้อจำกัด CE v1.4.2</h4><p style="font-size:15.5px; line-height:1.43"><b>Plane Lab › Cycles › Sprint 2</b> แล้วเปิดแผง Progress: มี Progress และ Burndown; ไม่มีตัววาดกราฟ Burn-up ใน UI จึงไม่มีเมนูให้เปิด</p></div>
-        <div class="card a" style="padding:10px 13px"><h4>ข้อมูลต้นทาง · <code>cycle_issues</code> + <code>issues.completed_at</code></h4><p style="font-size:15.5px; line-height:1.43"><code>cycle_issues</code> บอก scope ปัจจุบัน; <code>completed_at</code> เป็นเวลาที่ Done ล่าสุดและกลับเป็น <code>NULL</code> เมื่อย้ายงานออกจาก <code>completed</code>. เส้น scope ย้อนหลังต้องไล่ activity <code>field="cycles"</code> หรือเก็บ snapshot</p></div>
-        <div class="card o" style="padding:10px 13px"><h4>Workflow · คำนวณ → ตรวจ → แสดงผล</h4><p style="font-size:15.5px; line-height:1.43"><span class="tag a">LAB 4</span> ดัดแปลง <code>cycle_report.py</code> ให้คืน Done สะสมกับ Scope · <span class="tag o">LAB 9</span> ใช้โครง collector → metrics → API → UI เป็นแม่แบบต่อยอด panel พร้อม test</p></div>
+        <div class="card c" style="padding:10px 13px"><h4>ฟีเจอร์ที่เกี่ยวข้อง · ข้อจำกัด CE v1.4.2</h4><p style="font-size:15.5px; line-height:1.43">แผง Progress ของ cycle วาดได้เฉพาะ <b>burndown</b> (remaining เทียบ ideal) · ตัวเลือก <code>burnup</code> มีอยู่ในค่าคงที่และ store ของ frontend แต่<b>ไม่มีตัว render</b> จึงไม่มีเมนูให้เปิด · Analytics ระดับ workspace ก็ไม่มีกราฟนี้</p></div>
+        <div class="card a" style="padding:10px 13px"><h4>ข้อมูลต้นทาง · 2 เส้นมาจากไหน</h4><p style="font-size:15.5px; line-height:1.43"><b>Done:</b> <code>issues.completed_at</code> — ตั้งเมื่อเข้ากลุ่ม <code>completed</code> และกลับเป็น <code>NULL</code> เมื่อย้ายออก · <b>Scope:</b> แถว <code>cycle_issues</code> — ย้อนหลังได้จาก <code>created_at</code> ของแถวนั้น หรือ activity <code>field="cycles"</code> (verb <code>created</code> / <code>deleted</code>)</p></div>
+        <div class="card o" style="padding:10px 13px"><h4>Workflow · คำนวณ → ตรวจ → แสดงผล</h4><p style="font-size:15.5px; line-height:1.43"><span class="tag a">LAB 4</span> ต่อยอด <code>cycle_report.py</code> ที่ใช้สูตรเดียวกับ Plane ให้คืน Done สะสมคู่กับ Scope · <span class="tag o">LAB 9</span> เพิ่ม panel ตามโครง collector → metrics → API → UI พร้อม test</p></div>
       </div>
     </div>
-    <div class="note a" style="font-size:15.5px"><b>Mini exercise</b> — LAB 4: Sprint 1 เริ่ม 7 ใบ · เพิ่ม action item 1 ใบ · Done สะสม 3 ใบ: จุด Scope และ Done คือเท่าไร? ช่องว่างบอกอะไร และต้องตรวจ activity เหตุการณ์ใดก่อนสรุปว่า “ทีมช้า”?</div>
+    <div class="note a" style="font-size:15px"><b>Mini exercise</b> — จาก Sprint 1 ของ LAB 4 (เริ่ม 7 ใบ / 19 pt · เพิ่มใบ <code>tech-debt</code> 2 pt วันที่ 4 · points ที่ Done สะสม = 0·3·5·6·6): ① เขียนคู่ (Scope, Done) หน่วย points ของวันที่ 0 และวันที่ 4 ② ทำไมกราฟของ Plane จึงแสดงวันที่ 0 เป็น 8 ใบ ทั้งที่วันนั้นมีแค่ 7 ③ ต้องอ่านข้อมูลตัวใดจึงจะรู้ย้อนหลังได้ว่า scope เพิ่มวันไหน</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Burn-up</span><span class="pg"></span></div>
  </section>

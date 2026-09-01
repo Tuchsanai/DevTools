@@ -4,7 +4,7 @@
   "source": "mcp-excalidraw-server",
   "elements": [
     {
-      "id": "mtiacrjtm4rk9rk1dxn",
+      "id": "mtimn7leiizbxjdvr9",
       "type": "text",
       "x": 30,
       "y": 18,
@@ -29,15 +29,15 @@
       "originalText": "Backlog refinement : กลั่นไอเดียดิบให้เล็ก ชัด และประเมินแล้ว ก่อนเข้า Sprint Planning",
       "roughness": 1,
       "roundness": null,
-      "seed": 1575941694,
+      "seed": 2044884579,
       "strokeColor": "#0b2545",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "Backlog refinement : กลั่นไอเดียดิบให้เล็ก ชัด และประเมินแล้ว ก่อนเข้า Sprint Planning",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
-      "versionNonce": 611484968,
+      "versionNonce": 885398463,
       "verticalAlign": "middle"
     },
     {
@@ -55,7 +55,7 @@
           "type": "text"
         },
         {
-          "id": "mtiacrjt3djx93wqdbh",
+          "id": "mtimn7lezvcdt0jlvek",
           "type": "arrow"
         }
       ],
@@ -77,12 +77,12 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
       "versionNonce": 1061047868
     },
     {
-      "id": "mtiacrjtdihkrinuda9",
+      "id": "mtimn7leckpd4u94ipq",
       "type": "line",
       "x": 202,
       "y": 142,
@@ -127,15 +127,15 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1279622815,
+      "seed": 1303600074,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
-      "versionNonce": 1537352131
+      "versionNonce": 149031252
     },
     {
       "id": "l3",
@@ -148,11 +148,11 @@
       "backgroundColor": "transparent",
       "boundElements": [
         {
-          "id": "mtiacrjtlbisotujow",
+          "id": "mtimn7le23s3pu5vfh1",
           "type": "arrow"
         },
         {
-          "id": "mtiacrjt3djx93wqdbh",
+          "id": "mtimn7lezvcdt0jlvek",
           "type": "arrow"
         }
       ],
@@ -172,12 +172,12 @@
       "strokeColor": "transparent",
       "strokeStyle": "solid",
       "strokeWidth": 1,
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
       "versionNonce": 914256138
     },
     {
-      "id": "mtiacrjtujux4frp0b9",
+      "id": "mtimn7leb3f3cwb16yq",
       "type": "text",
       "x": 289.07499999999993,
       "y": 150,
@@ -202,19 +202,19 @@
       "originalText": "Ready : เล็ก · ชัด · ประเมินแล้ว",
       "roughness": 1,
       "roundness": null,
-      "seed": 68990642,
+      "seed": 1258181061,
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "Ready : เล็ก · ชัด · ประเมินแล้ว",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
-      "versionNonce": 236513546,
+      "versionNonce": 64600375,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiacrjt300if6qlhrk",
+      "id": "mtimn7lexignwzhlfc",
       "type": "text",
       "x": 292.55,
       "y": 178,
@@ -239,19 +239,19 @@
       "originalText": "ผ่าน Definition of Ready แล้ว\nพร้อมหยิบเข้า Sprint Planning ทันที",
       "roughness": 1,
       "roundness": null,
-      "seed": 1671954479,
+      "seed": 849971782,
       "strokeColor": "#16212f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "ผ่าน Definition of Ready แล้ว\nพร้อมหยิบเข้า Sprint Planning ทันที",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
-      "versionNonce": 560931923,
+      "versionNonce": 1575959632,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiacrjtwmofhm5a9xj",
+      "id": "mtimn7lec7vndjo9ng",
       "type": "line",
       "x": 132,
       "y": 266,
@@ -296,15 +296,15 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 323475300,
+      "seed": 1053891435,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
-      "versionNonce": 1000182574
+      "versionNonce": 1100485703
     },
     {
       "id": "l2",
@@ -317,11 +317,11 @@
       "backgroundColor": "transparent",
       "boundElements": [
         {
-          "id": "mtiacrjtbbduwiei4cf",
+          "id": "mtimn7lezurh1dw9lt",
           "type": "arrow"
         },
         {
-          "id": "mtiacrjtlbisotujow",
+          "id": "mtimn7le23s3pu5vfh1",
           "type": "arrow"
         }
       ],
@@ -341,12 +341,12 @@
       "strokeColor": "transparent",
       "strokeStyle": "solid",
       "strokeWidth": 1,
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
       "versionNonce": 368813701
     },
     {
-      "id": "mtiacrjt5e1n0gub8um",
+      "id": "mtimn7lexmfie0z813",
       "type": "text",
       "x": 266.12499999999994,
       "y": 274,
@@ -371,19 +371,19 @@
       "originalText": "Refine : แตกย่อย · ทำให้ชัด · ประเมิน",
       "roughness": 1,
       "roundness": null,
-      "seed": 1986219396,
+      "seed": 1241021237,
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "Refine : แตกย่อย · ทำให้ชัด · ประเมิน",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
-      "versionNonce": 2054713248,
+      "versionNonce": 1582653673,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiacrjtofadcwjod7p",
+      "id": "mtimn7le7j8d6eekbrq",
       "type": "text",
       "x": 249.42999999999995,
       "y": 302,
@@ -408,19 +408,19 @@
       "originalText": "แตก epic เป็น user story ที่ทำจบใน 1 sprint\nเขียน acceptance criteria · ประเมิน story point",
       "roughness": 1,
       "roundness": null,
-      "seed": 372413129,
+      "seed": 575219971,
       "strokeColor": "#16212f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "แตก epic เป็น user story ที่ทำจบใน 1 sprint\nเขียน acceptance criteria · ประเมิน story point",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
-      "versionNonce": 1128119597,
+      "versionNonce": 354694109,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiacrjt6io35gu9s19",
+      "id": "mtimn7le1ofvifhulac",
       "type": "line",
       "x": 60,
       "y": 390,
@@ -465,15 +465,15 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1527002055,
+      "seed": 357698794,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
-      "versionNonce": 423505965
+      "versionNonce": 2071161078
     },
     {
       "id": "l1",
@@ -486,7 +486,7 @@
       "backgroundColor": "transparent",
       "boundElements": [
         {
-          "id": "mtiacrjtbbduwiei4cf",
+          "id": "mtimn7lezurh1dw9lt",
           "type": "arrow"
         }
       ],
@@ -506,12 +506,12 @@
       "strokeColor": "transparent",
       "strokeStyle": "solid",
       "strokeWidth": 1,
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
       "versionNonce": 630492566
     },
     {
-      "id": "mtiacrjte94b7znnec",
+      "id": "mtimn7lershm1g3r9eb",
       "type": "text",
       "x": 250.06,
       "y": 398,
@@ -536,19 +536,19 @@
       "originalText": "ไอเดียดิบ : ใหญ่ · คลุมเครือ (Epic / theme)",
       "roughness": 1,
       "roundness": null,
-      "seed": 537479180,
+      "seed": 918491281,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "ไอเดียดิบ : ใหญ่ · คลุมเครือ (Epic / theme)",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
-      "versionNonce": 388766086,
+      "versionNonce": 1399282797,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiacrjt4koum6ywfgq",
+      "id": "mtimn7leapk6oqbiwoj",
       "type": "text",
       "x": 223.87999999999994,
       "y": 426,
@@ -573,19 +573,19 @@
       "originalText": "คำขอลูกค้า · bug report · ไอเดียทีม · \"อยากได้ระบบรายงาน\"\nยังไม่ต้องละเอียด — ใส่รายละเอียดเมื่อใกล้ถึงคิว",
       "roughness": 1,
       "roundness": null,
-      "seed": 949481985,
+      "seed": 1185361625,
       "strokeColor": "#16212f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "คำขอลูกค้า · bug report · ไอเดียทีม · \"อยากได้ระบบรายงาน\"\nยังไม่ต้องละเอียด — ใส่รายละเอียดเมื่อใกล้ถึงคิว",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 1429045923,
+      "versionNonce": 568172727,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiacrjtbbduwiei4cf",
+      "id": "mtimn7lezurh1dw9lt",
       "type": "arrow",
       "x": 400,
       "y": 382,
@@ -623,7 +623,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1185835669,
+      "seed": 2037959102,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "l1",
@@ -634,12 +634,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 49746145
+      "versionNonce": 362064438
     },
     {
-      "id": "mtiacrjtlbisotujow",
+      "id": "mtimn7le23s3pu5vfh1",
       "type": "arrow",
       "x": 400,
       "y": 258,
@@ -677,7 +677,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 453316675,
+      "seed": 1521864614,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "l2",
@@ -688,12 +688,12 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 1375709981
+      "versionNonce": 471688512
     },
     {
-      "id": "mtiacrjt3djx93wqdbh",
+      "id": "mtimn7lezvcdt0jlvek",
       "type": "arrow",
       "x": 400,
       "y": 134,
@@ -731,7 +731,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 830802846,
+      "seed": 1310654999,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "l3",
@@ -742,12 +742,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 1971170826
+      "versionNonce": 1104349181
     },
     {
-      "id": "mtiacrjtg8symehvqf",
+      "id": "mtimn7le3kuiisgyqy5",
       "type": "text",
       "x": 415,
       "y": 360,
@@ -772,19 +772,19 @@
       "originalText": "หยิบใบบนสุดมาดูก่อน (prioritised)",
       "roughness": 1,
       "roundness": null,
-      "seed": 1359323849,
+      "seed": 939085297,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "หยิบใบบนสุดมาดูก่อน (prioritised)",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 214171175,
+      "versionNonce": 1940433685,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiacrjt2dbsf6w2xd5",
+      "id": "mtimn7levuwlo26105o",
       "type": "text",
       "x": 415,
       "y": 236,
@@ -809,19 +809,19 @@
       "originalText": "กลั่นทีละน้อย ทุกสัปดาห์",
       "roughness": 1,
       "roundness": null,
-      "seed": 1918967410,
+      "seed": 1537513930,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "กลั่นทีละน้อย ทุกสัปดาห์",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 1249557964,
+      "versionNonce": 1383312356,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiacrjtc37w0jabrro",
+      "id": "mtimn7lejyu2mu034z",
       "type": "text",
       "x": 415,
       "y": 112,
@@ -846,19 +846,19 @@
       "originalText": "ผ่าน DoR ✓",
       "roughness": 1,
       "roundness": null,
-      "seed": 2018858231,
+      "seed": 1669581767,
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "ผ่าน DoR ✓",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 1287285441,
+      "versionNonce": 793261009,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiacrjti48wd2b82kk",
+      "id": "mtimn7lezqwwmrhzf0b",
       "type": "rectangle",
       "x": 60,
       "y": 494,
@@ -879,16 +879,16 @@
       "roundness": {
         "type": 3
       },
-      "seed": 1931051707,
+      "seed": 923419538,
       "strokeColor": "#0b7285",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 814211345
+      "versionNonce": 1552345194
     },
     {
-      "id": "mtiacrjtp20j6iqfka",
+      "id": "mtimn7le5nrfx0dnaa4",
       "type": "ellipse",
       "x": 80,
       "y": 520,
@@ -909,16 +909,16 @@
       "roundness": {
         "type": 3
       },
-      "seed": 899092141,
+      "seed": 1811639755,
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 3,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 812273025
+      "versionNonce": 1236819233
     },
     {
-      "id": "mtiacrjtddb68b8i5xs",
+      "id": "mtimn7lexw8lvzobsns",
       "type": "line",
       "x": 108,
       "y": 548,
@@ -949,18 +949,18 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 795681454,
+      "seed": 732984908,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 3,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 992713754
+      "versionNonce": 752896198
     },
     {
-      "id": "mtiacrjt0666t0nn9l3",
+      "id": "mtimn7lewwiuhms3sfe",
       "type": "line",
       "x": 108,
       "y": 548,
@@ -991,18 +991,18 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 263173617,
+      "seed": 731307707,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 3,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 130966293
+      "versionNonce": 657346583
     },
     {
-      "id": "mtiacrjttf97nmgvcge",
+      "id": "mtimn7le4vfioewargf",
       "type": "text",
       "x": 156,
       "y": 506,
@@ -1027,24 +1027,24 @@
       "originalText": "กิจกรรมต่อเนื่อง ไม่ใช่อีเวนต์",
       "roughness": 1,
       "roundness": null,
-      "seed": 2112888626,
+      "seed": 314196782,
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "กิจกรรมต่อเนื่อง ไม่ใช่อีเวนต์",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 1441163914,
+      "versionNonce": 63478568,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiacrjt2bdceyp0x9p",
+      "id": "mtimn7lejpc0pj1l87m",
       "type": "text",
       "x": 156,
       "y": 538,
-      "width": 647,
-      "height": 35,
+      "width": 539,
+      "height": 49,
       "angle": 0,
       "autoResize": true,
       "backgroundColor": "transparent",
@@ -1052,7 +1052,7 @@
       "containerId": null,
       "fillStyle": "solid",
       "fontFamily": 2,
-      "fontSize": 14,
+      "fontSize": 13,
       "frameId": null,
       "groupIds": [],
       "index": "a26",
@@ -1061,22 +1061,22 @@
       "link": null,
       "locked": false,
       "opacity": 100,
-      "originalText": "Scrum Guide ไม่กำหนดเป็นพิธีการ — ทีมทำทีละน้อยทุกสัปดาห์ (~10% ของเวลาทีม)\nใน Plane : เขียน AC ในใบงาน · แตก sub-work items · ใส่ estimate · แก้ blocker",
+      "originalText": "~10% ของเวลาทีม = แนวทางใน Scrum Guide 2017\n(ฉบับ 2020 ไม่กำหนดตัวเลข) · ทีมทำทีละน้อยทุกสัปดาห์\nใน Plane : เขียน AC · แตก sub-work items · ใส่ estimate · แก้ blocker",
       "roughness": 1,
       "roundness": null,
-      "seed": 901090829,
+      "seed": 1526122484,
       "strokeColor": "#16212f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "text": "Scrum Guide ไม่กำหนดเป็นพิธีการ — ทีมทำทีละน้อยทุกสัปดาห์ (~10% ของเวลาทีม)\nใน Plane : เขียน AC ในใบงาน · แตก sub-work items · ใส่ estimate · แก้ blocker",
+      "text": "~10% ของเวลาทีม = แนวทางใน Scrum Guide 2017\n(ฉบับ 2020 ไม่กำหนดตัวเลข) · ทีมทำทีละน้อยทุกสัปดาห์\nใน Plane : เขียน AC · แตก sub-work items · ใส่ estimate · แก้ blocker",
       "textAlign": "left",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 7157345,
+      "versionNonce": 759554256,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiacrjt45opz244d1o",
+      "id": "mtimn7le42g7lyg6l1x",
       "type": "rectangle",
       "x": 775,
       "y": 66,
@@ -1097,16 +1097,16 @@
       "roundness": {
         "type": 3
       },
-      "seed": 92930497,
+      "seed": 667139647,
       "strokeColor": "#6741d9",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 951550051
+      "versionNonce": 1286023369
     },
     {
-      "id": "mtiacrjtrusekblvk5m",
+      "id": "mtimn7lewcxeatudr9i",
       "type": "text",
       "x": 790,
       "y": 76,
@@ -1131,15 +1131,15 @@
       "originalText": "DEEP : คุณสมบัติของ backlog ที่ดี",
       "roughness": 1,
       "roundness": null,
-      "seed": 2046276088,
+      "seed": 1659309195,
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "DEEP : คุณสมบัติของ backlog ที่ดี",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 771710592,
+      "versionNonce": 1881294053,
       "verticalAlign": "middle"
     },
     {
@@ -1175,7 +1175,7 @@
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
       "versionNonce": 2135941916
     },
@@ -1212,7 +1212,7 @@
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
       "versionNonce": 169400495
     },
@@ -1249,7 +1249,7 @@
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
       "versionNonce": 933111846
     },
@@ -1286,7 +1286,7 @@
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
       "versionNonce": 846460127
     },
@@ -1316,12 +1316,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
       "versionNonce": 188545912
     },
     {
-      "id": "mtiacrjt0smzfo1iy7c",
+      "id": "mtimn7le01400q23i7v5d",
       "type": "text",
       "x": 790,
       "y": 362,
@@ -1346,15 +1346,15 @@
       "originalText": "Definition of Ready — เช็กก่อนเข้า Sprint",
       "roughness": 1,
       "roundness": null,
-      "seed": 1295689115,
+      "seed": 1566476516,
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "Definition of Ready — เช็กก่อนเข้า Sprint",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
-      "versionNonce": 108103791,
+      "versionNonce": 196623230,
       "verticalAlign": "middle"
     },
     {
@@ -1390,7 +1390,7 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
       "versionNonce": 1291476462
     },
@@ -1427,7 +1427,7 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
       "versionNonce": 1625798651
     },
@@ -1464,7 +1464,7 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723516,
       "version": 1,
       "versionNonce": 1593920324
     },
@@ -1501,12 +1501,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244080764,
+      "updated": 1788264723516,
       "version": 1,
       "versionNonce": 1368830273
     },
     {
-      "id": "mtiacrjtt6dns26samd",
+      "id": "mtimn7le1sc07ywsknl",
       "type": "text",
       "x": 790,
       "y": 578,
@@ -1531,15 +1531,15 @@
       "originalText": "ไม่ผ่านข้อใด → กลับไป refine ต่อ ไม่หยิบเข้า sprint",
       "roughness": 1,
       "roundness": null,
-      "seed": 2048188101,
+      "seed": 1689910860,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "ไม่ผ่านข้อใด → กลับไป refine ต่อ ไม่หยิบเข้า sprint",
       "textAlign": "center",
-      "updated": 1788244080765,
+      "updated": 1788264723516,
       "version": 1,
-      "versionNonce": 609857591,
+      "versionNonce": 1213454548,
       "verticalAlign": "middle"
     },
     {
@@ -1574,7 +1574,7 @@
       "strokeWidth": 1,
       "text": "Sprint Planning : หยิบเฉพาะใบ Ready",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723514,
       "version": 1,
       "versionNonce": 144645095,
       "verticalAlign": "middle"
@@ -1611,7 +1611,7 @@
       "strokeWidth": 1,
       "text": "D — Detailed appropriately\nใบบนสุดละเอียด ใบล่าง ๆ หยาบได้",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
       "versionNonce": 890824289,
       "verticalAlign": "middle"
@@ -1648,7 +1648,7 @@
       "strokeWidth": 1,
       "text": "E — Estimated\nใบใกล้คิวมี story point แล้ว",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
       "versionNonce": 2050602392,
       "verticalAlign": "middle"
@@ -1685,7 +1685,7 @@
       "strokeWidth": 1,
       "text": "E — Emergent\nเพิ่ม / ลด / แก้ได้เมื่อรู้มากขึ้น",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
       "versionNonce": 365509309,
       "verticalAlign": "middle"
@@ -1722,7 +1722,7 @@
       "strokeWidth": 1,
       "text": "P — Prioritised\nเรียงตามคุณค่า · ใบบนสุด = ทำก่อน",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
       "versionNonce": 1765037750,
       "verticalAlign": "middle"
@@ -1759,7 +1759,7 @@
       "strokeWidth": 1,
       "text": "✓ INVEST ผ่าน (เล็ก · ทดสอบได้)",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
       "versionNonce": 2108061525,
       "verticalAlign": "middle"
@@ -1796,7 +1796,7 @@
       "strokeWidth": 1,
       "text": "✓ AC ตรวจได้ (ผ่าน / ไม่ผ่าน ชัด)",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723515,
       "version": 1,
       "versionNonce": 966844516,
       "verticalAlign": "middle"
@@ -1833,7 +1833,7 @@
       "strokeWidth": 1,
       "text": "✓ ประเมินแล้ว · ≤ 8 pt",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723516,
       "version": 1,
       "versionNonce": 73990809,
       "verticalAlign": "middle"
@@ -1870,7 +1870,7 @@
       "strokeWidth": 1,
       "text": "✓ ไม่มี blocker / dependency ค้าง",
       "textAlign": "center",
-      "updated": 1788244080764,
+      "updated": 1788264723516,
       "version": 1,
       "versionNonce": 873247502,
       "verticalAlign": "middle"

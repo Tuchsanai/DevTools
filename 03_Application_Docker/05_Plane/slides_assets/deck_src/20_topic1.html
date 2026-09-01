@@ -338,7 +338,7 @@
   <div class="s-body">
     <div class="g11">
       <div>
-        <pre class="code"><span class="k">PLAB-12</span>  <span class="y">ผู้ใช้ต้องรีเซ็ตรหัสผ่านได้เองผ่านอีเมล</span>
+        <pre class="code"><span class="k">PLAB-xx</span>  <span class="y">ผู้ใช้ต้องรีเซ็ตรหัสผ่านได้เองผ่านอีเมล</span>
 <span class="c"># User story (Why + What)</span>
 ในฐานะ <span class="g">ผู้ใช้ที่ลืมรหัสผ่าน</span>
 ฉันต้องการ <span class="g">ขอลิงก์รีเซ็ตทางอีเมล</span>
@@ -410,7 +410,7 @@
   <div class="s-body">
     <div class="flow">
       <div class="b"><div class="t">Requirement</div><div class="s">user story · AC</div></div><span class="ar">→</span>
-      <div class="b a"><div class="t">Work item</div><div class="s">PLAB-12</div></div><span class="ar">→</span>
+      <div class="b a"><div class="t">Work item</div><div class="s">PLAB-xx</div></div><span class="ar">→</span>
       <div class="b"><div class="t">Branch / Commit</div><div class="s">อ้าง key ของ work item</div></div><span class="ar">→</span>
       <div class="b"><div class="t">Pull request</div><div class="s">review · CI</div></div><span class="ar">→</span>
       <div class="b k"><div class="t">Release</div><div class="s">changelog · tag</div></div>
@@ -418,14 +418,14 @@
     <div class="figrow c11">
       <div>
         <pre class="code"><span class="c"># ชื่อ branch: ประเภท/key ของ work item-คำอธิบายสั้น</span>
-git switch -c <span class="g">feat/PLAB-12-reset-password</span>
+git switch -c <span class="g">feat/PLAB-xx-reset-password</span>
 
 <span class="c"># commit message: key นำหน้า + บอกว่าทำอะไร (imperative)</span>
-git commit -m <span class="y">"PLAB-12: add reset-password endpoint"</span>
-git commit -m <span class="y">"PLAB-12: expire reset token after 15 min"</span>
+git commit -m <span class="y">"PLAB-xx: add reset-password endpoint"</span>
+git commit -m <span class="y">"PLAB-xx: expire reset token after 15 min"</span>
 
 <span class="c"># PR title / description อ้าง key เดิม แล้วแนบลิงก์ PR กลับไปที่ work item</span></pre>
-        <div class="note a" style="margin-top:10px"><b>Key ของ work item</b> — Plane สร้าง key เป็น <code>&lt;identifier&gt;-&lt;ลำดับ&gt;</code> เช่น PLAB-12 ให้อัตโนมัติ และเลขไม่ถูกนำกลับมาใช้ซ้ำแม้ลบ work item จึงอ้างอิงได้ถาวร</div>
+        <div class="note a" style="margin-top:10px"><b>Key ของ work item</b> — Plane สร้าง key เป็น <code>&lt;identifier&gt;-&lt;ลำดับ&gt;</code> ให้อัตโนมัติ และเลขไม่ถูกนำกลับมาใช้ซ้ำแม้ลบ work item จึงอ้างอิงได้ถาวร</div>
       </div>
       <div>
         <div class="fig shot fix" style="height:360px"><img data-a="lab3:ui-activity-log" alt="Activity log ของ work item ใน Plane แสดงผู้กระทำ ฟิลด์ที่เปลี่ยน และเวลา"></div>

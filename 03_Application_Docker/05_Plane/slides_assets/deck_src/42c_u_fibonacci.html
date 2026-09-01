@@ -1,14 +1,19 @@
-<!-- ===== U-FIBONACCI 1 : นิยาม + กลไก ===== -->
+<!-- ===== U-FIBONACCI 1 : นิยาม · กลไก · ตัวอย่าง ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Fibonacci · นิยาม · กลไก</div><h2>Modified Fibonacci — <em>ยิ่งงานใหญ่ ช่องว่างยิ่งกว้าง</em></h2></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Fibonacci · นิยาม · กลไก · ตัวอย่าง</div><h2>Modified Fibonacci — <em>ยิ่งงานใหญ่ ช่องว่างยิ่งกว้าง</em></h2></div>
   <div class="s-body top">
-    <div class="quote" style="font-size:16.5px; padding:7px 16px"><b>นิยาม</b> — Modified Fibonacci คือสเกลสำหรับ <b>relative estimation</b> เช่น 1 · 2 · 3 · 5 · 8 · 13 · 20 · 40 · 100 โดยช่องห่างกว้างขึ้นตามขนาดและความไม่แน่นอน<br><b>ทำไมสำคัญ · ปัญหาที่แก้</b> — ก่อนใช้ ทีมอาจถกความละเอียดปลอม เช่น 13 กับ 14; หลังใช้ ทีมเลือกช่วงขนาดร่วมกันและมองเห็นงานที่ใหญ่เกินจะเข้าใจ</div>
-    <div class="fig fix" style="height:294px; margin-top:6px"><img data-a="d30" alt="สเกล Modified Fibonacci ที่การ์ดและช่องว่างโตตามความไม่แน่นอน พร้อมเส้นแบ่งให้แตกงานตั้งแต่ 13 points และสเกลทางเลือก"></div>
-    <div class="figcap" style="font-size:13.5px"><b>องค์ประกอบ · กลไก · workflow</b> — ชุดค่า + ช่องว่าง + policy แตกงาน: เทียบฐาน → เลือกค่าที่ใกล้ที่สุด → แตกเมื่อแตะ 13 ตามกติกา LAB; ทางเลือกคือ T-shirt หรือ powers of 2</div>
-    <div class="grid2" style="margin-top:6px">
-      <div class="card a" style="padding:8px 14px"><h4>ตัวอย่าง · CampusEats · เทียบ → เลือก → แตก</h4><p style="font-size:15px; line-height:1.45">ใช้ <b>PBI-02 ดูเมนูและราคา = 2 pt</b> เป็นฐาน → <b>PBI-08 PromptPay QR = 8 pt</b> เพราะต้องเชื่อมต่อและตรวจยอด หากรวม “คืนเงินเมื่อร้านยกเลิก” จนทีมเลือก 13 pt ให้แยกเป็น story ใหม่แล้วประเมินอีกครั้ง</p></div>
-      <div class="card c" style="padding:8px 14px"><h4>❌ เข้าใจผิด → ✅ ใช้ให้ถูก</h4><p style="font-size:15px; line-height:1.45"><b>ผิด:</b> 13 pt = 13 วัน หรือ 14 ต้องแม่นกว่า 13 · <b>ถูก:</b> point คือ “ขนาดสัมพัทธ์” ของทีม เลือกช่องที่ใกล้ที่สุด; เมื่อค่ามากให้ลดความไม่แน่นอนด้วยการแตกงาน ไม่เพิ่มความละเอียดปลอม</p></div>
+    <div class="quote" style="font-size:15.5px; padding:8px 17px; line-height:1.48"><b>นิยาม</b> — Modified Fibonacci คือ <b>ชุดค่าสำเร็จรูปสำหรับ relative estimation</b> ที่ทีมเลือกได้เฉพาะค่าในชุด ไม่มีค่ากลาง: <b>1 · 2 · 3 · 5 · 8 · 13 · 20 · 40 · 100</b> — ดัดแปลงจากลำดับ Fibonacci (ค่าถัดไป = ผลบวกของสองค่าก่อนหน้า) โดยค่าปลาย <b>20 · 40 · 100</b> เป็นค่าปัดให้จำง่าย ไม่ใช่ Fibonacci แท้<br><b>ทำไมสำคัญ · ปัญหาที่แก้</b> — <b>ก่อน:</b> สเกลที่เลือกได้ทุกจำนวนเต็ม 1…20 ชวนให้ถกความละเอียดปลอม (“13 หรือ 14”) ทั้งที่ยังไม่มีใครรู้รายละเอียดของงานใหญ่ · <b>หลัง:</b> เหลือไม่กี่ช่องให้เลือก ทีมจึงจบเร็ว และช่องที่ห่างขึ้นเรื่อย ๆ บอกตรง ๆ ว่า “ยิ่งใหญ่ยิ่งไม่แน่นอน”</div>
+    <div class="figrow c21">
+      <div>
+        <div class="fig fix" style="height:348px"><img data-a="d30" alt="สเกล Modified Fibonacci ที่การ์ดและช่องว่างโตตามความไม่แน่นอน พร้อมเส้นแบ่งให้แตกงานตั้งแต่ 13 points และสเกลทางเลือก T-shirt กับกำลังของสอง"></div>
+        <div class="figcap" style="font-size:13px"><b>องค์ประกอบ · กลไก · workflow</b> — ชุดค่าคงที่ + ช่องว่างที่กว้างขึ้น + กติกาแตกงาน: เทียบกับใบอ้างอิง → เลือกค่าที่ใกล้ที่สุดในชุด → ค่า ≥ 13 ให้แตกก่อนเข้า sprint (กติกาของทีม/LAB) · สเกลทางเลือกที่ให้ผลคล้ายกันคือ T-shirt (XS–XL) และกำลังของสอง</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a" style="padding:9px 13px"><h4 style="font-size:16.5px">ตัวอย่าง · CampusEats</h4><p style="font-size:14.5px; line-height:1.45">ใบอ้างอิง <b>PBI-02 ดูเมนูและราคา = 2 pt</b> → <b>PBI-08 ชำระด้วย PromptPay QR</b> “ใหญ่กว่าราว 4 เท่า” เพราะต่อระบบชำระเงินภายนอกและตรวจยอดอัตโนมัติ → ได้ <b>8</b> (ในสเกลไม่มี 7 หรือ 9 ให้เถียง)</p></div>
+        <div class="card o" style="padding:9px 13px"><h4 style="font-size:16.5px">เมื่อค่าแตะ 13</h4><p style="font-size:14.5px; line-height:1.45">ถ้าทีมอยากรวม “คืนเงินเมื่อร้านยกเลิก” เข้าไปด้วยจนค่าขยับเป็น 13 นั่นคือสัญญาณให้ <b>แยกเป็น story ใหม่</b> แล้วประเมินทั้งสองใบอีกครั้ง ไม่ใช่ดันตัวเลขให้ใหญ่ขึ้น</p></div>
+        <div class="card c" style="padding:9px 13px"><h4 style="font-size:16.5px">❌ เข้าใจผิด → ✅ ใช้ให้ถูก</h4><p style="font-size:14.5px; line-height:1.45"><b>❌</b> “13 pt = 13 วัน” หรือ “ต้องเถียงให้ได้ว่า 13 หรือ 14” · <b>✅</b> point คือขนาดสัมพัทธ์ของทีมนี้ เลือกช่องที่ใกล้ที่สุดก็พอ; ความแม่นยำที่เพิ่มขึ้นมาจากการ <b>แตกงาน</b> ไม่ใช่จากการเติมเลขระหว่างช่อง</p></div>
+      </div>
     </div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Fibonacci</span><span class="pg"></span></div>
@@ -18,24 +23,23 @@
 <!-- ===== U-FIBONACCI 2 : ใน Plane ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Fibonacci · ใน Plane</div><h2>ตั้งสเกลใน Plane — <em>Points · Categories และขอบเขตของ CE</em></h2>
-    <div class="sub">สเกลเชิงแนวคิดเลือกได้หลายแบบ แต่หนึ่งโปรเจกต์ใช้ระบบ Estimates ที่ active อยู่หนึ่งระบบ</div></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Fibonacci · ใน Plane</div><h2>สเกลของทีม vs. <em>สเกลที่ Plane ให้ตั้งได้จริง</em></h2>
+    <div class="sub">Plane ไม่ได้บังคับว่าต้องใช้ Fibonacci แต่บังคับว่า “หนึ่งโปรเจกต์ = หนึ่งระบบประเมิน ชุดละ 2–6 ค่า”</div></div>
   <div class="s-body top">
     <div class="figrow c11">
       <div>
-        <div class="fig shot fix" style="height:350px"><img data-a="t-estimates-settings" alt="Project settings หน้า Estimates แสดงระบบ Points แบบ Fibonacci ที่เปิดใช้งาน"></div>
-        <div class="figcap">Project settings › Estimates ของ Plane Lab — ระบบ Points แบบ Fibonacci เปิดใช้งานอยู่</div>
+        <div class="fig shot fix" style="height:352px"><img data-a="t-estimates-settings" alt="หน้า Project settings หัวข้อ Estimates ของโปรเจกต์ Plane Lab แสดงสวิตช์ Enable estimates for my project เปิดอยู่ และ Estimates list มีระบบเดียวคือ Points ค่า 1, 2, 3, 5, 8, 13 พร้อมไอคอนถังขยะทางขวา"></div>
+        <div class="figcap">Plane Lab › Project settings › กลุ่ม <b>Work Structure › Estimates</b> — สวิตช์ <b>Enable estimates for my project</b> เปิดอยู่ · Estimates list มีระบบเดียวคือ <b>Points 1, 2, 3, 5, 8, 13</b> · ท้ายรายการมีเพียง <b>ไอคอนถังขยะ</b> ไม่มีปุ่มแก้ไข</div>
       </div>
       <div style="display:flex; flex-direction:column; gap:9px">
-        <div class="card a" style="padding:10px 14px"><h4><span class="n">1</span>วิธี Plane รองรับ · เลือก Points</h4><p style="font-size:15px">ไปที่ <b>Settings › Projects › Plane Lab › Estimates</b> → Add estimate system → Points → Fibonacci <b>1 · 2 · 3 · 5 · 8 · 13</b> แล้วเปิด “Enable estimates for my project”</p></div>
-        <div class="card o" style="padding:10px 14px"><h4><span class="n">2</span>องค์ประกอบและขอบเขต CE</h4><p style="font-size:15px"><b>Points</b>: Fibonacci · Linear · Squares · Custom; <b>Categories</b>: T-shirt · Easy-to-hard · Custom — ชุดละ 2–6 ค่า ส่วน <b>Time / Hours</b> ไม่แสดงใน CE</p></div>
-        <div class="card d" style="padding:10px 14px"><h4><span class="n">3</span>ฟีเจอร์ที่เกี่ยวข้อง · Cycle</h4><p style="font-size:15px">ช่อง Estimate ของ work item ผูกกับค่าที่เลือก; ระบบ Points ใช้กับ burndown โหมด <b>Estimates</b> ได้ แต่ Categories ไม่สร้างกราฟ points และ CE แก้ชุดเดิมไม่ได้—ต้องลบแล้วสร้างใหม่</p></div>
-        <div class="note w" style="font-size:14.5px"><b>อย่าสับสนสองสเกล</b> — สเกลแนวคิดไปถึง 100 แต่เทมเพลต Fibonacci ของ Plane จบที่ 13; เกณฑ์ “แตะ 13 แล้วแตก” เป็น policy ของทีม/LAB ไม่ใช่กฎที่ Plane บังคับ</div>
+        <div class="card a" style="padding:9px 13px"><h4 style="font-size:17px"><span class="n">1</span>วิธี Plane รองรับ · เส้นทางเมนูและเทมเพลต</h4><p style="font-size:14.5px; line-height:1.45"><b>Plane Lab › ⋯ › Settings › Work Structure › Estimates › Add estimate system</b> (ปุ่มนี้มีเฉพาะตอนโปรเจกต์ยังไม่มีระบบ) → <b>Points</b> (เทมเพลต Fibonacci · Linear · Squares · Custom) หรือ <b>Categories</b> (T-shirt · Easy to hard · Custom) — ค่าที่เลือกเก็บเป็น <b>ข้อความ</b> ใน <code>EstimatePoint.value</code></p></div>
+        <div class="card w" style="padding:9px 13px"><h4 style="font-size:17px"><span class="n">2</span>ขอบเขต CE · สเกลไปได้ไกลแค่ไหน</h4><p style="font-size:14.5px; line-height:1.45">หน้าสร้างระบบให้ใส่ได้ <b>2–6 ค่า</b> เทมเพลต Fibonacci ของ Plane จึงจบที่ <b>13</b> และสเกลเต็ม 1…100 (9 ค่า) สร้างจากหน้า Settings ไม่ได้แม้เลือก Custom → เพดานนี้พอดีกับกติกา “<b>≥ 13 ต้องแตกก่อนเข้า sprint</b>” · ระบบ <b>Time (ชั่วโมง)</b> เป็นของรุ่นเสียเงิน จึงไม่มีให้เลือกใน CE</p></div>
+        <div class="card d" style="padding:9px 13px"><h4 style="font-size:17px"><span class="n">3</span>ฟีเจอร์ที่เกี่ยวข้อง · เลือกแล้วเปลี่ยนยาก</h4><p style="font-size:14.5px; line-height:1.45">เลือก <b>Points</b> ถ้าอยากได้ burndown โหมด Estimates ของ Cycle (Categories นับได้แค่จำนวนใบ) และเลือกให้จบก่อนใส่ค่า เพราะหน้า Estimates ของ CE ไม่มีปุ่มแก้ชุดค่า มีแต่ปุ่มลบที่ <b>ถอดค่าประมาณออกจาก work item ทุกใบอย่างถาวร</b></p></div>
       </div>
     </div>
-    <div class="grid2" style="margin-top:11px">
-      <div class="note" style="font-size:15px"><span class="tag a">LAB 4</span> เปิด Estimates แบบ Fibonacci → ใส่ points ให้ backlog CampusEats → นำงานเข้า Cycle → ดู burndown โหมด Estimates</div>
-      <div class="note a" style="font-size:15px"><b>ลองทำ / ทบทวน</b> — ถ้า PBI-02 = 2 pt และ PBI-08 ใหญ่ราว 4 เท่า คุณจะเลือก 8 หรือ 13? ถ้าเพิ่ม flow คืนเงินที่ยังไม่ชัด คำตอบควรเปลี่ยนหรือควรแตก story อย่างไร—เขียนเหตุผลและชื่อ story ใหม่ 1 ใบ</div>
+    <div class="grid2">
+      <div class="note" style="font-size:14.5px"><span class="tag a">LAB 4</span> สร้างระบบ Points เทมเพลต Fibonacci → <code>seed_backlog.py</code> ใส่ค่าให้ PBI ทั้ง 10 ใบ (คอลัมน์ <code>points</code> ของ <code>backlog.csv</code>) → ตรวจใน SQL ว่า <code>estimate_points.value</code> เป็น string</div>
+      <div class="note a" style="font-size:14.5px"><b>ลองทำ / ทบทวน</b> — ทุกใบได้ค่าในชุดแล้ว ยกเว้น “แนะนำร้านจากประวัติการสั่ง” ที่ทีมบอกว่าใหญ่กว่า 13: อธิบายว่าทำไมจึง “เติมค่า 20 เข้าไปในชุดเดิม” จากหน้า Settings ไม่ได้ แล้วเสนอทางออกที่ควรทำจริง 1 ข้อ</div>
     </div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Fibonacci</span><span class="pg"></span></div>

@@ -6,12 +6,12 @@
   <div class="s-body top">
     <div class="quote" style="font-size:19px; line-height:1.5"><b>นิยาม</b> — การจัดลำดับความสำคัญ คือการเปรียบเทียบงานทุกใบในกองเดียวกัน แล้วตัดสินใจ <b>“ลำดับที่จะลงมือทำ”</b> จากคุณค่า · ต้นทุน · ความเสี่ยงที่ลดลง และความเสียหายที่เกิดขึ้นถ้ายังไม่ทำ<span class="who">— ผลลัพธ์คือรายการเรียง 1, 2, 3… ที่ไม่มีอันดับเสมอกัน</span></div>
     <div class="grid3">
-      <div class="card c" style="padding:12px 15px"><h4>ปัญหา · ก่อนจัดลำดับ</h4><p>ทุกคำขอถูกเรียกว่า “ด่วน” ทีมจึงสลับไปทำงานของคนที่เร่งเสียงดังที่สุด งานที่มีคุณค่าจริงถูกดองไว้ และไม่มีใครตอบได้ว่าใบถัดไปคือใบไหน</p></div>
+      <div class="card c" style="padding:12px 15px"><h4>ปัญหาที่แก้ · ก่อนจัดลำดับ</h4><p>ทุกคำขอถูกเรียกว่า “ด่วน” ทีมจึงสลับไปทำงานของคนที่เร่งเสียงดังที่สุด งานที่มีคุณค่าจริงถูกดองไว้ และไม่มีใครตอบได้ว่าใบถัดไปคือใบไหน</p></div>
       <div class="card o" style="padding:12px 15px"><h4>ผลลัพธ์ · หลังจัดลำดับ</h4><p>เหลือรายการเดียวที่เรียงแล้ว ทุกคนจึงเห็น trade-off เดียวกัน: ถ้างานใหม่ขึ้นอันดับ 1 ต้องบอกได้ว่าใบใดถูกเลื่อนลง</p></div>
       <div class="card a" style="padding:12px 15px"><h4>ทำไมสำคัญ</h4><p>กำลังคนและเวลาในหนึ่งรอบมีจำกัด ลำดับที่ชัดทำให้ส่งคุณค่าสูงก่อน และทำให้คำว่า “ยังไม่ทำตอนนี้” มีเหตุผลรองรับ</p></div>
     </div>
     <div class="g11" style="gap:18px">
-      <div class="card w" style="padding:12px 15px"><h4>ตัวอย่าง · CampusEats จาก LAB 3–4</h4><p>ทีมวางบั๊ก <b>PLAB-5 “ตะกร้าคำนวณราคาผิดเมื่อมีโปรโมชันซ้อนกัน”</b> (Urgent · label <code>bug</code>) ไว้เหนือ <b>“เขียนเอกสาร API สำหรับทีมร้านค้า”</b> (Low · label <code>docs</code>) เพราะบั๊กกระทบยอดเงินจริงทุกวันที่ยังไม่แก้ ส่วนเอกสารเลื่อนได้โดยยังไม่มีใครเสียหาย</p></div>
+      <div class="card w" style="padding:12px 15px"><h4>ตัวอย่าง · CampusEats จาก LAB 3–4</h4><p>ทีมวางบั๊ก <b>PLAB-5 “ตะกร้าคำนวณราคาผิดเมื่อมีโปรโมชันซ้อนกัน”</b> (Urgent · label <code>bug</code>) ไว้เหนือ <b>PBI-09 “เขียนเอกสาร API สำหรับทีมร้านค้า”</b> (Low · label <code>docs</code>) เพราะบั๊กกระทบยอดเงินจริงทุกวันที่ยังไม่แก้ ส่วนเอกสารเลื่อนได้โดยยังไม่มีใครเสียหาย</p></div>
       <div class="card d" style="padding:12px 15px"><h4>ความเข้าใจผิด · ❌ → ✅</h4><p><b>❌ ตั้ง priority ครบทุกใบแล้ว = จัดลำดับเสร็จ</b><br>✅ priority เป็นเพียงป้ายระดับที่ใช้ซ้ำได้ไม่จำกัด — งานที่เป็น Urgent พร้อมกันหลายใบยังไม่บอกว่าใบไหนก่อน; การจัดลำดับจบเมื่อได้ลำดับที่ไม่มีอันดับเสมอกัน</p></div>
     </div>
     <div class="note" style="font-size:15px"><b>ลำดับเปลี่ยนได้ ไม่ใช่การกลับคำ</b> — Scrum Guide 2020 เรียก Product Backlog ว่า <b>emergent, ordered list</b> และให้ Product Owner รับผิดชอบการจัดลำดับ การเรียงใหม่จึงคือการใช้ข้อมูลล่าสุด</div>
@@ -28,8 +28,8 @@
   <div class="s-body top">
     <div class="g21" style="grid-template-columns:1.80fr .70fr; gap:18px; align-items:start">
       <div>
-        <div class="fig fix" style="height:428px"><img data-a="d40" alt="แผนภาพเปรียบเทียบสามกรอบจัดลำดับ ได้แก่ Value × Effort matrix, MoSCoW และ WSJF ที่รวมผลเป็น backlog เรียงลำดับเดียว พร้อมแถวล่างสรุปการแมปไปยัง priority และ sort_order ของ Plane"></div>
-        <div class="figcap">แผนภาพ d40 — สามกรอบป้อนเข้าสู่ backlog ที่เรียงลำดับเดียว แถวล่างคือการแมปกลับไปยัง Plane</div>
+        <div class="fig fix" style="height:420px"><img data-a="d40" alt="แผนภาพเปรียบเทียบสามกรอบจัดลำดับ ได้แก่ Value × Effort matrix, MoSCoW และ WSJF ที่รวมผลเป็น backlog เรียงลำดับเดียว 6 ใบพร้อมป้าย priority และแถวล่างสรุปการแมปไปยัง priority และ sort_order ของ Plane"></div>
+        <div class="figcap">แผนภาพ d40 — สามกรอบป้อนเข้าสู่ backlog ที่เรียงลำดับเดียว · สังเกตใบอันดับ 3 กับ 4 ที่เป็น <b>medium ทั้งคู่</b> แต่ยังต้องเรียงก่อนหลัง — เลขลำดับคือ <code>sort_order</code> ไม่ใช่ป้าย priority</div>
       </div>
       <div style="display:flex; flex-direction:column; gap:9px">
         <div class="card a" style="padding:9px 13px"><h4 style="font-size:16px"><span class="n">1</span>ทำงานอย่างไร</h4><p style="font-size:15.5px; line-height:1.5">ใช้เกณฑ์เดียวกันกับงานทั้งกอง แล้วเทียบทีละคู่จนเหลือลำดับเดียว</p></div>
@@ -37,7 +37,7 @@
         <div class="card w" style="padding:9px 13px"><h4 style="font-size:16px"><span class="n">3</span>Workflow</h4><p style="font-size:15.5px; line-height:1.5">PO เสนอลำดับ → ทีมค้านด้วยต้นทุน ความเสี่ยง และ dependency → บันทึกลำดับลง backlog → ทบทวนเมื่อข้อมูลเปลี่ยน</p></div>
       </div>
     </div>
-    <div class="note o" style="font-size:14.5px"><b>ตัวอย่างการใช้ WSJF · CampusEats</b> — บั๊ก “ตะกร้าคำนวณราคาผิดเมื่อมีโปรโมชันซ้อนกัน” มี Cost of Delay สูง เพราะผู้ใช้จ่ายเงินผิดทุกวันที่ยังไม่แก้ และใช้เวลาแก้สั้น จึงได้คะแนนสูงกว่า “เขียนเอกสาร API สำหรับทีมร้านค้า” ที่เลื่อนได้โดยยังไม่มีความเสียหาย — ผลคือบั๊กขึ้นเป็นอันดับ 1</div>
+    <div class="note o" style="font-size:14.5px"><b>ลองคิดด้วย WSJF · CampusEats</b> — ทีมให้คะแนน Cost of Delay 1–10 และ Duration เป็นวัน: บั๊ก “ตะกร้าคำนวณราคาผิดเมื่อมีโปรโมชันซ้อนกัน” CoD <b>9</b> (ลูกค้าจ่ายเงินผิดทุกวัน) ÷ 1 วัน = <b>9.0</b> · PBI-09 “เขียนเอกสาร API” CoD <b>3</b> ÷ 2 วัน = <b>1.5</b> — บั๊กจึงขึ้นอันดับ 1; คะแนนเป็นของทีมเอง ใช้เทียบกันเท่านั้น ไม่ใช่ค่ามาตรฐาน</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Prioritization</span><span class="pg"></span></div>
  </section>
@@ -47,22 +47,22 @@
 <div class="slot">
  <section class="slide figs">
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Prioritization · ใน Plane</div><h2>Plane แยก <em>ป้าย priority</em> ออกจาก <em>ลำดับของ backlog</em></h2>
-    <div class="sub">ป้ายบอกระดับความเร่งด่วนของใบเดียว ส่วนลำดับบอกว่าทีมหยิบใบใดก่อน — ทั้งสองอย่างตั้งค่าคนละที่</div></div>
+    <div class="sub"><b>เส้นทางใน UI</b> — ป้าย: Plane Lab › Work Items › เปิดใบงาน › แผง <b>Properties › Priority</b> · ลำดับ: Work Items › ปุ่ม <b>Display › Order by</b> แล้วลากใบงาน</div></div>
   <div class="s-body top">
     <div class="figrow c11">
-      <div><div class="fig shot fix" style="height:266px"><img data-a="t-priority-picker" alt="หน้า detail ของ work item PLAB-12 ใน Plane โดยเปิดเมนู Priority ที่มีตัวเลือก Urgent High Medium Low และ None"></div>
-        <div class="figcap">Plane Lab › Work Items › PLAB-12 · Priority — Urgent · High · Medium · Low · None</div></div>
-      <div><div class="fig shot fix" style="height:266px"><img data-a="t-display-filters" alt="เมนู Display ของ Board layout ใน Plane ที่เห็น Group by ตั้งเป็น States และ Order by ตั้งเป็น Priority"></div>
-        <div class="figcap">Plane Lab › Work Items · Board → Display — Group by = States · Order by = Priority</div></div>
+      <div><div class="fig shot fix" style="height:252px"><img data-a="t-priority-picker" alt="หน้า detail ของ work item PLAB-12 ใน Plane แผง Properties ทางขวาแสดง State เป็น In Review, Assignees เป็น dev1 และเมนู Priority ที่เปิดอยู่มีตัวเลือก Urgent ซึ่งถูกติ๊กไว้ High Medium Low และ None"></div>
+        <div class="figcap"><b>ภาพจริง · PLAB-12</b> — แผง <b>Properties</b> เปิดเมนู <b>Priority</b>: Urgent (ติ๊กอยู่) · High · Medium · Low · None — ค่าคงที่ 5 ค่า เพิ่มเองไม่ได้</div></div>
+      <div><div class="fig shot fix" style="height:252px"><img data-a="t-display-filters" alt="บอร์ดของโปรเจกต์ Plane Lab ที่เปิดเมนู Display เห็นหัวข้อ Group by ตั้งเป็น States และหัวข้อ Order by ที่มีตัวเลือก Manual, Last created, Last updated, Start date, Due date และ Priority โดย Priority ถูกเลือกไว้"></div>
+        <div class="figcap"><b>ภาพจริง · Board › Display</b> — <b>Group by = States</b> · <b>Order by = Priority</b>; ตัวเลือกแรกของ Order by คือ <b>Manual</b> = โหมดเดียวที่ลากจัดลำดับได้</div></div>
     </div>
-    <div class="grid3" style="gap:14px">
-      <div class="card a" style="padding:9px 13px"><h4 style="font-size:16.5px">ฟิลด์ · <code>priority</code></h4><p style="font-size:15.5px; line-height:1.5">enum ตายตัว 5 ค่า ค่าเริ่มต้น <code>none</code>; <b>Order by › Priority</b> เรียง urgent → high → medium → low → none และใบที่ระดับเท่ากันเรียงต่อด้วย <b>ใบที่สร้างล่าสุดก่อน</b></p></div>
-      <div class="card o" style="padding:9px 13px"><h4 style="font-size:16.5px">ลำดับ · <code>sort_order</code></h4><p style="font-size:15.5px; line-height:1.5">ลำดับจริงอยู่คนละฟิลด์: ตั้ง <b>Order by › Manual</b> แล้วลากใบงาน — Plane เขียน <code>sort_order</code> ใหม่เป็นค่ากึ่งกลางของใบบนกับใบล่าง; การแก้ priority ไม่ขยับลำดับ</p></div>
-      <div class="card w" style="padding:9px 13px"><h4 style="font-size:16.5px">ฟีเจอร์ที่เกี่ยวข้อง · Views</h4><p style="font-size:15.5px; line-height:1.5">บันทึกฟิลเตอร์ Priority = Urgent, High เป็น <b>View</b> (LAB 5 ตั้งชื่อ “Expedite lane”) และใช้ <b>Group by › Priority</b> ดูว่างานด่วนไปกองอยู่คอลัมน์ใด</p></div>
+    <div class="grid3" style="gap:13px">
+      <div class="card a" style="padding:9px 13px"><h4 style="font-size:16.5px">Plane นำไปใช้อย่างไร · <code>priority</code></h4><p style="font-size:15px; line-height:1.45">คอลัมน์ <code>priority</code> ของตาราง <code>issues</code> เป็น enum 5 ค่า ค่าเริ่มต้น <code>none</code>; <b>Order by › Priority</b> เรียง urgent → high → medium → low → none และใบที่ระดับเท่ากันเรียงต่อด้วย <b>ใบที่สร้างล่าสุดก่อน</b></p></div>
+      <div class="card o" style="padding:9px 13px"><h4 style="font-size:16.5px">ลำดับจริง · <code>sort_order</code></h4><p style="font-size:15px; line-height:1.45">ตั้ง <b>Order by › Manual</b> แล้วลาก — Plane เขียน <code>sort_order</code> เป็นค่ากึ่งกลางของใบบนกับใบล่าง (วางบนสุด = ใบแรก − 65535) · แก้ priority ไม่ขยับลำดับ</p></div>
+      <div class="card w" style="padding:9px 13px"><h4 style="font-size:16.5px">ฟีเจอร์ที่เกี่ยวข้อง · Views</h4><p style="font-size:15px; line-height:1.45">บันทึกฟิลเตอร์ Priority = Urgent, High เป็น <b>View</b> (LAB 5 ตั้งชื่อ “Expedite lane”) และใช้ <b>Group by › Priority</b> ดูว่างานด่วนไปกองอยู่คอลัมน์ใด</p></div>
     </div>
-    <div class="grid2" style="gap:14px">
-      <div class="note w" style="font-size:14.5px"><b>ข้อจำกัด CE · Plane v1.4.2</b> — priority เป็น enum แก้ไขไม่ได้ · ไม่มีฟิลด์คะแนน WSJF · ไม่มี WIP limit ทีมต้องเขียนกติกาจำกัดใบ Expedite ไว้ใน Page เอง</div>
-      <div class="note a" style="font-size:14.5px"><b><span class="tag a">LAB 5</span> แบบฝึกหัด</b> — PBI-04 “สั่งอาหารและรับหมายเลขออเดอร์” (Urgent) ต้องรอ PBI-03 “เพิ่มเมนูลงตะกร้า” (High) ควรวางใบใดไว้อันดับ 1 และบันทึกความสัมพันธ์นี้ใน Plane อย่างไร</div>
+    <div class="grid2" style="gap:13px">
+      <div class="note w" style="font-size:14px"><b>ข้อจำกัด CE · Plane v1.4.2</b> — priority เป็น enum แก้ไขไม่ได้ · ไม่มีช่องกรอกคะแนน WSJF · ไม่มี WIP limit; ถ้า Order by ไม่ใช่ Manual การลากจะ<b>ย้ายกลุ่มเท่านั้น</b> Plane ขึ้นแถบทับคอลัมน์ว่า “This layout is ordered by Priority” และไม่บันทึกตำแหน่งใหม่</div>
+      <div class="note a" style="font-size:14px"><b><span class="tag a">LAB 5</span> แบบฝึกหัด / ทบทวน</b> — PBI-04 “สั่งอาหารและรับหมายเลขออเดอร์” (Urgent) ทำไม่ได้ถ้ายังไม่มี PBI-03 “เพิ่มเมนูลงตะกร้าและแก้จำนวน” (High): ควรวางใบใดไว้อันดับ 1 · ต้องตั้ง Order by เป็นอะไรจึงลากได้ · และบันทึกการพึ่งพานี้ใน Plane ด้วยอะไร</div>
     </div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Prioritization</span><span class="pg"></span></div>

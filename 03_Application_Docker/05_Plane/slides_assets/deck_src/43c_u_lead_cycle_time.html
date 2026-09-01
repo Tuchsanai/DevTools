@@ -8,7 +8,7 @@
       <div style="display:flex; flex-direction:column; gap:10px">
         <div class="card a"><h4>นิยาม · Lead time</h4><p>เวลาที่ผ่านไปตั้งแต่รับคำขอหรือสร้าง work item จนงานเข้า Done — รวมคิวก่อนเริ่ม ตลอดจนเวลาทำและเวลารอระหว่างขั้นตอน</p></div>
         <div class="card o"><h4>นิยาม · Cycle time</h4><p>เวลาที่ผ่านไปตั้งแต่งานเข้าสู่ขั้นที่ทีมกำหนดว่า “เริ่มแล้ว” จนเข้า Done — ในหน่วยนี้ใช้การเข้า state กลุ่ม <code>started</code> ครั้งแรกเป็นจุดเริ่ม</p></div>
-        <div class="card"><h4>ทำไมสำคัญ</h4><p>Lead time สะท้อนประสบการณ์ของผู้ขอ; Cycle time ช่วยทีมแยกความช้าหลังเริ่มงานออกจากเวลาที่รออยู่ใน backlog</p></div>
+        <div class="card"><h4>ทำไมสำคัญ</h4><p>Lead time สะท้อนประสบการณ์ของผู้ขอ จึงเป็นตัวเลขที่ใช้ตอบคำถาม “จะได้เมื่อไร”; Cycle time ช่วยทีมแยกความช้าหลังเริ่มงานออกจากเวลาที่รออยู่ใน backlog</p></div>
       </div>
       <div style="display:flex; flex-direction:column; gap:10px">
         <div class="grid2">
@@ -22,6 +22,7 @@
         </div>
       </div>
     </div>
+    <div class="note a" style="margin-top:13px; font-size:15.5px"><b>ความสัมพันธ์ที่จริงเสมอ</b> — Lead time ≥ Cycle time เพราะช่วง Cycle เป็นส่วนย่อยของช่วง Lead; ส่วนต่างคือ <b>เวลารอในคิวก่อนเริ่ม</b> ซึ่งย่อได้ด้วยการจำกัด WIP และจัดลำดับ backlog ให้ดีขึ้น ไม่ใช่ด้วยการเร่งคนที่กำลังเขียนโค้ด</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Lead time &amp; Cycle time</span><span class="pg"></span></div>
  </section>
@@ -32,14 +33,23 @@
  <section class="slide figs">
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Lead time &amp; Cycle time · กลไก</div><h2>สามจุดเวลา → สองช่วงเวลา → <em>หนึ่งการกระจาย</em></h2></div>
   <div class="s-body top">
-    <div class="figrow" style="grid-template-columns:1.43fr .57fr; gap:16px; align-items:start">
-      <div><div class="fig fix" style="height:388px"><img data-a="d39" alt="เส้นเวลาตัวอย่างจาก created ผ่านการเข้า state กลุ่ม started ครั้งแรกจนถึง completed พร้อมวงเล็บ Lead time, Cycle time และคำอธิบาย P85"></div>
-        <div class="figcap">Workflow ตัวอย่าง (PLAB-12 เป็นหมายเลขสาธิตในภาพ) · Lead 4 วัน 7 ชม. · Cycle 2 วัน 6 ชม. · ส่วนต่าง 2 วัน 1 ชม. คือคิวก่อนเริ่ม</div></div>
+    <div class="figrow" style="grid-template-columns:1.4fr .6fr; gap:16px; align-items:start">
+      <div><div class="fig fix" style="height:352px"><img data-a="d39" alt="เส้นเวลาตัวอย่างจาก created ผ่านการเข้า state กลุ่ม started ครั้งแรกจนถึง completed พร้อมวงเล็บ Lead time, Cycle time และคำอธิบาย P85"></div>
+        <div class="figcap">เส้นเวลาตัวอย่าง (PLAB-12 เป็นหมายเลขสาธิตในภาพ) · Lead 4 วัน 7 ชม. · Cycle 2 วัน 6 ชม. · ส่วนต่าง 2 วัน 1 ชม. คือคิวก่อนเริ่ม</div>
+        <table class="tbl xs" style="margin-top:9px">
+          <thead><tr><th>การกระจายจริงจาก LAB 5 · 9 ใบที่ Done ใน 7 วัน</th><th style="width:78px">p50</th><th style="width:78px">p85</th><th style="width:88px">ค่าเฉลี่ย</th></tr></thead>
+          <tbody>
+            <tr><td><b>Lead time</b> — ตั้งแต่สร้างใบงาน</td><td>48 ชม.</td><td><b>72 ชม.</b></td><td class="mut">45.3 ชม.</td></tr>
+            <tr><td><b>Cycle time</b> — ตั้งแต่เข้า <code>started</code></td><td>36 ชม.</td><td><b>48 ชม.</b></td><td class="mut">40.0 ชม.</td></tr>
+          </tbody>
+        </table>
+        <div class="figcap" style="margin-top:5px">ค่าเฉลี่ยของ Lead (45.3) ต่ำกว่า p50 (48) เพราะมี 3 ใบที่ถูกสร้างและปิดในชั่วโมงเดียวกัน (Lead ≈ 0) — ตัวอย่างของ outlier ที่ทำให้ค่าเฉลี่ยเล่าเรื่องผิด</div>
+      </div>
       <div style="display:flex; flex-direction:column; gap:9px">
-        <div class="card a" style="padding:10px 13px"><h4>องค์ประกอบ · ขอบเขต</h4><p style="font-size:15px"><b>รับคำขอ</b> → จุดเริ่ม Lead<br><b>เข้า started ครั้งแรก</b> → จุดเริ่ม Cycle<br><b>เข้า completed</b> → จุดจบของทั้งคู่</p></div>
-        <div class="card o" style="padding:10px 13px"><h4>กลไก · ต่อหนึ่งใบ</h4><p style="font-size:15px"><b>Lead</b> = เสร็จ − รับคำขอ<br><b>Cycle</b> = เสร็จ − เริ่มทำครั้งแรก<br><b>Queue</b> = Lead − Cycle</p></div>
-        <div class="card" style="padding:10px 13px"><h4>Workflow · จากใบงานสู่ P85</h4><p style="font-size:15px">คำนวณทุกใบที่ Done ด้วยขอบเขตเดียวกัน → เรียงระยะเวลาจากน้อยไปมาก → หา P50/P85; P85 คือเกณฑ์ที่งานอย่างน้อย 85% เสร็จภายในค่านั้น</p></div>
-        <div class="note w" style="font-size:14.5px; padding:9px 12px"><b>ขอบเขตต้องตรงกัน</b> — จะเริ่ม Cycle ที่ “In Progress” หรือ “Ready” ก็ได้ตาม policy แต่ห้ามสลับนิยามกลางชุดข้อมูล · ความสัมพันธ์กับ WIP/Little’s Law อยู่ในหน่วย WIP limit ก่อนหน้านี้</div>
+        <div class="card a" style="padding:10px 13px"><h4 style="font-size:17px">องค์ประกอบ · สามจุดเวลา</h4><p style="font-size:15px"><b>รับคำขอ</b> → จุดเริ่ม Lead<br><b>เข้า started ครั้งแรก</b> → จุดเริ่ม Cycle<br><b>เข้า completed</b> → จุดจบของทั้งคู่</p></div>
+        <div class="card o" style="padding:10px 13px"><h4 style="font-size:17px">กลไก · ต่อหนึ่งใบ</h4><p style="font-size:15px"><b>Lead</b> = เสร็จ − รับคำขอ<br><b>Cycle</b> = เสร็จ − เริ่มทำครั้งแรก<br><b>Queue</b> = Lead − Cycle</p></div>
+        <div class="card" style="padding:10px 13px"><h4 style="font-size:17px">Workflow · จากใบงานสู่ P85</h4><p style="font-size:15px">คำนวณทุกใบที่ Done ด้วยขอบเขตเดียวกัน → เรียงระยะเวลาจากน้อยไปมาก → หา P50/P85; <b>P85</b> คือค่าที่งานอย่างน้อย 85% เสร็จภายในนั้น จึงใช้ตอบผู้ขอได้ดีกว่าค่าเฉลี่ย</p></div>
+        <div class="note w" style="font-size:14.5px; padding:9px 12px"><b>ขอบเขตต้องตรงกัน</b> — จะเริ่มนับ Cycle ที่ “In Progress” หรือ “Ready” ก็ได้ตาม policy แต่ห้ามสลับนิยามกลางชุดข้อมูล · ความเชื่อมโยงกับ WIP และ Little’s Law อยู่ในหน่วย WIP limit ก่อนหน้านี้</div>
       </div>
     </div>
   </div>
@@ -54,8 +64,8 @@
     <div class="sub">ฟีเจอร์ที่เกี่ยวข้องคือ State groups + Work item Activity; CE v1.4.2 ไม่มี Lead/Cycle time ที่คำนวณล่วงหน้าหรือกราฟสำเร็จรูป</div></div>
   <div class="s-body top">
     <div class="figrow" style="grid-template-columns:1.14fr .86fr; gap:16px; align-items:start">
-      <div><div class="fig shot fix" style="height:308px"><img data-a="t-activity" alt="หน้า Work item PLAB-4 ใน Plane แสดง Activity ที่ admin เปลี่ยน state เป็น Todo และ In Progress รวมทั้งรายการสร้างงาน relation link และ comment"></div>
-        <div class="figcap">Plane Lab › Work Items › PLAB-4 › Activity — admin เปลี่ยน state เป็น Todo/In Progress; ประวัติเดียวกันมี create, relation, link และ comment</div></div>
+      <div><div class="fig shot fix" style="height:312px"><img data-a="t-activity" alt="หน้า Work item PLAB-4 ใน Plane แสดง Activity ที่ admin เปลี่ยน state เป็น Todo และ In Progress รวมทั้งรายการสร้างงาน relation link และ comment"></div>
+        <div class="figcap">เส้นทาง: <b>Plane Lab › Work Items › PLAB-4</b> แล้วเลื่อนลงถึงหัวข้อ <b>Activity</b> — “admin set the state to Todo / In Progress” คือแถวที่ใช้หาจุดเริ่ม Cycle; ใบนี้ยังอยู่ State = In Progress จึงยังไม่มี <code>completed_at</code></div></div>
       <div style="display:flex; flex-direction:column; gap:5px">
         <table class="tbl sm" style="font-size:14px">
           <thead><tr><th style="width:122px">จุดเวลา</th><th>ข้อมูลใน Plane</th></tr></thead>
@@ -66,14 +76,14 @@
           </tbody>
         </table>
         <div class="card a" style="padding:5px 11px"><h4>สูตรใน Plane</h4><p style="font-size:14.5px"><b>Lead</b> = completed_at − created_at<br><b>Cycle</b> = completed_at − เวลาเข้า started ครั้งแรก</p></div>
-        <div class="note w" style="font-size:14px; padding:6px 10px"><b>Reopen</b> ล้าง <code>completed_at</code>; Activity เดิมยังอยู่ แต่สูตรค่าปัจจุบันต้องรอ Done รอบใหม่ · Activity เขียนแบบ async โดย Celery worker จึงมาช้าได้เมื่อ worker หยุด</div>
+        <div class="note w" style="font-size:14px; padding:6px 10px"><b>สามกับดัก</b> — Reopen ล้าง <code>completed_at</code> ต้องรอ Done รอบใหม่ · Activity เขียนแบบ async ด้วย Celery worker จึงมาช้าได้เมื่อ worker หยุด · join ด้วย <code>new_identifier</code> (UUID) เพราะชื่อ state ถูกเปลี่ยนภายหลังได้</div>
       </div>
     </div>
     <div class="grid2" style="margin-top:9px">
-      <div class="card o" style="padding:8px 12px"><h4><span class="tag o" style="margin-right:7px">LAB 5</span><code>flow_metrics.py</code></h4><p style="font-size:14px">อ่าน Activity ของ CampusEats แล้วหา Lead/Cycle, p50/p85 และ Throughput (fixture ของ LAB จับคู่ชื่อ state กับ group)</p></div>
-      <div class="card" style="padding:8px 12px"><h4><span class="tag a" style="margin-right:7px">LAB 9</span>Tracking Dashboard</h4><p style="font-size:14px">นำ metric ชุดเดียวกันขึ้น dashboard เพื่อติดตามแนวโน้มและตรวจย้อนกับ LAB 5</p></div>
+      <div class="card o" style="padding:8px 12px"><h4><span class="tag o" style="margin-right:7px">LAB 5</span><code>flow_metrics.py</code></h4><p style="font-size:14px">อ่าน Activity ของ CampusEats ทีละใบ แล้วรายงาน Lead/Cycle, p50/p85, Throughput และ WIP</p></div>
+      <div class="card" style="padding:8px 12px"><h4><span class="tag a" style="margin-right:7px">LAB 9</span>Tracking Dashboard</h4><p style="font-size:14px">นำ metric ชุดเดียวกันขึ้น dashboard เพื่อดูแนวโน้มและตรวจย้อนกับผล LAB 5</p></div>
     </div>
-    <div class="note a" style="margin-top:7px; font-size:14.5px; padding:8px 11px"><b>Mini exercise</b> — สร้าง จ. 10:00 · เข้า <code>started</code> อ. 14:00 · Done พฤ. 14:00: Lead time และ Cycle time เท่าไร? <span class="mut">เฉลย: 76 ชม. และ 48 ชม.</span></div>
+    <div class="note a" style="margin-top:7px; font-size:14.5px; padding:8px 11px"><b>Mini exercise</b> — ใบงานสร้าง จ. 10:00 · เข้า <code>started</code> อ. 14:00 · Done พฤ. 14:00: Lead, Cycle และเวลารอในคิวเท่าไร? แล้วบอกว่าแต่ละจุดเวลาอ่านจากข้อมูลใดของ Plane</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Lead time &amp; Cycle time</span><span class="pg"></span></div>
  </section>

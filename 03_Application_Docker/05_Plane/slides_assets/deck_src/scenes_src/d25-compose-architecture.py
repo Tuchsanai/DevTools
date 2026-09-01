@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""d25 — anatomy of docker-compose.yml + plane.env (13 services · 10 volumes · ${VAR} · boot order · one published port).
+"""d25 — anatomy of docker-compose.yml + plane.env (13 services · 10 volumes · ${VAR} · boot order · proxy-only HTTP + HTTPS ports).
 
 Box labels render at 20 px Excalifont on the canvas (label font size is not configurable through the add path), so
 box text is kept short (label needs ~ measured_width x 1.25 + 10 px) and details go into txt() (Helvetica, size
@@ -11,13 +11,13 @@ from diagrams import *
 ENVBG = "#fff4e6"
 
 els = [
-    title("กายวิภาค docker-compose.yml + plane.env : 13 services · 10 volumes · port เดียวที่เปิดออก"),
+    title("กายวิภาค docker-compose.yml + plane.env : 13 services · 10 volumes · proxy เท่านั้นที่ publish port (HTTP + HTTPS)"),
 
     # ---------------------------------------------------------------- left : plane.env
     zone(30, 75, 225, 537, ORANGE, ENVBG),
     txt(45, 84, "plane.env  (--env-file)", 18, ORANGE),
     box("e1", 40, 116, 205, 38, "URL / port", ORANGE, "#ffffff", 14),
-    txt(46, 160, "APP_DOMAIN=localhost:8080\nLISTEN_HTTP_PORT=8080\nWEB_URL=http://localhost:8080", 13, INK),
+    txt(46, 160, "APP_DOMAIN=localhost:8080\nLISTEN_HTTP_PORT=8080\nLISTEN_HTTPS_PORT=8443\nWEB_URL=http://localhost:8080", 13, INK),
     box("e2", 40, 232, 205, 38, "secrets", RED, "#ffffff", 14),
     txt(46, 276, "SECRET_KEY=<สุ่ม 64 hex>\nLIVE_SERVER_SECRET_KEY=…", 13, INK),
     box("e3", 40, 318, 205, 38, "data stores", TEAL, "#ffffff", 14),
@@ -31,8 +31,8 @@ els = [
     # app services
     zone(315, 115, 610, 275, GREEN, GREENBG, id="appz"),
     txt(327, 121, "app services  ·  image makeplane/plane-*:${APP_RELEASE}", 14, GREEN),
-    box("px", 327, 150, 190, 64, "proxy (Caddy)\nports 8080:80", BLUE, BLUEBG, 15),
-    txt(327, 222, "ports: \"${LISTEN_HTTP_PORT}:80\"\nตัวเดียวที่ publish port", 13, BLUE),
+    box("px", 327, 150, 190, 64, "proxy (Caddy)\n8080/8443 → 80/443", BLUE, BLUEBG, 15),
+    txt(327, 222, "ports: HTTP→80 · HTTPS→443\nproxy เท่านั้นที่ publish port (HTTP + HTTPS)", 13, BLUE),
     box("web", 532, 150, 86, 64, "web\n:3000", GREEN, "#ffffff", 15),
     box("adm", 626, 150, 86, 64, "admin\n:3000", GREEN, "#ffffff", 15),
     box("spc", 720, 150, 86, 64, "space\n:3000", GREEN, "#ffffff", 15),
@@ -79,8 +79,8 @@ els = [
     arrow("cmd", "ctn", MUTED, x=1067, y=184, w=0, h=28),
     box("ctn", 967, 212, 200, 116, "13 containers\nplane-<service>-1\n12 Up + migrator\nExited (0)", INK, "#ffffff", 14),
     arrow("ctn", "pub", MUTED, x=1067, y=330, w=0, h=34),
-    box("pub", 967, 366, 200, 90, "published port\nตัวเดียว\n0.0.0.0:8080->80", BLUE, BLUEBG, 14),
-    txt(967, 470, "pc ps โชว์ (healthy) เฉพาะ\nweb · admin · space\n(image อื่นไม่ประกาศ healthcheck)", 13, MUTED),
+    box("pub", 967, 366, 200, 90, "proxy เท่านั้นที่\npublish port\n(HTTP + HTTPS)", BLUE, BLUEBG, 14),
+    txt(967, 470, "8080→80 · 8443→443\npc ps โชว์ (healthy) เฉพาะ\nweb · admin · space\n(image อื่นไม่ประกาศ healthcheck)", 13, MUTED),
     txt(967, 548, "ห้าม pc down -v ก่อนจบ LAB 9\n(ลบ volume = ข้อมูลหาย)", 13, RED),
 ]
 

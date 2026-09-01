@@ -2,7 +2,7 @@
 """d24 — Plane object hierarchy as a tree: Instance → Workspace → Project → (Work item · features) → children.
 Note: box labels render at the canvas default (20 px hand font) whatever fs is passed, so box text stays short and
 details go into grey helvetica txt elements.
-Project-level things are split into two dashed zones because only the first row is a toggle in Settings → Features
+Project-level things are split into two dashed zones because only the first row is toggled on its per-feature page under Settings › Features
 (project.cycle_view / module_view / issue_views_view / page_view / intake_view in Plane v1.4.2); States, Labels and
 Members are always on, and Estimates is enabled from its own Settings → Estimates page."""
 import sys, json, os
@@ -34,11 +34,11 @@ els = [
     # ---- notes on the right of the spine
     txt(NOTE_X, 78, "ทั้งเซิร์ฟเวอร์ 1 ตัว · instance admin ตั้งค่าที่ /god-mode/", 13, MUTED),
     txt(NOTE_X, 142, "องค์กร/ทีม · เชิญ members และกำหนด role ที่ระดับนี้\nAdmin = ตั้งค่า/เชิญคน · Member = ทำงาน · Guest = ดู+comment", 13, MUTED),
-    txt(NOTE_X, 222, "ผลิตภัณฑ์/ทีมย่อย · เปิด-ปิด features ได้รายโปรเจกต์ (Settings → Features)", 13, MUTED),
+    txt(NOTE_X, 222, "ผลิตภัณฑ์/ทีมย่อย · เปิด-ปิด features ได้รายโปรเจกต์ (Settings › Features › แต่ละฟีเจอร์)", 13, MUTED),
 ]
 
 # ---- level 3 : Project → Work item  +  two zones of project-level things
-#   zone A (teal)  : features that are toggles in Settings → Features
+#   zone A (teal)  : features toggled on their individual pages under Settings › Features
 #   zone B (grey)  : project settings that are always on (Estimates is enabled on its own settings page)
 FW, FGAP, FH = 160, 10, 40
 ZONE_H = 82                          # caption + row of boxes + synonym line
@@ -59,9 +59,9 @@ els += [
     stub(WI_CX, BUS1_Y, L3_Y - BUS1_Y, "wi", BLUE),
     zone(FZ_X, ZA_Y, FZ_W, ZONE_H, TEAL, TEALBG, id="fz"),
     stub(FZ_CX, BUS1_Y, ZA_Y - BUS1_Y, "fz", TEAL),
-    txt(FZ_X + 15, ZA_Y + 5, "features ระดับโปรเจกต์ — เปิด/ปิดได้ทีละอย่างใน Settings → Features", 12, TEAL),
+    txt(FZ_X + 15, ZA_Y + 5, "features ระดับโปรเจกต์ — เปิด/ปิดได้ที่ Settings › Features › แต่ละฟีเจอร์", 12, TEAL),
     zone(FZ_X, ZB_Y, FZ_W, ZONE_H, MUTED, GREYBG, id="sz"),
-    txt(FZ_X + 15, ZB_Y + 5, "ตั้งค่าระดับโปรเจกต์ — ใช้ได้เสมอ ปิดไม่ได้ (Estimates เปิดใช้ที่หน้า Settings → Estimates)", 12, MUTED),
+    txt(FZ_X + 15, ZB_Y + 5, "ตั้งค่าระดับโปรเจกต์ — ใช้ได้เสมอ ปิดไม่ได้ (Estimates ตั้งค่าที่ Settings › Estimates)", 12, MUTED),
 ]
 row1 = ["Cycles", "Modules", "Views", "Pages", "Intake"]
 row2 = ["States", "Labels", "Estimates", "Members"]

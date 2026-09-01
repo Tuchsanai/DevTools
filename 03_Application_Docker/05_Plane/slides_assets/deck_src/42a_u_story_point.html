@@ -24,7 +24,7 @@
       <div>
         <div class="fig photo fix" style="height:248px"><img data-a="real_estimation_whiteboard" alt="สมาชิกทีมเปรียบเทียบขนาดงานด้วยกระดาษโน้ตหลายขนาดบนกระดานไวต์บอร์ด"></div>
         <div class="figcap">การประเมินคือบทสนทนาของทีม: กระดาษที่ใหญ่ขึ้นสื่อ “ขนาดสัมพัทธ์” ไม่ได้สื่อจำนวนชั่วโมง</div>
-        <div class="card a" style="margin-top:9px; padding:11px 14px"><h4>ตัวอย่างจริง · CampusEats</h4><p style="font-size:15px"><b>PBI-02 ดูเมนูและราคา = 2 pt</b> เป็นใบอ้างอิงของทีม ส่วน <b>PBI-08 ชำระด้วย PromptPay QR = 8 pt</b> เพราะต้องต่อระบบชำระเงินภายนอก ตรวจยอดอัตโนมัติ และทีมยังไม่เคยทำ — 8 แปลว่า “ใหญ่กว่ามาก” ไม่ได้แปลว่าใช้เวลา 4 เท่าพอดี</p></div>
+        <div class="card a" style="margin-top:9px; padding:11px 14px"><h4>ตัวอย่างจริง · CampusEats</h4><p style="font-size:15px"><b>PBI-02 ดูเมนูและราคา = 2 pt</b> เป็นใบอ้างอิงของทีม ส่วน <b>PBI-08 ชำระเงินด้วย PromptPay QR = 8 pt</b> เพราะต้องต่อระบบชำระเงินภายนอก ตรวจยอดอัตโนมัติ และทีมยังไม่เคยทำ — 8 แปลว่า “ใหญ่กว่ามาก” ไม่ได้แปลว่าใช้เวลา 4 เท่าพอดี</p></div>
       </div>
     </div>
     <div class="grid2">
@@ -61,7 +61,7 @@
             <tr><td><b>PBI-07</b> ติดตามสถานะแบบ realtime</td><td>แตะทั้งฝั่งนักศึกษา ร้าน และไรเดอร์</td><td>อัปเดตใน 5 วินาทีโดยไม่ refresh</td><td>ยังไม่เลือกวิธี (poll หรือ push)</td><td class="req">8</td></tr>
           </tbody>
         </table>
-        <div class="note o" style="margin-top:10px; font-size:14.5px"><b>อ่านตามแนวนอน</b> — สามมิติถูกยุบเป็นค่าเดียว; <b>PBI-07 ได้ 8 เพราะความไม่แน่นอน</b> ไม่ใช่เพราะโค้ดเยอะ ทางลดค่าจึงคือหาข้อมูลเพิ่มหรือแตกใบ ไม่ใช่การบวกเวลาเผื่อไว้ในตัวเลข</div>
+        <div class="note o" style="margin-top:10px; font-size:14.5px"><b>อ่านตามแนวนอน</b> — สามมิติถูกยุบเป็นค่าเดียว; <b>PBI-07 ได้ 8 เพราะความไม่แน่นอน</b> ไม่ใช่เพราะโค้ดเยอะ วิธีลดค่าจึงเป็นการหาข้อมูลเพิ่มหรือแตกใบให้เล็กลง ไม่ใช่บวกเวลาเผื่อไว้ในตัวเลข</div>
       </div>
     </div>
     <div class="eyebrow" style="margin-top:2px">Workflow · ประเมิน 1 ใบ</div>
@@ -84,23 +84,18 @@
 <div class="slot">
  <section class="slide figs">
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Story point · ใน Plane</div><h2>Plane Estimates — <em>เปิดระบบ Points ที่โปรเจกต์ แล้วผูกค่าเข้ากับ work item</em></h2>
-    <div class="sub">Plane ไม่ได้ช่วยประเมิน แต่เก็บค่าที่ทีมตกลงแล้ว และรวมเป็นตัวเลขของ cycle ให้อัตโนมัติ</div></div>
+    <div class="sub">Plane ไม่ได้ช่วยประเมิน แต่เก็บค่าที่ทีมตกลงแล้ว แล้วรวมเป็น points ของ cycle ให้อัตโนมัติ</div></div>
   <div class="s-body top">
-    <div class="figrow c11" style="align-items:start">
-      <div>
-        <div class="fig shot fix" style="height:358px"><img data-a="t-estimates-settings" alt="หน้า Project settings ของโปรเจกต์ Plane Lab ที่หัวข้อ Estimates แสดงสวิตช์ Enable estimates for my project เปิดอยู่ และ Estimates list มีระบบ Points ค่า 1, 2, 3, 5, 8, 13"></div>
-        <div class="figcap">Plane Lab › Project settings › <b>Work structure › Estimates</b> — สวิตช์ <b>Enable estimates for my project</b> เปิดอยู่ · Estimates list มีระบบ <b>Points</b> ค่า 1, 2, 3, 5, 8, 13</div>
-      </div>
-      <div style="display:flex; flex-direction:column; gap:9px">
-        <div class="card a" style="padding:10px 13px"><h4><span class="n">1</span>วิธีเปิด · เส้นทางเมนู</h4><p style="font-size:15px"><b>Plane Lab › ⋯ › Settings › Work structure › Estimates</b> → Add estimate system → Points → Fibonacci → เปิดสวิตช์ Enable; หนึ่งโปรเจกต์ใช้ได้ 1 ระบบ (<code>Project.estimate</code>) ชุดละ 2–6 ค่า</p></div>
-        <div class="card o" style="padding:10px 13px"><h4><span class="n">2</span>ฟิลด์ · ค่าไปอยู่ที่ไหน</h4><p style="font-size:15px">เลือกค่าในช่อง <b>Estimate</b> ของ work item → <code>Issue.estimate_point</code> ชี้ไป <code>EstimatePoint</code> ที่เก็บ <code>value</code> เป็น <b>ข้อความ</b> แล้ว cast เป็น float ตอนรวม points</p></div>
-        <div class="card w" style="padding:10px 13px"><h4><span class="n">3</span>ฟีเจอร์ที่เกี่ยวข้อง · Cycle</h4><p style="font-size:15px">แถบ Progress ของ cycle แสดง <b>Points เสร็จ/ทั้งหมด</b> และสลับ burndown เป็นโหมด <b>Estimates</b> ได้เมื่อระบบที่ active เป็น Points</p></div>
-        <div class="note" style="font-size:13.5px"><b>ขอบเขต CE v1.4.2</b> — <code>/api/v1/…/estimates/</code> ไม่ถูก mount: ตั้ง <code>estimate_point</code> (UUID) ให้ work item ได้ แต่อ่านรายการ point ผ่าน API v1 ไม่ได้</div>
-      </div>
+    <div class="fig shot fix" style="height:236px; overflow:hidden; border-radius:8px"><img data-a="t-estimates-settings" style="width:100%; height:100%; max-width:none; max-height:none; object-fit:cover; object-position:50% 20%" alt="หน้า Estimates ใน Project settings ของโปรเจกต์ Plane Lab สวิตช์ Enable estimates for my project เปิดอยู่ และ Estimates list มีระบบเดียวชื่อ Points ค่า 1, 2, 3, 5, 8, 13 โดยท้ายแถวมีเพียงปุ่มถังขยะ"></div>
+    <div class="figcap">หน้า <b>Estimates</b> ของ Plane Lab (ครอบครึ่งบนของภาพจับหน้าจอ) — สวิตช์ <b>Enable estimates for my project</b> เปิดอยู่ · Estimates list มีระบบเดียวคือ <b>Points 1, 2, 3, 5, 8, 13</b> ท้ายแถวมีแต่ปุ่มถังขยะ</div>
+    <div class="grid3">
+      <div class="card a" style="padding:8px 12px"><h4><span class="n">1</span>วิธีเปิด · เส้นทางเมนู</h4><p style="font-size:14px">Plane Lab › <b>⋯ › Settings › Work Structure › Estimates › Add estimate system</b> → <b>Points</b> → <b>Fibonacci</b> → Create → เปิดสวิตช์ <b>Enable</b> (ตัวผูก <code>Project.estimate</code>) · 1 ระบบต่อโปรเจกต์ ชุดละ 2–6 ค่า</p></div>
+      <div class="card o" style="padding:8px 12px"><h4><span class="n">2</span>ฟิลด์ · ค่าไปอยู่ที่ไหน</h4><p style="font-size:14px">ช่อง <b>Estimate</b> ของ work item → <code>Issue.estimate_point</code> (FK ไป <code>EstimatePoint</code>) · แก้ค่าเมื่อไร Plane เขียนแถวใน <b>Activity</b> เก็บค่าเก่า → ค่าใหม่ พร้อมผู้แก้และเวลา จึงย้อนตรวจได้ว่าขนาดถูกแก้ตอนไหน</p></div>
+      <div class="card w" style="padding:8px 12px"><h4><span class="n">3</span>ฟีเจอร์ที่เกี่ยวข้อง · Cycle</h4><p style="font-size:14px">แถบ Progress ของ cycle นับ <b>Points เสร็จ/ทั้งหมด</b> (LAB 4 เริ่มที่ 0/19) และสลับ burndown เป็นโหมด <b>Estimates</b> ได้เมื่อระบบที่ active เป็นชนิด Points</p></div>
     </div>
     <div class="grid2">
-      <div class="note" style="font-size:14.5px"><span class="tag a">LAB 4</span> สร้างระบบ Points แบบ Fibonacci → <code>seed_backlog.py</code> ใส่ <code>estimate_point</code> ให้ 10 PBI ของ CampusEats → เลือก 7 ใบรวม <b>19 points</b> (งบ ≤ 20) เข้า Sprint 1</div>
-      <div class="note a" style="font-size:14.5px"><b>ลองทำ / ทบทวน</b> — story ใหม่ “ยกเลิกออเดอร์ภายใน 2 นาทีและคืนเงินอัตโนมัติ” ที่ยังไม่รู้ช่องทางคืนเงิน: เทียบกับใบอ้างอิง PBI-02 = 2 pt เลือกค่าจาก 1 · 2 · 3 · 5 · 8 · 13 ระบุ <b>มิติที่ดันค่าขึ้น</b> และบอกว่าจะบันทึกค่ากับเหตุผลไว้ที่ใดใน Plane</div>
+      <div class="note c" style="font-size:13.5px"><b>ขอบเขต CE v1.4.2</b> — สร้างแล้ว <b>แก้ระบบประเมินไม่ได้</b> มีแต่ปุ่มลบ ต้องลบแล้วสร้างใหม่ · route <code>estimates/</code> ของ API v1 ไม่ถูก mount จึงอ่านรายการ point ผ่าน v1 ไม่ได้ (แต่ตั้ง <code>estimate_point</code> ให้ work item ได้)</div>
+      <div class="note a" style="font-size:13.5px"><span class="tag a">LAB 4</span> <code>seed_backlog.py</code> ใส่ point ให้ 10 PBI → เลือก 7 ใบรวม <b>19 points</b> (งบ ≤ 20) เข้า Sprint 1 · <b>ลองทำ</b> — story “ยกเลิกออเดอร์ใน 2 นาทีและคืนเงินอัตโนมัติ” ที่ยังไม่รู้ช่องทางคืนเงิน: เทียบกับ PBI-02 = 2 pt เลือกค่าจากสเกล ระบุมิติที่ดันค่าขึ้น และบอกว่าจะจดเหตุผลไว้ที่ใดใน Plane</div>
     </div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Story point</span><span class="pg"></span></div>

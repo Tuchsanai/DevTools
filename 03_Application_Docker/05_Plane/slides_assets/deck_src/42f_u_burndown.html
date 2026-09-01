@@ -1,7 +1,7 @@
-<!-- ===== A : burndown definition ===== -->
+<!-- ===== A : burndown — นิยาม + ตัวอย่าง + ความเข้าใจผิด ===== -->
 <div class="slot">
  <section class="slide">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burndown · นิยาม</div><h2>Burndown คือกราฟ <em>“งานคงเหลือเทียบกับเวลา”</em></h2>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burndown · นิยาม · ตัวอย่าง</div><h2>Burndown คือกราฟ <em>“งานคงเหลือเทียบกับเวลา”</em></h2>
     <div class="sub">แกนนอน = วันใน Sprint · แกนตั้ง = งานที่ยังไม่ Done · เส้น ideal เป็นเพียงแนวอ้างอิง ไม่ใช่คำสั่งว่าทีมต้องเดินตามทุกวัน</div></div>
   <div class="s-body top">
     <div class="quote" style="font-size:19px"><b>นิยาม</b> — Burndown คือกราฟอนุกรมเวลาที่พล็อตปริมาณงานคงเหลือใน Sprint เทียบกับวัน เพื่อช่วยคาดการณ์และเปิดบทสนทนาเรื่องความเสี่ยงก่อนถึงวันสุดท้าย</div>
@@ -10,7 +10,7 @@
       <div class="card w"><h4>ปัญหาที่แก้ · ก่อน → หลัง</h4><p><b>ก่อน:</b> “เสร็จ 80%” ตรวจสอบยากและค้างหลายวัน<br><b>หลัง:</b> เห็นจำนวนใบหรือ points ที่ยังไม่ผ่าน Definition of Done เป็นตัวเลขเดียวกันทั้งทีม</p></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="note o"><b>ตัวอย่างจริง · CampusEats</b> — LAB 4 วาง 7 work items รวม 19 points ใน Sprint 1; PBI-01 ขนาด 3 points แม้เขียนโค้ดไป 80% ก็ยังไม่ลด จนผ่าน DoD จึงทำให้ remaining ลด 19 → 16 points</div>
+      <div class="note o"><b>ตัวอย่างจริง · CampusEats</b> — LAB 4 วาง 7 work items รวม 19 points ไว้ใน Sprint 1 ตอนต้นรอบ; PBI-01 ขนาด 3 points แม้เขียนโค้ดไป 80% ก็ยังไม่ลด จนผ่าน DoD จึงทำให้ remaining ลด 19 → 16 points</div>
       <div class="note c"><b>ความเข้าใจผิด</b> — ❌ actual สูงกว่า ideal = ทีมล้มเหลว &nbsp;→&nbsp; ✅ เป็นเพียงสัญญาณให้ตรวจสาเหตุ; burndown ไม่พิสูจน์คุณค่า คุณภาพ หรือการบรรลุ Sprint Goal ด้วยตัวมันเอง</div>
     </div>
     <div class="note a" style="margin-top:10px"><b>ขอบเขตของแนวคิด</b> — Scrum Guide 2020 ไม่ได้บังคับใช้ burndown และไม่นับเป็นอาร์ติแฟกต์หรืออีเวนต์ของ Scrum; ทีมเลือกใช้เป็นเทคนิคพยากรณ์ได้</div>
@@ -28,13 +28,13 @@
       <div><div class="fig fix" style="height:430px"><img data-a="d33" alt="แผนภาพแนวคิดเปรียบเทียบ Burndown ที่แสดงงานคงเหลือกับ Burn-up ที่แสดงงานเสร็จสะสมและ scope รวม"></div>
         <div class="figcap">แผนภาพแนวคิด: อ่านฝั่งซ้ายเป็นหลัก; ฝั่งขวาเกริ่น Burn-up ซึ่งแยก Done สะสมออกจาก scope รวม</div></div>
       <div>
-        <ul class="bul sm" style="font-size:15.5px">
+        <ul class="bul sm" style="font-size:15.2px">
           <li><b>องค์ประกอบ</b><span class="s">แกนเวลา · หน่วยงาน (ใบหรือ points) · ideal · actual</span></li>
           <li><b>วิธีทำงาน</b><span class="s">เริ่มที่ total → หักเฉพาะงาน Done ตามวัน → actual จึงมักลดเป็นขั้น</span></li>
+          <li><b>ideal ไม่ใช่พันธะ</b><span class="s">เป็นเส้นตรงที่สมมติว่างาน Done กระจายเท่ากันทุกวัน ซึ่งไม่เกิดจริง</span></li>
           <li><b>ราบนานแล้วดิ่ง</b><span class="s">งานใหญ่ หรือ review/test กองปลาย Sprint</span></li>
           <li><b>กระโดดขึ้น</b><span class="s">scope เพิ่ม; ต้องตรวจเหตุการณ์จริงและสมาชิกของ Sprint ก่อนตีความ</span></li>
-          <li><b>เหนือ ideal ต่อเนื่อง</b><span class="s">remaining ลดช้ากว่าแนวอ้างอิง—ตรวจ blocker และขนาดงาน</span></li>
-          <li><b>ต่ำกว่า ideal</b><span class="s">ลดเร็วกว่าแนวอ้างอิง แต่ยังต้องตรวจคุณภาพตาม DoD</span></li>
+          <li><b>เหนือ / ต่ำกว่า ideal</b><span class="s">เหนือ = ลดช้ากว่าแนวอ้างอิง ตรวจ blocker และขนาดงาน · ต่ำกว่า = เร็วกว่าแนว แต่ยังต้องตรวจคุณภาพตาม DoD</span></li>
         </ul>
       </div>
     </div>
@@ -47,21 +47,22 @@
 <!-- ===== D : burndown in Plane ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burndown · ใน Plane</div><h2>Plane คำนวณจาก <em>Cycle · completed_at · Estimates</em></h2></div>
-  <div class="s-body top">
-    <div class="figrow c11">
-      <div><div class="fig shot fix" style="height:240px"><img data-a="t-cycle-active" alt="ภาพจริงหน้า Sprint 2 ของ Plane พร้อมรายการงาน แผง Progress 3 จาก 5 ใบ 8 จาก 15 points และ burndown โหมด Work items"></div>
-        <div class="figcap"><b>ภาพจริง</b> — Sprint 2: Progress 3/5 ใบ · 8/15 points · กราฟเลือก Work items</div></div>
-      <div><div class="fig shot fix" style="height:240px"><img data-a="t-cycle-burndown-points" alt="ภาพจริงหน้า Sprint 2 ของ Plane ที่สลับตัวเลือกกราฟ burndown เป็น Estimates"></div>
-        <div class="figcap"><b>ภาพจริง</b> — Cycle เดิม: กราฟเลือก Estimates เพื่อดูความคืบหน้าแบบ points</div></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burndown · ใน Plane</div><h2>Plane วาดเส้น remaining จาก <em>completed_at</em> เท่านั้น</h2>
+    <div class="sub">เมนู: <b>Plane Lab › Cycles › Sprint 2</b> → แถบข้าง <b>Progress</b> (อ่านได้ Work items 3/5 · Points 8/15) → dropdown สลับหน่วย Work items ↔ Estimates</div></div>
+  <div class="s-body top" style="gap:9px">
+    <div class="figrow" style="grid-template-columns:314px 314px 1fr; gap:13px">
+      <div><div class="fig shot" style="height:364px; width:314px; flex:0 0 auto; overflow:hidden"><img data-a="t-cycle-active" style="width:100%; height:100%; max-width:none; max-height:none; object-fit:none; object-position:97.5% 96.28%" alt="ภาพจริงจากแถบ Progress ของ Sprint 2 ใน Plane: dropdown เลือก Work items และกราฟ burndown หน่วยใบงาน"></div>
+        <div class="figcap" style="font-size:11.9px; margin-top:4px"><b>ภาพจริง · ซูม 1:1</b> — โหมด <b>Work items</b>: เส้น Current 4 → 2 (จุดสุดท้าย = วันนี้) แล้วถูกวาดเป็น 0 ตั้งแต่ 2 ก.ย.</div></div>
+      <div><div class="fig shot" style="height:364px; width:314px; flex:0 0 auto; overflow:hidden"><img data-a="t-cycle-burndown-points" style="width:100%; height:100%; max-width:none; max-height:none; object-fit:none; object-position:97.5% 96.28%" alt="ภาพจริงจากแถบ Progress ของ Sprint 2 เดียวกัน แต่สลับ dropdown เป็น Estimates กราฟจึงเป็นหน่วย points"></div>
+        <div class="figcap" style="font-size:11.9px; margin-top:4px"><b>ภาพจริง · ซูม 1:1</b> — Cycle เดียวกัน โหมด <b>Estimates</b>: Ideal เริ่ม 15 · Current 12 → 7 points</div></div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a" style="padding:10px 13px"><h4>สูตรที่ Plane ใช้</h4><p style="font-size:14px"><code>remaining(d) = total − Σ ใบที่ completed_at ≤ d</code> ทุกวันในช่วง Cycle · Work items นับใบละ 1 · Estimates รวม <code>EstimatePoint.value</code> · เส้น <b>ideal = total × (1 − i/(n−1))</b> วาดโดยฝั่งเว็บ ไม่ได้มาจาก API · <code>completed_at</code> เขียนตอนใบเข้ากลุ่ม <code>completed</code></p></div>
+        <div class="card w" style="padding:10px 13px"><h4>อ่านให้ถูก · หางกราฟที่ดิ่งถึง 0</h4><p style="font-size:14px">API ส่งวันในอนาคตเป็น <code>null</code> แต่หน้าเว็บแปลงเป็น <b>0</b> ก่อนวาด เส้นจึงดูเหมือนลงถึงศูนย์ — <b>จุดจริงจุดสุดท้ายคือ “วันนี้”</b> และต้องเท่ากับ total ลบงานที่ Done ในแถบ Progress</p></div>
+        <div class="card o" style="padding:10px 13px"><h4>ฟีเจอร์ที่เกี่ยวข้อง · Estimates</h4><p style="font-size:14px">โหมด Estimates ใช้ได้เมื่อโปรเจกต์เปิดระบบ <b>Points</b> ที่ Project settings › Work structure › Estimates · ถ้าใช้ Categories ปลายทางตอบ 200 พร้อมกราฟว่าง ไม่ใช่ error</p></div>
+      </div>
     </div>
-    <div class="grid3" style="margin-top:8px">
-      <div class="card a"><h4>ใน Plane · เมนูและข้อมูล</h4><p><b>Plane Lab → Cycles → Sprint 2 → Progress</b>; เมื่อย้าย work item เข้า state กลุ่ม <code>completed</code> โมเดล <code>Issue</code> จะตั้ง <code>completed_at</code></p></div>
-      <div class="card o"><h4>ฟีเจอร์ที่เกี่ยวข้อง</h4><p><b>Work items</b> นับใบละ 1; <b>Estimates</b> รวมค่า <code>EstimatePoint.value</code> เฉพาะใบที่มี point ในระบบ Points ที่เปิดใช้กับโปรเจกต์</p></div>
-      <div class="card w"><h4>สูตรของ Plane ต่อวัน d</h4><p><code>R_items = N − #Done≤d</code><br><code>R_pts = Σpoint − Σpoint_Done≤d</code><br>เส้น ideal คำนวณในหน้าเว็บจาก total</p></div>
-    </div>
-    <div class="note w" style="margin-top:8px; font-size:14.5px"><b>ข้อจำกัด CE และกรณีขอบ</b> — CE มี burndown แต่ไม่ตรวจ DoD; ทีมต้องมีกติกาก่อนย้ายเข้า completed · Estimates ใช้ได้กับระบบ Points เท่านั้น · cancelled ยังอยู่ใน remaining · เปิดงานกลับจะล้าง <code>completed_at</code> · เพิ่มงานกลาง Cycle จะยกค่า total ของทุกวันย้อนหลัง</div>
-    <div class="note a" style="margin-top:7px; font-size:14.5px"><b><span class="tag a">LAB 4</span> Mini exercise</b> — จากเลข Progress ในภาพ งานคงเหลือกี่ใบและกี่ points? ช่วงที่ actual ราบหมายถึงอะไร และควรตรวจอะไรบนบอร์ดก่อนสรุปว่า Sprint ล่าช้า?</div>
+    <div class="note w" style="font-size:13.6px; padding:7px 14px"><b>ข้อจำกัด CE และกรณีขอบ</b> — CE ไม่ตรวจ DoD ให้ · ใบที่ <b>cancelled ไม่ถูกหักออก</b> จึงค้างบนเส้น remaining · เปิดงานที่ Done กลับ = ล้าง <code>completed_at</code> ใบนั้นหายจากประวัติทุกวัน · เพิ่มใบกลาง Cycle ยก <code>total</code> ของทุกวันย้อนหลัง · หลังกด <b>Transfer</b> กราฟถูกแช่แข็งใน <code>progress_snapshot</code> ถาวร</div>
+    <div class="note a" style="font-size:13.6px; padding:7px 14px"><b><span class="tag a">LAB 4</span> Mini exercise</b> — จากภาพจริงสองภาพ: (1) เหลืองานกี่ใบและกี่ points (2) โหมด Estimates เส้น Current เริ่มที่ 12 ขณะที่ Ideal เริ่มที่ 15 แปลว่าอะไรเกิดขึ้น (3) ก่อนสรุปว่า Sprint ล่าช้า ควรตรวจอะไรบนบอร์ดก่อน</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Burndown</span><span class="pg"></span></div>
  </section>

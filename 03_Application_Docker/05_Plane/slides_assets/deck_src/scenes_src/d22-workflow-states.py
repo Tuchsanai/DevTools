@@ -63,9 +63,8 @@ els += [
     # bottom: policies + comparison + CE note
     box("pol", 30, 430, 590, 100,
         "Policies = ข้อตกลงของทีม (Plane ไม่บังคับ → เขียนไว้ใน Page)\n"
-        "• เข้า In Review ต้องมี PR link\n"
-        "• เข้า Done ต้องผ่าน acceptance criteria ครบทุกข้อ\n"
-        "• WIP ใน In Progress ≤ 3 ใบ/คน", PURPLE, PURPLEBG, 14),
+        "• เข้า Done ต้องมี PR link และผ่าน acceptance criteria ครบทุกข้อ\n"
+        "• WIP ใน In Progress ≤ 3 ใบ (ต่อคอลัมน์)", PURPLE, PURPLEBG, 14),
     box("cmp", 645, 430, 535, 100,
         "เทียบกับ Jira\nJira: ตั้ง transition + condition / validator ได้\n"
         "Plane: มีแค่ state + group → เรียบง่าย แต่ทีมต้องมีวินัย", TEAL, TEALBG, 14),

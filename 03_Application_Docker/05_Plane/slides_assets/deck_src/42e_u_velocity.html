@@ -1,28 +1,29 @@
-<!-- ===== A : velocity — definition ===== -->
+<!-- ===== A : velocity — นิยาม + ตัวอย่าง + ความเข้าใจผิด ===== -->
 <div class="slot">
  <section class="slide">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Velocity · นิยาม</div><h2>Velocity — <em>ความเร็วที่วัดจากงาน Done จริงของทีม</em></h2>
-    <div class="sub">หนึ่งตัวเลขต่อหนึ่ง Sprint · ใช้หลักฐานจากอดีตเพื่อวางแผน ไม่ใช่คำสัญญาว่าอนาคตต้องทำได้เท่าเดิม</div></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Velocity · นิยาม · ตัวอย่าง</div><h2>Velocity — <em>ปริมาณงานที่ทีมทำ Done ได้จริงต่อหนึ่ง Sprint</em></h2>
+    <div class="sub">หนึ่งตัวเลขต่อหนึ่ง Sprint · ใช้ประวัติของทีมเองเพื่อวางแผน ไม่ใช่คำสัญญาว่ารอบหน้าต้องทำได้เท่าเดิม</div></div>
   <div class="s-body top">
     <div class="g11">
-      <div style="display:flex; flex-direction:column; gap:12px">
-        <div class="quote">Velocity คือ <mark>ผลรวม Story Points ของ work items ใน Sprint ที่ผ่าน Definition of Done</mark> ภายในรอบนั้น ใบที่ยังไม่ Done ไม่นับ แม้เริ่มทำแล้ว
-          <span class="who">หน่วย: points / sprint · เป็นมาตรวัดเฉพาะของทีมนั้น</span></div>
+      <div style="display:flex; flex-direction:column; gap:11px">
+        <div class="quote"><b>นิยาม</b> — Velocity คือ <mark>ผลรวม story points ของ work item ที่ผ่าน Definition of Done ภายใน Sprint นั้น</mark> งานที่เริ่มแล้วแต่ยังไม่ Done นับเป็น 0 — ไม่มีเครดิตครึ่งทาง
+          <span class="who">หน่วย: points / sprint · เป็นมาตรวัดเฉพาะของทีมนั้น ไม่ใช่มาตรฐานกลาง</span></div>
         <ul class="bul sm">
-          <li><b>ทำไมสำคัญ</b> — ทำให้ Sprint Planning และ release forecast อิงความสามารถที่เคยเกิดขึ้นจริง</li>
-          <li><b>ปัญหาที่แก้</b> — แทนการเดาว่า “น่าจะรับได้ 30 points” ด้วยช่วงจากหลาย Sprint ล่าสุด</li>
-          <li><b>เงื่อนไข</b> — สเกล points และ Definition of Done ต้องคงเส้นคงวาพออ่านแนวโน้มได้; เมื่อเปลี่ยน ให้บันทึกและตีความข้อมูลช่วงก่อน–หลังแยกกัน</li>
+          <li><b>ทำไมสำคัญ</b> — Sprint Planning เลือกงานจากสิ่งที่ทีม “เคยทำได้จริง” และตอบคำถาม “อีกกี่รอบจะเสร็จ” ด้วยหลักฐาน ไม่ใช่ความรู้สึก</li>
+          <li><b>ปัญหาที่แก้</b> — ทีมรับงานเข้ารอบตามความหวังทุกครั้ง จึงค้างงานสะสมและบอกกำหนดส่งมอบที่เชื่อถือได้ไม่ได้</li>
+          <li><b>เงื่อนไขที่ทำให้เชื่อถือได้</b> — ทีมชุดเดิม สเกล points เดิม DoD เดิม รอบยาวเท่าเดิม; ถ้าเปลี่ยนให้อ่านข้อมูลก่อน–หลังแยกกัน</li>
         </ul>
-        <table class="tbl sm" style="font-size:15px">
-          <thead><tr><th>ก่อนมีข้อมูล</th><th>หลังมีประวัติ 3+ Sprint</th></tr></thead>
-          <tbody><tr><td>รับงานตามความหวัง → มักเกินกำลัง</td><td>เลือกงานใกล้ช่วงที่เคย Done → อธิบายความเสี่ยงได้</td></tr></tbody>
+        <table class="tbl sm" style="font-size:14.5px">
+          <thead><tr><th style="width:47%">ก่อน · ยังไม่มีประวัติ</th><th>หลัง · มีประวัติ 3 Sprint</th></tr></thead>
+          <tbody><tr><td>“รอบนี้น่าจะรับได้ 30 points” → ค้างงานทุกรอบ</td><td>รับงานใกล้ช่วงที่เคย Done แล้วตอบเป็นช่วง “อีก 5.5–6.7 รอบ”</td></tr></tbody>
         </table>
+        <div class="note w" style="font-size:13.5px; padding:8px 13px"><b>ขอบเขต</b> — Scrum Guide 2020 ไม่ได้กล่าวถึง velocity เลย เป็นเทคนิคพยากรณ์ที่ทีมเลือกใช้เอง</div>
       </div>
       <div style="display:flex; flex-direction:column; gap:10px">
-        <div><div class="fig photo fix" style="height:240px"><img data-a="real_metrics_review" alt="ทีมกำลังทบทวนกราฟข้อมูลย้อนหลังร่วมกันเพื่อวางแผนรอบถัดไป"></div>
-          <div class="figcap">ทีมใช้แนวโน้มจากหลายรอบเพื่อคุยเรื่องแผนและความไม่แน่นอนร่วมกัน</div></div>
-        <div class="card a" style="padding:12px 15px"><h4>CampusEats · ตัวอย่าง Sprint 1</h4><p>PBI-01 ค้นหาร้าน 3 pt + PBI-02 ดูเมนู 2 pt + PBI-10 ย้าย config 1 pt ผ่าน DoD รวม <b>velocity = 6 points</b>; งานที่เริ่มแล้วแต่ยังไม่ Done ไม่ถูกนับ</p></div>
-        <div class="note c" style="font-size:14.5px"><b>ความเข้าใจผิด</b> — ❌ velocity สูง = ทีมเก่งกว่า · ✅ point เป็นสเกลภายในทีม จึงใช้ดูแนวโน้มและ forecast ของทีมเดิมเท่านั้น ห้ามเทียบคนหรือข้ามทีม</div>
+        <div><div class="fig photo fix" style="height:200px"><img data-a="real_metrics_review" alt="ทีมกำลังทบทวนกราฟข้อมูลย้อนหลังร่วมกันเพื่อวางแผนรอบถัดไป"></div>
+          <div class="figcap">ทีมใช้แนวโน้มจากหลายรอบที่ผ่านมาเป็นฐานของการวางแผนและการคุยเรื่องความไม่แน่นอน</div></div>
+        <div class="card a" style="padding:11px 14px"><h4>ตัวอย่างจริง · CampusEats Sprint 1</h4><p>LAB 4 ดึงเข้ารอบ 7 ใบ = 19 points แล้วแทรก action item อีก 1 ใบกลางรอบ (รวม 8 ใบ = 21 points) · ผ่าน DoD 3 ใบ: PBI-01 ค้นหาร้าน 3 pt + PBI-02 ดูเมนู 2 pt + PBI-10 ย้าย config 1 pt → <b>velocity = 6 points</b>; อีก 5 ใบนับ 0 และถูกโอนไป Sprint 2</p></div>
+        <div class="note c" style="font-size:14px"><b>ความเข้าใจผิด</b> — ❌ velocity สูงกว่า = ทีมเก่งกว่า จึงตั้งเป้าให้เพิ่มขึ้นทุกรอบ · ✅ point เป็นสเกลภายในทีม และเมื่อถูกใช้เป็นเป้า ทีมจะเฟ้อ point หรือลดคุณภาพ (เช่น ตัดการทดสอบออกจาก DoD) เพื่อดันตัวเลข — ใช้ดูแนวโน้มของทีมเดิมเท่านั้น ห้ามเทียบข้ามทีม</div>
       </div>
     </div>
   </div>
@@ -30,35 +31,42 @@
  </section>
 </div>
 
-<!-- ===== B : velocity — mechanism ===== -->
+<!-- ===== B : velocity — กลไก ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Velocity · กลไก</div><h2>Velocity — <em>ใช้ประวัติของทีมพยากรณ์อนาคต ไม่ใช่ตั้งเป้าให้ทีม</em></h2></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Velocity · กลไก</div><h2>จากประวัติ 3 Sprint สู่ <em>ช่วงพยากรณ์</em> — ไม่ใช่เป้าที่ตั้งให้ทีม</h2></div>
   <div class="s-body top">
-    <div class="fig fix" style="height:345px"><img data-a="d32" alt="กราฟ velocity 18, 22 และ 20 points ต่อ Sprint แล้วใช้ค่าเฉลี่ย 20 พยากรณ์ backlog 120 points เป็นประมาณ 6 Sprint"></div>
+    <div class="fig fix" style="height:392px"><img data-a="d32" alt="แผนภาพ velocity: แท่ง 18, 22 และ 20 points ต่อ Sprint เฉลี่ย 20 แล้วใช้พยากรณ์ backlog 120 points เป็น 6 Sprint ช่วง 5.5–6.7 Sprint"></div>
+    <div class="figcap">อ่านซ้ายไปขวา: วัด velocity ของแต่ละรอบ → เฉลี่ย → หารงานที่เหลือเป็นจำนวนรอบ แล้วรายงานเป็นช่วง</div>
     <div class="grid3" style="gap:12px">
-      <div class="card a" style="padding:11px 14px"><h4><span class="n">1</span>วัดเมื่อ Sprint จบ</h4><p>รวม points เฉพาะ work items ที่ Done: 18 · 22 · 20; งานครึ่งเสร็จ = 0 และนับเต็มใบใน Sprint ที่งานนั้น Done</p></div>
-      <div class="card o" style="padding:11px 14px"><h4><span class="n">2</span>สร้างช่วงอ้างอิง</h4><p>ค่าเฉลี่ย 3 Sprint = 20 pt/sprint; ช่วง 18–22 สะท้อนความผันผวน จึงควร forecast เป็นช่วง ไม่ใช่ค่าจุดเดียว</p></div>
-      <div class="card w" style="padding:11px 14px"><h4><span class="n">3</span>พยากรณ์และปรับใหม่</h4><p>120 pt ÷ 20 = 6 Sprint; ช่วงสถานการณ์อย่างง่ายจาก 22 และ 18 ได้ 5.5–6.7 Sprint แล้วคำนวณใหม่เมื่อ backlog หรือข้อมูลล่าสุดเปลี่ยน</p></div>
+      <div class="card a" style="padding:10px 14px"><h4><span class="n">1</span>องค์ประกอบ</h4><p>Sprint ที่ปิดแล้ว · DoD ชุดเดียวกันทุกรอบ · points ของทุกใบใน Sprint · ประวัติอย่างน้อย 3 รอบ · จำนวน points ที่ยังเหลือใน backlog</p></div>
+      <div class="card o" style="padding:10px 14px"><h4><span class="n">2</span>วิธีทำงาน · วัดเมื่อรอบจบ</h4><p>รวม points เฉพาะใบที่ Done ในรอบนั้น: 18 · 22 · 20 → เฉลี่ย <b>20 pt/sprint</b>; นับเต็มใบในรอบที่ใบนั้น Done และไม่ย้อนไปแก้รอบก่อน</p></div>
+      <div class="card w" style="padding:10px 14px"><h4><span class="n">3</span>Workflow · พยากรณ์แล้วคำนวณใหม่</h4><p>120 pt ÷ 20 = 6 Sprint; ใช้ค่าดีสุด/แย่สุด 120÷22 … 120÷18 = <b>5.5–6.7 Sprint</b> แล้วคำนวณซ้ำทุกครั้งที่ปิดรอบหรือ backlog เปลี่ยน</p></div>
     </div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Velocity</span><span class="pg"></span></div>
  </section>
 </div>
 
-<!-- ===== D : velocity — Plane ===== -->
+<!-- ===== D : velocity — ใน Plane ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Velocity · ใน Plane</div><h2>Plane CE ไม่มีกราฟ Velocity — <em>อ่าน Completed Cycles แล้วคำนวณเอง</em></h2>
-    <div class="sub">ข้อมูลต้นทางอยู่ใน Cycle · work items · Estimates และ progress snapshot</div></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Velocity · ใน Plane</div><h2>Plane CE ไม่มีกราฟ Velocity — <em>อ่าน Completed Cycle แล้วคำนวณเอง</em></h2>
+    <div class="sub">เมนู: <b>Plane Lab › Cycles › Sprint 1</b> (Completed) → แถบข้าง Progress · ข้อมูลดิบอยู่ใน cycle-issues + estimate_point</div></div>
   <div class="s-body top">
     <div class="figrow c21">
-      <div><div class="fig shot fix" style="height:390px"><img data-a="t-cycle-completed" alt="หน้า Sprint 1 สถานะ Completed แสดงงานสามใบ ช่วงวันที่ 28–31 สิงหาคม 2026 และกราฟ progress snapshot"></div>
-        <div class="figcap">Plane Lab › Cycles › Sprint 1 — Completed · 28–31 ส.ค. 2026 · งาน 3 ใบ · Work items 3/8 และกราฟ snapshot สุดท้าย</div></div>
-      <div style="display:flex; flex-direction:column; gap:10px">
-        <div class="card c" style="padding:11px 14px"><h4>ข้อจำกัดของ CE v1.4.2</h4><p>ไม่มี velocity chart สำเร็จรูป จึงคำนวณต่อ Completed Cycle: Σ <code>float(estimate_point.value)</code> ของงานสมาชิก Cycle ที่มี <code>completed_at</code>; ใบไม่มี estimate = 0</p></div>
-        <div class="card a" style="padding:11px 14px"><h4>ข้อมูลที่ใช้ · Cycles + Estimates</h4><p><code>GET …/cycles/?cycle_view=completed</code> แล้วอ่าน <code>…/cycle-issues/?expand=estimate_point</code>. Transfer เท่านั้นที่บันทึก <code>progress_snapshot</code>; <code>velocity.py</code> ใช้หา committed เดิม—วันจบผ่านไปไม่สร้างเอง</p></div>
-        <div class="note a" style="font-size:14.5px"><b><span class="tag a">LAB 4</span> Mini exercise</b> — รัน <code>python velocity.py</code>: ถ้า Sprint 1 Done 6 pt และ backlog ที่ยังไม่ Done 36 pt จะเหลือกี่ Sprint? จากนั้นอธิบายว่าเหตุใดคำตอบ “ประมาณ 6 Sprint” จึงไม่ใช่ deadline</div>
+      <div><div class="fig shot fix" style="height:396px"><img data-a="t-cycle-completed" alt="ภาพจริงหน้า Sprint 1 ของ Plane สถานะ Completed แสดงงานสามใบที่ Done ช่วงวันที่ 28 ถึง 31 สิงหาคม 2026 และกราฟ progress snapshot"></div>
+        <div class="figcap"><b>ภาพจริง</b> — Sprint 1 · <b>Completed</b> · 28–31 ส.ค. 2026: รายการเหลือ 3 ใบและ Done ทั้งหมด แต่แถบข้างยังอ่าน <b>Work items 3/8</b> และกราฟยังไต่ 8 → 7 → 6 → 5 เพราะทั้งคู่มาจาก <code>progress_snapshot</code> ที่ถูกแช่แข็งไว้ตอน Transfer</div>
+        <div class="grid4" style="gap:10px; margin-top:9px">
+          <div class="stat" style="padding:9px 13px"><div class="v" style="font-size:26px">21 pt</div><div class="l" style="font-size:12.5px">committed ตอนปิดรอบ (จาก snapshot)</div></div>
+          <div class="stat" style="padding:9px 13px"><div class="v o" style="font-size:26px">6 pt</div><div class="l" style="font-size:12.5px">ผ่าน DoD = velocity ของ Sprint 1</div></div>
+          <div class="stat" style="padding:9px 13px"><div class="v d" style="font-size:26px">36 pt</div><div class="l" style="font-size:12.5px">งานที่ยังไม่ Done ทั้งโปรเจกต์</div></div>
+          <div class="stat" style="padding:9px 13px"><div class="v" style="font-size:26px">≈ 6</div><div class="l" style="font-size:12.5px">Sprint ที่เหลือ (36 ÷ 6)</div></div>
+        </div></div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card c" style="padding:10px 13px"><h4>ข้อจำกัดของ CE v1.4.2</h4><p style="font-size:14.5px">ไม่มีกราฟ velocity สำเร็จรูป — ต้องรวมเองต่อ Cycle ที่ Completed: Σ <code>float(estimate_point.value)</code> ของใบที่มี <code>completed_at</code> (ใบไม่มี estimate = 0) · ระวัง <code>completed_estimates</code> ของ API v1: มันรวม <code>estimate_point.key</code> (ลำดับ 1–6) ไม่ใช่ค่า point จริง</p></div>
+        <div class="card a" style="padding:10px 13px"><h4>ฟีเจอร์ที่เกี่ยวข้อง · Cycles + Estimates + REST API</h4><p style="font-size:14.5px">ต้องเปิดระบบ <b>Points</b> ที่ Project settings › Work structure › Estimates ก่อน ใบจึงมี point · <code>GET /api/v1/…/cycles/?cycle_view=completed</code> แล้วอ่าน <code>…/cycle-issues/?expand=estimate_point</code> · committed เดิมอ่านจาก <code>progress_snapshot</code> ที่ Plane เขียน<b>ตอนกด Transfer เท่านั้น</b> (วันจบผ่านไปเฉย ๆ ไม่สร้างให้)</p></div>
+        <div class="note a" style="font-size:13.8px; padding:9px 14px"><b><span class="tag a">LAB 4</span> Mini exercise</b> — รัน <code>python velocity.py</code> แล้วตอบจากตัวเลขด้านซ้าย: (1) ทำไม committed จึงเป็น 21 pt ทั้งที่วางแผนไว้ 19 pt (2) “≈ 6 Sprint” เป็นพยากรณ์ ไม่ใช่ deadline เพราะอะไร</div>
       </div>
     </div>
   </div>

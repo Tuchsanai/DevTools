@@ -3,6 +3,9 @@
 ชุดการสอนที่ใช้ **Plane** (open-source project management, AGPL-3.0, self-hosted ด้วย Docker) เป็นเครื่องมือลงมือทำ
 สำหรับ 4 หัวข้อของวิชา:
 
+สไลด์ฉบับเต็มมี **202 สไลด์** และจัด 29 แนวคิดหลักเป็น concept units ที่ใช้แม่แบบเดียวกัน:
+**นิยาม → กลไก → ตัวอย่าง → ใน Plane + LAB + แบบฝึก** เพื่อให้ผู้เรียนเชื่อมทฤษฎีกับหลักฐานจากระบบจริงได้ทุกหน่วย
+
 | หัวข้อ | สิ่งที่เรียน | พิสูจน์ใน LAB |
 |---|---|---|
 | **1. หลักการเพื่อเป็นผู้เชี่ยวชาญด้านซอฟต์แวร์** (Principles to Software Professionals) | วิชาชีพ · SWEBOK · จรรยาบรรณ ACM/IEEE-CS · หลักการ SE · การสื่อสาร/traceability | LAB 3 |
@@ -32,8 +35,14 @@
 - `O` — overview และคลิกเพื่อกระโดดไปตอนที่ต้องการ
 - `F` — เต็มจอ · `?` — ดูปุ่มลัด · `Ctrl+P` — บันทึกเป็น PDF 16:9
 
-ไดอะแกรมในสไลด์วาดด้วย Excalidraw (ต้นฉบับแก้ได้ที่ `slides_assets/scenes/*.excalidraw`) ภาพประกอบแนวคิดเป็น SVG ใน
-`slides_assets/illustrations/` และ **ภาพหน้าจอทุกภาพมาจากการรันจริง** ใน LAB (`00N_LAB_*/images/`)
+ภาพประกอบด้านมนุษย์และบริบทการทำงานเป็นภาพสมจริงจาก Codex image gen ใน `slides_assets/photos/` ส่วนไดอะแกรม
+แนวคิดชุดใหม่ `d20`–`d42` มีต้นฉบับใน `slides_assets/deck_src/scenes_src/` และ render ด้วย
+`slides_assets/deck_src/tools/render_scene.py` (ไฟล์ Excalidraw ที่แก้ต่อได้อยู่ใน `slides_assets/scenes/`)
+
+ภาพหน้าจอทฤษฎี `slides_assets/screenshots/t-*.png` จับจาก Plane instance เดียวที่ทำ LAB 1→6 ต่อเนื่องกัน
+ส่วนภาพเฉพาะแล็บอยู่ใน `00N_LAB_*/images/` จึงเป็น **ภาพจากการรันจริงทั้งหมด** ไม่ใช่ภาพวาดแทน UI ของ Plane
+ข้อเท็จจริงของ Plane v1.4.2 ดูที่ [`deck_src/PLANE_REFERENCE.md`](./slides_assets/deck_src/PLANE_REFERENCE.md)
+และแผน 29 concept units ดูที่ [`deck_src/CONCEPT_PLAN.md`](./slides_assets/deck_src/CONCEPT_PLAN.md)
 
 ## เตรียมเครื่องเรียนครั้งเดียว
 
@@ -129,7 +138,7 @@ python3 scripts/check_materials.py
 ```bash
 cd slides_assets/deck_src
 python3 build_deck.py && python3 check_deck.py       # ต้องได้ overflowing slides / broken images / js errors = none
-python3 diagrams.py                                   # วาดไดอะแกรม Excalidraw ใหม่ (ต้องมี canvas server — ดูหัวไฟล์)
+python3 tools/render_scene.py --port 3401 scenes_src/d20-sdlc-phases.json  # render SVG + Excalidraw + PNG preview
 ```
 
 ## เก็บกวาด (Cleanup)

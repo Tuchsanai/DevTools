@@ -34,6 +34,11 @@ els = [
     arrow("st2", "tk1", BLUE, x=430, y=293, w=-50, h=37),
     arrow("st2", "tk2", BLUE, x=500, y=293, w=50, h=37),
 
+    # A subtask may be split directly from a story as well as from a task
+    box("sub-story", 40, 430, 190, 56, "Subtask\nงานย่อยของ Story", TEAL, TEALBG, 14),
+    arrow("st1", "sub-story", TEAL, dashed=True, x=265, y=293, w=-130, h=137),
+    txt(45, 490, "แตกได้จาก story หรือ task", 12, TEAL),
+
     # Subtask under task 2
     box("sub", 475, 430, 190, 56, "Subtask\nงานย่อยของ Task", TEAL, TEALBG, 14),
     arrow("tk2", "sub", ORANGE, x=570, y=392, w=0, h=38),

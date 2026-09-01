@@ -4,7 +4,7 @@
   "source": "mcp-excalidraw-server",
   "elements": [
     {
-      "id": "mtiac9mydx0e3nnscyn",
+      "id": "mtimmhq7pvqewyc7czp",
       "type": "text",
       "x": 30,
       "y": 18,
@@ -29,19 +29,19 @@
       "originalText": "วงจรชีวิตของ Issue : รายงาน → คัดกรอง → จัดลำดับ → วางแผน → ทำ → ตรวจ → เสร็จ",
       "roughness": 1,
       "roundness": null,
-      "seed": 832162629,
+      "seed": 821496686,
       "strokeColor": "#0b2545",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "วงจรชีวิตของ Issue : รายงาน → คัดกรอง → จัดลำดับ → วางแผน → ทำ → ตรวจ → เสร็จ",
       "textAlign": "center",
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
-      "versionNonce": 468281939,
+      "versionNonce": 1568083560,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiac9myja2bhw4s6z",
+      "id": "mtimmhq7l3v1sr9297m",
       "type": "rectangle",
       "x": 30,
       "y": 60,
@@ -62,16 +62,16 @@
       "roundness": {
         "type": 3
       },
-      "seed": 944939161,
+      "seed": 2142859922,
       "strokeColor": "#1864ab",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
-      "versionNonce": 1854408309
+      "versionNonce": 1213064556
     },
     {
-      "id": "mtiac9my41f0r4v9kyb",
+      "id": "mtimmhq7c3k4yoi424",
       "type": "text",
       "x": 45,
       "y": 66,
@@ -96,15 +96,15 @@
       "originalText": "วงจรชีวิตของ issue — แบบแผนเดียวกันใน Jira · GitHub Issues · Plane",
       "roughness": 1,
       "roundness": null,
-      "seed": 971433488,
+      "seed": 498914287,
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "วงจรชีวิตของ issue — แบบแผนเดียวกันใน Jira · GitHub Issues · Plane",
       "textAlign": "center",
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
-      "versionNonce": 1574615020,
+      "versionNonce": 305539131,
       "verticalAlign": "middle"
     },
     {
@@ -122,7 +122,7 @@
           "type": "text"
         },
         {
-          "id": "mtiac9my4lsga5esh3f",
+          "id": "mtimmhq7fw5jvenlnrr",
           "type": "arrow"
         }
       ],
@@ -144,7 +144,7 @@
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 1671805349
     },
@@ -163,27 +163,27 @@
           "type": "text"
         },
         {
-          "id": "mtiac9my4lsga5esh3f",
+          "id": "mtimmhq7fw5jvenlnrr",
           "type": "arrow"
         },
         {
-          "id": "mtiac9myt2085zyrr4m",
+          "id": "mtimmhq7yssymf457c",
           "type": "arrow"
         },
         {
-          "id": "mtiac9my32hohno34r3",
+          "id": "mtimmhq79qimzdw9lno",
           "type": "arrow"
         },
         {
-          "id": "mtiac9myxoo5nbpka1i",
+          "id": "mtimmhq7hr6wqfwev1p",
           "type": "arrow"
         },
         {
-          "id": "mtiac9myfxqpkac50s",
+          "id": "mtimmhq7k3cfh564f1",
           "type": "arrow"
         },
         {
-          "id": "mtiac9my1nyl5uz7tr4",
+          "id": "mtimmhq76fbwpramvxc",
           "type": "arrow"
         }
       ],
@@ -205,7 +205,7 @@
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 1674243794
     },
@@ -224,11 +224,11 @@
           "type": "text"
         },
         {
-          "id": "mtiac9myt2085zyrr4m",
+          "id": "mtimmhq7yssymf457c",
           "type": "arrow"
         },
         {
-          "id": "mtiac9myiwsdlxdkj7f",
+          "id": "mtimmhq7ub8sytjfcr9",
           "type": "arrow"
         }
       ],
@@ -250,7 +250,7 @@
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 1743162381
     },
@@ -269,11 +269,11 @@
           "type": "text"
         },
         {
-          "id": "mtiac9myiwsdlxdkj7f",
+          "id": "mtimmhq7ub8sytjfcr9",
           "type": "arrow"
         },
         {
-          "id": "mtiac9myq1x5rw0tjqs",
+          "id": "mtimmhq7ozyjeqznjdd",
           "type": "arrow"
         }
       ],
@@ -295,7 +295,7 @@
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 1480650378
     },
@@ -314,15 +314,15 @@
           "type": "text"
         },
         {
-          "id": "mtiac9myq1x5rw0tjqs",
+          "id": "mtimmhq7ozyjeqznjdd",
           "type": "arrow"
         },
         {
-          "id": "mtiac9myvsgbgan3it",
+          "id": "mtimmhq7e4gc817d7wa",
           "type": "arrow"
         },
         {
-          "id": "mtiac9mypz7lwzispfi",
+          "id": "mtimmhq77s3obcexxg6",
           "type": "arrow"
         }
       ],
@@ -344,7 +344,7 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 1135154323
     },
@@ -363,11 +363,11 @@
           "type": "text"
         },
         {
-          "id": "mtiac9myvsgbgan3it",
+          "id": "mtimmhq7e4gc817d7wa",
           "type": "arrow"
         },
         {
-          "id": "mtiac9myj7nfdctk1xg",
+          "id": "mtimmhq77q4tc0d2bp7",
           "type": "arrow"
         }
       ],
@@ -389,7 +389,7 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 1293040526
     },
@@ -408,11 +408,11 @@
           "type": "text"
         },
         {
-          "id": "mtiac9myj7nfdctk1xg",
+          "id": "mtimmhq77q4tc0d2bp7",
           "type": "arrow"
         },
         {
-          "id": "mtiac9my9p72o03etdl",
+          "id": "mtimmhq7esuw529jg3m",
           "type": "arrow"
         }
       ],
@@ -434,12 +434,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 70405497
     },
     {
-      "id": "mtiac9my4lsga5esh3f",
+      "id": "mtimmhq7fw5jvenlnrr",
       "type": "arrow",
       "x": 194,
       "y": 217,
@@ -477,7 +477,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1528785359,
+      "seed": 1552313252,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "s1",
@@ -488,12 +488,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
-      "versionNonce": 1457607321
+      "versionNonce": 443040622
     },
     {
-      "id": "mtiac9myt2085zyrr4m",
+      "id": "mtimmhq7yssymf457c",
       "type": "arrow",
       "x": 356,
       "y": 217,
@@ -531,7 +531,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1470089825,
+      "seed": 2002536645,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "s2",
@@ -542,12 +542,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 1741962117
+      "versionNonce": 1830091475
     },
     {
-      "id": "mtiac9myiwsdlxdkj7f",
+      "id": "mtimmhq7ub8sytjfcr9",
       "type": "arrow",
       "x": 518,
       "y": 217,
@@ -585,7 +585,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 604403653,
+      "seed": 1555931548,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "s3",
@@ -596,12 +596,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 1023211475
+      "versionNonce": 657716632
     },
     {
-      "id": "mtiac9myq1x5rw0tjqs",
+      "id": "mtimmhq7ozyjeqznjdd",
       "type": "arrow",
       "x": 680,
       "y": 217,
@@ -639,7 +639,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1864436488,
+      "seed": 261567489,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "s4",
@@ -650,12 +650,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 82215714
+      "versionNonce": 1224894629
     },
     {
-      "id": "mtiac9myvsgbgan3it",
+      "id": "mtimmhq7e4gc817d7wa",
       "type": "arrow",
       "x": 842,
       "y": 217,
@@ -693,7 +693,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 2057361242,
+      "seed": 1118404289,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "s5",
@@ -704,12 +704,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 901800754
+      "versionNonce": 970563231
     },
     {
-      "id": "mtiac9myj7nfdctk1xg",
+      "id": "mtimmhq77q4tc0d2bp7",
       "type": "arrow",
       "x": 1004,
       "y": 217,
@@ -747,7 +747,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1742300187,
+      "seed": 1296604059,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "s6",
@@ -758,9 +758,9 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 1851223023
+      "versionNonce": 1841440631
     },
     {
       "id": "reopen",
@@ -777,11 +777,11 @@
           "type": "text"
         },
         {
-          "id": "mtiac9my9p72o03etdl",
+          "id": "mtimmhq7esuw529jg3m",
           "type": "arrow"
         },
         {
-          "id": "mtiac9mypz7lwzispfi",
+          "id": "mtimmhq77s3obcexxg6",
           "type": "arrow"
         }
       ],
@@ -803,12 +803,12 @@
       "strokeColor": "#c92a2a",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788244057549,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 368066010
     },
     {
-      "id": "mtiac9my9p72o03etdl",
+      "id": "mtimmhq7esuw529jg3m",
       "type": "arrow",
       "x": 1034.8760425260532,
       "y": 180.59096635980052,
@@ -846,7 +846,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 599218919,
+      "seed": 1546279334,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "s7",
@@ -857,12 +857,12 @@
       "strokeColor": "#c92a2a",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 968807283
+      "versionNonce": 1720886080
     },
     {
-      "id": "mtiac9mypz7lwzispfi",
+      "id": "mtimmhq77s3obcexxg6",
       "type": "arrow",
       "x": 872.8760425260531,
       "y": 146.40903364019948,
@@ -900,7 +900,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1798512975,
+      "seed": 117280604,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "reopen",
@@ -911,9 +911,9 @@
       "strokeColor": "#c92a2a",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 636170521
+      "versionNonce": 874592676
     },
     {
       "id": "b1",
@@ -930,7 +930,7 @@
           "type": "text"
         },
         {
-          "id": "mtiac9my32hohno34r3",
+          "id": "mtimmhq79qimzdw9lno",
           "type": "arrow"
         }
       ],
@@ -952,12 +952,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 342759536
     },
     {
-      "id": "mtiac9my32hohno34r3",
+      "id": "mtimmhq79qimzdw9lno",
       "type": "arrow",
       "x": 238.19249870699264,
       "y": 254.32812615447082,
@@ -995,7 +995,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 392468551,
+      "seed": 1880895848,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "s2",
@@ -1006,9 +1006,9 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 620520877
+      "versionNonce": 385222914
     },
     {
       "id": "b2",
@@ -1025,11 +1025,7 @@
           "type": "text"
         },
         {
-          "id": "mtiac9myxoo5nbpka1i",
-          "type": "arrow"
-        },
-        {
-          "id": "mtiac9myzh4mblqibr8",
+          "id": "mtimmhq7hr6wqfwev1p",
           "type": "arrow"
         }
       ],
@@ -1051,12 +1047,12 @@
       "strokeColor": "#c92a2a",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 802311027
     },
     {
-      "id": "mtiac9myxoo5nbpka1i",
+      "id": "mtimmhq7hr6wqfwev1p",
       "type": "arrow",
       "x": 265.25530000934765,
       "y": 256.49473211781884,
@@ -1094,7 +1090,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 243464057,
+      "seed": 883198658,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "s2",
@@ -1105,9 +1101,9 @@
       "strokeColor": "#c92a2a",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 551161815
+      "versionNonce": 1766732508
     },
     {
       "id": "b3",
@@ -1124,11 +1120,7 @@
           "type": "text"
         },
         {
-          "id": "mtiac9myfxqpkac50s",
-          "type": "arrow"
-        },
-        {
-          "id": "mtiac9myu58pcvybgn",
+          "id": "mtimmhq7k3cfh564f1",
           "type": "arrow"
         }
       ],
@@ -1150,12 +1142,12 @@
       "strokeColor": "#c92a2a",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 1189383786
     },
     {
-      "id": "mtiac9myfxqpkac50s",
+      "id": "mtimmhq7k3cfh564f1",
       "type": "arrow",
       "x": 294.74469999065235,
       "y": 256.49473211781884,
@@ -1193,7 +1185,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1924489018,
+      "seed": 1424493984,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "s2",
@@ -1204,9 +1196,9 @@
       "strokeColor": "#c92a2a",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 1018770436
+      "versionNonce": 1402211130
     },
     {
       "id": "b4",
@@ -1223,7 +1215,7 @@
           "type": "text"
         },
         {
-          "id": "mtiac9my1nyl5uz7tr4",
+          "id": "mtimmhq76fbwpramvxc",
           "type": "arrow"
         }
       ],
@@ -1245,12 +1237,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 450026859
     },
     {
-      "id": "mtiac9my1nyl5uz7tr4",
+      "id": "mtimmhq76fbwpramvxc",
       "type": "arrow",
       "x": 321.8075012930073,
       "y": 254.32812615447082,
@@ -1288,7 +1280,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 890554225,
+      "seed": 1663070433,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "s2",
@@ -1299,16 +1291,16 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 1709764501
+      "versionNonce": 56252165
     },
     {
-      "id": "mtiac9myx00wvsf5sb",
+      "id": "mtimmhq7utj4izmaikl",
       "type": "text",
       "x": 540,
       "y": 338,
-      "width": 790,
+      "width": 832,
       "height": 35,
       "angle": 0,
       "autoResize": true,
@@ -1326,22 +1318,22 @@
       "link": null,
       "locked": false,
       "opacity": 100,
-      "originalText": "ผลการคัดกรอง — ตัดสินใจก่อนเข้า backlog\naccept = ไปต่อที่จัดลำดับ  ·  decline / duplicate = cancelled  ·  snooze = พักไว้ ยังไม่ตัดสิน",
+      "originalText": "ผลการคัดกรอง — ตัดสินใจก่อนเข้า backlog\naccept = ไปต่อที่จัดลำดับ  ·  decline / duplicate = ทีมย้าย state เองตาม policy  ·  snooze = พักไว้",
       "roughness": 1,
       "roundness": null,
-      "seed": 191215006,
+      "seed": 1886904111,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "text": "ผลการคัดกรอง — ตัดสินใจก่อนเข้า backlog\naccept = ไปต่อที่จัดลำดับ  ·  decline / duplicate = cancelled  ·  snooze = พักไว้ ยังไม่ตัดสิน",
+      "text": "ผลการคัดกรอง — ตัดสินใจก่อนเข้า backlog\naccept = ไปต่อที่จัดลำดับ  ·  decline / duplicate = ทีมย้าย state เองตาม policy  ·  snooze = พักไว้",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 1915309066,
+      "versionNonce": 1286287699,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiac9myh8q21unr3g8",
+      "id": "mtimmhq7xdvzgff1qq",
       "type": "rectangle",
       "x": 30,
       "y": 436,
@@ -1362,16 +1354,16 @@
       "roundness": {
         "type": 3
       },
-      "seed": 1878206631,
+      "seed": 714210269,
       "strokeColor": "#0b7285",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 1654012467
+      "versionNonce": 391338475
     },
     {
-      "id": "mtiac9my2624miyi2sp",
+      "id": "mtimmhq72v2hootmljf",
       "type": "text",
       "x": 374,
       "y": 442,
@@ -1396,15 +1388,15 @@
       "originalText": "Plane : state group ที่ใบงานอยู่ในแต่ละช่วง — ตั้งชื่อ state เองได้ แต่ group เป็นตัวกำหนดพฤติกรรม",
       "roughness": 1,
       "roundness": null,
-      "seed": 57173701,
+      "seed": 296066750,
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "Plane : state group ที่ใบงานอยู่ในแต่ละช่วง — ตั้งชื่อ state เองได้ แต่ group เป็นตัวกำหนดพฤติกรรม",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 1389938743,
+      "versionNonce": 606599480,
       "verticalAlign": "middle"
     },
     {
@@ -1440,7 +1432,7 @@
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 1833022144
     },
@@ -1457,14 +1449,6 @@
         {
           "id": "p2-label",
           "type": "text"
-        },
-        {
-          "id": "mtiac9myzh4mblqibr8",
-          "type": "arrow"
-        },
-        {
-          "id": "mtiac9myu58pcvybgn",
-          "type": "arrow"
         }
       ],
       "fillStyle": "solid",
@@ -1482,10 +1466,10 @@
         "type": 3
       },
       "seed": 1147758171,
-      "strokeColor": "#c92a2a",
+      "strokeColor": "#0b7285",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 1971565359
     },
@@ -1522,7 +1506,7 @@
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 1636034536
     },
@@ -1559,7 +1543,7 @@
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 1171475327
     },
@@ -1596,7 +1580,7 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 299898358
     },
@@ -1633,7 +1617,7 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 759376741
     },
@@ -1670,120 +1654,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 1963730412
     },
     {
-      "id": "mtiac9myzh4mblqibr8",
-      "type": "arrow",
-      "x": 239.88161102068062,
-      "y": 406.42042735490367,
-      "width": 30,
-      "height": 75,
-      "angle": 0,
-      "backgroundColor": "transparent",
-      "boundElements": null,
-      "elbowed": false,
-      "endArrowhead": "arrow",
-      "endBinding": {
-        "elementId": "p2",
-        "fixedPoint": null,
-        "focus": 0,
-        "gap": 4
-      },
-      "fillStyle": "solid",
-      "frameId": null,
-      "groupIds": [],
-      "index": "a56",
-      "isDeleted": false,
-      "lastCommittedPoint": null,
-      "link": null,
-      "locked": false,
-      "opacity": 100,
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          24.236777958638754,
-          60.15914529019267
-        ]
-      ],
-      "roughness": 0,
-      "roundness": null,
-      "seed": 1913565893,
-      "startArrowhead": null,
-      "startBinding": {
-        "elementId": "b2",
-        "fixedPoint": null,
-        "focus": 0,
-        "gap": 4
-      },
-      "strokeColor": "#c92a2a",
-      "strokeStyle": "solid",
-      "strokeWidth": 2,
-      "updated": 1788244057550,
-      "version": 1,
-      "versionNonce": 44198969
-    },
-    {
-      "id": "mtiac9myu58pcvybgn",
-      "type": "arrow",
-      "x": 320.1183889793193,
-      "y": 406.42042735490367,
-      "width": -30,
-      "height": 75,
-      "angle": 0,
-      "backgroundColor": "transparent",
-      "boundElements": null,
-      "elbowed": false,
-      "endArrowhead": "arrow",
-      "endBinding": {
-        "elementId": "p2",
-        "fixedPoint": null,
-        "focus": 0,
-        "gap": 4
-      },
-      "fillStyle": "solid",
-      "frameId": null,
-      "groupIds": [],
-      "index": "a57",
-      "isDeleted": false,
-      "lastCommittedPoint": null,
-      "link": null,
-      "locked": false,
-      "opacity": 100,
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          -24.236777958638697,
-          60.15914529019267
-        ]
-      ],
-      "roughness": 0,
-      "roundness": null,
-      "seed": 1123346925,
-      "startArrowhead": null,
-      "startBinding": {
-        "elementId": "b3",
-        "fixedPoint": null,
-        "focus": 0,
-        "gap": 4
-      },
-      "strokeColor": "#c92a2a",
-      "strokeStyle": "solid",
-      "strokeWidth": 2,
-      "updated": 1788244057550,
-      "version": 1,
-      "versionNonce": 696306235
-    },
-    {
-      "id": "mtiac9myc6zlzajhljp",
+      "id": "mtimmhq7ahs2ya24ki9",
       "type": "text",
       "x": 40,
       "y": 574,
@@ -1799,24 +1675,24 @@
       "fontSize": 14,
       "frameId": null,
       "groupIds": [],
-      "index": "a58",
+      "index": "a56",
       "isDeleted": false,
       "lineHeight": 1.25,
       "link": null,
       "locked": false,
       "opacity": 100,
-      "originalText": "Reopen = ย้าย state กลับไปกลุ่ม started บนใบเดิม ไม่สร้างใบใหม่ (ประวัติครบใน activity log)  ·  เข้า completed เมื่อผ่าน Definition of Done → Plane ตั้ง completed_at ให้\ndecline / duplicate ไม่ลบทิ้ง แต่เก็บเหตุผลไว้เป็นความจำขององค์กร  ·  Intake เปิดได้ที่ Project settings → Features",
+      "originalText": "Reopen = ย้าย state กลับไปกลุ่ม started บนใบเดิม ไม่สร้างใบใหม่ (ประวัติครบใน activity log)  ·  เข้า completed เมื่อผ่าน Definition of Done → Plane ตั้ง completed_at ให้\ndecline / duplicate เปลี่ยนสถานะ Intake แต่ไม่ย้าย state — ทีมย้ายเองตาม policy  ·  Intake เปิดได้ที่ Project settings → Features",
       "roughness": 1,
       "roundness": null,
-      "seed": 150359424,
+      "seed": 1442761788,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "text": "Reopen = ย้าย state กลับไปกลุ่ม started บนใบเดิม ไม่สร้างใบใหม่ (ประวัติครบใน activity log)  ·  เข้า completed เมื่อผ่าน Definition of Done → Plane ตั้ง completed_at ให้\ndecline / duplicate ไม่ลบทิ้ง แต่เก็บเหตุผลไว้เป็นความจำขององค์กร  ·  Intake เปิดได้ที่ Project settings → Features",
+      "text": "Reopen = ย้าย state กลับไปกลุ่ม started บนใบเดิม ไม่สร้างใบใหม่ (ประวัติครบใน activity log)  ·  เข้า completed เมื่อผ่าน Definition of Done → Plane ตั้ง completed_at ให้\ndecline / duplicate เปลี่ยนสถานะ Intake แต่ไม่ย้าย state — ทีมย้ายเองตาม policy  ·  Intake เปิดได้ที่ Project settings → Features",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
-      "versionNonce": 1019790954,
+      "versionNonce": 156224262,
       "verticalAlign": "middle"
     },
     {
@@ -1851,7 +1727,7 @@
       "strokeWidth": 1,
       "text": "แจ้ง / สร้าง\nReport",
       "textAlign": "center",
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 385869472,
       "verticalAlign": "middle"
@@ -1888,7 +1764,7 @@
       "strokeWidth": 1,
       "text": "คัดกรอง\nTriage",
       "textAlign": "center",
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 595757225,
       "verticalAlign": "middle"
@@ -1925,7 +1801,7 @@
       "strokeWidth": 1,
       "text": "จัดลำดับ\nPrioritise",
       "textAlign": "center",
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 273601010,
       "verticalAlign": "middle"
@@ -1962,7 +1838,7 @@
       "strokeWidth": 1,
       "text": "วางแผน\nPlan · Cycle",
       "textAlign": "center",
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 1768492577,
       "verticalAlign": "middle"
@@ -1999,7 +1875,7 @@
       "strokeWidth": 1,
       "text": "กำลังทำ\nIn progress",
       "textAlign": "center",
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 437561628,
       "verticalAlign": "middle"
@@ -2036,7 +1912,7 @@
       "strokeWidth": 1,
       "text": "ตรวจ\nReview",
       "textAlign": "center",
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 1357354419,
       "verticalAlign": "middle"
@@ -2073,7 +1949,7 @@
       "strokeWidth": 1,
       "text": "เสร็จ\nDone",
       "textAlign": "center",
-      "updated": 1788244057549,
+      "updated": 1788264689993,
       "version": 1,
       "versionNonce": 1270382590,
       "verticalAlign": "middle"
@@ -2110,7 +1986,7 @@
       "strokeWidth": 1,
       "text": "Reopen\nยังไม่ผ่านจริง",
       "textAlign": "center",
-      "updated": 1788244057549,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 2114953121,
       "verticalAlign": "middle"
@@ -2147,7 +2023,7 @@
       "strokeWidth": 1,
       "text": "accept\nรับเข้า",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 524499731,
       "verticalAlign": "middle"
@@ -2184,7 +2060,7 @@
       "strokeWidth": 1,
       "text": "decline\nไม่ทำ",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 1304728444,
       "verticalAlign": "middle"
@@ -2221,7 +2097,7 @@
       "strokeWidth": 1,
       "text": "duplicate\nซ้ำใบเดิม",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 1277014403,
       "verticalAlign": "middle"
@@ -2258,7 +2134,7 @@
       "strokeWidth": 1,
       "text": "snooze\nพักไว้ก่อน",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 688713042,
       "verticalAlign": "middle"
@@ -2295,7 +2171,7 @@
       "strokeWidth": 1,
       "text": "Intake\ntriage state",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 1347984233,
       "verticalAlign": "middle"
@@ -2323,16 +2199,16 @@
       "link": null,
       "locked": false,
       "opacity": 100,
-      "originalText": "cancelled\nไม่ทำ / ซ้ำ",
+      "originalText": "ยังอยู่ triage\nทีมย้ายเองตาม policy",
       "roughness": 1,
       "roundness": null,
       "seed": 1877145166,
-      "strokeColor": "#c92a2a",
+      "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 1,
-      "text": "cancelled\nไม่ทำ / ซ้ำ",
+      "text": "ยังอยู่ triage\nทีมย้ายเองตาม policy",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 140495046,
       "verticalAlign": "middle"
@@ -2369,7 +2245,7 @@
       "strokeWidth": 1,
       "text": "backlog",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 6850939,
       "verticalAlign": "middle"
@@ -2406,7 +2282,7 @@
       "strokeWidth": 1,
       "text": "unstarted\n(Todo)",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 582324202,
       "verticalAlign": "middle"
@@ -2443,7 +2319,7 @@
       "strokeWidth": 1,
       "text": "started\nIn Progress",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 925600015,
       "verticalAlign": "middle"
@@ -2480,7 +2356,7 @@
       "strokeWidth": 1,
       "text": "started\nIn Review",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 799695164,
       "verticalAlign": "middle"
@@ -2517,7 +2393,7 @@
       "strokeWidth": 1,
       "text": "completed\n(Done)",
       "textAlign": "center",
-      "updated": 1788244057550,
+      "updated": 1788264689994,
       "version": 1,
       "versionNonce": 568492719,
       "verticalAlign": "middle"

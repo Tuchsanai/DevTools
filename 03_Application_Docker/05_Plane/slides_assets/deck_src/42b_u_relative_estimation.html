@@ -5,7 +5,7 @@
   <div class="s-body top">
     <div class="quote" style="font-size:16px; padding:8px 18px; line-height:1.5">
       <b>นิยาม</b> — Relative estimation คือการให้ขนาดของงานด้วยการเทียบกับ <b>เรื่องอ้างอิง (reference story)</b> ที่ทีมเข้าใจตรงกัน โดยถามว่า “ใหญ่กว่าเรื่องนี้กี่เท่า” แทนการทำนายว่า “ใช้เวลากี่ชั่วโมง”<br>
-      <b>ทำไมสำคัญ · ปัญหาที่แก้</b> — <b>ก่อน:</b> ถามเป็นชั่วโมงแล้วได้ 8h / 12h / 30h จากสามคนในทีมเดียวกัน ตัวเลขจึงถูกตีความเป็นกำหนดส่งที่ผิดตั้งแต่วันแรก · <b>หลัง:</b> คำถามเชิงเทียบใช้ข้อมูลน้อยกว่าและไม่ผูกกับว่าใครเป็นคนลงมือ ทีมจึงตอบตรงกันเร็วขึ้นและนำค่าไปบวกรวมเพื่อคาดการณ์ได้
+      <b>ทำไมสำคัญ · ปัญหาที่แก้</b> — <b>ก่อน:</b> ถามเป็นชั่วโมงแล้วได้ 8h / 12h / 30h จากสามคนในทีมเดียวกัน ตัวเลขจึงถูกตีความเป็นกำหนดส่งที่ผิดตั้งแต่วันแรก · <b>หลัง:</b> คนตัดสิน “ใบไหนใหญ่กว่า” ได้ตรงกันกว่าการทาย “ใหญ่เท่าไร” เพราะการเทียบไม่ต้องรู้ค่าสัมบูรณ์ของงานที่ยังไม่เคยทำ และไม่ผูกกับว่าใครลงมือ ค่าจึงนิ่งพอจะบวกรวมไปคาดการณ์ต่อ
     </div>
     <div class="figrow c21">
       <div>
@@ -32,16 +32,14 @@
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Relative estimation · ใน Plane</div><h2>บันทึกผลการเทียบใน Plane — <em>ช่อง Estimate ของ work item</em></h2>
     <div class="sub">Plane เก็บ “ค่าที่ทีมตกลงแล้ว” แต่ไม่ได้เทียบให้ การเปรียบเทียบและเหตุผลเกิดในวงคุยของทีมก่อนเลือกค่าเสมอ</div></div>
   <div class="s-body top">
-    <div class="g21" style="grid-template-columns:minmax(0,1fr) 418px; align-items:start">
-      <div><div class="fig shot fix" style="height:398px"><img data-a="t-workitem-detail" alt="หน้ารายละเอียด PLAB-12 สั่งอาหารและรับหมายเลขออเดอร์ ในโปรเจกต์ Plane Lab แถบ Properties ทางขวาแสดง State In Review, Assignees dev1, Priority Urgent, Start date Sep 02 2026, Due date Sep 05 2026, Estimate 5, Modules Ordering, Cycle Sprint 2 และ label feature"></div>
-        <div class="figcap">PLAB-12 “สั่งอาหารและรับหมายเลขออเดอร์” — แถบ Properties: <b>Estimate 5</b> · In Review · dev1 · Urgent · Ordering · Sprint 2 · feature · Start Sep 02 / Due Sep 05, 2026</div></div>
-      <div style="display:flex; flex-direction:column; gap:8px">
-        <div class="card a" style="padding:8px 13px"><h4><span class="n">1</span>วิธี Plane รองรับ</h4><p style="font-size:15.5px; line-height:1.5">ต้องเปิดระบบประเมินที่ <b>Project settings › Estimates</b> ก่อน (โปรเจกต์ละ 1 ระบบ) ช่อง <b>Estimate</b> จึงปรากฏในแถบ Properties; ค่าที่เลือกเก็บเป็น <code>Issue.estimate_point</code> ไม่ใช่ชั่วโมง — CE v1.4.2 ไม่มีระบบ Time</p></div>
-        <div class="card o" style="padding:8px 13px"><h4><span class="n">2</span>ฟีเจอร์ที่เกี่ยวข้อง · Display</h4><p style="font-size:15.5px; line-height:1.5">เปิด display property <b>Estimate</b> (เมนู <b>Display › Properties</b>) ใน List/Table แล้ว <b>ทวนแนวเทียบ</b>: ทุกใบที่ 3 pt ใหญ่พอ ๆ กันจริงไหม; เหตุผลของค่าเขียนใน comment เพราะ Plane ไม่มีช่องเก็บ</p></div>
-        <div class="card w" style="padding:8px 13px"><h4><span class="n">3</span>ขอบเขตของ CE</h4><p style="font-size:15.5px; line-height:1.5">เมนู <b>Display › Order by</b> ของ CE <b>ไม่มี Estimate</b>; หัวคอลัมน์ Estimate ใน Table มีเมนู Low → High แต่ API v1.4.2 ไม่รับ <code>order_by</code> นี้ จึงถอยไปเรียง “ใหม่สุดก่อน” เงียบ ๆ — ถ้าต้องเรียงจริงให้ export CSV (มีคอลัมน์ <code>estimate</code>)</p></div>
-      </div>
+    <div class="fig shot fix" style="height:282px; overflow:hidden; border-radius:8px"><img data-a="t-workitem-detail" style="width:100%; height:100%; max-width:none; max-height:none; object-fit:cover; object-position:50% 19.5%" alt="หน้ารายละเอียด PLAB-12 สั่งอาหารและรับหมายเลขออเดอร์ ในโปรเจกต์ Plane Lab แถบ Properties ทางขวาแสดง State In Review, Assignees dev1, Priority Urgent, Created by admin, Start date Sep 02 2026, Due date Sep 05 2026, Estimate 5 และ Modules Ordering"></div>
+    <div class="figcap">PLAB-12 “สั่งอาหารและรับหมายเลขออเดอร์” (ครอบกลางภาพ) — แถบ <b>Properties</b>: In Review · dev1 · Urgent · Start Sep 02 / Due Sep 05, 2026 · <b>Estimate 5</b> · Modules Ordering</div>
+    <div class="grid3">
+      <div class="card a" style="padding:8px 12px"><h4><span class="n">1</span>วิธี Plane รองรับ</h4><p style="font-size:14px">ดรอปดาวน์ <b>Estimate</b> เสนอเฉพาะค่าในสเกลของโปรเจกต์ (ที่นี่คือ 1 · 2 · 3 · 5 · 8 · 13) ทีมจึงถูกบังคับให้เลือกจาก <b>สเกลร่วมชุดเดียว</b> ไม่มีช่องพิมพ์ตัวเลขอิสระ และไม่มีหน่วยชั่วโมง (Time เป็นของรุ่นเสียเงิน)</p></div>
+      <div class="card o" style="padding:8px 12px"><h4><span class="n">2</span>ฟีเจอร์ที่เกี่ยวข้อง · Display</h4><p style="font-size:14px">เปิด display property <b>Estimate</b> (ปุ่ม <b>Display › Display Properties</b>) ใน List/Table แล้ว <b>ทวนแนวเทียบ</b>: ทุกใบที่ 3 pt ใหญ่พอ ๆ กันจริงไหม · เหตุผลของค่าเขียนไว้ใน comment เพราะ Plane ไม่มีช่องเก็บ</p></div>
+      <div class="card w" style="padding:8px 12px"><h4><span class="n">3</span>ขอบเขตของ CE</h4><p style="font-size:14px">เมนู <b>Display › Order by</b> <b>ไม่มี Estimate</b>; หัวคอลัมน์ Estimate ใน Table มีเมนู Low → High แต่ backend v1.4.2 ไม่รับ <code>order_by</code> นี้ จึงถอยไปเรียง <code>-created_at</code> เงียบ ๆ — ถ้าต้องเรียงจริงให้ export CSV (มีคอลัมน์ <code>estimate</code>)</p></div>
     </div>
-    <div class="note a" style="font-size:15px"><span class="tag a" style="margin-right:7px">LAB 4</span><b>Mini exercise</b> — ให้ <b>PBI-02 “ดูเมนูและราคา” = 2 pt</b> เป็นเรื่องอ้างอิง แล้วเรียง <b>PBI-10</b> ย้าย config · <b>PBI-01</b> ค้นหาร้าน · <b>PBI-05</b> ร้านค้ายืนยันออเดอร์ · <b>PBI-06</b> ไรเดอร์เห็นออเดอร์ที่พร้อมส่ง · <b>PBI-07</b> ติดตามสถานะ realtime จากเล็กไปใหญ่ ให้ point จากสเกล 1 · 2 · 3 · 5 · 8 · 13 พร้อมเหตุผล 1 ประโยค แล้วตรวจคำตอบกับคอลัมน์ <code>points</code> ใน <code>backlog.csv</code></div>
+    <div class="note a" style="font-size:14px"><span class="tag a" style="margin-right:7px">LAB 4</span><b>Mini exercise</b> — ให้ <b>PBI-02 “ดูเมนูและราคา” = 2 pt</b> เป็นเรื่องอ้างอิง แล้วเรียง <b>PBI-10</b> ย้าย config · <b>PBI-01</b> ค้นหาร้าน · <b>PBI-05</b> ร้านค้ายืนยันออเดอร์ · <b>PBI-06</b> ไรเดอร์เห็นออเดอร์ที่พร้อมส่ง · <b>PBI-07</b> ติดตามสถานะ realtime จากเล็กไปใหญ่ ให้ point จากสเกล 1 · 2 · 3 · 5 · 8 · 13 พร้อมเหตุผล 1 ประโยค (มีสองใบที่ควรได้ค่าเท่ากัน) แล้วตรวจคำตอบกับคอลัมน์ <code>points</code> ใน <code>backlog.csv</code></div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Relative estimation</span><span class="pg"></span></div>
  </section>

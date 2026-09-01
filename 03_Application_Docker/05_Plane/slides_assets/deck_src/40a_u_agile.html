@@ -6,14 +6,14 @@
   <div class="s-body top">
     <div class="g12 mid" style="grid-template-columns:1.08fr .92fr">
       <div>
-        <div class="quote" style="font-size:19px; line-height:1.55"><span class="tag a">นิยาม</span> Agile คือแนวทางพัฒนาผลิตภัณฑ์ที่ทำงานเป็น <b>รอบสั้นซ้ำ ๆ ที่มีความยาวคงที่</b> (iterative) และส่งมอบ <b>ของที่ใช้งานได้เพิ่มขึ้นทีละส่วน</b> (incremental) โดยให้ผู้ใช้ตรวจของจริงทุกรอบ แล้วใช้สิ่งที่เรียนรู้ปรับทั้งลำดับงานและวิธีทำงานของรอบถัดไป</div>
+        <div class="quote" style="font-size:19px; line-height:1.55"><span class="tag a">นิยาม</span> Agile คือแนวทางพัฒนาผลิตภัณฑ์ที่ทำงานเป็น <b>รอบสั้นซ้ำ ๆ ที่กำหนดกรอบเวลาไว้ล่วงหน้า</b> (iterative) และส่งมอบ <b>ของที่ใช้งานได้เพิ่มขึ้นทีละส่วน</b> (incremental) โดยให้ผู้ใช้ตรวจของจริงทุกรอบ แล้วใช้สิ่งที่เรียนรู้ปรับทั้งลำดับงานและวิธีทำงานของรอบถัดไป</div>
         <dl class="kv" style="font-size:15.5px; gap:5px 14px; margin-top:11px">
           <dt>iterative</dt><dd>วนทำซ้ำเป็นรอบ — ของที่ทำไปแล้วถูกนำกลับมาแก้ให้ดีขึ้นได้ ไม่ใช่ทำครั้งเดียวแล้วห้ามแตะ</dd>
           <dt>incremental</dt><dd>ทุกรอบเพิ่ม “ชิ้นที่ใช้งานได้จริง” เข้ากับของเดิม ไม่ใช่สะสมงานที่ยังต่อกันไม่ติด</dd>
         </dl>
         <div class="grid2" style="margin-top:12px">
-          <div class="card c" style="padding:12px 15px"><h4>ปัญหาเดิม · ก่อน</h4><p>ทีมวางแผนและสร้างนานหลายเดือน ผู้ใช้เห็นของจริงตอนท้าย ถ้าเข้าใจปัญหาผิดตั้งแต่ต้น งานเกือบทั้งหมดต้องรื้อ</p></div>
-          <div class="card o" style="padding:12px 15px"><h4>วิธีแก้ · หลัง</h4><p>เลือกส่วนเล็กที่มีคุณค่า → สร้างและทดสอบให้จบ → ให้ผู้ใช้ลองของจริง → ปรับลำดับ backlog ก่อนลงทุนกับส่วนถัดไป</p></div>
+          <div class="card c" style="padding:12px 15px"><h4>ปัญหาที่แก้ · ก่อน</h4><p>ทีมวางแผนและสร้างนานหลายเดือน ผู้ใช้เห็นของจริงตอนท้าย ถ้าเข้าใจปัญหาผิดตั้งแต่ต้น งานเกือบทั้งหมดต้องรื้อ</p></div>
+          <div class="card o" style="padding:12px 15px"><h4>ปัญหาที่แก้ · หลัง</h4><p>เลือกส่วนเล็กที่มีคุณค่า → สร้างและทดสอบให้จบ → ให้ผู้ใช้ลองของจริง → ปรับลำดับ backlog ก่อนลงทุนกับส่วนถัดไป</p></div>
         </div>
         <div class="note a" style="margin-top:12px; font-size:15.5px"><b>ทำไมสำคัญ</b> — ความต้องการเปลี่ยนได้ และทีมเข้าใจผู้ใช้ผิดได้เสมอ รอบที่สั้นจำกัด “เวลาที่เดินไปผิดทาง” ให้เหลือแค่หนึ่งรอบ และเปลี่ยนการถกเถียงเรื่องความคืบหน้าให้เป็นการดูของที่ใช้ได้จริง</div>
       </div>
@@ -31,22 +31,23 @@
 <div class="slot">
  <section class="slide figs">
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Agile · กลไก</div><h2>หนึ่ง iteration ทำงานครบวงจร — <em>แล้วใช้ feedback เปลี่ยนลำดับงาน</em></h2>
-    <div class="sub">หนึ่งรอบมี 6 ขั้นต่อกันเป็นวง: จัดลำดับ backlog → วางแผนรอบ → สร้าง → ทดสอบ → ทบทวนกับผู้ใช้ → ปรับ backlog แล้วเริ่มรอบใหม่ทันที</div></div>
+    <div class="sub"><b>Workflow ของหนึ่งรอบ</b> 6 ขั้นต่อกันเป็นวง: จัดลำดับ backlog → วางแผนรอบ → สร้าง → ทดสอบ → ทบทวนกับผู้ใช้ → ปรับ backlog แล้วเริ่มรอบใหม่ทันที</div></div>
   <div class="s-body top">
-    <div class="fig fix" style="height:344px"><img data-a="d26" alt="วงจร Agile หกขั้นจาก backlog ไปวางแผน สร้าง ทดสอบ ทบทวนและปรับ backlog พร้อม increment ที่สะสมทุกรอบ และแถบล่างเทียบ Waterfall ที่ได้ feedback ครั้งเดียว"></div>
-    <div class="figcap">ซ้าย = วงรอบ 6 ขั้นของหนึ่ง iteration (1–4 สัปดาห์) · ขวา = increment สะสมขึ้นเรื่อย ๆ และผู้ใช้ทดลองของจริงแล้วส่ง feedback กลับเข้าขั้นทบทวน · ล่าง = Waterfall ได้ feedback ครั้งเดียวตอนจบ</div>
-    <table class="tbl sm" style="margin-top:8px; font-size:14.6px">
+    <div class="fig fix" style="height:278px"><img data-a="d26" alt="วงจร Agile หกขั้นจาก backlog ไปวางแผน สร้าง ทดสอบ ทบทวนและปรับ backlog พร้อม increment ที่สะสมทุกรอบ และแถบล่างเทียบ Waterfall กับ Agile"></div>
+    <div class="figcap" style="font-size:13.5px"><b>ทำงานอย่างไร</b> — ซ้าย = วงรอบ 6 ขั้นของหนึ่ง iteration · ขวา = increment สะสมขึ้นทุกรอบ และ feedback จากผู้ใช้วิ่งกลับเข้าขั้นทบทวน · ล่าง = แถบเทียบ Waterfall (feedback ครั้งเดียวตอนจบ) กับ Agile (feedback ทุกรอบ)</div>
+    <table class="tbl sm" style="margin-top:7px; font-size:14.6px">
       <thead>
-        <tr><th colspan="4">ส่วนประกอบ 4 อย่างที่ทำให้วงจรปิดได้ — ขาดข้อใดข้อหนึ่ง รอบนั้นจะไม่เกิดการเรียนรู้</th></tr>
-        <tr><th style="width:25%">Ordered backlog</th><th style="width:25%">Iteration · 1–4 สัปดาห์</th><th style="width:25%">Increment</th><th style="width:25%">Feedback</th></tr>
+        <tr><th colspan="4">องค์ประกอบ 4 อย่างที่ทำให้วงจรปิดได้ — ขาดข้อใดข้อหนึ่ง รอบนั้นจะไม่เกิดการเรียนรู้</th></tr>
+        <tr><th style="width:25%">Ordered backlog</th><th style="width:25%">Iteration · กรอบเวลาคงที่</th><th style="width:25%">Increment</th><th style="width:25%">Feedback</th></tr>
       </thead>
       <tbody><tr>
-        <td>รายการสิ่งที่อาจทำทั้งหมด เรียงเป็นลำดับเดียวตามคุณค่า; แต่ละรอบหยิบจากบนสุดเท่าที่ทำจบได้</td>
+        <td>รายการสิ่งที่อาจทำทั้งหมด เรียงเป็นลำดับเดียวตามคุณค่า แต่ละรอบหยิบจากบนสุด</td>
         <td>กรอบเวลาคงที่ที่ทีมวางแผน สร้าง ทดสอบ และทบทวนงานชุดหนึ่งให้จบครบวงจร</td>
-        <td>ส่วนของผลิตภัณฑ์ที่รวมกับของเดิมแล้วใช้งานได้จริง ไม่ใช่เอกสารหรือโค้ดที่ยังทดสอบไม่ได้</td>
-        <td>ข้อมูลจากผู้ใช้ ทีม และผลทดสอบ ใช้ยืนยันหรือหักล้างสมมติฐาน แล้วเปลี่ยน backlog ก่อนรอบใหม่</td>
+        <td>ส่วนของผลิตภัณฑ์ที่รวมกับของเดิมแล้วใช้ได้จริง ไม่ใช่โค้ดที่ยังทดสอบไม่ได้</td>
+        <td>ข้อมูลจากผู้ใช้ ทีม และผลทดสอบ ใช้ยืนยันหรือหักล้างสมมติฐาน แล้วปรับ backlog</td>
       </tr></tbody>
     </table>
+    <div class="note w" style="margin-top:7px; font-size:14.5px; padding:7px 14px"><b>รอบต้องสั้นแค่ไหน</b> — Agile Manifesto ข้อ 3 ให้ส่งมอบซอฟต์แวร์ที่ใช้ได้ “ทุกไม่กี่สัปดาห์ถึงไม่กี่เดือน โดยเลือกช่วงที่สั้นกว่า” ส่วน Scrum Guide 2020 กำหนด Sprint <b>ไม่เกิน 1 เดือน</b> — ทีมส่วนใหญ่จึงลงตัวที่ <b>1–4 สัปดาห์</b> ตามที่ไดอะแกรมนี้ใช้</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Agile</span><span class="pg"></span></div>
  </section>
@@ -58,23 +59,23 @@
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Agile · ตัวอย่าง · ใน Plane</div><h2>CampusEats บน Plane — <em>Cycle ทำให้รอบเรียนรู้มองเห็นและติดตามได้</em></h2>
     <div class="sub">Plane ไม่ได้ “ทำให้ทีมเป็น Agile” แต่ทำให้ลำดับงาน ขอบเขตของรอบ และสิ่งที่เสร็จจริง อยู่ในแหล่งข้อมูลเดียวที่ทุกคนเห็นตรงกัน</div></div>
   <div class="s-body top">
-    <div class="g11" style="grid-template-columns:1.06fr .94fr; gap:15px">
+    <div class="g11" style="grid-template-columns:.98fr 1.02fr; gap:16px; align-items:start">
       <div>
-        <div class="fig shot fix" style="height:250px"><img data-a="t-cycles-list" alt="หน้า Cycles ของโปรเจกต์ Plane Lab แสดงแผง Active cycle ของ Sprint 2 พร้อม Progress และกราฟ burndown และแถบ Completed cycle ที่มี Sprint 1"></div>
-        <div class="figcap" style="font-size:12.5px">หน้า Cycles ของ Plane Lab — <b>Active cycle</b>: Sprint 2 (60% · Aug 30 – Sep 12, 2026) แผง Progress 3/5 Work items closed ข้างกราฟ Work item burndown · <b>Upcoming</b> 0 · <b>Completed</b> 1 = Sprint 1 (38%)</div>
+        <div class="fig shot fix" style="height:216px"><img data-a="t-cycles-list" alt="หน้า Cycles ของโปรเจกต์ Plane Lab แสดงแผง Active cycle ของ Sprint 2 พร้อม Progress และกราฟ burndown และแถบ Completed cycle ที่มี Sprint 1"></div>
+        <div class="figcap" style="font-size:13px"><b>ภาพจริงใน Plane</b> · Plane Lab › Cycles — <b>Active cycle</b>: Sprint 2 (60% · Aug 30 – Sep 12, 2026) แผง Progress <b>3/5 Work items closed</b> ข้างกราฟ Work item burndown · <b>Upcoming</b> 0 · <b>Completed</b> 1 = Sprint 1 (38% · Aug 28–31)</div>
       </div>
-      <div style="display:flex; flex-direction:column; gap:7px">
-        <div class="card a" style="padding:8px 13px"><h4 style="font-size:16px"><span class="n">1</span>ตั้งเป้าของรอบ</h4><p style="font-size:13.8px">LAB 4 ตั้ง Sprint Goal “ค้นหาร้าน → ดูเมนู → ใส่ตะกร้า → สั่งอาหารได้ครบวงจร” แล้วดึง PBI-01…05, 09, 10 = <b>19 points</b> เข้า Sprint 1 (งบที่ตกลงกัน ≤ 20 points)</p></div>
-        <div class="card o" style="padding:8px 13px"><h4 style="font-size:16px"><span class="n">2</span>ส่งมอบสิ่งที่ Done จริง</h4><p style="font-size:13.8px">จบรอบมีเพียง PBI-01, 02, 10 ที่ผ่าน Definition of Done (<b>6 points</b>) — Review สาธิตสามใบนี้แล้วบันทึก feedback ลง Page ไม่ใช่รายงานใบที่ “เกือบเสร็จ”</p></div>
-        <div class="card w" style="padding:8px 13px"><h4 style="font-size:16px"><span class="n">3</span>ปรับก่อนเริ่มรอบใหม่</h4><p style="font-size:13.8px">feedback บวกผลจริงของรอบแรก (Done 6 จาก 19 points) ใช้เรียง Product Backlog ใหม่ และตั้งขนาดรอบถัดไปจากหลักฐาน ไม่ใช่จากความหวัง</p></div>
+      <div style="display:flex; flex-direction:column; gap:5px">
+        <div class="card a" style="padding:6px 12px"><h4 style="font-size:16px"><span class="n">1</span>ตัวอย่างจริง · ตั้งเป้าของรอบ</h4><p style="font-size:14.6px">LAB 4 เขียน <b>Sprint Goal</b> ของ Sprint 1: “นักศึกษาค้นหาร้าน ดูเมนู ใส่ตะกร้า และสั่งอาหารได้ครบวงจร” — เป้าของ<b>รอบ</b> ไม่ใช่ Product Goal ของทั้งเทอม</p></div>
+        <div class="card o" style="padding:6px 12px"><h4 style="font-size:16px"><span class="n">2</span>ส่งมอบเฉพาะที่ Done จริง</h4><p style="font-size:14.6px">รอบนี้รับ 7 ใบ = 19 points แต่จบรอบมีเพียง PBI-01, 02, 10 ที่ผ่าน Definition of Done = <b>6 points</b> — Review สาธิตเฉพาะสามใบนี้ ไม่ใช่ใบที่ “เกือบเสร็จ”</p></div>
+        <div class="card w" style="padding:6px 12px"><h4 style="font-size:16px"><span class="n">3</span>ปรับก่อนเริ่มรอบใหม่</h4><p style="font-size:14.6px">feedback บวกผลจริงของรอบแรก (Done 6 จาก 19 points) ใช้เรียง Product Backlog ใหม่ และตั้งขนาดรอบถัดไปจากหลักฐาน</p></div>
       </div>
     </div>
-    <div class="note a" style="margin-top:7px; font-size:13.4px; padding:8px 15px"><b>ใน Plane</b> — หนึ่งรอบ = <b>Cycle</b> เปิดที่ <b>Project settings › Features › Cycles</b> (โปรเจกต์ตั้งต้นปิดไว้ — ฟิลด์ <code>cycle_view</code>) · งานในรอบผูกผ่านตาราง <code>cycle_issues</code> · <b>ฟีเจอร์ที่เกี่ยวข้อง:</b> แผง Progress + burndown ของรอบ และ Page สำหรับ Review/Retro · <b>ข้อจำกัด:</b> Plane นับ “เสร็จ” จาก state group <code>completed</code> (จึงเซ็ต <code>completed_at</code>) ไม่ได้ตรวจ Definition of Done แทนทีม</div>
-    <div class="grid2" style="margin-top:7px; gap:12px">
-      <div class="card c" style="padding:7px 13px"><h4 style="font-size:16px">❌ Agile = ไม่ต้องวางแผน</h4><p style="font-size:13.8px">✅ วางแผนถี่ขึ้น: ละเอียดเฉพาะรอบที่กำลังจะทำ ส่วนที่ไกลออกไปเก็บเป็น backlog ที่จัดลำดับใหม่ได้เมื่อมีข้อมูลใหม่</p></div>
-      <div class="card c" style="padding:7px 13px"><h4 style="font-size:16px">❌ Agile = ไม่ต้องมีเอกสาร</h4><p style="font-size:13.8px">✅ Manifesto ให้คุณค่ากับซอฟต์แวร์ที่ใช้ได้ <b>มากกว่า</b> เอกสารครบถ้วน ไม่ใช่ <b>แทนที่</b> — ทำเท่าที่ช่วยให้สร้าง ทดสอบ ส่งมอบ และดูแลต่อได้</p></div>
+    <div class="note a" style="font-size:14px; padding:7px 14px"><b>การทำงานใน Plane</b> — หนึ่งรอบ = <b>Cycle</b> เปิดที่ <b>Project settings › Cycles › Enable cycles</b> (หน้านี้อยู่ใต้กลุ่ม <b>Features</b> ในแถบซ้าย — CE ไม่มีหน้า Features หน้าเดียวที่รวมสวิตช์ · ตั้งต้นปิด = <code>cycle_view</code>) · งานในรอบผูกผ่าน <code>cycle_issues</code> · <b>ฟีเจอร์ที่เกี่ยวข้อง:</b> Progress + burndown ของรอบ และ Page สำหรับ Review/Retro · <b>ข้อจำกัด:</b> Plane นับ “เสร็จ” จาก state group <code>completed</code> ไม่ได้ตรวจ Definition of Done แทนทีม</div>
+    <div class="grid2" style="gap:12px">
+      <div class="card c" style="padding:6px 12px"><h4 style="font-size:16px">ความเข้าใจผิด ❌ Agile = ไม่ต้องวางแผน</h4><p style="font-size:14.6px">✅ วางแผนถี่ขึ้น: ละเอียดเฉพาะรอบที่กำลังจะทำ ส่วนที่ไกลออกไปเก็บเป็น backlog ที่จัดลำดับใหม่ได้เมื่อมีข้อมูลใหม่</p></div>
+      <div class="card c" style="padding:6px 12px"><h4 style="font-size:16px">ความเข้าใจผิด ❌ Agile = ไม่ต้องมีเอกสาร</h4><p style="font-size:14.6px">✅ Manifesto ให้คุณค่ากับซอฟต์แวร์ที่ใช้ได้ <b>มากกว่า</b> เอกสารครบถ้วน ไม่ใช่ <b>แทนที่</b> — ทำเท่าที่ช่วยให้สร้าง ทดสอบ ส่งมอบ และดูแลต่อได้</p></div>
     </div>
-    <div class="note" style="margin-top:7px; font-size:13.2px; padding:8px 15px"><span class="tag a">LAB 4</span> <b>Mini exercise</b> — เลือกงานจาก PBI-01…05 (3 · 2 · 3 · 5 · 3 points) เข้ารอบ 2 สัปดาห์ให้รวม <b>ไม่เกิน 8 points</b> แล้วตอบ: (1) เขียน Sprint Goal หนึ่งประโยคที่สาธิตให้ผู้ใช้ดูได้จริง (2) ถ้า Review ได้ feedback ว่า “สั่งได้แต่จ่ายเงินไม่ได้ ก็ยังใช้จริงไม่ได้” จะเลื่อน PBI-08 (ชำระเงิน PromptPay, 8 points) ขึ้นก่อน PBI-06/07 หรือไม่ เพราะอะไร</div>
+    <div class="note o" style="font-size:14px; padding:7px 14px"><b><span class="tag a" style="font-size:13.5px">LAB 4</span> Mini exercise</b> — เลือกงานจาก PBI-01…05 (3 · 2 · 3 · 5 · 3 points) เข้ารอบ 2 สัปดาห์ให้รวม <b>ไม่เกิน 8 points</b> แล้วตอบ: (1) เขียน Sprint Goal หนึ่งประโยคที่สาธิตให้ผู้ใช้ดูได้จริง (2) ถ้า Review ได้ feedback ว่า “สั่งได้แต่จ่ายเงินไม่ได้” จะเลื่อน PBI-08 (PromptPay QR, 8 points) ขึ้นก่อน PBI-06/07 หรือไม่ เพราะอะไร</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Agile</span><span class="pg"></span></div>
  </section>

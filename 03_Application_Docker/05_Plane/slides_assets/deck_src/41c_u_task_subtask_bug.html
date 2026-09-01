@@ -15,18 +15,18 @@
             <tr><td><b>Bug</b></td><td>พฤติกรรมจริงต่างจากที่ตกลงไว้</td><td>ทำซ้ำอย่างไร · ควรได้อะไร · ได้อะไรจริง?</td></tr>
           </tbody>
         </table>
-        <div class="grid2" style="margin-top:8px">
-          <div class="card c" style="padding:10px 13px"><h4>ปัญหาที่แก้ · ก่อน</h4><p>story ใบใหญ่ค้างที่ “In Progress” ทั้งสัปดาห์โดยไม่มีใครบอกได้ว่าเหลืออะไร · ใบ bug ชื่อ <b>“แก้บั๊ก”</b> ไม่มีขั้นทำซ้ำ ผู้แก้ต้องกลับไปถามผู้รายงานทุกครั้ง</p></div>
-          <div class="card o" style="padding:10px 13px"><h4>ทำไมสำคัญ · หลัง</h4><p>เห็นขั้นลงมือ เจ้าของ และลำดับก่อนหลัง · ความคืบหน้าอ่านเป็น x/y ได้ · defect มีหลักฐานพอให้แก้และทดสอบซ้ำ (lint ของ LAB 3: 8/25 → 13/25 เพราะแก้ใบเดียว)</p></div>
+        <div class="grid2" style="margin-top:7px">
+          <div class="card c" style="padding:9px 13px"><h4>ปัญหาที่แก้ · ก่อน</h4><p style="font-size:15px; line-height:1.45">story ใบใหญ่ค้างที่ “In Progress” ทั้งสัปดาห์โดยไม่มีใครบอกได้ว่าเหลืออะไร · ใบ bug ชื่อ <b>“แก้บั๊ก”</b> ไม่มีขั้นทำซ้ำ ผู้แก้ต้องกลับไปถามผู้รายงานทุกครั้ง</p></div>
+          <div class="card o" style="padding:9px 13px"><h4>ทำไมสำคัญ · หลัง</h4><p style="font-size:15px; line-height:1.45">เห็นขั้นลงมือ เจ้าของ และลำดับก่อนหลัง · ความคืบหน้าอ่านเป็น x/y ได้ · defect มีหลักฐานพอให้แก้และทดสอบซ้ำ (คะแนน lint ของ LAB 3 ขยับ 8/25 → 13/25 เพราะแก้ใบเดียว)</p></div>
         </div>
-        <div class="note w" style="margin-top:8px; font-size:14.5px"><b>ความเข้าใจผิด ①</b> — ❌ “Bug คือชั้นที่เล็กกว่า Subtask” → ✅ Bug เป็น <b>ชนิดของปัญหา</b> ไม่ใช่ชั้นในลำดับ จึงอยู่ระดับ story หรือ task ก็ได้ และไม่ต้องมีงานแม่; <b>Subtask</b> ต่างหากที่นิยามด้วยการมีงานแม่เสมอ</div>
       </div>
       <div>
-        <div class="fig photo" style="height:236px"><img data-a="real_bug_triage" alt="นักพัฒนาสองคนนั่งดูหน้าจอแล็ปท็อปด้วยกันเพื่อตรวจอาการผิดพลาดและจดบันทึกหลักฐานสำหรับ triage bug"></div>
+        <div class="fig photo" style="height:206px"><img data-a="real_bug_triage" alt="นักพัฒนาสองคนนั่งดูหน้าจอแล็ปท็อปด้วยกันเพื่อตรวจอาการผิดพลาดและจดบันทึกหลักฐานสำหรับ triage bug"></div>
         <div class="figcap">Bug triage เริ่มจากดูหลักฐานร่วมกัน ไม่ใช่เดาว่าใครเป็นคนทำผิด</div>
-        <div class="card a" style="margin-top:10px; padding:10px 13px"><h4>ตัวอย่าง · CampusEats ใน LAB 3</h4><p><b>Story</b> PLAB-4 นักศึกษาสมัครบัญชีและเข้าสู่ระบบด้วยอีเมล<br><b>Task</b> 3 ใบใต้ story: ออกแบบฟอร์มสมัคร/เข้าสู่ระบบ (UI) · API สมัครบัญชีและตรวจโดเมนอีเมล · เขียน test ตามเกณฑ์การยอมรับ 3 ข้อ<br><b>Bug</b> PLAB-5 ตะกร้าคำนวณราคาผิดเมื่อมีโปรโมชันซ้อนกัน — คนละเรื่องกับ story จึงเป็นใบของตัวเอง</p></div>
+        <div class="card a" style="margin-top:9px; padding:9px 13px"><h4 style="font-size:16.5px">ตัวอย่าง · CampusEats ใน LAB 3</h4><p style="font-size:15px; line-height:1.45"><b>Story</b> PLAB-4 นักศึกษาสมัครบัญชีและเข้าสู่ระบบด้วยอีเมล<br><b>Task</b> PLAB-6…8: ออกแบบฟอร์มสมัคร/เข้าสู่ระบบ (UI) · API สมัครบัญชีและตรวจโดเมนอีเมล · เขียน test ตามเกณฑ์การยอมรับ 3 ข้อ<br><b>Bug</b> PLAB-5 ตะกร้าคำนวณราคาผิด — คนละเรื่องกับ story จึงเป็นใบของตัวเอง ไม่ใช่งานลูก</p></div>
       </div>
     </div>
+    <div class="note w" style="font-size:14px"><b>ความเข้าใจผิด ①</b> — ❌ “Bug คือชั้นที่เล็กกว่า Subtask” → ✅ Bug เป็น <b>ชนิดของปัญหา</b> ไม่ใช่ชั้นในลำดับ จึงไม่ต้องมีงานแม่ ส่วน <b>Subtask</b> นิยามด้วยการมีงานแม่เสมอ</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Task · Subtask · Bug</span><span class="pg"></span></div>
  </section>
@@ -40,8 +40,8 @@
   <div class="s-body top">
     <div class="figrow c21" style="align-items:start">
       <div>
-        <div class="fig fix" style="height:308px"><img data-a="d28" alt="แผนภาพลำดับชั้น Epic ไป User Story ไป Task ไป Subtask พร้อมขนาดเวลาโดยประมาณทางซ้าย, Bug เชื่อมด้วยเส้นประไปยังระดับ story และ task และคอลัมน์ขวาแมปเป็น Module, Work item, Sub-work item และ label bug ของ Plane CE"></div>
-        <div class="figcap"><b>ซ้าย</b> แนวคิด Agile: งานใหญ่ถูกแบ่งจนเล็กพอจะทำเสร็จได้ · เส้นประของ Bug = defect เกาะได้ทั้งระดับ story และ task · <b>ขวา</b> ชื่อเดียวกันนี้ใน Plane CE</div>
+        <div class="fig fix" style="height:304px"><img data-a="d28" alt="แผนภาพลำดับชั้น Epic ไป User Story ไป Task ไป Subtask พร้อมขนาดเวลาโดยประมาณทางซ้าย, Bug เชื่อมด้วยเส้นประไปยังระดับ story และ task และคอลัมน์ขวาแมปเป็น Module, Work item, Sub-work item และ label bug ของ Plane CE"></div>
+        <div class="figcap"><b>ซ้าย</b> แนวคิด Agile: งานใหญ่ถูกแบ่งจนเล็กพอจะทำเสร็จได้ (สัปดาห์–เดือน → หลายวัน → ชั่วโมง–1 วัน) · เส้นประของ Bug = defect เกาะได้ทั้งระดับ story และ task · <b>ขวา</b> ชื่อเดียวกันนี้ใน Plane CE</div>
       </div>
       <div>
         <table class="tbl xs" style="font-size:14.5px">
@@ -59,7 +59,7 @@
         <div class="note w" style="margin-top:9px; font-size:13.5px; line-height:1.5"><b>Severity ≠ Priority</b> — severity คือความรุนแรงของผลกระทบ (ข้อเท็จจริงของระบบ) · priority คือลำดับที่จะหยิบมาแก้ (การตัดสินใจของทีม) · bug รุนแรงแต่เจอปีละครั้ง อาจถูกจัดลำดับต่ำกว่าอาการเบา ๆ ที่ผู้ใช้เจอทุกวัน</div>
       </div>
     </div>
-    <div style="margin-top:4px; margin-bottom:2px; font-size:14px; color:var(--muted)"><span class="tag a">Workflow</span> จากหลักฐานไปสู่ผลที่ทดสอบซ้ำได้</div>
+    <div style="margin-top:2px; font-size:14px; color:var(--muted)"><span class="tag a">Workflow</span> จากหลักฐานไปสู่ผลที่ทดสอบซ้ำได้</div>
     <div class="flow">
       <div class="b"><div class="t">พบอาการ</div><div class="s">เก็บหลักฐาน</div></div><span class="ar">→</span>
       <div class="b a"><div class="t">ทำซ้ำ</div><div class="s">steps · env</div></div><span class="ar">→</span>
@@ -67,7 +67,7 @@
       <div class="b a"><div class="t">เชื่อมงาน</div><div class="s">parent · blocked by</div></div><span class="ar">→</span>
       <div class="b"><div class="t">แก้และทดสอบซ้ำ</div><div class="s">expected = actual</div></div>
     </div>
-    <div class="note a" style="font-size:14.5px"><b>เกณฑ์ตัดสินตอนแตกงาน</b> — ถ้างานใบหนึ่งยังส่งมอบหรือตรวจรับภายในหนึ่งวันไม่ได้ ให้แตกเป็นงานลูกที่มีผลลัพธ์ตรวจสอบได้ (ความสัมพันธ์แบบ “เป็นส่วนหนึ่งของ”) · แต่ถ้าสองใบเพียง “เกี่ยวข้อง” หรือ “ขวางกัน” ให้ใช้ relation ไม่ใช่งานแม่–งานลูก</div>
+    <div class="note a" style="font-size:14px"><b>ทำงานอย่างไร · เกณฑ์ตัดสินตอนแตกงาน</b> — ถ้าใบงานหนึ่งส่งมอบหรือตรวจรับไม่ได้ภายในหนึ่งวัน ให้แตกเป็นงานลูกที่มีผลลัพธ์ตรวจสอบได้ (ความสัมพันธ์แบบ “เป็นส่วนหนึ่งของ”) · แต่ถ้าสองใบเพียง “เกี่ยวข้อง” หรือ “ขวางกัน” ให้ใช้ relation ไม่ใช่งานแม่–งานลูก</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Task · Subtask · Bug</span><span class="pg"></span></div>
  </section>
@@ -81,11 +81,11 @@
   <div class="s-body top">
     <div class="grid3" style="gap:12px">
       <div>
-        <div class="fig shot fix" style="height:230px"><img data-a="t-subworkitems" alt="หน้า PLAB-4 ของ Plane เลื่อนมาที่ส่วน Sub-work items แสดงตัวนับ 1 จาก 3 Done งานลูกสามใบ PLAB-6 ถึง PLAB-8 และหัวข้อ Relations กับ Links"></div>
-        <div class="figcap" style="font-size:12.5px"><b>ภาพจริง · PLAB-4</b> — Sub-work items 3 ใบ · ตัวนับ <b>1/3 Done</b></div>
+        <div class="fig shot fix" style="height:230px"><img data-a="t-subworkitems" alt="หน้า PLAB-4 ของ Plane เลื่อนมาที่ส่วน Sub-work items แสดงตัวนับ 1 จาก 3 Done งานลูกสามใบ PLAB-8 PLAB-7 และ PLAB-6 ตามด้วยหัวข้อ Relations และ Links"></div>
+        <div class="figcap" style="font-size:12.5px"><b>ภาพจริง · PLAB-4</b> — Sub-work items PLAB-6…8 · ตัวนับ <b>1/3 Done</b></div>
       </div>
       <div>
-        <div class="fig shot fix" style="height:230px"><img data-a="t-relations" alt="หน้า PLAB-5 ของ Plane แสดงบล็อก Relations ที่มีกลุ่ม Blocked by ชี้ไป PLAB-4 สถานะ In Progress พร้อมแผงคุณสมบัติ Backlog, dev1, Urgent, Ordering และ label bug"></div>
+        <div class="fig shot fix" style="height:230px"><img data-a="t-relations" alt="หน้า PLAB-5 ของ Plane แสดงบล็อก Relations ที่มีกลุ่ม Blocked by ชี้ไป PLAB-4 สถานะ In Progress พร้อมแผงคุณสมบัติ State Backlog, assignee dev1, Priority Urgent, module Ordering และ label bug"></div>
         <div class="figcap" style="font-size:12.5px"><b>ภาพจริง · PLAB-5</b> — <b>Blocked by</b> PLAB-4 · dev1 · Urgent · <code>bug</code></div>
       </div>
       <div>
@@ -96,7 +96,7 @@
     <div class="grid3" style="gap:12px; margin-top:10px">
       <div class="card a" style="padding:9px 13px"><h4>Plane นำไปใช้อย่างไร · Parent</h4><p>งานลูกคือ work item เต็มใบที่ตั้ง <code>parent</code> ชี้แม่ได้ <b>ใบเดียว</b> · ตัวนับ x/y Done นับเฉพาะ<b>ลูกชั้นแรก</b>ที่อยู่กลุ่ม completed และ Plane <b>ไม่ปิดใบแม่ให้เอง</b></p></div>
       <div class="card o" style="padding:9px 13px"><h4>ฟีเจอร์ที่เกี่ยวข้อง · Relations</h4><p>UI มี 4 แบบ: <b>Blocked by · Blocking · Relates to · Duplicate</b> · ใส่ด้านเดียวพอ อีกใบเห็นคู่กลับเอง (PLAB-5 Blocked by PLAB-4 ⇒ PLAB-4 เห็น Blocking)</p></div>
-      <div class="card w" style="padding:9px 13px"><h4>ข้อจำกัด CE · ชนิดงานและ severity</h4><p>CE จัดการ work-item types ไม่ได้ จึงแยกชนิดด้วย label <code>bug</code> · ไม่มีช่อง severity ให้กรอก ต้องเขียนใน description แล้วใช้ <b>priority</b> จัดลำดับ</p></div>
+      <div class="card w" style="padding:9px 13px"><h4>ข้อจำกัด CE · ชนิดงานและ severity</h4><p>CE มีตาราง work-item type แต่ไม่มีหน้าจัดการ จึงแยกชนิดด้วย label <code>bug</code> · ไม่มีช่อง severity ให้กรอก ต้องเขียนใน description แล้วใช้ <b>priority</b> จัดลำดับ</p></div>
     </div>
     <div class="note c" style="margin-top:9px; font-size:13.5px"><b>ความเข้าใจผิด ②</b> — ❌ “ติ๊ก checkbox ในคำอธิบายก็ถือว่าแตกงานแล้ว” → ✅ checkbox ไม่มี state · assignee · เลขใบ และไม่นับใน x/y — งานที่ต้องมอบหมายหรือติดตามได้ ต้องเป็น <b>sub-work item</b></div>
     <div class="note a" style="margin-top:7px; font-size:13.5px"><span class="tag a">LAB 3</span> <b>แบบฝึกหัด / ทบทวน</b> — สร้าง sub-work item 3 ใบใต้ PLAB-4 แล้วปิดใบแรก · แก้ใบ “แก้บั๊ก” เป็น “ตะกร้าคำนวณราคาผิดเมื่อมีโปรโมชันซ้อนกัน” พร้อม steps / expected / actual / environment / severity, label <code>bug</code>, priority Urgent แล้วตั้งเป็น <b>Blocked by</b> PLAB-4 · <b>คำถาม:</b> ตัวนับใต้ PLAB-4 อ่านว่าอะไร · PLAB-4 จะขึ้น relation ชื่อใด · เหตุใดคู่ bug–story นี้จึงไม่ควรใช้ parent?</div>

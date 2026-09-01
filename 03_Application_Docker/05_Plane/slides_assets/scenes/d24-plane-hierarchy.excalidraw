@@ -4,7 +4,7 @@
   "source": "mcp-excalidraw-server",
   "elements": [
     {
-      "id": "mtiatfm25z5wx12s13b",
+      "id": "mtinu7ytm0r48uvpgqp",
       "type": "text",
       "x": 30,
       "y": 18,
@@ -29,15 +29,15 @@
       "originalText": "ลำดับชั้นของ Plane : Instance → Workspace → Project → Work item",
       "roughness": 1,
       "roundness": null,
-      "seed": 709830570,
+      "seed": 1046104994,
       "strokeColor": "#0b2545",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "ลำดับชั้นของ Plane : Instance → Workspace → Project → Work item",
       "textAlign": "center",
-      "updated": 1788244858445,
+      "updated": 1788266730201,
       "version": 1,
-      "versionNonce": 191960246,
+      "versionNonce": 1382786362,
       "verticalAlign": "middle"
     },
     {
@@ -55,7 +55,7 @@
           "type": "text"
         },
         {
-          "id": "mtiatfm238jvyir9w7r",
+          "id": "mtinu7ytlk1ttc5vz5a",
           "type": "arrow"
         }
       ],
@@ -77,7 +77,7 @@
       "strokeColor": "#c92a2a",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858445,
+      "updated": 1788266730201,
       "version": 1,
       "versionNonce": 219726207
     },
@@ -96,11 +96,11 @@
           "type": "text"
         },
         {
-          "id": "mtiatfm238jvyir9w7r",
+          "id": "mtinu7ytlk1ttc5vz5a",
           "type": "arrow"
         },
         {
-          "id": "mtiatfm2unw5rtz4qps",
+          "id": "mtinu7yttzkw7scs22r",
           "type": "arrow"
         }
       ],
@@ -122,7 +122,7 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858445,
+      "updated": 1788266730201,
       "version": 1,
       "versionNonce": 120505799
     },
@@ -141,7 +141,7 @@
           "type": "text"
         },
         {
-          "id": "mtiatfm2unw5rtz4qps",
+          "id": "mtinu7yttzkw7scs22r",
           "type": "arrow"
         }
       ],
@@ -163,12 +163,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858445,
+      "updated": 1788266730201,
       "version": 1,
       "versionNonce": 731091697
     },
     {
-      "id": "mtiatfm238jvyir9w7r",
+      "id": "mtinu7ytlk1ttc5vz5a",
       "type": "arrow",
       "x": 420,
       "y": 116,
@@ -206,7 +206,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 162487503,
+      "seed": 109686122,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "ins",
@@ -217,12 +217,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858445,
+      "updated": 1788266730201,
       "version": 1,
-      "versionNonce": 595385241
+      "versionNonce": 1699757314
     },
     {
-      "id": "mtiatfm2unw5rtz4qps",
+      "id": "mtinu7yttzkw7scs22r",
       "type": "arrow",
       "x": 420,
       "y": 196,
@@ -260,7 +260,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 409601062,
+      "seed": 163648886,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "ws",
@@ -271,12 +271,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858445,
+      "updated": 1788266730201,
       "version": 1,
-      "versionNonce": 737115312
+      "versionNonce": 1438507344
     },
     {
-      "id": "mtiatfm27garkq0rnpp",
+      "id": "mtinu7ytgol0c3co6ae",
       "type": "text",
       "x": 428,
       "y": 110,
@@ -301,19 +301,19 @@
       "originalText": "1 : N",
       "roughness": 1,
       "roundness": null,
-      "seed": 434358788,
+      "seed": 467757146,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "1 : N",
       "textAlign": "center",
-      "updated": 1788244858445,
+      "updated": 1788266730201,
       "version": 1,
-      "versionNonce": 476735566,
+      "versionNonce": 241477170,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiatfm2idnsnilks5q",
+      "id": "mtinu7ytmpjq8gtsqrn",
       "type": "text",
       "x": 428,
       "y": 190,
@@ -338,19 +338,19 @@
       "originalText": "1 : N",
       "roughness": 1,
       "roundness": null,
-      "seed": 445781066,
+      "seed": 1253242205,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "1 : N",
       "textAlign": "center",
-      "updated": 1788244858445,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1649116004,
+      "versionNonce": 725360235,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiatfm2kjv1b0gllz",
+      "id": "mtinu7yt6fkcoiw7ysi",
       "type": "text",
       "x": 612,
       "y": 78,
@@ -375,19 +375,19 @@
       "originalText": "ทั้งเซิร์ฟเวอร์ 1 ตัว · instance admin ตั้งค่าที่ /god-mode/",
       "roughness": 1,
       "roundness": null,
-      "seed": 237741416,
+      "seed": 1335866713,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "ทั้งเซิร์ฟเวอร์ 1 ตัว · instance admin ตั้งค่าที่ /god-mode/",
       "textAlign": "center",
-      "updated": 1788244858445,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1766434052,
+      "versionNonce": 1092181045,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiatfm22li1vjbcg3u",
+      "id": "mtinu7ytfr3lqrzagqu",
       "type": "text",
       "x": 612,
       "y": 142,
@@ -412,23 +412,23 @@
       "originalText": "องค์กร/ทีม · เชิญ members และกำหนด role ที่ระดับนี้\nAdmin = ตั้งค่า/เชิญคน · Member = ทำงาน · Guest = ดู+comment",
       "roughness": 1,
       "roundness": null,
-      "seed": 2108252589,
+      "seed": 1289277324,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "องค์กร/ทีม · เชิญ members และกำหนด role ที่ระดับนี้\nAdmin = ตั้งค่า/เชิญคน · Member = ทำงาน · Guest = ดู+comment",
       "textAlign": "center",
-      "updated": 1788244858445,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1826961657,
+      "versionNonce": 1533653524,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiatfm2v1cgj1p5y7",
+      "id": "mtinu7ytg6r3gnhiro",
       "type": "text",
       "x": 612,
       "y": 222,
-      "width": 578,
+      "width": 695,
       "height": 17,
       "angle": 0,
       "autoResize": true,
@@ -446,22 +446,22 @@
       "link": null,
       "locked": false,
       "opacity": 100,
-      "originalText": "ผลิตภัณฑ์/ทีมย่อย · เปิด-ปิด features ได้รายโปรเจกต์ (Settings → Features)",
+      "originalText": "ผลิตภัณฑ์/ทีมย่อย · เปิด-ปิด features ได้รายโปรเจกต์ (Settings › Features › แต่ละฟีเจอร์)",
       "roughness": 1,
       "roundness": null,
-      "seed": 769214688,
+      "seed": 740097273,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "text": "ผลิตภัณฑ์/ทีมย่อย · เปิด-ปิด features ได้รายโปรเจกต์ (Settings → Features)",
+      "text": "ผลิตภัณฑ์/ทีมย่อย · เปิด-ปิด features ได้รายโปรเจกต์ (Settings › Features › แต่ละฟีเจอร์)",
       "textAlign": "center",
-      "updated": 1788244858445,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 638891080,
+      "versionNonce": 978368599,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiatfm242eoz16vayk",
+      "id": "mtinu7ytqfu8a3h0xkd",
       "type": "line",
       "x": 420,
       "y": 252,
@@ -492,18 +492,18 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1811479963,
+      "seed": 1302415965,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1813385327
+      "versionNonce": 2021629743
     },
     {
-      "id": "mtiatfm2hjqdkhcz0rg",
+      "id": "mtinu7ytzh91fmv4jb",
       "type": "line",
       "x": 165,
       "y": 276,
@@ -534,15 +534,15 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1370652641,
+      "seed": 1197338447,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1900351549
+      "versionNonce": 1028487963
     },
     {
       "id": "wi",
@@ -559,7 +559,7 @@
           "type": "text"
         },
         {
-          "id": "mtiatfm28bcgmtj68uv",
+          "id": "mtinu7ytl2fhzibfujn",
           "type": "arrow"
         }
       ],
@@ -581,12 +581,12 @@
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1794344873
     },
     {
-      "id": "mtiatfm28bcgmtj68uv",
+      "id": "mtinu7ytl2fhzibfujn",
       "type": "arrow",
       "x": 165,
       "y": 284,
@@ -624,15 +624,15 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 2051737293,
+      "seed": 212371550,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1753840027
+      "versionNonce": 1716890314
     },
     {
       "id": "fz",
@@ -645,7 +645,7 @@
       "backgroundColor": "#e3fafc",
       "boundElements": [
         {
-          "id": "mtiatfm248bginphz4z",
+          "id": "mtinu7ytn71n64vbzvd",
           "type": "arrow"
         }
       ],
@@ -665,12 +665,12 @@
       "strokeColor": "#0b7285",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1802785045
     },
     {
-      "id": "mtiatfm248bginphz4z",
+      "id": "mtinu7ytn71n64vbzvd",
       "type": "arrow",
       "x": 745,
       "y": 284,
@@ -708,22 +708,22 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1083408329,
+      "seed": 1008344428,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 689366311
+      "versionNonce": 1705796712
     },
     {
-      "id": "mtiatfm2k7zmnn7tat",
+      "id": "mtinu7ytc5sk7rm0csh",
       "type": "text",
       "x": 330,
       "y": 297,
-      "width": 483,
+      "width": 533,
       "height": 15,
       "angle": 0,
       "autoResize": true,
@@ -741,18 +741,18 @@
       "link": null,
       "locked": false,
       "opacity": 100,
-      "originalText": "features ระดับโปรเจกต์ — เปิด/ปิดได้ทีละอย่างใน Settings → Features",
+      "originalText": "features ระดับโปรเจกต์ — เปิด/ปิดได้ที่ Settings › Features › แต่ละฟีเจอร์",
       "roughness": 1,
       "roundness": null,
-      "seed": 1691325856,
+      "seed": 1461419414,
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "text": "features ระดับโปรเจกต์ — เปิด/ปิดได้ทีละอย่างใน Settings → Features",
+      "text": "features ระดับโปรเจกต์ — เปิด/ปิดได้ที่ Settings › Features › แต่ละฟีเจอร์",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 869592072,
+      "versionNonce": 802353056,
       "verticalAlign": "middle"
     },
     {
@@ -781,16 +781,16 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 275237322
     },
     {
-      "id": "mtiatfm25eo6atblgjs",
+      "id": "mtinu7ytkv42eixbla",
       "type": "text",
       "x": 330,
       "y": 387,
-      "width": 656,
+      "width": 627,
       "height": 15,
       "angle": 0,
       "autoResize": true,
@@ -808,18 +808,18 @@
       "link": null,
       "locked": false,
       "opacity": 100,
-      "originalText": "ตั้งค่าระดับโปรเจกต์ — ใช้ได้เสมอ ปิดไม่ได้ (Estimates เปิดใช้ที่หน้า Settings → Estimates)",
+      "originalText": "ตั้งค่าระดับโปรเจกต์ — ใช้ได้เสมอ ปิดไม่ได้ (Estimates ตั้งค่าที่ Settings › Estimates)",
       "roughness": 1,
       "roundness": null,
-      "seed": 588785463,
+      "seed": 1638132356,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "text": "ตั้งค่าระดับโปรเจกต์ — ใช้ได้เสมอ ปิดไม่ได้ (Estimates เปิดใช้ที่หน้า Settings → Estimates)",
+      "text": "ตั้งค่าระดับโปรเจกต์ — ใช้ได้เสมอ ปิดไม่ได้ (Estimates ตั้งค่าที่ Settings › Estimates)",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1711805597,
+      "versionNonce": 266179020,
       "verticalAlign": "middle"
     },
     {
@@ -855,12 +855,12 @@
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1432117407
     },
     {
-      "id": "mtiatfm2vt9uqkl1la",
+      "id": "mtinu7yttt46m9g7lp8",
       "type": "text",
       "x": 334,
       "y": 357,
@@ -885,15 +885,15 @@
       "originalText": "= Sprint (Scrum)",
       "roughness": 1,
       "roundness": null,
-      "seed": 1969927703,
+      "seed": 1552504178,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "= Sprint (Scrum)",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 503276541,
+      "versionNonce": 1741247178,
       "verticalAlign": "middle"
     },
     {
@@ -929,12 +929,12 @@
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1940608916
     },
     {
-      "id": "mtiatfm2qskpucxjnro",
+      "id": "mtinu7ytr75ar3bhn7",
       "type": "text",
       "x": 504,
       "y": 357,
@@ -959,15 +959,15 @@
       "originalText": "= Epic (Jira)",
       "roughness": 1,
       "roundness": null,
-      "seed": 611300921,
+      "seed": 1917975547,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "= Epic (Jira)",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 48116125,
+      "versionNonce": 1069426007,
       "verticalAlign": "middle"
     },
     {
@@ -1003,7 +1003,7 @@
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1678930051
     },
@@ -1040,7 +1040,7 @@
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 76888842
     },
@@ -1077,7 +1077,7 @@
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1805480779
     },
@@ -1114,12 +1114,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1373553626
     },
     {
-      "id": "mtiatfm2ienultrroni",
+      "id": "mtinu7ytsiar4zyfixd",
       "type": "text",
       "x": 334,
       "y": 447,
@@ -1144,15 +1144,15 @@
       "originalText": "= board columns",
       "roughness": 1,
       "roundness": null,
-      "seed": 121860470,
+      "seed": 1313248301,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "= board columns",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1777644880,
+      "versionNonce": 213480959,
       "verticalAlign": "middle"
     },
     {
@@ -1188,7 +1188,7 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 592420181
     },
@@ -1225,12 +1225,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 829737958
     },
     {
-      "id": "mtiatfm23e1y1doe1ze",
+      "id": "mtinu7ytyer8iwmwx9a",
       "type": "text",
       "x": 674,
       "y": 447,
@@ -1255,15 +1255,15 @@
       "originalText": "= Story points",
       "roughness": 1,
       "roundness": null,
-      "seed": 1408342740,
+      "seed": 1259306516,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "= Story points",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 575448542,
+      "versionNonce": 70108016,
       "verticalAlign": "middle"
     },
     {
@@ -1299,12 +1299,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1232814703
     },
     {
-      "id": "mtiatfm2404ez1eydr5",
+      "id": "mtinu7yturjji778nl",
       "type": "line",
       "x": 165,
       "y": 464,
@@ -1335,18 +1335,18 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1468051652,
+      "seed": 773133358,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1912065760
+      "versionNonce": 331324968
     },
     {
-      "id": "mtiatfm3nfyc5pfntn",
+      "id": "mtinu7yt7d49cng1r8u",
       "type": "line",
       "x": 140,
       "y": 492,
@@ -1377,18 +1377,18 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1034620633,
+      "seed": 1837202190,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 923889341
+      "versionNonce": 191128200
     },
     {
-      "id": "mtiatfm3dtx4e5gn8jo",
+      "id": "mtinu7ytbh4ftn0m26f",
       "type": "text",
       "x": 175,
       "y": 470,
@@ -1413,15 +1413,15 @@
       "originalText": "= Issue (Jira) · Card (Trello)",
       "roughness": 1,
       "roundness": null,
-      "seed": 1187947262,
+      "seed": 1885134765,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "= Issue (Jira) · Card (Trello)",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 408379112,
+      "versionNonce": 902975615,
       "verticalAlign": "middle"
     },
     {
@@ -1439,7 +1439,7 @@
           "type": "text"
         },
         {
-          "id": "mtiatfm3yid3u5gf6fj",
+          "id": "mtinu7yu55o794kd9o5",
           "type": "arrow"
         }
       ],
@@ -1461,12 +1461,12 @@
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1086247852
     },
     {
-      "id": "mtiatfm3yid3u5gf6fj",
+      "id": "mtinu7yu55o794kd9o5",
       "type": "arrow",
       "x": 140,
       "y": 500,
@@ -1504,18 +1504,18 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1283941650,
+      "seed": 1148872954,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 907727388
+      "versionNonce": 1605069766
     },
     {
-      "id": "mtiatfm3be3y0uq4a0i",
+      "id": "mtinu7yukwn6jcaq72a",
       "type": "text",
       "x": 44,
       "y": 560,
@@ -1540,15 +1540,15 @@
       "originalText": "งานย่อย · parent / child",
       "roughness": 1,
       "roundness": null,
-      "seed": 1682765513,
+      "seed": 962920,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "งานย่อย · parent / child",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1712142887,
+      "versionNonce": 379967472,
       "verticalAlign": "middle"
     },
     {
@@ -1566,7 +1566,7 @@
           "type": "text"
         },
         {
-          "id": "mtiatfm3wm13ke8f4x",
+          "id": "mtinu7yurd6pkbjkoun",
           "type": "arrow"
         }
       ],
@@ -1588,12 +1588,12 @@
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1553382039
     },
     {
-      "id": "mtiatfm3wm13ke8f4x",
+      "id": "mtinu7yurd6pkbjkoun",
       "type": "arrow",
       "x": 360,
       "y": 500,
@@ -1631,18 +1631,18 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1699624504,
+      "seed": 588626495,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1772826304
+      "versionNonce": 1001058789
     },
     {
-      "id": "mtiatfm32c38g2r7ujr",
+      "id": "mtinu7yux5vcnvnqg6b",
       "type": "text",
       "x": 264,
       "y": 560,
@@ -1667,15 +1667,15 @@
       "originalText": "blocked by · duplicate · relates",
       "roughness": 1,
       "roundness": null,
-      "seed": 827670501,
+      "seed": 755186671,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "blocked by · duplicate · relates",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 692998771,
+      "versionNonce": 504094779,
       "verticalAlign": "middle"
     },
     {
@@ -1693,7 +1693,7 @@
           "type": "text"
         },
         {
-          "id": "mtiatfm3mrnndszg4y",
+          "id": "mtinu7yufx4ef1yhe1v",
           "type": "arrow"
         }
       ],
@@ -1715,12 +1715,12 @@
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 305219844
     },
     {
-      "id": "mtiatfm3mrnndszg4y",
+      "id": "mtinu7yufx4ef1yhe1v",
       "type": "arrow",
       "x": 580,
       "y": 500,
@@ -1758,18 +1758,18 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1369573216,
+      "seed": 1885642638,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 2065209290
+      "versionNonce": 385275912
     },
     {
-      "id": "mtiatfm3v4ontkveh1",
+      "id": "mtinu7yuafivvm00vs4",
       "type": "text",
       "x": 484,
       "y": 560,
@@ -1794,15 +1794,15 @@
       "originalText": "คุยงานในใบ · @mention",
       "roughness": 1,
       "roundness": null,
-      "seed": 825909074,
+      "seed": 341320415,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "คุยงานในใบ · @mention",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1942550570,
+      "versionNonce": 440581865,
       "verticalAlign": "middle"
     },
     {
@@ -1820,7 +1820,7 @@
           "type": "text"
         },
         {
-          "id": "mtiatfm3xlvif8qimwh",
+          "id": "mtinu7yu28xdj92l3ou",
           "type": "arrow"
         }
       ],
@@ -1842,12 +1842,12 @@
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1420570045
     },
     {
-      "id": "mtiatfm3xlvif8qimwh",
+      "id": "mtinu7yu28xdj92l3ou",
       "type": "arrow",
       "x": 800,
       "y": 500,
@@ -1885,18 +1885,18 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1292039341,
+      "seed": 1345758949,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 256204673
+      "versionNonce": 1176729457
     },
     {
-      "id": "mtiatfm31ateogg4owhj",
+      "id": "mtinu7yua3vrp5zz45q",
       "type": "text",
       "x": 704,
       "y": 560,
@@ -1921,15 +1921,15 @@
       "originalText": "ไฟล์ · ลิงก์ PR / เอกสาร",
       "roughness": 1,
       "roundness": null,
-      "seed": 373021252,
+      "seed": 1495300018,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "ไฟล์ · ลิงก์ PR / เอกสาร",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 848962400,
+      "versionNonce": 1661058060,
       "verticalAlign": "middle"
     },
     {
@@ -1947,7 +1947,7 @@
           "type": "text"
         },
         {
-          "id": "mtiatfm3poehw0fk2ho",
+          "id": "mtinu7yuouf1zo1h7j",
           "type": "arrow"
         }
       ],
@@ -1969,12 +1969,12 @@
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1293178744
     },
     {
-      "id": "mtiatfm3poehw0fk2ho",
+      "id": "mtinu7yuouf1zo1h7j",
       "type": "arrow",
       "x": 1020,
       "y": 500,
@@ -2012,18 +2012,18 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1208196805,
+      "seed": 848674161,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1395781687
+      "versionNonce": 2011967893
     },
     {
-      "id": "mtiatfm3mfe17kjju",
+      "id": "mtinu7yuwf37s4u018f",
       "type": "text",
       "x": 924,
       "y": 560,
@@ -2048,19 +2048,19 @@
       "originalText": "ใครแก้อะไร เมื่อไร (อัตโนมัติ)",
       "roughness": 1,
       "roundness": null,
-      "seed": 1811888064,
+      "seed": 468285575,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "ใครแก้อะไร เมื่อไร (อัตโนมัติ)",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1208590760,
+      "versionNonce": 610533523,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtiatfm3dr8yrxq6l7q",
+      "id": "mtinu7yutzjias48n4",
       "type": "rectangle",
       "x": 40,
       "y": 586,
@@ -2081,16 +2081,16 @@
       "roundness": {
         "type": 3
       },
-      "seed": 1886160062,
+      "seed": 801687636,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
-      "versionNonce": 1464077112
+      "versionNonce": 1831440814
     },
     {
-      "id": "mtiatfm3c86p5wkyhkn",
+      "id": "mtinu7yudbinlzc2hj",
       "type": "text",
       "x": 55,
       "y": 593,
@@ -2115,15 +2115,15 @@
       "originalText": "ลำดับชั้นเดียวกันโผล่ใน URL :  http://localhost:8080/devtools-lab/browse/PLAB-12/      →  <workspace slug> / <project identifier>-<ลำดับ>\nและใน API path :  /api/v1/workspaces/<slug>/projects/<project id>/work-items/<id>/      (X-API-Key · ใช้ใน LAB 4–5)",
       "roughness": 1,
       "roundness": null,
-      "seed": 2005860328,
+      "seed": 1785322355,
       "strokeColor": "#16212f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "ลำดับชั้นเดียวกันโผล่ใน URL :  http://localhost:8080/devtools-lab/browse/PLAB-12/      →  <workspace slug> / <project identifier>-<ลำดับ>\nและใน API path :  /api/v1/workspaces/<slug>/projects/<project id>/work-items/<id>/      (X-API-Key · ใช้ใน LAB 4–5)",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730203,
       "version": 1,
-      "versionNonce": 899771250,
+      "versionNonce": 486833101,
       "verticalAlign": "middle"
     },
     {
@@ -2158,7 +2158,7 @@
       "strokeWidth": 1,
       "text": "Instance (god-mode)",
       "textAlign": "center",
-      "updated": 1788244858445,
+      "updated": 1788266730201,
       "version": 1,
       "versionNonce": 1782422870,
       "verticalAlign": "middle"
@@ -2195,7 +2195,7 @@
       "strokeWidth": 1,
       "text": "Workspace (devtools-lab)\nroles Admin · Member · Guest",
       "textAlign": "center",
-      "updated": 1788244858445,
+      "updated": 1788266730201,
       "version": 1,
       "versionNonce": 1956799374,
       "verticalAlign": "middle"
@@ -2232,7 +2232,7 @@
       "strokeWidth": 1,
       "text": "Project (identifier PLAB)",
       "textAlign": "center",
-      "updated": 1788244858445,
+      "updated": 1788266730201,
       "version": 1,
       "versionNonce": 294625288,
       "verticalAlign": "middle"
@@ -2269,7 +2269,7 @@
       "strokeWidth": 1,
       "text": "Work item  PLAB-12\ntitle · description\nstate · priority\nassignee · estimate\nstart / target date",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1446392196,
       "verticalAlign": "middle"
@@ -2306,7 +2306,7 @@
       "strokeWidth": 1,
       "text": "Cycles",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 2019531144,
       "verticalAlign": "middle"
@@ -2343,7 +2343,7 @@
       "strokeWidth": 1,
       "text": "Modules",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 555927597,
       "verticalAlign": "middle"
@@ -2380,7 +2380,7 @@
       "strokeWidth": 1,
       "text": "Views",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 603380954,
       "verticalAlign": "middle"
@@ -2417,7 +2417,7 @@
       "strokeWidth": 1,
       "text": "Pages",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1031089743,
       "verticalAlign": "middle"
@@ -2454,7 +2454,7 @@
       "strokeWidth": 1,
       "text": "Intake",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1245151268,
       "verticalAlign": "middle"
@@ -2491,7 +2491,7 @@
       "strokeWidth": 1,
       "text": "States",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1784280481,
       "verticalAlign": "middle"
@@ -2528,7 +2528,7 @@
       "strokeWidth": 1,
       "text": "Labels",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 786662954,
       "verticalAlign": "middle"
@@ -2565,7 +2565,7 @@
       "strokeWidth": 1,
       "text": "Estimates",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1623449853,
       "verticalAlign": "middle"
@@ -2602,7 +2602,7 @@
       "strokeWidth": 1,
       "text": "Members",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 554034138,
       "verticalAlign": "middle"
@@ -2639,7 +2639,7 @@
       "strokeWidth": 1,
       "text": "Sub-work items",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 16259221,
       "verticalAlign": "middle"
@@ -2676,7 +2676,7 @@
       "strokeWidth": 1,
       "text": "Relations",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 1620801426,
       "verticalAlign": "middle"
@@ -2713,7 +2713,7 @@
       "strokeWidth": 1,
       "text": "Comments",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 429236697,
       "verticalAlign": "middle"
@@ -2750,7 +2750,7 @@
       "strokeWidth": 1,
       "text": "Attachments",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 608257442,
       "verticalAlign": "middle"
@@ -2787,7 +2787,7 @@
       "strokeWidth": 1,
       "text": "Activity log",
       "textAlign": "center",
-      "updated": 1788244858446,
+      "updated": 1788266730202,
       "version": 1,
       "versionNonce": 147591763,
       "verticalAlign": "middle"
