@@ -1,0 +1,41 @@
+<!-- ===== U-SPRINT-BACKLOG 1 : definition + mechanism ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Sprint Backlog · นิยาม</div><h2>Sprint Backlog — <em>เป้าหมาย · งานที่เลือก · แผนการทำงาน</em></h2>
+    <div class="sub">รายการ Product Backlog ที่เลือกมาทำใน Sprint <b>รวมกับแผนว่าจะทำอย่างไร</b> โดยทีมผู้พัฒนา (Developers) เป็นเจ้าของ และใช้ Sprint Goal เป็นทิศทางร่วม</div></div>
+  <div class="s-body top">
+    <div class="g21" style="grid-template-columns:minmax(0,1.55fr) 360px; align-items:start">
+      <div><div class="fig fix" style="height:405px"><img data-a="d42" alt="แผนภาพ Product Backlog ไหลผ่าน Sprint Planning ไปเป็น Sprint Backlog แล้วส่งมอบ Increment ที่ผ่าน Definition of Done"></div>
+        <div class="figcap">สามส่วนที่ต้องแยกให้ออก: Product Backlog = งานทั้งหมด · Sprint Backlog = งานที่เลือกพร้อมแผน · Increment = งาน Done ที่ใช้ได้จริง</div></div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a" style="padding:11px 14px"><h4>ทำไมสำคัญ · แก้ปัญหาอะไร</h4><p style="font-size:15px">ก่อนมี Sprint Backlog สมาชิกหยิบงานคนละทิศและไม่รู้ว่า Sprint นี้ต้องพิสูจน์อะไร หลังวางแผน ทุกคนเห็นเป้าหมายเดียว ขอบเขตใกล้ตัว และลำดับการทำงานร่วมกัน</p></div>
+        <div class="card" style="padding:11px 14px"><h4>กลไก · Why → What → How</h4><p style="font-size:15px"><b>Why</b> ตั้ง Sprint Goal · <b>What</b> Developers เลือกงานจากลำดับบน Product Backlog ตามกำลังของทีม · <b>How</b> แตกเป็น task และปรับแผนทุกวันเมื่อเรียนรู้เพิ่ม</p></div>
+        <div class="card o" style="padding:11px 14px"><h4>CampusEats · Sprint นี้</h4><p style="font-size:15px">Goal: “ล็อกอินและหาเมนูได้” · เลือกล็อกอิน รีเซ็ตรหัสผ่าน ค้นหาเมนู และตะกร้า รวม 19 points แล้วแตกแต่ละเรื่องเป็น API · UI · test; ตะกร้าที่ยังไม่ผ่าน DoD ไม่รวมใน Increment</p></div>
+      </div>
+    </div>
+    <div class="note w" style="font-size:14.5px"><b>ความเข้าใจผิด</b> — ❌ “Sprint Backlog คือสัญญารายการงานที่ห้ามเปลี่ยน” → ✅ เป็นแผนของ Developers ที่ปรับรายละเอียดและลำดับได้ตลอด Sprint ตราบใดที่ไม่ทำลาย Sprint Goal</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Sprint Backlog</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== U-SPRINT-BACKLOG 2 : Plane + lab ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Sprint Backlog · ใน Plane</div><h2>ใน Plane — <em>work items ที่อยู่ใน Cycle คือ Sprint Backlog</em></h2>
+    <div class="sub">Plane ใช้ Cycle แทน Sprint; เปิด Cycle แล้วเลือกงานเดิมจากโปรเจกต์เข้ามา โดยไม่ต้องสร้าง work item ซ้ำ</div></div>
+  <div class="s-body top">
+    <div class="g21" style="grid-template-columns:minmax(0,1.52fr) 390px; align-items:start">
+      <div><div class="fig shot fix" style="height:395px"><img data-a="t-cycle-add-items" alt="โมดัล Add existing work items บน active cycle สำหรับเลือก work items เข้า Cycle"></div>
+        <div class="figcap">Active Cycle · โมดัล “Add existing work items” สำหรับเลือกงานจากโปรเจกต์เข้า Sprint Backlog</div></div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card a" style="padding:10px 13px"><h4><span class="tag a" style="margin-right:7px">วิธีทำ</span>เลือกงานเข้า Sprint</h4><p style="font-size:15px"><b>Project › Cycles › Active Cycle › Add existing work items</b> → เลือกงาน → Add selected work items; เก็บ Sprint Goal ใน description ของ Cycle</p></div>
+        <div class="card" style="padding:10px 13px"><h4>Plane เก็บความสัมพันธ์อย่างไร</h4><p style="font-size:15px">ความสัมพันธ์อยู่ในตาราง <code>cycle_issues</code>; ถ้าใบอยู่ Cycle อื่น การเพิ่มจะย้ายแถวเดิมมายัง Cycle ใหม่—งานไม่ถูกทำสำเนา</p></div>
+        <div class="card w" style="padding:10px 13px"><h4>เงื่อนไขใน CE v1.4.2</h4><p style="font-size:15px">Cycles มีใน CE แต่ค่าเริ่มต้นปิด: เปิดที่ <b>Project settings › Features › Cycles</b>; Cycle ที่จบแล้วเพิ่มงานไม่ได้</p></div>
+        <div class="note a" style="font-size:14.5px"><b><span class="tag a" style="margin-right:7px">LAB 4</span>ลองทำ</b> — เขียน Goal 1 ประโยค เลือก 3 ใบรวมไม่เกิน 10 points แล้วอธิบายว่าใบที่ตัดออกช่วยรักษา Goal อย่างไร</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Sprint Backlog</span><span class="pg"></span></div>
+ </section>
+</div>

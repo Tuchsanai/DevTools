@@ -1,0 +1,41 @@
+<!-- ===== U-RELATIVE-ESTIMATION 1 : definition + mechanism ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Relative estimation · นิยาม</div><h2>Relative estimation — <em>เทียบขนาดกับเรื่องอ้างอิง ไม่เทียบกับนาฬิกา</em></h2>
+    <div class="sub">เลือก story ที่ทีมเข้าใจตรงกันเป็นฐาน แล้วถามว่าเรื่องใหม่เล็กกว่า พอ ๆ กัน หรือใหญ่กว่าฐานเพียงใด</div></div>
+  <div class="s-body top">
+    <div class="fig fix" style="height:303px"><img data-a="d29" alt="แผนภาพ Relative estimation เปรียบเทียบงานกับ reference story 2 points โดยรวม effort complexity และ uncertainty แทนการเดาชั่วโมง"></div>
+    <div class="grid3" style="margin-top:10px">
+      <div class="card c" style="padding:10px 13px"><h4>ปัญหาที่แก้ · ทำไมต้องเทียบ</h4><p style="font-size:15px">ชั่วโมงของงานเดียวกันเปลี่ยนตามคน เครื่องมือ และงานแทรก จึงถูกตีความเป็นกำหนดส่งได้ง่าย การเทียบ “ใหญ่กว่าเรื่องฐานแค่ไหน” ใช้ข้อมูลน้อยกว่าและทำให้ทีมคุยบนมาตราเดียวกัน</p></div>
+      <div class="card a" style="padding:10px 13px"><h4>กลไก 3 ขั้น</h4><p style="font-size:15px"><b>1)</b> เลือก reference story ที่เล็กและเข้าใจดี เช่น 2 pt · <b>2)</b> เทียบ effort + complexity + uncertainty · <b>3)</b> เลือกค่าที่ใกล้ที่สุดจากสเกลของทีม แล้วบันทึกเหตุผล</p></div>
+      <div class="card o" style="padding:10px 13px"><h4>CampusEats · ตัวอย่าง</h4><p style="font-size:15px">ใช้ <b>PBI-02 ดูเมนูและราคา = 2 pt</b> เป็นฐาน: ย้าย config = 1 pt · สั่งอาหารและออกเลขออเดอร์ = 5 pt · ติดตาม realtime = 8 pt เพราะมีการเชื่อมต่อและความไม่แน่นอนมากกว่า</p></div>
+    </div>
+    <div class="grid2">
+      <div class="note c" style="font-size:14.5px"><b>❌ เข้าใจผิด</b> — “5 points = 5 ชั่วโมง” และ “ทีม A ทำ 20 points จึงเก่งกว่าทีม B”</div>
+      <div class="note o" style="font-size:14.5px"><b>✅ ใช้ให้ถูก</b> — point บอกขนาดเทียบกับฐานของ <b>ทีมเดียวกัน</b>; ห้ามแปลงเป็นเวลาแบบสูตรตายตัวหรือเทียบข้ามทีม</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Relative estimation</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== U-RELATIVE-ESTIMATION 2 : Plane + lab ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Relative estimation · ใน Plane</div><h2>บันทึกผลเทียบใน Plane — <em>Estimate ของ work item · ตรวจความสม่ำเสมอใน List</em></h2>
+    <div class="sub">Plane เก็บ “ค่าที่ทีมตกลงแล้ว” ส่วนการเปรียบเทียบและเหตุผลเกิดขึ้นในบทสนทนาของทีมก่อนเลือกค่า</div></div>
+  <div class="s-body top">
+    <div class="g21" style="grid-template-columns:minmax(0,1.52fr) 390px; align-items:start">
+      <div><div class="fig shot fix" style="height:372px"><img data-a="t-workitem-detail" alt="หน้ารายละเอียด CampusEats story ที่แสดง description labels estimate assignee cycle และ module"></div>
+        <div class="figcap">รายละเอียด CampusEats story — Estimate อยู่ในชุด properties เดียวกับ assignee · cycle · module · labels</div></div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a" style="padding:10px 13px"><h4><span class="n">1</span>เปิดระบบของโปรเจกต์</h4><p style="font-size:15px"><b>Project settings › Estimates</b> → เลือกและเปิด Estimate แบบ Points หนึ่งระบบ; ช่อง Estimate ในแผงรายละเอียด work item จึงปรากฏให้เลือก</p></div>
+        <div class="card o" style="padding:10px 13px"><h4><span class="n">2</span>บันทึกค่าที่ทีมตกลง</h4><p style="font-size:15px">เลือกค่าใน Estimate dropdown ของแต่ละ work item; Plane ผูกใบงานกับ <code>EstimatePoint</code> ของโปรเจกต์ ไม่ได้เก็บจำนวนชั่วโมง</p></div>
+        <div class="card d" style="padding:10px 13px"><h4><span class="n">3</span>ตรวจ consistency</h4><p style="font-size:15px">เปิด List และแสดง property <b>Estimate</b> แล้วเทียบใบที่คล้ายกันกับ reference เดิม; CE ไม่มีตัวเลือก <b>Order by Estimate</b> จึงต้องตรวจค่าที่มองเห็นร่วมกัน</p></div>
+      </div>
+    </div>
+    <div class="note a" style="font-size:15px"><span class="tag a" style="margin-right:7px">LAB 4</span><b>Mini exercise</b> — ให้ <b>PBI-02 ดูเมนูและราคา = 2 pt</b> เป็นฐาน จัดอันดับจากเล็กไปใหญ่: PBI-10 ย้าย config · PBI-01 ค้นหาร้าน · PBI-04 สั่งอาหารและออกเลขออเดอร์ · PBI-07 ติดตาม realtime · PBI-08 PromptPay QR แล้วเลือก point ให้แต่ละใบพร้อมเหตุผลด้าน effort / complexity / uncertainty อย่างละ 1 ประโยค—ห้ามเริ่มจากการเดาชั่วโมง</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Relative estimation</span><span class="pg"></span></div>
+ </section>
+</div>

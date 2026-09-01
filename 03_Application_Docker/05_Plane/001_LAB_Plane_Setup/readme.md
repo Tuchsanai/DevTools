@@ -94,7 +94,7 @@ Docker daemon: 29.6.2
 ```bash
 mkdir -p ~/labwork && cd ~/labwork
 git clone https://github.com/Tuchsanai/DevTools.git
-cd DevTools/03_Application_Docker/Plane/001_LAB_Plane_Setup
+cd DevTools/03_Application_Docker/05_Plane/001_LAB_Plane_Setup
 ls
 ```
 
@@ -192,7 +192,7 @@ migrator
 **เปิด T2** ก่อน (ssh อีก session หรือ terminal ใหม่ใน VS Code) แล้วเปิดตารางสถานะค้างไว้:
 
 ```bash
-cd ~/labwork/DevTools/03_Application_Docker/Plane/001_LAB_Plane_Setup
+cd ~/labwork/DevTools/03_Application_Docker/05_Plane/001_LAB_Plane_Setup
 bash plane_status.sh
 ```
 

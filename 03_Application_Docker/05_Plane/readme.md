@@ -63,7 +63,7 @@ Clone ชุด LAB ไว้ครั้งเดียว:
 ```bash
 mkdir -p ~/labwork && cd ~/labwork
 git clone https://github.com/Tuchsanai/DevTools.git
-cd DevTools/03_Application_Docker/Plane
+cd DevTools/03_Application_Docker/05_Plane
 ```
 
 ## ติดตั้ง Plane ครั้งเดียว ใช้ต่อทุก LAB

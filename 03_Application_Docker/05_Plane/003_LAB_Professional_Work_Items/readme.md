@@ -81,7 +81,7 @@ plane-live-1          Up 2 hours
 เข้าโฟลเดอร์แล็บ:
 
 ```bash
-cd ~/labwork/DevTools/03_Application_Docker/Plane/003_LAB_Professional_Work_Items
+cd ~/labwork/DevTools/03_Application_Docker/05_Plane/003_LAB_Professional_Work_Items
 ls
 ```
 

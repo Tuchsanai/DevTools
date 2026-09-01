@@ -58,7 +58,7 @@
 docker start devtools 2>/dev/null || \
   docker run -dit --name devtools --privileged -p 2222:22 -p 8080:8080 -p 9000:9000 -p 8090:8090 tuchsanai/devtools:2569_1
 ssh root@localhost -p 2222        # password : passwd
-cd ~/labwork/DevTools/03_Application_Docker/Plane/008_LAB_Webhooks_Automation
+cd ~/labwork/DevTools/03_Application_Docker/05_Plane/008_LAB_Webhooks_Automation
 source ~/venv-plane/bin/activate
 pc ps --format 'table {{.Name}}\t{{.Status}}' | grep -E 'api|worker|proxy'
 ```

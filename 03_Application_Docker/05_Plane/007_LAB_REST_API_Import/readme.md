@@ -72,7 +72,7 @@ ssh root@localhost -p 2222        # password : passwd
 
 ```bash
 pc ps --format 'table {{.Name}}\t{{.Status}}' | head -4
-cd ~/labwork/DevTools/03_Application_Docker/Plane/007_LAB_REST_API_Import
+cd ~/labwork/DevTools/03_Application_Docker/05_Plane/007_LAB_REST_API_Import
 source ~/venv-plane/bin/activate
 python planeapi.py
 ```
@@ -726,7 +726,7 @@ sed -i "s|^API_KEY_RATE_LIMIT=.*|API_KEY_RATE_LIMIT=60/minute|" plane.env && gre
 pc up -d api
 until [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/instances/)" = "200" ]; do sleep 3; done; echo "api READY"
 curl -si -H "$H" http://localhost:8080/api/v1/users/me/ | grep -iE '^HTTP|x-ratelimit-remaining'
-cd ~/labwork/DevTools/03_Application_Docker/Plane/007_LAB_REST_API_Import
+cd ~/labwork/DevTools/03_Application_Docker/05_Plane/007_LAB_REST_API_Import
 ```
 
 ✅ **Expected output** — หลัง recreate: 5 × 200 (remaining 4→0) แล้ว 429 `retry-after=60` สองครั้ง; restore แล้ว Remaining กลับเป็น 59:

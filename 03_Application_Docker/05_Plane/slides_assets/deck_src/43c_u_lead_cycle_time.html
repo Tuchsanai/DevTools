@@ -1,0 +1,75 @@
+<!-- ===== A : Lead time vs Cycle time ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Lead time &amp; Cycle time · นิยาม</div><h2>Lead time กับ Cycle time — <em>นับงานใบเดียวกัน แต่เริ่มคนละจุด</em></h2>
+    <div class="sub">ทั้งคู่คือเวลาที่ผ่านไปจริงจนงานเสร็จ จึงรวมเวลารอด้วย — ช่วยแยกว่า “ลูกค้ารอนาน” เพราะค้างก่อนเริ่ม หรือเพราะขั้นตอนทำงานช้า</div></div>
+  <div class="s-body top">
+    <div class="figrow" style="grid-template-columns:1.43fr .57fr; gap:16px; align-items:start">
+      <div><div class="fig fix" style="height:365px"><img data-a="d39" alt="เส้นเวลาของ work item PLAB-12 จาก created_at ผ่านการเข้าสู่ state กลุ่ม started ครั้งแรกจนถึง completed_at พร้อม Lead time, Cycle time และ P85"></div>
+        <div class="figcap">CampusEats · PLAB-12: สร้าง 03/08 09:00 → เริ่ม 05/08 10:00 → เสร็จ 07/08 16:00 จึงมี Lead time 4 วัน 7 ชม. และ Cycle time 2 วัน 6 ชม.</div></div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a" style="padding:10px 13px"><h4>Lead time · มุมลูกค้า</h4><p style="font-size:15.5px">ตั้งแต่รับคำขอหรือสร้าง work item จน Done — รวมเวลารอใน backlog ก่อนทีมเริ่มทำ</p></div>
+        <div class="card o" style="padding:10px 13px"><h4>Cycle time · มุมทีม</h4><p style="font-size:15.5px">ตั้งแต่เข้า state กลุ่ม <code>started</code> ครั้งแรกจน Done — ใช้ดูความเร็วของระบบหลังเริ่มงาน</p></div>
+        <div class="card" style="padding:10px 13px"><h4>P85 · เห็นปลายหาง</h4><p style="font-size:15.5px">ค่าที่งาน 85% เสร็จไม่เกินค่านี้ เหมาะกับคำถาม “ส่วนใหญ่ต้องรอกี่วัน” เพราะงานช้ามากไม่กี่ใบทำให้ค่าเฉลี่ยเพี้ยนได้</p></div>
+        <div class="note w" style="font-size:14.5px; padding:9px 12px"><b>เข้าใจผิด</b> — Cycle time ไม่ใช่ชั่วโมงที่ลงมือเขียนโค้ดล้วน ๆ; เวลารอ Review หรือ Test หลังเริ่มงานยังอยู่ใน Cycle time</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Lead time &amp; Cycle time</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== B : Flow metrics + Little's Law ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Lead time &amp; Cycle time · กลไก</div><h2>Flow metrics ทำงานร่วมกัน — <em>อยากให้งานออกเร็วขึ้น ให้ลดงานที่ค้าง</em></h2></div>
+  <div class="s-body">
+    <div class="figrow" style="grid-template-columns:1.56fr .44fr; gap:16px">
+      <div class="fig fix" style="height:448px"><img data-a="d02" alt="เส้นเวลาของ work item หนึ่งใบ แสดง lead time, cycle time, Little's Law และ WIP limit บนบอร์ด"></div>
+      <div>
+        <ul class="bul sm" style="font-size:15px; line-height:1.48">
+          <li><b>Lead time</b> — ตั้งแต่ลูกค้าขอ (สร้าง) จน Done; สิ่งที่ลูกค้ารับรู้</li>
+          <li><b>Cycle time</b> — ตั้งแต่เริ่มลงมือ (In Progress) จน Done; สิ่งที่ทีมควบคุมได้</li>
+          <li><b>Throughput</b> — จำนวนงานที่ Done ต่อหน่วยเวลา เช่น 3 ใบ/วัน</li>
+          <li><b>WIP</b> — งานที่เริ่มแล้วแต่ยังไม่ Done ในขณะหนึ่ง</li>
+          <li><b>Flow efficiency</b> — เวลาที่ถูกทำจริง ÷ lead time; ทำจริง 6 ชม. จาก 32 ชม.ทำงาน ≈ 19% (ที่เหลือคือรอ)</li>
+        </ul>
+        <div class="note w" style="margin-top:8px; font-size:14.5px; padding:9px 12px"><b>Little's Law</b> — Lead time เฉลี่ย ≈ WIP ÷ Throughput (ระบบต้องนิ่ง) · WIP 12 ÷ 3 ใบ/วัน = รอ 4 วัน; ลด WIP เหลือ 6 → รอ 2 วัน โดยไม่ต้องเพิ่มคน</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Lead time &amp; Cycle time</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== D : Lead/Cycle time in Plane ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Lead time &amp; Cycle time · ใน Plane</div><h2>Plane เก็บ “ร่องรอยเวลา” — <em>แล้ว LAB คำนวณ metric เอง</em></h2>
+    <div class="sub">Plane CE v1.4.2 ไม่มี Lead/Cycle time ที่คำนวณไว้ล่วงหน้าหรือกราฟสำเร็จรูป แต่มีข้อมูลต้นทางครบเมื่อทีมย้าย state ตามงานจริง</div></div>
+  <div class="s-body top">
+    <div class="figrow" style="grid-template-columns:1.18fr .82fr; gap:16px; align-items:start">
+      <div><div class="fig shot fix" style="height:338px"><img data-a="t-activity" alt="แท็บ Activity ของ work item ใน Plane แสดงผู้กระทำ เวลา และประวัติการเปลี่ยน state หลายครั้ง"></div>
+        <div class="figcap">Activity ของ work item · ผู้กระทำ เวลา และรายการเปลี่ยน state คือหลักฐานสำหรับหาเวลาเริ่มทำครั้งแรก</div></div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <table class="tbl sm" style="font-size:14.5px">
+          <thead><tr><th style="width:130px">จุดเวลา</th><th>ข้อมูลใน Plane</th></tr></thead>
+          <tbody>
+            <tr><td><b>รับคำขอ</b></td><td><code>issues.created_at</code></td></tr>
+            <tr><td><b>เริ่มทำครั้งแรก</b></td><td><code>issue_activities</code> ที่ <code>field='state'</code> แล้ว <code>new_identifier</code> ชี้ไปยัง state กลุ่ม <code>started</code></td></tr>
+            <tr><td><b>เสร็จ</b></td><td><code>issues.completed_at</code> ถูกตั้งเมื่อเข้า state กลุ่ม <code>completed</code></td></tr>
+          </tbody>
+        </table>
+        <div class="card a" style="padding:10px 13px"><h4>สูตรที่สคริปต์ใช้</h4><p style="font-size:15px"><b>Lead</b> = completed_at − created_at<br><b>Cycle</b> = completed_at − เวลาเข้า started ครั้งแรก</p></div>
+        <div class="note w" style="font-size:14.5px; padding:9px 12px"><b>ระวัง Reopen</b> — เมื่อย้ายออกจากกลุ่ม completed ค่า <code>completed_at</code> จะกลับเป็นค่าว่าง จึงยังคำนวณรอบที่กำลังเปิดใหม่ไม่ได้</div>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:10px">
+      <div class="card o" style="padding:9px 13px"><h4><span class="tag o" style="margin-right:7px">LAB 5</span><code>flow_metrics.py</code></h4><p style="font-size:14.5px">ดึง Activity มาหา Lead/Cycle, p50/p85, Throughput และตรวจ Little's Law ของ CampusEats</p></div>
+      <div class="card" style="padding:9px 13px"><h4><span class="tag a" style="margin-right:7px">LAB 9</span>Tracking Dashboard</h4><p style="font-size:14.5px">นำ metric ชุดเดียวกันขึ้น dashboard เพื่อติดตามแนวโน้มและตรวจย้อนกับ LAB 5</p></div>
+    </div>
+    <div class="note a" style="margin-top:9px; font-size:14.5px; padding:9px 12px"><b>ลองคำนวณ</b> — สร้าง จ. 10:00 · เข้า started อ. 14:00 · Done พฤ. 14:00: Lead time และ Cycle time เท่าไร? <span class="mut">เฉลย: 52 ชม. และ 48 ชม.</span></div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Lead time &amp; Cycle time</span><span class="pg"></span></div>
+ </section>
+</div>

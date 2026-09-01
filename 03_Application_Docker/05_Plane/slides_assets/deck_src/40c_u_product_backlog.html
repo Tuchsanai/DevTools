@@ -1,0 +1,73 @@
+<!-- ===== U-PRODUCT-BACKLOG A : definition ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Product Backlog · นิยาม</div><h2>Product Backlog — <em>รายการเดียว · เรียงลำดับ · มองทั้งผลิตภัณฑ์</em></h2>
+    <div class="sub">ไม่ใช่รายการงานตายตัว แต่เป็นภาพรวมงานที่อาจจำเป็นเพื่อพาผลิตภัณฑ์ไปสู่ Product Goal</div></div>
+  <div class="s-body top">
+    <div class="g11" style="grid-template-columns:1.08fr .92fr; align-items:start">
+      <div style="display:flex; flex-direction:column; gap:11px">
+        <div class="quote" style="font-size:20px">“Product Backlog คือรายการเดียวที่เรียงลำดับของทุกสิ่งที่ผลิตภัณฑ์อาจต้องมี โดย Product Owner รับผิดชอบให้รายการนี้ชัดเจนและมีลำดับ”</div>
+        <div class="grid2" style="gap:11px">
+          <div class="card c" style="padding:12px 15px"><h4>ก่อนมี Backlog</h4><p>คำขอแยกอยู่ในแชต อีเมล และไฟล์หลายชุด แต่ละคนเลือกงานเอง จึงเกิดงานซ้ำ งานหล่น และไม่มีคำตอบว่า “ทำอะไรก่อน”</p></div>
+          <div class="card o" style="padding:12px 15px"><h4>เมื่อมี Backlog</h4><p>ทุกฝ่ายเห็นรายการเดียว ลำดับเดียว และเหตุผลเดียวกัน ทีมจึงใช้เวลาที่จำกัดกับงานซึ่งสำคัญต่อเป้าหมายมากที่สุด</p></div>
+        </div>
+        <div class="card a" style="padding:12px 15px"><h4>CampusEats · ตัวอย่างจริง</h4><p>PO รวม “สั่งอาหารล่วงหน้า”, “รีเซ็ตรหัสผ่าน”, “ค้นหาเมนู”, “ตะกร้า”, “จ่ายเงิน” และ “รีวิวร้าน” ไว้ในรายการเดียว แล้ววางงานที่ช่วยเป้าหมาย <b>“สั่งอาหารในแคมปัสได้”</b> ไว้ด้านบน</p></div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="fig photo fix" style="height:310px"><img data-a="real_backlog_refinement" alt="ทีมผลิตภัณฑ์กำลังทบทวนและจัดลำดับ Product Backlog ร่วมกันหน้าจอขนาดใหญ่"></div>
+        <div class="figcap">การจัดลำดับเป็นการตัดสินใจร่วมบนข้อมูลเดียว โดย Product Owner รับผิดชอบผลลัพธ์ของ Product Backlog</div>
+        <div class="note w" style="font-size:15px"><b>ความเข้าใจผิด</b> — ❌ “อยู่ใน backlog = รับปากว่าจะทำทั้งหมด” → ✅ backlog คือชุดทางเลือกที่เปลี่ยนได้ งานล่างยังหยาบหรือถูกนำออกได้เมื่อเป้าหมายและข้อมูลเปลี่ยน</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Product Backlog</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== U-PRODUCT-BACKLOG B : mechanism ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Product Backlog · กลไก</div><h2>จากเป้าหมายสู่ Increment — <em>เรียง · เตรียม · เลือก · ส่งมอบ · เรียนรู้</em></h2></div>
+  <div class="s-body top">
+    <div class="figrow c21" style="grid-template-columns:minmax(0,2.2fr) minmax(0,1fr); align-items:start">
+      <div>
+        <div class="fig fix" style="height:430px"><img data-a="d42" alt="Product Backlog ของ CampusEats ที่เรียงลำดับโดย Product Owner ก่อนเลือกงานเข้าสู่ Sprint Backlog และสร้าง Increment ที่ผ่าน Definition of Done"></div>
+        <div class="figcap">อ่านซ้าย→ขวา: รายการทั้งผลิตภัณฑ์ → งานที่ทีมเลือกพร้อมแผน → ของที่ผ่าน DoD และใช้งานได้</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a" style="padding:10px 13px"><h4><span class="n">1</span>ส่วนประกอบ</h4><p style="font-size:14.5px"><b>items</b> = ความต้องการ งานแก้ และความรู้ที่ต้องหา · <b>order</b> = ก่อน–หลัง · <b>Product Goal</b> = เป้าหมายที่ผูกทุกชิ้นเข้าด้วยกัน</p></div>
+        <div class="card o" style="padding:10px 13px"><h4><span class="n">2</span>กติกาการเรียง</h4><p style="font-size:14.5px">ดูคุณค่าต่อผู้ใช้ ความเสี่ยง dependency และความพร้อม—not แค่ป้าย Urgent; งานบนต้องชัดและเล็กพอให้เลือกเข้า Sprint</p></div>
+        <div class="card" style="padding:10px 13px"><h4><span class="n">3</span>วงจรการทำงาน</h4><p style="font-size:14.5px">PO เรียง → ทีม refine/estimate → Planning เลือก → ทำจนผ่าน DoD → Review → เพิ่ม ลบ หรือเรียง backlog ใหม่</p></div>
+        <div class="note a" style="font-size:14px"><b>DEEP</b> — <b>D</b>etailed appropriately · <b>E</b>mergent · <b>E</b>stimated · <b>P</b>rioritized/ordered; Product Goal คือ commitment ของ Product Backlog</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Product Backlog</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== U-PRODUCT-BACKLOG D : Plane ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Product Backlog · ใน Plane</div><h2>ใน Plane — <em>Product Backlog คือ work items ของโปรเจกต์ที่ยังอยู่กลุ่ม backlog</em></h2>
+    <div class="sub">ไม่มีกล่อง Product Backlog แยกต่างหาก: state group เป็นตัวบอกว่างานอยู่ช่วงใด และ <code>sort_order</code> เก็บลำดับแบบ manual</div></div>
+  <div class="s-body top">
+    <div class="ui-screen-layout" style="grid-template-columns:minmax(0,1fr) 350px">
+      <div>
+        <div class="fig shot fix" style="height:348px"><img data-a="t-workitems-list" alt="หน้า Work items ของโปรเจกต์ Plane Lab ใน List layout จัดกลุ่มตาม State และแสดง CampusEats backlog"></div>
+        <div class="figcap">Plane Lab (PLAB) · Work items · List layout · Group by State — รายการงาน CampusEats ใน backlog</div>
+      </div>
+      <div class="ui-screen-notes" style="font-size:14.5px">
+        <div class="card a" style="padding:11px 14px"><h4>เปิดดูรายการ</h4><p>เข้าโปรเจกต์ → <b>Work items</b> → เลือก <b>List</b> แล้ว Group by = State; state เริ่มต้น <b>Backlog</b> อยู่ใน group <code>backlog</code></p></div>
+        <div class="card o" style="padding:11px 14px"><h4>เรียงและช่วยตัดสินใจ</h4><p>ลากงานเมื่อใช้ลำดับแบบ manual เพื่อเปลี่ยน <code>sort_order</code>; ใช้ priority <code>urgent/high/medium/low/none</code> และ filters ช่วยมอง—แต่ priority ไม่แทนลำดับเดียวของ PO</p></div>
+        <div class="card d" style="padding:11px 14px"><h4>Related feature · Views</h4><p>บันทึก filters, layout และ display properties เป็น View เพื่อเปิดมุม “งานพร้อมเข้า Sprint” ซ้ำได้ โดยไม่สร้าง backlog อีกชุด</p></div>
+      </div>
+    </div>
+    <div class="grid2" style="gap:11px">
+      <div class="note w" style="font-size:14.5px"><b>ขอบเขตของ Plane CE v1.4.2</b> — ไม่มีพื้นที่ Product Backlog หรือฟิลด์ Product Goal โดยเฉพาะ: backlog คือ work items ใน state group <code>backlog</code>; ทีมจึงต้องเขียน Product Goal ไว้ใน Page ของโปรเจกต์แล้วใช้อ้างอิงตอนเรียงงาน</div>
+      <div class="note a" style="font-size:14.5px"><b><span class="tag a">LAB 3–4</span> Mini exercise</b> — จาก CampusEats 5 ใบ เลือก 3 ใบที่ช่วย Product Goal “สั่งอาหารล่วงหน้าได้ครบวงจร” มากที่สุด แล้วอธิบายเหตุผลของลำดับ 1→3; จากนั้นระบุว่าใบใดควรยังอยู่ Backlog และใบใดพร้อมเข้า Cycle</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Product Backlog</span><span class="pg"></span></div>
+ </section>
+</div>

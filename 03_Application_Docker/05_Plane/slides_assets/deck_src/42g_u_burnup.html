@@ -1,0 +1,41 @@
+<!-- ===== U-BURNUP 1 : definition + mechanism ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burn-up · นิยาม · กลไก</div><h2>Burn-up — <em>แยก “ทำเสร็จแล้ว” ออกจาก “ขอบเขตทั้งหมด”</em></h2>
+    <div class="sub">แกนนอน = เวลา · แกนตั้ง = จำนวนงานหรือ points · ระยะห่างระหว่างสองเส้นคืองานที่ยังเหลือ</div></div>
+  <div class="s-body top">
+    <div class="figrow c21" style="grid-template-columns:1.34fr .66fr; align-items:start">
+      <div><div class="fig fix" style="height:390px"><img data-a="d33" alt="กราฟเปรียบเทียบ Burndown กับ Burn-up โดยฝั่ง Burn-up แยกเส้น Done สะสมจากเส้น Scope รวมที่เพิ่มขึ้นกลาง Sprint"></div>
+        <div class="figcap">อ่านฝั่งขวา: เส้นเขียว = Done สะสม · เส้นม่วง = Scope รวม · Scope เพิ่มวันที่ 5 จึงมองเห็นเหตุของช่องว่างได้ทันที</div></div>
+      <div style="display:flex; flex-direction:column; gap:8px">
+        <div class="quote" style="font-size:17px; padding:10px 15px">Burn-up คือกราฟสองเส้น: <mark>งาน Done สะสม</mark> และ <mark>Scope รวม</mark> ณ แต่ละวัน จึงเห็นทั้งความคืบหน้าและการเปลี่ยนขอบเขตในภาพเดียว</div>
+        <div class="card a" style="padding:9px 13px"><h4>ทำไมสำคัญ · กลไก 3 ค่า</h4><p style="font-size:15px; line-height:1.45">ค่า remaining เส้นเดียวแยกไม่ได้ว่าทีมช้าหรือ scope เพิ่ม จึงอ่าน <b>Done(d)</b> · <b>Scope(d)</b> และ <b>Remaining(d)</b> = Scope(d) − Done(d). เส้น Done ไม่ควรลด เว้นแต่แก้ข้อมูลหรือเปิดงานกลับ</p></div>
+        <div class="card o" style="padding:9px 13px"><h4>CampusEats · Scope creep ที่มองเห็น</h4><p style="font-size:15px; line-height:1.45">Sprint 2 เริ่มที่ 10 ใบ; วันที่ 4 เพิ่มเรื่อง “แจ้งเตือนสารก่อภูมิแพ้” 2 ใบ → Scope = 12. วันที่ 6 Done แล้ว 8 ใบ จึงเหลือ 4 ใบ กราฟบอกพร้อมกันว่า <b>ทีมเดินหน้า 8</b> และ <b>scope โต 2</b></p></div>
+        <div class="card c" style="padding:9px 13px"><h4>❌ เข้าใจผิด → ✅ ใช้ให้ถูก</h4><p style="font-size:15px; line-height:1.45"><b>ผิด:</b> เส้นที่สูงขึ้นแปลว่างานแย่ลง · <b>ถูก:</b> Done สูงขึ้นคือความคืบหน้า ส่วน Scope สูงขึ้นคือขอบเขตเพิ่ม; ต้องอ่านสองเส้นและเหตุการณ์บน backlog ร่วมกัน</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Burn-up</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== U-BURNUP 2 : Plane + labs ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burn-up · ใน Plane</div><h2>Plane CE ไม่มีกราฟ Burn-up — <em>ประกอบข้อมูลจาก Cycle เอง</em></h2>
+    <div class="sub">ใช้ข้อมูลสมาชิกของ Cycle เป็น scope และ <code>completed_at</code> เป็นเวลาที่งานเข้าสู่ state group <b>completed</b></div></div>
+  <div class="s-body top">
+    <div class="figrow c21" style="grid-template-columns:1.35fr .65fr; align-items:start">
+      <div><div class="fig shot fix" style="height:372px"><img data-a="lab9:ui-dashboard" alt="Mission Control dashboard ของ LAB 9 แสดง metrics จากข้อมูล Plane API ได้แก่ burndown velocity cumulative flow lead และ cycle time WIP และ blockers"></div>
+        <div class="figcap">LAB 9 · Mission Control ดึงข้อมูลจริงจาก Plane API มาคำนวณ metrics ภายนอก — ตัวอย่างแนวทางเมื่อ CE ไม่มีกราฟที่ต้องการ</div></div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card c" style="padding:10px 13px"><h4>ข้อจำกัดของ CE v1.4.2</h4><p style="font-size:15px; line-height:1.48">หน้า Cycle มี Progress และ <b>burndown</b>; ค่าคงที่ <code>burnup</code> มีในโค้ดบางส่วน แต่ไม่มี renderer ของกราฟ Burn-up ใน UI จึงเปิดจากเมนูใดไม่ได้</p></div>
+        <div class="card a" style="padding:10px 13px"><h4>ข้อมูลต้นทาง · <code>cycle_issues</code> + <code>completed_at</code></h4><p style="font-size:15px; line-height:1.48">สมาชิก Cycle บอก scope ปัจจุบัน; สำหรับแต่ละวัน d นับ <code>Done(d) = Σ completed_at ≤ d</code>. ถ้าต้องการเส้น scope ย้อนหลังที่ขึ้นเป็นขั้น ต้องเก็บวันที่เพิ่ม/ถอดสมาชิก Cycle ไว้ด้วย ไม่ใช่อ่านเฉพาะสมาชิกปัจจุบัน</p></div>
+        <div class="card o" style="padding:10px 13px"><h4>Workflow · คำนวณ → ตรวจ → แสดงผล</h4><p style="font-size:15px; line-height:1.48"><span class="tag a">LAB 4</span> ดัดแปลง <code>cycle_report.py</code> ให้คืน Done สะสมและ Scope · <span class="tag o">LAB 9</span> เพิ่ม panel Burn-up พร้อม test แล้วเทียบจำนวน Done กับ Cycle Progress</p></div>
+      </div>
+    </div>
+    <div class="note a" style="font-size:15px"><b>Mini exercise</b> — CampusEats เริ่ม 10 ใบ · วันที่ 4 เพิ่ม 2 ใบ · วันที่ 6 Done สะสม 8 ใบ: จุดของเส้น Scope และ Done ในวันที่ 6 คือเท่าไร? ช่องว่าง 4 ใบบอกอะไร และคุณต้องตรวจเหตุการณ์ใดก่อนสรุปว่า “ทีมช้า”?</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Burn-up</span><span class="pg"></span></div>
+ </section>
+</div>

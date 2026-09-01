@@ -1,0 +1,67 @@
+<!-- ===== A : velocity — definition ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Velocity · นิยาม</div><h2>Velocity — <em>ความเร็วที่วัดจากงาน Done จริงของทีม</em></h2>
+    <div class="sub">หนึ่งตัวเลขต่อหนึ่ง Sprint · ใช้หลักฐานจากอดีตเพื่อวางแผน ไม่ใช่คำสัญญาว่าอนาคตต้องทำได้เท่าเดิม</div></div>
+  <div class="s-body top">
+    <div class="g11">
+      <div style="display:flex; flex-direction:column; gap:12px">
+        <div class="quote">Velocity คือ <mark>ผลรวม Story Points ของ work items ที่ผ่าน Definition of Done</mark> ภายใน Sprint หนึ่งรอบ งานที่ยังไม่ Done นับเป็น 0
+          <span class="who">หน่วย: points / sprint · เป็นมาตรวัดเฉพาะของทีมนั้น</span></div>
+        <ul class="bul sm">
+          <li><b>ทำไมสำคัญ</b> — ทำให้ Sprint Planning และ release forecast อิงความสามารถที่เคยเกิดขึ้นจริง</li>
+          <li><b>ปัญหาที่แก้</b> — แทนการเดาว่า “น่าจะรับได้ 30 points” ด้วยช่วงจากหลาย Sprint ล่าสุด</li>
+          <li><b>เงื่อนไข</b> — ทีมต้องใช้สเกล points และ Definition of Done เดิมอย่างสม่ำเสมอ จึงเปรียบเทียบข้ามเวลาได้</li>
+        </ul>
+        <table class="tbl sm" style="font-size:15px">
+          <thead><tr><th>ก่อนมีข้อมูล</th><th>หลังมีประวัติ 3+ Sprint</th></tr></thead>
+          <tbody><tr><td>รับงานตามความหวัง → มักเกินกำลัง</td><td>เลือกงานใกล้ช่วงที่เคย Done → อธิบายความเสี่ยงได้</td></tr></tbody>
+        </table>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div><div class="fig photo fix" style="height:240px"><img data-a="real_metrics_review" alt="ทีมกำลังทบทวนกราฟข้อมูลย้อนหลังร่วมกันเพื่อวางแผนรอบถัดไป"></div>
+          <div class="figcap">ทีมใช้แนวโน้มจากหลายรอบเพื่อคุยเรื่องแผนและความไม่แน่นอนร่วมกัน</div></div>
+        <div class="card a" style="padding:12px 15px"><h4>CampusEats · ตัวอย่าง Sprint 1</h4><p>PBI-01 ค้นหาร้าน 3 pt + PBI-02 ดูเมนู 2 pt + PBI-10 ย้าย config 1 pt ผ่าน DoD รวม <b>velocity = 6 points</b>; งานที่เริ่มแล้วแต่ยังไม่ Done ไม่ถูกนับ</p></div>
+        <div class="note c" style="font-size:14.5px"><b>ความเข้าใจผิด</b> — ❌ velocity สูง = ทีมเก่งกว่า · ✅ point เป็นสเกลภายในทีม จึงใช้ดูแนวโน้มและ forecast ของทีมเดิมเท่านั้น ห้ามเทียบคนหรือข้ามทีม</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Velocity</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== B : velocity — mechanism ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Velocity · กลไก</div><h2>Velocity — <em>ใช้ประวัติของทีมพยากรณ์อนาคต ไม่ใช่ตั้งเป้าให้ทีม</em></h2></div>
+  <div class="s-body top">
+    <div class="fig fix" style="height:345px"><img data-a="d32" alt="กราฟ velocity 18, 22 และ 20 points ต่อ Sprint แล้วใช้ค่าเฉลี่ย 20 พยากรณ์ backlog 120 points เป็นประมาณ 6 Sprint"></div>
+    <div class="grid3" style="gap:12px">
+      <div class="card a" style="padding:11px 14px"><h4><span class="n">1</span>วัดเมื่อ Sprint จบ</h4><p>รวม points เฉพาะ work items ที่ Done: 18 · 22 · 20; งานครึ่งเสร็จ = 0 และนับใหม่เมื่อมัน Done ใน Sprint ถัดไป</p></div>
+      <div class="card o" style="padding:11px 14px"><h4><span class="n">2</span>สร้างช่วงอ้างอิง</h4><p>ค่าเฉลี่ย 3 Sprint = 20 pt/sprint; ช่วง 18–22 สะท้อนความผันผวน จึงควร forecast เป็นช่วง ไม่ใช่วันเดียว</p></div>
+      <div class="card w" style="padding:11px 14px"><h4><span class="n">3</span>พยากรณ์และปรับใหม่</h4><p>120 pt ÷ 20 = 6 Sprint; ใช้เร็วสุด 22 และช้าสุด 18 ได้ 5.5–6.7 Sprint แล้วคำนวณใหม่เมื่อ backlog หรือข้อมูลล่าสุดเปลี่ยน</p></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Velocity</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== D : velocity — Plane ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Velocity · ใน Plane</div><h2>Plane CE ไม่มีกราฟ Velocity — <em>อ่าน Completed Cycles แล้วคำนวณเอง</em></h2>
+    <div class="sub">ข้อมูลต้นทางอยู่ใน Cycle · work items · Estimates และ progress snapshot</div></div>
+  <div class="s-body top">
+    <div class="figrow c21">
+      <div><div class="fig shot fix" style="height:390px"><img data-a="t-cycle-completed" alt="หน้า Cycle Sprint 1 ที่ Completed พร้อมรายการ work items และแผง Progress snapshot"></div>
+        <div class="figcap">Project › Cycles › Sprint 1 (Completed) — รายการงานและ Progress snapshot หลัง Transfer งานค้าง</div></div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card c" style="padding:11px 14px"><h4>ข้อจำกัดของ CE v1.4.2</h4><p>ไม่มี velocity chart สำเร็จรูป จึงต้องนำ cycle ที่จบแล้วมาต่อเป็นอนุกรม: velocity ของแต่ละ Cycle = Σ <code>estimate_point</code> ของงานที่มี <code>completed_at</code></p></div>
+        <div class="card a" style="padding:11px 14px"><h4>ข้อมูลที่ใช้ · Cycle + Estimates</h4><p><code>?cycle_view=completed</code> ให้ Completed Cycles; อ่านงานในแต่ละ Cycle พร้อม <code>estimate_point</code>. เมื่อกด Transfer, Plane เก็บ <code>progress_snapshot</code> ของ Cycle เดิมไว้ — ไม่ได้สร้างอัตโนมัติเมื่อวันจบผ่านไป</p></div>
+        <div class="note a" style="font-size:14.5px"><b><span class="tag a">LAB 4</span> Mini exercise</b> — รัน <code>python velocity.py</code>: ถ้า Sprint 1 Done 6 pt และ backlog ที่ยังไม่ Done 36 pt จะเหลือกี่ Sprint? จากนั้นอธิบายว่าเหตุใดคำตอบ “ประมาณ 6 Sprint” จึงไม่ใช่ deadline</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Velocity</span><span class="pg"></span></div>
+ </section>
+</div>

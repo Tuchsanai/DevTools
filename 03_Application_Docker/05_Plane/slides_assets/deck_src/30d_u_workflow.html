@@ -1,0 +1,60 @@
+<!-- ===== U-WORKFLOW A : definition ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · Workflow · นิยาม</div><h2>Workflow คือ <em>ภาษากลางว่า “งานอยู่ขั้นไหน และพร้อมขยับเมื่อใด”</em></h2>
+    <div class="sub">จากงานที่ทุกคนตีความเอง → เป็นกระบวนการที่มองเห็น ตรวจสอบ และส่งต่องานได้</div></div>
+  <div class="s-body top">
+    <div class="g12 mid" style="grid-template-columns:1.12fr .88fr">
+      <div>
+        <div class="quote" style="font-size:22px; line-height:1.42">Workflow = <b>states</b> ที่บอกตำแหน่งของงาน + <b>transitions</b> ที่บอกทางย้ายที่อนุญาต + <b>policies</b> ที่บอกเงื่อนไขก่อนย้าย<span class="who">เป้าหมายคือทำให้คำว่า “เสร็จ” มีความหมายเดียวกันทั้งทีม</span></div>
+        <div class="grid3" style="margin-top:14px; gap:10px">
+          <div class="card c" style="padding:12px 13px"><h4>ปัญหาก่อนมี workflow</h4><p style="font-size:15.5px">นักพัฒนาบอกว่า “เสร็จ” เมื่อเขียนโค้ดจบ แต่ผู้ทดสอบหมายถึงผ่าน test แล้ว งานจึงค้างแบบมองไม่เห็น</p></div>
+          <div class="card a" style="padding:12px 13px"><h4>ทำไมสำคัญ</h4><p style="font-size:15.5px">ทุกคนเห็นจุดเดียวกันว่าใครต้องทำอะไรต่อ งานค้างอยู่ที่ขั้นใด และต้องตรวจหลักฐานอะไร</p></div>
+          <div class="card o" style="padding:12px 13px"><h4>CampusEats</h4><p style="font-size:15.5px">เรื่อง “สั่งอาหารล่วงหน้า” เดินจาก Todo → In Progress → In Review → Done เมื่อผ่าน acceptance criteria</p></div>
+        </div>
+      </div>
+      <div><div class="fig photo fix" style="height:330px"><img data-a="real_developer_workflow" alt="นักพัฒนาทำงานโดยมีโค้ดและบอร์ด workflow เปิดอยู่คนละจอ"></div><div class="figcap">โค้ดกับบอร์ดต้องเล่าเรื่องเดียวกัน มิฉะนั้นสถานะบนบอร์ดจะไม่สะท้อนงานจริง</div></div>
+    </div>
+    <div class="note w" style="font-size:15.5px"><b>ความเข้าใจผิด</b> — ❌ “Workflow คือชื่อคอลัมน์สวย ๆ” → ✅ ต้องระบุเกณฑ์การเข้า–ออกแต่ละ state ด้วย · ❌ “Done = โค้ดเสร็จ” → ✅ Done ต้องผ่าน Definition of Done ที่ทีมตกลง</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 2 · Workflow</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== U-WORKFLOW B : mechanism ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · Workflow · กลไก</div><h2>กลไกของ workflow — <em>state บอกตำแหน่ง · transition บอกทาง · policy บอกเงื่อนไข</em></h2></div>
+  <div class="s-body top">
+    <div class="g21" style="grid-template-columns:1.8fr 1fr; align-items:start">
+      <div class="fig fix" style="height:395px"><img data-a="d22" alt="แผนภาพ workflow แสดง state groups ของ Plane, transitions, policies, completed_at และข้อจำกัดของ Community Edition"></div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a" style="padding:10px 13px"><h4><span class="n">1</span>State กับ group คนละชั้น</h4><p style="font-size:14.5px">ทีมเพิ่ม In Review หรือ Testing ได้ แต่แต่ละ state ต้องอยู่ในกลุ่ม backlog · unstarted · started · completed · cancelled</p></div>
+        <div class="card o" style="padding:10px 13px"><h4><span class="n">2</span>เส้นทางทำงาน</h4><p style="font-size:14.5px">งานไหลจากรอทำ → กำลังทำ → ตรวจ → เสร็จ; ถ้าตรวจไม่ผ่านให้ย้อนกลับ และยกเลิกเมื่อไม่ควรทำต่อ</p></div>
+        <div class="card w" style="padding:10px 13px"><h4><span class="n">3</span>Policy ทำให้ state มีความหมาย</h4><p style="font-size:14.5px">เข้า In Review ต้องมี PR link; เข้า Done ต้องผ่าน acceptance criteria ครบ ไม่ใช่เพียงลากการ์ดให้จบ</p></div>
+      </div>
+    </div>
+    <div class="note a" style="font-size:14.5px; margin-top:10px"><b>Jira-style vs Plane</b> — ระบบที่มี transition rules บังคับเส้นทางและเงื่อนไขได้ในเครื่องมือ; Plane CE เลือก state + group แบบเรียบง่าย จึงต้องอาศัยวินัยและ policy ของทีม</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 2 · Workflow</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== U-WORKFLOW D : in Plane ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · Workflow · ใน Plane</div><h2>Plane ใช้ States + state groups — <em>ตั้งโครงได้ แต่ CE ไม่บังคับ transition หรือ WIP</em></h2></div>
+  <div class="s-body top">
+    <div class="figrow c21" style="grid-template-columns:1.35fr .65fr; align-items:start">
+      <div><div class="fig shot fix" style="height:395px"><img data-a="t-states-settings" alt="Project settings States ของ Plane Lab แสดง state groups และ In Review"></div><div class="figcap">Project settings › States ของ PLAB แสดง 5 state groups และ state In Review ที่เพิ่มเอง</div></div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card a" style="padding:11px 14px"><h4>Plane บันทึกอย่างไร</h4><p style="font-size:15.5px">Work item มี state หนึ่งค่า และ state นั้นสังกัดหนึ่ง group; เมื่อย้ายเข้ากลุ่ม completed ระบบตั้ง <code>completed_at</code> และล้างค่านี้เมื่อย้ายออก</p></div>
+        <div class="card c" style="padding:11px 14px"><h4>ขอบเขตของ CE v1.4.2</h4><p style="font-size:15.5px">ย้ายจาก state ใดไป state ใดก็ได้ เพราะไม่มี transition rules; Board ก็ไม่มี WIP limit ในตัวเครื่องมือ</p></div>
+        <div class="card o" style="padding:11px 14px"><h4><span class="tag o" style="margin-right:6px">LAB 5</span>ลงมือทำ</h4><p style="font-size:15.5px">เพิ่ม In Review ในกลุ่ม started · จัด Board ตาม State · เขียน explicit policies ใน Project Page · ใช้ <code>wip_guard.py</code> ตรวจจำนวนงานผ่าน API</p></div>
+      </div>
+    </div>
+    <div class="note a" style="font-size:15.5px"><b>Mini exercise</b> — ออกแบบ workflow ของทีม support 5 state: ตั้งชื่อ · เลือก group · เขียนเกณฑ์เข้า/ออกแต่ละ state แล้วตอบว่า “ticket แบบใดจึงเรียกว่า completed ไม่ใช่ cancelled?”</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 2 · Workflow</span><span class="pg"></span></div>
+ </section>
+</div>

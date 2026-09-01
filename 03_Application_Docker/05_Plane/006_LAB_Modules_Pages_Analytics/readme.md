@@ -55,7 +55,7 @@
 docker start devtools 2>/dev/null || \
   docker run -dit --name devtools --privileged -p 2222:22 -p 8080:8080 tuchsanai/devtools:2569_1
 ssh root@localhost -p 2222        # password : passwd
-cd ~/labwork/DevTools/03_Application_Docker/Plane/006_LAB_Modules_Pages_Analytics
+cd ~/labwork/DevTools/03_Application_Docker/05_Plane/006_LAB_Modules_Pages_Analytics
 source ~/venv-plane/bin/activate && pip install -r requirements.txt -q
 curl -s -o /dev/null -w '%{http_code}\n' -H "X-API-Key: $(cat ~/.plane_token)" http://localhost:8080/api/v1/users/me/
 ```

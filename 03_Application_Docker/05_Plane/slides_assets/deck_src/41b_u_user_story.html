@@ -1,0 +1,86 @@
+<!-- ===== A : User Story · นิยาม ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · User Story · นิยาม</div><h2>User Story — <em>เล่าความต้องการผ่านคุณค่าของผู้ใช้</em></h2>
+    <div class="sub">ประโยคสั้นเริ่มการสนทนา ไม่ใช่เอกสารข้อกำหนดฉบับย่อ</div></div>
+  <div class="s-body top">
+    <div class="quote" style="font-size:20px; margin-bottom:10px">User Story คือคำอธิบายความต้องการจากมุมของผู้ใช้: ใครต้องการอะไร และเพื่อให้เกิดคุณค่าใด <span class="who">รูปแบบช่วยคิด: ในฐานะ… ฉันต้องการ… เพื่อ…</span></div>
+    <div class="flow" style="margin-bottom:12px">
+      <div class="b a"><div class="t">ใคร</div><div class="s">บทบาทหรือกลุ่มผู้ใช้</div></div><span class="ar">→</span>
+      <div class="b"><div class="t">ต้องการอะไร</div><div class="s">พฤติกรรมหรือผลลัพธ์</div></div><span class="ar">→</span>
+      <div class="b a"><div class="t">เพื่ออะไร</div><div class="s">คุณค่าที่ได้รับ</div></div><span class="ar">→</span>
+      <div class="b k"><div class="t">คุยให้เข้าใจร่วมกัน</div><div class="s">เติม acceptance criteria</div></div>
+    </div>
+    <div class="grid3">
+      <div class="card a"><h4>ทำไมสำคัญ</h4><p>ทีมเห็น “เหตุผล” ก่อนคิดวิธีสร้าง จึงอภิปรายทางเลือกและตรวจได้ว่างานที่ทำตอบผู้ใช้จริงหรือไม่</p></div>
+      <div class="card w"><h4>ปัญหาที่แก้</h4><p><b>ก่อน:</b> รายการฟีเจอร์ยาวแต่ไม่รู้ว่าใครได้ประโยชน์<br><b>หลัง:</b> งานหนึ่งใบมีผู้ใช้ เป้าหมาย และเกณฑ์ยอมรับที่คุยกันได้</p></div>
+      <div class="card o"><h4>CampusEats</h4><p>“ในฐานะนักศึกษา ฉันต้องการสั่งอาหารล่วงหน้าจากมือถือ เพื่อรับอาหารได้ทันระหว่างคาบ” — ทีมถามต่อเรื่องเวลา ร้าน และสถานะออเดอร์</p></div>
+    </div>
+    <div class="note c" style="font-size:15px"><b>เข้าใจผิด: ❌ เขียนครบหนึ่งประโยค = พร้อมพัฒนา</b> → <b>✅ ประโยคเป็นจุดเริ่มคุย</b>; ต้องเติมตัวอย่าง เงื่อนไข และ acceptance criteria ที่ทดสอบได้ก่อนเลือกเข้าสู่ Sprint</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · User Story</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== B : User Story · กลไก (reused INVEST slide) ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · User Story · กลไก</div><h2>User Story ที่ดี — <em>แบบฟอร์ม · เกณฑ์ INVEST</em></h2></div>
+  <div class="s-body top">
+    <div class="note a" style="margin-bottom:2px; font-size:16px"><b>Backlog refinement</b> — กิจกรรมต่อเนื่อง (ไม่ใช่อีเวนต์) ที่ PO และ Developers แตกงาน เพิ่มรายละเอียด และประเมินขนาด backlog items ล่วงหน้า ให้พร้อมสำหรับ Sprint Planning; Scrum Guide 2017 เคยแนะนำสัดส่วนไม่เกิน 10% ของ capacity — ฉบับ 2020 ไม่กำหนดตัวเลข</div>
+    <div class="g11">
+      <div>
+        <pre class="code"><span class="c"># แบบฟอร์ม user story</span>
+<span class="k">ในฐานะ</span> &lt;บทบาท&gt; <span class="k">ฉันต้องการ</span> &lt;สิ่งที่ต้องการ&gt;
+<span class="k">เพื่อ</span> &lt;คุณค่าที่ได้&gt;
+
+<span class="c"># ตัวอย่าง (work item ใน Plane)</span>
+<span class="y">ในฐานะ</span> ผู้ใช้ที่ลืมรหัสผ่าน
+<span class="y">ฉันต้องการ</span> รับลิงก์รีเซ็ตทางอีเมล
+<span class="y">เพื่อ</span> กลับเข้าใช้งานได้เองโดยไม่ต้องติดต่อแอดมิน
+
+<span class="c"># Acceptance criteria (ใส่ใน description)</span>
+<span class="g">- ลิงก์หมดอายุใน 30 นาที</span>
+<span class="g">- อีเมลที่ไม่มีในระบบ ต้องไม่บอกว่า "ไม่พบผู้ใช้"</span></pre>
+      </div>
+      <div>
+        <table class="tbl" style="font-size:16px">
+          <thead><tr><th style="width:150px">INVEST</th><th>ความหมาย</th></tr></thead>
+          <tbody>
+            <tr><td><b>I</b>ndependent</td><td>ทำแยกจาก story อื่นได้ ลำดับสลับได้</td></tr>
+            <tr><td><b>N</b>egotiable</td><td>เป็นหัวข้อคุย ไม่ใช่สเปกตายตัว</td></tr>
+            <tr><td><b>V</b>aluable</td><td>ผู้ใช้หรือธุรกิจได้อะไรชัดเจน</td></tr>
+            <tr><td><b>E</b>stimable</td><td>ทีมประเมินขนาดได้ (รู้พอที่จะเดา)</td></tr>
+            <tr><td><b>S</b>mall</td><td>ทำเสร็จได้ใน sprint เดียว</td></tr>
+            <tr><td><b>T</b>estable</td><td>มี acceptance criteria ที่ตรวจได้</td></tr>
+          </tbody>
+        </table>
+        <div class="note" style="margin-top:12px; font-size:14.5px">ใน Plane: ชื่อ work item = ประโยค user story, description = acceptance criteria, sub-work items = งานย่อยที่แตกตอน Planning</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · User Story</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== D : User Story · ใน Plane ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · User Story · ใน Plane</div><h2>จากบทสนทนาเป็น Work item — <em>Title · Description · Labels</em></h2>
+    <div class="sub">เก็บสิ่งที่ทีมตกลงไว้ในแหล่งเดียว แล้วนำไป refinement ต่อใน LAB 3</div></div>
+  <div class="s-body top">
+    <div class="g21" style="grid-template-columns:1.35fr .65fr; align-items:start">
+      <div>
+        <div class="fig shot fix" style="height:410px"><img data-a="t-workitem-create" alt="หน้าต่าง Create new work item ของ Plane Lab กรอกชื่อเรื่องและคำอธิบายของ CampusEats ก่อนบันทึก"></div>
+        <div class="figcap">Create new work item — กรอกชื่อเรื่อง CampusEats และคำอธิบายไว้ก่อนบันทึก</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card a" style="padding:11px 14px"><h4>แมปข้อมูลลง Plane</h4><p><b>Title</b> (ฟิลด์ <code>name</code>) = ประโยค story<br><b>Description</b> = บริบท + acceptance criteria<br><b>Labels</b> = ป้ายค้นหา/กรอง เช่น <code>story</code> หรือ <code>mobile</code></p></div>
+        <div class="card d" style="padding:11px 14px"><h4>ฟีเจอร์ที่เกี่ยวข้อง</h4><p>Plane CE v1.4.2 ใช้ <b>Work item</b> เป็นหน่วยงานร่วม และไม่มี work-item types ให้จัดการใน UI; ถ้าทีมต้องแยก Story ให้ใช้ Label ตามข้อตกลงของทีม</p></div>
+        <div class="note o" style="font-size:14.5px"><b><span class="tag o">LAB 3</span> Mini exercise</b> — เขียน CampusEats 1 story แล้วตรวจ 3 ข้อ: ระบุผู้ใช้หรือไม่ · คุณค่าชัดหรือไม่ · มี acceptance criteria ที่ตัดสินผ่าน/ไม่ผ่านได้อย่างน้อย 2 ข้อหรือไม่</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · User Story</span><span class="pg"></span></div>
+ </section>
+</div>

@@ -4,7 +4,8 @@
 Assets are picked up automatically:
   slides_assets/*.svg                 -> key = name prefix before the first '-'   (d01-scrum-to-plane.svg -> "d01")
   slides_assets/illustrations/*.svg   -> key = file stem                          (scrum_cycle.svg -> "scrum_cycle")
-  slides_assets/screenshots/*.png     -> key = file stem                          (l1-setup-form.png -> "l1-setup-form")
+  slides_assets/screenshots/*.png     -> key = file stem                          (t-cycle-active.png -> "t-cycle-active")
+  slides_assets/photos/*.jpg          -> key = file stem                          (real_daily_standup.jpg -> "real_daily_standup")
   00N_LAB_*/images/*.png              -> key = "lab<N>:" + file stem              (001_LAB_x/images/ui-home.png -> "lab1:ui-home")
 Slides reference assets with <img data-a="key">. Missing keys get a visible placeholder and are reported.
 """
@@ -38,6 +39,8 @@ def collect_assets():
         assets[os.path.splitext(os.path.basename(svg))[0]] = data_uri(svg)
     for png in sorted(glob.glob(f"{ASSETS}/screenshots/*.png")):
         assets[os.path.splitext(os.path.basename(png))[0]] = data_uri(png)
+    for jpg in sorted(glob.glob(f"{ASSETS}/photos/*.jpg")):                 # realistic illustrations (Codex image gen)
+        assets[os.path.splitext(os.path.basename(jpg))[0]] = data_uri(jpg)
     for lab in sorted(glob.glob(f"{ROOT}/0*_LAB_*")):
         n = int(os.path.basename(lab)[:3])
         for png in sorted(glob.glob(f"{lab}/images/*.png")):
@@ -54,7 +57,7 @@ def main():
     out_path = args.out
     assets = collect_assets()
     parts = [open(f"{HERE}/00_head.html", encoding="utf-8").read()]
-    slide_files = sorted(f for f in os.listdir(HERE) if re.match(r"^[1-8]\d_.*\.html$", f))
+    slide_files = sorted(f for f in os.listdir(HERE) if re.match(r"^[1-8]\d[a-z]?_.*\.html$", f))
     if args.only:
         slide_files = [f for f in slide_files if f in args.only or os.path.basename(f) in [os.path.basename(x) for x in args.only]]
     for f in slide_files:

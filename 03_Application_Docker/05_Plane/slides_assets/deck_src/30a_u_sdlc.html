@@ -1,0 +1,112 @@
+<!-- ===== U-SDLC A : definition ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · SDLC · นิยาม</div><h2>SDLC คือ <em>แผนที่ร่วมตั้งแต่ “ต้องการอะไร” จนถึง “ดูแลต่ออย่างไร”</em></h2>
+    <div class="sub">Software Development Life Cycle ไม่ใช่ชื่อเครื่องมือ แต่คือวงจรของกิจกรรมที่ทำให้ซอฟต์แวร์หนึ่งระบบเกิดขึ้น ใช้งานได้ และพัฒนาต่อได้</div></div>
+  <div class="s-body">
+    <div class="g11 mid">
+      <div style="display:flex; flex-direction:column; gap:14px">
+        <div class="quote">“SDLC คือวงจรของกิจกรรมตั้งแต่ทำความเข้าใจความต้องการ ออกแบบ พัฒนา ทดสอบ ส่งมอบ ไปจนถึงบำรุงรักษา”<span class="who">หนึ่งวงจรจบเมื่อสิ่งที่เรียนรู้ย้อนกลับไปเป็นความต้องการรอบถัดไป</span></div>
+        <div class="grid2">
+          <div class="card c"><h4>ก่อนมีแผนที่ร่วม</h4><p>เริ่มเขียนโค้ดทั้งที่โจทย์ยังคลุมเครือ · ลืมงบทดสอบ · ส่งงานแล้วไม่มีคนเฝ้าระบบหรือแก้ปัญหา</p></div>
+          <div class="card o"><h4>เมื่อใช้ SDLC</h4><p>ทีมเห็นว่างานอยู่ช่วงใด ใครต้องส่งต่ออะไร และหลักฐานใดบอกว่าพร้อมไปขั้นถัดไป</p></div>
+        </div>
+        <div class="note a"><b>ทำไมสำคัญ</b> — SDLC ให้ภาษากลางแก่ผู้ใช้ นักวิเคราะห์ นักออกแบบ นักพัฒนา ผู้ทดสอบ และผู้ดูแลระบบ; เครื่องมือแต่ละชนิดจึงมีหน้าที่ช่วยคนละช่วงของวงจร</div>
+      </div>
+      <div>
+        <div class="fig photo fix" style="height:390px"><img data-a="real_sdlc_requirements" alt="ทีมซอฟต์แวร์ร่วมกันทบทวนแบบหน้าจอและลำดับการทำงานบนกระดาน"></div>
+        <div class="figcap">ช่วง Requirements เริ่มจากการทำความเข้าใจปัญหาร่วมกัน ก่อนเปลี่ยนความต้องการให้เป็นงานที่ตรวจสอบได้</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 2 · SDLC</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== U-SDLC B : mechanism ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · SDLC · กลไก</div><h2>หกขั้นเชื่อมกันด้วย <em>ผลส่งมอบและ feedback</em></h2>
+    <div class="sub">แต่ละขั้นเปลี่ยนคำถามให้เป็นหลักฐานที่ทีมใช้ทำขั้นถัดไป—และย้อนกลับได้เมื่อพบสิ่งที่เข้าใจผิด</div></div>
+  <div class="s-body top">
+    <div class="g21" style="grid-template-columns:1.42fr .58fr; gap:18px">
+      <div class="fig fix" style="height:368px"><img data-a="d20" alt="วงจร SDLC หกขั้นจาก Requirements ถึง Maintenance พร้อมลูกศร feedback และการเปรียบเทียบ Waterfall กับ Iterative และ Agile"></div>
+      <table class="tbl xs" style="font-size:14.5px">
+        <thead><tr><th>ขั้น</th><th>กิจกรรม → artifact</th></tr></thead>
+        <tbody>
+          <tr><td><b>1 Requirements</b></td><td>คุยกับผู้ใช้ → user story · backlog</td></tr>
+          <tr><td><b>2 Design</b></td><td>ออกแบบข้อมูล/หน้าจอ → wireframe · API spec</td></tr>
+          <tr><td><b>3 Implementation</b></td><td>เขียนและ review → code · commit</td></tr>
+          <tr><td><b>4 Testing</b></td><td>ตรวจเงื่อนไขยอมรับ → test result</td></tr>
+          <tr><td><b>5 Deployment</b></td><td>build และปล่อย → image · release</td></tr>
+          <tr><td><b>6 Maintenance</b></td><td>เฝ้าดู แก้ ปรับปรุง → bug · request ใหม่</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid3" style="margin-top:10px">
+      <div class="card c" style="padding:10px 14px"><h4>Waterfall · รอบยาว</h4><p>ผ่านแต่ละขั้นครั้งใหญ่ตามลำดับ จึงได้ feedback จริงค่อนข้างช้า</p></div>
+      <div class="card a" style="padding:10px 14px"><h4>Iterative · แก้เป็นรอบ</h4><p>ทดลอง ทบทวน และแก้แบบเดิมซ้ำจนเหมาะขึ้น</p></div>
+      <div class="card o" style="padding:10px 14px"><h4>Agile · รอบสั้น + increment</h4><p>ทำทั้งหกกิจกรรมกับชิ้นเล็ก ส่งมอบได้ แล้วนำ feedback ไปจัดรอบถัดไป</p></div>
+    </div>
+    <div class="note" style="font-size:14px"><b>เชื่อมกับภาพ d04</b> — ความต่างสำคัญไม่ใช่ “มีหรือไม่มีขั้น” แต่คือขนาดของรอบและเวลาที่ทีมได้รับ feedback</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 2 · SDLC</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== U-SDLC C : CampusEats example ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · SDLC · ตัวอย่าง</div><h2>CampusEats หนึ่งภาคการศึกษา — <em>เดินครบวงจร ไม่ใช่เขียนโค้ดอย่างเดียว</em></h2>
+    <div class="sub">โจทย์: ให้นักศึกษาสั่งอาหารล่วงหน้า ลดคิวหน้าร้าน และรับอาหารตามช่วงเวลาที่เลือก</div></div>
+  <div class="s-body top">
+    <div class="g21" style="grid-template-columns:1.35fr .65fr">
+      <table class="tbl sm" style="font-size:15.5px">
+        <thead><tr><th style="width:150px">ช่วง</th><th>สิ่งที่ทีม CampusEats ทำให้เห็นจริง</th></tr></thead>
+        <tbody>
+          <tr><td><b>Requirements</b></td><td>สัมภาษณ์นักศึกษาและร้านค้า → backlog: เลือกร้าน · เมนู · ช่วงรับอาหาร · ชำระเงิน</td></tr>
+          <tr><td><b>Design</b></td><td>วาด flow การสั่งอาหาร ออกแบบหน้าจอและข้อมูล Order/Menu/Pickup slot</td></tr>
+          <tr><td><b>Implementation</b></td><td>พัฒนาเป็นชิ้นเล็ก เช่น “เลือกช่วงรับอาหาร” พร้อม review code</td></tr>
+          <tr><td><b>Testing</b></td><td>ตรวจเส้นทางปกติและกรณีเมนูหมด ช่วงเต็ม ยกเลิก และสั่งซ้ำ</td></tr>
+          <tr><td><b>Deployment</b></td><td>build รุ่นทดลอง ปล่อยให้กลุ่มนำร่องใช้ และบันทึกสิ่งที่เปลี่ยน</td></tr>
+          <tr><td><b>Maintenance</b></td><td>ติดตามปัญหา แก้ bug และเปลี่ยน feedback เช่น “แจ้งเตือนเมื่ออาหารพร้อม” เป็น backlog รอบใหม่</td></tr>
+        </tbody>
+      </table>
+      <div style="display:flex; flex-direction:column; gap:13px">
+        <div class="card c"><h4>❌ “SDLC = Waterfall”</h4><p><b>✅ จริง:</b> SDLC บอกว่าต้องคิดกิจกรรมใดบ้าง ส่วน Waterfall เป็นเพียงวิธีจัดกิจกรรมเหล่านั้นเป็นรอบยาวแบบหนึ่ง</p></div>
+        <div class="card w"><h4>❌ “Agile ไม่ออกแบบและไม่ทดสอบ”</h4><p><b>✅ จริง:</b> Agile ยังออกแบบ พัฒนา ทดสอบ และส่งมอบ แต่ทำกับชิ้นเล็กในแต่ละ iteration เพื่อรับ feedback เร็ว</p></div>
+        <div class="note a"><b>ลองชี้จุดย้อนกลับ</b> — ถ้าทดสอบแล้วพบว่าร้านไม่สามารถรับออเดอร์เกิน 20 รายการต่อช่วง ทีมต้องย้อนกลับไปทบทวน Requirements และ Design ก่อนแก้ code</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 2 · SDLC</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== U-SDLC D : Plane ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · SDLC · ใน Plane</div><h2>Plane เป็น <em>ศูนย์กลางติดตามงานตลอดวงจร</em>—ไม่ใช่เครื่องมือเขียนหรือ deploy code</h2>
+    <div class="sub">ทีมเชื่อมความต้องการ แผน สถานะ กลุ่มงาน และ feedback ไว้ในโปรเจกต์เดียว แล้วใช้เครื่องมือเฉพาะทางทำ Design · Code · Test · Deploy ต่อ</div></div>
+  <div class="s-body top">
+    <div class="figrow c21" style="align-items:start">
+      <div>
+        <div class="fig shot fix" style="height:365px"><img data-a="t-workitems-list" alt="หน้า Work items ของโปรเจกต์ PLAB ใน List layout จัดกลุ่มตาม State และแสดง backlog ของ CampusEats"></div>
+        <div class="figcap">PLAB › Work items — List layout จัดกลุ่มตาม State และแสดง backlog ของ CampusEats</div>
+      </div>
+      <ul class="bul sm" style="font-size:15.5px">
+        <li><b>Requirements → Work items</b><span class="s">เก็บ backlog ของความต้องการเป็นหน่วยงานที่ติดตามได้</span></li>
+        <li><b>Planning → Cycles</b><span class="s">เลือก work items เข้าเวลาทำงานที่มีวันเริ่มและวันจบ</span></li>
+        <li><b>Tracking → States</b><span class="s">บอกว่างานอยู่ขั้นใดด้วย state ใน 5 กลุ่มหลัก</span></li>
+        <li><b>Release grouping → Modules</b><span class="s">รวมงานตาม feature/release; ไม่ได้ deploy ซอฟต์แวร์ให้เอง</span></li>
+        <li><b>Feedback → Intake + comments</b><span class="s">รับคำขอเข้าคิว triage และสนทนาบน work item</span></li>
+      </ul>
+    </div>
+    <div class="grid2" style="margin-top:10px">
+      <div class="note w" style="font-size:14.5px"><b>Plane CE v1.4.2</b> — Cycles · Modules · Views · Intake ของโปรเจกต์ใหม่ปิดเป็นค่าเริ่มต้น (Pages เปิด); เปิดฟีเจอร์ที่ Project settings › Features เมื่อจะใช้</div>
+      <div class="note a" style="font-size:14.5px"><b><span class="tag a">LAB 1–2</span> Mini exercise</b> — นึกถึงโปรเจกต์ล่าสุดของคุณแล้วเขียนกิจกรรมอย่างละ 1 ข้อให้ครบ 6 ขั้น: งานใดหายไป และ artifact ใดควรเก็บเป็น work item หรือ comment ใน Plane?</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 2 · SDLC</span><span class="pg"></span></div>
+ </section>
+</div>

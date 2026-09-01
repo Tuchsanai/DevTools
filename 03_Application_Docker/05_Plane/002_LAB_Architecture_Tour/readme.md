@@ -74,7 +74,7 @@ ssh root@localhost -p 2222        # password : passwd
 เข้าโฟลเดอร์แล็บและเช็กว่า Plane จาก LAB 1 ยังอยู่ครบ :
 
 ```bash
-cd ~/labwork/DevTools/03_Application_Docker/Plane/002_LAB_Architecture_Tour
+cd ~/labwork/DevTools/03_Application_Docker/05_Plane/002_LAB_Architecture_Tour
 pc ps --format 'table {{.Service}}\t{{.Status}}' | grep -c ' Up'
 curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8080/api/instances/
 ```
@@ -412,7 +412,7 @@ celery	exchange	celery	queue	celery	[]
 **T2** — เฝ้าดู queue ทุก 2 วินาที (ค้างไว้):
 
 ```bash
-cd ~/labwork/DevTools/03_Application_Docker/Plane/002_LAB_Architecture_Tour && bash queue_watch.sh
+cd ~/labwork/DevTools/03_Application_Docker/05_Plane/002_LAB_Architecture_Tour && bash queue_watch.sh
 ```
 
 **T3** — ดู worker รับงาน (ค้างไว้):

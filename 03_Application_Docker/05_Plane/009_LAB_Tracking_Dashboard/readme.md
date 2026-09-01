@@ -55,7 +55,7 @@
 docker start devtools 2>/dev/null || \
   docker run -dit --name devtools --privileged -p 2222:22 -p 8080:8080 -p 8090:8090 tuchsanai/devtools:2569_1
 ssh root@localhost -p 2222        # password : passwd
-cd ~/labwork/DevTools/03_Application_Docker/Plane/009_LAB_Tracking_Dashboard
+cd ~/labwork/DevTools/03_Application_Docker/05_Plane/009_LAB_Tracking_Dashboard
 source ~/venv-plane/bin/activate && pip install -q pytest
 grep WEBHOOK_ALLOWED_HOSTS ~/plane-selfhost/plane.env
 ```

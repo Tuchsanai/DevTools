@@ -4,7 +4,7 @@
   "source": "mcp-excalidraw-server",
   "elements": [
     {
-      "id": "mtgz33l6hl0d7dnkiwt",
+      "id": "mti9f8db6pdp7ord6ug",
       "type": "text",
       "x": 30,
       "y": 18,
@@ -29,19 +29,19 @@
       "originalText": "Kanban : วัด flow ด้วย Lead time · Cycle time · WIP · Throughput",
       "roughness": 1,
       "roundness": null,
-      "seed": 132985495,
+      "seed": 1996993678,
       "strokeColor": "#0b2545",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "Kanban : วัด flow ด้วย Lead time · Cycle time · WIP · Throughput",
       "textAlign": "center",
-      "updated": 1788164687853,
+      "updated": 1788242516265,
       "version": 1,
-      "versionNonce": 1097425277,
+      "versionNonce": 327029114,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtgz33l6zfm9x1z2yjb",
+      "id": "mti9f8dchu06qvnjs8d",
       "type": "rectangle",
       "x": 30,
       "y": 80,
@@ -62,16 +62,16 @@
       "roundness": {
         "type": 3
       },
-      "seed": 2089337391,
+      "seed": 1907141876,
       "strokeColor": "#0b7285",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788164687853,
+      "updated": 1788242516265,
       "version": 1,
-      "versionNonce": 1262520915
+      "versionNonce": 1839030222
     },
     {
-      "id": "mtgz33l62kl923aofj",
+      "id": "mti9f8dcrxd1vvuw72q",
       "type": "text",
       "x": 50,
       "y": 92,
@@ -96,15 +96,15 @@
       "originalText": "เส้นเวลาของ work item หนึ่งใบ",
       "roughness": 1,
       "roundness": null,
-      "seed": 1815157148,
+      "seed": 2036540382,
       "strokeColor": "#0b7285",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "เส้นเวลาของ work item หนึ่งใบ",
       "textAlign": "center",
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
-      "versionNonce": 1145349604,
+      "versionNonce": 1442587096,
       "verticalAlign": "middle"
     },
     {
@@ -122,7 +122,7 @@
           "type": "text"
         },
         {
-          "id": "mtgz33l6h32s6t217zk",
+          "id": "mti9f8dcdbx1w1ivnzj",
           "type": "arrow"
         }
       ],
@@ -144,7 +144,7 @@
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 1553382039
     },
@@ -163,11 +163,11 @@
           "type": "text"
         },
         {
-          "id": "mtgz33l6h32s6t217zk",
+          "id": "mti9f8dcdbx1w1ivnzj",
           "type": "arrow"
         },
         {
-          "id": "mtgz33l6bbgdfn7x7td",
+          "id": "mti9f8dcjql1wbbkxao",
           "type": "arrow"
         }
       ],
@@ -189,7 +189,7 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 305219844
     },
@@ -208,7 +208,7 @@
           "type": "text"
         },
         {
-          "id": "mtgz33l6bbgdfn7x7td",
+          "id": "mti9f8dcjql1wbbkxao",
           "type": "arrow"
         }
       ],
@@ -230,12 +230,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 1420570045
     },
     {
-      "id": "mtgz33l6h32s6t217zk",
+      "id": "mti9f8dcdbx1w1ivnzj",
       "type": "arrow",
       "x": 288,
       "y": 161,
@@ -273,7 +273,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 347274878,
+      "seed": 640358529,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "c1",
@@ -284,12 +284,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
-      "versionNonce": 919824746
+      "versionNonce": 1406344741
     },
     {
-      "id": "mtgz33l6bbgdfn7x7td",
+      "id": "mti9f8dcjql1wbbkxao",
       "type": "arrow",
       "x": 688,
       "y": 161,
@@ -327,7 +327,7 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1329902700,
+      "seed": 1457263963,
       "startArrowhead": null,
       "startBinding": {
         "elementId": "c2",
@@ -338,12 +338,12 @@
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
-      "versionNonce": 879826804
+      "versionNonce": 864305
     },
     {
-      "id": "mtgz33l6ni5z6c27bwr",
+      "id": "mti9f8dccccalzkth8",
       "type": "line",
       "x": 60,
       "y": 222,
@@ -374,18 +374,18 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 45201688,
+      "seed": 265203274,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 3,
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
-      "versionNonce": 1297259040
+      "versionNonce": 434432212
     },
     {
-      "id": "mtgz33l6jc1rxlz52n",
+      "id": "mti9f8dcuqya2bh48t",
       "type": "text",
       "x": 380,
       "y": 228,
@@ -410,19 +410,19 @@
       "originalText": "Lead time = เสร็จ − สร้าง = 4 วัน 7 ชม.",
       "roughness": 1,
       "roundness": null,
-      "seed": 2114503392,
+      "seed": 1861105499,
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "Lead time = เสร็จ − สร้าง = 4 วัน 7 ชม.",
       "textAlign": "center",
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
-      "versionNonce": 1376921724,
+      "versionNonce": 162529845,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtgz33l6x3f8ovyieg8",
+      "id": "mti9f8dcxcx93kyzoio",
       "type": "line",
       "x": 440,
       "y": 258,
@@ -453,18 +453,18 @@
       ],
       "roughness": 0,
       "roundness": null,
-      "seed": 1741048411,
+      "seed": 823577633,
       "startArrowhead": null,
       "startBinding": null,
       "strokeColor": "#e8590c",
       "strokeStyle": "dashed",
       "strokeWidth": 3,
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
-      "versionNonce": 549363503
+      "versionNonce": 287253061
     },
     {
-      "id": "mtgz33l6qsr4s3a2hy9",
+      "id": "mti9f8dcaxz2ku4tb4q",
       "type": "text",
       "x": 600,
       "y": 264,
@@ -489,19 +489,19 @@
       "originalText": "Cycle time = เสร็จ − เริ่มทำ = 2 วัน 6 ชม.",
       "roughness": 1,
       "roundness": null,
-      "seed": 1933371034,
+      "seed": 225881943,
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "Cycle time = เสร็จ − เริ่มทำ = 2 วัน 6 ชม.",
       "textAlign": "center",
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
-      "versionNonce": 1081791090,
+      "versionNonce": 1192124579,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtgz33l6jx3tzf6f6v",
+      "id": "mti9f8dcny1ywc01bf8",
       "type": "rectangle",
       "x": 30,
       "y": 315,
@@ -522,16 +522,16 @@
       "roundness": {
         "type": 3
       },
-      "seed": 21829322,
+      "seed": 492297115,
       "strokeColor": "#6741d9",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
-      "versionNonce": 447771364
+      "versionNonce": 1975773045
     },
     {
-      "id": "mtgz33l6jttdjxndzf",
+      "id": "mti9f8dcnynu1dzevnj",
       "type": "text",
       "x": 50,
       "y": 327,
@@ -556,15 +556,15 @@
       "originalText": "Little's Law",
       "roughness": 1,
       "roundness": null,
-      "seed": 1621728995,
+      "seed": 308445949,
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "Little's Law",
       "textAlign": "center",
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
-      "versionNonce": 8633817,
+      "versionNonce": 324085387,
       "verticalAlign": "middle"
     },
     {
@@ -600,12 +600,12 @@
       "strokeColor": "#6741d9",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788164687854,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 929686019
     },
     {
-      "id": "mtgz33l6v7wyu0961u8",
+      "id": "mti9f8dcxc1bb99hpah",
       "type": "text",
       "x": 55,
       "y": 450,
@@ -630,19 +630,19 @@
       "originalText": "WIP 12 ใบ ÷ ปิดได้ 3 ใบ/วัน  →  รอเฉลี่ย 4 วัน\nอยากให้งานออกเร็วขึ้น: ลด WIP ก่อน ไม่ใช่เพิ่มคน",
       "roughness": 1,
       "roundness": null,
-      "seed": 602050480,
+      "seed": 1814646454,
       "strokeColor": "#16212f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "WIP 12 ใบ ÷ ปิดได้ 3 ใบ/วัน  →  รอเฉลี่ย 4 วัน\nอยากให้งานออกเร็วขึ้น: ลด WIP ก่อน ไม่ใช่เพิ่มคน",
       "textAlign": "center",
-      "updated": 1788164687854,
+      "updated": 1788242516266,
       "version": 1,
-      "versionNonce": 268841752,
+      "versionNonce": 2102813070,
       "verticalAlign": "middle"
     },
     {
-      "id": "mtgz33l605rqwdofggww",
+      "id": "mti9f8dczydfd6ezmf",
       "type": "rectangle",
       "x": 620,
       "y": 315,
@@ -663,16 +663,16 @@
       "roundness": {
         "type": 3
       },
-      "seed": 1191072817,
+      "seed": 668702322,
       "strokeColor": "#2f9e44",
       "strokeStyle": "dashed",
       "strokeWidth": 2,
-      "updated": 1788164687854,
+      "updated": 1788242516266,
       "version": 1,
-      "versionNonce": 490325133
+      "versionNonce": 2051384778
     },
     {
-      "id": "mtgz33l6so9wx7kkmal",
+      "id": "mti9f8dcwenoxfg06qi",
       "type": "text",
       "x": 640,
       "y": 327,
@@ -697,15 +697,15 @@
       "originalText": "WIP limit บนบอร์ด",
       "roughness": 1,
       "roundness": null,
-      "seed": 943700586,
+      "seed": 1789806077,
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "WIP limit บนบอร์ด",
       "textAlign": "center",
-      "updated": 1788164687854,
+      "updated": 1788242516266,
       "version": 1,
-      "versionNonce": 2006681972,
+      "versionNonce": 311762827,
       "verticalAlign": "middle"
     },
     {
@@ -741,7 +741,7 @@
       "strokeColor": "#1864ab",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788164687854,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 770257379
     },
@@ -778,7 +778,7 @@
       "strokeColor": "#e8590c",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788164687854,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 1304979424
     },
@@ -815,12 +815,12 @@
       "strokeColor": "#2f9e44",
       "strokeStyle": "solid",
       "strokeWidth": 2,
-      "updated": 1788164687854,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 368501385
     },
     {
-      "id": "mtgz33l6refgaq4m2p",
+      "id": "mti9f8dc2os72unotj2",
       "type": "text",
       "x": 640,
       "y": 510,
@@ -845,15 +845,15 @@
       "originalText": "คอลัมน์เต็ม = หยุดดึงงานใหม่ ไปช่วยปิดงานที่ค้างก่อน (stop starting, start finishing)",
       "roughness": 1,
       "roundness": null,
-      "seed": 651195196,
+      "seed": 2046513826,
       "strokeColor": "#5b6b7f",
       "strokeStyle": "solid",
       "strokeWidth": 2,
       "text": "คอลัมน์เต็ม = หยุดดึงงานใหม่ ไปช่วยปิดงานที่ค้างก่อน (stop starting, start finishing)",
       "textAlign": "center",
-      "updated": 1788164687854,
+      "updated": 1788242516266,
       "version": 1,
-      "versionNonce": 1989443256,
+      "versionNonce": 2037377132,
       "verticalAlign": "middle"
     },
     {
@@ -888,7 +888,7 @@
       "strokeWidth": 1,
       "text": "สร้าง (Backlog)\n2026-08-03 09:00",
       "textAlign": "center",
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 1620801426,
       "verticalAlign": "middle"
@@ -925,7 +925,7 @@
       "strokeWidth": 1,
       "text": "เริ่มทำ (In Progress)\n2026-08-05 10:00",
       "textAlign": "center",
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 429236697,
       "verticalAlign": "middle"
@@ -962,7 +962,7 @@
       "strokeWidth": 1,
       "text": "เสร็จ (Done)\n2026-08-07 16:00",
       "textAlign": "center",
-      "updated": 1788164687853,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 608257442,
       "verticalAlign": "middle"
@@ -999,7 +999,7 @@
       "strokeWidth": 1,
       "text": "Lead time  ≈  WIP  ÷  Throughput",
       "textAlign": "center",
-      "updated": 1788164687854,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 1041175374,
       "verticalAlign": "middle"
@@ -1036,7 +1036,7 @@
       "strokeWidth": 1,
       "text": "To Do\n\n4 ใบ",
       "textAlign": "center",
-      "updated": 1788164687854,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 1863133998,
       "verticalAlign": "middle"
@@ -1073,7 +1073,7 @@
       "strokeWidth": 1,
       "text": "In Progress\n(WIP ≤ 3)\n3/3  เต็ม!",
       "textAlign": "center",
-      "updated": 1788164687854,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 1665705221,
       "verticalAlign": "middle"
@@ -1110,7 +1110,7 @@
       "strokeWidth": 1,
       "text": "Done\n\n9 ใบ",
       "textAlign": "center",
-      "updated": 1788164687854,
+      "updated": 1788242516266,
       "version": 1,
       "versionNonce": 1012207056,
       "verticalAlign": "middle"

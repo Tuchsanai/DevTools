@@ -1,0 +1,71 @@
+<!-- ===== 3 : 11 categories ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · TOOLCHAIN · 11 หมวดเครื่องมือ</div><h2>หมวดเครื่องมือในงานวิศวกรรมซอฟต์แวร์ <em>และชื่อจริงที่พบในอุตสาหกรรม</em></h2></div>
+  <div class="s-body top">
+    <table class="tbl sm">
+      <thead><tr><th style="width:40px">#</th><th style="width:250px">หมวดเครื่องมือ</th><th>งานที่ช่วย</th><th style="width:400px">ตัวอย่างชื่อจริง</th></tr></thead>
+      <tbody>
+        <tr><td class="mut">1</td><td><b>Requirements &amp; backlog</b></td><td>เก็บความต้องการ user story acceptance criteria และจัดลำดับความสำคัญ</td><td>Jira, Plane, Azure Boards</td></tr>
+        <tr><td class="mut">2</td><td><b>Modeling / design</b></td><td>ไดอะแกรม UML, ERD, wireframe, architecture decision</td><td>draw.io, Excalidraw, Figma, PlantUML</td></tr>
+        <tr><td class="mut">3</td><td><b>IDE / editor</b></td><td>เขียน แก้ ดีบัก และ refactor โค้ด</td><td>VS Code, IntelliJ IDEA, PyCharm</td></tr>
+        <tr><td class="mut">4</td><td><b>VCS &amp; hosting</b></td><td>ประวัติโค้ด branch, pull request, code review</td><td>Git, GitHub, GitLab, Bitbucket</td></tr>
+        <tr><td class="mut">5</td><td><b>Build &amp; CI</b></td><td>build, lint, test อัตโนมัติทุก commit</td><td>Jenkins, GitHub Actions, GitLab CI</td></tr>
+        <tr><td class="mut">6</td><td><b>Testing</b></td><td>unit, integration, end-to-end, load test</td><td>pytest, JUnit, Playwright, k6</td></tr>
+        <tr><td class="mut">7</td><td><b>Containers &amp; deploy</b></td><td>บรรจุ แจกจ่าย และรันแอปให้เหมือนกันทุกเครื่อง</td><td>Docker, Docker Compose, Kubernetes, Helm</td></tr>
+        <tr><td class="mut">8</td><td><b>Monitoring &amp; observability</b></td><td>log, metrics, trace, error alert</td><td>Prometheus / Grafana, Sentry, Loki</td></tr>
+        <tr style="background:var(--accw)"><td class="mut">9</td><td><b>PM / issue tracking</b> <span class="tag a">วิชานี้</span></td><td>work item, สถานะ, sprint, board, รายงานความคืบหน้า</td><td>Jira, Trello, <b>Plane</b>, GitHub Projects, Linear, Asana</td></tr>
+        <tr><td class="mut">10</td><td><b>Documentation / wiki</b></td><td>spec, PRD, ADR, runbook ที่ทีมค้นได้</td><td>Confluence, Notion, Plane Pages</td></tr>
+        <tr><td class="mut">11</td><td><b>Communication</b></td><td>คุยงาน แจ้งเตือนอัตโนมัติ ประชุม</td><td>Slack, Discord, Microsoft Teams</td></tr>
+      </tbody>
+    </table>
+    <div class="note"><b>เชื่อมกับสิ่งที่เรียนมาแล้ว</b> — หมวด 7 คือ Docker จากบทก่อน หมวด 9 คือแกนของวิชานี้ ส่วนหมวด 8 และ 11 จะปรากฏเมื่อเราต่อ webhook และอ่าน log ของ Plane</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 2 · หมวดเครื่องมือ 11 หมวด</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4 : application / tool / platform · SaaS vs self-hosted ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · นิยาม · APPLICATION · TOOL · PLATFORM</div><h2>Application · Tool · Platform <em>และทางเลือก SaaS กับ self-hosted</em></h2></div>
+  <div class="s-body top">
+    <div class="grid3">
+      <div class="card a"><h4>Application</h4><p>ซอฟต์แวร์ที่ผู้ใช้ปลายทางเปิดใช้เพื่อทำงานหนึ่งอย่างจนจบ มี UI มีข้อมูลของตัวเอง เช่น Plane, Jira, Trello</p></div>
+      <div class="card"><h4>Tool</h4><p>โปรแกรมทำงานเฉพาะจุด มักเรียกจากบรรทัดคำสั่งหรือถูกโปรแกรมอื่นเรียก เช่น git, docker, curl, jq</p></div>
+      <div class="card o"><h4>Platform</h4><p>ฐานที่ให้แอปและ tool อื่นมาต่อยอดผ่าน API และส่วนขยาย เช่น GitHub, Kubernetes — Plane ก็กลายเป็น platform เมื่อเราใช้ API และ webhook ของมัน</p></div>
+    </div>
+    <table class="tbl">
+      <thead><tr><th style="width:200px">ประเด็น</th><th>SaaS (ผู้ให้บริการรันให้)</th><th>Self-hosted (เรารันเอง เช่น Plane ใน LAB)</th></tr></thead>
+      <tbody>
+        <tr><td><b>ความเป็นเจ้าของข้อมูล</b></td><td>ข้อมูลอยู่บนเซิร์ฟเวอร์ผู้ให้บริการ ย้ายออกได้เท่าที่เขาให้ export</td><td>ข้อมูลอยู่ใน Postgres และ MinIO ใน volume ของเราเอง สำรองและย้ายได้ทั้งก้อน</td></tr>
+        <tr><td><b>ต้นทุน</b></td><td>ค่าใช้จ่ายรายหัวต่อเดือน ไม่ต้องดูแลเครื่อง</td><td>ค่าเครื่องและเวลาคนดูแล: อัปเกรด สำรองข้อมูล แก้ปัญหาเอง</td></tr>
+        <tr><td><b>การควบคุม</b></td><td>ตั้งค่าได้เท่าที่ผู้ให้บริการเปิดให้</td><td>ปรับ env ทุกค่า ปิด telemetry ต่อ SMTP และ OAuth (Google / GitHub / GitLab / Gitea) ได้</td></tr>
+        <tr><td><b>License</b></td><td>ตามสัญญาบริการ (Terms of Service)</td><td>ตาม open-source license — Plane ใช้ <b>AGPL-3.0</b>: ใช้และแก้ได้ฟรี แต่ถ้าให้บริการรุ่นที่แก้ผ่านเครือข่ายต้องเปิดซอร์สส่วนที่แก้</td></tr>
+      </tbody>
+    </table>
+    <div class="note a"><b>ในวิชานี้เลือก self-hosted</b> — เพื่อให้เห็นทุกชั้นของแอปตั้งแต่ proxy ถึงฐานข้อมูล ข้อแลกเปลี่ยนคือเราต้องเป็นผู้ดูแลระบบเอง ซึ่งเป็นทักษะที่ต้องการฝึกอยู่แล้ว</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 2 · Application · Tool · Platform · SaaS vs self-hosted</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 5 : single source of truth ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · SINGLE SOURCE OF TRUTH</div><h2>Single source of truth — <em>แอป PM คือศูนย์กลางของ toolchain</em></h2>
+    <div class="sub">ข้อมูลสถานะงานต้องมีแหล่งเดียว เครื่องมืออื่นทั้งหมดส่งเหตุการณ์เข้ามาหรือดึงข้อมูลออกไปจากแหล่งนั้น</div></div>
+  <div class="s-body">
+    <div class="g21 mid">
+      <div><div class="fig fix" style="height:430px"><img data-a="tracking_loop" alt="วงจรการติดตามงานที่มีแอป PM เป็นศูนย์กลาง"></div>
+        <div class="figcap">เหตุการณ์จาก toolchain ไหลเข้าแหล่งเดียว และรายงานทุกแบบคำนวณจากข้อมูลชุดเดียวกัน</div></div>
+      <div style="display:flex; flex-direction:column; gap:11px">
+        <div class="card a"><h4>Single source of truth</h4><p>ทุกคนดูสถานะงานจากที่เดียว ไม่ต้องถามในแชตหรือเปิดสเปรดชีตหลายไฟล์ เมื่อมีสองแหล่ง ข้อมูลจะขัดกันเสมอและไม่มีใครรู้ว่าอันไหนจริง</p></div>
+        <div class="card"><h4>แอป PM เป็น hub</h4><p>work item เชื่อมกับ commit และ pull request, ผล CI, error จาก monitoring และเอกสาร รายงานอย่าง burndown และ analytics จึงคำนวณจากข้อมูลจริง ไม่ใช่จากที่ใครจำได้</p></div>
+        <div class="card o"><h4>กาวที่เชื่อม = API · webhook · import/export</h4><p>แอปอื่น "push" เหตุการณ์เข้ามาผ่าน API หรือรับแจ้งผ่าน webhook และเรา "pull" ข้อมูลออกไปวิเคราะห์ด้วย export — Plane มีครบทั้งสาม (สไลด์จุดต่อขยาย)</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 2 · Single source of truth</span><span class="pg"></span></div>
+ </section>
+</div>

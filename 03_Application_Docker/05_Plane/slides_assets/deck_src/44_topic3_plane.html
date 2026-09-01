@@ -1,0 +1,249 @@
+<!-- ===== 16 : Scrum vs Kanban vs Scrumban ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · เปรียบเทียบ</div><h2>Scrum · Kanban · Scrumban — <em>เลือกตามลักษณะงาน ไม่ใช่ตามความนิยม</em></h2></div>
+  <div class="s-body top">
+    <table class="tbl" style="font-size:15.5px">
+      <thead><tr><th style="width:165px">มิติ</th><th>Scrum</th><th>Kanban</th><th>Scrumban</th></tr></thead>
+      <tbody>
+        <tr><td><b>บทบาท</b></td><td>PO · Scrum Master · Developers (บังคับ)</td><td>ไม่กำหนด ใช้บทบาทเดิมขององค์กร</td><td>มักคง PO ไว้ Scrum Master เป็นผู้ดูแล flow</td></tr>
+        <tr><td><b>Timebox</b></td><td>Sprint 1–4 สัปดาห์ ส่งมอบตอนจบ sprint</td><td>ไม่มี ส่งมอบต่อเนื่องเมื่องานพร้อม</td><td>วางแผนตาม cadence แต่ปล่อยงานต่อเนื่อง</td></tr>
+        <tr><td><b>WIP</b></td><td>จำกัดโดยอ้อมผ่านจำนวนงานใน sprint</td><td>จำกัดชัดเจนต่อคอลัมน์ (บังคับ)</td><td>ใช้ WIP limit ต่อคอลัมน์บนบอร์ด sprint</td></tr>
+        <tr><td><b>Metrics</b></td><td>velocity, sprint burndown</td><td>lead time, cycle time, throughput, CFD</td><td>ใช้ทั้งสองชุด เน้น cycle time</td></tr>
+        <tr><td><b>เปลี่ยนแปลงกลางคัน</b></td><td>รับได้เฉพาะที่ไม่กระทบ Sprint Goal โดยตกลงกับ PO</td><td>รับได้ทันทีที่มีที่ว่าง เพียงจัดลำดับใหม่</td><td>รับได้ถ้าไม่เกิน WIP limit</td></tr>
+        <tr><td><b>เหมาะกับ</b></td><td>พัฒนาผลิตภัณฑ์ใหม่ ทีมประจำ ต้องการจังหวะและการวางแผน release</td><td>งาน support / ops / maintenance ที่งานเข้าไม่สม่ำเสมอ</td><td>ทีม Scrum ที่มีงานแทรกมากจนแผน sprint พังบ่อย</td></tr>
+      </tbody>
+    </table>
+    <div class="note a" style="font-size:16px"><b>ใน Plane ทำได้ทั้งสามแบบ</b> — Scrum ใช้ Cycle + Estimates, Kanban ใช้ Board layout + states + policy ที่ทีมตกลง (CE ไม่มี WIP limit ในซอฟต์แวร์), Scrumban ใช้ทั้งสองอย่างร่วมกัน</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 17 : Scrum → Plane ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Scrum → Plane</div><h2>แมป Scrum ลง Plane — <em>Cycle · Module · Estimates · States · Page</em></h2></div>
+  <div class="s-body">
+    <div class="fig fix" style="height:460px"><img data-a="d01" alt="ตารางแมป Product Backlog, Sprint, Sprint Backlog, Epic, Story points, Board columns, DoD, Burndown ไปยัง Work items, Cycle, Module, Estimates, States, Page, Cycle progress ของ Plane"></div>
+    <div class="note a" style="font-size:14.5px"><b>ข้อสังเกต</b> — Plane ไม่ได้บังคับ Scrum: ปิด Cycles ก็ได้บอร์ด Kanban ล้วน; Module ใช้แทน epic/feature ที่กินเวลาหลาย cycle; "Time" ใน Estimates เป็นฟีเจอร์ของรุ่นเสียเงิน (CE มี points และ categories)</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 17b : ศัพท์ที่เหลือ + เปิดฟีเจอร์ก่อนใช้ ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Scrum → Plane · ศัพท์เพิ่มเติม</div><h2>ศัพท์ที่เหลือของ Plane — <em>Intake · Views · Labels · Priority · Sub-work items</em></h2>
+    <div class="sub">และเงื่อนไขก่อนใช้: โปรเจกต์ที่สร้างจาก UI เริ่มด้วย Cycles / Modules / Views / Intake ปิดทั้งหมด</div></div>
+  <div class="s-body top">
+    <div class="g11">
+      <table class="tbl sm" style="font-size:14.5px">
+        <thead><tr><th style="width:120px">Plane</th><th style="width:150px">ตรงกับ</th><th>ใช้ทำอะไร</th></tr></thead>
+        <tbody>
+          <tr><td><b>Intake</b></td><td>triage inbox</td><td>รับคำขอจากนอกทีมเข้า state กลุ่ม <code>triage</code> ให้ PO รับหรือปฏิเสธก่อนเข้า backlog</td></tr>
+          <tr><td><b>Views</b></td><td>saved filter (JQL ของ Jira)</td><td>บันทึก layout + filters + display properties ไว้ใช้ซ้ำ; Public / Private</td></tr>
+          <tr><td><b>Labels</b></td><td>labels / components</td><td>ป้ายหลายอันต่อ work item, จัดเป็นกลุ่ม label ได้; ใช้แทน class of service</td></tr>
+          <tr><td><b>Priority</b></td><td>priority</td><td>urgent / high / medium / low / none — ค่าเดียวต่อ work item</td></tr>
+          <tr><td><b>Sub-work items</b></td><td>tasks / sub-tasks</td><td>งานย่อยที่แตกจาก story ตอน Sprint Planning; มี parent ได้ 1 ใบ</td></tr>
+          <tr><td><b>Module</b></td><td>epic / feature</td><td>กลุ่มงานข้ามหลาย cycle มี status (planned … completed) และ lead</td></tr>
+          <tr><td><b>Page</b></td><td>wiki / Confluence</td><td>เอกสารร่วม: DoD, explicit policies, บันทึก retro</td></tr>
+        </tbody>
+      </table>
+      <div style="display:flex; flex-direction:column; gap:11px">
+        <div class="card w" style="padding:12px 15px"><h4>ก่อนใช้ต้องเปิดฟีเจอร์</h4><p>ฟอร์มสร้างโปรเจกต์ใน UI ส่งเพียงชื่อ identifier และ network; ค่าเริ่มต้นฝั่ง backend ของ <code>cycle_view / module_view / issue_views_view / intake_view</code> คือ False (เฉพาะโปรเจกต์ตัวอย่างที่ระบบ seed ให้ที่เปิดไว้) — เปิดที่ <b>Settings › Projects › Features</b> หรือ PATCH ผ่าน API ไม่เช่นนั้น API ตอบ "Cycles are not enabled for this project"</p></div>
+        <pre class="code sm"><span class="k">PATCH</span> /api/v1/workspaces/&lt;slug&gt;/projects/&lt;project_id&gt;/
+<span class="g">{"cycle_view": true, "module_view": true, "issue_views_view": true, "intake_view": true}</span></pre>
+        <div class="card a" style="padding:12px 15px"><h4>Estimates ก็ต้องตั้งค่าก่อน</h4><p><b>Settings › Projects › Estimates</b> เลือกระบบ 1 ระบบต่อโปรเจกต์ จึงจะใส่ point ให้ work item และสลับ burndown เป็นโหมด Estimates ได้ (ดูสไลด์ Estimates)</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 18 : States & state groups ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Plane · States</div><h2>State groups — <em>คอลัมน์ตั้งเองได้ แต่ต้องสังกัด 1 ใน 5 กลุ่ม</em></h2></div>
+  <div class="s-body top">
+    <div class="g11">
+      <div>
+        <table class="tbl sm" style="font-size:14.5px">
+          <thead><tr><th>state group</th><th>state เริ่มต้น</th><th>ความหมายต่อ metrics</th></tr></thead>
+          <tbody>
+            <tr><td><code>backlog</code></td><td>Backlog <span class="tag d">default</span></td><td>ยังไม่ตัดสินใจทำ ไม่นับใน WIP</td></tr>
+            <tr><td><code>unstarted</code></td><td>Todo</td><td>เลือกแล้ว รอเริ่ม (จุดเริ่ม lead time ถ้านับจากที่นี่)</td></tr>
+            <tr><td><code>started</code></td><td>In Progress</td><td>= WIP; จุดเริ่ม cycle time</td></tr>
+            <tr><td><code>completed</code></td><td>Done</td><td>เข้ากลุ่มนี้ → ตั้ง <code>completed_at</code> → burndown ลด</td></tr>
+            <tr><td><code>cancelled</code></td><td>Cancelled</td><td>ปิดโดยไม่ทำ ไม่นับเป็นความคืบหน้า</td></tr>
+            <tr><td class="req">+ started</td><td><b>In Review</b> (เพิ่มเอง)</td><td>Settings › Projects › States — คอลัมน์ Review แบบ Kanban</td></tr>
+          </tbody>
+        </table>
+        <div class="note" style="margin-top:12px; font-size:14.5px">มีกลุ่มที่ 6 <code>triage</code> ซ่อนอยู่สำหรับ Intake; state ที่เป็น default หรือยังมีงานอยู่ลบไม่ได้ · ชื่อ state ต้องไม่ซ้ำในโปรเจกต์ · ย้ายออกจาก completed แล้ว <code>completed_at</code> กลับเป็นค่าว่าง</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:11px">
+        <div class="card c" style="padding:12px 15px"><h4>CE ไม่มี WIP limit และ workflow rule</h4><p>ลากการ์ดจาก state ใดไป state ใดก็ได้ ไม่มีเงื่อนไข ไม่มีตัวเลขจำกัดต่อคอลัมน์ ("Automations and workflows" อยู่ในแผนเสียเงิน) — ทีมต้องบังคับด้วย <b>policy ที่เขียนไว้</b> + <b>สคริปต์ตรวจผ่าน API</b> (LAB 5)</p></div>
+        <div class="card d" style="padding:12px 15px"><h4>เทียบ Jira workflow</h4><p>Jira นิยาม transition ระหว่าง status พร้อม condition / validator / post-function และตั้ง WIP limit ต่อคอลัมน์บนบอร์ดได้ — ยืดหยุ่นแต่ตั้งค่าซับซ้อน Plane เลือกความเรียบง่าย: state group 5 กลุ่มคือ "workflow" ขั้นต่ำที่ทุกโปรเจกต์ใช้ร่วมกัน</p></div>
+        <div class="card a" style="padding:12px 15px"><h4>Automations ที่ CE มี</h4><p>auto-archive งานที่ปิดแล้วนานเกิน 1–12 เดือน และ auto-close งานที่ไม่ขยับไปยัง state กลุ่ม cancelled — ทำงานผ่าน Celery beat เวลา 01:00 UTC (≈08:00 น. ไทย)</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 19 : Board layout ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Plane · Board Layout</div><h2>บอร์ดใน Plane — <em>Group by · Sub-group by (swimlanes) · Display properties · Views</em></h2></div>
+  <div class="s-body top">
+    <div class="ui-screen-layout" style="grid-template-columns:minmax(0,1fr) 340px">
+      <div class="ui-screen-full"><img data-a="lab5:ui-board-swimlanes" alt="Board layout ของ Plane ที่ Group by = State และ Sub-group by = Assignees ทำให้เกิด swimlanes ต่อคน"></div>
+      <div class="ui-screen-notes" style="font-size:14px">
+        <div class="note a" style="font-size:14px"><b>Layouts</b> — List · Board · Calendar · Table · Timeline; บอร์ด Kanban คือ Board</div>
+        <div class="note" style="font-size:14px"><b>Group by</b> = คอลัมน์: State · Priority · Cycle · Module · Labels · Assignees · Created by · None</div>
+        <div class="note o" style="font-size:14px"><b>Sub-group by</b> = swimlanes (แถวขวาง) ชุดตัวเลือกเดียวกัน; แสดงเฉพาะเมื่อ layout = Board และ Group&nbsp;by&nbsp;≠&nbsp;None</div>
+        <div class="note" style="font-size:14px"><b>Display properties</b> 16 อย่าง เช่น key, priority, due date, estimate, labels, sub-work item count</div>
+        <div class="note w" style="font-size:14px"><b>Views</b> — บันทึก layout + filters + display ไว้ใช้ซ้ำ เลือก Public / Private; workspace view เป็น Table เท่านั้น</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 20 : Cycle = Sprint ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Plane · Cycles</div><h2>Cycle คือ Sprint ของ Plane — <em>วันที่ · progress · burndown ที่คำนวณจาก completed_at</em></h2></div>
+  <div class="s-body top">
+    <div class="figrow c11">
+      <div><div class="fig shot fix" style="height:365px"><img data-a="lab4:ui-cycle-burndown" alt="หน้า Cycle ใน Plane แสดงกราฟ burndown เส้น Current work items กับเส้นประ Ideal work items"></div>
+        <div class="figcap">แผง Progress ของ cycle: เส้นทึบ = งานที่เหลือจริง, เส้นประ = ideal; สลับ Work items / Estimates ได้ (ต้องเปิด Cycles ที่ Settings › Projects › Features ก่อน)</div></div>
+      <div>
+        <ul class="bul sm" style="font-size:15.5px">
+          <li>Cycle มีแค่ <b>start_date / end_date</b> ไม่มีคอลัมน์สถานะ — In progress / Yet to start / Completed / Draft คำนวณจากวันที่ตอน query (timezone ของโปรเจกต์)</li>
+          <li><b>Active cycle</b> = cycle ที่วันนี้อยู่ในช่วง — แผง Progress, Work item burndown, สถิติตาม priority / assignee / label อยู่ในหน้า Cycles ของโปรเจกต์; เมนู <b>Active cycles</b> ระดับ workspace ใน CE เป็นหน้า upsell</li>
+          <li><b>Progress</b> นับ work items ต่อ state group (backlog / unstarted / started / completed / cancelled) และผลรวม points</li>
+          <li><b>Burndown</b>: remaining(วัน) = total − Σ งานที่ <code>completed_at</code> ≤ วันนั้น; วันในอนาคตเป็น null · ideal = total × (1 − i/(n−1))</li>
+          <li>CE มีเฉพาะ <b>burndown</b> — ตัวเลือก Burn-up มีในโค้ดแต่ไม่ได้ต่อกับ UI; อยากได้ burn-up ต้องคำนวณเองจาก <code>completed_at</code> ของแต่ละใบ (<code>cycle_report.py</code> ใน LAB 4 คำนวณ burndown ด้วยสูตรเดียวกับ Plane)</li>
+          <li>จบ cycle แล้วงานที่ค้างใช้ <b>Transfer</b> ไป cycle ถัดไป (เก็บ snapshot ของสถิติเดิม) — ปุ่มนี้แสดงเฉพาะ cycle ที่ <b>Completed</b> (end_date ผ่านแล้ว)</li>
+          <li>ปฏิทินใน UI ไม่ให้เลือกวันในอดีต — cycle ที่ต้องเริ่มย้อนหลัง (เช่นใน LAB 4) สร้าง/แก้ผ่าน REST API</li>
+        </ul>
+      </div>
+    </div>
+    <pre class="code sm"><span class="c"># app API ที่เบราว์เซอร์ใช้ (session cookie) — ไม่ใช่ /api/v1 ของ API key</span>
+<span class="k">GET</span> /api/workspaces/&lt;slug&gt;/projects/&lt;project_id&gt;/cycles/&lt;cycle_id&gt;/analytics/?type=issues   <span class="d">(หรือ type=points)</span>
+<span class="g">{ "completion_chart": { "2026-09-01": 12, "2026-09-02": 10, "2026-09-03": 7, …, "2026-09-14": null }, "assignees": [...], "labels": [...] }</span>
+<span class="k">GET</span> /api/workspaces/&lt;slug&gt;/projects/&lt;project_id&gt;/cycles/&lt;cycle_id&gt;/progress/   <span class="d">→ จำนวนงานและ points ต่อ state group</span></pre>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 21 : Estimates ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Plane · Estimates</div><h2>Estimates ใน Plane — <em>points หรือ categories · Time เป็นของรุ่นเสียเงิน</em></h2></div>
+  <div class="s-body top">
+    <div class="figrow c11">
+      <div><div class="fig shot fix" style="height:400px"><img data-a="lab4:ui-estimates" alt="หน้าตั้งค่า Estimates ของโปรเจกต์ใน Plane เลือกระบบ Points เทมเพลต Fibonacci"></div>
+        <div class="figcap">Settings › Projects › Estimates — เปิดใช้ได้ 1 ระบบต่อโปรเจกต์ มี 2–6 ค่าต่อชุด</div></div>
+      <div>
+        <table class="tbl" style="font-size:15.5px">
+          <thead><tr><th style="width:110px">ระบบ</th><th>เทมเพลต</th><th>ใช้กับ burndown</th></tr></thead>
+          <tbody>
+            <tr><td><b>Points</b></td><td>Fibonacci 1 2 3 5 8 13 · Linear 1–6 · Squares 1 4 9 16 25 36 · Custom</td><td class="req">ได้ (โหมด Estimates)</td></tr>
+            <tr><td><b>Categories</b></td><td>T-shirt XS–XXL · Easy-to-hard · Custom</td><td>ไม่ได้ นับเป็นจำนวนงานเท่านั้น</td></tr>
+            <tr><td><b>Time</b></td><td>Hours</td><td class="mut">มีเฉพาะรุ่น EE — ใน CE v1.4.2 หน้าต่างสร้าง estimate มีให้เลือกแค่ Points กับ Categories (ยืนยันจากการรันจริงใน LAB 4)</td></tr>
+          </tbody>
+        </table>
+        <div class="note" style="margin-top:12px; font-size:14.5px">ฐานข้อมูลเก็บ <code>Estimate.type</code> เป็น <code>points</code> หรือ <code>categories</code> เท่านั้น และเก็บค่าของแต่ละจุดเป็นข้อความ (<code>EstimatePoint.value</code>) ที่ถูกแปลงเป็น float ตอนคำนวณ</div>
+      </div>
+    </div>
+    <div class="note a" style="font-size:15.5px"><b>ผลต่อ burndown</b> — กราฟ "Work items" ลด 1 หน่วยต่อใบไม่ว่างานใหญ่เล็ก; กราฟ "Estimates" ลดตาม points ที่ Done จึงสะท้อนความคืบหน้าจริงกว่า แต่ใช้ได้เมื่อระบบเป็น points และทุกใบใน cycle ถูกประเมินแล้ว — ใบที่ไม่มี estimate ถูกตัดออกจากกราฟทั้งตัวตั้งและตัวลบ (ผลเท่ากับนับเป็น 0)</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 22 : อีเวนต์ Scrum บน Plane ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Plane · Scrum Events ในทางปฏิบัติ</div><h2>รัน Scrum ทั้งวงจรบน Plane — <em>Page · Board · Cycle progress · Retro</em></h2></div>
+  <div class="s-body top">
+    <div class="g11">
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card d" style="padding:10px 14px"><h4>Sprint Planning → Cycle</h4><p>สร้าง Cycle 2 สัปดาห์ เขียน Sprint Goal ใน description ลาก work items เข้า ใส่ estimate ให้ครบก่อนวันแรก</p></div>
+        <div class="card a" style="padding:10px 14px"><h4>Definition of Done → Page ของโปรเจกต์</h4><p>เขียนเป็นเช็กลิสต์ ล็อก (lock) เมื่อทีมตกลงแล้ว ปรับได้เฉพาะใน Retrospective; ลิงก์ Page นี้ไว้ใน description ของทุก Cycle</p></div>
+        <div class="card o" style="padding:10px 14px"><h4>Daily Scrum → Board ของ active cycle</h4><p>เปิด Board layout กรอง Cycle = ปัจจุบัน Group by State; เดินจากคอลัมน์ขวาไปซ้าย ถามว่า "อะไรขวางไม่ให้ใบนี้ Done" ไม่ใช่ "เมื่อวานทำอะไร"</p></div>
+        <div class="card w" style="padding:10px 14px"><h4>Sprint Review → Cycle progress + รายการ Done</h4><p>เปิดแผง Progress ให้ stakeholder เห็นสัดส่วน completed / started / unstarted แล้วสาธิตงานที่ Done ทีละใบ; feedback บันทึกเป็น comment หรือ work item ใหม่ใน backlog</p></div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:6px">Retrospective → Page (Make a copy จากหน้าต้นแบบ) — โครงร่างเนื้อหา</div>
+        <pre class="code"><span class="y">Retro — Cycle 3 (2026-09-15)</span>
+<span class="k">Start</span>     <span class="c">สิ่งที่จะเริ่มทำ</span>
+  [ ] เขียน acceptance criteria ก่อน Planning <span class="d">@owner</span>
+<span class="k">Stop</span>      <span class="c">สิ่งที่จะเลิกทำ</span>
+  [ ] ดึงงานใหม่ทั้งที่ In Review ยังค้าง 4 ใบ
+<span class="k">Continue</span>  <span class="c">สิ่งที่ดีอยู่แล้ว</span>
+  [x] Daily Scrum หน้าบอร์ด 15 นาที ตรงเวลา
+<span class="k">Metrics</span>   velocity 20 · transfer 2 · scope เพิ่ม 1 ใบ
+<span class="k">Action items</span> <span class="c">→ สร้างเป็น work item ใน Cycle 4</span></pre>
+        <div class="note" style="margin-top:10px; font-size:14.5px">Page เป็น rich-text editor ที่แก้ร่วมกันแบบเวลาจริง (live server) ไม่ใช่ไฟล์ markdown; CE ไม่มีระบบเทมเพลต — ทีมเก็บหน้าต้นแบบไว้แล้วใช้ Make a copy; action item ที่ไม่กลายเป็น work item มักไม่เกิดขึ้นจริง</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 23 : anti-patterns ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Anti-patterns</div><h2>สิ่งที่มักพัง — <em>บอร์ดสวยแต่ทีมไม่ได้ทำ Agile</em></h2></div>
+  <div class="s-body top">
+    <div class="grid3">
+      <div class="card c"><h4><span class="n">1</span>Mini-waterfall</h4><p style="font-size:16px">ใน sprint 2 สัปดาห์: สัปดาห์แรกทุกคนเขียนโค้ด สัปดาห์สอง test ทั้งหมด — burndown ราบแล้วดิ่งตอนท้าย <b>แก้:</b> แตกงานให้แต่ละใบ Done ได้ใน 1–2 วัน</p></div>
+      <div class="card c"><h4><span class="n">2</span>Zombie Scrum</h4><p style="font-size:16px">มีอีเวนต์ครบแต่ไม่มีผล: Daily เป็นการรายงานหัวหน้า Review ไม่มี stakeholder Retro ไม่มี action item <b>แก้:</b> ทุกอีเวนต์ต้องจบด้วยการตัดสินใจอย่างน้อยหนึ่งข้อ</p></div>
+      <div class="card c"><h4><span class="n">3</span>WIP ระเบิด</h4><p style="font-size:16px">คนละ 4–5 ใบใน In Progress ทุกอย่าง "เกือบเสร็จ" แต่ไม่มีอะไร Done <b>แก้:</b> ตกลง WIP limit ต่อคน ต่อคอลัมน์ และให้สคริปต์แจ้งเตือนเมื่อเกิน</p></div>
+    </div>
+    <div class="grid3">
+      <div class="card w"><h4><span class="n">4</span>Velocity เป็น KPI</h4><p style="font-size:16px">ผู้บริหารตั้งเป้า "sprint หน้าต้อง 25" → ทีมประเมินเฟ้อ ตัด test ออกจาก DoD ตัวเลขขึ้นแต่ผลิตภัณฑ์แย่ลง <b>แก้:</b> วัดผลลัพธ์ต่อผู้ใช้ (outcome) ไม่ใช่ output</p></div>
+      <div class="card w"><h4><span class="n">5</span>บอร์ดไม่อัปเดต</h4><p style="font-size:16px">คุยกันใน chat แล้วค่อยมาย้ายการ์ดตอนสิ้นสัปดาห์ — burndown, activity log, lead time ทั้งหมดผิด <b>แก้:</b> "ถ้าไม่อยู่บนบอร์ด ถือว่ายังไม่เกิด" และย้ายการ์ดตอน Daily Scrum</p></div>
+      <div class="card w"><h4><span class="n">6</span>ทุก work item เป็น Urgent</h4><p style="font-size:16px">priority ถูกตั้งเป็น urgent เกือบทั้ง backlog จนไม่มีความหมาย ทีมเลือกงานตามความคุ้นเคยแทน <b>แก้:</b> PO จัดลำดับเดียว (sort order) และจำกัด urgent ให้ตรงกับ class of service Expedite</p></div>
+    </div>
+    <div class="note a" style="font-size:15.5px"><b>ตรวจจับได้จากข้อมูลใน Plane</b> — burndown ที่ราบ (1), activity log ที่ว่างหลายวันแล้วมีการย้ายการ์ดเป็นชุด (5), จำนวน work items ใน started ต่อ assignee (3), สัดส่วน urgent ใน Analytics (6)</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 24 : สรุป + สะพานไป LAB 4–5 ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · สรุป</div><h2>สรุปตอนที่ 3 — <em>จากทฤษฎี Scrum &amp; Kanban สู่ LAB 4–5</em></h2></div>
+  <div class="s-body top">
+    <div class="g11">
+      <div>
+        <ul class="bul">
+          <li>Agile คือการย่นระยะระหว่างตัดสินใจกับเห็นผลจริง<span class="s">4 คุณค่า 12 หลักการ — เครื่องมือต้องรับใช้หลักการ ไม่ใช่กลับกัน</span></li>
+          <li>Scrum = 3 บทบาท · 5 อีเวนต์ · 3 อาร์ติแฟกต์ + commitment<span class="s">วัดด้วย velocity และ burndown; DoD คือหัวใจของคำว่า Done</span></li>
+          <li>Kanban = visualize, limit WIP, manage flow<span class="s">Little's Law: ลด WIP แล้ว lead time สั้นลงโดยไม่ต้องเพิ่มคน</span></li>
+          <li>Plane: Cycle = sprint, states 5 กลุ่ม, Board + swimlanes, Estimates, Page<span class="s">CE ไม่มี WIP limit / workflow rule — ทีมต้องมี policy และสคริปต์</span></li>
+          <li>metrics ของ Plane คำนวณจาก <code>completed_at</code> และ state group<span class="s">ข้อมูลดีได้เท่ากับวินัยในการย้ายการ์ดบนบอร์ด</span></li>
+        </ul>
+        <div class="note" style="margin-top:14px; font-size:15px"><b>คำถามทบทวน</b> — (1) ทำไม burndown ของ Plane ถึงต้องพึ่ง <code>completed_at</code> ไม่ใช่ประวัติ state (2) ถ้า throughput 5 ใบ/วัน และ WIP 20 ใบ lead time เฉลี่ยเท่าไร (3) Sprint Goal ต่างจากรายการงานใน Cycle อย่างไร</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px">
+        <div class="card a"><h4><span class="tag a" style="margin-right:8px">LAB 4</span>Scrum บน Plane</h4><p style="font-size:16px">เปิด Estimates แบบ Fibonacci · สร้าง Cycle 2 สัปดาห์ผ่าน API · points จาก <code>backlog.csv</code> (<code>seed_backlog.py</code>) · time machine SQL กระจาย <code>completed_at</code> คนละวัน · อ่าน burndown ทั้งโหมด Work items และ Estimates · คำนวณ burndown/velocity เองด้วย <code>cycle_report.py</code> / <code>velocity.py</code></p></div>
+        <div class="card o"><h4><span class="tag o" style="margin-right:8px">LAB 5</span>Kanban บน Plane</h4><p style="font-size:16px">เพิ่ม state In Review · ตั้ง Board ให้มี swimlanes ตาม assignee · เขียน explicit policies และ WIP limit เป็น Page · เขียนสคริปต์ผ่าน API นับงานใน started แล้วเตือนเมื่อเกิน · บันทึกเป็น View และตั้ง Intake</p></div>
+        <div class="note w" style="font-size:15px"><b>ก่อนเริ่ม LAB</b> — เปิด Cycles / Views / Intake ที่ Settings › Projects › Features (โปรเจกต์ที่สร้างจาก UI ปิดไว้ทั้งหมด) และตั้ง Estimates; ทบทวนตารางแปลศัพท์ Scrum ↔ Plane; เตรียม backlog อย่างน้อย 10 user stories ที่ผ่าน INVEST</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>

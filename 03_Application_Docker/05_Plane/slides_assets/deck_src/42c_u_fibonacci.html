@@ -1,0 +1,43 @@
+<!-- ===== U-FIBONACCI 1 : นิยาม + กลไก ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Fibonacci · นิยาม · กลไก</div><h2>Modified Fibonacci — <em>ยิ่งงานใหญ่ ช่องว่างยิ่งกว้าง</em></h2></div>
+  <div class="s-body top">
+    <div class="quote" style="font-size:17.5px; padding:8px 16px">Modified Fibonacci คือสเกลสำหรับ <b>relative estimation</b> เช่น 1 · 2 · 3 · 5 · 8 · 13 · 20 · 40 · 100 — เลขถัดไปห่างขึ้น เพราะงานที่ใหญ่ขึ้นมักมีทั้งความซับซ้อนและสิ่งที่ยังไม่รู้มากขึ้น</div>
+    <div class="fig fix" style="height:314px; margin-top:6px"><img data-a="d30" alt="สเกล Modified Fibonacci ที่การ์ดและช่องว่างโตตามความไม่แน่นอน พร้อมเส้นแบ่งให้แตกงานตั้งแต่ 13 points และสเกลทางเลือก"></div>
+    <div class="figcap">เลือกค่าที่ใกล้ที่สุดในสเกลเดียวกันทั้งทีม · ถ้าประเมินได้ตั้งแต่ 13 points ให้แตกงานก่อนนำเข้า sprint</div>
+    <div class="grid2" style="margin-top:6px">
+      <div class="card a" style="padding:8px 14px"><h4>CampusEats · จากเทียบ → เลือก → แตก</h4><p style="font-size:15px; line-height:1.45">ใช้ “บันทึกร้านโปรด” = 3 pt เป็นงานอ้างอิง → “คูปองข้ามร้าน” มีทั้งกติกา การชำระเงิน และกรณีคืนเงิน จึงได้ 13 pt → แตกเป็นตรวจสิทธิ์ · ใช้คูปอง · คืนยอด แล้วประเมินแต่ละใบใหม่</p></div>
+      <div class="card c" style="padding:8px 14px"><h4>❌ เข้าใจผิด → ✅ ใช้ให้ถูก</h4><p style="font-size:15px; line-height:1.45"><b>ผิด:</b> 13 pt = 13 วัน หรือ 14 ต้องแม่นกว่า 13 · <b>ถูก:</b> point คือ “ขนาดสัมพัทธ์” ของทีม เลือกช่องที่ใกล้ที่สุด; เมื่อค่ามากให้ลดความไม่แน่นอนด้วยการแตกงาน ไม่เพิ่มความละเอียดปลอม</p></div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Fibonacci</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== U-FIBONACCI 2 : ใน Plane ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Fibonacci · ใน Plane</div><h2>ตั้งสเกลใน Plane — <em>Points · Categories และขอบเขตของ CE</em></h2>
+    <div class="sub">สเกลเชิงแนวคิดเลือกได้หลายแบบ แต่หนึ่งโปรเจกต์ใช้ระบบ Estimates ที่ active อยู่หนึ่งระบบ</div></div>
+  <div class="s-body top">
+    <div class="figrow c11">
+      <div>
+        <div class="fig shot fix" style="height:350px"><img data-a="t-estimates-settings" alt="Project settings หน้า Estimates แสดงระบบ Points แบบ Fibonacci ที่เปิดใช้งาน"></div>
+        <div class="figcap">Project settings › Estimates ของ Plane Lab — ระบบ Points แบบ Fibonacci เปิดใช้งานอยู่</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a" style="padding:10px 14px"><h4><span class="n">1</span>เลือก Points</h4><p style="font-size:15px">ไปที่ <b>Settings › Projects › Estimates</b> แล้วเลือกเทมเพลต Fibonacci <b>1 · 2 · 3 · 5 · 8 · 13</b>, Linear 1–6, Squares 1 · 4 · 9 · 16 · 25 · 36 หรือ Custom</p></div>
+        <div class="card o" style="padding:10px 14px"><h4><span class="n">2</span>CE ใช้อะไรได้</h4><p style="font-size:15px"><b>Points</b> และ <b>Categories</b> (T-shirt · Easy-to-hard · Custom) ใช้ได้; แต่ละชุดมี 2–6 ค่า ส่วน <b>Time / Hours</b> เป็นระบบของรุ่นเสียเงิน</p></div>
+        <div class="card d" style="padding:10px 14px"><h4><span class="n">3</span>นำค่าไปใช้กับงาน</h4><p style="font-size:15px">เมื่อเปิด Estimates แล้ว work item จะแสดงตัวเลือก estimate; ระบบ Points เชื่อมกับกราฟของ Cycle ในโหมด <b>Estimates</b> ส่วน Categories ไม่นำไปคำนวณกราฟ points</p></div>
+        <div class="note w" style="font-size:14.5px"><b>อย่าสับสนสองสเกล</b> — Modified Fibonacci ในภาพแนวคิดไปถึง 100 แต่เทมเพลต Fibonacci ของ Plane มี 6 ค่าและจบที่ 13; ถ้าต้องการค่าอื่นให้สร้าง Custom ภายในขอบเขต 2–6 ค่า</div>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:11px">
+      <div class="note" style="font-size:15px"><span class="tag a">LAB 4</span> เปิด Estimates แบบ Fibonacci → ใส่ points ให้ backlog CampusEats → นำงานเข้า Cycle → ดู burndown โหมด Estimates</div>
+      <div class="note a" style="font-size:15px"><b>ลองทำ / ทบทวน</b> — ถ้างานอ้างอิง = 3 pt และ story ใหม่ใหญ่ราว 4 เท่าแต่ยังไม่รู้กติกาคืนเงิน คุณจะเลือก 8 หรือ 13? เขียนเหตุผล 1 ประโยค; ถ้าเลือก 13 ให้เสนอวิธีแตกอย่างน้อย 2 ใบ</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Fibonacci</span><span class="pg"></span></div>
+ </section>
+</div>

@@ -80,7 +80,7 @@ Plane จาก LAB 1 ยังอยู่ไหม (ถ้าปิดเค�
 ```bash
 pc ps --format 'table {{.Name}}\t{{.Status}}'
 until [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/instances/)" = "200" ]; do sleep 5; done; echo READY
-cd ~/labwork/DevTools/03_Application_Docker/Plane/004_LAB_Scrum_Cycles
+cd ~/labwork/DevTools/03_Application_Docker/05_Plane/004_LAB_Scrum_Cycles
 source ~/venv-plane/bin/activate
 python planeapi.py
 ```

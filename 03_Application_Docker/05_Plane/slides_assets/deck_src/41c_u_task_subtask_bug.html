@@ -1,0 +1,103 @@
+<!-- ===== U-TASK-SUBTASK-BUG A : นิยาม ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Task · Subtask · Bug · นิยาม</div><h2>งานย่อยกับข้อบกพร่อง — <em>ชื่อคล้ายกัน แต่ตอบคนละคำถาม</em></h2>
+    <div class="sub">Task / Subtask บอกว่า “ต้องลงมือทำอะไร” ส่วน Bug บอกว่า “ระบบจริงต่างจากสิ่งที่ควรเป็นอย่างไร”</div></div>
+  <div class="s-body top">
+    <div class="g21" style="align-items:start">
+      <div>
+        <div class="quote" style="font-size:18px"><b>Task</b> คือขั้นตอนเชิงเทคนิคขนาดชั่วโมง–ไม่กี่วัน · <b>Subtask</b> คืองานลูกของ story หรือ task · <b>Bug</b> คือข้อบกพร่องที่ผลจริง (actual) ไม่ตรงกับผลที่คาด (expected) และต้องอธิบายวิธีทำให้เกิดซ้ำ</div>
+        <table class="tbl sm" style="font-size:15.5px; margin-top:12px">
+          <thead><tr><th style="width:120px">แนวคิด</th><th style="width:235px">ใช้เมื่อ</th><th>คำถามที่ต้องตอบ</th></tr></thead>
+          <tbody>
+            <tr><td><b>Task</b></td><td>แปลง story เป็นงานลงมือทำ</td><td>ใครทำอะไร และส่งมอบหลักฐานอะไร?</td></tr>
+            <tr><td><b>Subtask</b></td><td>task ยังใหญ่หรือมีหลายคนร่วมกัน</td><td>งานลูกนี้ขึ้นกับงานแม่ใด?</td></tr>
+            <tr><td><b>Bug</b></td><td>พฤติกรรมที่สังเกตได้ผิดจากความคาดหมาย</td><td>ทำซ้ำอย่างไร · ควรได้อะไร · ได้อะไรจริง?</td></tr>
+          </tbody>
+        </table>
+        <div class="grid2" style="margin-top:12px">
+          <div class="card c" style="padding:11px 14px"><h4>ก่อนแยกให้ชัด</h4><p>story ใหญ่ค้างอยู่ที่ “กำลังทำ” · งานซ้ำกัน · bug เขียนเพียง “ใช้ไม่ได้” จนผู้แก้ทำซ้ำไม่ได้</p></div>
+          <div class="card o" style="padding:11px 14px"><h4>เมื่อแยกให้ชัด</h4><p>เห็นขั้นลงมือ เจ้าของ และ dependency · defect มีหลักฐานพอให้ triage แก้ และทดสอบซ้ำได้</p></div>
+        </div>
+        <div class="note w" style="margin-top:10px; font-size:14.5px"><b>ความเข้าใจผิด</b> — ❌ Bug คือ “ชั้นที่เล็กกว่า Subtask” → ✅ Bug เป็น <b>ชนิดของปัญหา</b> จึงอยู่ระดับ story หรือ task ก็ได้; Subtask ต่างหากที่ต้องมีงานแม่</div>
+      </div>
+      <div>
+        <div class="fig photo" style="height:285px"><img data-a="real_bug_triage" alt="นักพัฒนาสองคนร่วมกันตรวจอาการผิดพลาดบนแล็ปท็อปและบันทึกข้อมูลเพื่อ triage bug"></div>
+        <div class="figcap">Bug triage เริ่มจากดูหลักฐานร่วมกัน ไม่ใช่เดาว่าใครเป็นคนทำผิด</div>
+        <div class="card a" style="margin-top:12px; padding:12px 15px"><h4>CampusEats · จาก story สู่สิ่งที่ทำได้</h4><p><b>Story:</b> นักศึกษาสั่งอาหารล่วงหน้าจากมือถือ · <b>Task:</b> สร้าง API รับคำสั่งซื้อ · <b>Subtask:</b> ตรวจเวลารับอาหาร · <b>Bug:</b> หน้าจอขึ้น “ยืนยันแล้ว” แต่ร้านไม่พบคำสั่งซื้อ</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Task · Subtask · Bug</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== U-TASK-SUBTASK-BUG B : กลไก ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Task · Subtask · Bug · กลไก</div><h2>แตกงานให้ติดตามได้ — <em>แล้วเขียน Bug ให้ผู้อื่นทำซ้ำได้</em></h2>
+    <div class="sub">ลำดับชั้นอธิบายส่วนประกอบของงาน; bug report อธิบายหลักฐานของความผิดปกติ</div></div>
+  <div class="s-body top">
+    <div class="figrow c21" style="align-items:start">
+      <div>
+        <div class="fig fix" style="height:350px"><img data-a="d28" alt="ลำดับ Epic ไป User Story ไป Task ไป Subtask โดย Bug อยู่ได้ที่ระดับ story หรือ task และการแมปเป็น Module, Work item, Sub-work item และ label bug ใน Plane CE"></div>
+        <div class="figcap">อ่านบนลงล่าง: งานใหญ่ถูกแบ่งจนทำเสร็จได้; เส้นประของ Bug หมายถึง defect ไม่ใช่ชั้นตายตัวในลำดับ</div>
+      </div>
+      <div>
+        <table class="tbl xs" style="font-size:14.5px">
+          <thead><tr><th style="width:108px">ส่วนของ Bug</th><th>ต้องเขียนอะไร</th></tr></thead>
+          <tbody>
+            <tr><td><b>Title</b></td><td>อาการ + จุดที่เกิด แบบค้นหาเจอ</td></tr>
+            <tr><td><b>Steps</b></td><td>ลำดับสั้น ๆ ที่ทำให้เกิดซ้ำ</td></tr>
+            <tr><td><b>Expected</b></td><td>พฤติกรรมที่ควรเกิดตามกติกา</td></tr>
+            <tr><td><b>Actual</b></td><td>ผลจริง รวมข้อความผิดพลาด</td></tr>
+            <tr><td><b>Environment</b></td><td>รุ่นแอป · browser/device · บัญชีทดสอบ</td></tr>
+            <tr><td><b>Severity</b></td><td>ผลกระทบรุนแรงเพียงใด</td></tr>
+            <tr><td><b>Priority</b></td><td>ทีมควรแก้ลำดับใดเมื่อเทียบกับงานอื่น</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="flow" style="margin-top:12px">
+      <div class="b"><div class="t">พบอาการ</div><div class="s">เก็บหลักฐาน</div></div><span class="ar">→</span>
+      <div class="b a"><div class="t">ทำซ้ำ</div><div class="s">steps · env</div></div><span class="ar">→</span>
+      <div class="b"><div class="t">Triage</div><div class="s">severity · priority</div></div><span class="ar">→</span>
+      <div class="b a"><div class="t">เชื่อมงาน</div><div class="s">parent · blocked by</div></div><span class="ar">→</span>
+      <div class="b"><div class="t">แก้และทดสอบซ้ำ</div><div class="s">expected = actual</div></div>
+    </div>
+    <div class="note a" style="font-size:14.5px"><b>เกณฑ์แตกงาน</b> — ถ้า task ยังส่งมอบหรือตรวจรับภายในไม่กี่วันไม่ได้ ให้แตกเป็น Subtask ที่มีผลลัพธ์ตรวจสอบได้; ถ้างานเพียง “เกี่ยวข้อง” หรือ “ขวางกัน” ให้ใช้ relation แทน parent</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Task · Subtask · Bug</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== U-TASK-SUBTASK-BUG D : ใน Plane ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Task · Subtask · Bug · ใน Plane</div><h2>Plane CE ใช้ Work item เดียว — <em>แยกความหมายด้วย parent · relation · label</em></h2>
+    <div class="sub">Story, Task และ Bug ไม่ใช่ work-item type แยกกันใน Community Edition v1.4.2</div></div>
+  <div class="s-body top">
+    <div class="grid3" style="gap:12px">
+      <div>
+        <div class="fig shot fix" style="height:205px"><img data-a="t-subworkitems" alt="ส่วน Sub-work items ของ work item แม่ แสดงรายการงานลูกและความคืบหน้า x/y"></div>
+        <div class="figcap">Sub-work items ของงานแม่: รายการงานลูกและ progress x/y</div>
+      </div>
+      <div>
+        <div class="fig shot fix" style="height:205px"><img data-a="t-relations" alt="ส่วน Relations ของ work item แสดง Blocked by และ Blocking"></div>
+        <div class="figcap">Relations ของ work item: Blocked by / Blocking</div>
+      </div>
+      <div>
+        <div class="fig shot fix" style="height:205px"><img data-a="t-labels-settings" alt="Project settings Labels แสดงรายการ label รวม bug"></div>
+        <div class="figcap">Project settings › Labels: รายการ label รวม <code>bug</code></div>
+      </div>
+    </div>
+    <div class="grid3" style="gap:12px; margin-top:11px">
+      <div class="card a" style="padding:10px 13px"><h4>Parent → Sub-work item</h4><p>งานลูกเก็บ <code>parent</code> ที่ชี้ไปยัง work item แม่หนึ่งใบ จึงใช้แสดงโครงสร้างและความคืบหน้า</p></div>
+      <div class="card o" style="padding:10px 13px"><h4>Relations → Dependency</h4><p>ใช้ <b>Blocking</b> / <b>Blocked by</b> เมื่อสองงานขวางกัน แต่ไม่ได้เป็นส่วนย่อยของกันและกัน</p></div>
+      <div class="card w" style="padding:10px 13px"><h4>Label + Priority + ID</h4><p>สร้าง label <code>bug</code>; บันทึก severity ใน description และใช้ priority จัดลำดับแก้ · รหัส <code>PLAB-…</code> มาจาก project identifier + <code>sequence_id</code> ซึ่งไม่ถูกนำกลับมาใช้ซ้ำ</p></div>
+    </div>
+    <div class="note a" style="margin-top:10px; font-size:14.5px"><b>LAB 3 · Mini exercise</b> — จาก story “นักศึกษาสั่งอาหารล่วงหน้า” ให้สร้าง Task 1 ใบ + Subtask 1 ใบ และ Bug 1 ใบที่มี steps / expected / actual / environment / severity; ติด label <code>bug</code>, ตั้ง priority และเชื่อม <b>Blocked by</b> ให้ถูกต้อง — <b>ทบทวน:</b> เหตุใด dependency จึงไม่ควรทำเป็น parent?</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Task · Subtask · Bug</span><span class="pg"></span></div>
+ </section>
+</div>

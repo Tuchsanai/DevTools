@@ -1,0 +1,100 @@
+<!-- ===== A : Story point — definition ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Story point · นิยาม</div><h2>Story point — <em>หน่วยเปรียบเทียบ “ขนาดของงาน” ที่ทีมสร้างร่วมกัน</em></h2>
+    <div class="sub">ใช้ตอบว่า story หนึ่งใหญ่กว่าอีก story มากเพียงใด โดยไม่แกล้งทำเป็นรู้จำนวนชั่วโมงที่แน่นอน</div></div>
+  <div class="s-body top">
+    <div class="g11" style="grid-template-columns:.95fr 1.05fr">
+      <div>
+        <div class="quote" style="font-size:20px">Story point คือค่าขนาดสัมพัทธ์ของงาน ซึ่งรวม <b>ความพยายาม · ความซับซ้อน · ความไม่แน่นอน</b> ไว้ในตัวเลขเดียว ไม่ใช่เวลาและไม่ใช่คะแนนผลงาน</div>
+        <div class="flow" style="gap:7px; margin-top:12px; flex-wrap:nowrap">
+          <div class="b" style="min-width:0; padding:9px"><div class="t">Effort</div><div class="s">งานมากแค่ไหน</div></div>
+          <span class="ar">+</span>
+          <div class="b a" style="min-width:0; padding:9px"><div class="t">Complexity</div><div class="s">แก้ยากแค่ไหน</div></div>
+          <span class="ar">+</span>
+          <div class="b" style="min-width:0; padding:9px"><div class="t">Uncertainty</div><div class="s">ยังไม่รู้อะไร</div></div>
+          <span class="ar">→</span>
+          <div class="b k" style="min-width:0; padding:9px"><div class="t">Relative size</div><div class="s">เช่น 2 · 5 · 8</div></div>
+        </div>
+        <div class="grid2" style="margin-top:12px">
+          <div class="card c" style="padding:11px 13px"><h4>ก่อนใช้ points</h4><p>ทีมเดาเป็นชั่วโมงเร็วเกินไป แล้วตัวเลขถูกตีความเป็นคำมั่นสัญญา ทั้งที่ยังมีงานแฝงและความเสี่ยง</p></div>
+          <div class="card o" style="padding:11px 13px"><h4>หลังใช้ points</h4><p>ทีมเทียบกับ story อ้างอิง ถกสิ่งที่เข้าใจไม่ตรงกัน และใช้ขนาดรวมช่วยเลือกงานเข้า sprint</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="fig photo fix" style="height:255px"><img data-a="real_estimation_whiteboard" alt="สมาชิกทีมเปรียบเทียบขนาดงานด้วยกระดาษหลายขนาดบนกระดาน"></div>
+        <div class="figcap">การประเมินเป็นบทสนทนาของทีม: กระดาษที่ใหญ่ขึ้นสื่อขนาดสัมพัทธ์ ไม่ได้สื่อจำนวนชั่วโมง</div>
+        <div class="card a" style="margin-top:10px; padding:11px 14px"><h4>CampusEats · เทียบงานจริง</h4><p><b>PBI-02 ดูเมนูและราคา = 2 pt</b> เป็นฐานอ้างอิง ส่วน <b>PBI-08 ชำระด้วย PromptPay QR = 8 pt</b> เพราะมีการเชื่อมต่อภายนอก ตรวจยอด และความไม่แน่นอนมากกว่า—ไม่ได้หมายความว่าใช้เวลา 4 เท่าพอดี</p></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="note c" style="font-size:15px"><b>❌ เข้าใจผิด</b> — “1 point = 1 วัน” หรือ “คนเก่งทำ 8 points ได้เร็วกว่าคนอ่อน”</div>
+      <div class="note o" style="font-size:15px"><b>✅ ความหมายที่ถูก</b> — point เป็นมาตรวัดร่วมของทีม ใช้เปรียบเทียบงานและคาดการณ์จากประวัติของทีมนั้นเอง</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Story point</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== B : story points + planning poker ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Story point · กลไก</div><h2>Story points — <em>ประเมินขนาดแบบสัมพัทธ์ ไม่ใช่เป็นชั่วโมง</em></h2></div>
+  <div class="s-body top">
+    <div class="g11">
+      <div>
+        <ul class="bul">
+          <li>Story point = ขนาดสัมพัทธ์ รวม ความพยายาม + ความซับซ้อน + ความไม่แน่นอน<span class="s">เลือก story อ้างอิงที่ทีมเข้าใจตรงกันเป็น "2 แต้ม" แล้วเทียบข้ออื่นกับมัน</span></li>
+          <li>ใช้ลำดับ Fibonacci ดัดแปลง 1 · 2 · 3 · 5 · 8 · 13 · 20 · 40 · 100<span class="s">ช่องห่างกว้างขึ้นตามขนาด เพราะของใหญ่เดายากกว่า ถกเถียงเรื่อง 13 กับ 14 จึงไม่มีประโยชน์</span></li>
+          <li>ประเมินโดย Developers ทั้งทีม ไม่ใช่ PO หรือหัวหน้า<span class="s">เปิดไพ่พร้อมกันเพื่อกันการคล้อยตามคนแรก (anchoring); การคุยระหว่างประเมินคือคุณค่าหลัก</span></li>
+          <li>ข้อที่ได้ ≥ 13 ควรแตกให้เล็กลงก่อนดึงเข้า sprint</li>
+          <li>ประเมินใหม่เมื่อรู้ข้อมูลเพิ่ม ไม่ใช่เมื่อทำช้ากว่าแผน<span class="s">point วัดขนาดของงาน ไม่ใช่ผลงานของคน</span></li>
+        </ul>
+        <div class="note a" style="margin-top:10px; font-size:15px"><b>ใน Plane</b> — ต้องเลือกระบบประเมินที่ Settings › Projects › Estimates ก่อน (1 ระบบต่อโปรเจกต์) จึงจะใส่ point ให้ work item ได้</div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:6px">Planning Poker 1 รอบ — story "รีเซ็ตรหัสผ่านทางอีเมล"</div>
+        <table class="tbl" style="font-size:15.5px">
+          <thead><tr><th>ขั้น</th><th>Dev A</th><th>Dev B</th><th>Dev C</th><th>Dev D</th><th>ผล</th></tr></thead>
+          <tbody>
+            <tr><td>1 เปิดไพ่พร้อมกัน</td><td>3</td><td>5</td><td>5</td><td class="req">13</td><td class="mut">ต่างกันมาก</td></tr>
+            <tr><td>2 สูงสุด/ต่ำสุดอธิบาย</td><td colspan="4">D: "ต้องตั้ง SMTP และกันคนเดาอีเมล" · A: "ลืมไปว่ามีเรื่องความปลอดภัย"</td><td class="mut">แลกข้อมูล</td></tr>
+            <tr><td>3 เปิดไพ่รอบสอง</td><td>5</td><td>5</td><td>8</td><td>5</td><td class="req">สรุป 5</td></tr>
+          </tbody>
+        </table>
+        <div class="note o" style="margin-top:12px; font-size:15px"><b>ผลพลอยได้</b> — ทีมค้นพบงานแฝง "ตั้งค่า SMTP" และเขียนเพิ่มเป็น sub-work item ก่อน sprint จะเริ่ม</div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="note w" style="font-size:15.5px"><b>ห้าม</b> แปลง point เป็นชั่วโมงด้วยสูตรตายตัว และห้ามเทียบ point ข้ามทีม — แต่ละทีมมีมาตรวัดของตนเอง</div>
+      <div class="note" style="font-size:15.5px"><b>ทางเลือก</b> — T-shirt sizing (S / M / L) เมื่อ backlog ยังหยาบ; ใน Plane คือ Estimates แบบ categories แต่จะใช้ทำ burndown แบบ points ไม่ได้</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Story point</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== D : Story point in Plane ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Story point · ใน Plane</div><h2>Plane Estimates — <em>ตั้งระบบ Points หนึ่งชุด แล้วผูกค่ากับแต่ละ work item</em></h2></div>
+  <div class="s-body top">
+    <div class="figrow c21" style="align-items:start">
+      <div>
+        <div class="fig shot fix" style="height:350px"><img data-a="t-estimates-settings" alt="Project settings หน้า Estimates แสดงระบบ Points แบบ Fibonacci ที่เปิดใช้งาน"></div>
+        <div class="figcap">Project settings › Estimates — ระบบ Points แบบ Fibonacci เปิดใช้งานและแสดงค่าที่ทีมเลือกใช้</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card a" style="padding:11px 13px"><h4><span class="n">1</span>เลือกระบบของโปรเจกต์</h4><p>Plane ผูก Estimate ที่เปิดใช้อยู่กับโปรเจกต์ได้ 1 ระบบ; แบบ <b>Points</b> เก็บชุดค่า เช่น 1 · 2 · 3 · 5 · 8 · 13</p></div>
+        <div class="card o" style="padding:11px 13px"><h4><span class="n">2</span>ใส่ค่าที่ work item</h4><p>ช่อง estimate ของแต่ละใบชี้ไปยัง <code>EstimatePoint</code>; ค่าอยู่ในฟิลด์ <code>value</code> และ Plane แปลงเป็นตัวเลขเมื่อต้องรวม points</p></div>
+        <div class="card w" style="padding:11px 13px"><h4><span class="n">3</span>อ่านความคืบหน้า</h4><p>หน้า Cycle สลับ burndown เป็น <b>Estimates</b> ได้เมื่อระบบที่เปิดใช้เป็น Points; Categories ไม่สร้างกราฟ points และ Time ไม่มีใน CE</p></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="note" style="font-size:15px"><span class="tag a">LAB 4</span> เปิด Estimates แบบ Fibonacci → ใส่ points ให้ backlog CampusEats → เลือกงานรวมไม่เกิน 20 points เข้า Cycle → เปรียบเทียบกราฟ Work items กับ Estimates</div>
+      <div class="note a" style="font-size:15px"><b>ลองทำ / ทบทวน</b> — ถ้า PBI-02 = 2 pt คุณจะให้ PBI-08 กี่ point และเพราะ effort, complexity หรือ uncertainty ข้อใด? จากนั้นบันทึกค่าที่ work item และอธิบายเหตุผล 1 ประโยค</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Story point</span><span class="pg"></span></div>
+ </section>
+</div>

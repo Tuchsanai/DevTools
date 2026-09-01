@@ -1,6 +1,7 @@
 # Slide markup guide — Plane_Agile_Slides.html
 
-The deck is assembled by `build_deck.py` from `00_head.html` (CSS) + every `[1-8]?_*.html` fragment (sorted by name) + `90_tail.html` (controls, overview, JS).
+The deck is assembled by `build_deck.py` from `00_head.html` (CSS) + every `[1-8]\d[a-z]?_*.html` fragment (sorted by name: `40_…` < `40a_…` < `40b_…` < `41_…`) + `90_tail.html` (controls, overview, JS).
+Concept units (see `CONCEPT_PLAN.md`) live in lettered fragments `NNx_u_<concept>.html`; sub-dividers inside a ตอน are `slide section` slides **without** `data-sec`.
 Each fragment is a sequence of **slots**. One slot = one slide, fixed **1280×720**. Nothing may overflow (check with `check_deck.py`).
 
 ```html
@@ -40,9 +41,10 @@ Each fragment is a sequence of **slots**. One slot = one slide, fixed **1280×72
 - Agenda (overview slide): `<div class="agenda"><div class="it" data-go="1"><div class="ix">01</div><div class="tt">ชื่อตอน<s>คำอธิบาย</s></div></div>…</div>` (`data-go` = ตอน number → JS jumps there).
 
 ## Assets (`<img data-a="KEY">`, embedded by build_deck.py)
-- Excalidraw diagrams (`slides_assets/*.svg`): key = prefix before the first `-`: `d01`…`d14` (d01 scrum→plane, d02 kanban metrics, d03 lab architecture, d04 waterfall vs agile, d05 code of ethics, d06 work-item anatomy, d07 request path, d08 ER model, d09 API import flow, d10 dashboard flow, d11 jira/trello/plane terms, d12 celery/webhook flow, d13 roles, d14 first-run flow).
+- Excalidraw diagrams (`slides_assets/*.svg`): key = prefix before the first `-`: `d01`…`d14` (original) and `d20`…`d42` (concept diagrams, sources in `scenes_src/*.py`, rendered with `tools/render_scene.py`) (d01 scrum→plane, d02 kanban metrics, d03 lab architecture, d04 waterfall vs agile, d05 code of ethics, d06 work-item anatomy, d07 request path, d08 ER model, d09 API import flow, d10 dashboard flow, d11 jira/trello/plane terms, d12 celery/webhook flow, d13 roles, d14 first-run flow).
 - Illustrations (`slides_assets/illustrations/*.svg`): key = file stem: `scrum_cycle`, `kanban_board`, `agile_manifesto`, `software_professional`, `sdlc_toolchain`, `jira_trello_plane`, `burndown_cfd`, `tracking_loop`, `hero_cover` (+ any added later).
-- Screenshots: `slides_assets/screenshots/<stem>.png` → key `<stem>`; lab images `00N_LAB_*/images/<stem>.png` → key `labN:<stem>`.
+- Screenshots: `slides_assets/screenshots/<stem>.png` → key `<stem>` (theory shots `t-*` from the continuous instance, each with a sibling `.txt` describing the screen); lab images `00N_LAB_*/images/<stem>.png` → key `labN:<stem>`.
+- Realistic photos (Codex image gen, 1600×900 JPEG): `slides_assets/photos/<stem>.jpg` → key `<stem>` (`real_*`). Use as `<div class="fig photo" style="height:400px"><img data-a="real_daily_standup" alt="…"></div>` — one per slide, concept illustration only, never as a stand-in for Plane's UI.
 - **Never depict Plane's UI with drawings — only real screenshots.** Illustrations are for concepts only.
 
 ## Rules that keep slides readable
