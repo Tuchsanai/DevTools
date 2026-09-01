@@ -1,0 +1,2 @@
+Plane Lab project estimates are enabled and use the Points system.
+The Fibonacci point values 1, 2, 3, 5, 8, and 13 are visible.

@@ -126,7 +126,7 @@ pc exec -T -e PGPASSWORD=plane plane-db psql -U plane -d plane -c \
 B1: **Pages → New page** ชื่อ `PRD — CampusEats Ordering` วางจาก `prd_template.md` (Problem · Goals · Non-goals · User stories · Metrics · References) · พิมพ์ `#` แล้วเลือก work item เพื่อฝังลิงก์ · สร้างอีกหน้า `Ordering — API design` · ที่หน้า PRD กดเมนู ⋯ → **Lock**
 
 ![รายการ Pages ของโปรเจกต์](./images/ui-pages-list.png)
-![PRD — CampusEats Ordering ที่ล็อกแล้ว](./images/ui-page-prd.png)
+![ด้านบนของ PRD — CampusEats Ordering ที่ล็อกแล้ว: ชื่อเต็ม พร้อม Problem, Goals และ Non-goals; เลื่อนลงต่อเพื่อดู reference PLAB-9](./images/ui-page-prd.png)
 
 ```bash
 pc exec -T -e PGPASSWORD=plane plane-db psql -U plane -d plane -c \

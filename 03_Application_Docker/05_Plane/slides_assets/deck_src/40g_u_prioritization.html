@@ -2,18 +2,19 @@
 <div class="slot">
  <section class="slide">
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Prioritization · นิยาม</div><h2>Prioritization คือ <em>การตัดสินใจว่า “ทำอะไรก่อน”</em></h2>
-    <div class="sub">ผลลัพธ์ต้องเป็น backlog ที่เรียงลำดับเดียว ไม่ใช่รายการงานที่ทุกใบติดป้ายว่า “ด่วน”</div></div>
+    <div class="sub">ผลลัพธ์ที่ต้องได้คือ backlog ที่เรียงเป็นลำดับเดียว ไม่ใช่กองงานที่ทุกใบติดป้ายว่า “ด่วน”</div></div>
   <div class="s-body top">
-    <div class="quote" style="font-size:21px">การจัดลำดับความสำคัญ คือการเปรียบเทียบงานทั้งกอง แล้วเลือก “ลำดับการทำ” ตามคุณค่า ต้นทุน ความเสี่ยง และเวลา<span class="who">— ทีมดึงงานจากบนลงล่างเมื่อมี capacity</span></div>
+    <div class="quote" style="font-size:19px; line-height:1.5"><b>นิยาม</b> — การจัดลำดับความสำคัญ คือการเปรียบเทียบงานทุกใบในกองเดียวกัน แล้วตัดสินใจ <b>“ลำดับที่จะลงมือทำ”</b> จากคุณค่า · ต้นทุน · ความเสี่ยงที่ลดลง และความเสียหายที่เกิดขึ้นถ้ายังไม่ทำ<span class="who">— ผลลัพธ์คือรายการเรียง 1, 2, 3… ที่ไม่มีอันดับเสมอกัน</span></div>
     <div class="grid3">
-      <div class="card c"><h4>ก่อน · ทุกอย่าง Urgent</h4><p>ทีมสลับงานตามคนที่เร่งเสียงดังที่สุด งานสำคัญจริงรออยู่ และไม่มีใครบอกได้ว่างานถัดไปคืออะไร</p></div>
-      <div class="card o"><h4>หลัง · มีลำดับเดียว</h4><p>ทุกคนเห็น trade-off เดียวกัน: ถ้างานใหม่ขึ้นอันดับ 1 งานเดิมต้องเลื่อนลง การเริ่มงานจึงเป็นการตัดสินใจร่วม ไม่ใช่การเดา</p></div>
-      <div class="card a"><h4>เหตุผล · ทรัพยากรมีจำกัด</h4><p>เวลาและกำลังคนไม่พอทำทุกอย่างพร้อมกัน ลำดับที่ชัดช่วยส่งคุณค่าก่อน ลดงานค้าง และทำให้เหตุผลตรวจสอบได้</p></div>
+      <div class="card c" style="padding:12px 15px"><h4>ปัญหา · ก่อนจัดลำดับ</h4><p>ทุกคำขอถูกเรียกว่า “ด่วน” ทีมจึงสลับไปทำงานของคนที่เร่งเสียงดังที่สุด งานที่มีคุณค่าจริงถูกดองไว้ และไม่มีใครตอบได้ว่าใบถัดไปคือใบไหน</p></div>
+      <div class="card o" style="padding:12px 15px"><h4>ผลลัพธ์ · หลังจัดลำดับ</h4><p>เหลือรายการเดียวที่เรียงแล้ว ทุกคนจึงเห็น trade-off เดียวกัน: ถ้างานใหม่ขึ้นอันดับ 1 ต้องบอกได้ว่าใบใดถูกเลื่อนลง</p></div>
+      <div class="card a" style="padding:12px 15px"><h4>ทำไมสำคัญ</h4><p>กำลังคนและเวลาในหนึ่งรอบมีจำกัด ลำดับที่ชัดทำให้ส่งคุณค่าสูงก่อน และทำให้คำว่า “ยังไม่ทำตอนนี้” มีเหตุผลรองรับ</p></div>
     </div>
-    <div class="g11">
-      <div class="card w" style="padding:12px 16px"><h4>CampusEats · ตัวอย่างจริง</h4><p>ก่อนเปิดเทอม 1 สัปดาห์ ทีมวาง “รีเซ็ตรหัสผ่าน” เหนือ “dark mode” เพราะผู้ใช้ที่เข้าไม่ได้สั่งอาหารไม่ได้ แม้ทั้งสองงานจะถูกขอมาเหมือนกัน</p></div>
-      <div class="card d" style="padding:12px 16px"><h4>ความเข้าใจผิด</h4><p><b>❌ Priority = ระดับความเร่งด่วนของแต่ละใบ</b><br><b>✅ Prioritization = เปรียบเทียบทุกใบจนได้ลำดับ 1, 2, 3…</b> ป้ายเดียวกันยังต้องเรียงกันอีกครั้ง</p></div>
+    <div class="g11" style="gap:18px">
+      <div class="card w" style="padding:12px 15px"><h4>ตัวอย่าง · CampusEats จาก LAB 3–4</h4><p>ทีมวางบั๊ก <b>PLAB-5 “ตะกร้าคำนวณราคาผิดเมื่อมีโปรโมชันซ้อนกัน”</b> (Urgent · label <code>bug</code>) ไว้เหนือ <b>“เขียนเอกสาร API สำหรับทีมร้านค้า”</b> (Low · label <code>docs</code>) เพราะบั๊กกระทบยอดเงินจริงทุกวันที่ยังไม่แก้ ส่วนเอกสารเลื่อนได้โดยยังไม่มีใครเสียหาย</p></div>
+      <div class="card d" style="padding:12px 15px"><h4>ความเข้าใจผิด · ❌ → ✅</h4><p><b>❌ ตั้ง priority ครบทุกใบแล้ว = จัดลำดับเสร็จ</b><br>✅ priority เป็นเพียงป้ายระดับที่ใช้ซ้ำได้ไม่จำกัด — งานที่เป็น Urgent พร้อมกันหลายใบยังไม่บอกว่าใบไหนก่อน; การจัดลำดับจบเมื่อได้ลำดับที่ไม่มีอันดับเสมอกัน</p></div>
     </div>
+    <div class="note" style="font-size:15px"><b>ลำดับเปลี่ยนได้ ไม่ใช่การกลับคำ</b> — Scrum Guide 2020 เรียก Product Backlog ว่า <b>emergent, ordered list</b> และให้ Product Owner รับผิดชอบการจัดลำดับ การเรียงใหม่จึงคือการใช้ข้อมูลล่าสุด</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Prioritization</span><span class="pg"></span></div>
  </section>
@@ -22,11 +23,21 @@
 <!-- ===== U-PRIORITIZATION B : กลไก ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Prioritization · กลไก</div><h2>หลายวิธีคิด — <em>แต่ต้องรวมเป็น backlog ที่เรียงลำดับเดียว</em></h2></div>
-  <div class="s-body">
-    <div class="fig fix" style="height:420px"><img data-a="d40" alt="แผนภาพ Value × Effort, MoSCoW และ WSJF ที่รวมผลเป็น backlog เรียงลำดับเดียว พร้อมการแมปไปยัง priority และ sort_order ใน Plane"></div>
-    <div class="figcap">Workflow: เปรียบเทียบงานด้วยเกณฑ์ที่เหมาะ → อธิบาย trade-off → รวมเป็นลำดับเดียว → ทบทวนเมื่อข้อมูลหรือ Cost of Delay เปลี่ยน</div>
-    <div class="note a" style="font-size:14.5px"><b>เลือกเครื่องมือให้ตรงคำถาม</b> — <b>Value × Effort</b> หา quick win · <b>MoSCoW</b> ตกลงขอบเขต Must/Should/Could/Won't · <b>WSJF</b> เรียงงานที่ Cost of Delay สูงแต่ใช้เวลาสั้นก่อน · <b>Class of Service</b> กำหนดกติกาการไหล เช่น Expedite ที่ใช้เฉพาะเหตุฉุกเฉิน</div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Prioritization · กลไก</div><h2>หลายวิธีคิด — <em>แต่ต้องรวมเป็น backlog ที่เรียงลำดับเดียว</em></h2>
+    <div class="sub">แต่ละกรอบตอบคำถามคนละข้อ จึงใช้เป็นเครื่องมือเปรียบเทียบเพื่อให้เหตุผลตรวจสอบได้ ไม่ใช่สูตรที่ตัดสินแทนทีม</div></div>
+  <div class="s-body top">
+    <div class="g21" style="grid-template-columns:1.80fr .70fr; gap:18px; align-items:start">
+      <div>
+        <div class="fig fix" style="height:428px"><img data-a="d40" alt="แผนภาพเปรียบเทียบสามกรอบจัดลำดับ ได้แก่ Value × Effort matrix, MoSCoW และ WSJF ที่รวมผลเป็น backlog เรียงลำดับเดียว พร้อมแถวล่างสรุปการแมปไปยัง priority และ sort_order ของ Plane"></div>
+        <div class="figcap">แผนภาพ d40 — สามกรอบป้อนเข้าสู่ backlog ที่เรียงลำดับเดียว แถวล่างคือการแมปกลับไปยัง Plane</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a" style="padding:9px 13px"><h4 style="font-size:16px"><span class="n">1</span>ทำงานอย่างไร</h4><p style="font-size:15.5px; line-height:1.5">ใช้เกณฑ์เดียวกันกับงานทั้งกอง แล้วเทียบทีละคู่จนเหลือลำดับเดียว</p></div>
+        <div class="card o" style="padding:9px 13px"><h4 style="font-size:16px"><span class="n">2</span>องค์ประกอบ</h4><p style="font-size:15.5px; line-height:1.5"><b>Value × Effort</b> หา quick win · <b>MoSCoW</b> ตกลงขอบเขต Must / Should / Could / Won't · <b>WSJF</b> = Cost of Delay ÷ Duration ค่ามากทำก่อน · <b>Class of Service</b> กติกาการไหล เช่น Expedite เฉพาะเหตุฉุกเฉิน</p></div>
+        <div class="card w" style="padding:9px 13px"><h4 style="font-size:16px"><span class="n">3</span>Workflow</h4><p style="font-size:15.5px; line-height:1.5">PO เสนอลำดับ → ทีมค้านด้วยต้นทุน ความเสี่ยง และ dependency → บันทึกลำดับลง backlog → ทบทวนเมื่อข้อมูลเปลี่ยน</p></div>
+      </div>
+    </div>
+    <div class="note o" style="font-size:14.5px"><b>ตัวอย่างการใช้ WSJF · CampusEats</b> — บั๊ก “ตะกร้าคำนวณราคาผิดเมื่อมีโปรโมชันซ้อนกัน” มี Cost of Delay สูง เพราะผู้ใช้จ่ายเงินผิดทุกวันที่ยังไม่แก้ และใช้เวลาแก้สั้น จึงได้คะแนนสูงกว่า “เขียนเอกสาร API สำหรับทีมร้านค้า” ที่เลื่อนได้โดยยังไม่มีความเสียหาย — ผลคือบั๊กขึ้นเป็นอันดับ 1</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Prioritization</span><span class="pg"></span></div>
  </section>
@@ -35,21 +46,24 @@
 <!-- ===== U-PRIORITIZATION D : ใน Plane ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Prioritization · ใน Plane</div><h2>Plane เก็บทั้ง <em>ระดับ priority และลำดับของ backlog</em></h2>
-    <div class="sub">ป้ายช่วยมองเห็นความเร่งด่วน ส่วนการเรียงลำดับบอกว่าทีมควรหยิบใบใดก่อน</div></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Prioritization · ใน Plane</div><h2>Plane แยก <em>ป้าย priority</em> ออกจาก <em>ลำดับของ backlog</em></h2>
+    <div class="sub">ป้ายบอกระดับความเร่งด่วนของใบเดียว ส่วนลำดับบอกว่าทีมหยิบใบใดก่อน — ทั้งสองอย่างตั้งค่าคนละที่</div></div>
   <div class="s-body top">
     <div class="figrow c11">
-      <div><div class="fig shot fix" style="height:278px"><img data-a="t-priority-picker" alt="เมนู Priority ของ work item ใน Plane ที่เปิดให้เลือก Urgent High Medium Low หรือ None"></div>
-        <div class="figcap">Work item → Priority — ตัวเลือกคงที่ Urgent · High · Medium · Low · None</div></div>
-      <div><div class="fig shot fix" style="height:278px"><img data-a="t-display-filters" alt="เมนู Display หรือ Filters ของ Plane ที่เปิดให้เลือก layout, group by และ order by Priority"></div>
-        <div class="figcap">Work items → Display/Filters — เลือก layout · group by · order by Priority</div></div>
+      <div><div class="fig shot fix" style="height:266px"><img data-a="t-priority-picker" alt="หน้า detail ของ work item PLAB-12 ใน Plane โดยเปิดเมนู Priority ที่มีตัวเลือก Urgent High Medium Low และ None"></div>
+        <div class="figcap">Plane Lab › Work Items › PLAB-12 · Priority — Urgent · High · Medium · Low · None</div></div>
+      <div><div class="fig shot fix" style="height:266px"><img data-a="t-display-filters" alt="เมนู Display ของ Board layout ใน Plane ที่เห็น Group by ตั้งเป็น States และ Order by ตั้งเป็น Priority"></div>
+        <div class="figcap">Plane Lab › Work Items · Board → Display — Group by = States · Order by = Priority</div></div>
     </div>
-    <div class="grid3">
-      <div class="card a" style="padding:11px 14px"><h4>1 · ระดับ</h4><p><code>priority</code> มี 5 ค่าและค่าเริ่มต้นคือ <code>none</code>; เมื่อเรียงตาม priority ระบบวาง urgent → high → medium → low → none</p></div>
-      <div class="card o" style="padding:11px 14px"><h4>2 · ลำดับ</h4><p>ลากจัดอันดับ backlog เพื่อแยกใบที่มี priority เท่ากันให้เป็นลำดับ 1, 2, 3…; ระบบเก็บตำแหน่งไว้ใน <code>sort_order</code></p></div>
-      <div class="card w" style="padding:11px 14px"><h4>3 · Expedite</h4><p>CE ไม่มี WIP limit: ใช้ Urgent + policy ของทีม และบันทึกตัวกรองเป็น <b>View</b>; จำกัดจำนวนงานด่วน ไม่ให้ทุกใบข้ามคิว</p></div>
+    <div class="grid3" style="gap:14px">
+      <div class="card a" style="padding:9px 13px"><h4 style="font-size:16.5px">ฟิลด์ · <code>priority</code></h4><p style="font-size:15.5px; line-height:1.5">enum ตายตัว 5 ค่า ค่าเริ่มต้น <code>none</code>; <b>Order by › Priority</b> เรียง urgent → high → medium → low → none และใบที่ระดับเท่ากันเรียงต่อด้วย <b>ใบที่สร้างล่าสุดก่อน</b></p></div>
+      <div class="card o" style="padding:9px 13px"><h4 style="font-size:16.5px">ลำดับ · <code>sort_order</code></h4><p style="font-size:15.5px; line-height:1.5">ลำดับจริงอยู่คนละฟิลด์: ตั้ง <b>Order by › Manual</b> แล้วลากใบงาน — Plane เขียน <code>sort_order</code> ใหม่เป็นค่ากึ่งกลางของใบบนกับใบล่าง; การแก้ priority ไม่ขยับลำดับ</p></div>
+      <div class="card w" style="padding:9px 13px"><h4 style="font-size:16.5px">ฟีเจอร์ที่เกี่ยวข้อง · Views</h4><p style="font-size:15.5px; line-height:1.5">บันทึกฟิลเตอร์ Priority = Urgent, High เป็น <b>View</b> (LAB 5 ตั้งชื่อ “Expedite lane”) และใช้ <b>Group by › Priority</b> ดูว่างานด่วนไปกองอยู่คอลัมน์ใด</p></div>
     </div>
-    <div class="note a" style="font-size:14.5px"><b>LAB 5 · Mini exercise</b> — นำ 5 งาน CampusEats มาเรียงก่อน–หลัง อธิบายเกณฑ์ของอันดับ 1 แล้วสร้าง View “Expedite lane” ที่กรอง Urgent/High · <b>คำถาม:</b> ถ้าทุกใบเป็น Urgent ทีมยังรู้หรือไม่ว่าควรหยิบใบไหนต่อ?</div>
+    <div class="grid2" style="gap:14px">
+      <div class="note w" style="font-size:14.5px"><b>ข้อจำกัด CE · Plane v1.4.2</b> — priority เป็น enum แก้ไขไม่ได้ · ไม่มีฟิลด์คะแนน WSJF · ไม่มี WIP limit ทีมต้องเขียนกติกาจำกัดใบ Expedite ไว้ใน Page เอง</div>
+      <div class="note a" style="font-size:14.5px"><b><span class="tag a">LAB 5</span> แบบฝึกหัด</b> — PBI-04 “สั่งอาหารและรับหมายเลขออเดอร์” (Urgent) ต้องรอ PBI-03 “เพิ่มเมนูลงตะกร้า” (High) ควรวางใบใดไว้อันดับ 1 และบันทึกความสัมพันธ์นี้ใน Plane อย่างไร</div>
+    </div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Prioritization</span><span class="pg"></span></div>
  </section>

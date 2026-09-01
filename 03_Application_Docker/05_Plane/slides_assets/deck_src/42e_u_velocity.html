@@ -6,12 +6,12 @@
   <div class="s-body top">
     <div class="g11">
       <div style="display:flex; flex-direction:column; gap:12px">
-        <div class="quote">Velocity คือ <mark>ผลรวม Story Points ของ work items ที่ผ่าน Definition of Done</mark> ภายใน Sprint หนึ่งรอบ งานที่ยังไม่ Done นับเป็น 0
+        <div class="quote">Velocity คือ <mark>ผลรวม Story Points ของ work items ใน Sprint ที่ผ่าน Definition of Done</mark> ภายในรอบนั้น ใบที่ยังไม่ Done ไม่นับ แม้เริ่มทำแล้ว
           <span class="who">หน่วย: points / sprint · เป็นมาตรวัดเฉพาะของทีมนั้น</span></div>
         <ul class="bul sm">
           <li><b>ทำไมสำคัญ</b> — ทำให้ Sprint Planning และ release forecast อิงความสามารถที่เคยเกิดขึ้นจริง</li>
           <li><b>ปัญหาที่แก้</b> — แทนการเดาว่า “น่าจะรับได้ 30 points” ด้วยช่วงจากหลาย Sprint ล่าสุด</li>
-          <li><b>เงื่อนไข</b> — ทีมต้องใช้สเกล points และ Definition of Done เดิมอย่างสม่ำเสมอ จึงเปรียบเทียบข้ามเวลาได้</li>
+          <li><b>เงื่อนไข</b> — สเกล points และ Definition of Done ต้องคงเส้นคงวาพออ่านแนวโน้มได้; เมื่อเปลี่ยน ให้บันทึกและตีความข้อมูลช่วงก่อน–หลังแยกกัน</li>
         </ul>
         <table class="tbl sm" style="font-size:15px">
           <thead><tr><th>ก่อนมีข้อมูล</th><th>หลังมีประวัติ 3+ Sprint</th></tr></thead>
@@ -37,9 +37,9 @@
   <div class="s-body top">
     <div class="fig fix" style="height:345px"><img data-a="d32" alt="กราฟ velocity 18, 22 และ 20 points ต่อ Sprint แล้วใช้ค่าเฉลี่ย 20 พยากรณ์ backlog 120 points เป็นประมาณ 6 Sprint"></div>
     <div class="grid3" style="gap:12px">
-      <div class="card a" style="padding:11px 14px"><h4><span class="n">1</span>วัดเมื่อ Sprint จบ</h4><p>รวม points เฉพาะ work items ที่ Done: 18 · 22 · 20; งานครึ่งเสร็จ = 0 และนับใหม่เมื่อมัน Done ใน Sprint ถัดไป</p></div>
-      <div class="card o" style="padding:11px 14px"><h4><span class="n">2</span>สร้างช่วงอ้างอิง</h4><p>ค่าเฉลี่ย 3 Sprint = 20 pt/sprint; ช่วง 18–22 สะท้อนความผันผวน จึงควร forecast เป็นช่วง ไม่ใช่วันเดียว</p></div>
-      <div class="card w" style="padding:11px 14px"><h4><span class="n">3</span>พยากรณ์และปรับใหม่</h4><p>120 pt ÷ 20 = 6 Sprint; ใช้เร็วสุด 22 และช้าสุด 18 ได้ 5.5–6.7 Sprint แล้วคำนวณใหม่เมื่อ backlog หรือข้อมูลล่าสุดเปลี่ยน</p></div>
+      <div class="card a" style="padding:11px 14px"><h4><span class="n">1</span>วัดเมื่อ Sprint จบ</h4><p>รวม points เฉพาะ work items ที่ Done: 18 · 22 · 20; งานครึ่งเสร็จ = 0 และนับเต็มใบใน Sprint ที่งานนั้น Done</p></div>
+      <div class="card o" style="padding:11px 14px"><h4><span class="n">2</span>สร้างช่วงอ้างอิง</h4><p>ค่าเฉลี่ย 3 Sprint = 20 pt/sprint; ช่วง 18–22 สะท้อนความผันผวน จึงควร forecast เป็นช่วง ไม่ใช่ค่าจุดเดียว</p></div>
+      <div class="card w" style="padding:11px 14px"><h4><span class="n">3</span>พยากรณ์และปรับใหม่</h4><p>120 pt ÷ 20 = 6 Sprint; ช่วงสถานการณ์อย่างง่ายจาก 22 และ 18 ได้ 5.5–6.7 Sprint แล้วคำนวณใหม่เมื่อ backlog หรือข้อมูลล่าสุดเปลี่ยน</p></div>
     </div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Velocity</span><span class="pg"></span></div>
@@ -53,11 +53,11 @@
     <div class="sub">ข้อมูลต้นทางอยู่ใน Cycle · work items · Estimates และ progress snapshot</div></div>
   <div class="s-body top">
     <div class="figrow c21">
-      <div><div class="fig shot fix" style="height:390px"><img data-a="t-cycle-completed" alt="หน้า Cycle Sprint 1 ที่ Completed พร้อมรายการ work items และแผง Progress snapshot"></div>
-        <div class="figcap">Project › Cycles › Sprint 1 (Completed) — รายการงานและ Progress snapshot หลัง Transfer งานค้าง</div></div>
+      <div><div class="fig shot fix" style="height:390px"><img data-a="t-cycle-completed" alt="หน้า Sprint 1 สถานะ Completed แสดงงานสามใบ ช่วงวันที่ 28–31 สิงหาคม 2026 และกราฟ progress snapshot"></div>
+        <div class="figcap">Plane Lab › Cycles › Sprint 1 — Completed · 28–31 ส.ค. 2026 · งาน 3 ใบ · Work items 3/8 และกราฟ snapshot สุดท้าย</div></div>
       <div style="display:flex; flex-direction:column; gap:10px">
-        <div class="card c" style="padding:11px 14px"><h4>ข้อจำกัดของ CE v1.4.2</h4><p>ไม่มี velocity chart สำเร็จรูป จึงต้องนำ cycle ที่จบแล้วมาต่อเป็นอนุกรม: velocity ของแต่ละ Cycle = Σ <code>estimate_point</code> ของงานที่มี <code>completed_at</code></p></div>
-        <div class="card a" style="padding:11px 14px"><h4>ข้อมูลที่ใช้ · Cycle + Estimates</h4><p><code>?cycle_view=completed</code> ให้ Completed Cycles; อ่านงานในแต่ละ Cycle พร้อม <code>estimate_point</code>. เมื่อกด Transfer, Plane เก็บ <code>progress_snapshot</code> ของ Cycle เดิมไว้ — ไม่ได้สร้างอัตโนมัติเมื่อวันจบผ่านไป</p></div>
+        <div class="card c" style="padding:11px 14px"><h4>ข้อจำกัดของ CE v1.4.2</h4><p>ไม่มี velocity chart สำเร็จรูป จึงคำนวณต่อ Completed Cycle: Σ <code>float(estimate_point.value)</code> ของงานสมาชิก Cycle ที่มี <code>completed_at</code>; ใบไม่มี estimate = 0</p></div>
+        <div class="card a" style="padding:11px 14px"><h4>ข้อมูลที่ใช้ · Cycles + Estimates</h4><p><code>GET …/cycles/?cycle_view=completed</code> แล้วอ่าน <code>…/cycle-issues/?expand=estimate_point</code>. Transfer เท่านั้นที่บันทึก <code>progress_snapshot</code>; <code>velocity.py</code> ใช้หา committed เดิม—วันจบผ่านไปไม่สร้างเอง</p></div>
         <div class="note a" style="font-size:14.5px"><b><span class="tag a">LAB 4</span> Mini exercise</b> — รัน <code>python velocity.py</code>: ถ้า Sprint 1 Done 6 pt และ backlog ที่ยังไม่ Done 36 pt จะเหลือกี่ Sprint? จากนั้นอธิบายว่าเหตุใดคำตอบ “ประมาณ 6 Sprint” จึงไม่ใช่ deadline</div>
       </div>
     </div>

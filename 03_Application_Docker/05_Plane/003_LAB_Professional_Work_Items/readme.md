@@ -206,7 +206,7 @@ pc exec -T -e PGPASSWORD=plane plane-db psql -U plane -d plane -c \
 
 ## 4. Activity คือหลักฐานความรับผิดชอบ
 
-ใน PLAB-4: พิมพ์ comment `เริ่มทำ validation วันนี้` · เปลี่ยน State **Backlog → In Progress** · Assignees = ตัวเอง แล้วเปิดแท็บ **Activity**
+ใน PLAB-4: เปลี่ยน State **Backlog → In Progress** · Assignees = ตัวเอง · พิมพ์ comment `เริ่มทำแล้ว: ออกแบบฟอร์มก่อน (PLAB-6 เสร็จ) — API กับ test คาดเสร็จ 3 ก.ย. ถ้าติดเรื่อง SMTP จะรายงานทันที` แล้วเปิดแท็บ **Activity**
 
 ![แท็บ Activity ของ PLAB-4 แสดง actor field old → new](./images/ui-activity-log.png)
 
@@ -252,15 +252,15 @@ pc exec -T -e PGPASSWORD=plane plane-db psql -U plane -d plane -c \
 
 dev1 ยังไม่มีบัญชี → ไป `http://localhost:8080/sign-up` กรอก `dev1@example.com` แล้วลองรหัสผ่าน `Password123!` ก่อน:
 
-![ฟอร์ม sign-up กรอก Password123! ก่อนกด Create account — ฝั่ง client ไม่เตือนอะไร](./images/ui-signup-weak-typed.png)
-![server ตอบ PASSWORD_TOO_WEAK](./images/ui-signup-weak-password.png)
+![ฟอร์ม sign-up ก่อน submit — ช่องรหัสผ่านถูก mask แต่ฝั่ง client ยังไม่แสดงคำเตือน](./images/ui-signup-weak-typed.png)
+![server ตอบ Please use a stronger password.](./images/ui-signup-weak-password.png)
 
 > 📝 **คำอธิบาย:** ฝั่ง client ตรวจแค่รูปแบบ (8 ตัว มีใหญ่/เล็ก/ตัวเลข/อักขระพิเศษ) แต่ **server ใช้ zxcvbn** ให้คะแนนความคาดเดายาก — `Password123!` ได้คะแนน 1 จึงถูกปฏิเสธ · ใช้ `Member-Lab-2569` (คะแนน 4) แทน — เป็นค่า LAB เท่านั้น
 
-สมัครด้วย `Member-Lab-2569` → onboarding **Create your profile** (ชื่อ `Dev`) → หน้า **Join invites or create a workspace** ติ๊ก DevTools Lab → **Continue**
+สมัครด้วย `Member-Lab-2569` → onboarding **Create your profile** เริ่มจากช่อง Name ว่างดังภาพ แล้วกรอกชื่อ `Dev` → หน้า **Join invites or create a workspace** ติ๊ก DevTools Lab → **Continue**
 
 ![ฟอร์ม sign-up กรอก dev1@example.com (อีเมลตามคำเชิญ) และรหัสผ่าน Member-Lab-2569 ก่อนกด Create account](./images/ui-signup-with-invite.png)
-![onboarding ของ dev1 — Create your profile](./images/ui-dev1-onboarding-profile.png)
+![onboarding ของ dev1 — Create your profile ก่อนกรอกชื่อ Dev](./images/ui-dev1-onboarding-profile.png)
 ![หน้า Join invites แสดงคำเชิญของ DevTools Lab](./images/ui-join-invites.png)
 ![ติ๊กคำเชิญแล้วกด Continue](./images/ui-join-invites-checked.png)
 ![Home ของ dev1 ใน workspace DevTools Lab](./images/ui-dev1-home.png)
@@ -271,7 +271,7 @@ dev1 ยังไม่มีบัญชี → ไป `http://localhost:8080/s
 
 > 📝 **คำอธิบาย:** คำเชิญค้นด้วยอีเมลจากฐานข้อมูล ไม่ต้องใช้ token ในอีเมล — เมื่อผู้ใช้อีเมลเดียวกันสมัครสำเร็จจะเห็นคำเชิญตอน onboarding (หรือที่ **Settings → Workspace invites**) · sign-up เปิดอยู่โดยปริยาย (god-mode → Authentication) แต่ถึงปิด คนที่ถูกเชิญก็ยังสมัครได้ (ดูทดลองเพิ่มเติม ก.)
 
-ตรวจบทบาทใน SQL แล้วมอบหมาย PLAB-4 ให้ dev1 (B1: Assignees → dev1) → B2 เปิด **Your work** เห็น PLAB-4:
+ตรวจบทบาทใน SQL แล้วเพิ่ม dev1 เป็นสมาชิกโปรเจกต์ก่อนมอบหมายงาน:
 
 ```bash
 pc exec -T -e PGPASSWORD=plane plane-db psql -U plane -d plane -c \
@@ -288,13 +288,15 @@ pc exec -T -e PGPASSWORD=plane plane-db psql -U plane -d plane -c \
 (2 rows)
 ```
 
-![มอบหมาย PLAB-4 ให้ dev1](./images/ui-assign-dev1.png)
-![Your work ของ dev1 แสดง PLAB-4](./images/ui-dev1-your-work.png)
-
 > 📝 **คำอธิบาย:** dev1 ต้องเป็นสมาชิกของ **โปรเจกต์** ด้วยจึงจะถูกมอบหมายได้ — โปรเจกต์ Public จะให้สมาชิก workspace เข้าร่วมเองได้ หรือ admin เพิ่มที่ **Project settings → Members → Add member**
 
 ![Project settings → Members → Add member](./images/ui-project-add-member.png)
 ![รายชื่อสมาชิกของโปรเจกต์ Plane Lab](./images/ui-project-members.png)
+
+จากนั้น B1: Assignees → dev1 แล้ว B2 เปิด **Your work** เห็น PLAB-4:
+
+![มอบหมาย PLAB-4 ให้ dev1](./images/ui-assign-dev1.png)
+![Your work ของ dev1 แสดง PLAB-4](./images/ui-dev1-your-work.png)
 
 ---
 
@@ -328,7 +330,7 @@ pc exec -T -e PGPASSWORD=plane plane-db psql -U plane -d plane -c \
 B1: **Pages → New page** ชื่อ `Code of Ethics Reflection — LAB 3` วางเนื้อหาจาก `ethics_cases.md` (3 กรณี) → B2 (dev1) เปิดหน้าเดียวกันแล้วเขียน "สิ่งที่มืออาชีพต้องทำเป็นอย่างน้อย" ขณะที่ admin เขียน "หลักการที่ถูกท้าทาย"
 
 ![Page สะท้อนคิดในมุมมอง admin](./images/ui-ethics-page-admin.png)
-![Page เดียวกันในมุมมอง dev1 ขณะแก้พร้อมกัน](./images/ui-ethics-page-dev1.png)
+![Page เดียวกันในมุมมอง dev1 หลังข้อความจาก admin sync เข้ามา](./images/ui-ethics-page-dev1.png)
 ![Page ที่เขียนครบทั้ง 3 กรณีพร้อมเลขข้อย่อย](./images/ui-ethics-page.png)
 
 > 📝 **คำอธิบาย:** ตัวอักษรของอีกคนโผล่ทันทีเพราะ Pages ใช้ **live server** (WebSocket `/live/`, LAB 2) · เฉลยย่ออยู่ท้าย `ethics_cases.md`: A → Product 3.10 + Management 5.11 (+ Public 1.03) · B → 2.06 + 1.03 + 6.13 · C → 2.05 + 4.01 · กติกา 4 ข้อเมื่อถูกขอให้ทำสิ่งที่ขัดจรรยาบรรณ: **ปฏิเสธพร้อมเหตุผล → เสนอทางเลือก → บันทึกเป็นลายลักษณ์อักษร → รายงานตามลำดับ** — "บันทึก" ใน Plane คือ comment/Page ที่มี actor และเวลา
@@ -436,11 +438,19 @@ PASS: LAB 3 — labels 4 · sub-work items 3 · relation blocked_by 1 · links 1
 B1 ไป `http://localhost:8080/god-mode/authentication/` ปิดสวิตช์ **Allow anyone to sign up even without an invite** → B2 (ออกจากระบบก่อน) ลองสมัคร `nobody@example.com`
 
 ![god-mode ปิดสวิตช์ sign-up](./images/ui-godmode-signup-off.png)
-![หน้า sign-up แจ้ง SIGNUP_DISABLED](./images/ui-signup-disabled.png)
+![หน้า sign-up แจ้ง Sign up disabled. Please contact your administrator.](./images/ui-signup-disabled.png)
 
-✅ **Expected output** — ข้อความ **SIGNUP_DISABLED** · จากนั้น B1 เชิญ `nobody@example.com` แล้วสมัครใหม่ → ผ่าน (กติกา: ไม่มีคำเชิญ = ห้าม, มีคำเชิญ = ได้) · **เปิดสวิตช์คืน** ก่อนไปข้ออื่น
+✅ **Expected output** — ข้อความ **Sign up disabled. Please contact your administrator.** · จากนั้น B1 เชิญ `nobody@example.com` แล้วสมัครใหม่ → ผ่าน (กติกา: ไม่มีคำเชิญ = ห้าม, มีคำเชิญ = ได้) · **เปิดสวิตช์คืน** ก่อนไปข้ออื่น
 
-### ข. เลขงานไม่ถูกใช้ซ้ำ
+### ข. sub-work items เสร็จหมด แต่ parent ไม่ Done เอง
+
+ย้าย sub-work items ทั้ง 3 ใบ (PLAB-6..8 ในภาพ) เป็น Done → PLAB-4 แสดง 3/3 (100%) แต่ state ของ PLAB-4 ยังเป็น In Progress
+
+![Sub-work items 3/3](./images/ui-subitems-3of3.png)
+
+> 📝 **คำอธิบาย:** Plane ไม่ปิด parent ให้ เพราะ "งานย่อยเสร็จ" ไม่เท่ากับ "เกณฑ์การยอมรับผ่าน" — ทีมต้องเขียนไว้ใน DoD ว่าใครเป็นคนปิด parent และตรวจอะไรก่อน
+
+### ค. เลขงานไม่ถูกใช้ซ้ำ
 
 ลบ work item ใบใดใบหนึ่งที่สร้างทดสอบ (เมนู ⋯ → Delete) แล้วสร้างใหม่:
 
@@ -453,21 +463,13 @@ pc exec -T -e PGPASSWORD=plane plane-db psql -U plane -d plane -c \
 
 ✅ **Expected output** — แถวของเลขที่ลบมี `deleted = t` และใบใหม่ได้เลขถัดไป ไม่ย้อนกลับมาใช้เลขเดิม (audit trail ไม่หาย)
 
-### ค. rate limit ของการ sign-in (ทางเลือก)
+### ง. rate limit ของการ sign-in (ทางเลือก)
 
 ```bash
 bash auth_rate_limit.sh
 ```
 
 ✅ **Expected output** — 10 ครั้งแรกถูก redirect กลับพร้อม `AUTHENTICATION_FAILED` ครั้งที่ 11 กลายเป็น **429** (`AUTHENTICATION_RATE_LIMIT=10/minute`) — ป้องกันการเดารหัสผ่าน
-
-### ง. sub-work items เสร็จหมด แต่ parent ไม่ Done เอง
-
-ย้าย sub-work items ทั้ง 3 ใบ (PLAB-6..8 ในภาพ) เป็น Done → PLAB-4 แสดง 3/3 (100%) แต่ state ของ PLAB-4 ยังเป็น In Progress
-
-![Sub-work items 3/3](./images/ui-subitems-3of3.png)
-
-> 📝 **คำอธิบาย:** Plane ไม่ปิด parent ให้ เพราะ "งานย่อยเสร็จ" ไม่เท่ากับ "เกณฑ์การยอมรับผ่าน" — ทีมต้องเขียนไว้ใน DoD ว่าใครเป็นคนปิด parent และตรวจอะไรก่อน
 
 ### จ. ทำ backlog ทั้งชุดให้ได้ 100%
 

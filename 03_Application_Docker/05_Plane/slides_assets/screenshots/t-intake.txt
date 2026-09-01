@@ -1,0 +1,3 @@
+Plane Lab Intake on the Closed tab, with the status filter chips Accepted, Declined and Duplicate.
+The list holds PLAB-22 "เปลี่ยนสีปุ่มสั่งอาหารเป็นสีม่วง" (Declined) and PLAB-20 "แอปเด้งออกตอนกดจ่ายเงินด้วย QR บน Android" (Accepted, selected); the detail pane shows dev1's submission, now in state Backlog, with the activity "admin accepted this work item from intake".
+Nothing is left Pending: LAB 5 triaged all three submissions, and the remaining Snoozed one (PLAB-21) lives under the Open tab, which this build cannot show in the same list as the closed ones.

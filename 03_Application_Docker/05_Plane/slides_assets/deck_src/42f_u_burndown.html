@@ -1,22 +1,19 @@
 <!-- ===== A : burndown definition ===== -->
 <div class="slot">
- <section class="slide figs">
+ <section class="slide">
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burndown · นิยาม</div><h2>Burndown คือกราฟ <em>“งานคงเหลือเทียบกับเวลา”</em></h2>
     <div class="sub">แกนนอน = วันใน Sprint · แกนตั้ง = งานที่ยังไม่ Done · เส้น ideal เป็นเพียงแนวอ้างอิง ไม่ใช่คำสั่งว่าทีมต้องเดินตามทุกวัน</div></div>
   <div class="s-body top">
-    <div class="g21 mid" style="grid-template-columns:1.05fr .95fr">
-      <div>
-        <div class="quote" style="font-size:20px">ทุกสิ้นวัน ถามเพียงว่า “เหลืองานอีกเท่าไร” แล้วพล็อตค่าลงกราฟ จึงเห็นความเสี่ยงของ Sprint ก่อนถึงวันสุดท้าย</div>
-        <div class="grid2" style="margin-top:12px">
-          <div class="card a"><h4>ทำไมสำคัญ</h4><p>ทีมเห็นแนวโน้มร่วมกันว่า Sprint Goal ยังมีโอกาสสำเร็จหรือไม่ และคุยเรื่องการแตกงาน ช่วยกันปิดงาน หรือลด scope ได้เร็ว</p></div>
-          <div class="card w"><h4>ปัญหาที่แก้</h4><p>คำว่า “เสร็จ 80%” ตรวจสอบยากและมักค้างหลายวัน; burndown ลดเฉพาะเมื่อชิ้นงานผ่านเกณฑ์ Done จึงไม่ซ่อนงานเกือบเสร็จ</p></div>
-        </div>
-        <div class="note o" style="margin-top:12px"><b>CampusEats</b> — Sprint มี 40 points: ทีมทำโค้ดหน้าสั่งอาหารไปครึ่งหนึ่งแต่ยังไม่ผ่าน test ค่า remaining ยังเป็น 40; เมื่อ story 8 points ผ่าน Definition of Done จึงลดเหลือ 32</div>
-        <div class="note c" style="margin-top:10px"><b>เข้าใจผิด</b> — ❌ เส้นสูงกว่า ideal = ทีมล้มเหลว &nbsp;→&nbsp; ✅ กราฟคือสัญญาณให้ตรวจสาเหตุและปรับแผน ไม่ใช่คะแนนประเมินคน</div>
-      </div>
-      <div><div class="fig photo fix" style="height:390px"><img data-a="real_metrics_review" alt="สมาชิกทีมร่วมกันทบทวนกราฟความคืบหน้าบนจอ"></div>
-        <div class="figcap">ทีมใช้กราฟเพื่อถามหาความเสี่ยงและสิ่งกีดขวาง ไม่ใช่จับผิดรายบุคคล</div></div>
+    <div class="quote" style="font-size:19px"><b>นิยาม</b> — Burndown คือกราฟอนุกรมเวลาที่พล็อตปริมาณงานคงเหลือใน Sprint เทียบกับวัน เพื่อช่วยคาดการณ์และเปิดบทสนทนาเรื่องความเสี่ยงก่อนถึงวันสุดท้าย</div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="card a"><h4>ทำไมสำคัญ</h4><p>ทำให้ทีมเห็นแนวโน้มร่วมกันและตรวจความคืบหน้าสู่ Sprint Goal ได้เร็วขึ้น แล้วคุยเรื่อง blocker การแตกงาน หรือการเจรจา scope กับ Product Owner โดยไม่ทำลาย Sprint Goal</p></div>
+      <div class="card w"><h4>ปัญหาที่แก้ · ก่อน → หลัง</h4><p><b>ก่อน:</b> “เสร็จ 80%” ตรวจสอบยากและค้างหลายวัน<br><b>หลัง:</b> เห็นจำนวนใบหรือ points ที่ยังไม่ผ่าน Definition of Done เป็นตัวเลขเดียวกันทั้งทีม</p></div>
     </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="note o"><b>ตัวอย่างจริง · CampusEats</b> — LAB 4 วาง 7 work items รวม 19 points ใน Sprint 1; PBI-01 ขนาด 3 points แม้เขียนโค้ดไป 80% ก็ยังไม่ลด จนผ่าน DoD จึงทำให้ remaining ลด 19 → 16 points</div>
+      <div class="note c"><b>ความเข้าใจผิด</b> — ❌ actual สูงกว่า ideal = ทีมล้มเหลว &nbsp;→&nbsp; ✅ เป็นเพียงสัญญาณให้ตรวจสาเหตุ; burndown ไม่พิสูจน์คุณค่า คุณภาพ หรือการบรรลุ Sprint Goal ด้วยตัวมันเอง</div>
+    </div>
+    <div class="note a" style="margin-top:10px"><b>ขอบเขตของแนวคิด</b> — Scrum Guide 2020 ไม่ได้บังคับใช้ burndown และไม่นับเป็นอาร์ติแฟกต์หรืออีเวนต์ของ Scrum; ทีมเลือกใช้เป็นเทคนิคพยากรณ์ได้</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Burndown</span><span class="pg"></span></div>
  </section>
@@ -28,20 +25,20 @@
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burndown · กลไก</div><h2>อ่าน burndown ให้เป็น — <em>ideal · actual · รูปแบบที่บอกปัญหา</em></h2></div>
   <div class="s-body top">
     <div class="figrow c21" style="grid-template-columns:1.45fr .55fr">
-      <div><div class="fig fix" style="height:430px"><img data-a="d33" alt="กราฟ Burndown เปรียบเทียบเส้นงานคงเหลือจริงกับเส้น ideal และกราฟ Burn-up ที่แยก Done สะสมจาก scope รวม"></div>
-        <div class="figcap">อ่านฝั่งซ้าย: ideal ลดสม่ำเสมอ · actual ลดเป็นขั้นเมื่อมีงาน Done และกระโดดขึ้นเมื่อ scope เพิ่ม</div></div>
+      <div><div class="fig fix" style="height:430px"><img data-a="d33" alt="แผนภาพแนวคิดเปรียบเทียบ Burndown ที่แสดงงานคงเหลือกับ Burn-up ที่แสดงงานเสร็จสะสมและ scope รวม"></div>
+        <div class="figcap">แผนภาพแนวคิด: อ่านฝั่งซ้ายเป็นหลัก; ฝั่งขวาเกริ่น Burn-up ซึ่งแยก Done สะสมออกจาก scope รวม</div></div>
       <div>
         <ul class="bul sm" style="font-size:15.5px">
           <li><b>องค์ประกอบ</b><span class="s">แกนเวลา · หน่วยงาน (ใบหรือ points) · ideal · actual</span></li>
-          <li><b>วิธีทำงาน</b><span class="s">เริ่มที่ total → ทุกวันหักเฉพาะงาน Done → สิ้น Sprint ควรเข้าใกล้ 0</span></li>
+          <li><b>วิธีทำงาน</b><span class="s">เริ่มที่ total → หักเฉพาะงาน Done ตามวัน → actual จึงมักลดเป็นขั้น</span></li>
           <li><b>ราบนานแล้วดิ่ง</b><span class="s">งานใหญ่ หรือ review/test กองปลาย Sprint</span></li>
-          <li><b>กระโดดขึ้น</b><span class="s">scope เพิ่มกลาง Sprint; ถ้าไม่จดเหตุการณ์จะตีความว่า “ทีมช้า” ผิดสาเหตุ</span></li>
-          <li><b>เหนือ ideal ต่อเนื่อง</b><span class="s">remaining ลดช้ากว่าแผน ควรตรวจ blocker และขนาดงาน</span></li>
-          <li><b>ต่ำกว่า ideal</b><span class="s">เสร็จเร็วกว่าแนวอ้างอิง แต่ยังต้องตรวจคุณภาพตาม Definition of Done</span></li>
+          <li><b>กระโดดขึ้น</b><span class="s">scope เพิ่ม; ต้องตรวจเหตุการณ์จริงและสมาชิกของ Sprint ก่อนตีความ</span></li>
+          <li><b>เหนือ ideal ต่อเนื่อง</b><span class="s">remaining ลดช้ากว่าแนวอ้างอิง—ตรวจ blocker และขนาดงาน</span></li>
+          <li><b>ต่ำกว่า ideal</b><span class="s">ลดเร็วกว่าแนวอ้างอิง แต่ยังต้องตรวจคุณภาพตาม DoD</span></li>
         </ul>
       </div>
     </div>
-    <div class="note a" style="font-size:15px"><b>workflow การอ่าน</b> — ดู “รูปทรง” → หาเหตุการณ์จริงบนบอร์ด → คุยเหตุและทางเลือกกับทีม; อย่าสรุปจากเส้นเดียว เพราะ burndown ไม่บอกเองว่างานติดที่ใครหรือขั้นใด</div>
+    <div class="note a" style="font-size:15px"><b>Workflow การอ่าน</b> — ดู “รูปทรง” → หาเหตุการณ์จริงบนบอร์ด → คุยเหตุและทางเลือกกับทีม; อย่าสรุปจากเส้นเดียว เพราะกราฟไม่บอกเองว่างานติดที่ใครหรือขั้นใด</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Burndown</span><span class="pg"></span></div>
  </section>
@@ -50,21 +47,21 @@
 <!-- ===== D : burndown in Plane ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burndown · ใน Plane</div><h2>Plane คำนวณ burndown จาก <em>Cycle · completed_at · Estimates</em></h2></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Burndown · ใน Plane</div><h2>Plane คำนวณจาก <em>Cycle · completed_at · Estimates</em></h2></div>
   <div class="s-body top">
     <div class="figrow c11">
-      <div><div class="fig shot fix" style="height:225px"><img data-a="t-cycle-active" alt="หน้า Sprint 2 ของ Plane แสดงแผง Progress และกราฟ burndown ในโหมด Work items"></div>
-        <div class="figcap">Sprint 2 ในหน้า Cycles ของโปรเจกต์: แผง Progress และ burndown โหมด Work items</div></div>
-      <div><div class="fig shot fix" style="height:225px"><img data-a="t-cycle-burndown-points" alt="หน้า Sprint 2 ของ Plane แสดงกราฟ burndown ที่สลับเป็นโหมด Estimates"></div>
-        <div class="figcap">Cycle เดิมเมื่อสลับเป็น Estimates: เส้น remaining ใช้ผลรวม points</div></div>
+      <div><div class="fig shot fix" style="height:240px"><img data-a="t-cycle-active" alt="ภาพจริงหน้า Sprint 2 ของ Plane พร้อมรายการงาน แผง Progress 3 จาก 5 ใบ 8 จาก 15 points และ burndown โหมด Work items"></div>
+        <div class="figcap"><b>ภาพจริง</b> — Sprint 2: Progress 3/5 ใบ · 8/15 points · กราฟเลือก Work items</div></div>
+      <div><div class="fig shot fix" style="height:240px"><img data-a="t-cycle-burndown-points" alt="ภาพจริงหน้า Sprint 2 ของ Plane ที่สลับตัวเลือกกราฟ burndown เป็น Estimates"></div>
+        <div class="figcap"><b>ภาพจริง</b> — Cycle เดิม: กราฟเลือก Estimates เพื่อดูความคืบหน้าแบบ points</div></div>
     </div>
-    <div class="grid3" style="margin-top:10px">
-      <div class="card a"><h4><span class="n">1</span>เลือก Cycle</h4><p>เปิด Cycle ที่มีวันเริ่ม–จบ; แผง Progress ของ active cycle แสดงความคืบหน้าและกราฟตามวันในช่วงนั้น</p></div>
-      <div class="card o"><h4><span class="n">2</span>เลือกหน่วย</h4><p><b>Work items</b> นับใบละ 1; <b>Estimates</b> รวม point และใช้ได้เมื่อระบบ estimate ของโปรเจกต์เป็นชนิด points</p></div>
-      <div class="card w"><h4><span class="n">3</span>อัปเดต Done</h4><p><code>remaining(d) = total − Σ completed_at ≤ d</code>; ย้ายเข้า state กลุ่ม completed แล้วเส้นลด ส่วน cancelled ไม่ถูกหักออก</p></div>
+    <div class="grid3" style="margin-top:8px">
+      <div class="card a"><h4>ใน Plane · เมนูและข้อมูล</h4><p><b>Plane Lab → Cycles → Sprint 2 → Progress</b>; เมื่อย้าย work item เข้า state กลุ่ม <code>completed</code> โมเดล <code>Issue</code> จะตั้ง <code>completed_at</code></p></div>
+      <div class="card o"><h4>ฟีเจอร์ที่เกี่ยวข้อง</h4><p><b>Work items</b> นับใบละ 1; <b>Estimates</b> รวมค่า <code>EstimatePoint.value</code> เฉพาะใบที่มี point ในระบบ Points ที่เปิดใช้กับโปรเจกต์</p></div>
+      <div class="card w"><h4>สูตรของ Plane ต่อวัน d</h4><p><code>R_items = N − #Done≤d</code><br><code>R_pts = Σpoint − Σpoint_Done≤d</code><br>เส้น ideal คำนวณในหน้าเว็บจาก total</p></div>
     </div>
-    <div class="note w" style="margin-top:10px"><b>ข้อควรระวัง</b> — เปิดงานกลับจาก completed จะล้าง <code>completed_at</code> และงานกลับมาเป็น remaining; จึงต้องย้าย state ตามเหตุการณ์จริง ไม่ใช่ย้ายรวบยอดปลาย Sprint</div>
-    <div class="note a" style="margin-top:8px"><b><span class="tag a">LAB 4</span> Mini exercise</b> — ดูกราฟสองภาพ: วันใด actual ไม่ลด? เส้น Work items กับ Estimates ต่างกันอย่างไร? แล้วเสนอการตรวจสอบบนบอร์ด 1 อย่างก่อนสรุปว่า Sprint ล่าช้า</div>
+    <div class="note w" style="margin-top:8px; font-size:14.5px"><b>ข้อจำกัด CE และกรณีขอบ</b> — CE มี burndown แต่ไม่ตรวจ DoD; ทีมต้องมีกติกาก่อนย้ายเข้า completed · Estimates ใช้ได้กับระบบ Points เท่านั้น · cancelled ยังอยู่ใน remaining · เปิดงานกลับจะล้าง <code>completed_at</code> · เพิ่มงานกลาง Cycle จะยกค่า total ของทุกวันย้อนหลัง</div>
+    <div class="note a" style="margin-top:7px; font-size:14.5px"><b><span class="tag a">LAB 4</span> Mini exercise</b> — จากเลข Progress ในภาพ งานคงเหลือกี่ใบและกี่ points? ช่วงที่ actual ราบหมายถึงอะไร และควรตรวจอะไรบนบอร์ดก่อนสรุปว่า Sprint ล่าช้า?</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Burndown</span><span class="pg"></span></div>
  </section>

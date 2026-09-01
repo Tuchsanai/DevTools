@@ -1,21 +1,21 @@
 <!-- ===== U-SDLC A : definition ===== -->
 <div class="slot">
  <section class="slide">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · SDLC · นิยาม</div><h2>SDLC คือ <em>แผนที่ร่วมตั้งแต่ “ต้องการอะไร” จนถึง “ดูแลต่ออย่างไร”</em></h2>
-    <div class="sub">Software Development Life Cycle ไม่ใช่ชื่อเครื่องมือ แต่คือวงจรของกิจกรรมที่ทำให้ซอฟต์แวร์หนึ่งระบบเกิดขึ้น ใช้งานได้ และพัฒนาต่อได้</div></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · SDLC · นิยาม</div><h2>SDLC คือ <em>วงจรร่วมของงาน ตั้งแต่ “ต้องการอะไร” จนถึง “ดูแลต่ออย่างไร”</em></h2>
+    <div class="sub">Software Development Life Cycle ไม่ใช่ชื่อเครื่องมือหรือชื่อวิธีทำงาน แต่คือชุดกิจกรรมที่ทำให้ซอฟต์แวร์หนึ่งระบบเกิดขึ้น ใช้งานได้ และพัฒนาต่อได้</div></div>
   <div class="s-body">
     <div class="g11 mid">
-      <div style="display:flex; flex-direction:column; gap:14px">
-        <div class="quote">“SDLC คือวงจรของกิจกรรมตั้งแต่ทำความเข้าใจความต้องการ ออกแบบ พัฒนา ทดสอบ ส่งมอบ ไปจนถึงบำรุงรักษา”<span class="who">หนึ่งวงจรจบเมื่อสิ่งที่เรียนรู้ย้อนกลับไปเป็นความต้องการรอบถัดไป</span></div>
+      <div style="display:flex; flex-direction:column; gap:13px">
+        <div class="quote">“SDLC คือวงจรของกิจกรรมที่ทีมทำซ้ำ ตั้งแต่ทำความเข้าใจความต้องการ ออกแบบ พัฒนา ทดสอบ ส่งมอบ ไปจนถึงบำรุงรักษา”<span class="who">หนึ่งรอบจบเมื่อสิ่งที่เรียนรู้จากการใช้งานจริง ย้อนกลับไปเป็นความต้องการของรอบถัดไป</span></div>
         <div class="grid2">
-          <div class="card c"><h4>ก่อนมีแผนที่ร่วม</h4><p>เริ่มเขียนโค้ดทั้งที่โจทย์ยังคลุมเครือ · ลืมงบทดสอบ · ส่งงานแล้วไม่มีคนเฝ้าระบบหรือแก้ปัญหา</p></div>
-          <div class="card o"><h4>เมื่อใช้ SDLC</h4><p>ทีมเห็นว่างานอยู่ช่วงใด ใครต้องส่งต่ออะไร และหลักฐานใดบอกว่าพร้อมไปขั้นถัดไป</p></div>
+          <div class="card c"><h4>ปัญหาเมื่อไม่มีวงจรร่วมกัน</h4><p>เริ่มเขียนโค้ดทั้งที่โจทย์ยังคลุมเครือ · ไม่มีใครกันเวลาไว้ให้การทดสอบ · ส่งมอบแล้วไม่มีเจ้าของเมื่อระบบล่มหรือผู้ใช้ขอเพิ่ม</p></div>
+          <div class="card o"><h4>สิ่งที่ได้เมื่อใช้ SDLC</h4><p>ทุกคนตอบตรงกันว่างานชิ้นนี้อยู่ขั้นใด ใครส่งต่อให้ใคร ต้องมีหลักฐานอะไรจึงข้ามไปขั้นถัดไป และ feedback จะกลับเข้ามาทางไหน</p></div>
         </div>
-        <div class="note a"><b>ทำไมสำคัญ</b> — SDLC ให้ภาษากลางแก่ผู้ใช้ นักวิเคราะห์ นักออกแบบ นักพัฒนา ผู้ทดสอบ และผู้ดูแลระบบ; เครื่องมือแต่ละชนิดจึงมีหน้าที่ช่วยคนละช่วงของวงจร</div>
+        <div class="note a"><b>ทำไมสำคัญ</b> — SDLC ทำให้ “งานที่ไม่ใช่การเขียนโค้ด” (สัมภาษณ์ผู้ใช้ · ออกแบบ · ทดสอบ · ดูแลหลังส่งมอบ) มีที่อยู่ในแผน มีเจ้าของ และถูกกันเวลาไว้ แทนที่จะโผล่เป็นงานแทรกตอนใกล้ส่ง; ทั้งยังเป็นภาษากลางของผู้ใช้ นักพัฒนา ผู้ทดสอบ และผู้ดูแลระบบ</div>
       </div>
       <div>
-        <div class="fig photo fix" style="height:390px"><img data-a="real_sdlc_requirements" alt="ทีมซอฟต์แวร์ร่วมกันทบทวนแบบหน้าจอและลำดับการทำงานบนกระดาน"></div>
-        <div class="figcap">ช่วง Requirements เริ่มจากการทำความเข้าใจปัญหาร่วมกัน ก่อนเปลี่ยนความต้องการให้เป็นงานที่ตรวจสอบได้</div>
+        <div class="fig photo fix" style="height:378px"><img data-a="real_sdlc_requirements" alt="ทีมซอฟต์แวร์ร่วมกันทบทวนแบบหน้าจอและลำดับการทำงานบนกระดาน"></div>
+        <div class="figcap">ขั้น Requirements เริ่มจากการทำความเข้าใจปัญหาร่วมกัน ก่อนเปลี่ยนความต้องการให้เป็นงานที่ตรวจสอบได้</div>
       </div>
     </div>
   </div>
@@ -27,28 +27,28 @@
 <div class="slot">
  <section class="slide figs">
   <div class="s-head"><div class="eyebrow">ตอนที่ 2 · SDLC · กลไก</div><h2>หกขั้นเชื่อมกันด้วย <em>ผลส่งมอบและ feedback</em></h2>
-    <div class="sub">แต่ละขั้นเปลี่ยนคำถามให้เป็นหลักฐานที่ทีมใช้ทำขั้นถัดไป—และย้อนกลับได้เมื่อพบสิ่งที่เข้าใจผิด</div></div>
+    <div class="sub">องค์ประกอบของวงจร = ขั้น (กิจกรรม) + artifact ที่ส่งต่อ + เส้นทาง feedback ที่ย้อนกลับได้เมื่อพบว่าเข้าใจผิด</div></div>
   <div class="s-body top">
     <div class="g21" style="grid-template-columns:1.42fr .58fr; gap:18px">
-      <div class="fig fix" style="height:368px"><img data-a="d20" alt="วงจร SDLC หกขั้นจาก Requirements ถึง Maintenance พร้อมลูกศร feedback และการเปรียบเทียบ Waterfall กับ Iterative และ Agile"></div>
+      <div class="fig fix" style="height:324px"><img data-a="d20" alt="วงจร SDLC หกขั้นจาก Requirements ถึง Maintenance พร้อมลูกศร feedback และการเปรียบเทียบ Waterfall กับ Iterative และ Agile"></div>
       <table class="tbl xs" style="font-size:14.5px">
-        <thead><tr><th>ขั้น</th><th>กิจกรรม → artifact</th></tr></thead>
+        <thead><tr><th>ขั้น</th><th>คำถามที่ต้องตอบก่อนไปต่อ</th></tr></thead>
         <tbody>
-          <tr><td><b>1 Requirements</b></td><td>คุยกับผู้ใช้ → user story · backlog</td></tr>
-          <tr><td><b>2 Design</b></td><td>ออกแบบข้อมูล/หน้าจอ → wireframe · API spec</td></tr>
-          <tr><td><b>3 Implementation</b></td><td>เขียนและ review → code · commit</td></tr>
-          <tr><td><b>4 Testing</b></td><td>ตรวจเงื่อนไขยอมรับ → test result</td></tr>
-          <tr><td><b>5 Deployment</b></td><td>build และปล่อย → image · release</td></tr>
-          <tr><td><b>6 Maintenance</b></td><td>เฝ้าดู แก้ ปรับปรุง → bug · request ใหม่</td></tr>
+          <tr><td><b>1 Requirements</b></td><td>ใครใช้ ได้ประโยชน์อะไร และวัด “ใช่แล้ว” อย่างไร</td></tr>
+          <tr><td><b>2 Design</b></td><td>ข้อมูลและหน้าจอเป็นอย่างไร ส่วนใดคุยกับส่วนใด</td></tr>
+          <tr><td><b>3 Implementation</b></td><td>โค้ดตรงกับที่ออกแบบไหม ผ่าน review จากใคร</td></tr>
+          <tr><td><b>4 Testing</b></td><td>เกณฑ์ยอมรับข้อใดผ่าน/ไม่ผ่าน หลักฐานอยู่ที่ไหน</td></tr>
+          <tr><td><b>5 Deployment</b></td><td>ผู้ใช้จริงได้รุ่นใด ตั้งค่าอย่างไร ย้อนกลับได้ไหม</td></tr>
+          <tr><td><b>6 Maintenance</b></td><td>ระบบยังทำงานดีอยู่ไหม เรื่องใหม่เข้าคิวที่ใด</td></tr>
         </tbody>
       </table>
     </div>
-    <div class="grid3" style="margin-top:10px">
-      <div class="card c" style="padding:10px 14px"><h4>Waterfall · รอบยาว</h4><p>ผ่านแต่ละขั้นครั้งใหญ่ตามลำดับ จึงได้ feedback จริงค่อนข้างช้า</p></div>
-      <div class="card a" style="padding:10px 14px"><h4>Iterative · แก้เป็นรอบ</h4><p>ทดลอง ทบทวน และแก้แบบเดิมซ้ำจนเหมาะขึ้น</p></div>
-      <div class="card o" style="padding:10px 14px"><h4>Agile · รอบสั้น + increment</h4><p>ทำทั้งหกกิจกรรมกับชิ้นเล็ก ส่งมอบได้ แล้วนำ feedback ไปจัดรอบถัดไป</p></div>
+    <div class="grid3" style="margin-top:8px">
+      <div class="card c" style="padding:9px 14px"><h4>Waterfall · ผ่านครั้งเดียว</h4><p>ผ่านหกขั้นตามลำดับเป็นรอบยาวรอบเดียว; feedback จากผู้ใช้จริงมาช่วงท้าย จึงแก้สิ่งที่เข้าใจผิดได้ช้า</p></div>
+      <div class="card a" style="padding:9px 14px"><h4>Iterative · ทำซ้ำเพื่อปรับ</h4><p>วนกลับมาแก้ของชิ้นเดิมหลายรอบจนดีขึ้น แต่ละรอบไม่จำเป็นต้องส่งมอบให้ผู้ใช้</p></div>
+      <div class="card o" style="padding:9px 14px"><h4>Agile · รอบสั้น + increment</h4><p>ทำครบหกกิจกรรมกับชิ้นเล็กทุกรอบ จบรอบได้ของที่ใช้งานได้จริง แล้วนำ feedback ไปจัดรอบถัดไป</p></div>
     </div>
-    <div class="note" style="font-size:14px"><b>เชื่อมกับภาพ d04</b> — ความต่างสำคัญไม่ใช่ “มีหรือไม่มีขั้น” แต่คือขนาดของรอบและเวลาที่ทีมได้รับ feedback</div>
+    <div class="note" style="font-size:13.5px"><b>อ่านภาพอย่างไร</b> — ลูกศรทึบ = ลำดับงานและ artifact ที่ส่งต่อ (user story → wireframe/API spec → code → ผลทดสอบ → release) · ลูกศรประแดง = feedback ที่บังคับให้ย้อนไปทบทวนความต้องการ · ลูกศรจากขั้น 6 กลับขั้น 1 = รอบถัดไป &nbsp;·&nbsp; ตำราแต่ละเล่มแบ่งจำนวนขั้นไม่เท่ากัน (บางเล่มรวม Deployment กับ Maintenance) ประเด็นคือกิจกรรมต้องครบและขนาดของรอบ ไม่ใช่จำนวนกล่อง</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 2 · SDLC</span><span class="pg"></span></div>
  </section>
@@ -58,26 +58,27 @@
 <div class="slot">
  <section class="slide">
   <div class="s-head"><div class="eyebrow">ตอนที่ 2 · SDLC · ตัวอย่าง</div><h2>CampusEats หนึ่งภาคการศึกษา — <em>เดินครบวงจร ไม่ใช่เขียนโค้ดอย่างเดียว</em></h2>
-    <div class="sub">โจทย์: ให้นักศึกษาสั่งอาหารล่วงหน้า ลดคิวหน้าร้าน และรับอาหารตามช่วงเวลาที่เลือก</div></div>
-  <div class="s-body top">
+    <div class="sub">โจทย์เดียวกับ LAB 3–4: ให้นักศึกษาค้นหาร้าน ดูเมนู ใส่ตะกร้า และสั่งอาหารได้ครบวงจร</div></div>
+  <div class="s-body top" style="gap:9px">
     <div class="g21" style="grid-template-columns:1.35fr .65fr">
-      <table class="tbl sm" style="font-size:15.5px">
-        <thead><tr><th style="width:150px">ช่วง</th><th>สิ่งที่ทีม CampusEats ทำให้เห็นจริง</th></tr></thead>
+      <table class="tbl sm" style="font-size:15px">
+        <thead><tr><th style="width:146px">ขั้น</th><th>สิ่งที่ทีม CampusEats ทำให้เห็นจริง</th></tr></thead>
         <tbody>
-          <tr><td><b>Requirements</b></td><td>สัมภาษณ์นักศึกษาและร้านค้า → backlog: เลือกร้าน · เมนู · ช่วงรับอาหาร · ชำระเงิน</td></tr>
-          <tr><td><b>Design</b></td><td>วาด flow การสั่งอาหาร ออกแบบหน้าจอและข้อมูล Order/Menu/Pickup slot</td></tr>
-          <tr><td><b>Implementation</b></td><td>พัฒนาเป็นชิ้นเล็ก เช่น “เลือกช่วงรับอาหาร” พร้อม review code</td></tr>
-          <tr><td><b>Testing</b></td><td>ตรวจเส้นทางปกติและกรณีเมนูหมด ช่วงเต็ม ยกเลิก และสั่งซ้ำ</td></tr>
-          <tr><td><b>Deployment</b></td><td>build รุ่นทดลอง ปล่อยให้กลุ่มนำร่องใช้ และบันทึกสิ่งที่เปลี่ยน</td></tr>
-          <tr><td><b>Maintenance</b></td><td>ติดตามปัญหา แก้ bug และเปลี่ยน feedback เช่น “แจ้งเตือนเมื่ออาหารพร้อม” เป็น backlog รอบใหม่</td></tr>
+          <tr><td><b>Requirements</b></td><td>สัมภาษณ์นักศึกษาและร้านค้า → Product Backlog 10 ใบ (PBI-01…10): ค้นหาร้าน · ดูเมนู · ตะกร้า · สั่งและติดตามออเดอร์ · ชำระเงิน</td></tr>
+          <tr><td><b>Design</b></td><td>วาด flow ค้นหาร้าน → ดูเมนู → ตะกร้า → ยืนยันออเดอร์ และออกแบบข้อมูล Restaurant / Menu / Order ก่อนลงมือเขียน</td></tr>
+          <tr><td><b>Implementation</b></td><td>ทำทีละชิ้นเล็ก: PBI-01 “ค้นหาร้านตามชื่อ” (3 pt) และ PBI-02 “ดูเมนูและราคา” (2 pt) พร้อม review code และอ้างเลขใบใน commit</td></tr>
+          <tr><td><b>Testing</b></td><td>ตรวจตาม acceptance criteria ของแต่ละใบ: พิมพ์ 2 ตัวอักษรแล้วเห็นผลใน 1 วินาที (PBI-01) · เมนูหมดต้องกดไม่ได้ (PBI-02) · เลขออเดอร์ไม่ซ้ำ (PBI-04)</td></tr>
+          <tr><td><b>Deployment</b></td><td>build รุ่นทดลองให้กลุ่มนำร่องใช้; ก่อนขึ้น staging ต้องปิด PBI-10 — ย้าย URL ฐานข้อมูลและ key ออกจากโค้ดไปเป็น environment variable</td></tr>
+          <tr><td><b>Maintenance</b></td><td>รับ bug และคำขอจากผู้ใช้จริง เช่น “แอปเด้งออกตอนกดจ่ายเงินด้วย QR” เข้าคิว; PBI-07 ติดตามสถานะออเดอร์แบบ realtime (8 pt) รอเข้ารอบถัดไป</td></tr>
         </tbody>
       </table>
-      <div style="display:flex; flex-direction:column; gap:13px">
-        <div class="card c"><h4>❌ “SDLC = Waterfall”</h4><p><b>✅ จริง:</b> SDLC บอกว่าต้องคิดกิจกรรมใดบ้าง ส่วน Waterfall เป็นเพียงวิธีจัดกิจกรรมเหล่านั้นเป็นรอบยาวแบบหนึ่ง</p></div>
-        <div class="card w"><h4>❌ “Agile ไม่ออกแบบและไม่ทดสอบ”</h4><p><b>✅ จริง:</b> Agile ยังออกแบบ พัฒนา ทดสอบ และส่งมอบ แต่ทำกับชิ้นเล็กในแต่ละ iteration เพื่อรับ feedback เร็ว</p></div>
-        <div class="note a"><b>ลองชี้จุดย้อนกลับ</b> — ถ้าทดสอบแล้วพบว่าร้านไม่สามารถรับออเดอร์เกิน 20 รายการต่อช่วง ทีมต้องย้อนกลับไปทบทวน Requirements และ Design ก่อนแก้ code</div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card c"><h4>❌ “SDLC = Waterfall”</h4><p><b>✅ จริง:</b> SDLC บอกว่ามีกิจกรรมใดบ้างที่ต้องทำ ส่วน Waterfall เป็นเพียงวิธีจัดกิจกรรมเหล่านั้นเป็นรอบยาวรอบเดียว — Agile ก็ใช้ SDLC ชุดเดียวกัน</p></div>
+        <div class="card w"><h4>❌ “Agile ไม่ออกแบบและไม่ทดสอบ”</h4><p><b>✅ จริง:</b> Agile ยังออกแบบ พัฒนา ทดสอบ และส่งมอบครบ แต่ทำกับงานชิ้นเล็กทุก iteration เพื่อรับ feedback เร็ว</p></div>
+        <div class="note a"><b>ลองชี้จุดย้อนกลับ</b> — ทดสอบ PBI-01 แล้วพิมพ์ชื่อบางส่วนไม่พบร้าน: เกณฑ์ยอมรับไม่เคยระบุว่าต้องค้นบางส่วนได้ ทีมจึงต้องย้อนไปแก้ที่ Requirements และ Design ก่อนแก้โค้ด</div>
       </div>
     </div>
+    <div class="note" style="margin-top:0; font-size:14px"><b>สังเกต</b> — งานที่ไม่ใช่ฟีเจอร์ใหม่ก็เป็นใบงานของวงจร: PBI-10 ย้าย config (tech-debt) มาจากขั้น Deployment · PBI-09 เอกสาร API (docs) มาจากผู้ใช้อีกกลุ่มคือทีมร้านค้า · bug หลังส่งมอบ = ความต้องการของรอบถัดไป</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 2 · SDLC</span><span class="pg"></span></div>
  </section>
@@ -86,25 +87,25 @@
 <!-- ===== U-SDLC D : Plane ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · SDLC · ใน Plane</div><h2>Plane เป็น <em>ศูนย์กลางติดตามงานตลอดวงจร</em>—ไม่ใช่เครื่องมือเขียนหรือ deploy code</h2>
-    <div class="sub">ทีมเชื่อมความต้องการ แผน สถานะ กลุ่มงาน และ feedback ไว้ในโปรเจกต์เดียว แล้วใช้เครื่องมือเฉพาะทางทำ Design · Code · Test · Deploy ต่อ</div></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · SDLC · ใน Plane</div><h2>Plane เป็น <em>ศูนย์กลางติดตามงานตลอดวงจร</em> — ไม่ใช่เครื่องมือเขียนหรือ deploy code</h2>
+    <div class="sub">ทีมเก็บความต้องการ แผน สถานะ กลุ่มงาน และ feedback ไว้ในโปรเจกต์เดียว แล้วใช้เครื่องมือเฉพาะทางทำ Design · Code · Test · Deploy ต่อ</div></div>
   <div class="s-body top">
     <div class="figrow c21" style="align-items:start">
       <div>
-        <div class="fig shot fix" style="height:365px"><img data-a="t-workitems-list" alt="หน้า Work items ของโปรเจกต์ PLAB ใน List layout จัดกลุ่มตาม State และแสดง backlog ของ CampusEats"></div>
-        <div class="figcap">PLAB › Work items — List layout จัดกลุ่มตาม State และแสดง backlog ของ CampusEats</div>
+        <div class="fig shot fix" style="height:372px"><img data-a="t-workitems-list" alt="หน้า Work items ของโปรเจกต์ Plane Lab ใน List layout จัดกลุ่มตาม State และแสดงงาน CampusEats หลายสถานะ"></div>
+        <div class="figcap">DevTools Lab › Plane Lab › Work items — List layout จัดกลุ่มตาม State เรียงตาม Priority; 20 ใบใน 7 สถานะ: Backlog 6 · Todo 2 · Ready 2 · In Progress 2 · In Review 1 · Done 7 · Cancelled 0 (เช่น PLAB-16 “ชำระเงินด้วย PromptPay QR”)</div>
       </div>
       <ul class="bul sm" style="font-size:15.5px">
-        <li><b>Requirements → Work items</b><span class="s">เก็บ backlog ของความต้องการเป็นหน่วยงานที่ติดตามได้</span></li>
-        <li><b>Planning → Cycles</b><span class="s">เลือก work items เข้าเวลาทำงานที่มีวันเริ่มและวันจบ</span></li>
-        <li><b>Tracking → States</b><span class="s">บอกว่างานอยู่ขั้นใดด้วย state ใน 5 กลุ่มหลัก</span></li>
-        <li><b>Release grouping → Modules</b><span class="s">รวมงานตาม feature/release; ไม่ได้ deploy ซอฟต์แวร์ให้เอง</span></li>
-        <li><b>Feedback → Intake + comments</b><span class="s">รับคำขอเข้าคิว triage และสนทนาบน work item</span></li>
+        <li><b>Requirements → Work items</b><span class="s">เก็บความต้องการเป็นใบงานที่มีเจ้าของ สถานะ และประวัติ</span></li>
+        <li><b>Planning → Cycles</b><span class="s">เลือก work items เข้า Cycle; ใส่วันเริ่ม–วันจบเมื่อใช้เป็น timebox หรือเว้นทั้งคู่ให้เป็น Draft</span></li>
+        <li><b>Tracking → States</b><span class="s">ตั้งชื่อ state เองได้ แต่ทุกอันสังกัด 1 ใน 5 กลุ่ม: backlog · unstarted · started · completed · cancelled (+ triage ที่ซ่อนไว้ให้ Intake)</span></li>
+        <li><b>Release grouping → Modules</b><span class="s">รวมงานตาม feature หรือ release เพื่อดูความคืบหน้าเป็นก้อน — ไม่ได้ deploy ซอฟต์แวร์ให้</span></li>
+        <li><b>Feedback → Intake + comments</b><span class="s">คำขอใหม่เข้าคิว triage ก่อนรับเข้าบอร์ด ส่วนการถกกันอยู่บน work item</span></li>
       </ul>
     </div>
-    <div class="grid2" style="margin-top:10px">
-      <div class="note w" style="font-size:14.5px"><b>Plane CE v1.4.2</b> — Cycles · Modules · Views · Intake ของโปรเจกต์ใหม่ปิดเป็นค่าเริ่มต้น (Pages เปิด); เปิดฟีเจอร์ที่ Project settings › Features เมื่อจะใช้</div>
-      <div class="note a" style="font-size:14.5px"><b><span class="tag a">LAB 1–2</span> Mini exercise</b> — นึกถึงโปรเจกต์ล่าสุดของคุณแล้วเขียนกิจกรรมอย่างละ 1 ข้อให้ครบ 6 ขั้น: งานใดหายไป และ artifact ใดควรเก็บเป็น work item หรือ comment ใน Plane?</div>
+    <div class="grid2" style="margin-top:9px">
+      <div class="note w" style="font-size:14px"><b>ขอบเขตของ Plane CE v1.4.2</b> — Plane ติดตามงาน แต่ไม่ build/test/deploy ให้ และไม่มีหน้า Integrations สำเร็จรูปกับ Git/CI (ต้องเชื่อมเองผ่าน REST API + webhook) · โปรเจกต์ที่สร้างใหม่ปิด Cycles · Modules · Views · Intake ไว้ (เปิดเฉพาะ Pages) เปิดทีละฟีเจอร์ที่ <b>Settings › Projects › Plane Lab › Features › Cycles</b></div>
+      <div class="note a" style="font-size:14px"><b><span class="tag a">LAB 1–2</span> Mini exercise</b> — เขียนตาราง 6 แถวของโปรเจกต์ล่าสุดที่คุณทำ: ขั้น · กิจกรรมที่ทำจริง · หลักฐานที่ยังเหลืออยู่ · ผู้รับผิดชอบ แล้วตอบ 2 ข้อ: ขั้นใดไม่มีหลักฐานเลย และหลักฐานนั้นควรไปอยู่ตรงไหนใน Plane (work item · comment · attachment · Page)</div>
     </div>
   </div>
   <div class="s-foot"><span>ตอนที่ 2 · SDLC</span><span class="pg"></span></div>

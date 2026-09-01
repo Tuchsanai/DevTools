@@ -2,7 +2,7 @@
 <div class="slot">
  <section class="slide">
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · WIP limit · นิยาม</div><h2>WIP limit — <em>จำกัดงานที่เริ่ม เพื่อให้งานเสร็จ</em></h2>
-    <div class="sub">“WIP คือ งานที่เริ่มแล้วแต่ยังไม่ Done · WIP limit คือจำนวนสูงสุดที่ยอมให้ค้างในคอลัมน์หรือกับคนหนึ่งคน ณ ขณะเดียวกัน”</div></div>
+    <div class="sub">“WIP คือจำนวนงานที่ผ่านจุดเริ่มของขอบเขตที่วัดแล้วแต่ยังไม่ Done · WIP limit คือเพดานงานพร้อมกันต่อขั้นตอนหรือทั้งระบบ และอาจกำหนดต่อคน”</div></div>
   <div class="s-body top">
     <div class="g11" style="grid-template-columns:1.08fr .92fr; align-items:start">
       <div>
@@ -13,7 +13,7 @@
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:12px">
-        <div class="card a"><h4><span class="n">1</span>อะไรนับเป็น WIP</h4><p>งานที่เข้าสู่ขั้นลงมือแล้วและยังไม่ Done รวมเวลาที่รอ test, review หรือ deploy; งานใน To Do ที่ยังไม่เริ่มไม่นับ</p></div>
+        <div class="card a"><h4><span class="n">1</span>อะไรนับเป็น WIP</h4><p>ต้องกำหนดจุดเริ่ม–จบก่อน: หน่วยนี้นับตั้งแต่เข้า In Progress จนถึง Done จึงรวมเวลาทำและเวลารอ test, review หรือ deploy; To Do อยู่นอกขอบเขตนี้</p></div>
         <div class="card w"><h4><span class="n">2</span>ปัญหาที่แก้</h4><p>ลดการเริ่มพร้อมกัน ลดคิวที่ซ่อนอยู่ และบังคับให้ทีมเห็นจุดที่งานติด แทนการเพิ่มงานเข้าไปเรื่อย ๆ</p></div>
         <div class="card"><h4><span class="n">3</span>ทำไมสำคัญ</h4><p>เมื่อ throughput ใกล้เดิม Little’s Law อธิบายว่า WIP ลดลง → cycle time เฉลี่ยสั้นลง โดยไม่ต้องเพิ่มคน</p></div>
       </div>
@@ -30,18 +30,18 @@
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · WIP limit · กลไก</div><h2>คอลัมน์เต็ม = <em>หยุดดึงงานใหม่ แล้วช่วยงานที่ค้าง</em></h2></div>
   <div class="s-body top">
     <div class="figrow" style="grid-template-columns:1.46fr .54fr; gap:16px; align-items:start">
-      <div><div class="fig fix" style="height:418px"><img data-a="d35" alt="เปรียบเทียบก่อนและหลังใช้ WIP limit: WIP 12 กับ throughput 3 ใบต่อวันใช้ cycle time 4 วัน ส่วน WIP 6 ใช้ 2 วัน"></div>
-        <div class="figcap">ลด WIP จาก 12 เหลือ 6 ขณะที่ throughput เท่าเดิม 3 ใบ/วัน → cycle time โดยประมาณลดจาก 4 เหลือ 2 วัน</div></div>
+      <div><div class="fig fix" style="height:418px"><img data-a="d35" alt="เปรียบเทียบค่าเฉลี่ยก่อนและหลังใช้ WIP limit: WIP 12 กับ throughput 3 ใบต่อวันให้ cycle time 4 วัน ส่วน WIP 6 ให้ 2 วัน"></div>
+        <div class="figcap">ในระบบที่ค่อนข้างนิ่งและใช้ขอบเขตเดียวกัน: WIP เฉลี่ย 12 → 6 ขณะที่ throughput 3 ใบ/วัน → cycle time เฉลี่ยประมาณ 4 → 2 วัน</div></div>
       <div style="display:flex; flex-direction:column; gap:9px">
         <div>
           <div class="fig fix" style="height:118px; overflow:hidden">
-            <img data-a="d02" alt="แผง Little's Law: lead time โดยประมาณเท่ากับ WIP หาร throughput" style="width:100%; height:100%; object-fit:fill; object-view-box:inset(59% 60% 12% 4%)">
+            <img data-a="d02" alt="แผง Little's Law: lead time โดยประมาณเท่ากับ WIP หาร throughput เมื่อขอบเขตเริ่มที่ commitment" style="width:100%; height:100%; object-fit:fill; object-view-box:inset(59% 60% 12% 4%)">
           </div>
-          <div class="figcap">แผง Little’s Law จากภาพ flow metrics</div>
+          <div class="figcap"><code>d02</code> เริ่มที่ commitment จึงเรียก Lead time; ถ้าเริ่มที่ In Progress จะได้ Cycle time</div>
         </div>
-        <div class="card a" style="padding:9px 12px"><h4><span class="n">1</span>ตั้ง limit เริ่มต้น</h4><p style="font-size:14.5px">นับ WIP ปัจจุบัน แล้วเลือกเพดานที่เล็กพอให้คอขวดปรากฏแต่ทีมยังทำงานได้ เช่น In Progress ≤ 3 · Review ≤ 2</p></div>
-        <div class="card w" style="padding:9px 12px"><h4><span class="n">2</span>เมื่อเต็ม</h4><p style="font-size:14.5px">ห้าม pull ใบใหม่ · ช่วย review/test · ปลด blocker · แตกงานที่ใหญ่ เป้าหมายคือทำให้ช่องว่างเกิดทางขวา</p></div>
-        <div class="card o" style="padding:9px 12px"><h4><span class="n">3</span>วัดแล้วปรับ</h4><p style="font-size:14.5px">ติดตาม cycle time กับ throughput 1–2 รอบ ปรับ limit ทีละค่า และบันทึกเหตุผล; limit เป็นเพดาน ไม่ใช่เป้าหมายที่ต้องเติมให้เต็ม</p></div>
+        <div class="card a" style="padding:9px 12px"><h4><span class="n">1</span>องค์ประกอบ · ขอบเขต + เพดาน</h4><p style="font-size:15.5px">ระบุจุดเริ่ม–จบและคอลัมน์ที่จำกัด แล้วตั้งเพดานทดลองที่เล็กพอให้คอขวดปรากฏ เช่น In Progress ≤ 3 · Review ≤ 2</p></div>
+        <div class="card w" style="padding:9px 12px"><h4><span class="n">2</span>Workflow · เมื่อเต็ม</h4><p style="font-size:15.5px">ห้าม pull ใบใหม่ · ช่วย review/test · ปลด blocker · แตกงานที่ใหญ่ เป้าหมายคือทำให้ช่องว่างเกิดทางขวา</p></div>
+        <div class="card o" style="padding:9px 12px"><h4><span class="n">3</span>Feedback · วัดแล้วปรับ</h4><p style="font-size:15.5px">ติดตาม cycle time กับ throughput 1–2 รอบ ปรับ limit ทีละค่าและบันทึกเหตุผล; limit เป็นเพดาน ไม่ใช่เป้าหมายที่ต้องเติมให้เต็ม</p></div>
       </div>
     </div>
   </div>
@@ -53,16 +53,16 @@
 <div class="slot">
  <section class="slide">
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · WIP limit · ตัวอย่าง</div><h2>CampusEats — <em>ปิดคิว review ก่อนรับบั๊กเพิ่ม</em></h2>
-    <div class="sub">สถานการณ์: ทีม 3 คนมีงานเริ่มแล้ว 12 ใบ throughput เฉลี่ย 3 ใบ/วัน และมีบั๊ก “ชำระเงินแล้วคำสั่งซื้อไม่เข้าโรงอาหาร” เข้ามา</div></div>
+    <div class="sub">สถานการณ์: ช่วงที่ระบบค่อนข้างนิ่ง ทีม 3 คนมี WIP เฉลี่ย 12 ใบ throughput เฉลี่ย 3 ใบ/วัน และมีบั๊ก “ชำระเงินแล้วคำสั่งซื้อไม่เข้าโรงอาหาร” เข้ามา</div></div>
   <div class="s-body top">
     <div class="grid3">
-      <div class="card c"><h4><span class="n">1</span>ไม่มี limit</h4><p>ทีมรีบดึงบั๊กเข้า In Progress ทั้งที่งานเดิมค้าง ทุกคนสลับไปมา; WIP 12 ÷ 3 ใบ/วัน ≈ cycle time 4 วัน</p></div>
+      <div class="card c"><h4><span class="n">1</span>ไม่มี limit</h4><p>ทีมรีบดึงบั๊กเข้า In Progress ทั้งที่งานเดิมค้าง ทุกคนสลับไปมา; WIP เฉลี่ย 12 ÷ 3 ใบ/วัน ≈ cycle time เฉลี่ย 4 วัน</p></div>
       <div class="card w"><h4><span class="n">2</span>Review เต็ม 2/2</h4><p>นโยบายห้ามดึงงานใหม่ นักพัฒนาจึงช่วย test และ review ใบที่ใกล้ Done จนส่งมอบได้ 1 ใบและเกิดช่องว่าง</p></div>
-      <div class="card o"><h4><span class="n">3</span>ดึงตามความจุจริง</h4><p>จึงเริ่มแก้บั๊ก CampusEats; ถ้าลด WIP ทั้งระบบเหลือ 6 และ throughput ยัง 3 ใบ/วัน cycle time ≈ 2 วัน</p></div>
+      <div class="card o"><h4><span class="n">3</span>ดึงตามความจุจริง</h4><p>เมื่อเกิดช่องว่างจึงเริ่มแก้บั๊ก CampusEats; ถ้ารอบถัดไประบบนิ่งที่ WIP เฉลี่ย 6 และ throughput ยัง 3 ใบ/วัน cycle time เฉลี่ย ≈ 2 วัน</p></div>
     </div>
     <div class="g11" style="margin-top:14px; grid-template-columns:1fr 1fr">
-      <div class="card c"><h4>❌ “limit ทำให้คนว่างหรือลดผลงาน”</h4><p>การไม่เริ่มใบใหม่ไม่ได้แปลว่าหยุดทำงาน ทีมใช้ความจุช่วย review, test, แก้ blocker และทำใบที่ค้างให้ Done — วัดผลที่งานส่งมอบ ไม่ใช่จำนวนงานที่เริ่ม</p></div>
-      <div class="card o"><h4>✅ “limit ปกป้อง flow ของทั้งระบบ”</h4><p>จำกัดตามขั้นตอนที่เป็นคิวร่วมก่อน เช่น In Progress และ Review; limit ต่อคนเป็นเพียงตัวเสริม เพราะคนว่างแต่คอลัมน์ Review เต็มก็ยังไม่ควรเริ่มเพิ่ม</p></div>
+      <div class="card c"><h4>❌ ความเข้าใจผิด · “limit ทำให้คนว่างหรือลดผลงาน”</h4><p>การไม่เริ่มใบใหม่ไม่ได้แปลว่าหยุดทำงาน ทีมใช้ความจุช่วย review, test, แก้ blocker และทำใบที่ค้างให้ Done — วัดผลที่งานส่งมอบ ไม่ใช่จำนวนงานที่เริ่ม</p></div>
+      <div class="card o"><h4>✅ แก้ให้ถูก · “limit ปกป้อง flow ของทั้งระบบ”</h4><p>จำกัดตามขั้นตอนที่เป็นคิวร่วมก่อน เช่น In Progress และ Review; limit ต่อคนเป็นเพียงตัวเสริม เพราะคนว่างแต่คอลัมน์ Review เต็มก็ยังไม่ควรเริ่มเพิ่ม</p></div>
     </div>
     <div class="note w" style="margin-top:14px"><b>อย่าใช้สูตรแบบกลไก</b> — Little’s Law ใช้กับค่าเฉลี่ยของระบบที่ค่อนข้างนิ่ง: WIP, throughput และช่วงเวลาต้องนับด้วยขอบเขตเดียวกัน; งานเร่งด่วนยังต้องผ่าน policy ที่ทีมตกลง ไม่ใช่ข้าม limit โดยไม่มีเหตุผล</div>
   </div>
@@ -76,17 +76,17 @@
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · WIP limit · ใน Plane</div><h2>Plane ช่วยให้ “เห็น” WIP — <em>แต่ CE ไม่บังคับ limit ให้</em></h2></div>
   <div class="s-body top">
     <div class="figrow c21" style="align-items:start">
-      <div><div class="fig shot fix" style="height:365px"><img data-a="t-board-swimlanes" alt="Board layout ของโปรเจกต์ Plane Lab จัดกลุ่มตาม State และแบ่ง swimlane ตาม Assignee"></div>
-        <div class="figcap">Board ของ PLAB จัดกลุ่มตาม State และแบ่ง swimlane ตาม Assignee เพื่อมอง WIP ต่อคน</div></div>
+      <div><div class="fig shot fix" style="height:365px"><img data-a="t-board-swimlanes" alt="Work items ของโปรเจกต์ Plane Lab ใน Board layout จัด Group by State และ Sub-group by Assignees"></div>
+        <div class="figcap">ภาพจริง: Work items ของ Plane Lab จัด Group by = State และ Sub-group by = Assignees; แถวที่เห็นคือ dev1, admin และ None</div></div>
       <div style="display:flex; flex-direction:column; gap:10px">
-        <div class="card a" style="padding:10px 13px"><h4><span class="n">1</span>มอง WIP บน Board</h4><p>ที่หน้า <b>Work items</b> เลือก <b>Board layout</b> · <b>Group by = State</b> ให้ state เป็นคอลัมน์ · <b>Sub-group by = Assignees</b> ให้คนเป็น swimlane</p></div>
-        <div class="card c" style="padding:10px 13px"><h4><span class="n">2</span>ข้อจำกัด CE v1.4.2</h4><p>ไม่มีตัวเลือก WIP limit และไม่มี transition rule: การ์ดย้ายจาก state ใดไป state ใดก็ได้ บอร์ดแสดงจำนวนการ์ดให้ทีมเทียบกับ policy แต่ไม่หยุดการดึงงาน</p></div>
-        <div class="card o" style="padding:10px 13px"><h4><span class="n">3</span>เสริม policy + guard</h4><p>เขียน limit และ exit policy ใน <b>Project Page</b> · บันทึกมุมมองเป็น <b>View</b> · ให้ <code>wip_guard.py</code> นับงานผ่าน REST API และ exit 1 เมื่อเกิน</p></div>
+        <div class="card a" style="padding:10px 13px"><h4><span class="n">1</span>วิธีทำใน Plane</h4><p><b>Plane Lab › Work items</b> → ไอคอน <b>Board</b> → <b>Display</b> → <b>Group by = State</b> → <b>Sub-group by = Assignees</b> เพื่อให้ state เป็นคอลัมน์และคนเป็น swimlane</p></div>
+        <div class="card c" style="padding:10px 13px"><h4><span class="n">2</span>ข้อจำกัด CE v1.4.2</h4><p>ไม่มีตัวเลือก WIP limit และไม่มี transition rule: การ์ดย้ายจาก state ใดไป state ใดก็ได้ หัวคอลัมน์บอกจำนวนรวมให้เทียบ policy แต่ซอฟต์แวร์ไม่หยุดการดึงงาน</p></div>
+        <div class="card o" style="padding:10px 13px"><h4><span class="n">3</span>ฟีเจอร์ที่เกี่ยวข้อง · policy + guard</h4><p><b>Pages → New page</b> ใช้เขียน limit และ exit policy · <b>Views → Add view</b> ใช้บันทึก board/filter/display · <code>wip_guard.py</code> นับงานผ่าน REST API และ exit 1 เมื่อเกิน</p></div>
       </div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="note o" style="font-size:14.5px"><b>LAB 5 · ลงมือทำ</b> — ตั้ง Board เป็น State × Assignees · สร้าง Page “Kanban Policies” (In Progress ≤ 3 · In Review ≤ 2) · ทดลอง <code>wip_guard.py</code> จาก OK → VIOLATION → OK</div>
-      <div class="note a" style="font-size:14.5px"><b>Mini exercise</b> — ถ้า In Review = 2/2 แต่ In Progress = 2/3 ทีมควรดึงงานใหม่หรือช่วย Review? อธิบายด้วยคำว่า WIP, pull และคอขวด</div>
+      <div class="note o" style="font-size:15.5px"><b>LAB 5 · ลงมือทำ</b> — ตั้ง Board เป็น State × Assignees · สร้าง Page “Kanban Policies” (In Progress ≤ 3 · In Review ≤ 2) · ทดลอง <code>wip_guard.py</code> จาก OK → VIOLATION → OK</div>
+      <div class="note a" style="font-size:15.5px"><b>Mini exercise</b> — ถ้า In Review = 2/2 แต่ In Progress = 2/3 ทีมควรดึงงานใหม่หรือช่วย Review? อธิบายด้วยคำว่า WIP, pull และคอขวด</div>
     </div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · WIP limit</span><span class="pg"></span></div>

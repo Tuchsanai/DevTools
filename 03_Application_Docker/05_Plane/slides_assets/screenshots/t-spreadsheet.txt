@@ -1,0 +1,3 @@
+Plane Lab work items in Spreadsheet layout with the app sidebar collapsed so the full table fits the 1440px viewport.
+The columns Work items, State, Priority, Assignees, Labels, Modules and Cycle are all readable and editable inline — PLAB-5 shows dev1/bug/Ordering, PLAB-12 shows dev1/feature/Ordering/Sprint 2.
+16 of the 20 rows are fully in frame; the rest continue below the vertical scroll.

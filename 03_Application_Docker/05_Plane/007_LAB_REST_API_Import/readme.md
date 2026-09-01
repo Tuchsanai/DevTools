@@ -463,7 +463,7 @@ API calls: 38 · X-RateLimit-Remaining: 23 · โดน 429 แล้วรอ: 
 
 ![หน้า Cycles ของ JRA: Active cycle = Sprint 2 (0/6 · burndown · assignees admin/dev1) และ Completed cycle = Sprint 1 (Aug 10 – 23, 2026)](./images/ui-jra-cycles.png)
 
-> 📝 **คำอธิบาย:** Plane ไม่มีคอลัมน์ "สถานะ" ของ cycle — Active/Upcoming/Completed คำนวณจากวันที่ตอน query (LAB 4) Sprint 1 จึงไปอยู่ **Completed** ทันทีที่ PATCH `end_date` เป็นอดีต · Sprint 2 แสดง **Assignees admin 2 · dev1 2** = assignee จาก CSV ถูก map ผ่านอีเมลสำเร็จ · burndown ของ Sprint 2 ยังไม่ลดเพราะ `completed_at` ของ work item ที่ Done ถูกตั้งเป็น *เวลาที่นำเข้า* ไม่ใช่วันที่ใน Jira (API ให้ override ได้แค่ `created_at`) — LAB 9 จะใช้ Sprint 1 ที่ปิดแล้วคำนวณ velocity
+> 📝 **คำอธิบาย:** Plane ไม่มีคอลัมน์ "สถานะ" ของ cycle — Active/Upcoming/Completed คำนวณจากวันที่ตอน query (LAB 4) Sprint 1 จึงไปอยู่ **Completed** ทันทีที่ PATCH `end_date` เป็นอดีต · Sprint 2 แสดง **Assignees admin 2 · dev1 2** = assignee จาก CSV ถูก map ผ่านอีเมลสำเร็จ · ตัวเลข **0/6 Work item closed** เป็นหลักฐานว่ายังไม่มีใบปิด; ใน build นี้เส้น Current วาดค่า 6 ถึงวันที่มีข้อมูลแล้วตกเป็น 0 ในช่วงอนาคตหลังวันจับภาพ จึงไม่ใช่หลักฐานว่างานทั้ง 6 ใบเสร็จ — LAB 9 จะใช้ Sprint 1 ที่ปิดแล้วคำนวณ velocity
 
 ต่อด้วย **Jira Import → Modules** :
 

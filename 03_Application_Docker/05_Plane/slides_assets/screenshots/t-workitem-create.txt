@@ -1,0 +1,2 @@
+The Create new work item modal is open with a Thai CampusEats story title and an English description filled in.
+The default properties and the Discard and Save controls are visible; the item was not saved.

@@ -1,0 +1,2 @@
+Plane Lab work items are shown in the Timeline layout for late August and early September 2026.
+The left item list aligns with colored duration bars on the weekly Gantt-style grid.

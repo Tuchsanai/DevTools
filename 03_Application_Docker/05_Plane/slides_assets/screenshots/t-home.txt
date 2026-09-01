@@ -1,0 +1,3 @@
+DevTools Lab workspace Home for Lab Admin, scrolled so the whole widget stack fits the viewport.
+In frame: the greeting "Good morning, Lab Admin / Tuesday, Sep 1", the Quicklinks widget in its empty state, and the Recents widget listing seven Plane Lab entries (the pages Ordering — API design, PRD — CampusEats Ordering and Kanban Policies, plus work items PLAB-15, PLAB-14, PLAB-13 and PLAB-12) with a Show all link.
+The Your stickies widget sits below the fold and is not visible here.

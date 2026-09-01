@@ -1,19 +1,21 @@
-<!-- ===== U-PLANE-ARCH 1 : hierarchy ===== -->
+<!-- ===== U-PLANE-ARCH A : นิยาม — hierarchy ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · สถาปัตยกรรมของ Plane · นิยาม</div><h2>สถาปัตยกรรมของ Plane — <em>แผนที่ว่าอะไรอยู่ที่ไหน และสัมพันธ์กันอย่างไร</em></h2>
-    <div class="sub">อ่านสองมุมพร้อมกัน: ลำดับชั้นของงานที่ผู้ใช้จัดการ และบริการเบื้องหลังที่ทำให้ข้อมูลชุดนั้นใช้งานได้</div></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · สถาปัตยกรรมของ Plane · นิยาม</div><h2>สถาปัตยกรรมของ Plane — <em>ระบบเดียวที่ต้องอ่านให้ออกสองชั้น</em></h2>
+    <div class="sub">ชั้นข้อมูลที่ทีมจัดการ (Instance → Workspace → Project → Work item) และชั้นบริการที่ผู้ดูแลรัน (13 container)</div></div>
   <div class="s-body top">
-    <div class="g21" style="grid-template-columns:1.55fr .45fr; align-items:start">
+    <div class="g21" style="grid-template-columns:1.44fr .56fr; align-items:start">
       <div>
-        <div class="fig fix" style="height:390px"><img data-a="d24" alt="ลำดับชั้นของ Plane จาก Instance ไป Workspace, Project, features, Work item และข้อมูลย่อยของ work item"></div>
-        <div class="figcap" style="font-size:14px">ลำดับชั้นเชิงตรรกะ: Instance → Workspace → Project → Work item; Cycles, Modules, Views, Pages และ Intake เป็นความสามารถระดับโปรเจกต์</div>
+        <div class="fig fix" style="height:352px"><img data-a="d24" alt="ลำดับชั้นของ Plane จาก Instance ไป Workspace, Project, ความสามารถระดับโปรเจกต์ และ Work item พร้อมข้อมูลย่อยของ work item"></div>
+        <div class="figcap" style="font-size:14px">Cycles, Modules, Views, Pages และ Intake เปิด/ปิดได้รายโปรเจกต์ · States, Labels, Estimates, Members ตั้งค่าได้เสมอ</div>
+        <div class="note a" style="font-size:15px; padding:7px 11px"><b>อ่านแผนที่นี้อย่างไร</b> — งานหนึ่งใบมีชื่อเดียวที่ใช้ได้ทุกที่: ทีมพูดว่า <b>PLAB-12</b> · เบราว์เซอร์เปิด <code>/devtools-lab/browse/PLAB-12/</code> · สคริปต์เรียก <code>/api/v1/workspaces/devtools-lab/work-items/PLAB-12/</code></div>
       </div>
       <div style="display:flex; flex-direction:column; gap:7px">
-        <div class="quote" style="font-size:14.5px; padding:9px 12px">“สถาปัตยกรรม” คือการแบ่งระบบเป็นส่วนที่มีหน้าที่ชัด พร้อมกติกาว่าส่วนเหล่านั้นสื่อสารและพึ่งพากันอย่างไร</div>
-        <div class="card o" style="padding:8px 11px"><h4>ปัญหาที่แผนที่แก้</h4><p style="font-size:14px"><b>ก่อน:</b> เห็นหน้าเว็บเป็นก้อนเดียว ไม่รู้ว่าควรตั้งค่าชั้นใดหรือข้อมูลหายเพราะบริการใด<br><b>หลัง:</b> ระบุตำแหน่งข้อมูล ผู้รับ request และ dependency ได้ตรงจุด</p></div>
-        <div><div class="fig shot fix" style="height:180px"><img data-a="t-projects" alt="หน้า Projects ของ workspace DevTools Lab แสดงโปรเจกต์ Plane Lab รหัส PLAB"></div>
-          <div class="figcap" style="font-size:14px">หน้า Projects แสดง Plane Lab (PLAB) ซึ่งเป็นหนึ่ง Project ภายใน Workspace</div></div>
+        <div class="quote" style="font-size:15.5px; padding:10px 13px"><b>นิยาม</b> — สถาปัตยกรรม คือการแบ่งระบบเป็นส่วนที่มีหน้าที่ชัดเจน พร้อมกติกาว่าแต่ละส่วนพึ่งพากันอย่างไร</div>
+        <div class="card a" style="padding:7px 11px"><h4>ทำไมสำคัญ</h4><p style="font-size:15.5px">รู้ชั้นข้อมูล = รู้ว่าต้องตั้งค่าที่ workspace หรือ project · รู้ชั้นบริการ = รู้ว่าอาการเสียอยู่ที่ container ใด</p></div>
+        <div class="card o" style="padding:7px 11px"><h4>ปัญหาที่แก้</h4><p style="font-size:15.5px"><b>ก่อน:</b> เห็นเว็บเป็นก้อนเดียว เดาไม่ถูกว่าจะแก้ตรงไหน<br><b>หลัง:</b> ชี้ได้ว่าข้อมูลอยู่ชั้นใด และบริการใดรับ request</p></div>
+        <div><div class="fig shot fix" style="height:170px"><img data-a="t-projects" alt="หน้า Projects ของ workspace DevTools Lab แสดงการ์ดโปรเจกต์ DevTools Lab และ Plane Lab รหัส PLAB พร้อมคำอธิบาย CampusEats"></div>
+          <div class="figcap" style="font-size:14px"><b>ภาพจริงใน Plane</b> · workspace <b>DevTools Lab</b> › Projects — การ์ด <b>Plane Lab</b> identifier <b>PLAB</b> เรื่อง CampusEats</div></div>
       </div>
     </div>
   </div>
@@ -21,22 +23,22 @@
  </section>
 </div>
 
-<!-- ===== U-PLANE-ARCH 2 : logical architecture ===== -->
+<!-- ===== U-PLANE-ARCH B : กลไก — logical architecture ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · สถาปัตยกรรมของ Plane · กลไก</div><h2>หนึ่งการกระทำไหลผ่านหลายบริการ — <em>proxy เลือกทาง · api จัดการข้อมูล · worker ทำงานเบื้องหลัง</em></h2></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · สถาปัตยกรรมของ Plane · กลไก</div><h2>หนึ่งการกระทำวิ่งผ่านหลายบริการ — <em>proxy เลือกทาง · api เขียนข้อมูล · worker เก็บงานหลังบ้าน</em></h2></div>
   <div class="s-body top">
     <div class="g21" style="grid-template-columns:1.42fr .58fr; align-items:start">
       <div>
-        <div class="fig fix" style="height:370px"><img data-a="d23" alt="สถาปัตยกรรมเชิงตรรกะ Plane จาก Browser ผ่าน Caddy ไป web, admin, space, live, api, worker และบริการข้อมูล"></div>
-        <div class="figcap" style="font-size:14px">มีเพียง proxy ที่รับ traffic จากภายนอก; บริการอื่นคุยกันบนเครือข่ายภายในของ Compose</div>
+        <div class="fig fix" style="height:368px"><img data-a="d23" alt="สถาปัตยกรรมเชิงตรรกะของ Plane จาก Browser ผ่าน proxy Caddy ไป web, admin, space, live, api, worker, beat-worker และบริการพื้นฐาน PostgreSQL, Valkey, RabbitMQ, MinIO"></div>
+        <div class="figcap" style="font-size:14px">มีเพียง proxy ที่เปิดพอร์ตออกสู่ host (LAB ใช้ 8080 → 80) ที่เหลือคุยกันบนเครือข่ายภายในของ Compose · api, worker, beat-worker และ migrator ใช้ image <code>plane-backend</code> ตัวเดียวกัน ต่างกันที่ entrypoint</div>
       </div>
-      <div style="display:flex; flex-direction:column; gap:6px">
-        <div class="card a" style="padding:7px 10px"><h4><span class="n">1</span>หน้าเว็บ</h4><p style="font-size:14px">Browser → proxy (Caddy) → <b>web</b>; <code>/god-mode</code>, <code>/spaces</code> และ <code>/live</code> ไป admin, space และ live</p></div>
-        <div class="card" style="padding:7px 10px"><h4><span class="n">2</span>ข้อมูลธุรกรรม</h4><p style="font-size:14px"><code>/api/*</code> และ <code>/auth/*</code> ไป <b>api</b> ซึ่งอ่านเขียน PostgreSQL และใช้ Valkey เป็น cache/lock</p></div>
-        <div class="card o" style="padding:7px 10px"><h4><span class="n">3</span>งานเบื้องหลัง</h4><p style="font-size:14px">api ส่ง Celery task เข้า RabbitMQ; <b>worker</b> ทำ activity, notification, webhook และ export; <b>beat-worker</b> ส่งงานตามเวลา</p></div>
-        <div class="card w" style="padding:7px 10px"><h4>CampusEats หนึ่งเรื่อง</h4><p style="font-size:14px">เปิด PLAB → web; สร้างเรื่อง “สั่งอาหารล่วงหน้า” → api/PostgreSQL; แนบภาพ → MinIO; activity ผ่าน RabbitMQ → worker</p></div>
-        <div class="note c" style="font-size:14px; padding:7px 10px"><b>เข้าใจผิดบ่อย</b> — 13 containers ไม่ใช่ 13 ผลิตภัณฑ์ แต่คือ Plane ระบบเดียวที่แยก process ตามหน้าที่</div>
+      <div style="display:flex; flex-direction:column; gap:5px">
+        <div class="card a" style="padding:6px 9px"><h4><span class="n">1</span>องค์ประกอบ · ชั้นหน้าบ้าน</h4><p style="font-size:15.5px">proxy เลือกทางจาก prefix ของ URL — <code>/god-mode/*</code> → admin · <code>/spaces/*</code> → space · <code>/live/*</code> → live · ที่เหลือ → web</p></div>
+        <div class="card" style="padding:6px 9px"><h4><span class="n">2</span>องค์ประกอบ · ชั้นข้อมูล</h4><p style="font-size:15.5px"><code>/api/*</code> <code>/auth/*</code> → <b>api</b> (Django :8000) → PostgreSQL · Valkey = cache/lock ไม่ใช่คิว · ไฟล์แนบขึ้น MinIO ตรง</p></div>
+        <div class="card o" style="padding:6px 9px"><h4><span class="n">3</span>ทำงานอย่างไร · งานเบื้องหลัง</h4><p style="font-size:15.5px">api ส่ง task เข้า RabbitMQ คิว <code>celery</code> → <b>worker</b> ทำ activity, notification, webhook, export · <b>beat-worker</b> ยิงงานตามเวลา</p></div>
+        <div class="card w" style="padding:6px 9px"><h4>Workflow · CampusEats</h4><p style="font-size:15.5px">กด Save ที่ PLAB-3 → api เขียนแถวใน <code>issues</code> แล้วตอบกลับทันที · activity ถูกโยนเข้าคิวให้ worker ทำต่อ</p></div>
+        <div class="note c" style="font-size:15px; padding:6px 9px"><b>ความเข้าใจผิด</b> — ❌ 13 container = 13 ผลิตภัณฑ์ → ✅ ระบบเดียวที่แยก process ตามหน้าที่</div>
       </div>
     </div>
   </div>
@@ -44,22 +46,22 @@
  </section>
 </div>
 
-<!-- ===== U-PLANE-ARCH 3 : compose anatomy ===== -->
+<!-- ===== U-PLANE-ARCH C : ตัวอย่าง — compose anatomy ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · สถาปัตยกรรมของ Plane · ตัวอย่าง</div><h2>Compose เปลี่ยนแบบสถาปัตยกรรมให้รันได้ — <em>13 services · 10 volumes · 1 published entry point</em></h2>
-    <div class="sub"><code>docker-compose.yml</code> บอกว่าให้รันอะไรและพึ่งใคร ส่วน <code>plane.env</code> ใส่ค่าที่เปลี่ยนตามเครื่อง</div></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · สถาปัตยกรรมของ Plane · ตัวอย่าง</div><h2>Compose เปลี่ยนแบบสถาปัตยกรรมให้รันได้ — <em>13 services · 10 volumes · 1 published port</em></h2>
+    <div class="sub"><code>docker-compose.yml</code> บอกว่ารันอะไรและพึ่งใคร ส่วน <code>plane.env</code> ใส่ค่าที่เปลี่ยนไปตามเครื่อง</div></div>
   <div class="s-body top">
-    <div class="g21" style="grid-template-columns:1.5fr .5fr; align-items:start">
+    <div class="g21" style="grid-template-columns:1.46fr .54fr; align-items:start">
       <div>
-        <div class="fig fix" style="height:385px"><img data-a="d25" alt="กายวิภาค docker-compose.yml และ plane.env ของ Plane แบ่ง app services, infrastructure, volumes และ published port"></div>
-        <div class="figcap" style="font-size:14px">Compose สร้าง 13 containers; ปกติมี 12 ตัวทำงานและ migrator จบด้วย Exited (0) หลัง migrate สำเร็จ</div>
+        <div class="fig fix" style="height:336px"><img data-a="d25" alt="กายวิภาคของ docker-compose.yml และ plane.env ของ Plane แบ่งเป็น app services, infra, named volumes และพอร์ตเดียวที่เปิดออก"></div>
+        <div class="figcap" style="font-size:14px">Plane CE v1.4.2 ประกาศ 13 services กับ 10 named volumes · ค่า <code>${VAR}</code> ถูกแทนด้วยค่าจาก <code>plane.env</code> ตอน <code>up</code> · proxy เป็น service เดียวที่ publish พอร์ตออก host</div>
       </div>
-      <div style="display:flex; flex-direction:column; gap:7px">
-        <div class="card a" style="padding:8px 11px"><h4>Public origin</h4><p style="font-size:14px"><code>APP_DOMAIN</code> เป็นค่าต้นแบบใน <code>plane.env</code> ที่ขยายไปเป็น <code>WEB_URL</code> และ <code>CORS_ALLOWED_ORIGINS</code>; origin/พอร์ตต้องตรงกับ Browser</p></div>
-        <div class="card c" style="padding:8px 11px"><h4>Secrets</h4><p style="font-size:14px"><code>SECRET_KEY</code> ต้องไม่ว่างและควรเปลี่ยนจาก placeholder; <code>LIVE_SERVER_SECRET_KEY</code> ต้องมีค่าเพื่อให้ live ผ่านการตรวจ env ตอนเริ่ม</p></div>
-        <div class="card o" style="padding:8px 11px"><h4>Data stores</h4><p style="font-size:14px"><code>DATABASE_URL</code>, <code>REDIS_URL</code>, <code>AMQP_URL</code> ชี้ไปบริการข้อมูล; storage ใช้ <code>USE_MINIO</code>, S3 credentials, bucket และ <code>FILE_SIZE_LIMIT</code></p></div>
-        <div class="note w" style="font-size:14px; padding:7px 10px"><b>อย่าสับสน</b> — volumes อยู่ต่อเมื่อ restart หรือ <code>down</code>; แต่ <code>down -v</code> ลบข้อมูลด้วย</div>
+      <div style="display:flex; flex-direction:column; gap:6px">
+        <div class="card a" style="padding:7px 10px"><h4>Compose ทำงานอย่างไร</h4><p style="font-size:15.5px">หนึ่ง service = หนึ่งหน้าที่ · <code>depends_on</code> จัดลำดับเริ่ม · named volume เก็บสถานะไว้นอกตัว container</p></div>
+        <div class="card o" style="padding:7px 10px"><h4>ตัวอย่างจริง · เครื่องของทีม CampusEats</h4><p style="font-size:15.5px">LAB 1 ตั้ง <code>APP_DOMAIN</code>/<code>WEB_URL</code>/<code>CORS_ALLOWED_ORIGINS</code> = <code>localhost:8080</code> · ผลที่ต้องเห็น: 13 services · 10 volumes · 12 Up + migrator <b>Exited (0)</b></p></div>
+        <div class="card c" style="padding:7px 10px"><h4>ค่าที่พลาดแล้วเจ็บ</h4><p style="font-size:15.5px"><code>WEB_URL</code> ผิดพอร์ต → หลัง login เด้งไปพอร์ตที่ไม่มีใครฟัง · <code>SECRET_KEY</code> ว่าง → api ออกตั้งแต่ <code>configure_instance</code></p></div>
+        <div class="note w" style="font-size:15px; padding:6px 9px"><b>ความเข้าใจผิด</b> — ❌ แก้ <code>plane.env</code> แล้ว restart ก็พอ → ✅ ต้อง <code>up -d</code> ให้สร้าง container ใหม่ · ❌ <code>down</code> = ข้อมูลหาย → ✅ มีแต่ <code>down -v</code> ที่ลบ volume</div>
       </div>
     </div>
   </div>
@@ -67,40 +69,39 @@
  </section>
 </div>
 
-<!-- ===== U-PLANE-ARCH 4 : boot and failure ===== -->
+<!-- ===== U-PLANE-ARCH D : ใน Plane — boot order & failure modes ===== -->
 <div class="slot">
- <section class="slide">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · สถาปัตยกรรมของ Plane · ใน Plane</div><h2>เริ่มตาม dependency แล้วตรวจ readiness — <em>migrator ทำ schema ให้พร้อมก่อน api · worker · beat</em></h2></div>
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 2 · สถาปัตยกรรมของ Plane · ใน Plane</div><h2>ลำดับการเริ่มไม่ใช่ความพร้อม — <em>migrator กั้น schema · แต่ละบริการที่หายให้อาการต่างกัน</em></h2></div>
   <div class="s-body top">
-    <div class="flow" style="gap:5px; flex-wrap:nowrap; margin-bottom:8px">
-      <div class="b" style="min-width:0; padding:6px 8px"><div class="t" style="font-size:14px">DB · Valkey · MQ</div><div class="s">infra เริ่มก่อน</div></div><span class="ar">→</span>
-      <div class="b a" style="min-width:0; padding:6px 8px"><div class="t" style="font-size:14px">migrator</div><div class="s">migrate → exit 0</div></div><span class="ar">→</span>
-      <div class="b" style="min-width:0; padding:6px 8px"><div class="t" style="font-size:14px">api</div><div class="s">wait_for_migrations</div></div><span class="ar">→</span>
-      <div class="b a" style="min-width:0; padding:6px 8px"><div class="t" style="font-size:14px">worker · beat</div><div class="s">รอ migrations</div></div><span class="ar">→</span>
-      <div class="b" style="min-width:0; padding:6px 8px"><div class="t" style="font-size:14px">web · admin · space · live</div><div class="s">บริการหน้าบ้าน</div></div><span class="ar">→</span>
-      <div class="b k" style="min-width:0; padding:6px 8px"><div class="t" style="font-size:14px">proxy</div><div class="s">เปิด 80 / 443</div></div>
+    <div class="flow" style="gap:5px; flex-wrap:nowrap">
+      <div class="b" style="min-width:0; padding:5px 8px"><div class="t" style="font-size:15px">plane-db · redis · mq</div><div class="s">infra เริ่มก่อน</div></div><span class="ar">→</span>
+      <div class="b a" style="min-width:0; padding:5px 8px"><div class="t" style="font-size:15px">migrator ∥ api</div><div class="s">api รอ migration ครบ</div></div><span class="ar">→</span>
+      <div class="b a" style="min-width:0; padding:5px 8px"><div class="t" style="font-size:15px">worker · beat-worker</div><div class="s">รอสัญญาเดียวกัน</div></div><span class="ar">→</span>
+      <div class="b" style="min-width:0; padding:5px 8px"><div class="t" style="font-size:15px">web · space · admin · live</div><div class="s">บริการหน้าบ้าน</div></div><span class="ar">→</span>
+      <div class="b k" style="min-width:0; padding:5px 8px"><div class="t" style="font-size:15px">proxy</div><div class="s">เปิดพอร์ตให้ผู้ใช้</div></div>
     </div>
-    <div class="g11" style="grid-template-columns:.9fr 1.1fr; align-items:start">
-      <div>
-        <div class="fig shot fix" style="height:220px"><img data-a="t-features-settings" alt="Project settings หน้า Features ของ Plane Lab แสดงตัวเลือก Cycles, Modules, Views, Pages และ Intake"></div>
-        <div class="figcap" style="font-size:14px">Project settings › Features — ความสามารถระดับโปรเจกต์ เช่น Cycles, Modules, Views, Pages และ Intake</div>
-        <div class="note a" style="font-size:14px; padding:7px 10px"><b>จุดเชื่อมกับผู้ใช้</b> — toggles เปลี่ยนความสามารถของ Project แต่บริการทั้ง 13 เป็น deployment layer ที่ดูแลแยกกัน</div>
-      </div>
+    <div class="note c" style="font-size:15px; padding:6px 10px"><b>ความเข้าใจผิด</b> — ❌ <code>depends_on</code> แปลว่าบริการนั้นพร้อมแล้ว → ✅ compose จัดแค่ลำดับ <b>เริ่ม</b> และไฟล์นี้ไม่มี <code>healthcheck</code> เลย · ความพร้อมจริงมาจาก entrypoint ที่วน <code>wait_for_migrations</code> ทุก 10 วินาที แล้วค่อยเปิด gunicorn</div>
+    <div class="g11" style="grid-template-columns:1.04fr .96fr; align-items:start">
       <div>
         <table class="tbl xs" style="font-size:14px">
-          <thead><tr><th style="width:112px; font-size:14px">หยุดบริการ</th><th style="font-size:14px">ผลที่สังเกตได้</th></tr></thead>
+          <thead><tr><th style="width:100px; font-size:14px">หยุดบริการ</th><th style="font-size:14px">อาการที่วัดได้จริงใน LAB 2</th></tr></thead>
           <tbody>
-            <tr><td><b>PostgreSQL</b></td><td>ทั้งระบบใช้ข้อมูลไม่ได้; api/worker/beat ล้มขณะตรวจ migrations แล้ว restart</td></tr>
-            <tr><td><b>Valkey</b></td><td>api, worker และ live เริ่มไม่ได้; session ยังอยู่เพราะเก็บใน PostgreSQL</td></tr>
-            <tr><td><b>RabbitMQ</b></td><td>api เริ่มไม่ได้ เพราะขั้น register_instance ส่ง Celery task เข้า broker</td></tr>
-            <tr><td><b>worker</b></td><td>CRUD ยังตอบได้ แต่งาน activity, notification, webhook และ export รอใน queue</td></tr>
-            <tr><td><b>MinIO</b></td><td>อัปโหลด/ดาวน์โหลด/exports ล้มเหลว แต่ api ยังบูตได้</td></tr>
+            <tr><td><b>plane-db</b></td><td>หน้าเว็บและ <code>/api/instances/</code> ยังตอบ <b>200</b> เพราะค่าอยู่ใน cache แต่ endpoint ที่อ่าน DB จริงตอบ <b>500</b> — readiness ที่ผ่าน cache จึงโกหกได้</td></tr>
+            <tr><td><b>plane-redis</b></td><td><code>/api/instances/</code> ตอบ <b>500</b> ทันที ทุกหน้าจึงโหลดไม่ขึ้น และ live วน reconnect · แต่ยัง login อยู่ เพราะ session เก็บใน PostgreSQL</td></tr>
+            <tr><td><b>plane-mq</b></td><td>งานเบื้องหลังไม่มีที่ส่ง · ถ้าบูต api ใหม่จะไม่ผ่านขั้น <code>register_instance</code> ที่ต้อง publish task เข้า broker</td></tr>
+            <tr><td><b>worker</b></td><td>UI ยังลื่นและ CRUD ปกติ แต่ activity, notification, webhook, export กองในคิว <code>celery</code> · เปิดกลับมาแล้วระบายหมดในไม่กี่วินาที</td></tr>
+            <tr><td><b>plane-minio</b></td><td>แนบไฟล์/ดาวน์โหลด/export ล้ม เพราะเบราว์เซอร์ POST ไฟล์ตรงไปที่ <code>/uploads</code> · แต่ api ยังบูตได้ตามปกติ</td></tr>
           </tbody>
         </table>
-        <div class="note c" style="font-size:14px; padding:7px 10px; margin-top:7px"><b>เข้าใจผิดบ่อย</b> — <code>depends_on</code> จัดเพียงลำดับเริ่ม container ไม่ได้รับประกันว่า service พร้อม; readiness จริงพึ่ง <code>wait_for_migrations</code></div>
+      </div>
+      <div>
+        <div class="fig shot fix" style="height:210px"><img data-a="t-godmode" alt="หน้า Instance admin god-mode ของ Plane แสดง General settings ชื่อ instance DevTools Lab, อีเมลผู้ดูแล, Instance ID และสวิตช์ Telemetry"></div>
+        <div class="figcap" style="font-size:14px"><b>ฟีเจอร์ที่เกี่ยวข้อง · ภาพจริงใน Plane</b> — <code>/god-mode/</code> › Settings › General: ชื่อ instance <b>DevTools Lab</b>, อีเมลผู้ดูแล, Instance ID และสวิตช์ Telemetry</div>
+        <div class="note a" style="font-size:14.5px; padding:6px 10px"><b>การทำงานใน Plane</b> — หน้านี้เสิร์ฟโดย container <b>admin</b> คนละตัวกับ web · ค่าที่กดในนี้ถูกเก็บในตาราง <code>instance_configurations</code> ของ PostgreSQL ไม่ใช่ <code>plane.env</code> แก้ env ทีหลังจึงไม่มีผล</div>
       </div>
     </div>
-    <div class="note o" style="font-size:14px; padding:7px 10px; margin-top:8px"><b><span class="tag a" style="font-size:14px">LAB 1</span> <span class="tag o" style="font-size:14px">LAB 2</span> Mini exercise</b> — เปิด <code>docker compose ps -a</code> และ logs แล้วตอบ: request <code>/api/v1/...</code> ผ่าน container ใดบ้าง? ถ้า worker หยุด request ยังตอบได้หรือไม่ และงานใดจะค้าง?</div>
+    <div class="note o" style="font-size:15px; padding:6px 10px"><b><span class="tag a" style="font-size:14px">LAB 1</span> <span class="tag o" style="font-size:14px">LAB 2</span> Mini exercise</b> — เปิด <code>docker compose ps -a</code> แล้วตอบ: (1) <code>GET /api/v1/…/work-items/</code> ผ่าน container ใดบ้างกว่าจะถึงข้อมูล? (2) หยุด <code>worker</code> แล้วแก้งานใน UI — อะไรยังทำได้ และงานที่ค้างไปอยู่ที่ไหน? (3) หยุด <code>plane-db</code> แล้วทำไม <code>/api/instances/</code> ยังตอบ 200?</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 2 · สถาปัตยกรรมของ Plane</span><span class="pg"></span></div>
  </section>

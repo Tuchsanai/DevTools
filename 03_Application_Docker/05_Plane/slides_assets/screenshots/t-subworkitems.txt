@@ -1,0 +1,2 @@
+PLAB-4 is scrolled to its expanded Sub-work items section.
+Three child items are listed with 1/3 Done progress, followed by links and activity.

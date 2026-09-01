@@ -1,0 +1,2 @@
+Workspace Analytics is open on Overview for all projects.
+User, project, work-item, cycle, and intake totals appear above project-insight and active-project charts.

@@ -1,0 +1,2 @@
+The work-item board is grouped by State and sub-grouped by Assignee.
+Horizontal swimlanes for dev1, admin, and None are visible across the state columns.

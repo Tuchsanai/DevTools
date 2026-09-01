@@ -133,7 +133,7 @@ B1: forward 8090 → เปิด `http://localhost:8090`
 
 ดู 2 panel ใกล้ ๆ:
 
-![panel Cumulative flow 14 วัน: พื้นที่สีเขียว (Done) โตขึ้นทุกวันตั้งแต่ 08-24 ส่วนแถบน้ำเงิน (started) กว้างขึ้นช่วง 08-27 ถึง 08-30 = WIP บวมก่อนจะระบาย](./images/ui-dashboard-cfd.png)
+![panel Cumulative flow 14 วัน: Done เริ่มโตหลัง 08-25, ทรงตัวช่วง 08-27–08-28 แล้วเพิ่มต่อถึง 08-31; แถบ started ขยายเมื่อมีงานเริ่มและแคบลงเมื่อระบายไป Done](./images/ui-dashboard-cfd.png)
 
 ![panel WIP vs policy: In Progress 3/3 (แถบเต็มพอดี) · In Review 0/2 · หัวข้อบอก "ทุกคอลัมน์ในนโยบาย"](./images/ui-dashboard-wip.png)
 

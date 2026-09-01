@@ -4,9 +4,9 @@
   <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Cumulative Flow Diagram · นิยาม</div><h2>CFD — <em>ประวัติการไหลของงานทั้งระบบในภาพเดียว</em></h2>
     <div class="sub">แกนนอน = เวลา · แกนตั้ง = จำนวนงานสะสม · ความหนาของแต่ละแถบ = จำนวนงานในสถานะนั้น ณ เวลานั้น</div></div>
   <div class="s-body">
-    <div class="quote" style="font-size:20px">Cumulative Flow Diagram (CFD) คือกราฟพื้นที่ซ้อนที่นับงานในแต่ละขั้นของ workflow ซ้ำทุกช่วงเวลา จึงเห็นพร้อมกันว่า <b>งานเข้ามาเท่าไร · ค้างอยู่ตรงไหน · ปิดได้เร็วเพียงใด</b></div>
+    <div class="quote" style="font-size:20px">Cumulative Flow Diagram (CFD) คือกราฟพื้นที่ซ้อนที่แสดงจำนวนงานสะสมซึ่งผ่านแต่ละขั้นของ workflow ตามเวลา โดยพื้นที่ระหว่างเส้นสองเส้นคือจำนวนงานที่อยู่ในขั้นนั้น ณ เวลานั้น</div>
     <div class="grid3">
-      <div class="card c"><h4>ปัญหา · ภาพวันนี้ซ่อนอดีต</h4><p>บอร์ดบอกเพียงว่าวันนี้มีงานอยู่คอลัมน์ใด แต่ไม่บอกว่าแถว Review เคยบวมกี่วัน หรือคิวกำลังยาวขึ้นต่อเนื่องหรือไม่ ค่าเฉลี่ยเดียวก็ซ่อนช่วงที่ระบบติดขัดได้</p></div>
+      <div class="card c"><h4>ปัญหา → หลังใช้ · เห็นแนวโน้ม</h4><p><b>ก่อน:</b> บอร์ดบอกเพียงว่าวันนี้งานอยู่คอลัมน์ใด จึงไม่รู้ว่าคิว Review บวมนานเท่าไร · <b>หลัง:</b> CFD เก็บรูปทรงข้ามวัน ทำให้เห็นคิวที่ยาวขึ้นและช่วงที่ระบบติดขัด</p></div>
       <div class="card a"><h4>ทำไมสำคัญ · 4 สัญญาณร่วมกัน</h4><p>CFD ช่วยอ่าน <b>WIP</b> จากความหนาแนวตั้ง · <b>lead time โดยประมาณ</b> จากช่องว่างแนวนอน · <b>throughput</b> จากความชัน Done · และ <b>คอขวด</b> จากแถบกลางที่กว้างขึ้น</p></div>
       <div class="card o"><h4>CampusEats · เห็นคิวก่อนส่งช้า</h4><p>ทีมรับคำขอช่วงเปิดเทอมเร็วกว่าที่ review และ deploy ได้ แถบ In Progress จึงอ้วนขึ้น แม้ทุกคนดูยุ่ง CFD ชี้ว่าควรหยุดดึงงานใหม่ แล้วช่วยกันระบายปลายน้ำ</p></div>
     </div>
@@ -16,18 +16,18 @@
  </section>
 </div>
 
-<!-- ===== B : reused reading CFD + classes of service + cadences ===== -->
+<!-- ===== B : CFD components + reading workflow ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Cumulative Flow Diagram · กลไก</div><h2>อ่าน CFD แล้วจัดการ flow — <em>วัด · ตั้ง policy · ทบทวนตาม cadence</em></h2></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Cumulative Flow Diagram · กลไก</div><h2>อ่าน CFD จาก <em>เส้นขอบ · ความหนา · ช่องว่าง · ความชัน</em></h2></div>
   <div class="s-body top">
     <div class="figrow c21" style="grid-template-columns:1.42fr .58fr; align-items:start">
       <div><div class="fig fix" style="height:410px"><img data-a="d36" alt="Cumulative Flow Diagram แสดงแถบ To do In Progress และ Done พร้อมวิธีอ่าน WIP lead time throughput และคอขวด"></div>
         <div class="figcap">นับจำนวนงานปลายแต่ละวันแล้วซ้อนเป็นแถบ · ช่องว่างแนวนอนเป็นเพียงค่า lead time โดยประมาณ ไม่ใช่เวลาของงานใบใดใบหนึ่ง</div></div>
       <div style="display:flex; flex-direction:column; gap:8px">
-        <div class="card a" style="padding:9px 13px"><h4>กลไก · 3 ขั้น</h4><p style="font-size:15px; line-height:1.46"><b>1)</b> นับงานในแต่ละสถานะ ณ สิ้นวัน <b>2)</b> วางค่าเป็นแถบซ้อนต่อเนื่อง <b>3)</b> เปรียบเทียบความหนา ความชัน และการเปลี่ยนรูปของแถบข้ามวัน</p></div>
-        <div class="card w" style="padding:9px 13px"><h4>Class of service + explicit policy</h4><p style="font-size:15px; line-height:1.46"><b>Expedite</b> ข้ามคิว ≤ 1 · <b>Fixed date</b> เริ่มตาม lead time · <b>Standard</b> เดินตามลำดับ backlog · <b>Intangible</b> จองความจุไว้ลด technical debt</p></div>
-        <div class="card o" style="padding:9px 13px"><h4>Cadences · วงจร feedback</h4><p style="font-size:15px; line-height:1.46"><b>Replenishment</b> เติม Ready → <b>Daily Kanban</b> แก้คอขวด → <b>Delivery</b> ส่งเมื่อพร้อม → <b>Service delivery review</b> อ่าน CFD แล้วปรับ policy</p></div>
+        <div class="card a" style="padding:9px 13px"><h4>กลไก · สร้างกราฟ 3 ขั้น</h4><p style="font-size:15px; line-height:1.46"><b>1)</b> นับงานในแต่ละสถานะ ณ สิ้นวัน <b>2)</b> บวกเป็นเส้นสะสมตามลำดับ workflow <b>3)</b> ระบายพื้นที่ระหว่างเส้น แล้วเปรียบเทียบรูปทรงข้ามวัน</p></div>
+        <div class="card w" style="padding:9px 13px"><h4>องค์ประกอบ · เส้นขอบและแถบ</h4><p style="font-size:15px; line-height:1.46">เส้นบนสุด = scope ที่เข้าระบบสะสม · เส้นขอบ Done = output สะสม · พื้นที่ระหว่างเส้นติดกัน = จำนวนงานในสถานะนั้น; จึงอ่าน <b>WIP</b> จากความหนาแนวตั้ง</p></div>
+        <div class="card o" style="padding:9px 13px"><h4>Workflow การอ่าน · ตามรูปทรง</h4><p style="font-size:15px; line-height:1.46">อ่านแนวตั้งหา WIP → แนวนอนหา lead time โดยประมาณ → ดูความชัน Done หา throughput → หาแถบกลางที่กว้างขึ้นเพื่อระบุคอขวด</p></div>
       </div>
     </div>
     <div class="note a" style="font-size:15px"><b>จากกราฟสู่การตัดสินใจ</b> — เมื่อแถบ In Progress กว้างขึ้นต่อเนื่อง อย่าเร่ง “เริ่ม” เพิ่ม: หยุดดึงงาน · ช่วยขั้นปลายน้ำ · ตรวจ exit policy และ WIP limit แล้วดูรอบถัดไปว่าแถบกลับมาคงที่หรือไม่</div>
@@ -39,18 +39,18 @@
 <!-- ===== D : CFD in Plane + LAB 9 ===== -->
 <div class="slot">
  <section class="slide figs">
-  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Cumulative Flow Diagram · ใน Plane</div><h2>Plane CE ไม่มี CFD ในตัว — <em>สร้างจาก state activity ใน LAB 9</em></h2></div>
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Cumulative Flow Diagram · ใน Plane</div><h2>Plane CE ไม่มี CFD ในตัว — <em>สร้างจากประวัติ state ใน LAB 9</em></h2></div>
   <div class="s-body top">
     <div class="figrow c21" style="grid-template-columns:1.35fr .65fr; align-items:start">
       <div><div class="fig shot fix" style="height:385px"><img data-a="lab9:ui-dashboard-cfd" alt="แผง Cumulative Flow 14 วันของ LAB 9 แสดงพื้นที่ completed started unstarted backlog และ cancelled"></div>
-        <div class="figcap">LAB 9 · Cumulative Flow 14 วัน: completed สีเขียว · started สีน้ำเงิน · unstarted สีเทา</div></div>
+        <div class="figcap">ภาพจริงจาก LAB 9 · 14 วัน: completed สีเขียว · started สีน้ำเงิน · unstarted สีเทา; backlog/cancelled เป็นศูนย์จึงไม่เห็นพื้นที่</div></div>
       <div style="display:flex; flex-direction:column; gap:8px">
-        <div class="card c" style="padding:9px 13px"><h4>ข้อจำกัดของ CE v1.4.2</h4><p style="font-size:15px; line-height:1.45">Plane มี <b>Analytics › Work items</b> แต่กราฟ Created vs resolved นับรายเดือนตามเดือนที่สร้างและสถานะปัจจุบัน จึงไม่ใช่ CFD; ไม่พบกราฟ CFD สำเร็จรูปในรุ่นนี้</p></div>
-        <div class="card a" style="padding:9px 13px"><h4>ข้อมูลต้นทาง · Activity + State</h4><p style="font-size:15px; line-height:1.45">เมื่อ state เปลี่ยน Plane บันทึก activity ที่ <code>field="state"</code> พร้อม UUID เดิม/ใหม่; จับคู่ UUID กับ <code>states.group</code> แล้วสร้างจำนวนงานต่อกลุ่ม ณ สิ้นวันย้อนหลัง</p></div>
+        <div class="card c" style="padding:9px 13px"><h4>Plane + ฟีเจอร์ที่เกี่ยวข้อง</h4><p style="font-size:15px; line-height:1.45">Plane CE v1.4.2 ไม่มี CFD ในตัว; <b>Analytics › Work items</b> มี Created vs Resolved ซึ่งผูกแกนเวลากับเดือนที่สร้างและนับ resolved จากกลุ่ม completed ปัจจุบัน จึงไม่ใช่การเล่นประวัติ state</p></div>
+        <div class="card a" style="padding:9px 13px"><h4>การทำงานใน Plane · Activity + State</h4><p style="font-size:15px; line-height:1.45">เมื่อ state เปลี่ยน Plane บันทึก <code>IssueActivity field="state"</code>: ชื่ออยู่ใน <code>old/new_value</code> และ UUID อยู่ใน <code>old/new_identifier</code> · LAB 9 จับคู่ชื่อกับ <code>states.group</code>; งานจริงควรเก็บ UUID เผื่อเปลี่ยนชื่อ state</p></div>
         <div class="card o" style="padding:9px 13px"><h4>Workflow · ดึง → ย้อนสถานะ → วาด</h4><p style="font-size:15px; line-height:1.45"><span class="tag o">LAB 9</span> dashboard ดึง work items, states และ activities ผ่าน REST API · เริ่มจาก state ปัจจุบัน · ย้อน transition หลังจุดตัดเวลา · ทดสอบสูตรก่อนวาดแถบซ้อน</p></div>
       </div>
     </div>
-    <div class="note a" style="font-size:15px"><b>Mini exercise</b> — จากภาพ ช่วง 27–30 ส.ค. แถบ <b>started</b> เปลี่ยนอย่างไร? สิ่งนี้บอกอะไรเกี่ยวกับ WIP และคอขวด? เสนอการตัดสินใจหนึ่งข้อ แล้วระบุว่าต้องดู metric ใดในวันถัดไปเพื่อพิสูจน์ว่าการแก้ได้ผล</div>
+    <div class="note a" style="font-size:15px"><b>Mini exercise</b> — จากภาพ แถบ <b>started</b> กว้างขึ้นถึงราว 28–29 ส.ค. แล้วแคบลงวันที่ 30 ขณะที่ completed โตขึ้น: สิ่งนี้บอกอะไรเกี่ยวกับ WIP? เสนอการตัดสินใจหนึ่งข้อ แล้วระบุ metric ที่ต้องดูวันถัดไปเพื่อพิสูจน์ผล</div>
   </div>
   <div class="s-foot"><span>ตอนที่ 3 · Cumulative Flow Diagram</span><span class="pg"></span></div>
  </section>

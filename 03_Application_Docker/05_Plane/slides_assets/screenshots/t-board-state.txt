@@ -1,0 +1,3 @@
+Plane Lab work items in Board layout, grouped by State with no sub-group; the app sidebar is collapsed so four columns fit the 1440px viewport.
+Backlog 6, Todo 2, Ready 2 and In Progress 2 are fully in frame; In Review, Done and Cancelled are further right on the horizontally scrolling board.
+Cards show state, priority, due date, module, cycle, estimate, label and assignee chips — Backlog holds PLAB-5, 16, 20, 19, 8 and 7, Todo the two DevTools lab chores PLAB-2 and PLAB-3, Ready the CampusEats stories PLAB-15 and PLAB-14, and In Progress PLAB-1 and PLAB-4; the last Backlog card (PLAB-7) runs past the bottom of the viewport.

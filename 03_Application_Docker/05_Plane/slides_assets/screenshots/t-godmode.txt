@@ -1,0 +1,2 @@
+Instance admin General settings is open in God Mode.
+The screen shows DevTools Lab, admin@example.com, the instance ID, and the telemetry setting without exposing credentials.

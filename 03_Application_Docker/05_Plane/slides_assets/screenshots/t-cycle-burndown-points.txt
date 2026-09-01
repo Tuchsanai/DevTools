@@ -1,0 +1,2 @@
+Sprint 2 is open with its work-item list and progress side panel.
+The burndown selector is switched to Estimates, displaying the points-based progress chart.

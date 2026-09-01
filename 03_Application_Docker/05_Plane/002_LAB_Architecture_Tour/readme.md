@@ -41,6 +41,8 @@
 
 ![เส้นทางของ request: เบราว์เซอร์ → proxy → web/admin/space/api/live/minio และ api → db/valkey/mq](../slides_assets/d07-request-path.svg)
 
+> **หมายเหตุของภาพ:** ใช้ภาพนี้ดู **topology ของ route** เท่านั้น; กล่อง “ลองเองใน LAB 2” ที่กล่าวถึง `docker compose ... logs -f proxy` ไม่ตรงกับ proxy build นี้เพราะไม่มี access log — ในแล็บให้ใช้ `bash trace_request.sh` และ response signature ตามข้อ 2
+
 > **คำถามก่อนเริ่ม:** ถ้า `pc stop worker` แล้วไปกดเปลี่ยน state ของ work item ใน UI 5 ครั้ง — หน้าเว็บจะค้าง? จะ error? หรือจะปกติทุกอย่าง? แล้วงาน 5 ชิ้นนั้นไปอยู่ที่ไหน? ข้อ 6 จะให้คำตอบด้วย `rabbitmqctl` และกราฟใน Management UI
 
 ### Terminal Map
@@ -480,9 +482,9 @@ bash mq_ui_bridge.sh
 mq-ui bridge up → forward 15672 and open http://localhost:15672  (plane / plane)
 ```
 
-ในเบราว์เซอร์ → แท็บ **Queues and Streams** เห็น `celery` · Ready **27** · State running แต่ไม่มี consumer :
+ในเบราว์เซอร์ → แท็บ **Queues and Streams** เห็น `celery` · Ready **27** · State running; list view นี้ไม่แสดงจำนวน consumer จึงใช้ผล `consumers 0` จาก T1 ข้อ 6.3 ยืนยันว่า worker ยังหยุดอยู่:
 
-![RabbitMQ Management → Queues and Streams ขณะ worker หยุด: celery Ready 27](./images/ui-rabbitmq-queues-stopped.png)
+![RabbitMQ Management → Queues and Streams แสดง celery Ready 27; จำนวน consumers 0 ยืนยันจาก T1](./images/ui-rabbitmq-queues-stopped.png)
 
 คลิกชื่อ **celery** เข้าไปหน้า *Queue celery* ปล่อยไว้ (refresh ทุก 5 วินาที) แล้วกลับไป T1
 
@@ -553,9 +555,9 @@ pc exec -T -e PGPASSWORD=plane plane-db psql -U plane -d plane -f - < sql_tour.s
 
 ![PLAB-1 หลังแนบไฟล์ — Attachments แสดง campuseats-menu-mockup.png](./images/ui-attachment-plab1.png)
 
-> 📝 **คำอธิบาย:** ใน Network จะเห็น **3 request เรียงกัน**: **(1)** `POST /api/assets/v2/…/attachments/` ส่งแค่ `{"name","size","type"}` → api สร้างแถวใน `file_assets` และตอบ **presigned POST** (URL + ลายเซ็นชั่วคราว) · **(2)** `POST /uploads` **204** — เบราว์เซอร์ส่ง *ตัวไฟล์* ไปที่ `http://localhost:8080/uploads` ซึ่ง Caddy ส่งต่อไป `plane-minio:9000` (route `/{$BUCKET_NAME}/*` ในข้อ 2) — **Django ไม่เคยแตะไฟล์** · **(3)** `PATCH …/attachments/<id>/` บอก api ว่าอัปโหลดเสร็จ (`is_uploaded=true`) แล้ว worker รัน `get_asset_object_metadata` ไป `HEAD` object เก็บ content-type · api สร้าง presigned URL ด้วย host ของ request (`localhost:8080`) นี่คืออีกเหตุผลที่ `WEB_URL`/port ต้องตรงกับที่เบราว์เซอร์ใช้
+> 📝 **คำอธิบาย:** ใน Network จะเห็น **3 request หลักเรียงกัน**: **(1)** `POST /api/assets/v2/…/attachments/` ส่งแค่ `{"name","size","type"}` → api สร้างแถวใน `file_assets` และตอบ **presigned POST** (URL + ลายเซ็นชั่วคราว) · **(2)** `POST /uploads` **204** — เบราว์เซอร์ส่ง *ตัวไฟล์* ไปที่ `http://localhost:8080/uploads` ซึ่ง Caddy ส่งต่อไป `plane-minio:9000` (route `/{$BUCKET_NAME}/*` ในข้อ 2) — **Django ไม่เคยแตะไฟล์** · **(3)** `PATCH …/attachments/<id>/` บอก api ว่าอัปโหลดเสร็จ (`is_uploaded=true`) แล้ว worker รัน `get_asset_object_metadata` ไป `HEAD` object เก็บ content-type · api สร้าง presigned URL ด้วย host ของ request (`localhost:8080`) นี่คืออีกเหตุผลที่ `WEB_URL`/port ต้องตรงกับที่เบราว์เซอร์ใช้ · แถว `GET history` หลังสามแถวนี้เป็น background request ของหน้า ไม่ใช่ขั้นตอน upload
 
-![ลำดับ request ขณะแนบไฟล์ (บันทึกด้วย Playwright page.on("response") แล้วจัดเป็นตาราง — ไม่ใช่ภาพจับหน้าจอแท็บ Network ของ DevTools แต่รายการ/สถานะเหมือนที่จะเห็นในแท็บ Network): POST attachments (presign) → POST /uploads 204 → PATCH attachments](./images/ui-network-presigned-upload.png)
+![สามแถวแรกคือลำดับ upload: POST attachments (presign) → POST /uploads 204 → PATCH attachments; GET history แถวท้ายเป็น background request](./images/ui-network-presigned-upload.png)
 
 พิสูจน์จากอีกสองมุม — ไฟล์ใน volume และแถวใน DB :
 
@@ -592,7 +594,7 @@ bash minio_ui_bridge.sh
 
 > 📝 **คำอธิบาย:** MinIO เปิด 2 port — `9000` = S3 API (ที่ proxy ใช้) และ `9090` = console สำหรับคน · bridge นี้ส่ง `9090` ออกมา → แท็บ **PORTS** forward `9090` → เปิด `http://localhost:9090` → login **access-key / secret-key** (ค่า `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` ใน `plane.env` — LAB เท่านั้น งานจริงต้องเปลี่ยน) → กด **Acknowledge** ในหน้าต่าง License → **Object Browser** → bucket **uploads** → คลิกโฟลเดอร์ `<workspace_id>` เห็นไฟล์ที่เพิ่งแนบ
 
-![MinIO console → Object Browser → uploads/<workspace_id> เห็น object ที่แนบจาก PLAB-1](./images/ui-minio-console.png)
+![MinIO console → Object Browser → uploads/<workspace_id> เห็น 1 object ขนาด 3.6 KiB; ชื่อเต็มยืนยันจาก Attachments และ SQL ด้านบนเพราะคอลัมน์ Name ตัดท้าย](./images/ui-minio-console.png)
 
 ---
 

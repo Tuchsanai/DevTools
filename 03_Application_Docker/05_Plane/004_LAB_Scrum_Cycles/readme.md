@@ -412,7 +412,7 @@ API calls: 3
 
 action item ที่ไม่กลายเป็น work item มักไม่เกิดขึ้นจริง — แปลงมันเลย: **B1** → **Cycles → Sprint 1** → ปุ่ม **Add work item** → Title `ลบ secret ที่ฝังในโค้ดและเพิ่ม pre-commit hook (action item จาก Retro Sprint 1)` → ปุ่ม **Labels** → `tech-debt` → ปุ่ม **Estimate** → `2` → **Save**
 
-![modal Create new work item — ช่อง Cycle เป็น Sprint 1 อัตโนมัติ, 1 Labels (tech-debt), Estimate 2](./images/ui-action-item-modal.png)
+![modal Create new work item — ช่อง Cycle เป็น Sprint 1 อัตโนมัติ, แสดง 1 Labels ที่เลือกไว้ และ Estimate 2; ชื่อ tech-debt ตรวจตอนเปิด picker ตามขั้นก่อนหน้า](./images/ui-action-item-modal.png)
 
 ![Sprint 1 หลังเพิ่ม action item (PLAB-11 ในภาพ) — Work items 3/8, Points 6/21 และเส้น Current กระโดดขึ้นจาก 7 เป็น 8 ที่วันแรก = scope creep](./images/ui-scope-creep.png)
 
@@ -453,7 +453,7 @@ updated cycle 'Sprint 1' id=d1a8db09-93b9-41a6-926e-3cfd35ed5d33
 
 **B1** → reload หน้า **Sprint 1**: ป้ายเป็น **Completed**, วันที่ `Aug 27 - 30, 2026`, มีแถบ *Completed cycles are not editable.* และปุ่ม **Transfer work items** โผล่ในแถบข้าง (ปุ่มนี้มีเฉพาะ cycle ที่ Completed) → คลิก → modal **Transfer work items** → เลือก **Sprint 2** (ป้าย *Upcoming*)
 
-![Sprint 1 หลังย่น end_date — ป้าย Completed, วันที่ Aug 27 - 30, 2026, แถบ Completed cycles are not editable และกราฟย่อเหลือ 4 วัน](./images/ui-cycle-completed.png)
+![Sprint 1 หลังย่น end_date — ป้าย Completed, วันที่ Aug 27 - 30, 2026, แถบ Completed cycles are not editable และกราฟย่อเหลือ 4 วัน; ปุ่ม Transfer work items อยู่ถัดลงไปใน sidebar และ modal ภาพถัดไปยืนยันการเปิดปุ่ม](./images/ui-cycle-completed.png)
 
 ![modal Transfer work items เปิดอยู่ พร้อมรายชื่อ cycle ปลายทาง Sprint 2 · Upcoming](./images/ui-transfer-modal.png)
 

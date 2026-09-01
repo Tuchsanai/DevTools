@@ -1,0 +1,2 @@
+Plane Lab project settings is open on States with workflow groups visible.
+Backlog, Unstarted, Started, Completed, and Cancelled groups are shown, including the custom In Review state.

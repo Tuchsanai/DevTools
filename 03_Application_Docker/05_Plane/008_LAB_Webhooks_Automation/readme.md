@@ -202,8 +202,6 @@ HTTP 200 {"status": "duplicate ignored"}
 HTTP 401 {"error": "signature mismatch"}
 ```
 
-![กำแพงแสดงการ์ดแดง REJECTED จากการ replay แบบแก้ body](./images/ui-event-wall-rejected.png)
-
 ---
 
 ## 7. rules แบบ Butler — บอตตอบกลับผ่าน API
@@ -238,6 +236,10 @@ pc exec -T -e PGPASSWORD=plane plane-db psql -U plane -d plane -c \
 ```
 
 ✅ **Expected output** — comment ของบอตบน PLAB-3 (R1), PLAB-2 (R3, R2)
+
+ภาพนี้จับหลังทดลอง rules แล้วเพื่อให้เห็น state สะสมของกำแพง; การ์ดแดงบนสุดคือผล `--tamper` จากข้อ 6 ส่วน R1 และ loop guard ใต้การ์ดเป็นผลของข้อ 7:
+
+![กำแพงหลังข้อ 7 โดยยังแสดงการ์ดแดง REJECTED จากการ replay แบบแก้ body ในข้อ 6](./images/ui-event-wall-rejected.png)
 
 ---
 
