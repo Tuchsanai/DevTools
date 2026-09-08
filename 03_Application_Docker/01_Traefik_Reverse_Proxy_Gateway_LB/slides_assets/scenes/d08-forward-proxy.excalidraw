@@ -1,0 +1,519 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "t",
+      "type": "text",
+      "x": 40,
+      "y": 24,
+      "strokeColor": "#0b2545",
+      "text": "Forward Proxy — ตัวแทนของ “ฝั่ง client” ตอนจะออกไปข้างนอก",
+      "fontSize": 26,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "zone1",
+      "type": "rectangle",
+      "x": 40,
+      "y": 96,
+      "width": 330,
+      "height": 450,
+      "backgroundColor": "transparent",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "zone1l",
+      "type": "text",
+      "x": 60,
+      "y": 110,
+      "strokeColor": "#1769aa",
+      "text": "เครือข่ายในองค์กร",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "c0",
+      "type": "rectangle",
+      "x": 70,
+      "y": 168,
+      "width": 270,
+      "height": 70,
+      "backgroundColor": "#e8f4ff",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "เครื่องพนักงาน A"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "c1",
+      "type": "rectangle",
+      "x": 70,
+      "y": 260,
+      "width": 270,
+      "height": 70,
+      "backgroundColor": "#e8f4ff",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "เครื่องพนักงาน B"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "c2",
+      "type": "rectangle",
+      "x": 70,
+      "y": 352,
+      "width": 270,
+      "height": 70,
+      "backgroundColor": "#e8f4ff",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "เครื่องพนักงาน C"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "zone1n",
+      "type": "text",
+      "x": 62,
+      "y": 456,
+      "strokeColor": "#5b6b7f",
+      "text": "① ทุกเครื่อง “ตั้งค่าเอง” ว่าจะออกผ่าน proxy\n     curl -x · http_proxy · ตั้งในเบราว์เซอร์",
+      "fontSize": 15,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "proxy",
+      "type": "rectangle",
+      "x": 440,
+      "y": 210,
+      "width": 270,
+      "height": 110,
+      "backgroundColor": "#fff4e6",
+      "strokeColor": "#c2410c",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "label": {
+        "text": "Forward Proxy\n(Squid · tinyproxy)"
+      },
+      "fontSize": 21,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "pnote",
+      "type": "rectangle",
+      "x": 440,
+      "y": 345,
+      "width": 270,
+      "height": 130,
+      "backgroundColor": "transparent",
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "pn",
+      "type": "text",
+      "x": 458,
+      "y": 360,
+      "strokeColor": "#5b6b7f",
+      "text": "② ตรวจนโยบายก่อนปล่อยออก\n③ เก็บ log ว่าใครไปที่ไหน\n④ cache · จำกัดปลายทาง\n⑤ HTTPS เห็นแค่ host:443",
+      "fontSize": 15,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "zone2",
+      "type": "rectangle",
+      "x": 790,
+      "y": 96,
+      "width": 370,
+      "height": 370,
+      "backgroundColor": "transparent",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "zone2l",
+      "type": "text",
+      "x": 810,
+      "y": 110,
+      "strokeColor": "#27864a",
+      "text": "อินเทอร์เน็ต (เว็บปลายทาง)",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "s0",
+      "type": "rectangle",
+      "x": 820,
+      "y": 168,
+      "width": 310,
+      "height": 70,
+      "backgroundColor": "#eaf8ef",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "news.lab"
+      },
+      "fontSize": 19,
+      "fontFamily": 3,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "s1",
+      "type": "rectangle",
+      "x": 820,
+      "y": 260,
+      "width": 310,
+      "height": 70,
+      "backgroundColor": "#ffe9e9",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "social.lab"
+      },
+      "fontSize": 19,
+      "fontFamily": 3,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "s2",
+      "type": "rectangle",
+      "x": 820,
+      "y": 352,
+      "width": 310,
+      "height": 70,
+      "backgroundColor": "#eaf8ef",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "secure.lab : 443"
+      },
+      "fontSize": 19,
+      "fontFamily": 3,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "a0",
+      "type": "arrow",
+      "x": 347.88999569443513,
+      "y": 226.9437290082567,
+      "strokeColor": "#1769aa",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          84.22000861112974,
+          14.112541983486608
+        ]
+      ],
+      "start": {
+        "id": "c0"
+      },
+      "end": {
+        "id": "proxy"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "a1",
+      "type": "arrow",
+      "x": 347.9738323849174,
+      "y": 283.40752710392564,
+      "strokeColor": "#1769aa",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          84.05233523016523,
+          -6.81505420785129
+        ]
+      ],
+      "start": {
+        "id": "c1"
+      },
+      "end": {
+        "id": "proxy"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "a2",
+      "type": "arrow",
+      "x": 318.74518103141776,
+      "y": 349.4948322004514,
+      "strokeColor": "#1769aa",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          113.657178920771,
+          -37.47615088738934
+        ]
+      ],
+      "start": {
+        "id": "c2"
+      },
+      "end": {
+        "id": "proxy"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "b0",
+      "type": "arrow",
+      "x": 717.9055976471325,
+      "y": 242.84963236469446,
+      "strokeColor": "#27864a",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          94.18880470573504,
+          -14.59926472938892
+        ]
+      ],
+      "start": {
+        "id": "proxy"
+      },
+      "end": {
+        "id": "s0"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "b2",
+      "type": "arrow",
+      "x": 717.6519996114458,
+      "y": 308.508859881491,
+      "strokeColor": "#27864a",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          134.94190241645265,
+          41.15728023701803
+        ]
+      ],
+      "start": {
+        "id": "proxy"
+      },
+      "end": {
+        "id": "s2"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "bx",
+      "type": "arrow",
+      "x": 717.9775944791077,
+      "y": 275.7233195859331,
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 3,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          94.04481104178467,
+          7.053360828133748
+        ]
+      ],
+      "start": {
+        "id": "proxy"
+      },
+      "end": {
+        "id": "s1"
+      },
+      "endArrowhead": null,
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "bxl",
+      "type": "text",
+      "x": 716,
+      "y": 232,
+      "strokeColor": "#c92a2a",
+      "text": "✕ ถูกบล็อก",
+      "fontSize": 15,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    },
+    {
+      "id": "foot",
+      "type": "text",
+      "x": 40,
+      "y": 576,
+      "strokeColor": "#5b6b7f",
+      "text": "เว็บปลายทางเห็น IP ของ proxy ไม่ใช่ของพนักงาน · เห็น header  Via: 1.1 <ชื่อ proxy> · ทั้งหมดนี้ “ฝั่ง client” เป็นคนตั้ง ไม่ใช่เจ้าของเว็บ",
+      "fontSize": 16,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:14.258Z",
+      "updatedAt": "2026-08-15T16:05:14.258Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}
