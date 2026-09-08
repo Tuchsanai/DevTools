@@ -1,0 +1,494 @@
+[
+  {
+    "id": "lab003-architecture-rect-1",
+    "type": "rectangle",
+    "x": 0,
+    "y": 0,
+    "width": 1400,
+    "height": 800,
+    "strokeColor": "#ffffff",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "strokeWidth": 1,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": null
+  },
+  {
+    "id": "lab003-architecture-text-2",
+    "type": "text",
+    "x": 50,
+    "y": 28,
+    "text": "Lab 003 · Pod คือหน่วยเล็กที่สุด",
+    "fontSize": 32,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab003-architecture-arrow-3",
+    "type": "arrow",
+    "x": 50,
+    "y": 82,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        1300,
+        0
+      ]
+    ],
+    "strokeColor": "#d4d4d8",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "endArrowhead": null,
+    "startArrowhead": null
+  },
+  {
+    "id": "lab003-architecture-text-4",
+    "type": "text",
+    "x": 50,
+    "y": 92,
+    "text": "ไม่มี Service/Deployment — Browser แอบดู Pod เดียวผ่าน port-forward",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#52525b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab003-architecture-rect-5",
+    "type": "rectangle",
+    "x": 45,
+    "y": 270,
+    "width": 245,
+    "height": 120,
+    "strokeColor": "#18181b",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab003-architecture-rect-6",
+    "type": "rectangle",
+    "x": 45,
+    "y": 270,
+    "width": 245,
+    "height": 34,
+    "strokeColor": "#18181b",
+    "backgroundColor": "#f4f4f5",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": null
+  },
+  {
+    "id": "lab003-architecture-ellipse-7",
+    "type": "ellipse",
+    "x": 57,
+    "y": 280,
+    "width": 12,
+    "height": 12,
+    "strokeColor": "#a32222",
+    "backgroundColor": "#fbeaea",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100
+  },
+  {
+    "id": "lab003-architecture-ellipse-8",
+    "type": "ellipse",
+    "x": 77,
+    "y": 280,
+    "width": 12,
+    "height": 12,
+    "strokeColor": "#86590a",
+    "backgroundColor": "#fdf3dd",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100
+  },
+  {
+    "id": "lab003-architecture-ellipse-9",
+    "type": "ellipse",
+    "x": 97,
+    "y": 280,
+    "width": 12,
+    "height": 12,
+    "strokeColor": "#116b11",
+    "backgroundColor": "#e7f6e7",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100
+  },
+  {
+    "id": "lab003-architecture-text-10",
+    "type": "text",
+    "x": 94.7,
+    "y": 322,
+    "text": "Browser\nlocalhost:3000",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab003-architecture-rect-11",
+    "type": "rectangle",
+    "x": 430,
+    "y": 145,
+    "width": 900,
+    "height": 545,
+    "strokeColor": "#d4d4d8",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "dashed",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab003-architecture-text-12",
+    "type": "text",
+    "x": 450,
+    "y": 157,
+    "text": "namespace · lab003",
+    "fontSize": 22,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab003-architecture-rect-13",
+    "type": "rectangle",
+    "x": 470,
+    "y": 205,
+    "width": 820,
+    "height": 405,
+    "strokeColor": "#d4d4d8",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "dashed",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab003-architecture-text-14",
+    "type": "text",
+    "x": 490,
+    "y": 217,
+    "text": "Worker node",
+    "fontSize": 22,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab003-architecture-rect-15",
+    "type": "rectangle",
+    "x": 520,
+    "y": 300,
+    "width": 180,
+    "height": 130,
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "#eaf2fd",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab003-architecture-text-16",
+    "type": "text",
+    "x": 534,
+    "y": 310,
+    "text": "Pod",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#1c5cab",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab003-architecture-text-17",
+    "type": "text",
+    "x": 537.2,
+    "y": 353,
+    "text": "web\ncontainer: web",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab003-architecture-rect-18",
+    "type": "rectangle",
+    "x": 760,
+    "y": 260,
+    "width": 330,
+    "height": 190,
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "#eaf2fd",
+    "fillStyle": "solid",
+    "strokeWidth": 3,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab003-architecture-text-19",
+    "type": "text",
+    "x": 780,
+    "y": 275,
+    "text": "Pod · web2",
+    "fontSize": 22,
+    "fontFamily": "2",
+    "strokeColor": "#1c5cab",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab003-architecture-rect-20",
+    "type": "rectangle",
+    "x": 790,
+    "y": 335,
+    "width": 125,
+    "height": 80,
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "#eaf2fd",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab003-architecture-text-21",
+    "type": "text",
+    "x": 836.9,
+    "y": 362.5,
+    "text": "web",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab003-architecture-rect-22",
+    "type": "rectangle",
+    "x": 935,
+    "y": 335,
+    "width": 125,
+    "height": 80,
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "#eaf2fd",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab003-architecture-text-23",
+    "type": "text",
+    "x": 961.1,
+    "y": 362.5,
+    "text": "sidecar",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab003-architecture-arrow-24",
+    "type": "arrow",
+    "x": 935,
+    "y": 375,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        -20,
+        0
+      ]
+    ],
+    "strokeColor": "#116b11",
+    "strokeWidth": 3,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "endArrowhead": "arrow",
+    "startArrowhead": null
+  },
+  {
+    "id": "lab003-architecture-rect-25",
+    "type": "rectangle",
+    "x": 1110,
+    "y": 300,
+    "width": 145,
+    "height": 105,
+    "strokeColor": "#a32222",
+    "backgroundColor": "#fbeaea",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab003-architecture-text-26",
+    "type": "text",
+    "x": 1118,
+    "y": 327.5,
+    "text": "web-broken\nImagePullBackOff",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab003-architecture-rect-27",
+    "type": "rectangle",
+    "x": 585,
+    "y": 520,
+    "width": 580,
+    "height": 60,
+    "strokeColor": "#116b11",
+    "backgroundColor": "#e7f6e7",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab003-architecture-text-28",
+    "type": "text",
+    "x": 646.2,
+    "y": 537.5,
+    "text": "web + sidecar แชร์ localhost ใน Pod เดียวกัน",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab003-architecture-arrow-29",
+    "type": "arrow",
+    "x": 290,
+    "y": 330,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        140,
+        0
+      ],
+      [
+        230,
+        22
+      ]
+    ],
+    "strokeColor": "#1c5cab",
+    "strokeWidth": 3,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "endArrowhead": "arrow",
+    "startArrowhead": null,
+    "elbowed": true
+  },
+  {
+    "id": "lab003-architecture-text-30",
+    "type": "text",
+    "x": 305,
+    "y": 290,
+    "text": "port-forward",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#1c5cab",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  }
+]

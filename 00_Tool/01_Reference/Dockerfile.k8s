@@ -1,0 +1,602 @@
+# syntax=docker/dockerfile:1
+# ---------------------------------------------------------------------------
+# DevTools Kubernetes Learning Container  —  ไฟล์เดียวจบ ไม่ต้องพึ่ง base image
+#
+#   Ubuntu 26.04 LTS
+#     + Docker-in-Docker (docker-ce, buildx, compose)
+#     + Python 3 (venv พร้อมใช้ + uv)  + Node.js LTS + git ล่าสุด + gh
+#     + SSH
+#     + Kubernetes Tier 1: kubectl kind k3d helm k9s stern kubectx kubens
+#                          kustomize yq krew
+#     + Kubernetes Tier 2: argocd flux trivy kube-linter kubeconform skaffold
+#
+#   build:  docker build -f Dockerfile.k8s -t devtools-k8s:2569_1 .
+#   หรือ:   docker compose build
+# ---------------------------------------------------------------------------
+
+ARG UBUNTU_VERSION=26.04
+FROM ubuntu:${UBUNTU_VERSION}
+
+# ---- ระบบ -----------------------------------------------------------------
+ARG TZ=Asia/Bangkok
+ARG ROOT_PASSWORD=passwd
+ARG NODE_MAJOR=24
+ARG BUILD_DATE=unknown
+ARG VCS_REF=unknown
+
+# ---- Kubernetes toolchain (ตรวจสอบเวอร์ชันแล้ว ณ 2026-09-02) ---------------
+ARG KUBECTL_VERSION=v1.37.0
+ARG KIND_VERSION=v0.33.0
+ARG KIND_NODE_VERSION=v1.36.4
+ARG K3D_VERSION=v5.9.0
+ARG HELM_VERSION=v4.2.4
+ARG K9S_VERSION=v0.51.0
+ARG STERN_VERSION=v1.34.0
+ARG KUBECTX_VERSION=v0.11.0
+ARG KUSTOMIZE_VERSION=v5.8.1
+ARG YQ_VERSION=v4.53.6
+ARG KREW_VERSION=v0.5.0
+ARG ARGOCD_VERSION=v3.5.2
+ARG FLUX_VERSION=v2.9.5
+ARG TRIVY_VERSION=v0.74.0
+ARG KUBELINTER_VERSION=v0.8.3
+ARG KUBECONFORM_VERSION=v0.8.0
+ARG SKAFFOLD_VERSION=v2.24.0
+
+LABEL org.opencontainers.image.title="DevTools Kubernetes Learning Container" \
+      org.opencontainers.image.description="Ubuntu 26.04 + Docker-in-Docker + Python + Node.js + Kubernetes toolchain (Tier 1 + Tier 2)" \
+      org.opencontainers.image.source="https://github.com/tuchsanai/DevTools" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.revision="${VCS_REF}"
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=${TZ} \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    # /opt/venv มาก่อน system python เพื่อเลี่ยง PEP 668 (externally-managed-environment)
+    VIRTUAL_ENV=/opt/venv \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_ROOT_USER_ACTION=ignore \
+    UV_LINK_MODE=copy \
+    KREW_ROOT=/usr/local/krew \
+    KUBE_EDITOR=nano \
+    PATH=/usr/local/krew/bin:/opt/venv/bin:/usr/local/bin:$PATH
+
+# KIND_NODE_VERSION ต้องอ่านได้ตอน runtime ด้วย (k8s-bootstrap ใช้)
+ENV KIND_NODE_VERSION=${KIND_NODE_VERSION}
+
+# bash + -euo pipefail: ทำให้ `curl ... | bash` ที่พังกลางทาง ทำให้ build ล้มจริง
+# (ด้วย /bin/sh ปกติ exit code ของ pipe จะถูกกลืน = build ผ่านทั้งที่ของไม่ครบ)
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
+
+# ===========================================================================
+# ส่วนที่ 1 — ระบบพื้นฐาน
+# ===========================================================================
+
+# เปิด apt cache ให้ BuildKit เก็บ .deb ข้าม build ได้ (rebuild เร็วขึ้นมาก)
+# ไฟล์ใน cache mount ไม่ถูกนับเข้า image layer -> image ไม่บวม
+RUN rm -f /etc/apt/apt.conf.d/docker-clean \
+ && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+
+# curl retry อัตโนมัติทุกครั้ง — build ตัวนี้ดาวน์โหลดจาก GitHub ~1 GB
+# เน็ตสะดุดครั้งเดียว build ล้มทั้งกอง (ไม่ใช้ retry-all-errors เพื่อให้ 404 ยัง
+# ล้มทันที ไม่ต้องรอ retry ครบ) ไฟล์นี้ติดไปกับ image ทำให้ curl ของ นศ. ทนขึ้นด้วย
+COPY <<'EOF' /root/.curlrc
+retry = 5
+retry-delay = 3
+retry-connrefused
+connect-timeout = 30
+EOF
+
+# --- 1.1 เครื่องมือพื้นฐาน + Python + timezone ------------------------------
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates curl wget gnupg lsb-release software-properties-common \
+        sudo tini tzdata procps psmisc iproute2 \
+        vim nano less tree htop tmux bash-completion \
+        net-tools iputils-ping dnsutils rsync unzip zip jq ripgrep \
+        build-essential make pkg-config \
+        openssh-server openssh-client \
+        python3 python3-pip python3-venv python-is-python3 \
+ && ln -fs "/usr/share/zoneinfo/${TZ}" /etc/localtime \
+ && dpkg-reconfigure -f noninteractive tzdata
+
+# --- 1.2 Git ล่าสุดจาก git-core PPA + self-test worktree --------------------
+# ถ้า worktree ใช้ไม่ได้ ให้ build ล้มตั้งแต่ตอนนี้ ดีกว่าไปเจอตอน นศ. ใช้งาน
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    add-apt-repository -y ppa:git-core/ppa \
+ && apt-get update && apt-get install -y --no-install-recommends git git-lfs \
+ && git --version \
+ && git init -q /tmp/worktree-check \
+ && git -C /tmp/worktree-check worktree list >/dev/null \
+ && rm -rf /tmp/worktree-check
+
+# --- 1.3 Docker Engine (Docker-in-Docker) จาก repo ทางการ -------------------
+# ใช้ keyring แยกไฟล์ + signed-by (วิธีปัจจุบัน) ไม่ใช่ apt-key ที่ deprecated แล้ว
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    install -m 0755 -d /etc/apt/keyrings \
+ && curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc \
+ && chmod a+r /etc/apt/keyrings/docker.asc \
+ && printf 'deb [arch=%s signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu %s stable\n' \
+      "$(dpkg --print-architecture)" \
+      "$(. /etc/os-release && echo "${VERSION_CODENAME}")" \
+      > /etc/apt/sources.list.d/docker.list \
+ && apt-get update && apt-get install -y --no-install-recommends \
+        docker-ce docker-ce-cli containerd.io \
+        docker-buildx-plugin docker-compose-plugin \
+ && dockerd --version && docker buildx version && docker compose version
+
+# ค่า default ของ dockerd ข้างใน: บังคับ overlay2 (กัน fallback ไป vfs ที่ช้ามาก)
+# และหมุน log ไม่ให้ disk เต็มระหว่างเรียน
+COPY <<'EOF' /etc/docker/daemon.json
+{
+  "storage-driver": "overlay2",
+  "log-driver": "json-file",
+  "log-opts": { "max-size": "10m", "max-file": "3" }
+}
+EOF
+
+# --- 1.4 Node.js LTS + corepack (เปิดใช้ pnpm / yarn ได้ทันที) --------------
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    curl -fsSL "https://deb.nodesource.com/setup_${NODE_MAJOR}.x" | bash - \
+ && apt-get install -y --no-install-recommends nodejs \
+ && npm install -g npm@latest \
+ && corepack enable \
+ && node --version && npm --version
+
+# --- 1.5 Python: venv กลาง + uv --------------------------------------------
+# ทำ venv ไว้ที่ /opt/venv เพื่อให้ `pip install` ใช้ได้เลย ไม่ชน PEP 668
+RUN python3 -m venv "${VIRTUAL_ENV}" \
+ && "${VIRTUAL_ENV}/bin/pip" install --no-cache-dir --upgrade pip setuptools wheel \
+ && curl -fsSL https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh \
+ && uv --version && python --version && pip --version
+
+# --- 1.6 GitHub CLI ---------------------------------------------------------
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+      -o /etc/apt/keyrings/githubcli.gpg \
+ && chmod a+r /etc/apt/keyrings/githubcli.gpg \
+ && printf 'deb [arch=%s signed-by=/etc/apt/keyrings/githubcli.gpg] https://cli.github.com/packages stable main\n' \
+      "$(dpkg --print-architecture)" > /etc/apt/sources.list.d/github-cli.list \
+ && apt-get update && apt-get install -y --no-install-recommends gh \
+ && gh --version
+
+# ===========================================================================
+# ส่วนที่ 2 — Kubernetes toolchain
+# ===========================================================================
+
+# --- 2.1 Tier 1 core: kubectl / helm / kind / k3d ---------------------------
+# kubectl กับ helm ตรวจ sha256 จาก URL ทางการ
+# (ที่เหลือ upstream ไม่ได้ให้ checksum รูปแบบเดียวกัน — ดึงผ่าน TLS จาก release ทางการ)
+RUN <<'EOT'
+set -euo pipefail
+ARCH="$(dpkg --print-architecture)"
+
+# kubectl + ตรวจ checksum
+curl -fsSL -o /usr/local/bin/kubectl \
+  "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl"
+curl -fsSL -o /tmp/kubectl.sha256 \
+  "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl.sha256"
+echo "$(cat /tmp/kubectl.sha256)  /usr/local/bin/kubectl" | sha256sum -c -
+chmod 0755 /usr/local/bin/kubectl
+rm -f /tmp/kubectl.sha256
+
+# helm + ตรวจ checksum (ไฟล์ .sha256sum อ้างชื่อ tarball ตรง ๆ จึงต้อง cd ให้ตรง)
+helm_tgz="helm-${HELM_VERSION}-linux-${ARCH}.tar.gz"
+cd /tmp
+curl -fsSL -O "https://get.helm.sh/${helm_tgz}"
+curl -fsSL -O "https://get.helm.sh/${helm_tgz}.sha256sum"
+sha256sum -c "${helm_tgz}.sha256sum"
+tar xzf "$helm_tgz" "linux-${ARCH}/helm"
+install -m 0755 "linux-${ARCH}/helm" /usr/local/bin/helm
+rm -rf "/tmp/${helm_tgz}" "/tmp/${helm_tgz}.sha256sum" "/tmp/linux-${ARCH}"
+cd /
+
+curl -fsSL -o /usr/local/bin/kind \
+  "https://github.com/kubernetes-sigs/kind/releases/download/${KIND_VERSION}/kind-linux-${ARCH}"
+curl -fsSL -o /usr/local/bin/k3d \
+  "https://github.com/k3d-io/k3d/releases/download/${K3D_VERSION}/k3d-linux-${ARCH}"
+chmod 0755 /usr/local/bin/kind /usr/local/bin/k3d
+
+kubectl version --client=true
+helm version --short
+kind --version
+k3d --version
+EOT
+
+# --- 2.2 Tier 1 UX: k9s / stern / kubectx / kubens / kustomize / yq / krew ---
+RUN <<'EOT'
+set -euo pipefail
+ARCH="$(dpkg --print-architecture)"
+case "$ARCH" in
+  amd64) ALT=x86_64 ;;
+  arm64) ALT=arm64  ;;
+  *) echo "unsupported arch: $ARCH" >&2; exit 1 ;;
+esac
+
+# tarbin <ชื่อคำสั่ง> <url> <path ของไฟล์ใน tar>
+tarbin() {
+  tmp="$(mktemp -d)"
+  curl -fsSL "$2" | tar xz -C "$tmp" "$3"
+  install -m 0755 "$tmp/$3" "/usr/local/bin/$1"
+  rm -rf "$tmp"
+}
+
+tarbin k9s       "https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_Linux_${ARCH}.tar.gz" k9s
+tarbin stern     "https://github.com/stern/stern/releases/download/${STERN_VERSION}/stern_${STERN_VERSION#v}_linux_${ARCH}.tar.gz" stern
+tarbin kustomize "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_linux_${ARCH}.tar.gz" kustomize
+tarbin kubectx   "https://github.com/ahmetb/kubectx/releases/download/${KUBECTX_VERSION}/kubectx_${KUBECTX_VERSION}_linux_${ALT}.tar.gz" kubectx
+tarbin kubens    "https://github.com/ahmetb/kubectx/releases/download/${KUBECTX_VERSION}/kubens_${KUBECTX_VERSION}_linux_${ALT}.tar.gz" kubens
+
+curl -fsSL -o /usr/local/bin/yq \
+  "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${ARCH}"
+chmod 0755 /usr/local/bin/yq
+
+# krew: ติดตั้งตัวเองเข้า KREW_ROOT แล้วลง plugin ที่ใช้สอนบ่อย
+tmp="$(mktemp -d)"
+curl -fsSL "https://github.com/kubernetes-sigs/krew/releases/download/${KREW_VERSION}/krew-linux_${ARCH}.tar.gz" \
+  | tar xz -C "$tmp"
+"$tmp/krew-linux_${ARCH}" install krew
+rm -rf "$tmp"
+kubectl krew install neat tree
+
+k9s version --short
+stern --version
+kustomize version
+yq --version
+kubectl krew version | head -3
+EOT
+
+# --- 2.3 Tier 2: argocd / flux / trivy / kube-linter / kubeconform / skaffold -
+# ชั้นนี้หนักที่สุด (~657 MB) เพราะ argocd 238 MB + trivy 161 MB + skaffold 124 MB
+# ถ้าอยากลดขนาด image ให้ตัดชั้นนี้ออก แล้วใช้ wrapper script เรียกผ่าน container
+# แทน (ดู readme-k8s.md หัวข้อ "ขนาด image")
+RUN <<'EOT'
+set -euo pipefail
+ARCH="$(dpkg --print-architecture)"
+case "$ARCH" in
+  amd64) TRIVY_ARCH="64bit"; KL_ASSET="kube-linter-linux.tar.gz" ;;
+  arm64) TRIVY_ARCH="ARM64"; KL_ASSET="kube-linter-linux_arm64.tar.gz" ;;
+esac
+
+tarbin() {
+  tmp="$(mktemp -d)"
+  curl -fsSL "$2" | tar xz -C "$tmp" "$3"
+  install -m 0755 "$tmp/$3" "/usr/local/bin/$1"
+  rm -rf "$tmp"
+}
+
+curl -fsSL -o /usr/local/bin/argocd \
+  "https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_VERSION}/argocd-linux-${ARCH}"
+curl -fsSL -o /usr/local/bin/skaffold \
+  "https://github.com/GoogleContainerTools/skaffold/releases/download/${SKAFFOLD_VERSION}/skaffold-linux-${ARCH}"
+chmod 0755 /usr/local/bin/argocd /usr/local/bin/skaffold
+
+tarbin flux        "https://github.com/fluxcd/flux2/releases/download/${FLUX_VERSION}/flux_${FLUX_VERSION#v}_linux_${ARCH}.tar.gz" flux
+tarbin trivy       "https://github.com/aquasecurity/trivy/releases/download/${TRIVY_VERSION}/trivy_${TRIVY_VERSION#v}_Linux-${TRIVY_ARCH}.tar.gz" trivy
+tarbin kube-linter "https://github.com/stackrox/kube-linter/releases/download/${KUBELINTER_VERSION}/${KL_ASSET}" kube-linter
+tarbin kubeconform "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-${ARCH}.tar.gz" kubeconform
+
+argocd version --client --short
+flux --version
+trivy --version | head -1
+kube-linter version
+kubeconform -v
+skaffold version
+EOT
+
+# ===========================================================================
+# ส่วนที่ 3 — shell / SSH / สคริปต์ช่วยสอน
+# ===========================================================================
+
+# --- 3.1 completion + alias (pre-generate ไว้ ไม่ต้องคำนวณตอนเปิด shell) ----
+RUN <<'EOT'
+set -euo pipefail
+d=/etc/bash_completion.d
+install -d "$d"
+kubectl  completion bash   > "$d/kubectl"
+helm     completion bash   > "$d/helm"
+kind     completion bash   > "$d/kind"
+k3d      completion bash   > "$d/k3d"
+k9s      completion bash   > "$d/k9s"
+flux     completion bash   > "$d/flux"
+argocd   completion bash   > "$d/argocd"
+stern    --completion bash > "$d/stern"
+skaffold completion bash   > "$d/skaffold"
+
+cat > /etc/profile.d/devtools.sh <<'PROF'
+export KREW_ROOT=/usr/local/krew
+export PATH="$KREW_ROOT/bin:$PATH"
+export KUBE_EDITOR=nano
+alias k=kubectl
+alias kgp='kubectl get pods'
+alias kgn='kubectl get nodes'
+alias kaf='kubectl apply -f'
+alias kdes='kubectl describe'
+[ -f /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
+source /opt/venv/bin/activate 2>/dev/null || true
+# ให้ alias k ใช้ completion ของ kubectl ได้ด้วย
+if declare -F __start_kubectl >/dev/null 2>&1; then
+  complete -o default -F __start_kubectl k
+fi
+PROF
+
+# bash แบบ non-login (docker exec -it ... bash) อ่าน ~/.bashrc เท่านั้น
+printf '\nsource /etc/profile.d/devtools.sh\n' >> /root/.bashrc
+EOT
+
+# --- 3.2 SSH: root login ด้วย password (สำหรับห้องเรียนเท่านั้น) ------------
+# เขียนเป็น drop-in ใน sshd_config.d/ แทนการ sed แก้ไฟล์หลัก
+RUN echo "root:${ROOT_PASSWORD}" | chpasswd \
+ && mkdir -p /etc/ssh/sshd_config.d \
+ && printf 'PermitRootLogin yes\nPasswordAuthentication yes\nUseDNS no\nClientAliveInterval 60\nAcceptEnv LANG LC_*\n' \
+      > /etc/ssh/sshd_config.d/10-devtools.conf \
+ && sshd -t -f /etc/ssh/sshd_config \
+ && install -d /workspace /etc/devtools
+
+# --- 3.3 kind cluster template ----------------------------------------------
+# 1 control-plane + 2 worker, เปิดพอร์ต 80/443 ทะลุออกมาที่ container นี้
+# (compose map ต่อออก host เป็น 8080/8443 อีกที)
+COPY <<'EOF' /etc/devtools/kind-cluster.yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "ingress-ready=true"
+    extraPortMappings:
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+      - containerPort: 443
+        hostPort: 443
+        protocol: TCP
+  - role: worker
+  - role: worker
+EOF
+
+COPY --chmod=0755 <<'EOF' /usr/local/bin/k8s-bootstrap
+#!/usr/bin/env bash
+# สร้าง kind cluster + ลง add-on ที่จำเป็นสำหรับการเรียน
+set -euo pipefail
+
+CLUSTER="${CLUSTER:-devtools}"
+NODE_IMAGE="kindest/node:${KIND_NODE_VERSION:-v1.36.4}"
+CONFIG="${KIND_CONFIG:-/etc/devtools/kind-cluster.yaml}"
+
+do_metrics=1; do_ingress=1; do_certmgr=0; do_monitor=0
+usage() {
+  cat <<USAGE
+ใช้: k8s-bootstrap [options]
+  --no-metrics     ไม่ลง metrics-server (default: ลง)
+  --no-ingress     ไม่ลง ingress-nginx  (default: ลง)
+  --cert-manager   ลง cert-manager
+  --monitoring     ลง kube-prometheus-stack (หนัก ~5-10 นาที)
+  --all            ลงทุกอย่าง
+  --single-node    คลัสเตอร์ node เดียว (เครื่องแรมน้อย)
+env: CLUSTER=<ชื่อ>  KIND_NODE_VERSION=<vX.Y.Z>
+USAGE
+}
+for a in "$@"; do case "$a" in
+  --no-metrics) do_metrics=0 ;;
+  --no-ingress) do_ingress=0 ;;
+  --cert-manager) do_certmgr=1 ;;
+  --monitoring) do_monitor=1 ;;
+  --all) do_certmgr=1; do_monitor=1 ;;
+  --single-node) CONFIG="" ;;
+  -h|--help) usage; exit 0 ;;
+  *) echo "ไม่รู้จัก option: $a" >&2; usage; exit 2 ;;
+esac; done
+
+say() { printf '\n\033[1;36m==> %s\033[0m\n' "$*"; }
+
+docker info >/dev/null 2>&1 || { echo "dockerd ไม่ทำงาน — ลืม --privileged?" >&2; exit 1; }
+
+if kind get clusters 2>/dev/null | grep -qx "$CLUSTER"; then
+  say "cluster '$CLUSTER' มีอยู่แล้ว — ข้ามการสร้าง"
+else
+  say "สร้าง kind cluster '$CLUSTER' ($NODE_IMAGE)"
+  if [ -n "$CONFIG" ]; then
+    kind create cluster --name "$CLUSTER" --image "$NODE_IMAGE" --config "$CONFIG" --wait 300s
+  else
+    kind create cluster --name "$CLUSTER" --image "$NODE_IMAGE" --wait 300s
+  fi
+fi
+
+kubectl cluster-info --context "kind-$CLUSTER"
+kubectl get nodes -o wide
+
+if [ "$do_metrics" = 1 ]; then
+  say "ลง metrics-server (kubectl top / HPA ต้องใช้)"
+  helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/ >/dev/null
+  helm repo update >/dev/null
+  helm upgrade --install metrics-server metrics-server/metrics-server \
+    -n kube-system \
+    --set 'args={--kubelet-insecure-tls}' \
+    --wait --timeout 5m
+fi
+
+if [ "$do_ingress" = 1 ]; then
+  say "ลง ingress-nginx (โหมด kind: hostPort 80/443)"
+  helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx >/dev/null
+  helm repo update >/dev/null
+  helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+    -n ingress-nginx --create-namespace \
+    --set controller.hostPort.enabled=true \
+    --set controller.service.type=NodePort \
+    --set-string controller.nodeSelector."ingress-ready"=true \
+    --set controller.tolerations[0].key=node-role.kubernetes.io/control-plane \
+    --set controller.tolerations[0].operator=Exists \
+    --set controller.tolerations[0].effect=NoSchedule \
+    --wait --timeout 5m
+fi
+
+if [ "$do_certmgr" = 1 ]; then
+  say "ลง cert-manager"
+  helm repo add jetstack https://charts.jetstack.io >/dev/null
+  helm repo update >/dev/null
+  helm upgrade --install cert-manager jetstack/cert-manager \
+    -n cert-manager --create-namespace --set crds.enabled=true --wait --timeout 5m
+fi
+
+if [ "$do_monitor" = 1 ]; then
+  say "ลง kube-prometheus-stack (ใช้เวลาสักพัก)"
+  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts >/dev/null
+  helm repo update >/dev/null
+  helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
+    -n monitoring --create-namespace --wait --timeout 15m
+fi
+
+say "เสร็จแล้ว"
+kubectl get pods -A
+cat <<TIP
+
+ต่อไปลองได้เลย:
+  k9s                       # TUI ดูคลัสเตอร์ทั้งก้อน
+  kubectl top nodes         # ต้องมี metrics-server
+  kubectl get ingress -A
+  ลบทิ้ง: k8s-teardown
+TIP
+EOF
+
+COPY --chmod=0755 <<'EOF' /usr/local/bin/k8s-teardown
+#!/usr/bin/env bash
+set -euo pipefail
+CLUSTER="${CLUSTER:-devtools}"
+kind delete cluster --name "$CLUSTER"
+EOF
+
+# ===========================================================================
+# ส่วนที่ 4 — Entrypoint
+# ===========================================================================
+COPY --chmod=0755 <<'EOF' /usr/local/bin/docker-entrypoint.sh
+#!/usr/bin/env bash
+set -euo pipefail
+log() { printf '[entrypoint] %s\n' "$*" >&2; }
+
+# ---------------------------------------------------------------------------
+# 1) cgroup v2 delegation — ต้องทำ "ก่อน" dockerd start
+#
+# node ของ kind รัน systemd เป็น PID 1 ซึ่งต้องใช้ controller memory/io
+# แต่ cgroup root ของ container ตั้งต้นมา subtree_control ว่างเปล่า
+# ถ้าไม่ delegate ให้ kind จะล้มด้วย:
+#   could not find a log line that matches "Reached target .*Multi-User System.*"
+#
+# กฎ "no internal processes" ของ cgroup v2 ห้ามเปิด controller ขณะที่ยังมี
+# process อยู่ใน cgroup นั้น จึงต้องย้าย process ไป /init ก่อน
+# (ขั้นตอนเดียวกับที่ image `docker:dind` ทางการทำ)
+# ---------------------------------------------------------------------------
+if [[ -f /sys/fs/cgroup/cgroup.controllers ]]; then
+  if mkdir -p /sys/fs/cgroup/init 2>/dev/null; then
+    # ต้องอ่านรายชื่อ pid ให้จบ "ก่อน" ย้าย — ถ้า while-read จากไฟล์โดยตรง
+    # ไฟล์จะเปลี่ยนระหว่างอ่าน ทำให้ loop จบตั้งแต่ pid แรก และย้ายไม่ครบ
+    # วน 3 รอบเพราะอาจมี process เกิดใหม่ระหว่างย้าย
+    for _pass in 1 2 3; do
+      pids="$(cat /sys/fs/cgroup/cgroup.procs)"
+      [[ -z "$pids" ]] && break
+      for pid in $pids; do
+        echo "$pid" > /sys/fs/cgroup/init/cgroup.procs 2>/dev/null || true
+      done
+    done
+    moved="$(wc -l < /sys/fs/cgroup/init/cgroup.procs)"
+    failed=""
+    for c in $(cat /sys/fs/cgroup/cgroup.controllers); do
+      echo "+$c" > /sys/fs/cgroup/cgroup.subtree_control 2>/dev/null || failed="$failed $c"
+    done
+    log "cgroup v2 delegation: ย้าย $moved procs -> /init, เปิด [$(cat /sys/fs/cgroup/cgroup.subtree_control)]"
+    if [[ -n "$failed" ]]; then
+      log "WARN: delegate ไม่สำเร็จ:$failed — kind/k3d อาจสร้างคลัสเตอร์ไม่ได้"
+      log "      ตรวจว่ารัน container ด้วย --privileged แล้วหรือยัง"
+    fi
+  else
+    log "WARN: /sys/fs/cgroup เขียนไม่ได้ (ต้อง --privileged)"
+  fi
+fi
+
+# ---- 2) inotify limit — kind สร้าง node ไม่ผ่านบ่อยมากถ้าค่านี้ต่ำ ----------
+warned=0
+for pair in max_user_watches:524288 max_user_instances:512; do
+  name="${pair%%:*}"; want="${pair##*:}"; f="/proc/sys/fs/inotify/$name"
+  if [[ -w "$f" ]]; then
+    cur="$(cat "$f")"
+    if (( cur < want )); then echo "$want" > "$f" && log "fs.inotify.$name: $cur -> $want"; fi
+  elif (( warned == 0 )); then
+    log "WARN: ปรับ fs.inotify ไม่ได้ (ต้อง --privileged)"
+    warned=1
+  fi
+done
+
+# ---- 3) registry mirror (ห้องเรียนหลายคน pull พร้อมกัน) --------------------
+if [[ -n "${REGISTRY_MIRROR:-}" ]]; then
+  tmp="$(mktemp)"
+  jq --arg m "$REGISTRY_MIRROR" '.["registry-mirrors"]=[$m]' /etc/docker/daemon.json > "$tmp"
+  mv "$tmp" /etc/docker/daemon.json
+  log "registry mirror: $REGISTRY_MIRROR"
+fi
+
+# ---- 4) SSH ----------------------------------------------------------------
+mkdir -p /run/sshd
+ssh-keygen -A >/dev/null 2>&1 || true   # สร้าง host key ตอน run ครั้งแรก
+/usr/sbin/sshd
+log "sshd listening on :22"
+
+# ---- 5) Docker daemon (DinD) ----------------------------------------------
+if [[ "${START_DOCKERD:-1}" == "1" ]]; then
+  dockerd >/var/log/dockerd.log 2>&1 &
+  dockerd_pid=$!
+
+  timeout="${DOCKERD_TIMEOUT:-60}"
+  log "waiting for dockerd (timeout ${timeout}s)..."
+  for _ in $(seq 1 "$timeout"); do
+    if docker info >/dev/null 2>&1; then
+      log "dockerd ready: $(docker version --format '{{.Server.Version}}')"
+      break
+    fi
+    if ! kill -0 "$dockerd_pid" 2>/dev/null; then
+      log "ERROR: dockerd exited. tail of /var/log/dockerd.log:"
+      tail -n 30 /var/log/dockerd.log >&2 || true
+      log "HINT: ต้องรัน container ด้วย --privileged"
+      exit 1
+    fi
+    sleep 1
+  done
+
+  docker info >/dev/null 2>&1 \
+    || log "WARN: dockerd ยังไม่พร้อมหลัง ${timeout}s — ดู /var/log/dockerd.log"
+fi
+
+# `docker run -d` (ไม่มี TTY) + CMD bash => bash เจอ EOF แล้ว exit ทันที container ตาย
+# กรณีนี้ให้ค้างไว้แทน แล้วผู้ใช้เข้าทาง `docker exec -it <name> bash`
+# (`docker run -it` ยังได้ shell ปกติ, `docker run <img> kubectl version` ยังรันคำสั่งปกติ)
+if [[ $# -eq 1 && "$1" == "bash" && ! -t 0 ]]; then
+  log "no TTY attached — container จะค้างไว้ ใช้: docker exec -it <name> bash"
+  exec sleep infinity
+fi
+
+exec "$@"
+EOF
+
+# storage ของ inner docker ต้องอยู่บน volume ไม่ใช่ overlay layer ของ container
+VOLUME /var/lib/docker
+
+EXPOSE 22
+
+WORKDIR /workspace
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
+  CMD pgrep -x sshd >/dev/null && { [ "${START_DOCKERD:-1}" != "1" ] || docker info >/dev/null 2>&1; }
+
+# tini เป็น PID 1: reap zombie process ที่ dockerd/containerd/kind ทิ้งไว้
+# + ส่งต่อ signal ให้ `docker stop` ปิดได้สะอาด
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
+CMD ["bash"]

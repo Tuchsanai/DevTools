@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-emptydir
+  namespace: k8s-lab-ref
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-emptydir
+  template:
+    metadata:
+      labels:
+        app: db-emptydir
+    spec:
+      containers:
+        - name: db
+          image: k8s-lab-db:v1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRES_DB
+              value: skillspace
+            - name: POSTGRES_USER
+              value: opsuser
+            - name: POSTGRES_PASSWORD
+              value: labpass
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "opsuser", "-d", "skillspace"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: data
+          emptyDir: {}

@@ -1,0 +1,19 @@
+งาน: แก้ README ของแล็บทั้ง 21 ตัวตามรายการตรวจของ yolo1 — งานเชิงกล ห้ามเปลี่ยนเนื้อหา/ผลรัน/ภาพ นอกจากที่ระบุ
+
+อ่านก่อน:
+- รายการที่ต้องแก้ (ยึดเป็นหลัก) : /root/workspace/DevTools/05_kubernetes/.work/lab-fixes.md
+- เทมเพลต README (ลำดับหัวเรื่อง) : /root/workspace/DevTools/05_kubernetes/PROMPT_Kubernetes_Course_Spec.txt ส่วนที่ 4
+- เครื่องมือตรวจ : python3 /root/workspace/DevTools/05_kubernetes/.work/tools/check-readme.py <โฟลเดอร์แล็บ>...   (ต้องได้ 0 FAIL ทุกแล็บเมื่อจบงาน)
+
+สิ่งที่ต้องทำ:
+1. รัน linter กับทั้ง 21 แล็บ (โฟลเดอร์ 0NN-* ใน 3 ครั้ง) บันทึกผลก่อนแก้
+2. แก้ทุก FAIL: จัดลำดับหัว README ให้เป็น  # LAB n — ชื่อ : ประโยคขยาย  →  > โฟลเดอร์ ... = LAB n ของชุด Kubernetes ครั้งที่ N  →  > (ไฟล์ของแล็บนี้: ...)  →  > 💡 **แนวคิดหลักของแล็บนี้:** ...  (ห้ามเปลี่ยนข้อความในบล็อกแนวคิด) · ลบ/เรียบเรียงข้อความที่มีชื่อ container/IP ของเครื่องผลิต (devtools-k8s-lab-*, 172.30.*, k8s-course-net) ให้เหลือเฉพาะสิ่งที่นักศึกษาเห็น (devtools-k8s, localhost:8080/3000) · เปลี่ยนลิงก์ข้ามโฟลเดอร์ครั้ง (../../0N_Session...) เป็นข้อความ เช่น "แล็บ 015 ของครั้งที่ 3"
+3. แก้ WARN ที่ทำได้โดยไม่เปลี่ยนสาระ: README ที่ยาวเกิน 400 บรรทัด ให้ย่อ Expected output ที่ยาวเกินจำเป็น (ตัดบรรทัดซ้ำ ใส่ "..." กำกับ) ไม่ตัดขั้นตอน · ภาพใน images/ ที่ไม่ถูกอ้าง ให้แทรกอ้างอิงในขั้นตอนที่ตรง หรือถ้าไม่เกี่ยวให้ลบไฟล์
+4. รายการเฉพาะใน lab-fixes.md (เช่น 003 ขั้น 4 เรื่อง HOSTNAME/127.0.0.1 · 006 หมายเหตุ selector · 014 ลิงก์ข้ามครั้ง) ทำให้ครบ
+5. ตรวจ grep ทั้ง 05_kubernetes (ยกเว้น backup/ .work/) ว่าไม่มี email จริง, token, ชื่อบุคคลจริง, 172.30.*, devtools-k8s-lab-, k8s-course-net
+6. ลบโฟลเดอร์ .ipynb_checkpoints ทุกที่ใน /root/workspace/DevTools/05_kubernetes (ยกเว้น backup/) และสร้าง /root/workspace/DevTools/05_kubernetes/.gitignore ที่มี .ipynb_checkpoints/ และ .work/
+7. รัน linter ซ้ำทั้ง 21 แล็บ ต้องได้ 0 FAIL
+
+ห้าม: แก้ manifest YAML · แก้ตัวเลข/ชื่อ Pod ใน Expected output (ยกเว้นย่อด้วย ...) · แก้ไฟล์นอกโฟลเดอร์แล็บ 21 ตัว (นอกจาก .gitignore) · สร้าง container
+
+รายงานกลับ (คำตอบสุดท้ายถูกเก็บเป็นไฟล์ — ห้ามสร้างไฟล์รายงานเพิ่ม): ตาราง แล็บ | FAIL/WARN ก่อน | สิ่งที่แก้ | FAIL/WARN หลัง · ผล grep ข้อ 5 · สิ่งที่ตัดสินใจไม่แก้และเหตุผล

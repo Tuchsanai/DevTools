@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-too-big
+  namespace: lab019
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-too-big
+  template:
+    metadata:
+      labels:
+        app: web-too-big
+    spec:
+      containers:
+        - name: web
+          image: k8s-lab-web:v1
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "64" # จงใจขอ CPU เกินทุก node
+              memory: 128Mi
+            limits:
+              cpu: "64"
+              memory: 256Mi

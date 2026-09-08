@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: lab012
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: k8s-lab-web:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: API_BASE_URL
+              value: http://api:8000 # ใช้ชื่อ Service แทน IP ของ Pod
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: lab012
+spec:
+  selector:
+    app: web
+  ports:
+    - port: 3000
+      targetPort: http

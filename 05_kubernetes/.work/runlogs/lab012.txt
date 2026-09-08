@@ -1,0 +1,463 @@
+$ kubectl get nodes
+NAME                     STATUS   ROLES           AGE   VERSION
+devtools-control-plane   Ready    control-plane   17m   v1.36.4
+devtools-worker          Ready    <none>          17m   v1.36.4
+devtools-worker2         Ready    <none>          17m   v1.36.4
+$ docker exec devtools-control-plane crictl images | grep k8s-lab
+docker.io/library/k8s-lab-api                   v1                   37b98a526d09b       186MB
+docker.io/library/k8s-lab-db                    v1                   12de2be925d8a       300MB
+docker.io/library/k8s-lab-web                   v1                   f46e8e22f91a6       209MB
+docker.io/library/k8s-lab-web                   v2                   fccf050046905       209MB
+$ kubectl create namespace lab012
+namespace/lab012 created
+$ kubectl apply --dry-run=server -f manifests/ -f 02-db-emptydir.yaml
+secret/db-secret created (server dry run)
+deployment.apps/db created (server dry run)
+service/db created (server dry run)
+deployment.apps/api created (server dry run)
+service/api created (server dry run)
+deployment.apps/web created (server dry run)
+service/web created (server dry run)
+ingress.networking.k8s.io/web created (server dry run)
+deployment.apps/db created (server dry run)
+$ kubectl apply -f manifests/
+secret/db-secret created
+deployment.apps/db created
+service/db created
+deployment.apps/api created
+service/api created
+deployment.apps/web created
+service/web created
+ingress.networking.k8s.io/web created
+$ kubectl wait -n lab012 --for=condition=available deployment/db deployment/api deployment/web --timeout=180s
+deployment.apps/db condition met
+deployment.apps/api condition met
+deployment.apps/web condition met
+$ for i in $(seq 1 30); do body=$(curl -sS --max-time 2 http://localhost:80/info 2>/dev/null || true); echo "$body" | jq -e '.api.reachable == true and .db.status == "up"' >/dev/null 2>&1 && { echo "$body" | jq '{api,db}'; break; }; sleep 1; done
+{
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-7c94cf584b-wjd77"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -c 'select count(*) from tickets;'
+ count 
+-------
+     8
+(1 row)
+
+$ kubectl get pods -n lab012 -o wide
+NAME                   READY   STATUS    RESTARTS   AGE   IP            NODE              NOMINATED NODE   READINESS GATES
+api-7c94cf584b-wjd77   1/1     Running   0          4s    10.244.2.22   devtools-worker   <none>           <none>
+db-7cbb4874f6-pcc6r    1/1     Running   0          4s    10.244.2.21   devtools-worker   <none>           <none>
+web-c5f8c4c66-28vnw    1/1     Running   0          4s    10.244.2.23   devtools-worker   <none>           <none>
+$ node .work/tools/shot.js "http://devtools-k8s-lab-g4:80/tickets" 02_Session2_Networking_Config_Storage/012-why-data-disappears/images/02-tickets-before-create.png --w 1280 --h 800 --wait 2000
+{"ok":true,"out":"02_Session2_Networking_Config_Storage/012-why-data-disappears/images/02-tickets-before-create.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g4/tickets"}
+$ node -e '<Playwright: เปิด /tickets, กรอกฟอร์ม A-003, กด แจ้งซ่อม>'
+{"submitted":true,"url":"http://devtools-k8s-lab-g4/tickets?t=ok&m=%E0%B9%81%E0%B8%88%E0%B9%89%E0%B8%87%E0%B8%8B%E0%B9%88%E0%B8%AD%E0%B8%A1%E0%B9%80%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%9A%E0%B8%A3%E0%B9%89%E0%B8%AD%E0%B8%A2%20%E2%80%94%20%E0%B9%83%E0%B8%9A%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88%E0%B8%AD%E0%B8%A2%E0%B8%B9%E0%B9%88%E0%B9%83%E0%B8%99%E0%B8%84%E0%B8%AD%E0%B8%A5%E0%B8%B1%E0%B8%A1%E0%B8%99%E0%B9%8C%20%22%E0%B8%A3%E0%B8%AD%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B9%80%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%22","titleFound":1}
+$ node .work/tools/shot.js "http://devtools-k8s-lab-g4:80/tickets" 02_Session2_Networking_Config_Storage/012-why-data-disappears/images/02-ticket-created.png --w 1280 --h 800 --wait 2000
+{"ok":true,"out":"02_Session2_Networking_Config_Storage/012-why-data-disappears/images/02-ticket-created.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g4/tickets"}
+$ kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -c 'select count(*) from tickets;'
+ count 
+-------
+     9
+(1 row)
+
+$ kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -c "select id,title from tickets order by id desc limit 1;"
+ id |           title           
+----+---------------------------
+  9 | โปรเจกเตอร์ห้อง 999 ภาพไม่ขึ้น
+(1 row)
+
+$ kubectl exec -n lab012 deployment/web -- sh -c 'echo hi > /tmp/note.txt'
+$ kubectl exec -n lab012 deployment/web -- cat /tmp/note.txt
+hi
+$ kubectl get pods -n lab012 -l app=db -o wide
+NAME                  READY   STATUS    RESTARTS   AGE   IP            NODE              NOMINATED NODE   READINESS GATES
+db-7cbb4874f6-pcc6r   1/1     Running   0          76s   10.244.2.21   devtools-worker   <none>           <none>
+$ kubectl delete pod -n lab012 -l app=db
+pod "db-7cbb4874f6-pcc6r" deleted from lab012 namespace
+$ kubectl wait -n lab012 --for=condition=ready pod -l app=db --timeout=120s
+pod/db-7cbb4874f6-k2jwp condition met
+$ for i in $(seq 1 30); do out=$(kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -Atc 'select count(*) from tickets' 2>/dev/null || true); [ "$out" = 8 ] && { echo "$out"; break; }; sleep 1; done
+8
+$ kubectl get pods -n lab012 -l app=db -o wide
+NAME                  READY   STATUS    RESTARTS   AGE   IP            NODE              NOMINATED NODE   READINESS GATES
+db-7cbb4874f6-k2jwp   1/1     Running   0          4s    10.244.2.24   devtools-worker   <none>           <none>
+$ kubectl delete pod -n lab012 -l app=web
+pod "web-c5f8c4c66-28vnw" deleted from lab012 namespace
+$ kubectl wait -n lab012 --for=condition=ready pod -l app=web --timeout=120s
+pod/web-c5f8c4c66-dsf6p condition met
+$ kubectl exec -n lab012 deployment/web -- sh -c 'if [ -f /tmp/note.txt ]; then cat /tmp/note.txt; else echo /tmp/note.txt: No such file; fi'
+/tmp/note.txt: No such file
+$ kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -c 'select count(*) from tickets;'
+ count 
+-------
+     8
+(1 row)
+
+$ kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -c "select count(*) from tickets where title='โปรเจกเตอร์ห้อง 999 ภาพไม่ขึ้น';"
+ count 
+-------
+     0
+(1 row)
+
+$ node .work/tools/shot.js "http://devtools-k8s-lab-g4:80/tickets" 02_Session2_Networking_Config_Storage/012-why-data-disappears/images/04-ticket-gone-after-pod-recreate.png --w 1280 --h 800 --wait 2000
+{"ok":true,"out":"02_Session2_Networking_Config_Storage/012-why-data-disappears/images/04-ticket-gone-after-pod-recreate.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g4/tickets"}
+$ kubectl apply -f 02-db-emptydir.yaml
+deployment.apps/db configured
+$ kubectl rollout status -n lab012 deployment/db --timeout=180s
+Waiting for deployment "db" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "db" rollout to finish: 1 old replicas are pending termination...
+deployment "db" successfully rolled out
+$ for i in $(seq 1 30); do out=$(kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -Atc 'select count(*) from tickets' 2>/dev/null || true); [ "$out" = 8 ] && { echo "$out"; break; }; sleep 1; done
+8
+$ kubectl get pod -n lab012 -l app=db -o custom-columns=NAME:.metadata.name,RESTARTS:.status.containerStatuses[0].restartCount,STATUS:.status.phase
+NAME                  RESTARTS   STATUS
+db-765989fddb-wfh6l   0          Running
+$ node -e '<Playwright: เพิ่ม ticket สำหรับทดสอบ emptyDir>'
+locator.getAttribute: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('#asset_id option').filter({ hasText: 'A-003' }).first()[22m
+
+    at [eval]:1:393 {
+  log: [
+    "  - waiting for locator('#asset_id option').filter({ hasText: 'A-003' }).first()"
+  ],
+  name: 'TimeoutError'
+}
+$ kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -c 'select count(*) from tickets;'
+ count 
+-------
+     8
+(1 row)
+
+$ kubectl get pod -n lab012 -l app=db -o custom-columns=NAME:.metadata.name,RESTARTS:.status.containerStatuses[0].restartCount
+NAME                  RESTARTS
+db-765989fddb-wfh6l   0
+$ kubectl exec -n lab012 deployment/db -- kill 1
+$ kubectl get pod -n lab012 -l app=db -o custom-columns=NAME:.metadata.name,READY:.status.containerStatuses[0].ready,RESTARTS:.status.containerStatuses[0].restartCount
+NAME                  READY   RESTARTS
+db-765989fddb-wfh6l   true    1
+$ for i in $(seq 1 30); do ... รอ /info แสดง db=up ...; done
+$ kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -c 'select count(*) from tickets;'
+ count 
+-------
+     8
+(1 row)
+
+$ kubectl logs -n lab012 deployment/db --tail=30
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2026-09-02 16:50:57.229 UTC [1] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-09-02 16:50:57.229 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-09-02 16:50:57.229 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-09-02 16:50:57.255 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-09-02 16:50:57.307 UTC [34] LOG:  database system was shut down at 2026-09-02 16:50:56 UTC
+2026-09-02 16:50:57.322 UTC [1] LOG:  database system is ready to accept connections
+$ kubectl exec -n lab012 deployment/web -- wget -S -O- http://api:8000/ready || true
+Connecting to api:8000 (10.96.7.35:8000)
+  HTTP/1.1 503 Service Unavailable
+wget: server returned error: HTTP/1.1 503 Service Unavailable
+command terminated with exit code 1
+$ kubectl logs -n lab012 deployment/api --tail=20
+[api] GET /ready 503 2ms
+INFO:     10.244.2.25:36050 - "GET /ready HTTP/1.1" 503 Service Unavailable
+[api] GET /ready 503 2ms
+INFO:     10.244.2.25:36050 - "GET /ready HTTP/1.1" 503 Service Unavailable
+[api] GET /ready 503 1ms
+INFO:     10.244.2.25:36050 - "GET /ready HTTP/1.1" 503 Service Unavailable
+[api] GET /ready 503 1ms
+INFO:     10.244.2.25:36050 - "GET /ready HTTP/1.1" 503 Service Unavailable
+[api] GET /ready 503 2ms
+INFO:     10.244.2.25:36050 - "GET /ready HTTP/1.1" 503 Service Unavailable
+[api] GET /ready 503 2ms
+INFO:     10.244.2.25:36050 - "GET /ready HTTP/1.1" 503 Service Unavailable
+[api] GET /ready 503 2ms
+INFO:     10.244.2.25:36050 - "GET /ready HTTP/1.1" 503 Service Unavailable
+[api] GET /ready 503 2ms
+INFO:     10.244.2.25:36050 - "GET /ready HTTP/1.1" 503 Service Unavailable
+[api] GET /ready 503 2ms
+INFO:     10.244.2.25:36050 - "GET /ready HTTP/1.1" 503 Service Unavailable
+[api] GET /ready 503 2ms
+INFO:     10.244.2.25:36518 - "GET /ready HTTP/1.1" 503 Service Unavailable
+$ kubectl get endpointslices -n lab012 -l kubernetes.io/service-name=db -o wide
+NAME       ADDRESSTYPE   PORTS     ENDPOINTS     AGE
+db-j4mn6   IPv4          <unset>   10.244.2.26   2m22s
+$ curl -sS http://localhost:80/info | jq
+{
+  "pod": "web-c5f8c4c66-dsf6p",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "23:52:23",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-7c94cf584b-wjd77"
+  },
+  "db": {
+    "status": "down",
+    "error": "connection failed: connection to server at \"10.96.159.201\", port 5432 failed: Connection refused Is the server running …"
+  }
+}
+$ kubectl exec -n lab012 deployment/api -- sh -c "env | grep ^'DB_' | sort"
+DB_HOST=db
+DB_NAME=skillspace
+DB_PASSWORD=labpass
+DB_PORT=5432
+DB_PORT_5432_TCP=tcp://10.96.159.201:5432
+DB_PORT_5432_TCP_ADDR=10.96.159.201
+DB_PORT_5432_TCP_PORT=5432
+DB_PORT_5432_TCP_PROTO=tcp
+DB_SERVICE_HOST=10.96.159.201
+DB_SERVICE_PORT=5432
+DB_USER=opsuser
+$ kubectl apply -f 02-db-emptydir.yaml
+deployment.apps/db configured
+$ kubectl rollout status -n lab012 deployment/db --timeout=180s
+Waiting for deployment "db" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "db" rollout to finish: 1 old replicas are pending termination...
+deployment "db" successfully rolled out
+$ kubectl get endpointslices -n lab012 -l kubernetes.io/service-name=db -o wide
+NAME       ADDRESSTYPE   PORTS     ENDPOINTS     AGE
+db-j4mn6   IPv4          <unset>   10.244.2.26   2m52s
+db-wglvd   IPv4          5432      10.244.2.27   1s
+$ for i in $(seq 1 30); do body=$(curl -sS --max-time 2 http://localhost:80/info 2>/dev/null || true); echo "$body" | jq -e '.db.status == "up"' >/dev/null 2>&1 && { echo "$body" | jq '{api,db}'; break; }; sleep 1; done
+{
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-7c94cf584b-wjd77"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -Atc 'select count(*) from tickets'
+8
+$ node -e '<Playwright: เพิ่ม ticket สำหรับทดสอบ emptyDir>'
+{"submitted":true,"titleFound":1}
+$ kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -c 'select count(*) from tickets;'
+ count 
+-------
+     9
+(1 row)
+
+$ kubectl get pod -n lab012 -l app=db -o custom-columns=NAME:.metadata.name,RESTARTS:.status.containerStatuses[0].restartCount
+NAME                  RESTARTS
+db-7c8fd4985d-n8xsw   0
+$ kubectl exec -n lab012 deployment/db -- kill 1
+$ for i in $(seq 1 30); do ... รอ RESTARTS >= 1 และ PostgreSQL พร้อม ...; done
+RESTARTS=1 tickets=9
+$ kubectl get pod -n lab012 -l app=db -o custom-columns=NAME:.metadata.name,RESTARTS:.status.containerStatuses[0].restartCount
+NAME                  RESTARTS
+db-7c8fd4985d-n8xsw   1
+$ kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -c "select count(*) from tickets;"
+ count 
+-------
+     9
+(1 row)
+
+$ kubectl delete pod -n lab012 -l app=db
+pod "db-7c8fd4985d-n8xsw" deleted from lab012 namespace
+$ kubectl wait -n lab012 --for=condition=ready pod -l app=db --timeout=120s
+pod/db-7c8fd4985d-n64jq condition met
+$ for i in $(seq 1 30); do out=$(kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -Atc 'select count(*) from tickets' 2>/dev/null || true); [ "$out" = 8 ] && { echo "$out"; break; }; sleep 1; done
+8
+$ kubectl get pod -n lab012 -l app=db -o custom-columns=NAME:.metadata.name,RESTARTS:.status.containerStatuses[0].restartCount
+NAME                  RESTARTS
+db-7c8fd4985d-n64jq   0
+$ kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -c "select count(*) from tickets where title='ทดสอบ emptyDir ก่อน restart';"
+ count 
+-------
+     0
+(1 row)
+
+$ for i in $(seq 1 20); do ... รอ db=up ก่อนเพิ่ม ticket ...; done
+{
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-7c94cf584b-wjd77"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ node -e '<Playwright: เพิ่ม ticket ก่อน scale db 0 → 1>'
+{"submitted":true,"titleFound":1}
+$ kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -Atc 'select count(*) from tickets'
+9
+$ kubectl scale -n lab012 deployment/db --replicas=0
+deployment.apps/db scaled
+$ kubectl wait -n lab012 --for=delete pod -l app=db --timeout=120s
+pod/db-7c8fd4985d-n64jq condition met
+$ kubectl get pods -n lab012 -l app=db
+No resources found in lab012 namespace.
+$ curl -sS --max-time 5 http://localhost:80/info | jq '{api,db}'
+{
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-7c94cf584b-wjd77"
+  },
+  "db": {
+    "status": "down",
+    "error": "connection failed: connection to server at \"10.96.159.201\", port 5432 failed: Connection refused Is the server running …"
+  }
+}
+$ kubectl scale -n lab012 deployment/db --replicas=1
+deployment.apps/db scaled
+$ kubectl wait -n lab012 --for=condition=available deployment/db --timeout=180s
+deployment.apps/db condition met
+$ for i in $(seq 1 30); do out=$(kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -Atc 'select count(*) from tickets' 2>/dev/null || true); [ "$out" = 8 ] && { echo "$out"; break; }; sleep 1; done
+8
+$ for i in $(seq 1 20); do body=$(curl -sS --max-time 2 http://localhost:80/info 2>/dev/null || true); echo "$body" | jq -e '.db.status == "up"' >/dev/null 2>&1 && { echo "$body" | jq '{api,db}'; break; }; sleep 1; done
+{
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-7c94cf584b-wjd77"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ kubectl logs -n lab012 deployment/db --tail=15
+2026-09-02 16:54:46.913 UTC [60] LOG:  shutting down
+2026-09-02 16:54:46.921 UTC [60] LOG:  checkpoint starting: shutdown immediate
+2026-09-02 16:54:47.297 UTC [60] LOG:  checkpoint complete: wrote 976 buffers (6.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.026 s, sync=0.312 s, total=0.384 s; sync files=332, longest=0.009 s, average=0.001 s; distance=4431 kB, estimate=4431 kB; lsn=0/1947E30, redo lsn=0/1947E30
+2026-09-02 16:54:47.302 UTC [59] LOG:  database system is shut down
+ done
+server stopped
+
+PostgreSQL init process complete; ready for start up.
+
+2026-09-02 16:54:47.330 UTC [1] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-09-02 16:54:47.330 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-09-02 16:54:47.330 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-09-02 16:54:47.346 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-09-02 16:54:47.367 UTC [79] LOG:  database system was shut down at 2026-09-02 16:54:47 UTC
+2026-09-02 16:54:47.385 UTC [1] LOG:  database system is ready to accept connections
+$ kubectl get events -n lab012 --sort-by=.lastTimestamp | tail -25
+3m51s       Normal   Created             pod/db-765989fddb-wfh6l     Container created
+3m51s       Normal   Started             pod/db-765989fddb-wfh6l     Container started
+117s        Normal   SuccessfulCreate    replicaset/db-7c8fd4985d    Created pod: db-7c8fd4985d-n8xsw
+117s        Normal   Scheduled           pod/db-7c8fd4985d-n8xsw     Successfully assigned lab012/db-7c8fd4985d-n8xsw to devtools-worker
+116s        Normal   SuccessfulDelete    replicaset/db-765989fddb    Deleted pod: db-765989fddb-wfh6l
+116s        Normal   ScalingReplicaSet   deployment/db               Scaled down replica set db-765989fddb from 1 to 0
+116s        Normal   Killing             pod/db-765989fddb-wfh6l     Stopping container db
+72s         Normal   Pulled              pod/db-7c8fd4985d-n8xsw     Container image "k8s-lab-db:v1" already present on machine and can be accessed by the pod
+72s         Normal   Created             pod/db-7c8fd4985d-n8xsw     Container created
+72s         Normal   Started             pod/db-7c8fd4985d-n8xsw     Container started
+54s         Normal   Killing             pod/db-7c8fd4985d-n8xsw     Stopping container db
+54s         Normal   SuccessfulCreate    replicaset/db-7c8fd4985d    Created pod: db-7c8fd4985d-n64jq
+54s         Normal   Scheduled           pod/db-7c8fd4985d-n64jq     Successfully assigned lab012/db-7c8fd4985d-n64jq to devtools-worker
+53s         Normal   Created             pod/db-7c8fd4985d-n64jq     Container created
+53s         Normal   Pulled              pod/db-7c8fd4985d-n64jq     Container image "k8s-lab-db:v1" already present on machine and can be accessed by the pod
+53s         Normal   Started             pod/db-7c8fd4985d-n64jq     Container started
+6s          Normal   SuccessfulDelete    replicaset/db-7c8fd4985d    Deleted pod: db-7c8fd4985d-n64jq
+6s          Normal   ScalingReplicaSet   deployment/db               Scaled down replica set db-7c8fd4985d from 1 to 0
+6s          Normal   Killing             pod/db-7c8fd4985d-n64jq     Stopping container db
+4s          Normal   ScalingReplicaSet   deployment/db               Scaled up replica set db-7c8fd4985d from 0 to 1
+4s          Normal   SuccessfulCreate    replicaset/db-7c8fd4985d    Created pod: db-7c8fd4985d-j9t2x
+4s          Normal   Started             pod/db-7c8fd4985d-j9t2x     Container started
+4s          Normal   Created             pod/db-7c8fd4985d-j9t2x     Container created
+4s          Normal   Pulled              pod/db-7c8fd4985d-j9t2x     Container image "k8s-lab-db:v1" already present on machine and can be accessed by the pod
+4s          Normal   Scheduled           pod/db-7c8fd4985d-j9t2x     Successfully assigned lab012/db-7c8fd4985d-j9t2x to devtools-worker
+$ kubectl delete namespace lab012 --wait=true
+namespace "lab012" deleted
+$ kubectl get all -n lab012 || true
+No resources found in lab012 namespace.
+$ kubectl create namespace lab012
+namespace/lab012 created
+$ kubectl apply -f manifests/
+secret/db-secret created
+deployment.apps/db created
+service/db created
+deployment.apps/api created
+service/api created
+deployment.apps/web created
+service/web created
+ingress.networking.k8s.io/web created
+$ kubectl wait -n lab012 --for=condition=available deployment/db deployment/api deployment/web --timeout=180s
+deployment.apps/db condition met
+deployment.apps/api condition met
+deployment.apps/web condition met
+$ for i in $(seq 1 30); do body=$(curl -sS --max-time 2 http://localhost:80/info 2>/dev/null || true); echo "$body" | jq -e '.api.reachable == true and .db.status == "up"' >/dev/null 2>&1 && { echo "$body" | jq '{api,db}'; break; }; sleep 1; done
+{
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-7c94cf584b-5vv2p"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ kubectl exec -n lab012 deployment/db -- psql -U opsuser -d skillspace -Atc 'select count(*) from tickets'
+8
+$ kubectl get all,ingress,secret -n lab012
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-7c94cf584b-5vv2p   1/1     Running   0          5s
+pod/db-7cbb4874f6-hj99f    1/1     Running   0          5s
+pod/web-c5f8c4c66-469b9    1/1     Running   0          5s
+
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/api   ClusterIP   10.96.125.130   <none>        8000/TCP   5s
+service/db    ClusterIP   10.96.81.141    <none>        5432/TCP   5s
+service/web   ClusterIP   10.96.111.68    <none>        3000/TCP   5s
+
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api   1/1     1            1           5s
+deployment.apps/db    1/1     1            1           5s
+deployment.apps/web   1/1     1            1           5s
+
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/api-7c94cf584b   1         1         1       5s
+replicaset.apps/db-7cbb4874f6    1         1         1       5s
+replicaset.apps/web-c5f8c4c66    1         1         1       5s
+
+NAME                            CLASS   HOSTS   ADDRESS   PORTS   AGE
+ingress.networking.k8s.io/web   nginx   *                 80      5s
+
+NAME               TYPE     DATA   AGE
+secret/db-secret   Opaque   1      5s
+$ kubectl delete namespace lab012 --wait=true
+namespace "lab012" deleted
+$ kubectl get all -n lab012 || true
+No resources found in lab012 namespace.
+$ kubectl get namespace lab012 || true
+Error from server (NotFound): namespaces "lab012" not found
+$ mkdir -p ~/labwork && cd ~/labwork && git clone https://github.com/Tuchsanai/DevTools.git
+Cloning into 'DevTools'...
+$ cd ~/labwork/DevTools/05_kubernetes/02_Session2_Networking_Config_Storage/010-configmap-separate-config && pwd
+bash: line 1: cd: /tmp/labclone-g4/labwork/DevTools/05_kubernetes/02_Session2_Networking_Config_Storage/010-configmap-separate-config: No such file or directory
+$ cd ~/labwork/DevTools/05_kubernetes/02_Session2_Networking_Config_Storage/012-why-data-disappears && pwd
+/root/labwork/DevTools/05_kubernetes/02_Session2_Networking_Config_Storage/012-why-data-disappears
+$ kubectl create namespace lab012
+namespace/lab012 created
+$ kubectl apply --dry-run=server -f manifests/ -f 02-db-emptydir.yaml 
+secret/db-secret created (server dry run)
+deployment.apps/db created (server dry run)
+service/db created (server dry run)
+deployment.apps/api created (server dry run)
+service/api created (server dry run)
+deployment.apps/web created (server dry run)
+service/web created (server dry run)
+ingress.networking.k8s.io/web created (server dry run)
+deployment.apps/db created (server dry run)
+$ kubectl delete namespace lab012 --wait=true
+namespace "lab012" deleted
+$ kubectl get all -n lab012
+No resources found in lab012 namespace.
+$ docker rm -f devtools-k8s-lab-g4
+devtools-k8s-lab-g4
+$ docker ps -a --filter name=devtools-k8s-lab-g4
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES

@@ -1,0 +1,419 @@
+$ kubectl get nodes
+NAME                     STATUS   ROLES           AGE   VERSION
+devtools-control-plane   Ready    control-plane   22m   v1.36.4
+devtools-worker          Ready    <none>          22m   v1.36.4
+devtools-worker2         Ready    <none>          22m   v1.36.4
+$ docker exec devtools-control-plane crictl images | grep k8s-lab
+docker.io/library/k8s-lab-api                   v1                   1b0af425a075d       186MB
+docker.io/library/k8s-lab-db                    v1                   35984a84885cb       300MB
+docker.io/library/k8s-lab-web                   v1                   2a74c90a62059       209MB
+docker.io/library/k8s-lab-web                   v2                   7bedccdeefc86       209MB
+$ kubectl -n ingress-nginx get pods,svc -o wide
+NAME                                            READY   STATUS    RESTARTS   AGE   IP           NODE                     NOMINATED NODE   READINESS GATES
+pod/ingress-nginx-controller-5d9bb85749-mbclt   1/1     Running   0          21m   10.244.0.5   devtools-control-plane   <none>           <none>
+
+NAME                                         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE   SELECTOR
+service/ingress-nginx-controller             NodePort    10.96.227.22   <none>        80:30934/TCP,443:30998/TCP   21m   app.kubernetes.io/component=controller,app.kubernetes.io/instance=ingress-nginx,app.kubernetes.io/name=ingress-nginx
+service/ingress-nginx-controller-admission   ClusterIP   10.96.87.19    <none>        443/TCP                      21m   app.kubernetes.io/component=controller,app.kubernetes.io/instance=ingress-nginx,app.kubernetes.io/name=ingress-nginx
+$ kubectl create namespace lab017
+namespace/lab017 created
+$ kubectl apply -f manifests/
+configmap/web-config created
+deployment.apps/web created
+service/web created
+deployment.apps/api created
+service/api created
+ingress.networking.k8s.io/skillspace created
+secret/db-secret created
+persistentvolumeclaim/db-data created
+deployment.apps/db created
+service/db created
+$ kubectl wait -n lab017 --for=condition=available deploy/db deploy/api deploy/web --timeout=180s
+deployment.apps/db condition met
+deployment.apps/api condition met
+deployment.apps/web condition met
+$ kubectl get ingress -n lab017
+NAME         CLASS   HOSTS   ADDRESS   PORTS   AGE
+skillspace   nginx   *                 80      16s
+$ kubectl describe ingress -n lab017 skillspace
+Name:             skillspace
+Labels:           <none>
+Namespace:        lab017
+Address:          
+Ingress Class:    nginx
+Default backend:  <default>
+Rules:
+  Host        Path  Backends
+  ----        ----  --------
+  *           
+              /api   api:8000 (10.244.2.12:8000)
+              /      web:3000 (10.244.1.13:3000)
+Annotations:  <none>
+Events:
+  Type    Reason  Age   From                      Message
+  ----    ------  ----  ----                      -------
+  Normal  Sync    16s   nginx-ingress-controller  Scheduled for sync
+$ until [ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/info)" = 200 ]; do sleep 2; done
+$ curl -s http://localhost:80/info | jq
+{
+  "pod": "web-7484cf7478-8ljdm",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "23:53:47",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-6b56dd98f-q6fmx"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ curl -s http://localhost:80/api/whoami | jq
+{
+  "pod": "api-6b56dd98f-q6fmx",
+  "version": "v1",
+  "time": "2026-09-02T16:53:47+00:00"
+}
+$ curl -s http://localhost:80/api/dashboard | jq
+{
+  "tickets": {
+    "NEW": 3,
+    "ASSIGNED": 2,
+    "IN_PROGRESS": 1,
+    "DONE": 2
+  },
+  "overdue": [
+    {
+      "id": 4,
+      "title": "สวิตช์เครือข่ายพอร์ต 12 ไฟไม่ติด",
+      "priority": "NORMAL",
+      "assignee": "TECH-01",
+      "days_open": 9,
+      "sla_days": 3
+    },
+    {
+      "id": 1,
+      "title": "โปรเจกเตอร์ห้อง 205 ภาพวูบดับ",
+      "priority": "HIGH",
+      "assignee": null,
+      "days_open": 5,
+      "sla_days": 1
+    }
+  ],
+  "loans_active": 2,
+  "parts_low": [
+    {
+      "id": 1,
+      "sku": "LAMP-EPS-01",
+      "name": "หลอดโปรเจกเตอร์ Epson",
+      "qty_on_hand": 2,
+      "reorder_point": 5
+    },
+    {
+      "id": 4,
+      "sku": "CBL-HDMI-3M",
+      "name": "สาย HDMI ยาว 3 เมตร",
+      "qty_on_hand": 1,
+      "reorder_point": 6
+    }
+  ]
+}
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=8
+W0902 16:53:20.653585      11 controller.go:1241] Service "lab017/web" does not have any active Endpoint.
+W0902 16:53:23.986975      11 controller.go:1241] Service "lab017/web" does not have any active Endpoint.
+I0902 16:53:41.965801      11 status.go:311] "updating Ingress status" namespace="lab017" ingress="skillspace" currentValue=null newValue=[{"ip":"10.96.227.22"}]
+I0902 16:53:41.987272      11 event.go:377] Event(v1.ObjectReference{Kind:"Ingress", Namespace:"lab017", Name:"skillspace", UID:"cf5aa021-df41-4e90-8fa5-66b5ac1921f2", APIVersion:"networking.k8s.io/v1", ResourceVersion:"4185", FieldPath:""}): type: 'Normal' reason: 'Sync' Scheduled for sync
+172.18.0.1 - - [02/Sep/2026:16:53:47 +0000] "GET /info HTTP/1.1" 200 206 "-" "curl/8.18.0" 77 0.042 [lab017-web-3000] [] 10.244.1.13:3000 206 0.042 200 8594b8453b5124d3f1814af7201d8507
+172.18.0.1 - - [02/Sep/2026:16:53:47 +0000] "GET /info HTTP/1.1" 200 206 "-" "curl/8.18.0" 77 0.020 [lab017-web-3000] [] 10.244.1.13:3000 206 0.019 200 510516c839c378298461476c1236e0a4
+172.18.0.1 - - [02/Sep/2026:16:53:47 +0000] "GET /api/whoami HTTP/1.1" 200 79 "-" "curl/8.18.0" 83 0.002 [lab017-api-8000] [] 10.244.2.12:8000 79 0.003 200 a84fbc7b9ce781af8692c2dab25cd6c4
+172.18.0.1 - - [02/Sep/2026:16:53:47 +0000] "GET /api/dashboard HTTP/1.1" 200 672 "-" "curl/8.18.0" 86 0.013 [lab017-api-8000] [] 10.244.2.12:8000 672 0.013 200 0f2780542471d36e014be4b356d3af49
+$ node .work/tools/shot.js http://devtools-k8s-lab-g6:80/ .../images/03-root-via-ingress.png --w 1280 --h 800
+{"ok":true,"out":"03_Session3_Application_Deployment/017-ingress-the-front-door/images/03-root-via-ingress.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g6/"}
+$ node .work/tools/shot.js http://devtools-k8s-lab-g6:80/api/dashboard .../images/03-api-dashboard-json-via-ingress.png --w 1280 --h 800
+{"ok":true,"out":"03_Session3_Application_Deployment/017-ingress-the-front-door/images/03-api-dashboard-json-via-ingress.png","title":"","url":"http://devtools-k8s-lab-g6/api/dashboard"}
+$ kubectl apply -f 06-ingress-bad.yaml
+ingress.networking.k8s.io/skillspace configured
+$ until [ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/)" = 503 ]; do sleep 2; done; curl -i http://localhost:80/
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0100    190 100    190   0      0 193.2k      0                              0100    190 100    190   0      0 187.0k      0                              0100    190 100    190   0      0 184.8k      0                              0
+Warning: Problem : HTTP error. Will retry in 3 seconds. 5 retries left.
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 16:54:54 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+  0      0   0      0   0      0      0      0                              0100    190 100    190   0      0 298.7k      0                              0100    190 100    190   0      0 281.9k      0                              0100    190 100    190   0      0 276.1k      0                              0
+Warning: Problem : HTTP error. Will retry in 3 seconds. 4 retries left.
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 16:54:57 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+  0      0   0      0   0      0      0      0                              0100    190 100    190   0      0 284.5k      0                              0100    190 100    190   0      0 270.0k      0                              0100    190 100    190   0      0 265.8k      0                              0
+Warning: Problem : HTTP error. Will retry in 3 seconds. 3 retries left.
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 16:55:00 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+  0      0   0      0   0      0      0      0                              0100    190 100    190   0      0 263.5k      0                              0100    190 100    190   0      0 247.3k      0                              0100    190 100    190   0      0 243.4k      0                              0
+Warning: Problem : HTTP error. Will retry in 3 seconds. 2 retries left.
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 16:55:03 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+  0      0   0      0   0      0      0      0                              0100    190 100    190   0      0 330.7k      0                              0100    190 100    190   0      0 309.7k      0                              0100    190 100    190   0      0 303.1k      0                              0
+Warning: Problem : HTTP error. Will retry in 3 seconds. 1 retry left.
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 16:55:06 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+  0      0   0      0   0      0      0      0                              0100    190 100    190   0      0 247.7k      0                              0100    190 100    190   0      0 236.9k      0                              0100    190 100    190   0      0 233.3k      0                              0
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 16:55:09 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+$ kubectl describe ingress -n lab017 skillspace
+Name:             skillspace
+Labels:           <none>
+Namespace:        lab017
+Address:          10.96.227.22
+Ingress Class:    nginx
+Default backend:  <default>
+Rules:
+  Host        Path  Backends
+  ----        ----  --------
+  *           
+              /api   api:8000 (10.244.2.12:8000)
+              /      web-svc:3000 (<error: services "web-svc" not found>)
+Annotations:  <none>
+Events:
+  Type    Reason  Age               From                      Message
+  ----    ------  ----              ----                      -------
+  Normal  Sync    31s (x3 over 2m)  nginx-ingress-controller  Scheduled for sync
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=5
+172.18.0.1 - - [02/Sep/2026:16:54:57 +0000] "GET / HTTP/1.1" 503 190 "-" "curl/8.18.0" 73 0.000 [lab017-web-svc-3000] [] - - - - 467510e046083eee2ae5b54b8ac7df3f
+172.18.0.1 - - [02/Sep/2026:16:55:00 +0000] "GET / HTTP/1.1" 503 190 "-" "curl/8.18.0" 73 0.000 [lab017-web-svc-3000] [] - - - - 5aca93778916f93fba073888a7b1f312
+172.18.0.1 - - [02/Sep/2026:16:55:03 +0000] "GET / HTTP/1.1" 503 190 "-" "curl/8.18.0" 73 0.000 [lab017-web-svc-3000] [] - - - - b17cc36dd8c8cd5df5b84305d6575adf
+172.18.0.1 - - [02/Sep/2026:16:55:06 +0000] "GET / HTTP/1.1" 503 190 "-" "curl/8.18.0" 73 0.000 [lab017-web-svc-3000] [] - - - - a5fa882be2aeb808692e41ce29ae6949
+172.18.0.1 - - [02/Sep/2026:16:55:09 +0000] "GET / HTTP/1.1" 503 190 "-" "curl/8.18.0" 73 0.000 [lab017-web-svc-3000] [] - - - - 1aa02b095220632f739e57939c8cbd25
+$ kubectl apply -f manifests/06-ingress.yaml
+ingress.networking.k8s.io/skillspace configured
+$ until [ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/)" = 200 ]; do sleep 2; done
+$ kubectl patch ingress -n lab017 skillspace --type=json -p=...value:3001
+ingress.networking.k8s.io/skillspace patched
+$ until [ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/)" = 503 ]; do sleep 2; done; curl -i http://localhost:80/
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0100    190 100    190   0      0 199.7k      0                              0100    190 100    190   0      0 191.6k      0                              0100    190 100    190   0      0 189.3k      0                              0
+Warning: Problem : HTTP error. Will retry in 3 seconds. 5 retries left.
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 16:55:30 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+  0      0   0      0   0      0      0      0                              0100    190 100    190   0      0 297.8k      0                              0100    190 100    190   0      0 259.8k      0                              0100    190 100    190   0      0 253.4k      0                              0
+Warning: Problem : HTTP error. Will retry in 3 seconds. 4 retries left.
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 16:55:33 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+  0      0   0      0   0      0      0      0                              0100    190 100    190   0      0 293.5k      0                              0100    190 100    190   0      0 277.7k      0                              0100    190 100    190   0      0 272.8k      0                              0
+Warning: Problem : HTTP error. Will retry in 3 seconds. 3 retries left.
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 16:55:36 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+  0      0   0      0   0      0      0      0                              0100    190 100    190   0      0 221.6k      0                              0100    190 100    190   0      0 211.8k      0                              0100    190 100    190   0      0 208.7k      0                              0
+Warning: Problem : HTTP error. Will retry in 3 seconds. 2 retries left.
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 16:55:39 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+  0      0   0      0   0      0      0      0                              0100    190 100    190   0      0 278.5k      0                              0100    190 100    190   0      0 263.1k      0                              0100    190 100    190   0      0 258.4k      0                              0
+Warning: Problem : HTTP error. Will retry in 3 seconds. 1 retry left.
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 16:55:42 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+  0      0   0      0   0      0      0      0                              0100    190 100    190   0      0 282.4k      0                              0100    190 100    190   0      0 267.3k      0                              0100    190 100    190   0      0 262.8k      0                              0
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 16:55:45 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=5
+172.18.0.1 - - [02/Sep/2026:16:55:33 +0000] "GET / HTTP/1.1" 503 190 "-" "curl/8.18.0" 73 0.000 [lab017-web-3001] [] - - - - c29993873e37be2dbf32d12ff777ae94
+172.18.0.1 - - [02/Sep/2026:16:55:36 +0000] "GET / HTTP/1.1" 503 190 "-" "curl/8.18.0" 73 0.000 [lab017-web-3001] [] - - - - f4823078456983e93c530562d32c0c17
+172.18.0.1 - - [02/Sep/2026:16:55:39 +0000] "GET / HTTP/1.1" 503 190 "-" "curl/8.18.0" 73 0.000 [lab017-web-3001] [] - - - - feba2226ec8a12e594bd0c6fdadc6287
+172.18.0.1 - - [02/Sep/2026:16:55:42 +0000] "GET / HTTP/1.1" 503 190 "-" "curl/8.18.0" 73 0.000 [lab017-web-3001] [] - - - - c669dc17cb46001937e5bb8b2b43330f
+172.18.0.1 - - [02/Sep/2026:16:55:45 +0000] "GET / HTTP/1.1" 503 190 "-" "curl/8.18.0" 73 0.000 [lab017-web-3001] [] - - - - f11e6b81f49fde915b2e530a57e04306
+$ kubectl apply -f manifests/06-ingress.yaml
+ingress.networking.k8s.io/skillspace configured
+$ until [ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/info)" = 200 ]; do sleep 2; done; curl -s http://localhost:80/info | jq
+{
+  "pod": "web-7484cf7478-8ljdm",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "23:55:45",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-6b56dd98f-q6fmx"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ kubectl delete namespace lab017 --wait=true
+namespace "lab017" deleted
+$ kubectl get all -n lab017
+No resources found in lab017 namespace.
+$ kubectl create namespace lab017
+namespace/lab017 created
+$ kubectl apply -f manifests/
+configmap/web-config created
+deployment.apps/web created
+service/web created
+deployment.apps/api created
+service/api created
+ingress.networking.k8s.io/skillspace created
+secret/db-secret created
+persistentvolumeclaim/db-data created
+deployment.apps/db created
+service/db created
+$ kubectl wait -n lab017 --for=condition=available deploy/db deploy/api deploy/web --timeout=180s
+deployment.apps/db condition met
+deployment.apps/api condition met
+deployment.apps/web condition met
+$ until [ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/info)" = 200 ]; do sleep 2; done; curl -s http://localhost:80/info | jq -c; curl -s http://localhost:80/api/whoami | jq -c
+{"pod":"web-7484cf7478-qpz5f","version":"v1","theme":"blue","site_name":"SkillSpace","time":"23:56:48","api":{"configured":true,"reachable":true,"pod":"api-6b56dd98f-45jzl"},"db":{"status":"up"}}
+{"pod":"api-6b56dd98f-45jzl","version":"v1","time":"2026-09-02T16:56:48+00:00"}
+$ kubectl delete namespace lab017 --wait=true
+namespace "lab017" deleted
+$ kubectl get all -n lab017
+No resources found in lab017 namespace.
+$ kubectl -n ingress-nginx get deploy ingress-nginx-controller -o jsonpath=...
+http containerPort=80 hostPort=80
+https containerPort=443 hostPort=443
+webhook containerPort=8443 hostPort=
+$ kubectl apply --dry-run=client -f manifests/
+configmap/web-config created (dry run)
+deployment.apps/web created (dry run)
+service/web created (dry run)
+deployment.apps/api created (dry run)
+service/api created (dry run)
+ingress.networking.k8s.io/skillspace created (dry run)
+secret/db-secret created (dry run)
+persistentvolumeclaim/db-data created (dry run)
+deployment.apps/db created (dry run)
+service/db created (dry run)
+$ kubectl apply --dry-run=client -f 06-ingress-bad.yaml
+ingress.networking.k8s.io/skillspace created (dry run)

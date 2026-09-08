@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-oom
+  namespace: lab019
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-oom
+  template:
+    metadata:
+      labels:
+        app: web-oom
+    spec:
+      containers:
+        - name: web
+          image: k8s-lab-web:v1
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 50m
+              memory: 16Mi
+            limits:
+              cpu: 500m
+              memory: 32Mi # จงใจต่ำกว่า memory ที่ Next.js ต้องใช้

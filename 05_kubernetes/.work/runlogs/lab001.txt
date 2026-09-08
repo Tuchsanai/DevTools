@@ -1,0 +1,1014 @@
+$ k8s-bootstrap
+
+[1;36m==> สร้าง kind cluster 'devtools' (kindest/node:v1.36.4)[0m
+Creating cluster "devtools" ...
+ • Ensuring node image (kindest/node:v1.36.4) 🖼️  ...
+ ✓ Ensuring node image (kindest/node:v1.36.4) 🖼️
+ • Preparing nodes 📦 📦 📦   ...
+ ✓ Preparing nodes 📦 📦 📦 
+ • Writing configuration 📜  ...
+ ✓ Writing configuration 📜
+ • Starting control-plane 🕹️  ...
+ ✓ Starting control-plane 🕹️
+ • Installing CNI 🔌  ...
+ ✓ Installing CNI 🔌
+ • Installing StorageClass 💾  ...
+ ✓ Installing StorageClass 💾
+ • Joining worker nodes 🚜  ...
+ ✓ Joining worker nodes 🚜
+ • Waiting ≤ 5m0s for control-plane = Ready ⏳  ...
+ ✓ Waiting ≤ 5m0s for control-plane = Ready ⏳
+ • Ready after 11s 💚
+Set kubectl context to "kind-devtools"
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-devtools
+
+Have a nice day! 👋
+Kubernetes control plane is running at https://127.0.0.1:33375
+CoreDNS is running at https://127.0.0.1:33375/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+NAME                     STATUS     ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION                             CONTAINER-RUNTIME
+devtools-control-plane   Ready      control-plane   21s   v1.36.4   172.18.0.2    <none>        Debian GNU/Linux 13 (trixie)   6.6.87.2-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+devtools-worker          NotReady   <none>          11s   v1.36.4   172.18.0.4    <none>        Debian GNU/Linux 13 (trixie)   6.6.87.2-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+devtools-worker2         NotReady   <none>          11s   v1.36.4   172.18.0.3    <none>        Debian GNU/Linux 13 (trixie)   6.6.87.2-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+
+[1;36m==> ลง metrics-server (kubectl top / HPA ต้องใช้)[0m
+Release "metrics-server" does not exist. Installing it now.
+NAME: metrics-server
+LAST DEPLOYED: Wed Sep  2 23:30:50 2026
+NAMESPACE: kube-system
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+NOTES:
+***********************************************************************
+* Metrics Server                                                      *
+***********************************************************************
+  Chart version: 3.14.0
+  App version:   0.9.0
+  Image tag:     registry.k8s.io/metrics-server/metrics-server:v0.9.0
+***********************************************************************
+
+[1;36m==> ลง ingress-nginx (โหมด kind: hostPort 80/443)[0m
+Release "ingress-nginx" does not exist. Installing it now.
+NAME: ingress-nginx
+LAST DEPLOYED: Wed Sep  2 23:31:16 2026
+NAMESPACE: ingress-nginx
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+NOTES:
+The ingress-nginx controller has been installed.
+Get the application URL by running these commands:
+  export HTTP_NODE_PORT=$(kubectl get service --namespace ingress-nginx ingress-nginx-controller --output jsonpath="{.spec.ports[0].nodePort}")
+  export HTTPS_NODE_PORT=$(kubectl get service --namespace ingress-nginx ingress-nginx-controller --output jsonpath="{.spec.ports[1].nodePort}")
+  export NODE_IP="$(kubectl get nodes --output jsonpath="{.items[0].status.addresses[1].address}")"
+
+  echo "Visit http://${NODE_IP}:${HTTP_NODE_PORT} to access your application via HTTP."
+  echo "Visit https://${NODE_IP}:${HTTPS_NODE_PORT} to access your application via HTTPS."
+
+An example Ingress that makes use of the controller:
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: example
+    namespace: foo
+  spec:
+    ingressClassName: nginx
+    rules:
+      - host: www.example.com
+        http:
+          paths:
+            - pathType: Prefix
+              backend:
+                service:
+                  name: exampleService
+                  port:
+                    number: 80
+              path: /
+    # This section is only required if TLS is to be enabled for the Ingress
+    tls:
+      - hosts:
+        - www.example.com
+        secretName: example-tls
+
+If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
+
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: example-tls
+    namespace: foo
+  data:
+    tls.crt: <base64 encoded cert>
+    tls.key: <base64 encoded key>
+  type: kubernetes.io/tls
+
+[1;36m==> เสร็จแล้ว[0m
+NAMESPACE            NAME                                             READY   STATUS    RESTARTS   AGE
+ingress-nginx        ingress-nginx-controller-5d9bb85749-5xnnf        1/1     Running   0          22s
+kube-system          coredns-589f44dc88-kkktz                         1/1     Running   0          70s
+kube-system          coredns-589f44dc88-r9hk2                         1/1     Running   0          70s
+kube-system          etcd-devtools-control-plane                      1/1     Running   0          79s
+kube-system          kindnet-lc6k7                                    1/1     Running   0          71s
+kube-system          kindnet-pd5cb                                    1/1     Running   0          70s
+kube-system          kindnet-zgjds                                    1/1     Running   0          70s
+kube-system          kube-apiserver-devtools-control-plane            1/1     Running   0          77s
+kube-system          kube-controller-manager-devtools-control-plane   1/1     Running   0          78s
+kube-system          kube-proxy-2jlhw                                 1/1     Running   0          70s
+kube-system          kube-proxy-9tswb                                 1/1     Running   0          70s
+kube-system          kube-proxy-xjtq6                                 1/1     Running   0          71s
+kube-system          kube-scheduler-devtools-control-plane            1/1     Running   0          79s
+kube-system          metrics-server-55c6b8755f-g6d79                  1/1     Running   0          58s
+local-path-storage   local-path-provisioner-56c4685b7c-ls5xw          1/1     Running   0          70s
+
+ต่อไปลองได้เลย:
+  k9s                       # TUI ดูคลัสเตอร์ทั้งก้อน
+  kubectl top nodes         # ต้องมี metrics-server
+  kubectl get ingress -A
+  ลบทิ้ง: k8s-teardown
+$ k8s-teardown
+Deleting cluster "devtools" ...
+Deleted nodes: ["devtools-control-plane" "devtools-worker" "devtools-worker2"]
+$ k8s-bootstrap
+
+[1;36m==> สร้าง kind cluster 'devtools' (kindest/node:v1.36.4)[0m
+Creating cluster "devtools" ...
+ • Ensuring node image (kindest/node:v1.36.4) 🖼️  ...
+ ✓ Ensuring node image (kindest/node:v1.36.4) 🖼️
+ • Preparing nodes 📦 📦 📦   ...
+ ✓ Preparing nodes 📦 📦 📦 
+ • Writing configuration 📜  ...
+ ✓ Writing configuration 📜
+ • Starting control-plane 🕹️  ...
+ ✓ Starting control-plane 🕹️
+ • Installing CNI 🔌  ...
+ ✓ Installing CNI 🔌
+ • Installing StorageClass 💾  ...
+ ✓ Installing StorageClass 💾
+ • Joining worker nodes 🚜  ...
+ ✓ Joining worker nodes 🚜
+ • Waiting ≤ 5m0s for control-plane = Ready ⏳  ...
+ ✓ Waiting ≤ 5m0s for control-plane = Ready ⏳
+ • Ready after 9s 💚
+Set kubectl context to "kind-devtools"
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-devtools
+
+Thanks for using kind! 😊
+Kubernetes control plane is running at https://127.0.0.1:40417
+CoreDNS is running at https://127.0.0.1:40417/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+NAME                     STATUS     ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION                             CONTAINER-RUNTIME
+devtools-control-plane   Ready      control-plane   19s   v1.36.4   172.18.0.4    <none>        Debian GNU/Linux 13 (trixie)   6.6.87.2-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+devtools-worker          NotReady   <none>          10s   v1.36.4   172.18.0.2    <none>        Debian GNU/Linux 13 (trixie)   6.6.87.2-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+devtools-worker2         NotReady   <none>          10s   v1.36.4   172.18.0.3    <none>        Debian GNU/Linux 13 (trixie)   6.6.87.2-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+
+[1;36m==> ลง metrics-server (kubectl top / HPA ต้องใช้)[0m
+Release "metrics-server" does not exist. Installing it now.
+NAME: metrics-server
+LAST DEPLOYED: Wed Sep  2 23:33:02 2026
+NAMESPACE: kube-system
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+NOTES:
+***********************************************************************
+* Metrics Server                                                      *
+***********************************************************************
+  Chart version: 3.14.0
+  App version:   0.9.0
+  Image tag:     registry.k8s.io/metrics-server/metrics-server:v0.9.0
+***********************************************************************
+
+[1;36m==> ลง ingress-nginx (โหมด kind: hostPort 80/443)[0m
+Release "ingress-nginx" does not exist. Installing it now.
+NAME: ingress-nginx
+LAST DEPLOYED: Wed Sep  2 23:33:37 2026
+NAMESPACE: ingress-nginx
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+NOTES:
+The ingress-nginx controller has been installed.
+Get the application URL by running these commands:
+  export HTTP_NODE_PORT=$(kubectl get service --namespace ingress-nginx ingress-nginx-controller --output jsonpath="{.spec.ports[0].nodePort}")
+  export HTTPS_NODE_PORT=$(kubectl get service --namespace ingress-nginx ingress-nginx-controller --output jsonpath="{.spec.ports[1].nodePort}")
+  export NODE_IP="$(kubectl get nodes --output jsonpath="{.items[0].status.addresses[1].address}")"
+
+  echo "Visit http://${NODE_IP}:${HTTP_NODE_PORT} to access your application via HTTP."
+  echo "Visit https://${NODE_IP}:${HTTPS_NODE_PORT} to access your application via HTTPS."
+
+An example Ingress that makes use of the controller:
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: example
+    namespace: foo
+  spec:
+    ingressClassName: nginx
+    rules:
+      - host: www.example.com
+        http:
+          paths:
+            - pathType: Prefix
+              backend:
+                service:
+                  name: exampleService
+                  port:
+                    number: 80
+              path: /
+    # This section is only required if TLS is to be enabled for the Ingress
+    tls:
+      - hosts:
+        - www.example.com
+        secretName: example-tls
+
+If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
+
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: example-tls
+    namespace: foo
+  data:
+    tls.crt: <base64 encoded cert>
+    tls.key: <base64 encoded key>
+  type: kubernetes.io/tls
+
+[1;36m==> เสร็จแล้ว[0m
+NAMESPACE            NAME                                             READY   STATUS    RESTARTS   AGE
+ingress-nginx        ingress-nginx-controller-5d9bb85749-hczf6        1/1     Running   0          34s
+kube-system          coredns-589f44dc88-kfjdg                         1/1     Running   0          95s
+kube-system          coredns-589f44dc88-v67bc                         1/1     Running   0          95s
+kube-system          etcd-devtools-control-plane                      1/1     Running   0          102s
+kube-system          kindnet-72znx                                    1/1     Running   0          92s
+kube-system          kindnet-d4w7c                                    1/1     Running   0          96s
+kube-system          kindnet-sdlkf                                    1/1     Running   0          93s
+kube-system          kube-apiserver-devtools-control-plane            1/1     Running   0          102s
+kube-system          kube-controller-manager-devtools-control-plane   1/1     Running   0          102s
+kube-system          kube-proxy-mhlnz                                 1/1     Running   0          93s
+kube-system          kube-proxy-tf2sb                                 1/1     Running   0          92s
+kube-system          kube-proxy-vjcn8                                 1/1     Running   0          96s
+kube-system          kube-scheduler-devtools-control-plane            1/1     Running   0          102s
+kube-system          metrics-server-55c6b8755f-ngbgr                  1/1     Running   0          82s
+local-path-storage   local-path-provisioner-56c4685b7c-pgnpz          1/1     Running   0          95s
+
+ต่อไปลองได้เลย:
+  k9s                       # TUI ดูคลัสเตอร์ทั้งก้อน
+  kubectl top nodes         # ต้องมี metrics-server
+  kubectl get ingress -A
+  ลบทิ้ง: k8s-teardown
+$ kubectl cluster-info
+Kubernetes control plane is running at https://127.0.0.1:40417
+CoreDNS is running at https://127.0.0.1:40417/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+$ kubectl version
+Client Version: v1.37.0
+Kustomize Version: v5.8.1
+Server Version: v1.36.4
+$ kubectl get nodes -o wide
+NAME                     STATUS   ROLES           AGE    VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION                             CONTAINER-RUNTIME
+devtools-control-plane   Ready    control-plane   2m7s   v1.36.4   172.18.0.4    <none>        Debian GNU/Linux 13 (trixie)   6.6.87.2-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+devtools-worker          Ready    <none>          118s   v1.36.4   172.18.0.2    <none>        Debian GNU/Linux 13 (trixie)   6.6.87.2-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+devtools-worker2         Ready    <none>          118s   v1.36.4   172.18.0.3    <none>        Debian GNU/Linux 13 (trixie)   6.6.87.2-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+$ docker ps
+CONTAINER ID   IMAGE                  COMMAND                  CREATED         STATUS         PORTS                                                                 NAMES
+966bb2a59030   kindest/node:v1.36.4   "/usr/local/bin/entr…"   2 minutes ago   Up 2 minutes                                                                         devtools-worker2
+df79da30c990   kindest/node:v1.36.4   "/usr/local/bin/entr…"   2 minutes ago   Up 2 minutes                                                                         devtools-worker
+4a0c4bf2d1e4   kindest/node:v1.36.4   "/usr/local/bin/entr…"   2 minutes ago   Up 2 minutes   0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp, 127.0.0.1:40417->6443/tcp   devtools-control-plane
+$ kubectl get pods -A
+NAMESPACE            NAME                                             READY   STATUS    RESTARTS   AGE
+ingress-nginx        ingress-nginx-controller-5d9bb85749-hczf6        1/1     Running   0          60s
+kube-system          coredns-589f44dc88-kfjdg                         1/1     Running   0          2m1s
+kube-system          coredns-589f44dc88-v67bc                         1/1     Running   0          2m1s
+kube-system          etcd-devtools-control-plane                      1/1     Running   0          2m8s
+kube-system          kindnet-72znx                                    1/1     Running   0          118s
+kube-system          kindnet-d4w7c                                    1/1     Running   0          2m2s
+kube-system          kindnet-sdlkf                                    1/1     Running   0          119s
+kube-system          kube-apiserver-devtools-control-plane            1/1     Running   0          2m8s
+kube-system          kube-controller-manager-devtools-control-plane   1/1     Running   0          2m8s
+kube-system          kube-proxy-mhlnz                                 1/1     Running   0          119s
+kube-system          kube-proxy-tf2sb                                 1/1     Running   0          118s
+kube-system          kube-proxy-vjcn8                                 1/1     Running   0          2m2s
+kube-system          kube-scheduler-devtools-control-plane            1/1     Running   0          2m8s
+kube-system          metrics-server-55c6b8755f-ngbgr                  1/1     Running   0          108s
+local-path-storage   local-path-provisioner-56c4685b7c-pgnpz          1/1     Running   0          2m1s
+$ kubectl describe node devtools-worker | head -40
+Name:               devtools-worker
+Roles:              <none>
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=devtools-worker
+                    kubernetes.io/os=linux
+Annotations:        node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Wed, 02 Sep 2026 23:32:51 +0700
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  devtools-worker
+  AcquireTime:     <unset>
+  RenewTime:       Wed, 02 Sep 2026 23:34:43 +0700
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Wed, 02 Sep 2026 23:33:53 +0700   Wed, 02 Sep 2026 23:32:51 +0700   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Wed, 02 Sep 2026 23:33:53 +0700   Wed, 02 Sep 2026 23:32:51 +0700   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Wed, 02 Sep 2026 23:33:53 +0700   Wed, 02 Sep 2026 23:32:51 +0700   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Wed, 02 Sep 2026 23:33:53 +0700   Wed, 02 Sep 2026 23:33:06 +0700   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  172.18.0.2
+  Hostname:    devtools-worker
+Capacity:
+  cpu:                32
+  ephemeral-storage:  1055762868Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             64489556Ki
+  pods:               110
+Allocatable:
+  cpu:                32
+  ephemeral-storage:  1055762868Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             64489556Ki
+  pods:               110
+$ cd ~/labwork/DevTools/05_kubernetes/app && ./build-images.sh
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile:
+#1 transferring dockerfile: 3.73kB 0.0s done
+#1 DONE 0.8s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 5.6s
+
+#3 docker-image://docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+#3 resolve docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+#3 resolve docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32 0.3s done
+#3 sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32 9.08kB / 9.08kB done
+#3 sha256:34b128e419449565adc5ed7f487a6f503a73f1077012cfed86354c731338c44f 1.13kB / 1.13kB done
+#3 sha256:c844dc65644b70ea8b391444db20ff38537384d800ea9896d46ab8f3ce897f51 1.33kB / 1.33kB done
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 0B / 14.14MB 0.2s
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 1.05MB / 14.14MB 0.5s
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 6.29MB / 14.14MB 0.7s
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 12.58MB / 14.14MB 0.9s
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 14.14MB / 14.14MB 1.0s
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 14.14MB / 14.14MB 1.1s done
+#3 extracting sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 0.1s
+#3 extracting sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 0.2s done
+#3 DONE 2.5s
+
+#4 [internal] load metadata for docker.io/library/node:24-alpine
+#4 DONE 5.2s
+
+#5 [internal] load .dockerignore
+#5 transferring context:
+#5 transferring context: 586B 0.0s done
+#5 DONE 0.4s
+
+#6 [internal] load build context
+#6 DONE 0.0s
+
+#7 [deps 1/4] FROM docker.io/library/node:24-alpine@sha256:e67514e5d0f6c46656005e1b693b2ec9d52e80b641307de684d4a015ba7a4eaf
+#7 resolve docker.io/library/node:24-alpine@sha256:e67514e5d0f6c46656005e1b693b2ec9d52e80b641307de684d4a015ba7a4eaf
+#7 resolve docker.io/library/node:24-alpine@sha256:e67514e5d0f6c46656005e1b693b2ec9d52e80b641307de684d4a015ba7a4eaf 0.2s done
+#7 sha256:e67514e5d0f6c46656005e1b693b2ec9d52e80b641307de684d4a015ba7a4eaf 3.87kB / 3.87kB done
+#7 sha256:4caaaf42195bcd6f6f3559a413b20cb8f8ad089e231ee874cf7701643966689f 1.72kB / 1.72kB done
+#7 sha256:ee289c69ed1ac50a5a042112ea97f132800e2dd53e832da27784f00e45b3289c 6.49kB / 6.49kB done
+#7 sha256:55afa1ecc21d2bb5e5045f32dafee56272ffd89860bac26f6c32123439af26a4 0B / 3.85MB 0.1s
+#7 ...
+
+#6 [internal] load build context
+#6 transferring context: 202.15kB 0.1s done
+#6 DONE 0.4s
+
+#7 [deps 1/4] FROM docker.io/library/node:24-alpine@sha256:e67514e5d0f6c46656005e1b693b2ec9d52e80b641307de684d4a015ba7a4eaf
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 0B / 53.38MB 0.3s
+#7 sha256:b38a07ecd3ea0a536a5bb94db11493f70753da22ae004e3fff49cb5d6add507f 0B / 1.26MB 0.3s
+#7 sha256:55afa1ecc21d2bb5e5045f32dafee56272ffd89860bac26f6c32123439af26a4 3.85MB / 3.85MB 0.5s
+#7 sha256:55afa1ecc21d2bb5e5045f32dafee56272ffd89860bac26f6c32123439af26a4 3.85MB / 3.85MB 0.6s done
+#7 extracting sha256:55afa1ecc21d2bb5e5045f32dafee56272ffd89860bac26f6c32123439af26a4 0.1s
+#7 sha256:502142e2f20261fd2b9cce9a5883e63c4f830a1f4f3dbf643d6f6dd4e56c16a9 0B / 448B 0.6s
+#7 extracting sha256:55afa1ecc21d2bb5e5045f32dafee56272ffd89860bac26f6c32123439af26a4 0.2s done
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 6.29MB / 53.38MB 0.9s
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 11.53MB / 53.38MB 1.1s
+#7 sha256:b38a07ecd3ea0a536a5bb94db11493f70753da22ae004e3fff49cb5d6add507f 1.26MB / 1.26MB 1.0s done
+#7 sha256:502142e2f20261fd2b9cce9a5883e63c4f830a1f4f3dbf643d6f6dd4e56c16a9 448B / 448B 1.1s done
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 14.68MB / 53.38MB 1.2s
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 19.92MB / 53.38MB 1.4s
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 24.12MB / 53.38MB 1.5s
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 28.31MB / 53.38MB 1.7s
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 31.46MB / 53.38MB 1.8s
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 37.75MB / 53.38MB 2.0s
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 40.89MB / 53.38MB 2.1s
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 46.14MB / 53.38MB 2.3s
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 50.33MB / 53.38MB 2.5s
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 53.38MB / 53.38MB 2.6s
+#7 sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 53.38MB / 53.38MB 2.6s done
+#7 extracting sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 0.1s
+#7 extracting sha256:a0f82f71477fc2e453be843cff60ca54b0f44a67df7a3f01fddf121b807826be 2.4s done
+#7 extracting sha256:b38a07ecd3ea0a536a5bb94db11493f70753da22ae004e3fff49cb5d6add507f
+#7 extracting sha256:b38a07ecd3ea0a536a5bb94db11493f70753da22ae004e3fff49cb5d6add507f 0.1s done
+#7 extracting sha256:502142e2f20261fd2b9cce9a5883e63c4f830a1f4f3dbf643d6f6dd4e56c16a9
+#7 extracting sha256:502142e2f20261fd2b9cce9a5883e63c4f830a1f4f3dbf643d6f6dd4e56c16a9 0.1s done
+#7 DONE 6.2s
+
+#8 [deps 2/4] WORKDIR /app
+#8 DONE 0.3s
+
+#9 [deps 3/4] COPY package.json package-lock.json ./
+#9 DONE 0.3s
+
+#10 [runner 3/5] RUN addgroup -g 10001 -S webapp && adduser -u 10001 -S webapp -G webapp
+#10 DONE 0.6s
+
+#11 [deps 4/4] RUN npm ci
+#11 14.08 
+#11 14.08 added 47 packages, and audited 48 packages in 13s
+#11 14.08 
+#11 14.08 11 packages are looking for funding
+#11 14.08   run `npm fund` for details
+#11 14.08 
+#11 14.08 found 0 vulnerabilities
+#11 14.09 npm notice
+#11 14.09 npm notice New major version of npm available! 11.19.0 -> 12.0.2
+#11 14.09 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+#11 14.09 npm notice To update run: npm install -g npm@12.0.2
+#11 14.09 npm notice
+#11 DONE 14.2s
+
+#12 [builder 3/5] COPY --from=deps /app/node_modules ./node_modules
+#12 DONE 1.3s
+
+#13 [builder 4/5] COPY . .
+#13 DONE 0.3s
+
+#14 [builder 5/5] RUN npm run build
+#14 0.781 
+#14 0.781 > skillspace-web@1.0.0 build
+#14 0.781 > next build
+#14 0.781 
+#14 1.086 ▲ Next.js 16.3.1 (Turbopack)
+#14 1.116 ✓ Running next.config.ts took 30ms
+#14 1.128 
+#14 1.151   Creating an optimized production build ...
+#14 4.263 ✓ Compiled successfully in 2.9s
+#14 4.266   Running TypeScript ...
+#14 4.276 
+#14 4.277   We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+#14 4.277   The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+#14 4.277 
+#14 4.277   	- include was updated to add '.next/dev/types/**/*.ts'
+#14 4.277 
+#14 4.277   The following mandatory changes were made to your tsconfig.json:
+#14 4.277 
+#14 4.277   	- jsx was set to react-jsx (next.js uses the React automatic runtime)
+#14 4.277 
+#14 6.707   Finished TypeScript in 2.4s ...
+#14 6.710   Collecting page data using 10 workers ...
+#14 7.420   Generating static pages using 10 workers (0/1) ...
+#14 7.789 ✓ Generating static pages using 10 workers (1/1) in 369ms
+#14 7.794   Finalizing page optimization ...
+#14 8.048 
+#14 8.050 Route (app)
+#14 8.050 ┌ ƒ /
+#14 8.050 ├ ƒ /_not-found
+#14 8.050 ├ ƒ /healthz
+#14 8.050 ├ ƒ /info
+#14 8.050 ├ ƒ /loans
+#14 8.050 ├ ƒ /parts
+#14 8.050 ├ ƒ /readyz
+#14 8.050 └ ƒ /tickets
+#14 8.050 
+#14 8.050 
+#14 8.050 ƒ Proxy (Middleware)
+#14 8.050 
+#14 8.050 ƒ  (Dynamic)  server-rendered on demand
+#14 8.050 
+#14 8.123 npm notice
+#14 8.123 npm notice New major version of npm available! 11.19.0 -> 12.0.2
+#14 8.123 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+#14 8.123 npm notice To update run: npm install -g npm@12.0.2
+#14 8.123 npm notice
+#14 DONE 8.3s
+
+#15 [runner 4/5] COPY --from=builder --chown=webapp:webapp /app/.next/standalone ./
+#15 DONE 0.3s
+
+#16 [runner 5/5] COPY --from=builder --chown=webapp:webapp /app/.next/static ./.next/static
+#16 DONE 0.2s
+
+#17 exporting to image
+#17 exporting layers
+#17 exporting layers 0.3s done
+#17 writing image sha256:34d144d726eda34af4b53fe67378ac193987443d8d326b53b2662b05557eb72a 0.0s done
+#17 naming to docker.io/library/k8s-lab-web:v1 0.0s done
+#17 DONE 0.4s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 3.73kB 0.0s done
+#1 DONE 0.1s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 0.9s
+
+#3 docker-image://docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+#3 CACHED
+
+#4 [internal] load metadata for docker.io/library/node:24-alpine
+#4 DONE 0.9s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 586B 0.0s done
+#5 DONE 0.1s
+
+#6 [deps 1/4] FROM docker.io/library/node:24-alpine@sha256:e67514e5d0f6c46656005e1b693b2ec9d52e80b641307de684d4a015ba7a4eaf
+#6 DONE 0.0s
+
+#7 [deps 2/4] WORKDIR /app
+#7 CACHED
+
+#8 [internal] load build context
+#8 transferring context: 1.06kB 0.1s done
+#8 DONE 0.2s
+
+#9 [builder 3/5] COPY --from=deps /app/node_modules ./node_modules
+#9 CACHED
+
+#10 [deps 3/4] COPY package.json package-lock.json ./
+#10 CACHED
+
+#11 [deps 4/4] RUN npm ci
+#11 CACHED
+
+#12 [builder 4/5] COPY . .
+#12 CACHED
+
+#13 [builder 5/5] RUN npm run build
+#13 ...
+
+#14 [runner 3/5] RUN addgroup -g 10001 -S webapp && adduser -u 10001 -S webapp -G webapp
+#14 DONE 0.6s
+
+#13 [builder 5/5] RUN npm run build
+#13 0.893 
+#13 0.893 > skillspace-web@1.0.0 build
+#13 0.893 > next build
+#13 0.893 
+#13 1.238 ▲ Next.js 16.3.1 (Turbopack)
+#13 1.267 ✓ Running next.config.ts took 28ms
+#13 1.277 
+#13 1.308   Creating an optimized production build ...
+#13 4.273 ✓ Compiled successfully in 2.8s
+#13 4.275   Running TypeScript ...
+#13 4.282 
+#13 4.282   We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+#13 4.282   The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+#13 4.282 
+#13 4.282   	- include was updated to add '.next/dev/types/**/*.ts'
+#13 4.284 
+#13 4.284   The following mandatory changes were made to your tsconfig.json:
+#13 4.284 
+#13 4.284   	- jsx was set to react-jsx (next.js uses the React automatic runtime)
+#13 4.284 
+#13 6.625   Finished TypeScript in 2.3s ...
+#13 6.629   Collecting page data using 10 workers ...
+#13 7.318   Generating static pages using 10 workers (0/1) ...
+#13 7.700 ✓ Generating static pages using 10 workers (1/1) in 382ms
+#13 7.704   Finalizing page optimization ...
+#13 8.014 
+#13 8.015 Route (app)
+#13 8.015 ┌ ƒ /
+#13 8.015 ├ ƒ /_not-found
+#13 8.015 ├ ƒ /healthz
+#13 8.015 ├ ƒ /info
+#13 8.015 ├ ƒ /loans
+#13 8.015 ├ ƒ /parts
+#13 8.015 ├ ƒ /readyz
+#13 8.015 └ ƒ /tickets
+#13 8.015 
+#13 8.015 
+#13 8.015 ƒ Proxy (Middleware)
+#13 8.015 
+#13 8.016 ƒ  (Dynamic)  server-rendered on demand
+#13 8.016 
+#13 8.094 npm notice
+#13 8.094 npm notice New major version of npm available! 11.19.0 -> 12.0.2
+#13 8.094 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+#13 8.094 npm notice To update run: npm install -g npm@12.0.2
+#13 8.094 npm notice
+#13 DONE 8.3s
+
+#15 [runner 4/5] COPY --from=builder --chown=webapp:webapp /app/.next/standalone ./
+#15 DONE 0.5s
+
+#16 [runner 5/5] COPY --from=builder --chown=webapp:webapp /app/.next/static ./.next/static
+#16 DONE 0.3s
+
+#17 exporting to image
+#17 exporting layers
+#17 exporting layers 0.8s done
+#17 writing image sha256:0bdb9ed2beecfb5825514e2d1acfaf85fe8b23678789c6f3c40ef790ca111496 0.0s done
+#17 naming to docker.io/library/k8s-lab-web:v2 0.1s done
+#17 DONE 1.0s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile:
+#1 transferring dockerfile: 2.54kB 0.0s done
+#1 DONE 0.2s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 0.6s
+
+#3 docker-image://docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+#3 CACHED
+
+#4 [internal] load metadata for docker.io/library/python:3.12-slim
+#4 DONE 3.2s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 33B 0.0s
+#5 transferring context: 521B 0.0s done
+#5 DONE 0.2s
+
+#6 [internal] load build context
+#6 DONE 0.0s
+
+#7 [1/6] FROM docker.io/library/python:3.12-slim@sha256:78387bc3881b8273120a12ebe6c1ab22b018ccc2c9adf565ae1ac9b536e184ea
+#7 resolve docker.io/library/python:3.12-slim@sha256:78387bc3881b8273120a12ebe6c1ab22b018ccc2c9adf565ae1ac9b536e184ea
+#7 resolve docker.io/library/python:3.12-slim@sha256:78387bc3881b8273120a12ebe6c1ab22b018ccc2c9adf565ae1ac9b536e184ea 0.4s done
+#7 sha256:78387bc3881b8273120a12ebe6c1ab22b018ccc2c9adf565ae1ac9b536e184ea 10.37kB / 10.37kB done
+#7 sha256:2fe5997d249a808b8eeea52c58a1dbffbba28754dc11699ef5c029f2d818ce79 1.75kB / 1.75kB done
+#7 sha256:ec7d6c95cd3692a2e2d228a8b1ca74e4025b54121fcc4c5da6f09cfa473315ad 5.66kB / 5.66kB done
+#7 sha256:dbd0b7849e6c06b61e1fa6b7ffe053f246ce0075890620e3db64b47bb662433a 0B / 4.27MB 0.2s
+#7 ...
+
+#6 [internal] load build context
+#6 transferring context: 30.38kB 0.0s done
+#6 DONE 0.5s
+
+#7 [1/6] FROM docker.io/library/python:3.12-slim@sha256:78387bc3881b8273120a12ebe6c1ab22b018ccc2c9adf565ae1ac9b536e184ea
+#7 sha256:1560cfed01dc4c72c07f789d860078d74466a1f9a26b33a2e35d887b5f90dd3f 0B / 12.12MB 0.4s
+#7 sha256:6310eb16bf4251731feab01e8f633bf5e2d75a657ccad97f420b1f83cce457be 0B / 29.79MB 0.4s
+#7 sha256:dbd0b7849e6c06b61e1fa6b7ffe053f246ce0075890620e3db64b47bb662433a 1.05MB / 4.27MB 0.5s
+#7 sha256:dbd0b7849e6c06b61e1fa6b7ffe053f246ce0075890620e3db64b47bb662433a 4.27MB / 4.27MB 0.6s
+#7 sha256:1560cfed01dc4c72c07f789d860078d74466a1f9a26b33a2e35d887b5f90dd3f 2.10MB / 12.12MB 0.8s
+#7 sha256:1560cfed01dc4c72c07f789d860078d74466a1f9a26b33a2e35d887b5f90dd3f 6.29MB / 12.12MB 1.0s
+#7 sha256:dbd0b7849e6c06b61e1fa6b7ffe053f246ce0075890620e3db64b47bb662433a 4.27MB / 4.27MB 1.2s done
+#7 sha256:1560cfed01dc4c72c07f789d860078d74466a1f9a26b33a2e35d887b5f90dd3f 8.39MB / 12.12MB 1.2s
+#7 sha256:6310eb16bf4251731feab01e8f633bf5e2d75a657ccad97f420b1f83cce457be 2.10MB / 29.79MB 1.2s
+#7 sha256:1560cfed01dc4c72c07f789d860078d74466a1f9a26b33a2e35d887b5f90dd3f 9.44MB / 12.12MB 1.3s
+#7 sha256:56235e4245636e401a28cf88944d543b29ee028ae3b6c27e03d6b43e7b4eac5f 0B / 249B 1.3s
+#7 sha256:1560cfed01dc4c72c07f789d860078d74466a1f9a26b33a2e35d887b5f90dd3f 12.12MB / 12.12MB 1.5s
+#7 sha256:6310eb16bf4251731feab01e8f633bf5e2d75a657ccad97f420b1f83cce457be 7.34MB / 29.79MB 1.5s
+#7 sha256:6310eb16bf4251731feab01e8f633bf5e2d75a657ccad97f420b1f83cce457be 12.58MB / 29.79MB 1.7s
+#7 sha256:56235e4245636e401a28cf88944d543b29ee028ae3b6c27e03d6b43e7b4eac5f 249B / 249B 1.7s done
+#7 sha256:6310eb16bf4251731feab01e8f633bf5e2d75a657ccad97f420b1f83cce457be 15.73MB / 29.79MB 1.8s
+#7 sha256:6310eb16bf4251731feab01e8f633bf5e2d75a657ccad97f420b1f83cce457be 17.94MB / 29.79MB 1.9s
+#7 sha256:1560cfed01dc4c72c07f789d860078d74466a1f9a26b33a2e35d887b5f90dd3f 12.12MB / 12.12MB 2.1s done
+#7 sha256:6310eb16bf4251731feab01e8f633bf5e2d75a657ccad97f420b1f83cce457be 24.12MB / 29.79MB 2.1s
+#7 sha256:6310eb16bf4251731feab01e8f633bf5e2d75a657ccad97f420b1f83cce457be 27.26MB / 29.79MB 2.2s
+#7 sha256:6310eb16bf4251731feab01e8f633bf5e2d75a657ccad97f420b1f83cce457be 29.36MB / 29.79MB 2.3s
+#7 sha256:6310eb16bf4251731feab01e8f633bf5e2d75a657ccad97f420b1f83cce457be 29.79MB / 29.79MB 2.5s done
+#7 extracting sha256:6310eb16bf4251731feab01e8f633bf5e2d75a657ccad97f420b1f83cce457be 0.1s
+#7 extracting sha256:6310eb16bf4251731feab01e8f633bf5e2d75a657ccad97f420b1f83cce457be 2.3s done
+#7 extracting sha256:dbd0b7849e6c06b61e1fa6b7ffe053f246ce0075890620e3db64b47bb662433a
+#7 extracting sha256:dbd0b7849e6c06b61e1fa6b7ffe053f246ce0075890620e3db64b47bb662433a 0.2s done
+#7 extracting sha256:1560cfed01dc4c72c07f789d860078d74466a1f9a26b33a2e35d887b5f90dd3f
+#7 extracting sha256:1560cfed01dc4c72c07f789d860078d74466a1f9a26b33a2e35d887b5f90dd3f 1.1s done
+#7 extracting sha256:56235e4245636e401a28cf88944d543b29ee028ae3b6c27e03d6b43e7b4eac5f
+#7 extracting sha256:56235e4245636e401a28cf88944d543b29ee028ae3b6c27e03d6b43e7b4eac5f 0.1s done
+#7 DONE 8.6s
+
+#8 [2/6] WORKDIR /app
+#8 DONE 0.4s
+
+#9 [3/6] COPY requirements.txt .
+#9 DONE 0.4s
+
+#10 [4/6] RUN pip install --no-cache-dir -r requirements.txt
+#10 2.208 Collecting fastapi==0.121.2 (from -r requirements.txt (line 3))
+#10 2.387   Downloading fastapi-0.121.2-py3-none-any.whl.metadata (28 kB)
+#10 2.448 Collecting uvicorn==0.42.0 (from uvicorn[standard]==0.42.0->-r requirements.txt (line 4))
+#10 2.490   Downloading uvicorn-0.42.0-py3-none-any.whl.metadata (6.7 kB)
+#10 2.529 Collecting psycopg==3.2.12 (from psycopg[binary]==3.2.12->-r requirements.txt (line 5))
+#10 2.567   Downloading psycopg-3.2.12-py3-none-any.whl.metadata (4.5 kB)
+#10 2.706 Collecting pydantic==2.13.4 (from -r requirements.txt (line 6))
+#10 2.746   Downloading pydantic-2.13.4-py3-none-any.whl.metadata (109 kB)
+#10 2.864 Collecting starlette<0.50.0,>=0.40.0 (from fastapi==0.121.2->-r requirements.txt (line 3))
+#10 2.902   Downloading starlette-0.49.3-py3-none-any.whl.metadata (6.4 kB)
+#10 2.954 Collecting typing-extensions>=4.8.0 (from fastapi==0.121.2->-r requirements.txt (line 3))
+#10 2.994   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+#10 3.034 Collecting annotated-doc>=0.0.2 (from fastapi==0.121.2->-r requirements.txt (line 3))
+#10 3.081   Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+#10 3.119 Collecting click>=7.0 (from uvicorn==0.42.0->uvicorn[standard]==0.42.0->-r requirements.txt (line 4))
+#10 3.156   Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+#10 3.207 Collecting h11>=0.8 (from uvicorn==0.42.0->uvicorn[standard]==0.42.0->-r requirements.txt (line 4))
+#10 3.245   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+#10 3.288 Collecting annotated-types>=0.6.0 (from pydantic==2.13.4->-r requirements.txt (line 6))
+#10 3.327   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+#10 4.023 Collecting pydantic-core==2.46.4 (from pydantic==2.13.4->-r requirements.txt (line 6))
+#10 4.060   Downloading pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)
+#10 4.095 Collecting typing-inspection>=0.4.2 (from pydantic==2.13.4->-r requirements.txt (line 6))
+#10 4.133   Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+#10 4.278 Collecting psycopg-binary==3.2.12 (from psycopg[binary]==3.2.12->-r requirements.txt (line 5))
+#10 4.315   Downloading psycopg_binary-3.2.12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.9 kB)
+#10 4.363 Collecting httptools>=0.6.3 (from uvicorn[standard]==0.42.0->-r requirements.txt (line 4))
+#10 4.403   Downloading httptools-0.8.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (3.5 kB)
+#10 4.439 Collecting python-dotenv>=0.13 (from uvicorn[standard]==0.42.0->-r requirements.txt (line 4))
+#10 4.477   Downloading python_dotenv-1.2.3-py3-none-any.whl.metadata (29 kB)
+#10 4.523 Collecting pyyaml>=5.1 (from uvicorn[standard]==0.42.0->-r requirements.txt (line 4))
+#10 4.560   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+#10 4.609 Collecting uvloop>=0.15.1 (from uvicorn[standard]==0.42.0->-r requirements.txt (line 4))
+#10 4.646   Downloading uvloop-0.22.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (4.9 kB)
+#10 4.714 Collecting watchfiles>=0.20 (from uvicorn[standard]==0.42.0->-r requirements.txt (line 4))
+#10 4.751   Downloading watchfiles-1.2.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+#10 4.838 Collecting websockets>=10.4 (from uvicorn[standard]==0.42.0->-r requirements.txt (line 4))
+#10 4.876   Downloading websockets-17.1-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.3 kB)
+#10 4.920 Collecting anyio<5,>=3.6.2 (from starlette<0.50.0,>=0.40.0->fastapi==0.121.2->-r requirements.txt (line 3))
+#10 4.959   Downloading anyio-4.14.2-py3-none-any.whl.metadata (4.6 kB)
+#10 5.013 Collecting idna>=2.8 (from anyio<5,>=3.6.2->starlette<0.50.0,>=0.40.0->fastapi==0.121.2->-r requirements.txt (line 3))
+#10 5.050   Downloading idna-3.19-py3-none-any.whl.metadata (9.2 kB)
+#10 5.093 Downloading fastapi-0.121.2-py3-none-any.whl (109 kB)
+#10 5.142 Downloading uvicorn-0.42.0-py3-none-any.whl (68 kB)
+#10 5.183 Downloading psycopg-3.2.12-py3-none-any.whl (206 kB)
+#10 5.238 Downloading pydantic-2.13.4-py3-none-any.whl (472 kB)
+#10 5.313 Downloading psycopg_binary-3.2.12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.4 MB)
+#10 5.779    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 9.1 MB/s eta 0:00:00
+#10 5.816 Downloading pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)
+#10 6.040    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 9.7 MB/s eta 0:00:00
+#10 6.078 Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+#10 6.115 Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#10 6.152 Downloading click-8.5.0-py3-none-any.whl (125 kB)
+#10 6.201 Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+#10 6.242 Downloading httptools-0.8.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (523 kB)
+#10 6.330 Downloading python_dotenv-1.2.3-py3-none-any.whl (22 kB)
+#10 6.367 Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+#10 6.400    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 24.4 MB/s eta 0:00:00
+#10 6.439 Downloading starlette-0.49.3-py3-none-any.whl (74 kB)
+#10 6.481 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#10 6.518 Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+#10 6.557 Downloading uvloop-0.22.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (4.4 MB)
+#10 6.711    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 29.0 MB/s eta 0:00:00
+#10 6.748 Downloading watchfiles-1.2.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (456 kB)
+#10 6.800 Downloading websockets-17.1-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (224 kB)
+#10 6.842 Downloading anyio-4.14.2-py3-none-any.whl (125 kB)
+#10 6.886 Downloading idna-3.19-py3-none-any.whl (68 kB)
+#10 6.929 Installing collected packages: websockets, uvloop, typing-extensions, pyyaml, python-dotenv, psycopg-binary, idna, httptools, h11, click, annotated-types, annotated-doc, uvicorn, typing-inspection, pydantic-core, psycopg, anyio, watchfiles, starlette, pydantic, fastapi
+#10 10.12 Successfully installed annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.14.2 click-8.5.0 fastapi-0.121.2 h11-0.16.0 httptools-0.8.0 idna-3.19 psycopg-3.2.12 psycopg-binary-3.2.12 pydantic-2.13.4 pydantic-core-2.46.4 python-dotenv-1.2.3 pyyaml-6.0.3 starlette-0.49.3 typing-extensions-4.16.0 typing-inspection-0.4.4 uvicorn-0.42.0 uvloop-0.22.1 watchfiles-1.2.0 websockets-17.1
+#10 10.12 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#10 10.29 
+#10 10.29 [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+#10 10.29 [notice] To update, run: pip install --upgrade pip
+#10 DONE 10.5s
+
+#11 [5/6] COPY main.py .
+#11 DONE 0.3s
+
+#12 [6/6] RUN useradd --create-home --uid 10001 appuser && chown -R appuser:appuser /app
+#12 DONE 0.9s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 0.5s done
+#13 writing image sha256:c01adaec89c6dfb1e977fb3dce7121bbbcee878dd99f721f458c4ab9416c751d done
+#13 naming to docker.io/library/k8s-lab-api:v1 0.0s done
+#13 DONE 0.6s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 368B done
+#1 DONE 0.1s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 0.4s
+
+#3 docker-image://docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+#3 CACHED
+
+#4 [internal] load metadata for docker.io/library/postgres:17-alpine
+#4 DONE 2.8s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.1s
+
+#6 [1/2] FROM docker.io/library/postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
+#6 resolve docker.io/library/postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
+#6 ...
+
+#7 [internal] load build context
+#7 transferring context: 14.14kB 0.0s done
+#7 DONE 0.2s
+
+#6 [1/2] FROM docker.io/library/postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
+#6 resolve docker.io/library/postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73 0.1s done
+#6 sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73 10.30kB / 10.30kB done
+#6 sha256:7456ef82e5f5bc43d997f4781bbd7c0d6389bff397564649a356e206ba473aee 2.87kB / 2.87kB done
+#6 sha256:1bea307dfb3ee30541a7acf7de14b58bcd6948da98e5d31a04c627c4d35ec64b 8.73kB / 8.73kB done
+#6 sha256:4d80c046a9c75283330c9ea2f7f3e5b3fbfe521c980e19d4164116dd95dfc730 0B / 970B 0.1s
+#6 sha256:59234992055286eabeae83e92fd49c182136fabecaab40e96e44201d0b7acab6 0B / 900.25kB 0.3s
+#6 sha256:a12187db4b1792bf47380df49cfd84fd703811abd04c5d84568001a484afbf2d 0B / 116B 0.3s
+#6 sha256:4d80c046a9c75283330c9ea2f7f3e5b3fbfe521c980e19d4164116dd95dfc730 970B / 970B 0.4s done
+#6 extracting sha256:4d80c046a9c75283330c9ea2f7f3e5b3fbfe521c980e19d4164116dd95dfc730 0.0s done
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 0B / 112.42MB 0.4s
+#6 extracting sha256:59234992055286eabeae83e92fd49c182136fabecaab40e96e44201d0b7acab6
+#6 sha256:59234992055286eabeae83e92fd49c182136fabecaab40e96e44201d0b7acab6 900.25kB / 900.25kB 0.7s done
+#6 extracting sha256:59234992055286eabeae83e92fd49c182136fabecaab40e96e44201d0b7acab6 0.1s done
+#6 sha256:75de48f507ff913f69fa75a49da59f83db0ece385f649eefa7bcde930a9b573e 0B / 10.00kB 0.8s
+#6 sha256:a12187db4b1792bf47380df49cfd84fd703811abd04c5d84568001a484afbf2d 116B / 116B 0.9s done
+#6 extracting sha256:a12187db4b1792bf47380df49cfd84fd703811abd04c5d84568001a484afbf2d 0.0s done
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 6.29MB / 112.42MB 1.1s
+#6 sha256:75de48f507ff913f69fa75a49da59f83db0ece385f649eefa7bcde930a9b573e 10.00kB / 10.00kB 1.1s done
+#6 sha256:d884d6f49732553e9690257554497e612cdcc1a6d83562fe08d582dec39e34e9 0B / 129B 1.1s
+#6 sha256:b36c1b75fdb7939cb2a580ab05adfa65c8b118425f42cd8811cf632f37bb8616 0B / 169B 1.1s
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 14.68MB / 112.42MB 1.4s
+#6 sha256:d884d6f49732553e9690257554497e612cdcc1a6d83562fe08d582dec39e34e9 129B / 129B 1.3s done
+#6 sha256:b36c1b75fdb7939cb2a580ab05adfa65c8b118425f42cd8811cf632f37bb8616 169B / 169B 1.4s done
+#6 sha256:f070a657786685e37135e54207238cd1580e6869c6f5e8e6da85b2c9871ab31e 0B / 6.11kB 1.4s
+#6 sha256:7f3590dcd8434508e0c0bd953c80ed459f14f3a9005a3ac945bdb855abe58389 0B / 184B 1.4s
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 20.97MB / 112.42MB 1.6s
+#6 sha256:f070a657786685e37135e54207238cd1580e6869c6f5e8e6da85b2c9871ab31e 6.11kB / 6.11kB 1.6s done
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 29.36MB / 112.42MB 1.9s
+#6 sha256:7f3590dcd8434508e0c0bd953c80ed459f14f3a9005a3ac945bdb855abe58389 184B / 184B 1.8s done
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 37.75MB / 112.42MB 2.2s
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 48.23MB / 112.42MB 2.6s
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 54.53MB / 112.42MB 2.8s
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 60.82MB / 112.42MB 3.0s
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 71.30MB / 112.42MB 3.4s
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 77.59MB / 112.42MB 3.6s
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 87.03MB / 112.42MB 3.9s
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 95.42MB / 112.42MB 4.2s
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 102.76MB / 112.42MB 4.5s
+#6 sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 112.42MB / 112.42MB 4.9s done
+#6 extracting sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80
+#6 extracting sha256:5858a3f690eab3dfde37f933ab035d3453f4a56f38fb963ce98186b9d7d15e80 3.7s done
+#6 extracting sha256:75de48f507ff913f69fa75a49da59f83db0ece385f649eefa7bcde930a9b573e 0.0s done
+#6 extracting sha256:d884d6f49732553e9690257554497e612cdcc1a6d83562fe08d582dec39e34e9 0.0s done
+#6 extracting sha256:b36c1b75fdb7939cb2a580ab05adfa65c8b118425f42cd8811cf632f37bb8616
+#6 extracting sha256:b36c1b75fdb7939cb2a580ab05adfa65c8b118425f42cd8811cf632f37bb8616 0.0s done
+#6 extracting sha256:f070a657786685e37135e54207238cd1580e6869c6f5e8e6da85b2c9871ab31e 0.0s done
+#6 extracting sha256:7f3590dcd8434508e0c0bd953c80ed459f14f3a9005a3ac945bdb855abe58389 0.0s done
+#6 DONE 10.0s
+
+#8 [2/2] COPY initdb/ /docker-entrypoint-initdb.d/
+#8 DONE 0.4s
+
+#9 exporting to image
+#9 exporting layers 0.1s done
+#9 writing image sha256:a5a8c986a54218ca6ea171a77aefc903760934ef9a04adbfb15c2b7c82555c7a 0.0s done
+#9 naming to docker.io/library/k8s-lab-db:v1 0.0s done
+#9 DONE 0.3s
+k8s-lab-api:v1         c01adaec89c6        181MB             0B        
+k8s-lab-db:v1          a5a8c986a542        297MB             0B        
+k8s-lab-web:v1         34d144d726ed        205MB             0B        
+k8s-lab-web:v2         0bdb9ed2beec        205MB             0B        
+$ kind load docker-image k8s-lab-web:v1 k8s-lab-web:v2 k8s-lab-api:v1 k8s-lab-db:v1 --name devtools
+Image: "k8s-lab-web:v1" with ID "sha256:34d144d726eda34af4b53fe67378ac193987443d8d326b53b2662b05557eb72a" not yet present on node "devtools-worker2", loading...
+Image: "k8s-lab-web:v1" with ID "sha256:34d144d726eda34af4b53fe67378ac193987443d8d326b53b2662b05557eb72a" not yet present on node "devtools-worker", loading...
+Image: "k8s-lab-web:v1" with ID "sha256:34d144d726eda34af4b53fe67378ac193987443d8d326b53b2662b05557eb72a" not yet present on node "devtools-control-plane", loading...
+Image: "k8s-lab-web:v2" with ID "sha256:0bdb9ed2beecfb5825514e2d1acfaf85fe8b23678789c6f3c40ef790ca111496" not yet present on node "devtools-worker2", loading...
+Image: "k8s-lab-web:v2" with ID "sha256:0bdb9ed2beecfb5825514e2d1acfaf85fe8b23678789c6f3c40ef790ca111496" not yet present on node "devtools-worker", loading...
+Image: "k8s-lab-web:v2" with ID "sha256:0bdb9ed2beecfb5825514e2d1acfaf85fe8b23678789c6f3c40ef790ca111496" not yet present on node "devtools-control-plane", loading...
+Image: "k8s-lab-api:v1" with ID "sha256:c01adaec89c6dfb1e977fb3dce7121bbbcee878dd99f721f458c4ab9416c751d" not yet present on node "devtools-worker2", loading...
+Image: "k8s-lab-api:v1" with ID "sha256:c01adaec89c6dfb1e977fb3dce7121bbbcee878dd99f721f458c4ab9416c751d" not yet present on node "devtools-worker", loading...
+Image: "k8s-lab-api:v1" with ID "sha256:c01adaec89c6dfb1e977fb3dce7121bbbcee878dd99f721f458c4ab9416c751d" not yet present on node "devtools-control-plane", loading...
+Image: "k8s-lab-db:v1" with ID "sha256:a5a8c986a54218ca6ea171a77aefc903760934ef9a04adbfb15c2b7c82555c7a" not yet present on node "devtools-worker2", loading...
+Image: "k8s-lab-db:v1" with ID "sha256:a5a8c986a54218ca6ea171a77aefc903760934ef9a04adbfb15c2b7c82555c7a" not yet present on node "devtools-worker", loading...
+Image: "k8s-lab-db:v1" with ID "sha256:a5a8c986a54218ca6ea171a77aefc903760934ef9a04adbfb15c2b7c82555c7a" not yet present on node "devtools-control-plane", loading...
+$ docker exec devtools-control-plane crictl images | grep k8s-lab
+docker.io/library/k8s-lab-api                   v1                   c01adaec89c6d       186MB
+docker.io/library/k8s-lab-db                    v1                   a5a8c986a5421       300MB
+docker.io/library/k8s-lab-web                   v1                   34d144d726eda       209MB
+docker.io/library/k8s-lab-web                   v2                   0bdb9ed2beecf       209MB
+$ kubectl get nodes
+NAME                     STATUS   ROLES           AGE     VERSION
+devtools-control-plane   Ready    control-plane   5m14s   v1.36.4
+devtools-worker          Ready    <none>          5m5s    v1.36.4
+devtools-worker2         Ready    <none>          5m5s    v1.36.4
+$ kubectl -n ingress-nginx get pods
+NAME                                        READY   STATUS    RESTARTS   AGE
+ingress-nginx-controller-5d9bb85749-hczf6   1/1     Running   0          4m6s
+$ k9s
+[?1000l[?1002l[?1003l[?1006l[?2004l[?1049h[22;0;0t[?1h=[?25l[H[2J[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l[?25l$ kubectl get nodes -w
+$ docker stop devtools-worker2
+devtools-worker2
+$ kubectl wait --for=condition=Ready=false node/devtools-worker2 --timeout=90s
+$ kubectl get nodes
+$ kubectl get nodes
+NAME                     STATUS     ROLES           AGE     VERSION
+devtools-control-plane   Ready      control-plane   7m11s   v1.36.4
+devtools-worker          Ready      <none>          7m2s    v1.36.4
+devtools-worker2         NotReady   <none>          7m2s    v1.36.4
+NAME                     STATUS     ROLES           AGE     VERSION
+devtools-control-plane   Ready      control-plane   7m11s   v1.36.4
+devtools-worker          Ready      <none>          7m2s    v1.36.4
+devtools-worker2         NotReady   <none>          7m2s    v1.36.4
+$ kubectl describe node devtools-worker2 | sed -n '/Conditions:/,/Addresses:/p'
+$ kubectl describe node devtools-worker2 | sed -n '/Conditions:/,/Addresses:/p'
+Conditions:
+  Type             Status    LastHeartbeatTime                 LastTransitionTime                Reason              Message
+  ----             ------    -----------------                 ------------------                ------              -------
+  MemoryPressure   Unknown   Wed, 02 Sep 2026 23:38:28 +0700   Wed, 02 Sep 2026 23:39:28 +0700   NodeStatusUnknown   Kubelet stopped posting node status.
+  DiskPressure     Unknown   Wed, 02 Sep 2026 23:38:28 +0700   Wed, 02 Sep 2026 23:39:28 +0700   NodeStatusUnknown   Kubelet stopped posting node status.
+  PIDPressure      Unknown   Wed, 02 Sep 2026 23:38:28 +0700   Wed, 02 Sep 2026 23:39:28 +0700   NodeStatusUnknown   Kubelet stopped posting node status.
+  Ready            Unknown   Wed, 02 Sep 2026 23:38:28 +0700   Wed, 02 Sep 2026 23:39:28 +0700   NodeStatusUnknown   Kubelet stopped posting node status.
+Addresses:
+Conditions:
+  Type             Status    LastHeartbeatTime                 LastTransitionTime                Reason              Message
+  ----             ------    -----------------                 ------------------                ------              -------
+  MemoryPressure   Unknown   Wed, 02 Sep 2026 23:38:28 +0700   Wed, 02 Sep 2026 23:39:28 +0700   NodeStatusUnknown   Kubelet stopped posting node status.
+  DiskPressure     Unknown   Wed, 02 Sep 2026 23:38:28 +0700   Wed, 02 Sep 2026 23:39:28 +0700   NodeStatusUnknown   Kubelet stopped posting node status.
+  PIDPressure      Unknown   Wed, 02 Sep 2026 23:38:28 +0700   Wed, 02 Sep 2026 23:39:28 +0700   NodeStatusUnknown   Kubelet stopped posting node status.
+  Ready            Unknown   Wed, 02 Sep 2026 23:38:28 +0700   Wed, 02 Sep 2026 23:39:28 +0700   NodeStatusUnknown   Kubelet stopped posting node status.
+Addresses:
+$ docker start devtools-worker2
+$ docker start devtools-worker2
+devtools-worker2
+devtools-worker2
+$ kubectl wait --for=condition=Ready node/devtools-worker2 --timeout=90s
+node/devtools-worker2 condition met
+$ kubectl get nodes
+NAME                     STATUS   ROLES           AGE     VERSION
+devtools-control-plane   Ready    control-plane   7m14s   v1.36.4
+devtools-worker          Ready    <none>          7m5s    v1.36.4
+devtools-worker2         Ready    <none>          7m5s    v1.36.4
+NAME                     STATUS   ROLES           AGE     VERSION
+devtools-control-plane   Ready    control-plane   5m47s   v1.36.4
+devtools-worker          Ready    <none>          5m38s   v1.36.4
+devtools-worker2         Ready    <none>          5m38s   v1.36.4
+devtools-worker2         NotReady   <none>          6m37s   v1.36.4
+devtools-worker2         NotReady   <none>          6m37s   v1.36.4
+devtools-worker2         NotReady   <none>          6m37s   v1.36.4
+devtools-worker2         Ready      <none>          7m4s    v1.36.4
+devtools-worker2         Ready      <none>          7m4s    v1.36.4
+$ kubectl wait --for=condition=Ready=True node/devtools-worker2 --timeout=90s
+node/devtools-worker2 condition met
+$ kubectl get nodes
+NAME                     STATUS   ROLES           AGE     VERSION
+devtools-control-plane   Ready    control-plane   7m22s   v1.36.4
+devtools-worker          Ready    <none>          7m13s   v1.36.4
+devtools-worker2         Ready    <none>          7m13s   v1.36.4
+NAME                     STATUS   ROLES           AGE     VERSION
+devtools-control-plane   Ready    control-plane   5m47s   v1.36.4
+devtools-worker          Ready    <none>          5m38s   v1.36.4
+devtools-worker2         Ready    <none>          5m38s   v1.36.4
+devtools-worker2         NotReady   <none>          6m37s   v1.36.4
+devtools-worker2         NotReady   <none>          6m37s   v1.36.4
+devtools-worker2         NotReady   <none>          6m37s   v1.36.4
+devtools-worker2         Ready      <none>          7m4s    v1.36.4
+devtools-worker2         Ready      <none>          7m4s    v1.36.4
+$ mkdir -p ~/labwork && cd ~/labwork && git clone https://github.com/Tuchsanai/DevTools.git
+$ cd ~/labwork/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/001-kubernetes-introduction
+$ pwd
+Cloning into 'DevTools'...
+$ kubectl delete namespace lab001 --ignore-not-found
+$ kubectl get nodes
+NAME                     STATUS   ROLES           AGE     VERSION
+devtools-control-plane   Ready    control-plane   8m3s    v1.36.4
+devtools-worker          Ready    <none>          7m54s   v1.36.4
+devtools-worker2         Ready    <none>          7m54s   v1.36.4
+$ docker exec devtools-control-plane crictl images | grep k8s-lab
+docker.io/library/k8s-lab-api                   v1                   c01adaec89c6d       186MB
+docker.io/library/k8s-lab-db                    v1                   a5a8c986a5421       300MB
+docker.io/library/k8s-lab-web                   v1                   34d144d726eda       209MB
+docker.io/library/k8s-lab-web                   v2                   0bdb9ed2beecf       209MB
+$ kubectl get all -n lab001
+No resources found in lab001 namespace.
+$ kubectl -n kube-system logs deploy/metrics-server --tail=5
+I0902 16:40:29.189673       1 secure_serving.go:214] Serving securely on [::]:10250
+I0902 16:40:29.189694       1 tlsconfig.go:243] "Starting DynamicServingCertificateController"
+I0902 16:40:29.289774       1 shared_informer.go:409] "Caches are synced"
+I0902 16:40:29.289781       1 shared_informer.go:409] "Caches are synced"
+I0902 16:40:29.289802       1 shared_informer.go:409] "Caches are synced"
+$ kubectl get events -A --sort-by=.lastTimestamp | tail -10
+kube-system          75s         Normal    Pulled                    pod/kube-proxy-tf2sb                             Container image "registry.k8s.io/kube-proxy:v1.36.4" already present on machine and can be accessed by the pod
+kube-system          75s         Normal    Created                   pod/kube-proxy-tf2sb                             Container created
+kube-system          74s         Normal    TaintManagerEviction      pod/metrics-server-55c6b8755f-ngbgr              Cancelling deletion of Pod kube-system/metrics-server-55c6b8755f-ngbgr
+kube-system          60s         Warning   Unhealthy                 pod/metrics-server-55c6b8755f-ngbgr              Liveness probe failed: Get "https://10.244.2.2:10250/livez": net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+kube-system          50s         Normal    Killing                   pod/metrics-server-55c6b8755f-ngbgr              Container metrics-server failed liveness probe, will be restarted
+kube-system          50s         Warning   Unhealthy                 pod/metrics-server-55c6b8755f-ngbgr              Liveness probe failed: Get "https://10.244.2.2:10250/livez": context deadline exceeded
+kube-system          49s         Warning   Unhealthy                 pod/metrics-server-55c6b8755f-ngbgr              Readiness probe failed: Get "https://10.244.2.2:10250/readyz": context deadline exceeded
+kube-system          44s         Normal    Pulled                    pod/metrics-server-55c6b8755f-ngbgr              Container image "registry.k8s.io/metrics-server/metrics-server:v0.9.0" already present on machine and can be accessed by the pod
+kube-system          44s         Normal    Created                   pod/metrics-server-55c6b8755f-ngbgr              Container created
+kube-system          44s         Normal    Started                   pod/metrics-server-55c6b8755f-ngbgr              Container started
+$ kubectl -n kube-system get deploy,pod | grep metrics-server
+deployment.apps/metrics-server   1/1     1            1           8m25s
+pod/metrics-server-55c6b8755f-ngbgr                  1/1     Running   2 (59s ago)   8m25s
+$ kubectl get all -n lab001
+No resources found in lab001 namespace.

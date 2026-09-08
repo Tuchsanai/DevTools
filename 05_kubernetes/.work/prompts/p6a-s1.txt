@@ -1,0 +1,27 @@
+อ่านให้ครบก่อนเริ่ม:
+- spec ส่วนที่ 7 (ภาพประกอบ) และส่วนที่ 6 (ระบบสี) : /root/workspace/DevTools/05_kubernetes/PROMPT_Kubernetes_Course_Spec.txt
+- แกนเนื้อหา + รายการไดอะแกรมท้ายไฟล์ : /root/workspace/DevTools/05_kubernetes/.work/lab-outline.md  — งานของคุณคือ **เฉพาะ "ครั้งที่ 1"**
+
+วาดไดอะแกรมของครั้งที่ 1 ทั้งหมดตามรายการท้าย lab-outline.md ให้ครบ: d01..d08 (8 ภาพทฤษฎี) + lab0NN-architecture (7 ภาพ) รวม 15 ภาพ
+เก็บ .svg ที่ /root/workspace/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/slides_assets/<ชื่อ>.svg และ .excalidraw ที่ /root/workspace/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/slides_assets/scenes/<ชื่อ>.excalidraw (ชื่อไฟล์ต้องตรงกับรายการเป๊ะ)
+
+วิธีวาด (ต้องใช้วิธีนี้เท่านั้น — canvas ส่วนตัวของ job นี้คือ port 8893 · ห้ามใช้ MCP excalidraw ที่ชี้ port 8892 เพราะเป็น canvas ที่คนอื่นใช้อยู่):
+  bash /root/workspace/DevTools/05_kubernetes/.work/tools/excalidraw-canvas.sh 8893 start        # เปิด canvas + แท็บ headless (ต้องมีแท็บถึง export ได้)
+  source /root/workspace/DevTools/05_kubernetes/.work/tools/excalidraw-canvas.sh 8893            # ตั้ง env ให้ CLI ทุก shell ที่ใช้
+  mcp-excalidraw-server --help                                # ดูคำสั่ง (add/apply/update/delete/clear/describe/screenshot/export/import ...)
+  ต่อภาพ: เคลียร์ canvas → add elements จากไฟล์ JSON (เช่น mcp-excalidraw-server add elements.json) → screenshot ตรวจ (png) → screenshot --format svg --out <.svg> → export --out <.excalidraw>
+  ปิดท้าย: bash /root/workspace/DevTools/05_kubernetes/.work/tools/excalidraw-canvas.sh 8893 stop
+  ตรวจผลทุกภาพด้วยตา: render svg เป็น png ด้วย  node /root/workspace/DevTools/05_kubernetes/.work/tools/shot.js "file://<path.svg>" <png> --w 1600 --h 900  แล้วเปิดดูว่าข้อความไม่ทับกัน ลูกศรชี้ถูก ไม่มี element ตกขอบ อ่านออกบนจอโปรเจกเตอร์ · ถ้าไม่ผ่านให้แก้แล้ว export ใหม่
+  (ไฟล์ JSON ของ element ให้เก็บชั่วคราวใน /root/workspace/DevTools/05_kubernetes/.work/diagram-src-s1/ ไม่ใช่ในโฟลเดอร์ส่งมอบ)
+
+ข้อบังคับด้านเนื้อหา/สไตล์:
+- ภาพสถาปัตยกรรมประจำแล็บต้องตรงกับ object ที่แล็บนั้นสร้างจริงตาม outline (namespace, Deployment/ReplicaSet/Pod, Service, Ingress, ConfigMap, Secret, PVC, เบราว์เซอร์ที่ localhost:8080 หรือ 3000) ไม่ใส่ของที่แล็บนั้นยังไม่ได้เรียน
+- ภาพทฤษฎีต้อง "สอนได้ในภาพเดียว": มีชื่อภาพด้านบน ป้ายกำกับภาษาไทยสั้น ๆ (ศัพท์เทคนิคคงอังกฤษ) ลูกศรบอกทิศทาง
+- สไตล์เรียบ: roughness 0, fillStyle solid, พื้นขาว, ตัวอักษร ≥ 20px (ชื่อภาพ 28-32px)
+  สี: acc #1c5cab (K8s object ทั่วไป) · ok #116b11 (Service/สถานะดี) · warn #86590a (ConfigMap/Secret/Ingress) · crit #a32222 (พัง/ถูกลบ) · ink #18181b (ข้อความ)
+  พื้นการ์ด: accw #eaf2fd · okw #e7f6e7 · warnw #fdf3dd · critw #fbeaea · เส้นกรอบ rule #d4d4d8
+- รูปทรงของ object แต่ละชนิดต้องเหมือนกันทุกภาพ (เช่น Pod = สี่เหลี่ยมมุมมน accw · Service = สี่เหลี่ยมมุมมน okw ขอบเขียว · Ingress = กล่อง warnw · PVC = ทรงกระบอกหรือกล่องขอบหนา · node/namespace = กรอบเส้นประ · เบราว์เซอร์ = กล่องมีแถบหัว)
+- ขนาดภาพราว 1200-1600 x 700-900 px จัดให้เต็มพอดี ไม่มีพื้นที่ว่างมหาศาล
+- ห้ามใส่ข้อมูลจริง (email/ชื่อคน)
+
+รายงานกลับ (คำตอบสุดท้ายถูกเก็บเป็นไฟล์ — ไม่ต้องสร้างไฟล์รายงานเอง): รายการไฟล์ที่สร้างครบ 30 ไฟล์หรือไม่ · ภาพไหนที่ตรวจแล้วยังไม่พอใจหรือมีข้อจำกัด · ปัญหาที่เจอ

@@ -1,0 +1,14 @@
+งาน: แก้หน้าคั่นบท (section divider) ของสไลด์ครั้งที่ 2 ให้จุดโฟกัสของภาพถ่ายมองเห็นได้ — yolo1 ตรวจหน้า render แล้วพบว่า gradient มืดด้านซ้าย (~58% ของหน้า) บังจุดเล่าเรื่องของภาพ
+ไฟล์: /root/workspace/DevTools/05_kubernetes/02_Session2_Networking_Config_Storage/Kubernetes_Session2_Slides.html (~6 MB ห้ามเปิดอ่านทั้งไฟล์ ใช้สคริปต์ Python regex) · ภาพ /root/workspace/DevTools/05_kubernetes/02_Session2_Networking_Config_Storage/slides_assets/photos/ · สเปก /root/workspace/DevTools/05_kubernetes/.work/photo-spec-v2.md (ข้อ 7)
+หน้าคั่นบท 7 หน้า = <section class="slide section"> ที่มี <img data-a="lab0NN_scene" ... style="...object-fit:cover;filter:...">  (หน้า 10/21/31/42/53/65/76 ก่อนแก้)
+ปัญหาที่เห็น:
+  - หน้า 10 (lab008_scene): มือถือสายน้ำเงินหน้าช่องแร็คว่างอยู่ครึ่งซ้าย → ถูกบัง เห็นแต่รถเข็น
+  - หน้า 21 (lab009_scene): กรงล็อกและสายส้มอยู่ครึ่งซ้าย → ถูกบัง
+  - หน้า 53 (lab012_scene): วิศวกรดันเซิร์ฟเวอร์และเครื่องเก่าบนรถเข็นอยู่ครึ่งซ้าย → ถูกบัง
+  - หน้าอื่น (31 การ์ดสี · 42 security key · 65 storage · 76 เซิร์ฟเวอร์ไฟเหลือง) ให้ตรวจซ้ำว่าจุดโฟกัสอยู่ในส่วนขวาที่มองเห็นจริง
+วิธีแก้ (เรียงตามลำดับ ใช้วิธีแรกที่ได้ผล):
+  1. เพิ่ม object-position ให้ <img> ของหน้านั้น (เช่น object-position:left center หรือ "20% center") เพื่อเลื่อนจุดโฟกัสเข้าส่วนขวาที่มองเห็น — ใช้ได้เมื่อภาพถูก crop (object-fit:cover) มากพอ
+  2. ถ้า crop ไม่พอ (จุดโฟกัสยังอยู่ใต้ gradient) ให้สร้างภาพใหม่ด้วย skill imagegen ตามสเปกเดิมของภาพนั้น แต่จัดองค์ประกอบให้จุดโฟกัสอยู่ **ครึ่งขวา** ของภาพ (JPEG q88 1280×720 ≤ 350 KB ความสว่าง ≥ 0.40 ไม่มีตัวอักษร/โลโก้/ใบหน้าชัด สไตล์เดียวกับชุด) เก็บต้นฉบับ .work/photos-src2-s2/ แล้วฝัง base64 แทน KEY เดิม + แก้ alt + photos.md
+ห้าม: เปลี่ยนจำนวนหน้า · แตะหน้าอื่น · แก้ CSS กลาง · แตะโฟลเดอร์ครั้งอื่น
+ตรวจ: node /root/workspace/DevTools/05_kubernetes/.work/tools/check-slides.js <ไฟล์สไลด์> --shots /root/workspace/DevTools/05_kubernetes/.work/slide-shots2-s2 → เปิดดู PNG หน้าคั่นบททั้ง 7 และหน้าปก ยืนยันว่าจุดโฟกัสมองเห็นชัดในส่วนที่ไม่ถูกบัง
+รายงานกลับ (คำตอบสุดท้ายถูกเก็บเป็นไฟล์ — ห้ามสร้างไฟล์รายงานเพิ่ม): ตาราง หน้า | KEY | วิธีที่ใช้ (object-position ค่าอะไร / gen ใหม่) | ยืนยันจาก PNG · ผล check-slides

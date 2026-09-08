@@ -1,0 +1,556 @@
+[
+  {
+    "id": "lab001-architecture-rect-1",
+    "type": "rectangle",
+    "x": 0,
+    "y": 0,
+    "width": 1400,
+    "height": 800,
+    "strokeColor": "#ffffff",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "strokeWidth": 1,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": null
+  },
+  {
+    "id": "lab001-architecture-text-2",
+    "type": "text",
+    "x": 50,
+    "y": 28,
+    "text": "Lab 001 · รู้จัก Kubernetes cluster",
+    "fontSize": 32,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-arrow-3",
+    "type": "arrow",
+    "x": 50,
+    "y": 82,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        1300,
+        0
+      ]
+    ],
+    "strokeColor": "#d4d4d8",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "endArrowhead": null,
+    "startArrowhead": null
+  },
+  {
+    "id": "lab001-architecture-text-4",
+    "type": "text",
+    "x": 50,
+    "y": 92,
+    "text": "แล็บนี้ยังไม่รัน SkillSpace — ตรวจ cluster, node และ load image เข้า node เท่านั้น",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#52525b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-rect-5",
+    "type": "rectangle",
+    "x": 55,
+    "y": 245,
+    "width": 190,
+    "height": 85,
+    "strokeColor": "#18181b",
+    "backgroundColor": "#f4f4f5",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab001-architecture-text-6",
+    "type": "text",
+    "x": 77.2,
+    "y": 262.5,
+    "text": "kubectl / k9s\nในเครื่องเรียน",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-rect-7",
+    "type": "rectangle",
+    "x": 350,
+    "y": 140,
+    "width": 995,
+    "height": 570,
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "dashed",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab001-architecture-text-8",
+    "type": "text",
+    "x": 370,
+    "y": 152,
+    "text": "kind cluster · devtools",
+    "fontSize": 22,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-rect-9",
+    "type": "rectangle",
+    "x": 390,
+    "y": 195,
+    "width": 915,
+    "height": 135,
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "#eaf2fd",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "dashed",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab001-architecture-text-10",
+    "type": "text",
+    "x": 410,
+    "y": 207,
+    "text": "devtools-control-plane · ingress-nginx",
+    "fontSize": 22,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-rect-11",
+    "type": "rectangle",
+    "x": 430,
+    "y": 245,
+    "width": 180,
+    "height": 60,
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "#eaf2fd",
+    "fillStyle": "solid",
+    "strokeWidth": 4,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab001-architecture-text-12",
+    "type": "text",
+    "x": 468,
+    "y": 262.5,
+    "text": "API server",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-rect-13",
+    "type": "rectangle",
+    "x": 645,
+    "y": 245,
+    "width": 180,
+    "height": 60,
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "#eaf2fd",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab001-architecture-text-14",
+    "type": "text",
+    "x": 688.2,
+    "y": 262.5,
+    "text": "scheduler",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-rect-15",
+    "type": "rectangle",
+    "x": 860,
+    "y": 245,
+    "width": 180,
+    "height": 60,
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "#eaf2fd",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab001-architecture-text-16",
+    "type": "text",
+    "x": 898,
+    "y": 262.5,
+    "text": "controller",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-rect-17",
+    "type": "rectangle",
+    "x": 1075,
+    "y": 245,
+    "width": 180,
+    "height": 60,
+    "strokeColor": "#18181b",
+    "backgroundColor": "#f4f4f5",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab001-architecture-text-18",
+    "type": "text",
+    "x": 1144.2,
+    "y": 262.5,
+    "text": "etcd",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-rect-19",
+    "type": "rectangle",
+    "x": 390,
+    "y": 365,
+    "width": 430,
+    "height": 275,
+    "strokeColor": "#d4d4d8",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "dashed",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab001-architecture-text-20",
+    "type": "text",
+    "x": 410,
+    "y": 377,
+    "text": "devtools-worker",
+    "fontSize": 22,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-rect-21",
+    "type": "rectangle",
+    "x": 875,
+    "y": 365,
+    "width": 430,
+    "height": 275,
+    "strokeColor": "#d4d4d8",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "dashed",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab001-architecture-text-22",
+    "type": "text",
+    "x": 895,
+    "y": 377,
+    "text": "devtools-worker2",
+    "fontSize": 22,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-rect-23",
+    "type": "rectangle",
+    "x": 430,
+    "y": 430,
+    "width": 350,
+    "height": 72,
+    "strokeColor": "#d4d4d8",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab001-architecture-text-24",
+    "type": "text",
+    "x": 459.4,
+    "y": 441,
+    "text": "system Pods\nkube-system / metrics-server",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-rect-25",
+    "type": "rectangle",
+    "x": 915,
+    "y": 430,
+    "width": 350,
+    "height": 72,
+    "strokeColor": "#d4d4d8",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab001-architecture-text-26",
+    "type": "text",
+    "x": 1032.8,
+    "y": 441,
+    "text": "system Pods\nkube-system",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-rect-27",
+    "type": "rectangle",
+    "x": 430,
+    "y": 540,
+    "width": 350,
+    "height": 70,
+    "strokeColor": "#86590a",
+    "backgroundColor": "#fdf3dd",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab001-architecture-text-28",
+    "type": "text",
+    "x": 485.4,
+    "y": 550,
+    "text": "image cache\nk8s-lab-* ทั้ง 4 images",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-rect-29",
+    "type": "rectangle",
+    "x": 915,
+    "y": 540,
+    "width": 350,
+    "height": 70,
+    "strokeColor": "#86590a",
+    "backgroundColor": "#fdf3dd",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "lab001-architecture-text-30",
+    "type": "text",
+    "x": 970.4,
+    "y": 550,
+    "text": "image cache\nk8s-lab-* ทั้ง 4 images",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-text-31",
+    "type": "text",
+    "x": 81.36,
+    "y": 385,
+    "text": "kind load\ndocker-image",
+    "fontSize": 22,
+    "fontFamily": "2",
+    "strokeColor": "#86590a",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "lab001-architecture-arrow-32",
+    "type": "arrow",
+    "x": 245,
+    "y": 288,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        105,
+        0
+      ],
+      [
+        185,
+        -13
+      ]
+    ],
+    "strokeColor": "#1c5cab",
+    "strokeWidth": 3,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "endArrowhead": "arrow",
+    "startArrowhead": null,
+    "elbowed": true
+  },
+  {
+    "id": "lab001-architecture-arrow-33",
+    "type": "arrow",
+    "x": 240,
+    "y": 430,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        110,
+        0
+      ],
+      [
+        110,
+        145
+      ],
+      [
+        190,
+        145
+      ]
+    ],
+    "strokeColor": "#86590a",
+    "strokeWidth": 3,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "endArrowhead": "arrow",
+    "startArrowhead": null,
+    "elbowed": true
+  }
+]

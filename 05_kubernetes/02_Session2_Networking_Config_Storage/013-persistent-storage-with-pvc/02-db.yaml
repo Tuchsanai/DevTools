@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: lab013
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate # ให้ PostgreSQL ใช้ data directory ทีละ Pod
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: db
+          image: k8s-lab-db:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: skillspace
+            - name: POSTGRES_USER
+              value: opsuser
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: POSTGRES_PASSWORD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata # แยก subdirectory ใต้ mount
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "opsuser", "-d", "skillspace"] # Ready เมื่อรับ connection ได้จริง
+            periodSeconds: 3
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: db-data # Pod ใหม่กลับมาใช้ claim เดิม
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: lab013
+spec:
+  selector:
+    app: db
+  ports:
+    - port: 5432
+      targetPort: postgres

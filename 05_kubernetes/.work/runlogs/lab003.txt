@@ -1,0 +1,178 @@
+$ kubectl config set-context --current --namespace=default
+Context "kind-devtools" modified.
+$ kubectl create namespace lab003
+namespace/lab003 created
+$ kubectl get pods -n lab003 -w
+$ kubectl run web --image=k8s-lab-web:v1 --port=3000 -n lab003
+pod/web created
+$ kubectl wait -n lab003 --for=condition=Ready pod/web --timeout=90s
+pod/web condition met
+NAME   READY   STATUS    RESTARTS   AGE
+web    0/1     Pending   0          0s
+web    0/1     Pending   0          0s
+web    0/1     ContainerCreating   0          0s
+web    0/1     ContainerCreating   0          1s
+web    1/1     Running             0          1s
+$ kubectl get pods -n lab003 -o wide
+NAME   READY   STATUS    RESTARTS   AGE   IP           NODE              NOMINATED NODE   READINESS GATES
+web    1/1     Running   0          2s    10.244.1.4   devtools-worker   <none>           <none>
+$ kubectl describe pod web -n lab003 | sed -n '/Events:/,$p'
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  13s   default-scheduler  Successfully assigned lab003/web to devtools-worker
+  Normal  Pulled     12s   kubelet            spec.containers{web}: Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+  Normal  Created    12s   kubelet            spec.containers{web}: Container created
+  Normal  Started    12s   kubelet            spec.containers{web}: Container started
+$ kubectl logs web -n lab003
+▲ Next.js 16.3.1
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+✓ Ready in 0ms
+✓ Running next.config took 1.0ms
+$ kubectl exec -n lab003 web -- hostname
+web
+$ kubectl exec -it -n lab003 web -- sh
+# ps
+# env | grep HOSTNAME
+# wget -qO- localhost:3000/info
+# exit
+PID   USER     TIME  COMMAND
+    1 webapp    0:00 next-server (v
+   29 webapp    0:00 sh
+   35 webapp    0:00 ps
+HOSTNAME=0.0.0.0
+wget: can't connect to remote host: Connection refused
+command terminated with exit code 1
+$ kubectl exec -n lab003 web -- wget -qO- http://127.0.0.1:3000/info
+{"pod":"web","version":"v1","theme":"blue","site_name":"SkillSpace","time":"23:51:58","api":{"configured":false,"reachable":false},"db":{"status":"unknown"}}$ kubectl port-forward pod/web 3000:3000 -n lab003 --address 0.0.0.0 &
+Forwarding from 0.0.0.0:3000 -> 3000
+Handling connection for 3000
+$ เปิด http://localhost:3000 แล้ว capture ด้วย shot.js
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+{"ok":true,"out":"01_Session1_Kubernetes_Basics/003-pod-the-smallest-unit/images/03-first-page-on-kubernetes.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g1:3000/"}
+Handling connection for 3000
+{"pod":"web","version":"v1","theme":"blue","site_name":"SkillSpace","time":"23:52:21","api":{"configured":false,"reachable":false},"db":{"status":"unknown"}}
+$ cd ~/labwork/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/003-pod-the-smallest-unit && kubectl apply -f 02-pod-with-sidecar.yaml
+pod/web2 created
+$ kubectl wait -n lab003 --for=condition=Ready pod/web2 --timeout=120s
+pod/web2 condition met
+$ kubectl get pod web2 -n lab003 -o jsonpath='{.spec.containers[*].name}{"\\n"}'
+web sidecar\n$ kubectl logs web2 -n lab003 -c sidecar --tail=5
+{"status":"ok","pod":"web2","version":"v1"}
+$ kubectl describe pod web2 -n lab003 | sed -n '/Events:/,$p'
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  8s    default-scheduler  Successfully assigned lab003/web2 to devtools-worker
+  Normal  Pulled     7s    kubelet            spec.containers{web}: Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+  Normal  Created    7s    kubelet            spec.containers{web}: Container created
+  Normal  Started    7s    kubelet            spec.containers{web}: Container started
+  Normal  Pulling    7s    kubelet            spec.containers{sidecar}: Pulling image "busybox:1.36.1"
+  Normal  Pulled     1s    kubelet            spec.containers{sidecar}: Successfully pulled image "busybox:1.36.1" in 5.351s (5.351s including waiting). Image size: 2217006 bytes.
+  Normal  Created    1s    kubelet            spec.containers{sidecar}: Container created
+  Normal  Started    1s    kubelet            spec.containers{sidecar}: Container started
+$ kubectl get pod web2 -n lab003 -o jsonpath='{.spec.containers[*].name}{"\n"}'
+web sidecar
+$ kubectl delete pod web -n lab003
+pod "web" deleted from lab003 namespace
+$ kubectl get pods -n lab003
+NAME   READY   STATUS    RESTARTS   AGE
+web2   2/2     Running   0          33s
+$ pgrep -af 'kubectl port-forward' || true
+36136 bash -lc kubectl port-forward pod/web 3000:3000 -n lab003 --address 0.0.0.0 >> ~/labwork/DevTools/05_kubernetes/.work/runlogs/lab003.txt 2>&1
+36171 kubectl port-forward pod/web 3000:3000 -n lab003 --address 0.0.0.0
+36952 bash -lc pgrep -af 'kubectl port-forward' || true
+$ pkill -f 'kubectl port-forward pod/web'
+$ pgrep -af 'kubectl port-forward' || true
+36997 bash -lc pgrep -af 'kubectl port-forward' || true
+$ kubectl get pod web-broken -n lab003 -w
+$ kubectl run web-broken --image=k8s-lab-web:v9 -n lab003
+pod/web-broken created
+Error from server (NotFound): pods "web-broken" not found
+$ kubectl get pod web-broken -n lab003
+NAME         READY   STATUS             RESTARTS   AGE
+web-broken   0/1     ImagePullBackOff   0          21s
+$ kubectl describe pod web-broken -n lab003 | sed -n '/Events:/,$p'
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  33s                default-scheduler  Successfully assigned lab003/web-broken to devtools-worker
+  Normal   Pulling    19s (x2 over 33s)  kubelet            spec.containers{web-broken}: Pulling image "k8s-lab-web:v9"
+  Warning  Failed     17s (x2 over 31s)  kubelet            spec.containers{web-broken}: Failed to pull image "k8s-lab-web:v9": failed to pull and unpack image "docker.io/library/k8s-lab-web:v9": failed to resolve reference "docker.io/library/k8s-lab-web:v9": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed
+  Warning  Failed     17s (x2 over 31s)  kubelet            spec.containers{web-broken}: Error: ErrImagePull
+  Normal   BackOff    3s (x2 over 30s)   kubelet            spec.containers{web-broken}: Back-off pulling image "k8s-lab-web:v9"
+  Warning  Failed     3s (x2 over 30s)   kubelet            spec.containers{web-broken}: Error: ImagePullBackOff
+$ kubectl get events -n lab003 --sort-by=.lastTimestamp | tail -12
+90s         Normal    Pulling     pod/web2         Pulling image "busybox:1.36.1"
+90s         Normal    Started     pod/web2         Container started
+84s         Normal    Started     pod/web2         Container started
+84s         Normal    Created     pod/web2         Container created
+84s         Normal    Pulled      pod/web2         Successfully pulled image "busybox:1.36.1" in 5.351s (5.351s including waiting). Image size: 2217006 bytes.
+59s         Normal    Killing     pod/web          Stopping container web
+33s         Normal    Scheduled   pod/web-broken   Successfully assigned lab003/web-broken to devtools-worker
+19s         Normal    Pulling     pod/web-broken   Pulling image "k8s-lab-web:v9"
+17s         Warning   Failed      pod/web-broken   Failed to pull image "k8s-lab-web:v9": failed to pull and unpack image "docker.io/library/k8s-lab-web:v9": failed to resolve reference "docker.io/library/k8s-lab-web:v9": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed
+17s         Warning   Failed      pod/web-broken   Error: ErrImagePull
+3s          Warning   Failed      pod/web-broken   Error: ImagePullBackOff
+3s          Normal    BackOff     pod/web-broken   Back-off pulling image "k8s-lab-web:v9"
+$ kubectl delete pod web-broken -n lab003
+pod "web-broken" deleted from lab003 namespace
+$ kubectl get pods -n lab003
+NAME   READY   STATUS    RESTARTS   AGE
+web2   2/2     Running   0          92s
+$ kubectl delete namespace lab003 --wait=true --timeout=90s
+namespace "lab003" deleted
+$ kubectl create namespace lab003
+namespace/lab003 created
+$ cd ~/labwork/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/003-pod-the-smallest-unit && kubectl apply -f 02-pod-with-sidecar.yaml
+pod/web2 created
+$ kubectl wait -n lab003 --for=condition=Ready pod/web2 --timeout=120s
+pod/web2 condition met
+$ kubectl get pods -n lab003
+NAME   READY   STATUS    RESTARTS   AGE
+web2   2/2     Running   0          1s
+$ kubectl logs web2 -n lab003 -c sidecar --tail=1
+
+$ kubectl delete namespace lab003 --wait=true --timeout=90s
+namespace "lab003" deleted
+$ kubectl get all -n lab003
+No resources found in lab003 namespace.
+$ pgrep -af 'kubectl port-forward' || true
+38972 bash -lc pgrep -af 'kubectl port-forward' || true
+$ kubectl create namespace lab003
+namespace/lab003 created
+$ cd ~/labwork/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/003-pod-the-smallest-unit && kubectl apply -f 02-pod-with-sidecar.yaml
+pod/web2 created
+$ kubectl wait -n lab003 --for=condition=Ready pod/web2 --timeout=120s
+pod/web2 condition met
+$ kubectl get pods -n lab003
+NAME   READY   STATUS    RESTARTS   AGE
+web2   2/2     Running   0          14s
+$ kubectl logs web2 -n lab003 -c sidecar --tail=1
+{"status":"ok","pod":"web2","version":"v1"}
+$ kubectl delete namespace lab003 --wait=true --timeout=90s
+namespace "lab003" deleted
+$ kubectl get all -n lab003
+No resources found in lab003 namespace.
+$ pgrep -af 'kubectl port-forward' || true
+39985 bash -lc pgrep -af 'kubectl port-forward' || true
+$ kubectl apply --dry-run=client -f 02-pod-with-sidecar.yaml
+pod/web2 created (dry run)
+$ kubectl get all -n lab003
+No resources found in lab003 namespace.
+$ kubectl get namespaces
+NAME                 STATUS   AGE
+default              Active   31m
+ingress-nginx        Active   30m
+kube-node-lease      Active   31m
+kube-public          Active   31m
+kube-system          Active   31m
+local-path-storage   Active   31m
+$ pgrep -af 'kubectl port-forward' || true
+41068 bash -lc pgrep -af 'kubectl port-forward' || true

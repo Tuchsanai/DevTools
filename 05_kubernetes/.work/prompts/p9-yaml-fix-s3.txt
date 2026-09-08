@@ -1,0 +1,9 @@
+งาน: แก้ "การสอน YAML" ของครั้งที่ 3 ตามผลตรวจความถูกต้องของ yolo1 reviewer — ไฟล์ /root/workspace/DevTools/05_kubernetes/03_Session3_Application_Deployment/YAML_Guide.md และหัวข้อ "อ่าน YAML ของแล็บนี้" ใน README ของแล็บในโฟลเดอร์ /root/workspace/DevTools/05_kubernetes/03_Session3_Application_Deployment/
+
+อ่านก่อน (ยึดเป็นหลัก): /root/workspace/DevTools/05_kubernetes/.work/yaml-review-s3.md (รายการ FAIL/WARN/NIT พร้อมบรรทัด) · สเปก /root/workspace/DevTools/05_kubernetes/.work/yaml-teaching-spec.md (ข้อ 3, 4, 4b, 6)
+ทำ:
+1. แก้ทุก FAIL และ WARN ตามบรรทัดที่ระบุ · NIT แก้ถ้าไม่เสี่ยง · ความถูกต้องของ field/default ตรวจกับ `docker exec devtools-k8s-verify kubectl explain <kind>.<path>` (cluster v1.36.4 ที่เปิดไว้ให้แล้ว ห้ามสร้าง/ลบ container)
+- เพิ่มหัวข้อ "ทบทวน" 10-20 บรรทัดต่อ object ใน YAML_Guide.md สำหรับ object ที่เรียนไปแล้วแต่ยังใช้ในครั้งนี้ (สเปกข้อ 4b): ครั้งที่ 2 = Deployment · Ingress(ประตู) · ครั้งที่ 3 = Deployment · Service · ConfigMap · Secret · PVC · probes — แต่ละหัวข้อ: YAML ย่อจากไฟล์จริงของครั้งนี้ + 3-5 field สำคัญ + ลิงก์แล็บที่ใช้ · anchor ตามชื่อ object
+3. ตัวอย่าง YAML ทุกบล็อกต้องตรงกับไฟล์จริง (ระบุชื่อไฟล์) · ห้ามเปลี่ยนแนวคิดหลัก/ขั้นตอน/Expected output เดิม · README ≤ 450 บรรทัด
+4. ตรวจก่อนส่ง: python3 /root/workspace/DevTools/05_kubernetes/.work/tools/check-yaml-teaching.py /root/workspace/DevTools/05_kubernetes/03_Session3_Application_Deployment (0 FAIL) และ python3 /root/workspace/DevTools/05_kubernetes/.work/tools/check-readme.py /root/workspace/DevTools/05_kubernetes/03_Session3_Application_Deployment/0*-* (0 FAIL)
+รายงานกลับ (คำตอบสุดท้ายถูกเก็บเป็นไฟล์ — ห้ามสร้างไฟล์รายงานเพิ่ม): ตาราง ไฟล์ | รายการที่แก้ (บรรทัด) | ยังไม่แก้และเหตุผล · หัวข้อทบทวนที่เพิ่ม · ผล linter ทั้งสอง

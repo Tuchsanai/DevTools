@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: skillspace
+  namespace: lab017
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          # Prefix /api ส่งทั้ง path เดิมไป FastAPI
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8000
+          # path ที่เหลือทั้งหมดเข้าหน้า Next.js
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 3000

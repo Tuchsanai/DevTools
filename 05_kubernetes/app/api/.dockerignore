@@ -1,0 +1,17 @@
+# ไฟล์ที่ไม่ควรถูกส่งเข้า build context
+# ยิ่ง context เล็ก build ยิ่งเร็ว และไม่มีของที่ไม่เกี่ยวหลุดเข้า image
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+.env
+*.log
+.git/
+.gitignore
+.DS_Store
+.ipynb_checkpoints/
+
+# สคริปต์ทดสอบไม่ต้องอยู่ใน image ของ production
+smoke.sh

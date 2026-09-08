@@ -1,0 +1,26 @@
+คุณคือผู้ตรวจคุณภาพ "รูปภาพ" ของสื่อการสอน Kubernetes (ผู้สอนสั่งให้ตรวจโดยเฉพาะ) — งานนี้คือ ตรวจก่อน แล้วจึงแก้
+
+อ่านให้ครบก่อนเริ่ม:
+- รายการไดอะแกรมและเนื้อหาของแต่ละแล็บ (เกณฑ์ "ความถูกต้อง") : /root/workspace/DevTools/05_kubernetes/.work/lab-outline.md  — เฉพาะ "ครั้งที่ 3"
+- spec ส่วนที่ 7 (ภาพประกอบ) และส่วนที่ 6 (ระบบสี) : /root/workspace/DevTools/05_kubernetes/PROMPT_Kubernetes_Course_Spec.txt
+- ไดอะแกรมที่ต้องตรวจ 15 ภาพ : /root/workspace/DevTools/05_kubernetes/03_Session3_Application_Deployment/slides_assets/*.svg (ต้นฉบับ .excalidraw อยู่ใน /root/workspace/DevTools/05_kubernetes/03_Session3_Application_Deployment/slides_assets/scenes/)
+
+ขั้นที่ 1 — ตรวจทุกภาพ (ห้ามข้ามภาพใด ห้ามเดาจากไฟล์ SVG ต้องดูภาพจริง):
+  render แต่ละ SVG เป็น PNG:  node /root/workspace/DevTools/05_kubernetes/.work/tools/shot.js "file://<path.svg>" /root/workspace/DevTools/05_kubernetes/.work/diagram-review-s3/<ชื่อ>.png --w 1600 --h 900 --wait 500
+  แล้ว "เปิดดูภาพ" ทีละภาพ ประเมิน 5 หมวด ให้คะแนน 1-5 ต่อหมวด และเขียนปัญหาที่พบเป็นข้อ ๆ:
+  1. ความถูกต้อง — object/ชื่อ/port/เวอร์ชัน/namespace ตรงกับ lab-outline ของแล็บนั้น · ลูกศรทิศถูก · ศัพท์ Kubernetes สะกดถูก · ไม่มี object ที่แล็บนั้นยังไม่ได้เรียน · ภาพทฤษฎี (d01-d08) สอนแนวคิดตามชื่อภาพได้จริงในภาพเดียว
+  2. ตัวอักษร — สะกดผิดไทย/อังกฤษ · ขนาด ≥ 20px อ่านออกบนจอโปรเจกเตอร์ · ข้อความไม่ล้นกรอบ ไม่ทับเส้น/ขอบ/ลูกศร · ชื่อภาพอยู่บนสุด
+  3. ตำแหน่งและเลย์เอาต์ — จัดแนวตรง ระยะห่างสม่ำเสมอ · ไม่มี element ตกขอบ · ไม่มีพื้นที่ว่างมหาศาล · ลูกศรไม่พาดผ่าน object/ข้อความ ไม่ไขว้กันโดยไม่จำเป็น · ชื่อโซน (namespace/node) ไม่ทับเส้นประของกรอบ
+  4. ความสวยงาม — สีตาม palette ของชุด (acc #1c5cab · ok #116b11 · warn #86590a · crit #a32222 · ink #18181b · พื้น accw/okw/warnw/critw) · รูปทรงของ object ชนิดเดียวกันเหมือนกันทุกภาพ · เส้นหนาสม่ำเสมอ · องค์ประกอบสมดุล
+  5. อื่น ๆ — ชื่อไฟล์ตรงรายการ · มีคู่ .excalidraw ที่เปิดได้ · SVG มี viewBox · ไม่มีชื่อคน/email จริง · ขนาดภาพเหมาะกับสไลด์ 16:9
+
+ขั้นที่ 2 — แก้ทุกปัญหาที่พบ (คะแนนหมวดใดต่ำกว่า 4 หรือมีปัญหาที่เห็นชัด):
+  ใช้ canvas ส่วนตัว port 8895 เท่านั้น (ห้ามแตะ port 8892):
+    bash /root/workspace/DevTools/05_kubernetes/.work/tools/excalidraw-canvas.sh 8895 start ; source /root/workspace/DevTools/05_kubernetes/.work/tools/excalidraw-canvas.sh 8895
+    ต่อภาพ: clear → import <scene.excalidraw> --replace (หรือ add จาก JSON ที่แก้แล้ว) → แก้ element → screenshot ตรวจ → screenshot --format svg --out <path.svg> เขียนทับไฟล์เดิม → export --out <scene.excalidraw> เขียนทับไฟล์เดิม
+    ปิดท้าย: bash /root/workspace/DevTools/05_kubernetes/.work/tools/excalidraw-canvas.sh 8895 stop
+  ชื่อไฟล์ห้ามเปลี่ยน · แก้แล้วต้อง render ดูซ้ำจนผ่านทั้ง 5 หมวด (≥ 4 ทุกหมวด)
+
+รายงานกลับ (คำตอบสุดท้ายถูกเก็บเป็นไฟล์ — ห้ามสร้างไฟล์รายงานเพิ่ม):
+  ตาราง 15 แถว: ไฟล์ | คะแนน 5 หมวดก่อนแก้ | ปัญหาที่พบ | สิ่งที่แก้ | คะแนนหลังแก้
+  ตามด้วย: ภาพที่ยังมีข้อจำกัดแก้ไม่ได้ (ถ้ามี บอกตรง ๆ) · ข้อสังเกตเชิงสไตล์ที่ควรใช้เหมือนกันทั้ง 3 ครั้ง

@@ -1,0 +1,6 @@
+# ตรึงเวอร์ชันตาม docs/02_contract.md §6
+# ตรึงทุกตัวเพราะ image ต้อง build ได้ผลเหมือนเดิมในอีก 6 เดือน (ไม่งั้นแล็บพังกลางคาบ)
+fastapi==0.121.2
+uvicorn[standard]==0.42.0
+psycopg[binary]==3.2.12
+pydantic==2.13.4

@@ -1,0 +1,6 @@
+งาน: แก้ภาษาวิชาการของเอกสารครั้งที่ 1 ตาม feedback (รอบ cyolo1 ตรวจ → yolo1 สรุปสั่งแก้)
+อ่านก่อน: 1) feedback ของ yolo1 (ต้องทำครบ): /root/workspace/DevTools/05_kubernetes/.work/lang-feedback-s1.md  2) รายงานตรวจ (ส่วน B/C คือรายการแก้ทีละจุด): /root/workspace/DevTools/05_kubernetes/.work/lang-review-s1.md  3) เกณฑ์: /root/workspace/DevTools/05_kubernetes/.work/academic-style.md
+ไฟล์ในขอบเขต: /root/workspace/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/ (README ทุกระดับ · YAML_Guide.md · photos.md · Kubernetes_Session1_Slides.html — ไฟล์สไลด์ห้ามเปิดทั้งไฟล์ ใช้สคริปต์แยก markup)
+ทำ: แก้ทุกรายการใน B และ C ของรายงานตรวจ + ทุกข้อใน feedback · แก้เฉพาะข้อความ ไม่แตะโค้ด/ผลลัพธ์/ลิงก์/ASSETS/CSS/จำนวนหน้า
+ตรวจก่อนส่ง: check-lang-diff.py ทุกไฟล์ที่แก้ → OK · check-register.py → HARD=0 · check-readme.py 01_Session1_Kubernetes_Basics/0*/ → 0 FAIL · check-yaml-teaching.py 01_Session1_Kubernetes_Basics → 0 FAIL · ถ้าแก้สไลด์: check-slides.js --shots /root/workspace/DevTools/05_kubernetes/.work/slide-shots3-s1 → หน้าเท่าเดิม broken 0 + overflow check ผ่าน + เปิดดู PNG หน้าที่แก้
+รายงานกลับ (คำตอบสุดท้ายถูกเก็บเป็นไฟล์ — ห้ามสร้างไฟล์รายงานเพิ่ม): รายการที่แก้ (ไฟล์ · จุด · ก่อน → หลัง) · ผลสคริปต์ตรวจ · รายการที่ไม่แก้พร้อมเหตุผล

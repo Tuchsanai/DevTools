@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: lab014
+spec:
+  replicas: 2
+  strategy:
+    type: Recreate # บังคับให้เห็นว่า Pod ชุดผิดไม่มี endpoint เหลือ
+    rollingUpdate: null
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: k8s-lab-api:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: DB_HOST
+              value: db
+            - name: DB_PORT
+              value: "5432" # ปัญหาที่ตั้งใจให้พังคือ probe path เท่านั้น
+            - name: DB_NAME
+              value: skillspace
+            - name: DB_USER
+              value: opsuser
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: POSTGRES_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /readyz # จงใจผิด: API ไม่มี path นี้
+              port: http
+            periodSeconds: 3
+            failureThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10

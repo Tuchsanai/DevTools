@@ -1,0 +1,337 @@
+# Raw transcript — LAB 005 — 2026-09-02
+
+$ kubectl get nodes
+NAME                     STATUS   ROLES           AGE   VERSION
+devtools-control-plane   Ready    control-plane   21m   v1.36.4
+devtools-worker          Ready    <none>          21m   v1.36.4
+devtools-worker2         Ready    <none>          21m   v1.36.4
+[exit=0]
+
+$ docker exec devtools-control-plane crictl images | grep k8s-lab
+docker.io/library/k8s-lab-api                   v1                   f0b9cc03efb0e       186MB
+docker.io/library/k8s-lab-db                    v1                   c6f278c2d20e4       300MB
+docker.io/library/k8s-lab-web                   v1                   47289fcac09e8       209MB
+docker.io/library/k8s-lab-web                   v2                   f2d6e974702f8       209MB
+[exit=0]
+
+$ kubectl delete namespace lab005 --ignore-not-found
+[exit=0]
+
+$ kubectl create namespace lab005
+namespace/lab005 created
+[exit=0]
+
+$ kubectl apply -n lab005 -f 01-pods-with-labels.yaml
+pod/web-a created
+pod/web-b created
+pod/web-c created
+[exit=0]
+
+$ kubectl wait -n lab005 --for=condition=Ready pod -l app=web --timeout=120s
+pod/web-a condition met
+pod/web-b condition met
+pod/web-c condition met
+[exit=0]
+
+$ kubectl get pods -n lab005 --show-labels
+NAME    READY   STATUS    RESTARTS   AGE   LABELS
+web-a   1/1     Running   0          1s    app=web,tier=frontend,version=v1
+web-b   1/1     Running   0          1s    app=web,tier=frontend,version=v2
+web-c   1/1     Running   0          1s    app=web,version=v1
+[exit=0]
+
+$ kubectl get pods -n lab005 -L app,version
+NAME    READY   STATUS    RESTARTS   AGE   APP   VERSION
+web-a   1/1     Running   0          1s    web   v1
+web-b   1/1     Running   0          1s    web   v2
+web-c   1/1     Running   0          1s    web   v1
+[exit=0]
+
+$ kubectl get pods -n lab005 -l version=v1
+NAME    READY   STATUS    RESTARTS   AGE
+web-a   1/1     Running   0          1s
+web-c   1/1     Running   0          1s
+[exit=0]
+
+$ kubectl get pods -n lab005 -l app=web,version=v2
+NAME    READY   STATUS    RESTARTS   AGE
+web-b   1/1     Running   0          1s
+[exit=0]
+
+$ kubectl get pods -n lab005 -l version in (v1,v2)
+NAME    READY   STATUS    RESTARTS   AGE
+web-a   1/1     Running   0          1s
+web-b   1/1     Running   0          1s
+web-c   1/1     Running   0          1s
+[exit=0]
+
+$ kubectl get pods -n lab005 -l !tier
+NAME    READY   STATUS    RESTARTS   AGE
+web-c   1/1     Running   0          1s
+[exit=0]
+
+$ kubectl logs -n lab005 pod/web-b --tail=5
+▲ Next.js 16.3.1
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+✓ Ready in 0ms
+✓ Running next.config took 1.5ms
+[exit=0]
+
+$ kubectl exec -n lab005 pod/web-b -- wget -qO- localhost:3000/info
+wget: can't connect to remote host: Connection refused
+command terminated with exit code 1
+
+[exit=1]
+
+$ kubectl label pod web-c -n lab005 version=v2 --overwrite
+pod/web-c labeled
+[exit=0]
+
+$ kubectl get pods -n lab005 -l version=v2 --show-labels
+NAME    READY   STATUS    RESTARTS   AGE   LABELS
+web-b   1/1     Running   0          1s    app=web,tier=frontend,version=v2
+web-c   1/1     Running   0          1s    app=web,version=v2
+[exit=0]
+
+$ kubectl delete pods -n lab005 -l version=v2
+pod "web-b" deleted from lab005 namespace
+pod "web-c" deleted from lab005 namespace
+[exit=0]
+
+$ kubectl get pods -n lab005 --show-labels
+NAME    READY   STATUS    RESTARTS   AGE   LABELS
+web-a   1/1     Running   0          3s    app=web,tier=frontend,version=v1
+[exit=0]
+
+$ kubectl get nodes --show-labels
+NAME                     STATUS   ROLES           AGE   VERSION   LABELS
+devtools-control-plane   Ready    control-plane   21m   v1.36.4   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,ingress-ready=true,kubernetes.io/arch=amd64,kubernetes.io/hostname=devtools-control-plane,kubernetes.io/os=linux,node-role.kubernetes.io/control-plane=,node.kubernetes.io/exclude-from-external-load-balancers=
+devtools-worker          Ready    <none>          21m   v1.36.4   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=devtools-worker,kubernetes.io/os=linux
+devtools-worker2         Ready    <none>          21m   v1.36.4   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=devtools-worker2,kubernetes.io/os=linux
+[exit=0]
+
+$ kubectl -n ingress-nginx get deploy ingress-nginx-controller -o jsonpath=nodeSelector
+{"ingress-ready":"true","kubernetes.io/os":"linux"}\n[exit=0]
+
+$ kubectl get events -n lab005 --sort-by=.lastTimestamp
+LAST SEEN   TYPE     REASON      OBJECT      MESSAGE
+3s          Normal   Scheduled   pod/web-b   Successfully assigned lab005/web-b to devtools-worker2
+3s          Normal   Pulled      pod/web-a   Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+3s          Normal   Scheduled   pod/web-c   Successfully assigned lab005/web-c to devtools-worker2
+3s          Normal   Scheduled   pod/web-a   Successfully assigned lab005/web-a to devtools-worker2
+2s          Normal   Started     pod/web-a   Container started
+2s          Normal   Pulled      pod/web-b   Container image "k8s-lab-web:v2" already present on machine and can be accessed by the pod
+2s          Normal   Created     pod/web-b   Container created
+2s          Normal   Started     pod/web-b   Container started
+2s          Normal   Created     pod/web-a   Container created
+2s          Normal   Pulled      pod/web-c   Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+2s          Normal   Created     pod/web-c   Container created
+2s          Normal   Started     pod/web-c   Container started
+1s          Normal   Killing     pod/web-b   Stopping container web
+1s          Normal   Killing     pod/web-c   Stopping container web
+[exit=0]
+
+$ kubectl label node devtools-control-plane ingress-ready-
+node/devtools-control-plane unlabeled
+[exit=0]
+
+$ kubectl -n ingress-nginx delete pod -l app.kubernetes.io/component=controller
+pod "ingress-nginx-controller-5d9bb85749-stvjp" deleted from ingress-nginx namespace
+[exit=0]
+
+$ wait until replacement ingress controller is Pending
+phase=Pending
+
+$ kubectl -n ingress-nginx get pods -l app.kubernetes.io/component=controller -o wide
+NAME                                        READY   STATUS    RESTARTS   AGE   IP       NODE     NOMINATED NODE   READINESS GATES
+ingress-nginx-controller-5d9bb85749-gzpzj   0/1     Pending   0          12s   <none>   <none>   <none>           <none>
+[exit=0]
+
+$ kubectl -n ingress-nginx describe pod -l app.kubernetes.io/component=controller
+Name:             ingress-nginx-controller-5d9bb85749-gzpzj
+Namespace:        ingress-nginx
+Priority:         0
+Service Account:  ingress-nginx
+Node:             <none>
+Labels:           app.kubernetes.io/component=controller
+                  app.kubernetes.io/instance=ingress-nginx
+                  app.kubernetes.io/managed-by=Helm
+                  app.kubernetes.io/name=ingress-nginx
+                  app.kubernetes.io/part-of=ingress-nginx
+                  app.kubernetes.io/version=1.15.1
+                  helm.sh/chart=ingress-nginx-4.15.1
+                  pod-template-hash=5d9bb85749
+Annotations:      <none>
+Status:           Pending
+IP:               
+IPs:              <none>
+Controlled By:    ReplicaSet/ingress-nginx-controller-5d9bb85749
+Containers:
+  controller:
+    Image:           registry.k8s.io/ingress-nginx/controller:v1.15.1@sha256:594ceea76b01c592858f803f9ff4d2cb40542cae2060410b2c95f75907d659e1
+    Ports:           80/TCP (http), 443/TCP (https), 8443/TCP (webhook)
+    Host Ports:      80/TCP (http), 443/TCP (https), 0/TCP (webhook)
+    SeccompProfile:  RuntimeDefault
+    Args:
+      /nginx-ingress-controller
+      --publish-service=$(POD_NAMESPACE)/ingress-nginx-controller
+      --election-id=ingress-nginx-leader
+      --controller-class=k8s.io/ingress-nginx
+      --ingress-class=nginx
+      --configmap=$(POD_NAMESPACE)/ingress-nginx-controller
+      --validating-webhook=:8443
+      --validating-webhook-certificate=/usr/local/certificates/cert
+      --validating-webhook-key=/usr/local/certificates/key
+    Requests:
+      cpu:      100m
+      memory:   90Mi
+    Liveness:   http-get http://:10254/healthz delay=10s timeout=1s period=10s successThreshold=1 failureThreshold=5
+    Readiness:  http-get http://:10254/healthz delay=10s timeout=1s period=10s successThreshold=1 failureThreshold=3
+    Environment:
+      POD_NAME:       ingress-nginx-controller-5d9bb85749-gzpzj (v1:metadata.name)
+      POD_NAMESPACE:  ingress-nginx (v1:metadata.namespace)
+      LD_PRELOAD:     /usr/local/lib/libmimalloc.so
+    Mounts:
+      /usr/local/certificates/ from webhook-cert (ro)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-xfztf (ro)
+Conditions:
+  Type           Status
+  PodScheduled   False 
+Volumes:
+  webhook-cert:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  ingress-nginx-admission
+    Optional:    false
+  kube-api-access-xfztf:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              ingress-ready=true
+                             kubernetes.io/os=linux
+Tolerations:                 node-role.kubernetes.io/control-plane:NoSchedule op=Exists
+                             node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age   From               Message
+  ----     ------            ----  ----               -------
+  Warning  FailedScheduling  12s   default-scheduler  0/3 nodes are available: 3 node(s) didn't match Pod's node affinity/selector. no new claims to deallocate, preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
+[exit=0]
+
+$ kubectl -n ingress-nginx get events --sort-by=.lastTimestamp | tail -12
+12m         Warning   Unhealthy           pod/ingress-nginx-controller-5d9bb85749-tbh9r    Readiness probe failed: HTTP probe failed with statuscode: 500
+12m         Normal    Scheduled           pod/ingress-nginx-controller-5d9bb85749-stvjp    Successfully assigned ingress-nginx/ingress-nginx-controller-5d9bb85749-stvjp to devtools-control-plane
+12m         Normal    Pulled              pod/ingress-nginx-controller-5d9bb85749-stvjp    Container image "registry.k8s.io/ingress-nginx/controller:v1.15.1@sha256:594ceea76b01c592858f803f9ff4d2cb40542cae2060410b2c95f75907d659e1" already present on machine and can be accessed by the pod
+12m         Normal    Created             pod/ingress-nginx-controller-5d9bb85749-stvjp    Container created
+12m         Normal    Started             pod/ingress-nginx-controller-5d9bb85749-stvjp    Container started
+12m         Normal    CREATE              configmap/ingress-nginx-controller               ConfigMap ingress-nginx/ingress-nginx-controller
+12m         Warning   RELOAD              pod/ingress-nginx-controller-5d9bb85749-stvjp    Error reloading NGINX: exit status 1...
+4m24s       Normal    RELOAD              pod/ingress-nginx-controller-5d9bb85749-stvjp    NGINX reload triggered due to a change in configuration
+12s         Warning   FailedScheduling    pod/ingress-nginx-controller-5d9bb85749-gzpzj    0/3 nodes are available: 3 node(s) didn't match Pod's node affinity/selector. no new claims to deallocate, preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
+12s         Normal    SuccessfulCreate    replicaset/ingress-nginx-controller-5d9bb85749   Created pod: ingress-nginx-controller-5d9bb85749-gzpzj
+12s         Normal    Killing             pod/ingress-nginx-controller-5d9bb85749-stvjp    Stopping container controller
+10s         Warning   Unhealthy           pod/ingress-nginx-controller-5d9bb85749-stvjp    Readiness probe failed: HTTP probe failed with statuscode: 500
+[exit=0]
+
+$ kubectl label node devtools-control-plane ingress-ready=true
+node/devtools-control-plane labeled
+[exit=0]
+
+$ kubectl -n ingress-nginx wait --for=condition=Ready pod -l app.kubernetes.io/component=controller --timeout=120s
+pod/ingress-nginx-controller-5d9bb85749-gzpzj condition met
+[exit=0]
+
+$ kubectl -n ingress-nginx get pods -l app.kubernetes.io/component=controller -o wide
+NAME                                        READY   STATUS    RESTARTS   AGE   IP           NODE                     NOMINATED NODE   READINESS GATES
+ingress-nginx-controller-5d9bb85749-gzpzj   1/1     Running   0          24s   10.244.0.7   devtools-control-plane   <none>           <none>
+[exit=0]
+
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=8
+I0902 16:53:38.405894      11 nginx.go:319] "Starting NGINX process"
+I0902 16:53:38.405981      11 leaderelection.go:258] "Attempting to acquire leader lease..." lock="ingress-nginx/ingress-nginx-leader"
+I0902 16:53:38.406220      11 nginx.go:339] "Starting validation webhook" address=":8443" certPath="/usr/local/certificates/cert" keyPath="/usr/local/certificates/key"
+I0902 16:53:38.406479      11 controller.go:217] "Configuration changes detected, backend reload required"
+I0902 16:53:38.408193      11 status.go:85] "New leader elected" identity="ingress-nginx-controller-5d9bb85749-stvjp"
+I0902 16:53:38.424023      11 controller.go:231] "Backend successfully reloaded"
+I0902 16:53:38.424102      11 controller.go:243] "Initial sync, sleeping for 1 second"
+I0902 16:53:38.424170      11 event.go:377] Event(v1.ObjectReference{Kind:"Pod", Namespace:"ingress-nginx", Name:"ingress-nginx-controller-5d9bb85749-gzpzj", UID:"90c10a6c-337a-4a48-835f-344cae550fb4", APIVersion:"v1", ResourceVersion:"4149", FieldPath:""}): type: 'Normal' reason: 'RELOAD' NGINX reload triggered due to a change in configuration
+[exit=0]
+
+$ kubectl get node devtools-control-plane -o jsonpath=ingress-ready
+true\n[exit=0]
+
+$ kubectl delete namespace lab005
+namespace "lab005" deleted
+[exit=0]
+
+$ kubectl wait --for=delete namespace/lab005 --timeout=120s
+[exit=0]
+
+$ kubectl get all -n lab005
+No resources found in lab005 namespace.
+[exit=0]
+
+$ kubectl create namespace lab005
+namespace/lab005 created
+[exit=0]
+
+$ kubectl apply -n lab005 -f 01-pods-with-labels.yaml
+pod/web-a created
+pod/web-b created
+pod/web-c created
+[exit=0]
+
+$ kubectl wait -n lab005 --for=condition=Ready pod -l app=web --timeout=120s
+pod/web-a condition met
+pod/web-b condition met
+pod/web-c condition met
+[exit=0]
+
+$ kubectl get pods -n lab005 -l version=v2 --show-labels
+NAME    READY   STATUS    RESTARTS   AGE   LABELS
+web-b   1/1     Running   0          1s    app=web,tier=frontend,version=v2
+[exit=0]
+
+$ kubectl logs -n lab005 pod/web-b --tail=5
+▲ Next.js 16.3.1
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+✓ Ready in 0ms
+✓ Running next.config took 0.9ms
+[exit=0]
+
+$ kubectl delete namespace lab005
+namespace "lab005" deleted
+[exit=0]
+
+$ kubectl wait --for=delete namespace/lab005 --timeout=120s
+[exit=0]
+
+$ kubectl get all -n lab005
+No resources found in lab005 namespace.
+[exit=0]
+
+$ kubectl -n ingress-nginx get pods -l app.kubernetes.io/component=controller
+NAME                                        READY   STATUS    RESTARTS   AGE
+ingress-nginx-controller-5d9bb85749-gzpzj   1/1     Running   0          46s
+[exit=0]
+
+$ node .work/tools/shot.js http://devtools-k8s-lab-g2:3000/ .../images/03-web-b-v2-label.png --w 1280 --h 800 --wait 1500
+{"ok":true,"out":"01_Session1_Kubernetes_Basics/005-labels-the-glue/images/03-web-b-v2-label.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g2:3000/"}
+[exit=0]
+
+$ kubeconform -strict -summary 01-pods-with-labels.yaml
+Summary: 3 resources found in 1 file - Valid: 3, Invalid: 0, Errors: 0, Skipped: 0
+[exit=0]
+
+$ kubectl port-forward -n lab005 pod/web-b 3000:3000 --address 0.0.0.0
+Forwarding from 0.0.0.0:3000 -> 3000
+Handling connection for 3000
+[stopped after screenshot]
+
+$ kubectl get all -n lab005
+No resources found in lab005 namespace.
+[exit=0]

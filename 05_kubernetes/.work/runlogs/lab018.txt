@@ -1,0 +1,931 @@
+$ kubectl get nodes
+NAME                     STATUS   ROLES           AGE   VERSION
+devtools-control-plane   Ready    control-plane   31m   v1.36.4
+devtools-worker          Ready    <none>          30m   v1.36.4
+devtools-worker2         Ready    <none>          30m   v1.36.4
+$ docker exec devtools-control-plane crictl images | grep k8s-lab
+docker.io/library/k8s-lab-api                   v1                   1b0af425a075d       186MB
+docker.io/library/k8s-lab-db                    v1                   35984a84885cb       300MB
+docker.io/library/k8s-lab-web                   v1                   2a74c90a62059       209MB
+docker.io/library/k8s-lab-web                   v2                   7bedccdeefc86       209MB
+$ kubectl create namespace lab018
+namespace/lab018 created
+$ kubectl apply -f manifests/
+configmap/web-config created
+deployment.apps/web created
+service/web created
+deployment.apps/api created
+service/api created
+ingress.networking.k8s.io/skillspace created
+secret/db-secret created
+persistentvolumeclaim/db-data created
+deployment.apps/db created
+service/db created
+$ kubectl wait -n lab018 --for=condition=available deploy/db deploy/api deploy/web --timeout=180s
+deployment.apps/db condition met
+deployment.apps/api condition met
+deployment.apps/web condition met
+$ kubectl get pods -n lab018 -o wide
+NAME                  READY   STATUS    RESTARTS   AGE   IP            NODE               NOMINATED NODE   READINESS GATES
+api-6b56dd98f-skstx   1/1     Running   0          19s   10.244.2.22   devtools-worker2   <none>           <none>
+db-7dd8b59fd7-rfgk4   1/1     Running   0          18s   10.244.1.17   devtools-worker    <none>           <none>
+web-74cb858c9-8nxgf   1/1     Running   0          19s   10.244.1.15   devtools-worker    <none>           <none>
+web-74cb858c9-l5mqf   1/1     Running   0          19s   10.244.2.20   devtools-worker2   <none>           <none>
+web-74cb858c9-w6nqk   1/1     Running   0          19s   10.244.2.21   devtools-worker2   <none>           <none>
+$ until [ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/info)" = 200 ]; do sleep 2; done; curl -s http://localhost:80/info | jq
+{
+  "pod": "web-74cb858c9-8nxgf",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "00:01:59",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-6b56dd98f-skstx"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ for i in $(seq 1 120); do curl --retry 0 .../info || echo FAIL; sleep 0.3; done
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-8nxgf  v1
+$ timeout 35s kubectl get rs -n lab018 -w
+web-74cb858c9-w6nqk  v1
+NAME            DESIRED   CURRENT   READY   AGE
+api-6b56dd98f   1         1         1       47s
+db-7dd8b59fd7   1         1         1       46s
+web-74cb858c9   3         3         3       47s
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-8nxgf  v1
+$ timeout 30s stern -n lab018 web --tail 3
+web-74cb858c9-l5mqf  v1
++ web-74cb858c9-8nxgf › web
++ web-74cb858c9-l5mqf › web
++ web-74cb858c9-w6nqk › web
+web-74cb858c9-8nxgf web - Network:       http://0.0.0.0:3000
+web-74cb858c9-8nxgf web ✓ Ready in 0ms
+web-74cb858c9-8nxgf web ✓ Running next.config took 0.9ms
+web-74cb858c9-l5mqf web - Network:       http://0.0.0.0:3000
+web-74cb858c9-l5mqf web ✓ Ready in 0ms
+web-74cb858c9-l5mqf web ✓ Running next.config took 1.1ms
+web-74cb858c9-w6nqk web - Network:       http://0.0.0.0:3000
+web-74cb858c9-w6nqk web ✓ Ready in 0ms
+web-74cb858c9-w6nqk web ✓ Running next.config took 1.2ms
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-w6nqk  v1
+$ while rollout; ถ้า non-terminating Pod มีทั้ง v1/v2 ให้ shot.js ทุก 1 วินาที
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-8nxgf  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-l5mqf  v1
+web-74cb858c9-w6nqk  v1
+web-74cb858c9-w6nqk  v1
+$ kubectl apply -f manifests/02-web-deployment.yaml
+deployment.apps/web configured
+$ kubectl rollout status -n lab018 deploy/web --timeout=180s
+web-678694c6b8   1         0         0       0s
+web-678694c6b8   1         0         0       0s
+web-678694c6b8   1         1         0       0s
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
++ web-678694c6b8-pf7v9 › web
+mixed images: k8s-lab-web:v2 k8s-lab-web:v1 k8s-lab-web:v1 k8s-lab-web:v1
+web-678694c6b8-pf7v9 web ▲ Next.js 16.3.1
+web-678694c6b8-pf7v9 web - Local:         http://localhost:3000
+web-678694c6b8-pf7v9 web - Network:       http://0.0.0.0:3000
+web-678694c6b8-pf7v9 web ✓ Ready in 0ms
+web-678694c6b8-pf7v9 web ✓ Running next.config took 0.9ms
+{"ok":true,"out":"03_Session3_Application_Deployment/018-updating-without-downtime/images/04-rollout-in-progress-mixed.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g6/"}
+mixed images: k8s-lab-web:v2 k8s-lab-web:v1 k8s-lab-web:v1 k8s-lab-web:v1
+{"ok":true,"out":"03_Session3_Application_Deployment/018-updating-without-downtime/images/04-rollout-in-progress-mixed.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g6/"}
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+mixed images: k8s-lab-web:v2 k8s-lab-web:v1 k8s-lab-web:v1 k8s-lab-web:v1
+{"ok":true,"out":"03_Session3_Application_Deployment/018-updating-without-downtime/images/04-rollout-in-progress-mixed.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g6/"}
+mixed images: k8s-lab-web:v2 k8s-lab-web:v1 k8s-lab-web:v1 k8s-lab-web:v1
+{"ok":true,"out":"03_Session3_Application_Deployment/018-updating-without-downtime/images/04-rollout-in-progress-mixed.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g6/"}
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+mixed images: k8s-lab-web:v2 k8s-lab-web:v2 k8s-lab-web:v1 k8s-lab-web:v1
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+{"ok":true,"out":"03_Session3_Application_Deployment/018-updating-without-downtime/images/04-rollout-in-progress-mixed.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g6/"}
+mixed images: k8s-lab-web:v2 k8s-lab-web:v2 k8s-lab-web:v1 k8s-lab-web:v1
+{"ok":true,"out":"03_Session3_Application_Deployment/018-updating-without-downtime/images/04-rollout-in-progress-mixed.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g6/"}
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+mixed images: k8s-lab-web:v2 k8s-lab-web:v2 k8s-lab-web:v1 k8s-lab-web:v1
+{"ok":true,"out":"03_Session3_Application_Deployment/018-updating-without-downtime/images/04-rollout-in-progress-mixed.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g6/"}
+mixed images: k8s-lab-web:v2 k8s-lab-web:v2 k8s-lab-web:v1 k8s-lab-web:v1
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+{"ok":true,"out":"03_Session3_Application_Deployment/018-updating-without-downtime/images/04-rollout-in-progress-mixed.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g6/"}
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+mixed images: k8s-lab-web:v2 k8s-lab-web:v2 k8s-lab-web:v2 k8s-lab-web:v1
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+{"ok":true,"out":"03_Session3_Application_Deployment/018-updating-without-downtime/images/04-rollout-in-progress-mixed.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g6/"}
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+deployment "web" successfully rolled out
+$ kubectl get rs,pods -n lab018 -l app=web
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/web-678694c6b8   3         3         3       26s
+replicaset.apps/web-74cb858c9    0         0         0       108s
+
+NAME                       READY   STATUS        RESTARTS   AGE
+pod/web-678694c6b8-fw4w4   1/1     Running       0          16s
+pod/web-678694c6b8-pf7v9   1/1     Running       0          26s
+pod/web-678694c6b8-ph5gm   1/1     Running       0          8s
+pod/web-74cb858c9-w6nqk    1/1     Terminating   0          108s
+$ curl -s http://localhost:80/info | jq
+mixed phase ended
+{
+  "pod": "web-678694c6b8-fw4w4",
+  "version": "v2",
+  "theme": "emerald",
+  "site_name": "SkillSpace",
+  "time": "00:03:28",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-6b56dd98f-skstx"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ node .work/tools/shot.js http://devtools-k8s-lab-g6:80/ .../images/04-rollout-done-v2.png --w 1280 --h 800
+{"ok":true,"out":"03_Session3_Application_Deployment/018-updating-without-downtime/images/04-rollout-done-v2.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g6/"}
+$ for i in $(seq 1 100); do curl --retry 0 .../info || echo FAIL; sleep 0.2; done
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-fw4w4  v2
+$ kubectl rollout undo -n lab018 deploy/web
+Warning: resource deployments/web was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.
+deployment.apps/web rolled back
+$ kubectl rollout status -n lab018 deploy/web --timeout=180s
+web-678694c6b8-ph5gm  v2
+Waiting for deployment "web" rollout to finish: 0 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-pf7v9  v2
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-ph5gm  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-ph5gm  v2
+web-74cb858c9-x6d76  v1
+web-74cb858c9-x6d76  v1
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-ph5gm  v2
+web-74cb858c9-x6d76  v1
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-ph5gm  v2
+web-74cb858c9-x6d76  v1
+web-678694c6b8-fw4w4  v2
+web-74cb858c9-x6d76  v1
+web-74cb858c9-x6d76  v1
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-ph5gm  v2
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+web-74cb858c9-x6d76  v1
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-fw4w4  v2
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-fw4w4  v2
+web-74cb858c9-x6d76  v1
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-pf7v9  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-fw4w4  v2
+web-74cb858c9-x6d76  v1
+web-74cb858c9-x6d76  v1
+web-678694c6b8-pf7v9  v2
+web-74cb858c9-x6d76  v1
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-fw4w4  v2
+web-678694c6b8-fw4w4  v2
+web-74cb858c9-x6d76  v1
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+deployment "web" successfully rolled out
+$ kubectl rollout history -n lab018 deploy/web
+deployment.apps/web 
+REVISION  CHANGE-CAUSE
+2         <none>
+3         <none>
+
+$ kubectl get rs,pods -n lab018 -l app=web
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/web-678694c6b8   0         0         0       118s
+replicaset.apps/web-74cb858c9    3         3         3       3m20s
+
+NAME                       READY   STATUS        RESTARTS   AGE
+pod/web-678694c6b8-pf7v9   1/1     Terminating   0          118s
+pod/web-74cb858c9-mrpvq    1/1     Running       0          18s
+pod/web-74cb858c9-w8hhd    1/1     Running       0          9s
+pod/web-74cb858c9-x6d76    1/1     Running       0          27s
+$ until [ "$(curl -s http://localhost:80/info | jq -r .version)" = v1 ]; do sleep 1; done; curl -s http://localhost:80/info | jq
+{
+  "pod": "web-74cb858c9-x6d76",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "00:05:12",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-6b56dd98f-skstx"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ node .work/tools/shot.js http://devtools-k8s-lab-g6:80/ .../images/06-after-undo-v1.png --w 1280 --h 800
+{"ok":true,"out":"03_Session3_Application_Deployment/018-updating-without-downtime/images/06-after-undo-v1.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g6/"}
+$ for i in $(seq 1 100); do curl --retry 0 .../info || echo FAIL; sleep 0.15; done
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-w8hhd  v1
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-x6d76  v1
+web-74cb858c9-x6d76  v1
+$ kubectl apply -f 02-web-recreate.yaml
+web-74cb858c9-mrpvq  v1
+web-74cb858c9-x6d76  v1
+deployment.apps/web configured
+$ kubectl rollout status -n lab018 deploy/web --timeout=180s
+FAIL
+Waiting for deployment "web" rollout to finish: 0 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 0 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 0 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 0 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 0 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 0 of 3 updated replicas are available...
+FAIL
+FAIL
+FAIL
+Waiting for deployment "web" rollout to finish: 1 of 3 updated replicas are available...
+Waiting for deployment "web" rollout to finish: 2 of 3 updated replicas are available...
+FAIL
+FAIL
+FAIL
+FAIL
+FAIL
+FAIL
+FAIL
+FAIL
+FAIL
+FAIL
+FAIL
+deployment "web" successfully rolled out
+$ kubectl get pods -n lab018 -l app=web
+FAIL
+NAME                   READY   STATUS    RESTARTS   AGE
+web-678694c6b8-dss9d   1/1     Running   0          6s
+web-678694c6b8-gkzj9   1/1     Running   0          6s
+web-678694c6b8-q4548   1/1     Running   0          6s
+FAIL
+web-678694c6b8-dss9d  v2
+web-678694c6b8-dss9d  v2
+web-678694c6b8-gkzj9  v2
+web-678694c6b8-gkzj9  v2
+web-678694c6b8-gkzj9  v2
+web-678694c6b8-gkzj9  v2
+web-678694c6b8-dss9d  v2
+web-678694c6b8-q4548  v2
+web-678694c6b8-dss9d  v2
+web-678694c6b8-dss9d  v2
+web-678694c6b8-gkzj9  v2
+web-678694c6b8-gkzj9  v2
+web-678694c6b8-q4548  v2
+web-678694c6b8-q4548  v2
+web-678694c6b8-gkzj9  v2
+web-678694c6b8-q4548  v2
+web-678694c6b8-gkzj9  v2
+web-678694c6b8-q4548  v2
+web-678694c6b8-gkzj9  v2
+web-678694c6b8-q4548  v2
+web-678694c6b8-dss9d  v2
+web-678694c6b8-q4548  v2
+web-678694c6b8-q4548  v2
+web-678694c6b8-dss9d  v2
+web-678694c6b8-dss9d  v2
+web-678694c6b8-gkzj9  v2
+web-678694c6b8-dss9d  v2
+web-678694c6b8-q4548  v2
+web-678694c6b8-dss9d  v2
+web-678694c6b8-gkzj9  v2
+web-678694c6b8-dss9d  v2
+web-678694c6b8-q4548  v2
+web-678694c6b8-dss9d  v2
+web-678694c6b8-dss9d  v2
+web-678694c6b8-q4548  v2
+web-678694c6b8-gkzj9  v2
+$ kubectl apply -f manifests/02-web-deployment.yaml
+deployment.apps/web configured
+$ kubectl rollout status -n lab018 deploy/web --timeout=180s
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+deployment "web" successfully rolled out
+$ curl -s http://localhost:80/info | jq
+{
+  "pod": "web-74cb858c9-4mjnw",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "00:06:36",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-6b56dd98f-skstx"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ for i in $(seq 1 250); do curl --retry 0 .../info || echo FAIL; sleep 0.08; done
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-4mjnw  v1
+$ kubectl patch deploy -n lab018 web --type=json -p=<remove readiness + image v2>
+web-74cb858c9-mtfqf  v1
+deployment.apps/web patched
+$ kubectl rollout status -n lab018 deploy/web --timeout=180s
+web-74cb858c9-mtfqf  v1
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-q6sq2  v1
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-4mjnw  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-q6sq2  v1
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-q6sq2  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-655vp  v2
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-4mjnw  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-4mjnw  v1
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-4mjnw  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-zr7df  v2
+web-74cb858c9-4mjnw  v1
+web-7fdfc9d944-655vp  v2
+web-74cb858c9-4mjnw  v1
+web-7fdfc9d944-zr7df  v2
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-zr7df  v2
+web-74cb858c9-4mjnw  v1
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-zr7df  v2
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-655vp  v2
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+web-7fdfc9d944-zr7df  v2
+web-74cb858c9-mtfqf  v1
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+FAIL
+web-74cb858c9-mtfqf  v1
+FAIL
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-b5dzs  v2
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-zr7df  v2
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-zr7df  v2
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-b5dzs  v2
+web-74cb858c9-mtfqf  v1
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-zr7df  v2
+web-74cb858c9-mtfqf  v1
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+web-7fdfc9d944-zr7df  v2
+deployment "web" successfully rolled out
+$ kubectl get pods -n lab018 -l app=web
+web-7fdfc9d944-zr7df  v2
+NAME                   READY   STATUS        RESTARTS   AGE
+web-74cb858c9-mtfqf    1/1     Terminating   0          68s
+web-7fdfc9d944-655vp   1/1     Running       0          15s
+web-7fdfc9d944-b5dzs   1/1     Running       0          5s
+web-7fdfc9d944-zr7df   1/1     Running       0          10s
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-b5dzs  v2
+FAIL
+FAIL
+FAIL
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-zr7df  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-b5dzs  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-655vp  v2
+web-7fdfc9d944-b5dzs  v2
+$ kubectl apply -f manifests/02-web-deployment.yaml
+deployment.apps/web configured
+$ kubectl rollout status -n lab018 deploy/web --timeout=180s
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+deployment "web" successfully rolled out
+$ kubectl get deploy -n lab018 web -o jsonpath=...
+RollingUpdate maxSurge=1 maxUnavailable=0 readiness=/readyz image=k8s-lab-web:v1
+$ curl -s http://localhost:80/info | jq
+{
+  "pod": "web-74cb858c9-vzbr9",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "00:07:57",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-6b56dd98f-skstx"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ kubectl delete namespace lab018 --wait=true
+namespace "lab018" deleted
+$ kubectl get all -n lab018
+No resources found in lab018 namespace.
+$ kubectl create namespace lab018
+namespace/lab018 created
+$ kubectl apply -f manifests/
+configmap/web-config created
+deployment.apps/web created
+service/web created
+deployment.apps/api created
+service/api created
+ingress.networking.k8s.io/skillspace created
+secret/db-secret created
+persistentvolumeclaim/db-data created
+deployment.apps/db created
+service/db created
+$ kubectl wait -n lab018 --for=condition=available deploy/db deploy/api deploy/web --timeout=180s
+deployment.apps/db condition met
+deployment.apps/api condition met
+deployment.apps/web condition met
+$ kubectl get pods -n lab018 -l app=web
+NAME                  READY   STATUS    RESTARTS   AGE
+web-74cb858c9-5h5jh   1/1     Running   0          18s
+web-74cb858c9-6z78f   1/1     Running   0          18s
+web-74cb858c9-vcdrz   1/1     Running   0          18s
+$ until [ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/info)" = 200 ]; do sleep 2; done; curl -s http://localhost:80/info | jq -c
+{"pod":"web-74cb858c9-6z78f","version":"v1","theme":"blue","site_name":"SkillSpace","time":"00:08:50","api":{"configured":true,"reachable":true,"pod":"api-6b56dd98f-4k9bp"},"db":{"status":"up"}}
+$ kubectl delete namespace lab018 --wait=true
+namespace "lab018" deleted
+$ kubectl get all -n lab018
+No resources found in lab018 namespace.
+$ pgrep -af "kubectl.*port-forward"
+68256 bash -lc pgrep -af "kubectl.*port-forward" || true
+$ ps -ef | grep "[k]ubectl.*port-forward"
+$ kubectl apply --dry-run=client -f manifests/
+configmap/web-config created (dry run)
+deployment.apps/web created (dry run)
+service/web created (dry run)
+deployment.apps/api created (dry run)
+service/api created (dry run)
+ingress.networking.k8s.io/skillspace created (dry run)
+secret/db-secret created (dry run)
+persistentvolumeclaim/db-data created (dry run)
+deployment.apps/db created (dry run)
+service/db created (dry run)
+$ kubectl apply --dry-run=client -f 02-web-recreate.yaml
+deployment.apps/web created (dry run)
+$ docker exec devtools-k8s-lab-g6 kubectl get namespace lab016 lab017 lab018 --ignore-not-found -o name
+$ docker exec devtools-k8s-lab-g6 kubectl get all -A | grep -E "lab016|lab017|lab018"
+$ docker rm -f devtools-k8s-lab-g6
+devtools-k8s-lab-g6
+$ docker ps -a --filter name=devtools-k8s-lab-g6
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES

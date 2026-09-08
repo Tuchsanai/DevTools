@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web2
+  namespace: lab003
+  labels:
+    app: web
+spec:
+  containers:
+    # แอปหลักให้บริการหน้าเว็บที่ port 3000
+    - name: web
+      image: k8s-lab-web:v1
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 3000
+    # sidecar เรียก IPv4 loopback ของ Pod เดียวกัน (localhost ใน image นี้ชี้ IPv6 ก่อน)
+    - name: sidecar
+      image: busybox:1.36.1
+      imagePullPolicy: IfNotPresent
+      command: ["sh", "-c"]
+      args:
+        - while true; do
+            wget -qO- http://127.0.0.1:3000/healthz;
+            echo;
+            sleep 10;
+          done

@@ -1,0 +1,16 @@
+งาน: ปรับภาษาไทยทุกข้อความในสไลด์ครั้งที่ 1 ให้เป็นภาษาวิชาการ (ผู้สอนสั่ง 2026-09-03) และฝังไดอะแกรม SVG ฉบับล่าสุด โดยคงโค้ด ผลลัพธ์ โครงสร้าง และจำนวนหน้า
+อ่านก่อนและทำตามทุกข้อ: /root/workspace/DevTools/05_kubernetes/.work/academic-style.md (A · B2 เฉพาะ anchor ของครั้งที่ 1 · B3 · C · D · E)
+ไฟล์: /root/workspace/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/Kubernetes_Session1_Slides.html (~6 MB มี base64 — **ห้ามเปิดอ่านทั้งไฟล์**; เขียนสคริปต์ Python แยกส่วน markup ของสไลด์ออกจาก window.ASSETS แล้วอ่าน/แก้เฉพาะ markup ทีละ section)
+ขอบเขตข้อความที่ต้องแก้ (ทุกหน้า): h1/h2/h3 · eyebrow · bullet · .note · .m · ข้อความปก/agenda/คั่นบท/สรุป/ปิด · การ์ดอธิบายในหน้า "กายวิภาค YAML" (ชื่อการ์ด+คำอธิบาย) · การ์ด "ผิดบ่อย" → "ข้อผิดพลาดที่พบบ่อย" · "มองภาพนี้:" → "ข้อสังเกตจากภาพ:" · figcaption · alt ทุกภาพ · คำถามนำ · footer ข้อความไทย (path คงเดิม)
+ห้ามแก้: <pre>/<code> และข้อความในบล็อกคำสั่ง-ผลลัพธ์ · window.ASSETS (ยกเว้นข้อถัดไป) · CSS/JS · จำนวนและลำดับหน้า · ป้ายอังกฤษ (KUBERNETES · SESSION 01 · LAB 0NN …) · path/ชื่อไฟล์
+ฝัง SVG ใหม่: ไดอะแกรมใน /root/workspace/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/slides_assets/*.svg ถูกแก้ข้อความไทยแล้ว → แทนค่า base64 ของทุก KEY ที่เป็น SVG ใน window.ASSETS ด้วยไฟล์ปัจจุบัน (KEY ต้องเท่าเดิม ห้ามเพิ่ม/ลด)
+anchor: footer "อ่านต่อ: YAML_Guide.md#…" เปลี่ยนเฉพาะ anchor ตามตาราง B2 ของครั้งที่ 1 (ครั้งที่ 1: #อ่าน-yaml-ให้เป็น → #หลักการอ่าน-yaml · ครั้งที่ 2: #0-อ่าน-yaml-ให้เป็น-สรุป → #0-หลักการอ่าน-yaml-โดยสรุป · ครั้งที่ 3: #5-manifest-ที่พังโดยตั้งใจของแล็บ-020 → #5-manifest-ที่มีข้อผิดพลาดโดยเจตนาของปฏิบัติการ-020)
+ความยาว: ข้อความใหม่แต่ละชิ้นยาวไม่เกินเดิม +15% เพื่อไม่ให้ล้นหน้า
+ตรวจก่อนส่ง (ต้องผ่าน แนบผล):
+  python3 /root/workspace/DevTools/05_kubernetes/.work/tools/check-lang-diff.py <ไฟล์สไลด์>   → OK (pre blocks · ASSETS keys · จำนวนหน้า · CSS เหมือนเดิม)
+  python3 /root/workspace/DevTools/05_kubernetes/.work/tools/check-register.py <ไฟล์สไลด์>   → HARD=0 · SOFT ที่เหลือมีเหตุผล
+  node /root/workspace/DevTools/05_kubernetes/.work/tools/check-slides.js <ไฟล์สไลด์> --shots /root/workspace/DevTools/05_kubernetes/.work/slide-shots3-s1   → หน้าเท่าเดิม brokenImages 0 externalRefs 0 pageErrors 0
+  overflow check (เขียนสคริปต์ Playwright ใช้ /usr/local/lib/node_modules/@playwright/mcp/node_modules/playwright-core): เปิดไฟล์ viewport 1600×900 ไล่ทุก section.slide ที่แสดงอยู่ ตรวจว่าทุก element ที่มีข้อความมี bounding box อยู่ภายในกรอบ slide (bottom ≤ slide.bottom และ right ≤ slide.right) และไม่ทับ footer → รายงานหน้าที่ล้น แล้วย่อข้อความให้พอดีจนไม่มีหน้าล้น
+  เปิดดู PNG อย่างน้อย 15 หน้า (ปก · agenda · ทฤษฎี · กายวิภาค YAML · ปฏิบัติการ · สรุป · ปิด) ยืนยันว่าข้อความไม่ล้น ไม่ทับ และภาษาถูกต้อง
+ห้าม: แตะไฟล์อื่น/โฟลเดอร์ครั้งอื่น · สร้างไฟล์ใหม่ในโฟลเดอร์ส่งมอบ
+รายงานกลับ (คำตอบสุดท้ายถูกเก็บเป็นไฟล์ — ห้ามสร้างไฟล์รายงานเพิ่ม): จำนวนหน้าที่แก้ · HARD ก่อน→หลัง · SOFT ที่เหลือ+เหตุผล · ผล check-lang-diff/check-slides/overflow · ตัวอย่างข้อความก่อน/หลัง 8 คู่ · สิ่งที่ไม่ได้แก้เพราะอะไร

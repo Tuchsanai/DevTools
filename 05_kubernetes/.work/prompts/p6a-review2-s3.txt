@@ -1,0 +1,22 @@
+งาน: **วาดไดอะแกรมใหม่ตาม feedback ของ yolo1** สำหรับครั้งที่ 3 (ผู้สอนดูภาพแล้วชี้ว่าเส้นเชื่อมระหว่างกล่องวางไม่เหมาะสม ไม่เหมือนที่คนทั่วไปวาด)
+
+อ่านให้ครบก่อนเริ่ม (ห้ามลงมือก่อนอ่านจบ):
+- **feedback + กติกาเลย์เอาต์บังคับ 10 ข้อ** : /root/workspace/DevTools/05_kubernetes/.work/diagram-feedback-all.md  ← ยึดเป็นหลัก
+- เนื้อหาที่ภาพต้องสื่อ : /root/workspace/DevTools/05_kubernetes/.work/lab-outline.md (ครั้งที่ 3 + รายการไดอะแกรมท้ายไฟล์)
+- ผลตรวจรอบก่อน (ถ้ามี) : /root/workspace/DevTools/05_kubernetes/.work/diagram-review-s3.md
+- ไฟล์: /root/workspace/DevTools/05_kubernetes/03_Session3_Application_Deployment/slides_assets/*.svg และ /root/workspace/DevTools/05_kubernetes/03_Session3_Application_Deployment/slides_assets/scenes/*.excalidraw (15 คู่ ชื่อห้ามเปลี่ยน)
+
+ขั้นที่ 1 — ตรวจทุกภาพด้วยตาตามกติกาข้อ 1-9 ใน feedback + เกณฑ์ผู้สอน A-D:
+  render: node /root/workspace/DevTools/05_kubernetes/.work/tools/shot.js "file://<path.svg>" /root/workspace/DevTools/05_kubernetes/.work/diagram-review2-s3/<ชื่อ>.png --w 1600 --h 900 --wait 500  แล้วเปิดดู
+  A เส้นเห็นชัด (หนา ≥ 2px สีตัดพื้น) · B เส้นเชื่อมยาวพอดีจากกึ่งกลางขอบกล่องถึงกึ่งกลางขอบกล่อง (ไม่ลอย ไม่ทะลุ ไม่ออกจากมุม ผูก binding)
+  C ตัวอักษรวางสวย (กึ่งกลาง ไม่ล้น ไม่ทับเส้น) · D กล่องไม่ชิดกันจนบังเส้นเชื่อม (ระยะ ≥ 80px) · ให้คะแนน 1-5 ต่อข้อ
+ขั้นที่ 2 — ภาพใดผิดกติกาข้อใดข้อหนึ่ง หรือ A-D ต่ำกว่า 5 → **วาดใหม่ทั้งภาพจากพิกัดที่คำนวณบน grid** (เขียน JSON element ใหม่: กล่องเท่ากัน แถวตรง แม่กึ่งกลางเหนือลูก เส้นตรง/หักฉากออกจากกึ่งกลางขอบ ผูก startBinding/endBinding · ความสัมพันธ์ 1→N ใช้ bus หรือกรอบกลุ่ม ห้าม fan เส้นเฉียง)
+  ภาพที่ yolo1 ระบุชื่อไว้ใน feedback ต้องวาดใหม่แน่นอน
+  ใช้ canvas ส่วนตัว port 8895 เท่านั้น (ห้ามแตะ 8892):
+    bash /root/workspace/DevTools/05_kubernetes/.work/tools/excalidraw-canvas.sh 8895 start ; source /root/workspace/DevTools/05_kubernetes/.work/tools/excalidraw-canvas.sh 8895
+    ต่อภาพ: clear → add <elements.json> → screenshot ตรวจ → screenshot --format svg --out <path.svg> (เขียนทับ) → export --out <scene.excalidraw> (เขียนทับ)
+    ปิดท้าย: bash /root/workspace/DevTools/05_kubernetes/.work/tools/excalidraw-canvas.sh 8895 stop
+  วาดใหม่แล้ว render เปิดดูซ้ำ ไล่กติกา 1-9 และ A-D ทีละข้อจนผ่านหมด (5/5)
+ขั้นที่ 3 — เมื่อครบ 15 ภาพ ให้ render ทั้ง 15 ภาพเรียงกันดูอีกรอบว่า "สไตล์เดียวกันทั้งชุด" (ขนาดกล่อง สี ฟอนต์ ระยะ)
+
+รายงานกลับ (คำตอบสุดท้ายถูกเก็บเป็นไฟล์ — ห้ามสร้างไฟล์รายงานเพิ่ม): ตาราง 15 แถว: ไฟล์ | A B C D ก่อน | กติกาที่ผิด | วาดใหม่/แก้จุด | A B C D หลัง · ภาพที่ยังมีข้อจำกัด (บอกตรง ๆ)

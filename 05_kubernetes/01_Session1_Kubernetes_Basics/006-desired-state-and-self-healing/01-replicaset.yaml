@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: web
+spec:
+  replicas: 3 # desired state: ต้องมี web พร้อมกัน 3 Pod
+  selector:
+    matchLabels:
+      app: web # นับเฉพาะ Pod ที่มี label นี้
+  template:
+    metadata:
+      labels:
+        app: web # ต้องตรงกับ selector ด้านบน
+        version: v1
+    spec:
+      containers:
+        - name: web
+          image: k8s-lab-web:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000

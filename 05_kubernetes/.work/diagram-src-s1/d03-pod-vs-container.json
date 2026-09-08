@@ -1,0 +1,472 @@
+[
+  {
+    "id": "d03-pod-vs-container-rect-1",
+    "type": "rectangle",
+    "x": 0,
+    "y": 0,
+    "width": 1400,
+    "height": 800,
+    "strokeColor": "#ffffff",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "strokeWidth": 1,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": null
+  },
+  {
+    "id": "d03-pod-vs-container-text-2",
+    "type": "text",
+    "x": 50,
+    "y": 28,
+    "text": "Pod ไม่ใช่ container",
+    "fontSize": 32,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "d03-pod-vs-container-arrow-3",
+    "type": "arrow",
+    "x": 50,
+    "y": 82,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        1300,
+        0
+      ]
+    ],
+    "strokeColor": "#d4d4d8",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "endArrowhead": null,
+    "startArrowhead": null
+  },
+  {
+    "id": "d03-pod-vs-container-text-4",
+    "type": "text",
+    "x": 50,
+    "y": 92,
+    "text": "Pod คือ “ซอง” ที่ scheduler ย้ายทั้งชุด และมี container ได้ตั้งแต่หนึ่งตัวขึ้นไป",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#52525b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "d03-pod-vs-container-rect-5",
+    "type": "rectangle",
+    "x": 60,
+    "y": 150,
+    "width": 450,
+    "height": 520,
+    "strokeColor": "#a32222",
+    "backgroundColor": "#fbeaea",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "dashed",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "d03-pod-vs-container-text-6",
+    "type": "text",
+    "x": 80,
+    "y": 162,
+    "text": "มองแยกเป็น container",
+    "fontSize": 22,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "d03-pod-vs-container-rect-7",
+    "type": "rectangle",
+    "x": 120,
+    "y": 245,
+    "width": 330,
+    "height": 90,
+    "strokeColor": "#a32222",
+    "backgroundColor": "#fbeaea",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "d03-pod-vs-container-text-8",
+    "type": "text",
+    "x": 217.39999999999998,
+    "y": 277.5,
+    "text": "web container",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "d03-pod-vs-container-rect-9",
+    "type": "rectangle",
+    "x": 120,
+    "y": 400,
+    "width": 330,
+    "height": 90,
+    "strokeColor": "#a32222",
+    "backgroundColor": "#fbeaea",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "d03-pod-vs-container-text-10",
+    "type": "text",
+    "x": 196.6,
+    "y": 432.5,
+    "text": "sidecar container",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "d03-pod-vs-container-text-11",
+    "type": "text",
+    "x": 110,
+    "y": 550,
+    "text": "ไม่ใช่หน่วยที่ Kubernetes schedule",
+    "fontSize": 22,
+    "fontFamily": "2",
+    "strokeColor": "#a32222",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "d03-pod-vs-container-arrow-12",
+    "type": "arrow",
+    "x": 530,
+    "y": 405,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        120,
+        0
+      ]
+    ],
+    "strokeColor": "#1c5cab",
+    "strokeWidth": 4,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "endArrowhead": "arrow",
+    "startArrowhead": null
+  },
+  {
+    "id": "d03-pod-vs-container-text-13",
+    "type": "text",
+    "x": 538.52,
+    "y": 345,
+    "text": "รวมเป็น 1\nPod",
+    "fontSize": 22,
+    "fontFamily": "2",
+    "strokeColor": "#1c5cab",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "d03-pod-vs-container-rect-14",
+    "type": "rectangle",
+    "x": 675,
+    "y": 150,
+    "width": 665,
+    "height": 520,
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "#eaf2fd",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "dashed",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "d03-pod-vs-container-text-15",
+    "type": "text",
+    "x": 695,
+    "y": 162,
+    "text": "Pod · หน่วยเล็กที่สุดที่ Kubernetes ดูแล",
+    "fontSize": 22,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "d03-pod-vs-container-rect-16",
+    "type": "rectangle",
+    "x": 735,
+    "y": 235,
+    "width": 545,
+    "height": 280,
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "strokeWidth": 3,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "d03-pod-vs-container-text-17",
+    "type": "text",
+    "x": 755,
+    "y": 250,
+    "text": "Pod web2 · IP 10.244.1.8",
+    "fontSize": 22,
+    "fontFamily": "2",
+    "strokeColor": "#1c5cab",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "d03-pod-vs-container-rect-18",
+    "type": "rectangle",
+    "x": 770,
+    "y": 315,
+    "width": 210,
+    "height": 100,
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "#eaf2fd",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "d03-pod-vs-container-text-19",
+    "type": "text",
+    "x": 849,
+    "y": 340,
+    "text": "web\n:3000",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "d03-pod-vs-container-rect-20",
+    "type": "rectangle",
+    "x": 1035,
+    "y": 315,
+    "width": 210,
+    "height": 100,
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "#eaf2fd",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "d03-pod-vs-container-text-21",
+    "type": "text",
+    "x": 1062,
+    "y": 340,
+    "text": "sidecar\nเรียก localhost",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "d03-pod-vs-container-arrow-22",
+    "type": "arrow",
+    "x": 1035,
+    "y": 365,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        -55,
+        0
+      ]
+    ],
+    "strokeColor": "#116b11",
+    "strokeWidth": 3,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "endArrowhead": "arrow",
+    "startArrowhead": null
+  },
+  {
+    "id": "d03-pod-vs-container-rect-23",
+    "type": "rectangle",
+    "x": 825,
+    "y": 445,
+    "width": 365,
+    "height": 54,
+    "strokeColor": "#d4d4d8",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "d03-pod-vs-container-text-24",
+    "type": "text",
+    "x": 939.9,
+    "y": 459.5,
+    "text": "shared volume",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  },
+  {
+    "id": "d03-pod-vs-container-arrow-25",
+    "type": "arrow",
+    "x": 875,
+    "y": 415,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        30
+      ]
+    ],
+    "strokeColor": "#52525b",
+    "strokeWidth": 3,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "endArrowhead": "arrow",
+    "startArrowhead": null
+  },
+  {
+    "id": "d03-pod-vs-container-arrow-26",
+    "type": "arrow",
+    "x": 1140,
+    "y": 415,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        30
+      ]
+    ],
+    "strokeColor": "#52525b",
+    "strokeWidth": 3,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "endArrowhead": "arrow",
+    "startArrowhead": null
+  },
+  {
+    "id": "d03-pod-vs-container-rect-27",
+    "type": "rectangle",
+    "x": 790,
+    "y": 555,
+    "width": 435,
+    "height": 70,
+    "strokeColor": "#116b11",
+    "backgroundColor": "#e7f6e7",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roughness": 0,
+    "opacity": 100,
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "d03-pod-vs-container-text-28",
+    "type": "text",
+    "x": 799.5,
+    "y": 577.5,
+    "text": "แชร์ IP · localhost · volume · lifecycle",
+    "fontSize": 20,
+    "fontFamily": "2",
+    "strokeColor": "#18181b",
+    "roughness": 0,
+    "textAlign": "left",
+    "verticalAlign": "top",
+    "lineHeight": 1.25
+  }
+]

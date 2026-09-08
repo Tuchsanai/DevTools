@@ -1,0 +1,493 @@
+[
+  {
+    "id": "bg-1",
+    "type": "rectangle",
+    "x": 0,
+    "y": 0,
+    "width": 1480,
+    "height": 820,
+    "strokeColor": "#ffffff",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 1
+  },
+  {
+    "id": "text-2",
+    "type": "text",
+    "x": 42,
+    "y": 24,
+    "width": 1390,
+    "height": 44,
+    "text": "Lab 020 · อ่านอาการเพื่อหาชั้นที่พัง",
+    "fontSize": 32,
+    "fontFamily": "helvetica",
+    "textAlign": "left",
+    "verticalAlign": "middle",
+    "strokeColor": "#18181b",
+    "backgroundColor": "transparent",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2
+  },
+  {
+    "id": "text-3",
+    "type": "text",
+    "x": 44,
+    "y": 68,
+    "width": 1390,
+    "height": 27,
+    "text": "ชุด broken/ สร้าง 4 อาการ แล้วไล่ get → describe → logs → events",
+    "fontSize": 20,
+    "fontFamily": "helvetica",
+    "textAlign": "left",
+    "verticalAlign": "middle",
+    "strokeColor": "#52525b",
+    "backgroundColor": "transparent",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 1
+  },
+  {
+    "id": "rule-4",
+    "type": "line",
+    "x": 42,
+    "y": 102,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        1396,
+        0
+      ]
+    ],
+    "strokeColor": "#d4d4d8",
+    "strokeWidth": 2,
+    "roughness": 0
+  },
+  {
+    "id": "rect-5",
+    "type": "rectangle",
+    "x": 25,
+    "y": 335,
+    "width": 175,
+    "height": 112,
+    "strokeColor": "#d4d4d8",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "bar-6",
+    "type": "rectangle",
+    "x": 25,
+    "y": 335,
+    "width": 175,
+    "height": 30,
+    "strokeColor": "#d4d4d8",
+    "backgroundColor": "#eaf2fd",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2
+  },
+  {
+    "id": "ellipse-7",
+    "type": "ellipse",
+    "x": 35,
+    "y": 345,
+    "width": 10,
+    "height": 10,
+    "strokeColor": "#a32222",
+    "backgroundColor": "#fbeaea",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 1
+  },
+  {
+    "id": "ellipse-8",
+    "type": "ellipse",
+    "x": 51,
+    "y": 345,
+    "width": 10,
+    "height": 10,
+    "strokeColor": "#86590a",
+    "backgroundColor": "#fdf3dd",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 1
+  },
+  {
+    "id": "ellipse-9",
+    "type": "ellipse",
+    "x": 67,
+    "y": 345,
+    "width": 10,
+    "height": 10,
+    "strokeColor": "#116b11",
+    "backgroundColor": "#e7f6e7",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 1
+  },
+  {
+    "id": "text-10",
+    "type": "text",
+    "x": 112.5,
+    "y": 378,
+    "width": 151,
+    "height": 30,
+    "text": "Browser",
+    "fontSize": 22,
+    "fontFamily": "helvetica",
+    "textAlign": "center",
+    "verticalAlign": "middle",
+    "strokeColor": "#18181b",
+    "backgroundColor": "transparent",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2
+  },
+  {
+    "id": "text-11",
+    "type": "text",
+    "x": 112.5,
+    "y": 409,
+    "width": 151,
+    "height": 27,
+    "text": "localhost:8080",
+    "fontSize": 20,
+    "fontFamily": "helvetica",
+    "textAlign": "center",
+    "verticalAlign": "middle",
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "transparent",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 1
+  },
+  {
+    "id": "ingress-12",
+    "type": "rectangle",
+    "x": 240,
+    "y": 350,
+    "width": 150,
+    "height": 80,
+    "text": "Ingress\n/",
+    "fontSize": 20,
+    "fontFamily": "helvetica",
+    "textAlign": "center",
+    "verticalAlign": "middle",
+    "strokeColor": "#86590a",
+    "backgroundColor": "#fdf3dd",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "bad-13",
+    "type": "rectangle",
+    "x": 430,
+    "y": 350,
+    "width": 175,
+    "height": 80,
+    "text": "Service web\nendpoints: none",
+    "fontSize": 20,
+    "fontFamily": "helvetica",
+    "textAlign": "center",
+    "verticalAlign": "middle",
+    "strokeColor": "#a32222",
+    "backgroundColor": "#fbeaea",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "arrow-14",
+    "type": "arrow",
+    "x": 205,
+    "y": 390,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        30,
+        0
+      ]
+    ],
+    "strokeColor": "#18181b",
+    "backgroundColor": "transparent",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "endArrowhead": "arrow",
+    "startArrowhead": null,
+    "roundness": null
+  },
+  {
+    "id": "arrow-15",
+    "type": "arrow",
+    "x": 395,
+    "y": 390,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        30,
+        0
+      ]
+    ],
+    "strokeColor": "#86590a",
+    "backgroundColor": "transparent",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "endArrowhead": "arrow",
+    "startArrowhead": null,
+    "roundness": null
+  },
+  {
+    "id": "rect-16",
+    "type": "rectangle",
+    "x": 650,
+    "y": 130,
+    "width": 788,
+    "height": 590,
+    "strokeColor": "#d4d4d8",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2,
+    "strokeStyle": "dashed",
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "text-17",
+    "type": "text",
+    "x": 668,
+    "y": 140,
+    "width": 752,
+    "height": 30,
+    "text": "namespace lab020 · broken objects",
+    "fontSize": 22,
+    "fontFamily": "helvetica",
+    "textAlign": "left",
+    "verticalAlign": "middle",
+    "strokeColor": "#18181b",
+    "backgroundColor": "transparent",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2
+  },
+  {
+    "id": "warn-18",
+    "type": "rectangle",
+    "x": 700,
+    "y": 210,
+    "width": 300,
+    "height": 86,
+    "text": "Pod A · Pending\nrequests cpu: 64",
+    "fontSize": 20,
+    "fontFamily": "helvetica",
+    "textAlign": "center",
+    "verticalAlign": "middle",
+    "strokeColor": "#86590a",
+    "backgroundColor": "#fdf3dd",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "bad-19",
+    "type": "rectangle",
+    "x": 1060,
+    "y": 210,
+    "width": 300,
+    "height": 86,
+    "text": "Pod B · ImagePullBackOff\ntag ไม่มีจริง",
+    "fontSize": 20,
+    "fontFamily": "helvetica",
+    "textAlign": "center",
+    "verticalAlign": "middle",
+    "strokeColor": "#a32222",
+    "backgroundColor": "#fbeaea",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "bad-20",
+    "type": "rectangle",
+    "x": 700,
+    "y": 360,
+    "width": 300,
+    "height": 86,
+    "text": "Pod C · CrashLoopBackOff\nnode missing.js",
+    "fontSize": 20,
+    "fontFamily": "helvetica",
+    "textAlign": "center",
+    "verticalAlign": "middle",
+    "strokeColor": "#a32222",
+    "backgroundColor": "#fbeaea",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "warn-21",
+    "type": "rectangle",
+    "x": 1060,
+    "y": 360,
+    "width": 300,
+    "height": 86,
+    "text": "Service D · endpoints <none>\nselector app: wep",
+    "fontSize": 20,
+    "fontFamily": "helvetica",
+    "textAlign": "center",
+    "verticalAlign": "middle",
+    "strokeColor": "#86590a",
+    "backgroundColor": "#fdf3dd",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "neutral-22",
+    "type": "rectangle",
+    "x": 700,
+    "y": 540,
+    "width": 660,
+    "height": 82,
+    "text": "kubectl get → describe → logs --previous → events",
+    "fontSize": 22,
+    "fontFamily": "helvetica",
+    "textAlign": "center",
+    "verticalAlign": "middle",
+    "strokeColor": "#18181b",
+    "backgroundColor": "#ffffff",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "roundness": {
+      "type": 3
+    }
+  },
+  {
+    "id": "arrow-23",
+    "type": "arrow",
+    "x": 1000,
+    "y": 580,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        -125
+      ]
+    ],
+    "strokeColor": "#1c5cab",
+    "backgroundColor": "transparent",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2,
+    "strokeStyle": "solid",
+    "endArrowhead": "arrow",
+    "startArrowhead": null,
+    "roundness": null
+  },
+  {
+    "id": "text-24",
+    "type": "text",
+    "x": 1030,
+    "y": 650,
+    "width": 680,
+    "height": 30,
+    "text": "แก้ manifest ใน fixed/ แล้ว apply คืนทีละชั้น",
+    "fontSize": 22,
+    "fontFamily": "helvetica",
+    "textAlign": "center",
+    "verticalAlign": "middle",
+    "strokeColor": "#116b11",
+    "backgroundColor": "transparent",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 2
+  },
+  {
+    "id": "text-25",
+    "type": "text",
+    "x": 425,
+    "y": 480,
+    "width": 350,
+    "height": 54,
+    "text": "ผู้ใช้เห็น 503 / เข้าไม่ได้\nแต่อาการต้นเหตุอยู่คนละชั้น",
+    "fontSize": 20,
+    "fontFamily": "helvetica",
+    "textAlign": "center",
+    "verticalAlign": "middle",
+    "strokeColor": "#a32222",
+    "backgroundColor": "transparent",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 1
+  },
+  {
+    "id": "text-26",
+    "type": "text",
+    "x": 739,
+    "y": 784,
+    "width": 1390,
+    "height": 27,
+    "text": "Running ไม่ได้แปลว่าเชื่อมต่อได้ — ตรวจ Service, endpoints และ readiness ต่อ",
+    "fontSize": 20,
+    "fontFamily": "helvetica",
+    "textAlign": "center",
+    "verticalAlign": "middle",
+    "strokeColor": "#52525b",
+    "backgroundColor": "transparent",
+    "fillStyle": "solid",
+    "roughness": 0,
+    "strokeWidth": 1
+  }
+]

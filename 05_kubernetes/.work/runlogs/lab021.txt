@@ -1,0 +1,625 @@
+# Raw transcript — LAB 021
+
+$ docker start devtools-k8s || docker run ...
+devtools-k8s
+
+$ kubectl get nodes
+NAME                     STATUS   ROLES           AGE   VERSION
+devtools-control-plane   Ready    control-plane   25m   v1.36.4
+devtools-worker          Ready    <none>          25m   v1.36.4
+devtools-worker2         Ready    <none>          25m   v1.36.4
+
+$ docker exec devtools-control-plane crictl images | grep k8s-lab
+docker.io/library/k8s-lab-api                   v1                   42d77457f3a7b       186MB
+docker.io/library/k8s-lab-db                    v1                   5c2e02567888a       300MB
+docker.io/library/k8s-lab-web                   v1                   211bccf3fd619       209MB
+docker.io/library/k8s-lab-web                   v2                   36782d1182745       209MB
+
+$ kubectl -n ingress-nginx get pods
+NAME                                        READY   STATUS    RESTARTS   AGE
+ingress-nginx-controller-5d9bb85749-9kl8g   1/1     Running   0          24m
+
+$ kubectl create namespace lab021
+namespace/lab021 created
+
+$ kubectl apply -f manifests/
+configmap/web-config created
+deployment.apps/web created
+service/web created
+deployment.apps/api created
+service/api created
+ingress.networking.k8s.io/skillspace created
+secret/db-secret created
+persistentvolumeclaim/db-data created
+deployment.apps/db created
+service/db created
+
+$ kubectl wait -n lab021 --for=condition=available deployment/db deployment/api deployment/web --timeout=180s
+deployment.apps/db condition met
+deployment.apps/api condition met
+deployment.apps/web condition met
+
+$ kubectl get all,ingress,pvc,secret,configmap -n lab021
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-77cd4cf44d-95hgq   1/1     Running   0          24s
+pod/api-77cd4cf44d-d4v79   1/1     Running   0          24s
+pod/db-59469494cf-nj5qg    1/1     Running   0          24s
+pod/web-5587f599bf-8ds22   1/1     Running   0          25s
+pod/web-5587f599bf-sbz56   1/1     Running   0          25s
+
+NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+service/api   ClusterIP   10.96.245.8    <none>        8000/TCP   24s
+service/db    ClusterIP   10.96.82.209   <none>        5432/TCP   24s
+service/web   ClusterIP   10.96.86.187   <none>        3000/TCP   25s
+
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api   2/2     2            2           25s
+deployment.apps/db    1/1     1            1           24s
+deployment.apps/web   2/2     2            2           25s
+
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/api-77cd4cf44d   2         2         2       24s
+replicaset.apps/db-59469494cf    1         1         1       24s
+replicaset.apps/web-5587f599bf   2         2         2       25s
+
+NAME                                   CLASS   HOSTS   ADDRESS         PORTS   AGE
+ingress.networking.k8s.io/skillspace   nginx   *       10.96.167.146   80      24s
+
+NAME                            STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/db-data   Bound    pvc-5d77aa76-951e-444d-affc-5060248b2909   1Gi        RWO            standard       <unset>                 24s
+
+NAME               TYPE     DATA   AGE
+secret/db-secret   Opaque   1      24s
+
+NAME                         DATA   AGE
+configmap/kube-root-ca.crt   1      25s
+configmap/web-config         3      25s
+
+$ until BODY=$(curl -fsS http://localhost:80/info); do sleep 2; done; echo "$BODY" | jq
+{
+  "pod": "web-5587f599bf-sbz56",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "00:03:12",
+  "node": "devtools-worker",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-77cd4cf44d-95hgq"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+
+$ curl -s http://localhost:80/api/whoami | jq
+{
+  "pod": "api-77cd4cf44d-d4v79",
+  "version": "v1",
+  "time": "2026-09-02T17:03:12+00:00"
+}
+
+$ node .work/tools/shot.js "http://devtools-k8s-lab-g7:80/" 03_Session3_Application_Deployment/021-the-big-picture/images/01-complete-system.png --w 1280 --h 800 --wait 2000
+{"ok":true,"out":"03_Session3_Application_Deployment/021-the-big-picture/images/01-complete-system.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g7/"}
+
+$ node <Playwright: เปิด /tickets กรอกฟอร์ม และกด "แจ้งซ่อม">
+{"ok":true,"url":"http://devtools-k8s-lab-g7/tickets?t=ok&m=%E0%B9%81%E0%B8%88%E0%B9%89%E0%B8%87%E0%B8%8B%E0%B9%88%E0%B8%AD%E0%B8%A1%E0%B9%80%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%9A%E0%B8%A3%E0%B9%89%E0%B8%AD%E0%B8%A2%20%E2%80%94%20%E0%B9%83%E0%B8%9A%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88%E0%B8%AD%E0%B8%A2%E0%B8%B9%E0%B9%88%E0%B9%83%E0%B8%99%E0%B8%84%E0%B8%AD%E0%B8%A5%E0%B8%B1%E0%B8%A1%E0%B8%99%E0%B9%8C%20%22%E0%B8%A3%E0%B8%AD%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B9%80%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%22","message":"สำเร็จ · แจ้งซ่อมเรียบร้อย — ใบใหม่อยู่ในคอลัมน์ \"รอรับเรื่อง\""}
+
+$ node .work/tools/shot.js "http://devtools-k8s-lab-g7:80/tickets" 03_Session3_Application_Deployment/021-the-big-picture/images/02-ticket-created-trace.png --w 1280 --h 800 --full --wait 2000
+{"ok":true,"out":"03_Session3_Application_Deployment/021-the-big-picture/images/02-ticket-created-trace.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g7/tickets"}
+
+$ kubectl -n ingress-nginx logs deployment/ingress-nginx-controller --tail=3
+172.30.0.2 - - [02/Sep/2026:17:03:49 +0000] "GET /parts?_rsc=krstr HTTP/1.1" 200 704 "http://devtools-k8s-lab-g7/tickets" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36" 431 0.016 [lab021-web-3000] [] 10.244.1.18:3000 704 0.015 200 be25e2fe37abcb46a793bd8f808f46a9
+172.30.0.2 - - [02/Sep/2026:17:03:49 +0000] "GET /loans?_rsc=krstr HTTP/1.1" 200 703 "http://devtools-k8s-lab-g7/tickets" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36" 431 0.015 [lab021-web-3000] [] 10.244.1.18:3000 703 0.015 200 5922334c26a6b24c456877341b9fd2f2
+172.30.0.2 - - [02/Sep/2026:17:03:49 +0000] "GET /?_rsc=krstr HTTP/1.1" 200 696 "http://devtools-k8s-lab-g7/tickets" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36" 426 0.015 [lab021-web-3000] [] 10.244.1.18:3000 696 0.015 200 854a120eacd165580f12556e299ad189
+
+$ kubectl logs -n lab021 deployment/web --tail=10
+Found 2 pods, using pod/web-5587f599bf-8ds22
+▲ Next.js 16.3.1
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+✓ Ready in 0ms
+✓ Running next.config took 0.9ms
+
+$ kubectl logs -n lab021 deployment/api --tail=80 | grep 'POST /api/tickets' | tail -1
+Found 2 pods, using pod/api-77cd4cf44d-95hgq
+INFO:     10.244.1.18:33524 - "POST /api/tickets HTTP/1.1" 201 Created
+
+$ kubectl exec -n lab021 deployment/db -- psql -U opsuser -d skillspace -c "SELECT id,title,status FROM tickets ORDER BY id DESC LIMIT 1;"
+ id |         title         | status 
+----+-----------------------+--------
+  9 | LAB 021 request trace | NEW
+(1 row)
+
+
+$ timeout 5s stern -n lab021 . --tail 2
++ api-77cd4cf44d-d4v79 › api
++ api-77cd4cf44d-95hgq › api
++ db-59469494cf-nj5qg › db
++ web-5587f599bf-sbz56 › web
++ web-5587f599bf-8ds22 › web
+api-77cd4cf44d-d4v79 api [api] GET /health 200 1ms
+api-77cd4cf44d-d4v79 api INFO:     10.244.1.18:49796 - "GET /health HTTP/1.1" 200 OK
+api-77cd4cf44d-95hgq api [api] GET /ready 200 8ms
+api-77cd4cf44d-95hgq api INFO:     10.244.1.1:51838 - "GET /ready HTTP/1.1" 200 OK
+db-59469494cf-nj5qg db 2026-09-02 17:02:56.978 UTC [66] LOG:  database system was shut down at 2026-09-02 17:02:56 UTC
+db-59469494cf-nj5qg db 2026-09-02 17:02:56.998 UTC [1] LOG:  database system is ready to accept connections
+web-5587f599bf-8ds22 web ✓ Ready in 0ms
+web-5587f599bf-8ds22 web ✓ Running next.config took 0.9ms
+web-5587f599bf-sbz56 web ✓ Ready in 0ms
+web-5587f599bf-sbz56 web ✓ Running next.config took 1.1ms
+api-77cd4cf44d-95hgq api [api] GET /health 200 1ms
+api-77cd4cf44d-95hgq api INFO:     10.244.2.12:58864 - "GET /health HTTP/1.1" 200 OK
+api-77cd4cf44d-d4v79 api [api] GET /ready 200 7ms
+api-77cd4cf44d-d4v79 api INFO:     10.244.2.1:45526 - "GET /ready HTTP/1.1" 200 OK
+api-77cd4cf44d-95hgq api [api] GET /health 200 1ms
+api-77cd4cf44d-95hgq api INFO:     10.244.1.18:49812 - "GET /health HTTP/1.1" 200 OK
+api-77cd4cf44d-95hgq api [api] GET /ready 200 7ms
+api-77cd4cf44d-95hgq api INFO:     10.244.1.1:51850 - "GET /ready HTTP/1.1" 200 OK
+
+$ kubectl delete service db -n lab021
+service "db" deleted from lab021 namespace
+
+$ sleep 12; kubectl get pods,endpoints -n lab021
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-77cd4cf44d-95hgq   1/1     Running   0          114s
+pod/api-77cd4cf44d-d4v79   1/1     Running   0          114s
+pod/db-59469494cf-nj5qg    1/1     Running   0          114s
+pod/web-5587f599bf-8ds22   1/1     Running   0          115s
+pod/web-5587f599bf-sbz56   1/1     Running   0          115s
+
+NAME            ENDPOINTS                           AGE
+endpoints/api   10.244.1.19:8000,10.244.2.13:8000   114s
+endpoints/web   10.244.1.18:3000,10.244.2.12:3000   115s
+
+$ curl -s http://localhost:80/info | jq
+{
+  "pod": "web-5587f599bf-8ds22",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "00:04:42",
+  "node": "devtools-worker2",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-77cd4cf44d-d4v79"
+  },
+  "db": {
+    "status": "down",
+    "error": "[Errno -5] No address associated with hostname"
+  }
+}
+
+$ sleep 10; kubectl get pods,endpoints -n lab021
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-77cd4cf44d-95hgq   0/1     Running   0          2m10s
+pod/api-77cd4cf44d-d4v79   0/1     Running   0          2m10s
+pod/db-59469494cf-nj5qg    1/1     Running   0          2m10s
+pod/web-5587f599bf-8ds22   1/1     Running   0          2m11s
+pod/web-5587f599bf-sbz56   1/1     Running   0          2m11s
+
+NAME            ENDPOINTS                           AGE
+endpoints/api                                       2m10s
+endpoints/web   10.244.1.18:3000,10.244.2.12:3000   2m11s
+
+$ node .work/tools/shot.js "http://devtools-k8s-lab-g7:80/" 03_Session3_Application_Deployment/021-the-big-picture/images/04-db-service-cut.png --w 1280 --h 800 --wait 2000
+{"ok":true,"out":"03_Session3_Application_Deployment/021-the-big-picture/images/04-db-service-cut.png","title":"503 Service Temporarily Unavailable","url":"http://devtools-k8s-lab-g7/"}
+
+$ kubectl apply -f manifests/10-db-service.yaml
+service/db created
+
+$ until curl -fsS http://localhost:80/info | jq -e '.db.status == "up"' >/dev/null; do sleep 2; done; kubectl get pods,endpoints -n lab021
+curl: (22) The requested URL returned error: 503
+curl: (22) The requested URL returned error: 503
+curl: (22) The requested URL returned error: 503
+curl: (22) The requested URL returned error: 503
+curl: (22) The requested URL returned error: 503
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-77cd4cf44d-95hgq   1/1     Running   0          2m51s
+pod/api-77cd4cf44d-d4v79   1/1     Running   0          2m51s
+pod/db-59469494cf-nj5qg    1/1     Running   0          2m51s
+pod/web-5587f599bf-8ds22   1/1     Running   0          2m52s
+pod/web-5587f599bf-sbz56   1/1     Running   0          2m52s
+
+NAME            ENDPOINTS                           AGE
+endpoints/api   10.244.1.19:8000,10.244.2.13:8000   2m51s
+endpoints/db    10.244.1.21:5432                    15s
+endpoints/web   10.244.1.18:3000,10.244.2.12:3000   2m52s
+
+$ kubectl delete service db -n lab021
+service "db" deleted from lab021 namespace
+
+$ sleep 2; curl -s http://localhost:80/info | jq
+{
+  "pod": "web-5587f599bf-sbz56",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "00:05:41",
+  "node": "devtools-worker",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-77cd4cf44d-d4v79"
+  },
+  "db": {
+    "status": "down",
+    "error": "[Errno -5] No address associated with hostname"
+  }
+}
+
+$ node .work/tools/shot.js "http://devtools-k8s-lab-g7:80/" 03_Session3_Application_Deployment/021-the-big-picture/images/04-db-service-cut.png --w 1280 --h 800 --wait 0
+{"ok":true,"out":"03_Session3_Application_Deployment/021-the-big-picture/images/04-db-service-cut.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g7/"}
+
+$ kubectl apply -f manifests/10-db-service.yaml
+service/db created
+
+$ until curl -fsS http://localhost:80/info | jq -e '.db.status == "up"' >/dev/null; do sleep 2; done; curl -s http://localhost:80/info | jq '{api,db}'
+curl: (22) The requested URL returned error: 503
+curl: (22) The requested URL returned error: 503
+{
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-77cd4cf44d-95hgq"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+
+$ kubectl delete service api -n lab021
+service "api" deleted from lab021 namespace
+
+$ sleep 2; curl -s http://localhost:80/info | jq '{api,db}'
+{
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-77cd4cf44d-95hgq"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+
+$ kubectl get service,endpoints -n lab021
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/db    ClusterIP   10.96.226.200   <none>        5432/TCP   13s
+service/web   ClusterIP   10.96.86.187    <none>        3000/TCP   3m36s
+
+NAME            ENDPOINTS                           AGE
+endpoints/db    10.244.1.21:5432                    13s
+endpoints/web   10.244.1.18:3000,10.244.2.12:3000   3m36s
+
+$ kubectl apply -f manifests/05-api-service.yaml
+service/api created
+
+$ until curl -fsS http://localhost:80/info | jq -e '.api.reachable == true and .db.status == "up"' >/dev/null; do sleep 2; done; curl -s http://localhost:80/info | jq '{api,db}'
+{
+  "api": {
+    "configured": true,
+    "reachable": false,
+    "error": "fetch failed"
+  },
+  "db": {
+    "status": "unknown"
+  }
+}
+
+$ sleep 10; kubectl get service,endpoints -n lab021; for i in 1 2 3 4; do curl -s http://localhost:80/info | jq -c '{pod,api,db}'; done
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/api   ClusterIP   10.96.180.108   <none>        8000/TCP   26s
+service/db    ClusterIP   10.96.226.200   <none>        5432/TCP   39s
+service/web   ClusterIP   10.96.86.187    <none>        3000/TCP   4m2s
+
+NAME            ENDPOINTS                           AGE
+endpoints/api   10.244.1.19:8000,10.244.2.13:8000   26s
+endpoints/db    10.244.1.21:5432                    39s
+endpoints/web   10.244.1.18:3000,10.244.2.12:3000   4m2s
+{"pod":"web-5587f599bf-8ds22","api":{"configured":true,"reachable":true,"pod":"api-77cd4cf44d-d4v79"},"db":{"status":"up"}}
+{"pod":"web-5587f599bf-sbz56","api":{"configured":true,"reachable":true,"pod":"api-77cd4cf44d-95hgq"},"db":{"status":"up"}}
+{"pod":"web-5587f599bf-8ds22","api":{"configured":true,"reachable":true,"pod":"api-77cd4cf44d-d4v79"},"db":{"status":"up"}}
+{"pod":"web-5587f599bf-sbz56","api":{"configured":true,"reachable":true,"pod":"api-77cd4cf44d-95hgq"},"db":{"status":"up"}}
+
+$ kubectl delete service api -n lab021
+service "api" deleted from lab021 namespace
+
+$ for i in $(seq 1 10); do BODY=$(curl -s http://localhost:80/info); if echo "$BODY" | jq -e '.api.reachable == false' >/dev/null 2>&1; then echo "$BODY" | jq '{api,db}'; break; fi; sleep 1; done
+
+$ kubectl apply -f manifests/05-api-service.yaml
+service/api created
+
+$ sleep 10; for i in 1 2 3 4; do curl -s http://localhost:80/info | jq -c '{pod,api,db}'; done
+{"pod":"web-5587f599bf-8ds22","api":{"configured":true,"reachable":true,"pod":"api-77cd4cf44d-d4v79"},"db":{"status":"up"}}
+{"pod":"web-5587f599bf-sbz56","api":{"configured":true,"reachable":true,"pod":"api-77cd4cf44d-95hgq"},"db":{"status":"up"}}
+{"pod":"web-5587f599bf-8ds22","api":{"configured":true,"reachable":true,"pod":"api-77cd4cf44d-d4v79"},"db":{"status":"up"}}
+{"pod":"web-5587f599bf-8ds22","api":{"configured":true,"reachable":true,"pod":"api-77cd4cf44d-d4v79"},"db":{"status":"up"}}
+
+$ kubectl delete service api -n lab021
+service "api" deleted from lab021 namespace
+
+$ sleep 20; kubectl get pods,service,endpoints -n lab021; curl -i -s http://localhost:80/info | head -20
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-77cd4cf44d-95hgq   1/1     Running   0          5m
+pod/api-77cd4cf44d-d4v79   1/1     Running   0          5m
+pod/db-59469494cf-nj5qg    1/1     Running   0          5m
+pod/web-5587f599bf-8ds22   0/1     Running   0          5m1s
+pod/web-5587f599bf-sbz56   0/1     Running   0          5m1s
+
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/db    ClusterIP   10.96.226.200   <none>        5432/TCP   98s
+service/web   ClusterIP   10.96.86.187    <none>        3000/TCP   5m1s
+
+NAME            ENDPOINTS          AGE
+endpoints/db    10.244.1.21:5432   98s
+endpoints/web                      5m1s
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 17:07:48 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Wed, 02 Sep 2026 17:07:51 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+
+$ kubectl apply -f manifests/05-api-service.yaml
+service/api created
+
+$ kubectl wait -n lab021 --for=condition=ready pod -l app=web --timeout=120s
+pod/web-5587f599bf-8ds22 condition met
+pod/web-5587f599bf-sbz56 condition met
+
+$ until curl -fsS http://localhost:80/info | jq -e '.api.reachable == true and .db.status == "up"' >/dev/null; do sleep 2; done; curl -s http://localhost:80/info | jq '{api,db}'
+curl: (22) The requested URL returned error: 503
+{
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-77cd4cf44d-95hgq"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+
+$ kubectl delete ingress skillspace -n lab021
+ingress.networking.k8s.io "skillspace" deleted from lab021 namespace
+
+$ for i in $(seq 1 20); do CODE=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:80/); if [ "$CODE" = 404 ]; then echo "$CODE"; break; fi; sleep 1; done
+404
+
+$ kubectl get ingress -n lab021
+No resources found in lab021 namespace.
+
+$ kubectl apply -f manifests/06-ingress.yaml
+ingress.networking.k8s.io/skillspace created
+
+$ until [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:80/)" = 200 ]; do sleep 2; done; curl -s -o /dev/null -w '%{http_code}\n' http://localhost:80/
+200
+
+$ kubectl scale deployment web -n lab021 --replicas=0
+deployment.apps/web scaled
+
+$ for i in $(seq 1 20); do CODE=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:80/); if [ "$CODE" = 503 ]; then echo "$CODE"; break; fi; sleep 1; done; kubectl get deployment,pods,endpoints -n lab021
+503
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api   2/2     2            2           5m57s
+deployment.apps/db    1/1     1            1           5m56s
+deployment.apps/web   0/0     0            0           5m57s
+
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-77cd4cf44d-95hgq   1/1     Running   0          5m56s
+pod/api-77cd4cf44d-d4v79   1/1     Running   0          5m56s
+pod/db-59469494cf-nj5qg    1/1     Running   0          5m56s
+
+NAME            ENDPOINTS                           AGE
+endpoints/api   10.244.1.19:8000,10.244.2.13:8000   37s
+endpoints/db    10.244.1.21:5432                    2m34s
+endpoints/web   <none>                              5m57s
+
+$ kubectl apply -f manifests/02-web-deployment.yaml
+deployment.apps/web configured
+
+$ kubectl wait -n lab021 --for=condition=available deployment/web --timeout=120s
+deployment.apps/web condition met
+
+$ until BODY=$(curl -fsS http://localhost:80/info); do sleep 2; done; echo "$BODY" | jq -c '{pod,api,db}'
+{"pod":"web-5587f599bf-76jgl","api":{"configured":true,"reachable":true,"pod":"api-77cd4cf44d-95hgq"},"db":{"status":"up"}}
+
+$ kubectl get events -n lab021 --sort-by=.lastTimestamp | tail -15
+24s         Normal    Killing                 pod/web-5587f599bf-8ds22        Stopping container web
+24s         Normal    Killing                 pod/web-5587f599bf-sbz56        Stopping container web
+24s         Normal    SuccessfulDelete        replicaset/web-5587f599bf       Deleted pod: web-5587f599bf-sbz56
+9s          Normal    ScalingReplicaSet       deployment/web                  Scaled up replica set web-5587f599bf from 0 to 2
+9s          Normal    Scheduled               pod/web-5587f599bf-xxrgp        Successfully assigned lab021/web-5587f599bf-xxrgp to devtools-worker
+9s          Normal    SuccessfulCreate        replicaset/web-5587f599bf       Created pod: web-5587f599bf-xxrgp
+9s          Normal    SuccessfulCreate        replicaset/web-5587f599bf       Created pod: web-5587f599bf-76jgl
+9s          Normal    Scheduled               pod/web-5587f599bf-76jgl        Successfully assigned lab021/web-5587f599bf-76jgl to devtools-worker2
+8s          Normal    Pulled                  pod/web-5587f599bf-76jgl        Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+8s          Normal    Started                 pod/web-5587f599bf-xxrgp        Container started
+8s          Normal    Created                 pod/web-5587f599bf-xxrgp        Container created
+8s          Normal    Pulled                  pod/web-5587f599bf-xxrgp        Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+8s          Normal    Created                 pod/web-5587f599bf-76jgl        Container created
+8s          Normal    Started                 pod/web-5587f599bf-76jgl        Container started
+1s          Normal    Sync                    ingress/skillspace              Scheduled for sync
+
+$ kubectl get all,ingress,pvc -n lab021
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-77cd4cf44d-95hgq   1/1     Running   0          6m20s
+pod/api-77cd4cf44d-d4v79   1/1     Running   0          6m20s
+pod/db-59469494cf-nj5qg    1/1     Running   0          6m20s
+pod/web-5587f599bf-76jgl   1/1     Running   0          24s
+pod/web-5587f599bf-xxrgp   1/1     Running   0          24s
+
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/api   ClusterIP   10.96.111.55    <none>        8000/TCP   61s
+service/db    ClusterIP   10.96.226.200   <none>        5432/TCP   2m58s
+service/web   ClusterIP   10.96.86.187    <none>        3000/TCP   6m21s
+
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api   2/2     2            2           6m21s
+deployment.apps/db    1/1     1            1           6m20s
+deployment.apps/web   2/2     2            2           6m21s
+
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/api-77cd4cf44d   2         2         2       6m20s
+replicaset.apps/db-59469494cf    1         1         1       6m20s
+replicaset.apps/web-5587f599bf   2         2         2       6m21s
+
+NAME                                   CLASS   HOSTS   ADDRESS         PORTS   AGE
+ingress.networking.k8s.io/skillspace   nginx   *       10.96.167.146   80      53s
+
+NAME                            STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/db-data   Bound    pvc-5d77aa76-951e-444d-affc-5060248b2909   1Gi        RWO            standard       <unset>                 6m20s
+
+$ kubectl exec -n lab021 deployment/db -- psql -U opsuser -d skillspace -Atc 'SELECT count(*) FROM tickets;'
+9
+
+$ kubectl delete namespace lab021
+namespace "lab021" deleted
+
+$ kubectl wait --for=delete namespace/lab021 --timeout=180s
+
+$ kubectl get all -n lab021
+No resources found in lab021 namespace.
+
+$ kubectl create namespace lab021
+namespace/lab021 created
+
+$ kubectl apply -f manifests/
+configmap/web-config created
+deployment.apps/web created
+service/web created
+deployment.apps/api created
+service/api created
+ingress.networking.k8s.io/skillspace created
+secret/db-secret created
+persistentvolumeclaim/db-data created
+deployment.apps/db created
+service/db created
+
+$ kubectl wait -n lab021 --for=condition=available deployment/db deployment/api deployment/web --timeout=180s
+deployment.apps/db condition met
+deployment.apps/api condition met
+deployment.apps/web condition met
+
+$ until BODY=$(curl -fsS http://localhost:80/info); do sleep 2; done; echo "$BODY" | jq -c '{pod,api,db}'
+{"pod":"web-5587f599bf-kggqc","api":{"configured":true,"reachable":true,"pod":"api-77cd4cf44d-kxcv5"},"db":{"status":"up"}}
+
+$ kubectl exec -n lab021 deployment/db -- psql -U opsuser -d skillspace -Atc 'SELECT count(*) FROM tickets;'
+8
+
+$ kubectl get all,ingress,pvc -n lab021
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-77cd4cf44d-9htjl   1/1     Running   0          20s
+pod/api-77cd4cf44d-kxcv5   1/1     Running   0          20s
+pod/db-59469494cf-njxg4    1/1     Running   0          20s
+pod/web-5587f599bf-kggqc   1/1     Running   0          20s
+pod/web-5587f599bf-ms7q2   1/1     Running   0          20s
+
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/api   ClusterIP   10.96.252.199   <none>        8000/TCP   20s
+service/db    ClusterIP   10.96.226.83    <none>        5432/TCP   20s
+service/web   ClusterIP   10.96.242.36    <none>        3000/TCP   20s
+
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api   2/2     2            2           20s
+deployment.apps/db    1/1     1            1           20s
+deployment.apps/web   2/2     2            2           20s
+
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/api-77cd4cf44d   2         2         2       20s
+replicaset.apps/db-59469494cf    1         1         1       20s
+replicaset.apps/web-5587f599bf   2         2         2       20s
+
+NAME                                   CLASS   HOSTS   ADDRESS   PORTS   AGE
+ingress.networking.k8s.io/skillspace   nginx   *                 80      20s
+
+NAME                            STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/db-data   Bound    pvc-06e91d35-730b-46f2-8ab2-541b64b4e5b8   1Gi        RWO            standard       <unset>                 20s
+
+$ kubectl delete namespace lab021
+namespace "lab021" deleted
+
+$ kubectl wait --for=delete namespace/lab021 --timeout=180s
+
+$ kubectl get all -n lab021
+No resources found in lab021 namespace.
+
+$ kubectl get namespace lab021
+Error from server (NotFound): namespaces "lab021" not found
+
+$ mkdir -p ~/labwork && cd ~/labwork && git clone https://github.com/Tuchsanai/DevTools.git
+Cloning into 'DevTools'...
+
+$ cd ~/labwork/DevTools/05_kubernetes/03_Session3_Application_Deployment/021-the-big-picture && pwd
+/root/labwork/DevTools/05_kubernetes/03_Session3_Application_Deployment/021-the-big-picture
+
+$ git pull
+Already up to date.
+
+$ kubectl -n ingress-nginx logs deployment/ingress-nginx-controller | grep '"GET /info' | tail -1
+172.18.0.1 - - [02/Sep/2026:17:09:46 +0000] "GET /info HTTP/1.1" 200 233 "-" "curl/8.18.0" 77 0.028 [lab021-web-3000] [] 10.244.2.15:3000 233 0.028 200 4b9b38f9e5bffb3c564d9d44a87f9f48
+
+$ kubectl apply --dry-run=client -f <all LAB 021 manifests>
+error: the path "03_Session3_Application_Deployment/021-the-big-picture/manifests/01-configmap.yaml" does not exist
+error: the path "03_Session3_Application_Deployment/021-the-big-picture/manifests/02-web-deployment.yaml" does not exist
+error: the path "03_Session3_Application_Deployment/021-the-big-picture/manifests/03-web-service.yaml" does not exist
+error: the path "03_Session3_Application_Deployment/021-the-big-picture/manifests/04-api-deployment.yaml" does not exist
+error: the path "03_Session3_Application_Deployment/021-the-big-picture/manifests/05-api-service.yaml" does not exist
+error: the path "03_Session3_Application_Deployment/021-the-big-picture/manifests/06-ingress.yaml" does not exist
+error: the path "03_Session3_Application_Deployment/021-the-big-picture/manifests/07-secret.yaml" does not exist
+error: the path "03_Session3_Application_Deployment/021-the-big-picture/manifests/08-pvc.yaml" does not exist
+error: the path "03_Session3_Application_Deployment/021-the-big-picture/manifests/09-db-deployment.yaml" does not exist
+error: the path "03_Session3_Application_Deployment/021-the-big-picture/manifests/10-db-service.yaml" does not exist
+
+$ cd ~/labwork/DevTools/05_kubernetes && kubectl apply --dry-run=client -f <all LAB 021 manifests>
+configmap/web-config created (dry run)
+deployment.apps/web created (dry run)
+service/web created (dry run)
+deployment.apps/api created (dry run)
+service/api created (dry run)
+ingress.networking.k8s.io/skillspace created (dry run)
+secret/db-secret created (dry run)
+persistentvolumeclaim/db-data created (dry run)
+deployment.apps/db created (dry run)
+service/db created (dry run)
+
+$ kubectl get all -n lab019; kubectl get all -n lab020; kubectl get all -n lab021
+No resources found in lab019 namespace.
+No resources found in lab020 namespace.
+No resources found in lab021 namespace.
+
+$ ps -ef | grep "[k]ubectl port-forward"
+
+$ docker ps -a --filter name=devtools-k8s-lab-g7
+CONTAINER ID   IMAGE                           COMMAND                  CREATED          STATUS                    PORTS     NAMES
+1f6d16310ee4   tuchsanai/devtools-k8s:2569_1   "/usr/bin/tini -- /u…"   40 minutes ago   Up 40 minutes (healthy)   22/tcp    devtools-k8s-lab-g7
+
+$ docker rm -f devtools-k8s-lab-g7
+devtools-k8s-lab-g7
+
+$ docker ps -a --filter name=devtools-k8s-lab-g7
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES

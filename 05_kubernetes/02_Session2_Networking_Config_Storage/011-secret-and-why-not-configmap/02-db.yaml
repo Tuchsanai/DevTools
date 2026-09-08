@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: lab011
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: db
+          image: k8s-lab-db:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: skillspace
+            - name: POSTGRES_USER
+              value: opsuser
+            - name: POSTGRES_PASSWORD
+              valueFrom: # อ่านเฉพาะ key ที่ต้องใช้จาก Secret
+                secretKeyRef:
+                  name: db-secret
+                  key: POSTGRES_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: lab011
+spec:
+  selector:
+    app: db
+  ports:
+    - port: 5432
+      targetPort: postgres

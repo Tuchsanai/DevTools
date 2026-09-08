@@ -1,0 +1,447 @@
++ date -u +%Y-%m-%dT%H:%M:%SZ
+2026-09-02T16:39:38Z
++ kubectl get nodes
+NAME                     STATUS   ROLES           AGE     VERSION
+devtools-control-plane   Ready    control-plane   6m12s   v1.36.4
+devtools-worker          Ready    <none>          5m56s   v1.36.4
+devtools-worker2         Ready    <none>          5m56s   v1.36.4
++ bash -lc 'docker exec devtools-control-plane crictl images | grep k8s-lab'
+docker.io/library/k8s-lab-api                   v1                   682aa17deaef3       186MB
+docker.io/library/k8s-lab-web                   v1                   a389e8bc3c5ed       209MB
+docker.io/library/k8s-lab-db                    v1                   901da7602fb40       300MB
+docker.io/library/k8s-lab-web                   v2                   65ea95c8496b6       209MB
++ cd /root/labwork/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/007-deployment-manages-change
++ kubectl create namespace lab007
+namespace/lab007 created
++ kubectl apply -f 01-deployment.yaml -f 02-door.yaml
+deployment.apps/web created
+service/web created
+ingress.networking.k8s.io/web created
++ kubectl wait -n lab007 --for=condition=available deployment/web --timeout=120s
+deployment.apps/web condition met
++ kubectl get deploy,rs,pods -n lab007
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/web   3/3     3            3           3s
+
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/web-55d8957d6d   3         3         3       3s
+
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/web-55d8957d6d-46cds   1/1     Running   0          3s
+pod/web-55d8957d6d-74vg7   1/1     Running   0          3s
+pod/web-55d8957d6d-btqln   1/1     Running   0          3s
++ curl -s localhost:80/info
++ jq -c '{pod,version,theme}'
+jq: parse error: Invalid numeric literal at line 1, column 7
++ kubectl scale deployment web -n lab007 --replicas=5
+deployment.apps/web scaled
++ kubectl wait -n lab007 '--for=jsonpath={.status.readyReplicas}=5' deployment/web --timeout=120s
+deployment.apps/web condition met
++ kubectl get deploy,rs,pods -n lab007
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/web   5/5     5            5           11s
+
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/web-55d8957d6d   5         5         5       11s
+
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/web-55d8957d6d-46cds   1/1     Running   0          11s
+pod/web-55d8957d6d-74vg7   1/1     Running   0          11s
+pod/web-55d8957d6d-btqln   1/1     Running   0          11s
+pod/web-55d8957d6d-fhnj4   1/1     Running   0          4s
+pod/web-55d8957d6d-ndbj9   1/1     Running   0          4s
++ kubectl scale deployment web -n lab007 --replicas=3
+deployment.apps/web scaled
++ kubectl wait -n lab007 '--for=jsonpath={.status.readyReplicas}=3' deployment/web --timeout=120s
+deployment.apps/web condition met
++ kubectl apply -f 03-deployment-v2.yaml
+deployment.apps/web configured
++ kubectl rollout status deployment/web -n lab007 --timeout=120s
+Waiting for deployment "web" rollout to finish: 0 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+deployment "web" successfully rolled out
++ kubectl get rs,pods -n lab007
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/web-55d8957d6d   0         0         0       23s
+replicaset.apps/web-56769fd6b5   3         3         3       12s
+
+NAME                       READY   STATUS        RESTARTS   AGE
+pod/web-55d8957d6d-74vg7   1/1     Terminating   0          23s
+pod/web-56769fd6b5-7jv5v   1/1     Running       0          4s
+pod/web-56769fd6b5-w7d2p   1/1     Running       0          8s
+pod/web-56769fd6b5-zckpb   1/1     Running       0          12s
++ kubectl rollout history deployment/web -n lab007
+deployment.apps/web 
+REVISION  CHANGE-CAUSE
+1         release v1
+2         release v2
+
++ curl -s localhost:80/info
++ jq -c '{pod,version,theme}'
+{"pod":"web-56769fd6b5-w7d2p","version":"v2","theme":"emerald"}
++ kubectl logs -n lab007 deployment/web --tail=5
+Found 4 pods, using pod/web-55d8957d6d-74vg7
+▲ Next.js 16.3.1
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+✓ Ready in 0ms
+✓ Running next.config took 1.9ms
+{"ok":true,"out":"01_Session1_Kubernetes_Basics/007-deployment-manages-change/images/03-web-v2-after-rollout.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g3/"}
++ cd /root/labwork/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/007-deployment-manages-change
++ kubectl rollout undo deployment/web -n lab007
+Warning: resource deployments/web was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.
+deployment.apps/web rolled back
++ kubectl rollout status deployment/web -n lab007 --timeout=120s
+Waiting for deployment spec update to be observed...
+Waiting for deployment "web" rollout to finish: 0 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+deployment "web" successfully rolled out
++ kubectl get rs,pods -n lab007
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/web-55d8957d6d   3         3         3       64s
+replicaset.apps/web-56769fd6b5   0         0         0       53s
+
+NAME                       READY   STATUS        RESTARTS   AGE
+pod/web-55d8957d6d-2jpk4   1/1     Running       0          11s
+pod/web-55d8957d6d-hgf7f   1/1     Running       0          3s
+pod/web-55d8957d6d-pv2m7   1/1     Running       0          7s
+pod/web-56769fd6b5-7jv5v   1/1     Terminating   0          45s
++ kubectl rollout history deployment/web -n lab007
+deployment.apps/web 
+REVISION  CHANGE-CAUSE
+2         release v2
+3         release v1
+
++ curl -s localhost:80/info
++ jq -c '{pod,version,theme}'
+{"pod":"web-55d8957d6d-pv2m7","version":"v1","theme":"blue"}
++ kubectl describe deployment web -n lab007
+Name:                   web
+Namespace:              lab007
+CreationTimestamp:      Wed, 02 Sep 2026 23:39:39 +0700
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 3
+                        kubernetes.io/change-cause: release v1
+Selector:               app=web
+Replicas:               3 desired | 3 updated | 3 total | 3 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=web
+  Containers:
+   web:
+    Image:      k8s-lab-web:v1
+    Port:       3000/TCP (http)
+    Host Port:  0/TCP (http)
+    Readiness:  http-get http://:http/healthz delay=2s timeout=1s period=2s successThreshold=1 failureThreshold=3
+    Environment:
+      POD_NAME:     (v1:metadata.name)
+      NODE_NAME:    (v1:spec.nodeName)
+    Mounts:        <none>
+  Volumes:         <none>
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  web-56769fd6b5 (0/0 replicas created)
+NewReplicaSet:   web-55d8957d6d (3/3 replicas created)
+Events:
+  Type    Reason             Age               From                   Message
+  ----    ------             ----              ----                   -------
+  Normal  ScalingReplicaSet  64s               deployment-controller  Scaled up replica set web-55d8957d6d from 0 to 3
+  Normal  ScalingReplicaSet  57s               deployment-controller  Scaled up replica set web-55d8957d6d from 3 to 5
+  Normal  ScalingReplicaSet  53s               deployment-controller  Scaled down replica set web-55d8957d6d from 5 to 3
+  Normal  ScalingReplicaSet  53s               deployment-controller  Scaled up replica set web-56769fd6b5 from 0 to 1
+  Normal  ScalingReplicaSet  49s               deployment-controller  Scaled down replica set web-55d8957d6d from 3 to 2
+  Normal  ScalingReplicaSet  49s               deployment-controller  Scaled up replica set web-56769fd6b5 from 1 to 2
+  Normal  ScalingReplicaSet  46s               deployment-controller  Scaled down replica set web-55d8957d6d from 2 to 1
+  Normal  ScalingReplicaSet  45s               deployment-controller  Scaled up replica set web-56769fd6b5 from 2 to 3
+  Normal  ScalingReplicaSet  42s               deployment-controller  Scaled down replica set web-55d8957d6d from 1 to 0
+  Normal  ScalingReplicaSet  0s (x6 over 11s)  deployment-controller  (combined from similar events): Scaled down replica set web-56769fd6b5 from 1 to 0
+{"ok":true,"out":"01_Session1_Kubernetes_Basics/007-deployment-manages-change/images/05-web-v1-after-undo.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g3/"}
++ cd /root/labwork/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/007-deployment-manages-change
++ kubectl set image deployment/web web=k8s-lab-web:v3 -n lab007
+deployment.apps/web image updated
++ kubectl rollout status deployment/web -n lab007 --timeout=20s
+Waiting for deployment spec update to be observed...
+Waiting for deployment "web" rollout to finish: 0 out of 3 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
+error: timed out waiting for the condition
++ kubectl get pods,rs -n lab007 -o wide
+NAME                       READY   STATUS             RESTARTS   AGE   IP            NODE               NOMINATED NODE   READINESS GATES
+pod/web-55d8957d6d-2jpk4   1/1     Running            0          61s   10.244.2.9    devtools-worker    <none>           <none>
+pod/web-55d8957d6d-hgf7f   1/1     Running            0          53s   10.244.2.10   devtools-worker    <none>           <none>
+pod/web-55d8957d6d-pv2m7   1/1     Running            0          57s   10.244.1.6    devtools-worker2   <none>           <none>
+pod/web-6b87887f58-9sx2h   0/1     ImagePullBackOff   0          20s   10.244.2.11   devtools-worker    <none>           <none>
+
+NAME                             DESIRED   CURRENT   READY   AGE    CONTAINERS   IMAGES           SELECTOR
+replicaset.apps/web-55d8957d6d   3         3         3       114s   web          k8s-lab-web:v1   app=web,pod-template-hash=55d8957d6d
+replicaset.apps/web-56769fd6b5   0         0         0       103s   web          k8s-lab-web:v2   app=web,pod-template-hash=56769fd6b5
+replicaset.apps/web-6b87887f58   1         1         0       20s    web          k8s-lab-web:v3   app=web,pod-template-hash=6b87887f58
++ curl -s localhost:80/info
++ jq -c '{pod,version,theme}'
+{"pod":"web-55d8957d6d-2jpk4","version":"v1","theme":"blue"}
+++ kubectl get pod -n lab007 -l app=web -o 'jsonpath={range .items[?(@.status.containerStatuses[0].state.waiting.reason)]}{.metadata.name}{end}'
++ BROKEN_POD=web-6b87887f58-9sx2h
++ kubectl describe pod -n lab007 web-6b87887f58-9sx2h
+Name:             web-6b87887f58-9sx2h
+Namespace:        lab007
+Priority:         0
+Service Account:  default
+Node:             devtools-worker/172.18.0.2
+Start Time:       Wed, 02 Sep 2026 23:41:13 +0700
+Labels:           app=web
+                  pod-template-hash=6b87887f58
+Annotations:      <none>
+Status:           Pending
+IP:               10.244.2.11
+IPs:
+  IP:           10.244.2.11
+Controlled By:  ReplicaSet/web-6b87887f58
+Containers:
+  web:
+    Container ID:   
+    Image:          k8s-lab-web:v3
+    Image ID:       
+    Port:           3000/TCP (http)
+    Host Port:      0/TCP (http)
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Readiness:      http-get http://:http/healthz delay=2s timeout=1s period=2s successThreshold=1 failureThreshold=3
+    Environment:
+      POD_NAME:   web-6b87887f58-9sx2h (v1:metadata.name)
+      NODE_NAME:   (v1:spec.nodeName)
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-2txqq (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-2txqq:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age               From               Message
+  ----     ------     ----              ----               -------
+  Normal   Scheduled  20s               default-scheduler  Successfully assigned lab007/web-6b87887f58-9sx2h to devtools-worker
+  Normal   BackOff    18s               kubelet            spec.containers{web}: Back-off pulling image "k8s-lab-web:v3"
+  Warning  Failed     18s               kubelet            spec.containers{web}: Error: ImagePullBackOff
+  Normal   Pulling    7s (x2 over 19s)  kubelet            spec.containers{web}: Pulling image "k8s-lab-web:v3"
+  Warning  Failed     5s (x2 over 18s)  kubelet            spec.containers{web}: Failed to pull image "k8s-lab-web:v3": failed to pull and unpack image "docker.io/library/k8s-lab-web:v3": failed to resolve reference "docker.io/library/k8s-lab-web:v3": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed
+  Warning  Failed     5s (x2 over 18s)  kubelet            spec.containers{web}: Error: ErrImagePull
++ kubectl get events -n lab007 --sort-by=.lastTimestamp
+LAST SEEN   TYPE      REASON              OBJECT                      MESSAGE
+114s        Normal    SuccessfulCreate    replicaset/web-55d8957d6d   Created pod: web-55d8957d6d-74vg7
+114s        Normal    Pulled              pod/web-55d8957d6d-46cds    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+114s        Normal    Scheduled           pod/web-55d8957d6d-74vg7    Successfully assigned lab007/web-55d8957d6d-74vg7 to devtools-worker
+114s        Normal    ScalingReplicaSet   deployment/web              Scaled up replica set web-55d8957d6d from 0 to 3
+114s        Normal    SuccessfulCreate    replicaset/web-55d8957d6d   Created pod: web-55d8957d6d-btqln
+114s        Normal    Scheduled           pod/web-55d8957d6d-46cds    Successfully assigned lab007/web-55d8957d6d-46cds to devtools-worker
+114s        Normal    Pulled              pod/web-55d8957d6d-btqln    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+114s        Normal    Scheduled           pod/web-55d8957d6d-btqln    Successfully assigned lab007/web-55d8957d6d-btqln to devtools-worker2
+114s        Normal    SuccessfulCreate    replicaset/web-55d8957d6d   Created pod: web-55d8957d6d-46cds
+113s        Normal    Pulled              pod/web-55d8957d6d-74vg7    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+113s        Normal    Started             pod/web-55d8957d6d-74vg7    Container started
+113s        Normal    Created             pod/web-55d8957d6d-74vg7    Container created
+113s        Normal    Created             pod/web-55d8957d6d-btqln    Container created
+113s        Normal    Started             pod/web-55d8957d6d-btqln    Container started
+113s        Normal    Started             pod/web-55d8957d6d-46cds    Container started
+113s        Normal    Created             pod/web-55d8957d6d-46cds    Container created
+107s        Normal    SuccessfulCreate    replicaset/web-55d8957d6d   Created pod: web-55d8957d6d-ndbj9
+107s        Normal    Scheduled           pod/web-55d8957d6d-fhnj4    Successfully assigned lab007/web-55d8957d6d-fhnj4 to devtools-worker
+107s        Normal    SuccessfulCreate    replicaset/web-55d8957d6d   Created pod: web-55d8957d6d-fhnj4
+107s        Normal    Pulled              pod/web-55d8957d6d-ndbj9    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+107s        Normal    Scheduled           pod/web-55d8957d6d-ndbj9    Successfully assigned lab007/web-55d8957d6d-ndbj9 to devtools-worker2
+107s        Normal    ScalingReplicaSet   deployment/web              Scaled up replica set web-55d8957d6d from 3 to 5
+106s        Normal    Started             pod/web-55d8957d6d-fhnj4    Container started
+106s        Normal    Created             pod/web-55d8957d6d-fhnj4    Container created
+106s        Normal    Pulled              pod/web-55d8957d6d-fhnj4    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+106s        Normal    Started             pod/web-55d8957d6d-ndbj9    Container started
+106s        Normal    Created             pod/web-55d8957d6d-ndbj9    Container created
+103s        Normal    Scheduled           pod/web-56769fd6b5-zckpb    Successfully assigned lab007/web-56769fd6b5-zckpb to devtools-worker
+103s        Normal    Killing             pod/web-55d8957d6d-fhnj4    Stopping container web
+103s        Normal    SuccessfulCreate    replicaset/web-56769fd6b5   Created pod: web-56769fd6b5-zckpb
+103s        Normal    SuccessfulDelete    replicaset/web-55d8957d6d   Deleted pod: web-55d8957d6d-fhnj4
+103s        Normal    SuccessfulDelete    replicaset/web-55d8957d6d   Deleted pod: web-55d8957d6d-46cds
+103s        Normal    ScalingReplicaSet   deployment/web              Scaled down replica set web-55d8957d6d from 5 to 3
+103s        Normal    ScalingReplicaSet   deployment/web              Scaled up replica set web-56769fd6b5 from 0 to 1
+103s        Normal    Killing             pod/web-55d8957d6d-46cds    Stopping container web
+102s        Normal    Started             pod/web-56769fd6b5-zckpb    Container started
+102s        Normal    Pulled              pod/web-56769fd6b5-zckpb    Container image "k8s-lab-web:v2" already present on machine and can be accessed by the pod
+102s        Normal    Created             pod/web-56769fd6b5-zckpb    Container created
+99s         Normal    SuccessfulDelete    replicaset/web-55d8957d6d   Deleted pod: web-55d8957d6d-ndbj9
+99s         Normal    ScalingReplicaSet   deployment/web              Scaled down replica set web-55d8957d6d from 3 to 2
+99s         Normal    SuccessfulCreate    replicaset/web-56769fd6b5   Created pod: web-56769fd6b5-w7d2p
+99s         Normal    Killing             pod/web-55d8957d6d-ndbj9    Stopping container web
+99s         Normal    ScalingReplicaSet   deployment/web              Scaled up replica set web-56769fd6b5 from 1 to 2
+99s         Normal    Scheduled           pod/web-56769fd6b5-w7d2p    Successfully assigned lab007/web-56769fd6b5-w7d2p to devtools-worker2
+98s         Normal    Started             pod/web-56769fd6b5-w7d2p    Container started
+98s         Normal    Created             pod/web-56769fd6b5-w7d2p    Container created
+98s         Normal    Pulled              pod/web-56769fd6b5-w7d2p    Container image "k8s-lab-web:v2" already present on machine and can be accessed by the pod
+96s         Normal    ScalingReplicaSet   deployment/web              Scaled down replica set web-55d8957d6d from 2 to 1
+95s         Normal    SuccessfulDelete    replicaset/web-55d8957d6d   Deleted pod: web-55d8957d6d-btqln
+95s         Normal    Killing             pod/web-55d8957d6d-btqln    Stopping container web
+95s         Normal    Scheduled           pod/web-56769fd6b5-7jv5v    Successfully assigned lab007/web-56769fd6b5-7jv5v to devtools-worker
+95s         Normal    Pulled              pod/web-56769fd6b5-7jv5v    Container image "k8s-lab-web:v2" already present on machine and can be accessed by the pod
+95s         Normal    SuccessfulCreate    replicaset/web-56769fd6b5   Created pod: web-56769fd6b5-7jv5v
+95s         Normal    ScalingReplicaSet   deployment/web              Scaled up replica set web-56769fd6b5 from 2 to 3
+94s         Normal    Created             pod/web-56769fd6b5-7jv5v    Container created
+94s         Normal    Started             pod/web-56769fd6b5-7jv5v    Container started
+94s         Normal    Sync                ingress/web                 Scheduled for sync
+92s         Normal    SuccessfulDelete    replicaset/web-55d8957d6d   Deleted pod: web-55d8957d6d-74vg7
+92s         Normal    Killing             pod/web-55d8957d6d-74vg7    Stopping container web
+92s         Normal    ScalingReplicaSet   deployment/web              Scaled down replica set web-55d8957d6d from 1 to 0
+61s         Normal    SuccessfulCreate    replicaset/web-55d8957d6d   Created pod: web-55d8957d6d-2jpk4
+61s         Normal    Scheduled           pod/web-55d8957d6d-2jpk4    Successfully assigned lab007/web-55d8957d6d-2jpk4 to devtools-worker
+60s         Normal    Created             pod/web-55d8957d6d-2jpk4    Container created
+60s         Normal    Started             pod/web-55d8957d6d-2jpk4    Container started
+60s         Normal    Pulled              pod/web-55d8957d6d-2jpk4    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+57s         Normal    Killing             pod/web-56769fd6b5-zckpb    Stopping container web
+57s         Normal    SuccessfulCreate    replicaset/web-55d8957d6d   Created pod: web-55d8957d6d-pv2m7
+57s         Normal    SuccessfulDelete    replicaset/web-56769fd6b5   Deleted pod: web-56769fd6b5-zckpb
+57s         Normal    Scheduled           pod/web-55d8957d6d-pv2m7    Successfully assigned lab007/web-55d8957d6d-pv2m7 to devtools-worker2
+57s         Normal    Pulled              pod/web-55d8957d6d-pv2m7    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+56s         Normal    Created             pod/web-55d8957d6d-pv2m7    Container created
+56s         Normal    Started             pod/web-55d8957d6d-pv2m7    Container started
+53s         Normal    SuccessfulDelete    replicaset/web-56769fd6b5   Deleted pod: web-56769fd6b5-w7d2p
+53s         Normal    Started             pod/web-55d8957d6d-hgf7f    Container started
+53s         Normal    Scheduled           pod/web-55d8957d6d-hgf7f    Successfully assigned lab007/web-55d8957d6d-hgf7f to devtools-worker
+53s         Normal    SuccessfulCreate    replicaset/web-55d8957d6d   Created pod: web-55d8957d6d-hgf7f
+53s         Normal    Pulled              pod/web-55d8957d6d-hgf7f    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+53s         Normal    Created             pod/web-55d8957d6d-hgf7f    Container created
+53s         Normal    Killing             pod/web-56769fd6b5-w7d2p    Stopping container web
+50s         Normal    SuccessfulDelete    replicaset/web-56769fd6b5   Deleted pod: web-56769fd6b5-7jv5v
+50s         Normal    Killing             pod/web-56769fd6b5-7jv5v    Stopping container web
+20s         Normal    Scheduled           pod/web-6b87887f58-9sx2h    Successfully assigned lab007/web-6b87887f58-9sx2h to devtools-worker
+20s         Normal    SuccessfulCreate    replicaset/web-6b87887f58   Created pod: web-6b87887f58-9sx2h
+20s         Normal    ScalingReplicaSet   deployment/web              (combined from similar events): Scaled up replica set web-6b87887f58 from 0 to 1
+18s         Warning   Failed              pod/web-6b87887f58-9sx2h    Error: ImagePullBackOff
+18s         Normal    BackOff             pod/web-6b87887f58-9sx2h    Back-off pulling image "k8s-lab-web:v3"
+7s          Normal    Pulling             pod/web-6b87887f58-9sx2h    Pulling image "k8s-lab-web:v3"
+5s          Warning   Failed              pod/web-6b87887f58-9sx2h    Error: ErrImagePull
+5s          Warning   Failed              pod/web-6b87887f58-9sx2h    Failed to pull image "k8s-lab-web:v3": failed to pull and unpack image "docker.io/library/k8s-lab-web:v3": failed to resolve reference "docker.io/library/k8s-lab-web:v3": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed
++ kubectl rollout undo deployment/web -n lab007
+Warning: resource deployments/web was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.
+deployment.apps/web rolled back
++ kubectl rollout status deployment/web -n lab007 --timeout=120s
+Waiting for deployment spec update to be observed...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+deployment "web" successfully rolled out
++ kubectl get deploy,rs,pods -n lab007
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/web   3/3     3            3           115s
+
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/web-55d8957d6d   3         3         3       115s
+replicaset.apps/web-56769fd6b5   0         0         0       104s
+replicaset.apps/web-6b87887f58   0         0         0       21s
+
+NAME                       READY   STATUS        RESTARTS   AGE
+pod/web-55d8957d6d-2jpk4   1/1     Running       0          62s
+pod/web-55d8957d6d-hgf7f   1/1     Running       0          54s
+pod/web-55d8957d6d-pv2m7   1/1     Running       0          58s
+pod/web-6b87887f58-9sx2h   0/1     Terminating   0          21s
++ curl -s localhost:80/info
++ jq -c '{pod,version,theme}'
+{"pod":"web-55d8957d6d-pv2m7","version":"v1","theme":"blue"}
++ cd /root/labwork/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/007-deployment-manages-change
++ kubectl delete namespace lab007
+namespace "lab007" deleted
++ kubectl wait --for=delete namespace/lab007 --timeout=120s
++ kubectl get namespace lab007
+Error from server (NotFound): namespaces "lab007" not found
++ kubectl create namespace lab007
+namespace/lab007 created
++ kubectl apply -f 01-deployment.yaml -f 02-door.yaml
+deployment.apps/web created
+service/web created
+ingress.networking.k8s.io/web created
++ kubectl wait -n lab007 --for=condition=available deployment/web --timeout=120s
+deployment.apps/web condition met
+++ seq 1 30
++ for i in $(seq 1 30)
+++ curl -s -o /dev/null -w '%{http_code}' localhost:80/info
++ HTTP_CODE=200
++ '[' 200 = 200 ']'
++ break
++ echo 'HTTP 200'
+HTTP 200
++ kubectl get deploy,rs,pods,svc,ingress -n lab007
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/web   3/3     3            3           10s
+
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/web-55d8957d6d   3         3         3       10s
+
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/web-55d8957d6d-65zn2   1/1     Running   0          10s
+pod/web-55d8957d6d-ntk89   1/1     Running   0          10s
+pod/web-55d8957d6d-sfrnh   1/1     Running   0          10s
+
+NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+service/web   ClusterIP   10.96.27.234   <none>        3000/TCP   10s
+
+NAME                            CLASS   HOSTS   ADDRESS   PORTS   AGE
+ingress.networking.k8s.io/web   nginx   *                 80      10s
++ curl -s localhost:80/info
++ jq -c '{pod,version,theme}'
+{"pod":"web-55d8957d6d-sfrnh","version":"v1","theme":"blue"}
++ kubectl delete namespace lab007
+namespace "lab007" deleted
++ kubectl wait --for=delete namespace/lab007 --timeout=120s
++ kubectl get all -n lab007
+No resources found in lab007 namespace.
++ pgrep -af 'kubectl port-forward'
+19256 bash -lc  exec > >(tee -a /root/labwork/DevTools/05_kubernetes/.work/runlogs/lab007.txt) 2>&1 set -x cd /root/labwork/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/007-deployment-manages-change kubectl delete namespace lab007 kubectl wait --for=delete namespace/lab007 --timeout=120s kubectl get namespace lab007 kubectl create namespace lab007 kubectl apply -f 01-deployment.yaml -f 02-door.yaml kubectl wait -n lab007 --for=condition=available deployment/web --timeout=120s for i in $(seq 1 30); do HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" localhost:80/info); [ "$HTTP_CODE" = 200 ] && break; sleep 1; done echo "HTTP $HTTP_CODE" kubectl get deploy,rs,pods,svc,ingress -n lab007 curl -s localhost:80/info | jq -c "{pod,version,theme}" kubectl delete namespace lab007 kubectl wait --for=delete namespace/lab007 --timeout=120s kubectl get all -n lab007 pgrep -af "kubectl port-forward" || true 
++ pgrep -af '[k]ubectl port-forward'
++ echo 'no port-forward process'
+no port-forward process
+++ mktemp -d /tmp/lab007-clone-XXXXXX
++ TEMP_HOME=/tmp/lab007-clone-MjMdZL
++ HOME=/tmp/lab007-clone-MjMdZL
++ bash -c 'mkdir -p ~/labwork && cd ~/labwork && git clone https://github.com/Tuchsanai/DevTools.git'
+Cloning into 'DevTools'...
++ HOME=/tmp/lab007-clone-MjMdZL
++ bash -c 'cd ~/labwork/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/007-deployment-manages-change && pwd'
+bash: line 1: cd: /tmp/lab007-clone-MjMdZL/labwork/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/007-deployment-manages-change: No such file or directory
++ rm -rf /tmp/lab007-clone-MjMdZL
++ cd /root/labwork/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/007-deployment-manages-change
++ pwd
+/root/labwork/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/007-deployment-manages-change

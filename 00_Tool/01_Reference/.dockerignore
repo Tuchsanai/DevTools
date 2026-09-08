@@ -1,0 +1,4 @@
+# build context ควรมีแค่ Dockerfile — กัน context บวมและกัน secret หลุดเข้า image
+*
+!Dockerfile
+!Dockerfile.k8s

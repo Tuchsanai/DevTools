@@ -1,0 +1,15 @@
+งาน: ปรับ "ภาษา" ของเอกสารครั้งที่ 3 ทั้งหมดให้เป็นภาษาวิชาการ (ผู้สอนสั่ง 2026-09-03: "ต้องการให้การใช้ภาษาทั้งหมดเป็นภาษาวิชาการ") โดยไม่เปลี่ยนเนื้อหาเทคนิค คำสั่ง ผลลัพธ์ และโครงสร้าง
+อ่านก่อนและทำตามทุกข้อ: /root/workspace/DevTools/05_kubernetes/.work/academic-style.md (A หลักการ · B1/B2 หัวข้อและป้ายบังคับตรงตัว · C ตารางคำ · D สิ่งห้ามเปลี่ยน · E เครื่องมือตรวจ)
+ไฟล์ที่ต้องแก้ทั้งหมด (โฟลเดอร์ /root/workspace/DevTools/05_kubernetes/03_Session3_Application_Deployment/):
+  README.md · YAML_Guide.md · README.md ของปฏิบัติการ 015-021 ทั้ง 7 โฟลเดอร์ · slides_assets/photos/photos.md
+  และใน /root/workspace/DevTools/05_kubernetes/.work/lab-outline.md แก้เฉพาะบรรทัด "- **แนวคิดหลัก:**" ของปฏิบัติการ 015-021 ให้ตรงกับประโยค 💡 ในแต่ละ README (เพื่อให้ linter เทียบตรง)
+วิธีทำ: อ่านทีละไฟล์ทั้งไฟล์ แล้วเรียบเรียง "ร้อยแก้วทุกส่วน" — ชื่อเรื่อง หัวข้อ ย่อหน้า ตาราง รายการ คำอธิบาย 📝 ป้าย ✅ คำถาม รายการตรวจสอบ คำบรรยายใต้ภาพ — ให้เป็นภาษาวิชาการตาม style guide
+  ห้ามใช้ sed/replace แบบกลไกทั้งไฟล์ (จะทำลายโค้ดและผลลัพธ์) ให้แก้เฉพาะข้อความนอกบล็อกโค้ดและนอก inline code · ประโยคต้องอ่านลื่น ไม่ใช่แค่แทนคำ · ความหมายเชิงเทคนิคต้องคงเดิมทุกประโยค
+ข้อบังคับ: บล็อกโค้ด/ผลลัพธ์/inline code/ลิงก์/รูป/ลำดับหัวข้อ/จำนวนหัวข้อ คงเดิมทุกตัวอักษร · จำนวนบรรทัดต่อไฟล์ ±10% · หัวข้อและป้ายบังคับตาม B1 ตรงตัว · หัวข้อของ YAML_Guide.md เปลี่ยนเฉพาะที่ B2 ระบุสำหรับครั้งที่ 3 และต้องแก้ลิงก์ที่อ้าง anchor นั้นใน README ทุกไฟล์ของครั้งนี้ให้ตรง (สไลด์มีคนอื่นแก้ ไม่ต้องแตะ)
+ตรวจก่อนส่ง (ต้องผ่านทั้งหมด แนบผลในรายงาน):
+  python3 /root/workspace/DevTools/05_kubernetes/.work/tools/check-lang-diff.py <ทุกไฟล์ที่แก้ ยกเว้น lab-outline.md>   → OK ทุกไฟล์ (ถ้า FAIL ให้แก้จนผ่าน)
+  python3 /root/workspace/DevTools/05_kubernetes/.work/tools/check-register.py <ทุกไฟล์ที่แก้>   → HARD=0 ทุกไฟล์ · SOFT ที่เหลือทุกรายการต้องเป็นการใช้ที่ถูกต้องตามบริบท (เช่น "ดู" ใน "ดูแล" ถูกยกเว้นแล้ว) และระบุเหตุผลในรายงาน
+  python3 /root/workspace/DevTools/05_kubernetes/.work/tools/check-readme.py /root/workspace/DevTools/05_kubernetes/03_Session3_Application_Deployment/0*/   → 0 FAIL
+  python3 /root/workspace/DevTools/05_kubernetes/.work/tools/check-yaml-teaching.py /root/workspace/DevTools/05_kubernetes/03_Session3_Application_Deployment   → 0 FAIL
+ห้าม: แตะไฟล์ .yaml/.sh/images/สไลด์/โฟลเดอร์ครั้งอื่น/app · สร้างไฟล์ใหม่ · เปลี่ยนชื่อไฟล์
+รายงานกลับ (คำตอบสุดท้ายถูกเก็บเป็นไฟล์ — ห้ามสร้างไฟล์รายงานเพิ่ม): ตาราง ไฟล์ | บรรทัดก่อน→หลัง | HARD ก่อน→หลัง | SOFT ที่เหลือ + เหตุผล · ผล 4 สคริปต์ตรวจ · ตัวอย่างประโยคก่อน/หลัง 6 คู่ · สิ่งที่ไม่ได้แก้เพราะอะไร

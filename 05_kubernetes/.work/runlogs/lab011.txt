@@ -1,0 +1,413 @@
+$ kubectl get nodes
+NAME                     STATUS   ROLES           AGE   VERSION
+devtools-control-plane   Ready    control-plane   12m   v1.36.4
+devtools-worker          Ready    <none>          12m   v1.36.4
+devtools-worker2         Ready    <none>          12m   v1.36.4
+$ docker exec devtools-control-plane crictl images | grep k8s-lab
+docker.io/library/k8s-lab-api                   v1                   37b98a526d09b       186MB
+docker.io/library/k8s-lab-db                    v1                   12de2be925d8a       300MB
+docker.io/library/k8s-lab-web                   v1                   f46e8e22f91a6       209MB
+docker.io/library/k8s-lab-web                   v2                   fccf050046905       209MB
+$ kubectl create namespace lab011
+namespace/lab011 created
+$ kubectl apply --dry-run=server -f 01-secret.yaml -f 02-db.yaml -f 03-api.yaml -f 04-web.yaml -f 05-door.yaml
+secret/db-secret created (server dry run)
+deployment.apps/db created (server dry run)
+service/db created (server dry run)
+deployment.apps/api created (server dry run)
+service/api created (server dry run)
+deployment.apps/web created (server dry run)
+service/web created (server dry run)
+ingress.networking.k8s.io/web created (server dry run)
+$ kubectl apply -f 01-secret.yaml
+secret/db-secret created
+$ kubectl get secret db-secret -n lab011 -o yaml
+apiVersion: v1
+data:
+  POSTGRES_PASSWORD: bGFicGFzcw==
+kind: Secret
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Secret","metadata":{"annotations":{},"name":"db-secret","namespace":"lab011"},"stringData":{"POSTGRES_PASSWORD":"labpass"},"type":"Opaque"}
+  creationTimestamp: "2026-09-02T16:43:20Z"
+  name: db-secret
+  namespace: lab011
+  resourceVersion: "2497"
+  uid: 82dd1db2-d364-42eb-ae2a-bc95791aeb69
+type: Opaque
+$ kubectl apply -f 02-db.yaml
+deployment.apps/db created
+service/db created
+$ kubectl wait -n lab011 --for=condition=available deployment/db --timeout=180s
+deployment.apps/db condition met
+$ kubectl apply -f 03-api.yaml -f 04-web.yaml -f 05-door.yaml
+deployment.apps/api created
+service/api created
+deployment.apps/web created
+service/web created
+ingress.networking.k8s.io/web created
+$ kubectl wait -n lab011 --for=condition=available deployment/api deployment/web --timeout=180s
+deployment.apps/api condition met
+deployment.apps/web condition met
+$ for i in $(seq 1 30); do body=$(curl -sS --max-time 2 http://localhost:80/info 2>/dev/null || true); echo "$body" | jq -e '.api.reachable == true and .db.status == "up"' >/dev/null 2>&1 && { echo "$body" | jq; break; }; sleep 1; done
+$ kubectl get all,ingress,secret -n lab011
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-7dbfd9876c-5znt6   1/1     Running   0          33s
+pod/db-7cbb4874f6-9tff5    1/1     Running   0          35s
+pod/web-c5f8c4c66-8vk9k    1/1     Running   0          33s
+
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/api   ClusterIP   10.96.116.113   <none>        8000/TCP   33s
+service/db    ClusterIP   10.96.88.226    <none>        5432/TCP   35s
+service/web   ClusterIP   10.96.141.89    <none>        3000/TCP   33s
+
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api   1/1     1            1           33s
+deployment.apps/db    1/1     1            1           35s
+deployment.apps/web   1/1     1            1           33s
+
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/api-7dbfd9876c   1         1         1       33s
+replicaset.apps/db-7cbb4874f6    1         1         1       35s
+replicaset.apps/web-c5f8c4c66    1         1         1       33s
+
+NAME                            CLASS   HOSTS   ADDRESS         PORTS   AGE
+ingress.networking.k8s.io/web   nginx   *       10.96.216.101   80      33s
+
+NAME               TYPE     DATA   AGE
+secret/db-secret   Opaque   1      35s
+$ node .work/tools/shot.js "http://devtools-k8s-lab-g4:80/" 02_Session2_Networking_Config_Storage/011-secret-and-why-not-configmap/images/03-dashboard-with-real-data.png --w 1280 --h 800 --wait 2000
+{"ok":true,"out":"02_Session2_Networking_Config_Storage/011-secret-and-why-not-configmap/images/03-dashboard-with-real-data.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g4/"}
+$ curl -sS -i http://localhost:80/info
+HTTP/1.1 200 OK
+Date: Wed, 02 Sep 2026 16:44:09 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+
+{"pod":"web-c5f8c4c66-8vk9k","version":"v1","theme":"blue","site_name":"SkillSpace","time":"23:44:09","api":{"configured":true,"reachable":true,"pod":"api-7dbfd9876c-5znt6"},"db":{"status":"down","error":"[Errno -8] Servname not supported for ai_socktype"}}
+$ kubectl exec -n lab011 deploy/web -- wget -S -O- http://api:8000/ready
+Connecting to api:8000 (10.96.116.113:8000)
+  HTTP/1.1 503 Service Unavailable
+wget: server returned error: HTTP/1.1 503 Service Unavailable
+command terminated with exit code 1
+$ kubectl logs -n lab011 deployment/api --tail=30
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/main.py", line 478, in list_loans
+    with get_conn() as conn:
+         ^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/app/main.py", line 80, in get_conn
+    conn = psycopg.connect(DATABASE_URL, row_factory=dict_row, connect_timeout=2)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/psycopg/connection.py", line 98, in connect
+    attempts = conninfo_attempts(params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/psycopg/_conninfo_attempts.py", line 53, in conninfo_attempts
+    raise e.OperationalError(str(last_exc))
+psycopg.OperationalError: [Errno -8] Servname not supported for ai_socktype
+[api] GET /ready 503 1ms
+INFO:     10.244.2.14:49474 - "GET /ready HTTP/1.1" 503 Service Unavailable
+[api] GET /ready 503 1ms
+INFO:     10.244.2.14:49482 - "GET /ready HTTP/1.1" 503 Service Unavailable
+$ kubectl logs -n lab011 deployment/db --tail=20
+
+
+waiting for server to shut down....2026-09-02 16:43:28.575 UTC [46] LOG:  received fast shutdown request
+2026-09-02 16:43:28.591 UTC [46] LOG:  aborting any active transactions
+2026-09-02 16:43:28.593 UTC [46] LOG:  background worker "logical replication launcher" (PID 52) exited with exit code 1
+2026-09-02 16:43:28.593 UTC [47] LOG:  shutting down
+2026-09-02 16:43:28.602 UTC [47] LOG:  checkpoint starting: shutdown immediate
+.2026-09-02 16:43:29.661 UTC [47] LOG:  checkpoint complete: wrote 976 buffers (6.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.055 s, sync=0.915 s, total=1.068 s; sync files=332, longest=0.016 s, average=0.003 s; distance=4431 kB, estimate=4431 kB; lsn=0/1947E30, redo lsn=0/1947E30
+2026-09-02 16:43:29.666 UTC [46] LOG:  database system is shut down
+ done
+server stopped
+
+PostgreSQL init process complete; ready for start up.
+
+2026-09-02 16:43:29.713 UTC [1] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-09-02 16:43:29.713 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-09-02 16:43:29.713 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-09-02 16:43:29.730 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-09-02 16:43:29.758 UTC [66] LOG:  database system was shut down at 2026-09-02 16:43:29 UTC
+2026-09-02 16:43:29.769 UTC [1] LOG:  database system is ready to accept connections
+$ kubectl apply -f 03-api.yaml
+deployment.apps/api configured
+service/api unchanged
+$ kubectl rollout status -n lab011 deployment/api --timeout=120s
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+$ for i in $(seq 1 20); do body=$(curl -sS --max-time 2 http://localhost:80/info 2>/dev/null || true); echo "$body" | jq -e '.api.reachable == true and .db.status == "up"' >/dev/null 2>&1 && { echo "$body" | jq; break; }; sleep 1; done
+{
+  "pod": "web-c5f8c4c66-8vk9k",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "23:45:05",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-7c94cf584b-dk7wf"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ kubectl get secret db-secret -n lab011 -o jsonpath='{.data.POSTGRES_PASSWORD}' | base64 -d; echo
+labpass
+$ kubectl exec -n lab011 deployment/api -- sh -c "env | grep '^DB_' | sort"
+DB_HOST=db
+DB_NAME=skillspace
+DB_PASSWORD=labpass
+DB_PORT=5432
+DB_PORT_5432_TCP=tcp://10.96.88.226:5432
+DB_PORT_5432_TCP_ADDR=10.96.88.226
+DB_PORT_5432_TCP_PORT=5432
+DB_PORT_5432_TCP_PROTO=tcp
+DB_SERVICE_HOST=10.96.88.226
+DB_SERVICE_PORT=5432
+DB_USER=opsuser
+$ kubectl exec -n lab011 deployment/db -- psql -U opsuser -d skillspace -c 'select count(*) from tickets;'
+ count 
+-------
+     8
+(1 row)
+
+$ kubectl logs -n lab011 deployment/api --tail=12
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+[api] startup db=up
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+[api] GET /ready 200 7ms
+INFO:     10.244.2.14:44674 - "GET /ready HTTP/1.1" 200 OK
+$ node .work/tools/shot.js "http://devtools-k8s-lab-g4:80/" 02_Session2_Networking_Config_Storage/011-secret-and-why-not-configmap/images/03-dashboard-with-real-data.png --w 1280 --h 800 --wait 2000
+{"ok":true,"out":"02_Session2_Networking_Config_Storage/011-secret-and-why-not-configmap/images/03-dashboard-with-real-data.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g4/"}
+$ kubectl create secret generic db-secret -n lab011 --from-literal=POSTGRES_PASSWORD=wrongpass --dry-run=client -o yaml | kubectl apply -f -
+secret/db-secret configured
+$ kubectl rollout restart -n lab011 deployment/api
+deployment.apps/api restarted
+$ kubectl rollout status -n lab011 deployment/api --timeout=120s
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+$ kubectl exec -n lab011 deployment/web -- wget -S -O- http://api:8000/ready || true
+Connecting to api:8000 (10.96.116.113:8000)
+wget: can't connect to remote host (10.96.116.113): Connection refused
+command terminated with exit code 1
+$ curl -sS --max-time 5 http://localhost:80/info | jq
+{
+  "pod": "web-c5f8c4c66-8vk9k",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "23:45:29",
+  "api": {
+    "configured": true,
+    "reachable": false,
+    "error": "fetch failed"
+  },
+  "db": {
+    "status": "unknown"
+  }
+}
+$ kubectl logs -n lab011 deployment/api --tail=20
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+[api] startup db=down (connection failed: connection to server at "10.96.88.226", port 5432 failed: FATAL: password authentication failed for user "opsuser") — API ยังให้บริการต่อ
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+$ kubectl get pods -n lab011
+NAME                   READY   STATUS    RESTARTS   AGE
+api-6477946b67-gt56j   1/1     Running   0          2s
+db-7cbb4874f6-9tff5    1/1     Running   0          2m9s
+web-c5f8c4c66-8vk9k    1/1     Running   0          2m7s
+$ node .work/tools/shot.js "http://devtools-k8s-lab-g4:80/" 02_Session2_Networking_Config_Storage/011-secret-and-why-not-configmap/images/break-db-auth-failed.png --w 1280 --h 800 --wait 2000
+{"ok":true,"out":"02_Session2_Networking_Config_Storage/011-secret-and-why-not-configmap/images/break-db-auth-failed.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g4/"}
+$ kubectl exec -n lab011 deployment/web -- wget -S -O- http://api:8000/ready || true
+Connecting to api:8000 (10.96.116.113:8000)
+  HTTP/1.1 503 Service Unavailable
+wget: server returned error: HTTP/1.1 503 Service Unavailable
+command terminated with exit code 1
+$ curl -sS --max-time 5 http://localhost:80/info | jq
+{
+  "pod": "web-c5f8c4c66-8vk9k",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "23:45:49",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-6477946b67-gt56j"
+  },
+  "db": {
+    "status": "down",
+    "error": "connection failed: connection to server at \"10.96.88.226\", port 5432 failed: FATAL: password authentication failed for …"
+  }
+}
+$ kubectl logs -n lab011 deployment/api --tail=20
+           ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/main.py", line 348, in list_tickets
+    with get_conn() as conn:
+         ^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/app/main.py", line 80, in get_conn
+    conn = psycopg.connect(DATABASE_URL, row_factory=dict_row, connect_timeout=2)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/psycopg/connection.py", line 120, in connect
+    raise last_ex.with_traceback(None)
+psycopg.OperationalError: connection failed: connection to server at "10.96.88.226", port 5432 failed: FATAL:  password authentication failed for user "opsuser"
+[api] GET /ready 503 6ms
+INFO:     10.244.2.14:55664 - "GET /ready HTTP/1.1" 503 Service Unavailable
+[api] GET /ready 503 5ms
+INFO:     10.244.2.14:55668 - "GET /ready HTTP/1.1" 503 Service Unavailable
+$ node .work/tools/shot.js "http://devtools-k8s-lab-g4:80/" 02_Session2_Networking_Config_Storage/011-secret-and-why-not-configmap/images/break-db-auth-failed.png --w 1280 --h 800 --wait 2000
+{"ok":true,"out":"02_Session2_Networking_Config_Storage/011-secret-and-why-not-configmap/images/break-db-auth-failed.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g4/"}
+$ kubectl apply -f 01-secret.yaml
+secret/db-secret configured
+$ kubectl rollout restart -n lab011 deployment/api
+deployment.apps/api restarted
+$ kubectl rollout status -n lab011 deployment/api --timeout=120s
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+$ for i in $(seq 1 20); do body=$(curl -sS --max-time 2 http://localhost:80/info 2>/dev/null || true); echo "$body" | jq -e '.api.reachable == true and .db.status == "up"' >/dev/null 2>&1 && { echo "$body" | jq '{api,db}'; break; }; sleep 1; done
+{
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-b569554f7-wpsg7"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ kubectl get events -n lab011 --sort-by=.lastTimestamp | tail -20
+79s         Normal   Killing             pod/api-7dbfd9876c-5znt6    Stopping container api
+79s         Normal   ScalingReplicaSet   deployment/api              Scaled down replica set api-7dbfd9876c from 1 to 0
+56s         Normal   SuccessfulCreate    replicaset/api-6477946b67   Created pod: api-6477946b67-gt56j
+56s         Normal   ScalingReplicaSet   deployment/api              Scaled up replica set api-6477946b67 from 0 to 1
+56s         Normal   Scheduled           pod/api-6477946b67-gt56j    Successfully assigned lab011/api-6477946b67-gt56j to devtools-worker
+55s         Normal   Killing             pod/api-7c94cf584b-dk7wf    Stopping container api
+55s         Normal   SuccessfulDelete    replicaset/api-7c94cf584b   Deleted pod: api-7c94cf584b-dk7wf
+55s         Normal   ScalingReplicaSet   deployment/api              Scaled down replica set api-7c94cf584b from 1 to 0
+55s         Normal   Pulled              pod/api-6477946b67-gt56j    Container image "k8s-lab-api:v1" already present on machine and can be accessed by the pod
+55s         Normal   Created             pod/api-6477946b67-gt56j    Container created
+55s         Normal   Started             pod/api-6477946b67-gt56j    Container started
+3s          Normal   ScalingReplicaSet   deployment/api              Scaled up replica set api-b569554f7 from 0 to 1
+3s          Normal   SuccessfulCreate    replicaset/api-b569554f7    Created pod: api-b569554f7-wpsg7
+3s          Normal   Scheduled           pod/api-b569554f7-wpsg7     Successfully assigned lab011/api-b569554f7-wpsg7 to devtools-worker
+2s          Normal   Pulled              pod/api-b569554f7-wpsg7     Container image "k8s-lab-api:v1" already present on machine and can be accessed by the pod
+2s          Normal   SuccessfulDelete    replicaset/api-6477946b67   Deleted pod: api-6477946b67-gt56j
+2s          Normal   Killing             pod/api-6477946b67-gt56j    Stopping container api
+2s          Normal   ScalingReplicaSet   deployment/api              Scaled down replica set api-6477946b67 from 1 to 0
+2s          Normal   Created             pod/api-b569554f7-wpsg7     Container created
+2s          Normal   Started             pod/api-b569554f7-wpsg7     Container started
+$ kubectl delete namespace lab011 --wait=true
+namespace "lab011" deleted
+$ kubectl get all -n lab011 || true
+No resources found in lab011 namespace.
+$ kubectl create namespace lab011
+namespace/lab011 created
+$ kubectl apply -f 01-secret.yaml -f 02-db.yaml -f 03-api.yaml -f 04-web.yaml -f 05-door.yaml
+secret/db-secret created
+deployment.apps/db created
+service/db created
+deployment.apps/api created
+service/api created
+deployment.apps/web created
+service/web created
+ingress.networking.k8s.io/web created
+$ kubectl wait -n lab011 --for=condition=available deployment/db deployment/api deployment/web --timeout=180s
+deployment.apps/db condition met
+deployment.apps/api condition met
+deployment.apps/web condition met
+$ for i in $(seq 1 30); do body=$(curl -sS --max-time 2 http://localhost:80/info 2>/dev/null || true); echo "$body" | jq -e '.api.reachable == true and .db.status == "up"' >/dev/null 2>&1 && { echo "$body" | jq '{api,db}'; break; }; sleep 1; done
+{
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-7c94cf584b-bxm7s"
+  },
+  "db": {
+    "status": "up"
+  }
+}
+$ kubectl get all,ingress,secret -n lab011
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-7c94cf584b-bxm7s   1/1     Running   0          6s
+pod/db-7cbb4874f6-6nmxk    1/1     Running   0          6s
+pod/web-c5f8c4c66-q44gd    1/1     Running   0          6s
+
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/api   ClusterIP   10.96.236.82    <none>        8000/TCP   6s
+service/db    ClusterIP   10.96.230.224   <none>        5432/TCP   6s
+service/web   ClusterIP   10.96.236.41    <none>        3000/TCP   6s
+
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api   1/1     1            1           6s
+deployment.apps/db    1/1     1            1           6s
+deployment.apps/web   1/1     1            1           6s
+
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/api-7c94cf584b   1         1         1       6s
+replicaset.apps/db-7cbb4874f6    1         1         1       6s
+replicaset.apps/web-c5f8c4c66    1         1         1       6s
+
+NAME                            CLASS   HOSTS   ADDRESS   PORTS   AGE
+ingress.networking.k8s.io/web   nginx   *                 80      6s
+
+NAME               TYPE     DATA   AGE
+secret/db-secret   Opaque   1      6s
+$ kubectl delete namespace lab011 --wait=true
+namespace "lab011" deleted
+$ kubectl get all -n lab011 || true
+No resources found in lab011 namespace.
+$ kubectl get namespace lab011 || true
+Error from server (NotFound): namespaces "lab011" not found
+$ mkdir -p ~/labwork && cd ~/labwork && git clone https://github.com/Tuchsanai/DevTools.git
+Cloning into 'DevTools'...
+$ cd ~/labwork/DevTools/05_kubernetes/02_Session2_Networking_Config_Storage/010-configmap-separate-config && pwd
+bash: line 1: cd: /tmp/labclone-g4/labwork/DevTools/05_kubernetes/02_Session2_Networking_Config_Storage/010-configmap-separate-config: No such file or directory
+$ cd ~/labwork/DevTools/05_kubernetes/02_Session2_Networking_Config_Storage/011-secret-and-why-not-configmap && pwd
+/root/labwork/DevTools/05_kubernetes/02_Session2_Networking_Config_Storage/011-secret-and-why-not-configmap
+$ kubectl create namespace lab011
+namespace/lab011 created
+$ kubectl apply --dry-run=server -f 01-secret.yaml -f 02-db.yaml -f 03-api.yaml -f 04-web.yaml -f 05-door.yaml 
+secret/db-secret created (server dry run)
+deployment.apps/db created (server dry run)
+service/db created (server dry run)
+deployment.apps/api created (server dry run)
+service/api created (server dry run)
+deployment.apps/web created (server dry run)
+service/web created (server dry run)
+ingress.networking.k8s.io/web created (server dry run)
+$ kubectl delete namespace lab011 --wait=true
+namespace "lab011" deleted
+$ kubectl get all -n lab011
+No resources found in lab011 namespace.
+$ docker rm -f devtools-k8s-lab-g4
+devtools-k8s-lab-g4
+$ docker ps -a --filter name=devtools-k8s-lab-g4
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES

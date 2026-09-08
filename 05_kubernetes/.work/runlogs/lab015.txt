@@ -1,0 +1,607 @@
+$ kubectl get nodes
+NAME                     STATUS   ROLES           AGE   VERSION
+devtools-control-plane   Ready    control-plane   20m   v1.36.4
+devtools-worker          Ready    <none>          20m   v1.36.4
+devtools-worker2         Ready    <none>          20m   v1.36.4
+
+$ docker exec devtools-control-plane crictl images | grep k8s-lab
+docker.io/library/k8s-lab-api                   v1                   c662b53377da4       186MB
+docker.io/library/k8s-lab-db                    v1                   9bb05e9c07722       300MB
+docker.io/library/k8s-lab-web                   v1                   c07ef6ef4b6a3       209MB
+docker.io/library/k8s-lab-web                   v2                   685541d4b6ff0       209MB
+
+$ kubectl -n ingress-nginx get pods
+NAME                                        READY   STATUS    RESTARTS   AGE
+ingress-nginx-controller-5d9bb85749-x24vz   1/1     Running   0          19m
+
+$ kubectl create namespace lab015
+namespace/lab015 created
+
+$ kubectl apply -f manifests/
+configmap/web-config created
+deployment.apps/web created
+service/web created
+deployment.apps/api created
+service/api created
+ingress.networking.k8s.io/web created
+
+$ kubectl rollout status deployment/web -n lab015 --timeout=180s
+Waiting for deployment "web" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "web" rollout to finish: 1 of 2 updated replicas are available...
+deployment "web" successfully rolled out
+
+$ kubectl rollout status deployment/api -n lab015 --timeout=180s
+deployment "api" successfully rolled out
+
+$ kubectl get all,ingress,configmap -n lab015 -o wide
+NAME                       READY   STATUS    RESTARTS   AGE   IP            NODE               NOMINATED NODE   READINESS GATES
+pod/api-59d8fcb74b-5llqm   1/1     Running   0          2s    10.244.2.17   devtools-worker    <none>           <none>
+pod/api-59d8fcb74b-v86vp   1/1     Running   0          2s    10.244.1.29   devtools-worker2   <none>           <none>
+pod/web-64b77cf7f4-c487j   1/1     Running   0          2s    10.244.1.28   devtools-worker2   <none>           <none>
+pod/web-64b77cf7f4-xzkzj   1/1     Running   0          2s    10.244.2.16   devtools-worker    <none>           <none>
+
+NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/api   ClusterIP   10.96.86.207   <none>        8000/TCP   2s    app=api
+service/web   ClusterIP   10.96.86.61    <none>        3000/TCP   2s    app=web
+
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES           SELECTOR
+deployment.apps/api   2/2     2            2           2s    api          k8s-lab-api:v1   app=api
+deployment.apps/web   2/2     2            2           2s    web          k8s-lab-web:v1   app=web
+
+NAME                             DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES           SELECTOR
+replicaset.apps/api-59d8fcb74b   2         2         2       2s    api          k8s-lab-api:v1   app=api,pod-template-hash=59d8fcb74b
+replicaset.apps/web-64b77cf7f4   2         2         2       2s    web          k8s-lab-web:v1   app=web,pod-template-hash=64b77cf7f4
+
+NAME                            CLASS   HOSTS   ADDRESS   PORTS   AGE
+ingress.networking.k8s.io/web   nginx   *                 80      2s
+
+NAME                         DATA   AGE
+configmap/kube-root-ca.crt   1      2s
+configmap/web-config         3      2s
+
+$ kubectl exec deployment/web -n lab015 -- wget -qO- http://api:8000/health
+{"status":"ok","pod":"api-59d8fcb74b-v86vp","version":"v1"}
+$ curl -s http://localhost:80/info | jq
+{
+  "pod": "web-64b77cf7f4-c487j",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "23:50:47",
+  "node": "devtools-worker2",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-59d8fcb74b-5llqm"
+  },
+  "db": {
+    "status": "down",
+    "error": "[Errno -5] No address associated with hostname"
+  }
+}
+
+$ kubectl logs deployment/web -n lab015 --tail=8
+Found 2 pods, using pod/web-64b77cf7f4-c487j
+▲ Next.js 16.3.1
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+✓ Ready in 0ms
+✓ Running next.config took 0.9ms
+
+$ kubectl logs deployment/api -n lab015 --tail=8
+Found 2 pods, using pod/api-59d8fcb74b-5llqm
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+[api] startup db=down ([Errno -5] No address associated with hostname) — API ยังให้บริการต่อ
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+[api] GET /ready 503 4ms
+INFO:     10.244.1.28:36638 - "GET /ready HTTP/1.1" 503 Service Unavailable
+
+{"ok":true,"out":"03_Session3_Application_Deployment/015-assembling-a-real-application/images/03-web-api-assembled-no-db.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g5/"}
+$ kubectl delete service api -n lab015
+service "api" deleted from lab015 namespace
+
+$ kubectl get pods,service,endpoints -n lab015
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-59d8fcb74b-5llqm   1/1     Running   0          30s
+pod/api-59d8fcb74b-v86vp   1/1     Running   0          30s
+pod/web-64b77cf7f4-c487j   1/1     Running   0          30s
+pod/web-64b77cf7f4-xzkzj   1/1     Running   0          30s
+
+NAME          TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)    AGE
+service/web   ClusterIP   10.96.86.61   <none>        3000/TCP   30s
+
+NAME            ENDPOINTS                           AGE
+endpoints/web   10.244.1.28:3000,10.244.2.16:3000   30s
+
+$ curl -s http://localhost:80/info | jq
+{
+  "pod": "web-64b77cf7f4-xzkzj",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "23:51:13",
+  "node": "devtools-worker",
+  "api": {
+    "configured": true,
+    "reachable": false,
+    "error": "fetch failed"
+  },
+  "db": {
+    "status": "unknown"
+  }
+}
+
+{"ok":true,"out":"03_Session3_Application_Deployment/015-assembling-a-real-application/images/04-api-service-deleted.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g5/"}
+$ kubectl apply -f manifests/
+configmap/web-config unchanged
+deployment.apps/web unchanged
+service/web unchanged
+deployment.apps/api unchanged
+service/api created
+ingress.networking.k8s.io/web unchanged
+
+$ kubectl get service,endpoints api -n lab015
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+service/api   ClusterIP   10.96.101.74   <none>        8000/TCP   0s
+
+NAME            ENDPOINTS                           AGE
+endpoints/api   10.244.1.29:8000,10.244.2.17:8000   0s
+
+$ curl -s http://localhost:80/info | jq
+{
+  "pod": "web-64b77cf7f4-c487j",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "23:51:16",
+  "node": "devtools-worker2",
+  "api": {
+    "configured": true,
+    "reachable": false,
+    "error": "fetch failed"
+  },
+  "db": {
+    "status": "unknown"
+  }
+}
+
+$ kubectl delete ingress web -n lab015
+ingress.networking.k8s.io "web" deleted from lab015 namespace
+
+$ for i in $(seq 1 4); do curl -s -o /dev/null -w "%{http_code}\\n" http://localhost:80/; sleep 2; done
+200
+200
+404
+404
+
+$ kubectl apply -f manifests/
+configmap/web-config unchanged
+deployment.apps/web unchanged
+service/web unchanged
+deployment.apps/api unchanged
+service/api unchanged
+ingress.networking.k8s.io/web created
+
+$ for i in $(seq 1 4); do curl -s -o /dev/null -w "%{http_code}\\n" http://localhost:80/; sleep 2; done
+200
+200
+200
+200
+
+$ kubectl exec deployment/web -n lab015 -- wget -qO- http://api:8000/health
+{"status":"ok","pod":"api-59d8fcb74b-5llqm","version":"v1"}
+$ curl -s http://localhost:80/info | jq
+{
+  "pod": "web-64b77cf7f4-xzkzj",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "23:51:44",
+  "node": "devtools-worker",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-59d8fcb74b-5llqm"
+  },
+  "db": {
+    "status": "down",
+    "error": "[Errno -5] No address associated with hostname"
+  }
+}
+
+$ kubectl get -f manifests/
+NAME                   DATA   AGE
+configmap/web-config   3      61s
+
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/web   2/2     2            2           61s
+
+NAME          TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)    AGE
+service/web   ClusterIP   10.96.86.61   <none>        3000/TCP   61s
+
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api   2/2     2            2           61s
+
+NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+service/api   ClusterIP   10.96.101.74   <none>        8000/TCP   28s
+
+NAME                            CLASS   HOSTS   ADDRESS   PORTS   AGE
+ingress.networking.k8s.io/web   nginx   *                 80      19s
+
+$ kubectl diff -f manifests/ || true
+
+$ kubectl get pods -n lab015 -o wide
+NAME                   READY   STATUS    RESTARTS   AGE   IP            NODE               NOMINATED NODE   READINESS GATES
+api-59d8fcb74b-5llqm   1/1     Running   0          62s   10.244.2.17   devtools-worker    <none>           <none>
+api-59d8fcb74b-v86vp   1/1     Running   0          62s   10.244.1.29   devtools-worker2   <none>           <none>
+web-64b77cf7f4-c487j   1/1     Running   0          62s   10.244.1.28   devtools-worker2   <none>           <none>
+web-64b77cf7f4-xzkzj   1/1     Running   0          62s   10.244.2.16   devtools-worker    <none>           <none>
+
+$ kubectl delete configmap web-config -n lab015
+configmap "web-config" deleted from lab015 namespace
+
+$ kubectl rollout restart deployment/web -n lab015
+deployment.apps/web restarted
+
+$ for i in $(seq 1 4); do kubectl get pods -n lab015 -l app=web; sleep 3; done
+NAME                   READY   STATUS              RESTARTS   AGE
+web-5d848685f6-qt5nt   0/1     ContainerCreating   0          0s
+web-64b77cf7f4-c487j   1/1     Running             0          88s
+web-64b77cf7f4-xzkzj   1/1     Running             0          88s
+NAME                   READY   STATUS                       RESTARTS   AGE
+web-5d848685f6-qt5nt   0/1     CreateContainerConfigError   0          3s
+web-64b77cf7f4-c487j   1/1     Running                      0          91s
+web-64b77cf7f4-xzkzj   1/1     Running                      0          91s
+NAME                   READY   STATUS                       RESTARTS   AGE
+web-5d848685f6-qt5nt   0/1     CreateContainerConfigError   0          6s
+web-64b77cf7f4-c487j   1/1     Running                      0          94s
+web-64b77cf7f4-xzkzj   1/1     Running                      0          94s
+NAME                   READY   STATUS                       RESTARTS   AGE
+web-5d848685f6-qt5nt   0/1     CreateContainerConfigError   0          9s
+web-64b77cf7f4-c487j   1/1     Running                      0          97s
+web-64b77cf7f4-xzkzj   1/1     Running                      0          97s
+
+$ kubectl get pods -n lab015 -l app=web -o wide
+NAME                   READY   STATUS                       RESTARTS   AGE    IP            NODE               NOMINATED NODE   READINESS GATES
+web-5d848685f6-qt5nt   0/1     CreateContainerConfigError   0          12s    10.244.2.18   devtools-worker    <none>           <none>
+web-64b77cf7f4-c487j   1/1     Running                      0          100s   10.244.1.28   devtools-worker2   <none>           <none>
+web-64b77cf7f4-xzkzj   1/1     Running                      0          100s   10.244.2.16   devtools-worker    <none>           <none>
+
+$ kubectl describe deployment web -n lab015
+Name:                   web
+Namespace:              lab015
+CreationTimestamp:      Wed, 02 Sep 2026 23:50:43 +0700
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 2
+Selector:               app=web
+Replicas:               2 desired | 1 updated | 3 total | 2 available | 1 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:       app=web
+  Annotations:  kubectl.kubernetes.io/restartedAt: 2026-09-02T23:52:11+07:00
+  Containers:
+   web:
+    Image:      k8s-lab-web:v1
+    Port:       3000/TCP (http)
+    Host Port:  0/TCP (http)
+    Environment Variables from:
+      web-config  ConfigMap  Optional: false
+    Environment:
+      POD_NAME:     (v1:metadata.name)
+      NODE_NAME:    (v1:spec.nodeName)
+    Mounts:        <none>
+  Volumes:         <none>
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    ReplicaSetUpdated
+OldReplicaSets:  web-64b77cf7f4 (2/2 replicas created)
+NewReplicaSet:   web-5d848685f6 (1/1 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  101s  deployment-controller  Scaled up replica set web-64b77cf7f4 from 0 to 2
+  Normal  ScalingReplicaSet  13s   deployment-controller  Scaled up replica set web-5d848685f6 from 0 to 1
+
+$ kubectl get events -n lab015 --sort-by=.lastTimestamp | tail -15
+100s        Normal    Created             pod/web-64b77cf7f4-xzkzj    Container created
+100s        Normal    Pulled              pod/web-64b77cf7f4-xzkzj    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+100s        Normal    Pulled              pod/web-64b77cf7f4-c487j    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+100s        Normal    Created             pod/web-64b77cf7f4-c487j    Container created
+100s        Normal    Started             pod/web-64b77cf7f4-c487j    Container started
+100s        Normal    Created             pod/api-59d8fcb74b-5llqm    Container created
+99s         Normal    Started             pod/api-59d8fcb74b-v86vp    Container started
+99s         Normal    Started             pod/web-64b77cf7f4-xzkzj    Container started
+99s         Normal    Started             pod/api-59d8fcb74b-5llqm    Container started
+13s         Normal    SuccessfulCreate    replicaset/web-5d848685f6   Created pod: web-5d848685f6-qt5nt
+13s         Normal    Scheduled           pod/web-5d848685f6-qt5nt    Successfully assigned lab015/web-5d848685f6-qt5nt to devtools-worker
+13s         Normal    ScalingReplicaSet   deployment/web              Scaled up replica set web-5d848685f6 from 0 to 1
+12s         Warning   Failed              pod/web-5d848685f6-qt5nt    Error: configmap "web-config" not found
+12s         Normal    Pulled              pod/web-5d848685f6-qt5nt    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+3s          Normal    Sync                ingress/web                 Scheduled for sync
+
+$ curl -s -o /dev/null -w "%{http_code}\\n" http://localhost:80/
+200
+
+$ curl -s http://localhost:80/info | jq
+{
+  "pod": "web-64b77cf7f4-xzkzj",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "23:52:24",
+  "node": "devtools-worker",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-59d8fcb74b-5llqm"
+  },
+  "db": {
+    "status": "down",
+    "error": "[Errno -5] No address associated with hostname"
+  }
+}
+
+$ kubectl apply -f manifests/
+configmap/web-config created
+deployment.apps/web unchanged
+service/web unchanged
+deployment.apps/api unchanged
+service/api unchanged
+ingress.networking.k8s.io/web unchanged
+
+$ kubectl rollout status deployment/web -n lab015 --timeout=180s
+Waiting for deployment "web" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+deployment "web" successfully rolled out
+
+$ kubectl get pods -n lab015 -l app=web
+NAME                   READY   STATUS        RESTARTS   AGE
+web-5d848685f6-j5f9q   1/1     Running       0          1s
+web-5d848685f6-qt5nt   1/1     Running       0          16s
+web-64b77cf7f4-c487j   1/1     Terminating   0          104s
+
+$ curl -s http://localhost:80/info | jq
+{
+  "pod": "web-5d848685f6-j5f9q",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "23:52:32",
+  "node": "devtools-worker2",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-59d8fcb74b-5llqm"
+  },
+  "db": {
+    "status": "down",
+    "error": "[Errno -5] No address associated with hostname"
+  }
+}
+
+$ kubectl delete namespace lab015
+namespace "lab015" deleted
+
+$ kubectl wait --for=delete namespace/lab015 --timeout=180s
+
+$ kubectl create namespace lab015
+namespace/lab015 created
+
+$ kubectl apply -f manifests/
+configmap/web-config created
+deployment.apps/web created
+service/web created
+deployment.apps/api created
+service/api created
+ingress.networking.k8s.io/web created
+
+$ kubectl rollout status deployment/web -n lab015 --timeout=180s
+Waiting for deployment "web" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "web" rollout to finish: 1 of 2 updated replicas are available...
+deployment "web" successfully rolled out
+
+$ kubectl rollout status deployment/api -n lab015 --timeout=180s
+deployment "api" successfully rolled out
+
+$ kubectl get all,ingress,configmap -n lab015
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-59d8fcb74b-mxgqp   1/1     Running   0          2s
+pod/api-59d8fcb74b-zfqsj   1/1     Running   0          2s
+pod/web-64b77cf7f4-jqpd5   1/1     Running   0          2s
+pod/web-64b77cf7f4-l5d5k   1/1     Running   0          2s
+
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/api   ClusterIP   10.96.128.251   <none>        8000/TCP   2s
+service/web   ClusterIP   10.96.241.112   <none>        3000/TCP   2s
+
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api   2/2     2            2           2s
+deployment.apps/web   2/2     2            2           2s
+
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/api-59d8fcb74b   2         2         2       2s
+replicaset.apps/web-64b77cf7f4   2         2         2       2s
+
+NAME                            CLASS   HOSTS   ADDRESS   PORTS   AGE
+ingress.networking.k8s.io/web   nginx   *                 80      2s
+
+NAME                         DATA   AGE
+configmap/kube-root-ca.crt   1      3s
+configmap/web-config         3      2s
+
+$ curl -s -m 5 http://localhost:80/info | jq
+jq: parse error: Invalid numeric literal at line 1, column 7
+
+$ kubectl delete namespace lab015
+namespace "lab015" deleted
+
+$ kubectl wait --for=delete namespace/lab015 --timeout=180s
+
+$ kubectl get all -n lab015
+No resources found in lab015 namespace.
+
+$ kubectl create namespace lab015
+namespace/lab015 created
+
+$ kubectl apply -f manifests/
+configmap/web-config created
+deployment.apps/web created
+service/web created
+deployment.apps/api created
+service/api created
+ingress.networking.k8s.io/web created
+
+$ kubectl rollout status deployment/web -n lab015 --timeout=180s
+Waiting for deployment "web" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "web" rollout to finish: 1 of 2 updated replicas are available...
+deployment "web" successfully rolled out
+
+$ kubectl rollout status deployment/api -n lab015 --timeout=180s
+deployment "api" successfully rolled out
+
+$ for i in $(seq 1 15); do code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/); echo "HTTP $code"; [ "$code" = 200 ] && break; sleep 2; done
+HTTP 404
+HTTP 200
+
+$ kubectl get all,ingress,configmap -n lab015
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/api-59d8fcb74b-l2z2p   1/1     Running   0          5s
+pod/api-59d8fcb74b-zndcm   1/1     Running   0          5s
+pod/web-64b77cf7f4-krvsn   1/1     Running   0          5s
+pod/web-64b77cf7f4-wrdhw   1/1     Running   0          5s
+
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/api   ClusterIP   10.96.142.105   <none>        8000/TCP   5s
+service/web   ClusterIP   10.96.36.250    <none>        3000/TCP   5s
+
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api   2/2     2            2           5s
+deployment.apps/web   2/2     2            2           5s
+
+NAME                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/api-59d8fcb74b   2         2         2       5s
+replicaset.apps/web-64b77cf7f4   2         2         2       5s
+
+NAME                            CLASS   HOSTS   ADDRESS   PORTS   AGE
+ingress.networking.k8s.io/web   nginx   *                 80      4s
+
+NAME                         DATA   AGE
+configmap/kube-root-ca.crt   1      5s
+configmap/web-config         3      5s
+
+$ curl -s -m 5 http://localhost:80/info | jq
+{
+  "pod": "web-64b77cf7f4-wrdhw",
+  "version": "v1",
+  "theme": "blue",
+  "site_name": "SkillSpace",
+  "time": "23:53:34",
+  "node": "devtools-worker",
+  "api": {
+    "configured": true,
+    "reachable": true,
+    "pod": "api-59d8fcb74b-zndcm"
+  },
+  "db": {
+    "status": "down",
+    "error": "[Errno -5] No address associated with hostname"
+  }
+}
+
+$ kubectl delete namespace lab015
+namespace "lab015" deleted
+
+$ kubectl wait --for=delete namespace/lab015 --timeout=180s
+
+$ kubectl get all -n lab015
+No resources found in lab015 namespace.
+
+$ docker start devtools-k8s-lab-g5
+devtools-k8s-lab-g5
+
+$ mkdir -p ~/labwork && cd ~/labwork && git clone https://github.com/Tuchsanai/DevTools.git
+Cloning into 'DevTools'...
+
+$ cd ~/labwork/DevTools && git pull
+Already up to date.
+
+$ cd ~/labwork/DevTools/05_kubernetes/03_Session3_Application_Deployment/015-assembling-a-real-application && pwd
+/root/labwork/DevTools/05_kubernetes/03_Session3_Application_Deployment/015-assembling-a-real-application
+
+$ ls -1 manifests/
+01-configmap.yaml
+02-web-deployment.yaml
+03-web-service.yaml
+04-api-deployment.yaml
+05-api-service.yaml
+06-ingress.yaml
+
+$ sed -n '1,120p' manifests/01-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-config
+  namespace: lab015
+data:
+  SITE_NAME: SkillSpace
+  THEME: blue
+  API_BASE_URL: http://api:8000 # ชื่อคงที่จาก Service DNS
+
+$ sed -n '1,160p' manifests/02-web-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: lab015
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: k8s-lab-web:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: web-config # แยก config ออกจาก image
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+
+$ docker rm -f devtools-k8s-lab-g5
+devtools-k8s-lab-g5
+
+$ docker ps -a --filter name=devtools-k8s-lab-g5
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+$ docker ps -a --filter name=devtools-k8s-lab-g5 --format {{.Names}}
+

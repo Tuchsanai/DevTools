@@ -1,0 +1,523 @@
+# Raw transcript — LAB 006 — 2026-09-02
+
+$ kubectl get nodes
+NAME                     STATUS   ROLES           AGE   VERSION
+devtools-control-plane   Ready    control-plane   23m   v1.36.4
+devtools-worker          Ready    <none>          23m   v1.36.4
+devtools-worker2         Ready    <none>          23m   v1.36.4
+[exit=0]
+
+$ docker exec devtools-control-plane crictl images | grep k8s-lab
+docker.io/library/k8s-lab-api                   v1                   f0b9cc03efb0e       186MB
+docker.io/library/k8s-lab-db                    v1                   c6f278c2d20e4       300MB
+docker.io/library/k8s-lab-web                   v1                   47289fcac09e8       209MB
+docker.io/library/k8s-lab-web                   v2                   f2d6e974702f8       209MB
+[exit=0]
+
+$ kubectl -n ingress-nginx get pods -l app.kubernetes.io/component=controller
+NAME                                        READY   STATUS    RESTARTS   AGE
+ingress-nginx-controller-5d9bb85749-gzpzj   1/1     Running   0          2m9s
+[exit=0]
+
+$ kubectl delete namespace lab006 --ignore-not-found
+[exit=0]
+
+$ kubectl create namespace lab006
+namespace/lab006 created
+[exit=0]
+
+$ kubectl apply -n lab006 -f 01-replicaset.yaml
+replicaset.apps/web created
+[exit=0]
+
+$ kubectl wait -n lab006 --for=jsonpath={.status.readyReplicas}=3 rs/web --timeout=120s
+replicaset.apps/web condition met
+[exit=0]
+
+$ kubectl get rs,pods -n lab006 -o wide
+NAME                  DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES           SELECTOR
+replicaset.apps/web   3         3         3       1s    web          k8s-lab-web:v1   app=web
+
+NAME            READY   STATUS    RESTARTS   AGE   IP            NODE               NOMINATED NODE   READINESS GATES
+pod/web-cztmv   1/1     Running   0          1s    10.244.1.40   devtools-worker2   <none>           <none>
+pod/web-fmg6f   1/1     Running   0          1s    10.244.1.39   devtools-worker2   <none>           <none>
+pod/web-hx2rj   1/1     Running   0          1s    10.244.2.8    devtools-worker    <none>           <none>
+[exit=0]
+
+$ kubectl get pods -n lab006 -o custom-columns=NAME:.metadata.name,OWNER:.metadata.ownerReferences[0].kind,IMAGE:.spec.containers[0].image
+NAME        OWNER        IMAGE
+web-cztmv   ReplicaSet   k8s-lab-web:v1
+web-fmg6f   ReplicaSet   k8s-lab-web:v1
+web-hx2rj   ReplicaSet   k8s-lab-web:v1
+[exit=0]
+
+$ kubectl apply -n lab006 -f 02-door.yaml
+service/web created
+ingress.networking.k8s.io/web created
+[exit=0]
+
+$ kubectl get service,ingress -n lab006
+NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+service/web   ClusterIP   10.96.99.135   <none>        3000/TCP   0s
+
+NAME                            CLASS   HOSTS   ADDRESS   PORTS   AGE
+ingress.networking.k8s.io/web   nginx   *                 80      0s
+[exit=0]
+
+$ wait for http://localhost:80/info to return 200
+HTTP 200
+{"pod":"web-hx2rj","version":"v1","theme":"blue","site_name":"SkillSpace","time":"23:55:39","api":{"configured":false,"reachable":false},"db":{"status":"unknown"}}
+[exit=0]
+
+$ for i in 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12; do curl -s localhost:80/info | jq -r .pod; done
+web-cztmv
+web-cztmv
+web-hx2rj
+web-fmg6f
+web-cztmv
+web-fmg6f
+web-hx2rj
+web-cztmv
+web-hx2rj
+web-cztmv
+web-hx2rj
+web-hx2rj
+[exit=0]
+
+$ kubectl logs -n lab006 -l app=web --tail=3 --prefix=true
+[pod/web-cztmv/web] - Network:       http://0.0.0.0:3000
+[pod/web-cztmv/web] ✓ Ready in 0ms
+[pod/web-cztmv/web] ✓ Running next.config took 0.9ms
+[pod/web-fmg6f/web] - Network:       http://0.0.0.0:3000
+[pod/web-fmg6f/web] ✓ Ready in 0ms
+[pod/web-fmg6f/web] ✓ Running next.config took 1.3ms
+[pod/web-hx2rj/web] - Network:       http://0.0.0.0:3000
+[pod/web-hx2rj/web] ✓ Ready in 0ms
+[pod/web-hx2rj/web] ✓ Running next.config took 0.9ms
+[exit=0]
+
+old pod = web-cztmv
+
+$ (sleep 2; kubectl delete pod -n lab006 OLD) & timeout 15s kubectl get pods -n lab006 -w
+NAME        READY   STATUS    RESTARTS   AGE
+web-cztmv   1/1     Running   0          6s
+web-fmg6f   1/1     Running   0          6s
+web-hx2rj   1/1     Running   0          6s
+pod "web-cztmv" deleted from lab006 namespace
+web-cztmv   1/1     Terminating   0          8s
+web-f48br   0/1     Pending       0          0s
+web-cztmv   1/1     Terminating   0          8s
+web-f48br   0/1     Pending       0          0s
+web-f48br   0/1     ContainerCreating   0          0s
+web-cztmv   0/1     Error               0          9s
+web-f48br   0/1     ContainerCreating   0          1s
+web-f48br   1/1     Running             0          1s
+web-cztmv   0/1     Error               0          9s
+web-cztmv   0/1     Error               0          9s
+[exit=124: timeout ends watch]
+
+$ kubectl wait -n lab006 --for=jsonpath={.status.readyReplicas}=3 rs/web --timeout=120s
+replicaset.apps/web condition met
+[exit=0]
+
+$ kubectl get rs,pods -n lab006 -o wide
+NAME                  DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES           SELECTOR
+replicaset.apps/web   3         3         3       21s   web          k8s-lab-web:v1   app=web
+
+NAME            READY   STATUS    RESTARTS   AGE   IP            NODE               NOMINATED NODE   READINESS GATES
+pod/web-f48br   1/1     Running   0          13s   10.244.1.41   devtools-worker2   <none>           <none>
+pod/web-fmg6f   1/1     Running   0          21s   10.244.1.39   devtools-worker2   <none>           <none>
+pod/web-hx2rj   1/1     Running   0          21s   10.244.2.8    devtools-worker    <none>           <none>
+[exit=0]
+
+$ curl -s localhost:80/info | jq {pod,version}
+{
+  "pod": "web-hx2rj",
+  "version": "v1"
+}
+[exit=0]
+
+$ kubectl describe rs web -n lab006
+Name:         web
+Namespace:    lab006
+Selector:     app=web
+Labels:       <none>
+Annotations:  <none>
+Replicas:     3 current / 3 desired
+Pods Status:  3 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  app=web
+           version=v1
+  Containers:
+   web:
+    Image:         k8s-lab-web:v1
+    Port:          3000/TCP
+    Host Port:     0/TCP
+    Environment:   <none>
+    Mounts:        <none>
+  Volumes:         <none>
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Events:
+  Type    Reason            Age   From                   Message
+  ----    ------            ----  ----                   -------
+  Normal  SuccessfulCreate  21s   replicaset-controller  Created pod: web-fmg6f
+  Normal  SuccessfulCreate  21s   replicaset-controller  Created pod: web-hx2rj
+  Normal  SuccessfulCreate  21s   replicaset-controller  Created pod: web-cztmv
+  Normal  SuccessfulCreate  13s   replicaset-controller  Created pod: web-f48br
+[exit=0]
+
+$ kubectl get events -n lab006 --sort-by=.lastTimestamp
+LAST SEEN   TYPE     REASON             OBJECT           MESSAGE
+21s         Normal   Scheduled          pod/web-fmg6f    Successfully assigned lab006/web-fmg6f to devtools-worker2
+21s         Normal   SuccessfulCreate   replicaset/web   Created pod: web-cztmv
+21s         Normal   SuccessfulCreate   replicaset/web   Created pod: web-hx2rj
+21s         Normal   SuccessfulCreate   replicaset/web   Created pod: web-fmg6f
+21s         Normal   Scheduled          pod/web-cztmv    Successfully assigned lab006/web-cztmv to devtools-worker2
+21s         Normal   Scheduled          pod/web-hx2rj    Successfully assigned lab006/web-hx2rj to devtools-worker
+20s         Normal   Created            pod/web-hx2rj    Container created
+20s         Normal   Started            pod/web-hx2rj    Container started
+20s         Normal   Pulled             pod/web-cztmv    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+20s         Normal   Created            pod/web-cztmv    Container created
+20s         Normal   Pulled             pod/web-fmg6f    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+20s         Normal   Created            pod/web-fmg6f    Container created
+20s         Normal   Started            pod/web-fmg6f    Container started
+20s         Normal   Started            pod/web-cztmv    Container started
+20s         Normal   Pulled             pod/web-hx2rj    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+19s         Normal   Sync               ingress/web      Scheduled for sync
+13s         Normal   Killing            pod/web-cztmv    Stopping container web
+13s         Normal   Scheduled          pod/web-f48br    Successfully assigned lab006/web-f48br to devtools-worker2
+13s         Normal   SuccessfulCreate   replicaset/web   Created pod: web-f48br
+12s         Normal   Created            pod/web-f48br    Container created
+12s         Normal   Pulled             pod/web-f48br    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+12s         Normal   Started            pod/web-f48br    Container started
+[exit=0]
+
+$ kubectl scale rs web -n lab006 --replicas=5
+replicaset.apps/web scaled
+[exit=0]
+
+$ kubectl wait -n lab006 --for=jsonpath={.status.readyReplicas}=5 rs/web --timeout=120s
+replicaset.apps/web condition met
+[exit=0]
+
+$ kubectl get rs,pods -n lab006
+NAME                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/web   5         5         5       22s
+
+NAME            READY   STATUS    RESTARTS   AGE
+pod/web-blx9r   1/1     Running   0          0s
+pod/web-f48br   1/1     Running   0          14s
+pod/web-fmg6f   1/1     Running   0          22s
+pod/web-hx2rj   1/1     Running   0          22s
+pod/web-qmnhq   1/1     Running   0          0s
+[exit=0]
+
+$ kubectl scale rs web -n lab006 --replicas=1
+replicaset.apps/web scaled
+[exit=0]
+
+$ kubectl wait -n lab006 --for=jsonpath={.status.readyReplicas}=1 rs/web --timeout=120s
+replicaset.apps/web condition met
+[exit=0]
+
+$ kubectl get rs,pods -n lab006
+NAME                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/web   1         1         1       23s
+
+NAME            READY   STATUS        RESTARTS   AGE
+pod/web-blx9r   1/1     Terminating   0          1s
+pod/web-f48br   1/1     Terminating   0          15s
+pod/web-fmg6f   1/1     Terminating   0          23s
+pod/web-hx2rj   1/1     Running       0          23s
+pod/web-qmnhq   1/1     Terminating   0          1s
+[exit=0]
+
+$ kubectl apply -n lab006 -f 01-replicaset.yaml
+replicaset.apps/web configured
+[exit=0]
+
+$ kubectl wait -n lab006 --for=jsonpath={.status.readyReplicas}=3 rs/web --timeout=120s
+replicaset.apps/web condition met
+[exit=0]
+
+$ kubectl get rs,pods -n lab006
+NAME                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/web   3         3         3       24s
+
+NAME            READY   STATUS        RESTARTS   AGE
+pod/web-b4vdv   1/1     Running       0          1s
+pod/web-blx9r   1/1     Terminating   0          2s
+pod/web-hx2rj   1/1     Running       0          24s
+pod/web-q8zkw   1/1     Running       0          1s
+pod/web-qmnhq   1/1     Terminating   0          2s
+[exit=0]
+
+$ kubectl delete pods -n lab006 -l app=web
+pod "web-b4vdv" deleted from lab006 namespace
+pod "web-blx9r" deleted from lab006 namespace
+pod "web-hx2rj" deleted from lab006 namespace
+pod "web-q8zkw" deleted from lab006 namespace
+pod "web-qmnhq" deleted from lab006 namespace
+[exit=0]
+
+$ kubectl wait -n lab006 --for=jsonpath={.status.readyReplicas}=3 rs/web --timeout=120s
+replicaset.apps/web condition met
+[exit=0]
+
+$ kubectl get rs,pods -n lab006
+NAME                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/web   3         3         3       54s
+
+NAME            READY   STATUS    RESTARTS   AGE
+pod/web-jsmv7   1/1     Running   0          30s
+pod/web-jvjnf   1/1     Running   0          30s
+pod/web-w5ftj   1/1     Running   0          30s
+[exit=0]
+
+$ curl -s -o /dev/null -w HTTP localhost:80/info
+HTTP 200\\n[exit=0]
+
+$ sed image v1 to v2 > /tmp/rs-v2.yaml
+[exit=0]
+
+$ kubectl apply -n lab006 -f /tmp/rs-v2.yaml
+replicaset.apps/web configured
+[exit=0]
+
+$ kubectl get rs web -n lab006 -o jsonpath=image
+k8s-lab-web:v2\n[exit=0]
+
+$ kubectl get pods -n lab006 -o custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[0].image
+NAME        IMAGE
+web-jsmv7   k8s-lab-web:v1
+web-jvjnf   k8s-lab-web:v1
+web-w5ftj   k8s-lab-web:v1
+[exit=0]
+
+$ kubectl delete pod -n lab006 web-jsmv7
+pod "web-jsmv7" deleted from lab006 namespace
+[exit=0]
+
+$ kubectl wait -n lab006 --for=jsonpath={.status.readyReplicas}=3 rs/web --timeout=120s
+replicaset.apps/web condition met
+[exit=0]
+
+$ kubectl get pods -n lab006 -o custom-columns=NAME:.metadata.name,VERSION:.metadata.labels.version,IMAGE:.spec.containers[0].image
+NAME        VERSION   IMAGE
+web-jvjnf   v1        k8s-lab-web:v1
+web-w5ftj   v1        k8s-lab-web:v1
+web-zzgh7   v1        k8s-lab-web:v2
+[exit=0]
+
+$ for i in 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15; do curl -s localhost:80/info | jq -r pod-version; done
+web-w5ftj  v1
+web-jvjnf  v1
+web-jvjnf  v1
+web-jvjnf  v1
+web-w5ftj  v1
+web-jvjnf  v1
+web-zzgh7  v2
+web-w5ftj  v1
+web-zzgh7  v2
+web-jvjnf  v1
+web-jvjnf  v1
+web-zzgh7  v2
+web-w5ftj  v1
+web-jvjnf  v1
+web-zzgh7  v2
+[exit=0]
+
+$ kubectl apply -n lab006 -f 01-replicaset.yaml
+replicaset.apps/web configured
+[exit=0]
+
+v2 pod = web-zzgh7
+
+$ kubectl delete pod -n lab006 web-zzgh7
+pod "web-zzgh7" deleted from lab006 namespace
+[exit=0]
+
+$ kubectl wait -n lab006 --for=jsonpath={.status.readyReplicas}=3 rs/web --timeout=120s
+replicaset.apps/web condition met
+[exit=0]
+
+$ kubectl get pods -n lab006 -o custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[0].image,READY:.status.containerStatuses[0].ready
+NAME        IMAGE            READY
+web-d947z   k8s-lab-web:v1   true
+web-jvjnf   k8s-lab-web:v1   true
+web-w5ftj   k8s-lab-web:v1   true
+[exit=0]
+
+$ curl -s localhost:80/info | jq {pod,version}
+{
+  "pod": "web-jvjnf",
+  "version": "v1"
+}
+[exit=0]
+
+$ kubectl logs -n lab006 -l app=web --tail=2 --prefix=true
+[pod/web-d947z/web] ✓ Ready in 0ms
+[pod/web-d947z/web] ✓ Running next.config took 0.7ms
+[pod/web-jvjnf/web] ✓ Ready in 0ms
+[pod/web-jvjnf/web] ✓ Running next.config took 0.9ms
+[pod/web-w5ftj/web] ✓ Ready in 0ms
+[pod/web-w5ftj/web] ✓ Running next.config took 1.0ms
+[exit=0]
+
+$ kubectl delete namespace lab006
+namespace "lab006" deleted
+[exit=0]
+
+$ kubectl wait --for=delete namespace/lab006 --timeout=120s
+[exit=0]
+
+$ kubectl get all -n lab006
+No resources found in lab006 namespace.
+[exit=0]
+
+$ kubectl create namespace lab006
+namespace/lab006 created
+[exit=0]
+
+$ kubectl apply -n lab006 -f 01-replicaset.yaml -f 02-door.yaml
+replicaset.apps/web created
+service/web created
+ingress.networking.k8s.io/web created
+[exit=0]
+
+$ kubectl wait -n lab006 --for=jsonpath={.status.readyReplicas}=3 rs/web --timeout=120s
+replicaset.apps/web condition met
+[exit=0]
+
+$ kubectl get rs,pods,service,ingress -n lab006
+NAME                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/web   3         3         3       2s
+
+NAME            READY   STATUS    RESTARTS   AGE
+pod/web-gqhjq   1/1     Running   0          2s
+pod/web-khpw4   1/1     Running   0          2s
+pod/web-rvdhq   1/1     Running   0          2s
+
+NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+service/web   ClusterIP   10.96.157.12   <none>        3000/TCP   2s
+
+NAME                            CLASS   HOSTS   ADDRESS   PORTS   AGE
+ingress.networking.k8s.io/web   nginx   *                 80      2s
+[exit=0]
+
+$ wait for clean re-run HTTP 200
+HTTP 200
+{"pod":"web-khpw4","version":"v1","theme":"blue","site_name":"SkillSpace","time":"23:56:57","api":{"configured":false,"reachable":false},"db":{"status":"unknown"}}
+[exit=0]
+
+$ kubectl logs -n lab006 -l app=web --tail=2 --prefix=true
+[pod/web-gqhjq/web] ✓ Ready in 0ms
+[pod/web-gqhjq/web] ✓ Running next.config took 1.5ms
+[pod/web-khpw4/web] ✓ Ready in 0ms
+[pod/web-khpw4/web] ✓ Running next.config took 1.7ms
+[pod/web-rvdhq/web] ✓ Ready in 0ms
+[pod/web-rvdhq/web] ✓ Running next.config took 1.9ms
+[exit=0]
+
+$ kubectl get events -n lab006 --sort-by=.lastTimestamp
+LAST SEEN   TYPE     REASON             OBJECT           MESSAGE
+4s          Normal   Scheduled          pod/web-rvdhq    Successfully assigned lab006/web-rvdhq to devtools-worker2
+4s          Normal   Scheduled          pod/web-gqhjq    Successfully assigned lab006/web-gqhjq to devtools-worker
+4s          Normal   Sync               ingress/web      Scheduled for sync
+4s          Normal   SuccessfulCreate   replicaset/web   Created pod: web-gqhjq
+4s          Normal   Scheduled          pod/web-khpw4    Successfully assigned lab006/web-khpw4 to devtools-worker2
+4s          Normal   SuccessfulCreate   replicaset/web   Created pod: web-rvdhq
+4s          Normal   SuccessfulCreate   replicaset/web   Created pod: web-khpw4
+3s          Normal   Pulled             pod/web-rvdhq    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+3s          Normal   Created            pod/web-khpw4    Container created
+3s          Normal   Started            pod/web-khpw4    Container started
+3s          Normal   Created            pod/web-rvdhq    Container created
+3s          Normal   Started            pod/web-rvdhq    Container started
+3s          Normal   Pulled             pod/web-gqhjq    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+3s          Normal   Pulled             pod/web-khpw4    Container image "k8s-lab-web:v1" already present on machine and can be accessed by the pod
+3s          Normal   Started            pod/web-gqhjq    Container started
+3s          Normal   Created            pod/web-gqhjq    Container created
+[exit=0]
+
+$ kubectl delete namespace lab006
+namespace "lab006" deleted
+[exit=0]
+
+$ kubectl wait --for=delete namespace/lab006 --timeout=120s
+[exit=0]
+
+$ kubectl get all -n lab006
+No resources found in lab006 namespace.
+[exit=0]
+
+$ kubectl -n ingress-nginx get pods -l app.kubernetes.io/component=controller
+NAME                                        READY   STATUS    RESTARTS   AGE
+ingress-nginx-controller-5d9bb85749-gzpzj   1/1     Running   0          3m43s
+[exit=0]
+
+$ node .work/tools/shot.js http://devtools-k8s-lab-g2:80/ .../images/02-pod-name-a.png --w 1280 --h 800
+{"ok":true,"out":"01_Session1_Kubernetes_Basics/006-desired-state-and-self-healing/images/02-pod-name-a.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g2/"}
+[exit=0]
+
+$ node .work/tools/shot.js http://devtools-k8s-lab-g2:80/ .../images/02-pod-name-b.png --w 1280 --h 800
+{"ok":true,"out":"01_Session1_Kubernetes_Basics/006-desired-state-and-self-healing/images/02-pod-name-b.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g2/"}
+[exit=0]
+
+$ kubectl patch service web -n lab006 --type=merge -p selector-for-new-pod
+service/web patched
+$ node .work/tools/shot.js http://devtools-k8s-lab-g2:80/ .../images/03-after-delete-new-pod.png --w 1280 --h 800
+{"ok":true,"out":"01_Session1_Kubernetes_Basics/006-desired-state-and-self-healing/images/03-after-delete-new-pod.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g2/"}
+$ kubectl patch service web -n lab006 --type=json remove-temporary-selector
+service/web patched
+[exit=0]
+
+$ kubectl patch service web -n lab006 --type=merge -p selector-for-v2-pod
+service/web patched
+$ node .work/tools/shot.js http://devtools-k8s-lab-g2:80/ .../images/break-mixed-v1-v2.png --w 1280 --h 800
+{"ok":true,"out":"01_Session1_Kubernetes_Basics/006-desired-state-and-self-healing/images/break-mixed-v1-v2.png","title":"SkillSpace · ระบบงานซ่อมและครุภัณฑ์","url":"http://devtools-k8s-lab-g2/"}
+$ kubectl patch service web -n lab006 --type=json remove-temporary-selector
+service/web patched
+[exit=0]
+
+$ kubeconform -strict -summary 01-replicaset.yaml 02-door.yaml
+Summary: 3 resources found in 2 files - Valid: 3, Invalid: 0, Errors: 0, Skipped: 0
+[exit=0]
+
+$ kubectl get all -n lab006
+No resources found in lab006 namespace.
+[exit=0]
+
+$ kubectl get node devtools-control-plane -o jsonpath=ingress-ready
+true
+[exit=0]
+
+$ kubectl -n ingress-nginx get pods -l app.kubernetes.io/component=controller
+NAME                                        READY   STATUS    RESTARTS   AGE
+ingress-nginx-controller-5d9bb85749-gzpzj   1/1     Running   0          18m
+[exit=0]

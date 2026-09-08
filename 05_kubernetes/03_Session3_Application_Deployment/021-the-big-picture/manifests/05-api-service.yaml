@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: lab021
+spec:
+  selector: # ให้ web เรียก API ด้วย DNS ชื่อ api
+    app: api
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http

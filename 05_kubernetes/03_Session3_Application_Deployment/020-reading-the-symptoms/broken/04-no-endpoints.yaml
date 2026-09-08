@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: endpoint-web
+  namespace: lab020
+  labels:
+    app: web
+spec:
+  containers:
+    - name: web
+      image: k8s-lab-web:v1
+      imagePullPolicy: IfNotPresent
+      ports:
+        - name: http
+          containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: lab020
+spec:
+  selector:
+    app: wep # จงใจสะกดไม่ตรง label ของ Pod
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: skillspace
+  namespace: lab020
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 3000

@@ -1,0 +1,6 @@
+งาน: แก้สไลด์ครั้งที่ 2 ตาม feedback รอบ 3 ของ yolo1 (ข้อ 7-8 ใน /root/workspace/DevTools/05_kubernetes/.work/slides-feedback-all.md) — ไฟล์ /root/workspace/DevTools/05_kubernetes/02_Session2_Networking_Config_Storage/Kubernetes_Session2_Slides.html
+1. render ทุกหน้า (node /root/workspace/DevTools/05_kubernetes/.work/tools/check-slides.js <ไฟล์> --shots /root/workspace/DevTools/05_kubernetes/.work/slide-shots-s2) เปิดดูทุกหน้าที่มี screenshot ครอป และหน้า topology
+2. ครอป screenshot ใหม่จากต้นฉบับใน /root/workspace/DevTools/05_kubernetes/02_Session2_Networking_Config_Storage/<แล็บ>/images/*.png ด้วย Pillow: box=(264, 0, 1280, H) โดย H ให้ครอบการ์ดสถานะ+หัวข้อหน้า (ปกติ 260-420 px) หรือทั้งภาพถ้าต้องการเนื้อหาด้านล่าง · ห้ามตัดต่อเนื้อหา · ฝัง base64 แทนของเดิม (key เดิมใน window.ASSETS)
+3. หน้า topology/ไดอะแกรมเต็มความกว้าง: ถ้าตัวอักษรในภาพ < 14px ให้ตัดขอบขาวของ SVG (คำนวณ bbox ของ element แล้วตั้ง viewBox ใหม่ + padding 20px) ก่อนฝัง — ทำกับสำเนาที่ฝังในสไลด์เท่านั้น ห้ามแก้ไฟล์ .svg ใน slides_assets/
+4. render ซ้ำ เปิดดูหน้าที่แก้ทุกหน้า · รัน check-slides.js ครั้งสุดท้าย ต้องผ่านทุกข้อ (brokenImages ว่าง · externalRefs ว่าง · nav ครบ · labFoldersReferenced 7 · ≤ 15 MB)
+รายงานกลับ (คำตอบสุดท้ายถูกเก็บเป็นไฟล์ — ห้ามสร้างไฟล์รายงานเพิ่ม): หน้าที่แก้ · ผล check-slides.js · ข้อจำกัดที่เหลือ

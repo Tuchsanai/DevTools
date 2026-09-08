@@ -1,0 +1,245 @@
+$ kubectl config set-context --current --namespace=default
+Context "kind-devtools" modified.
+$ kubectl get pods
+No resources found in default namespace.
+$ kubectl get pods -A
+NAMESPACE            NAME                                             READY   STATUS    RESTARTS        AGE
+ingress-nginx        ingress-nginx-controller-5d9bb85749-hczf6        1/1     Running   0               12m
+kube-system          coredns-589f44dc88-kfjdg                         1/1     Running   0               13m
+kube-system          coredns-589f44dc88-v67bc                         1/1     Running   0               13m
+kube-system          etcd-devtools-control-plane                      1/1     Running   0               13m
+kube-system          kindnet-72znx                                    1/1     Running   1 (6m21s ago)   13m
+kube-system          kindnet-d4w7c                                    1/1     Running   0               13m
+kube-system          kindnet-sdlkf                                    1/1     Running   0               13m
+kube-system          kube-apiserver-devtools-control-plane            1/1     Running   0               13m
+kube-system          kube-controller-manager-devtools-control-plane   1/1     Running   0               13m
+kube-system          kube-proxy-mhlnz                                 1/1     Running   0               13m
+kube-system          kube-proxy-tf2sb                                 1/1     Running   1 (6m21s ago)   13m
+kube-system          kube-proxy-vjcn8                                 1/1     Running   0               13m
+kube-system          kube-scheduler-devtools-control-plane            1/1     Running   0               13m
+kube-system          metrics-server-55c6b8755f-ngbgr                  1/1     Running   2 (5m47s ago)   13m
+local-path-storage   local-path-provisioner-56c4685b7c-pgnpz          1/1     Running   0               13m
+$ kubectl get namespaces
+NAME                 STATUS   AGE
+default              Active   13m
+ingress-nginx        Active   12m
+kube-node-lease      Active   13m
+kube-public          Active   13m
+kube-system          Active   13m
+local-path-storage   Active   13m
+$ kubectl get pods -n kube-system
+NAME                                             READY   STATUS    RESTARTS        AGE
+coredns-589f44dc88-kfjdg                         1/1     Running   0               13m
+coredns-589f44dc88-v67bc                         1/1     Running   0               13m
+etcd-devtools-control-plane                      1/1     Running   0               13m
+kindnet-72znx                                    1/1     Running   1 (6m22s ago)   13m
+kindnet-d4w7c                                    1/1     Running   0               13m
+kindnet-sdlkf                                    1/1     Running   0               13m
+kube-apiserver-devtools-control-plane            1/1     Running   0               13m
+kube-controller-manager-devtools-control-plane   1/1     Running   0               13m
+kube-proxy-mhlnz                                 1/1     Running   0               13m
+kube-proxy-tf2sb                                 1/1     Running   1 (6m22s ago)   13m
+kube-proxy-vjcn8                                 1/1     Running   0               13m
+kube-scheduler-devtools-control-plane            1/1     Running   0               13m
+metrics-server-55c6b8755f-ngbgr                  1/1     Running   2 (5m48s ago)   13m
+$ kubectl get pods -n kube-system -o wide
+NAME                                             READY   STATUS    RESTARTS        AGE   IP           NODE                     NOMINATED NODE   READINESS GATES
+coredns-589f44dc88-kfjdg                         1/1     Running   0               13m   10.244.0.3   devtools-control-plane   <none>           <none>
+coredns-589f44dc88-v67bc                         1/1     Running   0               13m   10.244.0.4   devtools-control-plane   <none>           <none>
+etcd-devtools-control-plane                      1/1     Running   0               13m   172.18.0.4   devtools-control-plane   <none>           <none>
+kindnet-72znx                                    1/1     Running   1 (6m22s ago)   13m   172.18.0.3   devtools-worker2         <none>           <none>
+kindnet-d4w7c                                    1/1     Running   0               13m   172.18.0.4   devtools-control-plane   <none>           <none>
+kindnet-sdlkf                                    1/1     Running   0               13m   172.18.0.2   devtools-worker          <none>           <none>
+kube-apiserver-devtools-control-plane            1/1     Running   0               13m   172.18.0.4   devtools-control-plane   <none>           <none>
+kube-controller-manager-devtools-control-plane   1/1     Running   0               13m   172.18.0.4   devtools-control-plane   <none>           <none>
+kube-proxy-mhlnz                                 1/1     Running   0               13m   172.18.0.2   devtools-worker          <none>           <none>
+kube-proxy-tf2sb                                 1/1     Running   1 (6m22s ago)   13m   172.18.0.3   devtools-worker2         <none>           <none>
+kube-proxy-vjcn8                                 1/1     Running   0               13m   172.18.0.4   devtools-control-plane   <none>           <none>
+kube-scheduler-devtools-control-plane            1/1     Running   0               13m   172.18.0.4   devtools-control-plane   <none>           <none>
+metrics-server-55c6b8755f-ngbgr                  1/1     Running   2 (5m48s ago)   13m   10.244.2.2   devtools-worker2         <none>           <none>
+$ kubectl api-resources | head -30
+NAME                                SHORTNAMES   APIVERSION                        NAMESPACED   KIND
+bindings                                         v1                                true         Binding
+componentstatuses                   cs           v1                                false        ComponentStatus
+configmaps                          cm           v1                                true         ConfigMap
+endpoints                           ep           v1                                true         Endpoints
+events                              ev           v1                                true         Event
+limitranges                         limits       v1                                true         LimitRange
+namespaces                          ns           v1                                false        Namespace
+nodes                               no           v1                                false        Node
+persistentvolumeclaims              pvc          v1                                true         PersistentVolumeClaim
+persistentvolumes                   pv           v1                                false        PersistentVolume
+pods                                po           v1                                true         Pod
+podtemplates                                     v1                                true         PodTemplate
+replicationcontrollers              rc           v1                                true         ReplicationController
+resourcequotas                      quota        v1                                true         ResourceQuota
+secrets                                          v1                                true         Secret
+serviceaccounts                     sa           v1                                true         ServiceAccount
+services                            svc          v1                                true         Service
+mutatingadmissionpolicies                        admissionregistration.k8s.io/v1   false        MutatingAdmissionPolicy
+mutatingadmissionpolicybindings                  admissionregistration.k8s.io/v1   false        MutatingAdmissionPolicyBinding
+mutatingwebhookconfigurations                    admissionregistration.k8s.io/v1   false        MutatingWebhookConfiguration
+validatingadmissionpolicies                      admissionregistration.k8s.io/v1   false        ValidatingAdmissionPolicy
+validatingadmissionpolicybindings                admissionregistration.k8s.io/v1   false        ValidatingAdmissionPolicyBinding
+validatingwebhookconfigurations                  admissionregistration.k8s.io/v1   false        ValidatingWebhookConfiguration
+customresourcedefinitions           crd,crds     apiextensions.k8s.io/v1           false        CustomResourceDefinition
+apiservices                                      apiregistration.k8s.io/v1         false        APIService
+controllerrevisions                              apps/v1                           true         ControllerRevision
+daemonsets                          ds           apps/v1                           true         DaemonSet
+deployments                         deploy       apps/v1                           true         Deployment
+replicasets                         rs           apps/v1                           true         ReplicaSet
+$ POD=$(kubectl get pod -n ingress-nginx -l app.kubernetes.io/component=controller -o jsonpath='{.items[0].metadata.name}'); kubectl describe pod -n ingress-nginx "$POD" | head -35
+Name:             ingress-nginx-controller-5d9bb85749-hczf6
+Namespace:        ingress-nginx
+Priority:         0
+Service Account:  ingress-nginx
+Node:             devtools-control-plane/172.18.0.4
+Start Time:       Wed, 02 Sep 2026 23:33:50 +0700
+Labels:           app.kubernetes.io/component=controller
+                  app.kubernetes.io/instance=ingress-nginx
+                  app.kubernetes.io/managed-by=Helm
+                  app.kubernetes.io/name=ingress-nginx
+                  app.kubernetes.io/part-of=ingress-nginx
+                  app.kubernetes.io/version=1.15.1
+                  helm.sh/chart=ingress-nginx-4.15.1
+                  pod-template-hash=5d9bb85749
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.5
+IPs:
+  IP:           10.244.0.5
+Controlled By:  ReplicaSet/ingress-nginx-controller-5d9bb85749
+Containers:
+  controller:
+    Container ID:    containerd://61e3c27deaef78bd7067a8ef153bb20385c3f3829b895a2180e2dc33a02ac813
+    Image:           registry.k8s.io/ingress-nginx/controller:v1.15.1@sha256:594ceea76b01c592858f803f9ff4d2cb40542cae2060410b2c95f75907d659e1
+    Image ID:        registry.k8s.io/ingress-nginx/controller@sha256:594ceea76b01c592858f803f9ff4d2cb40542cae2060410b2c95f75907d659e1
+    Ports:           80/TCP (http), 443/TCP (https), 8443/TCP (webhook)
+    Host Ports:      80/TCP (http), 443/TCP (https), 0/TCP (webhook)
+    SeccompProfile:  RuntimeDefault
+    Args:
+      /nginx-ingress-controller
+      --publish-service=$(POD_NAMESPACE)/ingress-nginx-controller
+      --election-id=ingress-nginx-leader
+      --controller-class=k8s.io/ingress-nginx
+      --ingress-class=nginx
+      --configmap=$(POD_NAMESPACE)/ingress-nginx-controller
+$ POD=$(kubectl get pod -n ingress-nginx -l app.kubernetes.io/component=controller -o jsonpath='{.items[0].metadata.name}'); kubectl get pod -n ingress-nginx "$POD" -o yaml | head -40
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2026-09-02T16:33:50Z"
+  generateName: ingress-nginx-controller-5d9bb85749-
+  generation: 1
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+    app.kubernetes.io/version: 1.15.1
+    helm.sh/chart: ingress-nginx-4.15.1
+    pod-template-hash: 5d9bb85749
+  name: ingress-nginx-controller-5d9bb85749-hczf6
+  namespace: ingress-nginx
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: ingress-nginx-controller-5d9bb85749
+    uid: c6f50f7e-4efc-4580-9446-0bb2e0b6ef9d
+  resourceVersion: "836"
+  uid: dfd7752e-702f-484d-9efb-6134b9fc1b3a
+spec:
+  automountServiceAccountToken: true
+  containers:
+  - args:
+    - /nginx-ingress-controller
+    - --publish-service=$(POD_NAMESPACE)/ingress-nginx-controller
+    - --election-id=ingress-nginx-leader
+    - --controller-class=k8s.io/ingress-nginx
+    - --ingress-class=nginx
+    - --configmap=$(POD_NAMESPACE)/ingress-nginx-controller
+    - --validating-webhook=:8443
+    - --validating-webhook-certificate=/usr/local/certificates/cert
+    - --validating-webhook-key=/usr/local/certificates/key
+    env:
+$ kubectl create namespace lab002
+namespace/lab002 created
+$ kubectl get ns lab002 -o yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: "2026-09-02T16:46:37Z"
+  labels:
+    kubernetes.io/metadata.name: lab002
+  name: lab002
+  resourceVersion: "2230"
+  uid: 8522bc00-2604-41eb-b6d7-7f8a84431363
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active
+$ kubectl explain pod.spec.containers | head -20
+KIND:       Pod
+VERSION:    v1
+
+FIELD: containers <[]Container>
+
+
+DESCRIPTION:
+    List of containers belonging to the pod. Containers cannot currently be
+    added or removed. There must be at least one container in a Pod. Cannot be
+    updated.
+    A single application container that you want to run within a pod.
+    
+FIELDS:
+  args	<[]string>
+    Arguments to the entrypoint. The container image's CMD is used if this is
+    not provided. Variable references $(VAR_NAME) are expanded using the
+    container's environment. If a variable cannot be resolved, the reference in
+    the input string will be unchanged. Double $$ are reduced to a single $,
+    which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will
+    produce the string literal "$(VAR_NAME)". Escaped references will never be
+$ alias k kgp kgn
+alias k='kubectl'
+alias kgp='kubectl get pods'
+alias kgn='kubectl get nodes'
+$ kubectl get pods -A --field-selector status.phase=Running | wc -l
+16
+$ kubectl config set-context --current --namespace=lab002
+Context "kind-devtools" modified.
+$ kubectl get pods -n kube-system | head -5
+NAME                                             READY   STATUS    RESTARTS        AGE
+coredns-589f44dc88-kfjdg                         1/1     Running   0               14m
+coredns-589f44dc88-v67bc                         1/1     Running   0               14m
+etcd-devtools-control-plane                      1/1     Running   0               14m
+kindnet-72znx                                    1/1     Running   1 (6m58s ago)   14m
+$ kubectl get pods
+No resources found in lab002 namespace.
+$ kubectl config set-context --current --namespace=default
+Context "kind-devtools" modified.
+$ kubectl config view --minify | grep namespace
+    namespace: default
+$ POD=$(kubectl get pod -n ingress-nginx -l app.kubernetes.io/component=controller -o jsonpath='{.items[0].metadata.name}'); kubectl logs -n ingress-nginx "$POD" --tail=3
+I0902 16:34:06.152989      11 controller.go:231] "Backend successfully reloaded"
+I0902 16:34:06.153103      11 controller.go:243] "Initial sync, sleeping for 1 second"
+I0902 16:34:06.153163      11 event.go:377] Event(v1.ObjectReference{Kind:"Pod", Namespace:"ingress-nginx", Name:"ingress-nginx-controller-5d9bb85749-hczf6", UID:"dfd7752e-702f-484d-9efb-6134b9fc1b3a", APIVersion:"v1", ResourceVersion:"800", FieldPath:""}): type: 'Normal' reason: 'RELOAD' NGINX reload triggered due to a change in configuration
+$ kubectl get events -n lab002 --sort-by=.lastTimestamp
+No resources found in lab002 namespace.
+$ kubectl delete namespace lab002 --wait=true --timeout=60s
+namespace "lab002" deleted
+$ kubectl create namespace lab002
+namespace/lab002 created
+$ kubectl get ns lab002 -o jsonpath='{.metadata.name}{"  "}{.status.phase}{"\n"}'
+lab002  Active
+$ kubectl get all -n lab002
+No resources found in lab002 namespace.
+$ kubectl delete namespace lab002 --wait=true --timeout=60s
+namespace "lab002" deleted
+$ kubectl get all -n lab002
+No resources found in lab002 namespace.
+$ kubectl get all -n lab002
+No resources found in lab002 namespace.

@@ -1,0 +1,93 @@
+# ---------------------------------------------------------------------------
+# DevTools Kubernetes Learning Environment
+#
+#   docker compose build                 # build image
+#   docker compose up -d                 # เปิดใช้งาน
+#   docker compose exec devtools-k8s bash
+#   docker compose exec devtools-k8s k8s-bootstrap
+#   docker compose down                  # ปิด (ข้อมูลยังอยู่ใน volume)
+#   docker compose down -v               # ปิดและล้างทุกอย่างรวม image ที่ pull ไว้
+#
+#   โหมดห้องเรียน (เปิด registry cache ลดโหลดเน็ต):
+#   docker compose --profile classroom up -d
+# ---------------------------------------------------------------------------
+
+services:
+  devtools-k8s:
+    build:
+      context: .
+      dockerfile: Dockerfile.k8s   # ไฟล์เดียวจบ เริ่มจาก FROM ubuntu ไม่ต้องมี base image
+    image: devtools-k8s:2569_1
+    container_name: devtools-k8s
+    hostname: devtools-k8s
+
+    # จำเป็นสำหรับ Docker-in-Docker + kind (kubelet ต้องเข้าถึง cgroup/mount)
+    privileged: true
+
+    # kind สร้าง node เป็น container ซ้อนอีกชั้น — เปิด file descriptor ให้พอ
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+      nproc: 16384
+
+    # etcd/containerd ใช้ shm; ค่า default 64MB น้อยไปเวลารันหลาย node
+    shm_size: "1gb"
+
+    ports:
+      - "2299:22"      # SSH  (เลี่ยง 2222 ที่ Windows มักจองไว้)
+      - "8080:80"      # ingress-nginx HTTP  -> kind control-plane :80
+      - "8443:443"     # ingress-nginx HTTPS -> kind control-plane :443
+      - "9090:9090"    # เผื่อ port-forward (Prometheus / ArgoCD UI)
+      - "3000:3000"    # เผื่อ port-forward (Grafana / แอปของ นศ.)
+
+    environment:
+      # ดูคำอธิบายใน readme — ตั้ง 0 เพื่อยืม docker daemon ของ host แทน DinD
+      START_DOCKERD: "1"
+      DOCKERD_TIMEOUT: "60"
+      # เวอร์ชัน k8s ที่ kind จะสร้าง (pin ทั้งเทอมให้ นศ. เจอ output เหมือนกัน)
+      KIND_NODE_VERSION: "v1.36.4"
+      # เปิดใช้เมื่อรัน profile classroom (ดูบริการ registry-mirror ด้านล่าง)
+      # REGISTRY_MIRROR: "http://registry-mirror:5000"
+
+    volumes:
+      - workspace:/workspace
+      # สำคัญ: เก็บ storage ของ dockerd ข้างในไว้ ไม่งั้น recreate container ที
+      # ต้อง pull kindest/node (~1 GB) ใหม่ทุกครั้ง
+      - docker-data:/var/lib/docker
+      # ให้ kubeconfig อยู่รอด container recreate
+      - kube-config:/root/.kube
+
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x sshd >/dev/null && docker info >/dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 90s
+      retries: 3
+
+    restart: unless-stopped
+    stop_grace_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # pull-through cache ของ Docker Hub — เปิดด้วย --profile classroom
+  # ห้องเรียน 30 คน pull kindest/node (~1 GB) พร้อมกัน = เน็ตห้องตาย
+  # เปิดตัวนี้แล้ว uncomment REGISTRY_MIRROR ด้านบน
+  # ---------------------------------------------------------------------------
+  registry-mirror:
+    image: registry:3
+    container_name: devtools-registry-mirror
+    profiles: ["classroom"]
+    environment:
+      REGISTRY_PROXY_REMOTEURL: "https://registry-1.docker.io"
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+    ports:
+      - "5000:5000"
+    volumes:
+      - registry-data:/var/lib/registry
+    restart: unless-stopped
+
+volumes:
+  workspace:
+  docker-data:
+  kube-config:
+  registry-data:
