@@ -59,6 +59,8 @@ curl -fsSL -o setup.sh https://github.com/makeplane/plane/releases/latest/downlo
 chmod +x setup.sh
 ```
 
+![ดาวน์โหลด setup.sh](images/terminal-download.png)
+
 ✅ **Expected output** — `ls -la` เห็น `setup.sh` ประมาณ 22 KB สิทธิ์ `-rwxr-xr-x` ทุกคำสั่ง `./setup.sh` ต่อจากนี้รันจากโฟลเดอร์นี้
 
 ## 2. `./setup.sh` → **1 Install**
@@ -83,7 +85,9 @@ Action [2]: 1
 
 ✅ **Expected output** — `Plane supports amd64` → รายการ `Image ... Pulled` → `Most recent version of Plane is now available` แล้วกลับสู่ prompt ได้โฟลเดอร์ `plane-app/` ที่มี `docker-compose.yaml` และ `plane.env`
 
-> ⚠️ **ถ้าจบด้วย `pull access denied for minio/minio ... Failed to pull the images`** ไม่ต้อง Install ใหม่ — ไฟล์ทั้งสองถูกสร้างแล้ว เพียงแต่ image MinIO บน Docker Hub ถูกถอดออก ให้ชี้ไป registry ของ MinIO แทน แล้วไปข้อ 3 ต่อ (image ที่เหลือจะถูก pull ตอน Start):
+![./setup.sh → 1 Install: เมนู, ตรวจรุ่น, และ pull ที่หยุดเพราะ minio/minio](images/terminal-install.png)
+
+> ⚠️ **ถ้าจบด้วย `pull access denied for minio/minio ... Failed to pull the images`** (ดังภาพ) ไม่ต้อง Install ใหม่ — ไฟล์ทั้งสองถูกสร้างแล้ว เพียงแต่ image MinIO บน Docker Hub ถูกถอดออก ให้ชี้ไป registry ของ MinIO แทน แล้วไปข้อ 3 ต่อ (image ที่เหลือจะถูก pull ตอน Start):
 >
 > ```bash
 > sed -i 's|image: minio/minio:latest|image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z|' plane-app/docker-compose.yaml
@@ -108,12 +112,7 @@ grep -nE '^(LISTEN_HTTP_PORT|LISTEN_HTTPS_PORT|WEB_URL|CORS_ALLOWED_ORIGINS)=' p
 
 ✅ **Expected output**
 
-```
-12:LISTEN_HTTP_PORT=8089
-13:LISTEN_HTTPS_PORT=8443
-15:WEB_URL=http://localhost:8089
-17:CORS_ALLOWED_ORIGINS=http://localhost:8089
-```
+![แก้ plane.env แล้ว grep ตรวจค่า](images/terminal-config.png)
 
 📝 `LISTEN_HTTP_PORT` = พอร์ตที่ proxy ฟังในเครื่องเรียน · `WEB_URL` / `CORS_ALLOWED_ORIGINS` = URL ที่**เบราว์เซอร์**ใช้ (ปกติ VS Code ให้ local port เท่ากับ remote port ถ้าไม่เท่า ดูข้อ 4.3) · `SECRET_KEY` ต้องไม่ใช่ค่า default (ค่าของแต่ละคนต่างกัน ห้ามคัดลอกลงเอกสาร)
 
@@ -123,20 +122,17 @@ grep -nE '^(LISTEN_HTTP_PORT|LISTEN_HTTPS_PORT|WEB_URL|CORS_ALLOWED_ORIGINS)=' p
 
 ✅ **Expected output** (2–5 นาทีในครั้งแรก)
 
-```
-   Data Migration completed successfully ✅
-   API Service started successfully ✅
-   Plane Server started successfully ✅
-
-   You can access the application at http://localhost:8089
-```
+![./setup.sh → 2 Start: pull image, สร้าง network/volume, รอ migration และ API](images/terminal-start.png)
 
 ตรวจในเครื่องเรียน:
 
 ```bash
 docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+docker ps -a --format '{{.Names}} {{.Status}}' | grep migrator
 curl -s -o /dev/null -w 'api %{http_code}\n' http://localhost:8089/api/instances/
 ```
+
+![ผลตรวจ: 12 container Up, migrator Exited (0), api 200](images/terminal-verify.png)
 
 ✅ **Expected output** — 12 container `Up`, แถว `plane-app-proxy-1` มี `0.0.0.0:8089->80/tcp`, `plane-app-migrator-1` เป็น `Exited (0)` และ `api 200`
 
