@@ -1,0 +1,303 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "t",
+      "type": "text",
+      "x": 40,
+      "y": 24,
+      "strokeColor": "#0b2545",
+      "text": "อ่าน label ให้เป็น — ป้ายบน container กลายเป็น object อะไรใน Traefik",
+      "fontSize": 26,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "lz",
+      "type": "rectangle",
+      "x": 40,
+      "y": 96,
+      "width": 560,
+      "height": 300,
+      "backgroundColor": "transparent",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "lzt",
+      "type": "text",
+      "x": 60,
+      "y": 110,
+      "strokeColor": "#1769aa",
+      "text": "labels ของ container (ข้อความล้วน)",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "l1",
+      "type": "text",
+      "x": 62,
+      "y": 148,
+      "strokeColor": "#1769aa",
+      "text": "traefik.enable = true",
+      "fontSize": 16,
+      "fontFamily": 3,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "l2",
+      "type": "text",
+      "x": 62,
+      "y": 186,
+      "strokeColor": "#c2410c",
+      "text": "traefik.http.routers.myapp.rule\n        = PathPrefix(`/app`)",
+      "fontSize": 16,
+      "fontFamily": 3,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "l3",
+      "type": "text",
+      "x": 62,
+      "y": 254,
+      "strokeColor": "#6741d9",
+      "text": "traefik.http.middlewares.stamp\n        .headers.customresponseheaders.X = Y",
+      "fontSize": 16,
+      "fontFamily": 3,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "l4",
+      "type": "text",
+      "x": 62,
+      "y": 322,
+      "strokeColor": "#27864a",
+      "text": "traefik.http.services.myapp\n        .loadbalancer.server.port = 8080",
+      "fontSize": 16,
+      "fontFamily": 3,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "rz",
+      "type": "rectangle",
+      "x": 700,
+      "y": 96,
+      "width": 460,
+      "height": 300,
+      "backgroundColor": "transparent",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "rzt",
+      "type": "text",
+      "x": 720,
+      "y": 110,
+      "strokeColor": "#27864a",
+      "text": "object ที่เกิดขึ้นจริงตอนรัน",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "o1",
+      "type": "rectangle",
+      "x": 722,
+      "y": 142,
+      "width": 416,
+      "height": 56,
+      "backgroundColor": "#fff4e6",
+      "strokeColor": "#c2410c",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "router  myapp@docker"
+      },
+      "fontSize": 17,
+      "fontFamily": 3,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "o2",
+      "type": "rectangle",
+      "x": 722,
+      "y": 212,
+      "width": 416,
+      "height": 56,
+      "backgroundColor": "#f3f0ff",
+      "strokeColor": "#6741d9",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "middleware  stamp@docker"
+      },
+      "fontSize": 17,
+      "fontFamily": 3,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "o3",
+      "type": "rectangle",
+      "x": 722,
+      "y": 282,
+      "width": 416,
+      "height": 56,
+      "backgroundColor": "#eaf8ef",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "service  myapp@docker → 172.x:8080"
+      },
+      "fontSize": 16,
+      "fontFamily": 3,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "g",
+      "type": "text",
+      "x": 40,
+      "y": 424,
+      "strokeColor": "#0b2545",
+      "text": "ไวยากรณ์ :   traefik . http . <routers|services|middlewares> . <ชื่อที่เราตั้งเอง> . <คุณสมบัติ>",
+      "fontSize": 18,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "g2",
+      "type": "text",
+      "x": 40,
+      "y": 462,
+      "strokeColor": "#5b6b7f",
+      "text": "• ชื่อ object ตั้งเองได้ ไม่ต้องเท่ากับชื่อ service ใน compose\n• ท้ายชื่อ @docker / @file บอกว่ามาจาก provider ไหน — ใส่ตอน “อ้างถึง” เท่านั้น ห้ามใส่ตอนตั้งชื่อ\n• ประกาศ middleware อย่างเดียวไม่มีผล ต้อง attach ที่ routers.<ชื่อ>.middlewares ด้วย\n• ค่า port คือ port ใน container ไม่ใช่ port ที่ publish ออกมา",
+      "fontSize": 15,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "m1",
+      "type": "arrow",
+      "x": 608,
+      "y": 246,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 3,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          84,
+          2.842170943040401e-14
+        ]
+      ],
+      "start": {
+        "id": "lz"
+      },
+      "end": {
+        "id": "rz"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    },
+    {
+      "id": "ml",
+      "type": "text",
+      "x": 604,
+      "y": 152,
+      "strokeColor": "#5b6b7f",
+      "text": "Traefik อ่าน\nผ่าน Docker API",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:05:53.671Z",
+      "updatedAt": "2026-08-15T16:05:53.671Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

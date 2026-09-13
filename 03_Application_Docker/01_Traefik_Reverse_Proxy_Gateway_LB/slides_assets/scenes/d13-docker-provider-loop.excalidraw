@@ -1,0 +1,289 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "t",
+      "type": "text",
+      "x": 40,
+      "y": 24,
+      "strokeColor": "#0b2545",
+      "text": "ทำไมต้อง mount /var/run/docker.sock — วงจรที่ทำให้ config เปลี่ยนเองได้",
+      "fontSize": 26,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:02:09.487Z",
+      "updatedAt": "2026-08-15T16:02:09.487Z",
+      "version": 1
+    },
+    {
+      "id": "k1",
+      "type": "rectangle",
+      "x": 60,
+      "y": 130,
+      "width": 240,
+      "height": 96,
+      "backgroundColor": "#e8f4ff",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "① Docker daemon\nมี event ใหม่"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:02:09.487Z",
+      "updatedAt": "2026-08-15T16:02:09.487Z",
+      "version": 1
+    },
+    {
+      "id": "k2",
+      "type": "rectangle",
+      "x": 380,
+      "y": 130,
+      "width": 240,
+      "height": 96,
+      "backgroundColor": "#fff4e6",
+      "strokeColor": "#c2410c",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "② Traefik อ่าน\nDocker API ผ่าน socket"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:02:09.487Z",
+      "updatedAt": "2026-08-15T16:02:09.487Z",
+      "version": 1
+    },
+    {
+      "id": "k3",
+      "type": "rectangle",
+      "x": 700,
+      "y": 130,
+      "width": 240,
+      "height": 96,
+      "backgroundColor": "#f3f0ff",
+      "strokeColor": "#6741d9",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "③ แปลง label\nเป็น routers/services"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:02:09.487Z",
+      "updatedAt": "2026-08-15T16:02:09.487Z",
+      "version": 1
+    },
+    {
+      "id": "k4",
+      "type": "rectangle",
+      "x": 1000,
+      "y": 130,
+      "width": 200,
+      "height": 96,
+      "backgroundColor": "#eaf8ef",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "④ สลับตาราง\nเส้นทางทันที"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:02:09.487Z",
+      "updatedAt": "2026-08-15T16:02:09.487Z",
+      "version": 1
+    },
+    {
+      "id": "e1",
+      "type": "arrow",
+      "x": 308,
+      "y": 178,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          64,
+          2.842170943040401e-14
+        ]
+      ],
+      "start": {
+        "id": "k1"
+      },
+      "end": {
+        "id": "k2"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:02:09.487Z",
+      "updatedAt": "2026-08-15T16:02:09.487Z",
+      "version": 1
+    },
+    {
+      "id": "e2",
+      "type": "arrow",
+      "x": 628,
+      "y": 178,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          64,
+          2.842170943040401e-14
+        ]
+      ],
+      "start": {
+        "id": "k2"
+      },
+      "end": {
+        "id": "k3"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:02:09.487Z",
+      "updatedAt": "2026-08-15T16:02:09.487Z",
+      "version": 1
+    },
+    {
+      "id": "e3",
+      "type": "arrow",
+      "x": 948,
+      "y": 178,
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          44,
+          0
+        ]
+      ],
+      "start": {
+        "id": "k3"
+      },
+      "end": {
+        "id": "k4"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:02:09.487Z",
+      "updatedAt": "2026-08-15T16:02:09.487Z",
+      "version": 1
+    },
+    {
+      "id": "loop",
+      "type": "text",
+      "x": 60,
+      "y": 250,
+      "strokeColor": "#5b6b7f",
+      "text": "event ที่ทำให้วงจรนี้ทำงาน :  container start / stop / die · เปลี่ยน network · สร้าง container ใหม่จาก label ใหม่",
+      "fontSize": 15,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:02:09.487Z",
+      "updatedAt": "2026-08-15T16:02:09.487Z",
+      "version": 1
+    },
+    {
+      "id": "warn",
+      "type": "rectangle",
+      "x": 60,
+      "y": 300,
+      "width": 1140,
+      "height": 150,
+      "backgroundColor": "transparent",
+      "strokeColor": "#c92a2a",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:02:09.487Z",
+      "updatedAt": "2026-08-15T16:02:09.487Z",
+      "version": 1
+    },
+    {
+      "id": "wt",
+      "type": "text",
+      "x": 80,
+      "y": 314,
+      "strokeColor": "#c92a2a",
+      "text": "ความจริงเรื่องความปลอดภัยที่ต้องพูดพร้อมกันเสมอ",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:02:09.487Z",
+      "updatedAt": "2026-08-15T16:02:09.487Z",
+      "version": 1
+    },
+    {
+      "id": "wn",
+      "type": "text",
+      "x": 80,
+      "y": 348,
+      "strokeColor": "#5b6b7f",
+      "text": "• :ro ทำให้ “ไฟล์ socket” อ่านอย่างเดียว แต่ไม่ได้ทำให้ Docker API เป็น read-only\n• ใครเข้าถึง Docker API ได้ = สั่งสร้าง container ที่ mount ทั้งเครื่องได้ = เท่ากับ root ของโฮสต์\n• งานจริงจึงใช้ socket proxy ที่กรอง endpoint (เช่น อนุญาตเฉพาะ GET /containers) แทนการ mount ตรง",
+      "fontSize": 15,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:02:09.487Z",
+      "updatedAt": "2026-08-15T16:02:09.487Z",
+      "version": 1
+    },
+    {
+      "id": "foot",
+      "type": "text",
+      "x": 60,
+      "y": 480,
+      "strokeColor": "#0b2545",
+      "text": "ไม่มี provider = ไม่มี dynamic config : Traefik ที่รันเปล่า ๆ ตอบ 404 ทุก request เพราะไม่มี router ให้เลือกเลย",
+      "fontSize": 16,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:02:09.487Z",
+      "updatedAt": "2026-08-15T16:02:09.487Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

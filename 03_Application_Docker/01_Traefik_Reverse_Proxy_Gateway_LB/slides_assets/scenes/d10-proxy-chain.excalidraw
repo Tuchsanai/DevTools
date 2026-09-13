@@ -1,0 +1,430 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "t",
+      "type": "text",
+      "x": 40,
+      "y": 24,
+      "strokeColor": "#0b2545",
+      "text": "ของจริงมีได้พร้อมกัน — request เดียวเจอทั้งสอง proxy",
+      "fontSize": 26,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "c",
+      "type": "rectangle",
+      "x": 40,
+      "y": 200,
+      "width": 190,
+      "height": 90,
+      "backgroundColor": "#e8f4ff",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "พนักงาน\nเปิดเว็บ"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "f",
+      "type": "rectangle",
+      "x": 290,
+      "y": 200,
+      "width": 210,
+      "height": 90,
+      "backgroundColor": "#fff4e6",
+      "strokeColor": "#c2410c",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "label": {
+        "text": "forward proxy\nขององค์กร"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "net",
+      "type": "rectangle",
+      "x": 560,
+      "y": 210,
+      "width": 180,
+      "height": 70,
+      "backgroundColor": "#f1f3f5",
+      "strokeColor": "#5b6b7f",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "อินเทอร์เน็ต"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "r",
+      "type": "rectangle",
+      "x": 800,
+      "y": 200,
+      "width": 210,
+      "height": 90,
+      "backgroundColor": "#eaf8ef",
+      "strokeColor": "#27864a",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "label": {
+        "text": "reverse proxy\nของเว็บนั้น"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "b1",
+      "type": "rectangle",
+      "x": 1070,
+      "y": 150,
+      "width": 150,
+      "height": 62,
+      "backgroundColor": "#e8f4ff",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "app A"
+      },
+      "fontSize": 17,
+      "fontFamily": 3,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "b2",
+      "type": "rectangle",
+      "x": 1070,
+      "y": 232,
+      "width": 150,
+      "height": 62,
+      "backgroundColor": "#e8f4ff",
+      "strokeColor": "#1769aa",
+      "strokeWidth": 2,
+      "roughness": 1,
+      "label": {
+        "text": "app B"
+      },
+      "fontSize": 17,
+      "fontFamily": 3,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "x1",
+      "type": "arrow",
+      "x": 238,
+      "y": 245,
+      "strokeColor": "#c2410c",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          44,
+          0
+        ]
+      ],
+      "start": {
+        "id": "c"
+      },
+      "end": {
+        "id": "f"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "x2",
+      "type": "arrow",
+      "x": 508,
+      "y": 245,
+      "strokeColor": "#c2410c",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          44,
+          0
+        ]
+      ],
+      "start": {
+        "id": "f"
+      },
+      "end": {
+        "id": "net"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "x3",
+      "type": "arrow",
+      "x": 748,
+      "y": 245,
+      "strokeColor": "#27864a",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          44,
+          0
+        ]
+      ],
+      "start": {
+        "id": "net"
+      },
+      "end": {
+        "id": "r"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "x4",
+      "type": "arrow",
+      "x": 1017.72987951681,
+      "y": 214.93869879551735,
+      "strokeColor": "#27864a",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          44.54024096638011,
+          -11.877397591034708
+        ]
+      ],
+      "start": {
+        "id": "r"
+      },
+      "end": {
+        "id": "b1"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "x5",
+      "type": "arrow",
+      "x": 1017.9775944791077,
+      "y": 253.47331958593307,
+      "strokeColor": "#27864a",
+      "strokeWidth": 3,
+      "roughness": 1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          44.04481104178467,
+          3.303360828133833
+        ]
+      ],
+      "start": {
+        "id": "r"
+      },
+      "end": {
+        "id": "b2"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "z1",
+      "type": "rectangle",
+      "x": 275,
+      "y": 330,
+      "width": 240,
+      "height": 150,
+      "backgroundColor": "transparent",
+      "strokeColor": "#c2410c",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "z1t",
+      "type": "text",
+      "x": 292,
+      "y": 344,
+      "strokeColor": "#c2410c",
+      "text": "ฝั่ง client เป็นเจ้าของ",
+      "fontSize": 16,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "z1n",
+      "type": "text",
+      "x": 292,
+      "y": 374,
+      "strokeColor": "#5b6b7f",
+      "text": "• พนักงานตั้ง proxy เอง\n• เห็นว่า “ใครจะไปเว็บไหน”\n• HTTPS เห็นแค่ชื่อโฮสต์",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "z2",
+      "type": "rectangle",
+      "x": 785,
+      "y": 330,
+      "width": 240,
+      "height": 150,
+      "backgroundColor": "transparent",
+      "strokeColor": "#27864a",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 1,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "z2t",
+      "type": "text",
+      "x": 802,
+      "y": 344,
+      "strokeColor": "#27864a",
+      "text": "ฝั่งเว็บเป็นเจ้าของ",
+      "fontSize": 16,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "z2n",
+      "type": "text",
+      "x": 802,
+      "y": 374,
+      "strokeColor": "#5b6b7f",
+      "text": "• เจ้าของเว็บตั้งเอง\n• เลือก backend / ทำ TLS\n• เห็นเนื้อหาที่ถอดรหัสแล้ว",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    },
+    {
+      "id": "foot",
+      "type": "text",
+      "x": 40,
+      "y": 520,
+      "strokeColor": "#5b6b7f",
+      "text": "ตัวกลางสองตัวนี้ไม่ได้แข่งกัน — มันเป็นคนละหน้าที่บนเส้นทางเดียวกัน และมักไม่รู้จักกันเลยด้วยซ้ำ",
+      "fontSize": 16,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "createdAt": "2026-08-15T16:01:14.478Z",
+      "updatedAt": "2026-08-15T16:01:14.478Z",
+      "version": 1
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}
