@@ -6,7 +6,7 @@ fail=0; ok() { echo "  ✓ $1"; }; bad() { echo "  ✗ $1"; fail=1; }
 cd "$(dirname "$0")"
 n=$(sql "select count(*) from webhooks where url like '%hookwall.lab%' and is_active and deleted_at is null")
 [ "${n:-0}" -ge 1 ] && ok "webhook ชี้ไป hookwall.lab และ active" || bad "ไม่มี webhook ที่ url มี hookwall.lab (หรือถูกปิด)"
-grep -Eq '^WEBHOOK_ALLOWED_HOSTS=.*hookwall\.lab' ~/plane-selfhost/plane.env && ok "WEBHOOK_ALLOWED_HOSTS มี hookwall.lab" || bad "plane.env ยังไม่มี WEBHOOK_ALLOWED_HOSTS=hookwall.lab,dashboard.lab"
+grep -Eq '^WEBHOOK_ALLOWED_HOSTS=.*hookwall\.lab' ~/plane-selfhost/plane-app/plane.env && ok "WEBHOOK_ALLOWED_HOSTS มี hookwall.lab" || bad "plane.env ยังไม่มี WEBHOOK_ALLOWED_HOSTS=hookwall.lab,dashboard.lab"
 pc exec worker env 2>/dev/null | grep -q 'WEBHOOK_ALLOWED_HOSTS=.*hookwall\.lab' && ok "worker อ่าน allowlist แล้ว (recreate ผ่าน pc up -d)" || bad "worker ยังไม่เห็น WEBHOOK_ALLOWED_HOSTS — ต้อง pc up -d api worker beat-worker"
 n=$(sql "select count(*) from webhook_logs where response_status = '200'")
 [ "${n:-0}" -ge 3 ] && ok "webhook_logs ส่งสำเร็จ (200) $n ครั้ง" || bad "ส่งสำเร็จ (200) แค่ ${n:-0} ครั้ง (ต้องการ ≥ 3)"

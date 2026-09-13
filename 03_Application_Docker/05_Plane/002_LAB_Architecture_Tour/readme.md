@@ -81,7 +81,7 @@ pc ps --format 'table {{.Service}}\t{{.Status}}' | grep -c ' Up'
 curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8080/api/instances/
 ```
 
-> 📝 **คำอธิบาย:** `pc` คือ helper จาก LAB 1 (`docker compose -f ~/plane-selfhost/docker-compose.yml --env-file ~/plane-selfhost/plane.env -p plane "$@"`) ใช้แทนการพิมพ์ compose ยาว ๆ ทุกครั้ง · ถ้าปิดเครื่องไปแล้ว Plane จะไม่ขึ้นเอง ให้ `pc start` แล้วรอ `/api/instances/` ตอบ `200` ก่อน (ราว 1–2 นาที) · ถ้าได้ `12` และ `200` แปลว่าพร้อม
+> 📝 **คำอธิบาย:** `pc` คือ helper จาก LAB 1 (`docker compose -f ~/plane-selfhost/plane-app/docker-compose.yaml --env-file ~/plane-selfhost/plane-app/plane.env "$@"` — compose project ชื่อ `plane-app`) ใช้แทนการพิมพ์ compose ยาว ๆ ทุกครั้ง · ถ้าปิดเครื่องไปแล้ว Plane จะไม่ขึ้นเอง ให้ `pc start` แล้วรอ `/api/instances/` ตอบ `200` ก่อน (ราว 1–2 นาที) · ถ้าได้ `12` และ `200` แปลว่าพร้อม
 
 ✅ **Expected output** — 12 service `Up` และ readiness probe ตอบ 200:
 

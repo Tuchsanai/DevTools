@@ -23,6 +23,6 @@ DONE_S1=$(q "select count(*) from cycle_issues ci join cycles c on c.id=ci.cycle
 [ "$DONE_S1" = "5" ] || fail "Sprint 1 completed items = $DONE_S1 (ต้องเป็น 5)"
 LOG429=$(q "select count(*) from api_activity_logs where response_code=429")
 [ "${LOG429:-0}" -ge 1 ] || fail "ยังไม่มี 429 ใน api_activity_logs (รัน bash rate_limit_demo.sh ก่อน)"
-RATE=$(grep -E '^API_KEY_RATE_LIMIT=' ~/plane-selfhost/plane.env | cut -d= -f2)
+RATE=$(grep -E '^API_KEY_RATE_LIMIT=' ~/plane-selfhost/plane-app/plane.env | cut -d= -f2)
 [ "$RATE" = "60/minute" ] || fail "API_KEY_RATE_LIMIT=$RATE (ต้อง restore เป็น 60/minute)"
 echo "PASS: LAB 7 — TRL 20 (12 cards + 8 checklist) · JRA 13 (2 modules · 2 cycles · 6 estimate points · Sprint 1 done 5) · 429 logged ${LOG429}× · rate limit $RATE"

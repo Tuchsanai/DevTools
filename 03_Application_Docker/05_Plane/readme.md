@@ -50,13 +50,12 @@
 
 ```bash
 docker start devtools 2>/dev/null || \
-  docker run -dit --name devtools --privileged \
-  -p 2222:22 -p 8080:8080 -p 9000:9000 -p 8090:8090 tuchsanai/devtools:2569_1
+  docker run -dit --name devtools --privileged -p 2222:22 tuchsanai/devtools:2569_1
 ssh root@localhost -p 2222        # password: passwd
 ```
 
-> `-p 8080:8080` เปิดทางให้เบราว์เซอร์บนเครื่องเราเห็น Plane ที่รันข้างในเครื่องเรียนโดยตรง ส่วน `-p 9000:9000` / `-p 8090:8090` เผื่อไว้ให้เว็บแอปของเราเองใน LAB 8–9 ·
-> **`docker run` ทำงานเฉพาะครั้งแรกที่ยังไม่มี container** — ถ้า `devtools` ถูกสร้างไว้ก่อนแล้ว (เช่น จากชุด RabbitMQ) จะเพิ่ม `-p` ทีหลังไม่ได้ ให้ใช้แท็บ **PORTS** ของ VS Code forward `8080`, `9000`, `8090` แทน · `--privileged` ใช้เฉพาะ disposable classroom container เพื่อรัน Docker-in-Docker ไม่ใช่แนวทาง production ·
+> เปิดเฉพาะ SSH (`2222`) — เว็บทุกตัวที่รันในเครื่องเรียน (Plane ที่ `8089`, เว็บแอปของเราใน LAB 8–9) เปิดผ่านแท็บ **PORTS** ของ VS Code Remote-SSH → **Forward a Port** ตามที่แต่ละ LAB ระบุ จึงไม่ต้องสร้าง container ใหม่เพื่อเพิ่ม `-p` ·
+> **`docker run` ทำงานเฉพาะครั้งแรกที่ยังไม่มี container** — ถ้า `devtools` ถูกสร้างไว้ก่อนแล้ว (เช่น จากชุด RabbitMQ) `docker start` จะเปิดตัวเดิมพร้อมงานเก่า · `--privileged` ใช้เฉพาะ disposable classroom container เพื่อรัน Docker-in-Docker ไม่ใช่แนวทาง production ·
 > ถ้า `docker run` ฟ้องว่า port `2222` ใช้ไม่ได้ (พบบน Windows/WSL2 บางเครื่อง: *"forbidden by its access permissions"*) ให้เปลี่ยนเป็น
 > `-p 2280:22` แล้ว ssh ด้วย `-p 2280` — ดู `netsh interface ipv4 show excludedportrange protocol=tcp`
 
@@ -81,23 +80,22 @@ LAB 1 พาทำทีละขั้นพร้อมคำอธิบา�
 
 ```bash
 mkdir -p ~/plane-selfhost && cd ~/plane-selfhost
-TAG=v1.4.2      # release ที่ชุดนี้ทดสอบ (31 ส.ค. 2026) — ดูรุ่นล่าสุดที่ https://github.com/makeplane/plane/releases
-curl -sSL -o docker-compose.yml "https://github.com/makeplane/plane/releases/download/$TAG/docker-compose.yml"
-curl -sSL -o plane.env          "https://github.com/makeplane/plane/releases/download/$TAG/variables.env"
-sed -i "s|^APP_DOMAIN=.*|APP_DOMAIN=localhost:8080|; s|^APP_RELEASE=.*|APP_RELEASE=$TAG|; \
-        s|^LISTEN_HTTP_PORT=.*|LISTEN_HTTP_PORT=8080|; s|^LISTEN_HTTPS_PORT=.*|LISTEN_HTTPS_PORT=8443|; \
-        s|^WEB_URL=.*|WEB_URL=http://localhost:8080|; s|^CORS_ALLOWED_ORIGINS=.*|CORS_ALLOWED_ORIGINS=http://localhost:8080|" plane.env
-sed -i "s|^SECRET_KEY=.*|SECRET_KEY=$(openssl rand -hex 32)|; s|^LIVE_SERVER_SECRET_KEY=.*|LIVE_SERVER_SECRET_KEY=$(openssl rand -hex 32)|" plane.env
-docker compose -f docker-compose.yml --env-file plane.env -p plane up -d
-until [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/instances/)" = "200" ]; do sleep 5; done; echo READY
+curl -fsSL -o setup.sh https://github.com/makeplane/plane/releases/latest/download/setup.sh && chmod +x setup.sh
+./setup.sh install      # = เมนู 1 Install → ได้ plane-app/docker-compose.yaml + plane-app/plane.env (v1.4.2 เมื่อ 13 ก.ย. 2026)
+sed -i 's|image: minio/minio:latest|image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z|' plane-app/docker-compose.yaml   # Docker Hub ไม่มี minio/minio แล้ว
+sed -i 's|^LISTEN_HTTP_PORT=.*|LISTEN_HTTP_PORT=8089|; s|^LISTEN_HTTPS_PORT=.*|LISTEN_HTTPS_PORT=8443|; \
+        s|^WEB_URL=.*|WEB_URL=http://localhost:8089|; s|^CORS_ALLOWED_ORIGINS=.*|CORS_ALLOWED_ORIGINS=http://localhost:8089|' plane-app/plane.env
+sed -i "s|^SECRET_KEY=.*|SECRET_KEY=$(openssl rand -hex 32)|; s|^LIVE_SERVER_SECRET_KEY=.*|LIVE_SERVER_SECRET_KEY=$(openssl rand -hex 32)|" plane-app/plane.env
+./setup.sh start        # = เมนู 2 Start → รอ migration + API แล้วพิมพ์ "You can access the application at http://localhost:8089"
 ```
 
-> `WEB_URL`/`CORS_ALLOWED_ORIGINS` ต้องมี **port เดียวกับที่เบราว์เซอร์ใช้** เพราะ Plane สร้าง redirect หลัง login จากค่านี้ ·
-> ครั้งแรกจะ pull image รวม ~4.7 GB · `docker compose ps` ขึ้น `Up` ไม่ได้แปลว่าพร้อม — ให้รอ `/api/instances/` ตอบ `200` (ราว 2 นาที) ·
+> `WEB_URL`/`CORS_ALLOWED_ORIGINS` ต้องเป็น **URL ที่เบราว์เซอร์ใช้จริง** (VS Code PORTS → Forward `8089` → ปกติ `http://localhost:8089`) เพราะ Plane redirect หลัง login/setup ไปที่ค่านี้ ·
+> ครั้งแรกจะ pull image รวม ~4.7 GB · `docker ps` ขึ้น `Up` ไม่ได้แปลว่าพร้อม — ให้รอ `/api/instances/` ตอบ `200` (ราว 1–2 นาที) ·
+> compose project ชื่อ `plane-app` (container `plane-app-<service>-1`) และ helper `pc` = `docker compose -f ~/plane-selfhost/plane-app/docker-compose.yaml --env-file ~/plane-selfhost/plane-app/plane.env` (สร้างใน LAB 1 ข้อ 6) ·
 > บัญชีในเอกสารทั้งหมดเป็น **placeholder สำหรับ LAB**: `admin@example.com` / `Plane-Lab-2569`, `dev1@example.com` / `Member-Lab-2569`, bot `automation@example.com` / `Bot-Lab-2569`,
 > workspace `DevTools Lab` (`devtools-lab`), โปรเจกต์ `Plane Lab` (`PLAB`) · งานจริงต้องใช้ secret, TLS และสิทธิ์เท่าที่จำเป็น
 
-เปิด `http://localhost:8080` ในเบราว์เซอร์ → หน้า **Welcome to Plane** → ตั้งค่า instance admin ที่ `/god-mode/` (LAB 1 ข้อ 6)
+เปิด `http://localhost:8089` ในเบราว์เซอร์ (ผ่าน VS Code PORTS → Forward `8089`) → หน้า **Welcome to Plane** → ตั้งค่า instance admin ที่ `/god-mode/` (LAB 1 ข้อ 5)
 
 ## เส้นทาง LAB
 
@@ -146,7 +144,7 @@ python3 tools/render_scene.py --port 3401 scenes_src/d20-sdlc-phases.json  # ren
 จบแต่ละ LAB ให้ทำตาม **เก็บกวาด** ของ LAB นั้น (ส่วนใหญ่ปล่อย Plane ไว้ใช้ต่อ) · จบ LAB 9 ลบทั้งหมดข้างในเครื่องเรียน:
 
 ```bash
-cd ~/plane-selfhost && docker compose -f docker-compose.yml --env-file plane.env -p plane down -v
+cd ~/plane-selfhost && pc down -v && cd ~ && rm -rf ~/plane-selfhost   # pc = helper จาก LAB 1 (docker compose ของ plane-app)
 docker ps -a
 ```
 

@@ -102,8 +102,8 @@ B1: **Workspace settings → Webhooks → Add webhook** → Payload URL `http://
 ## 3. allowlist แล้ว recreate
 
 ```bash
-sed -i 's|^WEBHOOK_ALLOWED_HOSTS=.*|WEBHOOK_ALLOWED_HOSTS=hookwall.lab,dashboard.lab|' ~/plane-selfhost/plane.env
-grep -n WEBHOOK_ALLOWED_HOSTS ~/plane-selfhost/plane.env
+sed -i 's|^WEBHOOK_ALLOWED_HOSTS=.*|WEBHOOK_ALLOWED_HOSTS=hookwall.lab,dashboard.lab|' ~/plane-selfhost/plane-app/plane.env
+grep -n WEBHOOK_ALLOWED_HOSTS ~/plane-selfhost/plane-app/plane.env
 pc up -d api worker beat-worker
 until [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/instances/)" = "200" ]; do sleep 5; done; echo READY
 pc exec worker env | grep WEBHOOK_ALLOWED_HOSTS

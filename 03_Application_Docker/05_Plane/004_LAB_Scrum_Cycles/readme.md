@@ -85,7 +85,7 @@ source ~/venv-plane/bin/activate
 python planeapi.py
 ```
 
-> 📝 **คำอธิบาย:** `pc` คือ helper จาก LAB 1 (= `docker compose -f ~/plane-selfhost/docker-compose.yml --env-file ~/plane-selfhost/plane.env -p plane`) · ลูป `until` รอให้ `/api/instances/` ตอบ `200` เพราะ `Up` ≠ พร้อม ·
+> 📝 **คำอธิบาย:** `pc` คือ helper จาก LAB 1 (= `docker compose -f ~/plane-selfhost/plane-app/docker-compose.yaml --env-file ~/plane-selfhost/plane-app/plane.env`, project `plane-app`) · ลูป `until` รอให้ `/api/instances/` ตอบ `200` เพราะ `Up` ≠ พร้อม ·
 > `python planeapi.py` ทดสอบว่า token ใน `~/.plane_token` ยังใช้ได้ — ไฟล์นี้คือ client ที่ทุกสคริปต์ของแล็บ `import` ไปใช้ (อ่าน token, เดิน cursor pagination, รอเมื่อเจอ 429, แปลงชื่อ → UUID)
 
 ✅ **Expected output** — 12 container `Up` (+ `plane-migrator-1` Exited (0)) · `READY` · `users/me → 200` และเห็น UUID ของโปรเจกต์ PLAB:

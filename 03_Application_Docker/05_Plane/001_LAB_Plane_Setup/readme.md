@@ -1,292 +1,363 @@
-# LAB 1 — ติดตั้ง Plane ง่าย ๆ ด้วย Prime CLI
+# LAB 1 — ติดตั้ง Plane ด้วย Docker Compose (`setup.sh`) และเปิดเว็บผ่าน VS Code
 
 > โฟลเดอร์ `001_LAB_Plane_Setup` = **LAB 1** ใน `Plane_Agile_Slides.html`
->
+> (ไฟล์ของแล็บนี้ : `check_lab01.sh` · `images/`)
 > (เวลาโดยประมาณ : 45 นาที)
 
 ## สิ่งที่จะได้เรียนรู้
 
-คัดลอกคำสั่งติดตั้ง Plane ตาม [คู่มือ Docker Compose ของ Plane](https://developers.plane.so/self-hosting/methods/docker-compose) เลือก **Express** แล้วเปิดเว็บสร้าง Workspace และ Project แรก
+- ติดตั้ง **Plane Community Edition** แบบ self-host ตาม[คู่มือ Docker Compose ของ Plane](https://developers.plane.so/self-hosting/methods/docker-compose) ด้วยสคริปต์ `setup.sh` ตัวเดียว ไม่ต้อง clone source หรือเขียน Compose เอง
+- อ่านไฟล์ `plane.env` ให้เป็น: `LISTEN_HTTP_PORT` คือพอร์ตที่เครื่องเรียนฟัง ส่วน `WEB_URL` / `CORS_ALLOWED_ORIGINS` ต้องเท่ากับ URL ที่ **เบราว์เซอร์** ใช้จริง
+- เปิดเว็บที่รันในเครื่องเรียนผ่าน **VS Code Remote-SSH → PORTS** โดย forward พอร์ตเดียว (**8089**) และรู้ว่าต้องทำอย่างไรเมื่อพอร์ตฝั่งผู้เรียนไม่ตรงกับพอร์ตในเครื่องเรียน
+- แยก **Up** (container ยังไม่ตาย) ออกจาก **Ready** (เว็บและ API ตอบ `200`) แล้วทำ first-run: ตั้งผู้ดูแล instance → Workspace → Project **Plane Lab (`PLAB`)** → work items 3 ใบ
 
-```bash
-curl -fsSL https://prime.plane.so/install/ | sh -
-```
-
-วิธีนี้ติดตั้ง **Commercial Edition ซึ่งมี Free plan** และใช้ **Prime CLI** จัดการบริการ ไม่ต้อง clone source หรือเขียน Compose เอง; หลังติดตั้งปรับ URL สำหรับการเปิดผ่าน VS Code อีกครั้ง
-
-**กติกาข้อมูล:** ข้อมูลส่วนตัวและบัญชี Plane ในเอกสารและงานส่งใช้ placeholder เท่านั้น เช่น `<YOUR_NAME>`, `<YOUR_EMAIL>`, `<YOUR_USERNAME>`, `<YOUR_PASSWORD>`, `<YOUR_TOKEN>` แทนค่าตอนใช้งานจริงบนเครื่องเรียน และปกปิดข้อมูลเหล่านั้นก่อนจับภาพส่งงาน
+**กติกาข้อมูล:** ชื่อ อีเมล และรหัสผ่านในเอกสารนี้เป็น **placeholder สำหรับแล็บ** (`admin@example.com` / `Plane-Lab-2569` / workspace `DevTools Lab`) ห้ามใช้ข้อมูลจริงของตนเอง และปกปิดข้อมูลส่วนตัวก่อนจับภาพส่งงาน
 
 ## ทฤษฎีที่เกี่ยวข้อง
 
-Prime CLI เตรียมไฟล์และเปิดบริการ Docker ที่ Plane ต้องใช้ให้ทั้งชุด ส่วน **Express** ใช้ค่าตั้งต้น เหมาะกับการเริ่ม LAB ความพร้อมต้องตรวจทั้งสถานะบริการและการเปิดเว็บจริง เพราะ container ที่ทำงานอยู่ยังอาจกำลังเตรียมฐานข้อมูล
+- **เว็บแอปสมัยใหม่ไม่ใช่โปรเซสเดียว** — Plane ประกอบจาก **13 container**: proxy (Caddy) · web · admin · space · live · api · worker · beat-worker · migrator · plane-db (PostgreSQL) · plane-redis (Valkey) · plane-mq (RabbitMQ) · plane-minio (object storage) `setup.sh` เป็นเพียงตัวห่อ `docker compose` ที่ดาวน์โหลด `docker-compose.yaml` + `plane.env` ของรุ่นล่าสุดมาให้ แล้วสั่ง `up -d` / `down` แทนเรา
+- **Migration ก่อน แล้วค่อยเปิดบริการ** — `migrator` รัน `manage.py migrate` แล้วจบตัวเอง (`Exited (0)`) ส่วน `api`/`worker` รอจน schema พร้อมจึงเริ่มฟังพอร์ต ระหว่างนั้น `docker ps` ขึ้น `Up` ทั้งที่เว็บยังตอบ `502` — `setup.sh` จึงพิมพ์ *Waiting for Data Migration* และ *Waiting for API Service* ให้เห็น
+- **URL ฝั่งเบราว์เซอร์ ≠ พอร์ตฝั่งเครื่องเรียน** — Remote-SSH สร้าง SSH tunnel: เบราว์เซอร์คุยกับ `localhost:<LOCAL_PORT>` บนเครื่องผู้เรียน แล้ว VS Code ส่งต่อไปยัง `8089` ในเครื่องเรียน หลัง login Plane จะ **redirect ไปที่ `WEB_URL`** ค่านี้จึงต้องเป็น URL ฝั่งเบราว์เซอร์ ไม่ใช่พอร์ตที่ proxy ฟัง
 
 ## ภาพรวมของแล็บนี้
 
-เปิดเครื่องเรียน → Remote-SSH → ติดตั้งแบบ Express → ดูพอร์ตจริง → Forward พอร์ต → ตั้ง URL → เปิดเว็บ
+เตรียมเครื่องเรียน → ดาวน์โหลด `setup.sh` → **1 Install** → แก้ `plane.env` (พอร์ต 8089 + URL) → **2 Start** → Forward 8089 ใน VS Code → เปิดเว็บ → ตั้งผู้ดูแล → Workspace → Project → Work items 3 ใบ → ตรวจสถานะและทดลอง stop/start
 
-![เส้นทางเปิดเว็บผ่าน VS Code วาดด้วย Excalidraw MCP](images/ports-flow.png)
+![ขั้นตอนติดตั้ง Plane ด้วย setup.sh และเปิดเว็บผ่าน VS Code (วาดด้วย Excalidraw MCP)](images/setup-flow.png)
 
-ในผังนี้ `<REMOTE_HTTP_PORT>` = **8089** ส่วน `<LOCAL_PORT>` ใช้เลขจาก Forwarded Address (ปกติ 8089)
+[ไฟล์แก้ไข Excalidraw](images/setup-flow.excalidraw)
 
-[ไฟล์แก้ไข Excalidraw](images/ports-flow.excalidraw) · [ดาวน์โหลด PNG](images/ports-flow.png)
+> **คำถามก่อนเริ่ม:** `setup.sh` บอกว่า *Plane Server started successfully* แล้ว — เราจะพิสูจน์จากเครื่องผู้เรียนได้อย่างไรว่าเว็บใช้งานได้จริง และถ้า login แล้วเบราว์เซอร์เด้งไปพอร์ตที่เปิดไม่ได้ ต้องแก้ค่าไหน?
 
-> **คำถามก่อนเริ่ม:** ตัวติดตั้งบอกว่าสำเร็จแล้ว เราจะพิสูจน์ได้อย่างไรว่าเว็บใช้งานได้จริง?
+## 0. เตรียมเครื่องสำหรับเรียน
 
-## 0. เตรียมเครื่องเรียน
-
-ทำบนเครื่องของเราเอง — เปิด classroom container ที่มี Docker เตรียมไว้ให้:
+**เตรียมเครื่องสำหรับเรียน** — บนเครื่องผู้เรียน เปิด classroom container เดิม หรือสร้างใหม่หากยังไม่มี:
 
 ```bash
 docker start devtools 2>/dev/null || \
   docker run -dit --name devtools --privileged -p 2222:22 tuchsanai/devtools:2569_1
-ssh root@localhost -p 2222        # password : passwd
 ```
 
-คำสั่งแรกเปิด `devtools` เดิม หากยังไม่มีจะสร้างเครื่องเรียนใหม่ ส่วนคำสั่ง `ssh` ใช้เข้าสู่เครื่องเรียน บัญชี `root` และรหัส `passwd` ข้างต้นเป็นค่าเริ่มต้นของ classroom image ตามที่ผู้สอนกำหนด ไม่ใช่บัญชีผู้ดูแล Plane ที่จะสร้างใน LAB
-
-**จากนี้ให้รันคำสั่งติดตั้ง Plane ภายใน terminal ที่ SSH เข้าเครื่องเรียนแล้ว** ตรวจว่า Docker ภายในพร้อม:
+จากนั้น remote เข้าเครื่องเรียน:
 
 ```bash
-docker --version
-docker compose version
+ssh root@localhost -p 2222   # password: passwd
+```
+
+📝 **คำอธิบาย:** `-p 2222:22` เปิดเฉพาะ SSH ส่วนเว็บของ Plane จะเปิดผ่าน **VS Code Remote-SSH → PORTS** (ข้อ 4) ไม่ต้องสร้าง container ใหม่เพื่อเพิ่ม port mapping · บัญชี `root`/`passwd` เป็นค่าเริ่มต้นของ classroom image ไม่ใช่บัญชี Plane
+
+**เปิด VS Code Remote-SSH:** ติดตั้งส่วนขยาย **Remote - SSH** → Command Palette → **Remote-SSH: Connect to Host...** → เพิ่ม `ssh root@localhost -p 2222` → เปิดโฟลเดอร์ `/root` ในเครื่องเรียน จากนี้ **ทุกคำสั่งรันใน terminal ของ VS Code ที่อยู่ในเครื่องเรียน** ตรวจว่า Docker ภายในพร้อม:
+
+```bash
+docker --version && docker compose version
 docker info --format '{{.ServerVersion}}'
 ```
 
-**Expected output:** ทั้งสามคำสั่งแสดงเวอร์ชัน และไม่มี error ว่าติดต่อ Docker daemon ไม่ได้ หาก daemon ยังเริ่มไม่เสร็จให้รอแล้วตรวจซ้ำ
+✅ **Expected output** — แสดงเวอร์ชันทั้งสามบรรทัด ไม่มี error `Cannot connect to the Docker daemon` (ถ้ามี ให้รอ 10–20 วินาทีแล้วลองใหม่) เครื่องเรียนต้องมีอย่างน้อย **2 CPU / RAM 4 GB** และอินเทอร์เน็ต เพราะต้อง pull image รวมประมาณ 4–5 GB
 
-เครื่องของเราต้องมี Docker ทำงานอยู่ และจัดสรรทรัพยากรให้เครื่องเรียนอย่างน้อย **2 CPU cores / RAM 4 GB** พร้อมอินเทอร์เน็ต
-
-📝 `-p 2222:22` เปิดเฉพาะ SSH ส่วนเว็บให้ใช้ **VS Code Remote-SSH → PORTS** เป็นเส้นทางหลัก ไม่ต้องสร้าง classroom container ใหม่เพื่อเพิ่ม web port mapping
-
-เปิด VS Code บนเครื่องผู้เรียน ติดตั้งส่วนขยาย **Remote - SSH** → Command Palette → **Remote-SSH: Connect to Host...** → เลือกหรือเพิ่ม `ssh root@localhost -p 2222` แล้วเปิดโฟลเดอร์ในเครื่องเรียน ให้ terminal ของ VS Code อยู่ใน remote session นี้
-
-## 1. รันคำสั่งติดตั้ง
+## 1. ดาวน์โหลด `setup.sh` (ตามคู่มือ Plane)
 
 ```bash
-curl -fsSL https://prime.plane.so/install/ | sh -
+mkdir plane-selfhost
+cd plane-selfhost
+curl -fsSL -o setup.sh https://github.com/makeplane/plane/releases/latest/download/setup.sh
+chmod +x setup.sh
+ls -la
 ```
 
-ตอบหน้าจอตามลำดับ:
+✅ **Expected output** — มีไฟล์ `setup.sh` ขนาดประมาณ 22 KB สิทธิ์ `-rwxr-xr-x`
 
-| หน้าจอ | สิ่งที่ทำ |
-| --- | --- |
-| Welcome / Plane Self Hosted | กด **Enter** |
-| Domain / IP Address | ใส่ `127.0.0.1` สำหรับเส้นทาง SSH tunnel ใน LAB นี้ |
-| ยืนยัน Domain / IP Address | ใส่ค่าเดิมอีกครั้ง |
-| Behind a reverse proxy? | เลือก **No**; VS Code ส่งต่อ TCP ผ่าน SSH ไม่ใช่ HTTP reverse proxy |
-| Express / Advanced | เลือก **Express** แล้วกด **Enter** |
+📝 **คำอธิบาย:** โฟลเดอร์ `plane-selfhost` เป็นที่เก็บทั้งสคริปต์และไฟล์ตั้งค่า — สคริปต์จะสร้างโฟลเดอร์ย่อย `plane-app/` ให้เองในข้อถัดไป และ **ทุกคำสั่ง `./setup.sh` ต้องรันจากโฟลเดอร์นี้**
 
-กรอก IP โดยไม่ใส่ `http://`, พอร์ต หรือ path; รุ่นที่ทดสอบไม่รับ `localhost:พอร์ต` ในช่องนี้ กด `Tab` เพื่อเปลี่ยนช่องตามหน้าจอ ตัวติดตั้งจะดาวน์โหลดและเปิดบริการให้ รอจนแจ้งว่าติดตั้งสำเร็จ
+## 2. `./setup.sh` → เลือก **1 Install**
 
-**Expected output:** ข้อความสำเร็จพร้อม URL สำหรับเปิด Plane ระยะเวลาขึ้นกับความเร็วดาวน์โหลด หากพบ error ให้แก้ตามข้อความก่อน ไม่ถือว่าผ่านเพียงเพราะคำสั่งจบ
+```bash
+./setup.sh
+```
 
-## 2. Forward พอร์ตด้วย VS Code และตั้ง URL ให้ตรงกัน
+```
+Select a Action you want to perform:
+   1) Install
+   2) Start
+   3) Stop
+   4) Restart
+   5) Upgrade
+   6) View Logs
+   7) Backup Data
+   8) Exit
 
-### 2.1 พอร์ตที่กำหนดสำหรับ LAB นี้: 8089
+Action [2]: 1
+```
 
-**Plane ใช้ HTTP พอร์ต `8089` ในเครื่องเรียน** โดยคำสั่งในขั้น 2.3 จะตั้ง `LISTEN_HTTP_PORT=8089` ให้เอง และตรวจพอร์ตก่อนเปลี่ยนจากค่าติดตั้งเดิม ไม่หยุดหรือลบบริการของงานอื่น
+พิมพ์ `1` แล้ว Enter สคริปต์จะตรวจรุ่นล่าสุด (`v1.4.2` ณ วันที่ทดสอบ) ดาวน์โหลด `docker-compose.yaml` + `plane.env` ลง `plane-app/` แล้วเริ่ม pull image
 
-| พอร์ต/บริการ | ต้อง forward หรือไม่ | ใช้ทำอะไร |
+✅ **Expected output** — เห็นบรรทัด `Plane supports amd64` และรายการ `Image ... Pulling/Pulled` จบด้วย `Most recent version of Plane is now available for you to use` แล้วกลับสู่ prompt (สคริปต์ออกเอง ไม่ต้องกด 8)
+
+> ⚠️ **ถ้าเห็น `pull access denied for minio/minio ... Failed to pull the images. Exiting...`** ไม่ต้องรันใหม่ — ไฟล์ `plane-app/docker-compose.yaml` และ `plane-app/plane.env` ถูกสร้างเรียบร้อยแล้ว เพียงแต่ image MinIO บน Docker Hub (`minio/minio:latest`) ถูกถอดออกไป ให้ชี้ไปที่ registry ทางการของ MinIO แทน (พบตอนทดสอบ 13 ก.ย. 2569 ถ้า pull ผ่านก็รันคำสั่งนี้ได้เช่นกัน ไม่มีผลเสีย):
+>
+> ```bash
+> sed -i 's|image: minio/minio:latest|image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z|' plane-app/docker-compose.yaml
+> grep -n 'quay.io' plane-app/docker-compose.yaml
+> ```
+>
+> image ที่เหลือจะถูก pull ต่อให้เองตอนกด **2 Start** ในข้อ 3
+
+📝 **คำอธิบาย:** `ls plane-app/` ต้องเห็น `docker-compose.yaml`, `plane.env` และ `archive/` — สองไฟล์นี้คือทั้งหมดที่ Docker Compose ต้องใช้ · ไม่มี `-p` ในคำสั่งของสคริปต์ ดังนั้นชื่อ compose project = ชื่อโฟลเดอร์ **`plane-app`** → container ชื่อ `plane-app-<service>-1`, volume `plane-app_<name>`, network `plane-app_default`
+
+## 3. ตั้งพอร์ต **8089** และ URL ใน `plane.env` แล้ว **2 Start**
+
+### 3.1 พอร์ตที่กำหนดสำหรับแล็บนี้
+
+| พอร์ต / บริการ | ต้อง forward ใน VS Code? | ใช้ทำอะไร |
 | --- | --- | --- |
-| **8089 — Plane HTTP proxy** | **เพิ่ม 8089 ใน PORTS** | หน้าเว็บ, API, หน้าผู้ดูแล และ realtime ผ่าน proxy เดียว |
-| SSH — host 2222 → classroom 22 | Remote-SSH เชื่อมต่อไว้แล้ว | ขนส่ง tunnel; ไม่ต้องเพิ่มใน PORTS อีก |
-| HTTPS ของ proxy | ไม่ต้องสำหรับ LAB แบบ HTTP นี้ | ใช้เมื่อจัดโดเมนและ TLS เพิ่มต่างหาก |
-| PostgreSQL, Redis, RabbitMQ, MinIO และ SMTP | ไม่ต้อง | บริการภายในและอีเมล ไม่จำเป็นต่อการเปิดเว็บของ LAB |
+| **8089 — Plane proxy (HTTP)** | **ใช่ — พอร์ตเดียวที่ต้อง forward** | หน้าเว็บ, `/api/`, `/god-mode/`, `/spaces/`, `/live/` (WebSocket) และไฟล์แนบ ผ่าน proxy เดียว |
+| SSH — host `2222` → container `22` | ไม่ต้อง (Remote-SSH ใช้อยู่แล้ว) | ท่อขนส่งของ PORTS ทุกแถว |
+| 8443 — proxy HTTPS | ไม่ต้อง | ใช้เมื่อมีโดเมนและ TLS จริง แล็บนี้ใช้ HTTP |
+| PostgreSQL 5432, Valkey 6379, RabbitMQ 5672/15672, MinIO 9000/9090 | ไม่ต้อง | บริการภายใน network `plane-app_default` เท่านั้น (LAB 2 จะเปิดดูผ่าน `docker exec`) |
 
-Express อาจเริ่มที่พอร์ต 80 ก่อน ขั้น 2.3 จะเปลี่ยนพอร์ตที่ publish เป็น **8089 → 80**; เลข 80 ด้านขวาคือพอร์ตภายใน proxy container ไม่ใช่เลขที่ต้องใส่ใน PORTS
+📝 **คำอธิบาย:** ค่าตั้งต้นคือ `LISTEN_HTTP_PORT=80` / `LISTEN_HTTPS_PORT=443` ซึ่งชนกับงานอื่นในเครื่องเรียนได้ง่าย แล็บนี้กำหนด **8089** (และ 8443) ไว้ตายตัว จะได้ไม่ชนกับพอร์ต 8080–8088 ของแล็บอื่น
 
-### 2.2 เพิ่มพอร์ตและอ่าน Forwarded Address
-
-1. ในหน้าต่าง VS Code ที่ Remote-SSH แล้ว เปิด panel ด้านล่าง → **PORTS** (ถ้าไม่เห็น ใช้ Command Palette → **Ports: Focus on Ports View**)
-2. กด **Forward a Port** → ใส่ **8089** → Enter
-3. ปกติ Forwarded Address จะเป็น `localhost:8089` หากต้องการกำหนด local port เอง ให้คลิกขวาแถวนี้ → **Change Local Address Port** → ใส่ `8089` เมื่อพอร์ตฝั่งผู้เรียนว่าง
-4. อ่านคอลัมน์ **Forwarded Address** ของแถวนั้น เลขพอร์ตฝั่งเครื่องผู้เรียนคือ `<LOCAL_PORT>` ซึ่ง VS Code อาจเลือกให้ต่างจากพอร์ตในเครื่องเรียนเมื่อพอร์ตไม่ว่าง
-5. ใช้ **Open in Browser** หรือคัดลอก Forwarded Address แล้วเติม `http://` หากยังไม่มี scheme
-6. LAB นี้ใช้ host `127.0.0.1` ให้สม่ำเสมอ: ถ้า VS Code แสดง `localhost:<LOCAL_PORT>` ให้ใช้ `http://127.0.0.1:<LOCAL_PORT>` โดยคงเลขพอร์ตเดิม จากนั้นใช้ URL นี้ทุกครั้งและใช้ค่าเดียวกันในขั้นถัดไป
-
-**หากพอร์ตต่างกัน ให้เบราว์เซอร์เปิด `http://127.0.0.1:<LOCAL_PORT>` เสมอ** ส่วนช่อง Port ใน VS Code ยังเป็น **8089** ไม่ต้องแก้ `LISTEN_HTTP_PORT` ให้เท่าพอร์ตฝั่งผู้เรียน และไม่เปิด IP ของ Docker container ในเบราว์เซอร์
-
-ตัวอย่าง: remote **8089** → Forwarded Address `localhost:8088` ให้เปิด **`http://127.0.0.1:8088`** และใช้ค่านี้ตั้ง URL/CORS ส่วน PORTS ยังคง forward **8089**
-
-เพิ่มแถว PORTS ก่อนได้ แม้ Plane ยังไม่ฟังพอร์ต 8089; ให้รันขั้น 2.3 จบก่อนเปิดเว็บ
-
-### 2.3 คัดลอกวางเพื่อตั้งพอร์ตและ URL อัตโนมัติ
-
-วางทั้งก้อนนี้ใน terminal เครื่องเรียน เมื่อถาม **Paste Forwarded Address from VS Code:** ให้วางค่าจากคอลัมน์ Forwarded Address แล้ว Enter คำสั่งจะตั้งพอร์ต HTTP เป็น **8089** และตั้ง `WEB_URL` และ `CORS_ALLOWED_ORIGINS` ให้ตรงกัน พร้อมหยุด/เปิด Plane ให้เอง ไม่ต้องแก้ไฟล์ด้วย editor
+### 3.2 แก้ `plane.env` ด้วยคำสั่งเดียว
 
 ```bash
-bash <<'BASH'
-set -euo pipefail
-PLANE_HTTP_PORT=8089
-if [[ -z ${PLANE_BROWSER_URL:-} ]]; then
-  read -r -p 'Paste Forwarded Address from VS Code: ' PLANE_BROWSER_URL </dev/tty
-fi
-PLANE_BROWSER_URL=${PLANE_BROWSER_URL%/}
-[[ $PLANE_BROWSER_URL == http://* ]] || PLANE_BROWSER_URL="http://$PLANE_BROWSER_URL"
-if [[ ! $PLANE_BROWSER_URL =~ ^http://(localhost|127\.0\.0\.1)(:([0-9]{1,5}))?$ ]]; then
-  echo 'Use the HTTP localhost or 127.0.0.1 Forwarded Address, without a path.' >&2
-  exit 2
-fi
-LOCAL_PORT=${BASH_REMATCH[3]:-80}
-LOCAL_PORT=$((10#$LOCAL_PORT))
-(( LOCAL_PORT >= 1 && LOCAL_PORT <= 65535 )) || { echo 'Invalid port' >&2; exit 2; }
-PLANE_BROWSER_URL="http://127.0.0.1:$LOCAL_PORT"
-test -f /opt/plane/plane.env
-CURRENT_HTTP_PORT=$(sed -n 's/^LISTEN_HTTP_PORT=//p' /opt/plane/plane.env)
-if [[ $CURRENT_HTTP_PORT != "$PLANE_HTTP_PORT" ]]; then
-  python3 - "$PLANE_HTTP_PORT" <<'PYPORT'
-import socket, sys
-port = int(sys.argv[1])
-with socket.socket() as listener:
-    try:
-        listener.bind(('0.0.0.0', port))
-    except OSError:
-        sys.exit(f'Port {port} is busy. Choose another LAB port; do not stop other services.')
-PYPORT
-fi
-cp -p /opt/plane/plane.env /opt/plane/plane.env.before-forward
-chmod 600 /opt/plane/plane.env.before-forward
-prime-cli stop
-sed -i -E \
-  -e "s|^LISTEN_HTTP_PORT=.*|LISTEN_HTTP_PORT=$PLANE_HTTP_PORT|" \
-  -e "s|^WEB_URL=.*|WEB_URL=$PLANE_BROWSER_URL|" \
-  -e "s|^CORS_ALLOWED_ORIGINS=.*|CORS_ALLOWED_ORIGINS=$PLANE_BROWSER_URL|" \
-  /opt/plane/plane.env
-prime-cli start
-printf '\nOpen in your browser: %s\n' "$PLANE_BROWSER_URL"
-BASH
+cd ~/plane-selfhost
+sed -i 's|^LISTEN_HTTP_PORT=.*|LISTEN_HTTP_PORT=8089|; s|^LISTEN_HTTPS_PORT=.*|LISTEN_HTTPS_PORT=8443|; \
+        s|^WEB_URL=.*|WEB_URL=http://localhost:8089|; s|^CORS_ALLOWED_ORIGINS=.*|CORS_ALLOWED_ORIGINS=http://localhost:8089|' plane-app/plane.env
+sed -i "s|^SECRET_KEY=.*|SECRET_KEY=$(openssl rand -hex 32)|; s|^LIVE_SERVER_SECRET_KEY=.*|LIVE_SERVER_SECRET_KEY=$(openssl rand -hex 32)|" plane-app/plane.env
+grep -nE '^(APP_RELEASE|LISTEN_HTTP_PORT|LISTEN_HTTPS_PORT|WEB_URL|CORS_ALLOWED_ORIGINS)=' plane-app/plane.env
 ```
 
-เมื่อ Prime แสดง **Hit Enter or Return** ให้กด Enter เพื่อจบ จากนั้นเปิด URL หลังข้อความ **Open in your browser:** บนเครื่องผู้เรียน โค้ดปรับ `localhost` เป็น `127.0.0.1` และคงเลขพอร์ตจาก VS Code ไว้ ให้ใช้ URL นี้สม่ำเสมอ
+✅ **Expected output**
 
-`WEB_URL` และ CORS ต้องเป็น URL **ฝั่ง Browser** ทั้ง scheme, host และพอร์ต ส่วน `LISTEN_HTTP_PORT=8089` เป็นพอร์ตรับในเครื่องเรียน และ `SITE_ADDRESS` คงเดิมเพื่อให้ proxy รับ HTTP ภายใน หาก VS Code เปลี่ยน local port ให้รันก้อนนี้ใหม่ด้วย Forwarded Address ใหม่
+```
+2:APP_RELEASE=v1.4.2
+12:LISTEN_HTTP_PORT=8089
+13:LISTEN_HTTPS_PORT=8443
+15:WEB_URL=http://localhost:8089
+17:CORS_ALLOWED_ORIGINS=http://localhost:8089
+```
 
-ตรวจพอร์ตจริงหลังคำสั่งจบ โดยคัดลอกวางในเครื่องเรียน:
+📝 **คำอธิบาย:** **(1)** `LISTEN_HTTP_PORT` = พอร์ตที่ proxy publish บนเครื่องเรียน (`8089->80/tcp`) **(2)** `WEB_URL` และ `CORS_ALLOWED_ORIGINS` = URL ที่ **เบราว์เซอร์** จะเปิด — ตอนนี้ตั้งเป็น `http://localhost:8089` เพราะปกติ VS Code จะให้ local port เท่ากับ remote port (ถ้าไม่เท่า ข้อ 4.3 จะแก้) **(3)** `SECRET_KEY` / `LIVE_SERVER_SECRET_KEY` มาเป็น `change-this-key-on-deployment` ซึ่ง api จะเตือนระดับ CRITICAL จึงสุ่มค่าใหม่ด้วย `openssl rand` (ค่าของแต่ละคนต่างกัน **ห้าม**คัดลอกลงเอกสาร) · ไม่ต้องแก้ `APP_DOMAIN`/`SITE_ADDRESS` — proxy ฟัง `:80` ภายใน container เหมือนเดิม
+
+### 3.3 `./setup.sh` → เลือก **2 Start**
 
 ```bash
-docker ps --format 'table {{.Names}}\t{{.Ports}}'
-grep -E '^(LISTEN_HTTP_PORT|WEB_URL|CORS_ALLOWED_ORIGINS)=' /opt/plane/plane.env
+./setup.sh
 ```
 
-**Expected output:** แถว proxy มี `8089->80/tcp`, `LISTEN_HTTP_PORT=8089` และ URL/CORS ตรงกับ URL ที่เปิดบนเครื่องผู้เรียน
+พิมพ์ `2` แล้ว Enter (หรือกด Enter เฉย ๆ ก็ได้เพราะค่า default คือ 2) สคริปต์จะ `docker compose up -d` แล้วรอ migration และ API ให้เอง ครั้งแรกใช้เวลา 2–5 นาทีขึ้นกับความเร็ว pull image
 
-ถ้าพบ **Port 8089 is busy** คำสั่งจะหยุดก่อนแก้ไฟล์ ให้เลือกพอร์ตว่างอื่นในช่วง 8081–8088 โดยเปลี่ยนบรรทัด `PLANE_HTTP_PORT=8089` ในก้อนคำสั่ง และเพิ่มเลขเดียวกันใน PORTS อย่าหยุดงานอื่นเพื่อแย่งพอร์ต หากมีการแย่งพอร์ตหลังตรวจ Docker จะรายงาน bind error; ตรวจและเลือกใหม่ตามขั้นตอนเดียวกัน
+✅ **Expected output** (ตัดจากผลรันจริง)
 
-โค้ดเดียวกันมีให้ผู้สอนใน [configure_access.sh](configure_access.sh) แต่การทำ LAB ไม่ต้องดาวน์โหลดไฟล์นี้
+```
+   Data Migration completed successfully ✅
+   Waiting for API Service to be ready...
+   API Service started successfully ✅
+   Plane Server started successfully ✅
 
-> `127.0.0.1` ใน Browser คือเครื่องผู้เรียน ส่วนใน terminal Remote-SSH คือเครื่องเรียน เมื่อพอร์ตต่างกันจึงใช้คนละ URL
+   You can access the application at http://localhost:8089
+```
 
-## 3. เปิดเว็บและเริ่มใช้งาน
-
-เปิด URL ฝั่งผู้เรียนจากขั้น 2 เลือก **Get started** แล้วทำตามหน้าจอ:
-
-![หน้า Welcome หลัง Prime ติดตั้งสำเร็จ](images/forward-welcome.png)
-
-![สร้าง Workspace ผ่านพอร์ตที่ forward จริง](images/forward-workspace.png)
-
-1. ตั้งผู้ดูแล โดยแทน `<YOUR_NAME>`, `<YOUR_EMAIL>` และ `<YOUR_PASSWORD>` ด้วยค่าของตนเองเฉพาะตอนกรอกจริง ไม่พิมพ์ `< >` ลงในฟอร์ม; ช่องชื่อรุ่นที่ทดสอบไม่รับ `_` ให้ใช้ชื่อที่ระบบยอมรับ แล้วปกปิดข้อมูลก่อนส่งภาพ
-2. เข้าสู่ระบบและสร้าง Workspace ชื่อ **DevTools Lab** (ข้อมูลสมมติของแบบฝึกหัด)
-3. สร้าง Project ชื่อ **Plane Lab**, identifier **`PLAB`**
-4. เพิ่ม work item สมมติ 3 ใบ: **ออกแบบหน้ารายการอาหาร**, **เพิ่มตะกร้าสินค้า**, **แสดงสถานะคำสั่งซื้อ**
-
-หากมีขั้นชวนสมาชิกให้ข้ามก่อน LAB นี้ไม่ต้องส่งอีเมลหรือเปิดใช้แผนชำระเงิน ชื่อปุ่มอาจต่างกันตามรุ่น
-
-![Project และ work items ภาษาไทย 3 ใบจากการทดลองจริง](images/forward-work-items.png)
-
-ภาพจริงด้านบนมาจากรอบทดสอบก่อนกำหนดพอร์ต 8089 (local 18081 → remote 80) ไม่ใช่หลักฐานทดสอบพอร์ตใหม่ ผลการทดสอบด้วย Playwright CLI อยู่ใน [รายงานทดสอบ](TEST_REPORT.md)
-
-## 4. ตรวจสถานะ
+ตรวจพอร์ตจริงที่ proxy publish และจำนวน container:
 
 ```bash
-sudo prime-cli monitor
+docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+docker ps -a --format '{{.Names}} {{.Status}}' | grep migrator
+curl -s -o /dev/null -w 'web %{http_code}\n' http://localhost:8089/
+curl -s -o /dev/null -w 'api %{http_code}\n' http://localhost:8089/api/instances/
 ```
 
-ตรวจบริการในหน้าจอ monitor และลองรีเฟรชหน้าเว็บ ถ้าต้องการรายละเอียดคำสั่ง:
+✅ **Expected output** — 12 container `Up` (web/admin/space มี `(healthy)`) แถว `plane-app-proxy-1` มี `0.0.0.0:8089->80/tcp` · `plane-app-migrator-1 Exited (0)` · `web 200` และ `api 200`
+
+📝 **คำอธิบาย:** ตอนนี้ Plane พร้อม *ในเครื่องเรียน* แล้ว แต่เบราว์เซอร์บนเครื่องผู้เรียนยังเข้าไม่ถึง เพราะ classroom container เปิดไว้แค่พอร์ต 22 — ข้อ 4 จะสร้างเส้นทางด้วย VS Code
+
+## 4. Forward พอร์ตด้วย VS Code และตั้ง URL ให้ตรงกับเบราว์เซอร์
+
+![เส้นทางเปิดเว็บผ่าน VS Code Remote-SSH: Browser → PORTS → SSH tunnel → proxy 8089 → บริการภายใน (วาดด้วย Excalidraw MCP)](images/ports-flow.png)
+
+[ไฟล์แก้ไข Excalidraw](images/ports-flow.excalidraw)
+
+### 4.1 เพิ่มพอร์ตผ่าน PORTS → Forward a Port
+
+1. ในหน้าต่าง VS Code ที่เชื่อม Remote-SSH อยู่ เปิด panel ด้านล่าง → แท็บ **PORTS** (ถ้าไม่เห็น: Command Palette → **Ports: Focus on Ports View**)
+2. กด **Forward a Port** → พิมพ์ **`8089`** → Enter
+3. อ่านคอลัมน์ **Forwarded Address** ของแถวนั้น — ปกติจะเป็น `localhost:8089` (local port = remote port)
+
+### 4.2 เปิดเว็บจาก Forwarded Address
+
+คลิกไอคอน **Open in Browser** (ลูกโลก) ที่แถว 8089 หรือคัดลอก Forwarded Address แล้วเปิด **`http://localhost:8089`** ในเบราว์เซอร์บนเครื่องผู้เรียน ต้องเห็นหน้า **Welcome to Plane**
+
+📝 **คำอธิบาย:** `localhost` ในเบราว์เซอร์คือ **เครื่องผู้เรียน** ส่วน `localhost` ใน terminal ของ VS Code คือ **เครื่องเรียน** — VS Code เชื่อมสองฝั่งด้วย SSH tunnel ผ่านพอร์ต 2222 ที่มีอยู่แล้ว จึงไม่ต้องแก้ `docker run`
+
+### 4.3 ถ้าพอร์ตฝั่งผู้เรียนต่างจากพอร์ตในเครื่องเรียน
+
+ถ้าพอร์ต 8089 บนเครื่องผู้เรียนไม่ว่าง VS Code จะเลือกเลขอื่นให้ เช่น Forwarded Address = `localhost:8090` → **ต้องใช้ URL ฝั่งผู้เรียน** `http://localhost:8090` ในเบราว์เซอร์ และแก้ `WEB_URL`/`CORS_ALLOWED_ORIGINS` ให้เท่ากับ URL นั้น แล้ว Restart:
 
 ```bash
-sudo prime-cli --help
-sudo prime-cli healthcheck --help
+cd ~/plane-selfhost
+sed -i 's|^WEB_URL=.*|WEB_URL=http://localhost:8090|; s|^CORS_ALLOWED_ORIGINS=.*|CORS_ALLOWED_ORIGINS=http://localhost:8090|' plane-app/plane.env
+./setup.sh      # เลือก 4 Restart
 ```
 
-คัดลอกวางใน terminal เครื่องเรียนเพื่อตรวจ HTTP โดยอ่านพอร์ตจริงอัตโนมัติ:
+`LISTEN_HTTP_PORT` **คง 8089** และแถวใน PORTS ยังเป็น 8089 เหมือนเดิม — เปลี่ยนเฉพาะ URL ฝั่งเบราว์เซอร์ (ทางเลือก: คลิกขวาที่แถว → **Change Local Address Port** → `8089` เมื่อพอร์ตนั้นว่างแล้ว)
+
+📝 **คำอธิบาย (หลักฐานจากการทดสอบ):** เมื่อเปิดเว็บผ่าน local port `18089` ทั้งที่ `WEB_URL=http://localhost:8089` การ login ยังตอบ `302` ตามปกติ แต่เบราว์เซอร์ถูกส่งไปที่ **`http://localhost:8089/onboarding/`** — คือกลับไปพอร์ตของ `WEB_URL` ถ้าพอร์ตนั้นไม่ได้ forward ไว้จะเจอหน้าเปล่า/เชื่อมต่อไม่ได้ · เช่นเดียวกัน หลังตั้งผู้ดูแลใน god-mode ระบบ redirect ไป `WEB_URL + /god-mode/general/` ดังนั้น **URL ที่เบราว์เซอร์ใช้ = `WEB_URL` = `CORS_ALLOWED_ORIGINS`** เสมอ
+
+## 5. เปิดเว็บ → ตั้งผู้ดูแล → Workspace → Project → Work items
+
+### 5.1 Welcome → god-mode
+
+![หน้า Welcome to Plane ผ่านพอร์ตที่ forward (Playwright)](images/welcome.png)
+
+กด **Get started** → ไปที่ `http://localhost:8089/god-mode/` หน้า **Setup your Plane Instance** กรอกด้วยค่า placeholder ของแล็บ:
+
+| ช่อง | ค่าที่กรอก |
+| --- | --- |
+| First name / Last name | `Lab` / `Admin` |
+| Email | `admin@example.com` |
+| Company name | `DevTools Lab` |
+| Set a password / Confirm password | `Plane-Lab-2569` |
+
+![ฟอร์ม Setup your Plane Instance กรอกครบก่อนกด Continue](images/godmode-setup.png)
+
+กด **Continue** → เบราว์เซอร์ถูกส่งไป **`http://localhost:8089/god-mode/general/`** พร้อมป๊อปอัป *Create workspace — Instance setup done!* (กด **Close** ได้ เราจะสร้าง workspace ผ่าน onboarding)
+
+![god-mode › General หลังตั้งค่า: Name of instance = DevTools Lab](images/godmode-general.png)
+
+✅ **Expected output** — URL ลงท้าย `/god-mode/general/` **บน host และพอร์ตเดียวกับที่เปิดมา** (นี่คือหลักฐานว่า `WEB_URL` ถูกต้อง) ตรวจซ้ำจาก terminal เครื่องเรียน:
 
 ```bash
-REMOTE_HTTP_PORT=$(sed -n 's/^LISTEN_HTTP_PORT=//p' /opt/plane/plane.env)
-curl -fsS -L -o /dev/null -w 'HTTP %{http_code}\n' "http://127.0.0.1:$REMOTE_HTTP_PORT"
+curl -s http://localhost:8089/api/instances/ | python3 -c '
+import sys, json; d = json.load(sys.stdin)["instance"]
+print("is_setup_done:", d["is_setup_done"], "| instance_name:", d["instance_name"])'
 ```
 
-**Expected output:** หน้าเว็บตอบ `HTTP 200` และเบราว์เซอร์แสดงหน้า Plane หากใช้ HTTPS ให้เปลี่ยน URL ให้ตรงด้วย การตอบ 200 อย่างเดียวยังไม่ยืนยันว่า login หรือการบันทึกข้อมูลผ่าน
+```
+is_setup_done: True | instance_name: DevTools Lab
+```
 
-ถ้าเห็นข้อความ “Plane didn't start up correctly” ระหว่างติดตั้ง ให้รอจนตัวติดตั้งจบและตรวจ monitor เพราะหน้าเว็บอาจตอบ 200 ขณะที่ API ยังไม่พร้อม:
+📝 **คำอธิบาย:** รหัสผ่านถูกตรวจฝั่ง server ด้วย zxcvbn — รหัสง่าย ๆ อย่าง `Password123!` จะถูกปฏิเสธ (`PASSWORD_TOO_WEAK`) แม้ผ่านกฎบนหน้าจอ · ไม่มี SMTP ในแล็บนี้ จึง login ด้วยรหัสผ่านเท่านั้น
 
-![หน้าจอจริงระหว่าง migration ยังไม่เสร็จ](images/prime-starting.png)
+### 5.2 Sign in → onboarding
 
-สำหรับผู้สอน มีตัวตรวจเสริมในโฟลเดอร์ LAB (ไม่จำเป็นต่อการติดตั้ง):
+กลับไปที่ `http://localhost:8089/` → กรอก **Email** `admin@example.com` → **Continue** → **Password** `Plane-Lab-2569` → **Go to workspace**
+
+![หน้า sign-in หลังตั้ง instance แล้ว](images/signin.png)
+
+1. **Create your profile** — ช่อง Name ถูกเติม `Lab` ไว้แล้ว ปล่อยไว้ กด **Continue**
+2. **Create your workspace** — Name `DevTools Lab` (slug จะเป็น `devtools-lab` อัตโนมัติ) → เลือก **2-10** → **Create workspace**
+3. **Invite your teammates** — กด **I'll do it later** (ไม่มี SMTP อีเมลส่งไม่ออกอยู่แล้ว)
+4. ถึง Home `http://localhost:8089/devtools-lab/` — ถ้ามีป๊อปอัป Product Tour กด **No thanks, I will explore it myself**
+
+![onboarding: Create your workspace — DevTools Lab / devtools-lab / 2-10](images/onboarding-workspace.png)
+
+### 5.3 Project `Plane Lab` (`PLAB`) และ work items 3 ใบ
+
+แถบซ้าย **Projects** → **Add Project** → Project name `Plane Lab` → แก้ Project ID เป็น **`PLAB`** → **Create project** → ป๊อปอัป *Projects and work items* กด **Open project**
+
+![Project Plane Lab ถูกสร้าง — ป๊อปอัปเปิด/ปิดฟีเจอร์ของโปรเจกต์](images/project-created.png)
+
+ในหน้า **Work items** กด **New work item** → พิมพ์ Title → **Save** ทำ 3 ครั้ง:
+
+| # | Title |
+| --- | --- |
+| PLAB-1 | ออกแบบหน้ารายการอาหาร |
+| PLAB-2 | เพิ่มตะกร้าสินค้า |
+| PLAB-3 | แสดงสถานะคำสั่งซื้อ |
+
+![work items 3 ใบใน Plane Lab (PLAB-1..3) จากการทดลองจริง](images/work-items.png)
+
+✅ **Expected output** — รายการ **All work items 3** สถานะ `Backlog` เลข `PLAB-1`…`PLAB-3` ตามลำดับที่สร้าง (โปรเจกต์ `DevTools Lab` อีกอันคือตัวอย่างที่ระบบ seed ให้ตอนสร้าง workspace ไม่ต้องลบ)
+
+## 6. ตรวจสถานะและเตรียมคำสั่งลัดสำหรับแล็บถัดไป
+
+`setup.sh` มีเมนู **6 View Logs** ให้เลือกดู log ของแต่ละ service (กด `0` กลับเมนูหลัก, `8` ออก):
 
 ```bash
-REMOTE_HTTP_PORT=$(sed -n 's/^LISTEN_HTTP_PORT=//p' /opt/plane/plane.env)
-PLANE_URL="http://127.0.0.1:$REMOTE_HTTP_PORT" bash check_lab01.sh
+./setup.sh      # เลือก 6 → เลือก 3 (API) → Ctrl+C เพื่อหยุดดู
 ```
 
-ตัวตรวจรอทั้งหน้าเว็บและ `/api/instances/` ตอบ 200 ภายใน 600 วินาที ไม่ตรวจ SQL หรือยืนยันว่าแบบฝึกหัดสร้าง Project ผ่านแล้ว
+สร้าง helper **`pc`** = `docker compose` พร้อมไฟล์ของ Plane ใช้ได้จากทุกโฟลเดอร์ (LAB 2–9 ใช้คำสั่งนี้ตลอด):
+
+```bash
+cat > /usr/local/bin/pc <<'EOF'
+#!/bin/bash
+exec docker compose -f "$HOME/plane-selfhost/plane-app/docker-compose.yaml" --env-file "$HOME/plane-selfhost/plane-app/plane.env" "$@"
+EOF
+chmod +x /usr/local/bin/pc
+pc ps --format 'table {{.Service}}\t{{.Status}}\t{{.Ports}}'
+```
+
+✅ **Expected output** — 12 service `running` (migrator `exited (0)`) แถว `proxy` มี `0.0.0.0:8089->80/tcp`
+
+📝 **คำอธิบาย:** `pc` ชี้ไปที่ไฟล์ชุดเดียวกับที่ `setup.sh` ใช้ จึงเห็น project `plane-app` เดียวกัน (`pc logs -f api`, `pc exec plane-db psql ...`, `pc stop worker`) · `setup.sh` ใช้เมื่อต้องการ Start/Stop/Upgrade/Backup ทั้งชุด ส่วน `pc` ใช้เจาะราย service
+
+ตัวตรวจอัตโนมัติของแล็บ (รันในเครื่องเรียน หลัง clone ชุด LAB):
+
+```bash
+bash check_lab01.sh
+```
+
+✅ **Expected output** — บรรทัดเดียวขึ้นต้นด้วย `PASS:` เช่น `PASS: 12 containers up, proxy on 8089, web+API HTTP 200 after 0s, is_setup_done=True` (ตรวจไฟล์/พอร์ต/HTTP เท่านั้น ไม่ตรวจ workspace หรือ work items)
 
 ## ทดลองเพิ่มเติม
 
-หลังสร้าง Project และ work items แล้ว ให้ลองหยุดและเปิดใหม่:
+**หยุดแล้วเปิดใหม่ — ข้อมูลยังอยู่ไหม?** ใน `~/plane-selfhost` รัน `./setup.sh` → **3 Stop** แล้วดู `docker ps` (ต้องไม่มี `plane-app-*` เหลือ เพราะ Stop = `docker compose down` ลบ container แต่ **ไม่ลบ volume**) จากนั้น `./setup.sh` → **2 Start** รอจน *Plane Server started successfully* แล้วรีเฟรชหน้า Work items:
 
-```bash
-sudo prime-cli stop
-sudo prime-cli start
-```
+![หน้า Work items หลัง Stop แล้ว Start ใหม่ — PLAB-1..3 ยังอยู่](images/after-restart.png)
 
-รอเว็บพร้อม รีเฟรชหน้า Project และตรวจว่ารายการเดิมยังอยู่ หากหน้าจอถามให้เลือกบริการ ให้เลือกชุด Plane ที่ติดตั้งใน LAB นี้
+✅ **Expected output** — login ด้วยบัญชีเดิมได้ และ PLAB-1..3 ยังอยู่ครบ เพราะข้อมูลอยู่ใน volume `plane-app_pgdata` (PostgreSQL) และ `plane-app_uploads` (MinIO): `docker volume ls | grep plane-app`
 
-![Project และข้อมูลเดิมหลังหยุดและเปิดใหม่](images/forward-after-restart.png)
+**ดูว่า Plane ตอบอะไรก่อน API พร้อม** — สั่ง `pc restart api` แล้วยิง `curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8089/api/instances/` ซ้ำทุกวินาที จะเห็น `502` ราว 10–20 วินาทีก่อนกลับเป็น `200` — นี่คือช่องว่างระหว่าง *Up* กับ *Ready*
 
 ## แก้ปัญหาที่พบบ่อย
 
-| อาการ | สิ่งที่ตรวจ |
+| อาการ | สาเหตุ / สิ่งที่ตรวจ |
 | --- | --- |
-| ไม่มีสิทธิ์ / `sudo` ไม่พร้อม | ใช้บัญชีเครื่องเรียนที่ผู้สอนให้สิทธิ์ติดตั้ง |
-| ดาวน์โหลดล้มเหลว | ตรวจอินเทอร์เน็ตไป `prime.plane.so` และ registry แล้วรันคำสั่งติดตั้งใหม่ตามข้อความแนะนำ |
-| Domain/IP ไม่ผ่าน | ตรวจว่ากรอกสองช่องตรงกัน และโดเมนชี้ไปยังเครื่องติดตั้ง |
-| เปิดเว็บไม่ได้ | ตรวจ Forwarded Address, WEB_URL/CORS, การเชื่อมต่อ Remote-SSH และ `sudo prime-cli monitor` |
-| เว็บ 502 หรือบริการกำลังเริ่ม | รอพร้อมตรวจ log ใน monitor หากยังไม่พร้อมให้แก้ error ที่พบ |
-| ต้องเปลี่ยนการตั้งค่า | ดู `sudo prime-cli configure --help` แล้วใช้ `sudo prime-cli configure` |
+| `Failed to pull the images` และมี `pull access denied for minio/minio` | image บน Docker Hub ถูกถอด → รัน `sed` ในข้อ 2 ให้ใช้ `quay.io/minio/minio` แล้วกด **2 Start** ไม่ต้อง Install ใหม่ |
+| Install ค้างที่ `Checking for the latest release` หรือ curl ล้มเหลว | เครื่องเรียนออกอินเทอร์เน็ตไม่ได้ (`api.github.com`, `registry-1.docker.io`, `quay.io`) ตรวจ DNS/proxy แล้วรันใหม่ |
+| `Bind for 0.0.0.0:8089 failed: port is already allocated` | มีงานอื่นใช้ 8089 ในเครื่องเรียน → `docker ps --format '{{.Names}} {{.Ports}}' \| grep 8089` แล้วเปลี่ยน `LISTEN_HTTP_PORT` เป็นพอร์ตว่าง (เช่น 8088) และ forward เลขนั้นแทน **อย่าหยุดงานของคนอื่น** |
+| เปิด `http://localhost:8089` ไม่ได้จากเครื่องผู้เรียน แต่ `curl` ในเครื่องเรียนได้ `200` | ยังไม่ได้ forward พอร์ตใน PORTS หรือ Forwarded Address เป็นเลขอื่น → ใช้เลขที่ VS Code แสดง (ข้อ 4.3) |
+| login แล้วเด้งไปพอร์ตอื่น / หน้าเปล่า | `WEB_URL` ไม่ตรงกับ URL ฝั่งเบราว์เซอร์ → แก้ `WEB_URL`/`CORS_ALLOWED_ORIGINS` แล้ว `./setup.sh` → 4 Restart |
+| เว็บตอบ `502` หรือ `Waiting for API Service` นาน | migration ยังไม่จบ / api ยังบูต → `pc logs -f migrator api` รอจน `migrator Exited (0)`; ถ้า `Plane Server failed to start ❌` ให้อ่าน log ของ migrator |
+| `PASSWORD_TOO_WEAK` ใน god-mode | server ตรวจด้วย zxcvbn → ใช้รหัสยาวและไม่ใช่รูปแบบทั่วไป เช่น `Plane-Lab-2569` |
+| แก้ `plane.env` แล้วค่าไม่เปลี่ยน | ค่าถูกอ่านตอนสร้าง container → ต้อง **4 Restart** (หรือ `pc up -d <service>`) ไม่ใช่ `docker restart` |
 
 ## เก็บกวาด (Cleanup)
 
-ถ้าจะใช้ต่อ ให้หยุดด้วย `sudo prime-cli stop` แล้วเปิดกลับด้วย `sudo prime-cli start`
+ปล่อย Plane รันไว้ใช้ต่อใน LAB 2–9 ถ้าจะพักเครื่อง ให้ `./setup.sh` → **3 Stop** และกลับมา **2 Start** (ข้อมูลอยู่ใน volume)
 
-ถ้าจะถอนการติดตั้ง ใช้ `sudo prime-cli uninstall` และอ่านหน้าจอยืนยันก่อนดำเนินการ คำสั่งนี้เก็บโฟลเดอร์ data/logs ตามคู่มือ ไม่ได้แปลว่าลบข้อมูลทุกอย่างแล้ว
-
-ถ้าใช้ container เครื่องเรียนชั่วคราวและจบการทดลองทั้งหมด ให้ลบเฉพาะของตนเองจากเครื่อง host:
+ถ้าจะลบ Plane ทั้งชุด **รวมข้อมูล** (ทำตอนจบ LAB 9 เท่านั้น):
 
 ```bash
-docker rm -fv '<YOUR_LAB_CONTAINER>'
+cd ~/plane-selfhost && pc down -v && cd ~ && rm -rf ~/plane-selfhost
+docker ps -a | grep plane-app || echo "plane-app removed"
 ```
+
+ถ้าใช้ classroom container ชั่วคราวและจบทุกการทดลองแล้ว ให้ลบเฉพาะของตนเองจากเครื่องผู้เรียน: `docker rm -f devtools`
 
 ## สรุปคำสั่งของแล็บนี้
 
-| งาน | คำสั่ง |
+| งาน | คำสั่ง (รันใน `~/plane-selfhost` ของเครื่องเรียน) |
 | --- | --- |
-| ติดตั้ง | `curl -fsSL https://prime.plane.so/install/ \| sh -` |
-| ตรวจสถานะ | `sudo prime-cli monitor` |
-| หยุด / เปิด | `sudo prime-cli stop` / `sudo prime-cli start` |
-| ดูคำสั่งทั้งหมด | `sudo prime-cli --help` |
+| ดาวน์โหลดสคริปต์ | `curl -fsSL -o setup.sh https://github.com/makeplane/plane/releases/latest/download/setup.sh && chmod +x setup.sh` |
+| ติดตั้ง / เริ่ม / หยุด / รีสตาร์ท | `./setup.sh` → `1` / `2` / `3` / `4` (หรือ `./setup.sh install|start|stop|restart`) |
+| ดู log | `./setup.sh` → `6` หรือ `pc logs -f api` |
+| ตั้งพอร์ตและ URL | `sed -i ... plane-app/plane.env` (ข้อ 3.2 / 4.3) แล้ว `./setup.sh` → `4` |
+| ตรวจความพร้อม | `docker ps` · `curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8089/api/instances/` · `bash check_lab01.sh` |
+| helper สำหรับแล็บถัดไป | `pc ps` · `pc logs -f <service>` · `pc exec <service> <cmd>` |
 
 ## เช็กลิสต์ก่อนจบแล็บ
 
-- [ ] ติดตั้งด้วยคำสั่ง Prime และเลือก Express สำเร็จ
-- [ ] Forward พอร์ต HTTP ของ proxy ตามค่าจริง และเปิด URL ฝั่งผู้เรียนได้
-- [ ] WEB_URL/CORS ตรงกับ Browser; redirect ยังอยู่บน host และ local port เดิม
-- [ ] ตั้งผู้ดูแลและเข้าใช้งานได้
-- [ ] มี Workspace, Project และ work items 3 ใบ
-- [ ] หยุด/เปิดใหม่แล้วข้อมูลยังอยู่
-- [ ] ภาพส่งงานไม่มีข้อมูลส่วนตัวหรือ credentials จริง
+- [ ] `~/plane-selfhost/plane-app/` มี `docker-compose.yaml` และ `plane.env`; `./setup.sh` → 2 Start จบด้วย *Plane Server started successfully*
+- [ ] `docker ps` เห็น `plane-app-proxy-1` publish `8089->80/tcp` และ 12 container `Up`
+- [ ] Forward 8089 ใน PORTS แล้วเปิด `http://localhost:<LOCAL_PORT>` เห็น Plane; `WEB_URL`/`CORS_ALLOWED_ORIGINS` ตรงกับ URL นั้น และหลัง login/setup ไม่เด้งไปพอร์ตอื่น
+- [ ] ตั้งผู้ดูแล instance สำเร็จ (`is_setup_done: True`) และ sign in ด้วยรหัสผ่านได้
+- [ ] มี workspace `DevTools Lab`, project `Plane Lab` (`PLAB`) และ work items PLAB-1..3
+- [ ] Stop → Start แล้วข้อมูลยังอยู่; `bash check_lab01.sh` ได้ `PASS:`
+- [ ] มีคำสั่ง `pc` ใช้ได้ (`pc ps`)
+- [ ] ภาพส่งงานใช้ placeholder ไม่มีข้อมูลส่วนตัวหรือ secret จริง
 
-**การใช้ต่อกับเอกสารรุ่นเดิม:** LAB 2–9 และสไลด์เดิมบางส่วนเขียนสำหรับ Community Edition (`pc`, 13 services และ SQL เฉพาะรุ่น) จึงไม่ควรนำคำสั่งเหล่านั้นมารันกับ Prime โดยตรง การปรับปรุงครั้งนี้ครอบคลุมการติดตั้ง LAB 1; ใช้ Prime CLI จัดการ instance ชุดนี้
+อ้างอิง: [Docker Compose — Plane self-hosting](https://developers.plane.so/self-hosting/methods/docker-compose) · [makeplane/plane releases](https://github.com/makeplane/plane/releases)
 
-อ้างอิง: [Docker Compose](https://developers.plane.so/self-hosting/methods/docker-compose) · [Prime CLI](https://developers.plane.so/self-hosting/manage/prime-cli)
-
-*ผลลัพธ์ทั้งหมดในเอกสารนี้แยกขั้นตอนที่คาดหวังออกจากหลักฐานจริงใน TEST_REPORT.md ซึ่งบันทึกเมื่อ 9-ก.ย.-2026*
+*ผลลัพธ์ทั้งหมดในเอกสารนี้มาจากการรันจริงใน classroom container (Plane v1.4.2, ทดสอบเว็บและจับภาพด้วย Playwright ผ่าน SSH tunnel พอร์ต 8089) เมื่อ 13-ก.ย.-2569*

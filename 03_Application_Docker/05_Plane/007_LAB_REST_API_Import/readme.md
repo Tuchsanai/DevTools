@@ -716,7 +716,7 @@ echo '# ?expand=state,assignees,labels'; curl -s -H "$H" "$BASE/workspaces/$WS/w
 
 ```bash
 cd ~/plane-selfhost
-sed -i "s|^API_KEY_RATE_LIMIT=.*|API_KEY_RATE_LIMIT=5/minute|" plane.env && grep -n '^API_KEY_RATE_LIMIT=' plane.env
+sed -i "s|^API_KEY_RATE_LIMIT=.*|API_KEY_RATE_LIMIT=5/minute|" plane-app/plane.env && grep -n '^API_KEY_RATE_LIMIT=' plane-app/plane.env
 pc up -d api
 until [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/instances/)" = "200" ]; do sleep 3; done; echo "api READY"
 for i in 1 2 3 4 5 6 7; do
@@ -775,7 +775,7 @@ X-Ratelimit-Remaining: 59
 ## เก็บกวาด (Cleanup)
 
 ```bash
-grep -n '^API_KEY_RATE_LIMIT=' ~/plane-selfhost/plane.env
+grep -n '^API_KEY_RATE_LIMIT=' ~/plane-selfhost/plane-app/plane.env
 pc ps --format 'table {{.Name}}\t{{.Status}}' | grep -c Up
 ```
 
