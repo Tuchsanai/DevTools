@@ -1,0 +1,28 @@
+
+- update การติดตั้ง 001_LAB_Plane_Setup ให้ง่ายขึ้นโดยใช้ https://developers.plane.so/self-hosting/methods/docker-compose
+- ใช้ skill devtools-lab ทดลองใน classroom container ชั่วคราว และใช้ Playwright CLI ทดสอบเว็บพร้อมจับภาพหน้าจอจริง
+
+
+**เตรียมเครื่องสำหรับเรียน** — บนเครื่องผู้เรียน เปิด classroom container เดิม หรือสร้างใหม่หากยังไม่มี:
+    ```bash
+    docker start devtools 2>/dev/null || \
+      docker run -dit --name devtools --privileged -p 2222:22 tuchsanai/devtools:2569_1
+    ```
+    จากนั้น remote เข้าเครื่องเรียน:
+    ```bash
+    ssh root@localhost -p 2222   # password: passwd
+    ```
+**เปิดเว็บผ่าน VS Code Remote-SSH** — หากการทดลองต้องเปิดเว็บ และ forward พอร์ตผ่านแท็บ PORTS เป็นแนวทางหลัก เลือกพอร์ตตามบริการที่ติดตั้งจริง กำหนดเลข PORT ไปเลย เช่น 8081,..8089 ที่ไม่ชนกับ งานอื่น 
+   โดยเอกสาร LAB ต้องอธิบาย:
+    - ต้อง forward พอร์ตใดบ้าง และแต่ละพอร์ตใช้ทำอะไร
+    - วิธีเพิ่มพอร์ตผ่าน PORTS → Forward a Port
+    - วิธีเปิดเว็บจาก Forwarded Address ที่ VS Code แสดง
+    - หากพอร์ตบนเครื่องผู้เรียนต่างจากพอร์ตภายในเครื่องเรียน ต้องใช้ URL ใด
+    -ตรวจสอบให้การตั้งค่า URL และ redirect ของแอปสอดคล้องกับเส้นทางเข้าถึงที่แนะนำไว้
+
+
+## กติกา
+- เอกสาร LAB ใช้ **placeholder เท่านั้น** — ห้ามใส่ email/ชื่อจริง/token/username จริง
+- วาดรูปด้วย **Excalidraw MCP** · ทดสอบ web + capture ภาพจริงด้วย **Playwright CLI*
+
+# email แจ้งถ้าเสร็จ
