@@ -142,13 +142,25 @@ curl -s -o /dev/null -w 'api %{http_code}\n' http://localhost:8089/api/instances
 
 ### 4.1 เพิ่มพอร์ต
 
-1. ใน VS Code ที่เชื่อม Remote-SSH อยู่ เปิด panel ด้านล่าง → แท็บ **PORTS** (ถ้าไม่เห็น: Command Palette → **Ports: Focus on Ports View**)
-2. กด **Forward a Port** → พิมพ์ `8089` → Enter
-3. อ่านคอลัมน์ **Forwarded Address** — ปกติคือ `localhost:8089`
+ภาพต่อไปนี้จับจาก **VS Code Desktop จริง** ที่เชื่อม **Remote-SSH** เข้า classroom container โดยใช้ชื่อ SSH ว่า `devtools-lab` (ดูมุมซ้ายล่าง **SSH: devtools-lab**) การจับภาพทำบนจอเสมือนภายในเครื่อง `5090` ผ่าน SSH ชื่อ SSH ของผู้เรียนอาจต่างจากภาพได้
+
+1. ใน VS Code ที่เชื่อม Remote-SSH อยู่ เปิด panel ด้านล่าง → แท็บ **PORTS** (ถ้าไม่เห็น: Command Palette → **Ports: Focus on Ports View**) ก่อนเพิ่มพอร์ตจะเห็น **No forwarded ports** และปุ่ม **Forward a Port**
+
+![ภาพจริงจาก VS Code Remote-SSH: เปิดแท็บ PORTS และพบปุ่ม Forward a Port](images/vscode-ports-empty.png)
+
+2. กด **Forward a Port** → พิมพ์ `8089` ในช่อง **Port** → Enter
+
+![ภาพจริงจาก VS Code: กรอกพอร์ต 8089 ก่อนกด Enter](images/vscode-ports-enter-8089.png)
+
+3. ตรวจว่าแถว **Port = 8089** แสดง **Forwarded Address = localhost:8089** และ **Origin = User Forwarded** ถ้า Forwarded Address ได้เลขอื่น ให้ทำตามข้อ 4.3
+
+![ภาพจริงจาก VS Code: Forward พอร์ต 8089 สำเร็จ แสดง localhost:8089, User Forwarded และปุ่ม Open in Browser](images/vscode-ports-forwarded-8089.png)
+
+✅ **Expected output** — แท็บ **PORTS** มีรายการพอร์ต `8089` และมี Forwarded Address ให้เปิดได้ การมีแถวพอร์ตยืนยันการตั้ง tunnel ส่วนความพร้อมของ Plane ให้ตรวจ API ตอบ `200` ตามข้อ 3
 
 ### 4.2 เปิดเว็บ
 
-คลิกไอคอนลูกโลก **Open in Browser** ที่แถว 8089 หรือเปิด `http://localhost:8089` ในเบราว์เซอร์บนเครื่องผู้เรียน ต้องเห็นหน้า **Welcome to Plane**
+เลื่อนเมาส์ไปที่ **Forwarded Address** ของแถว `8089` แล้วคลิกไอคอนลูกโลก **Open in Browser** (ดังภาพด้านบน) หรือเปิด `http://localhost:8089` ในเบราว์เซอร์บนเครื่องผู้เรียน ต้องเห็นหน้า **Welcome to Plane**
 
 📝 `localhost` ในเบราว์เซอร์คือเครื่องผู้เรียน ส่วน `localhost` ใน terminal คือเครื่องเรียน VS Code เชื่อมสองฝั่งด้วย SSH tunnel ผ่านพอร์ต 2222 ที่มีอยู่แล้ว
 
