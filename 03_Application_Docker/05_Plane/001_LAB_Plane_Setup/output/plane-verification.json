@@ -1,0 +1,174 @@
+{
+  "checked_at_utc": "2026-09-13T08:43:20.522495+00:00",
+  "runtime": {
+    "CONTAINER_NAME": "devtools-plane-bfe597",
+    "WEB_PORT": 8190,
+    "HTTPS_PORT": 8443,
+    "SSH_PORT": 2222,
+    "BIND_ADDRESS": "127.0.0.1",
+    "SSH_HOST": "localhost",
+    "BROWSER_URL": "http://localhost:8190",
+    "LAB_IMAGE": "tuchsanai/devtools:2569_1",
+    "INSTALL_DIR": "/root/plane-selfhost",
+    "OWNER": "codex",
+    "RUN_ID": "plane-20260913T083541Z-c148c9",
+    "DOCKER_VOLUME": "devtools-plane-e3e399-docker",
+    "INSTALL_VOLUME": "devtools-plane-e3e399-install"
+  },
+  "lab_image_id": "sha256:7fa038e4f5c98ee9161ebe1874b85b482d5a300440c640dd9b7c1337cef38a5d",
+  "outer_status": "running",
+  "outer_port_bindings": {
+    "22/tcp": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "2222"
+      }
+    ],
+    "8190/tcp": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "8190"
+      }
+    ]
+  },
+  "outer_volumes": [
+    {
+      "name": "devtools-plane-e3e399-docker",
+      "destination": "/var/lib/docker"
+    },
+    {
+      "name": "devtools-plane-e3e399-install",
+      "destination": "/root/plane-selfhost"
+    }
+  ],
+  "services": [
+    {
+      "service": "proxy",
+      "status": "running",
+      "exit_code": 0,
+      "restarts": 0,
+      "image": "makeplane/plane-proxy:v1.4.2",
+      "image_id": "sha256:47e651c56749c287710cc26f82dc5d1046a2af76a332aa048ab7adb881cc4cd0"
+    },
+    {
+      "service": "space",
+      "status": "running",
+      "exit_code": 0,
+      "restarts": 0,
+      "image": "makeplane/plane-space:v1.4.2",
+      "image_id": "sha256:f8f842f05f41a16e9fe8c4f5e17a3bb175338ccdc094620e58ae49764ffbd671"
+    },
+    {
+      "service": "live",
+      "status": "running",
+      "exit_code": 0,
+      "restarts": 0,
+      "image": "makeplane/plane-live:v1.4.2",
+      "image_id": "sha256:cbb630ccaea24bb9998040cb45c11619a7501e8b6c75d449df2f8fd9b9cddbd0"
+    },
+    {
+      "service": "admin",
+      "status": "running",
+      "exit_code": 0,
+      "restarts": 0,
+      "image": "makeplane/plane-admin:v1.4.2",
+      "image_id": "sha256:6e1bb1d800d3c7ce84a09f810d5588db8613b35d4464e722a1bec12556ca0ebb"
+    },
+    {
+      "service": "web",
+      "status": "running",
+      "exit_code": 0,
+      "restarts": 0,
+      "image": "makeplane/plane-frontend:v1.4.2",
+      "image_id": "sha256:22fd2434fb8d6658439f669ab72f999ce0773abe587663da21a77d70bd63ff61"
+    },
+    {
+      "service": "worker",
+      "status": "running",
+      "exit_code": 0,
+      "restarts": 0,
+      "image": "makeplane/plane-backend:v1.4.2",
+      "image_id": "sha256:90032ce088708889b60c00d491897916f4deb882facda27db59fd10fb68729ef"
+    },
+    {
+      "service": "beat-worker",
+      "status": "running",
+      "exit_code": 0,
+      "restarts": 0,
+      "image": "makeplane/plane-backend:v1.4.2",
+      "image_id": "sha256:90032ce088708889b60c00d491897916f4deb882facda27db59fd10fb68729ef"
+    },
+    {
+      "service": "migrator",
+      "status": "exited",
+      "exit_code": 0,
+      "restarts": 0,
+      "image": "makeplane/plane-backend:v1.4.2",
+      "image_id": "sha256:90032ce088708889b60c00d491897916f4deb882facda27db59fd10fb68729ef"
+    },
+    {
+      "service": "api",
+      "status": "running",
+      "exit_code": 0,
+      "restarts": 0,
+      "image": "makeplane/plane-backend:v1.4.2",
+      "image_id": "sha256:90032ce088708889b60c00d491897916f4deb882facda27db59fd10fb68729ef"
+    },
+    {
+      "service": "plane-db",
+      "status": "running",
+      "exit_code": 0,
+      "restarts": 0,
+      "image": "postgres:15.7-alpine",
+      "image_id": "sha256:468d34fefd6338031787c7b8e94078975b3aaf4d66c7ead25c39cd3ba46a15c6"
+    },
+    {
+      "service": "plane-mq",
+      "status": "running",
+      "exit_code": 0,
+      "restarts": 0,
+      "image": "rabbitmq:3.13.6-management-alpine",
+      "image_id": "sha256:611107e29cce05c2acd968325d5dcbde7e2fee404970f1ead75fdb22be2821b3"
+    },
+    {
+      "service": "plane-minio",
+      "status": "running",
+      "exit_code": 0,
+      "restarts": 0,
+      "image": "quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z",
+      "image_id": "sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e"
+    },
+    {
+      "service": "plane-redis",
+      "status": "running",
+      "exit_code": 0,
+      "restarts": 0,
+      "image": "valkey/valkey:7.2.11-alpine",
+      "image_id": "sha256:10328d00120dc14fbc87b2ed61b7677ddbb0d011e705361b4788329a0ec69a93"
+    }
+  ],
+  "http_checks": [
+    {
+      "source": "lab container",
+      "path": "/",
+      "status": 200
+    },
+    {
+      "source": "workspace via Docker Desktop host published port",
+      "path": "/",
+      "status": 200
+    },
+    {
+      "source": "lab container",
+      "path": "/api/instances/",
+      "status": 200
+    },
+    {
+      "source": "workspace via Docker Desktop host published port",
+      "path": "/api/instances/",
+      "status": 200
+    }
+  ],
+  "ssh_login": "passed with temporary verification key and pinned container host key; temporary key removed",
+  "browser": "Welcome to Plane and administrator setup form verified; no administrator account submitted"
+}
