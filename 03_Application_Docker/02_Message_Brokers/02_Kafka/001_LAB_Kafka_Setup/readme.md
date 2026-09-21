@@ -66,7 +66,7 @@ Docker Compose version v5.3.1
 ```bash
 mkdir -p ~/labwork && cd ~/labwork
 git clone https://github.com/Tuchsanai/DevTools.git
-cd DevTools/07_Kafka/001_LAB_Kafka_Setup
+cd DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/001_LAB_Kafka_Setup
 ```
 
 > 📝 **คำอธิบาย:** `mkdir -p ~/labwork` สร้างโฟลเดอร์เก็บงาน (`-p` = มีอยู่แล้วก็ไม่ error) · `git clone` ดึงรีโพของวิชาลงมา ทำครั้งเดียวใช้ได้ทุกแล็บของชุดนี้ · แล้ว `cd` เข้าโฟลเดอร์แล็บ ซึ่งมี `send.py` · `receive.py` · `requirements.txt` รออยู่แล้ว ·
