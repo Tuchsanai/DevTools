@@ -34,8 +34,7 @@ docker run -dit --name devtools --privileged -p 2222:22 -p 8411:8411 tuchsanai/d
 ssh root@localhost -p 2222        # password : passwd
 ```
 
-> 📝 **คำอธิบาย:** สามบรรทัดนี้คือการ "เปิดเครื่องเรียน" ให้ทุกคนได้สภาพแวดล้อมเหมือนกันเป๊ะ · `docker rm -f devtools` ลบกล่องเรียนตัวเก่าทิ้งก่อนกันชื่อซ้ำ (`-f` = force ลบได้แม้ยังทำงานอยู่) ·
-> `-dit` คือ `-d` รันเบื้องหลัง + `-i` เปิด stdin ค้างไว้ + `-t` ให้มี terminal กล่องจะได้ไม่ดับทันที · `--privileged` ให้สิทธิ์เต็มเพื่อรัน **Docker ซ้อนข้างในกล่อง** (จำเป็น — Kafka ของแล็บนี้เป็น container ที่รันอยู่ข้างในเครื่องเรียนอีกที) ·
+> 📝 **คำอธิบาย:** "เปิดเครื่องเรียน" ให้ทุกคนได้สภาพแวดล้อมเหมือนกันเป๊ะ · `docker rm -f devtools` ลบกล่องตัวเก่ากันชื่อซ้ำ · `-dit` รันเบื้องหลังและไม่ดับทันที · `--privileged` ให้สิทธิ์เต็มเพื่อรัน **Docker ซ้อนข้างในกล่อง** (จำเป็น — Kafka ของแล็บนี้เป็น container ที่รันอยู่ข้างในเครื่องเรียนอีกที) ·
 > `-p 2222:22` ส่ง port 2222 ของเครื่องเรา เข้า port 22 (SSH) ของกล่อง · **`-p 8411:8411` คือของใหม่ของแล็บนี้** — เปิดทางให้หน้าเว็บ Kafka UI ทะลุออกมาถึงเบราว์เซอร์บนเครื่องเรา โดยไม่ต้องทำ port forwarding ทีหลัง
 
 > ใน VS Code ใช้ **Remote-SSH** ต่อไปที่ `root@localhost:2222` แล้วทำแล็บทั้งหมดข้างใน
@@ -75,8 +74,7 @@ git clone https://github.com/Tuchsanai/DevTools.git
 cd DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/001_LAB_Kafka_Setup
 ```
 
-> 📝 **คำอธิบาย:** `mkdir -p ~/labwork` สร้างโฟลเดอร์เก็บงาน (`-p` = มีอยู่แล้วก็ไม่ error) · `git clone` ดึงรีโพของวิชาลงมา ทำครั้งเดียวใช้ได้ทุกแล็บของชุดนี้ · แล้ว `cd` เข้าโฟลเดอร์แล็บ ซึ่งมี `docker-compose.yml` · `send.py` · `receive.py` · `requirements.txt` รออยู่แล้ว ·
-> ถ้าเคย clone ไว้ git จะบอกว่าโฟลเดอร์ไม่ว่าง — ข้ามไป `cd` ได้เลย
+> 📝 **คำอธิบาย:** ดึงรีโพของวิชาลงมา ทำครั้งเดียวใช้ได้ทุกแล็บของชุดนี้ แล้ว `cd` เข้าโฟลเดอร์แล็บ ซึ่งมี `docker-compose.yml` · `send.py` · `receive.py` · `requirements.txt` รออยู่แล้ว · ถ้าเคย clone ไว้ git จะบอกว่าโฟลเดอร์ไม่ว่าง — ข้ามไป `cd` ได้เลย
 
 ---
 
@@ -145,8 +143,7 @@ services:
 docker compose up -d
 ```
 
-> 📝 **คำอธิบาย:** `up` = สร้างและเริ่มทุกบริการในไฟล์ · `-d` (detached) = รันเบื้องหลัง แล้วคืน prompt ให้เรา · ครั้งแรก Docker จะ **pull image ทั้งสองตัวให้เอง** (ใช้เวลาสักครู่) แล้วจึงเริ่ม container ·
-> ดูบรรทัดของ `kafka` ให้ดี — มันขึ้นคำว่า **`Healthy`** ไม่ใช่แค่ `Started` แปลว่า compose ยืนรอจน broker ตอบได้จริงแล้วค่อยไปเปิด `kafka-ui` ต่อ (ผลของ healthcheck + depends_on ในข้อ 2)
+> 📝 **คำอธิบาย:** `up` = สร้างและเริ่มทุกบริการในไฟล์ · `-d` = รันเบื้องหลังแล้วคืน prompt · ครั้งแรก Docker **pull image ทั้งสองตัวให้เอง** (ใช้เวลาสักครู่) · ดูบรรทัดของ `kafka` ให้ดี — มันขึ้นคำว่า **`Healthy`** ไม่ใช่แค่ `Started` แปลว่า compose ยืนรอจน broker ตอบได้จริงแล้วค่อยไปเปิด `kafka-ui` ต่อ (ผลของ healthcheck + depends_on ในข้อ 2)
 
 ✅ **Expected output** — ปิดท้ายด้วย `[+] up 3/3` ครบสามบรรทัด (ก่อนหน้านี้จะมี log การ pull image ยาว ๆ · เวลาของแต่ละคนจะไม่ตรงกับเอกสารนี้):
 
@@ -243,7 +240,7 @@ kafka-ui  | 2026-09-21T06:16:22.482Z  INFO 1 --- [main] io.kafbat.ui.KafkaUiAppl
 
 ![หน้า Brokers ของ Kafka UI](./images/ui-brokers.png)
 
-> 📝 **คำอธิบาย:** **Broker Count 1 · Active Controller 1** — broker ตัวเดียวนี้เป็นทั้งคนเก็บข้อมูลและ controller ของ cluster · ช่อง **Controller Type: KRaft** คือคำยืนยันว่ารุ่นนี้ไม่ใช้ ZooKeeper แล้ว · ในตาราง Broker ID `1` มีเครื่องหมายถูกสีเขียว (online)
+> 📝 **คำอธิบาย:** **Broker Count 1 · Active Controller 1** — broker ตัวเดียวนี้เป็นทั้งคนเก็บข้อมูลและ controller · ช่อง **Controller Type: KRaft** ยืนยันว่ารุ่นนี้ไม่ใช้ ZooKeeper แล้ว
 
 ---
 
@@ -258,8 +255,7 @@ pip install -r requirements.txt
 python -c "import kafka; print(kafka.__version__)"
 ```
 
-> 📝 **คำอธิบาย:** `python3 -m venv ~/venv-kafka` สร้างสภาพแวดล้อม Python แยกส่วนตัว — ติดตั้งอะไรในนี้ไม่กระทบ Python ของระบบ · `source ~/venv-kafka/bin/activate` เปิดใช้งาน สังเกต prompt ขึ้นคำนำหน้า `(venv-kafka)` ·
-> `pip install -r requirements.txt` ติดตั้งตามรายการในไฟล์ ซึ่งมีบรรทัดเดียวคือ `kafka-python==3.0.10` — ไลบรารีฝั่ง Python สำหรับคุยกับ Kafka (ล็อกเวอร์ชันไว้ให้ตรงกับเอกสาร) · บรรทัดสุดท้าย import ทดสอบ สังเกตว่าชื่อตอนติดตั้งคือ `kafka-python` แต่ตอน import ใช้ชื่อ `kafka` เฉย ๆ
+> 📝 **คำอธิบาย:** `venv` สร้างสภาพแวดล้อม Python แยกส่วนตัว ติดตั้งอะไรในนี้ไม่กระทบ Python ของระบบ · `activate` เปิดใช้งาน สังเกต prompt ขึ้นคำนำหน้า `(venv-kafka)` · `pip install -r requirements.txt` ติดตั้งตามไฟล์ซึ่งมีบรรทัดเดียวคือ `kafka-python==3.0.10` · บรรทัดสุดท้าย import ทดสอบ — สังเกตว่าชื่อตอนติดตั้งคือ `kafka-python` แต่ตอน import ใช้ชื่อ `kafka` เฉย ๆ
 
 ✅ **Expected output** — จบด้วย `Successfully installed kafka-python-3.0.10` แล้วได้เลขเวอร์ชันจากบรรทัดสุดท้าย:
 
@@ -297,8 +293,7 @@ producer.close()
 ```
 
 > 📝 **คำอธิบาย:** ไล่ตามเลขในคอมเมนต์ · **(1)** `KafkaProducer` เปิด connection ไป `localhost:9092` — ไม่มี user/password เพราะ broker ของแล็บเป็น PLAINTEXT (ห้ามใช้แบบนี้บน production) · **(2)** `producer.send('hello', ...)` ส่งเข้า **topic** ชื่อ `hello` — Kafka รับเป็น bytes เสมอจึงต้อง `.encode()` และ **ไม่ต้องประกาศ topic ล่วงหน้า** broker ตั้งค่า auto-create ไว้ให้ ·
-> **(3)** ความจริง `send()` เป็นแบบ **async** — มันคืน `future` มาก่อน แล้ว `.get(timeout=10)` คือการยืนรอ "ใบเสร็จ" (`RecordMetadata`) จาก broker ว่าข้อความถูกจดลง log แล้วที่ **topic ไหน · partition ไหน · ตำแหน่ง (offset) ที่เท่าไร** — RabbitMQ ไม่มีใบเสร็จแบบนี้ เพราะข้อความเข้าคิวแล้วรอถูกลบ แต่ของ Kafka ทุกข้อความมี "ที่อยู่ถาวร" ใน log ·
-> **(4)** `close()` ปิด producer — ดันข้อมูลที่ค้างใน buffer ออกให้หมดก่อน
+> **(3)** `send()` เป็นแบบ **async** — คืน `future` มาก่อน แล้ว `.get(timeout=10)` คือการยืนรอ "ใบเสร็จ" (`RecordMetadata`) จาก broker ว่าข้อความถูกจดลง log แล้วที่ **topic ไหน · partition ไหน · offset ที่เท่าไร** — RabbitMQ ไม่มีใบเสร็จแบบนี้ เพราะข้อความเข้าคิวแล้วรอถูกลบ แต่ของ Kafka ทุกข้อความมี "ที่อยู่ถาวร" ใน log · **(4)** `close()` ดันข้อมูลที่ค้างใน buffer ออกให้หมดก่อนปิด
 
 รัน (อย่าลืมว่าต้องมี `(venv-kafka)` นำหน้า prompt และยัง**ไม่มีผู้อ่านสักคน**) :
 
