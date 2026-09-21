@@ -5,25 +5,17 @@
 
 ## สิ่งที่จะได้เรียนรู้
 
-- topic ไม่ใช่ท่อเดี่ยว ๆ — มันถูกผ่าเป็นหลาย **partition** แต่ละอันคือ **append-only log** แยกเล่ม มี **offset** ของตัวเอง
-- เปิด Kafka + Kafka UI ทั้งชุดด้วย **`docker compose up -d`** ไฟล์เดียว พร้อม **healthcheck** ที่บังคับลำดับการบูตให้เอง
+- topic ไม่ใช่ท่อเดี่ยว ๆ — มันถูกผ่าเป็นหลาย **partition** แต่ละอันคือ **append-only log** แยกเล่ม มี **offset** ของตัวเอง · ที่อยู่เต็มของทุกข้อความคือ **(topic, partition, offset)** และอ่านแล้ว **ไม่หาย** ต่างจาก RabbitMQ ที่ ack แล้วข้อความถูกลบ
+- เปิด Kafka + Kafka UI ทั้งชุดด้วย **`docker compose up -d`** ไฟล์เดียว — พร้อมเข้าใจเรื่อง **listener สองบาน** และ **healthcheck** ที่บังคับลำดับการบูตให้เอง
 - **กฎการเลือก partition 3 ชั้น** : ระบุ partition ตรง ๆ > hash ของ key > producer เลือกเอง — พิสูจน์ครบทั้งสามชั้นด้วยมือ
 - คำนวณ **murmur2(key) % จำนวน partition** เองด้วย `hash_key.py` แล้ว **ทำนายล่วงหน้า** ว่า key ไหนลงเล่มไหน *ก่อน* ส่งจริง
-- ที่อยู่เต็มของทุกข้อความคือ **(topic, partition, offset)** — อ่านแล้ว **ไม่หาย** อ่านซ้ำได้เรื่อย ๆ ต่างจาก RabbitMQ ที่ ack แล้วข้อความถูกลบ
+- ขอบเขตของ **"ลำดับการันตี"** และราคาที่ต้องจ่ายเมื่อ key กระจุก (**hot partition**)
 - ใช้ **Kafka UI** สืบสวนจริงจัง : Overview · Messages · กรองรายพาร์ทิชัน · ค้นด้วย key · Statistics · Produce Message
 - เห็นกับตาว่า **เพิ่มจำนวน partition แล้ว mapping พังยกแผง** — เหตุผลที่ของจริงต้องวางแผนจำนวน partition ตั้งแต่วันแรก
 
-## ภาพรวมของแล็บนี้
+## ลำดับการทำแล็บ
 
-1. เตรียมเครื่องเรียน + โค้ดแล็บ
-2. **`docker compose up -d`** เปิด broker + Kafka UI พร้อมกัน
-3. เตรียม Python (venv + kafka-python)
-4. สร้าง topic `orders` แบบตั้งใจ — **3 partitions**
-5. รัน `producer_no_key.py` สองรอบ — ไม่มี key = partition **คุมไม่ได้**
-6. รัน `producer_with_key.py` สองรอบ — key เดิม → partition เดิม **เป๊ะทุกครั้ง**
-7. เจาะทฤษฎี : กฎ 3 ชั้น · สูตร hash · ขอบเขตลำดับการันตี · hot partition
-8. อ่านทั้ง topic + สืบสวนใน Kafka UI + เจาะอ่าน partition เดียว
-9. ทดลองเพิ่มเติม 4 ข้อ — ทำนาย key ใหม่ · กับดักของฟอร์ม UI · เพิ่ม partition แล้ว mapping พัง · หัดอ่าน error
+เตรียมเครื่องเรียน → `docker compose up -d` → เตรียม venv → สร้าง topic `orders` **3 partitions** → รัน `producer_no_key.py` 2 รอบ (คุมไม่ได้) → รัน `producer_with_key.py` 2 รอบ (คงที่เสมอ) → **เจาะทฤษฎี** → อ่านทั้ง topic → สืบสวนใน Kafka UI → เจาะอ่าน partition เดียว → **ทดลองเพิ่มเติม 4 ข้อ**
 
 ---
 
@@ -760,9 +752,9 @@ python producer_with_key.py
 >
 > ![Overview หลังขยายเป็น 4 partitions](./images/ui-12-overview-4-partitions.png)
 
-### ง. หัดอ่าน error — `--describe` topic ที่ไม่มีอยู่
+### ง. หัดอ่าน error — typo ที่อันตรายกว่าที่คิด
 
-ลองสะกดชื่อผิดดูสักครั้ง จะได้รู้จักหน้าตา error ของฝั่ง Java :
+ลองสะกดชื่อ topic ผิดดูสักครั้ง :
 
 ```bash
 docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 \
@@ -776,11 +768,10 @@ Error while executing topic command : Topic 'ordersss' does not exist as expecte
 [2026-09-21 05:46:55,929] ERROR java.lang.IllegalArgumentException: Topic 'ordersss' does not exist as expected
 	at org.apache.kafka.tools.TopicCommand.ensureTopicExists(TopicCommand.java:211)
 	... (บรรทัด at org.apache... อีกหลายบรรทัด) ...
- (org.apache.kafka.tools.TopicCommand)
 ```
 
-> 📝 **คำอธิบาย:** วิธีอ่านกลับหัวกับ Python — traceback ของ Java ให้อ่าน **บรรทัดบนสุด** ก่อน : `Topic 'ordersss' does not exist as expected` ชัดเจนว่าสะกดผิด ส่วนบรรทัด `at org.apache...` ข้างล่างคือเส้นทางในโค้ดของเครื่องมือเอง ไม่ต้องตามไป ·
-> **เกร็ดที่อันตรายกว่า :** `--describe` แค่ฟ้องแล้วจบ แต่ **producer** ที่เผลอส่งไป topic ชื่อผิดอาจไม่ฟ้องเลย — ถ้า broker เปิด auto-create (ค่า default ของ Kafka) มันจะ **สร้าง topic ใหม่ให้เงียบ ๆ** แบบ 1 partition แล้ว typo ของเราก็กลายเป็น topic ผีทันที · แถมพอเป็น topic 1 partition ทุก key ก็ตกเล่มเดียวกันหมด — mapping ที่อุตส่าห์ออกแบบไว้ไม่มีความหมายเลย · เช็กเป็นระยะด้วย `kafka-topics.sh --list`
+> 📝 **คำอธิบาย:** traceback ของ Java อ่าน **บรรทัดบนสุด** ก่อน (กลับหัวกับ Python) : `Topic 'ordersss' does not exist as expected` ชัดเจนว่าสะกดผิด ส่วน `at org.apache...` คือเส้นทางในโค้ดของเครื่องมือเอง ไม่ต้องตามไป ·
+> **แต่ที่อันตรายกว่าคือฝั่ง producer** : ถ้าเผลอส่งไป topic ชื่อผิด broker ที่เปิด auto-create (ค่า default) จะ **สร้าง topic ใหม่ให้เงียบ ๆ แบบ 1 partition ไม่มี error สักบรรทัด** — typo กลายเป็น topic ผี และพอมีเล่มเดียว **ทุก key ก็ตกเล่มเดียวกันหมด** mapping ที่อุตส่าห์ออกแบบไว้ไม่มีความหมายเลย · เช็กเป็นระยะด้วย `kafka-topics.sh --list`
 
 ---
 
