@@ -6,8 +6,14 @@
 
 
 
-- อ่าน floder 001_LAB_Kafka_Setup  002_LAB_Partitions_Keys  003_LAB_Consumer_Groups  ให้ พิจารณา readme.md ข้างใน ในแต่ละ floder
-- ต้องการ upgrade 004_LAB_Event_Pipeline
+- อ่าน floder 001_LAB_Kafka_Setup  002_LAB_Partitions_Keys  003_LAB_Consumer_Groups 004_LAB_Event_Pipeline ให้ พิจารณา readme.md ข้างใน ในแต่ละ floder
+- ต้องการ upgrade เนื้อหาทาง ทฤษฏีภายใน Kafka_Slides.html ให้เข้าใจง่าย ครอบคลุม ทุก LAB
+- ในการ upgrade Kafka_Slides.html ไม่ต้องแยกหัวข้อ เป็นแต่ละ LAB แต่ ให้เป็นแนว ทฤษฏีที่มีภาพรวมครบทุก LAB อยู่ในเนื้อหาเดียวกันและเข้าใจง่าย
+- ถ้าต้องการเข้าใจ image ให้ใช้ cyolo1
+- อยากให้มีการใช้ imagegen ใน cyolo1 ช่วยในการส้รางรูปอธิบายเนื้อหา ที่เข้าใจยาก ให้เข้าใจง่ายขึ้น
+
+
+
 - อยาก ปรับปรุง LAB ให้ kafka และ kafka-ui รันใน docker-compose 
 - kafka-ui web นั้นต้องการให้ map port ออกมายัง local computer พยายามตั้งค่า port ให้ไม่ตรงกับ common  use  port ใน docker-compose เช่น 8080,80,8888
 - อยากให้ปรับ LAB ไม่ควรยาว เกินไป แต่ ครอบคลุ่มด้วยเนื้อหา

@@ -14,7 +14,12 @@ It is the backbone of data pipelines at LinkedIn, Netflix, Uber and countless ot
 เปิดไฟล์ [`Kafka_Slides.html`](./Kafka_Slides.html) ในเบราว์เซอร์
 (ไฟล์เดียวจบ ไม่ต้องติดตั้งอะไร · กด `O` ดูสไลด์ทั้งหมด · `Ctrl+P` บันทึกเป็น PDF)
 
-ผลการรันทุกอย่างในสไลด์ **รันจริง** บนเครื่องเรียน `tuchsanai/devtools:2569_1`
+สไลด์เป็น **ทฤษฎีชุดเดียวที่ครอบคลุมทั้ง 4 แล็บ** (ไม่แยกหัวข้อตามแล็บ) เรียงตามคอนเซ็ปต์ :
+ทำไมต้องมี Kafka → Log/offset/retention → Partition และ Key → Consumer Group / rebalance / LAG →
+Pub/Sub · Replay · Pipeline → Broker · Compose · Listener · Port → เทียบกับ RabbitMQ และแผนที่แล็บ —
+ป้าย `LAB n` มุมขวาบนของแต่ละสไลด์บอกว่าทฤษฎีข้อนั้นไปลงมือจริงในแล็บไหน ·
+ผลการรันและภาพหน้าจอในสไลด์ **รันจริง** บนเครื่องเรียน `tuchsanai/devtools:2569_1` ·
+รูปอธิบายคอนเซ็ปต์อยู่ใน [`slides_assets/`](./slides_assets) (สร้างไฟล์สไลด์ใหม่ด้วย `python3 slides_assets/build_slides.py`)
 
 ## เครื่องสำหรับทำแล็บ
 
@@ -57,7 +62,7 @@ Docker Compose version v5.3.1
 | **LAB 1** | [`001_LAB_Kafka_Setup`](./001_LAB_Kafka_Setup) | รัน broker ด้วย docker · Kafka UI · Hello World (`send.py`/`receive.py`) · อ่านแล้วไม่หาย | 9092 · **8411** |
 | **LAB 2** | [`002_LAB_Partitions_Keys`](./002_LAB_Partitions_Keys) | สร้าง topic 3 partitions · ส่งแบบมี/ไม่มี key · ลำดับการันตีต่อ partition | 9092 · **8412** |
 | **LAB 3** | [`003_LAB_Consumer_Groups`](./003_LAB_Consumer_Groups) | ทีมช่วยกันอ่าน · rebalance · อ่านค่า LAG · เพดานของ parallelism | 9092 · **8413** |
-| **LAB 4** | [`004_LAB_Event_Pipeline`](./004_LAB_Event_Pipeline) | pipeline JSON สามทอด : sensor → processor → alert center · สอง group สอง topic · replay ด้วย group ใหม่ (ในสไลด์เรียก "LAB 5 — Mini Event Pipeline") | 9092 · **8414** |
+| **LAB 4** | [`004_LAB_Event_Pipeline`](./004_LAB_Event_Pipeline) | pipeline JSON สามทอด : sensor → processor → alert center · สอง group สอง topic · replay ด้วย group ใหม่ | 9092 · **8414** |
 
 > **เลขโฟลเดอร์ตรงกับเลขแล็บ** (`001`–`004` = LAB 1–4) — ทุกแล็บมี `docker-compose.yml` ของตัวเอง
 > เปิด broker `kafka` (image `apache/kafka:4.1.0` — โหมด KRaft ไม่ต้องมี ZooKeeper · ไม่มี user/password ในโหมดแล็บ)

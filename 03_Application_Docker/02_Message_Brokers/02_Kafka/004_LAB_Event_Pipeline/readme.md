@@ -1,6 +1,6 @@
 # LAB 4 — Mini Event Pipeline (JSON) : sensor → processor → alert center
 
-> โฟลเดอร์ `004_LAB_Event_Pipeline` = **LAB 4** แล็บปิดท้ายของชุด Kafka (ในสไลด์ `Kafka_Slides.html` เรียกแล็บนี้ว่า "LAB 5 — Mini Event Pipeline") · ต่อจาก LAB 3 ที่รู้แล้วว่า consumer group แบ่ง partition กันอย่างไร
+> โฟลเดอร์ `004_LAB_Event_Pipeline` = **LAB 4** แล็บปิดท้ายของชุด Kafka (ในสไลด์ `Kafka_Slides.html` = section 05 "หลายทีม สมุดเล่มเดียว") · ต่อจาก LAB 3 ที่รู้แล้วว่า consumer group แบ่ง partition กันอย่างไร
 > ไฟล์ในโฟลเดอร์นี้ : `docker-compose.yml` · `sensor.py` · `processor.py` · `alert_center.py` · `requirements.txt`
 
 ## สิ่งที่จะได้เรียนรู้
