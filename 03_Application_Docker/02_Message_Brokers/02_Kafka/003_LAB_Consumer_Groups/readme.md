@@ -157,7 +157,19 @@ pip install -r requirements.txt
 
 ✅ **Expected output** — จบด้วย `Successfully installed kafka-python-3.0.10` (หรือ `Requirement already satisfied`)
 
-> **⚠️ กติกาสำคัญของแล็บนี้ :** ใช้ **หลาย terminal พร้อมกัน** (3 หน้าต่างเป็นหลัก · สูงสุด 5 ในทดลองเพิ่มเติม ข.) — **ทุกหน้าต่างใหม่** ต้อง `source ~/venv-kafka/bin/activate` แล้ว `cd` เข้าโฟลเดอร์แล็บก่อนเสมอ ลืมเมื่อไหร่เจอ `ModuleNotFoundError: No module named 'kafka'`
+> **⚠️ กติกาสำคัญของแล็บนี้ :** ใช้ **หลาย terminal พร้อมกัน** (3 หน้าต่างเป็นหลัก · สูงสุด 5 ในทดลองเพิ่มเติม ข.) — **ทุกหน้าต่างใหม่** ต้องมี venv เปิดอยู่ + อยู่ในโฟลเดอร์แล็บก่อนเสมอ ลืมเมื่อไหร่เจอ `ModuleNotFoundError: No module named 'kafka'` · **ไม่ต้องพิมพ์ทีละบรรทัด** — เปิดหน้าต่างใหม่บนเครื่องเราแล้ว **วางบรรทัดนี้บรรทัดเดียว** (ถาม password ครั้งเดียว : `passwd`) จบที่ prompt `(venv-kafka) root@…:~/labwork/…/003_LAB_Consumer_Groups#` พร้อมใช้งานทันที :
+>
+> ```bash
+> ssh -t root@localhost -p 2222 'cd ~/labwork/DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/003_LAB_Consumer_Groups && exec bash --rcfile <(cat ~/.bashrc; echo; cat ~/venv-kafka/bin/activate)'
+> ```
+>
+> ถ้าเปิด terminal ใน **VS Code Remote-SSH** (อยู่ในเครื่องเรียนอยู่แล้ว ไม่ต้อง ssh) ใช้บรรทัดนี้แทน :
+>
+> ```bash
+> source ~/venv-kafka/bin/activate && cd ~/labwork/DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/003_LAB_Consumer_Groups
+> ```
+>
+> 📝 **ทำไมต้องบรรทัดเดียว :** ถ้าวาง `ssh …` แล้วตามด้วย `source …` / `cd …` หลายบรรทัดพร้อมกัน บรรทัดถัดจาก `ssh` จะถูก **กินไปเป็น password** ทันที (ssh ถามรหัสก่อนที่บรรทัดอื่นจะได้รัน) · บรรทัดเดียวนี้จึงฝากคำสั่งไปรัน **ที่ฝั่งเครื่องเรียน** แทน : `-t` ขอ terminal จริงให้ shell โต้ตอบได้ · `cd …` เข้าโฟลเดอร์แล็บ · `exec bash --rcfile <(…)` เปิด bash ใหม่ที่อ่าน `~/.bashrc` ตามปกติ **แล้วต่อด้วย** `activate` ของ venv — prompt จึงยังมีสีและมี `(venv-kafka)` นำหน้าเหมือนพิมพ์เอง · ถ้าไม่มี `exec bash` ssh จะรันคำสั่งเสร็จแล้วตัดสายทิ้งทันที
 
 ---
 
@@ -311,11 +323,21 @@ RabbitMQ (LAB 2 ชุดที่แล้ว) แจกงาน **round-robin
 
 ## 6. Worker A ตัวเดียว — เป็นเจ้าของครบทั้ง 3 partitions
 
-แล็บนี้ใช้ **3 หน้าต่าง terminal** : **หน้าต่างที่ 1** ไว้ส่งงาน + สั่ง `docker compose exec` · **หน้าต่างที่ 2 และ 3** เป็น worker คนละตัว · เปิด **หน้าต่างที่ 2** (ssh เข้าเครื่องเรียนอีก session) สตาร์ต Worker A :
+แล็บนี้ใช้ **3 หน้าต่าง terminal** : **หน้าต่างที่ 1** ไว้ส่งงาน + สั่ง `docker compose exec` · **หน้าต่างที่ 2 และ 3** เป็น worker คนละตัว · เปิด **หน้าต่างที่ 2** — terminal ใหม่บนเครื่องเรา วาง **บรรทัดเดียว** นี้ (ssh + venv + cd ครบในบรรทัดเดียว · พิมพ์ password `passwd` ครั้งเดียว · ถ้าเป็น terminal ใน VS Code Remote-SSH ใช้บรรทัด `source … && cd …` จากข้อ 3 แทน) :
 
 ```bash
-source ~/venv-kafka/bin/activate
-cd ~/labwork/DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/003_LAB_Consumer_Groups
+ssh -t root@localhost -p 2222 'cd ~/labwork/DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/003_LAB_Consumer_Groups && exec bash --rcfile <(cat ~/.bashrc; echo; cat ~/venv-kafka/bin/activate)'
+```
+
+✅ **Expected output** — prompt เปลี่ยนเป็นแบบนี้ = venv เปิดอยู่ + อยู่ในโฟลเดอร์แล็บแล้ว (เลขหลัง `root@` คือ id ของเครื่องเรียน ของแต่ละคนต่างกัน · ถ้าไม่มี `(venv-kafka)` นำหน้า อย่าไปต่อ ย้อนดูข้อ 3):
+
+```
+(venv-kafka) root@b8e4a6e72f43:~/labwork/DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/003_LAB_Consumer_Groups#
+```
+
+สตาร์ต Worker A ในหน้าต่างนี้ :
+
+```bash
 python worker.py A
 ```
 
@@ -361,7 +383,7 @@ python new_task.py 12
 
 ## 7. เปิด Worker B — Rebalance ต่อหน้าต่อตา
 
-เปิด **หน้าต่างที่ 3** สตาร์ต Worker B **โดยไม่ต้องปิด A** (activate venv + `cd` ก่อนเหมือนข้อ 6) :
+เปิด **หน้าต่างที่ 3** สตาร์ต Worker B **โดยไม่ต้องปิด A** (terminal ใหม่ → วางบรรทัด `ssh -t …` บรรทัดเดียวจากข้อ 6 ก่อน จนเห็น prompt `(venv-kafka)`) :
 
 ```bash
 python worker.py B
@@ -532,7 +554,7 @@ workers         tasks           0          14              14              0    
 
 ### ข. Worker เกินจำนวน partition — ตัวที่เกินว่างงาน
 
-Worker A ยังรันอยู่จากข้อ ก. — เปิด **หน้าต่างที่ 3, 4, 5** รัน B, C, D (ทุกหน้าต่าง activate venv + `cd` ก่อน) :
+Worker A ยังรันอยู่จากข้อ ก. — เปิด **หน้าต่างที่ 3, 4, 5** รัน B, C, D (ทุกหน้าต่างวางบรรทัด `ssh -t …` บรรทัดเดียวจากข้อ 6 ก่อน) :
 
 ```bash
 python worker.py B        # หน้าต่างที่ 3
@@ -612,7 +634,7 @@ date
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
 | `KafkaTimeoutError: Unable to bootstrap` / `NoBrokersAvailable` | broker ยังไม่พร้อม หรือ compose ยังไม่ขึ้น | `docker compose ps` ต้องเห็น `kafka` เป็น `Up (healthy)` · ถ้าไม่มีแถวเลย ย้อนข้อ 2 |
-| `ModuleNotFoundError: No module named 'kafka'` | ลืม activate venv ใน terminal นั้น (ทุกหน้าต่างต้องทำเอง) | `source ~/venv-kafka/bin/activate` — ดูให้ prompt มี `(venv-kafka)` |
+| `ModuleNotFoundError: No module named 'kafka'` | ลืม activate venv ใน terminal นั้น (ทุกหน้าต่างต้องทำเอง) — มักเกิดเมื่อ ssh ธรรมดาแล้วไม่ได้ `source` | `source ~/venv-kafka/bin/activate` — ดูให้ prompt มี `(venv-kafka)` · ครั้งหน้าเปิดหน้าต่างด้วยบรรทัด `ssh -t …` บรรทัดเดียวจากข้อ 3 จะไม่พลาด |
 | worker เปิดอยู่แต่งานไม่มาเลย | ยังไม่ได้ส่งงาน หรือ **ทีมอ่านไปหมดแล้ว** (group จำ offset — รันใหม่ไม่อ่านซ้ำ) | `--describe --group workers` : LAG `0` = ไม่มีของค้าง ส่งใหม่ด้วย `python new_task.py 12` |
 | เปิด worker แล้วไม่เห็นบรรทัด "ได้รับมอบหมาย" | rebalance กำลังเจรจา (ไม่กี่วินาที) หรือ worker **เกินจำนวน partition** | รอสักครู่ · `--describe --group workers --members` ดูว่าสมาชิกเกิน 3 หรือยัง |
 | ปิด worker แล้วอีกตัวเงียบไปนาน ~45 วินาที | worker ตายโดยไม่ได้ `close()` (kill -9 · ปิดหน้าต่างทิ้ง · โค้ดเวอร์ชันเก่าไม่มี `finally`) → รอ session timeout | ปกติของ Kafka — ปิดด้วย Ctrl+C ให้ `close()` ทำงาน rebalance จะเกิดทันที |
@@ -651,6 +673,7 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 | คำสั่ง | ความหมาย |
 |---|---|
 | `docker run ... -p 2222:22 -p 8413:8413 tuchsanai/devtools:2569_1` | เปิดเครื่องเรียนพร้อมเปิดทางให้ Kafka UI (`8413`) ทะลุถึงเบราว์เซอร์ |
+| `ssh -t root@localhost -p 2222 'cd <โฟลเดอร์แล็บ> && exec bash --rcfile <(cat ~/.bashrc; echo; cat ~/venv-kafka/bin/activate)'` | เปิดหน้าต่าง terminal ใหม่ **บรรทัดเดียว** : ssh + venv + cd จบในคราวเดียว (ทุกหน้าต่างที่ 2–5) |
 | `docker compose up -d` / `ps` / `down -v` | เปิด broker + UI ทั้งชุด · ดูสถานะ (`kafka` ต้อง `healthy`) · ลบทั้งชุด |
 | `kafka-topics.sh --create --topic tasks --partitions 3 --replication-factor 1` | สร้าง topic 3 เล่ม = ทีมช่วยกันอ่านได้สูงสุด 3 ตัว |
 | `python worker.py <ชื่อ>` | เปิด worker เข้าทีม `workers` — เปิดเพิ่ม/ปิดออกได้ตลอด Kafka rebalance ให้เอง |
