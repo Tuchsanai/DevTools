@@ -1,0 +1,15 @@
+- อ่าน readme.md
+- อยาก ปรับปรุง LAB ให้ kafka และ kafka-ui รันใน docker-compose 
+- kafka-ui web นั้นต้องการให้ map port ออกมายัง local computer พยายามตั้งค่า port ให้ไม่ตรงกับ common  use  port ใน docker-compose เช่น 8080,80,8888
+- อยากให้ปรับ LAB ไม่ควรยาว เกินไป แต่ ครอบคลุ่มด้วยเนื้อหา
+- อยากให้มีการใช้ imagegen ใน cyolo1 ช่วยในการส้รางรูปอธิบายเนื้อหา ที่เข้าใจยาก ให้เข้าใจง่ายขึ้น
+
+
+
+- อ่าน floder 001_LAB_Kafka_Setup และ 002_LAB_Partitions_Keys  ให้ พิจารณา readme.md ข้างใน ในแต่ละ floder
+- ต้องการ upgrade 003_LAB_Consumer_Groups
+- อยาก ปรับปรุง LAB ให้ kafka และ kafka-ui รันใน docker-compose 
+- kafka-ui web นั้นต้องการให้ map port ออกมายัง local computer พยายามตั้งค่า port ให้ไม่ตรงกับ common  use  port ใน docker-compose เช่น 8080,80,8888
+- อยากให้ปรับ LAB ไม่ควรยาว เกินไป แต่ ครอบคลุ่มด้วยเนื้อหา
+- อยากให้มีการใช้ imagegen ใน cyolo1 ช่วยในการส้รางรูปอธิบายเนื้อหา ที่เข้าใจยาก ให้เข้าใจง่ายขึ้น
+

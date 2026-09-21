@@ -17,26 +17,29 @@ def main():
     print(f' [*] Worker {name} waiting for tasks. To exit press CTRL+C')
 
     assignment = None
-    while True:
-        # 2) poll ดึงงานชุดถัดไป (รอไม่เกิน 1 วินาทีต่อรอบ)
-        batch = consumer.poll(timeout_ms=1000)
+    try:
+        while True:
+            # 2) poll ดึงงานชุดถัดไป (รอไม่เกิน 1 วินาทีต่อรอบ)
+            batch = consumer.poll(timeout_ms=1000)
 
-        # 3) เช็กว่าโดน "แบ่ง partition" ใหม่หรือยัง — พิมพ์ทุกครั้งที่มีการเปลี่ยน (rebalance)
-        current = sorted(tp.partition for tp in consumer.assignment())
-        if current and current != assignment:
-            print(f' [*] Worker {name} ได้รับมอบหมาย partitions: {current}')
-            assignment = current
+            # 3) เช็กว่าโดน "แบ่ง partition" ใหม่หรือยัง — พิมพ์ทุกครั้งที่มีการเปลี่ยน (rebalance)
+            current = sorted(tp.partition for tp in consumer.assignment())
+            if current and current != assignment:
+                print(f' [*] Worker {name} ได้รับมอบหมาย partitions: {current}')
+                assignment = current
 
-        # 4) ทำงานทีละข้อความ — sleep 1 วินาที = แกล้งทำเป็นงานที่ใช้เวลา
-        for tp, messages in batch.items():
-            for message in messages:
-                print(f' [x] Worker {name} got p{message.partition} '
-                      f'offset={message.offset} {message.value.decode()}')
-                time.sleep(1)
+            # 4) ทำงานทีละข้อความ — sleep 1 วินาที = แกล้งทำเป็นงานที่ใช้เวลา
+            for tp, messages in batch.items():
+                for message in messages:
+                    print(f' [x] Worker {name} got p{message.partition} '
+                          f'offset={message.offset} {message.value.decode()}')
+                    time.sleep(1)
+    except KeyboardInterrupt:
+        print(f' [*] Worker {name} leaving the group...')
+    finally:
+        # 5) ปิดให้เรียบร้อย : commit offset ล่าสุด + บอกลา broker (LeaveGroup)
+        #    ทีมที่เหลือจะได้ rebalance ทันที ไม่ต้องรอ session timeout (45 วินาที)
+        consumer.close()
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        print('Interrupted')
-        sys.exit(0)
+    main()

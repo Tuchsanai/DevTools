@@ -53,9 +53,9 @@ Docker Compose version v5.3.1
 
 | แล็บในสไลด์ | โฟลเดอร์ | หัวข้อ | Port |
 |---|---|---|---|
-| **LAB 1** | [`001_LAB_Kafka_Setup`](./001_LAB_Kafka_Setup) | รัน broker ด้วย docker · Kafka UI · Hello World (`send.py`/`receive.py`) · อ่านแล้วไม่หาย | 9092 · 8080 |
-| **LAB 2** | [`002_LAB_Partitions_Keys`](./002_LAB_Partitions_Keys) | สร้าง topic 3 partitions · ส่งแบบมี/ไม่มี key · ลำดับการันตีต่อ partition | 9092 · 8080 |
-| **LAB 3** | [`003_LAB_Consumer_Groups`](./003_LAB_Consumer_Groups) | ทีมช่วยกันอ่าน · rebalance · อ่านค่า LAG · เพดานของ parallelism | 9092 · 8080 |
+| **LAB 1** | [`001_LAB_Kafka_Setup`](./001_LAB_Kafka_Setup) | รัน broker ด้วย docker · Kafka UI · Hello World (`send.py`/`receive.py`) · อ่านแล้วไม่หาย | 9092 · **8411** |
+| **LAB 2** | [`002_LAB_Partitions_Keys`](./002_LAB_Partitions_Keys) | สร้าง topic 3 partitions · ส่งแบบมี/ไม่มี key · ลำดับการันตีต่อ partition | 9092 · **8412** |
+| **LAB 3** | [`003_LAB_Consumer_Groups`](./003_LAB_Consumer_Groups) | ทีมช่วยกันอ่าน · rebalance · อ่านค่า LAG · เพดานของ parallelism | 9092 · **8413** |
 | **LAB 4** | [`004_LAB_PubSub_Replay`](./004_LAB_PubSub_Replay) | pub/sub ด้วยชื่อ group · replay ย้อนอดีต · group จำ offset | 9092 · 8080 |
 | **LAB 5** | [`005_LAB_Event_Pipeline`](./005_LAB_Event_Pipeline) | pipeline JSON สามทอด : sensor → processor → alert center | 9092 · 8080 |
 
