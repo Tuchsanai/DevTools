@@ -1,3 +1,4 @@
+import signal
 import sys
 import time
 from kafka import KafkaConsumer
@@ -5,6 +6,14 @@ from kafka import KafkaConsumer
 def main():
     # ตั้งชื่อ worker ผ่าน argument เช่น `python worker.py A` (ไว้ดูว่าใครได้งานไหน)
     name = sys.argv[1] if len(sys.argv) > 1 else 'worker'
+
+    # 0) แล็บนี้รัน worker เป็น background job (`python worker.py A &`) ในหน้าต่างเดียว
+    #    จึงปิดด้วย `kill <pid>` (SIGTERM) แทน Ctrl+C — แปลงสัญญาณทั้งสองให้เป็น KeyboardInterrupt
+    #    เพื่อให้ไปเข้า except/finally ด้านล่างเหมือนกัน (ส่วน `kill -9` จะไม่ผ่านตรงนี้เลย)
+    def graceful_exit(signum, frame):
+        raise KeyboardInterrupt
+    signal.signal(signal.SIGTERM, graceful_exit)
+    signal.signal(signal.SIGINT, graceful_exit)
 
     # 1) จุดเปลี่ยนสำคัญของแล็บนี้ : ใส่ group_id='workers'
     #    ทุก worker ที่ใช้ group_id เดียวกัน = ทีมเดียวกัน → Kafka "แบ่ง partition" ให้ช่วยกันอ่าน
@@ -14,7 +23,7 @@ def main():
                              group_id='workers',
                              auto_offset_reset='earliest')
 
-    print(f' [*] Worker {name} waiting for tasks. To exit press CTRL+C')
+    print(f' [*] Worker {name} waiting for tasks. To exit: kill <pid>', flush=True)
 
     assignment = None
     try:
@@ -23,19 +32,20 @@ def main():
             batch = consumer.poll(timeout_ms=1000)
 
             # 3) เช็กว่าโดน "แบ่ง partition" ใหม่หรือยัง — พิมพ์ทุกครั้งที่มีการเปลี่ยน (rebalance)
+            #    (ข้ามเฉพาะตอนเริ่มโปรแกรมที่ยังไม่ได้เล่มเลย · ถ้าเคยถือแล้วถูกริบจนเหลือ [] ก็พิมพ์ = ว่างงาน)
             current = sorted(tp.partition for tp in consumer.assignment())
-            if current and current != assignment:
-                print(f' [*] Worker {name} ได้รับมอบหมาย partitions: {current}')
+            if current != assignment and (current or assignment):
+                print(f' [*] Worker {name} ได้รับมอบหมาย partitions: {current}', flush=True)
                 assignment = current
 
             # 4) ทำงานทีละข้อความ — sleep 1 วินาที = แกล้งทำเป็นงานที่ใช้เวลา
             for tp, messages in batch.items():
                 for message in messages:
                     print(f' [x] Worker {name} got p{message.partition} '
-                          f'offset={message.offset} {message.value.decode()}')
+                          f'offset={message.offset} {message.value.decode()}', flush=True)
                     time.sleep(1)
     except KeyboardInterrupt:
-        print(f' [*] Worker {name} leaving the group...')
+        print(f' [*] Worker {name} leaving the group...', flush=True)
     finally:
         # 5) ปิดให้เรียบร้อย : commit offset ล่าสุด + บอกลา broker (LeaveGroup)
         #    ทีมที่เหลือจะได้ rebalance ทันที ไม่ต้องรอ session timeout (45 วินาที)

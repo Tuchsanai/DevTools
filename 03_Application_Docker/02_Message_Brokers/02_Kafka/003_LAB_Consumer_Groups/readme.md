@@ -16,6 +16,8 @@
 
 เตรียมเครื่องเรียน (เปิด port `8413`) → `docker compose up -d` → สร้าง topic `tasks` **3 partitions** + venv → อ่านโค้ด → **เจาะทฤษฎี** → Worker A คนเดียว → เปิด Worker B ดู **rebalance** → ส่องทีมด้วย CLI + Kafka UI → ปิด B ดู rebalance ขากลับ → **ทดลองเพิ่มเติม 3 ข้อ** (LAG · worker เกิน partition · ตายไม่บอกลา)
 
+> 🖥️ **แล็บนี้ใช้ terminal หน้าต่างเดียว** — worker ทุกตัวรันเป็น **background job** (`python worker.py A &`) ในหน้าต่างเดิม prompt กลับมาทันที ไม่ต้องเปิด ssh หลาย session ส่วน output ของ worker จะ **พิมพ์แทรกเข้ามาในหน้าต่างเดียวกัน** ให้เห็นทุกตัวพร้อมกัน (ดูวิธีอ่านในข้อ 3)
+
 ---
 
 ## 1. เตรียมเครื่องเรียน + โค้ดแล็บ
@@ -157,7 +159,11 @@ pip install -r requirements.txt
 
 ✅ **Expected output** — จบด้วย `Successfully installed kafka-python-3.0.10` (หรือ `Requirement already satisfied`)
 
-> **⚠️ กติกาสำคัญของแล็บนี้ :** ใช้ **หลาย terminal พร้อมกัน** (3 หน้าต่างเป็นหลัก · สูงสุด 5 ในทดลองเพิ่มเติม ข.) — **ทุกหน้าต่างใหม่** ต้อง `source ~/venv-kafka/bin/activate` แล้ว `cd` เข้าโฟลเดอร์แล็บก่อนเสมอ ลืมเมื่อไหร่เจอ `ModuleNotFoundError: No module named 'kafka'`
+> **⚠️ กติกาสำคัญของแล็บนี้ — ทำทั้งหมดใน terminal หน้าต่างเดียว :**
+> - **เปิด worker ด้วย `&` ต่อท้ายเสมอ** เช่น `python worker.py A &` → bash พิมพ์ `[1] 5602` (เลข job + PID) แล้ว **คืน prompt ทันที** worker ทำงานต่อเบื้องหลัง ถ้าลืม `&` หน้าต่างจะค้างรอ (กด Ctrl+C ออกแล้วสั่งใหม่พร้อม `&`)
+> - **output ของ worker ทุกตัวพิมพ์แทรกเข้ามาในหน้าต่างนี้** ปนกับ prompt — บางบรรทัดจะโผล่ต่อท้าย `(venv-kafka) $` หรือขึ้นหลังจากที่เราพิมพ์คำสั่งถัดไปแล้ว **เป็นเรื่องปกติ** ดูที่คำว่า `Worker A` / `Worker B` ในบรรทัดเป็นหลักว่าใครพิมพ์ · prompt ดูรก ๆ กด **Enter เปล่า ๆ** ให้ขึ้น prompt ใหม่ได้
+> - **ปิด worker ด้วย `kill $(pgrep -f "worker.py B")`** (ส่ง SIGTERM) แทนการกด Ctrl+C ในหน้าต่างอื่น — `worker.py` ของแล็บนี้รับสัญญาณแล้วเรียก `consumer.close()` ให้เหมือน Ctrl+C ทุกประการ (ดูข้อ 4) · เช็กว่ามี worker ตัวไหนรันอยู่ด้วย `jobs`
+> - activate venv (`source ~/venv-kafka/bin/activate`) แค่ **ครั้งเดียว** ในหน้าต่างนี้ — ถ้าเจอ `ModuleNotFoundError: No module named 'kafka'` แปลว่ายังไม่ได้ activate
 
 ---
 
@@ -200,6 +206,7 @@ producer.close()
 ### `worker.py` — ตัวทำงาน (consumer ในทีม `workers`)
 
 ```python
+import signal
 import sys
 import time
 from kafka import KafkaConsumer
@@ -207,6 +214,14 @@ from kafka import KafkaConsumer
 def main():
     # ตั้งชื่อ worker ผ่าน argument เช่น `python worker.py A` (ไว้ดูว่าใครได้งานไหน)
     name = sys.argv[1] if len(sys.argv) > 1 else 'worker'
+
+    # 0) แล็บนี้รัน worker เป็น background job (`python worker.py A &`) ในหน้าต่างเดียว
+    #    จึงปิดด้วย `kill <pid>` (SIGTERM) แทน Ctrl+C — แปลงสัญญาณทั้งสองให้เป็น KeyboardInterrupt
+    #    เพื่อให้ไปเข้า except/finally ด้านล่างเหมือนกัน (ส่วน `kill -9` จะไม่ผ่านตรงนี้เลย)
+    def graceful_exit(signum, frame):
+        raise KeyboardInterrupt
+    signal.signal(signal.SIGTERM, graceful_exit)
+    signal.signal(signal.SIGINT, graceful_exit)
 
     # 1) จุดเปลี่ยนสำคัญของแล็บนี้ : ใส่ group_id='workers'
     #    ทุก worker ที่ใช้ group_id เดียวกัน = ทีมเดียวกัน → Kafka "แบ่ง partition" ให้ช่วยกันอ่าน
@@ -216,7 +231,7 @@ def main():
                              group_id='workers',
                              auto_offset_reset='earliest')
 
-    print(f' [*] Worker {name} waiting for tasks. To exit press CTRL+C')
+    print(f' [*] Worker {name} waiting for tasks. To exit: kill <pid>', flush=True)
 
     assignment = None
     try:
@@ -225,19 +240,20 @@ def main():
             batch = consumer.poll(timeout_ms=1000)
 
             # 3) เช็กว่าโดน "แบ่ง partition" ใหม่หรือยัง — พิมพ์ทุกครั้งที่มีการเปลี่ยน (rebalance)
+            #    (ข้ามเฉพาะตอนเริ่มโปรแกรมที่ยังไม่ได้เล่มเลย · ถ้าเคยถือแล้วถูกริบจนเหลือ [] ก็พิมพ์ = ว่างงาน)
             current = sorted(tp.partition for tp in consumer.assignment())
-            if current and current != assignment:
-                print(f' [*] Worker {name} ได้รับมอบหมาย partitions: {current}')
+            if current != assignment and (current or assignment):
+                print(f' [*] Worker {name} ได้รับมอบหมาย partitions: {current}', flush=True)
                 assignment = current
 
             # 4) ทำงานทีละข้อความ — sleep 1 วินาที = แกล้งทำเป็นงานที่ใช้เวลา
             for tp, messages in batch.items():
                 for message in messages:
                     print(f' [x] Worker {name} got p{message.partition} '
-                          f'offset={message.offset} {message.value.decode()}')
+                          f'offset={message.offset} {message.value.decode()}', flush=True)
                     time.sleep(1)
     except KeyboardInterrupt:
-        print(f' [*] Worker {name} leaving the group...')
+        print(f' [*] Worker {name} leaving the group...', flush=True)
     finally:
         # 5) ปิดให้เรียบร้อย : commit offset ล่าสุด + บอกลา broker (LeaveGroup)
         #    ทีมที่เหลือจะได้ rebalance ทันที ไม่ต้องรอ session timeout (45 วินาที)
@@ -247,9 +263,10 @@ if __name__ == '__main__':
     main()
 ```
 
-> 📝 **คำอธิบาย:** **(1)** พระเอกของแล็บ — `group_id='workers'` : LAB 1–2 consumer ไม่มี group ต่างคนต่างอ่านทั้ง topic แต่พอใส่ `group_id` เดียวกัน ทุกตัวกลายเป็น **ทีมเดียวกัน** Kafka จะ (ก) **แบ่ง partition** ให้คนละเล่มไม่ซ้ำกัน และ (ข) **จด offset ของทีม** ไว้ที่ broker — ปิดแล้วเปิดใหม่อ่านต่อจากที่ค้าง · `auto_offset_reset='earliest'` มีผลเฉพาะครั้งแรกสุดที่ทีมยังไม่เคยจด offset ·
-> **(2)** `poll()` ดึงงานเป็น batch — ฝั่ง consumer ของ Kafka **ดึงเอง** ไม่ใช่ broker ยัด callback มาให้แบบ pika · **(3)** `consumer.assignment()` ถามว่าตอนนี้ฉันถือเล่มไหน — พิมพ์ทุกครั้งที่เปลี่ยน เพื่อ **เห็น rebalance ด้วยตาเปล่า** · **(4)** ไม่มี ack ให้เขียนเอง — ทีม commit offset ให้อัตโนมัติทุก 5 วินาที และข้อความ **ไม่ถูกลบจาก log** ·
-> **(5)** ของใหม่ : `consumer.close()` ใน `finally` — บอกลา broker อย่างสุภาพ (`LeaveGroup`) ทีมที่เหลือจึง rebalance **ทันที** · ถ้าโปรแกรมตายโดยไม่ได้ close broker จะรอจนขาด heartbeat ครบ **45 วินาที** (`session_timeout_ms` ของ kafka-python 3.0.10) ค่อยรู้ว่าหายไป — ทดลองเพิ่มเติม ค. จะโชว์ความต่างนี้
+> 📝 **คำอธิบาย:** **(0)** ของใหม่สำหรับแล็บหน้าต่างเดียว — worker รันเป็น background job เราจึงส่งสัญญาณไปปิดด้วย `kill <pid>` (SIGTERM) แทนกด Ctrl+C (SIGINT) · `signal.signal(...)` จับทั้งสองสัญญาณแล้ว **โยน `KeyboardInterrupt`** ให้ไหลเข้า `except` / `finally` ด้านล่างเหมือนกันเป๊ะ — นี่คือ "signal handler" ที่โค้ด consumer ของจริงต้องมี · ส่วน `kill -9` (SIGKILL) ระบบปฏิบัติการฆ่าทันที Python ไม่มีโอกาสรันอะไรเลย (ทดลอง ค.) · `flush=True` บังคับพิมพ์ทันทีไม่ค้างใน buffer เพราะ output ของ background job ต้องแทรกเข้าหน้าต่างเราแบบเรียลไทม์ ·
+> **(1)** พระเอกของแล็บ — `group_id='workers'` : LAB 1–2 consumer ไม่มี group ต่างคนต่างอ่านทั้ง topic แต่พอใส่ `group_id` เดียวกัน ทุกตัวกลายเป็น **ทีมเดียวกัน** Kafka จะ (ก) **แบ่ง partition** ให้คนละเล่มไม่ซ้ำกัน และ (ข) **จด offset ของทีม** ไว้ที่ broker — ปิดแล้วเปิดใหม่อ่านต่อจากที่ค้าง · `auto_offset_reset='earliest'` มีผลเฉพาะครั้งแรกสุดที่ทีมยังไม่เคยจด offset ·
+> **(2)** `poll()` ดึงงานเป็น batch — ฝั่ง consumer ของ Kafka **ดึงเอง** ไม่ใช่ broker ยัด callback มาให้แบบ pika · **(3)** `consumer.assignment()` ถามว่าตอนนี้ฉันถือเล่มไหน — พิมพ์ทุกครั้งที่เปลี่ยน เพื่อ **เห็น rebalance ด้วยตาเปล่า** (รวมถึงตอนถูกริบจนเหลือ `[]` = ว่างงาน ในทดลอง ข. — ข้ามแค่ตอนเริ่มโปรแกรมที่ยังไม่ทันได้เล่ม) · **(4)** ไม่มี ack ให้เขียนเอง — ทีม commit offset ให้อัตโนมัติทุก 5 วินาที และข้อความ **ไม่ถูกลบจาก log** ·
+> **(5)** `consumer.close()` ใน `finally` — บอกลา broker อย่างสุภาพ (`LeaveGroup`) ทีมที่เหลือจึง rebalance **ทันที** ไม่ว่าจะออกด้วย Ctrl+C หรือ `kill` · ถ้าโปรแกรมตายโดยไม่ได้ close broker จะรอจนขาด heartbeat ครบ **45 วินาที** (`session_timeout_ms` ของ kafka-python 3.0.10) ค่อยรู้ว่าหายไป — ทดลองเพิ่มเติม ค. จะโชว์ความต่างนี้
 
 ---
 
