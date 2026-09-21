@@ -32,6 +32,22 @@ services:
       timeout: 10s
       retries: 20
 
+  # --- รันครั้งเดียวแล้วจบ : สร้าง topic orders 3 partitions ให้อัตโนมัติ ---
+  kafka-init:
+    image: apache/kafka:4.1.0
+    container_name: kafka-init
+    depends_on:
+      kafka:
+        condition: service_healthy   # รอจน broker ตอบได้จริง ค่อยสั่งสร้าง topic
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:19092 \
+          --create --if-not-exists --topic orders --partitions 3 --replication-factor 1
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:19092 \
+          --describe --topic orders
+    restart: "no"                    # ทำเสร็จแล้วหยุด (Exited 0) ไม่ต้องเปิดใหม่
+
   kafka-ui:
     image: kafbat/kafka-ui:latest
     container_name: kafka-ui
