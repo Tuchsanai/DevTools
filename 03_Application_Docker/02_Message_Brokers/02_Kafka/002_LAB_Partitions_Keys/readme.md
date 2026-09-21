@@ -1,37 +1,39 @@
 # LAB 2 — Partitions & Keys : ใครเป็นคนเลือกว่าข้อความลง partition ไหน
 
-> โฟลเดอร์ `002_LAB_Partitions_Keys` = **LAB 2** ในสไลด์ `Kafka_Slides.html` (ต่อจาก LAB 1 ที่เปิด broker แล้วส่ง–รับข้อความแรกผ่าน topic เดียวแบบยังไม่ต้องสน partition)
+> โฟลเดอร์ `002_LAB_Partitions_Keys` = **LAB 2** ในสไลด์ `Kafka_Slides.html` (ต่อจาก LAB 1 ที่ส่ง–รับข้อความแรกผ่าน topic เดียวแบบยังไม่สน partition)
 > ไฟล์ในโฟลเดอร์นี้ : `docker-compose.yml` · `producer_no_key.py` · `producer_with_key.py` · `consumer_partitions.py` · `hash_key.py` · `requirements.txt`
+
+> 🖥️ **แล็บนี้ใช้ terminal หน้าต่างเดียวตลอดทั้งแล็บ** — ไม่มีคำสั่งไหนค้างรอ (consumer จบเองใน 5 วินาที · console producer ส่งผ่าน pipe) และหน้าเว็บ Kafka UI เปิดจากเบราว์เซอร์ของเราได้ตรง ๆ ที่ `http://localhost:8412` ไม่ต้อง forward port
 
 ## สิ่งที่จะได้เรียนรู้
 
-- topic ไม่ใช่ท่อเดี่ยว ๆ — มันถูกผ่าเป็นหลาย **partition** แต่ละอันคือ **append-only log** แยกเล่ม มี **offset** ของตัวเอง · ที่อยู่เต็มของทุกข้อความคือ **(topic, partition, offset)** และอ่านแล้ว **ไม่หาย** ต่างจาก RabbitMQ ที่ ack แล้วข้อความถูกลบ
-- เปิด Kafka + Kafka UI + สร้าง topic ทั้งชุดด้วย **`docker compose up -d`** ไฟล์เดียว — พร้อมเข้าใจเรื่อง **listener สองบาน** · **healthcheck** ที่บังคับลำดับการบูตให้เอง · และ **init container** ที่รันครั้งเดียวแล้วจบ
-- **กฎการเลือก partition 3 ชั้น** : ระบุ partition ตรง ๆ > hash ของ key > producer เลือกเอง — พิสูจน์ครบทั้งสามชั้นด้วยมือ
-- คำนวณ **murmur2(key) % จำนวน partition** เองด้วย `hash_key.py` แล้ว **ทำนายล่วงหน้า** ว่า key ไหนลงเล่มไหน *ก่อน* ส่งจริง
-- ขอบเขตของ **"ลำดับการันตี"** และราคาที่ต้องจ่ายเมื่อ key กระจุก (**hot partition**)
-- ใช้ **Kafka UI** สืบสวนจริงจัง : Overview · Messages · กรองรายพาร์ทิชัน · ค้นด้วย key · Statistics · Produce Message
-- เห็นกับตาว่า **เพิ่มจำนวน partition แล้ว mapping พังยกแผง** — เหตุผลที่ของจริงต้องวางแผนจำนวน partition ตั้งแต่วันแรก
+- topic ถูกผ่าเป็นหลาย **partition** แต่ละอันคือ **append-only log** แยกเล่ม มี **offset** ของตัวเอง — ที่อยู่เต็มของทุกข้อความคือ **(topic, partition, offset)**
+- **กฎเลือก partition 3 ชั้น** : ระบุ partition ตรง ๆ > `hash(key) % N` > producer เลือกเอง — พิสูจน์ครบทั้งสามชั้นด้วยมือ
+- **ทำนายล่วงหน้า** ได้ว่า key ไหนลงเล่มไหนด้วย `hash_key.py` ก่อนส่งจริง
+- **ลำดับการันตีเฉพาะภายใน partition เดียว** — และเหตุผลที่การเพิ่มจำนวน partition ทำให้ mapping พังยกแผง
+- ใช้ **Kafka UI** สืบสวน : นับข้อความรายเล่ม · กรองทีละ partition · ค้นด้วย key · Statistics
 
 ## ลำดับการทำแล็บ
 
-เตรียมเครื่องเรียน → `docker compose up -d` → เตรียม venv → ตรวจ topic `orders` **3 partitions** ที่ `kafka-init` สร้างให้ → รัน `producer_no_key.py` 2 รอบ (คุมไม่ได้) → รัน `producer_with_key.py` 2 รอบ (คงที่เสมอ) → **เจาะทฤษฎี** → อ่านทั้ง topic → สืบสวนใน Kafka UI → เจาะอ่าน partition เดียว → **ทดลองเพิ่มเติม 4 ข้อ**
+เตรียมเครื่องเรียน → `docker compose up -d` (ได้ topic `orders` 3 partitions มาเลย) → venv → ส่ง **ไม่มี key** 2 รอบ → ส่ง **มี key** 2 รอบ → **เจาะทฤษฎี** → อ่านทั้ง topic → สืบสวนใน Kafka UI → เจาะอ่าน partition เดียว → **ทดลองเพิ่มเติม 3 ข้อ**
+
+![แผนที่แล็บ : topic เดียว 3 เล่ม กับ 3 วิธีมองข้อมูลก้อนเดียวกัน](./images/concept-08-lab-map.png)
 
 ---
 
 ## 1. เตรียมเครื่องเรียน + โค้ดแล็บ
 
-เปิด container ที่ติดตั้ง Docker มาให้แล้ว (บนเครื่องของเราเอง ไม่ใช้ cloud) :
+เปิด container ที่ติดตั้ง Docker มาให้แล้ว (บนเครื่องของเราเอง ไม่ใช้ cloud) — **แล็บนี้เปิด port `8412` เพิ่ม** ให้หน้าเว็บ Kafka UI ทะลุออกมาถึงเบราว์เซอร์ของเรา :
 
 ```bash
 docker rm -f devtools
-docker run -dit --name devtools --privileged -p 2222:22 tuchsanai/devtools:2569_1
+docker run -dit --name devtools --privileged -p 2222:22 -p 8412:8412 tuchsanai/devtools:2569_1
 ssh root@localhost -p 2222        # password : passwd
 ```
 
-> 📝 **คำอธิบาย:** `docker rm -f devtools` ลบเครื่องเรียนตัวเดิมทิ้งกันชื่อซ้ำ (ถ้าไม่เคยสร้างจะเงียบ ๆ ไม่ใช่ error) · `--privileged` จำเป็นเพราะเราจะรัน **Docker ซ้อนข้างในกล่อง** — Kafka ของแล็บนี้ก็เป็น container อยู่ข้างในอีกที · `-p 2222:22` ส่ง port 2222 ของเครื่องเราเข้า SSH ของกล่อง · **คำสั่งที่เหลือทั้งหมดพิมพ์ข้างในเครื่องเรียน**
+> 📝 **คำอธิบาย:** `docker rm -f devtools` ลบเครื่องเรียนตัวเดิมกันชื่อซ้ำ · `--privileged` จำเป็นเพราะ Kafka ของแล็บนี้เป็น container ที่รัน **ซ้อนอยู่ข้างในเครื่องเรียน** · `-p 2222:22` คือ SSH · **`-p 8412:8412`** เปิดทางให้เบราว์เซอร์เห็น Kafka UI โดยไม่ต้อง forward port — เลขต้องตรงกับฝั่งซ้ายของ `ports:` ใน `docker-compose.yml` (LAB 1 ใช้ `8411` · แล็บนี้ `8412` · เลี่ยง `8080`/`80`/`8888` ที่ชนกับโปรแกรมอื่นง่าย)
 
-ใน VS Code ใช้ **Remote-SSH** ต่อไปที่ `root@localhost:2222` แล้วดึงโค้ดแล็บ :
+ใน VS Code ใช้ **Remote-SSH** ต่อไปที่ `root@localhost:2222` · **คำสั่งที่เหลือทั้งหมดพิมพ์ข้างในเครื่องเรียน** :
 
 ```bash
 docker compose version
@@ -41,9 +43,9 @@ cd DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/002_LAB_Partitions
 ls
 ```
 
-> 📝 **คำอธิบาย:** `docker compose version` ยืนยันก่อนว่าคำสั่ง compose ใช้ได้ — แล็บนี้พึ่งมันทั้งหมด (ถ้าขึ้น `Cannot connect to the Docker daemon` แปลว่า daemon ข้างในยังตื่นไม่เสร็จ รอสักครู่แล้วลองใหม่) · ถ้าเคย clone ไว้แล้วจาก LAB 1 ข้ามบรรทัด `git clone` ได้เลย
+> 📝 **คำอธิบาย:** `docker compose version` ยืนยันว่า Docker ข้างในตื่นแล้ว (ถ้าขึ้น `Cannot connect to the Docker daemon` รอสักครู่แล้วลองใหม่) · เคย clone จาก LAB 1 แล้วข้าม `git clone` ได้
 
-✅ **Expected output** — เห็นเลขเวอร์ชัน แล้ว `ls` เห็นไฟล์ครบ (เลขเวอร์ชันของแต่ละคนอาจไม่ตรงกับเอกสารนี้):
+✅ **Expected output** — เห็นเลขเวอร์ชัน แล้ว `ls` เห็นไฟล์ครบ:
 
 ```
 Docker Compose version v5.3.1
@@ -55,7 +57,7 @@ producer_no_key.py  producer_with_key.py  readme.md  requirements.txt
 
 ## 2. เปิด Kafka broker + Kafka UI ด้วย `docker compose`
 
-LAB 1 เราเปิดสองบริการด้วย `docker run` สองคำสั่ง แล้วต้อง **นั่งเฝ้า log เอง** ว่า broker พร้อมหรือยังก่อนเปิด UI · แล็บนี้ย้ายทั้งชุดมาอยู่ในไฟล์เดียว และเพิ่ม **service ตัวที่สาม** ที่สร้าง topic `orders` ให้อัตโนมัติ — เปิดไฟล์ `docker-compose.yml` ที่อยู่ในโฟลเดอร์แล็บดูก่อน :
+แล็บนี้มี **service ตัวที่สาม** เพิ่มจาก LAB 1 คือ `kafka-init` ที่สร้าง topic `orders` แบบ **3 partitions** ให้อัตโนมัติ — เปิด `docker-compose.yml` ดูก่อน :
 
 ```yaml
 services:
@@ -118,33 +120,15 @@ services:
         condition: service_healthy   # รอจน broker ตอบได้จริง ค่อยเปิด UI
 ```
 
-### 2.1 สี่จุดในไฟล์นี้ที่ต้องเข้าใจ
+### 2.1 สามจุดที่ต้องเข้าใจ
 
-**(ก) ทำไม broker ต้องมีประตูสองบาน**
+**(ก) broker มีประตูสองบาน** — โปรแกรม Python รัน *นอก* compose เรียก broker ว่า `localhost:9092` · ส่วน `kafka-ui` กับ `kafka-init` รัน *ใน* compose เรียกด้วยชื่อ service `kafka:19092` (คำว่า `localhost` ของมันคือตัวมันเอง) · Kafka จึงเปิด **listener สองบาน** และ `ADVERTISED_LISTENERS` บอกว่าใครเข้าประตูไหนให้ตอบกลับด้วยที่อยู่ไหน — จุดนี้ผิดเมื่อไร client จะ "ต่อติดแล้วค้าง"
 
 ![broker เปิดสอง listener : HOST สำหรับคนนอก · DOCKER สำหรับเพื่อนใน compose](./images/concept-00-two-listeners.png)
 
-ปัญหาคือ **มีคนสองกลุ่มที่ต้องต่อเข้า broker เดียวกัน แต่เรียกชื่อมันคนละชื่อ** :
+**(ข) `healthcheck` + `depends_on: condition: service_healthy`** — `Up` ≠ พร้อม · Docker ยิง `kafka-broker-api-versions.sh` ถาม broker ทุก 5 วินาที และ compose **กั้น `kafka-ui` / `kafka-init` ไว้จนกว่า broker จะ healthy** เราไม่ต้องนั่ง `docker logs` เฝ้าเอง
 
-- โปรแกรม Python ของเรา รัน **นอก** compose จึงเรียก broker ว่า `localhost:9092`
-- `kafka-ui` รัน **ใน** compose เดียวกัน มันเรียกเพื่อนด้วย **ชื่อ service** คือ `kafka` — และคำว่า `localhost` ของมันหมายถึงตัวมันเอง ไม่ใช่ broker
-
-Kafka แก้ด้วยการเปิด **listener หลายบาน** พร้อมกัน : บาน `HOST` นั่งที่ port `9092` และ **ประกาศตัวเอง** (`ADVERTISED`) ว่า `localhost:9092` · บาน `DOCKER` นั่งที่ port `19092` และประกาศตัวว่า `kafka:19092` · ใครเข้าประตูไหน Kafka ก็ตอบกลับด้วยที่อยู่ของประตูนั้น ทั้งคู่จึงต่อติดพร้อมกัน
-
-> **`ADVERTISED_LISTENERS` คือจุดที่คนพลาดบ่อยที่สุดเวลาเอา Kafka ลง Docker** — ถ้าประกาศผิด client จะ **ต่อติดครั้งแรกแล้วค้าง** เพราะ broker ตอบกลับมาว่า "จริง ๆ ให้ไปคุยที่ที่อยู่นี้" แล้ว client วิ่งตามไปไม่เจอ
-
-**(ข) `healthcheck` + `depends_on: condition: service_healthy`** — นี่คือคำตอบของบทเรียนเดิมจากชุด RabbitMQ ที่ว่า **`Up` ≠ พร้อม** · `healthcheck` ให้ Docker ยิง `kafka-broker-api-versions.sh` ถามตัว broker ทุก 5 วินาที ถ้าตอบได้แปลว่าพร้อมจริง · `depends_on` แบบ `service_healthy` สั่งให้ compose **กั้น `kafka-ui` ไว้จนกว่า broker จะ healthy** — เราไม่ต้องนั่ง `docker logs` เฝ้าเองอีกต่อไป
-
-**(ค) `ports: "8412:8080"`** — หน้าเว็บ Kafka UI ฟังที่ port `8080` ข้างในกล่องเสมอ แต่เรา map ออกมาเป็น **`8412`** บนเครื่องเรียน · จงใจเลี่ยง `8080`/`80`/`8888` เพราะเป็น port ยอดนิยมที่ชนกับของอื่นได้ง่าย (แล็บอื่นในวิชานี้ก็ใช้ `8080` อยู่)
-
-**(ง) `kafka-init` — container ที่เกิดมาเพื่อทำงานเดียวแล้วจบ** — LAB 1 เราปล่อยให้ broker สร้าง topic ให้เอง (auto-create) ซึ่งได้แค่ **1 partition** · แล็บนี้ต้องการ `orders` แบบ **3 partitions** ตั้งแต่ต้น จึงใส่ service ตัวที่สามที่ใช้ image เดียวกับ broker (เพราะมี `kafka-topics.sh` อยู่ข้างใน) แต่ **ทับ `entrypoint`** ให้รันคำสั่งสร้าง + describe topic แทนการเปิด broker · สี่จุดที่ต้องสังเกต :
-
-- `depends_on: service_healthy` ตัวเดียวกับ `kafka-ui` — ถ้าไม่รอ healthy คำสั่ง `--create` จะยิงไปตอน broker ยังไม่ตื่นแล้วล้ม
-- `--bootstrap-server kafka:19092` **ไม่ใช่ `localhost:9092`** — เพราะคำสั่งนี้รันในกล่อง `kafka-init` ไม่ใช่ในกล่อง `kafka` · `localhost` ของมันคือตัวมันเองซึ่งไม่มี broker อยู่ จึงต้องเข้าประตู `DOCKER` ด้วยชื่อ service เหมือน `kafka-ui` ทุกประการ — นี่คือบทเรียนข้อ (ก) ในรูปแบบที่จับต้องได้
-- `--if-not-exists` — สั่ง `docker compose up -d` ซ้ำเมื่อไร `kafka-init` จะถูกรันใหม่ทุกครั้ง ถ้าไม่มี flag นี้รอบสองจะล้มด้วย `TopicExistsException` · มีแล้วมันจะเงียบ ๆ ข้ามไป (ไม่พิมพ์ `Created topic`) แล้ว describe ต่อตามปกติ
-- `restart: "no"` — container นี้ **ตั้งใจให้จบ** พอคำสั่งเสร็จมันจะอยู่สถานะ `Exited (0)` ซึ่งถูกต้องแล้ว ไม่ใช่พัง (ดู 2.2)
-
-> **ของจริงใช้ท่านี้กันทั่วไป** เรียกว่า *init container* — งานเตรียมสภาพแวดล้อม (สร้าง topic · สร้างตาราง DB · ใส่ seed data) ควรถูกเขียนไว้ในไฟล์ประกาศระบบ ไม่ใช่ให้คนมานั่งพิมพ์คำสั่งเองหลัง `up` ทุกครั้ง · แต่เราจะยังฝึกสั่ง `kafka-topics.sh` ด้วยมือในข้อ 4 และทดลองเพิ่มเติม ค.–ง. อยู่ดี เพราะต้องใช้ตอน alter / list / สืบสวน topic ผี
+**(ค) `kafka-init` = init container** — ใช้ image เดียวกับ broker (เพราะมี `kafka-topics.sh` อยู่ข้างใน) แต่ **ทับ `entrypoint`** ให้รันคำสั่งสร้าง topic แล้วจบ → สถานะ `Exited (0)` คือ **ถูกต้อง** ไม่ใช่พัง · `--if-not-exists` ทำให้สั่ง `up -d` ซ้ำได้โดยไม่ล้มด้วย `TopicExistsException` · ของจริงใช้ท่านี้กับงานเตรียมระบบทุกชนิด (สร้าง topic · สร้างตาราง · seed data)
 
 ### 2.2 เปิดทั้งชุด
 
@@ -152,62 +136,38 @@ Kafka แก้ด้วยการเปิด **listener หลายบา�
 docker compose up -d
 ```
 
-> 📝 **คำอธิบาย:** `docker compose up` อ่าน `docker-compose.yml` ใน **โฟลเดอร์ปัจจุบัน** แล้วสร้าง network + container ให้ครบตามไฟล์ · `-d` = ปล่อยรันเบื้องหลัง · ครั้งแรกจะ pull image ทั้งสองตัวก่อน (ใช้เวลาสักพัก · `kafka-init` ใช้ image เดียวกับ `kafka` จึงไม่ต้อง pull เพิ่ม) · บรรทัดที่ต้องมองหาคือ **`Container kafka Healthy`** แล้วตามด้วย `Container kafka-ui Started` และ `Container kafka-init Started` — นั่นคือ `depends_on` กั้นทั้งสองตัวไว้จน broker พร้อมจริง
+> 📝 **คำอธิบาย:** อ่าน `docker-compose.yml` ใน **โฟลเดอร์ปัจจุบัน** แล้วสร้าง network + container ให้ครบ · `-d` = รันเบื้องหลัง · ครั้งแรกจะ pull image ก่อน (ใช้เวลาสักพัก) · บรรทัดที่ต้องมองหาคือ **`Container kafka Healthy`** แล้วค่อยตามด้วย `kafka-init Started` และ `kafka-ui Started`
 
-✅ **Expected output** — ท้าย log ต้องเห็นลำดับนี้ (ครั้งแรกจะมีบรรทัด pull image นำหน้าอีกยาว):
+✅ **Expected output** — ท้าย log ต้องเห็นลำดับนี้ (`Waiting` / `Healthy` ขึ้นสองครั้งเพราะมีคนรอ `kafka` อยู่สองคน):
 
 ```
- Image apache/kafka:4.1.0 Pulled
- Image kafbat/kafka-ui:latest Pulled
- Network 002_lab_partitions_keys_default  Created
- Container kafka  Created
- Container kafka-ui  Created
- Container kafka-init  Created
  Container kafka  Started
  Container kafka  Waiting
  Container kafka  Waiting
  Container kafka  Healthy
+ Container kafka-init  Starting
  Container kafka  Healthy
- Container kafka-ui  Started
+ Container kafka-ui  Starting
  Container kafka-init  Started
+ Container kafka-ui  Started
 ```
 
-> **สังเกต :** `Waiting` / `Healthy` ขึ้น **สองครั้ง** — เพราะมีคนรอ `kafka` อยู่สองคน (`kafka-ui` และ `kafka-init`) compose จึงรายงานแยกกัน
-
-เช็กสถานะ :
-
-```bash
-docker compose ps
-```
-
-> 📝 **คำอธิบาย:** `docker compose ps` ต่างจาก `docker ps` ตรงที่มันโชว์เฉพาะ container ของ compose ในโฟลเดอร์นี้ และเพิ่มคอลัมน์ **SERVICE** ให้ · จุดที่ต้องดู : `kafka` ต้องขึ้น **`Up (healthy)`** ไม่ใช่แค่ `Up` · และ `kafka-ui` ต้องมี mapping `0.0.0.0:8412->8080/tcp` · **`kafka-init` จะไม่โผล่** ในตารางนี้ เพราะ `compose ps` โชว์เฉพาะตัวที่ยังรันอยู่ — มันทำงานเสร็จและจบไปแล้ว
-
-✅ **Expected output** — สองแถว `Up` และ `kafka` ต้องเป็น `(healthy)` (เวลา CREATED ของแต่ละคนจะไม่ตรงกับเอกสารนี้):
-
-```
-NAME       IMAGE                    COMMAND                  SERVICE    CREATED          STATUS                    PORTS
-kafka      apache/kafka:4.1.0       "/__cacert_entrypoin…"   kafka      13 seconds ago   Up 12 seconds (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp
-kafka-ui   kafbat/kafka-ui:latest   "/bin/sh -c 'java --…"   kafka-ui   13 seconds ago   Up 5 seconds              0.0.0.0:8412->8080/tcp, [::]:8412->8080/tcp
-```
-
-อยากเห็น `kafka-init` ด้วยต้องเติม `-a` (all) :
+เช็กสถานะ (ใส่ `-a` ถึงจะเห็น `kafka-init` ที่จบไปแล้ว) :
 
 ```bash
 docker compose ps -a
 ```
 
-✅ **Expected output** — สามแถว · `kafka-init` เป็น **`Exited (0)`** = ทำงานสำเร็จแล้วจบ (เลข 0 คือ exit code ที่แปลว่าไม่มี error):
+✅ **Expected output** — `kafka` ต้องเป็น **`Up (healthy)`** · `kafka-init` เป็น **`Exited (0)`** · `kafka-ui` map `8412->8080` (ถ้า `kafka-init` ยังเป็น `Up` รอ 5 วินาทีแล้วสั่งซ้ำ):
 
 ```
 NAME         IMAGE                    COMMAND                  SERVICE      CREATED          STATUS                     PORTS
-kafka        apache/kafka:4.1.0       "/__cacert_entrypoin…"   kafka        20 seconds ago   Up 18 seconds (healthy)    0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp
-kafka-init   apache/kafka:4.1.0       "/bin/sh -c '/opt/ka…"   kafka-init   20 seconds ago   Exited (0) 9 seconds ago
-kafka-ui     kafbat/kafka-ui:latest   "/bin/sh -c 'java --…"   kafka-ui     20 seconds ago   Up 12 seconds              0.0.0.0:8412->8080/tcp, [::]:8412->8080/tcp
+kafka        apache/kafka:4.1.0       "/__cacert_entrypoin…"   kafka        16 seconds ago   Up 14 seconds (healthy)    0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp
+kafka-init   apache/kafka:4.1.0       "/bin/sh -c '/opt/ka…"   kafka-init   16 seconds ago   Exited (0) 5 seconds ago
+kafka-ui     kafbat/kafka-ui:latest   "/bin/sh -c 'java --…"   kafka-ui     16 seconds ago   Up 8 seconds               0.0.0.0:8412->8080/tcp, [::]:8412->8080/tcp
 ```
 
-> ถ้าเห็น `Exited (1)` แทน แปลว่าคำสั่งสร้าง topic ล้ม — ดูสาเหตุด้วย `docker logs kafka-init` (ข้อ 4 จะอ่าน log นี้กันอยู่แล้ว)
-
-> **เกร็ด :** เราตั้ง `container_name: kafka` ไว้ในไฟล์ compose ด้วย ชื่อ container จึงเป็น `kafka` สั้น ๆ ไม่ใช่ `002_lab_partitions_keys-kafka-1` ตามสูตร default ของ compose — ทำให้คำสั่ง `docker exec kafka ...` ที่ใช้ทั้งแล็บสั้นและตรงกับ LAB 1
+เปิดเบราว์เซอร์บนเครื่องเราไปที่ **`http://localhost:8412`** — ต้องเห็น Dashboard cluster `local` Online (UI อุ่นเครื่องราว 10 วินาที ถ้ายังไม่ขึ้นรีเฟรชอีกครั้ง)
 
 ---
 
@@ -219,71 +179,33 @@ source ~/venv-kafka/bin/activate
 pip install -r requirements.txt
 ```
 
-> 📝 **คำอธิบาย:** Python ในเครื่องเรียนเปิดกฎ PEP 668 ไว้ — `pip install` ตรง ๆ นอก venv จะโดนปฏิเสธ จึงต้องผ่าน **virtual environment** เสมอ · `~/venv-kafka` ใช้ร่วมกันได้ทุกแล็บของชุด Kafka (ถ้าสร้างไว้แล้วจาก LAB 1 ข้ามบรรทัดแรกได้) · `requirements.txt` ล็อก `kafka-python==3.0.10` ให้ตรงกันทั้งห้อง
+> 📝 **คำอธิบาย:** Python ในเครื่องเรียนเปิดกฎ PEP 668 — `pip install` นอก venv จะโดนปฏิเสธ · `~/venv-kafka` ใช้ร่วมกันได้ทุกแล็บของชุด Kafka (สร้างไว้แล้วจาก LAB 1 ข้ามบรรทัดแรกได้) · `requirements.txt` ล็อก `kafka-python==3.0.10`
 
-✅ **Expected output** — บรรทัดสุดท้ายต้องเป็น `Successfully installed kafka-python-3.0.10` (ถ้าติดตั้งไว้แล้วจะขึ้น `Requirement already satisfied` แทน — ใช้ได้เหมือนกัน)
-
-> **⚠️ กติกาเดิมจาก LAB 1 :** ทุกครั้งที่เปิด **terminal ใหม่** ต้อง `source ~/venv-kafka/bin/activate` ก่อนเสมอ — ลืมเมื่อไหร่เจอ `ModuleNotFoundError: No module named 'kafka'` ทันที
+✅ **Expected output** — บรรทัดสุดท้าย `Successfully installed kafka-python-3.0.10` (ถ้ามีแล้วจะขึ้น `Requirement already satisfied` — ใช้ได้เหมือนกัน) และ prompt ต้องขึ้น **`(venv-kafka)`** นำหน้าตลอดแล็บ
 
 ---
 
 ## 4. ตรวจ topic `orders` ที่ `kafka-init` สร้างให้ — 3 partitions
-
-LAB 1 เราปล่อยให้ broker สร้าง topic ให้เอง (auto-create) ซึ่งได้แค่ **1 partition** — คราวนี้ `kafka-init` ในไฟล์ compose สร้าง `orders` แบบ **3 partitions** ให้แล้วตั้งแต่ตอน `up` (ข้อ 2.1 ง) เพราะทั้งแล็บนี้ต้องการเห็นข้อความ **กระจายลง 3 เล่ม** · เริ่มจากอ่านสิ่งที่มันทำไว้ :
-
-```bash
-docker logs kafka-init
-```
-
-> 📝 **คำอธิบาย:** `docker logs` ใช้กับ container ที่จบไปแล้วได้ — output ของคำสั่งที่รันข้างในถูกเก็บไว้จนกว่า container จะถูกลบ · บรรทัดแรก `Created topic orders.` มาจาก `--create` · ตารางที่ตามมาคือผลของ `--describe` ที่เราสั่งต่อกันในบล็อก `command`
-
-✅ **Expected output** — `Created topic orders.` แล้วตามด้วย `PartitionCount: 3` ครบ 3 แถว (TopicId ของแต่ละคนจะไม่ตรงกับเอกสารนี้):
-
-```
-Created topic orders.
-Topic: orders	TopicId: xmHGmKHmS3elrE9vSN6dtw	PartitionCount: 3	ReplicationFactor: 1	Configs: min.insync.replicas=1
-	Topic: orders	Partition: 0	Leader: 1	Replicas: 1	Isr: 1	Elr: 	LastKnownElr:
-	Topic: orders	Partition: 1	Leader: 1	Replicas: 1	Isr: 1	Elr: 	LastKnownElr:
-	Topic: orders	Partition: 2	Leader: 1	Replicas: 1	Isr: 1	Elr: 	LastKnownElr:
-```
-
-ทีนี้สั่ง `kafka-topics.sh` **ด้วยมือ** บ้าง — เครื่องมือตัวเดียวกัน แต่คราวนี้เข้าไปสั่งในกล่อง `kafka` โดยตรง :
 
 ```bash
 docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 \
   --describe --topic orders
 ```
 
-> 📝 **คำอธิบาย:** `kafka-topics.sh` คือ CLI จัดการ topic — ติดตั้งอยู่ **ข้างใน image `apache/kafka`** จึงสั่งผ่าน `docker exec kafka ...` ได้ตลอดแล็บ · สังเกตว่า `--bootstrap-server` คราวนี้เป็น **`localhost:9092`** ไม่ใช่ `kafka:19092` แบบใน `kafka-init` — เพราะตอนนี้เรายืนอยู่ **ใน container `kafka` เอง** `localhost` จึงหมายถึง broker ตัวจริง เข้าประตู `HOST` ได้ปกติ · ที่อยู่เดียวกัน (broker เดียวกัน) แต่เรียกคนละชื่อตามว่า "ใครเป็นคนเรียก" — คือหัวใจของข้อ 2.1 (ก) ·
-> ในตาราง `--describe` : **Leader: 1** = partition นี้อยู่ในมือ broker id 1 (เรามีตัวเดียวจึงเป็นเจ้าของทุกเล่ม) · **Replicas / Isr** = รายชื่อสำเนา / สำเนาที่ตามทัน · คอลัมน์ `Elr` / `LastKnownElr` เป็นของใหม่ใน Kafka 4.x ว่างแบบนี้ถูกต้อง
+> 📝 **คำอธิบาย:** `kafka-topics.sh` คือ CLI จัดการ topic — อยู่ **ข้างใน image `apache/kafka`** จึงสั่งผ่าน `docker exec kafka ...` · คราวนี้ `--bootstrap-server` เป็น `localhost:9092` เพราะเรายืนอยู่ **ใน container `kafka` เอง** (ต่างจาก `kafka-init` ที่ต้องใช้ `kafka:19092` — คือข้อ 2.1 (ก) ในรูปแบบจับต้องได้) · **Leader: 1** = partition นี้อยู่ในมือ broker id 1 · **Replicas / Isr** = สำเนา / สำเนาที่ตามทัน · `Elr` ว่างแบบนี้ถูกต้องใน Kafka 4.x
 
-✅ **Expected output** — ตารางเดียวกับใน log ของ `kafka-init` ทุกตัวอักษร (TopicId ตรงกันด้วย เพราะเป็น topic ตัวเดียวกัน):
+✅ **Expected output** — `PartitionCount: 3` ครบ 3 แถว (TopicId ของแต่ละคนจะไม่ตรงกับเอกสารนี้):
 
 ```
-Topic: orders	TopicId: xmHGmKHmS3elrE9vSN6dtw	PartitionCount: 3	ReplicationFactor: 1	Configs: min.insync.replicas=1
+Topic: orders	TopicId: uUHOLEZdR3-Rf9f0FhuHVQ	PartitionCount: 3	ReplicationFactor: 1	Configs: min.insync.replicas=1
 	Topic: orders	Partition: 0	Leader: 1	Replicas: 1	Isr: 1	Elr: 	LastKnownElr:
 	Topic: orders	Partition: 1	Leader: 1	Replicas: 1	Isr: 1	Elr: 	LastKnownElr:
 	Topic: orders	Partition: 2	Leader: 1	Replicas: 1	Isr: 1	Elr: 	LastKnownElr:
 ```
 
-ลองสั่ง **สร้างซ้ำด้วยมือ** ดูสักครั้ง — แบบเดียวกับที่ `kafka-init` ทำ แต่จงใจ **ไม่ใส่** `--if-not-exists` :
+> อยากดูว่า `kafka-init` ทำอะไรไป : `docker logs kafka-init` จะเห็น `Created topic orders.` ตามด้วยตารางเดียวกันนี้ทุกตัวอักษร
 
-```bash
-docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 \
-  --create --topic orders --partitions 3 --replication-factor 1
-```
-
-✅ **Expected output** — ล้มทันที เพราะ topic มีอยู่แล้ว:
-
-```
-Error while executing topic command : Topic 'orders' already exists.
-[2026-09-21 07:37:23,794] ERROR org.apache.kafka.common.errors.TopicExistsException: Topic 'orders' already exists.
- (org.apache.kafka.tools.TopicCommand)
-```
-
-> 📝 **คำอธิบาย:** นี่คือเหตุผลที่ `kafka-init` ต้องมี `--if-not-exists` — container นั้นถูกรันใหม่ทุกครั้งที่สั่ง `docker compose up -d` ถ้าล้มแบบนี้ `compose ps -a` จะโชว์ `Exited (1)` ทุกรอบหลังรอบแรก · `--partitions 3` ผ่า topic เป็น 3 log แยกเล่ม · `--replication-factor 1` เก็บสำเนาเดียว — เรามี broker ตัวเดียว ขอมากกว่านี้จะ error เช่นกัน · ถ้าอยากสร้าง topic ใหม่ด้วยมือจริง ๆ ก็ใช้คำสั่งนี้แหละ แค่เปลี่ยนชื่อ topic (ทดลองเพิ่มเติม ค. จะได้ใช้ `--alter` กับเครื่องมือตัวนี้ต่อ)
-
-> **ภาพในหัวที่ต้องมี :** ตอนนี้ `orders` คือสมุด 3 เล่ม (p0 · p1 · p2) แต่ละเล่มเขียนได้แบบ **ต่อท้ายอย่างเดียว** และมีเลขบรรทัดของตัวเองเรียก **offset** เริ่มที่ 0 — คำถามของทั้งแล็บคือ *ข้อความหนึ่ง ๆ จะถูกจดลงเล่มไหน?*
+> **ภาพในหัวที่ต้องมี :** `orders` คือสมุด 3 เล่ม (p0 · p1 · p2) แต่ละเล่มเขียนได้แบบ **ต่อท้ายอย่างเดียว** มีเลขบรรทัดของตัวเองเรียก **offset** เริ่มที่ 0 — คำถามของทั้งแล็บคือ *ข้อความหนึ่ง ๆ จะถูกจดลงเล่มไหน?*
 
 ---
 
@@ -305,32 +227,38 @@ for i in range(1, 7):
 producer.close()
 ```
 
-> 📝 **คำอธิบาย:** **(1)** ต่อ broker ที่ `localhost:9092` — ไม่มี user/password เพราะ broker ของแล็บเปิดแบบ PLAINTEXT · **(2)** Kafka รับเป็น bytes จึงต้อง `.encode()` และเมื่อ **ไม่ใส่ key** ไลบรารีฝั่งผู้ส่งจะเลือก partition ให้เอง · **(3)** `send()` คืน future — `.get(timeout=10)` รอ "ใบเสร็จ" (`RecordMetadata`) ที่บอกว่าไปลง **partition ไหน · offset เท่าไร** ซึ่งเป็นพระเอกของแล็บนี้
+> 📝 **คำอธิบาย:** **(2)** Kafka รับเป็น bytes จึงต้อง `.encode()` และเมื่อ **ไม่ใส่ key** ไลบรารีฝั่งผู้ส่งจะเลือก partition ให้เอง · **(3)** `send()` คืน future — `.get(timeout=10)` รอ "ใบเสร็จ" (`RecordMetadata`) ที่บอกว่าไปลง **partition ไหน · offset เท่าไร** — พระเอกของแล็บนี้
 
-รัน **สองรอบ** (อย่าลืมว่าต้องมี `(venv-kafka)` นำหน้า prompt) :
+รัน **สองรอบ** :
 
 ```bash
 python producer_no_key.py
 python producer_no_key.py
 ```
 
-✅ **Expected output** (รอบแรก) — **partition ของแต่ละคนจะไม่ตรงกับเอกสารนี้ นั่นแหละคือประเด็น**:
+✅ **Expected output** — **partition ของแต่ละคนจะไม่ตรงกับเอกสารนี้ นั่นแหละคือประเด็น** (รอบ 1 แล้วรอบ 2):
 
 ```
- [x] Sent 'order 1'  ->  partition=2 offset=0
+ [x] Sent 'order 1'  ->  partition=0 offset=0
  [x] Sent 'order 2'  ->  partition=1 offset=0
  [x] Sent 'order 3'  ->  partition=1 offset=1
- [x] Sent 'order 4'  ->  partition=2 offset=1
- [x] Sent 'order 5'  ->  partition=0 offset=0
- [x] Sent 'order 6'  ->  partition=1 offset=2
+ [x] Sent 'order 4'  ->  partition=1 offset=2
+ [x] Sent 'order 5'  ->  partition=1 offset=3
+ [x] Sent 'order 6'  ->  partition=1 offset=4
+```
+```
+ [x] Sent 'order 1'  ->  partition=2 offset=0
+ [x] Sent 'order 2'  ->  partition=1 offset=5
+ [x] Sent 'order 3'  ->  partition=1 offset=6
+ [x] Sent 'order 4'  ->  partition=0 offset=1
+ [x] Sent 'order 5'  ->  partition=0 offset=2
+ [x] Sent 'order 6'  ->  partition=2 offset=1
 ```
 
 > **อ่านผลสองรอบเทียบกัน :**
-> - **คอลัมน์ partition ของรอบ 2 จะไม่เหมือนรอบ 1** — `kafka-python 3.0.10` เมื่อไม่มี key จะ **สุ่มเลือก partition ใหม่ทุกใบ** · บางรอบอาจบังเอิญตกเล่มเดียวกันหมดก็ได้ (โอกาส 1/3⁵ ≈ 0.4%) ไม่ใช่บั๊ก
-> - **offset ไม่รีเซ็ต** — มันวิ่งต่อจากของเดิมในแต่ละเล่ม เพราะ log เขียนต่อท้ายอย่างเดียว
-> - บทเรียนคือ "ไม่มี key = **คุมไม่ได้**" ไม่ใช่ "ต้องกระจายเท่า ๆ กัน" · ของเราจะออกมาแบบไหนก็ถูกทั้งนั้น
->
-> **เกร็ด :** "producer เลือกเอง" แต่ละไลบรารีไม่เหมือนกัน — `kafka-python` สุ่มใหม่ทุกใบ ส่วน Java client รุ่นใหม่ใช้ **sticky partitioner** คือเกาะเล่มเดิมจนกว่า batch จะเต็มแล้วค่อยย้าย · ผลที่เห็นต่างกัน แต่ข้อสรุปเดียวกัน
+> - **คอลัมน์ partition ของรอบ 2 ไม่เหมือนรอบ 1** — `kafka-python` เมื่อไม่มี key จะ **สุ่มเล่มใหม่ทุกใบ** (บางรอบอาจบังเอิญตกเล่มเดียวกันหลายใบ ไม่ใช่บั๊ก)
+> - **offset ไม่รีเซ็ต** — วิ่งต่อจากของเดิมในแต่ละเล่ม เพราะ log เขียนต่อท้ายอย่างเดียว
+> - บทเรียนคือ "ไม่มี key = **คุมไม่ได้**" ไม่ใช่ "ต้องกระจายเท่ากัน"
 
 ---
 
@@ -360,7 +288,7 @@ for round_no in range(1, 4):
 producer.close()
 ```
 
-> 📝 **คำอธิบาย:** ต่างจากข้อ 5 แค่จุดเดียวคือเพิ่ม `key=branch.encode()` เข้าไปใน `send()` · key ต้องเป็น **bytes** เหมือน value · นอกนั้นเหมือนกันทุกบรรทัด
+> 📝 **คำอธิบาย:** ต่างจากข้อ 5 แค่จุดเดียวคือเพิ่ม `key=branch.encode()` เข้าไปใน `send()` · key ต้องเป็น **bytes** เหมือน value
 
 รัน **สองรอบ** :
 
@@ -369,7 +297,7 @@ python producer_with_key.py
 python producer_with_key.py
 ```
 
-✅ **Expected output** (รอบแรก) — **ตัวเลข partition ชุดนี้ทุกคนต้องได้เหมือนกันเป๊ะ**:
+✅ **Expected output** (รอบแรก) — **คอลัมน์ partition ชุดนี้ทุกคนต้องได้เหมือนกันเป๊ะ**:
 
 ```
  [x] key=bangkok   -> partition=2 offset=2  ('bangkok order #1')
@@ -383,10 +311,11 @@ python producer_with_key.py
  [x] key=hatyai    -> partition=0 offset=5  ('hatyai order #3')
 ```
 
-> **นี่คือหัวใจของแล็บ — เทียบกับข้อ 5 ให้ชัด :**
-> - `bangkok → p2` · `chiangmai → p1` · `hatyai → p0` **ทั้ง 18 ใบจากสองรอบ ไม่มีข้อยกเว้นสักใบ**
-> - คอลัมน์ offset ต่างหากที่วิ่งขึ้น — เพราะเป็นเล่มเดิม จดต่อท้ายไปเรื่อย ๆ
-> - ตัวเลข offset ของเราอาจไม่ตรงกับเอกสาร (ขึ้นกับว่าข้อ 5 สุ่มลงเล่มไหนไปกี่ใบ) แต่ **คอลัมน์ partition ต้องตรงเป๊ะ** เพราะมันไม่ใช่การสุ่ม — ข้อ 7.3 จะพิสูจน์ให้ดูด้วยเครื่องคิดเลข
+![ไม่มี key สุ่มใหม่ทุกรอบ · มี key ลงเล่มเดิมทุกรอบ](./images/concept-07-nokey-vs-key.png)
+
+> **นี่คือหัวใจของแล็บ — เทียบกับข้อ 5 :**
+> - `bangkok → p2` · `chiangmai → p1` · `hatyai → p0` **ทั้ง 18 ใบจากสองรอบ ไม่มีข้อยกเว้น** (รอบ 2 ได้เล่มเดิม offset วิ่งต่อเป็น 5–7 · 10–12 · 6–8)
+> - offset ของเราอาจไม่ตรงเอกสาร (ขึ้นกับว่าข้อ 5 สุ่มลงเล่มไหนไปกี่ใบ) แต่ **คอลัมน์ partition ต้องตรงเป๊ะ** — ข้อ 7.3 จะพิสูจน์ด้วยเครื่องคิดเลข
 
 ตอนนี้ topic `orders` มี **30 ข้อความ** = 12 (ไม่มี key) + 18 (มี key)
 
@@ -394,38 +323,32 @@ python producer_with_key.py
 
 ## 7. เจาะทฤษฎี : Partitions & Keys ทำงานยังไงกันแน่
 
-ข้อนี้ไม่มีคำสั่งให้พิมพ์เยอะ แต่เป็นข้อที่ทำให้ทุกอย่างในแล็บ "เข้าที่" — อ่านให้จบก่อนไปต่อ
-
 ### 7.1 partition คืออะไรกันแน่
-
-`topic` เป็นแค่ **ชื่อ** ของกลุ่มข้อมูล — ของจริงที่เก็บข้อมูลคือ **partition** :
 
 ![topic หนึ่งอันคือ append-only log หลายเล่ม แต่ละเล่มมี offset ของตัวเอง](./images/concept-01-partitions.png)
 
-- แต่ละ partition = **ไฟล์ log ที่เขียนต่อท้ายอย่างเดียว (append-only)** เก็บลงดิสก์จริง ไม่ได้อยู่แค่ใน RAM
-- **offset** = เลขบรรทัดในเล่มนั้น เริ่มที่ 0 นับขึ้นเรื่อย ๆ **ไม่เคยถอยหลัง ไม่เคยรีไซเคิล** แม้จะลบข้อความเก่าทิ้งตามอายุแล้วก็ตาม
-- offset ของ p0 กับ p1 **ไม่เกี่ยวกันเลย** — "offset 5" ไม่มีความหมายถ้าไม่บอกว่าเล่มไหน · ที่อยู่ที่ระบุข้อความได้ไม่ซ้ำใครจึงต้องครบสามส่วน : **(topic, partition, offset)**
-- การอ่าน **ไม่ลบข้อความ** — consumer แค่เลื่อน "ที่คั่นหนังสือ" ของตัวเอง ใครจะย้อนกลับไปอ่านใหม่ก็ได้ (ความต่างใหญ่ที่สุดจาก RabbitMQ)
+- `topic` เป็นแค่ **ชื่อ** — ของจริงที่เก็บข้อมูลคือ **partition** = ไฟล์ log ที่เขียนต่อท้ายอย่างเดียว ลงดิสก์จริง
+- **offset** = เลขบรรทัดในเล่มนั้น เริ่มที่ 0 นับขึ้นเรื่อย ๆ **ไม่เคยถอยหลัง** · offset ของ p0 กับ p1 **ไม่เกี่ยวกัน** — ที่อยู่ที่ไม่ซ้ำใครจึงต้องครบ **(topic, partition, offset)**
+- การอ่าน **ไม่ลบข้อความ** — consumer แค่เลื่อน "ที่คั่นหนังสือ" ของตัวเอง (ต่างจาก RabbitMQ ที่ ack แล้วหาย)
+- ผ่าเป็นหลายเล่มเพื่อกระจายไปหลาย broker และให้ consumer หลายตัวช่วยกันอ่านคนละเล่ม — **จำนวน partition คือเพดานของความขนานฝั่งผู้อ่าน** (LAB 3)
 
-**แล้วทำไมต้องผ่าเป็นหลายเล่ม?** เพราะ log เล่มเดียวถูกจำกัดด้วยดิสก์และซีพียูของเครื่องเดียว การผ่าเป็น N เล่มทำให้ (ก) กระจายไปเก็บคนละ broker ได้ (ข) ให้ consumer หลายตัวช่วยกันอ่านคนละเล่มพร้อมกันได้ — **จำนวน partition คือเพดานของความขนานฝั่งผู้อ่าน** (เรื่องเต็ม ๆ อยู่ LAB 3)
+### 7.2 กฎการเลือก partition — 3 ชั้น
 
-### 7.2 กฎการเลือก partition — 3 ชั้น เรียงตามลำดับความสำคัญ
-
-ทุกครั้งที่ producer จะส่งข้อความ มันไล่ถามตามลำดับนี้ **หยุดที่ข้อแรกที่ตอบได้** :
+producer ไล่ถามตามลำดับนี้ **หยุดที่ข้อแรกที่ตอบได้** :
 
 ![กฎ 3 ชั้นของการเลือก partition : ระบุ partition > hash(key) > producer เลือกเอง](./images/concept-02-three-rules.png)
 
 | ลำดับ | เงื่อนไข | ผลลัพธ์ | เจอที่ไหนในแล็บนี้ |
 |---|---|---|---|
-| **1** | โปรแกรม **ระบุเลข partition มาตรง ๆ** | ใช้เลขนั้น — **key ถูกมองข้ามทั้งใบ** | ทดลองเพิ่มเติม ข. (ส่งจาก Kafka UI) |
-| **2** | ไม่ระบุ partition แต่ **มี key** | `(murmur2(key) & 0x7fffffff) % จำนวน partition` | ข้อ 6 · `producer_with_key.py` |
-| **3** | ไม่ระบุทั้ง partition และ key | producer เลือกเอง — **คุมไม่ได้** | ข้อ 5 · `producer_no_key.py` |
+| **1** | โปรแกรม **ระบุเลข partition ตรง ๆ** | ใช้เลขนั้น — **key ถูกมองข้าม** | ทดลองเพิ่มเติม ข. (ส่งจาก Kafka UI) |
+| **2** | ไม่ระบุ partition แต่ **มี key** | `(murmur2(key) & 0x7fffffff) % จำนวน partition` | ข้อ 6 |
+| **3** | ไม่ระบุทั้งคู่ | producer เลือกเอง — **คุมไม่ได้** | ข้อ 5 |
 
-> **จุดที่คนพลาดบ่อยที่สุด:** ชั้น 1 ชนะชั้น 2 เสมอ — ใส่ key มาสวยงามแค่ไหน ถ้าโค้ดเผลอระบุ `partition=0` ไปด้วย key จะกลายเป็นแค่ป้ายที่ติดไปกับข้อความ ไม่มีผลต่อการเลือกเล่มเลย · จะเห็นของจริงในทดลองเพิ่มเติม ข.
+> **จุดที่คนพลาดบ่อยที่สุด :** ชั้น 1 ชนะชั้น 2 เสมอ — ใส่ key มาสวยแค่ไหน ถ้าโค้ดเผลอระบุ `partition=0` ไปด้วย key ก็เป็นแค่ป้ายที่ติดไปกับข้อความ
 
 ### 7.3 คำนวณ hash ด้วยมือ — `hash_key.py`
 
-ชั้นที่ 2 เป็นคณิตศาสตร์ล้วน ไม่มีการสุ่ม เราจึง **ทำนายล่วงหน้าได้** ว่า key ไหนจะลงเล่มไหน :
+ชั้นที่ 2 เป็นคณิตศาสตร์ล้วน ไม่มีการสุ่ม เราจึง **ทำนายล่วงหน้าได้** :
 
 ![key ผ่าน murmur2 แล้วหารเอาเศษด้วยจำนวน partition ได้เลขเล่มที่แน่นอน](./images/concept-03-hash-routing.png)
 
@@ -438,13 +361,13 @@ for key in ['bangkok', 'chiangmai', 'hatyai', 'korat']:
     print(f'{key:10s} hash={h:>10d}   %3 -> p{h % 3}   %4 -> p{h % 4}')
 ```
 
-> 📝 **คำอธิบาย:** `murmur2` คือฟังก์ชัน hash เดียวกับที่ Java client ของ Kafka ใช้ (kafka-python ลอกสูตรมาแบบบรรทัดต่อบรรทัด) — นี่คือเหตุผลที่ข้อความจาก Python, Java, Go หรือหน้าเว็บ ที่ใช้ key เดียวกันจะ **ลงเล่มเดียวกัน** ข้ามภาษาได้ · `& 0x7fffffff` = ตัด bit บนสุดทิ้งเพื่อบังคับให้เป็นเลขบวก (ใน Java ค่า hash เป็น int แบบมีเครื่องหมาย ถ้าไม่ตัด เศษอาจติดลบแล้วกลายเป็นเลข partition ที่ไม่มีอยู่จริง) · `% 3` คือหารเอาเศษด้วย **จำนวน partition ปัจจุบัน** — คอลัมน์ `%4` ใส่มาเทียบไว้ก่อน เดี๋ยวได้ใช้ในทดลองเพิ่มเติม ค.
+> 📝 **คำอธิบาย:** `murmur2` คือ hash ตัวเดียวกับ Java client ของ Kafka — ข้อความจาก Python, Java, Go หรือหน้าเว็บที่ใช้ key เดียวกันจึง **ลงเล่มเดียวกันข้ามภาษา** · `& 0x7fffffff` บังคับให้เป็นเลขบวก · `% 3` = หารเอาเศษด้วย **จำนวน partition ปัจจุบัน** — คอลัมน์ `%4` ใส่เทียบไว้ก่อน เดี๋ยวได้ใช้ในทดลองเพิ่มเติม ค.
 
 ```bash
 python hash_key.py
 ```
 
-✅ **Expected output** — ตัวเลขชุดนี้ **ทุกคนต้องได้เหมือนกันเป๊ะ** เพราะเป็นคณิตศาสตร์ ไม่ใช่การสุ่ม:
+✅ **Expected output** — **ทุกคนต้องได้เหมือนกันเป๊ะ** เพราะเป็นคณิตศาสตร์:
 
 ```
 bangkok    hash= 365349053   %3 -> p2   %4 -> p1
@@ -453,230 +376,151 @@ hatyai     hash= 431853363   %3 -> p0   %4 -> p3
 korat      hash=1798336970   %3 -> p2   %4 -> p2
 ```
 
-> **เอาไปเทียบกับใบเสร็จข้อ 6 :** คอลัมน์ `%3` บอก `bangkok→p2` · `chiangmai→p1` · `hatyai→p0` — **ตรงกับผลจริงทั้ง 18 ใบ** · ถึงตรงนี้ควรพูดได้เต็มปากว่า "ที่ bangkok ลง p2 ไม่ใช่เรื่องบังเอิญ มันคือเศษของการหาร 365349053 ด้วย 3"
-> สังเกตคอลัมน์ `%4` ไว้ด้วย — พอเปลี่ยนตัวหาร **คำตอบเปลี่ยนหมดทุก key** และไม่มี key ไหนอยู่เล่มเดิมเลย จำภาพนี้ไว้ก่อน
+> **เทียบกับใบเสร็จข้อ 6 :** คอลัมน์ `%3` บอก `bangkok→p2` · `chiangmai→p1` · `hatyai→p0` — **ตรงกับผลจริงทั้ง 18 ใบ** · "ที่ bangkok ลง p2 ไม่ใช่เรื่องบังเอิญ มันคือเศษของ 365349053 หาร 3" · สังเกตคอลัมน์ `%4` ไว้ด้วย — เปลี่ยนตัวหาร **คำตอบเปลี่ยนหมดทุก key**
 
 ### 7.4 "ลำดับการันตี" การันตีแค่ไหน
 
-ประโยคที่ต้องท่องให้แม่น : **Kafka การันตีลำดับ "ภายใน partition เดียว" เท่านั้น — ไม่เคยการันตีลำดับข้าม partition**
+**Kafka การันตีลำดับ "ภายใน partition เดียว" เท่านั้น — ไม่การันตีข้าม partition**
 
 ![ลำดับการันตีภายใน partition เดียวเท่านั้น ข้าม partition ไม่การันตี](./images/concept-04-ordering.png)
 
-| สถานการณ์ | ลำดับการันตีไหม | เพราะอะไร |
+| สถานการณ์ | การันตีไหม | เพราะอะไร |
 |---|---|---|
-| `bangkok order #1 → #2 → #3` (key เดียวกัน) | ✅ การันตี | key เดียวกัน → เล่มเดียวกัน → offset ไล่กัน |
-| `bangkok order #1` เทียบกับ `hatyai order #1` | ❌ ไม่การันตี | คนละเล่ม (p2 vs p0) — consumer อ่านเล่มไหนก่อนก็ได้ |
-| `order 1 → order 6` (ไม่มี key) | ❌ ไม่การันตี | สุ่มกระจายหลายเล่ม |
-| ทุกข้อความใน topic ที่มี **1 partition** | ✅ การันตี | มีเล่มเดียว ทุกอย่างเรียงกันหมด — แต่ขยายไม่ได้เลย |
+| `bangkok order #1 → #2 → #3` (key เดียวกัน) | ✅ | key เดียวกัน → เล่มเดียวกัน → offset ไล่กัน |
+| `bangkok order #1` เทียบกับ `hatyai order #1` | ❌ | คนละเล่ม (p2 vs p0) — consumer อ่านเล่มไหนก่อนก็ได้ |
+| `order 1 → order 6` (ไม่มี key) | ❌ | สุ่มกระจายหลายเล่ม |
 
-> **นี่คือดีลที่ Kafka เสนอ :** ยอมสละ "ลำดับรวมทั้ง topic" (ซึ่งบังคับให้มีเล่มเดียว = ขยายไม่ได้) เพื่อแลกกับการกระจายโหลด แล้วคืน "ลำดับเฉพาะกลุ่มที่เราสนใจจริง ๆ" กลับมาให้ผ่าน key ·
-> **วิธีเลือก key ในงานจริง จึงคือการตอบคำถามว่า "ลำดับของอะไรที่ห้ามสลับ"** — ออเดอร์ของลูกค้าคนเดียวกัน? ใช้ `customer_id` · เหตุการณ์ของอุปกรณ์ตัวเดียวกัน? ใช้ `device_id` · ยอดเงินของบัญชีเดียวกัน? ใช้ `account_id`
-
-### 7.5 ราคาที่ต้องจ่าย — hot partition
-
-key ตายตัวแปลว่า **ถ้า key กระจุก งานก็กระจุก** :
+> **วิธีเลือก key ในงานจริงคือตอบคำถามว่า "ลำดับของอะไรที่ห้ามสลับ"** — ออเดอร์ของลูกค้าคนเดียวกัน → `customer_id` · เหตุการณ์ของอุปกรณ์เดียวกัน → `device_id`
+> **ราคาที่ต้องจ่าย :** key ตายตัวแปลว่าถ้า key กระจุก งานก็กระจุก (90% ออเดอร์มาจาก bangkok → p2 บวมคนเดียว เพิ่มเครื่องก็ไม่ช่วย) เรียกว่า **hot partition** — แก้ด้วย key ที่กระจายดีกว่า (เช่น `order_id`) หรือ salting (`bangkok-0`, `bangkok-1`, …)
 
 ![hot partition : key กระจุกทำให้ partition เดียวบวมและ consumer ตัวเดียวรับงานหนัก](./images/concept-06-hot-partition.png)
-
-- ร้านมี 3 สาขา แต่ 90% ของออเดอร์มาจาก bangkok → p2 บวมคนเดียว ส่วน p0/p1 ว่าง
-- consumer ที่รับผิดชอบ p2 ทำงานหนักกว่าเพื่อน **เพิ่มเครื่องก็ไม่ช่วย** เพราะหนึ่ง partition มีผู้อ่านได้ทีละตัวใน group เดียวกัน (LAB 3)
-- เรียกอาการนี้ว่า **hot partition / key skew**
-- **ทางออกที่ใช้กันจริง :** เลือก key ที่มี cardinality สูงและกระจายดี (เช่น `order_id` แทน `branch`) · หรือถ้าจำเป็นต้องใช้ key ที่กระจุกจริง ๆ ก็ทำ **salting** เช่น `bangkok-0`, `bangkok-1`, `bangkok-2` — แลกมาด้วยการที่ลำดับการันตีแค่ภายในแต่ละ salt
-
-### 7.6 key ≠ อย่างอื่นที่คนมักเข้าใจผิด
-
-| key **ไม่ใช่** | ความจริง |
-|---|---|
-| ตัวกรองข้อความ | consumer ไม่สามารถ "subscribe เฉพาะ key นี้" ได้ — ต้องอ่านมาทั้งเล่มแล้วกรองเอง |
-| กุญแจเอกลักษณ์ (unique key) | key ซ้ำได้ไม่จำกัด — ในแล็บนี้ `bangkok` ซ้ำ 6 ใบ |
-| ของที่ต้องมี | ปล่อยเป็น `None` ได้ (ข้อ 5) และเป็นค่า default ด้วยซ้ำ |
-| สิ่งที่รับประกันว่าข้อความไม่ซ้ำ | คนละเรื่องกับ idempotent producer / compaction |
-
-*(หมายเหตุ: key **มี** ความหมายพิเศษเพิ่มถ้า topic ตั้ง `cleanup.policy=compact` — Kafka จะเก็บเฉพาะข้อความล่าสุดของแต่ละ key ไว้ แต่ topic ในแล็บนี้เป็น `DELETE` ตามค่าปกติ ยังไม่ต้องสนใจ)*
 
 ---
 
 ## 8. อ่านทั้ง topic — `consumer_partitions.py`
 
 ```python
-import sys
 from kafka import KafkaConsumer
 
-def main():
-    # 1) อ่าน topic 'orders' จากข้อความแรกสุด (ยังไม่ใช้ group — อ่านซ้ำได้เรื่อย ๆ)
-    consumer = KafkaConsumer('orders',
-                             bootstrap_servers='localhost:9092',
-                             auto_offset_reset='earliest')
+# 1) อ่าน topic 'orders' ตั้งแต่ข้อความแรกสุด (ไม่ใส่ group_id -> รันซ้ำกี่รอบก็ได้ครบเหมือนเดิม)
+#    consumer_timeout_ms=5000 : ถ้าไม่มีข้อความใหม่มา 5 วินาที ให้จบเอง ไม่ต้องกด Ctrl+C
+consumer = KafkaConsumer('orders',
+                         bootstrap_servers='localhost:9092',
+                         auto_offset_reset='earliest',
+                         consumer_timeout_ms=5000)
 
-    print(' [*] Waiting for messages. To exit press CTRL+C')
-
+count = 0
+try:
     # 2) พิมพ์ "ที่อยู่" ของทุกข้อความ : partition / offset / key / เนื้อข้อความ
     #    (key ของข้อความที่ส่งแบบไม่ใส่ key จะเป็น None)
     for message in consumer:
         key = message.key.decode() if message.key else None
         print(f" [x] partition={message.partition} offset={message.offset} "
               f"key={key}  value={message.value.decode()}")
+        count += 1
+finally:
+    consumer.close()
 
-if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        print('Interrupted')
-        sys.exit(0)
+print(f" [*] Done - read {count} messages")
 ```
 
-> 📝 **คำอธิบาย:** **(1)** `auto_offset_reset='earliest'` = เริ่มอ่านจากข้อความแรกสุดของทุกเล่ม (ค่า default คือ `latest` = รอเฉพาะของใหม่ จะเห็นหน้าจอว่างเปล่า) · **ไม่ได้ใส่ `group_id`** — consumer แบบไร้ group จะไม่จดตำแหน่งที่อ่านถึงไว้ที่ broker เลย จึง **รันซ้ำกี่รอบก็ได้ข้อความครบเหมือนเดิม** (เรื่อง group เต็ม ๆ อยู่ LAB 3) · **(2)** `for message in consumer` วนไม่รู้จบ — อ่านหมดแล้วมันจะ "ค้าง" รอข้อความใหม่ ต้องกด **Ctrl+C** เอง
+> 📝 **คำอธิบาย:** **(1)** `auto_offset_reset='earliest'` = เริ่มอ่านจากข้อความแรกสุดของทุกเล่ม (default คือ `latest` = รอเฉพาะของใหม่ หน้าจอจะว่าง) · **ไม่ใส่ `group_id`** → ไม่จดตำแหน่งที่อ่านไว้ที่ broker จึง **รันซ้ำกี่รอบก็ได้ครบเหมือนเดิม** (เรื่อง group อยู่ LAB 3) · `consumer_timeout_ms=5000` ทำให้โปรแกรม **จบเอง** หลังอ่านหมดแล้วเงียบ 5 วินาที — prompt กลับมาโดยไม่ต้องกด Ctrl+C · **(2)** `finally: consumer.close()` ปิดการเชื่อมต่อให้เรียบร้อยเสมอ
 
 ```bash
 python consumer_partitions.py
 ```
 
-✅ **Expected output** — ครบ 30 ข้อความ (ตัวอย่างนี้ตัดมาให้ดูโครงสร้าง — **จำนวนและลำดับของแต่ละคนจะต่างกันตรงข้อความที่ไม่มี key**):
+✅ **Expected output** — ครบ 30 ข้อความ แล้วจบเองใน ~5 วินาที (**บรรทัด `key=None` ของแต่ละคนจะอยู่คนละเล่มกับเอกสาร**):
 
 ```
- [*] Waiting for messages. To exit press CTRL+C
- [x] partition=0 offset=0 key=None  value=order 5
- [x] partition=0 offset=3 key=hatyai  value=hatyai order #1
- [x] partition=0 offset=4 key=hatyai  value=hatyai order #2
+ [x] partition=2 offset=0 key=None  value=order 1
+ [x] partition=2 offset=1 key=None  value=order 6
+ [x] partition=2 offset=2 key=bangkok  value=bangkok order #1
+ [x] partition=2 offset=3 key=bangkok  value=bangkok order #2
+ [x] partition=2 offset=4 key=bangkok  value=bangkok order #3
+ [x] partition=2 offset=5 key=bangkok  value=bangkok order #1
+ [x] partition=2 offset=6 key=bangkok  value=bangkok order #2
+ [x] partition=2 offset=7 key=bangkok  value=bangkok order #3
  [x] partition=1 offset=0 key=None  value=order 2
+ [x] partition=1 offset=1 key=None  value=order 3
+ [x] partition=1 offset=2 key=None  value=order 4
+ [x] partition=1 offset=3 key=None  value=order 5
+ [x] partition=1 offset=4 key=None  value=order 6
+ [x] partition=1 offset=5 key=None  value=order 2
+ [x] partition=1 offset=6 key=None  value=order 3
  [x] partition=1 offset=7 key=chiangmai  value=chiangmai order #1
  [x] partition=1 offset=8 key=chiangmai  value=chiangmai order #2
- [x] partition=2 offset=0 key=None  value=order 1
- [x] partition=2 offset=1 key=None  value=order 4
- [x] partition=2 offset=2 key=bangkok  value=bangkok order #1
-        ... (รวม 30 บรรทัด) ...
-^CInterrupted
+ [x] partition=1 offset=9 key=chiangmai  value=chiangmai order #3
+ [x] partition=1 offset=10 key=chiangmai  value=chiangmai order #1
+ [x] partition=1 offset=11 key=chiangmai  value=chiangmai order #2
+ [x] partition=1 offset=12 key=chiangmai  value=chiangmai order #3
+ [x] partition=0 offset=0 key=None  value=order 1
+ [x] partition=0 offset=1 key=None  value=order 4
+ [x] partition=0 offset=2 key=None  value=order 5
+ [x] partition=0 offset=3 key=hatyai  value=hatyai order #1
+ [x] partition=0 offset=4 key=hatyai  value=hatyai order #2
+ [x] partition=0 offset=5 key=hatyai  value=hatyai order #3
+ [x] partition=0 offset=6 key=hatyai  value=hatyai order #1
+ [x] partition=0 offset=7 key=hatyai  value=hatyai order #2
+ [x] partition=0 offset=8 key=hatyai  value=hatyai order #3
+ [*] Done - read 30 messages
 ```
 
 > **จุดที่ต้องสังเกต :**
 > - ข้อความมาเป็น **ก้อนตาม partition** ไม่ได้เรียงตามเวลาที่ส่ง — consumer ดึงมาทีละเล่ม
-> - **ภายในเล่มเดียวกัน offset เรียง 0, 1, 2, ... เสมอ** ← นี่คือ "ลำดับการันตี" ของข้อ 7.4 ที่เห็นเป็นตัวเลขจริง
-> - ทุกใบของ `hatyai` อยู่ p0 · `chiangmai` อยู่ p1 · `bangkok` อยู่ p2 ไม่มีปน
-> - `key=None` คือของจากข้อ 5 — กระจัดกระจายอยู่หลายเล่ม
-> - **ลอง Ctrl+C แล้วรันใหม่อีกรอบ** — ได้ครบ 30 ใบเหมือนเดิม เพราะการอ่านไม่ลบข้อความ (RabbitMQ ทำแบบนี้ไม่ได้)
+> - **ภายในเล่มเดียวกัน offset เรียง 0, 1, 2, … เสมอ** ← "ลำดับการันตี" ของข้อ 7.4 ที่เห็นเป็นตัวเลขจริง
+> - ทุกใบของ `hatyai` อยู่ p0 · `chiangmai` อยู่ p1 · `bangkok` อยู่ p2 ไม่มีปน · `key=None` กระจัดกระจาย
+> - **รันซ้ำอีกรอบ** ได้ครบ 30 เหมือนเดิม เพราะการอ่านไม่ลบข้อความ
 
 ---
 
 ## 9. สืบสวน partition และ key ใน Kafka UI
 
-หน้าเว็บ UI เปิดอยู่ที่ port **`8412`** ของเครื่องเรียน (ตาม `ports: "8412:8080"` ในไฟล์ compose) — forward ออกมาก่อน :
-
-1. เปิดแท็บ **PORTS** (แถวเดียวกับ TERMINAL)
-2. กดปุ่ม **Forward a Port** → พิมพ์ `8412` → **Enter**
-3. เปิด `http://localhost:8412` ในเบราว์เซอร์ (หรือคลิกไอคอนลูกโลกในแถวของ port)
-
-![วิธี forward port ใน VS Code](./images/vscode-port-forward.png)
-
-*(ภาพนี้เก็บจากตอนที่แล็บยังใช้ port 8080 — ขั้นตอนเหมือนกันทุกอย่าง แค่พิมพ์ `8412` แทน)*
-
-หรือ forward ด้วยมือจาก terminal ใหม่บนเครื่องเรา (เปิดค้างไว้ตลอดที่ใช้ UI):
-
-```bash
-ssh -L 8412:localhost:8412 root@localhost -p 2222        # password : passwd
-```
-
-Kafka UI ไม่มีหน้า login — เข้ามาเจอ Dashboard เลย · ไปที่เมนู **Topics** ด้านซ้าย แล้วคลิกชื่อ `orders`
-ทุกภาพข้างล่างเก็บจากสถานะ "หลังจบข้อ 8" คือ topic มี **30 ข้อความ** พอดี
+เปิด **`http://localhost:8412`** → เมนู **Topics** ด้านซ้าย → คลิก `orders` · ทุกภาพข้างล่างเก็บจากสถานะ "หลังจบข้อ 8" คือ topic มี **30 ข้อความ**
 
 ### 9.1 แท็บ Overview — นับหัวรายเล่ม
 
 ![หน้า topic orders — Overview เห็น 3 partitions พร้อมจำนวนข้อความรายเล่ม](./images/ui-01-topic-overview.png)
 
-> 📝 **จุดที่ต้องดู:**
-> - **Partitions: 3** ตรงกับ `--partitions 3` ข้อ 4 · **In Sync Replicas: 3 of 3** · **URP: 0** = ไม่มีเล่มไหนสำเนาขาด (ในระบบจริงตัวเลขนี้คือสัญญาณเตือนอันดับแรกเวลา broker ล่ม)
-> - **Clean Up Policy: DELETE** = ลบตามอายุ/ขนาด ไม่ใช่ `COMPACT` — สำคัญกับเรื่อง key ตามข้อ 7.6
-> - **Message Count: 30** = 12 (ไม่มี key) + 18 (มี key)
-> - **ตารางล่างคือหัวใจของข้อนี้** — p0 = 9 ใบ · p1 = 13 ใบ · p2 = 8 ใบ รวม **30** ✔
-> - **Next Offset = เลขที่ข้อความใบถัดไปจะได้** ไม่ใช่ offset ของใบสุดท้าย (ใบสุดท้ายของ p0 คือ offset 8 ไม่ใช่ 9) ← จุดที่คนอ่านผิดบ่อยที่สุดในหน้านี้
-> - **First Offset = 0 ทุกเล่ม** → ยังไม่มีข้อความเก่าถูกลบทิ้ง (ถ้า retention เตะของเก่าไปแล้ว เลขนี้จะขยับขึ้น)
-> - **ตัวเลขรายเล่มของแต่ละคนจะไม่ตรงกับเอกสาร** เพราะฝั่งไม่มี key สุ่ม แต่ฝั่งมี key ต้องคงที่ : hatyai 6 ใบใน p0 · chiangmai 6 ใบใน p1 · bangkok 6 ใบใน p2 และผลรวมต้องได้ 30 เท่ากันทุกคน
+> 📝 **จุดที่ต้องดู:** **Partitions: 3** · **Message Count: 30** = 12 + 18 · ตารางล่าง p0 = 9 · p1 = 13 · p2 = 8 (**ตัวเลขรายเล่มของเราจะไม่ตรงเอกสาร** เพราะฝั่งไม่มี key สุ่ม แต่รวมต้องได้ 30) · **Next Offset = เลขที่ใบถัดไปจะได้** ไม่ใช่ offset ของใบสุดท้าย (ใบสุดท้ายของ p0 คือ 8 ไม่ใช่ 9) ← จุดที่คนอ่านผิดบ่อยที่สุด · **Clean Up Policy: DELETE** = ลบตามอายุ ไม่ใช่ compact
 
-### 9.2 แท็บ Messages — คอลัมน์ Key คู่กับ Partition
+### 9.2 แท็บ Messages — กรองดูทีละ partition
 
-![แท็บ Messages — เห็นคอลัมน์ Partition และ Key ของทุกข้อความ](./images/ui-02-messages-newest.png)
-
-> 📝 **จุดที่ต้องดู:**
-> - แถบบนซ้ายคือ **โหมดอ่าน** : `Newest` (ค่าเริ่มต้น) · `Oldest` · `Live Mode` · `From offset` · `From timestamp`
-> - มุมขวาบนรายงาน **`30 messages consumed`** — ต้องตรงกับ Overview
-> - **ไล่ทีละแถวเทียบ Key กับ Partition** : `hatyai → 0` · `chiangmai → 1` · `bangkok → 2` **ทุกแถวไม่มีข้อยกเว้น** ตรงกับใบเสร็จข้อ 6 และ `hash_key.py` ข้อ 7.3
-> - **คอลัมน์ Offset ไม่เรียงจากบนลงล่าง** (8, 12, 7, 7, 11, 6, …) เพราะ UI เรียงตาม **timestamp** ข้ามทุกเล่ม — offset จะเรียงสวยก็ต่อเมื่อล็อกดูเล่มเดียว (ข้อ 9.4)
-> - แถวของข้อ 5 จะมี **คอลัมน์ Key ว่างเปล่า** — นั่นคือ `key = null` (ไม่ใช่ string ว่าง)
-
-กดปุ่ม **`+`** หน้าแถวไหนก็ได้ แถวจะกางออกเป็นรายละเอียดรายใบ :
-
-![กางรายละเอียดข้อความหนึ่งใบ — เห็น Key/Value/Headers และขนาด](./images/ui-03-message-detail.png)
-
-> 📝 **จุดที่ต้องดู:** สามแท็บ **Key · Value · Headers** กดสลับได้ · **Headers** ของเราว่าง `{}` — header คือ metadata คู่ key–value ที่แนบไปกับข้อความได้ (เช่น trace id) **คนละเรื่องกับ message key ที่ใช้เลือก partition** · **Timestamp type: CREATE_TIME** = เวลาที่ *ผู้ส่ง* ประทับ (อีกแบบคือ `LOG_APPEND_TIME` = เวลาที่ broker เขียนลง log) · **Key Serde: String · Size: 6 Bytes** = คำว่า `hatyai` 6 ตัวอักษร — ยืนยันว่าสิ่งที่วิ่งในสายจริง ๆ คือ **bytes** ส่วน "String" เป็นแค่แว่นที่ UI ใส่ให้เราอ่านออก · หัวแถวบอก **Offset 8 · Partition 0** = ที่อยู่เต็มของใบนี้คือ `(orders, 0, 8)`
-
-### 9.3 กรองดูทีละ partition — พิสูจน์ว่าเป็น "สมุดแยกเล่ม" จริง
-
-คลิกช่อง **Select partitions** จะได้ checkbox ตามจำนวน partition :
-
-![ช่อง Select partitions กางออก เห็น Partition #0 #1 #2](./images/ui-04-partition-filter.png)
-
-ติ๊กเฉพาะ **Partition #2** แล้วสลับโหมดซ้ายสุดเป็น **Oldest** จากนั้นกด **Refresh** :
+คลิกแท็บ **Messages** → ช่อง **Select partitions** ติ๊กเฉพาะ **Partition #2** → สลับโหมดซ้ายสุดเป็น **Oldest** → กด **Refresh** :
 
 ![กรองเฉพาะ partition 2 เรียงจาก offset 0 — เห็นแต่ bangkok กับ null](./images/ui-05-partition2-only.png)
 
-> 📝 **ภาพนี้คือหัวใจของทั้งแล็บ:**
-> - มุมขวาบนเปลี่ยนเป็น **`8 messages consumed`** — จาก 30 เหลือ 8 ตรงกับ Message Count ของ p2 ใน Overview เป๊ะ
-> - **คอลัมน์ Offset เรียง 0 → 7 เป็นระเบียบ** และ Partition เป็น `2` ทุกแถว — นี่แหละ "หน้าตาของ log หนึ่งเล่ม" ที่วาดไว้ในข้อ 7.1
-> - สองแถวแรก key ว่าง (`order 1`, `order 4` จากข้อ 5 ที่สุ่มตกเล่มนี้) ตามด้วย **bangkok 6 ใบเรียง #1 → #2 → #3 → #1 → #2 → #3**
-> - **ไม่มี chiangmai หรือ hatyai โผล่มาแม้แต่ใบเดียว** — เพราะ hash พาไปคนละเล่มตั้งแต่ตอนส่งแล้ว
-> - อยากพิสูจน์ต่อ : ติ๊ก **#0** จะเจอแต่ `hatyai` + null · ติ๊ก **#1** จะเจอแต่ `chiangmai` + null
-> - สังเกต URL เปลี่ยนเป็น `...?limit=100&mode=EARLIEST&partitions=2` — ทุกตัวกรองผูกกับ URL แชร์ลิงก์ให้เพื่อนเปิดหน้าเดียวกันได้
+> 📝 **ภาพนี้คือหน้าตาของ log หนึ่งเล่ม:** มุมขวาบน **`8 messages consumed`** ตรงกับ Message Count ของ p2 ใน Overview · **Offset เรียง 0 → 7** · สองแถวแรก Key ว่าง = `null` จากข้อ 5 ที่สุ่มตกเล่มนี้ ตามด้วย **bangkok 6 ใบเรียง #1 #2 #3 #1 #2 #3** · **ไม่มี chiangmai / hatyai โผล่แม้แต่ใบเดียว** · ติ๊ก #0 จะเจอแต่ `hatyai` + null · #1 เจอแต่ `chiangmai` + null
 
-### 9.4 ค้นด้วย key — ตามรอยสาขาเดียวข้ามทั้ง topic
+### 9.3 ค้นด้วย key — ตามรอยสาขาเดียวข้ามทั้ง topic
 
 ล้างตัวกรอง partition ออก แล้วพิมพ์ `bangkok` ในช่อง **Search** มุมขวาบน กด Enter :
 
 ![ค้นคำว่า bangkok — ทุกแถวอยู่ partition 2 ทั้งหมด](./images/ui-06-search-bangkok.png)
 
-> 📝 **จุดที่ต้องดู:**
-> - ได้ **6 แถว** และคอลัมน์ Partition เป็น **2 ทั้ง 6 แถว** — คำตอบของคำถาม "ออเดอร์สาขา bangkok กระจายไปทั่ว topic ไหม?" คือ **ไม่ มันกองอยู่เล่มเดียว**
-> - offset ไล่ 2 → 7 และเนื้อความเรียง `#1 #2 #3 #1 #2 #3` = สองรอบที่รันในข้อ 6 **ต่อคิวกันสวยงามไม่มีอะไรแทรก** ← "ลำดับการันตีต่อ key" ของข้อ 7.4 ที่เห็นเป็นภาพ
-> - ช่อง Search นี้ค้นแบบ **substring ทั้ง key และ value** — สะดวกสำหรับห้องเรียน แต่ของจริงมันดึงข้อความมากรองฝั่ง UI ไม่ใช่ index อย่าคาดหวังความเร็วกับ topic ใหญ่ ๆ
-> - อยากกรองแบบเงื่อนไขจริงจัง ปุ่ม **+ Add Filters** เขียนได้ เช่น `keyAsText == "bangkok" && partition == 2`
+> 📝 **จุดที่ต้องดู:** ได้ **6 แถว** และ Partition เป็น **2 ทั้ง 6 แถว** · offset ไล่ 2 → 7 เนื้อความเรียง `#1 #2 #3 #1 #2 #3` = สองรอบของข้อ 6 **ต่อคิวกันไม่มีอะไรแทรก** ← "ลำดับการันตีต่อ key" ที่เห็นเป็นภาพ · ช่อง Search ค้นแบบ substring ทั้ง key และ value ฝั่ง UI ไม่ใช่ index — สะดวกในห้องเรียน แต่อย่าคาดหวังความเร็วกับ topic ใหญ่
 
-### 9.5 แท็บ Statistics — สแกนทั้ง topic แล้วสรุปสถิติ
+### 9.4 แท็บ Statistics — สรุปสถิติทั้ง topic
 
-คลิกแท็บ **Statistics** แล้วกดปุ่ม **Start Analysis** :
+คลิกแท็บ **Statistics** → ปุ่ม **Start Analysis** :
 
-![แท็บ Statistics — Null keys 12 · Unique keys 3 · ตารางรายพาร์ทิชัน](./images/ui-07-statistics.png)
+![แท็บ Statistics — Null keys 12 · Unique keys 3](./images/ui-07-statistics.png)
 
-> 📝 **หน้านี้ตอบโจทย์แล็บนี้ตรง ๆ ที่สุด:**
-> - **Total number: 30** — ยืนยันอีกทาง
-> - **Null keys: 12** ← จำนวนข้อความจาก `producer_no_key.py` สองรอบพอดี (6 + 6)
-> - **Unique keys: 3** ← `bangkok`, `chiangmai`, `hatyai` — จำนวน key ที่ **ไม่ซ้ำ** ไม่ใช่จำนวนข้อความที่มี key (ซึ่งคือ 18)
-> - **Unique values: 15** — `order 1`–`order 6` ซ้ำสองรอบ และ `<สาขา> order #N` ซ้ำสองรอบ เหลือเนื้อความไม่ซ้ำ 6 + 9 = 15
-> - **Key size** : Min 6 (`hatyai`) · Max 9 (`chiangmai`) · Total 132 Bytes = 6×6 + 9×6 + 7×6 (bangkok 7 ตัวอักษร) ✔ คำนวณตามได้
-> - **ใช้หน้านี้ตรวจ key skew ในงานจริง** : ถ้า Unique keys น้อยแต่ Total number มหาศาล แปลว่า key กระจุก → เสี่ยง hot partition ตามข้อ 7.5
+> 📝 **จุดที่ต้องดู:** **Total number: 30** · **Null keys: 12** = `producer_no_key.py` สองรอบ · **Unique keys: 3** = `bangkok` `chiangmai` `hatyai` (จำนวน key ที่ *ไม่ซ้ำ* ไม่ใช่จำนวนข้อความที่มี key) · **Key size Total 132 Bytes** = 6×7 + 6×9 + 6×6 ✔ · **ใช้หน้านี้ตรวจ key skew ในงานจริง** : Unique keys น้อยแต่ Total มหาศาล = เสี่ยง hot partition
 
-### 9.6 แท็บ Consumers — ทำไมถึงว่างเปล่า
+### 9.5 ปุ่ม Produce Message — กับดักที่ต้องรู้
 
-![แท็บ Consumers ของ topic orders — ไม่มีรายการใด ๆ](./images/ui-08-consumers-empty.png)
-
-> 📝 **ว่างเปล่าคือคำตอบที่ถูกต้อง** ไม่ใช่หน้าเสีย · `consumer_partitions.py` สร้าง `KafkaConsumer` โดย **ไม่ใส่ `group_id`** — consumer แบบไร้ group จะไม่ลงทะเบียนเป็น consumer group และ **ไม่จดตำแหน่งที่อ่านถึง (offset commit)** ไว้ที่ broker เลย นี่คือเหตุผลที่รันซ้ำกี่รอบก็ได้ 30 ใบเหมือนเดิม ·
-> พอเข้า **LAB 3** เราจะใส่ `group_id` แล้วหน้านี้จะมีชีวิตขึ้นมาทันที — โชว์ว่ามีสมาชิกกี่ตัว ใครถือ partition ไหน และ **Lag** (ตามหลังปลายทางอยู่กี่ข้อความ) ซึ่งเป็นตัวเลขที่ทีม production จ้องมากที่สุดในชีวิตประจำวัน
-
-### 9.7 ปุ่ม Produce Message — กับดักที่ต้องรู้
-
-มุมขวาบนของหน้า topic มีปุ่ม **Produce Message** กดแล้วได้ฟอร์มนี้ (ยัง **อย่าเพิ่งกดส่ง** — เดี๋ยวได้ใช้จริงในทดลองเพิ่มเติม ข.) :
+มุมขวาบนมีปุ่ม **Produce Message** กดแล้วได้ฟอร์มนี้ (ยัง **อย่าเพิ่งกดส่ง** — เดี๋ยวใช้จริงในทดลองเพิ่มเติม ข.) :
 
 ![ฟอร์ม Produce Message — มีช่อง Partition, Key, Value, Headers](./images/ui-09-produce-dialog.png)
 
-> 📝 **นี่คือกับดัก:**
-> - ช่องบนสุดคือ **Partition** และค่าเริ่มต้นคือ **`Partition #0`** — ไม่ใช่ "อัตโนมัติ"
-> - กดเปิด dropdown จะเห็นแค่ `#0` / `#1` / `#2` — **ไม่มีตัวเลือก "ให้ hash เลือกให้"**
-> - แปลว่าทุกข้อความที่ส่งจากหน้าเว็บนี้ **เข้ากฎชั้นที่ 1** ของข้อ 7.2 → **key ที่เราพิมพ์จะถูกมองข้ามในการเลือกเล่ม** (แต่ยังติดไปกับข้อความในฐานะข้อมูล)
-
-> 💡 **ทดลองเสร็จแล้วอย่าลืมปิด tunnel** — VS Code : แท็บ **PORTS** → คลิกขวาที่ `8412` → **Stop Forwarding Port** · แบบ `ssh -L` : พิมพ์ `exit` ใน session นั้น · (ยังไม่ต้องปิดตอนนี้ ทดลองเพิ่มเติมยังต้องกลับมาดู UI อีก แต่**จบแล็บแล้วต้องปิดเสมอ**)
+> 📝 **นี่คือกับดัก:** ช่องบนสุดคือ **Partition** ค่าเริ่มต้น **`Partition #0`** และ dropdown มีแค่ `#0` / `#1` / `#2` — **ไม่มีตัวเลือก "ให้ hash เลือกให้"** · ทุกข้อความจากฟอร์มนี้จึงเข้า **กฎชั้นที่ 1** ของข้อ 7.2 → key ที่พิมพ์จะถูกมองข้ามในการเลือกเล่ม
 
 ---
 
 ## 10. เจาะอ่าน partition เดียว — console consumer
 
-ในเมื่อแต่ละ partition คือ log แยกเล่ม — Kafka ก็ยอมให้เรา **เปิดอ่านเฉพาะเล่มเดียว** ได้ตรง ๆ จาก CLI (แบบเดียวกับที่ทำผ่านหน้าเว็บในข้อ 9.3) ลองเจาะ p2 (เล่มของ bangkok):
+Kafka ยอมให้เรา **เปิดอ่านเฉพาะเล่มเดียว** จาก CLI ได้ตรง ๆ (แบบเดียวกับข้อ 9.2 แต่ไม่ต้องใช้หน้าเว็บ) — เจาะ p2 :
 
 ```bash
 docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 \
@@ -684,13 +528,13 @@ docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server lo
   --property print.key=true
 ```
 
-> 📝 **คำอธิบาย:** `kafka-console-consumer.sh` คือ consumer สำเร็จรูปในกล่อง `kafka` ไว้แอบดูข้อมูลโดยไม่ต้องเขียนโค้ด · `--partition 2` = อ่านเฉพาะเล่ม p2 ไม่แตะเล่มอื่น · `--from-beginning` = เริ่มจาก offset 0 (ค่าปกติจะรอเฉพาะของใหม่) · `--max-messages 8` = อ่านครบ 8 ใบแล้วจบตัวเอง ไม่ต้องกด Ctrl+C — **เลข 8 มาจาก Message Count ของ p2 ใน UI ข้อ 9.1 ของเราอาจไม่ใช่ 8** ถ้าใส่เกินจำนวนที่มี คำสั่งจะค้างรอข้อความใหม่จนกว่าจะกด Ctrl+C · `--property print.key=true` = พิมพ์ key นำหน้าเนื้อความ (ไม่มี key จะขึ้น `null`)
+> 📝 **คำอธิบาย:** `--partition 2` = อ่านเฉพาะเล่ม p2 · `--from-beginning` = เริ่มจาก offset 0 · `--max-messages 8` = อ่านครบ 8 ใบแล้ว **จบเอง** ไม่ต้องกด Ctrl+C — **เลข 8 คือ Message Count ของ p2 จากข้อ 9.1 ของเราอาจไม่ใช่ 8** (ใส่เกินจำนวนที่มี คำสั่งจะค้างรอข้อความใหม่ — กด Ctrl+C ออก) · `print.key=true` = พิมพ์ key นำหน้า (ไม่มี key ขึ้น `null`)
 
-✅ **Expected output** — เห็นแต่ `bangkok` กับ `null` ไม่มีสาขาอื่นปน:
+✅ **Expected output** — เห็นแต่ `bangkok` กับ `null` ไม่มีสาขาอื่นปน — ตรงกับข้อ 9.2 ทุกบรรทัด:
 
 ```
 null	order 1
-null	order 4
+null	order 6
 bangkok	bangkok order #1
 bangkok	bangkok order #2
 bangkok	bangkok order #3
@@ -700,53 +544,47 @@ bangkok	bangkok order #3
 Processed a total of 8 messages
 ```
 
-> **ตรงกับข้อ 9.3 ทุกบรรทัด** — เครื่องมือคนละตัว (CLI vs หน้าเว็บ) แต่มองเห็น log เล่มเดียวกัน · อยากเห็นที่อยู่เต็ม ๆ ด้วยก็เติม `--property print.offset=true --property print.partition=true`
-
 ---
 
 ## ทดลองเพิ่มเติม
 
 ### ก. ทำนายก่อน แล้วค่อยส่ง — key หน้าใหม่ `korat`
 
-ย้อนดูผล `hash_key.py` จากข้อ 7.3 : `korat  hash=1798336970  %3 -> p2` → **ทำนายไว้ก่อน : `korat` ต้องลง p2** (เล่มเดียวกับ bangkok — คนละ key แต่เศษหารตรงกันได้ ไม่ใช่เรื่องแปลก)
+ย้อนดู `hash_key.py` ข้อ 7.3 : `korat  hash=1798336970  %3 -> p2` → **ทำนาย : `korat` ต้องลง p2** (เล่มเดียวกับ bangkok — คนละ key แต่เศษหารตรงกันได้ ไม่แปลก)
 
-ส่งของจริงด้วย console producer โดยไม่ต้องเขียนโค้ดสักบรรทัด :
+ส่งของจริงด้วย console producer โดยไม่ต้องเขียนโค้ด — ป้อนสองบรรทัดผ่าน pipe ในหน้าต่างเดิม :
 
 ```bash
-docker exec -it kafka /opt/kafka/bin/kafka-console-producer.sh --bootstrap-server localhost:9092 \
+printf 'korat:korat order #1\nkorat:korat order #2\n' | docker exec -i kafka \
+  /opt/kafka/bin/kafka-console-producer.sh --bootstrap-server localhost:9092 \
   --topic orders --property parse.key=true --property key.separator=:
 ```
 
-> 📝 **คำอธิบาย:** ต้องใส่ `-it` เพราะจะพิมพ์สด ๆ · `parse.key=true` สั่งให้ตีความบรรทัดที่พิมพ์เป็น `key<ตัวคั่น>value` · `key.separator=:` ใช้ `:` เป็นตัวคั่น · **ไม่ได้ระบุ `--partition`** จึงเข้ากฎชั้นที่ 2 คือให้ hash ตัดสิน · จะได้ prompt `>` มา พิมพ์สองบรรทัดนี้แล้วกด **Ctrl+C** เพื่อออก:
-
-```
->korat:korat order #1
->korat:korat order #2
-```
+> 📝 **คำอธิบาย:** `printf` พิมพ์สองบรรทัด `key:value` ส่งเข้า stdin ของ `docker exec -i` (ตัว `-i` ส่ง stdin เข้าไป ไม่ต้อง `-t` เพราะไม่ได้พิมพ์สด) · `parse.key=true` + `key.separator=:` สั่งให้ตีความส่วนหน้า `:` เป็น key · **ไม่ได้ระบุ `--partition`** จึงเข้ากฎชั้นที่ 2 ให้ hash ตัดสิน · สำเร็จแล้ว **ไม่พิมพ์อะไร** prompt กลับมาเฉย ๆ
 
 แล้ว `korat` ลงเล่มไหนจริง? :
 
 ```bash
 docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 \
   --topic orders --from-beginning --max-messages 32 \
-  --property print.key=true --property print.partition=true | grep korat
+  --property print.key=true --property print.partition=true --property print.offset=true | grep korat
 ```
 
-> 📝 **คำอธิบาย:** ตอนนี้ topic มี 30 + 2 = **32 ข้อความ** จึงใช้ `--max-messages 32` ให้จบเอง · `print.partition=true` เติมคอลัมน์ `Partition:N` นำหน้า · `| grep korat` กรองเฉพาะแถวของเรา
+> 📝 **คำอธิบาย:** ตอนนี้ topic มี 30 + 2 = **32 ข้อความ** จึง `--max-messages 32` ให้จบเอง · `print.partition` / `print.offset` เติมคอลัมน์ที่อยู่นำหน้า · `| grep korat` กรองเฉพาะแถวของเรา
 
 ✅ **Expected output** — สองใบลง **p2 ตามที่ทำนายไว้เป๊ะ**:
 
 ```
 Processed a total of 32 messages
-Partition:2	korat	korat order #1
-Partition:2	korat	korat order #2
+Partition:2	Offset:8	korat	korat order #1
+Partition:2	Offset:9	korat	korat order #2
 ```
 
-> **ย้ำบทเรียน :** เราทำนายถูกเพราะ **มันเป็นคณิตศาสตร์ ไม่ใช่การจับฉลาก** · จากวินาทีนี้ `korat` จะลง p2 **ตลอดไป** — ตราบใดที่ topic ยังมี 3 partitions (คำว่า "ตราบใดที่" นี่แหละคือประเด็นของทดลอง ค.)
+> **ย้ำบทเรียน :** ทำนายถูกเพราะ **มันเป็นคณิตศาสตร์ ไม่ใช่การจับฉลาก** · `korat` จะลง p2 **ตลอดไป** — ตราบใดที่ topic ยังมี 3 partitions (คำว่า "ตราบใดที่" คือประเด็นของทดลอง ค.)
 
 ### ข. ส่งจาก Kafka UI — ทำไม `korat` ใบนี้ถึงไม่ไป p2?
 
-กลับไปที่หน้าเว็บ กดปุ่ม **Produce Message** (ฟอร์มเดียวกับข้อ 9.7) แล้วกรอก :
+กลับไปหน้าเว็บ กดปุ่ม **Produce Message** (ฟอร์มข้อ 9.5) แล้วกรอก :
 
 | ช่อง | ค่าที่กรอก |
 |---|---|
@@ -754,7 +592,7 @@ Partition:2	korat	korat order #2
 | Key | `korat` |
 | Value | `korat order #3 (sent from Kafka UI)` |
 
-กด **Produce Message** ด้านล่างฟอร์ม · จากนั้นพิมพ์ `korat` ในช่อง **Search** ของแท็บ Messages :
+กด **Produce Message** ท้ายฟอร์ม · แล้วพิมพ์ `korat` ในช่อง **Search** ของแท็บ Messages :
 
 ![ค้น korat — สองใบอยู่ p2 แต่ใบที่ส่งจาก UI ไปอยู่ p0](./images/ui-10-search-korat.png)
 
@@ -766,23 +604,14 @@ Partition:2	korat	korat order #2
 | 9 | **2** | korat order #2 |
 | 9 | **0** | korat order #3 (sent from Kafka UI) |
 
-> 📝 **เกิดอะไรขึ้น:** key เป็น `korat` เหมือนกันทั้งสามใบ แต่ใบที่สามไป **p0** เพราะฟอร์มของ UI **ระบุ partition มาให้แล้ว** (`Partition #0`) → เข้ากฎ **ชั้นที่ 1** ซึ่งชนะ hash ของ key เสมอ ·
-> **นี่คือบั๊กคลาสสิกในงานจริง** : โค้ดที่เผลอส่ง `partition=` ไปด้วย ทำให้การรับประกันลำดับต่อ key พังเงียบ ๆ **โดยไม่มี error สักบรรทัด** — ข้อความยังเข้า Kafka ได้ปกติ key ยังติดไปครบ แต่ `korat` แตกเป็นสองเล่ม ลำดับข้าม `#2 → #3` ไม่การันตีอีกต่อไป ·
-> **วิธีที่ถูกในโค้ดจริงคือ อย่าใส่ `partition=` เลย** แล้วปล่อยให้ hash ทำงาน (เลือก `Partition #2` เองในฟอร์มก็ได้ผลถูก แต่นั่นคือการที่ *เรา* คำนวณ hash แทน Kafka ซึ่งจะพังทันทีที่จำนวน partition เปลี่ยน)
+> 📝 **เกิดอะไรขึ้น:** key เป็น `korat` เหมือนกันทั้งสามใบ แต่ใบที่สามไป **p0** เพราะฟอร์ม **ระบุ partition มาให้แล้ว** → กฎ **ชั้นที่ 1** ชนะ hash ของ key เสมอ ·
+> **นี่คือบั๊กคลาสสิกในงานจริง** : โค้ดที่เผลอส่ง `partition=` ไปด้วย ทำให้ลำดับต่อ key พังเงียบ ๆ **โดยไม่มี error สักบรรทัด** · วิธีที่ถูกคือ **อย่าใส่ `partition=` เลย** ปล่อยให้ hash ทำงาน
 >
 > ตอนนี้ topic มี **33 ข้อความ**
 
 ### ค. เพิ่มจำนวน partition แล้วเกิดอะไรขึ้น — บทเรียนที่แพงที่สุดของ Kafka
 
-จำคอลัมน์ `%4` ใน `hash_key.py` ได้ไหม — ถึงเวลาใช้แล้ว **ทำนายก่อนอีกครั้ง** :
-
-```
-bangkok    %3 -> p2   %4 -> p1
-chiangmai  %3 -> p1   %4 -> p2
-hatyai     %3 -> p0   %4 -> p3
-```
-
-**ทำนายไว้ : ถ้าเพิ่ม partition เป็น 4 แล้วส่งใหม่ ทั้งสามสาขาจะย้ายเล่มกันหมด ไม่มีใครอยู่ที่เดิมเลย**
+จำคอลัมน์ `%4` ใน `hash_key.py` ได้ไหม — **ทำนายก่อน :** ถ้าเพิ่ม partition เป็น 4 แล้วส่งใหม่ `bangkok→p1` · `chiangmai→p2` · `hatyai→p3` — **ทั้งสามสาขาย้ายเล่มหมด ไม่มีใครอยู่ที่เดิม**
 
 ![เพิ่ม partition จาก 3 เป็น 4 แล้ว mapping ของทุก key เปลี่ยน ข้อมูลเก่าไม่ย้ายตาม](./images/concept-05-repartition-break.png)
 
@@ -793,9 +622,9 @@ docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:90
 python producer_with_key.py
 ```
 
-> 📝 **คำอธิบาย:** `--alter --partitions 4` = ขยายจาก 3 เป็น 4 เล่ม · **เพิ่มได้อย่างเดียว ลดไม่ได้** (Kafka ไม่มีคำสั่งลดจำนวน partition เพราะจะต้องตัดสินใจว่าข้อมูลในเล่มที่หายไปจะไปไหน) · คำสั่งนี้ **ไม่ย้ายข้อมูลเก่าแม้แต่ใบเดียว** — แค่สร้างเล่มที่ 4 ว่าง ๆ เพิ่มเข้ามา · สำเร็จแล้วจะ **ไม่พิมพ์อะไรเลย** (เงียบ = สำเร็จ) · จากนั้นรัน producer ตัวเดิม **ที่ไม่ได้แก้โค้ดสักตัวอักษร**
+> 📝 **คำอธิบาย:** `--alter --partitions 4` ขยายจาก 3 เป็น 4 เล่ม — **เพิ่มได้อย่างเดียว ลดไม่ได้** และ **ไม่ย้ายข้อมูลเก่าแม้แต่ใบเดียว** แค่สร้างเล่มที่ 4 ว่าง ๆ เพิ่ม · สำเร็จแล้ว **ไม่พิมพ์อะไรเลย** · จากนั้นรัน producer ตัวเดิม **ที่ไม่ได้แก้โค้ดสักตัวอักษร**
 
-✅ **Expected output** — mapping **เปลี่ยนยกแผงตรงตามคอลัมน์ `%4` ที่ทำนายไว้**:
+✅ **Expected output** — mapping **เปลี่ยนยกแผงตรงตามคอลัมน์ `%4`**:
 
 ```
  [x] key=bangkok   -> partition=1 offset=13  ('bangkok order #1')
@@ -809,48 +638,20 @@ python producer_with_key.py
  [x] key=hatyai    -> partition=3 offset=2  ('hatyai order #3')
 ```
 
-> 📝 **สังเกต `hatyai` เริ่มที่ offset 0** — เพราะ p3 เป็นเล่มที่เพิ่งเกิด ยังไม่เคยมีใครเขียนลงไป
+> 📝 `hatyai` เริ่มที่ offset 0 — เพราะ p3 เป็นเล่มที่เพิ่งเกิด ยังไม่เคยมีใครเขียน
 
-ไปดูผลกระทบใน UI — ค้น `bangkok` อีกครั้ง จะเห็น **key เดียว แต่แตกเป็นสองเล่ม** :
+ดูผลกระทบใน UI — ค้น `bangkok` อีกครั้ง จะเห็น **key เดียว แต่แตกเป็นสองเล่ม** :
 
 ![ค้น bangkok หลังเพิ่ม partition — ของเก่าอยู่ p2 ของใหม่อยู่ p1](./images/ui-11-bangkok-split.png)
 
-| Offset | Partition | Value | มาจาก |
-|---|---|---|---|
-| 2 – 7 | **2** | bangkok order #1–#3 (สองรอบ) | ตอน topic มี 3 partitions |
-| 13 – 15 | **1** | bangkok order #1–#3 | ตอน topic มี 4 partitions |
-
-> **บทเรียนของข้อนี้ (สำคัญที่สุดในทดลองเพิ่มเติม) :**
-> - สูตรคือ `hash % จำนวน partition` — **เปลี่ยนตัวหาร = เปลี่ยนคำตอบแทบทุก key** (ไม่ใช่แค่ key ใหม่ ๆ แต่ key เดิมทั้งหมดด้วย)
-> - ข้อความเก่า **ไม่ถูกย้ายตาม** — Kafka ไม่มีการ rebalance ข้อมูลข้าม partition
-> - ผลคือ **การรับประกันลำดับต่อ key ขาดตอนตรงรอยต่อ** : ใครอ่าน p1 จะเห็นออเดอร์ bangkok ชุดใหม่โดยไม่รู้ว่ามีชุดเก่าค้างอยู่ใน p2 · ถ้านี่คือระบบตัดยอดเงินจริง ๆ ก็คือคิดเงินผิดลำดับได้เลย
-> - นี่คือเหตุผลที่ทีมจริง **วางแผนจำนวน partition ให้เผื่อโตตั้งแต่วันแรก** และถือว่าการเพิ่ม partition ของ topic ที่ใช้ key เป็น **operation ที่ต้องวางแผน** (หยุด producer → ระบายของเก่าให้หมด → ค่อยขยาย) ไม่ใช่คำสั่งที่เคาะเล่น ๆ ตอนบ่ายวันศุกร์
-> - ทางเลือกที่เจ็บน้อยกว่าคือ **สร้าง topic ใหม่ที่มีจำนวน partition ที่ต้องการ แล้วย้าย producer/consumer ไปทีละฝั่ง**
+> **บทเรียนของข้อนี้ :**
+> - สูตรคือ `hash % จำนวน partition` — **เปลี่ยนตัวหาร = เปลี่ยนคำตอบแทบทุก key** และข้อความเก่า **ไม่ถูกย้ายตาม**
+> - ผลคือ **ลำดับต่อ key ขาดตอนตรงรอยต่อ** : ใครอ่าน p1 จะเห็น bangkok ชุดใหม่โดยไม่รู้ว่ามีชุดเก่าค้างใน p2 — ถ้าเป็นระบบตัดยอดเงินก็คิดเงินผิดลำดับได้เลย
+> - ของจริงจึง **วางแผนจำนวน partition ให้เผื่อโตตั้งแต่วันแรก** และถือว่าการเพิ่ม partition ของ topic ที่ใช้ key เป็น operation ที่ต้องวางแผน (หยุด producer → ระบายของเก่า → ค่อยขยาย) หรือสร้าง topic ใหม่แล้วย้ายทีละฝั่ง
 >
-> ตอนนี้ topic มี **42 ข้อความ** — หน้า Overview แสดง 4 แถวแล้ว : p0 = 10 · p1 = 16 · p2 = 13 · p3 = 3 รวม **42** ✔ และ **p3 มี First Offset = 0 / Next Offset = 3** คือเล่มใหม่ที่เพิ่งเริ่มนับ
+> ตอนนี้ topic มี **42 ข้อความ** — หน้า Overview แสดง 4 แถว : p0 = 10 · p1 = 16 · p2 = 13 · p3 = 3 และ p3 มี First Offset 0 / Next Offset 3 คือเล่มใหม่ที่เพิ่งเริ่มนับ
 >
 > ![Overview หลังขยายเป็น 4 partitions](./images/ui-12-overview-4-partitions.png)
-
-### ง. หัดอ่าน error — typo ที่อันตรายกว่าที่คิด
-
-ลองสะกดชื่อ topic ผิดดูสักครั้ง :
-
-```bash
-docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 \
-  --describe --topic ordersss
-```
-
-✅ **Expected output** — ล้มพร้อม stack trace ของ Java:
-
-```
-Error while executing topic command : Topic 'ordersss' does not exist as expected
-[2026-09-21 05:46:55,929] ERROR java.lang.IllegalArgumentException: Topic 'ordersss' does not exist as expected
-	at org.apache.kafka.tools.TopicCommand.ensureTopicExists(TopicCommand.java:211)
-	... (บรรทัด at org.apache... อีกหลายบรรทัด) ...
-```
-
-> 📝 **คำอธิบาย:** traceback ของ Java อ่าน **บรรทัดบนสุด** ก่อน (กลับหัวกับ Python) : `Topic 'ordersss' does not exist as expected` ชัดเจนว่าสะกดผิด ส่วน `at org.apache...` คือเส้นทางในโค้ดของเครื่องมือเอง ไม่ต้องตามไป ·
-> **แต่ที่อันตรายกว่าคือฝั่ง producer** : ถ้าเผลอส่งไป topic ชื่อผิด broker ที่เปิด auto-create (ค่า default) จะ **สร้าง topic ใหม่ให้เงียบ ๆ แบบ 1 partition ไม่มี error สักบรรทัด** — typo กลายเป็น topic ผี และพอมีเล่มเดียว **ทุก key ก็ตกเล่มเดียวกันหมด** mapping ที่อุตส่าห์ออกแบบไว้ไม่มีความหมายเลย · เช็กเป็นระยะด้วย `kafka-topics.sh --list`
 
 ---
 
@@ -858,19 +659,15 @@ Error while executing topic command : Topic 'ordersss' does not exist as expecte
 
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
-| `docker compose up` ฟ้อง `no configuration file provided` | ยืนอยู่ผิดโฟลเดอร์ | `cd` เข้าโฟลเดอร์แล็บที่มี `docker-compose.yml` แล้วสั่งใหม่ (`ls` เช็กก่อน) |
-| `kafka-ui` ไม่ยอมขึ้น ค้างที่ `Waiting` นาน | broker ยัง healthy ไม่ผ่าน | `docker compose ps` ดูสถานะ `kafka` · `docker compose logs kafka --tail 20` หาสาเหตุ · healthcheck ให้เวลาสูงสุด 20 ครั้ง × 5 วินาที |
-| `Bind for 0.0.0.0:9092 failed: port is already allocated` | มี Kafka ตัวเก่าจาก LAB 1 (หรือ compose รอบก่อน) ค้างอยู่ | `docker rm -f kafka kafka-ui` แล้ว `docker compose up -d` ใหม่ · ถ้าไม่แน่ใจว่าใครจอง : `docker ps` |
-| UI บอก **cluster offline** | `KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS` ชี้ผิด (เช่นแก้เป็น `localhost:9092`) | ต้องเป็น `kafka:19092` — UI อยู่คนละ container จึงต้องเรียกด้วย **ชื่อ service** ตามข้อ 2.1 (ก) |
-| `kafka.errors.NoBrokersAvailable` ฝั่ง Python | broker ยังบูตไม่เสร็จ หรือ compose ยังไม่ได้ขึ้น | `docker compose ps` ต้องเห็น `Up (healthy)` ก่อน |
-| `ModuleNotFoundError: No module named 'kafka'` | ลืม activate venv ใน terminal นั้น (หรือตั้งชื่อไฟล์ตัวเองว่า `kafka.py` จนบังไลบรารี) | `source ~/venv-kafka/bin/activate` ให้ prompt ขึ้น `(venv-kafka)` |
-| เปิด `http://localhost:8412` ไม่ขึ้น | ยังไม่ได้ forward port `8412` หรือ tunnel ถูกปิด | forward `8412` ใหม่ตามข้อ 9 (ระวังอย่าพิมพ์ `8080` — นั่นคือ port **ข้างในกล่อง** ไม่ใช่ของเครื่องเรียน) |
-| `TopicExistsException` ตอน `--create` ด้วยมือ | `kafka-init` สร้าง `orders` ให้ไปแล้วตอน `up` (ข้อ 4 จงใจให้เห็น) | ใช้ topic เดิมต่อได้ — ถ้าอยากเริ่มจากศูนย์ : `docker compose down -v` แล้ว `up -d` ใหม่ (`kafka-init` สร้างให้อีกรอบ) หรือ `--delete --topic orders` แล้ว `--create` เอง |
-| `docker compose ps -a` เห็น `kafka-init` เป็น `Exited (0)` | **ไม่ใช่ปัญหา** — init container ทำงานเสร็จแล้วจบตามออกแบบ | ไม่ต้องทำอะไร · ดูผลงานด้วย `docker logs kafka-init` |
-| `kafka-init` เป็น `Exited (1)` | คำสั่งสร้าง topic ล้ม (broker ยังไม่พร้อม / แก้ `--bootstrap-server` เป็น `localhost:9092` ผิดที่) | `docker logs kafka-init` อ่านบรรทัด Error · ต้องเป็น `kafka:19092` ตามข้อ 2.1 (ง) · แก้แล้ว `docker compose up -d` ซ้ำ มันจะรันใหม่ให้เอง |
-| console consumer ค้างไม่ยอมจบ | ใส่ `--max-messages` มากกว่าจำนวนข้อความที่มีจริงในเล่มนั้น | **Ctrl+C** ออก แล้วดู Message Count รายเล่มจาก Overview (ข้อ 9.1) ก่อนใส่เลขใหม่ |
-| mapping key→partition ไม่ตรงกับเอกสาร | จำนวน partition ของ topic ไม่ใช่ 3 (เช่น producer ยิงก่อน `kafka-init` ทัน จน auto-create เป็น 1 เล่ม หรือทำทดลอง ค. ไปแล้ว) | `--describe --topic orders` ดู `PartitionCount` · ถ้าไม่ใช่ 3 ให้ `docker compose down -v` แล้ว `up -d` ใหม่ หรือ `--delete` แล้ว `--create --partitions 3` เอง |
-| ใส่ key แล้วแต่ข้อความยังกระจายมั่ว | โค้ด (หรือฟอร์ม UI) ระบุ `partition=` ไปด้วย → เข้ากฎชั้น 1 ที่ชนะ key | เอา argument `partition=` ออก ให้เหลือแค่ `key=` — ดูทดลองเพิ่มเติม ข. |
+| `docker compose up` ฟ้อง `no configuration file provided` | ยืนอยู่ผิดโฟลเดอร์ | `cd` เข้าโฟลเดอร์แล็บที่มี `docker-compose.yml` แล้วสั่งใหม่ |
+| `Bind for 0.0.0.0:9092 failed: port is already allocated` | มี Kafka ตัวเก่าจาก LAB 1 ค้างอยู่ | `docker rm -f kafka kafka-ui` แล้ว `docker compose up -d` ใหม่ |
+| `kafka-init` เป็น `Exited (1)` | คำสั่งสร้าง topic ล้ม (แก้ `--bootstrap-server` เป็น `localhost:9092` ผิดที่) | `docker logs kafka-init` อ่าน Error · ต้องเป็น `kafka:19092` ตามข้อ 2.1 (ก) · แก้แล้ว `docker compose up -d` ซ้ำ |
+| `kafka.errors.NoBrokersAvailable` ฝั่ง Python | broker ยังไม่ healthy หรือ compose ยังไม่ขึ้น | `docker compose ps` ต้องเห็น `Up (healthy)` ก่อน |
+| `ModuleNotFoundError: No module named 'kafka'` | ลืม activate venv | `source ~/venv-kafka/bin/activate` ให้ prompt ขึ้น `(venv-kafka)` |
+| เปิด `http://localhost:8412` ไม่ขึ้น | ลืม `-p 8412:8412` ตอนสร้างเครื่องเรียน · UI ยังบูตไม่เสร็จ | `docker ps` บนเครื่องเรา ดูว่า `devtools` มี `8412` — ไม่มีต้องสร้างใหม่ตามข้อ 1 · มีแล้วรอ 10 วินาทีแล้วรีเฟรช |
+| console consumer ค้างไม่ยอมจบ | `--max-messages` มากกว่าจำนวนข้อความที่มีจริง | **Ctrl+C** ออก แล้วดู Message Count จาก Overview (ข้อ 9.1) ก่อนใส่เลขใหม่ |
+| mapping key→partition ไม่ตรงเอกสาร | จำนวน partition ไม่ใช่ 3 (producer ยิงก่อน `kafka-init` จน auto-create เป็น 1 เล่ม · หรือทำทดลอง ค. ไปแล้ว) | `--describe --topic orders` ดู `PartitionCount` · ถ้าไม่ใช่ 3 ให้ `docker compose down -v` แล้ว `up -d` ใหม่ |
+| ใส่ key แล้วแต่ข้อความยังกระจายมั่ว | โค้ด (หรือฟอร์ม UI) ระบุ `partition=` ไปด้วย → กฎชั้น 1 ชนะ key | เอา `partition=` ออก ให้เหลือแค่ `key=` — ดูทดลองเพิ่มเติม ข. |
 
 ---
 
@@ -881,12 +678,12 @@ docker compose down -v
 docker ps -a
 ```
 
-> 📝 **คำอธิบาย:** `docker compose down` หยุดและลบ **ทั้ง container และ network** ที่ compose สร้างไว้ในคำสั่งเดียว — ไม่ต้องไล่ `docker rm -f` ทีละตัวเหมือน LAB 1 · `-v` ลบ volume ที่ผูกกับ compose ด้วย ทำให้ข้อความทั้ง 42 ใบใน topic `orders` หายไปหมด (ไม่เป็นไร แล็บหน้าเริ่มสร้างใหม่) · `docker ps -a` ตรวจซ้ำว่าไม่เหลือ container ค้าง ·
-> ที่ **ไม่ต้องลบ** : image `apache/kafka:4.1.0` กับ `kafbat/kafka-ui:latest` (แล็บถัดไปไม่ต้อง pull ใหม่) และ venv `~/venv-kafka` · และอย่าลืม**ปิด tunnel ของ port 8412** ตามท้ายข้อ 9
+> 📝 **คำอธิบาย:** `docker compose down` หยุดและลบ **ทั้ง container และ network** ในคำสั่งเดียว · `-v` ลบ volume ด้วย ข้อความทั้ง 42 ใบใน `orders` หายหมด (แล็บหน้าเริ่มใหม่) · ที่ **ไม่ต้องลบ** : image ทั้งสองตัว และ venv `~/venv-kafka`
 
 ✅ **Expected output** — compose ลบให้ครบทั้งชุด แล้วตารางเหลือแค่หัว:
 
 ```
+ Container kafka-init  Removed
  Container kafka-ui  Removed
  Container kafka  Removed
  Network 002_lab_partitions_keys_default  Removed
@@ -899,42 +696,34 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
 | คำสั่ง | ความหมาย |
 |---|---|
-| `docker compose up -d` | เปิด broker + Kafka UI + รัน `kafka-init` สร้าง topic `orders` จากไฟล์เดียว (healthcheck คุมลำดับบูตให้) |
-| `docker compose ps` / `ps -a` | ดูสถานะเฉพาะ container ของ compose ในโฟลเดอร์นี้ — `kafka` ต้องเป็น `Up (healthy)` · ใส่ `-a` ถึงจะเห็น `kafka-init` ที่ `Exited (0)` |
-| `docker logs kafka-init` | อ่านผลงานของ init container : `Created topic orders.` + ตาราง describe |
-| `docker compose logs kafka --tail 20` | ดู log ของ service เดียวเวลาหาสาเหตุที่ healthcheck ไม่ผ่าน |
+| `docker run ... -p 2222:22 -p 8412:8412 tuchsanai/devtools:2569_1` | เปิดเครื่องเรียนพร้อมเปิดทางให้ Kafka UI (`8412`) ทะลุถึงเบราว์เซอร์ |
+| `docker compose up -d` | เปิด broker + Kafka UI + รัน `kafka-init` สร้าง topic `orders` 3 partitions |
+| `docker compose ps -a` | ดูสถานะ — `kafka` ต้อง `Up (healthy)` · `kafka-init` ต้อง `Exited (0)` |
 | `docker compose down -v` | ลบ container + network + volume ของแล็บทั้งชุด |
-| `kafka-topics.sh --create --if-not-exists --topic orders --partitions 3 --replication-factor 1` | สร้าง topic กำหนดจำนวน partition เอง — `kafka-init` สั่งให้ตอน `up` · สั่งด้วยมือผ่าน `docker exec kafka ...` ก็ได้ (ไม่มี `--if-not-exists` แล้วมีอยู่แล้วจะ `TopicExistsException`) |
 | `kafka-topics.sh --describe --topic orders` | ดูตาราง partition : PartitionCount · Leader · Replicas · Isr |
 | `kafka-topics.sh --alter --topic orders --partitions 4` | เพิ่มจำนวน partition (เพิ่มได้ ลดไม่ได้ · mapping ของ key เปลี่ยนยกแผง) |
-| `kafka-topics.sh --list` | ดูรายชื่อ topic ทั้งหมด — ใช้จับ topic ผีที่เกิดจาก typo |
-| `python producer_no_key.py` | ส่ง 6 ข้อความไม่มี key — partition คุมไม่ได้ เปลี่ยนทุกรอบ |
+| `python producer_no_key.py` | ส่ง 6 ข้อความไม่มี key — partition คุมไม่ได้ |
 | `python producer_with_key.py` | ส่ง 9 ข้อความมี key — key เดิมลง partition เดิมเสมอ |
-| `python hash_key.py` | คำนวณ `murmur2(key) % N` เอง — ทำนาย partition ล่วงหน้าได้ |
-| `python consumer_partitions.py` | อ่านทั้ง topic ตั้งแต่ต้น พิมพ์ (partition · offset · key) ของทุกข้อความ |
+| `python hash_key.py` | คำนวณ `murmur2(key) % N` เอง — ทำนาย partition ล่วงหน้า |
+| `python consumer_partitions.py` | อ่านทั้ง topic พิมพ์ (partition · offset · key) แล้วจบเองใน 5 วินาที |
 | `kafka-console-consumer.sh --partition 2 --from-beginning --max-messages N --property print.key=true` | เจาะอ่าน log ของ partition เดียว |
-| `kafka-console-producer.sh --property parse.key=true --property key.separator=:` | ส่งข้อความมี key จากคีย์บอร์ด (พิมพ์ `key:value`) |
+| `printf 'k:v\n' \| docker exec -i kafka kafka-console-producer.sh --property parse.key=true --property key.separator=:` | ส่งข้อความมี key จาก CLI ผ่าน pipe ไม่ต้องพิมพ์สด |
 
-> **จำหลักเดียวให้ขึ้นใจ :** **ระบุ partition ชนะทุกอย่าง → ไม่ระบุแต่มี key ใช้ `murmur2(key) % N` → ไม่มีทั้งคู่ producer เลือกเอง** ·
-> key เดิม + จำนวน partition เท่าเดิม = เล่มเดิมเสมอ → **ลำดับการันตีเฉพาะภายใน partition** — และทุกอย่างถูกจดต่อท้าย log อ่านกี่รอบก็ไม่หาย
+> **จำหลักเดียวให้ขึ้นใจ :** **ระบุ partition ชนะทุกอย่าง → ไม่ระบุแต่มี key ใช้ `murmur2(key) % N` → ไม่มีทั้งคู่ producer เลือกเอง** · key เดิม + N เท่าเดิม = เล่มเดิมเสมอ → **ลำดับการันตีเฉพาะภายใน partition**
 
 ## ✅ เช็กลิสต์ก่อนจบแล็บ
 
-- [ ] `docker compose up -d` ขึ้นครบ · `docker compose ps` เห็น `kafka` เป็น **`Up (healthy)`** และ `kafka-ui` map `8412->8080` · `docker compose ps -a` เห็น `kafka-init` เป็น **`Exited (0)`**
-- [ ] อธิบายได้ว่าทำไม broker ต้องมี **listener สองบาน** (`localhost:9092` ให้ Python · `kafka:19092` ให้ kafka-ui **และ** kafka-init) และ `depends_on: service_healthy` แก้ปัญหาอะไร · ทำไม `kafka-init` ต้องมี `--if-not-exists`
-- [ ] `docker logs kafka-init` เห็น `Created topic orders.` และ `--describe` ด้วยมือเห็น `PartitionCount: 3` · Leader = 1 ทุกแถว · สั่ง `--create` ซ้ำแล้วเจอ `TopicExistsException`
-- [ ] รัน `producer_no_key.py` 2 รอบ — partition สองรอบ **ไม่เหมือนกัน** แต่ offset วิ่งต่อจากเดิม ไม่รีเซ็ต
-- [ ] รัน `producer_with_key.py` 2 รอบ — `bangkok→2` · `chiangmai→1` · `hatyai→0` **เหมือนกันทั้ง 18 ใบ**
-- [ ] อธิบาย **กฎ 3 ชั้น** ได้ : ระบุ partition > hash(key) > producer เลือกเอง
-- [ ] รัน `hash_key.py` แล้ว **เลข `%3` ตรงกับ partition จริง** ของทั้งสามสาขา
-- [ ] `consumer_partitions.py` เห็นครบ 30 ข้อความ · offset เรียงภายในแต่ละเล่ม · รันซ้ำแล้วได้ครบ 30 เหมือนเดิม
-- [ ] อธิบายได้ : ทำไมออเดอร์ `bangkok` เรียง #1→#3 เสมอ แต่ `order 1`–`order 6` สลับกันได้
-- [ ] Kafka UI : Overview (Partitions 3 · Message Count 30 · อ่าน Next Offset เป็น) · Messages · กรอง Partition #2 แล้วได้ 8 ใบ · Search `bangkok` แล้ว Partition เป็น 2 ทุกแถว · Statistics (Null keys 12 · Unique keys 3) · Consumers ว่าง · ฟอร์ม Produce Message
-- [ ] console consumer `--partition 2` เห็นเฉพาะ bangkok + `null` — ตรงกับที่เห็นใน UI
-- [ ] **ทำนายก่อนส่ง** ว่า `korat` จะลง p2 แล้วส่งจริงได้ผลตรงตามทำนาย
-- [ ] ส่ง `korat` จาก Kafka UI แล้ว**อธิบายได้ว่าทำไมไปลง p0** (ฟอร์มระบุ partition = กฎชั้น 1 ชนะ key)
-- [ ] `--alter --partitions 4` แล้วรัน producer เดิมซ้ำ — mapping เปลี่ยนเป็น `bangkok→1` · `chiangmai→2` · `hatyai→3` ตรงกับคอลัมน์ `%4` และเห็นใน UI ว่า `bangkok` แตกอยู่สองเล่ม
-- [ ] รู้ว่า typo ฝั่ง producer อันตรายกว่าฝั่ง `--describe` เพราะ auto-create
-- [ ] ปิด tunnel ของ port `8412` แล้ว · `docker compose down -v` แล้ว `docker ps -a` เหลือแค่หัวตาราง
+- [ ] `docker compose ps -a` เห็น `kafka` เป็น **`Up (healthy)`** · `kafka-init` เป็น **`Exited (0)`** · เปิด `http://localhost:8412` ได้
+- [ ] อธิบายได้ว่าทำไม broker ต้องมี **listener สองบาน** และ `kafka-init` คืออะไร ทำไม `Exited (0)` ถึงถูกต้อง
+- [ ] `--describe --topic orders` เห็น `PartitionCount: 3`
+- [ ] `producer_no_key.py` 2 รอบ — partition สองรอบ **ไม่เหมือนกัน** แต่ offset วิ่งต่อ
+- [ ] `producer_with_key.py` 2 รอบ — `bangkok→2` · `chiangmai→1` · `hatyai→0` **เหมือนกันทั้ง 18 ใบ**
+- [ ] อธิบาย **กฎ 3 ชั้น** ได้ และ `hash_key.py` คอลัมน์ `%3` ตรงกับ partition จริง
+- [ ] `consumer_partitions.py` เห็นครบ 30 · offset เรียงภายในแต่ละเล่ม · จบเองไม่ต้อง Ctrl+C
+- [ ] Kafka UI : Overview รวม 30 · กรอง Partition #2 เห็นแต่ bangkok + null · Search `bangkok` Partition เป็น 2 ทุกแถว · Statistics Null keys 12 / Unique keys 3
+- [ ] console consumer `--partition 2` ตรงกับ UI
+- [ ] **ทำนายก่อนส่ง** ว่า `korat` ลง p2 แล้วส่งจริงได้ตามทำนาย · ส่งจาก UI แล้ว**อธิบายได้ว่าทำไมไป p0**
+- [ ] `--alter --partitions 4` แล้ว mapping เปลี่ยนเป็น `1 · 2 · 3` ตรงคอลัมน์ `%4` และเห็น `bangkok` แตกสองเล่มใน UI
+- [ ] `docker compose down -v` แล้ว `docker ps -a` เหลือแค่หัวตาราง
 
-*ผลลัพธ์และภาพหน้าจอทั้งหมดในเอกสารนี้มาจากการรันจริงในเครื่องเรียน `tuchsanai/devtools:2569_1` (Kafka 4.1.0 · kafbat/kafka-ui v1.5.0 · kafka-python 3.0.10) · ตัวเลข offset ทุกจุดมาจากเซสชันเดียวกัน ซึ่งข้อความ 12 ใบที่ไม่มี key จากข้อ 5 สุ่มตกเป็น p0=3 · p1=7 · p2=2 — ของเราจะได้สัดส่วนอื่น offset จึงเลื่อนตามไปด้วย แต่คอลัมน์ partition ของข้อความที่มี key ต้องตรงกับเอกสารเสมอ*
+*ผลลัพธ์และภาพหน้าจอทั้งหมดมาจากการรันจริงในเครื่องเรียน `tuchsanai/devtools:2569_1` (Kafka 4.1.0 · kafbat/kafka-ui v1.5.0 · kafka-python 3.0.10) ในเซสชันเดียวกัน ซึ่งข้อความ 12 ใบที่ไม่มี key สุ่มตกเป็น p0=3 · p1=7 · p2=2 — ของเราจะได้สัดส่วนอื่น offset จึงเลื่อนตาม แต่คอลัมน์ partition ของข้อความที่มี key ต้องตรงกับเอกสารเสมอ*
