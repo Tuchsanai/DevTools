@@ -29,8 +29,6 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       # --- แล็บ pipeline : เปิด processor ตัวที่สองแล้วอยากเห็น rebalance ทันที ---
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      # --- กันพลาด : ห้าม broker สร้าง topic เองเวลาพิมพ์ชื่อผิด (ทดลองเพิ่มเติม ค.) ---
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
     healthcheck:
       test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1"]
       interval: 5s
