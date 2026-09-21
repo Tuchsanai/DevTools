@@ -173,7 +173,7 @@ pip install -r requirements.txt
 
 ![ร้าน 3 สาขาส่งงานเข้า topic tasks — สาขาเดิมลงเล่มเดิม ไปหา worker เดิม](./images/concept-00-branch-shop.png)
 
-> **อ่านภาพ :** ร้านแต่ละสาขาส่งงานเป็นชุด (สั่งของ → จ่ายเงิน → ส่งของ) โดยใช้ **ชื่อสาขาเป็น key** · `bangkok→p2 · chiangmai→p1 · hatyai→p0` งานของสาขาเดียวกันจึงต่อคิวอยู่เล่มเดียวกันเสมอ · ฝั่ง worker แต่ละตัว **เป็นเจ้าของเล่ม** (ในภาพ A ถือ p0+p1 · B ถือ p2 — ตรงกับที่จะเห็นจริงในข้อ 7) และใช้เวลา 1 วินาทีต่องาน → ลำดับ `task-1 → task-4 → task-7` ของ bangkok ไม่มีทางสลับ เพราะอยู่ในมือคนเดียว
+> **อ่านภาพ :** ร้านแต่ละสาขาส่งงานเป็นชุด (สั่งของ → จ่ายเงิน → ส่งของ) โดยใช้ **ชื่อสาขาเป็น key** · `bangkok→p2 · chiangmai→p1 · hatyai→p0` งานของสาขาเดียวกันจึงต่อคิวอยู่เล่มเดียวกันเสมอ · ฝั่ง worker แต่ละตัว **เป็นเจ้าของเล่ม** (ในภาพ A ถือ p0+p1 · B ถือ p2 — ตรงกับที่เห็นจริงในข้อ 7 ของเอกสารนี้ ของแต่ละคนอาจสลับกัน) และใช้เวลา 1 วินาทีต่องาน → ลำดับ `task-1 → task-4 → task-7` ของ bangkok ไม่มีทางสลับ เพราะอยู่ในมือคนเดียว
 
 ### `new_task.py` — ตัวส่งงาน
 
@@ -281,7 +281,7 @@ if __name__ == '__main__':
 - **group** คือชื่อทีม (`group_id`) — consumer ทุกตัวที่ใช้ชื่อเดียวกันเป็นสมาชิกทีมเดียวกัน
 - broker ที่เป็น **group coordinator** จะแบ่ง partition ของ topic ให้สมาชิก โดยกฎเดียวคือ **ภายในทีม หนึ่ง partition มีเจ้าของได้แค่หนึ่งคน** (คนหนึ่งถือหลายเล่มได้ แต่เล่มหนึ่งห้ามมีสองคน)
 - ทีมจด **offset ที่อ่านถึง** ของแต่ละเล่มไว้ที่ broker (ใน topic ภายในชื่อ `__consumer_offsets`) — เจ้าของเล่มเปลี่ยนคน คนใหม่ก็อ่านต่อจากตำแหน่งเดิมได้
-- ในภาพ A ถือ `[2]` B ถือ `[0, 1]` — **ใครได้ชุดไหนสลับกันได้** ของจริงในเอกสารนี้ A ได้ `[0, 1]` B ได้ `[2]` ถูกทั้งคู่
+- ในภาพ A ถือ `[2]` B ถือ `[0, 1]` — **ใครได้ชุดไหนสลับกันได้** ของจริงในข้อ 7 ของเอกสารนี้ A ได้ `[0, 1]` B ได้ `[2]` ส่วนในทดลอง ข. กลับกัน — ถูกทั้งคู่
 
 | | consumer **ไม่มี** group (LAB 1–2) | consumer **มี** group (แล็บนี้) |
 |---|---|---|
@@ -328,42 +328,40 @@ RabbitMQ (LAB 2 ชุดที่แล้ว) แจกงาน **round-robin
 
 ## 6. Worker A ตัวเดียว — เป็นเจ้าของครบทั้ง 3 partitions
 
-แล็บนี้ใช้ **3 หน้าต่าง terminal** : **หน้าต่างที่ 1** ไว้ส่งงาน + สั่ง `docker compose exec` · **หน้าต่างที่ 2 และ 3** เป็น worker คนละตัว · เปิด **หน้าต่างที่ 2** (ssh เข้าเครื่องเรียนอีก session) สตาร์ต Worker A :
+ทำต่อใน **หน้าต่างเดิม** (venv ยัง activate อยู่ · อยู่ในโฟลเดอร์แล็บ) สตาร์ต Worker A เป็น background job ด้วย `&` :
 
 ```bash
-source ~/venv-kafka/bin/activate
-cd ~/labwork/DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/003_LAB_Consumer_Groups
-python worker.py A
+python worker.py A &
 ```
 
-✅ **Expected output** — ทีมมีคนเดียว จึงได้ครบทุกเล่ม · โปรแกรม **ไม่จบเอง** ค้างรอ = ถูกต้อง ปล่อยไว้:
+✅ **Expected output** — bash พิมพ์ `[1] <PID>` แล้ว **คืน prompt ทันที** อีกราว 1–2 วินาที worker พิมพ์แทรกเข้ามา 2 บรรทัด : ทีมมีคนเดียวจึงได้ครบทุกเล่ม (PID ของแต่ละคนไม่ตรงกับเอกสารนี้ · บรรทัดของ worker โผล่ต่อท้าย prompt = ปกติ กด Enter ได้):
 
 ```
- [*] Worker A waiting for tasks. To exit press CTRL+C
+(venv-kafka) $ python worker.py A &
+[1] 22425
+(venv-kafka) $  [*] Worker A waiting for tasks. To exit: kill <pid>
  [*] Worker A ได้รับมอบหมาย partitions: [0, 1, 2]
 ```
 
-**หน้าต่างที่ 1** ส่งงาน 12 งาน :
+> 📝 **วิธีอ่านบล็อกผลลัพธ์ตั้งแต่ข้อนี้ไป :** บรรทัดที่ขึ้นต้นด้วย `(venv-kafka) $` คือ **สิ่งที่เราพิมพ์** ส่วนบรรทัด ` [*]` / ` [x]` ที่มีคำว่า `Worker A` / `Worker B` คือ **worker แต่ละตัวพิมพ์แทรกเข้ามา** ในหน้าต่างเดียวกัน — ทั้งหมดนี้อยู่บนจอเดียว ไม่ต้องสลับหน้าต่าง
+
+ส่งงาน 12 งาน (ยังอยู่หน้าต่างเดิม prompt ว่างอยู่) :
 
 ```bash
 python new_task.py 12
 ```
 
-✅ **Expected output** — ฝั่งส่ง : `bangkok→2 · chiangmai→1 · hatyai→0` ทุกครั้ง ไม่มีสุ่ม (ทุกคนได้เลขนี้เหมือนกัน เพราะเป็น hash ของ key จาก LAB 2):
+✅ **Expected output** — สองโปรแกรมพิมพ์ **สลับกันในจอเดียว** : ฝั่งส่ง `bangkok→2 · chiangmai→1 · hatyai→0` ทุกครั้งไม่มีสุ่ม (ทุกคนได้เลขนี้เหมือนกัน เพราะเป็น hash ของ key จาก LAB 2) ส่งครบ 12 ในพริบตาแล้ว prompt กลับมา · ส่วน A ทำงานทีละ 1 วินาที จึงพิมพ์ต่อเนื่องอีก ≈ 12 วินาที **หลัง prompt กลับมาแล้ว** · จุดที่ต้องดู : **offset ของแต่ละเล่มไล่ 0 → 3 เป๊ะ** ส่วนลำดับข้ามเล่มสลับกันได้ (ของแต่ละคนอาจไม่เรียงเหมือนเอกสารนี้):
 
 ```
+(venv-kafka) $ python new_task.py 12
  [x] Sent 'task-1 (bangkok)' -> partition=2
+ [x] Worker A got p2 offset=0 task-1 (bangkok)
  [x] Sent 'task-2 (chiangmai)' -> partition=1
  [x] Sent 'task-3 (hatyai)' -> partition=0
-        ... (วนสามสาขาแบบเดียวกันจนครบ 12) ...
+        ... (Sent วนสามสาขาจนครบ 12) ...
  [x] Sent 'task-12 (hatyai)' -> partition=0
-```
-
-✅ **Expected output** — **หน้าต่างที่ 2** : A เก็บครบ 12 งานคนเดียว (≈ 12 วินาที) · จุดที่ต้องดู : **offset ของแต่ละเล่มไล่ 0 → 3 เป๊ะ** ส่วนลำดับข้ามเล่มสลับกันได้ (ของแต่ละคนอาจไม่เรียงเหมือนเอกสารนี้):
-
-```
- [x] Worker A got p2 offset=0 task-1 (bangkok)
- [x] Worker A got p1 offset=0 task-2 (chiangmai)
+(venv-kafka) $  [x] Worker A got p1 offset=0 task-2 (chiangmai)
  [x] Worker A got p1 offset=1 task-5 (chiangmai)
  [x] Worker A got p1 offset=2 task-8 (chiangmai)
  [x] Worker A got p1 offset=3 task-11 (chiangmai)
@@ -372,75 +370,81 @@ python new_task.py 12
  [x] Worker A got p2 offset=3 task-10 (bangkok)
 ```
 
-> **อ่านผลให้เป็น :** `poll` ดึงงานมาเป็น **ชุดต่อ partition** จึงเห็น chiangmai (p1) ติดกันสี่งาน แล้วค่อย hatyai (p0) · Kafka **การันตีลำดับเฉพาะภายใน partition** (offset 0→1→2→3 เรียงเป๊ะทุกเล่ม) ส่วนลำดับ **ข้าม** เล่มไม่การันตี — และไม่จำเป็น เพราะงานต่างสาขาไม่เกี่ยวกัน
+> **อ่านผลให้เป็น :** งานแรก `task-1` ถูก A คว้าไปทันทีตั้งแต่ฝั่งส่งยังพิมพ์ไม่จบ (สองโปรแกรมทำงาน **พร้อมกันจริง**) · `poll` ดึงงานมาเป็น **ชุดต่อ partition** จึงเห็น chiangmai (p1) ติดกันสี่งาน แล้วค่อย hatyai (p0) · Kafka **การันตีลำดับเฉพาะภายใน partition** (offset 0→1→2→3 เรียงเป๊ะทุกเล่ม) ส่วนลำดับ **ข้าม** เล่มไม่การันตี — และไม่จำเป็น เพราะงานต่างสาขาไม่เกี่ยวกัน · รอให้ A พิมพ์ครบ 12 บรรทัดก่อนค่อยไปข้อ 7
 
 ---
 
 ## 7. เปิด Worker B — Rebalance ต่อหน้าต่อตา
 
-เปิด **หน้าต่างที่ 3** สตาร์ต Worker B **โดยไม่ต้องปิด A** (activate venv + `cd` ก่อนเหมือนข้อ 6) :
+สตาร์ต Worker B **ในหน้าต่างเดิม โดยไม่ต้องปิด A** :
 
 ```bash
-python worker.py B
+python worker.py B &
 ```
 
-✅ **Expected output** — ทีม 2 คนแบ่ง 3 เล่ม : ตัวหนึ่งได้ 2 อีกตัวได้ 1 · **ทั้งสองหน้าต่าง** พิมพ์บรรทัด "ได้รับมอบหมาย" ใหม่พร้อมกัน (ใครได้ชุดไหนสลับกันได้ — ของแต่ละคนอาจไม่ตรงกับเอกสารนี้):
+✅ **Expected output** — bash แจ้ง job `[2]` แล้ว **ทั้งสอง worker พิมพ์บรรทัด "ได้รับมอบหมาย" ใหม่พร้อมกัน** ในจอเดียว : ทีม 2 คนแบ่ง 3 เล่ม ตัวหนึ่งได้ 2 อีกตัวได้ 1 (ใครได้ชุดไหนสลับกันได้ — ของแต่ละคนอาจไม่ตรงกับเอกสารนี้):
 
 ```
-──── หน้าต่างที่ 3 (Worker B — สมาชิกใหม่) ────
- [*] Worker B waiting for tasks. To exit press CTRL+C
+(venv-kafka) $ python worker.py B &
+[2] 24028
+(venv-kafka) $  [*] Worker B waiting for tasks. To exit: kill <pid>
  [*] Worker B ได้รับมอบหมาย partitions: [2]
-──── หน้าต่างที่ 2 (Worker A — พิมพ์เพิ่มเอง ไม่ต้องทำอะไร) ────
  [*] Worker A ได้รับมอบหมาย partitions: [0, 1]
 ```
 
-> **นี่คือ rebalance :** A เคยถือ `[0, 1, 2]` — พอ B เข้าทีม Kafka **ริบเล่ม 2 ไปให้ B** เหลือ `[0, 1]` ให้ A · เราไม่ได้แตะโค้ดแม้แต่บรรทัดเดียว — อยากได้แรงเพิ่มก็แค่เปิด worker เพิ่ม
+> **นี่คือ rebalance :** A เคยถือ `[0, 1, 2]` — พอ B เข้าทีม Kafka **ริบเล่ม 2 ไปให้ B** เหลือ `[0, 1]` ให้ A · เราไม่ได้แตะโค้ดแม้แต่บรรทัดเดียว — อยากได้แรงเพิ่มก็แค่เปิด worker เพิ่ม · และเพราะทุกตัวพิมพ์ลงจอเดียวกัน เราจึง **เห็นทั้งสองฝั่งเปลี่ยนพร้อมกัน** ไม่ต้องหันไปดูหน้าต่างอื่น
 
-**หน้าต่างที่ 1** ส่งอีก 12 งาน แล้วดูการแบ่ง :
+ส่งอีก 12 งาน แล้วดูการแบ่ง :
 
 ```bash
 python new_task.py 12
 ```
 
-✅ **Expected output** — งานวิ่งหา **เจ้าของเล่ม** ไม่ใช่สลับตัวละงาน (offset ต่อจากรอบแรก 4→7 เพราะ log ยาวขึ้น):
+✅ **Expected output** — งานวิ่งหา **เจ้าของเล่ม** ไม่ใช่สลับตัวละงาน : B ได้เฉพาะ `bangkok` (p2) · A ได้ `chiangmai` + `hatyai` (p1, p0) · offset ต่อจากรอบแรก 4→7 เพราะ log ยาวขึ้น · สองตัวทำงาน **ขนานกัน** จึงพิมพ์สลับบรรทัดกัน (ครบ 12 งานใน ≈ 8 วินาที แทน 12):
 
 ```
-──── หน้าต่างที่ 3 (Worker B ถือ p2) — ได้เฉพาะ bangkok ────
+(venv-kafka) $ python new_task.py 12
  [x] Worker B got p2 offset=4 task-1 (bangkok)
- [x] Worker B got p2 offset=5 task-4 (bangkok)
- [x] Worker B got p2 offset=6 task-7 (bangkok)
- [x] Worker B got p2 offset=7 task-10 (bangkok)
-──── หน้าต่างที่ 2 (Worker A ถือ p0, p1) — ได้ chiangmai + hatyai ────
+ [x] Sent 'task-1 (bangkok)' -> partition=2
+ [x] Sent 'task-2 (chiangmai)' -> partition=1
  [x] Worker A got p1 offset=4 task-2 (chiangmai)
+        ... (Sent จนครบ 12) ...
+ [x] Sent 'task-12 (hatyai)' -> partition=0
+(venv-kafka) $  [x] Worker B got p2 offset=5 task-4 (bangkok)
  [x] Worker A got p0 offset=4 task-3 (hatyai)
+ [x] Worker B got p2 offset=6 task-7 (bangkok)
  [x] Worker A got p0 offset=5 task-6 (hatyai)
-        ... (p0 offset 6→7 · p1 offset 5→7 รวม 8 บรรทัด) ...
+ [x] Worker B got p2 offset=7 task-10 (bangkok)
+ [x] Worker A got p0 offset=6 task-9 (hatyai)
+ [x] Worker A got p0 offset=7 task-12 (hatyai)
+ [x] Worker A got p1 offset=5 task-5 (chiangmai)
+ [x] Worker A got p1 offset=6 task-8 (chiangmai)
  [x] Worker A got p1 offset=7 task-11 (chiangmai)
 ```
 
-> **เทียบภาพ 5.2 ให้ชัด :** bangkok ทั้ง 4 งาน `#1 → #4 → #7 → #10` เรียงเป๊ะในมือ B คนเดียว · ถ้าเป็น RabbitMQ round-robin task-1 ไป A task-4 ไป B ลำดับของสาขาเดียวกันก็แตกทันที
+> **เทียบภาพ 5.2 ให้ชัด :** bangkok ทั้ง 4 งาน `#1 → #4 → #7 → #10` เรียงเป๊ะในมือ B คนเดียว (ไล่ตามบรรทัด `Worker B` จากบนลงล่าง) · ถ้าเป็น RabbitMQ round-robin task-1 ไป A task-4 ไป B ลำดับของสาขาเดียวกันก็แตกทันที · A มี 2 เล่มจึงมีงาน 8 ชิ้น B มี 1 เล่มได้ 4 ชิ้น — **งานแบ่งตามเล่ม ไม่ได้แบ่งเท่ากัน**
 
 ---
 
 ## 8. ส่องทีม — `kafka-consumer-groups.sh` + Kafka UI
 
-ระหว่างทั้งสอง worker ยังรันอยู่ **หน้าต่างที่ 1** ถาม broker :
+ระหว่างทั้งสอง worker ยังรันอยู่เบื้องหลัง ถาม broker (หน้าต่างเดิม) :
 
 ```bash
 docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
   --describe --group workers
 ```
 
-✅ **Expected output** — หนึ่งแถวต่อ partition · LAG `0` ทุกเล่ม (24 งานถูกเก็บหมด) · CONSUMER-ID มี **สองค่า** : `...71f16f5e...` ถือเล่ม 0 กับ 1 (= A) · `...813348d4...` ถือเล่ม 2 (= B) ตรงกับข้อ 7 (ID · ลำดับแถวของแต่ละคนจะไม่ตรงกับเอกสารนี้):
+✅ **Expected output** — หนึ่งแถวต่อ partition · LAG `0` ทุกเล่ม (24 งานถูกเก็บหมด) · CONSUMER-ID มี **สองค่า** : `...2871e690...` ถือเล่ม 0 กับ 1 (= A) · `...6ebf76d2...` ถือเล่ม 2 (= B) ตรงกับข้อ 7 (ID · ลำดับแถวของแต่ละคนจะไม่ตรงกับเอกสารนี้):
 
 ```
 GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                              HOST            CLIENT-ID
-workers         tasks           1          8               8               0               kafka-python-3.0.10-71f16f5e-d6dc-42c0-a37d-34083de2cdb3 /172.19.0.1     kafka-python-3.0.10
-workers         tasks           0          8               8               0               kafka-python-3.0.10-71f16f5e-d6dc-42c0-a37d-34083de2cdb3 /172.19.0.1     kafka-python-3.0.10
-workers         tasks           2          8               8               0               kafka-python-3.0.10-813348d4-cf7e-41f1-8649-aebfded6b2ad /172.19.0.1     kafka-python-3.0.10
+workers         tasks           1          8               8               0               kafka-python-3.0.10-2871e690-6295-465a-ae07-e5276f048890 /172.19.0.1     kafka-python-3.0.10
+workers         tasks           0          8               8               0               kafka-python-3.0.10-2871e690-6295-465a-ae07-e5276f048890 /172.19.0.1     kafka-python-3.0.10
+workers         tasks           2          8               8               0               kafka-python-3.0.10-6ebf76d2-36f9-4469-ba8f-8b18cb2edfce /172.19.0.1     kafka-python-3.0.10
 ```
 
-> 📝 **คำอธิบาย:** อ่านตามตาราง 5.4 — `CURRENT-OFFSET 8` = ทีม commit ถึง 8 · `LOG-END-OFFSET 8` = log ยาว 8 · ส่วนต่าง **LAG 0** = ไม่มีงานค้าง · `HOST /172.19.0.1` คือ IP ของเครื่องเรียนมองจากใน network ของ compose
+> 📝 **คำอธิบาย:** อ่านตามตาราง 5.4 — `CURRENT-OFFSET 8` = ทีม commit ถึง 8 · `LOG-END-OFFSET 8` = log ยาว 8 · ส่วนต่าง **LAG 0** = ไม่มีงานค้าง · `HOST /172.19.0.1` คือ IP ของเครื่องเรียนมองจากใน network ของ compose · ดูว่า worker ตัวไหนยังรันอยู่ในหน้าต่างนี้ด้วย `jobs` (ต้องเห็น `Running` 2 แถว)
 
 เปิดหน้าเว็บ **`http://localhost:8413`** → เมนู **Consumers** ทางซ้าย — จากที่ว่างเปล่าตอนข้อ 2 ตอนนี้มีทีม `workers` โผล่มาแล้ว :
 
@@ -452,7 +456,7 @@ workers         tasks           2          8               8               0    
 
 ![หน้า consumer group workers — ใครถือ partition ไหน lag เท่าไร](./images/ui-02-group-workers.png)
 
-> 📝 **จุดที่ต้องดู:** แถบบน **Members 2 · Assigned Partitions 3 · Total lag 0** · ตารางล่าง **ตรงกับ CLI ทุกตัวอักษร** — Partition 2 เป็นของ `...813348d4` (B) · 1 กับ 0 เป็นของ `...71f16f5e` (A) · Current Offset / End offset = `CURRENT-OFFSET` / `LOG-END-OFFSET` ของ CLI ในชื่อใหม่ · ข้อมูลก้อนเดียวกัน คนละมุมมอง
+> 📝 **จุดที่ต้องดู:** แถบบน **Members 2 · Assigned Partitions 3 · Total lag 0** · ตารางล่าง **ตรงกับ CLI ทุกตัวอักษร** (ภาพนี้ถ่ายจากอีกรอบ ID จึงเป็นคนละชุดกับตาราง CLI ด้านบน แต่โครงเดียวกัน) — Partition 2 เป็นของ `...813348d4` (B) · 1 กับ 0 เป็นของ `...71f16f5e` (A) · Current Offset / End offset = `CURRENT-OFFSET` / `LOG-END-OFFSET` ของ CLI ในชื่อใหม่ · ข้อมูลก้อนเดียวกัน คนละมุมมอง
 
 เมนู **Topics** → `tasks` :
 
@@ -464,37 +468,45 @@ workers         tasks           2          8               8               0    
 
 ## 9. ปิด Worker B — Rebalance ขากลับ
 
-ไปที่ **หน้าต่างที่ 3** กด **Ctrl+C** แล้วหันมาดู **หน้าต่างที่ 2** ทันที :
+ปิด B จากหน้าต่างเดิมด้วย `kill` (ส่ง SIGTERM ให้ process ของ B — `worker.py` รับสัญญาณแล้วเรียก `close()` เหมือนกด Ctrl+C) :
 
-✅ **Expected output** — B บอกลาแล้วจบ · A ได้ทุกเล่มคืน **ภายในไม่กี่วินาที**:
+```bash
+kill $(pgrep -f "worker.py B")
+```
+
+✅ **Expected output** — B บอกลาแล้วจบ · A ได้ทุกเล่มคืน **ภายในไม่กี่วินาที** — เห็นทั้งสองบรรทัดต่อกันในจอเดียว (`kill` เองไม่พิมพ์อะไร):
 
 ```
-──── หน้าต่างที่ 3 (Worker B) ────
-^C [*] Worker B leaving the group...
-──── หน้าต่างที่ 2 (Worker A — พิมพ์เพิ่มเอง) ────
+(venv-kafka) $ kill $(pgrep -f "worker.py B")
+(venv-kafka) $  [*] Worker B leaving the group...
  [*] Worker A ได้รับมอบหมาย partitions: [0, 1, 2]
 ```
 
-> 📝 **คำอธิบาย:** Ctrl+C → `KeyboardInterrupt` → `finally: consumer.close()` — B ส่ง `LeaveGroup` ให้ coordinator ก่อนตาย coordinator จึงสั่ง rebalance **ทันที** ยกทั้งสามเล่มคืน A · ระบบ **ซ่อมตัวเอง** worker ออกไม่ใช่เหตุการณ์พิเศษ แค่ rebalance รอบหนึ่ง
+> 📝 **คำอธิบาย:** `pgrep -f "worker.py B"` หา PID ของ process ที่ command line มีคำว่า `worker.py B` → `kill` ส่ง SIGTERM → handler ในโค้ดโยน `KeyboardInterrupt` → `finally: consumer.close()` — B ส่ง `LeaveGroup` ให้ coordinator ก่อนตาย coordinator จึงสั่ง rebalance **ทันที** ยกทั้งสามเล่มคืน A · ระบบ **ซ่อมตัวเอง** worker ออกไม่ใช่เหตุการณ์พิเศษ แค่ rebalance รอบหนึ่ง
 
-พิสูจน์ว่า A รับงานแทนทั้งหมด — **หน้าต่างที่ 1** ส่งอีก 6 งาน :
+พิสูจน์ว่า A รับงานแทนทั้งหมด — ส่งอีก 6 งาน :
 
 ```bash
 python new_task.py 6
 ```
 
-✅ **Expected output** — **หน้าต่างที่ 2** เก็บครบ 6 งานคนเดียวจากทุกเล่ม (offset 8–9 ต่อจากเดิม):
+✅ **Expected output** — A เก็บครบ 6 งานคนเดียวจากทุกเล่ม (offset 8–9 ต่อจากเดิม) · สังเกตบรรทัด **`[2]+ Done python worker.py B`** ที่ bash แทรกมาตอนคืน prompt = ยืนยันว่า job ที่ 2 (B) จบแล้ว:
 
 ```
- [x] Worker A got p1 offset=8 task-2 (chiangmai)
- [x] Worker A got p0 offset=8 task-3 (hatyai)
- [x] Worker A got p0 offset=9 task-6 (hatyai)
- [x] Worker A got p1 offset=9 task-5 (chiangmai)
+(venv-kafka) $ python new_task.py 6
  [x] Worker A got p2 offset=8 task-1 (bangkok)
+ [x] Sent 'task-1 (bangkok)' -> partition=2
+        ... (Sent จนครบ 6) ...
+ [x] Sent 'task-6 (hatyai)' -> partition=0
+[2]+  Done                    python worker.py B
+(venv-kafka) $  [x] Worker A got p0 offset=8 task-3 (hatyai)
+ [x] Worker A got p0 offset=9 task-6 (hatyai)
+ [x] Worker A got p1 offset=8 task-2 (chiangmai)
+ [x] Worker A got p1 offset=9 task-5 (chiangmai)
  [x] Worker A got p2 offset=9 task-4 (bangkok)
 ```
 
-> **ครบวงจรแล้ว :** สมาชิกเข้า → แจกใหม่ · สมาชิกออก → คืนเล่มให้คนที่เหลือ · อัตโนมัติทั้งหมด และ **ไม่มีข้อความหล่นหาย** — ตอนนี้ topic มี **30 ข้อความ** (12 + 12 + 6)
+> **ครบวงจรแล้ว :** สมาชิกเข้า → แจกใหม่ · สมาชิกออก → คืนเล่มให้คนที่เหลือ · อัตโนมัติทั้งหมด และ **ไม่มีข้อความหล่นหาย** — ตอนนี้ topic มี **30 ข้อความ** (12 + 12 + 6) · `jobs` ตอนนี้เหลือ `[1]+ Running python worker.py A &` แถวเดียว
 
 ---
 
@@ -502,17 +514,27 @@ python new_task.py 6
 
 ### ก. LAG มองเห็นได้ — งานค้างเป็นตัวเลข
 
-ปิด Worker A (**หน้าต่างที่ 2** กด Ctrl+C) — ตอนนี้ **ทีมไม่มีสมาชิกเลย** · **หน้าต่างที่ 1** ส่ง 12 งานทิ้งไว้แล้วถามสถานะทีม :
+ปิด Worker A ด้วย — ตอนนี้ **ทีมไม่มีสมาชิกเลย** · แล้วส่ง 12 งานทิ้งไว้ ถามสถานะทีม :
 
 ```bash
+kill $(pgrep -f "worker.py A")
 python new_task.py 12
 docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
   --describe --group workers
 ```
 
-✅ **Expected output** — ทีมร้าง (`no active members` · CONSUMER-ID เป็น `-`) แต่ broker ยังจำ offset ของทีมไว้ : `CURRENT-OFFSET` หยุดที่ 10 ส่วน `LOG-END-OFFSET` ขยับไป 14 → **LAG เล่มละ 4 รวม 12** พอดีกับที่เพิ่งส่ง:
+✅ **Expected output** — A บอกลา (`[1]+ Done` โผล่ตอนคืน prompt) · ฝั่งส่งพิมพ์ครบ 12 แต่ **ไม่มีบรรทัด `Worker ... got` ตามมาเลย** เพราะไม่มีใครอ่าน · ตาราง : ทีมร้าง (`no active members` · CONSUMER-ID เป็น `-`) แต่ broker ยังจำ offset ของทีมไว้ : `CURRENT-OFFSET` หยุดที่ 10 ส่วน `LOG-END-OFFSET` ขยับไป 14 → **LAG เล่มละ 4 รวม 12** พอดีกับที่เพิ่งส่ง:
 
 ```
+(venv-kafka) $ kill $(pgrep -f "worker.py A")
+(venv-kafka) $  [*] Worker A leaving the group...
+python new_task.py 12
+ [x] Sent 'task-1 (bangkok)' -> partition=2
+        ... (Sent จนครบ 12 — ไม่มี Worker got ตามมา) ...
+ [x] Sent 'task-12 (hatyai)' -> partition=0
+[1]+  Done                    python worker.py A
+(venv-kafka) $ docker compose exec kafka ... --describe --group workers
+
 Consumer group 'workers' has no active members.
 
 GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
@@ -521,106 +543,172 @@ workers         tasks           1          10              14              4    
 workers         tasks           0          10              14              4               -               -               -
 ```
 
-เปิด Worker A กลับมา (**หน้าต่างที่ 2** : `python worker.py A`) :
+เปิด Worker A กลับมา :
+
+```bash
+python worker.py A &
+```
 
 ✅ **Expected output** — งานค้างทั้ง 12 ไหลมาทันที และ **เริ่มจาก offset 10 ที่ทีมจดไว้** — งาน 30 ชิ้นก่อนหน้าไม่ถูกอ่านซ้ำ:
 
 ```
- [*] Worker A waiting for tasks. To exit press CTRL+C
+(venv-kafka) $ python worker.py A &
+[1] 28102
+(venv-kafka) $  [*] Worker A waiting for tasks. To exit: kill <pid>
  [*] Worker A ได้รับมอบหมาย partitions: [0, 1, 2]
- [x] Worker A got p1 offset=10 task-2 (chiangmai)
- [x] Worker A got p1 offset=11 task-5 (chiangmai)
+ [x] Worker A got p2 offset=10 task-1 (bangkok)
+ [x] Worker A got p2 offset=11 task-4 (bangkok)
         ... (รวม 12 บรรทัด — ทุกเล่ม offset วิ่ง 10→13) ...
- [x] Worker A got p2 offset=13 task-10 (bangkok)
+ [x] Worker A got p1 offset=13 task-11 (chiangmai)
 ```
 
-รอ ~12 วินาที แล้ว **หน้าต่างที่ 1** รัน `--describe` ซ้ำ :
+รอ ~12 วินาที (ให้ A พิมพ์ครบ) แล้วรัน `--describe` ซ้ำ :
 
 ✅ **Expected output** — LAG ไหลลง `0` ทุกเล่ม และ CONSUMER-ID กลับมามีเจ้าของ (คนเดียวถือทั้งสามเล่ม):
 
 ```
 GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                              HOST            CLIENT-ID
-workers         tasks           2          14              14              0               kafka-python-3.0.10-08add2a0-f854-4c52-b0aa-c2cb6902cf76 /172.19.0.1     kafka-python-3.0.10
-workers         tasks           1          14              14              0               kafka-python-3.0.10-08add2a0-f854-4c52-b0aa-c2cb6902cf76 /172.19.0.1     kafka-python-3.0.10
-workers         tasks           0          14              14              0               kafka-python-3.0.10-08add2a0-f854-4c52-b0aa-c2cb6902cf76 /172.19.0.1     kafka-python-3.0.10
+workers         tasks           2          14              14              0               kafka-python-3.0.10-1370692e-0a51-443a-8f32-ad3421f22469 /172.19.0.1     kafka-python-3.0.10
+workers         tasks           1          14              14              0               kafka-python-3.0.10-1370692e-0a51-443a-8f32-ad3421f22469 /172.19.0.1     kafka-python-3.0.10
+workers         tasks           0          14              14              0               kafka-python-3.0.10-1370692e-0a51-443a-8f32-ad3421f22469 /172.19.0.1     kafka-python-3.0.10
 ```
 
 > **บทเรียน :** ตัวเลขนี้แหละที่ภาพ 5.4 วาดไว้ — และดูได้จากคอลัมน์ **Consumer lag** ในหน้า Consumers ของ Kafka UI เช่นกัน (ลองเปิดดูตอน LAG ยังเป็น 12) · ใน RabbitMQ เราดูงานค้างด้วย `list_queues` ใน Kafka ดูจาก LAG ของทีม
 
 ### ข. Worker เกินจำนวน partition — ตัวที่เกินว่างงาน
 
-Worker A ยังรันอยู่จากข้อ ก. — เปิด **หน้าต่างที่ 3, 4, 5** รัน B, C, D (ทุกหน้าต่าง activate venv + `cd` ก่อน) :
+Worker A ยังรันอยู่จากข้อ ก. — เปิด B, C, D เพิ่ม **ทีละตัว** ในหน้าต่างเดิม (พิมพ์บรรทัดหนึ่ง รอให้บรรทัด "ได้รับมอบหมาย" ขึ้นครบ แล้วค่อยพิมพ์บรรทัดถัดไป จะเห็น rebalance ทีละรอบ) :
 
 ```bash
-python worker.py B        # หน้าต่างที่ 3
-python worker.py C        # หน้าต่างที่ 4
-python worker.py D        # หน้าต่างที่ 5
+python worker.py B &
+python worker.py C &
+python worker.py D &
 ```
 
-✅ **Expected output** — ทีม 4 คน แต่มี 3 เล่ม : สามตัวได้คนละเล่ม **ตัวที่สี่เงียบ** ไม่มีบรรทัด "ได้รับมอบหมาย" เลย (โค้ดพิมพ์เฉพาะตอน assignment ไม่ว่าง) · ระหว่างเปิดทีละตัวจะเห็น A/B ถูกริบเล่มทีละรอบ · ใครเป็นตัวว่างงานสุ่มได้ทุกตัว:
+✅ **Expected output** — แต่ละครั้งที่มีคนเข้า **ทุกตัวที่โดนริบเล่มพิมพ์ assignment ใหม่พร้อมกัน** · พอ D เข้าเป็นคนที่ 4 บน 3 เล่ม จะมีตัวหนึ่งพิมพ์ **`partitions: []`** = ว่างงาน (ในรอบนี้คือ A · ใครเป็นตัวว่างงานสุ่มได้ทุกตัว ของแต่ละคนอาจไม่ตรงกับเอกสารนี้):
 
 ```
-──── หน้าต่างที่ 2 (Worker A) ────
- [*] Worker A ได้รับมอบหมาย partitions: [0, 1]
- [*] Worker A ได้รับมอบหมาย partitions: [0]
-──── หน้าต่างที่ 3 (Worker B) ────
- [*] Worker B ได้รับมอบหมาย partitions: [2]
+(venv-kafka) $ python worker.py B &
+[2] 58855
+(venv-kafka) $  [*] Worker B waiting for tasks. To exit: kill <pid>
+ [*] Worker B ได้รับมอบหมาย partitions: [0, 1]
+ [*] Worker A ได้รับมอบหมาย partitions: [2]
+python worker.py C &
+[3] 58859
+(venv-kafka) $  [*] Worker C waiting for tasks. To exit: kill <pid>
+ [*] Worker B ได้รับมอบหมาย partitions: [0]
+ [*] Worker C ได้รับมอบหมาย partitions: [1]
+python worker.py D &
+[4] 59258
+(venv-kafka) $  [*] Worker D waiting for tasks. To exit: kill <pid>
  [*] Worker B ได้รับมอบหมาย partitions: [1]
-──── หน้าต่างที่ 4 (Worker C) ────
+ [*] Worker D ได้รับมอบหมาย partitions: [0]
  [*] Worker C ได้รับมอบหมาย partitions: [2]
-──── หน้าต่างที่ 5 (Worker D — ว่างงาน!) ────
- [*] Worker D waiting for tasks. To exit press CTRL+C
-        ^ ไม่มีบรรทัด "ได้รับมอบหมาย" — หลักฐานว่า D ไม่ได้ถือเล่มใดเลย
+ [*] Worker A ได้รับมอบหมาย partitions: []
 ```
 
-ยืนยันด้วยมุมมอง "หนึ่งแถวต่อสมาชิก" (**หน้าต่างที่ 1**) :
+> 📝 **คำอธิบาย:** รอบ B เข้า → 2 คน 3 เล่ม (2+1) · รอบ C เข้า → 3 คน 3 เล่ม คนละเล่มพอดี · รอบ D เข้า → 4 คน 3 เล่ม **มีคนตกขบวน** — A ถูกริบเล่ม 2 ไปให้ C แล้วไม่ได้อะไรคืน จึงพิมพ์ `[]` (โค้ดข้อ 4 จุด (3) พิมพ์ทุกครั้งที่ assignment เปลี่ยน รวมถึงตอนเหลือศูนย์เล่ม) · สังเกตด้วยว่า **ทุกรอบ Kafka สับเล่มใหม่หมด** ไม่ใช่แค่หยิบเล่มว่างให้คนใหม่
+
+ยืนยันด้วยมุมมอง "หนึ่งแถวต่อสมาชิก" :
 
 ```bash
 docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
   --describe --group workers --members
+jobs
 ```
 
-✅ **Expected output** — 4 แถว คอลัมน์ `#PARTITIONS` เป็น `1, 1, 1` และ **`0`** หนึ่งตัว:
+✅ **Expected output** — 4 แถว คอลัมน์ `#PARTITIONS` เป็น `1, 1, 1` และ **`0`** หนึ่งตัว (= A ที่พิมพ์ `[]`) · `jobs` เห็น `Running` 4 แถว:
 
 ```
 GROUP           CONSUMER-ID                                              HOST            CLIENT-ID           #PARTITIONS
-workers         kafka-python-3.0.10-08add2a0-f854-4c52-b0aa-c2cb6902cf76 /172.19.0.1     kafka-python-3.0.10 1
-workers         kafka-python-3.0.10-62365e07-1df8-4db7-854b-dabe501fcf9a /172.19.0.1     kafka-python-3.0.10 0
-workers         kafka-python-3.0.10-46ffccba-38bc-40f1-8643-ce6334f7cfdd /172.19.0.1     kafka-python-3.0.10 1
-workers         kafka-python-3.0.10-259810c8-e6ac-4448-a959-804a2823ee2b /172.19.0.1     kafka-python-3.0.10 1
+workers         kafka-python-3.0.10-3bd07bff-5581-4b70-a1db-3d284993ffac /172.19.0.1     kafka-python-3.0.10 1
+workers         kafka-python-3.0.10-f7361ba4-488b-4e83-944f-fec26969744a /172.19.0.1     kafka-python-3.0.10 0
+workers         kafka-python-3.0.10-91cd0816-a21e-48b9-9865-5b0b470b9308 /172.19.0.1     kafka-python-3.0.10 1
+workers         kafka-python-3.0.10-0cc29acb-118c-426b-a7ff-e1d1608afb81 /172.19.0.1     kafka-python-3.0.10 1
+(venv-kafka) $ jobs
+[1]   Running                 python worker.py A &
+[2]   Running                 python worker.py B &
+[3]-  Running                 python worker.py C &
+[4]+  Running                 python worker.py D &
 ```
 
 ใน Kafka UI หน้า `workers` ก็ฟ้องแบบเดียวกัน — **Members 4** แต่ **Assigned Partitions 3** และตารางมีแค่ 3 แถว :
 
 ![ทีม workers สมาชิก 4 แต่ partition แค่ 3 — ตารางมี 3 เจ้าของ](./images/ui-04-group-4-members.png)
 
-**แล้วตัวสำรองมีค่าไหม?** — ลองปิด Worker C (**หน้าต่างที่ 4** Ctrl+C) แล้วดูหน้าต่างที่ 5 :
+**แล้วตัวสำรองมีค่าไหม?** — ปิด worker ที่ **ถือเล่มอยู่** สักตัว (ในรอบนี้ปิด D ที่ถือ `[0]` — ของใครที่ D เป็นตัวว่างงาน ให้ปิด B หรือ C แทน) แล้วดูตัวที่ว่างงาน :
 
-✅ **Expected output** — D ที่นั่งว่างอยู่ **ถูกดึงเข้ามาแทนภายในไม่กี่วินาที**:
+```bash
+kill $(pgrep -f "worker.py D")
+```
+
+✅ **Expected output** — D บอกลา แล้วตัวที่เคยว่าง (A) **ถูกดึงเข้ามาแทนภายในไม่กี่วินาที** — ทีมกลับเป็น 3 คน 3 เล่ม (เล่มอาจสับใหม่ทั้งชุดเหมือนรอบนี้):
 
 ```
-──── หน้าต่างที่ 4 (Worker C) ────
-^C [*] Worker C leaving the group...
-──── หน้าต่างที่ 5 (Worker D) ────
- [*] Worker D ได้รับมอบหมาย partitions: [2]
+(venv-kafka) $ kill $(pgrep -f "worker.py D")
+(venv-kafka) $  [*] Worker D leaving the group...
+ [*] Worker B ได้รับมอบหมาย partitions: [0]
+ [*] Worker C ได้รับมอบหมาย partitions: [1]
+ [*] Worker A ได้รับมอบหมาย partitions: [2]
 ```
 
 > **บทเรียนสำคัญที่สุดของแล็บ :** **partitions = เพดานของ parallelism** — worker เกินจำนวน partition ไม่ช่วยให้เร็วขึ้น แต่เป็น **hot standby** ที่เข้าแทนทันทีเมื่อมีคนตาย · topic ของจริงจึงตั้งจำนวน partition **เผื่อโต** ตั้งแต่แรก
 
 ### ค. ตายแบบไม่บอกลา — ทำไมต้องรอ 45 วินาที
 
-ข้อ 9 กับ ข. rebalance เกิดทันทีเพราะ `consumer.close()` ส่ง `LeaveGroup` · คราวนี้ฆ่า worker แบบไม่ให้โอกาสบอกลา — **หน้าต่างที่ 1** :
+ข้อ 9 กับ ข. rebalance เกิดทันทีเพราะ `consumer.close()` ส่ง `LeaveGroup` · คราวนี้ฆ่า worker ที่ถือเล่มอยู่ตัวหนึ่ง **แบบไม่ให้โอกาสบอกลา** แล้วส่งงานเข้าไปทันที (ในรอบนี้ฆ่า C ที่ถือ `[1]` — เลือกตัวที่ถือเล่มอยู่ตามผลของตัวเอง) :
 
 ```bash
-kill -9 $(pgrep -f "worker.py B")
-date
+kill -9 $(pgrep -f "worker.py C"); date
+python new_task.py 6
+docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+  --describe --group workers
 ```
 
-> 📝 **คำอธิบาย:** `kill -9` (SIGKILL) ฆ่า process ทันที Python ไม่มีโอกาสรัน `finally` · เล่มที่ B ถืออยู่จึง **ไม่มีใครอ่าน** จนกว่า broker จะรู้ว่า B หายไป — broker รู้จากการที่ **heartbeat ขาดหายครบ `session_timeout_ms` = 45 วินาที** · `date` จดเวลาไว้เทียบ
+> 📝 **คำอธิบาย:** `kill -9` (SIGKILL) ฆ่า process ทันที Python ไม่มีโอกาสรัน handler หรือ `finally` — ต่างจาก `kill` ธรรมดา (SIGTERM) ที่ใช้มาตลอด · เล่มที่ C ถืออยู่จึง **ไม่มีใครอ่าน** จนกว่า broker จะรู้ว่า C หายไป — broker รู้จากการที่ **heartbeat ขาดหายครบ `session_timeout_ms` = 45 วินาที** · `date` จดเวลาไว้เทียบ
 
-✅ **Expected output** — หน้าต่างที่ 3 ดับไปเฉย ๆ (ขึ้น `Killed`) · หน้าต่างของ worker ที่เหลือ **เงียบไปราว 45 วินาที** แล้วค่อยพิมพ์ assignment ใหม่ที่รวมเล่มของ B เข้าไป · ระหว่างนั้นถ้าส่งงานเข้าเล่มของ B งานจะ **ค้างเป็น LAG** จนกว่าจะ rebalance
+✅ **Expected output** — C **ไม่พิมพ์ `leaving the group`** (ตายเงียบ) bash แจ้ง **`[3]+ Killed`** · งาน 6 ชิ้น : `bangkok`/`hatyai` ถูก A/B เก็บทันที แต่ **`chiangmai` 2 ชิ้น (p1) ไม่มีใครรับ** · ตาราง : p1 มี **LAG 2** และ CONSUMER-ID ยังเป็นของ C `...91cd0816...` — **broker ยังเชื่อว่า C มีชีวิตอยู่**:
 
-> **บทเรียน :** นี่คือเหตุผลที่โค้ด consumer ของจริงต้อง **`close()` เสมอ** ตอนปิดโปรแกรม (ใน `finally` หรือ signal handler) · และเป็นเหตุผลที่ production มักปรับ `session_timeout_ms` / `heartbeat_interval_ms` ให้เหมาะกับงาน — สั้นไปทีม rebalance บ่อยเพราะแค่ GC pause ยาวไปงานค้างนานเวลามีคนตายจริง · ดูเสร็จแล้วปิด worker ทุกหน้าต่างด้วย Ctrl+C (เห็น `leaving the group...` ครบทุกตัว)
+```
+(venv-kafka) $ kill -9 $(pgrep -f "worker.py C"); date
+Mon Sep 21 16:31:19 +07 2026
+(venv-kafka) $ python new_task.py 6
+ [x] Worker A got p2 offset=14 task-1 (bangkok)
+ [x] Sent 'task-1 (bangkok)' -> partition=2
+ [x] Sent 'task-2 (chiangmai)' -> partition=1
+ [x] Sent 'task-3 (hatyai)' -> partition=0
+ [x] Worker B got p0 offset=14 task-3 (hatyai)
+        ... (Sent จนครบ 6) ...
+[3]+  Killed                  python worker.py C
+(venv-kafka) $  [x] Worker A got p2 offset=15 task-4 (bangkok)
+ [x] Worker B got p0 offset=15 task-6 (hatyai)
+(venv-kafka) $ docker compose exec kafka ... --describe --group workers
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                              HOST            CLIENT-ID
+workers         tasks           0          16              16              0               kafka-python-3.0.10-3bd07bff-5581-4b70-a1db-3d284993ffac /172.19.0.1     kafka-python-3.0.10
+workers         tasks           2          16              16              0               kafka-python-3.0.10-f7361ba4-488b-4e83-944f-fec26969744a /172.19.0.1     kafka-python-3.0.10
+workers         tasks           1          14              16              2               kafka-python-3.0.10-91cd0816-a21e-48b9-9865-5b0b470b9308 /172.19.0.1     kafka-python-3.0.10
+```
+
+รอเฉย ๆ **ราว 45–60 วินาที** (ห้ามพิมพ์อะไร ดูจอไว้) แล้วรัน `date` กับ `--describe` ซ้ำ :
+
+✅ **Expected output** — จอเงียบไปเกือบนาที แล้ว worker ที่เหลือพิมพ์ assignment ใหม่ที่ **รวมเล่ม 1 ของ C เข้าไป** และเก็บ `chiangmai` 2 ชิ้นที่ค้างทันที · `date` ห่างจากตอน kill ≈ 57 วินาที · `--describe` LAG กลับเป็น 0 และ ID ของ C หายจากตาราง:
+
+```
+(venv-kafka) $  [*] Worker B ได้รับมอบหมาย partitions: [0, 1]
+ [x] Worker B got p1 offset=14 task-2 (chiangmai)
+ [x] Worker B got p1 offset=15 task-5 (chiangmai)
+date
+Mon Sep 21 16:32:16 +07 2026
+(venv-kafka) $ docker compose exec kafka ... --describe --group workers
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                              HOST            CLIENT-ID
+workers         tasks           1          16              16              0               kafka-python-3.0.10-3bd07bff-5581-4b70-a1db-3d284993ffac /172.19.0.1     kafka-python-3.0.10
+workers         tasks           0          16              16              0               kafka-python-3.0.10-3bd07bff-5581-4b70-a1db-3d284993ffac /172.19.0.1     kafka-python-3.0.10
+workers         tasks           2          16              16              0               kafka-python-3.0.10-f7361ba4-488b-4e83-944f-fec26969744a /172.19.0.1     kafka-python-3.0.10
+```
+
+> **บทเรียน :** ระหว่าง 45 วินาทีนั้นงานของสาขา chiangmai **ค้างเป็น LAG** ทั้งที่มี worker ว่างอยู่ — นี่คือเหตุผลที่โค้ด consumer ของจริงต้อง **`close()` เสมอ** ตอนปิดโปรแกรม (ใน `finally` + signal handler แบบที่ `worker.py` ทำ) · และเป็นเหตุผลที่ production มักปรับ `session_timeout_ms` / `heartbeat_interval_ms` ให้เหมาะกับงาน — สั้นไปทีม rebalance บ่อยเพราะแค่ GC pause ยาวไปงานค้างนานเวลามีคนตายจริง · ดูเสร็จแล้วปิด worker ที่เหลือทั้งหมดในคำสั่งเดียว `kill $(pgrep -f worker.py)` (เห็น `leaving the group...` ครบทุกตัว แล้ว `jobs` เหลือแต่ `Done`)
 
 ---
 
@@ -629,10 +717,13 @@ date
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
 | `KafkaTimeoutError: Unable to bootstrap` / `NoBrokersAvailable` | broker ยังไม่พร้อม หรือ compose ยังไม่ขึ้น | `docker compose ps` ต้องเห็น `kafka` เป็น `Up (healthy)` · ถ้าไม่มีแถวเลย ย้อนข้อ 2 |
-| `ModuleNotFoundError: No module named 'kafka'` | ลืม activate venv ใน terminal นั้น (ทุกหน้าต่างต้องทำเอง) | `source ~/venv-kafka/bin/activate` — ดูให้ prompt มี `(venv-kafka)` |
+| `ModuleNotFoundError: No module named 'kafka'` | ยังไม่ได้ activate venv ในหน้าต่างนี้ | `source ~/venv-kafka/bin/activate` — ดูให้ prompt มี `(venv-kafka)` |
+| สั่ง `python worker.py A` แล้ว **หน้าต่างค้าง** พิมพ์อะไรต่อไม่ได้ | ลืม `&` ต่อท้าย worker จึงรัน foreground | กด **Ctrl+C** (worker จะ `leaving the group...` แล้วจบ) แล้วสั่งใหม่ให้มี `&` |
+| prompt ดูรก บรรทัดของ worker โผล่ต่อท้าย `$` หรือขึ้นหลังคำสั่งที่พิมพ์ไป | เป็นธรรมชาติของ background job ที่แชร์จอเดียวกัน | กด **Enter** เปล่า ๆ ให้ขึ้น prompt ใหม่ · ดูชื่อ `Worker A/B/...` ในบรรทัดว่าใครพิมพ์ · `jobs` ดูว่ามีใครรันอยู่ |
+| `kill $(pgrep -f "worker.py B")` ขึ้น `kill: usage:` หรือ `not enough arguments` | ไม่มี process ชื่อนั้นแล้ว (ปิดไปก่อนหน้า หรือสะกดชื่อ worker ไม่ตรง) | `jobs` หรือ `pgrep -af worker.py` ดูชื่อที่รันอยู่จริง |
 | worker เปิดอยู่แต่งานไม่มาเลย | ยังไม่ได้ส่งงาน หรือ **ทีมอ่านไปหมดแล้ว** (group จำ offset — รันใหม่ไม่อ่านซ้ำ) | `--describe --group workers` : LAG `0` = ไม่มีของค้าง ส่งใหม่ด้วย `python new_task.py 12` |
-| เปิด worker แล้วไม่เห็นบรรทัด "ได้รับมอบหมาย" | rebalance กำลังเจรจา (ไม่กี่วินาที) หรือ worker **เกินจำนวน partition** | รอสักครู่ · `--describe --group workers --members` ดูว่าสมาชิกเกิน 3 หรือยัง |
-| ปิด worker แล้วอีกตัวเงียบไปนาน ~45 วินาที | worker ตายโดยไม่ได้ `close()` (kill -9 · ปิดหน้าต่างทิ้ง · โค้ดเวอร์ชันเก่าไม่มี `finally`) → รอ session timeout | ปกติของ Kafka — ปิดด้วย Ctrl+C ให้ `close()` ทำงาน rebalance จะเกิดทันที |
+| เปิด worker แล้วไม่เห็นบรรทัด "ได้รับมอบหมาย" | rebalance กำลังเจรจา (ไม่กี่วินาที) หรือ worker **เกินจำนวน partition** ตั้งแต่ต้น | รอสักครู่ · `--describe --group workers --members` ดูว่าสมาชิกเกิน 3 หรือยัง |
+| ปิด worker แล้วอีกตัวเงียบไปนาน ~45 วินาที | worker ตายโดยไม่ได้ `close()` (`kill -9` · ปิดหน้าต่าง ssh ทิ้ง · โค้ดเวอร์ชันเก่าไม่มี handler) → รอ session timeout | ปกติของ Kafka — ปิดด้วย `kill <pid>` ธรรมดา (หรือ Ctrl+C) ให้ `close()` ทำงาน rebalance จะเกิดทันที |
 | `--describe --topic tasks` เห็น `PartitionCount: 1` | รัน worker/producer **ก่อน**สร้าง topic → auto-create แบบ 1 partition | ปิด worker ทุกตัว → `kafka-topics.sh ... --delete --topic tasks` → `--create --topic tasks --partitions 3` ใหม่ |
 | เปิด `http://localhost:8413` ไม่ขึ้น | ลืม `-p 8413:8413` ตอนสร้างเครื่องเรียน · UI ยังบูตไม่เสร็จ | `docker ps` บนเครื่องเรา ดูว่า `devtools` มี `8413` — ไม่มีต้องสร้างใหม่ตามข้อ 1 · มีแล้วรอ 10 วินาทีแล้วรีเฟรช |
 | `Bind for 0.0.0.0:8413 failed: port is already allocated` | มีโปรแกรมอื่นจอง `8413` | เปลี่ยนเลขซ้ายทั้งใน `docker-compose.yml` และ `-p` ของเครื่องเรียนให้ตรงกัน (เช่น `8414`) |
@@ -642,22 +733,31 @@ date
 
 ## เก็บกวาด (Cleanup)
 
-ปิด worker ทุกหน้าต่างด้วย **Ctrl+C** ให้ครบก่อน แล้ว :
+ปิด worker ที่ยังเหลือทั้งหมดในคำสั่งเดียว เช็กด้วย `jobs` ว่าไม่มี `Running` แล้วค่อยลบ compose :
 
 ```bash
+kill $(pgrep -f worker.py)
+jobs
 docker compose down -v
 docker ps -a
 ```
 
-> 📝 **คำอธิบาย:** `down` ลบ container + network ของแล็บทั้งชุดในคำสั่งเดียว · `-v` ลบ volume ด้วย — ข้อความใน `tasks` และ offset ของทีม `workers` หายหมด (ตั้งใจ แล็บหน้าเริ่มใหม่) · ที่ **ไม่ต้องลบ** : image ทั้งสองตัว และ venv `~/venv-kafka`
+> 📝 **คำอธิบาย:** `pgrep -f worker.py` (ไม่ระบุชื่อ) จับ worker ทุกตัวที่เหลือ → ทุกตัว `leaving the group...` · `down` ลบ container + network ของแล็บทั้งชุดในคำสั่งเดียว · `-v` ลบ volume ด้วย — ข้อความใน `tasks` และ offset ของทีม `workers` หายหมด (ตั้งใจ แล็บหน้าเริ่มใหม่) · ที่ **ไม่ต้องลบ** : image ทั้งสองตัว และ venv `~/venv-kafka`
 
-✅ **Expected output** — ลบครบ 3 รายการ แล้วตารางเหลือแค่หัว:
+✅ **Expected output** — worker บอกลาครบ · `jobs` เหลือแต่ `Done` · ลบครบ 3 รายการ แล้วตารางเหลือแค่หัว:
 
 ```
+(venv-kafka) $ kill $(pgrep -f worker.py)
+(venv-kafka) $  [*] Worker B leaving the group... [*] Worker A leaving the group...
+jobs
+[1]-  Done                    python worker.py A
+[2]+  Done                    python worker.py B
+(venv-kafka) $ docker compose down -v
 [+] down 3/3
  ✔ Container kafka-ui          Removed
  ✔ Container kafka             Removed
  ✔ Network kafka-lab3_default  Removed
+(venv-kafka) $ docker ps -a
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 ```
 
@@ -670,11 +770,13 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 | `docker run ... -p 2222:22 -p 8413:8413 tuchsanai/devtools:2569_1` | เปิดเครื่องเรียนพร้อมเปิดทางให้ Kafka UI (`8413`) ทะลุถึงเบราว์เซอร์ |
 | `docker compose up -d` / `ps` / `down -v` | เปิด broker + UI ทั้งชุด · ดูสถานะ (`kafka` ต้อง `healthy`) · ลบทั้งชุด |
 | `kafka-topics.sh --create --topic tasks --partitions 3 --replication-factor 1` | สร้าง topic 3 เล่ม = ทีมช่วยกันอ่านได้สูงสุด 3 ตัว |
-| `python worker.py <ชื่อ>` | เปิด worker เข้าทีม `workers` — เปิดเพิ่ม/ปิดออกได้ตลอด Kafka rebalance ให้เอง |
+| `python worker.py <ชื่อ> &` | เปิด worker เข้าทีม `workers` เป็น **background job** ในหน้าต่างเดิม — เปิดเพิ่มได้ตลอด Kafka rebalance ให้เอง |
+| `jobs` | ดูว่า worker ตัวไหนยัง `Running` / จบแล้ว (`Done` · `Killed`) |
+| `kill $(pgrep -f "worker.py B")` | ปิด worker **แบบสุภาพ** (SIGTERM → `close()` → rebalance ทันที) · ไม่ระบุชื่อ = ปิดทุกตัว |
+| `kill -9 $(pgrep -f "worker.py C")` | ฆ่า worker แบบไม่บอกลา — ดู session timeout 45 วินาทีทำงาน |
 | `python new_task.py <จำนวน>` | ส่งงาน key วน 3 สาขา — key เดิมลงเล่มเดิม งานสาขาเดิมไปหา worker เดิม |
 | `kafka-consumer-groups.sh --describe --group workers` | หนึ่งแถวต่อ partition : ใครถือเล่มไหน · CURRENT / LOG-END · **LAG** |
 | `kafka-consumer-groups.sh --describe --group workers --members` | หนึ่งแถวต่อสมาชิก : นับหัวทีม + `#PARTITIONS` (จับตัวว่างงาน) |
-| `kill -9 $(pgrep -f "worker.py B")` | ฆ่า worker แบบไม่บอกลา — ดู session timeout 45 วินาทีทำงาน |
 
 > **จำหลักเดียวให้ขึ้นใจ :** **group เดียวกัน → แบ่ง partition กันเป็นเจ้าของ เล่มละคน** · สมาชิกเปลี่ยน → rebalance อัตโนมัติ ข้อความไม่หาย · **LAG = งานค้าง** · **partitions = เพดานของ parallelism** · และ **`close()` เสมอ** ก่อนปิดโปรแกรม
 
@@ -683,14 +785,14 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 - [ ] สร้างเครื่องเรียนด้วย `-p 2222:22 -p 8413:8413` · `docker compose up -d` เห็น `kafka Healthy` → `kafka-ui Started` · `ps` เห็น `8413->8080`
 - [ ] อธิบายได้ว่า `KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0` ทำอะไร และทำไมห้องเรียนตั้ง 0
 - [ ] สร้าง topic `tasks` แล้ว `--describe` เห็น `PartitionCount: 3` · เมนู Consumers ใน UI ยัง **ว่าง**
-- [ ] Worker A คนเดียวได้ `[0, 1, 2]` เก็บ 12 งานครบ · ฝั่งส่ง `bangkok→2 · chiangmai→1 · hatyai→0` คงที่
-- [ ] เปิด B แล้ว **ทั้งสองหน้าต่าง** พิมพ์ assignment ใหม่ (rebalance) โดยไม่แตะโค้ด · ส่ง 12 งานแล้วงานแยกตาม **เจ้าของเล่ม** ไม่ใช่สลับตัวละงาน
+- [ ] `python worker.py A &` แล้ว prompt กลับมาทันที · A คนเดียวได้ `[0, 1, 2]` เก็บ 12 งานครบ (พิมพ์แทรกในหน้าต่างเดิม) · ฝั่งส่ง `bangkok→2 · chiangmai→1 · hatyai→0` คงที่
+- [ ] เปิด B แล้ว **ทั้งสอง worker** พิมพ์ assignment ใหม่ (rebalance) ในจอเดียว โดยไม่แตะโค้ด · ส่ง 12 งานแล้วงานแยกตาม **เจ้าของเล่ม** ไม่ใช่สลับตัวละงาน
 - [ ] อ่านตาราง `--describe --group workers` เป็น : ชี้ได้ว่า CONSUMER-ID ไหนคือ A/B และ LAG มาจากไหน
 - [ ] Kafka UI ที่ `localhost:8413` : Consumers เห็น `workers` Members 2 · หน้า group เห็นเจ้าของรายเล่มตรงกับ CLI · หน้า `tasks` Message Count 24 (อ่านแล้วไม่หาย)
-- [ ] Ctrl+C ที่ B เห็น `leaving the group...` และ A ได้ `[0, 1, 2]` คืน **ทันที** · รับ 6 งานถัดไปครบคนเดียว
+- [ ] `kill $(pgrep -f "worker.py B")` เห็น `leaving the group...` และ A ได้ `[0, 1, 2]` คืน **ทันที** · bash แจ้ง `[2]+ Done` · A รับ 6 งานถัดไปครบคนเดียว
 - [ ] ปิดทีมทั้งหมด ส่ง 12 งาน → `no active members` + LAG เล่มละ 4 → เปิด A → อ่านต่อจาก offset 10 → LAG `0`
-- [ ] เปิด 4 worker บน 3 partitions → มีตัวหนึ่งไม่มี assignment · `--members` เห็น `#PARTITIONS` มี `0` · ปิด C แล้ว D เข้าแทนทันที
-- [ ] `kill -9` worker แล้วอธิบายได้ว่าทำไม rebalance ช้าไป ~45 วินาที และ `close()` แก้ปัญหานี้อย่างไร
-- [ ] `docker compose down -v` แล้ว `docker ps -a` เหลือแค่หัวตาราง
+- [ ] เปิด 4 worker บน 3 partitions → มีตัวหนึ่งพิมพ์ `partitions: []` · `--members` เห็น `#PARTITIONS` มี `0` · ปิดตัวที่ถือเล่มแล้วตัวว่างงานเข้าแทนทันที
+- [ ] `kill -9` worker แล้วเห็น `Killed` (ไม่มี `leaving`) · ส่งงานแล้วเล่มของมันค้างเป็น **LAG** ราว 45–60 วินาที ค่อย rebalance · อธิบายได้ว่า `close()` + signal handler แก้ปัญหานี้อย่างไร
+- [ ] `kill $(pgrep -f worker.py)` ปิดครบ → `docker compose down -v` แล้ว `docker ps -a` เหลือแค่หัวตาราง
 
-*ผลลัพธ์และภาพหน้าจอทั้งหมดในเอกสารนี้มาจากการรันจริงในเครื่องเรียน `tuchsanai/devtools:2569_1` (Kafka 4.1.0 · kafbat/kafka-ui v1.5.0 · kafka-python 3.0.10) เมื่อ 21 ก.ย. 2026 · การแบ่ง partition ระหว่าง A/B และตัวที่ว่างงานในทดลอง ข. ของแต่ละคนอาจสลับกันได้ แต่ตัวเลข offset · LAG และ mapping ของ key ต้องตรงกับเอกสาร*
+*ผลลัพธ์และภาพหน้าจอทั้งหมดในเอกสารนี้มาจากการรันจริงในเครื่องเรียน `tuchsanai/devtools:2569_1` (Kafka 4.1.0 · kafbat/kafka-ui v1.5.0 · kafka-python 3.0.10) ผ่าน terminal หน้าต่างเดียวแบบ background job เมื่อ 21 ก.ย. 2026 · การแบ่ง partition ระหว่าง A/B ตัวที่ว่างงานในทดลอง ข. และ PID / job number ของแต่ละคนอาจต่างจากเอกสาร แต่ตัวเลข offset · LAG และ mapping ของ key ต้องตรงกัน*
