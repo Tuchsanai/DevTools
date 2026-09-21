@@ -59,7 +59,7 @@ Docker Compose version v5.3.1
 ```bash
 mkdir -p ~/labwork && cd ~/labwork
 git clone https://github.com/Tuchsanai/DevTools.git
-cd DevTools/07_Kafka/002_LAB_Partitions_Keys
+cd DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/002_LAB_Partitions_Keys
 ```
 
 > 📝 **คำอธิบาย:** สร้างโฟลเดอร์เก็บงานแล้วดึงรีโพของวิชาลงมา (ถ้าเคย clone ไว้แล้วจาก LAB 1 ให้ข้ามบรรทัด clone แล้ว `cd` เข้าโฟลเดอร์ได้เลย — git จะฟ้องว่าโฟลเดอร์ปลายทางไม่ว่างถ้าสั่งซ้ำ) · โฟลเดอร์ของแล็บนี้มีไฟล์ `producer_no_key.py` (ผู้ส่งแบบไม่มี key) · `producer_with_key.py` (ผู้ส่งแบบมี key) · `consumer_partitions.py` (ผู้อ่านที่พิมพ์ที่อยู่ของทุกข้อความ) · `requirements.txt` ครบแล้ว

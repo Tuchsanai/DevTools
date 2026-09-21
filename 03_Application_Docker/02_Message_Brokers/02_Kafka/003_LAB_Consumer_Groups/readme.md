@@ -61,7 +61,7 @@ Docker Compose version v5.3.1
 ```bash
 mkdir -p ~/labwork && cd ~/labwork
 git clone https://github.com/Tuchsanai/DevTools.git
-cd DevTools/07_Kafka/003_LAB_Consumer_Groups
+cd DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/003_LAB_Consumer_Groups
 ```
 
 > 📝 **คำอธิบาย:** `mkdir -p ~/labwork` สร้างโฟลเดอร์เก็บงาน (`-p` = มีอยู่แล้วก็ไม่ error) · `git clone` ดึงรีโพของวิชาลงมา ทำครั้งเดียวใช้ได้ทุกแล็บของชุดนี้ · แล้ว `cd` เข้าโฟลเดอร์แล็บ ซึ่งมี `new_task.py` (ตัวส่งงาน) · `worker.py` (ตัวทำงาน) · `requirements.txt` รออยู่แล้ว · ถ้าเคย clone ไว้จากแล็บก่อน git จะบอกว่าโฟลเดอร์ไม่ว่าง — ข้ามไป `cd` ได้เลย
