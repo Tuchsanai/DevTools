@@ -2,6 +2,8 @@
 # เปิดทั้งชุดด้วย : docker compose up -d
 # ปิดและล้างข้อมูลด้วย : docker compose down -v
 
+name: kafka-lab1          # ชื่อโปรเจกต์ของ compose ชุดนี้ (ใช้ตั้งชื่อ network ให้อ่านง่าย)
+
 services:
   kafka:
     image: apache/kafka:4.1.0
