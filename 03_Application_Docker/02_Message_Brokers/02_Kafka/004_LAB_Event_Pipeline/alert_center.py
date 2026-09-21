@@ -1,5 +1,4 @@
 import json
-import sys
 from kafka import KafkaConsumer
 
 def main():
@@ -12,15 +11,17 @@ def main():
 
     print(' [*] Alert center waiting. To exit press CTRL+C')
 
-    for message in consumer:
-        # 2) แปลง JSON กลับเป็น dict แล้วประกาศเตือน
-        alert = json.loads(message.value.decode())
-        print(f" [!] 🚨 {alert['sensor']} ร้อนผิดปกติ! temp={alert['temp']} "
-              f"(level={alert['level']})")
+    try:
+        for message in consumer:
+            # 2) bytes → JSON → dict แล้วประกาศเตือน
+            alert = json.loads(message.value.decode())
+            print(f" [!] 🚨 {alert['sensor']} ร้อนผิดปกติ! temp={alert['temp']} "
+                  f"(level={alert['level']}) offset={message.offset}")
+    except KeyboardInterrupt:
+        print(' [*] Alert center leaving the group...')
+    finally:
+        # 3) commit offset ล่าสุด + บอกลา broker ให้เรียบร้อย
+        consumer.close()
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        print('Interrupted')
-        sys.exit(0)
+    main()
