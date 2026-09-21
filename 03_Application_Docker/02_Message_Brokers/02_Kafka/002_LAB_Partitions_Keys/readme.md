@@ -6,7 +6,7 @@
 ## สิ่งที่จะได้เรียนรู้
 
 - topic ไม่ใช่ท่อเดี่ยว ๆ — มันถูกผ่าเป็นหลาย **partition** แต่ละอันคือ **append-only log** แยกเล่ม มี **offset** ของตัวเอง · ที่อยู่เต็มของทุกข้อความคือ **(topic, partition, offset)** และอ่านแล้ว **ไม่หาย** ต่างจาก RabbitMQ ที่ ack แล้วข้อความถูกลบ
-- เปิด Kafka + Kafka UI ทั้งชุดด้วย **`docker compose up -d`** ไฟล์เดียว — พร้อมเข้าใจเรื่อง **listener สองบาน** และ **healthcheck** ที่บังคับลำดับการบูตให้เอง
+- เปิด Kafka + Kafka UI + สร้าง topic ทั้งชุดด้วย **`docker compose up -d`** ไฟล์เดียว — พร้อมเข้าใจเรื่อง **listener สองบาน** · **healthcheck** ที่บังคับลำดับการบูตให้เอง · และ **init container** ที่รันครั้งเดียวแล้วจบ
 - **กฎการเลือก partition 3 ชั้น** : ระบุ partition ตรง ๆ > hash ของ key > producer เลือกเอง — พิสูจน์ครบทั้งสามชั้นด้วยมือ
 - คำนวณ **murmur2(key) % จำนวน partition** เองด้วย `hash_key.py` แล้ว **ทำนายล่วงหน้า** ว่า key ไหนลงเล่มไหน *ก่อน* ส่งจริง
 - ขอบเขตของ **"ลำดับการันตี"** และราคาที่ต้องจ่ายเมื่อ key กระจุก (**hot partition**)
@@ -15,7 +15,7 @@
 
 ## ลำดับการทำแล็บ
 
-เตรียมเครื่องเรียน → `docker compose up -d` → เตรียม venv → สร้าง topic `orders` **3 partitions** → รัน `producer_no_key.py` 2 รอบ (คุมไม่ได้) → รัน `producer_with_key.py` 2 รอบ (คงที่เสมอ) → **เจาะทฤษฎี** → อ่านทั้ง topic → สืบสวนใน Kafka UI → เจาะอ่าน partition เดียว → **ทดลองเพิ่มเติม 4 ข้อ**
+เตรียมเครื่องเรียน → `docker compose up -d` → เตรียม venv → ตรวจ topic `orders` **3 partitions** ที่ `kafka-init` สร้างให้ → รัน `producer_no_key.py` 2 รอบ (คุมไม่ได้) → รัน `producer_with_key.py` 2 รอบ (คงที่เสมอ) → **เจาะทฤษฎี** → อ่านทั้ง topic → สืบสวนใน Kafka UI → เจาะอ่าน partition เดียว → **ทดลองเพิ่มเติม 4 ข้อ**
 
 ---
 
@@ -55,7 +55,7 @@ producer_no_key.py  producer_with_key.py  readme.md  requirements.txt
 
 ## 2. เปิด Kafka broker + Kafka UI ด้วย `docker compose`
 
-LAB 1 เราเปิดสองบริการด้วย `docker run` สองคำสั่ง แล้วต้อง **นั่งเฝ้า log เอง** ว่า broker พร้อมหรือยังก่อนเปิด UI · แล็บนี้ย้ายทั้งชุดมาอยู่ในไฟล์เดียว — เปิดไฟล์ `docker-compose.yml` ที่อยู่ในโฟลเดอร์แล็บดูก่อน :
+LAB 1 เราเปิดสองบริการด้วย `docker run` สองคำสั่ง แล้วต้อง **นั่งเฝ้า log เอง** ว่า broker พร้อมหรือยังก่อนเปิด UI · แล็บนี้ย้ายทั้งชุดมาอยู่ในไฟล์เดียว และเพิ่ม **service ตัวที่สาม** ที่สร้าง topic `orders` ให้อัตโนมัติ — เปิดไฟล์ `docker-compose.yml` ที่อยู่ในโฟลเดอร์แล็บดูก่อน :
 
 ```yaml
 services:
@@ -88,6 +88,22 @@ services:
       timeout: 10s
       retries: 20
 
+  # --- รันครั้งเดียวแล้วจบ : สร้าง topic orders 3 partitions ให้อัตโนมัติ ---
+  kafka-init:
+    image: apache/kafka:4.1.0
+    container_name: kafka-init
+    depends_on:
+      kafka:
+        condition: service_healthy   # รอจน broker ตอบได้จริง ค่อยสั่งสร้าง topic
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:19092 \
+          --create --if-not-exists --topic orders --partitions 3 --replication-factor 1
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:19092 \
+          --describe --topic orders
+    restart: "no"                    # ทำเสร็จแล้วหยุด (Exited 0) ไม่ต้องเปิดใหม่
+
   kafka-ui:
     image: kafbat/kafka-ui:latest
     container_name: kafka-ui
@@ -102,7 +118,7 @@ services:
         condition: service_healthy   # รอจน broker ตอบได้จริง ค่อยเปิด UI
 ```
 
-### 2.1 สามจุดในไฟล์นี้ที่ต้องเข้าใจ
+### 2.1 สี่จุดในไฟล์นี้ที่ต้องเข้าใจ
 
 **(ก) ทำไม broker ต้องมีประตูสองบาน**
 
@@ -121,13 +137,22 @@ Kafka แก้ด้วยการเปิด **listener หลายบา�
 
 **(ค) `ports: "8412:8080"`** — หน้าเว็บ Kafka UI ฟังที่ port `8080` ข้างในกล่องเสมอ แต่เรา map ออกมาเป็น **`8412`** บนเครื่องเรียน · จงใจเลี่ยง `8080`/`80`/`8888` เพราะเป็น port ยอดนิยมที่ชนกับของอื่นได้ง่าย (แล็บอื่นในวิชานี้ก็ใช้ `8080` อยู่)
 
+**(ง) `kafka-init` — container ที่เกิดมาเพื่อทำงานเดียวแล้วจบ** — LAB 1 เราปล่อยให้ broker สร้าง topic ให้เอง (auto-create) ซึ่งได้แค่ **1 partition** · แล็บนี้ต้องการ `orders` แบบ **3 partitions** ตั้งแต่ต้น จึงใส่ service ตัวที่สามที่ใช้ image เดียวกับ broker (เพราะมี `kafka-topics.sh` อยู่ข้างใน) แต่ **ทับ `entrypoint`** ให้รันคำสั่งสร้าง + describe topic แทนการเปิด broker · สี่จุดที่ต้องสังเกต :
+
+- `depends_on: service_healthy` ตัวเดียวกับ `kafka-ui` — ถ้าไม่รอ healthy คำสั่ง `--create` จะยิงไปตอน broker ยังไม่ตื่นแล้วล้ม
+- `--bootstrap-server kafka:19092` **ไม่ใช่ `localhost:9092`** — เพราะคำสั่งนี้รันในกล่อง `kafka-init` ไม่ใช่ในกล่อง `kafka` · `localhost` ของมันคือตัวมันเองซึ่งไม่มี broker อยู่ จึงต้องเข้าประตู `DOCKER` ด้วยชื่อ service เหมือน `kafka-ui` ทุกประการ — นี่คือบทเรียนข้อ (ก) ในรูปแบบที่จับต้องได้
+- `--if-not-exists` — สั่ง `docker compose up -d` ซ้ำเมื่อไร `kafka-init` จะถูกรันใหม่ทุกครั้ง ถ้าไม่มี flag นี้รอบสองจะล้มด้วย `TopicExistsException` · มีแล้วมันจะเงียบ ๆ ข้ามไป (ไม่พิมพ์ `Created topic`) แล้ว describe ต่อตามปกติ
+- `restart: "no"` — container นี้ **ตั้งใจให้จบ** พอคำสั่งเสร็จมันจะอยู่สถานะ `Exited (0)` ซึ่งถูกต้องแล้ว ไม่ใช่พัง (ดู 2.2)
+
+> **ของจริงใช้ท่านี้กันทั่วไป** เรียกว่า *init container* — งานเตรียมสภาพแวดล้อม (สร้าง topic · สร้างตาราง DB · ใส่ seed data) ควรถูกเขียนไว้ในไฟล์ประกาศระบบ ไม่ใช่ให้คนมานั่งพิมพ์คำสั่งเองหลัง `up` ทุกครั้ง · แต่เราจะยังฝึกสั่ง `kafka-topics.sh` ด้วยมือในข้อ 4 และทดลองเพิ่มเติม ค.–ง. อยู่ดี เพราะต้องใช้ตอน alter / list / สืบสวน topic ผี
+
 ### 2.2 เปิดทั้งชุด
 
 ```bash
 docker compose up -d
 ```
 
-> 📝 **คำอธิบาย:** `docker compose up` อ่าน `docker-compose.yml` ใน **โฟลเดอร์ปัจจุบัน** แล้วสร้าง network + container ให้ครบตามไฟล์ · `-d` = ปล่อยรันเบื้องหลัง · ครั้งแรกจะ pull image ทั้งสองตัวก่อน (ใช้เวลาสักพัก) · บรรทัดที่ต้องมองหาคือ **`Container kafka Healthy`** แล้วตามด้วย `Container kafka-ui Started` — นั่นคือ `depends_on` ทำงานถูกต้อง
+> 📝 **คำอธิบาย:** `docker compose up` อ่าน `docker-compose.yml` ใน **โฟลเดอร์ปัจจุบัน** แล้วสร้าง network + container ให้ครบตามไฟล์ · `-d` = ปล่อยรันเบื้องหลัง · ครั้งแรกจะ pull image ทั้งสองตัวก่อน (ใช้เวลาสักพัก · `kafka-init` ใช้ image เดียวกับ `kafka` จึงไม่ต้อง pull เพิ่ม) · บรรทัดที่ต้องมองหาคือ **`Container kafka Healthy`** แล้วตามด้วย `Container kafka-ui Started` และ `Container kafka-init Started` — นั่นคือ `depends_on` กั้นทั้งสองตัวไว้จน broker พร้อมจริง
 
 ✅ **Expected output** — ท้าย log ต้องเห็นลำดับนี้ (ครั้งแรกจะมีบรรทัด pull image นำหน้าอีกยาว):
 
@@ -137,11 +162,17 @@ docker compose up -d
  Network 002_lab_partitions_keys_default  Created
  Container kafka  Created
  Container kafka-ui  Created
+ Container kafka-init  Created
  Container kafka  Started
  Container kafka  Waiting
+ Container kafka  Waiting
+ Container kafka  Healthy
  Container kafka  Healthy
  Container kafka-ui  Started
+ Container kafka-init  Started
 ```
+
+> **สังเกต :** `Waiting` / `Healthy` ขึ้น **สองครั้ง** — เพราะมีคนรอ `kafka` อยู่สองคน (`kafka-ui` และ `kafka-init`) compose จึงรายงานแยกกัน
 
 เช็กสถานะ :
 
@@ -149,7 +180,7 @@ docker compose up -d
 docker compose ps
 ```
 
-> 📝 **คำอธิบาย:** `docker compose ps` ต่างจาก `docker ps` ตรงที่มันโชว์เฉพาะ container ของ compose ในโฟลเดอร์นี้ และเพิ่มคอลัมน์ **SERVICE** ให้ · จุดที่ต้องดู : `kafka` ต้องขึ้น **`Up (healthy)`** ไม่ใช่แค่ `Up` · และ `kafka-ui` ต้องมี mapping `0.0.0.0:8412->8080/tcp`
+> 📝 **คำอธิบาย:** `docker compose ps` ต่างจาก `docker ps` ตรงที่มันโชว์เฉพาะ container ของ compose ในโฟลเดอร์นี้ และเพิ่มคอลัมน์ **SERVICE** ให้ · จุดที่ต้องดู : `kafka` ต้องขึ้น **`Up (healthy)`** ไม่ใช่แค่ `Up` · และ `kafka-ui` ต้องมี mapping `0.0.0.0:8412->8080/tcp` · **`kafka-init` จะไม่โผล่** ในตารางนี้ เพราะ `compose ps` โชว์เฉพาะตัวที่ยังรันอยู่ — มันทำงานเสร็จและจบไปแล้ว
 
 ✅ **Expected output** — สองแถว `Up` และ `kafka` ต้องเป็น `(healthy)` (เวลา CREATED ของแต่ละคนจะไม่ตรงกับเอกสารนี้):
 
@@ -158,6 +189,23 @@ NAME       IMAGE                    COMMAND                  SERVICE    CREATED 
 kafka      apache/kafka:4.1.0       "/__cacert_entrypoin…"   kafka      13 seconds ago   Up 12 seconds (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp
 kafka-ui   kafbat/kafka-ui:latest   "/bin/sh -c 'java --…"   kafka-ui   13 seconds ago   Up 5 seconds              0.0.0.0:8412->8080/tcp, [::]:8412->8080/tcp
 ```
+
+อยากเห็น `kafka-init` ด้วยต้องเติม `-a` (all) :
+
+```bash
+docker compose ps -a
+```
+
+✅ **Expected output** — สามแถว · `kafka-init` เป็น **`Exited (0)`** = ทำงานสำเร็จแล้วจบ (เลข 0 คือ exit code ที่แปลว่าไม่มี error):
+
+```
+NAME         IMAGE                    COMMAND                  SERVICE      CREATED          STATUS                     PORTS
+kafka        apache/kafka:4.1.0       "/__cacert_entrypoin…"   kafka        20 seconds ago   Up 18 seconds (healthy)    0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp
+kafka-init   apache/kafka:4.1.0       "/bin/sh -c '/opt/ka…"   kafka-init   20 seconds ago   Exited (0) 9 seconds ago
+kafka-ui     kafbat/kafka-ui:latest   "/bin/sh -c 'java --…"   kafka-ui     20 seconds ago   Up 12 seconds              0.0.0.0:8412->8080/tcp, [::]:8412->8080/tcp
+```
+
+> ถ้าเห็น `Exited (1)` แทน แปลว่าคำสั่งสร้าง topic ล้ม — ดูสาเหตุด้วย `docker logs kafka-init` (ข้อ 4 จะอ่าน log นี้กันอยู่แล้ว)
 
 > **เกร็ด :** เราตั้ง `container_name: kafka` ไว้ในไฟล์ compose ด้วย ชื่อ container จึงเป็น `kafka` สั้น ๆ ไม่ใช่ `002_lab_partitions_keys-kafka-1` ตามสูตร default ของ compose — ทำให้คำสั่ง `docker exec kafka ...` ที่ใช้ทั้งแล็บสั้นและตรงกับ LAB 1
 
@@ -179,30 +227,61 @@ pip install -r requirements.txt
 
 ---
 
-## 4. สร้าง topic `orders` แบบตั้งใจ — 3 partitions
+## 4. ตรวจ topic `orders` ที่ `kafka-init` สร้างให้ — 3 partitions
 
-LAB 1 เราปล่อยให้ broker สร้าง topic ให้เอง (auto-create) ซึ่งได้แค่ **1 partition** — คราวนี้จะสั่งสร้างเองพร้อมกำหนดจำนวน partition เพราะทั้งแล็บนี้ต้องการเห็นข้อความ **กระจายลง 3 เล่ม** :
+LAB 1 เราปล่อยให้ broker สร้าง topic ให้เอง (auto-create) ซึ่งได้แค่ **1 partition** — คราวนี้ `kafka-init` ในไฟล์ compose สร้าง `orders` แบบ **3 partitions** ให้แล้วตั้งแต่ตอน `up` (ข้อ 2.1 ง) เพราะทั้งแล็บนี้ต้องการเห็นข้อความ **กระจายลง 3 เล่ม** · เริ่มจากอ่านสิ่งที่มันทำไว้ :
 
 ```bash
-docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 \
-  --create --topic orders --partitions 3 --replication-factor 1
-
-docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 \
-  --describe --topic orders
+docker logs kafka-init
 ```
 
-> 📝 **คำอธิบาย:** `kafka-topics.sh` คือ CLI จัดการ topic — ติดตั้งอยู่ **ข้างใน container `kafka`** จึงสั่งผ่าน `docker exec` เสมอ · `--bootstrap-server localhost:9092` ตรงนี้คือ localhost **ของตัว container `kafka` เอง** จึงเข้าประตู `HOST` ได้ปกติ · `--partitions 3` ผ่า topic เป็น 3 log แยกเล่ม · `--replication-factor 1` เก็บสำเนาเดียว — เรามี broker ตัวเดียว ขอมากกว่านี้จะ error ·
-> ในตาราง `--describe` : **Leader: 1** = partition นี้อยู่ในมือ broker id 1 (เรามีตัวเดียวจึงเป็นเจ้าของทุกเล่ม) · **Replicas / Isr** = รายชื่อสำเนา / สำเนาที่ตามทัน · คอลัมน์ `Elr` / `LastKnownElr` เป็นของใหม่ใน Kafka 4.x ว่างแบบนี้ถูกต้อง
+> 📝 **คำอธิบาย:** `docker logs` ใช้กับ container ที่จบไปแล้วได้ — output ของคำสั่งที่รันข้างในถูกเก็บไว้จนกว่า container จะถูกลบ · บรรทัดแรก `Created topic orders.` มาจาก `--create` · ตารางที่ตามมาคือผลของ `--describe` ที่เราสั่งต่อกันในบล็อก `command`
 
-✅ **Expected output** — `PartitionCount: 3` และครบ 3 แถว (TopicId ของแต่ละคนจะไม่ตรงกับเอกสารนี้):
+✅ **Expected output** — `Created topic orders.` แล้วตามด้วย `PartitionCount: 3` ครบ 3 แถว (TopicId ของแต่ละคนจะไม่ตรงกับเอกสารนี้):
 
 ```
 Created topic orders.
-Topic: orders	TopicId: gDxz-zabQwy28-gS6GViaw	PartitionCount: 3	ReplicationFactor: 1	Configs: min.insync.replicas=1
+Topic: orders	TopicId: xmHGmKHmS3elrE9vSN6dtw	PartitionCount: 3	ReplicationFactor: 1	Configs: min.insync.replicas=1
 	Topic: orders	Partition: 0	Leader: 1	Replicas: 1	Isr: 1	Elr: 	LastKnownElr:
 	Topic: orders	Partition: 1	Leader: 1	Replicas: 1	Isr: 1	Elr: 	LastKnownElr:
 	Topic: orders	Partition: 2	Leader: 1	Replicas: 1	Isr: 1	Elr: 	LastKnownElr:
 ```
+
+ทีนี้สั่ง `kafka-topics.sh` **ด้วยมือ** บ้าง — เครื่องมือตัวเดียวกัน แต่คราวนี้เข้าไปสั่งในกล่อง `kafka` โดยตรง :
+
+```bash
+docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 \
+  --describe --topic orders
+```
+
+> 📝 **คำอธิบาย:** `kafka-topics.sh` คือ CLI จัดการ topic — ติดตั้งอยู่ **ข้างใน image `apache/kafka`** จึงสั่งผ่าน `docker exec kafka ...` ได้ตลอดแล็บ · สังเกตว่า `--bootstrap-server` คราวนี้เป็น **`localhost:9092`** ไม่ใช่ `kafka:19092` แบบใน `kafka-init` — เพราะตอนนี้เรายืนอยู่ **ใน container `kafka` เอง** `localhost` จึงหมายถึง broker ตัวจริง เข้าประตู `HOST` ได้ปกติ · ที่อยู่เดียวกัน (broker เดียวกัน) แต่เรียกคนละชื่อตามว่า "ใครเป็นคนเรียก" — คือหัวใจของข้อ 2.1 (ก) ·
+> ในตาราง `--describe` : **Leader: 1** = partition นี้อยู่ในมือ broker id 1 (เรามีตัวเดียวจึงเป็นเจ้าของทุกเล่ม) · **Replicas / Isr** = รายชื่อสำเนา / สำเนาที่ตามทัน · คอลัมน์ `Elr` / `LastKnownElr` เป็นของใหม่ใน Kafka 4.x ว่างแบบนี้ถูกต้อง
+
+✅ **Expected output** — ตารางเดียวกับใน log ของ `kafka-init` ทุกตัวอักษร (TopicId ตรงกันด้วย เพราะเป็น topic ตัวเดียวกัน):
+
+```
+Topic: orders	TopicId: xmHGmKHmS3elrE9vSN6dtw	PartitionCount: 3	ReplicationFactor: 1	Configs: min.insync.replicas=1
+	Topic: orders	Partition: 0	Leader: 1	Replicas: 1	Isr: 1	Elr: 	LastKnownElr:
+	Topic: orders	Partition: 1	Leader: 1	Replicas: 1	Isr: 1	Elr: 	LastKnownElr:
+	Topic: orders	Partition: 2	Leader: 1	Replicas: 1	Isr: 1	Elr: 	LastKnownElr:
+```
+
+ลองสั่ง **สร้างซ้ำด้วยมือ** ดูสักครั้ง — แบบเดียวกับที่ `kafka-init` ทำ แต่จงใจ **ไม่ใส่** `--if-not-exists` :
+
+```bash
+docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 \
+  --create --topic orders --partitions 3 --replication-factor 1
+```
+
+✅ **Expected output** — ล้มทันที เพราะ topic มีอยู่แล้ว:
+
+```
+Error while executing topic command : Topic 'orders' already exists.
+[2026-09-21 07:37:23,794] ERROR org.apache.kafka.common.errors.TopicExistsException: Topic 'orders' already exists.
+ (org.apache.kafka.tools.TopicCommand)
+```
+
+> 📝 **คำอธิบาย:** นี่คือเหตุผลที่ `kafka-init` ต้องมี `--if-not-exists` — container นั้นถูกรันใหม่ทุกครั้งที่สั่ง `docker compose up -d` ถ้าล้มแบบนี้ `compose ps -a` จะโชว์ `Exited (1)` ทุกรอบหลังรอบแรก · `--partitions 3` ผ่า topic เป็น 3 log แยกเล่ม · `--replication-factor 1` เก็บสำเนาเดียว — เรามี broker ตัวเดียว ขอมากกว่านี้จะ error เช่นกัน · ถ้าอยากสร้าง topic ใหม่ด้วยมือจริง ๆ ก็ใช้คำสั่งนี้แหละ แค่เปลี่ยนชื่อ topic (ทดลองเพิ่มเติม ค. จะได้ใช้ `--alter` กับเครื่องมือตัวนี้ต่อ)
 
 > **ภาพในหัวที่ต้องมี :** ตอนนี้ `orders` คือสมุด 3 เล่ม (p0 · p1 · p2) แต่ละเล่มเขียนได้แบบ **ต่อท้ายอย่างเดียว** และมีเลขบรรทัดของตัวเองเรียก **offset** เริ่มที่ 0 — คำถามของทั้งแล็บคือ *ข้อความหนึ่ง ๆ จะถูกจดลงเล่มไหน?*
 
@@ -786,9 +865,11 @@ Error while executing topic command : Topic 'ordersss' does not exist as expecte
 | `kafka.errors.NoBrokersAvailable` ฝั่ง Python | broker ยังบูตไม่เสร็จ หรือ compose ยังไม่ได้ขึ้น | `docker compose ps` ต้องเห็น `Up (healthy)` ก่อน |
 | `ModuleNotFoundError: No module named 'kafka'` | ลืม activate venv ใน terminal นั้น (หรือตั้งชื่อไฟล์ตัวเองว่า `kafka.py` จนบังไลบรารี) | `source ~/venv-kafka/bin/activate` ให้ prompt ขึ้น `(venv-kafka)` |
 | เปิด `http://localhost:8412` ไม่ขึ้น | ยังไม่ได้ forward port `8412` หรือ tunnel ถูกปิด | forward `8412` ใหม่ตามข้อ 9 (ระวังอย่าพิมพ์ `8080` — นั่นคือ port **ข้างในกล่อง** ไม่ใช่ของเครื่องเรียน) |
-| `TopicExistsException` ตอน `--create` | เคยสร้าง `orders` ไปแล้ว | ใช้ topic เดิมต่อได้ — ถ้าอยากเริ่มจากศูนย์ : `--delete --topic orders` แล้ว `--create` ใหม่ |
+| `TopicExistsException` ตอน `--create` ด้วยมือ | `kafka-init` สร้าง `orders` ให้ไปแล้วตอน `up` (ข้อ 4 จงใจให้เห็น) | ใช้ topic เดิมต่อได้ — ถ้าอยากเริ่มจากศูนย์ : `docker compose down -v` แล้ว `up -d` ใหม่ (`kafka-init` สร้างให้อีกรอบ) หรือ `--delete --topic orders` แล้ว `--create` เอง |
+| `docker compose ps -a` เห็น `kafka-init` เป็น `Exited (0)` | **ไม่ใช่ปัญหา** — init container ทำงานเสร็จแล้วจบตามออกแบบ | ไม่ต้องทำอะไร · ดูผลงานด้วย `docker logs kafka-init` |
+| `kafka-init` เป็น `Exited (1)` | คำสั่งสร้าง topic ล้ม (broker ยังไม่พร้อม / แก้ `--bootstrap-server` เป็น `localhost:9092` ผิดที่) | `docker logs kafka-init` อ่านบรรทัด Error · ต้องเป็น `kafka:19092` ตามข้อ 2.1 (ง) · แก้แล้ว `docker compose up -d` ซ้ำ มันจะรันใหม่ให้เอง |
 | console consumer ค้างไม่ยอมจบ | ใส่ `--max-messages` มากกว่าจำนวนข้อความที่มีจริงในเล่มนั้น | **Ctrl+C** ออก แล้วดู Message Count รายเล่มจาก Overview (ข้อ 9.1) ก่อนใส่เลขใหม่ |
-| mapping key→partition ไม่ตรงกับเอกสาร | จำนวน partition ของ topic ไม่ใช่ 3 | `--describe --topic orders` ดู `PartitionCount` · ถ้าไม่ใช่ 3 ให้ `--delete` แล้ว `--create --partitions 3` ใหม่ |
+| mapping key→partition ไม่ตรงกับเอกสาร | จำนวน partition ของ topic ไม่ใช่ 3 (เช่น producer ยิงก่อน `kafka-init` ทัน จน auto-create เป็น 1 เล่ม หรือทำทดลอง ค. ไปแล้ว) | `--describe --topic orders` ดู `PartitionCount` · ถ้าไม่ใช่ 3 ให้ `docker compose down -v` แล้ว `up -d` ใหม่ หรือ `--delete` แล้ว `--create --partitions 3` เอง |
 | ใส่ key แล้วแต่ข้อความยังกระจายมั่ว | โค้ด (หรือฟอร์ม UI) ระบุ `partition=` ไปด้วย → เข้ากฎชั้น 1 ที่ชนะ key | เอา argument `partition=` ออก ให้เหลือแค่ `key=` — ดูทดลองเพิ่มเติม ข. |
 
 ---
@@ -818,11 +899,12 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
 | คำสั่ง | ความหมาย |
 |---|---|
-| `docker compose up -d` | เปิด broker + Kafka UI พร้อมกันจากไฟล์เดียว (healthcheck คุมลำดับบูตให้) |
-| `docker compose ps` | ดูสถานะเฉพาะ container ของ compose ในโฟลเดอร์นี้ — `kafka` ต้องเป็น `Up (healthy)` |
+| `docker compose up -d` | เปิด broker + Kafka UI + รัน `kafka-init` สร้าง topic `orders` จากไฟล์เดียว (healthcheck คุมลำดับบูตให้) |
+| `docker compose ps` / `ps -a` | ดูสถานะเฉพาะ container ของ compose ในโฟลเดอร์นี้ — `kafka` ต้องเป็น `Up (healthy)` · ใส่ `-a` ถึงจะเห็น `kafka-init` ที่ `Exited (0)` |
+| `docker logs kafka-init` | อ่านผลงานของ init container : `Created topic orders.` + ตาราง describe |
 | `docker compose logs kafka --tail 20` | ดู log ของ service เดียวเวลาหาสาเหตุที่ healthcheck ไม่ผ่าน |
 | `docker compose down -v` | ลบ container + network + volume ของแล็บทั้งชุด |
-| `kafka-topics.sh --create --topic orders --partitions 3 --replication-factor 1` | สร้าง topic เอง กำหนดจำนวน partition เอง (ผ่าน `docker exec kafka ...` เสมอ) |
+| `kafka-topics.sh --create --if-not-exists --topic orders --partitions 3 --replication-factor 1` | สร้าง topic กำหนดจำนวน partition เอง — `kafka-init` สั่งให้ตอน `up` · สั่งด้วยมือผ่าน `docker exec kafka ...` ก็ได้ (ไม่มี `--if-not-exists` แล้วมีอยู่แล้วจะ `TopicExistsException`) |
 | `kafka-topics.sh --describe --topic orders` | ดูตาราง partition : PartitionCount · Leader · Replicas · Isr |
 | `kafka-topics.sh --alter --topic orders --partitions 4` | เพิ่มจำนวน partition (เพิ่มได้ ลดไม่ได้ · mapping ของ key เปลี่ยนยกแผง) |
 | `kafka-topics.sh --list` | ดูรายชื่อ topic ทั้งหมด — ใช้จับ topic ผีที่เกิดจาก typo |
@@ -838,9 +920,9 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
 ## ✅ เช็กลิสต์ก่อนจบแล็บ
 
-- [ ] `docker compose up -d` ขึ้นครบ · `docker compose ps` เห็น `kafka` เป็น **`Up (healthy)`** และ `kafka-ui` map `8412->8080`
-- [ ] อธิบายได้ว่าทำไม broker ต้องมี **listener สองบาน** (`localhost:9092` ให้ Python · `kafka:19092` ให้ kafka-ui) และ `depends_on: service_healthy` แก้ปัญหาอะไร
-- [ ] สร้าง topic `orders` สำเร็จ และ `--describe` เห็น `PartitionCount: 3` · Leader = 1 ทุกแถว
+- [ ] `docker compose up -d` ขึ้นครบ · `docker compose ps` เห็น `kafka` เป็น **`Up (healthy)`** และ `kafka-ui` map `8412->8080` · `docker compose ps -a` เห็น `kafka-init` เป็น **`Exited (0)`**
+- [ ] อธิบายได้ว่าทำไม broker ต้องมี **listener สองบาน** (`localhost:9092` ให้ Python · `kafka:19092` ให้ kafka-ui **และ** kafka-init) และ `depends_on: service_healthy` แก้ปัญหาอะไร · ทำไม `kafka-init` ต้องมี `--if-not-exists`
+- [ ] `docker logs kafka-init` เห็น `Created topic orders.` และ `--describe` ด้วยมือเห็น `PartitionCount: 3` · Leader = 1 ทุกแถว · สั่ง `--create` ซ้ำแล้วเจอ `TopicExistsException`
 - [ ] รัน `producer_no_key.py` 2 รอบ — partition สองรอบ **ไม่เหมือนกัน** แต่ offset วิ่งต่อจากเดิม ไม่รีเซ็ต
 - [ ] รัน `producer_with_key.py` 2 รอบ — `bangkok→2` · `chiangmai→1` · `hatyai→0` **เหมือนกันทั้ง 18 ใบ**
 - [ ] อธิบาย **กฎ 3 ชั้น** ได้ : ระบุ partition > hash(key) > producer เลือกเอง
