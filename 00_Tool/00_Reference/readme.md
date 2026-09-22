@@ -88,6 +88,7 @@ docker compose down             # หยุดและลบ container (ไฟ�
 | สิ่งที่ compose ตั้งให้ | รายละเอียด |
 |------|----------|
 | `privileged: true` + `stdin_open/tty` | เหมือน `docker run -dit --privileged` |
+| `env_file: /root/workspace/DGX_2024/.env` | โหลด credential ส่วนตัวเข้า container (ดูหัวข้อ 2.2; ไม่มีไฟล์ก็รันได้) |
 | `./workspace:/workspace` | งานของนักศึกษาอยู่บนเครื่อง host ไม่หายเมื่อ `down` |
 | `devtools-dind:/var/lib/docker` | named volume เก็บ image/container ของ Docker-in-Docker |
 | `restart: unless-stopped` | เปิดเครื่องใหม่แล้ว container กลับมาเอง |
@@ -100,6 +101,28 @@ SSH_PORT=2222
 JUPYTER_PORT=8888
 JUPYTER_PASSWORD=          # ว่าง = ไม่มีรหัสผ่าน
 ```
+
+### 2.2 โหลด credential จาก `/root/workspace/DGX_2024/.env`
+
+`docker-compose.yml` กำหนด `env_file: /root/workspace/DGX_2024/.env` (`required: false`) — ทุกตัวแปรในไฟล์นี้
+(เช่น `HF_TOKEN`, `GITHUB_TOKEN`, `DOCKER_USER` / `DOCKER_TOKEN`, `GIT_USER_NAME` / `GIT_USER_EMAIL`, `VAST_API_KEY`)
+จะถูก inject เป็น environment ของ container ตอน `docker compose up`
+
+```bash
+docker compose up -d
+docker exec devtools printenv HF_TOKEN      # ตรวจว่าโหลดแล้ว
+```
+
+| ที่ไหนเห็นตัวแปร | เห็นไหม |
+|------|------|
+| Terminal / kernel ใน JupyterLab, `docker exec` | ✅ สืบทอดจาก environment ของ container |
+| SSH session (`ssh root@localhost -p 2222`) | ❌ sshd ไม่ส่ง env ของ container ให้ shell — ใช้ `set -a; . /root/workspace/DGX_2024/.env; set +a` หรือ mount ไฟล์เข้ามาเอง |
+
+> * ถ้าไม่มีไฟล์นี้ (เช่นบนเครื่องอื่น) compose ยังรันได้ตามปกติเพราะตั้ง `required: false`
+> * `env_file` ใช้กับ **environment ของ container** เท่านั้น — ค่า `SSH_PORT` / `JUPYTER_PORT` / `JUPYTER_PASSWORD` ที่ใช้ map พอร์ต
+>   ยังอ่านจาก shell หรือ `.env` ข้าง `docker-compose.yml` ถ้าอยากใช้ไฟล์เดียวกันให้รัน `docker compose --env-file /root/workspace/DGX_2024/.env up -d`
+> * `JUPYTER_TOKEN` ในไฟล์นี้ **ไม่มีผล** กับ JupyterLab เพราะ `/etc/jupyter/jupyter_server_config.py` ตั้ง `token = ""` ไว้แล้ว (ใช้ `JUPYTER_PASSWORD` แทนถ้าต้องการรหัสผ่าน)
+> * ไฟล์นี้เป็น credential ส่วนตัว — อย่า commit และอย่า `docker commit` container ที่โหลดไว้
 
 ---
 
@@ -130,6 +153,9 @@ docker exec -it devtools docker run --rm hello-world
 
 เปิดเบราว์เซอร์ที่ <http://localhost:8888> เข้าได้เลยไม่ต้องใส่รหัสผ่าน — file browser เริ่มที่ `/` (root ของ container) จึงเห็นทุกโฟลเดอร์ งานของ lab อยู่ที่ `/workspace`
 
+file browser **แสดง hidden file / folder** (ชื่อขึ้นต้นด้วย `.` เช่น `.env`, `.git`, `.gitignore`, `.github/`) เป็นค่าเริ่มต้น
+เปิดไว้สองฝั่ง: server `c.ContentsManager.allow_hidden = True` และ UI `showHiddenFiles: true` — ถ้าอยากซ่อนชั่วคราวให้ติ๊กออกที่เมนู *View → Show Hidden Files*
+
 | Extension | ใช้ทำอะไร |
 |-----------|-----------|
 | **Terminal** (built-in) | bash login shell — copy/paste ได้ตามตารางด้านล่าง |
@@ -157,8 +183,8 @@ docker exec -it devtools docker run --rm hello-world
 
 | ไฟล์ | หน้าที่ |
 |------|--------|
-| `/etc/jupyter/jupyter_server_config.py` | ค่า server: ip/port, root_dir = `/`, allow_root, terminal = `bash -l`, ปิด token |
-| `/usr/local/share/jupyter/lab/settings/overrides.json` | ค่าเริ่มต้น UI: terminal `pasteWithCtrlV`, shortcut copy/paste, ปิด news/update check |
+| `/etc/jupyter/jupyter_server_config.py` | ค่า server: ip/port, root_dir = `/`, allow_root, `allow_hidden` (เห็น hidden file), terminal = `bash -l`, ปิด token |
+| `/usr/local/share/jupyter/lab/settings/overrides.json` | ค่าเริ่มต้น UI: file browser `showHiddenFiles`, terminal `pasteWithCtrlV`, shortcut copy/paste, ปิด news/update check |
 | `/usr/local/bin/start.sh` | entrypoint: sshd + dockerd + jupyter lab (ไม่มีรหัสผ่าน เว้นแต่ตั้ง `$JUPYTER_PASSWORD`) |
 | `/var/log/jupyter.log` | log ของ JupyterLab |
 

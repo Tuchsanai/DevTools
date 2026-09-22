@@ -108,6 +108,10 @@ c.ServerApp.allow_root = True
 c.ServerApp.open_browser = False
 c.ServerApp.allow_remote_access = True
 
+# แสดง hidden file / folder (ชื่อขึ้นต้นด้วย ".") ใน file browser เช่น .env .git .gitignore
+# (ฝั่ง UI ตั้ง showHiddenFiles ไว้ใน overrides.json; ต้องเปิดทั้งสองฝั่งจึงจะเห็น)
+c.ContentsManager.allow_hidden = True
+
 # terminal ใน JupyterLab ใช้ bash login shell (อ่าน /etc/profile, ~/.bashrc)
 c.ServerApp.terminals_enabled = True
 c.ServerApp.terminado_settings = {"shell_command": ["/bin/bash", "-l"]}
@@ -117,7 +121,7 @@ c.IdentityProvider.token = ""
 c.PasswordIdentityProvider.allow_password_change = False
 EOF
 
-# JupyterLab UI defaults — โดยเฉพาะ terminal ให้ copy/paste ได้สะดวก:
+# JupyterLab UI defaults — file browser แสดง hidden file/folder และ terminal ให้ copy/paste ได้สะดวก:
 #   * Ctrl+V           = paste (pasteWithCtrlV)
 #   * Ctrl+Shift+C / V = copy / paste
 #   * Ctrl+Insert / Shift+Insert = copy / paste

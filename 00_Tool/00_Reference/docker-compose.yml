@@ -6,6 +6,9 @@
 #
 # ปรับค่าได้ผ่าน environment หรือไฟล์ .env ข้าง ๆ (ทุกค่ามี default):
 #   SSH_PORT=2222  JUPYTER_PORT=8888  JUPYTER_PASSWORD=   (ว่าง = ไม่มีรหัสผ่าน)
+#
+# env_file: /root/workspace/DGX_2024/.env ถูกโหลดเป็น environment ของ container
+# (เห็นใน terminal / kernel ของ JupyterLab; SSH session ไม่สืบทอด env นี้ — ดู readme หัวข้อ 2.2)
 
 services:
   devtools:
@@ -17,6 +20,9 @@ services:
     stdin_open: true            # -i
     tty: true                   # -t  → start.sh จะเปิด bash ให้เมื่อ attach
     restart: unless-stopped
+    env_file:                   # โหลด credential ส่วนตัว (HF_TOKEN, GITHUB_TOKEN, DOCKER_*, ...) เข้า container
+      - path: /root/workspace/DGX_2024/.env
+        required: false         # ไม่มีไฟล์ก็รันได้ (เช่นบนเครื่องอื่น)
     environment:
       JUPYTER_PASSWORD: ${JUPYTER_PASSWORD:-}   # ว่าง = JupyterLab ไม่ถามรหัสผ่าน
     ports:

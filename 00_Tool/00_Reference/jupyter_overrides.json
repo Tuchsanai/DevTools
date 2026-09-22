@@ -1,4 +1,7 @@
 {
+  "@jupyterlab/filebrowser-extension:browser": {
+    "showHiddenFiles": true
+  },
   "@jupyterlab/terminal-extension:plugin": {
     "pasteWithCtrlV": true,
     "scrollback": 10000,
@@ -9,10 +12,34 @@
   },
   "@jupyterlab/shortcuts-extension:shortcuts": {
     "shortcuts": [
-      { "command": "terminal:copy",  "keys": ["Ctrl Shift C"], "selector": ".jp-Terminal" },
-      { "command": "terminal:paste", "keys": ["Ctrl Shift V"], "selector": ".jp-Terminal" },
-      { "command": "terminal:copy",  "keys": ["Ctrl Insert"],  "selector": ".jp-Terminal" },
-      { "command": "terminal:paste", "keys": ["Shift Insert"], "selector": ".jp-Terminal" }
+      {
+        "command": "terminal:copy",
+        "keys": [
+          "Ctrl Shift C"
+        ],
+        "selector": ".jp-Terminal"
+      },
+      {
+        "command": "terminal:paste",
+        "keys": [
+          "Ctrl Shift V"
+        ],
+        "selector": ".jp-Terminal"
+      },
+      {
+        "command": "terminal:copy",
+        "keys": [
+          "Ctrl Insert"
+        ],
+        "selector": ".jp-Terminal"
+      },
+      {
+        "command": "terminal:paste",
+        "keys": [
+          "Shift Insert"
+        ],
+        "selector": ".jp-Terminal"
+      }
     ]
   },
   "@jupyterlab/apputils-extension:notification": {
@@ -23,6 +50,8 @@
     "recordTiming": true
   },
   "@jupyterlab/fileeditor-extension:plugin": {
-    "editorConfig": { "lineNumbers": true }
+    "editorConfig": {
+      "lineNumbers": true
+    }
   }
 }
