@@ -1,7 +1,7 @@
 # DevTools Base Learning Container
 
 Container พื้นฐานสำหรับ DevTools labs — Ubuntu 24.04 ที่มาพร้อม **Docker-in-Docker**, **Python 3**,
-**Node.js 22 (LTS)** และ **SSH** ใช้งานได้ทันที
+**Node.js 22 (LTS)**, **JupyterLab** และ **SSH** ใช้งานได้ทันที
 
 ---
 
@@ -13,14 +13,16 @@ Container พื้นฐานสำหรับ DevTools labs — Ubuntu 24.04
 | **Docker-in-Docker** | docker-ce, CLI, containerd, buildx & compose plugins |
 | **Python** | python3, pip, venv (`python` → `python3`) |
 | **Node.js** | Node.js 22.x LTS + npm/npx (สำหรับ Next.js / React / Vite) |
+| **JupyterLab** | JupyterLab 4.x + extensions (ดูหัวข้อ 3.4) — kernel `python3` และ `bash` |
 | **Tooling** | git, curl, wget, vim, nano, less, net-tools, ping, dnsutils, openssh-server |
 | **Workdir** | `/workspace` |
-| **Ports** | `22` (SSH) |
+| **Ports** | `22` (SSH), `8888` (JupyterLab) |
 | **SSH login** | user `root` / password `passwd` (เปิด PasswordAuthentication + PermitRootLogin) |
+| **JupyterLab login** | ไม่มีรหัสผ่าน (ตั้งได้ด้วย `-e JUPYTER_PASSWORD=...`) |
 
 > หมายเหตุ: container รันเป็น `root` (ไม่มี user `student` แล้ว)
 
-> ⚠️ รหัสผ่าน SSH ของ `root` คือ `passwd` — ใช้สำหรับการเรียน/ทดสอบเท่านั้น ไม่ควรใช้ในระบบ production
+> ⚠️ รหัสผ่าน SSH ของ `root` คือ `passwd` และ JupyterLab เปิดแบบไม่มีรหัสผ่าน — ใช้สำหรับการเรียน/ทดสอบบนเครื่องตัวเองเท่านั้น ไม่ควรเปิดพอร์ตออก internet
 
 > 💡 ทุกคำสั่งในเอกสารนี้เป็น **บรรทัดเดียว** copy-paste ได้ทั้ง Windows และ Linux/macOS
 
@@ -60,7 +62,7 @@ docker build --no-cache -t devtools:2569_1 .
 คำสั่งนี้เป็นบรรทัดเดียว copy-paste ได้ทั้ง **Windows และ Linux/macOS**
 
 ```bash
-docker run -d --name devtools --privileged -p 2222:22 devtools:2569_1
+docker run -d --name devtools --privileged -p 2222:22 -p 8888:8888 devtools:2569_1
 ```
 
 | Flag | ความหมาย |
@@ -69,6 +71,35 @@ docker run -d --name devtools --privileged -p 2222:22 devtools:2569_1
 | `--name devtools` | ตั้งชื่อ container |
 | `--privileged` | จำเป็นสำหรับ Docker-in-Docker ให้ `dockerd` ทำงานได้ |
 | `-p 2222:22` | map SSH port ออกมาที่เครื่อง host พอร์ต 2222 |
+| `-p 8888:8888` | map JupyterLab ออกมาที่ host พอร์ต 8888 |
+| `-e JUPYTER_PASSWORD=xxx` | (optional) ตั้งรหัสผ่าน JupyterLab (ค่าเริ่มต้นไม่มีรหัสผ่าน) |
+
+### 2.1 รันด้วย Docker Compose (แนะนำ)
+
+ใช้ `docker-compose.yml` ในโฟลเดอร์นี้ — ตั้งค่า privileged, พอร์ต, รหัสผ่าน และ volume ให้ครบแล้ว
+
+```bash
+docker compose up -d            # ใช้ image จาก Docker Hub
+docker compose up -d --build    # หรือ build จาก Dockerfile ในโฟลเดอร์นี้
+docker compose logs -f          # ดู log (sshd / dockerd / jupyter)
+docker compose down             # หยุดและลบ container (ไฟล์ใน ./workspace ยังอยู่)
+```
+
+| สิ่งที่ compose ตั้งให้ | รายละเอียด |
+|------|----------|
+| `privileged: true` + `stdin_open/tty` | เหมือน `docker run -dit --privileged` |
+| `./workspace:/workspace` | งานของนักศึกษาอยู่บนเครื่อง host ไม่หายเมื่อ `down` |
+| `devtools-dind:/var/lib/docker` | named volume เก็บ image/container ของ Docker-in-Docker |
+| `restart: unless-stopped` | เปิดเครื่องใหม่แล้ว container กลับมาเอง |
+
+ปรับค่าได้ผ่าน environment หรือไฟล์ `.env` ข้าง `docker-compose.yml` (ทุกค่ามี default):
+
+```bash
+# .env
+SSH_PORT=2222
+JUPYTER_PORT=8888
+JUPYTER_PASSWORD=          # ว่าง = ไม่มีรหัสผ่าน
+```
 
 ---
 
@@ -95,13 +126,50 @@ ssh root@localhost -p 2222
 docker exec -it devtools docker run --rm hello-world
 ```
 
+### 3.4 เข้าใช้งาน JupyterLab
+
+เปิดเบราว์เซอร์ที่ <http://localhost:8888> เข้าได้เลยไม่ต้องใส่รหัสผ่าน — file browser เริ่มที่ `/` (root ของ container) จึงเห็นทุกโฟลเดอร์ งานของ lab อยู่ที่ `/workspace`
+
+| Extension | ใช้ทำอะไร |
+|-----------|-----------|
+| **Terminal** (built-in) | bash login shell — copy/paste ได้ตามตารางด้านล่าง |
+| **jupytext** | เปิดไฟล์ `.py` / `.md` เป็น notebook, pair notebook ↔ script (คลิกขวาไฟล์ → *Open With*) |
+| **jupyterlab-git** | Git UI ใน sidebar ซ้าย (stage / commit / diff / branch) |
+| **jupyterlab-lsp** + `python-lsp-server` | autocomplete, hover, go-to-definition, lint สำหรับ Python |
+| **jupyterlab-code-formatter** (black, isort) | จัดรูปแบบโค้ดใน cell / ไฟล์ |
+| **jupyterlab-execute-time** | แสดงเวลาที่ใช้รันของแต่ละ cell |
+| **jupyter-resource-usage** | แสดง CPU / Memory ที่ status bar |
+| **ipywidgets** | interactive widgets |
+| **bash_kernel** | เขียน notebook ด้วย Bash kernel (เหมาะกับ lab คำสั่ง shell / docker) |
+
+**Copy / Paste ใน Terminal ของ JupyterLab**
+
+| การกระทำ | คีย์ |
+|----------|------|
+| Paste | `Ctrl+V` หรือ `Shift+Insert` หรือ `Ctrl+Shift+V` หรือคลิกขวา → *Paste* |
+| Copy (เมื่อเลือกข้อความอยู่) | `Ctrl+C` หรือ `Ctrl+Insert` หรือ `Ctrl+Shift+C` หรือคลิกขวา → *Copy* |
+| ส่ง SIGINT (หยุดโปรเซส) | `Ctrl+C` เมื่อ **ไม่ได้** เลือกข้อความ |
+
+> การ copy/paste ผ่านคลิกขวาและ `Ctrl+Shift+C/V` ใช้ Clipboard API ของเบราว์เซอร์ ซึ่งทำงานเฉพาะบน `localhost` หรือ `https://`
+> ถ้าเข้าผ่าน `http://<ip>` ให้ใช้ `Ctrl+V` / `Shift+Insert` และเลือกข้อความแล้ว `Ctrl+C` แทน (ทำงานได้ทุกกรณี)
+
+ไฟล์ที่เกี่ยวข้องใน image:
+
+| ไฟล์ | หน้าที่ |
+|------|--------|
+| `/etc/jupyter/jupyter_server_config.py` | ค่า server: ip/port, root_dir = `/`, allow_root, terminal = `bash -l`, ปิด token |
+| `/usr/local/share/jupyter/lab/settings/overrides.json` | ค่าเริ่มต้น UI: terminal `pasteWithCtrlV`, shortcut copy/paste, ปิด news/update check |
+| `/usr/local/bin/start.sh` | entrypoint: sshd + dockerd + jupyter lab (ไม่มีรหัสผ่าน เว้นแต่ตั้ง `$JUPYTER_PASSWORD`) |
+| `/var/log/jupyter.log` | log ของ JupyterLab |
+
 ---
 
 ## 4. คำสั่งที่ใช้บ่อย
 
 ```bash
-# ดู log การ start (sshd / dockerd)
+# ดู log การ start (sshd / dockerd / jupyter)
 docker logs devtools
+docker exec devtools tail -f /var/log/jupyter.log
 
 # หยุด container
 docker stop devtools
@@ -143,5 +211,5 @@ image ถูก publish ไว้แล้วที่ [`tuchsanai/devtools`](ht
 ```bash
 docker pull tuchsanai/devtools:2569_1
 
-docker run -dit --name devtools --privileged -p 2222:22 tuchsanai/devtools:2569_1
+docker run -dit --name devtools --privileged -p 2222:22 -p 8888:8888 tuchsanai/devtools:2569_1
 ```

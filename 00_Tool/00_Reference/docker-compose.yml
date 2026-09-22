@@ -1,0 +1,30 @@
+# docker-compose.yml — รัน devtools container (SSH + JupyterLab + Docker-in-Docker)
+#
+#   docker compose up -d          # ใช้ image จาก Docker Hub (tuchsanai/devtools:2569_1)
+#   docker compose up -d --build  # build จาก Dockerfile ในโฟลเดอร์นี้แทน
+#   docker compose down           # หยุดและลบ container (ข้อมูลใน ./workspace ยังอยู่)
+#
+# ปรับค่าได้ผ่าน environment หรือไฟล์ .env ข้าง ๆ (ทุกค่ามี default):
+#   SSH_PORT=2222  JUPYTER_PORT=8888  JUPYTER_PASSWORD=   (ว่าง = ไม่มีรหัสผ่าน)
+
+services:
+  devtools:
+    image: tuchsanai/devtools:2569_1
+    build: .
+    container_name: devtools
+    hostname: devtools
+    privileged: true            # จำเป็นสำหรับ Docker-in-Docker (dockerd ข้างใน)
+    stdin_open: true            # -i
+    tty: true                   # -t  → start.sh จะเปิด bash ให้เมื่อ attach
+    restart: unless-stopped
+    environment:
+      JUPYTER_PASSWORD: ${JUPYTER_PASSWORD:-}   # ว่าง = JupyterLab ไม่ถามรหัสผ่าน
+    ports:
+      - "${SSH_PORT:-2222}:22"        # SSH        → ssh root@localhost -p 2222 (password: passwd)
+      - "${JUPYTER_PORT:-8888}:8888"  # JupyterLab → http://localhost:8888  (ไม่มีรหัสผ่าน)
+    volumes:
+      - ./workspace:/workspace        # งานของนักศึกษาอยู่บน host ไม่หายเมื่อลบ container
+      - devtools-dind:/var/lib/docker # image/container ของ Docker-in-Docker
+
+volumes:
+  devtools-dind:

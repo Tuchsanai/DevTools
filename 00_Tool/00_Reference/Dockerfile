@@ -62,17 +62,83 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 
 RUN install -d /workspace
 
+# ------------------------------------------------------------------
+# JupyterLab + extensions (ติดตั้งลง system python เพื่อให้ kernel เห็น
+# package เดียวกับที่ใช้ใน terminal / SSH)
+#   - jupytext                : เปิด .py / .md เป็น notebook ได้ (pair notebook <-> script)
+#   - jupyterlab-git          : Git UI ใน sidebar
+#   - jupyterlab-lsp          : autocomplete / hover / diagnostics (python-lsp-server)
+#   - jupyterlab-code-formatter + black + isort : จัดรูปแบบโค้ด
+#   - jupyterlab-execute-time : แสดงเวลารันของแต่ละ cell
+#   - jupyter-resource-usage  : แสดง CPU / RAM ใน status bar
+#   - ipywidgets              : interactive widgets
+#   - bash_kernel             : เขียน notebook ด้วย Bash kernel (เหมาะกับ DevTools lab)
+# ------------------------------------------------------------------
+ENV PIP_BREAK_SYSTEM_PACKAGES=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_ROOT_USER_ACTION=ignore
+
+RUN pip install \
+        "jupyterlab>=4.3,<5" \
+        notebook \
+        ipywidgets \
+        jupytext \
+        jupyterlab-git \
+        jupyterlab-lsp \
+        "python-lsp-server[all]" \
+        jupyterlab-code-formatter \
+        black \
+        isort \
+        jupyterlab-execute-time \
+        jupyter-resource-usage \
+        bash_kernel \
+ && python -m bash_kernel.install --sys-prefix \
+ && jupyter lab --version \
+ && jupyter labextension list 2>&1 | grep -E 'enabled|OK' | head -20
+
+# Jupyter Server config (system-wide)
+RUN mkdir -p /etc/jupyter \
+ && cat > /etc/jupyter/jupyter_server_config.py <<'EOF'
+c = get_config()  # noqa
+
+c.ServerApp.ip = "0.0.0.0"
+c.ServerApp.port = 8888
+c.ServerApp.root_dir = "/"          # เห็นทั้ง filesystem (โฟลเดอร์งานอยู่ที่ /workspace)
+c.ServerApp.allow_root = True
+c.ServerApp.open_browser = False
+c.ServerApp.allow_remote_access = True
+
+# terminal ใน JupyterLab ใช้ bash login shell (อ่าน /etc/profile, ~/.bashrc)
+c.ServerApp.terminals_enabled = True
+c.ServerApp.terminado_settings = {"shell_command": ["/bin/bash", "-l"]}
+
+# ไม่ใช้ token; รหัสผ่าน (ถ้ามี) ถูกตั้งจาก start.sh ผ่าน $JUPYTER_PASSWORD (default: ไม่มีรหัสผ่าน)
+c.IdentityProvider.token = ""
+c.PasswordIdentityProvider.allow_password_change = False
+EOF
+
+# JupyterLab UI defaults — โดยเฉพาะ terminal ให้ copy/paste ได้สะดวก:
+#   * Ctrl+V           = paste (pasteWithCtrlV)
+#   * Ctrl+Shift+C / V = copy / paste
+#   * Ctrl+Insert / Shift+Insert = copy / paste
+#   * คลิกขวาที่ terminal จะมีเมนู Copy / Paste
+COPY jupyter_overrides.json /usr/local/share/jupyter/lab/settings/overrides.json
+
 # ตั้งรหัสผ่าน root = passwd และเปิดให้ login ผ่าน SSH ด้วย password ได้
 RUN echo 'root:passwd' | chpasswd \
  && mkdir -p /etc/ssh/sshd_config.d \
  && printf 'PermitRootLogin yes\nPasswordAuthentication yes\n' \
       > /etc/ssh/sshd_config.d/10-root-login.conf
 
+# start script: sshd + dockerd + jupyter lab (ไม่มีรหัสผ่าน เว้นแต่ตั้ง $JUPYTER_PASSWORD)
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+
 VOLUME /var/lib/docker
 
-# 22=ssh
-EXPOSE 22
+# 22=ssh, 8888=jupyterlab
+EXPOSE 22 8888
 
 WORKDIR /workspace
 
-CMD ["sh", "-c", "mkdir -p /run/sshd && ssh-keygen -A >/dev/null 2>&1; /usr/sbin/sshd; dockerd > /var/log/dockerd.log 2>&1 & exec bash"]
+CMD ["/usr/local/bin/start.sh"]

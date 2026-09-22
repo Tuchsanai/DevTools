@@ -1,0 +1,28 @@
+{
+  "@jupyterlab/terminal-extension:plugin": {
+    "pasteWithCtrlV": true,
+    "scrollback": 10000,
+    "cursorBlink": true,
+    "fontSize": 13,
+    "shutdownOnClose": false,
+    "closeOnExit": true
+  },
+  "@jupyterlab/shortcuts-extension:shortcuts": {
+    "shortcuts": [
+      { "command": "terminal:copy",  "keys": ["Ctrl Shift C"], "selector": ".jp-Terminal" },
+      { "command": "terminal:paste", "keys": ["Ctrl Shift V"], "selector": ".jp-Terminal" },
+      { "command": "terminal:copy",  "keys": ["Ctrl Insert"],  "selector": ".jp-Terminal" },
+      { "command": "terminal:paste", "keys": ["Shift Insert"], "selector": ".jp-Terminal" }
+    ]
+  },
+  "@jupyterlab/apputils-extension:notification": {
+    "checkForUpdates": false,
+    "fetchNews": "false"
+  },
+  "@jupyterlab/notebook-extension:tracker": {
+    "recordTiming": true
+  },
+  "@jupyterlab/fileeditor-extension:plugin": {
+    "editorConfig": { "lineNumbers": true }
+  }
+}
