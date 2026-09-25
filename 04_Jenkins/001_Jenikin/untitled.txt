@@ -1,3 +1,38 @@
+
+เชื่อมต่อ ssh ไปยัง (`root@127.0.0.1:22022`, Password: `789`)
+ให้ load .env ที่ `/root/workspace/DGX_2024/.env` 
+1. ทำงานทั้งหมดบน Remote ที่ `/root/workspace/DevTools/04_Jenkins/001_Jenikin
+2. ใช้ computer use ในการจับภาพหน้าจอและการทดลอง
+3.อ่านข้อความด้านใน /root/workspace/DevTools/04_Jenkins/001_Jenikin/001_LAB_Jenkins_On_Docker(https://githu
+
+- ใช่ yolo3 ในการทำงาน
+
+- update เนื้อหาในช่วง setup ใน 001_LAB_Jenkins_On_Docker และ 002_LAB_Declarative_Pipeline
+   ต้องการให้เริ่มต้นจาก idea จาก https://github.com/Tuchsanai/DevTools/tree/main/03_Application_Docker/02_Message_Brokers/02_Kafka/001_LAB_Kafka_Setup
+
+ประมาณว่า  เรียบเรียงใหม่ได้
+
+ทำบนเครื่องของเราเอง (ไม่ใช้ cloud) — เปิด container ที่ติดตั้ง Docker มาให้แล้ว
+docker rm -f devtools
+docker run -dit --name devtools --privileged -p 2222:22 -p 8411:8411 tuchsanai/devtools:2569_1
+ssh root@localhost -p 2222        # password : pas 
+Clone โค้ดแล็บ
+mkdir -p ~/labworkxxxx && cd ~/labworkxxxxx
+git clone https://github.com/Tuchsanai/DevTools.git
+cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxup
+
+swd
+
+เรียก jenkins
+docker network create cicd-net
+docker run -d --name jenkins --network cicd-net --restart unless-stopped \
+  -p 8080:8080 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk21
+
+
+
+
+
+
 เชื่อมต่อ ssh ไปยัง (`root@127.0.0.1:22022`, Password: `789`)
 ให้ load .env ที่ `/root/workspace/DGX_2024/.env` 
 1. ทำงานทั้งหมดบน Remote ที่ `/root/workspace/`DevTools/04\_Jenkins/001\_Jenikin  

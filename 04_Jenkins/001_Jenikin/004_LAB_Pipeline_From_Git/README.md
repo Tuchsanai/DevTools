@@ -109,7 +109,7 @@ GitHub commit ca0726c → Jenkins build #2 → image <DOCKER_USER>/hello-ci:2 �
 > **Prerequisite GitHub:** บัญชี GitHub ที่ยืนยันอีเมลแล้ว และ **Personal access token (classic)** ที่มี scope `public_repo` (LAB 5 ต้องเพิ่ม `admin:repo_hook`) เก็บ token ไว้ใน password manager ห้ามเขียนลงไฟล์ใด ๆ
 
 ```bash
-COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"
+COURSE_ROOT="$HOME/labwork/DevTools/04_Jenkins/001_Jenikin"
 APP_SRC="$COURSE_ROOT/003_LAB_Docker_Build_Push/catfood-shop"
 LAB_SRC="$COURSE_ROOT/004_LAB_Pipeline_From_Git"
 PROJECT_DIR="$HOME/hello-ci"

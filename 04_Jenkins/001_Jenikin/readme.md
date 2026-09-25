@@ -36,56 +36,43 @@
 
 ## เริ่มระบบ
 
-รันคำสั่ง canonical นี้บนเครื่องหลัก:
+รันคำสั่ง canonical นี้บนเครื่องหลัก — **ครั้งเดียวตอนเริ่ม LAB 1** ใช้ต่อได้ถึง LAB 6 (รายละเอียดทุก flag อยู่ใน [LAB 1 ส่วนที่ 0](./001_LAB_Jenkins_On_Docker/README.md#0-เตรียมเครื่องเรียน)):
 
 ```bash
-docker run -dit --name devtools-jenkins --privileged \
-  --tmpfs /run -v jenkins-dind:/var/lib/docker \
-  -p 2222:22 -p 8080:8080 -p 8000:8000 -p 3000:3000 \
+docker rm -f devtools
+docker run -dit --name devtools --privileged --tmpfs /run \
+  -p 2222:22 -p 8080:8080 -p 3000:3000 -p 8000:8000 \
   tuchsanai/devtools:2569_1
-docker ps
+ssh root@localhost -p 2222        # password : passwd
 ```
 
-✅ **สิ่งที่ต้องเห็น** (ตัดเฉพาะแถวที่เกี่ยวข้อง):
+> `docker rm -f devtools` ทำเฉพาะตอนเริ่ม LAB 1 เท่านั้น หลังจากนั้น Jenkins และข้อมูลทั้งหมดอยู่ข้างใน `devtools` ให้ใช้ `docker start devtools` แทนการลบ
 
-```text
-...
-CONTAINER ID   IMAGE                         ...   NAMES
-...            tuchsanai/devtools:2569_1    ...   devtools-jenkins
-```
-
-เข้า shell ของ devtools:
+ใน shell ของ devtools จัดเตรียมชุดสอนจาก public repository:
 
 ```bash
-ssh root@localhost -p 2222
-```
-
-✅ **สิ่งที่ต้องเห็น**:
-
-```text
-root@...:~#
-```
-
-เมื่อ SSH ถามรหัสผ่าน ใช้ `passwd` จากนั้นจัดเตรียมชุดสอนจาก public repository:
-
-```bash
-if [ -d "$HOME/DevTools/.git" ]; then
-  git -C "$HOME/DevTools" pull
-else
-  git clone --depth 1 https://github.com/Tuchsanai/DevTools.git "$HOME/DevTools"
-fi
-export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"
-echo 'export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"' > /etc/profile.d/course.sh
+mkdir -p ~/labwork && cd ~/labwork
+git clone https://github.com/Tuchsanai/DevTools.git
+cd DevTools/04_Jenkins/001_Jenikin/001_LAB_Jenkins_On_Docker
+echo 'export COURSE_ROOT="$HOME/labwork/DevTools/04_Jenkins/001_Jenikin"' > /etc/profile.d/course.sh
+source /etc/profile.d/course.sh && ls "$COURSE_ROOT"
 ```
 
 ✅ **สิ่งที่ต้องเห็น** (รันครั้งแรก):
 
 ```text
-Cloning into '/root/DevTools'...
-...
+Cloning into 'DevTools'...
+001_LAB_Jenkins_On_Docker
+002_LAB_Declarative_Pipeline
+003_LAB_Docker_Build_Push
+004_LAB_Pipeline_From_Git
+005_LAB_Webhook_Trigger
+006_LAB_CICD_Capstone
+Jenkins_CICD_Docker_Slides.html
+readme.md
 ```
 
-ถ้ามี `~/DevTools` อยู่แล้ว ต้องเห็นผลจาก `git pull` เช่น `Already up to date.` แทน การวัดใน container ทดสอบพบว่า shallow clone ทั้ง repository มีขนาด `221M` ซึ่งไม่เกิน 300 MB จึงใช้ clone ธรรมดาและไม่ต้อง sparse checkout
+ถ้าเคย clone ไว้แล้ว ให้ใช้ `git -C ~/labwork/DevTools pull` แทน · clone เต็มมีขนาด 1.3 GB (รอบทดสอบใช้ 65–80 วินาที) ถ้าเน็ตช้าใช้ `git clone --depth 1 ...` ซึ่งวัดได้ราว `221M`
 
 URL สำหรับผู้เรียน:
 
@@ -109,28 +96,29 @@ URL สำหรับผู้เรียน:
 
 ## กู้สถานะหลัง restart หรือปิดเครื่อง
 
-เปิด devtools ตัวเดิมและรอ inner Docker ประมาณ 20 วินาที:
+เปิด devtools ตัวเดิม (ห้ามลบ `devtools` เพราะ Jenkins อยู่ข้างใน):
 
 ```bash
-docker start devtools-jenkins
-sleep 20
-docker exec devtools-jenkins docker ps
+docker start devtools
+docker exec devtools docker ps
 ```
 
 ✅ **สิ่งที่ต้องเห็น** (ตัดเฉพาะแถวที่เกี่ยวข้อง):
 
 ```text
-devtools-jenkins
+devtools
 CONTAINER ID   IMAGE   ...   NAMES
 ...            ...     ...   jenkins
 ```
+
+รอบทดสอบจริง `docker stop` + `docker start devtools` ได้ inner Docker กลับมาใน 1 วินาที และหน้า login ของ Jenkins ตอบ `200` ใน 7 วินาที (`docker restart devtools` : 3 วินาที / 9 วินาที) ถ้า `docker ps` ยังว่าง รออีกไม่กี่วินาทีแล้วสั่งใหม่ · หน้าเว็บที่ขึ้น **Starting Jenkins** (`/login` = `503`) แปลว่ายังโหลดอยู่ บางรอบนานถึง ~4 นาที ให้รอ
 
 Jenkins และ webapp ที่สร้างด้วย `--restart unless-stopped` จะกลับมาเอง งานและ build history อยู่ใน named volumes จึงไม่ต้องทำ wizard ซ้ำ
 
 ถ้าตามไม่ทัน ให้เข้า devtools แล้วใช้ bootstrap ไปยังสถานะจบ LAB ที่ต้องการ:
 
 ```bash
-docker exec -it devtools-jenkins bash
+docker exec -it devtools bash
 ```
 
 ✅ **สิ่งที่ต้องเห็น**:

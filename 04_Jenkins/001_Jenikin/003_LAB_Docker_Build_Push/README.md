@@ -140,14 +140,14 @@ catfood-shop/
 
 ต้องจบ LAB 2 แล้ว: devtools container ทำงาน มี network `cicd-net`, container `jenkins`, volume `jenkins_home` และ job `first-pipeline`
 
-> **Prerequisite:** devtools ต้อง publish port `3000` ด้วย (คำสั่ง canonical ใน [readme หลัก](../readme.md) มี `-p 3000:3000` แล้ว) หากสร้าง devtools ไว้ก่อนหน้านี้โดยไม่มี port 3000 ให้สร้างใหม่ด้วยคำสั่ง canonical ข้อมูล Docker ภายในอยู่ใน volume `jenkins-dind` จึงไม่หาย
+> **Prerequisite:** ร้านแมวของแล็บนี้เปิดที่ port `3000` — port 3000 เปิดไว้แล้วตั้งแต่ LAB 1 ส่วนที่ 0 (`-p 3000:3000`) ไม่ต้องสร้าง devtools ใหม่
 
 > **Prerequisite Docker Hub:** สมัครบัญชี ยืนยันอีเมล และสร้าง **Access Token สิทธิ์ Read & Write** แนะนำให้สร้าง repository `catfood-shop` แบบ **Public** ไว้ก่อน (ถ้าไม่สร้าง Docker Hub จะสร้างให้อัตโนมัติตอน push ตามค่า Default privacy ของบัญชี)
 
 ใน shell ของ devtools กำหนดตัวแปรที่ใช้ทั้งแล็บ:
 
 ```bash
-COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"
+COURSE_ROOT="$HOME/labwork/DevTools/04_Jenkins/001_Jenikin"
 LAB="$COURSE_ROOT/003_LAB_Docker_Build_Push"
 docker ps --format '{{.Names}}\t{{.Status}}'
 ```

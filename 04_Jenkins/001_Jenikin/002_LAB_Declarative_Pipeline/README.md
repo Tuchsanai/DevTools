@@ -124,27 +124,52 @@ plugin *Pipeline Graph View* (ติดตั้งมากับ suggested plu
 
 ---
 
-## สภาพตั้งต้น
+## 0. กลับเข้าเครื่องเรียน (ต่อจาก LAB 1)
 
-ต้องมีสถานะจบ LAB 1: คอนเทนเนอร์ `devtools-jenkins` ทำงาน และมีคอนเทนเนอร์ `jenkins` อยู่ภายใน
+แล็บนี้ใช้เครื่องเรียน `devtools` และ Jenkins ตัวเดิมจาก LAB 1 — **ไม่ต้องลบ ไม่ต้องสร้างกล่องใหม่** พิมพ์บนเครื่องของเรา :
 
 ```bash
-docker ps
-docker exec devtools-jenkins docker ps
+docker start devtools            # ถ้ารันอยู่แล้วก็ไม่เป็นไร
+ssh root@localhost -p 2222       # password : passwd
 ```
 
-✅ **สิ่งที่ต้องเห็น** (ตัดเฉพาะแถวที่เกี่ยวข้อง):
+> 📝 **คำอธิบาย:** `docker start devtools` ปลุกกล่องเรียนตัวเดิมขึ้นมาพร้อมทุกอย่างที่ทำไว้ใน LAB 1 (ถ้ากล่องรันอยู่แล้ว คำสั่งนี้แค่พิมพ์ชื่อ `devtools` กลับมา ไม่มีอะไรเสีย) · Docker ข้างในกล่องจะปลุก `jenkins` ให้เองเพราะ LAB 1 สร้างไว้ด้วย `--restart unless-stopped` — รอบทดสอบจริงหน้า login ตอบใน 7–9 วินาที (แต่มีหนึ่งรอบที่ใช้ ~4 นาที) · `ssh ... -p 2222` เข้าไปทำงานข้างในกล่องเหมือน LAB 1 (หรือใช้ VS Code **Remote-SSH** ไปที่ `root@localhost:2222`)
+>
+> ⚠️ **ห้าม `docker rm -f devtools`** — Jenkins, job `first-freestyle` และประวัติ build ทั้งหมดอยู่ข้างในกล่องนี้ ลบแล้วต้องเริ่ม LAB 1 ใหม่
 
-```text
-CONTAINER ID   IMAGE                         ...   NAMES
-...            tuchsanai/devtools:2569_1     ...   devtools-jenkins
-CONTAINER ID   IMAGE                         ...   NAMES
-...            jenkins/jenkins:lts-jdk21     ...   jenkins
+---
+
+## 1. เข้าโฟลเดอร์แล็บ และตรวจว่า Jenkins จาก LAB 1 ยังอยู่
+
+คำสั่งต่อจากนี้พิมพ์**ข้างในเครื่องเรียน** :
+
+```bash
+cd ~/labwork/DevTools/04_Jenkins/001_Jenikin/002_LAB_Declarative_Pipeline
+git -C ~/labwork/DevTools pull
+ls
+docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/login
 ```
 
-เปิด http://localhost:8080 และเข้าสู่ระบบด้วย `admin` / `admin2569`
+> 📝 **คำอธิบาย:** `cd` เข้าโฟลเดอร์ LAB 2 ในรีโพที่ clone ไว้ตั้งแต่ LAB 1 ส่วนที่ 1 · `git -C ~/labwork/DevTools pull` ดึงเนื้อหาล่าสุดของวิชา (`-C` = ให้ git ทำงานในโฟลเดอร์นั้นโดยไม่ต้อง `cd` ไป — ถ้าไม่มีอะไรใหม่จะขึ้น `Already up to date.`) · `ls` ดูของในแล็บ — ไฟล์ `Jenkinsfile` คือ**สคริปต์ฉบับเสร็จของแล็บนี้** เก็บไว้เทียบตอนท้าย ไม่ต้องใช้ตอนเริ่ม ·
+> `docker ps --format 'table ...'` แสดงเฉพาะสามคอลัมน์ที่อยากดู : ชื่อ (`{{.Names}}`) สถานะ (`{{.Status}}`) และ port (`{{.Ports}}`) โดย `\t` คั่นคอลัมน์ด้วย tab · `curl -s -o /dev/null -w "%{http_code}\n"` ยิงไปที่หน้า login ของ Jenkins แบบเงียบ (`-s`) ทิ้งเนื้อหาหน้าเว็บ (`-o /dev/null`) แล้วพิมพ์แค่รหัสสถานะ HTTP (`-w`)
 
-> ยังไม่มี? ย้อนไปทำ [LAB 1](../001_LAB_Jenkins_On_Docker/README.md) ก่อน (ใช้เวลาประมาณ 40 นาที)
+✅ **Expected output** — ต้องเห็นครบสามอย่าง : ไฟล์ในแล็บ · `jenkins` สถานะ `Up` พร้อม port `8080` · และเลข `200`
+
+```
+Jenkinsfile  README.md  images
+NAMES     STATUS              PORTS
+jenkins   Up About a minute   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp, 50000/tcp
+200
+```
+
+> ถ้าขึ้น `000` หรือ `503` แทน `200` แปลว่า Jenkins ยังโหลดไม่เสร็จ (เปิดเว็บจะเห็น **Starting Jenkins**) — ปกติไม่กี่วินาที แต่รอบทดสอบจริงหนึ่งรอบใช้ ~4 นาที รอแล้วสั่ง `curl` ใหม่ อย่าลบหรือ restart ซ้ำ · ถ้า `docker ps` ไม่มีแถว `jenkins` เลย ดูแถวแรกของ [แก้ปัญหาที่พบบ่อย](#แก้ปัญหาที่พบบ่อย)
+
+เปิด http://localhost:8080 และเข้าสู่ระบบด้วย `admin` / `admin2569` — ต้องเห็น job `first-freestyle` จาก LAB 1
+
+![Dashboard ที่มี first-freestyle จาก LAB 1](../001_LAB_Jenkins_On_Docker/images/lab1_s22_dashboard_after_recreate.png)
+
+> ยังไม่มี devtools หรือ jenkins? ย้อนไปทำ [LAB 1](../001_LAB_Jenkins_On_Docker/README.md) ส่วนที่ 0–1 และการทดลองที่ 1–4 ก่อน
 
 ---
 
@@ -680,7 +705,7 @@ Post Actions success
 
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
-| เปิด `localhost:8080` ไม่ได้ | devtools หรือ Jenkins ภายในยังไม่ทำงาน | `docker start devtools-jenkins` รอ ~20 วินาที แล้วตรวจ `docker exec devtools-jenkins docker ps` |
+| เปิด `localhost:8080` ไม่ได้ หรือ `docker ps` ไม่มี `jenkins` | devtools หรือ Jenkins ภายในยังไม่ทำงาน | บนเครื่องเรา `docker start devtools` รอไม่กี่วินาที (รอบทดสอบจริง ~7 วินาที) แล้วตรวจ `docker exec devtools docker ps` · ถ้าไม่มี `jenkins` เลย ให้ย้อนทำ LAB 1 |
 | ถูกส่งกลับไปหน้า Sign in | session หมดอายุหลัง restart | เข้าสู่ระบบด้วย `admin` / `admin2569` |
 | หาเมนู Stages ในหน้า build ไม่เจอ | Jenkins รุ่นนี้ตั้งชื่อเมนูระดับ build ว่า **Pipeline Overview** | ระดับ build ใช้ Pipeline Overview · ระดับ job ใช้ Stages |
 | ไม่มีเมนู Build with Parameters | Jenkins ยังไม่ได้รันสคริปต์ที่มี `parameters` | กด Build Now หนึ่งครั้งหลัง Save แล้วกลับไปหน้า job |

@@ -4,7 +4,7 @@
 
 แล็บนี้ตอบคำถามว่า **“จะติดตั้ง Jenkins บน Docker ให้พร้อมใช้งาน และพิสูจน์ได้อย่างไรว่าระบบทำงานถูกต้อง”** นักศึกษาจะยก Jenkins ขึ้นเป็นคอนเทนเนอร์ ตั้งค่าผ่าน Setup Wizard สร้าง job แรก ทดลองให้ build **ล้มเหลวโดยตั้งใจ** เพื่อฝึกอ่าน Console Output แล้วลบคอนเทนเนอร์ทิ้งเพื่อพิสูจน์ว่าประวัติ build ยังอยู่ใน volume
 
-![ภาพรวม: เบราว์เซอร์ → devtools-jenkins → คอนเทนเนอร์ jenkins + volume jenkins_home](./images/lab1_concept_architecture.png)
+![ภาพรวม: เบราว์เซอร์ → devtools → คอนเทนเนอร์ jenkins + volume jenkins_home](./images/lab1_concept_architecture.png)
 
 *ภาพที่ 1 ภาพรวมระบบของแล็บ: คอนเทนเนอร์ `jenkins` ทำหน้าที่ประมวลผล (compute) ส่วน volume `jenkins_home` เก็บสถานะทั้งหมด (state)*
 
@@ -91,7 +91,7 @@ Jenkins จึงตัดสินผลว่า `SUCCESS` เมื่อท�
 
 | องค์ประกอบ | ค่าในแล็บนี้ | หน้าที่ |
 |---|---|---|
-| คอนเทนเนอร์ชั้นนอก | `devtools-jenkins` | สภาพแวดล้อมของรายวิชา มี Docker daemon ของตัวเอง (Docker-in-Docker) |
+| คอนเทนเนอร์ชั้นนอก | `devtools` | สภาพแวดล้อมของรายวิชา มี Docker daemon ของตัวเอง (Docker-in-Docker) |
 | เครือข่าย | `cicd-net` | เครือข่ายที่คอนเทนเนอร์ของแล็บใช้ร่วมกันตั้งแต่ LAB 3 |
 | คอนเทนเนอร์ Jenkins | `jenkins` จาก `jenkins/jenkins:lts-jdk21` | ประมวลผล — รับงาน จัดคิว รันคำสั่ง |
 | named volume | `jenkins_home` → `/var/jenkins_home` | เก็บสถานะถาวร |
@@ -111,62 +111,104 @@ Jenkins จึงตัดสินผลว่า `SUCCESS` เมื่อท�
 
 ---
 
-## สภาพตั้งต้น
+## 0. เตรียมเครื่องเรียน
 
-เครื่องของนักศึกษาต้องมี **Docker**, **Git**, อินเทอร์เน็ต และพื้นที่ว่างอย่างน้อย **5 GB** โดยเริ่มจากเครื่องที่ยังไม่มีคอนเทนเนอร์ `devtools-jenkins`
-
-**ขั้นที่ 0.1 — สร้างคอนเทนเนอร์สภาพแวดล้อมของรายวิชา** (รันบนเครื่องหลัก)
+ทำบนเครื่องของเราเอง (ไม่ใช้ cloud) — เปิด container ที่ติดตั้ง Docker มาให้แล้ว
 
 ```bash
-docker run -dit --name devtools-jenkins --privileged \
-  --tmpfs /run -v jenkins-dind:/var/lib/docker \
-  -p 2222:22 -p 8080:8080 -p 8000:8000 \
+docker rm -f devtools
+docker run -dit --name devtools --privileged --tmpfs /run \
+  -p 2222:22 -p 8080:8080 -p 3000:3000 -p 8000:8000 \
   tuchsanai/devtools:2569_1
+ssh root@localhost -p 2222        # password : passwd
 ```
 
-คำสั่งนี้สร้างคอนเทนเนอร์ที่มี Docker daemon ของตัวเอง และเปิดพอร์ต `8080` (Jenkins), `8000` (เว็บแอปใน LAB 6) และ `2222` (SSH) ออกมายังเครื่องหลัก
+> 📝 **คำอธิบาย:** "เปิดเครื่องเรียน" ให้ทุกคนได้สภาพแวดล้อมเหมือนกันเป๊ะ และ**ใช้คำสั่งนี้คำสั่งเดียวตลอดทั้งชุด LAB 1–6** · `docker rm -f devtools` ลบกล่องชื่อเดียวกันตัวเก่า (เช่นที่ค้างจากแล็บ Kafka) กันชื่อซ้ำ · `-dit` รันเบื้องหลังและไม่ดับทันที · `--privileged` ให้สิทธิ์เต็มเพื่อรัน **Docker ซ้อนข้างในกล่อง** (จำเป็น — Jenkins ของแล็บนี้เป็น container ที่รันอยู่ข้างในเครื่องเรียนอีกที) ·
+> **`--tmpfs /run` คือของใหม่ของชุด Jenkins** — ทำให้ `/run` ว่างเปล่าทุกครั้งที่กล่องบูต ถ้าไม่ใส่ พอสั่ง `docker restart devtools` ไฟล์ `/var/run/docker.pid` ของรอบก่อนจะค้างอยู่ แล้ว Docker ข้างในจะไม่ยอมขึ้น (ในรอบทดสอบจริง `/var/log/dockerd.log` ในกล่องขึ้นว่า `failed to start daemon, ensure docker is not running or delete /var/run/docker.pid: process with PID 11 is still running`) · พอใส่ `--tmpfs /run` แล้ว `docker restart devtools` ได้ Docker ข้างในกลับมาใน 3 วินาที และ Jenkins ตอบหน้า login ใน 9 วินาที ·
+> `-p 2222:22` ส่ง port 2222 ของเครื่องเรา เข้า port 22 (SSH) ของกล่อง · `-p 8080:8080` คือหน้าเว็บ Jenkins · `-p 3000:3000` จองไว้ให้ร้านแมวของ LAB 3–4 · `-p 8000:8000` จองไว้ให้ webapp ของ LAB 6 — เปิดครบตั้งแต่ตอนนี้ จะได้**ไม่ต้องสร้าง devtools ใหม่อีกเลย**
+>
+> ⚠️ **`docker rm -f devtools` ทำเฉพาะตอนเริ่ม LAB 1 เท่านั้น** — หลังจากนี้ Jenkins และข้อมูลทั้งหมดของมันอยู่**ข้างใน** `devtools` ถ้าลบกล่องทิ้งก็หายหมด · ปิดเครื่องแล้วเปิดใหม่ให้ใช้ `docker start devtools` แทน
 
-**ขั้นที่ 0.2 — เข้าใช้งาน devtools**
+> ใน VS Code ใช้ **Remote-SSH** ต่อไปที่ `root@localhost:2222` แล้วทำแล็บทั้งหมดข้างใน
+
+port ของแล็บนี้ซ้อนกันสามชั้น — ดูภาพนี้ให้เข้าใจก่อน แล้วจะไม่งงตลอดทั้งชุดแล็บ :
+
+![เส้นทาง port ของแล็บ : เครื่องเรา -> devtools -> jenkins](./images/lab1_arch_ports.png)
+
+> 📝 **คำอธิบาย:** พิมพ์ `localhost:8080` ในเบราว์เซอร์ → ทะลุ `-p 8080:8080` ของกล่อง `devtools` → ทะลุ `-p 8080:8080` ของ container `jenkins` (ที่จะสร้างในการทดลองที่ 1) → ถึงหน้าเว็บ Jenkins · SSH เดินอีกทาง : `2222` ของเครื่องเรา → `22` ของ `devtools` · ส่วน `3000` กับ `8000` เปิดรอไว้เฉย ๆ ยังไม่มีใครใช้จนถึง LAB 3 และ LAB 6 ·
+> คำสั่ง `curl` ทั้งหลายในแล็บรันอยู่**ข้างในเครื่องเรียน** จึงคุย Jenkins ที่ `localhost:8080` ตรง ๆ ไม่ต้องผ่านชั้นนอก
+>
+> **ทำไม Jenkins ใช้ `8080` ตรง ๆ ไม่เลี่ยงเป็นเลขแปลก ๆ แบบ `8411` ของแล็บ Kafka?** — `8080` เป็น port มาตรฐานของ Jenkins เอง และทุกแล็บถัดไปอ้าง `http://localhost:8080` ตลอด · ถ้า port 8080 ของเครื่องเราถูกโปรแกรมอื่นจองอยู่ `docker run` จะขึ้น `Bind for 0.0.0.0:8080 failed: port is already allocated` — ให้หยุดโปรแกรมตัวนั้นก่อน (ดู [แก้ปัญหาที่พบบ่อย](#แก้ปัญหาที่พบบ่อย))
+
+ตรวจว่าพร้อมใช้งาน (คำสั่งทั้งหมดต่อจากนี้พิมพ์**ข้างในเครื่องเรียน**) :
 
 ```bash
-docker ps
-ssh root@localhost -p 2222     # รหัสผ่าน: passwd
+docker --version
+docker compose version
 ```
 
-✅ **สิ่งที่ต้องเห็น** (ตัดเฉพาะแถวที่เกี่ยวข้อง):
+✅ **Expected output** — ขอแค่มี **เลขเวอร์ชัน** ขึ้นครบสองบรรทัด ไม่ใช่ error (เลขเวอร์ชันของแต่ละคนอาจไม่ตรงกับเอกสารนี้):
 
-```text
-CONTAINER ID   IMAGE                        ...   NAMES
-...            tuchsanai/devtools:2569_1    ...   devtools-jenkins
-root@...:~#
+```
+Docker version 29.8.1, build 4a63305
+Docker Compose version v5.5.1
 ```
 
-**ขั้นที่ 0.3 — ดาวน์โหลดชุดไฟล์ของรายวิชา** (รันใน shell ของ devtools)
+> ถ้าขึ้น `Cannot connect to the Docker daemon` แปลว่ายังอยู่นอกกล่องเรียน หรือ daemon ข้างในยังตื่นไม่เสร็จ — รอสักครู่แล้วลองใหม่ (ถ้าเป็นหลัง `docker restart` และรอแล้วก็ไม่หาย ดูแถว `docker.pid` ใน [แก้ปัญหาที่พบบ่อย](#แก้ปัญหาที่พบบ่อย))
+
+---
+
+## 1. Clone โค้ดแล็บ
 
 ```bash
-if [ -d "$HOME/DevTools/.git" ]; then
-  git -C "$HOME/DevTools" pull
-else
-  git clone --depth 1 https://github.com/Tuchsanai/DevTools.git "$HOME/DevTools"
-fi
-export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"
-echo 'export COURSE_ROOT="$HOME/DevTools/04_Jenkins/001_Jenikin"' > /etc/profile.d/course.sh
-ls "$COURSE_ROOT"
+mkdir -p ~/labwork && cd ~/labwork
+git clone https://github.com/Tuchsanai/DevTools.git
+cd DevTools/04_Jenkins/001_Jenikin/001_LAB_Jenkins_On_Docker
+echo 'export COURSE_ROOT="$HOME/labwork/DevTools/04_Jenkins/001_Jenikin"' > /etc/profile.d/course.sh
+source /etc/profile.d/course.sh && ls "$COURSE_ROOT"
 ```
 
-✅ **ผลการทดลองจริง:**
+> 📝 **คำอธิบาย:** ดึงรีโพของวิชาลงมาไว้ใน `~/labwork/DevTools` — **ทำครั้งเดียว ใช้ได้ทุกแล็บของชุด Jenkins** แล้ว `cd` เข้าโฟลเดอร์ LAB 1 · บรรทัด `echo ... > /etc/profile.d/course.sh` บันทึกตัวแปร `COURSE_ROOT` ไว้ให้ทุก shell ที่เปิดใหม่รู้จักเอง (LAB 3–6 ใช้ตัวแปรนี้หาไฟล์ของแล็บ) · `source` โหลดตัวแปรเข้า shell ปัจจุบันทันที แล้ว `ls` พิสูจน์ว่าชี้ถูกโฟลเดอร์ ·
+> รีโพเต็มใหญ่ **1.3 GB** รอบทดสอบจริงใช้เวลา clone 65–80 วินาที — ถ้าเน็ตช้าใช้ `git clone --depth 1 https://github.com/Tuchsanai/DevTools.git` แทน (ดึงเฉพาะ commit ล่าสุด เหลือราว 221 MB) · ถ้าเคย clone ไว้แล้ว git จะบอกว่าโฟลเดอร์ไม่ว่าง — ให้ `git -C ~/labwork/DevTools pull` เพื่ออัปเดตแทน แล้วไปต่อที่บรรทัด `cd` ได้เลย
 
-```text
-Cloning into '/root/DevTools'...
+✅ **Expected output** — บรรทัดสุดท้ายต้องเห็นโฟลเดอร์ของ 6 แล็บ :
+
+```
+Cloning into 'DevTools'...
 001_LAB_Jenkins_On_Docker
 002_LAB_Declarative_Pipeline
 003_LAB_Docker_Build_Push
-...
+004_LAB_Pipeline_From_Git
+005_LAB_Webhook_Trigger
+006_LAB_CICD_Capstone
+Jenkins_CICD_Docker_Slides.html
+readme.md
 ```
 
-> ถ้ามี `~/DevTools` อยู่แล้ว จะเห็น `Already up to date.` แทน · หาก `docker run` แจ้งว่าชื่อซ้ำ ให้ใช้ `docker start devtools-jenkins` แล้วเข้า SSH ตามปกติ
+> ถ้าขึ้น `ls: cannot access ''` แปลว่า `COURSE_ROOT` ยังว่าง — ยังไม่ได้ `source /etc/profile.d/course.sh` หรือพิมพ์บรรทัด `echo` ผิด
 
-**ตั้งแต่นี้ไป ทุกคำสั่งในแล็บรันใน shell ของ `devtools-jenkins`**
+---
+
+## 2. สิ่งที่จะสร้างในแล็บนี้
+
+ตั้งแต่นี้ทุกคำสั่งพิมพ์ใน shell ของ `devtools` — แล็บนี้จะสร้างของ 4 อย่างข้างในเครื่องเรียน :
+
+| สิ่งที่สร้าง | ชื่อ | หน้าที่ |
+|---|---|---|
+| network | `cicd-net` | ให้ container ของแล็บถัดไปเรียกหากันด้วยชื่อได้ |
+| container | `jenkins` | ตัว Jenkins — รับงาน จัดคิว รันคำสั่ง |
+| volume | `jenkins_home` | เก็บสถานะทั้งหมดของ Jenkins (ผู้ใช้ job ประวัติ build) |
+| port | `8080` | หน้าเว็บและ REST API |
+
+หน้าตาของคำสั่งที่จะใช้ :
+
+```bash
+docker network create cicd-net
+docker run -d --name jenkins --network cicd-net --restart unless-stopped \
+  -p 8080:8080 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk21
+```
+
+> ยังไม่ต้องพิมพ์ — สองบรรทัดนี้จะรันจริงใน**การทดลองที่ 1** ซึ่งอธิบายทุก flag ไว้ครบ
 
 ---
 
@@ -201,6 +243,8 @@ Status: Downloaded newer image for jenkins/jenkins:lts-jdk21
 ```
 
 > 📝 ในการทดลองจริง การดาวน์โหลด image ครั้งแรกใช้เวลาประมาณ 15 วินาที (ขึ้นกับความเร็วเครือข่าย) **จำ 12 ตัวแรกของ ID คอนเทนเนอร์ไว้** (`76ef30adedca`) — จะได้เจออีกครั้งใน Console Output
+>
+> ID ของแต่ละเครื่องไม่ซ้ำกัน — รอบทดสอบ setup ใหม่ได้ network ID `ce6ddbb3874b...` และ container ID `2974be225c58` และ Jenkins พร้อมใน 19 วินาที · เอกสารนี้ใช้ `76ef30adedca` ตามภาพหน้าจอ ให้เทียบกับ ID ของเครื่องตัวเอง
 
 ---
 
@@ -582,7 +626,9 @@ local     jenkins_home
 | build `#1`–`#5` | `SUCCESS`, `SUCCESS`, `FAILURE`, `SUCCESS`, `SUCCESS` |
 | ขนาด `/var/jenkins_home` หลังจบแล็บ | 301 MB |
 | ลบ + สร้างคอนเทนเนอร์ใหม่ | ประวัติครบ ไม่ต้องทำ Setup Wizard ซ้ำ |
-| `docker restart devtools-jenkins` | `jenkins` กลับมา `Up` ภายใน ~1 วินาที และหน้า login พร้อมภายใน ~7 วินาที |
+| `docker restart devtools` (มี `--tmpfs /run`) | Docker ข้างในกลับมาใน 3 วินาที · `jenkins` ตอบ `/login` = `200` ใน 9 วินาที |
+| `docker stop` + `docker start devtools` | Docker ข้างในกลับมาใน 1 วินาที · `/login` = `200` ใน 7 วินาที |
+| `docker restart devtools` (ไม่มี `--tmpfs /run`) | Docker ข้างในไม่ขึ้น — `Cannot connect to the Docker daemon at unix:///var/run/docker.sock` |
 
 ## 🤔 คำถามทบทวน
 
@@ -595,21 +641,24 @@ local     jenkins_home
 
 ## กู้สถานะเมื่อปิดเครื่องหรือเริ่มระบบใหม่
 
+พิมพ์บน**เครื่องของเรา** (นอก devtools) :
+
 ```bash
-docker start devtools-jenkins
-sleep 20
-docker exec devtools-jenkins docker ps
+docker start devtools
+docker exec devtools docker ps
 ```
 
-✅ **สิ่งที่ต้องเห็น:** แถวของ `jenkins` อยู่ในสถานะ `Up` โดยไม่ต้องทำ Setup Wizard ซ้ำ
+✅ **สิ่งที่ต้องเห็น:** แถวของ `jenkins` อยู่ในสถานะ `Up` โดยไม่ต้องทำ Setup Wizard ซ้ำ — รอบทดสอบจริง `docker stop` + `docker start devtools` ได้ Docker ข้างในกลับมาใน 1 วินาที และหน้า login ของ Jenkins ตอบ `200` ใน 7 วินาที (ถ้า `docker ps` ยังว่าง รออีกไม่กี่วินาทีแล้วสั่งใหม่) · ระวัง : `Up` ยังไม่ใช่ "พร้อม" — บางรอบ Jenkins ใช้เวลาโหลดนานถึง ~4 นาที ระหว่างนั้นหน้าเว็บขึ้น **Starting Jenkins** ให้รอจน `curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/login` (ใน devtools) ได้ `200`
 
-เหตุผล: `--restart unless-stopped` สั่งให้ Jenkins กลับมาเอง, `--tmpfs /run` ป้องกัน PID เก่าของ Docker daemon ค้าง และ named volume `jenkins-dind` กับ `jenkins_home` เก็บ image และสถานะเดิมไว้ครบ (จากการทดลองจริง `docker restart` คอนเทนเนอร์ชั้นนอกแล้ว `jenkins` กลับมาใน ~1 วินาที) หากต้องสร้าง `devtools-jenkins` ใหม่ ให้ใช้คำสั่งในหัวข้อสภาพตั้งต้นเพื่อผูก volume ชุดเดิมกลับมา
+เหตุผล: `--restart unless-stopped` สั่งให้ Jenkins กลับมาเอง, `--tmpfs /run` ป้องกัน PID เก่าของ Docker daemon ค้าง และ image กับ volume `jenkins_home` ยังอยู่ข้างใน `devtools` ครบ ตราบใดที่**ไม่ลบ** `devtools` · ห้าม `docker rm devtools` หลังเริ่มแล็บแล้ว — ถ้าลบ Jenkins ข้างในจะหายไปด้วย ต้องเริ่ม LAB 1 ใหม่ตั้งแต่ส่วนที่ 0
 
 ## แก้ปัญหาที่พบบ่อย
 
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
-| `Bind for 0.0.0.0:8080 failed` | พอร์ต 8080 ของเครื่องหลักถูกใช้อยู่ | `docker ps` แล้วดูคอลัมน์ PORTS หยุดเฉพาะคอนเทนเนอร์ที่ตนเป็นเจ้าของ แล้วสร้าง devtools ใหม่ |
+| `Bind for 0.0.0.0:8080 failed: port is already allocated` | port 8080 ของเครื่องเราถูกโปรแกรมอื่นจองอยู่ | บนเครื่องเรา `docker ps` แล้วดูคอลัมน์ PORTS หยุดเฉพาะ container ที่ตนเป็นเจ้าของ (หรือปิดโปรแกรมที่ใช้ 8080) แล้วรันคำสั่งของส่วนที่ 0 ใหม่ |
+| `Conflict. The container name "/devtools" is already in use` | ข้าม `docker rm -f devtools` ในส่วนที่ 0 | ถ้าเพิ่งเริ่ม LAB 1 ให้ `docker rm -f devtools` แล้วรันใหม่ · ถ้าทำแล็บไปแล้ว **อย่าลบ** ใช้ `docker start devtools` แทน |
+| `network with name cicd-net already exists` | สร้าง network ไว้แล้วจากรอบก่อน | ข้ามบรรทัดนั้นแล้วทำต่อได้เลย |
 | เปิด `localhost:8080` แล้ว connection refused | Jenkins ยังเริ่มระบบไม่เสร็จ | รอจน `docker logs jenkins` แสดง `Jenkins is fully up and running` |
 | Wizard ช้าหรือ plugin ขึ้น Retry | เครือข่ายช้าหรือ update center ขัดข้อง | รอ 2–3 นาทีแล้วกด **Retry** ห้ามลบ volume `jenkins_home` |
 | Console Output ไม่มีผลของคำสั่ง มีแค่ `Finished: SUCCESS` | ช่อง Command ว่าง หรือยังไม่ได้กด Save | เปิด Configure ตรวจช่อง Command กด **Save** แล้ว build ใหม่ |
@@ -617,6 +666,7 @@ docker exec devtools-jenkins docker ps
 | หลังสร้างคอนเทนเนอร์ใหม่แล้วเจอหน้า Unlock อีก | ไม่ได้ผูก `-v jenkins_home:/var/jenkins_home` | ลบคอนเทนเนอร์ `jenkins` แล้วสร้างใหม่ตามการทดลองที่ 1 ให้ครบทุกตัวเลือก |
 | ลืมรหัส initial หลังตั้งผู้ดูแลแล้ว | รหัสชุดนั้นใช้ครั้งเดียว | เข้าสู่ระบบด้วย `admin` / `admin2569` |
 | API ตอบ 401 | รหัสผู้ดูแลไม่ตรง | ใช้ `-u admin:admin2569` |
-| restart แล้ว Docker daemon ใน devtools ไม่ขึ้น | ตอนสร้าง devtools ขาด `--tmpfs /run` | สร้าง devtools ใหม่ด้วยคำสั่งในหัวข้อสภาพตั้งต้น และผูก `jenkins-dind` เดิมกลับมา |
+| หลัง `docker restart devtools` ขึ้น `Cannot connect to the Docker daemon` และ `/var/log/dockerd.log` มี `delete /var/run/docker.pid` | สร้าง devtools โดยไม่มี `--tmpfs /run` — ไฟล์ `docker.pid` เก่าค้าง | กู้โดยไม่เสียข้อมูล (ทดสอบจริงแล้ว) : บนเครื่องเรา `docker exec devtools bash -c 'rm -f /var/run/docker.pid; (dockerd > /var/log/dockerd.log 2>&1 &)'` รอจน `docker exec devtools docker ps` ตอบ · ต้องทำซ้ำทุกครั้งที่ restart จนกว่าจะสร้าง devtools ใหม่ด้วยคำสั่งของส่วนที่ 0 (การสร้างใหม่ทำให้ Jenkins ข้างในหาย ต้องทำ LAB 1 ใหม่) |
+| หน้าเว็บค้างที่ **Starting Jenkins** หรือ `curl .../login` ได้ `503` หลังเปิด devtools | Jenkins กำลังโหลด — ส่วนใหญ่ไม่กี่วินาที แต่รอบทดสอบจริงหนึ่งรอบใช้ ~4 นาที | รอ อย่าลบหรือ restart ซ้ำ · ตรวจด้วย `docker logs jenkins 2>&1 \| grep "fully up" \| tail -1` ให้เวลาเป็นรอบล่าสุด |
 
 ➡️ **แล็บถัดไป:** [LAB 2 — เขียน Declarative Pipeline แรก](../002_LAB_Declarative_Pipeline/README.md)
