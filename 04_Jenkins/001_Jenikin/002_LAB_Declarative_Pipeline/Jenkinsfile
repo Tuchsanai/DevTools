@@ -16,21 +16,19 @@ pipeline {
         sleep 1
       }
     }
-
     stage('Build') {
       steps {
         echo "Building ${env.LAB_NAME}: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+        echo "APP_ENV=${params.APP_ENV}"
         sleep 1
       }
     }
-
     stage('Test') {
       steps {
         echo 'Tests passed'
         sleep 1
       }
     }
-
     stage('Deploy') {
       when {
         expression { params.APP_ENV == 'prod' }
@@ -48,6 +46,9 @@ pipeline {
     }
     success {
       echo 'Pipeline succeeded'
+    }
+    failure {
+      echo 'Pipeline failed - look for the red stage'
     }
   }
 }

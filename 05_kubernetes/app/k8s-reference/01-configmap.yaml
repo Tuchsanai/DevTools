@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: web-config
-  namespace: k8s-lab-ref
-data:
-  SITE_NAME: SkillSpace
-  API_BASE_URL: http://api:8000

@@ -1,5 +1,0 @@
-งาน: ปรับภาษาของ README ระดับชุดวิชา /root/workspace/DevTools/05_kubernetes/README.md ให้เป็นภาษาวิชาการทั้งไฟล์ (ผู้สอนสั่ง 2026-09-03) โดยไม่เปลี่ยนคำสั่ง ผลลัพธ์ ลิงก์ ตารางเวอร์ชัน และโครงสร้าง
-อ่านก่อนและทำตามทุกข้อ: /root/workspace/DevTools/05_kubernetes/.work/academic-style.md (A · B2 · C · D · E)
-วิธีทำ: อ่านทั้งไฟล์ แล้วเรียบเรียงร้อยแก้ว/หัวข้อ/ตาราง/รายการทุกส่วนเป็นภาษาวิชาการ ("แล็บ" → "ปฏิบัติการ" ยกเว้นชื่อโฟลเดอร์/ป้าย LAB NNN) · ห้าม sed ทั้งไฟล์ · บล็อกโค้ด/inline code/ลิงก์/path/รูป/จำนวนหัวข้อ คงเดิมทุกตัวอักษร · จำนวนบรรทัด ±10%
-ตรวจก่อนส่ง: python3 /root/workspace/DevTools/05_kubernetes/.work/tools/check-lang-diff.py /root/workspace/DevTools/05_kubernetes/README.md → OK · python3 /root/workspace/DevTools/05_kubernetes/.work/tools/check-register.py /root/workspace/DevTools/05_kubernetes/README.md → HARD=0 · ลิงก์ทุกอันในไฟล์ยังชี้ไฟล์ที่มีจริง (ตรวจด้วยสคริปต์)
-ห้ามแตะไฟล์อื่น · รายงานกลับ (คำตอบสุดท้ายถูกเก็บเป็นไฟล์ — ห้ามสร้างไฟล์รายงานเพิ่ม): บรรทัดก่อน→หลัง · HARD/SOFT ก่อน→หลัง · ตัวอย่างประโยคก่อน/หลัง 5 คู่ · ผลตรวจลิงก์

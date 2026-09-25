@@ -1,2 +1,0 @@
-psycopg[binary]==3.2.12
-kafka-python==3.0.10

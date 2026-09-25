@@ -1,4 +1,0 @@
-งาน: แก้หน้า "กายวิภาค YAML" ในสไลด์ครั้งที่ 1 ตาม feedback ของ yolo1 (รอบ 2) — ไฟล์ /root/workspace/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/Kubernetes_Session1_Slides.html
-อ่านก่อน: /root/workspace/DevTools/05_kubernetes/.work/yaml-slides-feedback-s1.md (feedback ของ yolo1 ยึดเป็นหลัก) · รายงาน cyolo1 รอบก่อน /root/workspace/DevTools/05_kubernetes/.work/yaml-slides-review-s1.md · แหล่งความจริง /root/workspace/DevTools/05_kubernetes/01_Session1_Kubernetes_Basics/YAML_Guide.md + ไฟล์ manifest จริง · kubectl explain ผ่าน `docker exec devtools-k8s-verify kubectl explain ...`
-ทำ: แก้ทุกข้อใน feedback (แก้ HTML โดยตรง เพิ่ม/แยกหน้าได้ ≤ 90 หน้า) → render (node /root/workspace/DevTools/05_kubernetes/.work/tools/check-slides.js <ไฟล์> --shots /root/workspace/DevTools/05_kubernetes/.work/slide-shots-s1) → เปิดดูทุกหน้าที่แก้ → check-slides.js ต้องผ่าน
-รายงานกลับ (คำตอบสุดท้ายถูกเก็บเป็นไฟล์): หน้าที่แก้ · ผล check-slides.js · ข้อที่ไม่แก้และเหตุผล

@@ -1,0 +1,10 @@
+เชื่อมต่อ ssh ไปยัง (`root@127.0.0.1:22022`, Password: `789`)
+ให้ load .env ที่ `/root/workspace/DGX_2024/.env` 
+1. ทำงานทั้งหมดบน Remote ที่ `/root/workspace/`DevTools/04\_Jenkins/001\_Jenikin  
+2. ใช้ computer use ในการจับภาพหน้าจอและการทดลอง
+
+- อ่าน README.md ใน  001_LAB_Jenkins_On_Docker  และ  002_LAB_Declarative_Pipeline
+- ต้องการปรับปรุ่ง LAB ทั้งสอง LAB ให้เข้าใจง่าย และ มีตัวอย่างการทดลอง และ ผลการทดลอง ที่น่าสนใจ ไม่ยากจนเกินไป
+- อยากให้มีการใช้ image gen ในการสร้างรูปเพื่อให้เข้าใจง่ายขึ้น
+- ทำการทดลองจริง ผ่าน devtools-lab skill containers แล้ว ใช้ผลการทดลองจริงมายืนยัน
+- ใช้ computer user ในการ เก็บภาพหน้าจอของจริง โดยเฉพาะ Jenkins 
