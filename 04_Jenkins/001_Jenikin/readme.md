@@ -18,8 +18,8 @@
 
 1. สมัคร Docker Hub และยืนยันอีเมล
 2. สร้าง Access Token สิทธิ์ **Read & Write** เท่านั้น
-3. สร้าง public repository ชื่อ `ci-demo`
-4. สร้าง public repository ชื่อ `cicd-webapp`
+3. สร้าง public repository ชื่อ `catfood-shop` (LAB 3 — ร้านอาหารแมว Next.js)
+4. สร้าง public repository ชื่อ `hello-ci` (LAB 4–5) และ `cicd-webapp` (LAB 6)
 5. เก็บ username/token ไว้ใน password manager และอย่าเขียนลงไฟล์ชุดสอน
 
 ดูขั้นตรวจความพร้อมและอาการผิดพลาดที่ [LAB 3 — Docker Build & Push](./003_LAB_Docker_Build_Push/README.md)
@@ -41,7 +41,7 @@
 ```bash
 docker run -dit --name devtools-jenkins --privileged \
   --tmpfs /run -v jenkins-dind:/var/lib/docker \
-  -p 2222:22 -p 8080:8080 -p 8000:8000 \
+  -p 2222:22 -p 8080:8080 -p 8000:8000 -p 3000:3000 \
   tuchsanai/devtools:2569_1
 docker ps
 ```
@@ -100,8 +100,8 @@ URL สำหรับผู้เรียน:
 |---|---:|---|---|---:|
 | 1 | 1 | [`001_LAB_Jenkins_On_Docker`](./001_LAB_Jenkins_On_Docker/README.md) | ยก Jenkins ใน Docker อย่างไร | 40 นาที |
 | 1 | 2 | [`002_LAB_Declarative_Pipeline`](./002_LAB_Declarative_Pipeline/README.md) | เปลี่ยนคลิกเป็นโค้ดอย่างไร | 30 นาที |
-| 1 | 3 | [`003_LAB_Docker_Build_Push`](./003_LAB_Docker_Build_Push/README.md) | ให้ Jenkins build และ push image จริงอย่างไร | 45 นาที |
-| 2 | 4 | [`004_LAB_Pipeline_From_Git`](./004_LAB_Pipeline_From_Git/README.md) | Jenkinsfile ไปอยู่ใน Git อย่างไร | 40 นาที |
+| 1 | 3 | [`003_LAB_Docker_Build_Push`](./003_LAB_Docker_Build_Push/README.md) | Build → Push → Pull → Deploy ร้านอาหารแมว (Next.js) อย่างไร | 60 นาที |
+| 2 | 4 | [`004_LAB_Pipeline_From_Git`](./004_LAB_Pipeline_From_Git/README.md) | push ครั้งเดียว ร้านอัปเดตเองจาก GitHub อย่างไร | 50 นาที |
 | 2 | 5 | [`005_LAB_Webhook_Trigger`](./005_LAB_Webhook_Trigger/README.md) | push แล้ว build ทันทีอย่างไร | 30 นาที |
 | 2 | 6 | [`006_LAB_CICD_Capstone`](./006_LAB_CICD_Capstone/README.md) | วง CI/CD เต็มหน้าตาเป็นอย่างไร | 45 นาที |
 

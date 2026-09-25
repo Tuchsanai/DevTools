@@ -8,3 +8,23 @@
 - อยากให้มีการใช้ image gen ในการสร้างรูปเพื่อให้เข้าใจง่ายขึ้น
 - ทำการทดลองจริง ผ่าน devtools-lab skill containers แล้ว ใช้ผลการทดลองจริงมายืนยัน
 - ใช้ computer user ในการ เก็บภาพหน้าจอของจริง โดยเฉพาะ Jenkins 
+
+
+เชื่อมต่อ ssh ไปยัง (`root@127.0.0.1:22022`, Password: `789`)
+ให้ load .env ที่ `/root/workspace/DGX_2024/.env` 
+1. ทำงานทั้งหมดบน Remote ที่ `/root/workspace/`DevTools/04\_Jenkins/001\_Jenikin  
+2. ใช้ computer use ในการจับภาพหน้าจอและการทดลอง
+
+
+- อ่าน README.md ใน  003_LAB_Docker_Build_Push 
+- อยากให้มีการ Build Push PULL ผ่าน docker hub และ deplay web ขายอาหารแมว โดยใช้ nextjs ออกแบบให้สวยๆ หน่อย
+- ต้องการปรับปรุ่ง LAB ทั้งสอง LAB เขียนแบบเชิงวิชาการ ให้เข้าใจง่าย มีทฤษฏีประกอบ และ มีตัวอย่างการทดลอง และ ผลการทดลอง ที่น่าสนใจ ไม่ยากจนเกินไป
+- อยากให้มีการใช้ image gen ใน cyolo1 ในการสร้างรูปเพื่อให้เข้าใจง่ายขึ้น
+- ทำการทดลองจริง ผ่าน devtools-lab skill containers แล้ว ใช้ผลการทดลองจริงมายืนยัน
+- ใช้ computer user ในการ เก็บภาพหน้าจอของจริง โดยเฉพาะ Jenkins หรือ login เข้า docker hub หรือ github จริงๆ แบบ จัดหน้าจอให้สวยงาม หรือ อื่นๆ 
+  สามารถใช้ image gen ใน cyolo1 เข้าช่วยได้ และ ให้ทำการปิดข้อมูลสำคัญ หรือให้เห็นแค่ repo หรือ image ที่เกี่ยวข้อง ถ้าต้องการ captured 
+
+
+LAB 004 นี่ ให้ทำ Repo ใหม่ โดยให้ copy code ของตัวอย่างที่เราทำไว้ไปใช้ 
+ให้ เปิด github สร้าง reop ใหม่ ให้เห็นทีละขั้นตอน ใช้ computer use ใน เครือง ปัจจุบัน
+ถ้าติดรหัส login เดียว ผม login ให้ ให้แจ่งผ่าน email : tuchsanai@gmail.com

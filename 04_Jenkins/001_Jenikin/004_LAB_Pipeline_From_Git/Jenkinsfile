@@ -2,59 +2,87 @@ pipeline {
   agent any
 
   environment {
-    IMAGE = 'hello-ci'
+    IMAGE       = 'hello-ci'      // ชื่อ image และ repository บน Docker Hub
+    DEPLOY_NAME = 'catfood-web'   // container ของร้านที่เปิดให้ลูกค้าใช้ (port 3000)
   }
 
   stages {
     stage('Check source') {
       steps {
-        echo 'ตรวจสอบ Source Code ที่ Jenkins ดึงมาจาก GitHub'
+        echo 'ตรวจ source ที่ Jenkins checkout มาจาก GitHub'
         sh '''
-          git log -1 --oneline
-          ls -la
+          git log -1 --format='commit %h : %s'
           test -f Dockerfile
-          test -f app/index.html
+          test -f package-lock.json
+          test -f data/products.js
         '''
       }
     }
 
     stage('Build image') {
       steps {
-        sh 'docker build -t "$IMAGE:$BUILD_NUMBER" .'
+        sh '''
+          VERSION=$(sed -n 's/.*"version": *"\\([^"]*\\)".*/\\1/p' package.json | head -1)
+          docker build \
+            --build-arg APP_VERSION="$VERSION" \
+            --build-arg BUILD_NUMBER="$BUILD_NUMBER" \
+            --build-arg GIT_COMMIT="$(git rev-parse --short HEAD)" \
+            --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -t "$IMAGE:$BUILD_NUMBER" .
+        '''
       }
     }
 
-    stage('Run container') {
+    stage('Test image') {
       steps {
         sh '''
-          docker run --rm "$IMAGE:$BUILD_NUMBER" \
-            sh -c "grep -Fq 'Pipeline จาก GitHub' /usr/share/nginx/html/index.html"
+          name="hello-ci-test-$BUILD_NUMBER"
+          trap 'docker rm -f "$name" >/dev/null 2>&1 || true' EXIT
+          docker run -d --name "$name" --network cicd-net "$IMAGE:$BUILD_NUMBER"
+          curl -fsS --retry 20 --retry-connrefused --retry-delay 1 \
+            "http://$name:3000/api/health" | tee health.json
+          grep -q "\\"commit\\":\\"$(git rev-parse --short HEAD)\\"" health.json
         '''
       }
     }
 
     stage('Push image') {
       steps {
-        withCredentials([
-          usernamePassword(
-            credentialsId: 'dockerhub',
-            usernameVariable: 'DOCKER_USER',
-            passwordVariable: 'DOCKER_TOKEN'
-          )
-        ]) {
-          sh '''
-            printf '%s' "$DOCKER_TOKEN" | \
-              docker login --username "$DOCKER_USER" --password-stdin
-
-            docker tag \
-              "$IMAGE:$BUILD_NUMBER" \
-              "$DOCKER_USER/hello-ci:$BUILD_NUMBER"
-
-            docker push "$DOCKER_USER/hello-ci:$BUILD_NUMBER"
-            docker logout
+        withCredentials([usernamePassword(credentialsId: 'dockerhub',
+            usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+          sh '''set +x
+            export DOCKER_CONFIG=$(mktemp -d)
+            trap 'docker logout >/dev/null 2>&1; rm -rf "$DOCKER_CONFIG"' EXIT
+            echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
+            for tag in "$BUILD_NUMBER" latest; do
+              docker tag "$IMAGE:$BUILD_NUMBER" "$DOCKER_USER/$IMAGE:$tag"
+              docker push "$DOCKER_USER/$IMAGE:$tag"
+            done
           '''
         }
       }
+    }
+
+    stage('Deploy') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub',
+            usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+          sh '''
+            docker pull "$DOCKER_USER/$IMAGE:$BUILD_NUMBER"
+            docker rm -f "$DEPLOY_NAME" 2>/dev/null || true
+            docker run -d --name "$DEPLOY_NAME" --restart unless-stopped \
+              --network cicd-net -p 3000:3000 "$DOCKER_USER/$IMAGE:$BUILD_NUMBER"
+            curl -fsS --retry 20 --retry-connrefused --retry-delay 1 \
+              "http://$DEPLOY_NAME:3000/api/health"
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "ร้านอัปเดตแล้ว: http://localhost:3000 (build #${env.BUILD_NUMBER}, commit ${env.GIT_COMMIT.substring(0, 7)})"
     }
   }
 }

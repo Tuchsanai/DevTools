@@ -1,0 +1,16 @@
+{
+  "name": "catfood-shop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Meow Mart — ร้านขายอาหารแมว (Next.js) สำหรับ LAB Jenkins CI/CD",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "16.3.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  }
+}

@@ -293,10 +293,10 @@ git pull --ff-only origin main
 git config user.name Student
 git config user.email student@example.invalid
 
-printf '\n<!-- Webhook probe %s -->\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> app/index.html
+printf '\n// Webhook probe %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> data/products.js
 printf 'GitHub webhook payload proof\n' > webhook-proof.txt
 
-git add app/index.html webhook-proof.txt
+git add data/products.js webhook-proof.txt
 git commit -m 'Verify immediate GitHub webhook build'
 time git push origin main
 ```
@@ -317,7 +317,7 @@ printf 'push delta: %s -> %s (+1)\n' "$LAB5_BEFORE_PUSH" "$LAB5_AFTER_PUSH"
 
 ไล่หลักฐานตาม SHA เดียวกัน:
 
-1. tab smee มี push payload: `ref=refs/heads/main`, `after=<SHA>`, `head_commit.id=<SHA>`, `commits[].modified` มี `app/index.html` และ `commits[].added` มี `webhook-proof.txt`
+1. tab smee มี push payload: `ref=refs/heads/main`, `after=<SHA>`, `head_commit.id=<SHA>`, `commits[].modified` มี `data/products.js` และ `commits[].added` มี `webhook-proof.txt`
 2. `docker logs smee-hello` มี POST ไป canonical target และ status 200 หลังเวลา delivery
 3. Jenkins มี build ใหม่ **หนึ่งรายการเท่านั้น** cause `GitHub push <SHA>` และจบ SUCCESS
 4. Console มี `Checking out Revision <SHA>` เดียวกับ origin/main
@@ -328,7 +328,7 @@ printf 'push delta: %s -> %s (+1)\n' "$LAB5_BEFORE_PUSH" "$LAB5_AFTER_PUSH"
 
 ![ไฟล์ที่เพิ่มและแก้ใน commits](./images/lab5_s08a_smee_commit_files.png)
 
-*ภาพที่ 8.1: ขยาย `commits[]` แล้วเห็น proof file ใน `added`; helper/API postcondition ตรวจ `modified=app/index.html` เพิ่มอีกชั้น*
+*ภาพที่ 8.1: ขยาย `commits[]` แล้วเห็น proof file ใน `added`; helper/API postcondition ตรวจ `modified=data/products.js` เพิ่มอีกชั้น*
 
 ![รายละเอียด head_commit](./images/lab5_s08b_smee_head_commit.png)
 
