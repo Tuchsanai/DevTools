@@ -31,7 +31,7 @@ LAB 3 ให้ Jenkins สร้างร้าน **Meow Mart** จากโ�
 
 | | Course Repository | Student Repository |
 |---|---|---|
-| ที่อยู่ | `$COURSE_ROOT` (ชุดสอน) | `$HOME/hello-ci` + `github.com/<GITHUB_USER>/hello-ci` |
+| ที่อยู่ | `~/labwork/DevTools/04_Jenkins/001_Jenikin` (ชุดสอน) | `~/hello-ci` + `github.com/<GITHUB_USER>/hello-ci` |
 | บทบาท | ต้นฉบับสำหรับอ่านและคัดลอก | โปรเจกต์จริงที่นักศึกษาแก้และ push |
 | Jenkins อ่านจาก | ไม่อ่าน | อ่าน `Jenkinsfile` และซอร์สทุก build |
 
@@ -93,9 +93,9 @@ GitHub commit ca0726c → Jenkins build #2 → image <DOCKER_USER>/hello-ci:2 �
 
 | ส่วน | ค่าที่ใช้ |
 |---|---|
-| ซอร์สร้าน (ต้นฉบับ) | `$COURSE_ROOT/003_LAB_Docker_Build_Push/catfood-shop` |
-| Pipeline (ต้นฉบับ) | `$COURSE_ROOT/004_LAB_Pipeline_From_Git/Jenkinsfile` |
-| Student project | `$HOME/hello-ci` |
+| ซอร์สร้าน (ต้นฉบับ) | `~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop` |
+| Pipeline (ต้นฉบับ) | `~/labwork/DevTools/04_Jenkins/001_Jenikin/004_LAB_Pipeline_From_Git/Jenkinsfile` |
+| Student project | `~/hello-ci` |
 | GitHub repository | `https://github.com/<GITHUB_USER>/hello-ci` — **Public**, สร้างใหม่ ไม่มี README |
 | Jenkins job | `hello-ci-pipeline` — Pipeline script from SCM, `*/main`, `Jenkinsfile` |
 | Docker Hub | `<DOCKER_USER>/hello-ci` — tag `<BUILD_NUMBER>` และ `latest` |
@@ -104,16 +104,11 @@ GitHub commit ca0726c → Jenkins build #2 → image <DOCKER_USER>/hello-ci:2 �
 
 ## สภาพตั้งต้น
 
-ต้องจบ LAB 3: Jenkins ใช้ `jenkins-docker:2569`, mount Docker socket, มี credential `dockerhub` และ `bash "$COURSE_ROOT/003_LAB_Docker_Build_Push/check.sh"` ผ่าน
+ต้องจบ LAB 3: Jenkins ใช้ `jenkins-docker:2569`, mount Docker socket, มี credential `dockerhub` และ `bash ~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/check.sh` ผ่าน
 
 > **Prerequisite GitHub:** บัญชี GitHub ที่ยืนยันอีเมลแล้ว และ **Personal access token (classic)** ที่มี scope `public_repo` (LAB 5 ต้องเพิ่ม `admin:repo_hook`) เก็บ token ไว้ใน password manager ห้ามเขียนลงไฟล์ใด ๆ
 
-```bash
-COURSE_ROOT="$HOME/labwork/DevTools/04_Jenkins/001_Jenikin"
-APP_SRC="$COURSE_ROOT/003_LAB_Docker_Build_Push/catfood-shop"
-LAB_SRC="$COURSE_ROOT/004_LAB_Pipeline_From_Git"
-PROJECT_DIR="$HOME/hello-ci"
-```
+ทุกคำสั่งในแล็บนี้อ้าง path เต็มตามตาราง **สัญญาของแล็บ** ด้านบนตรง ๆ ไม่ต้องตั้งตัวแปรใด ๆ
 
 ---
 
@@ -124,10 +119,10 @@ PROJECT_DIR="$HOME/hello-ci"
 **คำถาม:** Student Project ต้องมีอะไรบ้างจึงจะให้ Jenkins build ได้โดยไม่พึ่งไฟล์นอก repository?
 
 ```bash
-rm -rf "$PROJECT_DIR" && mkdir -p "$PROJECT_DIR"
-cp -r "$APP_SRC/." "$PROJECT_DIR/"          # โค้ดร้าน + Dockerfile + .dockerignore + .gitignore
-cp "$LAB_SRC/Jenkinsfile" "$PROJECT_DIR/"   # Pipeline ที่จะอยู่ใน repository
-cd "$PROJECT_DIR" && ls -A && find . -type f | wc -l
+rm -rf ~/hello-ci && mkdir -p ~/hello-ci
+cp -r ~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop/. ~/hello-ci/          # โค้ดร้าน + Dockerfile + .dockerignore + .gitignore
+cp ~/labwork/DevTools/04_Jenkins/001_Jenikin/004_LAB_Pipeline_From_Git/Jenkinsfile ~/hello-ci/   # Pipeline ที่จะอยู่ใน repository
+cd ~/hello-ci && ls -A && find . -type f | wc -l
 ```
 
 ✅ **ผลการทดลองจริง:**
@@ -153,7 +148,7 @@ public
 **คำถาม:** commit แรกบันทึกไฟล์ครบและเป็น Git repository ที่แยกจากชุดสอนหรือไม่?
 
 ```bash
-cd "$PROJECT_DIR"
+cd ~/hello-ci
 git init -q -b main
 git config user.name 'Student'
 git config user.email 'student@example.invalid'
@@ -207,7 +202,7 @@ git log --oneline --stat -1 | tail -3
 7. เพิ่ม remote และ push ใน devtools:
 
 ```bash
-cd "$PROJECT_DIR"
+cd ~/hello-ci
 git remote add origin "https://github.com/<GITHUB_USER>/hello-ci.git"
 git push -u origin main
 ```
@@ -382,7 +377,7 @@ No changes
 **คำถาม:** ถ้าร้านจัดโปรลดราคาแซลมอนจาก ฿459 เป็น ฿399 และออกเวอร์ชัน 1.1.0 ต้องทำอะไรบ้าง?
 
 ```bash
-cd "$PROJECT_DIR"
+cd ~/hello-ci
 sed -i "s/    price: 459,/    price: 399,/; s/    badge: 'ขายดี',/    badge: 'ลดราคา',/" data/products.js
 sed -i 's/"version": "1.0.0"/"version": "1.1.0"/' package.json
 git --no-pager diff -U0 | grep -E '^[-+] '
@@ -502,7 +497,7 @@ Changes found
 ตรวจสถานะจบแล็บ (ไม่ต้องส่ง token ให้ตัวตรวจ):
 
 ```bash
-cd "$LAB_SRC"
+cd ~/labwork/DevTools/04_Jenkins/001_Jenikin/004_LAB_Pipeline_From_Git
 GITHUB_USER='<GITHUB_USER>' DOCKER_USER='<DOCKER_USER>' bash check.sh
 ```
 

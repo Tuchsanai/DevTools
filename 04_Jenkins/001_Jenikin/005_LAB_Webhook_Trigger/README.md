@@ -62,7 +62,7 @@ export GITHUB_USER='<GITHUB_USER>'
 export GITHUB_TOKEN='<GITHUB_TOKEN>'
 
 (
-  cd "$COURSE_ROOT"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
   bash tools/bootstrap/up_to_lab4.sh
 )
 ```
@@ -259,7 +259,7 @@ ping ไม่มี `ref=refs/heads/main` จึงผ่าน relay ด้ว
 >
 > ```bash
 > (
->   cd "$COURSE_ROOT"
+>   cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
 >   /opt/venv/bin/python tools/ui/lab5_payload.py --action add-hook
 > )
 > ```
@@ -356,7 +356,7 @@ Finished: SUCCESS
 
 ```bash
 (
-  cd "$COURSE_ROOT/005_LAB_Webhook_Trigger"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin/005_LAB_Webhook_Trigger
   bash check.sh
 )
 ```

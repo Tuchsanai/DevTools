@@ -164,11 +164,10 @@ Docker Compose version v5.5.1
 mkdir -p ~/labwork && cd ~/labwork
 git clone https://github.com/Tuchsanai/DevTools.git
 cd DevTools/04_Jenkins/001_Jenikin/001_LAB_Jenkins_On_Docker
-echo 'export COURSE_ROOT="$HOME/labwork/DevTools/04_Jenkins/001_Jenikin"' > /etc/profile.d/course.sh
-source /etc/profile.d/course.sh && ls "$COURSE_ROOT"
+ls ~/labwork/DevTools/04_Jenkins/001_Jenikin
 ```
 
-> 📝 **คำอธิบาย:** ดึงรีโพของวิชาลงมาไว้ใน `~/labwork/DevTools` — **ทำครั้งเดียว ใช้ได้ทุกแล็บของชุด Jenkins** แล้ว `cd` เข้าโฟลเดอร์ LAB 1 · บรรทัด `echo ... > /etc/profile.d/course.sh` บันทึกตัวแปร `COURSE_ROOT` ไว้ให้ทุก shell ที่เปิดใหม่รู้จักเอง (LAB 3–6 ใช้ตัวแปรนี้หาไฟล์ของแล็บ) · `source` โหลดตัวแปรเข้า shell ปัจจุบันทันที แล้ว `ls` พิสูจน์ว่าชี้ถูกโฟลเดอร์ ·
+> 📝 **คำอธิบาย:** ดึงรีโพของวิชาลงมาไว้ใน `~/labwork/DevTools` — **ทำครั้งเดียว ใช้ได้ทุกแล็บของชุด Jenkins** แล้ว `cd` เข้าโฟลเดอร์ LAB 1 · `ls` ยืนยันว่าชุดแล็บอยู่ที่ `~/labwork/DevTools/04_Jenkins/001_Jenikin` — **ทุกแล็บในชุดนี้อ้าง path เต็มนี้ตรง ๆ** (เช่น LAB 3 อยู่ที่ `~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push`) จึงไม่ต้องตั้งตัวแปรใด ๆ ·
 > รีโพเต็มใหญ่ **1.3 GB** รอบทดสอบจริงใช้เวลา clone 65–80 วินาที — ถ้าเน็ตช้าใช้ `git clone --depth 1 https://github.com/Tuchsanai/DevTools.git` แทน (ดึงเฉพาะ commit ล่าสุด เหลือราว 221 MB) · ถ้าเคย clone ไว้แล้ว git จะบอกว่าโฟลเดอร์ไม่ว่าง — ให้ `git -C ~/labwork/DevTools pull` เพื่ออัปเดตแทน แล้วไปต่อที่บรรทัด `cd` ได้เลย
 
 ✅ **Expected output** — บรรทัดสุดท้ายต้องเห็นโฟลเดอร์ของ 6 แล็บ :
@@ -185,7 +184,7 @@ Jenkins_CICD_Docker_Slides.html
 readme.md
 ```
 
-> ถ้าขึ้น `ls: cannot access ''` แปลว่า `COURSE_ROOT` ยังว่าง — ยังไม่ได้ `source /etc/profile.d/course.sh` หรือพิมพ์บรรทัด `echo` ผิด
+> ถ้าขึ้น `No such file or directory` แปลว่า clone ไม่สำเร็จ หรือ clone ไว้คนละโฟลเดอร์ — ตรวจด้วย `ls ~/labwork` ว่ามีโฟลเดอร์ `DevTools` หรือไม่
 
 ---
 

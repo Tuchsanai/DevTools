@@ -184,11 +184,9 @@ catfood-shop/
 
 > **Prerequisite Docker Hub:** สมัครบัญชี ยืนยันอีเมล และสร้าง **Access Token สิทธิ์ Read & Write** แนะนำให้สร้าง repository `catfood-shop` แบบ **Public** ไว้ก่อน (ถ้าไม่สร้าง Docker Hub จะสร้างให้อัตโนมัติตอน push ตามค่า Default privacy ของบัญชี)
 
-ใน shell ของ devtools กำหนดตัวแปรที่ใช้ทั้งแล็บ:
+ไฟล์ของแล็บนี้อยู่ที่ `~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push` ใน shell ของ devtools ตรวจว่า Jenkins จาก LAB 2 ยังทำงาน:
 
 ```bash
-COURSE_ROOT="$HOME/labwork/DevTools/04_Jenkins/001_Jenikin"
-LAB="$COURSE_ROOT/003_LAB_Docker_Build_Push"
 docker ps --format '{{.Names}}\t{{.Status}}'
 ```
 
@@ -225,7 +223,7 @@ exit=127
 **คำถาม:** image `jenkins-docker:2569` ที่สร้างจาก `Dockerfile.jenkins` มี Docker CLI หรือไม่?
 
 ```bash
-cd "$LAB"
+cd ~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push
 docker build -t jenkins-docker:2569 -f Dockerfile.jenkins .
 docker run --rm --entrypoint docker jenkins-docker:2569 --version
 ```
@@ -249,7 +247,7 @@ docker run -d --name jenkins --restart unless-stopped --network cicd-net \
   -e JAVA_OPTS=-Djenkins.install.runSetupWizard=false \
   -v jenkins_home:/var/jenkins_home \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v "$LAB/catfood-shop:/lab/catfood-shop:ro" \
+  -v ~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop:/lab/catfood-shop:ro \
   jenkins-docker:2569
 until curl -fsS -o /dev/null http://localhost:8080/login; do sleep 2; done
 curl -fsS -u admin:admin2569 'http://localhost:8080/job/first-pipeline/api/json?tree=name'; echo
@@ -281,7 +279,7 @@ public
 **คำถาม:** image ของร้านที่ build จาก `Dockerfile` มีขนาดเท่าไร layer ใดกินพื้นที่มากที่สุด และ build ซ้ำโดยไม่แก้อะไรใช้เวลาเท่าไร?
 
 ```bash
-cd "$LAB/catfood-shop"
+cd ~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop
 time docker build -t catfood-shop:local .
 docker image ls catfood-shop
 docker history --format 'table {{.CreatedBy}}\t{{.Size}}' catfood-shop:local | head -14
@@ -402,10 +400,10 @@ curl -gfsS -u admin:admin2569 \
 
 *ภาพที่ 11 สร้าง job ชนิด Pipeline ชื่อ `docker-build-push`*
 
-2. ในส่วน **Pipeline** คง Definition เป็น **Pipeline script** แล้ววางเนื้อหาของ `$LAB/Jenkinsfile` ทั้งไฟล์ → **Save**
+2. ในส่วน **Pipeline** คง Definition เป็น **Pipeline script** แล้ววางเนื้อหาของ `~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile` ทั้งไฟล์ → **Save**
 
 ```bash
-cat "$LAB/Jenkinsfile"
+cat ~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile
 ```
 
 ![Pipeline script](./images/lab3_s05b_pipeline_script.png)
@@ -690,7 +688,7 @@ docker pull docker.io/<DOCKER_USER>/catfood-shop:latest
 docker rm -f catfood-web
 docker run -d --name catfood-web --restart unless-stopped --network cicd-net \
   -p 3000:3000 docker.io/<DOCKER_USER>/catfood-shop:latest
-cd "$LAB" && DOCKER_USER='<DOCKER_USER>' bash check.sh
+cd ~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push && DOCKER_USER='<DOCKER_USER>' bash check.sh
 ```
 
 ✅ **ผลการทดลองจริง:**
@@ -740,7 +738,7 @@ cd "$LAB" && DOCKER_USER='<DOCKER_USER>' bash check.sh
 | `docker: not found` ใน Pipeline | Jenkins ยังใช้ image เดิม | `docker inspect -f '{{.Config.Image}}' jenkins` แล้วทำการทดลองที่ 2–3 ใหม่ |
 | `Bind for 0.0.0.0:3000 failed` ตอน Pull & Deploy หลังการทดลองที่ 4 | ลืมลบ `catfood-local` ที่ยังจอง port 3000 | `docker rm -f catfood-local` แล้วสั่ง build ใหม่ |
 | `Build image` ช้า / ไม่มี `Using cache` ใน build แรกของ Jenkins | Jenkins ใช้ legacy builder ซึ่งมี cache แยกจาก BuildKit ที่ใช้ในการทดลองที่ 4 | เป็นเรื่องปกติ ตั้งแต่ build #2 เป็นต้นไปจะใช้ cache (การทดลองที่ 10) |
-| `cp: cannot stat '/lab/catfood-shop'` | ไม่ได้ mount source ตอนสร้าง `jenkins` | สร้าง container ใหม่ด้วยคำสั่งในการทดลองที่ 3 (ต้องมี `-v "$LAB/catfood-shop:/lab/catfood-shop:ro"`) |
+| `cp: cannot stat '/lab/catfood-shop'` | ไม่ได้ mount source ตอนสร้าง `jenkins` | สร้าง container ใหม่ด้วยคำสั่งในการทดลองที่ 3 (ต้องมี `-v ~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop:/lab/catfood-shop:ro`) |
 | เว็บขึ้น `vdev` แทนเวอร์ชัน | Jenkinsfile ไม่มี `VERSION = "${params.APP_VERSION}"` | ใช้ Jenkinsfile ของแล็บ build แรกของ job ยังไม่มี `$APP_VERSION` ใน shell |
 | `401 Unauthorized` / `denied: requested access` | token ผิด หมดอายุ ไม่มีสิทธิ์ Write หรือ username ไม่ตรง | สร้าง token Read & Write ใหม่แล้วแก้ credential `dockerhub` |
 | `429 Too Many Requests` | Docker Hub rate limit | login ก่อน build, รอ แล้วลดความถี่ในการสั่ง build |

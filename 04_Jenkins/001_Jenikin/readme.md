@@ -54,8 +54,7 @@ ssh root@localhost -p 2222        # password : passwd
 mkdir -p ~/labwork && cd ~/labwork
 git clone https://github.com/Tuchsanai/DevTools.git
 cd DevTools/04_Jenkins/001_Jenikin/001_LAB_Jenkins_On_Docker
-echo 'export COURSE_ROOT="$HOME/labwork/DevTools/04_Jenkins/001_Jenikin"' > /etc/profile.d/course.sh
-source /etc/profile.d/course.sh && ls "$COURSE_ROOT"
+ls ~/labwork/DevTools/04_Jenkins/001_Jenikin
 ```
 
 ✅ **สิ่งที่ต้องเห็น** (รันครั้งแรก):
@@ -131,7 +130,7 @@ root@...:~#
 
 ```bash
 (
-  cd "$COURSE_ROOT"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
   bash tools/bootstrap/up_to_lab2.sh
 )
 ```
@@ -149,7 +148,7 @@ root@...:~#
 export DOCKER_USER='<DOCKER_USER>'
 export DOCKER_TOKEN='<DOCKER_TOKEN>'
 (
-  cd "$COURSE_ROOT"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
   bash tools/bootstrap/up_to_lab3.sh
 )
 unset DOCKER_TOKEN
@@ -172,7 +171,7 @@ read -rsp 'GitHub PAT: ' GITHUB_TOKEN
 printf '\n'
 export GITHUB_TOKEN
 (
-  cd "$COURSE_ROOT"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
   bash tools/bootstrap/up_to_lab4.sh
 )
 unset DOCKER_TOKEN GITHUB_TOKEN

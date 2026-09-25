@@ -72,7 +72,7 @@ export GITHUB_USER='<GITHUB_USER>'
 export GITHUB_TOKEN='<GITHUB_TOKEN>'
 
 (
-  cd "$COURSE_ROOT"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
   bash tools/bootstrap/up_to_lab5.sh
 )
 ```
@@ -105,7 +105,7 @@ docker manifest inspect "docker.io/$DOCKER_USER/cicd-webapp:latest"
 
 ```bash
 (
-  cd "$COURSE_ROOT"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
   python3 tools/ui/lab6_github_repo.py --action create
 )
 ```
@@ -125,10 +125,10 @@ Pipeline from SCM ต้องอ่าน application, tests, Dockerfile แล
 
 ```bash
 mkdir -p "$HOME/webapp"
-cp -r "$COURSE_ROOT/006_LAB_CICD_Capstone/app" "$HOME/webapp/"
-cp "$COURSE_ROOT/006_LAB_CICD_Capstone/Dockerfile" "$HOME/webapp/"
-cp "$COURSE_ROOT/006_LAB_CICD_Capstone/Jenkinsfile" "$HOME/webapp/"
-cp "$COURSE_ROOT/006_LAB_CICD_Capstone/.course-cicd2569" "$HOME/webapp/"
+cp -r ~/labwork/DevTools/04_Jenkins/001_Jenikin/006_LAB_CICD_Capstone/app "$HOME/webapp/"
+cp ~/labwork/DevTools/04_Jenkins/001_Jenikin/006_LAB_CICD_Capstone/Dockerfile "$HOME/webapp/"
+cp ~/labwork/DevTools/04_Jenkins/001_Jenikin/006_LAB_CICD_Capstone/Jenkinsfile "$HOME/webapp/"
+cp ~/labwork/DevTools/04_Jenkins/001_Jenikin/006_LAB_CICD_Capstone/.course-cicd2569 "$HOME/webapp/"
 
 cd "$HOME/webapp"
 git init -b main
@@ -158,7 +158,7 @@ branch 'main' set up to track 'origin/main'.
 
 ```bash
 (
-  cd "$COURSE_ROOT"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
   python3 tools/ui/lab6_github_repo.py --action files
 )
 ```
@@ -238,7 +238,7 @@ Connected
 
 ```bash
 (
-  cd "$COURSE_ROOT"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
   JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab6_job.py
 )
 ```
@@ -281,7 +281,7 @@ Topology นี้เว้น Secret ว่าง เพราะ smee-client �
 
 ```bash
 (
-  cd "$COURSE_ROOT"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
   python3 tools/ui/lab6_github_repo.py --action hook
 )
 WEBAPP_AFTER_PING="$(curl -gfsS -u admin:admin2569 'http://localhost:8080/job/webapp-deploy/lastBuild/api/json?tree=number' | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
@@ -316,7 +316,7 @@ time git push origin main
 
 ```bash
 (
-  cd "$COURSE_ROOT"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
   JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab6_pipeline.py
 )
 ```
@@ -366,7 +366,7 @@ curl -fsS http://localhost:8000/api/info
 
 ```bash
 (
-  cd "$COURSE_ROOT"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
   WEBAPP_BASE_URL=http://localhost:8000 EXPECTED_VERSION=1.0.0 EXPECTED_THEME=blue python3 tools/ui/lab6_app.py
 )
 ```
@@ -446,7 +446,7 @@ time git push origin main
 
 ```bash
 (
-  cd "$COURSE_ROOT"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
   WEBAPP_BASE_URL=http://localhost:8000 EXPECTED_VERSION=2.0.0 EXPECTED_THEME=green python3 tools/ui/lab6_app.py
 )
 ```
@@ -465,7 +465,7 @@ time git push origin main
 
 ```bash
 (
-  cd "$COURSE_ROOT"
+  cd ~/labwork/DevTools/04_Jenkins/001_Jenikin
   DOCKER_USER='<DOCKER_USER>' JENKINS_BASE_URL=http://localhost:8080 python3 tools/ui/lab6_hub_tags.py
 )
 ```
@@ -481,7 +481,7 @@ export GITHUB_USER='<GITHUB_USER>'
 export GITHUB_TOKEN='<GITHUB_TOKEN>'
 export DOCKER_USER='<DOCKER_USER>'
 
-cd "$COURSE_ROOT/006_LAB_CICD_Capstone"
+cd ~/labwork/DevTools/04_Jenkins/001_Jenikin/006_LAB_CICD_Capstone
 bash check.sh
 ```
 
