@@ -126,7 +126,6 @@ PROJECT_DIR="$HOME/hello-ci"
 ```bash
 rm -rf "$PROJECT_DIR" && mkdir -p "$PROJECT_DIR"
 cp -r "$APP_SRC/." "$PROJECT_DIR/"          # โค้ดร้าน + Dockerfile + .dockerignore + .gitignore
-rm -f "$PROJECT_DIR/Dockerfile.single"      # ไฟล์ทดลองของ LAB 3 ไม่ต้องใช้
 cp "$LAB_SRC/Jenkinsfile" "$PROJECT_DIR/"   # Pipeline ที่จะอยู่ใน repository
 cd "$PROJECT_DIR" && ls -A && find . -type f | wc -l
 ```

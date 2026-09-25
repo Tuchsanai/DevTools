@@ -1,28 +1,19 @@
-# ---------- Stage 1: deps — ติดตั้ง dependency ตาม package-lock.json ----------
-FROM node:22-alpine AS deps
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund
-
-# ---------- Stage 2: build — คอมไพล์ Next.js เป็น standalone server ----------
-FROM node:22-alpine AS build
+# Dockerfile แบบ single-stage — ทุกขั้นอยู่ใน image เดียว อ่านจากบนลงล่างได้ทันที
+FROM node:22-alpine
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
-COPY --from=deps /app/node_modules ./node_modules
+
+# ① ติดตั้ง dependency ก่อน: ถ้า package*.json ไม่เปลี่ยน ขั้นนี้ใช้ cache ได้เลย (ล้าง cache ของ npm ทิ้งในขั้นเดียวกัน)
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund && npm cache clean --force
+
+# ② คัดลอกซอร์สแล้ว build (ลบ cache ของการ build ทิ้ง ไม่ต้องใช้ตอนรัน)
 COPY . .
-RUN npm run build
+RUN npm run build && rm -rf .next/cache
 
-# ---------- Stage 3: runtime — เก็บเฉพาะไฟล์ที่ต้องใช้ตอนรัน ----------
-FROM node:22-alpine AS runtime
-WORKDIR /app
+# ③ ตั้งค่าตอนรัน
 ENV NODE_ENV=production \
-    NEXT_TELEMETRY_DISABLED=1 \
-    PORT=3000 \
-    HOSTNAME=0.0.0.0
-
-COPY --from=build --chown=node:node /app/public ./public
-COPY --from=build --chown=node:node /app/.next/standalone ./
-COPY --from=build --chown=node:node /app/.next/static ./.next/static
+    PORT=3000
 
 # ข้อมูล build ประกาศไว้ท้ายสุด: เปลี่ยนเลข build ได้โดยไม่ทำให้ cache ของ npm ci / next build หาย
 ARG APP_VERSION=dev
@@ -34,8 +25,7 @@ ENV APP_VERSION=$APP_VERSION \
     GIT_COMMIT=$GIT_COMMIT \
     BUILD_TIME=$BUILD_TIME
 
-USER node
 EXPOSE 3000
 HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
   CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1
-CMD ["node", "server.js"]
+CMD ["npm", "start"]

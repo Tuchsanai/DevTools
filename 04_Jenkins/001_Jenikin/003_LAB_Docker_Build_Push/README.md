@@ -29,29 +29,70 @@
 
 วงจรที่แล็บนี้ฝึกคือ `docker build` → `docker push` → `docker pull` → `docker run` ข้อดีสำคัญคือ **build ครั้งเดียว แล้วรันได้ทุกที่ (build once, run anywhere)** เครื่องปลายทางไม่ต้องมี Node.js, ไม่ต้อง `npm install` และไม่ต้องมีซอร์สโค้ด ขอเพียงมี Docker และเข้าถึง registry ได้
 
-### 2. Layer และ Multi-stage build
+### 2. Dockerfile แบบ single-stage: อ่านทีละบรรทัด
 
-image ประกอบด้วย **layer** ซ้อนกัน คำสั่ง `FROM`, `COPY`, `RUN` แต่ละบรรทัดใน Dockerfile สร้าง layer ใหม่ ถ้าเรา build แอป Next.js ใน stage เดียว image จะพกทุกอย่างที่ใช้ตอน build ไปด้วย ทั้ง compiler, devDependencies และ cache ของการ build ทั้งที่ตอนรันจริงไม่ได้ใช้
-
-**Multi-stage build** แบ่ง Dockerfile ออกเป็นหลาย stage แล้วคัดลอกเฉพาะผลลัพธ์ที่จำเป็นไปยัง stage สุดท้าย แล็บนี้ใช้ 3 stage:
+image ประกอบด้วย **layer** ซ้อนกัน คำสั่ง `FROM`, `COPY`, `RUN` แต่ละบรรทัดใน Dockerfile สร้าง layer ใหม่ที่มีไฟล์ ส่วนคำสั่งอย่าง `ENV`, `ARG`, `EXPOSE`, `CMD` บันทึกเพียงค่าตั้งค่า (metadata) ขนาด 0 B แล็บนี้ใช้ Dockerfile แบบ **single-stage** คือมี `FROM` เพียงบรรทัดเดียว ทุกขั้นจึงอยู่ใน image เดียวและอ่านจากบนลงล่างได้ทันที (ตัดคอมเมนต์ออก):
 
 ```dockerfile
-FROM node:22-alpine AS deps      # ① ติดตั้ง dependency ตาม package-lock.json
-FROM node:22-alpine AS build     # ② next build → ได้ .next/standalone
-FROM node:22-alpine AS runtime   # ③ คัดลอกเฉพาะ standalone + static + public
+FROM node:22-alpine
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund && npm cache clean --force
+
+COPY . .
+RUN npm run build && rm -rf .next/cache
+
+ENV NODE_ENV=production \
+    PORT=3000
+
+ARG APP_VERSION=dev
+ARG BUILD_NUMBER=local
+ARG GIT_COMMIT=none
+ARG BUILD_TIME=unknown
+ENV APP_VERSION=$APP_VERSION \
+    BUILD_NUMBER=$BUILD_NUMBER \
+    GIT_COMMIT=$GIT_COMMIT \
+    BUILD_TIME=$BUILD_TIME
+
+EXPOSE 3000
+HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1
+CMD ["npm", "start"]
 ```
 
-`next.config.mjs` ตั้ง `output: 'standalone'` ให้ Next.js รวบรวมเฉพาะไฟล์ที่ server ต้องใช้ไว้ในโฟลเดอร์ `.next/standalone` จึงไม่ต้องคัดลอก `node_modules` ทั้งหมด (จะวัดผลจริงในการทดลองที่ 4)
+| บรรทัด | ทำอะไร | ขนาด layer (วัดจริงในการทดลองที่ 4) |
+|---|---|---:|
+| `FROM node:22-alpine` | ใช้ Node.js 22 บน Alpine Linux เป็นฐาน | ≈ 177 MB |
+| `WORKDIR /app` · `ENV NEXT_TELEMETRY_DISABLED=1` | กำหนดโฟลเดอร์ทำงาน และปิดการส่ง telemetry ของ Next.js | 8.19 kB · 0 B |
+| `COPY package.json package-lock.json ./` | คัดลอกเฉพาะรายการ dependency | 45.1 kB |
+| `RUN npm ci ... && npm cache clean --force` | ติดตั้ง dependency ตาม lock file แล้วลบ cache ของ npm | **357 MB** |
+| `COPY . .` | คัดลอกซอร์สโค้ดของร้าน | 422 kB |
+| `RUN npm run build && rm -rf .next/cache` | `next build` แล้วลบ cache ของการ build | 5.62 MB |
+| `ENV NODE_ENV=production PORT=3000` | ค่าตั้งค่าตอนรัน | 0 B |
+| `ARG` ×4 + `ENV APP_VERSION=...` | รับข้อมูล build จาก Jenkins แล้วเก็บเป็น env ของ image | 0 B |
+| `EXPOSE` · `HEALTHCHECK` · `CMD ["npm", "start"]` | ประกาศ port, วิธีตรวจสุขภาพ และคำสั่งเริ่ม `next start` | 0 B |
 
-![Multi-stage build](./images/lab3_theory_multistage.png)
+หลักการสำคัญที่ซ่อนอยู่ใน Dockerfile นี้มีสามข้อ
 
-*ภาพที่ 3 Multi-stage build: ship เฉพาะสิ่งที่ต้องใช้ตอนรัน ตัวเลขในภาพมาจากการวัดจริงในการทดลองที่ 4*
+1. **`FROM` หนึ่งบรรทัด = image หนึ่งตัว** ทุกอย่างที่ติดตั้งหรือสร้างในขั้นใดก็ตามจะติดอยู่ใน image สุดท้าย
+2. **คัดลอก dependency ก่อนซอร์สโค้ด** `npm ci` คือ layer ที่ใหญ่และช้าที่สุด การ `COPY package*.json` แยกไว้ก่อน `COPY . .` ทำให้การแก้โค้ดของร้านไม่ทำให้ layer นี้ต้องสร้างใหม่ ขั้น `npm ci` จึงใช้ cache ได้ตราบที่ `package-lock.json` ไม่เปลี่ยน
+3. **ลบของที่ไม่ใช้ใน `RUN` เดียวกัน** `npm cache clean --force` และ `rm -rf .next/cache` ต้องต่อท้ายด้วย `&&` ในบรรทัดเดียวกับคำสั่งที่สร้างไฟล์นั้น เพราะ layer ที่สร้างเสร็จแล้วแก้ไม่ได้ การเขียน `RUN rm ...` เป็นบรรทัดใหม่เพียงสร้าง layer ที่ “ซ่อน” ไฟล์ไว้ image ไม่ได้เล็กลง (การทดลองที่ 4 วัดผลต่างจริงให้ดู)
+
+ส่วน `ARG`/`ENV` ที่เปลี่ยนทุก build ถูกวางไว้ **ท้ายสุด** ด้วยเหตุผลเรื่อง layer cache ในหัวข้อถัดไป
+
+![Dockerfile แบบ single-stage](./images/lab3_theory_single_stage.png)
+
+*ภาพที่ 3 Dockerfile แบบ single-stage: ทุกขั้นอยู่ใน image เดียว layer ที่ใหญ่ที่สุดคือ `npm ci` ตัวเลขในภาพมาจากการวัดจริงในการทดลองที่ 4*
+
+> 📝 image ที่ใช้ใน production มักถูกลดขนาดลงอีกด้วยเทคนิคขั้นสูงกว่านี้ ซึ่งอยู่นอกขอบเขตของแล็บนี้
 
 ### 3. Layer cache: ทำไม build ครั้งที่สองเร็วขึ้น
 
 Docker จำผลของแต่ละ layer ไว้ ถ้าคำสั่งและไฟล์ที่ป้อนให้ layer นั้นไม่เปลี่ยน ครั้งถัดไปจะใช้ของเดิม (`Using cache`) แต่เมื่อ layer ใดเปลี่ยน layer ที่อยู่ถัดลงไปทั้งหมดต้องสร้างใหม่ หลักการเขียน Dockerfile จึงเป็น **“เรียงจากสิ่งที่เปลี่ยนน้อยไปหาสิ่งที่เปลี่ยนบ่อย”**
 
-Dockerfile ของร้านจึงวางข้อมูลที่เปลี่ยนทุก build (`APP_VERSION`, `BUILD_NUMBER`, `BUILD_TIME`) ไว้ **ท้ายสุด** ด้วย `ARG` + `ENV` ผลคือเมื่อออกเวอร์ชันใหม่ ขั้น `npm ci` และ `next build` ใช้ cache ได้ทั้งหมด และตอน push Docker Hub ก็ตอบว่า `Layer already exists` แทบทุก layer (พิสูจน์ในการทดลองที่ 10)
+Dockerfile ของร้านจึงวางข้อมูลที่เปลี่ยนทุก build (`APP_VERSION`, `BUILD_NUMBER`, `BUILD_TIME`) ไว้ **ท้ายสุด** ด้วย `ARG` + `ENV` ผลคือเมื่อออกเวอร์ชันใหม่ build #2 ใช้ cache ได้ตั้งแต่ขั้นที่ 2 ถึง 12 (รวม `npm ci` และ `next build`) และสร้างใหม่เฉพาะขั้นที่ 13 (`ENV APP_VERSION=...`) เป็นต้นไป ซึ่งเป็น metadata ทั้งหมด ตอน push Docker Hub จึงตอบว่า `Layer already exists` ทุก layer (พิสูจน์ในการทดลองที่ 10)
 
 ![Layer cache](./images/lab3_theory_layer_cache.png)
 
@@ -66,7 +107,7 @@ Dockerfile ของร้านจึงวางข้อมูลที่เ
 
 ![Tag vs Digest](./images/lab3_theory_tag_digest.png)
 
-*ภาพที่ 5 tag ย้ายได้ ส่วน digest ผูกกับเนื้อหาตลอดไป ค่า `62c9…` และ `bd79…` คือ digest จริงของ build #1 และ #2 ในการทดลองนี้*
+*ภาพที่ 5 tag ย้ายได้ ส่วน digest ผูกกับเนื้อหาตลอดไป ค่า `d275…` และ `5d47…` คือ digest จริงของ build #1 และ #2 ในการทดลองนี้*
 
 ### 5. Jenkins สั่ง Docker ผ่าน socket (DooD)
 
@@ -97,7 +138,7 @@ token ของ Docker Hub เก็บใน **Jenkins Credentials** ด้ว�
 เมื่อจบแล็บนี้ นักศึกษาจะสามารถ
 
 1. อธิบายความสัมพันธ์ของ image, container, registry, tag และ digest และลำดับ build → push → pull → run ได้
-2. อธิบายเหตุผลของ multi-stage build และวัดผลต่างของขนาด image ได้
+2. อ่าน Dockerfile แบบ single-stage ทีละบรรทัด และวัดขนาดของแต่ละ layer ด้วย `docker history` ได้
 3. เรียงลำดับคำสั่งใน Dockerfile ให้ใช้ layer cache ได้คุ้มค่า และอ่านผล `Using cache` / `Layer already exists` ได้
 4. ตั้งค่า Jenkins ให้ build/push ผ่าน Docker socket โดยเก็บ token ไว้ใน Credentials อย่างปลอดภัย
 5. ยืนยันว่า image บน Docker Hub คือ image เดียวกับที่ Jenkins build และที่รันอยู่บนทุกเครื่อง โดยใช้ digest
@@ -108,18 +149,17 @@ token ของ Docker Hub เก็บใน **Jenkins Credentials** ด้ว�
 | ช่วง | การทดลอง | สิ่งที่ทำ | ผลที่ต้องได้ (ค่าจริงจากการทดลอง) |
 |---|---|---|---|
 | A. เตรียม Jenkins | 1–3 | เพิ่ม Docker CLI และ mount socket + source | `docker: not found` → `Docker version 29.8.1` → job เดิมยังอยู่ |
-| B. รู้จัก image | 4 | build แบบ multi-stage เทียบ single-stage | **305 MB** เทียบ **2.39 GB** |
-| C. Pipeline | 5–7 | credential → job → build #1 | 5 stage เขียว, `Login Succeeded`, digest `62c9549b8368…` |
+| B. รู้จัก image | 4 | build และรัน image ของร้านในเครื่อง + ส่อง layer | **693 MB** (ดาวน์โหลด **154 MB**), layer ใหญ่สุด `npm ci` 357 MB, build ซ้ำ 1 วินาที |
+| C. Pipeline | 5–7 | credential → job → build #1 | 5 stage เขียว, `Login Succeeded`, digest `d27545b78779…` |
 | D. Registry & เว็บ | 8–9 | ดู Docker Hub, เปิดร้าน, pull บนเครื่องที่สอง | tag `1`/`latest`, ร้านเปิดได้, digest ตรงกันทั้งสองเครื่อง |
-| E. Release | 10–11 | build #2 v1.1.0 แล้ว rollback | ไม่มี layer ต้องอัปโหลดใหม่, rollback **1.2 วินาที**, `check.sh` PASS |
+| E. Release | 10–11 | build #2 v1.1.0 แล้ว rollback | ไม่มี layer ต้องอัปโหลดใหม่, rollback **1.0 วินาที**, `check.sh` PASS |
 
 ## 📂 ไฟล์ในโฟลเดอร์นี้
 
 | ไฟล์ | หน้าที่ |
 |---|---|
 | `catfood-shop/` | ซอร์สโค้ดร้าน Meow Mart (Next.js 16 + React 19) |
-| `catfood-shop/Dockerfile` | multi-stage build 3 stage (ใช้จริงใน Pipeline) |
-| `catfood-shop/Dockerfile.single` | Dockerfile ชั้นเดียว ใช้เปรียบเทียบในการทดลองที่ 4 เท่านั้น |
+| `catfood-shop/Dockerfile` | Dockerfile แบบ single-stage (ใช้จริงใน Pipeline) |
 | `Dockerfile.jenkins` | Jenkins LTS + Docker CLI |
 | `Jenkinsfile` | Pipeline 5 stage: Prepare source → Build image → Test image → Push → Pull & Deploy |
 | `check.sh` | ตัวตรวจสถานะจบแล็บ |
@@ -222,7 +262,6 @@ docker exec jenkins sh -c 'docker ps --format "{{.Names}}"; ls /lab/catfood-shop
 {"_class":"org.jenkinsci.plugins.workflow.job.WorkflowJob","name":"first-pipeline"}
 jenkins
 Dockerfile
-Dockerfile.single
 app
 data
 next.config.mjs
@@ -237,39 +276,62 @@ public
 
 ## ช่วง B — รู้จัก image ของร้านก่อนให้ Jenkins สร้าง
 
-### การทดลองที่ 4 — Multi-stage ช่วยลดขนาด image ได้แค่ไหน?
+### การทดลองที่ 4 — build และรัน image ของร้านในเครื่อง: layer ไหนใหญ่ที่สุด?
 
-**คำถาม:** image ของแอปเดียวกัน ถ้า build แบบ single-stage กับแบบ multi-stage ขนาดต่างกันเท่าไร?
+**คำถาม:** image ของร้านที่ build จาก `Dockerfile` มีขนาดเท่าไร layer ใดกินพื้นที่มากที่สุด และ build ซ้ำโดยไม่แก้อะไรใช้เวลาเท่าไร?
 
 ```bash
 cd "$LAB/catfood-shop"
-time docker build -t catfood-shop:multi .
-time docker build -f Dockerfile.single -t catfood-shop:single .
+time docker build -t catfood-shop:local .
 docker image ls catfood-shop
-docker run --rm catfood-shop:single sh -c 'du -sh /app/node_modules /app/.next'
-docker run --rm catfood-shop:multi  sh -c 'du -sh /app/node_modules /app/.next'
+docker history --format 'table {{.CreatedBy}}\t{{.Size}}' catfood-shop:local | head -14
+docker run --rm catfood-shop:local sh -c 'du -sh /app/node_modules /app/.next'
+docker run -d --name catfood-local -p 3000:3000 catfood-shop:local
+until curl -fs http://localhost:3000/api/health >/dev/null; do sleep 0.2; done
+curl -s http://localhost:3000/api/health; echo
+docker rm -f catfood-local          # คืน port 3000 ให้ Pipeline
+time docker build -t catfood-shop:local .   # build ซ้ำทันที
 ```
 
-✅ **ผลการทดลองจริง** (build ครั้งแรก ไม่มี cache):
+✅ **ผลการทดลองจริง** (build ครั้งแรก ไม่มี cache ใช้เวลารวม 30 วินาที: ดึง base image 4.8 s, `npm ci` 10.7 s, `npm run build` 3.5 s):
 
 ```text
-IMAGE                 ID             DISK USAGE   CONTENT SIZE
-catfood-shop:multi    3152e43c51e4        305MB         76.6MB
-catfood-shop:single   ab2b83b8d18a       2.39GB          636MB
+IMAGE                ID             DISK USAGE   CONTENT SIZE
+catfood-shop:local   ce1adc7431fc        693MB          154MB
 
-# single-stage                    # multi-stage
-340M  /app/node_modules           46.9M  /app/node_modules
-89M   /app/.next                  1.7M   /app/.next
+CREATED BY                                      SIZE
+...                                             0B      (แถว CMD / HEALTHCHECK / EXPOSE / ENV / ARG)
+RUN ... npm run build && rm -rf .next…          5.62MB
+COPY . . # buildkit                             422kB
+RUN ... npm ci --no-audit --no-fund &…          357MB
+COPY package.json package-lock.json ./ # bui…   45.1kB
+
+337.6M  /app/node_modules
+5.3M    /app/.next
+
+{"status":"ok","app":"catfood-shop","version":"dev","build":"local","commit":"none","builtAt":"unknown","host":"87156a3bd9e2"}
 ```
 
-| วัดค่า | single-stage | multi-stage | ผลต่าง |
-|---|---:|---:|---:|
-| ขนาดบนดิสก์ (DISK USAGE) | 2.39 GB | 305 MB | เล็กลง ~8 เท่า |
-| ขนาดที่ต้องดาวน์โหลด (CONTENT SIZE) | 636 MB | 76.6 MB | เล็กลง ~8 เท่า |
-| `node_modules` ใน image | 340 MB | 46.9 MB | เหลือเฉพาะที่ server ใช้ |
-| เวลา build (ครั้งแรก) | 48 วินาที | 21 วินาที | — |
+container พร้อมตอบ `/api/health` ภายใน 440 ms (log ของ `next start` แสดง `▲ Next.js 16.3.6` และ `✓ Ready in 104ms`) ส่วน build ซ้ำครั้งที่สองทุกขั้นขึ้น `CACHED` และเสร็จใน 1 วินาที
 
-> 🔍 **วิเคราะห์ผล:** image แบบ single-stage พก base image ขนาดใหญ่ (`node:22`), devDependencies และ cache ของ `next build` ไปด้วย ส่วน multi-stage ใช้ `node:22-alpine` และคัดลอกเฉพาะ `.next/standalone` ทุกครั้งที่ push/pull จึงประหยัดเวลาและพื้นที่ราว 8 เท่า Pipeline ในแล็บนี้จึงใช้ `Dockerfile` แบบ multi-stage
+| วัดค่า | ผลจริง |
+|---|---:|
+| ขนาดบนดิสก์ (DISK USAGE) | 693 MB |
+| ขนาดที่ต้องดาวน์โหลด (CONTENT SIZE) | 154 MB |
+| layer `npm ci` (ใหญ่ที่สุด) | 357 MB |
+| base image `node:22-alpine` | ≈ 177 MB |
+| `node_modules` / `.next` ใน image | 337.6 MB / 5.3 MB |
+| เวลา build ครั้งแรก / build ซ้ำ | 30 วินาที / 1 วินาที |
+
+**ผลของการล้าง cache ใน `RUN` เดียวกัน** — ผู้เขียนวัดเปรียบเทียบกับ Dockerfile รุ่นที่ยังไม่มี `&& npm cache clean --force` ต่อท้าย `npm ci`:
+
+| วัดค่า | ไม่ล้าง cache ของ npm | ล้างใน `RUN` เดียวกัน | ผลต่าง |
+|---|---:|---:|---:|
+| layer `npm ci` | 447 MB | 357 MB | −90 MB |
+| DISK USAGE | 873 MB | 693 MB | ≈ −180 MB |
+| CONTENT SIZE | 243 MB | 154 MB | −89 MB |
+
+> 🔍 **วิเคราะห์ผล:** `version` เป็น `dev` และ `build` เป็น `local` เพราะเราไม่ได้ส่ง `--build-arg` ค่า `ARG` จึงใช้ค่า default ใน Dockerfile (Jenkins จะส่งค่าจริงให้ในการทดลองที่ 6) ตาราง `docker history` ยืนยันว่า `node_modules` จากขั้น `npm ci` กินพื้นที่ราวครึ่งหนึ่งของ image ส่วนซอร์สโค้ดและผล `next build` รวมกันไม่ถึง 7 MB นี่คือเหตุผลที่ต้องวาง `npm ci` ไว้ก่อน `COPY . .` เพื่อให้ layer ที่ใหญ่ที่สุดถูกใช้ซ้ำจาก cache และการลบ cache ใน `RUN` เดียวกันลดขนาดที่ต้องดาวน์โหลดลงได้ราว 89 MB ทุกครั้งที่ push/pull
 
 ---
 
@@ -360,7 +422,7 @@ cat "$LAB/Jenkinsfile"
 
 ![Pipeline Graph build #1](./images/lab3_s06b_pipeline_graph_b1.png)
 
-*ภาพที่ 14 build #1 ผ่านครบทั้ง 5 stage ในเวลา 23 วินาที*
+*ภาพที่ 14 build #1 ผ่านครบทั้ง 5 stage ในเวลา 1 นาที 9 วินาที*
 
 ✅ **ผลการทดลองจริง:**
 
@@ -369,22 +431,23 @@ curl -fsS -u admin:admin2569 'http://localhost:8080/job/docker-build-push/lastBu
 ```
 
 ```json
-{"_class":"org.jenkinsci.plugins.workflow.job.WorkflowRun","duration":23847,"number":1,"result":"SUCCESS"}
+{"_class":"org.jenkinsci.plugins.workflow.job.WorkflowRun","duration":69948,"number":1,"result":"SUCCESS"}
 ```
 
 | Stage | เวลาจริง |
 |---|---:|
-| Prepare source | 0.33 s |
-| Build image | 6 s |
-| Test image | 1 s |
-| Push | 11 s |
-| Pull & Deploy | 3 s |
+| Prepare source | 0.38 s |
+| Build image | 41 s |
+| Test image | 1.7 s |
+| Push | 21 s |
+| Pull & Deploy | 3.4 s |
+| Post Actions | 0.1 s |
 
-> 🔍 **วิเคราะห์ผล:** stage `Build image` ใช้เพียง 6 วินาทีเพราะเราเคย build Dockerfile เดียวกันไว้แล้วในการทดลองที่ 4 ใน console จะเห็นว่าขั้นที่ 2–20 เป็น `Using cache` มีเพียงขั้นที่ 21 (`ENV APP_VERSION=... BUILD_NUMBER=...`) ที่ต้องสร้างใหม่ เพราะค่า build-arg เปลี่ยน ข้อความ `DEPRECATED: The legacy builder...` ที่ขึ้นตอนต้นมาจาก Docker CLI ใน Jenkins ที่ไม่มี buildx เป็นคำเตือน ไม่ใช่ error
+> 🔍 **วิเคราะห์ผล:** stage `Build image` ใช้เวลาถึง 41 วินาที และ console **ไม่มี `Using cache` เลย** แม้เราเพิ่ง build Dockerfile เดียวกันไปในการทดลองที่ 4 สาเหตุคือ Docker CLI ใน Jenkins ไม่มี buildx จึงใช้ **legacy builder** (ขึ้นข้อความ `DEPRECATED: The legacy builder...` ซึ่งเป็นคำเตือน ไม่ใช่ error และแสดงขั้นเป็น `Step 1/16` … `Step 16/16`) cache ของ legacy builder แยกจาก cache ของ BuildKit ที่ `docker build` ในการทดลองที่ 4 ใช้ Jenkins จึงต้องทำทุกขั้นใหม่ตั้งแต่ต้น แม้แต่ base image ก็ดึงใหม่ (`22-alpine: Pulling from library/node`) บรรทัดที่ควรสังเกตใน console ได้แก่ `Step 5/16 : RUN npm ci --no-audit --no-fund && npm cache clean --force` → `added 24 packages in 10s` และ `Step 7/16 : RUN npm run build && rm -rf .next/cache` → `✓ Compiled successfully in 1597ms` ตั้งแต่ build #2 เป็นต้นไป legacy builder จะมี cache ของตัวเองแล้ว (พิสูจน์ในการทดลองที่ 10)
 
-![Using cache ใน console](./images/lab3_s06c_console_cache.png)
+![console ของ build #1](./images/lab3_s06c_console_build_b1.png)
 
-*ภาพที่ 15 console ของ build #1: layer ที่ไม่เปลี่ยนแสดง `Using cache` ส่วน Step 21/25 ถูกสร้างใหม่*
+*ภาพที่ 15 console ของ build #1: legacy builder ทำครบ 16 ขั้นโดยไม่มี `Using cache` รวมถึง Step 5/16 (`npm ci`) และ Step 7/16 (`npm run build`)*
 
 ### การทดลองที่ 7 — Console พิสูจน์อะไรได้บ้าง?
 
@@ -392,20 +455,22 @@ curl -fsS -u admin:admin2569 'http://localhost:8080/job/docker-build-push/lastBu
 
 ```bash
 curl -fsS -u admin:admin2569 http://localhost:8080/job/docker-build-push/1/consoleText \
-  | grep -E 'Masking supported|Login Succeeded|digest: sha256|Pulling from|Downloaded newer|"build":"1"|เปิดร้าน|Finished:'
+  | grep -E 'Masking supported|Login Succeeded|digest: sha256|Pulling from .*catfood-shop|Downloaded newer image for .*catfood-shop|"build":"1"|เปิดร้าน|Finished:'
 ```
 
 ✅ **ผลการทดลองจริง** (แทนชื่อบัญชีด้วย `<DOCKER_USER>`):
 
 ```text
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"none","builtAt":"2026-09-25T11:20:43Z","host":"591e6909b266"}+ docker rm -f catfood-test-1
 Masking supported pattern matches of $DOCKER_TOKEN
 Login Succeeded
-1: digest: sha256:62c9549b836883cc9a25b7f010e2891c3334ded5b250ac0859b4add3380f8d08 size: 2066
-latest: digest: sha256:62c9549b836883cc9a25b7f010e2891c3334ded5b250ac0859b4add3380f8d08 size: 2066
+1: digest: sha256:d27545b78779972222f7b3ccee77f992a072d743a899ffe0c5c503837b2c7a60 size: 2276
+latest: digest: sha256:d27545b78779972222f7b3ccee77f992a072d743a899ffe0c5c503837b2c7a60 size: 2276
 Masking supported pattern matches of $DOCKER_TOKEN
 1: Pulling from <DOCKER_USER>/catfood-shop
 Status: Downloaded newer image for <DOCKER_USER>/catfood-shop:1
-{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"none","builtAt":"2026-09-25T07:24:45Z","host":"a3cd6c644419"}
++ grep "build":"1"
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"none","builtAt":"2026-09-25T11:20:43Z","host":"3ddb8a6253d4"}
 เปิดร้านได้ที่ http://localhost:3000 (catfood-shop v1.0.0 build #1)
 Finished: SUCCESS
 ```
@@ -416,13 +481,13 @@ Finished: SUCCESS
 
 ![push digest](./images/lab3_s07b_console_digest.png)
 
-*ภาพที่ 17 tag `1` และ `latest` ได้ digest เดียวกัน `sha256:62c9549b8368…` เพราะเป็น image ตัวเดียวกัน*
+*ภาพที่ 17 tag `1` และ `latest` ได้ digest เดียวกัน `sha256:d27545b78779…` เพราะเป็น image ตัวเดียวกัน*
 
 ![pull และ deploy](./images/lab3_s07c_console_pull_deploy.png)
 
 *ภาพที่ 18 stage Pull & Deploy: pull image จาก Docker Hub สร้าง `catfood-web` แล้ว `/api/health` ตอบ `"build":"1"`*
 
-> 🔍 **วิเคราะห์ผล:** บรรทัด `curl: (7) Failed to connect` ที่อาจเห็นก่อน JSON เป็นเรื่องปกติ เพราะ `curl --retry` ยิงก่อน Next.js พร้อมรับ request แล้วลองใหม่จนสำเร็จ ส่วน `WARNING! Your credentials are stored unencrypted` หมายถึงไฟล์ config ชั่วคราวใน `mktemp -d` ซึ่ง `trap` ลบทิ้งเมื่อจบ stage
+> 🔍 **วิเคราะห์ผล:** JSON บรรทัดแรก (`host` = `591e6909b266`) มาจาก stage Test image ซึ่งรันก่อน Push ส่วน JSON บรรทัดท้าย (`host` = `3ddb8a6253d4`) มาจาก `catfood-web` ที่ deploy จริง ทั้งสองมี `builtAt` เดียวกันเพราะมาจาก image ตัวเดียวกัน ตอน push tag `1` console แสดง `Pushed` 5 layer และ `Layer already exists` 4 layer (4 layer ของ base `node:22-alpine` เคยถูก push ขึ้น repository นี้ไว้แล้วจากการทดลองก่อนหน้าของผู้เขียน) ส่วน tag `latest` แสดง `Layer already exists` ครบทั้ง 9 layer บน repository ใหม่ของนักศึกษา tag `1` จะขึ้น `Pushed` ครบทั้ง 9 layer (ราว 146 MB) บรรทัด `curl: (7) Failed to connect` ที่อาจเห็นก่อน JSON เป็นเรื่องปกติ เพราะ `curl --retry` ยิงก่อน Next.js พร้อมรับ request แล้วลองใหม่จนสำเร็จ ส่วน `WARNING! Your credentials are stored unencrypted` หมายถึงไฟล์ config ชั่วคราวใน `mktemp -d` ซึ่ง `trap` ลบทิ้งเมื่อจบ stage
 
 ---
 
@@ -436,7 +501,7 @@ Finished: SUCCESS
 
 ![Docker Hub หลัง build #1](./images/lab3_s08a_hub_tags_b1.png)
 
-*ภาพที่ 19 Docker Hub แสดง tag `latest` และ `1` ที่มี digest `62c9549b8368` ตรงกับ console ในภาพที่ 17 ขนาดที่ต้องดาวน์โหลดคือ 73.08 MB*
+*ภาพที่ 19 Docker Hub แสดง tag `1` ที่มี digest `d27545b78779` ตรงกับ console ในภาพที่ 17 ขนาดที่ต้องดาวน์โหลด (Compressed size) คือ 146.53 MB ภาพนี้ถ่ายหลังจบแล็บ หน้า Tags จริงจึงมี tag `2` และ `latest` อยู่ด้วย*
 
 ตรวจจาก terminal โดยไม่ต้อง login (พิสูจน์ว่า repository เป็น Public):
 
@@ -446,8 +511,10 @@ curl -fsS "https://hub.docker.com/v2/namespaces/<DOCKER_USER>/repositories/catfo
 ```
 
 ```text
-sha256:62c9549b8368 2026-09-25T07:24:59.357547Z
+sha256:d27545b78779 2026-09-25T11:21:40.940719Z
 ```
+
+ค่า `full_size` จาก API เดียวกันคือ 153,648,169 ไบต์ = 154 MB (หน่วยฐาน 10) = 146.5 MiB จึงเป็นตัวเลขเดียวกับ CONTENT SIZE `154MB` ในการทดลองที่ 4 และ 146.53 MB ที่หน้า Docker Hub แสดง ต่างกันเพียงหน่วยที่ใช้
 
 2. เปิด **http://localhost:3000** — นี่คือร้านที่ Pipeline deploy ให้ ลองใช้งานตามภาพเคลื่อนไหวด้านล่าง (ยาวประมาณ 23 วินาที)
 
@@ -475,14 +542,14 @@ sha256:62c9549b8368 2026-09-25T07:24:59.357547Z
 
 ![Deployment info](./images/lab3_web_fullhd_deploy.jpg)
 
-*ภาพที่ 23 ส่วน Deployment info บอกว่าเว็บนี้มาจาก image ใด: `1.0.0`, Jenkins build `#1`, เวลา build และ container ที่กำลังตอบ*
+*ภาพที่ 23 ส่วน Deployment info บอกว่าเว็บนี้มาจาก image ใด: `1.0.0`, Jenkins build `#1`, เวลา build และ container ที่กำลังตอบ (container ID ในภาพคือ `438e9ca207db` ไม่ตรงกับ JSON ด้านล่าง เพราะภาพถ่ายหลัง rollback ในการทดลองที่ 11 แต่เป็น image `:1` ตัวเดียวกัน)*
 
 ```bash
 curl -s http://localhost:3000/api/health; echo
 ```
 
 ```json
-{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"none","builtAt":"2026-09-25T07:24:45Z","host":"a3cd6c644419"}
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"none","builtAt":"2026-09-25T11:20:43Z","host":"3ddb8a6253d4"}
 ```
 
 > 🔍 **วิเคราะห์ผล:** ค่า `host` คือ container ID แบบย่อของ `catfood-web` (ใน JSON ของ stage Test จะเป็นอีกค่าหนึ่ง เพราะเป็น container ชั่วคราว `catfood-test-1`) ส่วน `commit` เป็น `none` เพราะ LAB 3 ยังไม่ได้ดึงซอร์สจาก Git — LAB 4 จะทำให้ช่องนี้แสดง commit จริง
@@ -507,20 +574,20 @@ curl -s http://localhost:3001/api/health; echo
 ```text
 latest: Pulling from <DOCKER_USER>/catfood-shop
 f9606104cc3b: Pull complete
-...                                    (รวม 8 layers)
-Digest: sha256:62c9549b836883cc9a25b7f010e2891c3334ded5b250ac0859b4add3380f8d08
+...                                    (รวม 9 layers)
+Digest: sha256:d27545b78779972222f7b3ccee77f992a072d743a899ffe0c5c503837b2c7a60
 Status: Downloaded newer image for <DOCKER_USER>/catfood-shop:latest
 docker.io/<DOCKER_USER>/catfood-shop:latest
-pull_ms=9525
-<DOCKER_USER>/catfood-shop@sha256:62c9549b836883cc9a25b7f010e2891c3334ded5b250ac0859b4add3380f8d08
-{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"none","builtAt":"2026-09-25T07:24:45Z","host":"5704f05da57d"}
+pull_ms=15332
+<DOCKER_USER>/catfood-shop@sha256:d27545b78779972222f7b3ccee77f992a072d743a899ffe0c5c503837b2c7a60
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"none","builtAt":"2026-09-25T11:20:43Z","host":"c6b4737b3126"}
 ```
 
 ![สองเครื่อง digest เดียวกัน](./images/lab3_s09_two_servers_same_digest.png)
 
 *ภาพที่ 24 Server A (deploy โดย Jenkins) และ Server B (pull อย่างเดียว) แสดง version/build/เวลา build เหมือนกันทุกช่อง ต่างกันเฉพาะ container ID*
 
-> 🔍 **วิเคราะห์ผล:** digest บนเครื่อง B (`62c9549b…`) ตรงกับที่ Jenkins push และที่ Docker Hub แสดง จึงยืนยันได้ว่าเป็น **image ตัวเดียวกันทุกบิต** แม้แต่ `builtAt` ก็เป็นเวลาเดียวกัน เพราะค่านี้ถูกอบเข้า image ตอน build ไม่ได้สร้างใหม่ตอนรัน เครื่อง B ไม่ต้องมี Node.js, `npm` หรือซอร์สโค้ดเลย นี่คือความหมายของ *build once, run anywhere*
+> 🔍 **วิเคราะห์ผล:** digest บนเครื่อง B (`d27545b7…`) ตรงกับที่ Jenkins push และที่ Docker Hub แสดง จึงยืนยันได้ว่าเป็น **image ตัวเดียวกันทุกบิต** แม้แต่ `builtAt` ก็เป็นเวลาเดียวกัน เพราะค่านี้ถูกอบเข้า image ตอน build ไม่ได้สร้างใหม่ตอนรัน เครื่อง B ไม่ต้องมี Node.js, `npm` หรือซอร์สโค้ดเลย นี่คือความหมายของ *build once, run anywhere*
 
 ---
 
@@ -544,7 +611,7 @@ pull_ms=9525
 
 ![Pipeline Graph build #2](./images/lab3_s10c_pipeline_graph_b2.png)
 
-*ภาพที่ 27 build #2 ผ่านครบทุก stage*
+*ภาพที่ 27 build #2 ผ่านครบทุก stage (Prepare source 0.35 s · Build image 4.8 s · Test image 1.7 s · Push 12.2 s · Pull & Deploy 3.9 s)*
 
 ```bash
 curl -fsS -u admin:admin2569 http://localhost:8080/job/docker-build-push/2/consoleText \
@@ -555,28 +622,35 @@ curl -s http://localhost:3000/api/health; echo
 ✅ **ผลการทดลองจริง:**
 
 ```text
-     17  ---> Using cache
-     16 <layer>: Layer already exists
-      1 2: digest: sha256:bd792e89eadbd44057d744d84c60de28296f6df1cf6d65c0b4fc420da170801c size: 2066
-      1 latest: digest: sha256:bd792e89eadbd44057d744d84c60de28296f6df1cf6d65c0b4fc420da170801c size: 2066
-{"status":"ok","app":"catfood-shop","version":"1.1.0","build":"2","commit":"none","builtAt":"2026-09-25T07:31:48Z","host":"d54aec9cdc67"}
+     11  ---> Using cache
+      1 2: digest: sha256:5d4742e9c651fc8483c3e3ee37724a5489ca68cf0c9bc7967eda0c2d3af45f55 size: 2276
+     18 <layer>: Layer already exists
+      1 latest: digest: sha256:5d4742e9c651fc8483c3e3ee37724a5489ca68cf0c9bc7967eda0c2d3af45f55 size: 2276
+{"status":"ok","app":"catfood-shop","version":"1.1.0","build":"2","commit":"none","builtAt":"2026-09-25T11:22:42Z","host":"c0bc5b9683d1"}
 ```
+
+ไม่มีบรรทัด `Pushed` เลยแม้แต่บรรทัดเดียว ใน console ขั้นที่ 2–12 ขึ้น `Using cache` ทั้งหมด ขั้นที่ 13 (`ENV APP_VERSION=... BUILD_NUMBER=...` ซึ่งรับค่า build-arg ใหม่) ขึ้น `Running in …` และขั้นที่ 14–16 ถูกสร้างใหม่ตามมา แต่ทุกขั้นเป็นเพียง metadata
+
+![Using cache ใน console build #2](./images/lab3_s10e_console_cache_b2.png)
+
+*ภาพที่ 28 console ของ build #2: Step 2–12 แสดง `Using cache` ส่วน Step 13 (`ENV` ที่รับค่า build-arg) ถูกสร้างใหม่*
 
 | วัดค่า | build #1 | build #2 |
 |---|---:|---:|
-| ระยะเวลารวม | 23.8 s | 21.8 s |
-| ขั้นที่ `Using cache` | 17 | 17 (ทุกขั้นก่อน `ENV`) |
-| บรรทัด `Pushed` (layer ที่อัปโหลดใหม่) | — | **0** |
-| บรรทัด `Layer already exists` | — | 16 (8 layers × 2 tags) |
-| digest | `62c9549b8368…` | `bd792e89eadb…` |
+| ระยะเวลารวม | 69.9 s | 23.7 s |
+| stage `Build image` | 41 s | 4.8 s |
+| ขั้นที่ `Using cache` | 0 | 11 (ขั้นที่ 2–12) |
+| บรรทัด `Pushed` (layer ที่อัปโหลดใหม่) | 5 | **0** |
+| บรรทัด `Layer already exists` | 13 | 18 (9 layers × 2 tags) |
+| digest | `d27545b78779…` | `5d4742e9c651…` |
 
-> 📝 ครั้งแรกที่นักศึกษา push ขึ้น repository ว่าง layer จะขึ้นเป็น `Pushed` (อัปโหลดจริงราว 73 MB) ในการทดลองของผู้เขียน build #1 ก็แสดง `Layer already exists` เช่นกัน เพราะเคย push layer ชุดเดียวกันไว้ก่อนหน้า ซึ่งเป็นหลักฐานอีกข้อว่า registry เก็บ layer แบบไม่ซ้ำ (content-addressable)
+> 📝 ครั้งแรกที่นักศึกษา push ขึ้น repository ว่าง layer ทั้ง 9 จะขึ้นเป็น `Pushed` (อัปโหลดจริงราว 146 MB) ในการทดลองของผู้เขียน build #1 มี `Layer already exists` 4 layer ของ base image เพราะเคย push layer ชุดเดียวกันไว้ก่อนหน้า ซึ่งเป็นหลักฐานอีกข้อว่า registry เก็บ layer แบบไม่ซ้ำ (content-addressable)
 
 ![Docker Hub หลัง build #2](./images/lab3_s10d_hub_tags_b2.png)
 
-*ภาพที่ 28 tag `latest` ย้ายมาชี้ digest ใหม่ `bd792e89eadb` (กรอบเขียว) เหมือน tag `2` ส่วน tag `1` ยังชี้ `62c9549b8368` (กรอบแดง) เหมือนเดิม*
+*ภาพที่ 29 tag `latest` ย้ายมาชี้ digest ใหม่ `5d4742e9c651` (กรอบเขียว) เหมือน tag `2` ส่วน tag `1` ยังชี้ `d27545b78779` (กรอบแดง) เหมือนเดิม*
 
-> 🔍 **วิเคราะห์ผล:** การเปลี่ยน `ENV` ไม่สร้าง layer ของระบบไฟล์ใหม่ มีเพียง image config และ manifest ที่เปลี่ยน digest จึงเปลี่ยน แต่ข้อมูลที่ต้องอัปโหลดแทบเป็นศูนย์ นี่คือผลของการวาง `ARG/ENV` ที่เปลี่ยนบ่อยไว้ท้าย Dockerfile ถ้าย้ายสองบรรทัดนี้ไปไว้ต้นไฟล์ ทุก layer หลังจากนั้น (`npm ci`, `next build`) จะต้องสร้างใหม่ทุกครั้ง
+> 🔍 **วิเคราะห์ผล:** การเปลี่ยน `ENV` ไม่สร้าง layer ของระบบไฟล์ใหม่ มีเพียง image config และ manifest ที่เปลี่ยน digest จึงเปลี่ยน แต่ไม่มี layer ใดต้องอัปโหลดใหม่ และ stage `Build image` ที่ใช้ cache ลดจาก 41 s เหลือ 4.8 s นี่คือผลของการวาง `ARG/ENV` ที่เปลี่ยนบ่อยไว้ท้าย Dockerfile ถ้าย้ายสองบรรทัดนี้ไปไว้ต้นไฟล์ ทุก layer หลังจากนั้น (`npm ci`, `next build`) จะต้องสร้างใหม่ทุกครั้ง
 
 ### การทดลองที่ 11 — Rollback ใช้เวลาเท่าไร?
 
@@ -598,16 +672,16 @@ curl -s http://localhost:3000/api/health; echo
 
 ```text
 catfood-web
-2c0227e1fee3417a94239b8dbcd4fa365835aa09355f9936211e02d3fa180a44
-rollback_ms=1156
-{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"none","builtAt":"2026-09-25T07:24:45Z","host":"2c0227e1fee3"}
+438e9ca207db974f02890407838bcba374747a06dfbe071170b237e975863894
+rollback_ms=1001
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"none","builtAt":"2026-09-25T11:20:43Z","host":"438e9ca207db"}
 ```
 
 ![release และ rollback](./images/lab3_s11_release_and_rollback.png)
 
-*ภาพที่ 29 ซ้าย: หลัง build #2 chip แสดง `v1.1.0 · build #2` ขวา: หลัง rollback เหลือ `v1.0.0 · build #1` ภายใน 1.2 วินาที*
+*ภาพที่ 30 ซ้าย: หลัง build #2 chip แสดง `v1.1.0 · build #2` ขวา: หลัง rollback เหลือ `v1.0.0 · build #1` ภายใน 1.0 วินาที*
 
-> 🔍 **วิเคราะห์ผล:** rollback เร็วเพราะ image `:1` ยังอยู่ใน cache ของเครื่อง ถ้าไม่มี Docker จะ pull จาก Docker Hub ให้อัตโนมัติ (ใช้เวลาเพิ่มราว 10 วินาทีตามผลการทดลองที่ 9) สังเกตว่า tag `latest` บน Docker Hub ยังชี้ build #2 อยู่ การ rollback แบบนี้จึงเป็นการแก้ชั่วคราวที่ต้องบันทึกไว้ให้ทีมรู้
+> 🔍 **วิเคราะห์ผล:** rollback เร็วเพราะ image `:1` ยังอยู่ใน cache ของเครื่อง ถ้าไม่มี Docker จะ pull จาก Docker Hub ให้อัตโนมัติ (ใช้เวลาเพิ่มราว 15 วินาทีตามผลการทดลองที่ 9) สังเกตว่า tag `latest` บน Docker Hub ยังชี้ build #2 อยู่ การ rollback แบบนี้จึงเป็นการแก้ชั่วคราวที่ต้องบันทึกไว้ให้ทีมรู้
 
 **Roll forward กลับสู่เวอร์ชันล่าสุด** แล้วตรวจจบแล็บ:
 
@@ -627,7 +701,7 @@ cd "$LAB" && DOCKER_USER='<DOCKER_USER>' bash check.sh
 [PASS] jenkins mount source ร้านอาหารแมวที่ /lab/catfood-shop
 [PASS] Jenkins Credentials API พบ id dockerhub
 [PASS] docker-build-push build #2 = SUCCESS
-[PASS] console มี push digest sha256:bd792e89eadb...
+[PASS] console มี push digest sha256:5d4742e9c651...
 [PASS] Docker Hub tag 2 มี digest ตรงกับ console
 [PASS] tag latest ชี้ไปที่ build ล่าสุด
 [PASS] anonymous client อ่าน manifest ได้ (repository เป็น Public)
@@ -652,29 +726,31 @@ cd "$LAB" && DOCKER_USER='<DOCKER_USER>' bash check.sh
 |---|---|---|---|
 | 1 | Jenkins เดิมสั่ง Docker ได้ไหม | `docker: not found`, exit 127 | ต้องเพิ่ม Docker CLI |
 | 2–3 | เปลี่ยน image แล้วงานเดิมหายไหม | `first-pipeline` ยังอยู่ | state อยู่ใน volume ไม่ใช่ container |
-| 4 | multi-stage คุ้มไหม | 305 MB vs 2.39 GB | เล็กลง ~8 เท่า |
-| 5–7 | Pipeline ทำงานครบไหม | SUCCESS ใน 23.8 s, digest `62c9549b…` | build → test → push → pull → deploy อัตโนมัติ |
+| 4 | Dockerfile single-stage มีอะไรบ้าง | 693 MB, `npm ci` 357 MB, build ซ้ำ 1 s | dependency คือ layer ใหญ่สุด ต้องวางให้ใช้ cache ได้ |
+| 5–7 | Pipeline ทำงานครบไหม | SUCCESS ใน 69.9 s, digest `d27545b7…` | build → test → push → pull → deploy อัตโนมัติ |
 | 8 | Docker Hub ตรงกับ console ไหม | digest ตรงกัน, repository Public | ตรวจย้อนได้ด้วย digest |
-| 9 | เครื่องอื่นรันได้ไหม | pull 9.5 s, digest เดียวกัน | build once, run anywhere |
-| 10 | build ใหม่ทำงานซ้ำแค่ไหน | 17 ขั้นใช้ cache, 0 layer ต้องอัปโหลด | ลำดับ Dockerfile มีผลต่อความเร็ว |
-| 11 | rollback เร็วแค่ไหน | 1.2 วินาที | image ทุกเวอร์ชันคือจุดย้อนกลับ |
+| 9 | เครื่องอื่นรันได้ไหม | pull 15.3 s, digest เดียวกัน | build once, run anywhere |
+| 10 | build ใหม่ทำงานซ้ำแค่ไหน | 11 ขั้นใช้ cache, 0 layer ต้องอัปโหลด | ลำดับ Dockerfile มีผลต่อความเร็ว |
+| 11 | rollback เร็วแค่ไหน | 1.0 วินาที | image ทุกเวอร์ชันคือจุดย้อนกลับ |
 
 ## แก้ปัญหาที่พบบ่อย
 
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
 | `docker: not found` ใน Pipeline | Jenkins ยังใช้ image เดิม | `docker inspect -f '{{.Config.Image}}' jenkins` แล้วทำการทดลองที่ 2–3 ใหม่ |
+| `Bind for 0.0.0.0:3000 failed` ตอน Pull & Deploy หลังการทดลองที่ 4 | ลืมลบ `catfood-local` ที่ยังจอง port 3000 | `docker rm -f catfood-local` แล้วสั่ง build ใหม่ |
+| `Build image` ช้า / ไม่มี `Using cache` ใน build แรกของ Jenkins | Jenkins ใช้ legacy builder ซึ่งมี cache แยกจาก BuildKit ที่ใช้ในการทดลองที่ 4 | เป็นเรื่องปกติ ตั้งแต่ build #2 เป็นต้นไปจะใช้ cache (การทดลองที่ 10) |
 | `cp: cannot stat '/lab/catfood-shop'` | ไม่ได้ mount source ตอนสร้าง `jenkins` | สร้าง container ใหม่ด้วยคำสั่งในการทดลองที่ 3 (ต้องมี `-v "$LAB/catfood-shop:/lab/catfood-shop:ro"`) |
 | เว็บขึ้น `vdev` แทนเวอร์ชัน | Jenkinsfile ไม่มี `VERSION = "${params.APP_VERSION}"` | ใช้ Jenkinsfile ของแล็บ build แรกของ job ยังไม่มี `$APP_VERSION` ใน shell |
 | `401 Unauthorized` / `denied: requested access` | token ผิด หมดอายุ ไม่มีสิทธิ์ Write หรือ username ไม่ตรง | สร้าง token Read & Write ใหม่แล้วแก้ credential `dockerhub` |
 | `429 Too Many Requests` | Docker Hub rate limit | login ก่อน build, รอ แล้วลดความถี่ในการสั่ง build |
 | `Bind for 0.0.0.0:3000 failed: port is already allocated` | มี container อื่นใช้ port 3000 | `docker ps --filter publish=3000` แล้วลบตัวที่ไม่ใช้ |
-| เปิด `localhost:3000` จากเครื่องหลักไม่ได้ | devtools ไม่ได้ publish port 3000 | สร้าง devtools ใหม่ด้วยคำสั่ง canonical ที่มี `-p 3000:3000` |
+| เปิด `localhost:3000` จากเครื่องหลักไม่ได้ | devtools ไม่ได้ publish port 3000 | สร้าง devtools ใหม่ตาม LAB 1 ส่วนที่ 0 (ต้องมี `-p 3000:3000`) |
 | หน้า Tags บน Docker Hub ว่าง / 404 | repository เป็น Private หรือ URL ผิด | ตั้ง `catfood-shop` เป็น Public แล้ว refresh |
 | `check.sh` บอก `ยังไม่ใช่ build #N` | ยังอยู่ในสถานะ rollback | roll forward ด้วย `:latest` ตามท้ายการทดลองที่ 11 |
 
 ## สรุป
 
-LAB 3 เปลี่ยน Jenkins ให้เป็น “โรงงานผลิต image” ที่ครบวงจร: สร้าง image ของร้านแบบ multi-stage ทดสอบก่อนปล่อย push ขึ้น Docker Hub แล้ว pull กลับมา deploy เป็นเว็บจริง ผลการทดลองยืนยันว่า image ที่ได้เล็กลงราว 8 เท่า ย้ายไปรันเครื่องอื่นได้ด้วย digest เดียวกัน ออกเวอร์ชันใหม่โดยไม่ต้องอัปโหลด layer ซ้ำ และ rollback ได้ในเวลาราว 1 วินาที
+LAB 3 เปลี่ยน Jenkins ให้เป็น “โรงงานผลิต image” ที่ครบวงจร: สร้าง image ของร้านจาก Dockerfile แบบ single-stage ทดสอบก่อนปล่อย push ขึ้น Docker Hub แล้ว pull กลับมา deploy เป็นเว็บจริง ผลการทดลองยืนยันว่า image ขนาด 693 MB มี `npm ci` เป็น layer ใหญ่ที่สุด การเรียงคำสั่งให้ dependency ใช้ cache ได้ทำให้ stage Build image ของ build #2 เหลือ 4.8 วินาทีโดยไม่มี layer ต้องอัปโหลดใหม่ image ย้ายไปรันเครื่องอื่นได้ด้วย digest เดียวกัน และ rollback ได้ในเวลาราว 1 วินาที
 
 ข้อจำกัดที่เหลืออยู่คือซอร์สโค้ดยังมาจากโฟลเดอร์ที่ mount ไว้ และต้องกด Build เอง **LAB 4** จะย้ายซอร์สร้านเดียวกันนี้ขึ้น GitHub ให้ Jenkins อ่าน `Jenkinsfile` จาก repository และ build ใหม่อัตโนมัติทุกครั้งที่มี commit
