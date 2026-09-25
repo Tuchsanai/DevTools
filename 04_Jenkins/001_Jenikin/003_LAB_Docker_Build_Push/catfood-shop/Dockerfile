@@ -26,6 +26,6 @@ ENV APP_VERSION=$APP_VERSION \
     BUILD_TIME=$BUILD_TIME
 
 EXPOSE 3000
-HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --start-interval=1s --retries=3 \
   CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1
 CMD ["npm", "start"]

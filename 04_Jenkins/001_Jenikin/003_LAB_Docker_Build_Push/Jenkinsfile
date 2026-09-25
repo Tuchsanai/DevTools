@@ -1,3 +1,4 @@
+// LAB 3 — Jenkins ไม่มี Docker อยู่ข้างใน: ทุกคำสั่ง docker ถูกส่งไปทำบน container devtools ผ่าน SSH
 pipeline {
   agent any
 
@@ -7,32 +8,36 @@ pipeline {
   }
 
   environment {
-    APP_SRC     = '/lab/catfood-shop'   // source ที่ mount เข้า Jenkins แบบอ่านอย่างเดียว
-    APP_NAME    = 'catfood-shop'        // ชื่อ repository บน Docker Hub
-    DEPLOY_NAME = 'catfood-web'         // ชื่อ container ของเว็บที่ deploy แล้ว
-    VERSION     = "${params.APP_VERSION}" // ใช้ค่า default ได้ตั้งแต่ build แรก
+    SSH_KEY     = credentials('devtools-ssh')     // private key ที่ Jenkins ใช้ login เข้า devtools
+    DEVTOOLS    = 'root@devtools'                  // เครื่องที่มี Docker (ชื่อ devtools มาจาก --add-host)
+    SSH_OPTS    = '-o StrictHostKeyChecking=accept-new -o LogLevel=ERROR'
+    APP_DIR     = '~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop'
+    APP_NAME    = 'catfood-shop'                   // ชื่อ repository บน Docker Hub
+    DEPLOY_NAME = 'catfood-web'                    // container ของร้านที่เปิดให้ลูกค้าใช้ (port 3000)
+    VERSION     = "${params.APP_VERSION}"
   }
 
   stages {
-    stage('Prepare source') {
+    stage('Connect devtools') {
       steps {
-        sh '''
-          rm -rf app
-          cp -r "$APP_SRC" app
-          ls app
-        '''
+        sh 'ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" "hostname; docker --version"'
       }
     }
 
     stage('Build image') {
       steps {
         sh '''
-          docker build \
-            --build-arg APP_VERSION="$VERSION" \
-            --build-arg BUILD_NUMBER="$BUILD_NUMBER" \
-            --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            -t "$APP_NAME:$BUILD_NUMBER" app
-          docker image ls "$APP_NAME:$BUILD_NUMBER"
+          ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+            "APP_DIR=$APP_DIR IMAGE=$APP_NAME:$BUILD_NUMBER VERSION=$VERSION BUILD=$BUILD_NUMBER bash -s" <<'EOF'
+set -e
+cd $APP_DIR
+docker build --provenance=false \
+  --build-arg APP_VERSION="$VERSION" \
+  --build-arg BUILD_NUMBER="$BUILD" \
+  --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  -t "$IMAGE" .
+docker image ls "$IMAGE"
+EOF
         '''
       }
     }
@@ -40,11 +45,18 @@ pipeline {
     stage('Test image') {
       steps {
         sh '''
-          name="catfood-test-$BUILD_NUMBER"
-          trap 'docker rm -f "$name" >/dev/null 2>&1 || true' EXIT
-          docker run -d --name "$name" --network cicd-net "$APP_NAME:$BUILD_NUMBER"
-          curl -fsS --retry 20 --retry-connrefused --retry-delay 1 \
-            "http://$name:3000/api/health"
+          ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+            "IMAGE=$APP_NAME:$BUILD_NUMBER NAME=catfood-test-$BUILD_NUMBER bash -s" <<'EOF'
+docker run -d --name "$NAME" "$IMAGE" >/dev/null
+for i in $(seq 1 30); do
+  STATUS=$(docker inspect -f '{{.State.Health.Status}}' "$NAME")
+  echo "health of $NAME: $STATUS"
+  [ "$STATUS" = healthy ] && break
+  sleep 1
+done
+docker rm -f "$NAME" >/dev/null
+[ "$STATUS" = healthy ]
+EOF
         '''
       }
     }
@@ -54,13 +66,18 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'dockerhub',
             usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
           sh '''set +x
-            export DOCKER_CONFIG=$(mktemp -d)
-            trap 'docker logout >/dev/null 2>&1; rm -rf "$DOCKER_CONFIG"' EXIT
-            echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
-            for tag in "$BUILD_NUMBER" latest; do
-              docker tag "$APP_NAME:$BUILD_NUMBER" "docker.io/$DOCKER_USER/$APP_NAME:$tag"
-              docker push "docker.io/$DOCKER_USER/$APP_NAME:$tag"
-            done
+            # token เดินทางทาง stdin ของ SSH เท่านั้น ไม่ปรากฏใน command line
+            echo "$DOCKER_TOKEN" | ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+              "DOCKER_CONFIG=/tmp/jenkins-docker-$BUILD_NUMBER docker login -u $DOCKER_USER --password-stdin"
+            ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+              "IMAGE=$APP_NAME:$BUILD_NUMBER HUB=docker.io/$DOCKER_USER/$APP_NAME BUILD=$BUILD_NUMBER bash -s" <<'EOF'
+export DOCKER_CONFIG=/tmp/jenkins-docker-$BUILD
+trap 'docker logout >/dev/null 2>&1; rm -rf "$DOCKER_CONFIG"' EXIT
+for tag in "$BUILD" latest; do
+  docker tag "$IMAGE" "$HUB:$tag"
+  docker push "$HUB:$tag"
+done
+EOF
           '''
         }
       }
@@ -71,14 +88,21 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'dockerhub',
             usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
           sh '''
-            image="docker.io/$DOCKER_USER/$APP_NAME:$BUILD_NUMBER"
-            docker image rm "$image" "docker.io/$DOCKER_USER/$APP_NAME:latest"
-            docker pull "$image"
-            docker rm -f "$DEPLOY_NAME" 2>/dev/null || true
-            docker run -d --name "$DEPLOY_NAME" --restart unless-stopped \
-              --network cicd-net -p 3000:3000 "$image"
-            curl -fsS --retry 20 --retry-connrefused --retry-delay 1 \
-              "http://$DEPLOY_NAME:3000/api/health" | grep "\\"build\\":\\"$BUILD_NUMBER\\""
+            ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+              "HUB=docker.io/$DOCKER_USER/$APP_NAME BUILD=$BUILD_NUMBER NAME=$DEPLOY_NAME bash -s" <<'EOF'
+set -e
+docker image rm "$HUB:$BUILD" "$HUB:latest"     # ลบของในเครื่อง เพื่อพิสูจน์ว่าดึงจาก Docker Hub จริง
+docker pull "$HUB:$BUILD"
+docker rm -f "$NAME" 2>/dev/null || true
+docker run -d --name "$NAME" --restart unless-stopped -p 3000:3000 "$HUB:$BUILD"
+for i in $(seq 1 30); do
+  STATUS=$(docker inspect -f '{{.State.Health.Status}}' "$NAME")
+  echo "health of $NAME: $STATUS"
+  [ "$STATUS" = healthy ] && break
+  sleep 1
+done
+[ "$STATUS" = healthy ]
+EOF
           '''
         }
       }

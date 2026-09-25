@@ -91,7 +91,7 @@ URL สำหรับผู้เรียน:
 | 2 | 5 | [`005_LAB_Webhook_Trigger`](./005_LAB_Webhook_Trigger/README.md) | push แล้ว build ทันทีอย่างไร | 30 นาที |
 | 2 | 6 | [`006_LAB_CICD_Capstone`](./006_LAB_CICD_Capstone/README.md) | วง CI/CD เต็มหน้าตาเป็นอย่างไร | 45 นาที |
 
-จบ LAB 1–2 ให้ทำหัวข้อ **✅ ตรวจผลปิดแล็บ** ท้าย README ของแล็บนั้น (ตรวจผ่าน REST API ของ Jenkins) ส่วน LAB 3–6 ให้รัน `bash check.sh` ในโฟลเดอร์นั้น ต้องได้ exit code `0` ก่อนเดินต่อ
+จบ LAB 1–2 ให้ทำหัวข้อ **✅ ตรวจผลปิดแล็บ** ท้าย README ของแล็บนั้น (ตรวจผ่าน REST API ของ Jenkins) LAB 3–4 ให้ทำหัวข้อ **✅ ตรวจปิดแล็บด้วยตา** (ดูหน้า Jenkins, Docker Hub และหน้าร้านด้วยตัวเอง) ส่วน LAB 5–6 ให้รัน `bash check.sh` ในโฟลเดอร์นั้น ต้องได้ exit code `0` ก่อนเดินต่อ
 
 ## กู้สถานะหลัง restart หรือปิดเครื่อง
 
@@ -193,7 +193,7 @@ unset DOCKER_TOKEN GITHUB_TOKEN
 ```text
 001_Jenikin/
 ├── Jenkins_CICD_Docker_Slides.html   # สไลด์ self-contained
-├── 001_LAB_... ถึง 006_LAB_...       # README, check.sh และไฟล์ทดลอง
+├── 001_LAB_... ถึง 006_LAB_...       # README และไฟล์ทดลอง (LAB 5–6 มี check.sh)
 ├── slides_assets/                    # ภาพ วิดีโอ และ diagram (d0–d12) ของสไลด์
 ├── tools/slides_src.html             # ต้นฉบับสไลด์ก่อน embed asset
 ├── tools/diagrams.py                 # สร้าง diagram ทั้งชุดจาก visual kit เดียวกัน
