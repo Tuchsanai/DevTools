@@ -1,37 +1,393 @@
-# LAB 3 — Build · Push · Pull · Deploy ร้านอาหารแมวด้วย Jenkins และ Docker Hub
+# LAB 3 — Jenkins สั่ง Build → Test → Push → Pull → Deploy ร้านอาหารแมวผ่าน SSH
 
-> ⏱️ ประมาณ 60 นาที · 🧪 11 การทดลอง · 🎯 จบเมื่อเปิด `http://localhost:3000` แล้วเห็นร้าน **Meow Mart** ที่ Jenkins สั่ง build, push ขึ้น Docker Hub, pull กลับมา และ deploy ให้อัตโนมัติ และผ่านรายการ **✅ ตรวจปิดแล็บด้วยตา** ครบทุกข้อ
+> ⏱️ ประมาณ 60 นาที · 🧪 15 การทดลอง · 🎯 จบเมื่อกด **Build** ใน Jenkins แล้วเปิด `http://localhost:3000` เห็นร้าน **Meow Mart** เวอร์ชันที่ Pipeline เพิ่งสร้าง และผ่านรายการ **✅ ตรวจปิดแล็บด้วยตา** ครบทุกข้อ
 
-แล็บนี้ตอบคำถามว่า **“ซอร์สโค้ดหนึ่งชุดเดินทางจากเครื่องของเราไปเป็นเว็บที่รันได้บนเครื่องใดก็ได้อย่างไร”** นักศึกษาจะให้ Jenkins สั่งสร้าง Docker image ของเว็บขายอาหารแมวที่เขียนด้วย **Next.js** ทดสอบ image นั้น push ขึ้น **Docker Hub** แล้ว pull กลับมา deploy เป็นเว็บจริง โดย Jenkins ยังคงเป็น image มาตรฐาน `jenkins/jenkins:lts-jdk21` ที่ **ไม่มี Docker อยู่ข้างใน** ทุกคำสั่ง Docker ถูกส่งผ่าน **SSH** ไปทำบน container `devtools` จากนั้นพิสูจน์ด้วยผลการทดลองว่า image เดียวกันรันบนเครื่องที่สองได้ด้วย digest เดียวกัน ออกเวอร์ชันใหม่ได้ภายในไม่กี่วินาที และย้อนกลับ (rollback) ได้ในเวลาไม่ถึง 2 วินาที ทุกขั้นตรวจผลด้วยตาจากหน้าเว็บ Console Output และ Docker Hub ไม่ต้องใช้คำสั่ง API
+แล็บนี้ให้นักศึกษา **เริ่มงานทุกอย่างจาก Jenkins Pipeline** ไม่พิมพ์ `docker build` เองแม้แต่ครั้งเดียว Jenkins เป็น image มาตรฐาน `jenkins/jenkins:lts-jdk21` ที่ **ไม่มี Docker อยู่ข้างใน** จึงส่งคำสั่งผ่าน **SSH** ไปให้ container `devtools` ซึ่งมี Docker และซอร์สโค้ดร้านอาหารแมวอยู่แล้วเป็นผู้ลงมือทำ
 
-![Build once, run anywhere](./images/lab3_theory_build_push_pull.png)
+> **Jenkins เป็นผู้สั่งงาน ส่วน devtools เป็นผู้ประมวลผลคำสั่ง Docker** — ทุก stage ตั้งแต่ build, test, push ไปจนถึง pull และ deploy เริ่มจากปุ่มบน Jenkins
 
-*ภาพที่ 1 ภาพรวมของแล็บ: Jenkins สั่งงานผ่าน SSH → devtools รัน `docker build` → Docker Hub เก็บ image → เครื่องใดก็ pull ไปรันได้ และทุกเครื่องได้ image ที่มี digest เดียวกัน*
+ผลลัพธ์ทุกค่าในเอกสารนี้ (เลข build, เวลา, digest, container ID) มาจากการทดลองจริงชุดเดียวกันตั้งแต่ต้นจนจบ นักศึกษาจะเห็นค่า digest, hostname และเวลาที่ต่างออกไปในเครื่องของตนเอง แต่ **ความสัมพันธ์ระหว่างค่าต้องเหมือนกัน** เช่น digest ที่ push ต้องเท่ากับ digest ที่ pull และเท่ากับที่ Docker Hub แสดง
 
-**สิ่งที่จะได้เมื่อจบแล็บ** — ร้าน Meow Mart ที่ deploy โดย Pipeline (ภาพจริงจากการทดลอง แบบเต็มจอ 1920×1080):
+![หน้าแรกของร้าน Meow Mart ที่ Pipeline deploy](./images/lab3_f1_web_hero_b1.jpg)
 
-![หน้าแรกของร้าน Meow Mart](./images/lab3_web_fullhd_hero.jpg)
-
-*ภาพที่ 2 หน้าแรกของร้าน สังเกต chip สีเขียวบนแถบด้านบน `v1.0.0 · build #1` ซึ่งอ่านมาจาก image ที่ Jenkins สั่งสร้าง*
+*ภาพที่ 1 สิ่งที่จะได้เมื่อจบแล็บ (ภาพจริงแบบเต็มจอ 1920×1080): chip สีเขียว `v1.0.0 · build #1` บนแถบด้านบนอ่านมาจาก image ที่ Jenkins สั่งสร้าง*
 
 ---
 
-## 📚 ทฤษฎีก่อนลงมือ
+## 1. System Architecture — ใครอยู่ที่ไหน และคุยกันทางใด
 
-### 1. Image, Container, Registry และคำสั่งหลักสี่คำสั่ง
+![System architecture ของ LAB 3](./images/lab3_arch_system.png)
 
-| คำศัพท์ | ความหมาย | เปรียบเทียบ |
+*ภาพที่ 2 สถาปัตยกรรมจริงของแล็บ ทุกชื่อ IP และ port ในภาพตรวจจากเครื่องที่ใช้ทดลอง (คำสั่งตรวจอยู่ในการทดลองที่ 3–4) เส้นสีน้ำเงินคือเส้นทาง **คำสั่ง** (SSH) เส้นสีส้มคือเส้นทาง **image** (push/pull) ซึ่งแยกจากกันโดยสิ้นเชิง*
+
+| ส่วนประกอบ | อยู่ที่ไหน | หน้าที่ในแล็บนี้ |
 |---|---|---|
-| **Image** | แพ็กเกจแบบอ่านอย่างเดียวที่มีระบบไฟล์ของแอป runtime และคำสั่งเริ่มต้น | “แม่พิมพ์” หรือกล่องอาหารแมวที่ปิดผนึก |
-| **Container** | process ที่รันจาก image หนึ่งตัว มี writable layer ของตัวเอง | อาหารที่เทออกมาใส่ชาม |
-| **Registry** | ที่เก็บและแจกจ่าย image เช่น Docker Hub | โกดังกลางที่ร้านทุกสาขามารับของ |
-| **Repository / Tag** | ชื่อชุดของ image (`<DOCKER_USER>/catfood-shop`) และป้ายเวอร์ชัน (`1`, `2`, `latest`) | ชื่อสินค้าและรุ่น |
+| **ผู้เรียน** | เครื่องของตนเอง (Docker host เช่น Docker Desktop) | เปิด browser ไปที่ `localhost:8080` (Jenkins) และ `localhost:3000` (ร้าน) · ใช้ shell ของ devtools เตรียม key และอ่านไฟล์ |
+| **devtools** | container บนเครื่องผู้เรียน (`--privileged`, สร้างใน LAB 1) | มี `sshd` (port 22), **Docker daemon ของตัวเอง** (Docker-in-Docker), ซอร์สโค้ดร้าน และ build cache |
+| **Docker daemon ของ devtools** | ภายใน devtools | สร้างและรัน container ทุกตัวของแล็บ ได้แก่ `jenkins`, `catfood-test-N`, `catfood-web` |
+| **jenkins** | container บน Docker ของ devtools · network `cicd-net` (172.19.0.2) | อ่าน Jenkinsfile, เก็บ Credentials, เปิด SSH ไปสั่ง devtools — **ไม่มี Docker CLI และไม่ได้ mount docker.sock** |
+| **ซอร์สโค้ดร้าน** | `~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop` **บน devtools** | เป็น build context ของ `docker build` · Jenkins ไม่มีสำเนาซอร์สเลย |
+| **Docker Hub** | อินเทอร์เน็ต `docker.io/<DOCKER_USER>/catfood-shop` | เก็บ image พร้อม tag `1`, `2`, `latest` · devtools push ขึ้นและ pull กลับลงมา |
+| **catfood-web** | container บน Docker ของ devtools · default `bridge` (172.18.0.2) · `-p 3000:3000` | ร้าน Meow Mart ที่รันจาก image ที่ **pull กลับมาจาก Docker Hub** |
 
-วงจรที่แล็บนี้ฝึกคือ `docker build` → `docker push` → `docker pull` → `docker run` ข้อดีสำคัญคือ **build ครั้งเดียว แล้วรันได้ทุกที่ (build once, run anywhere)** เครื่องปลายทางไม่ต้องมี Node.js, ไม่ต้อง `npm install` และไม่ต้องมีซอร์สโค้ด ขอเพียงมี Docker และเข้าถึง registry ได้
+**เส้นทางสองเส้นที่ต้องแยกให้ออก**
 
-### 2. Dockerfile แบบ single-stage: อ่านทีละบรรทัด
+1. **เส้นทางคำสั่ง (SSH)** — `jenkins` → `root@devtools` port 22 → `bash -s` บน devtools → `docker ...` → Docker daemon ของ devtools สิ่งที่วิ่งบนเส้นนี้มีแค่ข้อความสคริปต์และ log ที่พิมพ์กลับมา
+2. **เส้นทาง image (HTTPS)** — Docker daemon ของ devtools ⇄ Docker Hub เมื่อ `docker push` และ `docker pull` layer ขนาดร้อยกว่า MB เดินทางบนเส้นนี้ **Jenkins ไม่เคยแตะข้อมูล image เลย**
 
-image ประกอบด้วย **layer** ซ้อนกัน คำสั่ง `FROM`, `COPY`, `RUN` แต่ละบรรทัดใน Dockerfile สร้าง layer ใหม่ที่มีไฟล์ ส่วนคำสั่งอย่าง `ENV`, `ARG`, `EXPOSE`, `HEALTHCHECK`, `CMD` บันทึกเพียงค่าตั้งค่า (metadata) ขนาด 0 B แล็บนี้ใช้ Dockerfile แบบ **single-stage** คือมี `FROM` เพียงบรรทัดเดียว ทุกขั้นจึงอยู่ใน image เดียวและอ่านจากบนลงล่างได้ทันที (ตัดคอมเมนต์ออก):
+> 📝 port ที่ผู้เรียนเปิดใน browser ผ่านสองชั้น: `localhost:8080` → `-p 8080:8080` ของ devtools → `-p 8080:8080` ของ container `jenkins` และ `localhost:3000` → devtools → `catfood-web` (port ทั้งสองเปิดไว้แล้วตั้งแต่ LAB 1)
+
+### คำศัพท์ที่ใช้ตลอดแล็บ
+
+| คำศัพท์ | ความหมาย |
+|---|---|
+| **Image** | แพ็กเกจอ่านอย่างเดียวที่มีระบบไฟล์ของแอปและคำสั่งเริ่มต้น ประกอบจาก **layer** ซ้อนกัน |
+| **Container** | process ที่รันจาก image หนึ่งตัว |
+| **Registry / Repository / Tag** | ที่เก็บ image (Docker Hub) / ชื่อชุด image (`<DOCKER_USER>/catfood-shop`) / ป้ายเวอร์ชันที่ย้ายได้ (`1`, `2`, `latest`) |
+| **Digest** | ลายนิ้วมือ `sha256:...` ที่คำนวณจากเนื้อหา image — เนื้อหาเดียวกันได้ digest เดียวกันเสมอ |
+| **Credential** | ความลับที่ Jenkins เก็บไว้แทนเรา แล้วให้ Pipeline อ้างถึงด้วย ID |
+
+---
+
+## 🎯 Learning Objectives — ผลลัพธ์การเรียนรู้
+
+เมื่อจบแล็บนี้ นักศึกษาจะสามารถ
+
+1. วาดและอธิบายสถาปัตยกรรมที่ Jenkins สั่งงาน Docker ของเครื่องอื่นผ่าน SSH โดยแยกเส้นทางคำสั่งออกจากเส้นทาง image ได้
+2. ตรวจได้ด้วยตนเองว่า Jenkins ไม่มี Docker แต่มี SSH client และ devtools พร้อมรับงาน
+3. เตรียม SSH key, เก็บ private key และ Docker Hub token ใน Jenkins Credentials และทดสอบการเชื่อมต่อจาก Jenkins ก่อน build
+4. อ่าน Jenkinsfile แล้วบอกได้ว่าโค้ดส่วนใดทำงานบน Jenkins คำสั่งใดทำงานบน devtools และตัวแปรถูกแทนค่าที่ฝั่งใด
+5. อ่านหลักฐานของทุก stage จากหน้า Stages / Console, Docker Hub และหน้าร้าน แล้วยืนยันว่า version, เลข build และ digest สัมพันธ์กัน
+6. ออกเวอร์ชันใหม่ด้วย **Build with Parameters** และอธิบายผลของ layer cache และการย้าย tag ได้
+
+## 🗺️ แผนที่การทดลอง
+
+| ส่วน | การทดลอง | สิ่งที่ทำ | ผลจริงที่ได้ |
+|---|---|---|---|
+| 2. รู้จักสภาพแวดล้อม | 1–3 | เปิด Jenkins · ส่องข้างใน Jenkins · ส่อง devtools | `docker: not found` (exit 127) แต่มี `OpenSSH_10.0p2` · devtools มี Docker 29.8.1 และไฟล์ร้านครบ |
+| 3. เครือข่าย + Credentials | 4–7 | `--add-host` → สร้าง key → เก็บ credential 2 ตัว → job ทดสอบ SSH | `devtools` = `172.18.0.1` · `Permission denied` ก่อนมี key · job ทดสอบพิมพ์ hostname ของ devtools |
+| 6. Pipeline ทีละ stage | 8–14 | Build Now → Connect → Build → Test → Push → Pull → Deploy | build #1 เขียวทั้ง 6 stage ใน 1 นาที 6 วินาที · digest `046f4bd8af08…` ตรงกันทุกจุด · ร้านขึ้น `v1.0.0 · build #1` |
+| 7. ออกเวอร์ชันใหม่ | 15 | Build with Parameters `1.1.0` | build #2 ใน 24 วินาที · `CACHED` 5 ขั้น · push ใหม่ 0 layer · digest `bd8c67e1adc8…` |
+
+## 📂 ไฟล์ในโฟลเดอร์นี้
+
+| ไฟล์ | หน้าที่ |
+|---|---|
+| `Jenkinsfile` | Pipeline 6 stage: Connect → Build → Test → Push → Pull → Deploy (ทุก stage ส่งคำสั่งผ่าน SSH ไปที่ devtools) |
+| `catfood-shop/` | ซอร์สโค้ดร้าน Meow Mart (Next.js 16 + React 19) = build context |
+| `catfood-shop/Dockerfile` | Dockerfile แบบ single-stage + `HEALTHCHECK` |
+
+## สภาพตั้งต้น
+
+ต้องจบ LAB 2 แล้ว: container `devtools` ทำงาน (สร้างตาม LAB 1 ส่วนที่ 0 ซึ่งเปิด `-p 2222:22 -p 8080:8080 -p 3000:3000` ไว้แล้ว) มี network `cicd-net`, container `jenkins` ที่สร้างจาก `jenkins/jenkins:lts-jdk21`, volume `jenkins_home` และ login ด้วย `admin / admin2569` ได้
+
+> **Prerequisite Docker Hub:** สมัครบัญชี ยืนยันอีเมล สร้าง **Access Token สิทธิ์ Read & Write** และแนะนำให้สร้าง repository `catfood-shop` แบบ **Public** ไว้ก่อน (ถ้าไม่สร้าง Docker Hub จะสร้างให้ตอน push ตามค่า Default privacy ของบัญชี)
+
+คำสั่งทุกคำสั่งที่เขียนว่า “**shell ของ devtools**” ให้รันใน terminal ที่เข้า devtools แล้ว (`ssh -p 2222 root@localhost` หรือ terminal ของ VS Code ที่ attach devtools)
+
+### รูปแบบของทุกการทดลอง
+
+ทุกการทดลองเขียนในรูปแบบเดียวกัน
+
+1. 🎯 **เป้าหมาย** — ต้องการเรียนรู้อะไร
+2. 🛠️ **ขั้นตอน** — ทำที่หน้าจอหรือเครื่องใด
+3. 📝 **คำอธิบาย** — คำสั่งหรือโค้ดทำงานอย่างไร
+4. ✅ **ผลที่ควรเห็น** — ตรวจจากจุดใด (ค่าจริงจากการทดลอง)
+5. 💡 **ข้อสรุป** — ผลนั้นพิสูจน์อะไร
+
+---
+
+## 2. รู้จักสภาพแวดล้อม Jenkins
+
+### การทดลองที่ 1 — เปิดหน้าเว็บ Jenkins
+
+🎯 **เป้าหมาย:** ยืนยันว่า Jenkins จาก LAB 2 ยังทำงาน และรู้ว่าหน้าจอใดคือจุดเริ่มงานของแล็บนี้
+
+🛠️ **ขั้นตอน (browser):** เปิด `http://localhost:8080` แล้ว login ด้วย `admin / admin2569`
+
+📝 **คำอธิบาย:** request จาก browser ผ่าน port `8080` ของ devtools เข้า container `jenkins` หน้า Dashboard คือจุดที่จะสร้าง job และกด Build ทุกครั้งในแล็บนี้
+
+✅ **ผลที่ควรเห็น:**
+
+![Jenkins Dashboard](./images/lab3_a1_dashboard.png)
+
+*ภาพที่ 3 Dashboard ของ Jenkins 2.568.3 มี job `first-freestyle` (LAB 1) และ `first-pipeline` (LAB 2) สีเขียว*
+
+💡 **ข้อสรุป:** Jenkins พร้อมใช้งาน และข้อมูลจาก LAB ก่อนหน้ายังอยู่ใน volume `jenkins_home`
+
+### การทดลองที่ 2 — ข้างใน Jenkins ไม่มี Docker แต่มี SSH
+
+🎯 **เป้าหมาย:** พิสูจน์ด้วยตนเองว่า container `jenkins` สั่ง `docker` ไม่ได้ แต่มีเครื่องมือสำหรับสั่งงานเครื่องอื่นอยู่แล้ว
+
+🛠️ **ขั้นตอน (shell ของ devtools):**
+
+```bash
+docker exec jenkins sh -c 'docker version'; printf 'exit=%s\n' "$?"
+docker exec jenkins sh -c 'command -v ssh; ssh -V'
+docker exec jenkins sh -c 'id; hostname'
+```
+
+📝 **คำอธิบาย:** `docker exec jenkins ...` รันคำสั่ง **ภายใน** container `jenkins` คำสั่งแรกลองเรียก Docker CLI คำสั่งที่สองหา SSH client คำสั่งที่สามดูว่า Jenkins รันเป็นผู้ใช้ใด
+
+✅ **ผลที่ควรเห็น (ผลจริง):**
+
+```text
+sh: 1: docker: not found
+exit=127
+/usr/bin/ssh
+OpenSSH_10.0p2 Debian-7+deb13u4, OpenSSL 3.5.7 9 Jun 2026
+uid=1000(jenkins) gid=1000(jenkins) groups=1000(jenkins)
+fe6b96ef4427
+```
+
+💡 **ข้อสรุป:** exit code `127` แปลว่าหาโปรแกรม `docker` ไม่พบ image มาตรฐานของ Jenkins **ตั้งใจไม่ใส่ Docker** และเราจะไม่ติดตั้งเพิ่ม แต่มี OpenSSH client มาให้แล้ว Jenkins จึงต้อง **ส่งคำสั่งไปให้เครื่องที่มี Docker ทำ** เหตุผลที่ออกแบบเช่นนี้
+
+1. **Jenkins มีหน้าที่สั่ง ไม่ใช่ทำ** — ควบคุมลำดับขั้น เก็บ log และความลับ ส่วนงานหนักให้เครื่องที่มีเครื่องมือครบทำ เหมือน build agent ในระบบจริง
+2. **image มาตรฐาน ดูแลง่าย** — ไม่ต้อง build Jenkins image เอง อัปเกรดด้วยการเปลี่ยน tag
+3. **ปลอดภัยกว่าการ mount `docker.sock`** — ถ้า mount socket ผู้ที่ควบคุม Jenkins ได้ก็ควบคุม Docker ได้ทั้งหมดทันที ในแล็บนี้สิทธิ์ถูกจำกัดไว้ที่ SSH key หนึ่งชุดซึ่งเพิกถอนได้
+
+### การทดลองที่ 3 — devtools มี Docker และไฟล์ร้านพร้อมใช้งาน
+
+🎯 **เป้าหมาย:** ยืนยันว่าเครื่องปลายทางที่ Jenkins จะสั่งงานมีครบทั้ง Docker, sshd และซอร์สโค้ด และยังไม่มี image ร้านมาก่อน
+
+🛠️ **ขั้นตอน (shell ของ devtools):**
+
+```bash
+hostname
+docker version --format 'Client {{.Client.Version}} / Server {{.Server.Version}}'
+(echo > /dev/tcp/127.0.0.1/22) 2>/dev/null && echo "sshd: port 22 open"
+ls ~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop
+docker image ls
+```
+
+📝 **คำอธิบาย:** `hostname` ของ devtools คือ container ID ของมัน ค่านี้จะใช้พิสูจน์ในการทดลองที่ 7 และ 9 ว่า SSH ไปถึงเครื่องที่ถูกต้อง บรรทัดที่สามเปิด TCP ไปที่ port 22 ของตัวเองเพื่อตรวจว่า sshd ฟังอยู่
+
+✅ **ผลที่ควรเห็น (ผลจริง — hostname ของแต่ละเครื่องต่างกัน):**
+
+```text
+1b12b5e8724f
+Client 29.8.1 / Server 29.8.1
+sshd: port 22 open
+Dockerfile  app  data  next.config.mjs  package-lock.json  package.json  public
+IMAGE                       ID             DISK USAGE   CONTENT SIZE   EXTRA
+jenkins/jenkins:lts-jdk21   c1e4c349365f        814MB          293MB   U
+```
+
+💡 **ข้อสรุป:** devtools มี Docker daemon ของตัวเอง, sshd พร้อมรับการเชื่อมต่อ และมีซอร์สโค้ดร้านพร้อม `Dockerfile` ส่วน `docker image ls` มีเพียง image ของ Jenkins แปลว่า **ยังไม่มีใคร build ร้านมาก่อน** — build ครั้งแรกจะเกิดจาก Jenkins ในการทดลองที่ 8
+
+---
+
+## 3. เครือข่ายและ Credentials
+
+### Jenkins หา devtools เจอได้อย่างไร
+
+| คำถาม | คำตอบ (ค่าจริงในแล็บ) |
+|---|---|
+| Jenkins เรียกปลายทางด้วยชื่ออะไร | `devtools` — เขียนไว้ใน Jenkinsfile เป็น `root@devtools` |
+| ชื่อนี้มาจากไหน | ตอนสร้าง container `jenkins` ใส่ `--add-host devtools:host-gateway` Docker จะเขียน `172.18.0.1  devtools` ลงใน `/etc/hosts` ของ Jenkins |
+| `172.18.0.1` คือใคร | gateway ของ default `bridge` บน Docker ของ devtools = **network interface ของ devtools เอง** (`host-gateway` หมายถึง “เครื่องที่เป็นเจ้าของ Docker daemon นี้”) |
+| Jenkins อยู่ network ไหน | `cicd-net` (172.19.0.0/16) IP `172.19.0.2` ส่ง packet ไป `172.18.0.1` ผ่าน gateway `172.19.0.1` ซึ่งก็เป็น interface ของ devtools เช่นกัน |
+| ใช้ port อะไร | **22** (sshd ของ devtools) |
+| ยืนยันตัวตนอย่างไร | **SSH key** ไม่ใช้รหัสผ่าน: private key อยู่ใน Jenkins Credentials, public key อยู่ใน `~/.ssh/authorized_keys` ของ devtools |
+
+> Pipeline ต้องเชื่อมต่อได้ **โดยไม่มีใครพิมพ์รหัสผ่านระหว่างทำงาน** จึงต้องตั้งค่า SSH credential ให้เสร็จก่อนเริ่ม build
+
+### การทดลองที่ 4 — สร้าง Jenkins ใหม่ให้รู้จักชื่อ `devtools`
+
+🎯 **เป้าหมาย:** ให้ Jenkins เรียก devtools ด้วยชื่อได้ โดยยังใช้ image และ volume เดิม แล้วพิสูจน์ว่าเส้นทางเครือข่ายถึง sshd จริง
+
+🛠️ **ขั้นตอน (shell ของ devtools):**
+
+```bash
+docker rm -f jenkins
+docker run -d --name jenkins --network cicd-net --restart unless-stopped \
+  -p 8080:8080 --add-host devtools:host-gateway \
+  -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk21
+docker exec jenkins getent hosts devtools
+docker exec jenkins ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new root@devtools true; printf 'exit=%s\n' "$?"
+docker inspect -f '{{.Config.Image}}  {{.HostConfig.ExtraHosts}}' jenkins
+docker network inspect bridge   -f '{{range .IPAM.Config}}{{.Subnet}} gw {{.Gateway}}{{end}}'
+docker network inspect cicd-net -f '{{range .IPAM.Config}}{{.Subnet}} gw {{.Gateway}}{{end}}'
+docker inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}={{$v.IPAddress}}{{end}}' jenkins
+```
+
+📝 **คำอธิบาย:** การลบ container ไม่ทำให้ job หรือผู้ใช้หาย เพราะข้อมูลทั้งหมดอยู่ใน volume `jenkins_home` (LAB 1) `BatchMode=yes` สั่งไม่ให้ SSH ถามรหัสผ่าน ส่วน `StrictHostKeyChecking=accept-new` ยอมรับ host key ของ devtools ในครั้งแรกแล้วจดไว้ ครั้งต่อไปถ้า host key เปลี่ยน SSH จะปฏิเสธ (ป้องกันการปลอมเครื่อง)
+
+✅ **ผลที่ควรเห็น (ผลจริง — IP อาจต่างกันในแต่ละเครื่อง):**
+
+```text
+172.18.0.1      devtools
+Warning: Permanently added 'devtools' (ED25519) to the list of known hosts.
+root@devtools: Permission denied (publickey,password).
+exit=255
+jenkins/jenkins:lts-jdk21  [devtools:host-gateway]
+172.18.0.0/16 gw 172.18.0.1
+172.19.0.0/16 gw 172.19.0.1
+cicd-net=172.19.0.2
+```
+
+💡 **ข้อสรุป:** ชื่อ `devtools` แปลงเป็น `172.18.0.1` ซึ่งเป็น gateway ของ bridge บน devtools บรรทัด `Permanently added 'devtools' (ED25519)` แสดงว่าคุยกับ sshd ของ devtools ได้จริง ส่วน `Permission denied (publickey,password)` เป็นผลที่ **ถูกต้อง** — เส้นทางเครือข่ายใช้ได้แล้ว ขาดเพียง key Jenkins ยังเป็น image มาตรฐานตัวเดิม เพิ่มเพียง host entry หนึ่งรายการ (รอ Jenkins เริ่มระบบสักครู่แล้ว login ใหม่ job เดิมยังอยู่ครบ)
+
+### การทดลองที่ 5 — สร้าง SSH key ให้ Jenkins ใช้เข้า devtools
+
+🎯 **เป้าหมาย:** เตรียม key คู่หนึ่ง โดยให้ devtools รู้จัก public key
+
+🛠️ **ขั้นตอน (shell ของ devtools):**
+
+```bash
+ssh-keygen -t ed25519 -N '' -C jenkins-to-devtools -f ~/.ssh/jenkins_devtools
+cat ~/.ssh/jenkins_devtools.pub >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+ls -l ~/.ssh
+```
+
+📝 **คำอธิบาย:** `ssh-keygen` สร้าง key เป็นคู่ `-N ''` คือไม่ตั้ง passphrase เพื่อให้ Jenkins ใช้ได้โดยไม่มีคนพิมพ์ การต่อท้าย `.pub` ลงใน `authorized_keys` ทำให้ sshd ยอมให้ผู้ที่ถือ private key คู่กันเข้าเป็น `root` ได้
+
+✅ **ผลที่ควรเห็น (ผลจริง — fingerprint ต่างกันทุกเครื่อง เช่น `SHA256:NXRWiNiB… jenkins-to-devtools`):**
+
+```text
+-rw------- 1 root root 101 ... authorized_keys
+-rw------- 1 root root 411 ... jenkins_devtools
+-rw-r--r-- 1 root root 101 ... jenkins_devtools.pub
+```
+
+💡 **ข้อสรุป:** `jenkins_devtools` คือ **private key** (411 ไบต์ อ่านได้เฉพาะเจ้าของ) จะไปอยู่ใน Jenkins Credentials เท่านั้น `jenkins_devtools.pub` คือ **public key** (101 ไบต์) เปิดเผยได้ ขนาดของ `authorized_keys` เท่ากับ `.pub` พอดี แปลว่ามี public key อยู่หนึ่งชุด
+
+> ⚠️ **Safety:** การ login เป็น `root` ด้วย key ชุดเดียวเหมาะกับแล็บที่ลบทิ้งได้เท่านั้น ใครได้ private key นี้ไปก็สั่ง Docker ของ devtools ได้ทุกอย่าง ระบบ production ควรใช้ผู้ใช้หรือ build agent เฉพาะงาน จำกัดสิทธิ์ตามหลัก least privilege และแยก key ต่อเครื่อง
+
+### การทดลองที่ 6 — เก็บ SSH key และ Docker Hub token ใน Jenkins Credentials
+
+🎯 **เป้าหมาย:** ให้ Pipeline ใช้ความลับสองชิ้นได้โดยไม่เขียนความลับลงในโค้ด และแยก credential ของ SSH ออกจาก Docker Hub
+
+🛠️ **ขั้นตอน (browser):**
+
+1. **Manage Jenkins → Credentials** (หมวด Security)
+
+![Manage Jenkins → Credentials](./images/lab3_b3a_manage_jenkins.png)
+
+*ภาพที่ 4 เมนู Credentials ในหมวด Security (กรอบแดง)*
+
+2. เลือก **System → Global credentials (unrestricted)** จะเห็นหน้าว่าง แล้วกด **Add Credentials**
+
+![Global credentials ยังว่าง](./images/lab3_b3a2_credentials_empty.png)
+
+*ภาพที่ 5 ก่อนเริ่มยังไม่มี credential ใด*
+
+**(ก) SSH key สำหรับเข้า devtools**
+
+3. เลือกชนิด **SSH Username with private key** → **Next**
+
+![เลือกชนิด SSH Username with private key](./images/lab3_b3b_credential_kind_ssh.png)
+
+*ภาพที่ 6 Jenkins รุ่นนี้ให้เลือกชนิด credential ใน dialog ก่อนกรอกข้อมูล*
+
+4. แสดง private key ใน shell ของ devtools แล้วคัดลอก **ทั้งไฟล์** รวมบรรทัด `-----BEGIN OPENSSH PRIVATE KEY-----` และ `-----END OPENSSH PRIVATE KEY-----`
+
+```bash
+cat ~/.ssh/jenkins_devtools
+```
+
+5. กรอก **ID** = `devtools-ssh`, **Description** = `SSH key: Jenkins to devtools`, **Username** = `root` เลือก **Private Key → Enter directly → Add** แล้ววางเนื้อหาที่คัดลอกมา ปล่อย **Passphrase** ว่าง → **Create**
+
+![แบบฟอร์ม SSH key](./images/lab3_b3c_ssh_credential_form.png)
+
+*ภาพที่ 7 ช่อง Key ในภาพใส่ข้อความตัวอย่างไว้แทน key จริง ให้วางเนื้อหาไฟล์ `~/.ssh/jenkins_devtools` ของตนเองทั้งไฟล์*
+
+![ส่วนล่างของแบบฟอร์ม SSH key](./images/lab3_b3c2_ssh_credential_form_bottom.png)
+
+*ภาพที่ 8 ส่วนล่างของแบบฟอร์ม: Passphrase ว่าง (key สร้างด้วย `-N ''`) แล้วกด Create*
+
+**(ข) Docker Hub token**
+
+6. **Add Credentials** อีกครั้ง เลือก **Username with password** → **Next** กรอก Username = `<DOCKER_USER>`, Password = `<DOCKER_TOKEN>`, ID = `dockerhub`, Description = `Docker Hub access token` → **Create** (แทน placeholder ด้วยค่าจริงของตนเอง)
+
+![แบบฟอร์ม Docker Hub](./images/lab3_b3d_dockerhub_credential_form.png)
+
+*ภาพที่ 9 ช่อง Password ถูกปิดบังเสมอ ID `dockerhub` คือชื่อที่ Jenkinsfile อ้างถึง*
+
+📝 **คำอธิบาย:** credential สองตัวนี้ **ใช้คนละที่และคนละเวลา** — `devtools-ssh` ใช้ทุก stage เพื่อเปิด SSH ส่วน `dockerhub` ใช้เฉพาะ stage ที่ต้องรู้ชื่อบัญชีหรือ login Docker Hub การแยกกันทำให้เปลี่ยน token ได้โดยไม่แตะ key และเพิกถอนสิทธิ์ทีละอย่างได้
+
+✅ **ผลที่ควรเห็น:** หน้า Global credentials มีสองรายการ
+
+![รายการ credential สองตัว](./images/lab3_b3e_credentials_list.png)
+
+*ภาพที่ 10 `devtools-ssh` และ `dockerhub` แสดงเพียง ID และคำอธิบาย*
+
+💡 **ข้อสรุป:** หน้านี้ **ไม่แสดง private key หรือ token เลย** แม้ผู้ดูแลก็อ่านความลับกลับออกมาจากหน้าเว็บไม่ได้ Pipeline เท่านั้นที่ขอใช้ได้ผ่าน ID
+
+> ⚠️ private key และ token วางได้ที่ Jenkins Credentials เท่านั้น ห้ามวางในแชต เอกสาร หรือ commit ลง Git
+
+### การทดลองที่ 7 — ทดสอบ SSH จาก Jenkins ก่อนเริ่ม build
+
+🎯 **เป้าหมาย:** ยืนยันว่า Jenkins ใช้ credential `devtools-ssh` เข้า devtools ได้จริง และไปถึง **เครื่องที่ถูกต้อง** ก่อนจะสั่งงานหนัก
+
+🛠️ **ขั้นตอน (browser):**
+
+1. Dashboard → **New Item** → ชื่อ `devtools-ssh-test` → เลือก **Pipeline** → **OK**
+
+![New Item devtools-ssh-test](./images/lab3_b4a_new_item_ssh_test.png)
+
+*ภาพที่ 11 job ทดสอบชนิด Pipeline*
+
+2. ในส่วน **Pipeline** คง Definition เป็น **Pipeline script** วางสคริปต์นี้ → **Save**
+
+```groovy
+pipeline {
+  agent any
+  stages {
+    stage('SSH to devtools') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY')]) {
+          sh 'ssh -i "$SSH_KEY" -o StrictHostKeyChecking=accept-new root@devtools "hostname; whoami; docker --version; ls ~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop"'
+        }
+      }
+    }
+  }
+}
+```
+
+![สคริปต์ทดสอบ SSH](./images/lab3_b4b_ssh_test_script.png)
+
+*ภาพที่ 12 สคริปต์ทดสอบใน editor ของ Jenkins*
+
+3. กด **Build Now** แล้วเปิด **Console Output** ของ build #1
+
+📝 **คำอธิบาย:** `withCredentials([sshUserPrivateKey(...)])` ให้ Jenkins เขียน private key ลงไฟล์ชั่วคราว แล้วเก็บ path ไว้ในตัวแปร `$SSH_KEY` เฉพาะภายในบล็อก เมื่อจบบล็อกไฟล์ถูกลบ `ssh -i "$SSH_KEY"` ใช้ไฟล์นั้นยืนยันตัวตน ข้อความในเครื่องหมายคำพูดหลัง `root@devtools` คือคำสั่งที่ **ไปรันบน devtools**
+
+✅ **ผลที่ควรเห็น (ผลจริง):**
+
+![Console ของ devtools-ssh-test](./images/lab3_b4c_ssh_test_console.png)
+
+*ภาพที่ 13 `ssh -i ****` (path ของ key ถูก mask) ตามด้วย `1b12b5e8724f`, `root`, `Docker version 29.8.1, build 4a63305` และรายการไฟล์ของร้าน → `Finished: SUCCESS`*
+
+💡 **ข้อสรุป:** `1b12b5e8724f` คือ hostname เดียวกับที่ได้ใน **การทดลองที่ 3** ไม่ใช่ hostname ของ Jenkins (`fe6b96ef4427` ในการทดลองที่ 2) และ Jenkins สั่ง `docker --version` ได้ทั้งที่ตัวเองไม่มี Docker — คำสั่งไปรันบน devtools จริง เส้นทางคำสั่งพร้อมแล้ว
+
+> 💡 **ทำไมไม่ใช้ `environment { SSH_KEY = credentials('devtools-ssh') }`?** ผู้เขียนลองแล้ว: สำหรับ credential ชนิด SSH key รูปแบบนี้จะผูกตัวแปร `SSH_KEY_USR` (= `root`) มาด้วยและ **mask คำว่า `root` ทุกที่ใน console** ผลคือ `root@devtools` กลายเป็น `****@devtools` และ `whoami` พิมพ์ `****` ตรวจด้วยตาไม่ได้ว่าเข้าเครื่องถูกผู้ใช้หรือไม่ จึงใช้ `withCredentials([sshUserPrivateKey(... keyFileVariable: 'SSH_KEY')])` ซึ่งผูกเฉพาะไฟล์ key แทน
+
+---
+
+## 4. ซอร์สโค้ดร้านและ Dockerfile
+
+### โครงสร้างไฟล์และ build context
+
+build context คือโฟลเดอร์ที่ `docker build` ส่งให้ Docker daemon ใช้ ในแล็บนี้คือ `catfood-shop/` **บน devtools** (Jenkinsfile ตั้งไว้เป็น `APP_DIR`) และ `Dockerfile` อยู่ที่รากของโฟลเดอร์นั้น
+
+```text
+~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop/   ← build context
+├── Dockerfile               # สูตรสร้าง image (single-stage + HEALTHCHECK)
+├── .dockerignore            # ไม่ส่ง node_modules, .next, .git, *.md เข้า build context
+├── package.json / package-lock.json
+├── app/page.js              # หน้าร้าน (อ่าน build info ทุก request)
+├── app/components/Shop.js   # ตัวกรองหมวด + ตะกร้า (ทำงานฝั่ง browser)
+├── app/api/health/route.js  # /api/health ที่ HEALTHCHECK และ stage Deploy เรียก
+├── data/products.js         # สินค้า 6 รายการ
+├── data/buildInfo.js        # อ่าน APP_VERSION, BUILD_NUMBER, GIT_COMMIT, BUILD_TIME
+└── public/images/           # ภาพสินค้า
+```
+
+> 📝 แล็บนี้ **ไม่ให้ build ด้วยมือบน devtools** image ของร้านจะถูกสร้างครั้งแรกโดย Jenkins ในการทดลองที่ 8 นักศึกษาอ่าน Dockerfile ให้เข้าใจก่อน แล้วดูผลของแต่ละบรรทัดจาก log ของ stage Build
+
+### Dockerfile ทีละขั้น
 
 ```dockerfile
 FROM node:22-alpine
@@ -39,10 +395,10 @@ WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund && npm cache clean --force
+RUN npm ci --no-audit --no-fund && npm cache clean --force      # ① ติดตั้ง dependencies
 
 COPY . .
-RUN npm run build && rm -rf .next/cache
+RUN npm run build && rm -rf .next/cache                          # ② build เว็บไซต์
 
 ENV NODE_ENV=production \
     PORT=3000
@@ -54,693 +410,600 @@ ARG BUILD_TIME=unknown
 ENV APP_VERSION=$APP_VERSION \
     BUILD_NUMBER=$BUILD_NUMBER \
     GIT_COMMIT=$GIT_COMMIT \
-    BUILD_TIME=$BUILD_TIME
+    BUILD_TIME=$BUILD_TIME                                       # ข้อมูล build จาก Jenkins
 
 EXPOSE 3000
 HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --start-interval=1s --retries=3 \
-  CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1
-CMD ["npm", "start"]
+  CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1      # ④ ตรวจสุขภาพ
+CMD ["npm", "start"]                                             # ③ เริ่มแอป
 ```
 
-| บรรทัด | ทำอะไร | ขนาด layer (วัดจริงในการทดลองที่ 4) |
-|---|---|---:|
-| `FROM node:22-alpine` | ใช้ Node.js 22 บน Alpine Linux เป็นฐาน | ≈ 177 MB |
-| `WORKDIR /app` · `ENV NEXT_TELEMETRY_DISABLED=1` | กำหนดโฟลเดอร์ทำงาน และปิดการส่ง telemetry ของ Next.js | 8.19 kB · 0 B |
-| `COPY package.json package-lock.json ./` | คัดลอกเฉพาะรายการ dependency | 45.1 kB |
-| `RUN npm ci ... && npm cache clean --force` | ติดตั้ง dependency ตาม lock file แล้วลบ cache ของ npm | **357 MB** |
-| `COPY . .` | คัดลอกซอร์สโค้ดของร้าน | 422 kB |
-| `RUN npm run build && rm -rf .next/cache` | `next build` แล้วลบ cache ของการ build | 5.62 MB |
-| `ENV NODE_ENV=production PORT=3000` | ค่าตั้งค่าตอนรัน | 0 B |
-| `ARG` ×4 + `ENV APP_VERSION=...` | รับข้อมูล build จาก Jenkins แล้วเก็บเป็น env ของ image | 0 B |
-| `EXPOSE 3000` · `CMD ["npm", "start"]` | ประกาศ port และคำสั่งเริ่ม `next start` | 0 B |
-| `HEALTHCHECK ... CMD wget ...` | ให้ **Docker เอง** เข้าไปถามแอปว่ายังตอบอยู่หรือไม่ ช่วงเริ่มระบบ (30 วินาทีแรก) ถามทุก 1 วินาที หลังจากนั้นทุก 10 วินาที | 0 B |
+| ขั้น | บรรทัด | ทำอะไร | ขนาด layer จริง (`docker history` ของ image ที่ Jenkins สร้าง) |
+|---|---|---|---:|
+| ฐาน | `FROM node:22-alpine` · `WORKDIR /app` | Node.js 22 บน Alpine และโฟลเดอร์ทำงาน | ≈ 177 MB · 8.19 kB |
+| ① ติดตั้ง dependencies | `COPY package*.json` แล้ว `RUN npm ci ... && npm cache clean --force` | ติดตั้งตาม lock file แล้วลบ cache ของ npm ใน `RUN` เดียวกัน | 45.1 kB · **357 MB** |
+| ② build เว็บไซต์ | `COPY . .` แล้ว `RUN npm run build && rm -rf .next/cache` | คัดลอกซอร์สแล้ว `next build` ลบ cache ของการ build | 422 kB · 5.62 MB |
+| ข้อมูล build | `ARG` ×4 + `ENV APP_VERSION=...` | รับค่าจาก Jenkins ผ่าน `--build-arg` แล้วเก็บเป็น env ของ image | 0 B |
+| ③ เริ่มแอป | `EXPOSE 3000` · `CMD ["npm", "start"]` | ประกาศ port และเริ่ม `next start` | 0 B |
+| ④ ตรวจสุขภาพ | `HEALTHCHECK ... wget /api/health` | ให้ **Docker เอง** ถามแอปทุก 1 วินาทีช่วง 30 วินาทีแรก หลังจากนั้นทุก 10 วินาที | 0 B |
 
-หลักการสำคัญที่ซ่อนอยู่ใน Dockerfile นี้มีสี่ข้อ
-
-1. **`FROM` หนึ่งบรรทัด = image หนึ่งตัว** ทุกอย่างที่ติดตั้งหรือสร้างในขั้นใดก็ตามจะติดอยู่ใน image สุดท้าย
-2. **คัดลอก dependency ก่อนซอร์สโค้ด** `npm ci` คือ layer ที่ใหญ่และช้าที่สุด การ `COPY package*.json` แยกไว้ก่อน `COPY . .` ทำให้การแก้โค้ดของร้านไม่ทำให้ layer นี้ต้องสร้างใหม่ ขั้น `npm ci` จึงใช้ cache ได้ตราบที่ `package-lock.json` ไม่เปลี่ยน
-3. **ลบของที่ไม่ใช้ใน `RUN` เดียวกัน** `npm cache clean --force` และ `rm -rf .next/cache` ต้องต่อท้ายด้วย `&&` ในบรรทัดเดียวกับคำสั่งที่สร้างไฟล์นั้น เพราะ layer ที่สร้างเสร็จแล้วแก้ไม่ได้ การเขียน `RUN rm ...` เป็นบรรทัดใหม่เพียงสร้าง layer ที่ “ซ่อน” ไฟล์ไว้ image ไม่ได้เล็กลง (การทดลองที่ 4 วัดผลต่างจริงให้ดู)
-4. **ให้ Docker ตรวจสุขภาพแทนเรา** `HEALTHCHECK` ทำให้ทุก container ที่รันจาก image นี้มีสถานะสุขภาพติดตัว เริ่มจาก `starting` แล้วเปลี่ยนเป็น `healthy` เมื่อแอปตอบได้ (หรือ `unhealthy` ถ้าล้มเหลว 3 ครั้งติด) นักศึกษาเห็นสถานะนี้ได้ในคอลัมน์ STATUS ของ `docker ps` เช่น `Up 2 seconds (healthy)` ส่วน Pipeline อ่านค่าเดียวกันด้วย `docker inspect -f '{{.State.Health.Status}}'` ตัวเลือก `--start-interval=1s` ทำให้ Docker ถามถี่ทุก 1 วินาทีระหว่างเริ่มระบบ สถานะจึงเปลี่ยนเป็น `healthy` ได้ภายในไม่กี่วินาทีแทนที่จะรอรอบ 10 วินาที
-
-ส่วน `ARG`/`ENV` ที่เปลี่ยนทุก build ถูกวางไว้ **ท้ายสุด** ด้วยเหตุผลเรื่อง layer cache ในหัวข้อถัดไป
+ภาพรวมขนาด: **693 MB** บนดิสก์ และ **154 MB** ที่ต้องดาวน์โหลด (ค่าจาก stage Build ในการทดลองที่ 10) ใน image มี `node_modules` 337.6 MB และ `.next` 5.3 MB
 
 ![Dockerfile แบบ single-stage](./images/lab3_theory_single_stage.png)
 
-*ภาพที่ 3 Dockerfile แบบ single-stage: ทุกขั้นอยู่ใน image เดียว layer ที่ใหญ่ที่สุดคือ `npm ci` ตัวเลขในภาพมาจากการวัดจริงในการทดลองที่ 4*
+*ภาพที่ 14 Dockerfile แบบ single-stage: layer ที่ใหญ่ที่สุดคือ `npm ci` ตัวเลขทุกตัวตรงกับ `docker history` ของ image ที่ Jenkins สร้าง*
 
-> 📝 image ที่ใช้ใน production มักถูกลดขนาดลงอีกด้วยเทคนิคขั้นสูงกว่านี้ ซึ่งอยู่นอกขอบเขตของแล็บนี้
+หลักการสี่ข้อที่ซ่อนอยู่ใน Dockerfile นี้
 
-### 3. Layer cache: ทำไม build ครั้งที่สองเร็วขึ้น
+1. **`FROM` หนึ่งบรรทัด = image หนึ่งตัว** ทุกอย่างที่ติดตั้งจะติดอยู่ใน image สุดท้าย
+2. **คัดลอก dependency ก่อนซอร์สโค้ด** การแก้โค้ดร้านจึงไม่ทำให้ layer `npm ci` (357 MB) ต้องสร้างใหม่
+3. **ลบของที่ไม่ใช้ใน `RUN` เดียวกัน** layer ที่สร้างเสร็จแล้วแก้ไม่ได้ `RUN rm ...` บรรทัดใหม่เพียงซ่อนไฟล์ image ไม่ได้เล็กลง
+4. **ให้ Docker ตรวจสุขภาพแทนเรา** container มีสถานะ `starting` → `healthy` (หรือ `unhealthy`) ติดตัว stage Test และ Deploy อ่านค่านี้ด้วย `docker inspect -f '{{.State.Health.Status}}'`
 
-Docker จำผลของแต่ละ layer ไว้ ถ้าคำสั่งและไฟล์ที่ป้อนให้ layer นั้นไม่เปลี่ยน ครั้งถัดไปจะใช้ของเดิม แต่เมื่อ layer ใดเปลี่ยน layer ที่อยู่ถัดลงไปทั้งหมดต้องสร้างใหม่ หลักการเขียน Dockerfile จึงเป็น **“เรียงจากสิ่งที่เปลี่ยนน้อยไปหาสิ่งที่เปลี่ยนบ่อย”**
+### Layer cache: เรียงจากสิ่งที่เปลี่ยนน้อยไปหาสิ่งที่เปลี่ยนบ่อย
 
-ในแล็บนี้ทุก build เกิดขึ้นบน Docker ของ devtools ซึ่งใช้ **BuildKit** เป็นตัว build ทั้งตอนที่นักศึกษาพิมพ์ `docker build` เอง (การทดลองที่ 4) และตอนที่ Jenkins สั่งผ่าน SSH (การทดลองที่ 6 และ 10) จึงใช้ cache ชุดเดียวกัน BuildKit แสดงเฉพาะขั้นที่สร้างไฟล์เป็นบรรทัด `#N` ใน console ได้แก่ `#6` `WORKDIR`, `#7` `COPY package*.json`, `#8` `RUN npm ci`, `#9` `COPY . .` และ `#10` `RUN npm run build` ขั้นที่ใช้ cache จะขึ้นว่า `#6 CACHED` … `#10 CACHED` ส่วน `ENV`/`ARG`/`HEALTHCHECK`/`CMD` เป็น metadata ที่ถูกเขียนลงใน image config ตอนท้าย ไม่ถูกแสดงเป็นขั้นแยก
-
-Dockerfile ของร้านวางข้อมูลที่เปลี่ยนทุก build (`APP_VERSION`, `BUILD_NUMBER`, `BUILD_TIME`) ไว้ **ท้ายสุด** ด้วย `ARG` + `ENV` ผลคือเมื่อออกเวอร์ชันใหม่ ทั้ง 5 ขั้นที่สร้างไฟล์ (รวม `npm ci` และ `next build`) ขึ้น `CACHED` สิ่งที่เปลี่ยนมีเพียง image config ที่เก็บค่า env ใหม่ ตอน push Docker Hub จึงตอบว่า `Layer already exists` ทุก layer (พิสูจน์ในการทดลองที่ 10)
+Docker จำผลของแต่ละ layer ไว้ ถ้าคำสั่งและไฟล์ที่ป้อนให้ layer นั้นไม่เปลี่ยน ครั้งถัดไปใช้ของเดิม (`CACHED`) Dockerfile ของร้านวางข้อมูลที่เปลี่ยนทุก build (`APP_VERSION`, `BUILD_NUMBER`, `BUILD_TIME`) ไว้ **ท้ายสุด** เมื่อออกเวอร์ชันใหม่ ทั้ง 5 ขั้นที่สร้างไฟล์จึง `CACHED` และตอน push Docker Hub ตอบ `Layer already exists` ทุก layer (พิสูจน์ในการทดลองที่ 15)
 
 ![Layer cache](./images/lab3_theory_layer_cache.png)
 
-*ภาพที่ 4 build #2 เปลี่ยนเฉพาะส่วนบนสุด (ค่าตั้งค่าของ image) ส่วน layer อื่นใช้ cache และไม่ต้องอัปโหลดซ้ำ*
-
-### 4. Tag กับ Digest
-
-- **Tag** คือป้ายชื่อที่ย้ายได้ เช่น `latest` ชี้ไปที่ build #1 แล้วภายหลังย้ายไปชี้ build #2
-- **Digest** (`sha256:...`) คือลายนิ้วมือที่คำนวณจากเนื้อหาของ image เนื้อหาต่างกันแม้เพียงบิตเดียว digest ก็ต่างกัน และไม่มีวันเปลี่ยน
-
-แนวปฏิบัติคือ **deploy ด้วย tag แต่ตรวจสอบด้วย digest** Jenkins console จะพิมพ์ digest หลัง push และหน้า Tags บน Docker Hub แสดง digest 12 ตัวแรก ซึ่งต้องตรงกัน
-
-Pipeline ของแล็บ build ด้วย `docker build --provenance=false` เพื่อให้ image ที่ push ขึ้นไปเป็น **manifest เดี่ยว** digest ที่ Jenkins พิมพ์จึงเท่ากับ digest ที่หน้า Docker Hub แสดงทุกตัวอักษร ถ้าเปิด attestation ไว้ (ค่าเริ่มต้นของ BuildKit) สิ่งที่ถูก push จะเป็น **index** ที่ห่อ image กับเอกสาร provenance ไว้ด้วยกัน console จะพิมพ์ digest ของ index ขณะที่ Docker Hub แสดง digest ของ image ราย platform ซึ่งเป็นคนละค่า ผู้เขียนพบปัญหานี้จริงระหว่างทดสอบแล็บ จึงปิด provenance ไว้เพื่อให้การตรวจด้วยตาทำได้ตรงไปตรงมา
-
-![Tag vs Digest](./images/lab3_theory_tag_digest.png)
-
-*ภาพที่ 5 tag ย้ายได้ ส่วน digest ผูกกับเนื้อหาตลอดไป ค่า `7803b4edfb8a…` และ `0f85c4beb07e…` คือ digest จริงของ build #1 และ #2 ในการทดลองนี้*
-
-### 5. Jenkins สั่ง Docker ผ่าน SSH ไปที่ devtools
-
-Jenkins ในแล็บนี้คือ image มาตรฐาน `jenkins/jenkins:lts-jdk21` ตามที่ใช้มาตั้งแต่ LAB 2 **ไม่ติดตั้ง Docker CLI เพิ่ม ไม่ mount Docker socket และไม่ mount ซอร์สโค้ด** เหตุผลมีสามข้อ
-
-1. **Jenkins มีหน้าที่ “สั่ง” ไม่ใช่ “ทำ”** Jenkins ควบคุมลำดับขั้น เก็บ log และเก็บ credential ส่วนงานหนักอย่าง build/test/push ให้เครื่องที่มีเครื่องมือครบทำ แนวคิดเดียวกับ **build agent** ในระบบจริงที่ Jenkins controller ส่งงานไปให้เครื่องลูกทำ
-2. **image เล็กและเป็นมาตรฐาน** ไม่ต้องดูแล image ที่สร้างเอง อัปเกรด Jenkins ได้ด้วยการเปลี่ยน tag อย่างเดียว
-3. **เครื่องที่เป็นเจ้าของ Docker ทำงานเอง** devtools มีทั้ง Docker daemon, ซอร์สโค้ด และ cache ของการ build อยู่แล้ว เมื่อสั่งให้ devtools build เองจึงใช้ cache เดียวกับที่นักศึกษา build ด้วยมือ
-
-การเชื่อมต่อทำงานดังนี้
-
-| ส่วน | ทำงานอย่างไร |
-|---|---|
-| ชื่อ `devtools` | ตอนสร้าง container `jenkins` ใส่ `--add-host devtools:host-gateway` Docker จะเขียนบรรทัด `<IP ของ gateway> devtools` ลงใน `/etc/hosts` ของ Jenkins IP นั้นคือ gateway ของ bridge network ซึ่งก็คือ Docker host = devtools เอง (Jenkins เป็น container ที่ Docker ของ devtools สร้าง) |
-| ช่องทาง | devtools มี `sshd` ทำงานอยู่แล้ว Jenkins ใช้ SSH client ที่มีมากับ image มาตรฐาน ส่งคำสั่งแบบ `ssh root@devtools "docker ..."` |
-| การยืนยันตัวตน | ใช้ **SSH key** ไม่ใช้รหัสผ่าน: private key เก็บใน **Jenkins Credentials** (ID `devtools-ssh`) เท่านั้น public key อยู่ใน `~/.ssh/authorized_keys` ของ devtools |
-| host key | `-o StrictHostKeyChecking=accept-new` ยอมรับ host key ของ devtools อัตโนมัติในการเชื่อมต่อครั้งแรกแล้วจดไว้ ครั้งต่อไปถ้า host key เปลี่ยน SSH จะปฏิเสธ (ป้องกันการปลอมเครื่อง) |
-
-![Jenkins สั่ง Docker ผ่าน SSH](./images/lab3_theory_ssh.png)
-
-*ภาพที่ 6 Jenkins (image มาตรฐาน ไม่มี Docker) ใช้ private key จาก Credentials เชื่อมต่อ SSH ไปที่ `devtools` ผ่านชื่อที่ได้จาก host-gateway แล้ว devtools เป็นผู้รัน `docker build/run/push/pull` กับ Docker Hub*
-
-> ⚠️ **Safety:** การ login เป็น `root` ผ่าน SSH ด้วย key ชุดเดียวที่ใช้ร่วมกัน เหมาะกับแล็บที่ลบทิ้งได้เท่านั้น ใครได้ private key นี้ไปก็สั่ง Docker ของ devtools ได้ทุกอย่าง ระบบ production ควรใช้ผู้ใช้หรือ build agent เฉพาะงาน จำกัดสิทธิ์ตามหลัก least privilege และแยก key ต่อเครื่อง
-
-### 6. Credential ไม่อยู่ในโค้ด
-
-แล็บนี้มีความลับสองชิ้น คือ **private key** สำหรับเข้า devtools (ID `devtools-ssh`) และ **Docker Hub token** (ID `dockerhub`) ทั้งสองเก็บใน **Jenkins Credentials** Jenkinsfile อ้างถึงด้วย ID เท่านั้น Pipeline ใช้มาตรการซ้อนกันหลายชั้น:
-
-| มาตรการ | ป้องกันอะไร |
-|---|---|
-| `SSH_KEY = credentials('devtools-ssh')` ในบล็อก `environment` | Jenkins เขียน private key ลงไฟล์ชั่วคราวใน workspace แล้วส่ง path ให้ `ssh -i` ใช้ console แสดงเป็น `ssh -i ****` และไฟล์ถูกลบเมื่อจบ build |
-| `withCredentials([usernamePassword(credentialsId: 'dockerhub', ...)])` | token มีอยู่เฉพาะในบล็อกที่ใช้ ไม่อยู่ใน environment ของทั้ง Pipeline |
-| Groovy สตริงอัญประกาศเดี่ยว `'''...'''` | Groovy ไม่แทนค่า token ลงในสคริปต์ shell เป็นผู้อ่านค่าเอง |
-| `set +x` | shell ไม่พิมพ์คำสั่งที่มี token ออก console |
-| `echo "$DOCKER_TOKEN" \| ssh ... docker login --password-stdin` | token เดินทางผ่าน **stdin** ของ SSH ไปถึง `docker login` บน devtools ไม่ปรากฏใน command line ของ process ใดทั้งฝั่ง Jenkins และ devtools |
-| `DOCKER_CONFIG=/tmp/jenkins-docker-<BUILD>` + `trap 'docker logout; rm -rf "$DOCKER_CONFIG"' EXIT` | ไฟล์ login ถูกเขียนในโฟลเดอร์ชั่วคราวของ build นั้น และถูกลบทันทีที่ push เสร็จ ไม่ว่าจะสำเร็จหรือล้มเหลว ผู้เขียนตรวจแล้วว่าไม่มีโฟลเดอร์ค้างบน devtools และจำนวน token ที่ปรากฏใน console = 0 |
-| Masking ของ Jenkins | ถ้าความลับหลุดเข้า console จะแสดงเป็น `****` (เป็นเพียงด่านสุดท้าย ไม่ใช่การรับประกัน) |
+*ภาพที่ 15 build #2 เปลี่ยนเฉพาะค่าตั้งค่าของ image ส่วน layer อื่นใช้ cache และไม่ต้องอัปโหลดซ้ำ*
 
 ---
 
-## 🎯 Learning Objectives — ผลลัพธ์การเรียนรู้
+## 5. อ่าน Jenkinsfile ก่อนรัน
 
-เมื่อจบแล็บนี้ นักศึกษาจะสามารถ
+อ่านทีละส่วนโดยถามตัวเองเสมอว่า **“บรรทัดนี้ทำงานที่ Jenkins หรือที่ devtools”**
 
-1. อธิบายความสัมพันธ์ของ image, container, registry, tag และ digest และลำดับ build → push → pull → run ได้
-2. อ่าน Dockerfile แบบ single-stage ทีละบรรทัด วัดขนาดของแต่ละ layer ด้วย `docker history` และอธิบายบทบาทของ `HEALTHCHECK` ได้
-3. เรียงลำดับคำสั่งใน Dockerfile ให้ใช้ layer cache ได้คุ้มค่า และอ่านผล `CACHED` / `Layer already exists` ได้
-4. ตั้งค่า Jenkins (image มาตรฐาน) ให้สั่ง build/push/deploy บน devtools ผ่าน SSH โดยเก็บ key และ token ใน Credentials
-5. ยืนยันว่า image บน Docker Hub คือ image เดียวกับที่ Jenkins สั่ง build และที่รันอยู่บนทุกเครื่อง โดยใช้ digest
-6. ออกเวอร์ชันใหม่และ rollback ด้วยการเปลี่ยน tag ได้
-7. ตรวจผลด้วยการดูหน้าเว็บ/Console/Docker Hub แทนการใช้คำสั่ง API
+![Pipeline 6 stage ทำงานที่ใด](./images/lab3_arch_stages.png)
 
-## 🗺️ แผนที่การทดลอง
+*ภาพที่ 16 ทุก stage เริ่มที่ Jenkins (แถวสีชมพู) ส่งสคริปต์ผ่าน SSH (แถวสีฟ้า) แล้วคำสั่ง Docker ทำงานบน devtools (แถวสีม่วง) แถวสีเขียวคือหลักฐานจริงจาก build #1*
 
-| ช่วง | การทดลอง | สิ่งที่ทำ | ผลที่ต้องได้ (ค่าจริงจากการทดลอง) |
+### 5.1 `parameters` — ค่าที่ผู้สั่ง build กำหนดได้
+
+```groovy
+parameters {
+  string(name: 'APP_VERSION', defaultValue: '1.0.0',
+         description: 'เวอร์ชันที่จะฝังเข้า image และแสดงบนหน้าเว็บ')
+}
+```
+
+build แรกใช้ค่า default `1.0.0` หลังจาก build แรก Jenkins ลงทะเบียน parameter แล้ว ปุ่ม **Build Now** จะเปลี่ยนเป็น **Build with Parameters** (ใช้ในการทดลองที่ 15)
+
+### 5.2 `environment` — ค่าคงที่ของ Pipeline (ถูกแทนค่าบน Jenkins)
+
+```groovy
+environment {
+  DEVTOOLS    = 'root@devtools'      // ปลายทาง SSH (ชื่อจาก --add-host, port 22)
+  SSH_OPTS    = '-o StrictHostKeyChecking=accept-new -o LogLevel=ERROR'
+  APP_DIR     = '~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop'
+  APP_NAME    = 'catfood-shop'       // ชื่อ image และ repository บน Docker Hub
+  DEPLOY_NAME = 'catfood-web'        // container ของร้าน (port 3000)
+  VERSION     = "${params.APP_VERSION}"
+}
+```
+
+| ตัวแปร | ใช้ทำอะไร |
+|---|---|
+| `DEVTOOLS`, `SSH_OPTS` | ปลายทางและตัวเลือกของ SSH `LogLevel=ERROR` ตัดข้อความเตือนออกจาก console |
+| `APP_DIR` | path ของ build context **บน devtools** — เครื่องหมาย `~` ถูกขยายเป็น `/root` โดย shell ของ devtools |
+| `APP_NAME`, `DEPLOY_NAME` | ชื่อ image/repository และชื่อ container ของร้าน |
+| `VERSION` | สตริง Groovy แบบ `"..."` ถูกแทนค่า `params.APP_VERSION` บน Jenkins ตั้งแต่เริ่ม Pipeline ทำให้ shell เห็น `$VERSION` ได้ตั้งแต่ build แรก |
+
+`$BUILD_NUMBER` ไม่ต้องประกาศ Jenkins ใส่ให้ทุก build อัตโนมัติ
+
+### 5.3 Credentials — ใช้ที่ไหน และป้องกันอย่างไร
+
+| ตำแหน่งในโค้ด | ผลบน Jenkins | ป้องกันอะไร |
+|---|---|---|
+| `withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY')])` ทุก stage | เขียน private key เป็นไฟล์ชั่วคราว ใส่ path ใน `$SSH_KEY` ลบไฟล์เมื่อจบบล็อก | console แสดง `ssh -i ****` ไม่มี key อยู่ในโค้ด |
+| `usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')` ใน Push, Pull, Deploy | ผูกชื่อบัญชีและ token เฉพาะในบล็อก | Jenkins รุ่นนี้ mask ทั้งสองค่า console จึงแสดง `docker.io/****/catfood-shop` |
+| `sh '''set +x ...` | shell ไม่พิมพ์คำสั่งที่มี token | token ไม่ปรากฏใน console |
+| `echo "$DOCKER_TOKEN" \| ssh ... docker login --password-stdin` | token เดินทางทาง **stdin** ของ SSH | ไม่อยู่ใน command line ของ process ใดทั้งสองฝั่ง |
+| `DOCKER_CONFIG=/tmp/jenkins-docker-$BUILD` + `trap 'docker logout; rm -rf "$DOCKER_CONFIG"' EXIT` | ไฟล์ login บน devtools อยู่ในโฟลเดอร์ชั่วคราวของ build นั้น | ถูกลบทันทีที่ push จบ ผู้เขียนตรวจหลัง build #2 แล้วไม่มีโฟลเดอร์ `/tmp/jenkins-docker-*` เหลือ |
+
+### 5.4 กายวิภาคของหนึ่ง stage — ตัวแปรถูกแทนค่าที่ฝั่งใด
+
+ทุก stage ยกเว้น Connect ใช้รูปแบบเดียวกัน ดู stage Build เป็นตัวอย่าง
+
+```groovy
+sh '''
+  ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+    "APP_DIR=$APP_DIR IMAGE=$APP_NAME:$BUILD_NUMBER VERSION=$VERSION BUILD=$BUILD_NUMBER bash -s" <<'EOF'
+set -e
+cd "$APP_DIR"
+docker build --provenance=false \
+  --build-arg APP_VERSION="$VERSION" \
+  --build-arg BUILD_NUMBER="$BUILD" \
+  --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  -t "$IMAGE" .
+docker image ls "$IMAGE"
+EOF
+'''
+```
+
+| ส่วน | แทนค่า / ทำงานที่ | อธิบาย |
+|---|---|---|
+| `sh '''...'''` | Jenkins | สตริง Groovy อัญประกาศเดี่ยวสามตัว Groovy **ไม่แทนค่า** `$` ใด ๆ ส่งทั้งก้อนให้ shell ของ Jenkins |
+| `"APP_DIR=$APP_DIR IMAGE=$APP_NAME:$BUILD_NUMBER ..."` | **shell ของ Jenkins** | อยู่ในอัญประกาศคู่ shell ของ Jenkins แทนค่าจาก `environment` ก่อนส่ง console แสดงผลจริงว่า `APP_DIR=~/labwork/... IMAGE=catfood-shop:1 VERSION=1.0.0 BUILD=1 bash -s` |
+| `ssh ... "$DEVTOOLS" "... bash -s"` | Jenkins → devtools | เปิด SSH ไปที่ `root@devtools` แล้วสั่ง `bash -s` = “อ่านสคริปต์จาก stdin” |
+| `<<'EOF'` … `EOF` | ส่งทาง stdin | heredoc ที่ **ใส่อัญประกาศ** ทำให้ shell ของ Jenkins ไม่แตะเนื้อสคริปต์เลย |
+| `cd "$APP_DIR"`, `$(date ...)`, `docker build ...` | **bash ของ devtools** | ตัวแปรในเนื้อสคริปต์คือค่าที่ส่งมาเป็น `VAR=value` เวลา `BUILD_TIME` จึงเป็นเวลาของ devtools และ `docker` คือ Docker CLI ของ devtools |
+| `--provenance=false` | devtools | ให้ push เป็น manifest เดี่ยว digest ใน console จึงเท่ากับที่หน้า Docker Hub แสดงทุกตัวอักษร (ถ้าเปิด attestation ค่าเริ่มต้นของ BuildKit จะเป็นคนละค่า) |
+
+**สรุปทั้ง Pipeline**
+
+| Stage | โค้ดบน Jenkins | คำสั่งบน devtools | Credential |
 |---|---|---|---|
-| A. เตรียม Jenkins | 1–3 | Jenkins ไม่มี Docker → สร้าง SSH key → ให้ Jenkins เห็น devtools | `docker: not found` → key 2 ไฟล์ → `Permission denied (publickey,password)` (แปลว่าต่อถึงแล้ว รอ key) |
-| B. รู้จัก image | 4 | build และรัน image ของร้านในเครื่อง + ส่อง layer | **693 MB** (ดาวน์โหลด **154 MB**), `healthy` ใน 3 วินาที, เว็บขึ้น `vdev · build #local` |
-| C. Pipeline | 5–7 | credential 2 ตัว → job → build #1 | 5 stage เขียวใน 23 วินาที, `Login Succeeded`, digest `7803b4edfb8a…` |
-| D. Registry & เว็บ | 8–9 | ดู Docker Hub, เปิดร้าน, pull บนเครื่องที่สอง | tag `1`/`latest`, เครื่องที่สอง pull 10.5 วินาที digest เดียวกัน |
-| E. Release | 10–11 | build #2 v1.1.0 แล้ว rollback | build #2 ไม่มี layer ต้องอัปโหลด, rollback **1.7 วินาที**, ตรวจปิดแล็บด้วยตาผ่าน |
+| Connect | เปิด SSH หนึ่งบรรทัด | `hostname; whoami; docker --version; ls $APP_DIR/Dockerfile` | `devtools-ssh` |
+| Build | ใส่ `IMAGE`, `VERSION`, `BUILD` | `docker build --provenance=false --build-arg ... -t catfood-shop:N .` | `devtools-ssh` |
+| Test | ใส่ `IMAGE`, `NAME=catfood-test-N` | `docker run -d` → วนอ่าน health ≤ 30 ครั้ง → `docker rm -f` → ต้อง `healthy` | `devtools-ssh` |
+| Push | `set +x`, ส่ง token ทาง stdin | `docker login` (DOCKER_CONFIG ชั่วคราว) → `docker tag` + `docker push :N` และ `:latest` → logout | `devtools-ssh` + `dockerhub` |
+| Pull | ใส่ `HUB=docker.io/<user>/catfood-shop` | จำ digest → `docker image rm` ทุก tag ของ build นี้ → `docker pull :N` → เทียบ digest | `devtools-ssh` + ชื่อบัญชีจาก `dockerhub` |
+| Deploy | ใส่ `VERSION`, `BUILD`, `NAME` | `docker run -d --name catfood-web -p 3000:3000 <HUB>:N` → รอ `healthy` → อ่าน `/api/health` → เทียบเวอร์ชัน | `devtools-ssh` + ชื่อบัญชีจาก `dockerhub` |
 
-## 📂 ไฟล์ในโฟลเดอร์นี้
+ทุก stage จบด้วยคำสั่งตรวจ ถ้าเงื่อนไขไม่จริง stage นั้นล้ม และ stage ถัดไปถูกข้าม (**fail fast**) image ที่ไม่ healthy จึงไม่ถูก push และ image ที่ digest ไม่ตรงจะไม่ถูก deploy
 
-| ไฟล์ | หน้าที่ |
-|---|---|
-| `catfood-shop/` | ซอร์สโค้ดร้าน Meow Mart (Next.js 16 + React 19) |
-| `catfood-shop/Dockerfile` | Dockerfile แบบ single-stage + `HEALTHCHECK` (ใช้จริงใน Pipeline) |
-| `Jenkinsfile` | Pipeline 5 stage ผ่าน SSH: Connect devtools → Build image → Test image → Push → Pull & Deploy |
+### 5.5 Jenkinsfile ฉบับสมบูรณ์
 
-ภายใน `catfood-shop/` ที่ควรรู้จัก:
+ไฟล์เดียวกับ `~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile` (แสดงใน shell ของ devtools ด้วย `cat` แล้วคัดลอกไปวางใน Jenkins)
 
-```text
-catfood-shop/
-├── app/page.js            # หน้าร้าน (อ่าน build info ทุก request)
-├── app/components/Shop.js # ตัวกรองหมวด + ตะกร้า (ทำงานฝั่ง browser)
-├── app/api/health/route.js# route ตรวจสุขภาพที่ HEALTHCHECK ใน Dockerfile เรียกใช้
-├── data/products.js       # ข้อมูลสินค้า 6 รายการ
-├── data/buildInfo.js      # อ่าน APP_VERSION, BUILD_NUMBER, GIT_COMMIT, BUILD_TIME
-└── public/images/         # ภาพสินค้า
-```
+```groovy
+// LAB 3 — Jenkins เป็น "ผู้สั่ง" devtools เป็น "ผู้ทำ"
+// Jenkins ไม่มี Docker อยู่ข้างใน ทุกคำสั่ง docker ถูกส่งผ่าน SSH ไปรันบน devtools
+pipeline {
+  agent any
 
-## สภาพตั้งต้น
+  parameters {
+    string(name: 'APP_VERSION', defaultValue: '1.0.0',
+           description: 'เวอร์ชันที่จะฝังเข้า image และแสดงบนหน้าเว็บ')
+  }
 
-ต้องจบ LAB 2 แล้ว: devtools container ทำงาน มี network `cicd-net`, container `jenkins` ที่สร้างจาก `jenkins/jenkins:lts-jdk21`, volume `jenkins_home` และ job `first-pipeline`
+  environment {
+    DEVTOOLS    = 'root@devtools'                  // ปลายทาง SSH (ชื่อ devtools มาจาก --add-host, port 22)
+    SSH_OPTS    = '-o StrictHostKeyChecking=accept-new -o LogLevel=ERROR'
+    APP_DIR     = '~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop'  // build context บน devtools
+    APP_NAME    = 'catfood-shop'                   // ชื่อ image และชื่อ repository บน Docker Hub
+    DEPLOY_NAME = 'catfood-web'                    // container ของร้านที่เปิดให้ลูกค้าใช้ (port 3000)
+    VERSION     = "${params.APP_VERSION}"
+  }
 
-> **Prerequisite:** ร้านแมวของแล็บนี้เปิดที่ port `3000` — port 3000 เปิดไว้แล้วตั้งแต่ LAB 1 ส่วนที่ 0 (`-p 3000:3000`) ไม่ต้องสร้าง devtools ใหม่
+  stages {
+    stage('Connect') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY')]) {
+          sh 'ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" "hostname; whoami; docker --version; ls $APP_DIR/Dockerfile"'
+        }
+      }
+    }
 
-> **Prerequisite Docker Hub:** สมัครบัญชี ยืนยันอีเมล และสร้าง **Access Token สิทธิ์ Read & Write** แนะนำให้สร้าง repository `catfood-shop` แบบ **Public** ไว้ก่อน (ถ้าไม่สร้าง Docker Hub จะสร้างให้อัตโนมัติตอน push ตามค่า Default privacy ของบัญชี)
+    stage('Build') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY')]) {
+          sh '''
+            ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+              "APP_DIR=$APP_DIR IMAGE=$APP_NAME:$BUILD_NUMBER VERSION=$VERSION BUILD=$BUILD_NUMBER bash -s" <<'EOF'
+set -e
+cd "$APP_DIR"
+docker build --provenance=false \
+  --build-arg APP_VERSION="$VERSION" \
+  --build-arg BUILD_NUMBER="$BUILD" \
+  --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  -t "$IMAGE" .
+docker image ls "$IMAGE"
+EOF
+          '''
+        }
+      }
+    }
 
-ไฟล์ของแล็บนี้อยู่ที่ `~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push` ใน shell ของ devtools ตรวจว่า Jenkins จาก LAB 2 ยังทำงาน:
+    stage('Test') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY')]) {
+          sh '''
+            ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+              "IMAGE=$APP_NAME:$BUILD_NUMBER NAME=catfood-test-$BUILD_NUMBER bash -s" <<'EOF'
+docker run -d --name "$NAME" "$IMAGE" >/dev/null
+for i in $(seq 1 30); do
+  STATUS=$(docker inspect -f '{{.State.Health.Status}}' "$NAME")
+  echo "health of $NAME: $STATUS"
+  [ "$STATUS" = healthy ] && break
+  sleep 1
+done
+docker rm -f "$NAME" >/dev/null
+[ "$STATUS" = healthy ]
+EOF
+          '''
+        }
+      }
+    }
 
-```bash
-docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
-```
+    stage('Push') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY'),
+                         usernamePassword(credentialsId: 'dockerhub',
+                           usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+          sh '''set +x
+            # token เดินทางทาง stdin ของ SSH เท่านั้น ไม่ปรากฏใน command line และ console
+            echo "$DOCKER_TOKEN" | ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+              "DOCKER_CONFIG=/tmp/jenkins-docker-$BUILD_NUMBER docker login -u $DOCKER_USER --password-stdin"
+            ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+              "IMAGE=$APP_NAME:$BUILD_NUMBER HUB=docker.io/$DOCKER_USER/$APP_NAME BUILD=$BUILD_NUMBER bash -s" <<'EOF'
+set -eo pipefail
+export DOCKER_CONFIG=/tmp/jenkins-docker-$BUILD
+trap 'docker logout >/dev/null 2>&1; rm -rf "$DOCKER_CONFIG"' EXIT
+for tag in "$BUILD" latest; do
+  docker tag "$IMAGE" "$HUB:$tag"
+  docker push "$HUB:$tag" | grep -v ': Waiting$'   # ตัดบรรทัดรอคิวออก ให้เห็นผลของแต่ละ layer ชัด
+done
+EOF
+          '''
+        }
+      }
+    }
 
-✅ **สิ่งที่ต้องเห็น:**
+    stage('Pull') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY'),
+                         usernamePassword(credentialsId: 'dockerhub',
+                           usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+          sh '''
+            ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+              "IMAGE=$APP_NAME:$BUILD_NUMBER HUB=docker.io/$DOCKER_USER/$APP_NAME BUILD=$BUILD_NUMBER bash -s" <<'EOF'
+set -e
+PUSHED=$(docker image inspect -f '{{index .RepoDigests 0}}' "$HUB:$BUILD" | cut -d@ -f2)
+echo "digest ที่ push: $PUSHED"
+docker image rm "$IMAGE" "$HUB:$BUILD" "$HUB:latest"   # ลบ image ในเครื่องทิ้ง เพื่อพิสูจน์ว่าดึงจาก Docker Hub จริง
+docker pull "$HUB:$BUILD"
+PULLED=$(docker image inspect -f '{{index .RepoDigests 0}}' "$HUB:$BUILD" | cut -d@ -f2)
+echo "digest ที่ pull: $PULLED"
+[ "$PUSHED" = "$PULLED" ] && echo "digest ตรงกัน: image ที่ pull คือ image เดียวกับที่ push"
+EOF
+          '''
+        }
+      }
+    }
 
-```text
-NAMES     IMAGE                       STATUS
-jenkins   jenkins/jenkins:lts-jdk21   Up ...
+    stage('Deploy') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY'),
+                         usernamePassword(credentialsId: 'dockerhub',
+                           usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+          sh '''
+            ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+              "HUB=docker.io/$DOCKER_USER/$APP_NAME BUILD=$BUILD_NUMBER VERSION=$VERSION NAME=$DEPLOY_NAME bash -s" <<'EOF'
+set -e
+docker rm -f "$NAME" 2>/dev/null || true
+docker run -d --name "$NAME" --restart unless-stopped -p 3000:3000 "$HUB:$BUILD"
+for i in $(seq 1 30); do
+  STATUS=$(docker inspect -f '{{.State.Health.Status}}' "$NAME")
+  echo "health of $NAME: $STATUS"
+  [ "$STATUS" = healthy ] && break
+  sleep 1
+done
+[ "$STATUS" = healthy ]
+docker ps --filter "name=^$NAME$" --format '{{.Names}}  {{.Image}}  {{.Status}}  {{.Ports}}'
+docker exec "$NAME" wget -qO- http://127.0.0.1:3000/api/health; echo
+[ "$(docker exec "$NAME" printenv APP_VERSION BUILD_NUMBER | paste -sd' ')" = "$VERSION $BUILD" ]
+echo "เว็บตอบเวอร์ชัน $VERSION build #$BUILD ตรงกับ Pipeline"
+EOF
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "เปิดร้านได้ที่ http://localhost:3000 (catfood-shop v${params.APP_VERSION} build #${env.BUILD_NUMBER})"
+    }
+  }
+}
 ```
 
 ---
 
-## ช่วง A — เตรียม Jenkins ให้สั่งงาน devtools ผ่าน SSH
+## 6. รัน Pipeline ทีละ stage
 
-### การทดลองที่ 1 — Jenkins มี Docker หรือไม่ และมี ssh หรือไม่?
+### การทดลองที่ 8 — สร้าง job `docker-build-push` และสั่ง build ครั้งแรก
 
-**คำถาม:** Jenkins container จาก LAB 2 เรียกคำสั่ง `docker` ได้หรือไม่ และมีเครื่องมือใดที่ใช้ติดต่อเครื่องอื่นได้อยู่แล้ว?
+🎯 **เป้าหมาย:** เริ่ม build ครั้งแรกของร้าน **จาก Jenkins** และดูภาพรวมของทั้ง 6 stage
+
+🛠️ **ขั้นตอน (browser):**
+
+1. Dashboard → **New Item** → ชื่อ `docker-build-push` → **Pipeline** → **OK**
+
+![New Item docker-build-push](./images/lab3_d1a_new_item_pipeline.png)
+
+*ภาพที่ 17 สร้าง job ชนิด Pipeline*
+
+2. **Pipeline → Definition: Pipeline script** วาง Jenkinsfile ฉบับสมบูรณ์ทั้งไฟล์ → **Save**
+
+![Jenkinsfile ใน editor](./images/lab3_d1b_pipeline_script.png)
+
+*ภาพที่ 18 Jenkinsfile ใน editor เริ่มจาก `parameters` และ `environment`*
+
+3. กด **Build Now**
+
+![Build Now](./images/lab3_d1c_build_now.png)
+
+*ภาพที่ 19 build แรกของ job ใช้ค่า default `APP_VERSION=1.0.0`*
+
+4. ระหว่างรอ เลือก build **#1 → Pipeline Overview** (หน้า **Stages**) จะเห็น stage ที่กำลังทำงานและ log สด
+
+![build #1 ระหว่างทำงาน](./images/lab3_d1d_overview_running_b1.png)
+
+*ภาพที่ 20 build #1 ขณะอยู่ใน stage Build: log ของ devtools ไหลกลับมาที่ Jenkins ทีละบรรทัด (`npm ci` เสร็จใน 10.4 วินาที)*
+
+📝 **คำอธิบาย:** Jenkins อ่าน Jenkinsfile แล้วรันทีละ stage หน้า Stages แสดง log แยกตาม stage ซึ่งอ่านง่ายกว่า Console Output ที่รวมทุกอย่างเป็นก้อนเดียว การทดลองที่ 9–14 จะคลิกอ่านทีละ stage
+
+✅ **ผลที่ควรเห็น (ผลจริง):**
+
+![build #1 สำเร็จทั้ง 6 stage](./images/lab3_d2a_overview_b1.png)
+
+*ภาพที่ 21 build #1 เขียวครบ Connect → Build → Test → Push → Pull → Deploy → Post Actions ใช้เวลารวม 1 นาที 6 วินาที*
+
+| Stage | Connect | Build | Test | Push | Pull | Deploy | Post Actions | **รวม** |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| build #1 | 0.41 s | 30 s | 3 s | 24 s | 4 s | 3 s | 75 ms | **1 min 6 s** |
+
+💡 **ข้อสรุป:** นักศึกษาไม่ได้พิมพ์คำสั่ง Docker เลย แต่ร้านถูก build, ทดสอบ, push, pull และ deploy ครบ เวลาส่วนใหญ่อยู่ที่ Build (build ครั้งแรกไม่มี cache) และ Push (อัปโหลดขึ้นอินเทอร์เน็ต)
+
+### การทดลองที่ 9 — Stage Connect: เข้าถึงเครื่องที่ถูกต้องหรือไม่?
+
+🎯 **เป้าหมาย:** ยืนยันว่า SSH สำเร็จและปลายทางคือ devtools ที่มี Docker
+
+🛠️ **ขั้นตอน (browser):** หน้า Stages ของ build #1 → คลิก **Connect**
+
+📝 **คำอธิบาย:** stage นี้ส่งคำสั่งสั้น ๆ บรรทัดเดียว `hostname; whoami; docker --version; ls $APP_DIR/Dockerfile` ถ้า SSH หรือไฟล์มีปัญหา Pipeline จะล้มตั้งแต่ตรงนี้ ไม่เสียเวลา build
+
+✅ **ผลที่ควรเห็น (ผลจริง):**
+
+![stage Connect](./images/lab3_e1_stage_connect_b1.png)
+
+*ภาพที่ 22 `1b12b5e8724f` · `root` · `Docker version 29.8.1, build 4a63305` · `/root/labwork/.../catfood-shop/Dockerfile` ใน 0.41 วินาที*
+
+💡 **ข้อสรุป:** hostname ตรงกับ `hostname` ของ devtools (การทดลองที่ 3) ผู้ใช้คือ `root` และ `~` ถูกขยายเป็น `/root` บน devtools แปลว่า **ไปถึงเครื่องที่ถูกต้อง ในบัญชีที่ถูกต้อง และเห็น build context แล้ว**
+
+### การทดลองที่ 10 — Stage Build: สร้าง image จากซอร์สโค้ดร้าน
+
+🎯 **เป้าหมาย:** เห็นว่า Dockerfile แต่ละบรรทัดทำงานอย่างไรบน devtools และได้ image ที่มี tag ตามเลข build
+
+🛠️ **ขั้นตอน (browser):** คลิก **Build** แล้วเลื่อนอ่านสามช่วง
+
+![stage Build ช่วงต้น](./images/lab3_e2a_stage_build_start_b1.png)
+
+*ภาพที่ 23 บรรทัด `+ ssh ... root@devtools APP_DIR=~/labwork/... IMAGE=catfood-shop:1 VERSION=1.0.0 BUILD=1 bash -s` คือคำสั่งหลังจาก shell ของ Jenkins แทนค่าแล้ว ตามด้วยการดาวน์โหลด `node:22-alpine` (ไม่มี cache)*
+
+![stage Build ช่วง npm ci](./images/lab3_e2b_stage_build_npm_b1.png)
+
+*ภาพที่ 24 `[2/6] WORKDIR` → `[3/6] COPY package.json` → `[4/6] RUN npm ci` (`added 24 packages in 10s`) → `[5/6] COPY . .` → `[6/6] RUN npm run build` (Next.js 16.3.6)*
+
+![stage Build ช่วงท้าย](./images/lab3_e2c_stage_build_end_b1.png)
+
+*ภาพที่ 25 `exporting manifest sha256:046f4bd8af08…` แล้ว `docker image ls` แสดง `catfood-shop:1   046f4bd8af08   693MB   154MB`*
+
+📝 **คำอธิบาย:** BuildKit ของ devtools แสดงแต่ละขั้นเป็น `#N [ขั้น/6]` ขั้น `FROM` ดาวน์โหลด base image (layer ใหญ่สุด 55.59 MB) ขั้น `npm ci` ติดตั้ง dependency 24 แพ็กเกจ แล้ว `next build` สร้างหน้าเว็บ สุดท้าย export เป็น image ชื่อ `catfood-shop:1` (เลข `1` คือ `$BUILD_NUMBER`)
+
+✅ **ผลที่ควรเห็น:** stage Build เขียวใน 30 วินาที และบรรทัดสุดท้ายมี `catfood-shop:1` ขนาด `693MB` / `154MB`
+
+**ตรวจเพิ่ม (ไม่บังคับ, shell ของ devtools):** ส่องขนาด layer ของ image ที่ Jenkins สร้าง (อ่านอย่างเดียว ไม่ได้ build ใหม่)
 
 ```bash
-docker exec jenkins sh -c 'docker version'; printf 'exit=%s\n' "$?"
-docker exec jenkins ssh -V
+docker history --format '{{.Size}}\t{{.CreatedBy}}' <DOCKER_USER>/catfood-shop:1 | head -16
 ```
-
-✅ **ผลการทดลองจริง:**
 
 ```text
-sh: 1: docker: not found
-exit=127
-OpenSSH_10.0p2 Debian-7+deb13u4, OpenSSL 3.5.7 9 Jun 2026
+0B      CMD ["npm" "start"]
+0B      HEALTHCHECK {Test:[CMD-SHELL wget -qO- http:…
+0B      EXPOSE [3000/tcp]
+0B      ENV APP_VERSION=1.0.0 BUILD_NUMBER=1 GIT_COM…
+0B      ARG BUILD_TIME=2026-09-25T13:27:54Z
+0B      ARG GIT_COMMIT=none
+0B      ARG BUILD_NUMBER=1
+0B      ARG APP_VERSION=1.0.0
+0B      ENV NODE_ENV=production PORT=3000
+5.62MB  RUN /bin/sh -c npm run build && rm -rf .next…
+422kB   COPY . . # buildkit
+357MB   RUN /bin/sh -c npm ci --no-audit --no-fund &…
+45.1kB  COPY package.json package-lock.json ./ # bui…
+0B      ENV NEXT_TELEMETRY_DISABLED=1
+8.19kB  WORKDIR /app
+0B      CMD ["node"]
 ```
 
-> 🔍 **วิเคราะห์ผล:** exit code `127` หมายถึงหาโปรแกรมไม่พบ Jenkins image มาตรฐานไม่มี Docker CLI **และแล็บนี้ตั้งใจให้เป็นเช่นนั้น** เราจะไม่ติดตั้ง Docker ลงใน Jenkins แต่ image มาตรฐานมี SSH client (OpenSSH) มาให้แล้ว ซึ่งเพียงพอสำหรับส่งคำสั่งไปให้ devtools ทำแทน
+💡 **ข้อสรุป:** การ build เกิดบน Docker daemon ของ devtools จากซอร์สบน devtools ทั้งหมด Jenkins รับเพียง log กลับมาแสดง image ที่ได้มี tag ตรงกับเลข build (`catfood-shop:1`) และ layer `npm ci` 357 MB คือส่วนที่ใหญ่ที่สุดตามที่วิเคราะห์ไว้ในหัวข้อ 4
 
-### การทดลองที่ 2 — สร้าง SSH key ให้ Jenkins ใช้เข้า devtools
+### การทดลองที่ 11 — Stage Test: image ที่ได้ใช้งานได้จริงหรือไม่?
 
-**คำถาม:** Jenkins จะพิสูจน์ตัวตนกับ devtools โดยไม่ต้องใช้รหัสผ่านได้อย่างไร?
+🎯 **เป้าหมาย:** ทดสอบ image ก่อนส่งขึ้น registry โดยอาศัย `HEALTHCHECK`
 
-รันใน shell ของ devtools:
+🛠️ **ขั้นตอน (browser):** คลิก **Test**
 
-```bash
-ssh-keygen -t ed25519 -N '' -C jenkins-to-devtools -f ~/.ssh/jenkins_devtools
-cat ~/.ssh/jenkins_devtools.pub >> ~/.ssh/authorized_keys
-chmod 600 ~/.ssh/authorized_keys
-ls -l ~/.ssh
-```
+📝 **คำอธิบาย:** devtools รัน container ชั่วคราว `catfood-test-1` (ไม่ publish port) แล้วอ่าน `docker inspect -f '{{.State.Health.Status}}'` ทุก 1 วินาที สูงสุด 30 ครั้ง จากนั้นลบ container ทิ้งเสมอ บรรทัดสุดท้าย `[ "$STATUS" = healthy ]` คือเงื่อนไขผ่าน/ไม่ผ่านของ stage
 
-✅ **ผลการทดลองจริง** (`ssh-keygen` พิมพ์ fingerprint ซึ่งต่างกันในแต่ละเครื่อง เช่น `SHA256:Zf/xzHLP… jenkins-to-devtools`):
+✅ **ผลที่ควรเห็น (ผลจริง):**
 
-```text
--rw------- 1 root root 101 ... authorized_keys
--rw------- 1 root root 411 ... jenkins_devtools
--rw-r--r-- 1 root root 101 ... jenkins_devtools.pub
-```
+![stage Test](./images/lab3_e3_stage_test_b1.png)
 
-> 🔍 **วิเคราะห์ผล:** `ssh-keygen` สร้าง key เป็นคู่ `jenkins_devtools` คือ **private key** (411 ไบต์ สิทธิ์ `-rw-------` อ่านได้เฉพาะเจ้าของ) ใช้พิสูจน์ตัวตน ต้องเก็บเป็นความลับและจะถูกนำไปใส่ใน Jenkins Credentials เท่านั้น ส่วน `jenkins_devtools.pub` คือ **public key** (101 ไบต์) เปิดเผยได้ เมื่อต่อท้ายไว้ใน `authorized_keys` แล้ว sshd ของ devtools จะยอมให้ผู้ที่ถือ private key คู่กันเข้าได้ ขนาดของ `authorized_keys` เท่ากับ `.pub` พอดี (101 ไบต์) แสดงว่ามี public key อยู่ 1 ชุด `-N ''` หมายถึงไม่ตั้ง passphrase เพื่อให้ Jenkins ใช้ได้โดยไม่ต้องมีคนพิมพ์
+*ภาพที่ 26 `health of catfood-test-1: starting` สองครั้ง แล้ว `healthy` ใน 3 วินาที*
 
-### การทดลองที่ 3 — ให้ Jenkins เรียก devtools ด้วยชื่อได้ (image เดิม + volume เดิม)
+💡 **ข้อสรุป:** แอปใน image ตอบ `/api/health` ได้จริง Pipeline จึงยอมให้เดินต่อไปที่ Push ถ้าสถานะไม่ถึง `healthy` stage นี้ล้มและ **ไม่มี image เสียขึ้น Docker Hub**
 
-**คำถาม:** เมื่อสร้าง container `jenkins` ใหม่จาก image เดิมพร้อม `--add-host` แล้ว Jenkins มองเห็น devtools หรือไม่ และ job จาก LAB 2 ยังอยู่หรือไม่?
+### การทดลองที่ 12 — Stage Push: ส่ง image ขึ้น Docker Hub
 
-```bash
-docker rm -f jenkins
-docker run -d --name jenkins --network cicd-net --restart unless-stopped \
-  -p 8080:8080 --add-host devtools:host-gateway \
-  -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk21
-docker exec jenkins getent hosts devtools
-docker exec jenkins ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new root@devtools true; printf 'exit=%s\n' "$?"
-docker inspect -f '{{.Config.Image}}  {{.HostConfig.ExtraHosts}}' jenkins
-```
+🎯 **เป้าหมาย:** เห็นการ login แบบไม่เปิดเผย token การอัปโหลด layer และ digest ของ image ที่ push
 
-✅ **ผลการทดลองจริง** (IP `172.18.0.1` อาจต่างกันในแต่ละเครื่อง):
+🛠️ **ขั้นตอน (browser):** คลิก **Push** แล้วเลื่อนลงจนสุด
 
-```text
-172.18.0.1      devtools
-Warning: Permanently added 'devtools' (ED25519) to the list of known hosts.
-root@devtools: Permission denied (publickey,password).
-exit=255
-jenkins/jenkins:lts-jdk21  [devtools:host-gateway]
-```
+![stage Push ช่วงต้น](./images/lab3_e4a_stage_push_b1.png)
 
-> 🔍 **วิเคราะห์ผล:** ชื่อ `devtools` แปลงเป็น `172.18.0.1` ซึ่งเป็น gateway ของ bridge network นั่นคือ Docker host = devtools เอง บรรทัด `Permanently added 'devtools' (ED25519)` แสดงว่า SSH คุยกับ sshd ของ devtools ได้จริงและจด host key ไว้แล้ว (`accept-new`) ส่วน `Permission denied (publickey,password)` เป็นผลที่ **ถูกต้อง** เพราะ Jenkins ยังไม่มี private key (`BatchMode=yes` สั่งไม่ให้ถามรหัสผ่าน) ข้อความนี้จึงพิสูจน์ว่าเส้นทางเครือข่ายใช้งานได้แล้ว ขาดเพียง key ซึ่งจะใส่เป็น credential ในการทดลองที่ 5 บรรทัดสุดท้ายยืนยันว่า Jenkins ยังเป็น image มาตรฐานตัวเดิม เพิ่มเพียง host entry หนึ่งรายการ
+*ภาพที่ 27 `Login Succeeded` ตามด้วย push tag `1`: base layer 4 ชั้น `Layer already exists` และ layer ของร้าน 5 ชั้น `Pushed` แล้ว `1: digest: sha256:046f4bd8af08…  size: 2006`*
 
-จากนั้นเปิด `http://localhost:8080` login ด้วย `admin / admin2569` (Jenkins อาจใช้เวลาเริ่มระบบสักครู่) แล้วดูหน้า Dashboard: job `first-pipeline` ยังอยู่ เพราะข้อมูลทั้งหมดเก็บใน volume `jenkins_home` ไม่ใช่ใน container
+![stage Push ช่วงท้าย](./images/lab3_e4b_stage_push_digest_b1.png)
 
----
+*ภาพที่ 28 push tag `latest` ต่อทันที: ทั้ง 9 layer `Layer already exists` และ `latest: digest:` ค่าเดียวกับ tag `1`*
 
-## ช่วง B — รู้จัก image ของร้านก่อนให้ Jenkins สั่งสร้าง
+📝 **คำอธิบาย:** token เดินทางผ่าน stdin ของ SSH ไปที่ `docker login --password-stdin` บน devtools ข้อความ `WARNING! Your credentials are stored unencrypted in '/tmp/jenkins-docker-1/config.json'` คือโฟลเดอร์ชั่วคราวที่ `trap` ลบทิ้งทันทีเมื่อ push จบ สคริปต์กรองบรรทัด `Waiting` (สถานะรอคิวที่พิมพ์ซ้ำนับร้อยบรรทัด) ออกเพื่อให้เห็นผลของแต่ละ layer ชัดเจน
 
-### การทดลองที่ 4 — build และรัน image ของร้านในเครื่อง: layer ไหนใหญ่ที่สุด?
+จากนั้นเปิด `https://hub.docker.com/r/<DOCKER_USER>/catfood-shop/tags` (หน้า Public ไม่ต้อง login)
 
-**คำถาม:** image ของร้านที่ build จาก `Dockerfile` มีขนาดเท่าไร layer ใดกินพื้นที่มากที่สุด container พร้อมใช้งานเร็วแค่ไหน และ build ซ้ำโดยไม่แก้อะไรใช้เวลาเท่าไร?
+✅ **ผลที่ควรเห็น (ผลจริง):**
 
-```bash
-cd ~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop
-time docker build -t catfood-shop:local .
-docker image ls catfood-shop
-docker history --format 'table {{.CreatedBy}}\t{{.Size}}' catfood-shop:local | head -14
-docker run --rm catfood-shop:local sh -c 'du -sh /app/node_modules /app/.next'
-```
+![Docker Hub หลัง build #1](./images/lab3_e4d_hub_tags_b1.png)
 
-✅ **ผลการทดลองจริง** (build ครั้งแรก ไม่มี cache ใช้เวลารวม 33 วินาที):
+*ภาพที่ 29 Docker Hub มี tag `latest` และ `1` ชี้ digest `046f4bd8af08` (กรอบเขียว) ตรงกับ console ขนาดที่ต้องดาวน์โหลด 146.53 MB*
 
-```text
-IMAGE                ID             DISK USAGE   CONTENT SIZE
-catfood-shop:local   7c1dade1e2f1        693MB          154MB
+💡 **ข้อสรุป:** tag `1` และ `latest` ได้ digest เดียวกันเพราะเป็น image ตัวเดียวที่ติดป้ายสองป้าย digest 12 ตัวแรกบน Docker Hub ต้องตรงกับบรรทัด `1: digest:` ใน console ทุกตัวอักษร (ได้ผลเช่นนี้เพราะ `--provenance=false`) ขนาด 146.53 MB คือ CONTENT SIZE 154 MB ในหน่วยฐาน 2 (MiB)
 
-CREATED BY                                      SIZE
-...                                             0B      (แถว CMD / HEALTHCHECK / EXPOSE / ENV / ARG)
-RUN ... npm run build && rm -rf .next…          5.62MB
-COPY . . # buildkit                             422kB
-RUN ... npm ci --no-audit --no-fund &…          357MB
-COPY package.json package-lock.json ./ # bui…   45.1kB
+> 📝 base layer 4 ชั้นขึ้น `Layer already exists` เพราะ repository ของผู้เขียนมี layer ของ `node:22-alpine` อยู่แล้ว เมื่อนักศึกษา push ขึ้น repository ใหม่เป็นครั้งแรก layer เหล่านี้อาจขึ้นเป็น `Pushed` หรือ `Mounted from library/node` แทน stage Push จึงอาจใช้เวลานานกว่า 24 วินาที
 
-337.6M  /app/node_modules
-5.3M    /app/.next
-```
+### การทดลองที่ 13 — Stage Pull: ดึง image กลับจาก Docker Hub ลง devtools
 
-จากนั้นรัน container จาก image นี้ แล้วดูสถานะสุขภาพที่ `HEALTHCHECK` รายงาน:
+🎯 **เป้าหมาย:** พิสูจน์ว่า image ที่จะ deploy มาจาก Docker Hub จริง และเป็นตัวเดียวกับที่ push
 
-```bash
-docker run -d --name catfood-local -p 3000:3000 catfood-shop:local
-docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'      # รอจน STATUS มี (healthy)
-```
+🛠️ **ขั้นตอน (browser):** คลิก **Pull**
 
-✅ **ผลการทดลองจริง** (สั่ง `docker ps` หลังรันประมาณ 3 วินาที):
+📝 **คำอธิบาย:** สคริปต์จำ digest ที่ได้ตอน push → `docker image rm` ทุก tag ของ build นี้จน image ถูกลบจากรายการ (`Deleted: sha256:...`) → `docker pull <HUB>:1` → อ่าน digest อีกครั้งแล้วเทียบ ถ้าไม่ตรง stage ล้มและไม่ deploy
 
-```text
-NAMES           STATUS                   PORTS
-catfood-local   Up 2 seconds (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
-```
+✅ **ผลที่ควรเห็น (ผลจริง):**
 
-ถ้าสั่งเร็วเกินไปจะเห็น `(health: starting)` ให้สั่ง `docker ps` ซ้ำอีกครั้ง เมื่อขึ้น `(healthy)` แล้ว เปิด **http://localhost:3000** ใน browser
+![stage Pull](./images/lab3_e5_stage_pull_b1.png)
 
-![ร้านที่รันจาก image local](./images/lab3_s04_local_web.png)
+*ภาพที่ 30 `digest ที่ push: sha256:046f4bd8…` → `Untagged` ×3 · `Deleted` → `1: Pulling from ****/catfood-shop` → `Digest: sha256:046f4bd8…` → `Status: Downloaded newer image` → `digest ตรงกัน`*
 
-*ภาพที่ 7 ร้านที่รันจาก `catfood-shop:local` chip บนแถบด้านบนแสดง `vdev · build #local`*
+💡 **ข้อสรุป:** `Pulling from` และ `Digest:` เป็นคำตอบจาก Docker Hub ส่วนบรรทัดสุดท้ายยืนยันว่า digest ที่ pull เท่ากับ digest ที่ push ทุกตัวอักษร จึงเป็น **image ตัวเดียวกันทุกบิต** layer ขึ้น `Already exists` เพราะ devtools ยังเก็บเนื้อหา layer ไว้ใน build cache แม้รายการ image ถูกลบแล้ว Docker จึงดาวน์โหลดเพียง manifest และ config (เครื่องที่ไม่เคยมี layer เหล่านี้จะดาวน์โหลดจริงราว 146 MB)
 
-เลื่อนลงล่างสุดของหน้าไปที่ส่วน **Deployment info**
+### การทดลองที่ 14 — Stage Deploy: เปิดร้านจาก image ที่ pull มา
 
-![Deployment info ของ image local](./images/lab3_s04_local_deploy_info.png)
+🎯 **เป้าหมาย:** รันร้านจาก image ที่ pull มา แล้วยืนยันว่าเว็บตอบเวอร์ชันและเลข build ที่ Pipeline ตั้งใจ
 
-*ภาพที่ 8 Deployment info ของ image ที่ build เอง: version `dev`, build `local`, commit `none`, built at `unknown`*
+🛠️ **ขั้นตอน (browser):** คลิก **Deploy** จากนั้นเปิด `http://localhost:3000`
 
-เมื่อดูเสร็จแล้ว ลบ container เพื่อคืน port 3000 ให้ Pipeline แล้วลอง build ซ้ำทันที:
+📝 **คำอธิบาย:** devtools ลบ `catfood-web` ตัวเก่า (ถ้ามี) แล้ว `docker run -d --name catfood-web --restart unless-stopped -p 3000:3000 docker.io/<DOCKER_USER>/catfood-shop:1` รอจน `healthy` แสดง `docker ps` อ่าน `/api/health` จากภายใน container และเทียบ `APP_VERSION BUILD_NUMBER` ของ container กับ `VERSION BUILD` ที่ Jenkins ส่งมา
 
-```bash
-docker rm -f catfood-local                  # คืน port 3000 ให้ Pipeline
-time docker build -t catfood-shop:local .   # build ซ้ำทันที
-```
+✅ **ผลที่ควรเห็น (ผลจริง):**
 
-build ซ้ำครั้งที่สองทุกขั้นขึ้น `CACHED` และเสร็จใน 1 วินาที
+![stage Deploy](./images/lab3_e6_stage_deploy_b1.png)
 
-| วัดค่า | ผลจริง |
-|---|---:|
-| ขนาดบนดิสก์ (DISK USAGE) | 693 MB |
-| ขนาดที่ต้องดาวน์โหลด (CONTENT SIZE) | 154 MB |
-| layer `npm ci` (ใหญ่ที่สุด) | 357 MB |
-| base image `node:22-alpine` | ≈ 177 MB |
-| `node_modules` / `.next` ใน image | 337.6 MB / 5.3 MB |
-| เวลาจาก `docker run` ถึง `(healthy)` | ≈ 3 วินาที |
-| เวลา build ครั้งแรก / build ซ้ำ | 33 วินาที / 1 วินาที |
+*ภาพที่ 31 `catfood-web  ****/catfood-shop:1  Up 2 seconds (healthy)  0.0.0.0:3000->3000/tcp` · `{"version":"1.0.0","build":"1","builtAt":"2026-09-25T13:27:54Z","host":"b5a6b93df587"}` · `เว็บตอบเวอร์ชัน 1.0.0 build #1 ตรงกับ Pipeline`*
 
-**ผลของการล้าง cache ใน `RUN` เดียวกัน** — ผู้เขียนวัดเปรียบเทียบกับ Dockerfile รุ่นที่ยังไม่มี `&& npm cache clean --force` ต่อท้าย `npm ci`:
+เปิดหน้าร้านแล้วลองใช้งานตามภาพเคลื่อนไหว (9 ฉาก ยาว 21 วินาที)
 
-| วัดค่า | ไม่ล้าง cache ของ npm | ล้างใน `RUN` เดียวกัน | ผลต่าง |
-|---|---:|---:|---:|
-| layer `npm ci` | 447 MB | 357 MB | −90 MB |
-| DISK USAGE | 873 MB | 693 MB | ≈ −180 MB |
-| CONTENT SIZE | 243 MB | 154 MB | −89 MB |
+![สาธิตการใช้งานร้าน](./images/lab3_f4_web_demo_b1.gif)
 
-> 🔍 **วิเคราะห์ผล:** หน้าเว็บแสดง `dev` และ `local` เพราะเราไม่ได้ส่ง `--build-arg` ค่า `ARG` จึงใช้ค่า default ใน Dockerfile (Jenkins จะส่งค่าจริงให้ในการทดลองที่ 6) ส่วน `(healthy)` ภายในราว 3 วินาทีมาจาก `--start-interval=1s` ที่ให้ Docker ถามแอปทุกวินาทีตอนเริ่มระบบ ตาราง `docker history` ยืนยันว่า `node_modules` จากขั้น `npm ci` กินพื้นที่ราวครึ่งหนึ่งของ image ส่วนซอร์สโค้ดและผล `next build` รวมกันไม่ถึง 7 MB นี่คือเหตุผลที่ต้องวาง `npm ci` ไว้ก่อน `COPY . .` เพื่อให้ layer ที่ใหญ่ที่สุดถูกใช้ซ้ำจาก cache และการลบ cache ใน `RUN` เดียวกันลดขนาดที่ต้องดาวน์โหลดลงได้ราว 89 MB ทุกครั้งที่ push/pull
+*ภาพที่ 32 สาธิตจริงบนเว็บที่ Pipeline deploy: chip เวอร์ชัน → รายการสินค้า → กรองหมวด → ใส่ตะกร้า 3 ชิ้น → Deployment info*
 
----
+![รายการสินค้า](./images/lab3_f2_web_products_b1.jpg)
 
-## ช่วง C — Pipeline: Connect → Build → Test → Push → Pull & Deploy
+*ภาพที่ 33 สินค้า 6 รายการ แต่ละการ์ดมีภาพ ป้าย ขนาด คะแนน ราคา และปุ่มใส่ตะกร้า*
 
-### การทดลองที่ 5 — เก็บ SSH key และ Docker Hub token ใน Jenkins Credentials
-
-**คำถาม:** จะให้ Pipeline ใช้ private key และ token โดยไม่เขียนความลับลงในโค้ดได้อย่างไร?
-
-1. เปิด `http://localhost:8080` และ login ด้วย `admin / admin2569`
-2. เลือก **Manage Jenkins → Credentials** (หมวด Security)
-
-![Manage Jenkins → Credentials](./images/lab3_s04a_manage_credentials.png)
-
-*ภาพที่ 9 เมนู Credentials ในหมวด Security ของ Manage Jenkins*
-
-#### (ก) SSH key สำหรับเข้า devtools
-
-3. เลือก **System → Global credentials (unrestricted) → Add Credentials** แล้วเลือกชนิด **SSH Username with private key** → **Next**
-
-![เลือกชนิด SSH Username with private key](./images/lab3_s05a_ssh_credential_type.png)
-
-*ภาพที่ 10 เลือกชนิด credential แบบ SSH Username with private key*
-
-4. แสดง private key ใน shell ของ devtools แล้วคัดลอก **ทั้งไฟล์** รวมบรรทัด `-----BEGIN OPENSSH PRIVATE KEY-----` และ `-----END OPENSSH PRIVATE KEY-----`
-
-```bash
-cat ~/.ssh/jenkins_devtools
-```
-
-5. กรอก ID = `devtools-ssh`, Description ตามภาพ, Username = `root` ในส่วน Private Key เลือก **Enter directly** → **Add** แล้ววางเนื้อหาที่คัดลอกมา
-
-![แบบฟอร์ม SSH key](./images/lab3_s05b_ssh_credential_form.png)
-
-*ภาพที่ 11 ID `devtools-ssh` คือชื่อที่ Jenkinsfile อ้างถึงใน `credentials('devtools-ssh')` และ Username `root` คือผู้ใช้บน devtools*
-
-6. ปล่อยช่อง **Passphrase** ว่าง (key นี้สร้างด้วย `-N ''`) แล้วกด **Create**
-
-![ส่วนล่างของแบบฟอร์ม SSH key](./images/lab3_s05b2_ssh_credential_form_bottom.png)
-
-*ภาพที่ 12 ส่วนล่างของแบบฟอร์ม: ช่อง Passphrase ว่าง และปุ่ม Create*
-
-> ⚠️ private key คือความลับ วางได้ที่ Jenkins Credentials เท่านั้น ห้ามวางในแชต เอกสาร หรือ commit ลง Git
-
-#### (ข) Docker Hub token
-
-7. กลับไปที่ **Global credentials (unrestricted) → Add Credentials** เลือกชนิด **Username with password** → **Next**
-
-![เลือกชนิด credential](./images/lab3_s04c_credential_type.png)
-
-*ภาพที่ 13 Jenkins รุ่นนี้ (2.568.3) ให้เลือกชนิด credential ใน dialog ก่อน*
-
-8. กรอก Username = `<DOCKER_USER>`, Password = `<DOCKER_TOKEN>`, ID = `dockerhub`, Description ตามภาพ แล้วกด **Create** (แทน placeholder ด้วยค่าจริงของตนเอง)
-
-![แบบฟอร์ม Username with password](./images/lab3_s04d_add_credential_form.png)
-
-*ภาพที่ 14 ช่อง Password ถูกปิดบังเสมอ และ ID `dockerhub` คือชื่อที่ Jenkinsfile อ้างถึง*
-
-✅ **สิ่งที่ต้องเห็น:** หน้า Global credentials มีสองรายการ
-
-![รายการ credential สองตัว](./images/lab3_s05c_credentials_list.png)
-
-*ภาพที่ 15 `devtools-ssh` (root) และ `dockerhub` (`<DOCKER_USER>/******`)*
-
-> 🔍 **วิเคราะห์ผล:** ตรวจด้วยตาว่าหน้านี้แสดงเพียง ID ชื่อผู้ใช้ และคำอธิบาย **ไม่แสดง private key หรือ token เลย** แม้แต่ผู้ดูแลที่เปิดหน้านี้ก็อ่านความลับกลับออกมาไม่ได้ Pipeline เท่านั้นที่ขอใช้ได้ผ่าน ID
-
-### การทดลองที่ 6 — สร้าง Pipeline และสั่ง build ครั้งแรก
-
-**คำถาม:** Pipeline 5 stage ที่สั่งงานผ่าน SSH ทำงานผ่านครบหรือไม่ ใช้เวลาเท่าไร และคำสั่งไปรันที่เครื่องใดจริง?
-
-#### อ่าน `Jenkinsfile` ก่อนใช้งาน
-
-| ส่วน | หน้าที่ |
-|---|---|
-| `parameters { string(name: 'APP_VERSION', defaultValue: '1.0.0') }` | ให้กด **Build with Parameters** เพื่อกำหนดเวอร์ชันได้ |
-| `environment { SSH_KEY = credentials('devtools-ssh') }` | Jenkins เขียน private key ลงไฟล์ชั่วคราว แล้วใส่ path ไว้ใน `$SSH_KEY` ให้ `ssh -i "$SSH_KEY"` ใช้ |
-| `DEVTOOLS = 'root@devtools'` · `SSH_OPTS = '-o StrictHostKeyChecking=accept-new -o LogLevel=ERROR'` | ปลายทางของ SSH (ชื่อ `devtools` มาจาก `--add-host`) และตัวเลือกที่ยอมรับ host key ครั้งแรกพร้อมตัดข้อความเตือนออกจาก console |
-| `APP_DIR = '~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop'` | path ของซอร์สโค้ด **บน devtools** Jenkins ไม่ต้องมีสำเนาของซอร์สเลย |
-| `APP_NAME = 'catfood-shop'` · `DEPLOY_NAME = 'catfood-web'` | ชื่อ repository บน Docker Hub และชื่อ container ของร้านที่เปิดให้ลูกค้าใช้ |
-| `VERSION = "${params.APP_VERSION}"` | ส่งค่า parameter เข้า shell ได้ตั้งแต่ build แรก (build แรกของ job ยังไม่มีตัวแปร `$APP_VERSION` ใน shell) |
-| stage `Connect devtools` | `ssh ... "hostname; docker --version"` ตรวจว่าเข้า devtools ได้และที่นั่นมี Docker |
-| stage `Build image` | `ssh ... "APP_DIR=... IMAGE=... VERSION=... BUILD=... bash -s" <<'EOF'` ค่าต่าง ๆ ถูกแทนบนฝั่ง Jenkins แล้วส่งไปเป็น `VAR=value` หน้าคำสั่ง ส่วนเนื้อสคริปต์ระหว่าง `<<'EOF'` … `EOF` ถูกส่งทาง stdin ไปให้ `bash -s` **รันบน devtools** (เครื่องหมาย `'EOF'` ทำให้ shell ฝั่ง Jenkins ไม่แทนค่า `$` ในเนื้อสคริปต์) สคริปต์ `cd $APP_DIR` แล้ว `docker build --provenance=false --build-arg APP_VERSION=... --build-arg BUILD_NUMBER=... --build-arg BUILD_TIME=... -t catfood-shop:<BUILD_NUMBER> .` |
-| stage `Test image` | รัน container ชั่วคราว `catfood-test-N` แล้ววนอ่าน `docker inspect -f '{{.State.Health.Status}}'` ทุก 1 วินาที สูงสุด 30 ครั้ง จากนั้นลบ container ทิ้ง ถ้าสถานะสุดท้ายไม่ใช่ `healthy` stage ล้ม และไม่ push |
-| stage `Push` | ส่ง token ทาง stdin ไปให้ `docker login --password-stdin` บน devtools โดยใช้ `DOCKER_CONFIG=/tmp/jenkins-docker-<BUILD>` แล้ว tag และ push `:<BUILD_NUMBER>` กับ `:latest` เมื่อจบ `trap` สั่ง `docker logout` และลบโฟลเดอร์นั้นทิ้ง |
-| stage `Pull & Deploy` | `docker image rm` tag ในเครื่องทิ้งก่อน (พิสูจน์ว่าได้ image มาจาก Docker Hub จริง) → `docker pull` → สร้าง `catfood-web` ใหม่ด้วย `-p 3000:3000 --restart unless-stopped` → รอจน `healthy` |
-| `post { success { echo ... } }` | พิมพ์ URL ของร้านเมื่อสำเร็จ |
-
-#### ขั้นตอน
-
-1. Dashboard → **New Item** → ชื่อ `docker-build-push` → เลือก **Pipeline** → **OK**
-
-![New Item แบบ Pipeline](./images/lab3_s05a_new_item_pipeline.png)
-
-*ภาพที่ 16 สร้าง job ชนิด Pipeline ชื่อ `docker-build-push`*
-
-2. ในส่วน **Pipeline** คง Definition เป็น **Pipeline script** แล้ววางเนื้อหาของ `~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile` ทั้งไฟล์ → **Save**
-
-```bash
-cat ~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile
-```
-
-![Pipeline script](./images/lab3_s05d_pipeline_script.png)
-
-*ภาพที่ 17 Jenkinsfile ใน editor เริ่มจากบล็อก `parameters` และ `environment` ที่อ้างถึง `credentials('devtools-ssh')`*
-
-3. กด **Build Now** (build แรกใช้ค่า default `APP_VERSION=1.0.0`)
-
-![Build Now](./images/lab3_s06a_build_now.png)
-
-*ภาพที่ 18 เมนู Build Now ของ job — หลัง build แรก เมนูจะเปลี่ยนเป็น Build with Parameters*
-
-4. รอให้ build จบ แล้วเปิด **Pipeline Overview** (หน้า Stages) ของ build #1
-
-![Pipeline Graph build #1](./images/lab3_s06b_pipeline_graph_b1.png)
-
-*ภาพที่ 19 build #1 ผ่านครบทั้ง 5 stage หน้าเว็บแสดง “Took 23 sec”*
-
-✅ **ผลการทดลองจริง** (อ่านจากหน้า Stages):
-
-| Stage | เวลาจริง |
-|---|---:|
-| Connect devtools | 0.34 s |
-| Build image | 1.9 s |
-| Test image | 2.8 s |
-| Push | 12.5 s |
-| Pull & Deploy | 4.6 s |
-| Post Actions | 0.1 s |
-| **รวม** | **23.0 s** |
-
-5. เปิด **Console Output** ของ build #1 แล้วอ่านสามช่วงต่อไปนี้
-
-![console: Connect devtools และเริ่ม Build image](./images/lab3_s06c_console_ssh_build_b1.png)
-
-*ภาพที่ 20 stage Connect devtools พิมพ์ hostname `efd5852c2216` และ `Docker version 29.8.1, build 4a63305` ส่วนคำสั่ง ssh แสดงเป็น `ssh -i ****` เพราะ path ของ key ถูก mask*
-
-![console: CACHED ใน Build image](./images/lab3_s06d_console_cache_test_b1.png)
-
-*ภาพที่ 21 stage Build image: BuildKit ของ devtools แสดง `#6 CACHED` … `#10 CACHED`*
-
-![console: health ของ catfood-test-1](./images/lab3_s06e_console_test_health_b1.png)
-
-*ภาพที่ 22 stage Test image: `health of catfood-test-1: starting` สองครั้ง แล้วเปลี่ยนเป็น `healthy`*
-
-> 🔍 **วิเคราะห์ผล:** `efd5852c2216` คือ hostname ของ **container devtools** ไม่ใช่ของ Jenkins และ `Docker version 29.8.1` มาจาก Docker ของ devtools ทั้งที่การทดลองที่ 1 พิสูจน์แล้วว่า Jenkins ไม่มีคำสั่ง `docker` จึงยืนยันได้ว่าคำสั่งทั้งหมดไปรันบน devtools จริง stage `Build image` ใช้เวลาเพียง 1.9 วินาทีเพราะ build เกิดบน Docker/BuildKit ของ devtools ตัวเดียวกับที่ใช้ในการทดลองที่ 4 จึงใช้ cache ได้ครบทั้ง 5 ขั้น (`#6`–`#10 CACHED`) แม้ค่า `--build-arg` จะต่างจากเดิม เพราะ `ARG`/`ENV` อยู่ท้าย Dockerfile ส่วน stage `Test image` แสดงว่า HEALTHCHECK ของ Docker ตอบ `healthy` หลังรอ 2 รอบ Pipeline จึงเดินต่อไปยัง Push
-
-### การทดลองที่ 7 — Console พิสูจน์อะไรได้บ้าง?
-
-**คำถาม:** console ของ build #1 ยืนยันการ login, push และการ pull กลับมา deploy ได้อย่างไร?
-
-อ่าน **Console Output** ของ build #1 ใน browser ต่อจากการทดลองที่ 6 (เลื่อนลงหรือใช้ Ctrl+F ค้นคำในหน้าเว็บ)
-
-![Login Succeeded](./images/lab3_s07a_console_login.png)
-
-*ภาพที่ 23 `Login Succeeded` เกิดจาก `--password-stdin` บน devtools โดยไม่มี token ปรากฏใน console*
-
-![push digest](./images/lab3_s07b_console_digest.png)
-
-*ภาพที่ 24 ผล push สองบรรทัด: `1: digest: sha256:7803b4edfb8a3a4e5ecba20ff545d24a0f58d17366793509d464bc52cf56ae76 size: 2006` และ `latest: digest:` ค่าเดียวกัน `size: 2006`*
-
-![pull และ deploy](./images/lab3_s07c_console_pull_deploy.png)
-
-*ภาพที่ 25 stage Pull & Deploy: `1: Pulling from <DOCKER_USER>/catfood-shop` → `Status: Downloaded newer image for <DOCKER_USER>/catfood-shop:1` → `health of catfood-web: starting` สองครั้ง → `healthy`*
-
-ท้าย console มีบรรทัดจาก `post { success }`:
-
-```text
-เปิดร้านได้ที่ http://localhost:3000 (catfood-shop v1.0.0 build #1)
-```
-
-> 🔍 **วิเคราะห์ผล:** tag `1` และ `latest` ได้ digest เดียวกัน `sha256:7803b4edfb8a…` เพราะเป็น image ตัวเดียวกันที่ติดป้ายสองป้าย `Downloaded newer image` ยืนยันว่า `catfood-web` รันจาก image ที่ดึงลงมาจาก Docker Hub จริง ไม่ใช่ image ที่เพิ่ง build ในเครื่อง (Pipeline ลบ tag ในเครื่องทิ้งก่อน pull) ในการทดลองของผู้เขียน ทุก layer ของ tag `1` ขึ้น `Layer already exists` (9 layer) เพราะ repository ของผู้เขียนมี layer ชุดนี้อยู่แล้วจากการทดสอบก่อนหน้า บน repository ใหม่ของนักศึกษา push ครั้งแรกจะขึ้น `Pushed` ครบ (อัปโหลดจริงราว 146 MB) stage Push จึงอาจใช้เวลานานกว่าตัวเลขในตาราง
-
----
-
-## ช่วง D — Docker Hub และเปิดร้านจริง
-
-### การทดลองที่ 8 — Docker Hub เก็บอะไรไว้ และร้านทำงานอย่างไร?
-
-**คำถาม:** digest บน Docker Hub ตรงกับ console หรือไม่ และเว็บที่ deploy แล้วมี feature อะไร?
-
-1. เปิด `https://hub.docker.com/r/<DOCKER_USER>/catfood-shop/tags` (หรือเมนู **My Hub → Repositories → catfood-shop → Tags**)
-
-![Docker Hub หลัง build #1](./images/lab3_s08a_hub_tags_b1.png)
-
-*ภาพที่ 26 Docker Hub แสดง tag `1` ที่มี digest `7803b4edfb8a` ตรงกับ console ในภาพที่ 24 ขนาดที่ต้องดาวน์โหลด (Compressed size) คือ 146.53 MB ภาพนี้ถ่ายหลังจบแล็บ หน้า Tags จริงจึงมี tag `2` และ `latest` อยู่ด้วย*
-
-เทียบ digest 12 ตัวแรกบนหน้านี้กับบรรทัด `1: digest: sha256:7803b4edfb8a…` ใน console ด้วยตา ต้องตรงกันทุกตัวอักษร ตัวเลข 146.53 MB กับ CONTENT SIZE `154MB` ในการทดลองที่ 4 คือขนาดเดียวกันแต่ต่างหน่วย: 154 MB (หน่วยฐาน 10) ≈ 146.5 MiB (หน่วยฐาน 2)
-
-2. เปิด **http://localhost:3000** — นี่คือร้านที่ Pipeline deploy ให้ ลองใช้งานตามภาพเคลื่อนไหวด้านล่าง (ยาวประมาณ 23 วินาที)
-
-![สาธิตการใช้งานร้าน](./images/lab3_web_demo.gif)
-
-*ภาพที่ 27 สาธิตจริงบนเว็บที่ deploy แล้ว: กรองหมวดสินค้า → ใส่ตะกร้า (ตัวเลขและยอดรวมเปลี่ยนทันที) → ดู Deployment info*
-
-![รายการสินค้า](./images/lab3_web_fullhd_products.jpg)
-
-*ภาพที่ 28 รายการสินค้า 6 รายการ แต่ละการ์ดมีภาพ ป้าย ขนาด คะแนน ราคา และปุ่มใส่ตะกร้า*
-
-**Feature ของร้าน Meow Mart**
-
-| Feature | ทำงานที่ | ทดลองอย่างไร | ผลที่เห็นจริง |
+| Feature | ทำงานที่ | ทดลองอย่างไร | ผลจริง |
 |---|---|---|---|
-| หน้าแรก + chip เวอร์ชัน | server (อ่าน env ทุก request) | เปิดหน้าแรก | `v1.0.0 · build #1` |
-| ตัวกรองหมวดสินค้า | browser (React state) | คลิก “อาหารเปียก”, “ขนมแมว” | เหลือ 1 และ 2 รายการ |
-| ตะกร้าสินค้า | browser | กด “+ ใส่ตะกร้า” 3 ครั้ง | `🛒 3 ชิ้น · ฿867` (149 + 259 + 459) |
-| Deployment info | server | เลื่อนลงล่างสุด | version, build, commit, เวลา build, container ID |
-| Health check | Docker HEALTHCHECK | `docker ps` | `(healthy)` |
+| chip เวอร์ชัน | server (อ่าน env ของ container ทุก request) | เปิดหน้าแรก | `v1.0.0 · build #1` |
+| ตัวกรองหมวด | browser | คลิก “อาหารเปียก”, “ขนมแมว” | เหลือ 1 และ 2 รายการ |
+| ตะกร้า | browser | ใส่ตะกร้าสินค้า 3 ชิ้นแรก | `3 ชิ้น · ฿937` (459 + 329 + 149) |
+| Deployment info | server | เลื่อนลงล่างสุด หรือกด “ดูข้อมูล build” | version, build, commit, เวลา build, container |
 
-![สรุป feature สี่ภาพ](./images/lab3_web_features.png)
+![Deployment info ของ build #1](./images/lab3_f3_web_deploy_info_b1.png)
 
-*ภาพที่ 29 (ซ้ายบน) กรองหมวดอาหารเปียก (ขวาบน) ใส่ตะกร้าชิ้นแรก (ซ้ายล่าง) ตะกร้า 3 ชิ้น ฿867 (ขวาล่าง) Deployment info*
+*ภาพที่ 34 Deployment info: Version `1.0.0` · Jenkins build `#1` · Built at `2026-09-25T13:27:54Z` · Container `b5a6b93df587`*
 
-![Deployment info](./images/lab3_web_fullhd_deploy.jpg)
-
-*ภาพที่ 30 ส่วน Deployment info บอกว่าเว็บนี้มาจาก image ใด: `1.0.0`, Jenkins build `#1`, เวลา build และ container ที่กำลังตอบ (ภาพนี้ถ่ายระหว่าง rollback ในการทดลองที่ 11 ซึ่งรัน image `:1` ตัวเดียวกัน container ID จึงไม่ตรงกับ container ที่ build #1 สร้าง)*
-
-> 🔍 **วิเคราะห์ผล:** ช่อง container ID ใน Deployment info คือ hostname ของ container ที่ตอบหน้าเว็บ จะเปลี่ยนทุกครั้งที่สร้าง container ใหม่ แม้ image เดิม ส่วน version, build และเวลา build ถูกอบไว้ใน image จึงคงที่ ช่อง `commit` เป็น `none` เพราะ LAB 3 ยังไม่ได้ดึงซอร์สจาก Git — LAB 4 จะทำให้ช่องนี้แสดง commit จริง
-
-### การทดลองที่ 9 — Pull บนเครื่องที่สอง ได้ image เดียวกันจริงหรือ?
-
-**คำถาม:** เครื่องที่ไม่เคย build และไม่มีซอร์สโค้ด จะรันร้านได้ด้วย `docker pull` เพียงอย่างเดียวหรือไม่ และได้ image ตัวเดียวกันหรือเปล่า?
-
-ใช้ “เครื่อง B” ซึ่งเป็น Docker host อีกเครื่องที่ไม่ใช่ devtools ตัวเดิม เช่น Docker Desktop บนเครื่องหลักของนักศึกษา หรือเครื่องของเพื่อน **ไม่ต้อง login** เพราะ repository เป็น Public:
-
-```bash
-docker image ls
-time docker pull <DOCKER_USER>/catfood-shop:1
-docker image inspect --format '{{index .RepoDigests 0}}' <DOCKER_USER>/catfood-shop:1
-docker run -d --name catfood-web -p 3001:3000 <DOCKER_USER>/catfood-shop:1
-docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
-```
-
-✅ **ผลการทดลองจริง** (`docker image ls` ว่างเปล่า เครื่อง B ยังไม่มี image ใดเลย):
-
-```text
-1: Pulling from <DOCKER_USER>/catfood-shop
-...: Pull complete                        (รวม 9 layers)
-Digest: sha256:7803b4edfb8a3a4e5ecba20ff545d24a0f58d17366793509d464bc52cf56ae76
-Status: Downloaded newer image for <DOCKER_USER>/catfood-shop:1
-docker.io/<DOCKER_USER>/catfood-shop:1
-
-real    0m10.540s
-
-<DOCKER_USER>/catfood-shop@sha256:7803b4edfb8a3a4e5ecba20ff545d24a0f58d17366793509d464bc52cf56ae76
-
-NAMES         IMAGE                          STATUS                  PORTS
-catfood-web   <DOCKER_USER>/catfood-shop:1   Up 1 second (healthy)   0.0.0.0:3001->3000/tcp
-```
-
-เปิด **http://localhost:3001** (เครื่อง B) คู่กับ **http://localhost:3000** (devtools ที่ Jenkins deploy) แล้วเทียบส่วน Deployment info
-
-![สองเครื่อง digest เดียวกัน](./images/lab3_s09_two_servers_same_digest.png)
-
-*ภาพที่ 31 Server A (deploy โดย Jenkins) และ Server B (pull อย่างเดียว) แสดง version/build/เวลา build เหมือนกันทุกช่อง ต่างกันเฉพาะ container ID*
-
-> 🔍 **วิเคราะห์ผล:** digest บนเครื่อง B (`7803b4ed…`) ตรงกับที่ Jenkins push และที่ Docker Hub แสดง จึงยืนยันได้ว่าเป็น **image ตัวเดียวกันทุกบิต** แม้แต่เวลา build ก็เป็นเวลาเดียวกัน เพราะค่านี้ถูกอบเข้า image ตอน build ไม่ได้สร้างใหม่ตอนรัน เครื่อง B ใช้เวลา pull 10.5 วินาที และ container ขึ้น `(healthy)` ทันที โดยไม่ต้องมี Node.js, `npm` หรือซอร์สโค้ดเลย นี่คือความหมายของ *build once, run anywhere*
+💡 **ข้อสรุป:** ค่าบนหน้าเว็บตรงกับ console ทุกช่อง — `builtAt` ตรงกับ `/api/health` และ Container `b5a6b93df587` ตรงกับ `host` ใน stage Deploy จึงสืบย้อนได้ครบว่า **หน้าเว็บที่เห็น ← container `catfood-web` ← image digest `046f4bd8…` ← Docker Hub ← build #1 ของ Jenkins** ช่อง Git commit เป็น `none` เพราะ LAB 3 ยังไม่ได้ดึงซอร์สจาก Git (LAB 4 จะเติมให้)
 
 ---
 
-## ช่วง E — ออกเวอร์ชันใหม่และย้อนกลับ
+## 7. ออกเวอร์ชันใหม่ด้วย Pipeline
 
-### การทดลองที่ 10 — ออก v1.1.0: อะไรถูกสร้างใหม่และอะไรถูกใช้ซ้ำ?
+### การทดลองที่ 15 — Build with Parameters `1.1.0`: อะไรถูกสร้างใหม่ อะไรถูกใช้ซ้ำ?
 
-**คำถาม:** เมื่อเปลี่ยนเพียงเลขเวอร์ชัน build และ push ครั้งที่สองต้องทำงานเท่าไร?
+🎯 **เป้าหมาย:** ออกเวอร์ชันใหม่โดยเปลี่ยนเพียงค่า parameter แล้วเปรียบเทียบกับ build #1 ทั้งเวลา cache digest และ tag บน Docker Hub
 
-1. เปิด job `docker-build-push` แล้วเลือก **Build with Parameters**
+🛠️ **ขั้นตอน (browser):**
 
-![Build with Parameters](./images/lab3_s10a_build_with_parameters_menu.png)
+1. เปิด job `docker-build-push` → **Build with Parameters**
 
-*ภาพที่ 32 หลัง build แรก Jenkins ลงทะเบียน parameter แล้ว เมนูจึงเปลี่ยนเป็น Build with Parameters*
+![Build with Parameters](./images/lab3_g1a_build_with_parameters.png)
 
-2. กรอก `APP_VERSION` = `1.1.0` แล้วกด **Build**
+*ภาพที่ 35 หลัง build แรก เมนูเปลี่ยนเป็น Build with Parameters*
 
-![กรอก APP_VERSION 1.1.0](./images/lab3_s10b_build_param_110.png)
+2. กรอก `APP_VERSION` = `1.1.0` → **Build**
 
-*ภาพที่ 33 เปลี่ยนเฉพาะเลขเวอร์ชัน ซอร์สโค้ดเหมือนเดิมทุกไฟล์*
+![กรอก APP_VERSION 1.1.0](./images/lab3_g1b_param_110.png)
 
-![Pipeline Graph build #2](./images/lab3_s10c_pipeline_graph_b2.png)
+*ภาพที่ 36 เปลี่ยนเฉพาะเลขเวอร์ชัน ซอร์สโค้ดเหมือนเดิมทุกไฟล์*
 
-*ภาพที่ 34 build #2 ผ่านครบทุก stage ในเวลารวม 22.3 วินาที (Connect devtools 0.35 s · Build image 1.1 s · Test image 2.9 s · Push 12.4 s · Pull & Deploy 4.8 s)*
+3. เปิดหน้า Stages ของ build #2 แล้วอ่าน Build, Push, Pull, Deploy
 
-3. เปิด **Console Output** ของ build #2 แล้วอ่านช่วง Build image และ Push
+📝 **คำอธิบาย:** `APP_VERSION` เปลี่ยน ค่า `BUILD_NUMBER` เป็น `2` และ `BUILD_TIME` เป็นเวลาใหม่ ทั้งสามค่าอยู่ท้าย Dockerfile ขั้นที่สร้างไฟล์ทั้ง 5 ขั้นจึงไม่เปลี่ยน
 
-![CACHED และ Layer already exists ใน console build #2](./images/lab3_s10e_console_cache_b2.png)
+✅ **ผลที่ควรเห็น (ผลจริง):**
 
-*ภาพที่ 35 console ของ build #2: `#6`–`#10 CACHED` ครบทั้ง 5 ขั้นที่สร้างไฟล์ ตามด้วย `Layer already exists` ทุก layer และ `2: digest: sha256:0f85c4beb07e4dc055fe3b231148cb8cf1adbef9f1540cb3bb4fcba492afe5a6 size: 2006`*
+![build #2 สำเร็จ](./images/lab3_g2_overview_b2.png)
 
-✅ **ผลการทดลองจริง** (นับจาก console ของ build #2): ขั้น `CACHED` 5 ขั้น, `Layer already exists` 18 บรรทัด (9 layers × 2 tags), `Pushed` **0** บรรทัด และ digest ใหม่ `sha256:0f85c4beb07e…`
+*ภาพที่ 37 build #2 เขียวทั้ง 6 stage ใช้เวลารวม 24 วินาที มีเมนู Parameters แสดงค่าที่ใช้*
 
-4. เปิดหน้า Tags บน Docker Hub อีกครั้ง
+![stage Build ของ build #2](./images/lab3_g3_stage_build_cached_b2.png)
 
-![Docker Hub หลัง build #2](./images/lab3_s10d_hub_tags_b2.png)
+*ภาพที่ 38 `[2/6]`–`[6/6]` ขึ้น `CACHED` ครบ 5 ขั้น export เสร็จใน 0.1 วินาที ได้ `catfood-shop:2   bd8c67e1adc8   693MB   154MB`*
 
-*ภาพที่ 36 tag `latest` ย้ายมาชี้ digest ใหม่ `0f85c4beb07e` (กรอบเขียว) เหมือน tag `2` ส่วน tag `1` ยังชี้ `7803b4edfb8a` (กรอบแดง) เหมือนเดิม*
+![stage Push ของ build #2](./images/lab3_g4_stage_push_b2.png)
 
-5. refresh **http://localhost:3000** — chip บนแถบด้านบนเปลี่ยนเป็น `v1.1.0 · build #2`
+*ภาพที่ 39 ทุก layer `Layer already exists` ไม่มี `Pushed` เลย และ `2: digest: sha256:bd8c67e1adc8…`*
 
-| วัดค่า | build #1 | build #2 |
+![stage Pull ของ build #2](./images/lab3_g5_stage_pull_b2.png)
+
+*ภาพที่ 40 digest ที่ push และ pull เป็น `sha256:bd8c67e1adc8…` เหมือนกัน*
+
+![stage Deploy ของ build #2](./images/lab3_g6_stage_deploy_b2.png)
+
+*ภาพที่ 41 `catfood-web ****/catfood-shop:2 ... (healthy)` · `"version":"1.1.0","build":"2"` · `เว็บตอบเวอร์ชัน 1.1.0 build #2 ตรงกับ Pipeline`*
+
+refresh หน้า Tags บน Docker Hub
+
+![Docker Hub หลัง build #2](./images/lab3_g7_hub_tags_b2.png)
+
+*ภาพที่ 42 tag `latest` ย้ายมาชี้ digest ใหม่ `bd8c67e1adc8` เหมือน tag `2` (กรอบเขียว) ส่วน tag `1` ยังชี้ `046f4bd8af08` (กรอบแดง)*
+
+refresh `http://localhost:3000`
+
+![ร้านหลัง build #2](./images/lab3_g8_web_hero_b2.jpg)
+
+*ภาพที่ 43 chip เปลี่ยนเป็น `v1.1.0 · build #2`*
+
+![Deployment info ของ build #2](./images/lab3_g9_web_deploy_info_b2.png)
+
+*ภาพที่ 44 Version `1.1.0` · build `#2` · Built at `2026-09-25T13:34:40Z` · Container `8580d8b66a2b`*
+
+| วัดค่า | build #1 (v1.0.0) | build #2 (v1.1.0) |
 |---|---:|---:|
-| ระยะเวลารวม | 23.0 s | 22.3 s |
-| stage `Build image` | 1.9 s | 1.1 s |
-| ขั้นที่ `CACHED` | 5 | 5 |
-| บรรทัด `Pushed` (layer ที่อัปโหลดใหม่) | 0 | **0** |
-| บรรทัด `Layer already exists` | 18 | 18 (9 layers × 2 tags) |
-| digest | `7803b4edfb8a…` | `0f85c4beb07e…` |
+| ระยะเวลารวม | 1 min 6 s | **24 s** |
+| stage Build | 30 s | 2 s |
+| stage Push | 24 s | 12 s |
+| ขั้นที่ `CACHED` | 0 (ไม่มี cache) | **5** |
+| บรรทัด `Pushed` | 5 | **0** |
+| บรรทัด `Layer already exists` | 13 | 18 (9 layer × 2 tag) |
+| digest | `046f4bd8af08…` | `bd8c67e1adc8…` |
+| container ที่ตอบเว็บ | `b5a6b93df587` | `8580d8b66a2b` |
 
-> 📝 ตัวเลข `Pushed` = 0 ของ build #1 เป็นผลเฉพาะ repository ของผู้เขียนที่มี layer ชุดนี้อยู่แล้ว ครั้งแรกที่นักศึกษา push ขึ้น repository ว่าง layer ทั้ง 9 จะขึ้นเป็น `Pushed` (อัปโหลดจริงราว 146 MB) แต่ build #2 ของนักศึกษาจะได้ `Pushed` = 0 เช่นเดียวกับตารางนี้ ซึ่งเป็นหลักฐานว่า registry เก็บ layer แบบไม่ซ้ำ (content-addressable)
+![Tag กับ Digest](./images/lab3_theory_tag_digest.png)
 
-> 🔍 **วิเคราะห์ผล:** build #2 เปลี่ยนเพียงค่า `ENV` (เวอร์ชัน เลข build และเวลา build) ซึ่งเป็น metadata ใน image config ไม่ใช่ layer ของระบบไฟล์ ทั้ง 5 ขั้นที่สร้างไฟล์จึงขึ้น `CACHED` และทั้ง 9 layer มีอยู่บน Docker Hub แล้ว สิ่งที่ต้องอัปโหลดใหม่มีเพียง config กับ manifest ขนาดเล็ก digest จึงเปลี่ยนจาก `7803…` เป็น `0f85…` ทั้งที่ไม่มี layer ใดต้องอัปโหลด นี่คือผลของการวาง `ARG/ENV` ที่เปลี่ยนบ่อยไว้ท้าย Dockerfile ถ้าย้ายสองบรรทัดนี้ไปไว้ต้นไฟล์ ทุก layer หลังจากนั้น (`npm ci`, `next build`) จะต้องสร้างใหม่และอัปโหลดใหม่ทุกครั้ง เวลาส่วนใหญ่ของ Pipeline (ราว 12 วินาที) จึงอยู่ที่การคุยกับ Docker Hub ไม่ใช่การ build
+*ภาพที่ 45 tag ย้ายได้ ส่วน digest ผูกกับเนื้อหาตลอดไป ค่า `046f4bd8…` และ `bd8c67e1…` คือ digest จริงของ build #1 และ #2*
 
-### การทดลองที่ 11 — Rollback ใช้เวลาเท่าไร?
+💡 **ข้อสรุป:** build #2 เปลี่ยนเพียงค่า `ENV` ซึ่งเป็น metadata ของ image ไม่ใช่ layer ของระบบไฟล์ ทุกขั้นจึง `CACHED` และทุก layer มีบน Docker Hub แล้ว สิ่งที่อัปโหลดใหม่มีเพียง config กับ manifest ขนาดเล็ก digest จึงเปลี่ยนทั้งที่ไม่มี layer ใดต้องอัปโหลด Pipeline ทั้งเส้นเร็วขึ้นจาก 1 นาที 6 วินาทีเหลือ 24 วินาที tag `latest` เป็นป้ายที่ย้ายตามเวอร์ชันล่าสุด ส่วน tag `1` ยังชี้ image เดิม — **deploy ด้วย tag แต่ตรวจสอบด้วย digest**
 
-**คำถาม:** ถ้า v1.1.0 มีปัญหา จะย้อนกลับไป v1.0.0 ได้เร็วแค่ไหน?
-
-เพราะ image ของทุกเวอร์ชันยังอยู่บน Docker Hub การ rollback จึงเป็นแค่การรัน container จาก tag เก่า ไม่ต้อง build ใหม่ รันใน shell ของ devtools (วัดเวลาจนกว่า Docker จะรายงาน `healthy`):
-
-```bash
-time (
-docker rm -f catfood-web
-docker run -d --name catfood-web --restart unless-stopped -p 3000:3000 docker.io/<DOCKER_USER>/catfood-shop:1
-until [ "$(docker inspect -f '{{.State.Health.Status}}' catfood-web)" = healthy ]; do sleep 0.5; done
-)
-```
-
-✅ **ผลการทดลองจริง:**
-
-```text
-catfood-web
-e1e38fd074cff9d56d162911f4b79df6b77ed0423af9a4bb55a52b7094ba777d
-
-real    0m1.709s
-```
-
-refresh **http://localhost:3000** — chip เปลี่ยนกลับเป็น `v1.0.0 · build #1`
-
-![release และ rollback](./images/lab3_s11_release_and_rollback.png)
-
-*ภาพที่ 37 ซ้าย: หลัง build #2 chip แสดง `v1.1.0 · build #2` ขวา: หลัง rollback เหลือ `v1.0.0 · build #1` ภายใน 1.7 วินาที*
-
-> 🔍 **วิเคราะห์ผล:** rollback เร็วเพราะ image `:1` ยังอยู่ในเครื่อง (stage Pull & Deploy ของ build #2 ลบเฉพาะ tag `2` และ `latest` ก่อน pull) ถ้าไม่มี Docker จะ pull จาก Docker Hub ให้อัตโนมัติ (ใช้เวลาเพิ่มราว 10 วินาทีตามผลการทดลองที่ 9) สังเกตว่า tag `latest` บน Docker Hub ยังชี้ build #2 อยู่ การ rollback แบบนี้จึงเป็นการแก้ชั่วคราวที่ต้องบันทึกไว้ให้ทีมรู้
-
-**Roll forward กลับสู่เวอร์ชันล่าสุด:**
-
-```bash
-time (
-docker pull docker.io/<DOCKER_USER>/catfood-shop:latest
-docker rm -f catfood-web
-docker run -d --name catfood-web --restart unless-stopped -p 3000:3000 docker.io/<DOCKER_USER>/catfood-shop:latest
-until [ "$(docker inspect -f '{{.State.Health.Status}}' catfood-web)" = healthy ]; do sleep 0.5; done
-)
-```
-
-ผลจริงใช้เวลาราว 3.2 วินาที (มีขั้น pull เพิ่มเข้ามา) refresh หน้าเว็บแล้ว chip กลับเป็น `v1.1.0 · build #2`
+---
 
 ### ✅ ตรวจปิดแล็บด้วยตา
 
 ตรวจทีละข้อ ทุกข้อต้องเป็นจริงจึงถือว่าจบแล็บ
 
-- [ ] **Jenkins:** job `docker-build-push` มี build #2 สีเขียว หน้า Stages แสดงครบ 5 stage (Connect devtools → Build image → Test image → Push → Pull & Deploy)
-- [ ] **Credentials:** หน้า Manage Jenkins → Credentials แสดง `devtools-ssh` และ `dockerhub` โดยไม่แสดง private key หรือ token
-- [ ] **Digest:** Console Output ของ build #2 มีบรรทัด `latest: digest: sha256:0f85c4beb07e…` และหน้า Tags บน Docker Hub แสดง tag `latest` ด้วย digest 12 ตัวแรก `0f85c4beb07e` ตรงกัน
-- [ ] **ร้าน:** http://localhost:3000 แสดง chip `v1.1.0 · build #2`
-- [ ] **Jenkins ยังสะอาด:** `docker exec jenkins sh -c 'docker version'` ยังได้ `docker: not found` (Jenkins ไม่เคยได้ Docker เพิ่ม)
-- [ ] **Container:** `docker ps` บน devtools แสดง `catfood-web` ที่ STATUS มี `(healthy)`
+- [ ] **Credentials:** หน้า Global credentials มี `devtools-ssh` และ `dockerhub` โดยไม่แสดง private key หรือ token
+- [ ] **SSH test:** job `devtools-ssh-test` build #1 สีเขียว และ console พิมพ์ hostname เดียวกับ `hostname` ใน shell ของ devtools
+- [ ] **Pipeline:** job `docker-build-push` มี build #1 และ #2 สีเขียว หน้า Stages แสดงครบ Connect → Build → Test → Push → Pull → Deploy
+- [ ] **Cache:** stage Build ของ build #2 มี `CACHED` ครบ 5 ขั้น และ stage Push ไม่มีบรรทัด `Pushed`
+- [ ] **Digest:** บรรทัด `digest ที่ push` และ `digest ที่ pull` ของ build #2 เป็นค่าเดียวกัน และหน้า Tags บน Docker Hub แสดง `latest` / `2` ด้วย digest 12 ตัวแรกเดียวกัน ส่วน `1` เป็นค่าของ build #1
+- [ ] **ร้าน:** `http://localhost:3000` แสดง chip `v1.1.0 · build #2` และ Deployment info มี Container ตรงกับ `host` ใน stage Deploy ของ build #2
+- [ ] **Jenkins ยังสะอาด:** `docker exec jenkins sh -c 'docker version'` ยังได้ `docker: not found`
 
 ---
 
@@ -748,38 +1011,44 @@ until [ "$(docker inspect -f '{{.State.Health.Status}}' catfood-web)" = healthy 
 
 | # | คำถาม | ผลจริง | ข้อสรุป |
 |---|---|---|---|
-| 1 | Jenkins มี Docker / ssh ไหม | `docker: not found` exit 127, มี `OpenSSH_10.0p2` | ไม่ต้องเพิ่ม Docker ใช้ SSH ที่มีอยู่แล้ว |
-| 2 | Jenkins จะพิสูจน์ตัวตนอย่างไร | key คู่ ed25519: private 411 B, public 101 B | private key ให้ Jenkins, public key ให้ devtools |
-| 3 | Jenkins มองเห็น devtools ไหม | `172.18.0.1 devtools`, `Permission denied (publickey,password)`, job เดิมยังอยู่ | เครือข่ายใช้ได้ รอเพียง key, state อยู่ใน volume |
-| 4 | Dockerfile single-stage มีอะไรบ้าง | 693 MB, `npm ci` 357 MB, `(healthy)` ใน 3 s, build ซ้ำ 1 s | dependency คือ layer ใหญ่สุด ต้องวางให้ใช้ cache ได้ |
-| 5 | ความลับเก็บที่ไหน | `devtools-ssh` + `dockerhub` ใน Credentials, หน้าเว็บไม่แสดงความลับ | โค้ดอ้างถึงด้วย ID เท่านั้น |
-| 6–7 | Pipeline ทำงานครบไหม | SUCCESS ใน 23.0 s, hostname `efd5852c2216`, digest `7803b4ed…` | Jenkins สั่ง devtools build → test → push → pull → deploy อัตโนมัติ |
-| 8 | Docker Hub ตรงกับ console ไหม | digest `7803b4edfb8a` ตรงกัน, 146.53 MB | ตรวจย้อนได้ด้วย digest (`--provenance=false`) |
-| 9 | เครื่องอื่นรันได้ไหม | pull 10.5 s, digest เดียวกัน, `(healthy)` | build once, run anywhere |
-| 10 | build ใหม่ทำงานซ้ำแค่ไหน | 5 ขั้น `CACHED`, 0 layer ต้องอัปโหลด, digest `0f85c4be…` | ลำดับ Dockerfile มีผลต่อความเร็ว |
-| 11 | rollback เร็วแค่ไหน | 1.7 วินาที (roll forward 3.2 วินาที) | image ทุกเวอร์ชันคือจุดย้อนกลับ |
+| 1 | Jenkins พร้อมไหม | Dashboard มี `first-freestyle`, `first-pipeline` | สถานะจาก LAB ก่อนอยู่ใน volume |
+| 2 | Jenkins มี Docker ไหม | `docker: not found` exit 127, มี `OpenSSH_10.0p2` | ต้องส่งคำสั่งไปให้เครื่องอื่นทำ |
+| 3 | devtools พร้อมไหม | hostname `1b12b5e8724f`, Docker 29.8.1, sshd port 22, ไฟล์ร้านครบ, ยังไม่มี image ร้าน | ปลายทางมีครบ build ครั้งแรกจะมาจาก Jenkins |
+| 4 | Jenkins เห็น devtools ไหม | `172.18.0.1 devtools`, `Permission denied (publickey,password)` | เครือข่ายใช้ได้ ขาดเพียง key |
+| 5 | ยืนยันตัวตนอย่างไร | ed25519: private 411 B, public 101 B | private → Jenkins, public → devtools |
+| 6 | ความลับเก็บที่ไหน | `devtools-ssh` + `dockerhub` ใน Credentials | โค้ดอ้างด้วย ID เท่านั้น |
+| 7 | Jenkins เข้า devtools ได้จริงไหม | job ทดสอบพิมพ์ `1b12b5e8724f`, `root`, Docker 29.8.1 | เชื่อมต่อถูกเครื่องก่อนเริ่ม build |
+| 8 | Pipeline ครบไหม | build #1 เขียว 6 stage ใน 1 min 6 s | ทุกอย่างเริ่มจากปุ่ม Build |
+| 9 | Connect | hostname devtools ใน 0.41 s | SSH ถึงเครื่องที่ถูกต้อง |
+| 10 | Build | `catfood-shop:1` 693MB/154MB ใน 30 s | build เกิดบน devtools จากซอร์สบน devtools |
+| 11 | Test | `starting` → `healthy` ใน 3 s | image ใช้งานได้ก่อน push |
+| 12 | Push | `Login Succeeded`, 5 × `Pushed`, digest `046f4bd8…` = Docker Hub | registry เก็บ image ตัวเดียวกับที่ build |
+| 13 | Pull | digest ที่ pull = digest ที่ push | image ที่จะ deploy มาจาก Docker Hub จริง |
+| 14 | Deploy | `(healthy)`, `/api/health` = 1.0.0 build 1, เว็บตรงกับ console | สืบย้อนเว็บ → image → build ได้ |
+| 15 | Release | build #2 ใน 24 s, 5 `CACHED`, 0 `Pushed`, digest `bd8c67e1…`, `latest` ย้าย | ลำดับ Dockerfile ทำให้ออกเวอร์ชันเร็ว tag ย้ายได้ digest ไม่เปลี่ยน |
 
 ## แก้ปัญหาที่พบบ่อย
 
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
-| `Could not resolve hostname devtools` ใน stage Connect devtools | สร้าง container `jenkins` โดยไม่มี `--add-host devtools:host-gateway` | ทำการทดลองที่ 3 ใหม่ แล้วตรวจด้วย `docker exec jenkins getent hosts devtools` |
-| `Permission denied (publickey,password)` ใน stage Connect devtools | public key ไม่อยู่ใน `~/.ssh/authorized_keys` ของ devtools, วาง private key ผิดไฟล์/ไม่ครบบรรทัด BEGIN/END หรือ credential ID ไม่ใช่ `devtools-ssh` | ทำการทดลองที่ 2 ใหม่ แล้วแก้ credential `devtools-ssh` ให้เป็นเนื้อหาของ `~/.ssh/jenkins_devtools` ทั้งไฟล์ |
-| `No such DSL method 'credentials'` หรือ `CredentialsNotFound` / `devtools-ssh` | สะกด ID ของ credential ไม่ตรงกับ Jenkinsfile | เปิดหน้า Credentials ตรวจว่า ID เป็น `devtools-ssh` และ `dockerhub` ตรงตัว |
-| `docker: not found` ใน Pipeline | มีคำสั่ง `docker` ที่รันตรงบน Jenkins โดยไม่ผ่าน `ssh` | ใช้ Jenkinsfile ของแล็บ ทุกคำสั่ง Docker ต้องอยู่หลัง `ssh -i "$SSH_KEY" ... "$DEVTOOLS"` |
-| stage Test image ล้ม health เป็น `unhealthy` หรือไม่ถึง `healthy` ภายใน 30 ครั้ง | แอปใน container เริ่มไม่ขึ้น | ใน shell ของ devtools สั่ง `docker run -d --name catfood-test-N catfood-shop:N` แล้ว `docker logs catfood-test-N` เพื่ออ่านสาเหตุ (Pipeline ลบ container ทดสอบทิ้งเสมอ) |
-| `Bind for 0.0.0.0:3000 failed` ตอน Pull & Deploy หลังการทดลองที่ 4 | ลืมลบ `catfood-local` ที่ยังจอง port 3000 | `docker rm -f catfood-local` แล้วสั่ง build ใหม่ |
-| `Bind for 0.0.0.0:3000 failed: port is already allocated` (กรณีอื่น) | มี container อื่นใช้ port 3000 | `docker ps --filter publish=3000` แล้วลบตัวที่ไม่ใช้ |
-| `401 Unauthorized` / `denied: requested access` | token ผิด หมดอายุ ไม่มีสิทธิ์ Write หรือ username ไม่ตรง | สร้าง token Read & Write ใหม่แล้วแก้ credential `dockerhub` |
-| digest บนหน้า Docker Hub ไม่ตรงกับ console | build โดยไม่มี `--provenance=false` จึง push เป็น index ที่มี attestation | ใช้ Jenkinsfile ของแล็บ (มี `docker build --provenance=false`) แล้วสั่ง build ใหม่ |
-| เว็บขึ้น `vdev` แทนเวอร์ชัน | Jenkinsfile ไม่มี `VERSION = "${params.APP_VERSION}"` | ใช้ Jenkinsfile ของแล็บ build แรกของ job ยังไม่มี `$APP_VERSION` ใน shell |
-| `429 Too Many Requests` | Docker Hub rate limit | รอ แล้วลดความถี่ในการสั่ง build |
+| `Could not resolve hostname devtools` ใน stage Connect | สร้าง `jenkins` โดยไม่มี `--add-host devtools:host-gateway` | ทำการทดลองที่ 4 ใหม่ แล้วตรวจด้วย `docker exec jenkins getent hosts devtools` |
+| `Permission denied (publickey,password)` ใน job ทดสอบหรือ stage Connect | public key ไม่อยู่ใน `~/.ssh/authorized_keys`, วาง private key ไม่ครบบรรทัด BEGIN/END หรือวาง `.pub` ผิดไฟล์ | ทำการทดลองที่ 5 ใหม่ แล้วแก้ credential `devtools-ssh` ให้เป็นเนื้อหา `~/.ssh/jenkins_devtools` ทั้งไฟล์ |
+| `ERROR: Could not find credentials entry with ID 'devtools-ssh'` หรือ `'dockerhub'` | ID สะกดไม่ตรง | เปิดหน้า Credentials ตรวจ ID ให้เป็น `devtools-ssh` และ `dockerhub` ตรงตัว |
+| console แสดง `****@devtools` และ `whoami` ได้ `****` | ใช้ `environment { SSH_KEY = credentials('devtools-ssh') }` ซึ่ง mask username `root` ด้วย | ใช้ Jenkinsfile ของแล็บ (`withCredentials([sshUserPrivateKey(...)])`) |
+| `docker: not found` ใน Pipeline | มีคำสั่ง `docker` ที่รันบน Jenkins โดยตรง | ทุกคำสั่ง Docker ต้องอยู่หลัง `ssh -i "$SSH_KEY" ... "$DEVTOOLS"` |
+| `cd: ~/labwork/...: No such file or directory` ใน stage Build | ไม่ได้ clone รีโพของวิชาไว้ที่ `~/labwork/DevTools` ตาม LAB 1 | clone ตาม LAB 1 ส่วนที่ 0 แล้วสั่ง build ใหม่ |
+| stage Test ล้ม ไม่ถึง `healthy` ภายใน 30 ครั้ง | แอปใน container เริ่มไม่ขึ้น | ใน shell ของ devtools: `docker run -d --name debug-shop catfood-shop:N` แล้ว `docker logs debug-shop` อ่านสาเหตุ (Pipeline ลบ container ทดสอบทิ้งเสมอ) |
+| `401 Unauthorized` / `denied: requested access` ใน stage Push | token ผิด หมดอายุ ไม่มีสิทธิ์ Write หรือ username ไม่ตรง | สร้าง token Read & Write ใหม่ แล้วแก้ credential `dockerhub` |
+| digest บน Docker Hub ไม่ตรงกับ console | build โดยไม่มี `--provenance=false` | ใช้ Jenkinsfile ของแล็บ แล้วสั่ง build ใหม่ |
+| stage Pull ล้มหลังบรรทัด `digest ที่ pull` | digest ไม่ตรง (มีคน push tag เดียวกันทับระหว่างทาง) | สั่ง build ใหม่ และอย่า push tag เดียวกันจากที่อื่นพร้อมกัน |
+| `Bind for 0.0.0.0:3000 failed: port is already allocated` ใน stage Deploy | มี container อื่นใช้ port 3000 | `docker ps --filter publish=3000` แล้วลบตัวที่ไม่ใช้ |
+| stage Deploy ล้มที่การเทียบเวอร์ชัน | container ไม่ได้รันจาก image ของ build นี้ | ดูบรรทัด `docker ps` ใน stage Deploy ว่า IMAGE เป็น `:N` ของ build ปัจจุบัน |
+| `429 Too Many Requests` | Docker Hub rate limit | รอสักครู่ แล้วลดความถี่ในการสั่ง build |
+| หน้า Tags บน Docker Hub ว่างหรือ 404 | repository เป็น Private หรือ URL ผิด | ตั้ง `catfood-shop` เป็น Public แล้ว refresh |
 | เปิด `localhost:3000` จากเครื่องหลักไม่ได้ | devtools ไม่ได้ publish port 3000 | สร้าง devtools ใหม่ตาม LAB 1 ส่วนที่ 0 (ต้องมี `-p 3000:3000`) |
-| หน้า Tags บน Docker Hub ว่าง / 404 | repository เป็น Private หรือ URL ผิด | ตั้ง `catfood-shop` เป็น Public แล้ว refresh |
-| หน้าเว็บยังแสดง `build #1` ตอนตรวจปิดแล็บ | ยังอยู่ในสถานะ rollback | roll forward ด้วย `:latest` ตามท้ายการทดลองที่ 11 |
 
 ## สรุป
 
-LAB 3 แยกหน้าที่ให้ชัดเจน: **Jenkins สั่ง devtools ทำ** Jenkins ยังเป็น image มาตรฐาน `jenkins/jenkins:lts-jdk21` ที่ไม่มี Docker อยู่ข้างใน ถือเพียง SSH key และ Docker Hub token ไว้ใน Credentials แล้วส่งคำสั่งผ่าน SSH ไปให้ devtools ซึ่งเป็นเจ้าของ Docker daemon ซอร์สโค้ด และ build cache เป็นผู้ build ทดสอบ push และ deploy ผลการทดลองยืนยันว่า image ขนาด 693 MB มี `npm ci` เป็น layer ใหญ่ที่สุด การเรียงคำสั่งให้ dependency ใช้ cache ได้ทำให้ build #2 ขึ้น `CACHED` ครบและไม่มี layer ต้องอัปโหลดใหม่ HEALTHCHECK ของ Docker ทำให้ทั้ง Pipeline และนักศึกษารู้ได้ว่า container พร้อมใช้งานหรือยัง image ย้ายไปรันเครื่องอื่นได้ด้วย digest เดียวกัน และ rollback ได้ใน 1.7 วินาที ทุกผลลัพธ์ตรวจได้ด้วยตาจากหน้า Jenkins, Console Output, Docker Hub และหน้าร้านเอง
+LAB 3 แยกหน้าที่ให้ชัดเจน: **Jenkins สั่ง devtools ทำ** Jenkins ยังเป็น image มาตรฐานที่ไม่มี Docker ถือเพียง SSH key และ Docker Hub token ใน Credentials ทุก stage ส่งสคริปต์ผ่าน SSH ไปให้ devtools ซึ่งเป็นเจ้าของ Docker daemon ซอร์สโค้ด และ build cache เป็นผู้ build → test → push → pull → deploy ผลการทดลองยืนยันทีละขั้น: SSH ไปถึง hostname ของ devtools จริง image ขนาด 693 MB ผ่าน HEALTHCHECK ก่อนถูก push digest ที่ push เท่ากับที่ pull และที่ Docker Hub แสดง และหน้าเว็บบอกเวอร์ชัน เลข build เวลา build และ container ตรงกับ console ทุกช่อง การออก v1.1.0 ด้วย Build with Parameters ใช้ cache ครบ ไม่ต้องอัปโหลด layer ใหม่ และจบใน 24 วินาที
 
-ข้อจำกัดที่เหลืออยู่คือซอร์สโค้ดยังมาจากโฟลเดอร์บน devtools และต้องกด Build เอง **LAB 4** จะย้ายซอร์สร้านเดียวกันนี้ขึ้น GitHub ให้ Jenkins อ่าน `Jenkinsfile` จาก repository และ build ใหม่อัตโนมัติทุกครั้งที่มี commit
+ข้อจำกัดที่เหลืออยู่คือซอร์สโค้ดยังมาจากโฟลเดอร์บน devtools และต้องกด Build เอง **LAB 4** จะย้ายร้านเดียวกันนี้ขึ้น GitHub ให้ Jenkins อ่าน `Jenkinsfile` จาก repository และ build อัตโนมัติทุกครั้งที่มี commit

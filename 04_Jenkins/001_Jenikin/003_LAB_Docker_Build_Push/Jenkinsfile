@@ -1,4 +1,5 @@
-// LAB 3 — Jenkins ไม่มี Docker อยู่ข้างใน: ทุกคำสั่ง docker ถูกส่งไปทำบน container devtools ผ่าน SSH
+// LAB 3 — Jenkins เป็น "ผู้สั่ง" devtools เป็น "ผู้ทำ"
+// Jenkins ไม่มี Docker อยู่ข้างใน ทุกคำสั่ง docker ถูกส่งผ่าน SSH ไปรันบน devtools
 pipeline {
   agent any
 
@@ -8,29 +9,31 @@ pipeline {
   }
 
   environment {
-    SSH_KEY     = credentials('devtools-ssh')     // private key ที่ Jenkins ใช้ login เข้า devtools
-    DEVTOOLS    = 'root@devtools'                  // เครื่องที่มี Docker (ชื่อ devtools มาจาก --add-host)
+    DEVTOOLS    = 'root@devtools'                  // ปลายทาง SSH (ชื่อ devtools มาจาก --add-host, port 22)
     SSH_OPTS    = '-o StrictHostKeyChecking=accept-new -o LogLevel=ERROR'
-    APP_DIR     = '~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop'
-    APP_NAME    = 'catfood-shop'                   // ชื่อ repository บน Docker Hub
+    APP_DIR     = '~/labwork/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop'  // build context บน devtools
+    APP_NAME    = 'catfood-shop'                   // ชื่อ image และชื่อ repository บน Docker Hub
     DEPLOY_NAME = 'catfood-web'                    // container ของร้านที่เปิดให้ลูกค้าใช้ (port 3000)
     VERSION     = "${params.APP_VERSION}"
   }
 
   stages {
-    stage('Connect devtools') {
+    stage('Connect') {
       steps {
-        sh 'ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" "hostname; docker --version"'
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY')]) {
+          sh 'ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" "hostname; whoami; docker --version; ls $APP_DIR/Dockerfile"'
+        }
       }
     }
 
-    stage('Build image') {
+    stage('Build') {
       steps {
-        sh '''
-          ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
-            "APP_DIR=$APP_DIR IMAGE=$APP_NAME:$BUILD_NUMBER VERSION=$VERSION BUILD=$BUILD_NUMBER bash -s" <<'EOF'
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY')]) {
+          sh '''
+            ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+              "APP_DIR=$APP_DIR IMAGE=$APP_NAME:$BUILD_NUMBER VERSION=$VERSION BUILD=$BUILD_NUMBER bash -s" <<'EOF'
 set -e
-cd $APP_DIR
+cd "$APP_DIR"
 docker build --provenance=false \
   --build-arg APP_VERSION="$VERSION" \
   --build-arg BUILD_NUMBER="$BUILD" \
@@ -38,15 +41,17 @@ docker build --provenance=false \
   -t "$IMAGE" .
 docker image ls "$IMAGE"
 EOF
-        '''
+          '''
+        }
       }
     }
 
-    stage('Test image') {
+    stage('Test') {
       steps {
-        sh '''
-          ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
-            "IMAGE=$APP_NAME:$BUILD_NUMBER NAME=catfood-test-$BUILD_NUMBER bash -s" <<'EOF'
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY')]) {
+          sh '''
+            ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+              "IMAGE=$APP_NAME:$BUILD_NUMBER NAME=catfood-test-$BUILD_NUMBER bash -s" <<'EOF'
 docker run -d --name "$NAME" "$IMAGE" >/dev/null
 for i in $(seq 1 30); do
   STATUS=$(docker inspect -f '{{.State.Health.Status}}' "$NAME")
@@ -57,25 +62,28 @@ done
 docker rm -f "$NAME" >/dev/null
 [ "$STATUS" = healthy ]
 EOF
-        '''
+          '''
+        }
       }
     }
 
     stage('Push') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub',
-            usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY'),
+                         usernamePassword(credentialsId: 'dockerhub',
+                           usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
           sh '''set +x
-            # token เดินทางทาง stdin ของ SSH เท่านั้น ไม่ปรากฏใน command line
+            # token เดินทางทาง stdin ของ SSH เท่านั้น ไม่ปรากฏใน command line และ console
             echo "$DOCKER_TOKEN" | ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
               "DOCKER_CONFIG=/tmp/jenkins-docker-$BUILD_NUMBER docker login -u $DOCKER_USER --password-stdin"
             ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
               "IMAGE=$APP_NAME:$BUILD_NUMBER HUB=docker.io/$DOCKER_USER/$APP_NAME BUILD=$BUILD_NUMBER bash -s" <<'EOF'
+set -eo pipefail
 export DOCKER_CONFIG=/tmp/jenkins-docker-$BUILD
 trap 'docker logout >/dev/null 2>&1; rm -rf "$DOCKER_CONFIG"' EXIT
 for tag in "$BUILD" latest; do
   docker tag "$IMAGE" "$HUB:$tag"
-  docker push "$HUB:$tag"
+  docker push "$HUB:$tag" | grep -v ': Waiting$'   # ตัดบรรทัดรอคิวออก ให้เห็นผลของแต่ละ layer ชัด
 done
 EOF
           '''
@@ -83,16 +91,37 @@ EOF
       }
     }
 
-    stage('Pull & Deploy') {
+    stage('Pull') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub',
-            usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY'),
+                         usernamePassword(credentialsId: 'dockerhub',
+                           usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
           sh '''
             ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
-              "HUB=docker.io/$DOCKER_USER/$APP_NAME BUILD=$BUILD_NUMBER NAME=$DEPLOY_NAME bash -s" <<'EOF'
+              "IMAGE=$APP_NAME:$BUILD_NUMBER HUB=docker.io/$DOCKER_USER/$APP_NAME BUILD=$BUILD_NUMBER bash -s" <<'EOF'
 set -e
-docker image rm "$HUB:$BUILD" "$HUB:latest"     # ลบของในเครื่อง เพื่อพิสูจน์ว่าดึงจาก Docker Hub จริง
+PUSHED=$(docker image inspect -f '{{index .RepoDigests 0}}' "$HUB:$BUILD" | cut -d@ -f2)
+echo "digest ที่ push: $PUSHED"
+docker image rm "$IMAGE" "$HUB:$BUILD" "$HUB:latest"   # ลบ image ในเครื่องทิ้ง เพื่อพิสูจน์ว่าดึงจาก Docker Hub จริง
 docker pull "$HUB:$BUILD"
+PULLED=$(docker image inspect -f '{{index .RepoDigests 0}}' "$HUB:$BUILD" | cut -d@ -f2)
+echo "digest ที่ pull: $PULLED"
+[ "$PUSHED" = "$PULLED" ] && echo "digest ตรงกัน: image ที่ pull คือ image เดียวกับที่ push"
+EOF
+          '''
+        }
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY'),
+                         usernamePassword(credentialsId: 'dockerhub',
+                           usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+          sh '''
+            ssh -i "$SSH_KEY" $SSH_OPTS "$DEVTOOLS" \
+              "HUB=docker.io/$DOCKER_USER/$APP_NAME BUILD=$BUILD_NUMBER VERSION=$VERSION NAME=$DEPLOY_NAME bash -s" <<'EOF'
+set -e
 docker rm -f "$NAME" 2>/dev/null || true
 docker run -d --name "$NAME" --restart unless-stopped -p 3000:3000 "$HUB:$BUILD"
 for i in $(seq 1 30); do
@@ -102,6 +131,10 @@ for i in $(seq 1 30); do
   sleep 1
 done
 [ "$STATUS" = healthy ]
+docker ps --filter "name=^$NAME$" --format '{{.Names}}  {{.Image}}  {{.Status}}  {{.Ports}}'
+docker exec "$NAME" wget -qO- http://127.0.0.1:3000/api/health; echo
+[ "$(docker exec "$NAME" printenv APP_VERSION BUILD_NUMBER | paste -sd' ')" = "$VERSION $BUILD" ]
+echo "เว็บตอบเวอร์ชัน $VERSION build #$BUILD ตรงกับ Pipeline"
 EOF
           '''
         }

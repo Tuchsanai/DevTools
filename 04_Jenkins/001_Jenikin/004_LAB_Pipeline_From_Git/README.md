@@ -629,9 +629,9 @@ git -C ~/hello-ci config --get-regexp credential
 | `Unable to find Jenkinsfile` | Script Path ผิด หรือไม่ได้ commit `Jenkinsfile` | ตรวจ `git ls-files Jenkinsfile` และ Script Path |
 | `Failed to connect to repository ... returned error: 400/404` | URL ผิดหรือ repo เป็น Private | ใช้ URL จากปุ่ม Code บน GitHub และตั้ง Public |
 | push แล้วไม่มี build ใหม่ | ยังไม่เปิด Poll SCM, cron ผิด หรือยังไม่ครบ 1 นาที | ดูเมนู Git Polling Log ต้องเห็น `Changes found` |
-| `Could not resolve hostname devtools` | Jenkins ไม่ได้สร้างด้วย `--add-host devtools:host-gateway` | สร้าง Jenkins ใหม่ตามการทดลองที่ 3 ของ LAB 3 |
-| `Permission denied (publickey)` | credential `devtools-ssh` ผิด หรือ public key ไม่อยู่ใน devtools | ตั้ง key และ credential ใหม่ตามการทดลองที่ 3 และ 5 ของ LAB 3 |
-| `tar: … Cannot open` หรือ stage Send source to devtools ล้ม | SSH ไป devtools ใช้งานไม่ได้ | ตรวจ SSH ก่อน: job `docker-build-push` ของ LAB 3 ผ่าน stage `Connect devtools` หรือไม่ ถ้าไม่ผ่านให้แก้สองแถวบน |
+| `Could not resolve hostname devtools` | Jenkins ไม่ได้สร้างด้วย `--add-host devtools:host-gateway` | สร้าง Jenkins ใหม่ตามการทดลองที่ 4 ของ LAB 3 |
+| `Permission denied (publickey)` | credential `devtools-ssh` ผิด หรือ public key ไม่อยู่ใน devtools | ตั้ง key และ credential ใหม่ตามการทดลองที่ 5 และ 6 ของ LAB 3 แล้วทดสอบด้วย job `devtools-ssh-test` (การทดลองที่ 7) |
+| `tar: … Cannot open` หรือ stage Send source to devtools ล้ม | SSH ไป devtools ใช้งานไม่ได้ | ตรวจ SSH ก่อน: job `docker-build-push` ของ LAB 3 ผ่าน stage `Connect` หรือไม่ ถ้าไม่ผ่านให้แก้สองแถวบน |
 | stage Test image ล้มที่การตรวจ `GIT_COMMIT` | Dockerfile ไม่มี `ARG GIT_COMMIT` หรือ job build คนละ commit กับ HEAD | ใช้ Dockerfile ของแล็บ (มี `ARG GIT_COMMIT` ใน stage runtime) และตรวจ Branch Specifier / Repository URL |
 | `port is already allocated` ที่ 3000 | `catfood-web` เดิมจาก LAB 3 ถูกลบไม่สำเร็จ | `docker rm -f catfood-web` ใน devtools แล้วสั่ง build ใหม่ |
 
