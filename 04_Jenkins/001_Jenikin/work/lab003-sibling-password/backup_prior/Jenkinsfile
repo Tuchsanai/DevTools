@@ -1,8 +1,7 @@
 // LAB 3 — Jenkins เป็น "ผู้สั่ง" devtools เป็น "ผู้ทำ"
-// jenkins และ devtools เป็น container พี่น้องบน network cicd-net เดียวกัน จึงเรียกกันด้วยชื่อ devtools ได้
-// jenkins เป็น image มาตรฐาน ไม่มี Docker CLI ไม่ได้ mount docker.sock (เพิ่มเพียง sshpass ในขั้นที่ 3)
-// ทุกงาน (git clone, docker build/run/push/pull) ถูกส่งผ่าน SSH ไปรันบน devtools:22
-// login ด้วยรหัสผ่านจาก credential devtools-ssh และยอมรับเฉพาะ host key ที่ pin ไว้ในขั้นที่ 4
+// jenkins เป็น image มาตรฐาน ไม่มี Docker CLI และไม่ได้ mount docker.sock
+// ทุกงาน (git clone, docker build/run/push/pull) ถูกส่งผ่าน SSH ไปรันบน devtools port 22
+// ปลายทาง devtools-gw เป็น Host alias ใน /var/jenkins_home/.ssh/config (ตั้งในขั้นที่ 4)
 
 // ตรวจค่าก่อนส่งข้าม SSH: ต้องตรง regex ทั้งค่า มิฉะนั้นหยุด build ทันที
 def requireMatch(String name, String value, String regex, String hint) {
@@ -12,23 +11,21 @@ def requireMatch(String name, String value, String regex, String hint) {
 }
 
 // รันสคริปต์ bash บน devtools ผ่าน SSH
-// vars → บรรทัด NAME='value' ต้นสคริปต์ ทุกค่าต้องมีเฉพาะอักขระที่ไม่มีความหมายพิเศษใน shell
-// คำสั่ง sh เป็นข้อความคงที่ ('...') Groovy จึงไม่แทนค่าใด ๆ ลงไป รหัสผ่านอยู่ใน env SSHPASS เท่านั้น
+// vars → ตัวแปรของสคริปต์ ทุกค่าถูกครอบด้วย ' ' และอนุญาตเฉพาะอักขระที่ไม่มีความหมายพิเศษใน shell
 def onDevtools(Map vars, String body, boolean capture = false) {
   def keys = vars.keySet() as List
-  def lines = ['set -euo pipefail']
+  def assigns = []
   for (int i = 0; i < keys.size(); i++) {
     def value = "${vars[keys[i]]}"
     if (!(value ==~ '[A-Za-z0-9._:/@=+-]*')) {
       error("ค่า ${keys[i]} มีอักขระที่ไม่อนุญาต")
     }
-    lines << "${keys[i]}='${value}'"
+    assigns << "${keys[i]}='${value}'"
   }
-  writeFile file: 'remote.sh', text: lines.join('\n') + '\n' + body + '\n'
+  writeFile file: 'remote.sh', text: "set -euo pipefail\n${body}\n"
   def out = null
-  withCredentials([usernamePassword(credentialsId: 'devtools-ssh',
-                   usernameVariable: 'SSH_USER', passwordVariable: 'SSHPASS')]) {
-    out = sh(script: 'sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password "$SSH_USER@devtools" bash -s < remote.sh',
+  withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY')]) {
+    out = sh(script: "ssh -i \"\$SSH_KEY\" devtools-gw \"${assigns.join(' ')} bash -s\" < remote.sh",
              returnStdout: capture)
   }
   return out
@@ -91,7 +88,7 @@ pipeline {
           }
         }
         sh '''
-          echo "jenkins: $(hostname) docker CLI = $(command -v docker || echo none) docker.sock = $(test -S /var/run/docker.sock && echo yes || echo none) sshpass = $(command -v sshpass || echo none)"
+          echo "jenkins: $(hostname) docker CLI = $(command -v docker || echo none) docker.sock = $(test -S /var/run/docker.sock && echo yes || echo none)"
         '''
         script {
           onDevtools([:], '''
@@ -178,14 +175,13 @@ esac
 
     stage('Push') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'devtools-ssh',
-                           usernameVariable: 'SSH_USER', passwordVariable: 'SSHPASS'),
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY'),
                          usernamePassword(credentialsId: 'dockerhub',
                            usernameVariable: 'HUB_USER', passwordVariable: 'HUB_TOKEN')]) {
-          // token เดินทางทาง stdin ของ SSH เท่านั้น ส่วนรหัสผ่าน SSH อยู่ใน env SSHPASS ทั้งคู่ไม่อยู่ใน command line และ console
-          // login ถูกเก็บในโฟลเดอร์ชั่วคราว DOCKER_CFG บน devtools ไม่ปนกับ ~/.docker ของ devtools
+          // token เดินทางทาง stdin ของ SSH เท่านั้น ไม่อยู่ใน command line และ console
+          // login ถูกเก็บในโฟลเดอร์ชั่วคราว DOCKER_CFG ไม่ปนกับ ~/.docker ของ devtools
           sh '''set +x
-            printf '%s\\n' "$HUB_TOKEN" | sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password "$SSH_USER@devtools" \
+            printf '%s\\n' "$HUB_TOKEN" | ssh -i "$SSH_KEY" devtools-gw \
               "umask 077; docker --config '$DOCKER_CFG' login docker.io -u '$HUB_USER' --password-stdin"
           '''
         }
@@ -208,7 +204,7 @@ printf '%s\\n' "$OUT" | sed -n 's/^.*: digest: \\(sha256:[0-9a-f]\\{64\\}\\) siz
       steps {
         script {
           // เคลียร์ devtools ก่อน Pull: container ทดสอบ, แอปเดิม catfood-web, image 2 ชื่อของ build นี้ และซอร์สที่ clone
-          // ลบเฉพาะ container ที่มี label ของ LAB 3 ไม่แตะของอื่นบน Docker ของ devtools
+          // ลบเฉพาะ container ที่มี label ของ LAB 3 ไม่แตะ jenkins, cicd-net, jenkins_home และของอื่น
           // ตั้งแต่ขั้นนี้จนจบ Deploy เว็บที่ port 3000 จะใช้ไม่ได้ชั่วคราว
           onDevtools([NAME: env.TEST_NAME, APP: env.DEPLOY_NAME, IMAGE: env.LOCAL_IMAGE, BUILD: env.BUILD_NUMBER,
                       REMOTE: "${env.HUB_REPO}:${env.IMAGE_TAG}", PUSHED: "${env.HUB_REPO}@${env.IMAGE_DIGEST}",
@@ -288,8 +284,8 @@ echo "เว็บตอบ version $VERSION build #$BUILD commit $COMMIT ตร
     }
     unsuccessful {
       script {
-        // build ล้มกลางทาง: ลบ container ทดสอบ, login ชั่วคราว และซอร์สที่ clone ของ build นี้ (ไม่แตะร้านที่เปิดอยู่)
-        // ถ้าเชื่อม devtools ไม่ได้ (เช่น รหัสผ่านผิด) ให้ทำขั้นเก็บกวาดท้ายเอกสารด้วยมือ
+        // build ล้มกลางทาง: ลบ container ทดสอบ, login ชั่วคราว และซอร์สที่ clone ของ build นี้
+        // ถ้าเชื่อม devtools ไม่ได้ ให้ทำขั้นเก็บกวาดท้ายเอกสารด้วยมือ
         try {
           onDevtools([NAME: env.TEST_NAME, CFG: env.DOCKER_CFG, WORK_DIR: env.WORK_DIR], '''
 docker rm -f "$NAME" >/dev/null 2>&1 || true

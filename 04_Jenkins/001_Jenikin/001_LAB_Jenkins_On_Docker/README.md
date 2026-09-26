@@ -123,22 +123,13 @@ docker run -dit --name devtools --privileged --tmpfs /run \
 ssh root@localhost -p 2222        # password : passwd
 ```
 
-> 📝 **คำอธิบาย:** "เปิดเครื่องเรียน" ให้ทุกคนได้สภาพแวดล้อมเหมือนกันเป๊ะ และ**ใช้คำสั่งนี้คำสั่งเดียวตลอดทั้งชุด LAB 1–6** · `docker rm -f devtools` ลบกล่องชื่อเดียวกันตัวเก่า (เช่นที่ค้างจากแล็บ Kafka) กันชื่อซ้ำ · `-dit` รันเบื้องหลังและไม่ดับทันที · `--privileged` ให้สิทธิ์เต็มเพื่อรัน **Docker ซ้อนข้างในกล่อง** (จำเป็น — Jenkins ของแล็บนี้เป็น container ที่รันอยู่ข้างในเครื่องเรียนอีกที) ·
-> **`--tmpfs /run` คือของใหม่ของชุด Jenkins** — ทำให้ `/run` ว่างเปล่าทุกครั้งที่กล่องบูต ถ้าไม่ใส่ พอสั่ง `docker restart devtools` ไฟล์ `/var/run/docker.pid` ของรอบก่อนจะค้างอยู่ แล้ว Docker ข้างในจะไม่ยอมขึ้น (ในรอบทดสอบจริง `/var/log/dockerd.log` ในกล่องขึ้นว่า `failed to start daemon, ensure docker is not running or delete /var/run/docker.pid: process with PID 11 is still running`) · พอใส่ `--tmpfs /run` แล้ว `docker restart devtools` ได้ Docker ข้างในกลับมาใน 3 วินาที และ Jenkins ตอบหน้า login ใน 9 วินาที ·
-> `-p 2222:22` ส่ง port 2222 ของเครื่องเรา เข้า port 22 (SSH) ของกล่อง · `-p 8080:8080` คือหน้าเว็บ Jenkins · `-p 3000:3000` จองไว้ให้ร้านแมวของ LAB 3–4 · `-p 8000:8000` จองไว้ให้ webapp ของ LAB 6 — เปิดครบตั้งแต่ตอนนี้ จะได้**ไม่ต้องสร้าง devtools ใหม่อีกเลย**
->
-> ⚠️ **`docker rm -f devtools` ทำเฉพาะตอนเริ่ม LAB 1 เท่านั้น** — หลังจากนี้ Jenkins และข้อมูลทั้งหมดของมันอยู่**ข้างใน** `devtools` ถ้าลบกล่องทิ้งก็หายหมด · ปิดเครื่องแล้วเปิดใหม่ให้ใช้ `docker start devtools` แทน
+> ⚠️ **`docker rm -f devtools` ทำเฉพาะตอนเริ่ม LAB 1 เท่านั้น** — คำสั่งนี้ลบข้อมูลทั้งหมดในเครื่องเรียน (รวม Jenkins) · ครั้งต่อไปให้ใช้ `docker start devtools`
 
 > ใน VS Code ใช้ **Remote-SSH** ต่อไปที่ `root@localhost:2222` แล้วทำแล็บทั้งหมดข้างใน
 
-port ของแล็บนี้ซ้อนกันสามชั้น — ดูภาพนี้ให้เข้าใจก่อน แล้วจะไม่งงตลอดทั้งชุดแล็บ :
-
 ![เส้นทาง port ของแล็บ : เครื่องเรา -> devtools -> jenkins](./images/lab1_arch_ports.png)
 
-> 📝 **คำอธิบาย:** พิมพ์ `localhost:8080` ในเบราว์เซอร์ → ทะลุ `-p 8080:8080` ของกล่อง `devtools` → ทะลุ `-p 8080:8080` ของ container `jenkins` (ที่จะสร้างในการทดลองที่ 1) → ถึงหน้าเว็บ Jenkins · SSH เดินอีกทาง : `2222` ของเครื่องเรา → `22` ของ `devtools` · ส่วน `3000` กับ `8000` เปิดรอไว้เฉย ๆ ยังไม่มีใครใช้จนถึง LAB 3 และ LAB 6 ·
-> คำสั่ง `curl` ทั้งหลายในแล็บรันอยู่**ข้างในเครื่องเรียน** จึงคุย Jenkins ที่ `localhost:8080` ตรง ๆ ไม่ต้องผ่านชั้นนอก
->
-> **ทำไม Jenkins ใช้ `8080` ตรง ๆ ไม่เลี่ยงเป็นเลขแปลก ๆ แบบ `8411` ของแล็บ Kafka?** — `8080` เป็น port มาตรฐานของ Jenkins เอง และทุกแล็บถัดไปอ้าง `http://localhost:8080` ตลอด · ถ้า port 8080 ของเครื่องเราถูกโปรแกรมอื่นจองอยู่ `docker run` จะขึ้น `Bind for 0.0.0.0:8080 failed: port is already allocated` — ให้หยุดโปรแกรมตัวนั้นก่อน (ดู [แก้ปัญหาที่พบบ่อย](#แก้ปัญหาที่พบบ่อย))
+> `localhost:8080` บนเครื่องเรา → `devtools` → container `jenkins` · SSH ใช้ `2222` → `22` · `3000` และ `8000` จองไว้ให้ LAB 3–4 และ LAB 6
 
 ตรวจว่าพร้อมใช้งาน (คำสั่งทั้งหมดต่อจากนี้พิมพ์**ข้างในเครื่องเรียน**) :
 
@@ -154,7 +145,7 @@ Docker version 29.8.1, build 4a63305
 Docker Compose version v5.5.1
 ```
 
-> ถ้าขึ้น `Cannot connect to the Docker daemon` แปลว่ายังอยู่นอกกล่องเรียน หรือ daemon ข้างในยังตื่นไม่เสร็จ — รอสักครู่แล้วลองใหม่ (ถ้าเป็นหลัง `docker restart` และรอแล้วก็ไม่หาย ดูแถว `docker.pid` ใน [แก้ปัญหาที่พบบ่อย](#แก้ปัญหาที่พบบ่อย))
+> ถ้าขึ้น `Cannot connect to the Docker daemon` หรือ port 8080 ถูกจอง ดู [แก้ปัญหาที่พบบ่อย](#แก้ปัญหาที่พบบ่อย)
 
 ---
 
@@ -188,9 +179,11 @@ readme.md
 
 ---
 
-## 2. สิ่งที่จะสร้างในแล็บนี้
+## การทดลองที่ 1 — Start: สร้าง network และคอนเทนเนอร์ Jenkins
 
-ตั้งแต่นี้ทุกคำสั่งพิมพ์ใน shell ของ `devtools` — แล็บนี้จะสร้างของ 4 อย่างข้างในเครื่องเรียน :
+**ทำอะไร:** สร้าง Docker network ของรายวิชา แล้วยก Jenkins ขึ้นบน network นั้น
+
+ตั้งแต่การทดลองนี้เป็นต้นไป ทุกคำสั่งพิมพ์ใน shell ของ `devtools` — แล็บนี้จะสร้างของ 4 อย่างข้างในเครื่องเรียน :
 
 | สิ่งที่สร้าง | ชื่อ | หน้าที่ |
 |---|---|---|
@@ -198,22 +191,6 @@ readme.md
 | container | `jenkins` | ตัว Jenkins — รับงาน จัดคิว รันคำสั่ง |
 | volume | `jenkins_home` | เก็บสถานะทั้งหมดของ Jenkins (ผู้ใช้ job ประวัติ build) |
 | port | `8080` | หน้าเว็บและ REST API |
-
-หน้าตาของคำสั่งที่จะใช้ :
-
-```bash
-docker network create cicd-net
-docker run -d --name jenkins --network cicd-net --restart unless-stopped \
-  -p 8080:8080 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk21
-```
-
-> ยังไม่ต้องพิมพ์ — สองบรรทัดนี้จะรันจริงใน**การทดลองที่ 1** ซึ่งอธิบายทุก flag ไว้ครบ
-
----
-
-## การทดลองที่ 1 — Start: สร้าง network และคอนเทนเนอร์ Jenkins
-
-**ทำอะไร:** สร้าง Docker network ของรายวิชา แล้วยก Jenkins ขึ้นบน network นั้น
 
 **ทำไม:** แต่ละตัวเลือกของ `docker run` สอดคล้องกับทฤษฎีข้อ 5 โดยตรง
 

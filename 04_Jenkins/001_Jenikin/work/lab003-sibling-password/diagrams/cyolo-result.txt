@@ -1,0 +1,39 @@
+Saved and inspected both PNGs with `view_image`; checked containment, arrow directions, stage order, and readability.
+
+- [architecture-sibling.png](/root/workspace/DevTools/04_Jenkins/001_Jenikin/work/lab003-sibling-password/diagrams/architecture-sibling.png)
+- [pipeline-sibling.png](/root/workspace/DevTools/04_Jenkins/001_Jenikin/work/lab003-sibling-password/diagrams/pipeline-sibling.png)
+
+Method: cyolo1 built-in `image_gen__imagegen` only—two generations and two corrective edits. Token usage was not reported. No code or documentation files were modified.
+
+<details>
+<summary>Final architecture edit prompt (verbatim)</summary>
+
+```text
+Edit this diagram to correct ONLY the registry arrow directions, the boundary port position, and the background. Preserve every other label, sibling containment, browser connections, GitHub source connection, SSH connection, and large readable typography.
+1. Render a SOLID OPAQUE PURE WHITE background behind the whole diagram, including title and external services. No transparency, no black background.
+2. Correct the orange straight vertical line labeled "Push image": its tail starts at the top-right edge of devtools and its SINGLE arrowhead is at Docker Hub pointing UP into Docker Hub. Delete its existing downward arrowhead at devtools. Push means devtools -> Docker Hub.
+3. Correct the orange rightmost elbow line labeled "Pull by digest": its tail starts at Docker Hub, goes down and then left, with its SINGLE arrowhead at devtools pointing LEFT into devtools. Delete the existing upward arrowhead at Docker Hub. Pull means Docker Hub -> devtools. No double-ended arrows. Keep these two orange paths separate, without crossings.
+4. Move the label "devtools:3000" upward so it is on the devtools container bottom border, not the shared network border. Keep "host:3000" on the host bottom border. Browser arrow passes through host:3000 then devtools:3000 then points upward into the nested catfood-web :3000.
+Keep title "LAB 3 | System Architecture". Keep jenkins and devtools distinct siblings inside cicd-net, itself inside Student Docker host. Keep catfood-web ONLY inside devtools. Do not add text.
+```
+
+</details>
+
+<details>
+<summary>Final pipeline edit prompt (verbatim)</summary>
+
+```text
+Edit this pipeline illustration for much larger readable type and less text. REMOVE the entire right-hand "README" column, all eight repeated explanatory paragraphs, the external Docker Hub box, and its two side arrows. Reflow the remaining diagram to use the FULL available image width. Preserve a white opaque background, navy/teal/blue/orange palette and portrait format. No sidebar at all. Keep only title, Jenkins controller box, SSH arrow, devtools boundary, and eight vertical stage cards. Increase card titles and descriptions substantially using the newly available width; no tiny text. Remove decorative icons if they consume needed text space.
+Title "LAB 3 | Pipeline". Jenkins box OUTSIDE and above devtools: "Jenkins controls" / "Password from Jenkins Credentials". Down arrow "SSH devtools:22". Execution boundary "devtools executes". Inside boundary eight cards connected by simple downward arrows in exact order:
+1 Connect / Password SSH
+2 Clone / GitHub to devtools
+3 Build / Docker image
+4 Test / Temporary container + health
+5 Push / Docker Hub + save digest
+6 Clean / Remove old LAB app and local image
+7 Pull / Same digest from Docker Hub
+8 Deploy / catfood-web on devtools + health
+Between 5 and 6 keep large orange annotation "Only after Push succeeds". Between 7 and 8 keep large orange annotation "Pull before Deploy". All stage text must remain exact; wrap descriptions where needed for large font. All Git and Docker execution visibly inside devtools; Jenkins outside. No new elements.
+```
+
+</details>
