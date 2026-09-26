@@ -17,7 +17,12 @@ pipeline {                 // ขอบเขตของ Pipeline ทั้ง�
 }
 ```
 
-จากนั้นจะเติมทีละส่วน: ตัวแปร `environment` (อ่านด้วย `env.NAME`) และ `parameters` (อ่านด้วย `params.NAME`) — การแทนค่า `${...}` ทำงานเฉพาะในสตริงอัญประกาศคู่ `"..."` — ต่อด้วย `post` และ `when` ซึ่งจะอธิบายในการทดลองที่ใช้จริง
+- **stage** คือขั้นที่มีชื่อ (เช่น Build, Test) · **steps** คือคำสั่งที่ทำจริงในขั้นนั้น
+- **sequential:** stage ใน `stages { }` ทำงานตามลำดับ stage ถัดไปเริ่มเมื่อ stage ก่อนหน้าจบแล้ว
+- **parallel:** รัน branch ที่ไม่ขึ้นต่อกันพร้อมกัน และ**รอให้ทุก branch จบ**ก่อนไป stage ถัดไป
+- **post:** งานที่ทำ*หลัง*งานใน stages จบ (เช่นสรุปผล) เป็นคนละเรื่องกับ `parallel`
+
+ลำดับแล็บ: สร้าง job 3 stages → อ่าน Pipeline Graph → ลอง `parallel` ใน job แยก → เติม `environment` (อ่านด้วย `env.NAME`) และ `parameters` (อ่านด้วย `params.NAME`) — การแทนค่า `${...}` ทำงานเฉพาะในสตริงอัญประกาศคู่ `"..."` — ต่อด้วย `post` และ `when` ซึ่งจะอธิบายในการทดลองที่ใช้จริง
 
 ---
 
@@ -26,9 +31,10 @@ pipeline {                 // ขอบเขตของ Pipeline ทั้ง�
 เมื่อจบแล็บนี้ นักศึกษาจะสามารถ
 
 1. สร้าง Pipeline job และเขียน Declarative Pipeline ด้วย `pipeline`, `agent`, `stages`, `stage` และ `steps` ได้
-2. ใช้ `environment` (`env.*`) และ `parameters` (`params.*`) พร้อมการแทนค่าในสตริงอัญประกาศคู่ได้
-3. ใช้ `post` และ `when` เพื่อกำหนดงานหลัง build และการข้าม stage ได้
-4. อ่าน Pipeline Graph และ Console Output เพื่ออธิบายว่า stage ใดทำงาน ถูกข้าม หรือล้มเหลว
+2. ใช้ `parallel` รัน stage ที่ไม่ขึ้นต่อกันพร้อมกัน และอธิบายได้ว่า stage ถัดไปรอทุก branch จบก่อน
+3. ใช้ `environment` (`env.*`) และ `parameters` (`params.*`) พร้อมการแทนค่าในสตริงอัญประกาศคู่ได้
+4. ใช้ `post` และ `when` เพื่อกำหนดงานหลัง build และการข้าม stage ได้
+5. อ่าน Pipeline Graph และ Console Output เพื่ออธิบายว่า stage ใดทำงาน ถูกข้าม หรือล้มเหลว
 
 ---
 
@@ -155,6 +161,66 @@ Finished: SUCCESS
 ```
 
 🔍 **ตีความ:** บรรทัด `[Pipeline] { (ชื่อ stage)` คือจุดเริ่มของ stage และ `[Pipeline] // stage` คือจุดจบ ตรงกับวงเล็บปีกกาในโค้ด แต่ละ stage ใช้เวลาประมาณ 1 วินาทีตาม `sleep 1` รวมทั้ง build ประมาณ 4–5 วินาที
+
+---
+
+## การทดลองที่ 3 — `parallel`: รัน Unit Tests และ Lint พร้อมกัน
+
+**คำถาม:** ถ้ามีสองงานที่ไม่ขึ้นต่อกัน จะให้ทำพร้อมกันแล้วค่อยไปขั้นถัดไปได้อย่างไร
+
+> 📝 ใช้ job แยกชื่อ `parallel-demo` เพื่อไม่ให้หมายเลข build ของ `first-pipeline` เปลี่ยน · stage ที่มี `parallel` ต้องมีแค่ `parallel` (ไม่ใส่ `steps` ระดับเดียวกัน) และข้างในเป็น stage ย่อยที่แต่ละตัวมี `steps` ของตัวเอง · งานทดสอบและ lint ในที่นี้**จำลอง**ด้วย `echo` และ `sleep` เท่านั้น ไม่ต้องติดตั้งเครื่องมือเพิ่ม
+
+**3.1) Dashboard → New Item** กรอกชื่อ `parallel-demo` เลือก **Pipeline** → **OK** → ตรวจว่า **Definition = Pipeline script** วางสคริปต์นี้ในช่อง **Script** → **Save**
+
+```groovy
+pipeline {
+  agent any
+
+  stages {
+    stage('Checks') {
+      parallel {
+        stage('Unit Tests') {
+          steps {
+            echo 'Unit Tests start'
+            sleep 3
+            echo 'Unit Tests done'
+          }
+        }
+        stage('Lint') {
+          steps {
+            echo 'Lint start'
+            sleep 3
+            echo 'Lint done'
+          }
+        }
+      }
+    }
+    stage('Finish') {
+      steps {
+        echo 'All checks finished'
+      }
+    }
+  }
+}
+```
+
+**3.2) กด Build Now** รอจน build ล่าสุดของ `parallel-demo` เสร็จ แล้วคลิก build นั้น → **Pipeline Overview**
+
+**3.3) สังเกตกราฟและ Console Output** — กราฟควรแยกเป็นสองแขนง `Unit Tests` กับ `Lint` ใต้ `Checks` แล้วรวมกลับก่อนเข้า `Finish`
+
+📋 **ผลที่คาดว่าจะเห็น** (ตัวอย่างลำดับ ไม่ใช่ผลที่รันทดสอบแล้ว):
+
+```text
+Unit Tests start
+Lint start
+Unit Tests done
+Lint done
+All checks finished
+```
+
+🔍 **ตีความ:** ข้อความ `start` ของทั้งสอง branch ควรขึ้นก่อน `done` ของ branch ใด ๆ แสดงว่าทำงานซ้อนกัน และ `All checks finished` ขึ้นหลัง `done` ทั้งคู่เสมอ เพราะ `Finish` รอทุก branch จบ · ลำดับบรรทัดระหว่างสอง branch **ไม่รับประกัน** (อาจเห็น `Lint start` ก่อน) และ log จริงมีบรรทัด `[Pipeline] ...` คั่น · ช่วง `sleep 3` ของสอง branch ซ้อนกัน `Checks` จึงมักใช้เวลาน้อยกว่าการรันต่อกัน แต่ไม่รับประกันเวลารวมที่แน่นอน
+
+➡️ **ต่อไป:** กลับไปที่ job `first-pipeline` แล้ววางสคริปต์แทนของเดิมตามการทดลองที่ 4
 
 ---
 
