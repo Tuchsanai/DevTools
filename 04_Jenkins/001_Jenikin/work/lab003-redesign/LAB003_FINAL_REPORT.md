@@ -48,3 +48,9 @@
 3. Nothing was rerun: no pipeline, no experiments, no tag pushes. Other files were untouched, including `globals.css` and `.ipynb_checkpoints`.
 
 **Prior yolo3 cost (canonical `claude-opus-5-5`, CLI list prices, not subscription charges):** phase 1 $4.6168822 and phase 2 $1.6263432 (the parent interrupted both on purpose), final successful run $5.1651622. The parent reports this run's cost.
+
+## Screenshot readability pass (2026-09-26, details in `readability/NOTES.md`)
+- The README now shows 39 lossless crops of the real captures (plus the full storefront figures 15 and 26), each linking to its untouched full-size image. The crops were made by `readability/make_crops.py`, are pixel-verified, and are listed in `readability/crop-manifest.json`. Captions disclose the crop.
+- Figure 9 now shows Docker Hub's real *Create access token* page (host capture, cropped, no token value visible) instead of the Repositories list.
+- Three captions (8, 19, 20) were corrected to match what the captures actually show.
+- `verify_readme.py` passes with the new crop and link checks, and `git diff --check` is clean. The pipeline was not rerun, and the shell blocks and Jenkinsfile are unchanged.

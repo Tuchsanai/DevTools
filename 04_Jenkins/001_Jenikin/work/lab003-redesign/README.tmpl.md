@@ -69,13 +69,13 @@ Jenkins ถือ private key ใน **Jenkins Credentials** ส่วน public
 
 stage **Clone** รัน `git clone` **บน devtools** (context ⑤) ซอร์สไม่ผ่าน Jenkins เลย และไม่พึ่งโฟลเดอร์ใดที่นักศึกษาเตรียมไว้ก่อน ซอร์สร้านอยู่ใน repository สาธารณะของรายวิชา:
 
-![ซอร์สร้านบน GitHub](./images/lab3_github_01_source.png)
+[![ซอร์สร้านบน GitHub](./images/lab3_github_01_source_crop.png)](./images/lab3_github_01_source.png)
 
-*ภาพที่ 2 (ภาพหน้าจอจริง) โฟลเดอร์ `catfood-shop` บน GitHub ที่ stage Clone ดึงมา*
+*ภาพที่ 2 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) โฟลเดอร์ `catfood-shop` บน GitHub ที่ stage Clone ดึงมา*
 
-![Dockerfile บน GitHub](./images/lab3_github_02_dockerfile.png)
+[![Dockerfile บน GitHub](./images/lab3_github_02_dockerfile_crop.png)](./images/lab3_github_02_dockerfile.png)
 
-*ภาพที่ 3 (ภาพหน้าจอจริง) `Dockerfile` ของร้าน — single-stage, `HEALTHCHECK` และ build-arg ข้อมูล build อยู่ท้ายไฟล์*
+*ภาพที่ 3 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) `Dockerfile` ของร้าน — single-stage, `HEALTHCHECK` และ build-arg ข้อมูล build อยู่ท้ายไฟล์*
 
 | parameter | ค่าเริ่มต้น | ความหมาย |
 |---|---|---|
@@ -146,7 +146,7 @@ stage Push จด digest ที่ Docker Hub ตอบกลับ แล้ว
 | `Jenkinsfile` | Pipeline 8 stage: Connect → Clone → Build → Test → Push → Clean → Pull → Deploy (เนื้อหาเดียวกับหัวข้อ “Jenkinsfile ฉบับสมบูรณ์” ด้านล่าง) |
 | `catfood-shop/` | ซอร์สร้าน Meow Mart (Next.js 16 + React 19) ซึ่ง stage Clone ดึงจาก GitHub — ไม่ต้อง copy เอง |
 | `catfood-shop/Dockerfile` | Dockerfile แบบ single-stage + `HEALTHCHECK` รับ `APP_VERSION`, `BUILD_NUMBER`, `GIT_COMMIT`, `BUILD_TIME` |
-| `images/` | แผนภาพประกอบ 2 ภาพ (`lab3_diagram_*`) และภาพหน้าจอจริงจากรอบทดสอบ |
+| `images/` | แผนภาพประกอบ 2 ภาพ (`lab3_diagram_*`) และภาพหน้าจอจริงจากรอบทดสอบ — ไฟล์ที่ลงท้าย `_crop`, `_tail`, `_graph`, `_log`, `_chip`, `_left`, `_right` คือส่วนที่ตัดออกจากภาพเต็มชื่อเดียวกันแบบพิกเซลตรงตัว (ไม่ย่อ ไม่แก้ไขเนื้อหา) เพื่อให้อ่านตัวอักษรได้ ภาพเต็มยังอยู่ครบและเปิดได้ด้วยการคลิกภาพใน README |
 
 ---
 
@@ -175,9 +175,9 @@ ssh root@localhost -p 2222        # password : passwd
 
 แล้วทำ **การทดลองที่ 3–4 ของ [LAB 1](../001_LAB_Jenkins_On_Docker/README.md)** ให้เสร็จ: เปิด `http://localhost:8080` ปลดล็อกด้วย `docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword` เลือก **Install suggested plugins** และสร้างผู้ดูแล `admin` / `admin2569`
 
-![หน้า Unlock Jenkins](./images/lab3_jenkins_01_unlock.png)
+[![หน้า Unlock Jenkins](./images/lab3_jenkins_01_unlock_crop.png)](./images/lab3_jenkins_01_unlock.png)
 
-*ภาพที่ 5 (ภาพหน้าจอจริง จากรอบทดลองแยกอีกรอบในวันเดียวกัน) หน้า Unlock Jenkins ของการติดตั้งครั้งแรก*
+*ภาพที่ 5 (ภาพหน้าจอจริงแบบครอป จากรอบทดลองแยกอีกรอบในวันเดียวกัน — คลิกภาพเพื่อเปิดภาพเต็ม) หน้า Unlock Jenkins ของการติดตั้งครั้งแรก*
 
 ### ทาง B — ทำต่อจาก LAB 1–2 (แนะนำ)
 
@@ -209,13 +209,13 @@ ssh root@localhost -p 2222        # password : passwd
 
 เปิด `http://localhost:8080` แล้ว login ด้วยผู้ดูแลที่สร้างไว้
 
-![หน้า Sign in ของ Jenkins](./images/lab3_jenkins_02_signin.png)
+[![หน้า Sign in ของ Jenkins](./images/lab3_jenkins_02_signin_crop.png)](./images/lab3_jenkins_02_signin.png)
 
-*ภาพที่ 6 (ภาพหน้าจอจริง) หน้า Sign in*
+*ภาพที่ 6 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) หน้า Sign in*
 
-![Dashboard หลัง login](./images/lab3_jenkins_03_dashboard.png)
+[![Dashboard หลัง login](./images/lab3_jenkins_03_dashboard_crop.png)](./images/lab3_jenkins_03_dashboard.png)
 
-*ภาพที่ 7 (ภาพหน้าจอจริง) Dashboard หลัง login*
+*ภาพที่ 7 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) Dashboard หลัง login*
 
 แล็บนี้ใช้ plugin ที่มากับชุด **Install suggested plugins** อยู่แล้ว ไม่ต้องติดตั้งเพิ่ม ตรวจที่ **Manage Jenkins → Plugins → Installed plugins** ว่ามีครบ:
 
@@ -226,9 +226,9 @@ ssh root@localhost -p 2222        # password : passwd
 | **SSH Credentials** | ชนิด credential **SSH Username with private key** และ `sshUserPrivateKey(...)` |
 | **Pipeline Graph View** | หน้า Stages แสดง 8 stage เป็นกราฟ (ไม่บังคับ แต่ช่วยอ่านผล) |
 
-![รายการ plugin ที่ติดตั้ง](./images/lab3_jenkins_09_plugins.png)
+[![รายการ plugin ที่ติดตั้ง](./images/lab3_jenkins_09_plugins_crop.png)](./images/lab3_jenkins_09_plugins.png)
 
-*ภาพที่ 8 (ภาพหน้าจอจริง) plugin กลุ่ม Pipeline ที่ติดตั้งจากชุด suggested plugins*
+*ภาพที่ 8 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) ส่วนต้นของหน้า Installed plugins (เรียงตามชื่อ) หลังติดตั้งชุด suggested plugins*
 
 > ถ้าตอนทำ LAB 1 เลือก **Select plugins to install** แล้วตัดบางตัวออก ให้ติดตั้งตัวที่ขาดจาก **Available plugins** แล้ว restart Jenkins
 
@@ -236,9 +236,9 @@ ssh root@localhost -p 2222        # password : passwd
 
 สมัครบัญชีและยืนยันอีเมล สร้าง **Personal Access Token สิทธิ์ Read & Write** (Account settings → Personal access tokens) เก็บ token ไว้สำหรับการทดลองที่ 6 เท่านั้น แนะนำให้สร้าง repository `catfood-shop` แบบ **Public** เพื่อเปิดดูหน้า Tags ได้โดยไม่ต้อง login (Pipeline login ทั้งตอน push และ pull จึงใช้กับ Private ได้เช่นกัน)
 
-![repository catfood-shop บน Docker Hub](./images/lab3_hub_01_logged_in.png)
+[![หน้าสร้าง Personal Access Token บน Docker Hub](./images/lab3_hub_04_pat_setup_crop.png)](./images/lab3_hub_04_pat_setup.png)
 
-*ภาพที่ 9 (ภาพหน้าจอจริง) หน้า Repositories บน Docker Hub หลัง login มี `catfood-shop` แบบ Public — ของนักศึกษาจะเป็น `<DOCKER_USER>/catfood-shop`*
+*ภาพที่ 9 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) Account settings → **Personal access tokens** → New access token บน Docker Hub: ตั้งชื่อ token (ในภาพคือ `jenkins-lab3`) เลือก **Access permissions = Repo Read & Write** แล้วกด **Generate** — ภาพนี้ถ่ายก่อนกด Generate จึงไม่มีค่า token ปรากฏ หลังกด Docker Hub แสดง token เพียงครั้งเดียว ให้คัดลอกเก็บไว้ทันที*
 
 ---
 
@@ -385,23 +385,23 @@ cat ~/.ssh/jenkins_devtools
 
 4. กรอก **ID** = `devtools-ssh`, **Description** = `SSH key: Jenkins to devtools`, **Username** = `root` เลือก **Private Key → Enter directly** วางเนื้อหาที่คัดลอกมา ปล่อย **Passphrase** ว่าง → **Create**
 
-![ค่าใน credential devtools-ssh](./images/lab3_jenkins_05_ssh_credential.png)
+[![ค่าใน credential devtools-ssh](./images/lab3_jenkins_05_ssh_credential_crop.png)](./images/lab3_jenkins_05_ssh_credential.png)
 
-*ภาพที่ 10 (ภาพหน้าจอจริง) หน้าต่าง **Update credential** ของ `devtools-ssh` ที่บันทึกแล้ว — ใช้ตรวจค่าทุกช่องให้ตรงกับที่กรอกตอนสร้าง Jenkins ซ่อน key เป็น `Concealed for Confidentiality`*
+*ภาพที่ 10 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) หน้าต่าง **Update credential** ของ `devtools-ssh` ที่บันทึกแล้ว — ใช้ตรวจค่าทุกช่องให้ตรงกับที่กรอกตอนสร้าง Jenkins ซ่อน key เป็น `Concealed for Confidentiality`*
 
 **(ข) Docker Hub token**
 
 5. **Add Credentials** อีกครั้ง → **Username with password** → Username = `<DOCKER_USER>` (ตัวพิมพ์เล็ก), Password = `<DOCKER_TOKEN>`, ID = `dockerhub`, Description = `Docker Hub access token` → **Create**
 
-![ค่าใน credential dockerhub](./images/lab3_jenkins_06_dockerhub_credential.png)
+[![ค่าใน credential dockerhub](./images/lab3_jenkins_06_dockerhub_credential_crop.png)](./images/lab3_jenkins_06_dockerhub_credential.png)
 
-*ภาพที่ 11 (ภาพหน้าจอจริง) หน้าต่าง **Update credential** ของ `dockerhub` ที่บันทึกแล้ว — token แสดงเป็น `Concealed` ID `dockerhub` คือชื่อที่ Jenkinsfile อ้างถึง*
+*ภาพที่ 11 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) หน้าต่าง **Update credential** ของ `dockerhub` ที่บันทึกแล้ว — token แสดงเป็น `Concealed` ID `dockerhub` คือชื่อที่ Jenkinsfile อ้างถึง*
 
 ✅ **สิ่งที่ต้องเห็น:** หน้า Global credentials มีสองรายการ `devtools-ssh` และ `dockerhub` แสดงเพียง ID และคำอธิบาย ไม่แสดง private key หรือ token
 
-![รายการ credential สองตัว](./images/lab3_jenkins_04_credentials.png)
+[![รายการ credential สองตัว](./images/lab3_jenkins_04_credentials_crop.png)](./images/lab3_jenkins_04_credentials.png)
 
-*ภาพที่ 12 (ภาพหน้าจอจริง) Global credentials มี `devtools-ssh` และ `dockerhub`*
+*ภาพที่ 12 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) Global credentials มี `devtools-ssh` และ `dockerhub`*
 
 > ⚠️ private key และ token วางได้ที่ Jenkins Credentials เท่านั้น ห้ามวางในแชต เอกสาร หรือ commit ลง Git · Jenkinsfile ตรวจ username ของ `dockerhub` ว่ามีเฉพาะ `a-z0-9` ตามกติกาชื่อบัญชี Docker Hub ก่อนนำไปประกอบชื่อ image
 
@@ -468,15 +468,15 @@ withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariabl
 
 1. Dashboard → **New Item** → ชื่อ `docker-build-push` → เลือก **Pipeline** → **OK**
 
-![New Item ชนิด Pipeline](./images/lab3_jenkins_08_new_pipeline.png)
+[![New Item ชนิด Pipeline](./images/lab3_jenkins_08_new_pipeline_crop.png)](./images/lab3_jenkins_08_new_pipeline.png)
 
-*ภาพที่ 13 (ภาพหน้าจอจริง) หน้า New Item ขณะเลือกชนิด **Pipeline** — ภาพนี้ถ่ายเพื่อแสดงหน้าจอเท่านั้น ในรอบทดสอบไม่ได้กด OK สร้าง job ซ้ำ*
+*ภาพที่ 13 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) หน้า New Item ขณะเลือกชนิด **Pipeline** — ภาพนี้ถ่ายเพื่อแสดงหน้าจอเท่านั้น ในรอบทดสอบไม่ได้กด OK สร้าง job ซ้ำ*
 
 2. หัวข้อ **Pipeline → Definition: Pipeline script** (ไม่ใช่ *Pipeline script from SCM*) วาง Jenkinsfile ฉบับสมบูรณ์ทั้งไฟล์ คง **Use Groovy Sandbox** ไว้ → **Save**
 
-![ช่อง Pipeline script ที่วาง Jenkinsfile แล้ว](./images/lab3_jenkins_07_pipeline_config.png)
+[![ช่อง Pipeline script ที่วาง Jenkinsfile แล้ว](./images/lab3_jenkins_07_pipeline_config_crop.png)](./images/lab3_jenkins_07_pipeline_config.png)
 
-*ภาพที่ 14 (ภาพหน้าจอจริง) หน้า Configure ของ job ที่ Definition เป็น **Pipeline script** และมี Jenkinsfile ของแล็บนี้อยู่ในช่อง Script (ถ่ายจาก job ที่สร้างครั้งแรกก่อนปรับ stage Clean รอบสุดท้าย ส่วนต้นไฟล์ที่เห็น — คำอธิบายและฟังก์ชันช่วย — เหมือนฉบับสมบูรณ์)*
+*ภาพที่ 14 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) หน้า Configure ของ job ที่ Definition เป็น **Pipeline script** และมี Jenkinsfile ของแล็บนี้อยู่ในช่อง Script (ถ่ายจาก job ที่สร้างครั้งแรกก่อนปรับ stage Clean รอบสุดท้าย ส่วนต้นไฟล์ที่เห็น — คำอธิบายและฟังก์ชันช่วย — เหมือนฉบับสมบูรณ์)*
 
 > 📝 job ที่เพิ่งสร้างยังไม่มีปุ่ม **Build with Parameters** เพราะ Jenkins จะรู้จัก `parameters { ... }` หลังรัน Jenkinsfile ครั้งแรก build แรกจึงกด **Build Now** ซึ่ง Declarative Pipeline ใส่ค่า default ให้ `params.*` ครบ (ตรวจแล้วในรอบทดสอบ: build แรกที่ไม่ส่ง parameter ได้ `params.GIT_URL` = `https://github.com/Tuchsanai/DevTools.git` และ `params.APP_VERSION` = `1.0.0`) tag แรกของนักศึกษาจึงเป็น `lab3-1`
 
@@ -550,9 +550,11 @@ commit ที่ได้คือ commit ล่าสุดของ `main` ใ
 
 จากนั้นเปิด `http://localhost:3000` บนเครื่องของเรา chip บนแถบด้านบนต้องเป็น `v1.0.0 · build #1`
 
-![หน้าร้าน v1.0.0 build #1](./images/lab3_app_01_version1.png)
+[![หน้าร้าน v1.0.0 build #1](./images/lab3_app_01_version1.png)](./images/lab3_app_01_version1.png)
 
-*ภาพที่ 15 (ภาพหน้าจอจริง) หน้าร้านหลัง build #1 ของรอบทดสอบ chip บนแถบด้านบนแสดง `v1.0.0 · build #1`*
+[![chip เวอร์ชันบนแถบด้านบน (ครอป)](./images/lab3_app_01_version1_chip.png)](./images/lab3_app_01_version1.png)
+
+*ภาพที่ 15 (ภาพหน้าจอจริง ภาพบนเต็มจอ ภาพล่างครอปเฉพาะ chip จากภาพเดียวกัน — คลิกภาพเพื่อเปิดภาพเต็ม) หน้าร้านหลัง build #1 ของรอบทดสอบ chip บนแถบด้านบนแสดง `v1.0.0 · build #1`*
 
 🔍 **สืบย้อน:** หน้าเว็บ → container `catfood-web` (`host` ใน `/api/health`) → `image: <repo>@sha256:...` ใน Deploy → digest ที่ Push จดไว้ → build #1 ของ Jenkins → `commit` จาก stage Clone
 
@@ -565,9 +567,9 @@ commit ที่ได้คือ commit ล่าสุดของ `main` ใ
 1. เปิด job `docker-build-push` → **Build with Parameters**
 2. เปลี่ยนเฉพาะ `APP_VERSION` เป็น `1.1.0` (ช่องอื่นคงค่าเดิม) → **Build**
 
-![ฟอร์ม Build with Parameters](./images/lab3_jenkins_10_build_parameters.png)
+[![ฟอร์ม Build with Parameters](./images/lab3_jenkins_10_build_parameters_crop.png)](./images/lab3_jenkins_10_build_parameters.png)
 
-*ภาพที่ 16 (ภาพหน้าจอจริง) ฟอร์ม Build with Parameters ที่ Jenkins สร้างจากบล็อก `parameters` หลัง build แรก กรอก `APP_VERSION` = `1.1.0` (รอบทดสอบกรอก `TAG_PREFIX` = `{{val:prefix}}` ด้วย ของนักศึกษาคง `lab3`) — ภาพนี้เป็นการเปิดฟอร์มดู build #2 จริงถูกสั่งด้วยค่าชุดเดียวกันผ่าน REST API ของ Jenkins*
+*ภาพที่ 16 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) ฟอร์ม Build with Parameters ที่ Jenkins สร้างจากบล็อก `parameters` หลัง build แรก กรอก `APP_VERSION` = `1.1.0` (รอบทดสอบกรอก `TAG_PREFIX` = `{{val:prefix}}` ด้วย ของนักศึกษาคง `lab3`) — ภาพนี้เป็นการเปิดฟอร์มดู build #2 จริงถูกสั่งด้วยค่าชุดเดียวกันผ่าน REST API ของ Jenkins*
 
 ก่อน build #2 ร้านที่ให้บริการอยู่คือ build #1 ใน **② shell ของ devtools**:
 
@@ -595,45 +597,57 @@ stage Pull และ Deploy ของ build #2 ใช้ digest เดียว�
 {{out:b2-deploy}}
 ```
 
-![build #2 สำเร็จครบ 8 stage](./images/lab3_jenkins_11_build2_success.png)
+[![build #2 สำเร็จครบ 8 stage — กราฟ stage](./images/lab3_jenkins_11_build2_success_graph.png)](./images/lab3_jenkins_11_build2_success.png)
 
-*ภาพที่ 17 (ภาพหน้าจอจริง) build #2 สีเขียวครบ Connect → Deploy พร้อมข้อความสรุปท้าย build*
+[![build #2 สำเร็จครบ 8 stage — log Post Actions](./images/lab3_jenkins_11_build2_success_log.png)](./images/lab3_jenkins_11_build2_success.png)
+
+*ภาพที่ 17 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) build #2 สีเขียวครบ Connect → Deploy พร้อมข้อความสรุปท้าย build · ภาพบนคือกราฟ stage ภาพล่างคือ log ของ Post Actions จากภาพหน้าจอเดียวกัน*
 
 #### หน้า Stages ของ build #2 ทีละ stage
 
 เปิด `http://localhost:8080/job/docker-build-push/2/stages/` แล้วคลิกทีละ stage ทางซ้าย ภาพทั้ง 8 ภาพด้านล่างเป็นภาพหน้าจอจริงของ build #2 (v1.1.0, tag `{{val:b2_tag}}`)
 
-![stage Connect](./images/lab3_stage_01_connect.png)
+[![stage Connect](./images/lab3_stage_01_connect_crop.png)](./images/lab3_stage_01_connect.png)
 
-*ภาพที่ 18 **Connect** — `docker CLI = none docker.sock = none` บน Jenkins แล้ว SSH ไปถาม Docker/git ของ devtools และประกาศปลายทาง push*
+*ภาพที่ 18 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) **Connect** — `docker CLI = none docker.sock = none` บน Jenkins แล้ว SSH ไปถาม Docker/git ของ devtools และประกาศปลายทาง push*
 
-![stage Clone](./images/lab3_stage_02_clone.png)
+[![stage Clone](./images/lab3_stage_02_clone_crop.png)](./images/lab3_stage_02_clone.png)
 
-*ภาพที่ 19 **Clone** — sparse clone ลง `/root/lab3-work/build-2` บน devtools แสดง commit และไฟล์ในโฟลเดอร์ร้าน*
+[![stage Clone — ท้ายบรรทัด ssh](./images/lab3_stage_02_clone_tail.png)](./images/lab3_stage_02_clone.png)
 
-![stage Build](./images/lab3_stage_03_build.png)
+*ภาพที่ 19 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) **Clone** — sparse clone ลง `/root/lab3-work/build-2` บน devtools แสดง commit ที่จะ build (ในภาพไม่มีรายชื่อไฟล์ ดูผลแบบเดียวกันของ build #1 ได้ใน console ของการทดลองที่ 8) · ภาพล่างคือท้ายบรรทัดคำสั่งยาวจากภาพหน้าจอเดียวกัน (ซ้อนกับภาพบนบางส่วน)*
 
-*ภาพที่ 20 **Build** — `docker build` บน devtools ทุกขั้นที่สร้างไฟล์เป็น `CACHED` ได้ `catfood-shop:build-2`*
+[![stage Build](./images/lab3_stage_03_build_crop.png)](./images/lab3_stage_03_build.png)
 
-![stage Test](./images/lab3_stage_04_test.png)
+[![stage Build — ท้ายบรรทัด ssh](./images/lab3_stage_03_build_tail.png)](./images/lab3_stage_03_build.png)
 
-*ภาพที่ 21 **Test** — `catfood-test-2` ถึง `healthy` และ `/api/health` ตอบ version `1.1.0` กับ commit ที่ clone มา*
+*ภาพที่ 20 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) **Build** — `docker build` บน devtools สร้าง `catfood-shop:build-2` (ในภาพขั้น ssh ถูกพับไว้ บรรทัด `CACHED` แบบเดียวกันของ build #1 อยู่ใน console ของการทดลองที่ 8) · ภาพล่างคือท้ายบรรทัดคำสั่งยาวจากภาพหน้าจอเดียวกัน (ซ้อนกับภาพบนบางส่วน)*
 
-![stage Push](./images/lab3_stage_05_push.png)
+[![stage Test](./images/lab3_stage_04_test_crop.png)](./images/lab3_stage_04_test.png)
 
-*ภาพที่ 22 **Push** — `Login Succeeded` แล้ว push `{{val:b2_tag}}` และจด digest `{{val:b2_short}}...`*
+*ภาพที่ 21 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) **Test** — `catfood-test-2` ถึง `healthy` และ `/api/health` ตอบ version `1.1.0` กับ commit ที่ clone มา*
 
-![stage Clean](./images/lab3_stage_06_clean.png)
+[![stage Push](./images/lab3_stage_05_push_crop.png)](./images/lab3_stage_05_push.png)
 
-*ภาพที่ 23 **Clean** — `ลบแอปเดิม catfood-web (8e69a91bd888, ...)` คือร้านของ build #1 ถูกลบที่นี่ **ก่อน Pull** แล้ว `Untagged`/`Deleted` image ของ build #2*
+*ภาพที่ 22 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) **Push** — `Login Succeeded` แล้ว push `{{val:b2_tag}}` และจด digest `{{val:b2_short}}...`*
 
-![stage Pull](./images/lab3_stage_07_pull.png)
+[![stage Clean](./images/lab3_stage_06_clean_crop.png)](./images/lab3_stage_06_clean.png)
 
-*ภาพที่ 24 **Pull** — ดึง `...@sha256:{{val:b2_short}}...` จาก Docker Hub digest เดียวกับที่ Push จดไว้*
+[![stage Clean — ท้ายบรรทัด ssh](./images/lab3_stage_06_clean_tail.png)](./images/lab3_stage_06_clean.png)
 
-![stage Deploy](./images/lab3_stage_08_deploy.png)
+*ภาพที่ 23 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) **Clean** — `ลบแอปเดิม catfood-web (8e69a91bd888, ...)` คือร้านของ build #1 ถูกลบที่นี่ **ก่อน Pull** แล้ว `Untagged`/`Deleted` image ของ build #2 · ภาพล่างคือท้ายบรรทัดคำสั่งยาวจากภาพหน้าจอเดียวกัน (ซ้อนกับภาพบนบางส่วน)*
 
-*ภาพที่ 25 **Deploy** — `catfood-web` ถึง `healthy` รันจาก `image: ...@sha256:{{val:b2_short}}...` และ health ตอบ `1.1.0` build `2`*
+[![stage Pull](./images/lab3_stage_07_pull_crop.png)](./images/lab3_stage_07_pull.png)
+
+[![stage Pull — ท้ายบรรทัด ssh](./images/lab3_stage_07_pull_tail.png)](./images/lab3_stage_07_pull.png)
+
+*ภาพที่ 24 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) **Pull** — ดึง `...@sha256:{{val:b2_short}}...` จาก Docker Hub digest เดียวกับที่ Push จดไว้ · ภาพล่างคือท้ายบรรทัดคำสั่งยาวจากภาพหน้าจอเดียวกัน (ซ้อนกับภาพบนบางส่วน)*
+
+[![stage Deploy](./images/lab3_stage_08_deploy_crop.png)](./images/lab3_stage_08_deploy.png)
+
+[![stage Deploy — ท้ายบรรทัด ssh](./images/lab3_stage_08_deploy_tail.png)](./images/lab3_stage_08_deploy.png)
+
+*ภาพที่ 25 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) **Deploy** — `catfood-web` ถึง `healthy` รันจาก `image: ...@sha256:{{val:b2_short}}...` และ health ตอบ `1.1.0` build `2` · ภาพล่างคือท้ายบรรทัดคำสั่งยาวจากภาพหน้าจอเดียวกัน (ซ้อนกับภาพบนบางส่วน)*
 
 ตรวจจาก **② shell ของ devtools** ว่าร้านเป็น container พี่น้องบน Docker ของ devtools:
 
@@ -648,13 +662,17 @@ stage Pull และ Deploy ของ build #2 ใช้ digest เดียว�
 
 เปิด `http://localhost:3000` อีกครั้ง:
 
-![หน้าร้าน v1.1.0 build #2](./images/lab3_app_03_version2.png)
+[![หน้าร้าน v1.1.0 build #2](./images/lab3_app_03_version2.png)](./images/lab3_app_03_version2.png)
 
-*ภาพที่ 26 (ภาพหน้าจอจริง) หน้าร้านหลัง build #2 chip เปลี่ยนเป็น `v1.1.0 · build #2`*
+[![chip เวอร์ชันบนแถบด้านบน (ครอป)](./images/lab3_app_03_version2_chip.png)](./images/lab3_app_03_version2.png)
 
-![Deployment info ของ build #2](./images/lab3_app_04_build2_info.png)
+*ภาพที่ 26 (ภาพหน้าจอจริง ภาพบนเต็มจอ ภาพล่างครอปเฉพาะ chip จากภาพเดียวกัน — คลิกภาพเพื่อเปิดภาพเต็ม) หน้าร้านหลัง build #2 chip เปลี่ยนเป็น `v1.1.0 · build #2`*
 
-*ภาพที่ 27 (ภาพหน้าจอจริง) หัวข้อ Deployment ของหน้าร้าน แสดง version, build, commit, เวลา build และ container `fa874f49da64` ตรงกับ `/api/health` ด้านบน*
+[![Deployment info ของ build #2 — คอลัมน์ซ้าย](./images/lab3_app_04_build2_info_left.png)](./images/lab3_app_04_build2_info.png)
+
+[![Deployment info ของ build #2 — คอลัมน์ขวา](./images/lab3_app_04_build2_info_right.png)](./images/lab3_app_04_build2_info.png)
+
+*ภาพที่ 27 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) หัวข้อ Deployment ของหน้าร้าน แสดง version, build, commit, เวลา build และ container `fa874f49da64` ตรงกับ `/api/health` ด้านบน · ตาราง Deployment แยกเป็นสองภาพ: ภาพบน = คอลัมน์ซ้าย ภาพล่าง = คอลัมน์ขวา*
 
 | วัดค่า | build #1 (v1.0.0) | build #2 (v1.1.0) |
 |---|---:|---:|
@@ -674,13 +692,13 @@ stage Pull และ Deploy ของ build #2 ใช้ digest เดียว�
 
 (`lab3-20260926-1` เป็น tag ของการรันครั้งแรกในวันเดียวกันที่ถูกแทนด้วยรอบ `{{val:prefix}}` และ `{{val:prefix}}-5` มาจาก build #5 ที่ทดสอบการปฏิเสธของ Clean ดูสรุปผลการทดสอบ)
 
-![หน้า Tags บน Docker Hub](./images/lab3_hub_02_pushed_tags.png)
+[![หน้า Tags บน Docker Hub](./images/lab3_hub_02_pushed_tags_crop.png)](./images/lab3_hub_02_pushed_tags.png)
 
-*ภาพที่ 28 (ภาพหน้าจอจริง) หน้า Tags กรองด้วย `{{val:prefix}}` — tag `-1` ชี้ `{{val:b1_short}}` และ `-2` ชี้ `{{val:b2_short}}` ตรงกับ console*
+*ภาพที่ 28 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) หน้า Tags กรองด้วย `{{val:prefix}}` — tag `-1` ชี้ `{{val:b1_short}}` และ `-2` ชี้ `{{val:b2_short}}` ตรงกับ console*
 
-![รายละเอียด digest บน Docker Hub](./images/lab3_hub_03_image_digest.png)
+[![รายละเอียด digest บน Docker Hub](./images/lab3_hub_03_image_digest_crop.png)](./images/lab3_hub_03_image_digest.png)
 
-*ภาพที่ 29 (ภาพหน้าจอจริง) หน้ารายละเอียดของ image build #2 แสดง manifest digest เต็ม `sha256:{{val:b2_short}}...` ตัวเดียวกับที่ Pull และ Deploy ใช้*
+*ภาพที่ 29 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) หน้ารายละเอียดของ image build #2 แสดง manifest digest เต็ม `sha256:{{val:b2_short}}...` ตัวเดียวกับที่ Pull และ Deploy ใช้*
 
 ---
 
@@ -696,9 +714,11 @@ stage Pull และ Deploy ของ build #2 ใช้ digest เดียว�
 {{out:b3}}
 ```
 
-![build #3 ล้มที่ Connect](./images/lab3_jenkins_12_invalid_parameter.png)
+[![build #3 ล้มที่ Connect — กราฟ stage](./images/lab3_jenkins_12_invalid_parameter_graph.png)](./images/lab3_jenkins_12_invalid_parameter.png)
 
-*ภาพที่ 30 (ภาพหน้าจอจริง) build #3 Connect เป็นสีแดง stage ถัดไปทั้งหมดถูกข้าม (skipped) — ผลที่ตั้งใจให้เกิด*
+[![build #3 ล้มที่ Connect — log Connect](./images/lab3_jenkins_12_invalid_parameter_log.png)](./images/lab3_jenkins_12_invalid_parameter.png)
+
+*ภาพที่ 30 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) build #3 Connect เป็นสีแดง stage ถัดไปทั้งหมดถูกข้าม (skipped) — ผลที่ตั้งใจให้เกิด · ภาพบนคือกราฟ stage ภาพล่างคือรายการ stage และ log จากภาพหน้าจอเดียวกัน*
 
 🔍 **ตีความ:** build ล้มใน Connect ภายในราว {{val:b3_duration}} บรรทัด `+ ssh` บรรทัดเดียวใน console มาจาก `post { unsuccessful }` ที่เก็บกวาดหลัง build ล้ม **ไม่มี SSH ใดที่ส่งค่า `1.2.0; id`** (ค่าที่ส่งมีเพียงชื่อ container และ path ของ build) ข้อความ `ERROR:` ถูกพิมพ์ท้าย console เพราะ Jenkins รายงานสาเหตุหลัง post ทำงานเสร็จ
 
@@ -710,9 +730,13 @@ stage Pull และ Deploy ของ build #2 ใช้ digest เดียว�
 {{out:b4}}
 ```
 
-![build #4 ล้มที่ Clone](./images/lab3_jenkins_13_missing_branch.png)
+[![build #4 ล้มที่ Clone — กราฟ stage](./images/lab3_jenkins_13_missing_branch_graph.png)](./images/lab3_jenkins_13_missing_branch.png)
 
-*ภาพที่ 31 (ภาพหน้าจอจริง) build #4 ผ่าน Connect แต่ Clone เป็นสีแดงด้วย `Remote branch no-such-branch not found` stage ที่เหลือถูกข้าม — ผลที่ตั้งใจให้เกิด*
+[![build #4 ล้มที่ Clone — log Clone](./images/lab3_jenkins_13_missing_branch_log.png)](./images/lab3_jenkins_13_missing_branch.png)
+
+[![build #4 ล้มที่ Clone — ท้ายบรรทัด ssh](./images/lab3_jenkins_13_missing_branch_tail.png)](./images/lab3_jenkins_13_missing_branch.png)
+
+*ภาพที่ 31 (ภาพหน้าจอจริงแบบครอป — คลิกภาพเพื่อเปิดภาพเต็ม) build #4 ผ่าน Connect แต่ Clone เป็นสีแดงด้วย `Remote branch no-such-branch not found` stage ที่เหลือถูกข้าม — ผลที่ตั้งใจให้เกิด · ภาพบนคือกราฟ stage ภาพกลางคือรายการ stage และ log ภาพล่างคือท้ายบรรทัดคำสั่งยาวจากภาพหน้าจอเดียวกัน (ซ้อนกับภาพกลางบางส่วน)*
 
 หลัง build #3 และ #4 ร้านยังเป็น build #2 container เดิม (ไม่มี container ทดสอบหรือโฟลเดอร์ login ค้าง):
 

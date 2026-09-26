@@ -78,5 +78,7 @@ t = re.sub(r'\{\{out:([\w-]+)\}\}', lambda m: rstrip_lines(outs[m.group(1)] if m
 t = re.sub(r'\{\{val:(\w+)\}\}', lambda m: str(vals[m.group(1)]), t)
 t = t.replace('{{jenkinsfile}}', (LAB / 'Jenkinsfile').read_text().rstrip('\n'))
 assert not re.search(r'\{\{(block|out|val|jenkinsfile)', t), 'unfilled placeholder'
+missing = [f for f in re.findall(r'\]\(\./images/([^)]+)\)', t) if not (LAB / 'images' / f).exists()]
+assert not missing, f'missing images {missing}'    # ภาพครอป (readability/make_crops.py) และภาพเต็มที่ลิงก์ไว้ต้องมีครบ
 (LAB / 'README.md').write_text(t)
 print('written', LAB / 'README.md', len(t.splitlines()), 'lines'); print({k: v for k, v in vals.items() if k != 'owner_row'})

@@ -13,4 +13,12 @@ setup = 'docker rm -f devtools\ndocker run -dit --name devtools --privileged --t
 print('learner setup exact', setup in r)
 for img in re.findall(r'\]\(\./images/([^)]+)\)', r): 
     if not (LAB / 'images' / img).exists(): ok = False; print('missing image', img)
+# ภาพครอปต้องเป็นลิงก์ไปภาพเต็มชื่อเดียวกัน (คลิกเปิดภาพเต็ม) และ caption ต้องบอกว่าเป็นภาพครอป
+crops = re.findall(r'\[!\[[^\]]*\]\(\./images/([^)]+)\)\]\(\./images/([^)]+)\)', r)
+bad = [(c, f) for c, f in crops if not c.startswith(f[:-4])]
+for m in re.finditer(r'^(\[!\[.*\n\n)+\*ภาพที่ \d+ [^\n]*', r, re.M):
+    if '_crop' in m.group(0) or '_tail' in m.group(0) or '_graph' in m.group(0) or '_left' in m.group(0) or '_chip' in m.group(0):
+        if 'ครอป' not in m.group(0).split('*ภาพที่')[1]: bad.append(('caption', m.group(0)[-80:]))
+unlinked = [f for f in re.findall(r'^!\[[^\]]*\]\(\./images/(lab3_(?!diagram)[^)]+)\)', r, re.M)]
+print('linked crops', len(crops), 'bad', bad, 'unlinked screenshots', unlinked); ok &= not bad
 sys.exit(0 if ok else 1)

@@ -1,0 +1,704 @@
+[
+ {
+  "crop": "images/lab3_jenkins_01_unlock_crop.png",
+  "source": "host-captures/jenkins-01-unlock.png",
+  "source_sha256": "f62b08d125946cf2631221ba5d961ff3a3ebe110dd7967f13a430865e381df7d",
+  "full_size_in_readme": "images/lab3_jenkins_01_unlock.png",
+  "box_ltrb": [
+   1220,
+   15,
+   2220,
+   415
+  ],
+  "size": [
+   1000,
+   400
+  ],
+  "crop_sha256": "391b930b739ce2ed5124a231f0ac2af8c3fd537d74706c05750836ed3deb5a9e",
+  "why": "modal only; empty lower modal and grey backdrop dropped"
+ },
+ {
+  "crop": "images/lab3_jenkins_02_signin_crop.png",
+  "source": "host-captures/jenkins-02-signin.png",
+  "source_sha256": "284c9c7b1bad75b2fad404b0e18c9dedb712aa4e84b3b3f4d4296bab837239f5",
+  "full_size_in_readme": "images/lab3_jenkins_02_signin.png",
+  "box_ltrb": [
+   2160,
+   420,
+   2680,
+   830
+  ],
+  "size": [
+   520,
+   410
+  ],
+  "crop_sha256": "f1c47530b8269b399f5a93c0e31f1701b6c4524dbb09fd00fa31ab86e569fbbf",
+  "why": "sign-in form at native size; left artwork and empty right half dropped"
+ },
+ {
+  "crop": "images/lab3_jenkins_03_dashboard_crop.png",
+  "source": "host-captures/jenkins-03-dashboard.png",
+  "source_sha256": "653a88eca214f3538f3d3d8a4261ba22abf5b644ab4e939455739b94f169a5eb",
+  "full_size_in_readme": "images/lab3_jenkins_03_dashboard.png",
+  "box_ltrb": [
+   0,
+   0,
+   1540,
+   390
+  ],
+  "size": [
+   1540,
+   390
+  ],
+  "crop_sha256": "cb300dd46c4fb1556e0a2d59773c89774fa43f887d2d8fc925283233d1779ca5",
+  "why": "side menu + job row through Last Success column"
+ },
+ {
+  "crop": "images/lab3_jenkins_09_plugins_crop.png",
+  "source": "host-captures/jenkins-09-plugins.png",
+  "source_sha256": "dbb10d878755f5999cb7dc951ebe16d2e7c94eb594f59f5c7634ab1b33bcbf92",
+  "full_size_in_readme": "images/lab3_jenkins_09_plugins.png",
+  "box_ltrb": [
+   0,
+   0,
+   1100,
+   1244
+  ],
+  "size": [
+   1100,
+   1244
+  ],
+  "crop_sha256": "c58377f0221c3dbc6a1baf8e98dc079aae257ecf876a53b14f0cc70f33d90eb6",
+  "why": "plugin names/versions/descriptions; far-right Health/Enabled columns dropped"
+ },
+ {
+  "crop": "images/lab3_jenkins_05_ssh_credential_crop.png",
+  "source": "host-captures/jenkins-05-ssh-credential.png",
+  "source_sha256": "356b4a437ac6891ba86954bbc9ca6c87c4a123cb803a5aed2869f5757248e39e",
+  "full_size_in_readme": "images/lab3_jenkins_05_ssh_credential.png",
+  "box_ltrb": [
+   1420,
+   200,
+   2020,
+   1050
+  ],
+  "size": [
+   600,
+   850
+  ],
+  "crop_sha256": "37820e0ce31b251aba67f87835d00b6981acb6d4f3625352f1380f1dc49375fd",
+  "why": "Update credential modal at native size"
+ },
+ {
+  "crop": "images/lab3_jenkins_06_dockerhub_credential_crop.png",
+  "source": "host-captures/jenkins-06-dockerhub-credential.png",
+  "source_sha256": "77ff98f8a4624fb3e95bd4444f04c5302cd349af44ebd5372111fe5e32b40cf6",
+  "full_size_in_readme": "images/lab3_jenkins_06_dockerhub_credential.png",
+  "box_ltrb": [
+   1420,
+   295,
+   2020,
+   955
+  ],
+  "size": [
+   600,
+   660
+  ],
+  "crop_sha256": "ebcc1994fd7cfa74cdcc1f97e7a585de4e53b66086d4e3de950f6ff1413503d2",
+  "why": "Update credential modal at native size"
+ },
+ {
+  "crop": "images/lab3_jenkins_04_credentials_crop.png",
+  "source": "host-captures/jenkins-04-credentials.png",
+  "source_sha256": "2ccdf28bf12ffa419b707e44c8d26c3e4067cf6cd2ceda2b27cbe0cc0e541520",
+  "full_size_in_readme": "images/lab3_jenkins_04_credentials.png",
+  "box_ltrb": [
+   0,
+   0,
+   1100,
+   310
+  ],
+  "size": [
+   1100,
+   310
+  ],
+  "crop_sha256": "4ff422c9fc79c6f2391de88ddc3aab666c4b576ce30440d05cb08e12abc44c5b",
+  "why": "breadcrumb + both credential rows"
+ },
+ {
+  "crop": "images/lab3_jenkins_08_new_pipeline_crop.png",
+  "source": "host-captures/jenkins-08-new-pipeline.png",
+  "source_sha256": "43bc369acc611a577e7d46d6f217e14457f26b7a5cf89e81ea42d888805e84ab",
+  "full_size_in_readme": "images/lab3_jenkins_08_new_pipeline.png",
+  "box_ltrb": [
+   1270,
+   55,
+   2170,
+   1000
+  ],
+  "size": [
+   900,
+   945
+  ],
+  "crop_sha256": "acc1016fd77e5852c6446135b1966fc95354811571701846b75abe6e5570e369",
+  "why": "New Item form column"
+ },
+ {
+  "crop": "images/lab3_jenkins_07_pipeline_config_crop.png",
+  "source": "host-captures/jenkins-07-pipeline-config.png",
+  "source_sha256": "44663ef2c5950537fb454fb535e19c78a235490483242cb28bf1b9eb9695c525",
+  "full_size_in_readme": "images/lab3_jenkins_07_pipeline_config.png",
+  "box_ltrb": [
+   0,
+   0,
+   1400,
+   1150
+  ],
+  "size": [
+   1400,
+   1150
+  ],
+  "crop_sha256": "f44f75261cfc95e2c1a56719aa48a1c8b248f8a91fda9bb61d06cdbd62bf1a23",
+  "why": "Configure menu + Pipeline section + script editor + Save"
+ },
+ {
+  "crop": "images/lab3_jenkins_10_build_parameters_crop.png",
+  "source": "host-captures/jenkins-10-build-parameters.png",
+  "source_sha256": "9c1fa0e5aaad7b69d6f1f813c49d72deb88cfe346383c310bb6c04f8600e3738",
+  "full_size_in_readme": "images/lab3_jenkins_10_build_parameters.png",
+  "box_ltrb": [
+   0,
+   0,
+   1400,
+   860
+  ],
+  "size": [
+   1400,
+   860
+  ],
+  "crop_sha256": "3f4ef116c509cb9510b51712324e43943d1f2e143ad3548739b5dc71725357ec",
+  "why": "job menu, build list, all 5 parameter fields + Build"
+ },
+ {
+  "crop": "images/lab3_jenkins_11_build2_success_graph.png",
+  "source": "host-captures/jenkins-11-build2-success.png",
+  "source_sha256": "abbafdfa76ac88126e81cbc375def840fb55063caca03fc04bb53855ba72fff1",
+  "full_size_in_readme": "images/lab3_jenkins_11_build2_success.png",
+  "box_ltrb": [
+   1020,
+   185,
+   2420,
+   280
+  ],
+  "size": [
+   1400,
+   95
+  ],
+  "crop_sha256": "484110435b8750312b50dce78d681d6637ba0b526a029c371f8f9b039f745cdf",
+  "why": "stage graph Start..End"
+ },
+ {
+  "crop": "images/lab3_jenkins_11_build2_success_log.png",
+  "source": "host-captures/jenkins-11-build2-success.png",
+  "source_sha256": "abbafdfa76ac88126e81cbc375def840fb55063caca03fc04bb53855ba72fff1",
+  "full_size_in_readme": "images/lab3_jenkins_11_build2_success.png",
+  "box_ltrb": [
+   345,
+   312,
+   1745,
+   515
+  ],
+  "size": [
+   1400,
+   203
+  ],
+  "crop_sha256": "ff13a1a788eef7886510452531f15cad59f0d2f5ab3228c1a3e85177dc1ac7f6",
+  "why": "Post Actions log incl. full digest line (ends x=1602)"
+ },
+ {
+  "crop": "images/lab3_stage_01_connect_crop.png",
+  "source": "host-captures/stage-01-connect.png",
+  "source_sha256": "1532b5195864d888fc38a17c95b768562f5371ca8a61de96780f7ca8bf0ee15e",
+  "full_size_in_readme": "images/lab3_stage_01_connect.png",
+  "box_ltrb": [
+   345,
+   312,
+   1745,
+   800
+  ],
+  "size": [
+   1400,
+   488
+  ],
+  "crop_sha256": "f2905e7c3f607dd5275536986686496193a74fe096b0277f8063d2ccf9716372",
+  "why": "log panel; every line ends before x=1343"
+ },
+ {
+  "crop": "images/lab3_stage_02_clone_crop.png",
+  "source": "host-captures/stage-02-clone.png",
+  "source_sha256": "ca61d12d43211881e734ab20a80ad3b2b440f151df4aabbe85d1d470e6af7630",
+  "full_size_in_readme": "images/lab3_stage_02_clone.png",
+  "box_ltrb": [
+   345,
+   312,
+   1745,
+   525
+  ],
+  "size": [
+   1400,
+   213
+  ],
+  "crop_sha256": "f1b2069922f8ffdec19d73641fe1374b63670644b22bd12081041f181ce44850",
+  "why": "log panel left part"
+ },
+ {
+  "crop": "images/lab3_stage_02_clone_tail.png",
+  "source": "host-captures/stage-02-clone.png",
+  "source_sha256": "ca61d12d43211881e734ab20a80ad3b2b440f151df4aabbe85d1d470e6af7630",
+  "full_size_in_readme": "images/lab3_stage_02_clone.png",
+  "box_ltrb": [
+   930,
+   430,
+   1930,
+   470
+  ],
+  "size": [
+   1000,
+   40
+  ],
+  "crop_sha256": "f19ca303d81a8b9cd197a359820cc8d440cb04ae27260478786e211e4a496df2",
+  "why": "right end of ssh line (ends x=1906)"
+ },
+ {
+  "crop": "images/lab3_stage_03_build_crop.png",
+  "source": "host-captures/stage-03-build.png",
+  "source_sha256": "58af6515f04a77de28eb85505175eab554178ab7d6445916dcb963574d9d576d",
+  "full_size_in_readme": "images/lab3_stage_03_build.png",
+  "box_ltrb": [
+   345,
+   312,
+   1745,
+   480
+  ],
+  "size": [
+   1400,
+   168
+  ],
+  "crop_sha256": "d524b1e899229931d12e472e5ab7d31d1335f28b8a1d8d7110ca907f2b955132",
+  "why": "log panel left part"
+ },
+ {
+  "crop": "images/lab3_stage_03_build_tail.png",
+  "source": "host-captures/stage-03-build.png",
+  "source_sha256": "58af6515f04a77de28eb85505175eab554178ab7d6445916dcb963574d9d576d",
+  "full_size_in_readme": "images/lab3_stage_03_build.png",
+  "box_ltrb": [
+   880,
+   430,
+   1880,
+   468
+  ],
+  "size": [
+   1000,
+   38
+  ],
+  "crop_sha256": "9d1bb56704850172cc38bf3bb89b4ef8a352ff0d12380f668db30d81e8ab2422",
+  "why": "right end of ssh line (ends x=1857)"
+ },
+ {
+  "crop": "images/lab3_stage_04_test_crop.png",
+  "source": "host-captures/stage-04-test.png",
+  "source_sha256": "c879e59793e55a6c4eea0dc21ebcbdb84fd9ea54831b489da55f6864b3c6ecab",
+  "full_size_in_readme": "images/lab3_stage_04_test.png",
+  "box_ltrb": [
+   345,
+   312,
+   1745,
+   650
+  ],
+  "size": [
+   1400,
+   338
+  ],
+  "crop_sha256": "3a36cd26a34d0fe947a40afc7333079372766971031bbedf4286b255f5efa347",
+  "why": "log panel; every line ends before x=1518"
+ },
+ {
+  "crop": "images/lab3_stage_05_push_crop.png",
+  "source": "host-captures/stage-05-push.png",
+  "source_sha256": "e43f06f668ba8ce8b329b2e9b76d8d8e1f5f79eb487d3651fe60fbf8bb133c10",
+  "full_size_in_readme": "images/lab3_stage_05_push.png",
+  "box_ltrb": [
+   345,
+   312,
+   1745,
+   800
+  ],
+  "size": [
+   1400,
+   488
+  ],
+  "crop_sha256": "aba48476f5a407184b115a639303f0c5763b2674986e42cd675fbf403ea5bb16",
+  "why": "log panel; every line ends before x=1492"
+ },
+ {
+  "crop": "images/lab3_stage_06_clean_crop.png",
+  "source": "host-captures/stage-06-clean.png",
+  "source_sha256": "1806955dbce4fb9144f3c537c54903a74cdcba8f9ecabd1a746e799c3bbb3f73",
+  "full_size_in_readme": "images/lab3_stage_06_clean.png",
+  "box_ltrb": [
+   345,
+   312,
+   1745,
+   675
+  ],
+  "size": [
+   1400,
+   363
+  ],
+  "crop_sha256": "5a4ff87ba4b97be8d11721fc727c50ba649e2fd9d9f8df915db7c13c9de9721b",
+  "why": "log panel left part"
+ },
+ {
+  "crop": "images/lab3_stage_06_clean_tail.png",
+  "source": "host-captures/stage-06-clean.png",
+  "source_sha256": "1806955dbce4fb9144f3c537c54903a74cdcba8f9ecabd1a746e799c3bbb3f73",
+  "full_size_in_readme": "images/lab3_stage_06_clean.png",
+  "box_ltrb": [
+   1720,
+   430,
+   2900,
+   505
+  ],
+  "size": [
+   1180,
+   75
+  ],
+  "crop_sha256": "62c34b97801859a5a3e5b5e3efdc91a5f45acc7bbc43038869cfc4c9a88a1309",
+  "why": "right end of ssh + line 0 (end x=2730/2873)"
+ },
+ {
+  "crop": "images/lab3_stage_07_pull_crop.png",
+  "source": "host-captures/stage-07-pull.png",
+  "source_sha256": "1a853b4b76fae385577d89912939a6e93ced3d9a00c589c5f236ad168e81eb54",
+  "full_size_in_readme": "images/lab3_stage_07_pull.png",
+  "box_ltrb": [
+   345,
+   312,
+   1745,
+   480
+  ],
+  "size": [
+   1400,
+   168
+  ],
+  "crop_sha256": "13956f5e6e39d9212314a48376d70ca6460cbaab1edcc89387b737ca8508959d",
+  "why": "log panel left part"
+ },
+ {
+  "crop": "images/lab3_stage_07_pull_tail.png",
+  "source": "host-captures/stage-07-pull.png",
+  "source_sha256": "1a853b4b76fae385577d89912939a6e93ced3d9a00c589c5f236ad168e81eb54",
+  "full_size_in_readme": "images/lab3_stage_07_pull.png",
+  "box_ltrb": [
+   1320,
+   430,
+   2310,
+   468
+  ],
+  "size": [
+   990,
+   38
+  ],
+  "crop_sha256": "343be6036288addeea487b5662d7aa15cd1e01e4c86209f4f81b4ffa2ef7acaa",
+  "why": "right end of ssh line with DIGEST (ends x=2288)"
+ },
+ {
+  "crop": "images/lab3_stage_08_deploy_crop.png",
+  "source": "host-captures/stage-08-deploy.png",
+  "source_sha256": "ec3644f7268efe4e4ea49fcdcbaab42c3dfdddfa1a5814016e903abe8f8e1473",
+  "full_size_in_readme": "images/lab3_stage_08_deploy.png",
+  "box_ltrb": [
+   345,
+   312,
+   1745,
+   730
+  ],
+  "size": [
+   1400,
+   418
+  ],
+  "crop_sha256": "b69cc11f9e260132f2696646dd308071ee0a51f5010a68adc5297c6d4701d60f",
+  "why": "log panel left part"
+ },
+ {
+  "crop": "images/lab3_stage_08_deploy_tail.png",
+  "source": "host-captures/stage-08-deploy.png",
+  "source_sha256": "ec3644f7268efe4e4ea49fcdcbaab42c3dfdddfa1a5814016e903abe8f8e1473",
+  "full_size_in_readme": "images/lab3_stage_08_deploy.png",
+  "box_ltrb": [
+   1050,
+   430,
+   2050,
+   505
+  ],
+  "size": [
+   1000,
+   75
+  ],
+  "crop_sha256": "0b6228146966397ce39bd9396afa79595ef788d943539586b5eea303a84d08ac",
+  "why": "right end of ssh + line 0 (end x=2008/2026)"
+ },
+ {
+  "crop": "images/lab3_jenkins_12_invalid_parameter_graph.png",
+  "source": "host-captures/jenkins-12-invalid-parameter.png",
+  "source_sha256": "27c35683a93d5b671a7014c9a5f2ae3e48bd446f26dc414dbcedfad05e441d57",
+  "full_size_in_readme": "images/lab3_jenkins_12_invalid_parameter.png",
+  "box_ltrb": [
+   1020,
+   185,
+   2420,
+   280
+  ],
+  "size": [
+   1400,
+   95
+  ],
+  "crop_sha256": "ddbefb1fd2c53506984726225f89f76841277bbf73fed36850f9cc68b97b93dc",
+  "why": "stage graph: Connect failed, rest skipped"
+ },
+ {
+  "crop": "images/lab3_jenkins_12_invalid_parameter_log.png",
+  "source": "host-captures/jenkins-12-invalid-parameter.png",
+  "source_sha256": "27c35683a93d5b671a7014c9a5f2ae3e48bd446f26dc414dbcedfad05e441d57",
+  "full_size_in_readme": "images/lab3_jenkins_12_invalid_parameter.png",
+  "box_ltrb": [
+   0,
+   312,
+   1400,
+   740
+  ],
+  "size": [
+   1400,
+   428
+  ],
+  "crop_sha256": "05f9f4dab50c3d0adeddcd53717e4d55dd2da46ec4f5cb7b59ab7cc2efb617c4",
+  "why": "stage list (skipped icons) + error log"
+ },
+ {
+  "crop": "images/lab3_jenkins_13_missing_branch_graph.png",
+  "source": "host-captures/jenkins-13-missing-branch.png",
+  "source_sha256": "9dbd4a9d46a8532fbb57fae27ce125187b8d74470b5cc6180d8995a3286bde3f",
+  "full_size_in_readme": "images/lab3_jenkins_13_missing_branch.png",
+  "box_ltrb": [
+   1020,
+   185,
+   2420,
+   280
+  ],
+  "size": [
+   1400,
+   95
+  ],
+  "crop_sha256": "4b97a5600e005ca9f9b1275e1e050a42fc1ff4f907f668224ad0b87d3c57fa8a",
+  "why": "stage graph: Clone failed, rest skipped"
+ },
+ {
+  "crop": "images/lab3_jenkins_13_missing_branch_log.png",
+  "source": "host-captures/jenkins-13-missing-branch.png",
+  "source_sha256": "9dbd4a9d46a8532fbb57fae27ce125187b8d74470b5cc6180d8995a3286bde3f",
+  "full_size_in_readme": "images/lab3_jenkins_13_missing_branch.png",
+  "box_ltrb": [
+   0,
+   312,
+   1400,
+   740
+  ],
+  "size": [
+   1400,
+   428
+  ],
+  "crop_sha256": "7fe21f9c8ce77330e9ffe9d2de3b846abec6b7ccf8461ca88c35bbe163405552",
+  "why": "stage list + Clone log incl. fatal line"
+ },
+ {
+  "crop": "images/lab3_jenkins_13_missing_branch_tail.png",
+  "source": "host-captures/jenkins-13-missing-branch.png",
+  "source_sha256": "9dbd4a9d46a8532fbb57fae27ce125187b8d74470b5cc6180d8995a3286bde3f",
+  "full_size_in_readme": "images/lab3_jenkins_13_missing_branch.png",
+  "box_ltrb": [
+   1100,
+   430,
+   2120,
+   505
+  ],
+  "size": [
+   1020,
+   75
+  ],
+  "crop_sha256": "f5a977754deb8cfb75f2f62ac0329e98b6268b392aa40f8c7770a86f5cbc1bc5",
+  "why": "right end of ssh + line 0 (end x=1992/2095)"
+ },
+ {
+  "crop": "images/lab3_github_01_source_crop.png",
+  "source": "host-captures/github-01-source.png",
+  "source_sha256": "e113d2f29dcf26a9b54408e8660d5d9f047d55b0b6eb131d2d02e0bc3432019f",
+  "full_size_in_readme": "images/lab3_github_01_source.png",
+  "box_ltrb": [
+   500,
+   95,
+   1770,
+   680
+  ],
+  "size": [
+   1270,
+   585
+  ],
+  "crop_sha256": "f7e608df75cd4993e0b383301fa1f63fa1fe351879349b4572be21749f05c5e4",
+  "why": "breadcrumb + file table"
+ },
+ {
+  "crop": "images/lab3_github_02_dockerfile_crop.png",
+  "source": "host-captures/github-02-dockerfile.png",
+  "source_sha256": "c07aab893b2996bf93c9e487e0ecdf23751f605a0995c34372ee092fb54dea72",
+  "full_size_in_readme": "images/lab3_github_02_dockerfile.png",
+  "box_ltrb": [
+   500,
+   95,
+   1770,
+   866
+  ],
+  "size": [
+   1270,
+   771
+  ],
+  "crop_sha256": "5838d2278611efdc0c99fc112250b959be7279dbfb289114955ee752fed0d394",
+  "why": "breadcrumb + Dockerfile lines 1-29"
+ },
+ {
+  "crop": "images/lab3_hub_02_pushed_tags_crop.png",
+  "source": "host-captures/hub-02-pushed-tags.png",
+  "source_sha256": "68758322ff228b9398dd720e49998e4f276018064d2cade7ba007ba810804279",
+  "full_size_in_readme": "images/lab3_hub_02_pushed_tags.png",
+  "box_ltrb": [
+   690,
+   90,
+   1760,
+   905
+  ],
+  "size": [
+   1070,
+   815
+  ],
+  "crop_sha256": "08719e3ffc91b523e89d93d989e94c2e50e15e93b3aff0253b42fd02b7aceb01",
+  "why": "repo header, filter, both tags with digest"
+ },
+ {
+  "crop": "images/lab3_hub_03_image_digest_crop.png",
+  "source": "host-captures/hub-03-image-digest.png",
+  "source_sha256": "8e64657758eceef1d41c520821b61723c6ca63f3af2fc03746bcf566dadc7557",
+  "full_size_in_readme": "images/lab3_hub_03_image_digest.png",
+  "box_ltrb": [
+   690,
+   90,
+   1760,
+   995
+  ],
+  "size": [
+   1070,
+   905
+  ],
+  "crop_sha256": "fed0876bf62c80033406dfa9e2a801b80e733ad4633755f94655b606e029ffbe",
+  "why": "tag title, full manifest digest, layers"
+ },
+ {
+  "crop": "images/lab3_app_01_version1_chip.png",
+  "source": "host-captures/app-01-version1.png",
+  "source_sha256": "41260937db8a8f71005026e19f4130ef9fdd2d81933693b42cf63a4a450260e3",
+  "full_size_in_readme": "images/lab3_app_01_version1.png",
+  "box_ltrb": [
+   1400,
+   0,
+   2000,
+   42
+  ],
+  "size": [
+   600,
+   42
+  ],
+  "crop_sha256": "45a79a8d7864bf445c2c1c2ace2aa12ef7b88041afc8b5cc4b81d25795e6fda8",
+  "why": "top bar version chip (full storefront still shown)"
+ },
+ {
+  "crop": "images/lab3_app_03_version2_chip.png",
+  "source": "host-captures/app-03-version2.png",
+  "source_sha256": "37265cc0a4a8dc3d191d76c681905bc68e6a32fa8424f2f3a2010f3afa643082",
+  "full_size_in_readme": "images/lab3_app_03_version2.png",
+  "box_ltrb": [
+   1400,
+   0,
+   2000,
+   42
+  ],
+  "size": [
+   600,
+   42
+  ],
+  "crop_sha256": "f8ca17f34fd5a77414452baf298f16d24bc9b568f102705ca11c66d2c9d7674c",
+  "why": "top bar version chip (full storefront still shown)"
+ },
+ {
+  "crop": "images/lab3_app_04_build2_info_left.png",
+  "source": "host-captures/app-04-build2-info.png",
+  "source_sha256": "1988b44f525eb67d85a48c19af7e53a7148e2015e1c343aa63168248dd1d1370",
+  "full_size_in_readme": "images/lab3_app_04_build2_info.png",
+  "box_ltrb": [
+   1505,
+   810,
+   2410,
+   1085
+  ],
+  "size": [
+   905,
+   275
+  ],
+  "crop_sha256": "0922891bf1832879208d3bce3efe98060b043feb23fe0cc849033e41ea730db8",
+  "why": "Deployment info column 1: Version/Git commit/Container"
+ },
+ {
+  "crop": "images/lab3_app_04_build2_info_right.png",
+  "source": "host-captures/app-04-build2-info.png",
+  "source_sha256": "1988b44f525eb67d85a48c19af7e53a7148e2015e1c343aa63168248dd1d1370",
+  "full_size_in_readme": "images/lab3_app_04_build2_info.png",
+  "box_ltrb": [
+   2410,
+   810,
+   3315,
+   1085
+  ],
+  "size": [
+   905,
+   275
+  ],
+  "crop_sha256": "c83a104955394ad51a1968069d4420cc607509e1ea9931e8ae1854464424b047",
+  "why": "Deployment info column 2: Jenkins build/Built at/Health API"
+ },
+ {
+  "crop": "images/lab3_hub_04_pat_setup_crop.png",
+  "source": "003_LAB_Docker_Build_Push/images/lab3_hub_04_pat_setup.png",
+  "source_sha256": "ef317ef7eb46f9d86acfcca02bceb7b26099200f08e7b4e9a78bcbf6986b1f20",
+  "full_size_in_readme": "images/lab3_hub_04_pat_setup.png",
+  "box_ltrb": [
+   760,
+   70,
+   1665,
+   600
+  ],
+  "size": [
+   905,
+   530
+  ],
+  "crop_sha256": "9d4ec0ace2c48a39cc11c5312862245b1e5abf141059016499dacbf0cfd30b4f",
+  "why": "Account settings menu (Personal access tokens) + Create access token form"
+ }
+]
