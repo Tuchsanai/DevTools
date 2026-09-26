@@ -1,0 +1,11 @@
+{
+  "H": "c23096",
+  "DC": "devtools-lab003-c23096",
+  "JC": "jenkins-lab003-c23096",
+  "NET": "cicd-net-lab003-c23096",
+  "VOL": "jenkins-lab003-c23096-home",
+  "P_SSH": "2223",
+  "P_JENKINS": "18080",
+  "P_APP": "13000",
+  "TAG_PREFIX": "lab3-sibling-20260926r2"
+}

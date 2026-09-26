@@ -3,8 +3,8 @@
 + real outputs of the sibling/password run in out/. Owner: yolo3.
 
 Placeholders: {{block:x}} (exact tested host block, marked for verify_readme.py), {{out:x}} (evidence),
-{{outblock:x}} (optional evidence block), {{val:x}}, {{fig:key}} (rendered only when the image exists,
-figures numbered in order), {{jenkinsfile}}, {{cleanup_row}}.
+{{val:x}}, {{fig:key}} (rendered only when the image exists,
+figures numbered in order), {{jenkinsfile}}.
 Evidence is rewritten only in two declared ways: run-specific names (devtools-lab003-H, jenkins-lab003-H,
 cicd-net-lab003-H, jenkins-lab003-H-home) become the learner names, and the Docker Hub account becomes <DOCKER_USER>."""
 import json, os, re, pathlib
@@ -54,6 +54,7 @@ digest = lambda n: re.search(r'digest: (sha256:[0-9a-f]{64})', '\n'.join(S[n]['P
 tag = lambda n: re.search(r'(\S+-\d+)(?=: digest)', '\n'.join(S[n]['Push'])).group(1)
 whole = lambda n: pick(rd(f'b{n}.txt').splitlines(), drop=lambda l: l.startswith(NOISE) or l.startswith('Stage "'))
 tail = lambda f, k: '\n'.join(rd(f).rstrip('\n').splitlines()[-k:])
+b1_digest_lines = [l for l in S[1]['Push'] if ': digest: ' in l] + [l for l in S[1]['Deploy'] if l.startswith(('image: ', 'เว็บตอบ'))]
 b2_digest_lines = [l for l in S[2]['Push'] if ': digest: ' in l] + \
     [l for l in S[2]['Pull'] if l.startswith('Digest: ')] + [l for l in S[2]['Deploy'] if l.startswith(('image: ', 'เว็บตอบ'))]
 outs = {
@@ -61,10 +62,10 @@ outs = {
     'b1-build': pick(S[1]['Build'], build_keep), 'b1-test': pick(S[1]['Test']),
     'b1-push': pick(S[1]['Push'], drop=lambda l: l.startswith('+ set +x')), 'b1-clean': pick(S[1]['Clean']),
     'b1-pull': pick(S[1]['Pull'], drop=layer_noise), 'b1-deploy': pick(S[1]['Deploy']),
-    'b2-clean': pick(S[2]['Clean']), 'b2-digest': '\n'.join(b2_digest_lines),
+    'b2-clean': pick(S[2]['Clean']), 'b2-digest': '\n'.join(b2_digest_lines), 'b1-push-digest': '\n'.join(b1_digest_lines),
     'b3': whole(3), 'b4': pick(S[4]['Clone'] + ['...'] + S[4]['Declarative: Post Actions']),
     'b5': pick(S[5]['Connect'] + ['...'] + S[5]['Declarative: Post Actions'], drop=lambda l: l.startswith('+ ') and not l.startswith('+ sshpass')),
-    'sshpass-tail': tail('sshpass.txt', 5), 'unlock': rd('unlock.txt').strip(),
+    'sshpass-tail': tail('sshpass.txt', 5),
     # harness-only status lines appended by pty_ssh.py / lab.sh are not what a learner's terminal shows
     'ssh-test': pick(rd('ssh-test.txt').splitlines(), drop=lambda l: l.startswith('[exit=')),
     'unpinned': pick(rd('unpinned.txt').splitlines(), drop=lambda l: l.startswith('exit=')),
@@ -82,23 +83,21 @@ for n in range(1, 6):
     vals[f'b{n}_result'] = J[n]['result']; vals[f'b{n}_duration'] = secs(J[n]['duration'])
 assert [J[n]['result'] for n in range(1, 6)] == ['SUCCESS', 'SUCCESS', 'FAILURE', 'FAILURE', 'FAILURE'], [J[n]['result'] for n in J]
 assert digest(2) in '\n'.join(S[2]['Pull']) and digest(2) in '\n'.join(S[2]['Deploy']), 'b2 pull/deploy digest mismatch'
-assert 'ลบแอปเดิม catfood-web' in outs['b2-clean'] and 'ลบแอปเดิม' not in outs['b1-clean']
+assert digest(1) in outs['b1-push-digest'] and 'ลบแอปเดิม catfood-web' in outs['b2-clean'] and 'ลบแอปเดิม' not in outs['b1-clean']
 
 # figures: key -> (image, link target or None, alt, caption)
-C = 'ภาพหน้าจอจริงจากเบราว์เซอร์ของรอบทดสอบ'
 FIG = {
     'diagram_architecture': ('lab3_diagram_sibling_architecture.png', None, 'แผนภาพสถาปัตยกรรมของ LAB 3',
-        'แผนภาพประกอบ ไม่ใช่ภาพหน้าจอ — `jenkins` และ `devtools` เป็น container พี่น้องบน `cicd-net` ของเครื่องเรา · Jenkins SSH ไปที่ `devtools:22` ด้วยรหัสผ่านจาก Jenkins Credentials · `git clone` และคำสั่ง `docker` ทั้งหมดรันบน devtools · `catfood-web` อยู่บน Docker ข้างใน devtools · เบราว์เซอร์เข้า Jenkins ที่ `8080` และร้านที่ `3000`'),
+        'แผนภาพประกอบ — `jenkins` และ `devtools` เป็น container พี่น้องบน `cicd-net` · Jenkins SSH ไปที่ `devtools:22` ด้วยรหัสผ่านจาก Jenkins Credentials · `git clone` และ `docker` ทั้งหมดรันบน devtools · `catfood-web` อยู่บน Docker ข้างใน devtools'),
     'diagram_pipeline': ('lab3_diagram_sibling_pipeline.png', None, 'แผนภาพลำดับ 8 stage',
-        'แผนภาพประกอบ ไม่ใช่ภาพหน้าจอ — Jenkins ควบคุม ทุก stage รันบน devtools ผ่าน SSH · Clean เกิดหลัง Push สำเร็จเท่านั้น · Pull ใช้ digest ที่ Push จดไว้ก่อน Deploy'),
+        'แผนภาพประกอบ — Jenkins ควบคุม ทุก stage รันบน devtools ผ่าน SSH · Clean เกิดหลัง Push สำเร็จเท่านั้น · Pull ใช้ digest ที่ Push จดไว้ก่อน Deploy'),
     'hub_pat': ('lab3_hub_04_pat_setup_crop.png', 'lab3_hub_04_pat_setup.png', 'หน้าสร้าง Personal Access Token บน Docker Hub',
-        'ภาพหน้าจอจริงแบบครอป จากรอบถ่ายภาพก่อนหน้า (หน้า Docker Hub ไม่ขึ้นกับการจัด container) — คลิกภาพเพื่อเปิดภาพเต็ม · ตั้งชื่อ token เลือก **Access permissions = Repo Read & Write** แล้วกด **Generate** · Docker Hub แสดง token เพียงครั้งเดียว ให้คัดลอกเก็บไว้ทันที'),
+        'หน้าสร้าง token บน Docker Hub: ตั้งชื่อ เลือก **Access permissions = Repo Read & Write** แล้วกด **Generate** · Docker Hub แสดง token ครั้งเดียว ให้คัดลอกเก็บทันที'),
     'github_source': ('lab3_github_01_source_crop.png', 'lab3_github_01_source.png', 'ซอร์สร้านบน GitHub',
-        'ภาพหน้าจอจริงแบบครอป จากรอบถ่ายภาพก่อนหน้า — คลิกภาพเพื่อเปิดภาพเต็ม · โฟลเดอร์ `catfood-shop` บน GitHub ที่ stage Clone ดึงมา'),
+        'โฟลเดอร์ `catfood-shop` บน GitHub ที่ stage Clone ดึงมา'),
 }
-SHOTS = json.loads((W / 'shots.json').read_text())  # capture key (host-captures/NN-key.png) -> alt, caption, url, instructions
-for key, alt, cap, *_ in SHOTS:
-    FIG[key] = (f'lab3_sib_{key}.png', None, alt, f'{C} — {cap}')
+for c in json.loads((W / 'captures.json').read_text()):   # real host-browser captures: crop shown, full capture linked
+    FIG[c['key']] = (f"lab3_sib_{c['key']}_crop.png", f"lab3_sib_{c['key']}.png", c['alt'], c['caption'])
 
 t = (W / 'README.tmpl.md').read_text(encoding='utf-8')
 num = [0]

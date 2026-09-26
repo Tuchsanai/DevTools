@@ -1,0 +1,81 @@
+OK   block host-setup identical 
+OK   block host-setup bash -n 
+OK   block host-check identical 
+OK   block host-check bash -n 
+OK   block unlock identical 
+OK   block unlock bash -n 
+OK   block sshpass identical 
+OK   block sshpass bash -n 
+OK   block pin-hostkey identical 
+OK   block pin-hostkey bash -n 
+OK   block ssh-test identical 
+OK   block ssh-test bash -n 
+OK   block check-web identical 
+OK   block check-web bash -n 
+OK   block cleanup identical 
+OK   block cleanup bash -n 
+OK   all 8 host blocks present 
+OK   Jenkinsfile embedded identical 
+OK   every ssh call uses sshpass -e + StrictHostKeyChecking=yes 
+OK   no key auth / gateway in Jenkinsfile 
+OK   ssh sh() steps are constant single-quoted strings 
+OK   usernamePassword devtools-ssh bound in onDevtools and Push 
+OK   setup has 'docker network create cicd-net' 
+OK   setup has '--name devtools --network cicd-net --privileged' 
+OK   setup has '-p 2222:22 -p 3000:3000' 
+OK   setup has '--name jenkins --network cicd-net' 
+OK   setup has '-p 8080:8080 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk21' 
+OK   jenkins has no docker socket / docker CLI install 
+OK   no ทาง A 
+OK   no ทาง B 
+OK   no devtools-gw 
+OK   no gateway 
+OK   no authorized_keys 
+OK   no ssh-keygen -t 
+OK   no private key file 
+OK   no SSH Agent 
+OK   no host-gateway 
+OK   no StrictHostKeyChecking=no 
+OK   no SSH Username with private key 
+OK   all image links exist 
+OK   no old-topology screenshots referenced 
+OK   no unfilled placeholders 
+OK   code fences balanced 
+OK   no trailing whitespace 
+OK   figure numbers sequential 
+OK   no secret values in 72 files (1 secrets checked) 
+OK   Docker Hub account name replaced in README 
+OK   Jenkinsfile collapsed in <details> 
+OK   main reading flow <= 450 lines 
+OK   fenced code blocks: every opener has a language or is a closer 
+OK   all 56 local links exist 
+OK   capture unlock: PNG crop+full, linked 
+OK   capture dashboard: PNG crop+full, linked 
+OK   capture ssh_credential: PNG crop+full, linked 
+OK   capture ssh_credential_id: PNG crop+full, linked 
+OK   capture credentials: PNG crop+full, linked 
+OK   capture pipeline_config: PNG crop+full, linked 
+OK   capture build1_graph: PNG crop+full, linked 
+OK   capture build1_connect: PNG crop+full, linked 
+OK   capture build1_connect_ssh: PNG crop+full, linked 
+OK   capture build_parameters: PNG crop+full, linked 
+OK   capture build2_clone: PNG crop+full, linked 
+OK   capture build2_build: PNG crop+full, linked 
+OK   capture build2_test: PNG crop+full, linked 
+OK   capture build2_push: PNG crop+full, linked 
+OK   capture build2_clean: PNG crop+full, linked 
+OK   capture build2_pull: PNG crop+full, linked 
+OK   capture build2_deploy: PNG crop+full, linked 
+OK   capture app_v110: PNG crop+full, linked 
+OK   capture app_deployment: PNG crop+full, linked 
+OK   capture hub_tags: PNG crop+full, linked 
+OK   capture build3: PNG crop+full, linked 
+OK   capture build4: PNG crop+full, linked 
+OK   capture build5: PNG crop+full, linked 
+OK   no unreferenced lab3 images left in images/ 
+OK   no screenshot placeholders 
+OK   no initial-admin-password example (32 hex or 16 hex + bullets) 
+OK   no host-key overclaims 
+OK   docker rm -f missing-container message stated 
+OK   host key shared across clones stated 
+README lines 736 figures 27 blocks 8

@@ -61,5 +61,27 @@ files = [LAB / 'README.md', LAB / 'Jenkinsfile'] + [p for d in ('out', 'blocks',
 leaks = [str(p.relative_to(W.parent.parent)) for p in files for s in secrets if s and s in p.read_text(errors='ignore')]
 check(f'no secret values in {len(files)} files ({len(secrets)} secrets checked)', not leaks, leaks)
 check('Docker Hub account name replaced in README', not hub or not re.search(r'(?<![A-Za-z])' + re.escape(hub) + r'/catfood-shop', r))
+# 8. phase-2 review corrections: lean flow, links, real PNG crops, no unlock value, no overclaims
+import json
+from PIL import Image
+main = re.sub(r'<details>.*?</details>', '', r, flags=re.S)
+check('Jenkinsfile collapsed in <details>', re.search(r'<details>\n<summary>.*?</summary>\n\n```groovy\n// LAB 3', r, re.S))
+check('main reading flow <= 450 lines', len(main.splitlines()) <= 450, len(main.splitlines()))
+check('fenced code blocks: every opener has a language or is a closer', all(i % 2 == 1 or f != '```' for i, f in enumerate(re.findall(r'^```\w*', r, re.M))))
+links = [l for l in re.findall(r'\]\(([^)#\s]+)\)', r) if not re.match(r'https?:', l)]
+check(f'all {len(links)} local links exist', all((LAB / l).resolve().exists() for l in links), [l for l in links if not (LAB / l).resolve().exists()])
+caps = json.loads((W / 'captures.json').read_text())
+for c in caps:
+    crop, full = LAB / 'images' / f"lab3_sib_{c['key']}_crop.png", LAB / 'images' / f"lab3_sib_{c['key']}.png"
+    ok_img = crop.exists() and full.exists() and Image.open(crop).format == 'PNG' and Image.open(full).format == 'PNG'
+    check(f"capture {c['key']}: PNG crop+full, linked", ok_img and f'](./images/{crop.name})](./images/{full.name})' in r)
+used_imgs = set(imgs)
+unused = [p.name for p in (LAB / 'images').glob('lab3_*.png') if p.name not in used_imgs]
+check('no unreferenced lab3 images left in images/', not unused, unused)
+check('no screenshot placeholders', not re.search(r'(?i)placeholder|TODO|pending|รอภาพ|ภาพจะตามมา', r))
+check('no initial-admin-password example (32 hex or 16 hex + bullets)', not re.search(r'\b[0-9a-f]{32}\b|[0-9a-f]{16}•', r))
+check('no host-key overclaims', not re.search(r'ไม่มีใครแทรกแซง|แอบอ้าง|ถ้าไม่มีก็ไม่ error|ตัวตนของเครื่อง', r))
+check('docker rm -f missing-container message stated', 'No such container' in r)
+check('host key shared across clones stated', 'ไม่ใช่ตัวตนเฉพาะเครื่อง' in r)
 print('README lines', len(r.splitlines()), 'figures', len(re.findall(r'^\*ภาพที่ \d+ ', r, re.M)), 'blocks', len(blocks))
 sys.exit(0 if ok else 1)
