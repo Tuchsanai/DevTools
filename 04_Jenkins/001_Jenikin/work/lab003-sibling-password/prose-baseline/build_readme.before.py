@@ -88,11 +88,11 @@ assert digest(1) in outs['b1-push-digest'] and 'ลบแอปเดิม catf
 # figures: key -> (image, link target or None, alt, caption)
 FIG = {
     'diagram_architecture': ('lab3_diagram_sibling_architecture.png', None, 'แผนภาพสถาปัตยกรรมของ LAB 3',
-        'แผนภาพประกอบ — `jenkins` และ `devtools` แทน server สองเครื่องบน `cicd-net` · Jenkins SSH ไปที่ `devtools:22` ด้วยรหัสผ่านจาก Jenkins Credentials · `git clone` และคำสั่ง `docker` ทั้งหมดรันบน devtools · ร้าน `catfood-web` รันบน Docker ข้างใน devtools'),
+        'แผนภาพประกอบ — `jenkins` และ `devtools` เป็น container พี่น้องบน `cicd-net` · Jenkins SSH ไปที่ `devtools:22` ด้วยรหัสผ่านจาก Jenkins Credentials · `git clone` และ `docker` ทั้งหมดรันบน devtools · `catfood-web` อยู่บน Docker ข้างใน devtools'),
     'diagram_pipeline': ('lab3_diagram_sibling_pipeline.png', None, 'แผนภาพลำดับ 8 stage',
-        'แผนภาพประกอบ — Jenkins คุมลำดับ 8 stage และส่งคำสั่งไปรันบน devtools ผ่าน SSH · Clean ทำหลัง Push สำเร็จเท่านั้น · Pull ใช้ digest ที่ Push จดไว้ แล้วจึง Deploy'),
+        'แผนภาพประกอบ — Jenkins ควบคุม ทุก stage รันบน devtools ผ่าน SSH · Clean เกิดหลัง Push สำเร็จเท่านั้น · Pull ใช้ digest ที่ Push จดไว้ก่อน Deploy'),
     'hub_pat': ('lab3_hub_04_pat_setup_crop.png', 'lab3_hub_04_pat_setup.png', 'หน้าสร้าง Personal Access Token บน Docker Hub',
-        'หน้าสร้าง token บน Docker Hub: ตั้งชื่อ เลือก **Access permissions = Repo Read & Write** แล้วกด **Generate** · token แสดงครั้งเดียว ให้คัดลอกเก็บทันที'),
+        'หน้าสร้าง token บน Docker Hub: ตั้งชื่อ เลือก **Access permissions = Repo Read & Write** แล้วกด **Generate** · Docker Hub แสดง token ครั้งเดียว ให้คัดลอกเก็บทันที'),
     'github_source': ('lab3_github_01_source_crop.png', 'lab3_github_01_source.png', 'ซอร์สร้านบน GitHub',
         'โฟลเดอร์ `catfood-shop` บน GitHub ที่ stage Clone ดึงมา'),
 }
