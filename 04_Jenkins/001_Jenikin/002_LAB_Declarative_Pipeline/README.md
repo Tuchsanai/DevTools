@@ -2,96 +2,22 @@
 
 > ⏱️ ประมาณ 40 นาที · 🧪 8 การทดลอง · 🎯 จบเมื่อ `first-pipeline` build ล่าสุดเป็น `SUCCESS` และทั้ง 5 ช่อง (Checkout, Build, Test, Deploy, Post Actions) เป็นสีเขียว
 
-แล็บนี้ตอบคำถามว่า **“จะเปลี่ยนลำดับงานที่เคยตั้งค่าด้วยการคลิก ให้เป็นโค้ดที่อ่าน ตรวจ และทำซ้ำได้อย่างไร”** นักศึกษาจะค่อย ๆ ต่อเติม Pipeline ทีละ directive — `stages` → `environment` → `parameters` → `post` → `when` — แล้วสังเกตผลของแต่ละการเปลี่ยนแปลงจาก Pipeline Graph และ Console Output รวมถึงทดลองให้ stage ล้มเหลวเพื่อดูว่า Pipeline ตอบสนองอย่างไร
+แล็บนี้ให้เราเขียน **Declarative Pipeline** เป็นครั้งแรก แทนการตั้งค่า Freestyle job ด้วยการคลิกแบบใน LAB 1 โครงสร้างหลักมีแค่นี้
 
-![กายวิภาคของ Declarative Jenkinsfile](./images/lab2_concept_jenkinsfile_anatomy.png)
+```groovy
+pipeline {                 // ขอบเขตของ Pipeline ทั้งหมด
+  agent any                // รันบน executor ใดก็ได้ที่ว่าง
+  stages {                 // รวมทุกขั้นของงาน
+    stage('Build') {       // หนึ่งขั้น = หนึ่งช่องใน Pipeline Graph
+      steps {              // คำสั่งที่ทำจริง
+        echo "Build #${env.BUILD_NUMBER}"
+      }
+    }
+  }
+}
+```
 
-*ภาพที่ 1 โค้ดทางซ้ายถูกแปลงเป็นกราฟทางขวา: แต่ละ `stage` คือหนึ่งโหนด และบล็อก `post` คือโหนด Post Actions*
-
----
-
-## 📚 ทฤษฎีก่อนลงมือ
-
-### 1. Pipeline as Code
-
-ใน LAB 1 ลำดับงานของ Freestyle job ถูกกำหนดผ่านแบบฟอร์มบนหน้าเว็บ ข้อจำกัดของแนวทางนี้คือการตั้งค่าอยู่ใน UI จึงตรวจทาน (review) เปรียบเทียบ และย้อนเวอร์ชันได้ยาก **Pipeline as Code** แก้ปัญหานี้ด้วยการบรรยายกระบวนการ build ทั้งหมดเป็นข้อความในไฟล์ชื่อ `Jenkinsfile` ซึ่งปฏิบัติต่อได้เหมือนซอร์สโค้ด กล่าวคือ
-
-- **ควบคุมเวอร์ชันได้ (versioned)** — เก็บใน Git ร่วมกับโค้ดของโปรแกรม (จะทำใน LAB 4)
-- **ตรวจทานได้ (reviewable)** — การเปลี่ยนขั้นตอน build ผ่าน code review ได้เหมือนโค้ดทั่วไป
-- **ทำซ้ำได้ (reproducible)** — Jenkins ตัวใดอ่านไฟล์เดียวกันก็ได้กระบวนการเดียวกัน
-- **สังเกตได้ (observable)** — แบ่งเป็น stage ที่มีสถานะแยกกัน จึงระบุจุดที่ล้มเหลวได้ทันที
-
-![Freestyle job เทียบกับ Pipeline as Code](./images/lab2_theory_freestyle_vs_pipeline.png)
-
-*ภาพที่ 2 จากการตั้งค่าด้วยการคลิก (LAB 1) สู่การตั้งค่าด้วยโค้ด (LAB 2)*
-
-### 2. Declarative Pipeline: โครงสร้างและ directive
-
-Jenkins รองรับ Pipeline สองรูปแบบ คือ **Scripted Pipeline** ซึ่งเป็นโค้ด Groovy ที่ยืดหยุ่นสูง และ **Declarative Pipeline** ซึ่งกำหนดโครงสร้างตายตัวด้วย directive ที่มีความหมายชัดเจน แล็บนี้ใช้แบบ Declarative เพราะอ่านง่าย และ Jenkins ตรวจโครงสร้างได้ก่อนเริ่มทำงาน
-
-| Directive | ตำแหน่ง | หน้าที่ |
-|---|---|---|
-| `pipeline { }` | บนสุด | ขอบเขตของ Declarative Pipeline ทั้งหมด |
-| `agent any` | ใน `pipeline` | ให้รันบน executor ใดก็ได้ที่ว่าง และจัดสรร workspace ให้ |
-| `parameters { }` | ใน `pipeline` | ประกาศค่าที่ผู้สั่ง build กรอกได้ อ่านผ่าน `params.NAME` |
-| `environment { }` | ใน `pipeline` หรือ `stage` | ประกาศตัวแปรสภาพแวดล้อม อ่านผ่าน `env.NAME` |
-| `stages { stage('X') { steps { } } }` | ใน `pipeline` | ลำดับขั้นของงาน แต่ละ stage มี steps ที่ทำจริง |
-| `when { }` | ใน `stage` | เงื่อนไขที่ตัดสินว่าจะเข้า stage นั้นหรือข้าม |
-| `post { }` | ใน `pipeline` หรือ `stage` | งานที่ทำหลัง stages จบ ตามเงื่อนไขของผลลัพธ์ |
-
-### 3. วงจรชีวิตของการรัน Pipeline หนึ่งครั้ง
-
-เมื่อสั่ง build Jenkins จะ ① รับ trigger พร้อมค่า parameter → ② แปลและตรวจไวยากรณ์ของสคริปต์ (หากผิดจะล้มเหลวก่อนเริ่ม stage แรก) → ③ นำเข้าคิว → ④ จัดสรร executor และ workspace ตาม `agent` → ⑤ ทำ stage ตามลำดับ โดยประเมิน `when` ก่อนเข้าแต่ละ stage → ⑥ ทำบล็อก `post` แล้วบันทึกผลลัพธ์ ทุกขั้นถูกบันทึกลง Console Output ในรูปบรรทัด `[Pipeline] ...`
-
-![วงจรชีวิตของ pipeline run](./images/lab2_theory_run_lifecycle.png)
-
-*ภาพที่ 3 จาก trigger ถึงผลลัพธ์: โค้ดเข้า หลักฐานออก*
-
-### 4. ขอบเขตของตัวแปร และการแทนค่าในสตริง
-
-| ประเภท | ประกาศที่ | อ่านด้วย | ตัวอย่างในแล็บ |
-|---|---|---|---|
-| ตัวแปรที่ Jenkins กำหนดให้ (built-in) | Jenkins ตั้งให้ทุก build | `env.NAME` | `env.JOB_NAME`, `env.BUILD_NUMBER` |
-| ตัวแปรที่เราประกาศ | บล็อก `environment` | `env.NAME` | `env.LAB_NAME` |
-| พารามิเตอร์ของ build | บล็อก `parameters` | `params.NAME` | `params.APP_ENV` |
-
-> ⚠️ Groovy แทนค่า `${...}` เฉพาะในสตริง **อัญประกาศคู่** `"..."` เท่านั้น สตริงอัญประกาศเดี่ยว `'...'` จะพิมพ์ข้อความตามตัวอักษร ดังนั้น `echo "Build #${env.BUILD_NUMBER}"` แสดงเลข build แต่ `echo 'Build #${env.BUILD_NUMBER}'` แสดงข้อความ `${env.BUILD_NUMBER}` ตรงตัว
-
-### 5. การควบคุมการไหลด้วย `when`
-
-`when` ถูกประเมิน **ก่อน** เข้า stage หากเงื่อนไขเป็นเท็จ stage นั้นจะถูกข้าม (*skipped*) โดยไม่ทำให้ build ล้มเหลว ในแล็บนี้ใช้ `expression { params.APP_ENV == 'prod' }` ซึ่งเป็นการเปรียบเทียบสตริงแบบ **ตรงตัวและแยกตัวพิมพ์ใหญ่–เล็ก (case-sensitive)** จึงมีเพียงค่า `prod` เท่านั้นที่ทำให้ Deploy ทำงาน
-
-![when: dev ข้าม, prod ทำงาน, Prod ข้าม](./images/lab2_concept_when_dev_prod.png)
-
-*ภาพที่ 4 Pipeline เดียว พฤติกรรมต่างกันตามค่า parameter — จะพิสูจน์ในการทดลองที่ 6*
-
-Jenkins แยกการข้าม stage ไว้สองกรณีและบันทึกข้อความต่างกัน ได้แก่ `skipped due to when conditional` (เงื่อนไข `when` เป็นเท็จ) และ `skipped due to earlier failure(s)` (มี stage ก่อนหน้าล้มเหลว)
-
-### 6. เงื่อนไขของบล็อก `post` และผลลัพธ์ของ build
-
-บล็อก `post` ทำงานหลัง stages ทั้งหมดจบ โดยเลือกทำตามผลลัพธ์ของ build เหมาะกับงานรายงานผล ทำความสะอาด หรือแจ้งเตือน
-
-| เงื่อนไข | ทำงานเมื่อ |
-|---|---|
-| `always` | ทุกครั้ง ไม่ว่าผลจะเป็นอะไร |
-| `success` | ผลเป็น `SUCCESS` |
-| `failure` | ผลเป็น `FAILURE` |
-| `unstable`, `changed`, `fixed`, `aborted`, `cleanup` | เงื่อนไขอื่นที่ใช้ได้ (ไม่ใช้ในแล็บนี้) |
-
-step `error 'ข้อความ'` ทำให้ stage ปัจจุบันล้มเหลวทันที stage ถัดไปจะถูกข้าม และ build มีผลเป็น `FAILURE`
-
-![post: always / success / failure](./images/lab2_concept_post.png)
-
-*ภาพที่ 5 บล็อกใดใน `post` ทำงานบ้าง ขึ้นกับว่ารันนั้นเขียวหรือแดง — จะพิสูจน์ในการทดลองที่ 5 และ 7*
-
-### 7. Pipeline Graph View
-
-plugin *Pipeline Graph View* (ติดตั้งมากับ suggested plugins ใน LAB 1) แสดงผลได้สองระดับ
-
-- **ระดับ build** — เมนู **Pipeline Overview** ของ build หนึ่ง ๆ (URL `/job/<job>/<N>/stages/`) แสดงกราฟของรันนั้น คลิก stage เพื่อดู steps
-- **ระดับ job** — เมนู **Stages** ของ job (URL `/job/<job>/multi-pipeline-graph/`) แสดงกราฟของทุกรันซ้อนกัน เหมาะกับการเปรียบเทียบ
-
-สัญลักษณ์: ✓ เขียว = สำเร็จ · ✗ แดง = ล้มเหลว · » เทา (เส้นอ้อม) = ข้าม
+จากนั้นจะเติมทีละส่วน: ตัวแปร `environment` (อ่านด้วย `env.NAME`) และ `parameters` (อ่านด้วย `params.NAME`) — การแทนค่า `${...}` ทำงานเฉพาะในสตริงอัญประกาศคู่ `"..."` — ต่อด้วย `post` และ `when` ซึ่งจะอธิบายในการทดลองที่ใช้จริง
 
 ---
 
@@ -99,77 +25,49 @@ plugin *Pipeline Graph View* (ติดตั้งมากับ suggested plu
 
 เมื่อจบแล็บนี้ นักศึกษาจะสามารถ
 
-1. อธิบายข้อได้เปรียบของ Pipeline as Code เมื่อเทียบกับ Freestyle job ได้
-2. เขียน Declarative Pipeline ที่มี `agent`, `stages`, `environment`, `parameters`, `when` และ `post` ได้
-3. แยกความแตกต่างของ `env.*` กับ `params.*` และการแทนค่าในสตริงอัญประกาศคู่ได้
-4. อ่าน Pipeline Graph และ Console Output เพื่ออธิบายว่า stage ใดทำงาน ถูกข้าม หรือล้มเหลว และเพราะเหตุใด
-5. ทำนายได้ว่าบล็อกใดใน `post` จะทำงานเมื่อ build สำเร็จหรือล้มเหลว
-
-## 🗺️ แผนที่ build ของแล็บนี้
-
-แล็บนี้สร้าง build ทั้งหมด 10 ครั้ง ตารางนี้ใช้ตรวจว่าทำมาถูกทาง (ถ้ากด build เกิน หมายเลขจะเลื่อนไป ไม่เป็นปัญหา)
-
-| Build | การทดลอง | สิ่งที่เปลี่ยน | ผลที่ต้องได้ |
-|---|---|---|---|
-| `#1` | 1–2 | 3 stages | ✓ Checkout, Build, Test |
-| `#2` | 3 | `+ environment` | `Building Declarative Pipeline: first-pipeline #2` |
-| `#3` | 4 | `+ parameters` (Build Now ครั้งแรก) | `APP_ENV=dev` |
-| `#4` | 4 | Build with Parameters | `APP_ENV=staging` |
-| `#5` | 5 | `+ post` | `Finished first-pipeline #5`, `Pipeline succeeded` |
-| `#6` | 6 | `+ Deploy / when`, `APP_ENV=dev` | Deploy **ข้าม** |
-| `#7` | 6 | `APP_ENV=prod` | Deploy **ทำงาน** |
-| `#8` | 6 | `APP_ENV=Prod` | Deploy **ข้าม** (case-sensitive) |
-| `#9` | 7 | Test ใช้ `error` | ✗ `FAILURE`, Deploy ข้าม |
-| `#10` | 7 | แก้กลับ, `APP_ENV=prod` | ✓ ทุกช่อง |
+1. สร้าง Pipeline job และเขียน Declarative Pipeline ด้วย `pipeline`, `agent`, `stages`, `stage` และ `steps` ได้
+2. ใช้ `environment` (`env.*`) และ `parameters` (`params.*`) พร้อมการแทนค่าในสตริงอัญประกาศคู่ได้
+3. ใช้ `post` และ `when` เพื่อกำหนดงานหลัง build และการข้าม stage ได้
+4. อ่าน Pipeline Graph และ Console Output เพื่ออธิบายว่า stage ใดทำงาน ถูกข้าม หรือล้มเหลว
 
 ---
 
-## 0. กลับเข้าเครื่องเรียน (ต่อจาก LAB 1)
+## 0. สิ่งที่ต้องมีก่อนเริ่ม
 
-แล็บนี้ใช้เครื่องเรียน `devtools` และ Jenkins ตัวเดิมจาก LAB 1 — **ไม่ต้องลบ ไม่ต้องสร้างกล่องใหม่** พิมพ์บนเครื่องของเรา :
+- ทำ **LAB 1 สำเร็จแล้ว** และ clone รีโพไว้ที่ `~/labwork/DevTools` แล้ว
+- ใช้เครื่องเรียน `devtools` และ Jenkins ตัวเดิมจาก LAB 1 — **ไม่ต้องลบ ไม่ต้องสร้างใหม่**
+
+ถ้าปิดเครื่องไปแล้ว ให้กลับเข้าเครื่องเรียนจากเครื่องของเรา :
 
 ```bash
 docker start devtools            # ถ้ารันอยู่แล้วก็ไม่เป็นไร
 ssh root@localhost -p 2222       # password : passwd
 ```
 
-> 📝 **คำอธิบาย:** `docker start devtools` ปลุกกล่องเรียนตัวเดิมขึ้นมาพร้อมทุกอย่างที่ทำไว้ใน LAB 1 (ถ้ากล่องรันอยู่แล้ว คำสั่งนี้แค่พิมพ์ชื่อ `devtools` กลับมา ไม่มีอะไรเสีย) · Docker ข้างในกล่องจะปลุก `jenkins` ให้เองเพราะ LAB 1 สร้างไว้ด้วย `--restart unless-stopped` — รอบทดสอบจริงหน้า login ตอบใน 7–9 วินาที (แต่มีหนึ่งรอบที่ใช้ ~4 นาที) · `ssh ... -p 2222` เข้าไปทำงานข้างในกล่องเหมือน LAB 1 (หรือใช้ VS Code **Remote-SSH** ไปที่ `root@localhost:2222`)
->
-> ⚠️ **ห้าม `docker rm -f devtools`** — Jenkins, job `first-freestyle` และประวัติ build ทั้งหมดอยู่ข้างในกล่องนี้ ลบแล้วต้องเริ่ม LAB 1 ใหม่
+> ⚠️ **ห้าม `docker rm -f devtools`** — Jenkins และประวัติ build ทั้งหมดอยู่ข้างในกล่องนี้ ลบแล้วต้องเริ่ม LAB 1 ใหม่
 
 ---
 
-## 1. เข้าโฟลเดอร์แล็บ และตรวจว่า Jenkins จาก LAB 1 ยังอยู่
+## 1. เข้าโฟลเดอร์แล็บ แล้วเปิด Jenkins
 
-คำสั่งต่อจากนี้พิมพ์**ข้างในเครื่องเรียน** :
+พิมพ์**ข้างในเครื่องเรียน** :
 
 ```bash
 cd ~/labwork/DevTools/04_Jenkins/001_Jenikin/002_LAB_Declarative_Pipeline
-git -C ~/labwork/DevTools pull
-ls
-docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
-curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/login
 ```
 
-> 📝 **คำอธิบาย:** `cd` เข้าโฟลเดอร์ LAB 2 ในรีโพที่ clone ไว้ตั้งแต่ LAB 1 ส่วนที่ 1 · `git -C ~/labwork/DevTools pull` ดึงเนื้อหาล่าสุดของวิชา (`-C` = ให้ git ทำงานในโฟลเดอร์นั้นโดยไม่ต้อง `cd` ไป — ถ้าไม่มีอะไรใหม่จะขึ้น `Already up to date.`) · `ls` ดูของในแล็บ — ไฟล์ `Jenkinsfile` คือ**สคริปต์ฉบับเสร็จของแล็บนี้** เก็บไว้เทียบตอนท้าย ไม่ต้องใช้ตอนเริ่ม ·
-> `docker ps --format 'table ...'` แสดงเฉพาะสามคอลัมน์ที่อยากดู : ชื่อ (`{{.Names}}`) สถานะ (`{{.Status}}`) และ port (`{{.Ports}}`) โดย `\t` คั่นคอลัมน์ด้วย tab · `curl -s -o /dev/null -w "%{http_code}\n"` ยิงไปที่หน้า login ของ Jenkins แบบเงียบ (`-s`) ทิ้งเนื้อหาหน้าเว็บ (`-o /dev/null`) แล้วพิมพ์แค่รหัสสถานะ HTTP (`-w`)
+เข้าสู่ระบบ Jenkins :
 
-✅ **Expected output** — ต้องเห็นครบสามอย่าง : ไฟล์ในแล็บ · `jenkins` สถานะ `Up` พร้อม port `8080` · และเลข `200`
+1. เปิด http://localhost:8080
+2. กรอก **Username** `admin`
+3. กรอก **Password** `admin2569`
 
-```
-Jenkinsfile  README.md  images
-NAMES     STATUS              PORTS
-jenkins   Up About a minute   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp, 50000/tcp
-200
-```
+   ![หน้า Sign in ของ Jenkins ที่กรอก Username และ Password แล้ว](./images/lab2_s00_login.png)
 
-> ถ้าขึ้น `000` หรือ `503` แทน `200` แปลว่า Jenkins ยังโหลดไม่เสร็จ (เปิดเว็บจะเห็น **Starting Jenkins**) — ปกติไม่กี่วินาที แต่รอบทดสอบจริงหนึ่งรอบใช้ ~4 นาที รอแล้วสั่ง `curl` ใหม่ อย่าลบหรือ restart ซ้ำ · ถ้า `docker ps` ไม่มีแถว `jenkins` เลย ดูแถวแรกของ [แก้ปัญหาที่พบบ่อย](#แก้ปัญหาที่พบบ่อย)
+   *ภาพหน้า Sign in: Username เป็น `admin` รหัสผ่านถูกซ่อนเป็นจุด แล้วกด **Sign in** (พอร์ต 18081 ในภาพเป็น tunnel สำหรับจับภาพ นักศึกษายังใช้ `localhost:8080`)*
 
-เปิด http://localhost:8080 และเข้าสู่ระบบด้วย `admin` / `admin2569` — ต้องเห็น job `first-freestyle` จาก LAB 1
-
-![Dashboard ที่มี first-freestyle จาก LAB 1](../001_LAB_Jenkins_On_Docker/images/lab1_s22_dashboard_after_recreate.png)
-
-> ยังไม่มี devtools หรือ jenkins? ย้อนไปทำ [LAB 1](../001_LAB_Jenkins_On_Docker/README.md) ส่วนที่ 0–1 และการทดลองที่ 1–4 ก่อน
+4. กด **Sign in**
+5. เมื่อเห็นหน้า Dashboard แล้ว ไปสร้าง Pipeline job ในการทดลองที่ 1
 
 ---
 
@@ -181,7 +79,7 @@ jenkins   Up About a minute   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp, 50000
 
 ![New Item: first-pipeline ชนิด Pipeline](./images/lab2_s01_new_item.png)
 
-*ภาพที่ 6 ต้องเลือกชนิด **Pipeline** ไม่ใช่ Freestyle project*
+*ภาพที่ 1 ต้องเลือกชนิด **Pipeline** ไม่ใช่ Freestyle project*
 
 **1.2) เลื่อนไปหัวข้อ Pipeline** ตรวจว่า **Definition = Pipeline script** แล้ววางสคริปต์ต่อไปนี้ในช่อง **Script**
 
@@ -214,7 +112,7 @@ pipeline {
 
 ![ช่อง Pipeline script ที่วางโค้ดแล้ว](./images/lab2_s02_initial_script.png)
 
-*ภาพที่ 7 Definition เป็น Pipeline script และโค้ด 3 stages อยู่ในช่อง Script*
+*ภาพที่ 2 Definition เป็น Pipeline script และโค้ด 3 stages อยู่ในช่อง Script*
 
 **1.3) กด Save** → หน้า `first-pipeline` เปิดขึ้น และยังไม่มี build
 
@@ -230,11 +128,11 @@ pipeline {
 
 ![หน้า build #1 และเมนู Pipeline Overview](./images/lab2_s03a_build_page.png)
 
-*ภาพที่ 8 ใน Jenkins รุ่นนี้ เมนูกราฟของ build ชื่อ **Pipeline Overview***
+*ภาพที่ 3 ใน Jenkins รุ่นนี้ เมนูกราฟของ build ชื่อ **Pipeline Overview***
 
 ![Pipeline Graph ของ build #1](./images/lab2_s03_first_graph.png)
 
-*ภาพที่ 9 กราฟ Start → Checkout → Build → Test → End ทุกโหนดเป็นสีเขียว คลิกแต่ละ stage เพื่อดู steps ที่อยู่ข้างใน*
+*ภาพที่ 4 กราฟ Start → Checkout → Build → Test → End ทุกโหนดเป็นสีเขียว คลิกแต่ละ stage เพื่อดู steps ที่อยู่ข้างใน*
 
 ✅ **ผลการทดลองจริง** (Console Output ของ `#1`, ตัดบางส่วน):
 
@@ -299,13 +197,13 @@ pipeline {
 
 ![สคริปต์ที่เพิ่ม environment](./images/lab2_s04a_environment_script.png)
 
-*ภาพที่ 10 บล็อก `environment` ประกาศ `LAB_NAME` และบรรทัด `echo` ใช้อัญประกาศคู่เพื่อแทนค่า*
+*ภาพที่ 5 บล็อก `environment` ประกาศ `LAB_NAME` และบรรทัด `echo` ใช้อัญประกาศคู่เพื่อแทนค่า*
 
 **3.2) เปิด Console Output ของ `#2`**
 
 ![Console Output ของ build #2](./images/lab2_s04_environment_console.png)
 
-*ภาพที่ 11 ข้อความรวมค่าจากสามแหล่ง: `LAB_NAME` (เราประกาศ), `JOB_NAME` และ `BUILD_NUMBER` (Jenkins กำหนด)*
+*ภาพที่ 6 ข้อความรวมค่าจากสามแหล่ง: `LAB_NAME` (เราประกาศ), `JOB_NAME` และ `BUILD_NUMBER` (Jenkins กำหนด)*
 
 ✅ **ผลการทดลองจริง:**
 
@@ -361,33 +259,33 @@ pipeline {
 
 ![สคริปต์ที่เพิ่ม parameters](./images/lab2_s05a_parameters_script.png)
 
-*ภาพที่ 12 ประกาศ `APP_ENV` (ค่าเริ่มต้น `dev`) และอ่านด้วย `params.APP_ENV`*
+*ภาพที่ 7 ประกาศ `APP_ENV` (ค่าเริ่มต้น `dev`) และอ่านด้วย `params.APP_ENV`*
 
 **4.2) สังเกตเมนู — ยังเป็น Build Now** เพราะ Jenkins ยังไม่ได้รันสคริปต์ใหม่ จึงยังไม่รู้จัก parameter กด **Build Now** หนึ่งครั้ง (ได้ `#3`, ใช้ค่าเริ่มต้น `APP_ENV=dev`)
 
 ![ก่อนลงทะเบียน parameter ยังเป็น Build Now](./images/lab2_s05b_before_register.png)
 
-*ภาพที่ 13 ก่อน build ครั้งแรกหลังเพิ่ม `parameters` เมนูยังเป็น Build Now*
+*ภาพที่ 8 ก่อน build ครั้งแรกหลังเพิ่ม `parameters` เมนูยังเป็น Build Now*
 
 ![หลัง build #3 กลายเป็น Build with Parameters](./images/lab2_s05c_build_with_parameters_menu.png)
 
-*ภาพที่ 14 หลัง `#3` เมนูเปลี่ยนเป็น **Build with Parameters***
+*ภาพที่ 9 หลัง `#3` เมนูเปลี่ยนเป็น **Build with Parameters***
 
 🔍 **ตีความ:** นิยาม parameter อยู่ *ในสคริปต์* Jenkins จะอ่านและบันทึกเป็นการตั้งค่าของ job เมื่อสคริปต์ถูกรันแล้วหนึ่งครั้ง เปิด **Configure** จะเห็นว่า *This project is parameterized* ถูกเลือกให้เองตามโค้ด
 
 ![This project is parameterized ถูกตั้งค่าอัตโนมัติ](./images/lab2_s05_parameters_config.png)
 
-*ภาพที่ 15 Name `APP_ENV`, Default Value `dev` มาจากโค้ด ไม่ต้องกรอกเอง*
+*ภาพที่ 10 Name `APP_ENV`, Default Value `dev` มาจากโค้ด ไม่ต้องกรอกเอง*
 
 **4.3) Build with Parameters → เปลี่ยนค่าเป็น `staging` → Build** (ได้ `#4`)
 
 ![หน้า Build with Parameters](./images/lab2_s06_build_parameters.png)
 
-*ภาพที่ 16 ค่าที่กรอกในแบบฟอร์มถูกส่งเข้า `params.APP_ENV`*
+*ภาพที่ 11 ค่าที่กรอกในแบบฟอร์มถูกส่งเข้า `params.APP_ENV`*
 
 ![Console Output ของ build #4](./images/lab2_s06b_console_staging.png)
 
-*ภาพที่ 17 build `#4` ได้รับค่า `staging` จากแบบฟอร์ม*
+*ภาพที่ 12 build `#4` ได้รับค่า `staging` จากแบบฟอร์ม*
 
 ✅ **ผลการทดลองจริง:**
 
@@ -401,6 +299,8 @@ APP_ENV=staging   ← #4 (Build with Parameters)
 ## การทดลองที่ 5 — `post`: งานหลัง stages จบ
 
 **คำถาม:** จะให้ข้อความหนึ่งทำงานเสมอ และอีกข้อความทำงานเฉพาะเมื่อสำเร็จได้อย่างไร
+
+> 📝 บล็อก `post` ทำงานหลัง stages ทั้งหมดจบ: `always` ทำทุกครั้ง · `success` ทำเมื่อ build สำเร็จ · `failure` ทำเมื่อ build ล้มเหลว
 
 **5.1) Configure → วางสคริปต์ฉบับเต็มนี้ → Save → Build with Parameters (คง `dev`) → Build** (ได้ `#5`)
 
@@ -454,13 +354,13 @@ pipeline {
 
 ![สคริปต์ที่เพิ่ม post](./images/lab2_s07a_post_script.png)
 
-*ภาพที่ 18 บล็อก `post` มีสามเงื่อนไข: `always`, `success`, `failure`*
+*ภาพที่ 13 บล็อก `post` มีสามเงื่อนไข: `always`, `success`, `failure`*
 
 **5.2) เปิด Console Output ของ `#5` แล้วเลื่อนลงไปส่วน Declarative: Post Actions**
 
 ![Console Output ส่วน Post Actions](./images/lab2_s07_post_console.png)
 
-*ภาพที่ 19 `always` และ `success` ทำงาน ส่วน `failure` ไม่ทำงานเพราะ build สำเร็จ*
+*ภาพที่ 14 `always` และ `success` ทำงาน ส่วน `failure` ไม่ทำงานเพราะ build สำเร็จ*
 
 ✅ **ผลการทดลองจริง:**
 
@@ -481,6 +381,8 @@ Finished: SUCCESS
 ## การทดลองที่ 6 — `when`: Deploy เฉพาะ prod
 
 **คำถาม:** จะข้าม Deploy สำหรับ dev แต่ทำจริงสำหรับ prod ได้อย่างไร และถ้าพิมพ์ `Prod` จะเกิดอะไรขึ้น
+
+> 📝 `when` ถูกตรวจ**ก่อน**เข้า stage ถ้าเงื่อนไขเป็นเท็จ stage นั้นจะถูกข้าม (skipped) โดย build ไม่ล้มเหลว · `params.APP_ENV == 'prod'` เทียบสตริงแบบแยกตัวพิมพ์ใหญ่–เล็ก
 
 **6.1) Configure → วางสคริปต์ฉบับเต็มนี้ → Save** (ไฟล์นี้ตรงกับ [`Jenkinsfile`](./Jenkinsfile) ทุกตัวอักษร)
 
@@ -541,10 +443,6 @@ pipeline {
 }
 ```
 
-![สคริปต์ที่เพิ่ม Deploy และ when](./images/lab2_s08a_deploy_when_script.png)
-
-*ภาพที่ 20 stage `Deploy` มี `when` ที่เปรียบเทียบ `params.APP_ENV` กับ `'prod'`*
-
 **6.2) ทำนายก่อนทดลอง** — เติมคอลัมน์ “คาดว่า” ก่อน แล้วค่อยรันเพื่อตรวจ
 
 | Build | ค่า `APP_ENV` | คาดว่า Deploy จะ… | ผลจริง |
@@ -554,22 +452,6 @@ pipeline {
 | `#8` | `Prod` (P ตัวใหญ่) | ? | ข้าม |
 
 **6.3) Build with Parameters สามครั้งด้วยค่า `dev`, `prod`, `Prod`** แล้วเปิด **Pipeline Overview** ของแต่ละ build
-
-![#6 APP_ENV=dev Deploy ถูกข้าม](./images/lab2_s08_dev_graph.png)
-
-*ภาพที่ 21 `#6` (`dev`): โหนด Deploy เป็นสีเทาพร้อมเส้นอ้อม = ถูกข้าม แต่ build ยังสำเร็จ*
-
-![#7 APP_ENV=prod Deploy ทำงาน](./images/lab2_s09_prod_graph.png)
-
-*ภาพที่ 22 `#7` (`prod`): Deploy เป็นสีเขียว และแสดง step `Deploying to prod`*
-
-![#8 APP_ENV=Prod Deploy ถูกข้าม](./images/lab2_s10_Prod_case_graph.png)
-
-*ภาพที่ 23 `#8` (`Prod`): Deploy ถูกข้ามเหมือน dev เพราะการเปรียบเทียบแยกตัวพิมพ์ใหญ่–เล็ก*
-
-![Console Output ของ #8](./images/lab2_s10b_Prod_console.png)
-
-*ภาพที่ 24 Console Output ระบุเหตุผลของการข้ามไว้ชัดเจน*
 
 ✅ **ผลการทดลองจริง** (บรรทัดที่เกี่ยวข้องจาก Console Output):
 
@@ -595,6 +477,8 @@ pipeline {
 
 **คำถาม:** เมื่อ Test ล้มเหลว stage ถัดไปและบล็อก `post` จะทำงานอย่างไร
 
+> 📝 step `error 'ข้อความ'` ทำให้ stage ปัจจุบันล้มเหลวทันที stage ถัดไปจะถูกข้าม และ build มีผลเป็น `FAILURE`
+
 **7.1) Configure → ในสคริปต์ฉบับเต็มของการทดลองที่ 6 เปลี่ยนบรรทัดเดียวใน stage `Test`** แล้วกด Save
 
 ```groovy
@@ -602,19 +486,7 @@ pipeline {
         error 'Tests failed'     // ← เปลี่ยนเป็นบรรทัดนี้
 ```
 
-![เปลี่ยน echo เป็น error](./images/lab2_s11a_fail_script.png)
-
-*ภาพที่ 25 step `error` จำลองสถานการณ์ที่ชุดทดสอบไม่ผ่าน*
-
 **7.2) Build with Parameters ด้วย `prod`** (ได้ `#9`) — ใช้ `prod` เพื่อพิสูจน์ว่าแม้ `when` จะเป็นจริง Deploy ก็ยังไม่ทำงาน
-
-![Pipeline Graph ของ #9](./images/lab2_s11_fail_graph.png)
-
-*ภาพที่ 26 Test เป็นสีแดง Deploy ถูกข้าม และไอคอนของ build `#9` เป็น ✗*
-
-![Console Output ของ #9](./images/lab2_s11b_fail_console.png)
-
-*ภาพที่ 27 `always` และ `failure` ทำงาน ส่วน `success` ไม่ทำงาน*
 
 ✅ **ผลการทดลองจริง:**
 
@@ -644,7 +516,7 @@ Finished: FAILURE
 
 ![Stages ของทุก build](./images/lab2_s12_job_stages_history.png)
 
-*ภาพที่ 28 ประวัติ `#1–#10` ในหน้าเดียว เห็นการเติบโตของ Pipeline ตั้งแต่ 3 stages จนถึง 5 ช่อง และเห็นรันที่ข้ามหรือล้มเหลวได้ทันที*
+*ภาพที่ 15 ประวัติ `#1–#10` ในหน้าเดียว เห็นการเติบโตของ Pipeline ตั้งแต่ 3 stages จนถึง 5 ช่อง และเห็นรันที่ข้ามหรือล้มเหลวได้ทันที*
 
 **8.2) ตรวจผลผ่าน REST API** (รันใน shell ของ devtools)
 

@@ -1,0 +1,362 @@
+Started by user Admin
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/docker-build-push
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Connect)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $HUB_TOKEN
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ hostname
++ command -v docker
++ echo none
++ test -S /var/run/docker.sock
++ echo none
++ command -v sshpass
++ echo jenkins: ad27ba488a7f docker CLI = none docker.sock = none sshpass = /usr/bin/sshpass
+jenkins: ad27ba488a7f docker CLI = none docker.sock = none sshpass = /usr/bin/sshpass
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+devtools: 4dc7e37d7397 user=root
+Docker Engine 29.8.1
+git version 2.55.0
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] echo
+จะ push ไปที่ docker.io/tuchsanai/catfood-shop:lab3-sibling-20260926r2-1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Clone)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+cloned to 4dc7e37d7397:/root/lab3-work/build-1
+commit 8b38dc93bc070235d418e02abcad9e9d5faf629b
+subject 1
+Dockerfile
+app
+data
+next.config.mjs
+package-lock.json
+package.json
+public
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] echo
+commit ที่จะ build: 8b38dc93bc07
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.52kB done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/node:22-alpine
+#2 DONE 2.9s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 84B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+#4 resolve docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402 0.0s done
+#4 ...
+
+#5 [internal] load build context
+#5 transferring context: 366.47kB done
+#5 DONE 0.1s
+
+#4 [1/6] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+#4 sha256:d39db1cf9caa4f49c5a2e67111fbe6e0d5eea8ede550cb82f3dc2b79712688d6 0B / 447B 0.2s
+#4 sha256:d39db1cf9caa4f49c5a2e67111fbe6e0d5eea8ede550cb82f3dc2b79712688d6 447B / 447B 0.3s
+#4 sha256:e554276b05e6306c5ad33cd85bfa7f0693083e21f6114db5abf60a20fb413039 0B / 1.26MB 0.2s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 0B / 55.59MB 0.2s
+#4 sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5 0B / 3.85MB 0.2s
+#4 sha256:d39db1cf9caa4f49c5a2e67111fbe6e0d5eea8ede550cb82f3dc2b79712688d6 447B / 447B 0.3s done
+#4 sha256:e554276b05e6306c5ad33cd85bfa7f0693083e21f6114db5abf60a20fb413039 1.26MB / 1.26MB 0.7s done
+#4 sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5 3.85MB / 3.85MB 1.0s done
+#4 extracting sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5 0.1s done
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 3.15MB / 55.59MB 2.1s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 7.34MB / 55.59MB 2.3s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 12.58MB / 55.59MB 2.6s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 18.87MB / 55.59MB 2.9s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 22.02MB / 55.59MB 3.0s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 25.17MB / 55.59MB 3.2s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 30.41MB / 55.59MB 3.5s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 36.70MB / 55.59MB 3.8s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 39.85MB / 55.59MB 3.9s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 44.04MB / 55.59MB 4.1s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 49.28MB / 55.59MB 4.4s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 52.43MB / 55.59MB 4.5s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 55.59MB / 55.59MB 4.7s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 55.59MB / 55.59MB 4.9s done
+#4 extracting sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937
+#4 extracting sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 0.9s done
+#4 DONE 6.0s
+
+#4 [1/6] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+#4 extracting sha256:e554276b05e6306c5ad33cd85bfa7f0693083e21f6114db5abf60a20fb413039 0.0s done
+#4 extracting sha256:d39db1cf9caa4f49c5a2e67111fbe6e0d5eea8ede550cb82f3dc2b79712688d6 0.0s done
+#4 DONE 6.1s
+
+#6 [2/6] WORKDIR /app
+#6 DONE 0.2s
+
+#7 [3/6] COPY package.json package-lock.json ./
+#7 DONE 0.1s
+
+#8 [4/6] RUN npm ci --no-audit --no-fund && npm cache clean --force
+#8 10.45 
+#8 10.45 added 24 packages in 10s
+#8 10.45 npm notice
+#8 10.45 npm notice New major version of npm available! 10.9.9 -> 12.1.0
+#8 10.45 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.1.0
+#8 10.45 npm notice To update run: npm install -g npm@12.1.0
+#8 10.45 npm notice
+#8 10.54 npm warn using --force Recommended protections disabled.
+#8 DONE 10.8s
+
+#9 [5/6] COPY . .
+#9 DONE 0.1s
+
+#10 [6/6] RUN npm run build && rm -rf .next/cache
+#10 0.323 
+#10 0.323 > catfood-shop@1.0.0 build
+#10 0.323 > next build
+#10 0.323 
+#10 0.588 ▲ Next.js 16.3.6 (Turbopack)
+#10 0.596 ✓ Running next.config.mjs took 8ms
+#10 0.618 
+#10 0.636   Creating an optimized production build ...
+#10 2.465 ✓ Compiled successfully in 1696ms
+#10 2.467   Running TypeScript ...
+#10 2.469   Finished TypeScript in 2ms ...
+#10 2.471   Collecting page data using 6 workers ...
+#10 2.904   Generating static pages using 6 workers (0/3) ...
+#10 3.262 ✓ Generating static pages using 6 workers (3/3) in 358ms
+#10 3.266   Finalizing page optimization ...
+#10 3.270 
+#10 3.272 Route (app)
+#10 3.272 ┌ ƒ /
+#10 3.272 ├ ○ /_not-found
+#10 3.272 ├ ƒ /api/health
+#10 3.272 └ ○ /icon.svg
+#10 3.272 
+#10 3.272 
+#10 3.272 ○  (Static)   prerendered as static content
+#10 3.272 ƒ  (Dynamic)  server-rendered on demand
+#10 3.272 
+#10 DONE 3.3s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 6.7s done
+#11 exporting manifest sha256:ea2559a940026b2eb8feb704f941c7b1980364e02429ac8145e1393d2a2665c8 0.0s done
+#11 exporting config sha256:33b37a46dfbdc047e3c9e4e626e59e8228ac545773e6534d056bbff74495df91 0.0s done
+#11 naming to docker.io/library/catfood-shop:build-1 done
+#11 unpacking to docker.io/library/catfood-shop:build-1
+#11 unpacking to docker.io/library/catfood-shop:build-1 1.9s done
+#11 DONE 8.7s
+IMAGE                  ID             DISK USAGE   CONTENT SIZE   EXTRA
+catfood-shop:build-1   ea2559a94002        693MB          154MB        
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+health of catfood-test-1: starting
+health of catfood-test-1: starting
+health of catfood-test-1: healthy
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"8b38dc93bc07","builtAt":"2026-09-26T14:10:51Z","host":"6808c351e4a8"}
+test ผ่าน: image ตอบเวอร์ชัน 1.0.0 commit 8b38dc93bc07
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push)
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS or $HUB_TOKEN
+[Pipeline] {
+[Pipeline] sh
++ set +x
+Login Succeeded
+
+WARNING! Your credentials are stored unencrypted in '/tmp/lab3-docker-1/config.json'.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/go/credential-store/
+
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+The push refers to repository [docker.io/tuchsanai/catfood-shop]
+e2de96513ba9: Layer already exists
+f7f2d304681a: Layer already exists
+e554276b05e6: Layer already exists
+d39db1cf9caa: Layer already exists
+fd97c7f1ae7f: Pushed
+0cbb2a438574: Pushed
+e7b764d7152f: Pushed
+3150af53ce99: Pushed
+558e9e845294: Pushed
+lab3-sibling-20260926r2-1: digest: sha256:ea2559a940026b2eb8feb704f941c7b1980364e02429ac8145e1393d2a2665c8 size: 2006
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] echo
+บันทึก digest ที่ push แล้ว: docker.io/tuchsanai/catfood-shop@sha256:ea2559a940026b2eb8feb704f941c7b1980364e02429ac8145e1393d2a2665c8
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Clean)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+Untagged: catfood-shop:build-1
+Untagged: tuchsanai/catfood-shop:lab3-sibling-20260926r2-1
+Deleted: sha256:ea2559a940026b2eb8feb704f941c7b1980364e02429ac8145e1393d2a2665c8
+devtools ไม่มีแอปเดิมและไม่มี image ของ build 1 แล้ว: เว็บหยุดชั่วคราว และ stage ถัดไปต้องดึงจาก Docker Hub
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Pull)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+docker.io/tuchsanai/catfood-shop@sha256:ea2559a940026b2eb8feb704f941c7b1980364e02429ac8145e1393d2a2665c8: Pulling from tuchsanai/catfood-shop
+3150af53ce99: Pulling fs layer
+0cbb2a438574: Pulling fs layer
+558e9e845294: Pulling fs layer
+e7b764d7152f: Pulling fs layer
+fd97c7f1ae7f: Pulling fs layer
+3150af53ce99: Already exists
+fd97c7f1ae7f: Already exists
+0cbb2a438574: Already exists
+558e9e845294: Already exists
+e7b764d7152f: Already exists
+fd97c7f1ae7f: Pull complete
+0cbb2a438574: Pull complete
+558e9e845294: Pull complete
+3150af53ce99: Pull complete
+3150af53ce99: Pull complete
+e7b764d7152f: Pull complete
+Digest: sha256:ea2559a940026b2eb8feb704f941c7b1980364e02429ac8145e1393d2a2665c8
+Status: Downloaded newer image for tuchsanai/catfood-shop@sha256:ea2559a940026b2eb8feb704f941c7b1980364e02429ac8145e1393d2a2665c8
+docker.io/tuchsanai/catfood-shop@sha256:ea2559a940026b2eb8feb704f941c7b1980364e02429ac8145e1393d2a2665c8
+tuchsanai/catfood-shop@sha256:ea2559a940026b2eb8feb704f941c7b1980364e02429ac8145e1393d2a2665c8
+pull ตาม digest สำเร็จ: ได้ image ตัวเดียวกับที่ push
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+f36700805439babaa9231a4ae145d35c1b4f0bca40785fba36214560f742ffae
+health of catfood-web: starting
+health of catfood-web: starting
+health of catfood-web: healthy
+catfood-web  Up 2 seconds (healthy)  0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+image: docker.io/tuchsanai/catfood-shop@sha256:ea2559a940026b2eb8feb704f941c7b1980364e02429ac8145e1393d2a2665c8
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"8b38dc93bc07","builtAt":"2026-09-26T14:10:51Z","host":"f36700805439"}
+เว็บตอบ version 1.0.0 build #1 commit 8b38dc93bc07 ตรงกับ Pipeline
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] deleteDir
+[Pipeline] echo
+เปิดร้านได้ที่ http://localhost:3000 (v1.0.0 build #1 = docker.io/tuchsanai/catfood-shop@sha256:ea2559a940026b2eb8feb704f941c7b1980364e02429ac8145e1393d2a2665c8)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

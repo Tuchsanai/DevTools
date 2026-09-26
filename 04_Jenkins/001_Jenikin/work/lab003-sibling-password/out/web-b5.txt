@@ -1,0 +1,2 @@
+{"status":"ok","app":"catfood-shop","version":"1.1.0","build":"2","commit":"8b38dc93bc07","builtAt":"2026-09-26T14:12:15Z","host":"2d7c4b120c21"}
+catfood-web  Up About a minute (healthy)  build=2

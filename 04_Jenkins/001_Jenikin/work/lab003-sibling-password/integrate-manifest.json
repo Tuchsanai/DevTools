@@ -1,0 +1,518 @@
+[
+ {
+  "dst": "lab3_diagram_sibling_architecture.png",
+  "src": "diagrams/architecture-sibling.png",
+  "sha256": "86f88bc2d91a795a590d528f381cf8af4ce6bfac59e459b991307ed97df89bab"
+ },
+ {
+  "dst": "lab3_diagram_sibling_pipeline.png",
+  "src": "diagrams/pipeline-sibling.png",
+  "sha256": "401c66fa71148d241eb8204f7dc72f60c0dd8e3f569fe03c8f3c70606f96b763"
+ },
+ {
+  "key": "unlock",
+  "src": "host-captures/01-unlock.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1376,
+   522
+  ],
+  "sha256_src": "72c3b8794d8243272b71afc5089f405918378a92dbe57132c89bb4407d4adf0b",
+  "crop_box": [
+   192,
+   20,
+   1184,
+   502
+  ],
+  "crop_size": [
+   992,
+   482
+  ],
+  "full": "lab3_sib_unlock.png",
+  "crop": "lab3_sib_unlock_crop.png"
+ },
+ {
+  "key": "dashboard",
+  "src": "host-captures/02-dashboard.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "61427f3e498487336084f9adaa7a4094212c3a9e597bb638412e5a73bcccd109",
+  "crop_box": [
+   360,
+   188,
+   1345,
+   292
+  ],
+  "crop_size": [
+   985,
+   104
+  ],
+  "full": "lab3_sib_dashboard.png",
+  "crop": "lab3_sib_dashboard_crop.png"
+ },
+ {
+  "key": "ssh_credential",
+  "src": "host-captures/03-ssh_credential.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1376,
+   500
+  ],
+  "sha256_src": "2ba7079ca3f153f78cfbde5b23fc26a47c7ffb34617a24d81b437a266ddc360f",
+  "crop_box": [
+   413,
+   18,
+   963,
+   482
+  ],
+  "crop_size": [
+   550,
+   464
+  ],
+  "full": "lab3_sib_ssh_credential.png",
+  "crop": "lab3_sib_ssh_credential_crop.png"
+ },
+ {
+  "key": "ssh_credential_id",
+  "src": "host-captures/03-ssh_credential-id.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1376,
+   500
+  ],
+  "sha256_src": "1b5c259096b4e884545775e0ea3ae727e287346dd89ca9b801ffa74112db8173",
+  "crop_box": [
+   413,
+   18,
+   963,
+   482
+  ],
+  "crop_size": [
+   550,
+   464
+  ],
+  "full": "lab3_sib_ssh_credential_id.png",
+  "crop": "lab3_sib_ssh_credential_id_crop.png"
+ },
+ {
+  "key": "credentials",
+  "src": "host-captures/04-credentials.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1376,
+   500
+  ],
+  "sha256_src": "de8511605c0a3984d2bb5c07e27738c8d0f882087f7340d9e3d323f4d4023ff7",
+  "crop_box": [
+   128,
+   60,
+   1248,
+   305
+  ],
+  "crop_size": [
+   1120,
+   245
+  ],
+  "full": "lab3_sib_credentials.png",
+  "crop": "lab3_sib_credentials_crop.png"
+ },
+ {
+  "key": "pipeline_config",
+  "src": "host-captures/05-pipeline_config.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "998b6fb9fb9e46372829924465fc47654ec638051890425a83d5941587ce9549",
+  "crop_box": [
+   360,
+   68,
+   1260,
+   437
+  ],
+  "crop_size": [
+   900,
+   369
+  ],
+  "full": "lab3_sib_pipeline_config.png",
+  "crop": "lab3_sib_pipeline_config_crop.png"
+ },
+ {
+  "key": "build1_graph",
+  "src": "host-captures/06-build1_graph.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "8d5811fe003aceaa6da1d0a57fa076d92c39ffe18308016f434f23f4cabc346a",
+  "crop_box": [
+   26,
+   68,
+   1340,
+   245
+  ],
+  "crop_size": [
+   1314,
+   177
+  ],
+  "full": "lab3_sib_build1_graph.png",
+  "crop": "lab3_sib_build1_graph_crop.png"
+ },
+ {
+  "key": "build1_connect",
+  "src": "host-captures/07-build1_connect.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "7d08c8a997d7e34de79aa4f729fee0c97738d05ca411779597579e453eb73375",
+  "crop_box": [
+   350,
+   70,
+   1340,
+   392
+  ],
+  "crop_size": [
+   990,
+   322
+  ],
+  "full": "lab3_sib_build1_connect.png",
+  "crop": "lab3_sib_build1_connect_crop.png"
+ },
+ {
+  "key": "build1_connect_ssh",
+  "src": "host-captures/07-build1_connect-ssh.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "e976d5670ba3ae1f5f026bfc8b1cd335f3c5605e37a0c72ce210ee71241e6b13",
+  "crop_box": [
+   350,
+   318,
+   1340,
+   472
+  ],
+  "crop_size": [
+   990,
+   154
+  ],
+  "full": "lab3_sib_build1_connect_ssh.png",
+  "crop": "lab3_sib_build1_connect_ssh_crop.png"
+ },
+ {
+  "key": "build_parameters",
+  "src": "host-captures/08-build_parameters.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "77e20f639b9d76ff44c7cfbc57f4494c03e6f02915c5d0d6c2e069e58f9b764a",
+  "crop_box": [
+   355,
+   100,
+   1265,
+   425
+  ],
+  "crop_size": [
+   910,
+   325
+  ],
+  "full": "lab3_sib_build_parameters.png",
+  "crop": "lab3_sib_build_parameters_crop.png"
+ },
+ {
+  "key": "build2_clone",
+  "src": "host-captures/16-build2_clone.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "484dc68bad491e546e735a58521e4973ebb65d93462e28b4ab6b67053f67d65d",
+  "crop_box": [
+   350,
+   135,
+   1340,
+   480
+  ],
+  "crop_size": [
+   990,
+   345
+  ],
+  "full": "lab3_sib_build2_clone.png",
+  "crop": "lab3_sib_build2_clone_crop.png"
+ },
+ {
+  "key": "build2_build",
+  "src": "host-captures/17-build2_build.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "71aba905ca0d73a338e7df3e247e6224c72cf2b2c241b98dd989f642ed6f0bba",
+  "crop_box": [
+   350,
+   72,
+   1340,
+   492
+  ],
+  "crop_size": [
+   990,
+   420
+  ],
+  "full": "lab3_sib_build2_build.png",
+  "crop": "lab3_sib_build2_build_crop.png"
+ },
+ {
+  "key": "build2_test",
+  "src": "host-captures/18-build2_test.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "7989eef2ec9b9bff97860437937e3e6731495b3a1d9660ac22a4de915f6a3dde",
+  "crop_box": [
+   350,
+   82,
+   1340,
+   375
+  ],
+  "crop_size": [
+   990,
+   293
+  ],
+  "full": "lab3_sib_build2_test.png",
+  "crop": "lab3_sib_build2_test_crop.png"
+ },
+ {
+  "key": "build2_push",
+  "src": "host-captures/19-build2_push.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "8d04dbd201bbe9089b9ce524f7a7f6ba20de8e6739eaf7530b76a39e6473ac5e",
+  "crop_box": [
+   350,
+   72,
+   1340,
+   492
+  ],
+  "crop_size": [
+   990,
+   420
+  ],
+  "full": "lab3_sib_build2_push.png",
+  "crop": "lab3_sib_build2_push_crop.png"
+ },
+ {
+  "key": "build2_clean",
+  "src": "host-captures/09-build2_clean_pull.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "c670da6a05d73c813d5621c211d442a7f70d7b372d06259e3199f2b542b518a1",
+  "crop_box": [
+   350,
+   82,
+   1340,
+   380
+  ],
+  "crop_size": [
+   990,
+   298
+  ],
+  "full": "lab3_sib_build2_clean.png",
+  "crop": "lab3_sib_build2_clean_crop.png"
+ },
+ {
+  "key": "build2_pull",
+  "src": "host-captures/09-build2_pull.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "e74a382e78adce70efc59b941f8fdce5af4fec198816ee704893eab969b4ad31",
+  "crop_box": [
+   350,
+   82,
+   1340,
+   425
+  ],
+  "crop_size": [
+   990,
+   343
+  ],
+  "full": "lab3_sib_build2_pull.png",
+  "crop": "lab3_sib_build2_pull_crop.png"
+ },
+ {
+  "key": "build2_deploy",
+  "src": "host-captures/10-build2_deploy.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "624c42ef3d60b4f430492b7cd042095e190df3343214731d9b417bd13dfae9f7",
+  "crop_box": [
+   350,
+   82,
+   1340,
+   456
+  ],
+  "crop_size": [
+   990,
+   374
+  ],
+  "full": "lab3_sib_build2_deploy.png",
+  "crop": "lab3_sib_build2_deploy_crop.png"
+ },
+ {
+  "key": "app_v110",
+  "src": "host-captures/11-app_v110.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "9bd04f940958d170df18639de98540a45168958104c74dd0286c2c62604af680",
+  "crop_box": [
+   60,
+   0,
+   1300,
+   375
+  ],
+  "crop_size": [
+   1240,
+   375
+  ],
+  "full": "lab3_sib_app_v110.png",
+  "crop": "lab3_sib_app_v110_crop.png"
+ },
+ {
+  "key": "app_deployment",
+  "src": "host-captures/11-app_deployment.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "5503eceab3141ee4412b3427487ba3ea50f5ba84e25d0e6ccfbd12b9a32f3809",
+  "crop_box": [
+   600,
+   68,
+   1300,
+   468
+  ],
+  "crop_size": [
+   700,
+   400
+  ],
+  "full": "lab3_sib_app_deployment.png",
+  "crop": "lab3_sib_app_deployment_crop.png"
+ },
+ {
+  "key": "hub_tags",
+  "src": "host-captures/12-hub_tags-context.png",
+  "src_format": "JPEG",
+  "src_size": [
+   2740,
+   995
+  ],
+  "sha256_src": "72b33a7f314a465d57016c92a9fe508b1b46a026bf916571234b6bc24f300dcc",
+  "crop_box": [
+   438,
+   20,
+   1370,
+   884
+  ],
+  "crop_size": [
+   932,
+   864
+  ],
+  "full": "lab3_sib_hub_tags.png",
+  "crop": "lab3_sib_hub_tags_crop.png"
+ },
+ {
+  "key": "build3",
+  "src": "host-captures/13-build3.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "258ba7741c520d4c8af3cfeb716c3b5fac1e592e2a8c3d4e3e84693e51ea9e01",
+  "crop_box": [
+   26,
+   68,
+   1340,
+   462
+  ],
+  "crop_size": [
+   1314,
+   394
+  ],
+  "full": "lab3_sib_build3.png",
+  "crop": "lab3_sib_build3_crop.png"
+ },
+ {
+  "key": "build4",
+  "src": "host-captures/14-build4.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "583f658a980c34a6e18940da0648179b810b2ccb54f6a9ac2c6810220ef0deb2",
+  "crop_box": [
+   350,
+   158,
+   1340,
+   400
+  ],
+  "crop_size": [
+   990,
+   242
+  ],
+  "full": "lab3_sib_build4.png",
+  "crop": "lab3_sib_build4_crop.png"
+ },
+ {
+  "key": "build5",
+  "src": "host-captures/15-build5.png",
+  "src_format": "JPEG",
+  "src_size": [
+   1370,
+   497
+  ],
+  "sha256_src": "96f317d2a2833339c04d8078b5767edfc307f84bbb510e08a8a6bd7301afa642",
+  "crop_box": [
+   350,
+   110,
+   1340,
+   400
+  ],
+  "crop_size": [
+   990,
+   290
+  ],
+  "full": "lab3_sib_build5.png",
+  "crop": "lab3_sib_build5_crop.png"
+ }
+]

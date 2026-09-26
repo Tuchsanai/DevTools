@@ -1,0 +1,200 @@
+{
+  "written_at": "2026-09-26T14:16:29+00:00",
+  "owner": "yolo3 (LAB003 sibling/password run)",
+  "run_hash": "c23096",
+  "containers": {
+    "devtools": "devtools-lab003-c23096",
+    "jenkins": "jenkins-lab003-c23096"
+  },
+  "network": "cicd-net-lab003-c23096",
+  "jenkins_home_volume": "jenkins-lab003-c23096-home",
+  "host_loopback_ports": {
+    "jenkins": "127.0.0.1:18080->8080",
+    "devtools_ssh": "127.0.0.1:2223->22",
+    "app": "127.0.0.1:13000->3000 (devtools) -> catfood-web:3000"
+  },
+  "container_ips_on_run_network": {
+    "jenkins": "172.22.0.3",
+    "devtools": "172.22.0.2"
+  },
+  "urls": {
+    "jenkins": "http://localhost:18080/",
+    "jenkins_via_container_ip": "http://172.22.0.3:8080/",
+    "app": "http://localhost:13000/",
+    "app_health": "http://localhost:13000/api/health",
+    "dockerhub_tags": "https://hub.docker.com/r/<DOCKER_USER>/catfood-shop/tags?name=lab3-sibling-20260926r2"
+  },
+  "jenkins_login": {
+    "username": "admin",
+    "password_file": "work/lab003-sibling-password/private/browser-auth.json (mode 600, git-ignored, shredded at cleanup)"
+  },
+  "jenkins_url_setting": "http://localhost:18080/",
+  "job": "docker-build-push",
+  "tag_prefix": "lab3-sibling-20260926r2",
+  "builds": [
+    {
+      "build": 1,
+      "result": "SUCCESS",
+      "stages": [
+        "Connect success 1226",
+        "Clone success 3843",
+        "Build success 33274",
+        "Test success 3821",
+        "Push success 20055",
+        "Clean success 1098",
+        "Pull success 4258",
+        "Deploy success 3333",
+        "Post Actions success 112"
+      ],
+      "tag": "lab3-sibling-20260926r2-1",
+      "digest": "sha256:ea2559a940026b2eb8feb704f941c7b1980364e02429ac8145e1393d2a2665c8"
+    },
+    {
+      "build": 2,
+      "result": "SUCCESS",
+      "stages": [
+        "Connect success 1104",
+        "Clone success 4683",
+        "Build success 1942",
+        "Test success 3295",
+        "Push success 10680",
+        "Clean success 1050",
+        "Pull success 3058",
+        "Deploy success 3058",
+        "Post Actions success 103"
+      ],
+      "tag": "lab3-sibling-20260926r2-2",
+      "digest": "sha256:2b717397cbd2b05d53cc67dd5f85c90035a045b4bbcd491c399a46e844e815d4"
+    },
+    {
+      "build": 3,
+      "result": "FAILURE",
+      "stages": [
+        "Connect failure 309",
+        "Clone skipped 77",
+        "Build skipped 52",
+        "Test skipped 61",
+        "Push skipped 51",
+        "Clean skipped 51",
+        "Pull skipped 52",
+        "Deploy skipped 50",
+        "Post Actions success 580"
+      ]
+    },
+    {
+      "build": 4,
+      "result": "FAILURE",
+      "stages": [
+        "Connect success 1058",
+        "Clone failure 1486",
+        "Build skipped 55",
+        "Test skipped 52",
+        "Push skipped 51",
+        "Clean skipped 51",
+        "Pull skipped 51",
+        "Deploy skipped 52",
+        "Post Actions success 569"
+      ]
+    },
+    {
+      "build": 5,
+      "result": "FAILURE",
+      "stages": [
+        "Connect failure 3560",
+        "Clone skipped 54",
+        "Build skipped 61",
+        "Test skipped 52",
+        "Push skipped 53",
+        "Clean skipped 54",
+        "Pull skipped 53",
+        "Deploy skipped 52",
+        "Post Actions success 4741"
+      ]
+    }
+  ],
+  "app_now": "{\"status\":\"ok\",\"app\":\"catfood-shop\",\"version\":\"1.1.0\",\"build\":\"2\",\"commit\":\"8b38dc93bc07\",\"builtAt\":\"2026-09-26T14:12:15Z\",\"host\":\"2d7c4b120c21\"}",
+  "shots": [
+    {
+      "save_as": "host-captures/01-unlock.png",
+      "url": "(already captured: host-captures/01-unlock.png)",
+      "capture": "Unlock Jenkins page (already done)"
+    },
+    {
+      "save_as": "host-captures/02-dashboard.png",
+      "url": "http://localhost:18080/",
+      "capture": "Dashboard after login: job docker-build-push with its last success/failure columns"
+    },
+    {
+      "save_as": "host-captures/03-ssh_credential.png",
+      "url": "http://localhost:18080/manage/credentials/store/system/domain/_/credential/devtools-ssh/update",
+      "capture": "Update form of devtools-ssh: Kind Username with password, Username root, 'Treat username as secret' unchecked, Password concealed, ID, Description. Clip to the form. Do NOT press Save"
+    },
+    {
+      "save_as": "host-captures/04-credentials.png",
+      "url": "http://localhost:18080/manage/credentials/store/system/domain/_/",
+      "capture": "Global credentials table with the two rows devtools-ssh and dockerhub"
+    },
+    {
+      "save_as": "host-captures/05-pipeline_config.png",
+      "url": "http://localhost:18080/job/docker-build-push/configure",
+      "capture": "Scroll to the Pipeline section: Definition = Pipeline script, the first ~20 script lines (header comments + onDevtools with sshpass), Use Groovy Sandbox. Do NOT press Save"
+    },
+    {
+      "save_as": "host-captures/06-build1_graph.png",
+      "url": "http://localhost:18080/job/docker-build-push/1/pipeline-overview/",
+      "capture": "Stage graph of build #1: 8 green stages Connect..Deploy"
+    },
+    {
+      "save_as": "host-captures/07-build1_connect.png",
+      "url": "http://localhost:18080/job/docker-build-push/1/pipeline-overview/",
+      "capture": "Select stage Connect and expand its steps: lines 'jenkins: ... docker CLI = none docker.sock = none sshpass = /usr/bin/sshpass', '+ sshpass -e ssh -o StrictHostKeyChecking=yes ... root@devtools bash -s', 'devtools: ... user=root'"
+    },
+    {
+      "save_as": "host-captures/08-build_parameters.png",
+      "url": "http://localhost:18080/job/docker-build-push/build?delay=0sec",
+      "capture": "Type 1.1.0 into APP_VERSION (other fields default). Capture the form. Do NOT click Build — a new build would replace the running shop"
+    },
+    {
+      "save_as": "host-captures/09-build2_clean_pull.png",
+      "url": "http://localhost:18080/job/docker-build-push/2/pipeline-overview/",
+      "capture": "Stage Clean log with 'ลบแอปเดิม catfood-web (...)' and Untagged/Deleted lines; stage Pull log with Digest: sha256:... (two clips or one tall clip)"
+    },
+    {
+      "save_as": "host-captures/10-build2_deploy.png",
+      "url": "http://localhost:18080/job/docker-build-push/2/pipeline-overview/",
+      "capture": "Stage Deploy log: 'image: docker.io/.../catfood-shop@sha256:...', health JSON with version 1.1.0 build 2, 'เว็บตอบ version 1.1.0 build #2 ...'"
+    },
+    {
+      "save_as": "host-captures/11-app_v110.png",
+      "url": "http://localhost:13000/",
+      "capture": "Shop home page; the top bar chip must read v1.1.0 · build #2"
+    },
+    {
+      "save_as": "host-captures/12-hub_tags.png",
+      "url": "https://hub.docker.com/r/<DOCKER_USER>/catfood-shop/tags?name=lab3-sibling-20260926r2",
+      "capture": "Docker Hub Tags page filtered to the run prefix: tags ...r2-1 and ...r2-2 with their digests. Account name may be visible; that is the public repo"
+    },
+    {
+      "save_as": "host-captures/13-build3.png",
+      "url": "http://localhost:18080/job/docker-build-push/3/pipeline-overview/",
+      "capture": "Graph: Connect red, rest skipped; plus the error 'APP_VERSION ไม่ถูกต้อง: ต้องเป็นรูปแบบ X.Y.Z'"
+    },
+    {
+      "save_as": "host-captures/14-build4.png",
+      "url": "http://localhost:18080/job/docker-build-push/4/pipeline-overview/",
+      "capture": "Graph: Connect green, Clone red; Clone log 'fatal: Remote branch no-such-branch not found'"
+    },
+    {
+      "save_as": "host-captures/15-build5.png",
+      "url": "http://localhost:18080/job/docker-build-push/5/pipeline-overview/",
+      "capture": "Graph: Connect red; Connect log 'Permission denied, please try again.' and 'script returned exit code 5'"
+    }
+  ],
+  "rules": [
+    "Real host browser only; clip each capture to the readable region (about 900-1400 px wide) and save it under the given save_as name (PNG or JPEG data both fine).",
+    "Do NOT click Build / Build Now / Save / Delete, do not edit credentials, and do not restart or remove the containers: the running shop must stay build #2.",
+    "01-unlock.png already exists (captured from run 1 of this same topology before its wizard); keep it.",
+    "Log in as admin with the password from browser-auth.json; do not show that password or the Docker Hub token in any capture.",
+    "When done, create work/lab003-sibling-password/CAPTURE_DONE (empty is fine); yolo3 then integrates the images, rebuilds and verifies the README, and removes all run resources."
+  ]
+}

@@ -613,17 +613,4 @@ local     jenkins_home
 
 ---
 
-## กู้สถานะเมื่อปิดเครื่องหรือเริ่มระบบใหม่
-
-พิมพ์บน**เครื่องของเรา** (นอก devtools) :
-
-```bash
-docker start devtools
-docker exec devtools docker ps
-```
-
-✅ **สิ่งที่ต้องเห็น:** แถวของ `jenkins` อยู่ในสถานะ `Up` โดยไม่ต้องทำ Setup Wizard ซ้ำ — รอบทดสอบจริง `docker stop` + `docker start devtools` ได้ Docker ข้างในกลับมาใน 1 วินาที และหน้า login ของ Jenkins ตอบ `200` ใน 7 วินาที (ถ้า `docker ps` ยังว่าง รออีกไม่กี่วินาทีแล้วสั่งใหม่) · ระวัง : `Up` ยังไม่ใช่ "พร้อม" — บางรอบ Jenkins ใช้เวลาโหลดนานถึง ~4 นาที ระหว่างนั้นหน้าเว็บขึ้น **Starting Jenkins** ให้รอจน `curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/login` (ใน devtools) ได้ `200`
-
-เหตุผล: `--restart unless-stopped` สั่งให้ Jenkins กลับมาเอง, `--tmpfs /run` ป้องกัน PID เก่าของ Docker daemon ค้าง และ image กับ volume `jenkins_home` ยังอยู่ข้างใน `devtools` ครบ ตราบใดที่**ไม่ลบ** `devtools` · ห้าม `docker rm devtools` หลังเริ่มแล็บแล้ว — ถ้าลบ Jenkins ข้างในจะหายไปด้วย ต้องเริ่ม LAB 1 ใหม่ตั้งแต่ส่วนที่ 0
-
 ➡️ **แล็บถัดไป:** [LAB 2 — เขียน Declarative Pipeline แรก](../002_LAB_Declarative_Pipeline/README.md)

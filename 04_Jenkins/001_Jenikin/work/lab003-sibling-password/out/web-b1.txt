@@ -1,0 +1,1 @@
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"8b38dc93bc07","builtAt":"2026-09-26T14:10:51Z","host":"f36700805439"}catfood-web  Up 6 seconds (healthy)  ea2559a94002

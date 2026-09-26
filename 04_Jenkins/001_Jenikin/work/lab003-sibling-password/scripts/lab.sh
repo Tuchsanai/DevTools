@@ -34,7 +34,7 @@ jobxml() { # parameter definitions mirror the Jenkinsfile so buildWithParameters
 }
 sshcred() { # XML for devtools-ssh; password from env SSHCRED_PASS inside the container
   docker exec -i -e JPASS -e SSHCRED_PASS "$JC" bash -c 'c=$1; shift
-    printf "<com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl><scope>GLOBAL</scope><id>devtools-ssh</id><description>SSH password: Jenkins to devtools</description><username>root</username><password>%s</password></com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>" "$SSHCRED_PASS" |
+    printf "<com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl><scope>GLOBAL</scope><id>devtools-ssh</id><description>SSH password: Jenkins to devtools</description><username>root</username><usernameSecret>false</usernameSecret><password>%s</password></com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>" "$SSHCRED_PASS" |
     curl -sS -K <(printf "user = \"admin:%s\"\n" "$JPASS") -c /tmp/h.jar -b /tmp/h.jar -o /dev/null -w "%{http_code}\n" -H "$c" -H "Content-Type: application/xml" -X POST --data-binary @- "$@"' _ "$(crumb)" "$@"
 }
 
@@ -55,7 +55,7 @@ VOL=jenkins-lab003-$H-home
 P_SSH=$(free 2223)
 P_JENKINS=$(free 18080)
 P_APP=$(free 13000)
-TAG_PREFIX=lab3-sibling-20260926
+TAG_PREFIX=${TAG_PREFIX:-lab3-sibling-20260926}
 EOF
   . "$STATE"; cat "$STATE"
   [ -z "$(docker ps -aq --filter "name=^($DC|$JC)\$")" ] || { echo "name clash" >&2; exit 1; }
@@ -114,7 +114,7 @@ creds)
   SSHCRED_PASS=passwd sshcred "$J/credentials/store/system/domain/_/createCredentials"
   c=$(crumb)
   docker exec -i -e JPASS -e DOCKER_USER -e DOCKER_TOKEN "$JC" bash -c '
-    printf "<com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl><scope>GLOBAL</scope><id>dockerhub</id><description>Docker Hub access token</description><username>%s</username><password>%s</password></com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>" "$DOCKER_USER" "$DOCKER_TOKEN" |
+    printf "<com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl><scope>GLOBAL</scope><id>dockerhub</id><description>Docker Hub access token</description><username>%s</username><usernameSecret>false</usernameSecret><password>%s</password></com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>" "$DOCKER_USER" "$DOCKER_TOKEN" |
     curl -sS -K <(printf "user = \"admin:%s\"\n" "$JPASS") -c /tmp/h.jar -b /tmp/h.jar -o /dev/null -w "%{http_code}\n" -H "$1" -H "Content-Type: application/xml" -X POST --data-binary @- '"$J"'/credentials/store/system/domain/_/createCredentials' _ "$c"
   ;;
 sshpw) # sshpw right|wrong — update devtools-ssh (wrong = random value, never stored)
@@ -157,6 +157,7 @@ cleanup)
   for f in "$P/jpass" "$P/browser-auth.json"; do [ -f "$f" ] && shred -u "$f"; done
   rm -rf "$W/run"
   echo "left over:"; docker ps -a --filter "name=lab003-$H" --format '{{.Names}}'; docker network ls -q --filter "name=$NET"; docker volume ls -q --filter "name=$VOL"
+  python3 -c 'import json,sys; print(json.dumps(dict(l.split("=",1) for l in open(sys.argv[1]).read().split() if "=" in l), indent=2))' "$STATE" > "$W/run-state.json"
   mv "$STATE" "$W/state.$H.done.env"
   ;;
 *) echo "usage: $0 up|wizard|hostblocks|creds|sshpw|job|build|web|cleanup" >&2; exit 2 ;;

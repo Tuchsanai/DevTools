@@ -1,0 +1,107 @@
+[
+ [
+  "unlock",
+  "หน้า Unlock Jenkins",
+  "หน้า Unlock Jenkins ของการติดตั้งครั้งแรก",
+  "(already captured: host-captures/01-unlock.png)",
+  "Unlock Jenkins page (already done)"
+ ],
+ [
+  "dashboard",
+  "Dashboard หลัง login",
+  "Dashboard หลัง login มี job `docker-build-push`",
+  "/",
+  "Dashboard after login: job docker-build-push with its last success/failure columns"
+ ],
+ [
+  "ssh_credential",
+  "credential devtools-ssh",
+  "credential `devtools-ssh` ชนิด **Username with password** Username `root` ไม่ติ๊ก Treat username as secret และรหัสผ่านถูกซ่อน",
+  "/manage/credentials/store/system/domain/_/credential/devtools-ssh/update",
+  "Update form of devtools-ssh: Kind Username with password, Username root, 'Treat username as secret' unchecked, Password concealed, ID, Description. Clip to the form. Do NOT press Save"
+ ],
+ [
+  "credentials",
+  "รายการ credential สองตัว",
+  "Global credentials มี `devtools-ssh` และ `dockerhub`",
+  "/manage/credentials/store/system/domain/_/",
+  "Global credentials table with the two rows devtools-ssh and dockerhub"
+ ],
+ [
+  "pipeline_config",
+  "ช่อง Pipeline script",
+  "หน้า Configure ของ job: Definition เป็น **Pipeline script** และมี Jenkinsfile ของแล็บนี้",
+  "/job/docker-build-push/configure",
+  "Scroll to the Pipeline section: Definition = Pipeline script, the first ~20 script lines (header comments + onDevtools with sshpass), Use Groovy Sandbox. Do NOT press Save"
+ ],
+ [
+  "build1_graph",
+  "build #1 ครบ 8 stage",
+  "build #1 เขียวครบ 8 stage",
+  "/job/docker-build-push/1/pipeline-overview/",
+  "Stage graph of build #1: 8 green stages Connect..Deploy"
+ ],
+ [
+  "build1_connect",
+  "log ของ Connect ใน build #1",
+  "log ของ stage Connect ใน build #1: Jenkins ไม่มี docker และ SSH ด้วย `sshpass -e`",
+  "/job/docker-build-push/1/pipeline-overview/",
+  "Select stage Connect and expand its steps: lines 'jenkins: ... docker CLI = none docker.sock = none sshpass = /usr/bin/sshpass', '+ sshpass -e ssh -o StrictHostKeyChecking=yes ... root@devtools bash -s', 'devtools: ... user=root'"
+ ],
+ [
+  "build_parameters",
+  "ฟอร์ม Build with Parameters",
+  "ฟอร์ม Build with Parameters ที่ Jenkins สร้างจากบล็อก `parameters` หลัง build แรก กรอก `APP_VERSION` = `1.1.0` (ภาพนี้เปิดฟอร์มดูเท่านั้น ไม่ได้กด Build)",
+  "/job/docker-build-push/build?delay=0sec",
+  "Type 1.1.0 into APP_VERSION (other fields default). Capture the form. Do NOT click Build — a new build would replace the running shop"
+ ],
+ [
+  "build2_clean_pull",
+  "Clean และ Pull ของ build #2",
+  "stage Clean ของ build #2 ลบร้านเดิม แล้ว Pull ดึงตาม digest",
+  "/job/docker-build-push/2/pipeline-overview/",
+  "Stage Clean log with 'ลบแอปเดิม catfood-web (...)' and Untagged/Deleted lines; stage Pull log with Digest: sha256:... (two clips or one tall clip)"
+ ],
+ [
+  "build2_deploy",
+  "Deploy ของ build #2",
+  "stage Deploy ของ build #2 รันจาก `<repo>@sha256:...` และเว็บตอบเวอร์ชันถูกต้อง",
+  "/job/docker-build-push/2/pipeline-overview/",
+  "Stage Deploy log: 'image: docker.io/.../catfood-shop@sha256:...', health JSON with version 1.1.0 build 2, 'เว็บตอบ version 1.1.0 build #2 ...'"
+ ],
+ [
+  "app_v110",
+  "หน้าร้าน v1.1.0 build #2",
+  "หน้าร้านหลัง build #2 chip บนแถบด้านบนแสดง `v1.1.0 · build #2`",
+  "APP",
+  "Shop home page; the top bar chip must read v1.1.0 · build #2"
+ ],
+ [
+  "hub_tags",
+  "หน้า Tags บน Docker Hub",
+  "หน้า Tags ของ `catfood-shop` บน Docker Hub มี tag ของ build #1 และ #2 พร้อม digest",
+  "HUB",
+  "Docker Hub Tags page filtered to the run prefix: tags ...r2-1 and ...r2-2 with their digests. Account name may be visible; that is the public repo"
+ ],
+ [
+  "build3",
+  "build #3 ล้มที่ Connect",
+  "build #3 (`APP_VERSION=1.2.0; id`) Connect แดง stage ถัดไปถูกข้าม — ผลที่ตั้งใจให้เกิด",
+  "/job/docker-build-push/3/pipeline-overview/",
+  "Graph: Connect red, rest skipped; plus the error 'APP_VERSION ไม่ถูกต้อง: ต้องเป็นรูปแบบ X.Y.Z'"
+ ],
+ [
+  "build4",
+  "build #4 ล้มที่ Clone",
+  "build #4 (`GIT_REF=no-such-branch`) ผ่าน Connect แต่ Clone แดง — ผลที่ตั้งใจให้เกิด",
+  "/job/docker-build-push/4/pipeline-overview/",
+  "Graph: Connect green, Clone red; Clone log 'fatal: Remote branch no-such-branch not found'"
+ ],
+ [
+  "build5",
+  "build #5 ล้มที่ Connect เพราะรหัสผ่านผิด",
+  "build #5 (รหัสผ่าน SSH ผิด) Connect แดงด้วย `Permission denied` — ผลที่ตั้งใจให้เกิด",
+  "/job/docker-build-push/5/pipeline-overview/",
+  "Graph: Connect red; Connect log 'Permission denied, please try again.' and 'script returned exit code 5'"
+ ]
+]

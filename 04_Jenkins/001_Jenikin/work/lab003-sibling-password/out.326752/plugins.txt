@@ -1,0 +1,2 @@
+installed: cloudbees-folder antisamy-markup-formatter build-timeout credentials-binding timestamper ws-cleanup workflow-aggregator pipeline-graph-view git matrix-auth mailer
+failed: []
