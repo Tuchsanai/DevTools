@@ -145,8 +145,6 @@ Docker version 29.8.1, build 4a63305
 Docker Compose version v5.5.1
 ```
 
-> ถ้าขึ้น `Cannot connect to the Docker daemon` หรือ port 8080 ถูกจอง ดู [แก้ปัญหาที่พบบ่อย](#แก้ปัญหาที่พบบ่อย)
-
 ---
 
 ## 1. Clone โค้ดแล็บ
@@ -627,22 +625,5 @@ docker exec devtools docker ps
 ✅ **สิ่งที่ต้องเห็น:** แถวของ `jenkins` อยู่ในสถานะ `Up` โดยไม่ต้องทำ Setup Wizard ซ้ำ — รอบทดสอบจริง `docker stop` + `docker start devtools` ได้ Docker ข้างในกลับมาใน 1 วินาที และหน้า login ของ Jenkins ตอบ `200` ใน 7 วินาที (ถ้า `docker ps` ยังว่าง รออีกไม่กี่วินาทีแล้วสั่งใหม่) · ระวัง : `Up` ยังไม่ใช่ "พร้อม" — บางรอบ Jenkins ใช้เวลาโหลดนานถึง ~4 นาที ระหว่างนั้นหน้าเว็บขึ้น **Starting Jenkins** ให้รอจน `curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/login` (ใน devtools) ได้ `200`
 
 เหตุผล: `--restart unless-stopped` สั่งให้ Jenkins กลับมาเอง, `--tmpfs /run` ป้องกัน PID เก่าของ Docker daemon ค้าง และ image กับ volume `jenkins_home` ยังอยู่ข้างใน `devtools` ครบ ตราบใดที่**ไม่ลบ** `devtools` · ห้าม `docker rm devtools` หลังเริ่มแล็บแล้ว — ถ้าลบ Jenkins ข้างในจะหายไปด้วย ต้องเริ่ม LAB 1 ใหม่ตั้งแต่ส่วนที่ 0
-
-## แก้ปัญหาที่พบบ่อย
-
-| อาการ | สาเหตุ | วิธีแก้ |
-|---|---|---|
-| `Bind for 0.0.0.0:8080 failed: port is already allocated` | port 8080 ของเครื่องเราถูกโปรแกรมอื่นจองอยู่ | บนเครื่องเรา `docker ps` แล้วดูคอลัมน์ PORTS หยุดเฉพาะ container ที่ตนเป็นเจ้าของ (หรือปิดโปรแกรมที่ใช้ 8080) แล้วรันคำสั่งของส่วนที่ 0 ใหม่ |
-| `Conflict. The container name "/devtools" is already in use` | ข้าม `docker rm -f devtools` ในส่วนที่ 0 | ถ้าเพิ่งเริ่ม LAB 1 ให้ `docker rm -f devtools` แล้วรันใหม่ · ถ้าทำแล็บไปแล้ว **อย่าลบ** ใช้ `docker start devtools` แทน |
-| `network with name cicd-net already exists` | สร้าง network ไว้แล้วจากรอบก่อน | ข้ามบรรทัดนั้นแล้วทำต่อได้เลย |
-| เปิด `localhost:8080` แล้ว connection refused | Jenkins ยังเริ่มระบบไม่เสร็จ | รอจน `docker logs jenkins` แสดง `Jenkins is fully up and running` |
-| Wizard ช้าหรือ plugin ขึ้น Retry | เครือข่ายช้าหรือ update center ขัดข้อง | รอ 2–3 นาทีแล้วกด **Retry** ห้ามลบ volume `jenkins_home` |
-| Console Output ไม่มีผลของคำสั่ง มีแค่ `Finished: SUCCESS` | ช่อง Command ว่าง หรือยังไม่ได้กด Save | เปิด Configure ตรวจช่อง Command กด **Save** แล้ว build ใหม่ |
-| `curl: (3) bad range in URL` | curl ตีความ `[...]` ใน URL | ใส่ตัวเลือก `-g` เช่น `curl -gs ...` |
-| หลังสร้างคอนเทนเนอร์ใหม่แล้วเจอหน้า Unlock อีก | ไม่ได้ผูก `-v jenkins_home:/var/jenkins_home` | ลบคอนเทนเนอร์ `jenkins` แล้วสร้างใหม่ตามการทดลองที่ 1 ให้ครบทุกตัวเลือก |
-| ลืมรหัส initial หลังตั้งผู้ดูแลแล้ว | รหัสชุดนั้นใช้ครั้งเดียว | เข้าสู่ระบบด้วย `admin` / `admin2569` |
-| API ตอบ 401 | รหัสผู้ดูแลไม่ตรง | ใช้ `-u admin:admin2569` |
-| หลัง `docker restart devtools` ขึ้น `Cannot connect to the Docker daemon` และ `/var/log/dockerd.log` มี `delete /var/run/docker.pid` | สร้าง devtools โดยไม่มี `--tmpfs /run` — ไฟล์ `docker.pid` เก่าค้าง | กู้โดยไม่เสียข้อมูล (ทดสอบจริงแล้ว) : บนเครื่องเรา `docker exec devtools bash -c 'rm -f /var/run/docker.pid; (dockerd > /var/log/dockerd.log 2>&1 &)'` รอจน `docker exec devtools docker ps` ตอบ · ต้องทำซ้ำทุกครั้งที่ restart จนกว่าจะสร้าง devtools ใหม่ด้วยคำสั่งของส่วนที่ 0 (การสร้างใหม่ทำให้ Jenkins ข้างในหาย ต้องทำ LAB 1 ใหม่) |
-| หน้าเว็บค้างที่ **Starting Jenkins** หรือ `curl .../login` ได้ `503` หลังเปิด devtools | Jenkins กำลังโหลด — ส่วนใหญ่ไม่กี่วินาที แต่รอบทดสอบจริงหนึ่งรอบใช้ ~4 นาที | รอ อย่าลบหรือ restart ซ้ำ · ตรวจด้วย `docker logs jenkins 2>&1 \| grep "fully up" \| tail -1` ให้เวลาเป็นรอบล่าสุด |
 
 ➡️ **แล็บถัดไป:** [LAB 2 — เขียน Declarative Pipeline แรก](../002_LAB_Declarative_Pipeline/README.md)
