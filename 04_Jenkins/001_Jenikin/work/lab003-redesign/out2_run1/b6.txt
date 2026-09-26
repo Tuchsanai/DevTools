@@ -1,0 +1,160 @@
+Started by user admin
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/docker-build-push
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Preflight)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY or $DOCKER_USER or $DOCKER_TOKEN
+[Pipeline] {
+[Pipeline] sh
++ hostname
++ command -v docker
++ echo none
++ echo jenkins: a5e6aa4c14ed docker CLI = none
+jenkins: a5e6aa4c14ed docker CLI = none
++ ssh -i **** devtools-gw echo "devtools: $(hostname) user=$(whoami)"; docker version --format "Docker {{.Server.Version}}"; git --version
+devtools: 3a246f45c3f6 user=root
+Docker 29.8.1
+git version 2.55.0
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Clone)
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw WORK_DIR=/root/lab3-work/build-6 GIT_URL=https://github.com/Tuchsanai/DevTools.git GIT_REF=main APP_SUBDIR=04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop bash -s
+Cloning into '/root/lab3-work/build-6'...
+cloned to 3a246f45c3f6:/root/lab3-work/build-6
+commit 789e08d582e65e90dcfc5ca4e4612aa413b74ae3
+author date 2026-09-25 20:50:02 +0700
+subject 1
+Dockerfile
+app
+data
+next.config.mjs
+package-lock.json
+package.json
+public
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw SRC=/root/lab3-work/build-6/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop IMAGE=catfood-shop:6 VERSION=1.1.0 BUILD=6 bash -s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 DONE 0.0s
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.52kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:22-alpine
+#2 DONE 1.5s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 84B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+#4 resolve docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 366.47kB done
+#5 DONE 0.0s
+
+#6 [2/6] WORKDIR /app
+#6 CACHED
+
+#7 [4/6] RUN npm ci --no-audit --no-fund && npm cache clean --force
+#7 CACHED
+
+#8 [5/6] COPY . .
+#8 CACHED
+
+#9 [3/6] COPY package.json package-lock.json ./
+#9 CACHED
+
+#10 [6/6] RUN npm run build && rm -rf .next/cache
+#10 CACHED
+
+#11 exporting to image
+#11 exporting layers done
+#11 exporting manifest sha256:84ca4c9bdb7fba638ceec36923406e07f92dfaef5d1805e1ed0316077eeca9f5 0.0s done
+#11 exporting config sha256:d41f92db2f42f598a7b7c6d127b137a1cdc984a2d935ae0911ebfd5635d2f8d6
+#11 exporting config sha256:d41f92db2f42f598a7b7c6d127b137a1cdc984a2d935ae0911ebfd5635d2f8d6 0.0s done
+#11 naming to docker.io/library/catfood-shop:6 done
+#11 unpacking to docker.io/library/catfood-shop:6 0.0s done
+#11 DONE 0.1s
+IMAGE            ID             DISK USAGE   CONTENT SIZE   EXTRA
+catfood-shop:6   84ca4c9bdb7f        693MB          154MB        
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw IMAGE=catfood-shop:6 NAME=catfood-test-6 VERSION=1.1.0 bash -s
+health of catfood-test-6: starting
+health of catfood-test-6: starting
+health of catfood-test-6: healthy
+{"status":"ok","app":"catfood-shop","version":"1.1.0","build":"6","commit":"789e08d582e6","builtAt":"2026-09-26T06:24:06Z","host":"55579fb6c32e"}
+test ผ่าน: image ตอบเวอร์ชัน 1.1.0
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push)
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY or $DOCKER_USER or $DOCKER_TOKEN
+[Pipeline] {
+[Pipeline] sh
++ set +x
+Error response from daemon: Get "http://localhost:5000/v2/": dial tcp [::1]:5000: connect: connection refused
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Pull)
+Stage "Pull" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy)
+Stage "Deploy" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE

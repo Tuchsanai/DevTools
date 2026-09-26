@@ -1,0 +1,235 @@
+// LAB 3 — Jenkins เป็น "ผู้สั่ง" devtools เป็น "ผู้ทำ"
+// jenkins เป็น image มาตรฐาน ไม่มี Docker CLI และไม่ได้ mount docker.sock
+// ทุกงาน (git clone, docker build/run/push/pull) ถูกส่งผ่าน SSH ไปรันบน devtools port 22
+// ปลายทาง devtools-gw เป็น Host alias ใน /var/jenkins_home/.ssh/config (ตั้งในการทดลองที่ 4)
+
+// ตรวจค่าบน Jenkins ก่อนส่งข้าม SSH: ค่าที่ผ่านมีเฉพาะอักขระที่ไม่มีความหมายพิเศษใน shell
+def requireMatch(String name, String value, String regex, String hint) {
+  if (!(value ==~ regex)) {
+    error("${name} ไม่ถูกต้อง: ${hint}")
+  }
+}
+
+pipeline {
+  agent any
+
+  options {
+    disableConcurrentBuilds()   // ทุก build ใช้ container ชื่อ catfood-web และ port 3000 เดียวกัน
+  }
+
+  parameters {
+    string(name: 'GIT_URL', defaultValue: 'https://github.com/Tuchsanai/DevTools.git',
+           description: 'Git repository สาธารณะแบบ https:// ที่มีซอร์สร้าน')
+    string(name: 'GIT_REF', defaultValue: 'main',
+           description: 'branch หรือ tag ที่จะ clone')
+    string(name: 'APP_SUBDIR', defaultValue: '04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop',
+           description: 'โฟลเดอร์ใน repository ที่มี Dockerfile (path แบบ relative)')
+    string(name: 'APP_VERSION', defaultValue: '1.0.0',
+           description: 'เวอร์ชันรูปแบบ X.Y.Z ที่จะฝังเข้า image และแสดงบนหน้าเว็บ')
+  }
+
+  environment {
+    DEVTOOLS    = 'devtools-gw'                          // Host alias → gateway ของ cicd-net = devtools port 22
+    WORK_DIR    = "/root/lab3-work/build-${env.BUILD_NUMBER}"  // ที่ clone ซอร์สบน devtools (แยกตาม build)
+    APP_NAME    = 'catfood-shop'                         // ชื่อ image และ repository บน Docker Hub
+    DEPLOY_NAME = 'catfood-web'                          // container ของร้านบน Docker ของ devtools (port 3000)
+    REGISTRY    = 'localhost:5000'
+    // คัดลอก parameter เป็นตัวแปรของ shell: build แรกที่ Jenkins ยังไม่รู้จัก parameter จะได้ค่า default ด้วย
+    GIT_URL     = "${params.GIT_URL}"
+    GIT_REF     = "${params.GIT_REF}"
+    APP_SUBDIR  = "${params.APP_SUBDIR}"
+    APP_VERSION = "${params.APP_VERSION}"
+  }
+
+  stages {
+    stage('Preflight') {
+      steps {
+        script {
+          requireMatch('GIT_URL', params.GIT_URL,
+                       'https://[A-Za-z0-9.-]+(:[0-9]{1,5})?(/[A-Za-z0-9._~-]+)+/?',
+                       'ต้องเป็น https://host/path ไม่มีช่องว่าง ไม่มี user:password@')
+          requireMatch('GIT_REF', params.GIT_REF,
+                       '(?!-)(?!.*\\.\\.)[A-Za-z0-9._/-]{1,100}',
+                       'ชื่อ branch/tag ใช้ได้เฉพาะ A-Z a-z 0-9 . _ / - และห้ามขึ้นต้นด้วย -')
+          requireMatch('APP_SUBDIR', params.APP_SUBDIR,
+                       '(?!-)(?!.*(^|/)\\.{1,2}(/|$))[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*',
+                       'path แบบ relative ห้ามขึ้นต้นด้วย / หรือ - และห้ามมี . หรือ .. เป็นชื่อโฟลเดอร์')
+          requireMatch('APP_VERSION', params.APP_VERSION,
+                       '[0-9]+\\.[0-9]+\\.[0-9]+',
+                       'ต้องเป็นรูปแบบ X.Y.Z เช่น 1.0.0')
+        }
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY'),
+                         usernamePassword(credentialsId: 'dockerhub',
+                           usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+          sh '''
+            case "$DOCKER_USER" in
+              ''|*[!a-z0-9]*) echo "username ใน credential dockerhub ต้องมีเฉพาะ a-z และ 0-9"; exit 1 ;;
+            esac
+            echo "jenkins: $(hostname) docker CLI = $(command -v docker || echo none)"
+            ssh -i "$SSH_KEY" "$DEVTOOLS" 'echo "devtools: $(hostname) user=$(whoami)"; docker version --format "Docker {{.Server.Version}}"; git --version'
+          '''
+        }
+      }
+    }
+
+    stage('Clone') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY')]) {
+          sh '''
+            ssh -i "$SSH_KEY" "$DEVTOOLS" \
+              "WORK_DIR=$WORK_DIR GIT_URL=$GIT_URL GIT_REF=$GIT_REF APP_SUBDIR=$APP_SUBDIR bash -s" <<'EOF'
+set -euo pipefail
+rm -rf "$WORK_DIR"
+mkdir -p "$(dirname "$WORK_DIR")"
+git clone --depth 1 --filter=blob:none --sparse --branch "$GIT_REF" -- "$GIT_URL" "$WORK_DIR"
+cd "$WORK_DIR"
+git sparse-checkout set "$APP_SUBDIR"
+test -f "$APP_SUBDIR/Dockerfile" || { echo "ไม่พบ $APP_SUBDIR/Dockerfile ใน $GIT_URL ($GIT_REF)"; exit 1; }
+echo "cloned to $(hostname):$WORK_DIR"
+git log -1 --format='commit %H%nauthor date %ci%nsubject %s'
+ls "$APP_SUBDIR"
+EOF
+          '''
+        }
+      }
+    }
+
+    stage('Build') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY')]) {
+          sh '''
+            ssh -i "$SSH_KEY" "$DEVTOOLS" \
+              "SRC=$WORK_DIR/$APP_SUBDIR IMAGE=$APP_NAME:$BUILD_NUMBER VERSION=$APP_VERSION BUILD=$BUILD_NUMBER bash -s" <<'EOF'
+set -euo pipefail
+cd "$SRC"
+COMMIT=$(git rev-parse --short=12 HEAD)
+docker build --provenance=false \
+  --build-arg APP_VERSION="$VERSION" \
+  --build-arg BUILD_NUMBER="$BUILD" \
+  --build-arg GIT_COMMIT="$COMMIT" \
+  --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  -t "$IMAGE" .
+docker image ls "$IMAGE"
+EOF
+          '''
+        }
+      }
+    }
+
+    stage('Test') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY')]) {
+          sh '''
+            ssh -i "$SSH_KEY" "$DEVTOOLS" \
+              "IMAGE=$APP_NAME:$BUILD_NUMBER NAME=catfood-test-$BUILD_NUMBER VERSION=$APP_VERSION bash -s" <<'EOF'
+set -euo pipefail
+docker rm -f "$NAME" >/dev/null 2>&1 || true
+trap 'docker rm -f "$NAME" >/dev/null 2>&1 || true' EXIT
+docker run -d --name "$NAME" "$IMAGE" >/dev/null
+STATUS=starting
+for i in $(seq 1 30); do
+  STATUS=$(docker inspect -f '{{.State.Health.Status}}' "$NAME")
+  echo "health of $NAME: $STATUS"
+  [ "$STATUS" = healthy ] && break
+  sleep 1
+done
+[ "$STATUS" = healthy ]
+HEALTH=$(docker exec "$NAME" wget -qO- http://127.0.0.1:3000/api/health)
+echo "$HEALTH"
+case "$HEALTH" in *"\\"version\\":\\"$VERSION\\""*) echo "test ผ่าน: image ตอบเวอร์ชัน $VERSION" ;; *) exit 1 ;; esac
+EOF
+          '''
+        }
+      }
+    }
+
+    stage('Push') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY'),
+                         usernamePassword(credentialsId: 'dockerhub',
+                           usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+          sh '''set +x
+            # token เดินทางทาง stdin ของ SSH เท่านั้น ไม่อยู่ใน command line และ console
+            printf '%s\\n' "$DOCKER_TOKEN" | ssh -i "$SSH_KEY" "$DEVTOOLS" \
+              "DOCKER_CONFIG=/tmp/jenkins-docker-$BUILD_NUMBER docker login $REGISTRY -u $DOCKER_USER --password-stdin"
+            ssh -i "$SSH_KEY" "$DEVTOOLS" \
+              "IMAGE=$APP_NAME:$BUILD_NUMBER HUB=$REGISTRY/$DOCKER_USER/$APP_NAME BUILD=$BUILD_NUMBER REGISTRY=$REGISTRY bash -s" <<'EOF'
+set -euo pipefail
+export DOCKER_CONFIG=/tmp/jenkins-docker-$BUILD
+trap 'docker logout "$REGISTRY" >/dev/null 2>&1; rm -rf "$DOCKER_CONFIG"' EXIT
+for tag in "$BUILD" latest; do
+  docker tag "$IMAGE" "$HUB:$tag"
+  docker push "$HUB:$tag" | grep -v ': Waiting$'   # ตัดบรรทัดรอคิวออก ให้เห็นผลของแต่ละ layer ชัด
+done
+EOF
+          '''
+        }
+      }
+    }
+
+    stage('Pull') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY'),
+                         usernamePassword(credentialsId: 'dockerhub',
+                           usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+          sh '''set +x
+            # login อีกครั้งแบบเดียวกับ Push: repository แบบ Private ก็ pull ได้
+            printf '%s\\n' "$DOCKER_TOKEN" | ssh -i "$SSH_KEY" "$DEVTOOLS" \
+              "DOCKER_CONFIG=/tmp/jenkins-docker-$BUILD_NUMBER docker login $REGISTRY -u $DOCKER_USER --password-stdin"
+            ssh -i "$SSH_KEY" "$DEVTOOLS" \
+              "IMAGE=$APP_NAME:$BUILD_NUMBER HUB=$REGISTRY/$DOCKER_USER/$APP_NAME BUILD=$BUILD_NUMBER REGISTRY=$REGISTRY bash -s" <<'EOF'
+set -euo pipefail
+export DOCKER_CONFIG=/tmp/jenkins-docker-$BUILD
+trap 'docker logout "$REGISTRY" >/dev/null 2>&1; rm -rf "$DOCKER_CONFIG"' EXIT
+PUSHED=$(docker image inspect -f '{{index .RepoDigests 0}}' "$HUB:$BUILD" | cut -d@ -f2)
+echo "digest ที่ push: $PUSHED"
+docker image rm "$IMAGE" "$HUB:$BUILD" "$HUB:latest"   # ลบ image ในเครื่องทิ้ง เพื่อพิสูจน์ว่าดึงจาก registry จริง
+docker pull "$HUB:$BUILD"
+PULLED=$(docker image inspect -f '{{index .RepoDigests 0}}' "$HUB:$BUILD" | cut -d@ -f2)
+echo "digest ที่ pull: $PULLED"
+[ "$PUSHED" = "$PULLED" ]
+echo "digest ตรงกัน: image ที่ pull คือ image เดียวกับที่ push"
+EOF
+          '''
+        }
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY'),
+                         usernamePassword(credentialsId: 'dockerhub',
+                           usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+          sh '''
+            ssh -i "$SSH_KEY" "$DEVTOOLS" \
+              "HUB=$REGISTRY/$DOCKER_USER/$APP_NAME BUILD=$BUILD_NUMBER VERSION=$APP_VERSION NAME=$DEPLOY_NAME bash -s" <<'EOF'
+set -euo pipefail
+OTHERS=$(docker ps --filter publish=3000 --format '{{.Names}}' | grep -vx "$NAME" || true)
+[ -z "$OTHERS" ] || { echo "port 3000 ถูก container อื่นใช้อยู่: $OTHERS"; exit 1; }
+docker rm -f "$NAME" >/dev/null 2>&1 || true
+docker run -d --name "$NAME" --restart unless-stopped -p 3000:3000 "$HUB:$BUILD"
+STATUS=starting
+for i in $(seq 1 30); do
+  STATUS=$(docker inspect -f '{{.State.Health.Status}}' "$NAME")
+  echo "health of $NAME: $STATUS"
+  [ "$STATUS" = healthy ] && break
+  sleep 1
+done
+[ "$STATUS" = healthy ]
+docker ps --filter "name=^$NAME$" --format '{{.Names}}  {{.Image}}  {{.Status}}  {{.Ports}}'
+docker exec "$NAME" wget -qO- http://127.0.0.1:3000/api/health; echo
+[ "$(docker exec "$NAME" printenv APP_VERSION BUILD_NUMBER | paste -sd' ')" = "$VERSION $BUILD" ]
+echo "เว็บตอบเวอร์ชัน $VERSION build #$BUILD ตรงกับ Pipeline"
+EOF
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "เปิดร้านได้ที่ http://localhost:3000 (catfood-shop v${params.APP_VERSION} build #${env.BUILD_NUMBER})"
+    }
+  }
+}

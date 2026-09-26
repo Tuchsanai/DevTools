@@ -1,0 +1,262 @@
+Started by user admin
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/docker-build-push
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Preflight)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY or $DOCKER_USER or $DOCKER_TOKEN
+[Pipeline] {
+[Pipeline] sh
++ hostname
++ command -v docker
++ echo none
++ echo jenkins: 5f544b549104 docker CLI = none
+jenkins: 5f544b549104 docker CLI = none
++ ssh -i **** devtools-gw echo "devtools: $(hostname) user=$(whoami)"; docker version --format "Docker {{.Server.Version}}"; git --version
+devtools: b8090b4c1758 user=root
+Docker 29.8.1
+git version 2.55.0
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Clone)
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw WORK_DIR=/root/lab3-work/build-1 GIT_URL=https://github.com/Tuchsanai/DevTools.git GIT_REF=main APP_SUBDIR=04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop bash -s
+Cloning into '/root/lab3-work/build-1'...
+cloned to b8090b4c1758:/root/lab3-work/build-1
+commit 789e08d582e65e90dcfc5ca4e4612aa413b74ae3
+author date 2026-09-25 20:50:02 +0700
+subject 1
+Dockerfile
+app
+data
+next.config.mjs
+package-lock.json
+package.json
+public
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw SRC=/root/lab3-work/build-1/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop IMAGE=catfood-shop:1 VERSION=1.0.0 BUILD=1 bash -s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.52kB done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/node:22-alpine
+#2 DONE 2.6s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 84B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+#4 resolve docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402 0.0s done
+#4 ...
+
+#5 [internal] load build context
+#5 transferring context: 366.47kB done
+#5 DONE 0.1s
+
+#4 [1/6] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+#4 sha256:d39db1cf9caa4f49c5a2e67111fbe6e0d5eea8ede550cb82f3dc2b79712688d6 0B / 447B 0.2s
+#4 sha256:d39db1cf9caa4f49c5a2e67111fbe6e0d5eea8ede550cb82f3dc2b79712688d6 447B / 447B 0.3s done
+#4 sha256:e554276b05e6306c5ad33cd85bfa7f0693083e21f6114db5abf60a20fb413039 0B / 1.26MB 0.2s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 0B / 55.59MB 0.2s
+#4 sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5 0B / 3.85MB 0.2s
+#4 sha256:e554276b05e6306c5ad33cd85bfa7f0693083e21f6114db5abf60a20fb413039 1.26MB / 1.26MB 0.7s done
+#4 sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5 3.85MB / 3.85MB 1.0s done
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 6.29MB / 55.59MB 1.1s
+#4 extracting sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5 0.1s done
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 12.58MB / 55.59MB 1.4s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 15.73MB / 55.59MB 1.5s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 19.92MB / 55.59MB 1.7s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 23.07MB / 55.59MB 1.8s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 27.26MB / 55.59MB 2.1s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 33.55MB / 55.59MB 2.4s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 36.70MB / 55.59MB 2.6s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 39.85MB / 55.59MB 2.7s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 44.04MB / 55.59MB 3.0s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 47.19MB / 55.59MB 3.2s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 51.38MB / 55.59MB 3.5s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 54.53MB / 55.59MB 3.6s
+#4 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 55.59MB / 55.59MB 3.7s done
+#4 extracting sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937
+#4 extracting sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 0.9s done
+#4 DONE 4.8s
+
+#4 [1/6] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+#4 extracting sha256:e554276b05e6306c5ad33cd85bfa7f0693083e21f6114db5abf60a20fb413039 0.0s done
+#4 extracting sha256:d39db1cf9caa4f49c5a2e67111fbe6e0d5eea8ede550cb82f3dc2b79712688d6 0.0s done
+#4 DONE 4.9s
+
+#6 [2/6] WORKDIR /app
+#6 DONE 0.3s
+
+#7 [3/6] COPY package.json package-lock.json ./
+#7 DONE 0.1s
+
+#8 [4/6] RUN npm ci --no-audit --no-fund && npm cache clean --force
+#8 10.16 
+#8 10.16 added 24 packages in 10s
+#8 10.16 npm notice
+#8 10.16 npm notice New major version of npm available! 10.9.9 -> 12.1.0
+#8 10.16 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.1.0
+#8 10.16 npm notice To update run: npm install -g npm@12.1.0
+#8 10.16 npm notice
+#8 10.25 npm warn using --force Recommended protections disabled.
+#8 DONE 10.6s
+
+#9 [5/6] COPY . .
+#9 DONE 0.1s
+
+#10 [6/6] RUN npm run build && rm -rf .next/cache
+#10 0.296 
+#10 0.296 > catfood-shop@1.0.0 build
+#10 0.296 > next build
+#10 0.296 
+#10 0.557 ▲ Next.js 16.3.6 (Turbopack)
+#10 0.566 ✓ Running next.config.mjs took 8ms
+#10 0.589 
+#10 0.607   Creating an optimized production build ...
+#10 2.317 ✓ Compiled successfully in 1570ms
+#10 2.319   Running TypeScript ...
+#10 2.321   Finished TypeScript in 2ms ...
+#10 2.324   Collecting page data using 6 workers ...
+#10 2.732   Generating static pages using 6 workers (0/3) ...
+#10 3.104 ✓ Generating static pages using 6 workers (3/3) in 372ms
+#10 3.108   Finalizing page optimization ...
+#10 3.112 
+#10 3.114 Route (app)
+#10 3.114 ┌ ƒ /
+#10 3.114 ├ ○ /_not-found
+#10 3.114 ├ ƒ /api/health
+#10 3.114 └ ○ /icon.svg
+#10 3.114 
+#10 3.114 
+#10 3.114 ○  (Static)   prerendered as static content
+#10 3.114 ƒ  (Dynamic)  server-rendered on demand
+#10 3.114 
+#10 DONE 3.2s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 6.6s done
+#11 exporting manifest sha256:0640688ca30740f57c17a900f4d1614d8bf1e514695017d50a6072b09747ec35 0.0s done
+#11 exporting config sha256:9b17388ae3f2e008910005e9e5895a32d487d5485e75f72cd9285b5c313d732b 0.0s done
+#11 naming to docker.io/library/catfood-shop:1 done
+#11 unpacking to docker.io/library/catfood-shop:1
+#11 unpacking to docker.io/library/catfood-shop:1 1.9s done
+#11 DONE 8.6s
+IMAGE            ID             DISK USAGE   CONTENT SIZE   EXTRA
+catfood-shop:1   0640688ca307        693MB          154MB        
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw IMAGE=catfood-shop:1 NAME=catfood-test-1 VERSION=1.0.0 bash -s
+health of catfood-test-1: starting
+health of catfood-test-1: starting
+health of catfood-test-1: healthy
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"789e08d582e6","builtAt":"2026-09-26T06:12:15Z","host":"458019d9b81c"}
+test ผ่าน: image ตอบเวอร์ชัน 1.0.0
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push)
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY or $DOCKER_USER or $DOCKER_TOKEN
+[Pipeline] {
+[Pipeline] sh
++ set +x
+Login Succeeded
+
+WARNING! Your credentials are stored unencrypted in '/tmp/jenkins-docker-1/config.json'.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/go/credential-store/
+
+The push refers to repository [localhost:5000/****/catfood-shop]
+d39db1cf9caa: Pushed
+e2de96513ba9: Pushed
+e554276b05e6: Pushed
+4d2c89f78070: Pushed
+917899c9743f: Pushed
+605650e5e8fe: Pushed
+7cad024705f3: Pushed
+f7f2d304681a: Pushed
+a57a8ff6d3a9: Pushed
+1: digest: sha256:0640688ca30740f57c17a900f4d1614d8bf1e514695017d50a6072b09747ec35 size: 2006
+The push refers to repository [localhost:5000/****/catfood-shop]
+e2de96513ba9: Layer already exists
+e554276b05e6: Layer already exists
+4d2c89f78070: Layer already exists
+d39db1cf9caa: Layer already exists
+f7f2d304681a: Layer already exists
+917899c9743f: Layer already exists
+a57a8ff6d3a9: Layer already exists
+605650e5e8fe: Layer already exists
+7cad024705f3: Layer already exists
+latest: digest: sha256:0640688ca30740f57c17a900f4d1614d8bf1e514695017d50a6072b09747ec35 size: 2006
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Pull)
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY or $DOCKER_USER or $DOCKER_TOKEN
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw IMAGE=catfood-shop:1 HUB=localhost:5000/****/catfood-shop BUILD=1 bash -s
+digest ที่ push: sha256:0640688ca30740f57c17a900f4d1614d8bf1e514695017d50a6072b09747ec35
+Untagged: catfood-shop:1
+Untagged: localhost:5000/****/catfood-shop:1
+Untagged: localhost:5000/****/catfood-shop:latest
+Deleted: sha256:0640688ca30740f57c17a900f4d1614d8bf1e514695017d50a6072b09747ec35
+Error response from daemon: failed to resolve reference "localhost:5000/****/catfood-shop:1": pull access denied, repository does not exist or may require authorization: authorization failed: no basic auth credentials
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy)
+Stage "Deploy" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE

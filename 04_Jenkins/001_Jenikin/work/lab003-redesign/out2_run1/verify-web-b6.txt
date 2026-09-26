@@ -1,0 +1,5 @@
+catfood-web  localhost:5000/labuser/catfood-shop:2  Up About a minute (healthy)  0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+{"status":"ok","app":"catfood-shop","version":"1.1.0","build":"2","commit":"789e08d582e6","builtAt":"2026-09-26T06:23:04Z","host":"6c48ea3a7426"}
+build-1
+build-2
+build-6

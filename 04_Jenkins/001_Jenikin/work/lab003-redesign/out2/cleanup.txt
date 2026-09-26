@@ -1,0 +1,7 @@
+catfood-web
+Untagged: localhost:5000/labuser/catfood-shop:2
+Deleted: sha256:3338cbcfc0152620a7c6864c152ce9e88d832f5962c0f053c4ac529f17263e54
+Untagged: localhost:5000/labuser/catfood-shop:6
+Deleted: sha256:617249cd5af0a348231f91c9f7b53344910525f1e8e57d2904da5cf04c1fca1a
+Untagged: localhost:5000/labuser/catfood-shop:1
+Deleted: sha256:476d003055dbc84eb2ba892091dcb904946fceafbef42055124a44039a289468

@@ -1,0 +1,279 @@
+Started by user labadmin
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/docker-build-push
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Connect)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $HUB_USER or $HUB_TOKEN
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ hostname
++ command -v docker
++ echo none
++ test -S /var/run/docker.sock
++ echo none
++ echo jenkins: cd3a16de4373 docker CLI = none docker.sock = none
+jenkins: cd3a16de4373 docker CLI = none docker.sock = none
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw  bash -s
+devtools: 79aca8352ad1 user=root
+Docker Engine 29.8.1
+git version 2.55.0
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] echo
+จะ push ไปที่ docker.io/tuchsanai/catfood-shop:lab3-20260926r2-1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Clone)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw WORK_DIR='/root/lab3-work/build-1' GIT_URL='https://github.com/Tuchsanai/DevTools.git' GIT_REF='main' APP_SUBDIR='04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop' bash -s
+cloned to 79aca8352ad1:/root/lab3-work/build-1
+commit 789e08d582e65e90dcfc5ca4e4612aa413b74ae3
+subject 1
+Dockerfile
+app
+data
+next.config.mjs
+package-lock.json
+package.json
+public
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] echo
+commit ที่จะ build: 789e08d582e6
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw SRC='/root/lab3-work/build-1/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop' IMAGE='catfood-shop:build-1' VERSION='1.0.0' BUILD='1' COMMIT='789e08d582e6' bash -s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.52kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:22-alpine
+#2 DONE 1.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 84B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+#4 resolve docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 366.47kB done
+#5 DONE 0.0s
+
+#6 [2/6] WORKDIR /app
+#6 CACHED
+
+#7 [5/6] COPY . .
+#7 CACHED
+
+#8 [3/6] COPY package.json package-lock.json ./
+#8 CACHED
+
+#9 [4/6] RUN npm ci --no-audit --no-fund && npm cache clean --force
+#9 CACHED
+
+#10 [6/6] RUN npm run build && rm -rf .next/cache
+#10 CACHED
+
+#11 exporting to image
+#11 exporting layers done
+#11 exporting manifest sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621 0.0s done
+#11 exporting config sha256:2118df7d37c199ae625e69bb29c8ad7f9625247db4285c3bfe2d7757b200611e
+#11 exporting config sha256:2118df7d37c199ae625e69bb29c8ad7f9625247db4285c3bfe2d7757b200611e 0.0s done
+#11 naming to docker.io/library/catfood-shop:build-1 done
+#11 unpacking to docker.io/library/catfood-shop:build-1 0.0s done
+#11 DONE 0.1s
+IMAGE                  ID             DISK USAGE   CONTENT SIZE   EXTRA
+catfood-shop:build-1   8e69a91bd888        693MB          154MB        
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw IMAGE='catfood-shop:build-1' NAME='catfood-test-1' BUILD='1' VERSION='1.0.0' COMMIT='789e08d582e6' bash -s
+health of catfood-test-1: starting
+health of catfood-test-1: starting
+health of catfood-test-1: healthy
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"789e08d582e6","builtAt":"2026-09-26T07:02:06Z","host":"48b8cd1f79c3"}
+test ผ่าน: image ตอบเวอร์ชัน 1.0.0 commit 789e08d582e6
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push)
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY or $HUB_USER or $HUB_TOKEN
+[Pipeline] {
+[Pipeline] sh
++ set +x
+Login Succeeded
+
+WARNING! Your credentials are stored unencrypted in '/tmp/lab3-docker-1/config.json'.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/go/credential-store/
+
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw CFG='/tmp/lab3-docker-1' IMAGE='catfood-shop:build-1' REMOTE='docker.io/tuchsanai/catfood-shop:lab3-20260926r2-1' bash -s
+The push refers to repository [docker.io/tuchsanai/catfood-shop]
+e2de96513ba9: Layer already exists
+e554276b05e6: Layer already exists
+d39db1cf9caa: Layer already exists
+f7f2d304681a: Layer already exists
+b12d811778a6: Layer already exists
+4b4f6f991e61: Layer already exists
+26c43aab9fc0: Layer already exists
+3bcff41df748: Layer already exists
+5f421fe40249: Layer already exists
+lab3-20260926r2-1: digest: sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621 size: 2006
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] echo
+บันทึก digest ที่ push แล้ว: docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Clean)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw NAME='catfood-test-1' APP='catfood-web' IMAGE='catfood-shop:build-1' BUILD='1' REMOTE='docker.io/tuchsanai/catfood-shop:lab3-20260926r2-1' PUSHED='docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621' WORK_DIR='/root/lab3-work/build-1' bash -s
+ลบแอปเดิม catfood-web (d52e068339ef, Up 2 minutes (healthy))
+2bca31b52544
+Untagged: catfood-shop:build-1
+Untagged: tuchsanai/catfood-shop:lab3-20260926r2-1
+Deleted: sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
+devtools ไม่มีแอปเดิมและไม่มี image ของ build 1 แล้ว: เว็บหยุดชั่วคราว และ stage ถัดไปต้องดึงจาก Docker Hub
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Pull)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw CFG='/tmp/lab3-docker-1' REF='docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621' DIGEST='sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621' bash -s
+docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621: Pulling from tuchsanai/catfood-shop
+Digest: sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
+Status: Downloaded newer image for tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
+docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
+tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
+pull ตาม digest สำเร็จ: ได้ image ตัวเดียวกับที่ push
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw REF='docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621' NAME='catfood-web' BUILD='1' VERSION='1.0.0' COMMIT='789e08d582e6' bash -s
+8b03268293763cffa3d816c34c424ec6b392c9ffcf7819d96bf595d65e85358d
+health of catfood-web: starting
+health of catfood-web: starting
+health of catfood-web: healthy
+catfood-web  Up 2 seconds (healthy)  0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+image: docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"789e08d582e6","builtAt":"2026-09-26T07:02:06Z","host":"8b0326829376"}
+เว็บตอบ version 1.0.0 build #1 commit 789e08d582e6 ตรงกับ Pipeline
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] deleteDir
+[Pipeline] echo
+เปิดร้านได้ที่ http://localhost:3000 (v1.0.0 build #1 = docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

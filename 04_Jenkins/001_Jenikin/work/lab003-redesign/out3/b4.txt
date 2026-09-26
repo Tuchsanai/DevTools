@@ -1,0 +1,123 @@
+Started by user labadmin
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/docker-build-push
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Connect)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $HUB_USER or $HUB_TOKEN
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ hostname
++ command -v docker
++ echo none
++ test -S /var/run/docker.sock
++ echo none
++ echo jenkins: cd3a16de4373 docker CLI = none docker.sock = none
+jenkins: cd3a16de4373 docker CLI = none docker.sock = none
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw  bash -s
+devtools: 79aca8352ad1 user=root
+Docker Engine 29.8.1
+git version 2.55.0
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] echo
+จะ push ไปที่ docker.io/tuchsanai/catfood-shop:lab3-20260926r2-4
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Clone)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw WORK_DIR='/root/lab3-work/build-4' GIT_URL='https://github.com/Tuchsanai/DevTools.git' GIT_REF='no-such-branch' APP_SUBDIR='04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop' bash -s
+fatal: Remote branch no-such-branch not found in upstream origin
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+Stage "Build" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+Stage "Test" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push)
+Stage "Push" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Clean)
+Stage "Clean" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Pull)
+Stage "Pull" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy)
+Stage "Deploy" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] deleteDir
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ssh -i **** devtools-gw NAME='catfood-test-4' CFG='/tmp/lab3-docker-4' WORK_DIR='/root/lab3-work/build-4' bash -s
+เก็บกวาดของ build ที่ล้มแล้ว: catfood-test-4 /tmp/lab3-docker-4 /root/lab3-work/build-4
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 128
+Finished: FAILURE

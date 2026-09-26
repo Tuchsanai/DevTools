@@ -1,0 +1,4 @@
+jenkins  jenkins/jenkins:lts-jdk21  Up About a minute
+cicd-net 172.19.0.0/16 gw 172.19.0.1
+DRIVER    VOLUME NAME
+local     jenkins_home

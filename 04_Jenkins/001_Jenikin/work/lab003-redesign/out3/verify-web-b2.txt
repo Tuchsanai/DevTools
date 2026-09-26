@@ -1,0 +1,2 @@
+catfood-web  c4db3e26a831  Up 4 seconds (healthy)  0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+{"status":"ok","app":"catfood-shop","version":"1.1.0","build":"2","commit":"789e08d582e6","builtAt":"2026-09-26T07:04:00Z","host":"fa874f49da64"}

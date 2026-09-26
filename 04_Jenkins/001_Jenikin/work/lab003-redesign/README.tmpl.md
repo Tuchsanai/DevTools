@@ -111,7 +111,7 @@ stage Push จด digest ที่ Docker Hub ตอบกลับ แล้ว
 - ไม่แตะ `jenkins`, network `cicd-net`, volume `jenkins_home` และ container/image อื่นบนเครื่อง
 - ถ้า build ล้ม **ก่อน** Clean (เช่น parameter ผิด, clone ไม่ได้, test ไม่ผ่าน, push ไม่ได้) ร้านเดิมยังเปิดอยู่ตามเดิม
 
-> ⏸️ **Downtime ที่ต้องรู้:** ตั้งแต่ Clean ลบร้านเดิมจนถึง Deploy รายงาน `healthy` เว็บที่ `localhost:3000` จะเปิดไม่ได้ ในรอบทดสอบช่วงนี้ใช้ราว 6 วินาที (Clean + Pull + Deploy ของ build #2) ถ้า Pull ช้าหรือ Docker Hub มีปัญหาจะนานกว่านี้ และถ้า Pull หรือ Deploy ล้ม ร้านจะยังปิดอยู่จนกว่าจะมี build ที่สำเร็จ (แล็บนี้ไม่มีระบบ rollback อัตโนมัติ — ให้แก้สาเหตุแล้วกด Build ใหม่)
+> ⏸️ **Downtime ที่ต้องรู้:** ตั้งแต่ Clean ลบร้านเดิมจนถึง Deploy รายงาน `healthy` เว็บที่ `localhost:3000` จะเปิดไม่ได้ ในรอบทดสอบช่วงนี้ใช้ราว {{val:b2_downtime}} (Clean + Pull + Deploy ของ build #2) ถ้า Pull ช้าหรือ Docker Hub มีปัญหาจะนานกว่านี้ และถ้า Pull หรือ Deploy ล้ม ร้านจะยังปิดอยู่จนกว่าจะมี build ที่สำเร็จ (แล็บนี้ไม่มีระบบ rollback อัตโนมัติ — ให้แก้สาเหตุแล้วกด Build ใหม่)
 
 ---
 
@@ -171,11 +171,7 @@ ssh root@localhost -p 2222        # password : passwd
 จากนั้นใน **② shell ของ devtools** สร้าง Jenkins ด้วยคำสั่งเดิมของ LAB 1 ทุกตัวอักษร:
 
 <!-- lab3-test:jenkins-launch -->
-```bash
-docker network create cicd-net
-docker run -d --name jenkins --network cicd-net --restart unless-stopped \
-  -p 8080:8080 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk21
-```
+{{block:jenkins-launch}}
 
 แล้วทำ **การทดลองที่ 3–4 ของ [LAB 1](../001_LAB_Jenkins_On_Docker/README.md)** ให้เสร็จ: เปิด `http://localhost:8080` ปลดล็อกด้วย `docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword` เลือก **Install suggested plugins** และสร้างผู้ดูแล `admin` / `admin2569`
 
@@ -199,19 +195,12 @@ ssh root@localhost -p 2222        # password : passwd
 ใน **② shell ของ devtools**:
 
 <!-- lab3-test:check-state -->
-```bash
-docker ps --filter name=^jenkins$ --format '{{.Names}}  {{.Image}}  {{.Status}}'
-docker network inspect cicd-net --format '{{.Name}} {{range .IPAM.Config}}{{.Subnet}} gw {{.Gateway}}{{end}}'
-docker volume ls --filter name=jenkins_home
-```
+{{block:check-state}}
 
 ✅ **ผลจากรอบทดสอบ** (subnet และเวลาของแต่ละเครื่องอาจต่างกัน):
 
 ```text
-jenkins  jenkins/jenkins:lts-jdk21  Up 8 seconds
-cicd-net 172.19.0.0/16 gw 172.19.0.1
-DRIVER    VOLUME NAME
-local     jenkins_home
+{{out:check-state}}
 ```
 
 > ถ้าไม่มีแถว `jenkins` หรือ network `cicd-net` แปลว่ายังไม่ได้ทำ LAB 1 ให้กลับไปทำทาง A · ถ้าขึ้น `Cannot connect to the Docker daemon` ดูแถว `docker.pid` ในแก้ปัญหาของ LAB 1
@@ -264,19 +253,12 @@ local     jenkins_home
 ใน **② shell ของ devtools**:
 
 <!-- lab3-test:exp1-no-docker -->
-```bash
-docker exec jenkins sh -c 'docker version'; echo "exit=$?"
-docker exec jenkins sh -c 'id; echo "HOME=$HOME"; ssh -V'
-```
+{{block:exp1-no-docker}}
 
 ✅ **ผลจากรอบทดสอบ:**
 
 ```text
-sh: 1: docker: not found
-exit=127
-uid=1000(jenkins) gid=1000(jenkins) groups=1000(jenkins)
-HOME=/var/jenkins_home
-OpenSSH_10.0p2 Debian-7+deb13u4, OpenSSL 3.5.7 9 Jun 2026
+{{out:exp1-no-docker}}
 ```
 
 🔍 **ตีความ:** exit code `127` = หาโปรแกรม `docker` ไม่เจอ Jenkins รันเป็นผู้ใช้ `jenkins` ที่มี home อยู่ที่ `/var/jenkins_home` (อยู่ใน volume) และมี OpenSSH client มาให้แล้ว — ไฟล์ `~/.ssh/config` ของผู้ใช้นี้จึงอยู่ใน volume `jenkins_home` ด้วย ซึ่งเป็นกุญแจของการทดลองที่ 4
@@ -288,21 +270,12 @@ OpenSSH_10.0p2 Debian-7+deb13u4, OpenSSL 3.5.7 9 Jun 2026
 **ทำไม:** เพื่อเห็นด้วยตาว่าทำไมเขียน `root@devtools` ใน Jenkinsfile ตรง ๆ ไม่ได้ (ทฤษฎีข้อ 2)
 
 <!-- lab3-test:exp2-dns -->
-```bash
-docker exec jenkins getent hosts devtools; echo "devtools exit=$?"
-docker exec jenkins getent hosts jenkins; echo "jenkins exit=$?"
-docker exec jenkins cat /etc/resolv.conf | grep nameserver
-hostname
-```
+{{block:exp2-dns}}
 
 ✅ **ผลจากรอบทดสอบ:**
 
 ```text
-devtools exit=2
-172.19.0.2      jenkins
-jenkins exit=0
-nameserver 127.0.0.11
-79aca8352ad1
+{{out:exp2-dns}}
 ```
 
 🔍 **ตีความ:** `getent` หา `devtools` ไม่เจอ (exit `2`) แต่หา `jenkins` เจอ เพราะ DNS `127.0.0.11` ของ Docker ข้างใน devtools รู้จักเฉพาะ container บน `cicd-net` ของตัวเอง บรรทัดสุดท้ายคือ hostname ของ devtools ซึ่งเป็น container ID ไม่ใช่ `devtools` — ชื่อ `devtools` มีอยู่เฉพาะบน Docker ของเครื่องเรา
@@ -316,18 +289,12 @@ nameserver 127.0.0.11
 **ทำอะไร:** อ่าน subnet และ gateway ของ `cicd-net` IP ของ `jenkins` และ IP ทั้งหมดของ devtools
 
 <!-- lab3-test:exp3-gateway -->
-```bash
-docker network inspect cicd-net --format '{{range .IPAM.Config}}subnet={{.Subnet}} gateway={{.Gateway}}{{end}}'
-docker inspect jenkins --format '{{range $n, $c := .NetworkSettings.Networks}}jenkins: {{$n}} {{$c.IPAddress}}{{end}}'
-hostname -I
-```
+{{block:exp3-gateway}}
 
 ✅ **ผลจากรอบทดสอบ** (ตัวเลขของแต่ละเครื่องอาจต่างกัน — ใช้ค่าของเครื่องตนเอง):
 
 ```text
-subnet=172.19.0.0/16 gateway=172.19.0.1
-jenkins: cicd-net 172.19.0.2
-172.17.0.2 172.18.0.1 172.19.0.1
+{{out:exp3-gateway}}
 ```
 
 🔍 **ตีความ:** gateway ของ `cicd-net` ปรากฏอยู่ในรายการ IP ของ devtools (`hostname -I`) จริง และ `jenkins` อยู่ subnet เดียวกัน → packet จาก `jenkins` ไปที่ gateway ถึง devtools โดยตรง นี่คือปลายทาง SSH ของเรา
@@ -339,25 +306,7 @@ jenkins: cicd-net 172.19.0.2
 **ทำไม:** Jenkinsfile จะอ้างเพียงชื่อ `devtools-gw` ส่วน IP จริงอยู่ในไฟล์ config ที่เก็บใน volume — เปลี่ยนเครื่องก็แค่รันบล็อกนี้ใหม่
 
 <!-- lab3-test:exp4-ssh-alias -->
-```bash
-GW=$(docker network inspect cicd-net --format '{{range .IPAM.Config}}{{println .Gateway}}{{end}}' | grep -E '^[0-9]+(\.[0-9]+){3}$' | head -n 1)
-hostname -I | tr ' ' '\n' | grep -qFx "$GW" && echo "gateway ของ cicd-net = $GW (เป็น IP ของ devtools เอง)" || { echo "หา gateway ไม่ได้ หยุดก่อน"; false; }
-docker exec -i -u jenkins jenkins sh -c 'umask 077; mkdir -p ~/.ssh; cat > ~/.ssh/config' <<EOF
-Host devtools-gw
-  HostName $GW
-  Port 22
-  User root
-  HostKeyAlias devtools-gw
-  StrictHostKeyChecking yes
-  IdentitiesOnly yes
-  BatchMode yes
-  ConnectTimeout 10
-  LogLevel ERROR
-EOF
-echo "devtools-gw $(cut -d' ' -f1,2 /etc/ssh/ssh_host_ed25519_key.pub)" |
-  docker exec -i -u jenkins jenkins sh -c 'umask 077; cat > ~/.ssh/known_hosts'
-docker exec jenkins ls -la /var/jenkins_home/.ssh
-```
+{{block:exp4-ssh-alias}}
 
 📝 **คำอธิบาย:**
 
@@ -369,32 +318,18 @@ docker exec jenkins ls -la /var/jenkins_home/.ssh
 ✅ **ผลจากรอบทดสอบ:**
 
 ```text
-gateway ของ cicd-net = 172.19.0.1 (เป็น IP ของ devtools เอง)
-total 16
-drwx------  2 jenkins jenkins 4096 Sep 26 06:46 .
-drwxr-xr-x 13 jenkins jenkins 4096 Sep 26 06:46 ..
--rw-------  1 jenkins jenkins  190 Sep 26 06:46 config
--rw-------  1 jenkins jenkins   93 Sep 26 06:46 known_hosts
+{{out:exp4-ssh-alias}}
 ```
 
 ทดสอบการเชื่อมต่อจากข้างใน `jenkins` (ยังไม่มี key — ตั้งใจให้ถูกปฏิเสธ):
 
 <!-- lab3-test:exp4-test -->
-```bash
-docker exec jenkins ssh -G devtools-gw | grep -E '^(hostname|port|user|hostkeyalias|stricthostkeychecking) '
-docker exec jenkins ssh devtools-gw true; echo "exit=$?"
-```
+{{block:exp4-test}}
 
 ✅ **ผลจากรอบทดสอบ:**
 
 ```text
-user root
-hostname 172.19.0.1
-port 22
-stricthostkeychecking true
-hostkeyalias devtools-gw
-root@172.19.0.1: Permission denied (publickey,password).
-exit=255
+{{out:exp4-test}}
 ```
 
 🔍 **ตีความ:** `ssh -G` แสดงค่าที่ SSH จะใช้จริงสำหรับ `devtools-gw` ส่วน `Permission denied (publickey,password)` เป็นผลที่ **ถูกต้อง** — แปลว่าเส้นทางถึง `sshd` ของ devtools แล้ว และ host key ผ่านการตรวจแล้ว (ถ้า key ไม่ตรงจะเห็น `Host key verification failed` แทน) ที่ขาดอยู่มีเพียง credential
@@ -406,37 +341,25 @@ exit=255
 ใน **② shell ของ devtools**:
 
 <!-- lab3-test:exp5-key -->
-```bash
-mkdir -p ~/.ssh && chmod 700 ~/.ssh
-[ -f ~/.ssh/jenkins_devtools ] || ssh-keygen -q -t ed25519 -N '' -C jenkins-to-devtools -f ~/.ssh/jenkins_devtools
-touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys
-grep -qxF "$(cat ~/.ssh/jenkins_devtools.pub)" ~/.ssh/authorized_keys || cat ~/.ssh/jenkins_devtools.pub >> ~/.ssh/authorized_keys
-ssh-keygen -lf ~/.ssh/jenkins_devtools.pub
-grep -c jenkins-to-devtools ~/.ssh/authorized_keys
-```
+{{block:exp5-key}}
 
 📝 **คำอธิบาย:** สร้าง key ed25519 เฉพาะเมื่อยังไม่มี (รันซ้ำได้ ไม่ทับ key เดิม) `-N ''` = ไม่มี passphrase เพื่อให้ Jenkins ใช้ได้โดยไม่มีคนพิมพ์ แล้วต่อ public key ท้าย `authorized_keys` เฉพาะเมื่อยังไม่มีบรรทัดนี้ `ssh-keygen -l` แสดง fingerprint และบรรทัดสุดท้ายนับว่ามี key นี้ใน `authorized_keys` กี่บรรทัด
 
 ✅ **ผลจากรอบทดสอบ** (fingerprint ของแต่ละเครื่องต่างกัน บรรทัดสุดท้ายต้องเป็น `1`):
 
 ```text
-256 SHA256:I29vIKioU99wVOzS6JKtNZQrfN6qcbDAOCOOwzm9rWA jenkins-to-devtools (ED25519)
-1
+{{out:exp5-key}}
 ```
 
 ลอง key กับ sshd ของ devtools ก่อนนำไปใส่ Jenkins:
 
 <!-- lab3-test:exp5-keytest -->
-```bash
-ssh -i ~/.ssh/jenkins_devtools -o BatchMode=yes -o IdentitiesOnly=yes \
-  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR \
-  root@127.0.0.1 'echo "key OK: $(whoami)@$(hostname)"'
-```
+{{block:exp5-keytest}}
 
 ✅ **ผลจากรอบทดสอบ:**
 
 ```text
-key OK: root@79aca8352ad1
+{{out:exp5-keytest}}
 ```
 
 > 📝 การทดสอบนี้ต่อเข้า `127.0.0.1` ของ devtools เอง จึงปิดการตรวจ host key เฉพาะคำสั่งนี้ ฝั่ง Jenkins ยังตรวจเข้มตามการทดลองที่ 4
@@ -538,311 +461,7 @@ withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariabl
 เนื้อหาเดียวกับไฟล์ [`Jenkinsfile`](./Jenkinsfile) ในโฟลเดอร์นี้ทุกตัวอักษร คัดลอกทั้งบล็อกไปวางใน Jenkins
 
 ```groovy
-// LAB 3 — Jenkins เป็น "ผู้สั่ง" devtools เป็น "ผู้ทำ"
-// jenkins เป็น image มาตรฐาน ไม่มี Docker CLI และไม่ได้ mount docker.sock
-// ทุกงาน (git clone, docker build/run/push/pull) ถูกส่งผ่าน SSH ไปรันบน devtools port 22
-// ปลายทาง devtools-gw เป็น Host alias ใน /var/jenkins_home/.ssh/config (ตั้งในขั้นที่ 4)
-
-// ตรวจค่าก่อนส่งข้าม SSH: ต้องตรง regex ทั้งค่า มิฉะนั้นหยุด build ทันที
-def requireMatch(String name, String value, String regex, String hint) {
-  if (!(value ==~ regex)) {
-    error("${name} ไม่ถูกต้อง: ${hint}")
-  }
-}
-
-// รันสคริปต์ bash บน devtools ผ่าน SSH
-// vars → ตัวแปรของสคริปต์ ทุกค่าถูกครอบด้วย ' ' และอนุญาตเฉพาะอักขระที่ไม่มีความหมายพิเศษใน shell
-def onDevtools(Map vars, String body, boolean capture = false) {
-  def keys = vars.keySet() as List
-  def assigns = []
-  for (int i = 0; i < keys.size(); i++) {
-    def value = "${vars[keys[i]]}"
-    if (!(value ==~ '[A-Za-z0-9._:/@=+-]*')) {
-      error("ค่า ${keys[i]} มีอักขระที่ไม่อนุญาต")
-    }
-    assigns << "${keys[i]}='${value}'"
-  }
-  writeFile file: 'remote.sh', text: "set -euo pipefail\n${body}\n"
-  def out = null
-  withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY')]) {
-    out = sh(script: "ssh -i \"\$SSH_KEY\" devtools-gw \"${assigns.join(' ')} bash -s\" < remote.sh",
-             returnStdout: capture)
-  }
-  return out
-}
-
-pipeline {
-  agent any
-
-  options {
-    disableConcurrentBuilds()   // ทุก build ใช้ container ชื่อ catfood-web และ port 3000 เดียวกัน
-  }
-
-  parameters {
-    string(name: 'GIT_URL', defaultValue: 'https://github.com/Tuchsanai/DevTools.git',
-           description: 'Git repository สาธารณะแบบ https:// ที่มีซอร์สร้าน')
-    string(name: 'GIT_REF', defaultValue: 'main',
-           description: 'branch หรือ tag ที่จะ clone')
-    string(name: 'APP_SUBDIR', defaultValue: '04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop',
-           description: 'โฟลเดอร์ใน repository ที่มี Dockerfile (path แบบ relative)')
-    string(name: 'APP_VERSION', defaultValue: '1.0.0',
-           description: 'เวอร์ชันรูปแบบ X.Y.Z ที่จะฝังเข้า image และแสดงบนหน้าเว็บ')
-    string(name: 'TAG_PREFIX', defaultValue: 'lab3',
-           description: 'คำนำหน้า tag บน Docker Hub → tag จริงคือ <TAG_PREFIX>-<BUILD_NUMBER>')
-  }
-
-  environment {
-    APP_NAME    = 'catfood-shop'                              // ชื่อ image และ repository บน Docker Hub
-    DEPLOY_NAME = 'catfood-web'                               // container ของร้านบน devtools (port 3000)
-    TEST_NAME   = "catfood-test-${env.BUILD_NUMBER}"          // container ชั่วคราวของ stage Test
-    WORK_DIR    = "/root/lab3-work/build-${env.BUILD_NUMBER}" // ที่ clone ซอร์สบน devtools (แยกตาม build)
-    DOCKER_CFG  = "/tmp/lab3-docker-${env.BUILD_NUMBER}"      // ที่เก็บ login Docker Hub ชั่วคราว (Push → Pull)
-    LOCAL_IMAGE = "catfood-shop:build-${env.BUILD_NUMBER}"    // ชื่อ image ในเครื่องก่อนติด tag ของ Hub
-  }
-
-  stages {
-    stage('Connect') {
-      steps {
-        script {
-          requireMatch('GIT_URL', params.GIT_URL,
-                       'https://[A-Za-z0-9.-]+(/[A-Za-z0-9._-]+)+/?',
-                       'ต้องเป็น https://host/path ไม่มีช่องว่าง ไม่มี user:password@')
-          requireMatch('GIT_REF', params.GIT_REF,
-                       '(?!-)(?!.*\\.\\.)[A-Za-z0-9._/-]{1,100}',
-                       'ชื่อ branch/tag ใช้ได้เฉพาะ A-Z a-z 0-9 . _ / - และห้ามขึ้นต้นด้วย -')
-          requireMatch('APP_SUBDIR', params.APP_SUBDIR,
-                       '(?!-)(?!.*(^|/)\\.{1,2}(/|$))[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*',
-                       'path แบบ relative ห้ามขึ้นต้นด้วย / หรือ - และห้ามมี . หรือ .. เป็นชื่อโฟลเดอร์')
-          requireMatch('APP_VERSION', params.APP_VERSION,
-                       '[0-9]+\\.[0-9]+\\.[0-9]+',
-                       'ต้องเป็นรูปแบบ X.Y.Z เช่น 1.0.0')
-          requireMatch('TAG_PREFIX', params.TAG_PREFIX,
-                       '[a-z0-9][a-z0-9.-]{0,40}',
-                       'ใช้ได้เฉพาะ a-z 0-9 . - ยาวไม่เกิน 41 ตัว')
-          env.IMAGE_TAG = "${params.TAG_PREFIX}-${env.BUILD_NUMBER}"
-          withCredentials([usernamePassword(credentialsId: 'dockerhub',
-                           usernameVariable: 'HUB_USER', passwordVariable: 'HUB_TOKEN')]) {
-            requireMatch('username ใน credential dockerhub', env.HUB_USER, '[a-z0-9]{4,30}',
-                         'ต้องมีเฉพาะ a-z และ 0-9 ยาว 4–30 ตัว')
-            env.HUB_REPO = "docker.io/${env.HUB_USER}/${env.APP_NAME}"
-          }
-        }
-        sh '''
-          echo "jenkins: $(hostname) docker CLI = $(command -v docker || echo none) docker.sock = $(test -S /var/run/docker.sock && echo yes || echo none)"
-        '''
-        script {
-          onDevtools([:], '''
-echo "devtools: $(hostname) user=$(whoami)"
-docker version --format 'Docker Engine {{.Server.Version}}'
-git --version
-''')
-          echo "จะ push ไปที่ ${env.HUB_REPO}:${env.IMAGE_TAG}"
-        }
-      }
-    }
-
-    stage('Clone') {
-      steps {
-        script {
-          // สคริปต์พิมพ์รายละเอียดลง stderr (เห็นใน console) และพิมพ์ commit ลง stdout ให้ Jenkins เก็บไว้
-          def commit = onDevtools([WORK_DIR: env.WORK_DIR, GIT_URL: params.GIT_URL,
-                                   GIT_REF: params.GIT_REF, APP_SUBDIR: params.APP_SUBDIR], '''
-rm -rf "$WORK_DIR"
-mkdir -p "$(dirname "$WORK_DIR")"
-git clone --quiet --depth 1 --filter=blob:none --sparse --branch "$GIT_REF" -- "$GIT_URL" "$WORK_DIR" >&2
-cd "$WORK_DIR"
-git sparse-checkout set "$APP_SUBDIR" >&2
-test -f "$APP_SUBDIR/Dockerfile" || { echo "ไม่พบ $APP_SUBDIR/Dockerfile ใน $GIT_URL ($GIT_REF)" >&2; exit 1; }
-{ echo "cloned to $(hostname):$WORK_DIR"
-  git log -1 --format='commit %H%nsubject %s'
-  ls "$APP_SUBDIR"; } >&2
-git rev-parse --short=12 HEAD
-''', true).trim()
-          requireMatch('commit', commit, '[0-9a-f]{12}', 'อ่าน commit จาก git ไม่ได้')
-          env.GIT_COMMIT_SHORT = commit
-          echo "commit ที่จะ build: ${commit}"
-        }
-      }
-    }
-
-    stage('Build') {
-      steps {
-        script {
-          onDevtools([SRC: "${env.WORK_DIR}/${params.APP_SUBDIR}", IMAGE: env.LOCAL_IMAGE,
-                      VERSION: params.APP_VERSION, BUILD: env.BUILD_NUMBER, COMMIT: env.GIT_COMMIT_SHORT], '''
-cd "$SRC"
-docker build --provenance=false \\
-  --label devtools.lab=lab3 --label devtools.build="$BUILD" \\
-  --label org.opencontainers.image.revision="$COMMIT" \\
-  --build-arg APP_VERSION="$VERSION" \\
-  --build-arg BUILD_NUMBER="$BUILD" \\
-  --build-arg GIT_COMMIT="$COMMIT" \\
-  --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \\
-  -t "$IMAGE" .
-docker image ls "$IMAGE"
-''')
-        }
-      }
-    }
-
-    stage('Test') {
-      steps {
-        script {
-          onDevtools([IMAGE: env.LOCAL_IMAGE, NAME: env.TEST_NAME, BUILD: env.BUILD_NUMBER,
-                      VERSION: params.APP_VERSION, COMMIT: env.GIT_COMMIT_SHORT], '''
-docker rm -f "$NAME" >/dev/null 2>&1 || true
-trap 'docker rm -f "$NAME" >/dev/null 2>&1 || true' EXIT
-docker run -d --name "$NAME" --label devtools.lab=lab3 --label devtools.role=test \\
-  --label devtools.build="$BUILD" "$IMAGE" >/dev/null
-STATUS=starting
-for i in $(seq 1 30); do
-  STATUS=$(docker inspect -f '{{.State.Health.Status}}' "$NAME")
-  echo "health of $NAME: $STATUS"
-  [ "$STATUS" = healthy ] && break
-  sleep 1
-done
-[ "$STATUS" = healthy ]
-HEALTH=$(docker exec "$NAME" wget -qO- http://127.0.0.1:3000/api/health)
-echo "$HEALTH"
-case "$HEALTH" in
-  *"\\"version\\":\\"$VERSION\\""*"\\"commit\\":\\"$COMMIT\\""*) echo "test ผ่าน: image ตอบเวอร์ชัน $VERSION commit $COMMIT" ;;
-  *) echo "test ไม่ผ่าน: ต้องได้ version $VERSION และ commit $COMMIT"; exit 1 ;;
-esac
-''')
-        }
-      }
-    }
-
-    stage('Push') {
-      steps {
-        withCredentials([sshUserPrivateKey(credentialsId: 'devtools-ssh', keyFileVariable: 'SSH_KEY'),
-                         usernamePassword(credentialsId: 'dockerhub',
-                           usernameVariable: 'HUB_USER', passwordVariable: 'HUB_TOKEN')]) {
-          // token เดินทางทาง stdin ของ SSH เท่านั้น ไม่อยู่ใน command line และ console
-          // login ถูกเก็บในโฟลเดอร์ชั่วคราว DOCKER_CFG ไม่ปนกับ ~/.docker ของ devtools
-          sh '''set +x
-            printf '%s\\n' "$HUB_TOKEN" | ssh -i "$SSH_KEY" devtools-gw \
-              "umask 077; docker --config '$DOCKER_CFG' login docker.io -u '$HUB_USER' --password-stdin"
-          '''
-        }
-        script {
-          def digest = onDevtools([CFG: env.DOCKER_CFG, IMAGE: env.LOCAL_IMAGE,
-                                   REMOTE: "${env.HUB_REPO}:${env.IMAGE_TAG}"], '''
-docker tag "$IMAGE" "$REMOTE"
-OUT=$(docker --config "$CFG" push "$REMOTE")
-printf '%s\\n' "$OUT" | grep -v ': Waiting$' >&2   # ตัดบรรทัดรอคิวออก ให้เห็นผลของแต่ละ layer ชัด
-printf '%s\\n' "$OUT" | sed -n 's/^.*: digest: \\(sha256:[0-9a-f]\\{64\\}\\) size: [0-9]*$/\\1/p'
-''', true).trim()
-          requireMatch('digest', digest, 'sha256:[0-9a-f]{64}', 'อ่าน digest จากผล docker push ไม่ได้')
-          env.IMAGE_DIGEST = digest
-          echo "บันทึก digest ที่ push แล้ว: ${env.HUB_REPO}@${digest}"
-        }
-      }
-    }
-
-    stage('Clean') {
-      steps {
-        script {
-          // เคลียร์ devtools ก่อน Pull: container ทดสอบ, แอปเดิม catfood-web, image 2 ชื่อของ build นี้ และซอร์สที่ clone
-          // ลบเฉพาะ container ที่มี label ของ LAB 3 ไม่แตะ jenkins, cicd-net, jenkins_home และของอื่น
-          // ตั้งแต่ขั้นนี้จนจบ Deploy เว็บที่ port 3000 จะใช้ไม่ได้ชั่วคราว
-          onDevtools([NAME: env.TEST_NAME, APP: env.DEPLOY_NAME, IMAGE: env.LOCAL_IMAGE, BUILD: env.BUILD_NUMBER,
-                      REMOTE: "${env.HUB_REPO}:${env.IMAGE_TAG}", PUSHED: "${env.HUB_REPO}@${env.IMAGE_DIGEST}",
-                      WORK_DIR: env.WORK_DIR], '''
-if docker container inspect "$APP" >/dev/null 2>&1; then
-  OWNER=$(docker inspect -f '{{index .Config.Labels "devtools.lab"}}/{{index .Config.Labels "devtools.role"}}' "$APP")
-  [ "$OWNER" = lab3/app ] || { echo "พบ container $APP ที่ไม่ได้สร้างโดย LAB 3 (label=$OWNER) จึงไม่ลบ: ลบหรือเปลี่ยนชื่อเองก่อน"; exit 1; }
-fi
-docker ps -aq --filter label=devtools.lab=lab3 --filter label=devtools.role=test \\
-  --filter label=devtools.build="$BUILD" | xargs -r docker rm -f
-docker rm -f "$NAME" >/dev/null 2>&1 || true
-docker ps -a --filter "name=^$APP$" --filter label=devtools.lab=lab3 --filter label=devtools.role=app \\
-  --format 'ลบแอปเดิม {{.Names}} ({{.Image}}, {{.Status}})'
-docker ps -aq --filter "name=^$APP$" --filter label=devtools.lab=lab3 --filter label=devtools.role=app | xargs -r docker rm -f
-docker image rm "$IMAGE" "$REMOTE"
-rm -rf "$WORK_DIR"
-if docker container inspect "$APP" >/dev/null 2>&1; then echo "ยังมี $APP ค้างอยู่"; exit 1; fi
-for REF in "$REMOTE" "$PUSHED"; do
-  if docker image inspect "$REF" >/dev/null 2>&1; then echo "ยังมี $REF ค้างอยู่"; exit 1; fi
-done
-echo "devtools ไม่มีแอปเดิมและไม่มี image ของ build $BUILD แล้ว: เว็บหยุดชั่วคราว และ stage ถัดไปต้องดึงจาก Docker Hub"
-''')
-        }
-      }
-    }
-
-    stage('Pull') {
-      steps {
-        script {
-          onDevtools([CFG: env.DOCKER_CFG, REF: "${env.HUB_REPO}@${env.IMAGE_DIGEST}",
-                      DIGEST: env.IMAGE_DIGEST], '''
-trap 'docker --config "$CFG" logout docker.io >/dev/null 2>&1 || true; rm -rf "$CFG"' EXIT
-docker --config "$CFG" pull "$REF"
-docker image inspect -f '{{range .RepoDigests}}{{println .}}{{end}}' "$REF" | grep -F "@$DIGEST"
-echo "pull ตาม digest สำเร็จ: ได้ image ตัวเดียวกับที่ push"
-''')
-        }
-      }
-    }
-
-    stage('Deploy') {
-      steps {
-        script {
-          onDevtools([REF: "${env.HUB_REPO}@${env.IMAGE_DIGEST}", NAME: env.DEPLOY_NAME,
-                      BUILD: env.BUILD_NUMBER, VERSION: params.APP_VERSION, COMMIT: env.GIT_COMMIT_SHORT], '''
-if docker container inspect "$NAME" >/dev/null 2>&1; then echo "ยังมี $NAME อยู่ (ต้องถูกลบใน Clean)"; exit 1; fi
-OTHERS=$(docker ps --filter publish=3000 --format '{{.Names}}')
-[ -z "$OTHERS" ] || { echo "port 3000 ถูก container อื่นใช้อยู่: $OTHERS"; exit 1; }
-docker run -d --name "$NAME" --restart unless-stopped -p 3000:3000 \\
-  --label devtools.lab=lab3 --label devtools.role=app --label devtools.build="$BUILD" "$REF"
-STATUS=starting
-for i in $(seq 1 30); do
-  STATUS=$(docker inspect -f '{{.State.Health.Status}}' "$NAME")
-  echo "health of $NAME: $STATUS"
-  [ "$STATUS" = healthy ] && break
-  sleep 1
-done
-[ "$STATUS" = healthy ]
-docker ps --filter "name=^$NAME$" --format '{{.Names}}  {{.Status}}  {{.Ports}}'
-docker inspect -f 'image: {{.Config.Image}}' "$NAME"
-HEALTH=$(docker exec "$NAME" wget -qO- http://127.0.0.1:3000/api/health)
-echo "$HEALTH"
-case "$HEALTH" in
-  *"\\"version\\":\\"$VERSION\\",\\"build\\":\\"$BUILD\\",\\"commit\\":\\"$COMMIT\\""*) ;;
-  *) echo "เว็บไม่ได้ตอบ version $VERSION build $BUILD commit $COMMIT"; exit 1 ;;
-esac
-echo "เว็บตอบ version $VERSION build #$BUILD commit $COMMIT ตรงกับ Pipeline"
-''')
-        }
-      }
-    }
-  }
-
-  post {
-    success {
-      echo "เปิดร้านได้ที่ http://localhost:3000 (v${params.APP_VERSION} build #${env.BUILD_NUMBER} = ${env.HUB_REPO}@${env.IMAGE_DIGEST})"
-    }
-    unsuccessful {
-      script {
-        // build ล้มกลางทาง: ลบ container ทดสอบ, login ชั่วคราว และซอร์สที่ clone ของ build นี้
-        // ถ้าเชื่อม devtools ไม่ได้ ให้ทำขั้นเก็บกวาดท้ายเอกสารด้วยมือ
-        try {
-          onDevtools([NAME: env.TEST_NAME, CFG: env.DOCKER_CFG, WORK_DIR: env.WORK_DIR], '''
-docker rm -f "$NAME" >/dev/null 2>&1 || true
-docker --config "$CFG" logout docker.io >/dev/null 2>&1 || true
-rm -rf "$CFG" "$WORK_DIR"
-echo "เก็บกวาดของ build ที่ล้มแล้ว: $NAME $CFG $WORK_DIR"
-''')
-        } catch (err) {
-          echo 'เก็บกวาดบน devtools ไม่สำเร็จ (เช่น SSH ใช้ไม่ได้) ให้ลบเองตามหัวข้อเก็บกวาด'
-        }
-      }
-    }
-    always {
-      deleteDir()   // ลบ workspace ของ job นี้บน Jenkins (มีแค่ remote.sh)
-    }
-  }
-}
+{{jenkinsfile}}
 ```
 
 ### การทดลองที่ 7 — สร้าง job `docker-build-push` แล้ววาง Jenkinsfile
@@ -865,42 +484,20 @@ echo "เก็บกวาดของ build ที่ล้มแล้ว: $N
 
 กด **Build Now** แล้วเปิด build **#1** → **Console Output** (หรือหน้า Stages ของ Pipeline Graph View)
 
-✅ **ผลจากรอบทดสอบ** (ตัดบรรทัด `[Pipeline]` ออก เลือกช่วงสำคัญของแต่ละ stage · รอบทดสอบใช้ `TAG_PREFIX` = `lab3-20260926r2` เพื่อไม่ชนกับ tag เดิมบน Docker Hub ของผู้ทดสอบ ของนักศึกษาจะเป็น `lab3-1` และ `<DOCKER_USER>` แทน `tuchsanai`):
+✅ **ผลจากรอบทดสอบ** (ตัดบรรทัด `[Pipeline]` ออก เลือกช่วงสำคัญของแต่ละ stage · รอบทดสอบใช้ `TAG_PREFIX` = `{{val:prefix}}` เพื่อไม่ชนกับ tag เดิมบน Docker Hub ของผู้ทดสอบ ของนักศึกษาจะเป็น `lab3-1` และ `<DOCKER_USER>` แทน `tuchsanai`):
 
 **1 Connect** — Jenkins ไม่มี docker แต่สั่ง devtools ได้
 
 ```text
-+ hostname
-+ command -v docker
-+ echo none
-+ test -S /var/run/docker.sock
-+ echo none
-+ echo jenkins: cd3a16de4373 docker CLI = none docker.sock = none
-jenkins: cd3a16de4373 docker CLI = none docker.sock = none
-+ ssh -i **** devtools-gw  bash -s
-devtools: 79aca8352ad1 user=root
-Docker Engine 29.8.1
-git version 2.55.0
-จะ push ไปที่ docker.io/tuchsanai/catfood-shop:lab3-20260926r2-1
+{{out:b1-connect}}
 ```
 
-hostname `cd3a16de4373` คือ container `jenkins` ส่วน `79aca8352ad1` คือ hostname ของ devtools ตรงกับการทดลองที่ 2 และ `****` คือ path ของ key ที่ Jenkins ปิดบัง
+hostname `{{val:jenkins_host}}` คือ container `jenkins` ส่วน `{{val:devtools_host}}` คือ hostname ของ devtools ตรงกับการทดลองที่ 2 และ `****` คือ path ของ key ที่ Jenkins ปิดบัง
 
 **2 Clone** — ซอร์สมาจาก GitHub ลงบน devtools
 
 ```text
-+ ssh -i **** devtools-gw WORK_DIR='/root/lab3-work/build-1' GIT_URL='https://github.com/Tuchsanai/DevTools.git' GIT_REF='main' APP_SUBDIR='04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop' bash -s
-cloned to 79aca8352ad1:/root/lab3-work/build-1
-commit 789e08d582e65e90dcfc5ca4e4612aa413b74ae3
-subject 1
-Dockerfile
-app
-data
-next.config.mjs
-package-lock.json
-package.json
-public
-commit ที่จะ build: 789e08d582e6
+{{out:b1-clone}}
 ```
 
 commit ที่ได้คือ commit ล่าสุดของ `main` ในวันที่ทดสอบ ของนักศึกษาจะเป็น commit ล่าสุด ณ วันที่รัน
@@ -908,73 +505,25 @@ commit ที่ได้คือ commit ล่าสุดของ `main` ใ
 **3 Build** — image ถูกสร้างจากซอร์สที่เพิ่ง clone บนเครื่องที่ยังไม่มี cache ทุกขั้นจะรันจริง (ตัวอย่างจากการรันครั้งแรกบนเครื่องทดสอบในวันเดียวกัน):
 
 ```text
-+ ssh -i **** devtools-gw SRC='/root/lab3-work/build-1/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop' IMAGE='catfood-shop:build-1' VERSION='1.0.0' BUILD='1' COMMIT='789e08d582e6' bash -s
-#4 [1/6] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
-#6 [2/6] WORKDIR /app
-#7 [3/6] COPY package.json package-lock.json ./
-#8 [4/6] RUN npm ci --no-audit --no-fund && npm cache clean --force
-#8 9.860 added 24 packages in 10s
-#9 [5/6] COPY . .
-#10 [6/6] RUN npm run build && rm -rf .next/cache
-#11 naming to docker.io/library/catfood-shop:build-1 done
-IMAGE                  ID             DISK USAGE   CONTENT SIZE   EXTRA
-catfood-shop:build-1   d52e068339ef        693MB          154MB
+{{out:fresh-build}}
 ```
 
 ส่วน build #1 ของรอบที่บันทึกไว้นี้ได้ `CACHED` ทุกขั้น เพราะเครื่องทดสอบเคย build ซอร์สเดียวกันมาก่อนหน้าไม่กี่นาที:
 
 ```text
-+ ssh -i **** devtools-gw SRC='/root/lab3-work/build-1/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop' IMAGE='catfood-shop:build-1' VERSION='1.0.0' BUILD='1' COMMIT='789e08d582e6' bash -s
-#4 [1/6] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
-#6 [2/6] WORKDIR /app
-#6 CACHED
-#7 [5/6] COPY . .
-#7 CACHED
-#8 [3/6] COPY package.json package-lock.json ./
-#8 CACHED
-#9 [4/6] RUN npm ci --no-audit --no-fund && npm cache clean --force
-#9 CACHED
-#10 [6/6] RUN npm run build && rm -rf .next/cache
-#10 CACHED
-#11 naming to docker.io/library/catfood-shop:build-1 done
-IMAGE                  ID             DISK USAGE   CONTENT SIZE   EXTRA
-catfood-shop:build-1   8e69a91bd888        693MB          154MB
+{{out:b1-build}}
 ```
 
 **4 Test** — แอปใน image ตอบ health และเวอร์ชัน/commit ถูกต้อง
 
 ```text
-+ ssh -i **** devtools-gw IMAGE='catfood-shop:build-1' NAME='catfood-test-1' BUILD='1' VERSION='1.0.0' COMMIT='789e08d582e6' bash -s
-health of catfood-test-1: starting
-health of catfood-test-1: starting
-health of catfood-test-1: healthy
-{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"789e08d582e6","builtAt":"2026-09-26T07:02:06Z","host":"48b8cd1f79c3"}
-test ผ่าน: image ตอบเวอร์ชัน 1.0.0 commit 789e08d582e6
+{{out:b1-test}}
 ```
 
-**5 Push** — login ด้วย token แล้ว push และจด digest (บนเครื่องที่ Docker Hub ยังไม่มี layer จะเห็น `Pushed` แทน `Layer already exists` เช่นรอบแรกในวันเดียวกันที่ push ใหม่ 5 layer)
+**5 Push** — login ด้วย token แล้ว push และจด digest (บนเครื่องที่ Docker Hub ยังไม่มี layer จะเห็น `Pushed` แทน `Layer already exists` เช่นรอบแรกในวันเดียวกันที่ push ใหม่ {{val:fresh_pushed}} layer)
 
 ```text
-+ set +x
-Login Succeeded
-
-WARNING! Your credentials are stored unencrypted in '/tmp/lab3-docker-1/config.json'.
-Configure a credential helper to remove this warning. See
-https://docs.docker.com/go/credential-store/
-
-+ ssh -i **** devtools-gw CFG='/tmp/lab3-docker-1' IMAGE='catfood-shop:build-1' REMOTE='docker.io/tuchsanai/catfood-shop:lab3-20260926r2-1' bash -s
-The push refers to repository [docker.io/tuchsanai/catfood-shop]
-e2de96513ba9: Layer already exists
-e554276b05e6: Layer already exists
-d39db1cf9caa: Layer already exists
-f7f2d304681a: Layer already exists
-b12d811778a6: Layer already exists
-4b4f6f991e61: Layer already exists
-26c43aab9fc0: Layer already exists
-3bcff41df748: Layer already exists
-5f421fe40249: Layer already exists
-lab3-20260926r2-1: digest: sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621 size: 2006
-บันทึก digest ที่ push แล้ว: docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
+{{out:b1-push}}
 ```
 
 `WARNING! Your credentials are stored unencrypted` หมายถึงไฟล์ login ในโฟลเดอร์ชั่วคราว `/tmp/lab3-docker-N` ซึ่ง stage Pull (หรือ `post` เมื่อ build ล้ม) logout และลบทิ้ง token ไม่เคยปรากฏใน console
@@ -982,13 +531,7 @@ lab3-20260926r2-1: digest: sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa
 **6 Clean** — เคลียร์ของ build นี้และร้านเดิมก่อน Pull
 
 ```text
-+ ssh -i **** devtools-gw NAME='catfood-test-1' APP='catfood-web' IMAGE='catfood-shop:build-1' BUILD='1' REMOTE='docker.io/tuchsanai/catfood-shop:lab3-20260926r2-1' PUSHED='docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621' WORK_DIR='/root/lab3-work/build-1' bash -s
-ลบแอปเดิม catfood-web (d52e068339ef, Up 2 minutes (healthy))
-2bca31b52544
-Untagged: catfood-shop:build-1
-Untagged: tuchsanai/catfood-shop:lab3-20260926r2-1
-Deleted: sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
-devtools ไม่มีแอปเดิมและไม่มี image ของ build 1 แล้ว: เว็บหยุดชั่วคราว และ stage ถัดไปต้องดึงจาก Docker Hub
+{{out:b1-clean}}
 ```
 
 บรรทัด `ลบแอปเดิม ...` ปรากฏเพราะเครื่องทดสอบมีร้านจากรอบก่อนหน้าอยู่แล้ว บรรทัดเลขฐาน 16 ถัดมาคือ ID ของ container ที่ถูกลบ ถ้าเป็นเครื่องใหม่ build #1 จะไม่มีสองบรรทัดนี้ `Untagged` / `Deleted` ยืนยันว่า image ของ build นี้ไม่อยู่ในเครื่องแล้ว
@@ -996,27 +539,13 @@ devtools ไม่มีแอปเดิมและไม่มี image ข�
 **7 Pull** — ดึงกลับจาก Docker Hub ตาม digest
 
 ```text
-+ ssh -i **** devtools-gw CFG='/tmp/lab3-docker-1' REF='docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621' DIGEST='sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621' bash -s
-docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621: Pulling from tuchsanai/catfood-shop
-Digest: sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
-Status: Downloaded newer image for tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
-docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
-tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
-pull ตาม digest สำเร็จ: ได้ image ตัวเดียวกับที่ push
+{{out:b1-pull}}
 ```
 
 **8 Deploy** — ร้านเปิดที่ port 3000 จาก image ที่ pull มา
 
 ```text
-+ ssh -i **** devtools-gw REF='docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621' NAME='catfood-web' BUILD='1' VERSION='1.0.0' COMMIT='789e08d582e6' bash -s
-8b03268293763cffa3d816c34c424ec6b392c9ffcf7819d96bf595d65e85358d
-health of catfood-web: starting
-health of catfood-web: starting
-health of catfood-web: healthy
-catfood-web  Up 2 seconds (healthy)  0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
-image: docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
-{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"789e08d582e6","builtAt":"2026-09-26T07:02:06Z","host":"8b0326829376"}
-เว็บตอบ version 1.0.0 build #1 commit 789e08d582e6 ตรงกับ Pipeline
+{{out:b1-deploy}}
 ```
 
 จากนั้นเปิด `http://localhost:3000` บนเครื่องของเรา chip บนแถบด้านบนต้องเป็น `v1.0.0 · build #1`
@@ -1038,54 +567,32 @@ image: docker.io/tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1
 
 ![ฟอร์ม Build with Parameters](./images/lab3_jenkins_10_build_parameters.png)
 
-*ภาพที่ 16 (ภาพหน้าจอจริง) ฟอร์ม Build with Parameters ที่ Jenkins สร้างจากบล็อก `parameters` หลัง build แรก กรอก `APP_VERSION` = `1.1.0` (รอบทดสอบกรอก `TAG_PREFIX` = `lab3-20260926r2` ด้วย ของนักศึกษาคง `lab3`) — ภาพนี้เป็นการเปิดฟอร์มดู build #2 จริงถูกสั่งด้วยค่าชุดเดียวกันผ่าน REST API ของ Jenkins*
+*ภาพที่ 16 (ภาพหน้าจอจริง) ฟอร์ม Build with Parameters ที่ Jenkins สร้างจากบล็อก `parameters` หลัง build แรก กรอก `APP_VERSION` = `1.1.0` (รอบทดสอบกรอก `TAG_PREFIX` = `{{val:prefix}}` ด้วย ของนักศึกษาคง `lab3`) — ภาพนี้เป็นการเปิดฟอร์มดู build #2 จริงถูกสั่งด้วยค่าชุดเดียวกันผ่าน REST API ของ Jenkins*
 
 ก่อน build #2 ร้านที่ให้บริการอยู่คือ build #1 ใน **② shell ของ devtools**:
 
 ```text
-catfood-web 8e69a91bd888 Up 56 seconds (healthy) 0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp devtools.build=1,devtools.lab=lab3,devtools.role=app,org.opencontainers.image.revision=789e08d582e6
-{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"789e08d582e6","builtAt":"2026-09-26T07:02:06Z","host":"8b0326829376"}
+{{out:before-b2-app}}
 ```
 
-✅ **ผลจากรอบทดสอบ** — stage Clean ของ build #2 ลบร้าน build #1 (`8e69a91bd888` คือ digest 12 ตัวแรกของ build #1):
+✅ **ผลจากรอบทดสอบ** — stage Clean ของ build #2 ลบร้าน build #1 (`{{val:b1_short}}` คือ digest 12 ตัวแรกของ build #1):
 
 ```text
-+ ssh -i **** devtools-gw NAME='catfood-test-2' APP='catfood-web' IMAGE='catfood-shop:build-2' BUILD='2' REMOTE='docker.io/tuchsanai/catfood-shop:lab3-20260926r2-2' PUSHED='docker.io/tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a' WORK_DIR='/root/lab3-work/build-2' bash -s
-ลบแอปเดิม catfood-web (8e69a91bd888, Up About a minute (healthy))
-8b0326829376
-Untagged: catfood-shop:build-2
-Untagged: tuchsanai/catfood-shop:lab3-20260926r2-2
-Deleted: sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a
-devtools ไม่มีแอปเดิมและไม่มี image ของ build 2 แล้ว: เว็บหยุดชั่วคราว และ stage ถัดไปต้องดึงจาก Docker Hub
+{{out:b2-clean}}
 ```
 
 stage Pull และ Deploy ของ build #2 ใช้ digest เดียวกับที่ stage Push ของ build #2 จดไว้:
 
 ```text
-lab3-20260926r2-2: digest: sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a size: 2006
-บันทึก digest ที่ push แล้ว: docker.io/tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a
+{{out:b2-push-digest}}
 ```
 
 ```text
-+ ssh -i **** devtools-gw CFG='/tmp/lab3-docker-2' REF='docker.io/tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a' DIGEST='sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a' bash -s
-docker.io/tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a: Pulling from tuchsanai/catfood-shop
-Digest: sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a
-Status: Downloaded newer image for tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a
-docker.io/tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a
-tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a
-pull ตาม digest สำเร็จ: ได้ image ตัวเดียวกับที่ push
+{{out:b2-pull}}
 ```
 
 ```text
-+ ssh -i **** devtools-gw REF='docker.io/tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a' NAME='catfood-web' BUILD='2' VERSION='1.1.0' COMMIT='789e08d582e6' bash -s
-fa874f49da640d0fc548f66ec749094cfe85be5f3a4a19fe93cfcdda8942a341
-health of catfood-web: starting
-health of catfood-web: starting
-health of catfood-web: healthy
-catfood-web  Up 2 seconds (healthy)  0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
-image: docker.io/tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a
-{"status":"ok","app":"catfood-shop","version":"1.1.0","build":"2","commit":"789e08d582e6","builtAt":"2026-09-26T07:04:00Z","host":"fa874f49da64"}
-เว็บตอบ version 1.1.0 build #2 commit 789e08d582e6 ตรงกับ Pipeline
+{{out:b2-deploy}}
 ```
 
 ![build #2 สำเร็จครบ 8 stage](./images/lab3_jenkins_11_build2_success.png)
@@ -1094,7 +601,7 @@ image: docker.io/tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63
 
 #### หน้า Stages ของ build #2 ทีละ stage
 
-เปิด `http://localhost:8080/job/docker-build-push/2/stages/` แล้วคลิกทีละ stage ทางซ้าย ภาพทั้ง 8 ภาพด้านล่างเป็นภาพหน้าจอจริงของ build #2 (v1.1.0, tag `lab3-20260926r2-2`)
+เปิด `http://localhost:8080/job/docker-build-push/2/stages/` แล้วคลิกทีละ stage ทางซ้าย ภาพทั้ง 8 ภาพด้านล่างเป็นภาพหน้าจอจริงของ build #2 (v1.1.0, tag `{{val:b2_tag}}`)
 
 ![stage Connect](./images/lab3_stage_01_connect.png)
 
@@ -1114,7 +621,7 @@ image: docker.io/tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63
 
 ![stage Push](./images/lab3_stage_05_push.png)
 
-*ภาพที่ 22 **Push** — `Login Succeeded` แล้ว push `lab3-20260926r2-2` และจด digest `c4db3e26a831...`*
+*ภาพที่ 22 **Push** — `Login Succeeded` แล้ว push `{{val:b2_tag}}` และจด digest `{{val:b2_short}}...`*
 
 ![stage Clean](./images/lab3_stage_06_clean.png)
 
@@ -1122,26 +629,21 @@ image: docker.io/tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63
 
 ![stage Pull](./images/lab3_stage_07_pull.png)
 
-*ภาพที่ 24 **Pull** — ดึง `...@sha256:c4db3e26a831...` จาก Docker Hub digest เดียวกับที่ Push จดไว้*
+*ภาพที่ 24 **Pull** — ดึง `...@sha256:{{val:b2_short}}...` จาก Docker Hub digest เดียวกับที่ Push จดไว้*
 
 ![stage Deploy](./images/lab3_stage_08_deploy.png)
 
-*ภาพที่ 25 **Deploy** — `catfood-web` ถึง `healthy` รันจาก `image: ...@sha256:c4db3e26a831...` และ health ตอบ `1.1.0` build `2`*
+*ภาพที่ 25 **Deploy** — `catfood-web` ถึง `healthy` รันจาก `image: ...@sha256:{{val:b2_short}}...` และ health ตอบ `1.1.0` build `2`*
 
 ตรวจจาก **② shell ของ devtools** ว่าร้านเป็น container พี่น้องบน Docker ของ devtools:
 
 <!-- lab3-test:verify-web -->
-```bash
-docker ps --filter name=^catfood-web$ --format '{{.Names}}  {{.Image}}  {{.Status}}  {{.Ports}}'
-curl -s http://localhost:3000/api/health; echo
-ls /root/lab3-work
-```
+{{block:verify-web}}
 
 ✅ **ผลจากรอบทดสอบ** (หลัง build #2 — `/root/lab3-work` ว่างเพราะ Clean ลบซอร์สแล้ว):
 
 ```text
-catfood-web  c4db3e26a831  Up 4 seconds (healthy)  0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
-{"status":"ok","app":"catfood-shop","version":"1.1.0","build":"2","commit":"789e08d582e6","builtAt":"2026-09-26T07:04:00Z","host":"fa874f49da64"}
+{{out:verify-web-b2}}
 ```
 
 เปิด `http://localhost:3000` อีกครั้ง:
@@ -1156,32 +658,29 @@ catfood-web  c4db3e26a831  Up 4 seconds (healthy)  0.0.0.0:3000->3000/tcp, [::]:
 
 | วัดค่า | build #1 (v1.0.0) | build #2 (v1.1.0) |
 |---|---:|---:|
-| ผล | `SUCCESS` | `SUCCESS` |
-| ระยะเวลารวม (รอบทดสอบ) | 27 วินาที | 27 วินาที |
-| tag บน Docker Hub | `lab3-20260926r2-1` | `lab3-20260926r2-2` |
-| digest | `sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621` | `sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a` |
-| ช่วงที่เว็บปิด (Clean + Pull + Deploy) | 7 วินาที | 6 วินาที |
+| ผล | `{{val:b1_result}}` | `{{val:b2_result}}` |
+| ระยะเวลารวม (รอบทดสอบ) | {{val:b1_duration}} | {{val:b2_duration}} |
+| tag บน Docker Hub | `{{val:b1_tag}}` | `{{val:b2_tag}}` |
+| digest | `{{val:b1_digest}}` | `{{val:b2_digest}}` |
+| ช่วงที่เว็บปิด (Clean + Pull + Deploy) | {{val:b1_downtime}} | {{val:b2_downtime}} |
 
 🔍 **ตีความ:** ซอร์ส commit เดิม เปลี่ยนเพียง `APP_VERSION`, `BUILD_NUMBER` และ `BUILD_TIME` ซึ่ง Dockerfile วางไว้ท้ายสุดเป็น `ENV` (metadata) ทุกขั้นที่สร้างไฟล์จึง `CACHED` และไม่มี layer ใหม่ต้องอัปโหลด แต่ **digest เปลี่ยน** เพราะ config ของ image เปลี่ยน · Clean ของ build #2 เป็นที่เดียวที่ร้าน build #1 ถูกลบ Deploy จึงเริ่มบนเครื่องที่ไม่มี `catfood-web` และ image ที่ขึ้นเว็บคือ digest ที่เพิ่ง push
 
 บน Docker Hub ที่ `https://hub.docker.com/r/<DOCKER_USER>/catfood-shop/tags` จะเห็น tag `lab3-1` และ `lab3-2` แต่ละตัวชี้ digest ของ build ตัวเอง ผลจาก API สาธารณะของ Docker Hub ในรอบทดสอบ:
 
 ```text
-lab3-20260926-1 sha256:d52e068339ef73a7c1d837ca9634e9ed45589a2dec75b077cbc503ab26396d23
-lab3-20260926r2-1 sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
-lab3-20260926r2-2 sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a
-lab3-20260926r2-5 sha256:ab17aa4dc2503545f876d3717cc3fb43355d235059d28e85510cbf864294d3e0
+{{out:hub-tags}}
 ```
 
-(`lab3-20260926-1` เป็น tag ของการรันครั้งแรกในวันเดียวกันที่ถูกแทนด้วยรอบ `lab3-20260926r2` และ `lab3-20260926r2-5` มาจาก build #5 ที่ทดสอบการปฏิเสธของ Clean ดูสรุปผลการทดสอบ)
+(`lab3-20260926-1` เป็น tag ของการรันครั้งแรกในวันเดียวกันที่ถูกแทนด้วยรอบ `{{val:prefix}}` และ `{{val:prefix}}-5` มาจาก build #5 ที่ทดสอบการปฏิเสธของ Clean ดูสรุปผลการทดสอบ)
 
 ![หน้า Tags บน Docker Hub](./images/lab3_hub_02_pushed_tags.png)
 
-*ภาพที่ 28 (ภาพหน้าจอจริง) หน้า Tags กรองด้วย `lab3-20260926r2` — tag `-1` ชี้ `8e69a91bd888` และ `-2` ชี้ `c4db3e26a831` ตรงกับ console*
+*ภาพที่ 28 (ภาพหน้าจอจริง) หน้า Tags กรองด้วย `{{val:prefix}}` — tag `-1` ชี้ `{{val:b1_short}}` และ `-2` ชี้ `{{val:b2_short}}` ตรงกับ console*
 
 ![รายละเอียด digest บน Docker Hub](./images/lab3_hub_03_image_digest.png)
 
-*ภาพที่ 29 (ภาพหน้าจอจริง) หน้ารายละเอียดของ image build #2 แสดง manifest digest เต็ม `sha256:c4db3e26a831...` ตัวเดียวกับที่ Pull และ Deploy ใช้*
+*ภาพที่ 29 (ภาพหน้าจอจริง) หน้ารายละเอียดของ image build #2 แสดง manifest digest เต็ม `sha256:{{val:b2_short}}...` ตัวเดียวกับที่ Pull และ Deploy ใช้*
 
 ---
 
@@ -1194,32 +693,21 @@ lab3-20260926r2-5 sha256:ab17aa4dc2503545f876d3717cc3fb43355d235059d28e85510cbf8
 ✅ **ผลจากรอบทดสอบ** (build #3):
 
 ```text
-Started by user labadmin
-Running on Jenkins in /var/jenkins_home/workspace/docker-build-push
-+ ssh -i **** devtools-gw NAME='catfood-test-3' CFG='/tmp/lab3-docker-3' WORK_DIR='/root/lab3-work/build-3' bash -s
-เก็บกวาดของ build ที่ล้มแล้ว: catfood-test-3 /tmp/lab3-docker-3 /root/lab3-work/build-3
-ERROR: APP_VERSION ไม่ถูกต้อง: ต้องเป็นรูปแบบ X.Y.Z เช่น 1.0.0
-Finished: FAILURE
+{{out:b3}}
 ```
 
 ![build #3 ล้มที่ Connect](./images/lab3_jenkins_12_invalid_parameter.png)
 
 *ภาพที่ 30 (ภาพหน้าจอจริง) build #3 Connect เป็นสีแดง stage ถัดไปทั้งหมดถูกข้าม (skipped) — ผลที่ตั้งใจให้เกิด*
 
-🔍 **ตีความ:** build ล้มใน Connect ภายในราว 2 วินาที บรรทัด `+ ssh` บรรทัดเดียวใน console มาจาก `post { unsuccessful }` ที่เก็บกวาดหลัง build ล้ม **ไม่มี SSH ใดที่ส่งค่า `1.2.0; id`** (ค่าที่ส่งมีเพียงชื่อ container และ path ของ build) ข้อความ `ERROR:` ถูกพิมพ์ท้าย console เพราะ Jenkins รายงานสาเหตุหลัง post ทำงานเสร็จ
+🔍 **ตีความ:** build ล้มใน Connect ภายในราว {{val:b3_duration}} บรรทัด `+ ssh` บรรทัดเดียวใน console มาจาก `post { unsuccessful }` ที่เก็บกวาดหลัง build ล้ม **ไม่มี SSH ใดที่ส่งค่า `1.2.0; id`** (ค่าที่ส่งมีเพียงชื่อ container และ path ของ build) ข้อความ `ERROR:` ถูกพิมพ์ท้าย console เพราะ Jenkins รายงานสาเหตุหลัง post ทำงานเสร็จ
 
 **(ข) branch ที่ไม่มีอยู่จริง:** Build with Parameters โดยกรอก `GIT_REF` = `no-such-branch` (รูปแบบถูก จึงผ่าน Connect)
 
 ✅ **ผลจากรอบทดสอบ** (build #4 เฉพาะ Clone และ post):
 
 ```text
-+ ssh -i **** devtools-gw WORK_DIR='/root/lab3-work/build-4' GIT_URL='https://github.com/Tuchsanai/DevTools.git' GIT_REF='no-such-branch' APP_SUBDIR='04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop' bash -s
-fatal: Remote branch no-such-branch not found in upstream origin
-...
-+ ssh -i **** devtools-gw NAME='catfood-test-4' CFG='/tmp/lab3-docker-4' WORK_DIR='/root/lab3-work/build-4' bash -s
-เก็บกวาดของ build ที่ล้มแล้ว: catfood-test-4 /tmp/lab3-docker-4 /root/lab3-work/build-4
-ERROR: script returned exit code 128
-Finished: FAILURE
+{{out:b4}}
 ```
 
 ![build #4 ล้มที่ Clone](./images/lab3_jenkins_13_missing_branch.png)
@@ -1229,9 +717,7 @@ Finished: FAILURE
 หลัง build #3 และ #4 ร้านยังเป็น build #2 container เดิม (ไม่มี container ทดสอบหรือโฟลเดอร์ login ค้าง):
 
 ```text
-fa874f49da64 Up 48 seconds (healthy)
-{"status":"ok","app":"catfood-shop","version":"1.1.0","build":"2","commit":"789e08d582e6","builtAt":"2026-09-26T07:04:00Z","host":"fa874f49da64"}
-ls: cannot access '/tmp/lab3-docker-*': No such file or directory
+{{out:after-b4}}
 ```
 
 🔍 **ตีความ:** ทั้งสอง build ล้ม **ก่อน Clean** ร้านเดิมจึงไม่ถูกแตะ และ `post` ลบเฉพาะของ build ที่ล้ม (`catfood-test-N`, `/tmp/lab3-docker-N`, `/root/lab3-work/build-N`) ลองแบบเดียวกันกับ `APP_SUBDIR` = `../../etc` จะได้ `APP_SUBDIR ไม่ถูกต้อง` ที่ Connect
@@ -1251,7 +737,7 @@ ls: cannot access '/tmp/lab3-docker-*': No such file or directory
 
 ## 📊 สรุปผลการทดสอบของเอกสารนี้
 
-ทดสอบเมื่อ 2026-09-26 06:45 UTC ใน container ทดลองแยกจาก image `tuchsanai/devtools:2569_1` (สร้างด้วย `--privileged --tmpfs /run` แบบเดียวกับทาง A) และ Jenkins 2.568.3 จาก `jenkins/jenkins:lts-jdk21` ด้วยคำสั่งสร้างของ LAB 1 ทุกตัวอักษร push/pull กับ **Docker Hub จริง** (`tuchsanai/catfood-shop`)
+ทดสอบเมื่อ {{val:test_date}} ใน container ทดลองแยกจาก image `tuchsanai/devtools:2569_1` (สร้างด้วย `--privileged --tmpfs /run` แบบเดียวกับทาง A) และ Jenkins {{val:jenkins_version}} จาก `jenkins/jenkins:lts-jdk21` ด้วยคำสั่งสร้างของ LAB 1 ทุกตัวอักษร push/pull กับ **Docker Hub จริง** (`tuchsanai/catfood-shop`)
 
 | รายการ | ผล |
 |---|---|
@@ -1259,13 +745,11 @@ ls: cannot access '/tmp/lab3-docker-*': No such file or directory
 | `jenkins` resolve `devtools` | ไม่ได้ (exit 2) |
 | SSH ผ่าน `devtools-gw` → gateway ของ `cicd-net` | ถึง sshd และตรวจ host key แบบ pin ผ่าน |
 | build แรกแบบ Build Now (ไม่ส่ง parameter) | `params.*` ได้ค่า default ครบ |
-| build #1 (`1.0.0`, clone จาก GitHub `main`) | `SUCCESS` ครบ 8 stage ใน 27 วินาที · `lab3-20260926r2-1` |
-| build #2 (`1.1.0`) | `SUCCESS` ใน 27 วินาที · Clean ลบร้าน build #1 · deploy `sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a` |
-| build #3 (`1.2.0; id`) | `FAILURE` ที่ Connect ร้านยังเป็น build #2 |
-| build #4 (`GIT_REF=no-such-branch`) | `FAILURE` ที่ Clone · post เก็บกวาดของ build #4 · ร้านยังเป็น build #2 |
-| build #5 (มี `catfood-web` ที่ไม่ใช่ของแล็บอยู่ก่อน) | `FAILURE` ที่ Clean (`failure`) ด้วยข้อความ `พบ container catfood-web ที่ไม่ได้สร้างโดย LAB 3` container นั้นยังอยู่ · Pull/Deploy ถูกข้าม · image `catfood-shop:build-5` ที่ build แล้วค้างในเครื่อง (ลบด้วยบล็อกเก็บกวาด) |
-| บล็อกเก็บกวาด | ลบ container ที่มี label ของ LAB 3, image ของร้าน และ `/root/lab3-work` · `jenkins`, `cicd-net`, `jenkins_home` และ `catfood-web` ที่ไม่มี label ของแล็บยังอยู่ · รอบทดสอบนี้ใช้ตัวเลือก image ตามชื่อ `catfood-shop` รุ่นก่อน บล็อกปัจจุบันเลือก image ด้วย label `devtools.lab=lab3` (ตรวจ syntax แล้ว แต่ไม่ได้รัน end-to-end ซ้ำ) |
-| หมายเหตุการทดสอบ | การรันครั้งแรกของวัน (tag `lab3-20260926-1`) ส่ง config ของ job ผ่าน REST API โดยไม่ระบุ charset ข้อความไทยใน console จึงเพี้ยน จึงแก้เครื่องมือทดสอบให้ส่ง `charset=UTF-8` ลบ build นั้นและรันใหม่ด้วย prefix `lab3-20260926r2` tag เดิมยังอยู่บน Docker Hub เป็นหลักฐาน · นักศึกษาวาง Jenkinsfile ผ่านหน้าเว็บ จึงไม่พบปัญหานี้ |
+| build #1 (`1.0.0`, clone จาก GitHub `main`) | `{{val:b1_result}}` ครบ 8 stage ใน {{val:b1_duration}} · `{{val:b1_tag}}` |
+| build #2 (`1.1.0`) | `{{val:b2_result}}` ใน {{val:b2_duration}} · Clean ลบร้าน build #1 · deploy `{{val:b2_digest}}` |
+| build #3 (`1.2.0; id`) | `{{val:b3_result}}` ที่ Connect ร้านยังเป็น build #2 |
+| build #4 (`GIT_REF=no-such-branch`) | `{{val:b4_result}}` ที่ Clone · post เก็บกวาดของ build #4 · ร้านยังเป็น build #2 |
+{{val:owner_row}}
 
 ## แก้ปัญหาที่พบบ่อย
 
@@ -1294,29 +778,12 @@ ls: cannot access '/tmp/lab3-docker-*': No such file or directory
 **ห้ามลบ** `devtools`, `jenkins`, volume `jenkins_home`, network `cicd-net` และ credential ทั้งสอง — LAB ถัดไปใช้ต่อ สิ่งที่แล็บนี้สร้างและลบได้อย่างปลอดภัย (ใน **② shell ของ devtools**) บล็อกนี้เลือกทั้ง container และ image ด้วย label `devtools.lab=lab3` ที่ Jenkinsfile ติดให้ตอน build/run จึงลบเฉพาะของที่แล็บสร้าง image หรือ container อื่นที่ไม่มี label นี้ (แม้ชื่อ `catfood-shop` เหมือนกัน) จะไม่ถูกแตะ:
 
 <!-- lab3-test:cleanup -->
-```bash
-docker ps -a --filter label=devtools.lab=lab3 --format '{{.Names}}' | xargs -r docker rm -f    # catfood-web และ catfood-test-N ที่มี label ของ LAB 3 เท่านั้น
-docker image ls -aq --filter label=devtools.lab=lab3 | sort -u | xargs -r docker image rm -f    # image ที่ build/pull จาก Jenkinsfile นี้ (มี label devtools.lab=lab3) เท่านั้น image อื่นแม้ชื่อ catfood-shop จะไม่ถูกลบ
-rm -rf /root/lab3-work /tmp/lab3-docker-*        # ซอร์สที่ clone และ login ชั่วคราวที่อาจค้างเมื่อ build ถูกยกเลิกกลางทาง
-docker ps -a --format '{{.Names}}'; docker network ls --filter name=cicd-net --format '{{.Name}}'; docker volume ls -q --filter name=jenkins_home
-```
+{{block:cleanup}}
 
 ✅ **ผลจากรอบทดสอบ** (สามบรรทัดท้ายคือสิ่งที่ต้องยังอยู่: `jenkins`, `cicd-net`, `jenkins_home` · รอบทดสอบมี container ชื่อ `catfood-web` จาก image `jenkins/jenkins` ที่สร้างขึ้นเพื่อทดสอบว่า Clean ปฏิเสธของที่ไม่ใช่ของแล็บ มันไม่มี label ของ LAB 3 จึงไม่ถูกลบและยังปรากฏในรายการ — เครื่องนักศึกษาจะไม่มีบรรทัดนี้ · ผลนี้จับจากบล็อกรุ่นก่อนที่เลือก image ตามชื่อ `catfood-shop` ส่วนตัวเลือก image ด้วย label ในบล็อกปัจจุบันตรวจ syntax แล้วแต่ยังไม่ได้รัน end-to-end ซ้ำ รายการที่เหลือจึงเหมือนกันเพราะ image ของร้านในรอบทดสอบทุกตัวสร้างจาก Jenkinsfile ที่ติด label):
 
 ```text
-Untagged: tuchsanai/catfood-shop@sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
-Deleted: sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621
-Untagged: catfood-shop:build-5
-Untagged: tuchsanai/catfood-shop:lab3-20260926r2-5
-Deleted: sha256:ab17aa4dc2503545f876d3717cc3fb43355d235059d28e85510cbf864294d3e0
-Untagged: tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a
-Deleted: sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a
-Untagged: tuchsanai/catfood-shop@sha256:d52e068339ef73a7c1d837ca9634e9ed45589a2dec75b077cbc503ab26396d23
-Deleted: sha256:d52e068339ef73a7c1d837ca9634e9ed45589a2dec75b077cbc503ab26396d23
-catfood-web
-jenkins
-cicd-net
-jenkins_home
+{{out:cleanup}}
 ```
 
 เมื่อเลิกใช้ SSH จาก Jenkins แล้ว (เช่น จบรายวิชา) ให้ **เพิกถอนสิทธิ์**: ลบบรรทัดที่ลงท้าย `jenkins-to-devtools` ออกจาก `/root/.ssh/authorized_keys` ลบ credential `devtools-ssh` และ `dockerhub` ใน Jenkins และ revoke token ที่หน้า Docker Hub → Personal access tokens · tag `lab3-N` บน Docker Hub ลบได้ที่หน้า Tags ของ repository

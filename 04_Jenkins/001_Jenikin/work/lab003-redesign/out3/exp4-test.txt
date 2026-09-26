@@ -1,0 +1,7 @@
+user root
+hostname 172.19.0.1
+port 22
+stricthostkeychecking true
+hostkeyalias devtools-gw
+root@172.19.0.1: Permission denied (publickey,password).
+exit=255

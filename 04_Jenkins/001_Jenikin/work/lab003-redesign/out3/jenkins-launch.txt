@@ -1,0 +1,44 @@
+6f31a89b9011863416b50d9642bc6c36562a11aaa2b9572e574a9750bba6882d
+Unable to find image 'jenkins/jenkins:lts-jdk21' locally
+lts-jdk21: Pulling from jenkins/jenkins
+7d8676c4f825: Pulling fs layer
+009bab87a9ea: Pulling fs layer
+f06c632bcf59: Pulling fs layer
+27ee9a825048: Pulling fs layer
+88d27572059a: Pulling fs layer
+d097c8512a96: Pulling fs layer
+13045988ecda: Pulling fs layer
+91db25d7b900: Pulling fs layer
+549414223487: Pulling fs layer
+ba74585817cb: Pulling fs layer
+c739d2dd7782: Pulling fs layer
+e8d1cd9c12ca: Pulling fs layer
+7d8676c4f825: Download complete
+88d27572059a: Download complete
+009bab87a9ea: Download complete
+27ee9a825048: Download complete
+c739d2dd7782: Download complete
+f06c632bcf59: Download complete
+91db25d7b900: Download complete
+549414223487: Download complete
+d097c8512a96: Download complete
+e8d1cd9c12ca: Download complete
+ba74585817cb: Download complete
+44136fa355b3: Download complete
+272717b30638: Download complete
+13045988ecda: Download complete
+27ee9a825048: Pull complete
+13045988ecda: Pull complete
+c739d2dd7782: Pull complete
+91db25d7b900: Pull complete
+d097c8512a96: Pull complete
+009bab87a9ea: Pull complete
+549414223487: Pull complete
+f06c632bcf59: Pull complete
+7d8676c4f825: Pull complete
+88d27572059a: Pull complete
+e8d1cd9c12ca: Pull complete
+ba74585817cb: Pull complete
+Digest: sha256:c1e4c349365f6d16d88595b2c5f7e8ff39b8ae1d061f62420bac193b4b9616d0
+Status: Downloaded newer image for jenkins/jenkins:lts-jdk21
+cd3a16de4373f488cece0585c71b6ce306a5349aa8991551daec8cd4f065423e

@@ -1,0 +1,33 @@
+{
+  "experiment": "devtools-lab003-f39782",
+  "owner": "yolo3",
+  "experiment_ip": "172.17.0.2",
+  "image_id": "sha256:b3e0784f66b7299ab61b0f75c74e8c76c17f0ffe4364acd6b61abc6e92840c14",
+  "container_ports": {"ssh": 22, "jenkins": 8080, "app": 3000},
+  "host_loopback_ports": {"ssh": "127.0.0.1:2223", "jenkins": "127.0.0.1:18080", "app": "127.0.0.1:13000"},
+  "jenkins_version": "2.568.3",
+  "job_name": "docker-build-push",
+  "browser_auth_file": "work/lab003-redesign/browser-auth.json (mode 600, user labadmin)",
+  "urls": {
+    "jenkins_login": "http://172.17.0.2:8080/login",
+    "dashboard": "http://172.17.0.2:8080/",
+    "credentials": "http://172.17.0.2:8080/manage/credentials/store/system/domain/_/",
+    "job": "http://172.17.0.2:8080/job/docker-build-push/",
+    "build_with_parameters": "http://172.17.0.2:8080/job/docker-build-push/build?delay=0sec",
+    "build_1_graph": "http://172.17.0.2:8080/job/docker-build-push/1/pipeline-overview/",
+    "build_1_console": "http://172.17.0.2:8080/job/docker-build-push/1/console",
+    "build_2_graph": "http://172.17.0.2:8080/job/docker-build-push/2/pipeline-overview/",
+    "build_2_console": "http://172.17.0.2:8080/job/docker-build-push/2/console",
+    "app": "http://172.17.0.2:3000/",
+    "app_health": "http://172.17.0.2:3000/api/health",
+    "dockerhub_tags": "https://hub.docker.com/r/<DOCKER_USER>/catfood-shop/tags?name=lab3-20260926"
+  },
+  "planned_builds": [
+    {"build": 1, "params": {"APP_VERSION": "1.0.0", "TAG_PREFIX": "lab3-20260926"}, "tag": "lab3-20260926-1"},
+    {"build": 2, "params": {"APP_VERSION": "1.1.0", "TAG_PREFIX": "lab3-20260926"}, "tag": "lab3-20260926-2"},
+    {"build": 3, "params": {"APP_VERSION": "1.2.0; id"}, "expect": "FAILURE at Connect (input validation)"},
+    {"build": 4, "params": {"GIT_REF": "no-such-branch", "TAG_PREFIX": "lab3-20260926"}, "expect": "FAILURE at Clone, post cleanup runs"}
+  ],
+  "build_1_starts_at": "2026-09-26T06:49:40+0000",
+  "note": "Builds are triggered by yolo3 via REST. BUILD_READY.json is written after builds 1-2 are verified. Experiment stays up until CAPTURE_DONE exists."
+}

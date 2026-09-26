@@ -1,0 +1,5 @@
+sh: 1: docker: not found
+exit=127
+uid=1000(jenkins) gid=1000(jenkins) groups=1000(jenkins)
+HOME=/var/jenkins_home
+OpenSSH_10.0p2 Debian-7+deb13u4, OpenSSL 3.5.7 9 Jun 2026

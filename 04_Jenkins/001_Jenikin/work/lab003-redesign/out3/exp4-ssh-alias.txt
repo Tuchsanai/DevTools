@@ -1,0 +1,6 @@
+gateway ของ cicd-net = 172.19.0.1 (เป็น IP ของ devtools เอง)
+total 16
+drwx------  2 jenkins jenkins 4096 Sep 26 06:46 .
+drwxr-xr-x 13 jenkins jenkins 4096 Sep 26 06:46 ..
+-rw-------  1 jenkins jenkins  190 Sep 26 06:46 config
+-rw-------  1 jenkins jenkins   93 Sep 26 06:46 known_hosts

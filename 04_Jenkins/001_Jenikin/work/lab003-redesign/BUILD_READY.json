@@ -1,0 +1,337 @@
+{
+ "experiment": "devtools-lab003-f39782",
+ "owner": "yolo3",
+ "written_at": "2026-09-26T07:05:49Z",
+ "jenkins_ui": "http://172.17.0.2:8080 (host tunnel per parent); login labadmin via browser-auth.json",
+ "job": "docker-build-push",
+ "tag_prefix": "lab3-20260926r2",
+ "hub_repo": "docker.io/tuchsanai/catfood-shop",
+ "note_replaced_run": "An earlier build #1 (tag lab3-20260926-1, digest sha256:d52e0683...) ran with the job XML posted without charset, so Thai text in its console was mojibake. Its console is archived in out3/enc-bug-b1.txt; the Jenkins record was deleted, nextBuildNumber reset to 1, and the pipeline rerun with the new prefix lab3-20260926r2. Hub tag lab3-20260926-1 remains public as an evidence artifact. Parent captures taken before ~07:01 UTC of the app/build #1 belong to that replaced run (chip text v1.0.0 · build #1 is identical).",
+ "builds": [
+  {
+   "build": 1,
+   "params": {
+    "APP_VERSION": "1.0.0",
+    "TAG_PREFIX": "lab3-20260926r2"
+   },
+   "result": "SUCCESS",
+   "duration_ms": 27256,
+   "tag": "lab3-20260926r2-1",
+   "digest": "sha256:8e69a91bd88883c7d11582be916bb1fc1f9273be7bf2fa9343732d7c816da621",
+   "stages": [
+    {
+     "stage": "Connect",
+     "status": "success",
+     "ms": 1054
+    },
+    {
+     "stage": "Clone",
+     "status": "success",
+     "ms": 4693
+    },
+    {
+     "stage": "Build",
+     "status": "success",
+     "ms": 1961
+    },
+    {
+     "stage": "Test",
+     "status": "success",
+     "ms": 3286
+    },
+    {
+     "stage": "Push",
+     "status": "success",
+     "ms": 8631
+    },
+    {
+     "stage": "Clean",
+     "status": "success",
+     "ms": 1076
+    },
+    {
+     "stage": "Pull",
+     "status": "success",
+     "ms": 2396
+    },
+    {
+     "stage": "Deploy",
+     "status": "success",
+     "ms": 3035
+    },
+    {
+     "stage": "Post Actions",
+     "status": "success",
+     "ms": 96
+    }
+   ],
+   "clean_removed_old_app": "catfood-web from replaced run (d52e068339ef)"
+  },
+  {
+   "build": 2,
+   "params": {
+    "APP_VERSION": "1.1.0",
+    "TAG_PREFIX": "lab3-20260926r2"
+   },
+   "result": "SUCCESS",
+   "duration_ms": 26618,
+   "tag": "lab3-20260926r2-2",
+   "digest": "sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a",
+   "stages": [
+    {
+     "stage": "Connect",
+     "status": "success",
+     "ms": 1028
+    },
+    {
+     "stage": "Clone",
+     "status": "success",
+     "ms": 3791
+    },
+    {
+     "stage": "Build",
+     "status": "success",
+     "ms": 2372
+    },
+    {
+     "stage": "Test",
+     "status": "success",
+     "ms": 3275
+    },
+    {
+     "stage": "Push",
+     "status": "success",
+     "ms": 8626
+    },
+    {
+     "stage": "Clean",
+     "status": "success",
+     "ms": 1071
+    },
+    {
+     "stage": "Pull",
+     "status": "success",
+     "ms": 2385
+    },
+    {
+     "stage": "Deploy",
+     "status": "success",
+     "ms": 3032
+    },
+    {
+     "stage": "Post Actions",
+     "status": "success",
+     "ms": 91
+    }
+   ],
+   "clean_removed_old_app": "catfood-web build 1 (8e69a91bd888, Up About a minute (healthy))",
+   "deploy_image": "docker.io/tuchsanai/catfood-shop@sha256:c4db3e26a831bcad768516433bc9cfc63c114181c385999dba6d62a796649c5a",
+   "health": {
+    "status": "ok",
+    "app": "catfood-shop",
+    "version": "1.1.0",
+    "build": "2",
+    "commit": "789e08d582e6",
+    "builtAt": "2026-09-26T07:04:00Z",
+    "host": "fa874f49da64"
+   }
+  },
+  {
+   "build": 3,
+   "params": {
+    "APP_VERSION": "1.2.0; id"
+   },
+   "result": "FAILURE",
+   "stages": [
+    {
+     "stage": "Connect",
+     "status": "failure",
+     "ms": 214
+    },
+    {
+     "stage": "Clone",
+     "status": "skipped",
+     "ms": 79
+    },
+    {
+     "stage": "Build",
+     "status": "skipped",
+     "ms": 53
+    },
+    {
+     "stage": "Test",
+     "status": "skipped",
+     "ms": 49
+    },
+    {
+     "stage": "Push",
+     "status": "skipped",
+     "ms": 48
+    },
+    {
+     "stage": "Clean",
+     "status": "skipped",
+     "ms": 53
+    },
+    {
+     "stage": "Pull",
+     "status": "skipped",
+     "ms": 49
+    },
+    {
+     "stage": "Deploy",
+     "status": "skipped",
+     "ms": 48
+    },
+    {
+     "stage": "Post Actions",
+     "status": "success",
+     "ms": 561
+    }
+   ],
+   "expect": "FAILURE at Connect; only SSH is post-cleanup; app still v1.1.0 build 2"
+  },
+  {
+   "build": 4,
+   "params": {
+    "GIT_REF": "no-such-branch",
+    "APP_VERSION": "1.2.0"
+   },
+   "result": "FAILURE",
+   "stages": [
+    {
+     "stage": "Connect",
+     "status": "success",
+     "ms": 1048
+    },
+    {
+     "stage": "Clone",
+     "status": "failure",
+     "ms": 1474
+    },
+    {
+     "stage": "Build",
+     "status": "skipped",
+     "ms": 49
+    },
+    {
+     "stage": "Test",
+     "status": "skipped",
+     "ms": 49
+    },
+    {
+     "stage": "Push",
+     "status": "skipped",
+     "ms": 49
+    },
+    {
+     "stage": "Clean",
+     "status": "skipped",
+     "ms": 50
+    },
+    {
+     "stage": "Pull",
+     "status": "skipped",
+     "ms": 51
+    },
+    {
+     "stage": "Deploy",
+     "status": "skipped",
+     "ms": 49
+    },
+    {
+     "stage": "Post Actions",
+     "status": "success",
+     "ms": 552
+    }
+   ],
+   "expect": "FAILURE at Clone (fatal: Remote branch no-such-branch not found); post cleanup removed build-4 dirs; app still v1.1.0 build 2"
+  },
+  {
+   "build": 5,
+   "params": {
+    "APP_VERSION": "1.2.0",
+    "TAG_PREFIX": "lab3-20260926r2"
+   },
+   "result": "FAILURE",
+   "stages": [
+    {
+     "stage": "Connect",
+     "status": "success",
+     "ms": 1016
+    },
+    {
+     "stage": "Clone",
+     "status": "success",
+     "ms": 3778
+    },
+    {
+     "stage": "Build",
+     "status": "success",
+     "ms": 2234
+    },
+    {
+     "stage": "Test",
+     "status": "success",
+     "ms": 3277
+    },
+    {
+     "stage": "Push",
+     "status": "success",
+     "ms": 8022
+    },
+    {
+     "stage": "Clean",
+     "status": "failure",
+     "ms": 659
+    },
+    {
+     "stage": "Pull",
+     "status": "skipped",
+     "ms": 70
+    },
+    {
+     "stage": "Deploy",
+     "status": "skipped",
+     "ms": 66
+    },
+    {
+     "stage": "Post Actions",
+     "status": "success",
+     "ms": 644
+    }
+   ],
+   "tag_pushed": "lab3-20260926r2-5",
+   "digest": "sha256:ab17aa4dc2503545f876d3717cc3fb43355d235059d28e85510cbf864294d3e0",
+   "expect": "ownership test run after CAPTURE_FINAL_DONE: foreign unlabeled catfood-web (jenkins image, sleep) present → Clean refused ('พบ container catfood-web ที่ไม่ได้สร้างโดย LAB 3 (label=/) จึงไม่ลบ'), foreign container preserved, Pull/Deploy skipped"
+  }
+ ],
+ "app_now": {
+  "url": "http://172.17.0.2:3000/",
+  "health": {
+   "status": "ok",
+   "app": "catfood-shop",
+   "version": "1.1.0",
+   "build": "2",
+   "commit": "789e08d582e6",
+   "builtAt": "2026-09-26T07:04:00Z",
+   "host": "fa874f49da64"
+  }
+ },
+ "capture_suggestions": [
+  "build 1/2 pipeline-overview graph (8 green stages)",
+  "build 2 console at Clean (ลบแอปเดิม ...) and Pull (Digest: sha256:c4db3e26...)",
+  "build 3 graph (Connect red) and build 4 graph (Clone red)",
+  "Build with Parameters form",
+  "Docker Hub tags filtered lab3-20260926r2",
+  "app v1.1.0 · build #2 hero + Deployment info"
+ ],
+ "hub_tags_url": "https://hub.docker.com/r/tuchsanai/catfood-shop/tags?name=lab3-20260926r2",
+ "next": "CAPTURE_FINAL_DONE received; documents finalized; experiment cleanup performed by yolo3 (see work/lab003-redesign/LAB003_FINAL_REPORT.md)",
+ "encoding_fix": {
+  "cause": "jenkins_api2.sh updatejob POSTed config.xml with 'Content-Type: application/xml' (no charset) and no XML declaration; Jenkins decoded the UTF-8 body as ISO-8859-1, double-encoding all Thai text (job description arrows, Jenkinsfile comments/strings, parameter descriptions) — build logs then echoed mojibake.",
+  "fix": "harness now sends 'Content-Type: application/xml; charset=UTF-8' for job/updatejob; UTF-8 original 003_LAB_Docker_Build_Push/Jenkinsfile re-uploaded at ~07:01 UTC; config.xml verified to contain 0 mojibake sequences; API shows correct Thai description and 5 parameter descriptions.",
+  "corrected_runs": "Builds #1 (1.0.0) and #2 (1.1.0) listed above are the corrected UTF-8 runs (after deleting the mojibake build record and resetting nextBuildNumber). #3 and #4 are the failure tests on the same corrected job. Their consoles show readable Thai (e.g. 'ลบแอปเดิม catfood-web ...', 'ERROR: APP_VERSION ไม่ถูกต้อง ...').",
+  "responds_to": "CAPTURE_DONE feedback written 07:00 UTC"
+ }
+}

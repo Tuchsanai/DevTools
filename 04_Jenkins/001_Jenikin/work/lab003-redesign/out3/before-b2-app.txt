@@ -1,0 +1,2 @@
+catfood-web 8e69a91bd888 Up 56 seconds (healthy) 0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp devtools.build=1,devtools.lab=lab3,devtools.role=app,org.opencontainers.image.revision=789e08d582e6
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"789e08d582e6","builtAt":"2026-09-26T07:02:06Z","host":"8b0326829376"}
