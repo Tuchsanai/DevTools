@@ -1,6 +1,7 @@
 // LAB 3 — Jenkins สั่ง devtools ผ่าน SSH ด้วย key: Connect → Clone → Build → Test → Push → Deploy
 // ต้องมี: plugin "SSH Agent" · credential devtools-ssh (SSH key) และ dockerhub (username + token)
-//         host key ของ devtools อยู่ใน ~/.ssh/known_hosts ของ jenkins แล้ว (README ข้อ 1.2)
+// host key: ต่อครั้งแรก ssh จำ key ของ devtools ลง ~/.ssh/known_hosts ของ jenkins เอง (accept-new)
+//           ครั้งต่อไปถ้า key เปลี่ยน ssh ปฏิเสธทันที
 // ทุกคำสั่ง git/docker รันบน devtools: Jenkins แค่ส่งคำสั่งไปทาง SSH
 
 pipeline {
@@ -16,7 +17,7 @@ pipeline {
   }
 
   environment {
-    SSH_DEVTOOLS = 'ssh -o StrictHostKeyChecking=yes -o BatchMode=yes root@devtools'
+    SSH_DEVTOOLS = 'ssh -o StrictHostKeyChecking=accept-new -o BatchMode=yes root@devtools'
     GIT_URL      = 'https://github.com/Tuchsanai/DevTools.git'
     APP_PATH     = '04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop'
     WORK_DIR     = '/root/lab3-work/DevTools'      // ที่ clone repo บน devtools
@@ -34,7 +35,6 @@ pipeline {
             error 'APP_VERSION ต้องเป็นรูปแบบ X.Y.Z เช่น 1.0.0'
           }
         }
-        sh 'ssh-keygen -lF devtools'   // host key ที่ pin ไว้ในข้อ 1.2 (ไม่มี = หยุดทันที)
         sshagent(credentials: ['devtools-ssh']) {
           sh '$SSH_DEVTOOLS "hostname && whoami && docker --version && git --version"'
         }

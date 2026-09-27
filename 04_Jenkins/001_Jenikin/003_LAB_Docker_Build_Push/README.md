@@ -1,6 +1,6 @@
 # LAB 3 — Jenkins สั่ง devtools ผ่าน SSH key: Connect → Clone → Build → Test → Push → Deploy ร้านอาหารแมว
 
-> 📝 **ฉบับปรับใหม่ (2026-09-27):** Jenkins SSH เข้า `devtools` ด้วย **key `devtoolSSH`** ผ่าน plugin **SSH Agent** และตรวจ host key จาก `known_hosts` ที่ pin ไว้ · `Jenkinsfile` ถูกเขียนใหม่ให้สั้นเหลือ **6 stage** · ⚠️ ไฟล์ฉบับนี้ **ตรวจแบบ static แล้ว แต่ยังไม่ได้รันจริงบน Jenkins** · ภาพที่มีป้าย 🕰️ **ภาพเดิม** ถ่ายจาก workflow รุ่นก่อน (SSH ด้วยรหัสผ่าน, 8 stage) ใช้ดูหน้าตาหน้าเว็บเท่านั้น
+> 📝 **ฉบับปรับใหม่ (2026-09-27):** Jenkins SSH เข้า `devtools` ด้วย **key `devtoolSSH`** ผ่าน plugin **SSH Agent** และให้ SSH จำ host key ของ devtools เองตอนต่อครั้งแรก (`accept-new`) · `Jenkinsfile` ถูกเขียนใหม่ให้สั้นเหลือ **6 stage** · ⚠️ ไฟล์ฉบับนี้ **ตรวจแบบ static แล้ว แต่ยังไม่ได้รันจริงบน Jenkins** · ภาพที่มีป้าย 🕰️ **ภาพเดิม** ถ่ายจาก workflow รุ่นก่อน (SSH ด้วยรหัสผ่าน, 8 stage) ใช้ดูหน้าตาหน้าเว็บเท่านั้น
 
 > ⏱️ ประมาณ 45–60 นาที · 🧪 7 ขั้น · 🎯 จบเมื่อกด **Build** ใน Jenkins แล้ว `http://localhost:3000` แสดงร้าน **Meow Mart** เวอร์ชันที่ Pipeline เพิ่ง build → test → push ขึ้น Docker Hub → pull กลับมา deploy
 
@@ -50,7 +50,7 @@ flowchart LR
 
 ```text
 003_LAB_Docker_Build_Push/
-├── Jenkinsfile          ← Pipeline 6 stage (ข้อ 4.4)
+├── Jenkinsfile          ← Pipeline 6 stage (ข้อ 4.3)
 ├── catfood-shop/        ← ซอร์สร้าน (devtools clone จาก GitHub เอง)
 └── Devtool_SSH/         ← key pair ของแล็บ → mount เข้า devtools ที่ /etc/devtools/ssh
     ├── devtoolSSH       ← private key: วางใน Jenkins credential devtools-ssh (ข้อ 3.1)
@@ -71,7 +71,7 @@ stage Clone ดึงซอร์สร้านจากโฟลเดอร�
 
 *ภาพที่ 2 โฟลเดอร์ `catfood-shop` บน GitHub ที่ stage Clone ดึงมา*
 
-## ขั้นที่ 1 — สร้าง container สองตัวและ pin host key (🖥️ host)
+## ขั้นที่ 1 — สร้าง container สองตัว (🖥️ host)
 
 ### 1.1) สร้าง network และ container จาก image `devtools:2569_1` ที่เตรียมไว้
 
@@ -118,7 +118,7 @@ docker run -d --name jenkins --network cicd-net --restart unless-stopped -p 8080
 | `docker network create cicd-net` (ส่วนที่ 1) | ขึ้น `already exists` ใช้ network เดิมได้ · บน `cicd-net` Jenkins เรียก `devtools` ด้วยชื่อได้เลย |
 | `--privileged --tmpfs /run` (ส่วนที่ 2) | ให้ Docker ข้างใน `devtools` ทำงานได้ |
 | `-v "${PWD}/Devtool_SSH:/etc/devtools/ssh"` (ส่วนที่ 2) | map โฟลเดอร์ key ของแล็บเข้า devtools → ตอน start `start.sh` นำ `devtoolSSH.pub` ไปใส่ใน `/root/.ssh/authorized_keys` |
-| `-v jenkins_home:/var/jenkins_home` (ส่วนที่ 3) | volume เก็บข้อมูล Jenkins รวมถึง `~/.ssh/known_hosts` ในข้อ 1.2 |
+| `-v jenkins_home:/var/jenkins_home` (ส่วนที่ 3) | volume เก็บข้อมูล Jenkins รวมถึง `~/.ssh/known_hosts` ที่ SSH จำ host key ของ devtools ไว้ตอน Connect ครั้งแรก |
 | `docker run ... --name jenkins` (ส่วนที่ 3) | ถ้าขึ้น `Conflict ... name "/jenkins" is already in use` แปลว่ามี `jenkins` อยู่แล้ว → ใช้ตัวเดิมต่อ (`docker start jenkins` ถ้าหยุดอยู่) ไม่ต้องลบ |
 
 ตรวจว่า devtools เปิด key login แล้ว:
@@ -129,22 +129,6 @@ docker logs devtools | grep "SSH key"
 ```
 
 ถ้าขึ้น `SSH key login disabled` แปลว่าไม่ได้รันในโฟลเดอร์แล็บ (mount ผิดที่) หรือไม่ได้ใช้ image `devtools:2569_1` → ลบ `devtools` แล้วทำ 1.1 ใหม่
-
-### 1.2) pin host key ของ devtools ไว้ใน `known_hosts` ของ jenkins
-
-SSH ยืนยันตัวตนสองทาง: **key ของเรา** (devtools ตรวจ Jenkins) และ **host key** (Jenkins ตรวจว่าคุยกับ devtools ตัวจริง) · `Jenkinsfile` ใช้ `StrictHostKeyChecking=yes` จึงต้องบอก Jenkins ล่วงหน้าว่า host key ของ `devtools` คืออะไร เราอ่านจากไฟล์ใน devtools โดยตรงด้วย `docker exec` (ไม่ผ่าน network จึงไม่มีใครปลอมได้) แล้วเขียนลง `~/.ssh/known_hosts` ของ user `jenkins`:
-
-<!-- lab3-test:pin-host-key -->
-```bash
-docker exec jenkins sh -c 'mkdir -p ~/.ssh && touch ~/.ssh/known_hosts && ssh-keygen -R devtools'
-docker exec devtools cat /etc/ssh/ssh_host_ed25519_key.pub | awk '{print "devtools", $1, $2}' | docker exec -i jenkins sh -c 'cat >> ~/.ssh/known_hosts'
-docker exec jenkins ssh-keygen -lF devtools
-docker exec devtools ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
-```
-
-- บรรทัดแรกลบ host key เก่าของ `devtools` (ถ้ามี) · ครั้งแรกจะขึ้น `Host devtools not found in ...` ไม่เป็นไร
-- ✅ บรรทัดที่ 3 (ฝั่ง jenkins) และ 4 (ฝั่ง devtools) ต้องได้ fingerprint `SHA256:...` **ตัวเดียวกัน** (ED25519)
-- ทุกครั้งที่ลบแล้วสร้าง `devtools` ใหม่ host key จะเปลี่ยน ต้องทำข้อ 1.2 ซ้ำ
 
 ## ขั้นที่ 2 — ปลดล็อก ตั้งค่า Jenkins และติดตั้ง plugin SSH Agent
 
@@ -313,7 +297,7 @@ Devtool_SSH/
 | ทางเลือก | ทำอะไร | ตั้งค่า job ในข้อ 4.2 |
 |---|---|---|
 | **ก. ใช้ไฟล์ของรายวิชา** (แนะนำรอบแรก) | ใช้ [`Jenkinsfile`](./Jenkinsfile) ใน repository ของรายวิชา ไม่ต้อง fork | ตามตารางในข้อ 4.2 |
-| **ข. ฝึกเขียนเอง** | พิมพ์ไฟล์ตามข้อ 4.4 ใน repository สาธารณะของตัวเอง แล้ว commit/push (ข้อ 4.5) | Repository URL, Branch และ Script Path ของตัวเอง |
+| **ข. ฝึกเขียนเอง** | พิมพ์ไฟล์ตามข้อ 4.3 ใน repository สาธารณะของตัวเอง แล้ว commit/push (หมายเหตุท้ายข้อ 4.3) | Repository URL, Branch และ Script Path ของตัวเอง |
 
 > 📷 ภาพที่ 7–9 เป็นภาพหน้าจอจริงของหน้าตั้งค่า job (2026-09-27) หน้าตั้งค่านี้ไม่ขึ้นกับเนื้อหา `Jenkinsfile`
 
@@ -343,65 +327,15 @@ Devtool_SSH/
 
 *ภาพที่ 9 Branch Specifier `*/main`, Script Path และ **Lightweight checkout** ติ๊กอยู่ · แถบกลางภาพคือรอยต่อของภาพที่เลื่อนหลายช่วง*
 
-**4.3) ใครโหลดอะไร**
+**4.3) อ่าน `Jenkinsfile` ทีละ stage ตามลำดับที่รัน**
 
-- Jenkins ดึง `Jenkinsfile` จาก GitHub เอง**ก่อน** Pipeline เริ่ม (Pipeline script from SCM) เพราะยังไม่รู้ว่าต้อง SSH ไปไหนจนกว่าจะอ่านไฟล์
-- จากนั้นทุกอย่างของแอป (`git clone`, `docker build/run/push/pull`) Jenkins ส่งทาง SSH ไปรันบน `devtools`
-- `skipDefaultCheckout()` ปิดการ checkout ทั้ง repository (ขนาดระดับ GB) ลง workspace ของ Jenkins ซึ่งแล็บนี้ไม่ใช้
+โค้ดด้านล่างตัดมาจาก [`Jenkinsfile`](./Jenkinsfile) ตรงตัวทุกบรรทัด (เปิดไฟล์เพื่อดูฉบับเต็ม) · Jenkins อ่านไฟล์นี้จาก GitHub เองก่อนเริ่ม ส่วน `skipDefaultCheckout()` บอกว่า Jenkins ไม่ต้อง checkout repository ลง workspace ของตัวเอง
 
-**4.4) อ่าน `Jenkinsfile` ทีละส่วน**
+**ค่าที่ทุก stage ใช้ร่วมกัน** — `environment` ประกาศคำสั่ง SSH และ path ต่าง ๆ ไว้ครั้งเดียว:
 
-ทุก stage ใช้รูปแบบเดียวกัน 3 อย่าง:
-
-| รูปแบบ | ตัวอย่างในไฟล์ | ความหมาย |
-|---|---|---|
-| `sshagent(credentials: ['devtools-ssh']) { ... }` | ทุก stage | plugin SSH Agent โหลด private key จาก credential ให้คำสั่ง `ssh` ในบล็อกใช้ แล้วปิด agent เมื่อจบบล็อก |
-| `$SSH_DEVTOOLS "..."` | Connect | `SSH_DEVTOOLS` = `ssh -o StrictHostKeyChecking=yes -o BatchMode=yes root@devtools` · `StrictHostKeyChecking=yes` ยอมเฉพาะ host key ที่ pin ไว้ในข้อ 1.2 · `BatchMode=yes` ห้ามถามรหัสผ่าน (key ใช้ไม่ได้ = ล้มทันที) |
-| `$SSH_DEVTOOLS "A=$A B=$B bash -ex" <<'EOF' ... EOF` | Clone ถึง Deploy | ส่งสคริปต์หลายบรรทัดไปรันบน devtools · ค่าจาก `environment` ส่งไปเป็นตัวแปรนำหน้า `bash` · `'EOF'` มี quote จึงไม่มีอะไรในสคริปต์ถูกแทนค่าบน Jenkins · `-e` หยุดเมื่อคำสั่งใดล้ม `-x` พิมพ์ทุกคำสั่งลง console |
-
-ความลับ:
-
-- `sh '...'` / `sh '''...'''` ใช้ **single quote** เสมอ Groovy จึงไม่แทนค่า `$HUB_TOKEN` ลงในสคริปต์ shell เป็นผู้อ่านจาก environment เอง และ Jenkins ซ่อนค่าเป็น `****`
-- token เข้า devtools ทาง stdin: `echo "$HUB_TOKEN" | ssh ... docker login --password-stdin` ไม่อยู่ใน command line
-- `set +x` ก่อนบรรทัด token และ `set -x` หลังบรรทัดนั้น: ปิดการพิมพ์คำสั่งของ `sh -xe` ชั่วคราว token จึงไม่ถูกพิมพ์ลง console เลย ไม่ต้องพึ่งการซ่อน `****` ของ Jenkins
-- `umask 077` ก่อน `docker login` บน devtools: ไฟล์ login ใน `AUTH_DIR` อ่านได้เฉพาะ `root`
-- login เก็บในโฟลเดอร์ชั่วคราว `AUTH_DIR` แยกจาก `~/.docker` และถูกลบด้วย `trap 'rm -rf "$AUTH_DIR"' EXIT` ทันทีที่สคริปต์จบ (สำเร็จหรือล้ม) ส่วน `post { always }` ลบซ้ำอีกชั้นกรณี build หยุดกลางทาง
-
-| Stage | ทำอะไรบน devtools |
-|---|---|
-| **1 Connect** | (บน Jenkins) ตรวจ `APP_VERSION` เป็น `X.Y.Z` และ `ssh-keygen -lF devtools` ว่ามี host key ที่ pin ไว้ → SSH ถาม `hostname`, `whoami`, เวอร์ชัน Docker/git |
-| **2 Clone** | sparse clone เฉพาะโฟลเดอร์ `catfood-shop` ลง `/root/lab3-work/DevTools` แล้วแสดง commit |
-| **3 Build** | `docker build` → `catfood-shop:lab3-N` ฝังเวอร์ชัน, เลข build, commit และเวลา |
-| **4 Test** | รัน `catfood-test` รอ `healthy` แล้วตรวจว่า `/api/health` ตอบ `version` และ `build` ตรงกับ build นี้ · ลบ container ทิ้งเสมอ |
-| **5 Push** | `docker login` ด้วย token → tag เป็น `<DOCKER_USER>/catfood-shop:lab3-N` → push → ลบไฟล์ login และ tag ในเครื่อง |
-| **6 Deploy** | login → ลบ image ในเครื่องแล้ว **pull จาก Docker Hub** → แทน `catfood-web` ตัวเดิมด้วยตัวใหม่ที่ port 3000 → รอ `healthy` แล้ว `curl localhost:3000/api/health` ต้องตอบเวอร์ชันและ build ตรง |
-
-ช่วงสั้น ๆ ระหว่างลบ `catfood-web` ตัวเดิมจนตัวใหม่ `healthy` ร้านจะปิดชั่วคราว · `disableConcurrentBuilds()` กันสอง build ใช้ชื่อ container และ port 3000 พร้อมกัน
-
-<details>
-<summary><b>Jenkinsfile ฉบับสมบูรณ์</b> (เหมือนไฟล์ <code>Jenkinsfile</code> ทุกตัวอักษร คลิกเพื่อเปิด)</summary>
-
-<!-- jenkinsfile:begin -->
 ```groovy
-// LAB 3 — Jenkins สั่ง devtools ผ่าน SSH ด้วย key: Connect → Clone → Build → Test → Push → Deploy
-// ต้องมี: plugin "SSH Agent" · credential devtools-ssh (SSH key) และ dockerhub (username + token)
-//         host key ของ devtools อยู่ใน ~/.ssh/known_hosts ของ jenkins แล้ว (README ข้อ 1.2)
-// ทุกคำสั่ง git/docker รันบน devtools: Jenkins แค่ส่งคำสั่งไปทาง SSH
-
-pipeline {
-  agent any
-
-  options {
-    disableConcurrentBuilds()   // ทุก build ใช้ชื่อ container และ port 3000 เดียวกัน
-    skipDefaultCheckout()       // Jenkins ไม่ต้อง checkout repo เอง devtools clone ใน stage Clone
-  }
-
-  parameters {
-    string(name: 'APP_VERSION', defaultValue: '1.0.0', description: 'เวอร์ชันรูปแบบ X.Y.Z ที่แสดงบนหน้าเว็บ')
-  }
-
   environment {
-    SSH_DEVTOOLS = 'ssh -o StrictHostKeyChecking=yes -o BatchMode=yes root@devtools'
+    SSH_DEVTOOLS = 'ssh -o StrictHostKeyChecking=accept-new -o BatchMode=yes root@devtools'
     GIT_URL      = 'https://github.com/Tuchsanai/DevTools.git'
     APP_PATH     = '04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop'
     WORK_DIR     = '/root/lab3-work/DevTools'      // ที่ clone repo บน devtools
@@ -410,8 +344,14 @@ pipeline {
     IMAGE_TAG    = "lab3-${env.BUILD_NUMBER}"
     LOCAL_IMAGE  = "catfood-shop:lab3-${env.BUILD_NUMBER}"
   }
+```
 
-  stages {
+- `SSH_DEVTOOLS` คือคำสั่ง SSH เข้า `root@devtools` · `accept-new` ให้ SSH จำ host key ของ devtools เองตอนต่อครั้งแรก และปฏิเสธถ้า key เปลี่ยนภายหลัง · `BatchMode=yes` ห้ามถามรหัสผ่าน key ใช้ไม่ได้ก็ล้มทันที
+- ทุก stage ห่อคำสั่งด้วย `sshagent(credentials: ['devtools-ssh']) { ... }` ให้ `ssh` ใช้ private key จาก credential `devtools-ssh` (ข้อ 3.1) · รูปแบบ `$SSH_DEVTOOLS "A=... bash -ex" <<'EOF' ... EOF` ส่งสคริปต์หลายบรรทัดไปรัน**บน devtools** โดยส่งค่าไปเป็นตัวแปรนำหน้า `bash` (`-e` หยุดเมื่อคำสั่งใดล้ม `-x` พิมพ์คำสั่งลง console)
+
+**Stage 1 — Connect**
+
+```groovy
     stage('Connect') {
       steps {
         script {
@@ -419,16 +359,18 @@ pipeline {
             error 'APP_VERSION ต้องเป็นรูปแบบ X.Y.Z เช่น 1.0.0'
           }
         }
-        sh 'ssh-keygen -lF devtools'   // host key ที่ pin ไว้ในข้อ 1.2 (ไม่มี = หยุดทันที)
         sshagent(credentials: ['devtools-ssh']) {
           sh '$SSH_DEVTOOLS "hostname && whoami && docker --version && git --version"'
         }
       }
     }
+```
 
-    stage('Clone') {
-      steps {
-        sshagent(credentials: ['devtools-ssh']) {
+ตรวจบน Jenkins ก่อนว่า `APP_VERSION` เป็นรูปแบบ `X.Y.Z` แล้ว SSH ด้วย private key ไปถาม `hostname`, `whoami` และเวอร์ชัน Docker/git ของ devtools เพื่อยืนยันว่าต่อได้จริง (ครั้งแรก SSH จะจำ host key ไว้ตรงนี้)
+
+**Stage 2 — Clone** (ใน `sshagent` เหมือน Connect)
+
+```groovy
           sh '''
 $SSH_DEVTOOLS "WORK_DIR=$WORK_DIR GIT_URL=$GIT_URL APP_PATH=$APP_PATH bash -ex" <<'EOF'
 rm -rf "$WORK_DIR"
@@ -439,13 +381,13 @@ git log -1 --oneline
 ls "$APP_PATH"
 EOF
 '''
-        }
-      }
-    }
+```
 
-    stage('Build') {
-      steps {
-        sshagent(credentials: ['devtools-ssh']) {
+`git clone` รัน**ข้างใน devtools** ลง `WORK_DIR` (`/root/lab3-work/DevTools`) · ลบของเก่าก่อน แล้ว sparse clone เฉพาะโฟลเดอร์ `catfood-shop` พร้อมแสดง commit และรายชื่อไฟล์
+
+**Stage 3 — Build**
+
+```groovy
           sh '''
 $SSH_DEVTOOLS "SRC=$WORK_DIR/$APP_PATH IMAGE=$LOCAL_IMAGE VERSION=$APP_VERSION BUILD=$BUILD_NUMBER bash -ex" <<'EOF'
 cd "$SRC"
@@ -455,13 +397,13 @@ docker build --build-arg APP_VERSION="$VERSION" --build-arg BUILD_NUMBER="$BUILD
 docker image ls "$IMAGE"
 EOF
 '''
-        }
-      }
-    }
+```
 
-    stage('Test') {
-      steps {
-        sshagent(credentials: ['devtools-ssh']) {
+เข้าโฟลเดอร์ซอร์สที่เพิ่ง clone บน devtools แล้ว `docker build` เป็น image `catfood-shop:lab3-<เลข build>` โดยฝังเวอร์ชัน เลข build, commit และเวลาลงใน image
+
+**Stage 4 — Test**
+
+```groovy
           sh '''
 $SSH_DEVTOOLS "IMAGE=$LOCAL_IMAGE VERSION=$APP_VERSION BUILD=$BUILD_NUMBER bash -ex" <<'EOF'
 docker rm -f catfood-test || true
@@ -475,12 +417,13 @@ HEALTH=$(docker exec catfood-test wget -qO- http://127.0.0.1:3000/api/health)
 echo "$HEALTH" | tr -d '"' | grep -F "version:$VERSION,build:$BUILD,"
 EOF
 '''
-        }
-      }
-    }
+```
 
-    stage('Push') {
-      steps {
+รัน image ใหม่เป็น container ชั่วคราว `catfood-test` รอให้ `healthy` แล้วตรวจว่า `/api/health` ตอบ `version` และ `build` ตรงกับ build นี้ · `trap ... EXIT` ลบ container ทดสอบเสมอแม้ test ไม่ผ่าน
+
+**Stage 5 — Push**
+
+```groovy
         withCredentials([usernamePassword(credentialsId: 'dockerhub',
                          usernameVariable: 'HUB_USER', passwordVariable: 'HUB_TOKEN')]) {
           sshagent(credentials: ['devtools-ssh']) {
@@ -496,16 +439,13 @@ docker --config "$AUTH_DIR" push "$IMAGE"
 docker image rm "$LOCAL_IMAGE"
 EOF
 '''
-          }
-        }
-      }
-    }
+```
 
-    stage('Deploy') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub',
-                         usernameVariable: 'HUB_USER', passwordVariable: 'HUB_TOKEN')]) {
-          sshagent(credentials: ['devtools-ssh']) {
+`withCredentials` ดึง username/token จาก credential `dockerhub` · token ส่งทาง stdin เข้า `--password-stdin` และ `set +x` ปิดการพิมพ์คำสั่งบรรทัดนั้น token จึงไม่อยู่ใน command line หรือ console · จากนั้น tag เป็น `<DOCKER_USER>/catfood-shop:lab3-<เลข build>` แล้ว push ขึ้น Docker Hub และ `trap` ลบไฟล์ login ชั่วคราวใน `AUTH_DIR` เสมอ
+
+**Stage 6 — Deploy** (ใน `withCredentials` + `sshagent` เหมือน Push)
+
+```groovy
             sh '''
 set +x
 echo "$HUB_TOKEN" | $SSH_DEVTOOLS "umask 077; docker --config $AUTH_DIR login -u $HUB_USER --password-stdin"
@@ -523,12 +463,13 @@ done
 curl -fsS http://localhost:3000/api/health | tr -d '"' | grep -F "version:$VERSION,build:$BUILD,"
 EOF
 '''
-          }
-        }
-      }
-    }
-  }
+```
 
+login อีกครั้ง ลบ image ในเครื่องแล้ว **pull จาก Docker Hub** เพื่อพิสูจน์ว่า image บน Hub ใช้ได้จริง → ลบ `catfood-web` ตัวเดิม → รันตัวใหม่ที่ port `3000` → รอ `healthy` แล้ว `curl` ต้องได้เวอร์ชันและ build ตรง (ช่วงสั้น ๆ ระหว่างสลับ container ร้านจะปิดชั่วคราว)
+
+**หลังจบทุก stage** — `post` บอก URL ของร้าน และลบไฟล์ login ซ้ำอีกชั้นกรณี build หยุดกลางทาง:
+
+```groovy
   post {
     success {
       echo "เปิดร้านได้ที่ http://localhost:3000 (v${params.APP_VERSION} build #${env.BUILD_NUMBER})"
@@ -540,25 +481,15 @@ EOF
       }
     }
   }
-}
-```
-<!-- jenkinsfile:end -->
-
-</details>
-
-**4.5) นำ `Jenkinsfile` เข้า Git ให้ job อ่าน**
-
-- **ทางเลือก ก:** ไฟล์อยู่ใน repository ของรายวิชาแล้ว ไม่ต้องทำอะไรเพิ่ม
-- **ทางเลือก ข:** วางไฟล์ที่ root ของ repository สาธารณะของตัวเอง แล้ว commit/push:
-
-```bash
-cd <โฟลเดอร์ที่ clone repository ของตัวเองไว้>
-git add Jenkinsfile
-git commit -m "Add LAB 3 Jenkinsfile"
-git push
 ```
 
-จากนั้น job `docker-build-push` → **Configure** → ตั้ง Repository URL, Branch Specifier และ Script Path (`Jenkinsfile`) เป็นของตัวเอง → **Save** · แก้ไฟล์แล้ว commit/push ก็พอ Jenkins อ่านรุ่นล่าสุดทุกครั้งที่ build
+เมื่อ build เขียวครบ ให้เปิด **`http://localhost:3000`** แล้วตรวจ chip บนแถบด้านบนว่าตรงกับ `APP_VERSION` และเลข build ที่เพิ่งรัน หน้าร้านจะมีลักษณะแบบนี้:
+
+[![หน้าร้าน Meow Mart (ภาพเดิม)](./images/lab3_sib_app_v110_crop.png)](./images/lab3_sib_app_v110.png)
+
+*ภาพที่ 10 🕰️ **ภาพเดิม — ตัวอย่างผลลัพธ์จากการรันจริงรอบก่อน** (2026-09-26, workflow รุ่นก่อน, ซอร์สร้านเดียวกัน) chip แสดง `v1.1.0 · build #2` · ใช้ดูหน้าตาร้านเท่านั้น **ไม่ใช่ผลยืนยันของ `Jenkinsfile` ฉบับนี้** ซึ่งยังไม่ได้รันจริงบน Jenkins · build แรกของเราต้องเห็น `v1.0.0 · build #1`*
+
+> 📌 **ทางเลือก ข (ฝึกเขียนเอง):** วางไฟล์ที่ root ของ repository สาธารณะของตัวเอง → `git add Jenkinsfile && git commit -m "Add LAB 3 Jenkinsfile" && git push` → job **Configure** ตั้ง Repository URL, Branch Specifier และ Script Path (`Jenkinsfile`) เป็นของตัวเอง · ทางเลือก ก ไม่ต้องทำอะไรเพิ่ม
 
 ## ขั้นที่ 5 — Build Now แล้วดู 6 stage ทำงาน
 
@@ -566,28 +497,24 @@ git push
 
 [![Console Output ช่วงเริ่ม build (ภาพเดิม)](./images/lab3_scm_08_console_obtained_crop.png)](./images/lab3_scm_08_console_obtained.png)
 
-*ภาพที่ 10 🕰️ **ภาพเดิม** Console Output ช่วงแรก: `Obtained .../Jenkinsfile from git https://github.com/Tuchsanai/DevTools.git` แล้วเข้า stage `(Connect)` ทันที ไม่มี `Declarative: Checkout SCM` · ช่วงแรกนี้เหมือนกันในไฟล์ฉบับใหม่ ส่วน log ของแต่ละ stage จะต่างจากภาพ*
+*ภาพที่ 11 🕰️ **ภาพเดิม** Console Output ช่วงแรก: `Obtained .../Jenkinsfile from git https://github.com/Tuchsanai/DevTools.git` แล้วเข้า stage `(Connect)` ทันที ไม่มี `Declarative: Checkout SCM` · ช่วงแรกนี้เหมือนกันในไฟล์ฉบับใหม่ ส่วน log ของแต่ละ stage จะต่างจากภาพ*
 
 ✅ สิ่งที่ต้องเห็นใน Console Output (ยังไม่มีภาพของไฟล์ฉบับนี้):
 
-- **Connect:** `# Host devtools found` พร้อม fingerprint ตรงกับข้อ 1.2 · บรรทัดที่ขึ้นต้นด้วย `[ssh-agent]` บอกว่าใช้ credential ของ `root` · ผล `devtools` / `root` / `Docker version ...` / `git version ...`
+- **Connect:** ครั้งแรกที่ jenkins ยังไม่รู้จัก devtools จะมี `Warning: Permanently added 'devtools' (ED25519) to the list of known hosts.` (build ต่อไปไม่ขึ้นอีก) · บรรทัดที่ขึ้นต้นด้วย `[ssh-agent]` บอกว่าใช้ credential ของ `root` · ผล `devtools` / `root` / `Docker version ...` / `git version ...`
 - **Clone:** บรรทัด `+ git clone ...` ตามด้วย commit ล่าสุด และรายชื่อไฟล์ของ `catfood-shop`
 - **Test:** บรรทัด `version:1.0.0,build:1,` ถูก `grep` เจอ
 - **Push:** `Login Succeeded` แล้ว `lab3-1: digest: sha256:... size: ...` · token แสดงเป็น `****`
 - **Deploy:** `Status: Downloaded newer image for <DOCKER_USER>/catfood-shop:lab3-1` → health ตรง → `เปิดร้านได้ที่ http://localhost:3000 (v1.0.0 build #1)`
 - หน้า Stages ต้องเขียวครบ 6 stage: Connect → Clone → Build → Test → Push → Deploy
 
-เปิด `http://localhost:3000` chip บนแถบด้านบนต้องเป็น `v1.0.0 · build #1`
+เปิด `http://localhost:3000` chip บนแถบด้านบนต้องเป็น `v1.0.0 · build #1` (หน้าตาร้านเหมือนภาพที่ 10)
 
 ## ขั้นที่ 6 — ออกเวอร์ชันใหม่ `APP_VERSION=1.1.0`
 
 job `docker-build-push` → **Build with Parameters** → `APP_VERSION` = `1.1.0` → **Build** (มี parameter เดียว)
 
-✅ build #2 เขียวครบ 6 stage · Deploy แทน `catfood-web` ของ build #1 · เปิด `http://localhost:3000` chip ต้องเป็น `v1.1.0 · build #2`:
-
-[![หน้าร้าน v1.1.0 build #2 (ภาพเดิม)](./images/lab3_sib_app_v110_crop.png)](./images/lab3_sib_app_v110.png)
-
-*ภาพที่ 11 🕰️ **ภาพเดิม** หน้าร้านหลัง build #2 ของรอบทดสอบ 2026-09-26 (ซอร์สร้านเดียวกัน) chip แสดง `v1.1.0 · build #2`*
+✅ build #2 เขียวครบ 6 stage · Deploy แทน `catfood-web` ของ build #1 · เปิด `http://localhost:3000` chip ต้องเป็น `v1.1.0 · build #2` (ตรงกับภาพที่ 10 ในข้อ 4.3)
 
 [![ส่วน Deployment info ของร้าน (ภาพเดิม)](./images/lab3_sib_app_deployment_crop.png)](./images/lab3_sib_app_deployment.png)
 
@@ -599,17 +526,9 @@ job `docker-build-push` → **Build with Parameters** → `APP_VERSION` = `1.1.0
 
 *ภาพที่ 13 🕰️ **ภาพเดิม** หน้า Tags บน Docker Hub ของรอบทดสอบเดิม (ชื่อ tag ในภาพเป็น `lab3-sibling-20260926r2-*`) · ของเราจะเป็น `lab3-1`, `lab3-2`*
 
-## ขั้นที่ 7 — ลองให้ล้ม 2 แบบ ร้านเดิมต้องยังอยู่
+## ขั้นที่ 7 — ลองให้ล้ม ร้านเดิมต้องยังอยู่
 
-**(ก) เวอร์ชันผิดรูปแบบ** — Build with Parameters กรอก `APP_VERSION` = `1.2.0; id` → build ล้มที่ **Connect** ด้วย `APP_VERSION ต้องเป็นรูปแบบ X.Y.Z เช่น 1.0.0` ก่อนส่งค่าใด ๆ ผ่าน SSH
-
-**(ข) ไม่มี host key ที่ pin ไว้** — ลบ host key ออกจาก jenkins แล้ว **Build Now**:
-
-```bash
-docker exec jenkins ssh-keygen -R devtools
-```
-
-build ล้มที่ **Connect** ตรง `ssh-keygen -lF devtools` (exit code 1) และถ้าข้ามบรรทัดนั้นไป `ssh` ก็จะขึ้น `Host key verification failed.` เพราะ `StrictHostKeyChecking=yes` ไม่ยอมเชื่อ host ที่ไม่รู้จัก · **จากนั้นทำข้อ 1.2 ใหม่** แล้วกด Build อีกครั้งให้ผ่าน
+**เวอร์ชันผิดรูปแบบ** — Build with Parameters กรอก `APP_VERSION` = `1.2.0; id` → build ล้มที่ **Connect** ด้วย `APP_VERSION ต้องเป็นรูปแบบ X.Y.Z เช่น 1.0.0` ก่อนส่งค่าใด ๆ ผ่าน SSH
 
 ตรวจจาก host ว่าร้านยังเป็น build ล่าสุดที่สำเร็จ:
 
@@ -619,24 +538,23 @@ docker exec devtools curl -s -w "\n" localhost:3000/api/health
 docker exec devtools docker ps --filter name=catfood --format '{{.Names}}  {{.Image}}  {{.Status}}'
 ```
 
-✅ `/api/health` ตอบ `"version":"1.1.0","build":"2"` (หรือ build ล่าสุดที่ผ่าน) และมีแค่ `catfood-web` สถานะ `(healthy)` ไม่มี `catfood-test` ค้าง · ทั้งสองแบบล้มก่อน Deploy ร้านเดิมจึงไม่ถูกแตะ
+✅ `/api/health` ตอบ `"version":"1.1.0","build":"2"` (หรือ build ล่าสุดที่ผ่าน) และมีแค่ `catfood-web` สถานะ `(healthy)` ไม่มี `catfood-test` ค้าง · build ล้มก่อน Deploy ร้านเดิมจึงไม่ถูกแตะ
 
 ## ✅ ตรวจปิดแล็บ
 
 - [ ] `docker logs devtools | grep "SSH key"` ได้ `SSH key login enabled` · `docker exec jenkins sh -c "command -v docker || echo 'docker: none'"` ได้ `docker: none`
-- [ ] `docker exec jenkins ssh-keygen -lF devtools` ได้ fingerprint ตรงกับ `docker exec devtools ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub`
+- [ ] `docker exec jenkins ssh-keygen -lF devtools` แสดง host key ของ devtools ที่ SSH จำไว้ตอน Connect ครั้งแรก
 - [ ] plugin **SSH Agent** ติดตั้งแล้ว · credential `devtools-ssh` เป็น **SSH Username with private key** (`root`) และ `dockerhub` เป็น **Username with password**
 - [ ] build #1 และ #2 เขียวครบ 6 stage · หน้า Tags บน Docker Hub มี `lab3-1` และ `lab3-2`
 - [ ] `http://localhost:3000` แสดง `v1.1.0 · build #2` · ไม่มีโฟลเดอร์ `/root/lab3-work/docker-auth` ค้างบน devtools (`docker exec devtools ls /root/lab3-work`)
-- [ ] build ในขั้นที่ 7 ล้มตามที่คาด และทำข้อ 1.2 ใหม่แล้ว
+- [ ] build ในขั้นที่ 7 ล้มที่ Connect ตามที่คาด และร้านยังเป็น build ล่าสุดที่ผ่าน
 
 ## แก้ปัญหาที่พบบ่อย
 
 | อาการ | วิธีแก้ |
 |---|---|
 | `No such DSL method 'sshagent'` | ยังไม่ได้ติดตั้ง plugin **SSH Agent** (ข้อ 2.7) |
-| Connect ล้มที่ `+ ssh-keygen -lF devtools` ไม่มีผลลัพธ์ | ยังไม่ได้ pin host key → ทำข้อ 1.2 |
-| `Host key verification failed.` / `REMOTE HOST IDENTIFICATION HAS CHANGED!` | `devtools` ถูกสร้างใหม่ host key จึงเปลี่ยน → ทำข้อ 1.2 ใหม่ (ห้ามแก้เป็น `StrictHostKeyChecking=no`) |
+| `REMOTE HOST IDENTIFICATION HAS CHANGED!` / `Host key verification failed.` | host key ของ `devtools` ไม่ตรงกับที่ jenkins จำไว้ · ตรวจก่อนว่า**ตั้งใจ**ลบแล้วสร้าง `devtools` ใหม่จริง และ fingerprint ใน error ตรงกับ `docker exec devtools ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` → จึงลบเฉพาะรายการเก่า `docker exec jenkins ssh-keygen -R devtools` แล้ว Build ใหม่ · ถ้าไม่ได้สร้างใหม่หรือ fingerprint ไม่ตรง ให้หยุดหาสาเหตุ · ห้ามแก้เป็น `StrictHostKeyChecking=no` หรือลบ `known_hosts` ทั้งไฟล์ |
 | `Permission denied (publickey,password)` | private key ใน `devtools-ssh` ไม่ตรงกับ `Devtool_SSH/devtoolSSH.pub` ที่ devtools ใช้ หรือ devtools ไม่ได้ mount key (`docker logs devtools \| grep "SSH key"`) → วาง key ใหม่ใน 3.1 หรือทำ 1.1 ใหม่ |
 | `SSH key login disabled` ใน `docker logs devtools` | รัน `docker run` นอกโฟลเดอร์แล็บ หรือไม่ได้ใช้ image `devtools:2569_1` → ทำ 1.1 ใหม่ในโฟลเดอร์แล็บ |
 | `[ssh-agent] Could not find specified credentials` หรือ `Error loading key` | credential `devtools-ssh` ไม่ใช่ชนิด **SSH Username with private key** หรือวาง key ไม่ครบบรรทัด BEGIN/END → สร้างใหม่ตาม 3.1 |
@@ -661,13 +579,13 @@ docker exec devtools rm -rf /root/lab3-work
 docker exec devtools docker ps -a --format '{{.Names}}'
 ```
 
-จบรายวิชาแล้วให้ลบ credential ทั้งสองและ revoke token ที่ Docker Hub · เปิดเครื่องใหม่ container ทั้งหมด (รวม `catfood-web`) จะกลับมาเอง (`--restart unless-stopped`) ถ้าไม่ขึ้นให้ `docker start devtools jenkins` · ถ้าสร้าง `devtools` ใหม่ ต้องทำข้อ 1.2 ใหม่ทุกครั้ง
+จบรายวิชาแล้วให้ลบ credential ทั้งสองและ revoke token ที่ Docker Hub · เปิดเครื่องใหม่ container ทั้งหมด (รวม `catfood-web`) จะกลับมาเอง (`--restart unless-stopped`) ถ้าไม่ขึ้นให้ `docker start devtools jenkins` · ถ้าสร้าง `devtools` ใหม่ host key จะเปลี่ยน build ถัดไปจะล้มด้วย `REMOTE HOST IDENTIFICATION HAS CHANGED!` → ดูตารางแก้ปัญหา
 
 ## 🤔 คำถามทบทวน
 
 1. `-v "${PWD}/Devtool_SSH:/etc/devtools/ssh"` ทำให้ `root@devtools` ยอมรับ key ของ Jenkins ได้อย่างไร
 2. private key และ public key ของ `devtoolSSH` อยู่ที่ไหนบ้างในแล็บนี้ และทำไม `Jenkinsfile` จึงอ้างแค่ ID `devtools-ssh`
-3. ข้อ 1.2 ป้องกันอะไร ถ้าเปลี่ยนเป็น `StrictHostKeyChecking=no` จะเสียอะไร และทำไมอ่าน host key ผ่าน `docker exec` แทนการถามผ่าน network
+3. credential `devtools-ssh` กับ host key ใน `known_hosts` พิสูจน์ตัวตนของใคร · ถ้า host key ของ devtools เปลี่ยน `StrictHostKeyChecking=accept-new` กับ `no` ทำต่างกันอย่างไร
 4. ทำไม token ต้องส่งด้วย `echo "$HUB_TOKEN" | ... --password-stdin` และทำไม `sh` ใช้ single quote `'...'` ไม่ใช่ `"..."`
 5. `trap 'rm -rf "$AUTH_DIR"' EXIT` และ `trap 'docker rm -f catfood-test' EXIT` ช่วยอะไรเมื่อคำสั่งกลางสคริปต์ล้ม
 6. ทำไม Deploy ลบ image ในเครื่องก่อน `docker pull` และ health check ใน Deploy พิสูจน์อะไรที่ `docker run` สำเร็จเฉย ๆ พิสูจน์ไม่ได้
