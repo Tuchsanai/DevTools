@@ -1,327 +1,193 @@
 # DevTools Base Learning Container
 
-Container พื้นฐานสำหรับ DevTools labs — Ubuntu 24.04 ที่มาพร้อม **Docker-in-Docker**, **Python 3**,
-**Node.js 22 (LTS)**, **JupyterLab** และ **SSH** ใช้งานได้ทันที
-
----
-
-## สิ่งที่อยู่ใน image
+Ubuntu 24.04 สำหรับ DevTools labs — มี **Docker-in-Docker**, **Python 3**, **Node.js 22**, **JupyterLab** และ **SSH** พร้อมใช้
 
 | หมวด | รายละเอียด |
 |------|------------|
 | **Base** | Ubuntu 24.04, timezone `Asia/Bangkok`, locale UTF-8 |
-| **Docker-in-Docker** | docker-ce, CLI, containerd, buildx & compose plugins |
-| **Python** | python3, pip, venv (`python` → `python3`) |
-| **Node.js** | Node.js 22.x LTS + npm/npx (สำหรับ Next.js / React / Vite) |
-| **JupyterLab** | JupyterLab 4.x + extensions (ดูหัวข้อ 3.4) — kernel `python3` และ `bash` |
-| **Tooling** | git, curl, wget, vim, nano, less, net-tools, ping, dnsutils, openssh-server |
+| **Docker-in-Docker** | docker-ce, containerd, buildx & compose plugins |
+| **Python / Node.js** | python3, pip, venv — Node.js 22 LTS + npm/npx |
+| **Tooling** | git, curl, wget, vim, nano, less, net-tools, ping, dnsutils |
+| **Ports** | `22` SSH, `8888` JupyterLab |
+| **SSH login** | ส่วนที่ 1: user `root` / password `passwd` — ส่วนที่ 2: key `devtoolSSH` |
 | **Workdir** | `/workspace` |
-| **Ports** | `22` (SSH), `8888` (JupyterLab) |
-| **SSH login** | user `root` / password `passwd` หรือ key `devtoolSSH` / `devtoolSSH.pub` (ดูหัวข้อ 3.2) |
-| **JupyterLab login** | ไม่มีรหัสผ่าน (ตั้งได้ด้วย `-e JUPYTER_PASSWORD=...`) |
 
-> หมายเหตุ: container รันเป็น `root` (ไม่มี user `student` แล้ว)
+> ⚠️ รหัสผ่าน `passwd` และ key ในโฟลเดอร์ `Devtool_SSH/` เป็นค่าเดียวกันทุกเครื่อง — ใช้เพื่อการเรียน/ทดลองบนเครื่องตัวเองเท่านั้น ไม่ควรเปิดพอร์ตออก internet
 
-> ⚠️ รหัสผ่าน SSH ของ `root` คือ `passwd` และ JupyterLab เปิดแบบไม่มีรหัสผ่าน — ใช้สำหรับการเรียน/ทดสอบบนเครื่องตัวเองเท่านั้น ไม่ควรเปิดพอร์ตออก internet
-
-> 💡 ทุกคำสั่งในเอกสารนี้เป็น **บรรทัดเดียว** copy-paste ได้ทั้ง Windows และ Linux/macOS
+เลือกใช้ **ส่วนใดส่วนหนึ่ง** — ทั้งสองส่วนใช้ชื่อ container `devtools` และพอร์ตเดียวกัน ถ้าจะเปลี่ยนส่วนให้ลบ container เดิมก่อนด้วย `docker rm -f devtools`
 
 ---
 
-## 1. Build container แบบ local
+# ส่วนที่ 1 — SSH ด้วย password
 
-build จาก `Dockerfile` ในโฟลเดอร์นี้ แล้วตั้งชื่อ image เป็น `devtools:2569_1`
+## 1.1 Run container
 
-```bash
-# อยู่ในโฟลเดอร์ที่มี Dockerfile
-cd 00_Tool/base-learning-container
-
-# build เป็น image ชื่อ devtools tag 2569_1
-docker build -t devtools:2569_1 .
-```
-
-ตรวจสอบว่า build สำเร็จ:
+คำสั่งบรรทัดเดียว copy-paste ได้ทั้ง Windows และ Linux/macOS (ดึง image จาก Docker Hub ให้อัตโนมัติ)
 
 ```bash
-docker images devtools
-# REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
-# devtools     2569_1    xxxxxxxxxxxx   x seconds ago   xxxMB
-```
-
-### build ใหม่โดยไม่ใช้ cache (ถ้าต้องการ)
-
-```bash
-docker build --no-cache -t devtools:2569_1 .
-```
-
----
-
-## 2. Run container
-
-ต้องใช้ `--privileged` เพราะข้างในรัน Docker daemon (Docker-in-Docker)
-คำสั่งนี้เป็นบรรทัดเดียว copy-paste ได้ทั้ง **Windows และ Linux/macOS**
-
-```bash
-docker run -d --name devtools --privileged -p 2222:22 -p 8888:8888 devtools:2569_1
+docker run -dit --name devtools --privileged -p 2222:22 -p 8888:8888 tuchsanai/devtools:2569_1
 ```
 
 | Flag | ความหมาย |
 |------|----------|
-| `-d` | รันแบบ background (detached) |
+| `-dit` | รันแบบ background พร้อม tty |
 | `--name devtools` | ตั้งชื่อ container |
-| `--privileged` | จำเป็นสำหรับ Docker-in-Docker ให้ `dockerd` ทำงานได้ |
-| `-p 2222:22` | map SSH port ออกมาที่เครื่อง host พอร์ต 2222 |
-| `-p 8888:8888` | map JupyterLab ออกมาที่ host พอร์ต 8888 |
-| `-e JUPYTER_PASSWORD=xxx` | (optional) ตั้งรหัสผ่าน JupyterLab (ค่าเริ่มต้นไม่มีรหัสผ่าน) |
+| `--privileged` | จำเป็นสำหรับ Docker-in-Docker ให้ `dockerd` ข้างในทำงานได้ |
+| `-p 2222:22` | map SSH ออกมาที่ host พอร์ต `2222` |
+| `-p 8888:8888` | map JupyterLab ออกมาที่ host พอร์ต `8888` |
 
-### 2.1 รันด้วย Docker Compose (แนะนำ)
-
-ใช้ `docker-compose.yml` ในโฟลเดอร์นี้ — ตั้งค่า privileged, พอร์ต, รหัสผ่าน และ volume ให้ครบแล้ว
+ตรวจว่า container ทำงานแล้ว:
 
 ```bash
-docker compose up -d            # ใช้ image จาก Docker Hub
-docker compose up -d --build    # หรือ build จาก Dockerfile ในโฟลเดอร์นี้
-docker compose logs -f          # ดู log (sshd / dockerd / jupyter)
-docker compose down             # หยุดและลบ container (ไฟล์ใน ./workspace ยังอยู่)
+docker ps --filter name=devtools
+# CONTAINER ID   IMAGE                       STATUS         PORTS
+# xxxxxxxxxxxx   tuchsanai/devtools:2569_1   Up 5 seconds   0.0.0.0:2222->22/tcp, 0.0.0.0:8888->8888/tcp
 ```
 
-| สิ่งที่ compose ตั้งให้ | รายละเอียด |
-|------|----------|
-| `privileged: true` + `stdin_open/tty` | เหมือน `docker run -dit --privileged` |
-| `env_file: /root/workspace/DGX_2024/.env` | โหลด credential ส่วนตัวเข้า container (ดูหัวข้อ 2.2; ไม่มีไฟล์ก็รันได้) |
-| `./workspace:/workspace` | งานของนักศึกษาอยู่บนเครื่อง host ไม่หายเมื่อ `down` |
-| `devtools-dind:/var/lib/docker` | named volume เก็บ image/container ของ Docker-in-Docker |
-| `./Devtool_SSH:/etc/devtools/ssh` | คู่ key `devtoolSSH` / `devtoolSSH.pub` สำหรับ SSH ด้วย key (ว่าง = สร้างให้; ดูหัวข้อ 3.2) |
-| `restart: unless-stopped` | เปิดเครื่องใหม่แล้ว container กลับมาเอง |
-
-ปรับค่าได้ผ่าน environment หรือไฟล์ `.env` ข้าง `docker-compose.yml` (ทุกค่ามี default):
-
-```bash
-# .env
-SSH_PORT=2222
-JUPYTER_PORT=8888
-JUPYTER_PASSWORD=          # ว่าง = ไม่มีรหัสผ่าน
-```
-
-### 2.2 โหลด credential จาก `/root/workspace/DGX_2024/.env`
-
-`docker-compose.yml` กำหนด `env_file: /root/workspace/DGX_2024/.env` (`required: false`) — ทุกตัวแปรในไฟล์นี้
-(เช่น `HF_TOKEN`, `GITHUB_TOKEN`, `DOCKER_USER` / `DOCKER_TOKEN`, `GIT_USER_NAME` / `GIT_USER_EMAIL`, `VAST_API_KEY`)
-จะถูก inject เป็น environment ของ container ตอน `docker compose up`
-
-```bash
-docker compose up -d
-docker exec devtools printenv HF_TOKEN      # ตรวจว่าโหลดแล้ว
-```
-
-| ที่ไหนเห็นตัวแปร | เห็นไหม |
-|------|------|
-| Terminal / kernel ใน JupyterLab, `docker exec` | ✅ สืบทอดจาก environment ของ container |
-| SSH session (`ssh root@localhost -p 2222`) | ❌ sshd ไม่ส่ง env ของ container ให้ shell — ใช้ `set -a; . /root/workspace/DGX_2024/.env; set +a` หรือ mount ไฟล์เข้ามาเอง |
-
-> * ถ้าไม่มีไฟล์นี้ (เช่นบนเครื่องอื่น) compose ยังรันได้ตามปกติเพราะตั้ง `required: false`
-> * `env_file` ใช้กับ **environment ของ container** เท่านั้น — ค่า `SSH_PORT` / `JUPYTER_PORT` / `JUPYTER_PASSWORD` ที่ใช้ map พอร์ต
->   ยังอ่านจาก shell หรือ `.env` ข้าง `docker-compose.yml` ถ้าอยากใช้ไฟล์เดียวกันให้รัน `docker compose --env-file /root/workspace/DGX_2024/.env up -d`
-> * `JUPYTER_TOKEN` ในไฟล์นี้ **ไม่มีผล** กับ JupyterLab เพราะ `/etc/jupyter/jupyter_server_config.py` ตั้ง `token = ""` ไว้แล้ว (ใช้ `JUPYTER_PASSWORD` แทนถ้าต้องการรหัสผ่าน)
-> * ไฟล์นี้เป็น credential ส่วนตัว — อย่า commit และอย่า `docker commit` container ที่โหลดไว้
-
----
-
-## 3. เข้าใช้งาน container
-
-### เข้าผ่าน shell โดยตรง
-
-```bash
-docker exec -it devtools bash
-```
-
-### 3.1 เข้าผ่าน SSH ด้วย password
-
-login ด้วย user `root` รหัสผ่าน `passwd`
+## 1.2 SSH ด้วย password
 
 ```bash
 ssh root@localhost -p 2222
 # password: passwd
 ```
 
-### 3.2 เข้าผ่าน SSH ด้วย private / public key (`devtoolSSH`)
+ครั้งแรกที่เชื่อมต่อ ssh จะถามยืนยัน host key ให้พิมพ์ `yes` แล้วใส่รหัสผ่าน `passwd`:
 
-โฟลเดอร์ `Devtool_SSH/` ข้าง `docker-compose.yml` มี **คู่ key สำเร็จรูปของ lab ให้แล้ว**: **`devtoolSSH`** (private key) และ **`devtoolSSH.pub`** (public key)
-compose map โฟลเดอร์นี้เข้า container ที่ `/etc/devtools/ssh` และตอน start, `start.sh` จะนำ `devtoolSSH.pub` ไปใส่ใน `/root/.ssh/authorized_keys` ให้เอง
-login ด้วย password ยังใช้ได้ตามเดิม
+```text
+$ ssh root@localhost -p 2222
+The authenticity of host '[localhost]:2222 ([127.0.0.1]:2222)' can't be established.
+ED25519 key fingerprint is SHA256:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+root@localhost's password:
+root@devtools:~# whoami
+root
+root@devtools:~# docker run --rm hello-world     # ทดสอบ Docker-in-Docker
+```
+
+### รันคำสั่งเดียวแล้วออก / copy ไฟล์เข้า-ออก container
+
+ทุกคำสั่งจะถามรหัสผ่าน `passwd` เหมือนกัน
+
+```bash
+ssh -p 2222 root@localhost "hostname && docker --version"
+scp -P 2222 ./hello.txt root@localhost:/workspace/
+scp -P 2222 root@localhost:/workspace/hello.txt ./
+```
+
+| คำสั่ง | ทำอะไร |
+|--------|--------|
+| `ssh -p 2222 root@localhost "hostname && docker --version"` | เชื่อมต่อเข้า container แล้ว **รันคำสั่งในเครื่องหมาย `"..."` ครั้งเดียวแล้วออกทันที** (ไม่เปิด shell ค้างไว้) — `hostname` แสดงชื่อเครื่อง (`devtools`), `&&` = รันคำสั่งถัดไปเมื่อคำสั่งแรกสำเร็จ, `docker --version` แสดงเวอร์ชัน Docker ใน container ผลลัพธ์แสดงบนเครื่องเรา |
+| `scp -P 2222 ./hello.txt root@localhost:/workspace/` | **copy ไฟล์จากเครื่องเรา → container**: ต้นทาง `./hello.txt` (ไฟล์ในโฟลเดอร์ปัจจุบันบนเครื่องเรา) ปลายทาง `root@localhost:/workspace/` (โฟลเดอร์ `/workspace` ใน container) |
+| `scp -P 2222 root@localhost:/workspace/hello.txt ./` | **copy ไฟล์จาก container → เครื่องเรา**: สลับต้นทาง/ปลายทาง — ดึง `/workspace/hello.txt` ใน container มาไว้ที่โฟลเดอร์ปัจจุบัน (`./`) |
+
+ส่วนประกอบของคำสั่ง:
+
+| ส่วน | ความหมาย |
+|------|----------|
+| `root@localhost` | login เป็น user `root` ที่เครื่อง `localhost` (พอร์ต 2222 ถูก map ไปที่ SSH ของ container) |
+| `-p 2222` / `-P 2222` | ระบุพอร์ต — `ssh` ใช้ `-p` (ตัวเล็ก) แต่ `scp` ใช้ `-P` (ตัวใหญ่) |
+| `scp <ต้นทาง> <ปลายทาง>` | ฝั่งที่มี `user@host:` นำหน้า = ไฟล์ใน container, ฝั่งที่ไม่มี = ไฟล์บนเครื่องเรา |
+
+---
+
+# ส่วนที่ 2 — SSH ด้วย key (`devtoolSSH`)
+
+โฟลเดอร์ `Devtool_SSH/` ในโฟลเดอร์นี้มีคู่ key สำเร็จรูปของ lab ให้แล้ว เมื่อ map โฟลเดอร์นี้เข้า container
+`start.sh` จะนำ public key ไปใส่ใน `/root/.ssh/authorized_keys` ให้เองตอน start
 
 ```text
 00_Reference/
-├── docker-compose.yml
+├── Dockerfile
 └── Devtool_SSH/         ← map เป็น volume → /etc/devtools/ssh
-    ├── devtoolSSH       ← private key: นศ. ใช้ไฟล์นี้กับ ssh -i
-    └── devtoolSSH.pub   ← public key: start.sh ใส่ใน /root/.ssh/authorized_keys
+    ├── devtoolSSH       ← private key (ใช้กับ ssh -i)
+    └── devtoolSSH.pub   ← public key (ใส่ใน authorized_keys ให้อัตโนมัติ)
 ```
 
-> ⚠️ key คู่นี้ **แจกให้ทุกคนใช้ร่วมกัน** เพราะ container นี้เอาไว้ทดลองเท่านั้น — ห้ามนำ key นี้ไปใช้กับเครื่องหรือ server จริง
-> ถ้าอยากได้ key ของตัวเอง ให้ลบไฟล์ทั้งสองในโฟลเดอร์ `Devtool_SSH/` แล้ว restart container → `start.sh` จะ **สร้างคู่ใหม่ให้ในโฟลเดอร์เดิม**
-> (`docker compose restart` แล้วดู `docker compose logs | grep "SSH key"`)
+## 2.1 Build image
 
-**ขั้นที่ 1 — start container** (compose map `./Devtool_SSH` ให้แล้ว)
+image บน Docker Hub (`tuchsanai/devtools:2569_1`) ยังไม่รองรับ SSH ด้วย key — ต้อง build จาก `Dockerfile` ในโฟลเดอร์นี้ก่อน
 
 ```bash
-docker compose up -d --build     # ต้อง --build ครั้งแรกเพื่อให้ได้ start.sh ตัวใหม่
-docker compose logs | grep "SSH key"
-# [start.sh] SSH key login enabled: /etc/devtools/ssh/devtoolSSH.pub
+docker build -t devtools:2569_1 .
 ```
 
-ถ้าใช้ `docker run` ให้เพิ่ม `-v` ชี้โฟลเดอร์ `Devtool_SSH` (Linux/macOS/PowerShell ใช้ `${PWD}` ได้เหมือนกัน) — ถ้าโฟลเดอร์ยังว่างหรือยังไม่มี container จะสร้าง key ใส่ให้:
+## 2.2 Run container พร้อม map โฟลเดอร์ key
+
+รันในโฟลเดอร์นี้ (ที่มี `Devtool_SSH/`) — `${PWD}` ใช้ได้ทั้ง PowerShell และ Linux/macOS
 
 ```bash
 docker run -dit --name devtools --privileged -p 2222:22 -p 8888:8888 -v "${PWD}/Devtool_SSH:/etc/devtools/ssh" devtools:2569_1
 ```
 
-**ขั้นที่ 2 — ตั้ง permission ของ private key (Linux/macOS ครั้งเดียว)** — git ไม่เก็บ permission `600` ไว้ ssh จะไม่ยอมใช้ key ที่คนอื่นอ่านได้
+| Flag | ความหมาย |
+|------|----------|
+| `-v "${PWD}/Devtool_SSH:/etc/devtools/ssh"` | map โฟลเดอร์ key เข้า container (flag อื่นเหมือนส่วนที่ 1) |
+| `devtools:2569_1` | image ที่ build เองในข้อ 2.1 |
+
+ตรวจว่าเปิดใช้ key แล้ว:
+
+```bash
+docker logs devtools | grep "SSH key"
+# [start.sh] SSH key login enabled: /etc/devtools/ssh/devtoolSSH.pub
+```
+
+## 2.3 SSH ด้วย key
+
+Linux/macOS ต้องตั้ง permission ของ private key ก่อน (ครั้งเดียว — git ไม่เก็บ permission ไว้ ssh จะไม่ยอมใช้ key ที่คนอื่นอ่านได้):
 
 ```bash
 chmod 600 Devtool_SSH/devtoolSSH
 ```
 
-**ขั้นที่ 3 — login ด้วย key** (ไม่ถามรหัสผ่าน)
+login ด้วย key — ไม่ถามรหัสผ่าน:
 
 ```bash
 ssh -i Devtool_SSH/devtoolSSH root@localhost -p 2222
 ```
 
-ตัวอย่างผลลัพธ์:
-
 ```text
 $ ssh -i Devtool_SSH/devtoolSSH root@localhost -p 2222
 root@devtools:~# whoami
 root
-root@devtools:~# ls -l ~/.ssh/authorized_keys
--rw------- 1 root root 90 Sep 27 11:27 /root/.ssh/authorized_keys
 ```
 
-รันคำสั่งเดียวแล้วออก / copy ไฟล์ด้วย key เดียวกัน:
+### รันคำสั่งเดียวแล้วออก / copy ไฟล์ด้วย key
+
+เหมือนข้อ 1.2 ทุกอย่าง แค่เพิ่ม `-i Devtool_SSH/devtoolSSH` — จึง **ไม่ถามรหัสผ่าน**
 
 ```bash
 ssh -i Devtool_SSH/devtoolSSH -p 2222 root@localhost "hostname && docker --version"
 scp -i Devtool_SSH/devtoolSSH -P 2222 ./hello.txt root@localhost:/workspace/
 ```
 
-ทดสอบว่าเข้าด้วย key จริง (ปิด password — ถ้า key ไม่ถูกจะ `Permission denied` แทนที่จะถามรหัสผ่าน):
+| คำสั่ง | ทำอะไร |
+|--------|--------|
+| `ssh -i Devtool_SSH/devtoolSSH -p 2222 root@localhost "hostname && docker --version"` | login ด้วย private key แล้วรัน `hostname` และ `docker --version` ใน container ครั้งเดียวแล้วออก |
+| `scp -i Devtool_SSH/devtoolSSH -P 2222 ./hello.txt root@localhost:/workspace/` | copy `hello.txt` จากเครื่องเรา → `/workspace/` ใน container โดยใช้ key (ดึงกลับก็สลับต้นทาง/ปลายทางเหมือนข้อ 1.2) |
 
-```bash
-ssh -i Devtool_SSH/devtoolSSH -o PasswordAuthentication=no -o IdentitiesOnly=yes -p 2222 root@localhost whoami
-```
+| ส่วน | ความหมาย |
+|------|----------|
+| `-i Devtool_SSH/devtoolSSH` | **i**dentity file — ระบุ private key ที่ใช้ยืนยันตัวตนแทนรหัสผ่าน (ใช้ `-i` ตัวเล็กทั้ง `ssh` และ `scp`) |
+| `-p 2222` / `-P 2222` | พอร์ต — `ssh` ตัวเล็ก, `scp` ตัวใหญ่ (เหมือนข้อ 1.2) |
 
-**(ทางเลือก) ตั้งชื่อย่อใน `~/.ssh/config`** แล้วพิมพ์แค่ `ssh devtools`
-
-```text
-Host devtools
-    HostName localhost
-    Port 2222
-    User root
-    IdentityFile /path/to/00_Reference/Devtool_SSH/devtoolSSH
-    IdentitiesOnly yes
-```
-
-| ปัญหา | วิธีแก้ |
-|------|--------|
-| `WARNING: UNPROTECTED PRIVATE KEY FILE!` (Linux/macOS) | `chmod 600 Devtool_SSH/devtoolSSH` |
-| `UNPROTECTED PRIVATE KEY FILE` บน Windows | `icacls Devtool_SSH\devtoolSSH /inheritance:r /grant:r "%USERNAME%:R"` |
-| `REMOTE HOST IDENTIFICATION HAS CHANGED!` (หลังสร้าง container ใหม่) | `ssh-keygen -R "[localhost]:2222"` |
-| ยังถามรหัสผ่าน | ตรวจ `docker compose logs \| grep "SSH key"` ว่ามี `enabled` — ถ้าเปลี่ยน key ต้อง restart container ก่อน |
-
-### ทดสอบว่า Docker-in-Docker ทำงาน
-
-```bash
-docker exec -it devtools docker run --rm hello-world
-```
-
-### 3.4 เข้าใช้งาน JupyterLab
-
-เปิดเบราว์เซอร์ที่ <http://localhost:8888> เข้าได้เลยไม่ต้องใส่รหัสผ่าน — file browser เริ่มที่ `/` (root ของ container) จึงเห็นทุกโฟลเดอร์ งานของ lab อยู่ที่ `/workspace`
-
-file browser **แสดง hidden file / folder** (ชื่อขึ้นต้นด้วย `.` เช่น `.env`, `.git`, `.gitignore`, `.github/`) เป็นค่าเริ่มต้น
-เปิดไว้สองฝั่ง: server `c.ContentsManager.allow_hidden = True` และ UI `showHiddenFiles: true` — ถ้าอยากซ่อนชั่วคราวให้ติ๊กออกที่เมนู *View → Show Hidden Files*
-
-| Extension | ใช้ทำอะไร |
-|-----------|-----------|
-| **Terminal** (built-in) | bash login shell — copy/paste ได้ตามตารางด้านล่าง |
-| **jupytext** | เปิดไฟล์ `.py` / `.md` เป็น notebook, pair notebook ↔ script (คลิกขวาไฟล์ → *Open With*) |
-| **jupyterlab-git** | Git UI ใน sidebar ซ้าย (stage / commit / diff / branch) |
-| **jupyterlab-lsp** + `python-lsp-server` | autocomplete, hover, go-to-definition, lint สำหรับ Python |
-| **jupyterlab-code-formatter** (black, isort) | จัดรูปแบบโค้ดใน cell / ไฟล์ |
-| **jupyterlab-execute-time** | แสดงเวลาที่ใช้รันของแต่ละ cell |
-| **jupyter-resource-usage** | แสดง CPU / Memory ที่ status bar |
-| **ipywidgets** | interactive widgets |
-| **bash_kernel** | เขียน notebook ด้วย Bash kernel (เหมาะกับ lab คำสั่ง shell / docker) |
-
-**Copy / Paste ใน Terminal ของ JupyterLab**
-
-| การกระทำ | คีย์ |
-|----------|------|
-| Paste | `Ctrl+V` หรือ `Shift+Insert` หรือ `Ctrl+Shift+V` หรือคลิกขวา → *Paste* |
-| Copy (เมื่อเลือกข้อความอยู่) | `Ctrl+C` หรือ `Ctrl+Insert` หรือ `Ctrl+Shift+C` หรือคลิกขวา → *Copy* |
-| ส่ง SIGINT (หยุดโปรเซส) | `Ctrl+C` เมื่อ **ไม่ได้** เลือกข้อความ |
-
-> การ copy/paste ผ่านคลิกขวาและ `Ctrl+Shift+C/V` ใช้ Clipboard API ของเบราว์เซอร์ ซึ่งทำงานเฉพาะบน `localhost` หรือ `https://`
-> ถ้าเข้าผ่าน `http://<ip>` ให้ใช้ `Ctrl+V` / `Shift+Insert` และเลือกข้อความแล้ว `Ctrl+C` แทน (ทำงานได้ทุกกรณี)
-
-ไฟล์ที่เกี่ยวข้องใน image:
-
-| ไฟล์ | หน้าที่ |
-|------|--------|
-| `/etc/jupyter/jupyter_server_config.py` | ค่า server: ip/port, root_dir = `/`, allow_root, `allow_hidden` (เห็น hidden file), terminal = `bash -l`, ปิด token |
-| `/usr/local/share/jupyter/lab/settings/overrides.json` | ค่าเริ่มต้น UI: file browser `showHiddenFiles`, terminal `pasteWithCtrlV`, shortcut copy/paste, ปิด news/update check |
-| `/usr/local/bin/start.sh` | entrypoint: sshd (+ สร้าง key ถ้ายังไม่มี และติดตั้ง `devtoolSSH.pub` ลง `authorized_keys`) + dockerd + jupyter lab (ไม่มีรหัสผ่าน เว้นแต่ตั้ง `$JUPYTER_PASSWORD`) |
-| `/var/log/jupyter.log` | log ของ JupyterLab |
+> * key คู่นี้ **แจกให้ทุกคนใช้ร่วมกัน** สำหรับ lab เท่านั้น — ห้ามนำไปใช้กับเครื่องจริง
+> * อยากได้ key ใหม่: ลบไฟล์ทั้งสองใน `Devtool_SSH/` แล้ว `docker restart devtools` → container สร้างคู่ใหม่ให้ในโฟลเดอร์เดิม
+> * login ด้วย password (`passwd`) ยังใช้ได้เหมือนส่วนที่ 1
 
 ---
 
-## 4. คำสั่งที่ใช้บ่อย
+# ใช้ร่วมกันทั้งสองส่วน
+
+## JupyterLab
+
+เปิดเบราว์เซอร์ที่ <http://localhost:8888> — เข้าได้เลยไม่ต้องใส่รหัสผ่าน งานของ lab อยู่ที่ `/workspace`
+
+## คำสั่งที่ใช้บ่อย
 
 ```bash
-# ดู log การ start (sshd / dockerd / jupyter)
-docker logs devtools
-docker exec devtools tail -f /var/log/jupyter.log
-
-# หยุด container
-docker stop devtools
-
-# เริ่มใหม่
-docker start devtools
-
-# ลบ container
-docker rm -f devtools
-
-# ลบ image
-docker rmi devtools:2569_1
-```
-
----
-
-## 5. Build & Tag สำหรับ push ขึ้น Docker Hub (optional)
-
-ถ้าจะ push ขึ้น registry ให้ tag ด้วยชื่อ `<user>/<repo>:<tag>`
-
-```bash
-# tag จาก local image ไปเป็นชื่อบน Docker Hub
-docker tag devtools:2569_1 tuchsanai/devtools:2569_1
-docker tag devtools:2569_1 tuchsanai/devtools:latest
-
-# login แล้ว push
-docker login -u tuchsanai
-docker push tuchsanai/devtools:2569_1
-docker push tuchsanai/devtools:latest
-```
-
----
-
-## 6. ดึง image จาก Docker Hub (ใช้ image สำเร็จรูป)
-
-image ถูก publish ไว้แล้วที่ [`tuchsanai/devtools`](https://hub.docker.com/r/tuchsanai/devtools) — ไม่ต้อง build เองก็ได้
-ทุกคำสั่งเป็นบรรทัดเดียว copy-paste ได้ทั้ง **Windows และ Linux/macOS**
-
-```bash
-docker pull tuchsanai/devtools:2569_1
-
-docker run -dit --name devtools --privileged -p 2222:22 -p 8888:8888 tuchsanai/devtools:2569_1
+docker logs devtools                 # ดู log ตอน start (sshd / dockerd / jupyter)
+docker exec -it devtools bash        # เข้า shell โดยไม่ผ่าน SSH
+docker stop devtools                 # หยุด container
+docker start devtools                # เริ่มใหม่
+docker rm -f devtools                # ลบ container
 ```
