@@ -39,6 +39,10 @@ image ที่ build ได้ถูก push ไปเก็บที่ **Dock
 
 *ภาพที่ 3 หน้าสร้าง token บน Docker Hub: ตั้งชื่อ เลือก **Access permissions = Repo Read & Write** แล้วกด **Generate** · token แสดงครั้งเดียว ให้คัดลอกเก็บทันที*
 
+[![ภาพประกอบหน้า Docker Hub หลังกด Generate (ค่าสมมติ)](./images/lab3_hub_pat_demo.png)](./images/lab3_hub_pat_demo.png)
+
+*ภาพที่ 3ก ภาพประกอบที่สร้างขึ้นเพื่อการสอน ไม่ใช่หน้าจอจริง · ชื่อผู้ใช้ `demo-student` และ token ในภาพเป็นค่าสมมติ ใช้งานไม่ได้ · ตอนทำ LAB จริงให้เลือก **Repo Read & Write** และคัดลอก token ของตัวเองเก็บทันที*
+
 stage Clone ดึงซอร์สร้านจากโฟลเดอร์นี้ใน repository ของรายวิชา:
 
 [![ซอร์สร้านบน GitHub](./images/lab3_github_01_source_crop.png)](./images/lab3_github_01_source.png)
@@ -48,6 +52,14 @@ stage Clone ดึงซอร์สร้านจากโฟลเดอร�
 > ผลลัพธ์ในเอกสารมาจากการรันจริง ID, hostname, เวลา และ digest ของแต่ละเครื่องจะต่างกัน · รอบทดสอบใช้ `TAG_PREFIX` = `lab3-sibling-20260926r2` (ของนักศึกษาเป็น `lab3`) · `<DOCKER_USER>` คือชื่อบัญชี Docker Hub · คลิกภาพเพื่อดูภาพเต็ม
 
 ## ขั้นที่ 1 — สร้าง network และ container สองตัว (🖥️ host)
+
+**ทำไมต้องมีสอง container:** ในงานจริง Jenkins กับเครื่องที่ build/deploy มักเป็น server คนละเครื่อง แล็บนี้จึงจำลองด้วย container สองตัว
+
+- **`jenkins`** = server ควบคุม — ถือ Pipeline, Credentials และประวัติ build แล้ว **ส่งคำสั่งทาง SSH** ออกไปทีละ stage (ตัวมันเองไม่รัน Docker)
+- **`devtools`** = server ทำงาน — **รับคำสั่ง SSH** แล้วรัน `git clone`, `docker build`, test, `docker push`/`pull` และ deploy ร้านจริง
+- **`cicd-net`** = network ร่วม — ทำให้สองตัวเรียกกันด้วย**ชื่อ** เช่น Jenkins ต่อ `devtools:22` ได้โดยไม่ต้องรู้ IP
+
+ผู้เรียนใช้งาน Jenkins ผ่าน**หน้าเว็บในเบราว์เซอร์** (`http://localhost:8080`) คำสั่ง 🖥️ host ในแล็บนี้เป็นแค่การเตรียมเครื่องครั้งเดียว ส่วนงาน build/deploy ทั้งหมดสั่งจากหน้าเว็บ Jenkins
 
 <!-- lab3-test:host-setup -->
 ```bash
@@ -71,22 +83,6 @@ docker run -d --name jenkins --network cicd-net --restart unless-stopped \
 ad27ba488a7f1070eacfa00b5e25943b336c70539ffc41cc55ba28c154205695
 ```
 
-ตรวจว่าทั้งสองตัว `Up` และอยู่ใน `cicd-net`:
-
-<!-- lab3-test:host-check -->
-```bash
-docker ps --filter name=^devtools$ --filter name=^jenkins$ --format '{{.Names}}  {{.Status}}  {{.Ports}}'
-docker network inspect cicd-net --format '{{range .Containers}}{{.Name}} {{end}}'
-```
-
-```text
-jenkins  Up 6 seconds  127.0.0.1:18080->8080/tcp
-devtools  Up 6 seconds  127.0.0.1:2223->22/tcp, 127.0.0.1:13000->3000/tcp
-devtools jenkins
-```
-
-> รอบทดสอบใช้ port อื่นบน `127.0.0.1` ของนักศึกษาจะเห็น `0.0.0.0:8080->8080/tcp`, `0.0.0.0:2222->22/tcp`, `0.0.0.0:3000->3000/tcp`
-
 ## ขั้นที่ 2 — ปลดล็อกและตั้งค่า Jenkins
 
 <!-- lab3-test:unlock -->
@@ -96,17 +92,58 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 ✅ ได้รหัสเลขฐานสิบหก 32 ตัว (ห้ามเผยแพร่)
 
-เปิด **http://localhost:8080** วางรหัส → **Continue** → **Install suggested plugins** → สร้างผู้ดูแล `admin` / `admin2569` → Jenkins URL `http://localhost:8080/` → **Save and Finish** → **Start using Jenkins** (ภาพทีละหน้าดูใน [LAB 1](../001_LAB_Jenkins_On_Docker/README.md)) · ถ้า volume `jenkins_home` มีอยู่แล้ว ให้ login ด้วยผู้ดูแลเดิม
+> 📷 ภาพที่ 5ก–5ฉ **นำมาจาก LAB 1 (การทดลองที่ 3–4)** เพื่อให้ทำตามได้ในหน้านี้เลย ไม่ใช่ภาพที่ถ่ายใหม่จากการรัน LAB 3 · เป็นภาพขั้นตอน Setup Wizard ที่นำกลับมาใช้ซ้ำ
 
-[![หน้า Unlock Jenkins](./images/lab3_sib_unlock_crop.png)](./images/lab3_sib_unlock.png)
+> 🔁 **ถ้าเคยตั้งค่า Jenkins ไว้แล้ว** ให้ login ด้วยผู้ดูแล (admin) เดิม แล้ว**ข้ามไปขั้นที่ 3** ได้เลย ไม่ต้องทำ Setup Wizard (2.1–2.6)
 
-*ภาพที่ 5 หน้า **Unlock Jenkins** ตอนติดตั้งครั้งแรก วางรหัสจากคำสั่งด้านบนในช่อง Administrator password*
+**2.1) ปลดล็อก** เปิดเบราว์เซอร์ไปที่ **http://localhost:8080** วางรหัสจากคำสั่งด้านบนในช่อง **Administrator password** แล้วกด **Continue**
+
+![หน้า Unlock Jenkins (ภาพจาก LAB 1)](./images/lab3_setup_from_lab1_01_unlock.png)
+
+*ภาพที่ 5ก (จาก LAB 1) หน้า **Unlock Jenkins** — วางรหัส 32 ตัวแล้วกด Continue · รหัสนี้ใช้ครั้งเดียว*
+
+**2.2) เลือก Install suggested plugins**
+
+![หน้า Customize Jenkins (ภาพจาก LAB 1)](./images/lab3_setup_from_lab1_02_plugins.png)
+
+*ภาพที่ 5ข (จาก LAB 1) เลือก **Install suggested plugins** ซึ่งมี Pipeline, Git และ Pipeline Graph View ที่แล็บนี้ต้องใช้*
+
+**2.3) รอติดตั้ง plugin** ประมาณ 2–4 นาที ห้ามปิด container ระหว่างนี้ ถ้าบางตัวขึ้น **Retry** ให้กด Retry
+
+![กำลังติดตั้ง plugin (ภาพจาก LAB 1)](./images/lab3_setup_from_lab1_03_installing.png)
+
+*ภาพที่ 5ค (จาก LAB 1) เครื่องหมาย ✓ คือ plugin ที่ติดตั้งเสร็จแล้ว*
+
+**2.4) สร้างผู้ดูแลระบบ** กรอกตามภาพ แล้วกด **Save and Continue**
+
+![แบบฟอร์ม Create First Admin User (ภาพจาก LAB 1)](./images/lab3_setup_from_lab1_04_admin_user.png)
+
+*ภาพที่ 5ง (จาก LAB 1) Username `admin` · Password `admin2569` (2 ช่อง) · Full name `Admin` · Email `student@example.com`*
+
+**2.5) คง Jenkins URL เป็น `http://localhost:8080/`** แล้วกด **Save and Finish**
+
+![Instance Configuration (ภาพจาก LAB 1)](./images/lab3_setup_from_lab1_05_instance_url.png)
+
+*ภาพที่ 5จ (จาก LAB 1) หน้า **Instance Configuration** — ใช้ `http://localhost:8080/` ตามที่แสดง*
+
+**2.6) กด Start using Jenkins**
+
+![Jenkins is ready! (ภาพจาก LAB 1)](./images/lab3_setup_from_lab1_06_ready.png)
+
+*ภาพที่ 5ฉ (จาก LAB 1) Setup Wizard เสร็จแล้ว กด **Start using Jenkins** เพื่อเข้า Dashboard*
+
+✅ เข้า Dashboard ของ Jenkins ได้ (ตอนนี้ยังไม่มี job จะสร้างในขั้นที่ 7)
 
 [![Dashboard หลัง login](./images/lab3_sib_dashboard_crop.png)](./images/lab3_sib_dashboard.png)
 
-*ภาพที่ 6 Dashboard หลัง login มี job `docker-build-push` · ภาพถ่ายหลังจบขั้นที่ 9: Last Success `#2` คือร้านที่เปิดอยู่ ส่วน Last Failure `#5` คือ build ที่ตั้งใจให้ล้ม*
+*ภาพที่ 6 **ตัวอย่างจาก LAB 3 ภายหลัง ไม่ใช่หน้าหลังตั้งค่าเสร็จใหม่** — Dashboard เมื่อทำจบขั้นที่ 9 แล้ว มี job `docker-build-push`: Last Success `#2` คือร้านที่เปิดอยู่ ส่วน Last Failure `#5` คือ build ที่ตั้งใจให้ล้ม*
 
 ## ขั้นที่ 3 — ติดตั้ง `sshpass` ใน `jenkins` (🖥️ host)
+
+**ทำไมต้องมี `sshpass`:** Pipeline ของแล็บนี้ให้ Jenkins **SSH ออกไปหา `devtools`** ด้วยรหัสผ่านโดยอัตโนมัติทุก stage แต่คำสั่ง `ssh` ปกติจะหยุดรอให้คนพิมพ์รหัส `sshpass` จึงทำหน้าที่ส่งรหัสให้แทน โดยรหัสมาจาก credential `devtools-ssh` ที่จะสร้างในขั้นที่ 6 (ไม่ได้เขียนไว้ใน Jenkinsfile)
+
+- ติดตั้งจาก 🖥️ host ด้วย `docker exec` ครั้งเดียว — ผู้เรียน**ไม่ต้อง SSH เข้า Jenkins** การสร้าง job, credential และกด Build ทำจากหน้าเว็บทั้งหมด
+- ใช้รหัสผ่านตามที่แล็บกำหนด ไม่ต้องเปลี่ยนรหัสของ `devtools` และไม่ต้องสลับไปใช้ SSH key
 
 <!-- lab3-test:sshpass -->
 ```bash
@@ -152,7 +189,9 @@ devtools ED25519 SHA256:xx0jAuPGt8ifmB/JdQPK4OFNifmaEc5UZWj4hW5RM7o root@buildki
 
 > ถ้า key ไม่ตรงหรือไม่มี SSH จะหยุดก่อนส่งรหัสผ่าน · key นี้ติดมากับ image `tuchsanai/devtools:2569_1` ทุก container จาก image นี้จึงได้ key เดียวกัน ไม่ใช่ตัวตนเฉพาะเครื่อง · ไฟล์ `devtools.known_hosts` ที่เหลือเป็น public key ลบได้
 
-## ขั้นที่ 5 — ทดสอบ SSH ด้วยรหัสผ่าน (🖥️ host)
+## ขั้นที่ 5 — (ไม่บังคับ) ทดสอบ SSH ด้วยรหัสผ่าน (🖥️ host)
+
+> ขั้นนี้เป็นแค่การเช็กการเชื่อมต่อด้วยมือก่อนเริ่ม **ข้ามได้** — ถ้าข้าม ให้ดูผลจาก stage **Connect** ในหน้าเว็บ Jenkins ตอนกด Build (ขั้นที่ 7) แทน · ใน Pipeline จริงไม่มีใครต้องพิมพ์รหัส Jenkins ส่งเองด้วย `sshpass`
 
 <!-- lab3-test:ssh-test -->
 ```bash
