@@ -17,7 +17,7 @@ Container พื้นฐานสำหรับ DevTools labs — Ubuntu 24.04
 | **Tooling** | git, curl, wget, vim, nano, less, net-tools, ping, dnsutils, openssh-server |
 | **Workdir** | `/workspace` |
 | **Ports** | `22` (SSH), `8888` (JupyterLab) |
-| **SSH login** | user `root` / password `passwd` (เปิด PasswordAuthentication + PermitRootLogin) |
+| **SSH login** | user `root` / password `passwd` หรือ key `devtoolSSH` / `devtoolSSH.pub` (ดูหัวข้อ 3.2) |
 | **JupyterLab login** | ไม่มีรหัสผ่าน (ตั้งได้ด้วย `-e JUPYTER_PASSWORD=...`) |
 
 > หมายเหตุ: container รันเป็น `root` (ไม่มี user `student` แล้ว)
@@ -91,6 +91,7 @@ docker compose down             # หยุดและลบ container (ไฟ�
 | `env_file: /root/workspace/DGX_2024/.env` | โหลด credential ส่วนตัวเข้า container (ดูหัวข้อ 2.2; ไม่มีไฟล์ก็รันได้) |
 | `./workspace:/workspace` | งานของนักศึกษาอยู่บนเครื่อง host ไม่หายเมื่อ `down` |
 | `devtools-dind:/var/lib/docker` | named volume เก็บ image/container ของ Docker-in-Docker |
+| `./Devtool_SSH:/etc/devtools/ssh` | คู่ key `devtoolSSH` / `devtoolSSH.pub` สำหรับ SSH ด้วย key (ว่าง = สร้างให้; ดูหัวข้อ 3.2) |
 | `restart: unless-stopped` | เปิดเครื่องใหม่แล้ว container กลับมาเอง |
 
 ปรับค่าได้ผ่าน environment หรือไฟล์ `.env` ข้าง `docker-compose.yml` (ทุกค่ามี default):
@@ -134,7 +135,7 @@ docker exec devtools printenv HF_TOKEN      # ตรวจว่าโหลด�
 docker exec -it devtools bash
 ```
 
-### เข้าผ่าน SSH
+### 3.1 เข้าผ่าน SSH ด้วย password
 
 login ด้วย user `root` รหัสผ่าน `passwd`
 
@@ -142,6 +143,91 @@ login ด้วย user `root` รหัสผ่าน `passwd`
 ssh root@localhost -p 2222
 # password: passwd
 ```
+
+### 3.2 เข้าผ่าน SSH ด้วย private / public key (`devtoolSSH`)
+
+โฟลเดอร์ `Devtool_SSH/` ข้าง `docker-compose.yml` มี **คู่ key สำเร็จรูปของ lab ให้แล้ว**: **`devtoolSSH`** (private key) และ **`devtoolSSH.pub`** (public key)
+compose map โฟลเดอร์นี้เข้า container ที่ `/etc/devtools/ssh` และตอน start, `start.sh` จะนำ `devtoolSSH.pub` ไปใส่ใน `/root/.ssh/authorized_keys` ให้เอง
+login ด้วย password ยังใช้ได้ตามเดิม
+
+```text
+00_Reference/
+├── docker-compose.yml
+└── Devtool_SSH/         ← map เป็น volume → /etc/devtools/ssh
+    ├── devtoolSSH       ← private key: นศ. ใช้ไฟล์นี้กับ ssh -i
+    └── devtoolSSH.pub   ← public key: start.sh ใส่ใน /root/.ssh/authorized_keys
+```
+
+> ⚠️ key คู่นี้ **แจกให้ทุกคนใช้ร่วมกัน** เพราะ container นี้เอาไว้ทดลองเท่านั้น — ห้ามนำ key นี้ไปใช้กับเครื่องหรือ server จริง
+> ถ้าอยากได้ key ของตัวเอง ให้ลบไฟล์ทั้งสองในโฟลเดอร์ `Devtool_SSH/` แล้ว restart container → `start.sh` จะ **สร้างคู่ใหม่ให้ในโฟลเดอร์เดิม**
+> (`docker compose restart` แล้วดู `docker compose logs | grep "SSH key"`)
+
+**ขั้นที่ 1 — start container** (compose map `./Devtool_SSH` ให้แล้ว)
+
+```bash
+docker compose up -d --build     # ต้อง --build ครั้งแรกเพื่อให้ได้ start.sh ตัวใหม่
+docker compose logs | grep "SSH key"
+# [start.sh] SSH key login enabled: /etc/devtools/ssh/devtoolSSH.pub
+```
+
+ถ้าใช้ `docker run` ให้เพิ่ม `-v` ชี้โฟลเดอร์ `Devtool_SSH` (Linux/macOS/PowerShell ใช้ `${PWD}` ได้เหมือนกัน) — ถ้าโฟลเดอร์ยังว่างหรือยังไม่มี container จะสร้าง key ใส่ให้:
+
+```bash
+docker run -dit --name devtools --privileged -p 2222:22 -p 8888:8888 -v "${PWD}/Devtool_SSH:/etc/devtools/ssh" devtools:2569_1
+```
+
+**ขั้นที่ 2 — ตั้ง permission ของ private key (Linux/macOS ครั้งเดียว)** — git ไม่เก็บ permission `600` ไว้ ssh จะไม่ยอมใช้ key ที่คนอื่นอ่านได้
+
+```bash
+chmod 600 Devtool_SSH/devtoolSSH
+```
+
+**ขั้นที่ 3 — login ด้วย key** (ไม่ถามรหัสผ่าน)
+
+```bash
+ssh -i Devtool_SSH/devtoolSSH root@localhost -p 2222
+```
+
+ตัวอย่างผลลัพธ์:
+
+```text
+$ ssh -i Devtool_SSH/devtoolSSH root@localhost -p 2222
+root@devtools:~# whoami
+root
+root@devtools:~# ls -l ~/.ssh/authorized_keys
+-rw------- 1 root root 90 Sep 27 11:27 /root/.ssh/authorized_keys
+```
+
+รันคำสั่งเดียวแล้วออก / copy ไฟล์ด้วย key เดียวกัน:
+
+```bash
+ssh -i Devtool_SSH/devtoolSSH -p 2222 root@localhost "hostname && docker --version"
+scp -i Devtool_SSH/devtoolSSH -P 2222 ./hello.txt root@localhost:/workspace/
+```
+
+ทดสอบว่าเข้าด้วย key จริง (ปิด password — ถ้า key ไม่ถูกจะ `Permission denied` แทนที่จะถามรหัสผ่าน):
+
+```bash
+ssh -i Devtool_SSH/devtoolSSH -o PasswordAuthentication=no -o IdentitiesOnly=yes -p 2222 root@localhost whoami
+```
+
+**(ทางเลือก) ตั้งชื่อย่อใน `~/.ssh/config`** แล้วพิมพ์แค่ `ssh devtools`
+
+```text
+Host devtools
+    HostName localhost
+    Port 2222
+    User root
+    IdentityFile /path/to/00_Reference/Devtool_SSH/devtoolSSH
+    IdentitiesOnly yes
+```
+
+| ปัญหา | วิธีแก้ |
+|------|--------|
+| `WARNING: UNPROTECTED PRIVATE KEY FILE!` (Linux/macOS) | `chmod 600 Devtool_SSH/devtoolSSH` |
+| `UNPROTECTED PRIVATE KEY FILE` บน Windows | `icacls Devtool_SSH\devtoolSSH /inheritance:r /grant:r "%USERNAME%:R"` |
+| `REMOTE HOST IDENTIFICATION HAS CHANGED!` (หลังสร้าง container ใหม่) | `ssh-keygen -R "[localhost]:2222"` |
+| ยังถามรหัสผ่าน | ตรวจ `docker compose logs \| grep "SSH key"` ว่ามี `enabled` — ถ้าเปลี่ยน key ต้อง restart container ก่อน |
 
 ### ทดสอบว่า Docker-in-Docker ทำงาน
 
@@ -185,7 +271,7 @@ file browser **แสดง hidden file / folder** (ชื่อขึ้นต�
 |------|--------|
 | `/etc/jupyter/jupyter_server_config.py` | ค่า server: ip/port, root_dir = `/`, allow_root, `allow_hidden` (เห็น hidden file), terminal = `bash -l`, ปิด token |
 | `/usr/local/share/jupyter/lab/settings/overrides.json` | ค่าเริ่มต้น UI: file browser `showHiddenFiles`, terminal `pasteWithCtrlV`, shortcut copy/paste, ปิด news/update check |
-| `/usr/local/bin/start.sh` | entrypoint: sshd + dockerd + jupyter lab (ไม่มีรหัสผ่าน เว้นแต่ตั้ง `$JUPYTER_PASSWORD`) |
+| `/usr/local/bin/start.sh` | entrypoint: sshd (+ สร้าง key ถ้ายังไม่มี และติดตั้ง `devtoolSSH.pub` ลง `authorized_keys`) + dockerd + jupyter lab (ไม่มีรหัสผ่าน เว้นแต่ตั้ง `$JUPYTER_PASSWORD`) |
 | `/var/log/jupyter.log` | log ของ JupyterLab |
 
 ---

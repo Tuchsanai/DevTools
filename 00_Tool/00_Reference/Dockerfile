@@ -128,10 +128,15 @@ EOF
 #   * คลิกขวาที่ terminal จะมีเมนู Copy / Paste
 COPY jupyter_overrides.json /usr/local/share/jupyter/lab/settings/overrides.json
 
-# ตั้งรหัสผ่าน root = passwd และเปิดให้ login ผ่าน SSH ด้วย password ได้
+# ตั้งรหัสผ่าน root = passwd และเปิดให้ login ผ่าน SSH ได้ทั้ง password และ key
+#   - password : ssh root@localhost -p 2222            (password: passwd)
+#   - key      : ssh -i ssh/devtoolSSH root@localhost -p 2222
+#     start.sh จะนำ public key จาก /etc/devtools/ssh/devtoolSSH.pub (mount มาจาก ./ssh บน host)
+#     ไปใส่ใน /root/.ssh/authorized_keys ทุกครั้งที่ container start
 RUN echo 'root:passwd' | chpasswd \
- && mkdir -p /etc/ssh/sshd_config.d \
- && printf 'PermitRootLogin yes\nPasswordAuthentication yes\n' \
+ && mkdir -p /etc/ssh/sshd_config.d /etc/devtools/ssh \
+ && install -d -m 700 /root/.ssh \
+ && printf 'PermitRootLogin yes\nPasswordAuthentication yes\nPubkeyAuthentication yes\n' \
       > /etc/ssh/sshd_config.d/10-root-login.conf
 
 # start script: sshd + dockerd + jupyter lab (ไม่มีรหัสผ่าน เว้นแต่ตั้ง $JUPYTER_PASSWORD)
