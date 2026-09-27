@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>LAB003 README อัปเดตเรียบร้อย</title>
+</head>
+<body style="font-family: 'Sarabun', 'Tahoma', sans-serif; line-height: 1.6; color: #222; max-width: 720px;">
+<p>เรียน อาจารย์</p>
+
+<p>README ของ LAB003 (Docker Build &amp; Push) แก้ตามที่ขอครบแล้ว และ push ขึ้น <code>main</code> ของ <code>Tuchsanai/DevTools</code> เรียบร้อย</p>
+
+<h3>ลิงก์</h3>
+<ul>
+  <li>README (main): <a href="https://github.com/Tuchsanai/DevTools/blob/main/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/README.md">04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/README.md</a></li>
+  <li>README (อ้างอิงตาม commit): <a href="https://github.com/Tuchsanai/DevTools/blob/2a47c68ff53bd5904087e63b798281569e708545/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/README.md">README.md @ 2a47c68</a></li>
+  <li>Commit: <a href="https://github.com/Tuchsanai/DevTools/commit/2a47c68ff53bd5904087e63b798281569e708545">2a47c68</a> — LAB003 README: add reused LAB 1 setup-wizard screenshots and PAT demo image</li>
+</ul>
+
+<h3>สิ่งที่แก้ตามที่ขอ</h3>
+<ol>
+  <li><b>ขั้นที่ 1:</b> เพิ่มคำอธิบายว่าทำไมใช้ 2 container แทน server 2 เครื่อง (<code>jenkins</code> คุม Pipeline และสั่งงานผ่าน SSH, <code>devtools</code> รับคำสั่งไปรัน, <code>cicd-net</code> ทำให้เรียกกันด้วยชื่อได้) และตัดบล็อก “ตรวจว่าทั้งสองตัว Up” ออก</li>
+  <li><b>ขั้นที่ 2:</b> แบ่งเป็นขั้นย่อย 2.1–2.6 พร้อมภาพ Setup Wizard 6 ภาพ (Unlock, plugins, installing, admin, Instance URL, ready) ภาพชุดนี้นำมาจาก LAB 1 และมีหมายเหตุไว้ใน README ว่าเป็นภาพที่นำกลับมาใช้ซ้ำ ถ้าเคยตั้งค่า Jenkins ไว้แล้ว ให้ login ด้วย admin เดิมแล้วข้ามไปขั้นที่ 3</li>
+  <li><b>ขั้นที่ 3:</b> อธิบายว่าทำไมยังต้องใช้ <code>sshpass</code> (Jenkins ต้อง SSH ไปหา <code>devtools</code> ด้วยรหัสผ่านจาก credential <code>devtools-ssh</code> แบบอัตโนมัติ) และติดตั้งผ่าน <code>docker exec</code> จาก host</li>
+  <li><b>ขั้นที่ 5:</b> เปลี่ยนเป็นขั้น “(ไม่บังคับ)” ข้ามได้ แล้วไปดูผลที่ stage Connect บนหน้าเว็บแทน</li>
+  <li>เพิ่มภาพประกอบการสร้าง Docker Hub PAT (<code>images/lab3_hub_pat_demo.png</code>)</li>
+</ol>
+
+<h3>การตรวจแบบ static</h3>
+<ul>
+  <li>README อ้างภาพ local 33 ภาพ มีไฟล์จริงครบทุกภาพ</li>
+  <li>code fence 36 อัน เปิด-ปิดครบคู่</li>
+  <li>ภาพ Setup Wizard ทั้ง 6 ภาพอยู่ใน commit และตรงกับต้นฉบับจาก LAB 1 ทุกไบต์</li>
+  <li>ไม่พบ token หรือข้อมูลลับใน README</li>
+  <li>หลัง push แล้ว <code>main</code> บน GitHub ชี้ไปที่ commit <code>2a47c68</code> ตรงกับเครื่อง local</li>
+</ul>
+
+<h3>หมายเหตุ</h3>
+<p>รอบนี้<b>ไม่ได้รันแล็บใหม่</b> ไม่ได้ build/run Docker และไม่ได้ทดสอบ SSH เป็นการแก้เอกสารและตรวจแบบ static เท่านั้น</p>
+
+<p>ขอแสดงความนับถือ</p>
+</body>
+</html>

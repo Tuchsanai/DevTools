@@ -33,6 +33,8 @@ image ที่ build ได้ถูก push ไปเก็บที่ **Dock
 
 {{fig:hub_pat}}
 
+{{fig:hub_pat_generated}}
+
 stage Clone ดึงซอร์สร้านจากโฟลเดอร์นี้ใน repository ของรายวิชา:
 
 {{fig:github_source}}

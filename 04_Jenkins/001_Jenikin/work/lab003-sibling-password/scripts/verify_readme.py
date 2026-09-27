@@ -83,5 +83,12 @@ check('no initial-admin-password example (32 hex or 16 hex + bullets)', not re.s
 check('no host-key overclaims', not re.search(r'ไม่มีใครแทรกแซง|แอบอ้าง|ถ้าไม่มีก็ไม่ error|ตัวตนของเครื่อง', r))
 check('docker rm -f missing-container message stated', 'No such container' in r)
 check('host key shared across clones stated', 'ไม่ใช่ตัวตนเฉพาะเครื่อง' in r)
+# 9. PAT demo figure (generated illustration, fictional user/token): 3ก directly after ภาพที่ 3, single image linked to itself
+check('ภาพที่ 3ก (PAT demo) directly after ภาพที่ 3', re.search(r'^\*ภาพที่ 3 [^\n]*\*\n\n\[!\[[^\]]*\]\(\./images/lab3_hub_pat_demo\.png\)\]\(\./images/lab3_hub_pat_demo\.png\)\n\n\*ภาพที่ 3ก ', r, re.M))
+check('3ก is the only sub-numbered figure', re.findall(r'^\*ภาพที่ (\d+[^\d\s]+) ', r, re.M) == ['3ก'])
+check('PAT demo image 1466x1073 PNG', (lambda im: im.format == 'PNG' and im.size == (1466, 1073))(Image.open(LAB / 'images' / 'lab3_hub_pat_demo.png')))
+cap3a = (re.findall(r'^\*ภาพที่ 3ก ([^\n]*)\*$', r, re.M) or [''])[0]
+check('3ก caption says generated illustration, fictional unusable token, choose Read & Write', all(k in cap3a for k in ('ภาพประกอบที่สร้างขึ้น', 'ไม่ใช่หน้าจอจริง', 'ค่าสมมติ', 'ใช้งานไม่ได้', 'Repo Read & Write')))
+check('old redacted PAT screenshots not published', not list((LAB / 'images').glob('lab3_hub_05_pat_generated*')) and 'pat_generated' not in r)
 print('README lines', len(r.splitlines()), 'figures', len(re.findall(r'^\*ภาพที่ \d+ ', r, re.M)), 'blocks', len(blocks))
 sys.exit(0 if ok else 1)

@@ -1,0 +1,3 @@
+Built-in imagegen succeeded; one image saved to [docker-pat-demo.png](/root/workspace/DevTools/04_Jenkins/001_Jenikin/work/lab003-sibling-password/diagrams/docker-pat-demo.png).
+
+Verified the exact fake token and demo labeling. Native output is 1466 × 1073, rather than 1400px wide. No README or code edits.

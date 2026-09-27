@@ -1,0 +1,1 @@
+I removed the "Push gotcha (2026-09-27)" paragraph and the blank line before it from `lab003-sibling-password-redesign.md`, so the file now ends at the `Related:` line and everything above it is unchanged.

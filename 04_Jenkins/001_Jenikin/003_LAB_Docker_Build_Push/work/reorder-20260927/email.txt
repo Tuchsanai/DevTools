@@ -1,0 +1,47 @@
+เรื่อง: LAB 3 (Jenkins Docker Build/Push) — จัดลำดับ README ใหม่และเปลี่ยนเป็น Pipeline script from SCM (ยังไม่ commit)
+
+สวัสดีครับ
+
+สรุปงานปรับ LAB 3 วันที่ 27 ก.ย. 2569:
+
+1) README ลดเหลือ 8 ขั้น
+   - ขั้นที่ 2: ตัดย่อหน้า Dashboard และภาพที่ 6 เดิมออก
+   - ขั้นที่ 3: ย้ายการสร้าง Jenkins Credentials มาไว้ถัดจากตั้งค่า Jenkins
+     • devtools-ssh ใช้ SSH ทุก stage
+     • dockerhub ใช้ใน Connect, Push และ Pull
+     • มีภาพหน้าจอจริงชุดใหม่ ภาพที่ 6–9
+   - ขั้นที่ 4: เตรียม sshpass, pin host key และทดสอบ SSH (ไม่บังคับ) ก่อนใช้งานจริง
+   - ขั้นที่ 5: อธิบาย Jenkinsfile ทีละชั้น
+     • ลำดับ: Credentials → SSH ไป devtools → git clone → Docker build/test → Docker Hub push/pull/deploy
+     • โค้ดตัดจากไฟล์จริงทุกบรรทัด
+   - ขั้นที่ 6: สร้าง job แบบ Pipeline script from SCM
+     • ใช้ repository https://github.com/Tuchsanai/DevTools.git branch main
+     • Script Path 04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile
+     • มีภาพหน้าจอจริงชุดใหม่ ภาพที่ 10–12
+     • อธิบายชัดว่า Jenkins เป็นผู้ดึง Jenkinsfile เองก่อน Pipeline เริ่ม ส่วน git clone ของแอปและคำสั่ง Docker รันบน devtools ผ่าน SSH
+   - เลขขั้น เลขภาพ (1–29) และการอ้างอิงถูกเรียงใหม่ทั้งหมด
+
+2) Jenkinsfile
+   - เพิ่ม skipDefaultCheckout() เพื่อไม่ให้ Jenkins clone ทั้ง repository (ประมาณ 1.3 GB) ซ้ำโดยไม่จำเป็น
+   - แก้ comment เลขขั้น
+   - 8 stage และลำดับ push ก่อน clean / deploy ตาม digest เหมือนเดิม
+
+3) การตรวจสอบ
+   - ตรวจแบบ static ผ่านทั้งหมด:
+     • ลิงก์ภาพครบ
+     • Jenkinsfile ใน README ตรงกับไฟล์ทุกตัวอักษร
+     • เลขขั้นและเลขภาพต่อเนื่อง
+     • ไม่พบข้อมูลลับ
+   - Jenkins linter ผ่านทั้งไฟล์ใหม่และไฟล์บน GitHub
+   - build จริงบน Jenkins ชั่วคราวที่แยกไว้ สำเร็จทั้งสองแบบ:
+     • Jenkinsfile ใหม่ (จาก repo ในเครื่อง ไม่ได้ push): SUCCESS ครบ 8 stage 76 วินาที
+     • Jenkinsfile บน GitHub main (โหมด SCM): SUCCESS 151 วินาที มี stage Checkout SCM เพิ่ม ช้ากว่าแต่ใช้ได้
+
+สิ่งที่ยังต้องทำ
+   - commit และ push README.md, Jenkinsfile และภาพ lab3_scm_01–07 (ยังไม่ได้ทำตามที่สั่ง)
+   - ยืนยันที่มาของภาพ lab3_scm_dockerhub_tags.png และ lab3_scm_github_jenkinsfile.png ที่ไม่ได้ส่งผ่านตัวรับภาพ
+   - สั่ง cleanup environment ชั่วคราวเมื่อถ่ายภาพเสร็จ
+
+รายละเอียดทั้งหมดอยู่ที่ work/reorder-20260927/result.md
+
+ขอบคุณครับ

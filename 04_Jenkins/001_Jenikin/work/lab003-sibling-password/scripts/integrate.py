@@ -12,7 +12,8 @@ W = pathlib.Path(__file__).resolve().parent.parent
 IMG = W.parent.parent / '003_LAB_Docker_Build_Push' / 'images'
 ARC = W / 'archive_old_images'
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
-KEEP = {'lab3_github_01_source.png', 'lab3_github_01_source_crop.png', 'lab3_hub_04_pat_setup.png', 'lab3_hub_04_pat_setup_crop.png'}
+KEEP = {'lab3_github_01_source.png', 'lab3_github_01_source_crop.png', 'lab3_hub_04_pat_setup.png', 'lab3_hub_04_pat_setup_crop.png',
+        'lab3_hub_pat_demo.png'}
 man = []
 for src, dst in (('architecture-sibling.png', 'lab3_diagram_sibling_architecture.png'), ('pipeline-sibling.png', 'lab3_diagram_sibling_pipeline.png')):
     s = W / 'diagrams' / src

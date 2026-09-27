@@ -23,9 +23,9 @@ Baseline copies and hashes: `prose-baseline/` (`files.sha256`, `images.sha256`, 
 - Non-image links unchanged: LAB 1 README, `./Jenkinsfile`, `./LAB003_FINAL_REPORT.md`, LAB 4 README.
 - Remaining "sibling"/"ผู้สั่ง"/"พี่น้อง" matches in the README only occur in image filenames, the embedded Jenkinsfile comments (byte-for-byte rule) and real run tags in the output logs (`lab3-sibling-…`).
 
-## Pending
+## Follow-up (done 2026-09-26)
 
-- Docker Hub **Generate-result screenshot** is still a separate, pending task. It was not created or faked here, and the README does not reference it.
+- Docker Hub Generate-result figure: **completed** as ภาพที่ 3ก using a generated teaching illustration (`images/lab3_hub_pat_demo.png`, fictional user/token, caption says so). No real token is shown and nothing is pending. See `PAT_IMAGE_INTEGRATION.md`.
 - Not done by design: no git add/commit/push (the auto-commit service handles this).
 
 ## Final editorial pass (2026-09-26)
@@ -51,4 +51,4 @@ Template only (`README.tmpl.md`); `captures.json`, `scripts/*`, Jenkinsfile, app
 - Against `prose-baseline/README.before.md`: 20/20 code blocks byte-identical and in the same order, matching `codeblocks.sha256`. The 31 image/link targets are identical and in the same order, the 27 `ภาพที่ N` → image mappings are identical, and the `lab3-test` markers are identical.
 - `images/`: all files match `prose-baseline/images.sha256`.
 - `003_LAB_Docker_Build_Push/Jenkinsfile`: no diff vs HEAD. The `catfood-shop/app/globals.css` modification was already there before this pass and was not touched.
-- No Docker runtime, no git mutations, no token generation. The Docker Hub Generate-result screenshot is **still pending**.
+- No Docker runtime, no git mutations, no token generation. The Generate-result figure was later completed with the generated demo image (see Follow-up).

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "created": "2026-09-27",
+  "base_url": "http://localhost:8080",
+  "login": "username admin / password admin2569 (disposable training account, same example as README step 2)",
+  "upload": "PUT or POST http://127.0.0.1:8790/images/<filename> raw PNG body (curl -T f.png ...). Only filenames below accepted.",
+  "rules": [
+    "Genuine captures only, browser ~1440x900, light theme, zoom 100%.",
+    "Start logged OUT. Capture in order 01..05. Each shot shows where to click next (optionally hover the target).",
+    "No real credentials; Global store may be empty."
+  ],
+  "shots": [
+    {"id": "01", "files": ["lab3_nav_01_login.png"], "page": "/login", "action": "Sign-in page with Username admin typed and password field filled (masked), before clicking Sign in. Then Sign in.", "readme_figure": "ภาพที่ 6ก"},
+    {"id": "02", "files": ["lab3_nav_02_dashboard.png"], "page": "/", "action": "Dashboard after login; left side panel shows 'Manage Jenkins' (or gear icon top-right). Click Manage Jenkins.", "readme_figure": "ภาพที่ 6ข"},
+    {"id": "03", "files": ["lab3_nav_03_manage.png"], "page": "/manage/", "action": "Manage Jenkins page with Security section item 'Credentials' visible. Click Credentials.", "readme_figure": "ภาพที่ 6ค"},
+    {"id": "04", "files": ["lab3_nav_04_credentials.png"], "page": "/manage/credentials/", "action": "Credentials page: 'Stores scoped to Jenkins' table with Store 'System' link. Click System.", "readme_figure": "ภาพที่ 6ง"},
+    {"id": "05", "files": ["lab3_nav_05_system.png"], "page": "/manage/credentials/store/system/", "action": "System store page listing domain 'Global credentials (unrestricted)'. Click it -> existing figure (Global page with + Add Credentials).", "readme_figure": "ภาพที่ 6จ"},
+    {"id": "06", "files": ["lab3_nav_06_global.png"], "page": "/manage/credentials/store/system/domain/_/", "action": "OPTIONAL: Global credentials page (empty) with + Add Credentials button. README keeps existing lab3_scm_01_credentials_store.png; this is only a consistency check.", "readme_figure": "(optional, not used unless needed)"}
+  ]
+}

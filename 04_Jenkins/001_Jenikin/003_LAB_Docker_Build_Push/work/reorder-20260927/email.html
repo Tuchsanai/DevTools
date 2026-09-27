@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8"><title>LAB003 อัปเดต README และผลทดสอบ SCM</title></head>
+<body style="font-family:Tahoma,Arial,sans-serif;font-size:14px;line-height:1.6;color:#222;max-width:720px">
+<h2 style="margin-bottom:4px">LAB 3 Docker Build Push: README ใหม่และผลทดสอบ Pipeline script from SCM</h2>
+<p>อัปเดต LAB003 เสร็จแล้ว push ขึ้น GitHub <code>main</code> แล้ว (ตรวจ hash บน remote แล้ว)</p>
+<ul>
+<li>README: <a href="https://github.com/Tuchsanai/DevTools/blob/main/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/README.md">04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/README.md</a></li>
+<li>Commit สุดท้าย: <a href="https://github.com/Tuchsanai/DevTools/commit/667350bb975f8be5ee2795b6f87e2871b12c8986"><code>667350b</code></a> (commit เนื้อหา <a href="https://github.com/Tuchsanai/DevTools/commit/e200b5556263c9c9837c7d488c966cc739043d22"><code>e200b55</code></a>)</li>
+</ul>
+<h3>สิ่งที่เปลี่ยน</h3>
+<ul>
+<li>ขั้นที่ 5 สอน<b>สร้าง</b> <code>Jenkinsfile</code>: เริ่มจากชื่อไฟล์และ Script Path ต่อด้วยโครง Declarative Pipeline แบบเต็ม (pipeline/agent/options/parameters/environment/stages/stage/steps/script/post) แล้วเติมทีละชั้น: Credentials → SSH → clone → build/test → push/pull/deploy · ส่วนที่ตัดมาจากไฟล์จริงมีป้ายบอกเลขบรรทัด · ไฟล์ฉบับเต็มในเอกสารตรงกับไฟล์จริงทุกตัวอักษร</li>
+<li>แยกชัดระหว่างรันด้วยไฟล์ของรายวิชา (ไม่ต้อง fork) กับฝึกเขียนเองใน repo ของตัวเอง</li>
+<li>ขั้นที่ 6 ใช้ Pipeline script from SCM · ภาพทั้งหมดเป็นภาพจริง รวม 33 ภาพ เรียงเลขต่อเนื่อง ได้แก่ Jenkins UI, GitHub, Docker Hub และ Console/Stages หลัง push</li>
+<li><code>Jenkinsfile</code> เพิ่ม <code>skipDefaultCheckout()</code></li>
+</ul>
+<h3>ผลตรวจจริง</h3>
+<ul>
+<li>Jenkins linter 2.568.3: โครง skeleton และ Jenkinsfile ผ่านทั้งคู่ (successfully validated)</li>
+<li>ตรวจเอกสาร: ลิงก์และภาพ 61 รายการครบ · excerpt ทั้ง 12 บล็อกตรงเลขบรรทัด · <code>git diff --check</code> สะอาด · ไม่พบ secret</li>
+<li>build หลัง push <code>verify-local/upstream-main</code> #2 อ่าน Jenkinsfile จาก GitHub <code>main</code> (<code>e200b55</code>): <b>SUCCESS 29 วินาที ผ่านครบ 8 stage</b> ไม่มี <code>Declarative: Checkout SCM</code> · push, pull และ deploy ใช้ digest เดียวกัน <code>sha256:a33d7870…</code> · ร้านตอบ 1.0.0 build 2</li>
+</ul>
+<h3>เก็บกวาด</h3>
+<p>ลบ container, volume และ network ของงานนี้ (<code>devtools-l3reorder-8de7f5-*</code>) แล้ว หยุดตัว forward port และตัวรับภาพแล้ว ลบไฟล์รหัสผ่านชั่วคราวแล้ว ไม่ได้แตะของอื่น · tag ทดสอบบน Docker Hub ยังเก็บไว้เป็นหลักฐาน</p>
+</body></html>

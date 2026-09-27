@@ -1,0 +1,8 @@
+277caf
+[02:29:23] running devtools- containers before: 0
+[02:29:23] network devtools-l3nav-277caf-net, volume devtools-l3nav-277caf-jhome
+[02:29:23] installing credentials plugin (+deps)
+[02:39:11] jenkins image: sha256:66ebfe0c8828e442169a77e4b858822f4595f7dd7873bb2f245f3a8696a56427 ip: 172.22.0.2
+[02:39:15] jenkins /login via host.docker.internal:18490 -> 200
+
+[exited with code 0]

@@ -66,3 +66,6 @@ lab3_stage_07_pull_tail.png
 lab3_stage_08_deploy.png
 lab3_stage_08_deploy_crop.png
 lab3_stage_08_deploy_tail.png
+# 2026-09-26 replaced by generated demo lab3_hub_pat_demo.png (redacted real PAT page retired)
+lab3_hub_05_pat_generated.png
+lab3_hub_05_pat_generated_crop.png

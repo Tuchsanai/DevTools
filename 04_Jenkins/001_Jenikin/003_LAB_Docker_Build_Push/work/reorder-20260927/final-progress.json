@@ -1,0 +1,61 @@
+{
+  "phase": "done",
+  "updated": "2026-09-27T02:22:26+0000",
+  "content_commit": "e200b5556263c9c9837c7d488c966cc739043d22",
+  "remote_main_verified": "667350bb975f8be5ee2795b6f87e2871b12c8986",
+  "build": {
+    "job": "verify-local/upstream-main",
+    "number": 2,
+    "url": "http://localhost:8080/job/verify-local/job/upstream-main/2/",
+    "console": "http://localhost:8080/job/verify-local/job/upstream-main/2/console",
+    "result": "SUCCESS",
+    "duration_s": 29,
+    "stages": [
+      "Connect",
+      "Clone",
+      "Build",
+      "Test",
+      "Push",
+      "Clean",
+      "Pull",
+      "Deploy"
+    ],
+    "declarative_checkout_scm": false,
+    "digest": "sha256:a33d7870924a79f76b6e3844672ce397593ab0a8faaba34ad5453b96ed28fd5f",
+    "tag": "lab3-reorder-20260927p-2"
+  },
+  "receiver": "http://127.0.0.1:8790/images/<name>",
+  "requested_uploads": [
+    "lab3_scm_08_console_obtained.png",
+    "lab3_scm_08_console_obtained_crop.png",
+    "lab3_scm_09_stages_success.png",
+    "lab3_scm_09_stages_success_crop.png"
+  ],
+  "marker": "work/reorder-20260927/final-capture-done",
+  "wait_timeout_s": 300,
+  "final_commit": "667350bb975f8be5ee2795b6f87e2871b12c8986",
+  "final_capture": {
+    "marker_found": true,
+    "received": [
+      "lab3_scm_08_console_obtained.png",
+      "lab3_scm_09_stages_success.png"
+    ],
+    "crops": "made remotely (plain crops)",
+    "readme_figures": [
+      14,
+      15
+    ]
+  },
+  "result": {
+    "static_checks": "ALL PASS",
+    "linter": "skeleton + Jenkinsfile validated",
+    "postpush_build": "verify-local/upstream-main #2 SUCCESS 29s, 8/8 stages, no Declarative: Checkout SCM, digest sha256:a33d7870924a79f76b6e3844672ce397593ab0a8faaba34ad5453b96ed28fd5f",
+    "secret_scan": "0 matches",
+    "cleanup": "containers/volume/network/forwarders/receiver removed, verified 0 left; temp admin password shredded"
+  },
+  "files": {
+    "final_result": "work/reorder-20260927/final-result.md",
+    "email_html": "work/reorder-20260927/email.html (not sent; coordinator sends)"
+  },
+  "worker_output_summary": "README step 5 teaches creating Jenkinsfile (skeleton + labelled excerpts), step 6 SCM with real post-push evidence, 33 figures; pushed e200b55 then 667350b; post-push build SUCCESS; cleanup done."
+}

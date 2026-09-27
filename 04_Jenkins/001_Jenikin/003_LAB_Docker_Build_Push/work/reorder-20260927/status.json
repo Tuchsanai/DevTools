@@ -1,0 +1,66 @@
+{
+  "updated": "2026-09-27T02:03:12+0000",
+  "phase": "done; environment cleaned up",
+  "hash": "8de7f5",
+  "planned_resources_owned_by_this_task": {
+    "network": "devtools-l3reorder-8de7f5-net",
+    "jenkins_container": "devtools-l3reorder-8de7f5-jenkins",
+    "devtools_container": "devtools-l3reorder-8de7f5-dt (network alias 'devtools')",
+    "jenkins_home_volume": "devtools-l3reorder-8de7f5-jhome"
+  },
+  "jenkins_url": "http://localhost:8080/ (on this remote: 127.0.0.1:8080 loopback forwarder -> Docker host 127.0.0.1:18480 -> devtools-l3reorder-8de7f5-jenkins:8080)",
+  "screenshot_receiver": {
+    "bind": "127.0.0.1:8790",
+    "endpoints": {
+      "GET /health": "liveness",
+      "GET /allowlist": "accepted filenames (from screenshot-plan.json)",
+      "GET /received": "receipts",
+      "PUT|POST /images/<filename>": "raw PNG body, max 15 MB, saved to <lab>/images/<filename>"
+    },
+    "example": "curl -T shot.png http://127.0.0.1:8790/images/lab3_scm_01_credentials_store.png",
+    "receipts_log": "work/reorder-20260927/evidence/receiver-receipts.jsonl"
+  },
+  "blockers": [],
+  "notes": "No student 'devtools' or 'jenkins' container exists on this Docker engine; nothing unrelated will be touched.",
+  "jenkins_auth": {
+    "method": "Jenkins own user database, form login",
+    "username": "admin",
+    "password_file": "shredded after use",
+    "anonymous_read": true,
+    "note": "Verified 2026-09-27: anonymous GET /api/json, /manage/credentials/ and /job/verify-local/api/json returned HTTP 200 although an admin user exists; acceptable only because Jenkins is loopback-bound, disposable and local."
+  },
+  "shop_url_optional": "http://localhost:3000/ (127.0.0.1:3000 forwarder -> host 127.0.0.1:13080 -> devtools-l3reorder-8de7f5-dt:3000)",
+  "ssh_tunnel_hint": "ssh -L 8080:127.0.0.1:8080 -L 8790:127.0.0.1:8790 <this remote>",
+  "background_processes_owned": {},
+  "containers_owned": {},
+  "jenkins_version": "2.568.3",
+  "global_credential_store": "present: devtools-ssh (root/passwd) and dockerhub (placeholder demostudent + dummy token), created by coordinator for screenshots",
+  "owner": "yolo3 (this task); only devtools-l3reorder-8de7f5-* are touched",
+  "jobs": {
+    "docker-build-push": "saved top-level SCM job (GitHub main), uses dummy global dockerhub creds -> intentionally never built",
+    "verify-local/local-jenkinsfile #1": "SUCCESS 76s, 8 stages",
+    "verify-local/upstream-main #1": "SUCCESS 151s, Checkout SCM + 8 stages"
+  },
+  "completed": [
+    "README reorder (8 steps, figs 1-29)",
+    "Jenkinsfile skipDefaultCheckout",
+    "static validation PASS",
+    "Jenkins linter PASS",
+    "2 real SCM builds SUCCESS",
+    "result.md",
+    "email.txt (not sent)"
+  ],
+  "screenshots_received": [
+    "lab3_scm_01",
+    "lab3_scm_02",
+    "lab3_scm_03",
+    "lab3_scm_04",
+    "lab3_scm_05",
+    "lab3_scm_06",
+    "lab3_scm_07"
+  ],
+  "warnings": [
+    "images/lab3_scm_dockerhub_tags.png and images/lab3_scm_github_jenkinsfile.png appeared outside the receiver (no receipt); not referenced, not deleted"
+  ],
+  "cleanup": "done 2026-09-27, verified none left"
+}

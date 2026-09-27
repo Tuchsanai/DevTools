@@ -1,0 +1,30 @@
+{
+  "job": "verify-local/upstream-main",
+  "build": 2,
+  "url_path": "/job/verify-local/job/upstream-main/2/",
+  "result": "SUCCESS",
+  "duration_s": 29,
+  "stages_wfapi": "wfapi 404",
+  "stages_seen": [
+    "Connect",
+    "Clone",
+    "Build",
+    "Test",
+    "Push",
+    "Clean",
+    "Pull",
+    "Deploy",
+    "Declarative: Post Actions"
+  ],
+  "obtained_line": "Obtained 04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile from git https://github.com/Tuchsanai/DevTools.git",
+  "checkout_scm_stage_present": false,
+  "push_digest": [
+    "sha256:a33d7870924a79f76b6e3844672ce397593ab0a8faaba34ad5453b96ed28fd5f"
+  ],
+  "pull_digest": [
+    "sha256:a33d7870924a79f76b6e3844672ce397593ab0a8faaba34ad5453b96ed28fd5f"
+  ],
+  "deploy_image": [
+    "docker.io/<DOCKER_USER>/catfood-shop@sha256:a33d7870924a79f76b6e3844672ce397593ab0a8faaba34ad5453b96ed28fd5f"
+  ]
+}

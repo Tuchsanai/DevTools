@@ -93,20 +93,24 @@ FIG = {
         'แผนภาพประกอบ — Jenkins คุมลำดับ 8 stage และส่งคำสั่งไปรันบน devtools ผ่าน SSH · Clean ทำหลัง Push สำเร็จเท่านั้น · Pull ใช้ digest ที่ Push จดไว้ แล้วจึง Deploy'),
     'hub_pat': ('lab3_hub_04_pat_setup_crop.png', 'lab3_hub_04_pat_setup.png', 'หน้าสร้าง Personal Access Token บน Docker Hub',
         'หน้าสร้าง token บน Docker Hub: ตั้งชื่อ เลือก **Access permissions = Repo Read & Write** แล้วกด **Generate** · token แสดงครั้งเดียว ให้คัดลอกเก็บทันที'),
+    'hub_pat_generated': ('lab3_hub_pat_demo.png', 'lab3_hub_pat_demo.png', 'ภาพประกอบหน้า Docker Hub หลังกด Generate (ค่าสมมติ)',
+        'ภาพประกอบที่สร้างขึ้นเพื่อการสอน ไม่ใช่หน้าจอจริง · ชื่อผู้ใช้ `demo-student` และ token ในภาพเป็นค่าสมมติ ใช้งานไม่ได้ · ตอนทำ LAB จริงให้เลือก **Repo Read & Write** และคัดลอก token ของตัวเองเก็บทันที'),
     'github_source': ('lab3_github_01_source_crop.png', 'lab3_github_01_source.png', 'ซอร์สร้านบน GitHub',
         'โฟลเดอร์ `catfood-shop` บน GitHub ที่ stage Clone ดึงมา'),
 }
 for c in json.loads((W / 'captures.json').read_text()):   # real host-browser captures: crop shown, full capture linked
     FIG[c['key']] = (f"lab3_sib_{c['key']}_crop.png", f"lab3_sib_{c['key']}.png", c['alt'], c['caption'])
 
+SUB = {'hub_pat_generated': 'ก'}   # extra figure under the previous number, so ภาพที่ 1–27 keep their numbers
 t = (W / 'README.tmpl.md').read_text(encoding='utf-8')
 num = [0]
 def fig(m):
     img, link, alt, cap = FIG[m.group(1)]
     if not (IMG / img).exists(): return '\x00'
-    num[0] += 1
+    if m.group(1) in SUB: label = f'{num[0]}{SUB[m.group(1)]}'
+    else: num[0] += 1; label = num[0]
     pic = f'[![{alt}](./images/{img})](./images/{link})' if link else f'![{alt}](./images/{img})'
-    return f'{pic}\n\n*ภาพที่ {num[0]} {cap}*'
+    return f'{pic}\n\n*ภาพที่ {label} {cap}*'
 t = re.sub(r'\{\{fig:(\w+)\}\}', fig, t)
 t = re.sub(r'(\n*\x00\n*)+', '\n\n', t)    # a figure not captured yet leaves no gap
 t = re.sub(r'\{\{block:([\w-]+)\}\}', lambda m: f'<!-- lab3-test:{m.group(1)} -->\n```bash\n' + (W / 'blocks' / f'{m.group(1)}.sh').read_text() + '```', t)

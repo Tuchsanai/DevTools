@@ -1,0 +1,308 @@
+Started by user unknown or anonymous
+Obtained 04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile from git https://github.com/Tuchsanai/DevTools.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/verify-local/upstream-main
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+The recommended git tool is: git
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/Tuchsanai/DevTools.git
+ > git init /var/jenkins_home/workspace/verify-local/upstream-main # timeout=10
+Fetching upstream changes from https://github.com/Tuchsanai/DevTools.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/Tuchsanai/DevTools.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/Tuchsanai/DevTools.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 2a47c68ff53bd5904087e63b798281569e708545 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 2a47c68ff53bd5904087e63b798281569e708545 # timeout=10
+Commit message: "LAB003 README: add reused LAB 1 setup-wizard screenshots and PAT demo image"
+First time build. Skipping changelog.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Connect)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $HUB_TOKEN
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ hostname
++ command -v docker
++ echo none
++ test -S /var/run/docker.sock
++ echo none
++ command -v sshpass
++ echo jenkins: fc7f11bde3ae docker CLI = none docker.sock = none sshpass = /usr/bin/sshpass
+jenkins: fc7f11bde3ae docker CLI = none docker.sock = none sshpass = /usr/bin/sshpass
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+devtools: c941a4bac88f user=root
+Docker Engine 29.8.1
+git version 2.55.0
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] echo
+จะ push ไปที่ docker.io/<DOCKER_USER>/catfood-shop:lab3-reorder-20260927u-1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Clone)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+cloned to c941a4bac88f:/root/lab3-work/build-1
+commit 2a47c68ff53bd5904087e63b798281569e708545
+subject LAB003 README: add reused LAB 1 setup-wizard screenshots and PAT demo image
+Dockerfile
+app
+data
+next.config.mjs
+package-lock.json
+package.json
+public
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] echo
+commit ที่จะ build: 2a47c68ff53b
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.52kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:22-alpine
+#2 DONE 0.9s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 84B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+#4 resolve docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 366.47kB done
+#5 DONE 0.0s
+
+#6 [2/6] WORKDIR /app
+#6 CACHED
+
+#7 [4/6] RUN npm ci --no-audit --no-fund && npm cache clean --force
+#7 CACHED
+
+#8 [5/6] COPY . .
+#8 CACHED
+
+#9 [3/6] COPY package.json package-lock.json ./
+#9 CACHED
+
+#10 [6/6] RUN npm run build && rm -rf .next/cache
+#10 CACHED
+
+#11 exporting to image
+#11 exporting layers done
+#11 exporting manifest sha256:6adba7dde2a03489f2d3f623769192532f4fc027446af56b81b4c5ca933c0242 0.0s done
+#11 exporting config sha256:c1bc80946d12917ebc3e5a1c374228eecc2b67ed43e6b78f9f91af45067a80e7
+#11 exporting config sha256:c1bc80946d12917ebc3e5a1c374228eecc2b67ed43e6b78f9f91af45067a80e7 0.0s done
+#11 naming to docker.io/library/catfood-shop:build-1 done
+#11 unpacking to docker.io/library/catfood-shop:build-1 0.0s done
+#11 DONE 0.1s
+IMAGE                  ID             DISK USAGE   CONTENT SIZE   EXTRA
+catfood-shop:build-1   6adba7dde2a0        693MB          154MB        
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+health of catfood-test-1: starting
+health of catfood-test-1: starting
+health of catfood-test-1: healthy
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"2a47c68ff53b","builtAt":"2026-09-27T01:55:37Z","host":"5cca412d780c"}
+test ผ่าน: image ตอบเวอร์ชัน 1.0.0 commit 2a47c68ff53b
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push)
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS or $HUB_TOKEN
+[Pipeline] {
+[Pipeline] sh
++ set +x
+Login Succeeded
+
+WARNING! Your credentials are stored unencrypted in '/tmp/lab3-docker-1/config.json'.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/go/credential-store/
+
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+The push refers to repository [docker.io/<DOCKER_USER>/catfood-shop]
+e554276b05e6: Layer already exists
+f7f2d304681a: Layer already exists
+e2de96513ba9: Layer already exists
+d39db1cf9caa: Layer already exists
+19d8e6927d2f: Layer already exists
+0f24440c5b86: Layer already exists
+0bc58dc755b6: Layer already exists
+48d41c366606: Layer already exists
+12e38ee5fd7a: Layer already exists
+lab3-reorder-20260927u-1: digest: sha256:6adba7dde2a03489f2d3f623769192532f4fc027446af56b81b4c5ca933c0242 size: 2006
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] echo
+บันทึก digest ที่ push แล้ว: docker.io/<DOCKER_USER>/catfood-shop@sha256:6adba7dde2a03489f2d3f623769192532f4fc027446af56b81b4c5ca933c0242
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Clean)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+ลบแอปเดิม catfood-web (e3fbbd1cb885, Up 2 minutes (healthy))
+92c2c8fe679c
+Untagged: catfood-shop:build-1
+Untagged: <DOCKER_USER>/catfood-shop:lab3-reorder-20260927u-1
+Deleted: sha256:6adba7dde2a03489f2d3f623769192532f4fc027446af56b81b4c5ca933c0242
+devtools ไม่มีแอปเดิมและไม่มี image ของ build 1 แล้ว: เว็บหยุดชั่วคราว และ stage ถัดไปต้องดึงจาก Docker Hub
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Pull)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+docker.io/<DOCKER_USER>/catfood-shop@sha256:6adba7dde2a03489f2d3f623769192532f4fc027446af56b81b4c5ca933c0242: Pulling from <DOCKER_USER>/catfood-shop
+Digest: sha256:6adba7dde2a03489f2d3f623769192532f4fc027446af56b81b4c5ca933c0242
+Status: Downloaded newer image for <DOCKER_USER>/catfood-shop@sha256:6adba7dde2a03489f2d3f623769192532f4fc027446af56b81b4c5ca933c0242
+docker.io/<DOCKER_USER>/catfood-shop@sha256:6adba7dde2a03489f2d3f623769192532f4fc027446af56b81b4c5ca933c0242
+<DOCKER_USER>/catfood-shop@sha256:6adba7dde2a03489f2d3f623769192532f4fc027446af56b81b4c5ca933c0242
+pull ตาม digest สำเร็จ: ได้ image ตัวเดียวกับที่ push
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] writeFile
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSHPASS
+[Pipeline] {
+[Pipeline] sh
++ sshpass -e ssh -o StrictHostKeyChecking=yes -o PreferredAuthentications=password root@devtools bash -s
+185dd87d46702259818fa287f09ca038d27212ac5d319159b8de7f2f9b932ceb
+health of catfood-web: starting
+health of catfood-web: starting
+health of catfood-web: healthy
+catfood-web  Up 2 seconds (healthy)  0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+image: docker.io/<DOCKER_USER>/catfood-shop@sha256:6adba7dde2a03489f2d3f623769192532f4fc027446af56b81b4c5ca933c0242
+{"status":"ok","app":"catfood-shop","version":"1.0.0","build":"1","commit":"2a47c68ff53b","builtAt":"2026-09-27T01:55:37Z","host":"185dd87d4670"}
+เว็บตอบ version 1.0.0 build #1 commit 2a47c68ff53b ตรงกับ Pipeline
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] deleteDir
+[Pipeline] echo
+เปิดร้านได้ที่ http://localhost:3000 (v1.0.0 build #1 = docker.io/<DOCKER_USER>/catfood-shop@sha256:6adba7dde2a03489f2d3f623769192532f4fc027446af56b81b4c5ca933c0242)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
