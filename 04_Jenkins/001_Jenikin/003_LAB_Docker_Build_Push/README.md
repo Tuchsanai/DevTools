@@ -7,25 +7,13 @@
 - **`jenkins`** — ควบคุม Pipeline: อ่าน `Jenkinsfile` จาก GitHub เก็บ Credentials แล้วส่งคำสั่งทาง SSH · ไม่มี Docker CLI และไม่ mount `docker.sock`
 - **`devtools`** — รับคำสั่ง SSH แล้วรัน `git clone` และคำสั่ง `docker` ทุกคำสั่ง · ร้าน `catfood-web` รันบน Docker **ข้างใน** devtools
 
-```mermaid
-flowchart LR
-  B([เบราว์เซอร์ของเรา]) -->|localhost:8080| J
-  B -->|localhost:3000| D
-  subgraph NET[network cicd-net]
-    J["jenkins :8080<br/>Pipeline + Credentials<br/>plugin SSH Agent<br/>ไม่มี Docker"] -->|"ssh root@devtools<br/>key: devtools-ssh<br/>host key: known_hosts"| D["devtools :22<br/>git + Docker ของตัวเอง<br/>ร้าน catfood-web :3000"]
-  end
-  G[(GitHub)] -->|git clone| D
-  D -->|docker push / pull| H[(Docker Hub)]
-```
+<a href="./images/lab3_diagram_a_architecture.png"><img src="./images/lab3_diagram_a_architecture.png" width="1000" alt="แผนภาพ A สถาปัตยกรรม: Jenkins ใช้ credential devtools-ssh สั่ง devtools ผ่าน SSH และ devtools รัน git กับ Docker รวมถึง catfood-web"></a>
 
-*แผนภาพ A — Jenkins ถือ private key ไว้ใน credential `devtools-ssh` แล้ว SSH ไป `devtools:22` · devtools ถือ public key (`Devtool_SSH/devtoolSSH.pub`) ใน `authorized_keys` · งาน git/docker ทั้งหมดรันบน devtools*
+*แผนภาพ A — Jenkins ใช้ private key ใน credential `devtools-ssh` SSH เข้าไปสั่ง `devtools` ซึ่งยอมให้ login ด้วย public key จากโฟลเดอร์ `Devtool_SSH` ที่ mount ไว้ · คำสั่ง git และ Docker ทั้งหมดรันใน devtools และร้าน `catfood-web` ก็รันบน Docker ข้างใน devtools*
 
-```mermaid
-flowchart LR
-  C[1 Connect<br/>ตรวจ key + host key] --> CL[2 Clone<br/>git clone บน devtools] --> BU[3 Build<br/>docker build] --> T[4 Test<br/>container ชั่วคราว + /api/health] --> P[5 Push<br/>login ด้วย token → push] --> DE[6 Deploy<br/>pull → run → health]
-```
+<a href="./images/lab3_diagram_b_pipeline.png"><img src="./images/lab3_diagram_b_pipeline.png" width="1000" alt="แผนภาพ B Pipeline 6 stage: Connect, Clone, Build, Test, Push, Deploy ที่ Jenkins สั่ง devtools ผ่าน SSH"></a>
 
-*แผนภาพ B — 6 stage ของ `Jenkinsfile` · ทุก stage คือ `ssh root@devtools ...` หนึ่งถึงสองครั้ง*
+*แผนภาพ B — Pipeline มี 6 stage คือ Connect → Clone → Build → Test → Push → Deploy โดย Jenkins คุมทุก stage ผ่าน SSH · devtools clone โค้ดจาก GitHub, build และ test image, push ขึ้น Docker Hub ด้วย credential `dockerhub` แล้ว deploy ร้านที่ `localhost:3000`*
 
 | container | รันอยู่บน | เข้าจากเครื่องเราทาง |
 |---|---|---|
