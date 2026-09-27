@@ -362,7 +362,7 @@ Devtool_SSH/
 
 โค้ดด้านล่างคือ [`Jenkinsfile`](./Jenkinsfile) **ทั้งไฟล์ ตรงตัวทุกบรรทัด** · Jenkins อ่านไฟล์นี้จาก GitHub เองก่อนเริ่ม (ตาม Script Path ในข้อ 4.2) · คำอธิบายภาษาไทยของแต่ละส่วนอยู่ถัดจากโค้ด เรียงตามลำดับบนลงล่างของไฟล์
 
-> ⚠️ **ไฟล์ฉบับนี้แก้แล้ว แต่ยังไม่ได้ push ขึ้น GitHub** — ไฟล์ด้านล่างเพิ่ม 2 บรรทัดใน `environment` (comment หนึ่งบรรทัด + `APP_VERSION  = "${params.APP_VERSION}"`) จาก commit `a8d0c0b` บน `main` · ไฟล์ฉบับแก้นี้ทดสอบบน Jenkins จริงโดยให้ job อ่าน `Jenkinsfile` จาก **Git repo จำลองในเครื่อง** (ไม่ใช่ GitHub) ส่วนซอร์สร้านยัง clone จาก GitHub ตามปกติ · **จนกว่าจะ push ไฟล์นี้** job ที่อ่านจาก GitHub ตามข้อ 4.2 จะยังได้ไฟล์เดิม และ **Build Now ครั้งแรกจะล้มที่ Test** (รายละเอียดในข้อ 5)
+> ℹ️ **ไฟล์ฉบับนี้คือไฟล์ที่อยู่บน `main` ของ GitHub แล้ว** (ขึ้นไปตั้งแต่ commit `ef02653`) — ต่างจาก commit เก่า `a8d0c0b` ตรงที่เพิ่ม 2 บรรทัดใน `environment` (comment หนึ่งบรรทัด + `APP_VERSION  = "${params.APP_VERSION}"`) เพื่อแก้ bug build แรก (รายละเอียดในข้อ 5) · ขอบเขตการทดสอบ: ไฟล์ฉบับนี้ (เนื้อหาตรงกับไฟล์บน GitHub `main` ทุกไบต์) ทดสอบบน Jenkins จริงโดยให้ job อ่าน `Jenkinsfile` จาก **Git repo จำลองในเครื่อง** ส่วนซอร์สร้าน clone จาก GitHub ตามปกติ · ยังไม่ได้รัน job ที่อ่าน `Jenkinsfile` จาก GitHub โดยตรงอีกรอบหลังไฟล์ขึ้น GitHub
 
 ```groovy
 // LAB 3 — Jenkins สั่ง devtools ผ่าน SSH ด้วย key: Connect → Clone → Build → Test → Push → Deploy
@@ -627,7 +627,7 @@ pipeline {
 >     APP_VERSION  = "${params.APP_VERSION}"
 > ```
 >
-> ด้วยไฟล์ฉบับแก้ Build Now ครั้งแรกเขียวครบทันที เลข build จึงเป็นตามคู่มือ: **#1 = `1.0.0`**, **#2 = `1.1.0`** (ภาพที่ 11ก) · ถ้ายังใช้ไฟล์เดิมจาก GitHub build #1 จะล้ม ต้องกด **Build with Parameters** ด้วย `1.0.0` อีกรอบ เลข build ทั้งหมดจึงเลื่อนไปหนึ่ง (`1.0.0` = #2 และ `1.1.0` = #3)
+> ด้วยไฟล์ฉบับแก้ Build Now ครั้งแรกเขียวครบทันที เลข build จึงเป็นตามคู่มือ: **#1 = `1.0.0`**, **#2 = `1.1.0`** (ภาพที่ 11ก) · ถ้าใช้ไฟล์รุ่นเก่า (เช่น commit `a8d0c0b` หรือ fork ที่ยังไม่อัปเดต) build #1 จะล้ม ต้องกด **Build with Parameters** ด้วย `1.0.0` อีกรอบ เลข build ทั้งหมดจึงเลื่อนไปหนึ่ง (`1.0.0` = #2 และ `1.1.0` = #3)
 
 [![หน้า Stages ของ job ที่อ่าน Jenkinsfile ฉบับแก้ build #1 และ #2 เขียวครบ 6 stage และ Post Actions](./images/lab3_localfix_stages_builds_1_2.png)](./images/lab3_localfix_stages_builds_1_2.png)
 
