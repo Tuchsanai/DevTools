@@ -163,9 +163,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 [![หน้า Dashboard วงกลมแดงและลูกศรชี้ไอคอนเฟือง Manage Jenkins มุมขวาบน](./work/gear-annotation-20260927/images/lab3_nav_02_dashboard_gear_annotated.svg)](./work/gear-annotation-20260927/images/lab3_nav_02_dashboard_gear_annotated.svg)
 
-[![ภาพขยายมุมขวาบน: แว่นขยาย · เฟือง Manage Jenkins (วงกลมแดง) · ไอคอนผู้ใช้](./work/gear-annotation-20260927/images/lab3_nav_02_gear_inset.svg)](./work/gear-annotation-20260927/images/lab3_nav_02_gear_inset.svg)
-
-*ภาพที่ 6ข หน้า **Dashboard** (ภาพหน้าจอจริงเต็มหน้าจอ + เส้นวงกลม/ลูกศรสีแดงที่เพิ่มเพื่อการสอนเท่านั้น) ภาพบนคือหน้าเต็ม ภาพล่างคือภาพขยายมุมขวาบนของภาพเดียวกัน: ไอคอนแว่นขยาย (ค้นหา) · **เฟืองในวงกลมแดง = Manage Jenkins** · ไอคอนผู้ใช้ · คลิกภาพเพื่อดูขนาดเต็ม ([ภาพต้นฉบับไม่มีเส้นกำกับ](./images/lab3_nav_02_dashboard.png)) · Jenkins บางรุ่นมีลิงก์ **Manage Jenkins** ในแถบซ้ายแทน*
+*ภาพที่ 6ข หน้า **Dashboard** (ภาพหน้าจอจริงเต็มหน้าจอ + เส้นวงกลม/ลูกศรสีแดงที่เพิ่มเพื่อการสอนเท่านั้น) มุมขวาบนมีไอคอนแว่นขยาย (ค้นหา) · **เฟืองในวงกลมแดงที่ลูกศรชี้ = Manage Jenkins** · ไอคอนผู้ใช้ · คลิกภาพเพื่อดูขนาดเต็ม ([ภาพต้นฉบับไม่มีเส้นกำกับ](./images/lab3_nav_02_dashboard.png)) · Jenkins บางรุ่นมีลิงก์ **Manage Jenkins** ในแถบซ้ายแทน*
 
 **3.0ค) Manage Jenkins → Credentials** — ในหน้า **Manage Jenkins** เลื่อนหาหมวด **Security** แล้วคลิก **Credentials** (Configure credentials) · ไม่ใช่ **Credential Providers** ที่อยู่ถัดไป
 
