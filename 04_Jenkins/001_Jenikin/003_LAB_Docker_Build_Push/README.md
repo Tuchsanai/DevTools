@@ -151,41 +151,41 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 | `devtools-ssh` | username/password ที่ Jenkins ใช้ **SSH เข้า `devtools`** (`root` / `passwd`) ทุกครั้งที่ส่งคำสั่ง | ทุก stage (ผ่านฟังก์ชัน `onDevtools`) และ `post` |
 | `dockerhub` | username + Personal Access Token ของ Docker Hub: username ใช้ตั้งชื่อ repository `docker.io/<DOCKER_USER>/catfood-shop` ส่วน token ใช้ `docker login` บน devtools เพื่อ **push** (ต้องมีสิทธิ์ Write) แล้ว **pull** กลับตาม digest (สิทธิ์ Read) ก่อน deploy | Connect (อ่าน username) · Push (login + push) · Pull (pull แล้ว logout) |
 
-**3.0) เปิดหน้าเพิ่ม credential** — คลิกตามลำดับ **Login → ⚙️ Manage Jenkins → Credentials → System → Global → + Add Credentials** (ภาพที่ 6ก–6ฉ เป็นภาพหน้าจอจริงจาก Jenkins 2.568.3 ครอปเฉพาะส่วนที่ต้องคลิก คลิกภาพเพื่อดูเต็มหน้า)
+**3.0) เปิดหน้าเพิ่ม credential** — คลิกตามลำดับ **Login → ⚙️ Manage Jenkins → Credentials → System → Global → + Add Credentials** (ภาพที่ 6ก–6ฉ เป็นภาพหน้าจอจริงแบบเต็มหน้าจาก Jenkins 2.568.3 ไม่ได้ครอป จึงเห็นเมนูและไอคอนรอบ ๆ จุดที่ต้องคลิก คลิกภาพเพื่อขยาย · จุดที่ต้องคลิกระบุเป็นตัวหนาในคำบรรยายใต้ภาพ)
 
 **3.0ก) Login** — เปิด `http://localhost:8080` กรอก Username `admin` และ Password `admin2569` (ผู้ดูแลที่สร้างในข้อ 2.4) แล้วกด **Sign in**
 
-[![หน้า Sign in to Jenkins](./images/lab3_nav_01_login_crop.png)](./images/lab3_nav_01_login.png)
+[![หน้า Sign in to Jenkins](./images/lab3_nav_01_login.png)](./images/lab3_nav_01_login.png)
 
 *ภาพที่ 6ก หน้า **Sign in to Jenkins**: Username `admin` · Password ถูกซ่อนเป็นจุด · กด **Sign in***
 
 **3.0ข) Dashboard → ไอคอนเฟือง ⚙️** — หลัง login จะอยู่ที่ Dashboard ให้คลิกไอคอน**เฟือง** (Manage Jenkins) มุมขวาบน ข้างไอคอนแว่นขยาย · จุดแดงบนเฟืองคือการแจ้งเตือนของระบบ ไม่เกี่ยวกับแล็บนี้
 
-[![ไอคอนเฟืองมุมขวาบนของ Dashboard](./images/lab3_nav_02_dashboard_crop.png)](./images/lab3_nav_02_dashboard.png)
+[![หน้า Dashboard มีไอคอนเฟืองมุมขวาบน](./images/lab3_nav_02_dashboard.png)](./images/lab3_nav_02_dashboard.png)
 
-*ภาพที่ 6ข มุมขวาบนของ Dashboard: ไอคอนแว่นขยาย (ค้นหา) · **เฟือง = Manage Jenkins** · ไอคอนผู้ใช้ · Jenkins บางรุ่นมีลิงก์ **Manage Jenkins** ในแถบซ้ายแทน*
+*ภาพที่ 6ข หน้า **Dashboard** ดูที่มุมขวาบน: ไอคอนแว่นขยาย (ค้นหา) · **เฟือง = Manage Jenkins** · ไอคอนผู้ใช้ · Jenkins บางรุ่นมีลิงก์ **Manage Jenkins** ในแถบซ้ายแทน*
 
 **3.0ค) Manage Jenkins → Credentials** — ในหน้า **Manage Jenkins** เลื่อนหาหมวด **Security** แล้วคลิก **Credentials** (Configure credentials) · ไม่ใช่ **Credential Providers** ที่อยู่ถัดไป
 
-[![หมวด Security ในหน้า Manage Jenkins](./images/lab3_nav_03_manage_crop.png)](./images/lab3_nav_03_manage.png)
+[![หน้า Manage Jenkins มีหมวด Security](./images/lab3_nav_03_manage.png)](./images/lab3_nav_03_manage.png)
 
-*ภาพที่ 6ค หมวด **Security** ของหน้า Manage Jenkins: คลิก **Credentials** · กล่องแจ้งเตือนด้านบนของหน้าเต็ม (reverse proxy, built-in node, CSP) เป็นคำเตือนทั่วไปของ Jenkins ทดสอบ ข้ามได้*
+*ภาพที่ 6ค หน้า **Manage Jenkins** ดูที่หมวด **Security**: คลิก **Credentials** · กล่องแจ้งเตือนด้านบนของหน้า (reverse proxy, built-in node, CSP) เป็นคำเตือนทั่วไปของ Jenkins ทดสอบ ข้ามได้*
 
 **3.0ง) Stores scoped to Jenkins → System** — หน้า **Credentials** มีตาราง **Stores scoped to Jenkins** ให้คลิก **System** (Domains: `Global`)
 
-[![หน้า Credentials และตาราง Stores scoped to Jenkins](./images/lab3_nav_04_credentials_crop.png)](./images/lab3_nav_04_credentials.png)
+[![หน้า Credentials และตาราง Stores scoped to Jenkins](./images/lab3_nav_04_credentials.png)](./images/lab3_nav_04_credentials.png)
 
 *ภาพที่ 6ง หน้า **Credentials** (breadcrumb `Manage Jenkins / Credentials`): แถว **System** ในตาราง **Stores scoped to Jenkins** · Jenkins รุ่นนี้มีปุ่ม **+ Add Credentials** ในกล่องด้านบนด้วย แต่แล็บนี้เข้าผ่าน System → Global เพื่อให้เห็นว่า credential ถูกเก็บที่ store และ domain ใด*
 
 **3.0จ) System → Global** — หน้า **System** แสดง domain ให้คลิก **Global** · ในรุ่นนี้ลิงก์ชื่อ **Global** (คำอธิบาย `Credentials that should be available everywhere.`) ส่วน Jenkins รุ่นก่อนและเอกสารอื่นเรียก domain เดียวกันนี้ว่า **Global credentials (unrestricted)**
 
-[![หน้า System แสดง domain Global](./images/lab3_nav_05_system_crop.png)](./images/lab3_nav_05_system.png)
+[![หน้า System แสดง domain Global](./images/lab3_nav_05_system.png)](./images/lab3_nav_05_system.png)
 
 *ภาพที่ 6จ หน้า **System**: domain **Global** · `0 credentials` คือยังไม่มี credential*
 
 **3.0ฉ) Global → + Add Credentials** — หน้า **Global** ยังว่าง (`This credentials domain is empty`) ให้กด **+ Add Credentials** กลางกล่อง (เมื่อมี credential แล้ว ปุ่มนี้ย้ายไปอยู่มุมขวาบนของรายการ) แล้วกรอกฟอร์มตาม 3.1
 
-[![หน้า Global ก่อนเพิ่ม credential](./images/lab3_nav_06_global_crop.png)](./images/lab3_nav_06_global.png)
+[![หน้า Global ก่อนเพิ่ม credential](./images/lab3_nav_06_global.png)](./images/lab3_nav_06_global.png)
 
 *ภาพที่ 6ฉ หน้า **Global** (breadcrumb `Manage Jenkins / Credentials / System / Global`): กด **+ Add Credentials***
 
