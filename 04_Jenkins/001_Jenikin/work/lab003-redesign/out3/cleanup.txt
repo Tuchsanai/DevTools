@@ -1,3 +1,0 @@
-jenkins
-cicd-net
-jenkins_home

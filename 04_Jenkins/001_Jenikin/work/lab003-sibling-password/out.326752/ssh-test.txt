@@ -1,3 +1,0 @@
-root@devtools's password: 
-b59c214c2712
-[exit=0 password_typed=True]

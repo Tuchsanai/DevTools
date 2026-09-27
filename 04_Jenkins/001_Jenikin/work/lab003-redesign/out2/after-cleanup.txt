@@ -1,4 +1,0 @@
-lab3-registry
-jenkins
-ls: cannot access '/root/lab3-work': No such file or directory
-ls: cannot access '/tmp/jenkins-docker-*': No such file or directory
