@@ -161,9 +161,11 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 **3.0ข) Dashboard → ไอคอนเฟือง ⚙️** — หลัง login จะอยู่ที่ Dashboard ให้คลิกไอคอน**เฟือง** (Manage Jenkins) มุมขวาบน ข้างไอคอนแว่นขยาย · จุดแดงบนเฟืองคือการแจ้งเตือนของระบบ ไม่เกี่ยวกับแล็บนี้
 
-[![หน้า Dashboard มีไอคอนเฟืองมุมขวาบน](./images/lab3_nav_02_dashboard.png)](./images/lab3_nav_02_dashboard.png)
+[![หน้า Dashboard วงกลมแดงและลูกศรชี้ไอคอนเฟือง Manage Jenkins มุมขวาบน](./work/gear-annotation-20260927/images/lab3_nav_02_dashboard_gear_annotated.svg)](./work/gear-annotation-20260927/images/lab3_nav_02_dashboard_gear_annotated.svg)
 
-*ภาพที่ 6ข หน้า **Dashboard** ดูที่มุมขวาบน: ไอคอนแว่นขยาย (ค้นหา) · **เฟือง = Manage Jenkins** · ไอคอนผู้ใช้ · Jenkins บางรุ่นมีลิงก์ **Manage Jenkins** ในแถบซ้ายแทน*
+[![ภาพขยายมุมขวาบน: แว่นขยาย · เฟือง Manage Jenkins (วงกลมแดง) · ไอคอนผู้ใช้](./work/gear-annotation-20260927/images/lab3_nav_02_gear_inset.svg)](./work/gear-annotation-20260927/images/lab3_nav_02_gear_inset.svg)
+
+*ภาพที่ 6ข หน้า **Dashboard** (ภาพหน้าจอจริงเต็มหน้าจอ + เส้นวงกลม/ลูกศรสีแดงที่เพิ่มเพื่อการสอนเท่านั้น) ภาพบนคือหน้าเต็ม ภาพล่างคือภาพขยายมุมขวาบนของภาพเดียวกัน: ไอคอนแว่นขยาย (ค้นหา) · **เฟืองในวงกลมแดง = Manage Jenkins** · ไอคอนผู้ใช้ · คลิกภาพเพื่อดูขนาดเต็ม ([ภาพต้นฉบับไม่มีเส้นกำกับ](./images/lab3_nav_02_dashboard.png)) · Jenkins บางรุ่นมีลิงก์ **Manage Jenkins** ในแถบซ้ายแทน*
 
 **3.0ค) Manage Jenkins → Credentials** — ในหน้า **Manage Jenkins** เลื่อนหาหมวด **Security** แล้วคลิก **Credentials** (Configure credentials) · ไม่ใช่ **Credential Providers** ที่อยู่ถัดไป
 
