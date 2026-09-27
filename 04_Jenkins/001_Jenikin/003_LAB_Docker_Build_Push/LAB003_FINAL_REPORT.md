@@ -175,7 +175,7 @@ The results above are the 2026-09-26 run and are unchanged. On 2026-09-27 the RE
 |---|---|---|---|
 | `verify-local/local-jenkinsfile` #1 | local bare repo with the modified file (before push) | SUCCESS, 76 s | 8 stages, no `Declarative: Checkout SCM` |
 | `verify-local/upstream-main` #1 | GitHub `main` at `2a47c68` (before this change) | SUCCESS, 151 s | `Declarative: Checkout SCM` + 8 stages |
-| `verify-local/upstream-main` (after push) | GitHub `main` after the content push | to be run right after this content commit is pushed | recorded in the follow-up commit |
+| `verify-local/upstream-main` #2 | GitHub `main` at `e200b55` (after the content push) | SUCCESS, 29 s (UI: 28 s) | 8 stages, no `Declarative: Checkout SCM`. Push digest = Pull `Digest:` = Deploy `image:` = `sha256:a33d7870924a…`, tag `lab3-reorder-20260927p-2`. Shop answered 1.0.0 / build 2 / commit `e200b5556263`. |
 
 **Checks.**
 - The skeleton and the `Jenkinsfile` both passed Jenkins' `/pipeline-model-converter/validate`.
@@ -186,4 +186,5 @@ The results above are the 2026-09-26 run and are unchanged. On 2026-09-27 the RE
 
 **Screenshots.** All of these are genuine, and none were generated or annotated. Crops are plain crops.
 - Jenkins UI shots 01–07 were captured on the host through Computer Use/Playwright and uploaded via the receiver.
+- Post-push shots 08 (Console Output: the `Obtained … from git` line followed directly by `(Connect)`) and 09 (Stages: all 8 green) were captured of `verify-local/upstream-main` #2 in the host browser and uploaded via the receiver. The README console excerpt consists of the first lines of that build's real console, taken from that single build.
 - The GitHub `Jenkinsfile` page and the Docker Hub tags page were captured natively on the host. The GitHub page shows commit `92d3888`, from before this change. The Docker Hub page shows the 2026-09-26 tags `lab3-sibling-20260926r2-1/-2`, not tags from this test.

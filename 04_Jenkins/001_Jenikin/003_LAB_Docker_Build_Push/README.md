@@ -914,34 +914,47 @@ echo "เก็บกวาดของ build ที่ล้มแล้ว: $N
 
 3. กด **Build Now** — job ใหม่ยังไม่มี **Build with Parameters** จนกว่าจะรันครั้งแรก build แรกจึงใช้ค่า default (`APP_VERSION=1.0.0`, tag `lab3-1`)
 
-✅ บรรทัดแรก ๆ ของ **Console Output** บอกว่า Jenkins ดึง `Jenkinsfile` มาจาก Git แล้ว stage ถัดไปคือ **Connect** ทันที (ไม่มี `Declarative: Checkout SCM` เพราะ `skipDefaultCheckout()`) ตัวอย่างรูปแบบ (illustrative ไม่ใช่ console ของ build ใด build หนึ่ง):
+✅ บรรทัดแรก ๆ ของ **Console Output** บอกว่า Jenkins ดึง `Jenkinsfile` มาจาก Git แล้ว stage ถัดไปคือ **Connect** ทันที (ไม่มี `Declarative: Checkout SCM` เพราะ `skipDefaultCheckout()`) ตัวอย่างจริงจาก build หลัง push (job ทดสอบ `verify-local/upstream-main` #2 ซึ่งอ่าน `Jenkinsfile` จาก GitHub `main` commit `e200b55` · ใน job `docker-build-push` ของคุณ path ของ workspace จะเป็น `/var/jenkins_home/workspace/docker-build-push`):
 
 ```text
 Obtained 04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile from git https://github.com/Tuchsanai/DevTools.git
 [Pipeline] Start of Pipeline
-...
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/verify-local/upstream-main
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
 [Pipeline] { (Connect)
 ```
 
+[![Console Output หลัง push](./images/lab3_scm_08_console_obtained_crop.png)](./images/lab3_scm_08_console_obtained.png)
+
+*ภาพที่ 14 Console Output ของ build ทดสอบหลัง push (`verify-local/upstream-main` #2): บรรทัด `Obtained .../Jenkinsfile from git https://github.com/Tuchsanai/DevTools.git` แล้วเข้า stage `(Connect)` ทันที ไม่มี `Declarative: Checkout SCM`*
+
+[![stage ครบ 8 stage](./images/lab3_scm_09_stages_success_crop.png)](./images/lab3_scm_09_stages_success.png)
+
+*ภาพที่ 15 หน้า Stages ของ build เดียวกัน: `SUCCESS` ใช้เวลา 28 วินาที Connect → Clone → Build → Test → Push → Clean → Pull → Deploy เขียวครบ ตามด้วย Post Actions · คลิกดูภาพเต็มซึ่งแสดงข้อความของ Post Actions: `docker.io/tuchsanai/catfood-shop@sha256:a33d7870…` ที่ deploy*
+
 > build แรกอาจรอช่วง `Obtained ... from git` นานกว่าปกติ เพราะ Jenkins ต้องดึงข้อมูล repository ครั้งแรก รอบถัดไปใช้ cache · ถ้าเห็น stage `Declarative: Checkout SCM` แปลว่า `Jenkinsfile` ที่ Jenkins ดึงมายังเป็นรุ่นก่อนเพิ่ม `skipDefaultCheckout()` จะยังทำงานได้แต่ช้ากว่า
 
-> 📷 ภาพที่ 14–31 (ยกเว้นภาพที่ 28 ที่เปิดดูภายหลัง) ถ่ายจากรอบทดสอบเดิม (2026-09-26) ที่วาง `Jenkinsfile` รุ่นก่อนหน้าในช่อง Pipeline script รุ่นนั้นยังไม่มี `skipDefaultCheckout()` แต่มี 8 stage ลำดับและพฤติกรรมเดียวกัน log ของแต่ละ stage จึงมีรูปแบบเดียวกับโหมด SCM
+> 📷 ภาพที่ 16–33 (ยกเว้นภาพที่ 30 ที่เปิดดูภายหลัง) ถ่ายจากรอบทดสอบเดิม (2026-09-26) ที่วาง `Jenkinsfile` รุ่นก่อนหน้าในช่อง Pipeline script รุ่นนั้นยังไม่มี `skipDefaultCheckout()` แต่มี 8 stage ลำดับและพฤติกรรมเดียวกัน log ของแต่ละ stage จึงมีรูปแบบเดียวกับโหมด SCM
 
 ✅ build #1 `SUCCESS` ครบ 8 stage ใน 1 นาที 14 วินาที:
 
 [![build #1 ครบ 8 stage](./images/lab3_sib_build1_graph_crop.png)](./images/lab3_sib_build1_graph.png)
 
-*ภาพที่ 14 build #1 เขียวครบ 8 stage จาก Connect ถึง Deploy ใช้เวลา 1 นาที 14 วินาที*
+*ภาพที่ 16 build #1 เขียวครบ 8 stage จาก Connect ถึง Deploy ใช้เวลา 1 นาที 14 วินาที*
 
 stage **Connect** ยืนยันว่า Jenkins ไม่มี docker แต่สั่ง devtools ได้ · บรรทัด `+ sshpass -e ssh ...` ไม่มีรหัสผ่าน:
 
 [![stage Connect ส่วนที่รันบน Jenkins](./images/lab3_sib_build1_connect_crop.png)](./images/lab3_sib_build1_connect.png)
 
-*ภาพที่ 15 stage Connect ของ build #1 ส่วนที่รันบน Jenkins: `docker CLI = none docker.sock = none sshpass = /usr/bin/sshpass`*
+*ภาพที่ 17 stage Connect ของ build #1 ส่วนที่รันบน Jenkins: `docker CLI = none docker.sock = none sshpass = /usr/bin/sshpass`*
 
 [![stage Connect ส่วนที่ SSH ไป devtools](./images/lab3_sib_build1_connect_ssh_crop.png)](./images/lab3_sib_build1_connect_ssh.png)
 
-*ภาพที่ 16 stage Connect ของ build #1 ส่วนที่ SSH ไป devtools: `sshpass -e ssh -o StrictHostKeyChecking=yes ... root@devtools` แล้ว devtools ตอบ hostname, `user=root`, Docker และ git*
+*ภาพที่ 18 stage Connect ของ build #1 ส่วนที่ SSH ไป devtools: `sshpass -e ssh -o StrictHostKeyChecking=yes ... root@devtools` แล้ว devtools ตอบ hostname, `user=root`, Docker และ git*
 
 ผลของ stage **Push** และ **Deploy** ใน build #1:
 
@@ -959,37 +972,37 @@ job `docker-build-push` → **Build with Parameters** → เปลี่ยน�
 
 [![ฟอร์ม Build with Parameters](./images/lab3_sib_build_parameters_crop.png)](./images/lab3_sib_build_parameters.png)
 
-*ภาพที่ 17 ฟอร์ม **Build with Parameters** กรอก `APP_VERSION` = `1.1.0` แล้วกด **Build** (ภาพถ่ายหลังจบแล็บ ใช้แสดงหน้าตาฟอร์ม)*
+*ภาพที่ 19 ฟอร์ม **Build with Parameters** กรอก `APP_VERSION` = `1.1.0` แล้วกด **Build** (ภาพถ่ายหลังจบแล็บ ใช้แสดงหน้าตาฟอร์ม)*
 
 ✅ build #2 `SUCCESS` ใน 30 วินาที · เลือก stage ทางซ้ายของหน้า build เพื่อดู log:
 
 [![stage Clone ของ build #2](./images/lab3_sib_build2_clone_crop.png)](./images/lab3_sib_build2_clone.png)
 
-*ภาพที่ 18 build #2 stage Clone: clone ลง `/root/lab3-work/build-2` บน devtools และได้ commit ของซอร์ส*
+*ภาพที่ 20 build #2 stage Clone: clone ลง `/root/lab3-work/build-2` บน devtools และได้ commit ของซอร์ส*
 
 [![stage Build ของ build #2](./images/lab3_sib_build2_build_crop.png)](./images/lab3_sib_build2_build.png)
 
-*ภาพที่ 19 build #2 stage Build ช่วงท้าย: ได้ image `catfood-shop:build-2` และ manifest `sha256:2b717397…` ซึ่งจะเป็น digest ที่ Push ได้*
+*ภาพที่ 21 build #2 stage Build ช่วงท้าย: ได้ image `catfood-shop:build-2` และ manifest `sha256:2b717397…` ซึ่งจะเป็น digest ที่ Push ได้*
 
 [![stage Test ของ build #2](./images/lab3_sib_build2_test_crop.png)](./images/lab3_sib_build2_test.png)
 
-*ภาพที่ 20 build #2 stage Test: `catfood-test-2` ถึง `healthy` และตอบ version `1.1.0` build `2`*
+*ภาพที่ 22 build #2 stage Test: `catfood-test-2` ถึง `healthy` และตอบ version `1.1.0` build `2`*
 
 [![stage Push ของ build #2](./images/lab3_sib_build2_push_crop.png)](./images/lab3_sib_build2_push.png)
 
-*ภาพที่ 21 build #2 stage Push: layer ส่วนใหญ่มีบน Docker Hub แล้วจาก build #1 (`Layer already exists`) และได้ digest `sha256:2b717397…`*
+*ภาพที่ 23 build #2 stage Push: layer ส่วนใหญ่มีบน Docker Hub แล้วจาก build #1 (`Layer already exists`) และได้ digest `sha256:2b717397…`*
 
 [![stage Clean ของ build #2](./images/lab3_sib_build2_clean_crop.png)](./images/lab3_sib_build2_clean.png)
 
-*ภาพที่ 22 build #2 stage Clean: ลบร้านเดิม `catfood-web` ของ build #1 (`ea2559a94002`) แล้วลบ image ของ build 2 ออกจาก devtools*
+*ภาพที่ 24 build #2 stage Clean: ลบร้านเดิม `catfood-web` ของ build #1 (`ea2559a94002`) แล้วลบ image ของ build 2 ออกจาก devtools*
 
 [![stage Pull ของ build #2](./images/lab3_sib_build2_pull_crop.png)](./images/lab3_sib_build2_pull.png)
 
-*ภาพที่ 23 build #2 stage Pull: ดึง `catfood-shop@sha256:2b717397…` กลับจาก Docker Hub (`Downloaded newer image`)*
+*ภาพที่ 25 build #2 stage Pull: ดึง `catfood-shop@sha256:2b717397…` กลับจาก Docker Hub (`Downloaded newer image`)*
 
 [![stage Deploy ของ build #2](./images/lab3_sib_build2_deploy_crop.png)](./images/lab3_sib_build2_deploy.png)
 
-*ภาพที่ 24 build #2 stage Deploy: `catfood-web` รันจาก `catfood-shop@sha256:2b717397…` และเว็บตอบ version `1.1.0` build #2*
+*ภาพที่ 26 build #2 stage Deploy: `catfood-web` รันจาก `catfood-shop@sha256:2b717397…` และเว็บตอบ version `1.1.0` build #2*
 
 Push, Pull และ Deploy ของ build #2 ใช้ digest เดียวกัน:
 
@@ -1004,21 +1017,21 @@ image: docker.io/<DOCKER_USER>/catfood-shop@sha256:2b717397cbd2b05d53cc67dd5f85c
 
 [![หน้าร้าน v1.1.0 build #2](./images/lab3_sib_app_v110_crop.png)](./images/lab3_sib_app_v110.png)
 
-*ภาพที่ 25 หน้าร้านหลัง build #2 chip บนแถบด้านบนแสดง `v1.1.0 · build #2`*
+*ภาพที่ 27 หน้าร้านหลัง build #2 chip บนแถบด้านบนแสดง `v1.1.0 · build #2`*
 
 [![ส่วน Deployment info ของร้าน](./images/lab3_sib_app_deployment_crop.png)](./images/lab3_sib_app_deployment.png)
 
-*ภาพที่ 26 ส่วน Deployment info ท้ายหน้าร้าน: Version `1.1.0`, Jenkins build `#2`, commit และ Container `2d7c4b120c21` ตรงกับ `host` ใน log ของ Deploy*
+*ภาพที่ 28 ส่วน Deployment info ท้ายหน้าร้าน: Version `1.1.0`, Jenkins build `#2`, commit และ Container `2d7c4b120c21` ตรงกับ `host` ใน log ของ Deploy*
 
 หน้า Tags บน Docker Hub มี tag ของ build #1 และ #2 และ digest ตรงกับ console:
 
 [![หน้า Tags บน Docker Hub](./images/lab3_sib_hub_tags_crop.png)](./images/lab3_sib_hub_tags.png)
 
-*ภาพที่ 27 หน้า Tags ของ repository `catfood-shop` บน Docker Hub กรองตาม prefix ของรอบทดสอบ: tag `-2` digest `2b717397cbd2` และ tag `-1` digest `ea2559a94002` ตรงกับ console*
+*ภาพที่ 29 หน้า Tags ของ repository `catfood-shop` บน Docker Hub กรองตาม prefix ของรอบทดสอบ: tag `-2` digest `2b717397cbd2` และ tag `-1` digest `ea2559a94002` ตรงกับ console*
 
 [![หน้า Tags พร้อมคำสั่ง docker pull](./images/lab3_scm_dockerhub_tags_crop.png)](./images/lab3_scm_dockerhub_tags.png)
 
-*ภาพที่ 28 หน้า Tags เดียวกันเปิดภายหลังด้วย browser ของเครื่อง host: tag `lab3-sibling-20260926r2-2` digest `2b717397cbd2` และ `-1` digest `ea2559a94002` พร้อมคำสั่ง `docker pull tuchsanai/catfood-shop:<tag>` · เป็น tag ของรอบทดสอบ 2026-09-26 ไม่ใช่รอบทดสอบ SCM*
+*ภาพที่ 30 หน้า Tags เดียวกันเปิดภายหลังด้วย browser ของเครื่อง host: tag `lab3-sibling-20260926r2-2` digest `2b717397cbd2` และ `-1` digest `ea2559a94002` พร้อมคำสั่ง `docker pull tuchsanai/catfood-shop:<tag>` · เป็น tag ของรอบทดสอบ 2026-09-26 ไม่ใช่รอบทดสอบ SCM*
 
 🔍 **สืบย้อนได้ครบ:** chip `v1.1.0 · build #2` → Container ใน Deployment info (`host` ใน `/api/health`) → `image: <repo>@sha256:...` ใน Deploy → digest ที่ Push จดไว้ → build #2 → commit จาก Clone
 
@@ -1037,19 +1050,19 @@ Finished: FAILURE
 
 [![build #3 ล้มที่ Connect](./images/lab3_sib_build3_crop.png)](./images/lab3_sib_build3.png)
 
-*ภาพที่ 29 build #3 (`APP_VERSION=1.2.0; id`) Connect แดงด้วย `APP_VERSION ไม่ถูกต้อง` stage อื่นถูกข้าม — ล้มตามที่ตั้งใจ*
+*ภาพที่ 31 build #3 (`APP_VERSION=1.2.0; id`) Connect แดงด้วย `APP_VERSION ไม่ถูกต้อง` stage อื่นถูกข้าม — ล้มตามที่ตั้งใจ*
 
 **(ข)** กรอก `GIT_REF` = `no-such-branch` (ผ่าน Connect เพราะรูปแบบถูก) → build #4 `FAILURE` ที่ Clone
 
 [![build #4 ล้มที่ Clone](./images/lab3_sib_build4_crop.png)](./images/lab3_sib_build4.png)
 
-*ภาพที่ 30 build #4 (`GIT_REF=no-such-branch`) Clone แดง: `Remote branch no-such-branch not found` exit code 128 — ล้มตามที่ตั้งใจ*
+*ภาพที่ 32 build #4 (`GIT_REF=no-such-branch`) Clone แดง: `Remote branch no-such-branch not found` exit code 128 — ล้มตามที่ตั้งใจ*
 
 **(ค)** credential `devtools-ssh` → **Update** → **Change Password** เป็นค่าอื่น → **Save** → **Build Now** → build #5 `FAILURE` ที่ Connect (`sshpass` exit code 5 = รหัสผิด) · **จากนั้นแก้ Password กลับเป็น `passwd`**
 
 [![build #5 ล้มที่ Connect เพราะรหัสผ่านผิด](./images/lab3_sib_build5_crop.png)](./images/lab3_sib_build5.png)
 
-*ภาพที่ 31 build #5 (รหัสผ่าน SSH ผิด) Connect แดง: `Permission denied, please try again.` และ exit code 5 — ล้มตามที่ตั้งใจ*
+*ภาพที่ 33 build #5 (รหัสผ่าน SSH ผิด) Connect แดง: `Permission denied, please try again.` และ exit code 5 — ล้มตามที่ตั้งใจ*
 
 ตรวจจาก host ว่าร้านยังเป็น container เดิมของ build #2:
 
