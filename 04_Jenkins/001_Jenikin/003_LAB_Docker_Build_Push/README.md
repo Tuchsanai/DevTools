@@ -167,9 +167,9 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 **3.0ค) Manage Jenkins → Credentials** — ในหน้า **Manage Jenkins** เลื่อนหาหมวด **Security** แล้วคลิก **Credentials** (Configure credentials) · ไม่ใช่ **Credential Providers** ที่อยู่ถัดไป
 
-[![หน้า Manage Jenkins มีหมวด Security](./images/lab3_nav_03_manage.png)](./images/lab3_nav_03_manage.png)
+[![หน้า Manage Jenkins วงกลมแดงและลูกศรชี้ไทล์ Credentials ในหมวด Security](./images/lab3_nav_03_manage_credentials_annotated.svg)](./images/lab3_nav_03_manage_credentials_annotated.svg)
 
-*ภาพที่ 6ค หน้า **Manage Jenkins** ดูที่หมวด **Security**: คลิก **Credentials** · กล่องแจ้งเตือนด้านบนของหน้า (reverse proxy, built-in node, CSP) เป็นคำเตือนทั่วไปของ Jenkins ทดสอบ ข้ามได้*
+*ภาพที่ 6ค หน้า **Manage Jenkins** ดูที่หมวด **Security**: คลิก **Credentials** (วงกลมแดงพร้อมลูกศรเป็นคำอธิบายที่วาดทับภาพหน้าจอจริง ไม่ใช่ **Credential Providers** · [ดูภาพต้นฉบับไม่มีคำอธิบาย](./images/lab3_nav_03_manage.png)) · กล่องแจ้งเตือนด้านบนของหน้า (reverse proxy, built-in node, CSP) เป็นคำเตือนทั่วไปของ Jenkins ทดสอบ ข้ามได้*
 
 **3.0ง) Stores scoped to Jenkins → System** — หน้า **Credentials** มีตาราง **Stores scoped to Jenkins** ให้คลิก **System** (Domains: `Global`)
 
