@@ -118,24 +118,37 @@ docker run -d --name jenkins --network cicd-net --restart unless-stopped -p 8080
 
 ## ขั้นที่ 2 — ปลดล็อก ตั้งค่า Jenkins และติดตั้ง plugin SSH Agent
 
+`docker run` แค่เริ่ม container — Jenkins ข้างในยังต้องบูตสักครู่ และการติดตั้งครั้งแรกยังต้องผ่าน **Setup Wizard** (ปลดล็อก → ติดตั้ง plugin → สร้างผู้ดูแล) ลำดับเดียวกับการทดลอง **Verify / Unlock / Setup Wizard** ใน [LAB 1](../001_LAB_Jenkins_On_Docker/README.md) (เปิดอ่านอ้างอิงได้ ไม่ต้องทำ LAB 1 ซ้ำ) · คำสั่งในขั้นนี้พิมพ์ใน **terminal ของ host เดียวกับขั้นที่ 1** ไม่ใช่ใน container `devtools`
+
+(ไม่บังคับ) ตรวจว่า Jenkins พร้อมแล้ว:
+
+```bash
+docker ps --filter name=jenkins
+docker logs --tail 30 jenkins
+```
+
+✅ STATUS เป็น `Up ...` และใน log มี `Jenkins is fully up and running` · ถ้ายังไม่เห็นให้รอสักครู่แล้วดู log อีกครั้ง
+
+> 🔁 **ถ้าเคยตั้งค่า Jenkins ไว้แล้ว** (ใช้ `jenkins_home` เดิม) หน้า http://localhost:8080 จะขึ้น **Sign in** แทนหน้า Unlock → login ด้วยผู้ดูแลเดิม แล้วข้ามไปข้อ 2.7 ไม่ต้องอ่านรหัสปลดล็อกหรือรีเซ็ตใหม่
+
+**ติดตั้งครั้งแรก:** Jenkins สร้างไฟล์ `initialAdminPassword` ไว้**ภายใน container** คำสั่ง `docker exec` ด้านล่างเข้าไปอ่านไฟล์นั้นออกมาแสดง
+
 <!-- lab3-test:unlock -->
 ```bash
 docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
-✅ ได้รหัสเลขฐานสิบหก 32 ตัว (ห้ามเผยแพร่)
+✅ ได้รหัสเลขฐานสิบหก 32 ตัวหนึ่งบรรทัด — คัดลอก**ทั้งบรรทัด** (แต่ละเครื่องได้ไม่เหมือนกัน ห้ามเผยแพร่) · ถ้าขึ้น `No such file or directory` มักแปลว่า Jenkins ยังบูตไม่เสร็จ ให้รอสักครู่ ดู `docker logs --tail 30 jenkins` แล้วลองใหม่ **ห้ามลบ** container หรือ volume
 
 > 📷 ภาพที่ 3ก–3ฉ **นำมาจาก LAB 1** เป็นขั้นตอน Setup Wizard เดียวกัน ไม่ได้ถ่ายใหม่จาก LAB 3
 
-> 🔁 **ถ้าเคยตั้งค่า Jenkins ไว้แล้ว** ให้ login ด้วยผู้ดูแลเดิม แล้วข้ามไปข้อ 2.7
-
-**2.1) ปลดล็อก** เปิด **http://localhost:8080** วางรหัสจากคำสั่งด้านบนในช่อง **Administrator password** แล้วกด **Continue**
+**2.1) ปลดล็อก** เปิด **http://localhost:8080** บนเครื่องที่ทำแล็บ วางรหัสที่คัดลอกไว้ในช่อง **Administrator password** แล้วกด **Continue** — จากนั้น Wizard จะพาติดตั้ง plugin (2.2–2.3) แล้วให้สร้างบัญชีผู้ดูแลของเราเอง (2.4)
 
 ![หน้า Unlock Jenkins (ภาพจาก LAB 1)](./images/lab3_setup_from_lab1_01_unlock.png)
 
 *ภาพที่ 3ก (จาก LAB 1) หน้า **Unlock Jenkins***
 
-**2.2) เลือก Install suggested plugins**
+**2.2) เลือก Install suggested plugins** ให้ Jenkins ติดตั้งชุด plugin มาตรฐานให้อัตโนมัติ
 
 ![หน้า Customize Jenkins (ภาพจาก LAB 1)](./images/lab3_setup_from_lab1_02_plugins.png)
 
@@ -147,7 +160,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 *ภาพที่ 3ค (จาก LAB 1) เครื่องหมาย ✓ คือ plugin ที่ติดตั้งเสร็จแล้ว*
 
-**2.4) สร้างผู้ดูแลระบบ** กรอกตามภาพ แล้วกด **Save and Continue**
+**2.4) สร้างผู้ดูแลระบบ** กรอกตามภาพ แล้วกด **Save and Continue** — รหัสปลดล็อกใน 2.1 ใช้ครั้งเดียว ต่อไป login ด้วยบัญชีที่สร้างตรงนี้
 
 ![แบบฟอร์ม Create First Admin User (ภาพจาก LAB 1)](./images/lab3_setup_from_lab1_04_admin_user.png)
 
@@ -165,11 +178,33 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 *ภาพที่ 3ฉ (จาก LAB 1) Setup Wizard เสร็จแล้ว*
 
-**2.7) ติดตั้ง plugin SSH Agent** — ⚙️ **Manage Jenkins → Plugins → Available plugins** → ช่องค้นหาพิมพ์ `SSH Agent` → ติ๊ก **SSH Agent** (plugin ID `ssh-agent`) → **Install** → รอจนขึ้น Success
+**2.7) ติดตั้ง plugin SSH Agent** — plugin นี้ให้ `Jenkinsfile` ใช้คำสั่ง `sshagent(credentials: ['devtools-ssh']) { ... }` ซึ่งโหลด private key จาก credential เข้า `ssh-agent` ชั่วคราวเฉพาะในบล็อก คำสั่ง `ssh` ข้างในจึงใช้ key ได้โดยไม่ต้องมีไฟล์ key บนดิสก์ของ job · ตัว credential `devtools-ssh` จะสร้างใน**ขั้นที่ 3** ตอนนี้ติดตั้งแค่ plugin
 
-- plugin นี้ให้คำสั่ง `sshagent(credentials: ['devtools-ssh']) { ... }` ใน `Jenkinsfile`: โหลด private key จาก credential เข้า `ssh-agent` ชั่วคราวเฉพาะในบล็อก คำสั่ง `ssh` ข้างในจึงใช้ key ได้โดยไม่มีไฟล์ key บนดิสก์ของ job
-- อย่าสับสนกับ **SSH Build Agents** (ใช้ต่อ agent node) ซึ่งเป็นคนละ plugin
-- ✅ ตรวจที่ **Manage Jenkins → Plugins → Installed plugins** ต้องมี **SSH Agent**
+1. **เปิดหน้าจัดการ plugin** — คลิก ⚙️ **Manage Jenkins** (มุมขวาบน) แล้วคลิก **Plugins**
+
+<a href="./images/lab3_ssh_agent_01_manage.png"><img src="./images/lab3_ssh_agent_01_manage.png" width="1000" alt="หน้า Manage Jenkins มีลิงก์ Plugins ในหมวด System Configuration"></a>
+
+*ภาพที่ 3ช หน้า **Manage Jenkins** → คลิก **Plugins***
+
+2. **ค้นหาและเลือก SSH Agent** — เมนูซ้ายเลือก **Available plugins** → ช่องค้นหาพิมพ์ `SSH Agent` → ติ๊กแถว **SSH Agent** (plugin ID `ssh-agent`) → กด **Install**
+   - ⚠️ อย่าเลือก **SSH Build Agents** ซึ่งเป็นคนละ plugin (ใช้ต่อ agent node)
+   - ถ้าค้นแล้วไม่เจอใน Available plugins อาจติดตั้งไว้แล้ว → ข้ามไปตรวจที่ข้อ 4
+
+<a href="./images/lab3_ssh_agent_02_available.png"><img src="./images/lab3_ssh_agent_02_available.png" width="1000" alt="หน้า Available plugins ค้นหา SSH Agent พบแถว SSH Agent และปุ่ม Install"></a>
+
+*ภาพที่ 3ซ **Available plugins** ค้นหา `SSH Agent` → ติ๊กแถว **SSH Agent** → **Install***
+
+3. **รอติดตั้งเสร็จ** — หน้า **Download progress** ต้องขึ้น **Success** ทั้งแถว **SSH Agent** และ **Loading plugin extensions** · plugin นี้โหลดได้ทันทีโดยไม่ต้อง restart จึง**ไม่ต้อง**ติ๊ก *Restart Jenkins when installation is complete* (ในการทดสอบจริงของแล็บนี้ติดตั้งสำเร็จโดยไม่ restart)
+
+<a href="./images/lab3_ssh_agent_03_success.png"><img src="./images/lab3_ssh_agent_03_success.png" width="1000" alt="หน้า Download progress แสดง SSH Agent และ Loading plugin extensions เป็น Success"></a>
+
+*ภาพที่ 3ฌ **SSH Agent** และ **Loading plugin extensions** ขึ้น **Success***
+
+4. **ตรวจว่าติดตั้งแล้ว** — เมนูซ้ายเลือก **Installed plugins** → ค้นหา `SSH Agent` ต้องเห็นแถว **SSH Agent** และสวิตช์เปิดใช้งาน (enabled) ✅ พร้อมไปขั้นที่ 3 สร้าง Credentials
+
+<a href="./images/lab3_ssh_agent_04_installed.png"><img src="./images/lab3_ssh_agent_04_installed.png" width="1000" alt="หน้า Installed plugins ค้นหา SSH Agent พบ plugin เปิดใช้งานอยู่"></a>
+
+*ภาพที่ 3ญ **Installed plugins** มี **SSH Agent** เปิดใช้งานอยู่*
 
 ## ขั้นที่ 3 — สร้าง Jenkins Credentials: `devtools-ssh` และ `dockerhub`
 
