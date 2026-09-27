@@ -188,3 +188,27 @@ The results above are the 2026-09-26 run and are unchanged. On 2026-09-27 the RE
 - Jenkins UI shots 01–07 were captured on the host through Computer Use/Playwright and uploaded via the receiver.
 - Post-push shots 08 (Console Output: the `Obtained … from git` line followed directly by `(Connect)`) and 09 (Stages: all 8 green) were captured of `verify-local/upstream-main` #2 in the host browser and uploaded via the receiver. The README console excerpt consists of the first lines of that build's real console, taken from that single build.
 - The GitHub `Jenkinsfile` page and the Docker Hub tags page were captured natively on the host. The GitHub page shows commit `92d3888`, from before this change. The Docker Hub page shows the 2026-09-26 tags `lab3-sibling-20260926r2-1/-2`, not tags from this test.
+
+## README restructure + credential navigation (2026-09-27)
+
+**What changed.**
+- Step 1 now also installs `sshpass`, pins the `devtools` host key, and has the optional SSH test (1.2–1.4). These were the old step 4; the content is unchanged. After step 1, steps 2–5 are a single continuous web-UI journey.
+- Step 3 gains 3.0ก–3.0ฉ, with an explicit click path: Login → gear (Manage Jenkins) → Security › Credentials → Stores scoped to Jenkins › System → Global → + Add Credentials. It notes that this Jenkins version labels the domain **Global**, while older versions label it "Global credentials (unrestricted)".
+- Step 4 starts in the web UI: Dashboard → New Item → Pipeline → Configure with Pipeline script from SCM, pointing at course `main` and this `Jenkinsfile`. It then teaches the `Jenkinsfile` design (4.3–4.11) and how to apply the file via Git/SCM (4.12). Old steps 6/7/8 are now 5/6/7. Figures 10–13 were renumbered to follow the new order, and the review questions were updated.
+- `Jenkinsfile`: only two header comments changed ("ขั้นที่ 4" → "ขั้นที่ 1"). The non-comment code is identical and the line count is the same (311), so every README line-range excerpt is still valid. No stage, credential ID, or safety check (validation, Test, Clean-after-Push, digest Pull) was added or removed.
+
+**Evidence.**
+- No new pipeline build was run, because the executable code is unchanged. The clone/build/test/push/pull/deploy evidence in the README is historical: 2026-09-26 and the 2026-09-27 SCM run above.
+- Screenshots 6ก–6ฉ are new, genuine host Computer Use captures (3440 px source) of the preserved Jenkins 2.568.3 (`devtools-l3nav-277caf-jenkins`). The README uses plain crops and links the full screenshots. No drawing or annotation was added.
+- Screenshots 10–12 (New Item / SCM config) are reused genuine captures from the earlier SCM test.
+- The old illustrative images keep their "synthetic" labels, for example ภาพที่ 3ก.
+
+**Checks.**
+- `Jenkinsfile` and the README skeleton both passed `/pipeline-model-converter/validate` on the preserved Jenkins.
+- The embedded `Jenkinsfile` matches the file byte for byte, and all 11 excerpts match their line ranges.
+- Fences are balanced, and 82 local links resolve.
+- Figures run 1…33 (with 3ก, 5ก–5ฉ, 6ก–6ฉ) in order.
+
+**Preserved Jenkins.**
+- The Pipeline and Git plugins (`workflow-aggregator`, `git`, `pipeline-graph-view` plus dependencies; 59 plugins, all active) were installed into the same container and volume, followed by a single `safeRestart`. No data was deleted or recreated.
+- A saved example job, `docker-build-push`, uses Pipeline script from SCM (`https://github.com/Tuchsanai/DevTools.git`, `*/main`, this Script Path, lightweight). It was **not triggered**, because real credentials are intentionally not stored there.

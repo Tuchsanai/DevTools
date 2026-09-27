@@ -1,6 +1,6 @@
 # LAB 3 — Jenkins สั่ง devtools ผ่าน SSH: Connect → Clone → Build → Test → Push → Clean → Pull → Deploy ร้านอาหารแมว
 
-> ⏱️ ประมาณ 50–60 นาที · 🧪 8 ขั้น · 🎯 จบเมื่อกด **Build** ใน Jenkins แล้ว `http://localhost:3000` แสดงร้าน **Meow Mart** เวอร์ชันที่ Pipeline เพิ่ง build → push ขึ้น Docker Hub → pull กลับตาม digest → deploy
+> ⏱️ ประมาณ 50–60 นาที · 🧪 7 ขั้น · 🎯 จบเมื่อกด **Build** ใน Jenkins แล้ว `http://localhost:3000` แสดงร้าน **Meow Mart** เวอร์ชันที่ Pipeline เพิ่ง build → push ขึ้น Docker Hub → pull กลับตาม digest → deploy
 
 ## ภาพรวม
 
@@ -51,7 +51,7 @@ stage Clone ดึงซอร์สร้านจากโฟลเดอร�
 
 > ผลลัพธ์ในเอกสารมาจากการรันจริง ID, hostname, เวลา และ digest ของแต่ละเครื่องจะต่างกัน · รอบทดสอบใช้ `TAG_PREFIX` = `lab3-sibling-20260926r2` (ของนักศึกษาเป็น `lab3`) · `<DOCKER_USER>` คือชื่อบัญชี Docker Hub · คลิกภาพเพื่อดูภาพเต็ม
 
-## ขั้นที่ 1 — สร้าง network และ container สองตัว (🖥️ host)
+## ขั้นที่ 1 — สร้าง container สองตัว แล้วเตรียม `jenkins` ให้ SSH ไป `devtools` ได้ (🖥️ host)
 
 **ทำไมต้องมีสอง container:** ในงานจริง Jenkins กับเครื่องที่ build/deploy มักเป็น server คนละเครื่อง แล็บนี้จึงจำลองด้วย container สองตัว
 
@@ -60,6 +60,10 @@ stage Clone ดึงซอร์สร้านจากโฟลเดอร�
 - **`cicd-net`** = network ร่วม — ทำให้สองตัวเรียกกันด้วย**ชื่อ** เช่น Jenkins ต่อ `devtools:22` ได้โดยไม่ต้องรู้ IP
 
 ผู้เรียนใช้งาน Jenkins ผ่าน**หน้าเว็บในเบราว์เซอร์** (`http://localhost:8080`) คำสั่ง 🖥️ host ในแล็บนี้เป็นแค่การเตรียมเครื่องครั้งเดียว ส่วนงาน build/deploy ทั้งหมดสั่งจากหน้าเว็บ Jenkins
+
+ขั้นนี้พิมพ์ใน 🖥️ host ครั้งเดียว: สร้าง container (1.1) แล้วเตรียมเครื่องมือ SSH ใน `jenkins` (1.2–1.4) เมื่อเสร็จแล้ว ขั้นที่ 2–5 ทำบนหน้าเว็บ Jenkins ต่อเนื่องกันไปจนกด Build
+
+### 1.1) สร้าง network และ container สองตัว
 
 <!-- lab3-test:host-setup -->
 ```bash
@@ -81,6 +85,84 @@ docker run -d --name jenkins --network cicd-net --restart unless-stopped \
 6991a385bf2064a9247fa2ced899eaddcdb280ab838167487d75fbe68d8e2b22
 4dc7e37d7397effd20bb187db15f93c1b48454db12b1771821ffab3d998f8bc2
 ad27ba488a7f1070eacfa00b5e25943b336c70539ffc41cc55ba28c154205695
+```
+
+container พร้อมแล้ว ก่อนไปหน้าเว็บให้เตรียม `jenkins` อีกสองอย่าง เพราะ Pipeline จะ SSH ไป `devtools` ตั้งแต่ stage แรก (Connect): โปรแกรม `sshpass` สำหรับส่งรหัสผ่าน และ host key ของ `devtools` ที่เชื่อถือไว้ล่วงหน้า · รหัสผ่านเองจะเก็บใน credential `devtools-ssh` ในขั้นที่ 3
+
+### 1.2) ติดตั้ง `sshpass` ใน `jenkins`
+
+**ทำไมต้องมี `sshpass`:** Pipeline ของแล็บนี้ให้ Jenkins **SSH ออกไปหา `devtools`** ด้วยรหัสผ่านโดยอัตโนมัติทุก stage แต่คำสั่ง `ssh` ปกติจะหยุดรอให้คนพิมพ์รหัส `sshpass` จึงทำหน้าที่ส่งรหัสให้แทน โดยรหัสมาจาก credential `devtools-ssh` ที่จะสร้างในขั้นที่ 3 (ไม่ได้เขียนไว้ใน Jenkinsfile)
+
+- ติดตั้งจาก 🖥️ host ด้วย `docker exec` ครั้งเดียว — ผู้เรียน**ไม่ต้อง SSH เข้า Jenkins** การสร้าง job, credential และกด Build ทำจากหน้าเว็บทั้งหมด
+- ใช้รหัสผ่านตามที่แล็บกำหนด ไม่ต้องเปลี่ยนรหัสของ `devtools` และไม่ต้องสลับไปใช้ SSH key
+
+<!-- lab3-test:sshpass -->
+```bash
+docker exec -u root -e DEBIAN_FRONTEND=noninteractive jenkins sh -c "apt-get update -qq && apt-get install -y -qq --no-install-recommends sshpass"
+docker exec jenkins sh -c "command -v sshpass; command -v docker || echo 'docker: none'"
+```
+
+`-u root` จำเป็นสำหรับ `apt-get` · ถ้าสร้าง `jenkins` ใหม่ต้องรันขั้นนี้อีกครั้ง
+
+✅ ท้ายผลลัพธ์ต้องมี `sshpass` และ Jenkins **ไม่มี** Docker CLI:
+
+```text
+Preparing to unpack .../sshpass_1.10-0.1_amd64.deb ...
+Unpacking sshpass (1.10-0.1) ...
+Setting up sshpass (1.10-0.1) ...
+/usr/bin/sshpass
+docker: none
+```
+
+### 1.3) pin host key ของ `devtools`
+
+บอก Jenkins ล่วงหน้าว่า `devtools` ตัวจริงมี key นี้ SSH จะได้ไม่ต่อผิดเครื่อง
+
+<!-- lab3-test:pin-hostkey -->
+```bash
+docker exec devtools sh -c "sed 's/^/devtools /' /etc/ssh/ssh_host_ed25519_key.pub > /tmp/devtools.known_hosts"
+docker cp devtools:/tmp/devtools.known_hosts devtools.known_hosts
+docker cp devtools.known_hosts jenkins:/tmp/devtools.known_hosts
+docker exec jenkins sh -c "mkdir -p -m 700 /var/jenkins_home/.ssh && cp /tmp/devtools.known_hosts /var/jenkins_home/.ssh/known_hosts"
+docker exec devtools ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
+docker exec jenkins ssh-keygen -lF devtools
+```
+
+อ่าน host key จาก `devtools` → `docker cp` ผ่านเครื่องเรา → วางเป็น `/var/jenkins_home/.ssh/known_hosts` ของผู้ใช้ `jenkins` → แสดง fingerprint สองฝั่ง
+
+✅ `SHA256:...` สองบรรทัดต้องเหมือนกัน:
+
+```text
+256 SHA256:xx0jAuPGt8ifmB/JdQPK4OFNifmaEc5UZWj4hW5RM7o root@buildkitsandbox (ED25519)
+# Host devtools found: line 1
+devtools ED25519 SHA256:xx0jAuPGt8ifmB/JdQPK4OFNifmaEc5UZWj4hW5RM7o root@buildkitsandbox
+```
+
+> ถ้า key ไม่ตรงหรือไม่มี SSH จะหยุดก่อนส่งรหัสผ่าน · key นี้ติดมากับ image `tuchsanai/devtools:2569_1` ทุก container จาก image นี้จึงได้ key เดียวกัน ไม่ใช่ตัวตนเฉพาะเครื่อง · ไฟล์ `devtools.known_hosts` ที่เหลือเป็น public key ลบได้
+
+### 1.4) (ไม่บังคับ) ทดสอบ SSH ด้วยรหัสผ่าน
+
+> ขั้นนี้เป็นแค่การเช็กการเชื่อมต่อด้วยมือก่อนเริ่ม **ข้ามได้** — ถ้าข้าม ให้ดูผลจาก stage **Connect** ในหน้าเว็บ Jenkins ตอนกด Build (ขั้นที่ 5) แทน · ใน Pipeline จริงไม่มีใครต้องพิมพ์รหัส Jenkins ส่งเองด้วย `sshpass`
+
+<!-- lab3-test:ssh-test -->
+```bash
+docker exec -it jenkins ssh -o StrictHostKeyChecking=yes root@devtools hostname
+```
+
+พิมพ์ `passwd` เมื่อถูกถาม (ตัวอักษรจะไม่แสดง) แล้วกด Enter
+
+✅ บรรทัดสุดท้ายเป็น hostname ของ `devtools` และ **ไม่มี** คำถาม `yes/no`:
+
+```text
+root@devtools's password:
+4dc7e37d7397
+```
+
+ถ้า `known_hosts` ไม่มี key ของ `devtools` SSH จะปฏิเสธก่อนถามรหัส:
+
+```text
+No ED25519 host key is known for devtools and you have requested strict checking.
+Host key verification failed.
 ```
 
 ## ขั้นที่ 2 — ปลดล็อกและตั้งค่า Jenkins
@@ -141,11 +223,43 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 | `devtools-ssh` | username/password ที่ Jenkins ใช้ **SSH เข้า `devtools`** (`root` / `passwd`) ทุกครั้งที่ส่งคำสั่ง | ทุก stage (ผ่านฟังก์ชัน `onDevtools`) และ `post` |
 | `dockerhub` | username + Personal Access Token ของ Docker Hub: username ใช้ตั้งชื่อ repository `docker.io/<DOCKER_USER>/catfood-shop` ส่วน token ใช้ `docker login` บน devtools เพื่อ **push** (ต้องมีสิทธิ์ Write) แล้ว **pull** กลับตาม digest (สิทธิ์ Read) ก่อน deploy | Connect (อ่าน username) · Push (login + push) · Pull (pull แล้ว logout) |
 
-เปิด **Manage Jenkins → Credentials → System → Global credentials (unrestricted)** แล้วกด **+ Add Credentials**
+**3.0) เปิดหน้าเพิ่ม credential** — คลิกตามลำดับ **Login → ⚙️ Manage Jenkins → Credentials → System → Global → + Add Credentials** (ภาพที่ 6ก–6ฉ เป็นภาพหน้าจอจริงจาก Jenkins 2.568.3 ครอปเฉพาะส่วนที่ต้องคลิก คลิกภาพเพื่อดูเต็มหน้า)
 
-[![หน้า Global credentials ก่อนเพิ่ม credential](./images/lab3_scm_01_credentials_store.png)](./images/lab3_scm_01_credentials_store.png)
+**3.0ก) Login** — เปิด `http://localhost:8080` กรอก Username `admin` และ Password `admin2569` (ผู้ดูแลที่สร้างในข้อ 2.4) แล้วกด **Sign in**
 
-*ภาพที่ 6 หน้า **Global** ของ System credentials ยังว่าง (`This credentials domain is empty`) · กดปุ่ม **+ Add Credentials** กลางกล่อง (เมื่อมี credential แล้ว ปุ่มนี้ย้ายไปอยู่มุมขวาบนของรายการ)*
+[![หน้า Sign in to Jenkins](./images/lab3_nav_01_login_crop.png)](./images/lab3_nav_01_login.png)
+
+*ภาพที่ 6ก หน้า **Sign in to Jenkins**: Username `admin` · Password ถูกซ่อนเป็นจุด · กด **Sign in***
+
+**3.0ข) Dashboard → ไอคอนเฟือง ⚙️** — หลัง login จะอยู่ที่ Dashboard ให้คลิกไอคอน**เฟือง** (Manage Jenkins) มุมขวาบน ข้างไอคอนแว่นขยาย · จุดแดงบนเฟืองคือการแจ้งเตือนของระบบ ไม่เกี่ยวกับแล็บนี้
+
+[![ไอคอนเฟืองมุมขวาบนของ Dashboard](./images/lab3_nav_02_dashboard_crop.png)](./images/lab3_nav_02_dashboard.png)
+
+*ภาพที่ 6ข มุมขวาบนของ Dashboard: ไอคอนแว่นขยาย (ค้นหา) · **เฟือง = Manage Jenkins** · ไอคอนผู้ใช้ · Jenkins บางรุ่นมีลิงก์ **Manage Jenkins** ในแถบซ้ายแทน*
+
+**3.0ค) Manage Jenkins → Credentials** — ในหน้า **Manage Jenkins** เลื่อนหาหมวด **Security** แล้วคลิก **Credentials** (Configure credentials) · ไม่ใช่ **Credential Providers** ที่อยู่ถัดไป
+
+[![หมวด Security ในหน้า Manage Jenkins](./images/lab3_nav_03_manage_crop.png)](./images/lab3_nav_03_manage.png)
+
+*ภาพที่ 6ค หมวด **Security** ของหน้า Manage Jenkins: คลิก **Credentials** · กล่องแจ้งเตือนด้านบนของหน้าเต็ม (reverse proxy, built-in node, CSP) เป็นคำเตือนทั่วไปของ Jenkins ทดสอบ ข้ามได้*
+
+**3.0ง) Stores scoped to Jenkins → System** — หน้า **Credentials** มีตาราง **Stores scoped to Jenkins** ให้คลิก **System** (Domains: `Global`)
+
+[![หน้า Credentials และตาราง Stores scoped to Jenkins](./images/lab3_nav_04_credentials_crop.png)](./images/lab3_nav_04_credentials.png)
+
+*ภาพที่ 6ง หน้า **Credentials** (breadcrumb `Manage Jenkins / Credentials`): แถว **System** ในตาราง **Stores scoped to Jenkins** · Jenkins รุ่นนี้มีปุ่ม **+ Add Credentials** ในกล่องด้านบนด้วย แต่แล็บนี้เข้าผ่าน System → Global เพื่อให้เห็นว่า credential ถูกเก็บที่ store และ domain ใด*
+
+**3.0จ) System → Global** — หน้า **System** แสดง domain ให้คลิก **Global** · ในรุ่นนี้ลิงก์ชื่อ **Global** (คำอธิบาย `Credentials that should be available everywhere.`) ส่วน Jenkins รุ่นก่อนและเอกสารอื่นเรียก domain เดียวกันนี้ว่า **Global credentials (unrestricted)**
+
+[![หน้า System แสดง domain Global](./images/lab3_nav_05_system_crop.png)](./images/lab3_nav_05_system.png)
+
+*ภาพที่ 6จ หน้า **System**: domain **Global** · `0 credentials` คือยังไม่มี credential*
+
+**3.0ฉ) Global → + Add Credentials** — หน้า **Global** ยังว่าง (`This credentials domain is empty`) ให้กด **+ Add Credentials** กลางกล่อง (เมื่อมี credential แล้ว ปุ่มนี้ย้ายไปอยู่มุมขวาบนของรายการ) แล้วกรอกฟอร์มตาม 3.1
+
+[![หน้า Global ก่อนเพิ่ม credential](./images/lab3_nav_06_global_crop.png)](./images/lab3_nav_06_global.png)
+
+*ภาพที่ 6ฉ หน้า **Global** (breadcrumb `Manage Jenkins / Credentials / System / Global`): กด **+ Add Credentials***
 
 **3.1) `devtools-ssh`** — เลือกชนิด **Username with password** แล้วกรอกในหน้าต่าง **Add Username with password**:
 
@@ -163,7 +277,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 *ภาพที่ 7 ฟอร์ม **Add Username with password** ของ `devtools-ssh`: Username `root` · ไม่ติ๊ก Treat username as secret · Password ถูกซ่อน · ID `devtools-ssh`*
 
-**3.2) `dockerhub`** — กด **+ Add Credentials** อีกครั้ง ชนิด **Username with password** เหมือนเดิม:
+**3.2) `dockerhub`** — กลับมาหน้า **Global** (คลิก `Global` ใน breadcrumb) แล้วกด **+ Add Credentials** อีกครั้ง ชนิด **Username with password** เหมือนเดิม:
 
 | ช่อง | ค่า |
 |---|---|
@@ -183,136 +297,79 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 > ⚠️ วาง token ใน Jenkins Credentials เท่านั้น ห้ามวางในแชต เอกสาร หรือ commit ลง Git · ID ต้องสะกดตรงตัว เพราะ `Jenkinsfile` เรียกด้วย ID นี้
 
-## ขั้นที่ 4 — เตรียม `jenkins` ให้ SSH ไป `devtools` ได้ (🖥️ host)
+## ขั้นที่ 4 — สร้าง Pipeline บนหน้าเว็บ Jenkins แล้วออกแบบ `Jenkinsfile`
 
-credential `devtools-ssh` จากขั้นที่ 3 จะถูกใช้จริงเมื่อ Pipeline เริ่ม SSH ใน stage Connect ก่อนถึงตอนนั้น `jenkins` ต้องมีอีกสองอย่าง: โปรแกรม `sshpass` สำหรับส่งรหัสผ่าน และ host key ของ `devtools` ที่เชื่อถือไว้ล่วงหน้า
+ทำต่อจากขั้นที่ 3 บนหน้าเว็บเดิม: สร้าง job ชนิด **Pipeline** ก่อน (4.1–4.2) เพื่อบอก Jenkins ว่าจะอ่าน `Jenkinsfile` จาก Git ตรงไหน จากนั้นเรียนออกแบบไฟล์นั้นทีละชั้น (4.3–4.11) และนำไฟล์เข้า Git ให้ job อ่าน (4.12) แล้วจึงกด Build ในขั้นที่ 5
 
-### 4.1) ติดตั้ง `sshpass` ใน `jenkins`
-
-**ทำไมต้องมี `sshpass`:** Pipeline ของแล็บนี้ให้ Jenkins **SSH ออกไปหา `devtools`** ด้วยรหัสผ่านโดยอัตโนมัติทุก stage แต่คำสั่ง `ssh` ปกติจะหยุดรอให้คนพิมพ์รหัส `sshpass` จึงทำหน้าที่ส่งรหัสให้แทน โดยรหัสมาจาก credential `devtools-ssh` ที่สร้างในขั้นที่ 3 (ไม่ได้เขียนไว้ใน Jenkinsfile)
-
-- ติดตั้งจาก 🖥️ host ด้วย `docker exec` ครั้งเดียว — ผู้เรียน**ไม่ต้อง SSH เข้า Jenkins** การสร้าง job, credential และกด Build ทำจากหน้าเว็บทั้งหมด
-- ใช้รหัสผ่านตามที่แล็บกำหนด ไม่ต้องเปลี่ยนรหัสของ `devtools` และไม่ต้องสลับไปใช้ SSH key
-
-<!-- lab3-test:sshpass -->
-```bash
-docker exec -u root -e DEBIAN_FRONTEND=noninteractive jenkins sh -c "apt-get update -qq && apt-get install -y -qq --no-install-recommends sshpass"
-docker exec jenkins sh -c "command -v sshpass; command -v docker || echo 'docker: none'"
-```
-
-`-u root` จำเป็นสำหรับ `apt-get` · ถ้าสร้าง `jenkins` ใหม่ต้องรันขั้นนี้อีกครั้ง
-
-✅ ท้ายผลลัพธ์ต้องมี `sshpass` และ Jenkins **ไม่มี** Docker CLI:
-
-```text
-Preparing to unpack .../sshpass_1.10-0.1_amd64.deb ...
-Unpacking sshpass (1.10-0.1) ...
-Setting up sshpass (1.10-0.1) ...
-/usr/bin/sshpass
-docker: none
-```
-
-### 4.2) pin host key ของ `devtools`
-
-บอก Jenkins ล่วงหน้าว่า `devtools` ตัวจริงมี key นี้ SSH จะได้ไม่ต่อผิดเครื่อง
-
-<!-- lab3-test:pin-hostkey -->
-```bash
-docker exec devtools sh -c "sed 's/^/devtools /' /etc/ssh/ssh_host_ed25519_key.pub > /tmp/devtools.known_hosts"
-docker cp devtools:/tmp/devtools.known_hosts devtools.known_hosts
-docker cp devtools.known_hosts jenkins:/tmp/devtools.known_hosts
-docker exec jenkins sh -c "mkdir -p -m 700 /var/jenkins_home/.ssh && cp /tmp/devtools.known_hosts /var/jenkins_home/.ssh/known_hosts"
-docker exec devtools ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
-docker exec jenkins ssh-keygen -lF devtools
-```
-
-อ่าน host key จาก `devtools` → `docker cp` ผ่านเครื่องเรา → วางเป็น `/var/jenkins_home/.ssh/known_hosts` ของผู้ใช้ `jenkins` → แสดง fingerprint สองฝั่ง
-
-✅ `SHA256:...` สองบรรทัดต้องเหมือนกัน:
-
-```text
-256 SHA256:xx0jAuPGt8ifmB/JdQPK4OFNifmaEc5UZWj4hW5RM7o root@buildkitsandbox (ED25519)
-# Host devtools found: line 1
-devtools ED25519 SHA256:xx0jAuPGt8ifmB/JdQPK4OFNifmaEc5UZWj4hW5RM7o root@buildkitsandbox
-```
-
-> ถ้า key ไม่ตรงหรือไม่มี SSH จะหยุดก่อนส่งรหัสผ่าน · key นี้ติดมากับ image `tuchsanai/devtools:2569_1` ทุก container จาก image นี้จึงได้ key เดียวกัน ไม่ใช่ตัวตนเฉพาะเครื่อง · ไฟล์ `devtools.known_hosts` ที่เหลือเป็น public key ลบได้
-
-### 4.3) (ไม่บังคับ) ทดสอบ SSH ด้วยรหัสผ่าน
-
-> ขั้นนี้เป็นแค่การเช็กการเชื่อมต่อด้วยมือก่อนเริ่ม **ข้ามได้** — ถ้าข้าม ให้ดูผลจาก stage **Connect** ในหน้าเว็บ Jenkins ตอนกด Build (ขั้นที่ 6) แทน · ใน Pipeline จริงไม่มีใครต้องพิมพ์รหัส Jenkins ส่งเองด้วย `sshpass`
-
-<!-- lab3-test:ssh-test -->
-```bash
-docker exec -it jenkins ssh -o StrictHostKeyChecking=yes root@devtools hostname
-```
-
-พิมพ์ `passwd` เมื่อถูกถาม (ตัวอักษรจะไม่แสดง) แล้วกด Enter
-
-✅ บรรทัดสุดท้ายเป็น hostname ของ `devtools` และ **ไม่มี** คำถาม `yes/no`:
-
-```text
-root@devtools's password:
-4dc7e37d7397
-```
-
-ถ้า `known_hosts` ไม่มี key ของ `devtools` SSH จะปฏิเสธก่อนถามรหัส:
-
-```text
-No ED25519 host key is known for devtools and you have requested strict checking.
-Host key verification failed.
-```
-
-## ขั้นที่ 5 — สร้าง `Jenkinsfile` ทีละชั้น
-
-`Jenkinsfile` คือไฟล์ข้อความที่เขียน Pipeline ด้วยภาษา Groovy แล้วเก็บไว้ใน Git คู่กับซอร์ส ในขั้นที่ 6 Jenkins จะอ่านไฟล์นี้จาก Git ทุกครั้งที่ build ขั้นนี้สอนวิธีสร้างไฟล์ตั้งแต่โครงเปล่า แล้วเติมทีละชั้นตามลำดับที่ Pipeline ใช้งานจริง: **Credentials → SSH ไป devtools → git clone → Docker build/test → Docker Hub push/pull/deploy**
-
-| ทางเลือก | ทำอะไร | ขั้นที่ 6 ตั้งค่า |
+| ทางเลือก | ทำอะไร | ตั้งค่า job ในข้อ 4.2 |
 |---|---|---|
-| **ก. รันแล็บด้วยไฟล์ของรายวิชา** (แนะนำสำหรับรอบแรก) | อ่านขั้นนี้เพื่อเข้าใจโครงสร้าง แล้วใช้ [`Jenkinsfile`](./Jenkinsfile) ฉบับสมบูรณ์ที่อยู่ใน repository ของรายวิชาอยู่แล้ว **ไม่ต้อง fork** | Repository URL และ Script Path ของรายวิชา (ตารางในขั้นที่ 6) |
-| **ข. ฝึกเขียนเอง** | สร้างไฟล์ `Jenkinsfile` ใน repository Git **สาธารณะ** ของตัวเอง ประกอบตาม 5.3–5.8 แล้ว commit/push | Repository URL ของตัวเอง และ Script Path ที่ชี้ไปยังไฟล์นั้น |
+| **ก. รันแล็บด้วยไฟล์ของรายวิชา** (แนะนำสำหรับรอบแรก) | อ่าน 4.3–4.11 เพื่อเข้าใจโครงสร้าง แล้วใช้ [`Jenkinsfile`](./Jenkinsfile) ฉบับสมบูรณ์ที่อยู่ใน repository ของรายวิชาอยู่แล้ว **ไม่ต้อง fork** | Repository URL และ Script Path ของรายวิชา (ตารางใน 4.2) |
+| **ข. ฝึกเขียนเอง** | สร้างไฟล์ `Jenkinsfile` ใน repository Git **สาธารณะ** ของตัวเอง ประกอบตาม 4.5–4.11 แล้ว commit/push (4.12) | Repository URL, Branch Specifier และ Script Path ของตัวเอง |
 
-ทั้งสองทางใช้ซอร์สร้านจาก parameter `GIT_URL`/`APP_SUBDIR` (ค่าเริ่มต้นคือ repository ของรายวิชา) จึงไม่ต้องคัดลอกโฟลเดอร์ `catfood-shop`
+ทั้งสองทางใช้ซอร์สร้านจาก parameter `GIT_URL`/`APP_SUBDIR` (ค่าเริ่มต้นคือ repository ของรายวิชา) ซึ่ง devtools เป็นผู้ `git clone` เองใน stage Clone จึงไม่ต้องคัดลอกโฟลเดอร์ `catfood-shop`
 
-**5.1) ชื่อไฟล์และตำแหน่ง**
+> 📷 ภาพที่ 10–12 เป็นภาพหน้าจอจริงที่ถ่ายไว้ก่อนหน้านี้จาก Jenkins ทดสอบรอบ Pipeline script from SCM (2026-09-27) นำมาใช้ซ้ำ ไม่ได้ถ่ายใหม่พร้อมภาพที่ 6ก–6ฉ
+
+**4.1) Dashboard → New Item → Pipeline** — คลิกโลโก้ **Jenkins** มุมซ้ายบนเพื่อกลับ Dashboard → คลิก **+ New Item** ในแถบซ้าย → ช่อง **Enter an item name** พิมพ์ `docker-build-push` → เลือกชนิด **Pipeline** → กด **OK**
+
+[![หน้า New Item](./images/lab3_scm_05_new_item.png)](./images/lab3_scm_05_new_item.png)
+
+*ภาพที่ 10 หน้า **New Item**: ชื่อ `docker-build-push` และเลือกชนิด **Pipeline***
+
+**4.2) ตั้งค่า job: Pipeline script from SCM** — กด OK แล้วจะเข้าหน้า **Configure** ของ job เลื่อนลงไปส่วน **Pipeline** แล้วตั้งค่าตามตาราง (ทางเลือก ข ให้เปลี่ยนเฉพาะ **Repository URL**, **Branch Specifier** และ **Script Path** เป็นของ repository ตัวเอง) → **Save**
+
+| ช่อง | ค่า |
+|---|---|
+| Definition | **Pipeline script from SCM** |
+| SCM | **Git** |
+| Repository URL | `https://github.com/Tuchsanai/DevTools.git` |
+| Credentials | `- none -` (repository สาธารณะ) |
+| Branch Specifier | `*/main` |
+| Script Path | `04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile` |
+| Lightweight checkout | ติ๊ก (ค่าเริ่มต้น) Jenkins อ่าน `Jenkinsfile` ผ่าน SCM โดยไม่ checkout ทั้ง repository ลง workspace ของ job (ยังอาจดึงข้อมูล Git มาเก็บเป็น cache) |
+
+[![Definition Pipeline script from SCM](./images/lab3_scm_06_pipeline_from_scm.png)](./images/lab3_scm_06_pipeline_from_scm.png)
+
+*ภาพที่ 11 ส่วน **Pipeline** ของหน้า Configure: Definition = **Pipeline script from SCM**, SCM = **Git**, Repository URL ของรายวิชา และ Credentials = none*
+
+[![Branch และ Script Path](./images/lab3_scm_07_branch_script_path_crop.png)](./images/lab3_scm_07_branch_script_path.png)
+
+*ภาพที่ 12 Branch Specifier `*/main`, Script Path `04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile` และ **Lightweight checkout** ติ๊กอยู่ · ครอปจากภาพเต็มหน้าที่ต่อจากหลายช่วงเลื่อน แถบกลางภาพคือรอยต่อของภาพ (คลิกดูภาพเต็ม)*
+
+หลัง Save **ยังไม่ต้องกด Build Now** · job เก็บแค่ "ไปอ่าน `Jenkinsfile` ที่ไหน" ตัว Pipeline จริงอยู่ในไฟล์ ซึ่ง Jenkins จะดึงจาก Git ตอนเริ่ม build ทุกครั้ง ข้อถัดไปอธิบายว่าไฟล์นั้นเขียนอย่างไร
+
+**4.3) ไฟล์ `Jenkinsfile` คืออะไร อยู่ตรงไหน**
+
+`Jenkinsfile` คือไฟล์ข้อความที่เขียน Pipeline ด้วยภาษา Groovy แล้วเก็บไว้ใน Git คู่กับซอร์ส job จากข้อ 4.2 จะให้ Jenkins อ่านไฟล์นี้จาก Git ทุกครั้งที่ build ข้อ 4.5–4.11 สอนสร้างไฟล์ตั้งแต่โครงเปล่า แล้วเติมทีละชั้นตามลำดับที่ Pipeline ใช้งานจริง: **Credentials → SSH ไป devtools → git clone บน devtools → Docker build/test → Docker Hub push/pull/deploy บน devtools**
 
 - ตั้งชื่อ `Jenkinsfile` (J ตัวใหญ่ ไม่มีนามสกุล) บันทึกเป็น UTF-8
-- Jenkins หาไฟล์ตาม **Script Path** ในขั้นที่ 6 ซึ่งเป็น path แบบ relative จาก root ของ repository และต้องสะกดตรงตัวพิมพ์ ในรายวิชาไฟล์อยู่ที่ `04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile`
-- ทางเลือก ข: ถ้าวางไฟล์ไว้ที่ root ของ repository ของตัวเอง Script Path คือ `Jenkinsfile`:
-
-```bash
-cd <โฟลเดอร์ที่ clone repository ของตัวเองไว้>
-touch Jenkinsfile               # สร้างไฟล์เปล่า แล้วเปิดด้วย editor เติมตาม 5.3–5.8
-git add Jenkinsfile
-git commit -m "Add LAB 3 Jenkinsfile"
-git push
-```
+- Jenkins หาไฟล์ตาม **Script Path** ในข้อ 4.2 ซึ่งเป็น path แบบ relative จาก root ของ repository และต้องสะกดตรงตัวพิมพ์ ในรายวิชาไฟล์อยู่ที่ `04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile`
 
 [![Jenkinsfile ของแล็บบน GitHub](./images/lab3_scm_github_jenkinsfile_crop.png)](./images/lab3_scm_github_jenkinsfile.png)
 
-*ภาพที่ 10 ไฟล์ `Jenkinsfile` ของแล็บนี้บน GitHub branch `main` ของ repository รายวิชา (path `DevTools / 04_Jenkins / 001_Jenikin / 003_LAB_Docker_Build_Push / Jenkinsfile`) · ถ่ายก่อนอัปเดตรอบนี้ (commit `92d3888`) หัวไฟล์ในภาพจึงยังต่างจากฉบับปัจจุบันเล็กน้อย*
+*ภาพที่ 13 ไฟล์ `Jenkinsfile` ของแล็บนี้บน GitHub branch `main` ของ repository รายวิชา (path `DevTools / 04_Jenkins / 001_Jenikin / 003_LAB_Docker_Build_Push / Jenkinsfile`) · ถ่ายก่อนอัปเดตรอบนี้ (commit `92d3888`) หัวไฟล์ในภาพจึงยังต่างจากฉบับปัจจุบันเล็กน้อย*
 
-**5.2) ใครโหลดอะไร: Jenkins โหลด Pipeline ส่วน devtools clone แอป**
+**4.4) ใครโหลดอะไร: Jenkins โหลด Pipeline ส่วน devtools clone แอป**
 
 - job แบบ **Pipeline script from SCM** ทำให้ Jenkins (controller) ดึง `04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile` จาก `https://github.com/Tuchsanai/DevTools.git` branch `main` **ก่อน** Pipeline เริ่ม นี่คือ Git ครั้งเดียวที่ Jenkins ทำเอง
 - `devtools` ช่วยงานนี้ไม่ได้ เพราะ Jenkins จะรู้ว่าต้อง SSH ไปไหนและใช้ credential ตัวใด ก็ต่อเมื่ออ่าน `Jenkinsfile` แล้ว
 - หลังจากนั้นทุกอย่างของแอป (`git clone` ซอร์สร้าน, `docker build`/`run`/`push`/`pull`) Jenkins ส่งผ่าน SSH ไปรันบน `devtools`
-- ปกติ Declarative Pipeline จะ checkout ทั้ง repository ลง workspace ของ Jenkins อีกรอบโดยอัตโนมัติ แต่แล็บนี้ไม่ใช้ไฟล์ใน workspace นั้น (repository ของรายวิชาใหญ่ระดับ GB) จึงปิดด้วย `skipDefaultCheckout()` ใน `options` (ตำแหน่ง [D] ในโครงข้อ 5.3)
+- ปกติ Declarative Pipeline จะ checkout ทั้ง repository ลง workspace ของ Jenkins อีกรอบโดยอัตโนมัติ แต่แล็บนี้ไม่ใช้ไฟล์ใน workspace นั้น (repository ของรายวิชาใหญ่ระดับ GB) จึงปิดด้วย `skipDefaultCheckout()` ใน `options` (ตำแหน่ง [D] ในโครงข้อ 4.5)
 
-**5.3) โครงของ Declarative Pipeline**
+**4.5) โครงของ Declarative Pipeline**
 
 เริ่มจากโครงนี้ก่อน วงเล็บปีกกา `{ }` ทุกคู่ต้องปิดครบ ทุกส่วนอยู่ใน `pipeline { }` ยกเว้นฟังก์ชันช่วยที่อยู่ด้านบนไฟล์:
 
 ```groovy
-// Jenkinsfile — โครงเปล่า (skeleton) รันได้แต่ยังไม่ทำงานจริง: เติมโค้ดของแต่ละชั้นตาม 5.4–5.8
+// Jenkinsfile — โครงเปล่า (skeleton) รันได้แต่ยังไม่ทำงานจริง: เติมโค้ดของแต่ละชั้นตาม 4.6–4.10
 
 // [A] ฟังก์ชันช่วย (helper) ประกาศนอก pipeline { } ด้านบนสุดของไฟล์
 def requireMatch(String name, String value, String regex, String hint) {
-  // 5.4: ตรวจค่าด้วย regex
+  // 4.6: ตรวจค่าด้วย regex
 }
 
 def onDevtools(Map vars, String body, boolean capture = false) {
-  // 5.5: ส่งสคริปต์ไปรันบน devtools ผ่าน SSH
+  // 4.7: ส่งสคริปต์ไปรันบน devtools ผ่าน SSH
 }
 
 pipeline {                  // [B] บล็อกนอกสุด มีได้บล็อกเดียวต่อไฟล์
@@ -365,7 +422,7 @@ pipeline {                  // [B] บล็อกนอกสุด มีไ�
 
 | ส่วน | อยู่ตรงไหน | ในไฟล์จริงของแล็บนี้ |
 |---|---|---|
-| [A] ฟังก์ชันช่วย `def ...` | นอก `pipeline { }` ด้านบนสุด | `requireMatch` (5.4), `onDevtools` (5.5) |
+| [A] ฟังก์ชันช่วย `def ...` | นอก `pipeline { }` ด้านบนสุด | `requireMatch` (4.6), `onDevtools` (4.7) |
 | [C] `agent` | บรรทัดแรกใน `pipeline` | `agent any` คำสั่ง `sh` รันบน Jenkins แล้ว SSH ต่อไป devtools |
 | [D] `options` | ใน `pipeline` ก่อน `stages` | `disableConcurrentBuilds()`, `skipDefaultCheckout()` |
 | [E] `parameters` | ใน `pipeline` | `GIT_URL`, `GIT_REF`, `APP_SUBDIR`, `APP_VERSION`, `TAG_PREFIX` |
@@ -376,7 +433,7 @@ pipeline {                  // [B] บล็อกนอกสุด มีไ�
 
 จากนี้ไปแต่ละชั้นจะเติมโค้ดลงในโครงนี้ ทุกบล็อกที่มีป้าย 📄 เป็น**ส่วนหนึ่ง**ที่ตัดมาจากไฟล์จริงตามเลขบรรทัด ไม่ใช่ไฟล์เต็ม ให้วางตามตำแหน่งที่ป้ายบอก
 
-**5.4) ชั้นที่ 1 — Credentials:** `withCredentials` ดึงค่าจาก ID ที่สร้างในขั้นที่ 3 มาเป็นตัวแปรชั่วคราวเฉพาะในบล็อก ใน stage Connect ใช้แค่ username ของ `dockerhub` เพื่อตั้งชื่อ repository ปลายทาง:
+**4.6) ชั้นที่ 1 — Credentials:** `withCredentials` ดึงค่าจาก ID ที่สร้างในขั้นที่ 3 มาเป็นตัวแปรชั่วคราวเฉพาะในบล็อก ใน stage Connect ใช้แค่ username ของ `dockerhub` เพื่อตั้งชื่อ repository ปลายทาง:
 
 📄 *ส่วนหนึ่งของ `Jenkinsfile` บรรทัด 9–13 · แทน `requireMatch` ในส่วน [A]*
 
@@ -399,7 +456,7 @@ withCredentials([usernamePassword(credentialsId: 'dockerhub',
 }
 ```
 
-**5.5) ชั้นที่ 2 — SSH ไป devtools:** ฟังก์ชัน `onDevtools(ตัวแปร, สคริปต์)` เขียนสคริปต์ของ stage เป็น `remote.sh` แล้วส่งทาง SSH โดยใช้ `devtools-ssh`, `sshpass` และ host key จากขั้นที่ 4:
+**4.7) ชั้นที่ 2 — SSH ไป devtools:** ฟังก์ชัน `onDevtools(ตัวแปร, สคริปต์)` เขียนสคริปต์ของ stage เป็น `remote.sh` แล้วส่งทาง SSH โดยใช้ `devtools-ssh`, `sshpass` และ host key จากขั้นที่ 1 (1.2–1.3):
 
 📄 *ส่วนหนึ่งของ `Jenkinsfile` บรรทัด 18–36 · แทน `onDevtools` ในส่วน [A]*
 
@@ -425,7 +482,7 @@ def onDevtools(Map vars, String body, boolean capture = false) {
 }
 ```
 
-- `sshpass -e` อ่านรหัสจากตัวแปร `SSHPASS` รหัสจึงไม่โผล่ใน command line หรือ console · `sh(script: '...')` เป็นข้อความคงที่ `$SSH_USER` จึงถูกแทนค่าโดย shell ไม่ใช่ Groovy · SSH ต่อเฉพาะเมื่อ host key ตรงกับที่ pin ในขั้นที่ 4.2
+- `sshpass -e` อ่านรหัสจากตัวแปร `SSHPASS` รหัสจึงไม่โผล่ใน command line หรือ console · `sh(script: '...')` เป็นข้อความคงที่ `$SSH_USER` จึงถูกแทนค่าโดย shell ไม่ใช่ Groovy · SSH ต่อเฉพาะเมื่อ host key ตรงกับที่ pin ในข้อ 1.3
 - สคริปต์อยู่ใน `'''...'''` Groovy จึงไม่แทนค่า `$` เอง แล้วส่งทาง stdin ไปรันด้วย bash บน devtools
 - parameter ถูกตรวจด้วย regex (ยอมเฉพาะ `A-Za-z0-9._:/@=+-`) แล้วเขียนเป็น `NAME='value'` ต้น `remote.sh` ค่าที่แฝงคำสั่ง shell จึงไปไม่ถึง devtools
 
@@ -441,7 +498,7 @@ git --version
 ''')
 ```
 
-**5.6) ชั้นที่ 3 — git clone บน devtools:** stage Clone ให้ devtools ทำ sparse clone เฉพาะโฟลเดอร์ `catfood-shop` แล้วส่ง commit กลับมาให้ Jenkins จดไว้:
+**4.8) ชั้นที่ 3 — git clone บน devtools:** stage Clone ให้ devtools ทำ sparse clone เฉพาะโฟลเดอร์ `catfood-shop` แล้วส่ง commit กลับมาให้ Jenkins จดไว้:
 
 📄 *ส่วนหนึ่งของ `Jenkinsfile` บรรทัด 113–125 · ใน `script { }` ของ `stage('Clone')`*
 
@@ -461,7 +518,7 @@ git rev-parse --short=12 HEAD
 ''', true).trim()
 ```
 
-**5.7) ชั้นที่ 4 — Docker build และ test บน devtools:** Build ฝังเวอร์ชัน/build/commit ลง image แล้ว Test รัน container ชั่วคราวจนกว่าจะ `healthy`:
+**4.9) ชั้นที่ 4 — Docker build และ test บน devtools:** Build ฝังเวอร์ชัน/build/commit ลง image แล้ว Test รัน container ชั่วคราวจนกว่าจะ `healthy`:
 
 📄 *ส่วนหนึ่งของ `Jenkinsfile` บรรทัด 136–148 · ใน `script { }` ของ `stage('Build')`*
 
@@ -500,7 +557,7 @@ done
 [ "$STATUS" = healthy ]
 ```
 
-**5.8) ชั้นที่ 5 — Docker Hub push → pull → deploy:** Push ส่ง token ทาง stdin ให้ `docker login --password-stdin` บน devtools แล้ว push และจด **digest**:
+**4.10) ชั้นที่ 5 — Docker Hub push → pull → deploy:** Push ส่ง token ทาง stdin ให้ `docker login --password-stdin` บน devtools แล้ว push และจด **digest**:
 
 📄 *ส่วนหนึ่งของ `Jenkinsfile` บรรทัด 189–192 · ใน `withCredentials` ของ `stage('Push')`*
 
@@ -546,7 +603,7 @@ docker run -d --name "$NAME" --restart unless-stopped -p 3000:3000 \
   --label devtools.lab=lab3 --label devtools.role=app --label devtools.build="$BUILD" "$REF"
 ```
 
-**5.9) ประกอบครบ 8 stage:** เมื่อเติมทุกชั้นลงในโครงข้อ 5.3 และเพิ่ม stage Clean ระหว่าง Push กับ Pull จะได้ไฟล์ฉบับสมบูรณ์ด้านล่าง ซึ่งเป็นไฟล์เดียวกับที่ขั้นที่ 6 ให้ Jenkins อ่านจาก GitHub
+**4.11) ประกอบครบ 8 stage:** เมื่อเติมทุกชั้นลงในโครงข้อ 4.5 และเพิ่ม stage Clean ระหว่าง Push กับ Pull จะได้ไฟล์ฉบับสมบูรณ์ด้านล่าง ซึ่งเป็นไฟล์เดียวกับที่ job ในข้อ 4.2 ให้ Jenkins อ่านจาก GitHub
 
 | Stage | ทำอะไร (บน devtools ยกเว้นที่ระบุ) |
 |---|---|
@@ -569,10 +626,10 @@ Clean ทำหลัง Push สำเร็จเท่านั้น ถ้�
 ```groovy
 // LAB 3 — Jenkins เป็น "ผู้สั่ง" devtools เป็น "ผู้ทำ"
 // jenkins และ devtools เป็น container พี่น้องบน network cicd-net เดียวกัน จึงเรียกกันด้วยชื่อ devtools ได้
-// jenkins เป็น image มาตรฐาน ไม่มี Docker CLI ไม่ได้ mount docker.sock (เพิ่มเพียง sshpass ในขั้นที่ 4)
+// jenkins เป็น image มาตรฐาน ไม่มี Docker CLI ไม่ได้ mount docker.sock (เพิ่มเพียง sshpass ในขั้นที่ 1)
 // Jenkins อ่านไฟล์นี้จาก Git เอง (Pipeline script from SCM) ก่อน Pipeline เริ่ม ส่วนซอร์สร้าน devtools เป็นผู้ clone ใน stage Clone
 // ทุกงาน (git clone, docker build/run/push/pull) ถูกส่งผ่าน SSH ไปรันบน devtools:22
-// login ด้วยรหัสผ่านจาก credential devtools-ssh และยอมรับเฉพาะ host key ที่ pin ไว้ในขั้นที่ 4
+// login ด้วยรหัสผ่านจาก credential devtools-ssh และยอมรับเฉพาะ host key ที่ pin ไว้ในขั้นที่ 1
 
 // ตรวจค่าก่อนส่งข้าม SSH: ต้องตรง regex ทั้งค่า มิฉะนั้นหยุด build ทันที
 def requireMatch(String name, String value, String regex, String hint) {
@@ -882,37 +939,26 @@ echo "เก็บกวาดของ build ที่ล้มแล้ว: $N
 
 </details>
 
-## ขั้นที่ 6 — สร้าง job แบบ Pipeline script from SCM แล้ว Build Now
+**4.12) นำ `Jenkinsfile` เข้า Git ให้ job อ่าน**
 
-ตารางด้านล่างใช้ `Jenkinsfile` ฉบับสมบูรณ์ของรายวิชา (ทางเลือก ก ในขั้นที่ 5) ไม่ต้อง fork · ถ้าเขียนไฟล์เอง (ทางเลือก ข) ให้เปลี่ยนเฉพาะ **Repository URL**, **Branch Specifier** และ **Script Path** เป็นของ repository ตัวเอง
+- **ทางเลือก ก:** ไฟล์อยู่ใน repository ของรายวิชาที่ Script Path ในข้อ 4.2 แล้ว ไม่ต้องทำอะไรเพิ่ม
+- **ทางเลือก ข (เขียนเอง):** วางไฟล์ไว้ที่ root ของ repository สาธารณะของตัวเอง แล้ว commit/push:
 
-1. Dashboard → **New Item** → ชื่อ `docker-build-push` → เลือก **Pipeline** → **OK**
+```bash
+cd <โฟลเดอร์ที่ clone repository ของตัวเองไว้>
+touch Jenkinsfile               # สร้างไฟล์เปล่า แล้วเปิดด้วย editor เติมตาม 4.5–4.11
+git add Jenkinsfile
+git commit -m "Add LAB 3 Jenkinsfile"
+git push
+```
 
-[![หน้า New Item](./images/lab3_scm_05_new_item.png)](./images/lab3_scm_05_new_item.png)
+จากนั้นเปิด job `docker-build-push` → **Configure** → ส่วน **Pipeline** ตั้ง **Repository URL** เป็น repository ของตัวเอง, **Branch Specifier** เป็น branch ที่ push (เช่น `*/main`) และ **Script Path** เป็น `Jenkinsfile` → **Save**
 
-*ภาพที่ 11 หน้า **New Item**: ชื่อ `docker-build-push` และเลือกชนิด **Pipeline***
+ทุกครั้งที่ build Jenkins อ่าน `Jenkinsfile` รุ่นล่าสุดบน branch นั้น แก้ไฟล์แล้ว commit/push ก็พอ ไม่ต้องแก้ job ใหม่
 
-2. เลื่อนลงไปส่วน **Pipeline** แล้วตั้งค่าตามตาราง → **Save**
+## ขั้นที่ 5 — Build Now แล้วดู 8 stage ทำงาน
 
-| ช่อง | ค่า |
-|---|---|
-| Definition | **Pipeline script from SCM** |
-| SCM | **Git** |
-| Repository URL | `https://github.com/Tuchsanai/DevTools.git` |
-| Credentials | `- none -` (repository สาธารณะ) |
-| Branch Specifier | `*/main` |
-| Script Path | `04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile` |
-| Lightweight checkout | ติ๊ก (ค่าเริ่มต้น) Jenkins อ่าน `Jenkinsfile` ผ่าน SCM โดยไม่ checkout ทั้ง repository ลง workspace ของ job (ยังอาจดึงข้อมูล Git มาเก็บเป็น cache) |
-
-[![Definition Pipeline script from SCM](./images/lab3_scm_06_pipeline_from_scm.png)](./images/lab3_scm_06_pipeline_from_scm.png)
-
-*ภาพที่ 12 ส่วน **Pipeline** ของหน้า Configure: Definition = **Pipeline script from SCM**, SCM = **Git**, Repository URL ของรายวิชา และ Credentials = none*
-
-[![Branch และ Script Path](./images/lab3_scm_07_branch_script_path_crop.png)](./images/lab3_scm_07_branch_script_path.png)
-
-*ภาพที่ 13 Branch Specifier `*/main`, Script Path `04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/Jenkinsfile` และ **Lightweight checkout** ติ๊กอยู่ · ครอปจากภาพเต็มหน้าที่ต่อจากหลายช่วงเลื่อน แถบกลางภาพคือรอยต่อของภาพ (คลิกดูภาพเต็ม)*
-
-3. กด **Build Now** — job ใหม่ยังไม่มี **Build with Parameters** จนกว่าจะรันครั้งแรก build แรกจึงใช้ค่า default (`APP_VERSION=1.0.0`, tag `lab3-1`)
+ในหน้า job `docker-build-push` กด **Build Now** — job ใหม่ยังไม่มี **Build with Parameters** จนกว่าจะรันครั้งแรก build แรกจึงใช้ค่า default (`APP_VERSION=1.0.0`, tag `lab3-1`)
 
 ✅ บรรทัดแรก ๆ ของ **Console Output** บอกว่า Jenkins ดึง `Jenkinsfile` มาจาก Git แล้ว stage ถัดไปคือ **Connect** ทันที (ไม่มี `Declarative: Checkout SCM` เพราะ `skipDefaultCheckout()`) ตัวอย่างจริงจาก build หลัง push (job ทดสอบ `verify-local/upstream-main` #2 ซึ่งอ่าน `Jenkinsfile` จาก GitHub `main` commit `e200b55` · ใน job `docker-build-push` ของคุณ path ของ workspace จะเป็น `/var/jenkins_home/workspace/docker-build-push`):
 
@@ -966,7 +1012,7 @@ image: docker.io/<DOCKER_USER>/catfood-shop@sha256:ea2559a940026b2eb8feb704f941c
 
 เปิด `http://localhost:3000` chip บนแถบด้านบนต้องเป็น `v1.0.0 · build #1`
 
-## ขั้นที่ 7 — ออกเวอร์ชันใหม่ `APP_VERSION=1.1.0`
+## ขั้นที่ 6 — ออกเวอร์ชันใหม่ `APP_VERSION=1.1.0`
 
 job `docker-build-push` → **Build with Parameters** → เปลี่ยนเฉพาะ `APP_VERSION` เป็น `1.1.0` → **Build**
 
@@ -1035,7 +1081,7 @@ image: docker.io/<DOCKER_USER>/catfood-shop@sha256:2b717397cbd2b05d53cc67dd5f85c
 
 🔍 **สืบย้อนได้ครบ:** chip `v1.1.0 · build #2` → Container ใน Deployment info (`host` ใน `/api/health`) → `image: <repo>@sha256:...` ใน Deploy → digest ที่ Push จดไว้ → build #2 → commit จาก Clone
 
-## ขั้นที่ 8 — ลองค่าผิด 3 แบบ ร้านเดิมต้องยังอยู่
+## ขั้นที่ 7 — ลองค่าผิด 3 แบบ ร้านเดิมต้องยังอยู่
 
 **(ก)** Build with Parameters กรอก `APP_VERSION` = `1.2.0; id` → build #3 `FAILURE` ที่ Connect ก่อนส่งค่านี้ผ่าน SSH (SSH ที่เห็นมาจาก `post` ซึ่งลบแค่ของชั่วคราว)
 
@@ -1086,18 +1132,18 @@ catfood-web  Up About a minute (healthy)  build=2
 - [ ] Credentials มี `devtools-ssh` (`root`) และ `dockerhub` · job `docker-build-push` เป็น **Pipeline script from SCM** ชี้ไปที่ Script Path ของแล็บนี้
 - [ ] build #1 และ #2 `SUCCESS` ครบ 8 stage · Clean ของ #2 มี `ลบแอปเดิม catfood-web (...)` · digest ใน Push, Pull, Deploy ตรงกัน
 - [ ] หน้า Tags บน Docker Hub มี `lab3-1` และ `lab3-2` · `http://localhost:3000` แสดง `v1.1.0 · build #2`
-- [ ] build ในขั้นที่ 8 ล้มตามที่คาด ร้านยังเป็น build #2 และแก้รหัส `devtools-ssh` กลับเป็น `passwd` แล้ว
+- [ ] build ในขั้นที่ 7 ล้มตามที่คาด ร้านยังเป็น build #2 และแก้รหัส `devtools-ssh` กลับเป็น `passwd` แล้ว
 
 ## แก้ปัญหาที่พบบ่อย
 
 | อาการ | วิธีแก้ |
 |---|---|
-| `sshpass: not found` ใน Connect | รันขั้นที่ 4.1 อีกครั้ง (เกิดเมื่อสร้าง `jenkins` ใหม่) |
+| `sshpass: not found` ใน Connect | รันข้อ 1.2 อีกครั้ง (เกิดเมื่อสร้าง `jenkins` ใหม่) |
 | `Could not resolve hostname devtools` | `docker network inspect cicd-net` ต้องเห็นทั้งสองตัว ถ้าไม่เห็นให้ `docker network connect cicd-net devtools` |
-| `Host key verification failed.` | ยังไม่ได้ pin หรือสร้าง `devtools` ใหม่จาก image อื่น → รันขั้นที่ 4.2 อีกครั้ง |
+| `Host key verification failed.` | ยังไม่ได้ pin หรือสร้าง `devtools` ใหม่จาก image อื่น → รันข้อ 1.3 อีกครั้ง |
 | `Permission denied, please try again.` / `exit code 5` | แก้ Password ของ `devtools-ssh` เป็น `passwd` |
-| `Could not find credentials entry with ID ...` | ตั้ง ID เป็น `devtools-ssh` และ `dockerhub` ให้ตรงตัว (ขั้นที่ 3) |
-| `Unable to find 04_Jenkins/.../Jenkinsfile from git` / `Couldn't find any revision to build` | ตรวจ Repository URL, Branch Specifier `*/main` และ Script Path ในขั้นที่ 6 ให้ตรงตัว (ตัวพิมพ์เล็ก-ใหญ่มีผล) |
+| `Could not find credentials entry with ID ...` | ตั้ง ID เป็น `devtools-ssh` และ `dockerhub` ให้ตรงตัว (ขั้นที่ 3 · หน้า Manage Jenkins → Credentials → System → Global) |
+| `Unable to find 04_Jenkins/.../Jenkinsfile from git` / `Couldn't find any revision to build` | ตรวจ Repository URL, Branch Specifier `*/main` และ Script Path ในข้อ 4.2 ให้ตรงตัว (ตัวพิมพ์เล็ก-ใหญ่มีผล) |
 | `Failed to connect to repository` ตอน Save หรือ build ค้างที่ `Obtained ...` | `jenkins` ต้องออก internet ไป `github.com` ได้ · build แรกดึงข้อมูลนานกว่าปกติ |
 | `user=****` หรือ `/****/lab3-work` ใน console | เอาติ๊ก **Treat username as secret** ของ `devtools-ssh` ออก |
 | `... ไม่ถูกต้อง: ...` ใน Connect | แก้ parameter ตามข้อความ (`X.Y.Z`, `https://...`, username Docker Hub ตัวพิมพ์เล็ก) |
@@ -1123,11 +1169,12 @@ docker ps --filter name=^devtools$ --filter name=^jenkins$ --format '{{.Names}} 
 
 ## 🤔 คำถามทบทวน
 
-1. ถ้าสร้าง `devtools` โดยไม่ใส่ `--network cicd-net` stage ใดจะล้มก่อน และ error คืออะไร
+1. ถ้าสร้าง `devtools` (ข้อ 1.1) โดยไม่ใส่ `--network cicd-net` stage ใดจะล้มก่อน และ error คืออะไร
 2. การ pin host key ป้องกันอะไรได้ และทำไม fingerprint ของทุกคนในห้องจึงเหมือนกัน
 3. ทำไม Jenkinsfile ใช้ `sshpass -e` แทน `sshpass -p passwd` และใช้ `sh '...'` แทน `sh "..."`
 4. ทำไม Clean ต้องเกิด **หลัง** Push สำเร็จ และทำไม Pull/Deploy ใช้ `repository@sha256:...` แทน `repository:tag`
-5. ในโหมด Pipeline script from SCM ทำไม Jenkins ต้องดึง `Jenkinsfile` เองแทนที่จะให้ devtools clone ให้ และ `skipDefaultCheckout()` ช่วยอะไร
+5. Credential ที่เพิ่มผ่าน **System → Global** ใช้ได้กับ job ใดบ้าง และทำไม `Jenkinsfile` จึงอ้างแค่ ID (`devtools-ssh`, `dockerhub`) ไม่ใส่รหัสผ่านหรือ token
+6. ในโหมด Pipeline script from SCM ทำไม Jenkins ต้องดึง `Jenkinsfile` เองแทนที่จะให้ devtools clone ให้ และ `skipDefaultCheckout()` ช่วยอะไร
 
 ผลทดสอบรอบ Pipeline script ดู [รายงานผลทดสอบ](./LAB003_FINAL_REPORT.md) · โหมด Pipeline script from SCM ทดสอบเพิ่มเมื่อ 2026-09-27 (build จริงครบ 8 stage)
 
