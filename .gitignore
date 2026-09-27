@@ -234,3 +234,6 @@ pyrightconfig.json
 # Playwright storage state dropped by lab screenshot rigs (session cookies) — never commit
 .pw-state.json
 *.pw-state*
+
+# Claude/Chromium scratch dirs inside work notes (paths too long for Windows)
+**/work/*/tmp/
