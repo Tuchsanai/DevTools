@@ -2,7 +2,7 @@
 
 > 📝 **ฉบับปรับใหม่ (2026-09-27):** Jenkins SSH เข้า `devtools` ด้วย **key `devtoolSSH`** ผ่าน plugin **SSH Agent** และตรวจ host key จาก `known_hosts` ที่ pin ไว้ · `Jenkinsfile` ถูกเขียนใหม่ให้สั้นเหลือ **6 stage** · ⚠️ ไฟล์ฉบับนี้ **ตรวจแบบ static แล้ว แต่ยังไม่ได้รันจริงบน Jenkins** · ภาพที่มีป้าย 🕰️ **ภาพเดิม** ถ่ายจาก workflow รุ่นก่อน (SSH ด้วยรหัสผ่าน, 8 stage) ใช้ดูหน้าตาหน้าเว็บเท่านั้น
 
-> ⏱️ ประมาณ 50–60 นาที (รวม build image devtools ครั้งแรก) · 🧪 7 ขั้น · 🎯 จบเมื่อกด **Build** ใน Jenkins แล้ว `http://localhost:3000` แสดงร้าน **Meow Mart** เวอร์ชันที่ Pipeline เพิ่ง build → test → push ขึ้น Docker Hub → pull กลับมา deploy
+> ⏱️ ประมาณ 45–60 นาที · 🧪 7 ขั้น · 🎯 จบเมื่อกด **Build** ใน Jenkins แล้ว `http://localhost:3000` แสดงร้าน **Meow Mart** เวอร์ชันที่ Pipeline เพิ่ง build → test → push ขึ้น Docker Hub → pull กลับมา deploy
 
 ## ภาพรวม
 
@@ -52,7 +52,6 @@ flowchart LR
 003_LAB_Docker_Build_Push/
 ├── Jenkinsfile          ← Pipeline 6 stage (ข้อ 4.4)
 ├── catfood-shop/        ← ซอร์สร้าน (devtools clone จาก GitHub เอง)
-├── devtools-image/      ← Dockerfile + start.sh ของ devtools ที่รองรับ SSH key (สำเนาจาก 00_Tool/00_Reference)
 └── Devtool_SSH/         ← key pair ของแล็บ → mount เข้า devtools ที่ /etc/devtools/ssh
     ├── devtoolSSH       ← private key: วางใน Jenkins credential devtools-ssh (ข้อ 3.1)
     └── devtoolSSH.pub   ← public key: start.sh ใส่ใน authorized_keys ของ devtools ให้เอง
@@ -74,30 +73,53 @@ stage Clone ดึงซอร์สร้านจากโฟลเดอร�
 
 ## ขั้นที่ 1 — สร้าง container สองตัวและ pin host key (🖥️ host)
 
-### 1.1) build image devtools ที่รองรับ key แล้วสร้าง network และ container
+### 1.1) สร้าง network และ container จาก image `devtools:2569_1` ที่เตรียมไว้
 
-image `tuchsanai/devtools:2569_1` บน Docker Hub **SSH ได้ด้วยรหัสผ่านอย่างเดียว** (ไม่อ่านโฟลเดอร์ key) แล็บนี้จึง build image จากโฟลเดอร์ `devtools-image/` ก่อน ซึ่งเป็นสำเนาไฟล์ build ของ `00_Tool/00_Reference` (ส่วนที่ 2) · ถ้าเคย build `devtools:2569_1` จาก 00_Reference แล้ว ข้ามบรรทัด `docker build` ได้
+image `devtools:2569_1` **เตรียมไว้พร้อมใช้แล้ว** ในเครื่อง (`start.sh` ของ image นี้อ่าน key จาก `/etc/devtools/ssh`) ใช้ได้ทันที ไม่ต้อง build เอง · ทำตาม **3 ส่วน** ด้านล่างตามลำดับ
 
-รันใน**โฟลเดอร์ของแล็บนี้** (ที่มี `Devtool_SSH/` และ `devtools-image/`) — `${PWD}` ใช้ได้ทั้ง PowerShell และ Linux/macOS:
+ก่อนเริ่ม เข้า**โฟลเดอร์ของแล็บนี้** (ที่มี `Devtool_SSH/`) — `${PWD}` ใช้ได้ทั้ง PowerShell และ Linux/macOS:
 
-<!-- lab3-test:host-setup -->
 ```bash
 cd 04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push   # จาก root ของ repository รายวิชา
-docker build -t devtools:2569_1 ./devtools-image
-docker rm -f jenkins devtools
+```
+
+#### ส่วนที่ 1 — สร้าง Docker network `cicd-net`
+
+<!-- lab3-test:host-setup-network -->
+```bash
 docker network create cicd-net
-docker run -dit --name devtools --network cicd-net --privileged --tmpfs /run --restart unless-stopped -p 2222:22 -p 3000:3000 -v "${PWD}/Devtool_SSH:/etc/devtools/ssh" devtools:2569_1
+```
+
+ถ้าขึ้น `already exists` ใช้ network เดิมได้เลย
+
+#### ส่วนที่ 2 — รัน container `devtools`
+
+> [!CAUTION]
+> **แล็บนี้ต่างจากแล็บอื่น!** ตอนรัน `devtools` ต้อง mount `Devtool_SSH` ด้วย `-v "${PWD}/Devtool_SSH:/etc/devtools/ssh"` ทุกครั้ง และต้องรันจากโฟลเดอร์แล็บที่มี key pair อยู่ · ถ้าไม่ mount, public key จะไม่ถูกโหลด และ Jenkins จะ SSH ด้วย private key ไม่ได้
+>
+> private key (`devtoolSSH`) จะนำไปใส่ใน Jenkins Credential ส่วน `devtoolSSH.pub` devtools ติดตั้งให้อัตโนมัติตอน start
+
+<!-- lab3-test:host-setup-devtools -->
+```bash
+docker run -dit --name devtools --privileged -p 2222:22 --network cicd-net --tmpfs /run --restart unless-stopped -p 3000:3000 -v "${PWD}/Devtool_SSH:/etc/devtools/ssh" devtools:2569_1
+```
+
+#### ส่วนที่ 3 — รัน container `jenkins`
+
+ขั้นนี้เป็นการ**สร้างครั้งแรก** · ถ้ามี `jenkins` อยู่แล้ว**ให้เก็บไว้ใช้ต่อ** ห้ามลบหรือสร้างใหม่ (ถ้าหยุดอยู่ใช้ `docker start jenkins`)
+
+<!-- lab3-test:host-setup-jenkins -->
+```bash
 docker run -d --name jenkins --network cicd-net --restart unless-stopped -p 8080:8080 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk21
 ```
 
 | ส่วน | ความหมาย |
 |---|---|
-| `docker build -t devtools:2569_1 ./devtools-image` | build image ที่ `start.sh` อ่าน key จาก `/etc/devtools/ssh` (ครั้งแรกใช้เวลาหลายนาที) |
-| `docker rm -f jenkins devtools` | ลบตัวเดิม ถ้าขึ้น `No such container` ทำต่อได้ · ⚠️ ของใน `devtools` ตัวเดิมจะหายไป |
-| `docker network create cicd-net` | ขึ้น `already exists` ใช้ network เดิมได้ · บน `cicd-net` Jenkins เรียก `devtools` ด้วยชื่อได้เลย |
-| `--privileged --tmpfs /run` | ให้ Docker ข้างใน `devtools` ทำงานได้ |
-| `-v "${PWD}/Devtool_SSH:/etc/devtools/ssh"` | map โฟลเดอร์ key ของแล็บเข้า devtools → ตอน start `start.sh` นำ `devtoolSSH.pub` ไปใส่ใน `/root/.ssh/authorized_keys` |
-| `-v jenkins_home:/var/jenkins_home` | volume เก็บข้อมูล Jenkins รวมถึง `~/.ssh/known_hosts` ในข้อ 1.2 |
+| `docker network create cicd-net` (ส่วนที่ 1) | ขึ้น `already exists` ใช้ network เดิมได้ · บน `cicd-net` Jenkins เรียก `devtools` ด้วยชื่อได้เลย |
+| `--privileged --tmpfs /run` (ส่วนที่ 2) | ให้ Docker ข้างใน `devtools` ทำงานได้ |
+| `-v "${PWD}/Devtool_SSH:/etc/devtools/ssh"` (ส่วนที่ 2) | map โฟลเดอร์ key ของแล็บเข้า devtools → ตอน start `start.sh` นำ `devtoolSSH.pub` ไปใส่ใน `/root/.ssh/authorized_keys` |
+| `-v jenkins_home:/var/jenkins_home` (ส่วนที่ 3) | volume เก็บข้อมูล Jenkins รวมถึง `~/.ssh/known_hosts` ในข้อ 1.2 |
+| `docker run ... --name jenkins` (ส่วนที่ 3) | ถ้าขึ้น `Conflict ... name "/jenkins" is already in use` แปลว่ามี `jenkins` อยู่แล้ว → ใช้ตัวเดิมต่อ (`docker start jenkins` ถ้าหยุดอยู่) ไม่ต้องลบ |
 
 ตรวจว่า devtools เปิด key login แล้ว:
 
@@ -106,7 +128,7 @@ docker logs devtools | grep "SSH key"
 # [start.sh] SSH key login enabled: /etc/devtools/ssh/devtoolSSH.pub
 ```
 
-ถ้าขึ้น `SSH key login disabled` แปลว่าไม่ได้รันในโฟลเดอร์แล็บ (mount ผิดที่) หรือใช้ image จาก Docker Hub → ลบ `devtools` แล้วทำ 1.1 ใหม่
+ถ้าขึ้น `SSH key login disabled` แปลว่าไม่ได้รันในโฟลเดอร์แล็บ (mount ผิดที่) หรือไม่ได้ใช้ image `devtools:2569_1` → ลบ `devtools` แล้วทำ 1.1 ใหม่
 
 ### 1.2) pin host key ของ devtools ไว้ใน `known_hosts` ของ jenkins
 
@@ -188,7 +210,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 | `devtools-ssh` | **SSH Username with private key** | user `root` + private key `Devtool_SSH/devtoolSSH` สำหรับ **SSH เข้า `devtools`** | ทุก stage และ `post` (ผ่าน `sshagent`) |
 | `dockerhub` | **Username with password** | username + Personal Access Token ของ Docker Hub: username ใช้ตั้งชื่อ image `<DOCKER_USER>/catfood-shop` ส่วน token ใช้ `docker login` บน devtools | Push · Deploy |
 
-**3.0) เปิดหน้าเพิ่ม credential** — คลิกตามลำดับ **Login → ⚙️ Manage Jenkins → Credentials → System → Global → + Add Credentials** (ภาพที่ 4ก–4ฉ ภาพหน้าจอจริงจาก Jenkins 2.568.3 คลิกภาพเพื่อขยาย)
+**3.0) เปิดหน้าเพิ่ม credential** — คลิกตามลำดับ **Login → ⚙️ Manage Jenkins → Credentials → System → Global → + Add Credentials** (ภาพที่ 4ก–4ช ภาพหน้าจอจริงจาก Jenkins 2.568.3 คลิกภาพเพื่อขยาย)
 
 **3.0ก) Login** — เปิด `http://localhost:8080` กรอก `admin` / `admin2569` แล้วกด **Sign in**
 
@@ -210,9 +232,9 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 **3.0ง) Stores scoped to Jenkins → System**
 
-[![หน้า Credentials และตาราง Stores scoped to Jenkins](./images/lab3_nav_04_credentials.png)](./images/lab3_nav_04_credentials.png)
+[![หน้า Credentials และตาราง Stores scoped to Jenkins](./images/lab3_nav_04_credentials_large.png)](./images/lab3_nav_04_credentials_large.png)
 
-*ภาพที่ 4ง หน้า **Credentials**: คลิกแถว **System** ในตาราง **Stores scoped to Jenkins***
+*ภาพที่ 4ง หน้า **Credentials**: คลิกแถว **System** ในตาราง **Stores scoped to Jenkins** (คลิกภาพเพื่อขยาย)*
 
 **3.0จ) System → Global** (Jenkins รุ่นก่อนเรียกว่า **Global credentials (unrestricted)**)
 
@@ -222,9 +244,9 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 **3.0ฉ) Global → + Add Credentials**
 
-[![หน้า Global ก่อนเพิ่ม credential](./images/lab3_nav_06_global.png)](./images/lab3_nav_06_global.png)
+[![หน้า Global ปุ่ม + Add Credentials](./images/lab3_nav_06_global_large.png)](./images/lab3_nav_06_global_large.png)
 
-*ภาพที่ 4ฉ หน้า **Global**: กด **+ Add Credentials***
+*ภาพที่ 4ฉ หน้า **Global**: กด **+ Add Credentials** (คลิกภาพเพื่อขยาย)*
 
 **3.1) `devtools-ssh`** — เลือก Kind **SSH Username with private key** แล้วกรอก:
 
@@ -236,12 +258,34 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 | Description | `SSH key: Jenkins to devtools` |
 | Username | `root` |
 | Treat username as secret | ไม่ติ๊ก |
-| Private Key | เลือก **Enter directly** → กด **Add** → วางเนื้อหา**ทั้งไฟล์** `Devtool_SSH/devtoolSSH` |
+| Private Key | เลือก **Enter directly** → กด **Add** → วาง**เนื้อหา**ของไฟล์ `Devtool_SSH/devtoolSSH` (ไม่มีนามสกุล) |
 | Passphrase | เว้นว่าง (key ของแล็บไม่มี passphrase) |
 
-กด **Create**
+**ไฟล์ที่ต้องคัดลอก** — ในโฟลเดอร์ `Devtool_SSH/` มีสองไฟล์ ใช้ไฟล์ **ไม่มีนามสกุล** เท่านั้น:
 
-- เปิดไฟล์ `Devtool_SSH/devtoolSSH` ด้วย text editor แล้วคัดลอกทั้งหมด ตั้งแต่บรรทัด `-----BEGIN OPENSSH PRIVATE KEY-----` ถึง `-----END OPENSSH PRIVATE KEY-----` (ใช้ไฟล์ที่**ไม่มี** `.pub`)
+```text
+Devtool_SSH/
+├── devtoolSSH       ← ✅ private key → คัดลอกเนื้อหาไปวางใน Jenkins
+└── devtoolSSH.pub   ← ❌ public key → ไม่ต้องใช้ (devtools ติดตั้งให้อัตโนมัติ)
+```
+
+> `devtoolSSH.pub` ถูกนำไปใส่ใน `/root/.ssh/authorized_keys` ของ devtools **อัตโนมัติ**ตอน container start (ผ่าน `-v "${PWD}/Devtool_SSH:/etc/devtools/ssh"` ในขั้นที่ 1.1) จึง**ไม่ต้อง**วางลงช่อง Key ของ Jenkins
+
+[![ฟอร์ม SSH Username with private key ของ devtools-ssh ก่อนวาง key](./images/lab3_ssh_private_key_form.png)](./images/lab3_ssh_private_key_form.png)
+
+*ภาพที่ 4ช ฟอร์มจริงของ `devtools-ssh` **ก่อนวาง key**: กรอก ID `devtools-ssh` · Username `root` · เลือก **Enter directly** แล้วกด **Add** เพื่อเปิดช่องวาง private key ของตัวเอง · ภาพนี้ยังไม่ได้วาง key จึงไม่มี key แสดง (คลิกภาพเพื่อขยาย)*
+
+**ขั้นตอนคัดลอก–วาง:**
+
+1. เปิดไฟล์ `Devtool_SSH/devtoolSSH` (ไม่มี `.pub`) ด้วย text editor เช่น Notepad / VS Code
+2. กด **Ctrl+A** แล้ว **Ctrl+C** เพื่อคัดลอก**เนื้อหาทั้งไฟล์** รวมบรรทัด `-----BEGIN OPENSSH PRIVATE KEY-----` และ `-----END OPENSSH PRIVATE KEY-----` — **ไม่ใช่**คัดลอกชื่อไฟล์หรือ path
+3. ใน Jenkins ช่อง **Private Key** เลือก **Enter directly** → กด **Add** → คลิกในช่อง **Key** แล้วกด **Ctrl+V**
+4. ช่อง **Passphrase** เว้นว่าง แล้วกด **Create**
+
+[![ฟอร์ม devtools-ssh หลังวาง key (เนื้อหา key ถูกแทนด้วยข้อความตัวอย่าง)](./images/lab3_ssh_private_key_pasted_redacted.png)](./images/lab3_ssh_private_key_pasted_redacted.png)
+
+*ภาพที่ 4ซ ภาพหน้าจอจริงของฟอร์ม `devtools-ssh` **หลังวาง key** ในช่อง **Key** · เพื่อปกป้องความลับ เนื้อหาที่วางในภาพถูก**แทนด้วยข้อความตัวอย่าง (placeholder) ก่อนวาง** — ข้อความในภาพ**ไม่ใช่ key จริง ใช้งานไม่ได้ ห้ามนำไปใช้** · ของจริงต้องเห็นบรรทัด `BEGIN`/`END` และเนื้อหาจากไฟล์ `devtoolSSH` ของตัวเอง (คลิกภาพเพื่อขยาย)*
+
 - ห้ามวาง private key ในแชต เอกสาร หรือ commit ลง repository ของตัวเอง · หลังกด Create Jenkins จะไม่แสดง key อีก
 
 **3.2) `dockerhub`** — กลับหน้า **Global** แล้วกด **+ Add Credentials** อีกครั้ง Kind **Username with password**:
@@ -594,7 +638,7 @@ docker exec devtools docker ps --filter name=catfood --format '{{.Names}}  {{.Im
 | Connect ล้มที่ `+ ssh-keygen -lF devtools` ไม่มีผลลัพธ์ | ยังไม่ได้ pin host key → ทำข้อ 1.2 |
 | `Host key verification failed.` / `REMOTE HOST IDENTIFICATION HAS CHANGED!` | `devtools` ถูกสร้างใหม่ host key จึงเปลี่ยน → ทำข้อ 1.2 ใหม่ (ห้ามแก้เป็น `StrictHostKeyChecking=no`) |
 | `Permission denied (publickey,password)` | private key ใน `devtools-ssh` ไม่ตรงกับ `Devtool_SSH/devtoolSSH.pub` ที่ devtools ใช้ หรือ devtools ไม่ได้ mount key (`docker logs devtools \| grep "SSH key"`) → วาง key ใหม่ใน 3.1 หรือทำ 1.1 ใหม่ |
-| `SSH key login disabled` ใน `docker logs devtools` | รัน `docker run` นอกโฟลเดอร์แล็บ หรือใช้ image `tuchsanai/devtools:2569_1` จาก Docker Hub → ทำ 1.1 ใหม่ในโฟลเดอร์แล็บ |
+| `SSH key login disabled` ใน `docker logs devtools` | รัน `docker run` นอกโฟลเดอร์แล็บ หรือไม่ได้ใช้ image `devtools:2569_1` → ทำ 1.1 ใหม่ในโฟลเดอร์แล็บ |
 | `[ssh-agent] Could not find specified credentials` หรือ `Error loading key` | credential `devtools-ssh` ไม่ใช่ชนิด **SSH Username with private key** หรือวาง key ไม่ครบบรรทัด BEGIN/END → สร้างใหม่ตาม 3.1 |
 | `Could not resolve hostname devtools` | `docker network inspect cicd-net` ต้องเห็นทั้งสองตัว ถ้าไม่เห็น `docker network connect cicd-net devtools` |
 | `Unable to find .../Jenkinsfile from git` | ตรวจ Repository URL, Branch `*/main` และ Script Path ในข้อ 4.2 |
@@ -621,7 +665,7 @@ docker exec devtools docker ps -a --format '{{.Names}}'
 
 ## 🤔 คำถามทบทวน
 
-1. ทำไมแล็บนี้ใช้ image `tuchsanai/devtools:2569_1` จาก Docker Hub ตรง ๆ ไม่ได้ และ `-v "${PWD}/Devtool_SSH:/etc/devtools/ssh"` ทำให้ `root@devtools` ยอมรับ key ของ Jenkins ได้อย่างไร
+1. `-v "${PWD}/Devtool_SSH:/etc/devtools/ssh"` ทำให้ `root@devtools` ยอมรับ key ของ Jenkins ได้อย่างไร
 2. private key และ public key ของ `devtoolSSH` อยู่ที่ไหนบ้างในแล็บนี้ และทำไม `Jenkinsfile` จึงอ้างแค่ ID `devtools-ssh`
 3. ข้อ 1.2 ป้องกันอะไร ถ้าเปลี่ยนเป็น `StrictHostKeyChecking=no` จะเสียอะไร และทำไมอ่าน host key ผ่าน `docker exec` แทนการถามผ่าน network
 4. ทำไม token ต้องส่งด้วย `echo "$HUB_TOKEN" | ... --password-stdin` และทำไม `sh` ใช้ single quote `'...'` ไม่ใช่ `"..."`
