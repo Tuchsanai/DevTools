@@ -280,6 +280,10 @@ Devtool_SSH/
 
 *ภาพที่ 4ช ฟอร์มจริงของ `devtools-ssh` **ก่อนวาง key**: กรอก ID `devtools-ssh` · Username `root` · เลือก **Enter directly** แล้วกด **Add** เพื่อเปิดช่องวาง private key ของตัวเอง · ภาพนี้ยังไม่ได้วาง key จึงไม่มี key แสดง (คลิกภาพเพื่อขยาย)*
 
+<a href="./images/lab3_windows_private_key_annotated.svg"><img src="./images/lab3_windows_private_key_annotated.svg" width="1000" alt="ภาพ Windows File Explorer จริงของโฟลเดอร์ Devtool_SSH วงรีแดงที่ไฟล์ devtoolSSH (private key) ส่วน devtoolSSH.pub ไม่ได้เลือก"></a>
+
+*ภาพที่ 4ซ-1 ภาพหน้าจอ Windows File Explorer จริง (ครอปเฉพาะ path และรายการไฟล์ · ปิดทับ path ส่วนตัวด้วยแถบดำ · คลิกเพื่อขยาย) เปิดโฟลเดอร์ `Devtool_SSH` แล้วใช้ไฟล์ **`devtoolSSH` ที่ไม่มีนามสกุล** (วงรีแดง) — **ไม่ใช้** `devtoolSSH.pub` · คัดลอก**เนื้อหาในไฟล์**ทั้งหมดรวมบรรทัด `BEGIN`/`END` ไปวางในช่อง **Private Key** ของ Jenkins — **ไม่ใช่**วางชื่อไฟล์หรือ path*
+
 **ขั้นตอนคัดลอก–วาง:**
 
 1. เปิดไฟล์ `Devtool_SSH/devtoolSSH` (ไม่มี `.pub`) ด้วย text editor เช่น Notepad / VS Code
