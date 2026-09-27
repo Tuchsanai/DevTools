@@ -1,0 +1,13 @@
+diff --git a/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/README.md b/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/README.md
+index 8228d21..75990ec 100644
+--- a/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/README.md
++++ b/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/README.md
+@@ -75,8 +75,6 @@ stage Clone ดึงซอร์สร้านจากโฟลเดอร
+ 
+ ### 1.1) สร้าง network และ container จาก image `devtools:2569_1` ที่เตรียมไว้
+ 
+-image `devtools:2569_1` **เตรียมไว้พร้อมใช้แล้ว** ในเครื่อง (`start.sh` ของ image นี้อ่าน key จาก `/etc/devtools/ssh`) ใช้ได้ทันที ไม่ต้อง build เอง · ทำตาม **3 ส่วน** ด้านล่างตามลำดับ
+-
+ ก่อนเริ่ม เข้า**โฟลเดอร์ของแล็บนี้** (ที่มี `Devtool_SSH/`) — `${PWD}` ใช้ได้ทั้ง PowerShell และ Linux/macOS:
+ 
+ ```bash

@@ -1,5 +1,9 @@
 # LAB 3 — Jenkins สั่ง devtools ผ่าน SSH key: Connect → Clone → Build → Test → Push → Deploy ร้านอาหารแมว
 
+> 📝 **ฉบับปรับใหม่ (2026-09-27):** Jenkins SSH เข้า `devtools` ด้วย **key `devtoolSSH`** ผ่าน plugin **SSH Agent** และให้ SSH จำ host key ของ devtools เองตอนต่อครั้งแรก (`accept-new`) · `Jenkinsfile` ถูกเขียนใหม่ให้สั้นเหลือ **6 stage** · ⚠️ ไฟล์ฉบับนี้ **ตรวจแบบ static แล้ว แต่ยังไม่ได้รันจริงบน Jenkins** · ภาพที่มีป้าย 🕰️ **ภาพเดิม** ถ่ายจาก workflow รุ่นก่อน (SSH ด้วยรหัสผ่าน, 8 stage) ใช้ดูหน้าตาหน้าเว็บเท่านั้น
+
+> ⏱️ ประมาณ 45–60 นาที · 🧪 6 ขั้น (ไม่นับข้อ 0 สิ่งที่ต้องมี) · 🎯 จบเมื่อกด **Build** ใน Jenkins แล้ว `http://localhost:3000` แสดงร้าน **Meow Mart** เวอร์ชันที่ Pipeline เพิ่ง build → test → push ขึ้น Docker Hub → pull กลับมา deploy
+
 ## ภาพรวม
 
 แล็บนี้ใช้ container สองตัวแทน **server สองเครื่อง** บน network `cicd-net`:
