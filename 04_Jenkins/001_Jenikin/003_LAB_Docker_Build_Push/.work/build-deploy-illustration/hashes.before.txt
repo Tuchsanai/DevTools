@@ -1,0 +1,2 @@
+08a3259db944efe1a44cda39509c272bb5d009f3cd2c04ebba159b95a987548a  .work/build-deploy-illustration/code.before.txt
+1abadccec39bdbc411853dd997c797ff6bd30cd11c7ae49250933bdeb41d0e06  images/lab3_build_action_large.png
