@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1580" height="476" viewBox="0 0 1580 476" role="img" aria-labelledby="t d">
+<svg xmlns="http://www.w3.org/2000/svg" width="1580" height="304" viewBox="0 0 1580 304" role="img" aria-labelledby="t d">
 <title id="t">Windows PowerShell (ภาพประกอบ ยังไม่ได้รัน): docker run devtools พร้อม mount Devtool_SSH</title>
 <desc id="d">ภาพประกอบหน้าต่าง Windows PowerShell ที่พิมพ์คำสั่งรอไว้แต่ยังไม่ได้กด Enter ไม่มีผลลัพธ์ ไม่ใช่ภาพหน้าจอจริง คำสั่ง: docker run -dit --name devtools --privileged -p 2222:22 --network cicd-net --tmpfs /run --restart unless-stopped -p 3000:3000 -v "${PWD}/Devtool_SSH:/etc/devtools/ssh" devtools:2569_1</desc>
-<rect x="1" y="1" width="1578" height="474" rx="10" fill="#012456" stroke="#3A4B6E" stroke-width="2"/>
+<rect x="1" y="1" width="1578" height="302" rx="10" fill="#012456" stroke="#3A4B6E" stroke-width="2"/>
 <path d="M11 1 H1569 Q1579 1 1579 11 V44 H1 V11 Q1 1 11 1 Z" fill="#F3F3F3"/>
 <rect x="18" y="11" width="24" height="22" rx="3" fill="#2B5797"/>
 <text x="21" y="28" font-family="Consolas, 'Cascadia Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace" font-size="15" font-weight="bold" fill="#FFFFFF">&gt;_</text>
@@ -26,11 +26,4 @@
 <text x="679.6" y="260" fill="#FFFFFF" font-weight="normal" textLength="249.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve"> devtools:2569_1</text>
 <rect x="933.2" y="237" width="15.6" height="30" fill="#EEEDF0"><animate attributeName="opacity" values="1;1;0;0" dur="1.1s" repeatCount="indefinite"/></rect>
 </g>
-<line x1="40" y1="310" x2="1540" y2="310" stroke="#2F4A7A" stroke-width="1.5" stroke-dasharray="6 6"/>
-<rect x="40" y="320" width="26" height="26" rx="5" fill="#FFD54A33" stroke="#FFD54A" stroke-width="2.5"/>
-<text x="80" y="341" font-family="'Leelawadee UI', 'Noto Sans Thai', Tahoma, 'Segoe UI', sans-serif" font-size="23" fill="#E8ECF4">prompt อยู่ที่โฟลเดอร์แล็บ 003_LAB_Docker_Build_Push (path ด้านหน้าแต่ละเครื่องอาจต่างกัน)</text>
-<rect x="40" y="360" width="26" height="26" rx="5" fill="#5CF08A33" stroke="#5CF08A" stroke-width="2.5"/>
-<text x="80" y="381" font-family="'Leelawadee UI', 'Noto Sans Thai', Tahoma, 'Segoe UI', sans-serif" font-size="23" fill="#E8ECF4">mount Devtool_SSH ของโฟลเดอร์นี้เข้า /etc/devtools/ssh — ห้ามตกหล่น</text>
-<rect x="40" y="400" width="26" height="26" rx="5" fill="#9FB3D933" stroke="#9FB3D9" stroke-width="2.5"/>
-<text x="80" y="421" font-family="'Leelawadee UI', 'Noto Sans Thai', Tahoma, 'Segoe UI', sans-serif" font-size="23" fill="#E8ECF4">คำสั่งนี้เป็นบรรทัดเดียว ที่เห็นขึ้นบรรทัดใหม่คือหน้าต่างตัดคำอัตโนมัติ ไม่ต้องใส่ backtick ( ` ) หรือกด Enter กลางคำสั่ง</text>
 </svg>
