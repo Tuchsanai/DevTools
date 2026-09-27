@@ -159,3 +159,31 @@ python3 scripts/verify_readme.py      # blocks = tested blocks, Jenkinsfile pari
 python3 scripts/secret_scan.py        # narrow gitleaks-style scan (prints file + rule only)
 git diff --check -- ../../003_LAB_Docker_Build_Push
 ```
+
+## SCM validation (2026-09-27, hash `8de7f5`)
+
+The results above are the 2026-09-26 run and are unchanged. On 2026-09-27 the README was reordered: Credentials come first, then the SSH preparation. Step 5 now teaches how to create a `Jenkinsfile`, starting from a skeleton that passes the linter and then adding the parts in this order: Credentials, SSH, clone, build/test, push/pull/deploy. Step 6 is now a **Pipeline script from SCM** job. The only change to `Jenkinsfile` is `skipDefaultCheckout()` plus the header comments.
+
+**Environment.** One disposable local Jenkins 2.568.3 and one `tuchsanai/devtools:2569_1` container, both named `devtools-l3reorder-8de7f5-*`, on their own network and volume. The Jenkins UI was reachable **without login** (anonymous access returned HTTP 200), even though a local admin user existed. That was acceptable only because Jenkins was bound to loopback and the environment was temporary.
+
+**Credentials.**
+- The global store holds the credentials shown in the screenshots: `devtools-ssh` (`root`/`passwd`) and `dockerhub` with the placeholder `demostudent` and a dummy token.
+- The saved top-level SCM job `docker-build-push` uses these dummy credentials, so it was never built.
+- The real builds ran in the folder `verify-local`, whose folder-scoped credentials were loaded from the runtime environment.
+
+| job / build | Jenkinsfile source | result | stages |
+|---|---|---|---|
+| `verify-local/local-jenkinsfile` #1 | local bare repo with the modified file (before push) | SUCCESS, 76 s | 8 stages, no `Declarative: Checkout SCM` |
+| `verify-local/upstream-main` #1 | GitHub `main` at `2a47c68` (before this change) | SUCCESS, 151 s | `Declarative: Checkout SCM` + 8 stages |
+| `verify-local/upstream-main` (after push) | GitHub `main` after the content push | to be run right after this content commit is pushed | recorded in the follow-up commit |
+
+**Checks.**
+- The skeleton and the `Jenkinsfile` both passed Jenkins' `/pipeline-model-converter/validate`.
+- The full `Jenkinsfile` embedded in the README is byte-identical to the file.
+- Each of the 12 labelled excerpts matches its stated line range. The raw bash excerpts use `bash` fences and shell-level escaping.
+- All local links and images resolve, and figures and steps are numbered consecutively.
+- A secret scan against the runtime values was clean, and `git diff --check` was clean.
+
+**Screenshots.** All of these are genuine, and none were generated or annotated. Crops are plain crops.
+- Jenkins UI shots 01–07 were captured on the host through Computer Use/Playwright and uploaded via the receiver.
+- The GitHub `Jenkinsfile` page and the Docker Hub tags page were captured natively on the host. The GitHub page shows commit `92d3888`, from before this change. The Docker Hub page shows the 2026-09-26 tags `lab3-sibling-20260926r2-1/-2`, not tags from this test.
