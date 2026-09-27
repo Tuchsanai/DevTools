@@ -2,7 +2,7 @@
 
 > 📝 **ฉบับปรับใหม่ (2026-09-27):** Jenkins SSH เข้า `devtools` ด้วย **key `devtoolSSH`** ผ่าน plugin **SSH Agent** และให้ SSH จำ host key ของ devtools เองตอนต่อครั้งแรก (`accept-new`) · `Jenkinsfile` ถูกเขียนใหม่ให้สั้นเหลือ **6 stage** · ⚠️ ไฟล์ฉบับนี้ **ตรวจแบบ static แล้ว แต่ยังไม่ได้รันจริงบน Jenkins** · ภาพที่มีป้าย 🕰️ **ภาพเดิม** ถ่ายจาก workflow รุ่นก่อน (SSH ด้วยรหัสผ่าน, 8 stage) ใช้ดูหน้าตาหน้าเว็บเท่านั้น
 
-> ⏱️ ประมาณ 45–60 นาที · 🧪 7 ขั้น · 🎯 จบเมื่อกด **Build** ใน Jenkins แล้ว `http://localhost:3000` แสดงร้าน **Meow Mart** เวอร์ชันที่ Pipeline เพิ่ง build → test → push ขึ้น Docker Hub → pull กลับมา deploy
+> ⏱️ ประมาณ 45–60 นาที · 🧪 6 ขั้น (ไม่นับข้อ 0 สิ่งที่ต้องมี) · 🎯 จบเมื่อกด **Build** ใน Jenkins แล้ว `http://localhost:3000` แสดงร้าน **Meow Mart** เวอร์ชันที่ Pipeline เพิ่ง build → test → push ขึ้น Docker Hub → pull กลับมา deploy
 
 ## ภาพรวม
 
@@ -204,9 +204,9 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 **3.0ข) Dashboard → ไอคอนเฟือง ⚙️** — คลิกไอคอน**เฟือง** (Manage Jenkins) มุมขวาบน ข้างไอคอนแว่นขยาย
 
-[![หน้า Dashboard มีไอคอนเฟือง Manage Jenkins มุมขวาบน](./images/lab3_nav_02_dashboard.png)](./images/lab3_nav_02_dashboard.png)
+[![หน้า Dashboard มีไอคอนเฟือง Manage Jenkins มุมขวาบน](./images/lab3_nav_02_dashboard_large.png)](./images/lab3_nav_02_dashboard_large.png)
 
-*ภาพที่ 4ข หน้า **Dashboard**: มุมขวาบนมีไอคอนแว่นขยาย (ค้นหา) · **เฟือง = Manage Jenkins** · ไอคอนผู้ใช้ · จุดแดงบนเฟืองคือการแจ้งเตือนของระบบ ไม่เกี่ยวกับแล็บนี้*
+*ภาพที่ 4ข หน้า **Dashboard**: มุมขวาบนมีไอคอนแว่นขยาย (ค้นหา) · **เฟือง = Manage Jenkins** · ไอคอนผู้ใช้ · จุดแดงบนเฟืองคือการแจ้งเตือนของระบบ ไม่เกี่ยวกับแล็บนี้ (คลิกภาพเพื่อขยาย)*
 
 **3.0ค) Manage Jenkins → Credentials** — หมวด **Security** คลิก **Credentials** (ไม่ใช่ **Credential Providers**)
 
@@ -222,9 +222,9 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 **3.0จ) System → Global** (Jenkins รุ่นก่อนเรียกว่า **Global credentials (unrestricted)**)
 
-[![หน้า System แสดง domain Global](./images/lab3_nav_05_system.png)](./images/lab3_nav_05_system.png)
+[![หน้า System แสดง domain Global](./images/lab3_nav_05_system_large.png)](./images/lab3_nav_05_system_large.png)
 
-*ภาพที่ 4จ หน้า **System**: domain **Global***
+*ภาพที่ 4จ หน้า **System** (breadcrumb Manage Jenkins / Credentials / System): คลิกลิงก์ **Global** ใต้ปุ่ม **+ Add domain** (บรรทัดใต้ลิงก์เขียน *Credentials that should be available everywhere.*) · ไม่ต้องกด Add domain (คลิกภาพเพื่อขยาย)*
 
 **3.0ฉ) Global → + Add Credentials**
 
