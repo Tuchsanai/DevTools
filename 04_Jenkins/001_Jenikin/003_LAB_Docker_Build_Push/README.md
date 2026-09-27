@@ -360,25 +360,35 @@ Devtool_SSH/
 
 **4.3) อ่าน `Jenkinsfile` ทีละ stage ตามลำดับที่รัน**
 
-โค้ดด้านล่างตัดมาจาก [`Jenkinsfile`](./Jenkinsfile) ตรงตัวทุกบรรทัด (เปิดไฟล์เพื่อดูฉบับเต็ม) · Jenkins อ่านไฟล์นี้จาก GitHub เองก่อนเริ่ม ส่วน `skipDefaultCheckout()` บอกว่า Jenkins ไม่ต้อง checkout repository ลง workspace ของตัวเอง
+โค้ดด้านล่างตัดมาจาก [`Jenkinsfile`](./Jenkinsfile) ตรงตัวทุกบรรทัด (เปิดไฟล์เพื่อดูฉบับเต็ม) · Jenkins อ่านไฟล์นี้จาก GitHub เองก่อนเริ่ม
 
-**ค่าที่ทุก stage ใช้ร่วมกัน** — `environment` ประกาศคำสั่ง SSH และ path ต่าง ๆ ไว้ครั้งเดียว:
+**ตั้งค่าของ pipeline** — `options` สองบรรทัดนี้จำเป็นต้องมี:
+
+```groovy
+  options {
+    disableConcurrentBuilds()   // ทุก build ใช้โฟลเดอร์ ชื่อ container และ port 3000 เดียวกัน ห้ามรันซ้อน
+    skipDefaultCheckout()       // Jenkins ไม่ต้อง checkout repo เอง devtools clone ใน stage Clone
+  }
+```
+
+- `disableConcurrentBuilds()` ถ้ากด Build ซ้อนกัน build หนึ่งจะลบโฟลเดอร์ clone, ไฟล์ login หรือ container ของอีก build ทิ้ง
+- `skipDefaultCheckout()` ไม่ให้ Jenkins clone repository ทั้งก้อนลง workspace ของตัวเองโดยไม่มีใครใช้ ซอร์สที่ build มีชุดเดียวคือที่ devtools clone
+
+**ค่าที่ทุก stage ใช้ร่วมกัน** — `environment` มีแค่สามค่า ค่าอื่น (URL ของ repo, path ของโฟลเดอร์) เขียนตรง ๆ ในจุดที่ใช้:
 
 ```groovy
   environment {
+    // accept-new: จำ host key ของ devtools ครั้งแรก ถ้าเปลี่ยนภายหลังจะปฏิเสธ · BatchMode: ไม่ถามรหัสผ่าน
     SSH_DEVTOOLS = 'ssh -o StrictHostKeyChecking=accept-new -o BatchMode=yes root@devtools'
-    GIT_URL      = 'https://github.com/Tuchsanai/DevTools.git'
-    APP_PATH     = '04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop'
-    WORK_DIR     = '/root/lab3-work/DevTools'      // ที่ clone repo บน devtools
     AUTH_DIR     = '/root/lab3-work/docker-auth'   // ไฟล์ login Docker Hub ชั่วคราวบน devtools
-    APP_NAME     = 'catfood-shop'
-    IMAGE_TAG    = "lab3-${env.BUILD_NUMBER}"
-    LOCAL_IMAGE  = "catfood-shop:lab3-${env.BUILD_NUMBER}"
+    IMAGE        = "catfood-shop:lab3-${env.BUILD_NUMBER}"
   }
 ```
 
 - `SSH_DEVTOOLS` คือคำสั่ง SSH เข้า `root@devtools` · `accept-new` ให้ SSH จำ host key ของ devtools เองตอนต่อครั้งแรก และปฏิเสธถ้า key เปลี่ยนภายหลัง · `BatchMode=yes` ห้ามถามรหัสผ่าน key ใช้ไม่ได้ก็ล้มทันที
-- ทุก stage ห่อคำสั่งด้วย `sshagent(credentials: ['devtools-ssh']) { ... }` ให้ `ssh` ใช้ private key จาก credential `devtools-ssh` (ข้อ 3.1) · รูปแบบ `$SSH_DEVTOOLS "A=... bash -ex" <<'EOF' ... EOF` ส่งสคริปต์หลายบรรทัดไปรัน**บน devtools** โดยส่งค่าไปเป็นตัวแปรนำหน้า `bash` (`-e` หยุดเมื่อคำสั่งใดล้ม `-x` พิมพ์คำสั่งลง console)
+- `IMAGE` คือชื่อ image ในเครื่อง `catfood-shop:lab3-<เลข build>` ส่วนชื่อบน Docker Hub คือ `$HUB_USER/$IMAGE`
+- ทุก stage ห่อคำสั่งด้วย `sshagent(credentials: ['devtools-ssh']) { ... }` ให้ `ssh` ใช้ private key จาก credential `devtools-ssh` (ข้อ 3.1)
+- รูปแบบ `$SSH_DEVTOOLS "A=... bash -ex" <<'EOF' ... EOF` ส่งสคริปต์หลายบรรทัดไปรัน**บน devtools** โดยส่งค่าไปเป็นตัวแปรนำหน้า `bash` (`-e` หยุดเมื่อคำสั่งใดล้ม `-x` พิมพ์คำสั่งลง console) · `.stripIndent()` ตัดช่องว่างหน้าบรรทัดออกก่อนรัน โค้ดจึงย่อหน้าตามโครงได้ และ `EOF` ตัวปิดยังอยู่ต้นบรรทัดตามที่ shell ต้องการ
 
 **Stage 1 — Connect**
 
@@ -386,6 +396,7 @@ Devtool_SSH/
     stage('Connect') {
       steps {
         script {
+          // ค่านี้ถูกส่งต่อเข้า shell บน devtools จึงต้องเป็นตัวเลขกับจุดเท่านั้น
           if (!(params.APP_VERSION ==~ /[0-9]+\.[0-9]+\.[0-9]+/)) {
             error 'APP_VERSION ต้องเป็นรูปแบบ X.Y.Z เช่น 1.0.0'
           }
@@ -397,37 +408,42 @@ Devtool_SSH/
     }
 ```
 
-ตรวจบน Jenkins ก่อนว่า `APP_VERSION` เป็นรูปแบบ `X.Y.Z` แล้ว SSH ด้วย private key ไปถาม `hostname`, `whoami` และเวอร์ชัน Docker/git ของ devtools เพื่อยืนยันว่าต่อได้จริง (ครั้งแรก SSH จะจำ host key ไว้ตรงนี้)
+ตรวจบน Jenkins ก่อนว่า `APP_VERSION` เป็นรูปแบบ `X.Y.Z` (ค่านี้ถูกส่งเข้า shell บน devtools การตรวจนี้กันการแทรกคำสั่ง) แล้ว SSH ด้วย private key ไปถาม `hostname`, `whoami` และเวอร์ชัน Docker/git ของ devtools เพื่อยืนยันว่าต่อได้จริง (ครั้งแรก SSH จะจำ host key ไว้ตรงนี้)
 
 **Stage 2 — Clone** (ใน `sshagent` เหมือน Connect)
 
 ```groovy
           sh '''
-$SSH_DEVTOOLS "WORK_DIR=$WORK_DIR GIT_URL=$GIT_URL APP_PATH=$APP_PATH bash -ex" <<'EOF'
-rm -rf "$WORK_DIR"
-git clone --depth 1 --filter=blob:none --sparse "$GIT_URL" "$WORK_DIR"
-cd "$WORK_DIR"
-git sparse-checkout set "$APP_PATH"
-git log -1 --oneline
-ls "$APP_PATH"
-EOF
-'''
+            $SSH_DEVTOOLS bash -ex <<'EOF'
+              rm -rf /root/lab3-work/DevTools
+              git clone --depth 1 --filter=blob:none --sparse \
+                https://github.com/Tuchsanai/DevTools.git /root/lab3-work/DevTools
+              cd /root/lab3-work/DevTools
+              git sparse-checkout set 04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop
+              git log -1 --oneline
+              ls 04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop
+            EOF
+            '''.stripIndent()
 ```
 
-`git clone` รัน**ข้างใน devtools** ลง `WORK_DIR` (`/root/lab3-work/DevTools`) · ลบของเก่าก่อน แล้ว sparse clone เฉพาะโฟลเดอร์ `catfood-shop` พร้อมแสดง commit และรายชื่อไฟล์
+`git clone` รัน**ข้างใน devtools** ลง `/root/lab3-work/DevTools` · ลบของเก่าก่อน แล้ว sparse clone เฉพาะโฟลเดอร์ `catfood-shop` พร้อมแสดง commit และรายชื่อไฟล์
 
 **Stage 3 — Build**
 
 ```groovy
           sh '''
-$SSH_DEVTOOLS "SRC=$WORK_DIR/$APP_PATH IMAGE=$LOCAL_IMAGE VERSION=$APP_VERSION BUILD=$BUILD_NUMBER bash -ex" <<'EOF'
-cd "$SRC"
-COMMIT=$(git rev-parse --short HEAD)
-TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-docker build --build-arg APP_VERSION="$VERSION" --build-arg BUILD_NUMBER="$BUILD" --build-arg GIT_COMMIT="$COMMIT" --build-arg BUILD_TIME="$TIME" -t "$IMAGE" .
-docker image ls "$IMAGE"
-EOF
-'''
+            $SSH_DEVTOOLS "IMAGE=$IMAGE APP_VERSION=$APP_VERSION BUILD_NUMBER=$BUILD_NUMBER bash -ex" <<'EOF'
+              cd /root/lab3-work/DevTools/04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push/catfood-shop
+              COMMIT=$(git rev-parse --short HEAD)
+              docker build \
+                --build-arg APP_VERSION="$APP_VERSION" \
+                --build-arg BUILD_NUMBER="$BUILD_NUMBER" \
+                --build-arg GIT_COMMIT="$COMMIT" \
+                --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                -t "$IMAGE" .
+              docker image ls "$IMAGE"
+            EOF
+            '''.stripIndent()
 ```
 
 เข้าโฟลเดอร์ซอร์สที่เพิ่ง clone บน devtools แล้ว `docker build` เป็น image `catfood-shop:lab3-<เลข build>` โดยฝังเวอร์ชัน เลข build, commit และเวลาลงใน image
@@ -436,21 +452,21 @@ EOF
 
 ```groovy
           sh '''
-$SSH_DEVTOOLS "IMAGE=$LOCAL_IMAGE VERSION=$APP_VERSION BUILD=$BUILD_NUMBER bash -ex" <<'EOF'
-docker rm -f catfood-test || true
-docker run -d --name catfood-test "$IMAGE"
-trap 'docker rm -f catfood-test' EXIT   # ลบ container ทดสอบเสมอ แม้ test ไม่ผ่าน
-for i in $(seq 1 30); do
-  [ "$(docker inspect -f '{{.State.Health.Status}}' catfood-test)" = healthy ] && break
-  sleep 1
-done
-HEALTH=$(docker exec catfood-test wget -qO- http://127.0.0.1:3000/api/health)
-echo "$HEALTH" | tr -d '"' | grep -F "version:$VERSION,build:$BUILD,"
-EOF
-'''
+            $SSH_DEVTOOLS "IMAGE=$IMAGE APP_VERSION=$APP_VERSION BUILD_NUMBER=$BUILD_NUMBER bash -ex" <<'EOF'
+              docker rm -f catfood-test || true
+              docker run -d --name catfood-test "$IMAGE"
+              trap 'docker rm -f catfood-test' EXIT   # ลบ container ทดสอบเสมอ แม้ test ไม่ผ่าน
+              for i in $(seq 1 30); do
+                [ "$(docker inspect -f '{{.State.Health.Status}}' catfood-test)" = healthy ] && break
+                sleep 1
+              done
+              docker exec catfood-test wget -qO- http://127.0.0.1:3000/api/health |
+                tr -d '"' | grep -F "version:$APP_VERSION,build:$BUILD_NUMBER,"
+            EOF
+            '''.stripIndent()
 ```
 
-รัน image ใหม่เป็น container ชั่วคราว `catfood-test` รอให้ `healthy` แล้วตรวจว่า `/api/health` ตอบ `version` และ `build` ตรงกับ build นี้ · `trap ... EXIT` ลบ container ทดสอบเสมอแม้ test ไม่ผ่าน
+รัน image ใหม่เป็น container ชั่วคราว `catfood-test` รอให้ `healthy` แล้วตรวจว่า `/api/health` ตอบ `version` และ `build` ตรงกับ build นี้ ถ้า `grep` ไม่เจอ stage จะล้ม · `trap ... EXIT` ลบ container ทดสอบเสมอแม้ test ไม่ผ่าน
 
 **Stage 5 — Push**
 
@@ -458,47 +474,41 @@ EOF
         withCredentials([usernamePassword(credentialsId: 'dockerhub',
                          usernameVariable: 'HUB_USER', passwordVariable: 'HUB_TOKEN')]) {
           sshagent(credentials: ['devtools-ssh']) {
-            // token ส่งทาง stdin ของ SSH เข้า --password-stdin: ไม่อยู่ใน command line และ console
+            // token ส่งทาง stdin เข้า --password-stdin: ไม่อยู่ใน command line และ console
             sh '''
-set +x
-echo "$HUB_TOKEN" | $SSH_DEVTOOLS "umask 077; docker --config $AUTH_DIR login -u $HUB_USER --password-stdin"
-set -x
-$SSH_DEVTOOLS "AUTH_DIR=$AUTH_DIR LOCAL_IMAGE=$LOCAL_IMAGE IMAGE=$HUB_USER/$APP_NAME:$IMAGE_TAG bash -ex" <<'EOF'
-trap 'rm -rf "$AUTH_DIR"' EXIT   # ลบ login ชั่วคราวเสมอ แม้ push ล้ม
-docker tag "$LOCAL_IMAGE" "$IMAGE"
-docker --config "$AUTH_DIR" push "$IMAGE"
-docker image rm "$LOCAL_IMAGE"
-EOF
-'''
+              set +x
+              echo "$HUB_TOKEN" | $SSH_DEVTOOLS "umask 077; docker --config $AUTH_DIR login -u $HUB_USER --password-stdin"
+              set -x
+              $SSH_DEVTOOLS docker tag $IMAGE $HUB_USER/$IMAGE
+              $SSH_DEVTOOLS docker --config $AUTH_DIR push $HUB_USER/$IMAGE
+              $SSH_DEVTOOLS docker image rm $IMAGE
+              '''.stripIndent()
 ```
 
-`withCredentials` ดึง username/token จาก credential `dockerhub` · token ส่งทาง stdin เข้า `--password-stdin` และ `set +x` ปิดการพิมพ์คำสั่งบรรทัดนั้น token จึงไม่อยู่ใน command line หรือ console · จากนั้น tag เป็น `<DOCKER_USER>/catfood-shop:lab3-<เลข build>` แล้ว push ขึ้น Docker Hub และ `trap` ลบไฟล์ login ชั่วคราวใน `AUTH_DIR` เสมอ
+`withCredentials` ดึง username/token จาก credential `dockerhub` · token ส่งทาง stdin เข้า `--password-stdin` และ `set +x` ปิดการพิมพ์คำสั่งบรรทัดนั้น token จึงไม่อยู่ใน command line หรือ console · ไฟล์ login เก็บใน `AUTH_DIR` บน devtools (`umask 077` ให้ root อ่านได้คนเดียว) · จากนั้น tag เป็น `<DOCKER_USER>/catfood-shop:lab3-<เลข build>` แล้ว push ขึ้น Docker Hub · stage นี้เป็นคำสั่งเดี่ยวจึงส่งตรงทีละบรรทัด ไม่ต้องใช้ `<<'EOF'`
 
 **Stage 6 — Deploy** (ใน `withCredentials` + `sshagent` เหมือน Push)
 
 ```groovy
             sh '''
-set +x
-echo "$HUB_TOKEN" | $SSH_DEVTOOLS "umask 077; docker --config $AUTH_DIR login -u $HUB_USER --password-stdin"
-set -x
-$SSH_DEVTOOLS "AUTH_DIR=$AUTH_DIR IMAGE=$HUB_USER/$APP_NAME:$IMAGE_TAG VERSION=$APP_VERSION BUILD=$BUILD_NUMBER bash -ex" <<'EOF'
-trap 'rm -rf "$AUTH_DIR"' EXIT
-docker image rm "$IMAGE"                  # ลบ image ในเครื่อง เพื่อให้ pull มาจาก Docker Hub จริง
-docker --config "$AUTH_DIR" pull "$IMAGE"
-docker rm -f catfood-web || true          # ลบร้านเวอร์ชันเดิม
-docker run -d --name catfood-web --restart unless-stopped -p 3000:3000 "$IMAGE"
-for i in $(seq 1 30); do
-  [ "$(docker inspect -f '{{.State.Health.Status}}' catfood-web)" = healthy ] && break
-  sleep 1
-done
-curl -fsS http://localhost:3000/api/health | tr -d '"' | grep -F "version:$VERSION,build:$BUILD,"
-EOF
-'''
+              $SSH_DEVTOOLS "AUTH_DIR=$AUTH_DIR IMAGE=$HUB_USER/$IMAGE APP_VERSION=$APP_VERSION BUILD_NUMBER=$BUILD_NUMBER bash -ex" <<'EOF'
+                docker image rm "$IMAGE"                  # ลบ image ในเครื่อง เพื่อให้ pull มาจาก Docker Hub จริง
+                docker --config "$AUTH_DIR" pull "$IMAGE"
+                docker rm -f catfood-web || true          # ลบร้านเวอร์ชันเดิม
+                docker run -d --name catfood-web --restart unless-stopped -p 3000:3000 "$IMAGE"
+                for i in $(seq 1 30); do
+                  [ "$(docker inspect -f '{{.State.Health.Status}}' catfood-web)" = healthy ] && break
+                  sleep 1
+                done
+                curl -fsS http://localhost:3000/api/health |
+                  tr -d '"' | grep -F "version:$APP_VERSION,build:$BUILD_NUMBER,"
+              EOF
+              '''.stripIndent()
 ```
 
-login อีกครั้ง ลบ image ในเครื่องแล้ว **pull จาก Docker Hub** เพื่อพิสูจน์ว่า image บน Hub ใช้ได้จริง → ลบ `catfood-web` ตัวเดิม → รันตัวใหม่ที่ port `3000` → รอ `healthy` แล้ว `curl` ต้องได้เวอร์ชันและ build ตรง (ช่วงสั้น ๆ ระหว่างสลับ container ร้านจะปิดชั่วคราว)
+ใช้ไฟล์ login เดิมจาก Push (บน devtools `IMAGE` คือชื่อเต็มบน Docker Hub) ลบ image ในเครื่องแล้ว **pull จาก Docker Hub** เพื่อพิสูจน์ว่า image บน Hub ใช้ได้จริง → ลบ `catfood-web` ตัวเดิม → รันตัวใหม่ที่ port `3000` → รอ `healthy` แล้ว `curl` ต้องได้เวอร์ชันและ build ตรง (ช่วงสั้น ๆ ระหว่างสลับ container ร้านจะปิดชั่วคราว)
 
-**หลังจบทุก stage** — `post` บอก URL ของร้าน และลบไฟล์ login ซ้ำอีกชั้นกรณี build หยุดกลางทาง:
+**หลังจบทุก stage** — `post` บอก URL ของร้าน และลบไฟล์ login ใน `AUTH_DIR` เสมอ ทั้งตอนสำเร็จและตอน build หยุดกลางทาง:
 
 ```groovy
   post {
@@ -506,7 +516,7 @@ login อีกครั้ง ลบ image ในเครื่องแล้
       echo "เปิดร้านได้ที่ http://localhost:3000 (v${params.APP_VERSION} build #${env.BUILD_NUMBER})"
     }
     always {
-      // กันไฟล์ login ค้างบน devtools ถ้า build หยุดกลางทาง
+      // ลบไฟล์ login Docker Hub บน devtools เสมอ ทั้งตอนสำเร็จและตอน build ล้มกลางทาง
       sshagent(credentials: ['devtools-ssh']) {
         sh '$SSH_DEVTOOLS "rm -rf $AUTH_DIR" || true'
       }
