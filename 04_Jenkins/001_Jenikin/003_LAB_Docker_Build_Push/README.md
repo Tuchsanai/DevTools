@@ -597,7 +597,7 @@ pipeline {
 
 <a href="./images/lab3_localfix_shop_v100_build1_full.png"><img src="./images/lab3_localfix_shop_v100_build1_full.png" width="480" alt="หน้าร้าน Meow Mart ทั้งหน้า หลัง Build Now ครั้งแรกด้วย Jenkinsfile ฉบับแก้ chip แสดง v1.0.0 build #1"></a>
 
-*ภาพที่ 10 ภาพหน้าจอจริงทั้งหน้า (2026-09-27) หลัง **Build Now ครั้งแรก** ด้วย `Jenkinsfile` ฉบับแก้ด้านบน · chip บนแถบด้านบนแสดง `v1.0.0 · build #1` · คลิกเพื่อดูขนาดเต็ม*
+*ภาพที่ 10 ภาพหน้าจอจริงทั้งหน้า (2026-09-28) หลัง **Build Now ครั้งแรก** ด้วย `Jenkinsfile` ฉบับแก้ด้านบน · chip บนแถบด้านบนแสดง `v1.0.0 · build #1` · คลิกเพื่อดูขนาดเต็ม*
 
 > 📌 **ทางเลือก ข (ฝึกเขียนเอง):** วางไฟล์ที่ root ของ repository สาธารณะของตัวเอง → `git add Jenkinsfile && git commit -m "Add LAB 3 Jenkinsfile" && git push` → job **Configure** ตั้ง Repository URL, Branch Specifier และ Script Path (`Jenkinsfile`) เป็นของตัวเอง · ทางเลือก ก ไม่ต้องทำอะไรเพิ่ม
 
@@ -609,7 +609,7 @@ pipeline {
 
 *ภาพที่ 11 🕰️ **ภาพเดิม** Console Output ช่วงแรก: `Obtained .../Jenkinsfile from git https://github.com/Tuchsanai/DevTools.git` แล้วเข้า stage `(Connect)` ทันที ไม่มี `Declarative: Checkout SCM` · ช่วงแรกนี้เหมือนกันในไฟล์ฉบับใหม่ ส่วน log ของแต่ละ stage จะต่างจากภาพ*
 
-✅ สิ่งที่ต้องเห็นใน Console Output (ตรงกับ log ของการรันจริงด้วยไฟล์ฉบับแก้ 2026-09-27):
+✅ สิ่งที่ต้องเห็นใน Console Output (ตรงกับ log ของการรันจริงด้วยไฟล์ฉบับแก้ 2026-09-28):
 
 - **Connect:** ครั้งแรกที่ jenkins ยังไม่รู้จัก devtools จะมี `Warning: Permanently added 'devtools' (ED25519) to the list of known hosts.` (build ต่อไปไม่ขึ้นอีก) · บรรทัดที่ขึ้นต้นด้วย `[ssh-agent]` บอกว่าใช้ credential ของ `root` · ผล `devtools` / `root` / `Docker version ...` / `git version ...`
 - **Clone:** บรรทัด `+ git clone ...` ตามด้วย commit ล่าสุด และรายชื่อไฟล์ของ `catfood-shop`
@@ -631,7 +631,7 @@ pipeline {
 
 [![หน้า Stages ของ job ที่อ่าน Jenkinsfile ฉบับแก้ build #1 และ #2 เขียวครบ 6 stage และ Post Actions](./images/lab3_localfix_stages_builds_1_2.png)](./images/lab3_localfix_stages_builds_1_2.png)
 
-*ภาพที่ 11ก ภาพหน้าจอจริงหน้า **Stages** (2026-09-27) ของ job ทดสอบ `docker-build-push-localfix` ที่อ่าน `Jenkinsfile` ฉบับแก้จาก Git repo จำลองในเครื่อง · build **#1** (Build Now, `1.0.0`) และ **#2** (`1.1.0`) เขียวครบ Connect → Clone → Build → Test → Push → Deploy และ Post Actions · ของเราชื่อ job เป็น `docker-build-push`*
+*ภาพที่ 11ก ภาพหน้าจอจริงหน้า **Stages** (2026-09-28) ของ job ทดสอบ `docker-build-push-localfix` ที่อ่าน `Jenkinsfile` ฉบับแก้จาก Git repo จำลองในเครื่อง · build **#1** (Build Now, `1.0.0`) และ **#2** (`1.1.0`) เขียวครบ Connect → Clone → Build → Test → Push → Deploy และ Post Actions · ของเราชื่อ job เป็น `docker-build-push`*
 
 ## ขั้นที่ 6 — ออกเวอร์ชันใหม่ `APP_VERSION=1.1.0`
 
@@ -641,7 +641,7 @@ job `docker-build-push` → **Build with Parameters** → `APP_VERSION` = `1.1.0
 
 [![ส่วน Deployment info ของร้าน build #2 แสดง Version 1.1.0 และ Jenkins build #2](./images/lab3_shop_tour_05_deployment.png)](./images/lab3_shop_tour_05_deployment.png)
 
-*ภาพที่ 12 ภาพหน้าจอจริง (2026-09-27) ส่วน **Deployment info** ท้ายหน้าร้านหลัง build #2: Version `1.1.0`, Jenkins build `#2`, Git commit `a8d0c0b`, Built at (UTC) และ Container ที่ตอบ · ท้ายหน้าเขียน `catfood-shop v1.1.0 · build #2 · commit a8d0c0b`*
+*ภาพที่ 12 ภาพหน้าจอจริง (2026-09-28) ส่วน **Deployment info** ท้ายหน้าร้านหลัง build #2: Version `1.1.0`, Jenkins build `#2`, Git commit `a8d0c0b`, Built at (UTC) และ Container ที่ตอบ · ท้ายหน้าเขียน `catfood-shop v1.1.0 · build #2 · commit a8d0c0b`*
 
 หน้า **Tags** ของ repository `catfood-shop` บน Docker Hub ต้องมี `lab3-1` และ `lab3-2`:
 
@@ -651,7 +651,7 @@ job `docker-build-push` → **Build with Parameters** → `APP_VERSION` = `1.1.0
 
 ## ขั้นที่ 7 — หน้าร้าน Meow Mart ที่ deploy แล้ว
 
-ภาพทั้งหมดในข้อนี้เป็นภาพหน้าจอจริงจากเบราว์เซอร์ (2026-09-27) ของร้านที่ build #2 (`v1.1.0`) deploy ไว้ที่ `http://localhost:3000`
+ภาพทั้งหมดในข้อนี้เป็นภาพหน้าจอจริงจากเบราว์เซอร์ (2026-09-28) ของร้านที่ build #2 (`v1.1.0`) deploy ไว้ที่ `http://localhost:3000`
 
 <a href="./images/lab3_localfix_shop_v110_build2_full.png"><img src="./images/lab3_localfix_shop_v110_build2_full.png" width="480" alt="หน้าร้าน Meow Mart ทั้งหน้า build #2 chip แสดง v1.1.0 build #2"></a>
 
@@ -666,5 +666,5 @@ job `docker-build-push` → **Build with Parameters** → `APP_VERSION` = `1.1.0
 - **แถบบนสุด** — ข้อความโปรโมชันและ chip `v<APP_VERSION> · build #<เลข build>` ที่อ่านจาก image ที่ deploy · แถบเมนู สินค้า / ทำไมต้องเรา / Deployment
 - **สินค้า 6 รายการ** — การ์ดมีรูป ชื่อ รายละเอียด น้ำหนัก คะแนน ราคา และปุ่ม **+ ใส่ตะกร้า**
 - **กรองหมวด** — ปุ่ม ทั้งหมด / อาหารเม็ด / อาหารเปียก / ขนมแมว · กด **อาหารเปียก** เหลือ 1 รายการ (ทูน่าเนื้อแน่น) · กด **ทั้งหมด** กลับมา 6 รายการ
-- **ตะกร้า** — กดใส่ตะกร้าทูน่า ปุ่มตะกร้าเปลี่ยนจาก `0 ชิ้น · ฿0` เป็น `1 ชิ้น · ฿329`
+- **ตะกร้า** — ตะกร้าเป็นตัวเลขแสดงจำนวนชิ้นและยอดรวม (ไม่ใช่ปุ่มให้กด) · กด **+ ใส่ตะกร้า** ที่ทูน่า ตัวเลขเปลี่ยนจาก `0 ชิ้น · ฿0` เป็น `1 ชิ้น · ฿329`
 - **Deployment info** — Version, Jenkins build, Git commit, Built at (UTC), Container และ Health API `/api/health` ที่ Pipeline ใช้ตรวจ ใช้ยืนยันว่า Pipeline deploy เวอร์ชันที่ต้องการแล้ว
