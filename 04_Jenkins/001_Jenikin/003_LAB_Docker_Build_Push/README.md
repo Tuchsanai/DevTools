@@ -98,15 +98,6 @@ docker network create cicd-net
 docker run -dit --name devtools --privileged -p 2222:22 --network cicd-net --tmpfs /run --restart unless-stopped -p 3000:3000 -v "${PWD}/Devtool_SSH:/etc/devtools/ssh" devtools:2569_1
 ```
 
-#### ส่วนที่ 3 — รัน container `jenkins`
-
-ขั้นนี้เป็นการ**สร้างครั้งแรก** · ถ้ามี `jenkins` อยู่แล้ว**ให้เก็บไว้ใช้ต่อ** ห้ามลบหรือสร้างใหม่ (ถ้าหยุดอยู่ใช้ `docker start jenkins`)
-
-<!-- lab3-test:host-setup-jenkins -->
-```bash
-docker run -d --name jenkins --network cicd-net --restart unless-stopped -p 8080:8080 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk21
-```
-
 ตรวจว่า devtools เปิด key login แล้ว:
 
 ```bash
@@ -115,6 +106,15 @@ docker logs devtools | grep "SSH key"
 ```
 
 ถ้าขึ้น `SSH key login disabled` แปลว่าไม่ได้รันในโฟลเดอร์แล็บ (mount ผิดที่) หรือไม่ได้ใช้ image `devtools:2569_1` → ลบ `devtools` แล้วทำ 1.1 ใหม่
+
+#### ส่วนที่ 3 — รัน container `jenkins`
+
+ขั้นนี้เป็นการ**สร้างครั้งแรก** · ถ้ามี `jenkins` อยู่แล้ว**ให้เก็บไว้ใช้ต่อ** ห้ามลบหรือสร้างใหม่ (ถ้าหยุดอยู่ใช้ `docker start jenkins`)
+
+<!-- lab3-test:host-setup-jenkins -->
+```bash
+docker run -d --name jenkins --network cicd-net --restart unless-stopped -p 8080:8080 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk21
+```
 
 ## ขั้นที่ 2 — ปลดล็อก ตั้งค่า Jenkins และติดตั้ง plugin SSH Agent
 
