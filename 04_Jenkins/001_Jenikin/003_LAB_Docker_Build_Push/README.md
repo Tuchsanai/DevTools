@@ -79,7 +79,7 @@ cd 04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push   # จาก root ของ
 
 <a href="./images/lab3_windows_lab_folder_annotated.svg"><img src="./images/lab3_windows_lab_folder_annotated.svg" width="910" alt="ภาพ Windows File Explorer จริงที่ครอปเฉพาะส่วนโฟลเดอร์แล็บ กรอบแดงที่ path และวงรีแดงที่โฟลเดอร์ Devtool_SSH"></a>
 
-*ภาพที่ 2ก ภาพหน้าจอ Windows File Explorer จริง (ครอปเฉพาะส่วน path และรายการในโฟลเดอร์แล็บ · คลิกเพื่อขยาย) มี `Devtool_SSH/` อยู่ข้างใน · เปิด terminal ที่โฟลเดอร์นี้ เพราะ `${PWD}/Devtool_SSH` จะถูก mount เป็น `/etc/devtools/ssh` ใน container · path ด้านหน้าแตกต่างกันแต่ละเครื่อง แต่ต่อท้ายด้วย `04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push` เหมือนกัน · ไม่ต้องเปิดไฟล์ private key ใน `Devtool_SSH`*
+*ภาพที่ 2ก ภาพหน้าจอ Windows File Explorer จริง (ครอปเฉพาะส่วน path และรายการในโฟลเดอร์แล็บ · ปิดทับ path ส่วนตัวด้วยแถบดำ · คลิกเพื่อขยาย) มี `Devtool_SSH/` อยู่ข้างใน · เปิด terminal ที่โฟลเดอร์นี้ เพราะ `${PWD}/Devtool_SSH` จะถูก mount เป็น `/etc/devtools/ssh` ใน container · path ด้านหน้าแตกต่างกันแต่ละเครื่อง แต่ต่อท้ายด้วย `04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push` เหมือนกัน · ไม่ต้องเปิดไฟล์ private key ใน `Devtool_SSH`*
 
 #### ส่วนที่ 1 — สร้าง Docker network `cicd-net`
 
