@@ -15,7 +15,7 @@
 <rect x="1" y="44" width="1578" height="64" fill="#FFF4CE"/>
 <text x="40" y="85" font-family="'Leelawadee UI', 'Noto Sans Thai', Tahoma, 'Segoe UI', sans-serif" font-size="25" font-weight="bold" fill="#5A3E00">ภาพประกอบคำสั่ง (ยังไม่ได้รัน) — พิมพ์รอไว้ ยังไม่กด Enter · ไม่ใช่ภาพหน้าจอผลการรัน Docker จริง</text>
 <g font-family="Consolas, 'Cascadia Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace" font-size="26">
-<rect x="80.8" y="140" width="948.0" height="40" rx="7" fill="#FFD54A33" stroke="#FFD54A" stroke-width="2.5"/>
+<rect x="83.8" y="140" width="942.0" height="40" rx="6" fill="#FFD54A33" stroke="#FFD54A" stroke-width="2.5"/>
 <text x="40.0" y="168" fill="#EEEDF0" font-weight="normal" textLength="31.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">PS</text>
 <text x="86.8" y="168" fill="#FFE36E" font-weight="bold" textLength="936.0" lengthAdjust="spacingAndGlyphs" xml:space="preserve">C:\DevTools\04_Jenkins\001_Jenikin\003_LAB_Docker_Build_Push</text>
 <text x="1022.8" y="168" fill="#EEEDF0" font-weight="normal" textLength="15.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>

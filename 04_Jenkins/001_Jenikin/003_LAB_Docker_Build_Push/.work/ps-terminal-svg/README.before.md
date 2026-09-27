@@ -88,10 +88,6 @@ cd 04_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push   # จาก root ของ
 docker network create cicd-net
 ```
 
-<a href="./images/lab3_powershell_terminal_network_create_pending.svg"><img src="./images/lab3_powershell_terminal_network_create_pending.svg" width="1000" alt="ภาพประกอบ Windows PowerShell ที่โฟลเดอร์แล็บ พิมพ์คำสั่ง docker network create cicd-net รอไว้ ยังไม่ได้รัน"></a>
-
-*ภาพที่ 2ข ภาพประกอบ (ไม่ใช่ภาพหน้าจอจริง) — คำสั่งพิมพ์รอไว้ใน PowerShell ที่โฟลเดอร์แล็บ ยังไม่ได้กด Enter จึงไม่มีผลลัพธ์ · คลิกเพื่อขยาย*
-
 ถ้าขึ้น `already exists` ใช้ network เดิมได้เลย
 
 #### ส่วนที่ 2 — รัน container `devtools`
@@ -105,10 +101,6 @@ docker network create cicd-net
 ```bash
 docker run -dit --name devtools --privileged -p 2222:22 --network cicd-net --tmpfs /run --restart unless-stopped -p 3000:3000 -v "${PWD}/Devtool_SSH:/etc/devtools/ssh" devtools:2569_1
 ```
-
-<a href="./images/lab3_powershell_terminal_devtools_run_pending.svg"><img src="./images/lab3_powershell_terminal_devtools_run_pending.svg" width="1000" alt="ภาพประกอบ Windows PowerShell ที่โฟลเดอร์แล็บ พิมพ์คำสั่ง docker run devtools พร้อม mount Devtool_SSH รอไว้ ยังไม่ได้รัน"></a>
-
-*ภาพที่ 2ค ภาพประกอบ (ไม่ใช่ภาพหน้าจอจริง) — คำสั่ง `docker run` ที่พิมพ์รอไว้ ยังไม่ได้รัน · เป็นคำสั่งบรรทัดเดียว หน้าต่างตัดบรรทัดให้เอง · กรอบเขียวคือ mount `Devtool_SSH` · คลิกเพื่อขยาย*
 
 ตรวจว่า devtools เปิด key login แล้ว:
 
