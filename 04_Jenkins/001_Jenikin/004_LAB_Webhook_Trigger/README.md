@@ -636,7 +636,7 @@ $ curl -s -o /dev/null -w "%{http_code}\n" -X POST https://<NGROK_DOMAIN>/github
 400
 ```
 
-✅ หน้าแรกได้ `403` พร้อม `blocked by ngrok traffic policy (LAB 4)` แปลว่า policy บล็อกไว้ ส่วน `POST /github-webhook/` ได้ `400` แปลว่าผ่าน policy ไปถึง Jenkins แล้ว ที่ได้ 400 เพราะเราไม่ได้ส่ง header ของ GitHub มา
+✅ หน้าแรกได้ `403` พร้อม `blocked by ngrok traffic policy (LAB 4)` แปลว่า policy บล็อกไว้ ส่วน `POST /github-webhook/` ได้ `400` แปลว่าผ่าน policy ไปถึง Jenkins แล้ว ที่ได้ 400 เพราะเราไม่ได้ส่ง header ของ GitHub มา (ถ้าใช้ `curl.exe` บน Windows บรรทัดแรกจะเป็น `HTTP/1.1 403 Forbidden` ก็ถูกเหมือนกัน)
 
 - ถ้าเปิดในเบราว์เซอร์ แผนฟรีอาจขึ้นหน้าเตือนของ ngrok ก่อน ให้กด **Visit Site** แล้วจะเห็นข้อความ 403 เดียวกัน หน้านี้ไม่กระทบ webhook เพราะ GitHub ไม่ใช่เบราว์เซอร์
 
