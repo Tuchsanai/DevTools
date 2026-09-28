@@ -18,7 +18,7 @@
 
 <a href="./images/lab4_diagram_c_pipeline.png"><img src="./images/lab4_diagram_c_pipeline.png" width="1000" alt="แผนภาพ C Pipeline 6 stage ของ LAB 4 Clone ทำบน Jenkins ที่เหลือบน devtools ถ้า Test ไม่ผ่าน Push และ Deploy ถูกข้าม"></a>
 
-*แผนภาพ C — Pipeline 6 stage ของ LAB 4 เริ่มจาก `githubPush()` (หลัง build #1 ไม่ต้องกด Build Now อีก) · **Clone** ทำบน Jenkins (`checkout scm` แล้ว `tar | ssh` ส่งซอร์สไป devtools) · Build / Test / Push / Deploy รันบน devtools ผ่าน SSH · Build อ่านเวอร์ชันจาก `package.json` · Test มี `npm test` (unit test) และ `/api/health` · ถ้า Test ไม่ผ่าน Push และ Deploy ถูกข้าม ร้านเดิมยังเปิดอยู่*
+*แผนภาพ C — Pipeline 6 stage ของ LAB 4 เริ่มจาก `githubPush()` (หลัง build #1 ไม่ต้องกด Build Now อีก) · **Clone** ทำบน Jenkins (`checkout scm` แล้ว `tar | ssh` ส่งซอร์สไป devtools) · Build / Test / Push / Deploy รันบน devtools ผ่าน SSH · เวอร์ชันมาจาก `package.json` (stage Clone อ่านค่า แล้ว Build ส่งเป็น `--build-arg` · ในภาพเขียนไว้ที่กล่อง Build) · Test มี `npm test` (unit test) และ `/api/health` · ถ้า Test ไม่ผ่าน Push และ Deploy ถูกข้าม ร้านเดิมยังเปิดอยู่*
 
 | container | image | รันอยู่บน | เข้าจากเครื่องเราทาง |
 |---|---|---|---|
@@ -129,11 +129,11 @@ token นี้ใช้สองที่: (1) `git push` จาก devtools (2
 docker exec -it devtools bash
 ```
 
-💻 devtools — ดึงไฟล์แล็บ (ถ้าเคย clone repository รายวิชาไว้ที่ `~/labwork/DevTools` ตั้งแต่ LAB 1–2 ให้ `pull` อย่างเดียว) แล้วคัดลอกโฟลเดอร์ `catfood-shop` ออกมาเป็น repo ของเรา:
+💻 devtools — ดึงไฟล์แล็บ**ลงใน container `devtools`** (repository ที่ clone ไว้ใน LAB 1 อยู่บน host ไม่ได้อยู่ใน container นี้ · ถ้าเคย clone ไว้ใน container นี้แล้วให้ `git -C ~/labwork/DevTools pull` แทนบรรทัด `git clone`) แล้วคัดลอกโฟลเดอร์ `catfood-shop` ออกมาเป็น repo ของเรา:
 
 ```bash
 mkdir -p ~/labwork
-git clone --depth 1 <COURSE_REPO_URL> ~/labwork/DevTools     # URL ของ repository รายวิชา (อันเดียวกับ LAB 1–3) · ถ้ามีแล้ว: git -C ~/labwork/DevTools pull
+git clone --depth 1 https://github.com/Tuchsanai/DevTools.git ~/labwork/DevTools   # --depth 1 = เอาเฉพาะ commit ล่าสุด (เล็กกว่า clone เต็มมาก)
 cp -r ~/labwork/DevTools/04_Jenkins/001_Jenikin/004_LAB_Webhook_Trigger/catfood-shop ~/catfood-shop
 cd ~/catfood-shop
 ls -a
@@ -177,7 +177,7 @@ git push -u origin main
 
 <a href="./images/lab4_jk_02a_cred_type.png"><img src="./images/lab4_jk_02a_cred_type.png" width="1000" alt="หน้าต่าง Add Credentials เลือกชนิด Username with password"></a>
 
-*ภาพที่ 10 หน้าต่าง **Add Credentials** → เลือก **Username with password** → **Next** · (ด้านหลังคือรายการ credential ตอนจบแล็บ ของเราตอนนี้ยังมีแค่ `devtools-ssh` และ `dockerhub`)*
+*ภาพที่ 10 หน้าต่าง **Add Credentials**: ① **Username with password** → ใช้สร้าง `github-token` (ข้อนี้) ② **Secret text** → ใช้สร้าง `github-webhook-secret` ในขั้นที่ 6 ③ เลือกชนิดแล้วกด **Next** · (ด้านหลังคือรายการ credential ตอนจบแล็บ ของเราตอนนี้ยังมีแค่ `devtools-ssh` และ `dockerhub`)*
 
 | ช่อง | ค่า |
 |---|---|
@@ -190,7 +190,7 @@ git push -u origin main
 
 <a href="./images/lab4_jk_02b_cred_github_token.png"><img src="./images/lab4_jk_02b_cred_github_token.png" width="1000" alt="ฟอร์ม Add Username with password ของ github-token Treat username as secret ไม่ติ๊ก"></a>
 
-*ภาพที่ 11 ฟอร์มของ `github-token`: Username `<GITHUB_USER>` · **Treat username as secret ไม่ติ๊ก** · Password เป็นจุด (token) · ID `github-token` · Description `GitHub fine-grained PAT: catfood-shop` → **Create** · ชื่อบัญชีในภาพปิดเป็น placeholder*
+*ภาพที่ 11 ฟอร์มของ `github-token`: ① Username `<GITHUB_USER>` ② **Treat username as secret ไม่ติ๊ก** ③ Password เป็นจุด (token · ในภาพเป็นค่าตัวอย่าง) ④ ID `github-token` · Description `GitHub fine-grained PAT: catfood-shop` ⑤ กด **Create** · ชื่อบัญชีในภาพปิดเป็น placeholder*
 
 ### 4.2) New Item → Pipeline `catfood-webhook`
 
@@ -216,17 +216,21 @@ git push -u origin main
 | Script Path | `Jenkinsfile` |
 | Lightweight checkout | ติ๊ก (ค่าเริ่มต้น) |
 
+<a href="./images/lab4_jk_05a_scm_no_cred.png"><img src="./images/lab4_jk_05a_scm_no_cred.png" width="1000" alt="ส่วน Pipeline SCM Git ใส่ Repository URL ของ private repo แต่ Credentials เป็น none จึงขึ้น error สีแดง Failed to connect to repository Invalid username or token"></a>
+
+*ภาพที่ 14 ถ้าใส่ URL แล้วยังไม่เลือก credential: ① **Repository URL** = `https://github.com/<GITHUB_USER>/catfood-shop.git` (private repo) ② ขึ้นข้อความสีแดงใต้ช่อง URL `Failed to connect to repository : Command "git ls-remote -h -- https://github.com/<GITHUB_USER>/catfood-shop.git HEAD" returned status code 128` · `remote: Invalid username or token. Password authentication is not supported for Git operations.` = Jenkins อ่าน private repo ไม่ได้เพราะไม่มี token ③ **Credentials** ยังเป็น `- none -` → แก้โดยเลือก `github-token` ตามภาพถัดไป · ชื่อบัญชีในภาพปิดเป็น placeholder*
+
 <a href="./images/lab4_jk_05b_scm_with_cred.png"><img src="./images/lab4_jk_05b_scm_with_cred.png" width="1000" alt="ส่วน Pipeline SCM Git Repository URL ของ private repo และ Credentials github-token"></a>
 
-*ภาพที่ 14 ② **Repository URL** = `https://github.com/<GITHUB_USER>/catfood-shop.git` (ตัวพิมพ์เล็ก/ใหญ่ของชื่อบัญชีต้องตรงกับ GitHub) ③ **Credentials** = `github-token` — repo เป็น private ถ้าเลือก `- none -` จะขึ้น error สีแดงใต้ช่อง URL (`Failed to connect to repository ...`) · เลือก credential แล้วข้อความแดงต้องหายไป · ชื่อบัญชีในภาพปิดเป็น placeholder*
+*ภาพที่ 15 หลังเลือก credential (ป้ายในภาพเริ่มที่ ②): ② **Repository URL** = `https://github.com/<GITHUB_USER>/catfood-shop.git` (ตัวพิมพ์เล็ก/ใหญ่ของชื่อบัญชีต้องตรงกับ GitHub) ③ **Credentials** = `<GITHUB_USER>/****** (GitHub fine-grained PAT: catfood-shop)` = `github-token` — ข้อความแดงของภาพก่อนหน้าหายไป แปลว่า Jenkins เข้า private repo ได้แล้ว · ชื่อบัญชีในภาพปิดเป็น placeholder*
 
 <a href="./images/lab4_jk_05c_branch_script.png"><img src="./images/lab4_jk_05c_branch_script.png" width="1000" alt="Branch Specifier */main Script Path Jenkinsfile และ Lightweight checkout ติ๊ก"></a>
 
-*ภาพที่ 15 ① **Branch Specifier** = `*/main` ② **Script Path** = `Jenkinsfile` (ไฟล์อยู่ที่ root ของ repo) ③ **Lightweight checkout** ติ๊กไว้ (ค่าเริ่มต้น) → กด **Save***
+*ภาพที่ 16 ① **Branch Specifier** = `*/main` ② **Script Path** = `Jenkinsfile` (ไฟล์อยู่ที่ root ของ repo) ③ **Lightweight checkout** ติ๊กไว้ (ค่าเริ่มต้น) → กด **Save***
 
 <a href="./images/lab4_jk_06_job_before_build.png"><img src="./images/lab4_jk_06_job_before_build.png" width="1000" alt="หน้า job catfood-webhook ก่อน build ครั้งแรก No builds มีเมนู Build Now และ GitHub Hook Log"></a>
 
-*ภาพที่ 16 หน้า job หลัง Save: ยังไม่มี build (`No builds`) · เมนูซ้ายมี **Build Now** และ **GitHub Hook Log** (ปรากฏเพราะติ๊ก trigger ในข้อ 4.3)*
+*ภาพที่ 17 หน้า job หลัง Save: ยังไม่มี build (`No builds`) · เมนูซ้ายมี **Build Now** และ **GitHub Hook Log** (ปรากฏเพราะติ๊ก trigger ในข้อ 4.3)*
 
 ### 4.5) อ่าน `Jenkinsfile` ทั้งไฟล์
 
@@ -420,35 +424,35 @@ pipeline {
 
 <a href="./images/lab4_jk_07_console1_top.png"><img src="./images/lab4_jk_07_console1_top.png" width="1000" alt="Console Output build 1 ช่วงต้น Started by user admin Obtained Jenkinsfile from git และ stage Connect"></a>
 
-*ภาพที่ 17 Console ช่วงต้น: `Started by user admin` → `Obtained Jenkinsfile from git https://github.com/<GITHUB_USER>/catfood-shop.git` (Jenkins อ่าน Jenkinsfile จาก private repo ได้แล้ว) → stage **Connect**: ครั้งแรกขึ้น `Warning: Permanently added 'devtools' (ED25519) ...` แล้ว `devtools` / `root` / `Docker version ...`*
+*ภาพที่ 18 Console ช่วงต้น: `Started by user admin` → `Obtained Jenkinsfile from git https://github.com/<GITHUB_USER>/catfood-shop.git` (Jenkins อ่าน Jenkinsfile จาก private repo ได้แล้ว) → stage **Connect**: ครั้งแรกขึ้น `Warning: Permanently added 'devtools' (ED25519) ...` แล้ว `devtools` / `root` / `Docker version ...`*
 
 <a href="./images/lab4_jk_07_console1_clone.png"><img src="./images/lab4_jk_07_console1_clone.png" width="1000" alt="Console Output build 1 stage Clone using credential github-token และ Checking out Revision"></a>
 
-*ภาพที่ 18 stage **Clone**: ① `using credential github-token` — Jenkins clone private repo ด้วย token ② `Checking out Revision abf4e3e...` (commit แรก ของเราจะเป็นเลขอื่น) ③ `Commit message: "Meow Mart v2.0.0 + Jenkinsfile"` · ไม่มีคำว่า `github_pat_` ใน console*
+*ภาพที่ 19 stage **Clone**: ① `using credential github-token` — Jenkins clone private repo ด้วย token ② `Checking out Revision abf4e3e...` (commit แรก ของเราจะเป็นเลขอื่น) ③ `Commit message: "Meow Mart v2.0.0 + Jenkinsfile"` · ไม่มีคำว่า `github_pat_` ใน console*
 
 <a href="./images/lab4_jk_07_console1_version.png"><img src="./images/lab4_jk_07_console1_version.png" width="1000" alt="Console Output build 1 commit abf4e3e version 2.0.0 และ tar exclude .git ส่งไป devtools"></a>
 
-*ภาพที่ 19 ① `commit abf4e3e · version 2.0.0` — Jenkins อ่านเวอร์ชันจาก `package.json` และเลข commit ของ build นี้ ② `+ tar --exclude=.git -cf - .` ส่งซอร์ส (ไม่รวม `.git` ไม่มี token) ไป devtools แล้ว `ls` แสดง `Dockerfile`, `Jenkinsfile`, `app`, `data`, ..., `tests`*
+*ภาพที่ 20 ① `commit abf4e3e · version 2.0.0` — Jenkins อ่านเวอร์ชันจาก `package.json` และเลข commit ของ build นี้ ② `+ tar --exclude=.git -cf - .` ส่งซอร์ส (ไม่รวม `.git` ไม่มี token) ไป devtools แล้ว `ls` แสดง `Dockerfile`, `Jenkinsfile`, `app`, `data`, ..., `tests`*
 
 <a href="./images/lab4_jk_07_console1_test.png"><img src="./images/lab4_jk_07_console1_test.png" width="1000" alt="Console Output build 1 stage Test unit test pass 3 และ health check"></a>
 
-*ภาพที่ 20 stage **Test**: ① `ok 1`–`ok 3` และ `# pass 3` `# fail 0` — unit test ผ่าน 3/3 ② จากนั้นรัน `catfood-test` รอ `healthy` แล้วตรวจ `/api/health` ว่าเป็น version + build + commit ของ build นี้จริง (`version:2.0.0,build:1,commit:abf4e3e,`)*
+*ภาพที่ 21 stage **Test**: ① `ok 2`, `ok 3` (`ok 1` อยู่เหนือขอบภาพ) และ `# pass 3` `# fail 0` — unit test ผ่าน 3/3 ② จากนั้นรัน `catfood-test` รอจน `healthy` แล้ว `wget` ถาม `/api/health` · บรรทัดถัดไปใต้ภาพคือ `grep -F version:2.0.0,build:1,commit:abf4e3e,` ที่ยืนยันว่าเป็น version + build + commit ของ build นี้จริง*
 
 <a href="./images/lab4_jk_07_console1_end.png"><img src="./images/lab4_jk_07_console1_end.png" width="1000" alt="Console Output build 1 ช่วงท้าย Post Actions เปิดร้านได้ที่ localhost 3000 และ Finished SUCCESS"></a>
 
-*ภาพที่ 21 ช่วงท้าย: ① stage Push ขึ้น Docker Hub เป็น tag `lab4-1` (`lab4-1: digest: sha256:...`) ② `เปิดร้านได้ที่ http://localhost:3000 (v2.0.0 build #1 commit abf4e3e)` ③ `Finished: SUCCESS`*
+*ภาพที่ 22 ช่วงท้าย: ① stage Push ขึ้น Docker Hub เป็น tag `lab4-1` (บรรทัด `lab4-1: digest: sha256:...` อยู่เหนือขอบภาพ) ② `เปิดร้านได้ที่ http://localhost:3000 (v2.0.0 build #1 commit abf4e3e)` ③ `Finished: SUCCESS`*
 
 > หมายเหตุ: log ของ stage Push มีบรรทัด `<layer>: Waiting` ซ้ำจำนวนมาก เป็นเรื่องปกติของ `docker push` ที่รันแบบไม่มี TTY (แสดงความคืบหน้าเป็นบรรทัดแทนการเขียนทับ) ไม่ใช่ error
 
 <a href="./images/lab4_jk_08_build1_page.png"><img src="./images/lab4_jk_08_build1_page.png" width="1000" alt="หน้า build 1 Started by user admin และ Revision จาก private repo"></a>
 
-*ภาพที่ 22 หน้า build #1: ① **Started by user admin** — build นี้เรากด Build Now เอง (ครั้งเดียวในแล็บ) ② **Revision** = commit ที่ build จาก private repo · URL ของ repo ในภาพปิดเป็น `<GITHUB_USER>`*
+*ภาพที่ 23 หน้า build #1: ① **Started by user admin** — build นี้เรากด Build Now เอง (ครั้งเดียวในแล็บ) ② **Revision** = commit ที่ build จาก private repo · URL ของ repo ในภาพปิดเป็น `<GITHUB_USER>`*
 
 ✅ เปิด http://localhost:3000 — ร้านเวอร์ชัน LAB 4 แทนร้านของ LAB 3:
 
 [![หน้าร้าน Meow Mart หลัง build 1 chip v2.0.0 build #1](./images/lab4_shop_01_v200_build1.png)](./images/lab4_shop_01_v200_build1_full.png)
 
-*ภาพที่ 23 ร้านหลัง build #1: แถบบนสุดเป็นแบนเนอร์ `🎉 โปรเดือนนี้: ขนมแมวทุกชิ้นลด 10% · ส่งฟรีเมื่อครบ ฿599` และ chip `v2.0.0 · build #1` · คลิกภาพเพื่อดูทั้งหน้า*
+*ภาพที่ 24 ร้านหลัง build #1: แถบบนสุดเป็นแบนเนอร์ `🎉 โปรเดือนนี้: ขนมแมวทุกชิ้นลด 10% · ส่งฟรีเมื่อครบ ฿599` และ chip `v2.0.0 · build #1` · คลิกภาพเพื่อดูทั้งหน้า*
 
 ## ขั้นที่ 5 — เปิดทางเข้าให้ GitHub ด้วย ngrok (🌐 + 🖥️)
 
@@ -458,15 +462,15 @@ pipeline {
 
 <a href="./images/lab4_ngrok_01_home.png"><img src="./images/lab4_ngrok_01_home.png" width="1000" alt="หน้าแรก ngrok.com ปุ่ม SIGN UP LOG IN และ GET STARTED FOR FREE"></a>
 
-*ภาพที่ 24 หน้าแรกของ ngrok: ① ยังไม่มีบัญชี → กด **SIGN UP** (ฟรี ไม่ต้องใช้บัตรเครดิต) ② หรือกด **GET STARTED (FOR FREE)** ก็ไปหน้าสมัครเหมือนกัน ③ มีบัญชีแล้ว → **LOG IN***
+*ภาพที่ 25 หน้าแรกของ ngrok: ① ยังไม่มีบัญชี → กด **SIGN UP** (ฟรี ไม่ต้องใช้บัตรเครดิต) ② หรือกด **GET STARTED (FOR FREE)** ก็ไปหน้าสมัครเหมือนกัน ③ มีบัญชีแล้ว → **LOG IN***
 
 <a href="./images/lab4_ngrok_02_signup.png"><img src="./images/lab4_ngrok_02_signup.png" width="1000" alt="หน้าสมัคร ngrok Sign up with GitHub Google หรือกรอกอีเมล"></a>
 
-*ภาพที่ 25 หน้าสมัคร: ① **แนะนำ Sign up with GitHub** — ใช้บัญชี GitHub ของแล็บนี้ได้ทันที ไม่ต้องตั้งรหัสใหม่ ② หรือสมัครด้วยอีเมล: กรอก Name · Email · Password แล้วไปกดยืนยันในอีเมล ③ แบบอีเมลต้องติ๊กยอมรับเงื่อนไขก่อนกด **Sign up** · หลังสมัคร ngrok อาจถามคำถามสั้น ๆ เรื่องการใช้งาน ตอบอะไรก็ได้*
+*ภาพที่ 26 หน้าสมัคร: ① **แนะนำ Sign up with GitHub** — ใช้บัญชี GitHub ของแล็บนี้ได้ทันที ไม่ต้องตั้งรหัสใหม่ ② หรือสมัครด้วยอีเมล: กรอก Name · Email · Password แล้วไปกดยืนยันในอีเมล ③ แบบอีเมลต้องติ๊กยอมรับเงื่อนไขก่อนกด **Sign up** · หลังสมัคร ngrok อาจถามคำถามสั้น ๆ เรื่องการใช้งาน ตอบอะไรก็ได้*
 
 <a href="./images/lab4_ngrok_03_login.png"><img src="./images/lab4_ngrok_03_login.png" width="1000" alt="หน้า Log in ของ ngrok Log in with GitHub และลิงก์ Sign up for free"></a>
 
-*ภาพที่ 26 ครั้งต่อไปเข้าที่ https://dashboard.ngrok.com: ① **Log in with GitHub** (วิธีเดียวกับตอนสมัคร) ② ยังไม่มีบัญชี → **Sign up for free***
+*ภาพที่ 27 ครั้งต่อไปเข้าที่ https://dashboard.ngrok.com: ① **Log in with GitHub** (วิธีเดียวกับตอนสมัคร) ② ยังไม่มีบัญชี → **Sign up for free***
 
 ### 5.2) Quickstart → Docker
 
@@ -474,30 +478,34 @@ pipeline {
 
 <a href="./images/lab4_ngrok_04_quickstart_docker.png"><img src="./images/lab4_ngrok_04_quickstart_docker.png" width="1000" alt="หน้า Quickstart ของ ngrok dashboard เลือก Docker แสดงคำสั่ง docker pull ngrok/ngrok และคำสั่งตัวอย่าง"></a>
 
-*ภาพที่ 27 **Quickstart**: ① หัวข้อ Choose your platform เลือก **Docker** — แล็บนี้รัน ngrok เป็น container ② หน้านี้บอกให้ใช้ image ทางการ `ngrok/ngrok` ③ **Show authtoken** จะโชว์ token จริง — ห้ามถ่ายรูปหรือแชร์ ④ คำสั่งตัวอย่างของ ngrok ใช้ `--net=host` และ `http 80` · **ในแล็บเราใช้คำสั่งของข้อ 5.5 แทน** (`--network cicd-net` + `http http://jenkins:8080`) ⑤ บรรทัดล่างบอกโดเมนฟรีประจำบัญชี (`<NGROK_DOMAIN>`) ใช้กับ `--url` · อีเมลในภาพปิดเป็น `<YOUR_EMAIL>`*
+*ภาพที่ 28 **Quickstart**: ① หัวข้อ Choose your platform เลือก **Docker** — แล็บนี้รัน ngrok เป็น container ② หน้านี้บอกให้ใช้ image ทางการ `ngrok/ngrok` ③ **Show authtoken** จะโชว์ token จริง — ห้ามถ่ายรูปหรือแชร์ ④ คำสั่งตัวอย่างของ ngrok ใช้ `--net=host` และ `http 80` · **ในแล็บเราใช้คำสั่งของข้อ 5.5 แทน** (`--network cicd-net` + `http http://jenkins:8080`) ⑤ บรรทัดล่างบอกโดเมนฟรีประจำบัญชี (`<NGROK_DOMAIN>`) ใช้กับ `--url` · อีเมลในภาพปิดเป็น `<YOUR_EMAIL>`*
 
 ### 5.3) Your Authtoken → Copy
 
 <a href="./images/lab4_ngrok_05_authtoken.png"><img src="./images/lab4_ngrok_05_authtoken.png" width="1000" alt="หน้า Your Authtoken ของ ngrok dashboard ช่อง token และปุ่ม Copy"></a>
 
-*ภาพที่ 28 ③ เมนูซ้าย **Getting Started → Your Authtoken** ① authtoken ของบัญชีเรา (ในภาพปิดเป็น `<NGROK_AUTHTOKEN>`) เก็บเป็นความลับเหมือนรหัสผ่าน ② กด **Copy** แล้วนำไปใส่ใน `-e NGROK_AUTHTOKEN=...` ของคำสั่งในข้อ 5.5 · ห้าม commit ลง Git · ถ้าหลุด กด Reset ในหน้านี้*
+*ภาพที่ 29 ③ เมนูซ้าย **Getting Started → Your Authtoken** ① authtoken ของบัญชีเรา (ในภาพปิดเป็น `<NGROK_AUTHTOKEN>`) เก็บเป็นความลับเหมือนรหัสผ่าน ② กด **Copy** แล้วนำไปใส่ใน `-e NGROK_AUTHTOKEN=...` ของคำสั่งในข้อ 5.5 · ห้าม commit ลง Git · ถ้าหลุด กด Reset ในหน้านี้*
 
 ### 5.4) Domains → dev domain ฟรีของบัญชี
 
 <a href="./images/lab4_ngrok_06_domains.png"><img src="./images/lab4_ngrok_06_domains.png" width="1000" alt="หน้า Domains ของ ngrok dashboard มี dev domain หนึ่งรายการ ป้าย Your dev domain"></a>
 
-*ภาพที่ 29 ⑤ เมนูซ้าย **Network → Domains** ③ ทุกบัญชี (รวมแผนฟรี) ได้ **dev domain 1 โดเมน** ① โดเมนในตาราง (ป้าย `dev domain`) คือ `<NGROK_DOMAIN>` — คัดลอกไปใช้กับ `--url` ของ ngrok และ Payload URL ของ GitHub ② คำอธิบาย **Your dev domain** = โดเมนที่ ngrok แจกให้อัตโนมัติ ไม่เปลี่ยนทุกครั้งที่รัน ④ **ไม่ต้องกด New Domain** · โดเมนจริงในภาพปิดไว้*
+*ภาพที่ 30 ⑤ เมนูซ้าย **Network → Domains** ③ ทุกบัญชี (รวมแผนฟรี) ได้ **dev domain 1 โดเมน** ① โดเมนในตาราง (ป้าย `dev domain`) คือ `<NGROK_DOMAIN>` — คัดลอกไปใช้กับ `--url` ของ ngrok และ Payload URL ของ GitHub ② คำอธิบาย **Your dev domain** = โดเมนที่ ngrok แจกให้อัตโนมัติ ไม่เปลี่ยนทุกครั้งที่รัน ④ **ไม่ต้องกด New Domain** · โดเมนจริงในภาพปิดไว้*
 
 - dev domain ของแผนฟรีมีรูปแบบ `xxxx-xxxx-xxxx.ngrok-free.dev` · ในเอกสารนี้เรียกว่า `<NGROK_DOMAIN>` (ไม่มี `https://` นำหน้า)
 - ต้องใส่ `--url https://<NGROK_DOMAIN>` ทุกครั้งที่รัน · ถ้าไม่ใส่ ngrok อาจให้โดเมนชั่วคราวอื่นมา แล้ว Payload URL ใน GitHub จะไม่ตรง
 
 ### 5.5) รัน container `ngrok` (🖥️ host)
 
-เปิด terminal ของ host แล้วเข้า**โฟลเดอร์ของแล็บนี้** (ที่มีโฟลเดอร์ `ngrok/`) แบบเดียวกับ LAB 3 — `${PWD}` ใช้ได้ทั้ง PowerShell และ Linux/macOS:
+เปิด terminal ของ host แล้วเข้า**โฟลเดอร์ของแล็บนี้** (ที่มีโฟลเดอร์ `ngrok/`) แบบเดียวกับ LAB 3 — `${PWD}` ใช้ได้ทั้ง PowerShell และ Linux/macOS · `git pull` ก่อน เพื่อให้ repository ที่ clone ไว้ใน LAB 1 มีโฟลเดอร์ของแล็บนี้:
 
 ```bash
-cd 04_Jenkins/001_Jenikin/004_LAB_Webhook_Trigger   # จาก root ของ repository รายวิชา
+git -C ~/labwork/DevTools pull
+cd ~/labwork/DevTools/04_Jenkins/001_Jenikin/004_LAB_Webhook_Trigger
+ls ngrok
 ```
+
+✅ `ls ngrok` เห็น `ngrok.example.yml` และ `traffic-policy.yml`
 
 ไฟล์ `ngrok/traffic-policy.yml` ที่จะ mount เข้า container:
 
@@ -556,13 +564,13 @@ docker logs ngrok
 
 <a href="./images/lab4_term_05_ngrok_logs.png"><img src="./images/lab4_term_05_ngrok_logs.png" width="1000" alt="terminal host docker logs ngrok มี client session established และ started tunnel addr http://jenkins:8080"></a>
 
-*ภาพที่ 30 ผลจริงของ `docker logs ngrok` (ngrok agent 3.39.8): `starting web service ... addr=0.0.0.0:4040` = inspector พร้อม · ① `client session established` = authtoken ถูกต้อง ต่อ ngrok cloud ได้ ② `started tunnel ... addr=http://jenkins:8080 url=https://<NGROK_DOMAIN>` = เปิด tunnel แล้ว · บรรทัด `join connections` คือ request ที่เข้ามาภายหลัง · โดเมนและ IP ในภาพปิดไว้*
+*ภาพที่ 31 ผลจริงของ `docker logs ngrok` (ngrok agent 3.39.8): `starting web service ... addr=0.0.0.0:4040` = inspector พร้อม · ① `client session established` = authtoken ถูกต้อง ต่อ ngrok cloud ได้ ② `started tunnel ... addr=http://jenkins:8080 url=https://<NGROK_DOMAIN>` = เปิด tunnel แล้ว · บรรทัด `join connections` คือ request ที่เข้ามาภายหลัง (`r=140.82.x.x` = GitHub) · เวลาใน log เป็น UTC · โดเมนและ IP ของเราในภาพปิดไว้*
 
 🌐 dashboard ของ ngrok → **Connectivity → Endpoints**:
 
 <a href="./images/lab4_ngrok_07_endpoints.png"><img src="./images/lab4_ngrok_07_endpoints.png" width="1000" alt="หน้า Endpoints ของ ngrok dashboard มี endpoint https://<NGROK_DOMAIN> ป้าย Agent และ Traffic Policy"></a>
 
-*ภาพที่ 31 ④ เมนูซ้าย **Connectivity → Endpoints** ① endpoint `https://<NGROK_DOMAIN>` ออนไลน์แล้ว = container ngrok ต่อ tunnel สำเร็จ ② ป้าย **Traffic Policy** = policy ที่เราใส่ทำงานอยู่ ③ ป้าย **Agent** = endpoint นี้มาจาก ngrok agent (container) บนเครื่องเรา ถ้าหยุด container แถวนี้จะหาย · โดเมนและอีเมลในภาพปิดไว้*
+*ภาพที่ 32 ④ เมนูซ้าย **Connectivity → Endpoints** ① endpoint `https://<NGROK_DOMAIN>` ออนไลน์แล้ว = container ngrok ต่อ tunnel สำเร็จ ② ป้าย **Traffic Policy** = policy ที่เราใส่ทำงานอยู่ ③ ป้าย **Agent** = endpoint นี้มาจาก ngrok agent (container) บนเครื่องเรา ถ้าหยุด container แถวนี้จะหาย · โดเมนและอีเมลในภาพปิดไว้*
 
 🖥️ ทดสอบ policy ด้วย `curl` จาก host (ต้องมี `curl` บน host · ถ้าไม่มี ให้เปิด `https://<NGROK_DOMAIN>/` ในเบราว์เซอร์แทนคำสั่งแรก):
 
@@ -573,7 +581,7 @@ curl -s -o /dev/null -w "%{http_code}\n" -X POST https://<NGROK_DOMAIN>/github-w
 
 <a href="./images/lab4_term_06_policy_curl.png"><img src="./images/lab4_term_06_policy_curl.png" width="1000" alt="terminal host curl หน้าแรกได้ 403 blocked by ngrok traffic policy และ POST github-webhook ได้ 400"></a>
 
-*ภาพที่ 32 ผลจริง: ① `curl -i https://<NGROK_DOMAIN>/` ได้ `HTTP/2 403` + `blocked by ngrok traffic policy (LAB 4)` = path อื่นถูก policy บล็อก หน้า Jenkins ไม่หลุดออก internet (ทดสอบ `/login` และ `/github-webhook` ที่ไม่มี `/` ท้ายก็ได้ 403 เหมือนกัน) ② `POST /github-webhook/` ได้ `400` = ผ่าน policy ถึง Jenkins แล้ว (400 เพราะเราไม่ได้ส่ง header ของ GitHub มา) — ทางเดิน ngrok → jenkins ใช้ได้*
+*ภาพที่ 33 ผลจริง: ① `curl -i https://<NGROK_DOMAIN>/` ได้ `HTTP/2 403` + `blocked by ngrok traffic policy (LAB 4)` = path อื่นถูก policy บล็อก หน้า Jenkins ไม่หลุดออก internet (ทดสอบ `/login` และ `/github-webhook` ที่ไม่มี `/` ท้ายก็ได้ 403 เหมือนกัน) ② `POST /github-webhook/` ได้ `400` = ผ่าน policy ถึง Jenkins แล้ว (400 เพราะเราไม่ได้ส่ง header ของ GitHub มา) — ทางเดิน ngrok → jenkins ใช้ได้*
 
 - เปิด `https://<NGROK_DOMAIN>/` ในเบราว์เซอร์: แผนฟรีอาจขึ้นหน้าเตือนของ ngrok (interstitial) ก่อน กด **Visit Site** แล้วจะเห็นข้อความ 403 เดียวกัน · หน้าเตือนนี้มีเฉพาะเบราว์เซอร์ **ไม่กระทบ webhook** เพราะ GitHub ไม่ใช่เบราว์เซอร์
 - ✅ เปิด http://localhost:4040 ได้หน้า ngrok inspector (ป้าย `online`) · request ที่ policy บล็อกไม่ลงมาถึง agent ส่วน `POST /github-webhook/` ที่ curl ไปจะเห็นเป็น `400 Bad Request`
@@ -605,11 +613,11 @@ openssl rand -hex 20
 
 <a href="./images/lab4_jk_02c_cred_webhook_secret.png"><img src="./images/lab4_jk_02c_cred_webhook_secret.png" width="1000" alt="ฟอร์ม Add Secret text ของ github-webhook-secret"></a>
 
-*ภาพที่ 33 ฟอร์ม **Add Secret text**: Secret เป็นจุด (`<WEBHOOK_SECRET>`) · ID `github-webhook-secret` · Description `GitHub webhook shared secret` → **Create***
+*ภาพที่ 34 ฟอร์ม **Add Secret text**: ① Secret เป็นจุด (`<WEBHOOK_SECRET>` จากข้อ 6.1 · ในภาพเป็นค่าตัวอย่าง) ② ID `github-webhook-secret` · Description `GitHub webhook shared secret` ③ กด **Create***
 
 <a href="./images/lab4_jk_03_credentials_list.png"><img src="./images/lab4_jk_03_credentials_list.png" width="1000" alt="รายการ Global credentials devtools-ssh dockerhub github-token github-webhook-secret"></a>
 
-*ภาพที่ 34 รายการ Global credentials ครบ 4 ตัว: ① `devtools-ssh`, `dockerhub` = ของเดิมจาก LAB 3 (ไม่ต้องสร้างใหม่) ② `github-token` (ใหม่) = GitHub username + fine-grained token → Jenkins clone private repo ③ `github-webhook-secret` (ใหม่) = Secret text ใช้ตรวจลายเซ็น webhook · ชื่อบัญชีในภาพปิดเป็น placeholder*
+*ภาพที่ 35 รายการ Global credentials ครบ 4 ตัว: ① `devtools-ssh`, `dockerhub` = ของเดิมจาก LAB 3 (ไม่ต้องสร้างใหม่) ② `github-token` (ใหม่) = GitHub username + fine-grained token → Jenkins clone private repo ③ `github-webhook-secret` (ใหม่) = Secret text ใช้ตรวจลายเซ็น webhook · ชื่อบัญชีในภาพปิดเป็น placeholder*
 
 ### 6.3) ตั้ง Shared secret ของ GitHub plugin
 
@@ -617,7 +625,7 @@ openssl rand -hex 20
 
 <a href="./images/lab4_jk_09b_shared_secret.png"><img src="./images/lab4_jk_09b_shared_secret.png" width="1000" alt="Manage Jenkins System หัวข้อ GitHub Advanced Shared secrets เลือก GitHub webhook shared secret SHA-256"></a>
 
-*ภาพที่ 35 ① หัวข้อ **GitHub** ใน Manage Jenkins → System (ไม่ต้องกด Add GitHub Server) ② กด **Advanced** → **Shared secrets** → **Add shared secret** → ช่อง **Shared secret** เลือก `GitHub webhook shared secret` (= `github-webhook-secret`) · Signature algorithm คง **SHA-256 (Recommended)** → กด **Save***
+*ภาพที่ 36 ① หัวข้อ **GitHub** ใน Manage Jenkins → System (ไม่ต้องกด Add GitHub Server) ② กด **Advanced** → **Shared secrets** → **Add shared secret** → ช่อง **Shared secret** เลือก `GitHub webhook shared secret` (= `github-webhook-secret`) · Signature algorithm คง **SHA-256 (Recommended)** → กด **Save***
 
 ### 6.4) สร้าง webhook ที่ repo `catfood-shop` (🌐 GitHub)
 
@@ -627,17 +635,17 @@ repo `catfood-shop` → แท็บ **Settings** → เมนูซ้าย *
 
 <a href="./images/lab4_gh_06a_webhook_form_url_secret.png"><img src="./images/lab4_gh_06a_webhook_form_url_secret.png" width="1000" alt="ฟอร์ม Add webhook Payload URL https://<NGROK_DOMAIN>/github-webhook/ Content type application/json Secret และ Enable SSL verification"></a>
 
-*ภาพที่ 36 ฟอร์ม **Add webhook**: ① **Payload URL** = `https://<NGROK_DOMAIN>/github-webhook/` — **ต้องมี `/` ท้าย** (ไม่มี `/` = policy ตอบ 403) ② **Content type** = `application/json` ③ **Secret** = `<WEBHOOK_SECRET>` ค่าเดียวกับ credential `github-webhook-secret` ④ **Enable SSL verification** (ค่าเริ่มต้น) — ngrok มี HTTPS ให้แล้ว · ค่าในภาพเป็น placeholder*
+*ภาพที่ 37 ฟอร์ม **Add webhook**: ① **Payload URL** = `https://<NGROK_DOMAIN>/github-webhook/` — **ต้องมี `/` ท้าย** (ไม่มี `/` = policy ตอบ 403) ② **Content type** = `application/json` ③ **Secret** = `<WEBHOOK_SECRET>` ค่าเดียวกับ credential `github-webhook-secret` ④ **Enable SSL verification** (ค่าเริ่มต้น) — ngrok มี HTTPS ให้แล้ว · ค่าในภาพเป็น placeholder*
 
 <a href="./images/lab4_gh_06b_webhook_form_events.png"><img src="./images/lab4_gh_06b_webhook_form_events.png" width="1000" alt="ฟอร์ม Add webhook ส่วน Which events เลือก Just the push event ติ๊ก Active และปุ่ม Add webhook"></a>
 
-*ภาพที่ 37 ① **Which events** เลือก **Just the push event.** — ส่งเฉพาะตอน git push (ค่าเริ่มต้น) ② ติ๊ก **Active** ไว้ — webhook ทำงานทันที ③ กด **Add webhook** → GitHub ส่ง `ping` ทดสอบทันที*
+*ภาพที่ 38 ① **Which events** เลือก **Just the push event.** — ส่งเฉพาะตอน git push (ค่าเริ่มต้น) ② ติ๊ก **Active** ไว้ — webhook ทำงานทันที ③ กด **Add webhook** → GitHub ส่ง `ping` ทดสอบทันที*
 
 <a href="./images/lab4_gh_05_webhooks_list.png"><img src="./images/lab4_gh_05_webhooks_list.png" width="1000" alt="หน้า Webhooks ของ repo มี webhook https://<NGROK_DOMAIN>/github... (push) เครื่องหมายถูกสีเขียว Last delivery was successful"></a>
 
-*ภาพที่ 38 กลับมาที่หน้า **Webhooks**: ① เมนูซ้าย Webhooks (ในหน้า Settings ของ repo) ② ปุ่ม **Add webhook** ใช้สร้างใหม่ ③ webhook ที่สร้างแล้ว ยิงไป `https://<NGROK_DOMAIN>/github-webhook/` เมื่อมี push ④ ✓ สีเขียว + **Last delivery was successful** = ส่งครั้งล่าสุดสำเร็จ (ครั้งแรกคือ `ping`) · กด Edit เพื่อเข้าแท็บ Recent Deliveries*
+*ภาพที่ 39 กลับมาที่หน้า **Webhooks**: ① เมนูซ้าย Webhooks (ในหน้า Settings ของ repo) ② ปุ่ม **Add webhook** ใช้สร้างใหม่ ③ webhook ที่สร้างแล้ว ยิงไป `https://<NGROK_DOMAIN>/github-webhook/` เมื่อมี push ④ ✓ สีเขียว + **Last delivery was successful** = ส่งครั้งล่าสุดสำเร็จ (ครั้งแรกคือ `ping`) · กด Edit เพื่อเข้าแท็บ Recent Deliveries*
 
-✅ ในแท็บ **Recent Deliveries** (คลิก **Edit** → แท็บด้านบน) ต้องมีแถว `ping` ✓ สีเขียว · response `200` (ภาพที่ 46 แถว ⑥)
+✅ ในแท็บ **Recent Deliveries** (คลิก **Edit** → แท็บด้านบน) ต้องมีแถว `ping` ✓ สีเขียว · response `200` (ภาพที่ 48 แถว ⑥)
 ✅ Jenkins **ไม่มี** build ใหม่ — `ping` เป็นแค่การทดสอบ ไม่ใช่ push · `docker logs jenkins` มี `PING webhook received from repo <https://github.com/<GITHUB_USER>/catfood-shop>!`
 
 ## ขั้นที่ 7 — ทดลอง ก: แก้ร้านแล้ว push → ร้านเปลี่ยนเอง (💻 devtools)
@@ -656,41 +664,43 @@ git push
 
 <a href="./images/lab4_term_02_git_push_v210.png"><img src="./images/lab4_term_02_git_push_v210.png" width="1000" alt="terminal devtools git diff แสดงแบนเนอร์ใหม่ ราคาทูน่า 299 เวอร์ชัน 2.1.0 และ git push main -> main"></a>
 
-*ภาพที่ 39 ผลจริง: `git diff --stat` = `2 files changed, 3 insertions(+), 3 deletions(-)` · ① แบนเนอร์โปรใหม่ `🐟 ทูน่าลดเหลือ ฿299 · ส่งฟรีเมื่อครบ ฿599` ② ราคาทูน่า `329 → 299` ③ เวอร์ชัน `2.0.0 → 2.1.0` ④ `abf4e3e..333a595  main -> main` = push ขึ้น main แล้ว → GitHub ยิง webhook (เลข commit ของเราจะต่างจากภาพ · ชื่อบัญชีปิดเป็น `<GITHUB_USER>`)*
+*ภาพที่ 40 ผลจริง: `git diff --stat` = `2 files changed, 3 insertions(+), 3 deletions(-)` · ① แบนเนอร์โปรใหม่ `🐟 ทูน่าลดเหลือ ฿299 · ส่งฟรีเมื่อครบ ฿599` ② ราคาทูน่า `329 → 299` ③ เวอร์ชัน `2.0.0 → 2.1.0` ④ `abf4e3e..333a595  main -> main` = push ขึ้น main แล้ว → GitHub ยิง webhook · ในภาพครอบ `git push` ด้วย `date +%T` เพื่อจับเวลา (08:56:04 → 08:56:06) และใช้ `commit -qam` (= `-am` แบบไม่พิมพ์สรุป) (เลข commit ของเราจะต่างจากภาพ · ชื่อบัญชีปิดเป็น `<GITHUB_USER>`)*
 
 🌐 สลับไปหน้า job `catfood-webhook` ภายในประมาณ 10 วินาที **#2 จะเริ่มเองโดยไม่มีใครกด** (รอบทดสอบ: push เสร็จ 08:56:06 → #2 เริ่ม 08:56:17 ห่าง ~11 วินาที):
 
+> 🕒 Jenkins ใน container แสดงเวลาเป็น **UTC** (ช้ากว่าเวลาไทย 7 ชั่วโมง) เช่น #2 ขึ้น `1:56:17 AM` = 08:56:17 เวลาไทย · log ของ `docker logs jenkins` และ `docker logs ngrok` ก็เป็น UTC ส่วน GitHub และ `date` ใน devtools แสดงเวลาไทย
+
 <a href="./images/lab4_e2e_03_job_running.png"><img src="./images/lab4_e2e_03_job_running.png" width="1000" alt="หน้า job catfood-webhook Stage View build 2 กำลังรัน stage Clone"></a>
 
-*ภาพที่ 40 หน้า job ขณะ **#2** กำลังรัน (Connect เสร็จ กำลังทำ Clone) ทั้งที่ไม่มีใครกด Build Now · แถว #1 ด้านล่างคือ build ที่เรากดเองในขั้นที่ 4*
+*ภาพที่ 41 หน้า job ขณะ **#2** กำลังรัน (Connect เสร็จ กำลังทำ Clone) ทั้งที่ไม่มีใครกด Build Now · แถว #1 ด้านล่างคือ build ที่เรากดเองในขั้นที่ 4*
 
 <a href="./images/lab4_jk_10_build2_started_by_push.png"><img src="./images/lab4_jk_10_build2_started_by_push.png" width="1000" alt="หน้า build 2 Started by GitHub push by <GITHUB_USER> และ commit v2.1.0"></a>
 
-*ภาพที่ 41 หน้า build #2: ① **Started by GitHub push by `<GITHUB_USER>`** — ไม่มีใครกดปุ่ม webhook สั่งเอง ② commit ที่ push (`v2.1.0: ทูน่าลดราคา + แบนเนอร์ใหม่`) อยู่ในส่วน Changes · build #2 ใช้เวลา ~1 นาที (เร็วกว่า #1 เพราะ Docker มี cache) · ชื่อบัญชีปิดเป็น placeholder*
+*ภาพที่ 42 หน้า build #2: ① **Started by GitHub push by `<GITHUB_USER>`** — ไม่มีใครกดปุ่ม webhook สั่งเอง ② commit ที่ push (`v2.1.0: ทูน่าลดราคา + แบนเนอร์ใหม่`) อยู่ในส่วน Changes · build #2 ใช้เวลา ~1 นาที (เร็วกว่า #1 เพราะ Docker มี cache) · ชื่อบัญชีปิดเป็น placeholder*
 
 <a href="./images/lab4_jk_11b_build2_stages.png"><img src="./images/lab4_jk_11b_build2_stages.png" width="1000" alt="หน้า Stages ของ build 2 เขียวครบ 6 stage Post Actions เปิดร้านได้ที่ localhost 3000 v2.1.0 build 2"></a>
 
-*ภาพที่ 41ก หน้า **Stages** ของ #2: ① `Started by GitHub push by <GITHUB_USER>` ② เขียวครบ Connect → Clone → Build → Test → Push → Deploy · Post Actions พิมพ์ `เปิดร้านได้ที่ http://localhost:3000 (v2.1.0 build #2 commit 333a595)`*
+*ภาพที่ 43 หน้า **Stages** ของ #2: ① `Started by GitHub push by <GITHUB_USER>` ② เขียวครบ Connect → Clone → Build → Test → Push → Deploy · Post Actions พิมพ์ `เปิดร้านได้ที่ http://localhost:3000 (v2.1.0 build #2 commit 333a595)`*
 
 ✅ Console ของ #2 มี `commit <sha ใหม่> · version 2.1.0` และ `Finished: SUCCESS` · refresh http://localhost:3000:
 
 [![หน้าร้านหลัง build 2 แบนเนอร์ใหม่ chip v2.1.0 build #2](./images/lab4_shop_02_v210_build2.png)](./images/lab4_shop_02_v210_build2_full.png)
 
-*ภาพที่ 42 ร้านหลัง push: แบนเนอร์เปลี่ยนเป็น `🐟 ทูน่าลดเหลือ ฿299 · ส่งฟรีเมื่อครบ ฿599` และ chip `v2.1.0 · build #2` · คลิกภาพเพื่อดูทั้งหน้า*
+*ภาพที่ 44 ร้านหลัง push: แบนเนอร์เปลี่ยนเป็น `🐟 ทูน่าลดเหลือ ฿299 · ส่งฟรีเมื่อครบ ฿599` และ chip `v2.1.0 · build #2` · คลิกภาพเพื่อดูทั้งหน้า*
 
 <a href="./images/lab4_shop_02b_v210_tuna.png"><img src="./images/lab4_shop_02b_v210_tuna.png" width="1000" alt="การ์ดสินค้า ทูน่าเนื้อแน่น อาหารเปียก ราคา 299 บาท"></a>
 
-*ภาพที่ 43 การ์ด **ทูน่าเนื้อแน่น อาหารเปียก** ราคา `฿299` (เดิม `฿329`) · ขนมไก่รูปหัวใจยัง `฿149`*
+*ภาพที่ 45 การ์ด **ทูน่าเนื้อแน่น อาหารเปียก** ราคา `฿299` (เดิม `฿329`) · ขนมไก่รูปหัวใจยัง `฿149`*
 
 <a href="./images/lab4_shop_02c_v210_deployinfo.png"><img src="./images/lab4_shop_02c_v210_deployinfo.png" width="1000" alt="ส่วน Deployment info Version 2.1.0 Jenkins build 2 Git commit 333a595"></a>
 
-*ภาพที่ 44 ส่วน **Deployment info** ท้ายหน้าร้าน: Version `2.1.0` · Jenkins build `#2` · Git commit `333a595` = commit ที่เรา push (ของเราเป็นเลขของตัวเอง) · Built at และ Container จะต่างจากภาพ*
+*ภาพที่ 46 ส่วน **Deployment info** ท้ายหน้าร้าน: Version `2.1.0` · Jenkins build `#2` · Git commit `333a595` = commit ที่เรา push (ของเราเป็นเลขของตัวเอง) · Built at และ Container จะต่างจากภาพ*
 
 ภาพเคลื่อนไหวของวงจรทั้งหมด:
 
 ![GIF วงจร git push ถึงร้านอัปเดต 8 ภาพ](./images/lab4_webhook_e2e.gif)
 
-*ภาพที่ 45 GIF 8 ภาพ ภาพละ 2 วินาที (16 วินาที): ① `git push` v2.1.0 → ② GitHub Recent Deliveries ✓ → ③ ngrok inspector รับ `POST /github-webhook/` ตอบ `200 OK` → ④ Jenkins เริ่ม #2 เอง "Started by GitHub push" → ⑤ Pipeline กำลังรัน → ⑥ Test ผ่าน → Push → Deploy → ⑦ ผลรวม #1–#4 (#3 แดงที่ Test จากขั้นที่ 9) → ⑧ ร้าน `v2.1.0 · build #2` ทูน่า ฿299 · ค่าจริงในทุกเฟรมปิดเป็น placeholder*
+*ภาพที่ 47 GIF 8 ภาพ ภาพละ 2 วินาที (16 วินาที): ① `git push` v2.1.0 → ② GitHub Recent Deliveries ✓ → ③ ngrok inspector รับ `POST /github-webhook/` ตอบ `200 OK` → ④ Jenkins เริ่ม #2 เอง "Started by GitHub push" → ⑤ Pipeline กำลังรัน → ⑥ Test ผ่าน → Push → Deploy (เฟรม ⑤⑥ ถ่ายจาก build #4 ซึ่งรันแบบเดียวกัน) → ⑦ ผลรวม #1–#4 (#3 แดงที่ Test จากขั้นที่ 9) → ⑧ ร้าน `v2.1.0 · build #2` ทูน่า ฿299 · ค่าจริงในทุกเฟรมปิดเป็น placeholder*
 
 ## ขั้นที่ 8 — ทดลอง ข: ตามรอย webhook ทีละจุด
 
@@ -702,17 +712,17 @@ repo → **Settings → Webhooks** → คลิก **Edit** ของ webhook �
 
 <a href="./images/lab4_gh_07_recent_deliveries.png"><img src="./images/lab4_gh_07_recent_deliveries.png" width="1000" alt="แท็บ Recent Deliveries มี ping push redelivery ทุกแถวเครื่องหมายถูกสีเขียว"></a>
 
-*ภาพที่ 46 แท็บ **Recent Deliveries** ตอนจบแล็บ (ใหม่อยู่บน): ⑥ `ping` แรก ตอน Add webhook ⑤ `push` → build #2 (ทูน่า ฿299) ④ `redelivery` → No changes (ข้อ 8.4) ③ `push` → build #3 (ราคา 0 · แดง ขั้นที่ 9) ② `push` → build #4 (revert) ① `ping` ล่าสุด ตอนแก้ Payload URL ⑦ ✓ สีเขียว = ส่งถึง Jenkins สำเร็จ คลิกแถวเพื่อดู Request/Response · ตอนนี้ของเราจะมีแค่ ping และ push แรก*
+*ภาพที่ 48 แท็บ **Recent Deliveries** ตอนจบแล็บ (ใหม่อยู่บน): ⑥ `ping` แรก ตอน Add webhook ⑤ `push` → build #2 (ทูน่า ฿299) ④ `redelivery` → No changes (ข้อ 8.4) ③ `push` → build #3 (ราคา 0 · แดง ขั้นที่ 9) ② `push` → build #4 (revert) ① `ping` ล่าสุด ตอนแก้ Payload URL ⑦ ✓ สีเขียว = ส่งถึง Jenkins สำเร็จ คลิกแถวเพื่อดู Request/Response · ตอนนี้ของเราจะมีแค่ ping และ push แรก*
 
 คลิกแถว `push` ของ build #2:
 
 <a href="./images/lab4_gh_08_delivery_push_request.png"><img src="./images/lab4_gh_08_delivery_push_request.png" width="1000" alt="delivery push แท็บ Request headers Request URL X-Github-Event push X-Hub-Signature-256 และ payload ref after"></a>
 
-*ภาพที่ 47 แท็บ **Request** = สิ่งที่ GitHub ส่งมา: ② `Request URL: https://<NGROK_DOMAIN>/github-webhook/` (POST ผ่าน ngrok) ③ `Content-Type: application/json` ตามที่ตั้ง ④ `X-Github-Event: push` = ชนิดเหตุการณ์ ⑤ `X-Hub-Signature-256` = ลายเซ็นจาก webhook secret · Jenkins ตรวจด้วย shared secret ⑥ Payload: `ref` = `refs/heads/main` · `after` = commit ใหม่ที่ Jenkins จะ build · โดเมนปิดเป็น placeholder*
+*ภาพที่ 49 ① แท็บ **Request** = สิ่งที่ GitHub ส่งมา: ② `Request URL: https://<NGROK_DOMAIN>/github-webhook/` (POST ผ่าน ngrok) ③ `Content-Type: application/json` ตามที่ตั้ง ④ `X-Github-Event: push` = ชนิดเหตุการณ์ ⑤ `X-Hub-Signature-256` = ลายเซ็นจาก webhook secret · Jenkins ตรวจด้วย shared secret ⑥ Payload: `ref` = `refs/heads/main` · `after` = commit ใหม่ที่ Jenkins จะ build · โดเมนปิดเป็น placeholder*
 
 <a href="./images/lab4_gh_09_delivery_push_response.png"><img src="./images/lab4_gh_09_delivery_push_response.png" width="1000" alt="delivery push แท็บ Response 200 Server Jetty Body ว่าง และปุ่ม Redeliver"></a>
 
-*ภาพที่ 48 แท็บ **Response 200**: ① Jenkins รับ webhook แล้ว GitHub จึงแสดง ✓ ② ปุ่ม **Redeliver** = ส่ง delivery เดิมซ้ำ (ข้อ 8.4) ③ `Server: Jetty` = เว็บเซิร์ฟเวอร์ของ Jenkins ตอบกลับมาผ่าน ngrok ④ Body ว่างเป็นเรื่องปกติ (Jenkins ตอบแค่ status 200)*
+*ภาพที่ 50 แท็บ **Response 200**: ① Jenkins รับ webhook แล้ว GitHub จึงแสดง ✓ ② ปุ่ม **Redeliver** = ส่ง delivery เดิมซ้ำ (ข้อ 8.4) ③ `Server: Jetty` = เว็บเซิร์ฟเวอร์ของ Jenkins ตอบกลับมาผ่าน ngrok ④ Body ว่างเป็นเรื่องปกติ (Jenkins ตอบแค่ status 200)*
 
 ### 8.2) ngrok: inspector และ log (🌐 + 🖥️)
 
@@ -720,13 +730,13 @@ repo → **Settings → Webhooks** → คลิก **Edit** ของ webhook �
 
 <a href="./images/lab4_ngrok_08_inspector_push.png"><img src="./images/lab4_ngrok_08_inspector_push.png" width="1000" alt="ngrok inspector localhost 4040 รายการ POST /github-webhook/ 200 OK และ payload ref after"></a>
 
-*ภาพที่ 49 ngrok inspector: ① request ล่าสุดคือ push จาก GitHub · Jenkins ตอบ `200 OK` (แถว `400 Bad Request` ล่างสุดคือ curl ทดสอบในข้อ 5.6) ② IP ต้นทางเป็นของ GitHub (ผู้ส่ง webhook) ③ `ref` = branch ที่ถูก push (`main`) ④ `after` = commit ใหม่ที่ Jenkins จะ build · ชื่อบัญชีและอีเมลใน payload ปิดเป็น placeholder · ปุ่ม **Replay** ใช้ส่ง request เดิมซ้ำได้*
+*ภาพที่ 51 ngrok inspector: ① request ล่าสุดคือ push จาก GitHub · Jenkins ตอบ `200 OK` (แถว `400 Bad Request` ล่างสุดคือ curl ทดสอบในข้อ 5.6) ② IP ต้นทางเป็นของ GitHub (ผู้ส่ง webhook) ③ `ref` = branch ที่ถูก push (`main`) ④ `after` = commit ใหม่ที่ Jenkins จะ build · ชื่อบัญชีและอีเมลใน payload ปิดเป็น placeholder · ปุ่ม **Replay** ใช้ส่ง request เดิมซ้ำได้*
 
 <a href="./images/lab4_ngrok_09_inspector_headers.png"><img src="./images/lab4_ngrok_09_inspector_headers.png" width="1000" alt="ngrok inspector แท็บ Headers Host User-Agent GitHub-Hookshot X-Github-Event push X-Hub-Signature-256"></a>
 
-*ภาพที่ 50 แท็บ **Headers** ของ request เดียวกัน: ① `Host` = โดเมน ngrok ของเรา (`<NGROK_DOMAIN>`) ② `User-Agent: GitHub-Hookshot/...` = ผู้ส่งคือ GitHub ③ `X-Github-Event: push` (ตอนสร้าง webhook เป็น `ping`) ④ `X-Hub-Signature-256` = ลายเซ็นที่ Jenkins ตรวจด้วย shared secret*
+*ภาพที่ 52 แท็บ **Headers** ของ request เดียวกัน: ① `Host` = โดเมน ngrok ของเรา (`<NGROK_DOMAIN>`) ② `User-Agent: GitHub-Hookshot/...` = ผู้ส่งคือ GitHub ③ `X-Github-Event: push` (ตอนสร้าง webhook เป็น `ping`) ④ `X-Hub-Signature-256` = ลายเซ็นที่ Jenkins ตรวจด้วย shared secret*
 
-🖥️ `docker logs --tail 20 ngrok` → แต่ละ request ที่เข้ามาเป็นบรรทัด `msg="join connections" ... l=<IP ของ jenkins>:8080 r=<IP ต้นทาง>` (ภาพที่ 30 สองบรรทัดล่าง)
+🖥️ `docker logs --tail 20 ngrok` → แต่ละ request ที่เข้ามาเป็นบรรทัด `msg="join connections" ... l=<IP ของ jenkins>:8080 r=<IP ต้นทาง>` (ภาพที่ 31 สองบรรทัดล่าง)
 
 ### 8.3) Jenkins: log ของ GitHub plugin (🖥️ host)
 
@@ -736,7 +746,7 @@ docker logs jenkins 2>&1 | grep -E "webhook|PushEvent|Triggering"
 
 <a href="./images/lab4_term_07_jenkins_logs.png"><img src="./images/lab4_term_07_jenkins_logs.png" width="1000" alt="terminal host docker logs jenkins grep แสดง PING webhook received Received PushEvent Poked catfood-webhook SCM changes detected Triggering"></a>
 
-*ภาพที่ 51 ผลจริง (ทั้งแล็บ): บรรทัดแรก `PING webhook received from repo` (ขั้นที่ 6) · ① `Received PushEvent for https://github.com/<GITHUB_USER>/catfood-shop from 140.82.x.x ⇒ https://<NGROK_DOMAIN>:8080/github-webhook/` = รับ push จาก GitHub ผ่าน ngrok ② `Poked catfood-webhook` = สะกิด job ที่ Repository URL ตรงกับ repo ใน payload ③ `SCM changes detected in catfood-webhook. Triggering #2` = เจอ commit ใหม่ → สั่ง build #2 · ถัดมาคือ redelivery (02:01:47 มี `Poked` แต่**ไม่มี** `Triggering`), #3 และ #4*
+*ภาพที่ 53 ผลจริง (ทั้งแล็บ): บรรทัดแรก `PING webhook received from repo` (ขั้นที่ 6) · ① `Received PushEvent for https://github.com/<GITHUB_USER>/catfood-shop from 140.82.x.x ⇒ https://<NGROK_DOMAIN>:8080/github-webhook/` = รับ push จาก GitHub ผ่าน ngrok ② `Poked catfood-webhook` = สะกิด job ที่ Repository URL ตรงกับ repo ใน payload ③ `SCM changes detected in catfood-webhook. Triggering #2` = เจอ commit ใหม่ → สั่ง build #2 · ถัดมาคือ redelivery (02:01:47 มี `Poked` แต่**ไม่มี** `Triggering`), #3 และ #4 · เวลาใน log เป็น UTC (02:01:47 = 09:01:47 เวลาไทย ตรงกับแถว redelivery ในภาพที่ 48)*
 
 - `:8080` ที่ต่อท้ายโดเมนในบรรทัด `Received PushEvent` เป็นแค่ข้อความใน log ของ Jenkins ไม่ใช่ URL ที่ GitHub ใช้ ไม่ต้องแก้อะไร
 
@@ -748,7 +758,7 @@ GitHub → Recent Deliveries → แถว `push` ของ build #2 → แท�
 
 <a href="./images/lab4_jk_12_hook_log_nochanges.png"><img src="./images/lab4_jk_12_hook_log_nochanges.png" width="1000" alt="หน้า GitHub Hook Log Last Built Revision already built by 2 No changes"></a>
 
-*ภาพที่ 52 **GitHub Hook Log** หลัง Redeliver: `Started by event from 140.82.x.x ⇒ ...` · ① `[poll] Last Built Revision` = Jenkins ดู commit ล่าสุดที่ build ไปแล้ว ② commit บน `main` ยังเป็นตัวเดิม — `already built by 2` ③ **`No changes`** → ไม่เริ่ม build ใหม่ · โดเมนและชื่อบัญชีปิดเป็น placeholder*
+*ภาพที่ 54 **GitHub Hook Log** หลัง Redeliver: `Started by event from 140.82.115.254 ⇒ ...` (IP ของ GitHub · เวลา 02:01:47 UTC) · ① `[poll] Last Built Revision` = Jenkins ดู commit ล่าสุดที่ build ไปแล้ว ② commit บน `main` ยังเป็นตัวเดิม — `already built by 2` ③ **`No changes`** → ไม่เริ่ม build ใหม่ · โดเมนและชื่อบัญชีปิดเป็น placeholder*
 
 > 💡 **สรุปสำคัญ:** webhook ของ GitHub plugin แปลว่า **"ไปเช็ก repo หน่อย"** ไม่ใช่ **"build เดี๋ยวนี้"** · Jenkins จะ build ก็ต่อเมื่อ branch `main` มี commit ใหม่ที่ยังไม่เคย build · ส่ง delivery เดิมซ้ำกี่ครั้งก็ไม่ build
 
@@ -766,31 +776,31 @@ git push
 
 <a href="./images/lab4_term_03_git_push_price0.png"><img src="./images/lab4_term_03_git_push_price0.png" width="1000" alt="terminal devtools git diff price 149 เป็น 0 git commit และ git push main -> main"></a>
 
-*ภาพที่ 53 ผลจริง: ① `price: 149 → 0` (ขนมไก่ `treats`) — unit test ต้องจับได้ ② `333a595..164a94a  main -> main` → webhook สั่ง build #3 เอง*
+*ภาพที่ 55 ผลจริง: ① `price: 149 → 0` (ขนมไก่ `treats`) — unit test ต้องจับได้ ② `333a595..164a94a  main -> main` → webhook สั่ง build #3 เอง*
 
 ✅ **#3** เริ่มเอง · Build ผ่าน แต่ **Test แดง** ภายในไม่กี่วินาที (รอบทดสอบ: ทั้ง build ล้มใน ~13 วินาที):
 
 <a href="./images/lab4_jk_13_console3_test_fail.png"><img src="./images/lab4_jk_13_console3_test_fail.png" width="1000" alt="Console build 3 npm test not ok 1 ทุกสินค้ามีราคาเป็นจำนวนเต็มบวก error treats ราคา 0 ไม่ถูกต้อง"></a>
 
-*ภาพที่ 54 Console #3 stage Test: ① `not ok 1 - ทุกสินค้ามีราคาเป็นจำนวนเต็มบวก` — unit test ข้อ 1 ไม่ผ่าน ② `error: 'treats: ราคา 0 ไม่ถูกต้อง'` = สาเหตุคือขนมไก่ (`treats`) ราคา 0 ที่เรา push · ข้อ 2 และ 3 ยัง `ok`*
+*ภาพที่ 56 Console #3 stage Test: ① `not ok 1 - ทุกสินค้ามีราคาเป็นจำนวนเต็มบวก` — unit test ข้อ 1 ไม่ผ่าน ② `error: 'treats: ราคา 0 ไม่ถูกต้อง'` = สาเหตุคือขนมไก่ (`treats`) ราคา 0 ที่เรา push · ข้อ 2 และ 3 ยัง `ok`*
 
 <a href="./images/lab4_jk_13b_console3_skipped.png"><img src="./images/lab4_jk_13b_console3_skipped.png" width="1000" alt="Console build 3 pass 2 fail 1 Stage Push skipped due to earlier failure Stage Deploy skipped"></a>
 
-*ภาพที่ 55 ① `# pass 2` `# fail 1` → stage Test แดง ② `Stage "Push" skipped due to earlier failure(s)` → image ที่พังไม่ขึ้น Docker Hub ③ `Stage "Deploy" skipped due to earlier failure(s)` → ร้านเดิม (build #2) ยังเปิดอยู่ · Post Actions ยังรันลบไฟล์ login ตามปกติ แล้วจบด้วย `ERROR: script returned exit code 1` และ `Finished: FAILURE`*
+*ภาพที่ 57 ① `# pass 2` `# fail 1` → stage Test แดง ② `Stage "Push" skipped due to earlier failure(s)` → image ที่พังไม่ขึ้น Docker Hub ③ `Stage "Deploy" skipped due to earlier failure(s)` → ร้านเดิม (build #2) ยังเปิดอยู่ · Post Actions ยังรันลบไฟล์ login ตามปกติ (บรรทัดล่างสุดของภาพ) แล้วท้าย console (ใต้ภาพ) จบด้วย `ERROR: script returned exit code 1` และ `Finished: FAILURE`*
 
 <a href="./images/lab4_jk_14_build3_stages.png"><img src="./images/lab4_jk_14_build3_stages.png" width="1000" alt="หน้า Stages build 3 Test แดง Push Deploy ถูกข้าม log fail 1"></a>
 
-*ภาพที่ 56 หน้า **Stages** ของ #3: ① **Test ✗ แดง** — unit test ไม่ผ่าน ② **Push** และ **Deploy** ถูกข้าม (ไอคอน `»`) → ไม่มี tag `lab4-3` บน Docker Hub และร้านเดิมยังอยู่ ③ log ของ stage Test จบด้วย `# fail 1` และ `script returned exit code 1`*
+*ภาพที่ 58 หน้า **Stages** ของ #3: ① **Test ✗ แดง** — unit test ไม่ผ่าน ② **Push** และ **Deploy** ถูกข้าม (ไอคอน `»`) → ไม่มี tag `lab4-3` บน Docker Hub และร้านเดิมยังอยู่ ③ log ของ stage Test จบด้วย `# fail 1` และ `script returned exit code 1`*
 
 ✅ refresh http://localhost:3000 — **ร้านไม่เปลี่ยน**:
 
 <a href="./images/lab4_shop_03_still_build2.png"><img src="./images/lab4_shop_03_still_build2.png" width="1000" alt="หน้าร้านหลัง build 3 แดง chip ยังเป็น v2.1.0 build #2"></a>
 
-*ภาพที่ 57 ① หลัง build #3 แดง ร้านยังเป็น `v2.1.0 · build #2` — ของพังไม่ถึงลูกค้า*
+*ภาพที่ 59 ① หลัง build #3 แดง ร้านยังเป็น `v2.1.0 · build #2` — ของพังไม่ถึงลูกค้า*
 
 <a href="./images/lab4_shop_03b_treats_still_149.png"><img src="./images/lab4_shop_03b_treats_still_149.png" width="1000" alt="การ์ดขนมไก่รูปหัวใจยังราคา 149 บาท"></a>
 
-*ภาพที่ 58 ② ขนมไก่รูปหัวใจยังราคา `฿149` — ราคา 0 ใน commit ที่พังไม่ถูก deploy*
+*ภาพที่ 60 ② ขนมไก่รูปหัวใจยังราคา `฿149` — ราคา 0 ใน commit ที่พังไม่ถูก deploy*
 
 แก้กลับด้วย `git revert` (สร้าง commit ใหม่ที่ย้อนการแก้ของ commit ล่าสุด ประวัติเดิมไม่หาย):
 
@@ -802,36 +812,36 @@ git log --oneline -4
 
 <a href="./images/lab4_term_04_git_revert.png"><img src="./images/lab4_term_04_git_revert.png" width="1000" alt="terminal devtools git revert --no-edit HEAD git push และ git log 4 commits"></a>
 
-*ภาพที่ 59 ผลจริง: ① `[main c973f9f] Revert "ขนมไก่ราคา 0 (ตั้งใจให้ test ไม่ผ่าน)"` = commit ใหม่ที่ย้อนราคาคืน (ไม่ลบประวัติ) ② `164a94a..c973f9f  main -> main` → build #4 ผ่าน → deploy ใหม่ · `git log --oneline -4` เห็นครบ 4 commit ของแล็บ*
+*ภาพที่ 61 ผลจริง: ① `[main c973f9f] Revert "ขนมไก่ราคา 0 (ตั้งใจให้ test ไม่ผ่าน)"` = commit ใหม่ที่ย้อนราคาคืน (ไม่ลบประวัติ) ② `164a94a..c973f9f  main -> main` → build #4 ผ่าน → deploy ใหม่ · `git log --oneline -4` เห็นครบ 4 commit ของแล็บ*
 
 ✅ **#4** เขียวครบ 6 stage · refresh ร้าน:
 
 <a href="./images/lab4_shop_04_v210_build4.png"><img src="./images/lab4_shop_04_v210_build4.png" width="1000" alt="หน้าร้านหลัง build 4 chip v2.1.0 build #4"></a>
 
-*ภาพที่ 60 ร้านหลัง revert: chip `v2.1.0 · build #4` (เวอร์ชันเดิมเพราะ revert ไม่ได้แก้ `package.json` แต่เป็น build ใหม่) · ขนมไก่กลับเป็น `฿149` · ทูน่ายัง `฿299`*
+*ภาพที่ 62 ร้านหลัง revert: chip `v2.1.0 · build #4` (เวอร์ชันเดิมเพราะ revert ไม่ได้แก้ `package.json` แต่เป็น build ใหม่) · เลื่อนลงไปที่การ์ดสินค้า: ขนมไก่กลับเป็น `฿149` · ทูน่ายัง `฿299`*
 
 <a href="./images/lab4_shop_04b_deployinfo_build4.png"><img src="./images/lab4_shop_04b_deployinfo_build4.png" width="1000" alt="Deployment info Version 2.1.0 Jenkins build 4 Git commit c973f9f"></a>
 
-*ภาพที่ 61 **Deployment info** หลัง build #4: Version `2.1.0` · Jenkins build `#4` · Git commit `c973f9f` = commit revert ล่าสุดบน GitHub (ของเราเป็นเลขของตัวเอง)*
+*ภาพที่ 63 **Deployment info** หลัง build #4: Version `2.1.0` · Jenkins build `#4` · Git commit `c973f9f` = commit revert ล่าสุดบน GitHub (ของเราเป็นเลขของตัวเอง)*
 
 ## ขั้นที่ 10 — ตรวจปิดแล็บด้วยตา (🌐 ไม่ต้องส่งไฟล์)
 
 | ที่ | สิ่งที่ต้องเห็น |
 |---|---|
-| Jenkins `catfood-webhook` → **Full Stage View** | #1 ✓ · #2 ✓ · #3 แดงที่ Test (Push/Deploy ระบายแดง = ถูกข้าม) · #4 ✓ (ภาพที่ 62) |
+| Jenkins `catfood-webhook` → **Full Stage View** | #1 ✓ · #2 ✓ · #3 แดงที่ Test (Push/Deploy ระบายแดง = ถูกข้าม) · #4 ✓ (ภาพที่ 64) |
 | Jenkins build #2 (และ #3, #4) | **Started by GitHub push by `<GITHUB_USER>`** · มีแค่ #1 ที่เป็น Started by user admin |
-| GitHub → Settings → Webhooks → Recent Deliveries | `ping` ✓ · `push` ✓ 3 ครั้ง · `redelivery` ✓ — ทุกแถว ✓ สีเขียว (ภาพที่ 46) |
-| Docker Hub → `catfood-shop` → Tags | `lab4-1`, `lab4-2`, `lab4-4` · **ไม่มี** `lab4-3` (ภาพที่ 63) |
-| ร้าน http://localhost:3000 | chip `v2.1.0 · build #4` · แบนเนอร์ทูน่า · ทูน่า ฿299 · ขนมไก่ ฿149 · Deployment info **Git commit ตรงกับ** commit ล่าสุดบน GitHub (💻 `git -C ~/catfood-shop log -1 --format=%h`) (ภาพที่ 61) |
-| ngrok dashboard → Endpoints | `https://<NGROK_DOMAIN>` online พร้อมป้าย Traffic Policy (ภาพที่ 31) · inspector `localhost:4040` มี `POST /github-webhook/` หลายรายการ |
+| GitHub → Settings → Webhooks → Recent Deliveries | `ping` ✓ · `push` ✓ 3 ครั้ง · `redelivery` ✓ — ทุกแถว ✓ สีเขียว (ภาพที่ 48) |
+| Docker Hub → `catfood-shop` → Tags | `lab4-1`, `lab4-2`, `lab4-4` · **ไม่มี** `lab4-3` (ภาพที่ 65) |
+| ร้าน http://localhost:3000 | chip `v2.1.0 · build #4` · แบนเนอร์ทูน่า · ทูน่า ฿299 · ขนมไก่ ฿149 · Deployment info **Git commit ตรงกับ** commit ล่าสุดบน GitHub (💻 `git -C ~/catfood-shop log -1 --format=%h`) (ภาพที่ 63) |
+| ngrok dashboard → Endpoints | `https://<NGROK_DOMAIN>` online พร้อมป้าย Traffic Policy (ภาพที่ 32) · inspector `localhost:4040` มี `POST /github-webhook/` หลายรายการ |
 
 <a href="./images/lab4_jk_16_full_stage_view.png"><img src="./images/lab4_jk_16_full_stage_view.png" width="1000" alt="Full Stage View ของ catfood-webhook build 1 ถึง 4 build 3 แดงที่ Test Push Deploy"></a>
 
-*ภาพที่ 62 **Full Stage View** (เมนูซ้ายของ job): ① #1 กด Build Now เองครั้งเดียว (`No Changes` = build แรก) ② #2 มาจาก git push (1 commit): ทูน่า ฿299 · v2.1.0 ③ #3 push ราคา 0 → Test แดง · Push/Deploy ไม่ได้ทำงาน (Stage View ระบายแดงให้ stage ที่ถูกข้ามด้วย) ④ #4 git revert + push → เขียวครบ ร้านกลับมาปกติ*
+*ภาพที่ 64 **Full Stage View** (เมนูซ้ายของ job): ① #1 กด Build Now เองครั้งเดียว (`No Changes` = build แรก) ② #2 มาจาก git push (1 commit): ทูน่า ฿299 · v2.1.0 ③ #3 push ราคา 0 → Test แดง · Push/Deploy ไม่ได้ทำงาน (Stage View ระบายแดงให้ stage ที่ถูกข้ามด้วย) ④ #4 git revert + push → เขียวครบ ร้านกลับมาปกติ*
 
 <a href="./images/lab4_hub_01_tags.png"><img src="./images/lab4_hub_01_tags.png" width="1000" alt="หน้า Tags ของ catfood-shop บน Docker Hub ค้น lab4 มี lab4-4 lab4-2 lab4-1 ไม่มี lab4-3"></a>
 
-*ภาพที่ 63 หน้า **Tags** ของ `<DOCKER_USER>/catfood-shop` บน Docker Hub (ค้น `lab4`): ① `lab4-4` — build #4 (git revert) ② `lab4-2` — build #2 (ทูน่าลดราคา) ③ `lab4-1` — build #1 (Build Now ครั้งแรก) · ⚠️ **ไม่มี `lab4-3`** — build #3 ไม่ผ่าน Test จึงไม่ได้ Push · ชื่อบัญชีปิดเป็น `<DOCKER_USER>`*
+*ภาพที่ 65 หน้า **Tags** ของ `<DOCKER_USER>/catfood-shop` บน Docker Hub (ค้น `lab4`): ① `lab4-4` — build #4 (git revert) ② `lab4-2` — build #2 (ทูน่าลดราคา) ③ `lab4-1` — build #1 (Build Now ครั้งแรก) · ⚠️ **ไม่มี `lab4-3`** — build #3 ไม่ผ่าน Test จึงไม่ได้ Push · ชื่อบัญชีปิดเป็น `<DOCKER_USER>`*
 
 ## ขั้นที่ 11 — ปิด ngrok และเก็บกวาด
 
@@ -872,7 +882,7 @@ docker ps --filter name=ngrok
 | `docker logs ngrok` มี error เรื่อง authtoken (`ERR_NGROK_105` / `ERR_NGROK_4018` ตามเอกสาร ngrok) | ไม่ได้ใส่ `NGROK_AUTHTOKEN` หรือคัดลอกผิด/ถูก Reset | คัดลอกใหม่จาก Your Authtoken → `docker rm -f ngrok` แล้วรันข้อ 5.5 ใหม่ |
 | `docker logs ngrok` มี error session limit / endpoint already online (`ERR_NGROK_108` / `ERR_NGROK_334` ตามเอกสาร ngrok) | บัญชีเดียวกันมี ngrok อีกตัวออนไลน์อยู่ (เครื่องอื่น / container เก่า / เพื่อนใช้ authtoken เดียวกัน) | ปิดตัวอื่น (`docker ps -a`, dashboard → Agents) ให้เหลือตัวเดียว · ใช้บัญชีของตัวเอง |
 | `docker logs ngrok` บอกว่าใช้โดเมนนี้ไม่ได้ | `--url` ไม่ตรงกับ dev domain ในบัญชี (สะกดผิด, ใช้ของเพื่อน, ใส่ `.app` แทน `.dev`) | คัดลอกโดเมนจากหน้า Domains ของบัญชีตัวเอง (ข้อ 5.4) |
-| `docker logs ngrok` หาไฟล์ policy ไม่เจอ (`no such file`) | ไม่ได้ `cd` เข้าโฟลเดอร์แล็บที่มี `ngrok/` ก่อนรัน · `${PWD}` จึง mount ผิดที่ | `docker rm -f ngrok` → `cd 04_Jenkins/001_Jenikin/004_LAB_Webhook_Trigger` → รันข้อ 5.5 ใหม่ |
+| `docker logs ngrok` หาไฟล์ policy ไม่เจอ (`no such file`) | ไม่ได้ `cd` เข้าโฟลเดอร์แล็บที่มี `ngrok/` ก่อนรัน · `${PWD}` จึง mount ผิดที่ | `docker rm -f ngrok` → `cd ~/labwork/DevTools/04_Jenkins/001_Jenikin/004_LAB_Webhook_Trigger` → รันข้อ 5.5 ใหม่ |
 | เปิด http://localhost:4040 ไม่ได้ | ไม่ได้ publish `-p 127.0.0.1:4040:4040` หรือ port 4040 ถูกใช้อยู่ | รันข้อ 5.5 ตรงตัว · ปิดโปรแกรมที่ใช้ port 4040 |
 | Test ล้ม `not ok 1 - ทุกสินค้ามีราคาเป็นจำนวนเต็มบวก` / `treats: ราคา 0 ไม่ถูกต้อง` **(พบจริง)** | ข้อมูลสินค้าผิด (ตั้งใจในขั้นที่ 9) · Push/Deploy ถูกข้าม ร้านเดิมยังอยู่ | แก้ข้อมูลแล้ว push หรือ `git revert --no-edit HEAD && git push` |
 | log ของ stage Push มี `...: Waiting` ซ้ำหลายสิบบรรทัด | ปกติของ `docker push` ที่รันแบบไม่มี TTY | ไม่ต้องแก้ ดูแค่ว่ามี `lab4-N: digest: sha256:...` |
