@@ -1,0 +1,158 @@
+// LAB 4 — git push → GitHub webhook → ngrok → Jenkins: Connect → Clone → Build → Test → Push → Deploy
+// ต้องมี: plugin "SSH Agent" และ "GitHub" · credential devtools-ssh, dockerhub (จาก LAB 3) และ github-token
+// Jenkins clone private repo เอง แล้วส่งซอร์สไป devtools ทาง SSH: devtools ไม่ต้องรู้ token ของ GitHub
+
+pipeline {
+  agent any
+
+  triggers {
+    githubPush()                // รับ webhook จาก GitHub (= ติ๊ก GitHub hook trigger for GITScm polling)
+  }
+
+  options {
+    disableConcurrentBuilds()   // push ติดกันหลายครั้งให้รอคิว: ทุก build ใช้โฟลเดอร์ ชื่อ container และ port 3000 เดียวกัน
+    skipDefaultCheckout()       // checkout เองใน stage Clone เพื่อเก็บเลข commit
+  }
+
+  environment {
+    // accept-new: จำ host key ของ devtools ครั้งแรก ถ้าเปลี่ยนภายหลังจะปฏิเสธ · BatchMode: ไม่ถามรหัสผ่าน
+    SSH_DEVTOOLS = 'ssh -o StrictHostKeyChecking=accept-new -o BatchMode=yes root@devtools'
+    SRC_DIR      = '/root/lab4-work/catfood-shop'   // ซอร์สที่ Jenkins ส่งไปให้ devtools build
+    AUTH_DIR     = '/root/lab4-work/docker-auth'    // ไฟล์ login Docker Hub ชั่วคราวบน devtools
+    IMAGE        = "catfood-shop:lab4-${env.BUILD_NUMBER}"
+    // APP_VERSION และ COMMIT ตั้งใน stage Clone ห้ามประกาศซ้ำที่นี่ (ค่าใน environment จะทับค่าที่ตั้งใน script)
+  }
+
+  stages {
+    stage('Connect') {
+      steps {
+        sshagent(credentials: ['devtools-ssh']) {
+          sh '$SSH_DEVTOOLS "hostname && whoami && docker --version"'
+        }
+      }
+    }
+
+    stage('Clone') {
+      steps {
+        script {
+          // Jenkins clone private repo ด้วย credential github-token ที่ตั้งไว้ใน job (commit เดียวกับ Jenkinsfile)
+          def scmVars = checkout scm
+          env.COMMIT = scmVars.GIT_COMMIT.substring(0, 7)
+          // เวอร์ชันมาจาก package.json ของ repo (webhook ไม่มีคนกรอก parameter)
+          env.APP_VERSION = sh(returnStdout: true,
+                               script: 'grep -m1 \'"version"\' package.json | cut -d \'"\' -f4').trim()
+          // ค่านี้ถูกส่งต่อเข้า shell บน devtools จึงต้องเป็นตัวเลขกับจุดเท่านั้น
+          if (!(env.APP_VERSION ==~ /[0-9]+\.[0-9]+\.[0-9]+/)) {
+            error "version ใน package.json ต้องเป็นรูปแบบ X.Y.Z (ได้ '${env.APP_VERSION}')"
+          }
+          echo "commit ${env.COMMIT} · version ${env.APP_VERSION}"
+        }
+        sshagent(credentials: ['devtools-ssh']) {
+          // ส่งซอร์ส (ไม่รวม .git) เป็น tar ผ่าน SSH ไปแตกบน devtools
+          // /bin/sh ของ Jenkins ไม่มี pipefail: บรรทัดสุดท้ายตรวจว่าไฟล์ไปถึงจริง
+          sh '''
+            $SSH_DEVTOOLS "rm -rf $SRC_DIR && mkdir -p $SRC_DIR"
+            tar --exclude=.git -cf - . | $SSH_DEVTOOLS "tar -xf - -C $SRC_DIR"
+            $SSH_DEVTOOLS "ls $SRC_DIR && test -f $SRC_DIR/package.json"
+            '''.stripIndent()
+        }
+      }
+    }
+
+    stage('Build') {
+      steps {
+        sshagent(credentials: ['devtools-ssh']) {
+          sh '''
+            $SSH_DEVTOOLS "SRC_DIR=$SRC_DIR IMAGE=$IMAGE APP_VERSION=$APP_VERSION BUILD_NUMBER=$BUILD_NUMBER COMMIT=$COMMIT bash -ex" <<'EOF'
+              cd "$SRC_DIR"
+              docker build \
+                --build-arg APP_VERSION="$APP_VERSION" \
+                --build-arg BUILD_NUMBER="$BUILD_NUMBER" \
+                --build-arg GIT_COMMIT="$COMMIT" \
+                --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                -t "$IMAGE" .
+              docker image ls "$IMAGE"
+            EOF
+            '''.stripIndent()
+        }
+      }
+    }
+
+    stage('Test') {
+      steps {
+        sshagent(credentials: ['devtools-ssh']) {
+          sh '''
+            $SSH_DEVTOOLS "IMAGE=$IMAGE APP_VERSION=$APP_VERSION BUILD_NUMBER=$BUILD_NUMBER COMMIT=$COMMIT bash -ex" <<'EOF'
+              docker run --rm "$IMAGE" npm test --silent   # ① unit test ข้อมูลสินค้า (tests/products.test.mjs)
+              docker rm -f catfood-test || true             # ② smoke test: รันจริงแล้วถาม /api/health
+              docker run -d --name catfood-test "$IMAGE"
+              trap 'docker rm -f catfood-test' EXIT         # ลบ container ทดสอบเสมอ แม้ test ไม่ผ่าน
+              for i in $(seq 1 30); do
+                [ "$(docker inspect -f '{{.State.Health.Status}}' catfood-test)" = healthy ] && break
+                sleep 1
+              done
+              docker exec catfood-test wget -qO- http://127.0.0.1:3000/api/health |
+                tr -d '"' | grep -F "version:$APP_VERSION,build:$BUILD_NUMBER,commit:$COMMIT,"
+            EOF
+            '''.stripIndent()
+        }
+      }
+    }
+
+    stage('Push') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub',
+                         usernameVariable: 'HUB_USER', passwordVariable: 'HUB_TOKEN')]) {
+          sshagent(credentials: ['devtools-ssh']) {
+            // token ส่งทาง stdin เข้า --password-stdin: ไม่อยู่ใน command line และ console
+            sh '''
+              set +x
+              echo "$HUB_TOKEN" | $SSH_DEVTOOLS "umask 077; docker --config $AUTH_DIR login -u $HUB_USER --password-stdin"
+              set -x
+              $SSH_DEVTOOLS docker tag $IMAGE $HUB_USER/$IMAGE
+              $SSH_DEVTOOLS docker --config $AUTH_DIR push $HUB_USER/$IMAGE
+              $SSH_DEVTOOLS docker image rm $IMAGE
+              '''.stripIndent()
+          }
+        }
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        // ใช้ HUB_USER ตั้งชื่อ image และใช้ไฟล์ login จาก stage Push (post ลบให้ตอนจบ)
+        withCredentials([usernamePassword(credentialsId: 'dockerhub',
+                         usernameVariable: 'HUB_USER', passwordVariable: 'HUB_TOKEN')]) {
+          sshagent(credentials: ['devtools-ssh']) {
+            sh '''
+              $SSH_DEVTOOLS "AUTH_DIR=$AUTH_DIR IMAGE=$HUB_USER/$IMAGE APP_VERSION=$APP_VERSION BUILD_NUMBER=$BUILD_NUMBER COMMIT=$COMMIT bash -ex" <<'EOF'
+                docker image rm "$IMAGE"                  # ลบ image ในเครื่อง เพื่อให้ pull มาจาก Docker Hub จริง
+                docker --config "$AUTH_DIR" pull "$IMAGE"
+                docker rm -f catfood-web || true          # ลบร้านเวอร์ชันเดิม (ของ LAB 3 หรือ build ก่อน)
+                docker run -d --name catfood-web --restart unless-stopped -p 3000:3000 "$IMAGE"
+                for i in $(seq 1 30); do
+                  [ "$(docker inspect -f '{{.State.Health.Status}}' catfood-web)" = healthy ] && break
+                  sleep 1
+                done
+                curl -fsS http://localhost:3000/api/health |
+                  tr -d '"' | grep -F "version:$APP_VERSION,build:$BUILD_NUMBER,commit:$COMMIT,"
+              EOF
+              '''.stripIndent()
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "เปิดร้านได้ที่ http://localhost:3000 (v${env.APP_VERSION} build #${env.BUILD_NUMBER} commit ${env.COMMIT})"
+    }
+    always {
+      // ลบไฟล์ login Docker Hub บน devtools เสมอ ทั้งตอนสำเร็จและตอน build ล้มกลางทาง
+      sshagent(credentials: ['devtools-ssh']) {
+        sh '$SSH_DEVTOOLS "rm -rf $AUTH_DIR" || true'
+      }
+    }
+  }
+}
