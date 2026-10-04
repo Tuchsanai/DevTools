@@ -1,0 +1,56 @@
+#!/bin/bash
+# k8s-up — สร้าง kind cluster สำหรับ lab (ค่าเริ่มต้นชื่อ "lab", 1 control-plane + 2 worker)
+#   override ได้ด้วย env:
+#     KIND_CONFIG       (default: /etc/devtools/kind/kind-lab.yaml)
+#     KIND_CLUSTER_NAME (default: lab)
+#     KIND_NODE_IMAGE   (default: ว่าง = ใช้ node image default ของ kind เวอร์ชันนี้)
+set -euo pipefail
+
+KIND_CONFIG="${KIND_CONFIG:-/etc/devtools/kind/kind-lab.yaml}"
+KIND_CLUSTER_NAME="${KIND_CLUSTER_NAME:-lab}"
+KIND_NODE_IMAGE="${KIND_NODE_IMAGE:-}"
+CONTEXT="kind-${KIND_CLUSTER_NAME}"
+
+log() { echo "[k8s-up] $*"; }
+
+# --- รอ dockerd (Docker-in-Docker) พร้อม -------------------------------------
+deadline=$((SECONDS + 90))
+until docker info >/dev/null 2>&1; do
+    if [ "$SECONDS" -ge "$deadline" ]; then
+        echo "[k8s-up] ERROR: dockerd ไม่พร้อมภายใน 90 วินาที — ดู log ที่ /var/log/dockerd.log" >&2
+        echo "[k8s-up]        (container ต้องรันด้วย privileged: true จึงจะใช้ Docker-in-Docker ได้)" >&2
+        exit 1
+    fi
+    sleep 2
+done
+log "dockerd ready"
+
+# --- มีคลัสเตอร์อยู่แล้ว → ข้าม -------------------------------------------------
+if kind get clusters 2>/dev/null | grep -qx "$KIND_CLUSTER_NAME"; then
+    log "cluster '$KIND_CLUSTER_NAME' มีอยู่แล้ว — ข้ามการสร้าง (ลบด้วย k8s-down)"
+    kubectl --context "$CONTEXT" get nodes -o wide || true
+    exit 0
+fi
+
+# --- สร้างคลัสเตอร์ -----------------------------------------------------------
+args=(create cluster --name "$KIND_CLUSTER_NAME" --config "$KIND_CONFIG")
+[ -n "$KIND_NODE_IMAGE" ] && args+=(--image "$KIND_NODE_IMAGE")
+log "kind ${args[*]}"
+kind "${args[@]}"
+
+log "waiting for all nodes Ready (timeout 180s)..."
+kubectl --context "$CONTEXT" wait --for=condition=Ready nodes --all --timeout=180s
+
+echo
+kubectl --context "$CONTEXT" get nodes -o wide
+cat <<MSG
+
+[k8s-up] cluster '$KIND_CLUSTER_NAME' พร้อมใช้งาน (kubectl context: $CONTEXT)
+  kubectl get pods -A                       # ดู pod ทั้งหมด (alias: k get pods -A)
+  kubectl apply -f /workspace/examples/web-deployment.yaml   # deploy nginx → http://localhost:30080
+  docker build -t myapp:1.0 /workspace/examples/myapp           # build image myapp จากตัวอย่าง
+  kind load docker-image myapp:1.0 --name $KIND_CLUSTER_NAME   # นำ image จาก dockerd เข้า node
+  k9s                                       # terminal UI ดู cluster
+  k8s-down                                  # ลบคลัสเตอร์
+  NodePort ที่ map ออก host: 30080 30081 30082
+MSG

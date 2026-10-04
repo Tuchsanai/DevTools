@@ -1,0 +1,50 @@
+# docker-compose.yml — รัน k8s-lab container (SSH + JupyterLab + Docker-in-Docker + kind/kubectl/helm/k9s)
+#
+#   docker compose up -d --build  # build image devtools-kind:2569_1 จาก Dockerfile ในโฟลเดอร์นี้แล้วรัน
+#   docker compose exec k8s-lab k8s-up    # สร้าง kind cluster "lab" (1 control-plane + 2 worker)
+#   docker compose exec k8s-lab k8s-down  # ลบคลัสเตอร์
+#   docker compose down           # หยุดและลบ container (ข้อมูลใน ./workspace ยังอยู่)
+#
+# พอร์ตตั้งไว้ต่างจาก devtools (2222 / 8888) เพื่อให้รันคู่กันบนเครื่องเดียวได้:
+#   SSH        → ssh root@localhost -p 2223                      (password: passwd)
+#                ssh -i Devtool_SSH/devtoolSSH root@localhost -p 2223   (key)
+#   JupyterLab → http://localhost:8889                           (ไม่มีรหัสผ่าน)
+#   NodePort   → http://localhost:30080 / 30081 / 30082          (service type NodePort ในคลัสเตอร์)
+#
+# SSH ด้วย key: key สำเร็จรูปอยู่ที่ ./Devtool_SSH/devtoolSSH (+ .pub) — ถ้าโฟลเดอร์ว่าง container สร้างให้เอง
+#
+# ปรับค่าได้ผ่าน environment หรือไฟล์ .env ข้าง ๆ (ทุกค่ามี default):
+#   SSH_PORT=2223  JUPYTER_PORT=8889  JUPYTER_PASSWORD=   (ว่าง = ไม่มีรหัสผ่าน)
+#   KIND_AUTO_CREATE=0   (1 = สร้าง kind cluster อัตโนมัติตอน container start, log: /var/log/k8s-up.log)
+#
+# env_file: /root/workspace/DGX_2024/.env ถูกโหลดเป็น environment ของ container
+# (เห็นใน terminal / kernel ของ JupyterLab; SSH session ไม่สืบทอด env นี้)
+
+services:
+  k8s-lab:
+    image: devtools-kind:2569_1
+    build: .
+    container_name: k8s-lab
+    hostname: k8s-lab
+    privileged: true            # จำเป็นสำหรับ Docker-in-Docker (dockerd ข้างใน) และ kind node
+    stdin_open: true            # -i
+    tty: true                   # -t  → start.sh จะเปิด bash ให้เมื่อ attach
+    restart: unless-stopped
+    env_file:                   # โหลด credential ส่วนตัว (HF_TOKEN, GITHUB_TOKEN, DOCKER_*, ...) เข้า container
+      - path: /root/workspace/DGX_2024/.env
+        required: false         # ไม่มีไฟล์ก็รันได้ (เช่นบนเครื่องอื่น)
+    environment:
+      JUPYTER_PASSWORD: ${JUPYTER_PASSWORD:-}   # ว่าง = JupyterLab ไม่ถามรหัสผ่าน
+      KIND_AUTO_CREATE: ${KIND_AUTO_CREATE:-0}  # 1 = รัน k8s-up อัตโนมัติตอน start
+    ports:
+      - "${SSH_PORT:-2223}:22"        # SSH        → ssh root@localhost -p 2223 (password: passwd)
+                                      #              ssh -i Devtool_SSH/devtoolSSH root@localhost -p 2223 (key)
+      - "${JUPYTER_PORT:-8889}:8888"  # JupyterLab → http://localhost:8889  (ไม่มีรหัสผ่าน)
+      - "30080-30082:30080-30082"     # NodePort ของ kind cluster (extraPortMappings ใน kind-lab.yaml)
+    volumes:
+      - ./workspace:/workspace        # งานของนักศึกษาอยู่บน host ไม่หายเมื่อลบ container
+      - k8s-lab-dind:/var/lib/docker  # image/container ของ Docker-in-Docker (รวม kind node)
+      - ./Devtool_SSH:/etc/devtools/ssh  # devtoolSSH(.pub) → start.sh ใส่ .pub ใน authorized_keys (ว่าง = สร้างให้)
+
+volumes:
+  k8s-lab-dind:
