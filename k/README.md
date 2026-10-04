@@ -49,20 +49,20 @@
 
 | รูปที่ | เรื่อง | รูปที่ | เรื่อง |
 |:---:|---|:---:|---|
-| 1 | [การเปรียบเทียบการบริหารคอนเทนเนอร์ก่อนและหลังใช้ Kubernetes](#fig-1) | 15 | [kubelet](#fig-15) |
-| 2 | [วิวัฒนาการของการติดตั้งใช้งานซอฟต์แวร์](#fig-2) | 16 | [Container Runtime](#fig-16) |
-| 3 | [สถาปัตยกรรม Kubernetes Cluster](#fig-3) | 17 | [kube-proxy](#fig-17) |
-| 4 | [การจัดการสถานะผ่าน API server และการติดตามด้วย Watch](#fig-4) | 18 | [CNI Plugin](#fig-18) |
-| 5 | [ภาพรวมองค์ประกอบของ Control Plane](#fig-5) | 19 | [กายวิภาคของ Pod](#fig-19) |
-| 6 | [kube-apiserver](#fig-6) | 20 | [ลำดับการทำงานเมื่อสั่ง kubectl apply](#fig-20) |
-| 7 | [ลำดับการประมวลผลคำร้องขอใน kube-apiserver](#fig-7) | 21 | [Reconciliation Loop](#fig-21) |
-| 8 | [etcd](#fig-8) | 22 | [ทรัพยากรประเภท Workload](#fig-22) |
-| 9 | [ฉันทามติแบบ Raft และ Quorum ใน etcd](#fig-9) | 23 | [Service และ Ingress](#fig-23) |
-| 10 | [kube-scheduler](#fig-10) | 24 | [CoreDNS](#fig-24) |
-| 11 | [kube-controller-manager](#fig-11) | 25 | [PV, PVC และ StorageClass](#fig-25) |
-| 12 | [การทำงานต่อเนื่องของ Controller](#fig-12) | 26 | [Namespace, ConfigMap และ Secret](#fig-26) |
-| 13 | [cloud-controller-manager](#fig-13) | 27 | [Self-healing และ Auto-scaling](#fig-27) |
-| 14 | [ภาพรวมองค์ประกอบของ Worker Node](#fig-14) | 28 | [Rolling Update และ Rollback](#fig-28) |
+| 1 | [การเปรียบเทียบการบริหารคอนเทนเนอร์ก่อนและหลังใช้ Kubernetes](#fig-1) | 15 | [Container Runtime](#fig-15) |
+| 2 | [วิวัฒนาการของการติดตั้งใช้งานซอฟต์แวร์](#fig-2) | 16 | [kube-proxy](#fig-16) |
+| 3 | [สถาปัตยกรรม Kubernetes Cluster](#fig-3) | 17 | [CNI Plugin](#fig-17) |
+| 4 | [ภาพรวมองค์ประกอบของ Control Plane](#fig-4) | 18 | [กายวิภาคของ Pod](#fig-18) |
+| 5 | [kube-apiserver](#fig-5) | 19 | [ลำดับการทำงานเมื่อสั่ง kubectl apply](#fig-19) |
+| 6 | [ลำดับการประมวลผลคำร้องขอใน kube-apiserver](#fig-6) | 20 | [Reconciliation Loop](#fig-20) |
+| 7 | [etcd](#fig-7) | 21 | [ทรัพยากรประเภท Workload](#fig-21) |
+| 8 | [ฉันทามติแบบ Raft และ Quorum ใน etcd](#fig-8) | 22 | [Service และ Ingress](#fig-22) |
+| 9 | [kube-scheduler](#fig-9) | 23 | [CoreDNS](#fig-23) |
+| 10 | [kube-controller-manager](#fig-10) | 24 | [PV, PVC และ StorageClass](#fig-24) |
+| 11 | [การทำงานต่อเนื่องของ Controller](#fig-11) | 25 | [Namespace, ConfigMap และ Secret](#fig-25) |
+| 12 | [cloud-controller-manager](#fig-12) | 26 | [Self-healing และ Auto-scaling](#fig-26) |
+| 13 | [ภาพรวมองค์ประกอบของ Worker Node](#fig-13) | 27 | [Rolling Update และ Rollback](#fig-27) |
+| 14 | [kubelet](#fig-14) |  | |
 
 ---
 
@@ -180,35 +180,13 @@
    └─────────────┘        └─────────────┘        └─────────────┘
 ```
 
-### 4.1 การจัดการสถานะผ่าน API server และการติดตามด้วย Watch
-
-<p align="center" id="fig-4">
-  <img src="images/04-arch-hub-spoke-watch.png" alt="รูปที่ 4 การจัดการสถานะผ่าน API server และการติดตามด้วย Watch" width="900"><br>
-  <em><b>รูปที่ 4</b> kube-apiserver เป็นศูนย์กลางของข้อมูลสถานะ และส่งการเปลี่ยนแปลงให้ส่วนประกอบที่ติดตามด้วย watch</em>
-</p>
-
-จากตารางที่ 4 แต่ละส่วนมีหน้าที่ต่างกัน แต่ต้องใช้ข้อมูลสถานะร่วมกัน เช่น ผู้ใช้ต้องการ Pod กี่ตัว Pod ใดรอการจัดวาง และ Node ใดพร้อมทำงาน จึงอ่านและอัปเดตข้อมูลเหล่านี้ผ่าน **kube-apiserver** ดังภาพที่ 4 ส่วน scheduler และ controller ไม่ต้องส่งคำสั่งหากันโดยตรง แต่ทำงานต่อจากข้อมูลที่บันทึกไว้ผ่าน API [6, 8]
-
-**Watch** คือการขอติดตามการเปลี่ยนแปลงของข้อมูลที่สนใจผ่าน API server แทนการถามซ้ำตลอดเวลา โดยไคลเอนต์เปิดการเชื่อมต่อเพื่อรับเหตุการณ์ เช่น มี Pod เพิ่มขึ้น (`ADDED`) ข้อมูล Pod เปลี่ยน (`MODIFIED`) หรือ Pod ถูกลบ (`DELETED`) แล้วนำข้อมูลไปทำงานตามหน้าที่ หากการเชื่อมต่อขาด ไคลเอนต์ต้องเชื่อมต่อใหม่ และอาจต้องอ่านรายการล่าสุดอีกครั้งเพื่อให้ข้อมูลทันปัจจุบัน [9]
-
-ตัวอย่างเมื่อมี Pod ใหม่ ลำดับอย่างง่ายเป็นดังนี้
-
-1. ผู้ใช้ส่งข้อมูลที่ต้องการผ่าน `kubectl` ไปยัง API server ซึ่งตรวจสอบคำขอและบันทึกข้อมูลใน etcd
-2. scheduler ติดตาม Pod ที่ยังไม่มี Node เลือก Node ที่เหมาะสม แล้วบันทึกผลผ่าน API server
-3. kubelet ของ Node นั้นติดตาม Pod ที่ได้รับมอบหมาย แล้วเรียก container runtime บนเครื่องให้รันคอนเทนเนอร์
-4. kubelet รายงานสถานะกลับผ่าน API server ผู้ใช้จึงติดตามผลได้ด้วย `kubectl get pods --watch`
-
-ในทางปฏิบัติ controller มักใช้ตัวช่วยที่เรียกว่า **informer** เพื่อเก็บสำเนาข้อมูลในหน่วยความจำและอัปเดตด้วย watch ช่วยลดการอ่านข้อมูลซ้ำจาก API server ส่วน etcd เป็นที่เก็บข้อมูล API โดย scheduler, controller และ kubelet ใช้ข้อมูลผ่าน API server ไม่ได้อ่านหรือเขียน etcd โดยตรง
-
-> **ขอบเขตของภาพที่ 4:** ชื่อ Hub-and-Spoke ในภาพหมายถึงการใช้ API server เป็นศูนย์กลางของข้อมูลสถานะ เส้น watch แสดงการแจ้งข้อมูล ไม่ใช่คำสั่งให้ทำงาน และไม่ได้หมายความว่าทุกส่วนต้องใช้ watch กับทุกข้อมูล การเรียก container runtime, การติดต่อ Cloud API และทราฟฟิกระหว่าง Pod ใช้เส้นทางของตนเองได้ การแยกหน้าที่ช่วยให้แต่ละส่วนกลับมาทำงานต่อจากข้อมูล API ได้ แต่หากส่วนใดขัดข้อง งานที่พึ่งพาส่วนนั้นยังได้รับผลกระทบ
-
 ---
 
 ## 5. องค์ประกอบของ Control Plane
 
-<p align="center" id="fig-5">
-  <img src="images/06-control-plane-components.png" alt="รูปที่ 5 ภาพรวมองค์ประกอบของ Control Plane" width="900"><br>
-  <em><b>รูปที่ 5</b> ภาพรวมองค์ประกอบของ Control Plane ในรูปแบบอุปมาหอบังคับการท่าเรือ</em>
+<p align="center" id="fig-4">
+  <img src="images/06-control-plane-components.png" alt="รูปที่ 4 ภาพรวมองค์ประกอบของ Control Plane" width="900"><br>
+  <em><b>รูปที่ 4</b> ภาพรวมองค์ประกอบของ Control Plane ในรูปแบบอุปมาหอบังคับการท่าเรือ</em>
 </p>
 
 Control Plane ประกอบด้วยองค์ประกอบหลัก 5 ส่วน ดังสรุปในตารางที่ 5 และอธิบายรายละเอียดในหัวข้อย่อย 5.1–5.5
@@ -225,16 +203,16 @@ Control Plane ประกอบด้วยองค์ประกอบหล
 
 ### 5.1 kube-apiserver
 
-<p align="center" id="fig-6">
-  <img src="images/07-comp-kube-apiserver.png" alt="รูปที่ 6 kube-apiserver" width="900"><br>
-  <em><b>รูปที่ 6</b> kube-apiserver: จุดติดต่อเดียวและศูนย์กลางของคลัสเตอร์</em>
+<p align="center" id="fig-5">
+  <img src="images/07-comp-kube-apiserver.png" alt="รูปที่ 5 kube-apiserver" width="900"><br>
+  <em><b>รูปที่ 5</b> kube-apiserver: จุดติดต่อเดียวและศูนย์กลางของคลัสเตอร์</em>
 </p>
 
 kube-apiserver ทำหน้าที่เปิดให้บริการ Kubernetes API ในรูปแบบ REST ผ่านโปรโตคอล HTTPS (โดยปกติใช้พอร์ต 6443) คำสั่ง `kubectl` จึงเป็นเพียงไคลเอนต์ที่แปลงคำสั่งเป็นคำร้องขอ HTTP ไปยัง kube-apiserver เช่น คำสั่งสร้าง Deployment จะถูกแปลงเป็นคำร้องขอ `POST /apis/apps/v1/namespaces/default/deployments`
 
-<p align="center" id="fig-7">
-  <img src="images/08-cp-apiserver-request-pipeline.png" alt="รูปที่ 7 ลำดับการประมวลผลคำร้องขอใน kube-apiserver" width="900"><br>
-  <em><b>รูปที่ 7</b> ลำดับการประมวลผลคำร้องขอภายใน kube-apiserver ตั้งแต่การยืนยันตัวตนจนถึงการบันทึกลง etcd</em>
+<p align="center" id="fig-6">
+  <img src="images/08-cp-apiserver-request-pipeline.png" alt="รูปที่ 6 ลำดับการประมวลผลคำร้องขอใน kube-apiserver" width="900"><br>
+  <em><b>รูปที่ 6</b> ลำดับการประมวลผลคำร้องขอภายใน kube-apiserver ตั้งแต่การยืนยันตัวตนจนถึงการบันทึกลง etcd</em>
 </p>
 
 คำร้องขอทุกรายการต้องผ่านขั้นตอนการประมวลผลตามลำดับ ดังตารางที่ 6
@@ -254,16 +232,16 @@ kube-apiserver ทำหน้าที่เปิดให้บริกา�
 
 ### 5.2 etcd
 
-<p align="center" id="fig-8">
-  <img src="images/09-comp-etcd.png" alt="รูปที่ 8 etcd" width="900"><br>
-  <em><b>รูปที่ 8</b> etcd: ฐานข้อมูลแบบกระจายที่จัดเก็บสถานะทั้งหมดของคลัสเตอร์</em>
+<p align="center" id="fig-7">
+  <img src="images/09-comp-etcd.png" alt="รูปที่ 7 etcd" width="900"><br>
+  <em><b>รูปที่ 7</b> etcd: ฐานข้อมูลแบบกระจายที่จัดเก็บสถานะทั้งหมดของคลัสเตอร์</em>
 </p>
 
 etcd คือฐานข้อมูลแบบ key-value ที่ทำงานแบบกระจาย (distributed) และมีความสอดคล้องของข้อมูลสูง (strongly consistent) ใช้จัดเก็บ object ทุกประเภทของคลัสเตอร์ เช่น ข้อมูล Pod ภายใต้คีย์ `/registry/pods/<namespace>/<name>`
 
-<p align="center" id="fig-9">
-  <img src="images/10-cp-etcd-raft-quorum.png" alt="รูปที่ 9 ฉันทามติแบบ Raft และ Quorum ใน etcd" width="900"><br>
-  <em><b>รูปที่ 9</b> กระบวนการเขียนข้อมูลด้วยฉันทามติแบบ Raft และความสัมพันธ์ระหว่างจำนวนสมาชิกกับ quorum</em>
+<p align="center" id="fig-8">
+  <img src="images/10-cp-etcd-raft-quorum.png" alt="รูปที่ 8 ฉันทามติแบบ Raft และ Quorum ใน etcd" width="900"><br>
+  <em><b>รูปที่ 8</b> กระบวนการเขียนข้อมูลด้วยฉันทามติแบบ Raft และความสัมพันธ์ระหว่างจำนวนสมาชิกกับ quorum</em>
 </p>
 
 etcd ใช้อัลกอริทึมฉันทามติ **Raft** [3] เพื่อรักษาความสอดคล้องของข้อมูลระหว่างสมาชิก โดยสมาชิกตัวหนึ่งได้รับเลือกเป็น **leader** ผ่านการลงคะแนน และสมาชิกที่เหลือเป็น **follower** การเขียนข้อมูลทุกครั้งต้องผ่าน leader ซึ่งบันทึกรายการลงในล็อกของตนแล้วส่งต่อให้ follower เมื่อสมาชิกเสียงข้างมากยืนยันการบันทึก รายการดังกล่าวจึงถือว่าสำเร็จ (committed) หาก leader ขัดข้อง follower ที่ไม่ได้รับสัญญาณ heartbeat ภายในระยะเวลาที่กำหนดจะเริ่มการเลือกตั้ง leader ใหม่
@@ -286,9 +264,9 @@ etcd ใช้อัลกอริทึมฉันทามติ **Raft** [3
 
 ### 5.3 kube-scheduler
 
-<p align="center" id="fig-10">
-  <img src="images/11-comp-kube-scheduler.png" alt="รูปที่ 10 kube-scheduler" width="900"><br>
-  <em><b>รูปที่ 10</b> kube-scheduler: กระบวนการคัดกรองและให้คะแนน Node สำหรับ Pod</em>
+<p align="center" id="fig-9">
+  <img src="images/11-comp-kube-scheduler.png" alt="รูปที่ 9 kube-scheduler" width="900"><br>
+  <em><b>รูปที่ 9</b> kube-scheduler: กระบวนการคัดกรองและให้คะแนน Node สำหรับ Pod</em>
 </p>
 
 kube-scheduler เฝ้าติดตาม Pod ที่ยังไม่ได้รับการกำหนด Node (ค่า `spec.nodeName` ว่าง) และคัดเลือก Node ที่เหมาะสมที่สุดผ่านกระบวนการสองขั้นตอน ดังตารางที่ 8
@@ -304,9 +282,9 @@ kube-scheduler เฝ้าติดตาม Pod ที่ยังไม่ไ
 
 ### 5.4 kube-controller-manager
 
-<p align="center" id="fig-11">
-  <img src="images/12-comp-kube-controller-manager.png" alt="รูปที่ 11 kube-controller-manager" width="900"><br>
-  <em><b>รูปที่ 11</b> kube-controller-manager: กลุ่มของ controller ที่ทำงานแบบ control loop</em>
+<p align="center" id="fig-10">
+  <img src="images/12-comp-kube-controller-manager.png" alt="รูปที่ 10 kube-controller-manager" width="900"><br>
+  <em><b>รูปที่ 10</b> kube-controller-manager: กลุ่มของ controller ที่ทำงานแบบ control loop</em>
 </p>
 
 kube-controller-manager เป็นโปรเซสที่รวม **controller** หลายตัวเข้าไว้ด้วยกันเพื่อลดความซับซ้อนในการติดตั้ง controller แต่ละตัวทำงานแบบ **control loop** กล่าวคือ สังเกตสถานะจริงของทรัพยากร เปรียบเทียบกับสถานะที่ต้องการ และดำเนินการแก้ไขจนกระทั่งทั้งสองสถานะสอดคล้องกัน ตัวอย่าง controller ที่สำคัญแสดงในตารางที่ 9
@@ -322,9 +300,9 @@ kube-controller-manager เป็นโปรเซสที่รวม **contr
 | EndpointSlice controller | ปรับปรุงรายการหมายเลข IP ของ Pod ที่อยู่เบื้องหลัง Service |
 | ServiceAccount controller | สร้าง ServiceAccount เริ่มต้นให้แก่ namespace ใหม่ |
 
-<p align="center" id="fig-12">
-  <img src="images/13-cp-controller-chain.png" alt="รูปที่ 12 การทำงานต่อเนื่องของ Controller" width="900"><br>
-  <em><b>รูปที่ 12</b> การทำงานต่อเนื่องของ controller จาก Deployment สู่ ReplicaSet และ Pod โดยสื่อสารผ่าน kube-apiserver</em>
+<p align="center" id="fig-11">
+  <img src="images/13-cp-controller-chain.png" alt="รูปที่ 11 การทำงานต่อเนื่องของ Controller" width="900"><br>
+  <em><b>รูปที่ 11</b> การทำงานต่อเนื่องของ controller จาก Deployment สู่ ReplicaSet และ Pod โดยสื่อสารผ่าน kube-apiserver</em>
 </p>
 
 controller แต่ละตัวรับผิดชอบทรัพยากรเพียงประเภทเดียว และทำงานต่อเนื่องกันเป็นทอด ๆ โดยอาศัยผลลัพธ์ของ controller ก่อนหน้าเป็นข้อมูลนำเข้า ตัวอย่างเช่น เมื่อผู้ใช้สร้าง Deployment ที่กำหนด `replicas: 3` Deployment controller จะสร้าง ReplicaSet จากนั้น ReplicaSet controller จะสร้าง Pod จำนวน 3 ตัว แล้ว kube-scheduler จะกำหนด Node ให้แก่ Pod และ kubelet จะเริ่มการทำงานของคอนเทนเนอร์ตามลำดับ ทุกขั้นตอนเกิดขึ้นผ่านการอ่านและเขียน object ใน kube-apiserver โดยไม่มีการเรียกใช้กันโดยตรง นอกจากนี้ object ที่ถูกสร้างจะมีฟิลด์ `metadata.ownerReferences` ชี้กลับไปยัง object ผู้สร้าง ซึ่งระบบใช้ในการลบแบบต่อเนื่อง (cascading deletion) ผ่าน garbage collector
@@ -333,9 +311,9 @@ controller แต่ละตัวรับผิดชอบทรัพยา
 
 ### 5.5 cloud-controller-manager
 
-<p align="center" id="fig-13">
-  <img src="images/14-comp-cloud-controller-manager.png" alt="รูปที่ 13 cloud-controller-manager" width="900"><br>
-  <em><b>รูปที่ 13</b> cloud-controller-manager: ส่วนเชื่อมต่อระหว่างคลัสเตอร์กับผู้ให้บริการคลาวด์</em>
+<p align="center" id="fig-12">
+  <img src="images/14-comp-cloud-controller-manager.png" alt="รูปที่ 12 cloud-controller-manager" width="900"><br>
+  <em><b>รูปที่ 12</b> cloud-controller-manager: ส่วนเชื่อมต่อระหว่างคลัสเตอร์กับผู้ให้บริการคลาวด์</em>
 </p>
 
 cloud-controller-manager แยกตรรกะที่เฉพาะเจาะจงกับผู้ให้บริการคลาวด์ออกจากแกนหลักของ Kubernetes เพื่อให้ผู้ให้บริการแต่ละรายพัฒนาส่วนเชื่อมต่อของตนได้อย่างอิสระ ประกอบด้วย controller หลัก 3 ส่วน ได้แก่
@@ -352,9 +330,9 @@ cloud-controller-manager แยกตรรกะที่เฉพาะเจ�
 
 ## 6. องค์ประกอบของ Worker Node
 
-<p align="center" id="fig-14">
-  <img src="images/15-worker-node-components.png" alt="รูปที่ 14 ภาพรวมองค์ประกอบของ Worker Node" width="900"><br>
-  <em><b>รูปที่ 14</b> ภาพรวมองค์ประกอบภายใน Worker Node</em>
+<p align="center" id="fig-13">
+  <img src="images/15-worker-node-components.png" alt="รูปที่ 13 ภาพรวมองค์ประกอบของ Worker Node" width="900"><br>
+  <em><b>รูปที่ 13</b> ภาพรวมองค์ประกอบภายใน Worker Node</em>
 </p>
 
 Worker Node ทุกเครื่องมีองค์ประกอบที่ทำงานร่วมกันเพื่อรันและเชื่อมต่อ Pod ดังสรุปในตารางที่ 10
@@ -370,9 +348,9 @@ Worker Node ทุกเครื่องมีองค์ประกอบ�
 
 ### 6.1 kubelet
 
-<p align="center" id="fig-15">
-  <img src="images/16-comp-kubelet.png" alt="รูปที่ 15 kubelet" width="900"><br>
-  <em><b>รูปที่ 15</b> kubelet: ตัวแทน (agent) ประจำ Node ที่ควบคุมวงจรชีวิตของ Pod</em>
+<p align="center" id="fig-14">
+  <img src="images/16-comp-kubelet.png" alt="รูปที่ 14 kubelet" width="900"><br>
+  <em><b>รูปที่ 14</b> kubelet: ตัวแทน (agent) ประจำ Node ที่ควบคุมวงจรชีวิตของ Pod</em>
 </p>
 
 kubelet เป็นตัวแทน (agent) ที่ทำงานบนทุก Node และเป็นองค์ประกอบเพียงตัวเดียวที่ลงมือสร้าง Pod บนเครื่องจริง kubelet เฝ้าติดตาม kube-apiserver เพื่อรับ Pod ที่ได้รับมอบหมายให้แก่ Node ของตน จากนั้นสั่งการ container runtime ผ่าน **Container Runtime Interface (CRI)** ให้สร้างคอนเทนเนอร์ตามข้อกำหนดใน PodSpec นอกจากนี้ kubelet ยังดำเนินการตรวจสุขภาพของคอนเทนเนอร์ (liveness, readiness และ startup probe) เชื่อมต่อ volume และรายงานสถานะของ Node และ Pod กลับไปยัง kube-apiserver อย่างต่อเนื่อง
@@ -381,9 +359,9 @@ kubelet เป็นตัวแทน (agent) ที่ทำงานบนท
 
 ### 6.2 Container Runtime
 
-<p align="center" id="fig-16">
-  <img src="images/17-comp-container-runtime.png" alt="รูปที่ 16 Container Runtime" width="900"><br>
-  <em><b>รูปที่ 16</b> Container Runtime: ส่วนที่ดึง image และรันคอนเทนเนอร์จริง</em>
+<p align="center" id="fig-15">
+  <img src="images/17-comp-container-runtime.png" alt="รูปที่ 15 Container Runtime" width="900"><br>
+  <em><b>รูปที่ 15</b> Container Runtime: ส่วนที่ดึง image และรันคอนเทนเนอร์จริง</em>
 </p>
 
 Container runtime คือซอฟต์แวร์ที่ดึง container image จาก registry แตก image เป็นระบบแฟ้มของคอนเทนเนอร์ และสร้างคอนเทนเนอร์โดยอาศัยกลไก namespaces และ cgroups ของเคอร์เนล Linux runtime ที่นิยมใช้ ได้แก่ **containerd** และ **CRI-O** ซึ่งเรียกใช้ low-level runtime เช่น `runc` อีกทอดหนึ่ง ลำดับการเรียกใช้จึงเป็น kubelet → CRI → containerd → runc → คอนเทนเนอร์
@@ -392,18 +370,18 @@ Container runtime คือซอฟต์แวร์ที่ดึง contain
 
 ### 6.3 kube-proxy
 
-<p align="center" id="fig-17">
-  <img src="images/18-comp-kube-proxy.png" alt="รูปที่ 17 kube-proxy" width="900"><br>
-  <em><b>รูปที่ 17</b> kube-proxy: การแปลงหมายเลข IP ของ Service ไปยัง Pod ปลายทาง</em>
+<p align="center" id="fig-16">
+  <img src="images/18-comp-kube-proxy.png" alt="รูปที่ 16 kube-proxy" width="900"><br>
+  <em><b>รูปที่ 16</b> kube-proxy: การแปลงหมายเลข IP ของ Service ไปยัง Pod ปลายทาง</em>
 </p>
 
 kube-proxy ทำงานบนทุก Node โดยเฝ้าติดตาม object ประเภท Service และ EndpointSlice แล้วสร้างกฎเครือข่ายในเคอร์เนลด้วยกลไก **iptables**, **IPVS** หรือ **nftables** เพื่อให้ทราฟฟิกที่ส่งไปยังหมายเลข IP เสมือนของ Service (ClusterIP) ถูกแปลงและกระจายไปยัง Pod ปลายทาง ควรสังเกตว่า kube-proxy มิได้ส่งต่อแพ็กเก็ตด้วยตนเอง หากแต่เขียนกฎให้เคอร์เนลดำเนินการ ในกรณีที่ kube-proxy ขัดข้อง กฎเครือข่ายจะไม่ได้รับการปรับปรุง ส่งผลให้ทราฟฟิกอาจถูกส่งไปยัง Pod ที่ไม่มีอยู่แล้ว ทั้งนี้ CNI plugin บางประเภท เช่น Cilium สามารถทำหน้าที่แทน kube-proxy ได้
 
 ### 6.4 CNI Plugin
 
-<p align="center" id="fig-18">
-  <img src="images/19-comp-cni-plugin.png" alt="รูปที่ 18 CNI Plugin" width="900"><br>
-  <em><b>รูปที่ 18</b> CNI Plugin: ระบบเครือข่ายที่เชื่อมต่อ Pod ข้าม Node</em>
+<p align="center" id="fig-17">
+  <img src="images/19-comp-cni-plugin.png" alt="รูปที่ 17 CNI Plugin" width="900"><br>
+  <em><b>รูปที่ 17</b> CNI Plugin: ระบบเครือข่ายที่เชื่อมต่อ Pod ข้าม Node</em>
 </p>
 
 **Container Network Interface (CNI)** เป็นข้อกำหนดมาตรฐานสำหรับการตั้งค่าเครือข่ายของคอนเทนเนอร์ CNI plugin เช่น Calico, Flannel และ Cilium ทำหน้าที่กำหนดหมายเลข IP ให้แก่ Pod ทุกตัวเมื่อถูกสร้าง และทำให้ Pod สื่อสารกันได้ข้าม Node ตาม **แบบจำลองเครือข่ายของ Kubernetes (Kubernetes network model)** ซึ่งมีข้อกำหนดสำคัญดังนี้ [1]
@@ -418,9 +396,9 @@ CNI plugin บางประเภทรองรับ **NetworkPolicy** ซ�
 
 ## 7. Pod: หน่วยการติดตั้งใช้งานที่เล็กที่สุด
 
-<p align="center" id="fig-19">
-  <img src="images/20-pod-anatomy.png" alt="รูปที่ 19 กายวิภาคของ Pod" width="900"><br>
-  <em><b>รูปที่ 19</b> โครงสร้างภายในของ Pod: คอนเทนเนอร์ เครือข่ายร่วม และ volume ร่วม</em>
+<p align="center" id="fig-18">
+  <img src="images/20-pod-anatomy.png" alt="รูปที่ 18 กายวิภาคของ Pod" width="900"><br>
+  <em><b>รูปที่ 18</b> โครงสร้างภายในของ Pod: คอนเทนเนอร์ เครือข่ายร่วม และ volume ร่วม</em>
 </p>
 
 **Pod** คือหน่วยที่เล็กที่สุดที่สามารถติดตั้งใช้งานใน Kubernetes ได้ Pod หนึ่งตัวประกอบด้วยคอนเทนเนอร์ตั้งแต่หนึ่งตัวขึ้นไปที่ถูกจัดวางบน Node เดียวกันเสมอและมีวงจรชีวิตร่วมกัน คุณสมบัติสำคัญของ Pod มีดังนี้
@@ -455,9 +433,9 @@ spec:
 
 ## 8. ลำดับการทำงานของระบบเมื่อสั่ง `kubectl apply`
 
-<p align="center" id="fig-20">
-  <img src="images/21-kubectl-apply-flow.png" alt="รูปที่ 20 ลำดับการทำงานเมื่อสั่ง kubectl apply" width="900"><br>
-  <em><b>รูปที่ 20</b> ลำดับการทำงานขององค์ประกอบต่าง ๆ เมื่อผู้ใช้สั่ง <code>kubectl apply</code></em>
+<p align="center" id="fig-19">
+  <img src="images/21-kubectl-apply-flow.png" alt="รูปที่ 19 ลำดับการทำงานเมื่อสั่ง kubectl apply" width="900"><br>
+  <em><b>รูปที่ 19</b> ลำดับการทำงานขององค์ประกอบต่าง ๆ เมื่อผู้ใช้สั่ง <code>kubectl apply</code></em>
 </p>
 
 หัวข้อนี้อธิบายการทำงานร่วมกันขององค์ประกอบทั้งหมดผ่านกรณีที่ผู้ใช้สั่ง `kubectl apply -f deploy.yaml` เพื่อสร้าง Deployment ที่กำหนด `replicas: 3`
@@ -475,7 +453,7 @@ spec:
 | 7 | Container runtime และ CNI plugin | ดึง image กำหนดเครือข่ายและหมายเลข IP ให้แก่ Pod และเริ่มการทำงานของคอนเทนเนอร์ |
 | 8 | kubelet | ตรวจสุขภาพของคอนเทนเนอร์และรายงานสถานะ `Running` กลับไปยัง kube-apiserver |
 
-จากลำดับเหตุการณ์ข้างต้น scheduler และ controller ประสานงานกันผ่านข้อมูลสถานะใน kube-apiserver แล้วดำเนินการตามหน้าที่ของตน ส่วน kubelet เรียก container runtime บน Node โดยตรงตามที่อธิบายในหัวข้อ 4.1 หาก kube-scheduler หยุดทำงานชั่วคราว Pod ใหม่ที่ยังไม่ได้รับการจัดวางต้องรอ เมื่อ scheduler กลับมาทำงานจะอ่านสถานะผ่าน API server และดำเนินการต่อได้
+จากลำดับเหตุการณ์ข้างต้น scheduler และ controller ประสานงานกันผ่านข้อมูลสถานะใน kube-apiserver แล้วดำเนินการตามหน้าที่ของตน ส่วน kubelet เรียก container runtime บน Node โดยตรงตามหน้าที่ที่สรุปไว้ในตารางที่ 4 หาก kube-scheduler หยุดทำงานชั่วคราว Pod ใหม่ที่ยังไม่ได้รับการจัดวางต้องรอ เมื่อ scheduler กลับมาทำงานจะอ่านสถานะผ่าน API server และดำเนินการต่อได้
 
 ผู้เรียนสามารถสังเกตลำดับเหตุการณ์ดังกล่าวได้จากคำสั่งต่อไปนี้
 
@@ -489,9 +467,9 @@ kubectl get events --sort-by=.metadata.creationTimestamp
 
 ## 9. Desired State และ Reconciliation Loop
 
-<p align="center" id="fig-21">
-  <img src="images/22-reconciliation-loop.png" alt="รูปที่ 21 Reconciliation Loop" width="900"><br>
-  <em><b>รูปที่ 21</b> การปรับสถานะจริงให้สอดคล้องกับสถานะที่ต้องการด้วย reconciliation loop</em>
+<p align="center" id="fig-20">
+  <img src="images/22-reconciliation-loop.png" alt="รูปที่ 20 Reconciliation Loop" width="900"><br>
+  <em><b>รูปที่ 20</b> การปรับสถานะจริงให้สอดคล้องกับสถานะที่ต้องการด้วย reconciliation loop</em>
 </p>
 
 Kubernetes ใช้แนวทาง **declarative** แทนแนวทาง **imperative** ดังเปรียบเทียบในตารางที่ 12
@@ -523,9 +501,9 @@ kubectl get pods -w      # Pod ใหม่จะถูกสร้างขึ�
 
 ## 10. ทรัพยากรประเภท Workload
 
-<p align="center" id="fig-22">
-  <img src="images/23-workload-types.png" alt="รูปที่ 22 ทรัพยากรประเภท Workload" width="900"><br>
-  <em><b>รูปที่ 22</b> ทรัพยากรประเภท workload และลักษณะการใช้งาน</em>
+<p align="center" id="fig-21">
+  <img src="images/23-workload-types.png" alt="รูปที่ 21 ทรัพยากรประเภท Workload" width="900"><br>
+  <em><b>รูปที่ 21</b> ทรัพยากรประเภท workload และลักษณะการใช้งาน</em>
 </p>
 
 **ตารางที่ 13** ทรัพยากรประเภท workload
@@ -573,9 +551,9 @@ spec:
 
 ## 11. ระบบเครือข่าย: Service, DNS และ Ingress
 
-<p align="center" id="fig-23">
-  <img src="images/24-services-networking.png" alt="รูปที่ 23 Service และ Ingress" width="900"><br>
-  <em><b>รูปที่ 23</b> เส้นทางของทราฟฟิกผ่าน Ingress และ Service ไปยัง Pod</em>
+<p align="center" id="fig-22">
+  <img src="images/24-services-networking.png" alt="รูปที่ 22 Service และ Ingress" width="900"><br>
+  <em><b>รูปที่ 22</b> เส้นทางของทราฟฟิกผ่าน Ingress และ Service ไปยัง Pod</em>
 </p>
 
 ### 11.1 Service
@@ -607,9 +585,9 @@ spec:
 
 ### 11.2 CoreDNS
 
-<p align="center" id="fig-24">
-  <img src="images/25-comp-coredns.png" alt="รูปที่ 24 CoreDNS" width="900"><br>
-  <em><b>รูปที่ 24</b> CoreDNS: ระบบแปลงชื่อ Service เป็นหมายเลข IP ภายในคลัสเตอร์</em>
+<p align="center" id="fig-23">
+  <img src="images/25-comp-coredns.png" alt="รูปที่ 23 CoreDNS" width="900"><br>
+  <em><b>รูปที่ 23</b> CoreDNS: ระบบแปลงชื่อ Service เป็นหมายเลข IP ภายในคลัสเตอร์</em>
 </p>
 
 **CoreDNS** เป็นส่วนเสริม (add-on) ที่ทำงานในรูปของ Pod ภายใน namespace `kube-system` ทำหน้าที่เป็นระบบ DNS ภายในคลัสเตอร์ CoreDNS กำหนดชื่อ DNS ให้แก่ Service ทุกตัวโดยอัตโนมัติตามรูปแบบ
@@ -649,9 +627,9 @@ spec:
 
 ## 12. ระบบจัดเก็บข้อมูล: Volume, PV, PVC และ StorageClass
 
-<p align="center" id="fig-25">
-  <img src="images/26-storage-pv-pvc.png" alt="รูปที่ 25 PV, PVC และ StorageClass" width="900"><br>
-  <em><b>รูปที่ 25</b> ความสัมพันธ์ระหว่าง Pod, PersistentVolumeClaim, PersistentVolume และ StorageClass</em>
+<p align="center" id="fig-24">
+  <img src="images/26-storage-pv-pvc.png" alt="รูปที่ 24 PV, PVC และ StorageClass" width="900"><br>
+  <em><b>รูปที่ 24</b> ความสัมพันธ์ระหว่าง Pod, PersistentVolumeClaim, PersistentVolume และ StorageClass</em>
 </p>
 
 ข้อมูลที่เขียนลงในระบบแฟ้มของคอนเทนเนอร์จะสูญหายเมื่อคอนเทนเนอร์ถูกลบ การจัดเก็บข้อมูลแบบถาวรจึงต้องอาศัยทรัพยากรด้านการจัดเก็บข้อมูลของ Kubernetes ดังตารางที่ 15
@@ -691,9 +669,9 @@ spec:
 
 ## 13. Namespace, ConfigMap, Secret และ RBAC
 
-<p align="center" id="fig-26">
-  <img src="images/27-config-secret-namespace.png" alt="รูปที่ 26 Namespace, ConfigMap และ Secret" width="900"><br>
-  <em><b>รูปที่ 26</b> การแบ่งคลัสเตอร์ด้วย Namespace และการส่งค่าตั้งค่าด้วย ConfigMap และ Secret</em>
+<p align="center" id="fig-25">
+  <img src="images/27-config-secret-namespace.png" alt="รูปที่ 25 Namespace, ConfigMap และ Secret" width="900"><br>
+  <em><b>รูปที่ 25</b> การแบ่งคลัสเตอร์ด้วย Namespace และการส่งค่าตั้งค่าด้วย ConfigMap และ Secret</em>
 </p>
 
 ### 13.1 Namespace
@@ -745,9 +723,9 @@ kubectl auth can-i delete pods -n prod --as=student1   # ตรวจสอบ�
 
 ## 14. การฟื้นฟูตนเอง การตรวจสุขภาพ และการปรับขนาดอัตโนมัติ
 
-<p align="center" id="fig-27">
-  <img src="images/28-self-healing-autoscaling.png" alt="รูปที่ 27 Self-healing และ Auto-scaling" width="900"><br>
-  <em><b>รูปที่ 27</b> กลไกการฟื้นฟูตนเอง การตรวจสุขภาพ และการปรับขนาดอัตโนมัติ</em>
+<p align="center" id="fig-26">
+  <img src="images/28-self-healing-autoscaling.png" alt="รูปที่ 26 Self-healing และ Auto-scaling" width="900"><br>
+  <em><b>รูปที่ 26</b> กลไกการฟื้นฟูตนเอง การตรวจสุขภาพ และการปรับขนาดอัตโนมัติ</em>
 </p>
 
 ### 14.1 การฟื้นฟูตนเอง (Self-healing)
@@ -802,9 +780,9 @@ kubectl get hpa -w
 
 ## 15. Rolling Update และ Rollback
 
-<p align="center" id="fig-28">
-  <img src="images/29-rolling-update.png" alt="รูปที่ 28 Rolling Update และ Rollback" width="900"><br>
-  <em><b>รูปที่ 28</b> การปรับปรุงเวอร์ชันแบบ rolling update และการย้อนกลับเวอร์ชัน</em>
+<p align="center" id="fig-27">
+  <img src="images/29-rolling-update.png" alt="รูปที่ 27 Rolling Update และ Rollback" width="900"><br>
+  <em><b>รูปที่ 27</b> การปรับปรุงเวอร์ชันแบบ rolling update และการย้อนกลับเวอร์ชัน</em>
 </p>
 
 Deployment ใช้กลยุทธ์ **RollingUpdate** เป็นค่าเริ่มต้น โดยทยอยสร้าง Pod เวอร์ชันใหม่และลบ Pod เวอร์ชันเดิมทีละส่วน เบื้องหลังกลไกนี้คือ Deployment controller สร้าง ReplicaSet ใหม่ แล้วค่อย ๆ เพิ่มจำนวน replicas ของ ReplicaSet ใหม่พร้อมกับลดจำนวน replicas ของ ReplicaSet เดิม
@@ -1033,9 +1011,7 @@ kind delete cluster --name lab
 5. Wiggins, A. *The Twelve-Factor App*. https://12factor.net/
 6. The Kubernetes Authors. *Kubernetes Components*. https://kubernetes.io/docs/concepts/overview/components/
 7. kind — Kubernetes IN Docker. https://kind.sigs.k8s.io/ · minikube. https://minikube.sigs.k8s.io/
-8. The Kubernetes Authors. *Communication between Nodes and the Control Plane*. https://kubernetes.io/docs/concepts/architecture/control-plane-node-communication/
-9. The Kubernetes Authors. *Kubernetes API Concepts*. https://kubernetes.io/docs/reference/using-api/api-concepts/
 
 ---
 
-> **หมายเหตุเกี่ยวกับภาพประกอบ:** ภาพประกอบที่ใช้ในเอกสารนี้มี 28 ภาพ โดยไฟล์ภาพเดิมทั้ง 29 ภาพยังอยู่ในโฟลเดอร์ [`images/`](images/) สร้างขึ้นด้วยปัญญาประดิษฐ์สำหรับการสร้างภาพ (Codex CLI บัญชี `cyolo1`, แบบจำลอง `gpt-6-astra`) เพื่อใช้ประกอบการเรียนการสอน ภาพใช้อุปมาเชิงเปรียบเทียบเพื่อช่วยความเข้าใจ ผู้เรียนควรใช้เนื้อหาในเอกสารนี้และเอกสารอ้างอิงเป็นหลักในการศึกษา
+> **หมายเหตุเกี่ยวกับภาพประกอบ:** ภาพประกอบที่ใช้ในเอกสารนี้มี 27 ภาพ โดยไฟล์ภาพเดิมทั้ง 29 ภาพยังอยู่ในโฟลเดอร์ [`images/`](images/) สร้างขึ้นด้วยปัญญาประดิษฐ์สำหรับการสร้างภาพ (Codex CLI บัญชี `cyolo1`, แบบจำลอง `gpt-6-astra`) เพื่อใช้ประกอบการเรียนการสอน ภาพใช้อุปมาเชิงเปรียบเทียบเพื่อช่วยความเข้าใจ ผู้เรียนควรใช้เนื้อหาในเอกสารนี้และเอกสารอ้างอิงเป็นหลักในการศึกษา
