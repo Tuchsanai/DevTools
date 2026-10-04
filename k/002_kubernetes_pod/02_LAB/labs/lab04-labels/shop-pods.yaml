@@ -1,0 +1,37 @@
+# LAB 4: Labels & Selectors — 3 Pod ในไฟล์เดียว คั่นด้วย ---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shop-web
+  labels:
+    app: som-shop     # ร้านของน้องส้ม
+    tier: web         # ชั้นหน้าเว็บ
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shop-cache
+  labels:
+    app: som-shop
+    tier: cache       # ชั้นแคช
+spec:
+  containers:
+    - name: cache
+      image: busybox:1.36
+      command: ["sh", "-c", "echo cache ready; sleep 3600"]   # จำลองว่าเป็น cache
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: toy-web
+  labels:
+    app: toy-shop     # ร้านของเล่น (คนละร้าน)
+    tier: web
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.27-alpine

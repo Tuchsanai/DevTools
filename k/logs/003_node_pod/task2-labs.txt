@@ -1,0 +1,21 @@
+งาน: สร้างไฟล์ LAB ทั้งหมดของบท 003 (Node กับ Pod) และทดสอบจริงทุกข้อด้วยสกิล k8s-lab (อ่านสกิล k8s-lab แล้วทำตามกฎเคร่งครัด)
+
+อ่านแผนก่อน: /root/workspace/DevTools/k/logs/003_node_pod/plan.md (หัวข้อ 2–3) ทำตามแผน ปรับได้เมื่อทดสอบจริงแล้วต้องแก้ (บันทึกทุกการเปลี่ยนแปลง) ดูบทเรียนจากบท 002 ใน /root/workspace/DevTools/k/logs/002_pod/lab-run/SUMMARY.md (เช่น postgres ต้องใช้ docker save --platform linux/amd64 + kind load image-archive, health ใน container ใช้ 127.0.0.1, port-forward หลุดเมื่อ Pod ถูกลบ)
+
+ขอบเขต:
+- เขียนไฟล์ได้เฉพาะใต้ /root/workspace/DevTools/k/003_kubernetes_node_pod/02_LAB/ (labs/ และโฟลเดอร์ LAB สุดท้าย) และ log ใต้ /root/workspace/DevTools/k/logs/003_node_pod/lab-run/ เท่านั้น ห้ามแก้ไฟล์ของบท 001/002 (อ่าน/คัดลอกได้)
+- ห้ามแตะ container k8s-lab ของผู้เรียน และ deep_vision_5090_vllm ห้าม docker system prune
+- container ทดลองชื่อ k8s-lab-<ชื่อ>-<hashid>, image tuchsanai/devtools-kind:2569_1, --privileged --hostname k8s-lab, publish SSH port ว่างตามสกิล, ส่งไฟล์ด้วย docker cp ไปที่ /workspace/003_kubernetes_node_pod (และ /workspace/002_kubernetes_pod ถ้าต้องใช้แอปบท 002) ห้าม bind mount
+- คำสั่ง docker stop/start lab-worker2 และ docker exec lab-worker ต้องรัน "ภายใน" container ทดลองเท่านั้น (docker exec $C docker stop lab-worker2) ห้ามรันกับ Docker ของเครื่อง host
+- ระวัง pkill -f: อย่าใช้ pattern ที่ตรงกับ command line ของ shell ตัวเอง
+- ห้ามใช้ Service/NodePort/Deployment/ReplicaSet/DaemonSet ใน LAB
+
+สิ่งที่ต้องทำ:
+1) สร้าง manifest ของ LAB ทั้งหมดตามแผน มีคอมเมนต์ภาษาไทยสั้น ๆ อธิบาย field สำคัญสำหรับมือใหม่ LAB สุดท้ายคัดลอกแอปจาก /root/workspace/DevTools/k/002_kubernetes_pod/02_LAB/som-shop/app มาไว้ในโฟลเดอร์ของบทนี้ตามแผน (ไม่ต้องคัดลอก node_modules/.next) เพื่อให้บทนี้ใช้งานได้ด้วยตัวเอง
+2) ทดสอบทุก LAB ตามลำดับเหมือนนักศึกษาพิมพ์ (cd /workspace/003_kubernetes_node_pod/02_LAB) เก็บคำสั่ง+output จริงที่ /root/workspace/DevTools/k/logs/003_node_pod/lab-run/labNN.log ยืนยันทุกจุดใน "จุดที่ต้องยืนยันตอนทดสอบจริง" ของแผน และจับเวลาจริง (NotReady หลัง docker stop กี่วินาที, eviction ตาม tolerationSeconds, เวลาที่ node กลับ Ready หลัง docker start, nodeTaintsPolicy Ignore vs Honor ให้ผลจริงอย่างไร, ข้อความ Events/คำเตือนจริงของ drain, FailedScheduling แต่ละแบบ) ถ้าผลจริงต่างจากแผน ให้ปรับ LAB ให้ถูกต้องและบันทึก
+   - หลัง LAB ที่ทำให้ node ล่ม ต้องยืนยันว่า node กลับ Ready ก่อนทำ LAB ถัดไป ถ้าไม่กลับให้ใช้แผนสำรองและบันทึกเป็นคำแนะนำสำหรับนักศึกษา
+   - LAB สุดท้าย: ทดสอบ port-forward 2 สาขา + ssh -L จากเครื่องนี้ (ผ่าน gateway + askpass ตามสกิล) curl หน้าเว็บทั้งสองสาขาเห็นชื่อสาขาเป็นชื่อ node จริง, สั่งซื้อผ่าน POST /api/orders แยกสาขา, drain/node ล่มตามแผน
+3) **ห้ามลบ container ทดลองหลังจบ** ให้รีเซ็ต LAB สุดท้ายกลับสู่สภาพ "2 สาขาเปิดอยู่คนละ node ทั้งสองรันปกติ, ทุก node Ready/uncordon" และเปิด port-forward ทั้งสองสาขา (--address 127.0.0.1, port 3001 และ 3002 ใน container, รันด้วย setsid nohup) เพื่อให้ผู้ประสานงานถ่าย screenshot เขียนข้อมูลการเข้าถึงลง /root/workspace/DevTools/k/logs/003_node_pod/lab-run/handoff.md (ชื่อ container, ssh host port, gateway, คำสั่งเปิด tunnel, คำสั่งที่จะใช้จำลอง drain/ล่มสำหรับ screenshot ถ้าต้องการ) ผู้ประสานงานจะลบ container เอง
+4) เขียนสรุปที่ /root/workspace/DevTools/k/logs/003_node_pod/lab-run/SUMMARY.md: ผ่าน/ไม่ผ่านรายข้อ, ค่าเวลาจริง, ข้อความจริงที่สำคัญ, การเปลี่ยนแปลงจากแผน, ป้าย/ข้อความในภาพ storyboard ที่ไม่ตรงผลจริง (เทียบกับ /root/workspace/DevTools/k/logs/003_node_pod/images.json ส่วน "Text (verbatim" ของ T20, L01–L22) พร้อมค่าที่ควรใช้แทน, ข้อควรระวังสำหรับนักศึกษา
+
+ห้ามใส่ credential จริงหรือ .env ใด ๆ ตอบท้ายสั้น ๆ: ผลรายข้อ, ป้ายภาพที่ต้องแก้, ชื่อ container ที่เปิดไว้และ ssh port

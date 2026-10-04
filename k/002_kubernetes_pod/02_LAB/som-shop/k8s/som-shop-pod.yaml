@@ -1,0 +1,106 @@
+# LAB 9: ร้านอาหารแมวน้องส้ม — Next.js + PostgreSQL ใน Pod เดียว
+# ออกแบบเพื่อการเรียนรู้เท่านั้น! งานจริงควรแยก web กับ db คนละ Pod (บทหน้า)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: som-shop
+  labels:
+    app: som-shop
+    part: all-in-one
+spec:
+  volumes:
+    - name: db-data              # ที่เก็บข้อมูล Postgres: รอดตอน container restart แต่หายเมื่อลบ Pod
+      emptyDir: {}
+
+  initContainers:                # ทำงานตามลำดับจากบนลงล่าง
+    # 1) db: native sidecar (restartPolicy: Always) → เริ่มก่อน และรันต่อไปตลอดอายุ Pod
+    - name: db
+      image: postgres:17.11-alpine
+      restartPolicy: Always      # ทำให้ init container นี้กลายเป็น sidecar (K8s 1.33+)
+      env:
+        - name: POSTGRES_USER
+          value: som
+        - name: POSTGRES_PASSWORD
+          value: meow1234        # เพื่อการเรียนเท่านั้น บทหน้าจะย้ายไปเก็บใน Secret
+        - name: POSTGRES_DB
+          value: catshop
+        - name: PGDATA           # ใช้โฟลเดอร์ย่อย กันปัญหา "directory ไม่ว่าง"
+          value: /var/lib/postgresql/data/pgdata
+      ports:
+        - containerPort: 5432
+      volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/postgresql/data
+      startupProbe:              # ผ่านเมื่อไร init ตัวถัดไปจึงเริ่ม
+        exec:
+          command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
+        periodSeconds: 2
+        failureThreshold: 30     # รอได้สูงสุด 2 x 30 = 60 วินาที
+      readinessProbe:
+        exec:
+          command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
+        periodSeconds: 5
+      livenessProbe:
+        tcpSocket:
+          port: 5432
+        periodSeconds: 10
+        failureThreshold: 3
+      resources:
+        requests: { cpu: 100m, memory: 256Mi }
+        limits:   { cpu: 500m, memory: 512Mi }
+
+    # 2) wait-for-db: รอจนต่อ db ทาง localhost ได้ (exit 0 แล้วจบ)
+    - name: wait-for-db
+      image: postgres:17.11-alpine
+      command:
+        - sh
+        - -c
+        - until pg_isready -h localhost -p 5432 -U som -d catshop; do echo "รอฐานข้อมูล..."; sleep 2; done; echo "ฐานข้อมูลพร้อมแล้ว"
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 64Mi }
+
+    # 3) db-seed: สร้างตาราง + ใส่สินค้าตั้งต้น (ใช้ image เดียวกับเว็บ)
+    - name: db-seed
+      image: som-shop-web:1.0
+      imagePullPolicy: IfNotPresent   # ใช้ image ที่ kind load ไว้บน node (ไม่ไปดึงจาก Docker Hub)
+      command: ["node", "scripts/seed.mjs"]
+      env:
+        - name: DATABASE_URL
+          value: postgres://som:meow1234@localhost:5432/catshop
+      resources:
+        requests: { cpu: 50m, memory: 64Mi }
+        limits:   { cpu: 300m, memory: 256Mi }
+
+  containers:
+    # web: หน้าร้าน Next.js คุยกับ db ผ่าน localhost:5432
+    - name: web
+      image: som-shop-web:1.0
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: DATABASE_URL
+          value: postgres://som:meow1234@localhost:5432/catshop
+        - name: SHOP_NAME
+          value: "ร้านอาหารแมวน้องส้ม"
+        - name: PORT
+          value: "3000"
+        - name: HOSTNAME           # ให้ Next.js ฟังทุก interface (ค่าเดิมของ HOSTNAME คือชื่อ Pod)
+          value: "0.0.0.0"
+      ports:
+        - containerPort: 3000
+      readinessProbe:              # พร้อมรับลูกค้าเมื่อ /api/health ตอบ 200
+        httpGet:
+          path: /api/health
+          port: 3000
+        periodSeconds: 5
+        failureThreshold: 2
+      livenessProbe:               # ค้างนานเกินไป → kubelet restart container web
+        httpGet:
+          path: /api/health
+          port: 3000
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        failureThreshold: 6
+      resources:
+        requests: { cpu: 100m, memory: 192Mi }
+        limits:   { cpu: 500m, memory: 512Mi }

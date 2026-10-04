@@ -1,0 +1,18 @@
+# LAB 6: ป้ายกฎขนาดกล่องของโซน budget (ใช้กับแต่ละ container)
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: box-size
+  namespace: budget
+spec:
+  limits:
+    - type: Container
+      defaultRequest:            # ไม่ระบุ requests → เติมค่านี้ให้
+        cpu: 100m
+        memory: 64Mi
+      default:                   # ไม่ระบุ limits → เติมค่านี้ให้
+        cpu: 200m
+        memory: 128Mi
+      max:                       # ห้าม limits เกินค่านี้ (ต่อ container)
+        cpu: 500m
+        memory: 256Mi

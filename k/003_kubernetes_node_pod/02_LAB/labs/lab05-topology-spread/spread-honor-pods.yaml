@@ -1,0 +1,80 @@
+# LAB 5: เหมือนเดิม + nodeTaintsPolicy: Honor = ไม่นับ node ที่ Pod ทนป้ายห้ามขึ้น (taint) ไม่ได้
+apiVersion: v1
+kind: Pod
+metadata:
+  name: honor-1
+  labels:
+    lab: "03"
+    group: honor
+spec:
+  topologySpreadConstraints:
+    - maxSkew: 1                         # จำนวน Pod ระหว่าง "เรือที่มากสุด" กับ "เรือที่น้อยสุด" ต่างกันได้ไม่เกิน 1
+      topologyKey: kubernetes.io/hostname   # 1 domain = 1 node
+      whenUnsatisfiable: DoNotSchedule   # ถ้าทำให้เอียงเกิน → ไม่วาง (Pending)
+      labelSelector:
+        matchLabels:
+          group: honor
+      nodeTaintsPolicy: Honor        # ค่าเริ่มต้นคือ Ignore
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: honor-2
+  labels:
+    lab: "03"
+    group: honor
+spec:
+  topologySpreadConstraints:
+    - maxSkew: 1                         # จำนวน Pod ระหว่าง "เรือที่มากสุด" กับ "เรือที่น้อยสุด" ต่างกันได้ไม่เกิน 1
+      topologyKey: kubernetes.io/hostname   # 1 domain = 1 node
+      whenUnsatisfiable: DoNotSchedule   # ถ้าทำให้เอียงเกิน → ไม่วาง (Pending)
+      labelSelector:
+        matchLabels:
+          group: honor
+      nodeTaintsPolicy: Honor        # ค่าเริ่มต้นคือ Ignore
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: honor-3
+  labels:
+    lab: "03"
+    group: honor
+spec:
+  topologySpreadConstraints:
+    - maxSkew: 1                         # จำนวน Pod ระหว่าง "เรือที่มากสุด" กับ "เรือที่น้อยสุด" ต่างกันได้ไม่เกิน 1
+      topologyKey: kubernetes.io/hostname   # 1 domain = 1 node
+      whenUnsatisfiable: DoNotSchedule   # ถ้าทำให้เอียงเกิน → ไม่วาง (Pending)
+      labelSelector:
+        matchLabels:
+          group: honor
+      nodeTaintsPolicy: Honor        # ค่าเริ่มต้นคือ Ignore
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: honor-4
+  labels:
+    lab: "03"
+    group: honor
+spec:
+  topologySpreadConstraints:
+    - maxSkew: 1                         # จำนวน Pod ระหว่าง "เรือที่มากสุด" กับ "เรือที่น้อยสุด" ต่างกันได้ไม่เกิน 1
+      topologyKey: kubernetes.io/hostname   # 1 domain = 1 node
+      whenUnsatisfiable: DoNotSchedule   # ถ้าทำให้เอียงเกิน → ไม่วาง (Pending)
+      labelSelector:
+        matchLabels:
+          group: honor
+      nodeTaintsPolicy: Honor        # ค่าเริ่มต้นคือ Ignore
+  containers:
+    - name: web
+      image: nginx:1.27-alpine

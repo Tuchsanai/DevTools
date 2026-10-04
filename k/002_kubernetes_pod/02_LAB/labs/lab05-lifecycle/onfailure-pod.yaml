@@ -1,0 +1,19 @@
+# LAB 5: เปรียบเทียบ restartPolicy OnFailure — เริ่มใหม่เฉพาะตอน exit code ไม่ใช่ 0
+apiVersion: v1
+kind: Pod
+metadata:
+  name: onfailure-pod
+spec:
+  restartPolicy: OnFailure
+  containers:
+    - name: app
+      image: busybox:1.36
+      # ครั้งแรกจะล้ม (ไฟล์ยังไม่มี) จึงถูกเริ่มใหม่ ครั้งต่อไปเจอไฟล์แล้ว exit 0 → Completed
+      # /work เป็น emptyDir (เรียนในบทนี้ LAB 8) ไฟล์จึงรอดข้ามการ restart container
+      command: ["sh", "-c", "if [ -f /work/tried ]; then echo 'รอบสองสำเร็จ'; exit 0; else touch /work/tried; echo 'รอบแรกล้ม'; exit 1; fi"]
+      volumeMounts:
+        - name: work
+          mountPath: /work
+  volumes:
+    - name: work
+      emptyDir: {}

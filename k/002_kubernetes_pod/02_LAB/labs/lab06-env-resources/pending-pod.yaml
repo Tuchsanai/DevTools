@@ -1,0 +1,12 @@
+# LAB 6: ขอ CPU มากเกินกว่าที่ Node ไหนจะมี → Pending (FailedScheduling)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pending-pod
+spec:
+  containers:
+    - name: big
+      image: nginx:1.27-alpine
+      resources:
+        requests:
+          cpu: "64"                     # ขอ 64 core! ไม่มี Node ไหนรับไหว

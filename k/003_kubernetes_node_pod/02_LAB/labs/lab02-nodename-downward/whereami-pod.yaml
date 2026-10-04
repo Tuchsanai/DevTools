@@ -1,0 +1,32 @@
+# LAB 2: Downward API — ให้ Pod รู้ว่าตัวเองชื่ออะไร อยู่บนเรือลำไหน IP อะไร
+apiVersion: v1
+kind: Pod
+metadata:
+  name: whereami
+  labels:
+    lab: "03"
+spec:
+  terminationGracePeriodSeconds: 1
+  containers:
+    - name: app
+      image: busybox:1.36
+      env:
+        - name: NODE_NAME            # ชื่อ node ที่ Pod ถูกวาง (ต้นเรือเติมให้ตอนสร้าง container)
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_IP               # IP ของ Pod (10.244.x.x)
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: HOST_IP              # IP ของ node (เช่น 172.19.0.x ใน kind ขึ้นกับ Docker network ของเครื่อง)
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: GREETING             # $(ชื่อตัวแปร) อ้างตัวแปรที่ประกาศ "ก่อนหน้า" ในลิสต์นี้ได้
+          value: "สวัสดีจาก $(POD_NAME) บนเรือ $(NODE_NAME)"
+      command: ["sh", "-c", "echo \"$GREETING (Pod IP $POD_IP, Node IP $HOST_IP)\"; sleep 3600"]

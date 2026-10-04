@@ -1,0 +1,15 @@
+# LAB 1: Pod ขนาดพอดี — scheduler หาเรือที่ "ระวางเหลือพอ" ให้ได้
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fit-pod
+  labels:
+    lab: "03"                 # ทุก Pod ของบทนี้ติดป้าย lab=03 → เก็บกวาดด้วย kubectl delete pod -l lab=03
+spec:
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+      resources:
+        requests:             # scheduler ใช้ "requests" (ไม่ใช่การใช้งานจริง) เทียบกับ allocatable ของ node
+          cpu: 100m
+          memory: 64Mi

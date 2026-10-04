@@ -1,0 +1,15 @@
+# LAB 6: ใช้ memory เกิน limit → kernel ฆ่า process → OOMKilled (exit 137)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oom-pod
+spec:
+  containers:
+    - name: hungry
+      image: busybox:1.36
+      command: ["sh", "-c", "echo 'กินแรมไม่หยุด...'; tail /dev/zero"]   # tail จะอ่านข้อมูลเก็บในแรมไปเรื่อย ๆ
+      resources:
+        requests:
+          memory: "16Mi"
+        limits:
+          memory: "32Mi"                # เกิน 32Mi เมื่อไร โดน OOMKilled

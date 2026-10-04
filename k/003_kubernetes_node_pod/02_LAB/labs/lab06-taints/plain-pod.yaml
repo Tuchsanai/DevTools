@@ -1,0 +1,11 @@
+# LAB 6: Pod ธรรมดา ไม่มีบัตรผ่าน (toleration) → ขึ้นเรือที่ติดป้ายห้ามขึ้นไม่ได้
+apiVersion: v1
+kind: Pod
+metadata:
+  name: plain-pod
+  labels:
+    lab: "03"
+spec:
+  containers:
+    - name: web
+      image: nginx:1.27-alpine

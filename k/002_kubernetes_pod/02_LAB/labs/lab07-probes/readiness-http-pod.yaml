@@ -1,0 +1,17 @@
+# LAB 7: readinessProbe แบบ httpGet — ไม่ผ่านแค่ READY 0/1 (ไม่ถูก restart)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: readiness-http-pod
+spec:
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+      ports:
+        - containerPort: 80
+      readinessProbe:
+        httpGet:
+          path: /ready.html      # ยังไม่มีไฟล์นี้ → 404 → ยังไม่พร้อม
+          port: 80
+        periodSeconds: 3
+        failureThreshold: 1

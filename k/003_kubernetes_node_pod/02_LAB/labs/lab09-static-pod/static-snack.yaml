@@ -1,0 +1,14 @@
+# LAB 9: static Pod — ไฟล์นี้ไม่ได้ kubectl apply แต่ copy ไปวางใน /etc/kubernetes/manifests บน node
+# ต้นเรือ (kubelet) อ่านไฟล์แล้วสร้าง Pod เอง ไม่ผ่าน scheduler / API server
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-snack           # ชื่อที่ kubectl เห็นจะต่อท้ายด้วยชื่อ node เช่น static-snack-lab-worker
+  labels:
+    app: static-snack
+spec:
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+      ports:
+        - containerPort: 80

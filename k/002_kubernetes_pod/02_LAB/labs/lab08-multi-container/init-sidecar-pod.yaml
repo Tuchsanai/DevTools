@@ -1,0 +1,36 @@
+# LAB 8: init container + sidecar + emptyDir ใน Pod เดียว
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-sidecar-pod
+spec:
+  volumes:
+    - name: html                # ชั้นวางของร่วมของทุก container ใน Pod
+      emptyDir: {}              # เกิดพร้อม Pod หายพร้อม Pod
+  initContainers:               # ทำงานก่อน container หลัก ต้องจบด้วย exit 0
+    - name: prepare
+      image: busybox:1.36
+      command:
+        - sh
+        - -c
+        - |
+          echo "เตรียมหน้าร้าน..."
+          sleep 5
+          echo "<h1>เมนูวันนี้ของน้องส้ม</h1>" > /html/index.html
+          echo "สร้างเมื่อ $(date)" >> /html/index.html
+          echo "prepare เสร็จ"
+      volumeMounts:
+        - name: html
+          mountPath: /html
+  containers:
+    - name: web                 # เสิร์ฟไฟล์จาก emptyDir
+      image: nginx:1.27-alpine
+      volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html
+    - name: menu-writer         # sidecar: เขียนเวลาลงไฟล์ทุก 5 วินาที
+      image: busybox:1.36
+      command: ["sh", "-c", "while true; do echo \"<p>อัปเดต $(date +%T)</p>\" >> /html/index.html; sleep 5; done"]
+      volumeMounts:
+        - name: html
+          mountPath: /html

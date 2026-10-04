@@ -1,0 +1,145 @@
+# LAB สุดท้าย: ร้านอาหารแมวน้องส้ม — ไฟล์เดียวใช้ได้ทุก environment
+# ไม่มี metadata.namespace → เลือกโซนตอนสั่ง: kubectl apply -f som-shop.yaml -n som-dev | som-staging | som-prod
+# ต่างจากบท 002/003: (1) securityContext ผ่าน Pod Security ระดับ restricted (2) ชื่อร้านบอก namespace อัตโนมัติ
+apiVersion: v1
+kind: Pod
+metadata:
+  # ชื่อเดียวกันได้ทุกโซน (ชื่อเต็ม = <namespace>/som-shop)
+  # บรรทัด name ห้ามมีคอมเมนต์ต่อท้าย เพราะ LAB ใช้ sed 's/name: som-shop$/.../' เปลี่ยนชื่อสาขา
+  name: som-shop
+  labels:
+    app: som-shop
+spec:
+  securityContext:               # ระดับ Pod: ใช้กับทุก container
+    runAsNonRoot: true           # ห้ามรันเป็น root
+    fsGroup: 70                  # volume (emptyDir) เป็นของกลุ่ม 70 = postgres เขียนได้
+    seccompProfile:
+      type: RuntimeDefault
+
+  volumes:
+    - name: db-data              # ฐานข้อมูลของ environment นี้เท่านั้น หายเมื่อ Pod/namespace ถูกลบ
+      emptyDir: {}
+
+  initContainers:
+    # 1) db: native sidecar (restartPolicy: Always) → เริ่มก่อนและรันตลอดอายุ Pod
+    - name: db
+      image: postgres:17.11-alpine
+      restartPolicy: Always
+      securityContext:
+        runAsUser: 70            # uid ของ postgres ใน image alpine
+        runAsGroup: 70
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
+      env:
+        - name: POSTGRES_USER
+          value: som
+        - name: POSTGRES_PASSWORD
+          value: meow1234        # เพื่อการเรียนเท่านั้น
+        - name: POSTGRES_DB
+          value: catshop
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+      ports:
+        - containerPort: 5432
+      volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/postgresql/data
+      startupProbe:
+        exec:
+          command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
+        periodSeconds: 2
+        failureThreshold: 30
+      readinessProbe:
+        exec:
+          command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
+        periodSeconds: 5
+      livenessProbe:
+        tcpSocket:
+          port: 5432
+        periodSeconds: 10
+        failureThreshold: 3
+      resources:
+        requests: { cpu: 100m, memory: 256Mi }
+        limits:   { cpu: 500m, memory: 512Mi }
+
+    # 2) wait-for-db: รอจนต่อ db ได้
+    - name: wait-for-db
+      image: postgres:17.11-alpine
+      command:
+        - sh
+        - -c
+        - until pg_isready -h localhost -p 5432 -U som -d catshop; do echo "รอฐานข้อมูล..."; sleep 2; done; echo "ฐานข้อมูลพร้อมแล้ว"
+      securityContext:
+        runAsUser: 70
+        runAsGroup: 70
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 64Mi }
+
+    # 3) db-seed: สร้างตาราง + สินค้าตั้งต้น
+    - name: db-seed
+      image: som-shop-web:1.1
+      imagePullPolicy: IfNotPresent
+      command: ["node", "scripts/seed.mjs"]
+      securityContext:
+        runAsUser: 1000          # image ระบุ USER node เป็น "ชื่อ" → ต้องใส่เป็นตัวเลขให้ runAsNonRoot ตรวจได้
+        runAsGroup: 1000
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
+      env:
+        - name: DATABASE_URL
+          value: postgres://som:meow1234@localhost:5432/catshop
+      resources:
+        requests: { cpu: 50m, memory: 64Mi }
+        limits:   { cpu: 300m, memory: 256Mi }
+
+  containers:
+    - name: web
+      image: som-shop-web:1.1
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
+      env:
+        - name: POD_NAMESPACE      # Downward API: namespace ของ Pod นี้ (ต้องประกาศก่อน SHOP_NAME)
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: SHOP_NAME          # → "ร้านอาหารแมวน้องส้ม (som-dev)" / "(som-staging)" / "(som-prod)"
+          value: "ร้านอาหารแมวน้องส้ม ($(POD_NAMESPACE))"
+        - name: SHOP_EYEBROW       # ข้อความเล็กเหนือชื่อร้าน (som-shop-web:1.1 อ่านจาก env)
+          value: "⚓ ท่าเรือ Kubernetes · โซน $(POD_NAMESPACE)"
+        - name: SHOP_FOOTER        # ข้อความท้ายหน้า
+          value: "Next.js + PostgreSQL · Kubernetes LAB 004 · namespace $(POD_NAMESPACE)"
+        - name: DATABASE_URL
+          value: postgres://som:meow1234@localhost:5432/catshop
+        - name: PORT
+          value: "3000"
+        - name: HOSTNAME
+          value: "0.0.0.0"
+      ports:
+        - containerPort: 3000
+      readinessProbe:
+        httpGet:
+          path: /api/health
+          port: 3000
+        periodSeconds: 5
+        failureThreshold: 2
+      livenessProbe:
+        httpGet:
+          path: /api/health
+          port: 3000
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        failureThreshold: 6
+      resources:
+        requests: { cpu: 100m, memory: 192Mi }
+        limits:   { cpu: 500m, memory: 512Mi }

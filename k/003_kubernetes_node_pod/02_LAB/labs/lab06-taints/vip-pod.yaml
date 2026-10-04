@@ -1,0 +1,19 @@
+# LAB 6: Pod VIP — มีบัตรผ่านป้าย dedicated=vip:NoSchedule และ "ขอ" ไปเรือ lab-worker2
+# บัตรผ่าน (toleration) อย่างเดียวไม่ได้ดึงไปเรือนั้น จึงต้องคู่กับ nodeSelector/affinity
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vip-pod
+  labels:
+    lab: "03"
+spec:
+  tolerations:
+    - key: dedicated
+      operator: Equal          # key และ value ต้องตรงกับ taint
+      value: vip
+      effect: NoSchedule
+  nodeSelector:
+    kubernetes.io/hostname: lab-worker2
+  containers:
+    - name: web
+      image: nginx:1.27-alpine

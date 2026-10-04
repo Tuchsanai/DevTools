@@ -1,0 +1,13 @@
+# LAB 3: nodeSelector — "ต้องขึ้นเรือที่มีธง fleet=fast เท่านั้น"
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selector-pod
+  labels:
+    lab: "03"
+spec:
+  nodeSelector:               # ทุก key ต้องตรง (AND) ถ้าไม่มี node ไหนตรง → Pending
+    fleet: fast
+  containers:
+    - name: web
+      image: nginx:1.27-alpine

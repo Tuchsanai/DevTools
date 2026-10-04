@@ -1,0 +1,17 @@
+# LAB 4 (ประตูที่ 2): เปิดให้ทุก Pod จากโซนที่มี label kubernetes.io/metadata.name=team-b เข้า web ได้
+# policy รวมกันแบบ OR: ผ่านข้อใดข้อหนึ่งก็เข้าได้
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-team-b
+  namespace: team-a
+spec:
+  podSelector:
+    matchLabels:
+      app: web                   # ใช้กับ Pod web เท่านั้น
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: team-b   # label ที่ระบบใส่ให้ทุก namespace อัตโนมัติ

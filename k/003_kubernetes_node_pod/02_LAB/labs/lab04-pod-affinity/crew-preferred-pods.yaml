@@ -1,0 +1,63 @@
+# LAB 4: preferred podAntiAffinity — 3 Pod อยากแยกเรือ (ไม่บังคับ) → Running ครบ แม้มี 2 ลำ
+apiVersion: v1
+kind: Pod
+metadata:
+  name: deckhand-1
+  labels:
+    lab: "03"
+    team: deckhand
+spec:
+  affinity:
+    podAntiAffinity:              # แบบ "อยากได้": พยายามแยกเรือ แต่ถ้าไม่มีเรือว่างก็ยอมอยู่ด้วยกัน
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                team: deckhand
+            topologyKey: kubernetes.io/hostname
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: deckhand-2
+  labels:
+    lab: "03"
+    team: deckhand
+spec:
+  affinity:
+    podAntiAffinity:              # แบบ "อยากได้": พยายามแยกเรือ แต่ถ้าไม่มีเรือว่างก็ยอมอยู่ด้วยกัน
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                team: deckhand
+            topologyKey: kubernetes.io/hostname
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: deckhand-3
+  labels:
+    lab: "03"
+    team: deckhand
+spec:
+  affinity:
+    podAntiAffinity:              # แบบ "อยากได้": พยายามแยกเรือ แต่ถ้าไม่มีเรือว่างก็ยอมอยู่ด้วยกัน
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                team: deckhand
+            topologyKey: kubernetes.io/hostname
+  containers:
+    - name: web
+      image: nginx:1.27-alpine

@@ -1,0 +1,17 @@
+# LAB 4: เว็บ nginx ของทีม a — ปักไว้บนเรือ lab-worker (ให้เห็นว่าคนละโซนอยู่เรือเดียวกันได้)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web
+  namespace: team-a
+  labels:
+    app: web
+    lab: net
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: lab-worker
+  containers:
+    - name: nginx
+      image: nginx:1.27-alpine
+      ports:
+        - containerPort: 80

@@ -1,0 +1,18 @@
+งาน: เขียนเอกสารบทเรียน 004 "Namespace" ภาษาไทยให้สมบูรณ์และละเอียด (ไม่ต้องรัน LAB ใหม่ ใช้ผลจริงที่ทดสอบแล้ว)
+
+แหล่งข้อมูล:
+- แผน: /root/workspace/DevTools/k/logs/004_namespace/plan.md และ precheck.md
+- ภาพและคำบรรยาย: /root/workspace/DevTools/k/logs/004_namespace/images.json (path + caption_th ตามลำดับ; บางภาพยังสร้างอยู่ ชื่อไฟล์ตาม images.json) + ภาพตัวละคร 01_Theory/images/00-character-som.png
+- ผลทดสอบจริง: /root/workspace/DevTools/k/logs/004_namespace/lab-run/lab00.log … lab10.log, SUMMARY.md (ค่าจริง ข้อความจริง การเปลี่ยนจากแผน ข้อควรระวัง — รวมสองข้อแก้ทฤษฎี: สร้าง namespace ขึ้นต้น kube- ได้ (เป็นธรรมเนียม ไม่ได้ห้าม) และ kube-node-lease ลบได้ (ที่ป้องกันคือ default, kube-system, kube-public)), screenshot-delete-dev.log
+- ไฟล์ LAB จริง: /root/workspace/DevTools/k/004_kubernetes_namespace/02_LAB/ อ้างชื่อไฟล์/เนื้อหาให้ตรงของจริง (แอปเป็น som-shop-web:1.1 ที่อ่าน header/footer จาก env)
+- screenshot จริง (Playwright ผ่าน ssh -L) ใน 02_LAB/images/screenshots/: 20261004_2050_lab10ns_01-som-dev.png (dev 1 ออเดอร์), 20261004_2050_lab10ns_02-som-staging.png (2 ออเดอร์), 20261004_2050_lab10ns_03-som-prod.png (3 ออเดอร์), 20261004_2051_lab10ns_04-som-dev-gone.png (หลัง kubectl delete ns som-dev ~10 วิ browser เปิด dev ไม่ได้ ERR_CONNECTION_RESET), 20261004_2051_lab10ns_05-som-prod-still-open.png (prod ยังเปิดอยู่) — ผลคำสั่งช่วงนี้ใน screenshot-delete-dev.log
+- สไตล์ตัวอย่าง: บท 003 /root/workspace/DevTools/k/003_kubernetes_node_pod/01_Theory/README.md, 02_LAB/README.md, README.md (หัวเอกสาร, บทคัดย่อ, วัตถุประสงค์, สารบัญ, สารบัญรูปภาพ, <p align="center" id="fig-N">, 🖥️ บนเครื่องนักศึกษา / 🐧 ใน SSH session ของ k8s-lab, ผลจริงใน ```text, คำถามทบทวน <details>, Troubleshooting, Checklist)
+
+ไฟล์ที่เขียนได้ (เฉพาะเท่านี้):
+1) /root/workspace/DevTools/k/004_kubernetes_namespace/01_Theory/README.md — ทฤษฎีละเอียดตามแผน ใช้ภาพ T01–T38 ครบตามลำดับ YAML ตัวอย่างถูกต้อง (ค่าจริงที่ทดสอบ) ตาราง ข้อควรจำ คำถามทบทวน+แนวคำตอบ เอกสารอ้างอิง kubernetes.io; IP ในภาพเป็นตัวอย่าง (ระบุว่า IP จริงต่างได้)
+2) /root/workspace/DevTools/k/004_kubernetes_namespace/02_LAB/README.md — LAB 0–10 จากง่ายไปยาก: เริ่มด้วยนำโฟลเดอร์เข้า k8s-lab (บนเครื่องนักศึกษา docker cp 004_kubernetes_namespace k8s-lab:/workspace/) ใช้คลัสเตอร์เดิมได้ ถ้ายังไม่มีให้ k8s-up; แต่ละ LAB: ภาพเปิด, เป้าหมาย, ขั้นตอน, ผลจริงจาก log (ระบุว่าเวลา/IP/node อาจต่าง), อธิบาย, คำถามชวนคิด, เก็บกวาด (ลบ namespace ที่สร้าง, คืน context namespace เป็น default, ลบ context intern); LAB สุดท้ายใช้ภาพ L15–L23 + screenshot จริง 5 ภาพ (ระบุว่าเป็นภาพหน้าจอจริง) รวม build som-shop-web:1.1 + kind load, postgres ด้วย docker save --platform + image-archive ตามที่ทดสอบ; ห้ามใช้ Service/NodePort/Deployment ในขั้นตอน LAB (ปูทางได้)
+3) /root/workspace/DevTools/k/004_kubernetes_namespace/README.md — หน้ารวม (ภาพเปิด T01, ลิงก์ทฤษฎี/LAB, โครงสร้างโฟลเดอร์, สิ่งที่ต้องผ่านก่อน: บท 001–003)
+4) สร้างใหม่ 01_Theory/images/imagegen-prompts.md และ 02_LAB/images/imagegen-prompts.md จาก images.json ปัจจุบัน (รูปแบบเดิม บรรทัดแรก Generated with built-in image_gen via cyolo1 using 00-character-som.png as character reference)
+
+ข้อกำหนด: ภาษาไทยอ่านง่าย ศัพท์เทคนิคคงภาษาอังกฤษ path relative ถูก ห้าม credential จริง (passwd, meow1234 ได้พร้อมหมายเหตุ; token ของ SA ให้แสดงแบบตัด เช่น eyJhbGciOi...) ผลลัพธ์ต้องมาจาก log จริงห้ามแต่ง ห้ามใส่รายละเอียดของเครื่องทดสอบ (port 2224, 172.18.0.1, askpass) ตรวจก่อนจบด้วยสคริปต์: img/ลิงก์ชี้ไฟล์ที่มี (ยกเว้นภาพที่กำลังสร้างแต่ชื่อตรง images.json), anchor มีปลายทาง, ใช้ภาพ T01–T38 และ L01–L23 ครบ, caption ตรง caption_th, YAML parse ได้, ไม่มี NodePort/Service/Deployment ในขั้นตอน LAB
+ตอบท้ายสั้น ๆ: ขนาดไฟล์ จำนวนภาพ ผลตรวจ

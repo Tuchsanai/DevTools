@@ -1,0 +1,12 @@
+# LAB 2: nodeName ชี้ไปเรือที่ไม่มีอยู่จริง → ไม่มีต้นเรือคนไหนรับ
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ghost-node-pod
+  labels:
+    lab: "03"
+spec:
+  nodeName: lab-worker9        # ไม่มี node ชื่อนี้ในคลัสเตอร์
+  containers:
+    - name: web
+      image: nginx:1.27-alpine

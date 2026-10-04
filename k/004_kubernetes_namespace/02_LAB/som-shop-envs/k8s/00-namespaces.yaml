@@ -1,0 +1,30 @@
+# LAB สุดท้าย: 3 โซนของร้านน้องส้ม ในคลัสเตอร์เดียว
+# dev/staging: แค่ "เตือน" ถ้า Pod ไม่ผ่าน restricted / prod: "บังคับ" restricted (ไม่ผ่าน = ปฏิเสธ)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: som-dev
+  labels:
+    env: dev
+    team: som
+    pod-security.kubernetes.io/warn: restricted
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: som-staging
+  labels:
+    env: staging
+    team: som
+    pod-security.kubernetes.io/warn: restricted
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: som-prod
+  labels:
+    env: prod
+    team: som
+    pod-security.kubernetes.io/enforce: restricted        # ด่านปฏิเสธ
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/warn: restricted           # กระดิ่งเตือนที่ kubectl

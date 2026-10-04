@@ -1,0 +1,18 @@
+# LAB 6: วาง Pod บน control-plane — ต้องมีทั้งบัตรผ่าน taint ของ control-plane และใบสั่งให้ไปที่นั่น
+# (ทำเพื่อการเรียนเท่านั้น งานจริงไม่ควรวางแอปบน control-plane)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: control-plane-pod
+  labels:
+    lab: "03"
+spec:
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists         # Exists = ไม่สนค่า value (taint นี้ไม่มี value)
+      effect: NoSchedule
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""   # label นี้มีเฉพาะบน control-plane (ค่าว่าง)
+  containers:
+    - name: web
+      image: nginx:1.27-alpine

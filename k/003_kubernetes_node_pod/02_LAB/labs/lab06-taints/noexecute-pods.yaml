@@ -1,0 +1,67 @@
+# LAB 6: 3 Pod บน lab-worker2 รอเจอป้าย maintenance=true:NoExecute (ป้ายไล่ลงเรือ)
+# no-pass = ไม่มีบัตร → ถูกไล่ทันที / pass-30s = อยู่ได้ 30 วิ / pass-forever = อยู่ต่อ
+apiVersion: v1
+kind: Pod
+metadata:
+  name: no-pass
+  labels:
+    lab: "03"
+    group: noexecute
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: lab-worker2
+  tolerations:
+    - key: dedicated               # บัตรผ่านป้ายเดิม (NoSchedule) เพื่อให้ขึ้นเรือ lab-worker2 ได้ก่อน
+      operator: Equal
+      value: vip
+      effect: NoSchedule
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pass-30s
+  labels:
+    lab: "03"
+    group: noexecute
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: lab-worker2
+  tolerations:
+    - key: dedicated               # บัตรผ่านป้ายเดิม (NoSchedule) เพื่อให้ขึ้นเรือ lab-worker2 ได้ก่อน
+      operator: Equal
+      value: vip
+      effect: NoSchedule
+    - key: maintenance             # บัตรผ่านป้ายไล่ลงเรือ แต่ "มีเวลา" 30 วินาที
+      operator: Equal
+      value: "true"
+      effect: NoExecute
+      tolerationSeconds: 30
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pass-forever
+  labels:
+    lab: "03"
+    group: noexecute
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: lab-worker2
+  tolerations:
+    - key: dedicated               # บัตรผ่านป้ายเดิม (NoSchedule) เพื่อให้ขึ้นเรือ lab-worker2 ได้ก่อน
+      operator: Equal
+      value: vip
+      effect: NoSchedule
+    - key: maintenance             # บัตรผ่านไม่ระบุเวลา → อยู่ต่อได้ตลอด
+      operator: Equal
+      value: "true"
+      effect: NoExecute
+  containers:
+    - name: web
+      image: nginx:1.27-alpine

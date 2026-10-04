@@ -1,0 +1,19 @@
+# LAB 4: podAffinity — "ต้องอยู่เรือลำเดียวกับ Pod ที่มีป้าย app=cache"
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-near-cache
+  labels:
+    lab: "03"
+    app: web
+spec:
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:            # หา Pod อื่นที่มีป้ายนี้ (ใน namespace เดียวกัน)
+            matchLabels:
+              app: cache
+          topologyKey: kubernetes.io/hostname   # "ที่เดียวกัน" = node เดียวกัน
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
