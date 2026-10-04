@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Jira and Plane issue hierarchy comparison</title>
+  <desc id="desc">Two tree diagrams compare Jira issue hierarchy with Plane work hierarchy, joined by a dashed equivalence arrow.</desc>
+
+  <defs>
+    <filter id="shadow" x="-20%" y="-25%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#18181b" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse" markerUnits="strokeWidth">
+      <path d="M1,1 L9,5 L1,9" fill="none" stroke="#52525b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      text { font-family: 'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif; }
+      .heading { font-size: 30px; font-weight: 700; fill: #18181b; letter-spacing: -0.3px; }
+      .eyebrow { font-size: 18px; font-weight: 700; fill: #52525b; letter-spacing: 1.8px; }
+      .node-label { font-size: 20px; font-weight: 700; fill: #ffffff; }
+      .node-sub { font-size: 18px; font-weight: 500; fill: #ffffff; opacity: 0.92; }
+      .connector { fill: none; stroke: #a1a1aa; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+      .footer { font-size: 18px; font-weight: 650; fill: #18181b; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+
+  <!-- Section headers -->
+  <text class="eyebrow" x="72" y="60">ISSUE HIERARCHY</text>
+  <text class="heading" x="72" y="101">Jira</text>
+  <line x1="72" y1="119" x2="540" y2="119" stroke="#1c5cab" stroke-width="4" stroke-linecap="round"/>
+
+  <text class="eyebrow" x="740" y="60">WORK HIERARCHY</text>
+  <text class="heading" x="740" y="101">Plane</text>
+  <line x1="740" y1="119" x2="1208" y2="119" stroke="#86590a" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Jira tree connectors -->
+  <path class="connector" d="M306 221 V258 M138 258 H474 M138 258 V291 M306 258 V291 M474 258 V291"/>
+  <path class="connector" d="M138 357 V402 M306 357 V402 M474 357 V402"/>
+
+  <!-- Jira nodes -->
+  <g filter="url(#shadow)">
+    <rect x="206" y="153" width="200" height="68" rx="18" fill="#6941a5"/>
+    <rect x="72" y="291" width="132" height="66" rx="16" fill="#1c5cab"/>
+    <rect x="240" y="291" width="132" height="66" rx="16" fill="#116b11"/>
+    <rect x="408" y="291" width="132" height="66" rx="16" fill="#a32222"/>
+    <rect x="72" y="402" width="132" height="60" rx="15" fill="#2a78d6"/>
+    <rect x="240" y="402" width="132" height="60" rx="15" fill="#2a78d6"/>
+    <rect x="408" y="402" width="132" height="60" rx="15" fill="#2a78d6"/>
+  </g>
+  <text class="node-label" x="306" y="195" text-anchor="middle">Epic</text>
+  <text class="node-label" x="138" y="332" text-anchor="middle">Story</text>
+  <text class="node-label" x="306" y="332" text-anchor="middle">Task</text>
+  <text class="node-label" x="474" y="332" text-anchor="middle">Bug</text>
+  <text class="node-label" x="138" y="439" text-anchor="middle">Sub-task</text>
+  <text class="node-label" x="306" y="439" text-anchor="middle">Sub-task</text>
+  <text class="node-label" x="474" y="439" text-anchor="middle">Sub-task</text>
+
+  <!-- Equivalence arrow -->
+  <g aria-label="equivalent concepts">
+    <rect x="581" y="265" width="118" height="46" rx="23" fill="#fafafa" stroke="#d4d4d8" stroke-width="2"/>
+    <text x="640" y="295" text-anchor="middle" font-size="18" font-weight="700" fill="#52525b">maps to</text>
+    <path d="M570 333 H710" fill="none" stroke="#52525b" stroke-width="3" stroke-dasharray="8 9" stroke-linecap="round" marker-start="url(#arrowhead)" marker-end="url(#arrowhead)"/>
+  </g>
+
+  <!-- Plane tree connectors -->
+  <path class="connector" d="M974 249 V302"/>
+  <path class="connector" d="M974 374 V427"/>
+
+  <!-- Plane nodes -->
+  <g filter="url(#shadow)">
+    <rect x="792" y="153" width="364" height="96" rx="18" fill="#6941a5"/>
+    <rect x="842" y="302" width="264" height="72" rx="17" fill="#86590a"/>
+    <rect x="812" y="427" width="324" height="86" rx="17" fill="#1c5cab"/>
+  </g>
+  <text class="node-label" x="974" y="190" text-anchor="middle">Module</text>
+  <text class="node-sub" x="974" y="220" text-anchor="middle">epic-like, with status &amp; lead</text>
+  <text class="node-label" x="974" y="346" text-anchor="middle">Work item</text>
+  <text class="node-label" x="974" y="462" text-anchor="middle">Sub-work item</text>
+  <text class="node-sub" x="974" y="491" text-anchor="middle">parent link</text>
+
+  <!-- Footer comparison chips -->
+  <g transform="translate(72 605)">
+    <rect width="530" height="62" rx="20" fill="#eef5ff" stroke="#bfdbfe" stroke-width="2"/>
+    <circle cx="31" cy="31" r="8" fill="#1c5cab"/>
+    <text class="footer" x="53" y="38">Jira: workflow per issue type</text>
+  </g>
+  <g transform="translate(622 605)">
+    <rect width="586" height="62" rx="20" fill="#fff7e8" stroke="#f1d49b" stroke-width="2"/>
+    <circle cx="31" cy="31" r="8" fill="#86590a"/>
+    <text class="footer" x="53" y="38">Plane: shared states per project</text>
+  </g>
+</svg>

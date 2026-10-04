@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: imagepull-web
+  namespace: lab020
+  labels:
+    case: imagepull
+spec:
+  containers:
+    - name: web
+      image: k8s-lab-web:v1.0 # tag นี้ไม่มีจริง
+      imagePullPolicy: IfNotPresent

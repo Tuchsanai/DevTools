@@ -1,0 +1,2 @@
+Workspace settings is open on the Webhooks page.
+The empty state says No Webhook added yet and shows Add webhook controls.

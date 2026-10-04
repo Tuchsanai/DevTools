@@ -1,0 +1,1310 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Kafka TA Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --ground:#F2F4F7; --paper:#FFFFFF; --ink:#131B24; --muted:#56626F; --line:#D5DBE2;
+  --accent:#2B55D9; --accent-soft:#E3EAFC;
+  --ok:#1C7C52; --ok-soft:#E1F3EA; --warn:#9A5B00; --warn-soft:#FBEFD9; --bad:#B42318; --bad-soft:#FBE4E1;
+  --code-bg:#EDF0F4; --term-bg:#18202A; --term-ink:#D8E1EA; --term-dim:#8FA0B2; --term-ok:#7FD6A6;
+  --c0:#2B55D9; --c1:#0E8A7A; --c2:#B5562B; --c3:#7A4FC4;
+  --display:"Bai Jamjuree","IBM Plex Sans Thai",system-ui,sans-serif;
+  --body:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0F141A; --paper:#161D25; --ink:#E6EBF0; --muted:#98A4B0; --line:#2B3541;
+    --accent:#7C9BFF; --accent-soft:#1C2745;
+    --ok:#4CC38A; --ok-soft:#12291F; --warn:#F0B44C; --warn-soft:#2E2412; --bad:#FF7A6B; --bad-soft:#331815;
+    --code-bg:#1D2530; --term-bg:#0A0E13; --term-ink:#D8E1EA; --term-dim:#7E8FA1; --term-ok:#7FD6A6;
+    --c0:#6F8FFF; --c1:#33B8A4; --c2:#E5834F; --c3:#A283E8;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0F141A; --paper:#161D25; --ink:#E6EBF0; --muted:#98A4B0; --line:#2B3541;
+  --accent:#7C9BFF; --accent-soft:#1C2745;
+  --ok:#4CC38A; --ok-soft:#12291F; --warn:#F0B44C; --warn-soft:#2E2412; --bad:#FF7A6B; --bad-soft:#331815;
+  --code-bg:#1D2530; --term-bg:#0A0E13; --term-ink:#D8E1EA; --term-dim:#7E8FA1; --term-ok:#7FD6A6;
+  --c0:#6F8FFF; --c1:#33B8A4; --c2:#E5834F; --c3:#A283E8;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding-inline:18px;padding-block:22px 72px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--ground);border-bottom:1px solid var(--line)}
+header.top .in{max-width:960px;margin:0 auto;padding:10px 18px 0}
+header.top .brand{font-family:var(--display);font-weight:700;font-size:17px}
+header.top .brand span{color:var(--muted);font-weight:500;font-size:13px;margin-left:8px}
+.tabs{display:flex;gap:2px;overflow-x:auto;margin-top:6px;scrollbar-width:none}
+.tabs button{font:inherit;font-family:var(--display);font-weight:600;font-size:14.5px;background:none;border:none;color:var(--muted);padding:9px 14px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+h1,h2,h3{font-family:var(--display);line-height:1.3;text-wrap:balance;margin:0}
+h1{font-size:clamp(26px,4.5vw,36px);font-weight:700}
+h2{font-size:23px;font-weight:700;margin-top:40px}
+h3{font-size:18px;font-weight:600}
+p{margin:8px 0;max-width:70ch}
+.lede{color:var(--muted);font-size:16.5px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+code{font-family:var(--mono);font-size:.86em;background:var(--code-bg);padding:1px 6px;border-radius:5px;overflow-wrap:anywhere}
+a{color:var(--accent)}
+
+/* figure */
+figure{margin:20px 0;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px}
+figure .scroll{overflow-x:auto}
+figure svg{display:block;width:100%;min-width:640px;height:auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px}
+svg text{font-family:var(--body);fill:var(--ink)}
+svg .mono{font-family:var(--mono)}
+svg .dim{fill:var(--muted)}
+svg .frame{fill:none;stroke:var(--line);stroke-width:1.5}
+svg .frame-dash{fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:5 4}
+svg .box{fill:var(--paper);stroke:var(--ink);stroke-width:1.4}
+svg .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+svg .arrow{stroke:var(--ink);stroke-width:1.6;fill:none}
+svg .arrow-a{stroke:var(--accent);stroke-width:1.8;fill:none}
+svg .cell0{fill:var(--c0)} svg .cell1{fill:var(--c1)} svg .cell2{fill:var(--c2)} svg .cell3{fill:var(--c3)}
+svg .celltext{fill:#fff;font-family:var(--mono);font-size:11px}
+svg .empty{fill:none;stroke:var(--muted);stroke-dasharray:4 3}
+svg .okfill{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.4}
+svg .badfill{fill:var(--bad-soft);stroke:var(--bad);stroke-width:1.4}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:12px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:12px 14px}
+.card b{font-family:var(--mono);font-size:14px;color:var(--accent)}
+.card p{margin:4px 0 0;font-size:15px}
+.card .ana{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:9px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-weight:600;background:var(--code-bg)}
+tr:last-child td{border-bottom:none}
+
+/* lab header */
+.labhead{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;margin-bottom:6px}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.fact{background:var(--paper);border:1px solid var(--line);border-radius:99px;padding:3px 12px;font-size:13.5px}
+.fact b{font-family:var(--mono);font-weight:600}
+.pill{display:inline-block;font-family:var(--mono);font-size:11.5px;font-weight:600;padding:1px 9px;border-radius:99px;white-space:nowrap;vertical-align:middle}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+
+/* steps */
+.steps{list-style:none;padding:0;margin:18px 0 0;display:flex;flex-direction:column;gap:14px}
+.step{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.step .sh{display:flex;gap:12px;align-items:flex-start}
+.step .num{flex:none;min-width:34px;height:34px;padding:0 6px;border-radius:17px;background:var(--ink);color:var(--ground);font-family:var(--mono);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center}
+.step.extra .num{background:var(--accent)}
+.step h3{margin-top:5px}
+.step .why{color:var(--muted);font-size:15px;margin:2px 0 0}
+.lbl{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:12px 0 4px}
+.copy{font:inherit;font-size:11.5px;text-transform:none;letter-spacing:0;background:none;border:1px solid var(--line);border-radius:6px;color:var(--muted);padding:1px 8px;cursor:pointer}
+.copy:hover,.copy:focus-visible{color:var(--accent);border-color:var(--accent)}
+pre{margin:0;font-family:var(--mono);font-size:13px;line-height:1.55;padding:11px 14px;border-radius:8px;overflow-x:auto;white-space:pre}
+pre.cmd{background:var(--code-bg);color:var(--ink)}
+pre.out{background:var(--term-bg);color:var(--term-ink)}
+pre.out .d{color:var(--term-dim)}
+pre.out .g{color:var(--term-ok)}
+.note{font-size:15px;margin:10px 0 0;padding-left:12px;border-left:3px solid var(--line)}
+.note b{font-weight:600}
+.alert{margin-top:12px;border-radius:8px;padding:10px 13px;font-size:15px}
+.alert.warn{background:var(--warn-soft)}
+.alert.bad{background:var(--bad-soft)}
+.alert.tip{background:var(--accent-soft)}
+.alert strong{display:block;font-family:var(--display);font-size:14.5px}
+.alert.warn strong{color:var(--warn)} .alert.bad strong{color:var(--bad)} .alert.tip strong{color:var(--accent)}
+.alert p{margin:4px 0}
+.alert .fixh{font-family:var(--display);font-weight:600;font-size:14px;margin:10px 0 4px}
+.alert ol.fix{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+.alert ol.fix li{padding-left:2px}
+.alert pre.cmd{background:var(--paper);margin-top:2px;white-space:pre}
+.alert .alt{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);font-size:14.5px}
+.alert .alt .fixh{display:block;margin:0 0 4px}
+.alert .alt pre{margin:6px 0}
+.bigsum,.labsum{background:var(--paper);border:1.5px solid var(--accent);border-radius:12px;padding:16px 18px;margin-top:16px}
+.labsum{margin-top:28px}
+.say{font-size:17px;line-height:1.75;max-width:none}
+.labsum ul{margin:4px 0 0;padding-left:22px}
+.labsum li{margin:4px 0}
+.small{font-size:13.5px;color:var(--muted)}
+[role="tabpanel"]{animation:fade .18s ease-out}
+@keyframes fade{from{opacity:.4}to{opacity:1}}
+@media (prefers-reduced-motion: reduce){[role="tabpanel"]{animation:none}}
+</style>
+
+<header class="top">
+  <div class="in">
+    <div class="brand">Kafka TA Field Guide<span>02_Kafka · รันจริงบน devtools:2569_1</span></div>
+    <div class="tabs" role="tablist" aria-label="หมวด">
+      <button role="tab" id="t-overview" aria-controls="overview" aria-selected="true">ภาพรวม</button>
+      <button role="tab" id="t-lab1" aria-controls="lab1" aria-selected="false">LAB 1 · Setup</button>
+      <button role="tab" id="t-lab2" aria-controls="lab2" aria-selected="false">LAB 2 · Keys</button>
+      <button role="tab" id="t-lab3" aria-controls="lab3" aria-selected="false">LAB 3 · Groups</button>
+      <button role="tab" id="t-lab4" aria-controls="lab4" aria-selected="false">LAB 4 · Pipeline</button>
+      <button role="tab" id="t-issues" aria-controls="issues" aria-selected="false">ปัญหา &amp; FAQ</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ===================== OVERVIEW ===================== -->
+<section role="tabpanel" id="overview" aria-labelledby="t-overview">
+  <span class="eyebrow">เริ่มที่นี่ · อ่าน 5 นาที</span>
+  <h1>Kafka คืออะไร — เล่าแบบคนไม่เคยรู้จัก</h1>
+  <p class="lede">อย่าเพิ่งจำศัพท์ ดูปัญหาก่อน แล้วจะเข้าใจเองว่าทำไมโลกต้องมีของแบบนี้</p>
+
+  <h2>1 · ปัญหา: เกิดเรื่องหนึ่งเรื่อง แต่มีหลายระบบต้องรู้</h2>
+  <p>สมมุติเราทำแอปสั่งอาหาร ทุกครั้งที่ลูกค้ากด <b>"สั่ง"</b> มี 4 ระบบที่ต้องรู้เรื่องนี้: <b>ครัว</b> (ทำอาหาร) · <b>ไรเดอร์</b> (หาคนส่ง) · <b>การเงิน</b> (ตัดเงิน) · <b>สถิติ</b> (ยอดขายวันนี้)</p>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 250" role="img" aria-labelledby="pbt">
+      <title id="pbt">ซ้าย ไม่มี Kafka แอปต้องโทรหาทุกระบบเอง ระบบหนึ่งล่มออเดอร์ก็พัง ขวา มี Kafka แอปเขียนเหตุการณ์ครั้งเดียว ทุกระบบมาอ่านเอง</title>
+      <defs><marker id="pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker></defs>
+      <text x="16" y="22" font-size="14" font-weight="700">❌ ไม่มี Kafka — แอปต้องโทรหาทุกคนเอง</text>
+      <rect x="16" y="95" width="110" height="56" rx="8" class="soft"/><text x="71" y="119" text-anchor="middle" font-weight="600" font-size="13">แอปสั่งอาหาร</text><text x="71" y="138" text-anchor="middle" font-size="11" class="dim">ลูกค้ากดสั่ง</text>
+      <rect x="226" y="36" width="110" height="36" rx="7" class="box"/><text x="281" y="59" text-anchor="middle" font-size="12.5">ครัว</text>
+      <rect x="226" y="84" width="110" height="36" rx="7" class="badfill"/><text x="281" y="107" text-anchor="middle" font-size="12.5">ไรเดอร์ (ล่ม!)</text>
+      <rect x="226" y="132" width="110" height="36" rx="7" class="box"/><text x="281" y="155" text-anchor="middle" font-size="12.5">การเงิน</text>
+      <rect x="226" y="180" width="110" height="36" rx="7" class="box"/><text x="281" y="203" text-anchor="middle" font-size="12.5">สถิติ</text>
+      <path d="M 126 112 L 224 56" class="arrow" marker-end="url(#pa)"/>
+      <path d="M 126 118 L 224 102" class="arrow" marker-end="url(#pa)"/>
+      <path d="M 126 126 L 224 150" class="arrow" marker-end="url(#pa)"/>
+      <path d="M 126 134 L 224 196" class="arrow" marker-end="url(#pa)"/>
+      <text x="16" y="240" font-size="12" class="dim">ไรเดอร์ล่ม → ออเดอร์พังทั้งใบ · อยากเพิ่มระบบใหม่ → ต้องแก้โค้ดแอป</text>
+
+      <line x1="372" y1="20" x2="372" y2="230" stroke="var(--line)" stroke-width="1.5"/>
+
+      <text x="392" y="22" font-size="14" font-weight="700">✅ มี Kafka — เขียนครั้งเดียว ใครอยากรู้มาอ่านเอง</text>
+      <rect x="392" y="95" width="100" height="56" rx="8" class="soft"/><text x="442" y="119" text-anchor="middle" font-weight="600" font-size="13">แอปสั่งอาหาร</text><text x="442" y="138" text-anchor="middle" font-size="11" class="dim">เขียน 1 ครั้ง</text>
+      <path d="M 492 123 L 520 123" class="arrow" marker-end="url(#pa)"/>
+      <rect x="524" y="70" width="92" height="106" rx="9" class="okfill"/>
+      <text x="570" y="94" text-anchor="middle" font-weight="700" font-size="13">Kafka</text>
+      <text x="570" y="114" text-anchor="middle" font-size="11">"มีออเดอร์ใหม่"</text>
+      <text x="570" y="132" text-anchor="middle" font-size="11">#1 #2 #3 ...</text>
+      <text x="570" y="156" text-anchor="middle" font-size="10.5" class="dim">จดเก็บไว้</text>
+      <rect x="648" y="36" width="96" height="34" rx="7" class="box"/><text x="696" y="58" text-anchor="middle" font-size="12.5">ครัว</text>
+      <rect x="648" y="84" width="96" height="34" rx="7" class="box"/><text x="696" y="106" text-anchor="middle" font-size="12.5">ไรเดอร์</text>
+      <rect x="648" y="132" width="96" height="34" rx="7" class="box"/><text x="696" y="154" text-anchor="middle" font-size="12.5">การเงิน</text>
+      <rect x="648" y="180" width="96" height="34" rx="7" class="box"/><text x="696" y="202" text-anchor="middle" font-size="12.5">สถิติ</text>
+      <path d="M 646 53 L 618 100" class="arrow" marker-end="url(#pa)"/>
+      <path d="M 646 101 L 618 115" class="arrow" marker-end="url(#pa)"/>
+      <path d="M 646 149 L 618 135" class="arrow" marker-end="url(#pa)"/>
+      <path d="M 646 197 L 618 150" class="arrow" marker-end="url(#pa)"/>
+      <text x="392" y="240" font-size="12" class="dim">ลูกศรชี้เข้า Kafka = แต่ละระบบ "มาดึงอ่านเอง" · ไรเดอร์ล่ม ออเดอร์ยังรอดอยู่ใน Kafka</text>
+    </svg>
+    </div>
+    <figcaption>แอปไม่ต้องรู้จักใครเลย แค่ "จดเหตุการณ์" ลง Kafka · ระบบไหนล่มก็ไม่ลากคนอื่นพัง · อยากเพิ่มระบบใหม่ก็แค่ให้มันมาอ่าน</figcaption>
+  </figure>
+
+  <h2>2 · เทียบกับของที่รู้จัก: กลุ่มไลน์</h2>
+  <div class="grid">
+    <div class="card"><b>พิมพ์ครั้งเดียว</b><p>ส่งข้อความลงกลุ่มครั้งเดียว ทุกคนในกลุ่มเห็น — ไม่ต้องทักทีละคน</p><p class="ana">= Producer ส่งลง Topic</p></div>
+    <div class="card"><b>อ่านตอนไหนก็ได้</b><p>คนที่ติดธุระ กลับมาเปิดทีหลังก็ยังอ่านได้ ไม่ต้องออนไลน์พร้อมกัน</p><p class="ana">= ข้อความเก็บไว้ใน Kafka</p></div>
+    <div class="card"><b>อ่านแล้วไม่หาย</b><p>เราอ่านแล้ว ข้อความยังอยู่ให้คนอื่นอ่าน · เลื่อนขึ้นไปอ่านย้อนหลังได้</p><p class="ana">= อ่านไม่ลบ · replay ได้</p></div>
+    <div class="card"><b>"อ่านถึงตรงนี้"</b><p>แต่ละคนมีจุดที่อ่านถึงของตัวเอง ใครอ่านช้าก็มีข้อความค้าง</p><p class="ana">= offset ของแต่ละ group · ข้อความค้าง = LAG</p></div>
+    <div class="card"><b>เข้ากลุ่มทีหลัง</b><p>(ถ้าตั้งให้เห็นประวัติ) สมาชิกใหม่อ่านย้อนหลังได้ทั้งหมด</p><p class="ana">= group ใหม่อ่านตั้งแต่ต้น</p></div>
+    <div class="card"><b>ประวัติไม่อยู่ตลอดไป</b><p>เก่าเกินช่วงเวลาหนึ่งก็หายเอง ไม่เกี่ยวว่ามีคนอ่านหรือยัง</p><p class="ana">= retention (ค่าเริ่มต้น 7 วัน)</p></div>
+  </div>
+  <p class="note">ส่วน <b>RabbitMQ</b> (สัปดาห์ที่แล้ว) เหมือน <b>ตะกร้ารับงาน</b>: งานหนึ่งชิ้นมีคนหยิบไปทำคนเดียว ทำเสร็จ (ack) แล้วงานถูกเอาออกจากตะกร้า · ถ้าคนหยิบล้มกลางทางก่อนบอกว่าเสร็จ งานจะกลับเข้าตะกร้าให้คนอื่นทำ — <b>ไม่ได้หายเพราะล่ม</b> แค่ออกแบบมาให้ "ทำเสร็จแล้วทิ้ง" · ดูเปรียบเทียบเต็ม ๆ ที่ท้ายหน้านี้</p>
+
+  <h2>3 · ดูการทำงานทีละจังหวะ</h2>
+  <p>กด <b>ถัดไป</b> เพื่อดูว่าข้อมูลไหลยังไง (7 จังหวะ)</p>
+  <figure>
+    <div class="scroll"><svg id="story" viewBox="0 0 760 290" role="img" aria-label="ภาพเคลื่อนไหวทีละจังหวะของ Kafka"></svg></div>
+    <p id="story-cap" style="font-size:16px;margin:10px 0 4px;max-width:none"></p>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px">
+      <button type="button" class="copy" id="st-prev" style="font-size:14px;padding:5px 14px">◀ ก่อนหน้า</button>
+      <button type="button" class="copy" id="st-next" style="font-size:14px;padding:5px 14px;color:var(--accent);border-color:var(--accent)">ถัดไป ▶</button>
+      <span id="st-count" class="small"></span>
+    </div>
+  </figure>
+
+  <h2>4 · ศัพท์จริง ผูกกับเรื่องแอปสั่งอาหาร</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>ศัพท์</th><th>ในเรื่องของเรา</th><th>ในแล็บ</th></tr></thead>
+    <tbody>
+      <tr><td><b>Producer</b></td><td>แอปสั่งอาหารที่ "จด" ออเดอร์</td><td><code>send.py</code> · <code>new_task.py</code> · <code>sensor.py</code></td></tr>
+      <tr><td><b>Topic</b></td><td>ชื่อกลุ่ม เช่น <code>orders</code> (เรื่องออเดอร์) — แยก topic ตามเรื่อง</td><td><code>hello</code> · <code>orders</code> · <code>tasks</code> · <code>sensor.readings</code></td></tr>
+      <tr><td><b>Offset</b></td><td>เลขลำดับข้อความ #1 #2 #3 (เริ่มนับ 0)</td><td>ใบเสร็จ <code>offset=0</code></td></tr>
+      <tr><td><b>Consumer</b></td><td>โปรแกรมที่มาอ่าน เช่น ระบบครัว</td><td><code>receive.py</code> · <code>worker.py</code></td></tr>
+      <tr><td><b>Consumer group</b></td><td>"ทีม" ที่มาอ่าน — ครัว 1 ทีม ไรเดอร์ 1 ทีม · แต่ละทีมจำ "อ่านถึงไหน" ของตัวเอง</td><td><code>group_id='workers'</code></td></tr>
+      <tr><td><b>Partition</b></td><td>ออเดอร์เยอะเกิน ครัวคนเดียวทำไม่ทัน → แบ่งสมุดเป็นหลายเล่ม ให้พ่อครัวหลายคนช่วยกัน คนละเล่ม</td><td>LAB 2–3</td></tr>
+      <tr><td><b>Key</b></td><td>ออเดอร์ของร้านเดียวกันให้ลงเล่มเดียวกันเสมอ → ลำดับไม่สลับ</td><td><code>key=bangkok</code></td></tr>
+      <tr><td><b>LAG</b></td><td>ทีมนี้ยังค้างอ่านกี่ออเดอร์</td><td><code>kafka-consumer-groups.sh</code></td></tr>
+      <tr><td><b>Broker</b></td><td>ตัวเซิร์ฟเวอร์ Kafka ที่เก็บทุกอย่าง</td><td>container <code>kafka</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>5 · ของจริงใช้ทำอะไร</h2>
+  <div class="grid">
+    <div class="card"><b>ร้านค้าออนไลน์</b><p>ออเดอร์ 1 ใบ → คลัง · จัดส่ง · การเงิน · อีเมล · สถิติ อ่านพร้อมกัน</p></div>
+    <div class="card"><b>แอปเรียกรถ / ส่งอาหาร</b><p>ตำแหน่งไรเดอร์ส่งเข้ามาทุกไม่กี่วินาที หลายระบบใช้ (แผนที่ · คิดราคา · ETA)</p></div>
+    <div class="card"><b>ธนาคาร</b><p>ทุกรายการโอน → ระบบจับทุจริต · แจ้งเตือน · บัญชี · ย้อนตรวจสอบได้</p></div>
+    <div class="card"><b>เซ็นเซอร์ IoT</b><p>อุณหภูมิไหลเข้าไม่หยุด → คัดเฉพาะค่าผิดปกติไปแจ้งเตือน = <b>LAB 4</b></p></div>
+  </div>
+  <p class="note">จุดร่วม: <b>ข้อมูลมาเยอะต่อเนื่อง</b> + <b>หลายทีมใช้ข้อมูลชุดเดียวกัน</b> + <b>อยากย้อนดูได้</b> — Kafka เกิดที่ LinkedIn เพื่องานแบบนี้</p>
+
+  <h2>6 · แต่ละแล็บพิสูจน์อะไรในเรื่องนี้</h2>
+  <div class="tbl"><table>
+    <tbody>
+      <tr><td><b>LAB 1</b></td><td>จดข้อความ → อ่าน → <b>อ่านซ้ำแล้วยังอยู่</b> (หัวใจของ Kafka)</td></tr>
+      <tr><td><b>LAB 2</b></td><td>แบ่งเป็นหลายเล่ม (partition) · key ตัดสินว่าลงเล่มไหน</td></tr>
+      <tr><td><b>LAB 3</b></td><td>หลายคนในทีมเดียวช่วยกันอ่าน คนละเล่ม · คนเข้า/ออก แบ่งใหม่เอง · ดูงานค้าง (LAG)</td></tr>
+      <tr><td><b>LAB 4</b></td><td>ต่อกันหลายทอดแบบระบบจริง · 2 ทีมอ่านคนละ topic · ทีมใหม่อ่านย้อนหลัง</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>ลงรายละเอียด 1 · ถ้าออเดอร์เยอะมาก Kafka แบ่งสมุดเป็นหลายเล่ม</h2>
+  <p>ต่อจากเรื่องแอปสั่งอาหาร: ถ้ามีร้าน 3 สาขา ออเดอร์เยอะจนสมุดเล่มเดียวไม่ไหว Kafka ให้แบ่ง topic <code>orders</code> เป็น <b>3 เล่ม</b> (เรียกว่า <b>partition</b>: p0 · p1 · p2) แล้วดูว่าแต่ละออเดอร์ลงเล่มไหน</p>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 270" role="img" aria-labelledby="dt1">
+      <title id="dt1">ออเดอร์แต่ละสาขาถูกส่งไปเล่มของตัวเองตาม key แต่ละเล่มนับ offset ของตัวเอง ทีม workers มีที่คั่นแยกต่อเล่ม</title>
+      <defs><marker id="dk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker></defs>
+      <!-- headers -->
+      <text x="14" y="22" font-size="12" class="dim">ออเดอร์มาจาก</text>
+      <text x="206" y="22" font-size="12" class="dim">topic orders (3 เล่ม) · ช่อง = ออเดอร์ 1 ใบ · เลขในช่อง = offset</text>
+      <text x="566" y="22" font-size="12" class="dim">ทีม workers อ่านถึงไหน</text>
+      <!-- rows -->
+      <g>
+        <rect x="14" y="40" width="150" height="46" rx="8" class="box"/><text x="89" y="60" text-anchor="middle" font-size="12.5" font-weight="600">สาขาหาดใหญ่</text><text x="89" y="77" text-anchor="middle" class="mono" font-size="10.5">key=hatyai</text>
+        <path d="M 164 63 L 196 63" class="arrow" marker-end="url(#dk)"/>
+        <text x="206" y="68" class="mono" font-size="13" font-weight="600">p0</text>
+        <rect x="236" y="44" width="62" height="38" rx="5" class="cell0"/><text x="267" y="68" text-anchor="middle" class="celltext" font-size="13">0</text>
+        <rect x="302" y="44" width="62" height="38" rx="5" class="cell0"/><text x="333" y="68" text-anchor="middle" class="celltext" font-size="13">1</text>
+        <rect x="368" y="44" width="62" height="38" rx="5" class="cell0"/><text x="399" y="68" text-anchor="middle" class="celltext" font-size="13">2</text>
+        <rect x="434" y="44" width="62" height="38" rx="5" class="empty"/><text x="465" y="68" text-anchor="middle" font-size="11" class="dim">ใบถัดไป</text>
+        <path d="M 432 38 L 432 88" stroke="var(--ink)" stroke-width="3"/><path d="M 426 34 L 438 34 L 432 42 z" fill="var(--ink)"/>
+        <text x="566" y="60" font-size="13">อ่านครบ 3 ใบ</text><text x="566" y="78" font-size="13" font-weight="700" style="fill:var(--ok)">ค้าง 0 (LAG 0)</text>
+      </g>
+      <g>
+        <rect x="14" y="108" width="150" height="46" rx="8" class="box"/><text x="89" y="128" text-anchor="middle" font-size="12.5" font-weight="600">สาขาเชียงใหม่</text><text x="89" y="145" text-anchor="middle" class="mono" font-size="10.5">key=chiangmai</text>
+        <path d="M 164 131 L 196 131" class="arrow" marker-end="url(#dk)"/>
+        <text x="206" y="136" class="mono" font-size="13" font-weight="600">p1</text>
+        <rect x="236" y="112" width="62" height="38" rx="5" class="cell1"/><text x="267" y="136" text-anchor="middle" class="celltext" font-size="13">0</text>
+        <rect x="302" y="112" width="62" height="38" rx="5" class="cell1" opacity=".35"/><text x="333" y="136" text-anchor="middle" class="celltext" font-size="13">1</text>
+        <rect x="368" y="112" width="62" height="38" rx="5" class="cell1" opacity=".35"/><text x="399" y="136" text-anchor="middle" class="celltext" font-size="13">2</text>
+        <rect x="434" y="112" width="62" height="38" rx="5" class="empty"/><text x="465" y="136" text-anchor="middle" font-size="11" class="dim">ใบถัดไป</text>
+        <path d="M 300 106 L 300 156" stroke="var(--ink)" stroke-width="3"/><path d="M 294 102 L 306 102 L 300 110 z" fill="var(--ink)"/>
+        <text x="566" y="128" font-size="13">อ่านไปแล้ว 1 ใบ</text><text x="566" y="146" font-size="13" font-weight="700" style="fill:var(--bad)">ค้าง 2 (LAG 2)</text>
+      </g>
+      <g>
+        <rect x="14" y="176" width="150" height="46" rx="8" class="box"/><text x="89" y="196" text-anchor="middle" font-size="12.5" font-weight="600">สาขากรุงเทพ</text><text x="89" y="213" text-anchor="middle" class="mono" font-size="10.5">key=bangkok</text>
+        <path d="M 164 199 L 196 199" class="arrow" marker-end="url(#dk)"/>
+        <text x="206" y="204" class="mono" font-size="13" font-weight="600">p2</text>
+        <rect x="236" y="180" width="62" height="38" rx="5" class="cell2"/><text x="267" y="204" text-anchor="middle" class="celltext" font-size="13">0</text>
+        <rect x="302" y="180" width="62" height="38" rx="5" class="cell2"/><text x="333" y="204" text-anchor="middle" class="celltext" font-size="13">1</text>
+        <rect x="368" y="180" width="62" height="38" rx="5" class="empty"/><text x="399" y="204" text-anchor="middle" font-size="11" class="dim">ใบถัดไป</text>
+        <path d="M 366 174 L 366 224" stroke="var(--ink)" stroke-width="3"/><path d="M 360 170 L 372 170 L 366 178 z" fill="var(--ink)"/>
+        <text x="566" y="196" font-size="13">อ่านครบ 2 ใบ</text><text x="566" y="214" font-size="13" font-weight="700" style="fill:var(--ok)">ค้าง 0 (LAG 0)</text>
+      </g>
+      <!-- legend strip -->
+      <path d="M 236 250 L 256 250" stroke="var(--ink)" stroke-width="3"/><text x="264" y="254" font-size="12">▼ เส้นดำ = ที่คั่นหนังสือของทีม (อ่านถึงตรงนี้)</text>
+      <rect x="520" y="243" width="22" height="14" rx="3" class="cell1" opacity=".35"/><text x="550" y="254" font-size="12">ช่องจาง = ยังไม่ได้อ่าน</text>
+    </svg>
+    </div>
+  </figure>
+  <p><b>อ่านภาพนี้ทีละข้อ</b></p>
+  <ol class="rules">
+    <li><b>key ตัดสินว่าลงเล่มไหน</b> — ออเดอร์หาดใหญ่ทุกใบลง p0 เสมอ เชียงใหม่ลง p1 กรุงเทพลง p2 (Kafka คำนวณจากชื่อ key ไม่ได้สุ่ม) → ออเดอร์ของสาขาเดียวกัน<b>เรียงลำดับไม่สลับ</b> · พิสูจน์ใน <b>LAB 2</b></li>
+    <li><b>แต่ละเล่มนับเลขของตัวเอง</b> — เลขในช่องคือ offset เริ่มที่ 0 ทุกเล่ม · จะบอก "ที่อยู่" ของออเดอร์ต้องบอกครบว่า <i>เล่มไหน + เลขอะไร</i> เช่น p1 เลข 0</li>
+    <li><b>ทีมผู้อ่านมีที่คั่นหนังสือแยกทุกเล่ม</b> (เส้นดำ ▼) — Kafka จำไว้ให้ ปิดโปรแกรมแล้วเปิดใหม่ก็อ่านต่อจากตรงเดิม · พิสูจน์ใน <b>LAB 3</b></li>
+    <li><b>LAG = ช่องจางที่ยังไม่ได้อ่าน</b> — เล่ม p1 ค้าง 2 ใบ ถ้าตัวเลขนี้โตเรื่อย ๆ แปลว่าอ่านไม่ทัน ต้องเพิ่มคนอ่าน</li>
+  </ol>
+  <p class="note">ทำไมต้องแบ่งหลายเล่ม? เพราะ<b>ในทีมเดียว หนึ่งเล่มอ่านได้ทีละคน</b> — 3 เล่มจึงให้พ่อครัว 3 คนช่วยกันอ่านพร้อมกันได้ (คนที่ 4 จะว่างงาน) · นี่คือเรื่องของ LAB 3</p>
+
+  <h2>ลงรายละเอียด 2 · ในแล็บ ของทั้งหมดอยู่ตรงไหน</h2>
+  <p>ในแล็บมี "กล่องซ้อนกัน 3 ชั้น" เหมือนตุ๊กตาแม่ลูกดก: <b>① เครื่องเรา</b> ข้างในมี <b>② กล่องเรียน devtools</b> ข้างในมี <b>③ กลุ่ม container ของ compose</b> (Kafka + หน้าเว็บ) — ให้ดูแค่ <b>3 เส้นทาง A · B · C</b></p>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 350" role="img" aria-labelledby="dt2">
+      <title id="dt2">กล่องซ้อนสามชั้น เส้นทาง A เบราว์เซอร์ไปหน้าเว็บ Kafka UI เส้นทาง B โปรแกรม Python ไป Kafka ทางประตู 9092 เส้นทาง C หน้าเว็บไป Kafka ทางประตู 19092</title>
+      <defs>
+        <marker id="mA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--c0)"/></marker>
+        <marker id="mB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--c1)"/></marker>
+        <marker id="mC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--c2)"/></marker>
+        <marker id="mK" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+      </defs>
+      <!-- layer 1 -->
+      <rect x="6" y="6" width="748" height="338" rx="12" class="frame"/>
+      <text x="20" y="28" font-size="13" font-weight="700">① เครื่องเรา</text>
+      <rect x="20" y="62" width="140" height="54" rx="8" class="box"/><text x="90" y="85" text-anchor="middle" font-size="13" font-weight="600">เบราว์เซอร์</text><text x="90" y="104" text-anchor="middle" class="mono" font-size="11">localhost:8411</text>
+      <rect x="20" y="238" width="140" height="54" rx="8" class="box"/><text x="90" y="261" text-anchor="middle" font-size="13" font-weight="600">Terminal</text><text x="90" y="280" text-anchor="middle" class="mono" font-size="11">ssh -p 2222</text>
+      <!-- layer 2 -->
+      <rect x="190" y="40" width="552" height="292" rx="10" class="frame-dash"/>
+      <text x="204" y="60" font-size="13" font-weight="700">② กล่องเรียน devtools</text>
+      <rect x="208" y="222" width="148" height="86" rx="8" class="soft"/><text x="282" y="246" text-anchor="middle" font-size="13" font-weight="600">โปรแกรม Python</text><text x="282" y="266" text-anchor="middle" class="mono" font-size="11">send.py</text><text x="282" y="284" text-anchor="middle" class="mono" font-size="11">worker.py ...</text>
+      <path d="M 160 265 L 206 265" class="arrow" marker-end="url(#mK)"/>
+      <!-- layer 3 -->
+      <rect x="392" y="78" width="336" height="240" rx="10" class="frame"/>
+      <text x="406" y="98" font-size="13" font-weight="700">③ compose</text><text x="486" y="98" font-size="11.5" class="dim">(container คุยกันด้วยชื่อ)</text>
+      <!-- kafka box with two doors -->
+      <rect x="430" y="160" width="140" height="120" rx="9" class="box"/>
+      <text x="492" y="200" text-anchor="middle" font-size="14" font-weight="700">kafka</text>
+      <text x="492" y="217" text-anchor="middle" font-size="11" class="dim">(broker)</text>
+      <rect x="422" y="236" width="16" height="30" rx="3" class="cell1"/>
+      <text x="446" y="256" font-size="11" class="mono">9092</text>
+      <rect x="562" y="164" width="16" height="30" rx="3" class="cell2"/>
+      <text x="556" y="184" font-size="11" class="mono" text-anchor="end">19092</text>
+      <rect x="610" y="112" width="104" height="54" rx="8" class="box"/><text x="662" y="135" text-anchor="middle" font-size="13" font-weight="600">kafka-ui</text><text x="662" y="154" text-anchor="middle" font-size="11" class="dim">หน้าเว็บ</text>
+      <rect x="610" y="226" width="104" height="54" rx="8" class="frame-dash"/><text x="662" y="249" text-anchor="middle" font-size="12.5">kafka-init</text><text x="662" y="267" text-anchor="middle" font-size="10.5" class="dim">เฉพาะ LAB 2</text>
+      <!-- path A -->
+      <path d="M 160 72 L 662 72 L 662 108" fill="none" stroke="var(--c0)" stroke-width="2.5" marker-end="url(#mA)"/>
+      <circle cx="300" cy="72" r="11" fill="var(--c0)"/><text x="300" y="76.5" text-anchor="middle" font-size="12" font-weight="700" style="fill:#fff">A</text>
+      <!-- path B -->
+      <path d="M 356 251 L 418 251" fill="none" stroke="var(--c1)" stroke-width="2.5" marker-end="url(#mB)"/>
+      <circle cx="386" cy="251" r="11" fill="var(--c1)"/><text x="386" y="255.5" text-anchor="middle" font-size="12" font-weight="700" style="fill:#fff">B</text>
+      <!-- path C -->
+      <path d="M 608 150 L 582 172" fill="none" stroke="var(--c2)" stroke-width="2.5" marker-end="url(#mC)"/>
+      <path d="M 608 240 L 582 188" fill="none" stroke="var(--c2)" stroke-width="2.5" stroke-dasharray="5 4" marker-end="url(#mC)"/>
+      <circle cx="596" cy="212" r="11" fill="var(--c2)"/><text x="596" y="216.5" text-anchor="middle" font-size="12" font-weight="700" style="fill:#fff">C</text>
+    </svg>
+    </div>
+  </figure>
+  <div class="tbl"><table>
+    <thead><tr><th>เส้น</th><th>ใครคุยกับใคร</th><th>ใช้ที่อยู่อะไร</th><th>ทำไม</th></tr></thead>
+    <tbody>
+      <tr><td><b style="color:var(--c0)">A</b></td><td>เบราว์เซอร์บนเครื่องเรา → หน้าเว็บ Kafka UI</td><td><code>localhost:8411</code></td><td>ต้องทะลุ 2 ชั้น: <code>-p 8411:8411</code> (เข้ากล่อง devtools) แล้ว <code>8411:8080</code> ใน compose (เข้า kafka-ui) — ลืมชั้นไหนเปิดไม่ขึ้น</td></tr>
+      <tr><td><b style="color:var(--c1)">B</b></td><td>โปรแกรม Python → Kafka</td><td><code>localhost:9092</code></td><td>Python อยู่นอก compose แต่อยู่เครื่องเดียวกับมัน · compose เปิดประตู 9092 ออกมาให้</td></tr>
+      <tr><td><b style="color:var(--c2)">C</b></td><td>kafka-ui / kafka-init → Kafka</td><td><code>kafka:19092</code></td><td>อยู่ใน compose ด้วยกัน เรียกกันด้วย<b>ชื่อ</b> <code>kafka</code> ได้เลย (เหมือน Docker LAB 6)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="alert tip"><strong>ทำไม Kafka ต้องมี "ประตู 2 บาน" (9092 กับ 19092)?</strong>
+    <p>เพราะคำว่า <code>localhost</code> ของแต่ละ container แปลว่า <b>"ตัวฉันเอง"</b> — ถ้า kafka-ui เรียก <code>localhost:9092</code> มันจะหา Kafka ในกล่องของตัวเอง ซึ่งไม่มี</p>
+    <p>เทียบกับ<b>เบอร์โทรออฟฟิศ</b>: คนนอกโทรเบอร์หลัก (<code>localhost:9092</code>) · คนในออฟฟิศกดเบอร์ต่อภายใน (<code>kafka:19092</code>) · Kafka จึงประกาศเบอร์ 2 ชุดไว้ใน <code>KAFKA_ADVERTISED_LISTENERS</code> ให้แต่ละกลุ่มใช้เบอร์ที่โทรถึง</p>
+  </div>
+
+  <div class="alert tip"><strong>เคล็ดลับ TA: เปิด port ครั้งเดียวใช้ได้ทั้ง 4 แล็บ</strong>
+    <p>เอกสารให้ลบ/สร้างกล่องใหม่ทุกแล็บเพื่อเปิด port ของแล็บนั้น — เปิดทีเดียวทั้งหมดได้ (ผมรันแบบนี้ทั้ง 4 แล็บ ใช้ได้):</p>
+    <pre class="cmd">docker rm -fv devtools
+docker run -dit --name devtools --privileged -p 2222:22 -p 8411:8411 -p 8412:8412 -p 8413:8413 -p 8414:8414 tuchsanai/devtools:2569_1</pre>
+    <p class="small"><code>-v</code> ใน <code>rm -fv</code> ลบ volume เก่าของกล่องทิ้งด้วย กันดิสก์เต็ม (image นี้ประกาศ <code>VOLUME /var/lib/docker</code>)</p>
+    <p class="small"><b>กลับมาทำต่อวันหลัง:</b> <code>docker start devtools</code> แล้ว ssh เข้าไป · ถ้าขึ้น <code>Cannot connect to the Docker daemon</code> ใช้คำสั่งปลุก Docker ในแท็บ LAB 1 ข้อ 0 (เจอจริง 1 ใน 4 ครั้ง)</p>
+  </div>
+
+  <h2>แผนที่แล็บ</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>แล็บ</th><th>พิสูจน์อะไร</th><th>topic</th><th>UI</th><th>ผลรันจริง</th></tr></thead>
+    <tbody>
+      <tr><td>LAB 1</td><td>ส่ง/รับ · อ่านแล้วไม่หาย</td><td><code>hello</code> (1p)</td><td>8411</td><td><span class="pill ok">ผ่าน</span></td></tr>
+      <tr><td>LAB 2</td><td>key → partition · ลำดับต่อเล่ม</td><td><code>orders</code> (3p→4p)</td><td>8412</td><td><span class="pill ok">ผ่าน</span> <span class="pill warn">ระวัง 1</span></td></tr>
+      <tr><td>LAB 3</td><td>group · rebalance · LAG</td><td><code>tasks</code> (3p)</td><td>8413</td><td><span class="pill ok">ผ่าน</span> <span class="pill bad">บัค 1</span></td></tr>
+      <tr><td>LAB 4</td><td>pipeline · 2 group · replay</td><td><code>sensor.readings</code> 3p · <code>sensor.alerts</code> 1p</td><td>8414</td><td><span class="pill ok">ผ่าน</span> <span class="pill warn">ระวัง 2</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="small">วิธีอ่านแต่ละขั้นในแท็บแล็บ: <b>คำสั่ง</b> (พิมพ์ในกล่องเรียนหลัง ssh) → <b>ผลที่ต้องเห็น</b> (มาจากที่ผมรันจริง — ID / เวลา / TopicId ของแต่ละคนไม่ตรงได้) → กล่องสีเหลือง/แดง = ปัญหาที่น้องจะเจอพร้อมวิธีรับมือ <b>โดยไม่ต้องแก้ไฟล์ใน repo</b></p>
+
+  <h2>สรุปท้ายหน้า · ตกลง Kafka คืออะไร</h2>
+  <div class="bigsum">
+    <p class="say"><b>Kafka คือ "สมุดจดเหตุการณ์กลาง" ของทั้งบริษัท</b> — โปรแกรมไหนมีเรื่องเกิดขึ้นก็จดลงสมุด · โปรแกรมไหนอยากรู้ก็มาเปิดอ่านเอง · อ่านแล้วไม่ลบ ใครมาทีหลังก็อ่านย้อนได้ (ภายในช่วงเวลาเก็บ เช่น 7 วัน)</p>
+    <div class="grid" style="margin-top:14px">
+      <div class="card"><b>ใช้ทำอะไร</b><p>ให้หลายระบบรู้เรื่องเดียวกันโดยไม่ต้องเรียกหากันตรง ๆ · รับข้อมูลที่ไหลเข้ามาเยอะไม่หยุด (คลิก ตำแหน่งรถ เซ็นเซอร์ รายการเงิน) · เก็บไว้ให้ย้อนดู/ประมวลผลใหม่ได้</p></div>
+      <div class="card"><b>ได้อะไร</b><p>ตัวอ่านล่ม ข้อมูลไม่หาย รอไว้ กลับมาอ่านต่อจากที่ค้าง · เพิ่มระบบใหม่ไม่ต้องแก้ของเดิม · งานเยอะก็เปิดตัวอ่านเพิ่มในทีม</p></div>
+      <div class="card"><b>ไม่เหมาะกับ</b><p>งานสั่งทำครั้งเดียวจบที่อยากแจกคนละชิ้นแบบยืดหยุ่น (ส่งเมล ย่อรูป) — อันนั้น RabbitMQ ตรงกว่า</p></div>
+    </div>
+  </div>
+
+  <h2>Kafka vs RabbitMQ · ต่างกันที่ "ปรัชญา"</h2>
+  <p>ทั้งคู่ส่งข้อความระหว่างโปรแกรมได้ และ<b>ทั้งคู่ทำให้ข้อความไม่หายเมื่อล่มได้</b> — ความต่างจริงอยู่ที่ออกแบบมาเพื่องานคนละแบบ ความต่างข้ออื่นทั้งหมดตามมาจากตรงนี้</p>
+  <div class="grid">
+    <div class="card"><b>RabbitMQ = "แจกงาน"</b><p>ข้อความ 1 ชิ้น = งาน 1 ชิ้น มีคนทำ <b>คนเดียว</b> · ทำเสร็จ (ack) ก็เอาออกทิ้ง · จบกัน</p><p class="ana">≈ ตะกร้ารับงาน / คิวรับบัตรที่ธนาคาร</p></div>
+    <div class="card"><b>Kafka = "บันทึกเหตุการณ์"</b><p>ข้อความ 1 ชิ้น = เหตุการณ์ 1 เรื่อง จด<b>เก็บไว้</b> · ใครอยากรู้มาอ่านเองกี่รอบก็ได้ · ลบเมื่อหมดอายุเท่านั้น</p><p class="ana">≈ สมุดบันทึก / กลุ่มไลน์</p></div>
+  </div>
+
+  <h3 style="margin-top:24px">ดูเป็นภาพบล็อก</h3>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 330" role="img" aria-labelledby="cmpt">
+      <title id="cmpt">บน RabbitMQ งานเข้าคิว worker หยิบไปทำแล้วงานหายจากคิว ล่าง Kafka ข้อความต่อท้ายสมุด แต่ละทีมมีที่คั่นของตัวเอง ข้อความยังอยู่</title>
+      <defs><marker id="cm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker></defs>
+      <text x="14" y="24" font-size="15" font-weight="700">RabbitMQ = ตะกร้ารับงาน</text>
+      <text x="236" y="24" font-size="12.5" class="dim">หยิบไปทำแล้ว งานหายจากตะกร้า</text>
+      <rect x="14" y="44" width="110" height="52" rx="8" class="soft"/><text x="69" y="75" text-anchor="middle" font-size="13" font-weight="600">ผู้ส่ง</text>
+      <path d="M 124 70 L 156 70" class="arrow" marker-end="url(#cm)"/>
+      <rect x="160" y="40" width="250" height="60" rx="9" class="frame"/><text x="172" y="58" font-size="11" class="dim">queue</text>
+      <rect x="172" y="64" width="44" height="28" rx="5" class="cell2" opacity=".3"/><text x="194" y="83" text-anchor="middle" class="celltext">#1</text>
+      <rect x="220" y="64" width="44" height="28" rx="5" class="cell2" opacity=".3"/><text x="242" y="83" text-anchor="middle" class="celltext">#2</text>
+      <rect x="268" y="64" width="44" height="28" rx="5" class="cell2"/><text x="290" y="83" text-anchor="middle" class="celltext">#3</text>
+      <rect x="316" y="64" width="44" height="28" rx="5" class="cell2"/><text x="338" y="83" text-anchor="middle" class="celltext">#4</text>
+      <path d="M 172 64 L 264 92 M 264 64 L 172 92" stroke="var(--bad)" stroke-width="2"/>
+      <path d="M 410 70 L 460 52" class="arrow" marker-end="url(#cm)"/><path d="M 410 70 L 460 92" class="arrow" marker-end="url(#cm)"/>
+      <rect x="464" y="34" width="120" height="34" rx="7" class="box"/><text x="524" y="56" text-anchor="middle" font-size="12">worker A ได้ #1</text>
+      <rect x="464" y="76" width="120" height="34" rx="7" class="box"/><text x="524" y="98" text-anchor="middle" font-size="12">worker B ได้ #2</text>
+      <text x="600" y="56" font-size="12">ack → <tspan style="fill:var(--bad)" font-weight="700">ลบทิ้ง</tspan></text>
+      <text x="600" y="98" font-size="12">คนละชิ้น ไม่ซ้ำกัน</text>
+      <text x="14" y="136" font-size="12.5" class="dim">ทีมอื่นอยากได้ #1 ด้วย? ต้องเตรียม queue แยกของทีมนั้นไว้ก่อน แล้วให้ exchange ก๊อปปี้ให้ (fanout)</text>
+
+      <line x1="14" y1="156" x2="746" y2="156" stroke="var(--line)" stroke-width="1.5"/>
+
+      <text x="14" y="184" font-size="15" font-weight="700">Kafka = สมุดบันทึก</text>
+      <text x="190" y="184" font-size="12.5" class="dim">อ่านแล้วยังอยู่ แต่ละทีมมีที่คั่นของตัวเอง</text>
+      <rect x="14" y="204" width="110" height="52" rx="8" class="soft"/><text x="69" y="235" text-anchor="middle" font-size="13" font-weight="600">ผู้ส่ง</text>
+      <path d="M 124 230 L 156 230" class="arrow" marker-end="url(#cm)"/>
+      <rect x="160" y="200" width="250" height="60" rx="9" class="frame"/><text x="172" y="218" font-size="11" class="dim">topic (log)</text>
+      <rect x="172" y="224" width="44" height="28" rx="5" class="cell0"/><text x="194" y="243" text-anchor="middle" class="celltext">#1</text>
+      <rect x="220" y="224" width="44" height="28" rx="5" class="cell0"/><text x="242" y="243" text-anchor="middle" class="celltext">#2</text>
+      <rect x="268" y="224" width="44" height="28" rx="5" class="cell0"/><text x="290" y="243" text-anchor="middle" class="celltext">#3</text>
+      <rect x="316" y="224" width="44" height="28" rx="5" class="cell0"/><text x="338" y="243" text-anchor="middle" class="celltext">#4</text>
+      <path d="M 364 220 L 364 256" stroke="var(--c1)" stroke-width="3"/>
+      <path d="M 266 220 L 266 256" stroke="var(--c2)" stroke-width="3"/>
+      <rect x="464" y="194" width="140" height="34" rx="7" class="box" style="stroke:var(--c1);stroke-width:2"/><text x="534" y="216" text-anchor="middle" font-size="12">ทีมครัว อ่านถึง #4</text>
+      <rect x="464" y="236" width="140" height="34" rx="7" class="box" style="stroke:var(--c2);stroke-width:2"/><text x="534" y="258" text-anchor="middle" font-size="12">ทีมไรเดอร์ อ่านถึง #2</text>
+      <path d="M 462 211 L 368 232" class="arrow" marker-end="url(#cm)"/><path d="M 462 253 L 270 246" class="arrow" marker-end="url(#cm)"/>
+      <text x="620" y="216" font-size="12">อ่านแล้ว<tspan style="fill:var(--ok)" font-weight="700"> ยังอยู่</tspan></text>
+      <text x="620" y="258" font-size="12">ทุกทีมได้ครบทุกใบ</text>
+      <text x="14" y="300" font-size="12.5" class="dim">ทีมใหม่อยากได้ #1–#4? ได้เลย — ตั้งชื่อทีม (group) ใหม่ แล้วอ่านจากต้นสมุด</text>
+      <text x="14" y="320" font-size="12.5" class="dim">แบ่งงานในทีม: RabbitMQ แจกทีละชิ้น · Kafka แจกทั้งเล่ม (partition) ให้แต่ละคน</text>
+    </svg>
+    </div>
+  </figure>
+
+  <h3 style="margin-top:24px">เทียบทีละเรื่อง</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>เรื่อง</th><th>RabbitMQ (แจกงาน)</th><th>Kafka (บันทึกเหตุการณ์)</th></tr></thead>
+    <tbody>
+      <tr><td>อ่านแล้วข้อความไปไหน</td><td>ack แล้ว<b>ลบออกจาก queue</b></td><td><b>ยังอยู่</b> แค่เลื่อนที่คั่น (offset) · ลบเมื่อหมดอายุ (retention เช่น 7 วัน)</td></tr>
+      <tr><td>ตัวรับหลายตัว <b>ทีมเดียวกัน</b></td><td>แจกทีละชิ้น สลับกัน (round-robin) · 1 ชิ้นได้คนเดียว</td><td>แบ่งกันถือคนละ partition · 1 ข้อความได้คนเดียวในทีม · คนเกินจำนวน partition ว่างงาน</td></tr>
+      <tr><td>ตัวรับหลายตัว <b>ต่างทีมกัน</b> ได้ข้อความเดียวกันครบ</td><td>ได้ แต่ต้องใช้ fanout exchange <b>ก๊อปปี้</b>ไปหลาย queue (queue ต่อทีม)</td><td>ได้เลย แค่ตั้ง <code>group_id</code> คนละชื่อ · อ่านจาก<b>ที่เดียวกัน</b> ไม่ต้องก๊อปปี้</td></tr>
+      <tr><td>มาทีหลัง อยากอ่านย้อน (replay)</td><td>queue ปกติ<b>ไม่ได้</b> — ของที่ ack ไปแล้วหายแล้ว</td><td><b>ได้</b> — group ใหม่อ่านจากต้น log (เท่าที่ยังไม่หมดอายุ)</td></tr>
+      <tr><td>ตัวรับล่มกลางงาน</td><td>ถ้าใช้ <b>manual ack</b>: งานที่ยังไม่ ack <b>กลับเข้าคิว</b>ให้ตัวอื่นทำ (ได้ซ้ำได้) · ถ้าใช้ <code>auto_ack=True</code>: หายจริง</td><td>อ่านต่อจากที่ <b>commit</b> ล่าสุด (auto ทุก 5 วิ) · ตายกะทันหันอาจได้งานซ้ำ · ⚠ บัค LAB 3: kill ตอนทำงานค้าง งานที่เหลือข้ามไป</td></tr>
+      <tr><td>ตัว broker ล่ม / restart</td><td>รอดถ้าตั้ง <b>durable queue + persistent message</b> (เก็บลงดิสก์) · ถ้าไม่ตั้ง หาย</td><td>log เขียนลงดิสก์ · <code>stop/start</code> รอด (LAB 1) · แต่ <code>compose down</code> ในแล็บลบ volume ทิ้ง</td></tr>
+      <tr><td>ยืนยันว่างานเสร็จ</td><td><code>basic_ack</code> ทีละข้อความ</td><td>commit ตำแหน่ง (offset) ทีเดียวทั้งช่วง</td></tr>
+      <tr><td>ใครส่งข้อความหาตัวรับ</td><td>broker <b>ยัด</b>ให้ (push · callback)</td><td>ตัวรับ<b>ดึง</b>เอง (pull · <code>poll</code>)</td></tr>
+      <tr><td>เลือกรับเฉพาะบางเรื่อง</td><td>broker ทำให้: routing key + wildcard (<code>kern.*</code>)</td><td>ไม่มี — แยก topic หรืออ่านมากรองเอง (จุดในชื่อไม่ใช่ wildcard)</td></tr>
+      <tr><td>ลำดับข้อความ</td><td>ตามคิว แต่หลาย worker ทำสลับกัน</td><td>การันตีภายใน partition เดียว → key เดียวกันไม่สลับ</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="alert warn"><strong>4 เรื่องที่มักเข้าใจผิด</strong>
+    <ol class="fix">
+      <li><b>"RabbitMQ ล่มแล้วข้อความหาย"</b> — ไม่จริง: ตัวรับล่มก่อน ack งานกลับเข้าคิว · broker ล่มก็รอดถ้า durable + persistent (RabbitMQ LAB 2 พิสูจน์ทั้งสองข้อ) · ที่หายจริงคือใช้ <code>auto_ack=True</code> (อย่าง <code>receive.py</code> ใน RabbitMQ LAB 1) หรือไม่ตั้ง durable · ถ้าต้องการชัวร์ขึ้นอีกขั้นฝั่งผู้ส่งต้องใช้ publisher confirms</li>
+      <li><b>"Kafka ตัวรับหลายตัวไม่แย่งกันเสมอ"</b> — จริงเฉพาะ<b>ต่าง group</b> · ถ้าอยู่ group เดียวกัน Kafka แบ่งงานให้ แต่ละข้อความไปถึงตัวเดียวในทีม (ตั้งใจ เพื่อช่วยกันทำ)</li>
+      <li><b>"Kafka เก็บข้อมูลตลอดไป"</b> — ไม่: มี retention (ค่าเริ่มต้น 7 วัน หรือตามขนาด) หมดอายุก็ลบ · replay ได้เฉพาะของที่ยังไม่หมดอายุ</li>
+      <li><b>"RabbitMQ replay ไม่ได้เลย"</b> — จริงสำหรับ queue ปกติ (แบบที่เรียนในวิชานี้) · แต่ RabbitMQ รุ่นใหม่มี <b>Streams</b> ที่ทำงานแบบ log อ่านซ้ำได้ (เห็นชื่อในแท็บ "Queues and Streams" ของ Management UI) — นอกขอบเขตแล็บ</li>
+    </ol>
+  </div>
+
+  <h3 style="margin-top:24px">แล้วจะเลือกตัวไหน</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>ถามตัวเอง</th><th>ใช่ → เลือก</th></tr></thead>
+    <tbody>
+      <tr><td>งานนี้สั่งทำครั้งเดียวแล้วจบ ไม่มีใครต้องดูย้อนหลัง? (ส่งเมล · ย่อรูป · ออกใบเสร็จ)</td><td><b>RabbitMQ</b> — คิวงาน + ack</td></tr>
+      <tr><td>เรื่องเดียวกัน หลายทีมต้องรู้ / อยากย้อนดูได้?</td><td><b>Kafka</b> — ตั้ง group ต่างกัน</td></tr>
+      <tr><td>ข้อมูลไหลเข้ามาเยอะไม่หยุด (หลักแสนต่อวินาที)?</td><td><b>Kafka</b> — แบ่ง partition กระจายโหลด</td></tr>
+      <tr><td>ต้องเลือกส่งตามเงื่อนไขซับซ้อนที่ตัว broker (wildcard)?</td><td><b>RabbitMQ</b> — topic exchange</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">ระบบใหญ่จริงมักใช้<b>ทั้งคู่</b>: Kafka เป็นสายข่าวกลางของทั้งบริษัท · RabbitMQ เป็นคิวงานภายในของแต่ละทีม</p>
+</section>
+
+<!-- ===================== LAB 1 ===================== -->
+<section role="tabpanel" id="lab1" aria-labelledby="t-lab1" hidden>
+  <div class="labhead"><span class="eyebrow">LAB 1 · 001_LAB_Kafka_Setup</span></div>
+  <h1>เปิด Kafka แล้วส่ง–รับข้อความแรก</h1>
+  <div class="facts"><span class="fact">UI <b>localhost:8411</b></span><span class="fact">topic <b>hello</b> (1 partition)</span><span class="fact">ไฟล์ <b>send.py · receive.py</b></span><span class="fact">ผลรัน <span class="pill ok">ตรงเอกสาร</span></span></div>
+  <p class="lede">เป้าหมายเดียว: เห็นกับตาว่า <strong>อ่านแล้วข้อความไม่หาย</strong> — จุดที่ Kafka ต่างจาก RabbitMQ มากที่สุด</p>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 170" role="img" aria-labelledby="l1t">
+      <title id="l1t">send.py เขียนต่อท้าย topic hello ได้ใบเสร็จ offset receive.py อ่านจากต้น log ได้ครบทุกรอบ</title>
+      <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker></defs>
+      <rect x="16" y="50" width="130" height="56" rx="8" class="soft"/><text x="81" y="74" text-anchor="middle" font-weight="600" font-size="13">send.py</text><text x="81" y="94" text-anchor="middle" class="mono" font-size="11">producer</text>
+      <path d="M 146 78 L 196 78" class="arrow" marker-end="url(#a1)"/>
+      <text x="200" y="40" font-size="12" class="dim">topic hello · partition 0 (เขียนต่อท้ายอย่างเดียว)</text>
+      <rect x="200" y="58" width="62" height="40" rx="5" class="cell0"/><text x="231" y="82" text-anchor="middle" class="celltext">0</text>
+      <rect x="266" y="58" width="62" height="40" rx="5" class="cell0"/><text x="297" y="82" text-anchor="middle" class="celltext">1</text>
+      <rect x="332" y="58" width="62" height="40" rx="5" class="cell0"/><text x="363" y="82" text-anchor="middle" class="celltext">2</text>
+      <rect x="398" y="58" width="62" height="40" rx="5" class="cell0"/><text x="429" y="82" text-anchor="middle" class="celltext">3</text>
+      <rect x="464" y="58" width="62" height="40" rx="5" class="empty"/><text x="495" y="82" text-anchor="middle" class="mono dim" font-size="11">ถัดไป</text>
+      <path d="M 540 78 L 600 78" class="arrow" marker-end="url(#a1)"/>
+      <rect x="604" y="50" width="140" height="56" rx="8" class="soft"/><text x="674" y="74" text-anchor="middle" font-weight="600" font-size="13">receive.py</text><text x="674" y="94" text-anchor="middle" class="mono" font-size="11">ไม่มี group_id</text>
+      <text x="200" y="130" font-size="13">ใบเสร็จ: <tspan class="mono">topic=hello partition=0 offset=N</tspan></text>
+      <text x="200" y="152" font-size="13">receive.py รันกี่รอบก็เริ่มจาก 0 เพราะไม่มีใครจำที่คั่น (<tspan class="mono">auto_offset_reset='earliest'</tspan>)</text>
+    </svg>
+    </div>
+  </figure>
+  <ol class="steps" id="steps-lab1"></ol>
+  <div class="labsum">
+    <h2 style="margin-top:0">สรุป · แล็บนี้สอนอะไร</h2>
+    <p class="say">แล็บนี้สอนว่า Kafka เป็น <b>สมุดจด ไม่ใช่ตะกร้า</b>: ส่งแล้วได้ "ที่อยู่" ถาวร (offset) · ไม่มีคนอ่านข้อความก็รอ · อ่านกี่รอบก็ยังอยู่ · broker ดับแล้วฟื้น ข้อมูลยังอยู่</p>
+    <p><b>เห็นภาพ:</b> เหมือนจดลงสมุดบันทึกประจำวัน — จดแล้วใครจะเปิดอ่านกี่รอบก็ได้ ไม่เหมือนโพสต์อิทที่ดึงออกแล้วหาย</p>
+    <p><b>เอาไปใช้จริง:</b></p>
+    <ul><li>ระบบปลายทางล่มชั่วคราว ข้อมูลไม่หาย รออยู่ใน Kafka กลับมาอ่านต่อได้</li><li>เก็บ "ประวัติเหตุการณ์" ไว้ตรวจย้อนหลัง (audit log) · debug ด้วยการอ่านซ้ำ</li><li>ทักษะที่ได้: เปิดระบบด้วย <code>docker compose up -d</code> รอให้ healthy · ส่อง topic ด้วย <code>kafka-topics.sh</code> · นับข้อความด้วย <code>kafka-get-offsets.sh</code></li></ul>
+  </div>
+</section>
+
+<!-- ===================== LAB 2 ===================== -->
+<section role="tabpanel" id="lab2" aria-labelledby="t-lab2" hidden>
+  <div class="labhead"><span class="eyebrow">LAB 2 · 002_LAB_Partitions_Keys</span></div>
+  <h1>ใครเลือกว่าข้อความลง partition ไหน</h1>
+  <div class="facts"><span class="fact">UI <b>localhost:8412</b></span><span class="fact">topic <b>orders</b> 3 → 4 partitions</span><span class="fact">ผลรัน <span class="pill ok">ตรงเอกสาร</span> <span class="pill warn">ระวัง 1 จุด</span></span></div>
+  <p class="lede">กฎ 3 ชั้น (producer ตัดสิน): <strong>ระบุ partition ตรง ๆ</strong> ชนะทุกอย่าง → ไม่ระบุแต่มี <strong>key</strong> ใช้ hash → ไม่มีทั้งคู่ <strong>สุ่ม</strong></p>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 210" role="img" aria-labelledby="l2t">
+      <title id="l2t">key ผ่าน murmur2 หารเอาเศษด้วย 3 ได้เล่ม bangkok ลง p2 chiangmai ลง p1 hatyai ลง p0 ไม่มี key สุ่ม</title>
+      <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker></defs>
+      <rect x="16" y="30" width="150" height="40" rx="7" class="box"/><text x="91" y="55" text-anchor="middle" class="mono" font-size="12">key=hatyai</text>
+      <rect x="16" y="84" width="150" height="40" rx="7" class="box"/><text x="91" y="109" text-anchor="middle" class="mono" font-size="12">key=chiangmai</text>
+      <rect x="16" y="138" width="150" height="40" rx="7" class="box"/><text x="91" y="163" text-anchor="middle" class="mono" font-size="12">key=bangkok</text>
+      <rect x="220" y="62" width="170" height="84" rx="8" class="soft"/>
+      <text x="305" y="92" text-anchor="middle" font-size="13" font-weight="600">murmur2(key)</text>
+      <text x="305" y="114" text-anchor="middle" class="mono" font-size="12">&amp; 0x7fffffff % 3</text>
+      <text x="305" y="134" text-anchor="middle" font-size="11" class="dim">คณิตศาสตร์ ไม่ใช่การสุ่ม</text>
+      <path d="M 166 50 L 218 86" class="arrow"/><path d="M 166 104 L 218 104" class="arrow"/><path d="M 166 158 L 218 124" class="arrow"/>
+      <path d="M 390 86 L 450 50" class="arrow" marker-end="url(#a2)"/><path d="M 390 104 L 450 104" class="arrow" marker-end="url(#a2)"/><path d="M 390 124 L 450 158" class="arrow" marker-end="url(#a2)"/>
+      <rect x="454" y="32" width="46" height="36" rx="5" class="cell0"/><text x="477" y="55" text-anchor="middle" class="celltext">p0</text>
+      <rect x="454" y="86" width="46" height="36" rx="5" class="cell1"/><text x="477" y="109" text-anchor="middle" class="celltext">p1</text>
+      <rect x="454" y="140" width="46" height="36" rx="5" class="cell2"/><text x="477" y="163" text-anchor="middle" class="celltext">p2</text>
+      <text x="514" y="55" font-size="12.5">hatyai 431853363 % 3 = 0</text>
+      <text x="514" y="109" font-size="12.5">chiangmai 34321306 % 3 = 1</text>
+      <text x="514" y="163" font-size="12.5">bangkok 365349053 % 3 = 2</text>
+      <text x="16" y="200" font-size="12.5" class="dim">เพิ่มเป็น 4 partitions → ตัวหารเปลี่ยน → bangkok→p1 · chiangmai→p2 · hatyai→p3 (ของเก่าไม่ย้ายตาม)</text>
+    </svg>
+    </div>
+  </figure>
+  <ol class="steps" id="steps-lab2"></ol>
+  <div class="labsum">
+    <h2 style="margin-top:0">สรุป · แล็บนี้สอนอะไร</h2>
+    <p class="say">แล็บนี้สอนว่า <b>key คือป้ายบอกว่าข้อความไปเล่มไหน</b>: key เดียวกัน → เล่มเดียวกันเสมอ → เรียงลำดับไม่สลับ · ไม่ใส่ key = สุ่ม คุมไม่ได้ · ระบุเล่มเองจะชนะ key · เพิ่มเล่มทีหลังทุกอย่างย้ายที่</p>
+    <p><b>เห็นภาพ:</b> เหมือนแยกกองเอกสารตามสาขา — เอกสารสาขาเดียวกันอยู่แฟ้มเดียวกันเรียงตามวัน แต่ข้ามแฟ้มไม่ได้เรียงกัน</p>
+    <p><b>เอาไปใช้จริง:</b></p>
+    <ul><li>ออเดอร์ของลูกค้าคนเดียวต้องไม่สลับ (สั่ง → จ่าย → ส่ง) → ใช้ <code>customer_id</code> เป็น key · อุปกรณ์ตัวเดียว → <code>device_id</code></li><li>อย่าใส่ <code>partition=</code> ในโค้ดเอง ปล่อยให้ key ตัดสิน</li><li>วางจำนวน partition เผื่อโตตั้งแต่วันแรก — เพิ่มทีหลังลำดับต่อ key พัง · ระวัง key กระจุก (hot partition)</li></ul>
+  </div>
+</section>
+
+<!-- ===================== LAB 3 ===================== -->
+<section role="tabpanel" id="lab3" aria-labelledby="t-lab3" hidden>
+  <div class="labhead"><span class="eyebrow">LAB 3 · 003_LAB_Consumer_Groups</span></div>
+  <h1>ทีมแบ่งเล่มกันอ่าน · Rebalance · LAG</h1>
+  <div class="facts"><span class="fact">UI <b>localhost:8413</b></span><span class="fact">topic <b>tasks</b> 3 partitions</span><span class="fact">group <b>workers</b></span><span class="fact">ผลรัน <span class="pill ok">ตรงเอกสาร</span> <span class="pill bad">บัค 1</span></span></div>
+  <p class="lede">กฎเดียว: <strong>ในทีมเดียวกัน 1 เล่มมีเจ้าของได้ 1 คน</strong> — ทุกผลในแล็บนี้งอกจากกฎข้อนี้</p>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 220" role="img" aria-labelledby="l3t">
+      <title id="l3t">สามจังหวะ A คนเดียวถือสามเล่ม B เข้ามาแบ่งเป็นสองต่อหนึ่ง สี่คนสามเล่มมีคนว่างงาน</title>
+      <text x="20" y="24" font-size="13" font-weight="600">A คนเดียว</text>
+      <rect x="20" y="36" width="210" height="150" rx="9" class="frame"/>
+      <rect x="36" y="52" width="178" height="40" rx="7" class="soft"/><text x="125" y="77" text-anchor="middle" font-size="13">Worker A · [0, 1, 2]</text>
+      <rect x="36" y="110" width="52" height="30" rx="5" class="cell0"/><text x="62" y="130" text-anchor="middle" class="celltext">p0</text>
+      <rect x="99" y="110" width="52" height="30" rx="5" class="cell1"/><text x="125" y="130" text-anchor="middle" class="celltext">p1</text>
+      <rect x="162" y="110" width="52" height="30" rx="5" class="cell2"/><text x="188" y="130" text-anchor="middle" class="celltext">p2</text>
+      <text x="125" y="170" text-anchor="middle" font-size="12" class="dim">ทำ 12 งานคนเดียว ≈ 12 วิ</text>
+
+      <text x="270" y="24" font-size="13" font-weight="600">เปิด B → rebalance</text>
+      <rect x="270" y="36" width="210" height="150" rx="9" class="frame"/>
+      <rect x="286" y="52" width="86" height="40" rx="7" class="soft"/><text x="329" y="77" text-anchor="middle" font-size="12">A · [2]</text>
+      <rect x="380" y="52" width="86" height="40" rx="7" class="soft"/><text x="423" y="77" text-anchor="middle" font-size="12">B · [0, 1]</text>
+      <rect x="286" y="110" width="52" height="30" rx="5" class="cell2"/><text x="312" y="130" text-anchor="middle" class="celltext">p2</text>
+      <rect x="380" y="110" width="40" height="30" rx="5" class="cell0"/><text x="400" y="130" text-anchor="middle" class="celltext">p0</text>
+      <rect x="424" y="110" width="40" height="30" rx="5" class="cell1"/><text x="444" y="130" text-anchor="middle" class="celltext">p1</text>
+      <text x="375" y="170" text-anchor="middle" font-size="12" class="dim">ใครได้ชุดไหนสลับกันได้ · ถูกทั้งคู่</text>
+
+      <text x="520" y="24" font-size="13" font-weight="600">4 คน 3 เล่ม</text>
+      <rect x="520" y="36" width="224" height="150" rx="9" class="frame"/>
+      <rect x="532" y="52" width="46" height="40" rx="6" class="soft"/><text x="555" y="77" text-anchor="middle" font-size="11.5">A [2]</text>
+      <rect x="584" y="52" width="46" height="40" rx="6" class="badfill"/><text x="607" y="77" text-anchor="middle" font-size="11.5">B [ ]</text>
+      <rect x="636" y="52" width="46" height="40" rx="6" class="soft"/><text x="659" y="77" text-anchor="middle" font-size="11.5">C [0]</text>
+      <rect x="688" y="52" width="46" height="40" rx="6" class="soft"/><text x="711" y="77" text-anchor="middle" font-size="11.5">D [1]</text>
+      <text x="632" y="128" text-anchor="middle" font-size="12">B ว่างงาน = ตัวสำรอง</text>
+      <text x="632" y="148" text-anchor="middle" font-size="12">partitions = เพดานความขนาน</text>
+      <text x="632" y="170" text-anchor="middle" font-size="12" class="dim">(ผลจริงรอบของผม)</text>
+      <text x="20" y="210" font-size="12.5" class="dim">ออกแบบบอกลา (kill / Ctrl+C → close()) = rebalance ทันที · ตายเงียบ (kill -9) = รอ ~45 วิ งานของเล่มนั้นค้างเป็น LAG</text>
+    </svg>
+    </div>
+  </figure>
+  <div class="alert tip"><strong>กติกาแล็บนี้: terminal หน้าต่างเดียว</strong>
+    <p>เปิด worker ด้วย <code>&amp;</code> ต่อท้ายเสมอ · ปิดด้วย <code>kill $(pgrep -f "worker.py B")</code> · ดูว่าใครยังรันด้วย <code>jobs</code> · ข้อความของ worker จะพิมพ์แทรกปน prompt — ปกติ กด Enter เปล่า ๆ ได้</p>
+  </div>
+  <ol class="steps" id="steps-lab3"></ol>
+  <div class="labsum">
+    <h2 style="margin-top:0">สรุป · แล็บนี้สอนอะไร</h2>
+    <p class="say">แล็บนี้สอนว่า <b>ทีมเดียวกันช่วยกันอ่านโดยแบ่งเล่มกัน</b>: เปิดเครื่องเพิ่ม Kafka แบ่งใหม่ให้เอง · ปิดเครื่อง เล่มกลับไปหาคนที่เหลือ · Kafka จำว่าทีมอ่านถึงไหน · LAG บอกว่างานค้างเท่าไร · คนเกินจำนวนเล่มว่างงาน</p>
+    <p><b>เห็นภาพ:</b> เหมือนพ่อครัว 3 คนกับสมุดออเดอร์ 3 เล่ม คนละเล่ม — มีพ่อครัวคนที่ 4 ก็ต้องยืนรอเป็นตัวสำรอง เพราะเล่มหนึ่งให้คนเดียวอ่าน</p>
+    <p><b>เอาไปใช้จริง:</b></p>
+    <ul><li>งานค้างเยอะ (LAG โต) → เปิด worker เพิ่ม ไม่ต้องแก้โค้ด — ระบบจริงตั้ง autoscale / alert จากตัวเลข LAG</li><li>อยากได้ worker สูงสุด N ตัว → topic ต้องมีอย่างน้อย N partition</li><li>โปรแกรมต้องปิดแบบสุภาพ (<code>close()</code>) ไม่งั้นทีมรอ 45 วิ · และระวัง kill ตอนงานค้าง (บัคข้อ +)</li></ul>
+  </div>
+</section>
+
+<!-- ===================== LAB 4 ===================== -->
+<section role="tabpanel" id="lab4" aria-labelledby="t-lab4" hidden>
+  <div class="labhead"><span class="eyebrow">LAB 4 · 004_LAB_Event_Pipeline</span></div>
+  <h1>Pipeline 3 โปรแกรม 2 ท่อ ไม่มีใครเรียกใคร</h1>
+  <div class="facts"><span class="fact">UI <b>localhost:8414</b></span><span class="fact">ใช้ <b>3–4 หน้าต่าง</b></span><span class="fact">ผลรัน <span class="pill ok">ตรงเอกสารทุกตัวเลข</span> <span class="pill warn">ระวัง 2 จุด</span></span></div>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 230" role="img" aria-labelledby="l4t">
+      <title id="l4t">sensor.py ส่งเข้า sensor.readings สามเล่ม processor ในกลุ่ม processors อ่าน กรองค่าตั้งแต่ 35 ส่งเข้า sensor.alerts หนึ่งเล่ม alert_center ในกลุ่ม alert-center อ่าน และ alert-stats อ่านซ้ำได้</title>
+      <defs><marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker></defs>
+      <rect x="12" y="60" width="110" height="60" rx="8" class="soft"/><text x="67" y="86" text-anchor="middle" font-weight="600" font-size="13">sensor.py</text><text x="67" y="106" text-anchor="middle" font-size="11" class="dim">15 ค่า JSON</text>
+      <path d="M 122 90 L 150 90" class="arrow" marker-end="url(#a4)"/>
+      <rect x="154" y="40" width="130" height="100" rx="8" class="frame"/>
+      <text x="219" y="58" text-anchor="middle" class="mono" font-size="11">sensor.readings</text>
+      <rect x="166" y="66" width="106" height="18" rx="4" class="cell0"/><text x="219" y="79" text-anchor="middle" class="celltext">p0 · 0 ค่า</text>
+      <rect x="166" y="88" width="106" height="18" rx="4" class="cell1"/><text x="219" y="101" text-anchor="middle" class="celltext">p1 · s1+s2 10</text>
+      <rect x="166" y="110" width="106" height="18" rx="4" class="cell2"/><text x="219" y="123" text-anchor="middle" class="celltext">p2 · s3 5</text>
+      <path d="M 284 90 L 314 90" class="arrow" marker-end="url(#a4)"/>
+      <rect x="318" y="50" width="140" height="80" rx="8" class="soft"/><text x="388" y="76" text-anchor="middle" font-weight="600" font-size="13">processor.py</text><text x="388" y="96" text-anchor="middle" font-size="11">อ่าน → temp ≥ 35 → เขียน</text><text x="388" y="116" text-anchor="middle" class="mono" font-size="10.5">group processors</text>
+      <path d="M 458 90 L 488 90" class="arrow" marker-end="url(#a4)"/>
+      <rect x="492" y="60" width="104" height="60" rx="8" class="frame"/><text x="544" y="80" text-anchor="middle" class="mono" font-size="11">sensor.alerts</text>
+      <rect x="504" y="88" width="80" height="20" rx="4" class="cell3"/><text x="544" y="102" text-anchor="middle" class="celltext">p0 · 9 alert</text>
+      <path d="M 596 80 L 626 60" class="arrow" marker-end="url(#a4)"/>
+      <path d="M 596 100 L 626 132" class="arrow" marker-end="url(#a4)"/>
+      <rect x="630" y="30" width="118" height="56" rx="8" class="soft"/><text x="689" y="54" text-anchor="middle" font-weight="600" font-size="12.5">alert_center.py</text><text x="689" y="73" text-anchor="middle" class="mono" font-size="10.5">group alert-center</text>
+      <rect x="630" y="106" width="118" height="56" rx="8" class="frame-dash"/><text x="689" y="130" text-anchor="middle" font-size="12.5">alert-stats</text><text x="689" y="149" text-anchor="middle" font-size="10.5" class="dim">group ใหม่ replay</text>
+      <text x="12" y="186" font-size="12.5">Kafka เก็บแค่ bytes → ส่ง: <tspan class="mono">dict → json.dumps → .encode()</tspan> · รับ: <tspan class="mono">.decode() → json.loads → dict</tspan></text>
+      <text x="12" y="210" font-size="12.5" class="dim">แต่ละโปรแกรมรู้จักแค่ชื่อ topic · ปิด processor → ค่าดิบกองเป็น LAG → เปิดกลับมาไล่ต่อเอง</text>
+    </svg>
+    </div>
+  </figure>
+  <div class="tbl"><table>
+    <thead><tr><th>หน้าต่าง</th><th>หน้าที่</th></tr></thead>
+    <tbody>
+      <tr><td>T1</td><td>รัน <code>sensor.py</code> + คำสั่ง <code>docker compose exec</code></td></tr>
+      <tr><td>T2</td><td><code>alert_center.py</code> (เปิดค้างทั้งแล็บ)</td></tr>
+      <tr><td>T3</td><td><code>processor.py</code> (P1)</td></tr>
+      <tr><td>T4</td><td><code>processor.py P2</code> (เฉพาะทดลอง ก.)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small">ทุกหน้าต่างใหม่: <code>source ~/venv-kafka/bin/activate</code> แล้ว <code>cd ~/labwork/DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/004_LAB_Event_Pipeline</code></p>
+  <ol class="steps" id="steps-lab4"></ol>
+  <div class="labsum">
+    <h2 style="margin-top:0">สรุป · แล็บนี้สอนอะไร</h2>
+    <p class="say">แล็บนี้สอน<b>การต่อโปรแกรมเป็นสายพาน</b>: แต่ละตัวรู้จักแค่ชื่อ topic ไม่รู้จักกัน · ตัวกลางอ่าน → กรอง → เขียนต่อ · ส่ง JSON เอง (Kafka เห็นแค่ bytes) · ทีมใหม่มาทีหลังก็อ่านย้อนได้ทั้งหมด</p>
+    <p><b>เห็นภาพ:</b> เหมือนสายพานโรงงาน: ต้นทางวางของ → คนคัดของเสีย → ปลายทางแพ็ก · เปลี่ยนคนคัดได้โดยต้นทาง/ปลายทางไม่ต้องรู้</p>
+    <p><b>เอาไปใช้จริง:</b></p>
+    <ul><li>IoT: เซ็นเซอร์ส่งค่าเข้า → คัดค่าผิดปกติ → แจ้งเตือน (ตัวแล็บเองคือ use case นี้ย่อส่วน)</li><li>ธนาคาร: รายการโอน → ตัวจับทุจริต → ทีมตรวจสอบ · เพิ่มทีมรายงานย้อนหลังได้โดยไม่แตะของเดิม</li><li>ทักษะที่ได้: <code>--all-groups --describe</code> หาว่าสายพานขาดตรงไหน (group ไหน LAG ค้าง)</li></ul>
+  </div>
+</section>
+
+<!-- ===================== ISSUES ===================== -->
+<section role="tabpanel" id="issues" aria-labelledby="t-issues" hidden>
+  <span class="eyebrow">รวมทุกปัญหา</span>
+  <h1>ปัญหาที่เจอจริง &amp; วิธีรับมือในห้อง</h1>
+  <p class="lede">ทั้งหมดรับมือได้<strong>โดยไม่ต้องแก้ไฟล์ใน repo</strong> — ใช้การสั่งงาน ลำดับขั้น หรือการรอ</p>
+  <div class="tbl"><table>
+    <thead><tr><th>ระดับ</th><th>แล็บ</th><th>อาการที่น้องจะเห็น</th><th>ทำไม</th><th>รับมือยังไง</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill bad">บัค</span></td><td>LAB 3</td><td>kill worker แล้วงานหายไปหลายชิ้น LAG = 0 แต่ไม่มีใครทำ</td><td><code>poll()</code> ดึงทั้งชุด แล้ว <code>close()</code> commit ข้ามงานที่ยังไม่ทำ</td><td>รอให้ worker พิมพ์ <code>got</code> ครบก่อนค่อย kill · ถ้าเกิดแล้ว ส่งงานใหม่ด้วย <code>new_task.py</code> · ใช้เป็นตัวอย่างสอน at-most-once</td></tr>
+      <tr><td><span class="pill warn">ระวัง</span></td><td>ทุกแล็บ</td><td>เปิดกล่องเดิมกลับมา (<code>docker start devtools</code>) แล้วขึ้น <code>Cannot connect to the Docker daemon</code> ไม่หายสักที</td><td>ไฟล์ pid ของ Docker ข้างในค้างจากรอบก่อน (เจอ 1 ใน 4 ครั้งที่ลอง) — กระทบแล็บ Traefik / RabbitMQ ที่ให้ <code>docker start</code> กล่องเดิมด้วย</td><td>ในกล่อง: <code>docker info &gt;/dev/null 2&gt;&amp;1 || { pkill dockerd; pkill containerd; sleep 2; rm -f /var/run/docker.pid /var/run/docker/containerd/containerd.pid; nohup dockerd &gt; /var/log/dockerd.log 2&gt;&amp;1 &amp; }</code> แล้วรอ ~2 วิ · อย่าใช้ <code>docker restart</code></td></tr>
+      <tr><td><span class="pill warn">ระวัง</span></td><td>ทุกแล็บ</td><td><code>docker compose down</code> (ไม่มี -v) แล้ว up ใหม่ topic หายหมด</td><td>image apache/kafka เก็บข้อมูลใน anonymous volume · container ใหม่ได้ volume ใหม่</td><td>อยากเก็บข้อมูลใช้ <code>stop</code>/<code>start</code> เท่านั้น · ล้าง volume ค้างด้วย <code>docker volume prune -f</code></td></tr>
+      <tr><td><span class="pill warn">ระวัง</span></td><td>LAB 4</td><td>ปิดหน้าต่าง processor ทิ้ง แล้วอีกตัวเงียบไป ~45 วิ</td><td><code>processor.py</code> ไม่ดักสัญญาณ SIGTERM จึงไม่บอกลา group</td><td>ปิด processor ด้วย <b>Ctrl+C</b> เสมอ · ถ้าเผลอ รอ 45 วิ</td></tr>
+      <tr><td><span class="pill warn">ระวัง</span></td><td>LAB 4</td><td>อุณหภูมิไม่ตรงเอกสาร ทั้งที่ seed ยังอยู่</td><td>ไลบรารีใช้เลขสุ่มไป 1 ตัวตอนสร้าง Producer — ขึ้นกับเวอร์ชัน</td><td>เช็ก <code>pip show kafka-python</code> ต้อง 3.0.10 · ใช้ <code>pip install -r requirements.txt</code></td></tr>
+      <tr><td><span class="pill warn">ระวัง</span></td><td>LAB 2</td><td>console consumer <code>--max-messages 8</code> เห็น bangkok ไม่ครบ หรือค้าง</td><td>เลข 8 มาจากรอบของผู้เขียน · ข้อความไม่มี key สุ่มเล่ม</td><td>ดู Message Count ของ p2 ใน UI ก่อน แล้วใส่เลขนั้น · ค้างกด Ctrl+C</td></tr>
+      <tr><td><span class="pill ok">ปกติ</span></td><td>LAB 1</td><td><code>send.py</code> ตอน broker หยุด นิ่ง ~30 วิ</td><td>ไลบรารีพยายามต่อจนหมดเวลา</td><td>รอ แล้วอ่านบรรทัดล่างสุดของ traceback</td></tr>
+      <tr><td><span class="pill ok">ปกติ</span></td><td>ทุกแล็บ</td><td><code>port is already allocated</code> / ชื่อ <code>kafka</code> ซ้ำ</td><td>แล็บก่อนยังไม่ปิด (ทุกแล็บใช้ชื่อ kafka + port 9092)</td><td><code>docker compose down -v</code> ในโฟลเดอร์แล็บเก่า หรือ <code>docker rm -f kafka kafka-ui kafka-init</code></td></tr>
+      <tr><td><span class="pill ok">ปกติ</span></td><td>ทุกแล็บ</td><td><code>No module named 'kafka'</code></td><td>หน้าต่างใหม่ยังไม่ activate</td><td><code>source ~/venv-kafka/bin/activate</code></td></tr>
+      <tr><td><span class="pill ok">ปกติ</span></td><td>ทุกแล็บ</td><td>เปิด <code>localhost:841x</code> ไม่ขึ้น</td><td>สร้างกล่องไม่ได้ <code>-p 841x:841x</code> หรือ UI ยังบูต</td><td>รอ 10 วิ · ถ้า <code>docker ps</code> (เครื่องเรา) ไม่เห็น port ต้องสร้างกล่องใหม่</td></tr>
+      <tr><td><span class="pill ok">ปกติ</span></td><td>LAB 2/3/4</td><td><code>PartitionCount: 1</code> ทั้งที่ควรเป็น 3</td><td>รันโค้ดก่อนสร้าง topic → broker auto-create 1 เล่ม</td><td>LAB 2: <code>down -v</code> แล้ว <code>up -d</code> · LAB 3/4: ปิดโปรแกรม → <code>--delete --topic</code> → สร้างใหม่</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>คำถามที่น้องน่าจะถาม</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>คำถาม</th><th>ตอบสั้น</th></tr></thead>
+    <tbody>
+      <tr><td>ทำไม <code>receive.py</code> รันซ้ำได้ของเดิม แต่ <code>worker.py</code> ไม่ได้?</td><td>receive ไม่มี group → ไม่มีใครจำ offset · worker มี group → broker จำที่อ่านถึงไว้</td></tr>
+      <tr><td>ใส่ key แล้วทำไมไม่ลงเล่มเดียวกัน?</td><td>มีการระบุ partition ด้วย (เช่นฟอร์ม UI) กฎชั้น 1 ชนะ · หรือเพิ่ม partition ไปแล้ว</td></tr>
+      <tr><td>worker ได้ <code>[]</code> เสียไหม?</td><td>ไม่ — worker มากกว่าจำนวนเล่ม ตัวเกินเป็นตัวสำรอง</td></tr>
+      <tr><td>kill -9 แล้วทำไมงานค้างนาน?</td><td>ไม่ได้บอกลา broker รอ heartbeat หายครบ 45 วิ</td></tr>
+      <tr><td><code>alert-stats</code> รอบสองทำไมว่าง?</td><td><code>--from-beginning</code> ใช้ได้เฉพาะ group ที่ยังไม่มี offset · ใช้ชื่อ group ใหม่</td></tr>
+      <tr><td>ค่าดิบทำไม 10/5/0?</td><td>sensor-1 กับ sensor-2 hash ลง p1 ด้วยกัน · Kafka สัญญา "key เดิมเล่มเดิม" ไม่ใช่ "แบ่งเท่ากัน"</td></tr>
+      <tr><td>ทำไมต้องมี listener สองบาน?</td><td>localhost ของแต่ละ container คือตัวมันเอง · Python นอก compose ใช้ <code>localhost:9092</code> · UI ใน compose ใช้ <code>kafka:19092</code></td></tr>
+      <tr><td>RabbitMQ ล่มแล้วข้อความหายไหม?</td><td>ไม่จำเป็น — ตัวรับล่มก่อน ack งานกลับเข้าคิว · broker ล่มรอดถ้า durable + persistent · หายจริงเมื่อใช้ auto_ack หรือไม่ตั้ง durable · ความต่างกับ Kafka คือ "ทำเสร็จแล้วทิ้ง" vs "เก็บไว้ให้อ่านซ้ำ"</td></tr>
+      <tr><td>Kafka เปิดตัวอ่านหลายตัว ได้ข้อความซ้ำกันไหม?</td><td>ขึ้นกับ group — ต่าง group: ทุกตัวได้ครบทุกใบ · group เดียวกัน: แบ่งกัน แต่ละใบไปตัวเดียว</td></tr>
+      <tr><td><code>kafka-init</code> ขึ้น Exited พังหรือเปล่า?</td><td>ไม่ — <code>Exited (0)</code> = ทำเสร็จแล้วจบ ถ้าพังจะเป็น <code>Exited (1)</code></td></tr>
+    </tbody>
+  </table></div>
+  <p class="small">ทดสอบบน Docker Desktop 29.8 → devtools:2569_1 (Docker 29.6.2 · Compose v5.3.1) · apache/kafka 4.1.0 · kafbat/kafka-ui v1.5.0 · kafka-python 3.0.10 · repo commit 40ae2fd · 21 ก.ย. 2026 · ไม่ได้แก้ไฟล์ใน repo</p>
+</section>
+</main>
+
+<script>
+const S = {
+lab1: [
+ {n:"0", t:"เปิดเครื่องเรียน แล้ว ssh เข้าไป", why:"ทำบนเครื่องเรา — ทุกคนได้สภาพแวดล้อมเดียวกัน",
+  cmd:`docker rm -f devtools
+docker run -dit --name devtools --privileged -p 2222:22 -p 8411:8411 tuchsanai/devtools:2569_1
+ssh root@localhost -p 2222        # password: passwd`,
+  out:`<span class="d"># หลัง ssh แล้วพิมพ์</span> docker --version ; docker compose version
+Docker version 29.6.2, build dfc4efb
+Docker Compose version v5.3.1`,
+  note:"<b>-dit</b> ต้องมีครบ ไม่งั้นกล่องดับทันที (ข้างในรัน bash) · <b>--privileged</b> ให้รัน Docker ซ้อนข้างใน · คำสั่งต่อจากนี้ทั้งหมดพิมพ์<b>ข้างในกล่อง</b>",
+  alerts:[{k:"warn",h:"ถ้าเจอ Cannot connect to the Docker daemon",p:"มี 2 กรณี: (1) เพิ่งสร้างกล่องไม่ถึง 10 วิ Docker ข้างในยังบูตไม่เสร็จ — แค่รอ (2) <b>เปิดกล่องเดิมกลับมา</b> (<code>docker start devtools</code> / รีสตาร์ตเครื่อง) แล้ว Docker ข้างในไม่ขึ้นเลย — ผมเจอจริง 1 ใน 4 ครั้ง เพราะไฟล์ pid เก่าค้าง ต้องปลุกเอง",
+   fix:[["คำสั่งเดียวจบทั้งสองกรณี (พิมพ์ในกล่องเรียนหลัง ssh) — ถ้า Docker ปกติดีจะไม่ทำอะไร ถ้าพังจะปลุกใหม่ แล้วรอจนพร้อม (ทดสอบแล้ว image ที่โหลดไว้ยังอยู่ครบ)","docker info >/dev/null 2>&1 || { pkill dockerd; pkill containerd; sleep 2; rm -f /var/run/docker.pid /var/run/docker/containerd/containerd.pid; nohup dockerd > /var/log/dockerd.log 2>&1 & }\nuntil docker info >/dev/null 2>&1; do sleep 1; done; echo Docker พร้อมแล้ว"],
+        ["ยืนยัน","docker --version\ndocker ps"]],
+   alt:"<b>อย่า</b>ใช้ <code>docker restart devtools</code> เป็นทางแก้ — มันคือสาเหตุของกรณี (2) เอง · ถ้า log (<code>tail -5 /var/log/dockerd.log</code>) พูดถึง permission / iptables แปลว่าตอนสร้างกล่องลืม <code>--privileged</code> → ต้องสร้างกล่องใหม่ (วิธีอยู่ในกล่อง \"ถ้าเปิด localhost:8411 ไม่ขึ้น\" ข้อ 5)"}]},
+ {n:"1", t:"Clone โค้ด + เตรียม Python", why:"PEP 668 ห้าม pip ลงเครื่องตรง ๆ ต้องใช้ venv",
+  cmd:`mkdir -p ~/labwork && cd ~/labwork
+git clone https://github.com/Tuchsanai/DevTools.git
+cd DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/001_LAB_Kafka_Setup
+python3 -m venv ~/venv-kafka
+source ~/venv-kafka/bin/activate
+pip install -r requirements.txt
+python -c "import kafka; print(kafka.__version__)"`,
+  out:`Successfully installed kafka-python-3.0.10
+3.0.10`,
+  note:"prompt ต้องมี <b>(venv-kafka)</b> นำหน้า · <b>ทุก terminal ใหม่ต้อง activate ใหม่</b> ไม่งั้นเจอ <code>No module named 'kafka'</code>"},
+ {n:"2", t:"เปิด broker + UI ด้วยคำสั่งเดียว", why:"healthcheck + depends_on ทำให้ UI รอจน broker พร้อมจริง (Up ≠ พร้อม)",
+  cmd:`docker compose up -d
+docker compose ps`,
+  out:` Container kafka Started
+ Container kafka Waiting
+ Container kafka <span class="g">Healthy</span>          <span class="d">← สำคัญ: Healthy ไม่ใช่แค่ Started</span>
+ Container kafka-ui Started
+NAME       STATUS                   PORTS
+kafka      Up 6 seconds (healthy)   0.0.0.0:9092->9092/tcp
+kafka-ui   Up Less than a second    0.0.0.0:8411->8080/tcp`,
+  note:"ครั้งแรกจะ pull image นานหน่อย · ดูคอลัมน์ PORTS ของ kafka-ui ต้องเป็น <code>8411->8080</code>"},
+ {n:"3", t:"ยืนยันด้วย log", why:"บรรทัดชี้ขาดว่า broker พร้อม",
+  cmd:`docker compose logs kafka --tail 5`,
+  out:`kafka  | ... INFO Kafka version: 4.1.0
+kafka  | ... INFO [KafkaRaftServer nodeId=1] <span class="g">Kafka Server started</span>`},
+ {n:"4", t:"สำรวจ broker ด้วย CLI", why:"CLI อยู่ในกล่อง kafka จึงต้องผ่าน docker compose exec",
+  cmd:`docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --version
+docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list`,
+  out:`4.1.0
+<span class="d">(--list ว่าง — ยังไม่มี topic · จริง ๆ พิมพ์บรรทัดว่าง 1 บรรทัด ไม่เป็นไร)</span>`},
+ {n:"5", t:"เปิด Kafka UI", why:"หน้าเว็บให้คนดู แยก container จาก broker",
+  cmd:`docker compose logs kafka-ui | grep "Started KafkaUiApplication"
+# แล้วเปิด http://localhost:8411 บนเบราว์เซอร์เครื่องเรา`,
+  out:`kafka-ui | ... Started KafkaUiApplication in 5.313 seconds
+<span class="d">หน้าเว็บ: Online 1 clusters · cluster local · Topics 0 · Brokers → Controller Type: KRaft</span>`,
+  alerts:[{k:"warn",h:"ถ้าเปิด localhost:8411 ไม่ขึ้น — เช็กทีละข้อ",p:"มี 2 สาเหตุ: UI ยังบูตไม่เสร็จ (แค่รอ) หรือกล่องเรียนไม่ได้เปิด port 8411 (ต้องแก้)",
+   fix:[["รอให้ UI พร้อม — วนเช็กจนหน้าเว็บตอบ (พิมพ์ในกล่องเรียน)","until curl -s -o /dev/null http://localhost:8411; do sleep 2; done; echo UI พร้อมแล้ว"],
+        ["ถ้าขึ้น UI พร้อมแล้วแต่เบราว์เซอร์ยังเปิดไม่ได้ → เช็กว่ากล่องเปิด port ไหม (พิมพ์บน<b>เครื่องเรา</b>) ต้องเห็นบรรทัด <code>8411/tcp -> 0.0.0.0:8411</code>","docker port devtools"]],
+   alt:"<b>ถ้าไม่เห็น 8411 · ทางลัด ไม่ต้องสร้างกล่องใหม่:</b> เปิด terminal ใหม่บนเครื่องเรา ทำอุโมงค์ ssh แล้วเปิด localhost:8411 ได้เลย (ต้องเปิดหน้าต่างนี้ค้างไว้) <pre class=\"cmd\">ssh -L 8411:localhost:8411 root@localhost -p 2222</pre>หรือใน VS Code: แท็บ PORTS → Forward a Port → พิมพ์ 8411 · ใช้ได้จริงเพราะในกล่อง <code>curl localhost:8411</code> ตอบ 200 (ผมเช็กแล้ว)<br><br><b>ทางถาวร · สร้างกล่องใหม่:</b> ของในกล่องเก่าหาย ต้อง clone + venv ใหม่ — เปิดทุก port ของ 4 แล็บไปเลยจะได้ไม่ต้องทำอีก <pre class=\"cmd\">exit\ndocker rm -fv devtools\ndocker run -dit --name devtools --privileged -p 2222:22 -p 8411:8411 -p 8412:8412 -p 8413:8413 -p 8414:8414 tuchsanai/devtools:2569_1\nssh-keygen -R \"[localhost]:2222\"\nssh root@localhost -p 2222</pre><code>ssh-keygen -R</code> ห้ามข้าม — กล่องใหม่มีกุญแจ ssh ใหม่ ถ้าไม่ลบของเก่าจะเจอ <code>REMOTE HOST IDENTIFICATION HAS CHANGED</code> แล้วต่อไม่ได้ · จากนั้นทำขั้น 1 (clone + venv) ใหม่"}]},
+ {n:"6", t:"ส่งข้อความแรก — ตอนยังไม่มีผู้อ่าน", why:"พิสูจน์ว่าผู้ส่งผู้รับไม่ต้องออนไลน์พร้อมกัน · topic ถูกสร้างเอง",
+  cmd:`python send.py
+docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
+docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic hello`,
+  out:` [x] Sent 'Hello Kafka!'  ->  topic=hello partition=0 <span class="g">offset=0</span>
+hello
+Topic: hello  PartitionCount: <span class="g">1</span>  ReplicationFactor: 1
+  Topic: hello  Partition: 0  Leader: 1  Replicas: 1  Isr: 1`,
+  note:"ใบเสร็จ (topic, partition, offset) = ที่อยู่ถาวรของข้อความ · auto-create ได้ 1 partition เสมอ · UI แท็บ Topics เห็น hello = 1 message"},
+ {n:"7", t:"อ่านสด 2 หน้าต่าง", why:"ของค้างมาทันที ของใหม่มาแบบ realtime",
+  cmd:`# หน้าต่าง 1
+python receive.py
+
+# หน้าต่าง 2 (ssh ใหม่ + activate + cd โฟลเดอร์แล็บ)
+python send.py ; python send.py ; python send.py`,
+  out:`<span class="d"># หน้าต่าง 2</span>
+ [x] Sent ... offset=1
+ [x] Sent ... offset=2
+ [x] Sent ... offset=3
+<span class="d"># หน้าต่าง 1</span>
+ [*] Waiting for messages. To exit press CTRL+C
+ [x] Received partition=0 offset=0 value=Hello Kafka!
+ [x] Received partition=0 offset=1 value=Hello Kafka!
+ [x] Received partition=0 offset=2 value=Hello Kafka!
+ [x] Received partition=0 offset=3 value=Hello Kafka!
+^C Interrupted`},
+ {n:"8", t:"หัวใจของแล็บ — อ่านซ้ำได้ครบ", why:"RabbitMQ ack แล้วหาย · Kafka อ่านแล้วยังอยู่",
+  cmd:`python receive.py        # ดูครบแล้ว Ctrl+C
+docker compose exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic hello --from-beginning --max-messages 4`,
+  out:` [x] Received partition=0 offset=0 ... offset=3   <span class="d">← ครบ 4 เหมือนเดิม</span>
+Hello Kafka!  <span class="d">(×4)</span>
+Processed a total of 4 messages`,
+  note:"receive.py ไม่มี <code>group_id</code> → ไม่มีใครจำที่อ่าน เปิดใหม่เริ่ม offset 0 ทุกครั้ง · ข้อความลบเมื่อหมดอายุ (7 วัน) ไม่ใช่เพราะถูกอ่าน"},
+ {n:"ก", x:1, t:"ส่งรัว 5 ครั้ง ดู log โต", why:"offset วิ่งต่อไม่มีเว้น",
+  cmd:`for i in 1 2 3 4 5; do python send.py; done
+docker compose exec kafka /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic hello`,
+  out:` [x] Sent ... offset=4  ...  offset=8
+hello:0:<span class="g">9</span>          <span class="d">← offset ถัดไปคือ 9 = มี 9 ข้อความ (0–8)</span>`},
+ {n:"ข", x:1, t:"อ่าน error ตอน broker หยุด", why:"ฝึกอ่าน traceback จากล่างขึ้นบน",
+  cmd:`docker compose stop kafka
+python send.py`,
+  out:`<span class="d">(นิ่งไปราว 30 วินาที แล้วค่อยขึ้น)</span>
+Traceback (most recent call last):
+  ...
+kafka.errors.KafkaTimeoutError: KafkaTimeoutError: Unable to bootstrap from localhost:9092`,
+  alerts:[{k:"warn",h:"นิ่งไป ~30 วิ = ปกติ ไม่ได้ค้าง",p:"ไลบรารีพยายามต่อ broker จนหมดเวลา (วัดจริง 30.1 วิ) แล้วค่อยขึ้น error — เอกสารไม่ได้บอกเรื่องเวลาไว้",
+   fix:[["รอ ~30 วิ แล้วอ่านบรรทัดล่างสุดของ traceback",""]],
+   alt:"ไม่อยากรอ: กด <b>Ctrl+C</b> ได้เลย จะขึ้น <code>KeyboardInterrupt</code> แทน — แต่ต้องรอดูสักครั้งให้เห็นหน้าตา <code>KafkaTimeoutError</code> เพราะเป็นบทเรียนของข้อนี้"}]},
+ {n:"ข2", x:1, t:"ปลุก broker แล้วส่งต่อ", why:"log อยู่บนดิสก์ รอด stop/start",
+  cmd:`docker compose start kafka
+docker compose logs kafka | grep -c "Kafka Server started"     # ต้องได้ 2 (ได้ 1 ให้รอแล้วนับใหม่)
+python send.py`,
+  out:`2
+ [x] Sent ... <span class="g">offset=9</span>     <span class="d">← ต่อจาก 8 ข้อมูลเก่ารอด</span>`},
+ {n:"✓", t:"เก็บกวาด", why:"แล็บหน้าใช้ชื่อ container / port เดิม ต้องปิดก่อน",
+  cmd:`docker compose down -v
+docker ps -a`,
+  out:` Container kafka-ui Removed
+ Container kafka Removed
+ Network kafka-lab1_default Removed
+CONTAINER ID   IMAGE   COMMAND   CREATED   STATUS   PORTS   NAMES`,
+  alerts:[{k:"warn",h:"รู้ไว้: down (ไม่มี -v) ก็ทำให้ข้อความหาย + มี volume ขยะค้าง",p:"ผมลอง <code>down</code> แล้ว <code>up</code> → topic hello หายหมด เพราะ Kafka เก็บข้อมูลใน volume ไร้ชื่อ · container ใหม่ได้ volume ใหม่ ส่วนของเก่าค้างกินดิสก์",
+   fix:[["ดูว่ามี volume ค้างกี่ก้อน","docker volume ls"],
+        ["ล้าง volume ที่ไม่มี container ใช้แล้ว (ทำหลัง down ทุกแล็บ)","docker volume prune -f"]],
+   alt:"ถ้าอยากพักแล็บไว้ทำต่อโดยข้อมูลไม่หาย ใช้ <code>docker compose stop</code> แล้วค่อย <code>docker compose start</code> แทน <code>down</code>"}]}
+],
+lab2: [
+ {n:"0", t:"เปิดกล่อง (port 8412) + เข้าโฟลเดอร์", why:"ถ้าเปิดกล่องแบบรวม port ไว้แล้ว ข้ามได้",
+  cmd:`cd ~/labwork/DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/002_LAB_Partitions_Keys
+source ~/venv-kafka/bin/activate
+ls`,
+  out:`consumer_partitions.py  docker-compose.yml  hash_key.py  images
+producer_no_key.py  producer_with_key.py  readme.md  requirements.txt`},
+ {n:"1", t:"compose up — มี kafka-init สร้าง topic ให้", why:"init container: รันงานเตรียมระบบครั้งเดียวแล้วจบ",
+  cmd:`docker compose up -d
+docker compose ps -a
+docker logs kafka-init`,
+  out:` Container kafka Healthy
+ Container kafka-init Started
+ Container kafka-ui Started
+kafka        Up 12 seconds (healthy)
+kafka-init   <span class="g">Exited (0)</span> 2 seconds ago      <span class="d">← ถูกต้อง ไม่ใช่พัง</span>
+kafka-ui     Up 6 seconds   0.0.0.0:8412->8080/tcp
+Created topic orders.
+Topic: orders  PartitionCount: <span class="g">3</span> ...`,
+  note:"ต้องใช้ <code>ps -a</code> ถึงเห็น kafka-init · init ใช้ <code>kafka:19092</code> เพราะอยู่ใน compose",
+  alerts:[{k:"warn",h:"ถ้า PartitionCount เป็น 1 (ควรเป็น 3)",p:"มีคนรัน producer ก่อน kafka-init สร้าง topic ทัน → broker สร้าง orders ให้เองแบบ 1 เล่ม · ผลทั้งแล็บจะไม่ตรงเอกสาร",
+   fix:[["ล้างทั้งชุดแล้วเปิดใหม่ — kafka-init จะสร้าง 3 เล่มให้","docker compose down -v\ndocker volume prune -f\ndocker compose up -d"],
+        ["ยืนยันก่อนรัน producer — ต้องเห็น PartitionCount: 3","docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic orders"]]}]},
+ {n:"2", t:"ส่งแบบไม่มี key 2 รอบ", why:"ไม่มี key = producer สุ่มเล่ม คุมไม่ได้",
+  cmd:`python producer_no_key.py
+python producer_no_key.py`,
+  out:`<span class="d"># รอบของผม (ของแต่ละคนต่างกัน — นั่นคือประเด็น)</span>
+ [x] Sent 'order 1'  ->  partition=1 offset=0
+ [x] Sent 'order 2'  ->  partition=2 offset=0
+ [x] Sent 'order 3'  ->  partition=2 offset=1
+ ...
+ [x] Sent 'order 1'  ->  partition=1 offset=2   <span class="d">← รอบ 2 เล่มไม่เหมือนรอบ 1</span>`,
+  note:"offset ไม่รีเซ็ต วิ่งต่อในแต่ละเล่ม"},
+ {n:"3", t:"ส่งแบบมี key 2 รอบ", why:"หัวใจของแล็บ: key เดิม → เล่มเดิมเสมอ",
+  cmd:`python producer_with_key.py
+python producer_with_key.py`,
+  out:` [x] key=bangkok   -> partition=<span class="g">2</span> offset=5
+ [x] key=chiangmai -> partition=<span class="g">1</span> offset=5
+ [x] key=hatyai    -> partition=<span class="g">0</span> offset=2
+ ... <span class="d">(18 ใบ เล่มตรงนี้ทุกใบ · offset ของแต่ละคนต่างได้)</span>`,
+  note:"คอลัมน์ partition <b>ทุกคนต้องได้เหมือนกัน</b> · ตอนนี้มี 30 ข้อความ (12 ไม่มี key + 18 มี key)"},
+ {n:"4", t:"ทำนายล่วงหน้าด้วย hash_key.py", why:"เลือกเล่มเป็นคณิตศาสตร์ ไม่ใช่การสุ่ม",
+  cmd:`python hash_key.py`,
+  out:`bangkok    hash= 365349053   %3 -> p2   %4 -> p1
+chiangmai  hash=  34321306   %3 -> p1   %4 -> p2
+hatyai     hash= 431853363   %3 -> p0   %4 -> p3
+korat      hash=1798336970   %3 -> p2   %4 -> p2`,
+  note:"ตรงเอกสารเป๊ะ · คอลัมน์ %4 ใช้ทำนายทดลอง ค."},
+ {n:"5", t:"อ่านทั้ง topic", why:"ลำดับการันตีเฉพาะในเล่มเดียว",
+  cmd:`python consumer_partitions.py`,
+  out:` [x] partition=2 offset=0 key=None  value=order 2
+ ...
+ [x] partition=0 offset=7 key=hatyai  value=hatyai order #3
+ [*] Done - read <span class="g">30</span> messages      <span class="d">← จบเองใน ~5 วิ</span>`,
+  note:"ข้อความมาเป็นก้อนตามเล่ม ไม่ใช่ตามเวลา · ในเล่มเดียว offset เรียง 0,1,2… เสมอ"},
+ {n:"6", t:"สืบใน Kafka UI (localhost:8412 → Topics → orders)", why:"ข้อมูลเดียวกัน คนละมุม",
+  cmd:`Overview    → Partitions 3 · Message Count 30 (รายเล่มของแต่ละคนต่างกัน)
+Messages    → Select partitions: Partition #2 · Oldest · Refresh
+Search      → พิมพ์ bangkok
+Statistics  → Start Analysis`,
+  out:`<span class="d">Partition #2 → เห็นแต่ bangkok + null</span>
+<span class="d">Search bangkok → Partition = 2 ทุกแถว</span>
+<span class="d">Statistics → Total 30 · Null keys 12 · Unique keys 3</span>
+<span class="d">ของผม: p0=8 · p1=11 · p2=11</span>`,
+  note:"<b>Next Offset</b> = เลขที่ใบถัดไปจะได้ ไม่ใช่ offset ใบสุดท้าย"},
+ {n:"7", t:"เจาะอ่านเล่มเดียวจาก CLI", why:"เหมือนกรอง partition ใน UI",
+  cmd:`docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 \\
+  --topic orders --partition 2 --from-beginning --max-messages 11 \\
+  --property print.key=true`,
+  out:`null	order 2
+null	order 3
+...
+bangkok	bangkok order #1
+...
+Processed a total of 11 messages`,
+  alerts:[{k:"warn",h:"เลข --max-messages ต้องเป็นของตัวเอง (เอกสารเขียน 8)",p:"ข้อความไม่มี key สุ่มเล่ม p2 ของแต่ละคนจึงมีจำนวนไม่เท่ากัน (ของผม 11) · ใส่น้อยไป = เห็น bangkok ไม่ครบ · ใส่มากไป = ค้างรอ",
+   fix:[["ดูจำนวนข้อความของแต่ละเล่ม — เลขท้ายคือจำนวน เช่น <code>orders:2:11</code> = p2 มี 11 ใบ","docker exec kafka /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic orders"],
+        ["ใส่เลขนั้นแทน 8 (ตัวอย่างนี้ 11)","docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic orders --partition 2 --from-beginning --max-messages 11 --property print.key=true"]],
+   alt:"ถ้ารันไปแล้วค้าง (ใส่เลขเกิน) กด <b>Ctrl+C</b> — ข้อมูลไม่เสียหาย · หรือตัด <code>--max-messages</code> ทิ้ง แล้วกด Ctrl+C เองเมื่อเห็นครบ"}]},
+ {n:"ก", x:1, t:"ทำนายก่อนส่ง — key ใหม่ korat", why:"korat %3 = p2 → ต้องลง p2",
+  cmd:`printf 'korat:korat order #1\\nkorat:korat order #2\\n' | docker exec -i kafka \\
+  /opt/kafka/bin/kafka-console-producer.sh --bootstrap-server localhost:9092 \\
+  --topic orders --property parse.key=true --property key.separator=:
+
+docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 \\
+  --topic orders --from-beginning --max-messages 32 \\
+  --property print.key=true --property print.partition=true --property print.offset=true | grep korat`,
+  out:`<span class="d">(producer สำเร็จแล้วไม่พิมพ์อะไร)</span>
+Partition:<span class="g">2</span>	Offset:11	korat	korat order #1
+Partition:<span class="g">2</span>	Offset:12	korat	korat order #2`},
+ {n:"ข", x:1, t:"ส่งจากปุ่ม Produce Message ใน UI", why:"กับดัก: ฟอร์มบังคับเลือก partition",
+  cmd:`UI → orders → Produce Message
+Partition: ปล่อย Partition #0 (ค่าเริ่มต้น)
+Key: korat
+Value: korat order #3 (sent from Kafka UI)
+→ Produce Message → ค้น korat ในแท็บ Messages`,
+  out:`Partition:<span class="g">0</span>  korat order #3 (sent from Kafka UI)   <span class="d">← ไม่ไป p2!</span>
+Partition:2  korat order #1
+Partition:2  korat order #2`,
+  note:"ระบุ partition = กฎชั้น 1 ชนะ key เสมอ · บัคคลาสสิกของงานจริง: เผลอใส่ <code>partition=</code> ลำดับต่อ key พังเงียบ ๆ"},
+ {n:"ค", x:1, t:"เพิ่มเป็น 4 partitions", why:"บทเรียนแพงที่สุด: ตัวหารเปลี่ยน mapping เปลี่ยน",
+  cmd:`docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 \\
+  --alter --topic orders --partitions 4
+python producer_with_key.py`,
+  out:` [x] key=bangkok   -> partition=<span class="g">1</span> offset=11
+ [x] key=chiangmai -> partition=<span class="g">2</span> offset=13
+ [x] key=hatyai    -> partition=<span class="g">3</span> offset=0    <span class="d">← เล่มใหม่เริ่ม 0</span>
+ ...`,
+  note:"เพิ่มได้ ลดไม่ได้ · ของเก่าไม่ย้าย · ค้น bangkok ใน UI จะเห็นแตก 2 เล่ม (p2 เก่า · p1 ใหม่) · รวม 42 ข้อความ"},
+ {n:"✓", t:"เก็บกวาด", why:"",
+  cmd:`docker compose down -v
+docker ps -a`,
+  out:` Container kafka-init Removed
+ Container kafka-ui Removed
+ Container kafka Removed
+ Network 002_lab_partitions_keys_default Removed`}
+],
+lab3: [
+ {n:"0", t:"compose up + สร้าง topic tasks 3 เล่ม", why:"ต้องสร้างเองก่อนรันโค้ด ไม่งั้น auto-create ได้ 1 เล่ม",
+  cmd:`cd ~/labwork/DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/003_LAB_Consumer_Groups
+source ~/venv-kafka/bin/activate
+docker compose up -d
+docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 \\
+  --create --topic tasks --partitions 3 --replication-factor 1`,
+  out:` Container kafka Healthy
+ Container kafka-ui Started
+Created topic tasks.`,
+  note:"เมนู Consumers ใน UI (localhost:8413) ตอนนี้ยังว่าง"},
+ {n:"1", t:"Worker A คนเดียว", why:"ทีมมีคนเดียว → ได้ทุกเล่ม",
+  cmd:`python worker.py A &`,
+  out:`[1] 22425
+ [*] Worker A waiting for tasks. To exit: kill &lt;pid&gt;
+ [*] Worker A ได้รับมอบหมาย partitions: <span class="g">[0, 1, 2]</span>`,
+  alerts:[{k:"warn",h:"ลืม & แล้วหน้าต่างค้าง พิมพ์อะไรไม่ได้",p:"worker รันอยู่ข้างหน้า (foreground) จึงยึดหน้าต่างไว้",
+   fix:[["กด Ctrl+C — worker พิมพ์ leaving the group แล้วจบเอง",""],
+        ["สั่งใหม่ให้มี & ต่อท้าย","python worker.py A &"]],
+   alt:"ไม่อยากปิด worker: กด <b>Ctrl+Z</b> (หยุดชั่วคราว) แล้วพิมพ์ <code>bg</code> → worker ไปรันเบื้องหลังต่อ ได้ prompt คืน · เช็กด้วย <code>jobs</code> ต้องเห็น Running"}]},
+ {n:"2", t:"ส่ง 12 งาน", why:"key = สาขา → งานสาขาเดียวอยู่เล่มเดียว",
+  cmd:`python new_task.py 12`,
+  out:` [x] Sent 'task-1 (bangkok)' -> partition=2
+ [x] Sent 'task-2 (chiangmai)' -> partition=1
+ [x] Sent 'task-3 (hatyai)' -> partition=0
+ ...
+ [x] Worker A got p2 offset=0 task-1 (bangkok)
+ [x] Worker A got p0 offset=0 task-3 (hatyai)
+ [x] Worker A got p0 offset=1 task-6 (hatyai)
+ ... <span class="d">(ทำทีละ 1 วิ รวม ~12 วิ)</span>`,
+  note:"ในแต่ละเล่ม offset 0→3 เรียงเป๊ะ · ข้ามเล่มสลับได้",
+  alerts:[{k:"bad",h:"อย่าเพิ่ง kill จนกว่า A จะพิมพ์ got ครบ 12 บรรทัด",p:"kill ระหว่างทำงานค้าง งานที่เหลือในชุดจะหายเงียบ (ดูข้อ + ท้ายแล็บ)",
+   fix:[["นับบรรทัด got ในจอให้ครบ 12 ก่อนไปข้อถัดไป (A ทำงานละ 1 วิ รอราว 12–15 วิ)",""]],
+   alt:"อย่าดูแค่ LAG — LAG เป็น 0 ได้ทั้งที่งานยังทำไม่ครบ (นี่คือตัวบัค) ต้องดูว่า worker <b>หยุดพิมพ์ got</b> แล้ว"}]},
+ {n:"3", t:"เปิด Worker B — rebalance", why:"scale ด้วยการเปิดเพิ่ม ไม่ต้องแก้โค้ด",
+  cmd:`python worker.py B &`,
+  out:`[2] 24028
+ [*] Worker B waiting for tasks. To exit: kill &lt;pid&gt;
+ [*] Worker A ได้รับมอบหมาย partitions: [2]
+ [*] Worker B ได้รับมอบหมาย partitions: [0, 1]`,
+  note:"ของผม A=[2] B=[0,1] · เอกสารกลับกัน — ถูกทั้งคู่"},
+ {n:"4", t:"ส่งอีก 12 งาน — งานวิ่งหาเจ้าของเล่ม", why:"Kafka แบ่งทั้งเล่ม ไม่ใช่ทีละใบแบบ RabbitMQ",
+  cmd:`python new_task.py 12`,
+  out:` [x] Worker A got p2 offset=4 task-1 (bangkok)
+ [x] Worker A got p2 offset=5 task-4 (bangkok)
+ [x] Worker A got p2 offset=6 task-7 (bangkok)
+ [x] Worker A got p2 offset=7 task-10 (bangkok)
+ [x] Worker B got p1 offset=4 task-2 (chiangmai)
+ [x] Worker B got p0 offset=4 task-3 (hatyai)
+ ... <span class="d">(B ได้ 8 · A ได้ 4 — แบ่งตามเล่ม ไม่ได้แบ่งเท่ากัน)</span>`},
+ {n:"5", t:"ส่องทีมด้วย CLI + UI", why:"อ่านตาราง LAG ให้เป็น",
+  cmd:`docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh \\
+  --bootstrap-server localhost:9092 --describe --group workers`,
+  out:`GROUP    TOPIC  PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  <span class="g">LAG</span>  CONSUMER-ID
+workers  tasks  1          8               8               <span class="g">0</span>    kafka-python-...-28e532a2...
+workers  tasks  0          8               8               <span class="g">0</span>    kafka-python-...-28e532a2...
+workers  tasks  2          8               8               <span class="g">0</span>    kafka-python-...-2fd75722...`,
+  note:"CONSUMER-ID ซ้ำกัน 2 แถว = คนเดียวถือ 2 เล่ม · UI → Consumers → workers: Members 2 · STABLE · topic tasks ยังมี 24 ข้อความ (อ่านแล้วไม่หาย)"},
+ {n:"6", t:"ปิด B แบบสุภาพ", why:"close() → LeaveGroup → rebalance ทันที",
+  cmd:`kill $(pgrep -f "worker.py B")
+python new_task.py 6`,
+  out:` [*] Worker B leaving the group...
+ [*] Worker A ได้รับมอบหมาย partitions: <span class="g">[0, 1, 2]</span>
+ [x] Worker A got p2 offset=8 task-1 (bangkok)
+ ... <span class="d">(A เก็บครบ 6)</span>
+[2]+  Done   python worker.py B`},
+ {n:"ก", x:1, t:"LAG ให้เห็นเป็นตัวเลข", why:"ทีมร้าง แต่ broker ยังจำ offset",
+  cmd:`kill $(pgrep -f "worker.py A")
+python new_task.py 12
+docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group workers
+python worker.py A &
+# รอ ~12 วิ แล้ว describe ซ้ำ`,
+  out:`Consumer group 'workers' has no active members.
+workers  tasks  2  10  14  <span class="g">4</span>  -
+workers  tasks  1  10  14  <span class="g">4</span>  -
+workers  tasks  0  10  14  <span class="g">4</span>  -
+ [x] Worker A got p0 offset=<span class="g">10</span> ...   <span class="d">← อ่านต่อจากที่ทีมจด</span>
+<span class="d"># describe รอบสอง → 14 14 0 ทุกเล่ม</span>`},
+ {n:"ข", x:1, t:"worker เกินจำนวน partition", why:"partitions = เพดานความขนาน",
+  cmd:`python worker.py B &      # รอบรรทัด "ได้รับมอบหมาย" ขึ้นก่อนค่อยเปิดตัวถัดไป
+python worker.py C &
+python worker.py D &
+docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group workers --members`,
+  out:`<span class="d">ผลรอบของผม</span>
+หลัง B: A [0, 1] · B [2]
+หลัง C: A [1] · B [2] · C [0]
+หลัง D: A [2] · B <span class="g">[]</span> · C [0] · D [1]      <span class="d">← มีคนว่างงาน</span>
+#PARTITIONS: 1 · 1 · 0 · 1`,
+  note:"ปิดตัวที่ถือเล่ม (เช่น <code>kill $(pgrep -f \"worker.py D\")</code>) → ตัวว่างถูกดึงเข้ามาแทนทันที = hot standby"},
+ {n:"ค", x:1, t:"ตายแบบไม่บอกลา (kill -9)", why:"broker ต้องรอ heartbeat หายครบ 45 วิ",
+  cmd:`kill -9 $(pgrep -f "worker.py C"); date      # เลือกตัวที่ถือเล่มอยู่
+python new_task.py 6
+docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group workers
+# นั่งรอ 45–60 วิ แล้ว date + describe ซ้ำ`,
+  out:`[3]+  Killed   python worker.py C       <span class="d">← ไม่มี leaving</span>
+workers  tasks  0  14  16  <span class="g">2</span>  ...(ยังเป็น ID ของ C)   <span class="d">← broker ยังเชื่อว่า C อยู่</span>
+<span class="d">... ผ่านไป 46 วิ ...</span>
+ [*] Worker A ได้รับมอบหมาย partitions: [0, 1]
+<span class="d"># describe → LAG กลับเป็น 0</span>`,
+  note:"ถ้า describe รอบสองยังเห็น LAG 2 ให้รออีก 5 วิ (คนใหม่เพิ่งเริ่มทำ + commit ทุก 5 วิ)"},
+ {n:"+", x:1, t:"บัคที่เอกสารไม่ได้บอก: kill ระหว่างทำงานค้าง งานหาย", why:"ผมทดสอบเพิ่ม — น้องใจร้อนจะเจอ",
+  cmd:`python worker.py X &
+python new_task.py 12
+# ผ่านไป ~3 วิ (ทำได้ 4 งาน) แล้ว kill เลย
+kill $(pgrep -f "worker.py X")
+docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group workers`,
+  out:` [x] Worker X got p2 offset=16 task-1 (bangkok)
+ [x] Worker X got p1 offset=16 task-2 (chiangmai)
+ [x] Worker X got p1 offset=17 task-5 (chiangmai)
+ [x] Worker X got p1 offset=18 task-8 (chiangmai)
+ [*] Worker X leaving the group...
+workers  tasks  2  20  20  <span class="g">0</span>
+workers  tasks  1  20  20  <span class="g">0</span>
+workers  tasks  0  20  20  <span class="g">0</span>     <span class="d">← LAG 0 ทั้งที่ทำไปแค่ 4 จาก 12!</span>
+<span class="d"># เปิด worker ใหม่ → ไม่ได้งานเลย · 8 งานหายเงียบ</span>`,
+  alerts:[{k:"bad",h:"ทำไมถึงหาย",p:"<code>poll()</code> ดึงงานมาทั้งชุด และเลื่อนตำแหน่งข้ามทั้งชุดทันที · ตอน kill โปรแกรมเรียก <code>close()</code> ซึ่ง commit ว่า \"ทำครบแล้ว\" ทั้งที่ยังไม่ได้ทำ (at-most-once) · ตรงข้ามกับ kill -9 ที่ทำให้ได้งานซ้ำ (at-least-once)"},
+          {k:"tip",h:"ถ้าน้องเจอแล้ว ทำยังไง (ไม่ต้องแก้ repo)",p:"งานที่หายไม่ได้ถูกลบ ยังอยู่ใน log — แค่ที่คั่นของทีมกระโดดข้ามไป",
+   fix:[["ทางที่ 1 (ง่ายสุด): ส่งงานชุดใหม่ แล้วรอให้ worker ทำครบก่อนค่อย kill","python worker.py A &\npython new_task.py 12"],
+        ["ทางที่ 2: เอางานที่ข้ามไปกลับมาทำ — ปิด worker ทุกตัวก่อน แล้วถอยที่คั่นของทีมกลับ (ตัวอย่างถอยเล่มละ 4 ใบ ปรับตามจำนวนที่หาย) แล้วเปิด worker ใหม่","kill $(pgrep -f worker.py)\ndocker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group workers --topic tasks --reset-offsets --shift-by -4 --execute\npython worker.py A &"]],
+   alt:"<b>สาธิตวิธีแก้ในโค้ด (ทำบนสำเนา ไม่แตะไฟล์ใน repo):</b><pre class=\"cmd\">cp worker.py /tmp/worker_fix.py\nsed -i \"s/auto_offset_reset='earliest')/auto_offset_reset='earliest', max_poll_records=1)/\" /tmp/worker_fix.py\npython /tmp/worker_fix.py X &</pre>ผมลองแล้ว: kill กลางทางยังเหลือ LAG 8 และ worker ใหม่เก็บครบ 8"}]},
+ {n:"✓", t:"เก็บกวาด", why:"",
+  cmd:`kill $(pgrep -f worker.py)
+jobs
+docker compose down -v`,
+  out:` [*] Worker B leaving the group... [*] Worker A leaving the group...
+[1]-  Done   python worker.py A
+ Network kafka-lab3_default Removed`,
+  alerts:[{k:"warn",h:"kill: usage / not enough arguments",p:"ไม่มี process ชื่อนั้นแล้ว (ปิดไปก่อน หรือสะกดชื่อ worker ผิด)",
+   fix:[["ดูว่าตอนนี้มี worker ตัวไหนรันอยู่จริง","jobs\npgrep -af worker.py"],
+        ["ปิดตามชื่อที่เห็นจริง หรือปิดทุกตัวรวดเดียว","kill $(pgrep -f worker.py)"]]}]}
+],
+lab4: [
+ {n:"0", t:"compose up + สร้าง 2 topic", why:"ท่อค่าดิบ 3 เล่ม · ท่อเรื่องด่วน 1 เล่ม (ลำดับรวมเส้นเดียว)",
+  cmd:`cd ~/labwork/DevTools/03_Application_Docker/02_Message_Brokers/02_Kafka/004_LAB_Event_Pipeline
+source ~/venv-kafka/bin/activate
+docker compose up -d
+docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic sensor.readings --partitions 3 --replication-factor 1
+docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic sensor.alerts --partitions 1 --replication-factor 1`,
+  out:`WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide...
+Created topic sensor.readings.
+WARNING: ...
+Created topic sensor.alerts.`,
+  note:"WARNING เป็นคำเตือนมาตรฐาน ไม่ใช่ error · จุดในชื่อ topic เป็นแค่ตัวอักษร ไม่ใช่ wildcard แบบ RabbitMQ"},
+ {n:"1", t:"T2: เปิดปลายน้ำก่อน — alert_center", why:"ผู้รับพร้อมก่อน แล้วค่อยปล่อยของไหล",
+  cmd:`python alert_center.py`,
+  out:` [*] Alert center waiting. To exit press CTRL+C     <span class="d">← ค้างรอ = ถูก</span>`},
+ {n:"2", t:"T3: เปิดตัวกลาง — processor", why:"consumer + producer ในโปรแกรมเดียว",
+  cmd:`python processor.py`,
+  out:` [*] Processor P1 waiting (alert เมื่อ temp >= 35.0). To exit press CTRL+C
+ [*] Processor P1 ได้รับมอบหมาย partitions: <span class="g">[0, 1, 2]</span>`},
+ {n:"3", t:"T1: เปิดก๊อกต้นน้ำ — sensor", why:"จัดจอให้เห็น 3 หน้าต่างพร้อมกัน",
+  cmd:`python sensor.py`,
+  out:`<span class="d"># T1 — ทุกคนได้ค่าชุดนี้เป๊ะ (random.seed)</span>
+ [x] Sent {'sensor': 'sensor-1', 'temp': 41.8, 'round': 1}
+ [x] Sent {'sensor': 'sensor-2', 'temp': 37.4, 'round': 1}
+ [x] Sent {'sensor': 'sensor-3', 'temp': 33.4, 'round': 1}
+ ... <span class="d">(15 ค่า จบที่ sensor-3 37.9)</span>
+<span class="d"># T3</span>
+ [!] P1 ALERT sensor-1 temp=41.8 -> sensor.alerts
+ [x] P1 OK    sensor-3 temp=33.4
+ ... <span class="d">(9 ALERT + 6 OK)</span>
+<span class="d"># T2</span>
+ [!] 🚨 sensor-1 ร้อนผิดปกติ! temp=41.8 (level=HIGH) offset=0
+ ... <span class="d">(9 ตัว offset 0–8)</span>`,
+  note:"ตามรอย sensor-2 · 37.4: เข้า sensor.readings p1 → processor สร้าง event ใหม่ (เพิ่ม level ตัด round) → sensor.alerts offset 1 → 🚨",
+  alerts:[{k:"warn",h:"ถ้าอุณหภูมิไม่ตรงเอกสาร (ทั้งที่ไม่ได้แตะ seed)",p:"ค่าตรงได้เพราะไลบรารี kafka-python ใช้เลขสุ่มไป 1 ตัวพอดี — ถ้าเวอร์ชันไม่ใช่ 3.0.10 ค่าจะเลื่อน",
+   fix:[["เช็กเวอร์ชัน ต้องเป็น 3.0.10","pip show kafka-python | grep Version"],
+        ["ถ้าไม่ใช่ ลงให้ตรงแล้วรันใหม่","pip install -r requirements.txt\npython sensor.py"],
+        ["ถ้าเวอร์ชันถูกแต่ยังไม่ตรง เช็กว่าไฟล์ถูกแก้ไหม (ไม่ขึ้นอะไร = ไม่ถูกแก้) · ถ้าขึ้น ให้คืนไฟล์","git diff sensor.py\ngit checkout -- sensor.py"]]},
+          {k:"warn",h:"alert_center เงียบ ทั้งที่ sensor ส่งครบ",p:"ห่วงโซ่ขาดตรงกลาง — ส่วนใหญ่ลืมเปิด processor หรือมันตายไปแล้ว",
+   fix:[["ดูว่า group ไหนค้าง — ถ้า processors มี LAG หรือขึ้น no active members = processor ไม่ได้รัน","docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --all-groups --describe"],
+        ["เปิด processor ใหม่ที่ T3 (activate venv + cd ก่อน) — มันไล่อ่านของค้างเอง แล้ว alert จะไหลไป T2","python processor.py"]]}]},
+ {n:"4", t:"ส่องทุก group ในคำสั่งเดียว", why:"สอง group สอง topic ต่างคนต่างจด offset",
+  cmd:`docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --all-groups --describe`,
+  out:`GROUP         TOPIC            PARTITION  CURRENT  LOG-END  LAG
+alert-center  sensor.alerts    0          9        9        0
+
+processors    sensor.readings  1          <span class="g">10</span>       10       0
+processors    sensor.readings  2          <span class="g">5</span>        5        0
+processors    sensor.readings  0          <span class="g">0</span>        0        0`,
+  note:"10/5/0 ไม่เท่ากันเป็นเรื่องปกติ: sensor-1 กับ sensor-2 hash ลง p1 ด้วยกัน · sensor-3 ลง p2 · p0 ไม่มีใคร"},
+ {n:"5", t:"ดูใน Kafka UI (localhost:8414)", why:"ภาพสรุป pipeline ทั้งเส้น",
+  cmd:`Topics      → sensor.readings 15 ข้อความ · sensor.alerts 9 ข้อความ
+sensor.alerts → Messages
+Consumers   → alert-center · processors`,
+  out:`<span class="d">Messages: JSON {"sensor":..,"temp":..,"level":"HIGH"} — ไม่มี round</span>
+<span class="d">Consumers: 2 group · Members 1 · Lag 0 · STABLE</span>`},
+ {n:"6", t:"Replay — alert ไม่หาย", why:"อ่านเสร็จแล้ว log ยังอยู่ ผู้อ่านใหม่อ่านซ้ำได้",
+  cmd:`docker compose exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 \\
+  --topic sensor.alerts --from-beginning
+# ครบแล้วกด Ctrl+C`,
+  out:`{"sensor": "sensor-1", "temp": 41.8, "level": "HIGH"}
+{"sensor": "sensor-2", "temp": 37.4, "level": "HIGH"}
+...
+^CProcessed a total of 9 messages`,
+  note:"console consumer ตั้ง group ชั่วคราวให้ตัวเอง → ไม่กระทบ offset ของ alert-center"},
+ {n:"ก", x:1, t:"T4: scale processor ตัวที่ 2", why:"เปิดเพิ่มใน group เดิม rebalance เอง",
+  cmd:`python processor.py P2          # หน้าต่าง T4
+python sensor.py                # หน้าต่าง T1`,
+  out:` [*] Processor P1 ได้รับมอบหมาย partitions: [0, 1]
+ [*] Processor P2 ได้รับมอบหมาย partitions: [2]
+<span class="d"># หลังส่ง: P1 ได้ 10 ค่า (sensor-1,2) · P2 ได้ 5 ค่า (sensor-3) · T2 🚨 เพิ่ม 9 (offset 9–17)</span>
+<span class="d"># Ctrl+C ที่ T4 → P2 leaving → P1 ได้ [0, 1, 2] คืนทันที</span>`,
+  alerts:[{k:"warn",h:"ปิด P2 ด้วย Ctrl+C เท่านั้น",p:"<code>processor.py</code> ไม่ดักสัญญาณ kill (ต่างจาก worker.py) · ถ้าปิดหน้าต่างทิ้งหรือใช้ <code>kill</code> → ไม่บอกลา group → P1 เงียบ ~45 วิ (วัดจริง 44 วิ) ก่อนได้เล่มคืน",
+   fix:[["ถ้าเผลอไปแล้ว: รอ ~45 วิ แล้วเช็กว่า P2 หายจาก group — ทั้ง 3 เล่มต้องเหลือ CONSUMER-ID เดียวกัน","docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group processors"],
+        ["เช็กว่าไม่มี processor ค้างเบื้องหลัง ถ้ามีให้ปิดด้วยสัญญาณเดียวกับ Ctrl+C (ใส่เลข PID ที่เห็น)","pgrep -af processor.py\nkill -INT PID"]],
+   alt:"ระหว่างรอ 45 วิ ไม่มีอะไรหาย — ค่าที่ส่งเข้ามาจะรอเป็น LAG แล้ว P1 เก็บต่อเองเมื่อได้เล่มคืน"}]},
+ {n:"ข", x:1, t:"Pub/Sub — group ใหม่อ่านย้อนหลังทั้งหมด", why:"แค่ตั้งชื่อ group ใหม่",
+  cmd:`docker compose exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 \\
+  --topic sensor.alerts --group alert-stats --from-beginning \\
+  --property print.offset=true --property print.key=true
+# Ctrl+C แล้วลองรันซ้ำอีกรอบ`,
+  out:`Offset:0	sensor-1	{"sensor": "sensor-1", "temp": 41.8, "level": "HIGH"}
+...
+Offset:17	sensor-3	{"sensor": "sensor-3", "temp": 37.9, "level": "HIGH"}
+^CProcessed a total of <span class="g">18</span> messages
+<span class="d"># รอบสอง → ไม่ได้อะไรเลย (ถูกต้อง)</span>`,
+  note:"<code>--from-beginning</code> มีผลเฉพาะ group ที่ยังไม่มี offset · อยากอ่านใหม่ใช้ชื่อ group ใหม่ หรือ <code>--reset-offsets --to-earliest --execute</code>"},
+ {n:"ค", x:1, t:"ลบ random.seed ดูว่าเกิดอะไร", why:"เข้าใจว่าทำไมแล็บล็อกเลขสุ่ม",
+  cmd:`# comment บรรทัด random.seed(2569) ใน sensor.py (ในเครื่องเรียนของน้อง)
+python sensor.py 6
+# เสร็จแล้วคืนไฟล์
+git checkout -- sensor.py`,
+  out:`<span class="d"># ของผม — ค่าเปลี่ยนทุกรอบ</span>
+ [x] Sent {'sensor': 'sensor-1', 'temp': 20.6, 'round': 1}
+ [x] Sent {'sensor': 'sensor-2', 'temp': 37.2, 'round': 1}
+ ...`,
+  note:"seed = ผลสุ่มเดาได้ (reproducible) · ถ้าสุ่มแล้วไม่มีค่า ≥ 35 pipeline จะเงียบทั้งเส้น — ไม่ใช่พัง"},
+ {n:"✓", t:"เก็บกวาด", why:"",
+  cmd:`# Ctrl+C ทุกหน้าต่าง (alert_center · processor)
+docker compose down -v
+docker ps -a`,
+  out:` Container kafka-ui Removed
+ Container kafka Removed
+ Network kafka-lab4_default Removed`}
+]};
+
+function esc(s){return s.replace(/&(?!lt;|gt;|amp;)/g,"&amp;").replace(/<(?!\/?span)/g,"&lt;");}
+function escCmd(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+let cid=0;
+for(const [lab,steps] of Object.entries(S)){
+  const ol=document.getElementById("steps-"+lab);
+  ol.innerHTML=steps.map(s=>{
+    const id="c"+(cid++);
+    const alerts=(s.alerts||[]).map(a=>{
+      const fx=(a.fix||[]).map((f,j)=>{const fid="f"+(cid++);return `<li><span>${f[0]}</span>${f[1]?`<div class="lbl" style="margin-top:6px">คำสั่ง<button class="copy" data-for="${fid}" type="button">คัดลอก</button></div><pre class="cmd" id="${fid}">${escCmd(f[1])}</pre>`:""}</li>`;}).join("");
+      return `<div class="alert ${a.k}"><strong>${a.k==="bad"?"⚠ ":""}${a.h}</strong><p>${a.p}</p>${fx?`<p class="fixh">${a.k==="bad"?"เลี่ยงยังไง":"ทำยังไง"}</p><ol class="fix">${fx}</ol>`:""}${a.alt?`<div class="alt"><span class="fixh">ทางอื่น / รู้ไว้</span><div>${a.alt}</div></div>`:""}</div>`;}).join("");
+    return `<li class="step${s.x?" extra":""}">
+      <div class="sh"><span class="num">${s.n}</span><div><h3>${s.t}</h3>${s.why?`<p class="why">${s.why}</p>`:""}</div></div>
+      <div class="lbl">คำสั่ง<button class="copy" data-for="${id}" type="button">คัดลอก</button></div>
+      <pre class="cmd" id="${id}">${escCmd(s.cmd)}</pre>
+      <div class="lbl">ผลที่ต้องเห็น</div>
+      <pre class="out">${esc(s.out)}</pre>
+      ${s.note?`<p class="note">${s.note}</p>`:""}
+      ${alerts}
+    </li>`;}).join("");
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest(".copy[data-for]"); if(!b) return;
+  const src=document.getElementById(b.dataset.for); if(!src) return;
+  const txt=src.innerText;
+  const done=()=>{b.textContent="คัดลอกแล้ว";setTimeout(()=>b.textContent="คัดลอก",1400);};
+  const fallback=()=>{
+    try{
+      const ta=document.createElement("textarea"); ta.value=txt; ta.setAttribute("readonly","");
+      ta.style.position="fixed"; ta.style.top="-1000px"; document.body.appendChild(ta); ta.select();
+      const ok=document.execCommand("copy"); ta.remove();
+      if(ok){done();return;}
+    }catch(err){}
+    const r=document.createRange(); r.selectNodeContents(src); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    b.textContent="เลือกให้แล้ว กด Ctrl+C";
+    setTimeout(()=>b.textContent="คัดลอก",2500);
+  };
+  try{ if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(done,fallback);} else fallback(); }catch(err){fallback();}
+});
+const tabs=[...document.querySelectorAll('[role="tab"]')];
+function show(id,push){
+  tabs.forEach(t=>{const on=t.getAttribute("aria-controls")===id;t.setAttribute("aria-selected",on);t.tabIndex=on?0:-1;document.getElementById(t.getAttribute("aria-controls")).hidden=!on;});
+  try{localStorage.setItem("kafka-ta-tab-v3",id);}catch(e){}
+  if(push) window.scrollTo({top:0});
+}
+tabs.forEach((t,i)=>{
+  t.addEventListener("click",()=>show(t.getAttribute("aria-controls"),true));
+  t.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){const n=tabs[(i+(e.key==="ArrowRight"?1:tabs.length-1))%tabs.length];n.focus();show(n.getAttribute("aria-controls"),true);}});
+});
+/* ---- story stepper ---- */
+const F=[
+ {n:1,k:0,r:0,a:null,c:"① ลูกค้าสั่งออเดอร์ #1 → แอป <b>จด</b>ลง Kafka ต่อท้ายสมุด ได้ที่อยู่ <b>offset 0</b> · แอปไม่รอใครอ่าน ทำงานต่อได้เลย"},
+ {n:3,k:0,r:0,a:null,c:"② ออเดอร์ #2 #3 ตามมา → ต่อท้ายไปเรื่อย ๆ (offset 1, 2) · ยังไม่มีใครอ่านก็ไม่เป็นไร ข้อความ<b>นอนรอ</b>อยู่ใน Kafka"},
+ {n:3,k:3,r:0,a:null,c:"③ ทีมครัวมาอ่านครบ 3 ใบ → แค่เลื่อน <b>\"อ่านถึงตรงนี้\"</b> ของครัว · ข้อความ<b>ไม่ถูกลบ</b> ยังอยู่ให้ทีมอื่น"},
+ {n:3,k:3,r:1,a:null,c:"④ ทีมไรเดอร์อ่านช้ากว่า อ่านไป 1 ใบ → ค้างอีก 2 ใบ = <b>LAG 2</b> · แต่ละทีมมีที่คั่นของตัวเอง ไม่แย่งกัน ไม่รอกัน"},
+ {n:5,k:5,r:2,a:null,c:"⑤ ออเดอร์ #4 #5 เข้ามา → ครัวตามทัน (LAG 0) · ไรเดอร์ยังค้าง 3 · ถ้าไรเดอร์ล่ม ออเดอร์ก็ยังรออยู่ครบ กลับมาอ่านต่อได้"},
+ {n:5,k:5,r:2,a:0,c:"⑥ สัปดาห์ต่อมาเพิ่ม <b>ทีมสถิติ</b> (group ใหม่) → เริ่มอ่านจาก #1 ได้เลย = <b>replay</b> · ไม่ต้องขอให้แอปส่งซ้ำ ไม่ต้องแก้โค้ดแอป"},
+ {n:5,k:5,r:5,a:5,c:"⑦ ทุกทีมอ่านครบ → ข้อมูล<b>ชุดเดียว</b> 3 ทีมใช้ร่วมกัน · ข้อความจะหายก็ต่อเมื่อ<b>หมดอายุ</b> (ค่าเริ่มต้น 7 วัน) ไม่ใช่เพราะถูกอ่าน"}
+];
+const G=[{key:"k",name:"ทีมครัว",col:"var(--c1)"},{key:"r",name:"ทีมไรเดอร์",col:"var(--c2)"},{key:"a",name:"ทีมสถิติ",col:"var(--c3)"}];
+let fi=0, prevN=0;
+function drawStory(){
+  const f=F[fi], sx=182, sw=46, gap=4, slots=6;
+  let h=`<defs><marker id="sa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker></defs>`;
+  h+=`<rect x="10" y="100" width="130" height="64" rx="9" class="soft"/><text x="75" y="126" text-anchor="middle" font-weight="600" font-size="13">แอปสั่งอาหาร</text><text x="75" y="146" text-anchor="middle" font-size="11" class="dim">Producer</text>`;
+  h+=`<path d="M 140 132 L 166 132" class="${f.n>prevN?'arrow-a':'arrow'}" marker-end="url(#sa)"/>`;
+  h+=`<rect x="168" y="30" width="330" height="236" rx="10" class="frame"/><text x="182" y="54" font-weight="700" font-size="13.5">Kafka</text><text x="236" y="54" font-size="12" class="dim">topic: orders (สมุดเล่มเดียว)</text>`;
+  for(let i=0;i<slots;i++){const x=sx+i*(sw+gap);
+    if(i<f.n){const fresh=i>=prevN&&fi>0;h+=`<rect x="${x}" y="72" width="${sw}" height="44" rx="5" class="cell0" ${fresh?'stroke="var(--ink)" stroke-width="2.5"':''}/><text x="${x+sw/2}" y="92" text-anchor="middle" class="celltext" font-size="12">#${i+1}</text><text x="${x+sw/2}" y="108" text-anchor="middle" class="celltext" font-size="9.5">off ${i}</text>`;}
+    else h+=`<rect x="${x}" y="72" width="${sw}" height="44" rx="5" class="empty"/>`;}
+  const full=f.n*(sw+gap)-gap;
+  G.forEach((g,gi)=>{const y=140+gi*40, v=f[g.key];
+    if(v===null){h+=`<text x="${sx}" y="${y+14}" font-size="11.5" class="dim">${g.name}: ยังไม่มี</text>`;return;}
+    const done=v===0?0:v*(sw+gap)-gap;
+    h+=`<rect x="${sx}" y="${y}" width="${full}" height="10" rx="5" fill="none" stroke="${g.col}" stroke-dasharray="3 3"/>`;
+    if(done>0)h+=`<rect x="${sx}" y="${y}" width="${done}" height="10" rx="5" fill="${g.col}"/>`;
+    h+=`<path d="M ${sx+done} ${y-3} L ${sx+done} ${y+13}" stroke="var(--ink)" stroke-width="2"/>`;
+    h+=`<text x="${sx}" y="${y+26}" font-size="11.5">${g.name} อ่านถึง #${v}${v===f.n?' (ครบ)':' · ค้าง '+(f.n-v)}</text>`;});
+  G.forEach((g,gi)=>{const y=40+gi*78, v=f[g.key];
+    if(v===null){h+=`<rect x="528" y="${y}" width="222" height="62" rx="9" class="frame-dash"/><text x="639" y="${y+36}" text-anchor="middle" font-size="12.5" class="dim">${g.name} — ยังไม่เกิด</text>`;return;}
+    const lag=f.n-v;
+    h+=`<rect x="528" y="${y}" width="222" height="62" rx="9" class="box" style="stroke:${g.col};stroke-width:2"/>`;
+    h+=`<text x="544" y="${y+24}" font-weight="600" font-size="13">${g.name}</text><text x="740" y="${y+24}" text-anchor="end" font-size="10.5" class="mono dim">Consumer group</text>`;
+    h+=`<text x="544" y="${y+46}" font-size="12.5">อ่านแล้ว ${v}/${f.n} · <tspan font-weight="700" style="fill:${lag?'var(--bad)':'var(--ok)'}">LAG ${lag}</tspan></text>`;
+    h+=`<path d="M 526 ${y+31} L 500 ${y+31}" class="arrow" marker-end="url(#sa)"/>`;});
+  h+=`<text x="10" y="284" font-size="11.5" class="dim">ลูกศรจากทีมชี้เข้า Kafka = แต่ละทีม "ดึงอ่านเอง" ตามจังหวะของตัวเอง · แท่งทึบ = อ่านแล้ว · เส้นประ = ยังค้าง</text>`;
+  document.getElementById("story").innerHTML=h;
+  document.getElementById("story-cap").innerHTML=f.c;
+  document.getElementById("st-count").textContent=`จังหวะ ${fi+1} / ${F.length}`;
+  document.getElementById("st-prev").disabled=fi===0;
+  document.getElementById("st-next").disabled=fi===F.length-1;
+}
+document.getElementById("st-next").addEventListener("click",()=>{if(fi<F.length-1){prevN=F[fi].n;fi++;drawStory();}});
+document.getElementById("st-prev").addEventListener("click",()=>{if(fi>0){fi--;prevN=fi>0?F[fi-1].n:0;drawStory();}});
+drawStory();
+
+let start="overview";
+try{const v=localStorage.getItem("kafka-ta-tab-v3"); if(v&&document.getElementById(v)) start=v;}catch(e){}
+show(start,false);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+{
+  "id": "6650a1b2c3d4e5f6a7b80001",
+  "name": "Campus Cafe App",
+  "desc": "บอร์ด Trello ของทีมนำร่อง CampusEats (ร้านกาแฟหน้าคณะ) ก่อนย้ายมาใช้ Plane",
+  "closed": false,
+  "idOrganization": "6650a1b2c3d4e5f6a7b80002",
+  "url": "https://trello.com/b/AbCdEfGh/campus-cafe-app",
+  "shortUrl": "https://trello.com/b/AbCdEfGh",
+  "labelNames": {"green": "feature", "red": "bug", "orange": "urgent", "blue": "docs", "purple": "design", "yellow": ""},
+  "labels": [
+    {"id": "6650a1b2c3d4e5f6a7b8e001", "idBoard": "6650a1b2c3d4e5f6a7b80001", "name": "feature", "color": "green"},
+    {"id": "6650a1b2c3d4e5f6a7b8e002", "idBoard": "6650a1b2c3d4e5f6a7b80001", "name": "bug", "color": "red"},
+    {"id": "6650a1b2c3d4e5f6a7b8e003", "idBoard": "6650a1b2c3d4e5f6a7b80001", "name": "urgent", "color": "orange"},
+    {"id": "6650a1b2c3d4e5f6a7b8e004", "idBoard": "6650a1b2c3d4e5f6a7b80001", "name": "docs", "color": "blue"},
+    {"id": "6650a1b2c3d4e5f6a7b8e005", "idBoard": "6650a1b2c3d4e5f6a7b80001", "name": "design", "color": "purple"}
+  ],
+  "lists": [
+    {"id": "6650a1b2c3d4e5f6a7b8d001", "name": "To Do", "closed": false, "idBoard": "6650a1b2c3d4e5f6a7b80001", "pos": 16384},
+    {"id": "6650a1b2c3d4e5f6a7b8d002", "name": "Doing", "closed": false, "idBoard": "6650a1b2c3d4e5f6a7b80001", "pos": 32768},
+    {"id": "6650a1b2c3d4e5f6a7b8d003", "name": "Review", "closed": false, "idBoard": "6650a1b2c3d4e5f6a7b80001", "pos": 49152},
+    {"id": "6650a1b2c3d4e5f6a7b8d004", "name": "Done", "closed": false, "idBoard": "6650a1b2c3d4e5f6a7b80001", "pos": 65536}
+  ],
+  "cards": [
+    {"id": "6650a1b2c3d4e5f6a7b8c001", "idShort": 1, "name": "หน้าแสดงเมนูร้านกาแฟหน้าคณะ", "desc": "นักศึกษาเปิดแอปแล้วเห็นเมนูพร้อมราคาและรูป\nต้องโหลดเสร็จใน 2 วินาทีบน 4G", "closed": false, "idList": "6650a1b2c3d4e5f6a7b8d001", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idLabels": ["6650a1b2c3d4e5f6a7b8e001"], "labels": [{"id": "6650a1b2c3d4e5f6a7b8e001", "name": "feature", "color": "green"}], "due": "2026-09-05T10:00:00.000Z", "dueComplete": false, "idChecklists": ["6650a1b2c3d4e5f6a7b8f001"], "idMembers": [], "pos": 16384, "shortUrl": "https://trello.com/c/a1b2c3d1", "dateLastActivity": "2026-08-20T08:12:00.000Z"},
+    {"id": "6650a1b2c3d4e5f6a7b8c002", "idShort": 2, "name": "ระบบตะกร้าสั่งซื้อ", "desc": "เพิ่ม/ลดจำนวน คำนวณราคารวม และจำตะกร้าไว้แม้ปิดแอป", "closed": false, "idList": "6650a1b2c3d4e5f6a7b8d002", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idLabels": ["6650a1b2c3d4e5f6a7b8e001", "6650a1b2c3d4e5f6a7b8e003"], "labels": [{"id": "6650a1b2c3d4e5f6a7b8e001", "name": "feature", "color": "green"}, {"id": "6650a1b2c3d4e5f6a7b8e003", "name": "urgent", "color": "orange"}], "due": "2026-09-03T10:00:00.000Z", "dueComplete": false, "idChecklists": ["6650a1b2c3d4e5f6a7b8f002"], "idMembers": [], "pos": 32768, "shortUrl": "https://trello.com/c/a1b2c3d2", "dateLastActivity": "2026-08-28T13:40:00.000Z"},
+    {"id": "6650a1b2c3d4e5f6a7b8c003", "idShort": 3, "name": "ปุ่มสั่งซื้อไม่ทำงานบน Safari", "desc": "กดปุ่ม 'สั่งเลย' บน iPhone แล้วไม่มีอะไรเกิดขึ้น (Chrome ปกติ)", "closed": false, "idList": "6650a1b2c3d4e5f6a7b8d002", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idLabels": ["6650a1b2c3d4e5f6a7b8e002", "6650a1b2c3d4e5f6a7b8e003"], "labels": [{"id": "6650a1b2c3d4e5f6a7b8e002", "name": "bug", "color": "red"}, {"id": "6650a1b2c3d4e5f6a7b8e003", "name": "urgent", "color": "orange"}], "due": "2026-09-01T10:00:00.000Z", "dueComplete": false, "idChecklists": [], "idMembers": [], "pos": 49152, "shortUrl": "https://trello.com/c/a1b2c3d3", "dateLastActivity": "2026-08-29T09:05:00.000Z"},
+    {"id": "6650a1b2c3d4e5f6a7b8c004", "idShort": 4, "name": "หน้า Login ด้วยอีเมลมหาวิทยาลัย", "desc": "รับเฉพาะโดเมนของมหาวิทยาลัย ส่ง OTP ทางอีเมล", "closed": false, "idList": "6650a1b2c3d4e5f6a7b8d003", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idLabels": ["6650a1b2c3d4e5f6a7b8e001"], "labels": [{"id": "6650a1b2c3d4e5f6a7b8e001", "name": "feature", "color": "green"}], "due": "2026-08-30T10:00:00.000Z", "dueComplete": false, "idChecklists": [], "idMembers": [], "pos": 65536, "shortUrl": "https://trello.com/c/a1b2c3d4", "dateLastActivity": "2026-08-27T15:22:00.000Z"},
+    {"id": "6650a1b2c3d4e5f6a7b8c005", "idShort": 5, "name": "เขียนคู่มือผู้ใช้สำหรับร้านค้า", "desc": "คู่มือสั้น ๆ 2 หน้า: รับออเดอร์ · เปลี่ยนสถานะ · ปิดร้านชั่วคราว", "closed": false, "idList": "6650a1b2c3d4e5f6a7b8d001", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idLabels": ["6650a1b2c3d4e5f6a7b8e004"], "labels": [{"id": "6650a1b2c3d4e5f6a7b8e004", "name": "docs", "color": "blue"}], "due": "2026-09-12T10:00:00.000Z", "dueComplete": false, "idChecklists": [], "idMembers": [], "pos": 81920, "shortUrl": "https://trello.com/c/a1b2c3d5", "dateLastActivity": "2026-08-18T10:00:00.000Z"},
+    {"id": "6650a1b2c3d4e5f6a7b8c006", "idShort": 6, "name": "โลโก้และสีธีม CampusEats", "desc": "ส่งมอบไฟล์ SVG + palette แล้ว", "closed": false, "idList": "6650a1b2c3d4e5f6a7b8d004", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idLabels": ["6650a1b2c3d4e5f6a7b8e005"], "labels": [{"id": "6650a1b2c3d4e5f6a7b8e005", "name": "design", "color": "purple"}], "due": null, "dueComplete": false, "idChecklists": [], "idMembers": [], "pos": 98304, "shortUrl": "https://trello.com/c/a1b2c3d6", "dateLastActivity": "2026-08-15T11:30:00.000Z"},
+    {"id": "6650a1b2c3d4e5f6a7b8c007", "idShort": 7, "name": "แจ้งเตือนเมื่ออาหารพร้อม (LINE Notify)", "desc": "เมื่อร้านกด 'พร้อมรับ' ให้ส่ง LINE หานักศึกษาภายใน 5 วินาที", "closed": false, "idList": "6650a1b2c3d4e5f6a7b8d001", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idLabels": ["6650a1b2c3d4e5f6a7b8e001"], "labels": [{"id": "6650a1b2c3d4e5f6a7b8e001", "name": "feature", "color": "green"}], "due": "2026-09-15T10:00:00.000Z", "dueComplete": false, "idChecklists": ["6650a1b2c3d4e5f6a7b8f003"], "idMembers": [], "pos": 114688, "shortUrl": "https://trello.com/c/a1b2c3d7", "dateLastActivity": "2026-08-25T16:45:00.000Z"},
+    {"id": "6650a1b2c3d4e5f6a7b8c008", "idShort": 8, "name": "ราคารวมผิดเมื่อมีส่วนลด", "desc": "ส่วนลด 10% ถูกหักสองครั้งเมื่อมีสินค้ามากกว่า 1 ชิ้น", "closed": false, "idList": "6650a1b2c3d4e5f6a7b8d003", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idLabels": ["6650a1b2c3d4e5f6a7b8e002"], "labels": [{"id": "6650a1b2c3d4e5f6a7b8e002", "name": "bug", "color": "red"}], "due": "2026-09-02T10:00:00.000Z", "dueComplete": false, "idChecklists": [], "idMembers": [], "pos": 131072, "shortUrl": "https://trello.com/c/a1b2c3d8", "dateLastActivity": "2026-08-29T10:10:00.000Z"},
+    {"id": "6650a1b2c3d4e5f6a7b8c009", "idShort": 9, "name": "ตั้งค่า CI ให้รัน test อัตโนมัติ", "desc": "GitHub Actions รัน pytest ทุก pull request", "closed": false, "idList": "6650a1b2c3d4e5f6a7b8d004", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idLabels": ["6650a1b2c3d4e5f6a7b8e001"], "labels": [{"id": "6650a1b2c3d4e5f6a7b8e001", "name": "feature", "color": "green"}], "due": null, "dueComplete": false, "idChecklists": [], "idMembers": [], "pos": 147456, "shortUrl": "https://trello.com/c/a1b2c3d9", "dateLastActivity": "2026-08-14T09:00:00.000Z"},
+    {"id": "6650a1b2c3d4e5f6a7b8c010", "idShort": 10, "name": "หน้าประวัติการสั่งซื้อ", "desc": "แสดงออเดอร์ย้อนหลัง 30 วัน พร้อมกดสั่งซ้ำ", "closed": false, "idList": "6650a1b2c3d4e5f6a7b8d001", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idLabels": ["6650a1b2c3d4e5f6a7b8e001"], "labels": [{"id": "6650a1b2c3d4e5f6a7b8e001", "name": "feature", "color": "green"}], "due": "2026-09-10T10:00:00.000Z", "dueComplete": false, "idChecklists": [], "idMembers": [], "pos": 163840, "shortUrl": "https://trello.com/c/a1b2c3e0", "dateLastActivity": "2026-08-21T14:00:00.000Z"},
+    {"id": "6650a1b2c3d4e5f6a7b8c011", "idShort": 11, "name": "อัปเดต README ของโครงการ", "desc": "", "closed": false, "idList": "6650a1b2c3d4e5f6a7b8d004", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idLabels": ["6650a1b2c3d4e5f6a7b8e004"], "labels": [{"id": "6650a1b2c3d4e5f6a7b8e004", "name": "docs", "color": "blue"}], "due": null, "dueComplete": true, "idChecklists": [], "idMembers": [], "pos": 180224, "shortUrl": "https://trello.com/c/a1b2c3e1", "dateLastActivity": "2026-08-12T08:30:00.000Z"},
+    {"id": "6650a1b2c3d4e5f6a7b8c012", "idShort": 12, "name": "ภาพหน้าจอสำหรับพรีเซนต์กับคณะ", "desc": "จับภาพ 6 หน้าหลักบนมือถือ ใส่ในสไลด์นำเสนอ", "closed": false, "idList": "6650a1b2c3d4e5f6a7b8d002", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idLabels": ["6650a1b2c3d4e5f6a7b8e005", "6650a1b2c3d4e5f6a7b8e004"], "labels": [{"id": "6650a1b2c3d4e5f6a7b8e005", "name": "design", "color": "purple"}, {"id": "6650a1b2c3d4e5f6a7b8e004", "name": "docs", "color": "blue"}], "due": "2026-09-04T10:00:00.000Z", "dueComplete": false, "idChecklists": [], "idMembers": [], "pos": 196608, "shortUrl": "https://trello.com/c/a1b2c3e2", "dateLastActivity": "2026-08-30T07:50:00.000Z"}
+  ],
+  "checklists": [
+    {"id": "6650a1b2c3d4e5f6a7b8f001", "name": "งานย่อย", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idCard": "6650a1b2c3d4e5f6a7b8c001", "pos": 16384, "checkItems": [
+      {"id": "6650a1b2c3d4e5f6a7b89001", "name": "ออกแบบ card เมนู", "state": "incomplete", "pos": 16384, "idChecklist": "6650a1b2c3d4e5f6a7b8f001", "due": null},
+      {"id": "6650a1b2c3d4e5f6a7b89002", "name": "ดึงข้อมูลเมนูจาก API", "state": "incomplete", "pos": 32768, "idChecklist": "6650a1b2c3d4e5f6a7b8f001", "due": null}
+    ]},
+    {"id": "6650a1b2c3d4e5f6a7b8f002", "name": "งานย่อย", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idCard": "6650a1b2c3d4e5f6a7b8c002", "pos": 16384, "checkItems": [
+      {"id": "6650a1b2c3d4e5f6a7b89003", "name": "ปุ่มเพิ่ม/ลดจำนวน", "state": "complete", "pos": 16384, "idChecklist": "6650a1b2c3d4e5f6a7b8f002", "due": null},
+      {"id": "6650a1b2c3d4e5f6a7b89004", "name": "คำนวณราคารวมและส่วนลด", "state": "incomplete", "pos": 32768, "idChecklist": "6650a1b2c3d4e5f6a7b8f002", "due": null},
+      {"id": "6650a1b2c3d4e5f6a7b89005", "name": "บันทึกตะกร้าใน localStorage", "state": "incomplete", "pos": 49152, "idChecklist": "6650a1b2c3d4e5f6a7b8f002", "due": null}
+    ]},
+    {"id": "6650a1b2c3d4e5f6a7b8f003", "name": "ขั้นตอน", "idBoard": "6650a1b2c3d4e5f6a7b80001", "idCard": "6650a1b2c3d4e5f6a7b8c007", "pos": 16384, "checkItems": [
+      {"id": "6650a1b2c3d4e5f6a7b89006", "name": "ขอ token LINE Notify", "state": "complete", "pos": 16384, "idChecklist": "6650a1b2c3d4e5f6a7b8f003", "due": null},
+      {"id": "6650a1b2c3d4e5f6a7b89007", "name": "ส่งข้อความทดสอบ", "state": "incomplete", "pos": 32768, "idChecklist": "6650a1b2c3d4e5f6a7b8f003", "due": null},
+      {"id": "6650a1b2c3d4e5f6a7b89008", "name": "ผูกกับสถานะออเดอร์ 'พร้อมรับ'", "state": "incomplete", "pos": 49152, "idChecklist": "6650a1b2c3d4e5f6a7b8f003", "due": null}
+    ]}
+  ],
+  "members": [],
+  "actions": []
+}

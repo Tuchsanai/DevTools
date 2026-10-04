@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Webhook HMAC signature verification flow</title>
+  <desc id="desc">A Plane worker signs a JSON payload with a shared secret using HMAC-SHA256, sends the payload and signature over HTTP, and a FastAPI receiver recomputes and compares the signature to accept or reject the event.</desc>
+
+  <defs>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="7" flood-color="#18181b" flood-opacity="0.09"/>
+    </filter>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8.5" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#1c5cab"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8.5" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#116b11"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8.5" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#a32222"/>
+    </marker>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+
+  <text x="640" y="49" text-anchor="middle" fill="#18181b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="30" font-weight="700">How a webhook signature is verified</text>
+  <text x="640" y="78" text-anchor="middle" fill="#52525b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="18">Both sides calculate the same digest from the same secret and exact request bytes</text>
+
+  <!-- Plane worker -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="110" width="350" height="490" rx="24" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  </g>
+  <rect x="40" y="110" width="350" height="68" rx="24" fill="#eaf3ff"/>
+  <path d="M40 154 V134 Q40 110 64 110 H366 Q390 110 390 134 V178 H40 Z" fill="#eaf3ff"/>
+  <circle cx="77" cy="144" r="17" fill="#1c5cab"/>
+  <path d="M69 144 l6 6 11-13" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="107" y="152" fill="#18181b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="24" font-weight="700">Plane worker</text>
+
+  <!-- JSON payload card -->
+  <rect x="70" y="204" width="290" height="118" rx="16" fill="#f7fbff" stroke="#93bceb" stroke-width="2"/>
+  <g transform="translate(92 226)">
+    <path d="M0 0 H37 L51 14 V68 H0 Z" fill="#ffffff" stroke="#2a78d6" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M37 0 V14 H51" fill="none" stroke="#2a78d6" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M17 27 l-6 7 6 7 M34 27 l6 7-6 7" fill="none" stroke="#1c5cab" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="162" y="251" fill="#18181b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="21" font-weight="700">JSON payload</text>
+  <text x="162" y="282" fill="#52525b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="18">Exact request bytes</text>
+
+  <!-- Secret card -->
+  <rect x="70" y="350" width="290" height="118" rx="16" fill="#fff9eb" stroke="#e1b75d" stroke-width="2"/>
+  <g transform="translate(91 381)">
+    <circle cx="21" cy="20" r="14" fill="none" stroke="#86590a" stroke-width="5"/>
+    <path d="M34 30 L65 61 M51 47 l9-9 M59 55 l9-9" fill="none" stroke="#86590a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="170" y="397" fill="#18181b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="21" font-weight="700">Shared secret</text>
+  <text x="170" y="429" fill="#86590a"
+        font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="18" font-weight="600">plane_wh_…</text>
+
+  <rect x="70" y="500" width="290" height="70" rx="14" fill="#f4f4f5"/>
+  <text x="215" y="528" text-anchor="middle" fill="#52525b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="18">Payload + secret are inputs</text>
+  <text x="215" y="552" text-anchor="middle" fill="#52525b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="18">to the signing function</text>
+
+  <!-- Connections into signing operation -->
+  <path d="M360 263 H416 Q430 263 430 249 V229" fill="none" stroke="#2a78d6" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+  <path d="M360 409 H402 Q416 409 416 395 V267 Q416 253 430 253" fill="none" stroke="#86590a" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+
+  <!-- Signing operation -->
+  <g filter="url(#shadow)">
+    <rect x="438" y="181" width="360" height="112" rx="18" fill="#1c5cab"/>
+  </g>
+  <circle cx="478" cy="237" r="22" fill="#ffffff" fill-opacity="0.16"/>
+  <path d="M468 237 h20 M478 227 v20" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <text x="516" y="228" fill="#ffffff"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="19" font-weight="600">SIGN</text>
+  <text x="516" y="258" fill="#ffffff"
+        font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="18" font-weight="700">HMAC-SHA256(secret, payload)</text>
+
+  <path d="M618 293 V326" fill="none" stroke="#1c5cab" stroke-width="3" marker-end="url(#arrow-blue)"/>
+
+  <!-- Signature header chip -->
+  <rect x="438" y="337" width="360" height="78" rx="16" fill="#eaf3ff" stroke="#2a78d6" stroke-width="2"/>
+  <rect x="453" y="354" width="50" height="44" rx="10" fill="#2a78d6"/>
+  <text x="478" y="383" text-anchor="middle" fill="#ffffff"
+        font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="20" font-weight="700">#</text>
+  <text x="518" y="383" fill="#18181b"
+        font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="18" font-weight="700">X-Plane-Signature: 9f3a…</text>
+
+  <!-- HTTP wire -->
+  <path d="M798 376 H858" fill="none" stroke="#1c5cab" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+  <rect x="794" y="320" width="74" height="32" rx="16" fill="#ffffff" stroke="#93bceb" stroke-width="2"/>
+  <text x="831" y="342" text-anchor="middle" fill="#1c5cab"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="18" font-weight="700">HTTP</text>
+  <text x="831" y="306" text-anchor="middle" fill="#1c5cab"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="19" font-weight="700">POST</text>
+
+  <!-- Receiver -->
+  <g filter="url(#shadow)">
+    <rect x="872" y="110" width="368" height="490" rx="24" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  </g>
+  <rect x="872" y="110" width="368" height="68" rx="24" fill="#eaf3ff"/>
+  <path d="M872 154 V134 Q872 110 896 110 H1216 Q1240 110 1240 134 V178 H872 Z" fill="#eaf3ff"/>
+  <circle cx="908" cy="144" r="17" fill="#2a78d6"/>
+  <path d="M900 139 H916 M900 149 H916" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <text x="938" y="152" fill="#18181b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="23" font-weight="700">Your receiver (FastAPI)</text>
+
+  <!-- Recompute -->
+  <rect x="898" y="202" width="316" height="88" rx="16" fill="#f7fbff" stroke="#93bceb" stroke-width="2"/>
+  <text x="1056" y="234" text-anchor="middle" fill="#1c5cab"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="18" font-weight="700">RECOMPUTE</text>
+  <text x="1056" y="263" text-anchor="middle" fill="#18181b"
+        font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="18" font-weight="700">HMAC-SHA256(secret, body)</text>
+
+  <path d="M1056 290 V316" fill="none" stroke="#1c5cab" stroke-width="3" marker-end="url(#arrow-blue)"/>
+
+  <!-- Constant-time comparison diamond -->
+  <path d="M1056 320 L1141 380 L1056 440 L971 380 Z" fill="#fff9eb" stroke="#86590a" stroke-width="2.5"/>
+  <text x="1056" y="370" text-anchor="middle" fill="#18181b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="19" font-weight="700">Signatures</text>
+  <text x="1056" y="396" text-anchor="middle" fill="#18181b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="19" font-weight="700">equal?</text>
+
+  <!-- Match outcome -->
+  <path d="M1005 415 L958 456" fill="none" stroke="#116b11" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-green)"/>
+  <text x="955" y="420" text-anchor="middle" fill="#116b11"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="18" font-weight="700">YES</text>
+  <rect x="895" y="460" width="148" height="104" rx="16" fill="#ecf8ec" stroke="#116b11" stroke-width="2"/>
+  <circle cx="969" cy="487" r="13" fill="#116b11"/>
+  <path d="M963 487 l4 4 8-9" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="969" y="523" text-anchor="middle" fill="#116b11"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="18" font-weight="700">match →</text>
+  <text x="969" y="547" text-anchor="middle" fill="#116b11"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="18" font-weight="700">accept event</text>
+
+  <!-- Mismatch outcome -->
+  <path d="M1107 415 L1154 456" fill="none" stroke="#a32222" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-red)"/>
+  <text x="1157" y="420" text-anchor="middle" fill="#a32222"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="18" font-weight="700">NO</text>
+  <rect x="1069" y="460" width="145" height="104" rx="16" fill="#fff0f0" stroke="#a32222" stroke-width="2"/>
+  <circle cx="1141" cy="487" r="13" fill="#a32222"/>
+  <path d="M1136 482 l10 10 M1146 482 l-10 10" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="1141" y="523" text-anchor="middle" fill="#a32222"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="18" font-weight="700">mismatch →</text>
+  <text x="1141" y="547" text-anchor="middle" fill="#a32222"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="18" font-weight="700">reject 401</text>
+
+  <!-- Security note -->
+  <rect x="394" y="635" width="492" height="54" rx="27" fill="#fff9eb" stroke="#e1b75d" stroke-width="2"/>
+  <g transform="translate(420 650)">
+    <rect x="3" y="12" width="20" height="17" rx="3" fill="none" stroke="#86590a" stroke-width="2.5"/>
+    <path d="M7 12 V8 a6 6 0 0 1 12 0 v4" fill="none" stroke="#86590a" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <text x="655" y="669" text-anchor="middle" fill="#86590a"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="20" font-weight="700">The secret never travels on the wire</text>
+</svg>

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crashloop-web
+  namespace: lab020
+  labels:
+    case: crashloop
+spec:
+  containers:
+    - name: web
+      image: k8s-lab-web:v1
+      imagePullPolicy: IfNotPresent
+      ports: # ใช้ command เดิมจาก image จึงเริ่ม server ได้
+        - name: http
+          containerPort: 3000

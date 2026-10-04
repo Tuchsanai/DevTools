@@ -1,0 +1,7 @@
+# override ชั้นที่ 3 : เปิด cache ของ proxy 60 วินาที เพื่อดูว่า request ที่สอง
+# ไม่ได้เดินทางออกไปถึงเว็บไซต์จริง (origin log ไม่เพิ่ม แต่ client ยังได้คำตอบ)
+#   docker compose -f docker-compose.yml -f docker-compose.policy.yml -f docker-compose.cache.yml up -d proxy
+services:
+  proxy:
+    environment:
+      PROXY_CACHE_TTL: "60"

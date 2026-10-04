@@ -1,0 +1,3 @@
+PLAB-12 "สั่งอาหารและรับหมายเลขออเดอร์" is open with its Thai user-story description and two acceptance-criteria checkboxes.
+Properties show State In Review, Assignee dev1, Priority Urgent, Estimate 5, Module Ordering, Cycle Sprint 2, the feature label and start/due dates Sep 02–05, 2026.
+The Activity feed records the state changes, the cycle the item was first added to (Sprint 1 — LAB 4 later transferred it into Sprint 2, which Plane does not log) and the assignee that was just set.

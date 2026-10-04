@@ -1,0 +1,22 @@
+{
+  "_comment": "แผนที่ Jira → Plane สำหรับ import_jira.py (แก้ไฟล์นี้ ไม่ต้องแก้โค้ด)",
+  "project": {
+    "name": "Jira Import",
+    "identifier": "JRA",
+    "description": "โปรเจกต์ Jira 'CAF' (CampusEats) ที่ย้ายเข้า Plane ด้วย REST API (LAB 7)",
+    "features": {"cycle_view": true, "module_view": true, "issue_views_view": true}
+  },
+  "status_to_state": {
+    "To Do":       {"name": "Todo",        "group": "unstarted", "color": "#3b82f6"},
+    "In Progress": {"name": "In Progress", "group": "started",   "color": "#f59e0b"},
+    "In Review":   {"name": "In Review",   "group": "started",   "color": "#8b5cf6"},
+    "Done":        {"name": "Done",        "group": "completed", "color": "#22c55e"}
+  },
+  "priority": {"Highest": "urgent", "High": "high", "Medium": "medium", "Low": "low", "Lowest": "none"},
+  "assignees": {"lab.admin": "admin@example.com", "dev.one": "dev1@example.com"},
+  "estimate": {"name": "Points", "type": "points", "values": ["1", "2", "3", "5", "8", "13"]},
+  "type_label_prefix": "type:",
+  "label_colors": {"type:story": "#22c55e", "type:task": "#3b82f6", "type:bug": "#ef4444", "ui": "#a855f7", "frontend": "#f59e0b"},
+  "epic_module_status": {"To Do": "planned", "In Progress": "in-progress", "Done": "completed"},
+  "created_format": "%d/%b/%y %I:%M %p"
+}

@@ -1,0 +1,2 @@
+The Ordering module is open with its eight work items listed.
+The side panel shows In Progress status, date range, lead and member, 5/8 items, 13/18 points, and a progress chart.

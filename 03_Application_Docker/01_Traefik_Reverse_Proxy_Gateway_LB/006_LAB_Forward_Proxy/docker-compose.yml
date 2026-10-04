@@ -1,0 +1,105 @@
+# LAB 6 — Forward Proxy: จำลอง "ออฟฟิศที่ออกอินเทอร์เน็ตตรง ๆ ไม่ได้"
+#
+#   officenet    : เครือข่ายในออฟฟิศ  — client กับ proxy (และ gateway) อยู่ตรงนี้
+#   internetnet  : เครือข่าย "อินเทอร์เน็ต" — เว็บไซต์ปลายทางอยู่ตรงนี้
+#
+# proxy เป็น container เดียวที่ต่อทั้งสองเครือข่าย จึงเป็นทางออกทางเดียวของ client
+#
+# name: กำหนดชื่อโปรเจกต์ให้คงที่ ชื่อ container จึงเป็น lab006-<service>-1 เสมอ
+# (ถ้าไม่กำหนด Compose จะใช้ชื่อโฟลเดอร์ซึ่งยาวกว่ามาก)
+name: lab006
+
+services:
+  client:
+    build: ./client
+    command: ["sleep", "infinity"]
+    networks:
+      - officenet
+
+  proxy:
+    build: ./proxy
+    environment:
+      PROXY_NAME: lab-forward-proxy
+      PROXY_DENY: ""
+      PROXY_ALLOW: ""
+      PROXY_CACHE_TTL: "0"
+    ports:
+      # ผูกกับ 127.0.0.1 ของเครื่องเรียนเท่านั้น — VS Code port forwarding ยังใช้ได้ปกติ
+      # แต่เครื่องอื่นในเครือข่ายจะเอา proxy ตัวนี้ไปใช้ไม่ได้ (open proxy = ของอันตราย)
+      - "127.0.0.1:8888:8888"   # proxy port — ไว้ตั้ง proxy ในเบราว์เซอร์ (ข้อ 9)
+      - "127.0.0.1:8899:8899"   # egress console (หน้า Wow)
+    networks:
+      - officenet
+      - internetnet
+
+  site-news:
+    build: ./sites
+    environment:
+      SITE_NAME: news.lab
+      SITE_TITLE: "NEWS.LAB — ข่าวเทคโนโลยี"
+      SITE_TAG: "เว็บไซต์ที่นโยบายบริษัทอนุญาตให้เข้าได้"
+      SITE_EMOJI: "📰"
+      SITE_ACCENT: "#8ec5ff"
+    labels:
+      # ป้ายชุดนี้มีไว้ใช้ตอนท้ายแล็บ (ตอนเทียบกับ reverse proxy) เท่านั้น
+      traefik.enable: "true"
+      traefik.docker.network: lab006-internetnet
+      traefik.http.routers.news.rule: PathPrefix(`/`)
+      traefik.http.routers.news.entrypoints: web
+      traefik.http.routers.news.service: news
+      traefik.http.services.news.loadbalancer.server.port: "80"
+    networks:
+      internetnet:
+        aliases:
+          - news.lab
+
+  site-social:
+    build: ./sites
+    environment:
+      SITE_NAME: social.lab
+      SITE_TITLE: "SOCIAL.LAB — โซเชียลมีเดีย"
+      SITE_TAG: "เว็บไซต์ที่ฝ่าย IT จะสั่งบล็อกที่ proxy ในข้อ 5"
+      SITE_EMOJI: "💬"
+      SITE_ACCENT: "#ff9db1"
+    networks:
+      internetnet:
+        aliases:
+          - social.lab
+
+  site-secure:
+    build: ./sites
+    environment:
+      SITE_NAME: secure.lab
+      SITE_TITLE: "SECURE.LAB — เว็บ HTTPS"
+      SITE_TAG: "ไซต์ HTTPS ที่สร้าง self-signed certificate เองตอนสตาร์ท"
+      SITE_EMOJI: "🔐"
+      SITE_ACCENT: "#7ee7a8"
+      SITE_TLS: "1"
+      PORT: "443"
+    networks:
+      internetnet:
+        aliases:
+          - secure.lab
+
+  # Traefik ในแล็บนี้เล่นบท "reverse proxy ของเจ้าของเว็บ news.lab" ไว้เทียบกันตอนท้าย
+  gateway:
+    image: traefik:v3.7.4
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --api.insecure=true
+      - --entrypoints.web.address=:80
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - officenet
+      - internetnet
+
+networks:
+  officenet:
+    name: lab006-officenet
+  internetnet:
+    name: lab006-internetnet

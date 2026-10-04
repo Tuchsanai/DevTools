@@ -1,0 +1,34 @@
+# ═══ STEP 1 — Traefik เปล่า ๆ : ยังไม่มี "ตา" ไว้มองหา backend ═══
+#
+# ชั้นที่ 1 (Compose/Docker) : สร้าง container + network + publish port
+# ชั้นที่ 2 (static config)  : command: ของ Traefik = ตั้งค่าตอนสตาร์ท
+# ชั้นที่ 3 (dynamic config) : routers/services — ขั้นนี้ยัง "ว่างเปล่า" เพราะยังไม่มี provider
+name: lab007
+
+services:
+  traefik:
+    image: traefik:v3.7.4
+    command:
+      # entryPoint = ประตูที่ Traefik "ฟัง" อยู่ข้างใน container (ไม่เกี่ยวกับ ports: ข้างล่าง)
+      - --entrypoints.web.address=:80
+      # เปิด API/dashboard แบบไม่มี auth — ใช้ได้เฉพาะในแล็บเท่านั้น
+      - --api.insecure=true
+      - --log.level=INFO
+    ports:
+      # ports: = Docker เอา port ของ host มาต่อเข้ากับ port ใน container
+      # ไม่ได้ทำให้ Traefik "ฟัง" อะไรเพิ่ม — ต้องมีคู่กับ entryPoint ถ้าจะเข้าจากเครื่องเรา
+      # (container ที่อยู่ network เดียวกันเรียก entryPoint ได้โดยไม่ต้อง publish)
+      - "8000:80"
+      - "8080:8080"
+    networks:
+      - labnet
+
+  app:
+    build: ./app
+    # ขั้นนี้ยังไม่มี label ใด ๆ — และ Traefik ก็ยังมองไม่เห็น Docker อยู่ดี
+    networks:
+      - labnet
+
+networks:
+  labnet:
+    name: lab007net

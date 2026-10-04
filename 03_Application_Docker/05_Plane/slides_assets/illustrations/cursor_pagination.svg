@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">REST API mechanics: cursor pagination, rate limiting, and idempotency</title>
+  <desc id="desc">Three stacked panels explain cursor pagination, a sixty-token-per-minute rate limit, and idempotent imports.</desc>
+
+  <defs>
+    <filter id="shadow" x="-10%" y="-15%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#18181b" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1c5cab"/>
+    </marker>
+    <marker id="arrowMuted" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52525b"/>
+    </marker>
+    <style>
+      text { font-family: 'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif; fill: #18181b; }
+      .panel-title { font-size: 25px; font-weight: 700; }
+      .label { font-size: 18px; font-weight: 600; }
+      .body { font-size: 18px; font-weight: 500; }
+      .code { font-size: 18px; font-weight: 650; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .muted { fill: #52525b; }
+      .white { fill: #ffffff; }
+      .blue { fill: #1c5cab; }
+      .green { fill: #116b11; }
+      .amber { fill: #86590a; }
+      .red { fill: #a32222; }
+      .hairline { stroke: #d4d4d8; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+
+  <!-- Panel 1: Cursor pagination -->
+  <g aria-label="Cursor pagination">
+    <rect x="28" y="24" width="1224" height="210" rx="22" fill="#ffffff" stroke="#dbe7f5" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="28" y="24" width="10" height="210" rx="5" fill="#1c5cab"/>
+    <circle cx="77" cy="64" r="22" fill="#e8f2ff"/>
+    <path d="M67 57h19M67 64h15M67 71h11" fill="none" stroke="#1c5cab" stroke-width="3" stroke-linecap="round"/>
+    <text x="112" y="72" class="panel-title">Cursor pagination</text>
+
+    <text x="64" y="117" class="label muted">PAGE 1</text>
+    <g transform="translate(64 132)">
+      <rect width="64" height="55" rx="10" fill="#edf5ff" stroke="#9bc2ef" stroke-width="1.5"/>
+      <circle cx="15" cy="17" r="6" fill="#2a78d6"/>
+      <path d="M13 34h38M13 43h27" stroke="#7baadd" stroke-width="4" stroke-linecap="round"/>
+      <rect x="72" width="64" height="55" rx="10" fill="#edf5ff" stroke="#9bc2ef" stroke-width="1.5"/>
+      <circle cx="87" cy="17" r="6" fill="#2a78d6"/>
+      <path d="M85 34h38M85 43h27" stroke="#7baadd" stroke-width="4" stroke-linecap="round"/>
+      <rect x="144" width="64" height="55" rx="10" fill="#edf5ff" stroke="#9bc2ef" stroke-width="1.5"/>
+      <circle cx="159" cy="17" r="6" fill="#2a78d6"/>
+      <path d="M157 34h38M157 43h27" stroke="#7baadd" stroke-width="4" stroke-linecap="round"/>
+    </g>
+
+    <rect x="300" y="105" width="222" height="40" rx="20" fill="#e8f2ff" stroke="#9bc2ef" stroke-width="1.5"/>
+    <text x="411" y="131" text-anchor="middle" class="code blue">next_cursor: c_82</text>
+    <path d="M522 125 C557 125 552 169 584 169" fill="none" stroke="#1c5cab" stroke-width="3" marker-end="url(#arrowBlue)"/>
+    <rect x="584" y="149" width="165" height="40" rx="20" fill="#1c5cab"/>
+    <text x="666.5" y="175" text-anchor="middle" class="code white">cursor=c_82</text>
+
+    <text x="790" y="117" class="label muted">PAGE 2</text>
+    <g transform="translate(790 132)">
+      <rect width="64" height="55" rx="10" fill="#edf5ff" stroke="#9bc2ef" stroke-width="1.5"/>
+      <circle cx="15" cy="17" r="6" fill="#2a78d6"/>
+      <path d="M13 34h38M13 43h27" stroke="#7baadd" stroke-width="4" stroke-linecap="round"/>
+      <rect x="72" width="64" height="55" rx="10" fill="#edf5ff" stroke="#9bc2ef" stroke-width="1.5"/>
+      <circle cx="87" cy="17" r="6" fill="#2a78d6"/>
+      <path d="M85 34h38M85 43h27" stroke="#7baadd" stroke-width="4" stroke-linecap="round"/>
+      <rect x="144" width="64" height="55" rx="10" fill="#edf5ff" stroke="#9bc2ef" stroke-width="1.5"/>
+      <circle cx="159" cy="17" r="6" fill="#2a78d6"/>
+      <path d="M157 34h38M157 43h27" stroke="#7baadd" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <path d="M1010 159h28" fill="none" stroke="#52525b" stroke-width="3" marker-end="url(#arrowMuted)"/>
+    <rect x="1049" y="138" width="169" height="43" rx="10" fill="#eaf7ea" stroke="#8dc68d" stroke-width="1.5"/>
+    <circle cx="1071" cy="159.5" r="9" fill="#116b11"/>
+    <path d="M1067 160l3 3 6-7" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="1087" y="166" class="code green">false</text>
+    <text x="1049" y="119" class="label muted">next_page_results:</text>
+    <text x="1049" y="211" class="body green">Stop — no next request</text>
+
+    <text x="300" y="191" class="body muted">response token</text>
+    <text x="584" y="216" class="body muted">next request</text>
+  </g>
+
+  <!-- Panel 2: Rate limit -->
+  <g aria-label="Rate limit">
+    <rect x="28" y="255" width="1224" height="210" rx="22" fill="#ffffff" stroke="#f0dfb9" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="28" y="255" width="10" height="210" rx="5" fill="#86590a"/>
+    <circle cx="77" cy="295" r="22" fill="#fff3d6"/>
+    <path d="M66 300h22l-3 10H69zM69 300v-13h16v13" fill="none" stroke="#86590a" stroke-width="3" stroke-linejoin="round"/>
+    <text x="112" y="303" class="panel-title">Rate limit</text>
+
+    <text x="64" y="353" class="label muted">TOKEN BUCKET</text>
+    <path d="M70 369h190l-17 66H87z" fill="#fff8e8" stroke="#86590a" stroke-width="2.5" stroke-linejoin="round"/>
+    <g fill="#d99a22">
+      <circle cx="99" cy="416" r="8"/><circle cx="120" cy="416" r="8"/><circle cx="141" cy="416" r="8"/><circle cx="162" cy="416" r="8"/><circle cx="183" cy="416" r="8"/><circle cx="204" cy="416" r="8"/><circle cx="225" cy="416" r="8"/>
+      <circle cx="109" cy="396" r="8"/><circle cx="130" cy="396" r="8"/><circle cx="151" cy="396" r="8"/><circle cx="172" cy="396" r="8"/><circle cx="193" cy="396" r="8"/><circle cx="214" cy="396" r="8"/>
+      <circle cx="119" cy="376" r="8"/><circle cx="140" cy="376" r="8"/><circle cx="161" cy="376" r="8"/><circle cx="182" cy="376" r="8"/><circle cx="203" cy="376" r="8"/>
+    </g>
+    <rect x="101" y="329" width="129" height="38" rx="19" fill="#fff3d6"/>
+    <text x="165.5" y="354" text-anchor="middle" class="label amber">60 / minute</text>
+
+    <path d="M276 394h70" fill="none" stroke="#86590a" stroke-width="3" marker-end="url(#arrowMuted)"/>
+    <rect x="348" y="349" width="354" height="76" rx="14" fill="#f7f7f8" stroke="#d4d4d8" stroke-width="1.5"/>
+    <text x="370" y="377" class="label muted">RESPONSE HEADER</text>
+    <rect x="370" y="388" width="310" height="27" rx="7" fill="#e8f2ff"/>
+    <text x="525" y="408" text-anchor="middle" class="code blue">X-RateLimit-Remaining: 59</text>
+
+    <path d="M718 394h60" fill="none" stroke="#52525b" stroke-width="3" marker-end="url(#arrowMuted)"/>
+    <g transform="translate(790 335)">
+      <path d="M0 34h122l-11 86H11z" fill="#fff0f0" stroke="#a32222" stroke-width="2.5" stroke-linejoin="round"/>
+      <text x="61" y="75" text-anchor="middle" class="panel-title red">0</text>
+      <text x="61" y="100" text-anchor="middle" class="body red">empty</text>
+    </g>
+    <path d="M929 394h39" fill="none" stroke="#a32222" stroke-width="3" marker-end="url(#arrowMuted)"/>
+    <rect x="980" y="350" width="238" height="78" rx="14" fill="#fff0f0" stroke="#e29a9a" stroke-width="2"/>
+    <circle cx="1010" cy="389" r="17" fill="#a32222"/>
+    <text x="1010" y="396" text-anchor="middle" class="label white">!</text>
+    <text x="1038" y="385" class="panel-title red">429</text>
+    <text x="1038" y="411" class="label red">Too Many Requests</text>
+  </g>
+
+  <!-- Panel 3: Idempotency -->
+  <g aria-label="Idempotency">
+    <rect x="28" y="486" width="1224" height="210" rx="22" fill="#ffffff" stroke="#d8ead8" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="28" y="486" width="10" height="210" rx="5" fill="#116b11"/>
+    <circle cx="77" cy="526" r="22" fill="#eaf7ea"/>
+    <path d="M66 526a11 11 0 1 1 4 8M66 526v-8m0 8h8" fill="none" stroke="#116b11" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="112" y="534" class="panel-title">Idempotency</text>
+
+    <rect x="64" y="563" width="255" height="92" rx="14" fill="#f7f7f8" stroke="#d4d4d8" stroke-width="1.5"/>
+    <text x="86" y="591" class="label muted">SAME IMPORT SCRIPT</text>
+    <path d="M86 610h16l7 7-7 7H86z" fill="none" stroke="#1c5cab" stroke-width="2.5" stroke-linejoin="round"/>
+    <text x="121" y="625" class="code blue">import_items.py</text>
+    <circle cx="295" cy="609" r="4" fill="#116b11"/>
+    <circle cx="295" cy="626" r="4" fill="#116b11"/>
+
+    <path d="M332 585h70" fill="none" stroke="#116b11" stroke-width="3" marker-end="url(#arrowBlue)"/>
+    <path d="M332 635h70" fill="none" stroke="#52525b" stroke-width="3" marker-end="url(#arrowMuted)"/>
+
+    <rect x="410" y="553" width="326" height="64" rx="13" fill="#eaf7ea" stroke="#8dc68d" stroke-width="1.5"/>
+    <circle cx="441" cy="585" r="18" fill="#116b11"/>
+    <path d="M433 585l6 6 11-13" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="470" y="579" class="label green">FIRST RUN</text>
+    <text x="470" y="603" class="body"><tspan class="code green">201</tspan><tspan> · items created</tspan></text>
+
+    <rect x="410" y="625" width="326" height="54" rx="13" fill="#fff3d6" stroke="#dbbb70" stroke-width="1.5"/>
+    <circle cx="441" cy="652" r="18" fill="#86590a"/>
+    <text x="441" y="659" text-anchor="middle" class="label white">↺</text>
+    <text x="470" y="659" class="body"><tspan class="label amber">SECOND RUN</tspan><tspan> · </tspan><tspan class="code amber">409</tspan></text>
+
+    <path d="M750 616h54" fill="none" stroke="#52525b" stroke-width="3" marker-end="url(#arrowMuted)"/>
+    <rect x="816" y="548" width="402" height="131" rx="15" fill="#f7f7f8" stroke="#d4d4d8" stroke-width="1.5"/>
+    <rect x="837" y="565" width="360" height="43" rx="10" fill="#e8f2ff" stroke="#9bc2ef" stroke-width="1.5"/>
+    <text x="1017" y="592" text-anchor="middle" class="code blue">external_source + external_id</text>
+    <path d="M1017 610v16" stroke="#116b11" stroke-width="3" marker-end="url(#arrowMuted)"/>
+    <rect x="892" y="630" width="250" height="34" rx="17" fill="#eaf7ea"/>
+    <text x="1017" y="653" text-anchor="middle" class="label green">409 · already exists</text>
+  </g>
+</svg>

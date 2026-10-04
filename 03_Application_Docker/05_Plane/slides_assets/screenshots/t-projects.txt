@@ -1,0 +1,2 @@
+The workspace Projects page shows the available project cards.
+Plane Lab is visible with identifier PLAB and the CampusEats project summary.

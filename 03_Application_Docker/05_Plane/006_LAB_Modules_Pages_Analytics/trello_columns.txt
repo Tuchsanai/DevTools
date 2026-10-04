@@ -1,0 +1,12 @@
+# ฟิลด์หลักของการ์ดในไฟล์ JSON ที่ Trello export ออกมา (Board menu → More → Print and export → Export as JSON — ใช้จริงใน LAB 7: trello_board.json)
+cards[].id
+cards[].idShort
+cards[].name
+cards[].desc
+cards[].idList          → lists[].name  (To Do / Doing / Review / Done)
+cards[].labels[].name
+cards[].due
+cards[].closed
+cards[].dateLastActivity
+checklists[].checkItems[].name
+checklists[].checkItems[].state   (complete / incomplete)

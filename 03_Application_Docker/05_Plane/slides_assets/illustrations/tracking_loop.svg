@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Product development tracking loop</title>
+  <desc id="desc">A circular Plan, Do, Measure, Adapt workflow surrounding a delivery dashboard, with REST API, Webhooks, and CSV import and export integrations.</desc>
+  <defs>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#18181b" flood-opacity="0.10"/>
+    </filter>
+    <filter id="chipShadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#18181b" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L11 6 L1 11 Z" fill="#1c5cab"/>
+    </marker>
+    <style>
+      text { font-family: 'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif; fill: #18181b; }
+      .stage-title { font-size: 28px; font-weight: 700; }
+      .stage-copy { font-size: 20px; font-weight: 500; fill: #52525b; }
+      .chip-label { font-size: 18px; font-weight: 650; }
+      .small-label { font-size: 18px; font-weight: 600; fill: #52525b; }
+      .kpi-label { font-size: 18px; font-weight: 600; fill: #52525b; }
+      .kpi-value { font-size: 23px; font-weight: 750; }
+      .loop-arrow { fill: none; stroke: #1c5cab; stroke-width: 5; stroke-linecap: round; marker-end: url(#arrowBlue); }
+      .integration-line { fill: none; stroke: #2a78d6; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 3 9; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+
+  <!-- Soft circular guide behind the process -->
+  <circle cx="640" cy="355" r="254" fill="none" stroke="#dbeafe" stroke-width="2" stroke-dasharray="8 12"/>
+
+  <!-- Integration satellites and dotted connectors -->
+  <path class="integration-line" d="M218 107 C300 112 344 151 402 205"/>
+  <path class="integration-line" d="M1062 107 C982 116 935 154 877 209"/>
+  <path class="integration-line" d="M252 625 C332 610 378 565 418 509"/>
+
+  <g filter="url(#chipShadow)">
+    <rect x="52" y="76" width="166" height="60" rx="30" fill="#ffffff" stroke="#2a78d6" stroke-width="2"/>
+    <circle cx="82" cy="106" r="11" fill="#2a78d6"/>
+    <text x="104" y="112" class="chip-label">REST API</text>
+  </g>
+  <g filter="url(#chipShadow)">
+    <rect x="1062" y="76" width="166" height="60" rx="30" fill="#ffffff" stroke="#116b11" stroke-width="2"/>
+    <circle cx="1092" cy="106" r="11" fill="#116b11"/>
+    <text x="1114" y="112" class="chip-label">Webhooks</text>
+  </g>
+  <g filter="url(#chipShadow)">
+    <rect x="52" y="595" width="250" height="60" rx="30" fill="#ffffff" stroke="#86590a" stroke-width="2"/>
+    <circle cx="82" cy="625" r="11" fill="#86590a"/>
+    <text x="104" y="631" class="chip-label">CSV import/export</text>
+  </g>
+  <text x="1118" y="171" text-anchor="middle" class="small-label" letter-spacing="1.5">INTEGRATIONS</text>
+
+  <!-- Curved clockwise arrows -->
+  <path class="loop-arrow" d="M823 119 C902 131 962 180 1001 240"/>
+  <path class="loop-arrow" d="M1058 375 C1027 466 949 532 828 574"/>
+  <path class="loop-arrow" d="M452 601 C352 574 273 496 229 377"/>
+  <path class="loop-arrow" d="M221 240 C258 170 336 126 451 112"/>
+
+  <!-- Stage nodes -->
+  <g filter="url(#softShadow)">
+    <rect x="450" y="55" width="380" height="112" rx="28" fill="#ffffff" stroke="#1c5cab" stroke-width="3"/>
+    <rect x="450" y="55" width="12" height="112" rx="6" fill="#1c5cab"/>
+    <circle cx="501" cy="111" r="27" fill="#eaf3ff"/>
+    <path d="M490 111 L498 119 L513 101" fill="none" stroke="#1c5cab" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="542" y="103" class="stage-title">Plan</text>
+    <text x="542" y="135" class="stage-copy">backlog, estimates</text>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <rect x="890" y="240" width="338" height="138" rx="28" fill="#ffffff" stroke="#2a78d6" stroke-width="3"/>
+    <rect x="1216" y="240" width="12" height="138" rx="6" fill="#2a78d6"/>
+    <circle cx="937" cy="309" r="27" fill="#eaf3ff"/>
+    <path d="M927 299 H947 M927 309 H943 M927 319 H939" fill="none" stroke="#2a78d6" stroke-width="4" stroke-linecap="round"/>
+    <text x="980" y="291" class="stage-title">Do</text>
+    <text x="980" y="323" class="stage-copy">work items move</text>
+    <text x="980" y="349" class="stage-copy">across states</text>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <rect x="450" y="548" width="380" height="122" rx="28" fill="#ffffff" stroke="#116b11" stroke-width="3"/>
+    <rect x="818" y="548" width="12" height="122" rx="6" fill="#116b11"/>
+    <circle cx="501" cy="609" r="27" fill="#e9f7e9"/>
+    <path d="M488 620 V607 M500 620 V596 M512 620 V602" fill="none" stroke="#116b11" stroke-width="4" stroke-linecap="round"/>
+    <text x="542" y="596" class="stage-title">Measure</text>
+    <text x="542" y="628" class="stage-copy">burndown, velocity,</text>
+    <text x="542" y="654" class="stage-copy">lead time</text>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <rect x="52" y="240" width="338" height="138" rx="28" fill="#ffffff" stroke="#86590a" stroke-width="3"/>
+    <rect x="52" y="240" width="12" height="138" rx="6" fill="#86590a"/>
+    <circle cx="101" cy="309" r="27" fill="#fff5df"/>
+    <path d="M89 312 C90 299 104 293 114 301 M114 301 L114 292 M114 301 L105 301 M113 307 C112 320 98 326 88 318 M88 318 L88 327 M88 318 L97 318" fill="none" stroke="#86590a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="143" y="291" class="stage-title">Adapt</text>
+    <text x="143" y="323" class="stage-copy">retrospective,</text>
+    <text x="143" y="349" class="stage-copy">re-prioritize</text>
+  </g>
+
+  <!-- Center dashboard -->
+  <g filter="url(#softShadow)">
+    <rect x="438" y="219" width="404" height="282" rx="24" fill="#ffffff" stroke="#d4d4d8" stroke-width="2"/>
+    <path d="M438 272 H842" stroke="#e4e4e7" stroke-width="2"/>
+    <circle cx="468" cy="246" r="6" fill="#a32222"/>
+    <circle cx="489" cy="246" r="6" fill="#86590a"/>
+    <circle cx="510" cy="246" r="6" fill="#116b11"/>
+    <text x="534" y="253" font-size="20" font-weight="700">Delivery dashboard</text>
+
+    <!-- Tiny line chart -->
+    <rect x="462" y="294" width="356" height="92" rx="14" fill="#f8fafc" stroke="#e4e4e7"/>
+    <path d="M482 361 H800 M482 335 H800 M482 310 H800" stroke="#e4e4e7" stroke-width="1.5" stroke-dasharray="4 6"/>
+    <path d="M482 360 C520 352 543 359 575 337 C606 316 628 329 661 310 C696 289 720 319 754 297 C774 284 788 288 800 283" fill="none" stroke="#2a78d6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="575" cy="337" r="5" fill="#ffffff" stroke="#2a78d6" stroke-width="3"/>
+    <circle cx="661" cy="310" r="5" fill="#ffffff" stroke="#2a78d6" stroke-width="3"/>
+    <circle cx="754" cy="297" r="5" fill="#ffffff" stroke="#2a78d6" stroke-width="3"/>
+
+    <!-- KPI tiles -->
+    <g>
+      <rect x="462" y="402" width="108" height="76" rx="14" fill="#eaf3ff"/>
+      <text x="476" y="429" class="kpi-label">Velocity</text>
+      <text x="476" y="461" class="kpi-value" fill="#1c5cab">22</text>
+    </g>
+    <g>
+      <rect x="578" y="402" width="124" height="76" rx="14" fill="#fff5df"/>
+      <text x="592" y="429" class="kpi-label">Lead time</text>
+      <text x="592" y="461" class="kpi-value" fill="#86590a">3.4 d</text>
+    </g>
+    <g>
+      <rect x="710" y="402" width="108" height="76" rx="14" fill="#e9f7e9"/>
+      <text x="724" y="429" class="kpi-label">Done</text>
+      <text x="724" y="461" class="kpi-value" fill="#116b11">87%</text>
+    </g>
+  </g>
+</svg>

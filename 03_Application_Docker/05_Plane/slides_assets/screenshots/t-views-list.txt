@@ -1,0 +1,2 @@
+The Plane Lab Views page lists the saved views.
+My open items and Expedite lane are visible with owner, favorite, and action controls.

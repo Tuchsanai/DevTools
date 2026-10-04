@@ -1,0 +1,36 @@
+# ═══ STEP 3 — deny by default : ต้องยกมือขอเองถึงจะถูก route ═══
+#
+# เพิ่มจาก STEP 2
+#   1. --providers.docker.exposedByDefault=false   ปิดการ route อัตโนมัติทั้งหมด
+#   2. label traefik.enable=true บน app เท่านั้น   ยกมือขอเฉพาะตัวที่ต้องการ
+#
+# ขั้นนี้ app ยังไม่มี rule ของตัวเอง จึงยังใช้ defaultRule อยู่ (Host แปลก ๆ ตามชื่อ container)
+name: lab007
+
+services:
+  traefik:
+    image: traefik:v3.7.4
+    command:
+      - --entrypoints.web.address=:80
+      - --api.insecure=true
+      - --log.level=INFO
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - labnet
+
+  app:
+    build: ./app
+    labels:
+      traefik.enable: "true"
+    networks:
+      - labnet
+
+networks:
+  labnet:
+    name: lab007net

@@ -1,0 +1,108 @@
+<!-- ===== A : Kanban definition ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Kanban · นิยาม</div><h2>Kanban — <em>ทำให้งานไหลจาก “รอ” ไปสู่ “เสร็จ”</em></h2>
+    <div class="sub">ไม่ใช่กรอบงานที่ต้องรื้อทีมใหม่ แต่เป็นวิธีมองงานที่ทำอยู่แล้วให้เห็นชัด แล้วค่อย ๆ ปรับให้ไหลดีขึ้นจากหลักฐาน</div></div>
+  <div class="s-body top">
+    <div class="g21" style="grid-template-columns:1.12fr .88fr; align-items:start">
+      <div>
+        <div class="quote" style="font-size:18px; padding:14px 20px"><b>นิยาม</b> — Kanban คือ<b>กลยุทธ์</b>สำหรับปรับ<b>การไหลของคุณค่า</b>ผ่านกระบวนการหนึ่งให้ดีที่สุด โดยใช้ระบบที่<b>มองเห็นได้</b>และ<b>ดึงงาน (pull)</b><span class="who">— Kanban Guide · เป้าหมายคือให้ชิ้นงานเสร็จต่อเนื่อง ไม่ใช่ให้ทุกคนยุ่งตลอดเวลา</span></div>
+        <div class="grid2" style="margin-top:12px">
+          <div class="card c"><h4>ปัญหา · ก่อนใช้ Kanban</h4><p>คำขอกระจายในแชต · แต่ละคนเริ่มหลายใบ · งานค้างระหว่างพัฒนา ทดสอบ และรีวิว จึงไม่มีใครรู้ว่าคอขวดอยู่ตรงไหน</p></div>
+          <div class="card o"><h4>ผลลัพธ์ · หลังใช้ Kanban</h4><p>การ์ดทุกใบอยู่บน workflow เดียว ทีมมองเห็นงานค้างและดึงงานใหม่เมื่อขั้นถัดไปพร้อมรับ จึงทำงานให้เสร็จก่อนเริ่มเพิ่ม</p></div>
+        </div>
+        <div class="note a" style="margin-top:12px; font-size:15.5px"><b>ทำไมสำคัญ</b> — งานที่ค้างคือเวลาและความเสี่ยงที่ยังไม่สร้างคุณค่า การลดงานค้างทำให้ feedback มาเร็วขึ้น เห็นคอขวดเร็วขึ้น และคาดการณ์เวลาส่งมอบได้ดีขึ้นโดยไม่ต้องเพิ่มคน</div>
+        <div class="note" style="margin-top:10px; font-size:15px"><b>4 หลักการพื้นฐาน</b> — ① เริ่มจากสิ่งที่ทีมทำอยู่ตอนนี้ ② ตกลงกันว่าจะเปลี่ยนแบบค่อยเป็นค่อยไป ③ เคารพกระบวนการ บทบาท และตำแหน่งเดิม ④ ส่งเสริมภาวะผู้นำในทุกระดับ <span style="color:var(--ink3)">— Kanban จึงเริ่มใช้ได้ในวันจันทร์ ต่างจากการเปลี่ยนไปใช้ Scrum ที่ต้องนิยามบทบาทและอีเวนต์ใหม่</span></div>
+      </div>
+      <div>
+        <div class="fig photo fix" style="height:428px"><img data-a="real_kanban_wall" alt="สมาชิกทีมกำลังย้ายกระดาษโน้ตบนบอร์ดงานที่แบ่งเป็นคอลัมน์"></div>
+        <div class="figcap">บอร์ดจริงทำให้งานที่กระจายอยู่ในหัวและบทสนทนากลายเป็นสถานะร่วมที่ทั้งทีมมองเห็น</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== B : Kanban mechanism — Toyota to software ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Kanban · กลไก</div><h2>จาก Toyota สู่ซอฟต์แวร์ — <em>ดึงตามความจุ · จำกัด WIP · มีกติกาชัด</em></h2></div>
+  <div class="s-body top">
+    <div class="figrow" style="grid-template-columns:1.42fr .58fr; gap:16px; align-items:start">
+      <div><div class="fig fix" style="height:468px; overflow:hidden"><img data-a="d34" alt="บอร์ด Kanban จาก Backlog ผ่าน Ready, In Progress ที่จำกัด WIP 3 ใบ และ Review ที่จำกัด 2 ใบ ไปถึง Done พร้อมลูกศรดึงงานและแถบนโยบายใต้ทุกคอลัมน์" style="object-view-box:inset(9% 23.7% 0% 0%)"></div>
+        <div class="figcap"><b>Workflow</b> · การ์ดเดินซ้าย → ขวา และขั้นถัดไปเป็นฝ่าย “ดึง” เมื่อมีที่ว่าง — ในภาพ In Progress เต็ม <b>3/3</b> จึงหยุดดึง ส่วน Review ยังว่าง (<b>1/2</b>) · แถบใต้ทุกคอลัมน์คือ <b>explicit policy</b> = เงื่อนไขที่ต้องจริงก่อนการ์ดจะเข้าคอลัมน์นั้น</div></div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:7px">องค์ประกอบ · 6 practices</div>
+        <ul class="bul sm" style="font-size:15.5px">
+          <li><b>Visualize</b> — ทำให้งานทุกใบและทุกขั้นตอนปรากฏบนบอร์ดเดียว</li>
+          <li><b>Limit WIP</b> — ตั้งเพดานงานที่เริ่มแล้วแต่ยังไม่เสร็จ</li>
+          <li><b>Manage flow</b> — ดูว่างานติดตรงไหน แล้วลดเวลารอ ไม่ใช่เร่งคน</li>
+          <li><b>Make policies explicit</b> — เขียนเงื่อนไขเข้า–ออกให้ทุกคนเห็น</li>
+          <li><b>Feedback loops</b> — มีรอบทบทวนงานและตัวเลขตาม cadence</li>
+          <li><b>Improve collaboratively</b> — ปรับระบบร่วมกันแบบทดลอง วัดผล แล้วปรับต่อ</li>
+        </ul>
+        <div class="note a" style="margin-top:9px; font-size:14.5px"><b>จากป้ายสัญญาณสู่การ์ดงาน</b> — <i>kanban</i> ในสายการผลิตของ Toyota คือป้ายที่ส่งสัญญาณให้ขั้น<b>ก่อนหน้า</b>ผลิตเมื่อขั้นถัดไปใช้ของไป ทีมซอฟต์แวร์ใช้ “ช่องว่างในคอลัมน์” เป็นป้ายนั้น: มีที่ว่างจึงดึงงานใหม่ได้</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== C : CampusEats example ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Kanban · ตัวอย่าง CampusEats</div><h2>CampusEats support — <em>หยุดเริ่ม แล้วช่วยกันทำให้เสร็จ</em></h2>
+    <div class="sub">สถานการณ์จาก LAB 5: dev1 ส่งเรื่อง “แอปเด้งออกตอนกดจ่ายเงินด้วย QR บน Android” เข้า Intake → ผู้ดูแลกด Accept ใบงานจึงลงมาที่ Backlog</div></div>
+  <div class="s-body top">
+    <div class="flow" style="gap:6px; flex-wrap:nowrap">
+      <div class="b" style="min-width:0"><div class="t">Intake</div><div class="s">Accept · Decline · Snooze</div></div><span class="ar">→</span>
+      <div class="b" style="min-width:0"><div class="t">Backlog</div><div class="s">ยังไม่ต้องลงรายละเอียด</div></div><span class="ar">→</span>
+      <div class="b" style="min-width:0"><div class="t">Todo</div><div class="s">รอเขียนให้ครบตาม DoR</div></div><span class="ar">→</span>
+      <div class="b a" style="min-width:0"><div class="t">Ready</div><div class="s">ผ่าน DoR · ใครว่างก็ดึงได้</div></div><span class="ar">→</span>
+      <div class="b" style="min-width:0"><div class="t">In Progress</div><div class="s">WIP ≤ 3 · cycle time เริ่มเดิน</div></div><span class="ar">→</span>
+      <div class="b a" style="min-width:0"><div class="t">In Review</div><div class="s">WIP ≤ 2 · คนที่ไม่ใช่ผู้ทำรีวิว</div></div><span class="ar">→</span>
+      <div class="b k" style="min-width:0"><div class="t">Done</div><div class="s">ผ่าน DoD แล้วยืนยันผล</div></div>
+    </div>
+    <div class="g21" style="grid-template-columns:1.22fr .78fr; gap:18px; align-items:start">
+      <div>
+        <table class="tbl sm">
+          <tbody>
+            <tr><td style="width:40px"><b>1</b></td><td style="width:170px"><b>คอลัมน์เต็ม จึงยังไม่ดึง</b></td><td>In Progress มีอยู่ 3/3 ใบตามเพดานที่ทีมประกาศไว้ บั๊กใบนี้จึงรออยู่ที่ Ready — จะแซงคิวได้ก็ต่อเมื่อประกาศเป็น <b>Expedite</b> (Priority = Urgent) ซึ่งมีได้ครั้งละ 1 ใบทั้งบอร์ด</td></tr>
+            <tr><td><b>2</b></td><td><b>เปิดช่องจากขวาไปซ้าย</b></td><td>Daily kanban เดินบอร์ด Done ← In Review ← In Progress: เคลียร์คิวรีวิวก่อน แล้วดันใบที่ใกล้เสร็จออกจาก In Progress จนเหลือที่ว่าง 1 ช่อง</td></tr>
+            <tr><td><b>3</b></td><td><b>ดึงแล้วส่งมอบ</b></td><td>ดึงบั๊กไปแก้พร้อมเพิ่ม test → ผ่านรีวิวของคนที่ไม่ใช่ผู้ทำ → ยืนยันกับผู้แจ้ง แล้วจึงย้ายเป็น Done</td></tr>
+            </tbody>
+        </table>
+        <div class="note" style="margin-top:12px; font-size:15px"><b>Cadences ของทีม (feedback loops)</b> — <b>Daily kanban</b> ทุกวัน 10:00 เดินบอร์ดจากขวาไปซ้าย · <b>Replenishment</b> สัปดาห์ละครั้ง เติม Ready เท่าที่ throughput รับไหว · <b>Intake triage</b> ตอบทุกใบภายใน 1 วันทำการ — ใบที่ตัดสินใจไม่ทำต่อจบที่ <b>Cancelled</b> พร้อมเหตุผล ไม่ปล่อยค้างบนบอร์ด</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px">
+        <div class="card c"><h4>❌ “Kanban คือบอร์ดที่มีคอลัมน์”</h4><p>บอร์ดที่ไม่มี WIP limit, การดึงงาน, policy และการวัด flow เป็นเพียงภาพสถานะ — งานยังกองเต็มทุกคอลัมน์ได้เหมือนเดิม</p><p style="margin-top:7px"><b style="color:#16803c">✅ ที่ถูก:</b> บอร์ดคือครึ่งเดียว อีกครึ่งคือกติกา: เต็มแล้วหยุดดึง แล้วไปช่วยแก้คอขวด</p></div>
+        <div class="card c"><h4>❌ “Kanban ไม่มีการวางแผน”</h4><p>ไม่มี Sprint Planning ไม่ได้แปลว่าไม่วางแผน</p><p style="margin-top:7px"><b style="color:#16803c">✅ ที่ถูก:</b> Kanban วางแผนแบบต่อเนื่องตาม cadence — จัดลำดับ backlog, เติมคิว Ready, ทบทวนนโยบายและตัวเลข flow; งานเริ่มเมื่อมีความจุจริง ไม่ต้องรอต้นรอบ</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== D : Kanban in Plane ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Kanban · ใน Plane</div><h2>Board layout — <em>คอลัมน์คือ state · กติกาเก็บไว้ใน Page</em></h2></div>
+  <div class="s-body top">
+    <div class="figrow" style="grid-template-columns:1.02fr .98fr; gap:16px; align-items:start">
+      <div><div class="fig shot fix" style="height:349px"><img data-a="t-board-state" alt="หน้า Work items ของโปรเจกต์ Plane Lab ใน Board layout จัดกลุ่มตาม State แสดงคอลัมน์ Backlog, Todo, Ready และ In Progress พร้อมการ์ดที่มีป้าย priority, วันครบกำหนด, module, cycle, estimate, label และผู้รับผิดชอบ"></div>
+        <div class="figcap"><b>ภาพจริง</b> · Work items ของ Plane Lab ใน Board layout (Group by = State, ย่อ sidebar): <b>Backlog 6 · Todo 2 · Ready 2 · In Progress 2</b> — คอลัมน์ In Review · Done · Cancelled อยู่ถัดไปทางขวานอกจอ ต้องเลื่อนบอร์ดไปดู</div></div>
+      <div style="display:flex; flex-direction:column; gap:9px">
+        <div class="card a" style="padding:10px 13px"><h4><span class="n">1</span>เปิดบอร์ด</h4><p style="font-size:15.5px; line-height:1.42">ที่หน้า <b>Work items</b> ของโปรเจกต์ เลือก layout <b>Board</b> แล้วตั้ง <b>Group by = State</b> · บอร์ด (ภายในคือ layout <code>kanban</code>) ต้องมีเกณฑ์จัดคอลัมน์เสมอ — ตัวเลือก “ไม่จัดกลุ่ม” มีให้เฉพาะ List</p></div>
+        <div class="card" style="padding:10px 13px"><h4><span class="n">2</span>คอลัมน์มาจากไหน</h4><p style="font-size:15.5px; line-height:1.42">แต่ละคอลัมน์คือหนึ่งแถวในตาราง <code>states</code> เรียงตามค่า <code>sequence</code> · state ที่เพิ่มใหม่ได้ <code>sequence</code> ต่อท้ายเสมอ จึงต้องลากจัดลำดับเอง · เปิด <b>Show empty groups</b> ให้คอลัมน์ว่างไม่หายไป เพราะช่องว่างคือสัญญาณให้ดึงงาน</p></div>
+        <div class="card o" style="padding:10px 13px"><h4><span class="n">3</span>ฟีเจอร์ที่เกี่ยวข้อง · Pages</h4><p style="font-size:15.5px; line-height:1.42"><b>Pages → New page</b> เก็บ explicit policy ของทีมไว้ที่เดียวกับงาน: ความหมายของแต่ละคอลัมน์ · DoR · DoD · WIP limit · กติกา Expedite</p></div>
+      </div>
+    </div>
+    <div class="note w" style="font-size:15px"><b>ข้อจำกัด CE v1.4.2</b> — บอร์ดลากการ์ดข้าม state ได้ทุกทิศทาง เพราะ Plane CE <b>ไม่มี transition rule และไม่มี WIP limit</b> ในซอฟต์แวร์ (workflow แบบมีเงื่อนไขเป็นฟีเจอร์รุ่นเสียเงิน) นโยบายจึงต้องบังคับด้วยคน + สคริปต์: <code>wip_guard.py</code> ของ LAB 5 นับการ์ดจริงเทียบ <code>wip_policy.json</code> แล้วคืน exit 1 เมื่อเกิน จึงใช้เป็นด่านใน CI ได้</div>
+    <div class="note a" style="font-size:15px"><b><span class="tag o" style="margin-right:6px">LAB 5</span>Mini exercise</b> — เปิด Board ของโปรเจกต์ตัวเองแล้วตอบ: ① คอลัมน์ใดมีการ์ดค้างมากที่สุด และนั่นบอกอะไรเรื่องคอขวด ② ถ้า In Review เต็ม 2/2 ทีมต้องทำอะไร<i>ก่อน</i>ดึงงานใหม่ ③ ใน Plane CE กติกาข้อนั้นเก็บไว้ที่ไหนให้ทุกคนเห็น และอะไรคอยตรวจว่าทีมทำจริง</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Kanban</span><span class="pg"></span></div>
+ </section>
+</div>

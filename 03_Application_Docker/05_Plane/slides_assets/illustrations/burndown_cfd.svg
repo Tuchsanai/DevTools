@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="svg-title svg-desc">
+  <title id="svg-title">Tracking charts: sprint burndown, cumulative flow, and velocity</title>
+  <desc id="svg-desc">Three side-by-side mini charts showing a sprint burndown with ideal and actual lines, a cumulative flow diagram with work-in-progress and lead-time annotations, and a five-sprint velocity bar chart.</desc>
+
+  <defs>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#18181b" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#86590a"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#a32222"/>
+    </marker>
+    <style>
+      text { font-family: 'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif; fill: #18181b; }
+      .panel-title { font-size: 25px; font-weight: 700; }
+      .axis-label { font-size: 18px; font-weight: 600; fill: #52525b; }
+      .tick { font-size: 18px; fill: #52525b; }
+      .annotation { font-size: 18px; font-weight: 700; }
+      .legend { font-size: 18px; font-weight: 600; fill: #52525b; }
+      .axis { stroke: #52525b; stroke-width: 2; stroke-linecap: round; }
+      .grid { stroke: #d4d4d8; stroke-width: 1; stroke-dasharray: 3 5; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+
+  <!-- Panel 1: Sprint burndown -->
+  <g aria-label="Sprint burndown chart">
+    <rect x="28" y="28" width="392" height="664" rx="20" fill="#ffffff" stroke="#e4e4e7" filter="url(#card-shadow)"/>
+    <circle cx="58" cy="70" r="8" fill="#1c5cab"/>
+    <text x="76" y="79" class="panel-title">Sprint burndown</text>
+
+    <!-- Plot grid and axes -->
+    <line x1="86" y1="177" x2="392" y2="177" class="grid"/>
+    <line x1="86" y1="256" x2="392" y2="256" class="grid"/>
+    <line x1="86" y1="335" x2="392" y2="335" class="grid"/>
+    <line x1="86" y1="414" x2="392" y2="414" class="grid"/>
+    <line x1="86" y1="493" x2="392" y2="493" class="grid"/>
+    <line x1="86" y1="177" x2="86" y2="493" class="axis"/>
+    <line x1="86" y1="493" x2="392" y2="493" class="axis"/>
+
+    <text x="72" y="183" class="tick" text-anchor="end">40</text>
+    <text x="72" y="262" class="tick" text-anchor="end">30</text>
+    <text x="72" y="341" class="tick" text-anchor="end">20</text>
+    <text x="72" y="420" class="tick" text-anchor="end">10</text>
+    <text x="72" y="499" class="tick" text-anchor="end">0</text>
+
+    <g class="tick" text-anchor="middle">
+      <text x="86" y="521">1</text><text x="120" y="521">2</text>
+      <text x="154" y="521">3</text><text x="188" y="521">4</text>
+      <text x="222" y="521">5</text><text x="256" y="521">6</text>
+      <text x="290" y="521">7</text><text x="324" y="521">8</text>
+      <text x="358" y="521">9</text><text x="392" y="521">10</text>
+    </g>
+    <text x="239" y="558" class="axis-label" text-anchor="middle">Sprint day</text>
+    <text x="48" y="335" class="axis-label" text-anchor="middle" transform="rotate(-90 48 335)">Remaining points</text>
+
+    <!-- Ideal and actual -->
+    <line x1="86" y1="177" x2="392" y2="493" stroke="#71717a" stroke-width="3" stroke-dasharray="8 7"/>
+    <polyline points="86,177 120,193 154,209 188,240 222,248 256,232 290,280 324,327 358,422 392,493"
+              fill="none" stroke="#1c5cab" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <g fill="#ffffff" stroke="#1c5cab" stroke-width="4">
+      <circle cx="86" cy="177" r="5"/><circle cx="120" cy="193" r="5"/>
+      <circle cx="154" cy="209" r="5"/><circle cx="188" cy="240" r="5"/>
+      <circle cx="222" cy="248" r="5"/><circle cx="256" cy="232" r="6"/>
+      <circle cx="290" cy="280" r="5"/><circle cx="324" cy="327" r="5"/>
+      <circle cx="358" cy="422" r="5"/><circle cx="392" cy="493" r="5"/>
+    </g>
+
+    <rect x="111" y="278" width="166" height="34" rx="17" fill="#fff7ed" stroke="#fdba74"/>
+    <text x="194" y="301" class="annotation" text-anchor="middle" fill="#86590a">behind schedule</text>
+    <path d="M205 278 C202 266,198 257,190 248" fill="none" stroke="#86590a" stroke-width="2.5" marker-end="url(#arrow-amber)"/>
+
+    <rect x="214" y="130" width="144" height="34" rx="17" fill="#fef2f2" stroke="#fca5a5"/>
+    <text x="286" y="153" class="annotation" text-anchor="middle" fill="#a32222">scope added</text>
+    <path d="M286 164 C278 183,269 210,257 227" fill="none" stroke="#a32222" stroke-width="2.5" marker-end="url(#arrow-red)"/>
+
+    <g transform="translate(80 614)">
+      <line x1="0" y1="0" x2="28" y2="0" stroke="#1c5cab" stroke-width="5" stroke-linecap="round"/>
+      <text x="38" y="6" class="legend">Actual</text>
+      <line x1="142" y1="0" x2="170" y2="0" stroke="#71717a" stroke-width="3" stroke-dasharray="7 6"/>
+      <text x="180" y="6" class="legend">Ideal</text>
+    </g>
+  </g>
+
+  <!-- Panel 2: Cumulative flow diagram -->
+  <g aria-label="Cumulative flow diagram">
+    <rect x="444" y="28" width="392" height="664" rx="20" fill="#ffffff" stroke="#e4e4e7" filter="url(#card-shadow)"/>
+    <circle cx="474" cy="70" r="8" fill="#2a78d6"/>
+    <text x="492" y="79" class="panel-title">Cumulative flow</text>
+
+    <!-- Plot grid and axes -->
+    <line x1="502" y1="177" x2="808" y2="177" class="grid"/>
+    <line x1="502" y1="256" x2="808" y2="256" class="grid"/>
+    <line x1="502" y1="335" x2="808" y2="335" class="grid"/>
+    <line x1="502" y1="414" x2="808" y2="414" class="grid"/>
+    <line x1="502" y1="493" x2="808" y2="493" class="grid"/>
+    <line x1="502" y1="177" x2="502" y2="493" class="axis"/>
+    <line x1="502" y1="493" x2="808" y2="493" class="axis"/>
+
+    <text x="488" y="183" class="tick" text-anchor="end">40</text>
+    <text x="488" y="262" class="tick" text-anchor="end">30</text>
+    <text x="488" y="341" class="tick" text-anchor="end">20</text>
+    <text x="488" y="420" class="tick" text-anchor="end">10</text>
+    <text x="488" y="499" class="tick" text-anchor="end">0</text>
+    <g class="tick" text-anchor="middle">
+      <text x="502" y="521">1</text><text x="563" y="521">2</text><text x="624" y="521">3</text>
+      <text x="686" y="521">4</text><text x="747" y="521">5</text><text x="808" y="521">6</text>
+    </g>
+    <text x="655" y="558" class="axis-label" text-anchor="middle">Time</text>
+    <text x="464" y="335" class="axis-label" text-anchor="middle" transform="rotate(-90 464 335)">Work items</text>
+
+    <!-- Stacked cumulative bands: top total remains 40 -->
+    <path d="M502 493 L563 477 L624 438 L686 390 L747 319 L808 240 L808 493 Z" fill="#116b11" fill-opacity="0.90"/>
+    <path d="M502 454 L563 430 L624 383 L686 327 L747 264 L808 208 L808 240 L747 319 L686 390 L624 438 L563 477 L502 493 Z" fill="#2a78d6" fill-opacity="0.88"/>
+    <path d="M502 177 L563 177 L624 177 L686 177 L747 177 L808 177 L808 208 L747 264 L686 327 L624 383 L563 430 L502 454 Z" fill="#a1a1aa" fill-opacity="0.72"/>
+    <polyline points="502,493 563,477 624,438 686,390 747,319 808,240" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <polyline points="502,454 563,430 624,383 686,327 747,264 808,208" fill="none" stroke="#ffffff" stroke-width="3"/>
+
+    <!-- WIP vertical bracket -->
+    <path d="M731 276 h-10 M726 276 V329 M731 329 h-10" fill="none" stroke="#18181b" stroke-width="3" stroke-linecap="round"/>
+    <rect x="552" y="286" width="182" height="34" rx="17" fill="#ffffff" fill-opacity="0.94" stroke="#93c5fd"/>
+    <text x="643" y="309" class="annotation" text-anchor="middle" fill="#1c5cab">WIP = band height</text>
+
+    <!-- Lead time horizontal bracket -->
+    <path d="M592 403 v10 M592 408 H688 M688 403 v10" fill="none" stroke="#86590a" stroke-width="3" stroke-linecap="round"/>
+    <rect x="526" y="425" width="228" height="34" rx="17" fill="#fff7ed" stroke="#fdba74"/>
+    <text x="640" y="448" class="annotation" text-anchor="middle" fill="#86590a">Lead time = band width</text>
+
+    <g transform="translate(486 614)">
+      <rect x="0" y="-10" width="18" height="18" rx="4" fill="#116b11"/>
+      <text x="26" y="6" class="legend">Done</text>
+      <rect x="102" y="-10" width="18" height="18" rx="4" fill="#2a78d6"/>
+      <text x="128" y="6" class="legend">In Progress</text>
+      <rect x="257" y="-10" width="18" height="18" rx="4" fill="#a1a1aa"/>
+      <text x="283" y="6" class="legend">To Do</text>
+    </g>
+  </g>
+
+  <!-- Panel 3: Velocity -->
+  <g aria-label="Velocity bar chart">
+    <rect x="860" y="28" width="392" height="664" rx="20" fill="#ffffff" stroke="#e4e4e7" filter="url(#card-shadow)"/>
+    <circle cx="890" cy="70" r="8" fill="#116b11"/>
+    <text x="908" y="79" class="panel-title">Velocity</text>
+
+    <!-- Plot grid and axes -->
+    <line x1="918" y1="177" x2="1224" y2="177" class="grid"/>
+    <line x1="918" y1="282" x2="1224" y2="282" class="grid"/>
+    <line x1="918" y1="388" x2="1224" y2="388" class="grid"/>
+    <line x1="918" y1="493" x2="1224" y2="493" class="grid"/>
+    <line x1="918" y1="177" x2="918" y2="493" class="axis"/>
+    <line x1="918" y1="493" x2="1224" y2="493" class="axis"/>
+
+    <text x="904" y="183" class="tick" text-anchor="end">30</text>
+    <text x="904" y="288" class="tick" text-anchor="end">20</text>
+    <text x="904" y="394" class="tick" text-anchor="end">10</text>
+    <text x="904" y="499" class="tick" text-anchor="end">0</text>
+    <text x="880" y="335" class="axis-label" text-anchor="middle" transform="rotate(-90 880 335)">Points done</text>
+
+    <!-- Bars: 18, 22, 20, 25, 24 -->
+    <g fill="#1c5cab">
+      <rect x="941" y="303" width="40" height="190" rx="8"/>
+      <rect x="999" y="261" width="40" height="232" rx="8"/>
+      <rect x="1057" y="282" width="40" height="211" rx="8"/>
+      <rect x="1115" y="230" width="40" height="263" rx="8"/>
+      <rect x="1173" y="240" width="40" height="253" rx="8"/>
+    </g>
+    <g font-size="18" font-weight="700" fill="#18181b" text-anchor="middle">
+      <text x="961" y="291">18</text><text x="1019" y="249">22</text>
+      <text x="1077" y="270">20</text><text x="1135" y="218">25</text>
+      <text x="1193" y="228">24</text>
+    </g>
+    <g class="tick" text-anchor="middle">
+      <text x="961" y="521">S1</text><text x="1019" y="521">S2</text>
+      <text x="1077" y="521">S3</text><text x="1135" y="521">S4</text>
+      <text x="1193" y="521">S5</text>
+    </g>
+    <text x="1071" y="558" class="axis-label" text-anchor="middle">Sprint</text>
+
+    <!-- Average = 21.8, labelled as 22 -->
+    <line x1="930" y1="261" x2="1220" y2="261" stroke="#86590a" stroke-width="3" stroke-dasharray="8 6"/>
+    <rect x="1010" y="129" width="174" height="38" rx="19" fill="#fff7ed" stroke="#fdba74"/>
+    <text x="1097" y="155" class="annotation" text-anchor="middle" fill="#86590a">avg 22 pts</text>
+    <path d="M1097 167 V252" fill="none" stroke="#86590a" stroke-width="2.5" marker-end="url(#arrow-amber)"/>
+
+    <rect x="926" y="594" width="286" height="48" rx="14" fill="#f0fdf4" stroke="#bbf7d0"/>
+    <text x="1069" y="625" font-size="18" font-weight="600" text-anchor="middle" fill="#116b11">Stable delivery across 5 sprints</text>
+  </g>
+</svg>

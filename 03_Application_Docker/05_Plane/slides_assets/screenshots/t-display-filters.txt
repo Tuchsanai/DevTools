@@ -1,0 +1,3 @@
+The board Display menu open over the Plane Lab work items; the layout switcher is the icon row at the top right with Board selected.
+Group by is set to States and Order by to Priority (both radio buttons checked), while Display Properties and Sub-group by are collapsed so the whole menu fits without scrolling.
+Show sub-work items and Show empty groups are both switched on.

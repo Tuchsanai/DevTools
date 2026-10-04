@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: lab007
+  annotations:
+    kubernetes.io/change-cause: "release v1"
+spec:
+  replicas: 3 # จำนวน Pod ที่ต้องการ
+  selector:
+    matchLabels:
+      app: web # จับคู่กับ label ของ Pod
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: k8s-lab-web:v1 # เวอร์ชันเริ่มต้น
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          readinessProbe: # รับ traffic เมื่อหน้าเว็บพร้อม
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 2

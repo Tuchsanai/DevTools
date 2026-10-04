@@ -1,0 +1,2 @@
+Plane Lab project settings, open on the Cycles feature page with the "Enable cycles" toggle switched on.
+This Plane 1.4.2 CE build has no combined Features page: the settings sidebar lists each feature as its own page under the Features group — Cycles, Modules, Views, Pages and Intake — above Work Structure (States, Labels, Estimates) and Execution (Automations).

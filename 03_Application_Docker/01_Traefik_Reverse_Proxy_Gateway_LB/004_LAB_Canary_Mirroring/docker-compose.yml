@@ -1,0 +1,48 @@
+services:
+  traefik:
+    image: traefik:v3.7.4
+    command:
+      - --api.insecure=true
+      - --entrypoints.web.address=:80
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./dynamic:/etc/traefik/dynamic:ro
+    networks:
+      - labnet
+
+  v1:
+    image: traefik/whoami:v1.11
+    command:
+      - --name=v1
+      - --verbose
+    hostname: v1
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=labnet
+      - traefik.http.services.v1.loadbalancer.server.port=80
+    networks:
+      - labnet
+
+  v2:
+    image: traefik/whoami:v1.11
+    command:
+      - --name=v2
+      - --verbose
+    hostname: v2
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=labnet
+      - traefik.http.services.v2.loadbalancer.server.port=80
+    networks:
+      - labnet
+
+networks:
+  labnet:
+    name: labnet

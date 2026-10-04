@@ -1,0 +1,47 @@
+# ═══ static config รูปแบบที่ 2 : ย้าย command: ทั้งชุดไปไว้ใน traefik.yml ═══
+#
+# สังเกตว่า service traefik ไม่มี command: เลย — Traefik อ่าน /etc/traefik/traefik.yml
+# เป็นไฟล์ static config โดยอัตโนมัติ  ผลลัพธ์ที่ /api/entrypoints และ /api/overview
+# ต้องเหมือนกับฉบับ flags ทุกประการ
+name: lab007
+
+# หมายเหตุ: ส่วนของ app เหมือนไฟล์ฉบับสมบูรณ์ทุกบรรทัด เพื่อให้เทียบได้ว่า
+# "static config สามแบบให้ผลเท่ากัน" โดยไม่มีตัวแปรอื่นมารบกวน
+services:
+  traefik:
+    image: traefik:v3.7.4
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./dynamic:/etc/traefik/dynamic:ro
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    networks:
+      - labnet
+
+  app:
+    build: ./app
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: lab007net
+      traefik.http.routers.myapp.rule: PathPrefix(`/app`)
+      traefik.http.routers.myapp.entrypoints: web
+      traefik.http.routers.myapp.service: myapp
+      traefik.http.routers.myapp.middlewares: stamp@docker,file-stamp@file
+      traefik.http.routers.myapp-host.rule: Host(`app.lab`)
+      traefik.http.routers.myapp-host.entrypoints: web
+      traefik.http.routers.myapp-host.service: myapp
+      traefik.http.routers.myapp-host.priority: "100"
+      traefik.http.routers.myapp-host.middlewares: stamp@docker
+      traefik.http.services.myapp.loadbalancer.server.port: "8080"
+      traefik.http.middlewares.stamp.headers.customresponseheaders.X-Config-Source: "docker-labels"
+    networks:
+      - labnet
+      - backoffice
+
+networks:
+  labnet:
+    name: lab007net
+  backoffice:
+    name: lab007-backoffice

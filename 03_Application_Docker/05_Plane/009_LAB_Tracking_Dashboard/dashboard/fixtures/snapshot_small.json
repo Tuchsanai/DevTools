@@ -1,0 +1,35 @@
+{
+  "_doc": "fixture เล็กที่รู้คำตอบ: 6 work items · states 5 · Sprint 0 (completed) + Sprint 1 (current) · activity เปลี่ยน state · 1 relation",
+  "states": {
+    "s-bl": {"name": "Backlog", "group": "backlog"},
+    "s-td": {"name": "Todo", "group": "unstarted"},
+    "s-ip": {"name": "In Progress", "group": "started"},
+    "s-rv": {"name": "In Review", "group": "started"},
+    "s-dn": {"name": "Done", "group": "completed"}
+  },
+  "points": {"p1": 1, "p2": 2, "p3": 3, "p5": 5, "p8": 8},
+  "items": [
+    {"id": "A-1", "sequence_id": 1, "name": "login", "state": "s-dn", "priority": "high", "created_at": "2026-08-25T08:00:00Z", "completed_at": "2026-08-27T08:00:00Z", "estimate_point": "p5", "assignees": ["u1"], "labels": []},
+    {"id": "A-2", "sequence_id": 2, "name": "search", "state": "s-dn", "priority": "medium", "created_at": "2026-08-25T08:00:00Z", "completed_at": "2026-08-29T08:00:00Z", "estimate_point": "p3", "assignees": ["u2"], "labels": []},
+    {"id": "A-3", "sequence_id": 3, "name": "cart", "state": "s-td", "priority": "high", "created_at": "2026-08-26T08:00:00Z", "completed_at": null, "estimate_point": "p3", "assignees": [], "labels": []},
+    {"id": "A-4", "sequence_id": 4, "name": "checkout", "state": "s-ip", "priority": "urgent", "created_at": "2026-08-26T08:00:00Z", "completed_at": null, "estimate_point": "p2", "assignees": ["u1"], "labels": []},
+    {"id": "A-5", "sequence_id": 5, "name": "receipt", "state": "s-td", "priority": "low", "created_at": "2026-08-28T08:00:00Z", "completed_at": null, "estimate_point": "p1", "assignees": [], "labels": []},
+    {"id": "A-6", "sequence_id": 6, "name": "notify", "state": "s-ip", "priority": "medium", "created_at": "2026-08-30T08:00:00Z", "completed_at": null, "estimate_point": "p8", "assignees": ["u2"], "labels": []}
+  ],
+  "cycles": [
+    {"id": "c0", "name": "Sprint 0", "start_date": "2026-08-18", "end_date": "2026-08-31", "status": "completed", "issue_ids": ["A-1", "A-2"]},
+    {"id": "c1", "name": "Sprint 1", "start_date": "2026-08-25", "end_date": "2026-09-07", "status": "current", "issue_ids": ["A-1", "A-2", "A-3", "A-4"]}
+  ],
+  "activities": [
+    {"issue_id": "A-1", "field": "state", "old_value": "Todo", "new_value": "In Progress", "created_at": "2026-08-26T08:00:00Z"},
+    {"issue_id": "A-1", "field": "state", "old_value": "In Progress", "new_value": "Done", "created_at": "2026-08-27T08:00:00Z"},
+    {"issue_id": "A-2", "field": "state", "old_value": "Todo", "new_value": "In Progress", "created_at": "2026-08-27T08:00:00Z"},
+    {"issue_id": "A-2", "field": "state", "old_value": "In Progress", "new_value": "Done", "created_at": "2026-08-29T08:00:00Z"},
+    {"issue_id": "A-4", "field": "state", "old_value": "Todo", "new_value": "In Progress", "created_at": "2026-08-27T08:00:00Z"},
+    {"issue_id": "A-6", "field": "state", "old_value": "Backlog", "new_value": "In Progress", "created_at": "2026-08-30T20:00:00Z"}
+  ],
+  "relations": [
+    {"issue_id": "A-5", "related_issue_id": "A-4", "relation_type": "blocked_by"},
+    {"issue_id": "A-3", "related_issue_id": "A-1", "relation_type": "blocked_by"}
+  ]
+}

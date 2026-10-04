@@ -1,0 +1,3 @@
+The Plane Lab Cycles page with the Active cycle section showing Sprint 2 at 60% (Aug 30 – Sep 12, 2026).
+Its Progress panel reads 3/5 work items closed (Completed 3, Started 1, Backlog 1) next to the work item burndown chart.
+The Upcoming cycle section is empty (0) and the Completed cycle section is expanded so Sprint 1 at 38% (Aug 28–31, 2026) is visible on the same screen.

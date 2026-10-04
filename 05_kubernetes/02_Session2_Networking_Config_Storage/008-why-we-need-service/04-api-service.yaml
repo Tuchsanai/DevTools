@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: lab008
+spec:
+  selector:
+    app: api # Endpoints เปลี่ยนตามสมาชิกที่มี label นี้
+  ports:
+    - name: http
+      port: 8000 # พอร์ตคงที่ของ Service
+      targetPort: http

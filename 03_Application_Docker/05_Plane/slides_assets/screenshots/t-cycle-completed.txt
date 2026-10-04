@@ -1,0 +1,2 @@
+Completed Sprint 1 is open with its three work items and completed-state banner.
+The side panel shows the Aug 28–31 date range, 3/8 work items, and the final progress snapshot chart.

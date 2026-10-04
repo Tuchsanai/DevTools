@@ -1,0 +1,2 @@
+PLAB-4 is open on Activity with actor names and relative timestamps visible.
+The history records multiple state changes plus a relation, link, and comment by admin.

@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: skillspace
+  namespace: lab019
+spec:
+  ingressClassName: nginx
+  rules:
+    - http: # ไม่กำหนด host เพื่อเปิดผ่าน localhost ได้
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 3000

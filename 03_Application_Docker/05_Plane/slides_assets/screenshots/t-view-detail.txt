@@ -1,0 +1,2 @@
+The saved Expedite lane view is open in board layout.
+Its filter chip visibly selects Priority as any of Urgent or High, and matching work items appear by state.

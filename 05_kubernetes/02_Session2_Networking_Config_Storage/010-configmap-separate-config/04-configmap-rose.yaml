@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-config
+  namespace: lab010
+data:
+  SITE_NAME: "ศูนย์บริการซ่อม คณะวิศวกรรมศาสตร์"
+  THEME: rose # ค่าใหม่จะมีผลกับ env เมื่อสร้าง container ใหม่

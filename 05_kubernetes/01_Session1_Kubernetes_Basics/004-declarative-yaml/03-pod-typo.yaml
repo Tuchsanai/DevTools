@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Pods # ผิดตั้งใจ: API รู้จัก kind ชื่อ Pod ไม่ใช่ Pods
+metadata:
+  name: web-typo
+spec:
+  containers:
+    - name: web
+      image: k8s-lab-web:v1
+      imagePullPolicy: IfNotPresent

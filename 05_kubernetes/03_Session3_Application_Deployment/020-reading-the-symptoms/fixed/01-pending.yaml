@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pending-web
+  namespace: lab020
+  labels:
+    case: pending
+spec:
+  containers:
+    - name: web
+      image: k8s-lab-web:v1
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: 50m # ลดให้ scheduler หา node ได้

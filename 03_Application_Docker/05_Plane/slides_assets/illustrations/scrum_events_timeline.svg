@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Scrum events across a two-week sprint</title>
+  <desc id="desc">A horizontal timeline showing ten working days, daily scrums, sprint planning at the start, sprint review and retrospective at the end, and the sprint as the container event.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#18181b" flood-opacity="0.13"/>
+    </filter>
+    <style>
+      text { font-family: 'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif; }
+      .ink { fill: #18181b; }
+      .muted { fill: #52525b; }
+      .day { font-size: 18px; font-weight: 700; }
+      .event { font-size: 18px; font-weight: 700; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+
+  <!-- Heading -->
+  <text x="64" y="62" class="ink" font-size="34" font-weight="750">Scrum events in a two-week sprint</text>
+  <text x="64" y="94" class="muted" font-size="20">A practical rhythm across 10 working days</text>
+
+  <!-- Sprint container bracket -->
+  <path d="M110 178 V150 Q110 138 122 138 H1158 Q1170 138 1170 150 V178"
+        fill="none" stroke="#1c5cab" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="410" y="118" width="460" height="42" rx="21" fill="#fafafa"/>
+  <text x="640" y="146" text-anchor="middle" fill="#1c5cab" font-size="22" font-weight="750">Sprint = the container event (1–4 weeks)</text>
+
+  <!-- Week labels -->
+  <text x="340" y="201" text-anchor="middle" class="muted" font-size="18" font-weight="700">WEEK 1</text>
+  <text x="900" y="201" text-anchor="middle" class="muted" font-size="18" font-weight="700">WEEK 2</text>
+
+  <!-- Daily Scrum cards -->
+  <g filter="url(#shadow)">
+    <g transform="translate(97 220)">
+      <rect width="86" height="74" rx="12" fill="#e8f2ff" stroke="#2a78d6" stroke-width="2"/>
+      <text x="43" y="21" text-anchor="middle" fill="#1c5cab" class="event">Daily</text>
+      <text x="43" y="43" text-anchor="middle" fill="#1c5cab" class="event">Scrum</text>
+      <text x="43" y="65" text-anchor="middle" fill="#1c5cab" font-size="18">15 min</text>
+    </g>
+    <g transform="translate(197 220)">
+      <rect width="86" height="74" rx="12" fill="#e8f2ff" stroke="#2a78d6" stroke-width="2"/>
+      <text x="43" y="21" text-anchor="middle" fill="#1c5cab" class="event">Daily</text>
+      <text x="43" y="43" text-anchor="middle" fill="#1c5cab" class="event">Scrum</text>
+      <text x="43" y="65" text-anchor="middle" fill="#1c5cab" font-size="18">15 min</text>
+    </g>
+    <g transform="translate(297 220)">
+      <rect width="86" height="74" rx="12" fill="#e8f2ff" stroke="#2a78d6" stroke-width="2"/>
+      <text x="43" y="21" text-anchor="middle" fill="#1c5cab" class="event">Daily</text>
+      <text x="43" y="43" text-anchor="middle" fill="#1c5cab" class="event">Scrum</text>
+      <text x="43" y="65" text-anchor="middle" fill="#1c5cab" font-size="18">15 min</text>
+    </g>
+    <g transform="translate(397 220)">
+      <rect width="86" height="74" rx="12" fill="#e8f2ff" stroke="#2a78d6" stroke-width="2"/>
+      <text x="43" y="21" text-anchor="middle" fill="#1c5cab" class="event">Daily</text>
+      <text x="43" y="43" text-anchor="middle" fill="#1c5cab" class="event">Scrum</text>
+      <text x="43" y="65" text-anchor="middle" fill="#1c5cab" font-size="18">15 min</text>
+    </g>
+    <g transform="translate(497 220)">
+      <rect width="86" height="74" rx="12" fill="#e8f2ff" stroke="#2a78d6" stroke-width="2"/>
+      <text x="43" y="21" text-anchor="middle" fill="#1c5cab" class="event">Daily</text>
+      <text x="43" y="43" text-anchor="middle" fill="#1c5cab" class="event">Scrum</text>
+      <text x="43" y="65" text-anchor="middle" fill="#1c5cab" font-size="18">15 min</text>
+    </g>
+    <g transform="translate(657 220)">
+      <rect width="86" height="74" rx="12" fill="#e8f2ff" stroke="#2a78d6" stroke-width="2"/>
+      <text x="43" y="21" text-anchor="middle" fill="#1c5cab" class="event">Daily</text>
+      <text x="43" y="43" text-anchor="middle" fill="#1c5cab" class="event">Scrum</text>
+      <text x="43" y="65" text-anchor="middle" fill="#1c5cab" font-size="18">15 min</text>
+    </g>
+    <g transform="translate(757 220)">
+      <rect width="86" height="74" rx="12" fill="#e8f2ff" stroke="#2a78d6" stroke-width="2"/>
+      <text x="43" y="21" text-anchor="middle" fill="#1c5cab" class="event">Daily</text>
+      <text x="43" y="43" text-anchor="middle" fill="#1c5cab" class="event">Scrum</text>
+      <text x="43" y="65" text-anchor="middle" fill="#1c5cab" font-size="18">15 min</text>
+    </g>
+    <g transform="translate(857 220)">
+      <rect width="86" height="74" rx="12" fill="#e8f2ff" stroke="#2a78d6" stroke-width="2"/>
+      <text x="43" y="21" text-anchor="middle" fill="#1c5cab" class="event">Daily</text>
+      <text x="43" y="43" text-anchor="middle" fill="#1c5cab" class="event">Scrum</text>
+      <text x="43" y="65" text-anchor="middle" fill="#1c5cab" font-size="18">15 min</text>
+    </g>
+    <g transform="translate(957 220)">
+      <rect width="86" height="74" rx="12" fill="#e8f2ff" stroke="#2a78d6" stroke-width="2"/>
+      <text x="43" y="21" text-anchor="middle" fill="#1c5cab" class="event">Daily</text>
+      <text x="43" y="43" text-anchor="middle" fill="#1c5cab" class="event">Scrum</text>
+      <text x="43" y="65" text-anchor="middle" fill="#1c5cab" font-size="18">15 min</text>
+    </g>
+    <g transform="translate(1057 220)">
+      <rect width="86" height="74" rx="12" fill="#e8f2ff" stroke="#2a78d6" stroke-width="2"/>
+      <text x="43" y="21" text-anchor="middle" fill="#1c5cab" class="event">Daily</text>
+      <text x="43" y="43" text-anchor="middle" fill="#1c5cab" class="event">Scrum</text>
+      <text x="43" y="65" text-anchor="middle" fill="#1c5cab" font-size="18">15 min</text>
+    </g>
+  </g>
+
+  <!-- Connect Daily cards to ticks -->
+  <g stroke="#9cc5f2" stroke-width="2">
+    <path d="M140 294 V326"/><path d="M240 294 V326"/><path d="M340 294 V326"/>
+    <path d="M440 294 V326"/><path d="M540 294 V326"/><path d="M700 294 V326"/>
+    <path d="M800 294 V326"/><path d="M900 294 V326"/><path d="M1000 294 V326"/>
+    <path d="M1100 294 V326"/>
+  </g>
+
+  <!-- Main sprint bar -->
+  <rect x="100" y="326" width="1080" height="52" rx="26" fill="#dceafe" stroke="#1c5cab" stroke-width="3"/>
+  <path d="M100 352 H1180" stroke="#2a78d6" stroke-width="3" opacity="0.45"/>
+
+  <!-- Weekend pause -->
+  <rect x="592" y="318" width="96" height="68" rx="14" fill="#fafafa" stroke="#a1a1aa" stroke-width="2" stroke-dasharray="6 6"/>
+  <text x="640" y="346" text-anchor="middle" class="muted" font-size="18" font-weight="700">WEEKEND</text>
+  <text x="640" y="370" text-anchor="middle" class="muted" font-size="18">pause</text>
+
+  <!-- Day ticks and labels -->
+  <g stroke="#1c5cab" stroke-width="3" fill="none">
+    <path d="M140 326 V378"/><path d="M240 326 V378"/><path d="M340 326 V378"/>
+    <path d="M440 326 V378"/><path d="M540 326 V378"/><path d="M700 326 V378"/>
+    <path d="M800 326 V378"/><path d="M900 326 V378"/><path d="M1000 326 V378"/>
+    <path d="M1100 326 V378"/>
+  </g>
+  <g class="ink day" text-anchor="middle">
+    <text x="140" y="411">Day 1</text><text x="240" y="411">Day 2</text>
+    <text x="340" y="411">Day 3</text><text x="440" y="411">Day 4</text>
+    <text x="540" y="411">Day 5</text><text x="700" y="411">Day 6</text>
+    <text x="800" y="411">Day 7</text><text x="900" y="411">Day 8</text>
+    <text x="1000" y="411">Day 9</text><text x="1100" y="411">Day 10</text>
+  </g>
+
+  <!-- Start and end event connectors -->
+  <path d="M112 378 V447" stroke="#116b11" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="112" cy="352" r="8" fill="#116b11"/>
+  <path d="M1168 378 V447" stroke="#a32222" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="1168" cy="352" r="8" fill="#a32222"/>
+
+  <!-- Event blocks -->
+  <g filter="url(#shadow)">
+    <rect x="76" y="447" width="322" height="94" rx="16" fill="#e7f6e7" stroke="#116b11" stroke-width="3"/>
+    <circle cx="109" cy="480" r="13" fill="#116b11"/>
+    <path d="M103 480 L108 485 L117 475" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="132" y="486" fill="#116b11" font-size="22" font-weight="750">Sprint Planning</text>
+    <text x="109" y="520" class="muted" font-size="20">max 8 h</text>
+
+    <rect x="690" y="447" width="228" height="94" rx="16" fill="#fff4dc" stroke="#86590a" stroke-width="3"/>
+    <text x="714" y="486" fill="#86590a" font-size="21" font-weight="750">Sprint Review</text>
+    <text x="714" y="520" class="muted" font-size="20">max 4 h</text>
+
+    <rect x="936" y="447" width="268" height="94" rx="16" fill="#fdeaea" stroke="#a32222" stroke-width="3"/>
+    <text x="960" y="486" fill="#a32222" font-size="20" font-weight="750">Sprint Retrospective</text>
+    <text x="960" y="520" class="muted" font-size="20">max 3 h</text>
+  </g>
+
+  <!-- Timebox callout -->
+  <g transform="translate(312 592)">
+    <rect width="656" height="72" rx="20" fill="#fff7e6" stroke="#86590a" stroke-width="2"/>
+    <circle cx="42" cy="36" r="18" fill="#86590a"/>
+    <path d="M42 25 V38 L51 43" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="76" y="44" fill="#18181b" font-size="22" font-weight="700">Timeboxes scale down for shorter sprints</text>
+  </g>
+</svg>

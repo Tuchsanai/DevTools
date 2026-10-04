@@ -1,0 +1,2 @@
+Sprint 2 is open with its work-item list and cycle details.
+The right panel shows Work items progress of 3/5, Points of 8/15, and the Work items burndown chart.

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Ethics dilemmas</title>
+  <desc id="desc">Three ethics scenario cards about testing deadlines, disclosing a known software bug, and access to personal data, followed by eight professional principles.</desc>
+
+  <defs>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#18181b" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+
+  <!-- Scenario cards -->
+  <g font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif">
+    <!-- Card 1: deadline and testing -->
+    <g transform="translate(50 54)">
+      <rect width="360" height="470" rx="28" fill="#ffffff" stroke="#dbeafe" stroke-width="2" filter="url(#shadow)"/>
+      <rect x="24" y="22" width="312" height="210" rx="22" fill="#eff6ff"/>
+
+      <!-- Clock -->
+      <circle cx="130" cy="116" r="52" fill="#ffffff" stroke="#1c5cab" stroke-width="7"/>
+      <path d="M130 82v37l24 16" fill="none" stroke="#1c5cab" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="130" cy="119" r="6" fill="#1c5cab"/>
+      <path d="M104 55h52" stroke="#2a78d6" stroke-width="8" stroke-linecap="round"/>
+      <path d="M130 55v10" stroke="#2a78d6" stroke-width="8" stroke-linecap="round"/>
+
+      <!-- Crossed-out test tube -->
+      <g transform="translate(208 73)">
+        <path d="M7 0h48M18 0v36L4 82a18 18 0 0 0 17 24h20A18 18 0 0 0 58 82L44 36V0" fill="#ffffff" stroke="#116b11" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M11 72h41l6 18a18 18 0 0 1-17 16H21A18 18 0 0 1 4 90z" fill="#dcfce7"/>
+        <path d="M8 70h47" stroke="#116b11" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="29" cy="85" r="5" fill="#116b11"/>
+        <circle cx="43" cy="95" r="4" fill="#116b11"/>
+        <path d="M-5 3l70 105" stroke="#a32222" stroke-width="12" stroke-linecap="round"/>
+        <path d="M-5 3l70 105" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+      </g>
+
+      <text x="180" y="282" text-anchor="middle" fill="#18181b" font-size="26" font-weight="700">
+        <tspan x="180" dy="0">Deadline tomorrow:</tspan>
+        <tspan x="180" dy="38">skip the tests?</tspan>
+      </text>
+      <rect x="52" y="378" width="256" height="56" rx="28" fill="#dbeafe" stroke="#2a78d6" stroke-width="2"/>
+      <text x="180" y="414" text-anchor="middle" fill="#1c5cab" font-size="20" font-weight="700">Which principle applies?</text>
+    </g>
+
+    <!-- Card 2: hidden known bug -->
+    <g transform="translate(460 54)">
+      <rect width="360" height="470" rx="28" fill="#ffffff" stroke="#fee2e2" stroke-width="2" filter="url(#shadow)"/>
+      <rect x="24" y="22" width="312" height="210" rx="22" fill="#fff7ed"/>
+
+      <!-- Speech bubble -->
+      <path d="M76 60h208a22 22 0 0 1 22 22v93a22 22 0 0 1-22 22H173l-43 29 8-29H76a22 22 0 0 1-22-22V82a22 22 0 0 1 22-22z" fill="#ffffff" stroke="#86590a" stroke-width="6" stroke-linejoin="round"/>
+
+      <!-- Bug hidden behind a cover -->
+      <g transform="translate(133 81)">
+        <path d="M47 10V0M26 19L17 8M68 19L77 8M19 47H5M75 47h14M18 67H4M76 67h14" fill="none" stroke="#a32222" stroke-width="6" stroke-linecap="round"/>
+        <ellipse cx="47" cy="51" rx="29" ry="37" fill="#fee2e2" stroke="#a32222" stroke-width="6"/>
+        <path d="M47 16v72M22 45h50M27 69h40" fill="none" stroke="#a32222" stroke-width="5"/>
+      </g>
+      <path d="M114 164c28-29 105-36 137-1v27H113z" fill="#86590a"/>
+      <path d="M113 164c31 17 108 18 138-1" fill="none" stroke="#ffffff" stroke-width="5" opacity="0.75"/>
+
+      <text x="180" y="282" text-anchor="middle" fill="#18181b" font-size="26" font-weight="700">
+        <tspan x="180" dy="0">Client asks to hide</tspan>
+        <tspan x="180" dy="38">a known bug</tspan>
+      </text>
+      <rect x="52" y="378" width="256" height="56" rx="28" fill="#fef3c7" stroke="#86590a" stroke-width="2"/>
+      <text x="180" y="414" text-anchor="middle" fill="#86590a" font-size="20" font-weight="700">Which principle applies?</text>
+    </g>
+
+    <!-- Card 3: personal data access -->
+    <g transform="translate(870 54)">
+      <rect width="360" height="470" rx="28" fill="#ffffff" stroke="#dcfce7" stroke-width="2" filter="url(#shadow)"/>
+      <rect x="24" y="22" width="312" height="210" rx="22" fill="#f0fdf4"/>
+
+      <!-- Database -->
+      <g transform="translate(57 68)">
+        <ellipse cx="74" cy="22" rx="62" ry="22" fill="#dbeafe" stroke="#1c5cab" stroke-width="6"/>
+        <path d="M12 22v82c0 12 28 22 62 22s62-10 62-22V22" fill="#ffffff" stroke="#1c5cab" stroke-width="6"/>
+        <path d="M12 59c0 12 28 22 62 22s62-10 62-22M12 95c0 12 28 22 62 22s62-10 62-22" fill="none" stroke="#2a78d6" stroke-width="5"/>
+      </g>
+
+      <!-- User silhouette -->
+      <g transform="translate(224 73)">
+        <circle cx="37" cy="28" r="25" fill="#dbeafe" stroke="#1c5cab" stroke-width="6"/>
+        <path d="M0 103c3-30 17-45 37-45s34 15 37 45z" fill="#dbeafe" stroke="#1c5cab" stroke-width="6" stroke-linejoin="round"/>
+      </g>
+
+      <!-- Padlock -->
+      <g transform="translate(151 116)">
+        <path d="M18 35V23C18 8 29 0 42 0s24 8 24 23v12" fill="none" stroke="#116b11" stroke-width="8" stroke-linecap="round"/>
+        <rect x="4" y="34" width="76" height="66" rx="12" fill="#dcfce7" stroke="#116b11" stroke-width="6"/>
+        <circle cx="42" cy="64" r="8" fill="#116b11"/>
+        <path d="M42 69v14" stroke="#116b11" stroke-width="7" stroke-linecap="round"/>
+      </g>
+
+      <text x="180" y="282" text-anchor="middle" fill="#18181b" font-size="26" font-weight="700">
+        <tspan x="180" dy="0">Personal data:</tspan>
+        <tspan x="180" dy="38">who may see it?</tspan>
+      </text>
+      <rect x="52" y="378" width="256" height="56" rx="28" fill="#dcfce7" stroke="#116b11" stroke-width="2"/>
+      <text x="180" y="414" text-anchor="middle" fill="#116b11" font-size="20" font-weight="700">Which principle applies?</text>
+    </g>
+
+    <!-- Eight ethics principle chips -->
+    <g transform="translate(34 594)" font-size="18" font-weight="700">
+      <g transform="translate(0 0)">
+        <rect width="142" height="72" rx="20" fill="#ffffff" stroke="#bfdbfe" stroke-width="2"/>
+        <circle cx="25" cy="36" r="16" fill="#1c5cab"/>
+        <text x="25" y="42" text-anchor="middle" fill="#ffffff">1</text>
+        <text x="50" y="42" fill="#18181b">Public</text>
+      </g>
+      <g transform="translate(152 0)">
+        <rect width="142" height="72" rx="20" fill="#ffffff" stroke="#bfdbfe" stroke-width="2"/>
+        <circle cx="25" cy="36" r="16" fill="#2a78d6"/>
+        <text x="25" y="42" text-anchor="middle" fill="#ffffff">2</text>
+        <text x="50" y="42" fill="#18181b">Client</text>
+      </g>
+      <g transform="translate(304 0)">
+        <rect width="142" height="72" rx="20" fill="#ffffff" stroke="#bbf7d0" stroke-width="2"/>
+        <circle cx="25" cy="36" r="16" fill="#116b11"/>
+        <text x="25" y="42" text-anchor="middle" fill="#ffffff">3</text>
+        <text x="50" y="42" fill="#18181b">Product</text>
+      </g>
+      <g transform="translate(456 0)">
+        <rect width="142" height="72" rx="20" fill="#ffffff" stroke="#fde68a" stroke-width="2"/>
+        <circle cx="25" cy="36" r="16" fill="#86590a"/>
+        <text x="25" y="42" text-anchor="middle" fill="#ffffff">4</text>
+        <text x="48" y="42" fill="#18181b">Judgment</text>
+      </g>
+      <g transform="translate(608 0)">
+        <rect width="142" height="72" rx="20" fill="#ffffff" stroke="#fde68a" stroke-width="2"/>
+        <circle cx="25" cy="36" r="16" fill="#86590a"/>
+        <text x="25" y="42" text-anchor="middle" fill="#ffffff">5</text>
+        <text x="47" y="42" fill="#18181b" font-size="18" textLength="88" lengthAdjust="spacingAndGlyphs">Management</text>
+      </g>
+      <g transform="translate(760 0)">
+        <rect width="142" height="72" rx="20" fill="#ffffff" stroke="#fecaca" stroke-width="2"/>
+        <circle cx="25" cy="36" r="16" fill="#a32222"/>
+        <text x="25" y="42" text-anchor="middle" fill="#ffffff">6</text>
+        <text x="48" y="42" fill="#18181b" font-size="18">Profession</text>
+      </g>
+      <g transform="translate(912 0)">
+        <rect width="142" height="72" rx="20" fill="#ffffff" stroke="#fecaca" stroke-width="2"/>
+        <circle cx="25" cy="36" r="16" fill="#a32222"/>
+        <text x="25" y="42" text-anchor="middle" fill="#ffffff">7</text>
+        <text x="47" y="42" fill="#18181b" font-size="18" textLength="88" lengthAdjust="spacingAndGlyphs">Colleagues</text>
+      </g>
+      <g transform="translate(1064 0)">
+        <rect width="142" height="72" rx="20" fill="#ffffff" stroke="#d4d4d8" stroke-width="2"/>
+        <circle cx="25" cy="36" r="16" fill="#52525b"/>
+        <text x="25" y="42" text-anchor="middle" fill="#ffffff">8</text>
+        <text x="50" y="42" fill="#18181b">Self</text>
+      </g>
+    </g>
+  </g>
+</svg>

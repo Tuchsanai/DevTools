@@ -1,0 +1,2 @@
+Plane Lab Modules is shown in gallery layout.
+Notifications, Ordering, and Payments cards display status, work-item totals, date ranges, owners, and progress bars.

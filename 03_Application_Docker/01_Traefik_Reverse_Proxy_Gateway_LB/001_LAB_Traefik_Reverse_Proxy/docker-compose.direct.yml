@@ -1,0 +1,18 @@
+services:
+  app1:
+    image: traefik/whoami:v1.11
+    ports:
+      - "8001:80"
+    networks:
+      - labnet
+
+  app2:
+    image: traefik/whoami:v1.11
+    ports:
+      - "8002:80"
+    networks:
+      - labnet
+
+networks:
+  labnet:
+    name: labnet

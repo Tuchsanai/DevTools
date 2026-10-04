@@ -1,0 +1,3 @@
+Plane Lab work items in List layout, grouped by State and ordered by Priority.
+All seven state groups are in frame with their counts: Backlog 6, Todo 2, Ready 2, In Progress 2, In Review 1, Done 7, Cancelled 0.
+Backlog (PLAB-5, 16, 20, 19, 8, 7) and In Progress (PLAB-1, PLAB-4) are expanded and show their state, priority, due date, module, cycle, estimate, label and assignee chips; the other groups are collapsed so every group fits the viewport.

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: lab021
+spec:
+  selector: # ให้ API เรียก PostgreSQL ด้วย DNS ชื่อ db
+    app: db
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres

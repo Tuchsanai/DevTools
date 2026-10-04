@@ -1,0 +1,2 @@
+This screenshot could not be captured from the live Plane Community Edition v1.4.2 interface.
+The populated active cycle exposes only Add work item for creating a new item, not an Add existing work items modal.

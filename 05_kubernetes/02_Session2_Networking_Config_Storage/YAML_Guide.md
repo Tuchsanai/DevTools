@@ -1,0 +1,298 @@
+# คู่มือ YAML ครั้งที่ 2 — Networking, Config & Storage
+
+> ใช้ศึกษาประกอบปฏิบัติการ 008–014 · ตัวอย่างทั้งหมดคัดจากไฟล์จริงในโฟลเดอร์ปฏิบัติการของการสอนครั้งนี้ และระบุไฟล์ต้นทางไว้อย่างครบถ้วน
+## 0. หลักการอ่าน YAML โดยสรุป
+
+1. `apiVersion` กำหนด API group/version ส่วน `kind` ระบุชนิด object ที่จะสร้าง
+2. `metadata` ระบุชื่อ, namespace, labels และข้อมูลกำกับของ object
+3. `spec` คือสภาพที่ต้องการ ส่วน `status` คือสภาพจริงที่ controller บันทึกกลับ
+4. YAML ใช้การเยื้องและ `-` เพื่อสร้างโครงสร้างแบบต้นไม้ จึงต้องพิจารณา parent ของแต่ละ field ให้ถูกต้อง
+5. คู่มือ YAML ครั้งที่ 1 มีฉบับเต็มเรื่อง syntax, โครง object และวิธีใช้ `kubectl explain`; ครั้งนี้ต่อยอดจากพื้นฐานนั้น
+## Deployment
+
+**ทบทวน:** Deployment ควบคุมจำนวนและการเปลี่ยนรุ่นของ Pod; ศึกษาไฟล์ฉบับเต็มและดำเนินการทดลองได้ใน [LAB 008](008-why-we-need-service/README.md)
+ตัวอย่าง YAML แบบย่อจาก `008-why-we-need-service/02-api.yaml`:
+
+```yaml
+apiVersion: apps/v1              # API group/version ของ Deployment
+kind: Deployment                 # controller ที่ดูแล Pod
+metadata:
+  name: api                      # ชื่อ Deployment
+spec:
+  replicas: 2                    # ต้องการ API 2 Pod
+  selector:                      # ต้องตรงกับ labels ใต้ template
+    matchLabels:
+      app: api                   # label ที่ Deployment ใช้เลือก Pod
+  template:                      # แม่แบบของ Pod ที่จะสร้าง
+```
+field สำคัญประกอบด้วย `replicas`, `selector.matchLabels`, `template`, และ `strategy`; ไฟล์นี้ไม่ระบุ `strategy` จึงใช้ `RollingUpdate`
+## Ingress
+
+**ทบทวน:** Ingress เป็น “ประตู” ที่ route HTTP จากภายนอกไปยัง Service; ศึกษาไฟล์ฉบับเต็มและดำเนินการทดลองได้ใน [LAB 008](008-why-we-need-service/README.md) · ตัวอย่าง YAML แบบย่อจาก `008-why-we-need-service/01-web.yaml`:
+
+```yaml
+kind: Ingress                    # กฎทางเข้า HTTP
+spec:
+  ingressClassName: nginx        # ให้ nginx controller รับกฎนี้
+  rules:                         # ไม่ใส่ host จึงรับทุก host
+    - http:
+        paths:
+          - path: /              # URL ที่เริ่มจับคู่
+            pathType: Prefix     # จับคู่ตาม prefix; ต้องระบุ
+            backend:
+              service:
+                name: web        # Service ปลายทาง
+                port:
+                  number: 3000   # พอร์ตของ Service
+```
+field สำคัญคือ `ingressClassName`, `rules[].http.paths[].path`, `pathType`, และ `backend.service`; LAB 008 ใช้เป็นประตูสำเร็จรูป
+## Service
+
+Service แก้ปัญหาการเปลี่ยนแปลงของ Pod IP โดยให้ virtual IP และชื่อ DNS คงที่ แล้วเลือก Pod ปลายทางจาก label ดังนั้น ผู้เรียนจึงควรพิจารณาทุกครั้งว่า Service เลือก Pod ใด รับข้อมูลที่พอร์ตใด และส่งต่อไปยังพอร์ตใด
+โครงสร้างจริงจาก `008-why-we-need-service/04-api-service.yaml`:
+
+```yaml
+apiVersion: v1              # API version ของ Service
+kind: Service               # ปลายทางคงที่หน้า Pod
+metadata:
+  name: api                 # ชื่อสั้นที่ Pod ใน namespace เดียวกันใช้เรียก
+  namespace: lab008         # namespace ของ Service
+spec:
+  selector:                 # map สำหรับเลือก Pod
+    app: api                # เลือก Pod ที่มี label app=api
+  ports:                    # รายการพอร์ตที่ Service เปิด
+    - name: http            # ตั้งชื่อพอร์ตเพื่อให้อ้างอิงได้
+      port: 8000            # พอร์ตของ Service
+      targetPort: http      # ส่งไป container port ชื่อ http
+```
+`type` ไม่ปรากฏในไฟล์นี้ จึงใช้ค่า default `ClusterIP` ส่วน NodePort จริงอยู่ใน `009-service-types-and-access/02-web-nodeport.yaml`:
+
+```yaml
+spec:
+  type: NodePort        # เปิดเพิ่มผ่านพอร์ตบนทุก Node
+  selector:
+    app: web            # เลือก Pod web
+  ports:
+    - port: 3000        # พอร์ตของ Service
+      targetPort: http  # ชื่อ container port ปลายทาง
+      nodePort: 30080   # พอร์ตภายนอกในช่วงที่ cluster กำหนด
+```
+| field | ค่าที่ใช้ได้ | ค่า default | ผลเมื่อเปลี่ยนหรือละเว้น |
+|---|---|---|---|
+| `spec.type` | `ClusterIP`, `NodePort`, `LoadBalancer`, `ExternalName` | `ClusterIP` | `NodePort` เพิ่มทางเข้าที่พอร์ตของทุก Node; `LoadBalancer` ขอ load balancer จากระบบที่รองรับ |
+| `spec.selector` | map ของ label | ไม่มี | selector ไม่ตรงทำให้ Service มี endpoint ว่าง แม้ Pod ยัง Running |
+| `spec.ports[].port` | เลข 1–65535 | ไม่มี ต้องระบุ | เป็นพอร์ตที่ client เรียกบน Service |
+| `targetPort` | เลขหรือชื่อ port ของ Pod | เท่ากับ `port` | ชื่อที่ไม่มีใน Pod ทำให้ส่ง traffic ไปไม่ถึง |
+| `nodePort` | โดยปกติ 30000–32767 หรือปล่อยให้ระบบเลือก | ระบบจัดสรร | ระบุนอกช่วงหรือซ้ำจะถูก API server ปฏิเสธ |
+| `protocol` | `TCP`, `UDP`, `SCTP` | `TCP` | ต้องตรงกับ protocol ที่ปลายทางใช้ |
+DNS ภายใน cluster มีรูปแบบเต็ม `<service>.<namespace>.svc.<cluster-domain>`; ในปฏิบัติการนี้คือ `api.lab008.svc.cluster.local` เนื่องจาก cluster domain คือ `cluster.local`
+Pod ใน `lab008` เรียกสั้น ๆ ว่า `api` ได้ ส่วน Pod ต่าง namespace ใช้ `api.lab008` หรือชื่อเต็ม
+EndpointSlice ถูก controller สร้างและอัปเดตจาก Pod ที่ตรงกับ `selector` โดย Service ไม่ได้บันทึก Pod IP แบบคงที่ หาก selector ไม่ถูกต้อง EndpointSlice จะไม่มีปลายทาง แต่จะไม่เกิด YAML validation error ผู้เรียนสามารถตรวจสอบด้วย `kubectl get endpointslice -l kubernetes.io/service-name=api` ส่วน `kubectl get endpoints api` ยังใช้ตรวจสอบได้ แต่จะแสดง Warning ว่า Endpoints deprecated ตั้งแต่ v1.33
+**ข้อผิดพลาดที่พบบ่อย:** runlog ของ LAB 009 บันทึกข้อความจริง `provided port is not in the valid range. The range of valid ports is 30000-32767` และ `provided port is already allocated` จาก `03-nodeport-bad.yaml` ส่วน selector ที่ไม่ถูกต้องใน LAB 008 สามารถ apply ได้ แต่หน้าเว็บตอบ `"error":"fetch failed"`; ให้ตรวจสอบ `kubectl describe service api` และ EndpointSlice
+คำสั่งตรวจสอบ object จริง:
+```bash
+kubectl get service api -n lab008 -o yaml
+kubectl get endpointslice -n lab008 -l kubernetes.io/service-name=api
+kubectl explain service.spec.ports
+```
+## ConfigMap
+
+ConfigMap แยกค่าที่ไม่ลับออกจาก image ทำให้ image เดียวใช้ config ต่างกันได้ การเลือก `envFrom`, `configMapKeyRef` หรือ mount เป็นไฟล์ขึ้นกับว่าโปรแกรมต้องการอ่านค่าแบบใด
+โครงสร้างจริงจาก `010-configmap-separate-config/02-configmap.yaml`:
+
+```yaml
+apiVersion: v1             # API version ของ ConfigMap
+kind: ConfigMap            # object สำหรับ config ที่ไม่ลับ
+metadata:
+  name: web-config         # ชื่อที่ workload ใช้อ้าง
+  namespace: lab010       # ต้องอยู่ namespace เดียวกับ Pod
+data:                     # map ที่ทุก value เป็น string
+  SITE_NAME: "ศูนย์บริการซ่อม คณะวิศวกรรมศาสตร์" # ข้อความจึงใส่ quote
+  THEME: amber            # ค่า theme ของเว็บ
+```
+การนำ key ทั้งหมดเข้าสู่ environment ตามไฟล์จริง `010-configmap-separate-config/03-web-envfrom.yaml`:
+
+```yaml
+containers:                       # อยู่ใต้ spec.template.spec
+  - name: web                     # container ที่รับค่า config
+    image: k8s-lab-web:v1         # image จริงของแล็บ
+    # ... imagePullPolicy และ ports อยู่ตรงนี้ในไฟล์จริง
+    envFrom:                      # นำทุก key เข้า environment
+      - configMapRef:
+          name: web-config        # ConfigMap ใน namespace เดียวกัน
+```
+| field | ค่าที่ใช้ได้ | ค่า default | ผลเมื่อเปลี่ยนหรือละเว้น |
+|---|---|---|---|
+| `data` | map ที่ value เป็น string | ไม่มี | quote ค่าที่ YAML อาจตีความเป็น number/bool; ConfigMap ไม่ใช่พื้นที่บันทึก secret |
+| `envFrom[].configMapRef.name` | ชื่อ ConfigMap namespace เดียวกัน | ไม่มี | ทุก key ที่เป็นชื่อ env ที่ถูกต้องถูกนำเข้า container |
+| `env[].valueFrom.configMapKeyRef` | `name` + `key` | ไม่มี | เลือกเพียง key เดียวและตั้งชื่อ env ฝั่ง container ใหม่ได้ |
+| `optional` ใน ref | `true`/`false` | `false` | ถ้าเป็น `false` แล้ว object/key ไม่มี Container จะเริ่มไม่ได้ |
+| ConfigMap volume | ชื่อ ConfigMap + path ของ volume | ไม่มี | แต่ละ key กลายเป็นไฟล์; การอัปเดตมาถึงภายหลัง แต่โปรแกรมต้อง reload เอง |
+`configMapKeyRef` และ ConfigMap volume เป็นกลไกที่อธิบายเพิ่ม แต่ไม่มี YAML ตัวอย่างในไฟล์ของ LAB 010 จึงไม่สร้าง snippet สมมุติขึ้นมา สำหรับ `envFrom` ค่าที่เปลี่ยนแปลงจะไม่อัปเดต environment ของ container เดิม จึงต้องสร้าง Pod ใหม่ เช่น `kubectl rollout restart deployment/web`; volume จะอัปเดตไฟล์ภายหลัง ยกเว้น mount ผ่าน `subPath`
+**ข้อผิดพลาดที่พบบ่อย:** runlog ของ LAB 010 บันทึก Pod เป็น `CreateContainerConfigError` และ Event จริง `Error: configmap "web-confg" not found` เมื่อสะกดชื่อไม่ถูกต้อง อีกกรณีหนึ่งคือการ apply ConfigMap ใหม่โดยคาดว่า environment ของ Container เดิมจะเปลี่ยนแปลง กรณีนี้ไม่เกิด error และต้องสร้าง Pod ใหม่
+คำสั่งตรวจสอบ object จริง:
+```bash
+kubectl get configmap web-config -n lab010 -o yaml
+kubectl explain configmap.data
+kubectl explain deployment.spec.template.spec.containers.envFrom.configMapRef
+```
+## Secret
+
+Secret แยกข้อมูลที่ต้องควบคุมสิทธิ์ออกจาก manifest ของ workload แต่ base64 เป็นเพียง encoding ไม่ใช่ encryption ห้าม commit credential จริง และควรกำหนด encryption at rest และ RBAC ตามนโยบายของระบบจริง
+โครงสร้างจริงจาก `011-secret-and-why-not-configmap/01-secret.yaml`:
+
+```yaml
+apiVersion: v1             # API version ของ Secret
+kind: Secret               # object สำหรับข้อมูลที่ควบคุมสิทธิ์
+metadata:
+  name: db-secret          # ชื่อที่ Pod ใช้อ้าง
+  namespace: lab011       # namespace เดียวกับ Pod
+type: Opaque              # Secret key/value ทั่วไป
+stringData:               # API server encode เป็น base64 ให้
+  POSTGRES_PASSWORD: labpass # ค่าสมมุติสำหรับห้องเรียน
+```
+การอ่าน key เดียวตามไฟล์จริง `011-secret-and-why-not-configmap/03-api.yaml`:
+
+```yaml
+containers:                         # อยู่ใต้ spec.template.spec
+  - name: api                       # container ผู้ใช้ Secret
+    # ... image, ports และ env อื่นอยู่ตรงนี้ในไฟล์จริง
+    env:
+      - name: DB_PASSWORD           # ชื่อ environment ฝั่ง API
+        valueFrom:
+          secretKeyRef:
+            name: db-secret         # Secret ใน namespace เดียวกัน
+            key: POSTGRES_PASSWORD  # key ที่ต้องมีอยู่จริง
+```
+| field | ค่าที่ใช้ได้ | ค่า default | ผลเมื่อเปลี่ยนหรือละเว้น |
+|---|---|---|---|
+| `type` | `Opaque` หรือชนิดเฉพาะ เช่น TLS | `Opaque` เมื่อเว้นว่าง | ชนิดเฉพาะอาจมีการตรวจ key ที่จำเป็น |
+| `stringData` | map ของข้อความที่เขียนง่าย | ไม่มี | API server รวมลง `data`; เมื่อ key ซ้ำกับ `data` ระบบให้ลำดับความสำคัญแก่ `stringData` |
+| `data` | map ของ byte ที่ encode เป็น base64 | ไม่มี | `kubectl get -o yaml` แสดง base64 ซึ่งถอดกลับได้ ไม่ใช่การเข้ารหัส |
+| `secretKeyRef.name/key` | ชื่อ Secret และ key | ไม่มี | object/key ไม่มีและไม่ optional ทำให้ Container เริ่มไม่ได้ |
+| `envFrom[].secretRef` | นำทุก key เข้า env | ไม่มี | สะดวกแต่มีขอบเขตการเปิดเผย Secret กว้างกว่าการเลือกทีละ key |
+`envFrom.secretRef` เป็นกลไกที่กล่าวถึงเพิ่มและไม่มีใน manifest ของ LAB 011 ตัวอย่างจริงจึงใช้ `secretKeyRef` เท่านั้น ค่า Secret ที่ใช้ผ่าน environment จะเป็น snapshot เมื่อ Container เริ่มทำงานเช่นเดียวกับ ConfigMap ดังนั้น เมื่อเปลี่ยน Secret แล้วต้องสร้าง Pod ใหม่เพื่อให้ env เปลี่ยนแปลง
+**ข้อผิดพลาดที่พบบ่อย:** `secretKeyRef.name` หรือ `key` ที่ไม่ถูกต้องทำให้ Pod มีสถานะ `CreateContainerConfigError`; ใช้ `kubectl describe pod` เพื่อตรวจสอบ Secret/key ที่ไม่พบ และ `data:` ที่กำหนดข้อความซึ่งไม่ใช่ base64 จะถูกปฏิเสธด้วย `illegal base64 data at input byte ...` อีกกรณีหนึ่งคือ Secret ของ API กับ db ไม่ตรงกัน แม้ YAML สามารถ apply ได้ แต่ runlog LAB 011 มี `FATAL: password authentication failed for user "opsuser"`
+คำสั่งตรวจสอบ object จริง:
+```bash
+kubectl get secret db-secret -n lab011 -o yaml
+kubectl explain secret.stringData
+kubectl explain deployment.spec.template.spec.containers.env.valueFrom.secretKeyRef
+```
+## Volume-PVC
+
+Volume เชื่อมพื้นที่บันทึกข้อมูลเข้ากับ Pod ส่วน `volumeMounts` ระบุตำแหน่งที่ Container มองเห็น ชื่อทั้งสองฝั่งต้องตรงกัน LAB 012 ใช้ `emptyDir` เพื่อพิสูจน์อายุเท่ากับ Pod และ LAB 013 เปลี่ยน source เป็น PVC เพื่อให้อายุข้อมูลแยกจาก Pod
+ส่วน `spec.template.spec` ตามไฟล์จริง `012-why-data-disappears/02-db-emptydir.yaml`:
+
+```yaml
+containers:                              # รายการ container ของ Pod
+  - name: db                             # container PostgreSQL
+    # ... image, ports และ env อื่นอยู่ตรงนี้ในไฟล์จริง
+    env:
+      - name: PGDATA                     # data directory ของ PostgreSQL
+        value: /var/lib/postgresql/data/pgdata # subdirectory ใต้ mount
+    volumeMounts:                        # mount อยู่ระดับ container
+      - name: data                       # ต้องตรงกับ volumes[].name
+        mountPath: /var/lib/postgresql/data # path ที่เห็นใน container
+volumes:                                 # volume อยู่ระดับ Pod
+  - name: data                           # ชื่อที่ volumeMounts อ้าง
+    emptyDir: {}                         # หายเมื่อ Pod ถูกนำออกจาก Node
+```
+PVC ตามไฟล์จริง `013-persistent-storage-with-pvc/01-pvc.yaml`:
+
+```yaml
+apiVersion: v1                    # API version ของ PVC
+kind: PersistentVolumeClaim      # คำขอพื้นที่เก็บข้อมูล
+metadata:
+  name: db-data                  # ชื่อ claim ที่ Pod ใช้อ้าง
+  namespace: lab013             # namespace เดียวกับ Pod
+spec:
+  accessModes:                  # ต้องระบุอย่างน้อยหนึ่ง mode
+    - ReadWriteOnce            # ให้ node เดียว mount แบบ read-write
+  resources:
+    requests:
+      storage: 1Gi             # ต้องระบุขนาดพื้นที่ที่ขอ
+```
+การอ้าง claim ตามไฟล์จริง `013-persistent-storage-with-pvc/02-db.yaml`:
+
+```yaml
+volumes:                        # อยู่ใต้ spec.template.spec
+  - name: data                 # ชื่อเดียวกับ volumeMounts
+    persistentVolumeClaim:
+      claimName: db-data       # PVC ใน namespace เดียวกัน
+```
+| field | ค่าที่ใช้ได้ | ค่า default | ผลเมื่อเปลี่ยนหรือละเว้น |
+|---|---|---|---|
+| `volumes[].name` | ชื่อ DNS label ที่ไม่ซ้ำใน Pod | ไม่มี | ต้องตรงกับ `volumeMounts[].name` |
+| `emptyDir` | `{}`, `medium`, `sizeLimit` | เมื่อไม่ระบุ `medium` ค่าเริ่มต้นจะเป็นสตริงว่าง และ `emptyDir` จะใช้พื้นที่จัดเก็บข้อมูลที่ Node รองรับ ซึ่งโดยทั่วไปเป็นดิสก์; `sizeLimit` ไม่กำหนด | คงอยู่เมื่อ Container restart แต่ถูกลบเมื่อ Pod สิ้นสุดลงหรือถูกลบ |
+| `volumeMounts[].mountPath` | absolute path ใน Container | ไม่มี | ข้อมูลใต้ path มาจาก volume ไม่ใช่ writable layer เดิม |
+| `persistentVolumeClaim.claimName` | PVC ใน namespace เดียวกัน | ไม่มี | claim ไม่พบทำให้ Pod schedule/mount ไม่ได้ |
+| `accessModes` | `ReadWriteOnce`, `ReadOnlyMany`, `ReadWriteMany`, `ReadWriteOncePod` | ไม่มี—ต้องระบุอย่างน้อย 1 mode | เป็นความสามารถ/เงื่อนไขการจับคู่ volume ไม่ใช่คำสั่ง chmod |
+| `resources.requests.storage` | Quantity เช่น `1Gi` | ไม่มี—ต้องระบุ | ขอ capacity ขั้นต่ำ; class/driver ต้องรองรับ |
+| `storageClassName` | ชื่อ StorageClass, `""`, หรือไม่ระบุ | ถ้าไม่ระบุอาจถูกเติมด้วย default StorageClass | `""` หมายถึงไม่ขอ class และปิด dynamic provisioning แบบ default |
+ชื่อย่อที่พบบ่อยคือ RWO = node เดียว mount แบบ read-write, ROX = หลาย node mount แบบ read-only และ RWX = หลาย node mount แบบ read-write; ความสามารถจริงขึ้นกับ volume plugin
+`PGDATA` ไม่ใช่ field ของ Kubernetes แต่เป็น environment variable ของ PostgreSQL ในไฟล์จริง โดยตั้งเป็น subdirectory ใต้ mount (`.../pgdata`) ให้ data directory แยกจาก root ของ volume; เปลี่ยน path แล้ว PostgreSQL จะมองคนละ data directory
+**ข้อผิดพลาดที่พบบ่อย:** ชื่อ mount ไม่ตรงกับ volume เป็นตัวอย่างข้อความ (ไม่มีใน runlog): `spec.template.spec.containers[0].volumeMounts[0].name: Not found: "data"` ส่วน runlog LAB 013 มี Event `0/3 nodes are available: persistentvolumeclaim "db-data" not found.` (`FailedScheduling`)
+คำสั่งตรวจสอบ object จริง:
+```bash
+kubectl get pvc db-data -n lab013 -o yaml
+kubectl explain pod.spec.volumes.emptyDir
+kubectl explain persistentvolumeclaim.spec.resources.requests
+```
+## Probes
+
+Probe ตอบคำถามแตกต่างกัน คือ readiness ตรวจสอบว่า Pod ควรรับ traffic แล้วหรือไม่ liveness ตรวจสอบว่าควร restart Container หรือไม่ และ startup ให้เวลาสำหรับโปรแกรมที่เริ่มทำงานช้าก่อเปิดใช้ readiness/liveness
+โครงสร้างจริงจาก `014-running-is-not-ready/01-api-with-probes.yaml`:
+
+```yaml
+readinessProbe:            # พร้อมรับ traffic หรือยัง
+  httpGet:
+    path: /ready           # เช็ก dependency ด้วย SELECT 1
+    port: http             # อ้าง container port ชื่อ http
+  periodSeconds: 5         # ตรวจทุก 5 วินาที
+  timeoutSeconds: 2        # เกิน 2 วินาทีถือว่า fail
+  failureThreshold: 2      # fail ต่อเนื่อง 2 ครั้งจึง NotReady
+livenessProbe:             # process ยังควรถูกรันต่อหรือไม่
+  httpGet:
+    path: /health          # เช็กเฉพาะ process ของ API
+    port: http             # อ้าง container port ชื่อ http
+  initialDelaySeconds: 5   # รอ 5 วินาทีก่อนเริ่มตรวจ
+  periodSeconds: 10        # ตรวจทุก 10 วินาที
+  timeoutSeconds: 2        # เกิน 2 วินาทีถือว่า fail
+  failureThreshold: 3      # fail 3 ครั้งจึง restart
+```
+| field | ค่าที่ใช้ได้ | ค่า default | ผลเมื่อเปลี่ยนหรือละเว้น |
+|---|---|---|---|
+| `readinessProbe` | HTTP, TCP, gRPC, exec | ไม่สร้าง probe | fail แล้ว Ready condition = `False` (`READY 0/1`) แต่ `STATUS` ยัง `Running`; ถูกถอดจาก Service endpoints และ Container ไม่ restart |
+| `livenessProbe` | HTTP, TCP, gRPC, exec | ไม่สร้าง probe | fail ครบ threshold แล้ว kubelet restart Container ตาม restart policy |
+| `startupProbe` | HTTP, TCP, gRPC, exec | ไม่สร้าง probe | ขณะยังไม่สำเร็จ readiness/liveness ยังไม่เริ่ม; fail ครบ threshold แล้ว restart |
+| `httpGet.path` / `port` | path; port เป็นชื่อหรือเลข | path `/`; `port` ต้องระบุ | path/port ต้องตรง endpoint ที่ process เปิดจริง |
+| `exec.command` | list ของคำสั่งและ argument | ไม่มี ต้องระบุ | exit code 0 = สำเร็จ; non-zero = fail และไม่รันผ่าน shell อัตโนมัติ |
+| `initialDelaySeconds` | จำนวนวินาที ≥ 0 | `0` | รอก่อนตรวจครั้งแรก; มากไปทำให้ตรวจพบปัญหาช้า |
+| `periodSeconds` | จำนวนวินาที ≥ 1 | `10` | ช่วงห่างการตรวจ; ต่ำไปเพิ่ม load |
+| `timeoutSeconds` | จำนวนวินาที ≥ 1 | `1` | เกินเวลาถือว่า fail |
+| `failureThreshold` | จำนวนครั้งต่อเนื่อง ≥ 1 | `3` | คูณกับ period โดยประมาณเป็นระยะเวลาก่อนเปลี่ยนสถานะหรือ restart |
+| `successThreshold` | จำนวนครั้งต่อเนื่อง ≥ 1 | `1` | liveness/startup ต้องเป็น `1`; readiness เพิ่มได้เพื่อกันอาการแกว่ง |
+สำหรับ `httpGet` สถานะ HTTP 200–399 ถือว่าสำเร็จ; 400 ขึ้นไป การเชื่อมต่อไม่สำเร็จ หรือการเชื่อมต่อหมดเวลาถือว่าไม่ผ่าน
+`readinessProbe.exec` ปรากฏครั้งแรกใน `013-persistent-storage-with-pvc/02-db.yaml` ด้วย `command: ["pg_isready", "-U", "opsuser", "-d", "skillspace"]`; LAB 013 จึงชี้กลับหัวข้อนี้ ส่วน `startupProbe` ไม่มีใน manifest ของครั้งนี้ จึงกล่าวถึงโดยไม่แต่ง YAML เพิ่ม
+**ข้อผิดพลาดที่พบบ่อย:** runlog LAB 014 บันทึกจริง `Readiness probe failed: HTTP probe failed with statuscode: 404` เมื่อใช้ `/readyz`; readiness ที่ไม่ถูกต้องทำให้ endpoints ว่างโดยไม่มีการ restart ส่วนเมื่อ liveness probe ไม่ผ่าน ระบบจะบันทึก Event `Container api failed liveness probe, will be restarted`
+คำสั่งตรวจสอบ object จริง:
+```bash
+kubectl get deployment api -n lab014 -o yaml
+kubectl describe pod -n lab014 -l app=api
+kubectl explain deployment.spec.template.spec.containers.readinessProbe
+```
+## สรุป field ของครั้งนี้
+
+| field | object | ปฏิบัติการแรกที่ใช้ |
+|---|---|---:|
+| `type`, `selector`, `ports.port/targetPort/nodePort/protocol` | Service | 008–009 |
+| Service DNS และ EndpointSlice จาก selector | Service | 008 |
+| `data`, `envFrom.configMapRef`, `configMapKeyRef` | ConfigMap / Pod | 010 |
+| `type`, `stringData`, `data`, `secretKeyRef` | Secret / Pod | 011 |
+| `volumes`, `volumeMounts`, `emptyDir`, `PGDATA` | Pod / PostgreSQL | 012 |
+| `accessModes`, `requests.storage`, `storageClassName`, `claimName` | PVC / Pod | 013 |
+| `readinessProbe.exec` | Pod | 013 |
+| `readinessProbe.httpGet`, `livenessProbe`, `startupProbe` | Pod | 014 |
+| `initialDelaySeconds`, `periodSeconds`, `timeoutSeconds`, `failureThreshold`, `successThreshold` | Probe | 014 |
+**ภาพรวมที่ควรจดจำ:** Service ทำให้ “ปลายทาง” คงที่; ConfigMap/Secret แยก “ค่า” ออกจาก workload; Volume/PVC แยก “ข้อมูล” ออกจากวงจรชีวิตของ Pod; และ Probes ระบุว่า Pod ใด “พร้อมใช้งาน” องค์ประกอบทั้งหมดนี้ถูกประกาศผ่านโครงสร้าง YAML แบบต้นไม้เช่นเดียวกัน

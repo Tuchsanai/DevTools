@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-data
+  namespace: lab013
+spec:
+  accessModes:
+    - ReadWriteOnce # ให้ node เดียวเขียนข้อมูลชุดนี้
+  resources:
+    requests:
+      storage: 1Gi # ขอพื้นที่จาก StorageClass ค่าเริ่มต้น

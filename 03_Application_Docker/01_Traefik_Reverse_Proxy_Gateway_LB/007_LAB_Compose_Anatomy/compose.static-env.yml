@@ -1,0 +1,56 @@
+# ═══ static config รูปแบบที่ 3 : environment variable ═══
+#
+# กติกาแปลงชื่อ : --entrypoints.web.address=:80  →  TRAEFIK_ENTRYPOINTS_WEB_ADDRESS=:80
+#   ตัดขีดนำหน้าออก · ทำเป็นตัวใหญ่ · จุดกลายเป็นขีดล่าง · เติมนำหน้าด้วย TRAEFIK_
+#
+# รูปแบบนี้พบบ่อยใน CI/CD และ Kubernetes ที่ inject ค่าเป็น env ได้ง่ายกว่าไฟล์
+name: lab007
+
+# หมายเหตุ: ส่วนของ app เหมือนไฟล์ฉบับสมบูรณ์ทุกบรรทัด เพื่อให้เทียบได้ว่า
+# "static config สามแบบให้ผลเท่ากัน" โดยไม่มีตัวแปรอื่นมารบกวน
+services:
+  traefik:
+    image: traefik:v3.7.4
+    environment:
+      TRAEFIK_ENTRYPOINTS_WEB_ADDRESS: ":80"
+      TRAEFIK_PROVIDERS_DOCKER: "true"
+      TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: "false"
+      TRAEFIK_PROVIDERS_FILE_DIRECTORY: "/etc/traefik/dynamic"
+      TRAEFIK_PROVIDERS_FILE_WATCH: "true"
+      TRAEFIK_API_INSECURE: "true"
+      TRAEFIK_ACCESSLOG: "true"
+      TRAEFIK_LOG_LEVEL: "INFO"
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./dynamic:/etc/traefik/dynamic:ro
+    networks:
+      - labnet
+
+  app:
+    build: ./app
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: lab007net
+      traefik.http.routers.myapp.rule: PathPrefix(`/app`)
+      traefik.http.routers.myapp.entrypoints: web
+      traefik.http.routers.myapp.service: myapp
+      traefik.http.routers.myapp.middlewares: stamp@docker,file-stamp@file
+      traefik.http.routers.myapp-host.rule: Host(`app.lab`)
+      traefik.http.routers.myapp-host.entrypoints: web
+      traefik.http.routers.myapp-host.service: myapp
+      traefik.http.routers.myapp-host.priority: "100"
+      traefik.http.routers.myapp-host.middlewares: stamp@docker
+      traefik.http.services.myapp.loadbalancer.server.port: "8080"
+      traefik.http.middlewares.stamp.headers.customresponseheaders.X-Config-Source: "docker-labels"
+    networks:
+      - labnet
+      - backoffice
+
+networks:
+  labnet:
+    name: lab007net
+  backoffice:
+    name: lab007-backoffice

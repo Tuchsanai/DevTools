@@ -1,0 +1,68 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#  LAB 7 — ฉบับสมบูรณ์ : compose ของ Traefik ที่อธิบายได้ทุกบรรทัด
+#
+#  โครงคิด 3 ชั้นที่ต้องแยกให้ออก
+#    ชั้น Docker/Compose  : image · ports · volumes · networks · labels
+#    ชั้น static config   : command: ของ Traefik — อ่านครั้งเดียวตอนสตาร์ท
+#                           (เปลี่ยนแล้วต้องสร้าง container ของ Traefik ใหม่)
+#    ชั้น dynamic config  : routers · services · middlewares — มาจาก provider
+#                           (Docker labels หรือไฟล์ใน dynamic/) เปลี่ยนได้ระหว่างรัน
+# ═══════════════════════════════════════════════════════════════════════════
+name: lab007
+
+services:
+  traefik:
+    image: traefik:v3.7.4                    # pin เวอร์ชันเสมอ อย่าใช้ :latest
+    command:
+      # ── static: ประตูรับ request ──────────────────────────────────────────
+      - --entrypoints.web.address=:80        # ชื่อ entryPoint คือ "web" ฟังที่ :80 ใน container
+      # ── static: provider ที่ 1 = Docker (อ่าน label ของ container) ─────────
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false   # ไม่ยกมือ = ไม่ถูก route
+      # ── static: provider ที่ 2 = ไฟล์ (สำหรับสิ่งที่ label เขียนไม่ได้) ────
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true          # แก้ไฟล์แล้วโหลดเองโดยไม่ต้อง restart
+      # ── static: หน้าต่างสำหรับ debug ─────────────────────────────────────
+      - --api.insecure=true                  # dashboard ไม่มี auth — เฉพาะแล็บ!
+      - --accesslog=true
+      - --log.level=INFO
+    ports:
+      - "8000:80"                            # host 8000 → entryPoint web
+      - "8080:8080"                          # host 8080 → dashboard/API
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro   # ตาไว้มอง Docker API
+      - ./dynamic:/etc/traefik/dynamic:ro              # ไฟล์ dynamic config
+    networks:
+      - labnet
+
+  app:
+    build: ./app
+    labels:
+      # ── ยกมือขอให้ Traefik สนใจ ────────────────────────────────────────────
+      traefik.enable: "true"
+      # ── บอกให้ชัดว่าจะคุยกับ container นี้ผ่าน network ไหน ─────────────────
+      traefik.docker.network: lab007net
+      # ── router หลัก : เลือกด้วย path ───────────────────────────────────────
+      traefik.http.routers.myapp.rule: PathPrefix(`/app`)
+      traefik.http.routers.myapp.entrypoints: web
+      traefik.http.routers.myapp.service: myapp
+      traefik.http.routers.myapp.middlewares: stamp@docker,file-stamp@file
+      # ── router ที่สอง : เลือกด้วย Host + priority สูงกว่า ───────────────────
+      traefik.http.routers.myapp-host.rule: Host(`app.lab`)
+      traefik.http.routers.myapp-host.entrypoints: web
+      traefik.http.routers.myapp-host.service: myapp
+      traefik.http.routers.myapp-host.priority: "100"
+      traefik.http.routers.myapp-host.middlewares: stamp@docker
+      # ── service : ปลายทางจริง (port ของ container) ─────────────────────────
+      traefik.http.services.myapp.loadbalancer.server.port: "8080"
+      # ── middleware : ประกาศที่นี่ แต่จะมีผลก็ต่อเมื่อถูก attach ที่ router ──
+      traefik.http.middlewares.stamp.headers.customresponseheaders.X-Config-Source: "docker-labels"
+    networks:
+      - labnet
+      - backoffice                           # อยู่สอง network ได้ เพราะเราปักหมุดด้วย label แล้ว
+
+networks:
+  labnet:
+    name: lab007net                          # ตั้งชื่อคงที่ เพื่อให้ traefik.docker.network อ้างถูก
+  backoffice:
+    name: lab007-backoffice

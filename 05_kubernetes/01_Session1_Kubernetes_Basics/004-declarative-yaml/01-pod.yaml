@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web
+  labels:
+    app: web # ใช้จัดกลุ่ม Pod โดยไม่ผูกกับชื่อหรือ IP
+    version: v1
+spec:
+  containers:
+    - name: web
+      image: k8s-lab-web:v1 # สภาพที่ต้องการ: SkillSpace เวอร์ชัน 1
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 3000 # พอร์ตที่แอปฟังอยู่ภายใน Pod

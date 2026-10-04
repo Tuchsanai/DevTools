@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: lab009
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: k8s-lab-web:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: API_BASE_URL
+              value: "http://api:8000"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: lab009
+spec:
+  type: NodePort # เปิดพอร์ตเดียวกันบนทุก Node
+  selector:
+    app: web
+  ports:
+    - port: 3000
+      targetPort: http
+      nodePort: 30080 # ต้องอยู่ในช่วง 30000-32767

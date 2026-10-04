@@ -1,0 +1,183 @@
+<div id="bar"><i></i></div>
+<div id="counter"><span id="cur">1</span> / <span id="tot">0</span></div>
+<div id="ctl">
+  <button id="bPrev" aria-label="สไลด์ก่อนหน้า" title="ก่อนหน้า (←)">‹</button>
+  <button id="bNext" aria-label="สไลด์ถัดไป" title="ถัดไป (→)">›</button>
+  <button id="bOv" aria-label="ดูทุกตอน" title="ดูทุกตอน (O)">▦</button>
+  <button id="bFs" aria-label="เต็มจอ" title="เต็มจอ (F)">⛶</button>
+  <button id="bHelp" aria-label="ปุ่มลัด" title="ปุ่มลัด (?)">?</button>
+</div>
+
+<div id="ov" role="dialog" aria-label="ภาพรวมทุกตอน">
+  <h3>Plane × Agile — ภาพรวมทุกตอน</h3>
+  <div class="oh">คลิกการ์ดเพื่อกระโดดไปตอนนั้น · กด <b>Esc</b> เพื่อปิด</div>
+  <div class="cards" id="ovCards"></div>
+</div>
+
+<div id="help" role="dialog" aria-modal="true" aria-label="ปุ่มลัด"><div class="box">
+  <h3>ปุ่มลัด</h3>
+  <table>
+    <tr><td><kbd>→</kbd><kbd>Space</kbd><kbd>PgDn</kbd></td><td>สไลด์ถัดไป</td></tr>
+    <tr><td><kbd>←</kbd><kbd>PgUp</kbd></td><td>สไลด์ก่อนหน้า</td></tr>
+    <tr><td><kbd>Home</kbd> / <kbd>End</kbd></td><td>สไลด์แรก / สุดท้าย</td></tr>
+    <tr><td><kbd>O</kbd></td><td>เปิดหน้ารวมทุกตอน (คลิกเพื่อกระโดด)</td></tr>
+    <tr><td><kbd>F</kbd></td><td>เต็มจอ</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td>พิมพ์ / บันทึกเป็น PDF (1 สไลด์ = 1 หน้า)</td></tr>
+    <tr><td><kbd>Esc</kbd></td><td>ปิดหน้าต่างนี้ / ปิดหน้ารวมตอน</td></tr>
+  </table>
+</div></div>
+
+<script>
+(function(){
+  var A = window.ASSETS || {};
+  Array.prototype.forEach.call(document.querySelectorAll('img[data-a]'), function(im){
+    var k = im.getAttribute('data-a');
+    if(A[k]) im.src = A[k];
+  });
+
+  /* ---- วิดีโอ : ใส่ poster ทันที ส่วนไฟล์วิดีโอโหลดเมื่อถึงสไลด์นั้น ---- */
+  var vids = Array.prototype.slice.call(document.querySelectorAll('video[data-v]'));
+  vids.forEach(function(v){
+    var k = v.getAttribute('data-v');
+    if(A[k + '_poster']) v.poster = A[k + '_poster'];
+    var img = v.parentNode.querySelector('img.vposter');
+    if(img && A[k + '_poster']) img.src = A[k + '_poster'];
+  });
+  function media(slot, on){
+    if(!slot) return;
+    Array.prototype.forEach.call(slot.querySelectorAll('video[data-v]'), function(v){
+      if(on){
+        var k = v.getAttribute('data-v');
+        if(!v.src && A[k]) v.src = A[k];
+        var pr = v.play();
+        if(pr && pr.catch) pr.catch(function(){});
+      } else {
+        v.pause();
+        try { v.currentTime = 0; } catch(e){}
+      }
+    });
+  }
+
+  var slots = Array.prototype.slice.call(document.querySelectorAll('.slot'));
+  var n = slots.length, i = 0;
+  document.getElementById('tot').textContent = n;
+  slots.forEach(function(s, k){
+    var pg = s.querySelector('.pg');
+    if(pg) pg.textContent = (k+1) + ' / ' + n;
+  });
+
+  /* ---- ข้อมูลกำกับแต่ละตอน ---- */
+  var META = {
+    '0': {t:'เปิดเรื่อง', d:'ปก · ภาพรวม 4 หัวข้อทฤษฎี และ 9 LAB ที่ใช้ Plane เป็นเครื่องมือ'},
+    '1': {t:'หลักการเพื่อเป็นผู้เชี่ยวชาญด้านซอฟต์แวร์', d:'software crisis · SWEBOK · จรรยาบรรณ ACM/IEEE-CS · หลักการ SE · การสื่อสารและ traceability'},
+    '2': {t:'บทบาทของแอปพลิเคชันในงานวิศวกรรมซอฟต์แวร์', d:'SDLC × เครื่องมือ · single source of truth · กายวิภาคของ Plane 13 container · config · security · API'},
+    '3': {t:'เครื่องมือ Agile — Scrum & Kanban', d:'Manifesto · Scrum 3-5-3 · story points · burndown · Kanban 6 practices · WIP · Little\'s Law · แมปกับ Plane'},
+    '4': {t:'การติดตามผลิตภัณฑ์ — Jira & Trello', d:'Jira workflow/JQL/reports · Trello Butler · เปรียบเทียบกับ Plane · metrics · dashboards · API/webhooks/import'},
+    '5': {t:'LAB 1–9', d:'Setup · Architecture · Professional work items · Scrum cycles · Kanban · Modules/Pages/Analytics · REST import · Webhooks · Dashboard'},
+    '6': {t:'สรุป', d:'ดัชนีทฤษฎี ↔ LAB · cheat sheet · แหล่งอ้างอิง'}
+  };
+  var starts = [{sec:'0', at:0}];
+  slots.forEach(function(s, k){
+    var sec = s.getAttribute('data-sec');
+    if(sec) starts.push({sec:sec, at:k});
+  });
+  var box = document.getElementById('ovCards');
+  starts.forEach(function(st, x){
+    var end = (x+1 < starts.length) ? starts[x+1].at - 1 : n - 1;
+    var m = META[st.sec];
+    var el = document.createElement('div');
+    el.className = 'oc';
+    el.setAttribute('role','button');
+    el.setAttribute('tabindex','0');
+    el.innerHTML = '<div class="n">' + (st.sec === '0' ? 'เริ่มต้น' : 'ตอนที่ ' + st.sec) + '</div>' +
+                   '<div class="t"></div><div class="d"></div>' +
+                   '<div class="r">สไลด์ ' + (st.at+1) + '–' + (end+1) + ' · ' + (end - st.at + 1) + ' แผ่น</div>';
+    el.querySelector('.t').textContent = m.t;
+    el.querySelector('.d').textContent = m.d;
+    el.addEventListener('click', function(){ ov(false); show(st.at); });
+    el.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); ov(false); show(st.at); } });
+    box.appendChild(el);
+  });
+
+  /* ---- ปุ่มบนหน้า Overview ในสไลด์ที่ 2 ---- */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-go]'), function(el){
+    el.addEventListener('click', function(){
+      var want = el.getAttribute('data-go');
+      var hit = starts.filter(function(s){ return s.sec === want; })[0];
+      show(hit ? hit.at : 0);
+    });
+  });
+
+  function fit(){
+    var s = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    document.documentElement.style.setProperty('--s', s);
+  }
+  function show(k){
+    media(slots[i], false);
+    i = Math.max(0, Math.min(n-1, k));
+    slots.forEach(function(s, x){ s.classList.toggle('active', x === i); });
+    media(slots[i], true);
+    document.getElementById('cur').textContent = i+1;
+    document.querySelector('#bar i').style.width = ((i+1)/n*100) + '%';
+    if(location.hash !== '#'+(i+1)) history.replaceState(null, '', '#'+(i+1));
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+  function ov(on){
+    var el = document.getElementById('ov');
+    if(on === undefined) on = !el.classList.contains('on');
+    el.classList.toggle('on', on);
+    if(on) el.scrollTop = 0;
+  }
+
+  window.addEventListener('resize', fit);
+  document.addEventListener('keydown', function(e){
+    var h = document.getElementById('help'), o = document.getElementById('ov');
+    if(e.key === 'Escape'){
+      if(h.classList.contains('on')){ h.classList.remove('on'); return; }
+      if(o.classList.contains('on')){ ov(false); return; }
+    }
+    if(h.classList.contains('on')) return;
+    switch(e.key){
+      case 'ArrowRight': case ' ': case 'PageDown': e.preventDefault(); if(!o.classList.contains('on')) next(); break;
+      case 'ArrowLeft': case 'PageUp': e.preventDefault(); if(!o.classList.contains('on')) prev(); break;
+      case 'Home': e.preventDefault(); ov(false); show(0); break;
+      case 'End': e.preventDefault(); ov(false); show(n-1); break;
+      case 'o': case 'O': ov(); break;
+      case 'f': case 'F': if(!document.fullscreenElement){ if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); } else { document.exitFullscreen(); } break;
+      case '?': h.classList.add('on'); break;
+    }
+  });
+  document.getElementById('bNext').onclick = next;
+  document.getElementById('bPrev').onclick = prev;
+  document.getElementById('bOv').onclick = function(){ ov(); };
+  document.getElementById('bFs').onclick = function(){
+    if(!document.fullscreenElement){ if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); }
+    else { document.exitFullscreen(); }
+  };
+  document.getElementById('bHelp').onclick = function(){ document.getElementById('help').classList.add('on'); };
+  document.getElementById('help').onclick = function(){ this.classList.remove('on'); };
+
+  /* แสดงปุ่มควบคุมเฉพาะตอนขยับเมาส์ แล้วซ่อนเองใน 2.2 วินาที */
+  var uiTimer = null;
+  function poke(){
+    document.body.classList.add('ui-on');
+    if(uiTimer) clearTimeout(uiTimer);
+    uiTimer = setTimeout(function(){ document.body.classList.remove('ui-on'); }, 2200);
+  }
+  document.addEventListener('mousemove', poke);
+  document.addEventListener('pointerdown', poke);
+  document.addEventListener('touchstart', poke, {passive:true});
+
+  fit();
+  var start = parseInt((location.hash || '').replace('#',''), 10);
+  show(isNaN(start) ? 0 : start-1);
+  /* ให้ URL #เลขสไลด์ ใช้กระโดดได้แม้เปลี่ยน hash หลังโหลด (เช่นจากลิงก์ภายนอกหรือสคริปต์ตรวจสอบ) */
+  window.addEventListener('hashchange', function(){
+    var k = parseInt((location.hash || '').replace('#',''), 10);
+    if(!isNaN(k) && k-1 !== i) show(k-1);
+  });
+})();
+</script>
+</body>
+</html>

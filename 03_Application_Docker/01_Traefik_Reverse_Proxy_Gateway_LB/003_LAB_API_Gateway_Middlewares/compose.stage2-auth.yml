@@ -1,0 +1,10 @@
+services:
+  users:
+    labels:
+      traefik.http.routers.users.middlewares: users-strip@docker,api-auth@docker
+  orders:
+    labels:
+      traefik.http.routers.orders.middlewares: orders-strip@docker,api-auth@docker
+  products:
+    labels:
+      traefik.http.routers.products.middlewares: products-strip@docker,api-auth@docker

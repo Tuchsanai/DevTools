@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-config
+  namespace: lab010
+data: # เก็บ config ที่ไม่ลับไว้นอก image
+  SITE_NAME: "ศูนย์บริการซ่อม คณะวิศวกรรมศาสตร์"
+  THEME: amber

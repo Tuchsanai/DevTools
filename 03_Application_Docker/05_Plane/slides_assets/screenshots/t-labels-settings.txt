@@ -1,0 +1,2 @@
+Plane Lab project settings is open on Labels.
+The visible label list includes bug, feature, docs, and tech-debt with distinct colors.

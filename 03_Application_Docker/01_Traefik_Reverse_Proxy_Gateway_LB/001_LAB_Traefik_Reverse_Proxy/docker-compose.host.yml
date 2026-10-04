@@ -1,0 +1,6 @@
+services:
+  app1:
+    labels:
+      traefik.http.routers.app1-host.entrypoints: web
+      traefik.http.routers.app1-host.rule: Host(`app1.lab`)
+      traefik.http.routers.app1-host.service: app1

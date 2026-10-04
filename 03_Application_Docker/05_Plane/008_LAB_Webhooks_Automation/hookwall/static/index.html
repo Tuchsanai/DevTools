@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>hookwall — Plane webhook wall</title>
+<style>
+:root{--bg:#0b0f1a;--glass:rgba(255,255,255,.06);--line:rgba(255,255,255,.12);--ink:#e6edf7;--mut:#8b97ad;--ok:#22c55e;--bad:#ef4444;--acc:#60a5fa;--amb:#f59e0b;--pur:#a78bfa}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:radial-gradient(1200px 600px at 20% -10%,#16305a 0%,transparent 60%),radial-gradient(900px 500px at 110% 20%,#3b1d6e 0%,transparent 55%),var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans Thai","Noto Sans Thai",Sarabun,system-ui,-apple-system,"Segoe UI",sans-serif;padding:26px 30px}
+h1{font-size:22px;font-weight:800;letter-spacing:.01em;display:flex;align-items:center;gap:12px}
+h1 .dot{width:12px;height:12px;border-radius:50%;background:var(--bad);box-shadow:0 0 0 0 rgba(239,68,68,.6);animation:none}
+h1 .dot.live{background:var(--ok);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}70%{box-shadow:0 0 0 12px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.sub{color:var(--mut);font-size:13px;margin-top:4px}
+.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;margin-top:20px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:16px 18px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.panel h2{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-bottom:12px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi .v{font-size:30px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;color:var(--mut);margin-top:3px}
+.kpi.ok .v{color:var(--ok)}.kpi.bad .v{color:var(--bad)}.kpi.pur .v{color:var(--pur)}.kpi.amb .v{color:var(--amb)}
+.timeline{display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 220px);overflow:auto;padding-right:4px}
+.card{display:grid;grid-template-columns:110px 1fr auto;gap:12px;align-items:start;background:rgba(0,0,0,.28);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:12px;padding:11px 14px;animation:in .45s ease}
+.card.rej{border-left-color:var(--bad);background:rgba(239,68,68,.12)}
+.card.rule{border-left-color:var(--pur)}
+@keyframes in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.card .t{color:var(--mut);font-size:12px;font-variant-numeric:tabular-nums}
+.card .ev{font-weight:700}
+.card .ev b{color:var(--acc)}
+.card .ch{color:var(--ink);font-size:13px;margin-top:2px}
+.card .meta{color:var(--mut);font-size:12px;margin-top:3px}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:2px 9px;border-radius:20px;border:1px solid;letter-spacing:.04em;white-space:nowrap}
+.badge.ok{color:var(--ok);border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.12)}
+.badge.bad{color:var(--bad);border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.12)}
+.badge.pur{color:var(--pur);border-color:rgba(167,139,250,.5);background:rgba(167,139,250,.12)}
+.counts{display:flex;flex-direction:column;gap:8px}
+.row{display:grid;grid-template-columns:150px 1fr 40px;gap:10px;align-items:center;font-size:13px}
+.bar{height:10px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--pur));width:0;transition:width .4s}
+.row .n{text-align:right;color:var(--mut);font-variant-numeric:tabular-nums}
+svg{width:100%;height:110px;display:block}
+.empty{color:var(--mut);text-align:center;padding:40px 0;font-size:14px}
+code{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:12px;color:#cbd5e1}
+</style>
+</head>
+<body>
+<h1><span class="dot" id="dot"></span> hookwall <span style="font-weight:400;color:var(--mut);font-size:15px">— กำแพง event จาก Plane webhook (HMAC ตรวจทุกใบ · SSE สด · rules แบบ Butler)</span></h1>
+<div class="sub" id="sub">กำลังเชื่อมต่อ…</div>
+
+<div class="kpis" style="margin-top:16px">
+  <div class="kpi ok"><div class="v" id="kOk">0</div><div class="l">event ที่ลายเซ็นถูกต้อง</div></div>
+  <div class="kpi bad"><div class="v" id="kBad">0</div><div class="l">ปฏิเสธ (ลายเซ็นผิด)</div></div>
+  <div class="kpi pur"><div class="v" id="kRule">0</div><div class="l">rules ที่ทำงาน</div></div>
+  <div class="kpi amb"><div class="v" id="kMin">0</div><div class="l">event ในนาทีล่าสุด</div></div>
+</div>
+
+<div class="grid">
+  <div class="panel">
+    <h2>timeline · ล่าสุดอยู่บนสุด</h2>
+    <div class="timeline" id="tl"><div class="empty">ยังไม่มี event — ไปลากการ์ดบนบอร์ดของ Plane แล้วกลับมาดู</div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div class="panel"><h2>events ต่อนาที (10 นาทีล่าสุด)</h2><svg id="spark" viewBox="0 0 400 110" preserveAspectRatio="none"></svg></div>
+    <div class="panel"><h2>นับตามชนิด event · action</h2><div class="counts" id="counts"><div class="empty" style="padding:14px 0">—</div></div></div>
+    <div class="panel"><h2>วิธีอ่าน</h2>
+      <div style="font-size:13px;color:var(--mut);line-height:1.7">
+        <span class="badge ok">✔ signature</span> = HMAC-SHA256(secret, raw body) ตรงกับ <code>X-Plane-Signature</code><br>
+        <span class="badge bad">✖ REJECTED</span> = body ถูกแก้หรือ secret ไม่ตรง (ตอบ 401)<br>
+        <span class="badge pur">rule</span> = hookwall ยิง REST API กลับไปในนามของ bot user<br>
+        delivery id ซ้ำ = ถูกข้าม (idempotent) · worker หยุด = กำแพงเงียบแล้ว burst ทีหลัง
+      </div></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var ok=0,bad=0,rules=0,counts={},times=[];
+  var tl=document.getElementById('tl');
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function card(r,prepend){
+    var s=r.summary||{}, rej=r.status==='REJECTED', fired=(r.rules||[]).filter(function(x){return x.rule!=='-'});
+    var el=document.createElement('div'); el.className='card'+(rej?' rej':'')+(fired.length?' rule':'');
+    el.innerHTML='<div class="t">'+esc(r.ts||'').replace('T','<br>')+'</div>'+
+      '<div><div class="ev">'+(rej?'<b>signature mismatch</b>':'<b>'+esc(r.event)+'</b> · '+esc(r.action)+' '+esc(s.key))+'</div>'+
+      '<div class="ch">'+esc(s.name||'')+(s.change?' — <code>'+esc(s.change)+'</code>':'')+'</div>'+
+      '<div class="meta">delivery <code>'+esc((r.delivery||'').slice(0,8))+'</code>'+(s.actor?' · by '+esc(s.actor):'')+
+      (fired.length?' · '+fired.map(function(f){return '<span class="badge pur">'+esc(f.rule)+' → '+esc(f.result)+'</span>'}).join(' '):'')+
+      ((r.rules||[]).some(function(x){return x.rule==='-'})?' · <span class="badge pur">loop guard</span>':'')+'</div></div>'+
+      '<div>'+(rej?'<span class="badge bad">✖ REJECTED</span>':'<span class="badge ok">✔ signature</span>')+'</div>';
+    if(tl.querySelector('.empty')) tl.innerHTML='';
+    if(prepend) tl.insertBefore(el,tl.firstChild); else tl.appendChild(el);
+    while(tl.children.length>150) tl.removeChild(tl.lastChild);
+  }
+  function tally(r){
+    if(r.status==='REJECTED') bad++; else { ok++; var k=r.event+' · '+r.action; counts[k]=(counts[k]||0)+1; }
+    rules+=((r.rules||[]).filter(function(x){return x.rule!=='-'}).length);
+    times.push(Date.now());
+  }
+  function draw(){
+    document.getElementById('kOk').textContent=ok; document.getElementById('kBad').textContent=bad; document.getElementById('kRule').textContent=rules;
+    var now=Date.now(); times=times.filter(function(t){return now-t<600000});
+    document.getElementById('kMin').textContent=times.filter(function(t){return now-t<60000}).length;
+    var bins=[]; for(var i=9;i>=0;i--){ bins.push(times.filter(function(t){var d=now-t; return d>=i*60000&&d<(i+1)*60000}).length); }
+    var max=Math.max(1,Math.max.apply(null,bins)), w=400/bins.length, path='';
+    var svg=document.getElementById('spark'), html='';
+    bins.forEach(function(v,i){ var h=v/max*90; html+='<rect x="'+(i*w+4)+'" y="'+(100-h)+'" width="'+(w-8)+'" height="'+h+'" rx="4" fill="rgba(96,165,250,.55)"/>'; path+=(i?' L':'M')+(i*w+w/2)+' '+(100-h); });
+    html+='<path d="'+path+'" fill="none" stroke="#a78bfa" stroke-width="2"/>'; svg.innerHTML=html;
+    var c=document.getElementById('counts'), keys=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a]});
+    if(keys.length){ var mx=counts[keys[0]]; c.innerHTML=keys.map(function(k){return '<div class="row"><div>'+esc(k)+'</div><div class="bar"><i style="width:'+(counts[k]/mx*100)+'%"></i></div><div class="n">'+counts[k]+'</div></div>'}).join(''); }
+  }
+  fetch('/api/events').then(function(r){return r.json()}).then(function(list){
+    list.slice(-60).forEach(function(r){tally(r);}); list.slice(-60).reverse().forEach(function(r){card(r,false)}); draw();
+  });
+  function connect(){
+    var es=new EventSource('/events');
+    es.onopen=function(){document.getElementById('dot').className='dot live';document.getElementById('sub').textContent='เชื่อมต่อ SSE แล้ว — รอ event จาก Plane (POST /hook)';};
+    es.onmessage=function(m){ try{ var r=JSON.parse(m.data); tally(r); card(r,true); draw(); }catch(e){} };
+    es.onerror=function(){document.getElementById('dot').className='dot';document.getElementById('sub').textContent='หลุดการเชื่อมต่อ — กำลังต่อใหม่…'; es.close(); setTimeout(connect,2000);};
+  }
+  connect(); setInterval(draw,5000);
+})();
+</script>
+</body>
+</html>

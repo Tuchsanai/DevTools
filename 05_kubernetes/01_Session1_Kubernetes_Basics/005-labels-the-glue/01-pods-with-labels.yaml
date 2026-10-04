@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-a
+  labels:
+    app: web
+    version: v1
+    tier: frontend # label หนึ่งตัวใช้บอกหน้าที่ของ Pod
+spec:
+  containers:
+    - name: web
+      image: k8s-lab-web:v1
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-b
+  labels:
+    app: web
+    version: v2
+    tier: frontend
+spec:
+  containers:
+    - name: web
+      image: k8s-lab-web:v2
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-c
+  labels:
+    app: web
+    version: v1
+    # ไม่มี tier เพื่อใช้ทดลอง selector !tier
+spec:
+  containers:
+    - name: web
+      image: k8s-lab-web:v1
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 3000

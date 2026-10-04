@@ -1,0 +1,2 @@
+A work item's Priority picker is open on the detail page.
+The menu visibly offers Urgent, High, Medium, Low, and None.

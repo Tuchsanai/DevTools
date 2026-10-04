@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Software delivery traceability chain</title>
+  <desc id="desc">A horizontal chain connects a requirement, work item, branch, commit, pull request, and release. A bidirectional arrow explains forward and backward traceability, with an activity log callout.</desc>
+
+  <defs>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#18181b" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrowInk" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto-start-reverse" markerUnits="strokeWidth">
+      <path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="#52525b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <rect width="1280" height="720" fill="#fafafa"/>
+
+  <!-- Heading -->
+  <text x="640" y="72" text-anchor="middle" fill="#18181b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="34" font-weight="700">End-to-end traceability</text>
+  <text x="640" y="108" text-anchor="middle" fill="#52525b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="20">Every delivery artifact stays connected from intent to release</text>
+
+  <!-- Chain links -->
+  <g fill="none" stroke="#a1a1aa" stroke-width="8" stroke-linecap="round">
+    <path d="M224 274 H240"/>
+    <path d="M424 274 H440"/>
+    <path d="M624 274 H640"/>
+    <path d="M824 274 H840"/>
+    <path d="M1024 274 H1040"/>
+  </g>
+  <g fill="#fafafa" stroke="#52525b" stroke-width="3">
+    <ellipse cx="232" cy="274" rx="15" ry="9"/>
+    <ellipse cx="432" cy="274" rx="15" ry="9"/>
+    <ellipse cx="632" cy="274" rx="15" ry="9"/>
+    <ellipse cx="832" cy="274" rx="15" ry="9"/>
+    <ellipse cx="1032" cy="274" rx="15" ry="9"/>
+  </g>
+
+  <!-- Node cards -->
+  <g filter="url(#softShadow)">
+    <rect x="40" y="160" width="184" height="228" rx="20" fill="#ffffff" stroke="#1c5cab" stroke-width="3"/>
+    <rect x="240" y="160" width="184" height="228" rx="20" fill="#ffffff" stroke="#2a78d6" stroke-width="3"/>
+    <rect x="440" y="160" width="184" height="228" rx="20" fill="#ffffff" stroke="#116b11" stroke-width="3"/>
+    <rect x="640" y="160" width="184" height="228" rx="20" fill="#ffffff" stroke="#86590a" stroke-width="3"/>
+    <rect x="840" y="160" width="184" height="228" rx="20" fill="#ffffff" stroke="#a32222" stroke-width="3"/>
+    <rect x="1040" y="160" width="184" height="228" rx="20" fill="#ffffff" stroke="#116b11" stroke-width="3"/>
+  </g>
+
+  <!-- Colored icon wells -->
+  <g>
+    <circle cx="132" cy="222" r="36" fill="#e8f1fb"/>
+    <circle cx="332" cy="222" r="36" fill="#e9f3fd"/>
+    <circle cx="532" cy="222" r="36" fill="#e8f5e8"/>
+    <circle cx="732" cy="222" r="36" fill="#fbf1dd"/>
+    <circle cx="932" cy="222" r="36" fill="#fbeaea"/>
+    <circle cx="1132" cy="222" r="36" fill="#e8f5e8"/>
+  </g>
+
+  <!-- Requirement icon: document and check -->
+  <g fill="none" stroke="#1c5cab" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M116 201 h22 l10 10 v31 h-32 z"/>
+    <path d="M138 201 v11 h10"/>
+    <path d="M122 226 l6 6 13-14"/>
+  </g>
+
+  <!-- Work item icon: ticket -->
+  <g fill="none" stroke="#2a78d6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M309 207 h46 v11 a8 8 0 0 0 0 16 v11 h-46 v-11 a8 8 0 0 0 0-16 z"/>
+    <path d="M332 209 v34" stroke-dasharray="3 7"/>
+  </g>
+
+  <!-- Branch icon -->
+  <g fill="none" stroke="#116b11" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="516" cy="204" r="6" fill="#ffffff"/>
+    <circle cx="516" cy="240" r="6" fill="#ffffff"/>
+    <circle cx="550" cy="215" r="6" fill="#ffffff"/>
+    <path d="M516 210 v24 M522 234 c17 0 28-4 28-13"/>
+  </g>
+
+  <!-- Commit icon -->
+  <g fill="none" stroke="#86590a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M704 222 h13 M747 222 h13"/>
+    <circle cx="732" cy="222" r="14"/>
+    <circle cx="732" cy="222" r="4" fill="#86590a" stroke="none"/>
+  </g>
+
+  <!-- Pull request icon -->
+  <g fill="none" stroke="#a32222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="918" cy="204" r="6" fill="#ffffff"/>
+    <circle cx="918" cy="240" r="6" fill="#ffffff"/>
+    <circle cx="950" cy="240" r="6" fill="#ffffff"/>
+    <path d="M918 210 v24 M924 207 h12 c8 0 14 6 14 14 v13"/>
+    <path d="M930 200 l7 7-7 7"/>
+  </g>
+
+  <!-- Release icon: package -->
+  <g fill="none" stroke="#116b11" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1110 211 l22-11 22 11-22 11 z"/>
+    <path d="M1110 211 v24 l22 11 22-11 v-24 M1132 222 v24"/>
+    <path d="M1121 205 l22 11"/>
+  </g>
+
+  <!-- Node labels -->
+  <g fill="#18181b" text-anchor="middle"
+     font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif">
+    <text x="132" y="294" font-size="20" font-weight="700">
+      <tspan x="132">Requirement</tspan>
+      <tspan x="132" dy="28">/ user story</tspan>
+    </text>
+    <text x="332" y="294" font-size="20" font-weight="700">
+      <tspan x="332">Work item</tspan>
+      <tspan x="332" dy="28">PLAB-12</tspan>
+    </text>
+    <text x="532" y="286" font-size="19" font-weight="700">
+      <tspan x="532">Branch</tspan>
+      <tspan x="532" dy="27">feat/PLAB-12-</tspan>
+      <tspan x="532" dy="27">reset-password</tspan>
+    </text>
+    <text x="732" y="280" font-size="19" font-weight="700">
+      <tspan x="732">Commit</tspan>
+      <tspan x="732" dy="27">'PLAB-12: add</tspan>
+      <tspan x="732" dy="27">reset endpoint'</tspan>
+    </text>
+    <text x="932" y="294" font-size="20" font-weight="700">
+      <tspan x="932">Pull request #42</tspan>
+      <tspan x="932" dy="28">(review)</tspan>
+    </text>
+    <text x="1132" y="294" font-size="20" font-weight="700">
+      <tspan x="1132">Release</tspan>
+      <tspan x="1132" dy="28">v1.3</tspan>
+    </text>
+  </g>
+
+  <!-- Bidirectional trace arrow -->
+  <line x1="88" y1="476" x2="1192" y2="476" stroke="#52525b" stroke-width="2.5"
+        marker-start="url(#arrowInk)" marker-end="url(#arrowInk)"/>
+  <rect x="250" y="449" width="780" height="54" rx="27" fill="#fafafa"/>
+  <text x="640" y="484" text-anchor="middle" fill="#18181b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="20" font-weight="600">Trace forward: why was this built?  ·  Trace back: which items shipped?</text>
+
+  <!-- Activity log callout -->
+  <g filter="url(#softShadow)">
+    <rect x="352" y="550" width="576" height="92" rx="18" fill="#ffffff" stroke="#2a78d6" stroke-width="2.5"/>
+  </g>
+  <circle cx="406" cy="596" r="25" fill="#e9f3fd"/>
+  <g fill="none" stroke="#1c5cab" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="406" cy="596" r="14"/>
+    <path d="M406 587 v10 l7 5"/>
+    <path d="M398 574 h16"/>
+  </g>
+  <text x="450" y="603" fill="#18181b"
+        font-family="'IBM Plex Sans Thai','Noto Sans Thai',Sarabun,system-ui,sans-serif"
+        font-size="20" font-weight="600">Activity log records who changed what and when</text>
+</svg>

@@ -1,0 +1,151 @@
+# Plane × Agile — เครื่องมือวิศวกรรมซอฟต์แวร์ที่รันเองได้จริง
+
+ชุดการสอนที่ใช้ **Plane** (open-source project management, AGPL-3.0, self-hosted ด้วย Docker) เป็นเครื่องมือลงมือทำ
+สำหรับ 4 หัวข้อของวิชา:
+
+สไลด์ฉบับเต็มมี **202 สไลด์** และจัด 29 แนวคิดหลักเป็น concept units ที่ใช้แม่แบบเดียวกัน:
+**นิยาม → กลไก → ตัวอย่าง → ใน Plane + LAB + แบบฝึก** เพื่อให้ผู้เรียนเชื่อมทฤษฎีกับหลักฐานจากระบบจริงได้ทุกหน่วย
+
+| หัวข้อ | สิ่งที่เรียน | พิสูจน์ใน LAB |
+|---|---|---|
+| **1. หลักการเพื่อเป็นผู้เชี่ยวชาญด้านซอฟต์แวร์** (Principles to Software Professionals) | วิชาชีพ · SWEBOK · จรรยาบรรณ ACM/IEEE-CS · หลักการ SE · การสื่อสาร/traceability | LAB 3 |
+| **2. บทบาทของแอปพลิเคชันในงานวิศวกรรมซอฟต์แวร์** (Roles of Applications in SE Tasks) | เครื่องมือตลอด SDLC · single source of truth · กายวิภาคของเว็บแอป 13 container | LAB 1–2 |
+| **3. เครื่องมือพัฒนาแบบ Agile** (Scrum & Kanban) | Manifesto · Scrum 3-5-3 · story points · burndown · Kanban · WIP · Little's Law | LAB 4–5 |
+| **4. การติดตามการพัฒนาผลิตภัณฑ์** (Jira & Trello) | Jira/Trello concepts · เปรียบเทียบกับ Plane · metrics · dashboards · API/webhooks/import | LAB 6–9 |
+
+ทุก LAB ใช้วงจรเดียวกับชุด RabbitMQ:
+
+> **ทายผล → รัน → สังเกตหลักฐาน → อธิบายเหตุผล → ทดลองให้พัง → แก้กลับ**
+
+## ผลลัพธ์การเรียนรู้
+
+เมื่อจบชุดนี้ ผู้เรียนควรอธิบายและทดลองให้เห็นได้ว่า:
+
+- มืออาชีพด้านซอฟต์แวร์ต่างจาก "คนเขียนโค้ดได้" อย่างไร และจรรยาบรรณ 8 ข้อปรากฏในงานประจำวันบน tracker ตรงไหน
+- แอปพลิเคชันจัดการโครงการทำหน้าที่อะไรใน SDLC และเว็บแอปสมัยใหม่ประกอบด้วยส่วนใดบ้าง (proxy · web · api · worker · queue · db · cache · object storage)
+- Scrum และ Kanban ต่างกันอย่างไร ทำไม Cycle = Sprint, Module = Epic, State group = คอลัมน์บอร์ด และ burndown คำนวณจากอะไร
+- Jira, Trello และ Plane ใช้ศัพท์ต่างกันแต่โมเดลเดียวกันอย่างไร และจะติดตามผลิตภัณฑ์ด้วย metric ใด (velocity · lead/cycle time · CFD)
+- จะป้อนข้อมูลเข้า/ออกจากเครื่องมือด้วย REST API, webhook และ CSV ได้อย่างไร แบบ idempotent และมี rate limit
+
+## เปิดสไลด์
+
+เปิด [`Plane_Agile_Slides.html`](./Plane_Agile_Slides.html) ในเบราว์เซอร์ได้โดยตรง ไม่ต้องใช้ web server และไม่โหลด CDN:
+
+- `←` / `→` หรือ `Space` — เปลี่ยนสไลด์ · `#เลข` ท้าย URL กระโดดไปสไลด์นั้น
+- `O` — overview และคลิกเพื่อกระโดดไปตอนที่ต้องการ
+- `F` — เต็มจอ · `?` — ดูปุ่มลัด · `Ctrl+P` — บันทึกเป็น PDF 16:9
+
+ภาพประกอบด้านมนุษย์และบริบทการทำงานเป็นภาพสมจริงจาก Codex image gen ใน `slides_assets/photos/` ส่วนไดอะแกรม
+แนวคิดชุดใหม่ `d20`–`d42` มีต้นฉบับใน `slides_assets/deck_src/scenes_src/` และ render ด้วย
+`slides_assets/deck_src/tools/render_scene.py` (ไฟล์ Excalidraw ที่แก้ต่อได้อยู่ใน `slides_assets/scenes/`)
+
+ภาพหน้าจอทฤษฎี `slides_assets/screenshots/t-*.png` จับจาก Plane instance เดียวที่ทำ LAB 1→6 ต่อเนื่องกัน
+ส่วนภาพเฉพาะแล็บอยู่ใน `00N_LAB_*/images/` จึงเป็น **ภาพจากการรันจริงทั้งหมด** ไม่ใช่ภาพวาดแทน UI ของ Plane
+ข้อเท็จจริงของ Plane v1.4.2 ดูที่ [`deck_src/PLANE_REFERENCE.md`](./slides_assets/deck_src/PLANE_REFERENCE.md)
+และแผน 29 concept units ดูที่ [`deck_src/CONCEPT_PLAN.md`](./slides_assets/deck_src/CONCEPT_PLAN.md)
+
+## เตรียมเครื่องเรียนครั้งเดียว
+
+คำสั่งชุดนี้รันบน **เครื่องของผู้เรียน** เพื่อเปิด container `devtools` แบบไม่ลบงานเก่า:
+
+```bash
+docker start devtools 2>/dev/null || \
+  docker run -dit --name devtools --privileged -p 2222:22 tuchsanai/devtools:2569_1
+ssh root@localhost -p 2222        # password: passwd
+```
+
+> เปิดเฉพาะ SSH (`2222`) — เว็บทุกตัวที่รันในเครื่องเรียน (Plane ที่ `8089`, เว็บแอปของเราใน LAB 8–9) เปิดผ่านแท็บ **PORTS** ของ VS Code Remote-SSH → **Forward a Port** ตามที่แต่ละ LAB ระบุ จึงไม่ต้องสร้าง container ใหม่เพื่อเพิ่ม `-p` ·
+> **`docker run` ทำงานเฉพาะครั้งแรกที่ยังไม่มี container** — ถ้า `devtools` ถูกสร้างไว้ก่อนแล้ว (เช่น จากชุด RabbitMQ) `docker start` จะเปิดตัวเดิมพร้อมงานเก่า · `--privileged` ใช้เฉพาะ disposable classroom container เพื่อรัน Docker-in-Docker ไม่ใช่แนวทาง production ·
+> ถ้า `docker run` ฟ้องว่า port `2222` ใช้ไม่ได้ (พบบน Windows/WSL2 บางเครื่อง: *"forbidden by its access permissions"*) ให้เปลี่ยนเป็น
+> `-p 2280:22` แล้ว ssh ด้วย `-p 2280` — ดู `netsh interface ipv4 show excludedportrange protocol=tcp`
+
+จากนั้นใช้ VS Code **Remote-SSH** ต่อ `root@localhost:2222` แล้วรันคำสั่งที่เหลือข้างในเครื่องเรียน ตรวจว่า Docker พร้อม:
+
+```bash
+docker --version
+docker compose version
+```
+
+Clone ชุด LAB ไว้ครั้งเดียว:
+
+```bash
+mkdir -p ~/labwork && cd ~/labwork
+git clone https://github.com/Tuchsanai/DevTools.git
+cd DevTools/03_Application_Docker/05_Plane
+```
+
+## ติดตั้ง Plane ครั้งเดียว ใช้ต่อทุก LAB
+
+LAB 1 พาทำทีละขั้นพร้อมคำอธิบาย สรุปคำสั่งทั้งหมดคือ (รันข้างในเครื่องเรียน):
+
+```bash
+mkdir -p ~/plane-selfhost && cd ~/plane-selfhost
+curl -fsSL -o setup.sh https://github.com/makeplane/plane/releases/latest/download/setup.sh && chmod +x setup.sh
+./setup.sh install      # = เมนู 1 Install → ได้ plane-app/docker-compose.yaml + plane-app/plane.env (v1.4.2 เมื่อ 13 ก.ย. 2026)
+sed -i 's|image: minio/minio:latest|image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z|' plane-app/docker-compose.yaml   # Docker Hub ไม่มี minio/minio แล้ว
+sed -i 's|^LISTEN_HTTP_PORT=.*|LISTEN_HTTP_PORT=8089|; s|^LISTEN_HTTPS_PORT=.*|LISTEN_HTTPS_PORT=8443|; \
+        s|^WEB_URL=.*|WEB_URL=http://localhost:8089|; s|^CORS_ALLOWED_ORIGINS=.*|CORS_ALLOWED_ORIGINS=http://localhost:8089|' plane-app/plane.env
+sed -i "s|^SECRET_KEY=.*|SECRET_KEY=$(openssl rand -hex 32)|; s|^LIVE_SERVER_SECRET_KEY=.*|LIVE_SERVER_SECRET_KEY=$(openssl rand -hex 32)|" plane-app/plane.env
+./setup.sh start        # = เมนู 2 Start → รอ migration + API แล้วพิมพ์ "You can access the application at http://localhost:8089"
+```
+
+> `WEB_URL`/`CORS_ALLOWED_ORIGINS` ต้องเป็น **URL ที่เบราว์เซอร์ใช้จริง** (VS Code PORTS → Forward `8089` → ปกติ `http://localhost:8089`) เพราะ Plane redirect หลัง login/setup ไปที่ค่านี้ ·
+> ครั้งแรกจะ pull image รวม ~4.7 GB · `docker ps` ขึ้น `Up` ไม่ได้แปลว่าพร้อม — ให้รอ `/api/instances/` ตอบ `200` (ราว 1–2 นาที) ·
+> compose project ชื่อ `plane-app` (container `plane-app-<service>-1`) และ helper `pc` = `docker compose -f ~/plane-selfhost/plane-app/docker-compose.yaml --env-file ~/plane-selfhost/plane-app/plane.env` (สร้างใน LAB 1 ข้อ 6) ·
+> บัญชีในเอกสารทั้งหมดเป็น **placeholder สำหรับ LAB**: `admin@example.com` / `Plane-Lab-2569`, `dev1@example.com` / `Member-Lab-2569`, bot `automation@example.com` / `Bot-Lab-2569`,
+> workspace `DevTools Lab` (`devtools-lab`), โปรเจกต์ `Plane Lab` (`PLAB`) · งานจริงต้องใช้ secret, TLS และสิทธิ์เท่าที่จำเป็น
+
+เปิด `http://localhost:8089` ในเบราว์เซอร์ (ผ่าน VS Code PORTS → Forward `8089`) → หน้า **Welcome to Plane** → ตั้งค่า instance admin ที่ `/god-mode/` (LAB 1 ข้อ 5)
+
+## เส้นทาง LAB
+
+| LAB | เวลาโดยประมาณ | โฟลเดอร์ | คำถามที่ทดลองตอบ | หัวข้อ |
+|---|---:|---|---|---|
+| **1** | 45 นาที | [`001_LAB_Plane_Setup`](./001_LAB_Plane_Setup) | ติดตั้งแอป 13 container ด้วยคำสั่งเดียวได้อย่างไร และ "พร้อม" วัดจากอะไร | 2 |
+| **2** | 50 นาที | [`002_LAB_Architecture_Tour`](./002_LAB_Architecture_Tour) | request วิ่งผ่าน proxy → api → db/queue อย่างไร และเกิดอะไรเมื่อ worker หยุด | 2 |
+| **3** | 50 นาที | [`003_LAB_Professional_Work_Items`](./003_LAB_Professional_Work_Items) | work item ที่มืออาชีพเขียนต่างจากโน้ตสั้น ๆ อย่างไร และเพิ่มเพื่อนร่วมทีมโดยไม่มี SMTP ได้ไหม | 1 |
+| **4** | 60 นาที | [`004_LAB_Scrum_Cycles`](./004_LAB_Scrum_Cycles) | Sprint = Cycle ทำงานอย่างไร burndown มาจากไหน และงานที่ไม่เสร็จไปไหน | 3 |
+| **5** | 55 นาที | [`005_LAB_Kanban_Flow`](./005_LAB_Kanban_Flow) | บอร์ด swimlane · state ใหม่ · WIP policy · Intake triage และวัด cycle time จาก activity ได้อย่างไร | 3 |
+| **6** | 55 นาที | [`006_LAB_Modules_Pages_Analytics`](./006_LAB_Modules_Pages_Analytics) | จะติดตาม roadmap ด้วย Modules, เก็บ PRD ไว้กับงาน, อ่าน Analytics, export CSV และเผยแพร่บอร์ดสาธารณะได้อย่างไร และ CE นำเข้าจาก Jira/Trello ได้ไหม | 4 |
+| **7** | 60 นาที | [`007_LAB_REST_API_Import`](./007_LAB_REST_API_Import) | ย้ายบอร์ด Trello/Jira เข้า Plane ด้วย REST API แบบ idempotent ภายใต้ rate limit ได้อย่างไร | 4 |
+| **8** | 55 นาที | [`008_LAB_Webhooks_Automation`](./008_LAB_Webhooks_Automation) | Plane แจ้งเหตุการณ์ออกมาอย่างไร ตรวจลายเซ็น HMAC และทำ automation แบบ Butler ได้อย่างไร | 4 |
+| **9** | 60 นาที | [`009_LAB_Tracking_Dashboard`](./009_LAB_Tracking_Dashboard) | จะสร้าง dashboard ติดตามผลิตภัณฑ์ (burndown · CFD · velocity · lead time) จากข้อมูลจริงใน Plane ภายใต้ rate limit ได้อย่างไร | 4 |
+
+ทุก LAB มีหัวข้อเดียวกัน: สิ่งที่จะได้เรียนรู้ · ทฤษฎีที่เกี่ยวข้อง · ภาพรวมของแล็บนี้ (พร้อมคำถามก่อนเริ่ม) · ขั้นตอนพร้อม 📝 คำอธิบาย และ ✅ Expected output · ทดลองเพิ่มเติม · แก้ปัญหาที่พบบ่อย · เก็บกวาด (Cleanup) · สรุปคำสั่งของแล็บนี้ · เช็กลิสต์ก่อนจบแล็บ
+ควรทำตามลำดับ LAB 1 → 9 เพราะ Plane และข้อมูลใน workspace ถูกใช้ต่อเนื่อง (ลบทั้งหมดตอนจบ LAB 9)
+
+## ขอบเขตของสิ่งที่ LAB พิสูจน์
+
+- ทุกอย่างรันใน classroom container แบบ Docker-in-Docker ด้วย image ทางการ `makeplane/plane-*:v1.4.2` — ไม่ใช่การตั้งค่าสำหรับ production
+  (ไม่มี TLS, secret เป็นค่า LAB, ไม่มี SMTP, ไม่มี backup อัตโนมัติ)
+- Plane Community Edition **ไม่มี** WIP limit, workflow rule, bulk edit, velocity chart และ importer — LAB จะเขียนสคริปต์ทดแทนผ่าน REST API
+  เพื่อให้เห็นว่า "เครื่องมือขาดอะไร วิศวกรเติมเองได้อย่างไร"
+- ข้อมูลตัวเลขในเอกสาร (เวลาบูต, จำนวน queue, ค่า metric) มาจากการรันจริงในวันที่ระบุ ของแต่ละคนอาจต่างกันเล็กน้อย
+
+## ตรวจไฟล์หลังแก้ไข
+
+```bash
+python3 scripts/check_materials.py
+```
+
+สคริปต์เป็น **static check**: โครงสร้างสไลด์ (ไฟล์เดียว ไม่มี CDN, asset ครบ), หัวข้อบังคับใน readme ของทุก LAB, ลิงก์/รูปที่อ้างถึงมีจริง,
+ไม่มี token/email จริงหลุด, syntax ของ Python และ tag `:latest`/`version:` ใน compose
+
+สร้างสไลด์ใหม่จากต้นฉบับ (แก้ HTML fragment ใน `slides_assets/deck_src/` แล้ว):
+
+```bash
+cd slides_assets/deck_src
+python3 build_deck.py && python3 check_deck.py       # ต้องได้ overflowing slides / broken images / js errors = none
+python3 tools/render_scene.py --port 3401 scenes_src/d20-sdlc-phases.json  # render SVG + Excalidraw + PNG preview
+```
+
+## เก็บกวาด (Cleanup)
+
+จบแต่ละ LAB ให้ทำตาม **เก็บกวาด** ของ LAB นั้น (ส่วนใหญ่ปล่อย Plane ไว้ใช้ต่อ) · จบ LAB 9 ลบทั้งหมดข้างในเครื่องเรียน:
+
+```bash
+cd ~/plane-selfhost && pc down -v && cd ~ && rm -rf ~/plane-selfhost   # pc = helper จาก LAB 1 (docker compose ของ plane-app)
+docker ps -a
+```
+
+อย่าลบ `devtools` ระหว่างชุด LAB เพราะ clone และ Plane อยู่ในนั้น หากต้องการ reset จริง ๆ ให้ `docker rm -f devtools` จากเครื่องของผู้เรียน

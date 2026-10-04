@@ -1,0 +1,69 @@
+services:
+  traefik:
+    image: traefik:v3.7.4
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --entrypoints.web.address=:80
+      - --api.insecure=true
+      - --accesslog=true
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - labnet
+
+  users:
+    image: traefik/whoami:v1.11
+    networks:
+      - labnet
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: labnet
+      traefik.http.routers.users.rule: PathPrefix(`/api/users`)
+      traefik.http.routers.users.entrypoints: web
+      traefik.http.routers.users.middlewares: users-strip@docker,api-auth@docker,security-headers@docker,api-rate-limit@docker
+      traefik.http.services.users.loadbalancer.server.port: "80"
+      traefik.http.routers.users-host.rule: Host(`app.lab`)
+      traefik.http.routers.users-host.entrypoints: web
+      traefik.http.routers.users-host.service: users
+      traefik.http.routers.users-host.middlewares: api-auth@docker,security-headers@docker,api-rate-limit@docker
+      traefik.http.middlewares.users-strip.stripprefix.prefixes: /api/users
+      traefik.http.middlewares.api-auth.basicauth.users: student:$$apr1$$hJHCQMaA$$MuhWGQBh6EhncM1XMCm1M1
+      traefik.http.middlewares.security-headers.headers.customresponseheaders.X-Powered-By: DevTools-Gateway
+      traefik.http.middlewares.security-headers.headers.contenttypenosniff: "true"
+      traefik.http.middlewares.api-rate-limit.ratelimit.average: "1"
+      traefik.http.middlewares.api-rate-limit.ratelimit.period: 10s
+      traefik.http.middlewares.api-rate-limit.ratelimit.burst: "2"
+
+  orders:
+    image: traefik/whoami:v1.11
+    networks:
+      - labnet
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: labnet
+      traefik.http.routers.orders.rule: PathPrefix(`/api/orders`)
+      traefik.http.routers.orders.entrypoints: web
+      traefik.http.routers.orders.middlewares: orders-strip@docker,api-auth@docker,security-headers@docker,api-rate-limit@docker
+      traefik.http.services.orders.loadbalancer.server.port: "80"
+      traefik.http.middlewares.orders-strip.stripprefix.prefixes: /api/orders
+
+  products:
+    image: traefik/whoami:v1.11
+    networks:
+      - labnet
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: labnet
+      traefik.http.routers.products.rule: PathPrefix(`/api/products`)
+      traefik.http.routers.products.entrypoints: web
+      traefik.http.routers.products.middlewares: products-strip@docker,api-auth@docker,security-headers@docker,api-rate-limit@docker
+      traefik.http.services.products.loadbalancer.server.port: "80"
+      traefik.http.middlewares.products-strip.stripprefix.prefixes: /api/products
+
+networks:
+  labnet:
+    name: labnet

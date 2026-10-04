@@ -1,0 +1,3 @@
+PLAB-5 (breadcrumb Plane Lab > Work Items > PLAB-5) scrolled down to its Relations block.
+Relations 1 is expanded and lists a Blocked by group holding PLAB-4 "นักศึกษาสมัครบัญชีและเข้าสู่ระบบด้วยอีเมล" (In Progress); Plane stores the reciprocal Blocking entry on PLAB-4, so only one direction can appear on a single item.
+The right-hand panel shows State Backlog, assignee dev1, Priority Urgent, module Ordering and the bug label, and the Activity feed below records "marked this work item is being blocked by PLAB-4".

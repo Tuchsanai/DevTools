@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: skillspace
+  namespace: lab016
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          # /api ต้องอยู่ก่อน / ซึ่งจับทุก path
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 3000

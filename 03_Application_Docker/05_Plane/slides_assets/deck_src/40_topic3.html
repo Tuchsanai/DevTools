@@ -1,0 +1,99 @@
+<!-- ===== ตอนที่ 3 : divider ===== -->
+<div class="slot" data-sec="3">
+ <section class="slide section">
+  <div class="s-body">
+    <div class="num-big">03</div>
+    <h1>เครื่องมือพัฒนาซอฟต์แวร์แบบอไจล์ — Scrum &amp; Kanban</h1>
+    <div class="m">จาก Waterfall สู่การส่งมอบเป็นรอบสั้น · กรอบงาน Scrum (บทบาท อีเวนต์ อาร์ติแฟกต์) · วิธี Kanban (WIP, flow metrics) · แล้วแมปทุกแนวคิดลงบน Cycle · State · Board · Estimate ของ Plane</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 2 : waterfall → iterative ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · ที่มาของ Agile</div><h2>จาก Waterfall สู่ <em>การพัฒนาแบบวนรอบ (iterative &amp; incremental)</em></h2></div>
+  <div class="s-body top">
+    <div class="figrow c21">
+      <div><div class="fig fix" style="height:400px"><img data-a="d04" alt="เปรียบเทียบ Waterfall ที่ได้ feedback ตอนจบ กับ Agile ที่ส่ง increment ทุก sprint"></div>
+        <div class="figcap">Waterfall รู้ว่าผิดโจทย์ตอนท้ายสุด · Agile ได้ feedback ทุกรอบ 1–4 สัปดาห์ แล้วจัดลำดับ backlog ใหม่</div></div>
+      <div>
+        <table class="tbl sm">
+          <thead><tr><th>ปี</th><th>เหตุการณ์สำคัญ</th></tr></thead>
+          <tbody>
+            <tr><td class="req">1970</td><td><b>Royce</b> บรรยายโมเดลแบบขั้นบันได (ต่อมาเรียก Waterfall) และเตือนว่าทำรอบเดียวเสี่ยง</td></tr>
+            <tr><td class="req">1986</td><td><b>Spiral</b> (Boehm) วนรอบตามความเสี่ยง มี prototype ทุกรอบ</td></tr>
+            <tr><td class="req">1995</td><td><b>Scrum</b> นำเสนอโดย Sutherland &amp; Schwaber ที่ OOPSLA</td></tr>
+            <tr><td class="req">1998</td><td><b>RUP</b> กระบวนการวนรอบ 4 เฟส (Inception–Transition)</td></tr>
+            <tr><td class="req">1999</td><td><b>XP</b> (Beck) — pair programming, TDD, refactoring</td></tr>
+            <tr><td class="req">2001</td><td><b>Agile Manifesto</b> 4 คุณค่า 12 หลักการ</td></tr>
+            <tr><td class="req">2010</td><td><b>Kanban</b> สำหรับซอฟต์แวร์ (Anderson) — จำกัด WIP วัด flow</td></tr>
+            <tr><td class="req">2020</td><td><b>Scrum Guide 2020</b> ฉบับปัจจุบัน สั้นลง เพิ่ม Product Goal</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="note a" style="font-size:16.5px"><b>ประเด็นหลัก</b> — ทุกวิธีหลังปี 1986 ตอบโจทย์เดียวกัน: ย่นเวลาระหว่าง "ตัดสินใจ" กับ "ได้เห็นผลจริง" เครื่องมืออย่าง Plane จึงถูกออกแบบรอบหน่วยงานสั้น ๆ (Cycle) ไม่ใช่แผนงานยาวหลายเดือน</div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 3 : Agile Manifesto ===== -->
+<div class="slot">
+ <section class="slide figs">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Agile Manifesto (2001)</div><h2>4 คุณค่าของ Agile — <em>"ให้คุณค่าฝั่งซ้ายมากกว่า" ไม่ใช่ "ไม่เอาฝั่งขวา"</em></h2></div>
+  <div class="s-body">
+    <div class="figrow c21">
+      <div class="fig fix" style="height:440px"><img data-a="agile_manifesto" alt="Agile Manifesto 4 คุณค่า: individuals and interactions, working software, customer collaboration, responding to change"></div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div class="card a" style="padding:11px 14px"><h4><span class="n">1</span>คนและการสื่อสาร</h4><p>เครื่องมือเป็นสื่อกลางของบทสนทนา ไม่ใช่ตัวแทนบทสนทนา — comment บน work item แทนอีเมลยาว</p></div>
+        <div class="card o" style="padding:11px 14px"><h4><span class="n">2</span>ซอฟต์แวร์ที่ใช้ได้จริง</h4><p>ความก้าวหน้าวัดจากงานที่ Done ตาม Definition of Done ไม่ใช่จำนวนเอกสาร</p></div>
+        <div class="card w" style="padding:11px 14px"><h4><span class="n">3</span>ร่วมมือกับลูกค้า</h4><p>ลูกค้าเห็นบอร์ดและ increment ทุกรอบ ไม่รอส่งมอบตอนจบสัญญา</p></div>
+        <div class="card c" style="padding:11px 14px"><h4><span class="n">4</span>ตอบสนองการเปลี่ยนแปลง</h4><p>backlog จัดลำดับใหม่ได้เสมอ แผนคือสมมติฐานที่ปรับได้ทุก sprint</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+
+<!-- ===== 4 : 12 หลักการ ===== -->
+<div class="slot">
+ <section class="slide">
+  <div class="s-head"><div class="eyebrow">ตอนที่ 3 · Agile Manifesto · 12 หลักการ</div><h2>12 หลักการของ Agile <em>และผลที่มีต่อการออกแบบเครื่องมือ</em></h2></div>
+  <div class="s-body top">
+    <div class="g11">
+      <table class="tbl sm" style="font-size:15px">
+        <thead><tr><th>#</th><th>หลักการ (ย่อ)</th><th>ผลต่อเครื่องมือ</th></tr></thead>
+        <tbody>
+          <tr><td class="req">1</td><td>ส่งมอบซอฟต์แวร์ที่มีคุณค่า <b>เร็วและต่อเนื่อง</b></td><td>รอบสั้น (Cycle) มี increment ทุกรอบ</td></tr>
+          <tr><td class="req">2</td><td>ยินดีรับ <b>ความต้องการที่เปลี่ยน</b> แม้ช่วงท้าย</td><td>backlog ลากจัดลำดับใหม่ได้ตลอด</td></tr>
+          <tr><td class="req">3</td><td>ส่งมอบซอฟต์แวร์ที่ใช้ได้ <b>บ่อย ๆ</b> (สัปดาห์–เดือน)</td><td>Cycle 1–4 สัปดาห์ มีวันเริ่ม–จบชัด</td></tr>
+          <tr><td class="req">4</td><td>ฝ่ายธุรกิจและนักพัฒนา <b>ทำงานร่วมกันทุกวัน</b></td><td>comment / mention / activity บน work item</td></tr>
+          <tr><td class="req">5</td><td>สร้างงานรอบ <b>คนที่มีแรงจูงใจ</b> และไว้ใจเขา</td><td>self-assign; เครื่องมือไม่ใช่ตัวจับผิด</td></tr>
+          <tr><td class="req">6</td><td><b>คุยต่อหน้า</b> คือการสื่อสารที่ดีที่สุด</td><td>บอร์ดเป็นฉากหลังของ Daily Scrum</td></tr>
+        </tbody>
+      </table>
+      <table class="tbl sm" style="font-size:15px">
+        <thead><tr><th>#</th><th>หลักการ (ย่อ)</th><th>ผลต่อเครื่องมือ</th></tr></thead>
+        <tbody>
+          <tr><td class="req">7</td><td><b>ซอฟต์แวร์ที่ใช้ได้</b> คือมาตรวัดความก้าวหน้าหลัก</td><td>นับเฉพาะ state group completed</td></tr>
+          <tr><td class="req">8</td><td>รักษา <b>จังหวะที่ยั่งยืน</b> ไปได้เรื่อย ๆ</td><td>velocity คงที่, จำกัด WIP</td></tr>
+          <tr><td class="req">9</td><td>ใส่ใจ <b>ความเป็นเลิศทางเทคนิค</b> และการออกแบบ</td><td>Definition of Done มี review/test</td></tr>
+          <tr><td class="req">10</td><td><b>ความเรียบง่าย</b> — ทำเฉพาะสิ่งจำเป็น</td><td>ตัด/cancel งานที่ไม่คุ้มออกจาก backlog</td></tr>
+          <tr><td class="req">11</td><td>สถาปัตยกรรมที่ดีมาจาก <b>ทีมที่จัดการตนเอง</b></td><td>ทีมกำหนด states และ policy ของบอร์ดเอง</td></tr>
+          <tr><td class="req">12</td><td>ทีม <b>ทบทวนและปรับ</b> วิธีทำงานเป็นระยะ</td><td>Retrospective + activity log + analytics</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid2">
+      <div class="note a" style="font-size:16px"><b>สังเกต</b> — ไม่มีหลักการข้อใดพูดถึง "เครื่องมือ" โดยตรง เครื่องมือที่ดีคือเครื่องมือที่ทำให้ 12 ข้อนี้เกิดขึ้นได้ง่าย ไม่ใช่เครื่องมือที่บังคับให้ทีมทำงานตามซอฟต์แวร์</div>
+      <div class="note w" style="font-size:16px"><b>คำถามชวนคิด</b> — ถ้าทีมใช้ Plane ครบทุกฟีเจอร์ แต่ลูกค้าเห็นของจริงครั้งแรกในเดือนที่ 6 ทีมนั้นละเมิดหลักการข้อใดบ้าง (อย่างน้อยข้อ 1, 3, 4, 7)</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>ตอนที่ 3 · Scrum &amp; Kanban</span><span class="pg"></span></div>
+ </section>
+</div>
+

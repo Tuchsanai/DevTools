@@ -1,0 +1,2 @@
+Workspace settings Members lists Dev as member and Lab Admin as admin with email authentication.
+A pending invitation for guest@example.com is visible with the Guest role.

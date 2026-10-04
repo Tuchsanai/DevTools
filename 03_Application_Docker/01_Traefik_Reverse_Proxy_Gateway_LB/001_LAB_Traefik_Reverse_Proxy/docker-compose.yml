@@ -1,0 +1,43 @@
+services:
+  traefik:
+    image: traefik:v3.7.4
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --api.insecure=true
+      - --entrypoints.web.address=:80
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - labnet
+
+  app1:
+    image: traefik/whoami:v1.11
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: labnet
+      traefik.http.routers.app1.entrypoints: web
+      traefik.http.routers.app1.rule: PathPrefix(`/app1`)
+      traefik.http.routers.app1.service: app1
+      traefik.http.services.app1.loadbalancer.server.port: "80"
+    networks:
+      - labnet
+
+  app2:
+    image: traefik/whoami:v1.11
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: labnet
+      traefik.http.routers.app2.entrypoints: web
+      traefik.http.routers.app2.rule: PathPrefix(`/app2`)
+      traefik.http.routers.app2.service: app2
+      traefik.http.services.app2.loadbalancer.server.port: "80"
+    networks:
+      - labnet
+
+networks:
+  labnet:
+    name: labnet
