@@ -1,0 +1,39 @@
+## Remote Setup
+
+1. **SSH**: `root@127.0.0.1 -p 22022` (password: `789`)
+2. **Env**: `set -a && source /root/workspace/DGX_2024/.env && set +a`
+3. **Workdir**: ทำงานทั้งหมดบน remote ที่ `/root/workspDevTools/05_Jenkins/001_Jenikin/002_LAB_Declarative_Pipelinekin/` เท่านั้น
+4. ค้นหา Skill ใน remote ใช้ skill devtools-lab และ skill  yolo และ cyolo
+5. การสร้างรูปใช้ cyolo imagegen ใน remote และ การเขียน code เอกสาร และ อื่นๆ ทั้งหมด ให้ใช้ yolo3  ใน remote ทั้งห6. \*\* Open web brower โดยใช้ play wrightDisplay บน host ผ่าน SSH ไปยัง remote tunnel
+   - ใช้ comp ผ่านการ open web broweruter use  บน hot ในการ เก็บภาพหน้าจอของจริง โดยเฉพาะ Jenkins Docker Hub  
+
+
+# Remote Setup
+
+1. **SSH**: `root@127.0.0.1 -p 22022` (password: `789`)
+2. **Env**: `set -a && source /root/workspace/DGX_2024/.env && set +a`
+3. **Workdir**: ทำงานบน remote ที่ `/root/workspace/003_LAB_Docker_Build_Push` เท่านั้น
+4. **Skills**: ค้นหาและใช้ skill `devtools-lab`, `yolo` และ `cyolo` บน remote
+5. **Tools** (รันบน remote ทั้งหมด):
+   - สร้างรูป → `cyolo imagegen`
+   - เขียน code, เอกสาร และงานอื่นทั้งหมด → `yolo3`
+6. **Display**: เปิด browser ด้วย Playwright บน host ผ่าน SSH tunnel ไปยัง remote
+   - ใช้ computer use บน host เพื่อเก็บภาพหน้าจอจริง โดยเฉพาะ Jenkins, Docker Hub และ GitHub
+7. รอคำสั่งดำเนินการหลังจากทำ ข้อ 1 ถึง 6 แล้ว  Github
+
+
+
+
+# Remote Setup
+
+1. **SSH**: `root@lunchz.ap.loclx.io:27899`, Password: `789`
+2. **Env**: `set -a && source /root/workspace/DGX_2024/.env && set +a`
+3. **Workdir**: ทำงานบน remote ที่ `/root/workspace/DevTools/05_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push` เท่านั้น
+5. files และ logs ทั้งหมดให้เก็บอยู่ใน **Workdir** บน Remote เท่านั้นห้ามเก็บไว้บน Host
+4. **Skills**: ค้นหาและใช้ skill `devtools-lab`, `yolo` และ `cyolo` บน remote
+5. **Tools** (รันบน remote ทั้งหมด ยกเว้น มีคำว่า on host):
+   - สร้างรูป → `cyolo1 โดยใช้ imagegen`
+   - เขียน code, เอกสาร และงานอื่นทั้งหมด → `yolo3 opus medium`
+6. Computer use (ให้ส่งคำสั่งไปยัง yolo terminal) บน host
+7. **Browser Display**: เปิด browser (Computer use) ด้วย Playwright บน host ผ่าน SSH tunnel ไปยัง remote เพื่อเก็บภาพหน้าจอจริง
+8. รอคำสั่งดำเนินการหลังจากทำ ข้อ 1 ถึง 6 แล้ว ห้ามทำอะไรก่อนสั่งงาน

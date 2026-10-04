@@ -1,2 +1,0 @@
-Plane Lab project settings is open on Members.
-dev1@example.com is listed as Member and admin@example.com as Admin, with lead, default assignee, and guest-access controls above.

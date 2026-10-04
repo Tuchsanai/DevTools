@@ -1,2 +1,0 @@
-The Personal Access Tokens panel is open under Developer settings.
-Token lab is listed as Active and never expires; no secret token value is displayed.

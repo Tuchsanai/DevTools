@@ -1,0 +1,347 @@
+- เชื่อมต่อ ssh ไปยัง (`root@127.0.0.1:22022`, Password: `789`)
+ให้ load .env ที่ `/root/workspace/DGX_2024/.env` 
+
+- ทำการติดตั้ง kokoro text2speech ใน root@127.0.0.1:22022 พร้อมทำเป็น mcp สำหรับเชื่อมต่อ 
+
+- อยากลองเล่น playwright ในคอมเครืองนี้ จอง ตั๋วเครืองบืน trip.com กทม ไป ญี่ปุน 5 วัน ในช่วง
+เดือนตุลาคม  โดย ให้ หา 3 ช่วง เวลา แล้วหา โรงแรมให้ด้วย 
+
+- ให้ บันทึกภาพการใช้งาน ระหว่างของ ตั๋วเครืองบิน พร้อมใช้ image gen ในการ วาด วงกลม ลำ
+ดับการใช้งาน
+  ว่า ต้องทำอะไรบ้างในระหว่างจอง
+
+- ใช้ kokoro บรรยายวิธีใช้งานเป้น เสียงภาษาอังกฤษจาก root@127.0.0.1:22022 พร้อมซับ title ภาษาไทย
+
+- ทำเป็น video ความยาวไม่ต่ำกว่า 2 นาที ในรูป .mp4  โดยให้ประมวลผลใน root@127.0.0.1:22022
+
+- วาดรูปแสดง สถาปัตยกรรม ระบบที่ออกแบบ นำส่งพร้อม video
+
+
+
+
+
+เชื่อมต่อ ssh ไปยัง (`root@127.0.0.1:22022`, Password: `789`)
+ให้ load .env ที่ `/root/workspace/DGX_2024/.env` 
+1. ทำงานทั้งหมดบน Remote ที่ `/root/workspace/DevTools/05_Jenkins/001_Jenikin
+2. ใช้ computer use ในการจับภาพหน้าจอและการทดลอง
+3.อ่านข้อความด้านใน /root/workspace/DevTools/05_Jenkins/001_Jenikin/001_LAB_Jenkins_On_Docker(https://githu
+
+- ใช่ yolo3 ในการทำงาน
+
+- update เนื้อหาในช่วง setup ใน 001_LAB_Jenkins_On_Docker และ 002_LAB_Declarative_Pipeline
+   ต้องการให้เริ่มต้นจาก idea จาก https://github.com/Tuchsanai/DevTools/tree/main/04_Application_Docker/02_Message_Brokers/02_Kafka/001_LAB_Kafka_Setup
+
+ประมาณว่า  เรียบเรียงใหม่ได้
+
+ทำบนเครื่องของเราเอง (ไม่ใช้ cloud) — เปิด container ที่ติดตั้ง Docker มาให้แล้ว
+docker rm -f devtools
+docker run -dit --name devtools --privileged -p 2222:22 -p 8411:8411 tuchsanai/devtools:2569_1
+ssh root@localhost -p 2222        # password : pas 
+Clone โค้ดแล็บ
+mkdir -p ~/labworkxxxx && cd ~/labworkxxxxx
+git clone https://github.com/Tuchsanai/DevTools.git
+cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxup
+
+swd
+
+เรียก jenkins
+docker network create cicd-net
+docker run -d --name jenkins --network cicd-net --restart unless-stopped \
+  -p 8080:8080 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jd- ใน 003_LAB_Docker_Build_Push และ 004_LAB_Pipeline_From_Git
+
+  *ต้องการเปลียนแนวทาง โดยให้ jenkin ซึ่ง original image  jenkins/jenkins:lts-jdk21 ไม่มี docker ด้านใน 
+  เมื่อต้องการ build push deploy ต้อง ssh ไปยัง container devtools 
+  * ไม่ต้องการใช้ curl ทดสอบ พยายาม ใช้ การเข้า web หรือ ดู แบบ มนุษย์ทดสอบk21
+
+
+
+
+
+
+เชื่อมต่อ ssh ไปยัง (`root@127.0.0.1:22022`, Password: `789`)
+ให้ load .env ที่ `/root/workspace/DGX_2024/.env` 
+1. ทำงานทั้งหมดบน Remote ที่ `/root/workspace/`DevTools/04\_Jenkins/001\_Jenikin  
+2. ใช้ computer use ในการจับภาพหน้าจอและการทดลอง
+
+- อ่าน README.md ใน  001_LAB_Jenkins_On_Docker  และ  002_LAB_Declarative_Pipeline
+- ต้องการปรับปรุ่ง LAB ทั้งสอง LAB ให้เข้าใจง่าย และ มีตัวอย่างการทดลอง และ ผลการทดลอง ที่น่าสนใจ ไม่ยากจนเกินไป
+- อยากให้มีการใช้ image gen ในการสร้างรูปเพื่อให้เข้าใจง่ายขึ้น
+- ทำการทดลองจริง ผ่าน devtools-lab skill containers แล้ว ใช้ผลการทดลองจริงมายืนยัน
+- ใช้ computer user ในการ เก็บภาพหน้าจอของจริง โดยเฉพาะ Jenkins 
+
+
+
+
+เชื่อมต่อ ssh ไปยัง (`root@127.0.0.1:22022`, Password: `789`)
+ให้ load .env ที่ `/root/workspace/DGX_2024/.env` 
+1. ทำงานทั้งหมดบน Remote ที่ `/root/workspace/`DevTools/04\_Jenkins/001\_Jenikin  
+2. ใช้ computer use ในการจับภาพหน้าจอและการทดลอง
+
+
+- อ่าน README.md ใน  003_LAB_Docker_Build_Push 
+- อยากให้มีการ Build Push PULL ผ่าน docker hub และ deplay web ขายอาหารแมว โดยใช้ nextjs ออกแบบให้สวยๆ หน่อย
+- ต้องการปรับปรุ่ง LAB ทั้งสอง LAB เขียนแบบเชิงวิชาการ ให้เข้าใจง่าย มีทฤษฏีประกอบ และ มีตัวอย่างการทดลอง และ ผลการทดลอง ที่น่าสนใจ ไม่ยากจนเกินไป
+- อยากให้มีการใช้ image gen ใน cyolo1 ในการสร้างรูปเพื่อให้เข้าใจง่ายขึ้น
+- ทำการทดลองจริง ผ่าน devtools-lab skill containers แล้ว ใช้ผลการทดลองจริงมายืนยัน
+- ใช้ computer user ในการ เก็บภาพหน้าจอของจริง โดยเฉพาะ Jenkins หรือ login เข้า docker hub หรือ github จริงๆ แบบ จัดหน้าจอให้สวยงาม หรือ อื่นๆ 
+  สามารถใช้ image gen ใน cyolo1 เข้าช่วยได้ และ ให้ทำการปิดข้อมูลสำคัญ หรือให้เห็นแค่ repo หรือ image ที่เกี่ยวข้อง ถ้าต้องการ captured 
+
+
+LAB 004 นี่ ให้ทำ Repo ใหม่ โดยให้ copy code ของตัวอย่างที่เราทำไว้ไปใช้ 
+ให้ เปิด github สร้าง reop ใหม่ ให้เห็นทีละขั้นตอน ใช้ computer use ใน เครือง ปัจจุบัน
+ถ้าติดรหัส login เดียว ผม login ให้ ให้แจ่งผ่าน email : tuchsanai@gmail.co
+
+
+
+
+
+เชื่อมต่อ ssh ไปยัง (`root@127.0.0.1:22022`, Password: `789`)
+ให้ load .env ที่ `/root/workspace/DGX_2024/.env` 
+1. ทำงานทั้งหมดบน Remote ที่ `/root/workspace/003_LAB_Docker_Build_Push
+2. ใช้ computer use ในการจับภาพหน้าจอและการทดลอง
+3. อ่าน readme.md
+
+
+
+
+
+
+- ใช้ computer user ในการ เก็บภาพหน้าจอของจริง โดยเฉพาะ Jenkins หรือ login เข้า docker hub หรือ github จริงๆ แบบ จัดหน้าจอให้สวยงาม หรือ อื่นๆ 
+  สามารถใช้ image gen ใน cyolo1 เข้าช่วยได้ และ ให้ทำการปิดข้อมูลสำคัญ หรือให้เห็นแค่ repo หรือ image ที่เกี่ยวข้อง ถ้าต้องการ captured 
+- อ่าน README.md ใน  003_LAB_Docker_Build_Push  
+- ต้องการปรับปรุงใหม่ตามนี้ 
+
+# แผนปรับปรุง LAB: Jenkins สั่ง Build → Push → Pull → Deploy
+
+## แนวคิดหลัก
+
+ผู้เรียนเริ่มงานจาก **Jenkins Pipeline** แล้ว Jenkins ส่งคำสั่งผ่าน **SSH ไปยัง devtools** ซึ่งมี Docker และซอร์สโค้ดร้านอาหารแมวอยู่แล้ว
+
+**Jenkins เป็นผู้สั่งงาน ส่วน devtools เป็นผู้ประมวลผลคำสั่ง Docker** โดยไม่ให้ผู้เรียนเริ่มจากการ build ด้วยมือบน devtools
+
+## 1. เริ่มด้วย System Architecture
+
+- แสดงผู้เรียน, Jenkins container, devtools, Docker daemon, Docker Hub และ container ร้านอาหารแมว
+- แยกลูกศรการส่งคำสั่ง SSH ออกจากเส้นทาง push/pull image
+- ระบุว่าซอร์สโค้ดอยู่ที่ไหน และ container ร้านทำงานบน Docker daemon ตัวใด
+- ตรวจโครงสร้างจริงก่อนวาด เพื่ออธิบายความสัมพันธ์ของ container ได้ถูกต้อง
+
+## 2. ให้ผู้เรียนเข้าใจสภาพแวดล้อม Jenkins
+
+- เข้าหน้าเว็บ Jenkins
+- ตรวจจากภายใน Jenkins container ว่าไม่มี Docker CLI แต่มี SSH client
+- อธิบายเหตุผลที่ Jenkins ต้องส่งคำสั่งไปยัง devtools
+- ยืนยันว่า devtools มี Docker และไฟล์ร้านพร้อมใช้งาน
+
+## 3. อธิบายเครือข่ายและตั้งค่า Credentials
+
+- อธิบายว่า Jenkins ติดต่อ devtools ผ่านชื่อเครื่องและพอร์ตใด
+- เตรียม SSH key สำหรับ Jenkins เข้า devtools
+- เก็บ private key ใน Jenkins Credentials และ public key ใน `authorized_keys` ฝั่ง devtools
+- เก็บ Docker Hub credential แยกจาก SSH credential
+- ทดสอบการเชื่อมต่อจาก Jenkins ก่อนเริ่ม build
+
+> แนวทางนี้ต้องตั้งค่า SSH credential เพื่อให้ Pipeline เชื่อมต่อได้โดยไม่ต้องป้อนรหัสผ่านระหว่างทำงาน
+
+## 4. แนะนำซอร์สโค้ดร้านและ Dockerfile
+
+- อธิบายโครงสร้างไฟล์ร้านอาหารแมว
+- ระบุ build context และตำแหน่ง Dockerfile บน devtools
+- อธิบายขั้นติดตั้ง dependencies, build เว็บไซต์, เริ่มแอป และตรวจสุขภาพ
+- ย้ายการ build ด้วยมือบน devtools ออกจากเส้นทางหลัก ให้การ build ครั้งแรกเริ่มจาก Jenkins
+
+## 5. อธิบาย Jenkinsfile ก่อนรัน
+
+แยกอธิบายทีละส่วน ได้แก่ parameters, environment, credentials และ stages พร้อมระบุให้ชัดว่า:
+
+- โค้ดส่วนใดทำงานบน Jenkins
+- คำสั่งใดเปิด SSH ไปยัง devtools
+- คำสั่ง Docker ใดทำงานบน devtools
+- ตัวแปรถูกแทนค่าฝั่งใด และ credential ถูกใช้อย่างไร
+
+จากนั้นจึงให้ Jenkinsfile ฉบับสมบูรณ์ที่ผู้เรียนใช้รันได้
+
+## 6. จัดการทดลองตามลำดับ Pipeline
+
+| ขั้นตอน | Jenkins สั่งให้ devtools ทำอะไร | ผลที่ต้องตรวจ |
+|---|---|---|
+| Connect | ตรวจเครื่องปลายทางและ Docker | SSH สำเร็จและเป็นเครื่องที่ถูกต้อง |
+| Build | สร้าง image จากซอร์สโค้ดร้าน | Build สำเร็จและมี tag ที่กำหนด |
+| Test | รัน container ทดสอบ | สถานะเป็น `healthy` |
+| Push | ส่ง image ขึ้น Docker Hub | Push สำเร็จและมี digest |
+| Pull | ดึง image จาก Docker Hub ลง devtools | มีหลักฐานการ pull และ digest ตรงกัน |
+| Deploy | รัน container ร้านจาก image ที่ pull | เปิดเว็บไซต์ได้และแสดงเวอร์ชันถูกต้อง |
+
+**ทุกขั้นเริ่มจาก Pipeline บน Jenkins** รวมถึงการสั่ง pull และ deploy บน devtools
+
+## 7. เขียนแต่ละการทดลองให้ตามได้ง่าย
+
+ใช้รูปแบบเดียวกันตลอดบทเรียน:
+
+1. **เป้าหมาย:** ต้องการเรียนรู้อะไร
+2. **ขั้นตอน:** ทำที่หน้าจอหรือเครื่องใด
+3. **คำอธิบาย:** คำสั่งหรือโค้ดทำงานอย่างไร
+4. **ผลที่ควรเห็น:** ตรวจจากจุดใด
+5. **ข้อสรุป:** ผลนั้นพิสูจน์อะไร
+
+ใช้ Computer Use ทดลองและจับภาพ Jenkins, Console Output, Docker Hub และหน้าร้านประกอบขั้นตอน
+
+## 8. ทดลองใหม่และเก็บหลักฐานให้สอดคล้องกัน
+
+- ตรวจสถานะระบบเดิมก่อนเริ่ม
+- ทดลองตั้งแต่ Jenkins สั่ง build จนเปิดร้านได้
+- เก็บภาพและผลจริงชุดใหม่ โดยให้เวอร์ชัน หมายเลข build และ digest สัมพันธ์กัน
+- วางเรื่อง cache, ออกเวอร์ชันใหม่ และ rollback ไว้หลังเส้นทางหลัก
+
+## 9. ปิดบทเรียนด้วย Checklist
+
+- [ ] Jenkins เชื่อมต่อ devtools ผ่าน SSH ได้
+- [ ] Pipeline ผ่านทุกขั้นตอน
+- [ ] Image ถูก push ขึ้น Docker Hub
+- [ ] Devtools pull image กลับมาได้
+- [ ] Container ร้านมีสถานะ `healthy`
+- [ ] เว็บไซต์แสดงเวอร์ชันและ build ที่ถูกต้อง
+- [ ] Jenkins ยังคงไม่มี Docker CLI
+- [ ] ผู้เรียนอธิบายได้ว่าใครสั่งงาน และคำสั่งประมว
+
+
+
+
+
+
+
+
+
+
+
+1. เชื่อมต่อ ssh ไปยัง (`root@127.0.0.1:22022`, Password: `789`)
+2. Load environment  ที่ `/root/workspace/DGX_2024/.env` 
+3. ทำงานทั้งหมดบน Remote ที่ `/root/workspace/`
+4. กำหนดให้ถ้ามีการเปิด web ให้เปิดใน remote  และให้ 
+   **Setup Playwright บน remote** :
+     ตรวจว่ามีPlaywright + Chromium แล้วหรือยัง ถ้าไม่มีให้ติดตั้ง:
+5. **Display บน host ผ่าน SSH tunnel
+
+- ใช้ computer use บน host เปิด browser ไปที่ Google Flights ที่รันอยู่บน remote
+
+
+
+## Remote Setup
+
+1. **SSH**: `root@127.0.0.1 -p 22022` (password: `789`), ใช้ `sshpass` สำหรับ non-interactive
+2. **Env**: `set -a && source /root/workspace/DGX_2024/.env && set +a`
+3. **Workdir**: ทำงานทั้งหมดบน remote ที่ `/root/workspace/` เท่านั้น
+4. **Web/Browser**: รันบน remote เสมอ
+   - ตรวจ Playwright + Chromium ถ้ายังไม่มีให้ติดตั้ง โดยใช้ `uv` ก่อนถ้ามี (`command -v uv`):
+     - มี uv: `uv pip install playwright && uv run playwright install --with-deps chromium`
+     - ไม่มี uv: `pip install playwright && playwright install --with-deps chromium`
+5. **Display บน host ผ่าน SSH tunnel (1:1 ความละเอียดจริง)**:
+   - remote: `Xvfb :99 -screen 0 1920x1080x24` → `x11vnc -display :99 -nopw -forever -shared`
+     → noVNC (port `6080`) แล้วรัน Chromium บน `DISPLAY=:99` ด้วย `--window-size=1920,1080 --start-maximized` เปิด Google Flights
+   - host: `ssh -N -L 6080:localhost:6080 -p 22022 root@127.0.0.1`
+   - host: ใช้ computer use เปิด `http://localhost:6080/vnc.html?autoconnect=true&resize=off`
+     (`re
+
+
+## Remote Setup
+
+1. **SSH**: `root@127.0.0.1 -p 22022` (password: `789`), ใช้ `sshpass` สำหรับ non-interactive
+2. **Env**: `set -a && source /root/workspace/DGX_2024/.env && set +a`
+3. **Workdir**: ทำงานทั้งหมดบน remote ที่ `/root/workspace/` เท่านั้น
+4. **Web/Browser**: รันบน remote เสมอ
+   - ตรวจ Playwright + Chromium ถ้ายังไม่มีให้ติดตั้ง โดยใช้ `uv` ก่อนถ้ามี (`command -v uv`):
+     - มี uv: `uv pip install playwright && uv run playwright install --with-deps chromium`
+     - ไม่มี uv: `pip install playwright && playwright install --with-deps chromium`
+   - หา path Chromium ของ Playwright:
+     `CHROME=$(find ~/.cache/ms-playwright -type f -name chrome | head -1)`
+
+5. **Display WEB บน host ผ่าน SSH tunnel (1:1 ความละเอียดจริง, ภาพคมชัด)**:
+   - remote (kill process เก่าก่อนถ้ามี: `pkill Xvfb; pkill x11vnc; pkill websockify`):
+```bash
+     Xvfb :99 -screen 0 1920x1080x24 -dpi 96 &
+     x11vnc -display :99 -nopw -forever -shared -noxdamage -rfbport 5900 &
+     websockify --web /usr/share/novnc 6080 localhost:5900 &
+     DISPLAY=:99 $CHROME --no-sandbox --window-size=1920,1080 --start-maximized \
+       --force-device-scale-factor=1 https://www.google.com/travel/flights &
+```
+   - host: `ssh -N -L 6080:localhost:6080 -p 22022 root@127.0.0.1`
+   - host: ใช้ computer use เปิด
+     `http://localhost:6080/vnc.html?autoconnect=true&resize=off&quality=9&compression=0`
+     - `resize=off` = แสดงตามความละเอียดจริงของ remote ไม่ scale/ไม่ resize (ห้ามใช้ `resize=remote`)
+     - `quality=9` = JPEG คุณภาพสูงสุด, `compression=0` = ไม่บีบอัด (localhost tunnel ไม่มีปัญหา bandwidth)
+   - host: ต้องไม่มีการ scale ซ้ำ
+     - browser zoom = 100% (`Ctrl+0`)
+     - เช็ก `window.devicePixelRatio` ถ้า ≠ 1 ให้เปิด browser ด้วย `--force-device-scale-factor=1` หรือ zoom = 1/DPR
+   - ถ้าจอที่ computer use เห็นเล็กกว่า 1920×1080 (screenshot ถูกย่อ) ให้ตั้ง Xvfb และ `--window-size`
+     ให้ตรงกับขนาดจอ host จริง เช่น `1280x800x24` + `--window-size=1280,800` เพื่อให้เป็น 1:1 จริง
+
+
+- เปิด browser ไปที่ trip.com  แสดง ขั้นตอนการจอง กรุงเทพไป ญี่ปุน
+
+
+เวลา display บน host ไม่ชัดอะ ใน web : 
+## Remote Setup
+
+1. **SSH**: `root@127.0.0.1 -p 22022` (password: `789`), ใช้ `sshpass` สำหรับ non-interactive
+2. **Env**: `set -a && source /root/workspace/DGX_2024/.env && set +a`
+3. **Workdir**: ทำงานทั้งหมดบน remote ที่ `/root/workspace/` เท่านั้น
+4. **Web/Browser**: รันบน remote เสมอ
+   - ตรวจ Playwright + Chromium ถ้ายังไม่มีให้ติดตั้ง โดยใช้ `uv` ก่อนถ้ามี (`command -v uv`):
+     - มี uv: `uv pip install playwright && uv run playwright install --with-deps chromium`
+     - ไม่มี uv: `pip install playwright && playwright install --with-deps chromium`
+5. **Display บน host ผ่าน SSH tunnel (1:1 ความละเอียดจริง)**:
+   - remote: `Xvfb :99 -screen 0 1920x1080x24` → `x11vnc -display :99 -nopw -forever -shared`
+     → noVNC (port `6080`) แล้วรัน Chromium บน `DISPLAY=:99` ด้วย `--window-size=1920,1080 --start-maximized` เปิด Google Flights
+   - host: `ssh -N -L 6080:localhost:6080 -p 22022 root@127.0.0.1`
+   - host: ใช้ computer use เปิด `http://localhost:6080/vnc.html?autoconnect=true&resize=off`
+     (`resize=off` = แสดงตามความละเอียดจริงของ remote ไม่ scale/ไม่ resize ห้ามใช้ `resize=remote`)size=off` = แสดงตามความละเอียดจริงของ remote ไม่ scale/ไม่ resize ห้ามใช้ `resize=remote`)
+
+
+
+
+## Remote Setup
+
+1. **SSH**: `root@127.0.0.1 -p 22022` (password: `789`), ใช้ `sshpass` สำหรับ non-interactive
+2. **Env**: `set -a && source /root/workspace/DGX_2024/.env && set +a`
+3. **Workdir**: ทำงานทั้งหมดบน remote ที่ `/root/workspace/` เท่านั้น
+
+- ใช้ computer use และ Playwright บน host เปิด browser ไปที่ Google Flights แสดง ขั้นตอนการจอง กรุงเทพไป ญี่ปุน
+- ใช้ Chrome extension (computer use) ไปที่ Google Flights แสดง ขั้นตอนการจอง กรุงเทพไป ญี่ปุน
+- เปรียบเที
+
+
+
+
+## Remote Setup
+
+1. **SSH**: `root@127.0.0.1 -p 22022` (password: `789`) 
+2. **Env**: `set -a && source /root/workspace/DGX_2024/.env && set +a`
+3. **Workdir**: ทำงานทั้งหมดบน remote ที่ `/root/workspace/DevTools/05_Jenkins/001_Jenikin/` เท่านั้น
+4. ค้นหา Skill ใน remote ใช้ skill devtools-lab และ skill  yolo และ cyolo
+5. การสร้างรูปใช้ cyolo imagegen ใน remote และ การเขียน code เอกสาร และ อื่นๆ ทั้งหมด ให้ใช้ yolo3  ใน remote ทั้งหมด
+6. **Display บน host ผ่าน SSH tunnel
+    - ใช้ computer use บน host ในการ เก็บภาพหน้าจอของจริง โดยเฉพาะ Jenkins Docker Hub   Github
+
+
+- อ่าน /root/workspace/DevTools/05_Jenkins/001_Jenikin/001_LAB_Jenkins_On_Docker/README.md
+- ต้องการปรับปรุ่ง LAB /root/workspace/DevTools/05_Jenkins/001_Jenikin/003_LAB_Docker_Build_Push
+
+- เตรียมเครื่องเรียน devtools for server
+    docker rm -f devtools    
+docker run -dit --name devtools --privileged --tmpfs /run \    
+  -p 2222:22 -p 8080:8080 -p 3000:3000 -p 8000:8000     \
+  tuchsanai/devtools:2569    _1
+ssh root@localhost -p 2222        # password : passwd   
+
+-ต้องการให้สร้าง Jenkins โดย
+
+    docker network create cicd-net
+    docker run -d --name jenkins --network cicd-net --restart unless-stopped \
+      -p 8080:8080 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jd
+k21
+บทั้ง 2 วิธ๊
+
+
+ลผลที่ไหน
+
+> **สถานะ:** เป็นแผนปรับปรุงบทเรียนเท่านั้น ยังไม่ได้แก้ไขไฟล์หรือเริ่มทดลองใหม่m

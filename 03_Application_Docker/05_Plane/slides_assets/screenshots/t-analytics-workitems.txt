@@ -1,2 +1,0 @@
-Workspace Analytics is open on the Work items tab.
-Totals for started, backlog, unstarted, and completed items appear above the Created vs Resolved chart and customized insights.

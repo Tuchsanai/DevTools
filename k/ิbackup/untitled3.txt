@@ -1,0 +1,81 @@
+
+# Remote Setup
+
+1. **SSH**: `root@127.0.0.1:2482`, Password: `789`
+2. **Env**: `set -a && source /root/workspace/DGX_2024/.env && set +a`
+3. **Workdir**: ทำงานบน remote ที่ `/root/workspace/DevTools/05_Jenkins/001_Jenikin` เท่านั้น
+5. files และ logs ทั้งหมดให้เก็บอยู่ใน **Workdir** บน Remote เท่านั้นห้ามเก็บไว้บน Host
+4. **Skills**: ค้นหาและใช้ skill `devtools-lab`, `yolo` และ `cyolo` บน remote
+5. **Tools** (รันบน remote ทั้งหมด ยกเว้น มีคำว่า on host):
+   - วางแผน → → `yolo1 opus medium`
+   - สร้างรูป → `cyolo1 โดยใช้ imagegen`
+   - เขียน code, เอกสาร และงานอื่นทั้งหมด → `yolo1 opus medium`
+6. Computer use (ให้ส่งคำสั่งไปยัง yolo terminal) บน host
+7. **Browser Display** (Computer use บน host): เก็บภาพหน้าจอจริงเท่านั้น ห้ามสร้างหรือจำลองภาพ
+   - **หน้าที่ไม่ต้อง login หรือรู้ user/password อยู่แล้ว** (เช่น Jenkins UI บน remote) → ใช้ **Playwright บน host**
+     - เข้าถึง service บน remote ผ่าน SSH tunnel
+     - ถ้าต้อง login ถ้าสามารถ credential จากแหล่งที่เหมาะสมบน remote เอง ห้าม hardcode ใน script หรือแสดงใน log/ภาพหน้าจอ
+   - **หน้าที่ต้อง login แต่ไม่รู้ user/password** (เช่น GitHub , Gmail) → ใช้ **Chrome extension (Claude)** บน host
+     - ใช้ session ที่ login ไว้แล้วใน Chrome ห้ามพิมพ์หรือบันทึก password/token ลงในไฟล์หรือ log
+   - **การเก็บภาพ**: ภาพที่ได้บน host ให้ส่งไปเก็บใน `<Workdir>/screenshots/` บน remote ทันที แล้วลบไฟล์บน host ตามข้อ 5
+   - ตั้งชื่อไฟล์ให้สื่อความหมาย เช่น `YYYYMMDD_HHMM_<section>_<step>.png`
+   - ปิด SSH tunnel และ browser เมื่อใช้งานเสร็จ
+
+-  ทำความเข้าใจ 001_LAB_Jenkins_On_Docker 002_LAB_Declarative_Pipeline 003_LAB_Docker_Build_Push 004_LAB_Webhook_Trigger
+-  ทำความเข้าใจ Jenkins_CICD_Docker_Slides.html
+
+
+
+
+8. รอคำสั่งดำเนินการหลังจากทำ ข้อ 1 ถึง 6 แล้ว ห้ามทำอะไรก่อนสั่งงาน
+
+
+
+
+
+
+
+
+
+
+
+
+# Remote Setup
+
+1. **SSH**: `root@lunchz.ap.loclx.io:27899`, Password: `789`
+2. **Env**: `set -a && source /root/workspace/DGX_2024/.env && set +a`
+3. **Workdir**: ทำงานบน remote ที่ `/root/workspace/DevTools/k/` เท่านั้น
+5. files และ logs ทั้งหมดให้เก็บอยู่ใน **Workdir** บน Remote เท่านั้นห้ามเก็บไว้บน Host
+4. **Skills**: ค้นหาและใช้ skill `devtools-lab`, `yolo` และ `cyolo` บน remote
+5. **Tools** (รันบน remote ทั้งหมด ยกเว้น มีคำว่า on host):
+   - สร้างรูป → `cyolo1 โดยใช้ imagegen`
+   - เขียน code, เอกสาร และงานอื่นทั้งหมด → `yolo3 opus medium`
+6. Computer use (ให้ส่งคำสั่งไปยัง yolo terminal) บน host
+7. **Browser Display** (Computer use บน host): เก็บภาพหน้าจอจริงเท่านั้น ห้ามสร้างหรือจำลองภาพ
+   - **หน้าที่ไม่ต้อง login หรือรู้ user/password อยู่แล้ว** (เช่น Jenkins UI บน remote) → ใช้ **Playwright บน host**
+     - เข้าถึง service บน remote ผ่าน SSH tunnel
+     - ถ้าต้อง login ถ้าสามารถ credential จากแหล่งที่เหมาะสมบน remote เอง ห้าม hardcode ใน script หรือแสดงใน log/ภาพหน้าจอ
+   - **หน้าที่ต้อง login แต่ไม่รู้ user/password** (เช่น GitHub , Gmail) → ใช้ **Chrome extension (Claude)** บน host
+     - ใช้ session ที่ login ไว้แล้วใน Chrome ห้ามพิมพ์หรือบันทึก password/token ลงในไฟล์หรือ log
+   - **การเก็บภาพ**: ภาพที่ได้บน host ให้ส่งไปเก็บใน `<Workdir>/screenshots/` บน remote ทันที แล้วลบไฟล์บน host ตามข้อ 5
+   - ตั้งชื่อไฟล์ให้สื่อความหมาย เช่น `YYYYMMDD_HHMM_<section>_<step>.png`
+   - ปิด SSH tunnel และ browser เมื่อใช้งานเสร็จ
+
+- ส้รางเนือหาเกี่ยวกับ kubernates และ kubernates archetecture อย่างละเอียด  ในรูปแบบ readme.md
+  และ ใช้ image gen ผ่าน cyolo1 อย่างละเอียด หลายๆ รูปเพื่อสร้างเรื่องราวให้ อธิบายเข้าใจง่าย โดยให้ gen ได้ทีละ 2 รูปพร้อมกัน   
+
+
+
+8. รอคำสั่งดำเนินการหลังจากทำ ข้อ 1 ถึง 6 แล้ว ห้ามทำอะไรก่อนสั่งงาน
+
+
+
+
+
+
+อ่านไฟล์ verify-k8s.md แล้วทำตามทุก Phase อย่างเคร่งครัด
+โดยให้ $ARGUMENTS = README.md
+
+
+- อ่าน README.md
+- ทดสอบ idea และ รูปภาพกว่า ทำถูกจริง

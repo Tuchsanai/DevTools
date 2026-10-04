@@ -1,5 +1,0 @@
-# ให้ไฟล์ข้อความเป็น LF เสมอ แม้ clone บน Windows (สคริปต์ sh ใน Jenkinsfile พังถ้าเป็น CRLF)
-* text=auto eol=lf
-*.jpg binary
-*.png binary
-*.svg text eol=lf
