@@ -1,5 +1,0 @@
-removed devtools-k8skind-474f76 (cgroup threaded state)
-devtools-k8skind-474f76 | re-created after start.sh cgroup fix
-image id: sha256:14b6760bc83547134ea53d54a6dc7be2a3a22e61781459f2a37b64e65cf8ce72  size: 1548277815
-cleanup done 07:35:55
-volume devtools-k8skind-474f76-dind + container devtools-k8skind-474f76 (exercise/restart test)

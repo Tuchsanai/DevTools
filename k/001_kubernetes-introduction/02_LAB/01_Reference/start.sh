@@ -72,6 +72,13 @@ if [ ! -e /workspace/examples ] && [ -d /opt/k8s-lab/examples ]; then
     echo "[start.sh] copied examples → /workspace/examples"
 fi
 
+# --- ลบ pid file ค้างจากรอบก่อน ------------------------------------------------
+# หลัง 'docker restart k8s-lab' ไฟล์ pid ของ dockerd/containerd ยังค้างอยู่ใน writable layer
+# ของ container และ PID เดิมอาจถูก process อื่นในรอบนี้ใช้ไปแล้ว (เช่น sshd) dockerd จะเข้าใจว่า
+# มีตัวเองรันอยู่แล้วและไม่ยอมขึ้น ("process with PID .. is still running")
+# ลบทิ้งได้อย่างปลอดภัย เพราะ start.sh คือ PID 1 ที่เพิ่งเริ่ม ยังไม่มี dockerd ตัวใดรันแน่นอน
+rm -f /var/run/docker.pid /var/run/docker/containerd/containerd.pid
+
 dockerd > /var/log/dockerd.log 2>&1 &
 
 # --- kind cluster (optional) ------------------------------------------------
