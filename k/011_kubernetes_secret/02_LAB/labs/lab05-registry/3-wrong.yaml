@@ -1,0 +1,15 @@
+# LAB 5 (3): บัตรผิด (รหัสผ่านผิด) → 401 Unauthorized
+# imagePullPolicy: Always = ไปถามคลังทุกครั้ง (ไม่ใช้ image ที่ค้างบน Node)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: wrong
+  namespace: reg
+spec:
+  terminationGracePeriodSeconds: 1
+  imagePullSecrets:
+    - name: wrongcred
+  containers:
+    - name: menu
+      image: kind-registry:5000/som-menu:1.0
+      imagePullPolicy: Always

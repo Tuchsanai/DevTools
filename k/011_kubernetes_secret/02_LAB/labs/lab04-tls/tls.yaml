@@ -1,0 +1,56 @@
+# LAB 4: nginx HTTPS — ใบรับรอง (cert) + กุญแจ (key) มาจาก Secret shop-tls (type kubernetes.io/tls)
+# ต้องสร้าง Secret ก่อน:  kubectl create secret tls shop-tls --cert=tls.crt --key=tls.key
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ngx-tls-conf
+data:
+  default.conf: |
+    server {
+      listen 443 ssl;
+      ssl_certificate     /etc/nginx/tls/tls.crt;    # ไฟล์จาก Secret (key tls.crt)
+      ssl_certificate_key /etc/nginx/tls/tls.key;    # ไฟล์จาก Secret (key tls.key)
+      location / { default_type text/plain; return 200 "HTTPS ร้านน้องส้ม\n"; }
+    }
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ngx-tls
+  labels:
+    app: ngx-tls
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.27-alpine
+      ports:
+        - name: https
+          containerPort: 443
+      volumeMounts:
+        - name: conf
+          mountPath: /etc/nginx/conf.d
+        - name: tls
+          mountPath: /etc/nginx/tls
+          readOnly: true
+  volumes:
+    - name: conf
+      configMap:
+        name: ngx-tls-conf
+    - name: tls
+      secret:
+        secretName: shop-tls
+        defaultMode: 0400            # กุญแจลับอ่านได้แค่เจ้าของ (nginx master รันเป็น root จึงอ่านได้)
+---
+# ท่อแก้วปิดสนิท: NodePort 30081 → https://localhost:30081 บนเครื่องนักศึกษา
+apiVersion: v1
+kind: Service
+metadata:
+  name: ngx-tls
+spec:
+  type: NodePort
+  selector:
+    app: ngx-tls
+  ports:
+    - port: 443
+      targetPort: https
+      nodePort: 30081

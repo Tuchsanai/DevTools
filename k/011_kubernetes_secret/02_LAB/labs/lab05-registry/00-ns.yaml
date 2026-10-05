@@ -1,0 +1,12 @@
+# LAB 5: namespace สำหรับทดลองดึง image จากคลังส่วนตัว
+#   reg  = โซนที่จะมีบัตรผ่าน (regcred)
+#   reg2 = โซนอื่นที่ไม่มีบัตร (ใช้ทดสอบว่า image ที่ค้างบน Node ใช้ซ้ำได้ไหม)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: reg
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: reg2

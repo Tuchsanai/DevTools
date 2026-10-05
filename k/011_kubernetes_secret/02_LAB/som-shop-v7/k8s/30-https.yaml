@@ -1,0 +1,79 @@
+# LAB 9 ขั้น E: ทางเข้า HTTPS ของร้าน — nginx ถือใบรับรองจาก Secret som-tls แล้วส่งต่อ (proxy) ให้ Service som-web
+#   ลูกค้า → https://localhost:30082 (NodePort) → nginx :8443 (TLS) → http://som-web:80 → Pod web
+# ต้องสร้าง Secret ก่อน:  kubectl -n som-shop create secret tls som-tls --cert=... --key=...
+# !!! nginx:1.27-alpine รันเป็น root → namespace som-shop (warn: restricted) แสดง Warning PodSecurity (แค่เตือน Pod ยังสร้างได้)
+#     แบบที่ผ่าน restricted ดู extra/30-https-restricted.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: som-https-conf
+  namespace: som-shop
+data:
+  default.conf: |
+    server {
+      listen 8443 ssl;
+      ssl_certificate     /etc/nginx/tls/tls.crt;
+      ssl_certificate_key /etc/nginx/tls/tls.key;
+      location / {
+        proxy_pass http://som-web.som-shop.svc.cluster.local:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: som-https
+  namespace: som-shop
+  labels:
+    app: som-https
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: som-https
+  template:
+    metadata:
+      labels:
+        app: som-https
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - name: https
+              containerPort: 8443
+          volumeMounts:
+            - name: conf
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
+            - name: tls
+              mountPath: /etc/nginx/tls
+              readOnly: true
+          resources:
+            requests: { cpu: 20m, memory: 32Mi }
+            limits:   { cpu: 200m, memory: 128Mi }
+      volumes:
+        - name: conf
+          configMap:
+            name: som-https-conf
+        - name: tls
+          secret:
+            secretName: som-tls        # type kubernetes.io/tls → ไฟล์ tls.crt + tls.key
+            defaultMode: 0400
+---
+# ท่อแก้วปิดสนิท: NodePort 30082 → https://localhost:30082 บนเครื่องนักศึกษา (ใบรับรอง self-signed เบราว์เซอร์จะเตือน)
+apiVersion: v1
+kind: Service
+metadata:
+  name: som-https
+  namespace: som-shop
+spec:
+  type: NodePort
+  selector:
+    app: som-https
+  ports:
+    - port: 443
+      targetPort: https
+      nodePort: 30082

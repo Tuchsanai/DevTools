@@ -1,0 +1,13 @@
+# LAB 10 ขั้น C: เปลี่ยนป้ายร้าน (ชื่อสาขา ธีม sunset และโปรโมชัน) — ชื่อเดียวกับ som-web-config ใน k8s/15-config.yaml
+# apply แล้ว Pod เดิมยังเห็นค่าเก่า (env อ่านครั้งเดียวตอนเริ่ม) จนกว่าจะ rollout restart
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: som-web-config
+  namespace: som-shop
+data:
+  SHOP_NAME: "ร้านน้องส้ม สาขาท่าเรือ"
+  SHOP_EYEBROW: "⚓ ท่าเรือ Kubernetes · ConfigMap"
+  SHOP_FOOTER: "Next.js + PostgreSQL · Kubernetes LAB 010 · ConfigMap som-web-config"
+  APP_THEME: "sunset"
+  SHOP_PROMO: "🎉 โปรวันนี้: ขนมปลาทูน่าลด 20%"

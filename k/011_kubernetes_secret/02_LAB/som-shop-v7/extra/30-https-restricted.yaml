@@ -1,0 +1,76 @@
+# LAB 9 ขั้น E (ทางเลือก): ทางเข้า HTTPS แบบผ่าน Pod Security "restricted" — ไม่มี Warning
+# ต่างจาก k8s/30-https.yaml:
+#   - image nginxinc/nginx-unprivileged:1.27-alpine (รันเป็น uid 101 ไม่ใช่ root)
+#   - securityContext ครบตาม restricted (runAsNonRoot, drop ALL, seccomp RuntimeDefault, allowPrivilegeEscalation false)
+#   - ไฟล์ใน Secret volume เป็นของ root → ให้ fsGroup 101 + defaultMode 0440 (กลุ่มอ่านได้) ไม่งั้น nginx อ่าน tls.key ไม่ได้
+# ใช้แทนไฟล์เดิม:  kubectl apply -f extra/30-https-restricted.yaml   (ชื่อ Deployment เดิม som-https → rolling update)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: som-https-conf
+  namespace: som-shop
+data:
+  default.conf: |
+    server {
+      listen 8443 ssl;
+      ssl_certificate     /etc/nginx/tls/tls.crt;
+      ssl_certificate_key /etc/nginx/tls/tls.key;
+      location / {
+        proxy_pass http://som-web.som-shop.svc.cluster.local:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: som-https
+  namespace: som-shop
+  labels:
+    app: som-https
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: som-https
+  template:
+    metadata:
+      labels:
+        app: som-https
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101               # ผู้ใช้ nginx ใน image unprivileged
+        runAsGroup: 101
+        fsGroup: 101                 # ไฟล์ใน volume ได้กลุ่ม 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: nginx
+          image: nginxinc/nginx-unprivileged:1.27-alpine
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          ports:
+            - name: https
+              containerPort: 8443
+          volumeMounts:
+            - name: conf
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
+            - name: tls
+              mountPath: /etc/nginx/tls
+              readOnly: true
+          resources:
+            requests: { cpu: 20m, memory: 32Mi }
+            limits:   { cpu: 200m, memory: 128Mi }
+      volumes:
+        - name: conf
+          configMap:
+            name: som-https-conf
+        - name: tls
+          secret:
+            secretName: som-tls
+            defaultMode: 0440          # -r--r----- root:101 → nginx (uid 101 กลุ่ม 101) อ่านได้

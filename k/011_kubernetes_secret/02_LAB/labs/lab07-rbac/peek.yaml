@@ -1,0 +1,18 @@
+# LAB 7: Pod ที่ maker สร้าง — ขอให้ kubelet เปิดซอง demo มาเป็น env แล้วพิมพ์ลง log
+# kubelet เปิดซองให้ Pod (ไม่ได้ตรวจว่าคนสร้าง Pod มีสิทธิ์ get secrets หรือไม่)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: peek
+spec:
+  restartPolicy: Never
+  containers:
+    - name: peek
+      image: busybox:1.36
+      command: ["sh", "-c", "echo stolen=$P"]
+      env:
+        - name: P
+          valueFrom:
+            secretKeyRef:
+              name: demo
+              key: password

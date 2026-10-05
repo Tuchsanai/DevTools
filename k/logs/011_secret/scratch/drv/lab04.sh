@@ -1,0 +1,15 @@
+R="../r.sh lab04"; D=labs/lab04-tls
+$R $D "openssl req -x509 -nodes -newkey rsa:2048 -days 365 -keyout tls.key -out tls.crt -subj '/CN=shop.som.local' -addext 'subjectAltName=DNS:shop.som.local,DNS:localhost'; ls -la tls.*"
+$R $D 'openssl x509 -in tls.crt -noout -subject -issuer -enddate -ext subjectAltName'
+$R $D 'kubectl create secret tls shop-tls --cert=tls.crt --key=tls.key; kubectl get secret shop-tls; kubectl describe secret shop-tls | tail -4'
+$R $D 'kubectl create secret tls badtls --cert=tls.crt --key=../lab02-types/pw.txt'
+$R $D 'kubectl apply -f tls.yaml && kubectl wait --for=condition=Ready pod/ngx-tls --timeout=120s; curl -sS https://localhost:30081/; echo "rc=$?"'
+$R $D 'sleep 5; curl -sS https://localhost:30081/; echo "rc=$?"'
+$R $D 'curl -sk https://localhost:30081/'
+$R $D 'curl -s --cacert tls.crt https://localhost:30081/'
+$R $D 'curl -s --cacert tls.crt --resolve shop.som.local:30081:127.0.0.1 https://shop.som.local:30081/'
+$R $D 'curl -sS --cacert tls.crt https://127.0.0.1:30081/; echo "rc=$?"'
+$R $D 'curl -sS http://localhost:30081/ | head -3'
+$R $D 'curl -skv https://localhost:30081/ 2>&1 | grep -E "subject:|issuer:|SSL connection|expire date"'
+$R $D 'openssl s_client -connect localhost:30081 -servername shop.som.local </dev/null 2>/dev/null | openssl x509 -noout -subject -enddate'
+$R $D 'kubectl exec ngx-tls -- ls -laL /etc/nginx/tls; kubectl exec ngx-tls -- mount | grep nginx/tls'

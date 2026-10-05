@@ -1,0 +1,31 @@
+# LAB 4: แบบเดียวกับ nocm/nokey/novol แต่ใส่ optional: true ทุกจุด → Pod เริ่มได้
+#   env ที่ไม่มี key = ไม่ถูกตั้ง (X ว่าง), envFrom ที่ไม่มี ConfigMap = ข้าม, volume ที่ไม่มี = โฟลเดอร์ว่าง
+apiVersion: v1
+kind: Pod
+metadata:
+  name: optpod
+spec:
+  terminationGracePeriodSeconds: 1
+  containers:
+    - name: c
+      image: busybox:1.36
+      command: ["sh", "-c", "echo X=[$X] HELLO=[$HELLO]; ls -la /etc/opt-cm; sleep 86400"]
+      env:
+        - name: X
+          valueFrom:
+            configMapKeyRef:
+              name: shop-config
+              key: NOPE
+              optional: true
+      envFrom:
+        - configMapRef:
+            name: not-here
+            optional: true
+      volumeMounts:
+        - name: v
+          mountPath: /etc/opt-cm
+  volumes:
+    - name: v
+      configMap:
+        name: not-here
+        optional: true

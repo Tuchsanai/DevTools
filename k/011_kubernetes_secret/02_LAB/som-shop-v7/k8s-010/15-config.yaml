@@ -1,0 +1,24 @@
+# สภาพท้ายบท 010 (สำเนา som-shop-v6/k8s ไม่แก้): กระดานประกาศของโซน som-shop (ConfigMap 2 แผ่น)
+# 1) som-web-config: ป้ายร้าน → web อ่านผ่าน envFrom (เปลี่ยนแล้วต้อง rollout restart)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: som-web-config
+  namespace: som-shop
+data:
+  SHOP_NAME: "ร้านอาหารแมวน้องส้ม"
+  SHOP_EYEBROW: "⚓ ท่าเรือ Kubernetes · ConfigMap"
+  # ห้ามใส่ $(POD_NAMESPACE) ในค่าของ ConfigMap — envFrom ไม่แทนค่าให้ (ดูขั้น B เสริม)
+  SHOP_FOOTER: "Next.js + PostgreSQL · Kubernetes LAB 010 · ConfigMap som-web-config"
+  APP_THEME: "harbor"              # harbor (น้ำเงิน) หรือ sunset (ส้ม) — ทับค่าเริ่มใน image ได้
+  SHOP_PROMO: ""                   # ว่าง = ไม่แสดงแถบโปรโมชัน
+---
+# 2) som-announcement: ประกาศหน้าร้าน → mount เป็นไฟล์ /etc/som/announcement.txt (เปลี่ยนเองไม่ต้อง restart)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: som-announcement
+  namespace: som-shop
+data:
+  announcement.txt: |
+    วันนี้ปลาทูสดมาก 🐟

@@ -1,0 +1,8 @@
+# สภาพท้ายบท 010 (สำเนา som-shop-v6/k8s ไม่แก้): โซนของร้านน้องส้ม — เตือน (warn) ถ้า Pod ไม่ผ่าน Pod Security ระดับ restricted
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: som-shop
+  labels:
+    app.kubernetes.io/part-of: som-shop
+    pod-security.kubernetes.io/warn: restricted

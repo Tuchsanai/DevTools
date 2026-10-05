@@ -1,0 +1,15 @@
+# LAB 5 (2): มีบัตรผ่าน regcred (type kubernetes.io/dockerconfigjson) → ดึงได้
+# ตรึงไว้ที่ lab-worker (nodeName) เพื่อใช้ทดสอบข้อ 5 ต่อ
+apiVersion: v1
+kind: Pod
+metadata:
+  name: withpull
+  namespace: reg
+spec:
+  nodeName: lab-worker
+  terminationGracePeriodSeconds: 1
+  imagePullSecrets:
+    - name: regcred                  # Secret ใน namespace เดียวกับ Pod
+  containers:
+    - name: menu
+      image: kind-registry:5000/som-menu:1.0

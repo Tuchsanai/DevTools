@@ -1,0 +1,25 @@
+# LAB 3: Pod envfrom — ถ่ายการ์ด "ทั้งกระดาน" มาเป็น env (envFrom) โดยเติมหน้าชื่อ CFG_
+# + ตั้ง env ชื่อซ้ำ CFG_APP_THEME เอง เพื่อดูว่าใครชนะ
+# ต้องมี shop-config จาก LAB 2 ก่อน
+apiVersion: v1
+kind: Pod
+metadata:
+  name: envfrom
+spec:
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 1
+  containers:
+    - name: c
+      image: busybox:1.36
+      command: ["sh", "-c", "env | sort | grep -E '^(CFG_|POD_)'; sleep 86400"]
+      envFrom:
+        - prefix: CFG_                     # ทุก key ได้ชื่อ CFG_<key>
+          configMapRef:
+            name: shop-config
+      env:
+        - name: POD_NAMESPACE              # Downward API (บท 003)
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: CFG_APP_THEME              # ชื่อซ้ำกับที่มาจาก envFrom → env ชนะ
+          value: "harbor (จาก env)"

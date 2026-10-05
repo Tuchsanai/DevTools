@@ -1,0 +1,16 @@
+# LAB 2: กระดานประกาศ shop-config — การ์ด key: value ที่ Pod หลายตัวอ่านได้
+# key ปกติ (SHOP_NAME, APP_THEME) + key แปลก ๆ (1bad, shop.name) ไว้ดูใน LAB 3 + key ที่เป็น "ไฟล์" ไว้ใช้ใน LAB 5
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shop-config
+data:
+  SHOP_NAME: "ร้านน้องส้ม"
+  APP_THEME: "sunset"
+  FOOTER: "ร้านใน namespace $(POD_NAMESPACE)"   # LAB 3: ค่าจาก envFrom ที่มี $(...) จะไม่ถูกแทนค่า
+  shop.name: "dot-key"                        # มีจุด — เป็นชื่อ env ได้แต่ shell อ่านไม่ได้
+  1bad: "starts-with-digit"                   # ขึ้นต้นด้วยตัวเลข — เช่นกัน
+  announcement.txt: |                         # | = ค่าหลายบรรทัด (เนื้อไฟล์)
+    วันนี้ปลาทูสด
+  menu.txt: |
+    ขนมปลาทูน่า

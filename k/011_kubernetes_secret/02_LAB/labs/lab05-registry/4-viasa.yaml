@@ -1,0 +1,12 @@
+# LAB 5 (4): ไม่เขียน imagePullSecrets ใน Pod — ได้บัตรอัตโนมัติจาก ServiceAccount default
+# (ต้อง kubectl -n reg patch sa default ... ก่อน)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: viasa
+  namespace: reg
+spec:
+  terminationGracePeriodSeconds: 1
+  containers:
+    - name: menu
+      image: kind-registry:5000/som-menu:1.0

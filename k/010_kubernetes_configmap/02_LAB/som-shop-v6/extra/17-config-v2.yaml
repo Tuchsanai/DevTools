@@ -1,0 +1,14 @@
+# LAB 10 ขั้น E: ป้ายร้านชุดใหม่แบบ "ชื่อใหม่ + immutable" (กระดานเคลือบ)
+# แก้ไม่ได้อีก → อยากเปลี่ยนต้องสร้าง -v3 แล้วชี้ Deployment ไปชื่อใหม่ (ชื่อเปลี่ยน = template เปลี่ยน = rollout เอง)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: som-web-config-v2
+  namespace: som-shop
+immutable: true
+data:
+  SHOP_NAME: "ร้านน้องส้ม (v2)"
+  SHOP_EYEBROW: "⚓ ท่าเรือ Kubernetes · ConfigMap v2 (immutable)"
+  SHOP_FOOTER: "Next.js + PostgreSQL · Kubernetes LAB 010 · ConfigMap som-web-config-v2"
+  APP_THEME: "harbor"
+  SHOP_PROMO: ""

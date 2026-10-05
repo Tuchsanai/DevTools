@@ -1,0 +1,9 @@
+# LAB 3: ซองเคลือบ — immutable: true แก้ data ไม่ได้ (ต้องลบแล้วสร้างใหม่ หรือใช้ชื่อใหม่)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: frozen
+type: Opaque
+immutable: true
+stringData:
+  API_KEY: example-key-v1            # ค่าตัวอย่างเพื่อการเรียน

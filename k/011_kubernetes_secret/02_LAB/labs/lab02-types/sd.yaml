@@ -1,0 +1,13 @@
+# LAB 2: Secret ที่เขียนเป็น YAML — data (base64 เอง) กับ stringData (ข้อความธรรมดา) ในไฟล์เดียว
+# key ชื่อเดียวกัน (PASSWORD) อยู่ทั้งสองที่ → stringData ชนะ (API server รวม stringData ทับลง data ให้)
+# !!! kubectl apply ไฟล์นี้ → annotation last-applied-configuration เก็บ stringData เป็น "ข้อความ" (ดูใน LAB 2)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sd
+type: Opaque
+data:
+  PASSWORD: bWVvdzEyMzQ=            # = base64 ของ meow1234 (แค่เปลี่ยนตัวอักษร ไม่ใช่การเข้ารหัส)
+stringData:
+  PASSWORD: override-by-stringData   # ทับ data.PASSWORD
+  USERNAME: som                      # ระบบแปลงเป็น base64 เก็บใน data ให้เอง

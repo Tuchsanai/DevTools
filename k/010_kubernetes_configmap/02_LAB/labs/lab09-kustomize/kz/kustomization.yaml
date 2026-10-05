@@ -1,0 +1,11 @@
+# LAB 9: kustomize (อยู่ใน kubectl แล้ว: kubectl kustomize / kubectl apply -k)
+# configMapGenerator = เครื่องพิมพ์ป้าย: สร้าง ConfigMap ชื่อ web-config-<hash จากเนื้อหา>
+# และแก้ชื่อใน deploy.yaml ให้ตรงเอง → แก้เนื้อหา = ชื่อใหม่ = Deployment rollout เอง
+configMapGenerator:
+- name: web-config
+  literals:
+  - SHOP_NAME=ร้านน้องส้ม
+  files:
+  - announcement.txt        # key = ชื่อไฟล์, ค่า = เนื้อไฟล์
+resources:
+- deploy.yaml

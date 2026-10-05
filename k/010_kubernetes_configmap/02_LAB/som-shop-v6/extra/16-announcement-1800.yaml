@@ -1,0 +1,9 @@
+# LAB 10 ขั้น D: ประกาศใหม่ — apply แล้วรอราว 1 นาที ไฟล์ใน /etc/som เปลี่ยนเอง หน้าเว็บเปลี่ยนตามโดย Pod ไม่ restart
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: som-announcement
+  namespace: som-shop
+data:
+  announcement.txt: |
+    ปิดร้านเร็ว 18:00 น. ⛵

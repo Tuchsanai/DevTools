@@ -1,0 +1,27 @@
+# LAB 7: เด็กฝึกงาน intern (บัตรแถบเทา) — ดู Pod, log และ ConfigMap ได้ แต่ไม่มีสิทธิ์ใด ๆ กับ Secret
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: intern
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: intern-view
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "configmaps"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: intern-view
+subjects:
+  - kind: ServiceAccount
+    name: intern
+    namespace: default
+roleRef:
+  kind: Role
+  name: intern-view
+  apiGroup: rbac.authorization.k8s.io

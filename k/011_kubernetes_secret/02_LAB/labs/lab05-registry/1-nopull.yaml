@@ -1,0 +1,11 @@
+# LAB 5 (1): ไม่มีบัตรผ่าน → คลังตอบ 401 → ErrImagePull / ImagePullBackOff
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nopull
+  namespace: reg
+spec:
+  terminationGracePeriodSeconds: 1
+  containers:
+    - name: menu
+      image: kind-registry:5000/som-menu:1.0

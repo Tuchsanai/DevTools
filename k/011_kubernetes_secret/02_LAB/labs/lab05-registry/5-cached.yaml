@@ -1,0 +1,14 @@
+# LAB 5 (5): โซนอื่น (reg2) ไม่มีบัตร ตรึงลง lab-worker ที่ดึง image นี้ไว้แล้ว
+# imagePullPolicy: IfNotPresent — แต่ kubelet v1.37 ตรวจว่า Pod นี้มีสิทธิ์ใช้ image ที่ดึงมาด้วยบัตรหรือไม่
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cached
+  namespace: reg2
+spec:
+  nodeName: lab-worker
+  terminationGracePeriodSeconds: 1
+  containers:
+    - name: menu
+      image: kind-registry:5000/som-menu:1.0
+      imagePullPolicy: IfNotPresent

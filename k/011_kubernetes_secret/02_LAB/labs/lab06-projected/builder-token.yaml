@@ -1,0 +1,15 @@
+# LAB 6: บัตรพนักงานหุ่นยนต์แบบถาวร — Secret type kubernetes.io/service-account-token
+# ใส่แค่ annotation ชื่อ ServiceAccount → ระบบเติม ca.crt, namespace, token ให้เอง (token ไม่มีวันหมดอายุ!)
+# ปัจจุบันแนะนำ kubectl create token <sa> --duration=... (มีอายุ) มากกว่า
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: builder
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: builder-token
+  annotations:
+    kubernetes.io/service-account.name: builder
+type: kubernetes.io/service-account-token

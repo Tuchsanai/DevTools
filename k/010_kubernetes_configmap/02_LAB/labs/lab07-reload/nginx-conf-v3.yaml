@@ -1,0 +1,8 @@
+# LAB 7: ConfigMap nginx-conf ชุดใหม่ (menu v3) — ชื่อเดียวกับ nginx-conf.yaml → apply = แก้กระดานเดิม
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+data:
+  default.conf: |
+    server { listen 80; location / { default_type text/plain; return 200 "menu v3\n"; } }

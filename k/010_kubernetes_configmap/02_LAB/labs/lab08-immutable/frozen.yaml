@@ -1,0 +1,9 @@
+# LAB 8: กระดานเคลือบอะคริลิก — immutable: true แก้ data ไม่ได้และปิด immutable ไม่ได้
+# อยากเปลี่ยนราคา = ลบแล้วสร้างใหม่ หรือสร้างชื่อใหม่ (frozen-v2)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frozen
+immutable: true
+data:
+  PRICE: "99"
