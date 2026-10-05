@@ -8,4 +8,5 @@ spec:
   containers:
     - name: app
       image: busybox:1.36
+      # stdout 1 บรรทัด, รอ 3 วิ, stderr 1 บรรทัด แล้ว exit 1 (ล้ม) ทุกรอบ
       command: ["sh", "-c", "echo 'กำลังเปิดร้าน...'; sleep 3; echo 'ERROR: หาไฟล์เมนูไม่เจอ' >&2; exit 1"]

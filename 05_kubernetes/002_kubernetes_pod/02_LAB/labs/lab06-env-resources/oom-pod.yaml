@@ -3,13 +3,13 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: oom-pod
-spec:
+spec:                                   # ไม่ระบุ restartPolicy = Always จึงถูก restart วน
   containers:
     - name: hungry
       image: busybox:1.36
       command: ["sh", "-c", "echo 'กินแรมไม่หยุด...'; tail /dev/zero"]   # tail จะอ่านข้อมูลเก็บในแรมไปเรื่อย ๆ
       resources:
         requests:
-          memory: "16Mi"
+          memory: "16Mi"                # ขั้นต่ำที่ขอจอง (ใช้ตอนเลือก Node)
         limits:
           memory: "32Mi"                # เกิน 32Mi เมื่อไร โดน OOMKilled

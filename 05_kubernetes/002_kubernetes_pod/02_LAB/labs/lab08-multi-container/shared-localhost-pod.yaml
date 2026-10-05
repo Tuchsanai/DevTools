@@ -4,11 +4,11 @@ kind: Pod
 metadata:
   name: shared-localhost-pod
 spec:
-  containers:
+  containers:                   # มี 2 ตัว → READY 2/2, ตัวแรก (web) คือ container เริ่มต้นของ kubectl
     - name: web                 # container หลัก: nginx ฟัง port 80
       image: nginx:1.27-alpine
       ports:
         - containerPort: 80
     - name: helper              # container ผู้ช่วย: ไม่มีเว็บของตัวเอง
       image: busybox:1.36
-      command: ["sh", "-c", "sleep 3600"]
+      command: ["sh", "-c", "sleep 3600"]   # แค่นอนรอ ไว้ให้เรา exec เข้าไปทดสอบ

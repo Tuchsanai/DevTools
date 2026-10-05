@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: bad-image-pod
-spec:
+spec:                     # ไม่ระบุ restartPolicy จึงได้ค่าเริ่มต้น Always
   containers:
     - name: web
       image: nginx:9.99-doesnotexist   # tag ผิด! แก้เป็น nginx:1.27-alpine แล้วลบ/apply ใหม่

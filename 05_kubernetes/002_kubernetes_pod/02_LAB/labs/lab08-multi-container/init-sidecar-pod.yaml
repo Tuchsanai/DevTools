@@ -10,7 +10,7 @@ spec:
   initContainers:               # ทำงานก่อน container หลัก ต้องจบด้วย exit 0
     - name: prepare
       image: busybox:1.36
-      command:
+      command:                  # รอ 5 วิ แล้วเขียนหัวเมนู + เวลาสร้าง ลง /html/index.html
         - sh
         - -c
         - |
@@ -21,13 +21,13 @@ spec:
           echo "prepare เสร็จ"
       volumeMounts:
         - name: html
-          mountPath: /html
+          mountPath: /html      # prepare เห็น emptyDir ที่ /html
   containers:
     - name: web                 # เสิร์ฟไฟล์จาก emptyDir
       image: nginx:1.27-alpine
       volumeMounts:
         - name: html
-          mountPath: /usr/share/nginx/html
+          mountPath: /usr/share/nginx/html   # volume เดียวกัน แต่ mount คนละ path ได้
     - name: menu-writer         # sidecar: เขียนเวลาลงไฟล์ทุก 5 วินาที
       image: busybox:1.36
       command: ["sh", "-c", "while true; do echo \"<p>อัปเดต $(date +%T)</p>\" >> /html/index.html; sleep 5; done"]

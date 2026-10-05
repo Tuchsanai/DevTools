@@ -3,14 +3,14 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: shop-web
-  labels:
+  labels:             # label = ป้าย key: value ที่ใช้เลือกด้วย -l
     app: som-shop     # ร้านของน้องส้ม
     tier: web         # ชั้นหน้าเว็บ
 spec:
   containers:
     - name: nginx
       image: nginx:1.27-alpine
----
+---                   # ขึ้น document ใหม่ = object ถัดไปในไฟล์เดียวกัน
 apiVersion: v1
 kind: Pod
 metadata:

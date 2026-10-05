@@ -4,7 +4,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: som-shop
-  labels:
+  labels:                       # ใช้ค้นหาด้วย -l app=som-shop
     app: som-shop
     part: all-in-one
 spec:
@@ -27,31 +27,31 @@ spec:
         - name: PGDATA           # ใช้โฟลเดอร์ย่อย กันปัญหา "directory ไม่ว่าง"
           value: /var/lib/postgresql/data/pgdata
       ports:
-        - containerPort: 5432
+        - containerPort: 5432    # PostgreSQL ฟัง port นี้ (ข้อมูลประกอบ)
       volumeMounts:
         - name: db-data
-          mountPath: /var/lib/postgresql/data
+          mountPath: /var/lib/postgresql/data   # ข้อมูล DB ไปอยู่บน emptyDir
       startupProbe:              # ผ่านเมื่อไร init ตัวถัดไปจึงเริ่ม
         exec:
           command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
         periodSeconds: 2
         failureThreshold: 30     # รอได้สูงสุด 2 x 30 = 60 วินาที
-      readinessProbe:
+      readinessProbe:            # ผ่าน → db นับเป็น READY (เห็น 1/2)
         exec:
           command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
         periodSeconds: 5
-      livenessProbe:
+      livenessProbe:             # เปิด port 5432 ไม่ได้ 3 ครั้งติด → restart db
         tcpSocket:
           port: 5432
         periodSeconds: 10
         failureThreshold: 3
-      resources:
+      resources:                 # requests = จองตอนเลือก Node, limits = เพดาน
         requests: { cpu: 100m, memory: 256Mi }
         limits:   { cpu: 500m, memory: 512Mi }
 
     # 2) wait-for-db: รอจนต่อ db ทาง localhost ได้ (exit 0 แล้วจบ)
     - name: wait-for-db
-      image: postgres:17.11-alpine
+      image: postgres:17.11-alpine # ใช้ image เดียวกับ db เพื่อให้มีคำสั่ง pg_isready
       command:
         - sh
         - -c
@@ -64,9 +64,9 @@ spec:
     - name: db-seed
       image: som-shop-web:1.0
       imagePullPolicy: IfNotPresent   # ใช้ image ที่ kind load ไว้บน node (ไม่ไปดึงจาก Docker Hub)
-      command: ["node", "scripts/seed.mjs"]
+      command: ["node", "scripts/seed.mjs"]   # สร้างตาราง + ใส่สินค้า 6 รายการ (รันซ้ำได้)
       env:
-        - name: DATABASE_URL
+        - name: DATABASE_URL     # ต่อ db ผ่าน localhost เพราะอยู่ Pod เดียวกัน
           value: postgres://som:meow1234@localhost:5432/catshop
       resources:
         requests: { cpu: 50m, memory: 64Mi }
@@ -80,14 +80,14 @@ spec:
       env:
         - name: DATABASE_URL
           value: postgres://som:meow1234@localhost:5432/catshop
-        - name: SHOP_NAME
+        - name: SHOP_NAME          # ชื่อร้านที่แสดงบนหน้าเว็บ
           value: "ร้านอาหารแมวน้องส้ม"
-        - name: PORT
+        - name: PORT               # port ที่ Next.js ฟัง
           value: "3000"
         - name: HOSTNAME           # ให้ Next.js ฟังทุก interface (ค่าเดิมของ HOSTNAME คือชื่อ Pod)
           value: "0.0.0.0"
       ports:
-        - containerPort: 3000
+        - containerPort: 3000    # port ที่ port-forward 3000:3000 ส่งเข้ามา
       readinessProbe:              # พร้อมรับลูกค้าเมื่อ /api/health ตอบ 200
         httpGet:
           path: /api/health
