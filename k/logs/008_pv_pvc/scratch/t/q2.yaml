@@ -1,0 +1,4 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: p3, namespace: qtest}
+spec: {accessModes: [ReadWriteOnce], resources: {requests: {storage: 10Mi}}}

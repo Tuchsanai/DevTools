@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata: {name: writer}
+spec:
+  containers:
+  - name: c
+    image: busybox:1.36
+    command: ["sh","-c","echo hello-$(hostname) >> /data/log.txt; id; ls -ld /data; sleep 3600"]
+    volumeMounts: [{name: d, mountPath: /data}]
+  volumes:
+  - name: d
+    persistentVolumeClaim: {claimName: notes}
