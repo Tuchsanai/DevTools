@@ -1,0 +1,42 @@
+# LAB 10: php-apache แบบ "ย้ายให้ HPA ดูแลแล้ว" = 10-php-apache.yaml ที่ลบบรรทัด replicas ออก (นอกนั้นเหมือนเดิม)
+# !!! ถ้า object เคยถูก apply พร้อม replicas มาก่อน ต้องลบ replicas ออกจาก last-applied ก่อน
+#     (kubectl apply edit-last-applied หรือ set-last-applied) ไม่งั้น apply ไฟล์นี้ครั้งแรกจะลดเหลือ 1 Pod
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hpa-demo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-apache
+  namespace: hpa-demo
+spec:
+  # ไม่มี replicas: แล้ว — HPA php-apache เป็นคนกำหนดจำนวน Pod (kubectl apply ไฟล์นี้จะไม่แตะจำนวน)
+  selector:
+    matchLabels:
+      app: php-apache
+  template:
+    metadata:
+      labels:
+        app: php-apache
+    spec:
+      containers:
+        - name: php-apache
+          image: registry.k8s.io/hpa-example
+          ports:
+            - containerPort: 80
+          resources:
+            requests: { cpu: 100m }   # HPA คิด % จากค่านี้ (100m = 0.1 core)
+            limits:   { cpu: 300m }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-apache
+  namespace: hpa-demo
+spec:
+  selector:
+    app: php-apache
+  ports:
+    - port: 80

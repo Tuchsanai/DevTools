@@ -1,0 +1,70 @@
+# บท 013 LAB 11 (เหมือนบท 012 ไม่เปลี่ยน): ประตูเดียวของร้าน = ป้าย Ingress 2 แผ่น + ด่าน Middleware 2 ด่าน (Traefik ใน namespace traefik เป็นคนทำ)
+#   http://shop.localhost:30080   → 301 → https://shop.localhost:30081  → som-web:80   (หน้าร้าน)
+#   http://admin.localhost:30080  → 301 → https://admin.localhost:30081 → ตรวจบัตร → som-admin:http (หลังร้าน)
+# ต้องมีก่อน apply:
+#   Secret som-tls        (kubernetes.io/tls ใบใหม่ SAN shop.localhost, admin.localhost, localhost — ขั้น B)
+#   Secret som-admin-auth (kubernetes.io/basic-auth username/password — ขั้น C)
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  namespace: som-shop
+spec:
+  redirectScheme:
+    scheme: https
+    port: "30081"          # พอร์ต HTTPS ของ NodePort Traefik (ไม่ใส่จะชี้ไปพอร์ต 443 ที่ไม่มีใน k8s-lab)
+    permanent: true        # 301
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: admin-auth
+  namespace: som-shop
+spec:
+  basicAuth:
+    secret: som-admin-auth
+    removeHeader: true     # แอปหลังร้านไม่เห็น header Authorization
+---
+# ป้ายหน้าร้าน: middleware ชื่อ <namespace>-<ชื่อ>@kubernetescrd = som-shop-redirect-https@kubernetescrd
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: som-shop
+  namespace: som-shop
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: som-shop-redirect-https@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts: [shop.localhost]
+      secretName: som-tls
+  rules:
+    - host: shop.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: som-web, port: {number: 80}}
+---
+# ป้ายหลังร้าน: ด่าน redirect ก่อน แล้วจึงตรวจบัตร (ลำดับใน annotation = ลำดับด่าน)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: som-admin
+  namespace: som-shop
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: som-shop-redirect-https@kubernetescrd,som-shop-admin-auth@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts: [admin.localhost]
+      secretName: som-tls
+  rules:
+    - host: admin.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: som-admin, port: {name: http}}

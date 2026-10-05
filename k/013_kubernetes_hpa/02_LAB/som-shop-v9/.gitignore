@@ -1,0 +1,5 @@
+# ไฟล์ Secret ที่มีค่าจริง ห้ามเข้า git (ไฟล์ตัวอย่าง *.example.yaml commit ได้)
+secret.yaml
+*.secret.yaml
+*.key
+*.crt

@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""ส่วนกลางของ prompt ภาพ บท 008–011 (PV/PVC, StatefulSet, ConfigMap, Secret)
+"""ส่วนกลางของ prompt ภาพ บท 008–012 (PV/PVC, StatefulSet, ConfigMap, Secret, Ingress)
+
+บท 012: สำเนาจาก logs/templates/imgkit/imgcommon.py + CHAPTERS["012"], LATER["012"], M_ING และป้ายแบบมีหมายเลข
+(Constraints อ้างป้ายด้วยหมายเลข "label N" จึงไม่ต้องพิมพ์ค่าที่อาจเปลี่ยนตามผลทดสอบซ้ำ — แก้ที่ Text ที่เดียว)
 
 สำเนาเดียวกันวางไว้ที่ logs/010_configmap และ logs/011_secret (ต่อยอดจาก logs/templates/imgkit/imgcommon.py ของบท 008/009)
 แต่ละบทเรียก configure(ch) แล้วใช้ t()/l() เพิ่มภาพ และ main() เขียน images.json + imagegen-prompts.md
@@ -32,6 +35,12 @@ CHAPTERS = {
         "out": f"{K}/logs/011_secret/images.json",
         "topic": "Secret",
         "title_th": "011 Kubernetes Secret",
+    },
+    "012": {
+        "root": f"{K}/012_kubernetes_ingress",
+        "out": f"{K}/logs/012_ingress/images.json",
+        "topic": "Ingress",
+        "title_th": "012 Kubernetes Ingress",
     },
 }
 
@@ -112,6 +121,36 @@ M_SEC = ("Secret = a navy envelope closed with an orange paw-print wax seal, kep
          "gate of a private container warehouse (registry) on the dock before a crane may pick up a container; "
          "projected volume = one ring binder inside the booth that combines a notice card, a sealed envelope and the "
          "booth's own name tag; service-account-token = a robot staff ID card with a long stamped barcode strip")
+M_SEC_SHORT = ("Learned in chapter 011: Secret = a navy envelope closed with an orange paw-print wax seal kept in a small "
+               "steel key box on the zone wall; a kubernetes.io/tls Secret holds a certificate badge (tls.crt) and a "
+               "private key (tls.key); a kubernetes.io/basic-auth Secret holds a username card and a dotted password "
+               "card")
+M_ING = ("Ingress = the harbor's single main front gate building on the dock: a grand reception hall with one big "
+         "direction signboard on a stand listing rules (each rule row = a ship-shop name (host) and a hallway door "
+         "name (path) pointing to one lighthouse counter = Service); Ingress controller = a friendly receptionist "
+         "robot (rounded white-and-teal body, small cap, wears a uniform vest with a colored round emblem, holds a "
+         "lantern) who stands at the gate, reads the signboard and walks each customer to the right lighthouse "
+         "counter — without the receptionist robot the signboard does nothing; IngressClass = the uniform: the "
+         "colored emblem on the robot's vest matches a small colored tag hanging on the signboard, telling which "
+         "company's receptionist is responsible for that board (a gold star on the tag = the default class); host "
+         "= the shop name written on the customer's visit ticket; path = a hallway door plate inside the hall; "
+         "backend = the lighthouse counter the signboard row points to (counters are now indoor ClusterIP "
+         "counters with no gangway door of their own); entry point = the gate's two doors: a plain wooden door "
+         "(HTTP) and a glass security door (HTTPS); TLS at the Ingress = the glass security door carries a stamped "
+         "certificate seal plate and the receptionist keeps the private key on a lanyard inside, the envelope "
+         "comes from the zone key box; SNI = the customer says the shop name through the intercom before the glass "
+         "door chooses which seal plate to show; default certificate = a plain grey generic seal plate; "
+         "defaultBackend = a lost-and-found desk beside the gate for customers whose ticket matches no row; 404 = "
+         "an empty wrong-door with a small sign; 503 = a counter that exists but every booth behind it is closed "
+         "(red lamps); controller-specific middleware = small checkpoints along the hallway: an arrow stand that "
+         "sends customers from the wooden door to the glass door (redirect), a turnstile that checks a staff ID "
+         "card from a sealed envelope (basic auth), a ticket trimmer that cuts the first part off the ticket "
+         "(strip prefix); access log = an open guest book on the reception desk; dashboard = a glass monitoring "
+         "board behind the receptionist showing route lines; Gateway API = a brand-new modern passenger terminal "
+         "building next to the old gate, with a terminal operator company plaque (GatewayClass), the terminal "
+         "building with numbered boarding gates (Gateway listeners) and route boards that each shop team hangs "
+         "itself (HTTPRoute); weighted canary = a turnstile splitting customers into two lanes of different "
+         "widths")
 STYLE_TAIL = ("Robots are simple friendly machines, never cats; customers and staff are faceless people silhouettes, "
               "never cats. Every cargo item, crate or prop is cat-food-shop or harbor related only (kibble bags, cat "
               "food cans, fish-shaped treats, food bowls, order ledgers, safes, ropes, ships).")
@@ -131,6 +170,8 @@ LATER = {
     "010": ("; do not show Secret objects or the word Secret, no sealed envelopes, no padlocks, no Ingress, "
             "HorizontalPodAutoscaler or Helm objects or words"),
     "011": "; do not show Ingress, HorizontalPodAutoscaler or Helm objects or words, no operator robots",
+    "012": ("; do not show HorizontalPodAutoscaler, Helm, GatewayClass, Gateway or HTTPRoute objects or words, no "
+            "passenger terminal building, no autoscaling robots"),
 }
 PW = ("never show a real-looking password: passwords appear only as the listed example value or as dots ●●●●")
 THAI = ("Thai text must be rendered exactly as given, correct Thai spelling, clear Thai font, no garbled glyphs")
@@ -153,6 +194,9 @@ def style():
     elif CH == "010":
         body = (f"{M_PREV} Learned in chapters 008–009: PV = a steel safe locker in the cargo hold of one ship, PVC = "
                 f"a requisition slip card; {M_STS_SHORT}. New in this chapter: {M_CM}.")
+    elif CH == "012":
+        body = (f"{M_PREV} Learned in chapters 008–010: PV = a steel safe locker in the cargo hold of one ship; "
+                f"{M_STS_SHORT}. {M_CM_SHORT}. {M_SEC_SHORT}. New in this chapter: {M_ING}.")
     else:
         body = (f"{M_PREV} Learned in chapters 008–009: PV = a steel safe locker in the cargo hold of one ship, PVC = "
                 f"a requisition slip card; {M_STS_SHORT}. {M_CM_SHORT}. New in this chapter: {M_SEC}.")
@@ -166,8 +210,11 @@ def asset():
 
 
 def prompt(scene, labels, extra="", allow_later=False):
-    lab = "; ".join(f'"{x}"' for x in labels)
-    pw = f"; {PW}" if CH in ("010", "011") else ""
+    if CH == "012":  # มีหมายเลข → Constraints อ้าง "label N" ได้โดยไม่ซ้ำค่า
+        lab = "; ".join(f'label {i}: "{x}"' for i, x in enumerate(labels, 1))
+    else:
+        lab = "; ".join(f'"{x}"' for x in labels)
+    pw = f"; {PW}" if CH in ("010", "011", "012") else ""
     cons = BASE_CONS + ("" if allow_later else LATER[CH]) + pw + (f"; {extra}" if extra else "") + f"; {THAI}."
     return "\n".join([
         USE_CASE, asset(), f"Scene: {scene}", CHAR, style(),
@@ -193,6 +240,11 @@ def build(items, kind):
         assert all(x.strip() for x in labels), slug
         assert any(THAI_RE.search(x) for x in labels), f"{slug}: no Thai label"
         assert re.fullmatch(r"[a-z0-9-]+", slug), slug
+        if CH == "012":  # ค่าที่มีตัวเลข (พอร์ต ผลทดสอบ) อยู่ใน Text ที่เดียว ห้ามซ้ำใน Scene/Constraints
+            for x in labels:
+                if re.search(r"[0-9]", x):
+                    assert x not in scene and x not in extra, f"{slug}: '{x}' repeated outside Text"
+            assert not re.search(r"300[89][0-9]|err=|orders=", scene + extra), f"{slug}: test value outside Text"
         sub = "01_Theory" if kind == "T" else "02_LAB"
         out.append({
             "id": f"{kind}{i:02d}",

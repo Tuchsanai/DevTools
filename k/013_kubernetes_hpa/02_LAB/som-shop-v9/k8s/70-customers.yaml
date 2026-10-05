@@ -1,0 +1,42 @@
+# LAB สุดท้าย: "ลูกค้าวันลดราคา" = Pod ยิง request ไม่หยุด ผ่านประตู Traefik (HTTPS) เหมือนลูกค้าจริง
+#   ตอนแรก replicas 0 (ยังไม่มีลูกค้า) → kubectl scale --replicas=1 = ลูกค้าแห่เข้าร้าน → scale 0 = ปิดโปร
+#   (1 Pod = ลูกค้า 1 คนกดไม่หยุด ~30 ครั้ง/วิ — เครื่อง 4 core ใช้ 1 ก็ถึง 6 บูธ, เพิ่มเป็น 2 ได้ถ้าเครื่อง 8 core ขึ้นไป)
+#   --connect-to: ต่อไปที่ Service traefik:443 ในคลัสเตอร์ แต่ URL/SNI/Host ยังเป็น shop.localhost:30081 เหมือนเปิดจาก browser
+#   (ต้องมี :30081 — Middleware redirect-https ของบท 012 ตอบ 301 ถ้า Host ไม่ใช่พอร์ต 30081)
+#   /api/work?ms=20 = แต่ละ request ทำให้ Pod หน้าร้านหมุน CPU 20 ms (som-shop-web:1.7)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customers
+  namespace: som-shop
+  labels: {app: customers}
+spec:
+  replicas: 0
+  selector:
+    matchLabels: {app: customers}
+  template:
+    metadata:
+      labels: {app: customers}
+    spec:
+      terminationGracePeriodSeconds: 1
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 100               # curl_user ใน image curlimages/curl
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: curl
+          image: curlimages/curl:8.22.0
+          command: ["sh", "-c"]
+          args:
+            - |
+              while true; do
+                curl -sk -o /dev/null -m 5 -w '%{http_code}\n' \
+                  --connect-to shop.localhost:30081:traefik.traefik.svc.cluster.local:443 \
+                  "https://shop.localhost:30081/api/work?ms=20" || echo fail
+              done
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+          resources:
+            requests: {cpu: 50m, memory: 16Mi}
+            limits: {cpu: 500m, memory: 64Mi}

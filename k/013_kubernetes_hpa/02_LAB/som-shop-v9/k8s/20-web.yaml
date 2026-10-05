@@ -1,0 +1,151 @@
+# บท 013 LAB 11: หน้าร้าน som-shop-web:1.7 (เพิ่ม /api/work?ms=N) — จำนวนบูธให้ HPA ดูแล
+# ต่างจากบท 012 (som-shop-v8/k8s/20-web.yaml) 3 จุด:
+#   1) image som-shop-web:1.5/1.6 → 1.7 (ทั้ง db-seed และ web)
+#   2) ลบ spec.replicas ออก (HPA เป็นคนกำหนด) — ต้องลบ replicas ออกจาก last-applied ก่อน (ขั้น B) ไม่งั้นบูธลดเหลือ 1
+#   3) change-cause ใหม่ / requests.cpu 100m เดิม = ฐานที่ HPA ใช้คิด %
+# DATABASE_URL ของ db-seed และ web ยังมาจากซอง som-db-secret (secretKeyRef) เหมือนบท 011
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: som-web
+  namespace: som-shop
+  labels:
+    app: som-web
+  annotations:
+    # บันทึกเหตุผลของ revision นี้ลงสมุด (แสดงในคอลัมน์ CHANGE-CAUSE ของ rollout history)
+    kubernetes.io/change-cause: "1.7 เพิ่ม /api/work + HPA"
+spec:
+  # ไม่มี replicas: แล้ว — จำนวนบูธเป็นหน้าที่ของ HPA som-web (60-hpa.yaml) ถ้าใส่ไว้ kubectl apply ครั้งหน้าจะรีเซ็ตจำนวนทับ HPA
+  revisionHistoryLimit: 5          # เก็บ ReplicaSet รุ่นเก่าไว้ย้อนได้ 5 รุ่น
+  progressDeadlineSeconds: 60      # rollout ไม่คืบหน้าเกิน 60 วิ = ล้มเหลว
+  minReadySeconds: 3               # Pod ใหม่ต้องพร้อมต่อเนื่อง 3 วิ ถึงนับว่าใช้ได้
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1                  # เปิดบูธใหม่เกินได้ 1 ตัว
+      maxUnavailable: 0            # ห้ามบูธที่พร้อมลดลงเลย → ลูกค้าไม่เจอร้านว่าง
+  selector:
+    matchLabels:
+      app: som-web
+  template:
+    metadata:
+      labels:
+        app: som-web
+    spec:
+      terminationGracePeriodSeconds: 30   # เวลาปิดร้านอย่างสุภาพ (preStop + SIGTERM) ก่อนโดน SIGKILL
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        # 1) รอจน som-db-0 พร้อม (ชื่อ DNS รายตัวมีเฉพาะตอน Pod Ready)
+        - name: wait-for-db
+          image: postgres:17.11-alpine
+          command:
+            - sh
+            - -c
+            - until pg_isready -h som-db-0.som-db -p 5432 -U som -d catshop; do echo "รอฐานข้อมูล som-db-0.som-db..."; sleep 2; done; echo "ฐานข้อมูลพร้อมแล้ว"
+          securityContext:
+            runAsUser: 70
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }
+        # 2) เติมสินค้าเข้าชั้น (สร้างตาราง + สินค้าตั้งต้น) — ทุก Pod รัน แต่มี advisory lock กันชน
+        - name: db-seed
+          image: som-shop-web:1.7
+          imagePullPolicy: IfNotPresent
+          command: ["node", "scripts/seed.mjs"]
+          securityContext:
+            runAsUser: 1000          # USER node ของ image เป็น "ชื่อ" → ใส่เลขให้ runAsNonRoot ตรวจได้
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: DATABASE_URL     # db-seed ต่อ db ด้วยรหัสจากซอง (รหัสผิด = Init:Error)
+              valueFrom:
+                secretKeyRef:
+                  name: som-db-secret
+                  key: DATABASE_URL
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits:   { cpu: 300m, memory: 256Mi }
+      volumes:
+        # กระดานเล็กในบูธ: ทุก key ของ som-announcement = 1 ไฟล์ — kubelet อัปเดตให้เองราว 1 นาทีหลังแก้
+        - name: announcement
+          configMap:
+            name: som-announcement
+      containers:
+        - name: web
+          image: som-shop-web:1.7    # 1.7 = 1.6 + /api/work (build ใน LAB 0)
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: POD_NAMESPACE    # Downward API (บท 003)
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: DATABASE_URL     # postgres://som:<รหัส>@som-db-0.som-db:5432/catshop — ทั้งก้อนอยู่ในซอง
+              valueFrom:
+                secretKeyRef:
+                  name: som-db-secret
+                  key: DATABASE_URL
+            - name: PORT
+              value: "3000"
+            - name: HOSTNAME
+              value: "0.0.0.0"
+          # ถ่ายการ์ดทั้งกระดาน som-web-config มาเป็น env (SHOP_NAME, SHOP_EYEBROW, SHOP_FOOTER, APP_THEME, SHOP_PROMO)
+          # env ด้านบนชนะ envFrom ถ้าชื่อซ้ำ / แก้ ConfigMap แล้วต้องได้ Pod ใหม่ (rollout restart) ค่าจึงเปลี่ยน
+          envFrom:
+            - configMapRef:
+                name: som-web-config
+          volumeMounts:
+            - name: announcement
+              mountPath: /etc/som        # ได้ไฟล์ /etc/som/announcement.txt (แอปอ่านใหม่ทุก request)
+              readOnly: true
+          ports:
+            - name: http
+              containerPort: 3000
+          readinessProbe:            # ต่อ db ได้ไหม (SELECT 1) → ไม่ผ่าน = Service ไม่ส่งลูกค้ามา
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 3
+            failureThreshold: 2
+          lifecycle:
+            preStop:                 # ถูกสั่งปิดแล้วยังเสิร์ฟต่อ 5 วิ ระหว่างที่ทุก Node ลบบูธนี้ออกจากรายชื่อ
+              sleep:
+                seconds: 5
+          livenessProbe:             # process ยังไม่ค้าง (ไม่แตะ db)
+            httpGet:
+              path: /api/live
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests: { cpu: 100m, memory: 192Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+---
+# หน้าร้านเป็น ClusterIP: เปิดได้ทาง https://shop.localhost:30081 (Ingress som-shop ใน 50-ingress.yaml)
+# apply ทับ NodePort เดิมได้เลย (service/som-web configured) และคืนพอร์ต 30080 ให้ Traefik
+apiVersion: v1
+kind: Service
+metadata:
+  name: som-web
+  namespace: som-shop
+spec:
+  type: ClusterIP
+  selector:
+    app: som-web
+  ports:
+    - port: 80
+      targetPort: http       # = 3000 ของ container web

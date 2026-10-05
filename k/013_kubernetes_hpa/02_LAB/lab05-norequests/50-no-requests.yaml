@@ -1,0 +1,31 @@
+# LAB 5: แอปเดียวกันแต่ "ลืม" resources.requests → HPA แบบ Utilization คิด % ไม่ได้ → TARGETS cpu: <unknown>/50%
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nores
+  namespace: hpa-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: nores}
+  template:
+    metadata:
+      labels: {app: nores}
+    spec:
+      containers:
+        - name: php-apache
+          image: registry.k8s.io/hpa-example
+          # ไม่มี resources: → ไม่มี requests.cpu
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nores
+  namespace: hpa-demo
+spec:
+  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: nores}
+  minReplicas: 1
+  maxReplicas: 4
+  metrics:
+    - type: Resource
+      resource: {name: cpu, target: {type: Utilization, averageUtilization: 50}}

@@ -1,0 +1,50 @@
+# LAB 2 (ทางสำรองเครื่อง ARM เช่น Mac Apple Silicon): ใช้แทน 10-php-apache.yaml เมื่อ hpa-example ดึงไม่ได้
+#   (hpa-example เป็น amd64 อย่างเดียว → Node ARM ได้ ErrImagePull "no match for platform in manifest")
+# ใช้ som-shop-web:1.7 ที่ build เองใน LAB 0 (build บนเครื่องตัวเองจึงได้สถาปัตยกรรมตรงกับ Node)
+#   GET /api/work?ms=20 = หมุน CPU 20 ms ต่อ request (ไม่แตะฐานข้อมูล จึงไม่ต้องมี db)
+# ตั้งชื่อ Deployment/Service/container = php-apache เหมือนไฟล์หลัก → คำสั่งใน LAB 2–10 ใช้ได้เหมือนเดิมทุกบรรทัด
+# ตัวยิงโหลดต้องใช้ lab03-load/30-load-arm.yaml (ยิง /api/work แทน /)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hpa-demo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-apache
+  namespace: hpa-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-apache
+  template:
+    metadata:
+      labels:
+        app: php-apache
+    spec:
+      containers:
+        - name: php-apache
+          image: som-shop-web:1.7
+          imagePullPolicy: IfNotPresent   # image อยู่ใน Node แล้ว (kind load) ไม่ต้องดึง
+          ports:
+            - containerPort: 3000
+          readinessProbe:                 # /api/live ไม่แตะ db (ไม่มี db ใน LAB นี้)
+            httpGet: { path: /api/live, port: 3000 }
+            periodSeconds: 3
+          resources:
+            requests: { cpu: 100m, memory: 64Mi }   # HPA คิด % จาก cpu 100m เหมือนไฟล์หลัก
+            limits:   { cpu: 300m, memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-apache
+  namespace: hpa-demo
+spec:
+  selector:
+    app: php-apache
+  ports:
+    - port: 80
+      targetPort: 3000

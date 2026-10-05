@@ -1,0 +1,36 @@
+# LAB สุดท้าย: หุ่นยนต์ผู้ช่วยผู้จัดการ (HPA) ของหน้าร้าน som-web — ดูมิเตอร์ CPU แล้วสั่งเปิด/ปิดบูธเอง
+#   คิด % จาก requests.cpu ของ container web (100m) → target 50% = เฉลี่ย 50m ต่อ Pod
+#   min 2 (ร้านต้องมีอย่างน้อย 2 บูธเสมอ) / max 6 (ท่าเรือรับได้สูงสุด 6 บูธ)
+#   db (StatefulSet som-db) ไม่มี HPA — postgres ตัวเดียวรับเขียน (บท 009)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: som-web
+  namespace: som-shop
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: som-web
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
+  behavior:
+    scaleUp:                         # เปิดบูธเพิ่มทันที (ค่าเริ่มต้น window 0)
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Pods
+          value: 2                   # เพิ่มได้ครั้งละไม่เกิน 2 บูธ ต่อ 15 วิ
+          periodSeconds: 15
+    scaleDown:                       # เฉพาะ LAB: รอ 60 วิ (ค่าเริ่มต้น 300 วิ) แล้วปิดทีละ 1 บูธ ต่อ 15 วิ
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 15

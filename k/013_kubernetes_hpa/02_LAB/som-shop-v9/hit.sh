@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# ยิง request ไปที่ร้าน "ผ่านประตู Ingress (HTTPS)" ทีละครั้ง (curl ใหม่ทุกครั้ง = connection ใหม่)
+# ใช้:  ./hit.sh [-q] [URL] [N] [DELAY]
+#   URL   ค่าเริ่มต้น https://shop.localhost:30081/api/whoami  (ตอบ "<ชื่อ Pod> <เวอร์ชัน>")
+#         curl ใน k8s-lab แปลงชื่อ *.localhost เป็น 127.0.0.1 เอง (ไม่ต้องแก้ /etc/hosts)
+#   N     จำนวนครั้ง (60)      DELAY  เว้นระหว่างครั้ง วินาที (0.1)
+#   -q    โหมดเงียบ: พิมพ์ . (สำเร็จ) / x (ล้มเหลว) ระหว่างยิง แล้วสรุป ok/err — ใช้ตอน rolling update
+# ตัวแปร CURL_OPTS (ค่าเริ่มต้น -k = ข้ามการตรวจใบรับรอง self-signed) เช่น
+#   CURL_OPTS="--cacert tls.crt" ./hit.sh                     ตรวจใบรับรองจริง
+#   CURL_OPTS="-k --resolve shop.localhost:30081:127.0.0.1" ./hit.sh   โปรแกรมที่ไม่แปลง *.localhost เอง
+QUIET=0
+if [ "$1" = "-q" ]; then QUIET=1; shift; fi
+URL=${1:-https://shop.localhost:30081/api/whoami}
+N=${2:-60}
+DELAY=${3:-0.1}
+OPTS=${CURL_OPTS:--k}
+
+ok=0; err=0; first_err=""; last_err=""
+declare -a lines errs
+start=$(date +%s.%N)
+for i in $(seq "$N"); do
+  # -f: HTTP 4xx/5xx นับเป็น err, -m 2: รอไม่เกิน 2 วินาที
+  if body=$(curl -sS -f -m 2 $OPTS "$URL" 2>&1); then
+    ok=$((ok + 1)); lines+=("$body"); [ $QUIET = 1 ] && printf '.'
+  else
+    err=$((err + 1)); errs+=("${body%% after*}")
+    now=$(date +%s.%N); [ -z "$first_err" ] && first_err=$now; last_err=$now
+    [ $QUIET = 1 ] && printf 'x'
+  fi
+  sleep "$DELAY"
+done
+end=$(date +%s.%N)
+[ $QUIET = 1 ] && echo
+
+if [ $ok -gt 0 ]; then
+  echo "จำนวน  Pod  เวอร์ชัน"
+  if [ $QUIET = 1 ]; then printf '%s\n' "${lines[@]}" | awk '{print $2}' | sort | uniq -c | sed 's/$/ (เวอร์ชัน)/'
+  else printf '%s\n' "${lines[@]}" | sort | uniq -c; fi
+fi
+if [ $err -gt 0 ]; then
+  echo "ข้อความ error:"
+  printf '%s\n' "${errs[@]}" | sort | uniq -c
+  awk -v a="$first_err" -v b="$last_err" 'BEGIN { printf "ช่วงที่มี err: %.1f วินาที\n", b - a }'
+fi
+awk -v a="$start" -v b="$end" -v ok=$ok -v err=$err 'BEGIN { printf "ok=%d err=%d (ใช้เวลา %.1f วินาที)\n", ok, err, b - a }'

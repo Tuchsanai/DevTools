@@ -1,0 +1,23 @@
+# LAB 8: หลาย metric (CPU + memory) — HPA คิด desiredReplicas ของแต่ละ metric แล้ว "เลือกค่ามากสุด"
+# memory ใช้ AverageValue (Mi ต่อ Pod) ตั้งต่ำกว่าที่ php-apache ใช้จริงโดยตั้งใจ เพื่อให้เห็น memory ชนะ CPU ตอนไม่มีโหลด
+# php-apache ใช้ราว 8–11Mi ต่อ Pod (Pod ใหม่ ~8Mi) → ตั้ง 6Mi ให้เกินชัด ๆ (ถ้าตั้ง 8Mi จะค่อย ๆ เพิ่มทีละ 1 และเฉียด tolerance)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+  namespace: hpa-demo
+spec:
+  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: php-apache}
+  minReplicas: 1
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource: {name: cpu, target: {type: Utilization, averageUtilization: 50}}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: AverageValue
+          averageValue: 6Mi
+  behavior:
+    scaleDown: {stabilizationWindowSeconds: 30}

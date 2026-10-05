@@ -1,0 +1,11 @@
+# LAB 9: ResourceQuota = งบบูธของโซน hpa-demo — requests.cpu รวมไม่เกิน 300m (= php-apache 100m ได้ 3 Pod)
+# HPA อยากได้ 6 แต่ ReplicaSet สร้าง Pod ที่ 4 ไม่ได้: exceeded quota
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: booth-budget
+  namespace: hpa-demo
+spec:
+  hard:
+    requests.cpu: 300m
+    pods: "10"

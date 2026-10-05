@@ -237,3 +237,6 @@ pyrightconfig.json
 
 # Claude/Chromium scratch dirs inside work notes (paths too long for Windows)
 **/work/*/tmp/
+
+# Kubernetes slide deck work files (generator, cache, logs, screenshots)
+05_kubernetes/.work/

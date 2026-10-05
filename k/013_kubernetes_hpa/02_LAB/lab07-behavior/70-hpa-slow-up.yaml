@@ -1,0 +1,27 @@
+# LAB 7: จำกัดการเพิ่มบูธ "ทีละ 1 Pod ต่อ 15 วิ" (ค่าเริ่มต้น = เพิ่มได้ max(100%, 4 Pod) ต่อ 15 วิ)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+  namespace: hpa-demo
+spec:
+  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: php-apache}
+  minReplicas: 1
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource: {name: cpu, target: {type: Utilization, averageUtilization: 50}}
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      selectPolicy: Max          # มีหลาย policy เลือกตัวที่ "เปลี่ยนได้มากสุด" (Min = น้อยสุด, Disabled = ห้ามเพิ่ม)
+      policies:
+        - type: Pods
+          value: 1               # ครั้งละ 1 Pod
+          periodSeconds: 15      # ต่อ 15 วิ
+    scaleDown:
+      stabilizationWindowSeconds: 30
+      policies:
+        - type: Percent
+          value: 50              # ลดได้ครึ่งหนึ่งต่อ 15 วิ
+          periodSeconds: 15

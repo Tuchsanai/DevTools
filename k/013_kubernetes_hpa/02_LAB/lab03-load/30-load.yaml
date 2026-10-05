@@ -1,0 +1,30 @@
+# LAB 3: เครื่องยิงโหลด (ลูกค้าจำลอง) อยู่คนละ namespace กับแอป (hpa-load) — ไม่ถูกนับใน HPA/ResourceQuota ของ hpa-demo
+# แต่ละ Pod วน wget ไป http://php-apache.hpa-demo ไม่หยุด (เหมือนตัวอย่างในเอกสาร HPA ทางการ)
+# -T 2 = รอไม่เกิน 2 วิ (ถ้าไม่ใส่ wget อาจค้างตลอดเมื่อ Pod ปลายทางถูกปิดกลางคัน → โหลดหายไปเฉย ๆ)
+# เพิ่มลูกค้า: kubectl -n hpa-load scale deploy/load --replicas=2   หยุด: --replicas=0
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hpa-load
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: load
+  namespace: hpa-load
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: load}
+  template:
+    metadata:
+      labels: {app: load}
+    spec:
+      terminationGracePeriodSeconds: 1
+      containers:
+        - name: load
+          image: busybox:1.36
+          command: ["/bin/sh", "-c", "while sleep 0.01; do wget -q -T 2 -O- http://php-apache.hpa-demo; done"]
+          resources:
+            requests: {cpu: 20m, memory: 8Mi}
+            limits: {cpu: 200m, memory: 32Mi}
