@@ -1,0 +1,21 @@
+# LAB 6: Pod ledger-pod — เขียน keepme.txt ครั้งแรกครั้งเดียว (ถ้ามีไฟล์อยู่แล้วจะไม่เขียนทับ) แล้วแสดงไฟล์
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ledger-pod
+spec:
+  terminationGracePeriodSeconds: 1   # ลบเร็ว (sh + sleep ไม่รับ SIGTERM)
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "[ -f /data/keepme.txt ] || echo \"keepme เขียนเมื่อ $(date +%T)\" > /data/keepme.txt; cat /data/keepme.txt; sleep 3600"]
+      volumeMounts:
+        - name: data
+          mountPath: /data
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 64Mi }
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: ledger

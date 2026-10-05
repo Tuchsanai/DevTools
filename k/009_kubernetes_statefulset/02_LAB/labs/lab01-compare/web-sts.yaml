@@ -1,0 +1,29 @@
+# LAB 1: แบบใหม่ — StatefulSet 3 ตัว (หัวหน้ากะแจกบัตรคิว -0 -1 -2: ชื่อคงที่)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  # ชื่อ headless Service ที่ใช้ทำ DNS รายตัว (สร้างจริงใน LAB 2 — LAB นี้ยังไม่มีก็สร้าง Pod ได้)
+  serviceName: web
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+          # Ready เมื่อเปิดหน้าเว็บได้ → StatefulSet รอตัวก่อนหน้า Ready ก่อนสร้างตัวถัดไป
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 2

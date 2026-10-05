@@ -1,0 +1,9 @@
+# LAB 7: โรงทำตู้แบบ Immediate — สร้างตู้ทันทีที่มีใบเบิก (ไม่รอ Pod)
+# local-path ต้องรู้ Node ก่อนสร้างโฟลเดอร์ → ใช้กับ Immediate ไม่ได้ (ดู event ของ PVC)
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: local-immediate
+provisioner: rancher.io/local-path
+reclaimPolicy: Delete
+volumeBindingMode: Immediate

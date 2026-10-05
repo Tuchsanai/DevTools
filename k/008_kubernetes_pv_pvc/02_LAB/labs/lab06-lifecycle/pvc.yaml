@@ -1,0 +1,11 @@
+# LAB 6: ใบเบิก ledger — ใช้ดูวงจรชีวิต: finalizer, Delete, Retain และการกู้ตู้
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ledger
+spec:
+  storageClassName: standard       # reclaimPolicy ของ class นี้ = Delete (ลบใบเบิก → บดตู้ทิ้ง)
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Mi

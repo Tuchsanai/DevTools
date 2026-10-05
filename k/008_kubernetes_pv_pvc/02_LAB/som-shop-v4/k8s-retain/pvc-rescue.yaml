@@ -1,0 +1,19 @@
+# LAB 10 ขั้น H2: ใบเบิกใหม่ที่ "ระบุตู้เดิม" — ใช้กู้ PV ที่ Retain ไว้ (ต้องเป็นสถานะ Available ก่อน)
+# 1) เปลี่ยน PV_NAME เป็นชื่อ PV จริง (pvc-xxxxxxxx-...) เช่น
+#    sed "s/PV_NAME/$PV/" k8s-retain/pvc-rescue.yaml | kubectl apply -f -
+# 2) เปิด db เฉพาะ Deployment (ชื่อใบเบิก som-db-data เหมือนเดิม จึงใช้ใบเบิกนี้):
+#    kubectl apply -f k8s-retain/10-db.yaml -l app=som-db
+#    (-l เลือกเฉพาะ object ที่มี label app=som-db = Deployment — ถ้า apply ทั้งไฟล์ kubectl จะพยายามลบ volumeName
+#     ออกจาก PVC แล้วได้ error "spec is immutable after creation" เพราะ spec ของ PVC ที่ Bound แล้วแก้ไม่ได้)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: som-db-data
+  namespace: som-shop
+spec:
+  storageClassName: standard-retain  # ต้องตรงกับ class ของ PV เดิม
+  accessModes: [ReadWriteOncePod]    # ต้องเป็นโหมดที่ PV เดิมมี
+  volumeName: PV_NAME                # ชี้ตู้เดิมโดยตรง (ไม่ให้แขนกลสร้างตู้ใหม่)
+  resources:
+    requests:
+      storage: 1Gi                   # ต้องไม่เกินขนาดของ PV เดิม

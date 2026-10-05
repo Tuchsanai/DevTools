@@ -1,0 +1,13 @@
+# LAB 2: headless Service = สมุดรายชื่อบนแท่นอ่าน (ไม่มีไฟประภาคาร / ไม่มี ClusterIP)
+# DNS ตอบ IP ของ Pod ที่ Ready ทุกตัว และมีชื่อรายตัว web-0.web, web-1.web, ...
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  clusterIP: None          # ← จุดสำคัญ: None = headless
+  selector:
+    app: web
+  ports:
+    - name: http
+      port: 80

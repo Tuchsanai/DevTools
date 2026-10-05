@@ -1,0 +1,6 @@
+# LAB 6: เอาเชือกออก partition=0 → อัปเดตบูธที่เหลือต่อ (เลขมากไปน้อย: web-1 แล้ว web-0)
+# ใช้:  kubectl patch sts web --patch-file partition-0.yaml
+spec:
+  updateStrategy:
+    rollingUpdate:
+      partition: 0

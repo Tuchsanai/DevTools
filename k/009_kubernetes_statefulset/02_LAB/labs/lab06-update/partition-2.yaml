@@ -1,0 +1,7 @@
+# LAB 6: เชือกกั้นแถว partition=2 → อัปเดตเฉพาะบูธเลข >= 2 (web-2 เป็น canary) ที่เหลือคงรุ่นเดิม
+# ใช้:  kubectl patch sts web --patch-file partition-2.yaml
+spec:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 2

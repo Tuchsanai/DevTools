@@ -1,0 +1,11 @@
+# LAB 4: ใบเบิกที่ขอใหญ่เกินตู้ที่มี — ไม่มี PV ไหนตรง และไม่มี class ให้สร้าง → ค้าง Pending
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: too-big
+spec:
+  storageClassName: ""
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi

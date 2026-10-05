@@ -1,0 +1,21 @@
+# LAB 1: แบบเดิม — Deployment 3 ตัว (ชามกระดาษ: ใช้แทนกันได้ ชื่อสุ่ม)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-d
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-d
+  template:
+    metadata:
+      labels:
+        app: web-d
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80

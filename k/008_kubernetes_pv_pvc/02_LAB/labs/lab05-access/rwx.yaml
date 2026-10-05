@@ -1,0 +1,33 @@
+# LAB 5: ReadWriteMany — หลาย Node เขียนพร้อมกัน ต้องใช้ storage แบบเครือข่าย (NFS/CephFS/คลาวด์) — local-path ทำไม่ได้
+# ใบเบิกแบบ RWX → แขนกลปฏิเสธ (ProvisioningFailed)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 10Mi
+---
+# Pod ที่รอใบเบิก shared → Pending ตลอด
+apiVersion: v1
+kind: Pod
+metadata:
+  name: use-rwx
+spec:
+  terminationGracePeriodSeconds: 1   # ลบเร็ว (sleep ไม่รับ SIGTERM)
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "sleep 3600"]
+      volumeMounts:
+        - name: data
+          mountPath: /data
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 64Mi }
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: shared

@@ -1,0 +1,36 @@
+# LAB 5: ตั้งนโยบายเก็บ PVC — scale ลด / ลบ StatefulSet แล้ว "ทิ้งตู้เซฟด้วย" (ค่า default คือ Retain ทั้งคู่)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: par
+spec:
+  serviceName: web
+  podManagementPolicy: Parallel
+  persistentVolumeClaimRetentionPolicy:
+    whenScaled: Delete     # scale ลด → ลบ PVC ของ Pod ที่หายไป
+    whenDeleted: Delete    # ลบ StatefulSet → ลบ PVC ทั้งหมด (PVC มี ownerReferences ชี้มาที่ StatefulSet)
+  replicas: 3
+  selector:
+    matchLabels:
+      app: par
+  template:
+    metadata:
+      labels:
+        app: par
+    spec:
+      terminationGracePeriodSeconds: 1
+      containers:
+        - name: c
+          image: busybox:1.36
+          command: ["sh", "-c", "[ -f /data/born.txt ] || echo \"first-born $(hostname) $(date +%T)\" > /data/born.txt; sleep 3600"]
+          volumeMounts:
+            - name: www
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: www
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 10Mi

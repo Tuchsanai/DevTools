@@ -1,0 +1,36 @@
+# LAB 1: emptyDir = กล่องกระดาษในบูธ — อยู่เท่าอายุ Pod (รอด container restart แต่หายเมื่อลบ Pod)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cache-demo
+spec:
+  terminationGracePeriodSeconds: 1   # ลบเร็ว (sh เป็น PID 1 ไม่รับ SIGTERM)
+  containers:
+    - name: app
+      image: busybox:1.36
+      # บันทึกเวลาเริ่มทุกครั้งลง /cache/boot.log แล้วรอ จนกว่าจะมีไฟล์ /tmp/stop
+      # /tmp อยู่ในตัว container เอง (ไม่ใช่ volume) → เมื่อ container เริ่มใหม่ /tmp/stop ก็หายไปเอง
+      # (ใช้วิธีนี้เพราะ kill 1 ใน busybox ไม่ทำให้ container ตาย — PID 1 ไม่รับ SIGTERM ถ้าไม่มี handler)
+      command:
+        - sh
+        - -c
+        - |
+          echo "start $(date +%T)" >> /cache/boot.log
+          while [ ! -f /tmp/stop ]; do sleep 1; done
+          echo "เจอ /tmp/stop → จบ process (kubelet จะเริ่ม container ใหม่)"
+          exit 1
+      volumeMounts:
+        - name: cache
+          mountPath: /cache
+        - name: ram
+          mountPath: /ram
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 64Mi }
+  volumes:
+    - name: cache
+      emptyDir: {}                 # โฟลเดอร์ว่างบนดิสก์ของ Node ที่ Pod ลง
+    - name: ram
+      emptyDir:
+        medium: Memory             # เก็บใน RAM (tmpfs) — เร็วแต่หายง่าย และนับเป็นหน่วยความจำของ Pod
+        sizeLimit: 16Mi            # เกินขนาดนี้ Pod จะถูกไล่ออก (evict)

@@ -1,0 +1,11 @@
+# LAB 3: ใบเบิกตู้เซฟใบแรก (PVC) — ขอ 10Mi เขียนได้จาก Node เดียว
+# ไม่ใส่ storageClassName → ใช้ class default ของคลัสเตอร์ (kind = standard) ให้แขนกลสร้างตู้ (PV) ให้เอง
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: notes
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Mi

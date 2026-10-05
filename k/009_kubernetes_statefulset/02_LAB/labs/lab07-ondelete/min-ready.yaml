@@ -1,0 +1,4 @@
+# LAB 7: minReadySeconds=10 → บูธใหม่ต้อง Ready ต่อเนื่อง 10 วิ ถึงนับว่า "พร้อม" แล้วค่อยอัปเดตบูธถัดไป
+# ใช้:  kubectl patch sts web --patch-file min-ready.yaml   (ไม่ได้แก้ template → ไม่เกิด rollout เอง)
+spec:
+  minReadySeconds: 10

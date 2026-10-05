@@ -1,0 +1,16 @@
+# LAB 9: โซน quota-lab + งบพื้นที่เก็บของ (ResourceQuota แบบบท 004 แต่คุม storage)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: quota-lab
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: storage
+  namespace: quota-lab
+spec:
+  hard:
+    persistentvolumeclaims: "2"                              # ใบเบิกได้ไม่เกิน 2 ใบ
+    requests.storage: 1Gi                                    # รวมทุก class ขอได้ไม่เกิน 1Gi
+    standard.storageclass.storage.k8s.io/requests.storage: 500Mi   # เฉพาะ class standard ไม่เกิน 500Mi

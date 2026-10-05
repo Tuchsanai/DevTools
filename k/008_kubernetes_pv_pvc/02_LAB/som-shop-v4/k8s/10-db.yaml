@@ -1,0 +1,97 @@
+# LAB 10: ครัวกลาง (ฐานข้อมูล) ที่ "จำได้แล้ว" — PVC som-db-data + Deployment som-db (1 ตัว, Recreate) + Service som-db
+# ต่างจากบท 007 จุดเดียว: volume db-data เปลี่ยนจาก emptyDir เป็น persistentVolumeClaim
+# ใบเบิกตู้เซฟ (PVC) แยกจาก Pod — ลบ Pod / rollout restart / ลบ Deployment ข้อมูลยังอยู่ จนกว่าจะลบ PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: som-db-data
+  namespace: som-shop
+spec:
+  storageClassName: standard       # class ของ kind (rancher.io/local-path, Delete, WaitForFirstConsumer)
+  accessModes: [ReadWriteOnce]     # เขียนได้จาก Node เดียว (local-path รองรับแค่ RWO/RWOP)
+  resources:
+    requests:
+      storage: 1Gi                 # ขนาดที่ขอ (local-path ไม่ได้บังคับขนาดจริง)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: som-db
+  namespace: som-shop
+  labels:
+    app: som-db
+spec:
+  # replicas ต้องเป็น 1 — ทุก Pod ของ Deployment อ้าง PVC เดียวกัน
+  # postgres 2 ตัวบนโฟลเดอร์ข้อมูลเดียวกัน = ข้อมูลพัง (ลองดูในขั้นทดลองอันตรายของ LAB 10)
+  replicas: 1
+  # Recreate = ปิด Pod db เดิมให้หมดก่อน แล้วค่อยสร้างตัวใหม่ → ไม่มีช่วงที่ postgres 2 ตัวเปิดโฟลเดอร์เดียวกัน
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: som-db
+  template:
+    metadata:
+      labels:
+        app: som-db
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 70                  # คงไว้ตามบท 007 — แต่ไม่มีผลกับ local-path (โฟลเดอร์เป็น drwxrwxrwx root อยู่แล้ว)
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        # ตู้เซฟของร้าน: อ้างใบเบิก (PVC) ด้วยชื่อ — Pod ไม่ต้องรู้ว่าตู้อยู่ที่ไหน
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: som-db-data
+      containers:
+        - name: postgres
+          image: postgres:17.11-alpine
+          securityContext:
+            runAsUser: 70            # uid ของ postgres ใน image alpine
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: POSTGRES_USER
+              value: som
+            - name: POSTGRES_PASSWORD
+              value: meow1234        # เพื่อการเรียนเท่านั้น (ของจริงใช้ Secret — บทหลัง)
+            - name: POSTGRES_DB
+              value: catshop
+            - name: PGDATA           # ใช้โฟลเดอร์ย่อย pgdata (postgres ต้องการโฟลเดอร์ 0700 ของตัวเอง)
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - name: postgres         # Service อ้าง targetPort: postgres
+              containerPort: 5432
+          volumeMounts:
+            - name: db-data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:            # พร้อมรับงาน = pg_isready ผ่าน (ใช้ 127.0.0.1 ใน container เดียวกัน)
+            exec:
+              command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
+            periodSeconds: 3
+          livenessProbe:
+            tcpSocket:
+              port: postgres
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+---
+# ประภาคารของครัว: ClusterIP เท่านั้น (ใช้ภายในคลัสเตอร์ — ไม่เปิด NodePort ให้ db)
+apiVersion: v1
+kind: Service
+metadata:
+  name: som-db
+  namespace: som-shop
+spec:
+  type: ClusterIP
+  selector:
+    app: som-db
+  ports:
+    - port: 5432
+      targetPort: postgres

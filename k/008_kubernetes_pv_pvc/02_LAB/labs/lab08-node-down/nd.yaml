@@ -1,0 +1,58 @@
+# LAB 8: ตู้เซฟติดเรือ — Deployment 1 ตัวที่ใช้ PVC แบบ local (local-path) แล้วลองหยุด Node ที่ Pod อยู่
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nd-data
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nd
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate                 # ใช้ PVC ตัวเดียว → ปิดตัวเก่าก่อนเปิดตัวใหม่
+  selector:
+    matchLabels:
+      app: nd
+  template:
+    metadata:
+      labels:
+        app: nd
+    spec:
+      terminationGracePeriodSeconds: 1
+      # ค่า default คือทนได้ 300 วิ หลัง Node NotReady/unreachable ก่อนถูกไล่ออก — LAB ลดเหลือ 30 วิ จะได้ไม่ต้องรอนาน
+      tolerations:
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 30
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 30
+      containers:
+        - name: app
+          image: busybox:1.36
+          # เขียนบรรทัดใหม่ทุกครั้งที่ Pod เริ่ม → ดูได้ว่าข้อมูลเดิมยังอยู่ไหม
+          command: ["sh", "-c", "echo \"$(date +%T) start $(hostname) on $NODE\" >> /data/boot.txt; cat /data/boot.txt; sleep 3600"]
+          env:
+            - name: NODE             # ชื่อ Node ที่ Pod ลง (Downward API บท 003)
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: nd-data

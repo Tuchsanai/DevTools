@@ -1,0 +1,9 @@
+# LAB 7: โรงทำตู้ที่ "อนุญาต" ให้ขยายใบเบิก — แต่ local-path ไม่มีตัวขยายจริง (ดูว่าขนาดจริงไม่เปลี่ยน)
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: local-expand
+provisioner: rancher.io/local-path
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true         # ไม่ใส่ = false (เหมือน standard ของ kind)

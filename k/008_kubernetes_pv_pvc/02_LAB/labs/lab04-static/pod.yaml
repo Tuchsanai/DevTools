@@ -1,0 +1,21 @@
+# LAB 4: Pod ที่ใช้ manual-claim — ไม่ได้ปัก Node แต่ scheduler จะส่งไป lab-worker2 ตาม nodeAffinity ของ PV
+apiVersion: v1
+kind: Pod
+metadata:
+  name: manual-user
+spec:
+  terminationGracePeriodSeconds: 1   # ลบเร็ว (sh + sleep ไม่รับ SIGTERM)
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo \"$(date +%T) from $(hostname)\" >> /data/manual.txt; cat /data/manual.txt; sleep 3600"]
+      volumeMounts:
+        - name: data
+          mountPath: /data
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 64Mi }
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: manual-claim

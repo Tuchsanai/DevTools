@@ -1,0 +1,22 @@
+# LAB 3: Pod ที่ใช้ใบเบิก notes — เมื่อ Pod นี้ถูก schedule แขนกลจึงสร้างตู้บน Node ที่ Pod ลง (WaitForFirstConsumer)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: writer
+spec:
+  terminationGracePeriodSeconds: 1   # ลบเร็ว (sh + sleep ไม่รับ SIGTERM)
+  containers:
+    - name: app
+      image: busybox:1.36
+      # เขียนต่อท้ายไฟล์ทุกครั้งที่ Pod เริ่ม แล้วแสดงทั้งไฟล์ + สิทธิ์ของโฟลเดอร์
+      command: ["sh", "-c", "echo \"$(date +%T) hello from $(hostname)\" >> /data/log.txt; cat /data/log.txt; ls -ld /data; sleep 3600"]
+      volumeMounts:
+        - name: data
+          mountPath: /data
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 64Mi }
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: notes            # อ้างใบเบิกด้วยชื่อเท่านั้น

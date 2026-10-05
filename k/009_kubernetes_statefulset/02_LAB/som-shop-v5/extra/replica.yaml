@@ -1,0 +1,81 @@
+# LAB 10 เสริม: สำเนาอ่านอย่างเดียว (read replica) ด้วย postgres streaming replication
+# StatefulSet som-db-replica 1 ตัว: init container โคลนข้อมูลจาก som-db-0 ครั้งแรก (pg_basebackup -R)
+# แล้ว postgres เปิดเป็น standby → รับหน้าสมุดใหม่จาก som-db-0 ต่อเนื่อง (อ่านได้ เขียนไม่ได้)
+# !!! ต้องอนุญาต replication ใน pg_hba.conf ของ som-db-0 ก่อน (คำสั่งอยู่ใน README ขั้น H)
+# !!! replica ไม่ใช่ failover อัตโนมัติ — ถ้า som-db-0 ล่ม web ยังเขียนไม่ได้ (งานของ Operator)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: som-db-replica
+  namespace: som-shop
+spec:
+  serviceName: som-db              # ใช้ headless Service เดิม (selector ไม่ตรง → ไม่อยู่ใน DNS som-db)
+  replicas: 1
+  selector:
+    matchLabels:
+      app: som-db-replica
+  template:
+    metadata:
+      labels:
+        app: som-db-replica
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        # โคลนครั้งแรกเท่านั้น: มี PG_VERSION แล้ว (PVC เดิม) = ข้าม
+        - name: clone-from-primary
+          image: postgres:17.11-alpine
+          securityContext:
+            runAsUser: 70
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: PGPASSWORD
+              value: meow1234        # เพื่อการเรียนเท่านั้น
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          # -R = เขียน standby.signal + primary_conninfo ให้ → เปิดมาเป็น standby เอง
+          command: ["sh", "-c", "if [ -s $PGDATA/PG_VERSION ]; then echo already-cloned; else pg_basebackup -h som-db-0.som-db -U som -D $PGDATA -R -X stream -P && echo cloned; fi"]
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      containers:
+        - name: postgres
+          image: postgres:17.11-alpine
+          securityContext:
+            runAsUser: 70
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: POSTGRES_PASSWORD
+              value: meow1234
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - name: postgres
+              containerPort: 5432
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
+            periodSeconds: 3
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        storageClassName: standard
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 1Gi

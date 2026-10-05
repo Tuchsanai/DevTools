@@ -1,0 +1,34 @@
+# LAB 2: StatefulSet web 3 ตัว ผูกกับ headless Service ชื่อ web (serviceName ต้องตรงกัน)
+# แต่ละ Pod เขียนหน้าเว็บของตัวเอง "first-born <ชื่อ Pod> <เวลา>" → wget แล้วรู้ว่าตอบจากตัวไหน
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  serviceName: web
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          command:
+            - sh
+            - -c
+            - echo "first-born $(hostname) $(date +%T)" > /usr/share/nginx/html/index.html; exec nginx -g 'daemon off;'
+          ports:
+            - name: http
+              containerPort: 80
+          # ไม่มี index.html → nginx ตอบ 403 → ไม่ Ready → หายจาก DNS (ใช้ทดลองในขั้นท้าย LAB 2)
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 2

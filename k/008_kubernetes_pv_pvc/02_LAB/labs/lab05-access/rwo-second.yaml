@@ -1,0 +1,21 @@
+# LAB 5: Pod ตัวที่ 2 ใช้ใบเบิก rwo-data เดียวกัน — scheduler ส่งไป Node เดียวกับตัวแรก (ตาม nodeAffinity ของ PV)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rwo-b
+spec:
+  terminationGracePeriodSeconds: 1   # ลบเร็ว (sleep ไม่รับ SIGTERM)
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo \"$(date +%T) from $(hostname)\" >> /data/shared.txt; cat /data/shared.txt; sleep 3600"]
+      volumeMounts:
+        - name: data
+          mountPath: /data
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 64Mi }
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: rwo-data

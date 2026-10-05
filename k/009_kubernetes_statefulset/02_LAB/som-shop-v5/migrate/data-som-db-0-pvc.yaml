@@ -1,0 +1,18 @@
+# LAB 10 ขั้น B: ใบเบิกใหม่ชื่อ "data-som-db-0" ที่ชี้ไปตู้เซฟ (PV) เดิมของบท 008
+# ชื่อต้องเป็น <ชื่อ template>-<ชื่อ sts>-<เลข> = data-som-db-0 → StatefulSet จะ "รับไปใช้" แทนการสร้าง PVC ใหม่
+# PVNAME จะถูกแทนด้วยชื่อ PV จริงตอนสั่ง:
+#   sed "s/PVNAME/$PV/" migrate/data-som-db-0-pvc.yaml | kubectl apply -f -
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-som-db-0
+  namespace: som-shop
+  labels:
+    app: som-db                    # label เดียวกับที่ StatefulSet ใส่ให้ PVC ที่สร้างเอง
+spec:
+  storageClassName: standard       # ต้องตรงกับ PV เดิม
+  volumeName: PVNAME               # ผูกกับ PV เดิมโดยตรง (static binding แบบบท 008 LAB 6)
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi

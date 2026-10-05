@@ -1,0 +1,65 @@
+# LAB 9: StatefulSet web เดิม (LAB 3) + tolerations 30 วิ (ค่า default 300 วิ) จะได้ไม่ต้องรอนานตอน Node ล่ม
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  clusterIP: None
+  selector:
+    app: web
+  ports:
+    - name: http
+      port: 80
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  serviceName: web
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      terminationGracePeriodSeconds: 5
+      # Node NotReady/unreachable นานเกิน 30 วิ → ถูกสั่งไล่ (แต่ StatefulSet ยังไม่สร้างแทน จนกว่าจะยืนยันว่า Pod เก่าตายแล้ว)
+      tolerations:
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 30
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 30
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          command:
+            - sh
+            - -c
+            - '[ -f /usr/share/nginx/html/index.html ] || echo "first-born $(hostname) $(date +%T)" > /usr/share/nginx/html/index.html; exec nginx -g "daemon off;"'
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 2
+          volumeMounts:
+            - name: www
+              mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+    - metadata:
+        name: www
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 10Mi

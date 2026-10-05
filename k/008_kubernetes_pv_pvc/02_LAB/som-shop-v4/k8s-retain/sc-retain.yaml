@@ -1,0 +1,10 @@
+# LAB 10 ขั้น H: โรงทำตู้เซฟแบบ "ไม่บดตู้ทิ้ง" — เหมือน standard แต่ reclaimPolicy: Retain
+# ลบ PVC แล้ว PV ยังอยู่ (สถานะ Released) พร้อมข้อมูล → ผู้ดูแลกู้คืนหรือลบเองได้
+# StorageClass เป็นของทั้งคลัสเตอร์ (ไม่มี namespace) — ลบ ns som-shop แล้ว class นี้ยังอยู่
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard-retain
+provisioner: rancher.io/local-path           # ใช้แขนกลตัวเดียวกับ standard
+reclaimPolicy: Retain                        # ลบใบเบิก → เก็บตู้ไว้ (ค่า default ของ class คือ Delete)
+volumeBindingMode: WaitForFirstConsumer      # รอให้มี Pod ก่อนค่อยสร้างตู้บน Node ที่ Pod ลง

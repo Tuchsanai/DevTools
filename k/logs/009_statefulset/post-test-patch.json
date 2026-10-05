@@ -1,0 +1,10 @@
+{"replace": {
+ "T02": [["\"PANIC\"", "\"ออเดอร์หาย\""]],
+ "L11": [["\"docker stop lab-worker2\"", "\"docker stop $N\""]]
+},
+"caption": {
+ "T02": "ทวนบท 008: Deployment ใช้ Pod template เดียว ทุก Pod จึงอ้าง claimName เดียวกัน — replicas 2 = postgres สองตัวเขียนโฟลเดอร์เดียว (ทดสอบแล้วออเดอร์หาย บางครั้ง PANIC)",
+ "L01": "LAB0: 3 Node Ready, StorageClass standard, ไม่มี PV/PVC ค้างจากบท 008 (kubectl get pv ว่าง), image postgres:17.11-alpine และ som-shop-web:1.2 อยู่บนทุก Node (nginx/busybox ให้ Node ดึงเองตอนใช้)",
+ "L08": "LAB6: partition 2 + nginx:1.28-alpine → เฉพาะ web-2 (updated=1) → partition 0 → web-1 แล้ว web-0 — rollout history มี 2 revision → rollout undo กลับ 1.27 (history เป็น 2, 3)",
+ "L11": "LAB9: docker stop Node ที่มี web-1 ($N ดูจาก kubectl get pod -o wide, tolerationSeconds 30) → NotReady 40–50 วิ → web-1 Terminating ~80 วิ แล้วค้าง ไม่มี web-1 ใหม่ (รอ 3 นาที ยังค้าง)"
+}}

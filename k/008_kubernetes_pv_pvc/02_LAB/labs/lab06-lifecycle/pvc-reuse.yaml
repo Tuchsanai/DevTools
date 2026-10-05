@@ -1,0 +1,14 @@
+# LAB 6: ใบเบิกใหม่ชื่อเดิม (ledger) ที่ "ระบุตู้เดิม" ด้วย volumeName — ใช้กู้ PV ที่ Retain ไว้
+# PV ต้องเป็น Available ก่อน (ลบ spec.claimRef ออก) แล้วเปลี่ยน PV_NAME เป็นชื่อ PV จริง:
+#   sed "s/PV_NAME/$PV/" pvc-reuse.yaml | kubectl apply -f -
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ledger
+spec:
+  storageClassName: standard       # ต้องตรงกับ class ของ PV
+  volumeName: PV_NAME              # ชี้ตู้เดิมโดยตรง (แขนกลจะไม่สร้างตู้ใหม่)
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Mi                # ต้องไม่เกินขนาดของ PV

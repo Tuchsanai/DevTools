@@ -1,0 +1,181 @@
+['id', 'path', 'section', 'caption_th', 'prompt', 'needs_test']
+## T02 True 02-recap-008-shared-slip.png
+CAP: ทวนบท 008: Deployment ใช้ Pod template เดียว ทุก Pod จึงอ้าง claimName เดียวกัน — replicas 2 = postgres สองตัวเขียนโฟลเดอร์เดียว (ทดสอบแล้วออเดอร์หาย/PANIC)
+Scene: Two kitchen booths on one ship connected to the same safe; their ledger has torn pages and a red alarm light; the shared blueprint card shows one claimName line. Nong Som points at the blueprint line.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "claimName: som-db-data"; "replicas: 2"; "PANIC"; "template เดียว = ตู้เดียว".
+## T05 True 05-deployment-random-names.png
+CAP: Pod ของ Deployment ชื่อสุ่ม (som-db-7b786655f5-9hf7p) เปลี่ยนทุกครั้งที่สร้างใหม่ และ RollingUpdate ทำให้มี 2 ตัวพร้อมกันได้ — ไม่เหมาะกับ db ที่ต้องรู้ว่าใครคือใคร
+Scene: A row of booths whose name plates are random barcode-like strings; one booth is replaced and its new plate is a different random string; a customer silhouette holding an address card looks lost. Nong Som scratches her head.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "som-db-7b786655f5-9hf7p"; "ชื่อใหม่ทุกครั้ง"; "ชื่อสุ่ม หาตัวไม่เจอ".
+## T08 True 08-ordinal-names-labels.png
+CAP: ชื่อ Pod = <ชื่อ sts>-<ลำดับ> และมี label อัตโนมัติ statefulset.kubernetes.io/pod-name กับ apps.kubernetes.io/pod-index — ใช้เลือก Pod รายตัวได้
+Scene: Three booths in a row with plates -0, -1, -2; each has a luggage tag with a small index number; the numbering robot hands out the next ticket. Nong Som reads a tag.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "web-0"; "web-1"; "web-2"; "apps.kubernetes.io/pod-index"; "ชื่อตามเลขลำดับ".
+## T09 True 09-same-name-new-uid.png
+CAP: ลบ Pod som-db-0 → ได้ Pod ชื่อเดิม som-db-0 แต่ UID และ IP ใหม่ และต่อ PVC เดิม data-som-db-0 (ทดสอบแล้ว)
+Scene: A crane lifts away booth -0 and places a new booth with the same plate -0 in the same row; its IP tag is a new color; its tube reconnects to the same numbered safe. Nong Som compares old and new IP tags.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "som-db-0"; "IP ใหม่"; "data-som-db-0"; "ชื่อเดิม ตู้เดิม".
+## T12 True 12-nslookup-headless.png
+CAP: nslookup ชื่อ headless Service ได้ IP ของทุก Pod ที่ Ready (หลายบรรทัด) ส่วน nslookup ชื่อรายตัวได้ IP เดียว — Pod ที่ไม่ Ready ไม่อยู่ในคำตอบ
+Scene: A directory book showing a page with three address lines and one grayed-out line for a booth with a red lamp; a second small card shows a single address for one booth. Nong Som holds a telephone handset.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "nslookup som-db"; "3 Address"; "nslookup som-db-1.som-db"; "ไม่ Ready = ไม่อยู่ในสมุด".
+## T15 True 15-sticky-pvc.png
+CAP: PVC ติดตามชื่อ Pod: Pod web-1 เกิดใหม่กี่ครั้งก็ต่อ www-web-1 เดิม ไฟล์ที่เขียนครั้งแรก (first-born web-1) ยังอยู่
+Scene: Booth -1 is rebuilt three times shown as fading ghost outlines, all tubes connecting to the same safe -1 that holds a note. Nong Som reads the note.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "web-1"; "www-web-1"; "first-born web-1"; "เกิดใหม่ก็ตู้เดิม".
+## T16 True 16-pvc-survives.png
+CAP: PVC ไม่ถูกลบเมื่อ scale down หรือลบ StatefulSet (ค่า default) — scale กลับหรือ apply ใหม่ Pod ชื่อเดิมกลับมาผูกตู้เดิม
+Scene: The numbering robot and booths -1 and -2 are gone (dashed outlines), but safes -1 and -2 remain padlocked in the hold with their slips still pinned. Nong Som points at the waiting safes.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "scale 3 → 1"; "delete sts"; "PVC ยังอยู่"; "ตู้รอเจ้าของกลับมา".
+## T17 True 17-retention-policy.png
+CAP: persistentVolumeClaimRetentionPolicy: whenDeleted / whenScaled ค่า default Retain; ตั้ง Delete แล้ว PVC มี ownerReferences ถึง StatefulSet และถูกลบตาม (ทดสอบแล้ว)
+Scene: A control panel on the numbering robot with two toggle switches, each switching between a padlock icon and a crusher icon; a slip shows an owner badge pointing to the robot. Nong Som flips a switch.
+Text (verbatim, exactly 6 short label instances; a label listed twice appears exactly twice): "whenDeleted"; "whenScaled"; "Retain"; "Delete"; "ownerReferences"; "เลือกได้ว่าเก็บหรือทิ้ง".
+## T18 True 18-ordered-ready-create.png
+CAP: OrderedReady (default): สร้าง -0 รอจน Ready ก่อนสร้าง -1 แล้ว -2 — ถ้า -0 ไม่ Ready ตัวถัดไปไม่เกิด
+Scene: A row of three booth slots; booth -0 has a green lamp, booth -1 is being lowered by a crane, slot -2 is empty with a waiting sign. The numbering robot holds the next ticket until the lamp turns green.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "OrderedReady"; "0 → 1 → 2"; "รอ Ready ทีละตัว".
+## T19 True 19-scale-down-reverse.png
+CAP: scale down ลบจากเลขมากไปน้อย (-2 ก่อน -1) และรอตัวก่อนหน้าปิดเสร็จ — -0 ถูกลบเป็นตัวสุดท้ายเสมอ
+Scene: Booth -2 is being lifted away first by a crane, booth -1 waits next in line with a queue number, booth -0 stays. Nong Som counts backwards on her paw.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "2 → 1 → 0"; "ลบจากเลขมากก่อน"; "-0 อยู่ท้ายสุด".
+## T20 True 20-parallel-policy.png
+CAP: podManagementPolicy: Parallel สร้าง/ลบทุกตัวพร้อมกันไม่รอกัน (ทดสอบแล้ว par-0..2 Pending พร้อมกัน) — ชื่อและตู้ประจำตัวยังเหมือนเดิม
+Scene: Three cranes lower booths -0, -1 and -2 at the same moment; each booth still lines up with its own safe. Nong Som waves a starting flag.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "Parallel"; "พร้อมกันทุกตัว"; "ชื่อและตู้ยังคงที่".
+## T21 True 21-rolling-reverse.png
+CAP: RollingUpdate ของ StatefulSet: เปลี่ยนทีละตัวจากเลขมากไปน้อย (-2 → -1 → -0) รอแต่ละตัว Ready ก่อนไปตัวถัดไป
+Scene: Three booths in a row; booth -2 already has a new signboard, booth -1 is being refitted with a crane, booth -0 still has the old signboard. Nong Som directs the crane.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "RollingUpdate"; "2 → 1 → 0"; "ทีละตัวจากท้ายแถว".
+## T22 True 22-partition-canary.png
+CAP: partition: N = อัปเดตเฉพาะ Pod ที่เลข ≥ N ใช้ทำ canary (partition 2 → เฉพาะ web-2 ได้ nginx:1.28-alpine) แล้วลด partition เป็น 0 เพื่อปล่อยทั้งหมด
+Scene: A rope barrier across the booth row between -1 and -2; only booth -2 beyond the rope has the new signboard; booths -0 and -1 keep the old one. Nong Som holds the rope post ready to move it.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "partition: 2"; "web-2: 1.28"; "web-0, web-1: 1.27"; "ทดลองรุ่นใหม่บางบูธ".
+## T23 True 23-revisions.png
+CAP: StatefulSet เก็บรุ่นเป็น ControllerRevision: status.currentRevision / updateRevision และ label controller-revision-hash บน Pod — ดูด้วย kubectl rollout history sts
+Scene: The numbering robot holds a thin logbook with two bookmarks of different colors; each booth wears a small barcode sticker matching one of the bookmarks. Nong Som compares stickers.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "currentRevision"; "updateRevision"; "controller-revision-hash"; "rollout history sts"; "รุ่นปัจจุบันกับรุ่นใหม่".
+## T24 True 24-ondelete.png
+CAP: updateStrategy: OnDelete = แก้ template แล้ว Pod ยังไม่เปลี่ยน จนกว่าจะลบ Pod นั้นเอง — ควบคุมจังหวะได้ละเอียดสำหรับระบบที่ต้องอัปเกรดทีละขั้นด้วยมือ
+Scene: A new blueprint card is pinned on the robot but all booths still show old signboards; Nong Som presses a delete button for booth -1 only, and only that rebuilt booth shows the new sign.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "OnDelete"; "kubectl delete pod web-1"; "ลบเมื่อไรเปลี่ยนเมื่อนั้น".
+## T26 True 26-independent-ledgers.png
+CAP: scale som-db เป็น 3 ได้ 3 postgres ที่ข้อมูลแยกกัน: som-db-0 มี orders ส่วน som-db-1/2 ว่าง (relation "orders" does not exist) — StatefulSet ไม่คัดลอกข้อมูลให้
+Scene: Three kitchen booths each above its own safe; booth -0's ledger is full, booths -1 and -2 have blank ledgers. Nong Som looks surprised at the blank ones.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "som-db-0: 4 orders"; "som-db-1: ว่าง"; "som-db-2: ว่าง"; "relation "orders" does not exist"; "ไม่ได้คัดลอกให้อัตโนมัติ".
+## T27 True 27-streaming-replication.png
+CAP: ถ้าต้องการสำเนาจริง แอปต้องทำเอง เช่น postgres streaming replication: replica ใช้ pg_basebackup -R จาก primary แล้วรับ WAL ต่อเนื่อง อ่านได้อย่างเดียว
+Scene: Booth -0 marked as the main kitchen sends ledger pages along a small conveyor courier to a copy booth whose ledger fills in sync; the copy booth has a glass read-only window. Nong Som checks the two ledgers match.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "primary"; "replica"; "pg_basebackup -R"; "streaming"; "อ่านอย่างเดียว".
+## T29 True 29-at-most-one.png
+CAP: Node ล่ม: Pod web-1 ค้าง Terminating (Ready False) ไม่ถูกสร้างใหม่ที่ Node อื่น — StatefulSet ยอมให้มี Pod ชื่อเดียวกันได้ไม่เกิน 1 ตัว (at most one)
+Scene: A ship stuck in thick fog with booth -1 shown as a dim silhouette; on the clear ship booths -0 and -2 are open; an empty slot -1 on the clear ship has a 'no entry' sign. Nong Som looks at the fog with binoculars.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "web-1 Terminating"; "NotReady"; "ชื่อเดียวกันมีได้ตัวเดียว".
+## T31 True 31-out-of-service-local.png
+CAP: ยืนยันว่า Node ดับจริงแล้วใส่ taint node.kubernetes.io/out-of-service → ระบบลบ Pod ให้ แต่ PV ของ local-path ผูก Node เดิม Pod ใหม่จึง Pending จนเรือกลับมา
+Scene: A harbor official tapes an out-of-service sign on the foggy ship; booth -1 is removed from it; a new booth -1 hangs on a crane over the clear ship but cannot land because its slip is chained to the safe on the foggy ship. Nong Som holds the tape roll.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "node.kubernetes.io/out-of-service"; "web-1 Pending"; "didn't match PersistentVolume's node affinity"; "ตู้เซฟยังติดเรือเดิม".
+## T33 True 33-which-name-to-connect.png
+CAP: web ควรต่อ db ด้วยชื่อไหน: som-db (headless) ตอบ IP ทุกตัว เมื่อ scale เป็น 3 อาจต่อผิดตัว → ระบุ som-db-0.som-db ให้ชี้ primary ชัดเจน
+Scene: A web booth customer holding two address cards; one card points to the directory book page with three addresses (arrows scatter to three kitchens), the other card points directly to kitchen -0. Nong Som circles the second card.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "som-db"; "som-db-0.som-db"; "ชี้ตัวหลักให้ชัด".
+## T34 True 34-adopt-existing-pvc.png
+CAP: ย้ายข้อมูลจาก Deployment: ตั้ง PV เป็น Retain → ลบ PVC เดิม → ลบ claimRef → สร้าง PVC ชื่อ data-som-db-0 (volumeName) ไว้ก่อน → StatefulSet ใช้ PVC ชื่อนั้นทันที
+Scene: Nong Som wheels an old safe on a hand truck from an old single kitchen to the numbered booth -0; she sticks a new slip with the numbered name on it before the numbering robot arrives; the robot nods seeing the slip already there.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "Retain"; "data-som-db-0"; "volumeName"; "ย้ายบ้านพร้อมตู้เซฟเดิม".
+## L01 True 01-lab0-prepare.png
+CAP: LAB0: 3 Node Ready, StorageClass standard, ไม่มี PV/PVC ค้างจากบท 008 (kubectl get pv ว่าง), image postgres:17.11-alpine, nginx:1.27/1.28-alpine, som-shop-web:1.2 พร้อม
+Scene: Nong Som at a laptop on the dock; three ships with Ready flags; an empty clean cargo hold with no leftover safes; crates of images on a crane.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "kubectl get pv"; "No resources found"; "postgres:17.11-alpine"; "เตรียมคลัสเตอร์".
+## L02 True 02-lab1-deploy-vs-sts.png
+CAP: LAB1: nginx 3 ตัวแบบ Deployment ได้ชื่อสุ่ม ลบแล้วชื่อใหม่; แบบ StatefulSet ได้ web-0/1/2 ลบ web-1 แล้วได้ web-1 คืน
+Scene: Two rows of booths: the upper row under the manager robot with random barcode plates, one replaced with a new random plate; the lower row under the numbering robot with plates -0, -1, -2 and a rebuilt -1 keeping its plate. Nong Som compares.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "Deployment: ชื่อสุ่ม"; "StatefulSet: ชื่อคงที่"; "web-1"; "web-1".
+## L03 True 03-lab2-headless-dns.png
+CAP: LAB2: Service web clusterIP: None → nslookup web ได้ 3 Address, nslookup web-0.web.default.svc.cluster.local ได้ IP เดียว, wget web-1.web ได้หน้าของ web-1
+Scene: A directory book on a lectern with three address lines; a telephone line from Nong Som's handset to booth -1; the booth replies with a page.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "clusterIP: None"; "nslookup web"; "web-1.web"; "โทรหาบูธตรง ๆ".
+## L04 True 04-lab3-volume-claim-templates.png
+CAP: LAB3: PVC www-web-0/1/2 เกิดตามลำดับ แต่ละ Pod เขียน first-born <ชื่อ> ครั้งแรก — ลบ Pod แล้วไฟล์เดิมยังอยู่
+Scene: Three numbered booths each with its own safe holding a note; one booth is rebuilt and its note remains. Nong Som holds a magnifier over a note.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "www-web-0"; "www-web-1"; "www-web-2"; "first-born web-1"; "บูธละตู้เซฟ".
+## L05 True 05-lab4-ordered-ready.png
+CAP: LAB4: StatefulSet bad ที่ readiness ไม่ผ่าน → ค้างที่ bad-0 ไม่สร้าง bad-1 จน touch /tmp/ready → bad-1 ตามมา
+Scene: Booth -0 with a red lamp; the crane holding booth -1 is frozen in mid-air; Nong Som flips the lamp switch to green and the crane starts moving.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "bad-0 0/1"; "touch /tmp/ready"; "bad-1 ตามมา"; "รอตัวก่อนหน้า Ready".
+## L06 True 06-lab4-parallel.png
+CAP: LAB4 (ต่อ): podManagementPolicy: Parallel → par-0/1/2 เกิดพร้อมกัน; scale down OrderedReady ลบ web-2 ก่อน web-1
+Scene: Three cranes lowering three booths at once on the left; on the right booth -2 lifted away before booth -1. Nong Som with a stopwatch.
+Text (verbatim, exactly 2 short label instances; a label listed twice appears exactly twice): "Parallel: พร้อมกัน"; "OrderedReady: 2 ก่อน 1".
+## L07 True 07-lab5-scale-retention.png
+CAP: LAB5: scale 3→1 แล้ว PVC www-web-1/2 ยังอยู่ → scale กลับ web-2 อ่าน first-born web-2 เดิม; StatefulSet par ตั้ง whenScaled/whenDeleted: Delete → PVC หายตาม
+Scene: Left: padlocked safes -1 and -2 waiting, then booths return to them. Right: the robot's switch set to crusher and safes going into a crusher press. Nong Som between the scenes.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "Retain (default)"; "first-born web-2"; "whenScaled: Delete"; "PVC หายตาม".
+## L08 True 08-lab6-partition.png
+CAP: LAB6: partition 2 + nginx:1.28-alpine → เฉพาะ web-2 (updated=1) → partition 0 → web-1 แล้ว web-0 — rollout history มี 2 revision
+Scene: A rope barrier between booths -1 and -2; booth -2 shows the new signboard; then Nong Som moves the rope post to the start of the row and the crane refits booth -1 then -0.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "partition: 2"; "updated=1"; "partition: 0"; "2 → 1 → 0"; "ปล่อยรุ่นใหม่เป็นขั้น".
+## L09 True 09-lab7-ondelete.png
+CAP: LAB7: OnDelete + set image กลับ 1.27 → ไม่มี Pod เปลี่ยน → ลบ web-1 → web-1 เป็น 1.27 คนเดียว; minReadySeconds ชะลอการเปลี่ยนแต่ละตัว
+Scene: All booths show the same old sign while a new blueprint is pinned; Nong Som presses a button for booth -1; only booth -1 gets the other sign; a stopwatch on the dock.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "OnDelete"; "web-1: 1.27"; "web-0, web-2: 1.28"; "เปลี่ยนเมื่อสั่งลบ".
+## L10 True 10-lab8-delete-reapply.png
+CAP: LAB8: kubectl delete sts web → Pod หายหมด PVC 3 ใบยังอยู่ → apply ใหม่ → web-0/1/2 อ่าน first-born เดิมทุกตัว
+Scene: The numbering robot and booths vanish into dashed outlines; three padlocked safes remain; a new robot arrives and booths reappear above the same safes, each note unchanged. Nong Som smiles.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "delete sts web"; "PVC ยังอยู่ 3 ใบ"; "apply ใหม่"; "ข้อมูลเดิมทุกตัว".
+## L11 True 11-lab9-node-down.png
+CAP: LAB9: docker stop Node ที่มี web-1 (tolerationSeconds 30) → NotReady → web-1 Terminating ค้าง ไม่มี web-1 ใหม่ (รอ ~2.5 นาที ยังค้าง)
+Scene: A foggy ship with dim booth -1; the clear ship has booths -0 and -2 and an empty slot with a no-entry sign; a stopwatch. Nong Som with binoculars.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "docker stop lab-worker2"; "web-1 Terminating"; "ไม่สร้างแทนให้".
+## L12 True 12-lab9-out-of-service.png
+CAP: LAB9 (ต่อ): taint out-of-service → web-1 ถูกลบและสร้างใหม่แต่ Pending (PV node affinity) → เอา taint ออก + docker start → web-1 Running อ่าน first-born web-1 เดิม
+Scene: An official tapes a sign on the foggy ship; a new booth -1 hangs on a crane unable to land; then the fog clears and booth -1 sits back on its ship above its safe. Nong Som removes the tape.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "out-of-service"; "web-1 Pending"; "docker start"; "กลับมาตู้เดิม".
+## L13 False 13-lab10-architecture.png
+CAP: LAB10 ภาพรวม som-shop-v5: web Deployment 3 บูธ (NodePort 30080) → DATABASE_URL som-db-0.som-db → headless Service som-db → StatefulSet som-db → PVC data-som-db-0
+Scene: Harbor overview: three web booths behind a lighthouse with a gangway door; a directory book on a lectern for the kitchen; kitchen booth -0 above its numbered safe; the numbering robot beside it. Nong Som holds the plan.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "som-web ×3"; "30080"; "som-db-0.som-db"; "data-som-db-0"; "ร้านแบบโปรดักชัน".
+## L14 True 14-lab10-start-008.png
+CAP: LAB10 ขั้น A: เริ่มจากสภาพท้ายบท 008 (db Deployment + PVC som-db-data) สั่งซื้อ 3 ครั้ง → orders=3
+Scene: The old single kitchen booth under the store-manager robot with one safe; customers place orders; a display. Nong Som holds a moving-day checklist.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "som-db-data"; "orders=3"; "จุดเริ่ม = ท้ายบท 008".
+## L15 True 15-lab10-migrate.png
+CAP: LAB10 ขั้น B: PV → Retain, ลบ Deployment/Service/PVC เดิม, ลบ claimRef, สร้าง PVC data-som-db-0 (volumeName) แล้ว apply StatefulSet → som-db-0 ผูก PV เดิม
+Scene: Nong Som wheels the padlocked safe on a hand truck to numbered booth -0 and pins a numbered slip onto it; the numbering robot arrives and connects booth -0 to the safe.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "Retain"; "remove claimRef"; "data-som-db-0"; "ย้ายตู้เซฟไปบูธ -0".
+## L16 True 16-lab10-web-points-sts.png
+CAP: LAB10 ขั้น B (ต่อ): web ใช้ DATABASE_URL ...@som-db-0.som-db:5432 → rollout → /api/stats orders=3 ข้อมูลย้ายมาครบ
+Scene: Web booths each with a tube labeled with an address going to the directory book and on to kitchen -0; the display shows the same count as before. Nong Som cheers.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "som-db-0.som-db:5432"; "orders=3"; "ย้ายมาครบ".
+## L17 True 17-lab10-delete-pod.png
+CAP: LAB10 ขั้น C: ลบ som-db-0 → กลับมาชื่อเดิม UID/IP ใหม่ PVC data-som-db-0 เดิม → orders=3
+Scene: A crane swaps kitchen booth -0 for a new booth with the same plate; new IP tag color; same safe. Nong Som compares tags.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "som-db-0"; "IP ใหม่"; "orders=3"; "ชื่อเดิม ตู้เดิม ข้อมูลเดิม".
+## L18 True 18-lab10-rolling-db.png
+CAP: LAB10 ขั้น D: patch memory limit 512Mi → 768Mi → rolling update som-db (revision 2) → สั่งซื้อเพิ่ม orders=4
+Scene: The kitchen booth -0 is refitted by a crane with a larger cooling unit; the logbook flips to page two; the ledger gains a line. Nong Som gives a thumbs up.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "memory: 768Mi"; "REVISION 2"; "orders=4"; "อัปเดตแล้วข้อมูลไม่หาย".
+## L19 True 19-lab10-delete-sts.png
+CAP: LAB10 ขั้น E: delete sts som-db → PVC data-som-db-0 ยัง Bound → apply 10-db.yaml → orders=4
+Scene: The numbering robot vanishes; the safe -0 with its slip stays; a new robot arrives and reconnects. Nong Som points at the safe.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "delete sts som-db"; "data-som-db-0: Bound"; "orders=4"; "ลบหัวหน้ากะ ตู้ไม่หาย".
+## L20 True 20-lab10-scale-three.png
+CAP: LAB10 ขั้น F: scale som-db 3 → PVC data-som-db-1/2 ใหม่ (ต่าง Node ได้), som-db-1/2 ไม่มีตาราง orders, nslookup som-db ได้ 3 IP แต่ร้านยังปกติเพราะ web ชี้ som-db-0
+Scene: Three kitchen booths -0, -1, -2 on two ships each above its own safe; only booth -0's ledger is full; the web tube goes only to -0. Nong Som explains with a pointer.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "data-som-db-1"; "data-som-db-2"; "relation "orders" does not exist"; "3 ตัว ≠ 3 สำเนา".
+## L21 True 21-lab10-scale-back.png
+CAP: LAB10 ขั้น G: scale กลับ 1 → som-db-1/2 ถูกลบ (2 ก่อน 1) แต่ PVC data-som-db-1/2 ยังอยู่ ต้องลบเอง
+Scene: Booths -2 then -1 lifted away; their safes remain padlocked; Nong Som holds a broom ready to clean them up.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "scale --replicas=1"; "PVC ค้าง 2 ใบ"; "ลบเองเมื่อไม่ใช้".
+## L22 True 22-lab10-extra-replica.png
+CAP: LAB10 เสริม: เพิ่มบรรทัด host replication ใน pg_hba.conf ของ som-db-0 → StatefulSet som-db-replica (init pg_basebackup -R) → pg_is_in_recovery = t, pg_stat_replication streaming async
+Scene: Kitchen booth -0 sends pages by a conveyor courier to a copy booth with a glass window; both ledgers show the same count; a status card. Nong Som checks with a magnifier.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "som-db-replica-0"; "pg_basebackup -R"; "streaming async"; "สำเนาอ่านอย่างเดียว".
+## L23 True 23-lab10-extra-readonly.png
+CAP: LAB10 เสริม (ต่อ): สั่งซื้อแล้ว replica เห็นตาม (orders เท่ากัน), INSERT บน replica → cannot execute INSERT in a read-only transaction, ลบ som-db-0 แล้ว replica ต่อกลับเอง
+Scene: A pen bounces off the copy booth's glass window with a red card; after kitchen -0 is rebuilt, the conveyor reconnects. Nong Som nods.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "cannot execute INSERT in a read-only transaction"; "ต่อกลับเอง"; "เขียนได้ที่ primary เท่านั้น".
+## L24 False 24-lab10-wrap-up.png
+CAP: LAB10 สรุปและบทถัดไป: db มีชื่อคงที่และตู้เซฟประจำตัวแล้ว แต่รหัสผ่านยังอยู่ใน YAML (→ Secret), เปิดร้านผ่าน NodePort (→ Ingress), web ยังต้อง scale เอง (→ HPA)
+Scene: Evening dock: Nong Som sits on a crate writing a three-item to-do list; three signposts beyond the harbor.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "Secret"; "Ingress"; "HPA"; "งานถัดไปของร้าน".

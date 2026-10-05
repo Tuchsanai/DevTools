@@ -1,0 +1,8 @@
+# LAB 7: โรงทำตู้แบบ Retain — แขนกลตัวเดิม (local-path) แต่ลบใบเบิกแล้ว "เก็บตู้ไว้"
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard-retain
+provisioner: rancher.io/local-path
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer

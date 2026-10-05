@@ -1,0 +1,22 @@
+# LAB 4: ตู้เซฟทำมือ (static PV) — ผู้ดูแลคลัสเตอร์สร้างเอง ขนาด 100Mi บนเรือ lab-worker2
+# PV ไม่มี namespace (เป็นของทั้งคลัสเตอร์)
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-manual
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes: [ReadWriteOnce]
+  persistentVolumeReclaimPolicy: Retain   # ลบใบเบิกแล้วตู้ยังอยู่ (ค่า default ของ PV ที่สร้างเอง)
+  storageClassName: ""                    # ไม่มี class = ไม่ใช่ตู้จากแขนกล
+  hostPath:
+    path: /srv/som-manual                 # โฟลเดอร์บน Node
+    type: DirectoryOrCreate
+  nodeAffinity:                           # บอกว่าตู้นี้อยู่บนเรือลำไหน → Pod ที่ใช้ต้องลง Node นี้
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values: [lab-worker2]

@@ -1,0 +1,11 @@
+# LAB 7: ใบเบิกจาก class local-immediate — ไม่ต้องมี Pod ก็เริ่มสร้างตู้ทันที → ล้มเหลว (no node was specified)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: imm
+spec:
+  storageClassName: local-immediate
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Mi

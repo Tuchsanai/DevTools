@@ -1,0 +1,26 @@
+# LAB 2: hostPath = ช่องเปิดบนดาดฟ้าเรือ — Pod เขียนลงโฟลเดอร์ของ Node ตรง ๆ (ข้อมูลอยู่บนเรือลำนั้นลำเดียว)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hp-worker
+  namespace: hostpath-lab
+spec:
+  terminationGracePeriodSeconds: 1   # ลบเร็ว (sh + sleep ไม่รับ SIGTERM)
+  nodeSelector:
+    kubernetes.io/hostname: lab-worker     # ปักให้ลง Node นี้
+  containers:
+    - name: app
+      image: busybox:1.36
+      # เขียนชื่อ Pod ต่อท้ายไฟล์ แล้วแสดงทั้งไฟล์ (ใน kubectl logs)
+      command: ["sh", "-c", "echo \"$(date +%T) from $(hostname) on lab-worker\" >> /host/notes.txt; cat /host/notes.txt; sleep 3600"]
+      volumeMounts:
+        - name: host
+          mountPath: /host
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 64Mi }
+  volumes:
+    - name: host
+      hostPath:
+        path: /srv/som-hostpath       # โฟลเดอร์บน Node (ในคลัสเตอร์ kind = ใน container ของ Node)
+        type: DirectoryOrCreate       # ไม่มีโฟลเดอร์ก็สร้างให้

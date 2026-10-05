@@ -1,0 +1,11 @@
+# LAB 4: ใบเบิกตู้ทำมือ — storageClassName: "" = ขอเฉพาะ PV ที่ไม่มี class (ถ้าไม่ใส่ฟิลด์นี้ class default จะสร้างตู้ใหม่ให้แทน)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: manual-claim
+spec:
+  storageClassName: ""
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 50Mi                # ขอ 50Mi → ได้ตู้ 100Mi (ตู้ที่เล็กที่สุดที่ใหญ่พอ)

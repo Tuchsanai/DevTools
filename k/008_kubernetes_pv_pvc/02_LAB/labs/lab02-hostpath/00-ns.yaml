@@ -1,0 +1,7 @@
+# LAB 2: โซน hostpath-lab — เปิดเตือน (warn) Pod Security ระดับ restricted เพื่อดูว่า hostPath ถูกเตือนอย่างไร
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hostpath-lab
+  labels:
+    pod-security.kubernetes.io/warn: restricted

@@ -1,0 +1,59 @@
+# LAB 9: รวมมิตรวิธี mount — subPath, readOnly, fsGroup และ ephemeral volume (อยู่ใน namespace default)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fsg-data
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fsg
+spec:
+  terminationGracePeriodSeconds: 1
+  securityContext:
+    runAsUser: 70                  # รันเป็น uid 70 (แบบ postgres)
+    runAsGroup: 70
+    fsGroup: 70                    # ขอให้ volume เป็นของกลุ่ม 70 — ได้ผลกับ emptyDir/CSI ส่วนใหญ่ แต่ local-path (hostPath) ไม่เปลี่ยนให้
+  containers:
+    - name: app
+      image: busybox:1.36
+      command:
+        - sh
+        - -c
+        - |
+          id
+          ls -ldn /data /eph
+          echo "เขียนผ่าน subPath" > /site/page.txt && echo "ls /data/site → $(ls /data/site/)"
+          touch /ro/x || echo "readOnly ทำงาน: เขียน /ro ไม่ได้"
+          sleep 3600
+      volumeMounts:
+        - name: data
+          mountPath: /data             # ทั้งตู้
+        - name: data
+          mountPath: /site
+          subPath: site                # เฉพาะโฟลเดอร์ย่อย site ในตู้ (ไม่มีจะถูกสร้างให้)
+        - name: data
+          mountPath: /ro
+          readOnly: true               # ตู้เดียวกันแต่อ่านอย่างเดียว
+        - name: e
+          mountPath: /eph
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 64Mi }
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: fsg-data
+    - name: e
+      ephemeral:                       # generic ephemeral volume: ได้ PVC ชื่อ <pod>-<volume> = fsg-e เกิดและตายพร้อม Pod
+        volumeClaimTemplate:
+          spec:
+            accessModes: [ReadWriteOnce]
+            resources:
+              requests:
+                storage: 5Mi

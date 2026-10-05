@@ -1,0 +1,8 @@
+# LAB 7: OnDelete → StatefulSet ไม่เปลี่ยนรุ่นเอง จะใช้รุ่นใหม่เฉพาะบูธที่เราลบเอง
+# ใช้:  kubectl patch sts web --patch-file ondelete.yaml
+# (rollingUpdate: null = ลบค่า partition ทิ้ง เพราะใช้ได้เฉพาะ type RollingUpdate)
+spec:
+  minReadySeconds: 0
+  updateStrategy:
+    type: OnDelete
+    rollingUpdate: null

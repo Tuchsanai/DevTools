@@ -1,0 +1,33 @@
+# LAB 5: ReadWriteOnce — ผูกกับ "Node เดียว" (ไม่ใช่ Pod เดียว) → Pod หลายตัวบน Node เดียวกันใช้ร่วมได้
+# ใบเบิกแบบ RWO (โหมดปกติของ local-path)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rwo-data
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Mi
+---
+# Pod ตัวแรก: เขียนไฟล์ลงตู้
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rwo-a
+spec:
+  terminationGracePeriodSeconds: 1   # ลบเร็ว (sleep ไม่รับ SIGTERM)
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo \"$(date +%T) from $(hostname)\" >> /data/shared.txt; sleep 3600"]
+      volumeMounts:
+        - name: data
+          mountPath: /data
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 64Mi }
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: rwo-data

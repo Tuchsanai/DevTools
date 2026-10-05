@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-som-db-0
+  namespace: som-shop
+  labels: {app: som-db}
+spec:
+  storageClassName: standard
+  volumeName: PVNAME
+  accessModes: [ReadWriteOnce]
+  resources: {requests: {storage: 1Gi}}

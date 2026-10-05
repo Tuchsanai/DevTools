@@ -1,0 +1,11 @@
+# LAB 9: ใบเบิก 100Mi ในโซน quota-lab (ไม่ใส่ class → standard) — ดูว่างบพอไหม
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: p100
+  namespace: quota-lab
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 100Mi
