@@ -1,0 +1,11 @@
+# LAB 6 ลองผิด 4: โต๊ะของหาย — Ingress ที่มีแค่ spec.defaultBackend (ไม่มี rules)
+# ใน Traefik ป้ายนี้กลายเป็น catch-all ของ "ทั้ง controller": ชื่อไหนที่ไม่มีป้ายรับ (other.localhost, typo.localhost,
+# class ผิด, ไม่ส่ง Host) จะไหลมาที่ admin หมด → ทดลองเสร็จต้อง kubectl delete -f lost.yaml ทันที
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lost
+  namespace: ingress-demo
+spec:
+  defaultBackend:
+    service: {name: admin, port: {number: 80}}

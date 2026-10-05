@@ -1,0 +1,47 @@
+# LAB 7: TLS ที่ประตู (TLS termination) — Traefik ถือใบรับรองจาก Secret som-tls (type kubernetes.io/tls)
+# ต้องสร้าง Secret ก่อน (namespace เดียวกับ Ingress):
+#   kubectl -n ingress-demo create secret tls som-tls --cert=tls.crt --key=tls.key
+# ลูกค้า --HTTPS--> Traefik :30081 (ถอดรหัส) --HTTP--> Pod  (แอปเห็น X-Forwarded-Proto: https)
+# ป้ายแผ่นเดียวใช้ได้ทั้ง http://...:30080 และ https://...:30081 (ไม่ได้ระบุ router.entrypoints)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shop
+  namespace: ingress-demo
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts: [shop.localhost]       # ชื่อใน hosts ต้องอยู่ใน subjectAltName ของใบรับรอง
+      secretName: som-tls
+  rules:
+    - host: shop.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: {service: {name: menu, port: {number: 80}}}
+          - path: /api
+            pathType: Prefix
+            backend: {service: {name: api, port: {name: http}}}
+          - path: /admin
+            pathType: Prefix
+            backend: {service: {name: admin, port: {number: 80}}}
+---
+# ป้าย backoffice (LAB 4) + TLS ใบเดียวกัน (ใบนี้มี SAN ทั้ง shop.localhost และ admin.localhost)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backoffice
+  namespace: ingress-demo
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts: [admin.localhost]
+      secretName: som-tls
+  rules:
+    - host: admin.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: {service: {name: admin, port: {number: 80}}}

@@ -1,0 +1,27 @@
+# LAB 3: ชื่อเดียว หลายทาง (path fan-out) — ป้าย shop เดิม (apply ทับ LAB 2)
+#   /       → menu      /api... → api      /admin... → admin
+# path ที่ยาวกว่าชนะ: /api/stats ตรงทั้ง / และ /api → ไป api
+# path ไม่ถูกตัด: แอป api ได้รับ "GET /api/stats" เต็ม ๆ (อยากตัดต้องใช้ Middleware ของ controller — LAB 8)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shop
+  namespace: ingress-demo
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: shop.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: menu, port: {number: 80}}
+          - path: /api
+            pathType: Prefix
+            backend:
+              service: {name: api, port: {name: http}}     # อ้าง port ของ Service ด้วย "ชื่อ" ก็ได้
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service: {name: admin, port: {number: 80}}

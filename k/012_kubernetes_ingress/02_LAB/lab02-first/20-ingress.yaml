@@ -1,0 +1,20 @@
+# LAB 2: ป้ายบอกทางแผ่นแรก — ใครมาด้วยชื่อ shop.localhost ทุก path ส่งไป Service menu
+# ป้าย (Ingress) อย่างเดียวไม่ทำงาน ต้องมีพนักงาน (controller Traefik จาก LAB 1) อ่านป้ายแล้วทำตาม
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shop
+  namespace: ingress-demo
+spec:
+  ingressClassName: traefik          # ป้ายนี้ให้ Traefik เป็นคนทำ
+  rules:
+    - host: shop.localhost           # เทียบกับ header Host ของคำขอ (Traefik ตัด :30080 ออกก่อนเทียบ)
+      http:
+        paths:
+          - path: /
+            pathType: Prefix         # / = ทุก path
+            backend:
+              service:
+                name: menu           # Service ClusterIP ใน namespace เดียวกับ Ingress
+                port:
+                  number: 80         # port ของ Service (ไม่ใช่ containerPort 8080)

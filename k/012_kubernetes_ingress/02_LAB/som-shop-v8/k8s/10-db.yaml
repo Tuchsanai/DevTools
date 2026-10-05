@@ -1,0 +1,95 @@
+# LAB 10: ครัวกลาง headless Service som-db + StatefulSet som-db (PVC data-som-db-0) — เหมือนบท 011 ทุกบรรทัด
+# POSTGRES_PASSWORD มาจากซอง som-db-secret (secretKeyRef) ที่สร้างไว้ในบท 011
+# !!! POSTGRES_PASSWORD ใช้แค่ตอน initdb ครั้งแรก (PVC ยังว่าง) — เปลี่ยน Secret ทีหลังไม่ได้เปลี่ยนรหัสในฐานข้อมูล
+#
+# headless Service (clusterIP: None) = สมุดรายชื่อ ไม่มี ClusterIP — DNS ตอบ IP ของ Pod ตรง ๆ
+# !!! เปลี่ยน Service ClusterIP เดิมเป็น headless ด้วย apply ทับไม่ได้ (spec.clusterIP แก้ไม่ได้) ต้อง delete svc ก่อน
+apiVersion: v1
+kind: Service
+metadata:
+  name: som-db
+  namespace: som-shop
+spec:
+  clusterIP: None
+  selector:
+    app: som-db
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: som-db
+  namespace: som-shop
+  labels:
+    app: som-db
+spec:
+  serviceName: som-db              # ต้องตรงกับชื่อ headless Service ด้านบน → ได้ DNS som-db-0.som-db
+  # replicas 1 = postgres ตัวเดียวที่รับเขียน (scale 3 = db 3 ตัว "ข้อมูลแยกกัน" ไม่ใช่ replication — บท 009)
+  replicas: 1
+  # ไม่มี strategy แบบ Deployment: StatefulSet ใช้ updateStrategy (default RollingUpdate ปิดตัวเก่าก่อนเปิดตัวใหม่ทีละตัว)
+  selector:
+    matchLabels:
+      app: som-db
+  template:
+    metadata:
+      labels:
+        app: som-db
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 70                  # คงไว้ตามบท 007–008 (ไม่มีผลกับ local-path)
+        seccompProfile:
+          type: RuntimeDefault
+      # ไม่มี volumes: ... แล้ว — Pod แต่ละตัวได้ PVC ของตัวเองจาก volumeClaimTemplates ด้านล่าง
+      containers:
+        - name: postgres
+          image: postgres:17.11-alpine
+          securityContext:
+            runAsUser: 70            # uid ของ postgres ใน image alpine
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: POSTGRES_USER
+              value: som
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:        # หยิบจากซอง (Secret) ไม่เขียนค่าใน YAML
+                  name: som-db-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              value: catshop
+            - name: PGDATA           # โฟลเดอร์ย่อย pgdata เหมือนบท 008 → ใช้ข้อมูลเดิมที่ย้ายมาได้ทันที
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - name: postgres
+              containerPort: 5432
+          volumeMounts:
+            - name: data             # = ชื่อใน volumeClaimTemplates
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:            # Ready = pg_isready ผ่าน (ไม่ Ready = ไม่อยู่ใน DNS som-db-0.som-db)
+            exec:
+              command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
+            periodSeconds: 3
+          livenessProbe:
+            tcpSocket:
+              port: postgres
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+  # สมุดใบเบิกตู้เซฟ: Pod som-db-N ได้ PVC data-som-db-N (ลบ Pod/ลบ StatefulSet แล้ว PVC ยังอยู่)
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        storageClassName: standard
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 1Gi

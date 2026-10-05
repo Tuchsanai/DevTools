@@ -1,0 +1,45 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shop
+  namespace: demo
+spec:
+  rules:
+    - host: shop.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: menu, port: {number: 80}}
+          - path: /api
+            pathType: Prefix
+            backend:
+              service: {name: api, port: {name: http}}
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service: {name: admin, port: {number: 80}}
+    - host: admin.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: admin, port: {number: 80}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: paths
+  namespace: demo
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: paths.localhost
+      http:
+        paths:
+          - {path: /api, pathType: Prefix, backend: {service: {name: api, port: {number: 80}}}}
+          - {path: /docs/, pathType: Prefix, backend: {service: {name: admin, port: {number: 80}}}}
+          - {path: /menu, pathType: Exact, backend: {service: {name: menu, port: {number: 80}}}}
+          - {path: /impl, pathType: ImplementationSpecific, backend: {service: {name: admin, port: {number: 80}}}}

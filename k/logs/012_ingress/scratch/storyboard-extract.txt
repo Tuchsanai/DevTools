@@ -1,0 +1,336 @@
+=== T01 nt=False 01-opening-front-gate.png
+CAP: เปิดบทที่ 12: ต่อจากบท 011 ร้านน้องส้มมีทั้งประตู HTTP และ HTTPS คนละเลข น้องส้มจึงสร้างประตูหน้าท่าเรือบานเดียวที่มีป้ายบอกทาง
+SCENE: The harbor dock seen from the sea road; a grand front gate building with one big direction signboard on a stand in front of it; behind the gate three indoor lighthouse counters. Nong Som cuts a ribbon at the gate.
+TEXT: label 1: "บทที่ 12"; label 2: "Ingress"; label 3: "ประตูหน้าท่าเรือบานเดียว".
+=== T02 nt=False 02-recap-many-doors.png
+CAP: ทวนบท 010–011: ร้านเปิด NodePort 30080 (HTTP) และ 30082 (HTTPS ผ่าน nginx) ลูกค้าต้องจำเลขประตูเอง ถ้าเพิ่มหน้าแอดมินก็ต้องเพิ่มเลขอีก
+SCENE: Two separate numbered gangway doors on the side of a ship, a confused customer silhouette holding a note with numbers; Nong Som scratches her head holding a key ring with many keys.
+TEXT: label 1: "NodePort 30080"; label 2: "NodePort 30082"; label 3: "ลูกค้าต้องจำเลขประตู"; label 4: "เพิ่มบริการ = เพิ่มประตู".
+=== T03 nt=False 03-metaphor-legend.png
+CAP: อุปมาใหม่ของบท: Ingress = ประตูหน้า + ป้ายบอกทาง, Ingress controller = พนักงานต้อนรับ (หุ่นยนต์), IngressClass = ยูนิฟอร์ม, TLS = ประตูกระจกนิรภัยมีตราประทับ, defaultBackend = โต๊ะของหาย
+SCENE: A legend board with five tiles: the gate with its signboard; the receptionist robot with a lantern; a uniform vest emblem matching a tag; a glass security door with a stamped seal plate; a lost-and-found desk.
+TEXT: label 1: "Ingress = ประตูหน้า + ป้ายบอกทาง"; label 2: "Ingress controller = พนักงานต้อนรับ"; label 3: "IngressClass = ยูนิฟอร์ม"; label 4: "TLS = ประตูกระจกนิรภัย"; label 5: "defaultBackend = โต๊ะของหาย".
+=== T04 nt=False 04-story-goal-names.png
+CAP: เป้าหมายของบท: ลูกค้าเข้าร้านด้วยชื่อ shop.localhost และแอดมินใช้ admin.localhost ผ่านประตูเดียว แทนการจำเลขพอร์ต
+SCENE: Two customer silhouettes hold visit tickets with shop names; both walk through the same front gate and the receptionist robot points them to two different counters. Nong Som holds a plan board.
+TEXT: label 1: "shop.localhost"; label 2: "admin.localhost"; label 3: "ใช้ชื่อแทนเลขพอร์ต"; label 4: "ป้ายเดียวพาไปถูกเคาน์เตอร์".
+=== T05 nt=False 05-nodeport-sprawl.png
+CAP: NodePort: ทุก Service ที่อยากให้คนนอกเข้าต้องมีเลขประตูของตัวเอง (ช่วง 30000–32767) และเปิดบนทุก Node — ร้านยิ่งมาก ยิ่งสับสน
+SCENE: Three ships each with a row of many numbered gangway doors; tangled rope lines from customers to the doors. Nong Som looks overwhelmed.
+TEXT: label 1: "NodePort ต่อ Service"; label 2: "ช่วง 30000–32767"; label 3: "เปิดบนทุกเรือ"; label 4: "ยิ่งร้านมาก ยิ่งสับสน".
+=== T06 nt=True 06-loadbalancer-per-service.png
+CAP: LoadBalancer: ได้ IP ภายนอกต่อ Service ในคลาวด์ แต่จ่ายเงินทุกตัว และบน kind (ไม่มี cloud controller) EXTERNAL-IP จะค้าง <pending>
+SCENE: A row of separate paid toll lighthouses on the sea road, one per counter, each with a coin box; at the end one lighthouse with a dim lamp and an hourglass. Nong Som counts coins.
+TEXT: label 1: "LoadBalancer ต่อ Service"; label 2: "จ่ายเงินทุกตัว"; label 3: "EXTERNAL-IP <pending>"; label 4: "kind ไม่มีให้ในตัว".
+=== T07 nt=False 07-one-gate-many-counters.png
+CAP: Ingress: เปิดประตูออกนอกบานเดียว (Service ของ controller) แล้วกฎ host/path ภายในพาไปหลาย Service ที่เป็น ClusterIP
+SCENE: A single front gate on the dock with one gangway; inside the hall the signboard splits into three hallways, each ending at an indoor lighthouse counter. Nong Som stands at the gate.
+TEXT: label 1: "Ingress"; label 2: "ทางเข้าเดียว"; label 3: "หลายเคาน์เตอร์ข้างใน"; label 4: "ClusterIP".
+=== T08 nt=False 08-l4-vs-l7.png
+CAP: Service ทำงานชั้น L4 (ดูแค่ IP:port แล้วส่งต่อ) ส่วน Ingress controller ทำงานชั้น L7 อ่านคำขอ HTTP (Host, path, header) ก่อนเลือกปลายทาง
+SCENE: Left: a lighthouse counter clerk-robot looks only at the address on a closed parcel. Right: the receptionist robot opens a visit ticket and reads its lines with a magnifier. Nong Som compares them.
+TEXT: label 1: "Service = L4"; label 2: "ดูแค่ IP:port"; label 3: "Ingress = L7"; label 4: "อ่าน Host / path / header"; label 5: "เลือกปลายทางจากเนื้อหา".
+=== T09 nt=True 09-http-request-anatomy.png
+CAP: คำขอ HTTP ที่ Ingress ใช้ตัดสิน: บรรทัด GET /api/stats และ header Host — browser/curl ใส่เลขพอร์ตต่อท้าย (shop.localhost:30080) ซึ่ง controller ตัดพอร์ตออกก่อนเทียบกฎ
+SCENE: A large visit ticket held up by Nong Som; two highlighted lines on it; an arrow from the ticket to the signboard.
+TEXT: label 1: "GET /api/stats"; label 2: "Host: shop.localhost:30080"; label 3: "ตั๋วบอกชื่อร้านและทางเดิน"; label 4: "เทียบชื่อโดยไม่สนพอร์ต".
+=== T10 nt=False 10-sign-without-receptionist.png
+CAP: Ingress เป็นแค่ object ที่บอกกฎ ถ้าไม่มี Ingress controller ในคลัสเตอร์ก็ไม่มีใครอ่านป้าย ลูกค้าไม่ถูกพาไปไหน
+SCENE: The front gate signboard standing alone in an empty hall, no robot present, a few customers wandering lost. Nong Som points at the empty receptionist spot.
+TEXT: label 1: "Ingress = แค่ป้าย"; label 2: "ยังไม่มีพนักงาน"; label 3: "ไม่มีใครพาลูกค้าไป".
+=== T11 nt=False 11-controller-watches-api.png
+CAP: Ingress controller เฝ้าดู (watch) Ingress, Service, EndpointSlice และ Secret จาก API server แล้วปรับเส้นทางของตัวเองทันทีโดยไม่ต้อง restart
+SCENE: The receptionist robot holds a walkie-talkie connected to the harbor control tower; papers float from the tower to the robot; the robot redraws lines on its route map.
+TEXT: label 1: "Ingress controller"; label 2: "watch Ingress / Service / EndpointSlice"; label 3: "อัปเดตเส้นทางเอง"; label 4: "ไม่ต้อง restart".
+=== T12 nt=False 12-controller-is-a-pod.png
+CAP: controller ก็คือแอปหนึ่งตัวในคลัสเตอร์: namespace traefik มี Deployment traefik + Service NodePort เป็นประตูออกนอกบานเดียว
+SCENE: A painted zone on the dock with a booth Pod box containing the receptionist robot, a store-manager robot next to it, and one gangway door on the zone edge. Nong Som peeks inside.
+TEXT: label 1: "namespace: traefik"; label 2: "Deployment traefik"; label 3: "Service NodePort"; label 4: "พนักงานต้อนรับก็เป็น Pod".
+=== T13 nt=False 13-controller-choices.png
+CAP: มี Ingress controller หลายบริษัท ใช้ป้าย Ingress มาตรฐานเดียวกัน (networking.k8s.io/v1) แต่ความสามารถเสริมต่างกัน
+SCENE: A wardrobe rack with four receptionist uniform vests of different colors, each with a plain emblem; one signboard in front fits all. Nong Som chooses a vest.
+TEXT: label 1: "Traefik"; label 2: "HAProxy Ingress"; label 3: "Contour"; label 4: "NGINX Gateway Fabric"; label 5: "ป้ายมาตรฐานเดียวกัน".
+=== T14 nt=False 14-ingress-nginx-retired.png
+CAP: ingress-nginx (kubernetes/ingress-nginx) หยุดดูแล 24 มี.ค. 2026 repo เป็น archive ไม่มี release/แพตช์ความปลอดภัยอีก ของที่ติดตั้งไว้ยังรันได้แต่เสี่ยง — ทางการแนะนำย้ายไป Gateway API หรือ controller อื่น
+SCENE: An old receptionist robot sitting on a bench with a retirement sash, its toolbox closed with a tag; a small warning sign next to the bench; Nong Som waves goodbye respectfully.
+TEXT: label 1: "ingress-nginx"; label 2: "หยุดดูแล 24 มี.ค. 2026"; label 3: "ไม่มีแพตช์ความปลอดภัย"; label 4: "ยังรันได้ แต่เสี่ยง".
+=== T15 nt=False 15-why-traefik.png
+CAP: บทนี้ใช้ Traefik v3.7.13: ยังดูแลอยู่, image ทางการดึงได้ตรง, ติดตั้งด้วย YAML pin เวอร์ชัน (ไม่ต้องใช้ Helm), รองรับทั้ง Ingress และ Gateway API
+SCENE: A checklist clipboard with four ticked rows; a new receptionist robot in a teal vest stands ready. Nong Som holds the clipboard.
+TEXT: label 1: "Traefik v3.7.13"; label 2: "ยังดูแลอยู่"; label 3: "ติดตั้งด้วย YAML pin เวอร์ชัน"; label 4: "ใช้ได้ทั้ง Ingress และ Gateway API"; label 5: "เลือกใช้ใน LAB นี้".
+=== T16 nt=False 16-ingressclass-uniform.png
+CAP: IngressClass บอกว่า controller ไหนรับผิดชอบ: IngressClass traefik มี controller: traefik.io/ingress-controller และ Ingress อ้างด้วย ingressClassName: traefik
+SCENE: Close-up: the colored emblem on the receptionist robot's vest and the matching colored tag on the signboard, connected by a dotted line. Nong Som compares the two.
+TEXT: label 1: "IngressClass: traefik"; label 2: "controller: traefik.io/ingress-controller"; label 3: "ingressClassName: traefik"; label 4: "ยูนิฟอร์มตรงกัน = รับผิดชอบป้ายนี้".
+=== T17 nt=True 17-default-class.png
+CAP: annotation ingressclass.kubernetes.io/is-default-class: "true" ทำให้ Ingress ที่ไม่ระบุ class ถูกเติม ingressClassName: traefik ตอนสร้าง (kubectl get ingressclass แสดง traefik (default))
+SCENE: A signboard arrives without a tag; a small stamping machine at the gate stamps a gold-star tag on it. Nong Som watches.
+TEXT: label 1: "is-default-class: "true""; label 2: "ไม่ระบุ class"; label 3: "ระบบเติม ingressClassName ให้"; label 4: "traefik (default)".
+=== T18 nt=True 18-wrong-class.png
+CAP: ระบุ class ผิด (เช่น ingressClassName: nginx ที่ไม่มีอยู่) → ไม่มี controller ไหนรับ, ADDRESS ว่าง, กฎไม่ทำงาน
+SCENE: A signboard with a tag color that matches no robot; the receptionist robot walks past it. Nong Som frowns at an empty status plate.
+TEXT: label 1: "ingressClassName: nginx"; label 2: "ไม่มีพนักงานบริษัทนี้"; label 3: "ADDRESS ว่าง"; label 4: "ป้ายถูกเมิน".
+=== T19 nt=False 19-ingress-yaml-anatomy.png
+CAP: Ingress (networking.k8s.io/v1): spec.rules[] → host → http.paths[] (path + pathType) → backend.service (name + port) อ่านจากบนลงล่างเหมือนป้ายบอกทาง
+SCENE: A tall blueprint card shaped like the signboard, with five indented sections connected by arrows. Nong Som traces the arrows with a pointer.
+TEXT: label 1: "apiVersion: networking.k8s.io/v1"; label 2: "spec.rules"; label 3: "host"; label 4: "http.paths"; label 5: "backend.service"; label 6: "อ่านจากบนลงล่าง".
+=== T20 nt=True 20-backend-port-name-number.png
+CAP: backend.service.port ใช้ number (80) หรือ name (http) ของ Service ไม่ใช่ containerPort — ใส่ผิดจะเห็น ERR service port not found ใน log ของ controller
+SCENE: A signboard row pointing to a lighthouse counter that has a port plate with a number and a name; a red card pinned to a wrong row. Nong Som checks with a clipboard.
+TEXT: label 1: "port.number: 80"; label 2: "port.name: http"; label 3: "พอร์ตของ Service"; label 4: "ไม่ใช่ containerPort"; label 5: "service port not found".
+=== T21 nt=False 21-clusterip-enough.png
+CAP: เมื่อมี Ingress แล้ว Service ของแอปเป็นแค่ ClusterIP (เคาน์เตอร์ในอาคาร) ประตูออกนอกเหลือบานเดียวคือ Service traefik
+SCENE: Inside the hall indoor lighthouse counters with no gangway doors; only the gate has one gangway door outward. Nong Som closes an old gangway door on a counter.
+TEXT: label 1: "type: ClusterIP"; label 2: "ไม่ต้องมี NodePort แล้ว"; label 3: "ประตูออกนอกบานเดียว"; label 4: "Service traefik".
+=== T22 nt=False 22-name-based-vhost.png
+CAP: name-based virtual hosting: ลูกค้าสองคนเข้าประตูเดียวกัน แต่ Host ต่างกัน (shop.localhost / admin.localhost) จึงถูกพาไปคนละ Service
+SCENE: Two customer silhouettes with different tickets enter the same gate; the receptionist robot sends one to the shop counter and one to the back-office counter.
+TEXT: label 1: "shop.localhost"; label 2: "admin.localhost"; label 3: "ประตูเดียวกัน"; label 4: "ไปคนละเคาน์เตอร์".
+=== T23 nt=True 23-localhost-subdomain.png
+CAP: ชื่อ *.localhost ถูก browser และ curl แปลงเป็น 127.0.0.1 เอง (ทดสอบแล้วใน Chromium 153 และ curl 8.5) จึงไม่ต้องแก้ไฟล์ hosts
+SCENE: A browser window shaped like a ship's porthole showing a name, with an arrow looping back to the student's own laptop at home; a closed notebook labelled hosts file stays on the shelf. Nong Som gives a thumbs up.
+TEXT: label 1: "*.localhost → 127.0.0.1"; label 2: "Chrome / Edge / curl"; label 3: "ไม่ต้องแก้ไฟล์ hosts"; label 4: "ชื่อวนกลับเครื่องตัวเอง".
+=== T24 nt=True 24-host-fallback.png
+CAP: ทางสำรองเมื่อโปรแกรมแปลง *.localhost ไม่ได้ (เช่น getent/wget/python): curl -H 'Host: ...' หรือ curl --resolve หรือแก้ไฟล์ hosts
+SCENE: Three small paths to the same gate: a hand-written ticket, a pre-printed address card, and a notebook page; Nong Som recommends them in order.
+TEXT: label 1: "curl -H 'Host: shop.localhost'"; label 2: "curl --resolve"; label 3: "แก้ไฟล์ hosts"; label 4: "บางโปรแกรมหาชื่อไม่เจอ".
+=== T25 nt=False 25-path-fanout.png
+CAP: fan-out: ชื่อเดียว shop.localhost แต่แยก path / → menu, /api → api, /admin → admin (Service คนละตัว)
+SCENE: Inside the hall three hallway doors under one shop name; each hallway leads to its own lighthouse counter. Nong Som directs traffic.
+TEXT: label 1: "/"; label 2: "/api"; label 3: "/admin"; label 4: "menu"; label 5: "api"; label 6: "admin"; label 7: "แยกทางตาม path".
+=== T26 nt=True 26-path-precedence.png
+CAP: หลายกฎตรงพร้อมกัน path ที่ยาวกว่าชนะ: /api/stats ไป api, /order ไป menu (ตกที่ /)
+SCENE: Two customers: one walks into a narrow long hallway, one into the wide main hallway; a measuring tape between door plates. Nong Som holds the tape.
+TEXT: label 1: "/api/stats → api"; label 2: "/order → menu"; label 3: "path ยาวกว่าชนะ".
+=== T27 nt=False 27-pathtype-three.png
+CAP: pathType มี 3 แบบ: Prefix (ตรงทีละท่อนที่คั่นด้วย /), Exact (ตรงตัวเท่านั้น), ImplementationSpecific (แล้วแต่ controller)
+SCENE: Three hallway door styles side by side: an arch with segmented stepping stones, a door with an exact-shape key hole, and a door with a question-mark plate. Nong Som explains.
+TEXT: label 1: "Prefix"; label 2: "Exact"; label 3: "ImplementationSpecific"; label 4: "ตรงทีละท่อน /"; label 5: "ตรงตัวเท่านั้น"; label 6: "แล้วแต่ controller".
+=== T28 nt=True 28-prefix-element-match.png
+CAP: Prefix /api ตามมาตรฐาน: ตรง /api, /api/, /api/x แต่ไม่ตรง /apix และ /API (ตัวพิมพ์ใหญ่ต่างกัน) — ยืนยันกับ Traefik ที่เปิด strictPrefixMatching
+SCENE: A hallway door with a stepping-stone path; customers with tickets: two walk through with green ticks, two are stopped with red crosses. Nong Som checks tickets.
+TEXT: label 1: "/api ✔"; label 2: "/api/x ✔"; label 3: "/apix ✘"; label 4: "/API ✘"; label 5: "Prefix ตัดตาม /".
+=== T29 nt=True 29-trailing-slash-exact.png
+CAP: ระวัง / ท้าย: Prefix /docs/ ก็รับ /docs (ไม่สน / ท้าย) แต่ Exact /menu ไม่รับ /menu/
+SCENE: Two door plates: one generous door accepting a ticket without the final slash; one strict door rejecting a ticket with an extra slash. Nong Som points at the tiny slash.
+TEXT: label 1: "Prefix /docs/ → /docs ✔"; label 2: "Exact /menu → /menu/ ✘"; label 3: "ระวังเครื่องหมาย / ท้าย".
+=== T30 nt=True 30-strict-prefix-traefik.png
+CAP: ข้อควรรู้เฉพาะ Traefik: ค่าเริ่มต้นเทียบ Prefix แบบตัวอักษร (/api ตรง /apix ด้วย) ต้องเปิด --providers.kubernetesingress.strictPrefixMatching=true จึงตรงมาตรฐาน
+SCENE: A switch panel on the receptionist robot's back with one lever; when off, a ticket with an extra letter slips through; when on, it is stopped. Nong Som flips the lever.
+TEXT: label 1: "ค่าเริ่มต้น: /apix ก็ผ่าน"; label 2: "strictPrefixMatching=true"; label 3: "ตรงตามมาตรฐาน"; label 4: "เฉพาะ Traefik".
+=== T31 nt=True 31-default-backend-lost-found.png
+CAP: ไม่ตรงกฎใดเลย → controller ตอบ 404 page not found; ถ้าตั้ง spec.defaultBackend จะส่งไปโต๊ะของหายแทน (ใน Traefik เป็น catch-all ของทั้งคลัสเตอร์)
+SCENE: A customer with an unknown ticket meets an empty wrong-door with a small sign; next to the gate a lost-and-found desk with a bell. Nong Som guides the customer to the desk.
+TEXT: label 1: "404 page not found"; label 2: "ไม่ตรงกฎใดเลย"; label 3: "defaultBackend"; label 4: "โต๊ะของหาย".
+=== T32 nt=True 32-status-404-503-502.png
+CAP: อ่านรหัสให้ออก: 404 = ไม่มีกฎตรง, 503 = มีกฎแต่ไม่มี Pod พร้อม (no available server), 502 = Pod ปิดกลางคันระหว่างตอบ
+SCENE: Three doors in a row: an empty wrong-door, a counter with all booths showing red lamps, a booth closing its shutter mid-sale. Nong Som holds a code card.
+TEXT: label 1: "404 = ไม่มีกฎตรง"; label 2: "503 = ไม่มีบูธพร้อม"; label 3: "502 = บูธปิดกลางคัน"; label 4: "อ่านรหัสให้ออก".
+=== T33 nt=False 33-tls-termination.png
+CAP: TLS termination: spec.tls ชี้ Secret som-tls (kubernetes.io/tls จากบท 011) controller ถอดรหัสที่ประตู แล้วส่ง HTTP ธรรมดาเข้าเคาน์เตอร์ พร้อม X-Forwarded-Proto: https
+SCENE: The glass security door with a stamped seal plate; the receptionist robot takes a sealed envelope from the zone key box; behind the door plain open hallways to the counters.
+TEXT: label 1: "spec.tls"; label 2: "secretName: som-tls"; label 3: "kubernetes.io/tls"; label 4: "ถอดรหัสที่ประตู"; label 5: "ข้างในเป็น HTTP".
+=== T34 nt=True 34-sni-cert-choice.png
+CAP: SNI: ลูกค้าบอกชื่อก่อนเปิดประตู controller เลือกใบรับรองตามชื่อ — ชื่อที่ไม่มีใน spec.tls ได้ใบสำรอง TRAEFIK DEFAULT CERT
+SCENE: A customer speaks into an intercom at the glass door; the door shows a matching seal plate; another customer with an unknown name gets a plain grey seal plate. Nong Som listens.
+TEXT: label 1: "SNI: shop.localhost"; label 2: "ตราของ shop.localhost"; label 3: "ชื่อไม่ตรง → TRAEFIK DEFAULT CERT"; label 4: "เลือกใบรับรองจากชื่อ".
+=== T35 nt=True 35-san-multi-name.png
+CAP: ใบรับรองใบเดียวใส่ได้หลายชื่อใน subjectAltName (shop.localhost, admin.localhost, localhost) — เรียกด้วย 127.0.0.1 จะได้ curl: (60) เพราะไม่อยู่ในใบ
+SCENE: One large certificate seal plate listing three names in rows; a customer holding a number-only ticket is stopped. Nong Som polishes the plate.
+TEXT: label 1: "DNS:shop.localhost"; label 2: "DNS:admin.localhost"; label 3: "DNS:localhost"; label 4: "ใบเดียวหลายชื่อ"; label 5: "127.0.0.1 ไม่อยู่ในใบ".
+=== T36 nt=True 36-redirect-301.png
+CAP: ลูกค้าที่เข้าประตูไม้ (HTTP) ถูกส่งต่อด้วย 301 ไปประตูกระจก (HTTPS) — Location ต้องเป็นพอร์ตที่ลูกค้าเห็นจริง
+SCENE: A customer at the plain wooden door; an arrow stand turns them toward the glass security door. Nong Som holds the arrow stand.
+TEXT: label 1: "http://shop.localhost:30080"; label 2: "301 Moved Permanently"; label 3: "Location: https://shop.localhost:30081/"; label 4: "พาไปประตูกระจกเสมอ".
+=== T37 nt=True 37-redirect-port-gotcha.png
+CAP: ข้อควรระวังบน kind: entrypoint websecure ฟังที่ :8443 ภายใน แต่ลูกค้าเห็น NodePort 30081 จึงต้องกำหนด port: "30081" ใน Middleware redirectScheme
+SCENE: Two door numbers: a small inner door number plate inside the hall and the outer gangway number on the dock; Nong Som crosses out the inner one on a redirect card and writes the outer one.
+TEXT: label 1: "websecure :8443 (ภายใน)"; label 2: "NodePort 30081 (ลูกค้าเห็น)"; label 3: "port: "30081""; label 4: "บอกพอร์ตที่ลูกค้าเห็น".
+=== T38 nt=False 38-standard-vs-specific.png
+CAP: แยกให้ชัด: rules/host/path/tls/IngressClass เป็นมาตรฐาน ใช้ได้ทุก controller ส่วน annotation traefik.ingress.kubernetes.io/router.middlewares และ Middleware (traefik.io) เป็นของ Traefik เท่านั้น
+SCENE: Two shelves: a big shelf of standard sign parts and a smaller shelf with special checkpoint gadgets painted in the receptionist's uniform color. Nong Som sorts parts.
+TEXT: label 1: "มาตรฐาน networking.k8s.io/v1"; label 2: "เฉพาะ Traefik"; label 3: "router.middlewares"; label 4: "Middleware (traefik.io)"; label 5: "ย้าย controller ต้องแปลส่วนนี้".
+=== T39 nt=False 39-middleware-chain.png
+CAP: Middleware ของ Traefik เป็นด่านเรียงตามลำดับใน annotation: redirectScheme, basicAuth, stripPrefix, rateLimit ฯลฯ
+SCENE: A hallway with four small checkpoints in a row: an arrow stand, a turnstile, a ticket trimmer and a slow gate with a timer; a customer passes them in order.
+TEXT: label 1: "redirectScheme"; label 2: "basicAuth"; label 3: "stripPrefix"; label 4: "rateLimit"; label 5: "ด่านตรวจเรียงตามลำดับ".
+=== T40 nt=True 40-basic-auth-secret.png
+CAP: basicAuth อ่าน Secret type kubernetes.io/basic-auth (ต่อยอดบท 011) ไม่มีบัตร → 401 + WWW-Authenticate; บัตรถูก → 200
+SCENE: A turnstile at the back-office hallway reads a staff card taken from a sealed envelope from the key box; one customer without a card is stopped. Nong Som shows her card.
+TEXT: label 1: "type: kubernetes.io/basic-auth"; label 2: "401 Unauthorized"; label 3: "username: som"; label 4: "password: ●●●●"; label 5: "ต่อยอดซองจากบท 11".
+=== T41 nt=True 41-strip-prefix.png
+CAP: stripPrefix ตัด /admin ออกก่อนส่งให้แอปหลังร้าน: /admin/orders → /orders และส่ง X-Forwarded-Prefix: /admin บอกต้นทาง
+SCENE: A ticket trimmer machine cuts the first part off a long ticket; the shorter ticket goes into the back-office counter. Nong Som feeds the machine.
+TEXT: label 1: "/admin/orders"; label 2: "→ /orders"; label 3: "X-Forwarded-Prefix: /admin"; label 4: "ตัดหัวตั๋วก่อนส่ง".
+=== T42 nt=True 42-kind-port-map.png
+CAP: เส้นทางจริงใน LAB: เครื่องนักศึกษา localhost:30080/30081/30082 → container k8s-lab → lab-control-plane → Service traefik → Pod traefik (:8000/:8443/:8080) — ไม่มีพอร์ต 80/443
+SCENE: A long dock path: a laptop at home, a cargo container bridge, the control tower ship, then the gate building with three doors (wooden, glass, monitoring). Nong Som walks along it.
+TEXT: label 1: "localhost:30080 → web :8000"; label 2: "localhost:30081 → websecure :8443"; label 3: "localhost:30082 → dashboard :8080"; label 4: "ไม่มีพอร์ต 80/443"; label 5: "kind map ไว้แค่ 3 พอร์ต".
+=== T43 nt=True 43-port-conflict.png
+CAP: NodePort ชนกัน: ถ้า Service ร้านเดิมยังถือ 30080 อยู่ การสร้าง Service traefik จะ error provided port is already allocated ต้องคืนพอร์ตก่อน
+SCENE: Two counters reaching for the same gangway door handle; a red error card hangs on the door. Nong Som separates them.
+TEXT: label 1: "provided port is already allocated"; label 2: "som-web (NodePort เดิม)"; label 3: "Service traefik"; label 4: "คืนพอร์ตก่อน".
+=== T44 nt=True 44-install-order.png
+CAP: ลำดับติดตั้ง: CRD ของ Traefik ก่อน → RBAC + Deployment + Service → IngressClass; ถ้าลืม CRD log จะมี Failed to watch และ Middleware ใช้ไม่ได้
+SCENE: Three numbered crates delivered in order by a crane to the gate; one crate missing leaves an error note on the robot's screen. Nong Som checks the delivery list.
+TEXT: label 1: "1) CRD"; label 2: "2) RBAC + Deployment + Service"; label 3: "3) IngressClass"; label 4: "ลืม CRD → Failed to watch".
+=== T45 nt=True 45-debug-toolkit.png
+CAP: เครื่องมือ debug: kubectl describe ingress (ดู backend/endpoint, Events มักเป็น <none>), log ของ controller (ERR), access log ว่า router ไหนตอบรหัสอะไร, dashboard
+SCENE: A toolbox open on the reception desk: a magnifier on the signboard, the guest book, the robot's log tape and the glass monitoring board. Nong Som works through them.
+TEXT: label 1: "kubectl describe ingress"; label 2: "Events: <none>"; label 3: "kubectl logs -n traefik"; label 4: "access log"; label 5: "dashboard"; label 6: "ไล่ตรวจทีละชั้น".
+=== T46 nt=True 46-zero-downtime.png
+CAP: Ingress ส่งเฉพาะ Pod ที่ Ready (ตาม EndpointSlice) — readinessProbe + preStop sleep 5 + maxUnavailable: 0 ทำให้เปลี่ยนรุ่นผ่าน Ingress ได้ err=0
+SCENE: The manager robot swaps booths one by one behind a counter; green lamps above booths; the receptionist robot only sends customers to green booths; a closing booth keeps serving for a moment.
+TEXT: label 1: "readinessProbe"; label 2: "preStop sleep 5"; label 3: "maxUnavailable: 0"; label 4: "err=0"; label 5: "เปลี่ยนรุ่นโดยลูกค้าไม่สะดุด".
+=== T47 nt=True 47-without-prestop.png
+CAP: ถ้าไม่มี readiness/preStop ลูกค้าบางคนถูกพาไปบูธที่กำลังปิด ได้ 502 Bad Gateway ระหว่าง rollout (pre-check เจอ 3–6 ครั้งจาก 300)
+SCENE: A booth slams its shutter while a customer is still at the window; the receptionist robot looks surprised. Nong Som raises a red flag.
+TEXT: label 1: "ไม่มี readiness / preStop"; label 2: "502 Bad Gateway"; label 3: "ลูกค้าบางคนเจอประตูปิด".
+=== T48 nt=False 48-canary-weight.png
+CAP: canary: ปล่อยรุ่นใหม่ให้ลูกค้าส่วนน้อยก่อน (เช่น 90/10) — Ingress มาตรฐานไม่มี weight ต้องใช้ความสามารถเฉพาะ controller หรือ Gateway API
+SCENE: A turnstile splitting a queue of customers into a wide lane to the old booth and a narrow lane to a new booth. Nong Som adjusts a dial.
+TEXT: label 1: "90%"; label 2: "10%"; label 3: "รุ่นเดิม"; label 4: "รุ่นใหม่"; label 5: "ปล่อยรุ่นใหม่ทีละน้อย"; label 6: "Ingress มาตรฐานไม่มี weight".
+=== T49 nt=False 49-ingress-limits.png
+CAP: ข้อจำกัดของ Ingress: เน้น HTTP/HTTPS, ฟีเจอร์เสริมกระจายอยู่ใน annotation ของแต่ละ controller, ทุกทีมแก้ป้ายเดียวกัน ย้าย controller ยาก
+SCENE: The single old signboard crowded with sticky notes in different colors; several teams queue to edit it. Nong Som sighs.
+TEXT: label 1: "เน้น HTTP/HTTPS"; label 2: "ฟีเจอร์เสริมอยู่ใน annotation"; label 3: "ทุกทีมแก้ป้ายเดียวกัน"; label 4: "ย้าย controller ยาก".
+=== T50 nt=False 50-gateway-api-roles.png
+CAP: Gateway API แยกบทบาท: GatewayClass (บริษัทผู้ให้บริการ), Gateway (อาคาร/ประตูขึ้นเรือ ที่ผู้ดูแลคลัสเตอร์คุม), HTTPRoute (ป้ายเส้นทางที่ทีมร้านแขวนเอง)
+SCENE: The brand-new passenger terminal building next to the old gate: an operator company plaque, the terminal with boarding gates, and route boards hung by shop teams. Nong Som tours it.
+TEXT: label 1: "GatewayClass"; label 2: "Gateway"; label 3: "HTTPRoute"; label 4: "ผู้ดูแลคลัสเตอร์"; label 5: "ทีมร้าน"; label 6: "อาคารผู้โดยสารรุ่นใหม่".
+=== T51 nt=False 51-comparison-table.png
+CAP: เปรียบเทียบ NodePort / LoadBalancer / Ingress / Gateway API: ชั้นที่ทำงาน, จำนวนประตูภายนอก, เลือกตามชื่อ/path ได้ไหม, TLS, ความสามารถขั้นสูง
+SCENE: A comparison board with exactly four rows, each row with a small icon (gangway door, paid lighthouse, front gate, passenger terminal) and a short row of color dots; Nong Som points at the third row.
+TEXT: label 1: "NodePort"; label 2: "LoadBalancer"; label 3: "Ingress"; label 4: "Gateway API"; label 5: "เลือกให้เหมาะกับงาน".
+=== T52 nt=False 52-best-practices.png
+CAP: แนวปฏิบัติ: pin เวอร์ชัน controller, Service แอปเป็น ClusterIP, เปิด TLS + redirect, มี readiness + preStop, ไม่ commit tls.key, จำกัดการเข้าถึงหน้าแอดมิน
+SCENE: A checklist poster on the gate wall with five ticked rows; Nong Som salutes.
+TEXT: label 1: "pin เวอร์ชัน controller"; label 2: "Service เป็น ClusterIP"; label 3: "TLS + redirect"; label 4: "readiness + preStop"; label 5: "ไม่ commit tls.key"; label 6: "ข้อปฏิบัติที่ดี".
+=== T53 nt=False 53-chapter-summary.png
+CAP: สรุปบท: ป้าย (Ingress) + พนักงาน (controller) + ยูนิฟอร์ม (IngressClass) + ประตูกระจก (TLS) ร้านมีหน้าร้านเดียวด้วยชื่อ — บทต่อไป HPA, Helm, Gateway API
+SCENE: Nong Som stands at the busy front gate at sunset; customers flow in through the glass door; three signposts on the horizon toward the next chapters.
+TEXT: label 1: "Ingress พาลูกค้าตามชื่อ"; label 2: "TLS ที่ประตูเดียว"; label 3: "ต่อไป: HPA · Helm · Gateway API".
+=== L01 nt=True 01-lab0-prepare.png
+CAP: LAB 0: ตรวจ 3 Node Ready, ดูว่าใครถือ NodePort 30080–30082 (ร้านบท 011) แล้วลบ Service som-web/som-https ชั่วคราว, โหลด postgres + build som-shop-web:1.5/1.6 ไว้ใช้ LAB 10
+SCENE: Nong Som checks a list at the dock: three ships ready, two old gangway doors being unscrewed, and crates of images lifted onto the ships by a crane.
+TEXT: label 1: "LAB 0"; label 2: "kubectl get svc -A | grep 3008"; label 3: "คืน NodePort ของร้านเดิม"; label 4: "postgres + som-shop-web 1.5 / 1.6".
+=== L02 nt=False 02-lab1-open.png
+CAP: LAB 1 เปิด: ติดตั้งพนักงานต้อนรับ — CRD (v3.7.13) → 00-traefik.yaml (RBAC, Deployment, Service NodePort, IngressClass default)
+SCENE: A new receptionist robot unpacked from a crate at the front gate; three numbered crates line up. Nong Som reads the manual.
+TEXT: label 1: "LAB 1"; label 2: "ติดตั้งพนักงานต้อนรับ"; label 3: "traefik:v3.7.13"; label 4: "CRD → Deployment → IngressClass".
+=== L03 nt=True 03-lab1-result.png
+CAP: ผล LAB 1: traefik Running (ดึง image จาก Docker Hub ได้ตรง ~7 วิ), IngressClass traefik (default), curl localhost:30080 → 404 page not found เพราะยังไม่มีป้าย, dashboard ที่ 30082
+SCENE: The receptionist robot stands at the gate with an empty signboard; a customer gets an empty wrong-door; the glass monitoring board glows behind. Nong Som nods.
+TEXT: label 1: "traefik (default)"; label 2: "404 page not found"; label 3: "ยังไม่มีป้าย = 404"; label 4: "dashboard".
+=== L04 nt=True 04-lab1-port-conflict.png
+CAP: LAB 1 ลองผิด: ถ้าข้าม LAB 0 แล้ว Service ร้านเดิมยังถือ 30080 → The Service "traefik" is invalid: ... provided port is already allocated
+SCENE: Two counters grab the same gangway door; a red card on the door; Nong Som holds the LAB 0 checklist.
+TEXT: label 1: "provided port is already allocated"; label 2: "ลืม LAB 0"; label 3: "คืนพอร์ตแล้ว apply ใหม่".
+=== L05 nt=False 05-lab2-open.png
+CAP: LAB 2 เปิด: Ingress แรก shop.localhost → Service menu (whoami) เปิดทั้ง curl และ browser http://shop.localhost:30080
+SCENE: The receptionist robot hangs the first row on the signboard; one customer with a ticket walks to the menu counter. Nong Som claps.
+TEXT: label 1: "LAB 2"; label 2: "Ingress แรก"; label 3: "shop.localhost → menu"; label 4: "http://shop.localhost:30080".
+=== L06 nt=True 06-lab2-host-header.png
+CAP: ผล LAB 2: curl -H 'Host: shop.localhost' ได้ Name: menu, ไม่ใส่ Host → 404, ADDRESS แสดง localhost; whoami แสดง Host: shop.localhost:30080
+SCENE: Two customers at the gate: one with a named ticket goes in, one with a blank ticket meets the wrong-door; the status plate on the signboard shows a word. Nong Som compares.
+TEXT: label 1: "curl -H 'Host: shop.localhost'"; label 2: "Name: menu"; label 3: "ไม่มี Host → 404"; label 4: "ADDRESS: localhost".
+=== L07 nt=False 07-lab3-open.png
+CAP: LAB 3 เปิด: ชื่อเดียว shop.localhost แยก path / → menu, /api → api, /admin → admin (3 Service)
+SCENE: Three hallway doors under one shop name with three counters; Nong Som paints door plates.
+TEXT: label 1: "LAB 3"; label 2: "/ → menu"; label 3: "/api → api"; label 4: "/admin → admin"; label 5: "หนึ่งชื่อ สามเคาน์เตอร์".
+=== L08 nt=True 08-lab3-result.png
+CAP: ผล LAB 3: /api/stats ไป api และ path ไม่ถูกตัด (GET /api/stats) ส่วน /order ไป menu; backend อ้าง port ได้ทั้ง number: 80 และ name: http
+SCENE: A whoami-style receipt printed by the api counter showing the counter name and the request line; Nong Som reads it.
+TEXT: label 1: "Name: api"; label 2: "GET /api/stats"; label 3: "path ไม่ถูกตัด"; label 4: "/order → menu".
+=== L09 nt=True 09-lab4-open.png
+CAP: LAB 4: เพิ่มกฎ admin.localhost → admin, ชื่ออื่นเช่น other.localhost → 404; Ingress ที่ไม่ใส่ class ถูกเติม ingressClassName: traefik
+SCENE: Two named tickets go to two counters through the same gate; an unknown ticket meets the wrong-door; a gold-star tag stamped on the signboard. Nong Som sorts tickets.
+TEXT: label 1: "LAB 4"; label 2: "admin.localhost → admin"; label 3: "other.localhost → 404"; label 4: "เติม class ให้เอง"; label 5: "แยกตามชื่อร้าน".
+=== L10 nt=False 10-lab5-open.png
+CAP: LAB 5 เปิด: Ingress paths.localhost มี Prefix /api, Prefix /docs/, Exact /menu, ImplementationSpecific /impl แล้วยิง path ทดสอบ 15 แบบ
+SCENE: Three door styles in a hall with a queue of test tickets; Nong Som holds a results clipboard.
+TEXT: label 1: "LAB 5"; label 2: "Prefix"; label 3: "Exact"; label 4: "ImplementationSpecific"; label 5: "ทดลองทีละ path".
+=== L11 nt=True 11-lab5-table.png
+CAP: ผล LAB 5 (strictPrefixMatching=true): /apix → 404, /docs → 200, /menu/ → 404, /implx → 404; ถ้าปิด strict /apix ไป api และ /docs กลายเป็น 404
+SCENE: A results board with exactly four rows of tickets with ticks and crosses, and a lever on the side. Nong Som flips the lever.
+TEXT: label 1: "/apix → 404"; label 2: "/docs → 200"; label 3: "/menu/ → 404"; label 4: "/implx → 404"; label 5: "ปิด strict → /apix ผ่าน"; label 6: "ผลจริง".
+=== L12 nt=False 12-lab6-open.png
+CAP: LAB 6 เปิด: ทำพังทีละแบบ — class ผิด, ชื่อ Service ผิด, port ผิด, scale เป็น 0, เพิ่ม defaultBackend
+SCENE: Nong Som with a detective magnifier stands before four broken signboard rows with warning stickers.
+TEXT: label 1: "LAB 6"; label 2: "ลองทำพังทีละแบบ"; label 3: "404"; label 4: "503"; label 5: "ERR".
+=== L13 nt=True 13-lab6-errors.png
+CAP: ผล LAB 6: describe แสดง <error: services "menuu" not found>, log ERR service port not found, class nginx → ADDRESS ว่าง, scale 0 → 503 no available server
+SCENE: Four evidence cards pinned on a board with strings to the signboard; Nong Som connects them.
+TEXT: label 1: "services "menuu" not found"; label 2: "service port not found"; label 3: "class nginx → ADDRESS ว่าง"; label 4: "503 no available server"; label 5: "หลักฐานจาก describe + log".
+=== L14 nt=True 14-lab6-default-backend.png
+CAP: ผล LAB 6 (defaultBackend): ทุกชื่อที่ไม่ตรงกฎ — และกฎที่ Service ไม่มี endpoint — ไหลไปโต๊ะของหาย (admin) ใน Traefik เป็น catch-all ของทั้งคลัสเตอร์ จึงลบทิ้งหลังทดลอง
+SCENE: All unknown tickets flow to the lost-and-found desk; a warning sign on the desk; Nong Som carries the desk away after the test.
+TEXT: label 1: "defaultBackend"; label 2: "ชื่อที่ไม่ตรง → admin"; label 3: "จับทั้งคลัสเตอร์"; label 4: "ทดลองแล้วลบทิ้ง".
+=== L15 nt=False 15-lab7-open.png
+CAP: LAB 7 เปิด: openssl สร้างใบรับรองหลายชื่อ (shop.localhost, admin.localhost, localhost) → Secret som-tls → spec.tls
+SCENE: Nong Som stamps a seal plate for the glass door and slides an envelope into the key box.
+TEXT: label 1: "LAB 7"; label 2: "som-tls"; label 3: "shop.localhost · admin.localhost"; label 4: "ประตูกระจกนิรภัย".
+=== L16 nt=True 16-lab7-results.png
+CAP: ผล LAB 7: ไม่มี -k → curl: (60), --cacert tls.crt ผ่าน, ชื่ออื่นได้ TRAEFIK DEFAULT CERT, browser เตือนใบรับรอง self-signed (ต้องเปิด --entryPoints.websecure.http.tls=true)
+SCENE: Three customers at the glass door: one blocked, one with a matching copy card allowed, one given a grey plate; a browser window shows a warning triangle.
+TEXT: label 1: "curl: (60)"; label 2: "--cacert tls.crt ✔"; label 3: "TRAEFIK DEFAULT CERT"; label 4: "เบราว์เซอร์เตือนใบรับรอง".
+=== L17 nt=False 17-lab8-open.png
+CAP: LAB 8 เปิด: Middleware ของ Traefik (ไม่ใช่มาตรฐาน) redirectScheme, basicAuth (Secret basic-auth จากบท 011), stripPrefix ผูกด้วย annotation router.middlewares
+SCENE: Three checkpoint gadgets unpacked in the hallway; Nong Som installs them in order.
+TEXT: label 1: "LAB 8"; label 2: "redirectScheme"; label 3: "basicAuth"; label 4: "stripPrefix"; label 5: "ด่านเฉพาะ Traefik".
+=== L18 nt=True 18-lab8-results.png
+CAP: ผล LAB 8: http → 301 Location https://shop.localhost:30081/..., /admin ไม่มีบัตร 401, บัตรผิด 401, บัตรถูก 200 และแอปเห็น /orders
+SCENE: A customer journey strip of four panels: arrow stand, stopped turnstile, open turnstile, trimmed ticket.
+TEXT: label 1: "301 → https://shop.localhost:30081/"; label 2: "401 ไม่มีบัตร"; label 3: "200 บัตรถูก"; label 4: "/admin/orders → /orders".
+=== L19 nt=True 19-lab9-open.png
+CAP: LAB 9: วน curl https ผ่าน Ingress ระหว่างเปลี่ยน menu → menu-v2 (readiness + preStop + maxUnavailable: 0) ได้ err=0
+SCENE: The manager robot swaps booths while a steady stream of customers flows through the glass door; a score board above. Nong Som times it.
+TEXT: label 1: "LAB 9"; label 2: "เปลี่ยนรุ่นระหว่างลูกค้าเข้า"; label 3: "menu → menu-v2"; label 4: "err=0".
+=== L20 nt=True 20-lab9-contrast.png
+CAP: LAB 9 เปรียบเทียบ: เอา readiness/preStop ออก → rollout restart สองรอบได้ 502 Bad Gateway บางครั้ง; ใส่กลับ → err=0
+SCENE: Split panel: left a booth shutter slams on a customer with a red score; right a booth closes politely with a green score. Nong Som points to the right.
+TEXT: label 1: "ไม่มี preStop/readiness"; label 2: "502 Bad Gateway"; label 3: "มี preStop/readiness"; label 4: "err=0".
+=== L21 nt=False 21-lab10-open.png
+CAP: LAB 10 เปิด: ร้าน som-shop-v8 (คัดลอกจากบท 011) เข้าทาง https://shop.localhost และหลังร้าน admin.localhost ผ่าน Ingress
+SCENE: The cat-food shop now sits behind the grand front gate with the glass door; a banner over the gate. Nong Som welcomes customers.
+TEXT: label 1: "LAB 10"; label 2: "ร้านน้องส้มมีหน้าร้านเดียวด้วยชื่อโดเมน"; label 3: "som-shop-v8".
+=== L22 nt=True 22-lab10-before-after.png
+CAP: ก่อน/หลัง: บท 011 ใช้ NodePort 30080 + nginx HTTPS 30082; บท 012 ใช้ Ingress เดียว Service som-web เป็น ClusterIP
+SCENE: Split panel: left two separate gangway doors on the shop ship; right one front gate with a glass door and indoor counters. Nong Som stands at the border.
+TEXT: label 1: "ก่อน: NodePort 30080 + 30082"; label 2: "หลัง: https://shop.localhost:30081"; label 3: "Service som-web: ClusterIP"; label 4: "ย้ายประตูมาที่ Ingress".
+=== L23 nt=True 23-lab10-ports-cleanup.png
+CAP: ขั้น A: apply k8s/ ของ v8 (som-web → ClusterIP, ConfigMap ป้ายบท 012) และลบ som-https (nginx TLS ของบท 011) — ข้อมูล db และออเดอร์เดิมยังอยู่
+SCENE: Nong Som unscrews the old nginx glass tube booth while the kitchen booth with its numbered safe stays untouched.
+TEXT: label 1: "som-web → ClusterIP"; label 2: "ลบ som-https"; label 3: "ออเดอร์เดิมยังอยู่".
+=== L24 nt=True 24-lab10-tls-move.png
+CAP: ขั้น B: ทำ som-tls ใบใหม่ให้ชื่อตรง (CN เดิม shop.som.local ใช้กับ shop.localhost ไม่ได้) แล้วย้าย TLS จาก nginx มาที่ spec.tls ของ Ingress
+SCENE: Nong Som exchanges an old seal plate with a different name for a new plate listing two names, and hangs it on the glass door.
+TEXT: label 1: "som-tls ใบใหม่"; label 2: "DNS:shop.localhost"; label 3: "DNS:admin.localhost"; label 4: "ย้าย TLS มาที่ Ingress".
+=== L25 nt=True 25-lab10-admin.png
+CAP: ขั้น C: หลังร้าน som-admin (nginx-unprivileged + ConfigMap หน้า HTML + /stats) ที่ admin.localhost ป้องกันด้วย basicAuth จาก Secret som-admin-auth (รหัสตัวอย่าง)
+SCENE: A back-office booth behind a turnstile; a staff silhouette shows a card; a small board inside shows an order counter icon.
+TEXT: label 1: "admin.localhost"; label 2: "basicAuth"; label 3: "som-admin-auth"; label 4: "หลังร้าน: ดูยอดออเดอร์"; label 5: "401 / 200".
+=== L26 nt=True 26-lab10-redirect-browser.png
+CAP: ขั้น D: browser เปิด http://shop.localhost:30080 → 301 → https://shop.localhost:30081 เตือน self-signed → หน้าร้านแสดง footer บท 012 (ทดสอบด้วย Chromium แล้ว)
+SCENE: A browser window journey in two frames: the wooden door with an arrow, then the glass door opening onto the shop page with a small warning triangle. Nong Som waves from the shop.
+TEXT: label 1: "http://shop.localhost:30080"; label 2: "301"; label 3: "https://shop.localhost:30081"; label 4: "ร้านอาหารแมวน้องส้ม"; label 5: "เตือนใบรับรอง self-signed".
+=== L27 nt=True 27-lab10-rolling.png
+CAP: ขั้น E: hit.sh ยิง https ผ่าน Ingress ระหว่าง rollout restart และ set image 1.5 → 1.6 ได้ err=0 ทั้งสองรอบ, rollout history มี change-cause
+SCENE: The manager robot swaps booths from an old color to a new color while customers stream through the glass door; a logbook open. Nong Som watches the score board.
+TEXT: label 1: "1.5 → 1.6"; label 2: "err=0"; label 3: "ลูกค้าไม่สะดุด"; label 4: "rollout history".
+=== L28 nt=True 28-lab10-checklist.png
+CAP: ตรวจรับร้าน: http → https, shop.localhost ขายได้, admin.localhost ต้องมีบัตร, NodePort เดิมของร้านไม่มีแล้ว, rolling update err=0
+SCENE: A checklist board at the gate with five ticked rows; Nong Som signs it.
+TEXT: label 1: "http → https"; label 2: "shop.localhost ขายได้"; label 3: "admin.localhost ต้องมีบัตร"; label 4: "ไม่มี NodePort ของร้านแล้ว"; label 5: "rolling update err=0"; label 6: "ตรวจรับร้าน".
+=== L29 nt=False 29-lab10-wrap-up.png
+CAP: ปิดบท: ร้านคนเยอะขึ้นต้องเพิ่มบูธอัตโนมัติ (HPA), ติดตั้ง controller/ร้านเป็นแพ็กเกจ (Helm), และอาคารผู้โดยสารรุ่นใหม่ (Gateway API)
+SCENE: Nong Som stands at the gate looking at a long queue of customers; three signposts on the horizon point to the next chapters.
+TEXT: label 1: "ร้านคนแน่น → HPA"; label 2: "ติดตั้งเป็นแพ็กเกจ → Helm"; label 3: "อาคารใหม่ → Gateway API".
+=== L30 nt=True 30-labx-gateway-open.png
+CAP: LAB เสริม: ติดตั้ง Gateway API CRD v1.6.2 + เปิด --providers.kubernetesgateway แล้วสร้าง GatewayClass/Gateway/HTTPRoute แบ่งน้ำหนัก 90/10
+SCENE: Nong Som opens the door of the new passenger terminal next to the old gate; a route board with two lanes of different widths.
+TEXT: label 1: "LAB เสริม"; label 2: "Gateway API"; label 3: "HTTPRoute weight 90 / 10"; label 4: "ลองอาคารผู้โดยสารใหม่".
+=== L31 nt=True 31-labx-gateway-result.png
+CAP: ผล LAB เสริม: GatewayClass ACCEPTED True, Gateway PROGRAMMED True, ยิง 40 ครั้งได้ร้าน 36 / หลังร้าน 4 (ใกล้ 90/10)
+SCENE: A counting board next to the two lanes with tally marks; Nong Som checks the numbers.
+TEXT: label 1: "ACCEPTED True"; label 2: "PROGRAMMED True"; label 3: "36 : 4"; label 4: "แบ่งลูกค้าตามน้ำหนัก".

@@ -1,0 +1,28 @@
+# LAB 5: pathType 3 แบบ บนชื่อ paths.localhost (ป้ายแยก ไม่ยุ่งกับ shop/admin)
+#   Prefix                 ตรงทีละ "ท่อน" ที่คั่นด้วย /  (/api ตรง /api /api/ /api/x แต่ไม่ตรง /apix) ตัวพิมพ์เล็ก-ใหญ่ต่างกัน
+#   Exact                  ต้องตรงทั้งเส้น (/menu เท่านั้น ไม่รับ /menu/)
+#   ImplementationSpecific แล้วแต่ controller (Traefik ทำเหมือน Prefix)
+# ผลตามมาตรฐานต้องใช้ flag --providers.kubernetesingress.strictPrefixMatching=true ของ Traefik (00-traefik.yaml ใส่แล้ว)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: paths
+  namespace: ingress-demo
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: paths.localhost
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend: {service: {name: api, port: {number: 80}}}
+          - path: /docs/                 # มี / ท้าย — Prefix ไม่สน / ท้าย (/docs ก็ตรง)
+            pathType: Prefix
+            backend: {service: {name: admin, port: {number: 80}}}
+          - path: /menu
+            pathType: Exact
+            backend: {service: {name: menu, port: {number: 80}}}
+          - path: /impl
+            pathType: ImplementationSpecific
+            backend: {service: {name: admin, port: {number: 80}}}

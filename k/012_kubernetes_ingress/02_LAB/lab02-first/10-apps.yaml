@@ -1,0 +1,111 @@
+# LAB 2: ห้องทดลองของบท (namespace ingress-demo) — 3 แอปเล็ก ๆ menu / api / admin
+# ทุกตัวคือ traefik/whoami (3 MB) ตอบกลับ "Name: <ชื่อ>" + บรรทัด "GET /path" + header ที่ได้รับ → เห็นชัดว่าคำขอไปถึงใคร
+# Service เป็น ClusterIP ทั้งหมด (ไม่มี NodePort) — คนนอกเข้าได้ทางประตู Traefik เท่านั้น
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-demo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: menu
+  namespace: ingress-demo
+spec:
+  replicas: 2
+  strategy:
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 0}   # LAB 9: ห้ามบูธที่พร้อมลดลงระหว่าง rolling update
+  selector:
+    matchLabels: {app: menu}
+  template:
+    metadata:
+      labels: {app: menu}
+    spec:
+      containers:
+        - name: whoami
+          image: traefik/whoami:v1.11.0
+          args: ["--port", "8080", "--name", "menu"]
+          ports: [{name: http, containerPort: 8080}]
+          readinessProbe:               # Ready เท่านั้นที่อยู่ใน EndpointSlice → Traefik ส่งคำขอให้
+            httpGet: {path: /health, port: http}
+            periodSeconds: 2
+          lifecycle:
+            preStop:                    # ถูกสั่งปิดแล้วยังตอบต่อ 5 วิ ระหว่างที่ Traefik ลบออกจากรายชื่อ
+              sleep: {seconds: 5}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: menu
+  namespace: ingress-demo
+spec:
+  selector: {app: menu}
+  ports: [{name: http, port: 80, targetPort: http}]   # Ingress อ้าง port ของ Service (80 หรือชื่อ http) ไม่ใช่ containerPort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: ingress-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: api}
+  template:
+    metadata:
+      labels: {app: api}
+    spec:
+      containers:
+        - name: whoami
+          image: traefik/whoami:v1.11.0
+          args: ["--port", "8080", "--name", "api"]
+          ports: [{name: http, containerPort: 8080}]
+          readinessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 2
+          lifecycle:
+            preStop:
+              sleep: {seconds: 5}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: ingress-demo
+spec:
+  selector: {app: api}
+  ports: [{name: http, port: 80, targetPort: http}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+  namespace: ingress-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: admin}
+  template:
+    metadata:
+      labels: {app: admin}
+    spec:
+      containers:
+        - name: whoami
+          image: traefik/whoami:v1.11.0
+          args: ["--port", "8080", "--name", "admin"]
+          ports: [{name: http, containerPort: 8080}]
+          readinessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 2
+          lifecycle:
+            preStop:
+              sleep: {seconds: 5}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin
+  namespace: ingress-demo
+spec:
+  selector: {app: admin}
+  ports: [{name: http, port: 80, targetPort: http}]

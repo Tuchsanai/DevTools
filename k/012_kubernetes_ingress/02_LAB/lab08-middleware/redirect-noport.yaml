@@ -1,0 +1,11 @@
+# LAB 8 ลองผิด: Middleware redirect-https ตัวเดิมแต่ "ไม่ใส่ port" (apply ทับ redirect.yaml ชั่วคราว)
+# ดูว่า Location ชี้ไปพอร์ตไหน แล้วคืนค่าด้วย kubectl apply -f redirect.yaml
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  namespace: ingress-demo
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true

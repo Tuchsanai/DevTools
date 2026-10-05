@@ -1,0 +1,41 @@
+# LAB 8 ขั้น 1: ป้ายลูกศร "ไปประตูกระจก" — Middleware redirectScheme (เฉพาะ Traefik, CRD traefik.io/v1alpha1)
+# http://shop.localhost:30080/... → 301 → https://shop.localhost:30081/... (เก็บ path + query เดิม)
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  namespace: ingress-demo
+spec:
+  redirectScheme:
+    scheme: https
+    port: "30081"        # ต้องบอกพอร์ต HTTPS ของ NodePort เอง (เป็นข้อความ มี "...") — ไม่ใส่ดู redirect-noport.yaml
+    permanent: true      # 301 (false = 302)
+---
+# ป้าย shop เดิม (LAB 7) + annotation เรียกใช้ Middleware
+# ชื่อที่ใช้ใน annotation = <namespace>-<ชื่อ Middleware>@kubernetescrd
+# บน https คำขอผ่านด่านนี้แล้วไม่ถูก redirect ซ้ำ (scheme เป็น https อยู่แล้ว)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shop
+  namespace: ingress-demo
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: ingress-demo-redirect-https@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts: [shop.localhost]
+      secretName: som-tls
+  rules:
+    - host: shop.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: {service: {name: menu, port: {number: 80}}}
+          - path: /api
+            pathType: Prefix
+            backend: {service: {name: api, port: {name: http}}}
+          - path: /admin
+            pathType: Prefix
+            backend: {service: {name: admin, port: {number: 80}}}

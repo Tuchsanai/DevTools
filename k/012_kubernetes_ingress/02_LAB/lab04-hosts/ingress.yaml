@@ -1,0 +1,18 @@
+# LAB 4: หลายชื่อ ประตูเดียว (host-based / name-based virtual hosting)
+# ป้ายแผ่นใหม่ชื่อ backoffice: admin.localhost ทุก path → admin
+# ตั้งใจ "ไม่ใส่ ingressClassName" — IngressClass traefik เป็น default จึงถูกเติมให้ตอนสร้าง
+# ชื่ออื่นที่ไม่มีป้ายไหนรับ (other.localhost หรือไม่ส่ง Host) → 404 page not found ของ Traefik
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backoffice
+  namespace: ingress-demo
+spec:
+  rules:
+    - host: admin.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: admin, port: {number: 80}}

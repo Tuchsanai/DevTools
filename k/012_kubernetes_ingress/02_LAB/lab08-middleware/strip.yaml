@@ -1,0 +1,55 @@
+# LAB 8 ขั้น 3: เครื่องตัดตั๋ว — Middleware stripPrefix ตัด /admin ออกก่อนส่งให้แอป
+#   https://shop.localhost:30081/admin/orders → แอป admin เห็น "GET /orders" + header X-Forwarded-Prefix: /admin
+# แยก /admin ออกจากป้าย shop ไปไว้ป้าย shop-admin ที่มี 3 ด่าน: redirect → ตรวจบัตร → ตัด /admin
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-admin
+  namespace: ingress-demo
+spec:
+  stripPrefix:
+    prefixes: [/admin]
+---
+# ป้าย shop (เหลือ / กับ /api) — apply ทับ redirect.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shop
+  namespace: ingress-demo
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: ingress-demo-redirect-https@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts: [shop.localhost]
+      secretName: som-tls
+  rules:
+    - host: shop.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: {service: {name: menu, port: {number: 80}}}
+          - path: /api
+            pathType: Prefix
+            backend: {service: {name: api, port: {name: http}}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shop-admin
+  namespace: ingress-demo
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: ingress-demo-redirect-https@kubernetescrd,ingress-demo-admin-auth@kubernetescrd,ingress-demo-strip-admin@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts: [shop.localhost]
+      secretName: som-tls
+  rules:
+    - host: shop.localhost
+      http:
+        paths:
+          - path: /admin
+            pathType: Prefix
+            backend: {service: {name: admin, port: {number: 80}}}

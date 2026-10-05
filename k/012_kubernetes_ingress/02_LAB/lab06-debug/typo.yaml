@@ -1,0 +1,18 @@
+# LAB 6 ลองผิด 2: ชื่อ Service สะกดผิด (menuu) และ port ผิด (8080 = containerPort ไม่ใช่ port ของ Service)
+# kubectl apply ผ่านเสมอ (API server ไม่ตรวจว่ามี Service จริงไหม) → ต้องดู describe ing และ log ของ Traefik
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: typo
+  namespace: ingress-demo
+spec:
+  rules:
+    - host: typo.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: {service: {name: menuu, port: {number: 80}}}    # ไม่มี Service ชื่อนี้
+          - path: /port
+            pathType: Prefix
+            backend: {service: {name: menu, port: {number: 8080}}}   # Service menu มีแค่ port 80

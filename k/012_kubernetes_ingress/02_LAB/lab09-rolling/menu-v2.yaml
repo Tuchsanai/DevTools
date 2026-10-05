@@ -1,0 +1,28 @@
+# LAB 9 ขั้น 2: menu รุ่นใหม่ (ชื่อตอบกลับ menu-v2) — ทุกอย่างเหมือน lab02-first/10-apps.yaml
+#   readinessProbe + preStop sleep 5 + maxUnavailable 0 → rolling update ผ่าน Ingress ไม่มี error
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: menu
+  namespace: ingress-demo
+spec:
+  replicas: 2
+  strategy:
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 0}
+  selector:
+    matchLabels: {app: menu}
+  template:
+    metadata:
+      labels: {app: menu}
+    spec:
+      containers:
+        - name: whoami
+          image: traefik/whoami:v1.11.0
+          args: ["--port", "8080", "--name", "menu-v2"]    # ต่างจากเดิมตรงนี้จุดเดียว
+          ports: [{name: http, containerPort: 8080}]
+          readinessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 2
+          lifecycle:
+            preStop:
+              sleep: {seconds: 5}

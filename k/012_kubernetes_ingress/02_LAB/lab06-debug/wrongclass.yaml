@@ -1,0 +1,16 @@
+# LAB 6 ลองผิด 1: ป้ายติดตราผิดสี — ingressClassName: nginx แต่ในคลัสเตอร์ไม่มี controller ของ class นี้
+# ผล: kubectl get ing เห็น CLASS nginx แต่ ADDRESS ว่าง, Traefik ไม่สนป้ายนี้ → wrong.localhost ได้ 404
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wrongclass
+  namespace: ingress-demo
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: wrong.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: {service: {name: menu, port: {number: 80}}}

@@ -1,0 +1,24 @@
+# LAB 9 ลองผิด: menu แบบ "เปราะ" — ไม่มี readinessProbe, ไม่มี preStop, maxUnavailable 1
+# Pod ใหม่ถูกนับว่า Ready ทันทีที่ process เริ่ม / Pod เก่าปิดทันทีทั้งที่ Traefik อาจยังส่งคำขอมา
+# → ระหว่าง rollout restart อาจเห็น 502 Bad Gateway (จำนวนขึ้นกับความเร็วเครื่อง บางรอบอาจเป็น 0)
+# คืนค่าด้วย: kubectl apply -f ../lab02-first/10-apps.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: menu
+  namespace: ingress-demo
+spec:
+  replicas: 2
+  strategy:
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 1}
+  selector:
+    matchLabels: {app: menu}
+  template:
+    metadata:
+      labels: {app: menu}
+    spec:
+      containers:
+        - name: whoami
+          image: traefik/whoami:v1.11.0
+          args: ["--port", "8080", "--name", "menu-fragile"]
+          ports: [{name: http, containerPort: 8080}]

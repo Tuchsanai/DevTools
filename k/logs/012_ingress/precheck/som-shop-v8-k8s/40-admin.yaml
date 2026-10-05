@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: som-admin-conf
+  namespace: som-shop
+data:
+  default.conf: |
+    server {
+      listen 8080;
+      root /usr/share/nginx/html;
+      location = /stats {
+        proxy_pass http://som-web.som-shop.svc.cluster.local/api/stats;
+      }
+    }
+  index.html: |
+    <!doctype html><meta charset="utf-8"><title>หลังร้านน้องส้ม</title>
+    <h1>หลังร้านน้องส้ม (admin)</h1><p><a href="/stats">ดูยอดออเดอร์</a></p>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: som-admin
+  namespace: som-shop
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: som-admin}
+  template:
+    metadata:
+      labels: {app: som-admin}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: nginx
+          image: nginxinc/nginx-unprivileged:1.27-alpine
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+          ports: [{name: http, containerPort: 8080}]
+          readinessProbe:
+            httpGet: {path: /, port: http}
+          volumeMounts:
+            - {name: conf, mountPath: /etc/nginx/conf.d/default.conf, subPath: default.conf, readOnly: true}
+            - {name: conf, mountPath: /usr/share/nginx/html/index.html, subPath: index.html, readOnly: true}
+          resources:
+            requests: {cpu: 10m, memory: 16Mi}
+            limits: {cpu: 100m, memory: 64Mi}
+      volumes:
+        - name: conf
+          configMap: {name: som-admin-conf}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: som-admin
+  namespace: som-shop
+spec:
+  selector: {app: som-admin}
+  ports: [{name: http, port: 80, targetPort: http}]

@@ -1,0 +1,35 @@
+# LAB 8 ขั้น 2: ไม้กั้นตรวจบัตรหน้าหลังร้าน — Middleware basicAuth อ่านบัตรจาก Secret admin-auth
+# สร้าง Secret ก่อน (type kubernetes.io/basic-auth ต้องมี key username + password, ค่าเป็นข้อความธรรมดาได้):
+#   kubectl -n ingress-demo create secret generic admin-auth --type=kubernetes.io/basic-auth \
+#     --from-literal=username=som --from-literal=password=<รหัสตัวอย่าง>
+# ไม่มีบัตร/บัตรผิด → 401 + WWW-Authenticate: Basic realm="traefik"   บัตรถูก → 200
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: admin-auth
+  namespace: ingress-demo
+spec:
+  basicAuth:
+    secret: admin-auth
+    removeHeader: true   # ตัด header Authorization ออกก่อนส่งให้แอป (แอปไม่ต้องเห็นรหัส)
+---
+# ป้าย backoffice (admin.localhost) = ด่าน redirect → ด่านตรวจบัตร (ลำดับใน annotation = ลำดับด่าน)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backoffice
+  namespace: ingress-demo
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: ingress-demo-redirect-https@kubernetescrd,ingress-demo-admin-auth@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts: [admin.localhost]
+      secretName: som-tls
+  rules:
+    - host: admin.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: {service: {name: admin, port: {number: 80}}}
