@@ -1,0 +1,11 @@
+{"replace": {
+ "T19": [["\"~47 วินาที\"", "\"~1 นาที\""]],
+ "L05": [["\"~47 วินาที\"", "\"~1 นาที\""]]
+},
+"caption": {
+ "T19": "แก้ Secret → ไฟล์ใน volume เปลี่ยนเอง (วัดได้ราว 1 นาที 71–81 วินาที) แต่ env ไม่เปลี่ยน; immutable: true ใช้ได้เหมือน ConfigMap (data: Forbidden: field is immutable when `immutable` is set)",
+ "L05": "LAB3 (ต่อ): patch Secret demo → ไฟล์ /etc/secret/password เปลี่ยนในราว 1 นาที (71–81 วินาที) ส่วน env DB_PASSWORD ยังเป็นค่าเดิม; immutable frozen แก้ไม่ได้",
+ "L14": "ขั้น A: เริ่มจากสภาพท้ายบท 010 (k8s-010/) แล้วสั่ง 3 ออเดอร์ → orders=3; intern ใช้ get deploy/sts -o yaml ยังเห็น meow1234",
+ "T14": "YAML: data ต้องใส่ base64 เอง; stringData ใส่ข้อความตรง ๆ แล้วระบบแปลงให้ — ถ้า key ซ้ำ stringData ชนะ (ทดสอบแล้ว) และระบบเก็บเป็น data แต่ถ้าสร้างด้วย kubectl apply ข้อความ stringData จะติดอยู่ใน annotation last-applied ด้วย",
+ "L13": "LAB9 ภาพรวม: Secret som-db-secret (POSTGRES_PASSWORD, DATABASE_URL) ให้ som-db-0 และ web ผ่าน secretKeyRef; ConfigMap ป้ายร้านจากบท 010; Secret som-tls ให้ nginx HTTPS NodePort 30082; intern อ่านได้แค่ Pod/ConfigMap/Deployment/StatefulSet อ่าน Secret ไม่ได้"
+}}
