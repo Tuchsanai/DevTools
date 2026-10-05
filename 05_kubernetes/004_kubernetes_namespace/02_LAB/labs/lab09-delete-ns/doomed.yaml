@@ -2,24 +2,24 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: doomed
+  name: doomed                   # โซนที่จะถูกลบทั้งก้อน
 ---
 apiVersion: v1
-kind: ConfigMap
+kind: ConfigMap                  # ของชิ้นที่ 1
 metadata:
   name: menu
   namespace: doomed
 data:
-  today: "ปลาทูน่า"
+  today: "ปลาทูน่า"              # ข้อมูลตัวอย่าง
 ---
 apiVersion: v1
-kind: ServiceAccount
+kind: ServiceAccount             # ของชิ้นที่ 2
 metadata:
   name: cleaner
   namespace: doomed
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: Role                       # ของชิ้นที่ 3
 metadata:
   name: cleaner-role
   namespace: doomed
@@ -29,7 +29,7 @@ rules:
     verbs: ["get", "list"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: RoleBinding                # ของชิ้นที่ 4
 metadata:
   name: cleaner-binding
   namespace: doomed
@@ -43,13 +43,13 @@ roleRef:
   name: cleaner-role
 ---
 apiVersion: v1
-kind: ResourceQuota
+kind: ResourceQuota              # ของชิ้นที่ 5
 metadata:
   name: doomed-quota
   namespace: doomed
 spec:
   hard:
-    pods: "5"
+    pods: "5"                    # Pod ได้ 5 ตัว (ใช้จริง 2)
 ---
 # Pod 2 ตัว: sleep เป็น PID 1 ไม่ตอบ SIGTERM → รอครบ grace 15 วิ
 # โซนจึงค้าง Terminating นานพอให้ลองสร้างของใหม่ระหว่างลบ
@@ -59,7 +59,7 @@ metadata:
   name: crate-1
   namespace: doomed
 spec:
-  terminationGracePeriodSeconds: 15
+  terminationGracePeriodSeconds: 15  # รอ 15 วิ ก่อนถูก kill
   containers:
     - name: app
       image: busybox:1.36
@@ -71,7 +71,7 @@ metadata:
   name: crate-2
   namespace: doomed
 spec:
-  terminationGracePeriodSeconds: 15
+  terminationGracePeriodSeconds: 15  # รอ 15 วิ ก่อนถูก kill
   containers:
     - name: app
       image: busybox:1.36

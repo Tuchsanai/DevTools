@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: restricted-ok
-  namespace: secure
+  namespace: secure              # โซนที่จะถูกตั้ง enforce=restricted
 spec:
   terminationGracePeriodSeconds: 1
   securityContext:               # ระดับ Pod: ใช้กับทุก container
@@ -14,7 +14,7 @@ spec:
       type: RuntimeDefault       # ใช้ตัวกรอง system call มาตรฐานของ container runtime
   containers:
     - name: app
-      image: busybox:1.36
+      image: busybox:1.36        # image เดิม ไม่ต้องแก้ image
       command: ["sleep", "3600"]
       securityContext:           # ระดับ container
         allowPrivilegeEscalation: false   # ห้ามยกระดับสิทธิ์ (เช่น setuid)

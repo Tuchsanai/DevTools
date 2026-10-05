@@ -1,14 +1,14 @@
 # LAB 4: สองโซนของสองทีม
 apiVersion: v1
-kind: Namespace
+kind: Namespace                  # ไฟล์เดียวสร้าง 2 โซน (คั่นด้วย ---)
 metadata:
-  name: team-a
+  name: team-a                   # โซนของทีม a
   labels:
-    team: a
+    team: a                      # label ที่เราตั้งเอง
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: team-b
+  name: team-b                   # โซนของทีม b
   labels:
-    team: b
+    team: b                      # label ที่เราตั้งเอง

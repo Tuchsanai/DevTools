@@ -11,7 +11,7 @@
 
 ใน LAB นี้นักศึกษาจะทำตามน้องส้มที่ทาสีแบ่งโซนบนแผนผังท่าเรือ เริ่มจากสำรวจโซนที่มีอยู่แล้ว สร้างโซนของตัวเอง วางกล่องชื่อเดียวกันในหลายโซน สลับโซนเริ่มต้นของ kubectl แยกของประจำโซนกับของส่วนกลาง ทดลองว่าโซนไม่ได้กั้นเครือข่ายเองแล้วสร้างรั้วด้วย NetworkPolicy ตั้งงบ (ResourceQuota) กฎขนาดกล่อง (LimitRange) บัตรพนักงานเฉพาะโซน (RBAC) ด่านตรวจความปลอดภัย (Pod Security Admission) และลบโซนทั้งก้อน ปิดท้ายด้วยการเปิด **ร้านอาหารแมวน้องส้ม 3 environment (`som-dev`, `som-staging`, `som-prod`) จาก manifest ไฟล์เดียว** ที่หน้าร้านบอกเองว่าอยู่โซนไหน
 
-ผลลัพธ์ทุกบล็อก ```` ```text ```` ในเอกสารนี้มาจาก **การทดลองจริง** บน container ที่สร้างจาก image เดียวกับ `k8s-lab` (`tuchsanai/devtools-kind:2569_1`, kind v0.33.0, Kubernetes v1.37.0) เมื่อ 4 ตุลาคม 2569 ตัดบางส่วนเพื่อให้กระชับ (แทนด้วย `...`) **เวลา, AGE, IP, ชื่อ Pod ที่สุ่ม, เลข port ของ API server และ Node ที่ scheduler เลือก (lab-worker หรือ lab-worker2) ในเครื่องนักศึกษาอาจต่างจากตัวอย่าง** เป็นเรื่องปกติ ให้ยึดผลจากเครื่องตัวเองเสมอ
+ผลลัพธ์ทุกบล็อก ```` ```text ```` ในเอกสารนี้มาจาก **การทดลองจริง** บน container ที่สร้างจาก image เดียวกับ `k8s-lab` (`tuchsanai/devtools-kind:2569_1`, kind v0.33.0, Kubernetes v1.37.0) เมื่อ 4 ตุลาคม 2569 และ **ทดสอบซ้ำทุกคำสั่งตามลำดับเมื่อ 5 ตุลาคม 2569** (kubectl client v1.37.1, Node v1.37.0, kind v0.33.0) ซึ่งข้อความ error, จำนวนนับ และตัวเลขงบตรงกันทุกจุด บล็อกที่รอบหลังได้ผลต่างออกไปปรับเป็นผลของรอบหลังและมีหมายเหตุกำกับไว้ ตัดบางส่วนเพื่อให้กระชับ (แทนด้วย `...`) **เวลา, AGE, IP, ชื่อ Pod ที่สุ่ม, เลข port ของ API server และ Node ที่ scheduler เลือก (lab-worker หรือ lab-worker2) ในเครื่องนักศึกษาอาจต่างจากตัวอย่าง** เป็นเรื่องปกติ ให้ยึดผลจากเครื่องตัวเองเสมอ
 
 ### สัญลักษณ์บอกว่ารันคำสั่งที่ไหน
 
@@ -108,8 +108,10 @@ LAB 0, 2 และ 3 ไม่มีไฟล์ ใช้คำสั่งล�
 🖥️ **บนเครื่องนักศึกษา** ตรวจว่า `k8s-lab` กำลังรัน (STATUS ต้องเป็น `Up`) ถ้าเป็น `Exited` ให้ `docker start k8s-lab`
 
 ```bash
-docker ps -a --filter name=k8s-lab
+docker ps -a --filter name=^k8s-lab$
 ```
+
+`^...$` ทำให้จับชื่อ `k8s-lab` แบบตรงตัว ถ้าใช้ `--filter name=k8s-lab` เฉย ๆ docker จะจับทุก container ที่ **มีคำนี้อยู่ในชื่อ** (เช่น `k8s-lab-xxx`) ซึ่งอาจทำให้สับสนว่าตัวไหนคือ `k8s-lab` จริง
 
 `cd` ไปยังโฟลเดอร์ที่ **มีโฟลเดอร์ `004_kubernetes_namespace` อยู่ข้างใน** แล้วคัดลอกทั้งโฟลเดอร์เข้า `/workspace/` ของ container (คำสั่งเดียวกันทั้ง PowerShell และ bash)
 
@@ -173,6 +175,21 @@ node/lab-worker2 condition met
 ...
 
 real	0m50.878s
+```
+
+(เวลาสร้างคลัสเตอร์ขึ้นกับเครื่อง) ถ้าคลัสเตอร์มีอยู่แล้วแต่เผลอสั่ง `time k8s-up` ซ้ำ ก็ไม่เสียหาย สคริปต์จะข้ามการสร้างแล้วแสดงตาราง Node ให้ ผลจริงจากรอบทดสอบซ้ำ (IP, AGE และ KERNEL-VERSION ในเครื่องนักศึกษาอาจต่างจากนี้)
+
+```text
+[k8s-up] dockerd ready
+[k8s-up] cluster 'lab' มีอยู่แล้ว — ข้ามการสร้าง (ลบด้วย k8s-down)
+NAME                STATUS   ROLES           AGE     VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION                             CONTAINER-RUNTIME
+lab-control-plane   Ready    control-plane   3m43s   v1.37.0   172.19.0.3    <none>        Debian GNU/Linux 13 (trixie)   6.6.87.2-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+lab-worker          Ready    <none>          3m34s   v1.37.0   172.19.0.2    <none>        Debian GNU/Linux 13 (trixie)   6.6.87.2-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+lab-worker2         Ready    <none>          3m34s   v1.37.0   172.19.0.4    <none>        Debian GNU/Linux 13 (trixie)   6.6.87.2-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+
+real	0m0.136s
+user	0m0.085s
+sys	0m0.092s
 ```
 
 > ข้อความท้าย `k8s-up` มีคำแนะนำตัวอย่างอื่น ๆ ของ image และ port 30080–30082 ซึ่ง **ยังไม่ใช้ในบทนี้** ให้ข้ามไป
@@ -322,32 +339,55 @@ ls labs/lab01-create-ns
 cat labs/lab01-create-ns/ns-blue.yaml labs/lab01-create-ns/snack-pod.yaml
 ```
 
+`ls` เห็น 3 ไฟล์ `ns-blue.yaml  snack-green-pod.yaml  snack-pod.yaml` และ `cat` พิมพ์ 2 ไฟล์แรกต่อกัน (เนื้อหาตามบล็อกด้านล่าง)
+
+#### อธิบาย YAML: `ns-blue.yaml`
+
 ```yaml
 # LAB 1: สร้าง namespace แบบเขียน YAML (เทียบกับ kubectl create namespace green)
-apiVersion: v1
-kind: Namespace
+apiVersion: v1                   # Namespace อยู่ใน core API group
+kind: Namespace                  # โซน = cluster-scoped จึงไม่มี metadata.namespace
 metadata:
-  name: blue                     # ชื่อโซน: a-z 0-9 และ - ยาวไม่เกิน 63 ตัว ห้ามขึ้นต้นด้วย kube-
-  labels:
+  name: blue                     # ชื่อโซน: a-z 0-9 และ - ยาวไม่เกิน 63 ตัว ไม่ควรขึ้นต้นด้วย kube- (สงวนไว้ให้ระบบตามธรรมเนียม)
+  labels:                        # ป้ายที่เราตั้งเอง (ระบบเติม kubernetes.io/metadata.name ให้อีกตัว)
     lab: "04"                    # label ของ namespace เอง (ไว้ค้นด้วย -l)
----
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `apiVersion: v1`, `kind: Namespace` | Namespace อยู่ใน core API group และเป็นของ **cluster-scoped** จึงไม่มี `metadata.namespace` | `namespace/blue created` และ `kubectl get ns blue -o yaml` (ขั้นที่ 6) ไม่มีบรรทัด `namespace:` |
+| `metadata.name: blue` | ชื่อโซน ต้องเป็นตัวพิมพ์เล็ก ตัวเลข และ `-` ยาวไม่เกิน 63 ตัว (RFC 1123 label) ส่วนคำนำหน้า `kube-` เป็นแค่ธรรมเนียม คอมเมนต์จึงใช้คำว่า "ไม่ควร" | `Blue_Zone` ถูกปฏิเสธด้วยข้อความ `a lowercase RFC 1123 label must consist of ...` (ขั้นที่ 4) แต่ `kube-mine` API ยอมให้สร้าง (ขั้นที่ 5) |
+| `metadata.labels.lab: "04"` | label ที่เราตั้งเอง ไว้ค้นด้วย `-l` ต้องครอบ `"04"` ด้วยเครื่องหมายคำพูด เพราะค่าของ label ต้องเป็นข้อความ ถ้าเขียน `04` เฉย ๆ YAML จะอ่านเป็นตัวเลข | `--show-labels` ได้ `kubernetes.io/metadata.name=blue,lab=04` (label แรกระบบเติมให้เอง) |
+
+#### อธิบาย YAML: `snack-pod.yaml`
+
+```yaml
 # LAB 1: Pod ขนมแมว "snack" — ไม่มี metadata.namespace
 # จะไปอยู่โซนไหนขึ้นกับ -n ตอนสั่ง (ไม่ใส่ -n → namespace ของ context ปกติคือ default)
 apiVersion: v1
-kind: Pod
-metadata:
-  name: snack
+kind: Pod                        # Pod เดี่ยว (บทนี้ยังไม่ใช้ Deployment)
+metadata:                        # ตั้งใจไม่ใส่ namespace
+  name: snack                    # ชื่อซ้ำได้ถ้าอยู่คนละ namespace
   labels:
-    app: snack
+    app: snack                   # ใช้ค้นทุกโซนด้วย -l app=snack
 spec:
   terminationGracePeriodSeconds: 1   # busybox sh เป็น PID 1 ไม่ตอบ SIGTERM → ให้ลบเร็ว
   containers:
     - name: app
-      image: busybox:1.36
-      command: ["sh", "-c", "echo snack พร้อมเสิร์ฟ; sleep 3600"]
+      image: busybox:1.36        # image เล็ก มี sh และ wget
+      command: ["sh", "-c", "echo snack พร้อมเสิร์ฟ; sleep 3600"]  # พิมพ์ข้อความ (ดูด้วย kubectl logs) แล้วรอ 1 ชม.
 ```
 
-(`---` ในบล็อกข้างบนแสดงรอยต่อของ 2 ไฟล์ ส่วน `snack-green-pod.yaml` เหมือน `snack-pod.yaml` แต่ชื่อ `snack-green` และมี `namespace: green` ในไฟล์)
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| ไม่มี `metadata.namespace` | ตั้งใจเว้นไว้ ให้ `-n` ตอนสั่งเป็นตัวเลือกโซน (ไม่ใส่ `-n` = namespace ของ context ซึ่งปกติคือ `default`) | ไฟล์เดียวสร้าง `blue/snack`, `green/snack`, `default/snack` ได้ (ขั้นที่ 2) |
+| `metadata.name: snack` | ชื่อต้องไม่ซ้ำ **ภายใน namespace เดียวกัน** เท่านั้น | 3 โซนชื่อเดียวกันได้ แต่ `create` ซ้ำใน `blue` ได้ `AlreadyExists` (ขั้นที่ 4) |
+| `metadata.labels.app: snack` | ป้ายไว้ค้นรวมทุกโซน | `kubectl get pods -A -l app=snack -o wide` เห็นทั้ง 3 ตัว |
+| `terminationGracePeriodSeconds: 1` | `sh` เป็น PID 1 ไม่ตอบ SIGTERM ถ้าไม่ตั้ง kubelet จะรอครบค่าเริ่มต้น 30 วินาทีก่อน kill | `kubectl delete pod snack` จบเร็ว (ขั้นที่ 6) เทียบกับ `peek` ที่ไม่ได้ตั้งค่านี้ ทำให้การลบโซนใน LAB 9 ขั้นที่ 5 ช้า |
+| `image: busybox:1.36` | image เล็ก มี `sh` และ `wget` | `blue/snack` ถูกใช้ยิง `wget` ไปหา `web` ใน LAB 4 |
+| `command: [... "echo snack พร้อมเสิร์ฟ; sleep 3600"]` | พิมพ์ข้อความหนึ่งบรรทัดแล้วรอ 1 ชั่วโมง Pod จึงอยู่ในสถานะ Running | `kubectl logs snack -n green` ได้ `snack พร้อมเสิร์ฟ` |
+
+ไฟล์ที่สาม `snack-green-pod.yaml` อธิบายในขั้นที่ 3
 
 ### ขั้นที่ 1: สร้าง namespace 2 วิธี
 
@@ -401,6 +441,8 @@ default     snack   1/1     Running   0          6s    10.244.2.3   lab-worker  
 green       snack   1/1     Running   0          6s    10.244.1.2   lab-worker2   <none>           <none>
 ```
 
+(IP และ NODE ขึ้นกับ scheduler ในรอบทดสอบซ้ำ `blue` กับ `default` ไปอยู่ `lab-worker2` ส่วน `green` อยู่ `lab-worker`)
+
 ดูทีละโซน และอ่าน namespace จาก object
 
 ```bash
@@ -425,6 +467,32 @@ snack พร้อมเสิร์ฟ
   <img src="images/04-lab1-namespace-mismatch.png" alt="รูปที่ 4 LAB 1 namespace ในไฟล์ไม่ตรงกับ -n" width="900"><br>
   <em><b>รูปที่ 4</b> LAB1: ไฟล์ที่เขียน metadata.namespace: green แต่สั่ง -n blue จะถูก kubectl ปฏิเสธ</em>
 </p>
+
+#### อธิบาย YAML: `snack-green-pod.yaml`
+
+```yaml
+# LAB 1: Pod เดียวกันแต่ "ติดป้ายที่อยู่" ไว้ในไฟล์ว่าเป็นของโซน green
+# apply -n green หรือไม่ใส่ -n ได้; ถ้าสั่ง -n blue จะ error เพราะไม่ตรงกัน
+apiVersion: v1
+kind: Pod
+metadata:
+  name: snack-green              # คนละชื่อกับ green/snack จึงไม่ชน
+  namespace: green               # ป้ายที่อยู่ในไฟล์
+  labels:
+    app: snack                   # label เดียวกับ snack
+spec:
+  terminationGracePeriodSeconds: 1  # ลบเร็ว (sh เป็น PID 1 ไม่ตอบ SIGTERM)
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo snack ของโซน green; sleep 3600"]
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `metadata.namespace: green` | "ป้ายที่อยู่" เขียนไว้ในไฟล์ kubectl จะยอมเฉพาะเมื่อไม่ใส่ `-n` หรือ `-n` ตรงกับป้าย | `-n blue` ได้ `error: the namespace from the provided object "green" does not match the namespace "blue"` และไม่สร้างอะไร ส่วนไม่ใส่ `-n` ได้ `pod/snack-green created` ใน `green` |
+| `metadata.name: snack-green` | ใช้ชื่อต่างจาก `snack` เพราะ `green` มี `snack` อยู่แล้วจากขั้นที่ 2 | `kubectl get pods -n green` เห็นทั้ง `snack` และ `snack-green` |
+| `labels.app: snack`, `terminationGracePeriodSeconds: 1`, `command` | เหมือน `snack-pod.yaml` ต่างแค่ข้อความที่พิมพ์ (`snack ของโซน green`) | Pod ใหม่เริ่มจาก `ContainerCreating` ตามปกติ |
 
 ```bash
 kubectl apply -f labs/lab01-create-ns/snack-green-pod.yaml -n blue
@@ -515,7 +583,7 @@ No resources found in default namespace.
 - `metadata.namespace` ในไฟล์ไม่ตรงกับ `-n` = error ไม่สร้างอะไร
 - `create` ซ้ำได้ `AlreadyExists` ส่วน `apply` ซ้ำได้ `unchanged`
 - `kubectl get pod <ชื่อ> -A` ใช้ไม่ได้ ต้องใช้ `--field-selector metadata.name=<ชื่อ>`
-- ชื่อ namespace ต้องเป็นตัวพิมพ์เล็ก ตัวเลข และ `-` เท่านั้น ส่วนคำนำหน้า `kube-` API ยอมแต่ห้ามใช้ตามธรรมเนียม
+- ชื่อ namespace ต้องเป็นตัวพิมพ์เล็ก ตัวเลข และ `-` เท่านั้น ส่วนคำนำหน้า `kube-` API ยอม แต่ตามธรรมเนียมไม่ควรใช้
 
 > **🤔 คำถามชวนคิด:** ถ้าทีม dev และทีม prod ใช้ไฟล์ `snack-green-pod.yaml` (ที่มี `namespace: green` ในไฟล์) ร่วมกัน จะเกิดปัญหาอะไร และควรแก้ไฟล์อย่างไร
 
@@ -811,7 +879,98 @@ team-a      web      1/1     Running   0          8s    10.244.2.6   lab-worker 
 team-b      client   1/1     Running   0          8s    10.244.2.8   lab-worker   <none>           <none>
 ```
 
-Pod ของ 2 โซนอยู่บน **เรือลำเดียวกัน** (`lab-worker`)
+Pod ของ 2 โซนอยู่บน **เรือลำเดียวกัน** (`lab-worker`) (IP ในเครื่องนักศึกษาต่างจากนี้ได้ รอบทดสอบซ้ำได้ `web` = `10.244.2.3` แต่ NODE เป็น `lab-worker` เสมอเพราะ `nodeSelector`)
+
+#### อธิบาย YAML: `zones.yaml`
+
+```yaml
+# LAB 4: สองโซนของสองทีม
+apiVersion: v1
+kind: Namespace                  # ไฟล์เดียวสร้าง 2 โซน (คั่นด้วย ---)
+metadata:
+  name: team-a                   # โซนของทีม a
+  labels:
+    team: a                      # label ที่เราตั้งเอง
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-b                   # โซนของทีม b
+  labels:
+    team: b                      # label ที่เราตั้งเอง
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| 2 เอกสาร `kind: Namespace` คั่นด้วย `---` | ไฟล์เดียวสร้างได้หลายโซน | `namespace/team-a created`, `namespace/team-b created` |
+| `labels.team: a` / `b` | label ที่เราตั้งเอง ไว้ค้นด้วย `-l team=...` แต่ **ไม่ได้ใช้ใน NetworkPolicy** ประตูใน `np-allow-team-b.yaml` ใช้ `kubernetes.io/metadata.name` ที่ระบบตั้งตามชื่อ namespace ให้เสมอแทน | – |
+
+#### อธิบาย YAML: `web-pod.yaml`
+
+```yaml
+# LAB 4: เว็บ nginx ของทีม a — ปักไว้บนเรือ lab-worker (ให้เห็นว่าคนละโซนอยู่เรือเดียวกันได้)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web
+  namespace: team-a              # ระบุโซนไว้ในไฟล์
+  labels:
+    app: web                     # allow-from-team-b เลือก Pod นี้ด้วย label นี้
+    lab: net                     # label รวมของ LAB 4 (-l lab=net)
+spec:
+  nodeSelector:                  # ปักเรือ: วางได้เฉพาะ Node ที่มี label ตรง
+    kubernetes.io/hostname: lab-worker  # label ชื่อเรือที่ทุก Node มีอยู่แล้ว
+  containers:
+    - name: nginx
+      image: nginx:1.27-alpine   # ตอบหน้า Welcome to nginx!
+      ports:
+        - containerPort: 80      # nginx ฟัง port 80 (ข้อมูลประกอบ)
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `metadata.namespace: team-a` | ระบุโซนในไฟล์ จึงไม่ต้องใส่ `-n` ตอน apply | NAMESPACE ของ `web` เป็น `team-a` |
+| `labels.app: web` | ป้ายที่ประตู `allow-from-team-b` ใช้เลือก Pod เป้าหมาย | `kubectl get netpol` แสดง POD-SELECTOR `app=web` |
+| `labels.lab: net` | ป้ายรวมของ LAB 4 | `kubectl wait ... -l lab=net -A` และ `get pods -A -l lab=net` เห็น 3 Pod |
+| `nodeSelector` `kubernetes.io/hostname: lab-worker` | ปักเรือด้วย label ชื่อ Node ที่ทุก Node มีอยู่แล้ว เพื่อพิสูจน์ว่าต่างโซนอยู่เรือเดียวกันได้ | NODE ของทั้ง 3 Pod เป็น `lab-worker` |
+| `image: nginx:1.27-alpine` | เว็บเซิร์ฟเวอร์ที่ตอบหน้า HTML ทันที | `wget` ได้ `<title>Welcome to nginx!</title>` |
+| `containerPort: 80` | ข้อมูลประกอบว่า container ฟัง port 80 (ไม่ได้เปิดหรือปิด port จริง) | `wget http://$WEB_IP` ไปที่ port 80 ได้ |
+
+#### อธิบาย YAML: `client-pods.yaml` (ส่วนสำคัญ)
+
+```yaml
+# LAB 4: ตัวทดสอบ (busybox มี wget) โซนละ 1 ตัว บนเรือ lab-worker ทั้งคู่
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client
+  namespace: team-a              # ตัวทดสอบในโซนเดียวกับ web
+  labels:
+    app: client
+    lab: net                     # label รวมของ LAB 4
+spec:
+  nodeSelector:                  # อยู่เรือลำเดียวกับ web
+    kubernetes.io/hostname: lab-worker
+  terminationGracePeriodSeconds: 1  # ลบเร็ว
+  containers:
+    - name: sh
+      image: busybox:1.36
+      command: ["sleep", "3600"] # รอเฉย ๆ ให้เรา exec เข้าไปใช้ wget
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client                   # ชื่อเดียวกันได้ เพราะอยู่คนละ namespace
+  namespace: team-b              # ตัวทดสอบจากนอกโซน team-a
+  # ... (ตัด: labels และ spec เหมือนตัวแรก)
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| 2 เอกสารชื่อ `client` เหมือนกัน แต่ `namespace` เป็น `team-a` และ `team-b` | ชื่อซ้ำได้เมื่ออยู่คนละโซน ได้ตัวทดสอบทั้งจากในโซนและนอกโซนของ `web` | `pod/client created` 2 ครั้ง |
+| `nodeSelector` `lab-worker` | อยู่เรือลำเดียวกับ `web` ทั้งคู่ | NODE `lab-worker` ทั้งหมด |
+| `command: ["sleep", "3600"]` | ไม่ทำอะไร รอให้เรา `kubectl exec ... wget` | ใช้ยิง `wget` ทุกขั้นของ LAB นี้ |
+| `terminationGracePeriodSeconds: 1` | `sleep` เป็น PID 1 ไม่ตอบ SIGTERM ตั้งให้ลบเร็ว | ลบ `team-a`/`team-b` ใน LAB 9 ได้โดยไม่ต้องรอ 30 วินาที |
 
 ### ขั้นที่ 2: ก่อนมีรั้ว ข้ามโซนได้
 
@@ -856,6 +1015,32 @@ options ndots:5
   <em><b>รูปที่ 8</b> LAB4: ใส่ NetworkPolicy ให้ team-a รับเฉพาะ Pod ในโซนตัวเอง team-b ได้ download timed out จากนั้นเปิดประตูให้ team-b ด้วย namespaceSelector</em>
 </p>
 
+#### อธิบาย YAML: `np-same-ns.yaml`
+
+```yaml
+# LAB 4 (รั้วที่ 1): ทุก Pod ใน team-a รับการเชื่อมต่อเข้าเฉพาะจาก Pod ในโซน team-a เอง
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy              # รั้วเครือข่ายระดับ Pod (namespaced)
+metadata:
+  name: allow-same-namespace
+  namespace: team-a              # รั้วนี้ล้อมเฉพาะโซน team-a
+spec:
+  podSelector: {}                # {} = เลือกทุก Pod ในโซนนี้ → Pod เหล่านี้เปลี่ยนเป็น "ปฏิเสธ ยกเว้นที่อนุญาต"
+  policyTypes: ["Ingress"]       # คุมเฉพาะขาเข้า
+  ingress:                       # รายการต้นทางที่อนุญาตให้เข้า
+    - from:
+        - podSelector: {}        # podSelector อย่างเดียว (ไม่มี namespaceSelector) = Pod ในโซนเดียวกันเท่านั้น
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `kind: NetworkPolicy`, `metadata.namespace: team-a` | รั้วเครือข่ายเป็นของประจำโซน มีผลกับ Pod ใน `team-a` เท่านั้น | `kubectl get netpol -n team-a` เห็น `allow-same-namespace` |
+| `spec.podSelector: {}` | `{}` = เลือก **ทุก Pod** ในโซน Pod ที่ถูกเลือกจะเปลี่ยนเป็น "ปฏิเสธขาเข้า ยกเว้นที่อนุญาต" | POD-SELECTOR แสดง `<none>` (หมายถึงทุก Pod ไม่ใช่ไม่มี Pod) ทั้ง `web` และ `team-a/client` อยู่หลังรั้ว |
+| `policyTypes: ["Ingress"]` | คุมเฉพาะขาเข้า ขาออกยังปล่อยปกติ | `describe` แสดง `Not affecting egress traffic` |
+| `ingress[].from[].podSelector: {}` | ต้นทางที่อนุญาต = ทุก Pod **ใน namespace เดียวกับ policy** (เพราะไม่มี `namespaceSelector` คู่) ไม่ระบุ `ports` จึงเปิดทุก port | `team-a/client` ยังได้ `Welcome to nginx!` ส่วน `team-b/client` และ `blue/snack` ได้ `download timed out` และ `describe` แสดง `To Port: <any>` |
+
+`cat` บรรทัดแรกของบล็อกคำสั่งด้านล่างพิมพ์เนื้อหาเดียวกับบล็อก YAML ข้างบน
+
 ```bash
 cat labs/lab04-network/np-same-ns.yaml
 kubectl apply -f labs/lab04-network/np-same-ns.yaml
@@ -863,21 +1048,6 @@ kubectl get netpol -n team-a
 time kubectl -n team-b exec client -- wget -qO- -T 3 http://$WEB_IP
 kubectl -n team-a exec client -- wget -qO- -T 3 http://$WEB_IP | grep -o '<title>.*</title>'
 kubectl -n blue exec snack -- wget -qO- -T 3 http://$WEB_IP
-```
-
-```yaml
-# LAB 4 (รั้วที่ 1): ทุก Pod ใน team-a รับการเชื่อมต่อเข้าเฉพาะจาก Pod ในโซน team-a เอง
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-same-namespace
-  namespace: team-a
-spec:
-  podSelector: {}                # {} = เลือกทุก Pod ในโซนนี้ → Pod เหล่านี้เปลี่ยนเป็น "ปฏิเสธ ยกเว้นที่อนุญาต"
-  policyTypes: ["Ingress"]       # คุมเฉพาะขาเข้า
-  ingress:
-    - from:
-        - podSelector: {}        # podSelector อย่างเดียว (ไม่มี namespaceSelector) = Pod ในโซนเดียวกันเท่านั้น
 ```
 
 ```text
@@ -898,9 +1068,40 @@ command terminated with exit code 1
 - รั้วมีผล **ทันที** (คำสั่งแรกหลัง apply ก็ถูกกั้นแล้ว) kindnet ของ kind บังคับใช้ NetworkPolicy จริง
 - `team-b` รอครบ 3 วินาทีแล้ว `download timed out` เพราะ packet ถูกทิ้งเงียบ ๆ (ไม่มีข้อความปฏิเสธกลับมา)
 - `team-a/client` ยังเข้าได้ และ `blue/snack` จากโซนอื่นก็ถูกกั้นเช่นกัน
-- คอลัมน์ `POD-SELECTOR` แสดง `<none>` สำหรับ `podSelector: {}` (หมายถึงทุก Pod ไม่ใช่ไม่มี Pod)
+- เวลา `real` ราว 3 วินาทีตาม `-T 3` (รอบทดสอบซ้ำได้ `0m3.064s`)
 
 ### ขั้นที่ 5: เปิดประตูให้ team-b เข้า web
+
+#### อธิบาย YAML: `np-allow-team-b.yaml`
+
+```yaml
+# LAB 4 (ประตูที่ 2): เปิดให้ทุก Pod จากโซนที่มี label kubernetes.io/metadata.name=team-b เข้า web ได้
+# policy รวมกันแบบ OR: ผ่านข้อใดข้อหนึ่งก็เข้าได้
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-team-b        # policy ที่ 2 ซ้อนกับ allow-same-namespace
+  namespace: team-a              # มีผลกับ Pod ในโซน team-a เท่านั้น
+spec:
+  podSelector:
+    matchLabels:
+      app: web                   # ใช้กับ Pod web เท่านั้น
+  policyTypes: ["Ingress"]       # คุมเฉพาะขาเข้า
+  ingress:
+    - from:
+        - namespaceSelector:     # เลือก "โซนต้นทาง" ด้วย label ของ namespace
+            matchLabels:
+              kubernetes.io/metadata.name: team-b   # label ที่ระบบใส่ให้ทุก namespace อัตโนมัติ
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `metadata.name: allow-from-team-b`, `namespace: team-a` | policy ที่ 2 ในโซนเดียวกัน ไม่ได้แทนที่ policy แรก ทุก policy ที่เลือก Pod เดียวกันรวมกันแบบ OR | `kubectl get netpol -n team-a` เห็น 2 แถว |
+| `spec.podSelector.matchLabels.app: web` | ประตูนี้เปิดเฉพาะ Pod ที่มี label `app=web` | POD-SELECTOR `app=web` และ `team-b` → `team-a/client` ยัง `download timed out` |
+| `policyTypes: ["Ingress"]` | คุมเฉพาะขาเข้า เหมือน policy แรก | `Policy Types: Ingress` |
+| `ingress[].from[].namespaceSelector` `kubernetes.io/metadata.name: team-b` | ต้นทาง = ทุก Pod ในโซนที่มี label นี้ ใช้ label ที่ระบบตั้งตามชื่อ namespace ให้อัตโนมัติ (เห็นใน LAB 0) จึงไม่ต้องติด label เอง | `team-b เข้าได้ในรอบที่ 1` แต่ `blue/snack` ยัง timed out และ `describe` แสดง `NamespaceSelector: kubernetes.io/metadata.name=team-b` |
+
+`cat` บรรทัดแรกของบล็อกคำสั่งด้านล่างพิมพ์เนื้อหาเดียวกับบล็อก YAML ข้างบน
 
 ```bash
 cat labs/lab04-network/np-allow-team-b.yaml
@@ -909,26 +1110,6 @@ for i in 1 2 3 4 5 6 7 8 9 10; do if kubectl -n team-b exec client -- wget -qO- 
 kubectl -n team-b exec client -- wget -qO- -T 3 http://$WEB_IP | grep -o '<title>.*</title>'
 kubectl -n blue exec snack -- wget -qO- -T 3 http://$WEB_IP
 kubectl -n team-b exec client -- wget -qO- -T 3 http://$(kubectl get pod client -n team-a -o jsonpath='{.status.podIP}'):80
-```
-
-```yaml
-# LAB 4 (ประตูที่ 2): เปิดให้ทุก Pod จากโซนที่มี label kubernetes.io/metadata.name=team-b เข้า web ได้
-# policy รวมกันแบบ OR: ผ่านข้อใดข้อหนึ่งก็เข้าได้
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-from-team-b
-  namespace: team-a
-spec:
-  podSelector:
-    matchLabels:
-      app: web                   # ใช้กับ Pod web เท่านั้น
-  policyTypes: ["Ingress"]
-  ingress:
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: team-b   # label ที่ระบบใส่ให้ทุก namespace อัตโนมัติ
 ```
 
 ```text
@@ -1013,26 +1194,37 @@ Spec:
 
 **ไฟล์:** `labs/lab05-quota/quota.yaml` (namespace `budget` + ResourceQuota `budget-quota`), `no-request-pod.yaml` (busybox ไม่มี resources), `small-pods.yaml` (busybox 4 ตัว ตัวละ requests 100m/64Mi, limits 200m/128Mi)
 
+#### อธิบาย YAML: `quota.yaml`
+
 ```yaml
 # LAB 5: โซน budget + ใบงบประมาณ (ResourceQuota) ของโซน
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: budget
+  name: budget                   # โซนของ LAB 5–6
 ---
 apiVersion: v1
-kind: ResourceQuota
+kind: ResourceQuota              # ใบงบของโซน (namespaced)
 metadata:
   name: budget-quota
-  namespace: budget
+  namespace: budget              # งบนี้ใช้กับโซน budget เท่านั้น
 spec:
-  hard:
+  hard:                          # มีค่า cpu/memory → ทุก Pod ต้องระบุ resources
     pods: "3"                    # Pod ได้ไม่เกิน 3 ตัว
     requests.cpu: 500m           # ผลรวม requests ของทุก Pod ในโซน
-    requests.memory: 256Mi
+    requests.memory: 256Mi       # ผลรวม requests หน่วยความจำ
     limits.cpu: "1"              # ผลรวม limits ของทุก Pod ในโซน
-    limits.memory: 512Mi
+    limits.memory: 512Mi         # ผลรวม limits หน่วยความจำ
 ```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| เอกสารแรก `kind: Namespace` `budget` | สร้างโซนพร้อมใบงบในไฟล์เดียว (Namespace มาก่อน จึงสร้างได้ตามลำดับ) | `namespace/budget created` ตามด้วย `resourcequota/budget-quota created` |
+| `kind: ResourceQuota`, `metadata.namespace: budget` | ใบงบเป็นของประจำโซน มีผลกับ `budget` เท่านั้น | `kubectl describe ns budget` แสดงใต้หัวข้อ `Resource Quotas` |
+| `hard.pods: "3"` | จำนวน Pod สูงสุดในโซน | `small-4` ได้ `exceeded quota: budget-quota, requested: pods=1, used: pods=3, limited: pods=3` |
+| `hard.requests.cpu: 500m`, `requests.memory: 256Mi` | เพดานผลรวม requests ของทุก Pod ในโซน | Used `300m`/`192Mi` หลังมี Pod เล็ก 3 ตัว |
+| `hard.limits.cpu: "1"`, `limits.memory: 512Mi` | เพดานผลรวม limits | Used `600m`/`384Mi` |
+| (ผลข้างเคียง) มีค่า cpu/memory ใน `hard` | เมื่อ quota คุม cpu/memory ทุก container ต้องระบุค่าที่ถูกคุมให้ครบ | `no-request` ถูกปฏิเสธด้วย `must specify limits.cpu for: app; limits.memory for: app; requests.cpu for: app; requests.memory for: app` |
 
 > คำนวณก่อนลงมือ: Pod เล็ก 4 ตัวรวมกันขอ requests 400m/256Mi และ limits 800m/512Mi ซึ่ง **ยังไม่เกินงบ CPU/หน่วยความจำ** ตัวที่ 4 จึงควรชนแค่ `pods: 3`
 
@@ -1064,6 +1256,30 @@ budget-quota   pods: 0/3, requests.cpu: 0/500m, requests.memory: 0/256Mi   limit
 
 ### ขั้นที่ 2: Pod ที่ไม่ระบุขนาด
 
+#### อธิบาย YAML: `no-request-pod.yaml`
+
+```yaml
+# LAB 5/6: Pod ที่ไม่ระบุ resources เลย
+# LAB 5 (มีแต่ quota) → ถูกปฏิเสธ "must specify ..."; LAB 6 (เพิ่ม LimitRange) → ผ่าน เพราะได้ค่า default
+apiVersion: v1
+kind: Pod
+metadata:
+  name: no-request               # ใช้ไฟล์เดียวกันทั้ง LAB 5 และ LAB 6
+  namespace: budget              # โซนที่มี ResourceQuota
+spec:
+  terminationGracePeriodSeconds: 1  # ลบเร็ว
+  containers:                    # ตั้งใจไม่ใส่ resources
+    - name: app
+      image: busybox:1.36
+      command: ["sleep", "3600"]
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `metadata.namespace: budget` | เขียนโซนไว้ในไฟล์ ไม่ต้องใส่ `-n` | ไปชนใบงบของ `budget` ทันที |
+| `containers` ที่ **ไม่มี** `resources` | ตั้งใจไม่ระบุขนาด เพื่อดูว่าด่าน quota ทำอะไร และใช้ไฟล์เดิมซ้ำใน LAB 6 | LAB 5: `failed quota: budget-quota: must specify ...` (ชื่อ container `app` อยู่ในข้อความ) / LAB 6: `pod/no-request created` เพราะ LimitRange เติมค่าให้ |
+| `terminationGracePeriodSeconds: 1` | `sleep` เป็น PID 1 ไม่ตอบ SIGTERM ตั้งให้ลบเร็ว | ลบโซน `budget` ใน LAB 9 ได้เร็ว |
+
 ```bash
 kubectl apply -f labs/lab05-quota/no-request-pod.yaml
 ```
@@ -1073,6 +1289,37 @@ Error from server (Forbidden): error when creating "labs/lab05-quota/no-request-
 ```
 
 ### ขั้นที่ 3: Pod เล็ก 4 ตัว
+
+#### อธิบาย YAML: `small-pods.yaml` (ส่วนสำคัญ)
+
+```yaml
+# LAB 5: Pod เล็ก 4 ตัว (ตัวละ req 100m/64Mi, lim 200m/128Mi) แต่ใบงบให้ pods: 3 → ตัวที่ 4 ถูกปฏิเสธ
+# ผลรวม 4 ตัว: requests 400m/256Mi, limits 800m/512Mi ยังไม่เกินงบ CPU/หน่วยความจำ → ชนแค่จำนวน pods
+apiVersion: v1
+kind: Pod
+metadata:
+  name: small-1                  # 4 ตัวเหมือนกันทุกอย่างยกเว้นชื่อ
+  namespace: budget              # อยู่ในไฟล์ จึงไม่ต้องใส่ -n
+  labels:
+    app: small
+spec:
+  terminationGracePeriodSeconds: 1
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sleep", "3600"]
+      resources:                 # ระบุครบ 4 ค่า จึงผ่านเงื่อนไข must specify
+        requests: { cpu: 100m, memory: 64Mi }  # ตัวละ 100m/64Mi
+        limits:   { cpu: 200m, memory: 128Mi }  # ตัวละ 200m/128Mi
+# ... (ตัด: small-2, small-3, small-4 เหมือน small-1 ต่างแค่ชื่อ)
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| 4 เอกสาร `small-1` ถึง `small-4` ใน `namespace: budget` | kubectl ส่งทีละเอกสารตามลำดับ ตัวที่ผ่านถูกสร้าง ตัวที่ไม่ผ่านได้ error ของตัวเอง | `small-1`–`small-3` `created` และ `small-4` ถูกปฏิเสธ |
+| `resources.requests: { cpu: 100m, memory: 64Mi }` | ระบุครบ จึงผ่านเงื่อนไข `must specify` | 3 ตัวรวมเป็น requests `300m`/`192Mi` |
+| `resources.limits: { cpu: 200m, memory: 128Mi }` | ระบุครบเช่นกัน | 3 ตัวรวมเป็น limits `600m`/`384Mi` |
+| ขนาดที่เลือก | 4 ตัวรวมกันยังไม่เกินงบ CPU/หน่วยความจำ (ตามที่คำนวณไว้ข้างบน) จึงชนแค่ `pods` | ข้อความ `exceeded quota` ของ `small-4` มีแค่ `pods=...` |
 
 ```bash
 kubectl apply -f labs/lab05-quota/small-pods.yaml
@@ -1151,16 +1398,18 @@ No LimitRange resource.
 
 **ไฟล์:** `labs/lab06-limitrange/limitrange.yaml`, `plain-pod.yaml` (Pod ไม่ระบุ resources ชื่อ `plain`), `big-pod.yaml` (ขอ `limits.cpu: "1"`)
 
+#### อธิบาย YAML: `limitrange.yaml`
+
 ```yaml
 # LAB 6: ป้ายกฎขนาดกล่องของโซน budget (ใช้กับแต่ละ container)
 apiVersion: v1
-kind: LimitRange
+kind: LimitRange                 # กฎขนาดต่อ container (quota คุมผลรวมทั้งโซน)
 metadata:
   name: box-size
-  namespace: budget
+  namespace: budget              # โซนเดียวกับ budget-quota
 spec:
   limits:
-    - type: Container
+    - type: Container            # ใช้กับแต่ละ container
       defaultRequest:            # ไม่ระบุ requests → เติมค่านี้ให้
         cpu: 100m
         memory: 64Mi
@@ -1171,6 +1420,14 @@ spec:
         cpu: 500m
         memory: 256Mi
 ```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `kind: LimitRange`, `metadata.namespace: budget` | กฎขนาดกล่องของโซน (quota คุม "ผลรวมทั้งโซน" ส่วน LimitRange คุม "แต่ละกล่อง") | `limitrange/box-size created` และ `describe ns budget` มีหัวข้อ `Resource Limits` |
+| `limits[].type: Container` | กฎใช้กับแต่ละ container ไม่ใช่ผลรวมของ Pod | คอลัมน์ Type เป็น `Container` |
+| `defaultRequest: cpu 100m, memory 64Mi` | container ที่ไม่ระบุ requests ได้ค่านี้ ตั้งเท่ากับ Pod เล็กของ LAB 5 เพื่อเทียบตัวเลขงบได้ง่าย | `no-request` และ `plain` ได้ `"requests":{"cpu":"100m","memory":"64Mi"}` |
+| `default: cpu 200m, memory 128Mi` | container ที่ไม่ระบุ limits ได้ค่านี้ | ได้ `"limits":{"cpu":"200m","memory":"128Mi"}` พร้อม annotation `LimitRanger plugin set: ...` และ Used ของ quota ยังเป็น `300m/192Mi`, `600m/384Mi` เท่าเดิม |
+| `max: cpu 500m, memory 256Mi` | ห้าม limits ของ container ใดเกินค่านี้ ตรวจก่อนด่าน quota | `big` ได้ `maximum cpu usage per Container is 500m, but limit is 1` แม้ `pods` จะเต็ม 3/3 อยู่แล้ว |
 
 ### ขั้นที่ 1: คืนที่ว่างในงบ แล้วติดป้ายกฎขนาดกล่อง
 
@@ -1190,11 +1447,35 @@ Name:       box-size
 Namespace:  budget
 Type        Resource  Min  Max    Default Request  Default Limit  Max Limit/Request Ratio
 ----        --------  ---  ---    ---------------  -------------  -----------------------
-Container   memory    -    256Mi  64Mi             128Mi          -
 Container   cpu       -    500m   100m             200m           -
+Container   memory    -    256Mi  64Mi             128Mi          -
 ```
 
+(ลำดับแถว `cpu`/`memory` ในตาราง LimitRange อาจสลับกันได้ในแต่ละครั้ง รอบทดสอบซ้ำได้ cpu ก่อน ส่วนค่าในแต่ละแถวต้องตรงกับไฟล์)
+
 ### ขั้นที่ 2: Pod ที่ไม่ระบุขนาด คราวนี้ผ่าน
+
+#### อธิบาย YAML: `plain-pod.yaml`
+
+```yaml
+# LAB 6: Pod ไม่ระบุ resources (เหมือน no-request) ไว้ดูว่า LimitRange เติมค่าอะไรให้
+apiVersion: v1
+kind: Pod
+metadata:
+  name: plain                    # Pod ตัวที่ 2 ที่ไม่ระบุ resources
+  namespace: budget              # โซนที่มี LimitRange แล้ว
+spec:
+  terminationGracePeriodSeconds: 1
+  containers:                    # ไม่มี resources → LimitRange เติมให้
+    - name: app
+      image: busybox:1.36
+      command: ["sleep", "3600"]
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `metadata.name: plain`, `namespace: budget` | Pod ตัวที่ 2 ที่ไม่ระบุ resources (คู่กับ `no-request` ของ LAB 5) ไว้ยืนยันว่าทุก Pod ในโซนได้ค่าเดียวกัน | `pod/plain created` |
+| `containers` ที่ไม่มี `resources` | ให้ LimitRange เติมค่า default | `{"limits":{"cpu":"200m","memory":"128Mi"},"requests":{"cpu":"100m","memory":"64Mi"}}` เหมือน `no-request` ทุกตัวอักษร |
 
 ```bash
 kubectl apply -f labs/lab05-quota/no-request-pod.yaml
@@ -1216,6 +1497,32 @@ pod/plain created
 
 ### ขั้นที่ 3: กล่องใหญ่เกิน max
 
+#### อธิบาย YAML: `big-pod.yaml`
+
+```yaml
+# LAB 6: ขอ limit cpu 1 core ซึ่งเกิน max 500m ของ LimitRange → ถูกปฏิเสธ
+apiVersion: v1
+kind: Pod
+metadata:
+  name: big
+  namespace: budget              # โซนที่มี LimitRange
+spec:
+  terminationGracePeriodSeconds: 1
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sleep", "3600"]
+      resources:
+        requests: { cpu: 100m, memory: 64Mi }  # requests ไม่เกินอะไร
+        limits:   { cpu: "1", memory: 128Mi }  # cpu 1 > max 500m → ถูกปฏิเสธ
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `resources.requests: { cpu: 100m, memory: 64Mi }` | ระบุครบ ไม่เกินกฎใด | – |
+| `resources.limits.cpu: "1"` | ขอ 1 core ต่อ container เกิน `max.cpu: 500m` ของ `box-size` ตั้งใจให้ชนด่าน LimitRange (ครอบ `"1"` ด้วยเครื่องหมายคำพูดให้เป็นข้อความแบบเดียวกับ quota) | `pods "big" is forbidden: maximum cpu usage per Container is 500m, but limit is 1` และ `big` ไม่มีใน `kubectl get pods` |
+| `limits.memory: 128Mi` | ไม่เกิน `max.memory: 256Mi` | ข้อความ error จึงพูดถึงแค่ cpu |
+
 ```bash
 kubectl apply -f labs/lab06-limitrange/big-pod.yaml
 kubectl get pods -n budget
@@ -1225,9 +1532,9 @@ kubectl describe quota -n budget
 ```text
 Error from server (Forbidden): error when creating "labs/lab06-limitrange/big-pod.yaml": pods "big" is forbidden: maximum cpu usage per Container is 500m, but limit is 1
 NAME         READY   STATUS              RESTARTS   AGE
-no-request   1/1     Running             0          1s
-plain        0/1     ContainerCreating   0          1s
-small-1      1/1     Running             0          10s
+no-request   0/1     ContainerCreating   0          0s
+plain        0/1     ContainerCreating   0          0s
+small-1      1/1     Running             0          5s
 Name:            budget-quota
 Namespace:       budget
 Resource         Used   Hard
@@ -1238,6 +1545,8 @@ pods             3      3
 requests.cpu     300m   500m
 requests.memory  192Mi  256Mi
 ```
+
+(ผลรอบทดสอบซ้ำ: `no-request` และ `plain` เพิ่งสร้างจึงยังเป็น `ContainerCreating` ถ้าพิมพ์ช้ากว่านี้จะเห็น `1/1 Running` แล้ว เป็นเรื่องจังหวะเวลาเท่านั้น quota นับ Pod ตั้งแต่ถูกสร้าง ไม่ต้องรอ Running)
 
 สังเกตว่าตอนนี้ `pods` เต็ม 3/3 แล้ว แต่ `big` ได้ข้อความของ **LimitRange** ไม่ใช่ `exceeded quota` เพราะ LimitRanger ตรวจก่อน quota
 
@@ -1271,9 +1580,11 @@ Resource Quotas
 Resource Limits
  Type       Resource  Min  Max    Default Request  Default Limit  Max Limit/Request Ratio
  ----       --------  ---  ---    ---------------  -------------  -----------------------
- Container  memory    -    256Mi  64Mi             128Mi          -
  Container  cpu       -    500m   100m             200m           -
+ Container  memory    -    256Mi  64Mi             128Mi          -
 ```
+
+(ลำดับแถว `cpu`/`memory` ใต้ `Resource Limits` อาจสลับกันได้เหมือนขั้นที่ 1)
 
 ### สิ่งที่เห็น
 
@@ -1301,19 +1612,68 @@ Resource Limits
 
 **ไฟล์:** `labs/lab07-rbac/sa-role-binding.yaml` (ใน `team-a`: SA `intern`, Role `pod-reader` = get/list/watch บน `pods`, `pods/log`, RoleBinding `intern-pod-reader`) และ `view-clusterrole-binding.yaml` (ใน `team-b`: SA `auditor` + RoleBinding `auditor-view` ที่อ้าง ClusterRole `view`)
 
+#### อธิบาย YAML: `sa-role-binding.yaml`
+
 ```yaml
-# LAB 7: ใช้สมุดกฎมาตรฐานของท่าเรือ (ClusterRole "view") แต่ผูกด้วย RoleBinding → มีผลแค่โซน team-b
+# LAB 7: บัตรพนักงานฝึกงาน (ServiceAccount intern) ของโซน team-a ดูได้อย่างเดียว
 apiVersion: v1
-kind: ServiceAccount
+kind: ServiceAccount             # บัตรประจำตัวของโปรแกรม (namespaced)
 metadata:
-  name: auditor
-  namespace: team-b
+  name: intern
+  namespace: team-a              # บัตรของโซน team-a
 ---
+# การ์ดสิทธิ์: ทำอะไรได้กับอะไร (มีผลเฉพาะ team-a)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role                       # สิทธิ์ที่มีผลเฉพาะ namespace ของ Role
+metadata:
+  name: pod-reader
+  namespace: team-a
+rules:
+  - apiGroups: [""]              # "" = core API group (Pod อยู่กลุ่มนี้)
+    resources: ["pods", "pods/log"]   # pods/log = subresource สำหรับ kubectl logs
+    verbs: ["get", "list", "watch"]  # ดูอย่างเดียว ไม่มี create/delete
+---
+# สายคล้อง: ผูกบัตร intern เข้ากับการ์ด pod-reader
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  name: intern-pod-reader
+  namespace: team-a
+subjects:
+  - kind: ServiceAccount         # ผู้รับสิทธิ์ = SA intern
+    name: intern
+    namespace: team-a            # SA ต้องระบุ namespace ของตัวเอง
+roleRef:                         # แก้ทีหลังไม่ได้ ต้องลบแล้วสร้างใหม่
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role                     # อ้าง Role ในโซนเดียวกัน
+  name: pod-reader
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `kind: ServiceAccount` `intern` ใน `team-a` | บัตรประจำตัวของโปรแกรม ชื่อเต็มเวลาตรวจสิทธิ์คือ `system:serviceaccount:<namespace>:<ชื่อ>` | ใช้ใน `--as=system:serviceaccount:team-a:intern` และ `auth whoami` ของ `intern@lab` ได้ `system:serviceaccount:team-a:intern` |
+| `kind: Role` `pod-reader` ใน `team-a` | การ์ดสิทธิ์ที่มีผลเฉพาะโซนของ Role เอง | `can-i list pods -n team-b` ได้ `no` |
+| `rules[].apiGroups: [""]` | `""` = core API group ที่ Pod อยู่ | – |
+| `rules[].resources: ["pods", "pods/log"]` | `pods/log` เป็น subresource แยก ต้องให้เพิ่มจึงอ่าน log ได้ ส่วน `pods/exec` ไม่ได้ให้ | `can-i get pods/log` = `yes`, `kubectl logs web` ได้ แต่ `exec web -- id` ได้ `cannot create resource "pods/exec"` |
+| `rules[].verbs: ["get", "list", "watch"]` | ดูอย่างเดียว ไม่มี create/delete | `can-i delete pods` = `no`, `can-i create pods` = `no` และ `delete pod web` ได้ Forbidden |
+| `kind: RoleBinding` `subjects` (SA `intern`, `namespace: team-a`) | สายคล้องที่ผูกบัตรเข้ากับการ์ด subject ที่เป็น SA ต้องบอก namespace ของ SA เสมอ | `get rolebinding -n team-a` แสดง ROLE `Role/pod-reader` |
+| `roleRef` (`kind: Role`, `name: pod-reader`) | อ้าง Role ในโซนเดียวกัน `roleRef` แก้ภายหลังไม่ได้ ต้องลบแล้วสร้างใหม่ | `can-i --list` แสดง `pods`, `pods/log` `[get list watch]` |
+
+#### อธิบาย YAML: `view-clusterrole-binding.yaml`
+
+```yaml
+# LAB 7: ใช้สมุดกฎมาตรฐานของท่าเรือ (ClusterRole "view") แต่ผูกด้วย RoleBinding → มีผลแค่โซน team-b
+apiVersion: v1
+kind: ServiceAccount             # บัตรของผู้ตรวจ
+metadata:
+  name: auditor
+  namespace: team-b              # บัตรของโซน team-b
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding                # RoleBinding (ไม่ใช่ ClusterRoleBinding) → สิทธิ์จำกัดแค่ team-b
+metadata:
   name: auditor-view
-  namespace: team-b
+  namespace: team-b              # สิทธิ์มีผลเฉพาะโซนนี้
 subjects:
   - kind: ServiceAccount
     name: auditor
@@ -1321,10 +1681,14 @@ subjects:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole              # ClusterRole สำเร็จรูป: view (ดูได้เกือบทุกอย่าง ยกเว้น Secret)
-  name: view
+  name: view                     # ชื่อ ClusterRole ที่มีอยู่แล้วในคลัสเตอร์
 ```
 
-(เนื้อหาของ `sa-role-binding.yaml` ดูทฤษฎีหัวข้อ 13.2 หรือ `cat labs/lab07-rbac/sa-role-binding.yaml`)
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `kind: ServiceAccount` `auditor` ใน `team-b` | บัตรของผู้ตรวจ | `serviceaccount/auditor created` |
+| `kind: RoleBinding` ใน `namespace: team-b` | ใช้ **RoleBinding** (ไม่ใช่ ClusterRoleBinding) สิทธิ์จึงจำกัดอยู่ในโซนของ binding | `can-i list pods -n team-a` = `no` และ `get pods -n team-a` ได้ Forbidden |
+| `roleRef.kind: ClusterRole`, `name: view` | ยืมสมุดกฎสำเร็จรูป `view` ที่มีอยู่แล้วในคลัสเตอร์ (LAB 3 ขั้นที่ 4) ไม่ต้องเขียน rules เอง `view` ให้อ่านได้เกือบทุกอย่าง ยกเว้น Secret | `-o wide` แสดง ROLE `ClusterRole/view`, SERVICEACCOUNTS `team-b/auditor` และ can-i: pods `yes`, configmaps `yes`, secrets `no`, delete `no` |
 
 ### ขั้นที่ 1: เราเป็นใคร และสร้างบัตร
 
@@ -1563,6 +1927,52 @@ secure   Active   1s    kubernetes.io/metadata.name=secure,pod-security.kubernet
 
 ### ขั้นที่ 2: nginx ที่รันเป็น root และ Pod ที่ขอ privileged
 
+#### อธิบาย YAML: `root-nginx-pod.yaml`
+
+```yaml
+# LAB 8: nginx ทางการ รันเป็น root และไม่มี securityContext
+# ผ่าน baseline (แต่มีคำเตือน restricted) / ไม่ผ่าน restricted
+apiVersion: v1
+kind: Pod
+metadata:
+  name: root-nginx
+  namespace: secure              # โซนที่มีด่าน PSA
+spec:
+  containers:                    # ไม่มี securityContext เลย
+    - name: nginx
+      image: nginx:1.27-alpine   # image ทางการ รันเป็น root (uid 0)
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `metadata.namespace: secure` | ส่งเข้าโซนที่มีด่าน PSA | ถูกตรวจด้วย label ของ `secure` |
+| ไม่มี `securityContext` ทั้งระดับ Pod และ container | แทน Pod "ทั่วไป" ที่เขียนกันบ่อย ไม่มีอะไรต้องห้ามของ baseline แต่ขาดทุกข้อของ restricted | ผ่าน `enforce=baseline` (`pod/root-nginx created`) แต่ได้ `Warning: would violate PodSecurity "restricted:latest"` 4 ข้อ |
+| `image: nginx:1.27-alpine` | image ทางการที่ process หลักรันเป็น root | `id` ได้ `uid=0(root) gid=0(root) ...` และหลัง `enforce=restricted` ตัวใหม่ (`root-nginx-2`) ถูกปฏิเสธ |
+
+#### อธิบาย YAML: `privileged-pod.yaml`
+
+```yaml
+# LAB 8: ขอสิทธิ์ privileged (เข้าถึงเครื่องได้เกือบทั้งหมด) → baseline ปฏิเสธ
+apiVersion: v1
+kind: Pod
+metadata:
+  name: privileged
+  namespace: secure              # โซนที่ enforce=baseline
+spec:
+  terminationGracePeriodSeconds: 1
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sleep", "3600"]
+      securityContext:           # ระดับ container
+        privileged: true         # ขอสิทธิ์เกือบเต็มเครื่อง: baseline ห้าม
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `containers[].securityContext.privileged: true` | ขอสิทธิ์เข้าถึงเครื่องได้เกือบทั้งหมด เป็นข้อต้องห้ามของระดับ baseline | `pods "privileged" is forbidden: violates PodSecurity "baseline:latest": privileged (container "app" must not set securityContext.privileged=true)` |
+| `command: ["sleep", "3600"]`, `terminationGracePeriodSeconds: 1` | ส่วนที่เหลือเหมือน busybox ตัวอื่นของบทนี้ | ไม่ได้ถูกสร้าง จึงไม่มีอะไรให้ลบ |
+
 ```bash
 kubectl apply -f labs/lab08-psa/root-nginx-pod.yaml
 kubectl apply -f labs/lab08-psa/privileged-pod.yaml
@@ -1619,6 +2029,45 @@ Error from server (Forbidden): pods "root-nginx-2" is forbidden: violates PodSec
 
 ### ขั้นที่ 5: Pod ที่ผ่าน restricted
 
+#### อธิบาย YAML: `restricted-ok-pod.yaml`
+
+```yaml
+# LAB 8: busybox ที่ตั้ง securityContext ครบตามระดับ restricted
+apiVersion: v1
+kind: Pod
+metadata:
+  name: restricted-ok
+  namespace: secure              # โซนที่จะถูกตั้ง enforce=restricted
+spec:
+  terminationGracePeriodSeconds: 1
+  securityContext:               # ระดับ Pod: ใช้กับทุก container
+    runAsNonRoot: true           # ห้ามรันเป็น root
+    runAsUser: 1000              # uid ที่ใช้รัน (ต้องเป็นตัวเลข)
+    runAsGroup: 1000             # gid หลัก (ถ้าไม่ใส่จะเป็น 0 = กลุ่ม root ซึ่ง restricted ยอม แต่ไม่ควร)
+    seccompProfile:
+      type: RuntimeDefault       # ใช้ตัวกรอง system call มาตรฐานของ container runtime
+  containers:
+    - name: app
+      image: busybox:1.36        # image เดิม ไม่ต้องแก้ image
+      command: ["sleep", "3600"]
+      securityContext:           # ระดับ container
+        allowPrivilegeEscalation: false   # ห้ามยกระดับสิทธิ์ (เช่น setuid)
+        capabilities:
+          drop: ["ALL"]          # ทิ้งสิทธิ์พิเศษของ Linux ทั้งหมด
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `spec.securityContext.runAsNonRoot: true` + `runAsUser: 1000` | restricted ข้อ `runAsNonRoot` และต้องมี uid เป็นตัวเลขให้ kubelet ตรวจได้ (busybox ไม่ได้ระบุ USER) | `id` ได้ `uid=1000` |
+| `spec.securityContext.runAsGroup: 1000` | กำหนด gid หลัก ไม่ให้ตกไปเป็น 0 (กลุ่ม root) | `gid=1000 groups=1000` |
+| `spec.securityContext.seccompProfile.type: RuntimeDefault` | restricted ข้อ `seccompProfile` | ไม่มี Warning |
+| `containers[].securityContext.allowPrivilegeEscalation: false` | restricted ข้อ `allowPrivilegeEscalation` ต้องตั้งระดับ container | ไม่มี Warning |
+| `containers[].securityContext.capabilities.drop: ["ALL"]` | restricted ข้อ `unrestricted capabilities` | `pod/restricted-ok created` ผ่าน `enforce=restricted` |
+
+4 ข้อที่ Warning ของ `root-nginx` บอกไว้ (ขั้นที่ 2) ถูกแก้ครบในไฟล์นี้ และใช้ image เดิมได้โดยไม่ต้องแก้ image
+
+`cat` บรรทัดแรกของบล็อกคำสั่งด้านล่างพิมพ์เนื้อหาเดียวกับบล็อก YAML ข้างบน
+
 ```bash
 cat labs/lab08-psa/restricted-ok-pod.yaml
 kubectl apply -f labs/lab08-psa/restricted-ok-pod.yaml
@@ -1659,9 +2108,68 @@ secure   Active   3s    kubernetes.io/metadata.name=secure,pod-security.kubernet
 
 **เป้าหมาย:** เห็นว่าลบ namespace = ลบทุกอย่างข้างใน เห็นสถานะ `Terminating` และ finalizer ทดลองสร้างของระหว่างกำลังลบ ตรวจว่า namespace ระบบตัวไหนลบไม่ได้ แล้วเก็บกวาด namespace ของ LAB 1–8 ทั้งหมด
 
-**ไฟล์:** `labs/lab09-delete-ns/doomed.yaml` (namespace `doomed` + ConfigMap `menu` + SA `cleaner` + Role `cleaner-role` + RoleBinding `cleaner-binding` + ResourceQuota `doomed-quota` (`pods: "5"`) + Pod busybox `crate-1`, `crate-2`) Pod ทั้งสองตั้ง `terminationGracePeriodSeconds: 15` (`sleep` เป็น PID 1 ไม่ตอบ SIGTERM จึงรอครบ 15 วินาที) โซนจะค้าง Terminating นานพอให้ทดลอง
+**ไฟล์:** `labs/lab09-delete-ns/doomed.yaml` (namespace `doomed` + ConfigMap `menu` + SA `cleaner` + Role `cleaner-role` + RoleBinding `cleaner-binding` + ResourceQuota `doomed-quota` + Pod busybox `crate-1`, `crate-2`)
 
 ### ขั้นที่ 1: สร้างโซนที่มีของหลายชนิด
+
+#### อธิบาย YAML: `doomed.yaml` (ส่วนสำคัญ)
+
+```yaml
+# LAB 9: โซนที่จะถูกลบทั้งก้อน — ใส่ของหลายชนิดไว้ดูว่าหายตามไปหมด
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: doomed                   # โซนที่จะถูกลบทั้งก้อน
+---
+apiVersion: v1
+kind: ConfigMap                  # ของชิ้นที่ 1
+metadata:
+  name: menu
+  namespace: doomed
+data:
+  today: "ปลาทูน่า"              # ข้อมูลตัวอย่าง
+---
+apiVersion: v1
+kind: ServiceAccount             # ของชิ้นที่ 2
+metadata:
+  name: cleaner
+  namespace: doomed
+---
+# ... (ตัด: Role cleaner-role (get/list pods) และ RoleBinding cleaner-binding)
+---
+apiVersion: v1
+kind: ResourceQuota              # ของชิ้นที่ 5
+metadata:
+  name: doomed-quota
+  namespace: doomed
+spec:
+  hard:
+    pods: "5"                    # Pod ได้ 5 ตัว (ใช้จริง 2)
+---
+# Pod 2 ตัว: sleep เป็น PID 1 ไม่ตอบ SIGTERM → รอครบ grace 15 วิ
+# โซนจึงค้าง Terminating นานพอให้ลองสร้างของใหม่ระหว่างลบ
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crate-1
+  namespace: doomed
+spec:
+  terminationGracePeriodSeconds: 15  # รอ 15 วิ ก่อนถูก kill
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sleep", "3600"]
+---
+# ... (ตัด: crate-2 เหมือน crate-1)
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| เอกสารแรก `kind: Namespace` `doomed` | โซนอยู่บนสุดของไฟล์ ของชิ้นอื่นจึงสร้างตามได้ทันที | `namespace/doomed created` ตามด้วยของอีก 7 ชิ้น |
+| ของ 6 ชนิด (`ConfigMap`, `ServiceAccount`, `Role`, `RoleBinding`, `ResourceQuota`, `Pod`) ทุกชิ้นมี `namespace: doomed` | ใส่หลายชนิดไว้ดูว่าลบโซนแล้วหายตามไปทั้งหมด และดูว่า `get all` แสดงไม่ครบ | `get all,...` ส่วนของ `all` มีแค่ Pod ส่วนชนิดอื่นปรากฏเพราะระบุเพิ่มเอง |
+| `ResourceQuota` `hard.pods: "5"` | งบเล็ก ๆ ไว้ให้เห็นว่า quota ก็หายตามโซน | `resourcequota/doomed-quota   pods: 2/5` |
+| Pod `terminationGracePeriodSeconds: 15` + `command: ["sleep", "3600"]` | `sleep` เป็น PID 1 ไม่ตอบ SIGTERM kubelet จึงรอครบ 15 วินาทีก่อน kill โซนจึงค้าง `Terminating` นานพอให้ทดลองสร้างของระหว่างลบ | `doomed   Terminating   1s`, `unable to create new content ...` และ `kubectl wait --for=delete` ใช้ราว 20 วินาที |
+| (ไม่ได้อยู่ในไฟล์) `spec.finalizers` | ระบบเติม finalizer `kubernetes` ให้ทุก namespace เอง | `["kubernetes"]` |
 
 🐧 **ใน SSH session ของ k8s-lab**
 
@@ -1774,7 +2282,7 @@ lab-worker          Ready    <none>          4m9s    v1.37.0
 lab-worker2         Ready    <none>          4m9s    v1.37.0
 ```
 
-`doomed` หายไปในราว 20 วินาที namespace อื่นและเรือทั้ง 3 ลำไม่กระทบ (รายการ namespace ของนักศึกษาขึ้นกับว่าเก็บกวาด LAB ก่อนหน้าไปแล้วหรือยัง)
+`doomed` หายไปในราว 20 วินาที (รอบทดสอบซ้ำได้ `real 0m23.296s` เวลาจริงขึ้นกับเครื่อง) namespace อื่นและเรือทั้ง 3 ลำไม่กระทบ (รายการ namespace ของนักศึกษาขึ้นกับว่าเก็บกวาด LAB ก่อนหน้าไปแล้วหรือยัง)
 
 ### ขั้นที่ 4: namespace ระบบที่ลบไม่ได้ (ทดสอบแบบไม่ลบจริง)
 
@@ -1824,7 +2332,7 @@ CURRENT   NAME       CLUSTER    AUTHINFO   NAMESPACE
 *         kind-lab   kind-lab   kind-lab   default
 ```
 
-ใช้เวลาราว 42 วินาที เพราะ Pod `blue/peek` จาก LAB 2 สร้างด้วย `kubectl run` (grace period ค่าเริ่มต้น 30 วินาที และ `sleep` ไม่ตอบ SIGTERM) ถ้าลบ namespace บางตัวไปแล้ว kubectl จะแจ้ง `NotFound` สำหรับตัวนั้น ไม่เป็นไร
+ใช้เวลาราว 42 วินาที (รอบทดสอบซ้ำ `0m42.274s`) เพราะ Pod `blue/peek` จาก LAB 2 สร้างด้วย `kubectl run` (grace period ค่าเริ่มต้น 30 วินาที และ `sleep` ไม่ตอบ SIGTERM) ถ้าลบ namespace บางตัวไปแล้ว kubectl จะแจ้ง `NotFound` สำหรับตัวนั้น ไม่เป็นไร
 
 ### สิ่งที่เห็น
 
@@ -1868,9 +2376,12 @@ CURRENT   NAME       CLUSTER    AUTHINFO   NAMESPACE
   <em><b>รูปที่ 16</b> ไฟล์เดียวแต่หน้าร้านแต่ละ env ต่างกัน: Downward API ส่ง metadata.namespace เข้า env POD_NAMESPACE แล้วต่อเป็น SHOP_NAME</em>
 </p>
 
-ส่วนสำคัญของ `som-shop.yaml` (ตัดบางส่วน ดูไฟล์เต็มด้วย `cat som-shop-envs/k8s/som-shop.yaml`)
+#### อธิบาย YAML: `som-shop.yaml` (ส่วนสำคัญ)
+
+ตัดบางส่วน ดูไฟล์เต็มด้วย `cat som-shop-envs/k8s/som-shop.yaml`
 
 ```yaml
+# ... (ตัด: คอมเมนต์หัวไฟล์ 3 บรรทัด)
 apiVersion: v1
 kind: Pod
 metadata:
@@ -1885,21 +2396,22 @@ spec:
     fsGroup: 70                  # volume (emptyDir) เป็นของกลุ่ม 70 = postgres เขียนได้
     seccompProfile:
       type: RuntimeDefault
-  # ... (ตัด)
+  # ... (ตัด: volumes)
   initContainers:
+    # 1) db: native sidecar (restartPolicy: Always) → เริ่มก่อนและรันตลอดอายุ Pod
     - name: db
       image: postgres:17.11-alpine
-      restartPolicy: Always
+      restartPolicy: Always      # ทำให้ init container นี้เป็น sidecar
       securityContext:
         runAsUser: 70            # uid ของ postgres ใน image alpine
-        runAsGroup: 70
-        allowPrivilegeEscalation: false
+        runAsGroup: 70           # gid ของ postgres
+        allowPrivilegeEscalation: false  # restricted: ห้ามยกระดับสิทธิ์
         capabilities:
-          drop: ["ALL"]
-      # ... (ตัด)
+          drop: ["ALL"]          # restricted: ทิ้ง capability ทั้งหมด
+      # ... (ตัด: env, probes, resources ของ db และ init wait-for-db, db-seed)
   containers:
     - name: web
-      image: som-shop-web:1.1
+      image: som-shop-web:1.1    # image เดียวกันทุกโซน
       imagePullPolicy: IfNotPresent
       securityContext:
         runAsUser: 1000          # image ระบุ USER node เป็นชื่อ จึงต้องใส่ตัวเลข
@@ -1920,14 +2432,28 @@ spec:
           value: "Next.js + PostgreSQL · Kubernetes LAB 004 · namespace $(POD_NAMESPACE)"
         - name: DATABASE_URL
           value: postgres://som:meow1234@localhost:5432/catshop
-      # ... (ตัด)
+      # ... (ตัด: PORT, HOSTNAME, probes, resources)
 ```
 
-- **ไม่มี `metadata.namespace`** ไฟล์เดียวจึงสั่งเข้าได้ทุกโซนด้วย `-n`
-- `POD_NAMESPACE` ได้ค่าจาก Downward API (บทที่ 3 ใช้ `spec.nodeName` บทนี้ใช้ `metadata.namespace`) แล้ว `$(POD_NAMESPACE)` ถูกแทนค่าใน env ตัวถัดไป หน้าร้านแต่ละโซนจึงแสดงต่างกันโดยไม่ต้องแก้ไฟล์
-- ทุก container มี securityContext ครบ 4 เรื่องของ restricted และระบุ uid/gid เป็นตัวเลข (`db`, `wait-for-db` = 70, `db-seed`, `web` = 1000) `fsGroup: 70` ทำให้ postgres เขียน emptyDir ได้
-- resources ของทุก container ยังเหมือนบทที่ 2 (ระบุครบจึงผ่าน quota และไม่เกิน max ของ LimitRange)
-- รหัส `meow1234` ใช้เพื่อการเรียนเท่านั้น
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| ไม่มี `metadata.namespace` | ไฟล์เดียวสั่งเข้าได้ทุกโซนด้วย `-n` | 10.5 ได้ `pod/som-shop created` 3 ครั้ง คนละ NAMESPACE |
+| `metadata.name: som-shop` (ไม่มีคอมเมนต์ต่อท้าย) | ชื่อเดียวกันทุกโซน และให้ `sed 's/name: som-shop$/.../'` ใน 10.7–10.8 เปลี่ยนชื่อสาขาได้ | `pod/som-shop-2 created` (ไม่ใช่ `configured`) |
+| `labels.app: som-shop` | ป้ายรวมของร้านทุกโซน | `kubectl get pods -A -l app=som-shop` |
+| `spec.securityContext` `runAsNonRoot: true`, `seccompProfile: RuntimeDefault` | 2 ใน 4 ข้อของ restricted ตั้งระดับ Pod ครั้งเดียวใช้กับทุก container | `--dry-run=server` ใน `som-prod` ได้ `pod/som-shop created (server dry run)` |
+| `spec.securityContext.fsGroup: 70` | volume ที่ mount ถูกเปลี่ยนเป็นของกลุ่ม 70 (postgres) postgres ที่ไม่ใช่ root จึงเขียนได้ | `drwxrwsrwx ... root postgres ... /var/lib/postgresql/data` และ `web` ได้ `groups=70,1000(node)` |
+| `volumes` `db-data` `emptyDir: {}` | ฐานข้อมูลของ Pod นี้เท่านั้น หายเมื่อ Pod หรือ namespace ถูกลบ | ออเดอร์ของแต่ละโซนไม่ปนกัน (10.10) |
+| `initContainers` `db` + `restartPolicy: Always` | init container ที่กลายเป็น sidecar เริ่มก่อนและรันตลอดอายุ Pod | `Init:0/3` ตอนเริ่ม แล้ว `2/2 Running` (db + web) |
+| `securityContext` ของ `db`, `wait-for-db`: `runAsUser: 70`, `runAsGroup: 70` | uid/gid ตัวเลขของ postgres ใน image alpine | `uid=70(postgres) gid=70(postgres)` |
+| `allowPrivilegeEscalation: false`, `capabilities.drop: ["ALL"]` (ทุก container) | อีก 2 ข้อของ restricted ต้องตั้งระดับ container | `CapPrm/CapEff/CapBnd` เป็น 0 ทั้งหมด แต่ `pg_isready` ยังได้ `accepting connections` |
+| `securityContext` ของ `db-seed` และ `web`: `runAsUser`/`runAsGroup` = 1000 | image ระบุ `USER node` เป็นชื่อ kubelet ตรวจ `runAsNonRoot` กับชื่อไม่ได้ จึงต้องใส่ uid ตัวเลข | `uid=1000(node) gid=1000(node)` และถ้าลบออก (10.8 ก) ได้ `Init:CreateContainerConfigError` |
+| `image: som-shop-web:1.1` + `imagePullPolicy: IfNotPresent` | ใช้ image ที่ build และ `kind load` ไว้บนเรือแล้ว ไม่ไปดึงจาก registry | ร้านพร้อมในไม่กี่วินาที (ถ้ายังไม่ load จะได้ `ErrImagePull` ดู Troubleshooting) |
+| `env` `POD_NAMESPACE` จาก `fieldRef: metadata.namespace` | Downward API ส่งชื่อ namespace ของ Pod เข้า env (บทที่ 3 ใช้ `spec.nodeName`) | `printenv POD_NAMESPACE` ได้ `som-staging` |
+| `SHOP_NAME`, `SHOP_EYEBROW`, `SHOP_FOOTER` ที่มี `$(POD_NAMESPACE)` | `$(ชื่อ)` ถูกแทนค่าด้วย env ที่ประกาศ **ก่อนหน้า** เท่านั้น `POD_NAMESPACE` จึงต้องอยู่บนสุด | `ร้านอาหารแมวน้องส้ม (som-dev)` / `(som-staging)` / `(som-prod)` และท้ายหน้า `namespace som-staging` |
+| `resources` ของทุก container (ค่าเดียวกับบทที่ 2) | ระบุครบจึงผ่านเงื่อนไขของ quota และไม่เกิน `max` ของ LimitRange ใน prod | 1 ร้านใช้ requests `200m/448Mi`, limits `1/1Gi` และ `som-shop` ไม่มี annotation `limit-ranger` |
+| `readinessProbe` `GET /api/health` port 3000 | พร้อมรับลูกค้าเมื่อแอปต่อฐานข้อมูลได้ | `kubectl wait --for=condition=Ready` ผ่าน และ `/api/health` ได้ `{"ok":true,"db":"up"}` |
+
+รหัส `meow1234` ใช้เพื่อการเรียนเท่านั้น
 
 > **ทำไมต้อง build image ใหม่เป็น `som-shop-web:1.1`:** แอปในโฟลเดอร์ `som-shop-envs/app` แก้จากบทที่ 2 เพียงจุดเดียว คือ `app/page.tsx` อ่านข้อความเล็กเหนือชื่อร้านจาก `SHOP_EYEBROW` และข้อความท้ายหน้าจาก `SHOP_FOOTER` (ถ้าไม่ตั้ง ใช้ข้อความเดิมของบทที่ 2 ทุกตัวอักษร) image `som-shop-web:1.0` ของบทที่ 2–3 ยังรันได้แต่หน้าเว็บจะไม่บอกชื่อโซนที่หัวและท้ายหน้า Dockerfile เหมือนเดิม (`USER node`)
 
@@ -1956,7 +2482,7 @@ Image: "som-shop-web:1.1" with ID "sha256:d1aecb886b11e889228016287c9a6bdaf794c7
 real	0m4.847s
 ```
 
-(`-q` = แสดงแค่ ID ของ image ที่ได้ ถ้าอยากเห็นขั้นตอนการ build ให้ตัด `-q` ออก ครั้งแรกอาจใช้เวลาหลายนาทีเพราะต้องดึง `node:22-alpine` และติดตั้ง dependency)
+(`-q` = แสดงแค่ ID ของ image ที่ได้ ถ้าอยากเห็นขั้นตอนการ build ให้ตัด `-q` ออก ครั้งแรกอาจใช้เวลาหลายนาทีเพราะต้องดึง `node:22-alpine` และติดตั้ง dependency) ID ของ image และลำดับ Node ในบรรทัด `loading...` ต่างกันได้ทุกครั้งที่ build/load รอบทดสอบซ้ำได้ ID `9d1e8590853f`, build `real 0m30.385s` และ kind load `real 0m5.650s` ส่วน `DISK USAGE 305MB` / `CONTENT SIZE 76.6MB` ตรงกัน
 
 image ของ postgres เป็นแบบหลาย platform `kind load docker-image` ตรง ๆ อาจล้มเหลว จึงใช้ `docker save --platform` เลือก platform เดียวแล้ว `kind load image-archive` (เครื่องสถาปัตยกรรม ARM ให้เปลี่ยนเป็น `linux/arm64` ซึ่งไม่ได้ทดสอบในเอกสารนี้)
 
@@ -1982,6 +2508,88 @@ docker.io/library/som-shop-web                  1.1                  4e9bfe88de2
   <img src="images/17-lab10-prod-guardrails.png" alt="รูปที่ 17 ชุดป้องกันของ som-prod" width="900"><br>
   <em><b>รูปที่ 17</b> som-prod มีชุดป้องกันครบ: ResourceQuota (งบ), LimitRange (ขนาดกล่อง) และ Pod Security แบบ restricted ที่หน้าโซน</em>
 </p>
+
+#### อธิบาย YAML: `00-namespaces.yaml`
+
+```yaml
+# LAB สุดท้าย: 3 โซนของร้านน้องส้ม ในคลัสเตอร์เดียว
+# dev/staging: แค่ "เตือน" ถ้า Pod ไม่ผ่าน restricted / prod: "บังคับ" restricted (ไม่ผ่าน = ปฏิเสธ)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: som-dev
+  labels:
+    env: dev                     # แสดงเป็นคอลัมน์ด้วย -L env
+    team: som                    # เลือกทั้ง 3 โซนด้วย -l team=som
+    pod-security.kubernetes.io/warn: restricted  # เตือนอย่างเดียว ไม่ปฏิเสธ
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: som-staging
+  labels:
+    env: staging                 # แสดงเป็นคอลัมน์ด้วย -L env
+    team: som
+    pod-security.kubernetes.io/warn: restricted  # เตือนอย่างเดียว ไม่ปฏิเสธ
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: som-prod
+  labels:
+    env: prod                    # แสดงเป็นคอลัมน์ด้วย -L env
+    team: som
+    pod-security.kubernetes.io/enforce: restricted        # ด่านปฏิเสธ
+    pod-security.kubernetes.io/enforce-version: latest  # ใช้กฎของ Kubernetes รุ่นที่รันอยู่
+    pod-security.kubernetes.io/warn: restricted           # กระดิ่งเตือนที่ kubectl
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| 3 เอกสาร `kind: Namespace` | สร้างครบ 3 environment ในคำสั่งเดียว | `namespace/som-dev created` ... `som-prod created` |
+| `labels.env: dev`/`staging`/`prod` | ป้ายบอกประเภทของ environment | `kubectl get ns -l team=som -L env` แสดงคอลัมน์ `ENV` |
+| `labels.team: som` | ป้ายกลุ่ม ใช้เลือกทั้ง 3 โซนพร้อมกัน | `-l team=som` ได้ 3 แถว (ใช้ตรวจในตารางเก็บกวาดด้วย) |
+| `pod-security.kubernetes.io/warn: restricted` (ทุกโซน) | กระดิ่งเตือนที่ kubectl เมื่อ Pod ไม่ผ่าน restricted แต่ยังสร้างให้ | dev/staging ไม่มี Warning เลยใน 10.5 เพราะ `som-shop.yaml` ผ่าน restricted อยู่แล้ว |
+| `pod-security.kubernetes.io/enforce: restricted` (เฉพาะ `som-prod`) | ด่านปฏิเสธจริง ร้านจริงต้องเข้มที่สุด | `som-shop-old` และ `kubectl run debug` ถูกปฏิเสธด้วย `violates PodSecurity "restricted:latest"` |
+| `pod-security.kubernetes.io/enforce-version: latest` | ใช้กฎ restricted ของ Kubernetes รุ่นที่รันอยู่ | ข้อความ error แสดง `"restricted:latest"` |
+
+#### อธิบาย YAML: `prod-guardrails.yaml`
+
+```yaml
+# LAB สุดท้าย: ชุดป้องกันของร้านจริง (som-prod เท่านั้น จึงเขียน namespace ไว้ในไฟล์)
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: prod-budget
+  namespace: som-prod            # งบของร้านจริงเท่านั้น
+spec:
+  hard:
+    pods: "2"                    # ร้านจริงเปิดได้ไม่เกิน 2 Pod
+    requests.cpu: "1"            # ผลรวม requests ของทุก Pod
+    requests.memory: 1Gi
+    limits.cpu: "2"              # ผลรวม limits ของทุก Pod
+    limits.memory: 2Gi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: prod-box-size
+  namespace: som-prod            # กฎขนาดกล่องของร้านจริงเท่านั้น
+spec:
+  limits:
+    - type: Container            # ใช้กับทุก container รวม init/sidecar
+      defaultRequest: { cpu: 50m, memory: 64Mi }  # เติม requests ให้ container ที่ไม่ระบุ
+      default:        { cpu: 200m, memory: 128Mi }  # เติม limits ให้ container ที่ไม่ระบุ
+      max:            { cpu: "1", memory: 1Gi }  # ห้าม limits เกินค่านี้ต่อ container
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `metadata.namespace: som-prod` (ทั้ง 2 เอกสาร) | ชุดป้องกันเป็นของร้านจริงเท่านั้น จึงเขียนโซนไว้ในไฟล์ apply โดยไม่ต้องใส่ `-n` และพลาดไปลงโซนอื่นไม่ได้ | `resourcequota/prod-budget created`, `limitrange/prod-box-size created` |
+| ResourceQuota `hard.pods: "2"` | เปิดร้านได้ไม่เกิน 2 Pod | สาขาที่ 3 ชน `pods=2` (10.7) |
+| `requests.cpu: "1"`, `requests.memory: 1Gi`, `limits.cpu: "2"`, `limits.memory: 2Gi` | งบรวมของโซน ตั้งให้พอ 2 ร้านพอดี (1 ร้าน = limits 1 CPU/1Gi) | สาขาที่ 3 ชน `limits.cpu`, `limits.memory` และ `requests.memory` พร้อมกัน แต่ไม่ชน `requests.cpu` (400m + 200m < 1) |
+| LimitRange `type: Container` `defaultRequest: 50m/64Mi`, `default: 200m/128Mi` | เติมค่าให้ container ที่ลืมระบุ (เช่น Pod debug) จึงไม่ติดเงื่อนไข `must specify` ของ quota | `debug` ได้ `{"limits":{"cpu":"200m","memory":"128Mi"},"requests":{"cpu":"50m","memory":"64Mi"}}` (10.8 ข) |
+| `max: cpu "1", memory 1Gi` | ห้าม container ใดขอ limits เกิน 1 CPU/1Gi ส่วน container ของร้านขอมากสุด 500m/512Mi จึงผ่าน | `pod/som-shop created` ใน `som-prod` |
 
 ```bash
 kubectl apply -f som-shop-envs/k8s/00-namespaces.yaml
@@ -2024,12 +2632,64 @@ Container   cpu       -    1    50m              200m           -
 Container   memory    -    1Gi  64Mi             128Mi          -
 ```
 
+(ลำดับแถว `cpu`/`memory` ของ LimitRange อาจสลับกันได้เหมือน LAB 6)
+
 ### 10.4 ร้านฉบับเก่าไม่ผ่านด่านของ prod
 
 <p align="center" id="fig-18">
   <img src="images/18-lab10-old-shop-rejected.png" alt="รูปที่ 18 ร้านฉบับเก่าถูกด่าน restricted ปฏิเสธ" width="900"><br>
   <em><b>รูปที่ 18</b> ร้านฉบับบท 002 (ไม่มี securityContext) ถูกด่าน restricted ของ som-prod ปฏิเสธ ส่วนฉบับใหม่ที่รันด้วย uid 70 และ 1000 ผ่านเข้าไป</em>
 </p>
+
+#### อธิบาย YAML: `som-shop-v002.yaml` (ส่วนสำคัญ)
+
+```yaml
+# LAB สุดท้าย: สำเนาร้านฉบับบท 002 (ไม่มี securityContext) เปลี่ยนชื่อเป็น som-shop-old
+# ใช้ลอง apply เข้า som-prod เพื่อดูด่าน Pod Security restricted ปฏิเสธ (ไม่ต้องแก้ไฟล์นี้)
+# (บท 002 LAB 9) ร้านอาหารแมวน้องส้ม — Next.js + PostgreSQL ใน Pod เดียว
+# ออกแบบเพื่อการเรียนรู้เท่านั้น! งานจริงควรแยก web กับ db คนละ Pod (บทหน้า)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: som-shop-old             # คนละชื่อกับ som-shop
+  labels:
+    app: som-shop
+    part: all-in-one
+spec:                            # ไม่มี securityContext ทั้งระดับ Pod และ container
+  volumes:
+    - name: db-data              # ที่เก็บข้อมูล Postgres: รอดตอน container restart แต่หายเมื่อลบ Pod
+      emptyDir: {}
+
+  initContainers:                # ทำงานตามลำดับจากบนลงล่าง
+    # 1) db: native sidecar (restartPolicy: Always) → เริ่มก่อน และรันต่อไปตลอดอายุ Pod
+    - name: db
+      image: postgres:17.11-alpine  # image ทางการ เริ่มทำงานเป็น root
+      restartPolicy: Always      # ทำให้ init container นี้กลายเป็น sidecar (K8s 1.33+)
+      # ... (ตัด: env, probes, resources)
+    # 2) wait-for-db: รอจนต่อ db ทาง localhost ได้ (exit 0 แล้วจบ)
+    - name: wait-for-db
+      image: postgres:17.11-alpine
+      # ... (ตัด)
+    # 3) db-seed: สร้างตาราง + ใส่สินค้าตั้งต้น (ใช้ image เดียวกับเว็บ)
+    - name: db-seed
+      image: som-shop-web:1.0    # image ของบท 002
+      imagePullPolicy: IfNotPresent   # ใช้ image ที่ kind load ไว้บน node (ไม่ไปดึงจาก Docker Hub)
+      command: ["node", "scripts/seed.mjs"]
+      # ... (ตัด)
+  containers:
+    # web: หน้าร้าน Next.js คุยกับ db ผ่าน localhost:5432
+    - name: web
+      image: som-shop-web:1.0
+      imagePullPolicy: IfNotPresent
+      # ... (ตัด)
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| `metadata.name: som-shop-old` | คนละชื่อกับ `som-shop` จะได้ไม่สับสนกับร้านฉบับใหม่ | ข้อความ error อ้าง `pods "som-shop-old"` |
+| ไม่มี `metadata.namespace` | เลือกโซนด้วย `-n som-prod` | ถูกตรวจด้วยด่าน `enforce: restricted` ของ `som-prod` |
+| ไม่มี `securityContext` เลยทั้งระดับ Pod และทุก container (`db`, `wait-for-db`, `db-seed`, `web`) | ร้านฉบับบทที่ 2 ที่ยังไม่ได้เตรียมรับ restricted | ผิดกฎครบ 4 ข้อ (`allowPrivilegeEscalation`, `capabilities`, `runAsNonRoot`, `seccompProfile`) ใน `containers "db", "wait-for-db", "db-seed", "web"` และไม่ถูกสร้าง |
+| `image: som-shop-web:1.0` | image ของบทที่ 2 | ไม่ถูกดึงหรือรันเลย เพราะถูกปฏิเสธที่ API server ก่อนถึง Node |
 
 ```bash
 kubectl apply -f som-shop-envs/k8s/som-shop-v002.yaml -n som-prod
@@ -2072,7 +2732,7 @@ som-staging   som-shop   2/2     Running   0          8s    10.244.2.11   lab-wo
 - Pod ชื่อ `som-shop` เหมือนกัน 3 ตัว คนละ NAMESPACE ไม่ชนกัน
 - dev/staging ไม่มี Warning เลย (ไฟล์ผ่าน restricted แล้ว กระดิ่ง warn จึงเงียบ)
 - `2/2` = sidecar `db` + `web` และ `Init:0/3` ตอนเริ่มคือ init 3 ตัว (`db` นับเป็น init แบบ sidecar) ร้านพร้อมในไม่กี่วินาทีเพราะ image อยู่บนเรือแล้ว
-- dev และ staging อยู่เรือเดียวกัน ส่วน prod อยู่อีกลำ (ในเครื่องนักศึกษาอาจต่างได้) namespace ไม่ได้กำหนดเรือ
+- dev และ staging อยู่เรือเดียวกัน ส่วน prod อยู่อีกลำ (ในเครื่องนักศึกษาอาจต่างได้ รอบทดสอบซ้ำได้ dev+staging บน `lab-worker2` และ prod บน `lab-worker` และ IP ต่างไปด้วย) namespace ไม่ได้กำหนดเรือ
 
 ### 10.6 ตรวจว่าแต่ละร้านรู้ว่าตัวเองอยู่โซนไหน และรันแบบไม่ใช่ root
 
@@ -2237,6 +2897,48 @@ pod "debug" deleted from som-prod namespace
   <em><b>รูปที่ 20</b> ServiceAccount intern ดูได้อย่างเดียวและเฉพาะ som-dev: get/list/logs ได้ แต่ลบไม่ได้และเข้า som-prod ไม่ได้</em>
 </p>
 
+#### อธิบาย YAML: `intern-rbac.yaml`
+
+```yaml
+# LAB สุดท้าย: บัตรเด็กฝึกงานของ som-dev — ดู Pod และ log ได้อย่างเดียว เฉพาะ som-dev
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: intern
+  namespace: som-dev             # บัตรอยู่ในโซน dev (หายพร้อมโซน)
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role                       # สิทธิ์เฉพาะ som-dev
+metadata:
+  name: shop-viewer
+  namespace: som-dev
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]  # Pod และ log ของ Pod
+    verbs: ["get", "list", "watch"]  # ดูอย่างเดียว
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: intern-shop-viewer
+  namespace: som-dev
+subjects:
+  - kind: ServiceAccount
+    name: intern
+    namespace: som-dev
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role                     # อ้าง Role shop-viewer ในโซนเดียวกัน
+  name: shop-viewer
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | ผลที่เห็นในการทดลอง |
+|---|---|---|
+| ทุกเอกสารมี `namespace: som-dev` | บัตร การ์ด และสายคล้องอยู่ในโซน dev ทั้งหมด จึงหายไปพร้อมโซนเมื่อลบ `som-dev` | หลัง 10.11 `kubectl --context intern@som-dev ...` ได้ `Unauthorized` |
+| ServiceAccount `intern` | บัตรเด็กฝึกงาน ชื่อเต็ม `system:serviceaccount:som-dev:intern` | `auth whoami` ได้ชื่อนี้ |
+| Role `shop-viewer` `resources: ["pods", "pods/log"]`, `verbs: ["get", "list", "watch"]` | ดู Pod และ log ได้อย่างเดียว ไม่มี `pods/portforward` และ `pods/exec` | can-i: get pods `yes`, get pods/log `yes`, delete `no`, create `no` และ port-forward ได้ `cannot create resource "pods/portforward"` |
+| RoleBinding `intern-shop-viewer` → `roleRef: Role shop-viewer` | ผูกบัตรกับการ์ดแบบ LAB 7 แต่ในโซน dev | `get pods -n som-prod` ได้ `no` / Forbidden |
+
 ```bash
 kubectl apply -f som-shop-envs/k8s/intern-rbac.yaml
 for chk in 'get pods -n som-dev' 'get pods/log -n som-dev' 'delete pods -n som-dev' 'get pods -n som-prod' 'create pods -n som-dev'; do printf '%-26s %s\n' "$chk" "$(kubectl auth can-i $chk --as=system:serviceaccount:som-dev:intern)"; done
@@ -2292,7 +2994,7 @@ error: error upgrading connection: unable to upgrade connection: pods "som-shop"
 kind-lab
 ```
 
-intern ดู Pod และ log ของร้าน dev ได้ แต่ลบไม่ได้ ดู prod ไม่ได้ และ **เปิดหน้าร้านด้วย port-forward ไม่ได้** (ต้องการ `create` บน `pods/portforward`) context ปัจจุบันยังเป็น `kind-lab` (admin) ขั้นต่อไปจึงใช้ admin เปิด port-forward
+(UID, JTI, AGE และเวลาใน log เช่น `next.config took 1.0ms` ต่างกันได้ทุกครั้ง รอบทดสอบซ้ำได้ `1.8ms`) intern ดู Pod และ log ของร้าน dev ได้ แต่ลบไม่ได้ ดู prod ไม่ได้ และ **เปิดหน้าร้านด้วย port-forward ไม่ได้** (ต้องการ `create` บน `pods/portforward`) context ปัจจุบันยังเป็น `kind-lab` (admin) ขั้นต่อไปจึงใช้ admin เปิด port-forward
 
 ### 10.10 เปิดหน้าร้าน 3 โซนใน browser
 
@@ -2333,19 +3035,21 @@ ssh -p 2223 -L 3001:localhost:3001 -L 3002:localhost:3002 -L 3003:localhost:3003
 หน้าเว็บทั้ง 3 โซน **สีและหน้าตาเหมือนกัน** (เป็น image เดียวกัน) ต่างกันที่ชื่อร้าน `(som-dev)`/`(som-staging)`/`(som-prod)` ข้อความเล็ก `⚓ ท่าเรือ Kubernetes · โซน som-...` ข้อความท้ายหน้า `namespace som-...` และตัวเลขออเดอร์ ส่วนป้าย `เสิร์ฟโดย Pod: som-shop` เหมือนกันทุกโซน เพราะชื่อ Pod เหมือนกัน
 
 <p align="center" id="fig-22">
-  <img src="images/screenshots/20261004_2050_lab10ns_01-som-dev.png" alt="รูปที่ 22 ภาพหน้าจอจริง โซน som-dev" width="700"><br>
-  <em><b>รูปที่ 22</b> ภาพหน้าจอจริงจากการทดลอง: http://localhost:3001 หัวเว็บ "ร้านอาหารแมวน้องส้ม (som-dev)" ข้อความเล็ก "โซน som-dev" ออเดอร์ทั้งหมด 1 และท้ายหน้า "Kubernetes LAB 004 · namespace som-dev"</em>
+  <img src="images/screenshots/20261005_1725_lab004_01-som-dev.png" alt="รูปที่ 22 ภาพหน้าจอจริง โซน som-dev" width="700"><br>
+  <em><b>รูปที่ 22</b> ภาพหน้าจอจริงจากการทดลอง: http://localhost:3001 หัวเว็บ "ร้านอาหารแมวน้องส้ม (som-dev)" ข้อความเล็ก "โซน som-dev" ออเดอร์ทั้งหมด 1 (อาหารเม็ดสูตรปลาทูน่าเหลือ 19 ชิ้น) และท้ายหน้า "Kubernetes LAB 004 · namespace som-dev"</em>
 </p>
 
 <p align="center" id="fig-23">
-  <img src="images/screenshots/20261004_2050_lab10ns_02-som-staging.png" alt="รูปที่ 23 ภาพหน้าจอจริง โซน som-staging" width="700"><br>
-  <em><b>รูปที่ 23</b> ภาพหน้าจอจริงจากการทดลอง: http://localhost:3002 ร้าน som-staging ออเดอร์ทั้งหมด 2 ไม่เกี่ยวกับออเดอร์ของ dev เพราะแต่ละโซนมีฐานข้อมูลใน Pod ของตัวเอง</em>
+  <img src="images/screenshots/20261005_1725_lab004_02-som-staging.png" alt="รูปที่ 23 ภาพหน้าจอจริง โซน som-staging" width="700"><br>
+  <em><b>รูปที่ 23</b> ภาพหน้าจอจริงจากการทดลอง: http://localhost:3002 ร้าน som-staging ออเดอร์ทั้งหมด 2 (สินค้าเดียวกันเหลือ 18 ชิ้น) ไม่เกี่ยวกับออเดอร์ของ dev เพราะแต่ละโซนมีฐานข้อมูลใน Pod ของตัวเอง</em>
 </p>
 
 <p align="center" id="fig-24">
-  <img src="images/screenshots/20261004_2050_lab10ns_03-som-prod.png" alt="รูปที่ 24 ภาพหน้าจอจริง โซน som-prod" width="700"><br>
-  <em><b>รูปที่ 24</b> ภาพหน้าจอจริงจากการทดลอง: http://localhost:3003 ร้าน som-prod (ร้านจริง) ออเดอร์ทั้งหมด 3 เปิดจาก manifest ไฟล์เดียวกับอีกสองโซน</em>
+  <img src="images/screenshots/20261005_1725_lab004_03-som-prod.png" alt="รูปที่ 24 ภาพหน้าจอจริง โซน som-prod" width="700"><br>
+  <em><b>รูปที่ 24</b> ภาพหน้าจอจริงจากการทดลอง: http://localhost:3003 ร้าน som-prod (ร้านจริง) ออเดอร์ทั้งหมด 3 (สินค้าเดียวกันเหลือ 17 ชิ้น) เปิดจาก manifest ไฟล์เดียวกับอีกสองโซน</em>
 </p>
+
+(รูปที่ 22–24 ถ่ายเมื่อ 5 ต.ค. 2569 โดยเปิดผ่าน NodePort Service ที่เพิ่มเฉพาะเพื่อการถ่ายภาพ หน้าเว็บเหมือนกับที่นักศึกษาเปิดผ่าน port-forward ตามขั้นตอนด้านบน)
 
 **(ทางเลือก) สั่งซื้อด้วย curl** 🐧 ใน k8s-lab
 

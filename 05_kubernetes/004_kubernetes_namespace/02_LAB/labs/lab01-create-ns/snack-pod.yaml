@@ -1,14 +1,14 @@
 # LAB 1: Pod ขนมแมว "snack" — ไม่มี metadata.namespace
 # จะไปอยู่โซนไหนขึ้นกับ -n ตอนสั่ง (ไม่ใส่ -n → namespace ของ context ปกติคือ default)
 apiVersion: v1
-kind: Pod
-metadata:
-  name: snack
+kind: Pod                        # Pod เดี่ยว (บทนี้ยังไม่ใช้ Deployment)
+metadata:                        # ตั้งใจไม่ใส่ namespace
+  name: snack                    # ชื่อซ้ำได้ถ้าอยู่คนละ namespace
   labels:
-    app: snack
+    app: snack                   # ใช้ค้นทุกโซนด้วย -l app=snack
 spec:
   terminationGracePeriodSeconds: 1   # busybox sh เป็น PID 1 ไม่ตอบ SIGTERM → ให้ลบเร็ว
   containers:
     - name: app
-      image: busybox:1.36
-      command: ["sh", "-c", "echo snack พร้อมเสิร์ฟ; sleep 3600"]
+      image: busybox:1.36        # image เล็ก มี sh และ wget
+      command: ["sh", "-c", "echo snack พร้อมเสิร์ฟ; sleep 3600"]  # พิมพ์ข้อความ (ดูด้วย kubectl logs) แล้วรอ 1 ชม.

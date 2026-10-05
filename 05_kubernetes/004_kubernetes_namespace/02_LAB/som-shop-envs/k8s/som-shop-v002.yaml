@@ -5,11 +5,11 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: som-shop-old
+  name: som-shop-old             # คนละชื่อกับ som-shop
   labels:
     app: som-shop
     part: all-in-one
-spec:
+spec:                            # ไม่มี securityContext ทั้งระดับ Pod และ container
   volumes:
     - name: db-data              # ที่เก็บข้อมูล Postgres: รอดตอน container restart แต่หายเมื่อลบ Pod
       emptyDir: {}
@@ -17,7 +17,7 @@ spec:
   initContainers:                # ทำงานตามลำดับจากบนลงล่าง
     # 1) db: native sidecar (restartPolicy: Always) → เริ่มก่อน และรันต่อไปตลอดอายุ Pod
     - name: db
-      image: postgres:17.11-alpine
+      image: postgres:17.11-alpine  # image ทางการ เริ่มทำงานเป็น root
       restartPolicy: Always      # ทำให้ init container นี้กลายเป็น sidecar (K8s 1.33+)
       env:
         - name: POSTGRES_USER
@@ -64,7 +64,7 @@ spec:
 
     # 3) db-seed: สร้างตาราง + ใส่สินค้าตั้งต้น (ใช้ image เดียวกับเว็บ)
     - name: db-seed
-      image: som-shop-web:1.0
+      image: som-shop-web:1.0    # image ของบท 002
       imagePullPolicy: IfNotPresent   # ใช้ image ที่ kind load ไว้บน node (ไม่ไปดึงจาก Docker Hub)
       command: ["node", "scripts/seed.mjs"]
       env:

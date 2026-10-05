@@ -3,15 +3,15 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-from-team-b
-  namespace: team-a
+  name: allow-from-team-b        # policy ที่ 2 ซ้อนกับ allow-same-namespace
+  namespace: team-a              # มีผลกับ Pod ในโซน team-a เท่านั้น
 spec:
   podSelector:
     matchLabels:
       app: web                   # ใช้กับ Pod web เท่านั้น
-  policyTypes: ["Ingress"]
+  policyTypes: ["Ingress"]       # คุมเฉพาะขาเข้า
   ingress:
     - from:
-        - namespaceSelector:
+        - namespaceSelector:     # เลือก "โซนต้นทาง" ด้วย label ของ namespace
             matchLabels:
               kubernetes.io/metadata.name: team-b   # label ที่ระบบใส่ให้ทุก namespace อัตโนมัติ

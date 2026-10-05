@@ -1,20 +1,20 @@
 # LAB 7: บัตรพนักงานฝึกงาน (ServiceAccount intern) ของโซน team-a ดูได้อย่างเดียว
 apiVersion: v1
-kind: ServiceAccount
+kind: ServiceAccount             # บัตรประจำตัวของโปรแกรม (namespaced)
 metadata:
   name: intern
-  namespace: team-a
+  namespace: team-a              # บัตรของโซน team-a
 ---
 # การ์ดสิทธิ์: ทำอะไรได้กับอะไร (มีผลเฉพาะ team-a)
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: Role                       # สิทธิ์ที่มีผลเฉพาะ namespace ของ Role
 metadata:
   name: pod-reader
   namespace: team-a
 rules:
   - apiGroups: [""]              # "" = core API group (Pod อยู่กลุ่มนี้)
     resources: ["pods", "pods/log"]   # pods/log = subresource สำหรับ kubectl logs
-    verbs: ["get", "list", "watch"]
+    verbs: ["get", "list", "watch"]  # ดูอย่างเดียว ไม่มี create/delete
 ---
 # สายคล้อง: ผูกบัตร intern เข้ากับการ์ด pod-reader
 apiVersion: rbac.authorization.k8s.io/v1
@@ -23,10 +23,10 @@ metadata:
   name: intern-pod-reader
   namespace: team-a
 subjects:
-  - kind: ServiceAccount
+  - kind: ServiceAccount         # ผู้รับสิทธิ์ = SA intern
     name: intern
-    namespace: team-a
+    namespace: team-a            # SA ต้องระบุ namespace ของตัวเอง
 roleRef:                         # แก้ทีหลังไม่ได้ ต้องลบแล้วสร้างใหม่
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
+  kind: Role                     # อ้าง Role ในโซนเดียวกัน
   name: pod-reader
