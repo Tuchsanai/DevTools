@@ -1,0 +1,17 @@
+งาน: ผู้ใช้ขอให้ "ข้อความคำอธิบายในภาพเป็นภาษาไทย" ให้แก้ prompt ภาพของ 3 บท และแก้จุดเล็กอีก 2 จุด
+
+ไฟล์ที่เขียนได้เท่านั้น:
+- /root/workspace/DevTools/k/logs/005_replicaset/images.json, /root/workspace/DevTools/k/logs/006_service/images.json, /root/workspace/DevTools/k/logs/007_deployment/images.json
+- imagegen-prompts.md ของ 01_Theory/images และ 02_LAB/images ของ 005_kubernetes_replicaset, 006_kubernetes_service, 007_kubernetes_deployment (สร้างใหม่จาก images.json ให้ตรงกัน รูปแบบเดิม)
+- /root/workspace/DevTools/k/004_kubernetes_namespace/02_LAB/README.md (เฉพาะจุดตามข้อ 3)
+- ไฟล์ชั่วคราว/สคริปต์ใต้ /root/workspace/DevTools/k/logs/005_replicaset/scratch/ (ห้ามใช้ /tmp)
+
+1) ทุก prompt ทั้ง 3 บท ปรับส่วน Text (verbatim) และ Constraints ดังนี้:
+   - ป้ายที่เป็น "คำอธิบาย/หัวข้อ/สถานะเชิงบรรยาย/คำเปรียบ" ต้องเป็นภาษาไทยสั้น อ่านง่าย (เช่น "desired/actual" → "ต้องการ 3" / "มีจริง 2", "observe/diff/act" → "สังเกต" / "เทียบ" / "ลงมือ", "controller" ในฐานะคำอธิบาย → "ตัวควบคุม (controller)", "Problem" → "ปัญหา", "Solution" → "ทางแก้", "level-triggered" → "ดูสถานะปัจจุบันเสมอ (level-triggered)")
+   - คงภาษาอังกฤษไว้เฉพาะ: ชื่อ resource/kind (Pod, ReplicaSet, Service, Deployment, EndpointSlice, NodePort ฯลฯ), ชื่อ field ใน YAML (replicas, selector, template, ownerReferences, maxSurge ฯลฯ), คำสั่ง (kubectl ...), ชื่อ object/ชื่อ Pod/ชื่อ node/IP/port/เวอร์ชัน และข้อความ error/สถานะจริงของ Kubernetes (Running, Pending, CrashLoopBackOff, exceeded quota ...) — ถ้าข้อความเหล่านี้เป็นหัวใจของภาพ ให้เพิ่มป้ายไทยสั้นอธิบายกำกับคู่ได้ 1 ป้าย
+   - ทุกภาพควรมีป้ายภาษาไทยอธิบายใจความหลักอย่างน้อย 1 ป้าย (ไม่เกินรวม ~7 ป้ายต่อภาพ ระบุจำนวนป้ายให้ตรง ห้ามป้ายว่าง)
+   - ภาษาไทยต้องสะกดถูก สั้น (ไม่เกิน ~20 ตัวอักษรต่อป้ายถ้าเป็นไปได้) ใส่ใน Constraints ว่า "Thai text must be rendered exactly as given, correct Thai spelling, clear Thai font, no garbled glyphs"
+   - ไม่เปลี่ยนฉาก/ความหมายทางเทคนิค/ชื่อไฟล์/ลำดับ/id ยกเว้นข้อ 2
+2) แก้ตามผลทดสอบจริงของบท 005 (ดู /root/workspace/DevTools/k/logs/005_replicaset/lab-run/SUMMARY.md ตารางป้ายภาพ): T17 NotReady ~45 วิ (+ สร้างแทน ~75 วิ), L18 บูธเก่า 3 ตัวป้าย 1.1 x3, L12 caption build จาก som-booths/app ของบทนี้, L10 และ T33 กล่าวถึง nodeTaintsPolicy: Honor, L09 caption เพิ่ม "อาจรอราว 1 นาทีหลังเพิ่มโควตา" และข้ออื่นในตารางนั้นทั้งหมด; caption_th ให้ตรงผลจริง
+3) /root/workspace/DevTools/k/004_kubernetes_namespace/02_LAB/README.md: ถ้ามีการเรียก GET /api/orders (ซึ่งจริง ๆ ตอบ 405 ไม่มี endpoint นี้) ให้เปลี่ยนเป็นวิธีที่ใช้ได้จริง เช่น ดูจำนวนออเดอร์บนหน้าเว็บ หรือ curl -s localhost:3000/ | grep ออเดอร์ หรือ /api/products (stock) หรือ psql นับ orders — ตรวจกับโค้ดแอปใน 004_kubernetes_namespace/02_LAB/som-shop-envs/app ว่ามี route อะไรบ้าง และอย่าแต่งผลลัพธ์ ถ้าในเอกสารยกผลลัพธ์ที่ไม่ได้มาจาก log จริง ให้เปลี่ยนเป็นคำอธิบายแทน
+ตรวจ JSON parse ได้, id/path เดิมไม่เปลี่ยน, ทุก prompt มีภาษาไทยอย่างน้อย 1 ป้าย (นับด้วยสคริปต์) ตอบสั้น ๆ: จำนวน prompt ที่แก้ต่อบท, ตัวอย่าง 3 ภาพก่อน/หลัง, สิ่งที่แก้ใน README 004

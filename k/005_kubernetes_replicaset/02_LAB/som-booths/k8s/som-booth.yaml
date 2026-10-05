@@ -1,0 +1,168 @@
+# LAB 9: ร้านน้องส้ม 3 บูธ — ReplicaSet som-booth ดูแลให้มีบูธครบ 3 ตัวเสมอ
+# template.spec = Pod ร้าน all-in-one ของบท 004 (som-shop.yaml) ทั้งก้อน: db sidecar + wait-for-db + db-seed + web
+# ต่างจากบท 004: env POD_NAME → หน้าเว็บบอกชื่อบูธ, preferred anti-affinity กระจายบูธข้ามเรือ
+# ทุกบูธมีฐานข้อมูล (emptyDir) ของตัวเอง → ออเดอร์ของแต่ละบูธ "ไม่ตรงกัน" (ปัญหาที่บท 006 จะแก้)
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: som-booth
+  namespace: som-booths
+  labels:
+    app: som-booth
+spec:
+  replicas: 3                      # จำนวนบูธ
+  selector:
+    matchLabels:
+      app: som-booth
+  template:                        # แบบพิมพ์บูธ (ไม่มี name → ระบบตั้ง som-booth-xxxxx)
+    metadata:
+      labels:
+        app: som-booth             # ต้องตรงกับ selector
+    spec:
+      securityContext:               # ระดับ Pod: ใช้กับทุก container
+        runAsNonRoot: true           # ห้ามรันเป็น root
+        fsGroup: 70                  # volume (emptyDir) เป็นของกลุ่ม 70 = postgres เขียนได้
+        seccompProfile:
+          type: RuntimeDefault
+
+      affinity:                      # ขอร้อง (preferred) ให้บูธอยู่คนละเรือ ถ้าไม่ได้ก็ยอม (บท 003)
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: som-booth
+                topologyKey: kubernetes.io/hostname
+
+      volumes:
+        - name: db-data              # ฐานข้อมูลของ "บูธนี้" เท่านั้น หายเมื่อ Pod ถูกลบ
+          emptyDir: {}
+
+      initContainers:
+        # 1) db: native sidecar (restartPolicy: Always) → เริ่มก่อนและรันตลอดอายุ Pod
+        - name: db
+          image: postgres:17.11-alpine
+          restartPolicy: Always
+          securityContext:
+            runAsUser: 70            # uid ของ postgres ใน image alpine
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: POSTGRES_USER
+              value: som
+            - name: POSTGRES_PASSWORD
+              value: meow1234        # เพื่อการเรียนเท่านั้น
+            - name: POSTGRES_DB
+              value: catshop
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: db-data
+              mountPath: /var/lib/postgresql/data
+          startupProbe:
+            exec:
+              command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+
+        # 2) wait-for-db: รอจนต่อ db ได้
+        - name: wait-for-db
+          image: postgres:17.11-alpine
+          command:
+            - sh
+            - -c
+            - until pg_isready -h localhost -p 5432 -U som -d catshop; do echo "รอฐานข้อมูล..."; sleep 2; done; echo "ฐานข้อมูลพร้อมแล้ว"
+          securityContext:
+            runAsUser: 70
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }
+
+        # 3) db-seed: สร้างตาราง + สินค้าตั้งต้น
+        - name: db-seed
+          image: som-shop-web:1.1
+          imagePullPolicy: IfNotPresent
+          command: ["node", "scripts/seed.mjs"]
+          securityContext:
+            runAsUser: 1000          # image ระบุ USER node เป็น "ชื่อ" → ต้องใส่เป็นตัวเลขให้ runAsNonRoot ตรวจได้
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: DATABASE_URL
+              value: postgres://som:meow1234@localhost:5432/catshop
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits:   { cpu: 300m, memory: 256Mi }
+
+      containers:
+        - name: web
+          image: som-shop-web:1.1
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: POD_NAME           # Downward API: ชื่อ Pod (= ชื่อบูธ) ต้องประกาศก่อนตัวที่ใช้ $(POD_NAME)
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: SHOP_NAME
+              value: "ร้านอาหารแมวน้องส้ม (หลายบูธ)"
+            - name: SHOP_EYEBROW       # ข้อความเล็กเหนือชื่อร้าน → บอกว่าเป็นบูธไหน
+              value: "⚓ บูธ $(POD_NAME)"
+            - name: SHOP_FOOTER
+              value: "Next.js + PostgreSQL · Kubernetes LAB 005 · ReplicaSet som-booth"
+            - name: DATABASE_URL
+              value: postgres://som:meow1234@localhost:5432/catshop
+            - name: PORT
+              value: "3000"
+            - name: HOSTNAME
+              value: "0.0.0.0"
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 2
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: { cpu: 100m, memory: 192Mi }
+            limits:   { cpu: 500m, memory: 512Mi }

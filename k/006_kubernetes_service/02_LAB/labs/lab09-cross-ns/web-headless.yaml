@@ -1,0 +1,14 @@
+# LAB 9: headless Service (clusterIP: None) — ไม่มี IP กลาง
+# DNS คืน IP ของทุก Pod ที่ Ready (สมุดรายชื่อบูธ) และ kube-proxy ไม่กระจายให้
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-headless
+  namespace: shop
+spec:
+  clusterIP: None
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: http

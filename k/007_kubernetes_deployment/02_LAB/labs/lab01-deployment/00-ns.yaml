@@ -1,0 +1,7 @@
+# LAB 1–3: โซน (namespace) deploy-lab — ใช้ต่อเนื่อง LAB 1 → 3 แล้วลบทิ้งตอนจบ LAB 3
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: deploy-lab
+  labels:
+    team: som

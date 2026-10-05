@@ -1,0 +1,12 @@
+# LAB 7 (ตั้งใจผิด #1): selector พิมพ์ผิด app=wbe → ไม่มี Pod ไหนตรง → ไม่มี endpoint
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-typo
+  namespace: shop
+spec:
+  selector:
+    app: wbe               # ← พิมพ์ผิด (ที่ถูกคือ web)
+  ports:
+    - port: 80
+      targetPort: http

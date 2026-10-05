@@ -1,0 +1,37 @@
+# LAB 7: Deployment web 3 replicas ค่า default (maxSurge/maxUnavailable 25%) — ยังไม่มี preStop
+# รอบแรกนับ error ระหว่างเปลี่ยนรุ่นแบบนี้ก่อน แล้วรอบสองค่อยใส่ graceful-patch.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: zdt-lab
+  labels:
+    app: web
+spec:
+  replicas: 3
+  selector:                        # เปลี่ยนไม่ได้หลังสร้าง (เหมือน ReplicaSet)
+    matchLabels:
+      app: web
+  # ไม่ได้เขียน strategy → ค่า default maxSurge 25% / maxUnavailable 25%
+  template:                        # พิมพ์เขียวของ Pod — แก้ส่วนนี้ = เกิดรุ่นใหม่ (rollout)
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine   # image สาธารณะ — Node pull เอง ไม่ต้อง kind load
+          env:
+            - name: VERSION
+              value: v1
+          # เขียนหน้า index ให้บอกรุ่นและชื่อ Pod แล้วเปิด nginx
+          command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:            # ไฟเขียวหน้าบูธ — rollout รอไฟนี้ก่อนปิดบูธรุ่นเก่า
+            httpGet: { path: /, port: http }
+            periodSeconds: 2
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }

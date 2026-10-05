@@ -1,0 +1,16 @@
+งาน: เขียนเอกสารบทเรียน 005 "ReplicaSet" ภาษาไทยให้สมบูรณ์และละเอียด (ไม่ต้องรัน LAB ใหม่ ใช้ผลจริงที่ทดสอบแล้ว)
+
+แหล่งข้อมูล:
+- แผน: /root/workspace/DevTools/k/logs/005_replicaset/plan.md, split-contract: logs/005_replicaset/scratch/split-contract.md
+- ภาพและคำบรรยาย: logs/005_replicaset/images.json (path + caption_th ตามลำดับ; ภาพกำลังสร้างใหม่ ชื่อไฟล์ตาม images.json) + ภาพตัวละคร 01_Theory/images/00-character-som.png
+- ผลทดสอบจริง: logs/005_replicaset/lab-run/lab00.log … lab09.log, SUMMARY.md, screenshot-scenes.log
+- ไฟล์ LAB จริง: /root/workspace/DevTools/k/005_kubernetes_replicaset/02_LAB/ (อ้างชื่อไฟล์/เนื้อหาให้ตรง; แอปอยู่ som-booths/app)
+- screenshot จริง (Playwright ผ่าน ssh -L, port-forward แยกทีละบูธ) ใน 02_LAB/images/screenshots/: 20261005_0831_lab9rs_01-booth-1.png (บูธ som-booth-rmcck ออเดอร์ 1), _02-booth-2.png (gxx9d ออเดอร์ 2), _03-booth-3.png (tdxr6 ออเดอร์ 3), 20261005_0832_lab9rs_04-replacement-booth-0-orders.png (หลังลบ rmcck RS สร้าง som-booth-z96mn ภายใน ~7 วิ ออเดอร์ 0 เพราะ DB ของบูธใหม่ว่าง และ port-forward เดิมหลุด "lost connection to pod" ต้องเปิดใหม่) — ผลคำสั่งใน screenshot-scenes.log
+- สไตล์ตัวอย่าง: บท 004 /root/workspace/DevTools/k/004_kubernetes_namespace/01_Theory/README.md, 02_LAB/README.md, README.md (หัวเอกสาร, บทคัดย่อ, วัตถุประสงค์, สารบัญ, สารบัญรูปภาพ, <p align="center" id="fig-N">, 🖥️ บนเครื่องนักศึกษา / 🐧 ใน SSH session ของ k8s-lab, ผลจริงใน ```text, คำถามทบทวน <details>, Troubleshooting, Checklist, เก็บกวาด)
+
+ไฟล์ที่เขียนได้เฉพาะ: 005_kubernetes_replicaset/README.md, 01_Theory/README.md, 02_LAB/README.md (ไฟล์ชั่วคราวใช้ logs/005_replicaset/scratch/docs/ ห้าม /tmp)
+1) 01_Theory/README.md — ทฤษฎีละเอียดตามแผน ใช้ภาพ T ครบตามลำดับ caption ตรง caption_th, YAML ตัวอย่างถูกต้องตามที่ทดสอบ, ตาราง, ข้อควรจำ, คำถามทบทวน+แนวคำตอบ, อ้างอิง kubernetes.io; ปิดบทด้วยปัญหาที่บท 006 (Service) และ 007 (Deployment) จะแก้
+2) 02_LAB/README.md — LAB 0–9 จากง่ายไปยาก: นำโฟลเดอร์เข้า k8s-lab (บนเครื่องนักศึกษา docker cp 005_kubernetes_replicaset k8s-lab:/workspace/), ใช้คลัสเตอร์เดิมได้/ถ้าไม่มีให้ k8s-up; แต่ละ LAB: ภาพเปิด, เป้าหมาย, ขั้นตอน, ผลจริงจาก log (ระบุว่าเวลา/IP/ชื่อ Pod อาจต่าง), อธิบาย, คำถามชวนคิด, เก็บกวาด; ใช้การแก้จาก SUMMARY (wget 127.0.0.1, nodeTaintsPolicy: Honor, ไม่มี GET /api/orders — ดูออเดอร์จากหน้าเว็บ/grep, scale กลับ 3 ก่อน apply promo ฯลฯ); LAB สุดท้ายใช้ภาพ L ของ LAB 9 + screenshot จริง 4 ภาพ (ระบุว่าเป็นภาพหน้าจอจริงจากการทดลอง); ห้ามใช้ Service/Deployment ในขั้นตอน LAB
+3) README.md หน้ารวม (ภาพเปิด T01, ลิงก์, โครงสร้างโฟลเดอร์, ต้องผ่านบท 001–004 ก่อน, บอกว่าบท 005→006→007 ต่อเนื่องกัน)
+ข้อกำหนด: ภาษาไทยอ่านง่าย ศัพท์เทคนิคคงภาษาอังกฤษ path relative ถูก ห้าม credential จริง (passwd, meow1234 ได้พร้อมหมายเหตุ) ผลลัพธ์ต้องมาจาก log จริงห้ามแต่ง ห้ามใส่รายละเอียดเครื่องทดสอบ (2224, 172.18.0.1, askpass, port 1300x) ตรวจก่อนจบด้วยสคริปต์: img/ลิงก์ชี้ไฟล์ที่มี (ยกเว้นภาพที่กำลังสร้างแต่ชื่อตรง images.json), anchor มีปลายทาง, ใช้ภาพ T/L ครบ, caption ตรง, YAML parse ได้, ไม่มี Service/Deployment ในขั้นตอน LAB
+ตอบท้ายสั้น ๆ: ขนาดไฟล์ จำนวนภาพ ผลตรวจ

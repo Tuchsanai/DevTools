@@ -1,0 +1,5 @@
+# LAB 9: โซน release-lab — blue/green และ canary ด้วย label + Service
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: release-lab

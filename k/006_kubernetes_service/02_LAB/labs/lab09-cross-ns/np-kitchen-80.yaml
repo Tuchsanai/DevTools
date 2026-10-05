@@ -1,0 +1,18 @@
+# LAB 9 (ถูก): ใช้พอร์ตของ Pod (targetPort/containerPort 80) — เรียกผ่าน web-alt:8080 ก็ผ่าน
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: web-from-kitchen
+  namespace: shop
+spec:
+  podSelector:
+    matchLabels:
+      app: web
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              team: kitchen
+      ports:
+        - port: 80         # พอร์ตของ Pod (หรือใช้ชื่อ http ก็ได้)

@@ -1,0 +1,5 @@
+# LAB 8: โซนฝึกกระจายบูธข้ามเรือ
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rs-spread

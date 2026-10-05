@@ -1,0 +1,41 @@
+# LAB 4 (2/3): ไม่มีที่ว่างเผื่อ — maxSurge 0 / maxUnavailable 1 → ปิดบูธเก่า 1 ตัวก่อน แล้วค่อยเปิดบูธใหม่
+# คาด: Pod รวมไม่เกิน 4 ตัว และพร้อมอย่างน้อย 3 ตัว
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nosurge
+  namespace: strategy-lab
+  labels:
+    app: nosurge
+    lab: strategy
+spec:
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0            # ห้ามมี Pod เกิน replicas
+      maxUnavailable: 1      # ยอมให้ขาดได้ 1 ตัว
+  selector:
+    matchLabels:
+      app: nosurge
+  template:
+    metadata:
+      labels:
+        app: nosurge
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          env:
+            - name: VERSION
+              value: v1
+          command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            httpGet: { path: /, port: http }
+            periodSeconds: 2
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }

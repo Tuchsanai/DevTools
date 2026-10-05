@@ -1,0 +1,5 @@
+# LAB 8: โซน migrate-lab — ย้ายร้านจาก ReplicaSet (แบบบท 006) มาเป็น Deployment
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: migrate-lab

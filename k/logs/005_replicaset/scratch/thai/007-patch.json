@@ -1,0 +1,627 @@
+{
+ "T01": {
+  "labels": [
+   "บทที่ 7",
+   "template: 1.3",
+   "1.2",
+   "1.2",
+   "kubectl delete pod",
+   "เปลี่ยนรุ่นเอง ร้านสะดุด"
+  ],
+  "extra": "'บทที่ 7' is a title banner across the top; 'template: 1.3' is on the blueprint card held by the robot; the two remaining booths each carry one '1.2' signboard; the booth being lifted has an awning only, no sign; 'kubectl delete pod' is printed on the red button remote; 'เปลี่ยนรุ่นเอง ร้านสะดุด' is a smaller subtitle directly below the title banner"
+ },
+ "T02": {
+  "labels": [
+   "template: 1.3",
+   "1.2",
+   "1.2",
+   "1.3",
+   "ไม่มีประวัติรุ่น"
+  ],
+  "extra": "'template: 1.3' on the blueprint; the two older booths each have one '1.2' signboard and the starred booth has the '1.3' signboard; the ship shows exactly three booths; 'ไม่มีประวัติรุ่น' on the empty logbook stand"
+ },
+ "T03": {
+  "labels": [
+   "อุปมาในบทนี้",
+   "Deployment",
+   "pod-template-hash",
+   "RollingUpdate",
+   "Recreate",
+   "rollout history",
+   "rollout undo"
+  ],
+  "extra": "'อุปมาในบทนี้' is the board title at the top; below it exactly six rows and each row has exactly one of the six labels 'Deployment', 'pod-template-hash', 'RollingUpdate', 'Recreate', 'rollout history', 'rollout undo' in that order; the shutters, sticker and signboard icons carry no text"
+ },
+ "T04": {
+  "labels": [
+   "Deployment: web",
+   "ReplicaSet รุ่นเก่า 0",
+   "ReplicaSet รุ่นใหม่ 3",
+   "Pod",
+   "Pod",
+   "Pod"
+  ],
+  "extra": "each of the three booths carries one 'Pod' label; 'Deployment: web' on the manager robot; 'ReplicaSet รุ่นเก่า 0' under the faded left supervisor robot; 'ReplicaSet รุ่นใหม่ 3' under the bright right supervisor robot"
+ },
+ "T05": {
+  "labels": [
+   "kubectl scale rs",
+   "6",
+   "3",
+   "ownerReferences: Deployment",
+   "แก้ RS ตรง ๆ ไม่ได้"
+  ],
+  "extra": "'kubectl scale rs' on a small ticket held by the staff silhouette; '6' on the dial before (left inset) and '3' on the dial after (right inset); 'ownerReferences: Deployment' on the owner badge; booths carry no text; 'แก้ RS ตรง ๆ ไม่ได้' is a title banner at the top"
+ },
+ "T06": {
+  "labels": [
+   "replicas",
+   "selector",
+   "template",
+   "strategy (วิธีเปลี่ยนรุ่น)",
+   "minReadySeconds",
+   "revisionHistoryLimit",
+   "progressDeadlineSeconds"
+  ],
+  "extra": "exactly seven field lines in this order: 'replicas', 'selector', 'template', 'strategy (วิธีเปลี่ยนรุ่น)', 'minReadySeconds', 'revisionHistoryLimit', 'progressDeadlineSeconds'; the first three labels sit in the teal block and the last four in the navy block; each line has exactly one label; the two colored blocks have no headings"
+ },
+ "T07": {
+  "labels": [
+   "kubectl create deployment",
+   "--dry-run=client -o yaml",
+   "web.yaml",
+   "ไม่แตะคลัสเตอร์"
+  ],
+  "extra": "'kubectl create deployment' on the command ticket; '--dry-run=client -o yaml' on the machine's front panel; 'web.yaml' on the folder tab; the YAML card shows only grey lines, no readable text; 'ไม่แตะคลัสเตอร์' on a small tag hanging on the dotted line to the control tower"
+ },
+ "T08": {
+  "labels": [
+   "READY",
+   "UP-TO-DATE",
+   "AVAILABLE",
+   "3/3",
+   "3",
+   "3",
+   "อ่านคอลัมน์ get deploy"
+  ],
+  "extra": "exactly three columns; headers 'READY', 'UP-TO-DATE', 'AVAILABLE' in order; numbers '3/3', '3', '3' under them in order; booths carry no text; 'อ่านคอลัมน์ get deploy' is the scoreboard title above the three headers"
+ },
+ "T09": {
+  "labels": [
+   "app=web",
+   "pod-template-hash=6f58b8bd67",
+   "pod-template-hash=7c987cc6b4",
+   "web-6f58b8bd67-frgpm",
+   "hash แยกรุ่นไม่ปนกัน"
+  ],
+  "extra": "'app=web' appears once on a large orange tag held by Nong Som; 'pod-template-hash=6f58b8bd67' appears once on the first robot's blueprint sticker and 'pod-template-hash=7c987cc6b4' once on the second robot's blueprint sticker; 'web-6f58b8bd67-frgpm' on the name card of one booth beside the first robot; other booth barcode stickers have no readable text; draw barcodes only, no food or hash browns; 'hash แยกรุ่นไม่ปนกัน' is a title banner at the top"
+ },
+ "T10": {
+  "labels": [
+   ".spec.template",
+   "image / env / probe",
+   "restartedAt",
+   "เกิด revision ใหม่",
+   "replicas",
+   "ไม่เกิด revision"
+  ],
+  "extra": "'.spec.template' on the blueprint; 'image / env / probe' on a banner above the three change cards; 'restartedAt' on the sticky note; 'เกิด revision ใหม่' on the new logbook page; 'replicas' on the dial; 'ไม่เกิด revision' on the old page"
+ },
+ "T11": {
+  "labels": [
+   "เก่า 3 / ใหม่ 0",
+   "เก่า 3 / ใหม่ 1",
+   "เก่า 2 / ใหม่ 1",
+   "เก่า 2 / ใหม่ 2",
+   "เก่า 1 / ใหม่ 2",
+   "เก่า 1 / ใหม่ 3",
+   "เก่า 0 / ใหม่ 3"
+  ],
+  "extra": "exactly seven rows, each row has exactly one of the seven labels on its left in this order from top to bottom: 'เก่า 3 / ใหม่ 0', 'เก่า 3 / ใหม่ 1', 'เก่า 2 / ใหม่ 1', 'เก่า 2 / ใหม่ 2', 'เก่า 1 / ใหม่ 2', 'เก่า 1 / ใหม่ 3', 'เก่า 0 / ใหม่ 3'; the booth counts in each row match its label exactly; never more than four booths in one row; awnings carry no text"
+ },
+ "T12": {
+  "labels": [
+   "replicas: 10",
+   "maxSurge 25% → 3 (สูงสุด 13)",
+   "maxUnavailable 25% → 2 (ต่ำสุด 8)",
+   "ปัดขึ้น",
+   "ปัดลง",
+   "replicas: 3 → +1 / -0",
+   "replicas: 4 → +1 / -1"
+  ],
+  "extra": "'replicas: 10' as the board title; 'maxSurge 25% → 3 (สูงสุด 13)' and 'ปัดขึ้น' on the top bar; 'maxUnavailable 25% → 2 (ต่ำสุด 8)' and 'ปัดลง' on the bottom bar; exactly 10 solid booth icons per bar; exactly 3 dashed extra slots on the top bar; exactly 2 dimmed booths on the bottom bar; the side card has the two lines 'replicas: 3 → +1 / -0' and 'replicas: 4 → +1 / -1'"
+ },
+ "T13": {
+  "labels": [
+   "RollingUpdate",
+   "Recreate",
+   "เปิดขาย",
+   "ปิดร้าน"
+  ],
+  "extra": "'RollingUpdate' labels the top lane, 'Recreate' the bottom lane; 'เปิดขาย' is the sign on the top lane; 'ปิดร้าน' is the sign in the gap of the bottom lane"
+ },
+ "T14": {
+  "labels": [
+   "RollingUpdate",
+   "Recreate",
+   "som-db",
+   "som-db",
+   "db ต้องมีตัวเดียว"
+  ],
+  "extra": "'RollingUpdate' as the left panel heading; 'Recreate' as the right panel heading; each panel's small lighthouse name plate reads 'som-db' (so 'som-db' appears exactly twice); chests and shutter icons have no text; 'db ต้องมีตัวเดียว' is a title banner across the top above both panels"
+ },
+ "T15": {
+  "labels": [
+   "readinessProbe",
+   "minReadySeconds: 5",
+   "Ready",
+   "0/1",
+   "รอไฟเขียวก่อน"
+  ],
+  "extra": "'readinessProbe' on the lamp of the first new booth; 'minReadySeconds: 5' on the hourglass; 'Ready' under the green-lit booth; '0/1' under the red-lit booth; 'รอไฟเขียวก่อน' in a small speech bubble from the manager robot's raised hand"
+ },
+ "T16": {
+  "labels": [
+   "ไม่มี readinessProbe",
+   "error",
+   "readinessProbe: /api/health",
+   "livenessProbe: /api/live",
+   "som-db",
+   "ตั้ง probe ให้ถูก"
+  ],
+  "extra": "'ไม่มี readinessProbe' as the left panel heading; 'error' next to the red spark; 'readinessProbe: /api/health' on the green lamp; 'livenessProbe: /api/live' on the heartbeat monitor; 'som-db' on the database booth; 'ตั้ง probe ให้ถูก' as the right panel heading"
+ },
+ "T17": {
+  "labels": [
+   "Terminating",
+   "EndpointSlice: terminating",
+   "preStop sleep 5s",
+   "SIGTERM",
+   "terminationGracePeriodSeconds: 30",
+   "ลำดับการปิด Pod"
+  ],
+  "extra": "stations 1–4 carry 'Terminating', 'EndpointSlice: terminating', 'preStop sleep 5s', 'SIGTERM' in order; station 5 has no text; 'terminationGracePeriodSeconds: 30' on the long bracket bar; 'ลำดับการปิด Pod' is a title banner at the top above the timeline"
+ },
+ "T18": {
+  "labels": [
+   "preStop sleep 5s",
+   "maxUnavailable: 0",
+   "readinessProbe",
+   "errors: 0/300",
+   "ปิดบูธเก่าแบบไม่สะดุด"
+  ],
+  "extra": "'preStop sleep 5s' on the hourglass; 'maxUnavailable: 0' on the manager card at the left; 'readinessProbe' on the green lamp of the new booth; 'errors: 0/300' on the counter board; 'ปิดบูธเก่าแบบไม่สะดุด' is a title banner at the top"
+ },
+ "T19": {
+  "labels": [
+   "ImagePullBackOff",
+   "progressDeadlineSeconds: 30",
+   "ProgressDeadlineExceeded",
+   "3/3",
+   "รุ่นใหม่ค้าง ร้านยังขาย"
+  ],
+  "extra": "'ImagePullBackOff' under the empty orange booth; 'progressDeadlineSeconds: 30' on the hourglass; 'ProgressDeadlineExceeded' on the manager's red card; '3/3' above the three blue booths; 'รุ่นใหม่ค้าง ร้านยังขาย' is a title banner at the top"
+ },
+ "T20": {
+  "labels": [
+   "Progressing=False",
+   "READY 3/3",
+   "UP-TO-DATE 1",
+   "AVAILABLE 3",
+   "kubectl rollout undo",
+   "ต้องสั่งย้อนรุ่นเอง"
+  ],
+  "extra": "'Progressing=False' on the manager's red card; the status board has exactly three readouts 'READY 3/3', 'UP-TO-DATE 1', 'AVAILABLE 3' in order; 'kubectl rollout undo' on the rewind button; 'ต้องสั่งย้อนรุ่นเอง' is a title banner at the top"
+ },
+ "T21": {
+  "labels": [
+   "REVISION",
+   "CHANGE-CAUSE",
+   "1  v1 nginx 1.27",
+   "2  v2 nginx 1.28",
+   "3  v3 broken",
+   "kubernetes.io/change-cause",
+   "สมุดบันทึกรุ่น"
+  ],
+  "extra": "table header has 'REVISION' and 'CHANGE-CAUSE'; exactly three rows reading '1  v1 nginx 1.27', '2  v2 nginx 1.28', '3  v3 broken' from top to bottom; 'kubernetes.io/change-cause' on the sticky note on the cover; 'สมุดบันทึกรุ่น' on the logbook spine"
+ },
+ "T22": {
+  "labels": [
+   "kubectl annotate",
+   "2  v2 nginx 1.28",
+   "3  v2 nginx 1.28",
+   "--record",
+   "ลืม annotate ข้อความซ้ำ"
+  ],
+  "extra": "'kubectl annotate' on Nong Som's rubber stamp; exactly two logbook rows reading '2  v2 nginx 1.28' then '3  v2 nginx 1.28'; '--record' on the crossed-out stamp in the bin; 'ลืม annotate ข้อความซ้ำ' beside the small warning triangle"
+ },
+ "T23": {
+  "labels": [
+   "kubectl rollout undo",
+   "--to-revision=2",
+   "1",
+   "3",
+   "4",
+   "ย้อนรุ่น = revision ใหม่"
+  ],
+  "extra": "'kubectl rollout undo' on the rewind button; '--to-revision=2' on the flipping page; the revision list card has exactly three rows reading '1', '3', '4' from top to bottom; 'ย้อนรุ่น = revision ใหม่' is a title banner at the top"
+ },
+ "T24": {
+  "labels": [
+   "rollout undo",
+   "Warning",
+   "last-applied-configuration",
+   "แก้ YAML ใน git"
+  ],
+  "extra": "'rollout undo' on the rewind arrow; 'Warning' on the yellow triangle; 'last-applied-configuration' on a tab of the folder; 'แก้ YAML ใน git' on a sticky note held by Nong Som"
+ },
+ "T25": {
+  "labels": [
+   "kubectl rollout pause",
+   "kubectl rollout resume",
+   "image",
+   "env",
+   "resources",
+   "แก้หลายอย่าง รุ่นเดียว"
+  ],
+  "extra": "'kubectl rollout pause' on the pause sign; 'kubectl rollout resume' on the resume sign; each change card has exactly one of 'image', 'env', 'resources'; 'แก้หลายอย่าง รุ่นเดียว' on the single combined rollout arrow"
+ },
+ "T26": {
+  "labels": [
+   "revisionHistoryLimit: 10",
+   "replicas: 0",
+   "replicas: 3",
+   "revisionHistoryLimit: 0",
+   "ไว้ใช้ย้อนรุ่น",
+   "ย้อนรุ่นไม่ได้"
+  ],
+  "extra": "'revisionHistoryLimit: 10' on the shelf sign; 'replicas: 0' printed once on the shelf edge; sleeping robots hold their clipboards face-down (no display visible); 'replicas: 3' on the awake robot's clipboard; 'revisionHistoryLimit: 0' on the inset's empty shelf sign; 'ไว้ใช้ย้อนรุ่น' on a small tag on the shelf of sleeping robots; 'ย้อนรุ่นไม่ได้' under the inset's empty shelf"
+ },
+ "T27": {
+  "labels": [
+   "kubectl set image",
+   "kubectl set env",
+   "kubectl scale",
+   "kubectl edit",
+   "kubectl patch",
+   "kubectl apply -f",
+   "แนะนำ"
+  ],
+  "extra": "exactly five buttons, each with one of 'kubectl set image', 'kubectl set env', 'kubectl scale', 'kubectl edit', 'kubectl patch'; 'kubectl apply -f' on the folder with 'แนะนำ' next to its check mark; the warning triangle has no text; no other text on the buttons"
+ },
+ "T28": {
+  "labels": [
+   "kubectl scale --replicas=5",
+   "web.yaml: replicas: 3",
+   "kubectl apply -f",
+   "5 → 3",
+   "ไฟล์ชนะ"
+  ],
+  "extra": "'kubectl scale --replicas=5' on the dial ticket; 'web.yaml: replicas: 3' on the folder; 'kubectl apply -f' on the big curved arrow; '5 → 3' above the remaining booths; 'ไฟล์ชนะ' is a title banner at the top"
+ },
+ "T29": {
+  "labels": [
+   "ReplicaSet som-web (เดิม)",
+   "ownerReferences: Deployment",
+   "app=som-web",
+   "3 → 0",
+   "0 → 3"
+  ],
+  "extra": "'ReplicaSet som-web (เดิม)' on the old supervisor's chest plate; 'ownerReferences: Deployment' on the badge being clipped; 'app=som-web' printed once on a large tag held up by the manager; '3 → 0' under the old supervisor's booths; '0 → 3' under the new supervisor's booths; the booth tags themselves are color-only"
+ },
+ "T30": {
+  "labels": [
+   "--cascade=orphan",
+   "ไม่มีเจ้าของ",
+   "ลบ Pod เก่าทีหลัง"
+  ],
+  "extra": "'--cascade=orphan' on a ticket in the leaving robot's hand; 'ไม่มีเจ้าของ' above the three old booths (once); 'ลบ Pod เก่าทีหลัง' on the broom icon; no children, no animals, no orphan imagery"
+ },
+ "T31": {
+  "labels": [
+   "ImagePullBackOff",
+   "0/1 Running",
+   "CrashLoopBackOff",
+   "rollout status",
+   "describe deploy",
+   "rollout undo",
+   "อาการ rollout พัง"
+  ],
+  "extra": "the three booths carry 'ImagePullBackOff', '0/1 Running', 'CrashLoopBackOff' in order; the checklist has exactly three lines 'rollout status', 'describe deploy', 'rollout undo'; 'อาการ rollout พัง' is a title banner at the top"
+ },
+ "T32": {
+  "labels": [
+   "version=blue",
+   "version=green",
+   "selector: version=green",
+   "สลับทีเดียว"
+  ],
+  "extra": "'version=blue' above the blue row, 'version=green' above the green row; 'selector: version=green' on the lever plate of the lighthouse counter; 'สลับทีเดียว' is a title banner at the top"
+ },
+ "T33": {
+  "labels": [
+   "app=web",
+   "track=stable ×9",
+   "track=canary ×1",
+   "~10%",
+   "แบ่งลูกค้าลองรุ่นใหม่"
+  ],
+  "extra": "'app=web' on the lighthouse counter's selector plate; 'track=stable ×9' above the nine blue booths; 'track=canary ×1' above the orange booth; '~10%' on the arrow to the orange booth; do not draw any canary bird or any bird at all; 'แบ่งลูกค้าลองรุ่นใหม่' is a title banner at the top"
+ },
+ "T34": {
+  "labels": [
+   "Pod: ทดลอง",
+   "ReplicaSet: ไม่สร้างเอง",
+   "Deployment: แอปทั่วไป",
+   "Recreate: ห้ามมี 2 รุ่น"
+  ],
+  "extra": "exactly four rows and each row has exactly one of the four labels in this order: 'Pod: ทดลอง', 'ReplicaSet: ไม่สร้างเอง', 'Deployment: แอปทั่วไป', 'Recreate: ห้ามมี 2 รุ่น'; no other text in the cells"
+ },
+ "T35": {
+  "labels": [
+   "สรุปคำสั่ง",
+   "kubectl set image",
+   "kubectl scale",
+   "rollout status",
+   "rollout history",
+   "rollout undo",
+   "rollout restart"
+  ],
+  "extra": "'สรุปคำสั่ง' is the board title at the top; below it exactly six rows, each row has exactly one of 'kubectl set image', 'kubectl scale', 'rollout status', 'rollout history', 'rollout undo', 'rollout restart' in the listed order; icons carry no text"
+ },
+ "T36": {
+  "labels": [
+   "PVC / StatefulSet",
+   "ConfigMap / Secret",
+   "Ingress",
+   "HPA",
+   "เรื่องต่อไป"
+  ],
+  "extra": "exactly four chests, each with exactly one of 'PVC / StatefulSet', 'ConfigMap / Secret', 'Ingress', 'HPA'; the database booth and its shelf have no text; 'เรื่องต่อไป' is a small banner above the four chests"
+ },
+ "L01": {
+  "labels": [
+   "kubectl get nodes",
+   "Ready",
+   "30080",
+   "som-shop-web:1.2",
+   "som-shop-web:1.3",
+   "เตรียมคลัสเตอร์"
+  ],
+  "extra": "'kubectl get nodes' on the laptop screen; 'Ready' flag is drawn once on a flagpole shared by the fleet; '30080' on the gangway door; the two crates carry 'som-shop-web:1.2' and 'som-shop-web:1.3'; 'เตรียมคลัสเตอร์' is a title banner at the top"
+ },
+ "L02": {
+  "labels": [
+   "deploy/web",
+   "rs/web-<hash>",
+   "--replicas=5",
+   "--replicas=2",
+   "REVISION 1",
+   "Deployment แรก"
+  ],
+  "extra": "'deploy/web' on the manager robot; 'rs/web-<hash>' on the supervisor robot; '--replicas=5' and '--replicas=2' on two positions of the dial; 'REVISION 1' on the logbook page; 'Deployment แรก' is a title banner at the top"
+ },
+ "L03": {
+  "labels": [
+   "kubectl scale rs",
+   "ปรับกลับ",
+   "kubectl delete pod",
+   "Terminating",
+   "Running"
+  ],
+  "extra": "'kubectl scale rs' on the staff ticket and 'ปรับกลับ' on a curved arrow from the manager (left scene); 'kubectl delete pod' on a red button, 'Terminating' on the fading booth, 'Running' on the new booth (right scene); barcode stickers have no readable text"
+ },
+ "L04": {
+  "labels": [
+   "nginx:1.27-alpine",
+   "nginx:1.28-alpine",
+   "3 → 0",
+   "0 → 3",
+   "kubectl get rs -w",
+   "เก่าลด ใหม่เพิ่ม"
+  ],
+  "extra": "'nginx:1.27-alpine' and '3 → 0' under the old robot; 'nginx:1.28-alpine' and '0 → 3' under the new robot; 'kubectl get rs -w' on the ribbon; 'เก่าลด ใหม่เพิ่ม' is a title banner at the top"
+ },
+ "L05": {
+  "labels": [
+   "client",
+   "http://web",
+   "web v1",
+   "web v2",
+   "คำตอบปนกันช่วงสั้น"
+  ],
+  "extra": "'client' on the client booth; 'http://web' on the lighthouse name plate; 'web v1' on one blue stripe and 'web v2' on one orange stripe of the receipt strip (each once); other stripes are color-only; 'คำตอบปนกันช่วงสั้น' is a title banner at the top"
+ },
+ "L06": {
+  "labels": [
+   "kubernetes.io/change-cause",
+   "ประวัติรุ่น (history)",
+   "rollout undo --to-revision=2",
+   "1",
+   "3",
+   "4",
+   "5"
+  ],
+  "extra": "the logbook page has exactly four rows labeled '1', '3', '4', '5' from top to bottom; 'kubernetes.io/change-cause' on the sticky note; 'ประวัติรุ่น (history)' on the logbook cover; 'rollout undo --to-revision=2' on the rewind arrow"
+ },
+ "L07": {
+  "labels": [
+   "rollout pause",
+   "rollout resume",
+   "set image",
+   "set env",
+   "rollout restart",
+   "restartedAt",
+   "ได้ revision เดียว"
+  ],
+  "extra": "left scene: 'rollout pause' on the pause sign, 'rollout resume' on the resume arrow, the two cards carry 'set image' and 'set env'; right scene: 'rollout restart' on a button, 'restartedAt' on the sticky note; 'ได้ revision เดียว' on the single new logbook page in the left scene"
+ },
+ "L08": {
+  "labels": [
+   "Pod สูงสุด / Ready ต่ำสุด",
+   "rolling.yaml: max 5, min 3",
+   "nosurge.yaml: max 4, min 3",
+   "recreate.yaml: min 0"
+  ],
+  "extra": "'Pod สูงสุด / Ready ต่ำสุด' is the title at the top; exactly three lanes, each with exactly one of 'rolling.yaml: max 5, min 3', 'nosurge.yaml: max 4, min 3', 'recreate.yaml: min 0' at its left in that order"
+ },
+ "L09": {
+  "labels": [
+   "minReadySeconds: 10",
+   "READY",
+   "AVAILABLE",
+   "0/1 Running",
+   "statuscode: 404",
+   "rollout undo",
+   "rollout ค้าง"
+  ],
+  "extra": "left: 'minReadySeconds: 10' on the hourglass, 'READY' and 'AVAILABLE' as the two scoreboard headers (no numbers); right: '0/1 Running' under the red-lamp booth, 'statuscode: 404' on the red ticket; 'rollout undo' on the rewind button; 'rollout ค้าง' is a heading above the right scene"
+ },
+ "L10": {
+  "labels": [
+   "nginx:9.99-nope",
+   "ImagePullBackOff",
+   "exceeded its progress deadline",
+   "http://web",
+   "rollout undo",
+   "image ผิด ร้านยังขาย"
+  ],
+  "extra": "'nginx:9.99-nope' on the empty cart; 'ImagePullBackOff' under the empty booth; 'exceeded its progress deadline' on a red ticket from the hourglass; 'http://web' on the lighthouse name plate; 'rollout undo' on the rewind button; 'image ผิด ร้านยังขาย' is a title banner at the top"
+ },
+ "L11": {
+  "labels": [
+   "ไม่มี preStop",
+   "errors: 3/300",
+   "preStop 5s + maxUnavailable 0",
+   "errors: 0/300",
+   "30080"
+  ],
+  "extra": "'ไม่มี preStop' and 'errors: 3/300' on the left scoreboard; 'preStop 5s + maxUnavailable 0' and 'errors: 0/300' on the right scoreboard; '30080' on the gangway door"
+ },
+ "L12": {
+  "labels": [
+   "rs/web",
+   "ownerReferences: Deployment",
+   "3 → 0",
+   "0 → 3",
+   "http://web",
+   "Deployment รับเลี้ยง RS"
+  ],
+  "extra": "'rs/web' on the old robot's chest plate; 'ownerReferences: Deployment' on the badge; '3 → 0' under the blue booths; '0 → 3' under the orange booths; 'http://web' on the lighthouse name plate; terminal card shows only grey lines; 'Deployment รับเลี้ยง RS' is a title banner at the top"
+ },
+ "L13": {
+  "labels": [
+   "kubectl patch svc",
+   "version=green",
+   "track=stable ×4",
+   "track=canary ×1",
+   "~20%",
+   "สลับทั้งชุด",
+   "ลองรุ่นใหม่บางส่วน"
+  ],
+  "extra": "left: 'kubectl patch svc' on the lever plate, 'version=green' above the green row; right: 'track=stable ×4' above the blue booths, 'track=canary ×1' above the orange booth, '~20%' on the tally card; never draw a canary bird or any bird; 'สลับทั้งชุด' is the left half heading; 'ลองรุ่นใหม่บางส่วน' is the right half heading"
+ },
+ "L14": {
+  "labels": [
+   "som-shop",
+   "30080",
+   "Deployment som-web ×3",
+   "som-db",
+   "Deployment som-db ×1",
+   "Recreate",
+   "ร้านน้องส้มโปรดักชัน"
+  ],
+  "extra": "'som-shop' on the zone sign; '30080' on the dock door; 'Deployment som-web ×3' above the three web booths; 'som-db' on the small lighthouse name plate; 'Deployment som-db ×1' above the database booth; 'Recreate' on the card held by the database manager robot; 'ร้านน้องส้มโปรดักชัน' is a title banner at the top of the map"
+ },
+ "L15": {
+  "labels": [
+   "k8s-rs/",
+   "ReplicaSet som-web",
+   "ReplicaSet som-db",
+   "30080",
+   "ยังไม่มีผู้จัดการร้าน"
+  ],
+  "extra": "'k8s-rs/' on the folder tab; 'ReplicaSet som-web' on the web supervisor's chest plate; 'ReplicaSet som-db' on the database supervisor's chest plate; '30080' on the dock door; the empty manager spot has no text; 'ยังไม่มีผู้จัดการร้าน' in a thought bubble above Nong Som"
+ },
+ "L16": {
+  "labels": [
+   "k8s/",
+   "Recreate",
+   "ownerReferences",
+   "hit.sh",
+   "err=0",
+   "รับเลี้ยงด้วย Deployment"
+  ],
+  "extra": "'k8s/' on the folder; 'Recreate' on the database shutter; 'ownerReferences' on the badge clipped onto the web supervisor (only that badge carries text); 'hit.sh' and 'err=0' on the scoreboard; 'รับเลี้ยงด้วย Deployment' is a title banner at the top"
+ },
+ "L17": {
+  "labels": [
+   "เวอร์ชัน 1.2",
+   "เวอร์ชัน 1.3",
+   "hit.sh -q 300",
+   "err=0"
+  ],
+  "extra": "'เวอร์ชัน 1.2' on one teal signboard; 'เวอร์ชัน 1.3' on one orange signboard; other signboards show only theme colors without text; 'hit.sh -q 300' and 'err=0' on the scoreboard; the dock door has no number"
+ },
+ "L18": {
+  "labels": [
+   "localhost:30080",
+   "เวอร์ชัน 1.3",
+   "เมนูใหม่: ขนมปลาทูน่าอบกรอบ",
+   "som-web-…"
+  ],
+  "extra": "'localhost:30080' on the browser bar; 'เวอร์ชัน 1.3' on the version badge; 'เมนูใหม่: ขนมปลาทูน่าอบกรอบ' on the ribbon; 'som-web-…' on the Pod chip; product cards show only food pictures without text"
+ },
+ "L19": {
+  "labels": [
+   "rollout history",
+   "rollout undo",
+   "เวอร์ชัน 1.2",
+   "เวอร์ชัน 1.3",
+   "orders: 2"
+  ],
+  "extra": "'rollout history' on the logbook cover; 'rollout undo' on the rewind button; 'เวอร์ชัน 1.2' on one teal signboard and 'เวอร์ชัน 1.3' on one orange signboard; 'orders: 2' on the database chest counter"
+ },
+ "L20": {
+  "labels": [
+   "som-shop-web:1.4",
+   "ImagePullBackOff",
+   "ProgressDeadlineExceeded",
+   "err=0",
+   "rollout undo",
+   "รุ่นพัง ร้านยังขาย"
+  ],
+  "extra": "'som-shop-web:1.4' on the empty cart; 'ImagePullBackOff' under the empty booth; 'ProgressDeadlineExceeded' on the hourglass ticket; 'err=0' on the scoreboard; 'rollout undo' on the button in Nong Som's paw; 'รุ่นพัง ร้านยังขาย' is a title banner at the top"
+ },
+ "L21": {
+  "labels": [
+   "--replicas=5",
+   "3 → 5",
+   "EndpointSlice",
+   "ไม่เกิด revision"
+  ],
+  "extra": "'--replicas=5' on the dial; '3 → 5' near the new booths; 'EndpointSlice' as the clipboard title; clipboard rows are icon-only; 'ไม่เกิด revision' on the closed logbook"
+ },
+ "L22": {
+  "labels": [
+   "orders: 2",
+   "orders: 0",
+   "503",
+   "rollout restart",
+   "PVC",
+   "db ลืมข้อมูล"
+  ],
+  "extra": "'orders: 2' on a faded note beside the old chest; 'orders: 0' on the new empty chest; '503' on the sad empty-shelf sign; 'rollout restart' on the refresh button; 'PVC' on the locked treasure chest; 'db ลืมข้อมูล' is a title banner at the top"
+ },
+ "L23": {
+  "labels": [
+   "Deployment",
+   "RollingUpdate + preStop",
+   "rollout undo",
+   "ProgressDeadlineExceeded",
+   "Recreate",
+   "db ยังลืมข้อมูล"
+  ],
+  "extra": "exactly six rows: five ticked rows with 'Deployment', 'RollingUpdate + preStop', 'rollout undo', 'ProgressDeadlineExceeded', 'Recreate' in order, and the unticked bottom row with 'db ยังลืมข้อมูล'"
+ }
+}

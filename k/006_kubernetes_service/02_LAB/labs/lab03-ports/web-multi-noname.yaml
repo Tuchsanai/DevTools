@@ -1,0 +1,15 @@
+# LAB 3 (ตั้งใจผิด): หลายพอร์ตแต่พอร์ตที่ 2 ไม่ตั้ง name → API ปฏิเสธ
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-noname
+  namespace: shop
+spec:
+  selector:
+    app: web
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+    - port: 8080           # ← ไม่มี name (ports[1])
+      targetPort: http

@@ -1,0 +1,14 @@
+# LAB 8: LoadBalancer — บนคลาวด์จะได้ IP สาธารณะ ส่วน kind ไม่มีผู้จัดสรร → EXTERNAL-IP <pending>
+# (แต่ยังได้ ClusterIP + nodePort แบบสุ่มให้)
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-lb
+  namespace: shop
+spec:
+  type: LoadBalancer
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: http

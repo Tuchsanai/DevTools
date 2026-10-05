@@ -1,0 +1,10 @@
+# LAB 9: ExternalName — ชื่อในคลัสเตอร์ (supplier.shop) ที่ DNS ตอบเป็น CNAME ไปชื่อภายนอก
+# ไม่มี selector / ClusterIP / kube-proxy
+apiVersion: v1
+kind: Service
+metadata:
+  name: supplier
+  namespace: shop
+spec:
+  type: ExternalName
+  externalName: example.com

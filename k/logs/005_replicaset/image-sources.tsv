@@ -1,0 +1,57 @@
+id	file	source
+T01	01-opening-lonely-pod-lost.png	T01 01-opening-lonely-pod-lost.png (แก้)
+T02	02-recap-three-chapters.png	new
+T03	03-metaphor-legend.png	T02 02-new-metaphor-legend.png (แก้)
+T04	04-reconcile-loop.png	T03 03-reconcile-loop.png
+T05	05-controllers-in-tower.png	T04 04-controllers-in-tower.png (แก้)
+T06	06-level-triggered.png	new
+T07	07-rs-anatomy.png	T05 05-rs-anatomy.png
+T08	08-rs-yaml-map.png	new
+T09	09-pod-naming.png	new
+T10	10-match-expressions.png	new
+T11	11-selector-template-mismatch.png	new
+T12	12-owner-references.png	new
+T13	13-rs-status-columns.png	new
+T14	14-rs-self-healing.png	T06 06-rs-self-healing.png
+T15	15-delete-overlap-terminating.png	new
+T16	16-drain-single-vs-rs.png	new
+T17	17-node-down-timeline.png	new
+T18	18-rs-scale.png	T11 11-rs-scale.png
+T19	19-scale-down-order.png	new
+T20	20-rs-counts-by-label.png	T07 07-rs-counts-by-label.png
+T21	21-rs-adopts-stray.png	T08 08-rs-adopts-stray.png (แก้)
+T22	22-rs-deletes-extra.png	T09 09-rs-deletes-extra.png
+T23	23-overlapping-selectors.png	new
+T24	24-unlabel-for-debug.png	new
+T25	25-selector-immutable.png	new
+T26	26-template-change-old-pods.png	T12 12-rs-why-not-directly.png (แก้)
+T27	27-rs-delete-cascade.png	T10 10-rs-owner-cascade.png (แก้)
+T28	28-orphan-readopt.png	new
+T29	29-replicationcontroller-history.png	new
+T30	30-rs-quota-cap.png	new
+T31	31-psa-workload-warn.png	new
+T32	32-anti-affinity-required.png	new
+T33	33-preferred-and-spread.png	new
+T34	34-names-ips-change.png	new
+T35	35-summary-checklist.png	new
+T36	36-next-chapters.png	new
+L01	01-lab0-prepare.png	L01 01-lab0-prepare.png (แก้)
+L02	02-lab1-first-rs.png	new
+L03	03-lab2-delete-watch.png	L02 02-lab1-rs-self-heal.png (แก้)
+L04	04-lab2-drain-rebirth.png	new
+L05	05-lab3-scale.png	new
+L06	06-lab4-label-trap.png	L03 03-lab2-label-trap.png (แก้)
+L07	07-lab5-template-old-pods.png	new
+L08	08-lab6-cascade-orphan.png	new
+L09	09-lab7-quota.png	new
+L10	10-lab8-spread.png	new
+L11	11-lab9-architecture.png	new
+L12	12-lab9-prepare-image.png	new
+L13	13-lab9-three-booths-two-ships.png	new
+L14	14-lab9-port-forward-each.png	new
+L15	15-lab9-orders-mismatch.png	new
+L16	16-lab9-delete-pod-data-lost.png	new
+L17	17-lab9-scale-3-5-2.png	new
+L18	18-lab9-template-promo.png	new
+L19	19-lab9-manual-replace.png	new
+L20	20-lab9-wrap-up-handoff.png	new

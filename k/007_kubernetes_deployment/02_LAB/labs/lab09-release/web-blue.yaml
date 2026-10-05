@@ -1,0 +1,34 @@
+# LAB 9 blue/green: แถวบูธสีน้ำเงิน (รุ่นปัจจุบัน) 2 replicas
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-blue
+  namespace: release-lab
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: web                   # ป้ายร่วม — Service แบบไม่ระบุรุ่นเลือกได้ทุกตัว
+        version: blue
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          env:
+            - name: VERSION
+              value: blue
+          command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            httpGet: { path: /, port: http }
+            periodSeconds: 2
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }

@@ -1,0 +1,35 @@
+# LAB 8: ร้านแบบบท 006 — ReplicaSet web 3 บูธ (VERSION v1) ที่ไม่มีผู้จัดการ
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: web
+  namespace: migrate-lab
+  labels:
+    app: web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  template:                        # แก้ template ของ ReplicaSet → Pod เดิมไม่เปลี่ยน (บท 005)
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine   # image สาธารณะ — Node pull เอง ไม่ต้อง kind load
+          env:
+            - name: VERSION
+              value: v1
+          # เขียนหน้า index ให้บอกรุ่นและชื่อ Pod แล้วเปิด nginx
+          command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:            # ไฟเขียวหน้าบูธ
+            httpGet: { path: /, port: http }
+            periodSeconds: 2
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }

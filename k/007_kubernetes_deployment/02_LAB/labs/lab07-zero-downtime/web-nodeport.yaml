@@ -1,0 +1,14 @@
+# LAB 7: ประตูทางขึ้นเรือหมายเลข 30080 (NodePort) → เปิด http://localhost:30080 บนเครื่องนักศึกษา / ใน k8s-lab
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: zdt-lab
+spec:
+  type: NodePort
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: http
+      nodePort: 30080

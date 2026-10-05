@@ -1,0 +1,5 @@
+# LAB 5: โซน ready-lab — readiness + minReadySeconds ตัดสินจังหวะ rollout
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ready-lab

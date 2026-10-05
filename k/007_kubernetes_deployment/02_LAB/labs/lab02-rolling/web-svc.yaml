@@ -1,0 +1,12 @@
+# LAB 2: ประภาคาร (Service ClusterIP) หน้า Deployment web — ลูกค้าเรียกชื่อ "web" ได้ตลอดระหว่างเปลี่ยนรุ่น
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: deploy-lab
+spec:
+  selector:
+    app: web                       # เลือกทั้ง Pod รุ่นเก่าและรุ่นใหม่ (มี app=web เหมือนกัน)
+  ports:
+    - port: 80
+      targetPort: http

@@ -1,0 +1,12 @@
+# LAB 5: patch (strategic merge) เปลี่ยน readinessProbe ไปที่ /nope ซึ่งไม่มีจริง → nginx ตอบ 404
+# (เก็บไว้ในโฟลเดอร์ patches/ เพราะไฟล์ patch ไม่มี apiVersion/kind — kubectl apply -f lab05-readiness/ จะไม่หยิบมา)
+# Pod รุ่นใหม่จึงไม่มีวันพร้อม (0/1 Running) → rollout ค้าง แต่ Pod รุ่นเก่ายังรับลูกค้า
+# ใช้:  kubectl -n ready-lab patch deploy web --patch-file lab05-readiness/patches/readiness-broken-patch.yaml
+spec:
+  template:
+    spec:
+      containers:
+        - name: web                  # จับคู่ container ด้วยชื่อ
+          readinessProbe:
+            httpGet:
+              path: /nope

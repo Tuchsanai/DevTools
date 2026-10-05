@@ -1,0 +1,27 @@
+# LAB 4 (แบบฝึก): ตั้ง maxSurge 0 และ maxUnavailable 0 พร้อมกัน → apply ไม่ผ่าน
+# (ห้ามเกินและห้ามขาด = เปลี่ยนรุ่นไม่ได้เลย)
+# ใช้:  kubectl apply --dry-run=server -f lab04-strategy/exercise/zero-zero.yaml
+# (แยกไว้ในโฟลเดอร์ exercise/ เพื่อไม่ให้ kubectl apply -f lab04-strategy/ หยิบไปด้วย)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zero
+  namespace: strategy-lab
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: zero
+  template:
+    metadata:
+      labels:
+        app: zero
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine

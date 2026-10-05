@@ -1,0 +1,824 @@
+[
+ {
+  "id": "T01",
+  "file": "01-opening-lonely-pod-lost.png",
+  "section": "1. บทนำ: บูธเดี่ยวหาย ไม่มีใครสร้างใหม่",
+  "caption_th": "ทบทวนปัญหาจากบท 002–004: Pod เดี่ยวถูกลบหรือ Node ล่มแล้วหายไปเลย ไม่มีใครสร้างใหม่ IP ก็เปลี่ยน และ port-forward ที่ต่อไว้หลุด",
+  "scene": "Left half: a single teal Pod shop booth on a cargo ship fades away into a dotted outline with a puff of smoke; an empty spot remains. Right half: a new teal booth that Nong Som rebuilt by hand appears with a different IP tag, and a thin cable that was plugged into the old booth hangs snapped and sparking. A faceless customer silhouette stands confused holding an empty food bowl. Nong Som stands in the middle, tired, holding a small hammer, paw on chin. At the far right edge a small teal box-shaped robot with a clipboard peeks in from behind a crate as a hint of the new helper.",
+  "labels": [
+   "บทที่ 5",
+   "10.244.1.7",
+   "10.244.2.9",
+   "port-forward"
+  ],
+  "extra": "'บทที่ 5' is a title banner at the top; '10.244.1.7' is the IP tag on the fading old booth; '10.244.2.9' is the IP tag on the new booth; 'port-forward' is a small tag on the snapped cable; the peeking robot has no text"
+ },
+ {
+  "id": "T02",
+  "file": "02-recap-three-chapters.png",
+  "section": "1. บทนำ: บูธเดี่ยวหาย ไม่มีใครสร้างใหม่",
+  "caption_th": "สามปัญหาที่ค้างมาจากบทก่อน: บท 002 ลบ Pod แล้วหายถาวร, บท 003 drain/เรือล่มแล้ว Pod เดี่ยวไม่ย้ายไปเรือลำอื่น, บท 004 Pod ใหม่ได้ IP ใหม่และ port-forward หลุด",
+  "scene": "Three equal comic panels side by side, each with a chapter tab on top. Panel 1: a hand presses a red delete button and a booth vanishes, leaving an empty spot. Panel 2: two cargo ships, the left ship is being emptied for repair and its booth simply disappears; the right ship receives nothing. Panel 3: a cable from a laptop to a booth is snapped. Nong Som walks under the panels looking at them one by one, worried.",
+  "labels": [
+   "บท 002",
+   "บท 003",
+   "บท 004",
+   "kubectl delete pod",
+   "drain",
+   "port-forward"
+  ],
+  "extra": "'บท 002', 'บท 003', 'บท 004' are the three panel tabs in order left to right; 'kubectl delete pod' on the red button in panel 1; 'drain' on a small sign on the left ship in panel 2; 'port-forward' on the snapped cable in panel 3"
+ },
+ {
+  "id": "T03",
+  "file": "03-metaphor-legend.png",
+  "section": "1. บทนำ: บูธเดี่ยวหาย ไม่มีใครสร้างใหม่",
+  "caption_th": "อุปมาใหม่ของบทนี้: หัวหน้ากะ = ReplicaSet, แบบพิมพ์ = Pod template, แว่นขยายส่องป้าย = selector, ป้ายเจ้าของบนบูธ = ownerReferences, หุ่นยนต์ในหอที่วนตรวจ = controller",
+  "scene": "A clean legend board with exactly five illustrated rows; each row has one icon on the left and its term on the right: (1) a small teal box robot holding a clipboard with a head-count display, (2) a blueprint card showing a booth outline, (3) a magnifier looking at a colored luggage tag, (4) a small owner badge clipped on a booth corner, (5) a robot at a desk inside the control tower with a circular arrow. Nong Som points at the board with a pointer stick.",
+  "labels": [
+   "ReplicaSet",
+   "Pod template",
+   "selector",
+   "ownerReferences",
+   "controller"
+  ],
+  "extra": "exactly five rows and each row has exactly one of the five labels in the order listed; the icons have no text"
+ },
+ {
+  "id": "T04",
+  "file": "04-reconcile-loop.png",
+  "section": "2. Controller และ reconciliation loop",
+  "caption_th": "หัวใจของ Kubernetes: controller วนเทียบ 'สิ่งที่ต้องการ' (spec) กับ 'สิ่งที่เป็นจริง' (status) แล้วแก้ส่วนต่างไม่รู้จบ",
+  "scene": "A big circular loop of three arrows around a harbor scene: at the top a wish card showing three booth icons, at the bottom-right a ship with only two booths, at the bottom-left a small teal supervisor robot adding one new booth. The three arrow segments carry the three step labels. Nong Som stands beside the loop holding a stopwatch, smiling.",
+  "labels": [
+   "desired: 3",
+   "actual: 2",
+   "observe",
+   "diff",
+   "act"
+  ],
+  "extra": "'desired: 3' on the wish card; 'actual: 2' under the ship; 'observe', 'diff', 'act' each on one of the three arrow segments in clockwise order; no other text"
+ },
+ {
+  "id": "T05",
+  "file": "05-controllers-in-tower.png",
+  "section": "2. Controller และ reconciliation loop",
+  "caption_th": "controller ทั้งหลายอยู่ใน kube-controller-manager (static Pod ใน kube-system) บนหอบังคับการ เฝ้าดู (watch) ผ่าน kube-apiserver และสั่งงานผ่าน API เท่านั้น ไม่คุยกับเรือตรง ๆ",
+  "scene": "Cutaway of the harbor control tower: inside, an office where three small robots sit at desks watching a big screen connected by a cable to a central API desk; arrows go only from robots to the API desk and from the API desk out to the ships at sea. Nong Som peeks through the tower window from outside.",
+  "labels": [
+   "kube-controller-manager",
+   "kube-apiserver",
+   "ReplicaSet controller",
+   "Node controller",
+   "Namespace controller"
+  ],
+  "extra": "the three robots each wear exactly one of the three controller labels on a desk name plate; 'kube-controller-manager' on the office door; 'kube-apiserver' on the central API desk"
+ },
+ {
+  "id": "T06",
+  "file": "06-level-triggered.png",
+  "section": "2. Controller และ reconciliation loop",
+  "caption_th": "level-triggered: controller ไม่ได้พึ่งการ 'ได้ยินเหตุการณ์' ทุกครั้ง แต่เทียบสภาพปัจจุบันทุกรอบ แม้พลาดข่าวไป (เช่น controller เพิ่งรีสตาร์ต) รอบถัดไปก็แก้ได้ถูก",
+  "scene": "Two-part scene. Left: the supervisor robot is briefly switched off (a small power plug unplugged) while a booth on the ship disappears and a news ticket about it flies past unseen. Right: the robot is back on, looks at the ship through binoculars, counts the booths on its clipboard and stamps a new booth. Nong Som plugs the cable back in on the left side.",
+  "labels": [
+   "watch",
+   "level-triggered",
+   "desired 3",
+   "actual 2"
+  ],
+  "extra": "'watch' on the missed news ticket on the left; 'level-triggered' as the heading above the right part; 'desired 3' and 'actual 2' as two lines on the robot's clipboard on the right"
+ },
+ {
+  "id": "T07",
+  "file": "07-rs-anatomy.png",
+  "section": "3. ReplicaSet manifest: replicas, selector, template",
+  "caption_th": "โครง ReplicaSet 3 ส่วน: replicas (จำนวนที่ต้องมี), selector (นับกล่องที่ป้ายตรง), template (แบบพิมพ์ไว้สร้างกล่องใหม่)",
+  "scene": "A teal shift-supervisor robot stands in the center holding three items, each with an arrow to a big callout: a head-count clipboard, a magnifier looking at a colored luggage tag, and a blueprint card showing a booth with the same luggage tag. Behind it three identical teal booths with matching tags sit on a ship. Nong Som reads the blueprint with interest.",
+  "labels": [
+   "replicas: 3",
+   "selector: app=snack",
+   "template",
+   "app=snack"
+  ],
+  "extra": "'replicas: 3' on the clipboard callout; 'selector: app=snack' on the magnifier callout; 'template' on the blueprint callout; 'app=snack' printed once on the blueprint's luggage tag; the three real booth tags are plain matching color with no text"
+ },
+ {
+  "id": "T08",
+  "file": "08-rs-yaml-map.png",
+  "section": "3. ReplicaSet manifest: replicas, selector, template",
+  "caption_th": "อ่าน YAML ของ ReplicaSet: apiVersion apps/v1, kind ReplicaSet แล้ว spec มี replicas, selector และ template (ข้างใน template คือ Pod spec ที่คุ้นเคยจากบท 002)",
+  "scene": "A large rounded YAML card on the left drawn as five colored horizontal bands (no code text other than the labels), each band connected by a colored arrow to an object on the right: the robot's chest plate, the robot badge, the clipboard, the magnifier, and the blueprint. Inside the blueprint a tiny booth with containers is visible. Nong Som traces the arrows with a paw.",
+  "labels": [
+   "apiVersion: apps/v1",
+   "kind: ReplicaSet",
+   "replicas: 3",
+   "selector",
+   "template"
+  ],
+  "extra": "each of the five bands of the YAML card carries exactly one label in the listed order top to bottom; the objects on the right have no text"
+ },
+ {
+  "id": "T09",
+  "file": "09-pod-naming.png",
+  "section": "3. ReplicaSet manifest: replicas, selector, template",
+  "caption_th": "template ไม่มี metadata.name: ReplicaSet ตั้งชื่อ Pod เป็น <ชื่อ RS>-<สุ่ม 5 ตัว> ทุกตัวชื่อไม่ซ้ำ และตัวใหม่ได้ชื่อใหม่เสมอ",
+  "scene": "The supervisor robot stamps booths out of a blueprint whose name field is an empty dashed box; three booths come out on a conveyor, each with a name card made of the robot's name plus a short random code. Nong Som reads the name cards, amused.",
+  "labels": [
+   "snack-rs",
+   "snack-rs-4xk9p",
+   "snack-rs-b7tqz",
+   "snack-rs-zm2wd",
+   "name: (none)"
+  ],
+  "extra": "'snack-rs' on the robot's chest plate; the three booth name cards read 'snack-rs-4xk9p', 'snack-rs-b7tqz', 'snack-rs-zm2wd' left to right; 'name: (none)' next to the empty dashed box on the blueprint"
+ },
+ {
+  "id": "T10",
+  "file": "10-match-expressions.png",
+  "section": "3. ReplicaSet manifest: replicas, selector, template",
+  "caption_th": "selector 2 แบบ: matchLabels (เท่ากับ) และ matchExpressions ที่ใช้ตัวดำเนินการ In / NotIn / Exists / DoesNotExist (ใช้คู่กันได้ ต้องตรงทุกข้อ)",
+  "scene": "A magnifier control panel with two sections: a simple top section with one equality tag, and a bottom section with four operator buttons, each button shows a tiny icon: (In) a tag entering a circle, (NotIn) a tag blocked from a circle, (Exists) a tag with a check mark, (DoesNotExist) an empty tag hook with a cross. Nong Som presses one of the buttons.",
+  "labels": [
+   "matchLabels",
+   "matchExpressions",
+   "In",
+   "NotIn",
+   "Exists",
+   "DoesNotExist"
+  ],
+  "extra": "'matchLabels' heads the top section; 'matchExpressions' heads the bottom section; each of the four buttons carries exactly one of 'In', 'NotIn', 'Exists', 'DoesNotExist'"
+ },
+ {
+  "id": "T11",
+  "file": "11-selector-template-mismatch.png",
+  "section": "3. ReplicaSet manifest: replicas, selector, template",
+  "caption_th": "label ใน template ต้องตรงกับ selector ไม่งั้น API server ไม่รับ (เพราะ ReplicaSet จะสร้าง Pod ที่ตัวเองนับไม่เห็นไปเรื่อย ๆ)",
+  "scene": "The robot hands its blueprint to the API desk clerk robot in the tower; the blueprint's luggage tag is a different color from the robot's magnifier tag; the clerk stamps a big red rejection stamp. A ghostly endless line of booths in the background shows what would happen otherwise. Nong Som looks at the two tags side by side.",
+  "labels": [
+   "selector: app=snack",
+   "app=snak",
+   "selector does not match template labels"
+  ],
+  "extra": "'selector: app=snack' on the robot's magnifier; 'app=snak' on the blueprint tag; 'selector does not match template labels' inside the red stamp"
+ },
+ {
+  "id": "T12",
+  "file": "12-owner-references.png",
+  "section": "3. ReplicaSet manifest: replicas, selector, template",
+  "caption_th": "ownerReferences: ทุก Pod ที่ ReplicaSet สร้างหรือรับเลี้ยงมีป้ายเจ้าของชี้กลับไปที่ RS (ค่าจริงจาก pre-check #4)",
+  "scene": "Close-up of a booth with a small owner badge clipped on its corner, enlarged in a magnified circle that shows four short lines; a dotted string runs from the badge back to the supervisor robot. Nong Som holds a magnifier over the badge.",
+  "labels": [
+   "ownerReferences",
+   "kind: ReplicaSet",
+   "name: snack-rs",
+   "controller: true",
+   "blockOwnerDeletion: true"
+  ],
+  "extra": "'ownerReferences' as the title of the magnified circle; the other four labels are the four lines inside it in the listed order"
+ },
+ {
+  "id": "T13",
+  "file": "13-rs-status-columns.png",
+  "section": "3. ReplicaSet manifest: replicas, selector, template",
+  "caption_th": "อ่านสถานะ: kubectl get rs แสดง DESIRED / CURRENT / READY และ status มี replicas, readyReplicas, availableReplicas, fullyLabeledReplicas",
+  "scene": "The robot's back has a scoreboard with three big columns; below, on the ship, three booths: two with a green lamp and one with a red lamp still warming up. A side card lists two extra status fields. Nong Som reads the scoreboard with a cup of tea.",
+  "labels": [
+   "DESIRED 3",
+   "CURRENT 3",
+   "READY 2",
+   "availableReplicas",
+   "fullyLabeledReplicas"
+  ],
+  "extra": "the three scoreboard columns carry 'DESIRED 3', 'CURRENT 3', 'READY 2' left to right; the side card lists 'availableReplicas' and 'fullyLabeledReplicas'; lamps have no text"
+ },
+ {
+  "id": "T14",
+  "file": "14-rs-self-healing.png",
+  "section": "4. Self-healing: ลบ Pod, drain และเรือล่ม",
+  "caption_th": "self-healing: กล่องหายไป 1 หัวหน้ากะนับได้ 2 ไม่ตรงกับ 3 จึงพิมพ์กล่องใหม่จากแบบทันที (ชื่อใหม่ IP ใหม่)",
+  "scene": "Three-step comic strip in one wide panel (left to right): (1) three booths on a ship, one being lifted away by a crane and fading; (2) the supervisor robot's clipboard turns orange showing a mismatch; (3) the robot stamps a brand-new booth out of the blueprint, the new booth has a sparkle. Nong Som claps in the last step.",
+  "labels": [
+   "1",
+   "2",
+   "3",
+   "3/3",
+   "2/3",
+   "3/3"
+  ],
+  "extra": "'1','2','3' are step numbers in circles above each step; the clipboard shows '3/3' in step 1, '2/3' in step 2 and '3/3' in step 3"
+ },
+ {
+  "id": "T15",
+  "file": "15-delete-overlap-terminating.png",
+  "section": "4. Self-healing: ลบ Pod, drain และเรือล่ม",
+  "caption_th": "ลบ Pod ของ ReplicaSet: ตัวใหม่ถูกสร้างภายในราว 3 วินาที ขณะที่ตัวเก่ายัง Terminating อยู่ (RS ไม่นับ Pod ที่กำลังถูกลบ)",
+  "scene": "A horizontal timeline ruler across the ship. On the left an old booth with a fading outline and closing shutters; directly next to it, overlapping in time, a new booth being stamped by the robot. A small stopwatch above the overlap. A big red button on the dock. Nong Som holds the stopwatch.",
+  "labels": [
+   "kubectl delete pod",
+   "Terminating",
+   "Running",
+   "~3 วิ"
+  ],
+  "extra": "'kubectl delete pod' on the red button; 'Terminating' under the old booth; 'Running' under the new booth; '~3 วิ' on the stopwatch"
+ },
+ {
+  "id": "T16",
+  "file": "16-drain-single-vs-rs.png",
+  "section": "4. Self-healing: ลบ Pod, drain และเรือล่ม",
+  "caption_th": "เทียบบท 003: drain เรือที่มี Pod เดี่ยว → Pod หายไปเลย, drain เรือที่มี Pod ของ ReplicaSet → หัวหน้ากะสร้างตัวแทนบนเรืออีกลำทันที (และไม่ต้องใช้ --force)",
+  "scene": "Two horizontal lanes. Top lane: ship lab-worker2 under repair scaffolding, a single booth without an owner badge vanishes into dotted outline, ship lab-worker next to it stays empty. Bottom lane: the same repair, booths with owner badges leave lab-worker2 and the supervisor robot stamps the same number of new booths on lab-worker. Nong Som stands between the lanes with a wrench.",
+  "labels": [
+   "Pod เดี่ยว: หาย",
+   "ReplicaSet: สร้างใหม่",
+   "kubectl drain lab-worker2",
+   "lab-worker",
+   "lab-worker2"
+  ],
+  "extra": "'Pod เดี่ยว: หาย' heads the top lane; 'ReplicaSet: สร้างใหม่' heads the bottom lane; 'kubectl drain lab-worker2' on a work-order card held by Nong Som; 'lab-worker' and 'lab-worker2' appear once each as hull names on the bottom lane ships only; the top lane ships have no hull text"
+ },
+ {
+  "id": "T17",
+  "file": "17-node-down-timeline.png",
+  "section": "4. Self-healing: ลบ Pod, drain และเรือล่ม",
+  "caption_th": "เรือล่ม (docker stop lab-worker2): Node เป็น NotReady หลังราว 50 วิ แล้ว Pod ต้องรอ tolerationSeconds (ค่าเริ่มต้น 300) ก่อนถูกไล่ RS จึงสร้างแทนบนเรืออื่น ใส่ toleration 30 วิใน template ให้เร็วขึ้นได้",
+  "scene": "A long horizontal timeline. At the start a ship sinking into fog; then a marker where the ship turns grey; then two branches: a long hourglass bar and a short hourglass bar, each ending at a point where the robot stamps a new booth on the other healthy ship. The old booth stays as a faded outline on the sunk ship. Nong Som holds the short hourglass and smiles.",
+  "labels": [
+   "docker stop lab-worker2",
+   "NotReady ~50 วิ",
+   "tolerationSeconds: 300",
+   "tolerationSeconds: 30",
+   "สร้างแทน"
+  ],
+  "extra": "'docker stop lab-worker2' at the start; 'NotReady ~50 วิ' at the grey marker; 'tolerationSeconds: 300' on the long hourglass bar; 'tolerationSeconds: 30' on the short one; 'สร้างแทน' once near the newly stamped booth"
+ },
+ {
+  "id": "T18",
+  "file": "18-rs-scale.png",
+  "section": "5. Scale: เพิ่ม ลด และลบตัวไหนก่อน",
+  "caption_th": "scale: เปลี่ยนเลข replicas หัวหน้ากะเพิ่มหรือลดกล่องให้ตรงทันที (kubectl scale, แก้ไฟล์แล้ว apply, kubectl edit หรือ scale เป็น 0)",
+  "scene": "The supervisor robot turns a big dial on its clipboard; on the left the ship gets two new booths sliding in (total five), on the right a second scene shows the ship with two booths after turning the dial down. Nong Som turns the dial together with the robot.",
+  "labels": [
+   "--replicas=5",
+   "--replicas=2",
+   "5",
+   "2"
+  ],
+  "extra": "'--replicas=5' above the left scene, '--replicas=2' above the right scene; '5' and '2' are the counts on the dial in each scene"
+ },
+ {
+  "id": "T19",
+  "file": "19-scale-down-order.png",
+  "section": "5. Scale: เพิ่ม ลด และลบตัวไหนก่อน",
+  "caption_th": "scale ลงแล้ว RS เลือกลบ Pod ที่ 'เสียน้อยที่สุด' ก่อน: ยังไม่ได้วางบนเรือ > Pending > ไม่ Ready > อยู่เรือที่แออัดกว่า > เพิ่ง Ready/ใหม่กว่า",
+  "scene": "A sorting line of five booths in front of the robot, ordered from left to right; the robot holds a priority card and a crane hook hovers above the leftmost booth. Booth 1 floats on the dock not yet on a ship, booth 2 is still assembling, booth 3 has a red lamp, booth 4 sits on a crowded ship, booth 5 is shiny new. Nong Som follows the order with a pointer.",
+  "labels": [
+   "ยังไม่ได้วางบนเรือ",
+   "Pending",
+   "ไม่ Ready",
+   "เรือแออัด",
+   "ใหม่กว่า",
+   "ลบก่อน"
+  ],
+  "extra": "booths 1 to 5 carry the first five labels in order left to right; 'ลบก่อน' on the crane hook above booth 1"
+ },
+ {
+  "id": "T20",
+  "file": "20-rs-counts-by-label.png",
+  "section": "6. กับดัก label",
+  "caption_th": "ReplicaSet ไม่ได้จำว่ากล่องไหนเป็นของตัวเองจากชื่อ แต่นับจาก label ที่ตรง selector — กล่องไหนป้ายตรงก็ถูกนับ",
+  "scene": "The supervisor robot shines a flashlight beam across two ships; booths wearing an orange luggage tag light up with a check mark, booths wearing a blue tag stay dim. Exactly three orange-tag booths are lit, two blue-tag booths are dim. Nong Som holds an orange tag and a blue tag comparing them.",
+  "labels": [
+   "selector: app=snack",
+   "app=snack",
+   "app=drink"
+  ],
+  "extra": "'selector: app=snack' on the flashlight; Nong Som's orange tag reads 'app=snack' and blue tag reads 'app=drink'; the booths' tags are plain colors without text"
+ },
+ {
+  "id": "T21",
+  "file": "21-rs-adopts-stray.png",
+  "section": "6. กับดัก label",
+  "caption_th": "กับดักที่ 1: Pod เดี่ยวที่มีอยู่ก่อนและ label ตรง จะถูก ReplicaSet 'รับเลี้ยง' (ใส่ ownerReferences) แล้วสร้างใหม่แค่ส่วนที่ขาด — แม้ Pod นั้นจะหน้าตาต่างจาก template",
+  "scene": "A lone booth with an orange tag and a differently colored awning already sits on a ship. The supervisor robot arrives, clips a small owner badge on the lone booth and stamps only two new booths from the blueprint; the two new booths have the blueprint's awning color, different from the lone booth. Nong Som looks surprised with a paw on cheek.",
+  "labels": [
+   "stray",
+   "ownerReferences: snack-rs",
+   "+2",
+   "replicas: 3"
+  ],
+  "extra": "'stray' is the name card on the lone booth; 'ownerReferences: snack-rs' on the owner badge clipped on it; '+2' near the two new stamped booths; 'replicas: 3' on the robot clipboard"
+ },
+ {
+  "id": "T22",
+  "file": "22-rs-deletes-extra.png",
+  "section": "6. กับดัก label",
+  "caption_th": "กับดักที่ 2: สร้าง Pod เดี่ยวที่ label ตรงหลังจาก ReplicaSet มีครบแล้ว → นับได้ 4 เกิน 3 → ReplicaSet ลบทิ้งทันที (pre-check #2)",
+  "scene": "Three orange-tag booths stand in a row with the supervisor robot; a fourth orange-tag booth is just being placed by a faceless sailor silhouette, and the robot immediately lifts it away with a red X. Nong Som facepalms gently.",
+  "labels": [
+   "4/3",
+   "stray",
+   "Deleted pod: stray"
+  ],
+  "extra": "'4/3' on the robot clipboard in orange; 'stray' name card on the fourth booth; 'Deleted pod: stray' as a small event ticket flying from the robot"
+ },
+ {
+  "id": "T23",
+  "file": "23-overlapping-selectors.png",
+  "section": "6. กับดัก label",
+  "caption_th": "กับดักที่ 3: สอง ReplicaSet ที่ selector ทับกัน — ownerReferences กันไม่ให้แย่ง Pod ที่มีเจ้าของแล้ว แต่ Pod ไร้เจ้าของจะถูกตัวที่เร็วกว่ารับไป และ get pods -l ดูปนกันจนงง",
+  "scene": "Two teal supervisor robots with different chest plates stand on the same dock, both pointing magnifiers at the same row of orange-tag booths. Each booth carries a small owner badge in the color of one robot: three badges match the left robot, two match the right robot. A tangle of dotted strings between them. Nong Som scratches her head between the robots.",
+  "labels": [
+   "rs-a",
+   "rs-b",
+   "selector: app=snack",
+   "selector: app=snack",
+   "ownerReferences"
+  ],
+  "extra": "'rs-a' on the left robot's chest plate; 'rs-b' on the right robot's; each robot's magnifier shows one 'selector: app=snack'; 'ownerReferences' once as a callout pointing to one badge; other badges are color only"
+ },
+ {
+  "id": "T24",
+  "file": "24-unlabel-for-debug.png",
+  "section": "6. กับดัก label",
+  "caption_th": "เทคนิค debug: ถอด label ออกจาก Pod ที่มีปัญหา (kubectl label pod <ชื่อ> app-) → หลุดจาก RS, RS สร้างตัวแทนทันที ส่วน Pod เดิมยังอยู่พร้อม log/สถานะให้ตรวจ",
+  "scene": "Nong Som unties an orange luggage tag from a booth with a red warning lamp and wheels the booth onto a small inspection bench on the side of the dock where a magnifier and a log scroll wait. The owner badge string falls off. Meanwhile the supervisor robot stamps a fresh replacement booth into the empty spot in the row.",
+  "labels": [
+   "kubectl label pod snack-rs-4xk9p app-",
+   "debug",
+   "+1"
+  ],
+  "extra": "'kubectl label pod snack-rs-4xk9p app-' on a card in Nong Som's paw; 'debug' on the inspection bench sign; '+1' near the fresh replacement booth"
+ },
+ {
+  "id": "T25",
+  "file": "25-selector-immutable.png",
+  "section": "7. selector แก้ไม่ได้ และ template ใหม่ไม่เปลี่ยน Pod เดิม",
+  "caption_th": "ใน apps/v1 selector ของ ReplicaSet แก้ไม่ได้หลังสร้าง (field is immutable) ถ้าต้องเปลี่ยนต้องสร้าง RS ใหม่",
+  "scene": "The robot's magnifier is bolted to its arm with a big padlock. Nong Som tries to swap the luggage tag inside the magnifier for a different color; a red rejection stamp from the API desk lands next to it.",
+  "labels": [
+   "selector",
+   "field is immutable",
+   "apps/v1"
+  ],
+  "extra": "'selector' on the padlock; 'field is immutable' inside the red stamp; 'apps/v1' on a small plate on the robot's arm"
+ },
+ {
+  "id": "T26",
+  "file": "26-template-change-old-pods.png",
+  "section": "7. selector แก้ไม่ได้ และ template ใหม่ไม่เปลี่ยน Pod เดิม",
+  "caption_th": "แก้ template (เช่น image ใหม่) แล้ว Pod เดิมไม่เปลี่ยน มีผลเฉพาะ Pod ที่สร้างใหม่ ต้องลบ Pod เองทีละตัวจึงได้รุ่นใหม่ และไม่มีประวัติให้ย้อน — งานนี้คือเหตุผลของ Deployment (บท 007)",
+  "scene": "The supervisor robot holds a new blueprint showing a booth with a star; but the three booths on the ship are still old booths without the star, except one booth that Nong Som just deleted by hand and that came back freshly stamped with the star. Nong Som wipes sweat while holding a small delete button, looking tired.",
+  "labels": [
+   "template: nginx:1.28-alpine",
+   "1.27",
+   "1.27",
+   "1.28",
+   "ลบเองทีละตัว"
+  ],
+  "extra": "'template: nginx:1.28-alpine' on the new blueprint; two old booths have '1.27' signboards and the newest booth has '1.28'; the ship shows exactly three booths total; 'ลบเองทีละตัว' on the small delete button"
+ },
+ {
+  "id": "T27",
+  "file": "27-rs-delete-cascade.png",
+  "section": "8. ลบ ReplicaSet: cascade และ orphan",
+  "caption_th": "ลบ ReplicaSet: background (ค่าเริ่มต้น — ลบ RS ทันทีแล้ว garbage collector ลบ Pod ตาม), foreground (ลบ Pod ก่อนแล้ว RS ค่อยหาย), orphan (ทิ้ง Pod ไว้ ถอดป้ายเจ้าของออก)",
+  "scene": "Three vertical panels with the same harbor. Panel 1: the robot leaves first and its booths dissolve after it along dotted strings. Panel 2: the booths dissolve first while the robot waits holding a small hourglass, then leaves. Panel 3: the robot leaves, the strings are cut with scissors and the three booths stay on the ship without owner badges. Nong Som holds the scissors in panel 3. Booths without badges are ordinary booths, never children or animals.",
+  "labels": [
+   "kubectl delete rs snack-rs",
+   "--cascade=background",
+   "--cascade=foreground",
+   "--cascade=orphan"
+  ],
+  "extra": "'kubectl delete rs snack-rs' as a banner across the top; the three panel headings are '--cascade=background', '--cascade=foreground', '--cascade=orphan' left to right; never draw waterfalls"
+ },
+ {
+  "id": "T28",
+  "file": "28-orphan-readopt.png",
+  "section": "8. ลบ ReplicaSet: cascade และ orphan",
+  "caption_th": "Pod ที่ถูกทิ้งไว้ (orphan) ไม่มีเจ้าของ ถ้าสร้าง RS ใหม่ที่ selector ตรง RS ใหม่จะรับเลี้ยง (ติดป้ายเจ้าของ) โดยไม่สร้าง Pod เพิ่ม",
+  "scene": "Three booths without owner badges on a ship. A new supervisor robot walks up and clips an owner badge on each booth one by one; its stamping machine stays idle with a zero counter. Nong Som hands the robot the badges. Booths are ordinary booths, never children or animals.",
+  "labels": [
+   "ownerReferences: (none)",
+   "snack-rs",
+   "+0",
+   "replicas: 3"
+  ],
+  "extra": "'ownerReferences: (none)' on a small sign in front of the unbadged booths; 'snack-rs' on the new robot's chest plate; '+0' on the idle stamping machine counter; 'replicas: 3' on the robot's clipboard"
+ },
+ {
+  "id": "T29",
+  "file": "29-replicationcontroller-history.png",
+  "section": "9. ReplicationController: รุ่นพี่ที่เกษียณแล้ว",
+  "caption_th": "ReplicationController (v1) คือรุ่นก่อน ReplicaSet: selector ได้แค่แบบเท่ากับ และเคยเปลี่ยนรุ่นด้วย kubectl rolling-update ฝั่ง client ซึ่งถูกถอดออกแล้ว",
+  "scene": "Left: an older, slightly rusty teal robot with a simple magnifier showing one equality tag, a small retired hat and an old crossed-out remote control. Right: the modern supervisor robot with a magnifier showing a set of tags. An arrow from left to right. Nong Som shakes hands with the old robot respectfully.",
+  "labels": [
+   "ReplicationController",
+   "v1",
+   "ReplicaSet",
+   "apps/v1",
+   "app=snack",
+   "app in (snack, drink)",
+   "kubectl rolling-update"
+  ],
+  "extra": "'ReplicationController' and 'v1' on the old robot's chest plate and shoulder; 'ReplicaSet' and 'apps/v1' on the modern robot's chest plate and shoulder; 'app=snack' in the old magnifier; 'app in (snack, drink)' in the new magnifier; 'kubectl rolling-update' on the crossed-out remote control"
+ },
+ {
+  "id": "T30",
+  "file": "30-rs-quota-cap.png",
+  "section": "10. ReplicaSet ใน namespace: quota, LimitRange และ PSA",
+  "caption_th": "RS กับ ResourceQuota: quota pods=4 แต่ replicas 6 → สร้างได้ 4 ตัว ที่เหลือ FailedCreate (exceeded quota) RS ตั้ง condition ReplicaFailure และพยายามซ้ำเรื่อย ๆ; LimitRange เติม requests/limits ให้ Pod ที่ RS สร้าง",
+  "scene": "A painted zone on the harbor map with a zone sign and a counting gate post showing four slots, all filled by four booths. The supervisor robot holds two more stamped booths that bounce off the gate with red sparks; its clipboard shows a mismatch and an orange alert ticket hangs from it. A small sticker machine at the gate puts size stickers on each booth that passes. Nong Som reads the alert ticket. Never draw money or coins.",
+  "labels": [
+   "pods: 4",
+   "replicas: 6",
+   "4/6",
+   "FailedCreate: exceeded quota",
+   "ReplicaFailure",
+   "LimitRange"
+  ],
+  "extra": "'pods: 4' on the gate post; 'replicas: 6' and '4/6' on the robot's clipboard (two lines); 'FailedCreate: exceeded quota' on the alert ticket; 'ReplicaFailure' on a small red flag on the robot's head; 'LimitRange' on the sticker machine; size stickers are color only"
+ },
+ {
+  "id": "T31",
+  "file": "31-psa-workload-warn.png",
+  "section": "10. ReplicaSet ใน namespace: quota, LimitRange และ PSA",
+  "caption_th": "Pod Security Admission กับ ReplicaSet: โหมด warn เตือนตั้งแต่ตอนสร้าง RS (ตรวจ Pod template) แต่ enforce ตรวจที่ตัว Pod → RS ถูกสร้างได้ แต่ Pod ถูกปฏิเสธ (FailedCreate) จนกว่าจะแก้ template",
+  "scene": "A security checkpoint at the entrance of a painted zone. The supervisor robot walks through with its blueprint and receives a yellow warning slip, but is allowed in. Inside the zone, each booth the robot tries to stamp is blocked by a red barrier arm. The robot's clipboard shows zero ready booths. Nong Som studies the yellow slip.",
+  "labels": [
+   "warn",
+   "enforce",
+   "Warning: would violate PodSecurity",
+   "FailedCreate",
+   "0/3"
+  ],
+  "extra": "'warn' on the checkpoint booth at the entrance; 'enforce' on the red barrier arm inside; 'Warning: would violate PodSecurity' on the yellow slip; 'FailedCreate' on a small red ticket at the barrier; '0/3' on the robot's clipboard"
+ },
+ {
+  "id": "T32",
+  "file": "32-anti-affinity-required.png",
+  "section": "11. ReplicaSet กับการจัดวาง: anti-affinity และ topology spread",
+  "caption_th": "podAntiAffinity แบบ required + topologyKey hostname: ห้ามบูธ RS เดียวกันอยู่เรือเดียวกัน มี worker 2 ลำแต่ replicas 3 → ตัวที่ 3 ค้าง Pending",
+  "scene": "Two worker cargo ships each carry exactly one booth with a matching orange tag; between the booths a strong repelling magnet symbol. A third booth floats on a raft at the dock, unable to board either ship, with a small pause icon. The control tower ship is in the background with a no-entry flag. The supervisor robot holds its clipboard. Nong Som looks at the floating booth, puzzled.",
+  "labels": [
+   "required",
+   "lab-worker",
+   "lab-worker2",
+   "Pending",
+   "replicas: 3"
+  ],
+  "extra": "'required' on the magnet symbol; 'lab-worker' and 'lab-worker2' on the two worker ship hulls; 'Pending' on the floating booth; 'replicas: 3' on the robot clipboard; the control tower ship and flag have no text"
+ },
+ {
+  "id": "T33",
+  "file": "33-preferred-and-spread.png",
+  "section": "11. ReplicaSet กับการจัดวาง: anti-affinity และ topology spread",
+  "caption_th": "preferred (กระจายเท่าที่ทำได้ → 3 บูธบน 2 เรือ = 2+1) และ topologySpreadConstraints maxSkew 1 (จำนวนบนแต่ละเรือต่างกันไม่เกิน 1)",
+  "scene": "Two side-by-side scenes. Left: two ships, one carrying two booths and the other one booth, a gentle soft magnet icon above. Right: two ships with three and two booths and a balance scale icon between them showing a difference of one. The supervisor robot balances booths on the right. Nong Som gives a thumbs up.",
+  "labels": [
+   "preferred",
+   "2",
+   "1",
+   "topologySpreadConstraints",
+   "maxSkew: 1"
+  ],
+  "extra": "'preferred' heads the left scene; '2' and '1' are count badges on the left two ships; 'topologySpreadConstraints' heads the right scene; 'maxSkew: 1' on the balance scale; right ships have no count text"
+ },
+ {
+  "id": "T34",
+  "file": "34-names-ips-change.png",
+  "section": "12. ข้อควรรู้: Pod จาก ReplicaSet ไม่มีชื่อคงที่และ IP คงที่",
+  "caption_th": "ทุกครั้งที่ RS สร้างตัวแทน ได้ชื่อใหม่และ IP ใหม่ ลูกค้าที่จำที่อยู่เดิมหรือ port-forward ที่ต่อ Pod เดิมไว้จะหลงทาง — ยังขาด 'ที่อยู่คงที่'",
+  "scene": "A booth that just reappeared on the ship with a new name card and a new IP tag, while the old outline with the old name and IP fades away next to it. A faceless customer silhouette holds an address card matching the old booth and looks around lost; a laptop cable plugged into the old outline is snapped. Nong Som shrugs.",
+  "labels": [
+   "snack-rs-4xk9p",
+   "10.244.1.12",
+   "snack-rs-q8vnc",
+   "10.244.2.15",
+   "port-forward"
+  ],
+  "extra": "'snack-rs-4xk9p' and '10.244.1.12' on the fading old outline (name card and IP tag); 'snack-rs-q8vnc' and '10.244.2.15' on the new booth; 'port-forward' on the snapped cable; the customer's address card has no text"
+ },
+ {
+  "id": "T35",
+  "file": "35-summary-checklist.png",
+  "section": "13. สรุปและปูทางบทถัดไป",
+  "caption_th": "สรุปบท: ReplicaSet = controller ที่นับ Pod ตาม selector แล้วสร้าง/ลบจาก template ให้ครบ replicas ตลอดเวลา ดูแลด้วย ownerReferences และ scale ได้ทันที",
+  "scene": "A checklist board with exactly six ticked rows, each with a small icon (clipboard, magnifier, blueprint, owner badge, healing sparkle, dial). The supervisor robot stands proudly beside it, and Nong Som gives a big thumbs up.",
+  "labels": [
+   "replicas",
+   "selector",
+   "template",
+   "ownerReferences",
+   "self-healing",
+   "scale"
+  ],
+  "extra": "exactly six rows, each with exactly one label in the listed order"
+ },
+ {
+  "id": "T36",
+  "file": "36-next-chapters.png",
+  "section": "13. สรุปและปูทางบทถัดไป",
+  "caption_th": "ปัญหาที่ยังเหลือ: แต่ละบูธมีฐานข้อมูลของตัวเอง ชื่อ/IP เปลี่ยนทุกครั้งจนลูกค้าหาร้านไม่เจอ (→ บท 006 Service) และเปลี่ยนรุ่นต้องลบ Pod เองทีละตัว (→ บท 007 Deployment)",
+  "scene": "The harbor at dusk: three booths on two ships with the supervisor robot. Above them three thought clouds with simple icons: three different order notes, a lost customer silhouette in fog, a tired paw deleting booths one by one. On the horizon, drawn only as soft shadow silhouettes, a lighthouse and a taller robot with a bow tie, each with a hanging sign. Nong Som looks toward the horizon with hope.",
+  "labels": [
+   "ข้อมูลไม่ตรงกัน",
+   "IP เปลี่ยน",
+   "เปลี่ยนรุ่นด้วยมือ",
+   "บท 6 Service",
+   "บท 7 Deployment"
+  ],
+  "extra": "each thought cloud carries exactly one of the first three labels in order; 'บท 6 Service' hangs from the lighthouse silhouette; 'บท 7 Deployment' hangs from the tall robot silhouette; the silhouettes are shadowy and small"
+ },
+ {
+  "id": "L01",
+  "file": "01-lab0-prepare.png",
+  "section": "LAB0 เตรียมคลัสเตอร์ + ทบทวน Pod เดี่ยวหายถาวร",
+  "caption_th": "LAB0: เช็กเรือ 3 ลำ Ready, ลบ Pod เดี่ยวแล้วยืนยันว่าหายถาวร และส่องหา kube-controller-manager ใน kube-system",
+  "scene": "Nong Som at a laptop on the dock; three ships with Ready flags; on one ship a single booth has just vanished into a dotted outline with nothing replacing it; a window of the control tower is open showing a robot at a desk.",
+  "labels": [
+   "kubectl get nodes",
+   "Ready",
+   "Pod เดี่ยว: หายถาวร",
+   "kube-controller-manager"
+  ],
+  "extra": "'kubectl get nodes' on the laptop screen; 'Ready' once on a flag shared by the fleet; 'Pod เดี่ยว: หายถาวร' next to the dotted outline; 'kube-controller-manager' on the tower window sign"
+ },
+ {
+  "id": "L02",
+  "file": "02-lab1-first-rs.png",
+  "section": "LAB1 ReplicaSet แรก",
+  "caption_th": "LAB1: สร้าง snack-rs 3 ตัว ดูชื่อ Pod แบบ <rs>-<สุ่ม>, ownerReferences, Events SuccessfulCreate และลอง template ที่ label ไม่ตรง selector",
+  "scene": "The supervisor robot proudly stamps three booths in a row on a ship; each booth has a name card and a small owner badge. A ticket roll with an event pops out of the stamping machine. Off to the side, a rejected blueprint lies in a bin with a red stamp. Nong Som types at a laptop.",
+  "labels": [
+   "snack-rs",
+   "replicas: 3",
+   "snack-rs-4xk9p",
+   "ownerReferences",
+   "SuccessfulCreate"
+  ],
+  "extra": "'snack-rs' on the robot's chest plate; 'replicas: 3' on its clipboard; 'snack-rs-4xk9p' on the first booth's name card only (other name cards are color only); 'ownerReferences' on one badge callout; 'SuccessfulCreate' on the event ticket; the rejected blueprint stamp has no text"
+ },
+ {
+  "id": "L03",
+  "file": "03-lab2-delete-watch.png",
+  "section": "LAB2 Self-healing: ลบ Pod, drain และเรือล่ม",
+  "caption_th": "LAB2: ลบ Pod (ทั้งทีละตัวและ -l app=snack) ขณะเปิด kubectl get pods -w อีกหน้าต่าง เห็นตัวใหม่เกิดขณะตัวเก่ายัง Terminating",
+  "scene": "Nong Som presses a big red button; the old booth is fading with closing shutters while the supervisor robot is already stamping a replacement right next to it. A second monitor on the dock shows a live scrolling list with an eye icon.",
+  "labels": [
+   "kubectl delete pod",
+   "Terminating",
+   "Running",
+   "kubectl get pods -w"
+  ],
+  "extra": "'kubectl delete pod' on the red button; 'Terminating' on the old fading booth; 'Running' on the new booth; 'kubectl get pods -w' on the second monitor"
+ },
+ {
+  "id": "L04",
+  "file": "04-lab2-drain-rebirth.png",
+  "section": "LAB2 Self-healing: ลบ Pod, drain และเรือล่ม",
+  "caption_th": "LAB2 (ต่อ): drain lab-worker2 → Pod ของ snack-rs บนเรือนั้นถูกไล่และเกิดใหม่บน lab-worker แล้ว uncordon (Pod ไม่ย้ายกลับเอง) — ทางเลือก: docker stop lab-worker2 + tolerationSeconds 30",
+  "scene": "Ship lab-worker2 under repair scaffolding with a closed gate; booths leave it as dotted outlines while the supervisor robot stamps new booths onto ship lab-worker. Afterwards a green reopen ribbon is tied on the gate of lab-worker2 but its deck stays empty. Nong Som holds a work-order card.",
+  "labels": [
+   "kubectl drain lab-worker2",
+   "SchedulingDisabled",
+   "lab-worker",
+   "lab-worker2",
+   "kubectl uncordon"
+  ],
+  "extra": "'kubectl drain lab-worker2' on the work-order card; 'SchedulingDisabled' on the closed gate; 'lab-worker' and 'lab-worker2' on the ship hulls; 'kubectl uncordon' on the green ribbon"
+ },
+ {
+  "id": "L05",
+  "file": "05-lab3-scale.png",
+  "section": "LAB3 Scale",
+  "caption_th": "LAB3: scale ด้วย kubectl scale, แก้ไฟล์แล้ว apply, kubectl edit และ scale 0 พร้อมบันทึกว่า Pod ตัวไหนถูกลบตอน scale ลง",
+  "scene": "The supervisor robot turns a dial in three steps shown as three small scenes left to right: five booths, two booths, zero booths with an empty but tidy deck. A crane removes booths and drops event tickets. Nong Som notes names on a clipboard.",
+  "labels": [
+   "--replicas=5",
+   "--replicas=2",
+   "--replicas=0",
+   "SuccessfulDelete"
+  ],
+  "extra": "the three scene headings are '--replicas=5', '--replicas=2', '--replicas=0' in order; 'SuccessfulDelete' on one event ticket"
+ },
+ {
+  "id": "L06",
+  "file": "06-lab4-label-trap.png",
+  "section": "LAB4 กับดัก label",
+  "caption_th": "LAB4: Pod stray ที่ label ตรงถูกลบทันทีเมื่อ RS ครบแล้ว แต่ถ้ามีอยู่ก่อนจะถูกรับเลี้ยง และถอด label เพื่อแยก Pod ออกมา debug",
+  "scene": "Three small scenes side by side. Left: a stray booth placed next to three booths is lifted away by the robot. Middle: a stray booth already on the ship receives an owner badge from an arriving robot and only two new booths appear. Right: Nong Som unties a tag from a booth and wheels it to an inspection bench while the robot stamps a replacement.",
+  "labels": [
+   "after RS: deleted",
+   "before RS: adopted",
+   "app-",
+   "stray",
+   "stray"
+  ],
+  "extra": "'after RS: deleted' heading left, 'before RS: adopted' heading middle, 'app-' heading right; the stray booths in the left and middle scenes each have one 'stray' name card"
+ },
+ {
+  "id": "L07",
+  "file": "07-lab5-template-old-pods.png",
+  "section": "LAB5 selector แก้ไม่ได้ + template ใหม่ Pod เดิมไม่เปลี่ยน",
+  "caption_th": "LAB5: เปลี่ยน selector ได้ field is immutable; เปลี่ยน image ใน template เป็น nginx:1.28-alpine แล้ว custom-columns ยังเห็น 1.27 ทุกตัว จนกว่าจะลบ Pod",
+  "scene": "Left: the robot's magnifier with a padlock and a red stamp. Right: a terminal-style table card with three rows next to three booths; two old booths and one freshly stamped booth with a star. Nong Som points at the table.",
+  "labels": [
+   "field is immutable",
+   "nginx:1.27-alpine",
+   "nginx:1.27-alpine",
+   "nginx:1.28-alpine",
+   "custom-columns"
+  ],
+  "extra": "'field is immutable' in the red stamp; the table card has exactly three rows reading 'nginx:1.27-alpine', 'nginx:1.27-alpine', 'nginx:1.28-alpine' top to bottom; 'custom-columns' as the table card title"
+ },
+ {
+  "id": "L08",
+  "file": "08-lab6-cascade-orphan.png",
+  "section": "LAB6 ลบ RS แบบ cascade vs orphan",
+  "caption_th": "LAB6: ลบ RS ปกติ Pod หายตาม, ลบด้วย --cascade=orphan Pod อยู่ต่อแบบไม่มีเจ้าของ แล้ว apply RS เดิมอีกครั้ง → รับเลี้ยงโดยไม่สร้างเพิ่ม",
+  "scene": "Two steps. Left: Nong Som cuts dotted owner strings with scissors as the robot leaves; three booths remain on the ship. Right: the robot returns and clips owner badges back onto the same three booths; its stamping machine shows zero. Booths are ordinary booths, never children or animals.",
+  "labels": [
+   "--cascade=orphan",
+   "ownerReferences",
+   "snack-rs",
+   "+0"
+  ],
+  "extra": "'--cascade=orphan' on the scissors; 'ownerReferences' on one re-clipped badge callout on the right; 'snack-rs' on the robot's chest plate on the right; '+0' on the stamping machine counter; never draw waterfalls"
+ },
+ {
+  "id": "L09",
+  "file": "09-lab7-quota.png",
+  "section": "LAB7 ReplicaSet กับ quota, LimitRange และ PSA",
+  "caption_th": "LAB7: namespace rs-quota มี quota pods=4 + LimitRange → RS replicas 6 ได้แค่ 4, Events FailedCreate exceeded quota, condition ReplicaFailure; เพิ่ม quota แล้ว RS สร้างต่อเอง; ทางเลือก PSA enforce ให้ RS สร้างได้แต่ Pod ถูกปฏิเสธ",
+  "scene": "A painted zone with a gate post showing four filled slots; the supervisor robot holds two booths that bounce off; an alert ticket hangs from its clipboard. Nong Som raises the gate post limit with a lever on the side, and a sticker machine at the gate puts size stickers on each booth. Never draw money or coins.",
+  "labels": [
+   "rs-quota",
+   "pods: 4",
+   "4/6",
+   "exceeded quota",
+   "LimitRange"
+  ],
+  "extra": "'rs-quota' on the zone sign; 'pods: 4' on the gate post; '4/6' on the robot clipboard; 'exceeded quota' on the alert ticket; 'LimitRange' on the sticker machine"
+ },
+ {
+  "id": "L10",
+  "file": "10-lab8-spread.png",
+  "section": "LAB8 กระจาย replica ด้วย anti-affinity และ topology spread",
+  "caption_th": "LAB8: required anti-affinity + replicas 3 บน worker 2 ลำ → 1 Pending; เปลี่ยนเป็น preferred → 2+1; topologySpreadConstraints maxSkew 1 → 2+2 / 3+2",
+  "scene": "Two scenes stacked vertically. Top: two worker ships with one booth each and a third booth floating on a raft at the dock. Bottom: the same two ships with two booths and one booth, a soft magnet icon above. The supervisor robot moves between the scenes. Nong Som compares them with a pointer.",
+  "labels": [
+   "required: Pending",
+   "preferred: 2+1",
+   "lab-worker",
+   "lab-worker2",
+   "maxSkew: 1"
+  ],
+  "extra": "'required: Pending' heads the top scene; 'preferred: 2+1' heads the bottom scene; 'lab-worker' and 'lab-worker2' appear once each on the bottom scene ship hulls; 'maxSkew: 1' on a small side note card"
+ },
+ {
+  "id": "L11",
+  "file": "11-lab9-architecture.png",
+  "section": "LAB9 LAB สุดท้าย: ร้านน้องส้ม 3 บูธด้วย ReplicaSet",
+  "caption_th": "LAB9 สถาปัตยกรรม: namespace som-booths, ReplicaSet som-booth replicas 3, Pod template = ร้าน all-in-one ของบท 004 (web som-shop-web:1.1 + db sidecar postgres + emptyDir) ทุกบูธจึงมีฐานข้อมูลของตัวเอง",
+  "scene": "A painted zone on the harbor with the supervisor robot holding a blueprint. Three booths on two ships; one booth is enlarged in a cutaway showing two containers inside: a web counter container and a small database cabinet container with its own shelf of cat food cans. A dotted line ties every booth to the robot. Nong Som explains with a pointer.",
+  "labels": [
+   "som-booths",
+   "som-booth",
+   "replicas: 3",
+   "web",
+   "db",
+   "som-shop-web:1.1"
+  ],
+  "extra": "'som-booths' on the zone sign; 'som-booth' on the robot chest plate; 'replicas: 3' on its clipboard; 'web' and 'db' only on the two containers of the enlarged booth; 'som-shop-web:1.1' on the blueprint"
+ },
+ {
+  "id": "L12",
+  "file": "12-lab9-prepare-image.png",
+  "section": "LAB9 LAB สุดท้าย: ร้านน้องส้ม 3 บูธด้วย ReplicaSet",
+  "caption_th": "LAB9 เตรียม image: ถ้าคลัสเตอร์ใหม่ build som-shop-web:1.1 จากโฟลเดอร์บท 004 แล้ว kind load ให้ทุก Node, postgres ใช้ docker save --platform + kind load image-archive หรือให้ Node pull เอง",
+  "scene": "A small dockside workshop: Nong Som packs a freshly built crate of cat food cans on a workbench, then a delivery cart carries copies of the crate onto all three ships. A second crate of database cabinets rides the same cart.",
+  "labels": [
+   "docker build",
+   "som-shop-web:1.1",
+   "kind load docker-image",
+   "postgres:17.11-alpine"
+  ],
+  "extra": "'docker build' on the workbench; 'som-shop-web:1.1' on the first crate; 'kind load docker-image' on the delivery cart; 'postgres:17.11-alpine' on the second crate"
+ },
+ {
+  "id": "L13",
+  "file": "13-lab9-three-booths-two-ships.png",
+  "section": "LAB9 LAB สุดท้าย: ร้านน้องส้ม 3 บูธด้วย ReplicaSet",
+  "caption_th": "LAB9: apply แล้ว kubectl get pods -o wide เห็น 3 บูธกระจาย 2 เรือ (preferred anti-affinity → 2+1) แต่ละบูธชื่อไม่ซ้ำ",
+  "scene": "Two worker ships: one carries two cat-food booths, the other carries one booth; each booth has a name card and a tiny awning; a soft magnet icon floats between ships. Nong Som on the dock checks a laptop table.",
+  "labels": [
+   "lab-worker",
+   "lab-worker2",
+   "kubectl get pods -o wide",
+   "preferred"
+  ],
+  "extra": "'lab-worker' and 'lab-worker2' on the hulls; 'kubectl get pods -o wide' on the laptop; 'preferred' on the magnet icon; booth name cards are color only"
+ },
+ {
+  "id": "L14",
+  "file": "14-lab9-port-forward-each.png",
+  "section": "LAB9 LAB สุดท้าย: ร้านน้องส้ม 3 บูธด้วย ReplicaSet",
+  "caption_th": "LAB9: ลูกค้าเข้าร้านได้ทีละบูธเท่านั้น: kubectl port-forward pod/<ชื่อ> 8081/8082/8083:3000 ใน k8s-lab แล้ว ssh -L จากเครื่องนักศึกษา เปิด 3 แท็บ",
+  "scene": "Three separate cables run from three booths on two ships to a relay box on the dock, then one thick tunnel cable runs to Nong Som's laptop showing three browser tabs. Each booth cable has a numbered plug.",
+  "labels": [
+   "8081",
+   "8082",
+   "8083",
+   "port-forward",
+   "ssh -L"
+  ],
+  "extra": "'8081', '8082', '8083' on the three plugs; 'port-forward' on the relay box; 'ssh -L' on the tunnel cable; browser tabs have no text"
+ },
+ {
+  "id": "L15",
+  "file": "15-lab9-orders-mismatch.png",
+  "section": "LAB9 LAB สุดท้าย: ร้านน้องส้ม 3 บูธด้วย ReplicaSet",
+  "caption_th": "LAB9: สั่งซื้อที่บูธ a แล้วเปิดบูธ b/c → ออเดอร์ไม่ตรงกัน เพราะแต่ละบูธมี db ของตัวเอง",
+  "scene": "Three booths side by side, each with an order board on its awning showing a different order count, and each with its own small database cabinet behind it. A faceless customer silhouette with a shopping bag stands at the first booth. Nong Som looks from one board to another, confused.",
+  "labels": [
+   "ออเดอร์ 2",
+   "ออเดอร์ 0",
+   "ออเดอร์ 0",
+   "db",
+   "db",
+   "db"
+  ],
+  "extra": "the three order boards read 'ออเดอร์ 2', 'ออเดอร์ 0', 'ออเดอร์ 0' left to right; each cabinet carries one 'db'"
+ },
+ {
+  "id": "L16",
+  "file": "16-lab9-delete-pod-data-lost.png",
+  "section": "LAB9 LAB สุดท้าย: ร้านน้องส้ม 3 บูธด้วย ReplicaSet",
+  "caption_th": "LAB9: ลบ Pod บูธ a → RS สร้างบูธใหม่ ชื่อใหม่ IP ใหม่ ออเดอร์เป็น 0 (emptyDir หายพร้อม Pod) และ port-forward ที่ต่อบูธเดิมหลุด",
+  "scene": "The old booth fades away together with its database cabinet; the robot stamps a fresh booth with a new name card and an empty database cabinet; its order board shows zero. The numbered cable that was plugged into the old booth hangs snapped and sparking. Nong Som holds a paw to her mouth.",
+  "labels": [
+   "kubectl delete pod",
+   "ออเดอร์ 0",
+   "port-forward",
+   "8081"
+  ],
+  "extra": "'kubectl delete pod' on a red button; 'ออเดอร์ 0' on the new booth's order board; 'port-forward' and '8081' on the snapped cable and its plug"
+ },
+ {
+  "id": "L17",
+  "file": "17-lab9-scale-3-5-2.png",
+  "section": "LAB9 LAB สุดท้าย: ร้านน้องส้ม 3 บูธด้วย ReplicaSet",
+  "caption_th": "LAB9: kubectl scale rs som-booth --replicas=5 แล้ว 2 — ดูว่าบูธไหนถูกปิด (ระวัง resource: 5 บูธขอราว 1 CPU / 2.2Gi ถ้า Pending ให้ใช้ 4)",
+  "scene": "Three small scenes left to right: three booths on two ships, then five booths on two ships (three and two), then two booths (one per ship). The robot turns its dial in each scene. Nong Som watches a small resource gauge on the dock.",
+  "labels": [
+   "3",
+   "5",
+   "2",
+   "kubectl scale rs som-booth"
+  ],
+  "extra": "'3', '5', '2' are big count badges above the three scenes; 'kubectl scale rs som-booth' on the dial; the gauge has no text"
+ },
+ {
+  "id": "L18",
+  "file": "18-lab9-template-promo.png",
+  "section": "LAB9 LAB สุดท้าย: ร้านน้องส้ม 3 บูธด้วย ReplicaSet",
+  "caption_th": "LAB9: แก้ template เป็น som-shop-web:1.1-promo + ข้อความโปร แล้ว apply → บูธเดิมยังเป็น 1.1 ทุกบูธ (template ใหม่ใช้กับบูธที่เกิดใหม่เท่านั้น)",
+  "scene": "The robot holds a new festive blueprint with confetti and a star; the two booths on the ships still show the old plain signboards. Nong Som compares the blueprint and the booths, eyebrows raised.",
+  "labels": [
+   "som-shop-web:1.1-promo",
+   "โปรบูธใหม่",
+   "1.1",
+   "1.1"
+  ],
+  "extra": "'som-shop-web:1.1-promo' and 'โปรบูธใหม่' on the festive blueprint; each of the two booths shows one '1.1' signboard; never draw real fireworks"
+ },
+ {
+  "id": "L19",
+  "file": "19-lab9-manual-replace.png",
+  "section": "LAB9 LAB สุดท้าย: ร้านน้องส้ม 3 บูธด้วย ReplicaSet",
+  "caption_th": "LAB9: ต้องลบ Pod ทีละตัวด้วยมือจึงได้บูธรุ่นโปร ระหว่างนั้นบูธที่ถูกลบปิดชั่วคราว ออเดอร์ของบูธนั้นหาย และต้อง port-forward ใหม่ทุกครั้ง",
+  "scene": "Nong Som, tired and sweating, deletes one old booth with a small red button while the robot stamps a festive promo booth in its place; the other old booth waits its turn. A small 'next' arrow points to the remaining old booth.",
+  "labels": [
+   "kubectl delete pod",
+   "1.1",
+   "1.1-promo",
+   "ทีละตัว"
+  ],
+  "extra": "'kubectl delete pod' on the red button; '1.1' on the remaining old booth; '1.1-promo' on the new festive booth; 'ทีละตัว' on the next arrow"
+ },
+ {
+  "id": "L20",
+  "file": "20-lab9-wrap-up-handoff.png",
+  "section": "LAB9 LAB สุดท้าย: ร้านน้องส้ม 3 บูธด้วย ReplicaSet",
+  "caption_th": "สรุป LAB9 และปัญหาส่งต่อ: (1) แต่ละบูธมี db ของตัวเอง ข้อมูลไม่ตรงกัน (2) ชื่อ/IP เปลี่ยน ต้อง port-forward ทีละ Pod → บท 006 Service (3) เปลี่ยนรุ่นต้องลบ Pod เอง → บท 007 Deployment",
+  "scene": "A checklist board with three rows each marked with an orange question mark icon. Behind the board, on the horizon, two soft shadow silhouettes: a lighthouse and a taller robot with a bow tie. Nong Som stands with the supervisor robot, pointing at the horizon.",
+  "labels": [
+   "ข้อมูลไม่ตรงกัน",
+   "ชื่อ/IP เปลี่ยน",
+   "เปลี่ยนรุ่นด้วยมือ",
+   "บท 6 Service",
+   "บท 7 Deployment"
+  ],
+  "extra": "the three board rows carry the first three labels in order; 'บท 6 Service' under the lighthouse silhouette; 'บท 7 Deployment' under the tall robot silhouette; the silhouettes are shadowy and small"
+ }
+]

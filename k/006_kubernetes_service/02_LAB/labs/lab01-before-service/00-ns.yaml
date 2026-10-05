@@ -1,0 +1,7 @@
+# LAB 1–9: โซน (namespace) shop ของบทนี้ — จบ LAB 9 ลบทิ้งด้วย kubectl delete ns shop
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: shop
+  labels:
+    team: som

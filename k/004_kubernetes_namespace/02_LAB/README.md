@@ -2353,11 +2353,22 @@ ssh -p 2223 -L 3001:localhost:3001 -L 3002:localhost:3002 -L 3003:localhost:3003
 curl -s -X POST localhost:3001/api/orders -H 'Content-Type: application/json' -d '{"product_id":1,"qty":1}'; echo
 ```
 
+ตัวอย่างผลเมื่อสั่งในร้านที่ยังไม่มีออเดอร์ (ถ้าเคยสั่งไปแล้ว `order_id` และ `stock` จะต่างจากนี้)
+
 ```text
 {"ok":true,"order_id":1,"product":{"id":1,"name_th":"อาหารเม็ดสูตรปลาทูน่า 1.5 กก.","stock":19}}
 ```
 
-ผลจริงหลังสั่งซื้อที่ dev 1 ออเดอร์: dev มีออเดอร์ 1 และสินค้า id 1 เหลือ 19 ชิ้น ส่วน staging และ prod ยังเป็น 0 ออเดอร์และเหลือ 20 ชิ้น (ตรวจเองได้ด้วย `curl -s localhost:3002/api/orders` และ `curl -s localhost:3002/api/products`)
+แอปนี้มี API แค่ `POST /api/orders` (สั่งซื้อ), `GET /api/products` และ `GET /api/health` — **ไม่มี `GET /api/orders`** (เรียกแล้วได้ `405 Method Not Allowed`) จึงตรวจจำนวนออเดอร์ของแต่ละโซนจากหน้าเว็บ (ช่อง "ออเดอร์ทั้งหมด") หรือด้วยคำสั่งด้านล่าง
+
+```bash
+# จำนวนออเดอร์ทั้งหมดของแต่ละโซน (ตัวเลขหน้าคำว่า ออเดอร์ทั้งหมด)
+for p in 3001 3002 3003; do echo -n "$p: "; curl -s localhost:$p/ | grep -o '[0-9,]*</span><span class="label">ออเดอร์ทั้งหมด'; done
+# stock ของสินค้า id 1 ในแต่ละโซน
+for p in 3001 3002 3003; do echo -n "$p: "; curl -s localhost:$p/api/products | grep -o '"stock":[0-9]*' | head -1; done
+```
+
+สิ่งที่ควรสังเกต: หลังสั่งที่ dev 1 ออเดอร์ ตัวเลขออเดอร์ของ dev เพิ่มขึ้น 1 และ stock ของสินค้า id 1 ใน dev ลดลง 1 ส่วน staging และ prod ไม่เปลี่ยนเลย เพราะแต่ละโซนมีฐานข้อมูลของตัวเอง
 
 ### 10.11 ลบโซน dev ทั้งก้อน
 

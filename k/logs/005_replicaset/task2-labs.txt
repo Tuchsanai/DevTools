@@ -1,0 +1,17 @@
+งาน: สร้างไฟล์ LAB ทั้งหมดของบท 005 (ReplicaSet) และทดสอบจริงทุกข้อด้วยสกิล k8s-lab (อ่านสกิล k8s-lab แล้วทำตามกฎเคร่งครัด)
+
+อ่านก่อน: แผน /root/workspace/DevTools/k/logs/005_replicaset/plan.md, สัญญาร่วม logs/005_replicaset/scratch/split-contract.md, pre-check logs/005_rs_deploy_svc/precheck.md บทก่อนหน้าดูได้ที่ 002_kubernetes_pod, 003_kubernetes_node_pod, 004_kubernetes_namespace (README และไฟล์ LAB; แอป som-shop-web:1.1 อยู่ที่ 004_kubernetes_namespace/02_LAB/som-shop-envs) ทำตามแผน ปรับได้เมื่อผลจริงต่าง (บันทึกทุกการเปลี่ยนแปลง)
+บทเรียนจากบทก่อน: postgres ต้องใช้ docker pull + docker save --platform linux/amd64 + kind load image-archive; health ใน container ใช้ 127.0.0.1; port-forward หลุดเมื่อ Pod ถูกลบ; ห้ามใช้ pkill -f ที่ pattern ตรงกับ shell ตัวเอง (ใช้ "[k]ubectl ..."); NotReady หลัง docker stop ~45-50 วิ
+
+ขอบเขต:
+- เขียนไฟล์ได้เฉพาะใต้ /root/workspace/DevTools/k/005_kubernetes_replicaset/02_LAB/ และ log ใต้ /root/workspace/DevTools/k/logs/005_replicaset/lab-run/ (ไฟล์ชั่วคราวใช้ logs/005_replicaset/scratch/ ห้ามใช้ /tmp ของเครื่องนี้) ถ้าบทนี้ต้องใช้แอป ให้คัดลอกแอปจากบท 004 มาไว้ในบทนี้ (ไม่เอา node_modules/.next) เพื่อให้ใช้งานได้ด้วยตัวเอง
+- ห้ามแตะ container k8s-lab ของผู้เรียน (รวม docker exec) และ deep_vision_5090_vllm ห้าม docker system prune
+- container ทดลองชื่อ k8s-lab-<ชื่อ>-<hashid>, image tuchsanai/devtools-kind:2569_1, --privileged --hostname k8s-lab, publish SSH port ว่างตามสกิล, docker cp ไปที่ /workspace/005_kubernetes_replicaset ห้าม bind mount; docker stop/start lab-worker2 ต้องรันภายใน container ทดลองเท่านั้น
+- ห้ามใช้ Service/Deployment ในขั้นตอน LAB (นักศึกษายังไม่เรียน)
+
+สิ่งที่ต้องทำ:
+1) สร้าง manifest/ไฟล์ทั้งหมดตามแผน คอมเมนต์ภาษาไทยสั้น ๆ สำหรับมือใหม่
+2) ทดสอบทุก LAB ตามลำดับเหมือนนักศึกษาพิมพ์ (cd /workspace/005_kubernetes_replicaset/02_LAB) เก็บคำสั่ง+output จริงที่ logs/005_replicaset/lab-run/labNN.log ยืนยันทุกจุดใน "จุดที่ต้องยืนยันตอนทดสอบ" ของแผน (ทรัพยากร 5 บูธ, docker tag + kind load tag ใหม่, ลำดับ Pod ที่ถูกลบตอน scale down, ข้อความ error จริง, เวลาสร้าง Pod แทนหลัง docker stop, port-forward หลุด ฯลฯ) ทดสอบ port-forward + ssh -L จากเครื่องนี้ผ่าน gateway + askpass ตามสกิล
+3) ห้ามลบ container ทดลองหลังจบ: รีเซ็ต LAB สุดท้ายให้อยู่ในสภาพที่เหมาะกับ screenshot (บูธ 3 ตัวรันปกติ คนละ Node ถ้าได้ แต่ละบูธมีออเดอร์ต่างกัน เช่น 1/2/3 เพื่อให้เห็นว่า DB แยกกัน) เปิด port-forward ไปแต่ละบูธ port 3001/3002/3003 (--address 127.0.0.1, setsid nohup) เขียน logs/005_replicaset/lab-run/handoff.md (ชื่อ container, ssh port, gateway, คำสั่ง tunnel, ชื่อ Pod แต่ละ port, คำสั่งสำหรับฉาก screenshot เพิ่ม เช่น ลบ Pod บูธหนึ่งแล้ว RS สร้างใหม่ + เปิด port-forward ใหม่) ผู้ประสานงานจะลบ container เอง
+4) เขียน logs/005_replicaset/lab-run/SUMMARY.md: ผ่าน/ไม่ผ่านรายข้อ, เวลาจริง, ข้อความจริงสำคัญ, การเปลี่ยนแปลงจากแผน, ป้าย/ข้อความ/ฉากในภาพ storyboard (logs/005_replicaset/images.json ส่วน "Text (verbatim" + caption_th + Scene ของภาพ needs_test และภาพที่อ้างค่าจริง) ที่ไม่ตรงผลจริง พร้อมค่าที่ควรใช้แทน, ข้อควรระวังสำหรับนักศึกษา
+ห้ามใส่ credential จริง/.env ตอบท้ายสั้น ๆ: ผลรายข้อ, ป้ายภาพที่ต้องแก้, container ที่เปิดไว้และ ssh port

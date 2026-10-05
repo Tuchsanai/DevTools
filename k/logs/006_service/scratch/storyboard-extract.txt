@@ -1,0 +1,156 @@
+===== T04 needs_test= None 04-why-service.png
+caption: ทำไมต้องมี Service: Pod เกิดใหม่ได้ IP ใหม่ตลอด ลูกค้าจำ IP ไม่ไหว → Service ให้ชื่อและ ClusterIP คงที่แล้วส่งต่อไปยัง Pod ที่พร้อม
+scene: Left: a confused customer silhouette holding a list of crossed-out IP tags while booths keep changing. Right: a lighthouse-shaped reception counter on the dock with a name plate and an address plate; customers line up calmly and the light beam guides them to three booths. Nong Som stands at the counter as the greeter.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "ทำไมต้องมี Service"; "10.244.1.4"; "10.244.2.8"; "web"; "10.96.47.123".
+===== T07 needs_test= None 07-selector-endpointslice.png
+caption: selector → EndpointSlice: Service เลือก Pod ด้วย label เหมือน ReplicaSet แล้วระบบเขียนรายชื่อ IP:port ของบูธที่เปิดอยู่ลงใน EndpointSlice
+scene: The lighthouse counter has a clipboard pinned on its side listing three booth entries with green dots; dotted lines connect each entry to a booth with an orange tag on two ships. A small helper robot updates the clipboard. Nong Som reads the clipboard.
+Text (verbatim, exactly 6 short label instances; a label listed twice appears exactly twice): "รายชื่อบูธที่เปิดอยู่"; "selector: app=web"; "EndpointSlice"; "10.244.1.4:80"; "10.244.2.7:80"; "10.244.2.8:80".
+===== T09 needs_test= None 09-endpoints-deprecated.png
+caption: v1 Endpoints เป็นรุ่นเก่า: kubectl get endpoints ขึ้นคำเตือน deprecated ตั้งแต่ v1.33 ให้ใช้ EndpointSlice (discovery.k8s.io/v1); Service ที่ไม่มี selector ต้องเขียน EndpointSlice เองได้ (กล่าวถึง)
+scene: Left: an old dusty paper ledger on a shelf with a yellow warning triangle sticker. Right: a shiny modern clipboard on the lighthouse counter. A curved arrow goes from the ledger to the clipboard. Nong Som puts the old ledger back on the shelf and picks up the new clipboard.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "v1 Endpoints"; "เลิกแนะนำแล้ว (v1.33+)"; "discovery.k8s.io/v1"; "EndpointSlice".
+===== T10 needs_test= None 10-service-cidr.png
+caption: ClusterIP มาจากช่วง Service CIDR ของคลัสเตอร์ (kind: 10.96.0.0/16) แยกจาก Pod IP (10.244.x.x); kubernetes = 10.96.0.1, DNS (kube-dns) = 10.96.0.10
+scene: A harbor address map split into two colored bands: an upper navy band where lighthouse counters stand in a row, and a lower teal band where booths stand on ships. In the navy band there are exactly three lighthouses, each with one address plate. Nong Som holds a measuring ruler along the navy band.
+Text (verbatim, exactly 7 short label instances; a label listed twice appears exactly twice): "ช่วง IP ของ Service"; "10.96.0.0/16"; "kubernetes 10.96.0.1"; "kube-dns 10.96.0.10"; "web 10.96.47.123"; "ช่วง IP ของ Pod"; "10.244.0.0/16".
+===== T15 needs_test= True 15-nodeport-rules-errors.png
+caption: กติกา NodePort: ต้องอยู่ในช่วง 30000–32767 (ผิดช่วงถูกปฏิเสธ) และเลขซ้ำกันไม่ได้ทั้งคลัสเตอร์ (provided port is already allocated)
+scene: Two ticket windows at the harbor office. At the left window a clerk stamps a red REJECT mark on a door-number request card that is outside a range ruler. At the right window a door already has a lock and a number, and a second request card for the same number is stamped red. Nong Som holds both rejected cards with a sheepish grin.
+Text (verbatim, exactly 6 short label instances; a label listed twice appears exactly twice): "ผิดช่วง"; "nodePort: 29999"; "The range of valid ports is 30000-32767"; "เลขซ้ำ"; "nodePort: 30080"; "provided port is already allocated".
+===== T16 needs_test= None 16-loadbalancer-pending.png
+caption: LoadBalancer: บนคลาวด์ได้ IP ภายนอกจากผู้ให้บริการ แต่ใน kind ไม่มีตัวจัดสรร EXTERNAL-IP จึงค้าง <pending> (ยังได้ nodePort ให้ใช้)
+scene: Left: a large cloud-provider pier crane handing a big public address plate to a lighthouse. Right: the kind harbor lighthouse with an empty plate holder and a small spinning hourglass; below it a gangway door still works. Nong Som shrugs with a smile.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "type: LoadBalancer"; "บนคลาวด์ได้ IP ภายนอก"; "ใน kind ค้างรอ"; "EXTERNAL-IP <pending>"; "80:30456/TCP".
+===== T18 needs_test= None 18-headless-phonebook.png
+caption: headless Service (clusterIP: None): ไม่มีเคาน์เตอร์กลาง DNS ตอบ IP ของทุก Pod ที่ ready โดยตรง ให้ลูกค้าเลือกบูธเอง
+scene: A phone-book board on the dock listing three booth addresses, each row with a small green lamp icon; there is no lighthouse counter, only an empty round foundation where one would stand. A customer silhouette with a normal head reads the board and walks straight to one booth. A fourth booth with a red lamp is not listed. Nong Som points at the board.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "DNS ตอบ IP ทุก Pod"; "clusterIP: None"; "10.244.1.7"; "10.244.1.8"; "10.244.2.15".
+===== T20 needs_test= None 20-resolv-search-ndots.png
+caption: resolv.conf ของ Pod: ชื่อที่มีจุดน้อยกว่า 5 (ndots:5) จะถูกเติม search domain ทีละตัวตามลำดับ ชื่อสั้น web จึงกลายเป็น web.shop.svc.cluster.local แล้วถามที่ DNS 10.96.0.10
+scene: A post-office sorting desk: an envelope with a short address enters a machine that tries three address suffix stamps in order from a rack; the first stamp lights green and the envelope comes out with the full address and goes to a DNS counter booth. A card pinned on the wall shows the rules. Nong Som feeds the envelope into the machine.
+Text (verbatim, exactly 6 short label instances; a label listed twice appears exactly twice): "เติมชื่อเต็มให้เอง"; "search shop.svc.cluster.local svc.cluster.local cluster.local"; "nameserver 10.96.0.10"; "options ndots:5"; "web"; "web.shop.svc.cluster.local".
+===== T22 needs_test= None 22-kube-proxy-signposts.png
+caption: kube-proxy (โหมด iptables ใน kind) ติดตั้งป้ายบอกทางบนเรือทุกลำ: แพ็กเก็ตที่ส่งไป ClusterIP ถูกแปลงปลายทางเป็น IP ของ Pod ที่พร้อมตั้งแต่บนเรือต้นทาง
+scene: The control tower dock and two worker ships side by side; the dock and each ship have one identical direction signpost with three arrows (three signposts total). A message bottle addressed to the lighthouse is redirected by the signpost on its own ship straight to a booth on another ship, never passing through the lighthouse building. Nong Som adjusts one signpost.
+Text (verbatim, exactly 6 short label instances; a label listed twice appears exactly twice): "แปลงปลายทางบนเรือต้นทาง"; "kube-proxy"; "kube-proxy"; "kube-proxy"; "iptables"; "10.96.47.123 → 10.244.2.8".
+===== T24 needs_test= None 24-random-per-connection.png
+caption: kube-proxy (iptables) เลือก Pod แบบสุ่มต่อ connection ไม่ใช่วนตามลำดับ ยิง 9 ครั้งอาจได้ 5/4/0 (pre-check) — ต้องยิงหลายครั้งถึงเห็นภาพรวม
+scene: A bar chart made of stacked cat food cans over three booths showing uneven heights from nine customers: five cans, four cans and zero cans. A pair of large dice rolls beside the lighthouse. Nong Som looks at the chart with a curious face.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "ยิง 9 ครั้ง"; "5"; "4"; "0"; "สุ่ม".
+===== T25 needs_test= None 25-keepalive-one-connection.png
+caption: keep-alive: browser ใช้ connection เดิมส่งหลายคำขอ จึงไปบูธเดิมทุกครั้ง (pre-check Chromium 10/10) การสุ่มเกิดเมื่อเปิด connection ใหม่เท่านั้น
+scene: Left: one customer tied to a single booth by one thick rope; ten small parcels slide along that same rope to the same booth. Right: ten separate thin ropes each newly thrown from a terminal toward three different booths. Nong Som stands between both scenes holding scissors next to the thick rope.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "1 connection"; "10/10 Pod เดียว"; "connection ใหม่ = สุ่มใหม่".
+===== T27 needs_test= None 27-readiness-endpoints.png
+caption: readinessProbe กับ endpoints: บูธไฟแดงยังอยู่ในรายชื่อแต่ ready=false จึงไม่ได้ลูกค้า (คอลัมน์ ENDPOINTS ยังแสดง IP ครบ — ต้องดู conditions)
+scene: Three booths: two with green lamps receive customers, one with a red lamp gets none. The lighthouse clipboard lists all three IPs with a check or cross beside each. Nong Som points at the cross mark.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "ไม่พร้อม = ไม่ได้ลูกค้า"; "10.244.1.7 ready=true"; "10.244.1.8 ready=true"; "10.244.2.15 ready=false"; "0/1".
+===== T30 needs_test= None 30-selector-mismatch-debug.png
+caption: Service ที่ selector พิมพ์ผิด: ไม่มีบูธไหนตรง EndpointSlice ว่าง เรียกแล้ว Connection refused — ตรวจด้วย get endpointslice, เทียบ label ของ Pod
+scene: The lighthouse counter shows an empty clipboard; its selector plate has a typo tag that does not match the orange tags on the booths; a customer silhouette bounces back with a red X. Nong Som holds a magnifier next to the selector plate and a booth tag side by side.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "selector พิมพ์ผิด"; "selector: app=wbe"; "app=web"; "ENDPOINTS <unset>"; "Connection refused".
+===== T31 needs_test= True 31-targetport-mismatch.png
+caption: targetPort ผิด: EndpointSlice มีรายชื่อครบ แต่ส่งลูกค้าไปหน้าต่างที่ไม่มีใครเปิด (container ฟัง 80 แต่ targetPort 8080) จึงถูกปฏิเสธ
+scene: The lighthouse clipboard is full with three green rows, but the arrows lead to a closed shuttered window on the side of a booth while the open serving window on the front has a smiling staff silhouette. A customer bumps into the closed shutter with a red X. Nong Som points from the closed window to the open one.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "targetPort ผิดหน้าต่าง"; "targetPort: 8080"; "containerPort: 80"; "Connection refused".
+===== T33 needs_test= None 33-limits-remaining.png
+caption: สิ่งที่ Service ไม่ช่วย: (1) แก้ template ของ ReplicaSet เป็นรุ่นใหม่แล้วบูธเดิมไม่เปลี่ยน (2) ฐานข้อมูลบน emptyDir หายเมื่อ Pod db เกิดใหม่ (3) ลูกค้าภายนอกยังต้องจำเลขประตู ไม่มีชื่อโดเมน
+scene: Three small panels in a row. Panel 1: the teal supervisor robot holds a new orange blueprint, but three booths still wear teal signboards. Panel 2: a database booth with an empty storage chest and a small dust puff. Panel 3: a customer silhouette staring at a long number on a door with a question mark. Nong Som stands below with a thinking pose.
+Text (verbatim, exactly 7 short label instances; a label listed twice appears exactly twice): "สิ่งที่ Service ไม่ช่วย"; "template: 1.3"; "1.2"; "1.2"; "1.2"; "emptyDir"; "localhost:30080 ?".
+===== L01 needs_test= None 01-lab0-prepare.png
+caption: LAB0: เช็กคลัสเตอร์ 3 Node, ตรวจว่า NodePort 30080–30082 ยังว่าง (ตัวอย่างจากบท 001 อาจค้าง), ดู kube-proxy mode และ Service kubernetes ที่มีอยู่แล้ว
+scene: Nong Som at a laptop on the dock checking a list; three ships with a shared Ready flag; three gangway doors on the control-tower dock with green FREE lamps; a tiny lighthouse already standing near the tower.
+Text (verbatim, exactly 7 short label instances; a label listed twice appears exactly twice): "kubectl get nodes"; "Ready ครบ 3 Node"; "30080"; "30081"; "30082"; "mode: iptables"; "kubernetes 10.96.0.1".
+===== L02 needs_test= None 02-lab1-ip-changes.png
+caption: LAB1: ReplicaSet web (nginx) 3 replicas หน้าเว็บบอก web v1 from <ชื่อ Pod> — เรียกด้วย Pod IP ได้ แต่ลบ Pod แล้วตัวใหม่ได้ IP ใหม่ ที่จดไว้ใช้ไม่ได้
+scene: The teal supervisor robot stamps a replacement booth while the old one fades. A client booth holds a notebook with an IP written and crossed out, and a message bottle bouncing back from the empty spot. Nong Som looks at the notebook.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "Pod ใหม่ IP ใหม่"; "ReplicaSet web"; "10.244.1.4"; "10.244.2.11"; "web v1 from web-7xkqp".
+===== L03 needs_test= None 03-lab2-expose-endpointslice.png
+caption: LAB2: kubectl expose rs web (เทียบกับเขียน YAML) → ได้ Service ClusterIP และ EndpointSlice ที่มี IP ของ Pod ทั้ง 3; get endpoints ขึ้นคำเตือน deprecated
+scene: A lighthouse being raised on the dock by a crane hook from a command card; its clipboard immediately fills with three rows linked to three booths. A small yellow warning note flutters near an old ledger. Nong Som presses the command button.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "สร้าง Service ด้วย expose"; "kubectl expose rs web --port=80"; "web 10.96.47.123"; "EndpointSlice"; "Warning: v1 Endpoints is deprecated".
+===== L04 needs_test= None 04-lab2-scale-endpoints-follow.png
+caption: LAB2 (ต่อ): scale ReplicaSet 3→5 หรือ ลบ Pod → EndpointSlice เปลี่ยนตามเอง ClusterIP ไม่เปลี่ยน
+scene: Two new booths slide onto the ships next to three existing ones; the lighthouse clipboard grows from three to five rows with a sparkle, the address plate stays the same with a padlock icon. The teal supervisor robot turns a dial. Nong Som watches the clipboard.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "kubectl scale rs web --replicas=5"; "3 → 5"; "EndpointSlice เพิ่มเอง"; "10.96.47.123"; "ClusterIP ไม่เปลี่ยน".
+===== L05 needs_test= True 05-lab3-ports-named.png
+caption: LAB3: Service web-alt port 8080 → targetPort: http (ชื่อพอร์ตของ container = 80) และ Service หลายพอร์ตที่ต้องตั้งชื่อทุกพอร์ต; ไม่ใส่ชื่อ → apply ไม่ผ่าน
+scene: A lighthouse with two ticket slots linked to one booth window by name; beside it a rejected blueprint with a red stamp on a slot missing its name plate. Nong Som attaches name plates to the slots.
+Text (verbatim, exactly 6 short label instances; a label listed twice appears exactly twice): "ต้องตั้งชื่อทุกพอร์ต"; "web-alt :8080"; "targetPort: http"; "name: http"; "name: alt"; "ports[1].name: Required value".
+===== L06 needs_test= None 06-lab4-dns-env.png
+caption: LAB4: nslookup web ได้ ClusterIP (ชื่อเต็ม web.shop.svc.cluster.local), ดู resolv.conf; Pod ที่สร้างก่อน Service ไม่มี WEB_SERVICE_HOST แต่ Pod ใหม่มี
+scene: A client booth with a magnifying phone book reading the lighthouse address; two booths side by side with notice boards: the old one empty, the new one with a card. Nong Som compares them.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "เรียกด้วยชื่อผ่าน DNS"; "nslookup web"; "web.shop.svc.cluster.local"; "10.96.47.123"; "WEB_SERVICE_HOST".
+===== L07 needs_test= None 07-lab5-random-affinity.png
+caption: LAB5: client busybox เรียก http://web 30 ครั้ง แล้ว sort | uniq -c เห็นกระจายแบบสุ่ม; ตั้ง sessionAffinity: ClientIP แล้วไปบูธเดียวทั้ง 30
+scene: Left: a client booth sends a stream of message bottles via the lighthouse to three booths; a tally board with three bars of different heights. Right: after a switch is flipped, all bottles go to one booth along a highlighted lane. Nong Som writes the tally.
+Text (verbatim, exactly 7 short label instances; a label listed twice appears exactly twice): "client"; "×30"; "sort | uniq -c"; "กระจายแบบสุ่ม"; "sessionAffinity: ClientIP"; "30/30"; "ไปบูธเดียว".
+===== L08 needs_test= None 08-lab6-not-ready.png
+caption: LAB6: ลบ index.html ใน Pod หนึ่ง → readiness ล้ม Pod 0/1 → EndpointSlice ยังแสดง IP แต่ ready=false และเรียก 30 ครั้งไม่ไปตัวนั้น; ใส่ไฟล์คืน → กลับมารับลูกค้า
+scene: Three booths: one booth's green lamp turns red after a staff silhouette removes its menu board; customers flow only to the two green booths. The lighthouse clipboard shows three rows, one greyed. Nong Som holds the removed menu board, ready to put it back.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "ไม่พร้อม = ไม่ได้ลูกค้า"; "0/1"; "ready=false"; "index.html".
+===== L09 needs_test= None 09-lab7-debug.png
+caption: LAB7: Service web-typo (selector app=wbe) → ENDPOINTS <unset> + Connection refused; web-badport (targetPort 8080) → มี endpoint แต่ถูกปฏิเสธ; แก้แล้วกลับมาใช้ได้
+scene: Nong Som as a detective with a magnifier follows a three-step checklist board beside two lighthouses: one with an empty clipboard, one with a full clipboard but arrows hitting a closed shutter.
+Text (verbatim, exactly 7 short label instances; a label listed twice appears exactly twice): "ไล่ตรวจทีละขั้น"; "1 get endpointslice"; "2 get pods --show-labels"; "3 targetPort"; "web-typo"; "web-badport"; "Connection refused".
+===== L10 needs_test= True 10-lab8-nodeport-browser.png
+caption: LAB8: Service web-nodeport (NodePort 30080) แล้วเปิด http://localhost:30080 บนเครื่องนักศึกษาได้ทันที ไม่ต้อง port-forward หรือ ssh -L
+scene: Nong Som at home desk with a laptop; a dotted path from the laptop through a door to the control-tower dock door, then to the lighthouse and booths; a crossed-out old tunnel pipe in the corner.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "เข้าร้านจาก browser ได้เลย"; "localhost:30080"; "30080"; "port-forward".
+===== L11 needs_test= True 11-lab8-keepalive-lb.png
+caption: LAB8 (ต่อ): refresh browser มักเห็นชื่อ Pod เดิม (keep-alive) ส่วน curl วน 30 ครั้งเห็นหลาย Pod; ลอง nodePort 29999 (ผิดช่วง) และ LoadBalancer ที่ค้าง <pending> แล้วลบ NodePort ก่อน LAB สุดท้าย
+scene: Split panel. Left: a browser window with a single solid rope tied to one booth, the same booth highlighted three times. Right: a terminal with many short arrows fanning to three booths. Bottom strip: a lighthouse with an empty plate holder and an hourglass. Nong Som compares both.
+Text (verbatim, exactly 6 short label instances; a label listed twice appears exactly twice): "browser"; "keep-alive"; "Pod เดิมทุกครั้ง"; "curl ×30"; "หลาย Pod"; "EXTERNAL-IP <pending>".
+===== L12 needs_test= None 12-lab9-cross-namespace.png
+caption: LAB9: Pod cook ใน namespace kitchen เรียก web (bad address) แล้วเรียก web.shop และ web.shop.svc.cluster.local ได้; ดู search domain ใน resolv.conf
+scene: Harbor map with two painted zones; a teal-zone booth sends three envelopes to the orange-zone lighthouse; the first bounces with a red X at the border, two arrive with green checks. Nong Som reads a small resolv card.
+Text (verbatim, exactly 6 short label instances; a label listed twice appears exactly twice): "เรียกข้าม namespace"; "kitchen"; "shop"; "web"; "web.shop"; "web.shop.svc.cluster.local".
+===== L13 needs_test= True 13-lab9-headless-externalname.png
+caption: LAB9 (ต่อ): nslookup web-headless คืน Pod IP ทุกตัว เทียบกับ web ที่คืน ClusterIP เดียว; nslookup supplier (ExternalName) คืน CNAME example.com (ต้องมีเน็ตออก)
+scene: Left: a phone-book board with three booth address rows and no lighthouse in front. Center: a lighthouse with a single address plate. Right: a signpost at the harbor edge pointing to a far island. Nong Som holds a magnifier over the phone book.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "web-headless"; "ได้ 3 Pod IP"; "web"; "ได้ 1 ClusterIP"; "supplier → example.com".
+===== L14 needs_test= True 14-lab9-networkpolicy-targetport.png
+caption: LAB9 (ต่อ): NetworkPolicy ให้ kitchen เข้า web ได้ที่ port 8080 (port ของ Service web-alt) → ยัง timed out; แก้เป็น port 80 (targetPort ของ Pod) → เข้าได้
+scene: A fence around the orange zone with a gate guard holding two rule cards one after another: the first card is crossed out in red as a message bottle times out at the gate (a small hourglass), the second card gets a green check and the bottle passes to the booths. Nong Som swaps the cards.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "ใช้ targetPort ของ Pod"; "port: 8080"; "download timed out"; "port: 80"; "web-alt:8080".
+===== L15 needs_test= None 15-lab10-architecture.png
+caption: LAB10: สถาปัตยกรรม — ReplicaSet som-web 3 บูธ + Service NodePort 30080 สำหรับลูกค้าภายนอก และ ReplicaSet som-db 1 ตัว (emptyDir) + Service ClusterIP som-db ใน namespace som-shop
+scene: Harbor map with one orange zone. At the zone entrance a gangway door; behind it a lighthouse guiding to three web booths spread on two ships with a teal supervisor robot nearby; the three booths send arrows to a second smaller lighthouse in front of one database booth that has a storage chest of cat-food cans, watched by a second small teal supervisor robot. Nong Som stands at the entrance welcoming customers.
+Text (verbatim, exactly 6 short label instances; a label listed twice appears exactly twice): "ผังสถาปัตยกรรมร้าน"; "som-shop"; "30080"; "som-web ×3"; "som-db"; "som-db ×1".
+===== L16 needs_test= None 16-lab10-build-images.png
+caption: LAB10: build som-shop-web:1.2 และ 1.3 จากโค้ดเดียว (build-arg เวอร์ชัน/ธีม) แล้ว kind load ให้ทุก Node; postgres ใช้ kind load image-archive หรือให้ Node pull เอง
+scene: A small workshop on the dock: two identical crates come out of one machine, one with a teal ribbon and one with an orange ribbon; a delivery cart carries them toward three ships. Nong Som operates the machine.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "สร้าง image จากโค้ดเดียว"; "som-shop-web:1.2"; "som-shop-web:1.3"; "kind load docker-image"; "postgres:17.11-alpine".
+===== L17 needs_test= None 17-lab10-db-service.png
+caption: LAB10: db = ReplicaSet som-db replicas 1 ข้อมูลอยู่ใน emptyDir + Service ClusterIP som-db ให้ web เรียกด้วยชื่อ som-db:5432
+scene: A database booth with a storage chest; a small lighthouse in front with a name plate; the teal supervisor robot beside the booth holds a clipboard; web booths in the background calling the name with speech-free arrows. Nong Som checks the chest.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "db กลางเรียกด้วยชื่อ"; "som-db:5432"; "ClusterIP"; "emptyDir"; "replicas: 1".
+===== L18 needs_test= True 18-lab10-stock-shelves-once.png
+caption: LAB10: web 3 replicas เริ่มพร้อมกัน initContainer เติมสินค้าเข้าฐานข้อมูลพร้อมกัน 3 ตัว — 1.2 ใช้ advisory lock ให้เข้าคิวทีละตัว และ ON CONFLICT DO NOTHING จึงไม่ซ้ำ
+scene: Three helper robots each carrying a crate of cat-food cans queue in a single line at a storage room door with a turnstile; only the first enters, the shelves inside are already full for the later ones who just check and leave. Nong Som holds the turnstile key. Show shelves being stocked with cans; no plants, no seeds, no gardening.
+Text (verbatim, exactly 6 short label instances; a label listed twice appears exactly twice): "เข้าคิวทีละตัว"; "pg_advisory_xact_lock"; "ON CONFLICT DO NOTHING"; "เพิ่มใหม่ 6"; "เพิ่มใหม่ 0"; "เพิ่มใหม่ 0".
+===== L19 needs_test= True 19-lab10-open-shop-30080.png
+caption: LAB10: เปิด http://localhost:30080 บนเครื่องนักศึกษา หน้าร้านแสดงป้ายเวอร์ชัน 1.2 และชื่อ Pod ที่เสิร์ฟ (ชื่อ Pod ของ ReplicaSet = som-web-<สุ่ม 5 ตัว>)
+scene: A laptop screen showing a cat-food shop page with a hero banner (Nong Som's photo avatar), a version badge and a chip with a Pod name under the shop title; Nong Som points proudly at the badge.
+Text (verbatim, exactly 3 short label instances; a label listed twice appears exactly twice): "localhost:30080"; "เวอร์ชัน 1.2"; "เสิร์ฟโดย Pod: som-web-4nhz6".
+===== L20 needs_test= True 20-lab10-hit-orders-shared.png
+caption: LAB10: ./hit.sh 60 ครั้งเห็นทุก replica ตอบ และออเดอร์ที่สั่งผ่าน Pod ไหนก็เห็นตัวเลขเดียวกัน เพราะใช้ db กลางตัวเดียว (แก้ปัญหาบท 005)
+scene: Left: a terminal card with three result rows, each with a bar of cans; arrows from the gangway door fan to three booths. Right: the three booths all point their arrows into one shared database booth whose order board shows a single number, and each booth displays the same small receipt. Nong Som counts on paws.
+Text (verbatim, exactly 6 short label instances; a label listed twice appears exactly twice): "./hit.sh"; "som-web-4nhz6"; "som-web-ccxvw"; "som-web-pn7qs"; "ออเดอร์ 3"; "ok=60 err=0".
+===== L21 needs_test= None 21-lab10-scale-and-heal.png
+caption: LAB10: scale rs/som-web 3→5 EndpointSlice เพิ่มเป็น 5 IP เอง; ลบ Pod web หนึ่งตัวระหว่าง hit.sh → ReplicaSet สร้างแทน ร้านยังขาย
+scene: Two new booths slide onto the ships; one other web booth fades while the teal supervisor robot stamps a replacement; customers keep entering the green-lit booths; the lighthouse clipboard has five icon rows. Nong Som holds a shopping basket, smiling.
+Text (verbatim, exactly 4 short label instances; a label listed twice appears exactly twice): "ร้านยังขายต่อ"; "kubectl scale rs/som-web --replicas=5"; "kubectl delete pod"; "5/5".
+===== L22 needs_test= True 22-lab10-db-pod-lost-data.png
+caption: LAB10: ลบ Pod db → ReplicaSet สร้างใหม่ IP ใหม่ แต่ชื่อ som-db/ClusterIP เดิมใช้ได้; emptyDir ว่าง หน้าเว็บ 503 "ร้านกำลังเตรียมสินค้า" → ลบ Pod web 1 ตัวให้ initContainer เติมสินค้าใหม่ → ออเดอร์ = 0
+scene: The database booth is replaced by a new one with a different IP tag, while the small lighthouse in front keeps the same name plate; the new storage chest is empty with a dust puff. A web booth shows a polite closed-for-restocking sign. A helper robot pushes a crate of cat-food cans into the empty chest. Nong Som looks surprised.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "ชื่อเดิมใช้ได้"; "som-db"; "10.244.1.9 → 10.244.2.14"; "503"; "ออเดอร์ 3 → 0".
+===== L23 needs_test= True 23-lab10-manual-update-pain.png
+caption: LAB10: set image rs/som-web เป็น 1.3 → Pod เดิมไม่เปลี่ยน; ลบ Pod ทีละตัวเอง (1.2/1.3 ปนกัน) หรือ ลบทีเดียวทั้งหมด → endpoints ว่างชั่วครู่ hit.sh นับ err ได้
+scene: Left: the teal supervisor robot holds an orange 1.3 blueprint while all booths still have teal signboards; Nong Som manually removes booths one by one with a sweat drop. Right: all booths gone at once, an empty lighthouse clipboard and a queue of customers bumping into a closed gangway door with red X marks; a scoreboard shows errors.
+Text (verbatim, exactly 5 short label instances; a label listed twice appears exactly twice): "kubectl set image rs/som-web"; "เวอร์ชัน 1.2"; "เวอร์ชัน 1.3"; "kubectl delete pod -l app=som-web"; "err".
+===== L24 needs_test= None 24-lab10-wrap-up-bridge.png
+caption: สรุป LAB สุดท้าย: Service ให้ชื่อคงที่ (som-db, som-web) และ NodePort 30080 ใช้ db กลางตัวเดียว แต่เปลี่ยนรุ่นต้องลบ Pod เองจนร้านสะดุด → ต้องมีผู้จัดการร้านที่เปลี่ยนรุ่นทีละบูธ รอไฟเขียว และย้อนรุ่นได้ (บทที่ 7)
+scene: Checklist board with exactly four ticked rows and one open row with a question mark, each with an icon (lighthouse, gangway door, database chest, clipboard, logbook). In the background at the harbor entrance a backlit silhouette of a taller navy box-shaped store-manager robot with a bow tie and a thick logbook. Nong Som gives a thumbs up toward the silhouette.
+Text (verbatim, exactly 6 short label instances; a label listed twice appears exactly twice): "Service som-web / som-db"; "NodePort 30080"; "db กลางตัวเดียว"; "EndpointSlice"; "เปลี่ยนรุ่นทีละบูธ?"; "Deployment".

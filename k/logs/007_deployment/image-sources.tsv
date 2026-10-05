@@ -1,0 +1,60 @@
+id	file	source
+T01	01-opening-manual-swap-stumble.png	T01 01-opening-lonely-pod-lost.png (แก้)
+T02	02-rs-template-no-change.png	T12 12-rs-why-not-directly.png (แก้)
+T03	03-new-metaphor-legend.png	T02 02-new-metaphor-legend.png (แก้)
+T04	04-deploy-hierarchy.png	T13 13-deploy-hierarchy.png
+T05	05-do-not-edit-owned-rs.png	new
+T06	06-deploy-manifest-anatomy.png	new
+T07	07-create-dry-run.png	new
+T08	08-ready-uptodate-available.png	new
+T09	09-pod-template-hash.png	T14 14-pod-template-hash.png (แก้)
+T10	10-what-triggers-rollout.png	new
+T11	11-rolling-update-steps.png	T15 15-rolling-update-steps.png (แก้)
+T12	12-max-surge-unavailable.png	T16 16-max-surge-unavailable.png (แก้)
+T13	13-recreate-vs-rolling.png	T17 17-recreate-vs-rolling.png
+T14	14-recreate-for-db.png	new
+T15	15-readiness-gates-rollout.png	T18 18-readiness-gates-rollout.png
+T16	16-probe-roles.png	new
+T17	17-termination-timeline.png	new
+T18	18-zero-downtime.png	T38 38-zero-downtime.png (แก้)
+T19	19-progress-deadline.png	T19 19-progress-deadline.png
+T20	20-no-auto-rollback.png	new
+T21	21-rollout-history.png	T20 20-rollout-history.png
+T22	22-change-cause-trap.png	new
+T23	23-rollout-undo.png	T21 21-rollout-undo.png
+T24	24-last-applied-warning.png	new
+T25	25-pause-resume.png	T22 22-pause-resume.png
+T26	26-revision-history-limit.png	T23 23-revision-history-limit.png (แก้)
+T27	27-ways-to-change.png	T24 24-ways-to-change.png (แก้)
+T28	28-apply-overwrites-replicas.png	new
+T29	29-adopt-rs.png	new
+T30	30-orphan-alternative.png	new
+T31	31-failure-modes.png	new
+T32	32-blue-green.png	T25 25-blue-green.png
+T33	33-canary-by-label.png	T26 26-canary-by-label.png
+T34	34-decision-table.png	T39 39-decision-table.png (แก้)
+T35	35-command-cheatsheet.png	new
+T36	36-next-chapter.png	T40 40-next-chapter.png (แก้)
+L01	01-lab0-prepare.png	L01 01-lab0-prepare.png (แก้)
+L02	02-lab1-first-deployment.png	L04 04-lab3-first-deployment.png (แก้)
+L03	03-lab1-rs-scale-reverted.png	new
+L04	04-lab2-rolling-rs.png	L05 05-lab4-rolling-rs.png
+L05	05-lab2-client-sees-mix.png	new
+L06	06-lab3-history-undo.png	L06 06-lab4-history-undo.png (แก้)
+L07	07-lab3-pause-restart.png	new
+L08	08-lab4-strategies.png	L07 07-lab5-strategies.png (แก้)
+L09	09-lab5-readiness-minready.png	new
+L10	10-lab6-broken-rollout.png	L08 08-lab6-broken-rollout.png (แก้)
+L11	11-lab7-zero-downtime.png	L13 13-lab10-zero-downtime.png (แก้)
+L12	12-lab8-migrate-rs.png	new
+L13	13-lab9-blue-green-canary.png	new
+L14	14-lab10-architecture.png	L15 15-lab12-architecture.png (แก้)
+L15	15-lab10-start-from-rs.png	new
+L16	16-lab10-convert-to-deployment.png	new
+L17	17-lab10-rollout-1-3.png	L23 23-lab12-rollout-1-3.png (แก้)
+L18	18-lab10-shop-1-3-page.png	L19 19-lab12-open-shop-30080.png (แก้)
+L19	19-lab10-history-undo.png	L24 24-lab12-rollback.png (แก้)
+L20	20-lab10-broken-1-4.png	L25 25-lab12-broken-still-selling.png (แก้)
+L21	21-lab10-scale-3-to-5.png	L21 21-lab12-scale-3-to-5.png (แก้)
+L22	22-lab10-db-lost-restart.png	L26 26-lab12-db-pod-lost-data.png (แก้)
+L23	23-lab10-wrap-up.png	L27 27-lab12-wrap-up.png (แก้)

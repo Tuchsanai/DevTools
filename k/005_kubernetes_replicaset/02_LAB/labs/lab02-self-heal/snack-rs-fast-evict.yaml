@@ -1,0 +1,35 @@
+# LAB 2 (ทางเลือก): snack-rs เดิม + toleration 30 วิ → ถูกไล่ออกจากเรือที่ล่มเร็วขึ้น (ค่าเริ่มต้น 300 วิ, บท 003)
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: snack-rs
+  namespace: rs-lab
+  labels:
+    app: snack
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: snack
+  template:
+    metadata:
+      labels:
+        app: snack
+    spec:
+      terminationGracePeriodSeconds: 1
+      tolerations:                     # ทนเรือ NotReady/ติดต่อไม่ได้แค่ 30 วิ
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 30
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 30
+      containers:
+        - name: app
+          image: busybox:1.36
+          command: ["sh", "-c", "echo บูธขนม $(hostname) เปิดแล้ว; sleep 3600"]
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 50m, memory: 32Mi }

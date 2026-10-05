@@ -1,0 +1,36 @@
+# LAB 8: Deployment ชื่อเดียวกับ ReplicaSet เดิม (web) และ selector เดียวกัน (app: web) แต่รุ่นใหม่ VERSION v2
+# คำถามของ LAB: Deployment จะ "รับเลี้ยง" ReplicaSet web ที่ไม่มีเจ้าของไหม แล้วจัดการรุ่นเก่าอย่างไร
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: migrate-lab
+  labels:
+    app: web
+spec:
+  replicas: 3
+  selector:                        # selector เดียวกับ ReplicaSet web เดิม
+    matchLabels:
+      app: web
+  template:                        # พิมพ์เขียวของ Pod — แก้ส่วนนี้ = เกิดรุ่นใหม่ (rollout)
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine   # image สาธารณะ — Node pull เอง ไม่ต้อง kind load
+          env:
+            - name: VERSION
+              value: v2               # ← รุ่นใหม่
+          # เขียนหน้า index ให้บอกรุ่นและชื่อ Pod แล้วเปิด nginx
+          command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:            # ไฟเขียวหน้าบูธ — rollout รอไฟนี้ก่อนปิดบูธรุ่นเก่า
+            httpGet: { path: /, port: http }
+            periodSeconds: 2
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }

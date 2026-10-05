@@ -1,0 +1,9 @@
+# LAB 6 (เสริม): รุ่นที่แอปล้มทันทีที่เริ่ม (exit 1) → Pod ใหม่ CrashLoopBackOff
+# (เก็บไว้ในโฟลเดอร์ patches/ เพราะไฟล์ patch ไม่มี apiVersion/kind — kubectl apply -f lab06-broken/ จะไม่หยิบมา)
+# ใช้:  kubectl -n broken-lab patch deploy web --patch-file lab06-broken/patches/crash-patch.yaml
+spec:
+  template:
+    spec:
+      containers:
+        - name: web
+          command: ["sh", "-c", "echo 'แอปรุ่นนี้พัง: ไม่เจอไฟล์ตั้งค่า' >&2; exit 1"]
