@@ -9,7 +9,7 @@ spec:
       image: busybox:1.36
       env:                              # ตัวแปรสภาพแวดล้อม (value ต้องเป็น string)
         - name: SHOP_NAME
-          value: "ร้านอาหารแมวน้องส้ม"
+          value: "ร้านอาหารแมวน้องส้ม"       # ภาษาไทยใช้ได้
         - name: OPEN_HOUR
           value: "9"                    # ตัวเลขต้องใส่ "" ให้เป็น string
       command: ["sh", "-c"]             # ทับ ENTRYPOINT ของ image
@@ -20,5 +20,5 @@ spec:
           cpu: "50m"                    # 50 milliCPU = 0.05 core
           memory: "32Mi"
         limits:                         # เพดานสูงสุดขณะรัน
-          cpu: "100m"
-          memory: "64Mi"
+          cpu: "100m"                   # เกินแล้วถูกหน่วง (throttle) ไม่ถูกฆ่า
+          memory: "64Mi"                # เกินแล้วถูกฆ่า (OOMKilled)

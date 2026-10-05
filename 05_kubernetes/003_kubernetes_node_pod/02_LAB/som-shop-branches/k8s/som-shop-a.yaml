@@ -5,9 +5,9 @@ kind: Pod
 metadata:
   name: som-shop-a
   labels:
-    app: som-shop
+    app: som-shop                # ป้ายร้าน ใช้เลือกทุกสาขา -l app=som-shop
     part: branch                 # ใช้ในกฎ podAntiAffinity ด้านล่าง
-    branch: a
+    branch: a                    # ป้ายแยกสาขา (ดูด้วย -L branch)
 spec:
   affinity:
     nodeAffinity:                # ต้องเปิดบนเรือที่ติดธง shop=open เท่านั้น
@@ -42,7 +42,7 @@ spec:
     # 1) db: native sidecar (restartPolicy: Always) → เริ่มก่อนและรันตลอดอายุ Pod
     - name: db
       image: postgres:17.11-alpine
-      restartPolicy: Always
+      restartPolicy: Always      # init container ที่มี restartPolicy: Always = native sidecar
       env:
         - name: POSTGRES_USER
           value: som
@@ -51,13 +51,13 @@ spec:
         - name: POSTGRES_DB
           value: catshop
         - name: PGDATA
-          value: /var/lib/postgresql/data/pgdata
+          value: /var/lib/postgresql/data/pgdata   # โฟลเดอร์ย่อยใน emptyDir ให้ initdb ทำงานได้
       ports:
         - containerPort: 5432
       volumeMounts:
         - name: db-data
           mountPath: /var/lib/postgresql/data
-      startupProbe:
+      startupProbe:              # รอ postgres พร้อม (สูงสุด 30 × 2 วิ) ก่อนเริ่ม init container ถัดไป
         exec:
           command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
         periodSeconds: 2
@@ -66,13 +66,13 @@ spec:
         exec:
           command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
         periodSeconds: 5
-      livenessProbe:
+      livenessProbe:             # port 5432 ไม่ตอบ 3 ครั้งติด → รีสตาร์ต db
         tcpSocket:
           port: 5432
         periodSeconds: 10
         failureThreshold: 3
       resources:
-        requests: { cpu: 100m, memory: 256Mi }
+        requests: { cpu: 100m, memory: 256Mi }   # requests ที่ scheduler นับ (db)
         limits:   { cpu: 500m, memory: 512Mi }
 
     # 2) wait-for-db: รอจนต่อ db ได้
@@ -89,7 +89,7 @@ spec:
     # 3) db-seed: สร้างตาราง + สินค้าตั้งต้น
     - name: db-seed
       image: som-shop-web:1.0
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: IfNotPresent   # ใช้ image ที่ kind load ไว้บน node ไม่ไปดึงจาก registry
       command: ["node", "scripts/seed.mjs"]
       env:
         - name: DATABASE_URL
@@ -101,7 +101,7 @@ spec:
   containers:
     - name: web
       image: som-shop-web:1.0
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: IfNotPresent   # ใช้ image ที่ kind load ไว้บน node ไม่ไปดึงจาก registry
       env:
         - name: NODE_NAME          # Downward API: ชื่อเรือที่ Pod นี้ถูกวาง (ต้องประกาศก่อน SHOP_NAME)
           valueFrom:
@@ -121,7 +121,7 @@ spec:
           value: "0.0.0.0"
       ports:
         - containerPort: 3000
-      readinessProbe:
+      readinessProbe:              # /api/health ตอบ 200 → Pod Ready (2/2)
         httpGet:
           path: /api/health
           port: 3000
@@ -135,5 +135,5 @@ spec:
         periodSeconds: 10
         failureThreshold: 6
       resources:
-        requests: { cpu: 100m, memory: 192Mi }
+        requests: { cpu: 100m, memory: 192Mi }   # web 100m/192Mi + db 100m/256Mi = 200m/448Mi ต่อสาขา
         limits:   { cpu: 500m, memory: 512Mi }

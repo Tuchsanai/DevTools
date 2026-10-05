@@ -9,13 +9,13 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
+      maxSurge: 1              # เปิดบูธใหม่เกินได้ 1 ตัว
+      maxUnavailable: 0        # บูธที่พร้อมห้ามลดลง
   template:
     spec:
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 30  # ต้องนานกว่า preStop 5 วิ + เวลาปิด nginx
       containers:
-        - name: web
+        - name: web            # จับคู่ container ด้วยชื่อ (strategic merge)
           lifecycle:
             preStop:
               sleep:

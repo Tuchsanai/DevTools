@@ -5,26 +5,26 @@ kind: Namespace
 metadata:
   name: som-dev
   labels:
-    env: dev
-    team: som
-    pod-security.kubernetes.io/warn: restricted
+    env: dev                     # แสดงเป็นคอลัมน์ด้วย -L env
+    team: som                    # เลือกทั้ง 3 โซนด้วย -l team=som
+    pod-security.kubernetes.io/warn: restricted  # เตือนอย่างเดียว ไม่ปฏิเสธ
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: som-staging
   labels:
-    env: staging
+    env: staging                 # แสดงเป็นคอลัมน์ด้วย -L env
     team: som
-    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn: restricted  # เตือนอย่างเดียว ไม่ปฏิเสธ
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: som-prod
   labels:
-    env: prod
+    env: prod                    # แสดงเป็นคอลัมน์ด้วย -L env
     team: som
     pod-security.kubernetes.io/enforce: restricted        # ด่านปฏิเสธ
-    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/enforce-version: latest  # ใช้กฎของ Kubernetes รุ่นที่รันอยู่
     pod-security.kubernetes.io/warn: restricted           # กระดิ่งเตือนที่ kubectl

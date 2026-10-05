@@ -3,15 +3,15 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: web
-  namespace: team-a
+  namespace: team-a              # ระบุโซนไว้ในไฟล์
   labels:
-    app: web
-    lab: net
+    app: web                     # allow-from-team-b เลือก Pod นี้ด้วย label นี้
+    lab: net                     # label รวมของ LAB 4 (-l lab=net)
 spec:
-  nodeSelector:
-    kubernetes.io/hostname: lab-worker
+  nodeSelector:                  # ปักเรือ: วางได้เฉพาะ Node ที่มี label ตรง
+    kubernetes.io/hostname: lab-worker  # label ชื่อเรือที่ทุก Node มีอยู่แล้ว
   containers:
     - name: nginx
-      image: nginx:1.27-alpine
+      image: nginx:1.27-alpine   # ตอบหน้า Welcome to nginx!
       ports:
-        - containerPort: 80
+        - containerPort: 80      # nginx ฟัง port 80 (ข้อมูลประกอบ)

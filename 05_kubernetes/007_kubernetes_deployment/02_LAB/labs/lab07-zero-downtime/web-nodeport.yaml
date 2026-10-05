@@ -5,10 +5,10 @@ metadata:
   name: web
   namespace: zdt-lab
 spec:
-  type: NodePort
+  type: NodePort               # เปิดพอร์ตบนทุก Node (kind map 30080 ออกมาที่ k8s-lab)
   selector:
-    app: web
+    app: web                   # เลือก Pod ของ Deployment web ทั้งรุ่นเก่าและใหม่
   ports:
     - port: 80
-      targetPort: http
-      nodePort: 30080
+      targetPort: http         # พอร์ตชื่อ http (80) ของ Pod
+      nodePort: 30080          # จองได้ทีละ Service ทั้งคลัสเตอร์ — ลบ zdt-lab ก่อนทำ LAB 10

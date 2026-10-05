@@ -2,17 +2,17 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: budget
+  name: budget                   # โซนของ LAB 5–6
 ---
 apiVersion: v1
-kind: ResourceQuota
+kind: ResourceQuota              # ใบงบของโซน (namespaced)
 metadata:
   name: budget-quota
-  namespace: budget
+  namespace: budget              # งบนี้ใช้กับโซน budget เท่านั้น
 spec:
-  hard:
+  hard:                          # มีค่า cpu/memory → ทุก Pod ต้องระบุ resources
     pods: "3"                    # Pod ได้ไม่เกิน 3 ตัว
     requests.cpu: 500m           # ผลรวม requests ของทุก Pod ในโซน
-    requests.memory: 256Mi
+    requests.memory: 256Mi       # ผลรวม requests หน่วยความจำ
     limits.cpu: "1"              # ผลรวม limits ของทุก Pod ในโซน
-    limits.memory: 512Mi
+    limits.memory: 512Mi         # ผลรวม limits หน่วยความจำ

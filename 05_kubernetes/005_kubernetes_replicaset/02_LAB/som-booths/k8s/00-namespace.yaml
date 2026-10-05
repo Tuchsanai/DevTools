@@ -4,5 +4,5 @@ kind: Namespace
 metadata:
   name: som-booths
   labels:
-    team: som
-    pod-security.kubernetes.io/warn: restricted
+    team: som   # ป้ายบอกเจ้าของ (แบบบท 004)
+    pod-security.kubernetes.io/warn: restricted   # แค่เตือน ไม่ปฏิเสธ (ไม่มี enforce)

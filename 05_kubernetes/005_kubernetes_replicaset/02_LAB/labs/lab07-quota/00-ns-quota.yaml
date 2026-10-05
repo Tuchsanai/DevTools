@@ -1,11 +1,11 @@
 # LAB 7: โซน rs-quota + ใบงบ (ResourceQuota) จำกัด 4 Pod + ป้ายขนาดกล่อง (LimitRange) แบบบท 004
 apiVersion: v1
-kind: Namespace
+kind: Namespace   # โซนของ LAB 7
 metadata:
   name: rs-quota
 ---
 apiVersion: v1
-kind: ResourceQuota
+kind: ResourceQuota   # ใบงบรวมของทั้ง namespace
 metadata:
   name: rs-quota
   namespace: rs-quota
@@ -14,13 +14,13 @@ spec:
     pods: "4"                    # Pod ได้ไม่เกิน 4 ตัว (ตรวจตอนสร้าง "Pod" ไม่ใช่ตอนสร้าง RS)
 ---
 apiVersion: v1
-kind: LimitRange
+kind: LimitRange   # ค่าตั้งต้น/เพดานต่อ container
 metadata:
   name: box-size
   namespace: rs-quota
 spec:
   limits:
-    - type: Container
+    - type: Container   # ใช้กับทุก container ใน namespace นี้
       defaultRequest: { cpu: 100m, memory: 64Mi }   # ไม่ระบุ requests → เติมค่านี้
       default:        { cpu: 200m, memory: 128Mi }  # ไม่ระบุ limits → เติมค่านี้
-      max:            { cpu: 500m, memory: 256Mi }
+      max:            { cpu: 500m, memory: 256Mi }   # เกินเพดานนี้ → Pod ถูกปฏิเสธ

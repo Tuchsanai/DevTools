@@ -2,4 +2,4 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: migrate-lab
+  name: migrate-lab            # ทุกคำสั่งของ LAB นี้ใช้ -n migrate-lab และลบทั้งโซนตอนจบ

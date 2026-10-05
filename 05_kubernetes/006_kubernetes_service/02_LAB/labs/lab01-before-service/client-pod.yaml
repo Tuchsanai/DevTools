@@ -1,18 +1,18 @@
 # LAB 1: Pod ลูกค้า (busybox) ไว้ยิง wget/nslookup จากในคลัสเตอร์
 # สร้าง "ก่อน" Service → ไม่มี env WEB_SERVICE_HOST (เทียบใน LAB 4)
 apiVersion: v1
-kind: Pod
+kind: Pod                            # Pod เดี่ยว ไม่มี ReplicaSet ดูแล (เป็นลูกค้า ไม่ใช่บูธ)
 metadata:
   name: client
   namespace: shop
   labels:
-    role: client
+    role: client                     # ไม่มี app=web → ReplicaSet/Service web ไม่นับ Pod นี้
 spec:
   terminationGracePeriodSeconds: 1   # ลบแล้วหายเร็ว
   containers:
     - name: busybox
-      image: busybox:1.36
-      command: ["sleep", "infinity"]
-      resources:
+      image: busybox:1.36            # มี wget, nslookup, ping ในตัว
+      command: ["sleep", "infinity"] # อยู่เฉย ๆ ให้ kubectl exec เข้ามายิงคำสั่ง
+      resources:                     # จองทรัพยากรเล็กน้อย
         requests: { cpu: 10m, memory: 16Mi }
         limits:   { cpu: 100m, memory: 32Mi }

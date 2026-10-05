@@ -1,12 +1,12 @@
 # LAB 4 (รั้วที่ 1): ทุก Pod ใน team-a รับการเชื่อมต่อเข้าเฉพาะจาก Pod ในโซน team-a เอง
 apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
+kind: NetworkPolicy              # รั้วเครือข่ายระดับ Pod (namespaced)
 metadata:
   name: allow-same-namespace
-  namespace: team-a
+  namespace: team-a              # รั้วนี้ล้อมเฉพาะโซน team-a
 spec:
   podSelector: {}                # {} = เลือกทุก Pod ในโซนนี้ → Pod เหล่านี้เปลี่ยนเป็น "ปฏิเสธ ยกเว้นที่อนุญาต"
   policyTypes: ["Ingress"]       # คุมเฉพาะขาเข้า
-  ingress:
+  ingress:                       # รายการต้นทางที่อนุญาตให้เข้า
     - from:
         - podSelector: {}        # podSelector อย่างเดียว (ไม่มี namespaceSelector) = Pod ในโซนเดียวกันเท่านั้น

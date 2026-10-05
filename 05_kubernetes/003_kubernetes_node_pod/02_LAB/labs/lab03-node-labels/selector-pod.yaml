@@ -7,7 +7,7 @@ metadata:
     lab: "03"
 spec:
   nodeSelector:               # ทุก key ต้องตรง (AND) ถ้าไม่มี node ไหนตรง → Pending
-    fleet: fast
+    fleet: fast               # ตรงกับ label ที่ติดด้วย kubectl label node ... fleet=fast
   containers:
     - name: web
       image: nginx:1.27-alpine

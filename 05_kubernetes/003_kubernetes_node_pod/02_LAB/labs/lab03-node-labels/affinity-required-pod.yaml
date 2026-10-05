@@ -12,7 +12,7 @@ spec:
         nodeSelectorTerms:          # หลาย term = OR
           - matchExpressions:       # หลาย expression ใน term เดียว = AND
               - key: fleet
-                operator: In
+                operator: In          # In = ค่า label ตรงกับค่าใดค่าหนึ่งในลิสต์
                 values: ["fast", "eco"]
   containers:
     - name: web

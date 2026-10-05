@@ -8,7 +8,7 @@ metadata:
     app: cache                # web-near-cache จะ "ดึงดูด" Pod ที่มีป้ายนี้
 spec:
   nodeSelector:
-    kubernetes.io/hostname: lab-worker
+    kubernetes.io/hostname: lab-worker   # label มาตรฐานที่ทุก node มีอยู่แล้ว = ชื่อ node
   containers:
     - name: web
       image: nginx:1.27-alpine

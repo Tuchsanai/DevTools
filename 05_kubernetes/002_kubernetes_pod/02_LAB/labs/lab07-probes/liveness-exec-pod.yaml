@@ -9,7 +9,7 @@ spec:
       image: busybox:1.36
       # สร้างไฟล์ healthy → ผ่านไป 30 วินาทีลบทิ้ง (จำลองแอปค้าง)
       command: ["sh", "-c", "touch /tmp/healthy; echo 'สบายดี'; sleep 30; rm -f /tmp/healthy; echo 'ไม่สบายแล้ว'; sleep 600"]
-      livenessProbe:
+      livenessProbe:                         # ไม่ผ่าน → kubelet ฆ่าแล้ว restart container
         exec:
           command: ["cat", "/tmp/healthy"]   # exit 0 = ผ่าน, ไม่ใช่ 0 = ไม่ผ่าน
         initialDelaySeconds: 5               # รอ 5 วินาทีก่อนตรวจครั้งแรก

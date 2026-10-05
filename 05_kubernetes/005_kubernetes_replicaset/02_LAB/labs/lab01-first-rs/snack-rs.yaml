@@ -1,26 +1,26 @@
 # LAB 1: ReplicaSet ตัวแรก — หัวหน้ากะดูแลบูธขนม 3 บูธ
 apiVersion: apps/v1          # ReplicaSet อยู่ในกลุ่ม apps (Pod อยู่ใน v1)
-kind: ReplicaSet
+kind: ReplicaSet   # หัวหน้ากะ: รักษาจำนวน Pod ให้ครบตามที่สั่ง
 metadata:
-  name: snack-rs
-  namespace: rs-lab
+  name: snack-rs   # ชื่อ RS = คำนำหน้าชื่อ Pod (snack-rs-xxxxx)
+  namespace: rs-lab   # Pod ที่ปั๊มออกมาอยู่ namespace เดียวกับ RS
   labels:
-    app: snack
+    app: snack   # ป้ายของตัว RS เอง (ไม่ใช้ในการนับ)
 spec:
   replicas: 3                # จำนวนบูธที่ต้องมีตลอดเวลา
   selector:                  # หัวหน้ากะนับเฉพาะ Pod ที่มีป้ายตรงนี้
     matchLabels:
-      app: snack
+      app: snack   # นับทุก Pod ที่มีป้ายนี้ ไม่สนว่าใครสร้าง
   template:                  # แบบพิมพ์สำหรับปั๊ม Pod ใหม่ (ไม่มี name → ระบบตั้งชื่อ snack-rs-xxxxx)
     metadata:
       labels:
         app: snack           # ต้องตรงกับ selector ไม่งั้นสร้าง RS ไม่ได้
     spec:
-      terminationGracePeriodSeconds: 1
+      terminationGracePeriodSeconds: 1   # busybox ไม่รับ SIGTERM → ถูก kill หลัง 1 วิ (เห็น Error ชั่วครู่)
       containers:
         - name: app
-          image: busybox:1.36
-          command: ["sh", "-c", "echo บูธขนม $(hostname) เปิดแล้ว; sleep 3600"]
+          image: busybox:1.36   # ทุก Pod ใช้ image เดียวกันจาก template
+          command: ["sh", "-c", "echo บูธขนม $(hostname) เปิดแล้ว; sleep 3600"]   # $(hostname) = ชื่อ Pod
           resources:
-            requests: { cpu: 10m, memory: 16Mi }
-            limits:   { cpu: 50m, memory: 32Mi }
+            requests: { cpu: 10m, memory: 16Mi }   # ขั้นต่ำที่จองไว้ (ใช้ตอน scheduler จัดวาง)
+            limits:   { cpu: 50m, memory: 32Mi }   # เพดานที่ใช้ได้จริง

@@ -1,7 +1,7 @@
-# LAB 10 (จุดเริ่ม = สำเนาจากบท 006 ไม่แก้): ครัวกลาง (ฐานข้อมูล) — ReplicaSet som-db 1 ตัว + Service ClusterIP som-db:5432
+# LAB 10 (จุดเริ่ม = สำเนาจากบท 006 ค่าไม่แก้ เพิ่มแค่คอมเมนต์): ครัวกลาง (ฐานข้อมูล) — ReplicaSet som-db 1 ตัว + Service ClusterIP som-db:5432
 # web ทุก Pod เรียก db ด้วยชื่อ "som-db" → Pod db เกิดใหม่ IP เปลี่ยน แต่ชื่อ/ClusterIP เดิม
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: ReplicaSet               # ไม่มีผู้จัดการ — ขั้น 10.3 ให้ Deployment som-db มารับเลี้ยง
 metadata:
   name: som-db
   namespace: som-shop
@@ -72,7 +72,7 @@ metadata:
   name: som-db
   namespace: som-shop
 spec:
-  type: ClusterIP
+  type: ClusterIP              # ใช้ภายในคลัสเตอร์เท่านั้น
   selector:
     app: som-db
   ports:

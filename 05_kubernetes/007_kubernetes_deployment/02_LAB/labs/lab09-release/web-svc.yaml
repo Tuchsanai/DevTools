@@ -7,8 +7,8 @@ metadata:
   namespace: release-lab
 spec:
   selector:
-    app: web
-    version: blue
+    app: web                   # ป้ายร่วมของทุก Pod
+    version: blue              # คันโยก: patch เป็น green = สลับทั้งร้าน
   ports:
     - port: 80
-      targetPort: http
+      targetPort: http         # ส่งต่อไปพอร์ตชื่อ http (80) ของ Pod

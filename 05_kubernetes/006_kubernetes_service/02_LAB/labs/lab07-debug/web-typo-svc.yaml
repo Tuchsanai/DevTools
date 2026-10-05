@@ -9,4 +9,4 @@ spec:
     app: wbe               # ← พิมพ์ผิด (ที่ถูกคือ web)
   ports:
     - port: 80
-      targetPort: http
+      targetPort: http     # พอร์ตถูกต้อง ปัญหาอยู่ที่ selector อย่างเดียว

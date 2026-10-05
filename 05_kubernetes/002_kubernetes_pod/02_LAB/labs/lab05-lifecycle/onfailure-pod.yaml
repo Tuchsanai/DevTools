@@ -4,7 +4,7 @@ kind: Pod
 metadata:
   name: onfailure-pod
 spec:
-  restartPolicy: OnFailure
+  restartPolicy: OnFailure   # exit ≠ 0 → restart, exit 0 → จบ (Completed)
   containers:
     - name: app
       image: busybox:1.36
@@ -12,8 +12,8 @@ spec:
       # /work เป็น emptyDir (เรียนในบทนี้ LAB 8) ไฟล์จึงรอดข้ามการ restart container
       command: ["sh", "-c", "if [ -f /work/tried ]; then echo 'รอบสองสำเร็จ'; exit 0; else touch /work/tried; echo 'รอบแรกล้ม'; exit 1; fi"]
       volumeMounts:
-        - name: work
-          mountPath: /work
+        - name: work         # ต้องตรงกับชื่อใน volumes ด้านล่าง
+          mountPath: /work   # ตำแหน่งที่ volume โผล่ใน container
   volumes:
     - name: work
-      emptyDir: {}
+      emptyDir: {}           # โฟลเดอร์ว่างที่มีอายุเท่ากับ Pod

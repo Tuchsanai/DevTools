@@ -11,8 +11,8 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: deck
-                operator: Gt
+              - key: deck             # label deck=5 (lab-worker2) / deck=2 (lab-worker)
+                operator: Gt          # Greater than: ผ่านเฉพาะเรือที่ deck > 3
                 values: ["3"]         # ต้องใส่ค่าเดียว และเป็นตัวเลขในเครื่องหมายคำพูด
   containers:
     - name: web

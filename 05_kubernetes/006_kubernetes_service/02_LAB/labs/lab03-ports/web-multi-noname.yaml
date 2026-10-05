@@ -8,7 +8,7 @@ spec:
   selector:
     app: web
   ports:
-    - name: http
+    - name: http           # ports[0] มีชื่อ
       port: 80
       targetPort: http
     - port: 8080           # ← ไม่มี name (ports[1])

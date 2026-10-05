@@ -8,16 +8,16 @@ metadata:
   labels:
     app: som-web
 spec:
-  replicas: 3
+  replicas: 3                        # 3 บูธ (LAB 10.8 scale เป็น 5 แล้วคืนเป็น 3)
   selector:
     matchLabels:
       app: som-web
   template:
     metadata:
       labels:
-        app: som-web
+        app: som-web               # Service som-web เลือก Pod ด้วยป้ายนี้
     spec:
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 30  # เวลาให้ Next.js ปิดตัวหลังได้ SIGTERM
       securityContext:
         runAsNonRoot: true
         seccompProfile:
@@ -42,7 +42,7 @@ spec:
         # 2) เติมสินค้าเข้าชั้น (สร้างตาราง + สินค้าตั้งต้น) — ทุก Pod รัน แต่มี advisory lock กันชน
         - name: db-seed
           image: som-shop-web:1.2
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: IfNotPresent  # ใช้ image ที่ kind load ไว้บน Node (ไม่มีใน Docker Hub)
           command: ["node", "scripts/seed.mjs"]
           securityContext:
             runAsUser: 1000          # USER node ของ image เป็น "ชื่อ" → ใส่เลขให้ runAsNonRoot ตรวจได้
@@ -51,7 +51,7 @@ spec:
             capabilities:
               drop: ["ALL"]
           env:
-            - name: DATABASE_URL
+            - name: DATABASE_URL     # initContainer ก็ต่อ db ด้วยชื่อ Service som-db
               value: postgres://som:meow1234@som-db:5432/catshop
           resources:
             requests: { cpu: 50m, memory: 64Mi }
@@ -77,12 +77,12 @@ spec:
               value: "Next.js + PostgreSQL · Kubernetes LAB 006 · namespace $(POD_NAMESPACE)"
             - name: DATABASE_URL     # เรียก db ด้วยชื่อ Service (ไม่ใช่ IP ของ Pod db)
               value: postgres://som:meow1234@som-db:5432/catshop
-            - name: PORT
+            - name: PORT             # Next.js ฟังพอร์ต 3000 (= containerPort ชื่อ http)
               value: "3000"
-            - name: HOSTNAME
+            - name: HOSTNAME         # ฟังทุก interface ไม่ใช่แค่ localhost (ให้ probe/Service เข้าถึงได้)
               value: "0.0.0.0"
           ports:
-            - name: http
+            - name: http             # Service อ้าง targetPort: http
               containerPort: 3000
           readinessProbe:            # ต่อ db ได้ไหม (SELECT 1) → ไม่ผ่าน = Service ไม่ส่งลูกค้ามา
             httpGet:
@@ -111,6 +111,6 @@ spec:
   selector:
     app: som-web
   ports:
-    - port: 80
+    - port: 80               # ClusterIP:80 ภายในคลัสเตอร์
       targetPort: http       # = 3000 ของ container web
-      nodePort: 30080
+      nodePort: 30080        # ทุก Node:30080 → localhost:30080 บนเครื่องนักศึกษา

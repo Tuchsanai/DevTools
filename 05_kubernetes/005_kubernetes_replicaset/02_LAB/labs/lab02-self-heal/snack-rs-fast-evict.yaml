@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
-  name: snack-rs
+  name: snack-rs   # ชื่อเดิม → apply แล้วเป็นการแก้ template ของ snack-rs ตัวเดิม
   namespace: rs-lab
   labels:
     app: snack
@@ -18,11 +18,11 @@ spec:
     spec:
       terminationGracePeriodSeconds: 1
       tolerations:                     # ทนเรือ NotReady/ติดต่อไม่ได้แค่ 30 วิ
-        - key: node.kubernetes.io/not-ready
-          operator: Exists
-          effect: NoExecute
-          tolerationSeconds: 30
-        - key: node.kubernetes.io/unreachable
+        - key: node.kubernetes.io/not-ready   # taint ที่ระบบใส่ให้เรือที่ NotReady
+          operator: Exists   # ไม่สน value ของ taint
+          effect: NoExecute   # taint ชนิดไล่ Pod ที่รันอยู่ออก
+          tolerationSeconds: 30   # ทนได้ 30 วิ แล้วถูกไล่ (ค่าเริ่มต้นที่ระบบเติม = 300)
+        - key: node.kubernetes.io/unreachable   # taint เมื่อ control-plane ติดต่อเรือไม่ได้
           operator: Exists
           effect: NoExecute
           tolerationSeconds: 30

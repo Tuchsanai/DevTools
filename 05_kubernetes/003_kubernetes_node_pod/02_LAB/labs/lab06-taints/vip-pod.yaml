@@ -11,8 +11,8 @@ spec:
     - key: dedicated
       operator: Equal          # key และ value ต้องตรงกับ taint
       value: vip
-      effect: NoSchedule
-  nodeSelector:
+      effect: NoSchedule       # ทนได้เฉพาะผลแบบ NoSchedule (ไม่ครอบคลุม NoExecute)
+  nodeSelector:                # ใบสั่ง: ต้องไปเรือ lab-worker2 เท่านั้น
     kubernetes.io/hostname: lab-worker2
   containers:
     - name: web

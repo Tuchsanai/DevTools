@@ -8,5 +8,5 @@ spec:
     - name: big
       image: nginx:1.27-alpine
       resources:
-        requests:
+        requests:                       # scheduler ต้องหา Node ที่มี CPU ว่างพอตามนี้
           cpu: "64"                     # ขอ 64 core! ไม่มี Node ไหนรับไหว

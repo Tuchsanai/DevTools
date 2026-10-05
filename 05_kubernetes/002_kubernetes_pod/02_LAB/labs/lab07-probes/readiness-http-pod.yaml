@@ -9,9 +9,9 @@ spec:
       image: nginx:1.27-alpine
       ports:
         - containerPort: 80
-      readinessProbe:
-        httpGet:
+      readinessProbe:            # ไม่ผ่าน → READY 0/1 เท่านั้น ไม่ restart
+        httpGet:                 # ตอบ 200–399 = ผ่าน, อย่างอื่น (เช่น 404) = ไม่ผ่าน
           path: /ready.html      # ยังไม่มีไฟล์นี้ → 404 → ยังไม่พร้อม
           port: 80
-        periodSeconds: 3
-        failureThreshold: 1
+        periodSeconds: 3         # ตรวจทุก 3 วินาที
+        failureThreshold: 1      # ล้มครั้งเดียวก็ถือว่าไม่พร้อมทันที

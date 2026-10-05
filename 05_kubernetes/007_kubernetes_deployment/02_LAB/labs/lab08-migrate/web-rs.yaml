@@ -1,8 +1,8 @@
 # LAB 8: ร้านแบบบท 006 — ReplicaSet web 3 บูธ (VERSION v1) ที่ไม่มีผู้จัดการ
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: ReplicaSet               # ไม่มีผู้จัดการ (แบบบท 005/006) → Pod ไม่มี pod-template-hash
 metadata:
-  name: web
+  name: web                    # ชื่อเดียวกับ Deployment ที่จะมารับเลี้ยง
   namespace: migrate-lab
   labels:
     app: web
@@ -10,7 +10,7 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      app: web
+      app: web                 # selector เดียวกับ web-deploy.yaml → Deployment รับเลี้ยง RS นี้ได้
   template:                        # แก้ template ของ ReplicaSet → Pod เดิมไม่เปลี่ยน (บท 005)
     metadata:
       labels:
@@ -21,15 +21,15 @@ spec:
           image: nginx:1.27-alpine   # image สาธารณะ — Node pull เอง ไม่ต้อง kind load
           env:
             - name: VERSION
-              value: v1
+              value: v1        # รุ่นเดิม (ขั้นที่ 4 ใช้ sed ทำให้ Deployment เป็น v1 เท่ากันทุกตัวอักษร)
           # เขียนหน้า index ให้บอกรุ่นและชื่อ Pod แล้วเปิด nginx
           command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
           ports:
-            - name: http
+            - name: http       # ตั้งชื่อพอร์ต — readinessProbe และ Service (targetPort: http) อ้างด้วยชื่อนี้
               containerPort: 80
           readinessProbe:            # ไฟเขียวหน้าบูธ
             httpGet: { path: /, port: http }
-            periodSeconds: 2
+            periodSeconds: 2   # ตรวจทุก 2 วิ → Pod ใหม่ขึ้น 1/1 เร็ว rollout จึงเดินเร็ว
           resources:
-            requests: { cpu: 10m, memory: 16Mi }
+            requests: { cpu: 10m, memory: 16Mi }  # ขอทรัพยากรน้อย ๆ ให้ kind 3 Node รับ Pod ได้หลายตัว
             limits:   { cpu: 100m, memory: 64Mi }

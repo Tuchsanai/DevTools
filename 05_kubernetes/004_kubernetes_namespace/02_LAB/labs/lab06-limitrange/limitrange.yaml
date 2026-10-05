@@ -1,12 +1,12 @@
 # LAB 6: ป้ายกฎขนาดกล่องของโซน budget (ใช้กับแต่ละ container)
 apiVersion: v1
-kind: LimitRange
+kind: LimitRange                 # กฎขนาดต่อ container (quota คุมผลรวมทั้งโซน)
 metadata:
   name: box-size
-  namespace: budget
+  namespace: budget              # โซนเดียวกับ budget-quota
 spec:
   limits:
-    - type: Container
+    - type: Container            # ใช้กับแต่ละ container
       defaultRequest:            # ไม่ระบุ requests → เติมค่านี้ให้
         cpu: 100m
         memory: 64Mi

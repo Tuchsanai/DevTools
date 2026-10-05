@@ -24,13 +24,13 @@ spec:
     # 1) db: native sidecar (restartPolicy: Always) → เริ่มก่อนและรันตลอดอายุ Pod
     - name: db
       image: postgres:17.11-alpine
-      restartPolicy: Always
+      restartPolicy: Always      # ทำให้ init container นี้เป็น sidecar
       securityContext:
         runAsUser: 70            # uid ของ postgres ใน image alpine
-        runAsGroup: 70
-        allowPrivilegeEscalation: false
+        runAsGroup: 70           # gid ของ postgres
+        allowPrivilegeEscalation: false  # restricted: ห้ามยกระดับสิทธิ์
         capabilities:
-          drop: ["ALL"]
+          drop: ["ALL"]          # restricted: ทิ้ง capability ทั้งหมด
       env:
         - name: POSTGRES_USER
           value: som
@@ -60,8 +60,8 @@ spec:
         periodSeconds: 10
         failureThreshold: 3
       resources:
-        requests: { cpu: 100m, memory: 256Mi }
-        limits:   { cpu: 500m, memory: 512Mi }
+        requests: { cpu: 100m, memory: 256Mi }  # ระบุครบ จึงผ่าน quota
+        limits:   { cpu: 500m, memory: 512Mi }  # ไม่เกิน max 1 CPU/1Gi ของ prod
 
     # 2) wait-for-db: รอจนต่อ db ได้
     - name: wait-for-db
@@ -71,7 +71,7 @@ spec:
         - -c
         - until pg_isready -h localhost -p 5432 -U som -d catshop; do echo "รอฐานข้อมูล..."; sleep 2; done; echo "ฐานข้อมูลพร้อมแล้ว"
       securityContext:
-        runAsUser: 70
+        runAsUser: 70            # ใช้ image postgres เหมือน db
         runAsGroup: 70
         allowPrivilegeEscalation: false
         capabilities:
@@ -82,8 +82,8 @@ spec:
 
     # 3) db-seed: สร้างตาราง + สินค้าตั้งต้น
     - name: db-seed
-      image: som-shop-web:1.1
-      imagePullPolicy: IfNotPresent
+      image: som-shop-web:1.1    # image ที่ build ในขั้น 10.2
+      imagePullPolicy: IfNotPresent  # ใช้ image ที่ kind load ไว้บน Node
       command: ["node", "scripts/seed.mjs"]
       securityContext:
         runAsUser: 1000          # image ระบุ USER node เป็น "ชื่อ" → ต้องใส่เป็นตัวเลขให้ runAsNonRoot ตรวจได้
@@ -100,10 +100,10 @@ spec:
 
   containers:
     - name: web
-      image: som-shop-web:1.1
+      image: som-shop-web:1.1    # image เดียวกันทุกโซน
       imagePullPolicy: IfNotPresent
       securityContext:
-        runAsUser: 1000
+        runAsUser: 1000          # image ระบุ USER node เป็นชื่อ จึงต้องใส่ตัวเลข
         runAsGroup: 1000
         allowPrivilegeEscalation: false
         capabilities:
@@ -121,15 +121,15 @@ spec:
           value: "Next.js + PostgreSQL · Kubernetes LAB 004 · namespace $(POD_NAMESPACE)"
         - name: DATABASE_URL
           value: postgres://som:meow1234@localhost:5432/catshop
-        - name: PORT
+        - name: PORT             # Next.js ฟัง port 3000
           value: "3000"
-        - name: HOSTNAME
+        - name: HOSTNAME         # ให้ Next.js ฟังทุก interface
           value: "0.0.0.0"
       ports:
-        - containerPort: 3000
+        - containerPort: 3000    # port-forward 300x:3000 มาที่ port นี้
       readinessProbe:
         httpGet:
-          path: /api/health
+          path: /api/health      # ตอบ {"ok":true,"db":"up"} เมื่อต่อฐานข้อมูลได้
           port: 3000
         periodSeconds: 5
         failureThreshold: 2

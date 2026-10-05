@@ -8,9 +8,9 @@ spec:
   selector:
     app: web
   ports:
-    - name: http
+    - name: http           # ชื่อพอร์ต → env WEB_MULTI_SERVICE_PORT_HTTP และชื่อใน EndpointSlice
       port: 80
       targetPort: http
-    - name: alt
+    - name: alt            # พอร์ตที่ 2 ต้องมีชื่อไม่ซ้ำ (ไม่ใส่ = API ปฏิเสธ ดูขั้นที่ 3)
       port: 8080
       targetPort: http     # สองพอร์ตของ Service ชี้ไปพอร์ตเดียวกันของ Pod ได้

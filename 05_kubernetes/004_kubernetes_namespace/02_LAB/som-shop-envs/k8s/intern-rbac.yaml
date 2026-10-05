@@ -3,17 +3,17 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: intern
-  namespace: som-dev
+  namespace: som-dev             # บัตรอยู่ในโซน dev (หายพร้อมโซน)
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: Role                       # สิทธิ์เฉพาะ som-dev
 metadata:
   name: shop-viewer
   namespace: som-dev
 rules:
   - apiGroups: [""]
-    resources: ["pods", "pods/log"]
-    verbs: ["get", "list", "watch"]
+    resources: ["pods", "pods/log"]  # Pod และ log ของ Pod
+    verbs: ["get", "list", "watch"]  # ดูอย่างเดียว
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -26,5 +26,5 @@ subjects:
     namespace: som-dev
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
+  kind: Role                     # อ้าง Role shop-viewer ในโซนเดียวกัน
   name: shop-viewer

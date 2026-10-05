@@ -9,4 +9,4 @@ spec:
   nodeName: lab-control-plane  # ระบุเรือเอง → scheduler ไม่ตรวจ taint ของ control-plane (ไม่มี toleration ก็ลงได้)
   containers:
     - name: web
-      image: nginx:1.27-alpine
+      image: nginx:1.27-alpine   # pull บน control-plane ครั้งแรก → Events มีแค่ Pulling/Pulled/Created/Started จาก kubelet

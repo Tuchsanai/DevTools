@@ -1,14 +1,14 @@
 # LAB 4: Pod หลงที่ติดป้าย app=snack เหมือนบูธของ snack-rs แต่ทำงานคนละอย่าง (command ต่าง)
 apiVersion: v1
-kind: Pod
+kind: Pod   # Pod ที่เราสร้างเอง ตอนเกิดไม่มี ownerReferences
 metadata:
   name: stray
   namespace: rs-lab
   labels:
     app: snack               # ป้ายตรง selector ของ snack-rs → หัวหน้ากะนับรวม
 spec:
-  terminationGracePeriodSeconds: 1
+  terminationGracePeriodSeconds: 1   # ถูก RS ลบแล้วปิดเร็ว
   containers:
     - name: app
       image: busybox:1.36
-      command: ["sh", "-c", "echo ฉันคือ stray ไม่ได้มาจากแบบพิมพ์; sleep 3600"]
+      command: ["sh", "-c", "echo ฉันคือ stray ไม่ได้มาจากแบบพิมพ์; sleep 3600"]   # ต่างจาก template ของ snack-rs → ใช้จับ "บูธปลอม"

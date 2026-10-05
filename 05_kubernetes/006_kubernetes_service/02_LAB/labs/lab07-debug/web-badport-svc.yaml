@@ -6,7 +6,7 @@ metadata:
   namespace: shop
 spec:
   selector:
-    app: web
+    app: web               # ถูกต้อง → มี endpoint ครบ 3 บูธ
   ports:
     - port: 80
       targetPort: 8080     # ← ผิด: ใน Pod ไม่มีอะไรฟัง 8080

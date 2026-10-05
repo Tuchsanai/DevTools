@@ -8,7 +8,7 @@ metadata:
   labels:
     app: web
 spec:
-  replicas: 3
+  replicas: 3                  # จำนวนบูธที่ต้องการ (scale แก้ค่านี้ ไม่นับเป็น revision ใหม่)
   selector:                        # เปลี่ยนไม่ได้หลังสร้าง (เหมือน ReplicaSet)
     matchLabels:
       app: web
@@ -16,22 +16,22 @@ spec:
   template:                        # พิมพ์เขียวของ Pod — แก้ส่วนนี้ = เกิดรุ่นใหม่ (rollout)
     metadata:
       labels:
-        app: web
+        app: web               # label ของ Pod ต้องตรง selector (Deployment เติม pod-template-hash ให้เอง)
     spec:
       containers:
         - name: web
           image: nginx:1.27-alpine   # image สาธารณะ — Node pull เอง ไม่ต้อง kind load
           env:
             - name: VERSION
-              value: v1
+              value: v1        # ข้อความรุ่นบนหน้าเว็บ — set env VERSION=... แก้ template = เกิด rollout
           # เขียนหน้า index ให้บอกรุ่นและชื่อ Pod แล้วเปิด nginx
           command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
           ports:
-            - name: http
+            - name: http       # ตั้งชื่อพอร์ต — readinessProbe และ Service (targetPort: http) อ้างด้วยชื่อนี้
               containerPort: 80
           readinessProbe:            # ไฟเขียวหน้าบูธ — rollout รอไฟนี้ก่อนปิดบูธรุ่นเก่า
             httpGet: { path: /, port: http }
-            periodSeconds: 2
+            periodSeconds: 2   # ตรวจทุก 2 วิ → Pod ใหม่ขึ้น 1/1 เร็ว rollout จึงเดินเร็ว
           resources:
-            requests: { cpu: 10m, memory: 16Mi }
+            requests: { cpu: 10m, memory: 16Mi }  # ขอทรัพยากรน้อย ๆ ให้ kind 3 Node รับ Pod ได้หลายตัว
             limits:   { cpu: 100m, memory: 64Mi }

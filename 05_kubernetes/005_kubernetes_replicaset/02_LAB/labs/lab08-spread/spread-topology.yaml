@@ -1,11 +1,11 @@
-# LAB 8: topologySpreadConstraints — จำนวนบูธต่อเรือต่างกันได้ไม่เกิน 1 (4 บูธ → 2+2, 5 บูธ → 3+2)
+# LAB 8: topologySpreadConstraints — จำนวนบูธต่อเรือต่างกันได้ไม่เกิน 1 (4 บูธ → 2+2, 5 บูธ → 2+3 หรือ 3+2)
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
   name: spread-topo
   namespace: rs-spread
 spec:
-  replicas: 4
+  replicas: 4   # 4 บูธ → 2+2 (ขั้นที่ 3 scale เป็น 5)
   selector:
     matchLabels:
       app: spread-topo
@@ -17,10 +17,10 @@ spec:
       terminationGracePeriodSeconds: 1
       topologySpreadConstraints:
         - maxSkew: 1                           # ต่างกันได้ไม่เกิน 1 ตัว
-          topologyKey: kubernetes.io/hostname
+          topologyKey: kubernetes.io/hostname   # นับต่อเรือ
           whenUnsatisfiable: DoNotSchedule     # ถ้าทำไม่ได้ → ไม่จัดลง (Pending)
           nodeTaintsPolicy: Honor              # ไม่นับ control-plane (มี taint) — บท 003 LAB 5
-          labelSelector:
+          labelSelector:   # นับเฉพาะ Pod ป้าย app=spread-topo
             matchLabels:
               app: spread-topo
       containers:

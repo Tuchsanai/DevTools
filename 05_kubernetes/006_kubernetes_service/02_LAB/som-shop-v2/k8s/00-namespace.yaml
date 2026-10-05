@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: som-shop
+  name: som-shop                                # โซนของ LAB 10 (ลบทั้งร้านด้วย kubectl delete ns som-shop)
   labels:
-    app.kubernetes.io/part-of: som-shop
-    pod-security.kubernetes.io/warn: restricted
+    app.kubernetes.io/part-of: som-shop         # ป้ายบอกว่าเป็นส่วนหนึ่งของแอป som-shop
+    pod-security.kubernetes.io/warn: restricted # warn = แค่เตือน ไม่ปฏิเสธ Pod (ผลจริง: ไม่มีคำเตือน เพราะตั้ง securityContext ครบ)

@@ -7,7 +7,7 @@ metadata:
   labels:
     app: web
 spec:
-  replicas: 3
+  replicas: 3   # 3 บูธ
   selector:
     matchLabels:
       app: web
@@ -19,7 +19,7 @@ spec:
         tier: front
     spec:
       containers:
-        - name: nginx
+        - name: nginx   # ชื่อ container (คอลัมน์ CONTAINERS ของ get rs -o wide)
           image: nginx:1.27-alpine
           env:
             - name: VERSION          # รุ่นของหน้าเว็บ (ดูด้วย custom-columns ได้)
@@ -27,10 +27,10 @@ spec:
           # เขียนหน้า index ให้บอกรุ่นและชื่อ Pod แล้วเปิด nginx
           command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
           ports:
-            - containerPort: 80
-          readinessProbe:
+            - containerPort: 80   # nginx ฟังพอร์ต 80 (เฉพาะ IPv4 เพราะ command ทับสคริปต์ตั้งต้น)
+          readinessProbe:   # Ready เมื่อ GET / ได้ 200 → kubectl wait ใช้เงื่อนไขนี้
             httpGet: { path: /, port: 80 }
-            periodSeconds: 2
+            periodSeconds: 2   # ตรวจทุก 2 วิ
           resources:
             requests: { cpu: 10m, memory: 16Mi }
             limits:   { cpu: 100m, memory: 64Mi }

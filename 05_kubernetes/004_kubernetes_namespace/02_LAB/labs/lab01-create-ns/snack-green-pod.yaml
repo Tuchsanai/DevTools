@@ -3,12 +3,12 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: snack-green
+  name: snack-green              # คนละชื่อกับ green/snack จึงไม่ชน
   namespace: green               # ป้ายที่อยู่ในไฟล์
   labels:
-    app: snack
+    app: snack                   # label เดียวกับ snack
 spec:
-  terminationGracePeriodSeconds: 1
+  terminationGracePeriodSeconds: 1  # ลบเร็ว (sh เป็น PID 1 ไม่ตอบ SIGTERM)
   containers:
     - name: app
       image: busybox:1.36

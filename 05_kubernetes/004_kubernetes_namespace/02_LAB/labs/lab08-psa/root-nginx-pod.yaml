@@ -4,8 +4,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: root-nginx
-  namespace: secure
+  namespace: secure              # โซนที่มีด่าน PSA
 spec:
-  containers:
+  containers:                    # ไม่มี securityContext เลย
     - name: nginx
-      image: nginx:1.27-alpine
+      image: nginx:1.27-alpine   # image ทางการ รันเป็น root (uid 0)
