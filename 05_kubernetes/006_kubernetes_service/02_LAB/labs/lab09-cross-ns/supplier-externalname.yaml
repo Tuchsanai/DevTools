@@ -7,4 +7,4 @@ metadata:
   namespace: shop
 spec:
   type: ExternalName
-  externalName: example.com
+  externalName: example.com  # DNS ตอบ CNAME → example.com (Host header ของ client ยังเป็น supplier.shop)

@@ -12,13 +12,13 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: som-db
+      app: som-db                  # ReplicaSet นับ Pod ที่มีป้ายนี้
   template:
     metadata:
       labels:
-        app: som-db
+        app: som-db                # Service som-db เลือก Pod ด้วยป้ายนี้
     spec:
-      securityContext:
+      securityContext:               # ระดับ Pod: ผ่าน Pod Security restricted (บท 004)
         runAsNonRoot: true
         fsGroup: 70                  # emptyDir เป็นของกลุ่ม 70 = postgres เขียนได้
         seccompProfile:
@@ -38,30 +38,30 @@ spec:
             capabilities:
               drop: ["ALL"]
           env:
-            - name: POSTGRES_USER
+            - name: POSTGRES_USER    # postgres image สร้างผู้ใช้/ฐานข้อมูลนี้ตอนเริ่มครั้งแรก
               value: som
             - name: POSTGRES_PASSWORD
               value: meow1234        # เพื่อการเรียนเท่านั้น (ของจริงใช้ Secret — บทหลัง)
             - name: POSTGRES_DB
               value: catshop
-            - name: PGDATA
+            - name: PGDATA           # โฟลเดอร์ย่อยใน emptyDir (initdb ไม่ยอมใช้จุด mount ตรง ๆ)
               value: /var/lib/postgresql/data/pgdata
           ports:
             - name: postgres         # Service อ้าง targetPort: postgres
               containerPort: 5432
-          volumeMounts:
+          volumeMounts:              # ต่อ emptyDir db-data เข้าที่เก็บข้อมูลของ postgres
             - name: db-data
               mountPath: /var/lib/postgresql/data
           readinessProbe:            # พร้อมรับงาน = pg_isready ผ่าน (ใช้ 127.0.0.1 ใน container เดียวกัน)
             exec:
               command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
             periodSeconds: 3
-          livenessProbe:
+          livenessProbe:             # พอร์ต 5432 ยังเปิดอยู่ไหม (ไม่ผ่าน = kubelet restart container)
             tcpSocket:
               port: postgres
             initialDelaySeconds: 10
             periodSeconds: 10
-          resources:
+          resources:                 # postgres ใช้หน่วยความจำมากกว่า web จึงจองมากกว่า
             requests: { cpu: 100m, memory: 256Mi }
             limits:   { cpu: 500m, memory: 512Mi }
 ---
@@ -76,5 +76,5 @@ spec:
   selector:
     app: som-db
   ports:
-    - port: 5432
-      targetPort: postgres
+    - port: 5432             # web เรียก som-db:5432
+      targetPort: postgres   # → containerPort ชื่อ postgres (5432)

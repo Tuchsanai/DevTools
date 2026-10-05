@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: kitchen
+  name: kitchen            # search domain ของ Pod ในโซนนี้ขึ้นต้นด้วย kitchen.svc.cluster.local
   labels:
     team: kitchen          # NetworkPolicy ใน shop อ้างป้ายนี้
 ---
 apiVersion: v1
 kind: Pod
 metadata:
-  name: cook
+  name: cook               # ลูกค้าจากโซนอื่น (busybox แบบเดียวกับ client)
   namespace: kitchen
 spec:
   terminationGracePeriodSeconds: 1

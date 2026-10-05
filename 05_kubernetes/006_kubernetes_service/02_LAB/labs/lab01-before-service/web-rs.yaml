@@ -6,12 +6,12 @@ metadata:
   name: web
   namespace: shop
   labels:
-    app: web
+    app: web                       # kubectl expose (LAB 2) คัดลอกป้ายนี้ไปให้ Service
 spec:
-  replicas: 3
+  replicas: 3                      # ดูแลให้มี 3 บูธเสมอ (ลบ 1 ตัว → สร้างใหม่แทน แต่ได้ IP ใหม่)
   selector:
     matchLabels:
-      app: web
+      app: web                     # ReplicaSet นับ Pod ที่มีป้ายนี้
   template:
     metadata:
       labels:
@@ -21,7 +21,7 @@ spec:
         - name: nginx
           image: nginx:1.27-alpine   # image สาธารณะ — Node pull เอง ไม่ต้อง kind load
           env:
-            - name: VERSION
+            - name: VERSION          # รุ่นของหน้าเว็บ → ข้อความ "web v1 ..."
               value: v1
           # เขียนหน้า index ให้บอกรุ่นและชื่อ Pod แล้วเปิด nginx
           command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
@@ -30,7 +30,7 @@ spec:
               containerPort: 80
           readinessProbe:            # ไฟเขียวหน้าบูธ: ไม่ผ่าน = Service ไม่ส่งลูกค้ามา (LAB 6)
             httpGet: { path: /, port: http }
-            periodSeconds: 2
+            periodSeconds: 2         # ตรวจทุก 2 วินาที (ล้ม 3 ครั้งติดกัน = not ready)
           resources:
             requests: { cpu: 10m, memory: 16Mi }
             limits:   { cpu: 100m, memory: 64Mi }

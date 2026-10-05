@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: client2
+  name: client2                      # ต่างจาก client แค่ชื่อ (และเวลาที่สร้าง)
   namespace: shop
   labels:
     role: client

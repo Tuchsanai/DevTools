@@ -6,7 +6,7 @@ metadata:
   namespace: shop
 spec:
   selector:
-    app: web
+    app: web               # บูธชุดเดียวกับ Service web (Pod หนึ่งอยู่หลังหลาย Service ได้)
   ports:
     - port: 8080           # ลูกค้าเรียก http://web-alt:8080
       targetPort: http     # → containerPort ชื่อ http (80)

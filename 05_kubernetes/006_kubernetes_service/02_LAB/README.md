@@ -11,7 +11,7 @@
 
 ใน LAB นี้นักศึกษาจะทำตามน้องส้มที่สร้าง **ประภาคาร (Service)** ให้ร้าน เริ่มจากเห็นด้วยตาตัวเองว่าการจด IP ของ Pod ไว้ใช้ไม่ได้ แล้วสร้าง Service ตัวแรก อ่านรายชื่อบูธใน EndpointSlice ลองพอร์ต 3 ชั้น เรียกร้านด้วยชื่อ DNS ดูการสุ่มกระจายลูกค้า ปิดไฟเขียวของบูธหนึ่ง ไล่ debug Service ที่ตั้งค่าผิด เปิดร้านจาก browser ด้วย **`http://localhost:30080`** (บทแรกที่ไม่ต้องใช้ port-forward/ssh -L) และเรียก Service ข้าม namespace ปิดท้ายด้วย **ร้านอาหารแมวน้องส้มที่แยกหน้าร้าน (web) ออกจากครัวกลาง (db) เป็นครั้งแรก** ทำให้ออเดอร์จากทุกบูธรวมที่เดียว แต่จะเผยปัญหาตอนเปลี่ยนรุ่นที่ส่งต่อให้บทที่ 7
 
-ผลลัพธ์ทุกบล็อก ```` ```text ```` ในเอกสารนี้มาจาก **การทดลองจริง** บน container ที่สร้างจาก image เดียวกับ `k8s-lab` (`tuchsanai/devtools-kind:2569_1`, Kubernetes v1.37.0) เมื่อ 5 ตุลาคม 2569 ตัดบางส่วนเพื่อให้กระชับ (แทนด้วย `...`) **เวลา, AGE, ClusterIP, Pod IP, ชื่อ Pod ที่สุ่ม (เช่น `web-k2nk5`), จำนวนครั้งที่สุ่มได้ และ Node ที่ scheduler เลือก ในเครื่องนักศึกษาจะต่างจากตัวอย่าง** เป็นเรื่องปกติ ให้ยึดผลจากเครื่องตัวเองเสมอ และเมื่อคำสั่งในเอกสารมีชื่อ Pod หรือ IP ให้ **แทนด้วยค่าที่เห็นในเครื่องตัวเอง** (หรือใช้ตัวแปรตามที่เอกสารแสดง)
+ผลลัพธ์ทุกบล็อก ```` ```text ```` ในเอกสารนี้มาจาก **การทดลองจริง** บน container ที่สร้างจาก image เดียวกับ `k8s-lab` (`tuchsanai/devtools-kind:2569_1`: kubectl client v1.37.1, Kubernetes/Node v1.37.0, kind 0.33.0, Node เป็น Debian 13 + containerd 2.3.4) เมื่อ 5 ตุลาคม 2569 ตัดบางส่วนเพื่อให้กระชับ (แทนด้วย `...`) **เวลา, AGE, ClusterIP, Pod IP, ชื่อ Pod ที่สุ่ม (เช่น `web-68gh2`), จำนวนครั้งที่สุ่มได้ และ Node ที่ scheduler เลือก ในเครื่องนักศึกษาจะต่างจากตัวอย่าง** เวลาที่วัดด้วย `time` (build image, `k8s-up`, ลบ namespace) ก็ขึ้นกับความเร็วเครื่อง เป็นเรื่องปกติ ให้ยึดผลจากเครื่องตัวเองเสมอ และเมื่อคำสั่งในเอกสารมีชื่อ Pod หรือ IP ให้ **แทนด้วยค่าที่เห็นในเครื่องตัวเอง** (หรือใช้ตัวแปรตามที่เอกสารแสดง)
 
 ### สัญลักษณ์บอกว่ารันคำสั่งที่ไหน
 
@@ -29,6 +29,7 @@
 - Pod ที่อยู่หลัง Service ทุก LAB สร้างด้วย **ReplicaSet** (บทที่ 5) เพราะ Service เลือก Pod ด้วย label ไม่สนว่าใครสร้าง Pod บทนี้ **ไม่ใช้** ตัวช่วยเปลี่ยนรุ่นของบทที่ 7
 - **LAB 1–9 ใช้ namespace `shop` ต่อเนื่องกัน** (LAB 9 เพิ่ม `kitchen`) แล้วลบทิ้งตอนท้าย LAB 9 ส่วน LAB 10 ใช้ `som-shop` ถ้าหยุดกลางทางหรือผลเพี้ยน ให้ `kubectl delete ns shop kitchen` แล้วเริ่มใหม่จาก LAB 1 ได้ (ดู [ตารางเก็บกวาด](#ตารางเก็บกวาดและคืนสภาพ))
 - **NodePort 30080 จองได้ทีละ Service ทั้งคลัสเตอร์** ต้องลบ `web-nodeport` ของ LAB 8 ก่อนเริ่ม LAB 10
+- **Service ที่เพิ่งสร้างหรือเพิ่งแก้ต้องรอ kube-proxy ราว 2 วินาที** (วัดจริง: เรียกสำเร็จครั้งแรกหลังสร้าง 1.7 วินาที) ถ้าเรียกทันทีหลัง `apply`/`patch` อาจได้ `Connection refused` หรือผลเก่า เอกสารจึงใส่ `sleep 2`/`sleep 3` ไว้ในจุดที่ทดลองแล้วเจอปัญหานี้ ถ้าพิมพ์ทีละคำสั่งด้วยมือมักไม่ทันเห็น
 - Pod busybox ใน LAB ตั้ง `terminationGracePeriodSeconds: 1` และ image สาธารณะ (`nginx:1.27-alpine`, `busybox:1.36`) ให้ Node ดึงเอง ไม่ต้อง `kind load`
 - รหัสผ่าน SSH `passwd` และรหัสฐานข้อมูล `meow1234` ในเอกสารนี้เป็น **ค่าตัวอย่างเพื่อการเรียนเท่านั้น** ห้ามใช้กับระบบจริง (ของจริงเก็บใน Secret ซึ่งเป็นเนื้อหาบทหลัง)
 
@@ -110,8 +111,10 @@ LAB 0, 5 และ 6 ไม่มีไฟล์ของตัวเอง ใ�
 🖥️ **บนเครื่องนักศึกษา** ตรวจว่า `k8s-lab` กำลังรัน (STATUS ต้องเป็น `Up`) ถ้าเป็น `Exited` ให้ `docker start k8s-lab`
 
 ```bash
-docker ps -a --filter name=k8s-lab
+docker ps -a --filter name=^k8s-lab$
 ```
+
+> `--filter name=` เป็นการค้นแบบ "มีคำนี้อยู่ในชื่อ" ถ้าเขียนแค่ `name=k8s-lab` จะได้ container อื่นที่ชื่อขึ้นต้นด้วย `k8s-lab-...` มาด้วย `^...$` ทำให้ตรงชื่อ `k8s-lab` เป๊ะ (บน PowerShell คำสั่งเดียวกันใช้ได้)
 
 `cd` ไปยังโฟลเดอร์ที่ **มีโฟลเดอร์ `006_kubernetes_service` อยู่ข้างใน** แล้วคัดลอกทั้งโฟลเดอร์เข้า `/workspace/` ของ container (คำสั่งเดียวกันทั้ง PowerShell และ bash)
 
@@ -153,10 +156,10 @@ lab07-debug
 lab08-nodeport
 lab09-cross-ns
 ...
-NAME                STATUS   ROLES           AGE     VERSION
-lab-control-plane   Ready    control-plane   4m30s   v1.37.0
-lab-worker          Ready    <none>          4m19s   v1.37.0
-lab-worker2         Ready    <none>          4m19s   v1.37.0
+NAME                STATUS   ROLES           AGE    VERSION
+lab-control-plane   Ready    control-plane   104s   v1.37.0
+lab-worker          Ready    <none>          94s    v1.37.0
+lab-worker2         Ready    <none>          94s    v1.37.0
 ```
 
 | ผลของ `kubectl get nodes` | ทำอย่างไร |
@@ -185,8 +188,10 @@ Set kubectl context to "kind-lab"
   ...
   NodePort ที่ map ออก host: 30080 30081 30082
 
-real	0m47.936s
+real	0m50.690s
 ```
+
+ในการทดลองสร้างคลัสเตอร์ใช้ราว 51 วินาที (เครื่องนักศึกษาอาจเร็วหรือช้ากว่านี้) ถ้าคลัสเตอร์มีอยู่แล้ว `k8s-up` จะพิมพ์ `[k8s-up] cluster 'lab' มีอยู่แล้ว — ข้ามการสร้าง (ลบด้วย k8s-down)` แล้วจบในไม่ถึง 1 วินาที
 
 สังเกตสองบรรทัดท้าย: `k8s-up` แนะนำตัวอย่าง `/workspace/examples/web-deployment.yaml` ที่เปิดหน้าเว็บที่ `http://localhost:30080` และบอกว่า **NodePort 30080 30081 30082 ถูก map ออกมาที่เครื่องนักศึกษา** ทั้งสองเรื่องเกี่ยวกับบทนี้โดยตรง
 
@@ -200,7 +205,7 @@ real	0m47.936s
 kubectl get svc -A | grep -E '3008[0-2]' || echo '(ว่าง)'
 ```
 
-ถ้าได้ `(ว่าง)` ข้ามไปขั้นที่ 5 ได้เลย ถ้าเห็นบรรทัดแบบนี้ (ผลจริงเมื่อจำลองว่าตัวอย่างของบทที่ 1 ยังค้างอยู่)
+ถ้าได้ `(ว่าง)` (ผลจริงในการทดลองบนคลัสเตอร์ใหม่) ข้ามไปขั้นที่ 5 ได้เลย ถ้าเห็นบรรทัดแบบนี้ (ผลจริงจากการทดลองรอบก่อน เมื่อจำลองว่าตัวอย่างของบทที่ 1 ยังค้างอยู่)
 
 ```text
 default       web          NodePort    10.96.10.17   <none>        80:30080/TCP             8s
@@ -235,16 +240,16 @@ docker exec lab-control-plane cat /kind/kubeadm.conf | grep -i serviceSubnet
 
 ```text
 NAMESPACE     NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE
-default       kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP                  4m57s
-kube-system   kube-dns     ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   4m56s
+default       kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP                  103s
+kube-system   kube-dns     ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   101s
 
 NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
-kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   4m57s
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   103s
 
     mode: iptables
 
 NAME         DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
-kube-proxy   3         3         3       3            3           kubernetes.io/os=linux   4m56s
+kube-proxy   3         3         3       3            3           kubernetes.io/os=linux   101s
 
   serviceSubnet: 10.96.0.0/16
 ```
@@ -260,6 +265,7 @@ kube-proxy   3         3         3       3            3           kubernetes.io/
 ```bash
 cat /etc/devtools/kind/kind-lab.yaml
 docker ps --format '{{.Names}}\t{{.Ports}}'
+kubectl version; kind --version
 ```
 
 ```text
@@ -278,9 +284,14 @@ nodes:
   - role: worker
   - role: worker
 
-lab-control-plane	0.0.0.0:30080-30082->30080-30082/tcp, 127.0.0.1:41689->6443/tcp
 lab-worker2	
 lab-worker	
+lab-control-plane	0.0.0.0:30080-30082->30080-30082/tcp, 127.0.0.1:41983->6443/tcp
+
+Client Version: v1.37.1
+Kustomize Version: v5.8.1
+Server Version: v1.37.0
+kind version 0.33.0
 ```
 
 เส้นทางของพอร์ต 30080 ถูกเตรียมไว้ตั้งแต่บทที่ 1 แล้ว 3 ชั้น
@@ -289,7 +300,7 @@ lab-worker
 2. 🐧 `k8s-lab:30080` → container `lab-control-plane:30080` (kind `extraPortMappings` ที่เห็นใน `docker ps` ด้านบน)
 3. `lab-control-plane:30080` → Pod ที่อยู่หลัง Service ชนิด NodePort ที่ใช้ `nodePort: 30080` (ยังไม่มีตอนนี้ จะสร้างใน LAB 8 และ LAB 10)
 
-เลขพอร์ต `127.0.0.1:41689->6443` ของ API server ในเครื่องนักศึกษาจะต่างจากนี้ ไม่ต้องสนใจ
+เลขพอร์ต `127.0.0.1:41983->6443` ของ API server และลำดับแถวของ `docker ps` ในเครื่องนักศึกษาจะต่างจากนี้ ไม่ต้องสนใจ ส่วน `kubectl version` บอกว่า kubectl (client) เป็น v1.37.1 และคลัสเตอร์ (server/Node) เป็น v1.37.0 ต่างกันแค่เลข patch จึงใช้ร่วมกันได้ปกติ และ kind เป็นรุ่น 0.33.0
 
 ### สิ่งที่เห็น
 
@@ -314,7 +325,28 @@ lab-worker
 
 **เป้าหมาย:** สร้างร้าน `web` 3 บูธด้วย ReplicaSet แล้วเห็นว่า IP ของ Pod เปลี่ยนเมื่อ ReplicaSet สร้าง Pod แทน IP ที่จดไว้จึงใช้ไม่ได้
 
-ไฟล์ใน `labs/lab01-before-service/` (ตัด `resources` ออกเพื่อให้สั้น)
+### อธิบาย YAML: `labs/lab01-before-service/`
+
+`kubectl apply -f labs/lab01-before-service/` ในขั้นที่ 1 สร้างทุกไฟล์ในโฟลเดอร์นี้ตามลำดับชื่อไฟล์ (`00-ns.yaml` ขึ้นก่อน namespace จึงมีก่อน Pod)
+
+**`00-ns.yaml`**
+
+```yaml
+# LAB 1–9: โซน (namespace) shop ของบทนี้ — จบ LAB 9 ลบทิ้งด้วย kubectl delete ns shop
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: shop               # ทุกไฟล์ของ LAB 1–9 อ้าง namespace: shop
+  labels:
+    team: som              # ป้ายของโซน (เทียบ team: kitchen ที่ NetworkPolicy ใช้เลือกโซนใน LAB 9)
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ |
+|---|---|
+| `kind: Namespace`, `name: shop` | โซนเดียวที่ LAB 1–9 ใช้ร่วมกัน จบ LAB 9 ลบทั้งโซนทีเดียว (`kubectl delete ns shop kitchen` ใช้ 10.8 วินาทีในการทดลอง) |
+| `labels.team: som` | ป้ายของโซน ใช้เทียบกับ `team: kitchen` ใน LAB 9 ที่ NetworkPolicy ใช้เลือกโซนต้นทาง (โซน `shop` ไม่มีป้าย `kitchen` → `client` ถูกกั้น) |
+
+**`web-rs.yaml`** (ร้าน 3 บูธ)
 
 ```yaml
 # LAB 1: ร้าน web 3 บูธ (ReplicaSet จากบท 005) — ยังไม่มี Service
@@ -325,12 +357,12 @@ metadata:
   name: web
   namespace: shop
   labels:
-    app: web
+    app: web                       # kubectl expose (LAB 2) คัดลอกป้ายนี้ไปให้ Service
 spec:
-  replicas: 3
+  replicas: 3                      # ดูแลให้มี 3 บูธเสมอ (ลบ 1 ตัว → สร้างใหม่แทน แต่ได้ IP ใหม่)
   selector:
     matchLabels:
-      app: web
+      app: web                     # ReplicaSet นับ Pod ที่มีป้ายนี้
   template:
     metadata:
       labels:
@@ -340,7 +372,7 @@ spec:
         - name: nginx
           image: nginx:1.27-alpine   # image สาธารณะ — Node pull เอง ไม่ต้อง kind load
           env:
-            - name: VERSION
+            - name: VERSION          # รุ่นของหน้าเว็บ → ข้อความ "web v1 ..."
               value: v1
           # เขียนหน้า index ให้บอกรุ่นและชื่อ Pod แล้วเปิด nginx
           command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
@@ -349,10 +381,52 @@ spec:
               containerPort: 80
           readinessProbe:            # ไฟเขียวหน้าบูธ: ไม่ผ่าน = Service ไม่ส่งลูกค้ามา (LAB 6)
             httpGet: { path: /, port: http }
-            periodSeconds: 2
+            periodSeconds: 2         # ตรวจทุก 2 วินาที (ล้ม 3 ครั้งติดกัน = not ready)
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }
 ```
 
-นอกจากนี้มี `00-ns.yaml` (namespace `shop` label `team: som`) และ `client-pod.yaml` (Pod `client` image `busybox:1.36` label `role=client` รัน `sleep infinity` ไว้ยิง `wget`/`nslookup` จากในคลัสเตอร์)
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `kind: ReplicaSet`, `replicas: 3` | ดูแลให้มี 3 บูธเสมอ (บทที่ 5) | ลบ `web-qr4kg` แล้วได้ `web-68gh2` แทน แต่ IP เปลี่ยน |
+| `selector.matchLabels` / `template.metadata.labels` = `app: web` | ReplicaSet นับ Pod ด้วยป้ายนี้ และ Service ใน LAB 2 ก็เลือก Pod ด้วยป้ายเดียวกัน | `client` (ป้าย `role=client`) ไม่ถูกนับเป็นบูธ |
+| `metadata.labels.app: web` (ของ ReplicaSet เอง) | `kubectl expose rs web` คัดลอกป้ายนี้ไปเป็น label ของ Service | `web-quick` มี `labels: app: web` ใน LAB 2 ขั้นที่ 1 |
+| `env VERSION=v1` + `command` | เขียน `index.html` เป็น `web v1 from $(hostname)` ก่อนเปิด nginx (`exec` ให้ nginx เป็น process หลัก) | ทุกคำตอบบอกชื่อ Pod เช่น `web v1 from web-qr4kg` จึงนับการกระจายได้ |
+| `ports: name: http, containerPort: 80` | ตั้งชื่อพอร์ตไว้ให้ Service อ้าง `targetPort: http` แทนเลข | LAB 2–3 ใช้ `targetPort: http` (EndpointSlice แปลงเป็น PORTS `80`) |
+| `readinessProbe httpGet / port http`, `periodSeconds: 2` | ไฟเขียวของบูธ ตรวจหน้าแรกทุก 2 วินาที (`failureThreshold` ค่าเริ่มต้น 3) | LAB 6 ลบ `index.html` → 403 → `ready=false` ในราว 6 วินาที |
+| `resources` | จองทรัพยากรเล็กน้อยให้ 3 บูธ + ลูกค้ารันบนเครื่องนักศึกษาได้สบาย | – |
+
+**`client-pod.yaml`** (ลูกค้าในคลัสเตอร์)
+
+```yaml
+# LAB 1: Pod ลูกค้า (busybox) ไว้ยิง wget/nslookup จากในคลัสเตอร์
+# สร้าง "ก่อน" Service → ไม่มี env WEB_SERVICE_HOST (เทียบใน LAB 4)
+apiVersion: v1
+kind: Pod                            # Pod เดี่ยว ไม่มี ReplicaSet ดูแล (เป็นลูกค้า ไม่ใช่บูธ)
+metadata:
+  name: client
+  namespace: shop
+  labels:
+    role: client                     # ไม่มี app=web → ReplicaSet/Service web ไม่นับ Pod นี้
+spec:
+  terminationGracePeriodSeconds: 1   # ลบแล้วหายเร็ว
+  containers:
+    - name: busybox
+      image: busybox:1.36            # มี wget, nslookup, ping ในตัว
+      command: ["sleep", "infinity"] # อยู่เฉย ๆ ให้ kubectl exec เข้ามายิงคำสั่ง
+      resources:                     # จองทรัพยากรเล็กน้อย
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 32Mi }
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ |
+|---|---|
+| `kind: Pod` (ไม่มี ReplicaSet) | ลูกค้าตัวเดียว ไม่ใช่บูธ ใช้ยิงคำสั่งด้วย `kubectl exec` ไปจนถึง LAB 9 |
+| `labels.role: client` | ไม่มี `app=web` จึงไม่อยู่ใน EndpointSlice ของ `web` (LAB 2 เห็นแค่ 3 IP ของ `web-*`) |
+| `image: busybox:1.36`, `command: sleep infinity` | busybox มี `wget`, `nslookup`, `ping` ในตัว และ `sleep infinity` ทำให้ container อยู่ไปเรื่อย ๆ |
+| `terminationGracePeriodSeconds: 1` | ไม่ต้องรอ 30 วินาทีตอนลบ namespace |
+| (สร้างก่อน Service) | ไม่มี env `WEB_*` (LAB 4 ขั้นที่ 3 ได้ `exit=1`) |
 
 ### ขั้นที่ 1: สร้าง namespace, ร้าน 3 บูธ และลูกค้า
 
@@ -369,49 +443,49 @@ kubectl -n shop get rs,pods -o wide --show-labels
 namespace/shop created
 pod/client created
 replicaset.apps/web created
-pod/web-999d4 condition met
-pod/web-9gngn condition met
-pod/web-mgz49 condition met
+pod/web-ljmt4 condition met
+pod/web-qr4kg condition met
+pod/web-rppf4 condition met
 pod/client condition met
 
 NAME                  DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES              SELECTOR   LABELS
-replicaset.apps/web   3         3         3       13s   nginx        nginx:1.27-alpine   app=web    app=web
+replicaset.apps/web   3         3         3       15s   nginx        nginx:1.27-alpine   app=web    app=web
 
 NAME            READY   STATUS    RESTARTS   AGE   IP           NODE          NOMINATED NODE   READINESS GATES   LABELS
-pod/client      1/1     Running   0          13s   10.244.2.4   lab-worker    <none>           <none>            role=client
-pod/web-999d4   1/1     Running   0          13s   10.244.2.5   lab-worker    <none>           <none>            app=web
-pod/web-9gngn   1/1     Running   0          13s   10.244.1.3   lab-worker2   <none>           <none>            app=web
-pod/web-mgz49   1/1     Running   0          13s   10.244.1.4   lab-worker2   <none>           <none>            app=web
+pod/client      1/1     Running   0          15s   10.244.2.2   lab-worker2   <none>           <none>            role=client
+pod/web-ljmt4   1/1     Running   0          15s   10.244.1.2   lab-worker    <none>           <none>            app=web
+pod/web-qr4kg   1/1     Running   0          15s   10.244.2.3   lab-worker2   <none>           <none>            app=web
+pod/web-rppf4   1/1     Running   0          15s   10.244.2.4   lab-worker2   <none>           <none>            app=web
 ```
 
-ครั้งแรก Node ต้องดึง image `nginx` และ `busybox` จาก Docker Hub จึงใช้เวลาราว 10–20 วินาที
+ครั้งแรก Node ต้องดึง image `nginx` และ `busybox` จาก Docker Hub จึงใช้เวลาราว 10–20 วินาที (ในการทดลอง `wait` ของ `web` ใช้ 10 วินาที) ชื่อ Pod, IP และ Node ที่ scheduler เลือก (รอบนี้ 2 บูธ + `client` อยู่ `lab-worker2`) ในเครื่องนักศึกษาจะต่างจากนี้
 
 ### ขั้นที่ 2: เรียกบูธด้วย Pod IP แล้วลบบูธนั้น
 
-เลือก Pod `web` ตัวหนึ่งจากผลของขั้นที่ 1 แล้ว **แทน `10.244.1.3` และ `web-9gngn` ด้วย IP และชื่อในเครื่องตัวเอง**
+เลือก Pod `web` ตัวหนึ่งจากผลของขั้นที่ 1 แล้ว **แทน `10.244.2.3` และ `web-qr4kg` ด้วย IP และชื่อในเครื่องตัวเอง**
 
 ```bash
-kubectl -n shop exec client -- wget -qO- http://10.244.1.3
-kubectl -n shop delete pod web-9gngn
-kubectl -n shop exec client -- wget -qO- -T 3 http://10.244.1.3; echo "exit=$?"
+kubectl -n shop exec client -- wget -qO- http://10.244.2.3
+kubectl -n shop delete pod web-qr4kg
+kubectl -n shop exec client -- wget -qO- -T 3 http://10.244.2.3; echo "exit=$?"
 kubectl -n shop get pods -o wide
 ```
 
 ```text
-web v1 from web-9gngn
-pod "web-9gngn" deleted from shop namespace
+web v1 from web-qr4kg
+pod "web-qr4kg" deleted from shop namespace
 wget: download timed out
 command terminated with exit code 1
 exit=1
 NAME        READY   STATUS    RESTARTS   AGE   IP           NODE          NOMINATED NODE   READINESS GATES
-client      1/1     Running   0          33s   10.244.2.4   lab-worker    <none>           <none>
-web-999d4   1/1     Running   0          33s   10.244.2.5   lab-worker    <none>           <none>
-web-k2nk5   1/1     Running   0          4s    10.244.2.6   lab-worker    <none>           <none>
-web-mgz49   1/1     Running   0          33s   10.244.1.4   lab-worker2   <none>           <none>
+client      1/1     Running   0          20s   10.244.2.2   lab-worker2   <none>           <none>
+web-68gh2   1/1     Running   0          5s    10.244.2.5   lab-worker2   <none>           <none>
+web-ljmt4   1/1     Running   0          20s   10.244.1.2   lab-worker    <none>           <none>
+web-rppf4   1/1     Running   0          20s   10.244.2.4   lab-worker2   <none>           <none>
 ```
 
-- หน้าเว็บบอก `web v1 from web-9gngn` คือชื่อ Pod ที่ตอบ (มาจาก `$(hostname)` ใน command ของ container)
-- หลังลบ ReplicaSet สร้าง `web-k2nk5` แทนภายในไม่กี่วินาที แต่ได้ **ชื่อใหม่และ IP ใหม่** (`10.244.2.6`)
+- หน้าเว็บบอก `web v1 from web-qr4kg` คือชื่อ Pod ที่ตอบ (มาจาก `$(hostname)` ใน command ของ container)
+- หลังลบ ReplicaSet สร้าง `web-68gh2` แทนภายในไม่กี่วินาที แต่ได้ **ชื่อใหม่และ IP ใหม่** (`10.244.2.5`)
 - เรียก IP เดิมได้ `wget: download timed out` (ใช้ `-T 3` ให้รอแค่ 3 วินาที) ถ้า IP เดิมบังเอิญถูก Pod อื่นนำไปใช้ อาจได้คำตอบจาก Pod ที่ไม่เกี่ยวข้องหรือ `Connection refused` แทน ซึ่งแย่กว่าเพราะดูเหมือนใช้ได้
 
 ### สิ่งที่เห็น
@@ -421,7 +495,7 @@ web-mgz49   1/1     Running   0          33s   10.244.1.4   lab-worker2   <none>
 
 **คำถามชวนคิด**
 
-1. ถ้ามีแอปอื่นจด IP `10.244.2.5` ของ `web-999d4` ไว้ แล้วน้องส้ม scale ReplicaSet ลงเหลือ 2 แอปนั้นจะเจออะไร
+1. ถ้ามีแอปอื่นจด IP `10.244.1.2` ของ `web-ljmt4` ไว้ แล้วน้องส้ม scale ReplicaSet ลงเหลือ 2 แอปนั้นจะเจออะไร
 2. ทำไม Pod `client` จึงไม่ถูกนับเป็นบูธของ ReplicaSet `web`
 
 ---
@@ -459,9 +533,9 @@ metadata:
   namespace: shop
   ...
 spec:
-  clusterIP: 10.96.84.23
+  clusterIP: 10.96.62.255
   clusterIPs:
-  - 10.96.84.23
+  - 10.96.62.255
   internalTrafficPolicy: Cluster
   ipFamilies:
   - IPv4
@@ -483,7 +557,7 @@ service "web-quick" deleted from shop namespace
 
 ### ขั้นที่ 2: สร้าง Service จาก YAML
 
-ไฟล์ `labs/lab02-clusterip/web-svc.yaml`
+#### อธิบาย YAML: `labs/lab02-clusterip/web-svc.yaml`
 
 ```yaml
 # LAB 2: Service แรก — ClusterIP (ค่าเริ่มต้น) ชื่อ web
@@ -491,7 +565,7 @@ service "web-quick" deleted from shop namespace
 apiVersion: v1
 kind: Service
 metadata:
-  name: web
+  name: web                # ชื่อนี้กลายเป็นชื่อ DNS web.shop.svc.cluster.local
   namespace: shop
 spec:
   type: ClusterIP          # ไม่ใส่ก็ได้ (ค่าเริ่มต้น)
@@ -501,6 +575,16 @@ spec:
     - port: 80             # พอร์ตที่ Service รับ (http://web:80)
       targetPort: http     # พอร์ตของ container (ชื่อ http = containerPort 80)
 ```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `kind: Service`, `name: web` | สร้าง "ประภาคาร" ชื่อ `web` ชื่อนี้กลายเป็นชื่อ DNS `web.shop.svc.cluster.local` | `wget http://web` ได้ (ขั้นที่ 4), LAB 4 `nslookup` ได้ ClusterIP `10.96.24.101` |
+| `namespace: shop` | Service เลือก Pod ได้เฉพาะในโซนเดียวกัน | โซนอื่นต้องเรียก `web.shop` (LAB 9) |
+| `type: ClusterIP` | ค่าเริ่มต้น ได้ IP เสมือนจากช่วง `10.96.0.0/16` ใช้ได้เฉพาะในคลัสเตอร์ | ได้ `10.96.24.101` ping ไม่ตอบแต่ wget ได้ |
+| `selector: app: web` | เลือก Pod ด้วยป้าย (ไม่สนว่า ReplicaSet ไหนสร้าง) ระบบเขียน EndpointSlice ให้จาก Pod ที่ตรง | EndpointSlice `web-fqgqh` มี 3 IP ของ `web-*` ไม่มี `client` |
+| `port: 80` | พอร์ตที่ลูกค้าเรียกบน ClusterIP / ชื่อ Service (`http://web` = พอร์ต 80) | `PORT(S) 80/TCP` |
+| `targetPort: http` | ส่งต่อไปพอร์ต **ชื่อ** `http` ของ container (= 80 ใน `web-rs.yaml`) ถ้าวันหน้าเปลี่ยนเลขพอร์ตใน Pod ไม่ต้องแก้ Service | `describe svc` แสดง `TargetPort: http/TCP` ส่วน EndpointSlice แปลงเป็นเลข PORTS `80` |
+| (ไม่ได้ตั้ง `name` ให้พอร์ต) | Service พอร์ตเดียวไม่บังคับตั้งชื่อ | `describe` แสดง `Port: <unset>  80/TCP` และไม่มี env `WEB_SERVICE_PORT_HTTP` (LAB 4) |
 
 ```bash
 kubectl apply -f labs/lab02-clusterip/web-svc.yaml
@@ -513,20 +597,20 @@ kubectl -n shop describe svc web
 ```text
 service/web created
 NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
-service/web   ClusterIP   10.96.55.132   <none>        80/TCP    0s
+service/web   ClusterIP   10.96.24.101   <none>        80/TCP    0s
 
 NAME                                       ADDRESSTYPE   PORTS   ENDPOINTS                          AGE
-endpointslice.discovery.k8s.io/web-5r58w   IPv4          80      10.244.2.5,10.244.1.4,10.244.2.6   0s
+endpointslice.discovery.k8s.io/web-fqgqh   IPv4          80      10.244.2.4,10.244.1.2,10.244.2.5   0s
 
 NAME        READY   STATUS    RESTARTS   AGE   IP           NODE          NOMINATED NODE   READINESS GATES
-client      1/1     Running   0          50s   10.244.2.4   lab-worker    <none>           <none>
-web-999d4   1/1     Running   0          50s   10.244.2.5   lab-worker    <none>           <none>
-web-k2nk5   1/1     Running   0          21s   10.244.2.6   lab-worker    <none>           <none>
-web-mgz49   1/1     Running   0          50s   10.244.1.4   lab-worker2   <none>           <none>
+client      1/1     Running   0          20s   10.244.2.2   lab-worker2   <none>           <none>
+web-68gh2   1/1     Running   0          5s    10.244.2.5   lab-worker2   <none>           <none>
+web-ljmt4   1/1     Running   0          20s   10.244.1.2   lab-worker    <none>           <none>
+web-rppf4   1/1     Running   0          20s   10.244.2.4   lab-worker2   <none>           <none>
 
 Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
 NAME   ENDPOINTS                                   AGE
-web    10.244.1.4:80,10.244.2.5:80,10.244.2.6:80   1s
+web    10.244.1.2:80,10.244.2.4:80,10.244.2.5:80   0s
 
 Name:                     web
 Namespace:                shop
@@ -536,18 +620,18 @@ Selector:                 app=web
 Type:                     ClusterIP
 IP Family Policy:         SingleStack
 IP Families:              IPv4
-IP:                       10.96.55.132
-IPs:                      10.96.55.132
+IP:                       10.96.24.101
+IPs:                      10.96.24.101
 Port:                     <unset>  80/TCP
 TargetPort:               http/TCP
-Endpoints:                10.244.2.5:80,10.244.1.4:80,10.244.2.6:80
+Endpoints:                10.244.2.4:80,10.244.1.2:80,10.244.2.5:80
 Session Affinity:         None
 Internal Traffic Policy:  Cluster
 Events:                   <none>
 ```
 
-- Service `web` ได้ ClusterIP `10.96.55.132` (ในเครื่องนักศึกษาจะเป็นเลขอื่นในช่วง `10.96.x.x`) **จดไว้** จะใช้ในขั้นที่ 4
-- EndpointSlice ชื่อ `web-5r58w` (ชื่อ Service + สุ่ม) มี 3 IP ตรงกับ Pod `web-*` ไม่มี `client` เพราะ label ไม่ตรง
+- Service `web` ได้ ClusterIP `10.96.24.101` (ในเครื่องนักศึกษาจะเป็นเลขอื่นในช่วง `10.96.x.x`) **จดไว้** จะใช้ในขั้นที่ 4
+- EndpointSlice ชื่อ `web-fqgqh` (ชื่อ Service + สุ่ม) มี 3 IP ตรงกับ Pod `web-*` ไม่มี `client` เพราะ label ไม่ตรง (ลำดับ IP ในแต่ละคำสั่งอาจไม่เหมือนกัน `get endpoints` เรียงตามเลข ส่วน EndpointSlice เรียงตามที่ controller เขียน)
 - `kubectl get endpoints` ยังใช้ได้แต่ขึ้นคำเตือนว่าเลิกใช้แล้ว ให้ใช้ EndpointSlice แทน
 
 ### ขั้นที่ 3: อ่าน EndpointSlice แบบเต็ม
@@ -565,25 +649,26 @@ items:
   apiVersion: discovery.k8s.io/v1
   endpoints:
   - addresses:
-    - 10.244.2.5
+    - 10.244.2.4
     conditions:
       ready: true
       serving: true
       terminating: false
-    nodeName: lab-worker
+    nodeName: lab-worker2
     targetRef:
       kind: Pod
-      name: web-999d4
+      name: web-rppf4
       namespace: shop
   ...
   kind: EndpointSlice
   metadata:
     ...
     generateName: web-
+    generation: 1
     labels:
       endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
       kubernetes.io/service-name: web
-    name: web-5r58w
+    name: web-fqgqh
     namespace: shop
     ownerReferences:
     - apiVersion: v1
@@ -602,32 +687,37 @@ items:
 
 ### ขั้นที่ 4: เรียกด้วยชื่อ และลอง ping ClusterIP
 
-แทน `10.96.55.132` ด้วย ClusterIP ของตัวเอง และ `10.244.2.5` ด้วย IP ของ Pod `web` ตัวหนึ่ง
+แทน `10.96.24.101` ด้วย ClusterIP ของตัวเอง และ `10.244.2.5` ด้วย IP ของ Pod `web` ตัวหนึ่ง
+
+> ⚠️ **รอ kube-proxy ก่อนเรียก:** ถ้ารันขั้นนี้ต่อจาก `kubectl apply` ทันที (เช่นคัดลอกทั้งชุดไปวางรวดเดียว) ให้ `sleep 2` ก่อน ในการทดลองที่เรียกหลังสร้าง Service ไม่ถึง 1 วินาที ได้ `wget: can't connect to remote host (10.96.24.101): Connection refused` เพราะ kube-proxy ยังเขียนกฎไม่เสร็จ (วัดได้ว่าใช้ราว 1.7 วินาที) เรียกซ้ำแล้วได้ปกติ
 
 ```bash
+sleep 2     # จำเป็นเฉพาะเมื่อเพิ่ง apply Service
 kubectl -n shop exec client -- wget -qO- http://web
-kubectl -n shop exec client -- ping -c 2 -W 2 10.96.55.132; echo "exit=$?"
+kubectl -n shop exec client -- ping -c 2 -W 2 10.96.24.101; echo "exit=$?"
 kubectl -n shop exec client -- ping -c 2 -W 2 10.244.2.5
 ```
 
 ```text
-web v1 from web-999d4
+web v1 from web-rppf4
 
-PING 10.96.55.132 (10.96.55.132): 56 data bytes
+PING 10.96.24.101 (10.96.24.101): 56 data bytes
 
---- 10.96.55.132 ping statistics ---
+--- 10.96.24.101 ping statistics ---
 2 packets transmitted, 0 packets received, 100% packet loss
 command terminated with exit code 1
 exit=1
 
 PING 10.244.2.5 (10.244.2.5): 56 data bytes
-64 bytes from 10.244.2.5: seq=0 ttl=63 time=0.063 ms
-64 bytes from 10.244.2.5: seq=1 ttl=63 time=0.064 ms
+64 bytes from 10.244.2.5: seq=0 ttl=63 time=0.191 ms
+64 bytes from 10.244.2.5: seq=1 ttl=63 time=0.089 ms
 
 --- 10.244.2.5 ping statistics ---
 2 packets transmitted, 2 packets received, 0% packet loss
-round-trip min/avg/max = 0.063/0.063/0.064 ms
+round-trip min/avg/max = 0.089/0.140/0.191 ms
 ```
+
+(บรรทัด `web v1 from web-rppf4` มาจากการเรียกซ้ำหลังรอ ในการทดลองที่ไม่มี `sleep 2` ครั้งแรกที่เรียกทันทีได้ `Connection refused` ตามคำเตือนด้านบน ชื่อ Pod ที่ตอบเป็นการสุ่ม)
 
 `wget http://web` ได้หน้าเว็บด้วย **ชื่อ** แต่ ping ClusterIP ได้ 100% packet loss ส่วน ping Pod IP ได้ปกติ เพราะ ClusterIP เป็นที่อยู่เสมือนที่ไม่มีเครื่องใดถือจริง (ทฤษฎีหัวข้อ 2.2) **ping ไม่ตอบไม่ได้แปลว่า Service เสีย**
 
@@ -647,7 +737,7 @@ kubectl -n shop get endpointslice -l kubernetes.io/service-name=web
 ```text
 replicaset.apps/web scaled
 NAME        ADDRESSTYPE   PORTS   ENDPOINTS                                      AGE
-web-5r58w   IPv4          80      10.244.2.5,10.244.1.4,10.244.2.6 + 2 more...   39s
+web-fqgqh   IPv4          80      10.244.2.4,10.244.1.2,10.244.2.5 + 2 more...   28s
 ```
 
 คอลัมน์ ENDPOINTS แสดงแค่ 3 IP แรกแล้วต่อด้วย `+ 2 more...` (แม้ใช้ `-o wide`) ดูครบทุกตัวด้วย jsonpath
@@ -656,26 +746,34 @@ web-5r58w   IPv4          80      10.244.2.5,10.244.1.4,10.244.2.6 + 2 more...  
 kubectl -n shop get endpointslice -l kubernetes.io/service-name=web -o jsonpath='{range .items[0].endpoints[*]}{.addresses[0]} {.targetRef.name} ready={.conditions.ready}{"\n"}{end}'
 ```
 
-จากนั้นลบ Pod ตัวหนึ่ง (แทน `web-999d4` ด้วยชื่อในเครื่องตัวเอง) แล้วดูรายชื่อก่อนและหลังรอ 3 วินาที เทียบกับ ClusterIP
+```text
+10.244.2.4 web-rppf4 ready=true
+10.244.1.2 web-ljmt4 ready=true
+10.244.2.5 web-68gh2 ready=true
+10.244.1.3 web-9d2ks ready=true
+10.244.2.6 web-fbmpj ready=true
+```
+
+จากนั้นลบ Pod ตัวหนึ่ง (แทน `web-ljmt4` ด้วยชื่อในเครื่องตัวเอง ในการทดลองเลือกตัวที่เก่าที่สุด) แล้วดูรายชื่อก่อนและหลังรอ 3 วินาที เทียบกับ ClusterIP
 
 ```bash
-kubectl -n shop delete pod web-999d4
+kubectl -n shop delete pod web-ljmt4
 kubectl -n shop get endpointslice -l kubernetes.io/service-name=web
 sleep 3; kubectl -n shop get endpointslice -l kubernetes.io/service-name=web
 kubectl -n shop get svc web
 ```
 
 ```text
-pod "web-999d4" deleted from shop namespace
+pod "web-ljmt4" deleted from shop namespace
 NAME        ADDRESSTYPE   PORTS   ENDPOINTS                                      AGE
-web-5r58w   IPv4          80      10.244.1.4,10.244.2.6,10.244.1.5 + 2 more...   41s
+web-fqgqh   IPv4          80      10.244.2.4,10.244.2.5,10.244.1.3 + 2 more...   29s
 NAME        ADDRESSTYPE   PORTS   ENDPOINTS                                      AGE
-web-5r58w   IPv4          80      10.244.1.4,10.244.2.6,10.244.1.5 + 2 more...   44s
+web-fqgqh   IPv4          80      10.244.2.4,10.244.2.5,10.244.1.3 + 2 more...   33s
 NAME   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
-web    ClusterIP   10.96.55.132   <none>        80/TCP    44s
+web    ClusterIP   10.96.24.101   <none>        80/TCP    33s
 ```
 
-IP `10.244.2.5` ของ Pod ที่ถูกลบหายจากรายชื่อทันที Pod ใหม่เข้ามาแทน ส่วน **ClusterIP ยังเป็นเลขเดิม** ลูกค้าที่เรียก `web` ไม่ต้องรู้เรื่องนี้เลย
+IP `10.244.1.2` ของ Pod ที่ถูกลบหายจากรายชื่อทันที Pod ใหม่เข้ามาแทน (ยังเห็น `+ 2 more...` คือครบ 5) ส่วน **ClusterIP ยังเป็นเลขเดิม** ลูกค้าที่เรียก `web` ไม่ต้องรู้เรื่องนี้เลย
 
 คืนเป็น 3 บูธ
 
@@ -688,19 +786,21 @@ kubectl -n shop get pods -o wide
 ```text
 replicaset.apps/web scaled
 NAME        ADDRESSTYPE   PORTS   ENDPOINTS                          AGE
-web-5r58w   IPv4          80      10.244.1.4,10.244.2.6,10.244.1.5   46s
+web-fqgqh   IPv4          80      10.244.2.4,10.244.2.5,10.244.2.6   35s
 NAME        READY   STATUS    RESTARTS   AGE   IP           NODE          NOMINATED NODE   READINESS GATES
-client      1/1     Running   0          95s   10.244.2.4   lab-worker    <none>           <none>
-web-gsgss   1/1     Running   0          9s    10.244.1.5   lab-worker2   <none>           <none>
-web-k2nk5   1/1     Running   0          66s   10.244.2.6   lab-worker    <none>           <none>
-web-mgz49   1/1     Running   0          95s   10.244.1.4   lab-worker2   <none>           <none>
+client      1/1     Running   0          55s   10.244.2.2   lab-worker2   <none>           <none>
+web-68gh2   1/1     Running   0          40s   10.244.2.5   lab-worker2   <none>           <none>
+web-fbmpj   1/1     Running   0          9s    10.244.2.6   lab-worker2   <none>           <none>
+web-rppf4   1/1     Running   0          55s   10.244.2.4   lab-worker2   <none>           <none>
 ```
+
+ตอน scale ลง ReplicaSet เลือกลบบูธเองตามกติกาของบทที่ 5 รอบนี้เหลือ 3 บูธอยู่ `lab-worker2` ทั้งหมด (ในเครื่องนักศึกษาอาจกระจายต่างจากนี้) จำชื่อบูธ `web-rppf4` (เกิดก่อน Service) และ `web-fbmpj` (เกิดหลัง Service ตอน scale) ไว้ใช้ใน LAB 4
 
 ### สิ่งที่เห็น
 
 - `kubectl expose` สร้าง Service ได้เร็วแต่ใส่ targetPort เป็นเลข ไฟล์ YAML ควบคุมได้ละเอียดกว่า
 - EndpointSlice ถูกเขียนให้อัตโนมัติ มี IP ของ Pod ที่ตรง selector, conditions, targetRef และ ownerReferences ชี้ Service
-- ClusterIP ping ไม่ตอบ แต่เรียกด้วยชื่อ/พอร์ตของ Service ได้
+- ClusterIP ping ไม่ตอบ แต่เรียกด้วยชื่อ/พอร์ตของ Service ได้ (Service ที่เพิ่งสร้างต้องรอ kube-proxy ราว 2 วินาที)
 - scale หรือลบ Pod แล้วรายชื่อเปลี่ยนเอง ClusterIP ไม่เปลี่ยน
 
 **คำถามชวนคิด**
@@ -723,7 +823,7 @@ web-mgz49   1/1     Running   0          95s   10.244.1.4   lab-worker2   <none>
 
 ### ขั้นที่ 1: Service รับ 8080 ส่งต่อ 80
 
-ไฟล์ `labs/lab03-ports/web-alt-svc.yaml`
+#### อธิบาย YAML: `labs/lab03-ports/web-alt-svc.yaml`
 
 ```yaml
 # LAB 3: Service รับที่พอร์ต 8080 แต่ส่งต่อไปพอร์ต 80 (ชื่อ http) ของ Pod
@@ -734,40 +834,50 @@ metadata:
   namespace: shop
 spec:
   selector:
-    app: web
+    app: web               # บูธชุดเดียวกับ Service web (Pod หนึ่งอยู่หลังหลาย Service ได้)
   ports:
     - port: 8080           # ลูกค้าเรียก http://web-alt:8080
       targetPort: http     # → containerPort ชื่อ http (80)
 ```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `selector: app: web` | บูธชุดเดียวกับ Service `web` Pod หนึ่งตัวอยู่หลังหลาย Service ได้ | ได้ `web v1 from web-rppf4` เหมือนเรียก `web` |
+| `port: 8080` | พอร์ตที่ลูกค้าเรียก **ฝั่ง Service** มีแค่พอร์ตนี้พอร์ตเดียว | `PORT(S) 8080/TCP`, เรียก `web-alt` พอร์ต 80 ได้ `download timed out` |
+| `targetPort: http` | kube-proxy แปลง `ClusterIP:8080 → Pod:80` (พอร์ตชื่อ `http`) | `web-alt:8080` ได้หน้าเว็บ และ LAB 9 ใช้ Service นี้พิสูจน์ว่า NetworkPolicy เห็นพอร์ต 80 ไม่ใช่ 8080 |
+| (ไม่ใส่ `type`) | ได้ `ClusterIP` เป็นค่าเริ่มต้น | `TYPE ClusterIP` |
 
 🐧 **ใน SSH session ของ k8s-lab**
 
 ```bash
 kubectl apply -f labs/lab03-ports/web-alt-svc.yaml
 kubectl -n shop get svc web-alt
+sleep 2     # รอ kube-proxy เขียนกฎของ Service ใหม่
 kubectl -n shop exec client -- wget -qO- http://web-alt:8080
 time kubectl -n shop exec client -- wget -qO- -T 3 http://web-alt; echo "exit=$?"
 ```
 
 ```text
 service/web-alt created
-NAME      TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-web-alt   ClusterIP   10.96.141.242   <none>        8080/TCP   0s
-web v1 from web-gsgss
+NAME      TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+web-alt   ClusterIP   10.96.142.94   <none>        8080/TCP   0s
+web v1 from web-rppf4
 wget: download timed out
 command terminated with exit code 1
 
-real	0m3.060s
-user	0m0.031s
-sys	0m0.019s
+real	0m3.171s
+user	0m0.039s
+sys	0m0.039s
 exit=1
 ```
 
 `web-alt:8080` ได้หน้าเว็บ (kube-proxy แปลง `8080 → 80` ให้) แต่เรียก `web-alt` เฉย ๆ (พอร์ต 80) **เงียบจนครบ 3 วินาที** (`download timed out`) ไม่ใช่ถูกปฏิเสธ เพราะ Service นี้ไม่ได้ประกาศพอร์ต 80 จึงไม่มีกฎรองรับ
 
+> ⚠️ ในการทดลองที่เรียก `web-alt:8080` หลัง `apply` เพียง 0.2 วินาที (ไม่มี `sleep 2`) ได้ `wget: can't connect to remote host (10.96.142.94): Connection refused` เรียกซ้ำจึงได้ `web v1 from web-rppf4` ที่แสดงด้านบน ถ้าเจอแบบนี้ให้รอ 2 วินาทีแล้วลองใหม่
+
 ### ขั้นที่ 2: Service หลายพอร์ต
 
-ไฟล์ `labs/lab03-ports/web-multi-svc.yaml`
+#### อธิบาย YAML: `labs/lab03-ports/web-multi-svc.yaml`
 
 ```yaml
 # LAB 3: Service หลายพอร์ต — ต้องตั้ง name ให้ทุกพอร์ต
@@ -780,13 +890,19 @@ spec:
   selector:
     app: web
   ports:
-    - name: http
+    - name: http           # ชื่อพอร์ต → env WEB_MULTI_SERVICE_PORT_HTTP และชื่อใน EndpointSlice
       port: 80
       targetPort: http
-    - name: alt
+    - name: alt            # พอร์ตที่ 2 ต้องมีชื่อไม่ซ้ำ (ไม่ใส่ = API ปฏิเสธ ดูขั้นที่ 3)
       port: 8080
       targetPort: http     # สองพอร์ตของ Service ชี้ไปพอร์ตเดียวกันของ Pod ได้
 ```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `ports[0]`: `name: http`, `port: 80` | พอร์ตแรกของ Service | `PORT(S) 80/TCP,8080/TCP`, env `WEB_MULTI_SERVICE_PORT_HTTP=80` (LAB 4) |
+| `ports[1]`: `name: alt`, `port: 8080` | พอร์ตที่สอง Service ที่มีหลายพอร์ต **ต้องตั้งชื่อทุกพอร์ตและห้ามซ้ำ** | env `WEB_MULTI_SERVICE_PORT_ALT=8080`; ไม่ตั้งชื่อ → ขั้นที่ 3 |
+| `targetPort: http` ทั้งสองพอร์ต | สองพอร์ตของ Service ชี้ไปพอร์ตเดียวกันของ Pod ได้ | EndpointSlice PORTS `80,80` และ `ports` มีชื่อ `alt`, `http` |
 
 ```bash
 kubectl apply -f labs/lab03-ports/web-multi-svc.yaml
@@ -796,28 +912,32 @@ kubectl -n shop exec client -- wget -qO- http://web-multi
 kubectl -n shop exec client -- wget -qO- http://web-multi:8080
 ```
 
+ผลจริงเมื่อรันทั้งชุดต่อกันทันที (ไม่ได้รอ)
+
 ```text
 service/web-multi created
-NAME        TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)           AGE
-web-multi   ClusterIP   10.96.28.97   <none>        80/TCP,8080/TCP   0s
+NAME        TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)           AGE
+web-multi   ClusterIP   10.96.196.78   <none>        80/TCP,8080/TCP   0s
 NAME              ADDRESSTYPE   PORTS   ENDPOINTS                          AGE
-web-multi-4gzd9   IPv4          80,80   10.244.1.5,10.244.1.4,10.244.2.6   0s
-wget: can't connect to remote host (10.96.28.97): Connection refused
+web-multi-7f4bn   IPv4          80,80   10.244.2.6,10.244.2.4,10.244.2.5   0s
+wget: can't connect to remote host (10.96.196.78): Connection refused
 command terminated with exit code 1
-web v1 from web-k2nk5
+wget: can't connect to remote host (10.96.196.78): Connection refused
+command terminated with exit code 1
 ```
 
-ครั้งแรกที่เรียก `web-multi` หลังสร้างเสร็จไม่ถึง 1 วินาที ได้ `Connection refused` เพราะ kube-proxy ยังเขียนกฎไม่เสร็จ **ลองซ้ำอีกครั้ง** จะใช้ได้ทั้งสองพอร์ต ผลจริงเมื่อเรียกซ้ำ และดูพอร์ตใน EndpointSlice
+อาจได้ `Connection refused` หนึ่งหรือทั้งสองครั้ง (ในผลด้านบนได้ทั้งสองครั้ง) เพราะเรียกหลังสร้างเสร็จไม่ถึง 1 วินาที kube-proxy ยังเขียนกฎไม่เสร็จ (ครั้งที่สองค้างราว 21 วินาทีก่อนขึ้น error ในการทดลอง) **ถ้าเจอแบบนี้ให้ `sleep 2` แล้วลองซ้ำ** ผลจริงเมื่อเรียกซ้ำ และดูพอร์ตใน EndpointSlice
 
 ```bash
+sleep 2
 for i in 1 2 3; do kubectl -n shop exec client -- wget -qO- http://web-multi; done
 kubectl -n shop get endpointslice -l kubernetes.io/service-name=web-multi -o jsonpath="{.items[0].ports}"; echo
 ```
 
 ```text
-web v1 from web-k2nk5
-web v1 from web-k2nk5
-web v1 from web-gsgss
+web v1 from web-fbmpj
+web v1 from web-rppf4
+web v1 from web-fbmpj
 [{"name":"alt","port":80,"protocol":"TCP"},{"name":"http","port":80,"protocol":"TCP"}]
 ```
 
@@ -825,7 +945,7 @@ EndpointSlice เก็บพอร์ตแยกตามชื่อของ
 
 ### ขั้นที่ 3: ลืมตั้งชื่อพอร์ต
 
-ไฟล์ `labs/lab03-ports/web-multi-noname.yaml` (ตั้งใจผิด)
+#### อธิบาย YAML: `labs/lab03-ports/web-multi-noname.yaml` (ตั้งใจผิด)
 
 ```yaml
 # LAB 3 (ตั้งใจผิด): หลายพอร์ตแต่พอร์ตที่ 2 ไม่ตั้ง name → API ปฏิเสธ
@@ -838,12 +958,17 @@ spec:
   selector:
     app: web
   ports:
-    - name: http
+    - name: http           # ports[0] มีชื่อ
       port: 80
       targetPort: http
     - port: 8080           # ← ไม่มี name (ports[1])
       targetPort: http
 ```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `ports[0]` มี `name: http` | พอร์ตแรกถูกต้อง | – |
+| `ports[1]` ไม่มี `name` | ตั้งใจลืมชื่อ ให้เห็นกฎ "หลายพอร์ตต้องมีชื่อ" ซึ่ง API ตรวจตอนสร้าง | `spec.ports[1].name: Required value` และ Service ไม่ถูกสร้าง |
 
 ```bash
 kubectl apply -f labs/lab03-ports/web-multi-noname.yaml; echo "exit=$?"
@@ -860,7 +985,7 @@ API ปฏิเสธตั้งแต่ตอนสร้าง (`ports[1]` 
 
 - `port` (ของ Service) กับ `targetPort` (ของ Pod) ต่างกันได้ เรียกพอร์ตที่ Service ไม่ได้ประกาศจะ timeout
 - Service หลายพอร์ตต้องตั้งชื่อทุกพอร์ต สองพอร์ตชี้ไปพอร์ตเดียวกันของ Pod ได้
-- Service ที่เพิ่งสร้างอาจตอบ `Connection refused` ใน ~1 วินาทีแรก
+- Service ที่เพิ่งสร้างอาจตอบ `Connection refused` ในราว 1–2 วินาทีแรก (รอ `sleep 2` แล้วลองซ้ำ)
 
 **คำถามชวนคิด**
 
@@ -895,13 +1020,13 @@ Address:	10.96.0.10:53
 
 ** server can't find web.cluster.local: NXDOMAIN
 
+Name:	web.shop.svc.cluster.local
+Address: 10.96.24.101
+
 ** server can't find web.cluster.local: NXDOMAIN
 
 ** server can't find web.svc.cluster.local: NXDOMAIN
 
-
-Name:	web.shop.svc.cluster.local
-Address: 10.96.55.132
 
 ** server can't find web.svc.cluster.local: NXDOMAIN
 
@@ -912,10 +1037,11 @@ Address:	10.96.0.10:53
 
 
 Name:	web.shop.svc.cluster.local
-Address: 10.96.55.132
+Address: 10.96.24.101
+
 ```
 
-- `nslookup web` **หาเจอ** (`web.shop.svc.cluster.local` → ClusterIP ของ `web`) แต่ `nslookup` ของ busybox ถามทุก search domain พร้อมกันแล้วพิมพ์ทุกผล จึงมีบรรทัด `NXDOMAIN` ของโดเมนที่ไม่ตรงปนอยู่ และจบด้วย `exit code 1` **ไม่ได้แปลว่า DNS เสีย**
+- `nslookup web` **หาเจอ** (`web.shop.svc.cluster.local` → ClusterIP ของ `web`) แต่ `nslookup` ของ busybox ถามทุก search domain พร้อมกันแล้วพิมพ์ทุกผล จึงมีบรรทัด `NXDOMAIN` ของโดเมนที่ไม่ตรงปนอยู่ และจบด้วย `exit code 1` **ไม่ได้แปลว่า DNS เสีย** ลำดับบรรทัดเปลี่ยนได้ทุกครั้งที่รัน (ขึ้นกับว่าคำตอบไหนกลับมาก่อน)
 - ชื่อเต็ม `web.shop.svc.cluster.local` ได้ผลสะอาด ใช้ชื่อเต็มเมื่อทดสอบด้วย `nslookup` ของ busybox
 - `Server: 10.96.0.10` คือ ClusterIP ของ `kube-dns` ที่เห็นใน LAB 0
 
@@ -942,9 +1068,9 @@ Address:	10.96.0.10:53
 
 command terminated with exit code 1
 
-web v1 from web-k2nk5
+web v1 from web-68gh2
 
-web v1 from web-k2nk5
+web v1 from web-rppf4
 ```
 
 - `search` ขึ้นต้นด้วย namespace ของ Pod (`shop.svc.cluster.local`) ชื่อสั้น `web` จึงกลายเป็น `web.shop.svc.cluster.local`
@@ -954,7 +1080,37 @@ web v1 from web-k2nk5
 
 ### ขั้นที่ 3: env var ของ Service
 
-Pod `client` ถูกสร้างใน LAB 1 **ก่อน** มี Service ส่วน `client2` (ไฟล์ `labs/lab04-dns/client2-pod.yaml` เหมือน `client` ทุกอย่างยกเว้นชื่อ) จะสร้าง **หลัง** Service `web`, `web-alt`, `web-multi`
+Pod `client` ถูกสร้างใน LAB 1 **ก่อน** มี Service ส่วน `client2` จะสร้าง **หลัง** Service `web`, `web-alt`, `web-multi`
+
+#### อธิบาย YAML: `labs/lab04-dns/client2-pod.yaml`
+
+```yaml
+# LAB 4: Pod ลูกค้าตัวที่ 2 — สร้าง "หลัง" Service web/web-alt
+# kubelet จึงใส่ env WEB_SERVICE_HOST / WEB_SERVICE_PORT ... ให้ (client ตัวแรกไม่มี)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client2                      # ต่างจาก client แค่ชื่อ (และเวลาที่สร้าง)
+  namespace: shop
+  labels:
+    role: client
+spec:
+  terminationGracePeriodSeconds: 1
+  containers:
+    - name: busybox
+      image: busybox:1.36
+      command: ["sleep", "infinity"]
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 32Mi }
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `name: client2` | เหมือน `client-pod.yaml` ทุก field ยกเว้นชื่อ ตัวแปรที่ต่างจึงเหลือแค่ "เวลาที่สร้าง" | `client` ไม่มี `WEB_*` (`exit=1`) แต่ `client2` มี 27 ตัว |
+| `labels.role: client` | ป้ายเดียวกับ `client` ไม่ใช่บูธ `web` | ไม่อยู่ใน EndpointSlice ของ `web` |
+| `image: busybox:1.36`, `sleep infinity` | ใช้ยิง `wget`/`env` เหมือน `client` (และใช้ใน LAB 5 เป็นลูกค้า IP ที่สอง) | LAB 5 `client2` ติดบูธของตัวเองเมื่อเปิด `sessionAffinity` |
+| (ไม่มี field env ในไฟล์เลย) | env `WEB_*` ไม่ได้มาจาก YAML แต่ kubelet ใส่ให้ตอนสร้าง container จาก Service ที่มีอยู่ **ณ ตอนนั้น** ใน namespace เดียวกัน | env ของ `client2` มีครบทั้ง `WEB_`, `WEB_ALT_`, `WEB_MULTI_` |
 
 ```bash
 kubectl -n shop exec client -- env | grep WEB_; echo "exit=$?"
@@ -967,25 +1123,25 @@ kubectl -n shop exec client2 -- env | grep WEB_ | sort
 exit=1
 pod/client2 created
 pod/client2 condition met
-WEB_ALT_PORT=tcp://10.96.141.242:8080
-WEB_ALT_PORT_8080_TCP=tcp://10.96.141.242:8080
-WEB_ALT_PORT_8080_TCP_ADDR=10.96.141.242
+WEB_ALT_PORT=tcp://10.96.142.94:8080
+WEB_ALT_PORT_8080_TCP=tcp://10.96.142.94:8080
+WEB_ALT_PORT_8080_TCP_ADDR=10.96.142.94
 WEB_ALT_PORT_8080_TCP_PORT=8080
 WEB_ALT_PORT_8080_TCP_PROTO=tcp
-WEB_ALT_SERVICE_HOST=10.96.141.242
+WEB_ALT_SERVICE_HOST=10.96.142.94
 WEB_ALT_SERVICE_PORT=8080
-WEB_MULTI_PORT=tcp://10.96.28.97:80
+WEB_MULTI_PORT=tcp://10.96.196.78:80
 ...
-WEB_MULTI_SERVICE_HOST=10.96.28.97
+WEB_MULTI_SERVICE_HOST=10.96.196.78
 WEB_MULTI_SERVICE_PORT=80
 WEB_MULTI_SERVICE_PORT_ALT=8080
 WEB_MULTI_SERVICE_PORT_HTTP=80
-WEB_PORT=tcp://10.96.55.132:80
-WEB_PORT_80_TCP=tcp://10.96.55.132:80
-WEB_PORT_80_TCP_ADDR=10.96.55.132
+WEB_PORT=tcp://10.96.24.101:80
+WEB_PORT_80_TCP=tcp://10.96.24.101:80
+WEB_PORT_80_TCP_ADDR=10.96.24.101
 WEB_PORT_80_TCP_PORT=80
 WEB_PORT_80_TCP_PROTO=tcp
-WEB_SERVICE_HOST=10.96.55.132
+WEB_SERVICE_HOST=10.96.24.101
 WEB_SERVICE_PORT=80
 ```
 
@@ -993,17 +1149,17 @@ WEB_SERVICE_PORT=80
 - `client2` ได้ env ของทุก Service ใน `shop` ชื่อ Service แปลงเป็นตัวพิมพ์ใหญ่และ `-` เป็น `_` (`web-alt` → `WEB_ALT_...`)
 - มี `WEB_MULTI_SERVICE_PORT_HTTP`/`_ALT` เพราะพอร์ตของ `web-multi` มีชื่อ แต่ **ไม่มี `WEB_SERVICE_PORT_HTTP`** เพราะพอร์ตของ Service `web` ไม่ได้ตั้งชื่อ
 
-Pod `web` เองก็เป็นแบบเดียวกัน ดูชื่อด้วย `kubectl -n shop get pods` แล้วแทนชื่อด้วย Pod ที่สร้าง **ก่อน** LAB 2 (เช่น `web-mgz49`) และ Pod ที่เกิด **หลัง** LAB 2 (เช่น `web-gsgss` ที่เกิดตอน scale ใน LAB 2)
+Pod `web` เองก็เป็นแบบเดียวกัน ดูชื่อด้วย `kubectl -n shop get pods` แล้วแทนชื่อด้วย Pod ที่สร้าง **ก่อน** LAB 2 (ในการทดลองคือ `web-rppf4`) และ Pod ที่เกิด **หลัง** LAB 2 (ในการทดลองคือ `web-fbmpj` ที่เกิดตอน scale ใน LAB 2 ขั้นที่ 5)
 
 ```bash
-kubectl -n shop exec web-mgz49 -- env | grep SERVICE_HOST
-kubectl -n shop exec web-gsgss -- env | grep WEB_SERVICE
+kubectl -n shop exec web-rppf4 -- env | grep SERVICE_HOST
+kubectl -n shop exec web-fbmpj -- env | grep WEB_SERVICE
 ```
 
 ```text
 KUBERNETES_SERVICE_HOST=10.96.0.1
-WEB_SERVICE_HOST=10.96.55.132
 WEB_SERVICE_PORT=80
+WEB_SERVICE_HOST=10.96.24.101
 ```
 
 Pod เก่ามีแค่ `KUBERNETES_SERVICE_HOST` (Service `kubernetes` มีมาตั้งแต่สร้างคลัสเตอร์) ส่วน Pod ใหม่มี `WEB_SERVICE_HOST` ลำดับการสร้างมีผลแบบนี้ **แอปจึงควรหา Service ด้วย DNS**
@@ -1044,21 +1200,24 @@ kubectl -n shop exec client -- sh -c 'for i in $(seq 30); do wget -qO- http://we
 ```
 
 ```text
-      4 web v1 from web-gsgss
-     14 web v1 from web-k2nk5
-     12 web v1 from web-mgz49
+      3 web v1 from web-68gh2
+     14 web v1 from web-fbmpj
+     13 web v1 from web-rppf4
 
-      8 web v1 from web-gsgss
-      9 web v1 from web-k2nk5
-     13 web v1 from web-mgz49
+      9 web v1 from web-68gh2
+      9 web v1 from web-fbmpj
+     12 web v1 from web-rppf4
 ```
 
-ทุก Pod ได้ลูกค้า แต่ **ไม่เท่ากันและแต่ละรอบต่างกัน** เพราะเป็นการสุ่มต่อ connection ไม่ใช่การวนตามลำดับ (round-robin) ตัวเลขในเครื่องนักศึกษาจะต่างจากนี้แน่นอน
+ทุก Pod ได้ลูกค้า แต่ **ไม่เท่ากันและแต่ละรอบต่างกัน** (รอบแรก `web-68gh2` ได้แค่ 3 ครั้ง) เพราะเป็นการสุ่มต่อ connection ไม่ใช่การวนตามลำดับ (round-robin) ตัวเลขในเครื่องนักศึกษาจะต่างจากนี้แน่นอน
 
 ### ขั้นที่ 2: เปิด sessionAffinity: ClientIP
 
+หลัง `patch` ให้ **รอ 3 วินาที** ก่อนยิง เพราะ kube-proxy ต้องเขียนกฎ affinity ใหม่ก่อน
+
 ```bash
 kubectl -n shop patch svc web -p '{"spec":{"sessionAffinity":"ClientIP"}}'
+sleep 3
 kubectl -n shop exec client -- sh -c 'for i in $(seq 30); do wget -qO- http://web; done' | sort | uniq -c
 kubectl -n shop exec client2 -- sh -c 'for i in $(seq 30); do wget -qO- http://web; done' | sort | uniq -c
 kubectl -n shop get svc web -o jsonpath='{.spec.sessionAffinityConfig}'; echo
@@ -1066,12 +1225,14 @@ kubectl -n shop get svc web -o jsonpath='{.spec.sessionAffinityConfig}'; echo
 
 ```text
 service/web patched
-     30 web v1 from web-k2nk5
-     30 web v1 from web-mgz49
+     30 web v1 from web-rppf4
+     30 web v1 from web-rppf4
 {"clientIP":{"timeoutSeconds":10800}}
 ```
 
-`client` ไปบูธเดียวครบ 30/30 และ `client2` (คนละ IP) ก็ไปบูธเดียวของตัวเองครบ 30/30 (อาจเป็นบูธเดียวกับ `client` หรือไม่ก็ได้) API เติม `timeoutSeconds: 10800` (3 ชั่วโมง) ให้เป็นค่าเริ่มต้น
+`client` ไปบูธเดียวครบ 30/30 และ `client2` (คนละ IP) ก็ไปบูธเดียวของตัวเองครบ 30/30 (รอบนี้บังเอิญเป็นบูธเดียวกับ `client` คือ `web-rppf4` ในอีกรอบหนึ่ง `client2` ได้ `web-fbmpj` คนละบูธ) API เติม `timeoutSeconds: 10800` (3 ชั่วโมง) ให้เป็นค่าเริ่มต้น
+
+> ⚠️ ในการทดลองที่ยิงทันทีหลัง `patch` (ไม่มี `sleep 3`) `client` ได้ `27 web-68gh2 / 2 web-fbmpj / 1 web-rppf4` ไม่ครบ 30/30 เพราะ request แรก ๆ ออกไปก่อนกฎ affinity จะพร้อม ถ้าเห็นผลกระจายแบบนี้ให้รอแล้วยิงใหม่
 
 ### ขั้นที่ 3: ปิด sessionAffinity
 
@@ -1084,9 +1245,9 @@ kubectl -n shop exec client -- sh -c 'for i in $(seq 30); do wget -qO- http://we
 ```text
 service/web patched
 None []
-      9 web v1 from web-gsgss
-     11 web v1 from web-k2nk5
-     10 web v1 from web-mgz49
+     15 web v1 from web-68gh2
+      7 web v1 from web-fbmpj
+      8 web v1 from web-rppf4
 ```
 
 กลับเป็น `None` แล้ว `sessionAffinityConfig` หายไปเอง (ในวงเล็บว่าง) และการกระจายกลับมา **ต้องปิดให้เรียบร้อย** เพราะ LAB ถัดไปใช้การกระจายแบบปกติ
@@ -1125,20 +1286,23 @@ POD=$(kubectl -n shop get pod -l app=web -o name | head -1); echo $POD; kubectl 
 ```
 
 ```text
-pod/web-gsgss
-09:00:35
-web-gsgss   1/1   Running   0     2m44s
-09:00:35 ready=true
-web-gsgss   1/1   Running   0     2m45s
-09:00:36 ready=true
-...
-web-gsgss   1/1   Running   0     2m50s
-09:00:41 ready=true
-web-gsgss   0/1   Running   0     2m51s
-09:00:42 ready=false
+pod/web-68gh2
+17:27:26
+web-68gh2   1/1   Running   0     2m40s
+17:27:26 ready=true
+web-68gh2   1/1   Running   0     2m41s
+17:27:27 ready=true
+web-68gh2   1/1   Running   0     2m43s
+17:27:29 ready=true
+web-68gh2   1/1   Running   0     2m44s
+17:27:30 ready=true
+web-68gh2   1/1   Running   0     2m45s
+17:27:31 ready=true
+web-68gh2   0/1   Running   0     2m46s
+17:27:32 ready=false
 ```
 
-ราว **7 วินาที** หลังลบไฟล์ Pod เปลี่ยนเป็น `0/1` และ endpoint เป็น `ready=false` (probe ทุก 2 วินาที ต้องล้มติดกัน 3 ครั้งตาม `failureThreshold` ค่าเริ่มต้น) Pod ยัง `Running` ไม่ถูก restart เพราะนี่คือ readiness ไม่ใช่ liveness
+ราว **6 วินาที** หลังลบไฟล์ (17:27:26 → 17:27:32) Pod เปลี่ยนเป็น `0/1` และ endpoint เป็น `ready=false` (probe ทุก 2 วินาที ต้องล้มติดกัน 3 ครั้งตาม `failureThreshold` ค่าเริ่มต้น จึงใช้ราว 6–7 วินาทีแล้วแต่จังหวะ) Pod ยัง `Running` ไม่ถูก restart เพราะนี่คือ readiness ไม่ใช่ liveness เวลาที่ `date +%T` พิมพ์เป็นนาฬิกาของเครื่อง จะต่างจากนี้
 
 ### ขั้นที่ 2: รายชื่อยังมี IP แต่ไม่ได้ลูกค้า
 
@@ -1151,77 +1315,78 @@ kubectl -n shop exec client -- sh -c 'for i in $(seq 30); do wget -qO- http://we
 
 ```text
 NAME        READY   STATUS    RESTARTS   AGE
-client      1/1     Running   0          4m33s
-client2     1/1     Running   0          100s
-web-gsgss   0/1     Running   0          3m7s
-web-k2nk5   1/1     Running   0          4m4s
-web-mgz49   1/1     Running   0          4m33s
+client      1/1     Running   0          3m1s
+client2     1/1     Running   0          60s
+web-68gh2   0/1     Running   0          2m46s
+web-fbmpj   1/1     Running   0          2m15s
+web-rppf4   1/1     Running   0          3m1s
 
 NAME        ADDRESSTYPE   PORTS   ENDPOINTS                          AGE
-web-5r58w   IPv4          80      10.244.1.4,10.244.2.6,10.244.1.5   3m44s
+web-fqgqh   IPv4          80      10.244.2.4,10.244.2.5,10.244.2.6   2m41s
 
-10.244.1.4 web-mgz49 ready=true
-10.244.2.6 web-k2nk5 ready=true
-10.244.1.5 web-gsgss ready=false
+10.244.2.4 web-rppf4 ready=true
+10.244.2.5 web-68gh2 ready=false
+10.244.2.6 web-fbmpj ready=true
 
-     19 web v1 from web-k2nk5
-     11 web v1 from web-mgz49
+     12 web v1 from web-fbmpj
+     18 web v1 from web-rppf4
 ```
 
-**กับดัก:** คอลัมน์ ENDPOINTS ยังแสดง 3 IP ครบ (รวม `10.244.1.5` ของบูธไฟแดง) ต้องดู `conditions.ready` จึงจะรู้ว่าตัวไหนไม่ได้ลูกค้า และยิง 30 ครั้งไม่ไป `web-gsgss` เลย
+**กับดัก:** คอลัมน์ ENDPOINTS ยังแสดง 3 IP ครบ (รวม `10.244.2.5` ของบูธไฟแดง) ต้องดู `conditions.ready` จึงจะรู้ว่าตัวไหนไม่ได้ลูกค้า และยิง 30 ครั้งไม่ไป `web-68gh2` เลย
 
 ### ขั้นที่ 3: ดูสาเหตุจาก Pod และ EndpointSlice
 
-แทน `web-gsgss` ด้วยชื่อในตัวแปร `POD` ของตัวเอง
+แทน `web-68gh2` ด้วยชื่อในตัวแปร `POD` ของตัวเอง
 
 ```bash
-kubectl -n shop describe pod web-gsgss | grep -E "Readiness|Warning"
+kubectl -n shop describe pod web-68gh2 | grep -E "Readiness|Warning"
 kubectl -n shop describe endpointslice -l kubernetes.io/service-name=web | sed -n "/Endpoints:/,\$p" | head -30
 ```
 
 ```text
     Readiness:  http-get http://:http/ delay=0s timeout=1s period=2s successThreshold=1 failureThreshold=3
-  Warning  Unhealthy  3m7s               kubelet            spec.containers{nginx}: Readiness probe failed: Get "http://10.244.1.5:80/": dial tcp 10.244.1.5:80: connect: connection refused
-  Warning  Unhealthy  0s (x13 over 22s)  kubelet            spec.containers{nginx}: Readiness probe failed: HTTP probe failed with statuscode: 403
+  Warning  Unhealthy  2m46s            kubelet            spec.containers{nginx}: Readiness probe failed: Get "http://10.244.2.5:80/": dial tcp 10.244.2.5:80: connect: connection refused
+  Warning  Unhealthy  2s (x4 over 6s)  kubelet            spec.containers{nginx}: Readiness probe failed: HTTP probe failed with statuscode: 403
 Endpoints:
-  - Addresses:  10.244.1.4
+  - Addresses:  10.244.2.4
     Conditions:
       Ready:    true
     ...
-  - Addresses:  10.244.1.5
+  - Addresses:  10.244.2.5
     Conditions:
       Ready:    false
     Hostname:   <unset>
-    TargetRef:  Pod/web-gsgss
+    TargetRef:  Pod/web-68gh2
     NodeName:   lab-worker2
     Zone:       <unset>
+  ...
 Events:         <none>
 ```
 
-- Event `statuscode: 403` บอกสาเหตุตรง ๆ (nginx ไม่มีไฟล์หน้าแรกให้ตอบ)
-- Event `connection refused` เมื่อ 3 นาทีก่อนเกิดตอน Pod เพิ่งเริ่มและ nginx ยังไม่เปิดพอร์ต เป็นเรื่องปกติ
+- Event `statuscode: 403` บอกสาเหตุตรง ๆ (nginx ไม่มีไฟล์หน้าแรกให้ตอบ) `(x4 over 6s)` คือ probe ล้มซ้ำ 4 ครั้งใน 6 วินาที
+- Event `connection refused` เมื่อราว 3 นาทีก่อนเกิดตอน Pod เพิ่งเริ่มและ nginx ยังไม่เปิดพอร์ต เป็นเรื่องปกติ
 - `describe endpointslice` แสดง `Conditions: Ready: false` ของบูธนั้นชัดเจน
 
 ### ขั้นที่ 4: คืนไฟเขียว
 
 ```bash
-POD=pod/web-gsgss    # แทนด้วยชื่อของตัวเอง หรือใช้ตัวแปร POD จากขั้นที่ 1 ต่อได้เลย
+POD=pod/web-68gh2    # แทนด้วยชื่อของตัวเอง หรือใช้ตัวแปร POD จากขั้นที่ 1 ต่อได้เลย
 kubectl -n shop exec $POD -- sh -c "echo \"web v1 from \$(hostname)\" > /usr/share/nginx/html/index.html"; date +%T; kubectl -n shop wait --for=condition=Ready $POD --timeout=30s; date +%T
 kubectl -n shop get endpointslice -l kubernetes.io/service-name=web -o jsonpath='{range .items[0].endpoints[*]}{.addresses[0]} {.targetRef.name} ready={.conditions.ready}{"\n"}{end}'
-kubectl -n shop exec client -- wget -qO- http://10.244.1.5
+kubectl -n shop exec client -- wget -qO- http://10.244.2.5
 ```
 
 ```text
-09:01:16
-pod/web-gsgss condition met
-09:01:17
-10.244.1.4 web-mgz49 ready=true
-10.244.2.6 web-k2nk5 ready=true
-10.244.1.5 web-gsgss ready=true
-web v1 from web-gsgss
+17:27:33
+pod/web-68gh2 condition met
+17:27:33
+10.244.2.4 web-rppf4 ready=true
+10.244.2.5 web-68gh2 ready=true
+10.244.2.6 web-fbmpj ready=true
+web v1 from web-68gh2
 ```
 
-ใส่ไฟล์คืนแล้วกลับมา Ready ในราว 1 วินาที และ `ready=true` อีกครั้งโดยไม่ต้องทำอะไรกับ Service
+ใส่ไฟล์คืนแล้วกลับมา Ready ภายในวินาทีเดียวกัน (probe รอบถัดไปผ่านครั้งเดียวก็พอ เพราะ `successThreshold=1`) และ `ready=true` อีกครั้งโดยไม่ต้องทำอะไรกับ Service
 
 ### สิ่งที่เห็น
 
@@ -1247,7 +1412,11 @@ web v1 from web-gsgss
 
 **ต้องมีจาก LAB 6:** ReplicaSet `web` 3 บูธที่ ready ทั้งหมด และ Pod `client`
 
-ไฟล์ใน `labs/lab07-debug/`
+### อธิบาย YAML: `labs/lab07-debug/`
+
+โฟลเดอร์นี้มี Service ที่ตั้งใจตั้งค่าผิด 2 ไฟล์ `kubectl apply -f labs/lab07-debug/` สร้างทั้งคู่พร้อมกัน
+
+**`web-typo-svc.yaml`** (ผิดที่ selector)
 
 ```yaml
 # LAB 7 (ตั้งใจผิด #1): selector พิมพ์ผิด app=wbe → ไม่มี Pod ไหนตรง → ไม่มี endpoint
@@ -1261,8 +1430,12 @@ spec:
     app: wbe               # ← พิมพ์ผิด (ที่ถูกคือ web)
   ports:
     - port: 80
-      targetPort: http
----
+      targetPort: http     # พอร์ตถูกต้อง ปัญหาอยู่ที่ selector อย่างเดียว
+```
+
+**`web-badport-svc.yaml`** (ผิดที่ targetPort)
+
+```yaml
 # LAB 7 (ตั้งใจผิด #2): selector ถูก แต่ targetPort 8080 — nginx ฟังที่ 80
 apiVersion: v1
 kind: Service
@@ -1271,13 +1444,19 @@ metadata:
   namespace: shop
 spec:
   selector:
-    app: web
+    app: web               # ถูกต้อง → มี endpoint ครบ 3 บูธ
   ports:
     - port: 80
       targetPort: 8080     # ← ผิด: ใน Pod ไม่มีอะไรฟัง 8080
 ```
 
-(ในโฟลเดอร์แยกเป็น 2 ไฟล์ `web-typo-svc.yaml` และ `web-badport-svc.yaml` ด้านบนรวมมาให้อ่านต่อกัน)
+| ไฟล์ / field | ค่าที่ตั้งใจผิด | ผลที่เห็นในการทดลอง | วิธีแก้ในขั้นตอน |
+|---|---|---|---|
+| `web-typo` `selector: app: wbe` | ไม่มี Pod ไหนมีป้าย `app=wbe` → EndpointSlice ว่าง | ENDPOINTS `<unset>`, `describe` → `Endpoints:` ว่าง, wget ได้ `Connection refused` ทันที | `patch` selector เป็น `app: web` (selector ของ Service แก้ได้ ต่างจาก ReplicaSet) |
+| `web-typo` `targetPort: http` | ถูกต้อง ปัญหาอยู่ที่ selector อย่างเดียว | หลังแก้ selector ใช้ได้ทันที ไม่ต้องแก้พอร์ต | – |
+| `web-badport` `selector: app: web` | ถูกต้อง | มี endpoint ครบ 3 บูธ | – |
+| `web-badport` `targetPort: 8080` | nginx ใน Pod ฟังแค่ 80 → Pod ปฏิเสธ connection | PORTS `8080`, `Endpoints: ...:8080`, wget `Connection refused` ภายใน 0.16 วินาที | `patch` เป็น `targetPort: "http"` |
+| ทั้งสองไฟล์ `port: 80` | พอร์ตฝั่ง Service ปกติ | ชื่อ DNS หาเจอ (ได้ ClusterIP) จึงไม่ใช่ `bad address` | – |
 
 ### ขั้นที่ 1: selector พิมพ์ผิด
 
@@ -1291,12 +1470,12 @@ sleep 2; kubectl -n shop exec client -- wget -qO- -T 3 http://web-typo; echo "ex
 ```text
 service/web-badport created
 service/web-typo created
-wget: can't connect to remote host (10.96.237.174): Connection refused
+wget: can't connect to remote host (10.96.145.14): Connection refused
 command terminated with exit code 1
 exit=1
 ```
 
-DNS หาชื่อเจอ (ได้ ClusterIP `10.96.237.174`) แต่ถูกปฏิเสธ ไล่ตามบันไดในทฤษฎีหัวข้อ 13: ดู endpoint → ดู selector → เทียบ label
+DNS หาชื่อเจอ (ได้ ClusterIP `10.96.145.14`) แต่ถูกปฏิเสธ ไล่ตามบันไดในทฤษฎีหัวข้อ 13: ดู endpoint → ดู selector → เทียบ label
 
 ```bash
 kubectl -n shop get endpointslice -l kubernetes.io/service-name=web-typo
@@ -1306,17 +1485,17 @@ kubectl -n shop get pods --show-labels
 
 ```text
 NAME             ADDRESSTYPE   PORTS     ENDPOINTS   AGE
-web-typo-rsdpj   IPv4          <unset>   <unset>     4s
+web-typo-6w5rp   IPv4          <unset>   <unset>     3s
 
 Selector:                 app=wbe
 Endpoints:                
 
 NAME        READY   STATUS    RESTARTS   AGE     LABELS
-client      1/1     Running   0          5m13s   role=client
-client2     1/1     Running   0          2m20s   role=client
-web-gsgss   1/1     Running   0          3m47s   app=web
-web-k2nk5   1/1     Running   0          4m44s   app=web
-web-mgz49   1/1     Running   0          5m13s   app=web
+client      1/1     Running   0          3m6s    role=client
+client2     1/1     Running   0          65s     role=client
+web-68gh2   1/1     Running   0          2m51s   app=web
+web-fbmpj   1/1     Running   0          2m20s   app=web
+web-rppf4   1/1     Running   0          3m6s    app=web
 ```
 
 EndpointSlice ว่าง (`<unset>`) เพราะไม่มี Pod ไหนมี label `app=wbe` เมื่อ Service ไม่มี endpoint kube-proxy ตอบปฏิเสธทันที (`Connection refused`) แก้ selector ได้เลย (selector ของ Service แก้ได้ ต่างจาก ReplicaSet)
@@ -1330,8 +1509,8 @@ kubectl -n shop exec client -- wget -qO- -T 3 http://web-typo
 ```text
 service/web-typo patched
 NAME             ADDRESSTYPE   PORTS   ENDPOINTS                          AGE
-web-typo-rsdpj   IPv4          80      10.244.1.4,10.244.2.6,10.244.1.5   6s
-web v1 from web-k2nk5
+web-typo-6w5rp   IPv4          80      10.244.2.6,10.244.2.4,10.244.2.5   5s
+web v1 from web-68gh2
 ```
 
 ### ขั้นที่ 2: targetPort ผิด
@@ -1343,20 +1522,20 @@ kubectl -n shop describe svc web-badport | grep -E "TargetPort|Endpoints"
 ```
 
 ```text
-wget: can't connect to remote host (10.96.234.49): Connection refused
+wget: can't connect to remote host (10.96.218.18): Connection refused
 command terminated with exit code 1
 
-real	0m0.061s
-user	0m0.040s
-sys	0m0.018s
+real	0m0.157s
+user	0m0.030s
+sys	0m0.026s
 exit=1
 NAME                ADDRESSTYPE   PORTS   ENDPOINTS                          AGE
-web-badport-cqhnf   IPv4          8080    10.244.1.5,10.244.1.4,10.244.2.6   22s
+web-badport-wpp2s   IPv4          8080    10.244.2.4,10.244.2.5,10.244.2.6   5s
 TargetPort:               8080/TCP
-Endpoints:                10.244.1.5:8080,10.244.1.4:8080,10.244.2.6:8080
+Endpoints:                10.244.2.4:8080,10.244.2.5:8080,10.244.2.6:8080
 ```
 
-ข้อความเหมือนขั้นที่ 1 (`Connection refused` ภายใน 0.06 วินาที) แต่สาเหตุต่างกัน คราวนี้ **มี endpoint ครบ 3 ตัว** แต่ PORTS เป็น `8080` ซึ่งไม่มีโปรแกรมฟังใน Pod ตัว Pod จึงปฏิเสธ แก้ targetPort เป็นชื่อพอร์ต `http`
+ข้อความเหมือนขั้นที่ 1 (`Connection refused` ภายในราว 0.16 วินาที) แต่สาเหตุต่างกัน คราวนี้ **มี endpoint ครบ 3 ตัว** แต่ PORTS เป็น `8080` ซึ่งไม่มีโปรแกรมฟังใน Pod ตัว Pod จึงปฏิเสธ แก้ targetPort เป็นชื่อพอร์ต `http`
 
 ```bash
 kubectl -n shop patch svc web-badport -p '{"spec":{"ports":[{"port":80,"targetPort":"http"}]}}'
@@ -1367,8 +1546,8 @@ kubectl -n shop exec client -- wget -qO- -T 3 http://web-badport
 ```text
 service/web-badport patched
 NAME                ADDRESSTYPE   PORTS   ENDPOINTS                          AGE
-web-badport-cqhnf   IPv4          80      10.244.1.5,10.244.1.4,10.244.2.6   25s
-web v1 from web-mgz49
+web-badport-wpp2s   IPv4          80      10.244.2.6,10.244.2.4,10.244.2.5   8s
+web v1 from web-fbmpj
 ```
 
 ### ขั้นที่ 3: ชื่อ DNS ผิด
@@ -1383,7 +1562,7 @@ command terminated with exit code 1
 exit=1
 ```
 
-`bad address` แปลว่า DNS หาชื่อไม่เจอ ยังไม่ถึงขั้น Service เลย ตรวจการสะกดชื่อและ namespace
+`bad address` แปลว่า DNS หาชื่อไม่เจอ ยังไม่ถึงขั้น Service เลย ตรวจการสะกดชื่อและ namespace (ในการทดลองคำสั่งนี้ใช้ราว 6 วินาทีกว่าจะขึ้น error เพราะต้องรอ DNS ตอบครบทุกชื่อที่เติม search domain ก่อน เวลาในเครื่องนักศึกษาอาจต่างจากนี้)
 
 ### ขั้นที่ 4: เก็บกวาด LAB 7
 
@@ -1424,7 +1603,7 @@ service "web-typo" deleted from shop namespace
 
 ### ขั้นที่ 1: สร้าง NodePort 30080
 
-ไฟล์ `labs/lab08-nodeport/web-nodeport.yaml`
+#### อธิบาย YAML: `labs/lab08-nodeport/web-nodeport.yaml`
 
 ```yaml
 # LAB 8: NodePort 30080 → เปิดประตูหมายเลข 30080 บน "ทุก Node"
@@ -1436,7 +1615,7 @@ metadata:
   name: web-nodeport
   namespace: shop
 spec:
-  type: NodePort
+  type: NodePort           # = ClusterIP + เปิดพอร์ตเดียวกันบนทุก Node
   selector:
     app: web
   ports:
@@ -1445,37 +1624,53 @@ spec:
       nodePort: 30080      # ทุก Node:30080 (ช่วงที่ใช้ได้ 30000–32767)
 ```
 
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `type: NodePort` | ได้ทุกอย่างของ ClusterIP **บวก** เปิดพอร์ตเดียวกันบนทุก Node | `TYPE NodePort` และยังได้ CLUSTER-IP `10.96.244.19` |
+| `selector: app: web` | บูธชุดเดิม | curl วนเห็นทั้ง 3 บูธ |
+| `port: 80` | พอร์ตบน ClusterIP สำหรับใช้ในคลัสเตอร์ | `PORT(S) 80:30080/TCP` (ตัวหน้า) |
+| `targetPort: http` | ส่งต่อไปพอร์ต 80 ของ Pod | ได้ `web v1 from ...` |
+| `nodePort: 30080` | เลือกเลขเองให้ตรงกับพอร์ตที่ k8s-lab map ออกเครื่องนักศึกษา (30080–30082) ถ้าไม่ใส่จะได้เลขสุ่มที่ map ไม่ถึง | `PORT(S) 80:30080/TCP` (ตัวหลัง), `localhost:30080` ใช้ได้ทั้งใน k8s-lab และ browser; เลขนี้จองได้ Service เดียว (ขั้นที่ 5) |
+
 🐧 **ใน SSH session ของ k8s-lab**
 
 ```bash
 kubectl apply -f labs/lab08-nodeport/web-nodeport.yaml
 kubectl -n shop get svc web-nodeport
-sleep 1; curl -s localhost:30080
+sleep 3; curl -s localhost:30080
 ```
 
 ```text
 service/web-nodeport created
 NAME           TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
-web-nodeport   NodePort   10.96.39.125   <none>        80:30080/TCP   0s
-web v1 from web-k2nk5
+web-nodeport   NodePort   10.96.244.19   <none>        80:30080/TCP   0s
+web v1 from web-fbmpj
 ```
 
 `PORT(S)` อ่านว่า "พอร์ต 80 ของ ClusterIP และพอร์ต 30080 ของทุก Node" ใน k8s-lab `localhost:30080` ไปถึง `lab-control-plane:30080` ผ่าน extraPortMappings (LAB 0 ขั้นที่ 6)
+
+> ⚠️ **ต้องรอราว 3 วินาที:** ในการทดลองที่ใช้ `sleep 1` (2 ครั้งจาก 2) `curl -s localhost:30080` ไม่พิมพ์อะไรเลย (curl exit 56 = connection reset เพราะกฎ NodePort ยังไม่พร้อม) รออีก 2 วินาทีจึงได้ `web v1 from web-fbmpj` ที่แสดงด้านบน (บล็อกผลด้านบนจึงรวมจาก 2 รอบ: บรรทัด `get svc` จากรอบแรก บรรทัด `web v1` จากรอบที่รอครบ 3 วินาที) ถ้าไม่เห็นข้อความให้รอแล้ว curl ซ้ำ
 
 ### ขั้นที่ 2: ประตู 30080 เปิดบนทุก Node
 
 ```bash
 for n in lab-control-plane lab-worker lab-worker2; do echo -n "$n: "; curl -s http://$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $n):30080; done
+kubectl -n shop get pods -o wide
 ```
 
 ```text
-lab-control-plane: web v1 from web-k2nk5
-lab-worker: web v1 from web-k2nk5
-lab-worker2: web v1 from web-mgz49
+lab-control-plane: web v1 from web-rppf4
+lab-worker: web v1 from web-rppf4
+lab-worker2: web v1 from web-fbmpj
+NAME        READY   STATUS    RESTARTS   AGE     IP           NODE          NOMINATED NODE   READINESS GATES
+client      1/1     Running   0          4m6s    10.244.2.2   lab-worker2   <none>           <none>
+client2     1/1     Running   0          2m5s    10.244.2.7   lab-worker2   <none>           <none>
+web-68gh2   1/1     Running   0          3m51s   10.244.2.5   lab-worker2   <none>           <none>
+web-fbmpj   1/1     Running   0          3m20s   10.244.2.6   lab-worker2   <none>           <none>
+web-rppf4   1/1     Running   0          4m6s    10.244.2.4   lab-worker2   <none>           <none>
 ```
 
-`docker inspect` อ่าน IP ของ container ที่เป็น Node แต่ละลำ ทั้ง 3 Node ตอบที่ 30080 รวม `lab-control-plane` ที่ไม่มี Pod `web` เลย (kube-proxy บนเรือลำนั้นส่งต่อข้ามเรือให้)
-
+`docker inspect` อ่าน IP ของ container ที่เป็น Node แต่ละลำ ทั้ง 3 Node ตอบที่ 30080 ในการทดลองบูธ `web` ทั้ง 3 อยู่บน `lab-worker2` แต่ `lab-control-plane` และ `lab-worker` ที่ไม่มีบูธเลยก็ยังตอบได้ (kube-proxy บนเรือลำนั้นส่งต่อข้ามเรือให้) การกระจายบูธบน Node ในเครื่องนักศึกษาอาจต่างจากนี้ (ถ้ารันขั้นนี้เร็วเกินไปหลังสร้าง Service ทุก Node จะยังไม่ตอบ ให้รอแล้วลองใหม่)
 ### ขั้นที่ 3: เปิดจาก browser บนเครื่องนักศึกษา
 
 🌐 **browser บนเครื่องนักศึกษา** เปิด **http://localhost:30080** จะเห็นข้อความบรรทัดเดียว `web v1 from web-xxxxx` ไม่ต้องใช้ `kubectl port-forward` หรือ `ssh -L` เหมือนบทก่อน ๆ
@@ -1485,13 +1680,15 @@ lab-worker2: web v1 from web-mgz49
   <em><b>รูปที่ 11</b> LAB8 (ต่อ): refresh browser มักเห็นชื่อ Pod เดิม (keep-alive) ส่วน curl วน 30 ครั้งเห็นหลาย Pod; ลอง nodePort 29999 (ผิดช่วง) และ LoadBalancer ที่ค้าง &lt;pending&gt; แล้วลบ NodePort ก่อน LAB สุดท้าย</em>
 </p>
 
-ลองกด refresh (F5) หลายครั้ง ส่วนใหญ่จะเห็น **ชื่อ Pod เดิมทุกครั้ง** ผลจริงเมื่อทดลองด้วย Chromium จากนอก container ผ่านเส้นทางเดียวกับ `localhost:30080` ของนักศึกษา
+ลองกด refresh (F5) หลายครั้ง ส่วนใหญ่จะเห็น **ชื่อ Pod เดิมทุกครั้ง** ผลจริงเมื่อทดลองด้วย Chromium จากนอก container ผ่านเส้นทางเดียวกับ `localhost:30080` ของนักศึกษา (การทดลองรอบก่อน ชื่อ Pod จึงไม่ตรงกับรอบนี้)
 
 | การทดลองใน browser | ผล |
 |---|---|
 | เปิดหน้า + reload 9 ครั้ง (รวม 10) | `web v1 from web-k2nk5` ทั้ง 10 ครั้ง |
 | `fetch()` 10 ครั้งในหน้าเดิม | Pod เดียวทั้ง 10 ครั้ง |
 | เปิด browser context ใหม่ทุกครั้ง (คล้ายหน้าต่าง Incognito ใหม่) 5 ครั้ง | 2 ชื่อ (3 + 2) |
+
+รอบนี้จำลองพฤติกรรมเดียวกันด้วย `curl` **process เดียว** ที่ส่ง 10 request บน connection เดียว (แบบที่ browser ทำ) จากนอก container ได้ `10 web v1 from web-68gh2` คือ Pod เดียวทั้ง 10 ครั้ง
 
 สาเหตุคือ **keep-alive**: browser เปิด connection เดียวแล้วใช้ส่งหลาย request ส่วน kube-proxy เลือก Pod **ตอนเปิด connection** เท่านั้น ถ้าอยากเห็นชื่อเปลี่ยน ให้ปิดหน้าต่างทั้งหมดแล้วรอสักครู่ หรือเปิดหน้าต่าง Incognito ใหม่ (ก็ยังสุ่มอยู่ดี) **การที่ refresh แล้วเห็นชื่อเดิมไม่ได้แปลว่ามี Pod เดียว**
 
@@ -1504,12 +1701,14 @@ for i in $(seq 30); do curl -s localhost:30080; done | sort | uniq -c
 ```
 
 ```text
-     12 web v1 from web-gsgss
-      9 web v1 from web-k2nk5
-      9 web v1 from web-mgz49
+      9 web v1 from web-68gh2
+      6 web v1 from web-fbmpj
+     11 web v1 from web-rppf4
 ```
 
-🖥️ **บนเครื่องนักศึกษา (ทางเลือก)** ยิงจากเครื่องตัวเองผ่าน `localhost:30080` ได้เช่นกัน ผลจริงเมื่อยิง 30 ครั้งจากนอก container ได้ `7 web-gsgss / 8 web-k2nk5 / 15 web-mgz49` (กระจายครบ 3 Pod)
+กระจายครบ 3 Pod (รวมได้ 26 ไม่ใช่ 30 เพราะในการทดลองรันขั้นนี้ทันทีหลังสร้าง Service ไม่กี่วินาที 4 ครั้งแรกจึงยังไม่ได้คำตอบ ถ้ารอแล้วตามขั้นที่ 1 จะได้ครบ 30)
+
+🖥️ **บนเครื่องนักศึกษา (ทางเลือก)** ยิงจากเครื่องตัวเองผ่าน `localhost:30080` ได้เช่นกัน ผลจริงเมื่อยิง 30 ครั้งจากนอก container ผ่านพอร์ตที่ publish จาก k8s-lab
 
 ```bash
 # macOS / Linux / Git Bash
@@ -1521,9 +1720,42 @@ for i in $(seq 30); do curl -s http://localhost:30080; done | sort | uniq -c
 1..30 | ForEach-Object { curl.exe -s http://localhost:30080 } | Group-Object | Select-Object Count, Name
 ```
 
+```text
+     10 web v1 from web-68gh2
+     11 web v1 from web-fbmpj
+      9 web v1 from web-rppf4
+```
+
+(ผลข้างบนมาจากคำสั่ง bash ส่วน PowerShell แสดงเป็นตาราง `Count Name` แทน)
+
 ### ขั้นที่ 5: กติกาของ NodePort
 
-ไฟล์ `labs/lab08-nodeport/web-dup-nodeport.yaml` ขอ nodePort 30080 ซ้ำ (ตั้งใจผิด) ส่วนคำสั่งแรกขอเลขนอกช่วง
+#### อธิบาย YAML: `labs/lab08-nodeport/web-dup-nodeport.yaml` (ตั้งใจผิด)
+
+```yaml
+# LAB 8 (ตั้งใจผิด): ขอ nodePort 30080 ซ้ำ — 1 เลขใช้ได้ Service เดียวทั้งคลัสเตอร์
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-dup            # ชื่อไม่ซ้ำ แต่เลข nodePort ซ้ำ
+  namespace: shop
+spec:
+  type: NodePort
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: http
+      nodePort: 30080      # ← ซ้ำกับ web-nodeport
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `name: web-dup` | ชื่อ Service ไม่ซ้ำ ให้เห็นว่าปัญหาไม่ได้อยู่ที่ชื่อ | – |
+| `type: NodePort`, `nodePort: 30080` | ขอเลขเดียวกับ `web-nodeport` ที่ยังอยู่ เลข nodePort จองได้ Service เดียวทั้งคลัสเตอร์ | `provided port is already allocated` และ Service ไม่ถูกสร้าง |
+| `selector`, `port`, `targetPort` | เหมือน `web-nodeport` ทุกอย่าง | – |
+
+ส่วนคำสั่งแรกด้านล่างใช้ `kubectl create service` ขอเลขนอกช่วง (29999) โดยไม่ต้องมีไฟล์
 
 ```bash
 kubectl -n shop create service nodeport bad --tcp=80:80 --node-port=29999; echo "exit=$?"
@@ -1542,7 +1774,30 @@ exit=1
 
 ### ขั้นที่ 6: LoadBalancer ใน kind
 
-ไฟล์ `labs/lab08-nodeport/web-lb.yaml` เป็น Service `type: LoadBalancer` ที่ไม่ระบุ nodePort
+#### อธิบาย YAML: `labs/lab08-nodeport/web-lb.yaml`
+
+```yaml
+# LAB 8: LoadBalancer — บนคลาวด์จะได้ IP สาธารณะ ส่วน kind ไม่มีผู้จัดสรร → EXTERNAL-IP <pending>
+# (แต่ยังได้ ClusterIP + nodePort แบบสุ่มให้)
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-lb
+  namespace: shop
+spec:
+  type: LoadBalancer       # = NodePort + ขอ IP ภายนอกจากผู้ให้บริการ (kind ไม่มี)
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: http     # ไม่ระบุ nodePort → ระบบสุ่มเลขในช่วง 30000–32767 ให้
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `type: LoadBalancer` | ขอ IP ภายนอกจากผู้ให้บริการ (บนคลาวด์จะได้ load balancer จริง) ซึ่ง kind ไม่มี | `EXTERNAL-IP <pending>` ค้างตลอด |
+| ไม่ระบุ `nodePort` | LoadBalancer สร้างบน NodePort ระบบจึงสุ่มเลขในช่วง 30000–32767 ให้ | ได้ `80:30952/TCP` (สุ่ม เลขในเครื่องนักศึกษาจะต่าง) ซึ่งไม่ได้ map ออกเครื่องนักศึกษา |
+| `selector`, `port: 80`, `targetPort: http` | เหมือน Service อื่นในบทนี้ | ยังได้ ClusterIP `10.96.82.207` ใช้ในคลัสเตอร์ได้ |
 
 ```bash
 kubectl apply -f labs/lab08-nodeport/web-lb.yaml
@@ -1553,11 +1808,11 @@ kubectl delete -f labs/lab08-nodeport/web-lb.yaml
 ```text
 service/web-lb created
 NAME     TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
-web-lb   LoadBalancer   10.96.28.238   <pending>     80:31841/TCP   5s
+web-lb   LoadBalancer   10.96.82.207   <pending>     80:30952/TCP   5s
 service "web-lb" deleted from shop namespace
 ```
 
-kind ไม่มีผู้จัดสรร IP ภายนอก `EXTERNAL-IP` จึงค้าง `<pending>` แต่ยังได้ ClusterIP และ nodePort สุ่ม (`31841` ในการทดลอง) ซึ่ง **ไม่ได้ map ออกมาที่เครื่องนักศึกษา** (map แค่ 30080–30082)
+kind ไม่มีผู้จัดสรร IP ภายนอก `EXTERNAL-IP` จึงค้าง `<pending>` แต่ยังได้ ClusterIP และ nodePort สุ่ม (`30952` ในการทดลอง) ซึ่ง **ไม่ได้ map ออกมาที่เครื่องนักศึกษา** (map แค่ 30080–30082)
 
 ### ขั้นที่ 7: ลบ NodePort ก่อน LAB สุดท้าย (ห้ามข้าม)
 
@@ -1565,16 +1820,19 @@ kind ไม่มีผู้จัดสรร IP ภายนอก `EXTERNAL-
 kubectl delete -f labs/lab08-nodeport/web-nodeport.yaml
 kubectl get svc -A | grep 30080 || echo "(ว่าง — 30080 ว่างแล้ว)"
 curl -sS -m 3 localhost:30080; echo "exit=$?"
+sleep 3; curl -sS -m 3 localhost:30080; echo "exit=$?"
 ```
 
 ```text
 service "web-nodeport" deleted from shop namespace
 (ว่าง — 30080 ว่างแล้ว)
+web v1 from web-rppf4
+exit=0
 curl: (56) Recv failure: Connection reset by peer
 exit=56
 ```
 
-หลังลบ ใน k8s-lab ได้ `Connection reset by peer` ส่วนการเรียกจากนอก container ในการทดลอง ยังได้หน้าเว็บอีก 1 ครั้งในราว 1 วินาทีแรก (kube-proxy ยังไม่ลบกฎ) แล้วจึงได้ `curl: (7) Failed to connect ... Couldn't connect to server` 🌐 ลอง refresh browser ตอนนี้จะเปิดไม่ได้แล้ว
+`get svc` ยืนยันว่าเลข 30080 ว่างแล้ว แต่ **curl ครั้งแรกทันทีหลังลบยังได้หน้าเว็บอีก 1 ครั้ง** (`exit=0` เกิดทั้ง 2 รอบที่ทดลอง) เพราะ kube-proxy ยังลบกฎไม่เสร็จ รอ 3 วินาทีจึงได้ `curl: (56) Recv failure: Connection reset by peer` จากนอก container ก็เป็นแบบเดียวกัน คือได้หน้าเว็บอีก 1 ครั้งแล้วจึงได้ `curl: (7) Failed to connect ... Couldn't connect to server` 🌐 ลอง refresh browser ตอนนี้จะเปิดไม่ได้แล้ว
 
 ### สิ่งที่เห็น
 
@@ -1603,7 +1861,39 @@ exit=56
 
 ### ขั้นที่ 1: ตรวจว่าไม่มี NetworkPolicy ค้าง แล้วสร้างโซนครัว
 
-ไฟล์ `labs/lab09-cross-ns/kitchen.yaml` มี namespace `kitchen` (label `team: kitchen`) และ Pod `cook` (busybox)
+#### อธิบาย YAML: `labs/lab09-cross-ns/kitchen.yaml`
+
+```yaml
+# LAB 9: โซนครัว (namespace kitchen) + Pod cook ไว้เรียก Service ข้าม namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kitchen            # search domain ของ Pod ในโซนนี้ขึ้นต้นด้วย kitchen.svc.cluster.local
+  labels:
+    team: kitchen          # NetworkPolicy ใน shop อ้างป้ายนี้
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cook               # ลูกค้าจากโซนอื่น (busybox แบบเดียวกับ client)
+  namespace: kitchen
+spec:
+  terminationGracePeriodSeconds: 1
+  containers:
+    - name: busybox
+      image: busybox:1.36
+      command: ["sleep", "infinity"]
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }
+        limits:   { cpu: 100m, memory: 32Mi }
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| เอกสารแรก `kind: Namespace`, `name: kitchen` | โซนที่สองของบทนี้ ไฟล์เดียวมี 2 object คั่นด้วย `---` (namespace มาก่อน Pod) | `namespace/kitchen created` แล้วจึง `pod/cook created` |
+| `labels.team: kitchen` | ป้ายที่ NetworkPolicy ในขั้นที่ 4 ใช้ (`namespaceSelector`) | `cook` ผ่านรั้วได้เมื่อพอร์ตถูก ส่วน `client` (โซน `shop`) ไม่ผ่าน |
+| เอกสารที่สอง `kind: Pod`, `name: cook`, `namespace: kitchen` | ลูกค้าจากโซนอื่น (busybox แบบเดียวกับ `client`) | `resolv.conf` ของ `cook` ขึ้นต้นด้วย `kitchen.svc.cluster.local` → ชื่อสั้น `web` ได้ `bad address` |
+| `terminationGracePeriodSeconds: 1`, `sleep infinity`, `resources` | เหมือน `client-pod.yaml` | – |
 
 🐧 **ใน SSH session ของ k8s-lab**
 
@@ -1635,21 +1925,64 @@ kubectl -n kitchen exec cook -- cat /etc/resolv.conf
 wget: bad address 'web'
 command terminated with exit code 1
 exit=1
-web v1 from web-gsgss
-web v1 from web-k2nk5
+web v1 from web-rppf4
+web v1 from web-68gh2
 search kitchen.svc.cluster.local svc.cluster.local cluster.local
 nameserver 10.96.0.10
 options ndots:5
 ```
 
 search domain ตัวแรกของ `cook` คือ `kitchen.svc.cluster.local` ชื่อสั้น `web` จึงถูกหาใน `kitchen` (ไม่มี) ข้ามโซนต้องใช้ `web.shop` หรือชื่อเต็ม
-
 ### ขั้นที่ 3: headless เทียบกับ Service ปกติ และ ExternalName
 
 <p align="center" id="fig-13">
   <img src="images/13-lab9-headless-externalname.png" alt="รูปที่ 13 LAB 9 headless และ ExternalName" width="900"><br>
   <em><b>รูปที่ 13</b> LAB9 (ต่อ): nslookup web-headless.shop.svc.cluster.local คืน Pod IP ทุกตัว เทียบกับ web.shop.svc.cluster.local ที่คืน ClusterIP เดียว; nslookup supplier.shop.svc.cluster.local (ExternalName) คืน CNAME example.com (ต้องมีเน็ตออก) แต่ wget ได้ 409 Conflict เพราะ Host header ไม่ตรง</em>
 </p>
+
+#### อธิบาย YAML: `labs/lab09-cross-ns/web-headless.yaml` และ `supplier-externalname.yaml`
+
+**`web-headless.yaml`**
+
+```yaml
+# LAB 9: headless Service (clusterIP: None) — ไม่มี IP กลาง
+# DNS คืน IP ของทุก Pod ที่ Ready (สมุดรายชื่อบูธ) และ kube-proxy ไม่กระจายให้
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-headless
+  namespace: shop
+spec:
+  clusterIP: None          # headless: ไม่จอง ClusterIP (get svc แสดง CLUSTER-IP = None)
+  selector:
+    app: web               # ยังต้องมี selector เพื่อให้มี EndpointSlice/DNS ของ Pod
+  ports:
+    - port: 80
+      targetPort: http
+```
+
+**`supplier-externalname.yaml`**
+
+```yaml
+# LAB 9: ExternalName — ชื่อในคลัสเตอร์ (supplier.shop) ที่ DNS ตอบเป็น CNAME ไปชื่อภายนอก
+# ไม่มี selector / ClusterIP / kube-proxy
+apiVersion: v1
+kind: Service
+metadata:
+  name: supplier
+  namespace: shop
+spec:
+  type: ExternalName
+  externalName: example.com  # DNS ตอบ CNAME → example.com (Host header ของ client ยังเป็น supplier.shop)
+```
+
+| ไฟล์ / field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `web-headless` `clusterIP: None` | ไม่จอง IP กลาง → kube-proxy ไม่สร้างกฎ DNS ตอบเป็น IP ของ Pod แทน | `get svc` แสดง CLUSTER-IP `None`, nslookup ได้ 3 Address (`10.244.2.5`, `.6`, `.4`) |
+| `web-headless` `selector: app: web` | ยังต้องมี selector เพื่อให้ระบบรู้ว่า Pod ไหนเป็นสมาชิก (เขียน EndpointSlice และ DNS ให้) | ได้ IP ของบูธที่ Ready ครบ 3 ตัว |
+| `web-headless` `ports` | บอกพอร์ตไว้เป็นข้อมูล (ไม่มีการแปลงพอร์ต เพราะไม่มี kube-proxy) | PORT(S) `80/TCP` |
+| `supplier` `type: ExternalName` | Service ที่เป็นแค่ชื่อ DNS ไม่มี selector / ClusterIP / endpoint | `get svc`: CLUSTER-IP `<none>`, PORT(S) `<none>` |
+| `supplier` `externalName: example.com` | DNS ตอบ CNAME ชี้ไปชื่อภายนอก แต่ client ยังส่ง Host header เป็นชื่อเดิม | nslookup ได้ `canonical name = example.com`, wget ได้ `409 Conflict` |
 
 ```bash
 kubectl apply -f labs/lab09-cross-ns/web-headless.yaml -f labs/lab09-cross-ns/supplier-externalname.yaml
@@ -1665,21 +1998,21 @@ Address:	10.96.0.10:53
 
 
 Name:	web-headless.shop.svc.cluster.local
-Address: 10.244.1.4
+Address: 10.244.2.5
 Name:	web-headless.shop.svc.cluster.local
 Address: 10.244.2.6
 Name:	web-headless.shop.svc.cluster.local
-Address: 10.244.1.5
+Address: 10.244.2.4
 
 Server:		10.96.0.10
 Address:	10.96.0.10:53
 
-
 Name:	web.shop.svc.cluster.local
-Address: 10.96.55.132
+Address: 10.96.24.101
+
 ```
 
-headless (`clusterIP: None`) คืน **IP ของ Pod ทั้ง 3** ส่วน Service ปกติคืน **ClusterIP เดียว** อย่าลืมใช้ชื่อเต็มกับ `nslookup` ของ busybox ผลจริงเมื่อใช้ชื่อย่อแบบมีจุด
+headless (`clusterIP: None`) คืน **IP ของ Pod ทั้ง 3** (ลำดับสลับได้ทุกครั้ง) ส่วน Service ปกติคืน **ClusterIP เดียว** อย่าลืมใช้ชื่อเต็มกับ `nslookup` ของ busybox ผลจริงเมื่อใช้ชื่อย่อแบบมีจุด
 
 ```bash
 kubectl -n kitchen exec cook -- nslookup web-headless.shop; echo "exit=$?"
@@ -1711,22 +2044,28 @@ Address:	10.96.0.10:53
 
 supplier.shop.svc.cluster.local	canonical name = example.com
 Name:	example.com
+Address: 2606:4700:10::6814:179a
+Name:	example.com
+Address: 2606:4700:10::ac42:93f3
+
+supplier.shop.svc.cluster.local	canonical name = example.com
+Name:	example.com
 Address: 172.66.147.243
 Name:	example.com
 Address: 104.20.23.154
-...
-NAME           TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)           AGE
-supplier       ExternalName   <none>          example.com   <none>            17s
-web            ClusterIP      10.96.55.132    <none>        80/TCP            7m2s
-web-alt        ClusterIP      10.96.141.242   <none>        8080/TCP          5m58s
-web-headless   ClusterIP      None            <none>        80/TCP            17s
-web-multi      ClusterIP      10.96.28.97     <none>        80/TCP,8080/TCP   5m53s
+
+NAME           TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)           AGE
+supplier       ExternalName   <none>         example.com   <none>            1s
+web            ClusterIP      10.96.24.101   <none>        80/TCP            4m9s
+web-alt        ClusterIP      10.96.142.94   <none>        8080/TCP          2m57s
+web-headless   ClusterIP      None           <none>        80/TCP            1s
+web-multi      ClusterIP      10.96.196.78   <none>        80/TCP,8080/TCP   2m52s
 wget: server returned error: HTTP/1.1 409 Conflict
 command terminated with exit code 1
 exit=1
 ```
 
-- `supplier` ได้ `canonical name = example.com` ตามด้วย IP ของ `example.com` (IP ในเครื่องนักศึกษาอาจต่าง และถ้าไม่มีอินเทอร์เน็ตจะเห็นแค่บรรทัด canonical name)
+- `supplier` ได้ `canonical name = example.com` **2 ชุด** เพราะ busybox `nslookup` ถามทั้ง AAAA (IPv6 เช่น `2606:4700:10::6814:179a`) และ A (IPv4 เช่น `172.66.147.243`) แล้วพิมพ์ทั้งคู่ IP ในเครื่องนักศึกษาอาจต่าง (และลำดับชุดอาจสลับ) ถ้าไม่มีอินเทอร์เน็ตจะเห็นแค่บรรทัด canonical name
 - `get svc`: ExternalName ไม่มี ClusterIP และ PORT(S) ส่วน headless มี CLUSTER-IP เป็น `None`
 - `wget http://supplier.shop` ได้ `409 Conflict` เพราะ wget ส่ง Host header เป็น `supplier.shop` ซึ่งปลายทางไม่รู้จัก นี่คือข้อจำกัดของ ExternalName ที่เปลี่ยนแค่ DNS ไม่ได้เปลี่ยน Host header/TLS
 
@@ -1737,7 +2076,11 @@ exit=1
   <em><b>รูปที่ 14</b> LAB9 (ต่อ): NetworkPolicy ให้ kitchen เข้า web ได้ที่ port 8080 (port ของ Service web-alt) → ยัง timed out; แก้เป็น port 80 (targetPort ของ Pod) → เข้าได้ และ policy นี้ทำให้ Pod อื่นนอก kitchen (client ใน shop) เข้า web ไม่ได้ด้วย</em>
 </p>
 
-ก่อนมีรั้ว `cook` เรียก `web-alt.shop:8080` ได้ จากนั้นสร้าง policy ที่ "อนุญาต `kitchen` ที่พอร์ต 8080" (ไฟล์ `np-kitchen-8080.yaml` ตั้งใจผิด)
+ก่อนมีรั้ว `cook` เรียก `web-alt.shop:8080` ได้ จากนั้นสร้าง policy ที่ "อนุญาต `kitchen` ที่พอร์ต 8080" (ไฟล์ `np-kitchen-8080.yaml` ตั้งใจผิด) แล้วแก้ด้วย `np-kitchen-80.yaml`
+
+#### อธิบาย YAML: `labs/lab09-cross-ns/np-kitchen-8080.yaml` (ตั้งใจผิด) และ `np-kitchen-80.yaml` (ถูก)
+
+**`np-kitchen-8080.yaml`**
 
 ```yaml
 # LAB 9 (ตั้งใจผิด): อนุญาตครัวเข้า web "พอร์ต 8080" (= port ของ Service web-alt)
@@ -1752,6 +2095,29 @@ spec:
   podSelector:
     matchLabels:
       app: web             # policy เลือก "Pod" ไม่ใช่ Service
+  policyTypes: ["Ingress"] # คุมขาเข้า → Pod ที่ถูกเลือกรับเฉพาะที่ ingress อนุญาต
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              team: kitchen  # ต้นทาง = ทุก Pod ใน namespace ที่มีป้าย team=kitchen
+      ports:
+        - port: 8080       # ← ผิด: ต้องใช้พอร์ตของ Pod (targetPort)
+```
+
+**`np-kitchen-80.yaml`**
+
+```yaml
+# LAB 9 (ถูก): ใช้พอร์ตของ Pod (targetPort/containerPort 80) — เรียกผ่าน web-alt:8080 ก็ผ่าน
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: web-from-kitchen   # ชื่อเดียวกับไฟล์ 8080 (ลบตัวเก่าก่อน apply)
+  namespace: shop
+spec:
+  podSelector:
+    matchLabels:
+      app: web
   policyTypes: ["Ingress"]
   ingress:
     - from:
@@ -1759,8 +2125,18 @@ spec:
             matchLabels:
               team: kitchen
       ports:
-        - port: 8080       # ← ผิด: ต้องใช้พอร์ตของ Pod (targetPort)
+        - port: 80         # พอร์ตของ Pod (หรือใช้ชื่อ http ก็ได้)
 ```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `kind: NetworkPolicy`, `namespace: shop` | รั้วของโซน `shop` ต้องมี CNI ที่รองรับ NetworkPolicy (kind ของ k8s-lab บังคับใช้ได้ ผลกั้นจริงด้านล่าง) | ก่อนสร้าง `get networkpolicy -A` ได้ `No resources found` |
+| `name: web-from-kitchen` (ทั้งสองไฟล์) | ชื่อเดียวกัน จึงต้อง `delete` ไฟล์ 8080 ก่อน `apply` ไฟล์ 80 | `deleted` แล้ว `created` |
+| `podSelector: app: web` | policy เลือก **Pod** บูธ `web` ไม่ใช่ Service (Service `web` และ `web-alt` ส่งไป Pod ชุดนี้ทั้งคู่) | กั้นได้ทั้งทาง `web` และ `web-alt` |
+| `policyTypes: ["Ingress"]` | คุมขาเข้า: ทันทีที่ Pod ถูกเลือก Pod นั้นรับเฉพาะต้นทางที่ ingress อนุญาต | ผลข้างเคียง: `client` ใน `shop` ถูกกั้นด้วย (`download timed out`) |
+| `from.namespaceSelector: team: kitchen` | อนุญาตทุก Pod ในโซนที่มีป้าย `team=kitchen` (ป้ายใน `kitchen.yaml`) | `cook` ผ่านได้เมื่อพอร์ตถูก ส่วน `shop` (ป้าย `team: som`) ไม่ผ่าน |
+| `ports.port: 8080` (ไฟล์ผิด) | เขียนตามพอร์ตของ **Service** `web-alt` แต่ policy ตรวจที่ Pod หลัง kube-proxy แปลงเป็น `Pod:80` แล้ว | `cook` → `web-alt.shop:8080` ได้ `download timed out` |
+| `ports.port: 80` (ไฟล์ถูก) | ใช้พอร์ตของ **Pod** (targetPort/containerPort) | `cook` ผ่านทั้ง `web-alt.shop:8080` และ `web.shop` |
 
 ```bash
 kubectl -n kitchen exec cook -- wget -qO- -T 3 http://web-alt.shop:8080
@@ -1770,7 +2146,7 @@ kubectl -n shop exec client -- wget -qO- -T 3 http://web; echo "exit=$?"
 ```
 
 ```text
-web v1 from web-mgz49
+web v1 from web-rppf4
 networkpolicy.networking.k8s.io/web-from-kitchen created
 wget: download timed out
 command terminated with exit code 1
@@ -1783,7 +2159,7 @@ exit=1
 - `cook` ถูกกั้น (`download timed out`) ทั้งที่ policy "อนุญาตพอร์ต 8080" เพราะ policy ตรวจที่ Pod **หลัง** kube-proxy แปลง `ClusterIP:8080` เป็น `Pod:80` แล้ว Pod เห็นพอร์ต 80 ซึ่งไม่ได้อนุญาต
 - ผลข้างเคียง: `client` ใน `shop` เองก็ถูกกั้น เพราะทันทีที่มี policy เลือก Pod `app=web` Pod นั้นรับเฉพาะที่ policy อนุญาต (ต้นทางจาก `kitchen` เท่านั้น)
 
-แก้เป็นพอร์ตของ Pod (ไฟล์ `np-kitchen-80.yaml` เหมือนเดิมทุกอย่างยกเว้น `port: 80`)
+แก้เป็นพอร์ตของ Pod (ไฟล์ `np-kitchen-80.yaml` ค่าเหมือนเดิมทุกอย่างยกเว้น `port: 80` ต่างกันแค่ comment)
 
 ```bash
 kubectl delete -f labs/lab09-cross-ns/np-kitchen-8080.yaml && kubectl apply -f labs/lab09-cross-ns/np-kitchen-80.yaml
@@ -1795,8 +2171,8 @@ kubectl -n shop exec client -- wget -qO- -T 3 http://web; echo "exit=$?"
 ```text
 networkpolicy.networking.k8s.io "web-from-kitchen" deleted from shop namespace
 networkpolicy.networking.k8s.io/web-from-kitchen created
-web v1 from web-mgz49
-web v1 from web-mgz49
+web v1 from web-rppf4
+web v1 from web-rppf4
 wget: download timed out
 command terminated with exit code 1
 exit=1
@@ -1815,22 +2191,22 @@ kubectl get ns
 namespace "shop" deleted
 namespace "kitchen" deleted
 
-real	0m10.745s
+real	0m10.767s
 ...
 NAME                 STATUS   AGE
-default              Active   13m
-kube-node-lease      Active   13m
-kube-public          Active   13m
-kube-system          Active   13m
-local-path-storage   Active   13m
+default              Active   6m59s
+kube-node-lease      Active   6m59s
+kube-public          Active   6m59s
+kube-system          Active   6m59s
+local-path-storage   Active   6m55s
 ```
 
-ลบ namespace แล้ว ReplicaSet, Pod, Service, EndpointSlice และ NetworkPolicy ทั้งหมดใน `shop`/`kitchen` หายไปด้วย
+ลบ namespace ใช้ราว 11 วินาที (รอ Pod ทุกตัวปิดตัว) แล้ว ReplicaSet, Pod, Service, EndpointSlice และ NetworkPolicy ทั้งหมดใน `shop`/`kitchen` หายไปด้วย
 
 ### สิ่งที่เห็น
 
 - ข้ามโซนต้องใช้ `<svc>.<ns>` หรือชื่อเต็ม ชื่อสั้นได้ `bad address`
-- headless คืน IP ของทุก Pod, Service ปกติคืน ClusterIP เดียว, ExternalName คืน CNAME (แต่ Host header ยังเป็นชื่อเดิม → `409 Conflict`)
+- headless คืน IP ของทุก Pod, Service ปกติคืน ClusterIP เดียว, ExternalName คืน CNAME พร้อม IPv6 (AAAA) และ IPv4 (A) ของปลายทาง (แต่ Host header ยังเป็นชื่อเดิม → `409 Conflict`)
 - `nslookup` ของ busybox ต้องใช้ชื่อเต็ม (`web-headless.shop` ได้ NXDOMAIN)
 - NetworkPolicy ต้องใช้พอร์ตของ Pod (targetPort) และเมื่อเลือก Pod แล้ว ทุกต้นทางที่ไม่ได้อนุญาตถูกกั้นหมด
 
@@ -1879,14 +2255,53 @@ namespace som-shop (PSA warn: restricted)
 | `som-shop-v2/app/` | แอป Next.js (สำเนาจากบทที่ 5 แล้วปรับเป็นรุ่น 1.2/1.3) |
 | `som-shop-v2/hit.sh` | ยิง request ทีละครั้งแล้วนับว่าไปตก Pod ไหน |
 
-ส่วนสำคัญของ `10-db.yaml` (ตัดมา)
+#### อธิบาย YAML: `som-shop-v2/k8s/00-namespace.yaml`
 
 ```yaml
+# LAB 10: โซนของร้านน้องส้ม (web แยกจาก db) — เตือน (warn) ถ้า Pod ไม่ผ่าน Pod Security ระดับ restricted (แบบบท 004)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: som-shop                                # โซนของ LAB 10 (ลบทั้งร้านด้วย kubectl delete ns som-shop)
+  labels:
+    app.kubernetes.io/part-of: som-shop         # ป้ายบอกว่าเป็นส่วนหนึ่งของแอป som-shop
+    pod-security.kubernetes.io/warn: restricted # warn = แค่เตือน ไม่ปฏิเสธ Pod (ผลจริง: ไม่มีคำเตือน เพราะตั้ง securityContext ครบ)
+```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `name: som-shop` | โซนของ LAB 10 แยกจาก `shop` ของ LAB 1–9 เก็บกวาดทีเดียวด้วย `kubectl delete ns som-shop` | ลบ namespace ใช้ 11.1 วินาที (ข้อ 10.14) |
+| `app.kubernetes.io/part-of: som-shop` | ป้ายมาตรฐานบอกว่าเป็นส่วนของแอป `som-shop` (ใช้ค้น/จัดกลุ่ม ไม่มีผลต่อการทำงาน) | – |
+| `pod-security.kubernetes.io/warn: restricted` | ให้ API **เตือน** (ไม่ปฏิเสธ) เมื่อ Pod ไม่ผ่านระดับ restricted แบบบทที่ 4 | `apply` ไม่มีคำเตือนเลย เพราะทุก Pod ตั้ง `securityContext` ครบ |
+
+#### อธิบาย YAML: `som-shop-v2/k8s/10-db.yaml` (ครัวกลาง)
+
+```yaml
+# LAB 10: ครัวกลาง (ฐานข้อมูล) — ReplicaSet som-db 1 ตัว + Service ClusterIP som-db:5432
+# web ทุก Pod เรียก db ด้วยชื่อ "som-db" → Pod db เกิดใหม่ IP เปลี่ยน แต่ชื่อ/ClusterIP เดิม
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: som-db
+  namespace: som-shop
+  labels:
+    app: som-db
 spec:
   # replicas ต้องเป็น 1 — postgres 2 ตัว "ไม่แชร์ข้อมูลกัน" (Service จะสุ่มส่งไปคนละ db)
   replicas: 1
+  selector:
+    matchLabels:
+      app: som-db                  # ReplicaSet นับ Pod ที่มีป้ายนี้
   template:
+    metadata:
+      labels:
+        app: som-db                # Service som-db เลือก Pod ด้วยป้ายนี้
     spec:
+      securityContext:               # ระดับ Pod: ผ่าน Pod Security restricted (บท 004)
+        runAsNonRoot: true
+        fsGroup: 70                  # emptyDir เป็นของกลุ่ม 70 = postgres เขียนได้
+        seccompProfile:
+          type: RuntimeDefault
       volumes:
         # !!! emptyDir = ข้อมูลอยู่กับ Pod นี้เท่านั้น → Pod db ถูกลบ/เกิดใหม่ = ข้อมูลหายหมด
         # (ตั้งใจให้เห็นใน LAB — บทหลังใช้ PersistentVolumeClaim)
@@ -1895,12 +2310,39 @@ spec:
       containers:
         - name: postgres
           image: postgres:17.11-alpine
+          securityContext:
+            runAsUser: 70            # uid ของ postgres ใน image alpine
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           env:
+            - name: POSTGRES_USER    # postgres image สร้างผู้ใช้/ฐานข้อมูลนี้ตอนเริ่มครั้งแรก
+              value: som
             - name: POSTGRES_PASSWORD
               value: meow1234        # เพื่อการเรียนเท่านั้น (ของจริงใช้ Secret — บทหลัง)
+            - name: POSTGRES_DB
+              value: catshop
+            - name: PGDATA           # โฟลเดอร์ย่อยใน emptyDir (initdb ไม่ยอมใช้จุด mount ตรง ๆ)
+              value: /var/lib/postgresql/data/pgdata
           ports:
             - name: postgres         # Service อ้าง targetPort: postgres
               containerPort: 5432
+          volumeMounts:              # ต่อ emptyDir db-data เข้าที่เก็บข้อมูลของ postgres
+            - name: db-data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:            # พร้อมรับงาน = pg_isready ผ่าน (ใช้ 127.0.0.1 ใน container เดียวกัน)
+            exec:
+              command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
+            periodSeconds: 3
+          livenessProbe:             # พอร์ต 5432 ยังเปิดอยู่ไหม (ไม่ผ่าน = kubelet restart container)
+            tcpSocket:
+              port: postgres
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:                 # postgres ใช้หน่วยความจำมากกว่า web จึงจองมากกว่า
+            requests: { cpu: 100m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
 ---
 # ประภาคารของครัว: ClusterIP เท่านั้น (ใช้ภายในคลัสเตอร์ — ไม่เปิด NodePort ให้ db)
 apiVersion: v1
@@ -1913,13 +2355,54 @@ spec:
   selector:
     app: som-db
   ports:
-    - port: 5432
-      targetPort: postgres
+    - port: 5432             # web เรียก som-db:5432
+      targetPort: postgres   # → containerPort ชื่อ postgres (5432)
 ```
 
-ส่วนสำคัญของ `20-web.yaml` (ตัดมา)
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `kind: ReplicaSet`, `replicas: 1` | db ต้องมีตัวเดียว postgres 2 ตัวไม่แชร์ข้อมูลกัน ถ้ามี 2 ตัว Service จะสุ่มส่งไปคนละ db | ลบ Pod db แล้ว ReplicaSet สร้างใหม่ให้ใน 4.1 วินาที (ข้อ 10.9) |
+| `selector` / `template.labels` = `app: som-db` | ReplicaSet นับ Pod และ Service `som-db` เลือก Pod ด้วยป้ายนี้ | EndpointSlice ของ `som-db` มี IP ของ Pod db 1 ตัว |
+| Pod `securityContext` (`runAsNonRoot`, `fsGroup: 70`, `seccompProfile`) | ผ่าน Pod Security restricted และให้ postgres (uid/gid 70) เขียน emptyDir ได้ | ไม่มีคำเตือน PSA, db Ready ใน 4.3 วินาที |
+| `volumes: db-data emptyDir: {}` | ที่เก็บข้อมูลที่อยู่กับ Pod นี้เท่านั้น **ตั้งใจ** ให้เห็นว่าข้อมูลหายเมื่อ Pod เกิดใหม่ | หลังลบ Pod db: `relation "orders" does not exist`, หน้าเว็บ 503, ออเดอร์ 0 |
+| `image: postgres:17.11-alpine` | image สาธารณะ แต่ LAB โหลดเข้า Node ไว้ก่อน (ข้อ 10.2) เพื่อให้เริ่มเร็ว | `kubectl get rs -o wide` แสดง IMAGES `postgres:17.11-alpine` |
+| container `securityContext` (`runAsUser: 70`, `drop: ["ALL"]` ...) | รันเป็นผู้ใช้ postgres ไม่ใช่ root ตัดสิทธิ์พิเศษทั้งหมด | – |
+| `env` `POSTGRES_USER`/`POSTGRES_PASSWORD`/`POSTGRES_DB` | image สร้างผู้ใช้ `som` รหัส `meow1234` และฐานข้อมูล `catshop` ตอนเริ่มครั้งแรก (รหัสเพื่อการเรียนเท่านั้น) | `psql -U som -d catshop` ใช้ได้ (ข้อ 10.7) |
+| `env PGDATA` + `volumeMounts` | ให้ postgres เก็บข้อมูลในโฟลเดอร์ย่อยของ emptyDir | ข้อมูลอยู่ใน emptyDir จึงหายพร้อม Pod |
+| `ports: name: postgres, containerPort: 5432` | ตั้งชื่อพอร์ตให้ Service อ้าง `targetPort: postgres` | EndpointSlice PORTS `5432` |
+| `readinessProbe exec pg_isready ... -h 127.0.0.1`, `periodSeconds: 3` | db พร้อมรับงานจริงเมื่อ `pg_isready` ผ่าน ก่อนนั้น Service ยังไม่ส่งงานมา | `wait --for=condition=Ready` ผ่านใน 4.3 วินาที; initContainer `wait-for-db` ของ web รอจุดนี้ |
+| `livenessProbe tcpSocket port postgres` | พอร์ต 5432 ยังเปิดอยู่ไหม (`initialDelaySeconds: 10` ให้เวลาเริ่มก่อน) | RESTARTS `0` ตลอด LAB |
+| `resources` | postgres ใช้หน่วยความจำมากกว่า web จึงจอง 256Mi | – |
+| Service `som-db` `type: ClusterIP` | ใช้ภายในคลัสเตอร์เท่านั้น ไม่เปิด NodePort ให้ db (ลูกค้าภายนอกไม่ควรต่อ db ตรง) | `som-db ClusterIP 10.96.93.117 5432/TCP` |
+| Service `som-db` `port: 5432`, `targetPort: postgres` | web เรียก `som-db:5432` แล้วส่งต่อไปพอร์ตชื่อ `postgres` | ClusterIP **คงเดิม** แม้ IP ของ Pod db เปลี่ยน `10.244.2.9 → 10.244.2.14` |
+
+#### อธิบาย YAML: `som-shop-v2/k8s/20-web.yaml` (หน้าร้าน)
 
 ```yaml
+# LAB 10: หน้าร้าน — ReplicaSet som-web 3 บูธ + Service NodePort som-web (30080)
+# ทุกบูธต่อ db กลางตัวเดียวผ่านชื่อ Service som-db → ออเดอร์จากทุกบูธรวมที่เดียว (แก้ปัญหาบท 005)
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: som-web
+  namespace: som-shop
+  labels:
+    app: som-web
+spec:
+  replicas: 3                        # 3 บูธ (LAB 10.8 scale เป็น 5 แล้วคืนเป็น 3)
+  selector:
+    matchLabels:
+      app: som-web
+  template:
+    metadata:
+      labels:
+        app: som-web               # Service som-web เลือก Pod ด้วยป้ายนี้
+    spec:
+      terminationGracePeriodSeconds: 30  # เวลาให้ Next.js ปิดตัวหลังได้ SIGTERM
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       initContainers:
         # 1) รอจน Service som-db มี db ที่พร้อม
         - name: wait-for-db
@@ -1928,18 +2411,59 @@ spec:
             - sh
             - -c
             - until pg_isready -h som-db -p 5432 -U som -d catshop; do echo "รอฐานข้อมูล som-db..."; sleep 2; done; echo "ฐานข้อมูลพร้อมแล้ว"
+          securityContext:
+            runAsUser: 70
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }
         # 2) เติมสินค้าเข้าชั้น (สร้างตาราง + สินค้าตั้งต้น) — ทุก Pod รัน แต่มี advisory lock กันชน
         - name: db-seed
           image: som-shop-web:1.2
+          imagePullPolicy: IfNotPresent  # ใช้ image ที่ kind load ไว้บน Node (ไม่มีใน Docker Hub)
           command: ["node", "scripts/seed.mjs"]
+          securityContext:
+            runAsUser: 1000          # USER node ของ image เป็น "ชื่อ" → ใส่เลขให้ runAsNonRoot ตรวจได้
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: DATABASE_URL     # initContainer ก็ต่อ db ด้วยชื่อ Service som-db
+              value: postgres://som:meow1234@som-db:5432/catshop
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits:   { cpu: 300m, memory: 256Mi }
       containers:
         - name: web
           image: som-shop-web:1.2    # รุ่นและธีมฝังอยู่ใน image (APP_VERSION/APP_THEME)
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           env:
+            - name: POD_NAMESPACE    # Downward API (บท 003)
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: SHOP_NAME
+              value: "ร้านอาหารแมวน้องส้ม"
+            - name: SHOP_FOOTER
+              value: "Next.js + PostgreSQL · Kubernetes LAB 006 · namespace $(POD_NAMESPACE)"
             - name: DATABASE_URL     # เรียก db ด้วยชื่อ Service (ไม่ใช่ IP ของ Pod db)
               value: postgres://som:meow1234@som-db:5432/catshop
+            - name: PORT             # Next.js ฟังพอร์ต 3000 (= containerPort ชื่อ http)
+              value: "3000"
+            - name: HOSTNAME         # ฟังทุก interface ไม่ใช่แค่ localhost (ให้ probe/Service เข้าถึงได้)
+              value: "0.0.0.0"
           ports:
-            - name: http
+            - name: http             # Service อ้าง targetPort: http
               containerPort: 3000
           readinessProbe:            # ต่อ db ได้ไหม (SELECT 1) → ไม่ผ่าน = Service ไม่ส่งลูกค้ามา
             httpGet:
@@ -1953,6 +2477,9 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          resources:
+            requests: { cpu: 100m, memory: 192Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
 ---
 # ประภาคารของหน้าร้าน: NodePort 30080 → เปิด http://localhost:30080 บนเครื่องนักศึกษา
 apiVersion: v1
@@ -1965,10 +2492,31 @@ spec:
   selector:
     app: som-web
   ports:
-    - port: 80
+    - port: 80               # ClusterIP:80 ภายในคลัสเตอร์
       targetPort: http       # = 3000 ของ container web
-      nodePort: 30080
+      nodePort: 30080        # ทุก Node:30080 → localhost:30080 บนเครื่องนักศึกษา
 ```
+
+| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลการทดลอง |
+|---|---|---|
+| `kind: ReplicaSet`, `replicas: 3` | หน้าร้าน 3 บูธ (ข้อ 10.8 scale เป็น 5 แล้วคืนเป็น 3) | `get rs`: `som-web 3 3 3` |
+| `selector` / `template.labels` = `app: som-web` | ReplicaSet นับ Pod และ Service `som-web` เลือก Pod ด้วยป้ายนี้ | EndpointSlice `som-web-j4xfm` มี 3 → 5 → 3 IP |
+| `terminationGracePeriodSeconds: 30` | ให้ Next.js ปิดตัวหลังได้ SIGTERM | ลบบูธระหว่างขาย บางรอบมี 1 request โดน `Connection reset by peer` (ข้อ 10.8) |
+| Pod `securityContext` | ผ่าน Pod Security restricted | ไม่มีคำเตือน PSA |
+| initContainer `wait-for-db` (image postgres, `until pg_isready -h som-db ...`) | รอจน Service `som-db` มี db ที่พร้อม ใช้ **ชื่อ Service** ไม่ใช่ IP | สถานะ `Init:0/2` ช่วงแรก |
+| initContainer `db-seed` (`node scripts/seed.mjs`, image `som-shop-web:1.2`) | สร้างตาราง + สินค้าตั้งต้น ทุกบูธรัน แต่ใช้ advisory lock กันชน | `Init:1/2`, log `new: 6` / `new: 0` / `new: 0`, INIT_RESTARTS `0,0`; ข้อ 10.10 ใช้บูธใหม่เติมสินค้าให้ db ใหม่ |
+| `imagePullPolicy: IfNotPresent` | ใช้ image ที่ `kind load` ไว้บน Node (ไม่มีใน Docker Hub) | ถ้าลืม `kind load` จะได้ `ErrImagePull` (Troubleshooting) |
+| `runAsUser: 1000` | image ระบุ `USER node` เป็นชื่อ ต้องใส่เลขให้ `runAsNonRoot` ตรวจได้ | – |
+| `env DATABASE_URL=postgres://som:meow1234@som-db:5432/catshop` | ทั้ง `db-seed` และ `web` ต่อ db ด้วย **ชื่อ Service** `som-db` | `dns.lookup('som-db')` ได้ ClusterIP `10.96.93.117`; หลังลบ Pod db web ต่อใหม่เองโดยไม่ restart |
+| `env POD_NAMESPACE` (Downward API), `SHOP_NAME`, `SHOP_FOOTER` | ข้อความบนหน้าเว็บ `$(POD_NAMESPACE)` ถูกแทนด้วยชื่อ namespace | ท้ายหน้าแสดง `... namespace som-shop` |
+| `env PORT=3000`, `HOSTNAME=0.0.0.0` | Next.js ฟังพอร์ต 3000 ทุก interface ให้ probe และ Service เข้าถึงได้ | EndpointSlice PORTS `3000` |
+| container `image: som-shop-web:1.2` | รุ่นและธีมฝังใน image (build-arg ข้อ 10.2) | หน้าแรก "เวอร์ชัน 1.2", `hit.sh` แสดงรุ่น `1.2`; ข้อ 10.11 `set image` เปลี่ยน template เป็น 1.3 |
+| `ports: name: http, containerPort: 3000` | Service อ้าง `targetPort: http` | – |
+| `readinessProbe /api/health` (`periodSeconds: 3`, `failureThreshold: 2`) | ตรวจแค่ "ต่อ db ได้" (`SELECT 1`) ไม่ตรวจตาราง | หลังลบ Pod db บูธยัง `1/1` และ `/api/health` → `{"ok":true,"db":"up"}` แต่หน้าแรก 503 |
+| `livenessProbe /api/live` (`initialDelaySeconds: 10`) | process ยังไม่ค้าง ไม่แตะ db จึงไม่ restart บูธเพราะ db ล่ม | RESTARTS `0` แม้ db ถูกลบ |
+| `resources` | จองให้ Next.js | – |
+| Service `som-web` `type: NodePort` | เปิดร้านให้ลูกค้าภายนอก | `som-web NodePort 80:30080/TCP` |
+| `port: 80`, `targetPort: http`, `nodePort: 30080` | ClusterIP:80 และทุก Node:30080 → Pod:3000 | `http://localhost:30080` เปิดร้านได้ทั้งใน k8s-lab และ browser |
 
 **สิ่งที่เปลี่ยนในแอปรุ่น 1.2/1.3** (เทียบกับ `som-shop-web:1.1` ของบทที่ 4–5)
 
@@ -2004,41 +2552,43 @@ time docker build -q --build-arg APP_VERSION=1.3 --build-arg APP_THEME=sunset -t
 
 ```text
 (ว่าง)
-sha256:d82b21fba19a4da1c6cf66ca3d0c430c50d3422afacdbac618b4ef769cf0d620
+sha256:f6c9e393fe27394e67fa183dfe5b27db205816417b4dcfe85d7c143d92416720
 
-real	0m28.035s
+real	0m33.743s
 ...
-sha256:c8ff9b7a6dd688ac6836f31c4247d68de6cfe15ccfc85f4b49f93914bc15175f
+sha256:67f5f492bfa92eef2badb8bb8f96ed0ad1c196d717e57581a5e0c650fed713b3
 
-real	0m0.880s
+real	0m1.484s
 ```
 
-รุ่น 1.2 ใช้เวลาราว 28 วินาที (ดาวน์โหลด dependency และคอมไพล์) ส่วนรุ่น 1.3 ไม่ถึง 1 วินาที เพราะทุกชั้นก่อน `ENV` ใช้ cache เดิม ต่างกันแค่ค่า `APP_VERSION`/`APP_THEME` ในชั้นท้าย (เครื่องนักศึกษาอาจใช้เวลานานกว่านี้หลายเท่า)
+รุ่น 1.2 ใช้เวลาราว 34 วินาทีในการทดลอง (ดาวน์โหลด dependency และคอมไพล์) ส่วนรุ่น 1.3 ราว 1.5 วินาที เพราะทุกชั้นก่อน `ENV` ใช้ cache เดิม ต่างกันแค่ค่า `APP_VERSION`/`APP_THEME` ในชั้นท้าย (เครื่องนักศึกษาอาจใช้เวลานานกว่านี้หลายเท่า และ `sha256:...` จะเป็นค่าอื่น)
 
-นำ image ทั้งสองเข้าทุก Node แล้วเตรียม postgres
+นำ image ทั้งสองเข้าทุก Node เตรียม postgres แล้ว **ให้สิทธิ์ execute กับ `hit.sh`** (ใช้ในข้อ 10.6 เป็นต้นไป)
 
 ```bash
 time kind load docker-image som-shop-web:1.2 som-shop-web:1.3 --name lab
 cd ..
 time (docker pull -q postgres:17.11-alpine && docker save --platform linux/amd64 postgres:17.11-alpine -o ../pg.tar && kind load image-archive ../pg.tar --name lab && rm ../pg.tar)
+chmod +x hit.sh
 ```
 
 ```text
-Image: "som-shop-web:1.2" with ID "sha256:d82b21fb..." not yet present on node "lab-control-plane", loading...
-Image: "som-shop-web:1.2" with ID "sha256:d82b21fb..." not yet present on node "lab-worker2", loading...
-Image: "som-shop-web:1.2" with ID "sha256:d82b21fb..." not yet present on node "lab-worker", loading...
-Image: "som-shop-web:1.3" with ID "sha256:c8ff9b7a..." not yet present on node "lab-control-plane", loading...
-Image: "som-shop-web:1.3" with ID "sha256:c8ff9b7a..." not yet present on node "lab-worker2", loading...
-Image: "som-shop-web:1.3" with ID "sha256:c8ff9b7a..." not yet present on node "lab-worker", loading...
+Image: "som-shop-web:1.2" with ID "sha256:f6c9e393..." not yet present on node "lab-worker2", loading...
+Image: "som-shop-web:1.2" with ID "sha256:f6c9e393..." not yet present on node "lab-worker", loading...
+Image: "som-shop-web:1.2" with ID "sha256:f6c9e393..." not yet present on node "lab-control-plane", loading...
+Image: "som-shop-web:1.3" with ID "sha256:67f5f492..." not yet present on node "lab-worker2", loading...
+Image: "som-shop-web:1.3" with ID "sha256:67f5f492..." not yet present on node "lab-worker", loading...
+Image: "som-shop-web:1.3" with ID "sha256:67f5f492..." not yet present on node "lab-control-plane", loading...
 
-real	0m4.443s
+real	0m6.512s
 docker.io/library/postgres:17.11-alpine
 
-real	0m15.226s
+real	0m16.602s
 ```
 
-- image ที่ build เอง (`som-shop-web`) ไม่มีใน Docker Hub ต้อง `kind load docker-image` ให้ทุก Node และ YAML ใช้ `imagePullPolicy: IfNotPresent`
+- image ที่ build เอง (`som-shop-web`) ไม่มีใน Docker Hub ต้อง `kind load docker-image` ให้ทุก Node และ YAML ใช้ `imagePullPolicy: IfNotPresent` (ลำดับ Node ในบรรทัด `loading...` สลับได้)
 - postgres เป็น image หลาย platform ถ้า `kind load docker-image` ตรง ๆ อาจได้ `ctr: content digest sha256:...: not found` จึงใช้ `docker save --platform linux/amd64` + `kind load image-archive` (ถ้าข้ามขั้นนี้ Node จะดึงจาก Docker Hub เองได้แต่ช้ากว่า) ถ้าเคยโหลดไว้ในบทก่อนและคลัสเตอร์ยังเดิม ข้ามขั้นนี้ได้
+- **`chmod +x hit.sh` จำเป็น:** ในการทดลองที่ไม่ได้สั่งบรรทัดนี้ ไฟล์เป็น `-rw-r--r--` และ `./hit.sh` ในข้อ 10.6 ได้ `./hit.sh: Permission denied` (exit 126) หลัง `chmod +x` จึงรันได้ (`chmod` ไม่พิมพ์อะไรเมื่อสำเร็จ ตรวจซ้ำได้ด้วย `ls -l hit.sh` ซึ่งต้องขึ้นต้นด้วย `-rwx`)
 - ตอนนี้อยู่ที่โฟลเดอร์ `/workspace/006_kubernetes_service/02_LAB/som-shop-v2` คำสั่งที่เหลือของ LAB 10 รันจากที่นี่
 
 ### 10.3 เปิดครัวกลาง: db + Service som-db
@@ -2058,24 +2608,24 @@ kubectl -n som-shop get rs,pods,svc,endpointslice -o wide
 namespace/som-shop created
 replicaset.apps/som-db created
 service/som-db created
-pod/som-db-vhn7w condition met
+pod/som-db-kslt4 condition met
 
-real	0m3.791s
+real	0m4.250s
 
 NAME                     DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES                  SELECTOR
 replicaset.apps/som-db   1         1         1       4s    postgres     postgres:17.11-alpine   app=som-db
 
-NAME               READY   STATUS    RESTARTS   AGE   IP            NODE         NOMINATED NODE   READINESS GATES
-pod/som-db-vhn7w   1/1     Running   0          4s    10.244.2.21   lab-worker   <none>           <none>
+NAME               READY   STATUS    RESTARTS   AGE   IP           NODE          NOMINATED NODE   READINESS GATES
+pod/som-db-kslt4   1/1     Running   0          4s    10.244.2.9   lab-worker2   <none>           <none>
 
 NAME             TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE   SELECTOR
-service/som-db   ClusterIP   10.96.93.105   <none>        5432/TCP   4s    app=som-db
+service/som-db   ClusterIP   10.96.93.117   <none>        5432/TCP   4s    app=som-db
 
-NAME                                          ADDRESSTYPE   PORTS   ENDPOINTS     AGE
-endpointslice.discovery.k8s.io/som-db-v78pk   IPv4          5432    10.244.2.21   4s
+NAME                                          ADDRESSTYPE   PORTS   ENDPOINTS    AGE
+endpointslice.discovery.k8s.io/som-db-b95qk   IPv4          5432    10.244.2.9   4s
 ```
 
-**จดไว้ 2 ค่า** จะใช้เทียบในข้อ 10.9: ClusterIP ของ `som-db` (`10.96.93.105`) และ IP ของ Pod db (`10.244.2.21`) ไม่มีคำเตือน Pod Security เพราะ Pod ตั้ง securityContext ครบตามระดับ restricted แล้ว (บทที่ 4)
+**จดไว้ 2 ค่า** จะใช้เทียบในข้อ 10.9: ClusterIP ของ `som-db` (`10.96.93.117`) และ IP ของ Pod db (`10.244.2.9`) (ค่าในเครื่องนักศึกษาจะต่าง) ไม่มีคำเตือน Pod Security เพราะ Pod ตั้ง securityContext ครบตามระดับ restricted แล้ว (บทที่ 4)
 
 ### 10.4 เปิดหน้าร้าน 3 บูธ และเติมสินค้าแบบกันชน
 
@@ -2094,24 +2644,25 @@ kubectl apply -f k8s/20-web.yaml && timeout 12 kubectl -n som-shop get pods -l a
 replicaset.apps/som-web created
 service/som-web created
 NAME            READY   STATUS     RESTARTS   AGE
-som-web-6h94x   0/1     Pending    0          1s
-som-web-8g2wt   0/1     Init:0/2   0          1s
-som-web-zk8jj   0/1     Init:0/2   0          1s
+som-web-fg4wd   0/1     Init:0/2   0          0s
+som-web-l2zp4   0/1     Init:0/2   0          0s
+som-web-tp95k   0/1     Init:0/2   0          0s
 ...
-som-web-8g2wt   0/1     Init:1/2   0          2s
-som-web-zk8jj   0/1     Init:1/2   0          2s
-som-web-6h94x   0/1     Init:1/2   0          2s
+som-web-fg4wd   0/1     Init:1/2   0          2s
+som-web-tp95k   0/1     Init:1/2   0          2s
+som-web-l2zp4   0/1     Init:1/2   0          2s
 ...
-som-web-8g2wt   0/1     PodInitializing   0          3s
+som-web-fg4wd   0/1     PodInitializing   0          3s
 ...
-som-web-8g2wt   0/1     Running           0          3s
+som-web-fg4wd   0/1     Running           0          3s
 ...
-som-web-8g2wt   1/1     Running           0          4s
-som-web-6h94x   1/1     Running           0          4s
-som-web-zk8jj   1/1     Running           0          4s
+som-web-fg4wd   1/1     Running           0          4s
+som-web-tp95k   1/1     Running           0          4s
+som-web-l2zp4   1/1     Running           0          4s
+...
 ```
 
-แต่ละบูธผ่าน `Init:0/2` (รอ db) → `Init:1/2` (เติมสินค้า) → `PodInitializing` → `Running 0/1` (รอ readiness) → `1/1` (`timeout 12` หยุดการดูให้เองหลัง 12 วินาที) ดู log ของ initContainer `db-seed` ทั้ง 3 บูธ
+แต่ละบูธผ่าน `Init:0/2` (รอ db) → `Init:1/2` (เติมสินค้า) → `PodInitializing` → `Running 0/1` (รอ readiness) → `1/1` ในราว 4 วินาที (`timeout 12` หยุดการดูให้เองหลัง 12 วินาที บางครั้งจะเห็นบูธขึ้น `Pending` ชั่วครู่ก่อน `Init:0/2`) ดู log ของ initContainer `db-seed` ทั้ง 3 บูธ
 
 ```bash
 kubectl -n som-shop logs -l app=som-web -c db-seed --prefix
@@ -2119,57 +2670,57 @@ kubectl -n som-shop get pods -o custom-columns=NAME:.metadata.name,INIT_RESTARTS
 ```
 
 ```text
-[pod/som-web-8g2wt/db-seed] connected to database
-[pod/som-web-8g2wt/db-seed] got seed lock 5005
-[pod/som-web-8g2wt/db-seed] tables ready: products, orders
-[pod/som-web-8g2wt/db-seed] seeded 6 products (new: 0)
-[pod/som-web-zk8jj/db-seed] connected to database
-[pod/som-web-zk8jj/db-seed] got seed lock 5005
-[pod/som-web-zk8jj/db-seed] tables ready: products, orders
-[pod/som-web-zk8jj/db-seed] seeded 6 products (new: 0)
-[pod/som-web-6h94x/db-seed] connected to database
-[pod/som-web-6h94x/db-seed] got seed lock 5005
-[pod/som-web-6h94x/db-seed] tables ready: products, orders
-[pod/som-web-6h94x/db-seed] seeded 6 products (new: 6)
+[pod/som-web-tp95k/db-seed] connected to database
+[pod/som-web-tp95k/db-seed] got seed lock 5005
+[pod/som-web-tp95k/db-seed] tables ready: products, orders
+[pod/som-web-tp95k/db-seed] seeded 6 products (new: 0)
+[pod/som-web-fg4wd/db-seed] connected to database
+[pod/som-web-fg4wd/db-seed] got seed lock 5005
+[pod/som-web-fg4wd/db-seed] tables ready: products, orders
+[pod/som-web-fg4wd/db-seed] seeded 6 products (new: 6)
+[pod/som-web-l2zp4/db-seed] connected to database
+[pod/som-web-l2zp4/db-seed] got seed lock 5005
+[pod/som-web-l2zp4/db-seed] tables ready: products, orders
+[pod/som-web-l2zp4/db-seed] seeded 6 products (new: 0)
 NAME            INIT_RESTARTS   NODE
-som-db-vhn7w    <none>          lab-worker
-som-web-6h94x   0,0             lab-worker
-som-web-8g2wt   0,0             lab-worker2
-som-web-zk8jj   0,0             lab-worker
+som-db-kslt4    <none>          lab-worker2
+som-web-fg4wd   0,0             lab-worker
+som-web-l2zp4   0,0             lab-worker2
+som-web-tp95k   0,0             lab-worker2
 ```
 
-- ทั้ง 3 บูธเริ่มเติมสินค้าพร้อมกันเข้า **db ตัวเดียวกัน** แต่ `pg_advisory_xact_lock(5005)` ทำให้เข้าคิวทีละบูธ บูธแรกที่ได้ lock เพิ่มสินค้า 6 รายการ (`new: 6`) บูธที่เหลือเห็นว่ามีแล้ว (`new: 0`) เพราะ `ON CONFLICT DO NOTHING`
+- ทั้ง 3 บูธเริ่มเติมสินค้าพร้อมกันเข้า **db ตัวเดียวกัน** แต่ `pg_advisory_xact_lock(5005)` ทำให้เข้าคิวทีละบูธ บูธแรกที่ได้ lock (รอบนี้คือ `som-web-fg4wd`) เพิ่มสินค้า 6 รายการ (`new: 6`) บูธที่เหลือเห็นว่ามีแล้ว (`new: 0`) เพราะ `ON CONFLICT DO NOTHING` (`logs --prefix` เรียงตาม Pod ไม่ได้เรียงตามเวลา บูธที่ได้ `new: 6` จึงอยู่แถวไหนก็ได้)
 - `INIT_RESTARTS 0,0` ทุกบูธ ในการตรวจก่อนเขียนบท แอปรุ่นเก่าที่ **ไม่มี lock** ทำให้ 2 ใน 3 บูธ init ล้ม 1 ครั้งด้วย `duplicate key value violates unique constraint "pg_type_typname_nsp_index"` เพราะ `CREATE TABLE IF NOT EXISTS` พร้อมกันชนกัน บทเรียน: **งานที่ replica หลายตัวทำซ้ำพร้อมกันต้องรันซ้ำได้ (idempotent) และกันชน** (งานแบบทำครั้งเดียวมีเครื่องมือเฉพาะในบทหลัง)
 - จำนวนบูธต่อ Node (2+1) ขึ้นกับ scheduler ของเครื่องตัวเอง
 
 ### 10.5 web หา db ด้วยชื่อ Service
 
-แทน `som-web-6h94x` ด้วยชื่อบูธในเครื่องตัวเอง
+แทน `som-web-fg4wd` ด้วยชื่อบูธในเครื่องตัวเอง
 
 ```bash
-kubectl -n som-shop exec som-web-6h94x -c web -- node -e "require('dns').lookup('som-db',(e,a)=>console.log(a))"
+kubectl -n som-shop exec som-web-fg4wd -c web -- node -e "require('dns').lookup('som-db',(e,a)=>console.log(a))"
 kubectl -n som-shop get svc som-db
-kubectl -n som-shop exec som-web-6h94x -c web -- env | grep SOM_DB_SERVICE
+kubectl -n som-shop exec som-web-fg4wd -c web -- env | grep SOM_DB_SERVICE
 kubectl -n som-shop get rs,svc
 ```
 
 ```text
-10.96.93.105
+10.96.93.117
 NAME     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-som-db   ClusterIP   10.96.93.105   <none>        5432/TCP   35s
+som-db   ClusterIP   10.96.93.117   <none>        5432/TCP   17s
+SOM_DB_SERVICE_HOST=10.96.93.117
 SOM_DB_SERVICE_PORT=5432
-SOM_DB_SERVICE_HOST=10.96.93.105
 NAME                      DESIRED   CURRENT   READY   AGE
-replicaset.apps/som-db    1         1         1       35s
-replicaset.apps/som-web   3         3         3       31s
+replicaset.apps/som-db    1         1         1       17s
+replicaset.apps/som-web   3         3         3       13s
 
 NAME              TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
-service/som-db    ClusterIP   10.96.93.105   <none>        5432/TCP       35s
-service/som-web   NodePort    10.96.77.163   <none>        80:30080/TCP   31s
+service/som-db    ClusterIP   10.96.93.117   <none>        5432/TCP       17s
+service/som-web   NodePort    10.96.55.166   <none>        80:30080/TCP   13s
 ```
 
 - ในบูธ web ชื่อ `som-db` แปลเป็น ClusterIP ของ Service `som-db` (search domain `som-shop.svc.cluster.local`) ไม่ใช่ IP ของ Pod db
-- มี env `SOM_DB_SERVICE_HOST` เพราะบูธ web ถูกสร้างหลัง Service `som-db` (ถ้าสลับลำดับ apply จะไม่มี แต่ DNS ยังใช้ได้ แอปจึงใช้ชื่อใน `DATABASE_URL`)
+- มี env `SOM_DB_SERVICE_HOST` เพราะบูธ web ถูกสร้างหลัง Service `som-db` (ถ้าสลับลำดับ apply จะไม่มี แต่ DNS ยังใช้ได้ แอปจึงใช้ชื่อใน `DATABASE_URL`) ลำดับบรรทัด env ไม่แน่นอน
 - `som-web` เป็น NodePort `80:30080/TCP` พร้อมให้ลูกค้าเข้าแล้ว
 
 ### 10.6 เปิดร้านที่ http://localhost:30080
@@ -2182,13 +2733,13 @@ service/som-web   NodePort    10.96.77.163   <none>        80:30080/TCP   31s
 🌐 **browser บนเครื่องนักศึกษา** เปิด **http://localhost:30080** จะเห็นร้านธีม harbor (น้ำเงิน teal) ป้าย **"เวอร์ชัน 1.2"** แถบ **"🐱 เสิร์ฟโดย Pod: som-web-… · เวอร์ชัน 1.2"** ข้อความเล็ก `⚓ ท่าเรือ Kubernetes · ReplicaSet + Service` และท้ายหน้า `Next.js + PostgreSQL · Kubernetes LAB 006 · namespace som-shop`
 
 <p align="center" id="fig-20">
-  <img src="images/screenshots/20261005_0933_lab10svc_01-shop-nodeport-1.2.png" alt="รูปที่ 20 ภาพหน้าจอจริง ร้านเวอร์ชัน 1.2" width="700"><br>
-  <em><b>รูปที่ 20</b> ภาพหน้าจอจริงจากการทดลอง: เปิด http://localhost:30080 (NodePort โดยตรง ไม่ใช้ port-forward หรือ ssh -L) หน้าร้านธีม harbor ป้าย "เวอร์ชัน 1.2" แถบ "🐱 เสิร์ฟโดย Pod: som-web-tmxnr · เวอร์ชัน 1.2" และออเดอร์ทั้งหมด 4 ซึ่งรวมจากทุกบูธใน db กลางตัวเดียว</em>
+  <img src="images/screenshots/20261005_1736_lab006_02-shop-nodeport-1.2.png" alt="รูปที่ 20 ภาพหน้าจอจริง ร้านเวอร์ชัน 1.2 ออเดอร์ 4" width="700"><br>
+  <em><b>รูปที่ 20</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านธีม harbor ป้าย "เวอร์ชัน 1.2" แถบ "🐱 เสิร์ฟโดย Pod: som-web-bhpqg · เวอร์ชัน 1.2" ออเดอร์ทั้งหมด 4 ชิ้นที่ขายแล้ว 8 สินค้าในร้าน 6 ซึ่งรวมจากทุกบูธใน db กลางตัวเดียว (หมายเหตุ: ภาพนี้ถ่ายจาก namespace som-shop-v12 ที่สร้างเพิ่มบน NodePort 30081 เพื่อถ่ายภาพ ท้ายหน้าจึงเป็น namespace som-shop-v12 บนเครื่องนักศึกษาให้เปิด http://localhost:30080 ตามขั้นตอนเดิม ท้ายหน้าจะเป็น namespace som-shop)</em>
 </p>
 
-กด refresh หลายครั้ง ส่วนใหญ่ชื่อ Pod **ไม่เปลี่ยน** (keep-alive แบบ LAB 8 ผลจริงของร้านนี้ใน Chromium: reload 9 ครั้งได้ Pod เดิมทั้ง 9) ดูการกระจายจริงด้วย `hit.sh`
+กด refresh หลายครั้ง ส่วนใหญ่ชื่อ Pod **ไม่เปลี่ยน** (keep-alive แบบ LAB 8 ผลจริงของร้านนี้ใน Chromium จากการทดลองรอบก่อน: reload 9 ครั้งได้ Pod เดิมทั้ง 9) ดูการกระจายจริงด้วย `hit.sh`
 
-🐧 **ใน SSH session ของ k8s-lab** (อยู่ที่ `som-shop-v2`)
+🐧 **ใน SSH session ของ k8s-lab** (อยู่ที่ `som-shop-v2` และสั่ง `chmod +x hit.sh` ในข้อ 10.2 แล้ว)
 
 ```bash
 ./hit.sh
@@ -2196,13 +2747,26 @@ service/som-web   NodePort    10.96.77.163   <none>        80:30080/TCP   31s
 
 ```text
 จำนวน  Pod  เวอร์ชัน
-     25 som-web-6h94x 1.2
-     17 som-web-8g2wt 1.2
-     18 som-web-zk8jj 1.2
-ok=60 err=0 (ใช้เวลา 6.5 วินาที)
+     18 som-web-fg4wd 1.2
+     16 som-web-l2zp4 1.2
+     26 som-web-tp95k 1.2
+ok=60 err=0 (ใช้เวลา 6.6 วินาที)
 ```
 
-60 ครั้งไปครบทั้ง 3 บูธ ไม่มี error
+60 ครั้งไปครบทั้ง 3 บูธ ไม่มี error ถ้าได้ `./hit.sh: Permission denied` แปลว่ายังไม่ได้ `chmod +x hit.sh` (ข้อ 10.2) ให้สั่งแล้วรันใหม่
+
+ตรวจหน้าแรกจาก k8s-lab ด้วย `curl` ได้เช่นกัน (ดึงเฉพาะป้ายรุ่นและแถบชื่อ Pod)
+
+```bash
+curl -s -o /dev/null -w "%{http_code} %{size_download} bytes\n" localhost:30080; curl -s localhost:30080 | grep -o "เวอร์ชัน 1\.[23]" | head -2; curl -s localhost:30080 | grep -o "เสิร์ฟโดย Pod[^<]*" | head -1
+```
+
+```text
+200 17696 bytes
+เวอร์ชัน 1.2
+เวอร์ชัน 1.2
+เสิร์ฟโดย Pod: som-web-fg4wd · เวอร์ชัน 1.2
+```
 
 ### 10.7 ออเดอร์จากทุกบูธรวมที่เดียว
 
@@ -2228,16 +2792,16 @@ for i in $(seq 12); do curl -s localhost:30080/api/stats; done | sort | uniq -c
      3
 (1 row)
 
-      2 som-web-6h94x 1.2 orders=3 products=6
-      8 som-web-8g2wt 1.2 orders=3 products=6
-      2 som-web-zk8jj 1.2 orders=3 products=6
+      3 som-web-fg4wd 1.2 orders=3 products=6
+      2 som-web-l2zp4 1.2 orders=3 products=6
+      7 som-web-tp95k 1.2 orders=3 products=6
 ```
 
-ทุกบูธเห็น `orders=3` เท่ากัน และ `order_id` เรียง 1, 2, 3 ต่อกัน (stock ลดต่อเนื่อง 18 → 16 → 14) เพราะทุกบูธเขียนลง **db กลางตัวเดียว** ผ่านชื่อ `som-db` ต่างจากบทที่ 5 ที่บูธหนึ่งออเดอร์ 2 แต่อีกบูธ 0
+ทุกบูธเห็น `orders=3` เท่ากัน และ `order_id` เรียง 1, 2, 3 ต่อกัน (stock ลดต่อเนื่อง 18 → 16 → 14) เพราะทุกบูธเขียนลง **db กลางตัวเดียว** ผ่านชื่อ `som-db` ต่างจากบทที่ 5 ที่บูธหนึ่งออเดอร์ 2 แต่อีกบูธ 0 (จำนวนครั้งที่แต่ละบูธตอบเป็นการสุ่ม)
 
-🌐 กดปุ่ม 🛒 **สั่งซื้อ** ในหน้าร้านอีก 1 ครั้ง ผลจริงในการทดลอง: ข้อความ `สั่งซื้อแล้ว! ออเดอร์ #4` และตัวเลข "ออเดอร์ทั้งหมด" เปลี่ยนจาก 3 เป็น 4 (บูธที่เสิร์ฟคือ `som-web-zk8jj`) ไม่ว่าคำสั่งซื้อจะไปตกบูธไหน ตัวเลขก็ต่อกัน
+🌐 กดปุ่ม 🛒 **สั่งซื้อ** ในหน้าร้านอีก 1 ครั้ง ผลจริงในการทดลองรอบก่อน: ข้อความ `สั่งซื้อแล้ว! ออเดอร์ #4` และตัวเลข "ออเดอร์ทั้งหมด" เปลี่ยนจาก 3 เป็น 4 (บูธที่เสิร์ฟคือ `som-web-zk8jj`) ไม่ว่าคำสั่งซื้อจะไปตกบูธไหน ตัวเลขก็ต่อกัน
 
-> ไม่ควรใช้ `curl -s localhost:30080 | grep ...` เพื่อดูชื่อ Pod จากหน้าแรก เพราะหน้า Next.js มีข้อมูล RSC ฝังอยู่ ทำให้ได้ข้อความยาวหลายพันตัวอักษร ให้ใช้ `/api/whoami` หรือ `/api/stats` แทน
+> ไม่ควรใช้ `curl -s localhost:30080 | grep ...` แบบไม่มี `-o` เพื่อดูชื่อ Pod จากหน้าแรก เพราะหน้า Next.js มีข้อมูล RSC ฝังอยู่ ทำให้ได้ข้อความยาวหลายพันตัวอักษร ถ้าจะดูจากหน้าแรกให้ใช้ `grep -o` แบบข้อ 10.6 หรือใช้ `/api/whoami` / `/api/stats` แทน
 
 ### 10.8 scale 3 → 5 และ self-healing ใต้ Service
 
@@ -2256,28 +2820,28 @@ kubectl -n som-shop get endpointslice -l kubernetes.io/service-name=som-web -o j
 
 ```text
 replicaset.apps/som-web scaled
-pod/som-web-6h94x condition met
-pod/som-web-8g2wt condition met
-pod/som-web-kx775 condition met
-pod/som-web-zk8jj condition met
-pod/som-web-zr5pd condition met
-NAME            ADDRESSTYPE   PORTS   ENDPOINTS                                         AGE
-som-web-d5hqj   IPv4          3000    10.244.2.22,10.244.1.14,10.244.2.23 + 2 more...   68s
-10.244.2.22 som-web-zk8jj ready=true
-10.244.1.14 som-web-8g2wt ready=true
-10.244.2.23 som-web-6h94x ready=true
-10.244.1.15 som-web-kx775 ready=true
-10.244.1.16 som-web-zr5pd ready=true
+pod/som-web-7rbjb condition met
+pod/som-web-cwxqc condition met
+pod/som-web-fg4wd condition met
+pod/som-web-l2zp4 condition met
+pod/som-web-tp95k condition met
+NAME            ADDRESSTYPE   PORTS   ENDPOINTS                                        AGE
+som-web-j4xfm   IPv4          3000    10.244.1.5,10.244.2.11,10.244.2.10 + 2 more...   33s
+10.244.1.5 som-web-fg4wd ready=true
+10.244.2.11 som-web-tp95k ready=true
+10.244.2.10 som-web-l2zp4 ready=true
+10.244.2.12 som-web-cwxqc ready=true
+10.244.1.6 som-web-7rbjb ready=true
 จำนวน  Pod  เวอร์ชัน
-     20 som-web-6h94x 1.2
-      8 som-web-8g2wt 1.2
-      9 som-web-kx775 1.2
-     12 som-web-zk8jj 1.2
-     11 som-web-zr5pd 1.2
-ok=60 err=0 (ใช้เวลา 6.5 วินาที)
+      9 som-web-7rbjb 1.2
+     13 som-web-cwxqc 1.2
+     13 som-web-fg4wd 1.2
+     10 som-web-l2zp4 1.2
+     15 som-web-tp95k 1.2
+ok=60 err=0 (ใช้เวลา 6.6 วินาที)
 ```
 
-บูธใหม่ 2 ตัว Ready ในราว 4 วินาที EndpointSlice มี 5 IP เอง (PORTS `3000` = พอร์ตของ container) และลูกค้ากระจายไปครบ 5 บูธโดยไม่ต้องแก้ Service
+บูธใหม่ 2 ตัว Ready ในราว 4 วินาที (`wait` ใช้ 4.3 วินาที) EndpointSlice มี 5 IP เอง (PORTS `3000` = พอร์ตของ container) และลูกค้ากระจายไปครบ 5 บูธโดยไม่ต้องแก้ Service
 
 **self-healing ใต้ Service:** ใช้ 2 หน้าต่าง
 
@@ -2293,23 +2857,23 @@ ok=60 err=0 (ใช้เวลา 6.5 วินาที)
 kubectl -n som-shop delete $(kubectl -n som-shop get pod -l app=som-web -o name | head -1)
 ```
 
-ผลจริง 3 รอบ (รอบละครั้ง terminal 2 แสดง `pod "som-web-..." deleted from som-shop namespace`)
+ผลจริง 3 รอบ (terminal 2 ลบ `som-web-7rbjb`, `som-web-cwxqc`, `som-web-fg4wd` ตามลำดับ แต่ละรอบแสดง `pod "som-web-..." deleted from som-shop namespace`)
 
 ```text
+....................................................................................................
+ok=100 err=0 (ใช้เวลา 11.0 วินาที)
+
+....................................................................................................
+ok=100 err=0 (ใช้เวลา 11.0 วินาที)
+
 ....................x...............................................................................
 ข้อความ error:
       1 curl: (56) Recv failure: Connection reset by peer
 ช่วงที่มี err: 0.0 วินาที
-ok=99 err=1 (ใช้เวลา 10.8 วินาที)
-
-....................................................................................................
-ok=100 err=0 (ใช้เวลา 10.8 วินาที)
-
-....................................................................................................
-ok=100 err=0 (ใช้เวลา 10.8 วินาที)
+ok=99 err=1 (ใช้เวลา 10.9 วินาที)
 ```
 
-ReplicaSet สร้างบูธใหม่แทน EndpointSlice ถอดบูธเก่าออกและใส่บูธใหม่เมื่อ Ready ร้านขายต่อได้เกือบทุกครั้ง แต่บางรอบมี 1 request ที่โดน `Connection reset by peer` เพราะไปถึงบูธตอนกำลังปิดพอดี (ทฤษฎีหัวข้อ 12.2) ในการทดสอบ 5 รอบได้ err 1, 0, 1, 0, 0 ถ้าดู `kubectl -n som-shop get pods -w` ระหว่างนั้นจะเห็นบูธที่ถูกลบขึ้นสถานะ `Error` ชั่วครู่ก่อนหาย (Next.js ออกด้วย exit code ไม่เป็น 0 ตอนรับ SIGTERM) เป็นเรื่องปกติ
+ReplicaSet สร้างบูธใหม่แทน EndpointSlice ถอดบูธเก่าออกและใส่บูธใหม่เมื่อ Ready ร้านขายต่อได้เกือบทุกครั้ง แต่บางรอบมี 1 request ที่โดน `Connection reset by peer` เพราะไปถึงบูธตอนกำลังปิดพอดี (ทฤษฎีหัวข้อ 12.2) รอบนี้ได้ err 0, 0, 1 (การทดสอบรอบก่อน 5 รอบได้ err 1, 0, 1, 0, 0) ถ้าดู `kubectl -n som-shop get pods -w` ระหว่างนั้นจะเห็นบูธที่ถูกลบขึ้นสถานะ `Error` ชั่วครู่ก่อนหาย (Next.js ออกด้วย exit code ไม่เป็น 0 ตอนรับ SIGTERM) เป็นเรื่องปกติ
 
 คืนเป็น 3 บูธ
 
@@ -2321,10 +2885,10 @@ sleep 3; kubectl -n som-shop get pods
 ```text
 replicaset.apps/som-web scaled
 NAME            READY   STATUS    RESTARTS   AGE
-som-db-vhn7w    1/1     Running   0          2m18s
-som-web-lm7jj   1/1     Running   0          40s
-som-web-zk8jj   1/1     Running   0          2m14s
-som-web-zr5pd   1/1     Running   0          71s
+som-db-kslt4    1/1     Running   0          81s
+som-web-l2zp4   1/1     Running   0          77s
+som-web-r6dmt   1/1     Running   0          24s
+som-web-tp95k   1/1     Running   0          77s
 ```
 
 ### 10.9 ลบ Pod db: ชื่อเดิม IP ใหม่ แต่ข้อมูลหาย
@@ -2342,25 +2906,24 @@ kubectl -n som-shop get pod -l app=som-db -o wide
 kubectl -n som-shop get svc som-db
 kubectl -n som-shop get endpointslice -l kubernetes.io/service-name=som-db
 ```
-
 ```text
-NAME           READY   STATUS    RESTARTS   AGE     IP            NODE         NOMINATED NODE   READINESS GATES
-som-db-vhn7w   1/1     Running   0          2m38s   10.244.2.21   lab-worker   <none>           <none>
-NAME           ADDRESSTYPE   PORTS   ENDPOINTS     AGE
-som-db-v78pk   IPv4          5432    10.244.2.21   2m39s
-pod "som-db-vhn7w" deleted from som-shop namespace
-pod/som-db-mlfx7 condition met
-db ใหม่ Ready หลังสั่งลบ 4.7 วินาที
-NAME           READY   STATUS    RESTARTS   AGE   IP            NODE         NOMINATED NODE   READINESS GATES
-som-db-mlfx7   1/1     Running   0          4s    10.244.2.26   lab-worker   <none>           <none>
+NAME           READY   STATUS    RESTARTS   AGE   IP           NODE          NOMINATED NODE   READINESS GATES
+som-db-kslt4   1/1     Running   0          81s   10.244.2.9   lab-worker2   <none>           <none>
+NAME           ADDRESSTYPE   PORTS   ENDPOINTS    AGE
+som-db-b95qk   IPv4          5432    10.244.2.9   81s
+pod "som-db-kslt4" deleted from som-shop namespace
+pod/som-db-m52lz condition met
+db ใหม่ Ready หลังสั่งลบ 4.1 วินาที
+NAME           READY   STATUS    RESTARTS   AGE   IP            NODE          NOMINATED NODE   READINESS GATES
+som-db-m52lz   1/1     Running   0          4s    10.244.2.14   lab-worker2   <none>           <none>
 NAME     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-som-db   ClusterIP   10.96.93.105   <none>        5432/TCP   2m44s
+som-db   ClusterIP   10.96.93.117   <none>        5432/TCP   85s
 NAME           ADDRESSTYPE   PORTS   ENDPOINTS     AGE
-som-db-v78pk   IPv4          5432    10.244.2.26   2m44s
+som-db-b95qk   IPv4          5432    10.244.2.14   85s
 ```
 
-- ReplicaSet `som-db` สร้าง db ใหม่ Ready ในราว 5 วินาที ได้ **ชื่อใหม่และ IP ใหม่** (`10.244.2.21 → 10.244.2.26`)
-- Service `som-db` ยังเป็น **ClusterIP เดิม** (`10.96.93.105`) EndpointSlice ชื่อเดิม (`som-db-v78pk`) แค่เปลี่ยน IP ข้างใน web ทุกบูธจึงไม่ต้องแก้อะไร
+- ReplicaSet `som-db` สร้าง db ใหม่ Ready ในราว 4 วินาที ได้ **ชื่อใหม่และ IP ใหม่** (`10.244.2.9 → 10.244.2.14`)
+- Service `som-db` ยังเป็น **ClusterIP เดิม** (`10.96.93.117`) EndpointSlice ชื่อเดิม (`som-db-b95qk`) แค่เปลี่ยน IP ข้างใน web ทุกบูธจึงไม่ต้องแก้อะไร
 
 ตรวจหน้าร้านและฐานข้อมูล
 
@@ -2374,34 +2937,44 @@ kubectl -n som-shop get pods; kubectl -n som-shop logs -l app=som-web -c web --t
 ```text
 503
 {"ok":true,"db":"up"}
-      4 som-web-lm7jj 1.2 db-not-ready
-      1 som-web-zk8jj 1.2 db-not-ready
-      1 som-web-zr5pd 1.2 db-not-ready
+      2 som-web-l2zp4 1.2 db-not-ready
+      1 som-web-r6dmt 1.2 db-not-ready
+      3 som-web-tp95k 1.2 db-not-ready
 ERROR:  relation "orders" does not exist
 LINE 1: select count(*) from orders
                              ^
 command terminated with exit code 1
 NAME            READY   STATUS    RESTARTS   AGE
-som-db-mlfx7    1/1     Running   0          5s
-som-web-lm7jj   1/1     Running   0          66s
-som-web-zk8jj   1/1     Running   0          2m40s
-som-web-zr5pd   1/1     Running   0          97s
-[pod/som-web-lm7jj/web] ✓ Running next.config took 1.0ms
-[pod/som-web-lm7jj/web] db connection lost: terminating connection due to administrator command (จะต่อใหม่เองใน request ถัดไป)
-[pod/som-web-zk8jj/web] ✓ Running next.config took 1.0ms
-[pod/som-web-zk8jj/web] db connection lost: terminating connection due to administrator command (จะต่อใหม่เองใน request ถัดไป)
-[pod/som-web-zr5pd/web] ✓ Running next.config took 0.8ms
-[pod/som-web-zr5pd/web] db connection lost: terminating connection due to administrator command (จะต่อใหม่เองใน request ถัดไป)
+som-db-m52lz    1/1     Running   0          5s
+som-web-l2zp4   1/1     Running   0          82s
+som-web-r6dmt   1/1     Running   0          29s
+som-web-tp95k   1/1     Running   0          82s
+[pod/som-web-l2zp4/web] ✓ Running next.config took 0.7ms
+[pod/som-web-l2zp4/web] db connection lost: terminating connection due to administrator command (จะต่อใหม่เองใน request ถัดไป)
+[pod/som-web-r6dmt/web] ✓ Running next.config took 0.9ms
+[pod/som-web-r6dmt/web] db connection lost: terminating connection due to administrator command (จะต่อใหม่เองใน request ถัดไป)
+[pod/som-web-tp95k/web] ✓ Running next.config took 1.0ms
+[pod/som-web-tp95k/web] db connection lost: terminating connection due to administrator command (จะต่อใหม่เองใน request ถัดไป)
 ```
 
 - web **ต่อ db ใหม่ได้เองโดยไม่ restart** (`/api/health` → `{"ok":true,"db":"up"}`, RESTARTS 0, บูธยัง `1/1`) log บอกแค่ว่าสายเก่าขาดแล้วจะต่อใหม่เอง
 - แต่ db ตัวใหม่ **ว่างเปล่า** เพราะข้อมูลเก่าอยู่ใน `emptyDir` ของ Pod db ที่ถูกลบ ตาราง `orders` จึงไม่มี (`relation "orders" does not exist`) ทุกบูธตอบ `/api/stats` ว่า `db-not-ready` และหน้าแรกตอบ **HTTP 503**
 
+ดูข้อความบนหน้า 503 จาก k8s-lab ได้ด้วย
+
+```bash
+curl -s localhost:30080 | grep -o "ร้านกำลังเตรียมสินค้า[^<]*" | head -1
+```
+
+```text
+ร้านกำลังเตรียมสินค้า กรุณารอสักครู่ 🐱
+```
+
 🌐 refresh browser จะเห็นหน้า **"ร้านกำลังเตรียมสินค้า กรุณารอสักครู่ 🐱"** (หน้านี้ลองใหม่เองทุก 5 วินาที)
 
 <p align="center" id="fig-24">
-  <img src="images/screenshots/20261005_0935_lab10svc_02-503-after-db-deleted.png" alt="รูปที่ 24 ภาพหน้าจอจริง หน้า 503 หลังลบ Pod db" width="700"><br>
-  <em><b>รูปที่ 24</b> ภาพหน้าจอจริงจากการทดลอง: หลังลบ Pod db Service som-db ยังใช้ ClusterIP เดิม 10.96.188.142 แต่ endpoint เปลี่ยนจาก 10.244.2.33 เป็น 10.244.2.38 ฐานข้อมูลใหม่ยังว่าง หน้าเว็บจึงตอบ HTTP 503 "ร้านกำลังเตรียมสินค้า กรุณารอสักครู่" (เสิร์ฟโดย Pod som-web-bx7tz ที่ยัง Ready อยู่)</em>
+  <img src="images/screenshots/20261005_1736_lab006_03-shop-503.png" alt="รูปที่ 24 ภาพหน้าจอจริง หน้า 503 ร้านกำลังเตรียมสินค้า หลังลบ Pod db" width="700"><br>
+  <em><b>รูปที่ 24</b> ภาพหน้าจอจริงจากการทดลอง: หลังลบ Pod db Service som-db ยังใช้ ClusterIP เดิม 10.96.232.78 แต่ endpoint เปลี่ยนจาก 10.244.1.15 เป็น 10.244.1.17 ฐานข้อมูลใหม่ยังว่าง หน้าเว็บจึงตอบ HTTP 503 "ร้านกำลังเตรียมสินค้า กรุณารอสักครู่ 🐱" "ฐานข้อมูลยังไม่มีสินค้า (HTTP 503) · หน้านี้จะลองใหม่เองทุก 5 วินาที" (เสิร์ฟโดย Pod som-web-2q6hd เวอร์ชัน 1.2 ที่ยัง Ready อยู่) (หมายเหตุ: ถ่ายจาก namespace som-shop-503 ที่สร้างเพิ่มบน NodePort 30082 เพื่อถ่ายภาพ บนเครื่องนักศึกษาคือ http://localhost:30080)</em>
 </p>
 
 ภาพหน้าจอจริงด้านบนมาจากการทดลองอีกรอบหนึ่ง ซึ่งได้ผลแบบเดียวกัน (ผลคำสั่งของรอบนั้น)
@@ -2435,30 +3008,30 @@ kubectl -n som-shop logs -l app=som-web -c db-seed --prefix | grep seeded
 for i in $(seq 9); do curl -s localhost:30080/api/stats; done | sort | uniq -c; for i in 1 2 3 4 5 6; do curl -s -o /dev/null -w "%{http_code} " localhost:30080; done; echo
 ```
 
-ผลจริง (ในการทดลองบูธที่ถูกลบคือ `som-web-zk8jj`)
+ผลจริง (ในการทดลองบูธที่ถูกลบคือ `som-web-l2zp4`)
 
 ```text
-pod "som-web-zk8jj" deleted from som-shop namespace
-pod/som-web-lm7jj condition met
-pod/som-web-n5vw6 condition met
-pod/som-web-zr5pd condition met
+pod/som-web-l2zp4
+pod "som-web-l2zp4" deleted from som-shop namespace
+pod/som-web-r6dmt condition met
+pod/som-web-tp95k condition met
+pod/som-web-tqzg5 condition met
 Pod web ใหม่ Ready หลังสั่งลบ 3.6 วินาที
-[pod/som-web-lm7jj/db-seed] seeded 6 products (new: 0)
-[pod/som-web-n5vw6/db-seed] seeded 6 products (new: 6)
-[pod/som-web-zr5pd/db-seed] seeded 6 products (new: 0)
-      4 som-web-lm7jj 1.2 orders=0 products=6
-      2 som-web-n5vw6 1.2 orders=0 products=6
-      3 som-web-zr5pd 1.2 orders=0 products=6
+[pod/som-web-r6dmt/db-seed] seeded 6 products (new: 0)
+[pod/som-web-tp95k/db-seed] seeded 6 products (new: 0)
+[pod/som-web-tqzg5/db-seed] seeded 6 products (new: 6)
+      5 som-web-r6dmt 1.2 orders=0 products=6
+      4 som-web-tp95k 1.2 orders=0 products=6
 200 200 200 200 200 200 
 ```
 
-- บูธใหม่ `som-web-n5vw6` เติมสินค้า `new: 6` ลง db ใหม่ (log `new: 0` ของอีกสองบูธเป็นของตอนที่บูธนั้นเกิด ไม่ได้รันใหม่)
-- **ทุกบูธกลับมาขายทันที** (`200` ทุกครั้ง `products=6`) โดยไม่ต้องลบบูธอื่น เพราะใช้ db กลางตัวเดียว
+- บูธใหม่ `som-web-tqzg5` เติมสินค้า `new: 6` ลง db ใหม่ (log `new: 0` ของอีกสองบูธเป็นของตอนที่บูธนั้นเกิด ไม่ได้รันใหม่ ถ้าบูธที่เติมสินค้าคนแรกในข้อ 10.4 ยังอยู่ จะเห็น `new: 6` ของบูธนั้นด้วย)
+- **ทุกบูธกลับมาขายทันที** (`200` ทุกครั้ง `products=6`) โดยไม่ต้องลบบูธอื่น เพราะใช้ db กลางตัวเดียว (9 ครั้งของ `/api/stats` รอบนี้ไม่ตกบูธใหม่เลย ไม่ใช่ความบังเอิญ แต่เพราะเรียกทันทีหลัง `wait` kube-proxy ยังไม่ได้เพิ่ม endpoint ของบูธใหม่ลงกฎ ตามกติกาเรื่องรอราว 2 วินาที ถ้ารอสักครู่แล้วเรียกซ้ำจะเห็นบูธใหม่ตอบด้วย)
 - แต่ **`orders=0`** ออเดอร์เก่าหายถาวร
 
 <p align="center" id="fig-25">
-  <img src="images/screenshots/20261005_0936_lab10svc_03-shop-back-0-orders.png" alt="รูปที่ 25 ภาพหน้าจอจริง ร้านกลับมาแต่ออเดอร์ 0" width="700"><br>
-  <em><b>รูปที่ 25</b> ภาพหน้าจอจริงจากการทดลอง: ลบ Pod web 1 ตัวให้ initContainer db-seed ของ Pod ใหม่เติมสินค้าใหม่ ร้านกลับมาขายได้ทุกบูธ แต่ออเดอร์ทั้งหมด 0 และชิ้นที่ขายแล้ว 0 เพราะข้อมูลเดิมหายไปพร้อม emptyDir ของ Pod db ตัวเก่า</em>
+  <img src="images/screenshots/20261005_1737_lab006_04-shop-back-0-orders.png" alt="รูปที่ 25 ภาพหน้าจอจริง ร้านกลับมาแต่ออเดอร์ 0" width="700"><br>
+  <em><b>รูปที่ 25</b> ภาพหน้าจอจริงจากการทดลอง: ลบ Pod web 1 ตัวให้ initContainer db-seed ของ Pod ใหม่เติมสินค้าใหม่ ร้านกลับมาขายได้ทุกบูธ (ภาพนี้เสิร์ฟโดยบูธเดิม som-web-fcvgx เวอร์ชัน 1.2) สินค้าในร้าน 6 แต่ออเดอร์ทั้งหมด 0 ชิ้นที่ขายแล้ว 0 และ "ยังไม่มีออเดอร์ ลองกดสั่งซื้อดูสิ" เพราะข้อมูลเดิมหายไปพร้อม emptyDir ของ Pod db ตัวเก่า (หมายเหตุ: ถ่ายจาก namespace som-shop-503 บน NodePort 30082 ที่สร้างเพิ่มเพื่อถ่ายภาพ บนเครื่องนักศึกษาคือ http://localhost:30080)</em>
 </p>
 
 **บทเรียน:** Service ทำให้ "ที่อยู่" ของ db คงที่ แต่ไม่ได้ทำให้ "ข้อมูล" คงอยู่ db ที่เก็บข้อมูลบน `emptyDir` เสียข้อมูลทุกครั้งที่ Pod db เกิดใหม่ (แก้ด้วย PersistentVolumeClaim ในบทหลัง) และ `replicas` ของ db ต้องเป็น 1 เพราะ postgres 2 ตัวไม่แชร์ข้อมูลกัน Service จะสุ่มส่งไปคนละ db
@@ -2483,19 +3056,18 @@ kubectl -n som-shop get pods -l app=som-web -o custom-columns=NAME:.metadata.nam
 ```text
 replicaset.apps/som-web image updated
 som-shop-web:1.3 som-shop-web:1.3
-NAME      DESIRED   CURRENT   READY   AGE     CONTAINERS   IMAGES             SELECTOR
-som-web   3         3         3       3m11s   web          som-shop-web:1.3   app=som-web
+NAME      DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES             SELECTOR
+som-web   3         3         3       86s   web          som-shop-web:1.3   app=som-web
 NAME            IMAGE
-som-web-lm7jj   som-shop-web:1.2
-som-web-n5vw6   som-shop-web:1.2
-som-web-zr5pd   som-shop-web:1.2
+som-web-r6dmt   som-shop-web:1.2
+som-web-tp95k   som-shop-web:1.2
+som-web-tqzg5   som-shop-web:1.2
 จำนวน  Pod  เวอร์ชัน
-     21 som-web-lm7jj 1.2
-     18 som-web-n5vw6 1.2
-     21 som-web-zr5pd 1.2
-ok=60 err=0 (ใช้เวลา 6.5 วินาที)
+     17 som-web-r6dmt 1.2
+     25 som-web-tp95k 1.2
+     18 som-web-tqzg5 1.2
+ok=60 err=0 (ใช้เวลา 6.6 วินาที)
 ```
-
 template ของ ReplicaSet เป็น 1.3 แล้ว แต่ **บูธเดิมทั้ง 3 ยังเป็น 1.2** และลูกค้ายังเห็น 1.2 ทุกครั้ง (ทบทวนบทที่ 5: ReplicaSet ดูแลแค่จำนวน ไม่เปลี่ยน Pod ที่มีอยู่) น้องส้มต้องลบบูธเองเพื่อให้ ReplicaSet สร้างบูธใหม่จาก template ใหม่
 
 ### 10.12 ลบ Pod เองทีละตัว แล้วลบที่เหลือทีเดียว
@@ -2517,20 +3089,20 @@ kubectl -n som-shop delete $(kubectl -n som-shop get pod -l app=som-web -o name 
 ผลจริง (terminal 2 แล้วตามด้วย terminal 1)
 
 ```text
-pod "som-web-lm7jj" deleted from som-shop namespace
-pod/som-web-mtvzf condition met
-pod/som-web-n5vw6 condition met
-pod/som-web-zr5pd condition met
+pod "som-web-r6dmt" deleted from som-shop namespace
+pod/som-web-tp95k condition met
+pod/som-web-tqzg5 condition met
+pod/som-web-trnbl condition met
 
 จำนวน  Pod  เวอร์ชัน
-      6 som-web-lm7jj 1.2
-     58 som-web-mtvzf 1.3
-     62 som-web-n5vw6 1.2
-     74 som-web-zr5pd 1.2
-ok=200 err=0 (ใช้เวลา 21.7 วินาที)
+     10 som-web-r6dmt 1.2
+     73 som-web-tp95k 1.2
+     68 som-web-tqzg5 1.2
+     49 som-web-trnbl 1.3
+ok=200 err=0 (ใช้เวลา 21.9 วินาที)
 ```
 
-ระหว่างนี้ **ลูกค้าเห็นร้านคนละรุ่นปนกัน** (บางคนเห็นธีม sunset 1.3 บางคนเห็น harbor 1.2) รอบนี้ err 0 (อีกรอบได้ err 1) ถ้าจะทำต่ออีก 2 บูธต้องพิมพ์ชื่อและรอเองทีละตัว น่าเบื่อและเสี่ยงลบผิดตัว
+ระหว่างนี้ **ลูกค้าเห็นร้านคนละรุ่นปนกัน** (บางคนเห็นธีม sunset 1.3 จาก `som-web-trnbl` บางคนเห็น harbor 1.2) รอบนี้ err 0 (การทดลองรอบก่อนมีรอบที่ได้ err 1) ถ้าจะทำต่ออีก 2 บูธต้องพิมพ์ชื่อและรอเองทีละตัว น่าเบื่อและเสี่ยงลบผิดตัว
 
 ```bash
 kubectl -n som-shop get pods -l app=som-web -o custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[0].image
@@ -2538,9 +3110,9 @@ kubectl -n som-shop get pods -l app=som-web -o custom-columns=NAME:.metadata.nam
 
 ```text
 NAME            IMAGE
-som-web-mtvzf   som-shop-web:1.3
-som-web-n5vw6   som-shop-web:1.2
-som-web-zr5pd   som-shop-web:1.2
+som-web-tp95k   som-shop-web:1.2
+som-web-tqzg5   som-shop-web:1.2
+som-web-trnbl   som-shop-web:1.3
 ```
 
 **แบบที่ 2: ทางลัดที่ผิด ลบทั้งหมดในคำสั่งเดียว**
@@ -2562,52 +3134,55 @@ kubectl -n som-shop get endpointslice -l kubernetes.io/service-name=som-web
 ผลจริง (terminal 2 แล้วตามด้วย terminal 1)
 
 ```text
-pod "som-web-mtvzf" deleted from som-shop namespace
-pod "som-web-n5vw6" deleted from som-shop namespace
-pod "som-web-zr5pd" deleted from som-shop namespace
+pod "som-web-tp95k" deleted from som-shop namespace
+pod "som-web-tqzg5" deleted from som-shop namespace
+pod "som-web-trnbl" deleted from som-shop namespace
 NAME            READY   STATUS     RESTARTS   AGE
-som-db-mlfx7    1/1     Running    0          111s
-som-web-6pk9k   0/1     Init:0/2   0          2s
-som-web-7pl88   0/1     Init:1/2   0          2s
-som-web-jv599   0/1     Init:1/2   0          1s
+som-db-m52lz    1/1     Running    0          41s
+som-web-khfrr   0/1     Init:1/2   0          1s
+som-web-p5z2k   0/1     Init:1/2   0          1s
+som-web-wvlfd   0/1     Init:1/2   0          1s
 NAME            ADDRESSTYPE   PORTS   ENDPOINTS                             AGE
-som-web-d5hqj   IPv4          3000    10.244.2.29,10.244.1.19,10.244.1.18   4m26s
+som-web-j4xfm   IPv4          3000    10.244.2.16,10.244.1.11,10.244.1.10   118s
 
-...................xxxxxxx..............................................................................................................................................................................
+...................xxxxx................................................................................................................................................................................
 ข้อความ error:
-      1 curl: (28) Operation timed out
-      6 curl: (56) Recv failure: Connection reset by peer
-ช่วงที่มี err: 2.6 วินาที
-ok=193 err=7 (ใช้เวลา 24.7 วินาที)
+      2 curl: (28) Operation timed out
+      3 curl: (56) Recv failure: Connection reset by peer
+ช่วงที่มี err: 4.4 วินาที
+ok=195 err=5 (ใช้เวลา 25.9 วินาที)
 ```
 
 ตรวจรุ่นหลังร้านกลับมา
 
 ```bash
-kubectl -n som-shop get pods -l app=som-web -o custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[0].image; ./hit.sh
+kubectl -n som-shop wait --for=condition=Ready pod -l app=som-web --timeout=90s >/dev/null; kubectl -n som-shop get pods -l app=som-web -o custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[0].image; ./hit.sh
+curl -s localhost:30080 | grep -o "เวอร์ชัน 1\.[23]" | head -1; curl -s localhost:30080 | grep -o "เมนูใหม่[^<]*" | head -1
 ```
 
 ```text
 NAME            IMAGE
-som-web-6pk9k   som-shop-web:1.3
-som-web-7pl88   som-shop-web:1.3
-som-web-jv599   som-shop-web:1.3
+som-web-khfrr   som-shop-web:1.3
+som-web-p5z2k   som-shop-web:1.3
+som-web-wvlfd   som-shop-web:1.3
 จำนวน  Pod  เวอร์ชัน
-     23 som-web-6pk9k 1.3
-     20 som-web-7pl88 1.3
-     17 som-web-jv599 1.3
+     15 som-web-khfrr 1.3
+     16 som-web-p5z2k 1.3
+     29 som-web-wvlfd 1.3
 ok=60 err=0 (ใช้เวลา 6.5 วินาที)
+เวอร์ชัน 1.3
+เมนูใหม่: ขนมปลาทูน่าอบกรอบ 🐟
 ```
 
-- ลบทั้งหมดพร้อมกัน → บูธใหม่ทุกตัวยังอยู่ใน `Init` ไม่มีบูธที่ ready ให้ส่งลูกค้า (ENDPOINTS ที่เห็นเป็น IP ของบูธใหม่ที่ยัง `ready=false`) **ร้านสะดุด** แถว `x` ต่อกัน 7 ตัว ในช่วงราว 2.6 วินาที
-- ข้อความ error คือ `Connection reset by peer` และ `Operation timed out` ทดลองซ้ำอีก 2 รอบได้ err 4 และ 4 (ช่วง 2.3 และ 4.3 วินาที) และในรอบที่ถ่ายภาพหน้าจอ **ยิง 150 ครั้งได้ error 7 ครั้ง** (`during delete-all: ok=143 err=7`)
+- ลบทั้งหมดพร้อมกัน → บูธใหม่ทุกตัวยังอยู่ใน `Init` ไม่มีบูธที่ ready ให้ส่งลูกค้า (ENDPOINTS ที่เห็นเป็น IP ของบูธใหม่ที่ยัง `ready=false`) **ร้านสะดุด** แถว `x` ต่อกัน 5 ตัว ในช่วงราว 4.4 วินาที
+- ข้อความ error คือ `Connection reset by peer` และ `Operation timed out` จำนวน err ต่างกันทุกรอบ: รอบนี้ 5 จาก 200, การทดลองรอบก่อนได้ 7 จาก 200 (ช่วง 2.6 วินาที), 4 และ 4 (ช่วง 2.3 และ 4.3 วินาที) และในรอบที่ถ่ายภาพหน้าจอ **ยิง 150 ครั้งได้ error 7 ครั้ง** (`during delete-all: ok=143 err=7`) โดยรวมอยู่ในช่วง 4–7 ครั้ง
 - ตัวเลขนี้มาจากเครื่องทดสอบที่บูธใหม่ Ready ในราว 3–4 วินาที **เครื่องที่ช้ากว่าจะเห็น err มากกว่านี้** และถ้าร้านมี 30 บูธ ทั้งสองแบบยิ่งลำบาก
 
 🌐 refresh browser จะเห็นร้านรุ่นใหม่
 
 <p align="center" id="fig-27">
-  <img src="images/screenshots/20261005_0937_lab10svc_04-shop-1.3-after-manual-delete.png" alt="รูปที่ 27 ภาพหน้าจอจริง ร้านเวอร์ชัน 1.3" width="700"><br>
-  <em><b>รูปที่ 27</b> ภาพหน้าจอจริงจากการทดลอง: set image rs/som-web เป็น 1.3 แล้ว Pod เดิมยังเป็น 1.2 ต้องลบ Pod ทั้งหมดเอง (ระหว่างนั้น curl 150 ครั้ง error 7) จึงได้ร้านธีม sunset ป้าย "เวอร์ชัน 1.3" และแบนเนอร์ "🎉 เมนูใหม่: ขนมปลาทูน่าอบกรอบ 🐟" — ออเดอร์ 3 ในภาพสั่งหลังเติมสินค้าใหม่และยังอยู่ เพราะลบแค่ Pod web ไม่ได้ลบ db</em>
+  <img src="images/screenshots/20261005_1736_lab006_01-shop-1.3.png" alt="รูปที่ 27 ภาพหน้าจอจริง ร้านเวอร์ชัน 1.3 ออเดอร์ 3" width="700"><br>
+  <em><b>รูปที่ 27</b> ภาพหน้าจอจริงจากการทดลอง: เมื่อทุกบูธเป็น 1.3 แล้วจะได้ร้านธีม sunset ป้าย "เวอร์ชัน 1.3" แถบ "🐱 เสิร์ฟโดย Pod: som-web-pglfq · เวอร์ชัน 1.3" และแบนเนอร์ "🎉 เมนูใหม่: ขนมปลาทูน่าอบกรอบ 🐟" ท้ายหน้า namespace som-shop — ออเดอร์ทั้งหมด 3 ชิ้นที่ขายแล้ว 3 สินค้าในร้าน 6 เก็บอยู่ใน db กลาง ซึ่งการลบ Pod web ไม่ได้แตะ (หมายเหตุ: ร้านในภาพสร้างใหม่ด้วย image 1.3 ใน namespace som-shop บน NodePort 30080 เพื่อถ่ายภาพ ไม่ได้ผ่านขั้น set image + ลบ Pod ในรอบถ่ายภาพ)</em>
 </p>
 
 ### 10.13 สรุป LAB 10 และปัญหาที่ส่งต่อ
@@ -2636,7 +3211,7 @@ ok=60 err=0 (ใช้เวลา 6.5 วินาที)
 - เปิดร้านจาก browser ที่ `localhost:30080` ได้ทันที browser ติดบูธเดิม (keep-alive) ส่วน `hit.sh` เห็นครบทุกบูธ `ok=60 err=0`
 - ออเดอร์จากทุกบูธรวมใน db กลาง scale 5 แล้ว EndpointSlice ตามเอง ลบบูธหนึ่งระหว่างขาย err 0–1
 - ลบ Pod db: IP ใหม่ ClusterIP เดิม web ต่อใหม่เอง แต่ข้อมูลหาย หน้า 503 → ลบบูธ web 1 ตัวเพื่อเติมสินค้า ทุกบูธกลับมา ออเดอร์ 0
-- `set image rs` ไม่เปลี่ยนบูธเดิม ลบทีละตัวเห็น 1.2/1.3 ปน ลบทีเดียวร้านสะดุด (err 7 จาก 200 และ 7 จาก 150)
+- `set image rs` ไม่เปลี่ยนบูธเดิม ลบทีละตัวเห็น 1.2/1.3 ปน ลบทีเดียวร้านสะดุด (รอบนี้ err 5 จาก 200 ในช่วง 4.4 วินาที รอบก่อน 7 จาก 200 และ 7 จาก 150)
 
 ### 10.14 เก็บกวาด LAB 10
 
@@ -2651,18 +3226,18 @@ docker exec lab-worker crictl images | grep som-shop
 ```text
 namespace "som-shop" deleted
 
-real	0m11.214s
+real	0m11.089s
 ...
 (30080 ว่าง)
-docker.io/library/som-shop-web                  1.2                  5d645cb7b669b       76.6MB
-docker.io/library/som-shop-web                  1.3                  3f71969dffec2       76.6MB
+docker.io/library/som-shop-web                  1.2                  76eb03e99952e       76.6MB
+docker.io/library/som-shop-web                  1.3                  332937a52995b       76.6MB
 ```
 
-ลบ namespace ราว 11 วินาที พอร์ต 30080 ว่างอีกครั้ง image `som-shop-web:1.2` และ `1.3` ยังอยู่บน Node **เก็บไว้ใช้ต่อในบทที่ 7** (ถ้า `k8s-down` ต้อง build และ `kind load` ใหม่)
+ลบ namespace ราว 11 วินาที พอร์ต 30080 ว่างอีกครั้ง image `som-shop-web:1.2` และ `1.3` ยังอยู่บน Node (IMAGE ID ที่ `crictl` แสดงเปลี่ยนทุกครั้งที่ build ใหม่ ในเครื่องนักศึกษาจะต่างจากนี้) **เก็บไว้ใช้ต่อในบทที่ 7** (ถ้า `k8s-down` ต้อง build และ `kind load` ใหม่)
 
 ### คำถามท้าย LAB 10
 
-1. ทำไม `DATABASE_URL` จึงใช้ `som-db:5432` แทน IP ของ Pod db ถ้าใส่ IP `10.244.2.21` ไว้ ข้อ 10.9 จะเกิดอะไรขึ้น
+1. ทำไม `DATABASE_URL` จึงใช้ `som-db:5432` แทน IP ของ Pod db ถ้าใส่ IP ของ Pod db (ในการทดลองคือ `10.244.2.9`) ไว้ ข้อ 10.9 จะเกิดอะไรขึ้น
 2. ทำไม Service `som-db` จึงเป็น ClusterIP ไม่ใช่ NodePort และทำไม ReplicaSet `som-db` ต้องมี `replicas: 1` ถ้าตั้งเป็น 3 ลูกค้าจะเห็นออเดอร์อย่างไร
 3. ถ้าแอปรุ่น 1.2 ไม่มี advisory lock ใน `seed.mjs` แต่ยัง scale เป็น 3 บูธพร้อมกัน จะเห็นอะไรใน `INIT_RESTARTS` และ log ของ `db-seed` และควรแก้แบบไหนอีกบ้าง
 4. หลังลบ Pod db ทำไมหน้าเว็บ 503 ทั้งที่บูธ web ยัง `1/1 Ready` และทำไมการลบบูธ web แค่ 1 ตัวจึงทำให้ **ทุก** บูธกลับมาขายได้
@@ -2683,18 +3258,21 @@ docker.io/library/som-shop-web                  1.3                  3f71969dffe
 | `Error from server (NotFound): namespaces "shop" not found` | ข้าม LAB 1 หรือเก็บกวาดไปแล้ว | เริ่มใหม่จาก LAB 1 (`kubectl apply -f labs/lab01-before-service/`) แล้วทำ LAB ที่ต้องมีก่อนตามบรรทัด "ต้องมีจาก LAB ..." |
 | `provided port is already allocated` ตอน apply NodePort 30080 | Service อื่นจอง 30080 อยู่ (ตัวอย่างของบทที่ 1, `web-nodeport` ของ LAB 8 หรือ `som-web` ที่ยังไม่ลบ) | `kubectl get svc -A \| grep 30080` แล้วลบตัวที่ค้าง (LAB 0 ขั้นที่ 4, LAB 8 ขั้นที่ 7) |
 | browser เปิด `http://localhost:30080` ไม่ได้ ทั้งที่ใน k8s-lab `curl -s localhost:30080` ได้ | container `k8s-lab` ไม่ได้ publish พอร์ต 30080 (สร้างไม่ตรงบทที่ 1) หรือโปรแกรมอื่นบนเครื่องใช้พอร์ตนี้ | 🖥️ `docker port k8s-lab` ต้องมีบรรทัดของ `30080/tcp` ถ้าไม่มี ใช้ทางสำรอง 🖥️ `ssh -p 2223 -L 30080:localhost:30080 root@localhost` แล้วเปิด `http://localhost:30080` อีกครั้ง (ถ้าพอร์ตชน เปลี่ยนเลขซ้ายเป็น `-L 13080:localhost:30080` แล้วเปิด `http://localhost:13080`) |
+| `curl -s localhost:30080` ไม่พิมพ์อะไรเลย (exit 56) หรือ loop ของ Node ไม่ได้คำตอบ ทันทีหลังสร้าง NodePort | กฎ NodePort ของ kube-proxy ยังไม่พร้อม | รอ 2–3 วินาที (LAB 8 ขั้นที่ 1 ใช้ `sleep 3`) แล้ว curl ซ้ำ |
+| ลบ NodePort แล้ว `curl localhost:30080` ยังได้หน้าเว็บอีก 1 ครั้ง | kube-proxy ยังลบกฎไม่เสร็จ | ปกติ รอ 3 วินาทีแล้วจะได้ `(56) Connection reset by peer` / `(7) Couldn't connect` |
+| เปิด `sessionAffinity: ClientIP` แล้วยิง 30 ครั้งยังกระจายหลายบูธ | ยิงทันทีหลัง `patch` กฎ affinity ยังไม่พร้อม | `sleep 3` หลัง `patch` แล้วยิงใหม่ (LAB 5 ขั้นที่ 2) |
 | browser refresh แล้วเห็นชื่อ Pod เดิมตลอด | keep-alive ของ browser (ไม่ใช่ความผิดปกติ) | ดูการกระจายด้วย `curl` วน หรือ `./hit.sh` (LAB 8 ขั้นที่ 4) |
 | `ping` ClusterIP ได้ 100% packet loss | ClusterIP เป็น IP เสมือน (ปกติ) | ทดสอบด้วย `wget`/`curl` ไปที่พอร์ตของ Service |
 | `nslookup web` มีบรรทัด `** server can't find ... NXDOMAIN` ปน และ exit 1 / `nslookup web.shop` ได้ NXDOMAIN | ข้อจำกัดของ `nslookup` ใน busybox | ใช้ชื่อเต็ม `web.shop.svc.cluster.local` กับ nslookup ส่วนการทดสอบแอปใช้ `wget http://web.shop` |
 | `wget: bad address 'web'` | เรียกชื่อสั้นจาก namespace อื่น หรือสะกดผิด | ใช้ `web.shop` หรือชื่อเต็ม ตรวจชื่อด้วย `kubectl get svc -A` |
-| `wget: can't connect to remote host (10.96.x.x): Connection refused` | Service ไม่มี endpoint ที่ ready (selector ผิด/Pod ไม่ ready) หรือ targetPort ผิด หรือ Service เพิ่งสร้าง (~1 วินาทีแรก) | ลองซ้ำ 1 ครั้ง แล้วไล่ตาม LAB 7: `get endpointslice -l kubernetes.io/service-name=<svc>`, `describe svc`, `get pods --show-labels` |
+| `wget: can't connect to remote host (10.96.x.x): Connection refused` | Service ไม่มี endpoint ที่ ready (selector ผิด/Pod ไม่ ready) หรือ targetPort ผิด หรือ Service เพิ่งสร้าง (kube-proxy ยังเขียนกฎไม่เสร็จ ราว 2 วินาทีแรก) | `sleep 2` แล้วลองซ้ำ ถ้ายังได้อีกให้ไล่ตาม LAB 7: `get endpointslice -l kubernetes.io/service-name=<svc>`, `describe svc`, `get pods --show-labels` |
 | `wget: download timed out` | เรียกพอร์ตที่ Service ไม่ได้ประกาศ, NetworkPolicy กั้น หรือเรียก Pod IP ที่ไม่มีแล้ว | ตรวจ `PORT(S)` ของ Service, `kubectl get netpol -A`, ใช้ชื่อ Service แทน IP |
 | ENDPOINTS แสดง IP ครบแต่บางบูธไม่ได้ลูกค้า | บูธนั้น `ready=false` | ดูด้วย jsonpath `conditions.ready` หรือ `describe endpointslice` (LAB 6) |
 | ENDPOINTS แสดง `... + 2 more...` | kubectl ตัดการแสดงผลเกิน 3 IP | ใช้ jsonpath `{range .items[0].endpoints[*]}...` |
 | `sessionAffinity` ยังเป็น `ClientIP` ทำให้ LAB 6 ยิงไปบูธเดียว | ลืมปิดในท้าย LAB 5 | `kubectl -n shop patch svc web -p '{"spec":{"sessionAffinity":"None"}}'` |
 | `client` ใน shop เรียก `web` ได้ `download timed out` หลัง LAB 9 ขั้นที่ 4 | NetworkPolicy เลือก Pod `app=web` แล้วอนุญาตเฉพาะ `kitchen` (ตั้งใจให้เห็น) | ลบ policy `kubectl -n shop delete netpol web-from-kitchen` หรือลบ namespace ตามขั้นที่ 5 |
 | `wget http://supplier.shop` ได้ `409 Conflict` / nslookup ExternalName ไม่ได้ A record | Host header ไม่ตรง (ข้อจำกัดของ ExternalName) / เครื่องไม่มีอินเทอร์เน็ต | เป็นผลที่คาดไว้ ดูแค่บรรทัด `canonical name = example.com` |
-| `./hit.sh: Permission denied` | สิทธิ์ execute หายระหว่างคัดลอกไฟล์ | `chmod +x hit.sh` หรือรันด้วย `bash hit.sh` |
+| `./hit.sh: Permission denied` (exit 126) | ไฟล์ `hit.sh` ไม่มีสิทธิ์ execute (เช่น ข้าม `chmod` ในข้อ 10.2 หรือสิทธิ์หายระหว่างคัดลอกไฟล์) ถ้าเจอ `Permission denied` ให้ `chmod +x hit.sh` | `chmod +x hit.sh` (ข้อ 10.2) หรือรันด้วย `bash hit.sh` |
 | `som-web` ค้าง `Init:0/2` นาน, log `wait-for-db` พิมพ์ `รอฐานข้อมูล som-db...` ซ้ำ ๆ | db ยังไม่ Ready หรือ Service `som-db` ไม่มี endpoint | `kubectl -n som-shop get pods,endpointslice` และ `kubectl -n som-shop logs -l app=som-web -c wait-for-db` ตรวจว่า apply `10-db.yaml` แล้ว |
 | `som-web` ค้าง `ErrImagePull` / `ImagePullBackOff` (`som-shop-web:1.2`) | ยังไม่ `kind load docker-image` หรือสร้างคลัสเตอร์ใหม่หลัง load | ทำข้อ 10.2 แล้ว `kubectl -n som-shop delete pod -l app=som-web` |
 | `kind load docker-image postgres:...` ขึ้น `ctr: content digest sha256:...: not found` | image หลาย platform | ใช้ `docker save --platform linux/amd64 ...` + `kind load image-archive` (ข้อ 10.2) |
@@ -2764,4 +3342,4 @@ pgrep -af "[h]it.sh" || echo "ไม่มี hit.sh ค้าง"
 
 ---
 
-> **หมายเหตุเกี่ยวกับภาพประกอบ:** ภาพประกอบ LAB (ยกเว้นภาพในโฟลเดอร์ [`images/screenshots/`](images/screenshots/) ซึ่งเป็นภาพหน้าจอจริงจากการทดลอง) สร้างขึ้นด้วยปัญญาประดิษฐ์สำหรับการสร้างภาพเพื่อใช้ประกอบการเรียนการสอน ชุดคำสั่งสร้างภาพอยู่ใน [`images/imagegen-prompts.md`](images/imagegen-prompts.md) ภาพใช้อุปมาเชิงเปรียบเทียบ ตัวเลขในภาพ (เช่น IP และจำนวน err) เป็นค่าตัวอย่าง ให้ยึดผลลัพธ์คำสั่งในเอกสารและในเครื่องของนักศึกษาเป็นหลัก ภาพหน้าจอจริงถ่ายจาก browser ที่เปิด NodePort 30080 โดยตรง (บนเครื่องนักศึกษาคือ `http://localhost:30080`) ชื่อ Pod, IP และจำนวนออเดอร์ในภาพมาจากการทดลองรอบที่ถ่ายภาพ จึงอาจต่างจากผลคำสั่งในเอกสาร
+> **หมายเหตุเกี่ยวกับภาพประกอบ:** ภาพประกอบ LAB (ยกเว้นภาพในโฟลเดอร์ [`images/screenshots/`](images/screenshots/) ซึ่งเป็นภาพหน้าจอจริงจากการทดลอง) สร้างขึ้นด้วยปัญญาประดิษฐ์สำหรับการสร้างภาพเพื่อใช้ประกอบการเรียนการสอน ชุดคำสั่งสร้างภาพอยู่ใน [`images/imagegen-prompts.md`](images/imagegen-prompts.md) ภาพใช้อุปมาเชิงเปรียบเทียบ ตัวเลขในภาพ (เช่น IP และจำนวน err) เป็นค่าตัวอย่าง ให้ยึดผลลัพธ์คำสั่งในเอกสารและในเครื่องของนักศึกษาเป็นหลัก ภาพหน้าจอจริงถ่ายจาก NodePort 30080–30082 ของ namespace ที่สร้างเพื่อถ่ายภาพ (ดูหมายเหตุใต้แต่ละภาพ) ชื่อ Pod, IP และจำนวนออเดอร์ในภาพมาจากการทดลองรอบที่ถ่ายภาพ จึงอาจต่างจากผลคำสั่งในเอกสาร

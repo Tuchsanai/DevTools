@@ -10,11 +10,11 @@ spec:
   podSelector:
     matchLabels:
       app: web             # policy เลือก "Pod" ไม่ใช่ Service
-  policyTypes: ["Ingress"]
+  policyTypes: ["Ingress"] # คุมขาเข้า → Pod ที่ถูกเลือกรับเฉพาะที่ ingress อนุญาต
   ingress:
     - from:
         - namespaceSelector:
             matchLabels:
-              team: kitchen
+              team: kitchen  # ต้นทาง = ทุก Pod ใน namespace ที่มีป้าย team=kitchen
       ports:
         - port: 8080       # ← ผิด: ต้องใช้พอร์ตของ Pod (targetPort)

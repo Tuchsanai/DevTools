@@ -6,9 +6,9 @@ metadata:
   name: web-lb
   namespace: shop
 spec:
-  type: LoadBalancer
+  type: LoadBalancer       # = NodePort + ขอ IP ภายนอกจากผู้ให้บริการ (kind ไม่มี)
   selector:
     app: web
   ports:
     - port: 80
-      targetPort: http
+      targetPort: http     # ไม่ระบุ nodePort → ระบบสุ่มเลขในช่วง 30000–32767 ให้
