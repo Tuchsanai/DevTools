@@ -1,5 +1,7 @@
 # LAB 10: ครัวกลาง (ฐานข้อมูล) แบบใหม่ — Deployment som-db 1 ตัว (Recreate) + Service ClusterIP som-db:5432 เดิม
 # ชื่อและ selector (app: som-db) เท่าบท 006 → Pod spec เหมือนเดิมทุกอย่าง เปลี่ยนแค่ "ใครเป็นผู้ดูแล"
+# ตอนแปลงจาก k8s-rs/: template เหมือน ReplicaSet som-db เดิมทุกตัวอักษร → Deployment "รับเลี้ยง" RS เดิมเป็นรุ่นปัจจุบัน
+# ไม่สร้าง Pod db ใหม่ ข้อมูลจึงยังอยู่ (strategy อยู่นอก template — Recreate มีผลเมื่อเปลี่ยนรุ่น/rollout restart ครั้งถัดไป)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
