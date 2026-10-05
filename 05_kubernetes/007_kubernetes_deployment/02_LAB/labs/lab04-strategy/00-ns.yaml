@@ -2,4 +2,4 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: strategy-lab
+  name: strategy-lab           # ทุกคำสั่งของ LAB นี้ใช้ -n strategy-lab และลบทั้งโซนตอนจบ

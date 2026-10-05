@@ -1,7 +1,7 @@
-# LAB 10 (จุดเริ่ม = สำเนาจากบท 006 ไม่แก้): หน้าร้าน — ReplicaSet som-web 3 บูธ + Service NodePort som-web (30080)
+# LAB 10 (จุดเริ่ม = สำเนาจากบท 006 ค่าไม่แก้ เพิ่มแค่คอมเมนต์): หน้าร้าน — ReplicaSet som-web 3 บูธ + Service NodePort som-web (30080)
 # ทุกบูธต่อ db กลางตัวเดียวผ่านชื่อ Service som-db → ออเดอร์จากทุกบูธรวมที่เดียว (แก้ปัญหาบท 005)
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: ReplicaSet               # ไม่มีผู้จัดการ — ขั้น 10.4 ให้ Deployment som-web มารับเลี้ยง
 metadata:
   name: som-web
   namespace: som-shop
@@ -17,7 +17,7 @@ spec:
       labels:
         app: som-web
     spec:
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 30  # ยังไม่มี preStop → ตอนแปลง (10.4) บูธเดิมถูกปิดทันที อาจเห็น error
       securityContext:
         runAsNonRoot: true
         seccompProfile:
@@ -89,7 +89,7 @@ spec:
               path: /api/health
               port: http
             periodSeconds: 3
-            failureThreshold: 2
+            failureThreshold: 2  # ล้ม 2 ครั้งติด (~6 วิ) = not ready
           livenessProbe:             # process ยังไม่ค้าง (ไม่แตะ db)
             httpGet:
               path: /api/live
@@ -113,4 +113,4 @@ spec:
   ports:
     - port: 80
       targetPort: http       # = 3000 ของ container web
-      nodePort: 30080
+      nodePort: 30080          # จองได้ทีละ Service ทั้งคลัสเตอร์

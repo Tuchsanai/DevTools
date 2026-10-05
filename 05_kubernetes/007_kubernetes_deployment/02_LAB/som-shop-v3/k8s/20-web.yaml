@@ -11,7 +11,7 @@ metadata:
     # บันทึกเหตุผลของ revision นี้ลงสมุด (แสดงในคอลัมน์ CHANGE-CAUSE ของ rollout history)
     kubernetes.io/change-cause: "1.2 แปลงเป็น Deployment"
 spec:
-  replicas: 3
+  replicas: 3                  # 3 บูธ (ขั้น 10.9 scale เป็น 5)
   revisionHistoryLimit: 5          # เก็บ ReplicaSet รุ่นเก่าไว้ย้อนได้ 5 รุ่น
   progressDeadlineSeconds: 60      # rollout ไม่คืบหน้าเกิน 60 วิ = ล้มเหลว (เห็นในขั้นรุ่นพัง 1.4)
   minReadySeconds: 3               # Pod ใหม่ต้องพร้อมต่อเนื่อง 3 วิ ถึงนับว่าใช้ได้
@@ -52,7 +52,7 @@ spec:
             limits:   { cpu: 100m, memory: 64Mi }
         # 2) เติมสินค้าเข้าชั้น (สร้างตาราง + สินค้าตั้งต้น) — ทุก Pod รัน แต่มี advisory lock กันชน
         - name: db-seed
-          image: som-shop-web:1.2
+          image: som-shop-web:1.2  # initContainer ใช้ image เดียวกับ web — ขั้น 10.6 set image db-seed=... ด้วย
           imagePullPolicy: IfNotPresent
           command: ["node", "scripts/seed.mjs"]
           securityContext:
@@ -100,7 +100,7 @@ spec:
               path: /api/health
               port: http
             periodSeconds: 3
-            failureThreshold: 2
+            failureThreshold: 2  # ล้ม 2 ครั้งติด (~6 วิ) = not ready (เห็นตอนลบ Pod db ขั้น 10.10)
           lifecycle:
             preStop:                 # ถูกสั่งปิดแล้วยังเสิร์ฟต่อ 5 วิ ระหว่างที่ทุก Node ลบบูธนี้ออกจากรายชื่อ
               sleep:
@@ -128,4 +128,4 @@ spec:
   ports:
     - port: 80
       targetPort: http       # = 3000 ของ container web
-      nodePort: 30080
+      nodePort: 30080          # ต้องว่าง (ลบ zdt-lab ของ LAB 7 ก่อน)

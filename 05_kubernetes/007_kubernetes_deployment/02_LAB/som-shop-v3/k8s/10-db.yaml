@@ -3,7 +3,7 @@
 # ตอนแปลงจาก k8s-rs/: template เหมือน ReplicaSet som-db เดิมทุกตัวอักษร → Deployment "รับเลี้ยง" RS เดิมเป็นรุ่นปัจจุบัน
 # ไม่สร้าง Pod db ใหม่ ข้อมูลจึงยังอยู่ (strategy อยู่นอก template — Recreate มีผลเมื่อเปลี่ยนรุ่น/rollout restart ครั้งถัดไป)
 apiVersion: apps/v1
-kind: Deployment
+kind: Deployment               # ชื่อ/selector เดิม → รับเลี้ยง RS som-db เดิม
 metadata:
   name: som-db
   namespace: som-shop

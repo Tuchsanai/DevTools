@@ -2,4 +2,4 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: ready-lab
+  name: ready-lab              # ทุกคำสั่งของ LAB นี้ใช้ -n ready-lab และลบทั้งโซนตอนจบ

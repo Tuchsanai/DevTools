@@ -5,5 +5,5 @@ spec:
   template:
     spec:
       containers:
-        - name: web
-          command: ["sh", "-c", "echo 'แอปรุ่นนี้พัง: ไม่เจอไฟล์ตั้งค่า' >&2; exit 1"]
+        - name: web            # จับคู่ container ด้วยชื่อ (strategic merge)
+          command: ["sh", "-c", "echo 'แอปรุ่นนี้พัง: ไม่เจอไฟล์ตั้งค่า' >&2; exit 1"]  # เขียน stderr แล้ว exit 1 → CrashLoopBackOff, ดูด้วย logs --previous

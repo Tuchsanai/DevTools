@@ -2,4 +2,4 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: zdt-lab
+  name: zdt-lab                # ทุกคำสั่งของ LAB นี้ใช้ -n zdt-lab และลบทั้งโซนตอนจบ

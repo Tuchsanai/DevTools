@@ -2,4 +2,4 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: broken-lab
+  name: broken-lab             # ทุกคำสั่งของ LAB นี้ใช้ -n broken-lab และลบทั้งโซนตอนจบ

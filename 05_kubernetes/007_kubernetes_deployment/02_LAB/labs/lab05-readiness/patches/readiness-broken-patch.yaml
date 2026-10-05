@@ -7,6 +7,6 @@ spec:
     spec:
       containers:
         - name: web                  # จับคู่ container ด้วยชื่อ
-          readinessProbe:
+          readinessProbe:      # แก้เฉพาะ path — port และ periodSeconds เดิมยังอยู่ (strategic merge)
             httpGet:
-              path: /nope
+              path: /nope      # path ที่ไม่มีจริง → probe ได้ 404 → Pod ใหม่ 0/1 Running

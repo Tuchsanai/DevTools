@@ -5,4 +5,4 @@ metadata:
   name: som-shop
   labels:
     app.kubernetes.io/part-of: som-shop
-    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn: restricted  # แค่เตือน ไม่บล็อก — Pod ของร้านตั้ง securityContext ให้ผ่าน restricted แล้ว

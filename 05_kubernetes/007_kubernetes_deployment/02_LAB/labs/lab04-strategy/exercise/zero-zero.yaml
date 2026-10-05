@@ -5,15 +5,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zero
+  name: zero                   # ชื่อที่โผล่ใน error: The Deployment "zero" is invalid
   namespace: strategy-lab
 spec:
   replicas: 2
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 0
+      maxSurge: 0              # ห้ามมี Pod เกิน replicas
+      maxUnavailable: 0        # และห้ามขาด → API server ปฏิเสธ (may not be 0 when maxSurge is 0)
   selector:
     matchLabels:
       app: zero

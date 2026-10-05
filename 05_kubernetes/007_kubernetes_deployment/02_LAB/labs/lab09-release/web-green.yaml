@@ -5,11 +5,11 @@ metadata:
   name: web-green
   namespace: release-lab
 spec:
-  replicas: 2
+  replicas: 2                  # เปิดรอไว้พร้อมกับ blue
   selector:
     matchLabels:
       app: web
-      version: green
+      version: green           # selector ต้องมี version ด้วย ไม่งั้น blue/green แย่ง Pod กัน
   template:
     metadata:
       labels:
@@ -21,14 +21,14 @@ spec:
           image: nginx:1.27-alpine
           env:
             - name: VERSION
-              value: green
+              value: green     # ข้อความบนหน้าเว็บ: web green from ...
           command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
           ports:
-            - name: http
+            - name: http       # ตั้งชื่อพอร์ต — readinessProbe และ Service (targetPort: http) อ้างด้วยชื่อนี้
               containerPort: 80
           readinessProbe:
             httpGet: { path: /, port: http }
-            periodSeconds: 2
+            periodSeconds: 2   # ตรวจทุก 2 วิ → Pod ใหม่ขึ้น 1/1 เร็ว rollout จึงเดินเร็ว
           resources:
-            requests: { cpu: 10m, memory: 16Mi }
+            requests: { cpu: 10m, memory: 16Mi }  # ขอทรัพยากรน้อย ๆ ให้ kind 3 Node รับ Pod ได้หลายตัว
             limits:   { cpu: 100m, memory: 64Mi }
