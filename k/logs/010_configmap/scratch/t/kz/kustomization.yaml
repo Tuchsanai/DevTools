@@ -1,0 +1,8 @@
+configMapGenerator:
+- name: web-config
+  literals:
+  - SHOP_NAME=ร้านน้องส้ม
+  files:
+  - announcement.txt
+resources:
+- deploy.yaml
