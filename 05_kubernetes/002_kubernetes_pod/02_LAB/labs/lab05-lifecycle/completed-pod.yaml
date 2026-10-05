@@ -1,0 +1,11 @@
+# LAB 5: Pod ที่ทำงานเสร็จแล้วจบ (exit 0) → STATUS Completed, phase Succeeded
+apiVersion: v1
+kind: Pod
+metadata:
+  name: completed-pod
+spec:
+  restartPolicy: Never    # จบแล้วไม่ต้องเริ่มใหม่
+  containers:
+    - name: job
+      image: busybox:1.36
+      command: ["sh", "-c", "echo 'น้องส้มนับสต็อกเสร็จแล้ว'; exit 0"]

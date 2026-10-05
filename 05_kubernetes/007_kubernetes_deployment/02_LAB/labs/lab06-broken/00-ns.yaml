@@ -1,0 +1,5 @@
+# LAB 6: โซน broken-lab — rollout พัง (image ผิด / แอปล้ม) แล้ว undo
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: broken-lab

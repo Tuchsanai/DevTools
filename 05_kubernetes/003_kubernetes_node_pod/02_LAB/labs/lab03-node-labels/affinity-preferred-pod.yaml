@@ -1,0 +1,105 @@
+# LAB 3: node affinity แบบ "อยากได้" (preferred) — 4 Pod หน้าตาเดียวกัน ดูว่าไปเรือไหนบ้าง
+# weight สูง = scheduler ให้คะแนนเพิ่มมาก แต่ไม่ใช่คำสั่งบังคับ (ไม่มีเรือตรงก็ยังวางที่อื่นได้)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: prefer-1
+  labels:
+    lab: "03"
+    group: prefer
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 80              # 1–100: อยากได้เรือ fleet=fast มาก
+          preference:
+            matchExpressions:
+              - key: fleet
+                operator: In
+                values: ["fast"]
+        - weight: 20              # อยากได้เรือที่มีป้าย cabin (ค่าอะไรก็ได้) นิดหน่อย
+          preference:
+            matchExpressions:
+              - key: cabin
+                operator: Exists
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: prefer-2
+  labels:
+    lab: "03"
+    group: prefer
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 80              # 1–100: อยากได้เรือ fleet=fast มาก
+          preference:
+            matchExpressions:
+              - key: fleet
+                operator: In
+                values: ["fast"]
+        - weight: 20              # อยากได้เรือที่มีป้าย cabin (ค่าอะไรก็ได้) นิดหน่อย
+          preference:
+            matchExpressions:
+              - key: cabin
+                operator: Exists
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: prefer-3
+  labels:
+    lab: "03"
+    group: prefer
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 80              # 1–100: อยากได้เรือ fleet=fast มาก
+          preference:
+            matchExpressions:
+              - key: fleet
+                operator: In
+                values: ["fast"]
+        - weight: 20              # อยากได้เรือที่มีป้าย cabin (ค่าอะไรก็ได้) นิดหน่อย
+          preference:
+            matchExpressions:
+              - key: cabin
+                operator: Exists
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: prefer-4
+  labels:
+    lab: "03"
+    group: prefer
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 80              # 1–100: อยากได้เรือ fleet=fast มาก
+          preference:
+            matchExpressions:
+              - key: fleet
+                operator: In
+                values: ["fast"]
+        - weight: 20              # อยากได้เรือที่มีป้าย cabin (ค่าอะไรก็ได้) นิดหน่อย
+          preference:
+            matchExpressions:
+              - key: cabin
+                operator: Exists
+  containers:
+    - name: web
+      image: nginx:1.27-alpine

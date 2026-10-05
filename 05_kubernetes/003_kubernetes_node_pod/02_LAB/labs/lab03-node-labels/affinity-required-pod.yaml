@@ -1,0 +1,19 @@
+# LAB 3: node affinity แบบ "ต้อง" (required) — ขึ้นได้ทั้งเรือ fast และ eco
+apiVersion: v1
+kind: Pod
+metadata:
+  name: affinity-required-pod
+  labels:
+    lab: "03"
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:   # ต้องตรงตอนวาง / วางแล้วไม่ตรวจซ้ำ
+        nodeSelectorTerms:          # หลาย term = OR
+          - matchExpressions:       # หลาย expression ใน term เดียว = AND
+              - key: fleet
+                operator: In
+                values: ["fast", "eco"]
+  containers:
+    - name: web
+      image: nginx:1.27-alpine

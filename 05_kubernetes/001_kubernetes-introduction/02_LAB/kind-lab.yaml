@@ -1,0 +1,26 @@
+# kind-lab.yaml — kind cluster สำหรับ lab (ใช้โดย k8s-up)
+#   - ชื่อคลัสเตอร์ "lab" → kubectl context = kind-lab
+#   - 1 control-plane + 2 worker (ทุก node เป็น container ใน Docker-in-Docker)
+#   - extraPortMappings: NodePort 30080-30082 ของ control-plane ถูก map ออกมาที่ container k8s-lab
+#     (docker-compose map ต่อไปที่ host อีกชั้น → เปิด http://localhost:30080 จากเครื่องตัวเองได้)
+#   - ไม่ pin node image → ใช้ image default ของ kind เวอร์ชันที่ติดตั้ง (override ได้ด้วย KIND_NODE_IMAGE)
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: lab
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 30080
+        hostPort: 30080
+        listenAddress: "0.0.0.0"
+        protocol: TCP
+      - containerPort: 30081
+        hostPort: 30081
+        listenAddress: "0.0.0.0"
+        protocol: TCP
+      - containerPort: 30082
+        hostPort: 30082
+        listenAddress: "0.0.0.0"
+        protocol: TCP
+  - role: worker
+  - role: worker

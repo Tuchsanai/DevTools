@@ -1,0 +1,25 @@
+# LAB สุดท้าย: ชุดป้องกันของร้านจริง (som-prod เท่านั้น จึงเขียน namespace ไว้ในไฟล์)
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: prod-budget
+  namespace: som-prod
+spec:
+  hard:
+    pods: "2"                    # ร้านจริงเปิดได้ไม่เกิน 2 Pod
+    requests.cpu: "1"
+    requests.memory: 1Gi
+    limits.cpu: "2"
+    limits.memory: 2Gi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: prod-box-size
+  namespace: som-prod
+spec:
+  limits:
+    - type: Container            # ใช้กับทุก container รวม init/sidecar
+      defaultRequest: { cpu: 50m, memory: 64Mi }
+      default:        { cpu: 200m, memory: 128Mi }
+      max:            { cpu: "1", memory: 1Gi }

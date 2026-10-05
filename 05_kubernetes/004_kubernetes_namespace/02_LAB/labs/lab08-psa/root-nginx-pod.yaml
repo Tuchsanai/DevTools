@@ -1,0 +1,11 @@
+# LAB 8: nginx ทางการ รันเป็น root และไม่มี securityContext
+# ผ่าน baseline (แต่มีคำเตือน restricted) / ไม่ผ่าน restricted
+apiVersion: v1
+kind: Pod
+metadata:
+  name: root-nginx
+  namespace: secure
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.27-alpine

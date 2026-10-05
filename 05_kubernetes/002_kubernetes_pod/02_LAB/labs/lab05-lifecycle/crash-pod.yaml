@@ -1,0 +1,11 @@
+# LAB 5: container ล้มทุกครั้ง (exit 1) + restartPolicy Always → CrashLoopBackOff
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crash-pod
+spec:
+  restartPolicy: Always   # ค่าเริ่มต้น: ล้มเมื่อไรก็เริ่มใหม่ (รอนานขึ้นเรื่อย ๆ)
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo 'กำลังเปิดร้าน...'; sleep 3; echo 'ERROR: หาไฟล์เมนูไม่เจอ' >&2; exit 1"]

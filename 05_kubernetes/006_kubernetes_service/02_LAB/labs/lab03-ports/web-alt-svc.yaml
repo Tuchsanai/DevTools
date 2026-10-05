@@ -1,0 +1,12 @@
+# LAB 3: Service รับที่พอร์ต 8080 แต่ส่งต่อไปพอร์ต 80 (ชื่อ http) ของ Pod
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-alt
+  namespace: shop
+spec:
+  selector:
+    app: web
+  ports:
+    - port: 8080           # ลูกค้าเรียก http://web-alt:8080
+      targetPort: http     # → containerPort ชื่อ http (80)

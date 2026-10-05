@@ -1,0 +1,16 @@
+# LAB 8: NodePort 30080 → เปิดประตูหมายเลข 30080 บน "ทุก Node"
+# kind ของ k8s-lab map พอร์ต 30080 ของเครื่องนักศึกษา → lab-control-plane:30080 (extraPortMappings บท 001)
+# → เปิด http://localhost:30080 จาก browser ได้เลย
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-nodeport
+  namespace: shop
+spec:
+  type: NodePort
+  selector:
+    app: web
+  ports:
+    - port: 80             # ClusterIP:80 (ภายในคลัสเตอร์)
+      targetPort: http     # → Pod:80
+      nodePort: 30080      # ทุก Node:30080 (ช่วงที่ใช้ได้ 30000–32767)

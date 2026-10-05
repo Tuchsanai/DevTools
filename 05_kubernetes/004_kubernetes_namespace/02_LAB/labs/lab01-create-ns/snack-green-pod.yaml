@@ -1,0 +1,15 @@
+# LAB 1: Pod เดียวกันแต่ "ติดป้ายที่อยู่" ไว้ในไฟล์ว่าเป็นของโซน green
+# apply -n green หรือไม่ใส่ -n ได้; ถ้าสั่ง -n blue จะ error เพราะไม่ตรงกัน
+apiVersion: v1
+kind: Pod
+metadata:
+  name: snack-green
+  namespace: green               # ป้ายที่อยู่ในไฟล์
+  labels:
+    app: snack
+spec:
+  terminationGracePeriodSeconds: 1
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo snack ของโซน green; sleep 3600"]

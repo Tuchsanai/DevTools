@@ -1,0 +1,13 @@
+# LAB 9 canary: Service web ที่เลือกแค่ app=web (ไม่ระบุ version/track) → stable และ canary รับลูกค้าตามจำนวน Pod
+# (ทางเลือกแทน patch แบบ json remove)  kubectl apply -f lab09-release/web-svc-all.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: release-lab
+spec:
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: http

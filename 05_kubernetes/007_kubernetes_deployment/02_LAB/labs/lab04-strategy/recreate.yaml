@@ -1,0 +1,38 @@
+# LAB 4 (3/3): Recreate — ปิดทุกบูธก่อน (ป้าย CLOSED) แล้วค่อยเปิดรุ่นใหม่ทั้งหมด → มีช่วงที่ไม่มี Pod พร้อมเลย
+# ใช้เมื่อสองรุ่นอยู่พร้อมกันไม่ได้ (เช่น ฐานข้อมูล som-db ใน LAB 10)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recreate
+  namespace: strategy-lab
+  labels:
+    app: recreate
+    lab: strategy
+spec:
+  replicas: 4
+  strategy:
+    type: Recreate           # ไม่มี rollingUpdate ให้ตั้ง
+  selector:
+    matchLabels:
+      app: recreate
+  template:
+    metadata:
+      labels:
+        app: recreate
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          env:
+            - name: VERSION
+              value: v1
+          command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            httpGet: { path: /, port: http }
+            periodSeconds: 2
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }

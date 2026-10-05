@@ -1,0 +1,9 @@
+# LAB 5: ระบุ image tag ที่ไม่มีอยู่จริง → ErrImagePull → ImagePullBackOff
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bad-image-pod
+spec:
+  containers:
+    - name: web
+      image: nginx:9.99-doesnotexist   # tag ผิด! แก้เป็น nginx:1.27-alpine แล้วลบ/apply ใหม่

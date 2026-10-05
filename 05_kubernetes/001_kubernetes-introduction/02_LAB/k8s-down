@@ -1,0 +1,4 @@
+#!/bin/bash
+# k8s-down — ลบ kind cluster ของ lab (ค่าเริ่มต้นชื่อ "lab", override ด้วย KIND_CLUSTER_NAME)
+set -euo pipefail
+kind delete cluster --name "${KIND_CLUSTER_NAME:-lab}"

@@ -1,0 +1,12 @@
+# LAB 8: Service web (ClusterIP) — ชื่อเดิมตลอดการย้าย ลูกค้าไม่ต้องเปลี่ยนที่อยู่
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: migrate-lab
+spec:
+  selector:
+    app: web                       # เลือกทั้ง Pod รุ่นเก่าและรุ่นใหม่ (มี app=web เหมือนกัน)
+  ports:
+    - port: 80
+      targetPort: http

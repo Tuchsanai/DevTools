@@ -1,0 +1,14 @@
+# LAB 9: Service web — คันโยกที่ประภาคาร: selector version=blue → ส่งลูกค้าไปแถวสีน้ำเงินทั้งหมด
+# สลับเป็นสีเขียว:  kubectl -n release-lab patch svc web -p '{"spec":{"selector":{"version":"green"}}}'
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: release-lab
+spec:
+  selector:
+    app: web
+    version: blue
+  ports:
+    - port: 80
+      targetPort: http

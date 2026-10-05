@@ -1,0 +1,101 @@
+# LAB 7: กองตู้สินค้า 4 Pod (cargo-1..4 กระจาย 2 worker) + pantry ที่มี emptyDir บน lab-worker
+# ทุกตัวเป็น "Pod เดี่ยว" ไม่มี controller ดูแล → ถูก drain แล้วหายไปเลย
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cargo-1
+  labels:
+    lab: "03"
+    group: cargo
+spec:
+  topologySpreadConstraints:       # กระจาย cargo ให้ 2 worker เท่า ๆ กัน (ทวน LAB 5)
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      nodeTaintsPolicy: Honor
+      labelSelector:
+        matchLabels:
+          group: cargo
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cargo-2
+  labels:
+    lab: "03"
+    group: cargo
+spec:
+  topologySpreadConstraints:       # กระจาย cargo ให้ 2 worker เท่า ๆ กัน (ทวน LAB 5)
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      nodeTaintsPolicy: Honor
+      labelSelector:
+        matchLabels:
+          group: cargo
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cargo-3
+  labels:
+    lab: "03"
+    group: cargo
+spec:
+  topologySpreadConstraints:       # กระจาย cargo ให้ 2 worker เท่า ๆ กัน (ทวน LAB 5)
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      nodeTaintsPolicy: Honor
+      labelSelector:
+        matchLabels:
+          group: cargo
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cargo-4
+  labels:
+    lab: "03"
+    group: cargo
+spec:
+  topologySpreadConstraints:       # กระจาย cargo ให้ 2 worker เท่า ๆ กัน (ทวน LAB 5)
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      nodeTaintsPolicy: Honor
+      labelSelector:
+        matchLabels:
+          group: cargo
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pantry
+  labels:
+    lab: "03"
+    group: pantry
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: lab-worker   # ครัวเก็บของอยู่บนเรือที่จะเข้าอู่
+  volumes:
+    - name: scratch
+      emptyDir: {}                 # ข้อมูลอยู่บน node → drain ต้องยืนยันด้วย --delete-emptydir-data
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+      volumeMounts:
+        - name: scratch
+          mountPath: /scratch

@@ -1,0 +1,5 @@
+# LAB 7: โซน zdt-lab — นับ error ระหว่าง rollout ผ่าน NodePort 30080 (จบแล้วลบ ns เพื่อคืน 30080)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: zdt-lab

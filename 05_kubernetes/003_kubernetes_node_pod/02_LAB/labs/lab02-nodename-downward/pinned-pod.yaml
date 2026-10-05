@@ -1,0 +1,12 @@
+# LAB 2: nodeName = ส่งตรงถึงต้นเรือ ข้ามเจ้าหน้าที่จัดตู้ (scheduler) ไปเลย
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pinned-pod
+  labels:
+    lab: "03"
+spec:
+  nodeName: lab-control-plane  # ระบุเรือเอง → scheduler ไม่ตรวจ taint ของ control-plane (ไม่มี toleration ก็ลงได้)
+  containers:
+    - name: web
+      image: nginx:1.27-alpine

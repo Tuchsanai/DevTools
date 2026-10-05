@@ -1,0 +1,36 @@
+# LAB 5: ลองแก้ selector ของ RS ที่มีอยู่แล้ว → ถูกปฏิเสธ (field is immutable)
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: web
+  namespace: rs-lab
+  labels:
+    app: web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+      tier: front          # ← เพิ่มป้ายใน selector (ห้ามแก้ selector หลังสร้าง)
+  template:
+    metadata:
+      labels:
+        app: web
+        tier: front
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          env:
+            - name: VERSION          # รุ่นของหน้าเว็บ (ดูด้วย custom-columns ได้)
+              value: v1
+          # เขียนหน้า index ให้บอกรุ่นและชื่อ Pod แล้วเปิด nginx
+          command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet: { path: /, port: 80 }
+            periodSeconds: 2
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }

@@ -1,0 +1,49 @@
+# LAB 5: Deployment ที่ Pod ใหม่ต้อง "พร้อมต่อเนื่อง 10 วินาที" (minReadySeconds) ก่อนนับเป็น AVAILABLE
+# → READY ขึ้นก่อน AVAILABLE ราว 10 วินาที และ rollout ช้าลงตาม
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: ready-lab
+  labels:
+    app: web
+spec:
+  minReadySeconds: 10             # พร้อมแล้วต้องรอดอีก 10 วิ ถึงนับว่าใช้ได้ (นาฬิกาทรายหน้าบูธ)
+  replicas: 3
+  selector:                        # เปลี่ยนไม่ได้หลังสร้าง (เหมือน ReplicaSet)
+    matchLabels:
+      app: web
+  template:                        # พิมพ์เขียวของ Pod — แก้ส่วนนี้ = เกิดรุ่นใหม่ (rollout)
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine   # image สาธารณะ — Node pull เอง ไม่ต้อง kind load
+          env:
+            - name: VERSION
+              value: v1
+          # เขียนหน้า index ให้บอกรุ่นและชื่อ Pod แล้วเปิด nginx
+          command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:            # ไฟเขียวหน้าบูธ — rollout รอไฟนี้ก่อนปิดบูธรุ่นเก่า
+            httpGet: { path: /, port: http }
+            periodSeconds: 2
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: ready-lab
+spec:
+  selector:
+    app: web                       # เลือกทั้ง Pod รุ่นเก่าและรุ่นใหม่ (มี app=web เหมือนกัน)
+  ports:
+    - port: 80
+      targetPort: http

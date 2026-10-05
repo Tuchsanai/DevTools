@@ -1,0 +1,22 @@
+# LAB 7 รอบสอง: สูตรเปลี่ยนรุ่นไม่ให้ลูกค้าเจอ error
+# (เก็บไว้ในโฟลเดอร์ patches/ เพราะไฟล์ patch ไม่มี apiVersion/kind — kubectl apply -f lab07-zero-downtime/ จะไม่หยิบมา)
+#  - maxSurge 1 / maxUnavailable 0 → เปิดบูธใหม่ให้พร้อมก่อน ค่อยปิดบูธเก่า (จำนวนบูธพร้อมไม่ลดเลย)
+#  - preStop sleep 5 → บูธที่ถูกสั่งปิดยังเสิร์ฟต่อ 5 วิ ระหว่างที่ทุก Node ลบมันออกจากรายชื่อ (EndpointSlice)
+#  - terminationGracePeriodSeconds 30 → เวลารวมให้ปิดร้านอย่างสุภาพก่อนโดน SIGKILL
+# ใช้:  kubectl -n zdt-lab patch deploy web --patch-file lab07-zero-downtime/patches/graceful-patch.yaml
+# (patch นี้แก้ template ด้วย → เกิด rollout 1 ครั้ง รอให้จบก่อนเริ่มนับรอบสอง)
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: web
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: 5           # sleep action ของ kubelet — ไม่ต้องมีคำสั่ง sleep ใน image

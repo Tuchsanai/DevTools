@@ -1,0 +1,14 @@
+# LAB 2: Pod YAML แรก — เว็บเซิร์ฟเวอร์ nginx 1 container
+apiVersion: v1            # กลุ่ม/เวอร์ชันของ API ที่ใช้ (Pod อยู่ในกลุ่ม core = v1)
+kind: Pod                 # ชนิดของ object ที่ต้องการสร้าง
+metadata:                 # ข้อมูลระบุตัวตนของ object
+  name: web               # ชื่อ Pod (ต้องไม่ซ้ำใน namespace เดียวกัน)
+  labels:                 # ป้ายแท็ก key: value ไว้ค้นหา/จัดกลุ่ม
+    app: web
+    owner: nong-som
+spec:                     # สิ่งที่เราอยากได้ (desired state)
+  containers:             # รายการ container ใน Pod (เป็น list จึงขึ้นต้นด้วย -)
+    - name: nginx         # ชื่อ container ภายใน Pod
+      image: nginx:1.27-alpine   # image + tag (ระบุ tag เสมอ ไม่ใช้ latest)
+      ports:
+        - containerPort: 80      # บอกว่าแอปฟัง port 80 (เป็นข้อมูลประกอบ ไม่ได้เปิด port ให้ภายนอก)

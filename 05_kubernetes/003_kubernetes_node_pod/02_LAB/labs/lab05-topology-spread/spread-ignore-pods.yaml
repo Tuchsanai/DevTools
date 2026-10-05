@@ -1,0 +1,77 @@
+# LAB 5: กระจาย 4 Pod ด้วย maxSkew 1 แบบค่าเริ่มต้น (nodeTaintsPolicy: Ignore)
+# Ignore = นับ node ที่มี taint (lab-control-plane) เป็น domain ด้วย ทั้งที่ Pod ไปลงที่นั่นไม่ได้
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spread-1
+  labels:
+    lab: "03"
+    group: spread
+spec:
+  topologySpreadConstraints:
+    - maxSkew: 1                         # จำนวน Pod ระหว่าง "เรือที่มากสุด" กับ "เรือที่น้อยสุด" ต่างกันได้ไม่เกิน 1
+      topologyKey: kubernetes.io/hostname   # 1 domain = 1 node
+      whenUnsatisfiable: DoNotSchedule   # ถ้าทำให้เอียงเกิน → ไม่วาง (Pending)
+      labelSelector:
+        matchLabels:
+          group: spread
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spread-2
+  labels:
+    lab: "03"
+    group: spread
+spec:
+  topologySpreadConstraints:
+    - maxSkew: 1                         # จำนวน Pod ระหว่าง "เรือที่มากสุด" กับ "เรือที่น้อยสุด" ต่างกันได้ไม่เกิน 1
+      topologyKey: kubernetes.io/hostname   # 1 domain = 1 node
+      whenUnsatisfiable: DoNotSchedule   # ถ้าทำให้เอียงเกิน → ไม่วาง (Pending)
+      labelSelector:
+        matchLabels:
+          group: spread
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spread-3
+  labels:
+    lab: "03"
+    group: spread
+spec:
+  topologySpreadConstraints:
+    - maxSkew: 1                         # จำนวน Pod ระหว่าง "เรือที่มากสุด" กับ "เรือที่น้อยสุด" ต่างกันได้ไม่เกิน 1
+      topologyKey: kubernetes.io/hostname   # 1 domain = 1 node
+      whenUnsatisfiable: DoNotSchedule   # ถ้าทำให้เอียงเกิน → ไม่วาง (Pending)
+      labelSelector:
+        matchLabels:
+          group: spread
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spread-4
+  labels:
+    lab: "03"
+    group: spread
+spec:
+  topologySpreadConstraints:
+    - maxSkew: 1                         # จำนวน Pod ระหว่าง "เรือที่มากสุด" กับ "เรือที่น้อยสุด" ต่างกันได้ไม่เกิน 1
+      topologyKey: kubernetes.io/hostname   # 1 domain = 1 node
+      whenUnsatisfiable: DoNotSchedule   # ถ้าทำให้เอียงเกิน → ไม่วาง (Pending)
+      labelSelector:
+        matchLabels:
+          group: spread
+  containers:
+    - name: web
+      image: nginx:1.27-alpine

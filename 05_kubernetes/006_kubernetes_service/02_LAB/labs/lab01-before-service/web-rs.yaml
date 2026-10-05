@@ -1,0 +1,36 @@
+# LAB 1: ร้าน web 3 บูธ (ReplicaSet จากบท 005) — ยังไม่มี Service
+# หน้าเว็บตอบ "web v1 from <ชื่อ Pod>" → เห็นทันทีว่า request ไปตกบูธไหน
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: web
+  namespace: shop
+  labels:
+    app: web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web                   # Service จะเลือก Pod ด้วยป้ายนี้ (LAB 2)
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine   # image สาธารณะ — Node pull เอง ไม่ต้อง kind load
+          env:
+            - name: VERSION
+              value: v1
+          # เขียนหน้า index ให้บอกรุ่นและชื่อ Pod แล้วเปิด nginx
+          command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
+          ports:
+            - name: http             # ตั้งชื่อพอร์ต → Service อ้าง targetPort: http ได้
+              containerPort: 80
+          readinessProbe:            # ไฟเขียวหน้าบูธ: ไม่ผ่าน = Service ไม่ส่งลูกค้ามา (LAB 6)
+            httpGet: { path: /, port: http }
+            periodSeconds: 2
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }

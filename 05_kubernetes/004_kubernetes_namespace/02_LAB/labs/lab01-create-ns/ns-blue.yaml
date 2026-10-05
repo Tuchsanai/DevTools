@@ -1,0 +1,7 @@
+# LAB 1: สร้าง namespace แบบเขียน YAML (เทียบกับ kubectl create namespace green)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: blue                     # ชื่อโซน: a-z 0-9 และ - ยาวไม่เกิน 63 ตัว ไม่ควรขึ้นต้นด้วย kube- (สงวนไว้ให้ระบบตามธรรมเนียม)
+  labels:
+    lab: "04"                    # label ของ namespace เอง (ไว้ค้นด้วย -l)

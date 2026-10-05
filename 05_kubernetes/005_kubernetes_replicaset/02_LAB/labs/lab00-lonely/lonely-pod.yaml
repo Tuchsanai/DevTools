@@ -1,0 +1,14 @@
+# LAB 0: Pod เดี่ยว (ไม่มีใครดูแล) — ลบแล้วหายถาวร
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lonely
+  namespace: rs-lab
+  labels:
+    app: lonely
+spec:
+  terminationGracePeriodSeconds: 1   # busybox ไม่รับ SIGTERM → ให้ปิดเร็ว
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo บูธเดี่ยวเปิดแล้ว; sleep 3600"]

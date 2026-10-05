@@ -1,0 +1,20 @@
+# LAB 9 (ตั้งใจผิด): อนุญาตครัวเข้า web "พอร์ต 8080" (= port ของ Service web-alt)
+# NetworkPolicy ตรวจที่ Pod ปลายทาง "หลัง" kube-proxy แปลงที่อยู่แล้ว → เห็นพอร์ต 80 ของ Pod ไม่ใช่ 8080
+# ผล: ครัวถูกกั้น (timed out)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: web-from-kitchen
+  namespace: shop
+spec:
+  podSelector:
+    matchLabels:
+      app: web             # policy เลือก "Pod" ไม่ใช่ Service
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              team: kitchen
+      ports:
+        - port: 8080       # ← ผิด: ต้องใช้พอร์ตของ Pod (targetPort)

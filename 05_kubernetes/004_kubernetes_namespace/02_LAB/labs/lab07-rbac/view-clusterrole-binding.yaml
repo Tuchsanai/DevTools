@@ -1,0 +1,20 @@
+# LAB 7: ใช้สมุดกฎมาตรฐานของท่าเรือ (ClusterRole "view") แต่ผูกด้วย RoleBinding → มีผลแค่โซน team-b
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: auditor
+  namespace: team-b
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: auditor-view
+  namespace: team-b
+subjects:
+  - kind: ServiceAccount
+    name: auditor
+    namespace: team-b
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole              # ClusterRole สำเร็จรูป: view (ดูได้เกือบทุกอย่าง ยกเว้น Secret)
+  name: view

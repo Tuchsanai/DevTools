@@ -1,0 +1,18 @@
+# LAB 5: โซน budget + ใบงบประมาณ (ResourceQuota) ของโซน
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: budget
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: budget-quota
+  namespace: budget
+spec:
+  hard:
+    pods: "3"                    # Pod ได้ไม่เกิน 3 ตัว
+    requests.cpu: 500m           # ผลรวม requests ของทุก Pod ในโซน
+    requests.memory: 256Mi
+    limits.cpu: "1"              # ผลรวม limits ของทุก Pod ในโซน
+    limits.memory: 512Mi

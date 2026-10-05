@@ -1,0 +1,36 @@
+# LAB 2: รุ่นใหม่ของ web — เปลี่ยน template 2 จุด (image 1.28 + VERSION v2) ใน revision เดียว
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: deploy-lab
+  labels:
+    app: web
+spec:
+  replicas: 3
+  selector:                        # เปลี่ยนไม่ได้หลังสร้าง (เหมือน ReplicaSet)
+    matchLabels:
+      app: web
+  # ไม่ได้เขียน strategy / revisionHistoryLimit / progressDeadlineSeconds → ใช้ค่า default (ดูใน LAB 1)
+  template:                        # พิมพ์เขียวของ Pod — แก้ส่วนนี้ = เกิดรุ่นใหม่ (rollout)
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.28-alpine   # ← เปลี่ยน 1 (เดิม 1.27)
+          env:
+            - name: VERSION
+              value: v2               # ← เปลี่ยน 2 (เดิม v1)
+          # เขียนหน้า index ให้บอกรุ่นและชื่อ Pod แล้วเปิด nginx
+          command: ["sh", "-c", "echo \"web $VERSION from $(hostname)\" > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:            # ไฟเขียวหน้าบูธ — rollout รอไฟนี้ก่อนปิดบูธรุ่นเก่า
+            httpGet: { path: /, port: http }
+            periodSeconds: 2
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits:   { cpu: 100m, memory: 64Mi }

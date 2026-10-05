@@ -1,0 +1,12 @@
+# LAB 7 (ตั้งใจผิด #2): selector ถูก แต่ targetPort 8080 — nginx ฟังที่ 80
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-badport
+  namespace: shop
+spec:
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: 8080     # ← ผิด: ใน Pod ไม่มีอะไรฟัง 8080

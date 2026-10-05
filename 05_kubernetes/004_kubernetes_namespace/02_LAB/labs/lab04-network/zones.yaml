@@ -1,0 +1,14 @@
+# LAB 4: สองโซนของสองทีม
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-a
+  labels:
+    team: a
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-b
+  labels:
+    team: b

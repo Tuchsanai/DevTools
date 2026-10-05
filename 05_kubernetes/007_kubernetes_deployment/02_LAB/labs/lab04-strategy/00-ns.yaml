@@ -1,0 +1,5 @@
+# LAB 4: โซน strategy-lab — เทียบ 3 กลยุทธ์เปลี่ยนรุ่น แล้วลบทิ้งตอนจบ LAB 4
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: strategy-lab

@@ -1,0 +1,14 @@
+# LAB 2: Service แรก — ClusterIP (ค่าเริ่มต้น) ชื่อ web
+# ชื่อ "web" + IP เสมือน (ClusterIP) คงที่ ส่งต่อไป Pod ที่มีป้าย app=web และ Ready
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: shop
+spec:
+  type: ClusterIP          # ไม่ใส่ก็ได้ (ค่าเริ่มต้น)
+  selector:
+    app: web               # เลือก Pod ด้วย label (ไม่สนว่าใครสร้าง Pod)
+  ports:
+    - port: 80             # พอร์ตที่ Service รับ (http://web:80)
+      targetPort: http     # พอร์ตของ container (ชื่อ http = containerPort 80)

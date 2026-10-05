@@ -1,0 +1,8 @@
+# LAB 9: โซนของร้านน้องส้มหลายบูธ — เตือน (warn) ถ้า Pod ไม่ผ่าน Pod Security ระดับ restricted (แบบบท 004)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: som-booths
+  labels:
+    team: som
+    pod-security.kubernetes.io/warn: restricted

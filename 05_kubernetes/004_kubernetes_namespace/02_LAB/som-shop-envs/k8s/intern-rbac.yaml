@@ -1,0 +1,30 @@
+# LAB สุดท้าย: บัตรเด็กฝึกงานของ som-dev — ดู Pod และ log ได้อย่างเดียว เฉพาะ som-dev
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: intern
+  namespace: som-dev
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: shop-viewer
+  namespace: som-dev
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: intern-shop-viewer
+  namespace: som-dev
+subjects:
+  - kind: ServiceAccount
+    name: intern
+    namespace: som-dev
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: shop-viewer

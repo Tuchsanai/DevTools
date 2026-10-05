@@ -1,0 +1,57 @@
+# LAB 4: required podAntiAffinity — ลูกเรือ 3 คน ห้ามอยู่เรือเดียวกัน แต่มีเรือ worker แค่ 2 ลำ
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crew-1
+  labels:
+    lab: "03"
+    team: crew
+spec:
+  affinity:
+    podAntiAffinity:              # ผลักกัน: ห้ามอยู่เรือลำเดียวกับ Pod team=crew ตัวอื่น
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              team: crew
+          topologyKey: kubernetes.io/hostname
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crew-2
+  labels:
+    lab: "03"
+    team: crew
+spec:
+  affinity:
+    podAntiAffinity:              # ผลักกัน: ห้ามอยู่เรือลำเดียวกับ Pod team=crew ตัวอื่น
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              team: crew
+          topologyKey: kubernetes.io/hostname
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crew-3
+  labels:
+    lab: "03"
+    team: crew
+spec:
+  affinity:
+    podAntiAffinity:              # ผลักกัน: ห้ามอยู่เรือลำเดียวกับ Pod team=crew ตัวอื่น
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              team: crew
+          topologyKey: kubernetes.io/hostname
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
