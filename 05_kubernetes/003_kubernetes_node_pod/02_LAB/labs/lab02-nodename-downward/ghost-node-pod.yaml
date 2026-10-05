@@ -9,4 +9,4 @@ spec:
   nodeName: lab-worker9        # ไม่มี node ชื่อนี้ในคลัสเตอร์
   containers:
     - name: web
-      image: nginx:1.27-alpine
+      image: nginx:1.27-alpine   # ไม่มีวันถูก pull เพราะไม่มี kubelet ไหนรับ Pod นี้

@@ -6,7 +6,7 @@ metadata:
   name: prefer-1
   labels:
     lab: "03"
-    group: prefer
+    group: prefer             # ใช้เลือกทั้งกลุ่ม -l group=prefer
 spec:
   affinity:
     nodeAffinity:
@@ -21,7 +21,7 @@ spec:
           preference:
             matchExpressions:
               - key: cabin
-                operator: Exists
+                operator: Exists  # Exists = มี key นี้ก็พอ ไม่ต้องใส่ values
   containers:
     - name: web
       image: nginx:1.27-alpine
@@ -32,7 +32,7 @@ metadata:
   name: prefer-2
   labels:
     lab: "03"
-    group: prefer
+    group: prefer             # ใช้เลือกทั้งกลุ่ม -l group=prefer
 spec:
   affinity:
     nodeAffinity:
@@ -47,7 +47,7 @@ spec:
           preference:
             matchExpressions:
               - key: cabin
-                operator: Exists
+                operator: Exists  # Exists = มี key นี้ก็พอ ไม่ต้องใส่ values
   containers:
     - name: web
       image: nginx:1.27-alpine
@@ -58,7 +58,7 @@ metadata:
   name: prefer-3
   labels:
     lab: "03"
-    group: prefer
+    group: prefer             # ใช้เลือกทั้งกลุ่ม -l group=prefer
 spec:
   affinity:
     nodeAffinity:
@@ -73,7 +73,7 @@ spec:
           preference:
             matchExpressions:
               - key: cabin
-                operator: Exists
+                operator: Exists  # Exists = มี key นี้ก็พอ ไม่ต้องใส่ values
   containers:
     - name: web
       image: nginx:1.27-alpine
@@ -84,7 +84,7 @@ metadata:
   name: prefer-4
   labels:
     lab: "03"
-    group: prefer
+    group: prefer             # ใช้เลือกทั้งกลุ่ม -l group=prefer
 spec:
   affinity:
     nodeAffinity:
@@ -99,7 +99,7 @@ spec:
           preference:
             matchExpressions:
               - key: cabin
-                operator: Exists
+                operator: Exists  # Exists = มี key นี้ก็พอ ไม่ต้องใส่ values
   containers:
     - name: web
       image: nginx:1.27-alpine

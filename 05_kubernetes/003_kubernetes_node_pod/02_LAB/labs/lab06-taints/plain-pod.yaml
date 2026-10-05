@@ -5,7 +5,7 @@ metadata:
   name: plain-pod
   labels:
     lab: "03"
-spec:
+spec:                         # ไม่มี tolerations และ nodeSelector → scheduler เลือกเรือเอง
   containers:
     - name: web
       image: nginx:1.27-alpine

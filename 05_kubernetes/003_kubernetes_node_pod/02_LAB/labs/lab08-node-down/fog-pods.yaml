@@ -26,11 +26,11 @@ spec:
     kubernetes.io/hostname: lab-worker2   # เรือที่เราจะทำให้ "หายในหมอก"
   tolerations:                     # เขียนทับค่าเริ่มต้น 300 วิ ที่ระบบใส่ให้ → ยอมรอแค่ 30 วิ
     - key: node.kubernetes.io/unreachable    # node ขาดการติดต่อ (Ready=Unknown)
-      operator: Exists
+      operator: Exists             # taint ระบบไม่มี value จึงใช้ Exists
       effect: NoExecute
       tolerationSeconds: 30
     - key: node.kubernetes.io/not-ready      # node รายงานว่าไม่พร้อม (Ready=False)
-      operator: Exists
+      operator: Exists             # taint ระบบไม่มี value จึงใช้ Exists
       effect: NoExecute
       tolerationSeconds: 30
   containers:

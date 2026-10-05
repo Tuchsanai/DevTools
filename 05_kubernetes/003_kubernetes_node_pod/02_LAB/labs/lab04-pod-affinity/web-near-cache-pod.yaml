@@ -5,10 +5,10 @@ metadata:
   name: web-near-cache
   labels:
     lab: "03"
-    app: web
+    app: web                  # ป้ายของตัวเอง (ไม่ตรงกับ selector app=cache จึงไม่ดึงดูดตัวเอง)
 spec:
   affinity:
-    podAffinity:
+    podAffinity:                # ดึงดูด: ต้องอยู่ใกล้ Pod เป้าหมาย
       requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:            # หา Pod อื่นที่มีป้ายนี้ (ใน namespace เดียวกัน)
             matchLabels:

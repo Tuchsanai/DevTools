@@ -6,7 +6,7 @@ metadata:
   labels:
     lab: "03"
 spec:
-  terminationGracePeriodSeconds: 1
+  terminationGracePeriodSeconds: 1   # sh/sleep ไม่ตอบ SIGTERM → ให้ลบเสร็จใน 1 วิ
   containers:
     - name: app
       image: busybox:1.36
@@ -15,7 +15,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
-        - name: POD_NAME
+        - name: POD_NAME             # ชื่อ Pod เอง (metadata.name)
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
@@ -29,4 +29,5 @@ spec:
               fieldPath: status.hostIP
         - name: GREETING             # $(ชื่อตัวแปร) อ้างตัวแปรที่ประกาศ "ก่อนหน้า" ในลิสต์นี้ได้
           value: "สวัสดีจาก $(POD_NAME) บนเรือ $(NODE_NAME)"
+      # พิมพ์ข้อความ 1 บรรทัด (อ่านด้วย kubectl logs whereami) แล้ว sleep ให้ Pod อยู่ต่อ
       command: ["sh", "-c", "echo \"$GREETING (Pod IP $POD_IP, Node IP $HOST_IP)\"; sleep 3600"]

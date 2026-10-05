@@ -4,11 +4,11 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: static-snack           # ชื่อที่ kubectl เห็นจะต่อท้ายด้วยชื่อ node เช่น static-snack-lab-worker
-  labels:
+  labels:                      # ไม่ติด lab=03 โดยตั้งใจ กันคำสั่งเก็บกวาดของ LAB อื่นไปลบ mirror pod
     app: static-snack
 spec:
   containers:
     - name: web
       image: nginx:1.27-alpine
       ports:
-        - containerPort: 80
+        - containerPort: 80    # nginx ฟังที่ port 80 (ประกาศไว้เป็นข้อมูล)

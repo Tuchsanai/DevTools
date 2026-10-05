@@ -11,7 +11,7 @@ spec:
     - maxSkew: 1                         # จำนวน Pod ระหว่าง "เรือที่มากสุด" กับ "เรือที่น้อยสุด" ต่างกันได้ไม่เกิน 1
       topologyKey: kubernetes.io/hostname   # 1 domain = 1 node
       whenUnsatisfiable: DoNotSchedule   # ถ้าทำให้เอียงเกิน → ไม่วาง (Pending)
-      labelSelector:
+      labelSelector:                     # นับเฉพาะ Pod กลุ่ม group=honor ในแต่ละ domain
         matchLabels:
           group: honor
       nodeTaintsPolicy: Honor        # ค่าเริ่มต้นคือ Ignore
@@ -31,7 +31,7 @@ spec:
     - maxSkew: 1                         # จำนวน Pod ระหว่าง "เรือที่มากสุด" กับ "เรือที่น้อยสุด" ต่างกันได้ไม่เกิน 1
       topologyKey: kubernetes.io/hostname   # 1 domain = 1 node
       whenUnsatisfiable: DoNotSchedule   # ถ้าทำให้เอียงเกิน → ไม่วาง (Pending)
-      labelSelector:
+      labelSelector:                     # นับเฉพาะ Pod กลุ่ม group=honor ในแต่ละ domain
         matchLabels:
           group: honor
       nodeTaintsPolicy: Honor        # ค่าเริ่มต้นคือ Ignore
@@ -51,7 +51,7 @@ spec:
     - maxSkew: 1                         # จำนวน Pod ระหว่าง "เรือที่มากสุด" กับ "เรือที่น้อยสุด" ต่างกันได้ไม่เกิน 1
       topologyKey: kubernetes.io/hostname   # 1 domain = 1 node
       whenUnsatisfiable: DoNotSchedule   # ถ้าทำให้เอียงเกิน → ไม่วาง (Pending)
-      labelSelector:
+      labelSelector:                     # นับเฉพาะ Pod กลุ่ม group=honor ในแต่ละ domain
         matchLabels:
           group: honor
       nodeTaintsPolicy: Honor        # ค่าเริ่มต้นคือ Ignore
@@ -71,7 +71,7 @@ spec:
     - maxSkew: 1                         # จำนวน Pod ระหว่าง "เรือที่มากสุด" กับ "เรือที่น้อยสุด" ต่างกันได้ไม่เกิน 1
       topologyKey: kubernetes.io/hostname   # 1 domain = 1 node
       whenUnsatisfiable: DoNotSchedule   # ถ้าทำให้เอียงเกิน → ไม่วาง (Pending)
-      labelSelector:
+      labelSelector:                     # นับเฉพาะ Pod กลุ่ม group=honor ในแต่ละ domain
         matchLabels:
           group: honor
       nodeTaintsPolicy: Honor        # ค่าเริ่มต้นคือ Ignore

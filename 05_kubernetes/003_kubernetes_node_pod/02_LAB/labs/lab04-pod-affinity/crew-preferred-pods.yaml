@@ -10,8 +10,8 @@ spec:
   affinity:
     podAntiAffinity:              # แบบ "อยากได้": พยายามแยกเรือ แต่ถ้าไม่มีเรือว่างก็ยอมอยู่ด้วยกัน
       preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
+        - weight: 100             # 1–100: คะแนนพิเศษสูงสุดเมื่อแยกเรือได้
+          podAffinityTerm:        # แบบ preferred ต้องห่อเงื่อนไขไว้ใน podAffinityTerm
             labelSelector:
               matchLabels:
                 team: deckhand
@@ -31,8 +31,8 @@ spec:
   affinity:
     podAntiAffinity:              # แบบ "อยากได้": พยายามแยกเรือ แต่ถ้าไม่มีเรือว่างก็ยอมอยู่ด้วยกัน
       preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
+        - weight: 100             # 1–100: คะแนนพิเศษสูงสุดเมื่อแยกเรือได้
+          podAffinityTerm:        # แบบ preferred ต้องห่อเงื่อนไขไว้ใน podAffinityTerm
             labelSelector:
               matchLabels:
                 team: deckhand
@@ -52,8 +52,8 @@ spec:
   affinity:
     podAntiAffinity:              # แบบ "อยากได้": พยายามแยกเรือ แต่ถ้าไม่มีเรือว่างก็ยอมอยู่ด้วยกัน
       preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
+        - weight: 100             # 1–100: คะแนนพิเศษสูงสุดเมื่อแยกเรือได้
+          podAffinityTerm:        # แบบ preferred ต้องห่อเงื่อนไขไว้ใน podAffinityTerm
             labelSelector:
               matchLabels:
                 team: deckhand

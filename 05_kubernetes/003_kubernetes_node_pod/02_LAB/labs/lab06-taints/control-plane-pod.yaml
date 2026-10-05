@@ -7,7 +7,7 @@ metadata:
   labels:
     lab: "03"
 spec:
-  tolerations:
+  tolerations:                 # บัตรผ่าน taint node-role.kubernetes.io/control-plane:NoSchedule
     - key: node-role.kubernetes.io/control-plane
       operator: Exists         # Exists = ไม่สนค่า value (taint นี้ไม่มี value)
       effect: NoSchedule

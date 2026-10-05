@@ -8,8 +8,8 @@ metadata:
 spec:
   containers:
     - name: web
-      image: nginx:1.27-alpine
+      image: nginx:1.27-alpine  # web server เล็ก รันค้างได้เองโดยไม่ต้องใส่ command
       resources:
         requests:             # scheduler ใช้ "requests" (ไม่ใช่การใช้งานจริง) เทียบกับ allocatable ของ node
-          cpu: 100m
-          memory: 64Mi
+          cpu: 100m           # 0.1 core → Allocated cpu ของเรือเพิ่มจาก 100m (kindnet) เป็น 200m
+          memory: 64Mi        # → Allocated memory เพิ่มจาก 50Mi เป็น 114Mi

@@ -10,10 +10,10 @@ spec:
   affinity:
     podAntiAffinity:              # ผลักกัน: ห้ามอยู่เรือลำเดียวกับ Pod team=crew ตัวอื่น
       requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
+        - labelSelector:          # Pod ที่ "ห้ามอยู่ด้วย" = team=crew (รวมพวกเดียวกันเอง)
             matchLabels:
               team: crew
-          topologyKey: kubernetes.io/hostname
+          topologyKey: kubernetes.io/hostname   # "เรือเดียวกัน" = node เดียวกัน
   containers:
     - name: web
       image: nginx:1.27-alpine
@@ -29,10 +29,10 @@ spec:
   affinity:
     podAntiAffinity:              # ผลักกัน: ห้ามอยู่เรือลำเดียวกับ Pod team=crew ตัวอื่น
       requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
+        - labelSelector:          # Pod ที่ "ห้ามอยู่ด้วย" = team=crew (รวมพวกเดียวกันเอง)
             matchLabels:
               team: crew
-          topologyKey: kubernetes.io/hostname
+          topologyKey: kubernetes.io/hostname   # "เรือเดียวกัน" = node เดียวกัน
   containers:
     - name: web
       image: nginx:1.27-alpine
@@ -48,10 +48,10 @@ spec:
   affinity:
     podAntiAffinity:              # ผลักกัน: ห้ามอยู่เรือลำเดียวกับ Pod team=crew ตัวอื่น
       requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
+        - labelSelector:          # Pod ที่ "ห้ามอยู่ด้วย" = team=crew (รวมพวกเดียวกันเอง)
             matchLabels:
               team: crew
-          topologyKey: kubernetes.io/hostname
+          topologyKey: kubernetes.io/hostname   # "เรือเดียวกัน" = node เดียวกัน
   containers:
     - name: web
       image: nginx:1.27-alpine

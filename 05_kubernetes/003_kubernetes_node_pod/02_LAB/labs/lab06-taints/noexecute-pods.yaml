@@ -8,7 +8,7 @@ metadata:
     lab: "03"
     group: noexecute
 spec:
-  nodeSelector:
+  nodeSelector:                    # ปักทั้ง 3 Pod ไว้ที่ lab-worker2
     kubernetes.io/hostname: lab-worker2
   tolerations:
     - key: dedicated               # บัตรผ่านป้ายเดิม (NoSchedule) เพื่อให้ขึ้นเรือ lab-worker2 ได้ก่อน
@@ -27,7 +27,7 @@ metadata:
     lab: "03"
     group: noexecute
 spec:
-  nodeSelector:
+  nodeSelector:                    # ปักทั้ง 3 Pod ไว้ที่ lab-worker2
     kubernetes.io/hostname: lab-worker2
   tolerations:
     - key: dedicated               # บัตรผ่านป้ายเดิม (NoSchedule) เพื่อให้ขึ้นเรือ lab-worker2 ได้ก่อน
@@ -38,7 +38,7 @@ spec:
       operator: Equal
       value: "true"
       effect: NoExecute
-      tolerationSeconds: 30
+      tolerationSeconds: 30        # นับจากตอนติด taint NoExecute ครบแล้วถูกไล่
   containers:
     - name: web
       image: nginx:1.27-alpine
@@ -51,7 +51,7 @@ metadata:
     lab: "03"
     group: noexecute
 spec:
-  nodeSelector:
+  nodeSelector:                    # ปักทั้ง 3 Pod ไว้ที่ lab-worker2
     kubernetes.io/hostname: lab-worker2
   tolerations:
     - key: dedicated               # บัตรผ่านป้ายเดิม (NoSchedule) เพื่อให้ขึ้นเรือ lab-worker2 ได้ก่อน

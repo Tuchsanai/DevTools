@@ -6,13 +6,13 @@ metadata:
   name: cargo-1
   labels:
     lab: "03"
-    group: cargo
+    group: cargo                   # ใช้ใน labelSelector ของ topologySpreadConstraints
 spec:
   topologySpreadConstraints:       # กระจาย cargo ให้ 2 worker เท่า ๆ กัน (ทวน LAB 5)
     - maxSkew: 1
       topologyKey: kubernetes.io/hostname
       whenUnsatisfiable: DoNotSchedule
-      nodeTaintsPolicy: Honor
+      nodeTaintsPolicy: Honor      # ไม่นับ control-plane → ได้ 2 : 2 บน worker
       labelSelector:
         matchLabels:
           group: cargo
@@ -26,13 +26,13 @@ metadata:
   name: cargo-2
   labels:
     lab: "03"
-    group: cargo
+    group: cargo                   # ใช้ใน labelSelector ของ topologySpreadConstraints
 spec:
   topologySpreadConstraints:       # กระจาย cargo ให้ 2 worker เท่า ๆ กัน (ทวน LAB 5)
     - maxSkew: 1
       topologyKey: kubernetes.io/hostname
       whenUnsatisfiable: DoNotSchedule
-      nodeTaintsPolicy: Honor
+      nodeTaintsPolicy: Honor      # ไม่นับ control-plane → ได้ 2 : 2 บน worker
       labelSelector:
         matchLabels:
           group: cargo
@@ -46,13 +46,13 @@ metadata:
   name: cargo-3
   labels:
     lab: "03"
-    group: cargo
+    group: cargo                   # ใช้ใน labelSelector ของ topologySpreadConstraints
 spec:
   topologySpreadConstraints:       # กระจาย cargo ให้ 2 worker เท่า ๆ กัน (ทวน LAB 5)
     - maxSkew: 1
       topologyKey: kubernetes.io/hostname
       whenUnsatisfiable: DoNotSchedule
-      nodeTaintsPolicy: Honor
+      nodeTaintsPolicy: Honor      # ไม่นับ control-plane → ได้ 2 : 2 บน worker
       labelSelector:
         matchLabels:
           group: cargo
@@ -66,13 +66,13 @@ metadata:
   name: cargo-4
   labels:
     lab: "03"
-    group: cargo
+    group: cargo                   # ใช้ใน labelSelector ของ topologySpreadConstraints
 spec:
   topologySpreadConstraints:       # กระจาย cargo ให้ 2 worker เท่า ๆ กัน (ทวน LAB 5)
     - maxSkew: 1
       topologyKey: kubernetes.io/hostname
       whenUnsatisfiable: DoNotSchedule
-      nodeTaintsPolicy: Honor
+      nodeTaintsPolicy: Honor      # ไม่นับ control-plane → ได้ 2 : 2 บน worker
       labelSelector:
         matchLabels:
           group: cargo
