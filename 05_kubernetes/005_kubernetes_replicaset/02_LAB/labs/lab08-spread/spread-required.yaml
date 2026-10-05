@@ -5,7 +5,7 @@ metadata:
   name: spread-req
   namespace: rs-spread
 spec:
-  replicas: 3
+  replicas: 3   # 3 บูธ แต่ worker มีแค่ 2 ลำ
   selector:
     matchLabels:
       app: spread-req
@@ -17,10 +17,10 @@ spec:
       terminationGracePeriodSeconds: 1
       affinity:
         podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
+          requiredDuringSchedulingIgnoredDuringExecution:   # บังคับ: ทำตามไม่ได้ = ไม่วาง (Pending)
             - labelSelector:
                 matchLabels:
-                  app: spread-req
+                  app: spread-req   # ห้ามอยู่เรือเดียวกับ Pod ป้ายนี้ (รวมพวกเดียวกันเอง)
               topologyKey: kubernetes.io/hostname   # 1 เรือ = 1 โดเมน
       containers:
         - name: app

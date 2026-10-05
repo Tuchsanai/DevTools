@@ -5,10 +5,10 @@ metadata:
   name: quota-rs
   namespace: rs-quota
 spec:
-  replicas: 6
+  replicas: 6   # ขอ 6 แต่ quota ให้ 4 → DESIRED 6 CURRENT 4
   selector:
     matchLabels:
-      app: quota
+      app: quota   # selector
   template:
     metadata:
       labels:

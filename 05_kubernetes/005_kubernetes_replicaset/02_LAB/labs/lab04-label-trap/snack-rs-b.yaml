@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
-  name: snack-rs-b
+  name: snack-rs-b   # Pod ของ RS นี้ชื่อ snack-rs-b-xxxxx (เรียงก่อน snack-rs-xxxxx)
   namespace: rs-lab
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: snack
+      app: snack   # selector ซ้ำกับ snack-rs ← ต้นเหตุความสับสน
   template:
     metadata:
       labels:
         app: snack
     spec:
-      terminationGracePeriodSeconds: 1
+      terminationGracePeriodSeconds: 1   # หลังลบ RS นี้ Pod ขึ้น Error ค้างอยู่ชั่วครู่
       containers:
         - name: app
           image: busybox:1.36
-          command: ["sh", "-c", "echo บูธของ snack-rs-b; sleep 3600"]
+          command: ["sh", "-c", "echo บูธของ snack-rs-b; sleep 3600"]   # log บอกว่าเป็น Pod ของ snack-rs-b
           resources:
             requests: { cpu: 10m, memory: 16Mi }
             limits:   { cpu: 50m, memory: 32Mi }

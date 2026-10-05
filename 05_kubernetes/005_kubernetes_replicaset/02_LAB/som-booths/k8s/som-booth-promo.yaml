@@ -33,7 +33,7 @@ spec:
                 labelSelector:
                   matchLabels:
                     app: som-booth
-                topologyKey: kubernetes.io/hostname
+                topologyKey: kubernetes.io/hostname   # กระจายตาม Node (เรือ)
 
       volumes:
         - name: db-data              # ฐานข้อมูลของ "บูธนี้" เท่านั้น หายเมื่อ Pod ถูกลบ
@@ -43,7 +43,7 @@ spec:
         # 1) db: native sidecar (restartPolicy: Always) → เริ่มก่อนและรันตลอดอายุ Pod
         - name: db
           image: postgres:17.11-alpine
-          restartPolicy: Always
+          restartPolicy: Always   # init container ที่ restartPolicy Always = native sidecar รันค้างคู่กับ web
           securityContext:
             runAsUser: 70            # uid ของ postgres ใน image alpine
             runAsGroup: 70
@@ -64,7 +64,7 @@ spec:
           volumeMounts:
             - name: db-data
               mountPath: /var/lib/postgresql/data
-          startupProbe:
+          startupProbe:   # ให้ postgres เริ่มได้ถึง 2×30 = 60 วิ
             exec:
               command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
             periodSeconds: 2
@@ -79,7 +79,7 @@ spec:
             periodSeconds: 10
             failureThreshold: 3
           resources:
-            requests: { cpu: 100m, memory: 256Mi }
+            requests: { cpu: 100m, memory: 256Mi }   # db: รวมกับ web ≈ 200m/448Mi ต่อบูธ (ขั้น 9.6)
             limits:   { cpu: 500m, memory: 512Mi }
 
         # 2) wait-for-db: รอจนต่อ db ได้
@@ -102,7 +102,7 @@ spec:
         # 3) db-seed: สร้างตาราง + สินค้าตั้งต้น
         - name: db-seed
           image: som-shop-web:1.1-promo
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: IfNotPresent   # ใช้ image ที่ kind load ไว้บน Node
           command: ["node", "scripts/seed.mjs"]
           securityContext:
             runAsUser: 1000          # image ระบุ USER node เป็น "ชื่อ" → ต้องใส่เป็นตัวเลขให้ runAsNonRoot ตรวจได้
@@ -120,7 +120,7 @@ spec:
       containers:
         - name: web
           image: som-shop-web:1.1-promo
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: IfNotPresent   # ใช้ image ที่ kind load ไว้บน Node
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
@@ -149,10 +149,10 @@ spec:
             - name: HOSTNAME
               value: "0.0.0.0"
           ports:
-            - containerPort: 3000
+            - containerPort: 3000   # port-forward pod/... 808x:3000 ชี้มาที่พอร์ตนี้
           readinessProbe:
             httpGet:
-              path: /api/health
+              path: /api/health   # บูธ Ready เมื่อ health ตอบ 200 → kubectl wait รอเงื่อนไขนี้
               port: 3000
             periodSeconds: 5
             failureThreshold: 2
@@ -164,5 +164,5 @@ spec:
             periodSeconds: 10
             failureThreshold: 6
           resources:
-            requests: { cpu: 100m, memory: 192Mi }
+            requests: { cpu: 100m, memory: 192Mi }   # web
             limits:   { cpu: 500m, memory: 512Mi }

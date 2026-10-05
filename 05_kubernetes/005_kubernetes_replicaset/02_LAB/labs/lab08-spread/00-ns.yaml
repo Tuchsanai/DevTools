@@ -1,5 +1,5 @@
 # LAB 8: โซนฝึกกระจายบูธข้ามเรือ
 apiVersion: v1
-kind: Namespace
+kind: Namespace   # โซนของ LAB 8 (ลบทีเดียวตอนจบ)
 metadata:
   name: rs-spread

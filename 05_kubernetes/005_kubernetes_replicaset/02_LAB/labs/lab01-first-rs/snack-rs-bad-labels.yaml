@@ -2,14 +2,14 @@
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
-  name: snack-rs-bad
+  name: snack-rs-bad   # RS นี้จะไม่ถูกสร้างเลย
   namespace: rs-lab
 spec:
-  replicas: 3
+  replicas: 3   # ไม่มีผล เพราะถูกปฏิเสธตั้งแต่ apply
   selector:
     matchLabels:
       app: snack
-  template:
+  template:   # ป้ายในแบบพิมพ์ไม่ผ่าน selector → API server ปฏิเสธทั้งก้อน
     metadata:
       labels:
         app: snak            # ← พิมพ์ผิด ไม่ตรงกับ selector

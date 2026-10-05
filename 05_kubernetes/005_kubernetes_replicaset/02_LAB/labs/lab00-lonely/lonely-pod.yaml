@@ -1,14 +1,14 @@
 # LAB 0: Pod เดี่ยว (ไม่มีใครดูแล) — ลบแล้วหายถาวร
 apiVersion: v1
-kind: Pod
+kind: Pod   # Pod เดี่ยว ไม่มี controller ดูแล → ลบแล้วไม่มีใครสร้างแทน
 metadata:
   name: lonely
-  namespace: rs-lab
+  namespace: rs-lab   # namespace ของ LAB 0–6 (สร้างจาก 00-ns.yaml)
   labels:
-    app: lonely
+    app: lonely   # ป้ายไม่ชนกับ app=snack ของ snack-rs
 spec:
   terminationGracePeriodSeconds: 1   # busybox ไม่รับ SIGTERM → ให้ปิดเร็ว
   containers:
     - name: app
-      image: busybox:1.36
-      command: ["sh", "-c", "echo บูธเดี่ยวเปิดแล้ว; sleep 3600"]
+      image: busybox:1.36   # image เล็ก มี sh/sleep
+      command: ["sh", "-c", "echo บูธเดี่ยวเปิดแล้ว; sleep 3600"]   # พิมพ์ข้อความแล้วนอน 1 ชม. ให้ Running ค้างไว้
