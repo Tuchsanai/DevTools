@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""ส่วนกลางของ prompt ภาพ บท 008 PersistentVolume/PVC และ 009 StatefulSet
+"""ส่วนกลางของ prompt ภาพ บท 008–011 (PV/PVC, StatefulSet, ConfigMap, Secret)
 
-สำเนาเดียวกันวางไว้ที่ logs/008_pv_pvc และ logs/009_statefulset (รูปแบบเดียวกับ logs/007_deployment/imgcommon.py)
+สำเนาเดียวกันวางไว้ที่ logs/010_configmap และ logs/011_secret (ต่อยอดจาก logs/templates/imgkit/imgcommon.py ของบท 008/009)
 แต่ละบทเรียก configure(ch) แล้วใช้ t()/l() เพิ่มภาพ และ main() เขียน images.json + imagegen-prompts.md
 """
 import json, os, re
@@ -20,6 +20,18 @@ CHAPTERS = {
         "out": f"{K}/logs/009_statefulset/images.json",
         "topic": "StatefulSet",
         "title_th": "009 Kubernetes StatefulSet",
+    },
+    "010": {
+        "root": f"{K}/010_kubernetes_configmap",
+        "out": f"{K}/logs/010_configmap/images.json",
+        "topic": "ConfigMap",
+        "title_th": "010 Kubernetes ConfigMap",
+    },
+    "011": {
+        "root": f"{K}/011_kubernetes_secret",
+        "out": f"{K}/logs/011_secret/images.json",
+        "topic": "Secret",
+        "title_th": "011 Kubernetes Secret",
     },
 }
 
@@ -66,6 +78,40 @@ M_STS = ("StatefulSet = a numbering shift-supervisor robot (purple-navy box-shap
          "headless Service = an open directory book on a lectern (no lighthouse light) that lists each booth number "
          "with its direct address; partition = a rope barrier across the booth row; streaming replication = a small "
          "conveyor courier copying ledger pages from booth -0 to a read-only copy booth")
+M_STS_SHORT = ("StatefulSet = a numbering shift-supervisor robot (purple-navy box-shaped robot with a numbered ticket "
+               "dispenser on its chest); the database kitchen booth som-db-0 has number plate -0 and its own numbered "
+               "safe in the cargo hold; headless Service = an open directory book on a lectern")
+M_CM = ("ConfigMap = a teal-framed cork notice board standing in the zone, covered with neat index cards, each card "
+        "showing one key and its value (the shop handbook that every booth in the same zone may read); data keys = "
+        "the index cards; env / envFrom = a name-badge note card clipped on a staff member's chest at the start of "
+        "a shift, copied from the board once (to change it the staff must start a new shift = a new Pod); volume "
+        "mount = a small copy of the notice board hung inside the booth wall, kept up to date by kubelet; kubelet = "
+        "a small deckhand robot (round grey body, one antenna, carrying a tote bag of cards) that lives on each ship "
+        "and walks between the zone board and the booths every minute or so to refresh the booth boards; subPath "
+        "= a single photocopied card taped flat on the booth wall that the deckhand never refreshes; ..data link = a "
+        "small arrow sign on the booth board that the deckhand swings to the newest stack of cards in one move; "
+        "immutable = a notice board sealed under a clear laminated acrylic sheet with a round seal sticker (cards "
+        "can no longer be moved); configMapGenerator (kustomize) = a label-printer machine that prints a brand-new "
+        "board whose name plate ends with a short random-looking code tag")
+M_CM_SHORT = ("Learned in chapter 010: ConfigMap = a teal-framed cork notice board with index cards (key: value) that "
+              "booths in the same zone read; env/envFrom = a name-badge card clipped on a staff chest at shift start "
+              "(changes only with a new shift = new Pod); volume mount = a small notice board inside the booth that "
+              "the kubelet deckhand robot (small round grey robot with one antenna) refreshes every minute or so; "
+              "immutable = a board sealed under a clear laminated sheet")
+M_SEC = ("Secret = a navy envelope closed with an orange paw-print wax seal, kept in a small steel key box on the "
+         "zone wall next to the notice board; base64 = a TRANSPARENT envelope: the letters inside are only rewritten "
+         "in a different alphabet and anyone can still see and convert them back (it is NOT a lock); a "
+         "real lock = a padlock; encryption at rest = a heavy round vault door inside the harbor control tower "
+         "where the tower archive cabinet (etcd) keeps every record; etcd = the tall archive cabinet of drawers in the "
+         "control tower; RBAC = staff ID cards on lanyards with a colored stripe: a green-stripe card may open the "
+         "key box, a grey-stripe intern card may only look at the notice board and booths (the key box stays shut "
+         "with a red X); Secret volume = a sealed envelope tray inside the booth made of soft memory foam (tmpfs: "
+         "kept only in memory, never written on the ship deck, emptied when the booth closes); TLS = a sealed "
+         "glass delivery tube between the customer and the counter, with a certificate badge (tls.crt) on the tube "
+         "and a private key (tls.key) hanging inside the counter; imagePullSecrets = a gate pass card shown at the "
+         "gate of a private container warehouse (registry) on the dock before a crane may pick up a container; "
+         "projected volume = one ring binder inside the booth that combines a notice card, a sealed envelope and the "
+         "booth's own name tag; service-account-token = a robot staff ID card with a long stamped barcode strip")
 STYLE_TAIL = ("Robots are simple friendly machines, never cats; customers and staff are faceless people silhouettes, "
               "never cats. Every cargo item, crate or prop is cat-food-shop or harbor related only (kibble bags, cat "
               "food cans, fish-shaped treats, food bowls, order ledgers, safes, ropes, ships).")
@@ -82,7 +128,11 @@ LATER = {
     "008": ("; do not show StatefulSet, Ingress, HorizontalPodAutoscaler, ConfigMap or Secret objects or words, and "
             "no numbering ticket-dispenser robot"),
     "009": "; do not show Ingress, HorizontalPodAutoscaler, ConfigMap or Secret objects or words",
+    "010": ("; do not show Secret objects or the word Secret, no sealed envelopes, no padlocks, no Ingress, "
+            "HorizontalPodAutoscaler or Helm objects or words"),
+    "011": "; do not show Ingress, HorizontalPodAutoscaler or Helm objects or words, no operator robots",
 }
+PW = ("never show a real-looking password: passwords appear only as the listed example value or as dots ●●●●")
 THAI = ("Thai text must be rendered exactly as given, correct Thai spelling, clear Thai font, no garbled glyphs")
 THAI_RE = re.compile(r"[฀-๿]")
 
@@ -98,8 +148,14 @@ def configure(ch):
 def style():
     if CH == "008":
         body = f"{M_PREV} New in this chapter: {M_PV}."
-    else:
+    elif CH == "009":
         body = f"{M_PREV} Learned in chapter 008: {M_PV}. New in this chapter: {M_STS}."
+    elif CH == "010":
+        body = (f"{M_PREV} Learned in chapters 008–009: PV = a steel safe locker in the cargo hold of one ship, PVC = "
+                f"a requisition slip card; {M_STS_SHORT}. New in this chapter: {M_CM}.")
+    else:
+        body = (f"{M_PREV} Learned in chapters 008–009: PV = a steel safe locker in the cargo hold of one ship, PVC = "
+                f"a requisition slip card; {M_STS_SHORT}. {M_CM_SHORT}. New in this chapter: {M_SEC}.")
     return f"{STYLE_HEAD} {body} {STYLE_TAIL}"
 
 
@@ -111,7 +167,8 @@ def asset():
 
 def prompt(scene, labels, extra="", allow_later=False):
     lab = "; ".join(f'"{x}"' for x in labels)
-    cons = BASE_CONS + ("" if allow_later else LATER[CH]) + (f"; {extra}" if extra else "") + f"; {THAI}."
+    pw = f"; {PW}" if CH in ("010", "011") else ""
+    cons = BASE_CONS + ("" if allow_later else LATER[CH]) + pw + (f"; {extra}" if extra else "") + f"; {THAI}."
     return "\n".join([
         USE_CASE, asset(), f"Scene: {scene}", CHAR, style(),
         f"Text (verbatim, exactly {len(labels)} short label instances; a label listed twice appears exactly twice): {lab}.",
@@ -132,6 +189,7 @@ def build(items, kind):
     out = []
     for i, (slug, sec, cap, scene, labels, extra, allow, nt) in enumerate(items, 1):
         assert 1 <= len(labels) <= 7, (slug, len(labels))
+        assert len(set(labels)) == len(labels), f"{slug}: duplicate label"
         assert all(x.strip() for x in labels), slug
         assert any(THAI_RE.search(x) for x in labels), f"{slug}: no Thai label"
         assert re.fullmatch(r"[a-z0-9-]+", slug), slug

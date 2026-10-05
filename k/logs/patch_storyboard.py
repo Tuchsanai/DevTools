@@ -10,6 +10,9 @@ P=os.path.join(here,'images.json'); d=json.load(open(P)); pt=json.load(open(PF))
 for i in d:
     for a,b in pt.get('replace',{}).get(i['id'],[]):
         assert a in i['prompt'],(i['id'],a[:40]); i['prompt']=i['prompt'].replace(a,b)
+        core=a.strip('"\'')
+        if len(core)>=3 and core in i['prompt'] and core not in b:
+            print(f"WARNING {i['id']}: old text {core!r} still appears elsewhere in the prompt (Scene/Constraints?)")
     if i['id'] in pt.get('caption',{}): i['caption_th']=pt['caption'][i['id']]
 json.dump(d,open(P,'w'),ensure_ascii=False,indent=2)
 c=ic.CHAPTERS[ic.CH]

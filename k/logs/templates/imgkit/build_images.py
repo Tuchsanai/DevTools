@@ -1,456 +1,443 @@
 #!/usr/bin/env python3
-"""Storyboard ภาพบท 009 StatefulSet → images.json + imagegen-prompts.md (รัน: python3 build_images.py)"""
+"""Storyboard ภาพบท 011 Secret → images.json + imagegen-prompts.md (รัน: python3 build_images.py)"""
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from imgcommon import configure, t, l, main
 
-configure("009")
+configure("011")
 
 # ---------------------------------------------------------------- Theory
-S1 = "1. บทนำ: อยากมีครัว 3 ครัว"
-t("opening-three-kitchens", S1,
-  "เปิดบทที่ 9: ต่อจากบท 008 — ร้านจำออเดอร์ได้แล้ว แต่ db มีได้ตัวเดียว น้องส้มอยากมีครัวหลายครัวที่แต่ละครัวมีชื่อและตู้เซฟของตัวเอง",
-  """A harbor dock at morning. One kitchen booth sits on a ship above a single safe. Nong Som stands with a blueprint
-  sketch showing three kitchen booths each above its own safe, a thought cloud with question marks over the store-
-  manager robot who holds one slip only.""",
-  ["บทที่ 9", "ครัวละตู้เซฟ", "Deployment: ใบเบิกใบเดียว"],
-  "'บทที่ 9' as a title banner; 'ครัวละตู้เซฟ' on Nong Som's blueprint; 'Deployment: ใบเบิกใบเดียว' on the single slip the manager robot holds")
-t("recap-008-shared-slip", S1,
-  "ทวนบท 008: Deployment ใช้ Pod template เดียว ทุก Pod จึงอ้าง claimName เดียวกัน — replicas 2 = postgres สองตัวเขียนโฟลเดอร์เดียว (ทดสอบแล้วออเดอร์หาย/PANIC)",
-  """Two kitchen booths on one ship connected to the same safe; their ledger has torn pages and a red alarm light;
-  the shared blueprint card shows one claimName line. Nong Som points at the blueprint line.""",
-  ["claimName: som-db-data", "replicas: 2", "PANIC", "template เดียว = ตู้เดียว"],
-  "'claimName: som-db-data' on the blueprint card; 'replicas: 2' on a small sign; 'PANIC' on the alarm light; 'template เดียว = ตู้เดียว' as a title banner",
-  nt=True)
+S1 = "1. บทนำ: รหัสผ่านติดอยู่บนกระดานประกาศ"
+t("opening-sealed-envelope", S1,
+  "เปิดบทที่ 11: ต่อจากบท 010 — ป้ายร้านอยู่ใน ConfigMap แล้ว แต่รหัส DB ยังอยู่ใน YAML ที่ใครก็อ่านได้ น้องส้มจึงย้ายรหัสใส่ซองปิดผนึกในกล่องกุญแจ",
+  """The harbor zone with the teal notice board; Nong Som takes a dotted password card off the board and slides it into a
+  navy envelope with an orange paw wax seal, placing it into a small steel key box on the zone wall.""",
+  ["บทที่ 11", "Secret", "ย้ายรหัสออกจากกระดาน"],
+  "'บทที่ 11' as a title banner; 'Secret' on the key box; 'ย้ายรหัสออกจากกระดาน' as a subtitle")
+t("recap-password-visible", S1,
+  "ทวนบท 010: intern ที่อ่านได้แค่ Deployment ก็เห็น postgres://som:meow1234@... และ POSTGRES_PASSWORD ใน StatefulSet",
+  """An intern silhouette with a grey ID card reads two blueprint cards (web and db) with a magnifier; on both a row is
+  highlighted showing only dots. Nong Som frowns.""",
+  ["DATABASE_URL", "POSTGRES_PASSWORD", "som:●●●●@", "ใครอ่าน YAML ก็เห็นรหัส"],
+  "'DATABASE_URL' on the web blueprint; 'POSTGRES_PASSWORD' on the db blueprint; 'som:●●●●@' on the magnified row; last label as a title banner")
 t("metaphor-legend", S1,
-  "อุปมาใหม่: StatefulSet = หัวหน้ากะที่ตั้งชื่อบูธตามเลขลำดับและแจกตู้เซฟประจำตัว, volumeClaimTemplates = สมุดใบเบิกฉีกได้, headless Service = สมุดรายชื่อบอกเลขบูธตรง ๆ",
-  """A legend board with four rounded tiles: a purple-navy robot with a numbered ticket dispenser on its chest; a pad
-  of pre-printed slips with one slip being torn off; three booths with number plates each above its own numbered
-  safe; an open directory book on a lectern. Nong Som presents the board.""",
-  ["StatefulSet = หัวหน้ากะตั้งเลข", "volumeClaimTemplates = สมุดใบเบิก", "บูธละตู้เซฟ", "headless Service = สมุดรายชื่อ"],
-  "each tile carries exactly one of the four labels in the listed order; booth plates in tile 3 are color-only")
+  "อุปมาใหม่: Secret = ซองปิดผนึกในกล่องกุญแจ, base64 = ซองใส (แปลงรูปเฉย ๆ), RBAC = บัตรพนักงานที่เปิดกล่องได้/ไม่ได้, encryption at rest = ตู้นิรภัยในหอบังคับการ",
+  """A legend board with four tiles: a navy envelope with a paw wax seal in a key box; a transparent envelope with visible
+  letters; two lanyard ID cards (green stripe and grey stripe); a round vault door inside the control tower.""",
+  ["Secret = ซองปิดผนึก", "base64 = ซองใส", "RBAC = บัตรพนักงาน", "encryption at rest = ตู้นิรภัย"],
+  "each tile carries exactly one of the four labels in the listed order")
 
-S2 = "2. ทำไม Deployment ไม่พอสำหรับระบบ stateful"
-t("stateless-vs-stateful", S2,
-  "stateless (web) สลับตัวไหนก็ได้ เหมือนชามกระดาษใช้แล้วทิ้ง; stateful (db) แต่ละตัวมีข้อมูล/ตัวตนของตัวเอง เหมือนชามเซรามิกสลักชื่อ",
-  """Left shelf: a stack of identical paper food bowls, a hand takes any one. Right shelf: three ceramic food bowls
-  each engraved with a number, each sitting on its own small safe. Nong Som holds one ceramic bowl carefully.""",
-  ["stateless", "stateful", "หยิบใบไหนก็ได้", "แต่ละใบมีของตัวเอง"],
-  "'stateless' above left shelf; 'stateful' above right shelf; 'หยิบใบไหนก็ได้' under left; 'แต่ละใบมีของตัวเอง' under right")
-t("deployment-random-names", S2,
-  "Pod ของ Deployment ชื่อสุ่ม (som-db-7b786655f5-9hf7p) เปลี่ยนทุกครั้งที่สร้างใหม่ และ RollingUpdate ทำให้มี 2 ตัวพร้อมกันได้ — ไม่เหมาะกับ db ที่ต้องรู้ว่าใครคือใคร",
-  """A row of booths whose name plates are random barcode-like strings; one booth is replaced and its new plate is a
-  different random string; a customer silhouette holding an address card looks lost. Nong Som scratches her head.""",
-  ["som-db-7b786655f5-9hf7p", "ชื่อใหม่ทุกครั้ง", "ชื่อสุ่ม หาตัวไม่เจอ"],
-  "'som-db-7b786655f5-9hf7p' on one booth plate (other plates are color-only stripes); 'ชื่อใหม่ทุกครั้ง' on an arrow to the replaced booth; 'ชื่อสุ่ม หาตัวไม่เจอ' as a title banner",
+S2 = "2. Secret ต่างจาก ConfigMap อย่างไร"
+t("secret-vs-configmap", S2,
+  "Secret ใช้คล้าย ConfigMap (key-value, ≤ 1 MiB, namespaced, env/volume) แต่ data เก็บเป็น base64, describe ไม่แสดงค่า, volume เป็น tmpfs และแยกสิทธิ์ RBAC ได้",
+  """Side by side: the open teal notice board and the steel key box with sealed envelopes; a comparison strip under them with
+  exactly two rows. Nong Som stands between.""",
+  ["ConfigMap", "Secret", "≤ 1 MiB ทั้งคู่", "แยกสิทธิ์อ่านได้", "หน้าตาคล้าย แต่ระวังกว่า"],
+  "'ConfigMap' over the board; 'Secret' over the key box; '≤ 1 MiB ทั้งคู่' and 'แยกสิทธิ์อ่านได้' on the two strip rows; last label as a title banner")
+t("base64-not-encryption", S2,
+  "base64 ไม่ใช่การเข้ารหัส: bWVvdzEyMzQ= | base64 -d → meow1234 ใครมีข้อความก็แปลงกลับได้ทันที ไม่ต้องมีกุญแจ",
+  """A transparent envelope on a table; inside letters are visible; Nong Som slides it through a small converting roller and
+  plain letters come out the other side; no key anywhere.""",
+  ["bWVvdzEyMzQ=", "base64 -d", "meow1234", "ซองใส ไม่ใช่กุญแจ"],
+  "'bWVvdzEyMzQ=' on the transparent envelope; 'base64 -d' on the roller; 'meow1234' on the output card; 'ซองใส ไม่ใช่กุญแจ' as a title banner",
   nt=True)
+t("echo-newline-trap", S2,
+  "ระวัง newline: echo meow1234 | base64 → bWVvdzEyMzQK (มี \\n ติดไปด้วย รหัสจะผิด) ต้องใช้ echo -n → bWVvdzEyMzQ=",
+  """Two conveyor lanes: in the top lane a card has an extra small curly tail at the end and becomes a slightly different
+  code; in the bottom lane a clean card becomes the right code with a green tick. Nong Som points at the tail.""",
+  ["echo", "bWVvdzEyMzQK", "echo -n", "bWVvdzEyMzQ=", "อย่าให้มีขึ้นบรรทัดใหม่"],
+  "'echo' and 'bWVvdzEyMzQK' on the top lane; 'echo -n' and 'bWVvdzEyMzQ=' on the bottom lane; last label as a title banner",
+  nt=True)
+t("real-protection-layers", S2,
+  "ความปลอดภัยของ Secret ไม่ได้มาจาก base64 แต่มาจากหลายชั้น: RBAC ใครอ่านได้, encryption at rest ใน etcd, tmpfs บน Node, ไม่พิมพ์ค่าใน describe และการไม่ commit ลง git",
+  """A layered shield made of exactly four stacked rings around a sealed envelope, each ring with a small icon (ID card,
+  vault door, memory-foam tray, crossed-out code book). Nong Som assembles the rings.""",
+  ["RBAC", "encryption at rest", "tmpfs", "ไม่ commit ลง git", "ป้องกันหลายชั้น"],
+  "the first four labels on the four rings; 'ป้องกันหลายชั้น' as a title banner")
 
-S3 = "3. คุณสมบัติของ StatefulSet"
-t("three-guarantees", S3,
-  "StatefulSet รับประกัน 3 อย่าง: ชื่อคงที่ (<sts>-0..N), ที่อยู่ DNS คงที่ต่อ Pod, และ storage ประจำตัวที่ตามกลับมาทุกครั้ง",
-  """Three podium pillars like an award stand: a name plate ending in -0, a directory book page with an address line,
-  a numbered safe. The purple-navy numbering robot stands behind them. Nong Som applauds.""",
-  ["ชื่อคงที่", "DNS คงที่", "ตู้เซฟประจำตัว", "som-db-0"],
-  "'ชื่อคงที่', 'DNS คงที่', 'ตู้เซฟประจำตัว' on the three pillars; 'som-db-0' on the name plate on the first pillar")
-t("manifest-anatomy", S3,
-  "โครง StatefulSet: serviceName (ชื่อ headless Service), replicas, selector, template และ volumeClaimTemplates — ไม่มี strategy แบบ Deployment แต่ใช้ updateStrategy",
-  """A big YAML card on a board with highlighted rows and callout arrows; the numbering robot holds the card corner.
-  Nong Som with a pen.""",
-  ["kind: StatefulSet", "serviceName: som-db", "volumeClaimTemplates", "updateStrategy", "โครงไฟล์ StatefulSet"],
-  "first four labels are rows on the YAML card; 'โครงไฟล์ StatefulSet' as a title banner")
-t("ordinal-names-labels", S3,
-  "ชื่อ Pod = <ชื่อ sts>-<ลำดับ> และมี label อัตโนมัติ statefulset.kubernetes.io/pod-name กับ apps.kubernetes.io/pod-index — ใช้เลือก Pod รายตัวได้",
-  """Three booths in a row with plates -0, -1, -2; each has a luggage tag with a small index number; the numbering
-  robot hands out the next ticket. Nong Som reads a tag.""",
-  ["web-0", "web-1", "web-2", "apps.kubernetes.io/pod-index", "ชื่อตามเลขลำดับ"],
-  "'web-0', 'web-1', 'web-2' on the three booth plates; 'apps.kubernetes.io/pod-index' on the enlarged tag; 'ชื่อตามเลขลำดับ' as a title banner",
+S3 = "3. ประเภท (type) ของ Secret"
+t("secret-types", S3,
+  "type บอกรูปแบบ key: Opaque (อิสระ), kubernetes.io/basic-auth (username/password), kubernetes.io/dockerconfigjson (.dockerconfigjson), kubernetes.io/tls (tls.crt/tls.key), kubernetes.io/service-account-token",
+  """A shelf of five envelope styles in the key box, each with a different shape icon (plain, person, crane, padlock tube,
+  robot ID card). Nong Som catalogs them.""",
+  ["Opaque", "kubernetes.io/basic-auth", "kubernetes.io/dockerconfigjson", "kubernetes.io/tls", "kubernetes.io/service-account-token", "ชนิดของซอง"],
+  "the five type names on the five envelopes; 'ชนิดของซอง' as a title banner")
+t("type-validation", S3,
+  "type ตรวจ key ให้: basic-auth ว่างเปล่า → data[username]: Required value, data[password]: Required value; tls ไม่มี key → data[tls.key]: Required value; key ไม่ใช่ PEM → failed to find any PEM data in key input",
+  """A gate inspector robot checks envelopes; two envelopes are stopped with red cards; one passes with a green tick. Nong
+  Som reads the red cards.""",
+  ["data[username]: Required value", "data[tls.key]: Required value", "failed to find any PEM data", "type ช่วยตรวจรูปแบบ"],
+  "the three English errors on three red cards; 'type ช่วยตรวจรูปแบบ' as a title banner",
   nt=True)
-t("same-name-new-uid", S3,
-  "ลบ Pod som-db-0 → ได้ Pod ชื่อเดิม som-db-0 แต่ UID และ IP ใหม่ และต่อ PVC เดิม data-som-db-0 (ทดสอบแล้ว)",
-  """A crane lifts away booth -0 and places a new booth with the same plate -0 in the same row; its IP tag is a new
-  color; its tube reconnects to the same numbered safe. Nong Som compares old and new IP tags.""",
-  ["som-db-0", "IP ใหม่", "data-som-db-0", "ชื่อเดิม ตู้เดิม"],
-  "'som-db-0' on the new booth plate; 'IP ใหม่' on the new IP tag; 'data-som-db-0' on the safe; 'ชื่อเดิม ตู้เดิม' as a title banner",
+t("dockerconfigjson", S3,
+  "kubectl create secret docker-registry regcred → type dockerconfigjson เก็บ {\"auths\":{server:{username,password,auth}}} — decode ได้รหัสเต็ม ๆ เช่นกัน",
+  """A gate pass card for a private container warehouse; held up to the light it is transparent and shows a server row, a
+  username row and a password row as dots. Nong Som holds the card.""",
+  ["docker-registry", ".dockerconfigjson", "registry.example.com", "password: ●●●●", "บัตรผ่านคลังสินค้า"],
+  "'docker-registry' on the card header; '.dockerconfigjson' on the card's key tag; 'registry.example.com' and 'password: ●●●●' as rows; last label as a title banner",
   nt=True)
+t("service-account-token", S3,
+  "Secret ชนิด service-account-token (ใส่ annotation kubernetes.io/service-account.name) → ระบบเติม token, ca.crt, namespace ให้; ระวัง kubectl describe แสดง token เต็ม ๆ — ปัจจุบันใช้ kubectl create token (มีอายุ) แทน",
+  """A robot staff ID card with a long barcode strip being stamped by a machine in the control tower; a describe magnifier
+  shows the full barcode; next to it a short-lived paper ticket with a clock icon. Nong Som prefers the ticket.""",
+  ["service-account-token", "describe เห็น token", "kubectl create token", "ใช้แบบมีอายุดีกว่า"],
+  "'service-account-token' on the ID card; 'describe เห็น token' on the magnifier; 'kubectl create token' on the ticket; last label as a title banner",
+  nt=True)
+t("opaque-default", S3,
+  "kubectl create secret generic = type Opaque (ค่าปกติ) ใส่ key อะไรก็ได้ เหมาะกับรหัส DB และ DATABASE_URL ของร้าน",
+  """A plain navy envelope with two cards inside visible as dot rows; the type tag says plain. Nong Som seals it.""",
+  ["generic", "Opaque", "POSTGRES_PASSWORD", "DATABASE_URL", "ซองแบบทั่วไป"],
+  "'generic' on the command card; 'Opaque' on the type tag; the two key names on the two cards; last label as a title banner")
 
-S4 = "4. headless Service และ DNS ต่อ Pod"
-t("normal-vs-headless", S4,
-  "Service ปกติมี ClusterIP เดียวแล้วกระจายไปทุก Pod; headless (clusterIP: None) ไม่มี IP กลาง DNS ตอบ IP ของ Pod โดยตรงและมีชื่อรายตัว",
-  """Left: a lighthouse counter with one address plate sending customers to random booths. Right: an open directory
-  book on a lectern listing each booth's direct address, customers going straight to a chosen booth. Nong Som
-  stands between them.""",
-  ["Service ปกติ", "ClusterIP", "clusterIP: None", "ชี้ตรงรายบูธ"],
-  "'Service ปกติ' above left; 'ClusterIP' on the lighthouse address plate; 'clusterIP: None' on the lectern; 'ชี้ตรงรายบูธ' above right")
-t("dns-format", S4,
-  "รูปแบบ DNS ต่อ Pod: <pod>.<service>.<namespace>.svc.cluster.local เช่น som-db-0.som-db.som-shop.svc.cluster.local — ใน namespace เดียวกันใช้ som-db-0.som-db ได้",
-  """A long address ribbon broken into colored segments like train cars, each segment with a small icon (booth,
-  directory book, zone sign, harbor). Nong Som walks along the ribbon reading it.""",
-  ["som-db-0", "som-db", "som-shop", "svc.cluster.local", "ที่อยู่เต็มของบูธ"],
-  "the four English labels on four consecutive segments with dots between them; 'ที่อยู่เต็มของบูธ' as a title banner")
-t("nslookup-headless", S4,
-  "nslookup ชื่อ headless Service ได้ IP ของทุก Pod ที่ Ready (หลายบรรทัด) ส่วน nslookup ชื่อรายตัวได้ IP เดียว — Pod ที่ไม่ Ready ไม่อยู่ในคำตอบ",
-  """A directory book showing a page with three address lines and one grayed-out line for a booth with a red lamp;
-  a second small card shows a single address for one booth. Nong Som holds a telephone handset.""",
-  ["nslookup som-db", "3 Address", "nslookup som-db-1.som-db", "ไม่ Ready = ไม่อยู่ในสมุด"],
-  "'nslookup som-db' above the page; '3 Address' on the page; 'nslookup som-db-1.som-db' on the small card; 'ไม่ Ready = ไม่อยู่ในสมุด' next to the grayed line",
+S4 = "4. วิธีสร้าง Secret"
+t("create-literal-file", S4,
+  "--from-literal=password=meow1234 หรือ --from-file=db-password=pw.txt (ไฟล์ไม่มี newline) — kubectl เข้ารหัส base64 ให้เอง",
+  """Nong Som at a desk drops a typed card and a small text file into an envelope-making machine that outputs sealed envelopes;
+  a terminal card shows the command.""",
+  ["--from-literal", "--from-file", "kubectl แปลง base64 ให้"],
+  "'--from-literal' and '--from-file' on the two input slots; 'kubectl แปลง base64 ให้' as a title banner")
+t("data-vs-stringdata", S4,
+  "YAML: data ต้องใส่ base64 เอง; stringData ใส่ข้อความตรง ๆ แล้วระบบแปลงให้ — ถ้า key ซ้ำ stringData ชนะ (ทดสอบแล้ว) และ get -o yaml จะเห็นแค่ data",
+  """Two input trays: one tray of transparent-coded cards, one tray of plain cards; both merge into one envelope where the
+  plain card replaces the coded card with the same key. Nong Som watches the merge.""",
+  ["data: (base64)", "stringData: (ข้อความ)", "key ซ้ำ stringData ชนะ", "เก็บจริงเป็น data"],
+  "'data: (base64)' and 'stringData: (ข้อความ)' on the two trays; 'key ซ้ำ stringData ชนะ' on the merge point; 'เก็บจริงเป็น data' on the envelope",
   nt=True)
-t("servicename-governs", S4,
-  "spec.serviceName ต้องชี้ headless Service ที่ selector ตรงกับ Pod — เป็นตัวกำหนดโดเมนของ Pod; ต้องสร้าง Service เอง StatefulSet ไม่สร้างให้",
-  """The numbering robot holds a cord tied to the directory book; the book stands on a pedestal Nong Som just built
-  with a hammer; booths in the background.""",
-  ["serviceName", "headless Service", "ต้องสร้าง Service เอง"],
-  "'serviceName' on the cord tag; 'headless Service' on the book cover; 'ต้องสร้าง Service เอง' as a title banner")
-
-S5 = "5. volumeClaimTemplates: ตู้เซฟประจำตัว"
-t("pvc-per-pod", S5,
-  "volumeClaimTemplates ชื่อ data → PVC ต่อ Pod ชื่อ data-<sts>-<ลำดับ> เช่น data-som-db-0, data-som-db-1 แต่ละใบได้ PV ของตัวเอง",
-  """The numbering robot tears slips from a pad, each slip numbered, and each slip ties to its own safe beneath each
-  numbered booth on different ships. Nong Som collects one slip.""",
-  ["volumeClaimTemplates", "data-som-db-0", "data-som-db-1", "data-som-db-2", "บูธละใบเบิก"],
-  "'volumeClaimTemplates' on the pad; three slip names on three slips; 'บูธละใบเบิก' as a title banner")
-t("sticky-pvc", S5,
-  "PVC ติดตามชื่อ Pod: Pod web-1 เกิดใหม่กี่ครั้งก็ต่อ www-web-1 เดิม ไฟล์ที่เขียนครั้งแรก (first-born web-1) ยังอยู่",
-  """Booth -1 is rebuilt three times shown as fading ghost outlines, all tubes connecting to the same safe -1 that
-  holds a note. Nong Som reads the note.""",
-  ["web-1", "www-web-1", "first-born web-1", "เกิดใหม่ก็ตู้เดิม"],
-  "'web-1' on the booth plate; 'www-web-1' on the safe; 'first-born web-1' on the note; 'เกิดใหม่ก็ตู้เดิม' as a title banner",
-  nt=True)
-t("pvc-survives", S5,
-  "PVC ไม่ถูกลบเมื่อ scale down หรือลบ StatefulSet (ค่า default) — scale กลับหรือ apply ใหม่ Pod ชื่อเดิมกลับมาผูกตู้เดิม",
-  """The numbering robot and booths -1 and -2 are gone (dashed outlines), but safes -1 and -2 remain padlocked in the
-  hold with their slips still pinned. Nong Som points at the waiting safes.""",
-  ["scale 3 → 1", "delete sts", "PVC ยังอยู่", "ตู้รอเจ้าของกลับมา"],
-  "'scale 3 → 1' and 'delete sts' on two small signs; 'PVC ยังอยู่' on the pinned slips; 'ตู้รอเจ้าของกลับมา' as a title banner",
-  nt=True)
-t("retention-policy", S5,
-  "persistentVolumeClaimRetentionPolicy: whenDeleted / whenScaled ค่า default Retain; ตั้ง Delete แล้ว PVC มี ownerReferences ถึง StatefulSet และถูกลบตาม (ทดสอบแล้ว)",
-  """A control panel on the numbering robot with two toggle switches, each switching between a padlock icon and a
-  crusher icon; a slip shows an owner badge pointing to the robot. Nong Som flips a switch.""",
-  ["whenDeleted", "whenScaled", "Retain", "Delete", "ownerReferences", "เลือกได้ว่าเก็บหรือทิ้ง"],
-  "'whenDeleted' and 'whenScaled' on the two switches; 'Retain' and 'Delete' on the two switch positions (each once, shared legend); 'ownerReferences' on the owner badge; last label as a title banner",
+t("last-applied-leak", S4,
+  "กับดัก: kubectl apply ไฟล์ที่มี stringData → annotation kubectl.kubernetes.io/last-applied-configuration เก็บข้อความรหัสแบบไม่ base64 ไว้ด้วย; ใช้ kubectl create secret หรือ apply --server-side",
+  """A sealed envelope with a sticky note stuck on its outside that shows the plain password as dots; a magnifier reveals
+  the note. Nong Som peels the note off with tweezers.""",
+  ["stringData", "last-applied-configuration", "รหัสติดอยู่นอกซอง"],
+  "'stringData' on the envelope tag; 'last-applied-configuration' on the sticky note; 'รหัสติดอยู่นอกซอง' as a title banner",
   nt=True)
 
-S6 = "6. ลำดับการสร้าง/ลบ: podManagementPolicy"
-t("ordered-ready-create", S6,
-  "OrderedReady (default): สร้าง -0 รอจน Ready ก่อนสร้าง -1 แล้ว -2 — ถ้า -0 ไม่ Ready ตัวถัดไปไม่เกิด",
-  """A row of three booth slots; booth -0 has a green lamp, booth -1 is being lowered by a crane, slot -2 is empty
-  with a waiting sign. The numbering robot holds the next ticket until the lamp turns green.""",
-  ["OrderedReady", "0 → 1 → 2", "รอ Ready ทีละตัว"],
-  "'OrderedReady' on the robot chest display; '0 → 1 → 2' on an arrow strip under the slots; 'รอ Ready ทีละตัว' as a title banner",
+S5 = "5. ใช้ Secret ใน Pod"
+t("env-secret-key-ref", S5,
+  "env.valueFrom.secretKeyRef (name + key) หรือ envFrom.secretRef — เหมือน ConfigMap: ค่าถูกคัดลอกตอนเริ่ม ไม่เปลี่ยนจนกว่าจะได้ Pod ใหม่",
+  """A staff member at the booth door receives a sealed chest card copied from an envelope; the envelope goes back into the
+  key box. Nong Som checks the staff member's card.""",
+  ["secretKeyRef", "envFrom: secretRef", "คัดลอกตอนเข้ากะ"],
+  "'secretKeyRef' and 'envFrom: secretRef' on two arrows from the key box; 'คัดลอกตอนเข้ากะ' as a title banner")
+t("volume-tmpfs", S5,
+  "volume ของ Secret เป็น tmpfs (อยู่ในหน่วยความจำ ไม่เขียนลงดิสก์ Node) ไฟล์ละ key ผ่าน ..data และตั้ง defaultMode: 0400 ได้ (ทดสอบ: mount = tmpfs ro)",
+  """Inside a booth: a soft memory-foam tray holds sealed envelope files, each envelope tagged with one key name; the ship
+  deck below shows nothing written. Nong Som points at the tray.""",
+  ["tmpfs", "/etc/secret/password", "defaultMode: 0400", "อยู่ในหน่วยความจำ"],
+  "'tmpfs' on the tray; '/etc/secret/password' on one envelope; 'defaultMode: 0400' on a permission tag; 'อยู่ในหน่วยความจำ' as a title banner",
   nt=True)
-t("scale-down-reverse", S6,
-  "scale down ลบจากเลขมากไปน้อย (-2 ก่อน -1) และรอตัวก่อนหน้าปิดเสร็จ — -0 ถูกลบเป็นตัวสุดท้ายเสมอ",
-  """Booth -2 is being lifted away first by a crane, booth -1 waits next in line with a queue number, booth -0 stays.
-  Nong Som counts backwards on her paw.""",
-  ["2 → 1 → 0", "ลบจากเลขมากก่อน", "-0 อยู่ท้ายสุด"],
-  "'2 → 1 → 0' on an arrow strip; 'ลบจากเลขมากก่อน' as a title banner; '-0 อยู่ท้ายสุด' next to booth -0",
+t("env-leak", S5,
+  "env รั่วง่าย: kubectl exec ... env, /proc/1/environ, log ที่พิมพ์ตัวแปร, crash dump — ไฟล์ใน volume ปลอดภัยกว่าและอัปเดตได้",
+  """A staff chest card is photocopied by passing gadgets: a shell terminal, a process window and a log scroll, each showing
+  dots; in contrast a booth envelope tray stays closed. Nong Som covers a chest card with her paw.""",
+  ["kubectl exec env", "/proc/1/environ", "log", "env รั่วง่ายกว่าไฟล์"],
+  "the three English labels on the three gadgets; 'env รั่วง่ายกว่าไฟล์' as a title banner",
   nt=True)
-t("parallel-policy", S6,
-  "podManagementPolicy: Parallel สร้าง/ลบทุกตัวพร้อมกันไม่รอกัน (ทดสอบแล้ว par-0..2 Pending พร้อมกัน) — ชื่อและตู้ประจำตัวยังเหมือนเดิม",
-  """Three cranes lower booths -0, -1 and -2 at the same moment; each booth still lines up with its own safe. Nong Som
-  waves a starting flag.""",
-  ["Parallel", "พร้อมกันทุกตัว", "ชื่อและตู้ยังคงที่"],
-  "'Parallel' on the starting flag; 'พร้อมกันทุกตัว' as a title banner; 'ชื่อและตู้ยังคงที่' as a subtitle",
-  nt=True)
-
-S7 = "7. การอัปเดต: updateStrategy"
-t("rolling-reverse", S7,
-  "RollingUpdate ของ StatefulSet: เปลี่ยนทีละตัวจากเลขมากไปน้อย (-2 → -1 → -0) รอแต่ละตัว Ready ก่อนไปตัวถัดไป",
-  """Three booths in a row; booth -2 already has a new signboard, booth -1 is being refitted with a crane, booth -0
-  still has the old signboard. Nong Som directs the crane.""",
-  ["RollingUpdate", "2 → 1 → 0", "ทีละตัวจากท้ายแถว"],
-  "'RollingUpdate' on the robot display; '2 → 1 → 0' on the arrow strip; 'ทีละตัวจากท้ายแถว' as a title banner",
-  nt=True)
-t("partition-canary", S7,
-  "partition: N = อัปเดตเฉพาะ Pod ที่เลข ≥ N ใช้ทำ canary (partition 2 → เฉพาะ web-2 ได้ nginx:1.28-alpine) แล้วลด partition เป็น 0 เพื่อปล่อยทั้งหมด",
-  """A rope barrier across the booth row between -1 and -2; only booth -2 beyond the rope has the new signboard;
-  booths -0 and -1 keep the old one. Nong Som holds the rope post ready to move it.""",
-  ["partition: 2", "web-2: 1.28", "web-0, web-1: 1.27", "ทดลองรุ่นใหม่บางบูธ"],
-  "'partition: 2' on the rope post; 'web-2: 1.28' on booth -2 sign; 'web-0, web-1: 1.27' on a shared card in front of booths -0 and -1; last label as a title banner",
-  nt=True)
-t("revisions", S7,
-  "StatefulSet เก็บรุ่นเป็น ControllerRevision: status.currentRevision / updateRevision และ label controller-revision-hash บน Pod — ดูด้วย kubectl rollout history sts",
-  """The numbering robot holds a thin logbook with two bookmarks of different colors; each booth wears a small
-  barcode sticker matching one of the bookmarks. Nong Som compares stickers.""",
-  ["currentRevision", "updateRevision", "controller-revision-hash", "rollout history sts", "รุ่นปัจจุบันกับรุ่นใหม่"],
-  "first two labels on the two bookmarks; 'controller-revision-hash' on an enlarged sticker; 'rollout history sts' on the logbook cover; last label as a title banner",
-  nt=True)
-t("ondelete", S7,
-  "updateStrategy: OnDelete = แก้ template แล้ว Pod ยังไม่เปลี่ยน จนกว่าจะลบ Pod นั้นเอง — ควบคุมจังหวะได้ละเอียดสำหรับระบบที่ต้องอัปเกรดทีละขั้นด้วยมือ",
-  """A new blueprint card is pinned on the robot but all booths still show old signboards; Nong Som presses a
-  delete button for booth -1 only, and only that rebuilt booth shows the new sign.""",
-  ["OnDelete", "kubectl delete pod web-1", "ลบเมื่อไรเปลี่ยนเมื่อนั้น"],
-  "'OnDelete' on the robot display; 'kubectl delete pod web-1' on the button; 'ลบเมื่อไรเปลี่ยนเมื่อนั้น' as a title banner",
-  nt=True)
-t("min-ready-seconds", S7,
-  "minReadySeconds: Pod ต้อง Ready ต่อเนื่องครบกี่วินาทีจึงนับว่า available ก่อนไปตัวถัดไป — ชะลอ rollout ให้เห็นปัญหาทัน",
-  """A booth with a green lamp and a stopwatch counting; the crane for the next booth waits at a stop line until the
-  stopwatch completes. Nong Som holds the stopwatch.""",
-  ["minReadySeconds: 10", "รอนิ่งก่อนไปต่อ"],
-  "'minReadySeconds: 10' on the stopwatch; 'รอนิ่งก่อนไปต่อ' as a title banner")
-
-S8 = "8. replicas หลายตัว ≠ ข้อมูล replicate"
-t("independent-ledgers", S8,
-  "scale som-db เป็น 3 ได้ 3 postgres ที่ข้อมูลแยกกัน: som-db-0 มี orders ส่วน som-db-1/2 ว่าง (relation \"orders\" does not exist) — StatefulSet ไม่คัดลอกข้อมูลให้",
-  """Three kitchen booths each above its own safe; booth -0's ledger is full, booths -1 and -2 have blank ledgers.
-  Nong Som looks surprised at the blank ones.""",
-  ["som-db-0: 4 orders", "som-db-1: ว่าง", "som-db-2: ว่าง", "relation \"orders\" does not exist", "ไม่ได้คัดลอกให้อัตโนมัติ"],
-  "the three booth labels on three ledgers; the English error on a red card near booth -1; last label as a title banner",
-  nt=True)
-t("streaming-replication", S8,
-  "ถ้าต้องการสำเนาจริง แอปต้องทำเอง เช่น postgres streaming replication: replica ใช้ pg_basebackup -R จาก primary แล้วรับ WAL ต่อเนื่อง อ่านได้อย่างเดียว",
-  """Booth -0 marked as the main kitchen sends ledger pages along a small conveyor courier to a copy booth whose
-  ledger fills in sync; the copy booth has a glass read-only window. Nong Som checks the two ledgers match.""",
-  ["primary", "replica", "pg_basebackup -R", "streaming", "อ่านอย่างเดียว"],
-  "'primary' on booth -0; 'replica' on the copy booth; 'pg_basebackup -R' on the first conveyor box; 'streaming' on the conveyor belt; 'อ่านอย่างเดียว' on the glass window",
-  nt=True)
-t("operator-concept", S8,
-  "ระบบจริง: failover, สลับ primary, backup อัตโนมัติ ใช้ Operator (controller เฉพาะทางของฐานข้อมูล) ดูแลบน StatefulSet/Pod — บทนี้ปูทางเท่านั้น",
-  """A specialist robot wearing a chef hat and holding a toolbox oversees several kitchen booths and safes, ready to
-  swap the main kitchen if one fails. Nong Som takes notes.""",
-  ["Operator", "failover", "ผู้เชี่ยวชาญดูแลฐานข้อมูล"],
-  "'Operator' on the specialist robot; 'failover' on a swap-arrow sign; 'ผู้เชี่ยวชาญดูแลฐานข้อมูล' as a title banner")
-
-S9 = "9. StatefulSet กับ Node ล่ม"
-t("at-most-one", S9,
-  "Node ล่ม: Pod web-1 ค้าง Terminating (Ready False) ไม่ถูกสร้างใหม่ที่ Node อื่น — StatefulSet ยอมให้มี Pod ชื่อเดียวกันได้ไม่เกิน 1 ตัว (at most one)",
-  """A ship stuck in thick fog with booth -1 shown as a dim silhouette; on the clear ship booths -0 and -2 are open; an
-  empty slot -1 on the clear ship has a 'no entry' sign. Nong Som looks at the fog with binoculars.""",
-  ["web-1 Terminating", "NotReady", "ชื่อเดียวกันมีได้ตัวเดียว"],
-  "'web-1 Terminating' on the dim booth; 'NotReady' on the foggy ship flag; 'ชื่อเดียวกันมีได้ตัวเดียว' as a title banner",
-  nt=True)
-t("force-delete-danger", S9,
-  "force delete (--grace-period=0 --force) เสี่ยง: ถ้า Node แค่หลุดเครือข่ายแต่ Pod ยังทำงาน จะมี som-db-0 สองตัวเขียนข้อมูลพร้อมกัน",
-  """Two booths both labeled -0, one on the foggy ship still cooking, one on the clear ship just built; both connect
-  to safes and write the ledger; red lightning icons between them. Nong Som raises a stop paw.""",
-  ["--force", "som-db-0", "som-db-0", "อันตราย: สองตัวชื่อเดียว"],
-  "'--force' on a red hammer; 'som-db-0' on each of the two booths (exactly twice); 'อันตราย: สองตัวชื่อเดียว' as a title banner")
-t("out-of-service-local", S9,
-  "ยืนยันว่า Node ดับจริงแล้วใส่ taint node.kubernetes.io/out-of-service → ระบบลบ Pod ให้ แต่ PV ของ local-path ผูก Node เดิม Pod ใหม่จึง Pending จนเรือกลับมา",
-  """A harbor official tapes an out-of-service sign on the foggy ship; booth -1 is removed from it; a new booth -1
-  hangs on a crane over the clear ship but cannot land because its slip is chained to the safe on the foggy ship.
-  Nong Som holds the tape roll.""",
-  ["node.kubernetes.io/out-of-service", "web-1 Pending", "didn't match PersistentVolume's node affinity", "ตู้เซฟยังติดเรือเดิม"],
-  "taint label on the sign; 'web-1 Pending' on the hanging booth; the English message on a red card; 'ตู้เซฟยังติดเรือเดิม' as a title banner",
+t("update-and-immutable", S5,
+  "แก้ Secret → ไฟล์ใน volume เปลี่ยนเอง (วัดได้ ~47 วินาที) แต่ env ไม่เปลี่ยน; immutable: true ใช้ได้เหมือน ConfigMap (data: Forbidden: field is immutable when `immutable` is set)",
+  """Left: the deckhand robot replaces an envelope in the booth tray with a stopwatch showing under a minute while a staff
+  chest card stays old. Right: an envelope sealed under a laminated sheet.""",
+  ["~47 วินาที", "env ยังค่าเดิม", "immutable: true", "อัปเดตเหมือน ConfigMap"],
+  "'~47 วินาที' on the stopwatch; 'env ยังค่าเดิม' on the chest card; 'immutable: true' on the laminated envelope; last label as a title banner",
   nt=True)
 
-S10 = "10. เปรียบเทียบและแนวปฏิบัติ"
-t("compare-controllers", S10,
-  "เทียบ Deployment (Pod เหมือนกัน สลับได้) vs StatefulSet (ชื่อ/ตู้ประจำตัว เรียงลำดับ) vs DaemonSet (1 Pod ต่อ Node เช่น agent เก็บ log — แนวคิด)",
-  """Three columns: the store-manager robot with identical booths; the numbering robot with numbered booths and
-  safes; a third robot placing exactly one small booth on every ship. Nong Som stands in front.""",
-  ["Deployment", "StatefulSet", "DaemonSet", "ทุกตัวเหมือนกัน", "มีเลขประจำตัว", "เรือละ 1 ตัว"],
-  "column headers 'Deployment', 'StatefulSet', 'DaemonSet'; under them 'ทุกตัวเหมือนกัน', 'มีเลขประจำตัว', 'เรือละ 1 ตัว' respectively")
-t("which-name-to-connect", S10,
-  "web ควรต่อ db ด้วยชื่อไหน: som-db (headless) ตอบ IP ทุกตัว เมื่อ scale เป็น 3 อาจต่อผิดตัว → ระบุ som-db-0.som-db ให้ชี้ primary ชัดเจน",
-  """A web booth customer holding two address cards; one card points to the directory book page with three addresses
-  (arrows scatter to three kitchens), the other card points directly to kitchen -0. Nong Som circles the second
-  card.""",
-  ["som-db", "som-db-0.som-db", "ชี้ตัวหลักให้ชัด"],
-  "'som-db' on the first card; 'som-db-0.som-db' on the second card; 'ชี้ตัวหลักให้ชัด' as a title banner",
+S6 = "6. imagePullSecrets: ดึง image จาก registry ส่วนตัว"
+t("image-pull-secrets", S6,
+  "registry ที่ต้อง login → Pod ใส่ imagePullSecrets: [{name: regcred}] หรือผูกไว้กับ ServiceAccount; ไม่มีบัตร → ErrImagePull no basic auth credentials, บัตรผิด → 401 Unauthorized",
+  """A private container warehouse gate on the dock with a guard robot; a crane with a gate pass card is let through and
+  lifts a container; another crane without a card is stopped with a red card; a third with a wrong card gets another
+  red card. Nong Som holds a valid pass.""",
+  ["imagePullSecrets", "no basic auth credentials", "401 Unauthorized", "บัตรผ่านคลัง image"],
+  "'imagePullSecrets' on the valid pass; the two English errors on two red cards; 'บัตรผ่านคลัง image' as a title banner",
   nt=True)
-t("adopt-existing-pvc", S10,
-  "ย้ายข้อมูลจาก Deployment: ตั้ง PV เป็น Retain → ลบ PVC เดิม → ลบ claimRef → สร้าง PVC ชื่อ data-som-db-0 (volumeName) ไว้ก่อน → StatefulSet ใช้ PVC ชื่อนั้นทันที",
-  """Nong Som wheels an old safe on a hand truck from an old single kitchen to the numbered booth -0; she sticks a new
-  slip with the numbered name on it before the numbering robot arrives; the robot nods seeing the slip already
-  there.""",
-  ["Retain", "data-som-db-0", "volumeName", "ย้ายบ้านพร้อมตู้เซฟเดิม"],
-  "'Retain' on the padlock; 'data-som-db-0' on the new slip; 'volumeName' on the slip's second line; 'ย้ายบ้านพร้อมตู้เซฟเดิม' as a title banner",
+t("pull-recheck-cached", S6,
+  "Kubernetes v1.37 (ทดสอบแล้ว): image ที่เคยดึงด้วย imagePullSecrets มาอยู่บน Node แล้ว Pod อื่นที่ไม่มีบัตรก็ยังใช้ไม่ได้ (kubelet ตรวจสิทธิ์ซ้ำ) แม้ imagePullPolicy: IfNotPresent",
+  """A container already sits in a ship's cargo hold; a booth without a gate pass asks to use it, and the deckhand robot
+  checks for a pass and refuses with a red card. Nong Som nods approvingly.""",
+  ["IfNotPresent", "ไม่มีบัตร = ใช้ไม่ได้", "kubelet ตรวจสิทธิ์ซ้ำ"],
+  "'IfNotPresent' on the booth's request card; 'ไม่มีบัตร = ใช้ไม่ได้' on the red card; 'kubelet ตรวจสิทธิ์ซ้ำ' as a title banner",
   nt=True)
-t("best-practices", S10,
-  "แนวปฏิบัติ: readinessProbe ที่ถูกต้อง, resources, PV Retain สำหรับข้อมูลสำคัญ, backup นอกคลัสเตอร์, ไม่ force delete, กระจาย Pod ข้าม Node และใช้ Operator สำหรับ HA",
-  """A checklist board with six rows each with a small icon (green lamp, gauge, padlock, dock warehouse, stop sign,
-  two ships). Nong Som ticks the boxes with a big pencil.""",
-  ["readinessProbe", "resources", "Retain", "backup", "ไม่ force delete", "เช็กลิสต์ db"],
-  "first five labels on five checklist rows (the sixth row is icon-only); 'เช็กลิสต์ db' as the board title")
 
-S11 = "11. สรุป"
-t("summary-table", S11,
-  "ตารางสรุป StatefulSet: ชื่อ, DNS, PVC, ลำดับ, การอัปเดต, การลบ — เทียบกับ Deployment",
-  """A clean table board with two columns (manager robot icon vs numbering robot icon) and five icon rows; cells are
-  check and cross icons only. Nong Som points at it.""",
-  ["ชื่อ Pod", "DNS ต่อ Pod", "PVC ต่อ Pod", "ลำดับ", "อัปเดต", "สรุปบท"],
-  "five row headers 'ชื่อ Pod', 'DNS ต่อ Pod', 'PVC ต่อ Pod', 'ลำดับ', 'อัปเดต'; 'สรุปบท' as a title banner; column headers are icon-only; cells are icon-only")
-t("command-cheatsheet", S11,
-  "คำสั่งประจำบท: kubectl get sts,pod,pvc / rollout status sts / patch partition / scale sts / nslookup <pod>.<svc>",
-  """A chalkboard cheat sheet on an easel with five command lines in monospace and small icons. Nong Som holds chalk.""",
-  ["kubectl get sts,pvc", "kubectl rollout status sts/som-db", "kubectl scale sts som-db", "nslookup som-db-0.som-db", "คำสั่งประจำบท"],
-  "the four commands as lines on the board; 'คำสั่งประจำบท' as the board title")
-t("next-chapters", S11,
-  "ปิดบท: รหัสผ่าน db ยังเขียนตรงใน YAML → ConfigMap/Secret, เปิดร้านด้วย NodePort → Ingress, ปรับจำนวน web อัตโนมัติ → HPA",
-  """Sunset harbor with three signposts pointing to three upcoming islands: a sealed envelope vault, a grand harbor
-  gate arch, an automatic dial that adds booths. Nong Som holds a map with the shop route.""",
-  ["ConfigMap / Secret", "Ingress", "HPA", "บทถัดไป"],
-  "the three English labels on the three signposts; 'บทถัดไป' as a title banner",
+S7 = "7. TLS Secret: HTTPS ให้ร้าน"
+t("tls-cert-key", S7,
+  "kubernetes.io/tls เก็บ tls.crt (ใบรับรอง แจกได้) + tls.key (กุญแจส่วนตัว ห้ามรั่ว) สร้าง self-signed ด้วย openssl req -x509 แล้ว kubectl create secret tls",
+  """A certificate badge on a ribbon and a small private key on a hook inside the counter; an openssl stamping press makes
+  the pair; both go into one envelope. Nong Som holds the badge up.""",
+  ["openssl req -x509", "tls.crt", "tls.key", "kubectl create secret tls", "ใบรับรอง + กุญแจ"],
+  "'openssl req -x509' on the press; 'tls.crt' on the badge; 'tls.key' on the key tag; 'kubectl create secret tls' on the envelope; last label as a title banner")
+t("https-nginx-curl", S7,
+  "nginx mount Secret TLS แล้วฟัง 443 ssl: curl https://... → (60) SSL certificate problem: self-signed certificate; curl -k ข้ามการตรวจ; curl --cacert tls.crt ตรวจผ่านอย่างถูกต้อง",
+  """A sealed glass delivery tube from a customer silhouette to the counter; three customers try: one is stopped by a red card,
+  one jumps over a check gate, one shows the badge copy and walks through a green gate. Nong Som guards the gate.""",
+  ["(60) self-signed certificate", "curl -k", "curl --cacert tls.crt", "HTTPS ร้านน้องส้ม"],
+  "the English error on the red card; 'curl -k' on the jumper; 'curl --cacert tls.crt' on the green gate; 'HTTPS ร้านน้องส้ม' as a title banner",
+  nt=True)
+
+S8 = "8. RBAC: ใครเปิดซองได้"
+t("rbac-intern-forbidden", S8,
+  "ต่อบท 004: Role ของ intern ให้ get/list pods, configmaps → kubectl auth can-i get secrets = no และ get secret ได้ Error from server (Forbidden)",
+  """An intern with a grey-stripe ID card reads the notice board and looks at booths happily, but at the key box a red X
+  light blinks. Nong Som with a green-stripe card watches.""",
+  ["intern", "get pods = yes", "get secrets = no", "Forbidden", "บัตรนี้เปิดกล่องไม่ได้"],
+  "'intern' on the grey card; 'get pods = yes' near the booths; 'get secrets = no' near the key box; 'Forbidden' on the red X light; last label as a title banner",
+  nt=True)
+t("rbac-indirect-read", S8,
+  "สิทธิ์สร้าง Pod = อ่าน Secret ทางอ้อมได้: ServiceAccount maker (get secrets = no) สร้าง Pod ที่ใส่ secretKeyRef แล้ว kubectl logs เห็นค่า — จำกัดสิทธิ์ create pods ใน namespace ที่มีความลับ",
+  """A staff member with a card that cannot open the key box builds a tiny booth whose staff automatically receives a chest
+  card from the envelope, then reads it from the booth's log scroll. Nong Som raises an alarm flag.""",
+  ["get secrets = no", "create pods = yes", "stolen=●●●●", "สร้าง Pod ได้ = อ่านซองได้"],
+  "'get secrets = no' and 'create pods = yes' on two lines of the staff card; 'stolen=●●●●' on the log scroll; last label as a title banner",
+  nt=True)
+t("describe-vs-get", S8,
+  "kubectl describe secret แสดงแค่ขนาด (password: 8 bytes) แต่ get secret -o yaml / jsonpath แสดง base64 เต็ม = อ่านได้ — สิทธิ์ get secrets จึงเท่ากับอ่านรหัส",
+  """Two windows of the key box: a frosted window showing only a byte count, and a clear window showing the transparent
+  envelope letters. Nong Som points at the clear window.""",
+  ["describe: 8 bytes", "get -o yaml: bWVvdzEyMzQ=", "get ได้ = อ่านได้"],
+  "'describe: 8 bytes' on the frosted window; 'get -o yaml: bWVvdzEyMzQ=' on the clear window; 'get ได้ = อ่านได้' as a title banner",
+  nt=True)
+
+S9 = "9. etcd และ encryption at rest"
+t("etcd-plaintext", S9,
+  "Secret ทุกตัวถูกเก็บใน etcd ของ control plane — kind ค่าปกติไม่เปิด encryption at rest: etcdctl get /registry/secrets/default/demo เห็นค่ารหัสเป็นข้อความตรง ๆ (ทดสอบแล้ว)",
+  """Inside the control tower: a tall archive cabinet of drawers; one drawer pulled open shows an envelope that is not sealed
+  at all, letters visible as dots. Nong Som shines a flashlight into the drawer.""",
+  ["etcd", "/registry/secrets/default/demo", "ไม่ได้เข้ารหัส", "เปิดลิ้นชักก็เห็น"],
+  "'etcd' on the cabinet; '/registry/secrets/default/demo' on the drawer label; 'ไม่ได้เข้ารหัส' on the open envelope; last label as a title banner",
+  nt=True)
+t("encryption-configuration", S9,
+  "เปิด encryption at rest: EncryptionConfiguration (resources: secrets, providers: aescbc/secretbox/kms v2 แล้วตามด้วย identity) + kube-apiserver --encryption-provider-config แล้วเขียน Secret ใหม่ทั้งหมดซ้ำ (แนวคิด ไม่ทำใน LAB)",
+  """A round vault door installed in front of the archive cabinet; a config card on the wall lists provider rows; a robot arm
+  rewrites old envelopes into sealed ones. Nong Som reads the config card.""",
+  ["EncryptionConfiguration", "aescbc / kms v2", "identity", "--encryption-provider-config", "ล็อกตู้เอกสารในหอ"],
+  "'EncryptionConfiguration' on the config card title; 'aescbc / kms v2' and 'identity' as two rows; '--encryption-provider-config' on the vault door; last label as a title banner")
+t("who-can-read-etcd", S9,
+  "แม้เข้ารหัสแล้ว ผู้ดูแลที่มีสิทธิ์ API/etcd/backup หรือ root บน Node ยังเข้าถึงได้ — ปกป้องไฟล์ backup ของ etcd และจำกัดสิทธิ์ cluster-admin",
+  """A backup crate of archive drawers being carried off the tower by a crane; a guard robot checks staff cards at the tower
+  door; a gold master key on a hook. Nong Som points at the backup crate.""",
+  ["backup etcd", "cluster-admin", "ใครถือกุญแจหลักก็อ่านได้"],
+  "'backup etcd' on the crate; 'cluster-admin' on the gold key tag; last label as a title banner")
+
+S10 = "10. ข้อควรระวัง"
+t("never-commit-git", S10,
+  "อย่า commit Secret YAML/ไฟล์ .env ลง git (base64 อ่านกลับได้): ใส่ใน .gitignore, เก็บแค่ไฟล์ตัวอย่าง *.example.yaml ที่ใช้ค่าปลอม, ถ้าหลุดต้องเปลี่ยนรหัสทันที",
+  """A code-repository bookshelf; Nong Som stops a staff silhouette from shelving a sealed envelope and instead shelves a
+  sample card stamped 'example'; a gitignore sign lists blocked files.""",
+  [".gitignore", "secret.example.yaml", "หลุดแล้วต้องเปลี่ยนรหัส", "อย่า commit รหัสจริง"],
+  "'.gitignore' on the sign; 'secret.example.yaml' on the sample card; 'หลุดแล้วต้องเปลี่ยนรหัส' on a small warning card; last label as a title banner")
+t("leak-checklist", S10,
+  "ทางรั่วที่พบบ่อย: get secret -o yaml บนจอที่แชร์, แอปพิมพ์ env/DATABASE_URL ลง log, ใส่รหัสใน ConfigMap/annotation/args, คำสั่งที่พิมพ์รหัสค้างใน shell history",
+  """A checklist board with four leak icons (a shared screen, a log scroll, a notice board card, a shell history scroll), each
+  with a red drip; Nong Som plugs leaks with a cork.""",
+  ["จอที่แชร์", "log", "ConfigMap / args", "shell history", "จุดที่รหัสรั่วบ่อย"],
+  "the first four labels on the four leak icons; 'จุดที่รหัสรั่วบ่อย' as a title banner")
+t("rotate-password", S10,
+  "เปลี่ยนรหัสต้องทำ 2 ฝั่ง: ฐานข้อมูล (ALTER USER) และ Secret แล้ว rollout restart — POSTGRES_PASSWORD ใช้แค่ตอน initdb ครั้งแรก การแก้ Secret อย่างเดียวไม่เปลี่ยนรหัสใน DB",
+  """Two synchronized dials: one on the kitchen booth -0 (database) and one on the key box (Secret); a link rod joins them;
+  a booth swap happens after both dials turn. Nong Som turns both dials.""",
+  ["ALTER USER", "Secret", "rollout restart", "เปลี่ยนรหัสต้องเปลี่ยนสองฝั่ง"],
+  "'ALTER USER' on the db dial; 'Secret' on the key box dial; 'rollout restart' on the swap arrow; last label as a title banner",
+  nt=True)
+
+S11 = "11. แนวทางเก็บความลับนอกคลัสเตอร์ (ปูทาง)"
+t("sealed-secrets", S11,
+  "Sealed Secrets: เข้ารหัส Secret ด้วย public key ของ controller ในคลัสเตอร์ → ได้ SealedSecret ที่ commit ลง git ได้ เฉพาะคลัสเตอร์ถอดได้",
+  """A locked metal canister (sealed with a padlock) placed on the git bookshelf; a controller robot in the harbor opens it
+  with its private key and produces a normal envelope for the key box. Nong Som shelves the canister.""",
+  ["SealedSecret", "commit ได้", "ถอดรหัสได้ในคลัสเตอร์เท่านั้น"],
+  "'SealedSecret' on the canister; 'commit ได้' on the bookshelf; 'ถอดรหัสได้ในคลัสเตอร์เท่านั้น' as a title banner")
+t("external-secrets-vault", S11,
+  "External Secrets Operator / Vault / Secrets Store CSI: เก็บความลับในตู้นิรภัยภายนอก แล้วซิงก์หรือ mount เข้า Pod ตามสิทธิ์ — เปลี่ยนรหัสและตรวจ log การเข้าถึงได้ที่เดียว",
+  """A big external vault building off the harbor; a courier conveyor brings envelopes into the zone key box on demand; an
+  audit log book sits on the vault counter. Nong Som visits the vault.""",
+  ["External Secrets", "Vault", "Secrets Store CSI", "ตู้นิรภัยนอกท่าเรือ"],
+  "'External Secrets' on the conveyor; 'Vault' on the building; 'Secrets Store CSI' on a plug adapter at the booth; last label as a title banner")
+
+S12 = "12. projected volume"
+t("projected-volume", S12,
+  "projected รวม configMap + secret + downwardAPI ไว้ในโฟลเดอร์เดียว เช่น /etc/som/announcement.txt, /etc/som/db/password, /etc/som/pod-name (ทดสอบแล้ว)",
+  """One ring binder inside the booth combines a notice card, a sealed envelope and the booth's own name tag; three arrows
+  come in from the notice board, the key box and the booth plate. Nong Som closes the binder.""",
+  ["projected", "configMap", "secret", "downwardAPI", "รวมไว้แฟ้มเดียว"],
+  "'projected' on the binder; 'configMap', 'secret', 'downwardAPI' on the three arrows; last label as a title banner",
+  nt=True)
+
+S13 = "13. สรุป"
+t("configmap-vs-secret-table", S13,
+  "ตารางสรุป ConfigMap vs Secret: เก็บอะไร, รูปแบบ (ข้อความ vs base64), describe, volume (ดิสก์ ro vs tmpfs), RBAC, encryption at rest, ใช้กับ imagePullSecrets/TLS",
+  """A clean two-column comparison board with the notice board icon and the key box icon as headers and exactly two rows.
+  Nong Som points with a pointer.""",
+  ["ConfigMap", "Secret", "ข้อความธรรมดา", "base64 + จำกัดสิทธิ์", "ค่าตั้งค่า", "รหัส / กุญแจ / token"],
+  "'ConfigMap' and 'Secret' as column headers; 'ข้อความธรรมดา' and 'ค่าตั้งค่า' under ConfigMap; 'base64 + จำกัดสิทธิ์' and 'รหัส / กุญแจ / token' under Secret; no other rows")
+t("best-practices", S13,
+  "แนวปฏิบัติ: สิทธิ์ get/list secrets ให้น้อยที่สุด, เปิด encryption at rest, mount เป็นไฟล์แทน env เมื่อทำได้, ไม่ commit ลง git, เปลี่ยนรหัสเป็นระยะ, ใช้ระบบภายนอกในโปรดักชัน",
+  """A checklist poster with exactly four rows and icons (ID card, vault door, envelope tray, rotating dial). Nong Som ticks the boxes.""",
+  ["ให้สิทธิ์น้อยที่สุด", "เปิด encryption at rest", "ใช้ไฟล์แทน env", "เปลี่ยนรหัสเป็นระยะ", "แนวปฏิบัติ Secret"],
+  "the first four labels on the four checklist rows; 'แนวปฏิบัติ Secret' as a title banner")
+t("command-cheatsheet", S13,
+  "cheatsheet: kubectl create secret generic/tls/docker-registry, get secret -o jsonpath | base64 -d, auth can-i get secrets --as, rollout restart",
+  """A tidy cheat sheet card pinned beside the key box with five command rows. Nong Som holds a magnifier.""",
+  ["kubectl create secret generic", "kubectl create secret tls", "base64 -d", "kubectl auth can-i get secrets", "คำสั่งที่ใช้บ่อย"],
+  "first four labels as rows on the card; 'คำสั่งที่ใช้บ่อย' as the card title")
+t("next-ingress-hpa-helm", S13,
+  "ต่อไป: Ingress (ประตูหน้าเดียวหลายร้าน + TLS ที่ Ingress), HPA (เพิ่มบูธอัตโนมัติตามโหลด), Helm (แพ็กทั้งร้านพร้อม ConfigMap/Secret เป็นชุดเดียว)",
+  """A harbor road map with three upcoming signposts: a grand front gate with a certificate badge, a booth row that grows with
+  a gauge, a big packing crate holding a whole mini shop. Nong Som walks toward them with a backpack.""",
+  ["Ingress", "HPA", "Helm", "บทต่อไป"],
+  "'Ingress', 'HPA', 'Helm' on the three signposts; 'บทต่อไป' as a title banner",
   allow=True)
 
 # ---------------------------------------------------------------- LAB
-l("lab0-prepare", "LAB0 เตรียมคลัสเตอร์",
-  "LAB0: 3 Node Ready, StorageClass standard, ไม่มี PV/PVC ค้างจากบท 008 (kubectl get pv ว่าง), image postgres:17.11-alpine, nginx:1.27/1.28-alpine, som-shop-web:1.2 พร้อม",
-  """Nong Som at a laptop on the dock; three ships with Ready flags; an empty clean cargo hold with no leftover safes;
-  crates of images on a crane.""",
-  ["kubectl get pv", "No resources found", "postgres:17.11-alpine", "เตรียมคลัสเตอร์"],
-  "'kubectl get pv' and 'No resources found' on the laptop screen as two lines; 'postgres:17.11-alpine' on one crate (others color-only); 'เตรียมคลัสเตอร์' as a title banner",
+l("lab0-prepare", "LAB0 เตรียมคลัสเตอร์และ image",
+  "LAB0: 3 Node Ready, โหลด postgres:17.11-alpine (image-archive) และ som-shop-web:1.5 (สำเนาแอปจากบท 010 ไม่แก้โค้ด) ให้ทุก Node",
+  """Three ships at the dock with a crane loading two containers onto every ship. Nong Som checks a clipboard.""",
+  ["3 Node Ready", "postgres:17.11-alpine", "som-shop-web:1.5", "เตรียมของให้ครบทุกเรือ"],
+  "'3 Node Ready' on the clipboard; the two image names on the two containers; last label as a title banner")
+l("lab1-base64", "LAB1 base64 ไม่ใช่การเข้ารหัส",
+  "LAB1: create secret generic demo → get -o yaml เห็น password: bWVvdzEyMzQ= → base64 -d ได้ meow1234; describe แสดง 8 bytes; echo vs echo -n",
+  """A transparent envelope goes through a converting roller and plain letters come out; a frosted window shows only a byte
+  count. Nong Som shrugs.""",
+  ["bWVvdzEyMzQ=", "base64 -d → meow1234", "describe: 8 bytes", "แปลงกลับได้ทันที"],
+  "'bWVvdzEyMzQ=' on the envelope; 'base64 -d → meow1234' on the roller output; 'describe: 8 bytes' on the frosted window; last label as a title banner",
   nt=True)
-l("lab1-deploy-vs-sts", "LAB1 Deployment เทียบ StatefulSet",
-  "LAB1: nginx 3 ตัวแบบ Deployment ได้ชื่อสุ่ม ลบแล้วชื่อใหม่; แบบ StatefulSet ได้ web-0/1/2 ลบ web-1 แล้วได้ web-1 คืน",
-  """Two rows of booths: the upper row under the manager robot with random barcode plates, one replaced with a new
-  random plate; the lower row under the numbering robot with plates -0, -1, -2 and a rebuilt -1 keeping its plate.
-  Nong Som compares.""",
-  ["Deployment: ชื่อสุ่ม", "StatefulSet: ชื่อคงที่", "web-1", "web-1"],
-  "first label above the upper row; second label above the lower row; 'web-1' on the old booth -1 outline and on the rebuilt booth -1 (exactly twice); upper row plates are color-only stripes",
+l("lab2-create-types", "LAB2 สร้างแบบต่าง ๆ และ type",
+  "LAB2: --from-file, data + stringData (stringData ชนะ), basic-auth/tls/docker-registry และ error ของ type; ดู last-applied-configuration ที่เก็บ stringData เป็นข้อความ",
+  """A workbench producing different envelope styles; two red cards from the inspector robot; one envelope has a sticky note
+  outside. Nong Som inspects the sticky note.""",
+  ["stringData ชนะ", "data[tls.key]: Required value", "kubernetes.io/basic-auth", "last-applied-configuration", "ซองแต่ละแบบ"],
+  "'stringData ชนะ' on the merge envelope; the English error on a red card; 'kubernetes.io/basic-auth' on one envelope; 'last-applied-configuration' on the sticky note; last label as a title banner",
   nt=True)
-l("lab2-headless-dns", "LAB2 headless Service และ DNS",
-  "LAB2: Service web clusterIP: None → nslookup web ได้ 3 Address, nslookup web-0.web.default.svc.cluster.local ได้ IP เดียว, wget web-1.web ได้หน้าของ web-1",
-  """A directory book on a lectern with three address lines; a telephone line from Nong Som's handset to booth -1;
-  the booth replies with a page.""",
-  ["clusterIP: None", "nslookup web", "web-1.web", "โทรหาบูธตรง ๆ"],
-  "'clusterIP: None' on the lectern; 'nslookup web' on the book page header; 'web-1.web' on the phone cord tag; 'โทรหาบูธตรง ๆ' as a title banner",
+l("lab3-use-in-pod", "LAB3 ใช้ใน Pod: env, envFrom, volume",
+  "LAB3: spod ใช้ secretKeyRef/envFrom prefix SD_/volume → mount เป็น tmpfs ro, ไฟล์ -r-------- เมื่อ defaultMode 0400, /proc/1/environ เห็น DB_PASSWORD",
+  """A cutaway booth: a staff member with a chest card, a memory-foam envelope tray with a permission tag, and a process
+  window leaking dots. Nong Som points at each.""",
+  ["secretKeyRef", "tmpfs (ro)", "-r--------", "/proc/1/environ", "env กับไฟล์ต่างกัน"],
+  "'secretKeyRef' on the chest card; 'tmpfs (ro)' on the tray; '-r--------' on the tag; '/proc/1/environ' on the process window; last label as a title banner",
   nt=True)
-l("lab3-volume-claim-templates", "LAB3 volumeClaimTemplates",
-  "LAB3: PVC www-web-0/1/2 เกิดตามลำดับ แต่ละ Pod เขียน first-born <ชื่อ> ครั้งแรก — ลบ Pod แล้วไฟล์เดิมยังอยู่",
-  """Three numbered booths each with its own safe holding a note; one booth is rebuilt and its note remains. Nong Som
-  holds a magnifier over a note.""",
-  ["www-web-0", "www-web-1", "www-web-2", "first-born web-1", "บูธละตู้เซฟ"],
-  "three safe names on three safes; 'first-born web-1' on the note in safe -1; 'บูธละตู้เซฟ' as a title banner",
+l("lab3-update", "LAB3 ใช้ใน Pod: env, envFrom, volume",
+  "LAB3 (ต่อ): patch Secret demo → ไฟล์ /etc/secret/password เปลี่ยนใน ~47 วินาที ส่วน env DB_PASSWORD ยังเป็นค่าเดิม; immutable frozen แก้ไม่ได้",
+  """The deckhand robot replaces an envelope in the booth tray under a stopwatch while the staff chest card stays old; a
+  laminated envelope on the side. Nong Som records.""",
+  ["~47 วินาที", "env ค่าเดิม", "field is immutable", "ไฟล์เปลี่ยนเอง env ไม่เปลี่ยน"],
+  "'~47 วินาที' on the stopwatch; 'env ค่าเดิม' on the chest card; 'field is immutable' on a red card by the laminated envelope; last label as a title banner",
   nt=True)
-l("lab4-ordered-ready", "LAB4 ลำดับและ podManagementPolicy",
-  "LAB4: StatefulSet bad ที่ readiness ไม่ผ่าน → ค้างที่ bad-0 ไม่สร้าง bad-1 จน touch /tmp/ready → bad-1 ตามมา",
-  """Booth -0 with a red lamp; the crane holding booth -1 is frozen in mid-air; Nong Som flips the lamp switch to green
-  and the crane starts moving.""",
-  ["bad-0 0/1", "touch /tmp/ready", "bad-1 ตามมา", "รอตัวก่อนหน้า Ready"],
-  "'bad-0 0/1' on booth -0; 'touch /tmp/ready' on the switch; 'bad-1 ตามมา' on the crane; 'รอตัวก่อนหน้า Ready' as a title banner",
+l("lab4-tls-nginx", "LAB4 TLS Secret กับ nginx HTTPS",
+  "LAB4: openssl สร้าง cert CN=shop.som.local → secret tls shop-tls → nginx 443 ssl + NodePort 30081: curl ได้ (60) self-signed, curl -k ได้ HTTPS ร้านน้องส้ม, --cacert ผ่าน",
+  """A glass delivery tube from a customer gangway door numbered 30081 to an nginx counter; the certificate badge on the tube;
+  three customers at the check gate. Nong Som hands out the badge copy.""",
+  ["shop-tls", "NodePort 30081", "curl -k", "--cacert tls.crt", "HTTPS ใช้ได้"],
+  "'shop-tls' on the envelope at the counter; 'NodePort 30081' on the gangway; 'curl -k' and '--cacert tls.crt' on two customers; last label as a title banner",
   nt=True)
-l("lab4-parallel", "LAB4 ลำดับและ podManagementPolicy",
-  "LAB4 (ต่อ): podManagementPolicy: Parallel → par-0/1/2 เกิดพร้อมกัน; scale down OrderedReady ลบ web-2 ก่อน web-1",
-  """Three cranes lowering three booths at once on the left; on the right booth -2 lifted away before booth -1. Nong
-  Som with a stopwatch.""",
-  ["Parallel: พร้อมกัน", "OrderedReady: 2 ก่อน 1"],
-  "first label above the left scene; second label above the right scene",
+l("lab5-private-registry", "LAB5 imagePullSecrets กับ registry ส่วนตัว",
+  "LAB5: registry:2 + htpasswd บน network kind (kind-registry:5000) → push som-menu:1.0 → Pod ไม่มีบัตร ErrImagePull, regcred ถูก Running, wrongcred 401 Unauthorized; ผูก regcred ที่ ServiceAccount default ได้",
+  """A private warehouse gate on the dock with a guard robot; three cranes queue: one without a pass (red card), one with a
+  wrong pass (red card), one with the right pass lifting a container. Nong Som stands by the gate.""",
+  ["kind-registry:5000", "no basic auth credentials", "401 Unauthorized", "regcred", "มีบัตรถึงจะดึงได้"],
+  "'kind-registry:5000' on the warehouse sign; the two English errors on two red cards; 'regcred' on the valid pass; last label as a title banner",
   nt=True)
-l("lab5-scale-retention", "LAB5 scale และ PVC retention",
-  "LAB5: scale 3→1 แล้ว PVC www-web-1/2 ยังอยู่ → scale กลับ web-2 อ่าน first-born web-2 เดิม; StatefulSet par ตั้ง whenScaled/whenDeleted: Delete → PVC หายตาม",
-  """Left: padlocked safes -1 and -2 waiting, then booths return to them. Right: the robot's switch set to crusher and
-  safes going into a crusher press. Nong Som between the scenes.""",
-  ["Retain (default)", "first-born web-2", "whenScaled: Delete", "PVC หายตาม"],
-  "'Retain (default)' above left; 'first-born web-2' on a note; 'whenScaled: Delete' above right; 'PVC หายตาม' on the crusher",
+l("lab5-cached-recheck", "LAB5 imagePullSecrets กับ registry ส่วนตัว",
+  "LAB5 (ต่อ): Pod ใน namespace อื่นที่ไม่มีบัตร ตรึงลง Node ที่มี image แล้ว → ยัง ErrImagePull (kubelet v1.37 ตรวจบัตรซ้ำ) — เพราะฉะนั้น LAB นี้ใช้ image แยก som-menu ไม่ใช้ som-shop-web",
+  """The container sits in a ship's cargo hold; a booth from a different zone without a pass asks for it; the deckhand robot
+  refuses with a red card. A small side sign shows a separate container for this lab. Nong Som points at the side sign.""",
+  ["nodeName: lab-worker", "ErrImagePull", "ใช้ image แยกสำหรับ LAB นี้", "มีบน Node ก็ต้องมีบัตร"],
+  "'nodeName: lab-worker' on the booth request card; 'ErrImagePull' on the red card; 'ใช้ image แยกสำหรับ LAB นี้' on the side sign; last label as a title banner",
   nt=True)
-l("lab6-partition", "LAB6 RollingUpdate และ partition",
-  "LAB6: partition 2 + nginx:1.28-alpine → เฉพาะ web-2 (updated=1) → partition 0 → web-1 แล้ว web-0 — rollout history มี 2 revision",
-  """A rope barrier between booths -1 and -2; booth -2 shows the new signboard; then Nong Som moves the rope post to
-  the start of the row and the crane refits booth -1 then -0.""",
-  ["partition: 2", "updated=1", "partition: 0", "2 → 1 → 0", "ปล่อยรุ่นใหม่เป็นขั้น"],
-  "'partition: 2' and 'partition: 0' on the two rope post positions; 'updated=1' on a status card; '2 → 1 → 0' on the arrow strip; last label as a title banner",
+l("lab6-projected-token", "LAB6 projected volume และ token",
+  "LAB6: Pod proj รวม announcement.txt + db/password + pod-name ใน /etc/som (โหมด 0440); Secret service-account-token ของ builder ถูกเติม token/ca.crt/namespace และ describe แสดง token เต็ม",
+  """A ring binder in a booth combining a notice card, an envelope and the booth name tag; beside it a robot ID card with a
+  long barcode being shown fully under a magnifier. Nong Som closes the binder.""",
+  ["/etc/som/db/password", "pod-name", "builder-token", "describe เห็น token", "รวมแฟ้มเดียว"],
+  "'/etc/som/db/password' and 'pod-name' on two binder tabs; 'builder-token' on the ID card; 'describe เห็น token' on the magnifier; last label as a title banner",
   nt=True)
-l("lab7-ondelete", "LAB7 OnDelete และ minReadySeconds",
-  "LAB7: OnDelete + set image กลับ 1.27 → ไม่มี Pod เปลี่ยน → ลบ web-1 → web-1 เป็น 1.27 คนเดียว; minReadySeconds ชะลอการเปลี่ยนแต่ละตัว",
-  """All booths show the same old sign while a new blueprint is pinned; Nong Som presses a button for booth -1; only
-  booth -1 gets the other sign; a stopwatch on the dock.""",
-  ["OnDelete", "web-1: 1.27", "web-0, web-2: 1.28", "เปลี่ยนเมื่อสั่งลบ"],
-  "'OnDelete' on the robot display; 'web-1: 1.27' on booth -1; 'web-0, web-2: 1.28' on a shared card; last label as a title banner",
+l("lab7-rbac-intern", "LAB7 RBAC: intern และสิทธิ์ทางอ้อม",
+  "LAB7: intern (Role get/list/watch pods, pods/log, configmaps) → can-i get secrets = no, get secret demo → Forbidden; ยังดู Pod -o yaml เห็นแค่ชื่อ secretKeyRef ไม่เห็นค่า",
+  """The intern with a grey-stripe card reads booths and the notice board; at the key box a red X blinks; a Pod blueprint
+  shows only an envelope name tag, not its contents. Nong Som nods.""",
+  ["can-i get secrets: no", "Forbidden", "secretKeyRef: demo", "ดูได้แต่เปิดซองไม่ได้"],
+  "'can-i get secrets: no' on the intern's card; 'Forbidden' on the red X; 'secretKeyRef: demo' on the blueprint; last label as a title banner",
   nt=True)
-l("lab8-delete-reapply", "LAB8 ลบ StatefulSet แล้ว apply ใหม่",
-  "LAB8: kubectl delete sts web → Pod หายหมด PVC 3 ใบยังอยู่ → apply ใหม่ → web-0/1/2 อ่าน first-born เดิมทุกตัว",
-  """The numbering robot and booths vanish into dashed outlines; three padlocked safes remain; a new robot arrives and
-  booths reappear above the same safes, each note unchanged. Nong Som smiles.""",
-  ["delete sts web", "PVC ยังอยู่ 3 ใบ", "apply ใหม่", "ข้อมูลเดิมทุกตัว"],
-  "'delete sts web' on the fading robot; 'PVC ยังอยู่ 3 ใบ' on the safes; 'apply ใหม่' on the arriving robot; last label as a title banner",
+l("lab7-pod-maker", "LAB7 RBAC: intern และสิทธิ์ทางอ้อม",
+  "LAB7 (ต่อ): maker ไม่มีสิทธิ์ get secrets แต่ create pods ได้ → kubectl run peek ที่ใช้ secretKeyRef แล้ว logs ได้ stolen=<รหัส> — สิทธิ์สร้าง Pod ต้องให้อย่างระวัง",
+  """A staff member builds a tiny booth that receives the envelope contents automatically, then reads them on a log scroll.
+  Nong Som rings an alarm bell.""",
+  ["maker", "kubectl run peek", "stolen=●●●●", "สร้าง Pod ได้ = อ่านซองได้"],
+  "'maker' on the staff card; 'kubectl run peek' on the tiny booth; 'stolen=●●●●' on the scroll; last label as a title banner",
   nt=True)
-l("lab9-node-down", "LAB9 Node ล่ม",
-  "LAB9: docker stop Node ที่มี web-1 (tolerationSeconds 30) → NotReady → web-1 Terminating ค้าง ไม่มี web-1 ใหม่ (รอ ~2.5 นาที ยังค้าง)",
-  """A foggy ship with dim booth -1; the clear ship has booths -0 and -2 and an empty slot with a no-entry sign; a
-  stopwatch. Nong Som with binoculars.""",
-  ["docker stop lab-worker2", "web-1 Terminating", "ไม่สร้างแทนให้"],
-  "'docker stop lab-worker2' on a switch box; 'web-1 Terminating' on the dim booth; 'ไม่สร้างแทนให้' on the no-entry sign",
+l("lab8-etcd-peek", "LAB8 ส่อง etcd",
+  "LAB8: kubectl -n kube-system exec etcd-lab-control-plane -- etcdctl ... get /registry/secrets/default/demo | grep -a → เห็นรหัสเป็นข้อความ (ไม่มี encryption at rest); EncryptionConfiguration เป็นทฤษฎี",
+  """Inside the control tower: an archive drawer pulled out; the envelope inside is unsealed with letters visible as dots; a
+  blueprint of a vault door pinned on the wall as a future plan. Nong Som holds a flashlight.""",
+  ["etcdctl get", "/registry/secrets/default/demo", "เห็นเป็นข้อความ", "ยังไม่มีตู้นิรภัย"],
+  "'etcdctl get' on the flashlight; '/registry/secrets/default/demo' on the drawer label; 'เห็นเป็นข้อความ' on the open envelope; last label as a title banner",
   nt=True)
-l("lab9-out-of-service", "LAB9 Node ล่ม",
-  "LAB9 (ต่อ): taint out-of-service → web-1 ถูกลบและสร้างใหม่แต่ Pending (PV node affinity) → เอา taint ออก + docker start → web-1 Running อ่าน first-born web-1 เดิม",
-  """An official tapes a sign on the foggy ship; a new booth -1 hangs on a crane unable to land; then the fog clears
-  and booth -1 sits back on its ship above its safe. Nong Som removes the tape.""",
-  ["out-of-service", "web-1 Pending", "docker start", "กลับมาตู้เดิม"],
-  "'out-of-service' on the taped sign; 'web-1 Pending' on the hanging booth; 'docker start' on the switch box; 'กลับมาตู้เดิม' as a title banner",
+
+F = "LAB9 ร้านน้องส้มซ่อนรหัสผ่าน"
+l("lab9-architecture", F,
+  "LAB9 ภาพรวม: Secret som-db-secret (POSTGRES_PASSWORD, DATABASE_URL) ให้ som-db-0 และ web ผ่าน secretKeyRef; ConfigMap ป้ายร้านจากบท 010; Secret som-tls ให้ nginx HTTPS NodePort 30082; intern อ่านได้แค่ Pod/ConfigMap",
+  """Harbor overview: the key box with two envelopes on the zone wall next to the notice board; arrows from one envelope to
+  the kitchen booth -0 and to three web booths; another envelope to an nginx counter with a glass tube at gangway 30082;
+  the intern with a grey card in the plaza. Nong Som stands by the key box.""",
+  ["som-db-secret", "som-tls", "secretKeyRef", "NodePort 30082", "intern", "ร้านที่ซ่อนรหัสแล้ว"],
+  "'som-db-secret' and 'som-tls' on the two envelopes; 'secretKeyRef' on an arrow; 'NodePort 30082' on the gangway; 'intern' on the grey card; last label as a title banner")
+l("lab9-start-visible", F,
+  "ขั้น A: เริ่มจากสภาพท้ายบท 010 (k8s-010/) ออเดอร์ 3; intern ใช้ get deploy/sts -o yaml ยังเห็น meow1234",
+  """The shop from chapter 010 with sunset awnings; the intern reads the web and db blueprints with a magnifier and finds dot
+  rows. Nong Som points to the key box she is about to fill.""",
+  ["k8s-010/", "orders=3", "intern เห็นรหัส", "ก่อนย้าย"],
+  "'k8s-010/' on the blueprint folder; 'orders=3' on the counter; 'intern เห็นรหัส' on the magnifier; 'ก่อนย้าย' as a title banner",
   nt=True)
-F = "LAB10 ร้านน้องส้มแบบโปรดักชัน: db เป็น StatefulSet"
-l("lab10-architecture", F,
-  "LAB10 ภาพรวม som-shop-v5: web Deployment 3 บูธ (NodePort 30080) → DATABASE_URL som-db-0.som-db → headless Service som-db → StatefulSet som-db → PVC data-som-db-0",
-  """Harbor overview: three web booths behind a lighthouse with a gangway door; a directory book on a lectern for the
-  kitchen; kitchen booth -0 above its numbered safe; the numbering robot beside it. Nong Som holds the plan.""",
-  ["som-web ×3", "30080", "som-db-0.som-db", "data-som-db-0", "ร้านแบบโปรดักชัน"],
-  "'som-web ×3' over the web booths; '30080' on the gangway door; 'som-db-0.som-db' on the directory page; 'data-som-db-0' on the safe; last label as a title banner")
-l("lab10-start-008", F,
-  "LAB10 ขั้น A: เริ่มจากสภาพท้ายบท 008 (db Deployment + PVC som-db-data) สั่งซื้อ 3 ครั้ง → orders=3",
-  """The old single kitchen booth under the store-manager robot with one safe; customers place orders; a display.
-  Nong Som holds a moving-day checklist.""",
-  ["som-db-data", "orders=3", "จุดเริ่ม = ท้ายบท 008"],
-  "'som-db-data' on the slip; 'orders=3' on the display; last label as a title banner",
+l("lab9-create-secret", F,
+  "ขั้น B: kubectl create secret generic som-db-secret --from-literal=POSTGRES_PASSWORD=... --from-literal=DATABASE_URL=... (หรือไฟล์ 05-secret.example.yaml ที่ไม่ commit ค่าจริง)",
+  """Nong Som types two dotted cards and seals them into one envelope placed in the key box; a sample YAML card stamped
+  'example' sits on the desk.""",
+  ["som-db-secret", "POSTGRES_PASSWORD", "DATABASE_URL", "05-secret.example.yaml", "ใส่ซองก่อนใช้"],
+  "'som-db-secret' on the envelope; the two key names on the two cards; '05-secret.example.yaml' on the sample card; last label as a title banner")
+l("lab9-db-secret-ref", F,
+  "ขั้น C1: apply k8s/10-db.yaml (POSTGRES_PASSWORD จาก secretKeyRef) → som-db-0 rolling update ~2 วินาที PVC เดิม ออเดอร์ยัง 3",
+  """The numbering robot refits booth -0; the new booth's staff gets a chest card from the envelope; the safe below is the
+  same numbered safe. Nong Som checks the order counter.""",
+  ["som-db-0", "secretKeyRef", "data-som-db-0", "orders=3", "รหัสมาจากซอง"],
+  "'som-db-0' on the booth plate; 'secretKeyRef' on the arrow; 'data-som-db-0' on the safe; 'orders=3' on the counter; last label as a title banner",
   nt=True)
-l("lab10-migrate", F,
-  "LAB10 ขั้น B: PV → Retain, ลบ Deployment/Service/PVC เดิม, ลบ claimRef, สร้าง PVC data-som-db-0 (volumeName) แล้ว apply StatefulSet → som-db-0 ผูก PV เดิม",
-  """Nong Som wheels the padlocked safe on a hand truck to numbered booth -0 and pins a numbered slip onto it; the
-  numbering robot arrives and connects booth -0 to the safe.""",
-  ["Retain", "remove claimRef", "data-som-db-0", "ย้ายตู้เซฟไปบูธ -0"],
-  "'Retain' on the padlock; 'remove claimRef' on scissors; 'data-som-db-0' on the slip; last label as a title banner",
+l("lab9-web-secret-ref", F,
+  "ขั้น C2: apply k8s/20-web.yaml (web และ db-seed ใช้ DATABASE_URL จาก Secret) → orders=3; intern grep meow1234 ใน Deployment ได้ 0 บรรทัด, get secret → Forbidden, exec → Forbidden",
+  """New web booths open; the intern's magnifier over the blueprint now finds only an envelope name tag; a red X at the key
+  box and at the booth door. Nong Som smiles.""",
+  ["orders=3", "meow1234: 0 บรรทัด", "Forbidden", "intern หาไม่เจอแล้ว"],
+  "'orders=3' on the counter; 'meow1234: 0 บรรทัด' on the magnifier; 'Forbidden' on the red X; last label as a title banner",
   nt=True)
-l("lab10-web-points-sts", F,
-  "LAB10 ขั้น B (ต่อ): web ใช้ DATABASE_URL ...@som-db-0.som-db:5432 → rollout → /api/stats orders=3 ข้อมูลย้ายมาครบ",
-  """Web booths each with a tube labeled with an address going to the directory book and on to kitchen -0; the display
-  shows the same count as before. Nong Som cheers.""",
-  ["som-db-0.som-db:5432", "orders=3", "ย้ายมาครบ"],
-  "'som-db-0.som-db:5432' on the tube tag; 'orders=3' on the display; 'ย้ายมาครบ' as a title banner",
+l("lab9-alter-user", F,
+  "ขั้น D1: psql ALTER USER som PASSWORD 'purr5678' → Pod web เดิมยังตอบ 200 (connection เดิมใน pool ยังต่ออยู่) แต่รหัสเก่าต่อใหม่ไม่ได้: password authentication failed for user \"som\"",
+  """The kitchen booth -0 changes the lock code on its door dial; staff already inside keep working; a new staff member with
+  the old code is stopped at the door with a red card. Nong Som turns the dial.""",
+  ["ALTER USER som", "200 OK", "password authentication failed", "คนเก่ายังอยู่ คนใหม่เข้าไม่ได้"],
+  "'ALTER USER som' on the dial; '200 OK' on the busy booth; the English error on the red card; last label as a title banner",
   nt=True)
-l("lab10-delete-pod", F,
-  "LAB10 ขั้น C: ลบ som-db-0 → กลับมาชื่อเดิม UID/IP ใหม่ PVC data-som-db-0 เดิม → orders=3",
-  """A crane swaps kitchen booth -0 for a new booth with the same plate; new IP tag color; same safe. Nong Som compares
-  tags.""",
-  ["som-db-0", "IP ใหม่", "orders=3", "ชื่อเดิม ตู้เดิม ข้อมูลเดิม"],
-  "'som-db-0' on the new plate; 'IP ใหม่' on the IP tag; 'orders=3' on the display; last label as a title banner",
+l("lab9-forgot-secret", F,
+  "ขั้น D2 (ลองผิด): rollout restart โดยยังไม่แก้ Secret → Pod ใหม่ค้าง Init:Error (db-seed: auth_failed) แต่ Pod เดิมยังขายได้ (maxUnavailable: 0)",
+  """A new web booth stuck at the gate with a red lamp because its chest card has the old code; the old booths keep serving
+  customers with green lamps. Nong Som slaps her forehead.""",
+  ["Init:Error", "auth_failed", "maxUnavailable: 0", "ลืมแก้ซอง"],
+  "'Init:Error' on the stuck booth; 'auth_failed' on its chest card; 'maxUnavailable: 0' on the manager robot; 'ลืมแก้ซอง' as a title banner",
   nt=True)
-l("lab10-rolling-db", F,
-  "LAB10 ขั้น D: patch memory limit 512Mi → 768Mi → rolling update som-db (revision 2) → สั่งซื้อเพิ่ม orders=4",
-  """The kitchen booth -0 is refitted by a crane with a larger cooling unit; the logbook flips to page two; the ledger
-  gains a line. Nong Som gives a thumbs up.""",
-  ["memory: 768Mi", "REVISION 2", "orders=4", "อัปเดตแล้วข้อมูลไม่หาย"],
-  "'memory: 768Mi' on the cooling unit; 'REVISION 2' on the logbook page; 'orders=4' on the display; last label as a title banner",
+l("lab9-update-restart", F,
+  "ขั้น D3: create secret ... --dry-run=client -o yaml | kubectl apply -f - ด้วยรหัสใหม่ → rollout restart → Pod ใหม่ครบ 3 ตัว POST ได้ ออเดอร์เพิ่มเป็น 4 ข้อมูลเดิมไม่หาย",
+  """Nong Som reseals a new envelope into the key box; the manager robot swaps all three booths; the order counter ticks up
+  by one. Customers buy again.""",
+  ["--dry-run=client -o yaml | kubectl apply -f -", "rollout restart", "orders=4", "ร้านกลับมาขายได้"],
+  "the long command on the envelope sealing machine; 'rollout restart' on the manager robot; 'orders=4' on the counter; last label as a title banner",
   nt=True)
-l("lab10-delete-sts", F,
-  "LAB10 ขั้น E: delete sts som-db → PVC data-som-db-0 ยัง Bound → apply 10-db.yaml → orders=4",
-  """The numbering robot vanishes; the safe -0 with its slip stays; a new robot arrives and reconnects. Nong Som points
-  at the safe.""",
-  ["delete sts som-db", "data-som-db-0: Bound", "orders=4", "ลบหัวหน้ากะ ตู้ไม่หาย"],
-  "'delete sts som-db' on the fading robot; 'data-som-db-0: Bound' on the slip; 'orders=4' on the display; last label as a title banner",
+l("lab9-https", F,
+  "ขั้น E: secret tls som-tls + 30-https.yaml (nginx proxy → som-web) NodePort 30082 → curl -k https://localhost:30082/api/stats ได้ร้านเดิม; ไม่มี -k ได้ (60); มี Warning PodSecurity เพราะ nginx รันเป็น root",
+  """A glass delivery tube connects gangway 30082 to an nginx counter that forwards customers to the lighthouse counter of
+  the web booths; a yellow warning card on the nginx counter. Nong Som cuts a ribbon.""",
+  ["som-tls", "NodePort 30082", "curl -k", "Warning PodSecurity", "ร้านมี HTTPS แล้ว"],
+  "'som-tls' on the envelope at the counter; 'NodePort 30082' on the gangway; 'curl -k' on a customer; 'Warning PodSecurity' on the yellow card; last label as a title banner",
   nt=True)
-l("lab10-scale-three", F,
-  "LAB10 ขั้น F: scale som-db 3 → PVC data-som-db-1/2 ใหม่ (ต่าง Node ได้), som-db-1/2 ไม่มีตาราง orders, nslookup som-db ได้ 3 IP แต่ร้านยังปกติเพราะ web ชี้ som-db-0",
-  """Three kitchen booths -0, -1, -2 on two ships each above its own safe; only booth -0's ledger is full; the web tube
-  goes only to -0. Nong Som explains with a pointer.""",
-  ["data-som-db-1", "data-som-db-2", "relation \"orders\" does not exist", "3 ตัว ≠ 3 สำเนา"],
-  "slip names on safes -1 and -2; the English error on a red card near booth -1; '3 ตัว ≠ 3 สำเนา' as a title banner",
-  nt=True)
-l("lab10-scale-back", F,
-  "LAB10 ขั้น G: scale กลับ 1 → som-db-1/2 ถูกลบ (2 ก่อน 1) แต่ PVC data-som-db-1/2 ยังอยู่ ต้องลบเอง",
-  """Booths -2 then -1 lifted away; their safes remain padlocked; Nong Som holds a broom ready to clean them up.""",
-  ["scale --replicas=1", "PVC ค้าง 2 ใบ", "ลบเองเมื่อไม่ใช้"],
-  "'scale --replicas=1' on a dial; 'PVC ค้าง 2 ใบ' on the remaining safes; 'ลบเองเมื่อไม่ใช้' as a title banner",
-  nt=True)
-l("lab10-extra-replica", F,
-  "LAB10 เสริม: เพิ่มบรรทัด host replication ใน pg_hba.conf ของ som-db-0 → StatefulSet som-db-replica (init pg_basebackup -R) → pg_is_in_recovery = t, pg_stat_replication streaming async",
-  """Kitchen booth -0 sends pages by a conveyor courier to a copy booth with a glass window; both ledgers show the same
-  count; a status card. Nong Som checks with a magnifier.""",
-  ["som-db-replica-0", "pg_basebackup -R", "streaming async", "สำเนาอ่านอย่างเดียว"],
-  "'som-db-replica-0' on the copy booth plate; 'pg_basebackup -R' on the first conveyor box; 'streaming async' on the status card; last label as a title banner",
-  nt=True)
-l("lab10-extra-readonly", F,
-  "LAB10 เสริม (ต่อ): สั่งซื้อแล้ว replica เห็นตาม (orders เท่ากัน), INSERT บน replica → cannot execute INSERT in a read-only transaction, ลบ som-db-0 แล้ว replica ต่อกลับเอง",
-  """A pen bounces off the copy booth's glass window with a red card; after kitchen -0 is rebuilt, the conveyor
-  reconnects. Nong Som nods.""",
-  ["cannot execute INSERT in a read-only transaction", "ต่อกลับเอง", "เขียนได้ที่ primary เท่านั้น"],
-  "the English error on the red card; 'ต่อกลับเอง' on the reconnecting conveyor; last label as a title banner",
-  nt=True)
-l("lab10-wrap-up", F,
-  "LAB10 สรุปและบทถัดไป: db มีชื่อคงที่และตู้เซฟประจำตัวแล้ว แต่รหัสผ่านยังอยู่ใน YAML (→ Secret), เปิดร้านผ่าน NodePort (→ Ingress), web ยังต้อง scale เอง (→ HPA)",
-  """Evening dock: Nong Som sits on a crate writing a three-item to-do list; three signposts beyond the harbor.""",
-  ["Secret", "Ingress", "HPA", "งานถัดไปของร้าน"],
-  "'Secret', 'Ingress', 'HPA' on the three signposts; 'งานถัดไปของร้าน' on the to-do list header",
+l("lab9-wrap-up", F,
+  "สรุป LAB9: รหัสออกจาก YAML แล้ว (Secret + secretKeyRef), เปลี่ยนรหัสจริงสำเร็จ ออเดอร์ยังอยู่, intern อ่านซองไม่ได้ — แต่ etcd ยังเก็บเป็นข้อความ และต่อไปจะใช้ Ingress/HPA/Helm",
+  """Nong Som stands in front of the shop holding a sealed envelope; a checklist with three ticks and one open item pointing
+  to the control tower archive; three signposts toward the next chapters on the horizon.""",
+  ["รหัสออกจาก YAML", "เปลี่ยนรหัสสำเร็จ", "intern เปิดซองไม่ได้", "etcd ยังต้องเข้ารหัส", "Ingress · HPA · Helm"],
+  "first three labels as ticked rows; 'etcd ยังต้องเข้ารหัส' as an open row; 'Ingress · HPA · Helm' on the signposts",
   allow=True)
 
 if __name__ == "__main__":
