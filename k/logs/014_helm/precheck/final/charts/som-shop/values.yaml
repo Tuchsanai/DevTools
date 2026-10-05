@@ -1,0 +1,51 @@
+# ใบสั่งปรับแต่งร้าน (ค่าเริ่มต้น) — ทับได้ด้วย -f values-xxx.yaml และ --set (--set ชนะ)
+fullnameOverride: ""            # ว่าง = ใช้ชื่อ release เป็นคำนำหน้า (release som → som-web, som-db)
+
+shop:                           # การ์ดบนกระดานประกาศ som-web-config (แอปอ่านผ่าน envFrom)
+  SHOP_NAME: "ร้านอาหารแมวน้องส้ม"
+  SHOP_EYEBROW: "⚓ ท่าเรือ Kubernetes · Helm"
+  SHOP_FOOTER: "Next.js + PostgreSQL · Kubernetes LAB 014 · ติดตั้งทั้งร้านด้วย Helm"
+  APP_THEME: "harbor"
+  SHOP_PROMO: ""
+announcement: |
+  วันนี้ปลาทูสดมาก 🐟
+
+web:
+  image:
+    repository: som-shop-web
+    tag: ""                     # ว่าง = .Chart.AppVersion
+    pullPolicy: IfNotPresent
+  replicas: 2                   # ใช้เมื่อ hpa.enabled=false เท่านั้น
+  resources:
+    requests: {cpu: 100m, memory: 192Mi}
+    limits: {cpu: 500m, memory: 512Mi}
+
+hpa:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 6
+  cpu: 50
+
+db:
+  enabled: true
+  image: postgres:17.11-alpine
+  user: som
+  name: catshop
+  password: ""                  # ห้ามใส่รหัสจริงในไฟล์ที่ commit — ส่งด้วย --set ครั้งแรก, ครั้งต่อไป chart หยิบจาก Secret เดิม (lookup)
+  storage: 1Gi
+  storageClassName: standard
+externalDatabase:
+  url: ""                       # ใช้เมื่อ db.enabled=false
+
+seed:
+  enabled: true                 # hook post-install/post-upgrade: Job เติมสินค้าเข้าชั้น
+
+ingress:
+  enabled: false
+  className: traefik
+  host: shop.localhost
+  tls: false                    # true = chart สร้างใบรับรอง self-signed (เก็บใบเดิมด้วย lookup) + redirect http → https
+  httpsPort: 30081              # พอร์ต HTTPS ของ NodePort Traefik ใน k8s-lab
+
+tests:
+  image: curlimages/curl:8.22.0

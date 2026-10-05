@@ -1,0 +1,13 @@
+# สาขาทดลอง (dev): บูธเดียว ไม่มี HPA ประตู http ธรรมดา ธีมส้ม
+shop:
+  SHOP_NAME: "ร้านอาหารแมวน้องส้ม (dev)"
+  APP_THEME: "sunset"
+  SHOP_PROMO: "🧪 สาขาทดลอง — ของจริงอยู่ที่ shop.localhost"
+web:
+  replicas: 1
+hpa:
+  enabled: false
+ingress:
+  enabled: true
+  host: dev.shop.localhost
+  tls: false

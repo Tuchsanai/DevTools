@@ -1,0 +1,1 @@
+cd /workspace/pc; sed -n '/^          args:/,/^          [a-z]*:$/p' addons/traefik-rendered.yaml | head -40; grep -n "metadata:" -A3 addons/traefik-rendered.yaml | grep "name:" ; grep -n "namespace:" addons/traefik-rendered.yaml | sort -u | head

@@ -1,0 +1,9 @@
+# ชุดแฟรนไชส์ร้านอาหารแมวน้องส้ม (บท 014) — chart API v2 (Helm 3 และ Helm 4 ใช้ได้)
+apiVersion: v2
+name: som-shop
+description: ร้านอาหารแมวน้องส้ม — หน้าร้าน Next.js + ครัว PostgreSQL + Ingress + HPA
+type: application
+version: 0.1.0          # เวอร์ชันของ chart (ชุดแฟรนไชส์) — แก้ทุกครั้งที่แก้ templates
+appVersion: "1.7"       # เวอร์ชันแอปเริ่มต้น = tag ของ som-shop-web ถ้าไม่ได้ตั้ง web.image.tag
+kubeVersion: ">=1.30.0-0"
+keywords: [som-shop, kubernetes-lab]
