@@ -1,4 +1,0 @@
-#!/bin/bash
-# usage: lr NN 'command'  — run in container, append "$ cmd" + output to labNN.log
-N=$1; shift; C=$(cat /tmp/k8s002/cname); LOG=/root/workspace/DevTools/k/logs/002_pod/lab-run/lab$N.log
-{ echo "\$ $*"; docker exec -w /workspace/002_kubernetes_pod/02_LAB $C bash -c "$*" 2>&1; echo; } | tee -a $LOG
