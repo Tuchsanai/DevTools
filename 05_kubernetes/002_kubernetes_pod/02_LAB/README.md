@@ -525,56 +525,14 @@ No resources found in default namespace.
 
 <p align="center" id="fig-7">
   <img src="images/03-lab2-first-yaml.png" alt="รูปที่ 7 LAB2 YAML แรก" width="900"><br>
-  <em><b>รูปที่ 7</b> LAB2: ร่าง YAML ด้วย --dry-run=client -o yaml เขียน nginx-pod.yaml แล้ว kubectl apply -f</em>
+  <em><b>รูปที่ 7</b> LAB2: อ่านไฟล์ nginx-pod.yaml ที่เตรียมไว้ แล้ว kubectl apply -f สร้าง Pod web</em>
 </p>
 
-**เป้าหมาย:** ร่าง YAML ด้วยเครื่องมือ อ่านไฟล์ `nginx-pod.yaml` สร้าง Pod แบบ declarative และเห็นทั้ง `spec` กับ `status`
+**เป้าหมาย:** อ่านไฟล์ `nginx-pod.yaml` ที่เตรียมไว้ สร้าง Pod แบบ declarative และเห็นทั้ง `spec` กับ `status`
 
 🐧 **ใน SSH session ของ k8s-lab** (อยู่ที่ `/workspace/DevTools/05_kubernetes/002_kubernetes_pod/02_LAB`)
 
-### ขั้นที่ 1: ให้ kubectl ร่าง YAML ให้
-
-```bash
-kubectl run web --image=nginx:1.27-alpine --dry-run=client -o yaml
-kubectl explain pod.spec.containers.ports | head -30
-```
-
-```text
-$ kubectl run web --image=nginx:1.27-alpine --dry-run=client -o yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    run: web
-  name: web
-spec:
-  containers:
-  - image: nginx:1.27-alpine
-    name: web
-    resources: {}
-  dnsPolicy: ClusterFirst
-  restartPolicy: Always
-status: {}
-
-$ kubectl explain pod.spec.containers.ports | head -30
-KIND:       Pod
-VERSION:    v1
-
-FIELD: ports <[]ContainerPort>
-
-DESCRIPTION:
-    List of ports to expose from the container. Not specifying a port here DOES
-    NOT prevent that port from being exposed. ...
-FIELDS:
-  containerPort	<integer> -required-
-    Number of port to expose on the pod's IP address. This must be a valid port
-    number, 0 < x < 65536.
-...
-```
-
-`--dry-run=client` แค่พิมพ์ YAML ออกมา **ยังไม่ได้สร้าง Pod** (ถ้าต้องการเก็บเป็นไฟล์ ให้ต่อท้ายด้วย `> my-pod.yaml`)
-
-### ขั้นที่ 2: อ่านไฟล์ YAML ของ LAB
+### ขั้นที่ 1: อ่านไฟล์ YAML ของ LAB
 
 ```bash
 cat labs/lab02-first-yaml/nginx-pod.yaml
@@ -601,18 +559,18 @@ spec:                     # สิ่งที่เราอยากได้ 
 
 | field | ค่า | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลที่เห็น |
 |---|---|---|---|
-| `apiVersion` | `v1` | Pod อยู่ในกลุ่ม API หลัก (core) จึงเขียนแค่ `v1` | บรรทัด `1:apiVersion: v1` ในขั้นที่ 4 |
+| `apiVersion` | `v1` | Pod อยู่ในกลุ่ม API หลัก (core) จึงเขียนแค่ `v1` | บรรทัด `1:apiVersion: v1` ในขั้นที่ 3 |
 | `kind` | `Pod` | บอก kube-apiserver ว่าจะสร้าง object ชนิด Pod | `pod/web created` |
-| `metadata.name` | `web` | ชื่อ Pod ต้องไม่ซ้ำใน namespace | `create` ซ้ำจึงได้ `AlreadyExists` (ขั้นที่ 5) |
-| `metadata.labels` | `app: web`, `owner: nong-som` | ป้ายสำหรับค้นหา/จัดกลุ่ม (ใช้จริงใน LAB 4) ต่างจาก `kubectl run` ที่ติด `run=web` ให้เอง | คอลัมน์ `LABELS` = `app=web,owner=nong-som` |
+| `metadata.name` | `web` | ชื่อ Pod ต้องไม่ซ้ำใน namespace | `create` ซ้ำจึงได้ `AlreadyExists` (ขั้นที่ 4) |
+| `metadata.labels` | `app: web`, `owner: nong-som` | ป้ายสำหรับค้นหา/จัดกลุ่ม (ใช้จริงใน LAB 4) ต่างจาก `kubectl run` ใน LAB 1 ที่ติด label `run=<ชื่อ Pod>` ให้เอง | คอลัมน์ `LABELS` = `app=web,owner=nong-som` |
 | `spec.containers` | list 1 ตัว | Pod นี้มี container เดียว ขึ้นต้นด้วย `-` เพราะเป็น list | READY `1/1` |
-| `containers[].name` | `nginx` | ชื่อ container ภายใน Pod (ใช้กับ `-c` ภายหลัง) ตั้งต่างจากชื่อ Pod ได้ | `kubectl run` ตั้งชื่อ container = ชื่อ Pod (`web`) แต่ไฟล์นี้ใช้ `nginx` |
+| `containers[].name` | `nginx` | ชื่อ container ภายใน Pod (ใช้กับ `-c` ภายหลัง) ตั้งต่างจากชื่อ Pod ได้ | `kubectl run` ตั้งชื่อ container = ชื่อ Pod (เช่น `hello` ใน LAB 1) แต่ไฟล์นี้ใช้ `nginx` |
 | `containers[].image` | `nginx:1.27-alpine` | ระบุ tag ชัดเจนเพื่อให้ได้เวอร์ชันเดิมทุกครั้ง (ไม่ใช้ `latest`) | LAB 3 เห็น `nginx version: nginx/1.27.5` |
 | `ports[].containerPort` | `80` | **ข้อมูลประกอบ** ว่าแอปฟัง port 80 ไม่ได้เปิด port ออกนอก Pod และแก้บน Pod ที่รันอยู่ไม่ได้ | `22:    - containerPort: 80` และเปลี่ยนเป็น 8080 แล้วได้ `Forbidden` |
 
-field ที่ **ไม่ได้เขียน** (เช่น `restartPolicy: Always`, `dnsPolicy: ClusterFirst`, `imagePullPolicy: IfNotPresent`) ระบบเติมค่าเริ่มต้นให้ จึงเห็นใน `kubectl get pod web -o yaml` (ขั้นที่ 4)
+field ที่ **ไม่ได้เขียน** (เช่น `restartPolicy: Always`, `dnsPolicy: ClusterFirst`, `imagePullPolicy: IfNotPresent`) ระบบเติมค่าเริ่มต้นให้ จึงเห็นใน `kubectl get pod web -o yaml` (ขั้นที่ 3)
 
-### ขั้นที่ 3: apply ไฟล์ YAML
+### ขั้นที่ 2: apply ไฟล์ YAML
 
 ```bash
 kubectl apply -f labs/lab02-first-yaml/nginx-pod.yaml                                               # สร้าง Pod ตามไฟล์
@@ -637,7 +595,7 @@ web    1/1     Running   0          0s    10.244.3.4   lab-worker2   <none>     
 
 (เวลา, IP และ NODE จะต่างในแต่ละครั้ง)
 
-### ขั้นที่ 4: ดู spec และ status ของจริง
+### ขั้นที่ 3: ดู spec และ status ของจริง
 
 ```bash
 kubectl get pod web -o yaml | grep -nE "^(apiVersion|kind|metadata|spec|status):|podIP:|phase:|qosClass:|  - containerPort"
@@ -660,7 +618,7 @@ Running 10.244.3.4
 
 ลองเปิดดูทั้งหมดด้วย `kubectl get pod web -o yaml | less` (กด `q` เพื่อออก) จะเห็นว่าระบบเติมค่าเริ่มต้นใน `spec` และเขียน `status` ให้ยาวกว่า 130 บรรทัด (รอบทดลองจริง `kubectl get pod web -o yaml | wc -l` ได้ `141`)
 
-### ขั้นที่ 5: apply ซ้ำ, create ซ้ำ และลองแก้ Pod ที่รันอยู่
+### ขั้นที่ 4: apply ซ้ำ, create ซ้ำ และลองแก้ Pod ที่รันอยู่
 
 ```bash
 kubectl apply -f labs/lab02-first-yaml/nginx-pod.yaml
@@ -687,7 +645,7 @@ The Pod "web" is invalid: spec: Forbidden: pod updates may not change fields oth
 
 หลังข้อความ `Forbidden` kubectl แสดง diff ของ field ที่เราพยายามเปลี่ยน (`ContainerPort` 80 → 8080) ทั้ง `create` และ `apply` ที่ล้มเหลวจบด้วย exit code 1
 
-### ขั้นที่ 6: ลบ Pod
+### ขั้นที่ 5: ลบ Pod
 
 ```bash
 kubectl delete -f labs/lab02-first-yaml/nginx-pod.yaml
@@ -705,7 +663,7 @@ No resources found in default namespace.
 - Pod ที่รันอยู่ **แก้ได้แค่บาง field** (เช่น `image`) การเปลี่ยน `containerPort` ถูกปฏิเสธด้วย `Forbidden` ต้องลบแล้วสร้างใหม่
 - `-o yaml` + `grep`/`jsonpath` ช่วยดึงเฉพาะค่าที่สนใจ
 
-> **🏆 ท้าทาย:** เขียนไฟล์ `/tmp/my-pod.yaml` เองจากผล dry-run ให้ Pod ชื่อ `my-web` มี label `owner=<ชื่อเล่นของคุณ>` แล้ว apply, ตรวจด้วย `--show-labels` และลบทิ้ง
+> **🏆 ท้าทาย:** คัดลอก `nginx-pod.yaml` เป็น `/tmp/my-pod.yaml` แล้วแก้ ให้ Pod ชื่อ `my-web` มี label `owner=<ชื่อเล่นของคุณ>` แล้ว apply, ตรวจด้วย `--show-labels` และลบทิ้ง
 
 ---
 
@@ -741,7 +699,7 @@ index.html
 
 #### อธิบาย YAML: ใช้ `labs/lab02-first-yaml/nginx-pod.yaml` ซ้ำ
 
-LAB นี้ใช้ไฟล์เดียวกับ LAB 2 (ดูตารางอธิบายทีละ field ที่ [LAB 2 ขั้นที่ 2](#lab-2-pod-yaml-แรก)) จุดที่เกี่ยวกับ LAB นี้คือ
+LAB นี้ใช้ไฟล์เดียวกับ LAB 2 (ดูตารางอธิบายทีละ field ที่ [LAB 2 ขั้นที่ 1](#lab-2-pod-yaml-แรก)) จุดที่เกี่ยวกับ LAB นี้คือ
 
 - `containers[].image: nginx:1.27-alpine` → เป็น Alpine Linux จึงเห็น `ID=alpine`, `nginx version: nginx/1.27.5` และ **ไม่มี `bash`** (ผลจริง `which bash` ไม่เจอ ต้องใช้ `sh`)
 - `containers[].name: nginx` → Pod มี container เดียว `kubectl exec`/`logs` จึงไม่ต้องใส่ `-c`
