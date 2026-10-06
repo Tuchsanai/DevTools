@@ -148,6 +148,8 @@ The connection to the server localhost:8080 was refused - did you specify the ri
 
 ### 4.2 สร้างคลัสเตอร์ด้วย `k8s-up`
 
+![คำสั่ง k8s-up สร้างคลัสเตอร์ lab ภายใน k8s-lab ที่มี 1 control-plane และ 2 worker ทุก node เป็น container และอยู่ในสถานะ Ready](images/04-k8s-up-cluster.png)
+
 ```bash
 k8s-up
 ```
@@ -173,6 +175,8 @@ lab-worker2         Ready    <none>          12s   v1.37.0   172.19.0.3
 ถ้ารัน `k8s-up` ซ้ำขณะมีคลัสเตอร์อยู่แล้ว จะไม่สร้างใหม่และแจ้งว่า `cluster 'lab' มีอยู่แล้ว — ข้ามการสร้าง (ลบด้วย k8s-down)`
 
 ### 4.3 ตรวจว่าเชื่อมต่อคลัสเตอร์ไหน
+
+![คำสั่ง 3 คำสั่งในหัวข้อ 4.3 จับคู่ด้วยหมายเลขกับส่วนของคลัสเตอร์ที่ตรวจ: kind get clusters ได้ lab, kubectl config current-context ได้ kind-lab, kubectl cluster-info ยืนยันว่าเชื่อมต่อ kube-apiserver และ CoreDNS ได้](images/05-which-cluster.png)
 
 หัวข้อนี้มี 3 คำสั่ง ให้รันทีละคำสั่งแล้วดูผลก่อนไปคำสั่งถัดไป
 
@@ -223,6 +227,8 @@ CoreDNS is running at https://127.0.0.1:35427/api/v1/namespaces/kube-system/serv
 - `CoreDNS` คือบริการ DNS ภายในคลัสเตอร์ ใช้ให้ Pod หากันด้วยชื่อ
 
 ### 4.4 ดูรายชื่อ node และนับจำนวน node
+
+![นับ node ทั้งหมดด้วย kubectl get nodes --no-headers | wc -l ได้ 3 คือหอบังคับการ lab-control-plane และเรือ lab-worker กับ lab-worker2 และแยกนับตาม label ได้ control-plane 1 และ worker 2](images/06-count-nodes.png)
 
 **คำสั่งที่ 1: ดูรายชื่อและสถานะของ node**
 
@@ -377,6 +383,23 @@ lab-worker          kindest/node:v1.37.0   Up 38 seconds
 lab-worker2         kindest/node:v1.37.0   Up 38 seconds
 lab-control-plane   kindest/node:v1.37.0   Up 38 seconds
 ```
+
+เทียบกับ [รูปที่ 3 สถาปัตยกรรมของ Kubernetes Cluster](../01_Theory/README.md#fig-3) ในส่วนทฤษฎี container แต่ละตัวที่เห็นใน `docker ps` คือ node 1 ตัวของคลัสเตอร์ `lab`:
+
+![เทียบผล docker ps กับรูปสถาปัตยกรรม Kubernetes: lab-control-plane คือ Control Plane ที่มี kube-apiserver, etcd, kube-scheduler และ kube-controller-manager ส่วน lab-worker และ lab-worker2 คือ Worker Node ที่มี kubelet, kube-proxy และ container runtime ทุก node เป็น container ภายใน k8s-lab](images/07-kind-nodes-architecture.png)
+
+| แถวใน `docker ps` | ตรงกับส่วนไหนในรูปที่ 3 | องค์ประกอบที่รันอยู่ (ดูได้จาก `kubectl get pods -A -o wide` ในหัวข้อ 4.5) |
+|---|---|---|
+| ① `lab-control-plane` | **Control Plane** (หอบังคับการ) | `kube-apiserver`, `etcd`, `kube-scheduler`, `kube-controller-manager` และ `coredns` |
+| ② `lab-worker` | **Worker Node** (เรือสินค้า) ลำที่ 1 | `kubelet`, `kube-proxy`, container runtime (`containerd`) ยังไม่มี Pod ของแอป |
+| ③ `lab-worker2` | **Worker Node** (เรือสินค้า) ลำที่ 2 | เหมือน `lab-worker` |
+
+ข้อแตกต่างจากรูปที่ 3:
+
+- คลัสเตอร์ในแล็บมี Worker Node **2** ตัว ไม่ใช่ 3 ตัวเหมือนในรูป
+- kind รันบนเครื่องของเราเอง จึงไม่มี `cloud-controller-manager` และ Cloud Provider
+- node ทุกตัวเป็น **container** ใน Docker ภายใน `k8s-lab` ไม่ใช่เครื่องจริงหรือเครื่องเสมือน
+- `lab-control-plane` มี `kubelet` และ `kube-proxy` ด้วย เพราะใน kind control-plane ก็เป็น node ตัวหนึ่ง
 
 ### 4.6 ลบคลัสเตอร์เมื่อเลิกใช้
 
