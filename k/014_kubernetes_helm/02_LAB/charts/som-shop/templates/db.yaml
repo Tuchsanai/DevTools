@@ -1,0 +1,82 @@
+{{- if .Values.db.enabled }}
+{{- $fn := include "som-shop.fullname" . }}
+# ครัวกลาง: headless Service + StatefulSet (PVC data-<fn>-db-0 ไม่ถูกลบตอน helm uninstall)
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fn }}-db
+  labels:
+    {{- include "som-shop.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  selector:
+    app: {{ $fn }}-db
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $fn }}-db
+  labels:
+    {{- include "som-shop.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ $fn }}-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $fn }}-db
+  template:
+    metadata:
+      labels:
+        app: {{ $fn }}-db
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 70
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: postgres
+          image: {{ .Values.db.image }}
+          securityContext:
+            runAsUser: 70
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.db.user | quote }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef: {name: {{ $fn }}-db-secret, key: POSTGRES_PASSWORD}
+            - name: POSTGRES_DB
+              value: {{ .Values.db.name | quote }}
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - {name: postgres, containerPort: 5432}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data}
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", {{ .Values.db.user | quote }}, "-d", {{ .Values.db.name | quote }}, "-h", "127.0.0.1"]
+            periodSeconds: 3
+          livenessProbe:
+            tcpSocket: {port: postgres}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        storageClassName: {{ .Values.db.storageClassName }}
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: {{ .Values.db.storage }}
+{{- end }}

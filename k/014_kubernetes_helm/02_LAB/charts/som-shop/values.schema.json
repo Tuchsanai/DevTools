@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "som-shop values",
+  "type": "object",
+  "properties": {
+    "web": {
+      "type": "object",
+      "properties": {
+        "replicas": {"type": "integer", "minimum": 1, "maximum": 6},
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {"type": "string", "minLength": 1},
+            "tag": {"type": "string", "not": {"const": "1.4"}}
+          }
+        }
+      }
+    },
+    "hpa": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "minReplicas": {"type": "integer", "minimum": 1},
+        "maxReplicas": {"type": "integer", "maximum": 6},
+        "cpu": {"type": "integer", "minimum": 10, "maximum": 100}
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "tls": {"type": "boolean"},
+        "host": {"type": "string", "pattern": "^[a-z0-9.-]+$"}
+      }
+    },
+    "db": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "storage": {"type": "string", "pattern": "^[0-9]+(Mi|Gi)$"}
+      }
+    }
+  }
+}

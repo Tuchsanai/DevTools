@@ -1,0 +1,65 @@
+{{- if .Values.ingress.enabled }}
+{{- $fn := include "som-shop.fullname" . }}
+{{- $host := .Values.ingress.host }}
+{{- if .Values.ingress.tls }}
+{{- $tlsName := printf "%s-tls" $fn }}
+{{- $old := lookup "v1" "Secret" .Release.Namespace $tlsName }}
+# ใบรับรอง self-signed: มีอยู่แล้วใช้ใบเดิม (lookup) ไม่งั้นสร้างใหม่ด้วย genSelfSignedCert (เฉพาะ LAB)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $tlsName }}
+  labels:
+    {{- include "som-shop.labels" . | nindent 4 }}
+type: kubernetes.io/tls
+data:
+  {{- if $old }}
+  tls.crt: {{ index $old.data "tls.crt" }}
+  tls.key: {{ index $old.data "tls.key" }}
+  {{- else }}
+  {{- $cert := genSelfSignedCert $host nil (list $host) 365 }}
+  tls.crt: {{ $cert.Cert | b64enc }}
+  tls.key: {{ $cert.Key | b64enc }}
+  {{- end }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $fn }}-redirect-https
+  labels:
+    {{- include "som-shop.labels" . | nindent 4 }}
+spec:
+  redirectScheme:
+    scheme: https
+    port: {{ .Values.ingress.httpsPort | quote }}
+    permanent: true
+---
+{{- end }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fn }}-web
+  labels:
+    {{- include "som-shop.labels" . | nindent 4 }}
+  {{- if .Values.ingress.tls }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: {{ printf "%s-%s-redirect-https@kubernetescrd" .Release.Namespace $fn }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    - hosts: [{{ $host | quote }}]
+      secretName: {{ $fn }}-tls
+  {{- end }}
+  rules:
+    - host: {{ $host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fn }}-web
+                port: {name: http}
+{{- end }}

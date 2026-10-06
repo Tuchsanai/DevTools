@@ -1,0 +1,13 @@
+# สาขาจริง (prod): HPA 2–6 บูธ ประตู HTTPS shop.localhost
+shop:
+  SHOP_NAME: "ร้านอาหารแมวน้องส้ม"
+  APP_THEME: "harbor"
+  SHOP_PROMO: "🎉 เปิดสาขาใหม่ด้วย Helm คำสั่งเดียว"
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+ingress:
+  enabled: true
+  host: shop.localhost
+  tls: true

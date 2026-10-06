@@ -1,0 +1,4 @@
+# บท 014 LAB 10: values ของ chart metrics-server/metrics-server 3.14.0 (app 0.9.0)
+# helm upgrade --install metrics-server metrics-server/metrics-server --version 3.14.0 -n kube-system -f metrics-server-values.yaml
+args:
+  - --kubelet-insecure-tls    # kind: ใบรับรอง kubelet self-signed ไม่มี IP SAN (เฉพาะ LAB)

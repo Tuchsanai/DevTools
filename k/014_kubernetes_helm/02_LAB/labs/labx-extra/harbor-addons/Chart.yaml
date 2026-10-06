@@ -1,0 +1,14 @@
+# LAB เสริม: umbrella chart = กล่องแฟรนไชส์ที่มีกล่องย่อย (subchart) 2 กล่อง ไม่มี templates ของตัวเอง
+apiVersion: v2
+name: harbor-addons
+description: ชุดอุปกรณ์เสริมของท่าเรือ — metrics-server + podinfo (เปิด/ปิดได้)
+type: application
+version: 0.1.0
+dependencies:
+  - name: metrics-server
+    version: 3.14.0
+    repository: https://kubernetes-sigs.github.io/metrics-server/
+  - name: podinfo
+    version: 6.15.0
+    repository: oci://ghcr.io/stefanprodan/charts   # dependency จาก OCI registry ก็ได้
+    condition: podinfo.enabled                      # ติดตั้งก็ต่อเมื่อ podinfo.enabled=true

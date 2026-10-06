@@ -1,0 +1,30 @@
+{{- $fn := include "som-shop.fullname" . }}
+# ผู้ตรวจรับร้าน: helm test <release> → Pod นี้ต้อง Succeeded
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ $fn }}-test-health
+  labels:
+    {{- include "som-shop.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 100
+    seccompProfile: {type: RuntimeDefault}
+  containers:
+    - name: curl
+      image: {{ .Values.tests.image }}
+      command: ["sh", "-c"]
+      args:
+        - |
+          set -e
+          echo "health:   $(curl -sf http://{{ $fn }}-web/api/health)"
+          echo "whoami:   $(curl -sf http://{{ $fn }}-web/api/whoami)"
+          curl -sf http://{{ $fn }}-web/api/products | grep -q . && echo "products: ok"
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities: {drop: ["ALL"]}

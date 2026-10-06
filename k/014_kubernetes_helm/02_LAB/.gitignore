@@ -1,0 +1,11 @@
+# ใบรับรอง/กุญแจ และไฟล์ที่สร้างระหว่าง LAB ห้ามเข้า git
+*.key
+*.crt
+*.tgz
+*.log
+labs/lab01-catalog/traefik/
+labs/lab05-first/mychart/
+labs/lab06-debug/broken-*/
+labs/lab11-registry/auth/
+labs/lab11-registry/pulled/
+labs/labx-extra/harbor-addons/charts/

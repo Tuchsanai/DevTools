@@ -1,0 +1,13 @@
+# LAB 3: ใบสั่งปรับแต่งสาขา podinfo (ใช้กับ helm upgrade -f) — ค่าที่ส่งด้วย --set บนบรรทัดคำสั่งชนะค่าในไฟล์นี้
+replicaCount: 3
+ui:
+  color: "#ff8c00"
+  message: "ร้านน้องส้มสาขา values file"
+ingress:
+  enabled: true
+  className: traefik
+  hosts:
+    - host: podinfo.localhost
+      paths:
+        - path: /
+          pathType: Prefix

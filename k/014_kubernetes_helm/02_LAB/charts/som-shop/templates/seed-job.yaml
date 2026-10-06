@@ -1,0 +1,47 @@
+{{- if .Values.seed.enabled }}
+{{- $fn := include "som-shop.fullname" . }}
+# hook: ขั้นตอนพิเศษหลังเปิดร้าน/ปรับปรุงร้าน — เติมสินค้าเข้าชั้น (สร้างตาราง + สินค้าตั้งต้น ทำซ้ำได้)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $fn }}-seed
+  labels:
+    {{- include "som-shop.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: {type: RuntimeDefault}
+      {{- if .Values.db.enabled }}
+      initContainers:
+        - name: wait-for-db
+          image: {{ .Values.db.image }}
+          command: ["sh", "-c", "until pg_isready -h {{ $fn }}-db-0.{{ $fn }}-db -p 5432; do echo waiting for db; sleep 2; done"]
+          securityContext:
+            runAsUser: 70
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+      {{- end }}
+      containers:
+        - name: seed
+          image: {{ include "som-shop.webImage" . }}
+          imagePullPolicy: {{ .Values.web.image.pullPolicy }}
+          command: ["node", "scripts/seed.mjs"]
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef: {name: {{ $fn }}-db-secret, key: DATABASE_URL}
+{{- end }}

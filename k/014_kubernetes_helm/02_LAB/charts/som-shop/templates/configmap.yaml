@@ -1,0 +1,20 @@
+# กระดานประกาศ 2 แผ่น: ป้ายร้าน (envFrom) + ประกาศหน้าร้าน (mount เป็นไฟล์)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "som-shop.fullname" . }}-web-config
+  labels:
+    {{- include "som-shop.labels" . | nindent 4 }}
+data:
+  {{- range $key, $value := .Values.shop }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "som-shop.fullname" . }}-announcement
+  labels:
+    {{- include "som-shop.labels" . | nindent 4 }}
+data:
+  announcement.txt: {{ .Values.announcement | quote }}

@@ -1,0 +1,33 @@
+# บท 014 LAB 10: values ของ chart traefik/traefik 41.6.1 (app v3.7.13) ให้ได้ผลเหมือน static manifest บท 012/013
+# helm upgrade --install traefik traefik/traefik --version 41.6.1 -n traefik --create-namespace -f traefik-values.yaml
+service:
+  spec:
+    type: NodePort            # kind map ออกมาแค่ 30080-30082 (ไม่มี LoadBalancer)
+ports:
+  web:
+    nodePort: 30080
+  websecure:
+    nodePort: 30081           # chart ตั้ง websecure.http.tls.enabled=true ให้แล้ว (= --entryPoints.websecure.http.tls=true)
+  traefik:
+    expose:
+      default: true           # เปิด dashboard ออก Service (เฉพาะ LAB)
+    nodePort: 30082
+providers:
+  kubernetesIngress:
+    strictPrefixMatching: true
+    allowEmptyServices: true  # ค่าเริ่มต้นของ chart เป็น true อยู่แล้ว ใส่ไว้ให้เห็นชัด
+    publishedService:
+      enabled: false
+    ingressEndpoint:
+      hostname: localhost     # คอลัมน์ ADDRESS = localhost เหมือนบท 012
+ingressClass:
+  enabled: true
+  isDefaultClass: true        # ดาวทอง
+api:
+  dashboard: true
+  insecure: true              # dashboard ไม่มีรหัส — เฉพาะ LAB
+accessLog:
+  enabled: true             # สมุดเยี่ยม (ชื่อ key ตาม values.schema.json ของ chart — ใส่ logs.access จะโดน schema ปฏิเสธ)
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false

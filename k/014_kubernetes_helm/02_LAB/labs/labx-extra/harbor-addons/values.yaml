@@ -1,0 +1,6 @@
+# ส่งค่าให้ subchart ด้วย key ชื่อ subchart
+metrics-server:
+  args:
+    - --kubelet-insecure-tls
+podinfo:
+  enabled: false

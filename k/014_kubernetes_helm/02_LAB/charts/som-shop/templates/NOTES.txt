@@ -1,0 +1,17 @@
+🐱 เปิดร้าน {{ .Values.shop.SHOP_NAME }} (release {{ .Release.Name }}, revision {{ .Release.Revision }}) ใน namespace {{ .Release.Namespace }} แล้ว
+   image หน้าร้าน: {{ include "som-shop.webImage" . }}
+{{- if .Values.hpa.enabled }}
+   จำนวนบูธ: HPA {{ .Values.hpa.minReplicas }}–{{ .Values.hpa.maxReplicas }} (cpu {{ .Values.hpa.cpu }}%)
+{{- else }}
+   จำนวนบูธ: {{ .Values.web.replicas }} (ไม่มี HPA)
+{{- end }}
+{{- if .Values.ingress.enabled }}
+{{- if .Values.ingress.tls }}
+   เปิดร้าน: curl -k https://{{ .Values.ingress.host }}:{{ .Values.ingress.httpsPort }}/api/whoami
+{{- else }}
+   เปิดร้าน: curl http://{{ .Values.ingress.host }}:30080/api/whoami
+{{- end }}
+{{- else }}
+   ยังไม่มี Ingress: kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "som-shop.fullname" . }}-web 8080:80
+{{- end }}
+   ตรวจรับร้าน: helm test {{ .Release.Name }} -n {{ .Release.Namespace }} --logs

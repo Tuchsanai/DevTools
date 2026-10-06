@@ -1,0 +1,12 @@
+replicaCount: 3
+ui:
+  color: "#ff8c00"
+  message: "ร้านน้องส้มสาขา values file"
+ingress:
+  enabled: true
+  className: traefik
+  hosts:
+    - host: podinfo.localhost
+      paths:
+        - path: /
+          pathType: Prefix

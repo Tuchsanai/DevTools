@@ -1,0 +1,369 @@
+---
+# Source: som-shop/templates/secret.yaml
+# ซองปิดผนึก: รหัสฐานข้อมูล + DATABASE_URL (Helm เก็บค่านี้ใน release Secret ด้วย — ถอดได้!)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: som-db-secret
+  labels:
+    app.kubernetes.io/name: som-shop
+    app.kubernetes.io/instance: som
+    app.kubernetes.io/version: "1.7"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: som-shop-0.1.0
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: "meow1234"
+  DATABASE_URL: "postgres://som:meow1234@som-db-0.som-db:5432/catshop"
+
+---
+# Source: som-shop/templates/configmap.yaml
+# กระดานประกาศ 2 แผ่น: ป้ายร้าน (envFrom) + ประกาศหน้าร้าน (mount เป็นไฟล์)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: som-web-config
+  labels:
+    app.kubernetes.io/name: som-shop
+    app.kubernetes.io/instance: som
+    app.kubernetes.io/version: "1.7"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: som-shop-0.1.0
+data:
+  APP_THEME: "sunset"
+  SHOP_EYEBROW: "⚓ ท่าเรือ Kubernetes · Helm"
+  SHOP_FOOTER: "Next.js + PostgreSQL · Kubernetes LAB 014 · ติดตั้งทั้งร้านด้วย Helm"
+  SHOP_NAME: "ร้านอาหารแมวน้องส้ม (dev)"
+  SHOP_PROMO: "🧪 สาขาทดลอง — ของจริงอยู่ที่ shop.localhost"
+
+---
+# Source: som-shop/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: som-announcement
+  labels:
+    app.kubernetes.io/name: som-shop
+    app.kubernetes.io/instance: som
+    app.kubernetes.io/version: "1.7"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: som-shop-0.1.0
+data:
+  announcement.txt: "วันนี้ปลาทูสดมาก 🐟\n"
+
+---
+# Source: som-shop/templates/db.yaml
+# ครัวกลาง: headless Service + StatefulSet (PVC data-<fn>-db-0 ไม่ถูกลบตอน helm uninstall)
+apiVersion: v1
+kind: Service
+metadata:
+  name: som-db
+  labels:
+    app.kubernetes.io/name: som-shop
+    app.kubernetes.io/instance: som
+    app.kubernetes.io/version: "1.7"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: som-shop-0.1.0
+spec:
+  clusterIP: None
+  selector:
+    app: som-db
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+
+---
+# Source: som-shop/templates/web.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: som-web
+  labels:
+    app.kubernetes.io/name: som-shop
+    app.kubernetes.io/instance: som
+    app.kubernetes.io/version: "1.7"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: som-shop-0.1.0
+spec:
+  type: ClusterIP
+  selector:
+    app: som-web
+  ports:
+    - {name: http, port: 80, targetPort: http}
+
+---
+# Source: som-shop/templates/web.yaml
+# หน้าร้าน: Deployment + Service ClusterIP
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: som-web
+  labels:
+    app.kubernetes.io/name: som-shop
+    app.kubernetes.io/instance: som
+    app.kubernetes.io/version: "1.7"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: som-shop-0.1.0
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  minReadySeconds: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 0}
+  selector:
+    matchLabels:
+      app: som-web
+  template:
+    metadata:
+      labels:
+        app: som-web
+      annotations:
+        # แก้กระดานประกาศ/ซอง → ค่า checksum เปลี่ยน → ได้ Pod ใหม่เอง (ไม่ต้อง rollout restart)
+        checksum/config: 44aca01bc285df275ba88544115cf8c6dc7c66f7abedd0407de301e6e6de8f99
+        checksum/secret: 97f731ed46fbd5621ab2ef2728fbac41663f980649ee012c1b8c3240e5c3ee42
+    spec:
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: {type: RuntimeDefault}
+      initContainers:
+        - name: wait-for-db
+          image: postgres:17.11-alpine
+          command: ["sh", "-c", "until pg_isready -h som-db-0.som-db -p 5432; do echo waiting for db; sleep 2; done"]
+          securityContext:
+            runAsUser: 70
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+          resources:
+            requests: {cpu: 10m, memory: 16Mi}
+            limits: {cpu: 100m, memory: 64Mi}
+      volumes:
+        - name: announcement
+          configMap:
+            name: som-announcement
+      containers:
+        - name: web
+          image: som-shop-web:1.7
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef: {fieldPath: metadata.namespace}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef: {name: som-db-secret, key: DATABASE_URL}
+            - {name: PORT, value: "3000"}
+            - {name: HOSTNAME, value: "0.0.0.0"}
+          envFrom:
+            - configMapRef:
+                name: som-web-config
+          volumeMounts:
+            - {name: announcement, mountPath: /etc/som, readOnly: true}
+          ports:
+            - {name: http, containerPort: 3000}
+          readinessProbe:
+            httpGet: {path: /api/health, port: http}
+            periodSeconds: 3
+            failureThreshold: 2
+          livenessProbe:
+            httpGet: {path: /api/live, port: http}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          lifecycle:
+            preStop:
+              sleep: {seconds: 5}
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 192Mi
+
+---
+# Source: som-shop/templates/db.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: som-db
+  labels:
+    app.kubernetes.io/name: som-shop
+    app.kubernetes.io/instance: som
+    app.kubernetes.io/version: "1.7"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: som-shop-0.1.0
+spec:
+  serviceName: som-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: som-db
+  template:
+    metadata:
+      labels:
+        app: som-db
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 70
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: postgres
+          image: postgres:17.11-alpine
+          securityContext:
+            runAsUser: 70
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+          env:
+            - name: POSTGRES_USER
+              value: "som"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef: {name: som-db-secret, key: POSTGRES_PASSWORD}
+            - name: POSTGRES_DB
+              value: "catshop"
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - {name: postgres, containerPort: 5432}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data}
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "som", "-d", "catshop", "-h", "127.0.0.1"]
+            periodSeconds: 3
+          livenessProbe:
+            tcpSocket: {port: postgres}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        storageClassName: standard
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+# Source: som-shop/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: som-web
+  labels:
+    app.kubernetes.io/name: som-shop
+    app.kubernetes.io/instance: som
+    app.kubernetes.io/version: "1.7"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: som-shop-0.1.0
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: "dev.shop.localhost"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: som-web
+                port: {name: http}
+---
+# Source: som-shop/templates/tests/test-health.yaml
+# ผู้ตรวจรับร้าน: helm test <release> → Pod นี้ต้อง Succeeded
+apiVersion: v1
+kind: Pod
+metadata:
+  name: som-test-health
+  labels:
+    app.kubernetes.io/name: som-shop
+    app.kubernetes.io/instance: som
+    app.kubernetes.io/version: "1.7"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: som-shop-0.1.0
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 100
+    seccompProfile: {type: RuntimeDefault}
+  containers:
+    - name: curl
+      image: curlimages/curl:8.22.0
+      command: ["sh", "-c"]
+      args:
+        - |
+          set -e
+          echo "health:   $(curl -sf http://som-web/api/health)"
+          echo "whoami:   $(curl -sf http://som-web/api/whoami)"
+          curl -sf http://som-web/api/products | grep -q . && echo "products: ok"
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities: {drop: ["ALL"]}
+
+---
+# Source: som-shop/templates/seed-job.yaml
+# hook: ขั้นตอนพิเศษหลังเปิดร้าน/ปรับปรุงร้าน — เติมสินค้าเข้าชั้น (สร้างตาราง + สินค้าตั้งต้น ทำซ้ำได้)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: som-seed
+  labels:
+    app.kubernetes.io/name: som-shop
+    app.kubernetes.io/instance: som
+    app.kubernetes.io/version: "1.7"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: som-shop-0.1.0
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: {type: RuntimeDefault}
+      initContainers:
+        - name: wait-for-db
+          image: postgres:17.11-alpine
+          command: ["sh", "-c", "until pg_isready -h som-db-0.som-db -p 5432; do echo waiting for db; sleep 2; done"]
+          securityContext:
+            runAsUser: 70
+            runAsGroup: 70
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+      containers:
+        - name: seed
+          image: som-shop-web:1.7
+          imagePullPolicy: IfNotPresent
+          command: ["node", "scripts/seed.mjs"]
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef: {name: som-db-secret, key: DATABASE_URL}
+
