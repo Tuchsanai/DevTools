@@ -11,7 +11,7 @@
 
 บทที่ 1 ให้ภาพรวมว่า Kubernetes ทำงานเหมือน **ท่าเรือขนส่งตู้สินค้า** ที่มีหอบังคับการ (Control Plane) คอยตัดสินใจ และมีเรือ (Worker Node) บรรทุกตู้สินค้า (container) บทนี้ซูมเข้าไปที่ "กล่อง" ที่ห่อตู้สินค้าก่อนขึ้นเรือ นั่นคือ **Pod** ซึ่งเป็นหน่วยที่เล็กที่สุดที่ Kubernetes สร้าง จัดวาง และดูแลได้
 
-เนื้อหาเริ่มจากความหมายของ Pod ความสัมพันธ์กับ Node และเครือข่ายภายใน Pod ต่อด้วยเส้นทางที่ Pod ถูกสร้างขึ้นจริงในคลัสเตอร์ จากนั้นสอน **การเขียน Kubernetes YAML** ตั้งแต่ไวยากรณ์ YAML พื้นฐาน, โครงสร้าง manifest สี่ส่วน, การกำหนด image, env, command/args, resources, labels ไปจนถึงเครื่องมือช่วยเขียน ช่วงท้ายเป็นเรื่อง **วงจรชีวิตของ Pod** และการอ่านข้อผิดพลาดยอดฮิต (CrashLoopBackOff, ImagePullBackOff, OOMKilled, Pending), **probes**, **emptyDir**, **init container และ sidecar** รวมถึงชุดเครื่องมือดีบัก และการเปิดเว็บใน Pod จาก browser ด้วย `kubectl port-forward` ร่วมกับ `ssh -L`
+เนื้อหาเริ่มจากความหมายของ Pod ความสัมพันธ์กับ Node และเครือข่ายภายใน Pod ต่อด้วยเส้นทางที่ Pod ถูกสร้างขึ้นจริงในคลัสเตอร์ จากนั้นสอน **การเขียน Kubernetes YAML** ตั้งแต่ไวยากรณ์ YAML พื้นฐาน, โครงสร้าง manifest สี่ส่วน, การกำหนด image, env, command/args, resources, labels ไปจนถึงการสร้าง/ลบ Pod จากไฟล์ด้วย `kubectl apply`/`create`/`delete` ช่วงท้ายเป็นเรื่อง **วงจรชีวิตของ Pod** และการอ่านข้อผิดพลาดยอดฮิต (CrashLoopBackOff, ImagePullBackOff, OOMKilled, Pending), **probes**, **emptyDir**, **init container และ sidecar** รวมถึงชุดเครื่องมือดีบัก และการเปิดเว็บใน Pod จาก browser ด้วย `kubectl port-forward` ร่วมกับ `ssh -L`
 
 ตลอดบทเราจะเดินทางไปกับ **น้องส้ม** ผู้ช่วยกัปตันท่าเรือ Kubernetes ที่อยากเปิด "ร้านอาหารแมวน้องส้ม" บนเรือ ผลลัพธ์คำสั่งที่ยกมาในเอกสารนี้มาจากการทดลองจริงบนคลัสเตอร์ kind (Kubernetes v1.37.0) ของ LAB ประจำบท เมื่อ 4 ตุลาคม 2569
 
@@ -22,7 +22,7 @@
 1. อธิบายว่า Pod คืออะไร แตกต่างจาก container อย่างไร และเหตุใด Kubernetes จึงจัดการ container ผ่าน Pod
 2. อธิบายการแชร์เครือข่าย (IP เดียว, `localhost`) และ volume ภายใน Pod รวมถึงการสื่อสารระหว่าง Pod ได้
 3. อธิบายลำดับเหตุการณ์ตั้งแต่ `kubectl apply` จนกระทั่ง Pod อยู่ในสถานะ `Running`
-4. เขียนไฟล์ YAML ของ Pod ที่ถูกต้อง ทั้งส่วน `apiVersion`, `kind`, `metadata`, `spec` และกำหนด image, ports, env, command/args, resources, labels ได้
+4. อ่านและเขียนไฟล์ YAML ของ Pod ที่ถูกต้อง ทั้งส่วน `apiVersion`, `kind`, `metadata`, `spec` และกำหนด image, ports, env, command/args, resources, labels ได้
 5. อ่าน phase, STATUS, RESTARTS และ Events เพื่อวินิจฉัยปัญหา CrashLoopBackOff, ImagePullBackOff, OOMKilled และ Pending ได้
 6. เลือกใช้ startupProbe, livenessProbe และ readinessProbe ได้เหมาะสม
 7. ออกแบบ Pod หลาย container ด้วย emptyDir, init container และ sidecar และบอกได้ว่าเมื่อใดไม่ควรรวม container ไว้ใน Pod เดียว
@@ -40,7 +40,7 @@
 8. [โครงสร้าง Kubernetes Manifest](#8-โครงสร้าง-kubernetes-manifest)
 9. [เขียน spec ของ container](#9-เขียน-spec-ของ-container)
 10. [Labels, Selectors และ Annotations](#10-labels-selectors-และ-annotations)
-11. [เครื่องมือช่วยเขียน YAML](#11-เครื่องมือช่วยเขียน-yaml)
+11. [สร้างและลบ Pod จากไฟล์ YAML](#11-สร้างและลบ-pod-จากไฟล์-yaml)
 12. [วงจรชีวิตของ Pod](#12-วงจรชีวิตของ-pod)
 13. [Probes ตรวจสุขภาพ container](#13-probes-ตรวจสุขภาพ-container)
 14. [Volume ภายใน Pod ด้วย emptyDir](#14-volume-ภายใน-pod-ด้วย-emptydir)
@@ -56,7 +56,7 @@
 | รูปที่ | เรื่อง | รูปที่ | เรื่อง |
 |:---:|---|:---:|---|
 | 1 | [น้องส้มฝันอยากเปิดร้านอาหารแมวบนเรือ](#fig-1) | 17 | [Labels และ Selectors](#fig-17) |
-| 2 | [ทบทวนอุปมาท่าเรือ](#fig-2) | 18 | [kubectl explain และ --dry-run](#fig-18) |
+| 2 | [ทบทวนอุปมาท่าเรือ](#fig-2) | 18 | [เครื่องมือเสริม: explain และ --dry-run](#fig-18) |
 | 3 | [Pod คืออะไร](#fig-3) | 19 | [Pod phase ทั้ง 5 ค่า](#fig-19) |
 | 4 | [ทำไมต้องห่อ container ด้วย Pod](#fig-4) | 20 | [Container state และ restartPolicy](#fig-20) |
 | 5 | [Pod อยู่บน Node เดียวเสมอ](#fig-5) | 21 | [CrashLoopBackOff](#fig-21) |
@@ -113,6 +113,20 @@
 | probe | เจ้าหน้าที่ตรวจสุขภาพ (หูฟังแพทย์) | `/api/health` |
 | init container | ทีมเตรียมงานที่ต้องทำเสร็จก่อนเปิดร้าน | `wait-for-db`, `db-seed` |
 | sidecar | ผู้ช่วยที่ทำงานคู่ตลอดเวลา | `db` (native sidecar) |
+
+**สนามทดลองของบทนี้** (เตรียมใน LAB 0) ทุกอย่างอยู่ใน container เดียวบนเครื่องนักศึกษา
+
+```text
+เครื่องนักศึกษา (Docker Desktop)
+ └─ container k8s-lab  ← สร้างจาก image tuchsanai/devtools-kind:2569_1, เข้าด้วย ssh -p 2223 root@localhost
+     ├─ /workspace/DevTools/...  ← ไฟล์ LAB ที่ git clone มา (README, labs/*.yaml, som-shop/)
+     └─ kind cluster "lab" (k8s-up)  ← node แต่ละตัวเป็น container ซ้อนใน Docker ของ k8s-lab
+         ├─ lab-control-plane  (หอบังคับการ, มี taint ไม่รับ Pod ทั่วไป)
+         ├─ lab-worker         (เรือ ← Pod ของเราอยู่ที่นี่)
+         └─ lab-worker2        (เรือ ← Pod ของเราอยู่ที่นี่)
+```
+
+ไฟล์ YAML ของทุก LAB **เตรียมไว้ให้แล้ว** ในโฟลเดอร์ `labs/` นักศึกษาจะอ่านไฟล์ ทำความเข้าใจทีละ field แล้วสั่ง `kubectl apply -f` เนื้อหาหัวข้อ 7–10 ในเอกสารนี้จึงเน้นให้ **อ่าน YAML ออก** และแก้ได้เมื่อต้องการ
 
 > **ขอบเขตของบทนี้:** เราจะสร้าง **Pod เดี่ยว ๆ** เท่านั้น เพื่อให้เห็นพฤติกรรมของ Pod ชัดที่สุด ทรัพยากรระดับสูงอย่าง Deployment, Service, PersistentVolumeClaim และ Secret จะกล่าวถึงเพื่อปูทางเท่านั้น และเป็น **เนื้อหาของบทถัดไป**
 
@@ -349,7 +363,7 @@ shop: ร้านของเล่น
 Error from server (BadRequest): error when creating "STDIN": Pod in version "v1" cannot be handled as a Pod: json: cannot unmarshal number into Go struct field EnvVar.spec.containers.env.value of type string
 ```
 
-> **ข้อควรจำ:** YAML ที่ "ถูกไวยากรณ์" ยังอาจ "ผิดความหมาย" สำหรับ Kubernetes ได้ ใช้ `kubectl apply --dry-run=server -f ไฟล์.yaml` หรือ `kubectl diff -f ไฟล์.yaml` ตรวจก่อน apply จริงเสมอ
+> **ข้อควรจำ:** YAML ที่ "ถูกไวยากรณ์" ยังอาจ "ผิดความหมาย" สำหรับ Kubernetes ได้ ไม่ต้องกลัว เพราะ kube-apiserver ตรวจทุกไฟล์ตอน `kubectl apply` อยู่แล้ว ถ้าผิดจะปฏิเสธพร้อมบอกชื่อ field ที่ผิด (เช่น `EnvVar.spec.containers.env.value`) และไม่สร้างอะไรเลย ให้อ่านข้อความ error แล้วแก้ไฟล์ตามนั้น
 
 ---
 
@@ -459,7 +473,7 @@ containers:
 
   image ที่ build เองในเครื่อง (เช่น `som-shop-web:1.0` ใน LAB 9) ไม่ได้อยู่ใน Docker Hub ต้องนำเข้า node ด้วย `kind load docker-image` แล้วใช้ `IfNotPresent` (หรือ `Never`) มิฉะนั้น node จะพยายามดึงจากอินเทอร์เน็ตและล้มเหลว
 
-- **`ports.containerPort` เป็นข้อมูลประกอบ (documentation)** ไม่ได้เปิดหรือปิด port ใด ๆ แอปที่ฟัง port อยู่จะเข้าถึงได้จาก Pod IP เสมอแม้ไม่ได้ประกาศ ดังที่ `kubectl explain` อธิบายไว้ (ผลจริงจาก LAB 2)
+- **`ports.containerPort` เป็นข้อมูลประกอบ (documentation)** ไม่ได้เปิดหรือปิด port ใด ๆ แอปที่ฟัง port อยู่จะเข้าถึงได้จาก Pod IP เสมอแม้ไม่ได้ประกาศ ดังที่ `kubectl explain` อธิบายไว้ (ผลจริงจากคลัสเตอร์ kind ของ LAB)
 
 ```text
 $ kubectl explain pod.spec.containers.ports | head -30
@@ -659,40 +673,9 @@ shop-web   1/1     Running   0          6s
 
 ---
 
-## 11. เครื่องมือช่วยเขียน YAML
+## 11. สร้างและลบ Pod จากไฟล์ YAML
 
-<p align="center" id="fig-18">
-  <img src="images/18-kubectl-explain-dry-run.png" alt="รูปที่ 18 kubectl explain และ --dry-run" width="900"><br>
-  <em><b>รูปที่ 18</b> kubectl explain เป็นคู่มือ field ของ YAML และ --dry-run=client -o yaml ช่วยร่างไฟล์ Pod โดยยังไม่สร้างจริง</em>
-</p>
-
-ไม่มีใครจำ field ทั้งหมดได้ เครื่องมือต่อไปนี้ช่วยให้เขียน YAML ได้ถูกต้องเร็วขึ้น
-
-**1) ร่างไฟล์ด้วย `--dry-run=client -o yaml`** (ไม่สร้างจริง แค่พิมพ์ YAML ออกมา) ผลจริงจาก LAB 2
-
-```text
-$ kubectl run web --image=nginx:1.27-alpine --dry-run=client -o yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    run: web
-  name: web
-spec:
-  containers:
-  - image: nginx:1.27-alpine
-    name: web
-    resources: {}
-  dnsPolicy: ClusterFirst
-  restartPolicy: Always
-status: {}
-```
-
-เก็บเป็นไฟล์แล้วแก้ต่อได้ด้วย `kubectl run web --image=nginx:1.27-alpine --dry-run=client -o yaml > pod.yaml` (สังเกตว่า kubectl เขียน list โดยไม่เยื้อง `-` ซึ่งถูกต้องตาม YAML เช่นเดียวกับการเยื้อง 2 ช่องแบบในไฟล์ LAB ขอให้เลือกแบบใดแบบหนึ่งและใช้ให้สม่ำเสมอ)
-
-**2) เปิดคู่มือ field ด้วย `kubectl explain`** เช่น `kubectl explain pod.spec.containers`, `kubectl explain pod.spec.containers.livenessProbe` หรือดูทั้งต้นด้วย `kubectl explain pod.spec.containers --recursive`
-
-**3) ตรวจก่อนใช้จริง** `kubectl diff -f pod.yaml` แสดงความต่างระหว่างไฟล์กับของจริงในคลัสเตอร์ และ `kubectl apply --dry-run=server -f pod.yaml` ให้ kube-apiserver ตรวจโดยไม่บันทึก
+เมื่อมีไฟล์ YAML แล้ว (ใน LAB เตรียมไว้ให้ในโฟลเดอร์ `labs/`) คำสั่งที่ใช้กับไฟล์มีสามตัวหลัก คือ `kubectl apply -f`, `kubectl create -f` และ `kubectl delete -f`
 
 **ตารางที่ 12** `kubectl apply` เทียบกับ `kubectl create`
 
@@ -703,7 +686,7 @@ status: {}
 | มีแล้วและไฟล์ไม่เปลี่ยน | `unchanged` | error `AlreadyExists` |
 | มีแล้วและไฟล์เปลี่ยน | พยายามอัปเดต (`configured`) | error `AlreadyExists` |
 
-ผลจริงจาก LAB 2
+ผลจริงจาก LAB 2 (สั่ง `apply` ครั้งแรกได้ `pod/web created` จากนั้นสั่งซ้ำ)
 
 ```text
 $ kubectl apply -f labs/lab02-first-yaml/nginx-pod.yaml
@@ -713,7 +696,21 @@ $ kubectl create -f labs/lab02-first-yaml/nginx-pod.yaml
 Error from server (AlreadyExists): error when creating "labs/lab02-first-yaml/nginx-pod.yaml": pods "web" already exists
 ```
 
-ลบด้วยไฟล์เดียวกันได้ด้วย `kubectl delete -f pod.yaml` หรือลบทั้งโฟลเดอร์ด้วย `kubectl delete -f labs/lab05-lifecycle/`
+ลบด้วยไฟล์เดียวกันได้ด้วย `kubectl delete -f <ไฟล์>` หรือลบทุกไฟล์ในโฟลเดอร์ด้วย `kubectl delete -f labs/lab05-lifecycle/` (ใช้ทั้งโฟลเดอร์กับ `apply -f` ได้เช่นกัน)
+
+> **ทำไมใน LAB ใช้ `apply` เป็นหลัก:** สั่งซ้ำกี่ครั้งก็ได้ผลเหมือนเดิม (ไม่ error) และเป็นรูปแบบเดียวกับที่ใช้กับ Deployment/Service ในบทถัดไป ส่วน `create` ใช้ใน LAB 2 เพื่อให้เห็นความต่างเท่านั้น
+
+### 11.1 เครื่องมือเสริมเมื่อต้องเขียนไฟล์เอง (ไม่ได้ใช้ใน LAB)
+
+<p align="center" id="fig-18">
+  <img src="images/18-kubectl-explain-dry-run.png" alt="รูปที่ 18 kubectl explain และ --dry-run" width="900"><br>
+  <em><b>รูปที่ 18</b> เครื่องมือเสริม: kubectl explain เป็นคู่มือ field ของ YAML และ --dry-run=client -o yaml ช่วยร่างไฟล์ Pod โดยยังไม่สร้างจริง</em>
+</p>
+
+ถ้าวันหนึ่งต้องเขียน YAML ขึ้นใหม่เอง มีสองเครื่องมือช่วย
+
+- **`kubectl run <ชื่อ> --image=<image> --dry-run=client -o yaml > pod.yaml`** พิมพ์ YAML ตั้งต้นออกมา (ไม่สร้าง Pod จริง) แล้วนำไปแก้ต่อ
+- **`kubectl explain <path>`** เปิดคู่มือของ field เช่น `kubectl explain pod.spec.containers` หรือ `kubectl explain pod.spec.containers.livenessProbe`
 
 ---
 
@@ -1159,7 +1156,7 @@ Pod web (10.244.x.x) port 80
 2. **บนเครื่องนักศึกษา** เปิดหน้าต่างใหม่แล้ว `ssh -p 2223 -L 8080:localhost:8080 root@localhost` ซึ่งบอก SSH ว่า "เปิด port 8080 บนเครื่องฉัน แล้วส่งต่อไปที่ `localhost:8080` ฝั่ง k8s-lab"
 3. เปิด browser ไปที่ `http://localhost:8080`
 
-> **ทำไมไม่ใช้ port 30080–30082 ที่ map ไว้ตั้งแต่บทที่ 1?** port ชุดนั้นเตรียมไว้สำหรับ Service ชนิด NodePort ซึ่งเป็นเนื้อหาบทถัดไป ในบทนี้เราใช้แค่ Pod จึงใช้ `port-forward` + `ssh -L` ซึ่งเป็นวิธีเข้าถึงชั่วคราวสำหรับนักพัฒนา (ไม่ใช่วิธีเปิดบริการให้ผู้ใช้จริง)
+> **ทำไมไม่ใช้ port 30080–30082 ที่ map ไว้ตอนสร้าง k8s-lab ใน LAB 0?** port ชุดนั้นเตรียมไว้สำหรับ Service ชนิด NodePort ซึ่งเป็นเนื้อหาบทถัดไป ในบทนี้เราใช้แค่ Pod จึงใช้ `port-forward` + `ssh -L` ซึ่งเป็นวิธีเข้าถึงชั่วคราวสำหรับนักพัฒนา (ไม่ใช่วิธีเปิดบริการให้ผู้ใช้จริง)
 
 ---
 
@@ -1228,6 +1225,7 @@ The Pod "web" is invalid: spec: Forbidden: pod updates may not change fields oth
 10. Pod เป็นของ **ชั่วคราว**: ลบแล้วไม่มีใครสร้างคืน ได้ IP ใหม่ และ spec ส่วนใหญ่แก้ไม่ได้ → บทหน้าจะใช้ Deployment, Service, PVC และ Secret
 
 > **ข้อควรจำก่อนเข้า LAB**
+> - เริ่มจาก LAB 0: `docker run` container `k8s-lab` → `ssh -p 2223 root@localhost` → `git clone` แล้ว `cd /workspace/DevTools/05_kubernetes/002_kubernetes_pod/02_LAB` → `k8s-up`
 > - ทุกคำสั่งรันใน SSH session ของ `k8s-lab` ยกเว้นคำสั่ง `ssh -L` และ browser ซึ่งทำบนเครื่องนักศึกษา
 > - ดูปัญหาตามลำดับ `get` → `describe` (Events) → `logs --previous` → `exec`
 > - Pod ที่มีหลาย container ต้องใส่ `-c <ชื่อ>` กับ `logs` และ `exec`

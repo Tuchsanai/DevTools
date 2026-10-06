@@ -244,7 +244,7 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 18-kubectl-explain-dry-run.png
 
-> T18 · 11. เครื่องมือช่วยเขียน YAML — kubectl explain เป็นคู่มือ field ของ YAML และ --dry-run=client -o yaml ช่วยร่างไฟล์ Pod โดยยังไม่สร้างจริง
+> T18 · 11.1 เครื่องมือเสริมเมื่อต้องเขียนไฟล์เอง — kubectl explain เป็นคู่มือ field ของ YAML และ --dry-run=client -o yaml ช่วยร่างไฟล์ Pod โดยยังไม่สร้างจริง
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
