@@ -6,7 +6,7 @@
 
 ก่อนเริ่ม ให้ติดตั้งและเปิด Docker Desktop โดยใช้ Linux containers แล้วเปิด Terminal หรือ PowerShell ในโฟลเดอร์ `02_LAB` ที่มี `Dockerfile` และ `Devtool_SSH`
 
-ตัวอย่างผลลัพธ์ด้านล่างมาจากการทดลองจริงผ่าน CLI บนเครื่องโลคอลและล็อกอิน SSH ด้วยรหัสผ่าน `passwd` วันที่ 4 ตุลาคม 2569 ตัดบางส่วนเพื่อให้อ่านง่าย โดยเวลา, ID และเวอร์ชันอาจต่างกันในแต่ละเครื่อง
+ตัวอย่างผลลัพธ์ด้านล่างมาจากการทดลองจริงผ่าน CLI บนเครื่องโลคอลและล็อกอิน SSH ด้วยรหัสผ่าน `passwd` วันที่ 4 ตุลาคม 2569 (หัวข้อ 4.4–4.5 ทดลองซ้ำวันที่ 17 ตุลาคม 2569) ตัดบางส่วนเพื่อให้อ่านง่าย โดยเวลา, ID และเวอร์ชันอาจต่างกันในแต่ละเครื่อง
 
 ## 1. Build image แล้ว Run container
 
@@ -28,7 +28,7 @@ docker build -t devtools-kind:2569_1 .
 เมื่อ build สำเร็จ ให้สร้างและเริ่ม container (คัดลอกทั้งบรรทัด):
 
 ```powershell
-docker run -dit --name k8s-lab --hostname k8s-lab --privileged -p 2223:22 -p 8889:8888 -p 30080-30082:30080-30082 -v "${PWD}/Devtool_SSH:/etc/devtools/ssh" devtools-kind:2569_1
+docker run -dit --name k8s-lab --hostname k8s-lab --privileged -p 2223:22 -p 8889:8888 -v "${PWD}/Devtool_SSH:/etc/devtools/ssh" devtools-kind:2569_1
 ```
 
 ผลลัพธ์คือ ID ของ container ที่สร้างขึ้น:
@@ -37,7 +37,7 @@ docker run -dit --name k8s-lab --hostname k8s-lab --privileged -p 2223:22 -p 888
 587e89ac026f5b8f0c4bee2233d482ce9f8841c458d90528d28e751a08509f14
 ```
 
-`--privileged` รองรับ Docker ภายใน container สำหรับแล็บ ส่วน `-v` เชื่อมโฟลเดอร์ SSH keys จากเครื่องนักศึกษา พอร์ตที่เตรียมไว้คือ SSH `2223`, JupyterLab `8889` และพอร์ตสำหรับแล็บ `30080–30082`
+`--privileged` รองรับ Docker ภายใน container สำหรับแล็บ ส่วน `-v` เชื่อมโฟลเดอร์ SSH keys จากเครื่องนักศึกษา พอร์ตที่เตรียมไว้คือ SSH `2223` (เชื่อมไปพอร์ต `22` ใน container) และ JupyterLab `8889` (เชื่อมไปพอร์ต `8888` ใน container)
 
 ตรวจว่า container ทำงานและดูข้อความเริ่มต้น:
 
@@ -228,8 +228,6 @@ CoreDNS is running at https://127.0.0.1:35427/api/v1/namespaces/kube-system/serv
 
 ### 4.4 ดูรายชื่อ node และนับจำนวน node
 
-![นับ node ทั้งหมดด้วย kubectl get nodes --no-headers | wc -l ได้ 3 คือหอบังคับการ lab-control-plane และเรือ lab-worker กับ lab-worker2 และแยกนับตาม label ได้ control-plane 1 และ worker 2](images/06-count-nodes.png)
-
 **คำสั่งที่ 1: ดูรายชื่อและสถานะของ node**
 
 ```bash
@@ -240,9 +238,9 @@ kubectl get nodes
 
 ```text
 NAME                STATUS   ROLES           AGE   VERSION
-lab-control-plane   Ready    control-plane   32s   v1.37.0
-lab-worker          Ready    <none>          16s   v1.37.0
-lab-worker2         Ready    <none>          16s   v1.37.0
+lab-control-plane   Ready    control-plane   39s   v1.37.0
+lab-worker          Ready    <none>          24s   v1.37.0
+lab-worker2         Ready    <none>          24s   v1.37.0
 ```
 
 แต่ละบรรทัดคือ node 1 ตัว
@@ -253,88 +251,24 @@ lab-worker2         Ready    <none>          16s   v1.37.0
 - `AGE` เวลาที่ node อยู่ในคลัสเตอร์
 - `VERSION` เวอร์ชัน Kubernetes บน node
 
-**คำสั่งที่ 2: ดู node แบบละเอียดขึ้น**
+นับจำนวน node จากตารางนี้ได้เลย:
 
-```bash
-kubectl get nodes -o wide
-```
+| สิ่งที่นับ | ดูจากคอลัมน์ | ผล |
+|---|---|---|
+| node ทั้งหมด | นับจำนวนแถว (ไม่นับแถวหัวตาราง) | **3** |
+| control-plane | `ROLES` เป็น `control-plane` | **1** (`lab-control-plane`) |
+| worker | `ROLES` เป็น `<none>` | **2** (`lab-worker`, `lab-worker2`) |
+| node ที่พร้อมใช้งาน | `STATUS` เป็น `Ready` | **3** (ครบทุก node) |
 
-ผลลัพธ์จริง (ตัดคอลัมน์ EXTERNAL-IP และ KERNEL-VERSION ออก):
+**สรุปผล:** คลัสเตอร์ `lab` ตอนนี้มี **3 node** แบ่งเป็น control-plane 1 node และ worker 2 node ทุก node อยู่ในสถานะ `Ready` ถ้ามี node ไหนเป็น `NotReady` แสดงว่า node นั้นยังไม่พร้อม
 
-```text
-NAME                STATUS   ROLES           AGE   VERSION   INTERNAL-IP   OS-IMAGE                       CONTAINER-RUNTIME
-lab-control-plane   Ready    control-plane   28s   v1.37.0   172.19.0.2    Debian GNU/Linux 13 (trixie)   containerd://2.3.4
-lab-worker          Ready    <none>          12s   v1.37.0   172.19.0.4    Debian GNU/Linux 13 (trixie)   containerd://2.3.4
-lab-worker2         Ready    <none>          12s   v1.37.0   172.19.0.3    Debian GNU/Linux 13 (trixie)   containerd://2.3.4
-```
-
-`-o wide` เพิ่มคอลัมน์ เช่น IP ภายในของ node (`INTERNAL-IP`), ระบบปฏิบัติการ (`OS-IMAGE`) และโปรแกรมที่ใช้รัน container (`CONTAINER-RUNTIME`)
-
-**คำสั่งที่ 3: นับจำนวน node ทั้งหมด**
-
-```bash
-kubectl get nodes --no-headers | wc -l
-```
-
-ผลลัพธ์จริง:
-
-```text
-3
-```
-
-`--no-headers` ตัดบรรทัดหัวตาราง (`NAME STATUS ...`) ออก ให้เหลือ 1 บรรทัดต่อ node จากนั้น `|` ส่งผลไปให้ `wc -l` นับจำนวนบรรทัด จึงได้จำนวน node
-
-**คำสั่งที่ 4: นับจำนวน control-plane node**
-
-```bash
-kubectl get nodes -l node-role.kubernetes.io/control-plane --no-headers | wc -l
-```
-
-ผลลัพธ์จริง:
-
-```text
-1
-```
-
-`-l` กรอง node ด้วย label โดย control-plane มี label `node-role.kubernetes.io/control-plane` คำสั่งนี้จึงนับเฉพาะ control-plane
-
-**คำสั่งที่ 5: นับจำนวน worker node**
-
-```bash
-kubectl get nodes -l '!node-role.kubernetes.io/control-plane' --no-headers | wc -l
-```
-
-ผลลัพธ์จริง:
-
-```text
-2
-```
-
-`!` หน้า label แปลว่า "ไม่มี label นี้" จึงได้ node ที่ไม่ใช่ control-plane ซึ่งก็คือ worker ต้องใส่ `'...'` ครอบไว้เพื่อไม่ให้ shell ตีความ `!` เอง
-
-**คำสั่งที่ 6: นับเฉพาะ node ที่พร้อมใช้งาน**
-
-```bash
-kubectl get nodes --no-headers | grep -c ' Ready '
-```
-
-ผลลัพธ์จริง:
-
-```text
-3
-```
-
-`grep -c ' Ready '` นับบรรทัดที่มีคำว่า `Ready` ถ้าค่านี้เท่ากับผลของคำสั่งที่ 3 แสดงว่าทุก node พร้อมใช้งาน ถ้าน้อยกว่าแสดงว่ามีบาง node ที่ยังไม่พร้อม (เช่น `NotReady`)
-
-**สรุปผล:** คลัสเตอร์ `lab` ตอนนี้มี **3 node** แบ่งเป็น control-plane 1 node และ worker 2 node ทุก node อยู่ในสถานะ `Ready`
-
-**คำสั่งที่ 7: ดูรายละเอียดของ node ทีละตัว**
+**คำสั่งที่ 2: ดูรายละเอียดของ node ทีละตัว**
 
 ```bash
 kubectl describe node lab-worker
 ```
 
-ผลลัพธ์จริง (ตัดมาเฉพาะส่วน `Conditions`):
+ผลลัพธ์จริง (ตัดมาเฉพาะส่วน `Conditions` และตัดคอลัมน์เวลาออก):
 
 ```text
 Name:               lab-worker
@@ -352,43 +286,54 @@ Conditions:
 ### 4.5 ดู Pod ของระบบที่รันอยู่บนแต่ละ node
 
 ```bash
-kubectl get pods -A -o wide
+kubectl get pods -A
 ```
 
-ผลลัพธ์จริง (ตัดคอลัมน์ IP, NOMINATED NODE และ READINESS GATES ออก):
+`-A` (ย่อจาก all namespaces) ให้แสดง Pod จากทุก namespace ถ้าไม่ใส่จะเห็นแค่ namespace `default` ซึ่งยังว่างอยู่ จึงขึ้น `No resources found in default namespace.`
+
+ผลลัพธ์จริง:
 
 ```text
-NAMESPACE            NAME                                        READY   STATUS    NODE
-kube-system          coredns-559f6c778d-qbsq8                    1/1     Running   lab-control-plane
-kube-system          etcd-lab-control-plane                      1/1     Running   lab-control-plane
-kube-system          kindnet-8s57k                               1/1     Running   lab-worker
-kube-system          kube-apiserver-lab-control-plane            1/1     Running   lab-control-plane
-kube-system          kube-proxy-54kbd                            1/1     Running   lab-worker
-kube-system          kube-proxy-hcmj9                            1/1     Running   lab-worker2
-kube-system          kube-scheduler-lab-control-plane            1/1     Running   lab-control-plane
-local-path-storage   local-path-provisioner-75f7fc7dc5-8rwn5     1/1     Running   lab-control-plane
+NAMESPACE            NAME                                        READY   STATUS    RESTARTS   AGE
+kube-system          coredns-559f6c778d-6rrxs                    1/1     Running   0          28s
+kube-system          coredns-559f6c778d-b8pfd                    1/1     Running   0          28s
+kube-system          etcd-lab-control-plane                      1/1     Running   0          37s
+kube-system          kindnet-7xvr6                               1/1     Running   0          28s
+kube-system          kindnet-ct6vg                               1/1     Running   0          24s
+kube-system          kindnet-fjzhh                               1/1     Running   0          24s
+kube-system          kube-apiserver-lab-control-plane            1/1     Running   0          36s
+kube-system          kube-controller-manager-lab-control-plane   1/1     Running   0          36s
+kube-system          kube-proxy-ktq8k                            1/1     Running   0          28s
+kube-system          kube-proxy-qrqrx                            1/1     Running   0          24s
+kube-system          kube-proxy-vwnsf                            1/1     Running   0          24s
+kube-system          kube-scheduler-lab-control-plane            1/1     Running   0          36s
+local-path-storage   local-path-provisioner-75f7fc7dc5-d42lm     1/1     Running   0          28s
 ```
 
-ส่วนประกอบหลักของ control plane (`etcd`, `kube-apiserver`, `kube-scheduler`) อยู่บน `lab-control-plane` ส่วน `kube-proxy` และ `kindnet` มีอยู่บนทุก node
+- Pod ที่ชื่อลงท้ายด้วย `-lab-control-plane` (`etcd`, `kube-apiserver`, `kube-controller-manager`, `kube-scheduler`) คือส่วนประกอบหลักของ control plane ที่รันอยู่บน `lab-control-plane`
+- `kube-proxy` และ `kindnet` มีอย่างละ **3** ตัว คือ node ละ 1 ตัว
+- `coredns` คือ DNS ภายในคลัสเตอร์ที่เห็นในหัวข้อ 4.3
 
 เนื่องจาก node ของ kind เป็น container จึงเห็น node ทั้ง 3 ผ่าน `docker ps` ภายใน `k8s-lab` ได้ด้วย:
 
 ```bash
-docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
+docker ps
 ```
 
+ผลลัพธ์จริง (ตัดคอลัมน์ COMMAND, CREATED และ PORTS ออก):
+
 ```text
-NAMES               IMAGE                  STATUS
-lab-worker          kindest/node:v1.37.0   Up 38 seconds
-lab-worker2         kindest/node:v1.37.0   Up 38 seconds
-lab-control-plane   kindest/node:v1.37.0   Up 38 seconds
+CONTAINER ID   IMAGE                  STATUS          NAMES
+965bf077ee37   kindest/node:v1.37.0   Up 44 seconds   lab-worker2
+11c2d36aba9b   kindest/node:v1.37.0   Up 44 seconds   lab-control-plane
+3235a405f18e   kindest/node:v1.37.0   Up 44 seconds   lab-worker
 ```
 
 เทียบกับ [รูปที่ 3 สถาปัตยกรรมของ Kubernetes Cluster](../01_Theory/README.md#fig-3) ในส่วนทฤษฎี container แต่ละตัวที่เห็นใน `docker ps` คือ node 1 ตัวของคลัสเตอร์ `lab`:
 
 ![เทียบผล docker ps กับรูปสถาปัตยกรรม Kubernetes: lab-control-plane คือ Control Plane ที่มี kube-apiserver, etcd, kube-scheduler และ kube-controller-manager ส่วน lab-worker และ lab-worker2 คือ Worker Node ที่มี kubelet, kube-proxy และ container runtime ทุก node เป็น container ภายใน k8s-lab](images/07-kind-nodes-architecture.png)
 
-| แถวใน `docker ps` | ตรงกับส่วนไหนในรูปที่ 3 | องค์ประกอบที่รันอยู่ (ดูได้จาก `kubectl get pods -A -o wide` ในหัวข้อ 4.5) |
+| แถวใน `docker ps` | ตรงกับส่วนไหนในรูปที่ 3 | องค์ประกอบที่รันอยู่ (ดูได้จาก `kubectl get pods -A` ในหัวข้อ 4.5) |
 |---|---|---|
 | ① `lab-control-plane` | **Control Plane** (หอบังคับการ) | `kube-apiserver`, `etcd`, `kube-scheduler`, `kube-controller-manager` และ `coredns` |
 | ② `lab-worker` | **Worker Node** (เรือสินค้า) ลำที่ 1 | `kubelet`, `kube-proxy`, container runtime (`containerd`) ยังไม่มี Pod ของแอป |
@@ -414,36 +359,60 @@ Deleted nodes: ["lab-worker" "lab-worker2" "lab-control-plane"]
 
 หลังลบ `kind get clusters` จะแสดง `No kind clusters found.` สร้างคลัสเตอร์ใหม่ได้ด้วย `k8s-up`
 
-## 5. สรุปคำสั่งพื้นฐาน
+## 5. สรุปคำสั่ง Kubernetes
 
-คำสั่งบนเครื่องนักศึกษา (PowerShell หรือ Terminal):
+ทุกคำสั่งในหัวข้อนี้รัน **ใน SSH session ภายใน container `k8s-lab`**
+
+### 5.1 สร้างและลบคลัสเตอร์ของแล็บ
 
 | คำสั่ง | ใช้ทำอะไร |
 |--------|-----------|
-| `docker build -t devtools-kind:2569_1 .` | build image ของแล็บ |
-| `docker run -dit --name k8s-lab ... devtools-kind:2569_1` | สร้างและเริ่ม container `k8s-lab` (ดูคำสั่งเต็มในขั้นตอนที่ 1) |
-| `docker ps --filter name=k8s-lab` | ตรวจว่า container มีสถานะ `Up` |
-| `docker logs k8s-lab` | ดู log ตอนเริ่ม container |
-| `docker start k8s-lab` / `docker stop k8s-lab` | เปิด/ปิด container ที่สร้างไว้แล้ว |
-| `ssh -p 2223 root@localhost` | ล็อกอินเข้า container (รหัสผ่าน `passwd`) |
+| `k8s-up` | สร้างคลัสเตอร์ `lab` (1 control-plane + 2 worker) |
+| `k8s-down` | ลบคลัสเตอร์ `lab` |
+| `kind get clusters` | ดูรายชื่อคลัสเตอร์ที่ kind สร้างไว้ |
 
-คำสั่งใน SSH session ภายใน `k8s-lab`:
+### 5.2 ตรวจ `kubectl` และการเชื่อมต่อคลัสเตอร์
 
 | คำสั่ง | ใช้ทำอะไร |
 |--------|-----------|
 | `kubectl version --client` | ตรวจเวอร์ชันของ `kubectl` |
 | `kubectl --help` | ดูรายการคำสั่งของ `kubectl` |
-| `k8s-up` | สร้างคลัสเตอร์ `lab` (1 control-plane + 2 worker) |
-| `k8s-down` | ลบคลัสเตอร์ `lab` |
-| `kind get clusters` | ดูรายชื่อคลัสเตอร์ของ kind |
+| `kubectl <คำสั่ง> --help` | ดูวิธีใช้และ option ของคำสั่งนั้น เช่น `kubectl get --help` |
 | `kubectl config current-context` | ดูว่า `kubectl` กำลังใช้คลัสเตอร์ไหน (`kind-lab`) |
 | `kubectl cluster-info` | ดูที่อยู่ของ control plane และ CoreDNS |
-| `kubectl get nodes` | ดูรายชื่อและสถานะของ node |
-| `kubectl get nodes -o wide` | ดู node พร้อม IP, OS และ container runtime |
-| `kubectl get nodes --no-headers \| wc -l` | นับจำนวน node ทั้งหมด |
-| `kubectl get nodes -l '!node-role.kubernetes.io/control-plane' --no-headers \| wc -l` | นับจำนวน worker node |
-| `kubectl describe node <ชื่อ node>` | ดูรายละเอียดและสถานะของ node หนึ่ง |
-| `kubectl get pods -A -o wide` | ดู Pod ทุก namespace และดูว่าอยู่บน node ไหน |
-| `docker ps` | ดู container ที่เป็น node ของ kind |
 
-ใน SSH session พิมพ์ `k` แทน `kubectl` ได้ เช่น `k get nodes`
+### 5.3 `kubectl get nodes` และ option ที่ใช้บ่อย
+
+| คำสั่ง | ใช้ทำอะไร |
+|--------|-----------|
+| `kubectl get nodes` | ดูรายชื่อ บทบาท (`ROLES`) และสถานะ (`STATUS`) ของทุก node |
+| `kubectl get nodes -o wide` | เพิ่มคอลัมน์ IP ภายใน, ระบบปฏิบัติการ และ container runtime ของ node |
+| `kubectl get nodes --show-labels` | แสดง label ทั้งหมดของแต่ละ node |
+| `kubectl get nodes -w` | ดูต่อเนื่อง ถ้าสถานะเปลี่ยนจะแสดงบรรทัดใหม่ (กด `Ctrl+C` เพื่อออก) |
+| `kubectl get node lab-worker` | ดูเฉพาะ node ที่ระบุชื่อ |
+
+### 5.4 `kubectl get pods` และ option ที่ใช้บ่อย
+
+| คำสั่ง | ใช้ทำอะไร |
+|--------|-----------|
+| `kubectl get pods` | ดู Pod ใน namespace `default` (ตอนนี้ยังว่าง จึงขึ้น `No resources found in default namespace.`) |
+| `kubectl get pods -A` | ดู Pod ของ **ทุก** namespace (`-A` ย่อจาก `--all-namespaces`) |
+| `kubectl get pods -n kube-system` | ดู Pod เฉพาะ namespace ที่ระบุ (`-n` ย่อจาก `--namespace`) |
+| `kubectl get pods -A -o wide` | เพิ่มคอลัมน์ IP ของ Pod และ `NODE` ที่บอกว่า Pod อยู่บน node ไหน |
+| `kubectl get pods -A --show-labels` | แสดง label ของแต่ละ Pod |
+| `kubectl get pods -A -w` | ดูต่อเนื่อง ถ้าสถานะ Pod เปลี่ยนจะแสดงบรรทัดใหม่ (กด `Ctrl+C` เพื่อออก) |
+| `kubectl get pod <ชื่อ pod> -n <namespace>` | ดูเฉพาะ Pod ที่ระบุชื่อ เช่น `kubectl get pod etcd-lab-control-plane -n kube-system` |
+
+option ใช้ร่วมกันได้ เช่น `kubectl get pods -n kube-system -o wide` ดู Pod ใน `kube-system` พร้อมคอลัมน์ `NODE`
+
+### 5.5 ดูรายละเอียด
+
+| คำสั่ง | ใช้ทำอะไร |
+|--------|-----------|
+| `kubectl describe node <ชื่อ node>` | ดูรายละเอียดของ node เช่น `Conditions`, `Capacity` และ Pod ที่รันบน node นั้น |
+| `kubectl describe pod <ชื่อ pod> -n <namespace>` | ดูรายละเอียดของ Pod เช่น node ที่อยู่, container ข้างใน และ `Events` |
+
+### 5.6 พิมพ์ให้สั้นลง
+
+- พิมพ์ `k` แทน `kubectl` ได้ เช่น `k get nodes`
+- ใช้ชื่อแบบเอกพจน์หรือชื่อย่อแทนได้: `node` หรือ `no` แทน `nodes` และ `pod` หรือ `po` แทน `pods` เช่น `k get no` และ `k get po -A`

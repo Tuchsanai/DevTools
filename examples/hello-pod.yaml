@@ -1,0 +1,15 @@
+# hello-pod.yaml — Pod เดี่ยว (ไม่มี controller ดูแล ลบแล้วไม่ถูกสร้างใหม่)
+#   kubectl apply -f hello-pod.yaml
+#   kubectl logs hello
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello
+  labels:
+    app: hello
+spec:
+  restartPolicy: Never
+  containers:
+    - name: hello
+      image: busybox:1.36
+      command: ["sh", "-c", "echo Hello from Kubernetes pod $(hostname); sleep 3600"]
