@@ -778,252 +778,240 @@ pod "toy-web" deleted from default namespace
 
 <p align="center" id="fig-9">
   <img src="images/06-lab5-lifecycle-debug.png" alt="รูปที่ 9 LAB5 lifecycle และดีบัก" width="900"><br>
-  <em><b>รูปที่ 9</b> LAB5: สังเกต Completed, CrashLoopBackOff และ ImagePullBackOff แล้วใช้ describe กับ logs --previous หาสาเหตุ</em>
+  <em><b>รูปที่ 9</b> LAB5: สังเกต Completed, CrashLoopBackOff และ ImagePullBackOff แล้วใช้ describe กับ logs หาสาเหตุ</em>
 </p>
 
-**เป้าหมาย:** อ่าน phase, STATUS, RESTARTS ให้ออก และไล่หาสาเหตุ Pod ที่พังด้วย `describe` และ `logs --previous`
+**เป้าหมาย:** ดู STATUS ของ Pod แบบต่าง ๆ แล้วหาสาเหตุ Pod ที่พังด้วยคำสั่งพื้นฐาน 2 ตัว คือ `kubectl describe` กับ `kubectl logs`
 
-**ตาราง** Pod ทั้ง 4 ตัวใน `labs/lab05-lifecycle/`
+ในโฟลเดอร์ `labs/lab05-lifecycle/` มี 4 Pod แต่ละตัวจงใจให้จบต่างกัน
 
-| ไฟล์ | สิ่งที่ทำ | restartPolicy | คาดว่าจะเห็น |
-|---|---|---|---|
-| `completed-pod.yaml` | busybox echo แล้ว `exit 0` | `Never` | `Completed`, phase `Succeeded` |
-| `crash-pod.yaml` | echo, รอ 3 วินาที, `exit 1` ทุกครั้ง | `Always` | RESTARTS เพิ่ม, `Error`/`CrashLoopBackOff` |
-| `onfailure-pod.yaml` | รอบแรก `exit 1` รอบสอง `exit 0` (ใช้ emptyDir `/work` จำว่าเคยลองแล้ว ซึ่งจะเรียนละเอียดใน LAB 8) | `OnFailure` | restart 1 ครั้งแล้ว `Completed` |
-| `bad-image-pod.yaml` | `image: nginx:9.99-doesnotexist` | (ค่าเริ่มต้น) | `ErrImagePull` ⇄ `ImagePullBackOff` |
+- `completed-pod` ทำงานเสร็จแล้วจบ
+- `crash-pod` ล้มทุกครั้ง
+- `onfailure-pod` ล้มรอบแรก สำเร็จรอบสอง
+- `bad-image-pod` ระบุ image ผิด
 
-#### อธิบาย YAML: ไฟล์ทั้ง 4 ใน `labs/lab05-lifecycle/`
+🐧 **ใน SSH session ของ k8s-lab**
 
-ทั้ง 4 ไฟล์เป็น Pod container เดียว ต่างกันที่ **`restartPolicy`** (ระดับ Pod ใช้กับทุก container) และ **คำสั่งที่จบด้วย exit code อะไร** ส่วนสำคัญของแต่ละไฟล์
+### ขั้นที่ 1: สร้าง Pod ทั้ง 4 ตัว
+
+ใส่ชื่อ **โฟลเดอร์** แทนชื่อไฟล์ kubectl จะ apply ทุกไฟล์ในโฟลเดอร์ให้
+
+```bash
+kubectl apply -f labs/lab05-lifecycle/
+```
+
+**Expected output**
+
+<pre>
+pod/bad-image-pod created
+pod/completed-pod created
+pod/crash-pod created
+pod/onfailure-pod created
+</pre>
+
+### ขั้นที่ 2: รอ 20 วินาที แล้วดูสถานะ
+
+```bash
+kubectl get pods
+```
+
+**Expected output**
+
+<pre>
+NAME            READY   STATUS             RESTARTS      AGE
+bad-image-pod   0/1     ImagePullBackOff   0             20s
+completed-pod   0/1     Completed          0             20s
+crash-pod       0/1     Error              1 (7s ago)    20s
+onfailure-pod   0/1     Completed          1 (11s ago)   20s
+</pre>
+
+แต่ละ Pod จบไม่เหมือนกัน ขั้นต่อไปจะดูทีละตัวว่าเพราะอะไร (STATUS ของ `crash-pod` อาจเป็น `Error`, `CrashLoopBackOff` หรือ `Running` สลับกันไป และ `bad-image-pod` อาจเป็น `ErrImagePull` ก็ได้ ขึ้นกับจังหวะที่สั่ง)
+
+### ขั้นที่ 3: completed-pod — งานเสร็จแล้วจบ
 
 ```yaml
-# completed-pod.yaml
+# completed-pod.yaml (ส่วนสำคัญ)
 spec:
   restartPolicy: Never    # จบแล้วไม่ต้องเริ่มใหม่
   containers:
     - name: job
       image: busybox:1.36
-      command: ["sh", "-c", "echo 'น้องส้มนับสต็อกเสร็จแล้ว'; exit 0"]   # พิมพ์ข้อความแล้วจบด้วย exit 0 (สำเร็จ)
+      command: ["sh", "-c", "echo 'น้องส้มนับสต็อกเสร็จแล้ว'; exit 0"]
 ```
 
+```bash
+kubectl logs completed-pod
+```
+
+**Expected output**
+
+<pre>
+น้องส้มนับสต็อกเสร็จแล้ว
+</pre>
+
+พิมพ์ข้อความแล้วจบด้วย `exit 0` (สำเร็จ) และ `restartPolicy: Never` จึงไม่เริ่มใหม่ STATUS เป็น `Completed`
+
+### ขั้นที่ 4: crash-pod — ล้มวนไม่จบ
+
 ```yaml
-# crash-pod.yaml
+# crash-pod.yaml (ส่วนสำคัญ)
 spec:
-  restartPolicy: Always   # ค่าเริ่มต้น: ล้มเมื่อไรก็เริ่มใหม่ (รอนานขึ้นเรื่อย ๆ)
+  restartPolicy: Always   # ล้มเมื่อไรก็เริ่มใหม่
   containers:
     - name: app
       image: busybox:1.36
-      # stdout 1 บรรทัด, รอ 3 วิ, stderr 1 บรรทัด แล้ว exit 1 (ล้ม) ทุกรอบ
       command: ["sh", "-c", "echo 'กำลังเปิดร้าน...'; sleep 3; echo 'ERROR: หาไฟล์เมนูไม่เจอ' >&2; exit 1"]
 ```
 
-```yaml
-# onfailure-pod.yaml
-spec:
-  restartPolicy: OnFailure   # exit ≠ 0 → restart, exit 0 → จบ (Completed)
-  containers:
-    - name: app
-      image: busybox:1.36
-      ...
-      command: ["sh", "-c", "if [ -f /work/tried ]; then echo 'รอบสองสำเร็จ'; exit 0; else touch /work/tried; echo 'รอบแรกล้ม'; exit 1; fi"]
-      volumeMounts:
-        - name: work         # ต้องตรงกับชื่อใน volumes ด้านล่าง
-          mountPath: /work   # ตำแหน่งที่ volume โผล่ใน container
-  volumes:
-    - name: work
-      emptyDir: {}           # โฟลเดอร์ว่างที่มีอายุเท่ากับ Pod
-```
-
-```yaml
-# bad-image-pod.yaml
-spec:                     # ไม่ระบุ restartPolicy จึงได้ค่าเริ่มต้น Always
-  containers:
-    - name: web
-      image: nginx:9.99-doesnotexist   # tag ผิด! แก้เป็น nginx:1.27-alpine แล้วลบ/apply ใหม่
-```
-
-| ไฟล์ / field | ทำไมตั้งแบบนี้ | โยงกับผลที่เห็น |
-|---|---|---|
-| completed: `restartPolicy: Never` + `exit 0` | งานที่ทำครั้งเดียวจบ ไม่ต้องเริ่มใหม่ | `0/1 Completed` RESTARTS 0, `phase=Succeeded exitCode=0 reason=Completed` |
-| crash: `restartPolicy: Always` + `exit 1` | จำลองแอปที่ล้มทุกครั้ง kubelet จึง restart วนไม่จบ | RESTARTS เพิ่มเรื่อย ๆ, STATUS สลับ `Running`/`Error`/`CrashLoopBackOff`, `back-off` ยาวขึ้นจนตันที่ `5m0s` |
-| crash: `sleep 3` และ `>&2` | ให้ container มีชีวิตอยู่ 3 วินาทีพอให้เห็น `Running` และส่งข้อความ error ทาง stderr | snapshot ~3s/~20s เห็น `1/1 Running`; `logs --previous` เห็นทั้งบรรทัด stdout และ stderr |
-| onfailure: `restartPolicy: OnFailure` | restart เฉพาะตอน exit ≠ 0 | รอบแรก `exit 1` → restart 1 ครั้ง → รอบสอง `exit 0` → `Completed`, `restarts=1`, `phase=Succeeded` |
-| onfailure: `volumes` emptyDir + `volumeMounts` `/work` | ไฟล์ `/work/tried` ต้องรอดข้ามการ restart container จึงต้องอยู่บน volume ระดับ Pod (ถ้าเขียนลงไฟล์ระบบของ container เอง จะหายทุกครั้งที่ restart แล้วล้มวนตลอด) | log สุดท้ายคือ `รอบสองสำเร็จ` |
-| bad-image: `image: nginx:9.99-doesnotexist` | tag ที่ไม่มีอยู่จริงบน Docker Hub | Events `... not found`, STATUS `ErrImagePull` ⇄ `ImagePullBackOff`; แก้ด้วย `sed` เปลี่ยน tag (comment ท้ายบรรทัดติดไปด้วย จึงเห็นใน `grep image:`) |
-
-🐧 **ใน SSH session ของ k8s-lab**
-
-### ขั้นที่ 1: สร้างทั้ง 4 Pod แล้วเฝ้าดู
+**4.1 ดู log ว่าแอปพูดอะไรก่อนล้ม**
 
 ```bash
-kubectl apply -f labs/lab05-lifecycle/completed-pod.yaml -f labs/lab05-lifecycle/crash-pod.yaml -f labs/lab05-lifecycle/onfailure-pod.yaml -f labs/lab05-lifecycle/bad-image-pod.yaml
-kubectl get pods
+kubectl logs crash-pod
 ```
 
-สั่ง `kubectl get pods` ซ้ำทุก ~10 วินาที (หรือใช้ `kubectl get pods -w` แล้วกด Ctrl+C เมื่อพอ) ผลจริงที่เวลาต่าง ๆ
+**Expected output**
 
-```text
-# ~3s
-NAME            READY   STATUS              RESTARTS   AGE
-bad-image-pod   0/1     ContainerCreating   0          3s
-completed-pod   0/1     ContainerCreating   0          3s
-crash-pod       1/1     Running             0          3s
-onfailure-pod   0/1     ContainerCreating   0          3s
+<pre>
+กำลังเปิดร้าน...
+ERROR: หาไฟล์เมนูไม่เจอ
+</pre>
 
-# ~10s
-NAME            READY   STATUS         RESTARTS     AGE
-bad-image-pod   0/1     ErrImagePull   0            11s
-completed-pod   0/1     Completed      0            11s
-crash-pod       0/1     Error          1 (7s ago)   11s
-onfailure-pod   0/1     Completed      1 (2s ago)   11s
-
-# ~20s
-NAME            READY   STATUS         RESTARTS      AGE
-bad-image-pod   0/1     ErrImagePull   0             20s
-completed-pod   0/1     Completed      0             20s
-crash-pod       1/1     Running        2 (13s ago)   20s
-onfailure-pod   0/1     Completed      1 (11s ago)   20s
-
-# ~7 นาที
-NAME            READY   STATUS             RESTARTS        AGE
-bad-image-pod   0/1     ImagePullBackOff   0               7m14s
-completed-pod   0/1     Completed          0               7m14s
-crash-pod       0/1     Error              6 (3m51s ago)   7m14s
-onfailure-pod   0/1     Completed          1 (7m5s ago)    7m14s
-```
-
-> **หมายเหตุจากการทดลองจริง:** STATUS ของ `crash-pod` สลับไปมาระหว่าง `Running` → `Error` → `CrashLoopBackOff` และเห็น `Error` บ่อยที่สุด (สุ่มดูทุก 3 วินาทีตั้งแต่วินาทีที่ 20 ถึง 200: `Error` 47 ครั้ง, `CrashLoopBackOff` 7 ครั้ง, `Running` 4 ครั้ง) ดังนั้นที่ ~7 นาที นักศึกษาอาจเห็น `0/1 Error` (อย่างในรอบทดลองนี้) หรือ `0/1 CrashLoopBackOff` ก็ได้ ทั้งสองแบบถูกต้อง สิ่งที่ยืนยันว่าเป็น crash loop คือ **RESTARTS ที่เพิ่มขึ้นเรื่อย ๆ โดยช่วงห่างยาวขึ้น** (ที่ ~7 นาทีมี RESTARTS 6 แต่ restart ครั้งล่าสุดเมื่อ 3m51s ก่อน) ส่วน `bad-image-pod` ก็สลับ `ErrImagePull` ⇄ `ImagePullBackOff` เช่นกัน (ช่วงเวลาเดียวกัน: `ErrImagePull` 13 ครั้ง, `ImagePullBackOff` 45 ครั้ง) ตัวเลข AGE/RESTARTS และจำนวนครั้งที่นับได้จะต่างกันตามจังหวะที่สั่งคำสั่ง
-
-### ขั้นที่ 2: สืบสวน crash-pod
+**4.2 ดูรายละเอียดด้วย describe**
 
 ```bash
 kubectl describe pod crash-pod
-kubectl logs crash-pod --previous
-kubectl get pod crash-pod -o jsonpath="{.status.containerStatuses[0].state.waiting}{\"\\n\"}"
-kubectl get pod crash-pod -o jsonpath="phase={.status.phase}{\"\\n\"}"
 ```
 
-ผลจริงที่ประมาณ 3 นาที 20 วินาทีหลังสร้าง (ตัดเฉพาะส่วนสำคัญ)
+**Expected output** (ตัดเฉพาะส่วนสำคัญ)
 
-```text
-Containers:
-  app:
-    Image:         busybox:1.36
-    Command:
-      sh
-      -c
-      echo 'กำลังเปิดร้าน...'; sleep 3; echo 'ERROR: หาไฟล์เมนูไม่เจอ' >&2; exit 1
-    State:          Running
-      Started:      Mon, 05 Oct 2026 17:07:15 +0700
-    Last State:     Terminated
+<pre>
+...
+    State:          Terminated
       Reason:       Error
       Exit Code:    1
-      Started:      Mon, 05 Oct 2026 17:05:45 +0700
-      Finished:     Mon, 05 Oct 2026 17:05:48 +0700
-    Ready:          True
-    Restart Count:  5
+...
+    Restart Count:  2
 ...
 Events:
-  Type     Reason     Age                  From               Message
-  ----     ------     ----                 ----               -------
-  Normal   Scheduled  3m21s                default-scheduler  Successfully assigned default/crash-pod to lab-worker
-  Warning  BackOff    24s (x5 over 3m13s)  kubelet            spec.containers{app}: Back-off restarting failed container app in pod crash-pod_default(9390c699-fd0e-4e5a-a275-345e190554b4)
-  Normal   Pulled     1s (x6 over 3m20s)   kubelet            spec.containers{app}: Container image "busybox:1.36" already present on machine and can be accessed by the pod
-  Normal   Created    1s (x6 over 3m20s)   kubelet            spec.containers{app}: Container created
-  Normal   Started    1s (x6 over 3m20s)   kubelet            spec.containers{app}: Container started
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+...
+  Normal   Started    15s (x3 over 35s)  kubelet            spec.containers{app}: Container started
+  Warning  BackOff    11s (x2 over 27s)  kubelet            spec.containers{app}: Back-off restarting failed container app in pod crash-pod_default(...)
+</pre>
 
-$ kubectl logs crash-pod --previous
-กำลังเปิดร้าน...
-ERROR: หาไฟล์เมนูไม่เจอ
+- log บอกสาเหตุ: แอปหาไฟล์เมนูไม่เจอ แล้วจบด้วย `Exit Code: 1` (ล้ม)
+- `restartPolicy: Always` ทำให้ Kubernetes เริ่มใหม่เรื่อย ๆ `Restart Count` จึงเพิ่มขึ้น และรอนานขึ้นทุกรอบ (`Back-off`) อาการนี้เรียกว่า **CrashLoopBackOff**
+- สั่ง `kubectl get pods` ซ้ำอีกสักพัก จะเห็น RESTARTS ของ `crash-pod` เพิ่มขึ้นเรื่อย ๆ
 
-$ kubectl get pod crash-pod -o jsonpath="{.status.containerStatuses[0].state.waiting}{\"\\n\"}"
-{"message":"back-off 2m40s restarting failed container=app pod=crash-pod_default(9390c699-fd0e-4e5a-a275-345e190554b4)","reason":"CrashLoopBackOff"}
+### ขั้นที่ 5: onfailure-pod — ล้มรอบแรก สำเร็จรอบสอง
 
-$ kubectl get pod crash-pod -o jsonpath="phase={.status.phase}{\"\\n\"}"
-phase=Running
+```yaml
+# onfailure-pod.yaml (ส่วนสำคัญ)
+spec:
+  restartPolicy: OnFailure   # เริ่มใหม่เฉพาะตอนล้ม (exit ไม่ใช่ 0)
+  containers:
+    - name: app
+      image: busybox:1.36
+      # รอบแรกยังไม่มีไฟล์ /work/tried → สร้างไฟล์แล้ว exit 1 / รอบสองเจอไฟล์ → exit 0
+      command: ["sh", "-c", "if [ -f /work/tried ]; then echo 'รอบสองสำเร็จ'; exit 0; else touch /work/tried; echo 'รอบแรกล้ม'; exit 1; fi"]
 ```
 
-ในจังหวะที่ `describe` นี้ container เพิ่งถูกเริ่มรอบใหม่ (`State: Running`, `Started` 17:07:15) จึงเห็น `Ready: True` ส่วน `Last State` คือรอบที่ล้มก่อนหน้า (`Error`, `Exit Code: 1`) ถ้าสั่งในจังหวะอื่นอาจเห็น `State: Waiting` (`CrashLoopBackOff`) หรือ `Terminated` (`Error`) แทน ค่า UID ในวงเล็บ `crash-pod_default(...)` และเวลาจะต่างในแต่ละเครื่อง
-
-(คำสั่ง `jsonpath` ของ `state.waiting` จะได้ผลเฉพาะตอนที่ container กำลังรอ back-off ถ้าได้ผลว่างให้ลองใหม่อีกครั้ง — ในรอบทดลองต้องสั่งซ้ำทุก 2 วินาทีถึง 33 ครั้งกว่าจะได้ผล เพราะช่วงส่วนใหญ่ container อยู่ในสถานะ `Running` หรือ `Terminated`)
-
-ถ้า `kubectl logs crash-pod --previous` ได้ `unable to retrieve container logs for containerd://...` แปลว่าสั่งตอน container เพิ่งจบ (`State: Terminated`) ให้รอแล้วสั่งใหม่ตอน STATUS เป็น `CrashLoopBackOff` หรือ `Running` (หรือใช้ `kubectl logs crash-pod` ไม่ใส่ `--previous` ซึ่งจะเห็น log ของรอบที่เพิ่งล้ม)
-
-> **ตัวเลข back-off อ่านอย่างไร:** kubelet รอก่อน restart เป็นเท่าตัวทุกครั้งที่ล้มซ้ำ คือ `10s` → `20s` → `40s` → `1m20s` → `2m40s` → แล้ว **ตันที่ `5m0s`** (เพดานสูงสุด) ในรอบทดลองนี้สั่งที่ประมาณ 3.5 นาทีหลังสร้าง Pod จึงเห็น `back-off 2m40s` ถ้ารอให้ล้มซ้ำอีกรอบ ค่าถัดไปคือ 2m40s × 2 = 5m20s ซึ่งเกินเพดาน จึงเห็น `back-off 5m0s` และคงที่ไปเรื่อย ๆ ตัวเลขที่นักศึกษาเห็นจึงขึ้นกับว่าสั่งตอนไหน
-
-### ขั้นที่ 3: ตรวจ completed-pod และ onfailure-pod
+(ไฟล์จริงมี `volumes` ชื่อ `work` เพิ่ม เพื่อให้ไฟล์ `/work/tried` อยู่รอดข้ามการเริ่มใหม่ จะเรียนใน LAB 8)
 
 ```bash
-kubectl get pod completed-pod -o jsonpath="phase={.status.phase} exitCode={.status.containerStatuses[0].state.terminated.exitCode} reason={.status.containerStatuses[0].state.terminated.reason}{\"\\n\"}"; kubectl logs completed-pod
-kubectl get pod onfailure-pod -o jsonpath="phase={.status.phase} restarts={.status.containerStatuses[0].restartCount}{\"\\n\"}"; kubectl logs onfailure-pod
+kubectl logs onfailure-pod
 ```
 
-```text
-phase=Succeeded exitCode=0 reason=Completed
-น้องส้มนับสต็อกเสร็จแล้ว
-phase=Succeeded restarts=1
+**Expected output**
+
+<pre>
 รอบสองสำเร็จ
+</pre>
+
+ในขั้นที่ 2 เห็น RESTARTS = `1` และ STATUS `Completed` = ล้ม 1 ครั้ง เริ่มใหม่ แล้วสำเร็จจึงหยุด
+
+### ขั้นที่ 6: bad-image-pod — image ผิด แล้วแก้
+
+```yaml
+# bad-image-pod.yaml (ส่วนสำคัญ)
+spec:
+  containers:
+    - name: web
+      image: nginx:9.99-doesnotexist   # tag ผิด! ไม่มีอยู่จริง
 ```
 
-### ขั้นที่ 4: สืบสวนและแก้ bad-image-pod
+**6.1 หาสาเหตุจาก Events**
 
 ```bash
-kubectl describe pod bad-image-pod | sed -n "/^Events:/,\$p"
+kubectl describe pod bad-image-pod
 ```
 
-```text
+**Expected output** (ส่วน Events ท้ายสุด)
+
+<pre>
 Events:
-  Type     Reason     Age                   From               Message
-  ----     ------     ----                  ----               -------
-  Normal   Scheduled  7m14s                 default-scheduler  Successfully assigned default/bad-image-pod to lab-worker2
-  Normal   Pulling    4m2s (x5 over 7m13s)  kubelet            spec.containers{web}: Pulling image "nginx:9.99-doesnotexist"
-  Warning  Failed     4m1s (x5 over 7m7s)   kubelet            spec.containers{web}: Failed to pull image "nginx:9.99-doesnotexist": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/library/nginx:9.99-doesnotexist": failed to resolve reference "docker.io/library/nginx:9.99-doesnotexist": docker.io/library/nginx:9.99-doesnotexist: not found
-  Warning  Failed     4m1s (x5 over 7m7s)   kubelet            spec.containers{web}: Error: ErrImagePull
-  Warning  Failed     118s (x20 over 7m7s)  kubelet            spec.containers{web}: Error: ImagePullBackOff
-  Normal   BackOff    104s (x21 over 7m7s)  kubelet            spec.containers{web}: Back-off pulling image "nginx:9.99-doesnotexist"
-```
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+...
+  Warning  Failed     1s (x3 over 43s)   kubelet            spec.containers{web}: Failed to pull image "nginx:9.99-doesnotexist": ... docker.io/library/nginx:9.99-doesnotexist: not found
+  Warning  Failed     1s (x3 over 43s)   kubelet            spec.containers{web}: Error: ErrImagePull
+</pre>
 
-สาเหตุคือ tag `9.99-doesnotexist` ไม่มีอยู่จริง (`not found`) แก้โดยสร้างไฟล์ที่แก้ tag แล้ว จากนั้น **ลบ Pod แล้ว apply ใหม่**
+คำว่า `not found` บอกว่าหา image `nginx:9.99-doesnotexist` ไม่เจอ (tag ผิด)
 
-```bash
-sed "s/nginx:9.99-doesnotexist/nginx:1.27-alpine/" labs/lab05-lifecycle/bad-image-pod.yaml > /tmp/bad-image-fixed.yaml && grep image: /tmp/bad-image-fixed.yaml
-kubectl delete pod bad-image-pod && kubectl apply -f /tmp/bad-image-fixed.yaml && kubectl wait --for=condition=Ready pod/bad-image-pod --timeout=60s && kubectl get pod bad-image-pod
-```
-
-```text
-      image: nginx:1.27-alpine   # tag ผิด! แก้เป็น nginx:1.27-alpine แล้วลบ/apply ใหม่
-pod "bad-image-pod" deleted from default namespace
-pod/bad-image-pod created
-pod/bad-image-pod condition met
-NAME            READY   STATUS    RESTARTS   AGE
-bad-image-pod   1/1     Running   0          1s
-```
-
-> **รู้ไว้:** `image` เป็น field ที่แก้ได้บน Pod ที่รันอยู่ ในการทดลองจริง ถ้า `kubectl apply -f /tmp/bad-image-fixed.yaml` โดยไม่ลบก่อนจะได้ `pod/bad-image-pod configured` แล้ว Pod เป็น `Running` เช่นกัน แต่การ "ลบแล้วสร้างใหม่" เป็นแนวทางที่ใช้ได้กับทุก field
-
-### ขั้นที่ 5: ลบทั้งหมด
+**6.2 แก้ image เป็นตัวที่ถูก**
 
 ```bash
-kubectl delete -f labs/lab05-lifecycle/ --ignore-not-found; kubectl get pods
+kubectl set image pod/bad-image-pod web=nginx:1.27-alpine
 ```
 
-```text
+**Expected output**
+
+<pre>
+pod/bad-image-pod image updated
+</pre>
+
+`web=` คือชื่อ container ใน Pod รอสัก 10 วินาทีแล้วดูอีกครั้ง
+
+```bash
+kubectl get pods
+```
+
+**Expected output**
+
+<pre>
+NAME            READY   STATUS      RESTARTS      AGE
+bad-image-pod   1/1     Running     0             55s
+completed-pod   0/1     Completed   0             55s
+crash-pod       1/1     Running     3 (22s ago)   55s
+onfailure-pod   0/1     Completed   1 (46s ago)   55s
+</pre>
+
+`bad-image-pod` เป็น `Running` แล้ว ส่วน `crash-pod` ยังล้มวนอยู่ (RESTARTS เพิ่มเป็น 3)
+
+### ขั้นที่ 7: ลบทั้งหมด
+
+```bash
+kubectl delete -f labs/lab05-lifecycle/
+```
+
+**Expected output**
+
+<pre>
 pod "bad-image-pod" deleted from default namespace
 pod "completed-pod" deleted from default namespace
 pod "crash-pod" deleted from default namespace
 pod "onfailure-pod" deleted from default namespace
-No resources found in default namespace.
-```
+</pre>
 
 ### สิ่งที่เห็น
 
-- STATUS ในตารางไม่ใช่ phase: `crash-pod` แสดง `Error`/`CrashLoopBackOff` แต่ phase คือ `Running`; `completed-pod` แสดง `Completed` แต่ phase คือ `Succeeded`
-- kubelet restart container **ใน Pod เดิม** โดยรอนานขึ้นเป็นเท่าตัว (`10s` → `20s` → `40s` → `1m20s` → `2m40s`) จนถึงเพดาน `back-off 5m0s`
-- `logs --previous` คือกุญแจสำคัญในการดู log ของรอบที่ล้ม
-- `OnFailure` restart เฉพาะตอนล้ม เมื่อสำเร็จแล้วจบที่ `Completed`
-- ปัญหา image ดูที่ Events ข้อความ `not found` บอกว่าชื่อหรือ tag ผิด
+- `Completed` = ทำงานเสร็จ (exit 0) / `Error`, `CrashLoopBackOff` = ล้มแล้วถูกเริ่มใหม่วนไป / `ErrImagePull`, `ImagePullBackOff` = ดึง image ไม่ได้
+- `restartPolicy` กำหนดว่าจะเริ่มใหม่เมื่อไร: `Always` ทุกครั้ง, `OnFailure` เฉพาะตอนล้ม, `Never` ไม่เริ่มใหม่
+- Pod พัง ให้เริ่มจาก 2 คำสั่งนี้: `kubectl logs <pod>` (แอปพูดอะไร) และ `kubectl describe pod <pod>` (ดู `State`, `Exit Code` และ `Events`)
 
-> **🤔 คำถามชวนคิด:** ถ้าเปลี่ยน `crash-pod` เป็น `restartPolicy: Never` คาดว่า STATUS, RESTARTS และ phase จะเป็นอย่างไร (ลองทำแล้วตรวจคำตอบ อย่าลืมลบ Pod)
+> **🤔 คำถามชวนคิด:** ถ้าเปลี่ยน `crash-pod` เป็น `restartPolicy: Never` คาดว่า STATUS และ RESTARTS จะเป็นอย่างไร (ลองทำแล้วตรวจคำตอบ อย่าลืมลบ Pod)
 
 ---
 
@@ -2476,7 +2464,7 @@ No resources found in default namespace.
 - [ ] **LAB 2** ผล `pod/web unchanged` และ `AlreadyExists`
 - [ ] **LAB 3** browser บนเครื่องนักศึกษาเปิด `http://localhost:8080` เห็น "สวัสดีจากน้องส้ม" และ `kubectl logs web` มี request จาก browser
 - [ ] **LAB 4** ผล `kubectl get pods -l app=som-shop,tier=web` เหลือ `shop-web` ตัวเดียว
-- [ ] **LAB 5** `kubectl get pods` ที่เห็น `Completed`, `Error`/`CrashLoopBackOff` (RESTARTS > 0) และ `ErrImagePull`/`ImagePullBackOff` พร้อม `kubectl logs crash-pod --previous`
+- [ ] **LAB 5** `kubectl get pods` ที่เห็น `Completed`, `Error`/`CrashLoopBackOff` (RESTARTS > 0) และ `ErrImagePull`/`ImagePullBackOff` พร้อม `kubectl logs crash-pod`
 - [ ] **LAB 6** `OOMKilled` exit code 137 และ Events `FailedScheduling ... Insufficient cpu`
 - [ ] **LAB 7** `kubectl get pods` ที่ `liveness-exec-pod` RESTARTS ≥ 1 และ `readiness-http-pod` READY `0/1` RESTARTS 0
 - [ ] **LAB 8** `hostname -i` ของสอง container เท่ากัน และหลัง `nginx -s stop` ไฟล์ใน emptyDir ยังอยู่
