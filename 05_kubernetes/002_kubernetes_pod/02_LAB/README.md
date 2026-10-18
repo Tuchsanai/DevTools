@@ -163,47 +163,61 @@ cd DevTools/05_kubernetes/002_kubernetes_pod/02_LAB
 
 🐧 **ใน SSH session ของ k8s-lab** (ทุกขั้นใน LAB นี้)
 
-### ขั้นที่ 1: สร้าง Pod แล้วดูสถานะทันที
+### ขั้นที่ 1: สร้าง Pod แล้วดูสถานะ
+
+**1.1 สร้าง Pod ชื่อ `hello` จาก image nginx**
 
 ```bash
-kubectl run hello --image=nginx:1.27-alpine && kubectl get pods
+kubectl run hello --image=nginx:1.27-alpine
 ```
-
-ผลจริง
 
 ```text
 pod/hello created
+```
+
+**1.2 ดูรายการ Pod ทันที**
+
+```bash
+kubectl get pods
+```
+
+```text
 NAME    READY   STATUS              RESTARTS   AGE
 hello   0/1     ContainerCreating   0          0s
 ```
 
-STATUS ยังเป็น `ContainerCreating` และ READY `0/1` เพราะ Pod **ยังสร้างไม่เสร็จ** node กำลังดึง image `nginx:1.27-alpine` จาก Docker Hub ต้องรอสักครู่ (ครั้งแรกราว 5–10 วินาที) ขั้นถัดไปจึงใช้ `kubectl wait` รอแทนการกดสั่ง `get pods` ซ้ำไปเรื่อย ๆ
+STATUS ยังเป็น `ContainerCreating` และ READY `0/1` เพราะ Pod **ยังสร้างไม่เสร็จ** node กำลังดึง image จาก Docker Hub
 
-### ขั้นที่ 2: รอจน Pod พร้อม แล้วดูแบบละเอียด
+**1.3 รอสัก 10 วินาที แล้วสั่ง `kubectl get pods` อีกครั้ง** (ถ้ายังไม่ `Running` ก็รอแล้วสั่งซ้ำ)
 
 ```bash
-kubectl wait --for=condition=Ready pod/hello --timeout=180s
 kubectl get pods
+```
+
+```text
+NAME    READY   STATUS    RESTARTS   AGE
+hello   1/1     Running   0          8s
+```
+
+เมื่อเห็น `1/1` และ `Running` แปลว่า Pod พร้อมใช้งานแล้ว
+
+### ขั้นที่ 2: ดูแบบละเอียดด้วย `-o wide`
+
+```bash
 kubectl get pods -o wide
 ```
 
-ผลจริง
-
 ```text
-pod/hello condition met
-
-NAME    READY   STATUS    RESTARTS   AGE
-hello   1/1     Running   0          8s
-
 NAME    READY   STATUS    RESTARTS   AGE   IP           NODE          NOMINATED NODE   READINESS GATES
 hello   1/1     Running   0          8s    10.244.2.2   lab-worker2   <none>           <none>
 ```
 
-| คำสั่ง | แสดงอะไร |
-|---|---|
-| `kubectl wait --for=condition=Ready pod/hello` | รอจน Pod พร้อม (สูงสุด 180 วินาที) ได้ `condition met` แปลว่าพร้อมแล้ว |
-| `kubectl get pods` | สรุปสั้น: ชื่อ, READY, STATUS, จำนวน restart และอายุ |
-| `kubectl get pods -o wide` | ข้อมูลเดิม **บวก** `IP` ของ Pod และ `NODE` ที่ Pod ไปอยู่ (รวมถึง `NOMINATED NODE`, `READINESS GATES` ที่บทนี้ยังไม่ใช้) |
+เทียบกับผลของ `kubectl get pods` ในขั้นที่ 1.3 จะเห็นว่า `-o wide` แสดง **คอลัมน์เพิ่ม** ขึ้นมา
+
+| คำสั่ง | คอลัมน์ที่เห็น | ใช้เมื่อ |
+|---|---|---|
+| `kubectl get pods` | `NAME`, `READY`, `STATUS`, `RESTARTS`, `AGE` | อยากรู้แค่ว่า Pod พร้อมหรือยัง |
+| `kubectl get pods -o wide` | ทุกคอลัมน์ข้างบน **+** `IP` (IP ของ Pod) และ `NODE` (Pod ไปอยู่บน node ไหน) | อยากรู้ว่า Pod อยู่ที่ไหน มี IP อะไร |
 
 (IP และ NODE ของนักศึกษาอาจต่างจากนี้ เช่นได้ `lab-worker` แทน `lab-worker2`)
 
