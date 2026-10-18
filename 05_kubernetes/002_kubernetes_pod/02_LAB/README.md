@@ -539,7 +539,7 @@ Forwarding from [::1]:8080 -> 80
 
 <p align="center" id="fig-6">
   <img src="images/04b-lab3-vscode-ports.png" alt="รูปที่ 6 LAB3 เปิดเว็บผ่านแท็บ PORTS ของ VS Code" width="900"><br>
-  <em><b>รูปที่ 6</b> LAB3 ขั้นที่ 4: VS Code เห็น port 8080 ที่ port-forward เปิดไว้ในแท็บ PORTS แล้วส่งต่อมาที่เครื่องนักศึกษาให้อัตโนมัติ กดไอคอนลูกโลกเพื่อเปิดใน browser</em>
+  <em><b>รูปที่ 6</b> LAB3 ขั้นที่ 4 (ภาพจำลองหน้าจอ VS Code): แท็บ PORTS แสดง port 8080 ที่ VS Code ส่งต่อมาให้อัตโนมัติ (Auto Forwarded) ชี้ที่แถวนั้นแล้วกดไอคอนลูกโลก Open in Browser</em>
 </p>
 
 1. ใน VS Code เปิดแท็บ **PORTS** (แถบเดียวกับ TERMINAL ด้านล่าง)
