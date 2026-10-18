@@ -158,34 +158,6 @@ Text (verbatim, at most 4 short labels): "docker build"; "som-shop-web:1.0"; "ki
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words.
 ```
 
-## 15-lab9-emptydir-survive-vs-lost.png
-
-> L15 · LAB9 ข้อมูลรอดหรือหาย — ทดลองกับข้อมูลออเดอร์: restart container db แล้วข้อมูลยังอยู่บน emptyDir แต่ลบ Pod แล้วข้อมูลหายทั้งหมด
-
-```text
-Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
-Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Pod lesson (README figure, about 1536x1024).
-Scene: Two-panel comparison. Left: inside Pod som-shop, the db container restarts (circular arrow, RESTARTS 1) while the emptyDir shelf still holds order receipts, green check, Nong Som relieved. Right: a crane removes the whole Pod som-shop; the shelf and receipts vanish; a new Pod box arrives with a different IP and an empty shelf with fresh stock, red X on orders, Nong Som surprised.
-Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly.
-Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001 classroom illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one or more shipping containers and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); image registry = warehouse of container blueprints.
-Text (verbatim, at most 4 short labels): "restart db: ออเดอร์ยังอยู่"; "ลบ Pod: ออเดอร์หาย"; "emptyDir"; "IP ใหม่".
-Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words.
-```
-
-## 16-lab9-next-split.png
-
-> L16 · LAB9 ปูทางบทหน้า — Pod เดียวรวมเว็บกับฐานข้อมูลเป็นการออกแบบเพื่อการเรียนรู้ บทหน้าจะแยก web เป็น Deployment, db ใช้ที่เก็บถาวร และเชื่อมกันด้วย Service
-
-```text
-Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
-Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Pod lesson (README figure, about 1536x1024).
-Scene: Before/after planning board. Left: today's single Pod box containing web and db, marked with a graduation cap icon (learning design). Arrow to right: a preview plan sketch with web Pods managed by a Deployment crew on one side, a db with a durable storage barrel on the other side, and a Service lighthouse connecting them. Nong Som draws on the board with a marker.
-Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly.
-Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001 classroom illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one or more shipping containers and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); image registry = warehouse of container blueprints.
-Text (verbatim, at most 5 short labels): "วันนี้: 1 Pod"; "บทหน้า"; "Deployment"; "Service"; "ที่เก็บถาวร".
-Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; Deployment and Service appear only on the right-hand 'next chapter' sketch.
-```
-
 # LAB 0 step figures (added 2026-10-06, cyolo1 gpt-6-astra high, same character reference)
 
 ## 01-lab0-setup.png

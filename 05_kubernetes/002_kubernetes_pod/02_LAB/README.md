@@ -38,7 +38,7 @@
 | 6 | [env, command และ resources](#lab-6-env-command-และ-resources) | 20 นาที | ⭐⭐⭐ |
 | 7 | [Probes ตรวจสุขภาพ](#lab-7-probes-ตรวจสุขภาพ) | 15 นาที | ⭐⭐⭐ |
 | 8 | [LAB สุดท้าย: ร้านอาหารแมวน้องส้ม](#lab-8-lab-สุดท้าย-ร้านอาหารแมวน้องส้ม) | 45–60 นาที | ⭐⭐⭐⭐⭐ |
-| – | [Troubleshooting](#troubleshooting) · [Checklist ส่งงาน](#checklist-ส่งงาน) · [เก็บกวาดหลังจบบท](#เก็บกวาดหลังจบบท) | | |
+| – | [เก็บกวาดหลังจบบท](#เก็บกวาดหลังจบบท) · [สรุปคำสั่ง kubectl ในบทนี้](#สรุปคำสั่ง-kubectl-ในบทนี้) | | |
 
 รวมประมาณ 3.5–4 ชั่วโมง (เครื่องช้าหรือเน็ตช้าอาจนานกว่านี้ เพราะต้องดึง image จาก Docker Hub)
 
@@ -46,17 +46,15 @@
 
 | รูปที่ | เรื่อง | รูปที่ | เรื่อง |
 |:---:|---|:---:|---|
-| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 12 | [LAB 7 probes](#fig-12) |
-| 2 | [LAB 0 git clone](#fig-2) | 13 | [LAB 8 ร้านอาหารแมวน้องส้ม](#fig-13) |
-| 3 | [LAB 1 kubectl run](#fig-3) | 14 | [สถาปัตยกรรม Pod som-shop](#fig-14) |
-| 4 | [LAB 2 YAML แรก](#fig-4) | 15 | [build และ kind load](#fig-15) |
-| 5 | [LAB 3 exec/logs/port-forward](#fig-5) | 16 | [ลำดับการเริ่ม Pod som-shop](#fig-16) |
-| 6 | [LAB 3 attach VS Code เข้า k8s-lab](#fig-6) | 17 | [ภาพหน้าจอจริง: หน้าร้านเริ่มต้น](#fig-17) |
-| 7 | [LAB 3 เปิดเว็บผ่าน VS Code PORTS](#fig-7) | 18 | [ภาพหน้าจอจริง: หลังสั่งซื้อ 3 ครั้ง](#fig-18) |
-| 8 | [ภาพหน้าจอจริง: หน้าเว็บ nginx ของ LAB 3](#fig-8) | 19 | [emptyDir รอด vs หาย](#fig-19) |
-| 9 | [LAB 4 labels](#fig-9) | 20 | [ภาพหน้าจอจริง: หลัง restart db](#fig-20) |
-| 10 | [LAB 5 lifecycle และดีบัก](#fig-10) | 21 | [ภาพหน้าจอจริง: หลังลบ Pod แล้วสร้างใหม่](#fig-21) |
-| 11 | [LAB 6 env/command/resources](#fig-11) | 22 | [บทหน้า: แยกเว็บกับฐานข้อมูล](#fig-22) |
+| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 10 | [LAB 5 lifecycle และดีบัก](#fig-10) |
+| 2 | [LAB 0 git clone](#fig-2) | 11 | [LAB 6 env/command/resources](#fig-11) |
+| 3 | [LAB 1 kubectl run](#fig-3) | 12 | [LAB 7 probes](#fig-12) |
+| 4 | [LAB 2 YAML แรก](#fig-4) | 13 | [LAB 8 ร้านอาหารแมวน้องส้ม](#fig-13) |
+| 5 | [LAB 3 exec/logs/port-forward](#fig-5) | 14 | [สถาปัตยกรรม Pod som-shop](#fig-14) |
+| 6 | [LAB 3 attach VS Code เข้า k8s-lab](#fig-6) | 15 | [build และ kind load](#fig-15) |
+| 7 | [LAB 3 เปิดเว็บผ่าน VS Code PORTS](#fig-7) | 16 | [ลำดับการเริ่ม Pod som-shop](#fig-16) |
+| 8 | [ภาพหน้าจอจริง: หน้าเว็บ nginx ของ LAB 3](#fig-8) | 17 | [ภาพหน้าจอจริง: หน้าร้านเริ่มต้น](#fig-17) |
+| 9 | [LAB 4 labels](#fig-9) | 18 | [ภาพหน้าจอจริง: หลังสั่งซื้อ 3 ครั้ง](#fig-18) |
 
 ### โครงสร้างไฟล์ LAB
 
@@ -131,7 +129,7 @@ lab-worker          Ready    &lt;none&gt;          13s   v1.37.0
 lab-worker2         Ready    &lt;none&gt;          13s   v1.37.0
 </pre>
 
-> **✅ ผ่านเมื่อ:** node 3 ตัว `Ready` และ Pod ใน `kube-system` เป็น `Running` ทุกตัว (ช่วงแรกอาจยัง `0/1` รอสักครู่) ข้อความเรื่อง NodePort ท้าย `k8s-up` ข้ามได้ ปัญหาอื่นดู [Troubleshooting](#troubleshooting)
+> **✅ ผ่านเมื่อ:** node 3 ตัว `Ready` และ Pod ใน `kube-system` เป็น `Running` ทุกตัว (ช่วงแรกอาจยัง `0/1` รอสักครู่) ข้อความเรื่อง NodePort ท้าย `k8s-up` ข้ามได้
 
 ### ขั้นที่ 2: git clone ไฟล์ LAB
 
@@ -940,7 +938,7 @@ spec:
       command: ["sh", "-c", "if [ -f /work/tried ]; then echo 'รอบสองสำเร็จ'; exit 0; else touch /work/tried; echo 'รอบแรกล้ม'; exit 1; fi"]
 ```
 
-(ไฟล์จริงมี `volumes` ชื่อ `work` เพิ่ม เพื่อให้ไฟล์ `/work/tried` อยู่รอดข้ามการเริ่มใหม่ จะเห็นอีกครั้งใน LAB 8)
+(ไฟล์จริงมี `volumes` ชื่อ `work` เพิ่ม เพื่อให้ไฟล์ `/work/tried` อยู่รอดข้ามการเริ่มใหม่)
 
 ```bash
 kubectl logs onfailure-pod
@@ -1475,7 +1473,7 @@ pod "readiness-http-pod" deleted from default namespace
   <em><b>รูปที่ 13</b> LAB สุดท้าย: เปิดร้านอาหารแมวน้องส้มด้วย Next.js + PostgreSQL ใน Pod เดียว</em>
 </p>
 
-**เป้าหมาย:** เปิดร้านเว็บ (Next.js) + ฐานข้อมูล (PostgreSQL) ใน Pod เดียว สั่งซื้อจาก browser แล้วพิสูจน์ว่า **container ตาย → ข้อมูลรอด แต่ Pod หาย → ข้อมูลหาย**
+**เป้าหมาย:** เปิดร้านเว็บ (Next.js) + ฐานข้อมูล (PostgreSQL) ใน Pod เดียว สั่งซื้อจาก browser แล้วดูว่าออเดอร์ถูกบันทึกลงฐานข้อมูลจริง
 
 > ⚠️ **ออกแบบเพื่อการเรียนรู้เท่านั้น** งานจริงไม่ควรใส่เว็บกับฐานข้อมูลไว้ใน Pod เดียว และรหัสผ่าน `meow1234` ใน YAML ก็ใช้เพื่อการเรียนเท่านั้น บทถัดไปจะแยกให้ถูกต้อง
 
@@ -1495,7 +1493,7 @@ pod "readiness-http-pod" deleted from default namespace
 3. **`db-seed`** — สร้างตารางและใส่สินค้า 6 รายการ แล้วจบ
 4. **`web`** — หน้าร้าน Next.js (port 3000) คุยกับ `db` ผ่าน `localhost`
 
-ข้อมูลของฐานข้อมูลเก็บไว้ที่ **emptyDir** (โฟลเดอร์ที่มีอายุเท่ากับ Pod) เปิดอ่านไฟล์เต็มได้ใน VS Code ทุกบรรทัดมี comment อธิบายไว้
+เปิดอ่านไฟล์เต็มได้ใน VS Code ทุกบรรทัดมี comment อธิบายไว้
 
 ### ขั้นที่ 2: build image ของเว็บ
 
@@ -1666,33 +1664,9 @@ Forwarding from [::1]:3000 -> 3000
   <em><b>รูปที่ 18</b> ภาพหน้าจอจริงจากการทดลอง: หลังกดสั่งซื้อ 3 ครั้ง ออเดอร์ทั้งหมดเป็น 3 และ stock ของสินค้าที่สั่งลดลง (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ตอนถ่ายเข้าผ่าน NodePort ชั่วคราวแทน port-forward หน้าเว็บที่เห็นเหมือนกัน)</em>
 </p>
 
-### ขั้นที่ 8: ทดลองที่ 1 — ฐานข้อมูลตาย ข้อมูลยังอยู่ไหม
+### ขั้นที่ 8: ตรวจออเดอร์ในฐานข้อมูล
 
-<p align="center" id="fig-19">
-  <img src="images/15-lab9-emptydir-survive-vs-lost.png" alt="รูปที่ 19 emptyDir รอด vs หาย" width="900"><br>
-  <em><b>รูปที่ 19</b> restart container db แล้วข้อมูลยังอยู่บน emptyDir แต่ลบ Pod แล้วข้อมูลหายทั้งหมด</em>
-</p>
-
-เปิด **Terminal ใหม่** ใน VS Code (terminal แรกยังรัน port-forward อยู่) แล้วสั่งหยุดฐานข้อมูล
-
-```bash
-kubectl exec som-shop -c db -- kill -INT 1
-```
-
-คำสั่งนี้ไม่มี output (`kill -INT 1` = สั่งให้โปรแกรมหลักของ container `db` คือ PostgreSQL หยุดทำงาน) รอสัก 5 วินาที
-
-```bash
-kubectl get pods
-```
-
-**Expected output**
-
-<pre>
-NAME       READY   STATUS    RESTARTS     AGE
-som-shop   2/2     Running   1 (8s ago)   40s
-</pre>
-
-RESTARTS เป็น `1` = Kubernetes เริ่ม container `db` ใหม่ให้เองใน Pod เดิม ตรวจจำนวนออเดอร์
+เปิด **Terminal ใหม่** ใน VS Code (terminal แรกยังรัน port-forward อยู่) แล้วเข้าฐานข้อมูล
 
 ```bash
 kubectl exec -it som-shop -c db -- psql -U som -d catshop
@@ -1711,94 +1685,11 @@ SELECT count(*) FROM orders;
 (1 row)
 </pre>
 
-พิมพ์ `\q` ออก แล้ว refresh browser ออเดอร์ยังอยู่ครบ 3 รายการ
+ออเดอร์ 3 รายการที่กดจาก browser ถูกบันทึกลงฐานข้อมูลจริง พิมพ์ `\q` เพื่อออก
 
-<p align="center" id="fig-20">
-  <img src="images/screenshots/20261018_lab8_03-after-db-restart.jpg" alt="รูปที่ 20 ภาพหน้าจอจริง หลัง restart db" width="700"><br>
-  <em><b>รูปที่ 20</b> ภาพหน้าจอจริงจากการทดลอง: หลังฐานข้อมูลหยุดและถูกเริ่มใหม่ ข้อมูล 3 ออเดอร์ยังอยู่ครบ (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ตอนถ่ายเข้าผ่าน NodePort ชั่วคราวแทน port-forward หน้าเว็บที่เห็นเหมือนกัน)</em>
-</p>
+### ขั้นที่ 9: เก็บกวาด
 
-**ข้อมูลรอด** เพราะเก็บบน emptyDir ซึ่งอยู่กับ **Pod** ไม่ใช่กับ container
-
-### ขั้นที่ 9: ทดลองที่ 2 — ลบ Pod แล้วสร้างใหม่
-
-```bash
-kubectl delete pod som-shop
-```
-
-**Expected output**
-
-<pre>
-pod "som-shop" deleted from default namespace
-</pre>
-
-```bash
-kubectl get pods
-```
-
-**Expected output**
-
-<pre>
-No resources found in default namespace.
-</pre>
-
-**ไม่มีใครสร้าง Pod คืนให้** ร้านปิด และ port-forward ใน terminal แรกก็หลุด (กด Ctrl+C ที่ terminal แรก) สร้าง Pod ใหม่จากไฟล์เดิม
-
-```bash
-kubectl apply -f som-shop/k8s/som-shop-pod.yaml
-```
-
-**Expected output**
-
-<pre>
-pod/som-shop created
-</pre>
-
-รอจน `kubectl get pods` เป็น `2/2 Running` แล้วตรวจจำนวนออเดอร์อีกครั้ง
-
-```bash
-kubectl exec -it som-shop -c db -- psql -U som -d catshop
-```
-
-```sql
-SELECT count(*) FROM orders;
-```
-
-**Expected output**
-
-<pre>
- count 
--------
-     0
-(1 row)
-</pre>
-
-พิมพ์ `\q` ออก แล้วรัน `kubectl port-forward pod/som-shop 3000:3000` ใหม่และ refresh browser ร้านกลับเป็น 0 ออเดอร์
-
-<p align="center" id="fig-21">
-  <img src="images/screenshots/20261018_lab8_04-after-pod-delete.jpg" alt="รูปที่ 21 ภาพหน้าจอจริง หลังลบ Pod แล้วสร้างใหม่" width="700"><br>
-  <em><b>รูปที่ 21</b> ภาพหน้าจอจริงจากการทดลอง: หลังลบ Pod แล้วสร้างใหม่ ร้านกลับเป็น 0 ออเดอร์ และ stock กลับเป็นค่าตั้งต้น (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ตอนถ่ายเข้าผ่าน NodePort ชั่วคราวแทน port-forward หน้าเว็บที่เห็นเหมือนกัน)</em>
-</p>
-
-**ข้อมูลหายหมด** เพราะ Pod ใหม่ได้ emptyDir ใหม่ที่ว่างเปล่า (และได้ IP ใหม่ด้วย)
-
-### ขั้นที่ 10: ทำไมงานจริงต้องแยก
-
-<p align="center" id="fig-22">
-  <img src="images/16-lab9-next-split.png" alt="รูปที่ 22 บทหน้า: แยกเว็บกับฐานข้อมูล" width="900"><br>
-  <em><b>รูปที่ 22</b> Pod เดียวรวมเว็บกับฐานข้อมูลเป็นการออกแบบเพื่อการเรียนรู้ บทหน้าจะแยก web กับ db และเชื่อมกันด้วย Service</em>
-</p>
-
-ปัญหาที่เจอใน LAB นี้ บทหน้าจะแก้ด้วย
-
-- ลบ Pod แล้วไม่มีใครสร้างคืน → **Deployment**
-- ข้อมูลหายเมื่อได้ Pod ใหม่ → **ที่เก็บข้อมูลถาวร (PersistentVolume)**
-- IP เปลี่ยน ต้อง port-forward ใหม่ทุกครั้ง → **Service**
-- รหัสผ่านอยู่ใน YAML → **Secret**
-
-### ขั้นที่ 11: เก็บกวาด
-
-กด **Ctrl+C** หยุด port-forward แล้ว
+กลับไปที่ terminal แรกแล้วกด **Ctrl+C** หยุด port-forward จากนั้น
 
 ```bash
 kubectl delete -f som-shop/k8s/som-shop-pod.yaml
@@ -1812,60 +1703,14 @@ pod "som-shop" deleted from default namespace
 
 ### สิ่งที่เห็น
 
+- build image เอง แล้วใช้ `kind load` ส่งเข้าคลัสเตอร์ก่อนสร้าง Pod
 - Pod เดียวมีได้หลาย container คุยกันผ่าน `localhost` และดู log ทีละตัวด้วย `-c`
-- container `db` ตาย → Kubernetes เริ่มใหม่ใน Pod เดิม ข้อมูลบน emptyDir **รอด**
-- ลบ Pod → ไม่มีใครสร้างคืน และ Pod ใหม่ได้ emptyDir ใหม่ ข้อมูล **หาย**
+- `kubectl exec -it ... psql` เข้าไปดูข้อมูลในฐานข้อมูลได้ เห็นออเดอร์ที่สั่งจากหน้าเว็บจริง
 
 ### คำถามท้าย LAB 8
 
 1. ทำไม `kubectl get pods` แสดง READY `2/2` ทั้งที่ Pod มี container ทั้งหมด 4 ตัว
-2. ทำไมหยุดฐานข้อมูลแล้วข้อมูลยังอยู่ แต่ลบ Pod แล้วข้อมูลหาย ตอบโดยอ้างถึง emptyDir
-3. ถ้าแก้โค้ดเว็บแล้ว build เป็น `som-shop-web:1.1` ต้องทำขั้นตอนใดบ้างจึงจะเห็นเวอร์ชันใหม่
-
----
-
-## Troubleshooting
-
-| อาการ | สาเหตุ | วิธีแก้ |
-|---|---|---|
-| `docker run` แจ้ง `Conflict. The container name "/k8s-lab" is already in use` | มี container ชื่อ `k8s-lab` อยู่แล้ว (เช่นจากบทที่ 1) | ใช้ตัวเดิม (`docker start k8s-lab`) หรือลบก่อนด้วย `docker rm -f k8s-lab` แล้ว `docker run` ใหม่ (ดู [LAB 0 ขั้นที่ 1](#ขั้นที่-1-setup-container-และคลัสเตอร์)) |
-| `docker run` แจ้ง `port is already allocated` | container อื่นใช้ port `2223`/`8889` อยู่ | 🖥️ `docker ps` หาตัวที่ใช้ port แล้ว `docker stop <ชื่อ>` จากนั้น `docker rm -f k8s-lab` แล้วสั่ง `docker run` ใหม่ |
-| `docker pull` ช้ามากหรือแจ้ง `toomanyrequests` | image ใหญ่ ~1.5 GB หรือ Docker Hub จำกัดการดึง | รอแล้วสั่งซ้ำ (ส่วนที่โหลดแล้วไม่ต้องโหลดใหม่) หรือ `docker login` ด้วยบัญชี Docker Hub ของตัวเอง |
-| `ssh -p 2223` แจ้ง `Connection refused` | container ไม่ได้รัน หรือ sshd ยังไม่ขึ้น | 🖥️ `docker ps -a --filter name=k8s-lab` ถ้า `Exited` ให้ `docker start k8s-lab` แล้วรอ 2–3 วินาที |
-| `ssh` แจ้ง `REMOTE HOST IDENTIFICATION HAS CHANGED!` | ลบแล้วสร้าง `k8s-lab` ใหม่ host key จึงเปลี่ยน | 🖥️ `ssh-keygen -R "[localhost]:2223"` แล้ว ssh ใหม่ |
-| `k8s-up` ล้ม มีข้อความ `Structure needs cleaning` หรือ `docker logs k8s-lab` ไม่มี `memory`/`io` ในบรรทัด cgroup | สร้าง container โดยไม่ใส่ `--privileged` หรือ Docker ไม่ได้ใช้ cgroup v2 | ลบแล้วสร้างใหม่ด้วยคำสั่ง `docker run` เต็มใน LAB 0 (ต้องมี `--privileged`) และใช้ Docker Desktop แบบ WSL2/Linux containers |
-| `git clone` แจ้ง `Could not resolve host: github.com` หรือค้างนาน | container ออกเน็ตไม่ได้ หรือเน็ตช้า | 🐧 ตรวจด้วย `curl -sI https://github.com \| head -1` ถ้าเน็ตช้าใช้ `git clone --depth 1 ...` |
-| `ls` ใน k8s-lab ไม่เจอ `labs/` หรือ `som-shop/`, kubectl แจ้ง `the path "labs/..." does not exist` | ยังไม่ได้ `git clone` หรืออยู่ผิดโฟลเดอร์ | 🐧 ทำ [LAB 0 ขั้นที่ 2](#ขั้นที่-2-git-clone-ไฟล์-lab) (`cd /workspace && git clone https://github.com/Tuchsanai/DevTools.git`) แล้ว `cd /workspace/DevTools/05_kubernetes/002_kubernetes_pod/02_LAB` (ตรวจด้วย `pwd`) |
-| `kubectl get nodes` ต่อคลัสเตอร์ไม่ได้ (เช่น connection refused) | ยังไม่ได้รัน `k8s-up` หรือคลัสเตอร์ถูกลบ/หยุดไป | 🐧 รัน `k8s-up` ใหม่ (ถ้าเพิ่ง restart container คลัสเตอร์อาจต้องสร้างใหม่) |
-| Pod `som-shop` ค้าง `Init:ErrImagePull` / `ImagePullBackOff` ที่ `db-seed` หรือ `web` | ลืม `kind load docker-image som-shop-web:1.0 --name lab` node จึงไปหา image บน Docker Hub ซึ่งไม่มี | 🐧 `kind load docker-image som-shop-web:1.0 --name lab` แล้ว `kubectl delete pod som-shop` และ `kubectl apply -f som-shop/k8s/som-shop-pod.yaml` |
-| `ErrImagePull` ที่ Events มีคำว่า `toomanyrequests` / `429 Too Many Requests` | Docker Hub จำกัดจำนวนการดึงแบบไม่ล็อกอิน (ทั้งห้องใช้ IP เดียว) | รอสักพักแล้วลองใหม่ |
-| `kubectl port-forward` แจ้งว่า listen ไม่ได้ มีคำว่า `address already in use` | port-forward ตัวเก่ายังรันอยู่ (เช่นลืม Ctrl+C จาก LAB 3) | หาและหยุดด้วย `pgrep -af "kubectl port-forward"` / `pkill -f "kubectl port-forward"` หรือใช้ port อื่น เช่น `kubectl port-forward pod/web 8081:80` |
-| browser เปิดไม่ได้ (connection refused/ERR_CONNECTION_RESET) | port-forward หยุด/หลุด หรือ VS Code ไม่ได้ attach อยู่ | ตรวจว่า terminal ที่รัน port-forward ยังทำงาน และแท็บ PORTS มี port นั้นอยู่ |
-| port-forward ขึ้น `error: lost connection to pod` | Pod ถูกลบ/สร้างใหม่ port-forward ผูกกับ Pod เดิม | Ctrl+C แล้วรัน `kubectl port-forward ...` ใหม่ |
-| หน้าเว็บ LAB 3 แสดงภาษาไทยเพี้ยน | nginx ไม่ส่ง charset | ใส่ `<meta charset=utf-8>` นำหน้าใน `index.html` |
-| `kubectl delete` Pod ที่ใช้ busybox ค้างประมาณ 30 วินาที | `sh` เป็นโปรเซสหลัก ไม่ตอบ SIGTERM จึงรอ grace period 30 วินาที | รอ หรือใช้ `kubectl delete pod <ชื่อ> --now` |
-| ไม่เคยเห็น `CrashLoopBackOff` เห็นแต่ `Error` | บน K8s 1.37 STATUS สลับ `Error`/`CrashLoopBackOff` | ดู RESTARTS ที่เพิ่มขึ้นและ Events `BackOff` แทน |
-| `liveness-exec-pod` ยังไม่ restart | ต้องรอ ~75 วินาที (ล้มที่ ~45 วิ + รอ kill 30 วิ) | รออย่างน้อย 90 วินาทีก่อนตรวจ |
-| `pending-pod` ไม่ Pending แต่ Running | เครื่องมีมากกว่า 64 CPU thread | เพิ่มค่า `cpu` ใน `pending-pod.yaml` ให้เกินจำนวน CPU ของเครื่อง |
-| `kubectl logs <pod>` / `exec` ได้ข้อมูลของ container ผิดตัว (มีข้อความ `Defaulted container ...`) | Pod มีหลาย container kubectl จึงเลือก container แรกให้ | ใส่ `-c <ชื่อ container>` |
-| คำสั่ง `kubectl wait` timeout | image ใหญ่/เน็ตช้า | ดู `kubectl describe pod` ว่าติดขั้นไหน แล้วรอหรือแก้ตามสาเหตุ |
-
----
-
-## Checklist ส่งงาน
-
-ส่งภาพหน้าจอ (screenshot ของ terminal/browser) ตามรายการต่อไปนี้ พร้อมคำตอบคำถามชวนคิดอย่างน้อย LAB ละ 1 ข้อ และคำถามท้าย LAB 8 ทั้ง 3 ข้อ
-
-- [ ] **LAB 0** `kubectl get nodes -o wide` เห็น 3 node `Ready` และ context `kind-lab`
-- [ ] **LAB 1** `kubectl describe pod hello` ส่วน Events ครบ `Scheduled` → `Started`
-- [ ] **LAB 2** ผล `pod/web unchanged` และ `AlreadyExists`
-- [ ] **LAB 3** browser บนเครื่องนักศึกษาเปิด `http://localhost:8080` เห็น "สวัสดีจากน้องส้ม" และ `kubectl logs web` มี request จาก browser
-- [ ] **LAB 4** ผล `kubectl get pods -l app=som-shop,tier=web` เหลือ `shop-web` ตัวเดียว
-- [ ] **LAB 5** `kubectl get pods` ที่เห็น `Completed`, `Error`/`CrashLoopBackOff` (RESTARTS > 0) และ `ErrImagePull`/`ImagePullBackOff` พร้อม `kubectl logs crash-pod`
-- [ ] **LAB 6** `OOMKilled` exit code 137 และ Events `FailedScheduling ... Insufficient cpu`
-- [ ] **LAB 7** `kubectl get pods` ที่ `liveness-exec-pod` RESTARTS ≥ 1 และ `readiness-http-pod` READY `0/1` RESTARTS 0
-- [ ] **LAB 8** (1) `kubectl get pods` เป็น `som-shop 2/2 Running` (2) browser หน้าร้านหลังสั่งซื้อ (3) หลัง `kill -INT 1` RESTARTS เป็น 1 และออเดอร์ยังอยู่ (4) หลังลบ Pod และ apply ใหม่ ออเดอร์เป็น 0
-- [ ] ท้ายสุด `kubectl get pods` ได้ `No resources found in default namespace.`
+2. ถ้าแก้โค้ดเว็บแล้ว build เป็น `som-shop-web:1.1` ต้องทำขั้นตอนใดบ้างจึงจะเห็นเวอร์ชันใหม่
 
 ---
 
@@ -1893,3 +1738,56 @@ docker rm -f k8s-lab     # ลบ container รวมคลัสเตอร์
 ```
 
 > **บทถัดไป:** น้องส้มจะแยกเว็บกับฐานข้อมูลออกจากกัน ให้ Deployment ดูแลการสร้าง Pod ใหม่ ใช้ Service ให้ที่อยู่คงที่ (และเปิดร้านผ่าน port 30080–30082 ได้โดยไม่ต้อง port-forward) เก็บข้อมูลบนที่เก็บถาวร และย้ายรหัสผ่านไปไว้ใน Secret
+
+---
+
+## สรุปคำสั่ง kubectl ในบทนี้
+
+**สร้าง / ลบ Pod**
+
+| คำสั่ง | ใช้ทำอะไร |
+|---|---|
+| `kubectl run hello --image=nginx:1.27-alpine` | สร้าง Pod ด้วยคำสั่งเดียว (ไม่ใช้ไฟล์) |
+| `kubectl apply -f <ไฟล์ หรือ โฟลเดอร์>` | สร้าง/อัปเดต Pod ตามไฟล์ YAML (สั่งซ้ำได้) |
+| `kubectl create -f <ไฟล์>` | สร้างใหม่อย่างเดียว ถ้ามีอยู่แล้วจะ error |
+| `kubectl delete pod <ชื่อ>` | ลบ Pod ตามชื่อ |
+| `kubectl delete -f <ไฟล์ หรือ โฟลเดอร์>` | ลบทุก Pod ที่อยู่ในไฟล์ |
+| `kubectl delete pod -l <key=value>` | ลบทุก Pod ที่มี label นี้ |
+
+**ดูสถานะ**
+
+| คำสั่ง | ใช้ทำอะไร |
+|---|---|
+| `kubectl get pods` | รายการ Pod: READY, STATUS, RESTARTS |
+| `kubectl get pods -o wide` | เพิ่ม IP และ NODE ของ Pod |
+| `kubectl get pods --show-labels` | เพิ่มคอลัมน์ label |
+| `kubectl get pods -l <key=value>` | เลือกเฉพาะ Pod ที่มี label นี้ |
+| `kubectl get pod <ชื่อ> -o yaml` | ดู Pod เต็ม ๆ ทั้ง `spec` และ `status` |
+| `kubectl describe pod <ชื่อ>` | รายละเอียด + **Events** (ใช้หาสาเหตุเวลา Pod พัง) |
+
+**เข้าไปใน Pod / ดู log**
+
+| คำสั่ง | ใช้ทำอะไร |
+|---|---|
+| `kubectl logs <ชื่อ>` | ดูสิ่งที่แอปพิมพ์ออกมา |
+| `kubectl logs <ชื่อ> -c <container>` | ดู log ของ container ที่ระบุ (Pod ที่มีหลาย container) |
+| `kubectl exec <ชื่อ> -- <คำสั่ง>` | รันคำสั่งหนึ่งคำสั่งใน container |
+| `kubectl exec -it <ชื่อ> -- sh` | เข้า shell ใน container (พิมพ์ `exit` เพื่อออก) |
+| `kubectl port-forward pod/<ชื่อ> <port เครื่อง>:<port ใน Pod>` | เปิดทางเข้าเว็บใน Pod (ค้างไว้, Ctrl+C เพื่อหยุด) |
+
+**แก้ Pod ที่รันอยู่**
+
+| คำสั่ง | ใช้ทำอะไร |
+|---|---|
+| `kubectl label pod <ชื่อ> key=value` | ติด label |
+| `kubectl label pod <ชื่อ> key-` | ถอด label |
+| `kubectl set image pod/<ชื่อ> <container>=<image>` | เปลี่ยน image ของ container |
+
+**คลัสเตอร์และ image**
+
+| คำสั่ง | ใช้ทำอะไร |
+|---|---|
+| `k8s-up` / `k8s-down` | สร้าง / ลบคลัสเตอร์ kind ชื่อ `lab` |
+| `kubectl get nodes` | ดู node ในคลัสเตอร์ |
+| `docker build -t <ชื่อ:tag> .` | build image จาก Dockerfile |
+| `kind load docker-image <ชื่อ:tag> --name lab` | ส่ง image เข้าทุก node ของคลัสเตอร์ |
