@@ -604,184 +604,173 @@ pod "web" deleted from default namespace
   <em><b>รูปที่ 8</b> LAB4: ติดป้าย label ให้ Pod 3 ตัวและใช้ -l เลือกเฉพาะกลุ่มที่ต้องการ</em>
 </p>
 
-**เป้าหมาย:** สร้าง Pod หลายตัวจากไฟล์เดียว (multi-document `---`) ติด แก้ ลบ label และค้นหาด้วย selector
+**เป้าหมาย:** ติดป้าย (label) ให้ Pod แล้วใช้ป้ายนั้นเลือกเฉพาะ Pod ที่ต้องการ
 
-ไฟล์ `labs/lab04-labels/shop-pods.yaml` มี 3 Pod
+**label** คือป้าย `key=value` ที่แปะไว้กับ Pod เช่น `app=som-shop` เอาไว้จัดกลุ่มและค้นหา ไฟล์ `labs/lab04-labels/shop-pods.yaml` มี 3 Pod (คั่นแต่ละตัวด้วย `---`)
 
-| Pod | image | labels |
-|---|---|---|
-| `shop-web` | `nginx:1.27-alpine` | `app=som-shop`, `tier=web` |
-| `shop-cache` | `busybox:1.36` | `app=som-shop`, `tier=cache` |
-| `toy-web` | `nginx:1.27-alpine` | `app=toy-shop`, `tier=web` |
-
-#### อธิบาย YAML: `labs/lab04-labels/shop-pods.yaml`
-
-ส่วนสำคัญ (Pod แรกเต็ม ๆ และส่วนที่ต่างของอีกสองตัว)
-
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: shop-web
-  labels:             # label = ป้าย key: value ที่ใช้เลือกด้วย -l
-    app: som-shop     # ร้านของน้องส้ม
-    tier: web         # ชั้นหน้าเว็บ
-spec:
-  containers:
-    - name: nginx
-      image: nginx:1.27-alpine
----                   # ขึ้น document ใหม่ = object ถัดไปในไฟล์เดียวกัน
-...
-  name: shop-cache
-  labels:
-    app: som-shop
-    tier: cache       # ชั้นแคช
-...
-    - name: cache
-      image: busybox:1.36
-      command: ["sh", "-c", "echo cache ready; sleep 3600"]   # จำลองว่าเป็น cache
----
-...
-  name: toy-web
-  labels:
-    app: toy-shop     # ร้านของเล่น (คนละร้าน)
-    tier: web
-```
-
-| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลที่เห็น |
-|---|---|---|
-| `---` | คั่น YAML หลาย document ในไฟล์เดียว แต่ละ document คือ object หนึ่งตัว | `apply` ครั้งเดียวได้ `created` 3 บรรทัด และ `delete -f` ลบได้ทั้งไฟล์ |
-| `metadata.labels.app` | บอกว่า Pod เป็นของร้านไหน ตั้งให้ 2 ตัวเป็น `som-shop` และ 1 ตัวเป็น `toy-shop` เพื่อให้มีทั้งตัวที่ตรงและไม่ตรง selector | `-l app=som-shop` ได้ 2 ตัว, `-l app!=som-shop` ได้แค่ `toy-web` |
-| `metadata.labels.tier` | บอกชั้นของระบบ (`web`/`cache`) ตั้งให้ `toy-web` เป็น `web` เหมือน `shop-web` เพื่อให้ selector ข้ามร้านได้ | `-l tier=web` ได้ `shop-web` + `toy-web`, `-l app=som-shop,tier=web` (AND) เหลือ `shop-web` ตัวเดียว |
-| `shop-cache` → `command: [... "sleep 3600"]` | busybox ไม่มีโปรแกรมที่รันค้างเอง ถ้าไม่ใส่ `sleep` container จะจบทันทีและถูก restart วน | Pod `shop-cache` เป็น `1/1 Running` เหมือนอีกสองตัว |
-| ไม่มี `annotations` ในไฟล์ | annotation ถูกเพิ่มทีหลังด้วย `kubectl annotate` ในขั้นที่ 3 | `describe` เห็น `Annotations: description: ... owner: น้องส้ม` |
+| Pod | labels |
+|---|---|
+| `shop-web` | `app=som-shop`, `tier=web` |
+| `shop-cache` | `app=som-shop`, `tier=cache` |
+| `toy-web` | `app=toy-shop`, `tier=web` |
 
 🐧 **ใน SSH session ของ k8s-lab**
 
-### ขั้นที่ 1: สร้างและดู labels
+### ขั้นที่ 1: สร้าง Pod ทั้ง 3 ตัว แล้วดู label
 
 ```bash
-kubectl apply -f labs/lab04-labels/shop-pods.yaml && kubectl wait --for=condition=Ready pod --all --timeout=120s
-kubectl get pods --show-labels
+kubectl apply -f labs/lab04-labels/shop-pods.yaml
 ```
 
-```text
+**Expected output**
+
+<pre>
 pod/shop-web created
 pod/shop-cache created
 pod/toy-web created
-pod/shop-cache condition met
-pod/shop-web condition met
-pod/toy-web condition met
-NAME         READY   STATUS    RESTARTS   AGE   LABELS
-shop-cache   1/1     Running   0          6s    app=som-shop,tier=cache
-shop-web     1/1     Running   0          6s    app=som-shop,tier=web
-toy-web      1/1     Running   0          6s    app=toy-shop,tier=web
+</pre>
+
+ไฟล์เดียวสร้างได้ 3 Pod รอสัก 10 วินาทีแล้วดู label ด้วย `--show-labels`
+
+```bash
+kubectl get pods --show-labels
 ```
 
-### ขั้นที่ 2: เลือกด้วย selector
+**Expected output**
+
+<pre>
+NAME         READY   STATUS    RESTARTS   AGE   LABELS
+shop-cache   1/1     Running   0          11s   app=som-shop,tier=cache
+shop-web     1/1     Running   0          11s   app=som-shop,tier=web
+toy-web      1/1     Running   0          11s   app=toy-shop,tier=web
+</pre>
+
+### ขั้นที่ 2: เลือก Pod ด้วย label (`-l`)
+
+**2.1 เฉพาะร้านน้องส้ม**
 
 ```bash
 kubectl get pods -l app=som-shop
-kubectl get pods -l tier=web
-kubectl get pods -l app=som-shop,tier=web
-kubectl get pods -l 'tier in (web,cache)'
-kubectl get pods -l app!=som-shop
-kubectl get pods -L app,tier
 ```
 
-```text
-$ kubectl get pods -l app=som-shop
+**Expected output**
+
+<pre>
 NAME         READY   STATUS    RESTARTS   AGE
-shop-cache   1/1     Running   0          6s
-shop-web     1/1     Running   0          6s
+shop-cache   1/1     Running   0          11s
+shop-web     1/1     Running   0          11s
+</pre>
 
-$ kubectl get pods -l tier=web
-NAME       READY   STATUS    RESTARTS   AGE
-shop-web   1/1     Running   0          6s
-toy-web    1/1     Running   0          6s
-
-$ kubectl get pods -l app=som-shop,tier=web
-NAME       READY   STATUS    RESTARTS   AGE
-shop-web   1/1     Running   0          6s
-
-$ kubectl get pods -l 'tier in (web,cache)'
-NAME         READY   STATUS    RESTARTS   AGE
-shop-cache   1/1     Running   0          7s
-shop-web     1/1     Running   0          7s
-toy-web      1/1     Running   0          7s
-
-$ kubectl get pods -l app!=som-shop
-NAME      READY   STATUS    RESTARTS   AGE
-toy-web   1/1     Running   0          7s
-
-$ kubectl get pods -L app,tier
-NAME         READY   STATUS    RESTARTS   AGE   APP        TIER
-shop-cache   1/1     Running   0          7s    som-shop   cache
-shop-web     1/1     Running   0          7s    som-shop   web
-toy-web      1/1     Running   0          7s    toy-shop   web
-```
-
-> ใส่ `'...'` ครอบ selector ที่มีวงเล็บหรือ `!` เพื่อไม่ให้ shell ตีความเอง
-
-### ขั้นที่ 3: เพิ่ม แก้ ลบ label และใส่ annotation
+**2.2 เฉพาะ Pod ที่เป็นหน้าเว็บ (ทุกร้าน)**
 
 ```bash
-kubectl label pod toy-web env=dev && kubectl get pod toy-web --show-labels
-kubectl label pod toy-web env=prod
-kubectl label pod toy-web env=prod --overwrite && kubectl get pod toy-web -L env
-kubectl label pod toy-web env- && kubectl get pod toy-web --show-labels
-kubectl annotate pod shop-web owner="น้องส้ม" description="หน้าร้านทดลอง"
-kubectl describe pod shop-web | sed -n "/^Labels/,/^Status/p"
+kubectl get pods -l tier=web
 ```
 
-```text
+**Expected output**
+
+<pre>
+NAME       READY   STATUS    RESTARTS   AGE
+shop-web   1/1     Running   0          11s
+toy-web    1/1     Running   0          11s
+</pre>
+
+**2.3 ต้องตรงทั้งสองป้าย (ร้านน้องส้ม **และ** หน้าเว็บ)**
+
+```bash
+kubectl get pods -l app=som-shop,tier=web
+```
+
+**Expected output**
+
+<pre>
+NAME       READY   STATUS    RESTARTS   AGE
+shop-web   1/1     Running   0          11s
+</pre>
+
+เครื่องหมาย `,` แปลว่า "และ" จึงเหลือ Pod เดียว
+
+### ขั้นที่ 3: ติดป้ายเพิ่ม แล้วถอดออก
+
+```bash
+kubectl label pod toy-web env=dev
+```
+
+**Expected output**
+
+<pre>
 pod/toy-web labeled
-NAME      READY   STATUS    RESTARTS   AGE   LABELS
-toy-web   1/1     Running   0          7s    app=toy-shop,env=dev,tier=web
+</pre>
 
-error: 'env' already has a value (dev), and --overwrite is false
+```bash
+kubectl get pods --show-labels
+```
 
-pod/toy-web labeled
-NAME      READY   STATUS    RESTARTS   AGE   ENV
-toy-web   1/1     Running   0          7s    prod
+**Expected output**
 
+<pre>
+NAME         READY   STATUS    RESTARTS   AGE   LABELS
+shop-cache   1/1     Running   0          11s   app=som-shop,tier=cache
+shop-web     1/1     Running   0          11s   app=som-shop,tier=web
+toy-web      1/1     Running   0          11s   app=toy-shop,env=dev,tier=web
+</pre>
+
+`toy-web` มีป้าย `env=dev` เพิ่มขึ้นมา ถอดป้ายออกด้วยการใส่ `-` ต่อท้ายชื่อ key
+
+```bash
+kubectl label pod toy-web env-
+```
+
+**Expected output**
+
+<pre>
 pod/toy-web unlabeled
-NAME      READY   STATUS    RESTARTS   AGE   LABELS
-toy-web   1/1     Running   0          7s    app=toy-shop,tier=web
+</pre>
 
-pod/shop-web annotated
-Labels:           app=som-shop
-                  tier=web
-Annotations:      description: หน้าร้านทดลอง
-                  owner: น้องส้ม
-Status:           Running
-```
-
-### ขั้นที่ 4: ลบเป็นกลุ่มด้วย label แล้วเก็บกวาด
+### ขั้นที่ 4: ลบเป็นกลุ่มด้วย label
 
 ```bash
 kubectl delete pod -l app=som-shop
-kubectl get pods --show-labels
-kubectl delete -f labs/lab04-labels/shop-pods.yaml --ignore-not-found
 ```
 
-```text
+**Expected output**
+
+<pre>
 pod "shop-cache" deleted from default namespace
 pod "shop-web" deleted from default namespace
-NAME      READY   STATUS    RESTARTS   AGE   LABELS
-toy-web   1/1     Running   0          39s   app=toy-shop,tier=web
-pod "toy-web" deleted from default namespace
+</pre>
+
+```bash
+kubectl get pods
 ```
+
+**Expected output**
+
+<pre>
+NAME      READY   STATUS    RESTARTS   AGE
+toy-web   1/1     Running   0          42s
+</pre>
+
+Pod ของร้านน้องส้มหายไปทั้งคู่ในคำสั่งเดียว เหลือแค่ `toy-web` (ใช้อย่างระวัง!) ลบตัวที่เหลือ
+
+```bash
+kubectl delete pod toy-web
+```
+
+**Expected output**
+
+<pre>
+pod "toy-web" deleted from default namespace
+</pre>
 
 ### สิ่งที่เห็น
 
-- ไฟล์เดียวสร้างได้หลาย object ด้วย `---`
-- `,` ใน selector คือ AND ส่วน `in (...)` คือ "ค่าใดค่าหนึ่งในชุด"
-- การแก้ label ที่มีค่าอยู่แล้วต้องใช้ `--overwrite` ลบ label ด้วย `key-`
-- annotation ใส่ภาษาไทยได้ แต่ใช้ `-l` ค้นหาไม่ได้
-- `delete -l` ลบทุก Pod ที่ตรง selector ในคำสั่งเดียว (ใช้อย่างระวัง!) ส่วน `--ignore-not-found` ทำให้ไม่ error เมื่อ Pod บางตัวถูกลบไปแล้ว
+- label คือป้าย `key=value` บน Pod ดูได้ด้วย `--show-labels`
+- `-l key=value` เลือกเฉพาะ Pod ที่มีป้ายนั้น ใส่หลายป้ายคั่นด้วย `,` = ต้องตรงทุกป้าย
+- `kubectl label pod <ชื่อ> key=value` ติดป้าย, `key-` ถอดป้าย
+- `kubectl delete pod -l ...` ลบทุก Pod ที่ตรงป้ายในครั้งเดียว
 
-> **🏆 ท้าทาย:** หา Pod ทั้งหมดในทุก namespace ที่มี label key `k8s-app` ด้วย `kubectl get pods -A -l k8s-app` แล้วอธิบายว่าเป็น Pod อะไร
+> **🏆 ท้าทาย:** ลอง `kubectl get pods -A -l k8s-app` ดู Pod ระบบที่มีป้าย key `k8s-app` แล้วอธิบายว่าเป็น Pod อะไร
 
 ---
 
@@ -2486,7 +2475,7 @@ No resources found in default namespace.
 - [ ] **LAB 1** `kubectl describe pod hello` ส่วน Events ครบ `Scheduled` → `Started`
 - [ ] **LAB 2** ผล `pod/web unchanged` และ `AlreadyExists`
 - [ ] **LAB 3** browser บนเครื่องนักศึกษาเปิด `http://localhost:8080` เห็น "สวัสดีจากน้องส้ม" และ `kubectl logs web` มี request จาก browser
-- [ ] **LAB 4** ผล `kubectl get pods -l app=som-shop,tier=web` และ `-L app,tier`
+- [ ] **LAB 4** ผล `kubectl get pods -l app=som-shop,tier=web` เหลือ `shop-web` ตัวเดียว
 - [ ] **LAB 5** `kubectl get pods` ที่เห็น `Completed`, `Error`/`CrashLoopBackOff` (RESTARTS > 0) และ `ErrImagePull`/`ImagePullBackOff` พร้อม `kubectl logs crash-pod --previous`
 - [ ] **LAB 6** `OOMKilled` exit code 137 และ Events `FailedScheduling ... Insufficient cpu`
 - [ ] **LAB 7** `kubectl get pods` ที่ `liveness-exec-pod` RESTARTS ≥ 1 และ `readiness-http-pod` READY `0/1` RESTARTS 0
