@@ -1,0 +1,8 @@
+# LAB 4–5: ค่าตั้งค่าร้าน (บทที่ 6) — ชื่อ object ขึ้นต้นด้วยชื่อ release จะได้ติดตั้งหลายร้านได้ไม่ชนกัน
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  SHOP_NAME: {{ .Values.shop.name | quote }}
+  SHOP_ENV: {{ .Values.shop.env | quote }}

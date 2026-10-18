@@ -1,0 +1,17 @@
+# LAB 1, 2: สมุดบันทึกบน PVC — Pod ถูกลบ สมุดยังอยู่ Pod ใหม่เขียนต่อจากเดิม
+apiVersion: v1
+kind: Pod
+metadata:
+  name: notes-pvc-pod
+spec:
+  containers:
+    - name: busybox
+      image: busybox:1.37
+      command: ["sh", "-c", "echo \"$(date +%T) $(hostname) เปิดสมุด\" >> /data/notes.txt; cat /data/notes.txt; sleep 3600"]
+      volumeMounts:
+        - name: notes
+          mountPath: /data
+  volumes:
+    - name: notes
+      persistentVolumeClaim:   # ← ต่างจาก notes-emptydir-pod.yaml ตรงนี้: ใช้ PVC แทน emptyDir
+        claimName: notes-pvc

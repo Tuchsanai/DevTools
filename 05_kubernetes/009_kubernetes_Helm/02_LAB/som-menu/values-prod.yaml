@@ -1,0 +1,11 @@
+# LAB 5: ร้านจริง (prod) — 3 สาขา มีครัว ใช้ชื่อ shop.localhost / kitchen.localhost
+shop:
+  name: "ร้านอาหารแมวน้องส้ม"
+  env: prod
+menu:
+  replicas: 3
+kitchen:
+  enabled: true
+ingress:
+  shopHost: shop.localhost
+  kitchenHost: kitchen.localhost

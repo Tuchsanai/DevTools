@@ -1,0 +1,22 @@
+# LAB 2: เปลี่ยน nginx เป็นรุ่น 1.28 — ต่างจาก web-deploy.yaml แค่ 2 บรรทัดที่มี ← เท่านั้น
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web                  # ชื่อเดิม → apply แล้วเป็นการแก้ Deployment ตัวเดิม
+  annotations:
+    kubernetes.io/change-cause: "nginx 1.28"   # ← เปลี่ยน
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.28-alpine   # ← เปลี่ยน: แม่พิมพ์เปลี่ยน → Deployment ทยอยเปลี่ยน Pod ทีละตัว
+          ports:
+            - containerPort: 80

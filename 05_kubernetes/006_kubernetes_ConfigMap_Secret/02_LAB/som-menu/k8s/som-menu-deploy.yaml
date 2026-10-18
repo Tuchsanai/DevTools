@@ -1,0 +1,55 @@
+# LAB 4: ร้านอาหารแมวน้องส้ม 3 สาขา — ค่าตั้งค่าจาก ConfigMap รหัสผ่านจาก Secret (image ไม่ต้อง build ใหม่)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: som-menu
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: som-menu
+  template:
+    metadata:
+      labels:
+        app: som-menu
+    spec:
+      containers:
+        - name: web
+          image: som-menu:1.0
+          imagePullPolicy: IfNotPresent   # ใช้ image ที่ kind load ไว้บน node
+          env:
+            - name: SHOP_NAME             # จาก ConfigMap (อ่านครั้งเดียวตอน container เริ่ม)
+              valueFrom:
+                configMapKeyRef:
+                  name: som-menu-config
+                  key: SHOP_NAME
+            - name: ANNOUNCEMENT          # จาก ConfigMap (แก้แล้วต้อง restart Pod)
+              valueFrom:
+                configMapKeyRef:
+                  name: som-menu-config
+                  key: ANNOUNCEMENT
+            - name: ADMIN_PASSWORD        # จาก Secret
+              valueFrom:
+                secretKeyRef:
+                  name: som-menu-secret
+                  key: ADMIN_PASSWORD
+          volumeMounts:
+            - name: menu                  # เมนูเป็นไฟล์ /etc/som-menu/menu.txt (แก้แล้วไฟล์เปลี่ยนเอง)
+              mountPath: /etc/som-menu
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits:   { cpu: 200m, memory: 128Mi }
+      volumes:
+        - name: menu
+          configMap:
+            name: som-menu-config
+            items:                        # เลือกเฉพาะ key menu.txt มาเป็นไฟล์ (ไม่เอา SHOP_NAME, ANNOUNCEMENT)
+              - key: menu.txt
+                path: menu.txt

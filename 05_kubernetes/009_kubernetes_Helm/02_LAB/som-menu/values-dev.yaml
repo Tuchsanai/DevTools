@@ -1,0 +1,10 @@
+# LAB 5: ร้านทดลอง (dev) — สาขาเดียว ไม่มีครัว ใช้ชื่อ shop-dev.localhost
+shop:
+  name: "ร้านน้องส้ม สาขาทดลอง"
+  env: dev
+menu:
+  replicas: 1
+kitchen:
+  enabled: false
+ingress:
+  shopHost: shop-dev.localhost

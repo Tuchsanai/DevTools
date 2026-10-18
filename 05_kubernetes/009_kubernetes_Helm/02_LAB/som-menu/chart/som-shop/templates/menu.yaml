@@ -1,0 +1,50 @@
+# LAB 4–5: หน้าร้าน (Deployment + Service ClusterIP) — เหมือน som-menu.yaml บทที่ 8 แต่ค่าที่เปลี่ยนได้กลายเป็นช่องวงเล็บปีกกาคู่
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-menu
+spec:
+  replicas: {{ .Values.menu.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-menu
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-menu
+    spec:
+      containers:
+        - name: web
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: APP_MODE
+              value: shop
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config   # SHOP_NAME, SHOP_ENV
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: orders
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            periodSeconds: 5
+      volumes:
+        - name: orders
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-orders
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-menu
+spec:
+  selector:
+    app: {{ .Release.Name }}-menu
+  ports:
+    - port: 80
+      targetPort: 3000

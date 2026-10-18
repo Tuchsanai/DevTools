@@ -1,0 +1,17 @@
+# LAB 1: สมุดบันทึกบน emptyDir — Pod ถูกลบเมื่อไร สมุดหายไปด้วย (บทที่ 2)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: notes-emptydir
+spec:
+  containers:
+    - name: busybox
+      image: busybox:1.37
+      # ทุกครั้งที่ container เริ่ม: เขียนบรรทัดใหม่ต่อท้ายสมุด แล้วพิมพ์สมุดทั้งเล่มออก log จากนั้นนอนรอ
+      command: ["sh", "-c", "echo \"$(date +%T) $(hostname) เปิดสมุด\" >> /data/notes.txt; cat /data/notes.txt; sleep 3600"]
+      volumeMounts:
+        - name: notes
+          mountPath: /data
+  volumes:
+    - name: notes
+      emptyDir: {}             # ที่เก็บชั่วคราว อายุเท่ากับ Pod

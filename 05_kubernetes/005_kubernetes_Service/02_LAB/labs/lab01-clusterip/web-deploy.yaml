@@ -1,0 +1,23 @@
+# LAB 1, 2, 3: เว็บ nginx 3 Pod ที่บอกชื่อ Pod ของตัวเองบนหน้าเว็บ — ไว้ดูว่า Service ส่งลูกค้าไป Pod ไหน
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web                 # ← ป้ายนี้แหละที่ Service ใช้หา Pod
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          command: ["/bin/sh", "-c"]   # เปลี่ยนคำสั่งเริ่มต้น (บทที่ 2): เขียนหน้าเว็บก่อน แล้วค่อยเปิด nginx
+          args:
+            - echo "Hello from Pod $(hostname)" > /usr/share/nginx/html/index.html && exec nginx -g "daemon off;"
+          ports:
+            - containerPort: 80

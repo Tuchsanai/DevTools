@@ -1,0 +1,11 @@
+# LAB 4: สมุดออเดอร์ของร้านน้องส้ม — PVC แยกจาก Deployment ลบ Deployment แล้วสมุดยังอยู่
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: som-orders
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi

@@ -1,0 +1,49 @@
+# LAB 4: ร้านอาหารแมวน้องส้ม — Deployment ดูแลหน้าร้าน 3 สาขา (เวอร์ชัน 1.0) ใช้คู่กับ som-menu-svc.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: som-menu
+  labels:
+    app: som-menu
+  annotations:
+    kubernetes.io/change-cause: "เมนูเวอร์ชัน 1.0"   # โชว์ใน kubectl rollout history
+spec:
+  replicas: 3                    # เปิด 3 สาขา = Pod 3 ตัว
+  minReadySeconds: 10            # สาขาใหม่ต้องพร้อมต่อเนื่อง 10 วินาที จึงนับว่าเปิดแล้ว (ช้าลงพอให้เห็นการเปลี่ยนรุ่น)
+  strategy:
+    type: RollingUpdate          # เปลี่ยนรุ่นแบบทยอยทีละสาขา (ค่าเริ่มต้นของ Deployment)
+    rollingUpdate:
+      maxSurge: 1                # เปิดสาขาใหม่เกิน 3 ได้ทีละ 1 สาขา
+      maxUnavailable: 0          # สาขาที่พร้อมต้องไม่ต่ำกว่า 3 เลย → ร้านไม่ปิดระหว่างเปลี่ยนรุ่น
+  selector:
+    matchLabels:
+      app: som-menu              # นับเฉพาะ Pod ที่มีป้ายนี้
+  template:                      # แม่พิมพ์ของทุกสาขา
+    metadata:
+      labels:
+        app: som-menu            # ต้องตรงกับ selector
+        version: "1.0"           # ป้ายเสริมไว้ดูรุ่น (selector ไม่ได้ใช้)
+    spec:
+      containers:
+        - name: web
+          image: som-menu:1.0
+          imagePullPolicy: IfNotPresent   # ใช้ image ที่ kind load ไว้บน node
+          env:
+            - name: SHOP_NAME
+              value: "ร้านอาหารแมวน้องส้ม"
+          ports:
+            - containerPort: 3000      # port ที่ Service ส่งต่อเข้ามา (targetPort)
+          readinessProbe:              # ตอบ /api/health ได้ = สาขาพร้อมรับลูกค้า
+            httpGet:
+              path: /api/health
+              port: 3000
+            periodSeconds: 5
+          livenessProbe:               # ค้างนานเกินไป → kubelet restart container
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:                   # ทุกสาขาจองเท่ากัน เพราะมาจากแม่พิมพ์เดียวกัน
+            requests: { cpu: 50m, memory: 64Mi }
+            limits:   { cpu: 200m, memory: 128Mi }

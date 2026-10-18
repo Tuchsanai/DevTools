@@ -1,0 +1,11 @@
+# LAB 4: สมุดออเดอร์ของร้าน (บทที่ 7) — หน้าร้านเขียน ครัวอ่าน เล่มเดียวกัน
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: som-orders
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi

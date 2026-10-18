@@ -1,0 +1,13 @@
+# LAB 4: แก้ค่าตั้งค่าร้าน — ต่างจาก som-menu-config.yaml แค่ 2 จุดที่มี ← เท่านั้น
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: som-menu-config
+data:
+  SHOP_NAME: "ร้านอาหารแมวน้องส้ม"
+  ANNOUNCEMENT: "มีไอศกรีมแมวแล้ว!"   # ← เปลี่ยน (env: ต้อง restart Pod ถึงจะเห็น)
+  menu.txt: |
+    อาหารเม็ดสูตรปลาทูน่า|459
+    อาหารเปียกปลาซาบะ|35
+    ขนมแมวเลียรสไก่|59
+    ไอศกรีมแมว รสนมแพะ|49

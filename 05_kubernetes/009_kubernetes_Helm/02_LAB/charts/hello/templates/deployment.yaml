@@ -1,0 +1,21 @@
+# LAB 1–3: แม่พิมพ์ Deployment — ช่องวงเล็บปีกกาคู่จะถูกเติมค่าตอน helm install / helm template
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}            # ชื่อ release ที่ตั้งตอน helm install เช่น hello
+spec:
+  replicas: {{ .Values.replicas }}     # จาก values.yaml
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: whoami
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          args: ["--name", {{ .Values.message | quote }}]   # quote = ใส่ "" ให้เป็นข้อความ
+          ports:
+            - containerPort: 80

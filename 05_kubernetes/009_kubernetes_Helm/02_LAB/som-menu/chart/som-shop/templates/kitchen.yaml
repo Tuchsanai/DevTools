@@ -1,0 +1,53 @@
+# LAB 4–5: ครัว — สร้างเฉพาะเมื่อ kitchen.enabled เป็น true (if ... end ครอบทั้งไฟล์)
+{{- if .Values.kitchen.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-kitchen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-kitchen
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-kitchen
+    spec:
+      containers:
+        - name: web
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: APP_MODE
+              value: kitchen
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: orders
+              mountPath: /data
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            periodSeconds: 5
+      volumes:
+        - name: orders
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-orders
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-kitchen
+spec:
+  selector:
+    app: {{ .Release.Name }}-kitchen
+  ports:
+    - port: 80
+      targetPort: 3000
+{{- end }}

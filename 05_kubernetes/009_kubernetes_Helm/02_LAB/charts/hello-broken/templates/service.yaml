@@ -1,0 +1,13 @@
+# LAB 1–3: แม่พิมพ์ Service แบบ NodePort (บทที่ 5)
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  type: NodePort
+  selector:
+    app: {{ .Release.Name }}
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: {{ .Values.service.nodePort }}

@@ -1,0 +1,9 @@
+# LAB 2: แก้หน้าเว็บใน ConfigMap web-page — ต่างจาก web-page.yaml แค่บรรทัด <h1> เท่านั้น
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-page
+data:
+  index.html: |
+    <meta charset="utf-8">
+    <h1>ร้านน้องส้ม: มีเมนูใหม่</h1>

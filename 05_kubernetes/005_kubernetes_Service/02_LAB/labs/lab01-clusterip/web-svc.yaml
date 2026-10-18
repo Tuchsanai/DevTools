@@ -1,0 +1,12 @@
+# LAB 1, 2: Service แรก (ClusterIP) — ที่อยู่เดียวของ Pod ทุกตัวที่ติดป้าย app=web ใช้ได้เฉพาะในคลัสเตอร์
+apiVersion: v1               # Service อยู่กลุ่มหลัก v1 เหมือน Pod
+kind: Service
+metadata:
+  name: web                  # ชื่อ Service = ชื่อที่ Pod อื่นใช้เรียก เช่น http://web
+spec:
+  type: ClusterIP            # ค่าเริ่มต้น: ได้ IP ภายในคลัสเตอร์ 1 อันที่ไม่เปลี่ยน
+  selector:
+    app: web                 # ส่งงานให้ Pod ที่มีป้ายนี้ (ไม่มี matchLabels แบบ ReplicaSet)
+  ports:
+    - port: 80               # port ของ Service (คนเรียกใช้ port นี้)
+      targetPort: 80         # port ของ container ใน Pod ที่จะส่งต่อไป

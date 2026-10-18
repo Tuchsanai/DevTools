@@ -1,0 +1,3 @@
+# LAB 2: ใบสั่งค่าใหม่ — เขียนเฉพาะค่าที่อยากเปลี่ยน ที่เหลือใช้จาก values.yaml ของ chart
+replicas: 3
+message: hello-big

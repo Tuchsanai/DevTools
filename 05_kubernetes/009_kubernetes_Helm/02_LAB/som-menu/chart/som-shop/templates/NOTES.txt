@@ -1,0 +1,7 @@
+ร้าน {{ .Release.Name }} ({{ .Values.shop.name }}) เปิดแล้ว
+  หน้าร้าน {{ .Values.menu.replicas }} สาขา: http://{{ .Values.ingress.shopHost }}:30080
+{{- if .Values.kitchen.enabled }}
+  ครัว: http://{{ .Values.ingress.kitchenHost }}:30080
+{{- else }}
+  ร้านนี้ไม่มีครัว
+{{- end }}

@@ -1,0 +1,16 @@
+# LAB 4–5: ค่าเริ่มต้นของร้าน — แต่ละร้าน (release) เปลี่ยนเฉพาะค่าที่ต่างด้วย -f values-<ชื่อ>.yaml
+shop:
+  name: "ร้านอาหารแมวน้องส้ม"   # ชื่อร้านบนหน้าเว็บ (ไป ConfigMap → env SHOP_NAME)
+  env: ""                        # ป้ายสภาพแวดล้อม เช่น dev / prod (ว่าง = ไม่แสดง)
+image:
+  repository: som-menu
+  tag: "1.0"
+menu:
+  replicas: 2                    # จำนวนสาขาหน้าร้าน
+kitchen:
+  enabled: true                  # มีครัวไหม (false = ไม่สร้างครัวเลย)
+storage:
+  size: 100Mi                    # ขนาดสมุดออเดอร์ (PVC บทที่ 7)
+ingress:
+  shopHost: shop.localhost       # ชื่อเข้าหน้าร้าน (บทที่ 8)
+  kitchenHost: kitchen.localhost # ชื่อเข้าครัว (ใช้เมื่อ kitchen.enabled เป็น true)

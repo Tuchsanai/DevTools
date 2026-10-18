@@ -1,0 +1,33 @@
+# LAB 2, 3: แอป "drink" 1 Pod + Service แบบ ClusterIP (ไม่เปิด NodePort เอง — ให้ Ingress พาลูกค้ามา)
+# image whoami ตอบกลับว่า Pod ไหนรับ และได้คำขอหน้าตาแบบไหน (path, Host)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: drink
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: drink
+  template:
+    metadata:
+      labels:
+        app: drink
+    spec:
+      containers:
+        - name: whoami
+          image: traefik/whoami:v1.11.0
+          args: ["--name", "drink"]   # บรรทัดแรกของคำตอบจะเป็น Name: drink
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: drink
+spec:
+  selector:
+    app: drink
+  ports:
+    - port: 80
+      targetPort: 80

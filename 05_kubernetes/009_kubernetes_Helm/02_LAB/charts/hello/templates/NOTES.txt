@@ -1,0 +1,2 @@
+ติดตั้ง {{ .Release.Name }} แล้ว: {{ .Values.replicas }} Pod ตอบว่า {{ .Values.message }}
+ลองเรียก: curl http://localhost:{{ .Values.service.nodePort }}

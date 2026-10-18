@@ -1,0 +1,7 @@
+# LAB 4–5: chart ของร้านอาหารแมวน้องส้มทั้งร้าน — หน้าร้าน ครัว สมุดออเดอร์ และป้ายทางเข้า
+apiVersion: v2
+name: som-shop
+description: ร้านอาหารแมวน้องส้ม (หน้าร้าน + ครัว + สมุดออเดอร์ + Ingress) ในกล่องเดียว
+type: application
+version: 0.1.0                 # เวอร์ชันของ chart
+appVersion: "1.0"              # เวอร์ชันของแอป som-menu

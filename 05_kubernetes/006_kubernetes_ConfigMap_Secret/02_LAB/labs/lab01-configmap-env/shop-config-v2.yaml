@@ -1,0 +1,9 @@
+# LAB 1: แก้ ConfigMap shop-config — ต่างจาก shop-config.yaml แค่บรรทัดที่มี ← เท่านั้น
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shop-config
+data:
+  SHOP_NAME: "ร้านอาหารแมวน้องส้ม"
+  OPEN_HOURS: "09:00-21:00"
+  ANNOUNCEMENT: "วันนี้ลด 20%"   # ← เปลี่ยน

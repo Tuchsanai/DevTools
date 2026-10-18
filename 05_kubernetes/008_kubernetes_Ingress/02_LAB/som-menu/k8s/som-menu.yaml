@@ -1,0 +1,47 @@
+# LAB 4: หน้าร้านน้องส้ม 2 สาขา + Service แบบ ClusterIP (เข้าจากนอกคลัสเตอร์ผ่าน Ingress เท่านั้น)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: som-menu
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: som-menu
+  template:
+    metadata:
+      labels:
+        app: som-menu
+    spec:
+      containers:
+        - name: web
+          image: som-menu:1.0
+          imagePullPolicy: IfNotPresent   # ใช้ image ที่ kind load ไว้บน node
+          env:
+            - name: APP_MODE
+              value: shop                 # ทำงานเป็นหน้าร้าน
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: orders
+              mountPath: /data            # เขียนสมุดออเดอร์ที่ /data/orders.txt
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            periodSeconds: 5
+      volumes:
+        - name: orders
+          persistentVolumeClaim:
+            claimName: som-orders
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: som-menu
+spec:
+  selector:
+    app: som-menu
+  ports:
+    - port: 80                            # ClusterIP (ค่าเริ่มต้น) ไม่มี nodePort แล้ว
+      targetPort: 3000

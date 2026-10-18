@@ -1,0 +1,30 @@
+# LAB 4–5: ป้ายผังทางเข้าของร้านนี้ (บทที่ 8) — แถวครัวมีเฉพาะเมื่อเปิดครัว
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: {{ .Values.ingress.shopHost }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-menu
+                port:
+                  number: 80
+    {{- if .Values.kitchen.enabled }}
+    - host: {{ .Values.ingress.kitchenHost }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-kitchen
+                port:
+                  number: 80
+    {{- end }}

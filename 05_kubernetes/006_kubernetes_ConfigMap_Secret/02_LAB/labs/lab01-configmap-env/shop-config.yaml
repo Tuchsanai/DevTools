@@ -1,0 +1,9 @@
+# LAB 1: ConfigMap แรก — เก็บค่าตั้งค่าของร้านไว้นอก image เป็นคู่ key: value
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shop-config
+data:                            # ค่าทุกตัวเป็นข้อความ (string) เสมอ
+  SHOP_NAME: "ร้านอาหารแมวน้องส้ม"
+  OPEN_HOURS: "09:00-21:00"
+  ANNOUNCEMENT: "วันนี้ลด 10%"

@@ -1,0 +1,28 @@
+# LAB 2: Ingress แยกตามชื่อ (host) — ชื่อไหนไป Service ไหน
+apiVersion: networking.k8s.io/v1   # Ingress อยู่กลุ่ม networking.k8s.io
+kind: Ingress
+metadata:
+  name: shop-host
+spec:
+  ingressClassName: traefik        # ให้ยามประตู Traefik เป็นคนอ่านป้ายนี้
+  rules:
+    - host: shop.localhost         # ลูกค้าพิมพ์ http://shop.localhost:30080
+      http:
+        paths:
+          - path: /
+            pathType: Prefix       # ทุก path ที่ขึ้นต้นด้วย /
+            backend:
+              service:
+                name: menu         # → Service menu
+                port:
+                  number: 80
+    - host: drink.localhost        # ลูกค้าพิมพ์ http://drink.localhost:30080
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: drink        # → Service drink
+                port:
+                  number: 80

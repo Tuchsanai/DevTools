@@ -1,0 +1,11 @@
+# LAB 0: ติดตั้ง Traefik (Ingress Controller) เหมือนบทที่ 8 — ใช้ใน LAB 4–5
+# Traefik คือ "ยามประตูใหญ่" รับลูกค้าทุกคนที่ port 30080 แล้วส่งต่อตามป้าย Ingress
+service:
+  spec:
+    type: NodePort             # เปิดประตูบนทุก Node (บทที่ 5) — kind ของแล็บ map 30080 ออกมาถึงเครื่องเรา
+ports:
+  web:                         # ประตู http
+    nodePort: 30080            # ลูกค้าเข้าที่ http://<ชื่อ>.localhost:30080
+  websecure:                   # ประตู https — บทนี้ยังไม่ใช้ ปิดไว้
+    expose:
+      default: false

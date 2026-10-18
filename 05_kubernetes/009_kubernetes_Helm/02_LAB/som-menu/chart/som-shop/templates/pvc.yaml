@@ -1,0 +1,11 @@
+# LAB 4–5: สมุดออเดอร์ของร้านนี้ (บทที่ 7) — 1 release = 1 สมุด
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-orders
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.storage.size }}

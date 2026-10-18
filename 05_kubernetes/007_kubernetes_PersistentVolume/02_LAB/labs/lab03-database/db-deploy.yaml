@@ -1,0 +1,54 @@
+# LAB 3: ฐานข้อมูล PostgreSQL 1 ตัว — ข้อมูลอยู่บน PVC รหัสผ่านจาก Secret เรียกด้วยชื่อ Service som-db
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: som-db
+spec:
+  replicas: 1                  # ฐานข้อมูลนี้มีได้ตัวเดียว (เขียนไฟล์ชุดเดียวกัน)
+  strategy:
+    type: Recreate             # เปลี่ยน Pod: ปิดตัวเก่าก่อน แล้วค่อยเปิดตัวใหม่ (ไม่ให้ 2 ตัวเขียนพร้อมกัน)
+  selector:
+    matchLabels:
+      app: som-db
+  template:
+    metadata:
+      labels:
+        app: som-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          env:
+            - name: POSTGRES_USER
+              value: som
+            - name: POSTGRES_DB
+              value: catshop
+            - name: POSTGRES_PASSWORD   # จาก Secret (บทที่ 6)
+              valueFrom:
+                secretKeyRef:
+                  name: som-db-secret
+                  key: POSTGRES_PASSWORD
+          ports:
+            - containerPort: 5432
+          readinessProbe:              # พร้อมเมื่อ pg_isready ตอบว่ารับงานได้ (exec probe บทที่ 2)
+            exec:
+              command: ["pg_isready", "-U", "som", "-d", "catshop"]
+            periodSeconds: 5
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data   # ที่ที่ PostgreSQL เก็บข้อมูล
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: som-db-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: som-db                 # แอปอื่นเรียก som-db:5432 ได้ (บทที่ 5)
+spec:
+  selector:
+    app: som-db
+  ports:
+    - port: 5432
+      targetPort: 5432

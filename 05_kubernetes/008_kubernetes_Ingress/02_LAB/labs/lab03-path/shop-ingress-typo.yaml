@@ -1,0 +1,18 @@
+# LAB 3: Ingress ที่พิมพ์ชื่อ Service ผิด — ป้ายชี้ไปบูธที่ไม่มีอยู่จริง
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shop-typo
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: typo.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: drnik        # ← พิมพ์ผิด (ที่ถูกคือ drink)
+                port:
+                  number: 80

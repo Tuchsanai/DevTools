@@ -1,0 +1,19 @@
+# LAB 1: Pod ที่อ่านค่าจาก ConfigMap shop-config มาเป็นตัวแปร env
+apiVersion: v1
+kind: Pod
+metadata:
+  name: config-pod
+spec:
+  containers:
+    - name: busybox
+      image: busybox:1.37
+      command: ["sleep", "3600"]
+      env:
+        - name: SHOP_NAME              # ดึงทีละ key: ตั้งชื่อตัวแปรเองได้
+          valueFrom:
+            configMapKeyRef:
+              name: shop-config        # ชื่อ ConfigMap
+              key: SHOP_NAME           # key ใน data
+      envFrom:                         # ดึงทุก key ใน ConfigMap มาเป็นตัวแปรในครั้งเดียว
+        - configMapRef:
+            name: shop-config

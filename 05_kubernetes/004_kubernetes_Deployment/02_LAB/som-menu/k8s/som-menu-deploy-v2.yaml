@@ -1,0 +1,50 @@
+# LAB 4: ร้านอาหารแมวน้องส้ม — เปลี่ยนเป็นเมนูเวอร์ชัน 2.0
+# ต่างจาก som-menu-deploy.yaml แค่ 3 บรรทัดที่มี ← เท่านั้น
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: som-menu
+  labels:
+    app: som-menu
+  annotations:
+    kubernetes.io/change-cause: "เมนูเวอร์ชัน 2.0"   # ← เปลี่ยน
+spec:
+  replicas: 3                    # เปิด 3 สาขา = Pod 3 ตัว
+  minReadySeconds: 10            # สาขาใหม่ต้องพร้อมต่อเนื่อง 10 วินาที จึงนับว่าเปิดแล้ว (ช้าลงพอให้เห็นการเปลี่ยนรุ่น)
+  strategy:
+    type: RollingUpdate          # เปลี่ยนรุ่นแบบทยอยทีละสาขา (ค่าเริ่มต้นของ Deployment)
+    rollingUpdate:
+      maxSurge: 1                # เปิดสาขาใหม่เกิน 3 ได้ทีละ 1 สาขา
+      maxUnavailable: 0          # สาขาที่พร้อมต้องไม่ต่ำกว่า 3 เลย → ร้านไม่ปิดระหว่างเปลี่ยนรุ่น
+  selector:
+    matchLabels:
+      app: som-menu              # นับเฉพาะ Pod ที่มีป้ายนี้
+  template:                      # แม่พิมพ์ของทุกสาขา
+    metadata:
+      labels:
+        app: som-menu            # ต้องตรงกับ selector
+        version: "2.0"           # ← เปลี่ยน
+    spec:
+      containers:
+        - name: web
+          image: som-menu:2.0           # ← เปลี่ยน
+          imagePullPolicy: IfNotPresent   # ใช้ image ที่ kind load ไว้บน node
+          env:
+            - name: SHOP_NAME
+              value: "ร้านอาหารแมวน้องส้ม"
+          ports:
+            - containerPort: 3000      # port ที่ port-forward 8080:3000 ส่งเข้ามา
+          readinessProbe:              # ตอบ /api/health ได้ = สาขาพร้อมรับลูกค้า
+            httpGet:
+              path: /api/health
+              port: 3000
+            periodSeconds: 5
+          livenessProbe:               # ค้างนานเกินไป → kubelet restart container
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:                   # ทุกสาขาจองเท่ากัน เพราะมาจากแม่พิมพ์เดียวกัน
+            requests: { cpu: 50m, memory: 64Mi }
+            limits:   { cpu: 200m, memory: 128Mi }

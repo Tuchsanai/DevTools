@@ -1,0 +1,10 @@
+# LAB 1, 2: Pod ลูกค้า — busybox ที่นอนรอเฉย ๆ ให้เรา exec เข้าไปเรียก Service จากในคลัสเตอร์
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client
+spec:
+  containers:
+    - name: busybox
+      image: busybox:1.37
+      command: ["sleep", "3600"]   # นอนรอ 1 ชั่วโมง (มี wget และ nslookup ให้ใช้)

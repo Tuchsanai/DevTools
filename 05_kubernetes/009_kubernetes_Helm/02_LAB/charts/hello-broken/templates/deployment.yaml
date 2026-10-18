@@ -1,0 +1,21 @@
+# LAB 3: แม่พิมพ์ที่พิมพ์ผิด — helm lint และ helm install จะฟ้องก่อนสร้างอะไรเลย
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}            # ชื่อ release ที่ตั้งตอน helm install เช่น hello
+spec:
+  replicas: {{ .Values.replicas }     # ← พิมพ์ผิด: ขาด } ตัวปิด 1 ตัว
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: whoami
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          args: ["--name", {{ .Values.message | quote }}]   # quote = ใส่ "" ให้เป็นข้อความ
+          ports:
+            - containerPort: 80

@@ -1,0 +1,8 @@
+# LAB 3: ค่าเริ่มต้นของ chart hello-broken (เหมือน hello ทุกค่า)
+replicas: 2                    # จำนวน Pod
+message: hello-v1              # ข้อความที่แอปตอบ (บรรทัด Name: ของ whoami)
+image:
+  repository: traefik/whoami
+  tag: v1.11.0
+service:
+  nodePort: 30081              # ประตูของ chart นี้ (30080 เป็นของ Traefik)

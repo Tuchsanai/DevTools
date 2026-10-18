@@ -1,0 +1,11 @@
+# LAB 3: ที่เก็บข้อมูลถาวรของฐานข้อมูล
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: som-db-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi

@@ -1,0 +1,22 @@
+# LAB 1, 2, 3: Deployment แรก — ขอ Pod nginx 3 ตัว โดย Deployment สร้าง ReplicaSet มาดูแล Pod ให้อีกชั้น
+apiVersion: apps/v1          # กลุ่มเดียวกับ ReplicaSet
+kind: Deployment             # ← เทียบกับ web-rs.yaml ในบทที่ 3 เปลี่ยนแค่ตรงนี้ (กับ annotations)
+metadata:
+  name: web                  # ชื่อ Deployment → ReplicaSet ชื่อ web-<hash> → Pod ชื่อ web-<hash>-<สุ่ม>
+  annotations:
+    kubernetes.io/change-cause: "nginx 1.27"   # บันทึกว่ารุ่นนี้คืออะไร โชว์ใน kubectl rollout history
+spec:
+  replicas: 3                # อยากได้ Pod 3 ตัวตลอดเวลา
+  selector:                  # นับ Pod จากป้าย app=web (เหมือน ReplicaSet)
+    matchLabels:
+      app: web
+  template:                  # แม่พิมพ์ Pod — เปลี่ยนแม่พิมพ์เมื่อไร Deployment จะทยอยเปลี่ยน Pod ให้
+    metadata:
+      labels:
+        app: web             # ต้องตรงกับ selector
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80

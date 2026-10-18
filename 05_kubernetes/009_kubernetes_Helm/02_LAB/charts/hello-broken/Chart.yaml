@@ -1,0 +1,7 @@
+# LAB 3: chart ที่มีแม่พิมพ์พิมพ์ผิด (สำเนาของ hello)
+apiVersion: v2                 # รูปแบบ chart ของ Helm 3 ขึ้นไป
+name: hello-broken                  # ชื่อ chart
+description: แอปทักทายเล็ก ๆ สำหรับหัดเขียน Helm chart
+type: application
+version: 0.1.0                 # เวอร์ชันของ "กล่อง" chart (แก้ template แล้วเพิ่มเลขนี้)
+appVersion: "1.11.0"           # เวอร์ชันของแอปข้างใน (image traefik/whoami)

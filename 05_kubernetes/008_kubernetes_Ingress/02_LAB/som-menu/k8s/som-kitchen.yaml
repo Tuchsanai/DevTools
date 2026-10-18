@@ -1,0 +1,48 @@
+# LAB 4: ครัวน้องส้ม 1 Pod — image เดียวกับหน้าร้าน แต่ APP_MODE=kitchen และอ่านสมุดออเดอร์อย่างเดียว
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: som-kitchen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: som-kitchen
+  template:
+    metadata:
+      labels:
+        app: som-kitchen
+    spec:
+      containers:
+        - name: web
+          image: som-menu:1.0             # image เดียวกับหน้าร้าน
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: APP_MODE
+              value: kitchen              # ทำงานเป็นครัว
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: orders
+              mountPath: /data
+              readOnly: true              # ครัวอ่านสมุดได้ แต่เขียนไม่ได้
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            periodSeconds: 5
+      volumes:
+        - name: orders
+          persistentVolumeClaim:
+            claimName: som-orders         # PVC เดียวกับหน้าร้าน
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: som-kitchen
+spec:
+  selector:
+    app: som-kitchen
+  ports:
+    - port: 80
+      targetPort: 3000

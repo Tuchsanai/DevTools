@@ -1,0 +1,11 @@
+# LAB 2: Service ที่พิมพ์ป้ายผิด — selector หา Pod ไม่เจอ จึงไม่มีใครรับงาน
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-typo
+spec:
+  selector:
+    app: wbe                 # ← พิมพ์ผิด (ที่ถูกคือ web) ไม่มี Pod ไหนติดป้ายนี้
+  ports:
+    - port: 80
+      targetPort: 80

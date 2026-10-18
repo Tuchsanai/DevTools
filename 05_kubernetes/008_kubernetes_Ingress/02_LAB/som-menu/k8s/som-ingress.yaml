@@ -1,0 +1,28 @@
+# LAB 4: ป้ายผังทางเข้าร้านน้องส้ม — ประตูเดียว (30080) สองชื่อ
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: som-shop
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: shop.localhost         # ลูกค้า → หน้าร้าน
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: som-menu
+                port:
+                  number: 80
+    - host: kitchen.localhost      # พ่อครัว → ครัว
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: som-kitchen
+                port:
+                  number: 80

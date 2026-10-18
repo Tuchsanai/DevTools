@@ -1,0 +1,12 @@
+# LAB 2: ใบขอพื้นที่ที่ระบุ StorageClass ผิดชื่อ — ไม่มีใครมาสร้างที่เก็บให้ PVC จึงค้าง Pending
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: notes-pvc-typo
+spec:
+  storageClassName: standrad   # ← พิมพ์ผิด (ที่ถูกคือ standard)
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi

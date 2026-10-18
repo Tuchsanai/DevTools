@@ -1,0 +1,13 @@
+# LAB 3: Service แบบ NodePort — เปิดประตู 30080 บนทุก Node ให้คนนอกคลัสเตอร์เข้าถึงได้
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-nodeport
+spec:
+  type: NodePort             # ← ใหม่: ได้ทั้ง ClusterIP และ port บนทุก Node
+  selector:
+    app: web
+  ports:
+    - port: 80               # port ของ Service ในคลัสเตอร์
+      targetPort: 80         # port ของ container
+      nodePort: 30080        # ← ใหม่: port บนทุก Node (ต้องอยู่ในช่วง 30000–32767) แล็บนี้ map ออกมาถึงเครื่องเราแล้ว

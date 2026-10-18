@@ -1,0 +1,36 @@
+# LAB 4: ร้านอาหารแมวน้องส้ม 2 สาขา ใช้สมุดออเดอร์เล่มเดียวกันบน PVC som-orders
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: som-menu
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: som-menu
+  template:
+    metadata:
+      labels:
+        app: som-menu
+    spec:
+      containers:
+        - name: web
+          image: som-menu:1.0
+          imagePullPolicy: IfNotPresent   # ใช้ image ที่ kind load ไว้บน node
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: orders
+              mountPath: /data            # แอปเขียนสมุดที่ /data/orders.txt
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits:   { cpu: 200m, memory: 128Mi }
+      volumes:
+        - name: orders
+          persistentVolumeClaim:
+            claimName: som-orders         # ทุกสาขาใช้ PVC เดียวกัน

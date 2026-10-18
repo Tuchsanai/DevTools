@@ -60,3 +60,5 @@
 ## เริ่มเลย
 
 👉 [อ่านทฤษฎี](01_Theory/README.md) → [ลงมือทำ LAB](02_LAB/README.md)
+
+**บทถัดไป:** [บทที่ 4: Kubernetes Deployment — เปลี่ยนเมนูโดยร้านไม่ปิด](../004_kubernetes_Deployment/README.md)

@@ -1,0 +1,13 @@
+# LAB 4: ที่อยู่เดียวของร้านน้องส้ม — Service แบบ NodePort กระจายลูกค้าไปทุกสาขาที่พร้อม
+apiVersion: v1
+kind: Service
+metadata:
+  name: som-menu
+spec:
+  type: NodePort
+  selector:
+    app: som-menu            # ทุกสาขาที่ติดป้ายนี้ ไม่สนว่า version 1.0 หรือ 2.0
+  ports:
+    - port: 80               # ในคลัสเตอร์เรียก http://som-menu (port 80)
+      targetPort: 3000       # หน้าร้าน Node.js ฟัง port 3000
+      nodePort: 30080        # นอกคลัสเตอร์เปิด http://localhost:30080

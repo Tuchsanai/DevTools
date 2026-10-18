@@ -1,0 +1,12 @@
+# LAB 1, 2: ใบขอพื้นที่เก็บข้อมูล (PVC) — ขอ 100Mi แล้ว Kubernetes หาที่เก็บถาวรมาให้
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: notes-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce            # เขียนได้จาก Node เดียวในเวลาเดียวกัน
+  resources:
+    requests:
+      storage: 100Mi           # ขนาดที่ขอ
+  # ไม่ระบุ storageClassName = ใช้ StorageClass ค่าเริ่มต้นของคลัสเตอร์ (ใน kind คือ standard)

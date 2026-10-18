@@ -1,0 +1,40 @@
+# LAB 2: nginx ที่ใช้หน้าเว็บจาก ConfigMap web-page (mount เป็นไฟล์) + Service NodePort 30080
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: page                       # ใช้ volume ชื่อ page (ประกาศข้างล่าง)
+              mountPath: /usr/share/nginx/html # วางไว้ที่โฟลเดอร์หน้าเว็บของ nginx
+      volumes:
+        - name: page
+          configMap:
+            name: web-page                     # ทุก key ใน ConfigMap web-page กลายเป็นไฟล์ 1 ไฟล์
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  type: NodePort
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080

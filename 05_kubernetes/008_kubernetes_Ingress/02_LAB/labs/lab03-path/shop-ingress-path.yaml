@@ -1,0 +1,25 @@
+# LAB 3: Ingress แยกตามทางเดิน (path) — ชื่อเดียว shop.localhost แต่ /menu กับ /drink ไปคนละ Service
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shop-path
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: shop.localhost
+      http:
+        paths:
+          - path: /menu            # /menu, /menu/today, ... → Service menu
+            pathType: Prefix
+            backend:
+              service:
+                name: menu
+                port:
+                  number: 80
+          - path: /drink           # /drink, /drink/cold, ... → Service drink
+            pathType: Prefix
+            backend:
+              service:
+                name: drink
+                port:
+                  number: 80

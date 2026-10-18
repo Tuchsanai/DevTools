@@ -1,0 +1,7 @@
+# LAB 1–3: บัตรประจำตัวของ chart — ชื่อ เวอร์ชันของ chart และเวอร์ชันของแอปข้างใน
+apiVersion: v2                 # รูปแบบ chart ของ Helm 3 ขึ้นไป
+name: hello                    # ชื่อ chart
+description: แอปทักทายเล็ก ๆ สำหรับหัดเขียน Helm chart
+type: application
+version: 0.1.0                 # เวอร์ชันของ "กล่อง" chart (แก้ template แล้วเพิ่มเลขนี้)
+appVersion: "1.11.0"           # เวอร์ชันของแอปข้างใน (image traefik/whoami)

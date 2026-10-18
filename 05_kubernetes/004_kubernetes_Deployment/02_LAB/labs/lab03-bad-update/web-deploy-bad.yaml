@@ -1,0 +1,23 @@
+# LAB 3: อัปเดตพัง — พิมพ์เลขรุ่น nginx ผิด (ไม่มี image นี้จริง) ดูว่าร้านยังเปิดอยู่ไหม
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  annotations:
+    kubernetes.io/change-cause: "nginx 1.99 (พิมพ์ผิด)"
+spec:
+  replicas: 3
+  progressDeadlineSeconds: 30   # ← ใหม่: เปลี่ยนรุ่นไม่คืบหน้าเกิน 30 วินาที = ถือว่าล้มเหลว (ค่าเริ่มต้น 600)
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.99-alpine   # ← พิมพ์ผิด: ไม่มีรุ่นนี้ใน Docker Hub → Pod ใหม่ดึง image ไม่ได้
+          ports:
+            - containerPort: 80
