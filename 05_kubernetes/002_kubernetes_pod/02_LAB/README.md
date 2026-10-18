@@ -2502,7 +2502,7 @@ No resources found in default namespace.
 
 - [ ] **LAB 0** `kubectl get nodes -o wide` เห็น 3 node `Ready` และ context `kind-lab`
 - [ ] **LAB 1** `kubectl describe pod hello` ส่วน Events ครบ `Scheduled` → `Started`
-- [ ] **LAB 2** ผล `pod/web unchanged`, `AlreadyExists` และ `Forbidden: pod updates may not change fields ...`
+- [ ] **LAB 2** ผล `pod/web unchanged` และ `AlreadyExists`
 - [ ] **LAB 3** browser บนเครื่องนักศึกษาเปิด `http://localhost:8080` เห็น "สวัสดีจากน้องส้ม" และหน้าต่าง `kubectl logs -f web` ที่มี request จาก browser
 - [ ] **LAB 4** ผล `kubectl get pods -l app=som-shop,tier=web` และ `-L app,tier`
 - [ ] **LAB 5** `kubectl get pods` ที่เห็น `Completed`, `Error`/`CrashLoopBackOff` (RESTARTS > 0) และ `ErrImagePull`/`ImagePullBackOff` พร้อม `kubectl logs crash-pod --previous`
