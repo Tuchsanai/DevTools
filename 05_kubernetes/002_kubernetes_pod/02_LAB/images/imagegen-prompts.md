@@ -244,14 +244,28 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 04b-lab3-vscode-ports.png
 
-> LAB3 ขั้นที่ 4: ภาพจำลองหน้าจอ VS Code แท็บ PORTS แบบสมจริง (updated 2026-10-18, Codex CLI image_gen, same character reference)
+> LAB3 ขั้นที่ 4: ภาพจำลองหน้าจอ VS Code (attach เข้า container) แท็บ PORTS (updated 2026-10-18, Codex CLI image_gen)
 
 ```text
 Use case: realistic software screenshot for a Thai university DevTools lab README; students must recognize the exact UI they will see.
 Asset type: landscape 16:10 high-resolution realistic desktop screenshot (about 1600x1000), crisp UI text, looks like a real screen capture, NOT a cartoon.
-Scene: A real-looking Visual Studio Code window, Dark Modern theme, exactly as VS Code looks on Windows. Bottom-left status bar shows the green remote indicator with the text "SSH: localhost". Left Explorer sidebar shows folder 02_LAB with sub-folders images, labs, som-shop and file README.md. The editor area shows README.md open with a few faint markdown lines. The bottom panel is open with tabs PROBLEMS, OUTPUT, DEBUG CONSOLE, TERMINAL, PORTS; the PORTS tab is selected and shows a badge 1. The PORTS table has column headers Port, Forwarded Address, Running Process, Origin and exactly one row: Port 8080, Forwarded Address localhost:8080, Running Process kubectl port-forward pod/web 8080:80, Origin Auto Forwarded. The mouse cursor hovers that row, revealing the small globe icon "Open in Browser" next to the forwarded address, with its tooltip "Open in Browser" visible.
+Scene: A real-looking Visual Studio Code window, Dark Modern theme, attached to a running container. Bottom-left status bar shows the remote indicator with the text "Container tuchsanai/devtools-kind:2569_1 (k8s-lab)". Left Explorer sidebar shows folder 02_LAB with sub-folders images, labs, som-shop and file README.md. The editor area shows README.md open with a few faint markdown lines. The bottom panel is open with tabs PROBLEMS, OUTPUT, DEBUG CONSOLE, TERMINAL, PORTS; the PORTS tab is selected and shows a badge 1. The PORTS table has column headers Port, Forwarded Address, Running Process, Origin and exactly one row: Port 8080, Forwarded Address localhost:8080, Running Process kubectl port-forward pod/web 8080:80, Origin Auto Forwarded. The mouse cursor hovers that row, revealing the small globe icon next to the forwarded address, with its tooltip "Open in Browser" visible.
 Annotation overlay (the only non-realistic part): a thick orange rounded rectangle around the PORTS tab and a thick orange circle around the globe icon, connected by a short orange arrow; in the lower-right corner a small sticker of Nong Som (the attached character reference, kept small, about 12% of image width) pointing at the globe icon.
 Character sticker: Nong Som exactly as in the attached reference sheet 00-character-som.png — chubby orange tabby cat, white chest and muzzle, big green eyes, navy captain hat with white ship-wheel badge, teal neckerchief; appears exactly once, small, in the corner.
 Text: all UI text must be real English VS Code labels spelled exactly as listed above; keep other text minimal or blurred; no gibberish.
 Constraints: realistic flat UI rendering like an actual screenshot, no 3D, no cartoon editor, no watermark, no extra windows; exactly one row in the PORTS table; do not show passwords.
+```
+
+## 04a-lab3-vscode-attach.png
+
+> LAB3 ขั้นที่ 0: ภาพจำลองหน้าจอ VS Code คลิกขวา k8s-lab → Attach Visual Studio Code (added 2026-10-18, Codex CLI image_gen)
+
+```text
+Use case: realistic software screenshot for a Thai university DevTools lab README; students must recognize the exact UI they will see.
+Asset type: landscape 16:10 high-resolution realistic desktop screenshot (about 1600x1000), crisp UI text, looks like a real screen capture, NOT a cartoon.
+Scene: A real-looking Visual Studio Code window on Windows, Dark Modern theme, local (no remote connected; bottom-left status bar shows only the plain blue remote button icon). The Activity Bar on the left has the Containers (whale-free generic container cube) icon selected, and the side bar title reads CONTAINERS. Under a section CONTAINERS there is a group "tuchsanai/devtools-kind:2569_1" containing one running container item with a green play icon labeled "k8s-lab  Up 10 minutes". The user has right-clicked that item and a context menu is open with these items in order: View Logs, Attach Shell, Attach Visual Studio Code, Inspect, Open in Browser, Stop, Restart, Remove. The item "Attach Visual Studio Code" is highlighted (hover). The editor area on the right shows the VS Code Welcome page faintly.
+Annotation overlay (the only non-realistic part): a thick orange rounded rectangle around the "k8s-lab" container item and another around the "Attach Visual Studio Code" menu item, with a short orange arrow between them; in the lower-right corner a small sticker of Nong Som (the attached character reference, kept small, about 12% of image width) pointing at the menu item.
+Character sticker: Nong Som exactly as in the attached reference sheet 00-character-som.png — chubby orange tabby cat, white chest and muzzle, big green eyes, navy captain hat with white ship-wheel badge, teal neckerchief; appears exactly once, small, in the corner.
+Text: all UI text must be real English VS Code labels spelled exactly as listed above; keep other text minimal; no gibberish.
+Constraints: realistic flat UI rendering like an actual screenshot, no 3D, no cartoon editor, no Docker whale logo, no watermark, no extra windows; exactly one container item.
 ```

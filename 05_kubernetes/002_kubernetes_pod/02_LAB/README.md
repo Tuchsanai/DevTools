@@ -47,18 +47,18 @@
 
 | รูปที่ | เรื่อง | รูปที่ | เรื่อง |
 |:---:|---|:---:|---|
-| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 13 | [LAB 9 ร้านอาหารแมวน้องส้ม](#fig-13) |
-| 2 | [LAB 0 git clone](#fig-2) | 14 | [สถาปัตยกรรม Pod som-shop](#fig-14) |
-| 3 | [LAB 1 kubectl run](#fig-3) | 15 | [ลำดับการเริ่ม Pod som-shop](#fig-15) |
-| 4 | [LAB 2 YAML แรก](#fig-4) | 16 | [build และ kind load](#fig-16) |
-| 5 | [LAB 3 exec/logs/port-forward](#fig-5) | 17 | [เปิดร้านจาก browser](#fig-17) |
-| 6 | [LAB 3 เปิดเว็บผ่าน VS Code PORTS](#fig-6) | 18 | [ภาพหน้าจอจริง: หน้าร้านเริ่มต้น](#fig-18) |
-| 7 | [ภาพหน้าจอจริง: หน้าเว็บ nginx ของ LAB 3](#fig-7) | 19 | [ภาพหน้าจอจริง: หลังสั่งซื้อ 3 ครั้ง](#fig-19) |
-| 8 | [LAB 4 labels](#fig-8) | 20 | [emptyDir รอด vs หาย](#fig-20) |
-| 9 | [LAB 5 lifecycle และดีบัก](#fig-9) | 21 | [ภาพหน้าจอจริง: หลัง restart db](#fig-21) |
-| 10 | [LAB 6 env/command/resources](#fig-10) | 22 | [ภาพหน้าจอจริง: หลังลบ Pod แล้วสร้างใหม่](#fig-22) |
-| 11 | [LAB 7 probes](#fig-11) | 23 | [บทหน้า: แยกเว็บกับฐานข้อมูล](#fig-23) |
-| 12 | [LAB 8 multi-container](#fig-12) |  |  |
+| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 13 | [LAB 8 multi-container](#fig-13) |
+| 2 | [LAB 0 git clone](#fig-2) | 14 | [LAB 9 ร้านอาหารแมวน้องส้ม](#fig-14) |
+| 3 | [LAB 1 kubectl run](#fig-3) | 15 | [สถาปัตยกรรม Pod som-shop](#fig-15) |
+| 4 | [LAB 2 YAML แรก](#fig-4) | 16 | [ลำดับการเริ่ม Pod som-shop](#fig-16) |
+| 5 | [LAB 3 exec/logs/port-forward](#fig-5) | 17 | [build และ kind load](#fig-17) |
+| 6 | [LAB 3 attach VS Code เข้า k8s-lab](#fig-6) | 18 | [เปิดร้านจาก browser](#fig-18) |
+| 7 | [LAB 3 เปิดเว็บผ่าน VS Code PORTS](#fig-7) | 19 | [ภาพหน้าจอจริง: หน้าร้านเริ่มต้น](#fig-19) |
+| 8 | [ภาพหน้าจอจริง: หน้าเว็บ nginx ของ LAB 3](#fig-8) | 20 | [ภาพหน้าจอจริง: หลังสั่งซื้อ 3 ครั้ง](#fig-20) |
+| 9 | [LAB 4 labels](#fig-9) | 21 | [emptyDir รอด vs หาย](#fig-21) |
+| 10 | [LAB 5 lifecycle และดีบัก](#fig-10) | 22 | [ภาพหน้าจอจริง: หลัง restart db](#fig-22) |
+| 11 | [LAB 6 env/command/resources](#fig-11) | 23 | [ภาพหน้าจอจริง: หลังลบ Pod แล้วสร้างใหม่](#fig-23) |
+| 12 | [LAB 7 probes](#fig-12) | 24 | [บทหน้า: แยกเว็บกับฐานข้อมูล](#fig-24) |
 
 ### โครงสร้างไฟล์ LAB
 
@@ -466,7 +466,33 @@ No resources found in default namespace.
 
 **เป้าหมาย:** เข้าไปใน Pod แก้หน้าเว็บ แล้ว **เปิดเว็บใน Pod จาก browser บนเครื่องนักศึกษา** ผ่าน VS Code และดู log
 
-**ต้องมี:** VS Code + extension **Remote - SSH** ที่เชื่อมต่อเข้า k8s-lab แล้ว (`ssh -p 2223 root@localhost`) ทุกคำสั่งใน LAB นี้พิมพ์ใน **Terminal ของ VS Code** (เมนู Terminal → New Terminal) ที่อยู่ในโฟลเดอร์ `02_LAB`
+**ต้องมี:** VS Code + extension **Container Tools** (หรือ Docker) และ **Dev Containers** ติดตั้งบนเครื่องนักศึกษา ทุกคำสั่งใน LAB นี้พิมพ์ใน **Terminal ของ VS Code** ที่ attach เข้า container k8s-lab
+
+### ขั้นที่ 0: เปิด VS Code แล้ว attach เข้า container k8s-lab
+
+<p align="center" id="fig-6">
+  <img src="images/04a-lab3-vscode-attach.png" alt="รูปที่ 6 LAB3 attach VS Code เข้า container k8s-lab" width="900"><br>
+  <em><b>รูปที่ 6</b> LAB3 ขั้นที่ 0 (ภาพจำลองหน้าจอ VS Code): ในแท็บ Containers คลิกขวาที่ k8s-lab แล้วเลือก Attach Visual Studio Code</em>
+</p>
+
+1. เปิด VS Code บนเครื่องนักศึกษา กดไอคอน **Containers** ที่แถบซ้าย
+2. **คลิกขวา** ที่ container `k8s-lab` (image `tuchsanai/devtools-kind:2569_1`) แล้วเลือก **Attach Visual Studio Code**
+3. VS Code จะเปิดหน้าต่างใหม่ มุมล่างซ้ายขึ้น `Container tuchsanai/devtools-kind:2569_1 (k8s-lab)` = ตอนนี้ทำงานอยู่ **ใน container** แล้ว
+4. เมนู **File → Open Folder** เลือก `/workspace/DevTools/05_kubernetes/002_kubernetes_pod/02_LAB`
+5. เมนู **Terminal → New Terminal** แล้วตรวจว่าใช้ kubectl ได้
+
+```bash
+kubectl get nodes
+```
+
+**Expected output**
+
+<pre>
+NAME                STATUS   ROLES           AGE   VERSION
+lab-control-plane   Ready    control-plane   21m   v1.37.0
+lab-worker          Ready    &lt;none&gt;          20m   v1.37.0
+lab-worker2         Ready    &lt;none&gt;          20m   v1.37.0
+</pre>
 
 ### ขั้นที่ 1: สร้าง Pod web
 
@@ -537,9 +563,9 @@ Forwarding from [::1]:8080 -> 80
 
 ### ขั้นที่ 4: เปิดเว็บจาก VS Code
 
-<p align="center" id="fig-6">
-  <img src="images/04b-lab3-vscode-ports.png" alt="รูปที่ 6 LAB3 เปิดเว็บผ่านแท็บ PORTS ของ VS Code" width="900"><br>
-  <em><b>รูปที่ 6</b> LAB3 ขั้นที่ 4 (ภาพจำลองหน้าจอ VS Code): แท็บ PORTS แสดง port 8080 ที่ VS Code ส่งต่อมาให้อัตโนมัติ (Auto Forwarded) ชี้ที่แถวนั้นแล้วกดไอคอนลูกโลก Open in Browser</em>
+<p align="center" id="fig-7">
+  <img src="images/04b-lab3-vscode-ports.png" alt="รูปที่ 7 LAB3 เปิดเว็บผ่านแท็บ PORTS ของ VS Code" width="900"><br>
+  <em><b>รูปที่ 7</b> LAB3 ขั้นที่ 4 (ภาพจำลองหน้าจอ VS Code ที่ attach เข้า k8s-lab แล้ว): แท็บ PORTS แสดง port 8080 ที่ VS Code ส่งต่อมาให้อัตโนมัติ (Auto Forwarded) ชี้ที่แถวนั้นแล้วกดไอคอนลูกโลก Open in Browser</em>
 </p>
 
 1. ใน VS Code เปิดแท็บ **PORTS** (แถบเดียวกับ TERMINAL ด้านล่าง)
@@ -548,9 +574,9 @@ Forwarding from [::1]:8080 -> 80
 
 🌐 browser จะเปิด `http://localhost:8080` และเห็นหัวข้อ "สวัสดีจากน้องส้ม 🐱"
 
-<p align="center" id="fig-7">
-  <img src="images/screenshots/20261005_1725_lab002_02-lab3-nginx.png" alt="รูปที่ 7 ภาพหน้าจอจริง หน้าเว็บ nginx สวัสดีจากน้องส้ม" width="700"><br>
-  <em><b>รูปที่ 7</b> ภาพหน้าจอจริงจากการทดลอง: หน้าเว็บของ Pod web หลังแก้ index.html แสดงหัวข้อ "สวัสดีจากน้องส้ม 🐱"</em>
+<p align="center" id="fig-8">
+  <img src="images/screenshots/20261005_1725_lab002_02-lab3-nginx.png" alt="รูปที่ 8 ภาพหน้าจอจริง หน้าเว็บ nginx สวัสดีจากน้องส้ม" width="700"><br>
+  <em><b>รูปที่ 8</b> ภาพหน้าจอจริงจากการทดลอง: หน้าเว็บของ Pod web หลังแก้ index.html แสดงหัวข้อ "สวัสดีจากน้องส้ม 🐱"</em>
 </p>
 
 ทุกครั้งที่เปิดหรือ refresh หน้าเว็บ หน้าต่าง port-forward จะพิมพ์ `Handling connection for 8080`
@@ -590,7 +616,7 @@ pod "web" deleted from default namespace
 ### สิ่งที่เห็น
 
 - `kubectl exec -it <pod> -- sh` พาเข้าไปใน container เหมือนอยู่ในเครื่องนั้น การแก้ไฟล์แบบนี้ **ชั่วคราว** ถ้าลบ Pod ไฟล์จะหาย
-- `kubectl port-forward` เปิดทางจาก k8s-lab เข้า Pod แล้ว VS Code ส่งต่อ port นั้นมาที่เครื่องนักศึกษาให้เอง
+- `kubectl port-forward` เปิดทางจาก k8s-lab เข้า Pod แล้ว VS Code (ที่ attach เข้า container) ส่งต่อ port นั้นมาที่เครื่องนักศึกษาให้เอง
 - `kubectl logs` ดูสิ่งที่แอปใน Pod พิมพ์ออกมา (สำหรับ nginx คือ log ของทุก request)
 
 > **🤔 คำถามชวนคิด:** ถ้ากด Ctrl+C หยุด port-forward แล้ว refresh browser จะเกิดอะไรขึ้น เพราะอะไร
@@ -599,9 +625,9 @@ pod "web" deleted from default namespace
 
 ## LAB 4: Labels และ Selectors
 
-<p align="center" id="fig-8">
-  <img src="images/05-lab4-labels.png" alt="รูปที่ 8 LAB4 labels" width="900"><br>
-  <em><b>รูปที่ 8</b> LAB4: ติดป้าย label ให้ Pod 3 ตัวและใช้ -l เลือกเฉพาะกลุ่มที่ต้องการ</em>
+<p align="center" id="fig-9">
+  <img src="images/05-lab4-labels.png" alt="รูปที่ 9 LAB4 labels" width="900"><br>
+  <em><b>รูปที่ 9</b> LAB4: ติดป้าย label ให้ Pod 3 ตัวและใช้ -l เลือกเฉพาะกลุ่มที่ต้องการ</em>
 </p>
 
 **เป้าหมาย:** ติดป้าย (label) ให้ Pod แล้วใช้ป้ายนั้นเลือกเฉพาะ Pod ที่ต้องการ
@@ -776,9 +802,9 @@ pod "toy-web" deleted from default namespace
 
 ## LAB 5: Lifecycle และการดีบัก Pod ที่พัง
 
-<p align="center" id="fig-9">
-  <img src="images/06-lab5-lifecycle-debug.png" alt="รูปที่ 9 LAB5 lifecycle และดีบัก" width="900"><br>
-  <em><b>รูปที่ 9</b> LAB5: สังเกต Completed, CrashLoopBackOff และ ImagePullBackOff แล้วใช้ describe กับ logs หาสาเหตุ</em>
+<p align="center" id="fig-10">
+  <img src="images/06-lab5-lifecycle-debug.png" alt="รูปที่ 10 LAB5 lifecycle และดีบัก" width="900"><br>
+  <em><b>รูปที่ 10</b> LAB5: สังเกต Completed, CrashLoopBackOff และ ImagePullBackOff แล้วใช้ describe กับ logs หาสาเหตุ</em>
 </p>
 
 **เป้าหมาย:** ดู STATUS ของ Pod แบบต่าง ๆ แล้วหาสาเหตุ Pod ที่พังด้วยคำสั่งพื้นฐาน 2 ตัว คือ `kubectl describe` กับ `kubectl logs`
@@ -1017,391 +1043,429 @@ pod "onfailure-pod" deleted from default namespace
 
 ## LAB 6: env, command และ resources
 
-<p align="center" id="fig-10">
-  <img src="images/07-lab6-env-command-resources.png" alt="รูปที่ 10 LAB6 env/command/resources" width="900"><br>
-  <em><b>รูปที่ 10</b> LAB6: ส่ง env และ command เข้า container ทดลอง memory limit จนเกิด OOMKilled และ request CPU เกินจน Pending</em>
+<p align="center" id="fig-11">
+  <img src="images/07-lab6-env-command-resources.png" alt="รูปที่ 11 LAB6 env/command/resources" width="900"><br>
+  <em><b>รูปที่ 11</b> LAB6: ส่ง env และ command เข้า container ทดลอง memory limit จนเกิด OOMKilled และ request CPU เกินจน Pending</em>
 </p>
 
-**เป้าหมาย:** ส่งค่าเข้า container ด้วย `env`, ทับคำสั่งด้วย `command`/`args`, เห็นผลของ memory limit (OOMKilled) และ CPU request ที่เกิน (Pending)
-
-ไฟล์ใน `labs/lab06-env-resources/`: `env-command-pod.yaml` (env + command/args + requests/limits), `oom-pod.yaml` (limit memory 32Mi แล้วรัน `tail /dev/zero` ซึ่งกิน RAM ไม่หยุด), `pending-pod.yaml` (ขอ `cpu: "64"`)
-
-#### อธิบาย YAML: `labs/lab06-env-resources/env-command-pod.yaml`
-
-```yaml
-    - name: app
-      image: busybox:1.36
-      env:                              # ตัวแปรสภาพแวดล้อม (value ต้องเป็น string)
-        - name: SHOP_NAME
-          value: "ร้านอาหารแมวน้องส้ม"       # ภาษาไทยใช้ได้
-        - name: OPEN_HOUR
-          value: "9"                    # ตัวเลขต้องใส่ "" ให้เป็น string
-      command: ["sh", "-c"]             # ทับ ENTRYPOINT ของ image
-      args:                             # ทับ CMD ของ image
-        - echo "SHOP_NAME=$SHOP_NAME"; echo "OPEN_HOUR=$OPEN_HOUR"; sleep 3600
-      resources:
-        requests:                       # ใช้ตอน scheduler เลือก Node
-          cpu: "50m"                    # 50 milliCPU = 0.05 core
-          memory: "32Mi"
-        limits:                         # เพดานสูงสุดขณะรัน
-          cpu: "100m"                   # เกินแล้วถูกหน่วง (throttle) ไม่ถูกฆ่า
-          memory: "64Mi"                # เกินแล้วถูกฆ่า (OOMKilled)
-```
-
-| field | ทำอะไร / ทำไมตั้งแบบนี้ | โยงกับผลที่เห็น |
-|---|---|---|
-| `env[].name/value` | ส่งค่าเข้า container เป็นตัวแปรสภาพแวดล้อม `value` ต้องเป็น **string** เสมอ จึงใส่ `"9"` | `logs` เห็น `SHOP_NAME=ร้านอาหารแมวน้องส้ม`, `OPEN_HOUR=9`; ขั้นที่ 4 ถอด quote แล้วได้ `BadRequest ... cannot unmarshal number ... of type string` |
-| (ไม่ได้เขียน) `HOSTNAME` | Kubernetes ตั้งให้ทุก container อัตโนมัติ = ชื่อ Pod | `env` เห็น `HOSTNAME=env-command-pod` (จุดนี้สำคัญใน LAB 9) |
-| `command: ["sh", "-c"]` | ทับ ENTRYPOINT ของ image ให้รันผ่าน shell | jsonpath ได้ `["sh","-c"]` |
-| `args: [ "echo ...; sleep 3600" ]` | ทับ CMD ของ image เป็นสคริปต์ 1 บรรทัด ซึ่ง `sh -c` รับไปรัน (`$SHOP_NAME` ถูกแทนค่าโดย shell) และ `sleep 3600` ทำให้ container ไม่จบ | jsonpath ได้ args 1 ตัว, Pod `1/1 Running` |
-| `resources.requests` 50m / 32Mi | ปริมาณที่ "จอง" ไว้ scheduler ใช้ตัดสินว่า Node ไหนรับได้ | `describe` เห็น `Requests: cpu 50m, memory 32Mi` |
-| `resources.limits` 100m / 64Mi | เพดานขณะรัน CPU เกินจะถูกหน่วง memory เกินจะถูกฆ่า | `Limits: cpu 100m, memory 64Mi`; requests < limits จึงได้ QoS `Burstable` |
-
-#### อธิบาย YAML: `oom-pod.yaml` และ `pending-pod.yaml`
-
-```yaml
-# oom-pod.yaml
-spec:                                   # ไม่ระบุ restartPolicy = Always จึงถูก restart วน
-  containers:
-    - name: hungry
-      image: busybox:1.36
-      command: ["sh", "-c", "echo 'กินแรมไม่หยุด...'; tail /dev/zero"]   # tail จะอ่านข้อมูลเก็บในแรมไปเรื่อย ๆ
-      resources:
-        requests:
-          memory: "16Mi"                # ขั้นต่ำที่ขอจอง (ใช้ตอนเลือก Node)
-        limits:
-          memory: "32Mi"                # เกิน 32Mi เมื่อไร โดน OOMKilled
-```
-
-```yaml
-# pending-pod.yaml
-    - name: big
-      image: nginx:1.27-alpine
-      resources:
-        requests:                       # scheduler ต้องหา Node ที่มี CPU ว่างพอตามนี้
-          cpu: "64"                     # ขอ 64 core! ไม่มี Node ไหนรับไหว
-```
-
-| ไฟล์ / field | ทำไมตั้งแบบนี้ | โยงกับผลที่เห็น |
-|---|---|---|
-| oom: `command: ... tail /dev/zero` | `/dev/zero` ไม่มีขึ้นบรรทัดใหม่ `tail` จึงเก็บข้อมูลไว้ในหน่วยความจำไปเรื่อย ๆ | ใช้ memory พุ่งจนชนเพดานภายในไม่ถึงวินาที (`Started` กับ `Finished` เป็นวินาทีเดียวกัน) |
-| oom: `limits.memory: "32Mi"` | เพดานต่ำ ทำให้ kernel ฆ่าโปรเซสด้วย SIGKILL เร็ว | `Reason: OOMKilled`, `Exit Code: 137` (= 128 + 9) |
-| oom: ไม่มี `restartPolicy` | ค่าเริ่มต้น `Always` | RESTARTS เพิ่มขึ้นเรื่อย ๆ (เห็น `2 (15s ago)` ที่ 16 วินาที) |
-| pending: `requests.cpu: "64"` | ขอ CPU มากกว่าที่ node มี (`Allocatable cpu: 32` ในเครื่องทดสอบ) และ control-plane มี taint | `Pending`, IP/NODE เป็น `<none>`, Events `0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu` |
-| pending: ไม่มี `limits` | ทดสอบเฉพาะการตัดสินใจของ scheduler ซึ่งดูแค่ `requests` | Pod ไม่เคยถูกวางบน node จึงไม่เคยรัน container เลย |
+**เป้าหมาย:** ส่งค่าเข้า container ด้วย `env` และดูว่าเกิดอะไรเมื่อใช้ memory เกินเพดาน (OOMKilled) หรือขอ CPU มากเกินไป (Pending)
 
 🐧 **ใน SSH session ของ k8s-lab**
 
-### ขั้นที่ 1: env และ command/args
+### ขั้นที่ 1: ส่งค่าเข้า container ด้วย env
 
-```bash
-cat labs/lab06-env-resources/env-command-pod.yaml
-kubectl apply -f labs/lab06-env-resources/env-command-pod.yaml && kubectl wait --for=condition=Ready pod/env-command-pod --timeout=60s
-kubectl logs env-command-pod
-kubectl exec env-command-pod -- env | grep -E "SHOP_NAME|OPEN_HOUR|HOSTNAME"
-kubectl get pod env-command-pod -o jsonpath="{.spec.containers[0].command} {.spec.containers[0].args}{\"\\n\"}"
+```yaml
+# env-command-pod.yaml (ส่วนสำคัญ)
+      env:                              # ตัวแปรที่ส่งเข้า container
+        - name: SHOP_NAME
+          value: "ร้านอาหารแมวน้องส้ม"
+        - name: OPEN_HOUR
+          value: "9"                    # ตัวเลขต้องใส่ "" เสมอ
+      command: ["sh", "-c"]             # คำสั่งที่ใช้แทนคำสั่งเดิมของ image
+      args:
+        - echo "SHOP_NAME=$SHOP_NAME"; echo "OPEN_HOUR=$OPEN_HOUR"; sleep 3600
+      resources:
+        requests:                       # ขอจองไว้ (scheduler ใช้เลือก node)
+          cpu: "50m"                    # 50m = 0.05 core
+          memory: "32Mi"
+        limits:                         # เพดานสูงสุดที่ใช้ได้
+          cpu: "100m"
+          memory: "64Mi"
 ```
 
-```text
-pod/env-command-pod created
-pod/env-command-pod condition met
+```bash
+kubectl apply -f labs/lab06-env-resources/env-command-pod.yaml
+```
 
-$ kubectl logs env-command-pod
+**Expected output**
+
+<pre>
+pod/env-command-pod created
+</pre>
+
+รอสัก 10 วินาทีแล้วดูว่าแอปพิมพ์อะไรออกมา
+
+```bash
+kubectl logs env-command-pod
+```
+
+**Expected output**
+
+<pre>
 SHOP_NAME=ร้านอาหารแมวน้องส้ม
 OPEN_HOUR=9
+</pre>
 
-$ kubectl exec env-command-pod -- env | grep -E "SHOP_NAME|OPEN_HOUR|HOSTNAME"
+ค่าใน `env` ถูกส่งเข้าไปให้แอปใช้ได้จริง ลองดูตัวแปรทั้งหมดใน container
+
+```bash
+kubectl exec env-command-pod -- env
+```
+
+**Expected output** (ตัดบางบรรทัด)
+
+<pre>
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 HOSTNAME=env-command-pod
 SHOP_NAME=ร้านอาหารแมวน้องส้ม
 OPEN_HOUR=9
+...
+</pre>
 
-$ kubectl get pod env-command-pod -o jsonpath="{.spec.containers[0].command} {.spec.containers[0].args}{\"\\n\"}"
-["sh","-c"] ["echo \"SHOP_NAME=$SHOP_NAME\"; echo \"OPEN_HOUR=$OPEN_HOUR\"; sleep 3600"]
-```
+นอกจากค่าที่เราใส่ ยังมี `HOSTNAME` ซึ่ง Kubernetes ตั้งให้เป็นชื่อ Pod อัตโนมัติ
 
-### ขั้นที่ 2: resources และ QoS
+### ขั้นที่ 2: ดู requests และ limits
 
 ```bash
-kubectl describe pod env-command-pod | grep -A6 -E "^    (Limits|Requests):" | head -8
-kubectl get pod env-command-pod -o jsonpath="{.status.qosClass}{\"\\n\"}"
+kubectl describe pod env-command-pod
 ```
 
-```text
+**Expected output** (ตัดเฉพาะส่วนสำคัญ)
+
+<pre>
+...
     Limits:
       cpu:     100m
       memory:  64Mi
     Requests:
       cpu:     50m
       memory:  32Mi
-    Environment:
-      SHOP_NAME:  ร้านอาหารแมวน้องส้ม
-Burstable
-```
+...
+QoS Class:                   Burstable
+...
+</pre>
 
-### ขั้นที่ 3: ทดลอง OOMKilled และ Pending
+- **Requests** = ปริมาณที่ขอจองไว้ **Limits** = เพดานที่ใช้ได้สูงสุด
+- requests น้อยกว่า limits จึงได้ QoS Class `Burstable`
+
+### ขั้นที่ 3: ใช้ memory เกินเพดาน → OOMKilled
+
+```yaml
+# oom-pod.yaml (ส่วนสำคัญ)
+      command: ["sh", "-c", "echo 'กินแรมไม่หยุด...'; tail /dev/zero"]   # กิน RAM ไปเรื่อย ๆ
+      resources:
+        limits:
+          memory: "32Mi"                # เกิน 32Mi เมื่อไร โดนฆ่า
+```
 
 ```bash
-kubectl apply -f labs/lab06-env-resources/oom-pod.yaml -f labs/lab06-env-resources/pending-pod.yaml
-kubectl get pods
-kubectl describe pod oom-pod | sed -n "/^    State:/,/^    Restart Count/p"
-kubectl describe pod pending-pod | sed -n "/^Events:/,\$p"
-kubectl get pod pending-pod -o wide
+kubectl apply -f labs/lab06-env-resources/oom-pod.yaml
 ```
 
-```text
+**Expected output**
+
+<pre>
 pod/oom-pod created
-pod/pending-pod created
+</pre>
 
-$ kubectl get pods
-NAME              READY   STATUS      RESTARTS      AGE
-env-command-pod   1/1     Running     0             18s
-oom-pod           0/1     OOMKilled   2 (15s ago)   16s
-pending-pod       0/1     Pending     0             16s
+รอสัก 10 วินาที
 
-$ kubectl describe pod oom-pod | sed -n "/^    State:/,/^    Restart Count/p"
-    State:          Terminated
-      Reason:       OOMKilled
-      Exit Code:    137
-      Started:      Mon, 05 Oct 2026 17:11:46 +0700
-      Finished:     Mon, 05 Oct 2026 17:11:46 +0700
+```bash
+kubectl get pods
+```
+
+**Expected output**
+
+<pre>
+NAME              READY   STATUS             RESTARTS     AGE
+env-command-pod   1/1     Running            0            20s
+oom-pod           0/1     CrashLoopBackOff   1 (8s ago)   10s
+</pre>
+
+STATUS ของ `oom-pod` จะสลับระหว่าง `OOMKilled` กับ `CrashLoopBackOff` ดูสาเหตุด้วย describe
+
+```bash
+kubectl describe pod oom-pod
+```
+
+**Expected output** (ตัดเฉพาะส่วนสำคัญ)
+
+<pre>
+...
     Last State:     Terminated
       Reason:       OOMKilled
       Exit Code:    137
-      Started:      Mon, 05 Oct 2026 17:11:33 +0700
-      Finished:     Mon, 05 Oct 2026 17:11:33 +0700
-    Ready:          False
-    Restart Count:  2
+...
+    Restart Count:  1
+...
+</pre>
 
-$ kubectl describe pod pending-pod | sed -n "/^Events:/,\$p"
+`OOMKilled` = ใช้ memory เกิน limit จึงถูกระบบฆ่าทิ้ง (Exit Code `137`) แล้วถูกเริ่มใหม่วนไป
+
+### ขั้นที่ 4: ขอ CPU มากเกินไป → Pending
+
+```yaml
+# pending-pod.yaml (ส่วนสำคัญ)
+      resources:
+        requests:
+          cpu: "64"                     # ขอ 64 core! ไม่มี node ไหนมีพอ
+```
+
+```bash
+kubectl apply -f labs/lab06-env-resources/pending-pod.yaml
+```
+
+**Expected output**
+
+<pre>
+pod/pending-pod created
+</pre>
+
+```bash
+kubectl get pods
+```
+
+**Expected output**
+
+<pre>
+NAME              READY   STATUS      RESTARTS      AGE
+env-command-pod   1/1     Running     0             25s
+oom-pod           0/1     OOMKilled   2 (13s ago)   15s
+pending-pod       0/1     Pending     0             5s
+</pre>
+
+`pending-pod` ค้างที่ `Pending` ไม่ว่ารอนานแค่ไหน ดูเหตุผลใน Events
+
+```bash
+kubectl describe pod pending-pod
+```
+
+**Expected output** (ส่วน Events ท้ายสุด)
+
+<pre>
 Events:
   Type     Reason            Age   From               Message
   ----     ------            ----  ----               -------
-  Warning  FailedScheduling  30s   default-scheduler  0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
+  Warning  FailedScheduling  5s    default-scheduler  0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu. ...
+</pre>
 
-$ kubectl get pod pending-pod -o wide
-NAME          READY   STATUS    RESTARTS   AGE   IP       NODE     NOMINATED NODE   READINESS GATES
-pending-pod   0/1     Pending   0          30s   <none>   <none>   <none>           <none>
-```
-
-(ค่า RESTARTS ของ `oom-pod` ขึ้นกับจังหวะที่สั่ง เช่น 1 หรือ 2 และเพิ่มต่อไปเรื่อย ๆ เพราะ restart วน; เวลา `Started`/`Finished` จะต่างในแต่ละเครื่อง)
-
-ดูว่า node มี CPU เท่าไร
-
-```bash
-kubectl describe node lab-worker | sed -n "/^Allocatable:/,/^System Info/p" | head -8
-```
-
-```text
-Allocatable:
-  cpu:                32
-  ephemeral-storage:  1081101176832
-  hugepages-1Gi:      0
-  hugepages-2Mi:      0
-  memory:             64489564Ki
-  pods:               110
-System Info:
-```
-
-> node ของ kind มองเห็น CPU/RAM เท่ากับเครื่องจริง เครื่องทดสอบมี 32 core ของนักศึกษาจะน้อยกว่านี้ ซึ่งยิ่งทำให้ `cpu: "64"` เกินแน่นอน (ยกเว้นเครื่องที่มีมากกว่า 64 thread ซึ่งแทบไม่มี)
-
-### ขั้นที่ 4: ทดลองลืม quote ใน env
-
-```bash
-sed 's/value: "9"/value: 9/' labs/lab06-env-resources/env-command-pod.yaml | sed 's/name: env-command-pod/name: env-number-test/' | kubectl apply -f -
-```
-
-```text
-Error from server (BadRequest): error when creating "STDIN": Pod in version "v1" cannot be handled as a Pod: json: cannot unmarshal number into Go struct field EnvVar.spec.containers.env.value of type string
-```
+`Insufficient cpu` = ไม่มี worker ตัวไหนมี CPU พอ ส่วน `untolerated taint` คือ control-plane ที่ห้ามวาง Pod ทั่วไป Pod จึงไม่ได้ไปอยู่ node ไหนเลย
 
 ### ขั้นที่ 5: ลบทั้งหมด
 
 ```bash
-kubectl delete -f labs/lab06-env-resources/; kubectl get pods
+kubectl delete -f labs/lab06-env-resources/
 ```
 
-```text
+**Expected output**
+
+<pre>
 pod "env-command-pod" deleted from default namespace
 pod "oom-pod" deleted from default namespace
 pod "pending-pod" deleted from default namespace
-No resources found in default namespace.
-```
+</pre>
 
 ### สิ่งที่เห็น
 
-- `env` ส่งข้อความภาษาไทยได้ และ `HOSTNAME` ของ container มีค่าเป็นชื่อ Pod
-- `command`/`args` ทับคำสั่งเริ่มต้นของ image busybox
-- memory เกิน limit → `OOMKilled` exit code `137` (= 128 + สัญญาณ 9 SIGKILL) แล้วถูก restart วน
-- CPU request เกินที่ Node ไหนจะมี → `Pending` ไม่มี IP ไม่มี NODE เพราะยังไม่ผ่านขั้น scheduler เลย ข้อความ `1 node(s) had untolerated taint(s)` คือ `lab-control-plane`
-- `env.value` ที่เป็นตัวเลขต้องใส่ quote ไม่เช่นนั้น kube-apiserver ปฏิเสธ
+- `env` ส่งค่า (ภาษาไทยได้) เข้า container ตัวเลขต้องใส่ `""` เสมอ
+- **requests** = ขอจอง (ใช้ตอนเลือก node) / **limits** = เพดานขณะรัน
+- memory เกิน limit → `OOMKilled` (Exit Code 137) แล้วถูกเริ่มใหม่วนไป
+- ขอ CPU เกินที่ node มี → `Pending` ตลอด ดูเหตุผลที่ Events ของ `describe`
 
-> **🏆 ท้าทาย:** แก้ `oom-pod` ให้ limit เป็น `requests` = `limits` ทั้ง CPU และ memory (เช่น `cpu: 100m`, `memory: 64Mi`) และเปลี่ยนคำสั่งเป็น `sleep 3600` แล้วตรวจว่า QoS class เป็นอะไร
+> **🏆 ท้าทาย:** คัดลอก `env-command-pod.yaml` แล้วแก้ requests ให้เท่ากับ limits (`cpu: 100m`, `memory: 64Mi`) apply แล้วดูด้วย `kubectl describe` ว่า QoS Class เปลี่ยนเป็นอะไร
 
 ---
 
 ## LAB 7: Probes ตรวจสุขภาพ
 
-<p align="center" id="fig-11">
-  <img src="images/08-lab7-probes.png" alt="รูปที่ 11 LAB7 probes" width="900"><br>
-  <em><b>รูปที่ 11</b> LAB7: liveness ล้มแล้ว container ถูก restart ส่วน readiness ล้มแล้ว Pod เป็น READY 0/1 โดยไม่ถูก restart</em>
+<p align="center" id="fig-12">
+  <img src="images/08-lab7-probes.png" alt="รูปที่ 12 LAB7 probes" width="900"><br>
+  <em><b>รูปที่ 12</b> LAB7: liveness ล้มแล้ว container ถูก restart ส่วน readiness ล้มแล้ว Pod เป็น READY 0/1 โดยไม่ถูก restart</em>
 </p>
 
-**เป้าหมาย:** เห็นความต่างของ liveness กับ readiness ด้วยตาตัวเอง
+**เป้าหมาย:** เห็นความต่างของ probe 2 แบบด้วยตาตัวเอง
 
-| ไฟล์ | probe | กลไก |
-|---|---|---|
-| `labs/lab07-probes/liveness-exec-pod.yaml` | `livenessProbe` exec `cat /tmp/healthy` ทุก 5 วินาที, failureThreshold 3 | container สร้าง `/tmp/healthy` แล้วลบทิ้งหลัง 30 วินาที (จำลองแอปค้าง) |
-| `labs/lab07-probes/readiness-http-pod.yaml` | `readinessProbe` httpGet `/ready.html` port 80 ทุก 3 วินาที | ยังไม่มีไฟล์ → 404 → ไม่พร้อม |
-
-#### อธิบาย YAML: `liveness-exec-pod.yaml` และ `readiness-http-pod.yaml`
-
-```yaml
-# liveness-exec-pod.yaml
-    - name: app
-      image: busybox:1.36
-      # สร้างไฟล์ healthy → ผ่านไป 30 วินาทีลบทิ้ง (จำลองแอปค้าง)
-      command: ["sh", "-c", "touch /tmp/healthy; echo 'สบายดี'; sleep 30; rm -f /tmp/healthy; echo 'ไม่สบายแล้ว'; sleep 600"]
-      livenessProbe:                         # ไม่ผ่าน → kubelet ฆ่าแล้ว restart container
-        exec:
-          command: ["cat", "/tmp/healthy"]   # exit 0 = ผ่าน, ไม่ใช่ 0 = ไม่ผ่าน
-        initialDelaySeconds: 5               # รอ 5 วินาทีก่อนตรวจครั้งแรก
-        periodSeconds: 5                     # ตรวจทุก 5 วินาที
-        failureThreshold: 3                  # ไม่ผ่าน 3 ครั้งติด → restart
-```
-
-```yaml
-# readiness-http-pod.yaml
-    - name: web
-      image: nginx:1.27-alpine
-      ports:
-        - containerPort: 80
-      readinessProbe:            # ไม่ผ่าน → READY 0/1 เท่านั้น ไม่ restart
-        httpGet:                 # ตอบ 200–399 = ผ่าน, อย่างอื่น (เช่น 404) = ไม่ผ่าน
-          path: /ready.html      # ยังไม่มีไฟล์นี้ → 404 → ยังไม่พร้อม
-          port: 80
-        periodSeconds: 3         # ตรวจทุก 3 วินาที
-        failureThreshold: 1      # ล้มครั้งเดียวก็ถือว่าไม่พร้อมทันที
-```
-
-| field | ทำไมตั้งแบบนี้ | โยงกับผลที่เห็น |
-|---|---|---|
-| liveness: `command` ที่ `sleep 30` แล้ว `rm -f /tmp/healthy` | จำลองแอปที่ทำงานปกติ 30 วินาทีแล้ว "ค้าง" (ยังรันอยู่แต่ไม่สบาย) ข้อความ echo ช่วยให้เห็นใน log | `logs --previous` ได้ `สบายดี` / `ไม่สบายแล้ว` |
-| liveness: `exec: cat /tmp/healthy` | probe แบบรันคำสั่งใน container ผ่านเมื่อ exit 0 | ข้อความ `Liveness probe failed: cat: can't open '/tmp/healthy'` |
-| liveness: `initialDelaySeconds: 5`, `periodSeconds: 5`, `failureThreshold: 3` | ตรวจทุก 5 วินาที ล้ม 3 ครั้งติด (~15 วินาที) จึงสั่ง restart | `Unhealthy (x3 over 25s)` แล้ว `Killing`; `describe` แสดง `delay=5s timeout=1s period=5s successThreshold=1 failureThreshold=3` (`timeout`/`successThreshold` เป็นค่าเริ่มต้น) |
-| readiness: `httpGet path: /ready.html, port: 80` | ตรวจด้วย HTTP GET ไฟล์ที่ตั้งใจไม่ให้มี เพื่อควบคุมได้ด้วยการสร้าง/ลบไฟล์ | ครั้งแรก `connection refused` (nginx ยังไม่เริ่ม) แล้ว `statuscode: 404` |
-| readiness: `periodSeconds: 3`, `failureThreshold: 1` | ตรวจถี่และล้มครั้งเดียวก็ไม่พร้อม เพื่อให้เห็นผลภายในไม่กี่วินาที | สร้าง `ready.html` → `1/1`, ลบ → `0/1` ภายใน 3–5 วินาที; `describe` แสดง `delay=0s ... period=3s ... failureThreshold=1` |
-| readiness: ไม่มี `livenessProbe` | readiness ไม่เคยทำให้ restart | RESTARTS คงที่ `0` ตลอด |
+- **readiness** ไม่ผ่าน → Pod แค่ "ยังไม่พร้อม" (READY `0/1`) **ไม่ถูกเริ่มใหม่**
+- **liveness** ไม่ผ่าน → container ถูก **ฆ่าแล้วเริ่มใหม่** (RESTARTS เพิ่ม)
 
 🐧 **ใน SSH session ของ k8s-lab**
 
-### ขั้นที่ 1: สร้างทั้งสอง Pod
+### ขั้นที่ 1: readiness — พร้อมหรือยัง
 
-```bash
-kubectl apply -f labs/lab07-probes/liveness-exec-pod.yaml -f labs/lab07-probes/readiness-http-pod.yaml
-kubectl get pods
-kubectl describe pod readiness-http-pod | sed -n "/^Events:/,\$p"
+```yaml
+# readiness-http-pod.yaml (ส่วนสำคัญ)
+      readinessProbe:
+        httpGet:                 # เปิดหน้าเว็บนี้ ได้ 200 = พร้อม, 404 = ไม่พร้อม
+          path: /ready.html      # ตอนแรกยังไม่มีไฟล์นี้
+          port: 80
+        periodSeconds: 3         # ตรวจทุก 3 วินาที
 ```
 
-```text
-pod/liveness-exec-pod created
+**1.1 สร้าง Pod**
+
+```bash
+kubectl apply -f labs/lab07-probes/readiness-http-pod.yaml
+```
+
+**Expected output**
+
+<pre>
 pod/readiness-http-pod created
+</pre>
 
-# ~10s
-NAME                 READY   STATUS    RESTARTS   AGE
-liveness-exec-pod    1/1     Running   0          11s
-readiness-http-pod   0/1     Running   0          11s
-
-Events:
-  Type     Reason     Age   From               Message
-  ----     ------     ----  ----               -------
-  Normal   Scheduled  10s   default-scheduler  Successfully assigned default/readiness-http-pod to lab-worker
-  Normal   Pulling    10s   kubelet            spec.containers{web}: Pulling image "nginx:1.27-alpine"
-  Normal   Pulled     4s    kubelet            spec.containers{web}: Successfully pulled image "nginx:1.27-alpine" in 6.105s (6.105s including waiting). Image size: 20984244 bytes.
-  Normal   Created    4s    kubelet            spec.containers{web}: Container created
-  Normal   Started    4s    kubelet            spec.containers{web}: Container started
-  Warning  Unhealthy  4s    kubelet            spec.containers{web}: Readiness probe failed: Get "http://10.244.1.5:80/ready.html": dial tcp 10.244.1.5:80: connect: connection refused
-  Warning  Unhealthy  3s    kubelet            spec.containers{web}: Readiness probe failed: HTTP probe failed with statuscode: 404
-```
-
-(IP ของ Pod, node และจำนวนครั้ง `(xN over ...)` จะต่างตามจังหวะที่สั่ง ถ้า node มี image `nginx:1.27-alpine` อยู่แล้วจะเห็น `already present on machine` แทน `Pulling`/`Pulled`)
-
-ครั้งแรก `connection refused` เพราะ nginx ยังเริ่มไม่เสร็จ หลังจากนั้นเป็น `404` เพราะยังไม่มีไฟล์ `/ready.html`
-
-### ขั้นที่ 2: ทำให้ readiness ผ่าน แล้วไม่ผ่านอีกครั้ง
+รอสัก 10 วินาที
 
 ```bash
-kubectl exec readiness-http-pod -- sh -c "echo ready > /usr/share/nginx/html/ready.html"
-kubectl get pod readiness-http-pod
-kubectl exec readiness-http-pod -- rm /usr/share/nginx/html/ready.html
-kubectl get pod readiness-http-pod
+kubectl get pods
 ```
 
-(รอ 3–5 วินาทีก่อน `get` แต่ละครั้ง เพราะ probe ตรวจทุก 3 วินาที)
+**Expected output**
 
-```text
+<pre>
+NAME                 READY   STATUS    RESTARTS   AGE
+readiness-http-pod   0/1     Running   0          10s
+</pre>
+
+STATUS เป็น `Running` แต่ READY `0/1` = container ทำงานอยู่ แต่ **ยังไม่พร้อม** ดูเหตุผล
+
+```bash
+kubectl describe pod readiness-http-pod
+```
+
+**Expected output** (ส่วน Events ท้ายสุด)
+
+<pre>
+Events:
+...
+  Warning  Unhealthy  0s (x4 over 9s)  kubelet            spec.containers{web}: Readiness probe failed: HTTP probe failed with statuscode: 404
+</pre>
+
+probe เปิด `/ready.html` แล้วได้ `404` (ไม่มีไฟล์) จึงถือว่ายังไม่พร้อม
+
+**1.2 สร้างไฟล์ให้ probe ผ่าน**
+
+```bash
+kubectl exec readiness-http-pod -- touch /usr/share/nginx/html/ready.html
+```
+
+คำสั่งนี้ไม่มี output รอสัก 5 วินาที
+
+```bash
+kubectl get pods
+```
+
+**Expected output**
+
+<pre>
 NAME                 READY   STATUS    RESTARTS   AGE
 readiness-http-pod   1/1     Running   0          15s
+</pre>
 
-NAME                 READY   STATUS    RESTARTS   AGE
-readiness-http-pod   0/1     Running   0          19s
-```
-
-### ขั้นที่ 3: รอ liveness ล้ม (อย่างน้อย 90 วินาที)
+**1.3 ลบไฟล์ทิ้ง**
 
 ```bash
-kubectl describe pod liveness-exec-pod | sed -n "/^Events:/,\$p"
+kubectl exec readiness-http-pod -- rm /usr/share/nginx/html/ready.html
+```
+
+รอสัก 5 วินาที
+
+```bash
 kubectl get pods
-kubectl logs liveness-exec-pod --previous
 ```
 
-ผลจริงที่ประมาณ 60 วินาที (Events) และ 95 วินาที (`get pods`)
+**Expected output**
 
-```text
-Events:
-  Type     Reason     Age                From               Message
-  ----     ------     ----               ----               -------
-  Normal   Scheduled  61s                default-scheduler  Successfully assigned default/liveness-exec-pod to lab-worker2
-  Normal   Pulled     60s                kubelet            spec.containers{app}: Container image "busybox:1.36" already present on machine and can be accessed by the pod
-  Normal   Created    60s                kubelet            spec.containers{app}: Container created
-  Normal   Started    60s                kubelet            spec.containers{app}: Container started
-  Warning  Unhealthy  15s (x3 over 25s)  kubelet            spec.containers{app}: Liveness probe failed: cat: can't open '/tmp/healthy': No such file or directory
-  Normal   Killing    15s                kubelet            spec.containers{app}: Container app failed liveness probe, will be restarted
+<pre>
+NAME                 READY   STATUS    RESTARTS   AGE
+readiness-http-pod   0/1     Running   0          20s
+</pre>
 
-# ~95s
-NAME                 READY   STATUS    RESTARTS      AGE
-liveness-exec-pod    1/1     Running   1 (21s ago)   97s
-readiness-http-pod   0/1     Running   0             97s
+READY กลับเป็น `0/1` แต่ RESTARTS ยังเป็น `0` = readiness ไม่เคยทำให้ container ถูกเริ่มใหม่
 
-$ kubectl logs liveness-exec-pod --previous
-สบายดี
-ไม่สบายแล้ว
+### ขั้นที่ 2: liveness — ยังมีชีวิตอยู่ไหม
+
+```yaml
+# liveness-exec-pod.yaml (ส่วนสำคัญ)
+      # สร้างไฟล์ /tmp/healthy → ผ่านไป 30 วินาทีลบทิ้ง (จำลองแอปค้าง)
+      command: ["sh", "-c", "touch /tmp/healthy; echo 'สบายดี'; sleep 30; rm -f /tmp/healthy; echo 'ไม่สบายแล้ว'; sleep 600"]
+      livenessProbe:
+        exec:
+          command: ["cat", "/tmp/healthy"]   # อ่านไฟล์ได้ = ยังมีชีวิต
+        initialDelaySeconds: 5               # รอ 5 วินาทีก่อนตรวจครั้งแรก
+        periodSeconds: 5                     # ตรวจทุก 5 วินาที
+        failureThreshold: 3                  # ไม่ผ่าน 3 ครั้งติด → เริ่มใหม่
 ```
 
-> **ทำไมต้องรอนาน:** probe เริ่มล้มหลังวินาทีที่ ~30 ต้องล้ม 3 ครั้ง (ทุก 5 วินาที) จึงสั่ง `Killing` ที่ราววินาทีที่ 45 (Events ที่ 60 วินาทีแสดง `Killing 15s` ก่อนหน้า) แต่ `sh` ของ busybox ไม่ตอบสัญญาณ SIGTERM kubelet จึงต้องรอ grace period 30 วินาทีก่อนบังคับปิด ทำให้ RESTARTS เปลี่ยนเป็น 1 ที่ราววินาทีที่ 75 (รอบทดลองจริง: ยังเป็น 0 ที่วินาทีที่ 71 และเป็น `1 (1s ago)` ที่วินาทีที่ 76)
-
-### ขั้นที่ 4: เปรียบเทียบการตั้งค่า probe แล้วลบ
+**2.1 สร้าง Pod**
 
 ```bash
-kubectl describe pod liveness-exec-pod | grep -E "Restart Count|Liveness:"; kubectl describe pod readiness-http-pod | grep -E "Restart Count|Readiness:"
-kubectl delete -f labs/lab07-probes/ --now; kubectl get pods
+kubectl apply -f labs/lab07-probes/liveness-exec-pod.yaml
 ```
 
-```text
-    Restart Count:  1
-    Liveness:       exec [cat /tmp/healthy] delay=5s timeout=1s period=5s successThreshold=1 failureThreshold=3
-    Restart Count:  0
-    Readiness:      http-get http://:80/ready.html delay=0s timeout=1s period=3s successThreshold=1 failureThreshold=1
+**Expected output**
+
+<pre>
+pod/liveness-exec-pod created
+</pre>
+
+รอสัก 10 วินาที
+
+```bash
+kubectl get pods
+```
+
+**Expected output**
+
+<pre>
+NAME                 READY   STATUS    RESTARTS   AGE
+liveness-exec-pod    1/1     Running   0          10s
+readiness-http-pod   0/1     Running   0          30s
+</pre>
+
+ตอนนี้ `liveness-exec-pod` ยังสบายดี (มีไฟล์ `/tmp/healthy`)
+
+**2.2 รอประมาณ 1 นาทีครึ่ง แล้วดูอีกครั้ง**
+
+ไฟล์จะถูกลบที่วินาทีที่ 30 → probe ไม่ผ่าน 3 ครั้ง → container ถูกฆ่าแล้วเริ่มใหม่ (รวมเวลาปิด container ราว 75–90 วินาที)
+
+```bash
+kubectl get pods
+```
+
+**Expected output**
+
+<pre>
+NAME                 READY   STATUS    RESTARTS      AGE
+liveness-exec-pod    1/1     Running   1 (15s ago)   90s
+readiness-http-pod   0/1     Running   0             110s
+</pre>
+
+RESTARTS ของ `liveness-exec-pod` เพิ่มเป็น `1` ส่วน `readiness-http-pod` ยังเป็น `0` ดูเหตุผล
+
+```bash
+kubectl describe pod liveness-exec-pod
+```
+
+**Expected output** (ส่วน Events ท้ายสุด)
+
+<pre>
+Events:
+...
+  Warning  Unhealthy  45s (x3 over 55s)  kubelet            spec.containers{app}: Liveness probe failed: cat: can't open '/tmp/healthy': No such file or directory
+  Normal   Killing    45s                kubelet            spec.containers{app}: Container app failed liveness probe, will be restarted
+...
+</pre>
+
+`Unhealthy (x3)` = probe ไม่ผ่าน 3 ครั้ง แล้ว `Killing` = ฆ่า container เพื่อเริ่มใหม่
+
+### ขั้นที่ 3: ลบทั้งหมด
+
+```bash
+kubectl delete -f labs/lab07-probes/
+```
+
+**Expected output** (รอราว 30 วินาที)
+
+<pre>
 pod "liveness-exec-pod" deleted from default namespace
 pod "readiness-http-pod" deleted from default namespace
-No resources found in default namespace.
-```
+</pre>
 
 ### สิ่งที่เห็น
 
-- **readiness ล้ม** → READY `0/1` แต่ RESTARTS = 0 container ยังทำงานอยู่ และกลับมา `1/1` ได้เองเมื่อ probe ผ่าน
-- **liveness ล้ม** → Events `Killing` แล้ว RESTARTS เพิ่ม log รอบก่อนหน้าดูด้วย `--previous`
-- `--now` ช่วยให้ลบ Pod ที่ใช้ busybox ได้เร็ว ไม่ต้องรอ 30 วินาที (รอบทดลอง `time kubectl delete -f labs/lab07-probes/ --now` ใช้ราว 2.5 วินาที)
-- ผลของ READY `0/1` ต่อการรับทราฟฟิกจริงจะเห็นชัดในบทถัดไป
+- **readiness** ไม่ผ่าน → READY `0/1` แต่ไม่ restart และกลับมา `1/1` ได้เองเมื่อผ่าน
+- **liveness** ไม่ผ่านครบ `failureThreshold` → `Killing` แล้ว RESTARTS เพิ่ม
+- ดูผลของ probe ได้จาก Events ใน `kubectl describe pod`
 
 > **🤔 คำถามชวนคิด:** ถ้าเปลี่ยน readinessProbe ของ `readiness-http-pod` เป็น livenessProbe (ค่าเดิม) จะเกิดอะไรกับ RESTARTS เมื่อไม่มีไฟล์ `/ready.html`
 
@@ -1409,9 +1473,9 @@ No resources found in default namespace.
 
 ## LAB 8: Multi-container: localhost, emptyDir, init, sidecar
 
-<p align="center" id="fig-12">
-  <img src="images/09-lab8-multi-container.png" alt="รูปที่ 12 LAB8 multi-container" width="900"><br>
-  <em><b>รูปที่ 12</b> LAB8: Pod หลาย container คุยกันผ่าน localhost ใช้ emptyDir ร่วมกัน มี init container เตรียมไฟล์ และ sidecar เขียนข้อมูลต่อเนื่อง</em>
+<p align="center" id="fig-13">
+  <img src="images/09-lab8-multi-container.png" alt="รูปที่ 13 LAB8 multi-container" width="900"><br>
+  <em><b>รูปที่ 13</b> LAB8: Pod หลาย container คุยกันผ่าน localhost ใช้ emptyDir ร่วมกัน มี init container เตรียมไฟล์ และ sidecar เขียนข้อมูลต่อเนื่อง</em>
 </p>
 
 **เป้าหมาย:** พิสูจน์ว่า container ใน Pod เดียวกันใช้ IP เดียวกัน, ใช้ emptyDir ร่วมกัน, เห็นลำดับ init container และพฤติกรรมของข้อมูลเมื่อ container restart เทียบกับเมื่อลบ Pod
@@ -1669,9 +1733,9 @@ No resources found in default namespace.
 
 ## LAB 9: LAB สุดท้าย: ร้านอาหารแมวน้องส้ม
 
-<p align="center" id="fig-13">
-  <img src="images/10-lab9-som-shop-storefront.png" alt="รูปที่ 13 LAB9 ร้านอาหารแมวน้องส้ม" width="900"><br>
-  <em><b>รูปที่ 13</b> LAB สุดท้าย: เปิดร้านอาหารแมวน้องส้มด้วย Next.js + PostgreSQL ใน Pod เดียว</em>
+<p align="center" id="fig-14">
+  <img src="images/10-lab9-som-shop-storefront.png" alt="รูปที่ 14 LAB9 ร้านอาหารแมวน้องส้ม" width="900"><br>
+  <em><b>รูปที่ 14</b> LAB สุดท้าย: เปิดร้านอาหารแมวน้องส้มด้วย Next.js + PostgreSQL ใน Pod เดียว</em>
 </p>
 
 **เป้าหมาย:** build image ของแอป Next.js เอง นำเข้าคลัสเตอร์ด้วย `kind load` เปิดร้านใน Pod เดียวที่มี native sidecar (PostgreSQL), init container 2 ตัว, emptyDir, env, resources และ probes ครบ แล้วเปิดร้านใน browser กดสั่งซื้อ และทดลองว่าข้อมูลรอดหรือหายในสถานการณ์ใด
@@ -1680,9 +1744,9 @@ No resources found in default namespace.
 
 ### 9.1 สถาปัตยกรรมของ Pod som-shop
 
-<p align="center" id="fig-14">
-  <img src="images/11-lab9-pod-architecture.png" alt="รูปที่ 14 สถาปัตยกรรม Pod som-shop" width="900"><br>
-  <em><b>รูปที่ 14</b> สถาปัตยกรรม Pod som-shop: web (Next.js :3000) คุยกับ db (PostgreSQL :5432) ผ่าน localhost ภายใน Pod เดียว และเก็บข้อมูล DB บน emptyDir</em>
+<p align="center" id="fig-15">
+  <img src="images/11-lab9-pod-architecture.png" alt="รูปที่ 15 สถาปัตยกรรม Pod som-shop" width="900"><br>
+  <em><b>รูปที่ 15</b> สถาปัตยกรรม Pod som-shop: web (Next.js :3000) คุยกับ db (PostgreSQL :5432) ผ่าน localhost ภายใน Pod เดียว และเก็บข้อมูล DB บน emptyDir</em>
 </p>
 
 ```text
@@ -1710,9 +1774,9 @@ Pod som-shop  (labels: app=som-shop, part=all-in-one)   IP เดียว เ�
 
 ### 9.2 ลำดับการเริ่มและทำไม db ต้องเป็น native sidecar
 
-<p align="center" id="fig-15">
-  <img src="images/12-lab9-startup-order.png" alt="รูปที่ 15 ลำดับการเริ่ม Pod som-shop" width="900"><br>
-  <em><b>รูปที่ 15</b> ลำดับเริ่ม Pod: db (native sidecar) เริ่มก่อนและผ่าน startupProbe → wait-for-db รอ pg_isready → db-seed สร้างตารางและสินค้า → web เริ่มทำงาน</em>
+<p align="center" id="fig-16">
+  <img src="images/12-lab9-startup-order.png" alt="รูปที่ 16 ลำดับการเริ่ม Pod som-shop" width="900"><br>
+  <em><b>รูปที่ 16</b> ลำดับเริ่ม Pod: db (native sidecar) เริ่มก่อนและผ่าน startupProbe → wait-for-db รอ pg_isready → db-seed สร้างตารางและสินค้า → web เริ่มทำงาน</em>
 </p>
 
 init container ปกติต้องรันจนจบก่อน app container ทุกตัว ถ้าวาง PostgreSQL ไว้ใน `containers` แล้วให้ `wait-for-db` รอ จะรอไม่มีวันจบ (deadlock) จึงวาง `db` ไว้ **บนสุดของ `initContainers` พร้อม `restartPolicy: Always`** (native sidecar, GA ตั้งแต่ Kubernetes 1.33 คลัสเตอร์ของเราเป็น v1.37.0) kubelet จะเริ่ม `db` แล้วรอ startupProbe ผ่านก่อนรัน init ตัวถัดไป และ `db` ทำงานต่อตลอดอายุ Pod
@@ -1876,9 +1940,9 @@ spec:
 
 ### 9.3 Build image และนำเข้าคลัสเตอร์
 
-<p align="center" id="fig-16">
-  <img src="images/13-lab9-build-kind-load.png" alt="รูปที่ 16 build และ kind load" width="900"><br>
-  <em><b>รูปที่ 16</b> build image som-shop-web:1.0 ใน k8s-lab แล้วใช้ kind load docker-image นำ image เข้าไปในทุก node ของคลัสเตอร์</em>
+<p align="center" id="fig-17">
+  <img src="images/13-lab9-build-kind-load.png" alt="รูปที่ 17 build และ kind load" width="900"><br>
+  <em><b>รูปที่ 17</b> build image som-shop-web:1.0 ใน k8s-lab แล้วใช้ kind load docker-image นำ image เข้าไปในทุก node ของคลัสเตอร์</em>
 </p>
 
 node ของ kind เป็น container แยก มี containerd ของตัวเอง **มองไม่เห็น image ใน Docker ของ k8s-lab** จึงต้อง `kind load` เข้าไปก่อน
@@ -2144,9 +2208,9 @@ container `web` รันเป็น user `node` (ไม่ใช่ root) แ�
 
 ### 9.8 เปิดร้านใน browser และสั่งซื้อ
 
-<p align="center" id="fig-17">
-  <img src="images/14-lab9-open-in-browser.png" alt="รูปที่ 17 เปิดร้านจาก browser" width="900"><br>
-  <em><b>รูปที่ 17</b> เปิดร้านจากเครื่องนักศึกษา: kubectl port-forward pod/som-shop 3000:3000 ใน k8s-lab และ ssh -L 3000:localhost:3000 จากเครื่องนักศึกษา</em>
+<p align="center" id="fig-18">
+  <img src="images/14-lab9-open-in-browser.png" alt="รูปที่ 18 เปิดร้านจาก browser" width="900"><br>
+  <em><b>รูปที่ 18</b> เปิดร้านจากเครื่องนักศึกษา: kubectl port-forward pod/som-shop 3000:3000 ใน k8s-lab และ ssh -L 3000:localhost:3000 จากเครื่องนักศึกษา</em>
 </p>
 
 **ขั้นที่ 1:** 🐧 **ใน SSH session หลักของ k8s-lab** เปิด port-forward ค้างไว้
@@ -2182,16 +2246,16 @@ curl -s localhost:3000/api/products | head -c 300; echo
 
 **ขั้นที่ 4:** 🌐 **browser บนเครื่องนักศึกษา** เปิด **http://localhost:3000**
 
-<p align="center" id="fig-18">
-  <img src="images/screenshots/20261005_1725_lab002_01-som-shop.png" alt="รูปที่ 18 ภาพหน้าจอจริง หน้าร้านเริ่มต้น" width="700"><br>
-  <em><b>รูปที่ 18</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านอาหารแมวน้องส้มเมื่อเปิดครั้งแรก มีสินค้า 6 รายการ ออเดอร์ทั้งหมด 0 และ footer แสดงว่าเสิร์ฟโดย Pod som-shop (ภาพนี้ถ่ายผ่าน NodePort Service ชั่วคราวที่เพิ่มเองเพื่อถ่ายภาพ หน้าที่เห็นเหมือนกับที่เปิดผ่าน port-forward + ssh -L)</em>
+<p align="center" id="fig-19">
+  <img src="images/screenshots/20261005_1725_lab002_01-som-shop.png" alt="รูปที่ 19 ภาพหน้าจอจริง หน้าร้านเริ่มต้น" width="700"><br>
+  <em><b>รูปที่ 19</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านอาหารแมวน้องส้มเมื่อเปิดครั้งแรก มีสินค้า 6 รายการ ออเดอร์ทั้งหมด 0 และ footer แสดงว่าเสิร์ฟโดย Pod som-shop (ภาพนี้ถ่ายผ่าน NodePort Service ชั่วคราวที่เพิ่มเองเพื่อถ่ายภาพ หน้าที่เห็นเหมือนกับที่เปิดผ่าน port-forward + ssh -L)</em>
 </p>
 
 กดปุ่ม **🛒 สั่งซื้อ** 3 ครั้ง (เลือกสินค้าต่างกันได้) แต่ละการ์ดจะขึ้น "สั่งซื้อแล้ว! ออเดอร์ #N" จำนวน "เหลือ ... ชิ้น" ลดลง และมีรายการใน "ออเดอร์ล่าสุด"
 
-<p align="center" id="fig-19">
-  <img src="images/screenshots/20261004_1814_lab9_02-shop-after-orders.png" alt="รูปที่ 19 ภาพหน้าจอจริง หลังสั่งซื้อ 3 ครั้ง" width="700"><br>
-  <em><b>รูปที่ 19</b> ภาพหน้าจอจริงจากการทดลอง: หลังกดสั่งซื้อ 3 ครั้ง ออเดอร์ทั้งหมดเป็น 3, stock ของสินค้าที่สั่งลดลง และมีรายการออเดอร์ล่าสุด 3 รายการ</em>
+<p align="center" id="fig-20">
+  <img src="images/screenshots/20261004_1814_lab9_02-shop-after-orders.png" alt="รูปที่ 20 ภาพหน้าจอจริง หลังสั่งซื้อ 3 ครั้ง" width="700"><br>
+  <em><b>รูปที่ 20</b> ภาพหน้าจอจริงจากการทดลอง: หลังกดสั่งซื้อ 3 ครั้ง ออเดอร์ทั้งหมดเป็น 3, stock ของสินค้าที่สั่งลดลง และมีรายการออเดอร์ล่าสุด 3 รายการ</em>
 </p>
 
 **(ทางเลือก) สั่งซื้อด้วย curl** ใน SSH session ที่สอง เพื่อดู API โดยตรง ผลจริงจากรอบทดสอบ (รอบนั้นมีออเดอร์แรกเป็นสินค้า id 1 จำนวน 1 ชิ้นก่อนแล้ว — ได้ `{"ok":true,"order_id":1,"product":{"id":1,...,"stock":19}}` — order_id ด้านล่างจึงเริ่มที่ 2)
@@ -2227,9 +2291,9 @@ kubectl exec som-shop -c db -- psql -U som -d catshop -c 'SELECT o.id, p.sku, o.
 
 ### 9.9 ทดลองที่ 1: ฐานข้อมูลตาย แล้วข้อมูลยังอยู่ไหม
 
-<p align="center" id="fig-20">
-  <img src="images/15-lab9-emptydir-survive-vs-lost.png" alt="รูปที่ 20 emptyDir รอด vs หาย" width="900"><br>
-  <em><b>รูปที่ 20</b> ทดลองกับข้อมูลออเดอร์: restart container db แล้วข้อมูลยังอยู่บน emptyDir แต่ลบ Pod แล้วข้อมูลหายทั้งหมด</em>
+<p align="center" id="fig-21">
+  <img src="images/15-lab9-emptydir-survive-vs-lost.png" alt="รูปที่ 21 emptyDir รอด vs หาย" width="900"><br>
+  <em><b>รูปที่ 21</b> ทดลองกับข้อมูลออเดอร์: restart container db แล้วข้อมูลยังอยู่บน emptyDir แต่ลบ Pod แล้วข้อมูลหายทั้งหมด</em>
 </p>
 
 🐧 **ใน SSH session ที่สอง** (ให้ port-forward ในหน้าต่างหลักทำงานต่อไป) สั่งหยุด PostgreSQL ภายใน container `db`
@@ -2288,9 +2352,9 @@ web restarts=0
 
 🌐 **browser** กด refresh หน้าร้าน ข้อมูลออเดอร์ยังอยู่ครบ
 
-<p align="center" id="fig-21">
-  <img src="images/screenshots/20261004_1815_lab9_03-after-db-restart.png" alt="รูปที่ 21 ภาพหน้าจอจริง หลัง restart db" width="700"><br>
-  <em><b>รูปที่ 21</b> ภาพหน้าจอจริงจากการทดลอง: หลังหยุด PostgreSQL ด้วย pg_ctl stop จน container db ถูก restart ข้อมูล 3 ออเดอร์และ stock ที่ลดลงยังอยู่ครบ</em>
+<p align="center" id="fig-22">
+  <img src="images/screenshots/20261004_1815_lab9_03-after-db-restart.png" alt="รูปที่ 22 ภาพหน้าจอจริง หลัง restart db" width="700"><br>
+  <em><b>รูปที่ 22</b> ภาพหน้าจอจริงจากการทดลอง: หลังหยุด PostgreSQL ด้วย pg_ctl stop จน container db ถูก restart ข้อมูล 3 ออเดอร์และ stock ที่ลดลงยังอยู่ครบ</em>
 </p>
 
 **สรุปทดลองที่ 1:** kubelet restart เฉพาะ container `db` (RESTARTS ของ Pod เป็น 1 ซึ่งมาจาก `db`) ภายใน Pod เดิม IP เดิม ส่วน `web` ไม่ถูก restart และ **ข้อมูลรอด เพราะอยู่บน emptyDir ซึ่งมีอายุเท่ากับ Pod**
@@ -2373,18 +2437,18 @@ seeded 6 products (new: 6)
 kubectl port-forward pod/som-shop 3000:3000
 ```
 
-<p align="center" id="fig-22">
-  <img src="images/screenshots/20261004_1815_lab9_04-after-pod-delete.png" alt="รูปที่ 22 ภาพหน้าจอจริง หลังลบ Pod แล้วสร้างใหม่" width="700"><br>
-  <em><b>รูปที่ 22</b> ภาพหน้าจอจริงจากการทดลอง: หลังลบ Pod แล้ว apply ใหม่ (และรัน port-forward ใหม่) ร้านกลับเป็น 0 ออเดอร์ และ stock กลับเป็นค่าตั้งต้น</em>
+<p align="center" id="fig-23">
+  <img src="images/screenshots/20261004_1815_lab9_04-after-pod-delete.png" alt="รูปที่ 23 ภาพหน้าจอจริง หลังลบ Pod แล้วสร้างใหม่" width="700"><br>
+  <em><b>รูปที่ 23</b> ภาพหน้าจอจริงจากการทดลอง: หลังลบ Pod แล้ว apply ใหม่ (และรัน port-forward ใหม่) ร้านกลับเป็น 0 ออเดอร์ และ stock กลับเป็นค่าตั้งต้น</em>
 </p>
 
 **สรุปทดลองที่ 2:** Pod ใหม่ได้ **IP ใหม่** (รอบทดลองนี้ `10.244.3.21` → `10.244.3.22` ของนักศึกษาจะเป็นเลขอื่น และอาจย้ายไปอีก node ด้วย), emptyDir ว่างเปล่า PostgreSQL จึงสร้างฐานข้อมูลใหม่ และ `db-seed` ใส่สินค้าใหม่ทั้ง 6 รายการ (`new: 6`) **ออเดอร์ทั้งหมดหายไป**
 
 ### 9.11 ทำไมงานจริงต้องแยก และบทหน้าจะทำอะไร
 
-<p align="center" id="fig-23">
-  <img src="images/16-lab9-next-split.png" alt="รูปที่ 23 บทหน้า: แยกเว็บกับฐานข้อมูล" width="900"><br>
-  <em><b>รูปที่ 23</b> Pod เดียวรวมเว็บกับฐานข้อมูลเป็นการออกแบบเพื่อการเรียนรู้ บทหน้าจะแยก web เป็น Deployment, db ใช้ที่เก็บถาวร และเชื่อมกันด้วย Service</em>
+<p align="center" id="fig-24">
+  <img src="images/16-lab9-next-split.png" alt="รูปที่ 24 บทหน้า: แยกเว็บกับฐานข้อมูล" width="900"><br>
+  <em><b>รูปที่ 24</b> Pod เดียวรวมเว็บกับฐานข้อมูลเป็นการออกแบบเพื่อการเรียนรู้ บทหน้าจะแยก web เป็น Deployment, db ใช้ที่เก็บถาวร และเชื่อมกันด้วย Service</em>
 </p>
 
 | ปัญหาที่น้องส้มเจอใน LAB 9 | สิ่งที่บทถัดไปจะใช้ (ยังไม่ทำในบทนี้) |
@@ -2446,7 +2510,6 @@ No resources found in default namespace.
 | หน้าเว็บ LAB 3 แสดงภาษาไทยเพี้ยน | nginx ไม่ส่ง charset | ใส่ `<meta charset=utf-8>` นำหน้าใน `index.html` |
 | `kubectl delete` Pod ที่ใช้ busybox ค้างประมาณ 30 วินาที | `sh` เป็นโปรเซสหลัก ไม่ตอบ SIGTERM จึงรอ grace period 30 วินาที | รอ หรือใช้ `kubectl delete pod <ชื่อ> --now` |
 | `wget http://localhost:3000/...` ใน container `web` ได้ `Connection refused` | `localhost` ถูก resolve เป็น `::1` แต่ Next.js ฟังเฉพาะ IPv4 | ใช้ `http://127.0.0.1:3000/...` (ดู [9.7](#97-ตรวจ-health-ภายใน-pod-และเรื่อง-localhost-กับ-ipv6)) |
-| `kubectl logs crash-pod --previous` ได้ `unable to retrieve container logs for containerd://...` | สั่งตอน container เพิ่งจบ (`State: Terminated`) kubelet ลบ container รอบก่อนหน้าไปแล้ว | รอแล้วสั่งใหม่ตอน STATUS เป็น `CrashLoopBackOff` หรือ `Running` หรือใช้ `kubectl logs crash-pod` (ไม่ใส่ `--previous`) ซึ่งจะเห็น log ของรอบที่เพิ่งล้ม |
 | ไม่เคยเห็น `CrashLoopBackOff` เห็นแต่ `Error` | บน K8s 1.37 STATUS สลับ `Error`/`CrashLoopBackOff` | ดู RESTARTS ที่เพิ่มขึ้นและ Events `BackOff` แทน |
 | `liveness-exec-pod` ยังไม่ restart | ต้องรอ ~75 วินาที (ล้มที่ ~45 วิ + รอ kill 30 วิ) | รออย่างน้อย 90 วินาทีก่อนตรวจ |
 | `pending-pod` ไม่ Pending แต่ Running | เครื่องมีมากกว่า 64 CPU thread | เพิ่มค่า `cpu` ใน `pending-pod.yaml` ให้เกินจำนวน CPU ของเครื่อง |
