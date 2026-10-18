@@ -11,7 +11,7 @@
 
 ทุก LAB ทำ **ใน container `k8s-lab`** (image `tuchsanai/devtools-kind:2569_1` มี kubectl, kind, helm, k9s และ Docker ข้างในครบ) โดยทำตามน้องส้มตั้งแต่สร้างคลัสเตอร์ สร้าง Pod แรก ดีบัก Pod ที่พัง จนถึงเปิด **"ร้านอาหารแมวน้องส้ม"** (Next.js + PostgreSQL) ใน Pod เดียว
 
-> ผลในบล็อก ```` ```text ```` มาจากการทดลองจริงเมื่อ 5 ต.ค. 2569 (kind v0.33.0, kubectl v1.37.1, Kubernetes v1.37.0) ค่า AGE, IP, ชื่อ Pod ที่สุ่ม และ Node ในเครื่องนักศึกษาอาจต่างไป เป็นเรื่องปกติ
+> บล็อก **Expected output** คือผลที่ควรเห็นหลังรันคำสั่ง (ไม่ต้องพิมพ์ตาม) มาจากการทดลองจริงเมื่อ 5 ต.ค. 2569 (kind v0.33.0, kubectl v1.37.1, Kubernetes v1.37.0) ค่า AGE, IP, ชื่อ Pod ที่สุ่ม และ Node ในเครื่องนักศึกษาอาจต่างไป เป็นเรื่องปกติ
 
 | สัญลักษณ์ | รันที่ไหน |
 |---|---|
@@ -119,7 +119,9 @@ kubectl get nodes      # ต้องเห็น 3 node Ready
 kubectl get pods -A    # Pod ระบบใน kube-system ต้อง Running
 ```
 
-```text
+**Expected output**
+
+<pre>
 ...
 [k8s-up] cluster 'lab' พร้อมใช้งาน (kubectl context: kind-lab)
 ...
@@ -127,9 +129,9 @@ real	0m48.440s
 
 NAME                STATUS   ROLES           AGE   VERSION
 lab-control-plane   Ready    control-plane   23s   v1.37.0
-lab-worker          Ready    <none>          13s   v1.37.0
-lab-worker2         Ready    <none>          13s   v1.37.0
-```
+lab-worker          Ready    &lt;none&gt;          13s   v1.37.0
+lab-worker2         Ready    &lt;none&gt;          13s   v1.37.0
+</pre>
 
 > **✅ ผ่านเมื่อ:** node 3 ตัว `Ready` และ Pod ใน `kube-system` เป็น `Running` ทุกตัว (ช่วงแรกอาจยัง `0/1` รอสักครู่) ข้อความเรื่อง NodePort ท้าย `k8s-up` ข้ามได้ ปัญหาอื่นดู [Troubleshooting](#troubleshooting)
 
@@ -171,9 +173,11 @@ cd DevTools/05_kubernetes/002_kubernetes_pod/02_LAB
 kubectl run hello --image=nginx:1.27-alpine
 ```
 
-```text
+**Expected output**
+
+<pre>
 pod/hello created
-```
+</pre>
 
 **1.2 ดูรายการ Pod ทันที**
 
@@ -181,10 +185,12 @@ pod/hello created
 kubectl get pods
 ```
 
-```text
+**Expected output**
+
+<pre>
 NAME    READY   STATUS              RESTARTS   AGE
 hello   0/1     ContainerCreating   0          0s
-```
+</pre>
 
 STATUS ยังเป็น `ContainerCreating` และ READY `0/1` เพราะ Pod **ยังสร้างไม่เสร็จ** node กำลังดึง image จาก Docker Hub
 
@@ -194,10 +200,12 @@ STATUS ยังเป็น `ContainerCreating` และ READY `0/1` เพร
 kubectl get pods
 ```
 
-```text
+**Expected output**
+
+<pre>
 NAME    READY   STATUS    RESTARTS   AGE
 hello   1/1     Running   0          10s
-```
+</pre>
 
 เมื่อเห็น `1/1` และ `Running` แปลว่า Pod พร้อมใช้งานแล้ว
 
@@ -207,10 +215,12 @@ hello   1/1     Running   0          10s
 kubectl get pods -o wide
 ```
 
-```text
+**Expected output**
+
+<pre>
 NAME    READY   STATUS    RESTARTS   AGE   IP           NODE          NOMINATED NODE   READINESS GATES
-hello   1/1     Running   0          10s   10.244.2.3   lab-worker2   <none>           <none>
-```
+hello   1/1     Running   0          10s   10.244.2.3   lab-worker2   &lt;none&gt;           &lt;none&gt;
+</pre>
 
 เทียบกับผลของ `kubectl get pods` ในขั้นที่ 1.3 จะเห็นว่า `-o wide` แสดง **คอลัมน์เพิ่ม** ขึ้นมา
 
@@ -227,9 +237,9 @@ hello   1/1     Running   0          10s   10.244.2.3   lab-worker2   <none>    
 kubectl describe pod hello
 ```
 
-ผลจริง (ตัดเฉพาะส่วนสำคัญ)
+**Expected output** (ตัดเฉพาะส่วนสำคัญ)
 
-```text
+<pre>
 Name:             hello
 Namespace:        default
 Node:             lab-worker2/172.19.0.3
@@ -253,7 +263,7 @@ Events:
   Normal  Pulled     2s    kubelet            spec.containers{hello}: Successfully pulled image "nginx:1.27-alpine" in 7.852s (7.852s including waiting). Image size: 20984244 bytes.
   Normal  Created    2s    kubelet            spec.containers{hello}: Container created
   Normal  Started    2s    kubelet            spec.containers{hello}: Container started
-```
+</pre>
 
 ### ขั้นที่ 4: ลบ Pod แล้วตรวจ
 
@@ -262,12 +272,12 @@ kubectl delete pod hello
 kubectl get pods
 ```
 
-ผลจริง
+**Expected output**
 
-```text
+<pre>
 pod "hello" deleted from default namespace
 No resources found in default namespace.
-```
+</pre>
 
 `No resources found` = ไม่มี Pod เหลือใน namespace `default` แล้ว
 
