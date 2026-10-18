@@ -15,19 +15,19 @@
 
 | ส่วน | เนื้อหา | ลิงก์ |
 |---|---|---|
-| 📖 **ทฤษฎี** | Pod, Node, เครือข่ายของ Pod, เส้นทางการเกิดของ Pod, YAML พื้นฐาน, manifest, container spec (image/env/command/resources), labels, lifecycle และข้อผิดพลาดยอดฮิต, probes, emptyDir, init container/sidecar, การดีบัก และ port-forward + ssh -L (32 ภาพประกอบ + คำถามทบทวนพร้อมแนวคำตอบ) | [01_Theory/README.md](01_Theory/README.md) |
-| 🧪 **ปฏิบัติการ** | LAB 0–9 จากง่ายไปยาก: สร้างคลัสเตอร์ → `kubectl run` → YAML แรก → exec/logs/port-forward → labels → lifecycle/debug → env/resources → probes → multi-container → **LAB สุดท้าย: ร้านอาหารแมวน้องส้ม** พร้อม Troubleshooting และ Checklist ส่งงาน | [02_LAB/README.md](02_LAB/README.md) |
+| 📖 **ทฤษฎี** | Pod, Node, เครือข่ายของ Pod, เส้นทางการเกิดของ Pod, YAML พื้นฐาน, manifest, container spec (image/env/command/resources), labels, lifecycle และข้อผิดพลาดยอดฮิต, probes, emptyDir, init container/sidecar, การดีบัก และเปิดเว็บด้วย port-forward + แท็บ PORTS ของ VS Code (มีหัวข้ออ่าน YAML ทีละบรรทัดแบบละเอียด + คำถามทบทวนพร้อมแนวคำตอบ) | [01_Theory/README.md](01_Theory/README.md) |
+| 🧪 **ปฏิบัติการ** | LAB 0–8 จากง่ายไปยาก: สร้างคลัสเตอร์ → `kubectl run` → YAML แรก → exec/logs/port-forward → labels → lifecycle/debug → env/resources → probes → **LAB สุดท้าย: ร้านอาหารแมวน้องส้ม** พร้อมสรุปคำสั่ง kubectl ท้ายบท | [02_LAB/README.md](02_LAB/README.md) |
 
 ## คำแนะนำในการเรียน
 
-1. **อ่านทฤษฎีก่อน** อย่างน้อยหัวข้อ 1–11 (Pod และการเขียน YAML) แล้วเริ่ม LAB 0–4 ได้เลย
-2. ก่อนทำ LAB 5–9 ให้อ่านหัวข้อ 12–17 (lifecycle, probes, emptyDir, multi-container, การดีบัก)
+1. **อ่านทฤษฎีก่อน** อย่างน้อยหัวข้อ 1–8 (Pod และการอ่าน YAML) แล้วเริ่ม LAB 0–4 ได้เลย
+2. ก่อนทำ LAB 5–8 ให้อ่านหัวข้อ 9–14 (lifecycle, probes, emptyDir, init/sidecar, การดีบัก)
 3. ทำ LAB **ตามลำดับ** เพราะ LAB หลังใช้ความรู้และคลัสเตอร์จาก LAB ก่อนหน้า ใช้เวลารวมประมาณ 3.5–4 ชั่วโมง
 4. สังเกตสัญลักษณ์ในเอกสาร LAB ว่าคำสั่งรันที่ไหน: 🖥️ บนเครื่องนักศึกษา / 🐧 ใน SSH session ของ k8s-lab / 🌐 browser
 5. ผลลัพธ์ในเอกสารมาจากการทดลองจริง (Kubernetes v1.37.0) แต่ **เวลา, IP, ชื่อ Node อาจต่างจากเครื่องของนักศึกษา**
 6. ลองตอบคำถามทบทวนด้วยตัวเองก่อนเปิดดูแนวคำตอบ
 
-> **ขอบเขตของบทนี้:** ใช้ **Pod เดี่ยว ๆ เท่านั้น** การเปิดเว็บใช้ `kubectl port-forward` ร่วมกับ `ssh -L` ส่วน Deployment, Service (รวมถึง NodePort ผ่าน port 30080–30082), PersistentVolumeClaim และ Secret เป็น **เนื้อหาของบทถัดไป**
+> **ขอบเขตของบทนี้:** ใช้ **Pod เดี่ยว ๆ เท่านั้น** การเปิดเว็บใช้ `kubectl port-forward` ร่วมกับแท็บ PORTS ของ VS Code ส่วน Deployment, Service (รวมถึง NodePort ผ่าน port 30080–30082), PersistentVolumeClaim และ Secret เป็น **เนื้อหาของบทถัดไป**
 
 ## สิ่งที่ต้องมีก่อนเริ่ม
 
@@ -44,23 +44,22 @@
 ├── README.md                         ← หน้านี้
 ├── 01_Theory/
 │   ├── README.md                     ← เอกสารทฤษฎี
-│   └── images/                       ← ภาพประกอบ 00–32 (+ imagegen-prompts.md)
+│   └── images/                       ← ภาพประกอบ 00–35 (+ imagegen-prompts.md)
 └── 02_LAB/
-    ├── README.md                     ← คู่มือ LAB 0–9
-    ├── images/                       ← ภาพประกอบ LAB 01–16 + screenshots/ ภาพหน้าจอจริงของร้าน
-    ├── labs/                         ← YAML ของ LAB 2–8
+    ├── README.md                     ← คู่มือ LAB 0–8
+    ├── images/                       ← ภาพประกอบ LAB + screenshots/ ภาพหน้าจอจริง
+    ├── labs/                         ← YAML ของ LAB 2–7
     │   ├── lab02-first-yaml/
     │   ├── lab04-labels/
     │   ├── lab05-lifecycle/
     │   ├── lab06-env-resources/
-    │   ├── lab07-probes/
-    │   └── lab08-multi-container/
-    └── som-shop/                     ← LAB 9 ร้านอาหารแมวน้องส้ม
+    │   └── lab07-probes/
+    └── som-shop/                     ← LAB 8 ร้านอาหารแมวน้องส้ม
         ├── app/                      ← แอป Next.js + Dockerfile + scripts/seed.mjs
         └── k8s/som-shop-pod.yaml     ← manifest ของ Pod
 ```
 
-ใน LAB 0 จะคัดลอกโฟลเดอร์ทั้งหมดนี้เข้า container ด้วย `docker cp 002_kubernetes_pod k8s-lab:/workspace/` และทำงานที่ `/workspace/002_kubernetes_pod/02_LAB` ภายใน k8s-lab
+ใน LAB 0 จะ `git clone` repo เข้า container แล้วทำงานที่ `/workspace/DevTools/05_kubernetes/002_kubernetes_pod/02_LAB` ภายใน k8s-lab
 
 ## เริ่มเลย
 
