@@ -196,7 +196,7 @@ kubectl get pods
 
 ```text
 NAME    READY   STATUS    RESTARTS   AGE
-hello   1/1     Running   0          8s
+hello   1/1     Running   0          10s
 ```
 
 เมื่อเห็น `1/1` และ `Running` แปลว่า Pod พร้อมใช้งานแล้ว
@@ -209,7 +209,7 @@ kubectl get pods -o wide
 
 ```text
 NAME    READY   STATUS    RESTARTS   AGE   IP           NODE          NOMINATED NODE   READINESS GATES
-hello   1/1     Running   0          8s    10.244.2.2   lab-worker2   <none>           <none>
+hello   1/1     Running   0          10s   10.244.2.3   lab-worker2   <none>           <none>
 ```
 
 เทียบกับผลของ `kubectl get pods` ในขั้นที่ 1.3 จะเห็นว่า `-o wide` แสดง **คอลัมน์เพิ่ม** ขึ้นมา
@@ -235,7 +235,7 @@ Namespace:        default
 Node:             lab-worker2/172.19.0.3
 Labels:           run=hello
 Status:           Running
-IP:               10.244.2.2
+IP:               10.244.2.3
 Containers:
   hello:
     Image:          nginx:1.27-alpine
@@ -248,11 +248,11 @@ QoS Class:                   BestEffort
 Events:
   Type    Reason     Age   From               Message
   ----    ------     ----  ----               -------
-  Normal  Scheduled  8s    default-scheduler  Successfully assigned default/hello to lab-worker2
-  Normal  Pulling    7s    kubelet            spec.containers{hello}: Pulling image "nginx:1.27-alpine"
-  Normal  Pulled     0s    kubelet            spec.containers{hello}: Successfully pulled image "nginx:1.27-alpine" in 7.499s (7.499s including waiting). Image size: 20984244 bytes.
-  Normal  Created    0s    kubelet            spec.containers{hello}: Container created
-  Normal  Started    0s    kubelet            spec.containers{hello}: Container started
+  Normal  Scheduled  10s   default-scheduler  Successfully assigned default/hello to lab-worker2
+  Normal  Pulling    10s   kubelet            spec.containers{hello}: Pulling image "nginx:1.27-alpine"
+  Normal  Pulled     2s    kubelet            spec.containers{hello}: Successfully pulled image "nginx:1.27-alpine" in 7.852s (7.852s including waiting). Image size: 20984244 bytes.
+  Normal  Created    2s    kubelet            spec.containers{hello}: Container created
+  Normal  Started    2s    kubelet            spec.containers{hello}: Container started
 ```
 
 ### ขั้นที่ 4: ลบ Pod แล้วตรวจ
