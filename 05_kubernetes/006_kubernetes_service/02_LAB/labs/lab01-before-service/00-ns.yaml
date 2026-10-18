@@ -1,7 +1,0 @@
-# LAB 1–9: โซน (namespace) shop ของบทนี้ — จบ LAB 9 ลบทิ้งด้วย kubectl delete ns shop
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: shop               # ทุกไฟล์ของ LAB 1–9 อ้าง namespace: shop
-  labels:
-    team: som              # ป้ายของโซน (เทียบ team: kitchen ที่ NetworkPolicy ใช้เลือกโซนใน LAB 9)

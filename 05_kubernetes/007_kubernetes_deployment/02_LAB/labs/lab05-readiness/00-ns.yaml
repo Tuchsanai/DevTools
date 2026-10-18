@@ -1,5 +1,0 @@
-# LAB 5: โซน ready-lab — readiness + minReadySeconds ตัดสินจังหวะ rollout
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ready-lab              # ทุกคำสั่งของ LAB นี้ใช้ -n ready-lab และลบทั้งโซนตอนจบ
