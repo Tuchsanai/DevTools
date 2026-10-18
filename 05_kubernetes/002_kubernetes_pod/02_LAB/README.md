@@ -416,8 +416,20 @@ kubectl create -f labs/lab02-first-yaml/nginx-pod.yaml
 Error from server (AlreadyExists): error when creating "labs/lab02-first-yaml/nginx-pod.yaml": pods "web" already exists
 </pre>
 
-- `apply` ดูว่าไฟล์ต่างจากของที่มีอยู่ไหม ไม่ต่าง → `unchanged` (สั่งซ้ำได้เสมอ)
-- `create` สร้างใหม่อย่างเดียว ถ้ามีชื่อนี้แล้ว → error `AlreadyExists`
+**`create` กับ `apply` ต่างกันอย่างไร**
+
+| | `kubectl create -f` | `kubectl apply -f` |
+|---|---|---|
+| ยังไม่มี Pod นี้ | สร้างให้ (`created`) | สร้างให้ (`created`) |
+| มีแล้ว ไฟล์ไม่เปลี่ยน | error `AlreadyExists` | ไม่ทำอะไร (`unchanged`) |
+| มีแล้ว ไฟล์ถูกแก้ | error `AlreadyExists` | อัปเดตตามไฟล์ (`configured`) |
+
+**ควรใช้อันไหน**
+
+- ใช้ **`apply` เป็นหลัก** เพราะสั่งซ้ำกี่ครั้งก็ได้ แก้ไฟล์แล้ว apply ใหม่ได้เลย (แบบ declarative = "ทำให้ตรงกับไฟล์")
+- ใช้ **`create`** เมื่ออยากให้ "สร้างใหม่เท่านั้น" ถ้ามีอยู่แล้วให้ error เตือน จะได้ไม่ไปทับของเดิมโดยไม่ตั้งใจ
+- อย่าใช้สลับกันกับ object เดียวกัน: ถ้าสร้างด้วย `create` แล้วมา `apply` ทีหลัง จะได้คำเตือน `missing the kubectl.kubernetes.io/last-applied-configuration annotation` (ยังทำงานได้ แต่ควรเลือกใช้แบบเดียวตั้งแต่ต้น)
+- Pod แก้ได้แค่บาง field (เช่น label, image) ถ้าแก้ field อื่นใน spec เช่น port ต้องลบแล้วสร้างใหม่
 
 ### ขั้นที่ 5: ลบ Pod
 
@@ -1749,7 +1761,7 @@ docker rm -f k8s-lab     # ลบ container รวมคลัสเตอร์
 |---|---|
 | `kubectl run hello --image=nginx:1.27-alpine` | สร้าง Pod ด้วยคำสั่งเดียว (ไม่ใช้ไฟล์) |
 | `kubectl apply -f <ไฟล์ หรือ โฟลเดอร์>` | สร้าง/อัปเดต Pod ตามไฟล์ YAML (สั่งซ้ำได้) |
-| `kubectl create -f <ไฟล์>` | สร้างใหม่อย่างเดียว ถ้ามีอยู่แล้วจะ error |
+| `kubectl create -f <ไฟล์>` | สร้างใหม่อย่างเดียว ถ้ามีอยู่แล้วจะ error (ใช้ `apply` เป็นหลัก) |
 | `kubectl delete pod <ชื่อ>` | ลบ Pod ตามชื่อ |
 | `kubectl delete -f <ไฟล์ หรือ โฟลเดอร์>` | ลบทุก Pod ที่อยู่ในไฟล์ |
 | `kubectl delete pod -l <key=value>` | ลบทุก Pod ที่มี label นี้ |
