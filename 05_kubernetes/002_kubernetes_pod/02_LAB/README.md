@@ -47,17 +47,18 @@
 
 | รูปที่ | เรื่อง | รูปที่ | เรื่อง |
 |:---:|---|:---:|---|
-| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 12 | [LAB 9 ร้านอาหารแมวน้องส้ม](#fig-12) |
-| 2 | [LAB 0 git clone](#fig-2) | 13 | [สถาปัตยกรรม Pod som-shop](#fig-13) |
-| 3 | [LAB 1 kubectl run](#fig-3) | 14 | [ลำดับการเริ่ม Pod som-shop](#fig-14) |
-| 4 | [LAB 2 YAML แรก](#fig-4) | 15 | [build และ kind load](#fig-15) |
-| 5 | [LAB 3 exec/logs/port-forward](#fig-5) | 16 | [เปิดร้านจาก browser](#fig-16) |
-| 6 | [ภาพหน้าจอจริง: หน้าเว็บ nginx ของ LAB 3](#fig-6) | 17 | [ภาพหน้าจอจริง: หน้าร้านเริ่มต้น](#fig-17) |
-| 7 | [LAB 4 labels](#fig-7) | 18 | [ภาพหน้าจอจริง: หลังสั่งซื้อ 3 ครั้ง](#fig-18) |
-| 8 | [LAB 5 lifecycle และดีบัก](#fig-8) | 19 | [emptyDir รอด vs หาย](#fig-19) |
-| 9 | [LAB 6 env/command/resources](#fig-9) | 20 | [ภาพหน้าจอจริง: หลัง restart db](#fig-20) |
-| 10 | [LAB 7 probes](#fig-10) | 21 | [ภาพหน้าจอจริง: หลังลบ Pod แล้วสร้างใหม่](#fig-21) |
-| 11 | [LAB 8 multi-container](#fig-11) | 22 | [บทหน้า: แยกเว็บกับฐานข้อมูล](#fig-22) |
+| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 13 | [LAB 9 ร้านอาหารแมวน้องส้ม](#fig-13) |
+| 2 | [LAB 0 git clone](#fig-2) | 14 | [สถาปัตยกรรม Pod som-shop](#fig-14) |
+| 3 | [LAB 1 kubectl run](#fig-3) | 15 | [ลำดับการเริ่ม Pod som-shop](#fig-15) |
+| 4 | [LAB 2 YAML แรก](#fig-4) | 16 | [build และ kind load](#fig-16) |
+| 5 | [LAB 3 exec/logs/port-forward](#fig-5) | 17 | [เปิดร้านจาก browser](#fig-17) |
+| 6 | [LAB 3 เปิดเว็บผ่าน VS Code PORTS](#fig-6) | 18 | [ภาพหน้าจอจริง: หน้าร้านเริ่มต้น](#fig-18) |
+| 7 | [ภาพหน้าจอจริง: หน้าเว็บ nginx ของ LAB 3](#fig-7) | 19 | [ภาพหน้าจอจริง: หลังสั่งซื้อ 3 ครั้ง](#fig-19) |
+| 8 | [LAB 4 labels](#fig-8) | 20 | [emptyDir รอด vs หาย](#fig-20) |
+| 9 | [LAB 5 lifecycle และดีบัก](#fig-9) | 21 | [ภาพหน้าจอจริง: หลัง restart db](#fig-21) |
+| 10 | [LAB 6 env/command/resources](#fig-10) | 22 | [ภาพหน้าจอจริง: หลังลบ Pod แล้วสร้างใหม่](#fig-22) |
+| 11 | [LAB 7 probes](#fig-11) | 23 | [บทหน้า: แยกเว็บกับฐานข้อมูล](#fig-23) |
+| 12 | [LAB 8 multi-container](#fig-12) |  |  |
 
 ### โครงสร้างไฟล์ LAB
 
@@ -460,166 +461,147 @@ No resources found in default namespace.
 
 <p align="center" id="fig-5">
   <img src="images/04-lab3-exec-logs-portforward.png" alt="รูปที่ 5 LAB3 exec/logs/port-forward" width="900"><br>
-  <em><b>รูปที่ 5</b> LAB3: เข้าไปใน Pod ด้วย exec แก้หน้าเว็บ ดู access log และเปิดเว็บผ่าน port-forward + ssh -L</em>
+  <em><b>รูปที่ 5</b> LAB3: เข้าไปใน Pod ด้วย exec แก้หน้าเว็บ ดู access log และเปิดเว็บผ่าน port-forward + แท็บ PORTS ของ VS Code</em>
 </p>
 
-**เป้าหมาย:** สำรวจภายใน container, แก้หน้าเว็บ, ดู access log และ **เปิดเว็บใน Pod จาก browser บนเครื่องนักศึกษา**
+**เป้าหมาย:** เข้าไปใน Pod แก้หน้าเว็บ แล้ว **เปิดเว็บใน Pod จาก browser บนเครื่องนักศึกษา** ผ่าน VS Code และดู log
 
-### ขั้นที่ 1: สร้าง Pod และสำรวจภายใน
+**ต้องมี:** VS Code + extension **Remote - SSH** ที่เชื่อมต่อเข้า k8s-lab แล้ว (`ssh -p 2223 root@localhost`) ทุกคำสั่งใน LAB นี้พิมพ์ใน **Terminal ของ VS Code** (เมนู Terminal → New Terminal) ที่อยู่ในโฟลเดอร์ `02_LAB`
 
-🐧 **ใน SSH session ของ k8s-lab**
+### ขั้นที่ 1: สร้าง Pod web
 
 ```bash
-kubectl apply -f labs/lab02-first-yaml/nginx-pod.yaml && kubectl wait --for=condition=Ready pod/web --timeout=120s
-kubectl exec web -- sh -c "hostname; whoami; head -2 /etc/os-release; nginx -v; ls /usr/share/nginx/html"
+kubectl apply -f labs/lab02-first-yaml/nginx-pod.yaml
 ```
 
-```text
+**Expected output**
+
+<pre>
 pod/web created
-pod/web condition met
-web
-root
-NAME="Alpine Linux"
-ID=alpine
-nginx version: nginx/1.27.5
+</pre>
+
+รอสัก 10 วินาทีแล้วตรวจว่า `Running`
+
+```bash
+kubectl get pods
+```
+
+**Expected output**
+
+<pre>
+NAME   READY   STATUS    RESTARTS   AGE
+web    1/1     Running   0          11s
+</pre>
+
+### ขั้นที่ 2: เข้าไปใน Pod แล้วแก้หน้าเว็บ
+
+```bash
+kubectl exec -it web -- sh
+```
+
+prompt จะเปลี่ยนเป็น `/ #` แปลว่าตอนนี้อยู่ **ใน container ของ Pod** แล้ว (image นี้เป็น Alpine จึงใช้ `sh` ไม่มี `bash`) พิมพ์ทีละบรรทัด
+
+```bash
+ls /usr/share/nginx/html
+echo '<meta charset=utf-8><h1>สวัสดีจากน้องส้ม 🐱</h1>' > /usr/share/nginx/html/index.html
+cat /usr/share/nginx/html/index.html
+exit
+```
+
+**Expected output**
+
+<pre>
 50x.html
 index.html
-```
+&lt;meta charset=utf-8&gt;&lt;h1&gt;สวัสดีจากน้องส้ม 🐱&lt;/h1&gt;
+</pre>
 
-#### อธิบาย YAML: ใช้ `labs/lab02-first-yaml/nginx-pod.yaml` ซ้ำ
+- `ls` เห็นไฟล์หน้าเว็บของ nginx ส่วน `echo ... >` เขียนทับ `index.html` ด้วยข้อความของเรา
+- `<meta charset=utf-8>` ช่วยให้ภาษาไทยแสดงถูกใน browser
+- `exit` ออกจาก Pod กลับมาที่ prompt `root@k8s-lab`
 
-LAB นี้ใช้ไฟล์เดียวกับ [LAB 2](#lab-2-pod-yaml-แรก) จุดที่เกี่ยวกับ LAB นี้คือ
-
-- `containers[].image: nginx:1.27-alpine` → เป็น Alpine Linux จึงเห็น `ID=alpine`, `nginx version: nginx/1.27.5` และ **ไม่มี `bash`** (ผลจริง `which bash` ไม่เจอ ต้องใช้ `sh`)
-- `containers[].name: nginx` → Pod มี container เดียว `kubectl exec`/`logs` จึงไม่ต้องใส่ `-c`
-- `ports[].containerPort: 80` → เป็นแค่ข้อมูลประกอบ การเข้าถึงจากภายนอกต้องใช้ `kubectl port-forward pod/web 8080:80` (เลขขวา `80` คือ port ที่ nginx ฟังจริงใน Pod)
-
-ลองเข้า shell แบบโต้ตอบด้วย `kubectl exec -it web -- sh` (image alpine ไม่มี `bash`) สำรวจด้วย `ls`, `cat /etc/nginx/conf.d/default.conf` แล้วพิมพ์ `exit` เพื่อออก
-
-### ขั้นที่ 2: เปลี่ยนหน้าเว็บเป็นของน้องส้ม
-
-```bash
-kubectl exec web -- sh -c "echo \"<meta charset=utf-8><h1>สวัสดีจากน้องส้ม 🐱</h1>\" > /usr/share/nginx/html/index.html"
-kubectl exec web -- cat /usr/share/nginx/html/index.html
-```
-
-```text
-<meta charset=utf-8><h1>สวัสดีจากน้องส้ม 🐱</h1>
-```
-
-> ใส่ `<meta charset=utf-8>` ไว้หน้าข้อความ เพราะ nginx ส่ง header `Content-Type: text/html` โดยไม่บอก charset ถ้าไม่ใส่ ภาษาไทยอาจแสดงเพี้ยนใน browser
-
-### ขั้นที่ 3: เปิด port-forward (ค้างไว้)
-
-🐧 **ใน SSH session หลักของ k8s-lab**
+### ขั้นที่ 3: เปิดทางเข้าเว็บด้วย port-forward
 
 ```bash
 kubectl port-forward pod/web 8080:80
 ```
 
-```text
+**Expected output**
+
+<pre>
 Forwarding from 127.0.0.1:8080 -> 80
 Forwarding from [::1]:8080 -> 80
-```
+</pre>
 
-คำสั่งนี้ **ค้างอยู่** (ห้ามปิด) มันเปิด port 8080 ที่ `127.0.0.1` ของ k8s-lab แล้วส่งต่อเข้า port 80 ของ Pod `web` ทุกครั้งที่มีการเชื่อมต่อจะพิมพ์ `Handling connection for 8080`
+คำสั่งนี้ **ค้างไว้** (อย่าปิด) มันส่งต่อ port `8080` ของ k8s-lab เข้าไปที่ port `80` ของ Pod `web`
 
-### ขั้นที่ 4: เปิดท่อ SSH จากเครื่องนักศึกษา
-
-🖥️ **บนเครื่องนักศึกษา** เปิด Terminal/PowerShell **หน้าต่างใหม่**
-
-```bash
-ssh -p 2223 -L 8080:localhost:8080 root@localhost
-```
-
-ใส่รหัส `passwd` หน้าต่างนี้ทำสองหน้าที่พร้อมกัน คือ (1) เป็นท่อส่ง port 8080 ของเครื่องนักศึกษาไปที่ `localhost:8080` ใน k8s-lab และ (2) เป็น shell ของ k8s-lab อีกหน้าต่างหนึ่ง **ให้เปิดค้างไว้ตลอดที่ใช้ browser**
-
-🐧 **ใน SSH session ที่สอง (หน้าต่างท่อ)** ทดสอบด้วย curl
-
-```bash
-curl -s localhost:8080
-curl -s -o /dev/null -w "%{http_code}\n" localhost:8080/nope
-```
-
-```text
-<meta charset=utf-8><h1>สวัสดีจากน้องส้ม 🐱</h1>
-404
-```
-
-🌐 **browser บนเครื่องนักศึกษา** เปิด **http://localhost:8080** จะเห็นหัวข้อ "สวัสดีจากน้องส้ม 🐱" (ในรอบทดลองจริง เครื่องที่ใช้ทดสอบไม่ได้เปิด SSH ของ container ออกภายนอก จึงเปิดท่อ `ssh -L 18080:localhost:8080` ภายใน k8s-lab ไปยัง sshd ของตัวเอง กลไกเหมือนกันต่างแค่เลข port ฝั่งซ้าย และดึงหน้าเว็บผ่านท่อได้ข้อความเดียวกัน หน้าต่าง port-forward พิมพ์ `Handling connection for 8080` ทุกครั้งที่มี request)
+### ขั้นที่ 4: เปิดเว็บจาก VS Code
 
 <p align="center" id="fig-6">
-  <img src="images/screenshots/20261005_1725_lab002_02-lab3-nginx.png" alt="รูปที่ 6 ภาพหน้าจอจริง หน้าเว็บ nginx สวัสดีจากน้องส้ม" width="700"><br>
-  <em><b>รูปที่ 6</b> ภาพหน้าจอจริงจากการทดลอง: หน้าเว็บของ Pod web (nginx) หลังแก้ index.html ใน LAB 3 แสดงหัวข้อ "สวัสดีจากน้องส้ม 🐱" บนหน้าขาว (ตอนถ่ายภาพเปิดผ่าน NodePort Service ชั่วคราวที่เพิ่มเองเพื่อถ่ายภาพเท่านั้น นักศึกษาใช้ port-forward + ssh -L ตามขั้นข้างต้น ผลที่เห็นเหมือนกัน)</em>
+  <img src="images/04b-lab3-vscode-ports.png" alt="รูปที่ 6 LAB3 เปิดเว็บผ่านแท็บ PORTS ของ VS Code" width="900"><br>
+  <em><b>รูปที่ 6</b> LAB3 ขั้นที่ 4: VS Code เห็น port 8080 ที่ port-forward เปิดไว้ในแท็บ PORTS แล้วส่งต่อมาที่เครื่องนักศึกษาให้อัตโนมัติ กดไอคอนลูกโลกเพื่อเปิดใน browser</em>
 </p>
 
-```text
-browser (เครื่องนักศึกษา) http://localhost:8080
-   │  ssh -p 2223 -L 8080:localhost:8080 root@localhost      ← หน้าต่าง 🖥️ ใหม่
-   ▼
-k8s-lab 127.0.0.1:8080
-   │  kubectl port-forward pod/web 8080:80                   ← SSH session หลัก 🐧
-   ▼
-Pod web : 80
-```
+1. ใน VS Code เปิดแท็บ **PORTS** (แถบเดียวกับ TERMINAL ด้านล่าง)
+2. จะเห็นแถว port **8080** ที่ VS Code ส่งต่อมาให้อัตโนมัติ (ถ้าไม่เห็น กด **Forward a Port** แล้วพิมพ์ `8080`)
+3. ชี้ที่แถวนั้นแล้วกดไอคอน **ลูกโลก (Open in Browser)**
 
-### ขั้นที่ 5: ดู access log แบบสด
+🌐 browser จะเปิด `http://localhost:8080` และเห็นหัวข้อ "สวัสดีจากน้องส้ม 🐱"
 
-🐧 **ใน SSH session ที่สอง**
+<p align="center" id="fig-7">
+  <img src="images/screenshots/20261005_1725_lab002_02-lab3-nginx.png" alt="รูปที่ 7 ภาพหน้าจอจริง หน้าเว็บ nginx สวัสดีจากน้องส้ม" width="700"><br>
+  <em><b>รูปที่ 7</b> ภาพหน้าจอจริงจากการทดลอง: หน้าเว็บของ Pod web หลังแก้ index.html แสดงหัวข้อ "สวัสดีจากน้องส้ม 🐱"</em>
+</p>
+
+ทุกครั้งที่เปิดหรือ refresh หน้าเว็บ หน้าต่าง port-forward จะพิมพ์ `Handling connection for 8080`
+
+### ขั้นที่ 5: ดู log ของ Pod
+
+เปิด **Terminal ใหม่** ใน VS Code (กด `+` ที่แท็บ TERMINAL) เพราะ terminal แรกยังรัน port-forward อยู่
 
 ```bash
-kubectl logs web --tail=5
-kubectl logs -f web
+kubectl logs web
 ```
 
-ผลจริงของ `--tail=5` (รอบทดลองนี้มี request เพียง 3 ครั้ง คือ curl `/`, curl `/nope` และ request ผ่านท่อที่จำลอง browser ด้วย curl ซึ่งตั้ง User-Agent เป็น `Mozilla/5.0 (browser-sim)` บรรทัดแรกจึงยังเป็น log ตอน nginx เริ่มทำงาน)
+**Expected output** (บรรทัดท้าย ๆ)
 
-```text
-2026/10/05 10:02:17 [notice] 1#1: start worker process 65
-127.0.0.1 - - [05/Oct/2026:10:02:26 +0000] "GET / HTTP/1.1" 200 83 "-" "curl/8.5.0" "-"
-2026/10/05 10:02:26 [error] 35#35: *2 open() "/usr/share/nginx/html/nope" failed (2: No such file or directory), client: 127.0.0.1, server: localhost, request: "GET /nope HTTP/1.1", host: "localhost:8080"
-127.0.0.1 - - [05/Oct/2026:10:02:26 +0000] "GET /nope HTTP/1.1" 404 153 "-" "curl/8.5.0" "-"
-127.0.0.1 - - [05/Oct/2026:10:02:26 +0000] "GET / HTTP/1.1" 200 83 "-" "Mozilla/5.0 (browser-sim)" "-"
-```
+<pre>
+...
+2026/10/18 00:20:45 [notice] 1#1: start worker process 65
+127.0.0.1 - - [18/Oct/2026:00:20:58 +0000] "GET / HTTP/1.1" 200 83 "-" "Mozilla/5.0 ..." "-"
+</pre>
 
-> **ลำดับบรรทัดอาจสลับกันได้:** บรรทัด `[error] ... open() "/usr/share/nginx/html/nope" failed` (error log ออกทาง stderr) กับบรรทัด `"GET /nope HTTP/1.1" 404` (access log ออกทาง stdout) มาจากคนละ stream จึงอาจขึ้นก่อนหรือหลังกันก็ได้ จำนวน/เวลาของบรรทัดที่เห็นใน `--tail=5` ขึ้นกับจำนวน request ที่นักศึกษาส่งไปก่อนหน้า (ถ้า request น้อยจะยังเห็นบรรทัด `[notice] ... start worker process`) และ User-Agent ของ browser จริงจะเป็นข้อความยาว ๆ เช่น `Mozilla/5.0 (Windows NT 10.0; ...)`
+บรรทัด `GET / ... 200` คือการเปิดหน้าเว็บจาก browser เมื่อสักครู่ (refresh browser แล้วสั่งซ้ำจะเห็นบรรทัดเพิ่ม)
 
-ขณะ `logs -f` ทำงาน ให้กด refresh ใน browser จะเห็นบรรทัด `GET /` ใหม่ปรากฏทันที (จาก browser จะเห็น User-Agent ของ browser แทน `curl`) กด **Ctrl+C** เพื่อหยุด `logs -f` ผลจริงจากรอบทดลอง (request จำลอง browser ผ่านท่อ โดยตั้ง User-Agent แบบ Chrome)
+### ขั้นที่ 6: ปิดและลบ Pod
 
-```text
-127.0.0.1 - - [05/Oct/2026:10:02:29 +0000] "GET / HTTP/1.1" 200 83 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/141.0" "-"
-```
-
-### ขั้นที่ 6: ปิดทุกอย่างและลบ Pod
-
-1. 🐧 SSH session หลัก: กด **Ctrl+C** เพื่อหยุด `kubectl port-forward`
-2. 🖥️ หน้าต่างท่อ: พิมพ์ `exit` เพื่อปิด SSH tunnel
-3. 🐧 SSH session หลัก:
+กลับไปที่ terminal แรกแล้วกด **Ctrl+C** เพื่อหยุด port-forward จากนั้น
 
 ```bash
 kubectl delete -f labs/lab02-first-yaml/nginx-pod.yaml
 ```
 
-```text
+**Expected output**
+
+<pre>
 pod "web" deleted from default namespace
-```
+</pre>
 
 ### สิ่งที่เห็น
 
-- `kubectl exec` รันคำสั่งใน container ได้เหมือนอยู่ในเครื่องนั้น การแก้ไฟล์ด้วยวิธีนี้ **เป็นการชั่วคราว** ถ้า Pod ถูกลบไฟล์ที่แก้จะหาย
-- log ของ nginx มีทั้ง access log (stdout) และ error log (stderr) `kubectl logs` เห็นทั้งสองอย่าง
-- request ใน log มาจาก `127.0.0.1` เพราะ port-forward ส่งเข้ามาทาง loopback ภายใน Pod
-- การเปิดเว็บต้องต่อท่อ 2 ช่วง และ **ไม่ต้องใช้ port 30080–30082** ในบทนี้
+- `kubectl exec -it <pod> -- sh` พาเข้าไปใน container เหมือนอยู่ในเครื่องนั้น การแก้ไฟล์แบบนี้ **ชั่วคราว** ถ้าลบ Pod ไฟล์จะหาย
+- `kubectl port-forward` เปิดทางจาก k8s-lab เข้า Pod แล้ว VS Code ส่งต่อ port นั้นมาที่เครื่องนักศึกษาให้เอง
+- `kubectl logs` ดูสิ่งที่แอปใน Pod พิมพ์ออกมา (สำหรับ nginx คือ log ของทุก request)
 
-> **🤔 คำถามชวนคิด:** ถ้าปิดหน้าต่าง `ssh -L` แต่ port-forward ยังทำงาน `curl localhost:8080` ใน k8s-lab ยังได้ผลไหม และ browser บนเครื่องนักศึกษายังเปิดได้ไหม
+> **🤔 คำถามชวนคิด:** ถ้ากด Ctrl+C หยุด port-forward แล้ว refresh browser จะเกิดอะไรขึ้น เพราะอะไร
 
 ---
 
 ## LAB 4: Labels และ Selectors
 
-<p align="center" id="fig-7">
-  <img src="images/05-lab4-labels.png" alt="รูปที่ 7 LAB4 labels" width="900"><br>
-  <em><b>รูปที่ 7</b> LAB4: ติดป้าย label ให้ Pod 3 ตัวและใช้ -l เลือกเฉพาะกลุ่มที่ต้องการ</em>
+<p align="center" id="fig-8">
+  <img src="images/05-lab4-labels.png" alt="รูปที่ 8 LAB4 labels" width="900"><br>
+  <em><b>รูปที่ 8</b> LAB4: ติดป้าย label ให้ Pod 3 ตัวและใช้ -l เลือกเฉพาะกลุ่มที่ต้องการ</em>
 </p>
 
 **เป้าหมาย:** สร้าง Pod หลายตัวจากไฟล์เดียว (multi-document `---`) ติด แก้ ลบ label และค้นหาด้วย selector
@@ -805,9 +787,9 @@ pod "toy-web" deleted from default namespace
 
 ## LAB 5: Lifecycle และการดีบัก Pod ที่พัง
 
-<p align="center" id="fig-8">
-  <img src="images/06-lab5-lifecycle-debug.png" alt="รูปที่ 8 LAB5 lifecycle และดีบัก" width="900"><br>
-  <em><b>รูปที่ 8</b> LAB5: สังเกต Completed, CrashLoopBackOff และ ImagePullBackOff แล้วใช้ describe กับ logs --previous หาสาเหตุ</em>
+<p align="center" id="fig-9">
+  <img src="images/06-lab5-lifecycle-debug.png" alt="รูปที่ 9 LAB5 lifecycle และดีบัก" width="900"><br>
+  <em><b>รูปที่ 9</b> LAB5: สังเกต Completed, CrashLoopBackOff และ ImagePullBackOff แล้วใช้ describe กับ logs --previous หาสาเหตุ</em>
 </p>
 
 **เป้าหมาย:** อ่าน phase, STATUS, RESTARTS ให้ออก และไล่หาสาเหตุ Pod ที่พังด้วย `describe` และ `logs --previous`
@@ -1058,9 +1040,9 @@ No resources found in default namespace.
 
 ## LAB 6: env, command และ resources
 
-<p align="center" id="fig-9">
-  <img src="images/07-lab6-env-command-resources.png" alt="รูปที่ 9 LAB6 env/command/resources" width="900"><br>
-  <em><b>รูปที่ 9</b> LAB6: ส่ง env และ command เข้า container ทดลอง memory limit จนเกิด OOMKilled และ request CPU เกินจน Pending</em>
+<p align="center" id="fig-10">
+  <img src="images/07-lab6-env-command-resources.png" alt="รูปที่ 10 LAB6 env/command/resources" width="900"><br>
+  <em><b>รูปที่ 10</b> LAB6: ส่ง env และ command เข้า container ทดลอง memory limit จนเกิด OOMKilled และ request CPU เกินจน Pending</em>
 </p>
 
 **เป้าหมาย:** ส่งค่าเข้า container ด้วย `env`, ทับคำสั่งด้วย `command`/`args`, เห็นผลของ memory limit (OOMKilled) และ CPU request ที่เกิน (Pending)
@@ -1282,9 +1264,9 @@ No resources found in default namespace.
 
 ## LAB 7: Probes ตรวจสุขภาพ
 
-<p align="center" id="fig-10">
-  <img src="images/08-lab7-probes.png" alt="รูปที่ 10 LAB7 probes" width="900"><br>
-  <em><b>รูปที่ 10</b> LAB7: liveness ล้มแล้ว container ถูก restart ส่วน readiness ล้มแล้ว Pod เป็น READY 0/1 โดยไม่ถูก restart</em>
+<p align="center" id="fig-11">
+  <img src="images/08-lab7-probes.png" alt="รูปที่ 11 LAB7 probes" width="900"><br>
+  <em><b>รูปที่ 11</b> LAB7: liveness ล้มแล้ว container ถูก restart ส่วน readiness ล้มแล้ว Pod เป็น READY 0/1 โดยไม่ถูก restart</em>
 </p>
 
 **เป้าหมาย:** เห็นความต่างของ liveness กับ readiness ด้วยตาตัวเอง
@@ -1450,9 +1432,9 @@ No resources found in default namespace.
 
 ## LAB 8: Multi-container: localhost, emptyDir, init, sidecar
 
-<p align="center" id="fig-11">
-  <img src="images/09-lab8-multi-container.png" alt="รูปที่ 11 LAB8 multi-container" width="900"><br>
-  <em><b>รูปที่ 11</b> LAB8: Pod หลาย container คุยกันผ่าน localhost ใช้ emptyDir ร่วมกัน มี init container เตรียมไฟล์ และ sidecar เขียนข้อมูลต่อเนื่อง</em>
+<p align="center" id="fig-12">
+  <img src="images/09-lab8-multi-container.png" alt="รูปที่ 12 LAB8 multi-container" width="900"><br>
+  <em><b>รูปที่ 12</b> LAB8: Pod หลาย container คุยกันผ่าน localhost ใช้ emptyDir ร่วมกัน มี init container เตรียมไฟล์ และ sidecar เขียนข้อมูลต่อเนื่อง</em>
 </p>
 
 **เป้าหมาย:** พิสูจน์ว่า container ใน Pod เดียวกันใช้ IP เดียวกัน, ใช้ emptyDir ร่วมกัน, เห็นลำดับ init container และพฤติกรรมของข้อมูลเมื่อ container restart เทียบกับเมื่อลบ Pod
@@ -1710,9 +1692,9 @@ No resources found in default namespace.
 
 ## LAB 9: LAB สุดท้าย: ร้านอาหารแมวน้องส้ม
 
-<p align="center" id="fig-12">
-  <img src="images/10-lab9-som-shop-storefront.png" alt="รูปที่ 12 LAB9 ร้านอาหารแมวน้องส้ม" width="900"><br>
-  <em><b>รูปที่ 12</b> LAB สุดท้าย: เปิดร้านอาหารแมวน้องส้มด้วย Next.js + PostgreSQL ใน Pod เดียว</em>
+<p align="center" id="fig-13">
+  <img src="images/10-lab9-som-shop-storefront.png" alt="รูปที่ 13 LAB9 ร้านอาหารแมวน้องส้ม" width="900"><br>
+  <em><b>รูปที่ 13</b> LAB สุดท้าย: เปิดร้านอาหารแมวน้องส้มด้วย Next.js + PostgreSQL ใน Pod เดียว</em>
 </p>
 
 **เป้าหมาย:** build image ของแอป Next.js เอง นำเข้าคลัสเตอร์ด้วย `kind load` เปิดร้านใน Pod เดียวที่มี native sidecar (PostgreSQL), init container 2 ตัว, emptyDir, env, resources และ probes ครบ แล้วเปิดร้านใน browser กดสั่งซื้อ และทดลองว่าข้อมูลรอดหรือหายในสถานการณ์ใด
@@ -1721,9 +1703,9 @@ No resources found in default namespace.
 
 ### 9.1 สถาปัตยกรรมของ Pod som-shop
 
-<p align="center" id="fig-13">
-  <img src="images/11-lab9-pod-architecture.png" alt="รูปที่ 13 สถาปัตยกรรม Pod som-shop" width="900"><br>
-  <em><b>รูปที่ 13</b> สถาปัตยกรรม Pod som-shop: web (Next.js :3000) คุยกับ db (PostgreSQL :5432) ผ่าน localhost ภายใน Pod เดียว และเก็บข้อมูล DB บน emptyDir</em>
+<p align="center" id="fig-14">
+  <img src="images/11-lab9-pod-architecture.png" alt="รูปที่ 14 สถาปัตยกรรม Pod som-shop" width="900"><br>
+  <em><b>รูปที่ 14</b> สถาปัตยกรรม Pod som-shop: web (Next.js :3000) คุยกับ db (PostgreSQL :5432) ผ่าน localhost ภายใน Pod เดียว และเก็บข้อมูล DB บน emptyDir</em>
 </p>
 
 ```text
@@ -1751,9 +1733,9 @@ Pod som-shop  (labels: app=som-shop, part=all-in-one)   IP เดียว เ�
 
 ### 9.2 ลำดับการเริ่มและทำไม db ต้องเป็น native sidecar
 
-<p align="center" id="fig-14">
-  <img src="images/12-lab9-startup-order.png" alt="รูปที่ 14 ลำดับการเริ่ม Pod som-shop" width="900"><br>
-  <em><b>รูปที่ 14</b> ลำดับเริ่ม Pod: db (native sidecar) เริ่มก่อนและผ่าน startupProbe → wait-for-db รอ pg_isready → db-seed สร้างตารางและสินค้า → web เริ่มทำงาน</em>
+<p align="center" id="fig-15">
+  <img src="images/12-lab9-startup-order.png" alt="รูปที่ 15 ลำดับการเริ่ม Pod som-shop" width="900"><br>
+  <em><b>รูปที่ 15</b> ลำดับเริ่ม Pod: db (native sidecar) เริ่มก่อนและผ่าน startupProbe → wait-for-db รอ pg_isready → db-seed สร้างตารางและสินค้า → web เริ่มทำงาน</em>
 </p>
 
 init container ปกติต้องรันจนจบก่อน app container ทุกตัว ถ้าวาง PostgreSQL ไว้ใน `containers` แล้วให้ `wait-for-db` รอ จะรอไม่มีวันจบ (deadlock) จึงวาง `db` ไว้ **บนสุดของ `initContainers` พร้อม `restartPolicy: Always`** (native sidecar, GA ตั้งแต่ Kubernetes 1.33 คลัสเตอร์ของเราเป็น v1.37.0) kubelet จะเริ่ม `db` แล้วรอ startupProbe ผ่านก่อนรัน init ตัวถัดไป และ `db` ทำงานต่อตลอดอายุ Pod
@@ -1917,9 +1899,9 @@ spec:
 
 ### 9.3 Build image และนำเข้าคลัสเตอร์
 
-<p align="center" id="fig-15">
-  <img src="images/13-lab9-build-kind-load.png" alt="รูปที่ 15 build และ kind load" width="900"><br>
-  <em><b>รูปที่ 15</b> build image som-shop-web:1.0 ใน k8s-lab แล้วใช้ kind load docker-image นำ image เข้าไปในทุก node ของคลัสเตอร์</em>
+<p align="center" id="fig-16">
+  <img src="images/13-lab9-build-kind-load.png" alt="รูปที่ 16 build และ kind load" width="900"><br>
+  <em><b>รูปที่ 16</b> build image som-shop-web:1.0 ใน k8s-lab แล้วใช้ kind load docker-image นำ image เข้าไปในทุก node ของคลัสเตอร์</em>
 </p>
 
 node ของ kind เป็น container แยก มี containerd ของตัวเอง **มองไม่เห็น image ใน Docker ของ k8s-lab** จึงต้อง `kind load` เข้าไปก่อน
@@ -2185,9 +2167,9 @@ container `web` รันเป็น user `node` (ไม่ใช่ root) แ�
 
 ### 9.8 เปิดร้านใน browser และสั่งซื้อ
 
-<p align="center" id="fig-16">
-  <img src="images/14-lab9-open-in-browser.png" alt="รูปที่ 16 เปิดร้านจาก browser" width="900"><br>
-  <em><b>รูปที่ 16</b> เปิดร้านจากเครื่องนักศึกษา: kubectl port-forward pod/som-shop 3000:3000 ใน k8s-lab และ ssh -L 3000:localhost:3000 จากเครื่องนักศึกษา</em>
+<p align="center" id="fig-17">
+  <img src="images/14-lab9-open-in-browser.png" alt="รูปที่ 17 เปิดร้านจาก browser" width="900"><br>
+  <em><b>รูปที่ 17</b> เปิดร้านจากเครื่องนักศึกษา: kubectl port-forward pod/som-shop 3000:3000 ใน k8s-lab และ ssh -L 3000:localhost:3000 จากเครื่องนักศึกษา</em>
 </p>
 
 **ขั้นที่ 1:** 🐧 **ใน SSH session หลักของ k8s-lab** เปิด port-forward ค้างไว้
@@ -2201,7 +2183,7 @@ Forwarding from 127.0.0.1:3000 -> 3000
 Forwarding from [::1]:3000 -> 3000
 ```
 
-**ขั้นที่ 2:** 🖥️ **บนเครื่องนักศึกษา** เปิดหน้าต่างใหม่ (ถ้าหน้าต่าง `ssh -L 8080` จาก LAB 3 ยังเปิดอยู่ ให้ `exit` ก่อน)
+**ขั้นที่ 2:** 🖥️ **บนเครื่องนักศึกษา** เปิดหน้าต่างใหม่ (ถ้า port-forward จาก LAB 3 ยังรันอยู่ ให้กด Ctrl+C ก่อน)
 
 ```bash
 ssh -p 2223 -L 3000:localhost:3000 root@localhost
@@ -2223,16 +2205,16 @@ curl -s localhost:3000/api/products | head -c 300; echo
 
 **ขั้นที่ 4:** 🌐 **browser บนเครื่องนักศึกษา** เปิด **http://localhost:3000**
 
-<p align="center" id="fig-17">
-  <img src="images/screenshots/20261005_1725_lab002_01-som-shop.png" alt="รูปที่ 17 ภาพหน้าจอจริง หน้าร้านเริ่มต้น" width="700"><br>
-  <em><b>รูปที่ 17</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านอาหารแมวน้องส้มเมื่อเปิดครั้งแรก มีสินค้า 6 รายการ ออเดอร์ทั้งหมด 0 และ footer แสดงว่าเสิร์ฟโดย Pod som-shop (ภาพนี้ถ่ายผ่าน NodePort Service ชั่วคราวที่เพิ่มเองเพื่อถ่ายภาพ หน้าที่เห็นเหมือนกับที่เปิดผ่าน port-forward + ssh -L)</em>
+<p align="center" id="fig-18">
+  <img src="images/screenshots/20261005_1725_lab002_01-som-shop.png" alt="รูปที่ 18 ภาพหน้าจอจริง หน้าร้านเริ่มต้น" width="700"><br>
+  <em><b>รูปที่ 18</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านอาหารแมวน้องส้มเมื่อเปิดครั้งแรก มีสินค้า 6 รายการ ออเดอร์ทั้งหมด 0 และ footer แสดงว่าเสิร์ฟโดย Pod som-shop (ภาพนี้ถ่ายผ่าน NodePort Service ชั่วคราวที่เพิ่มเองเพื่อถ่ายภาพ หน้าที่เห็นเหมือนกับที่เปิดผ่าน port-forward + ssh -L)</em>
 </p>
 
 กดปุ่ม **🛒 สั่งซื้อ** 3 ครั้ง (เลือกสินค้าต่างกันได้) แต่ละการ์ดจะขึ้น "สั่งซื้อแล้ว! ออเดอร์ #N" จำนวน "เหลือ ... ชิ้น" ลดลง และมีรายการใน "ออเดอร์ล่าสุด"
 
-<p align="center" id="fig-18">
-  <img src="images/screenshots/20261004_1814_lab9_02-shop-after-orders.png" alt="รูปที่ 18 ภาพหน้าจอจริง หลังสั่งซื้อ 3 ครั้ง" width="700"><br>
-  <em><b>รูปที่ 18</b> ภาพหน้าจอจริงจากการทดลอง: หลังกดสั่งซื้อ 3 ครั้ง ออเดอร์ทั้งหมดเป็น 3, stock ของสินค้าที่สั่งลดลง และมีรายการออเดอร์ล่าสุด 3 รายการ</em>
+<p align="center" id="fig-19">
+  <img src="images/screenshots/20261004_1814_lab9_02-shop-after-orders.png" alt="รูปที่ 19 ภาพหน้าจอจริง หลังสั่งซื้อ 3 ครั้ง" width="700"><br>
+  <em><b>รูปที่ 19</b> ภาพหน้าจอจริงจากการทดลอง: หลังกดสั่งซื้อ 3 ครั้ง ออเดอร์ทั้งหมดเป็น 3, stock ของสินค้าที่สั่งลดลง และมีรายการออเดอร์ล่าสุด 3 รายการ</em>
 </p>
 
 **(ทางเลือก) สั่งซื้อด้วย curl** ใน SSH session ที่สอง เพื่อดู API โดยตรง ผลจริงจากรอบทดสอบ (รอบนั้นมีออเดอร์แรกเป็นสินค้า id 1 จำนวน 1 ชิ้นก่อนแล้ว — ได้ `{"ok":true,"order_id":1,"product":{"id":1,...,"stock":19}}` — order_id ด้านล่างจึงเริ่มที่ 2)
@@ -2268,9 +2250,9 @@ kubectl exec som-shop -c db -- psql -U som -d catshop -c 'SELECT o.id, p.sku, o.
 
 ### 9.9 ทดลองที่ 1: ฐานข้อมูลตาย แล้วข้อมูลยังอยู่ไหม
 
-<p align="center" id="fig-19">
-  <img src="images/15-lab9-emptydir-survive-vs-lost.png" alt="รูปที่ 19 emptyDir รอด vs หาย" width="900"><br>
-  <em><b>รูปที่ 19</b> ทดลองกับข้อมูลออเดอร์: restart container db แล้วข้อมูลยังอยู่บน emptyDir แต่ลบ Pod แล้วข้อมูลหายทั้งหมด</em>
+<p align="center" id="fig-20">
+  <img src="images/15-lab9-emptydir-survive-vs-lost.png" alt="รูปที่ 20 emptyDir รอด vs หาย" width="900"><br>
+  <em><b>รูปที่ 20</b> ทดลองกับข้อมูลออเดอร์: restart container db แล้วข้อมูลยังอยู่บน emptyDir แต่ลบ Pod แล้วข้อมูลหายทั้งหมด</em>
 </p>
 
 🐧 **ใน SSH session ที่สอง** (ให้ port-forward ในหน้าต่างหลักทำงานต่อไป) สั่งหยุด PostgreSQL ภายใน container `db`
@@ -2329,9 +2311,9 @@ web restarts=0
 
 🌐 **browser** กด refresh หน้าร้าน ข้อมูลออเดอร์ยังอยู่ครบ
 
-<p align="center" id="fig-20">
-  <img src="images/screenshots/20261004_1815_lab9_03-after-db-restart.png" alt="รูปที่ 20 ภาพหน้าจอจริง หลัง restart db" width="700"><br>
-  <em><b>รูปที่ 20</b> ภาพหน้าจอจริงจากการทดลอง: หลังหยุด PostgreSQL ด้วย pg_ctl stop จน container db ถูก restart ข้อมูล 3 ออเดอร์และ stock ที่ลดลงยังอยู่ครบ</em>
+<p align="center" id="fig-21">
+  <img src="images/screenshots/20261004_1815_lab9_03-after-db-restart.png" alt="รูปที่ 21 ภาพหน้าจอจริง หลัง restart db" width="700"><br>
+  <em><b>รูปที่ 21</b> ภาพหน้าจอจริงจากการทดลอง: หลังหยุด PostgreSQL ด้วย pg_ctl stop จน container db ถูก restart ข้อมูล 3 ออเดอร์และ stock ที่ลดลงยังอยู่ครบ</em>
 </p>
 
 **สรุปทดลองที่ 1:** kubelet restart เฉพาะ container `db` (RESTARTS ของ Pod เป็น 1 ซึ่งมาจาก `db`) ภายใน Pod เดิม IP เดิม ส่วน `web` ไม่ถูก restart และ **ข้อมูลรอด เพราะอยู่บน emptyDir ซึ่งมีอายุเท่ากับ Pod**
@@ -2414,18 +2396,18 @@ seeded 6 products (new: 6)
 kubectl port-forward pod/som-shop 3000:3000
 ```
 
-<p align="center" id="fig-21">
-  <img src="images/screenshots/20261004_1815_lab9_04-after-pod-delete.png" alt="รูปที่ 21 ภาพหน้าจอจริง หลังลบ Pod แล้วสร้างใหม่" width="700"><br>
-  <em><b>รูปที่ 21</b> ภาพหน้าจอจริงจากการทดลอง: หลังลบ Pod แล้ว apply ใหม่ (และรัน port-forward ใหม่) ร้านกลับเป็น 0 ออเดอร์ และ stock กลับเป็นค่าตั้งต้น</em>
+<p align="center" id="fig-22">
+  <img src="images/screenshots/20261004_1815_lab9_04-after-pod-delete.png" alt="รูปที่ 22 ภาพหน้าจอจริง หลังลบ Pod แล้วสร้างใหม่" width="700"><br>
+  <em><b>รูปที่ 22</b> ภาพหน้าจอจริงจากการทดลอง: หลังลบ Pod แล้ว apply ใหม่ (และรัน port-forward ใหม่) ร้านกลับเป็น 0 ออเดอร์ และ stock กลับเป็นค่าตั้งต้น</em>
 </p>
 
 **สรุปทดลองที่ 2:** Pod ใหม่ได้ **IP ใหม่** (รอบทดลองนี้ `10.244.3.21` → `10.244.3.22` ของนักศึกษาจะเป็นเลขอื่น และอาจย้ายไปอีก node ด้วย), emptyDir ว่างเปล่า PostgreSQL จึงสร้างฐานข้อมูลใหม่ และ `db-seed` ใส่สินค้าใหม่ทั้ง 6 รายการ (`new: 6`) **ออเดอร์ทั้งหมดหายไป**
 
 ### 9.11 ทำไมงานจริงต้องแยก และบทหน้าจะทำอะไร
 
-<p align="center" id="fig-22">
-  <img src="images/16-lab9-next-split.png" alt="รูปที่ 22 บทหน้า: แยกเว็บกับฐานข้อมูล" width="900"><br>
-  <em><b>รูปที่ 22</b> Pod เดียวรวมเว็บกับฐานข้อมูลเป็นการออกแบบเพื่อการเรียนรู้ บทหน้าจะแยก web เป็น Deployment, db ใช้ที่เก็บถาวร และเชื่อมกันด้วย Service</em>
+<p align="center" id="fig-23">
+  <img src="images/16-lab9-next-split.png" alt="รูปที่ 23 บทหน้า: แยกเว็บกับฐานข้อมูล" width="900"><br>
+  <em><b>รูปที่ 23</b> Pod เดียวรวมเว็บกับฐานข้อมูลเป็นการออกแบบเพื่อการเรียนรู้ บทหน้าจะแยก web เป็น Deployment, db ใช้ที่เก็บถาวร และเชื่อมกันด้วย Service</em>
 </p>
 
 | ปัญหาที่น้องส้มเจอใน LAB 9 | สิ่งที่บทถัดไปจะใช้ (ยังไม่ทำในบทนี้) |
@@ -2480,7 +2462,7 @@ No resources found in default namespace.
 | Pod `som-shop` ค้าง `Init:ErrImagePull` / `ImagePullBackOff` ที่ `db-seed` หรือ `web` | ลืม `kind load docker-image som-shop-web:1.0 --name lab` node จึงไปหา image บน Docker Hub ซึ่งไม่มี | 🐧 `kind load docker-image som-shop-web:1.0 --name lab` แล้ว `kubectl delete pod som-shop` และ `kubectl apply -f som-shop/k8s/som-shop-pod.yaml` |
 | `kind load docker-image postgres:...` ขึ้น `ctr: content digest sha256:...: not found` | image หลาย platform กับ containerd image store (ดู [9.3](#93-build-image-และนำเข้าคลัสเตอร์)) | ใช้ `docker save --platform linux/amd64 ... -o /tmp/pg.tar` + `kind load image-archive /tmp/pg.tar --name lab` (เครื่อง ARM ใช้ `linux/arm64`) |
 | `ErrImagePull` ที่ Events มีคำว่า `toomanyrequests` / `429 Too Many Requests` | Docker Hub จำกัดจำนวนการดึงแบบไม่ล็อกอิน (ทั้งห้องใช้ IP เดียว) | รอสักพักแล้วลองใหม่ หรือ `docker pull` ล่วงหน้าแล้ว `kind load` (สำหรับ postgres ใช้วิธีใน 9.3) |
-| `kubectl port-forward` แจ้งว่า listen ไม่ได้ มีคำว่า `address already in use` | port-forward ตัวเก่ายังรันอยู่ (เช่นลืม Ctrl+C จาก LAB 3) | หาและหยุดด้วย `pgrep -af "kubectl port-forward"` / `pkill -f "kubectl port-forward"` หรือใช้ port อื่น เช่น `kubectl port-forward pod/web 8081:80` (แล้วใช้ `-L 8081:localhost:8081`) |
+| `kubectl port-forward` แจ้งว่า listen ไม่ได้ มีคำว่า `address already in use` | port-forward ตัวเก่ายังรันอยู่ (เช่นลืม Ctrl+C จาก LAB 3) | หาและหยุดด้วย `pgrep -af "kubectl port-forward"` / `pkill -f "kubectl port-forward"` หรือใช้ port อื่น เช่น `kubectl port-forward pod/web 8081:80` |
 | `ssh -L` แจ้งว่า bind port ไม่ได้ (`Address already in use` / `cannot listen to port`) หรือ browser เปิดแล้วเป็นเว็บอื่น | port 8080/3000 บนเครื่องนักศึกษาถูกโปรแกรมอื่นใช้ (เช่น dev server) | เปลี่ยนเลข **ซ้าย** ของ `-L` เช่น `ssh -p 2223 -L 13000:localhost:3000 root@localhost` แล้วเปิด `http://localhost:13000` |
 | browser เปิดไม่ได้ (connection refused/ERR_CONNECTION_RESET) | หน้าต่าง `ssh -L` ถูกปิด หรือ port-forward หยุด/หลุด | ตรวจว่าทั้งสองหน้าต่างยังทำงาน ดูหน้าต่าง port-forward ว่ามี `Handling connection for ...` |
 | port-forward ขึ้น `error: lost connection to pod` | Pod ถูกลบ/สร้างใหม่ port-forward ผูกกับ Pod เดิม | Ctrl+C แล้วรัน `kubectl port-forward ...` ใหม่ |
@@ -2503,7 +2485,7 @@ No resources found in default namespace.
 - [ ] **LAB 0** `kubectl get nodes -o wide` เห็น 3 node `Ready` และ context `kind-lab`
 - [ ] **LAB 1** `kubectl describe pod hello` ส่วน Events ครบ `Scheduled` → `Started`
 - [ ] **LAB 2** ผล `pod/web unchanged` และ `AlreadyExists`
-- [ ] **LAB 3** browser บนเครื่องนักศึกษาเปิด `http://localhost:8080` เห็น "สวัสดีจากน้องส้ม" และหน้าต่าง `kubectl logs -f web` ที่มี request จาก browser
+- [ ] **LAB 3** browser บนเครื่องนักศึกษาเปิด `http://localhost:8080` เห็น "สวัสดีจากน้องส้ม" และ `kubectl logs web` มี request จาก browser
 - [ ] **LAB 4** ผล `kubectl get pods -l app=som-shop,tier=web` และ `-L app,tier`
 - [ ] **LAB 5** `kubectl get pods` ที่เห็น `Completed`, `Error`/`CrashLoopBackOff` (RESTARTS > 0) และ `ErrImagePull`/`ImagePullBackOff` พร้อม `kubectl logs crash-pod --previous`
 - [ ] **LAB 6** `OOMKilled` exit code 137 และ Events `FailedScheduling ... Insufficient cpu`

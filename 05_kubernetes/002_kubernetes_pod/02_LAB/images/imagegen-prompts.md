@@ -242,3 +242,16 @@ Text (verbatim, at most 5 short labels): "git clone"; "/workspace/DevTools"; "cd
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos (no Docker whale, no GitHub octocat); do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words. No ships, no control tower, no Pod boxes.
 ```
 
+## 04b-lab3-vscode-ports.png
+
+> LAB3 ขั้นที่ 4: เปิดเว็บผ่านแท็บ PORTS ของ VS Code (added 2026-10-18, Codex CLI image_gen, same character reference)
+
+```text
+Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
+Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Pod lesson (README figure, about 1536x1024).
+Scene: A simplified, clean code-editor window (generic flat editor UI, dark navy title bar, no real product logo) fills the left two thirds. Its title bar shows the label VS Code and a small green remote badge labeled SSH: k8s-lab. At the bottom of the window is a panel with two tabs, TERMINAL and PORTS; the PORTS tab is active and highlighted. The PORTS table has exactly one row: port 8080 and forwarded address localhost:8080. On that row, a small globe icon is circled in orange with a big orange arrow pointing at it labeled Open in Browser. A dotted line goes from the globe icon to a simple browser window on the right whose address bar reads localhost:8080 and whose page shows a big heading สวัสดีจากน้องส้ม 🐱. Nong Som stands at the lower right pointing happily at the browser.
+Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly.
+Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001 classroom illustration set.
+Text (verbatim, only these labels): "VS Code"; "SSH: k8s-lab"; "TERMINAL"; "PORTS"; "8080"; "localhost:8080"; "Open in Browser"; "สวัสดีจากน้องส้ม 🐱".
+Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no code lines with readable text, no watermark, no signature, no real company logos (no VS Code logo, no Microsoft logo, no Chrome logo, no Docker whale); exactly one row in the PORTS table.
+```
