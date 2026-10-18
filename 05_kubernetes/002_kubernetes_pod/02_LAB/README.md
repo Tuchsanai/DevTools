@@ -9,32 +9,27 @@
 
 ## บทนำ
 
-ใน LAB นี้นักศึกษาจะทำตามน้องส้ม ตั้งแต่สร้างคลัสเตอร์ท่าเรือ สร้าง Pod แรก เขียน YAML เอง ไล่ดีบัก Pod ที่พัง ไปจนถึงเปิด **"ร้านอาหารแมวน้องส้ม"** (Next.js + PostgreSQL) ใน Pod เดียว แล้วพิสูจน์ด้วยตาว่า "container ตาย → ข้อมูลรอด แต่ Pod หาย → ข้อมูลหาย"
+ทุก LAB ทำ **ใน container `k8s-lab`** (image `tuchsanai/devtools-kind:2569_1` มี kubectl, kind, helm, k9s และ Docker ข้างในครบ) โดยทำตามน้องส้มตั้งแต่สร้างคลัสเตอร์ สร้าง Pod แรก ดีบัก Pod ที่พัง จนถึงเปิด **"ร้านอาหารแมวน้องส้ม"** (Next.js + PostgreSQL) ใน Pod เดียว
 
-ผลลัพธ์ทุกบล็อก ```` ```text ```` ในเอกสารนี้มาจาก **การทดลองจริง** บน container `k8s-lab` (image `tuchsanai/devtools-kind:2569_1`, kind v0.33.0 go1.26.7, kubectl client v1.37.1 (Kustomize v5.8.1), node/server Kubernetes v1.37.0, containerd 2.3.4, Docker 29.8.2) เมื่อ 5 ตุลาคม 2569 ตัดบางส่วนเพื่อให้กระชับ (แทนด้วย `...`) **เวลา, AGE, IP, ชื่อ Pod ที่สุ่ม (hash ท้ายชื่อ), UID, image ID และ Node ที่ Pod ไปอยู่ ในเครื่องนักศึกษาอาจต่างจากตัวอย่าง** เป็นเรื่องปกติ
+> ผลในบล็อก ```` ```text ```` มาจากการทดลองจริงเมื่อ 5 ต.ค. 2569 (kind v0.33.0, kubectl v1.37.1, Kubernetes v1.37.0) ค่า AGE, IP, ชื่อ Pod ที่สุ่ม และ Node ในเครื่องนักศึกษาอาจต่างไป เป็นเรื่องปกติ
 
-ทุกไฟล์ `.yaml` ที่ LAB ใช้ มีหัวข้อย่อย **"อธิบาย YAML"** ตรงจุดที่ใช้ไฟล์นั้น และในไฟล์เองก็มี comment ภาษาไทย (`# ...`) กำกับ field สำคัญไว้ (comment ไม่มีผลต่อการทำงาน)
-
-### สัญลักษณ์บอกว่ารันคำสั่งที่ไหน
-
-| สัญลักษณ์ | ความหมาย |
+| สัญลักษณ์ | รันที่ไหน |
 |---|---|
-| 🖥️ **บนเครื่องนักศึกษา** | Terminal/PowerShell ของเครื่องตัวเอง (Windows/macOS/Linux) |
-| 🐧 **ใน SSH session ของ k8s-lab** | หน้าต่างที่ล็อกอิน `ssh -p 2223 root@localhost` แล้ว (prompt `root@k8s-lab`) |
-| 🌐 **browser บนเครื่องนักศึกษา** | Chrome/Edge/Firefox บนเครื่องตัวเอง |
+| 🖥️ | Terminal/PowerShell บนเครื่องนักศึกษา |
+| 🐧 | SSH session ใน k8s-lab (prompt `root@k8s-lab`) |
+| 🌐 | browser บนเครื่องนักศึกษา |
 
-### กติกาของ LAB บทนี้
+### กติกา
 
-- ทุก LAB ทำในโฟลเดอร์ **`/workspace/DevTools/05_kubernetes/002_kubernetes_pod/02_LAB`** ภายใน k8s-lab และ **จบด้วยการลบ Pod ของตัวเองเสมอ**
-- บทนี้ใช้ **Pod เดี่ยว ๆ เท่านั้น** ไม่ใช้ Deployment หรือทรัพยากรเครือข่ายอื่น การเข้าถึงแอปใช้ `kubectl exec`, `kubectl logs` และ `kubectl port-forward` + `ssh -L` เท่านั้น
-- **port 30080–30082** ที่ map ไว้ตอนสร้าง container ใน LAB 0 **ยังไม่ใช้ในบทนี้** (เตรียมไว้สำหรับ Service ชนิด NodePort ในบทถัดไป) แม้ข้อความของ `k8s-up` จะแนะนำไว้ก็ตาม
-- รหัสผ่าน SSH `passwd` และรหัสฐานข้อมูล `meow1234` ในเอกสารนี้เป็น **ค่าตัวอย่างเพื่อการเรียนเท่านั้น** ห้ามใช้กับระบบจริง
+- ทำงานในโฟลเดอร์ `/workspace/DevTools/05_kubernetes/002_kubernetes_pod/02_LAB` และ **ลบ Pod ของตัวเองทุกครั้งที่จบ LAB**
+- ใช้ **Pod เดี่ยว ๆ เท่านั้น** เข้าถึงแอปด้วย `kubectl exec`, `logs` และ `port-forward` + `ssh -L`
+- รหัส `passwd` (SSH) และ `meow1234` (ฐานข้อมูล) เป็นค่าตัวอย่างเพื่อการเรียนเท่านั้น
 
 ## สารบัญ LAB
 
 | LAB | ชื่อ | เวลาโดยประมาณ | ความยาก |
 |:---:|---|:---:|:---:|
-| 0 | [สร้างคลัสเตอร์ท่าเรือ](#lab-0-สร้างคลัสเตอร์ท่าเรือ) (เตรียม container `k8s-lab` + SSH + `k8s-up`) | 20–30 นาที | ⭐ |
+| 0 | [เตรียมสภาพแวดล้อม (Setup)](#lab-0-เตรียมสภาพแวดล้อม-setup) (container `k8s-lab` + คลัสเตอร์ + git clone) | 20–30 นาที | ⭐ |
 | 1 | [Pod แรกด้วย kubectl run](#lab-1-pod-แรกด้วย-kubectl-run) | 10 นาที | ⭐ |
 | 2 | [Pod YAML แรก](#lab-2-pod-yaml-แรก) | 15 นาที | ⭐⭐ |
 | 3 | [เข้าไปใน Pod: exec, logs, port-forward](#lab-3-เข้าไปใน-pod-exec-logs-port-forward) | 20 นาที | ⭐⭐ |
@@ -52,19 +47,17 @@
 
 | รูปที่ | เรื่อง | รูปที่ | เรื่อง |
 |:---:|---|:---:|---|
-| 1 | [LAB 0 ขั้นที่ 1 docker pull/run](#fig-1) | 14 | [LAB 8 multi-container](#fig-14) |
-| 2 | [LAB 0 ขั้นที่ 2 SSH เข้า k8s-lab](#fig-2) | 15 | [LAB 9 ร้านอาหารแมวน้องส้ม](#fig-15) |
-| 3 | [LAB 0 ขั้นที่ 3 git clone](#fig-3) | 16 | [สถาปัตยกรรม Pod som-shop](#fig-16) |
-| 4 | [LAB 0 ขั้นที่ 4 สร้างคลัสเตอร์](#fig-4) | 17 | [ลำดับการเริ่ม Pod som-shop](#fig-17) |
-| 5 | [LAB 0 ขั้นที่ 5 ตรวจคลัสเตอร์](#fig-5) | 18 | [build และ kind load](#fig-18) |
-| 6 | [LAB 1 kubectl run](#fig-6) | 19 | [เปิดร้านจาก browser](#fig-19) |
-| 7 | [LAB 2 YAML แรก](#fig-7) | 20 | [ภาพหน้าจอจริง: หน้าร้านเริ่มต้น](#fig-20) |
-| 8 | [LAB 3 exec/logs/port-forward](#fig-8) | 21 | [ภาพหน้าจอจริง: หลังสั่งซื้อ 3 ครั้ง](#fig-21) |
-| 9 | [ภาพหน้าจอจริง: หน้าเว็บ nginx ของ LAB 3](#fig-9) | 22 | [emptyDir รอด vs หาย](#fig-22) |
-| 10 | [LAB 4 labels](#fig-10) | 23 | [ภาพหน้าจอจริง: หลัง restart db](#fig-23) |
-| 11 | [LAB 5 lifecycle และดีบัก](#fig-11) | 24 | [ภาพหน้าจอจริง: หลังลบ Pod แล้วสร้างใหม่](#fig-24) |
-| 12 | [LAB 6 env/command/resources](#fig-12) | 25 | [บทหน้า: แยกเว็บกับฐานข้อมูล](#fig-25) |
-| 13 | [LAB 7 probes](#fig-13) |  |  |
+| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 12 | [LAB 9 ร้านอาหารแมวน้องส้ม](#fig-12) |
+| 2 | [LAB 0 git clone](#fig-2) | 13 | [สถาปัตยกรรม Pod som-shop](#fig-13) |
+| 3 | [LAB 1 kubectl run](#fig-3) | 14 | [ลำดับการเริ่ม Pod som-shop](#fig-14) |
+| 4 | [LAB 2 YAML แรก](#fig-4) | 15 | [build และ kind load](#fig-15) |
+| 5 | [LAB 3 exec/logs/port-forward](#fig-5) | 16 | [เปิดร้านจาก browser](#fig-16) |
+| 6 | [ภาพหน้าจอจริง: หน้าเว็บ nginx ของ LAB 3](#fig-6) | 17 | [ภาพหน้าจอจริง: หน้าร้านเริ่มต้น](#fig-17) |
+| 7 | [LAB 4 labels](#fig-7) | 18 | [ภาพหน้าจอจริง: หลังสั่งซื้อ 3 ครั้ง](#fig-18) |
+| 8 | [LAB 5 lifecycle และดีบัก](#fig-8) | 19 | [emptyDir รอด vs หาย](#fig-19) |
+| 9 | [LAB 6 env/command/resources](#fig-9) | 20 | [ภาพหน้าจอจริง: หลัง restart db](#fig-20) |
+| 10 | [LAB 7 probes](#fig-10) | 21 | [ภาพหน้าจอจริง: หลังลบ Pod แล้วสร้างใหม่](#fig-21) |
+| 11 | [LAB 8 multi-container](#fig-11) | 22 | [บทหน้า: แยกเว็บกับฐานข้อมูล](#fig-22) |
 
 ### โครงสร้างไฟล์ LAB
 
@@ -86,384 +79,135 @@
 
 ---
 
-## LAB 0: สร้างคลัสเตอร์ท่าเรือ
+## LAB 0: เตรียมสภาพแวดล้อม (Setup)
 
-**เป้าหมาย:** เตรียม container `k8s-lab` จาก image สำเร็จรูป `tuchsanai/devtools-kind:2569_1` บน Docker Hub แล้ว SSH เข้าไป `git clone` ไฟล์ LAB และสร้างคลัสเตอร์ kind ชื่อ `lab` (1 control-plane + 2 worker) และตรวจว่าพร้อมใช้งาน
+**เป้าหมาย:** สร้าง container `k8s-lab` และคลัสเตอร์ kind ชื่อ `lab` (1 control-plane + 2 worker) แล้วดึงไฟล์ LAB มาไว้ใน container (รายละเอียดของแต่ละคำสั่งดูได้จาก [LAB บทที่ 1](../../001_kubernetes-introduction/02_LAB/readme.md))
 
-**สิ่งที่ต้องมีก่อน:** Docker Desktop (Linux containers) เปิดอยู่ มี SSH client (Windows 10/11, macOS และ Linux มีให้แล้ว) ไม่ต้องมีไฟล์ LAB บนเครื่อง (จะ `git clone` ใน container ในขั้นที่ 3) และไม่ต้อง build image เองเหมือน [LAB บทที่ 1](../../001_kubernetes-introduction/02_LAB/readme.md) เพราะ image นี้ build จาก Dockerfile ชุดเดียวกันและ push ขึ้น Docker Hub ไว้แล้ว (image ID `8108a1bc7901`)
+**ต้องมี:** Docker Desktop (Linux containers, RAM อย่างน้อย 4 GB) และ SSH client
 
-> **RAM:** จากการวัดจริงด้วย `docker stats` container `k8s-lab` ใช้ราว 125 MiB ตอนยังไม่มีคลัสเตอร์ และราว **1.7 GiB** หลัง `k8s-up` (3 node) แนะนำให้ Docker Desktop มี RAM อย่างน้อย 4 GB (Settings → Resources) เพราะ LAB 9 ต้อง build แอปและรัน PostgreSQL เพิ่ม ถ้าเครื่อง RAM น้อย ให้ปิดโปรแกรมอื่น และหยุด container ที่ไม่ใช้ด้วย `docker stop <ชื่อ>`
-
-ภายใน image มีเครื่องมือครบสำหรับบทนี้: kubectl `v1.37.1`, kind `0.33.0`, helm, k9s, Docker-in-Docker (dockerd ใน container) และคำสั่ง `k8s-up` / `k8s-down` สำหรับสร้าง/ลบคลัสเตอร์
-
-### ขั้นที่ 1: ดึง image และสร้าง container k8s-lab
+### ขั้นที่ 1: Setup container และคลัสเตอร์
 
 <p align="center" id="fig-1">
-  <img src="images/01a-lab0-step1-pull-run.png" alt="รูปที่ 1 LAB0 ขั้นที่ 1 docker pull และ docker run" width="900"><br>
-  <em><b>รูปที่ 1</b> LAB0 ขั้นที่ 1: docker pull ดึง image tuchsanai/devtools-kind:2569_1 จาก Docker Hub มาที่เครื่องนักศึกษา แล้ว docker run สร้าง container k8s-lab ที่เปิดประตู SSH 2223 → 22</em>
+  <img src="images/01-lab0-setup.png" alt="รูปที่ 1 LAB0 Setup container และคลัสเตอร์" width="900"><br>
+  <em><b>รูปที่ 1</b> LAB0 ขั้นที่ 1: (1) docker run สร้าง container k8s-lab (2) ssh -p 2223 เข้าไปข้างใน (3) รัน k8s-up สร้าง kind cluster ชื่อ lab ได้ 3 node Ready (control-plane 1 ตัว + worker 2 ตัว)</em>
 </p>
 
-**ทำอะไร:** ดาวน์โหลด image `tuchsanai/devtools-kind:2569_1` จาก Docker Hub มาไว้ในเครื่อง แล้วสร้าง container ชื่อ `k8s-lab` จาก image นั้น container นี้คือ "เครื่อง Linux จำลอง" ที่มีเครื่องมือ Kubernetes ครบ และเป็นที่ที่เราจะสร้างคลัสเตอร์ในขั้นที่ 4
-
-**ทำไม:** ทุกคนในห้องจะได้สภาพแวดล้อมเดียวกัน (เวอร์ชัน kubectl/kind ตรงกับเอกสาร) โดยไม่ต้องติดตั้งเครื่องมือลงเครื่องตัวเอง
-
-#### 1.1 ดึง image จาก Docker Hub
-
-ขนาดประมาณ 1.5 GB ครั้งแรกใช้เวลาหลายนาที ขึ้นกับความเร็วเน็ต
+**1) สร้าง container** 🖥️ **บนเครื่องนักศึกษา** (image ประมาณ 1.5 GB ครั้งแรกใช้เวลาหลายนาที)
 
 ```bash
-docker pull tuchsanai/devtools-kind:2569_1   # ดาวน์โหลด image จาก Docker Hub
-docker images tuchsanai/devtools-kind        # ตรวจว่า image อยู่ในเครื่องแล้ว
+docker pull tuchsanai/devtools-kind:2569_1
+docker run -dit --name k8s-lab --hostname k8s-lab --privileged -p 2223:22 -p 8889:8888 tuchsanai/devtools-kind:2569_1
 ```
 
-| ส่วนของคำสั่ง | ความหมาย |
-|---|---|
-| `docker pull` | ดาวน์โหลด image จาก registry (ค่าเริ่มต้นคือ Docker Hub) |
-| `tuchsanai/devtools-kind` | ชื่อ image รูปแบบ `<บัญชี Docker Hub>/<ชื่อ image>` |
-| `:2569_1` | **tag** = เวอร์ชันของ image ถ้าไม่ใส่ Docker จะใช้ `:latest` ซึ่ง image นี้ไม่มี จึงต้องใส่เสมอ |
-| `docker images <ชื่อ>` | แสดง image ที่มีในเครื่อง พร้อม ID และขนาด |
+- `--privileged` ให้รัน Docker ซ้อนใน container ได้ (kind ต้องใช้) **ขาดไม่ได้**
+- `-p 2223:22` เปิดทาง SSH เข้า container ผ่าน port `2223`
+- `-p 8889:8888` เปิด JupyterLab ที่ `http://localhost:8889/lab` ไว้เปิดดูไฟล์/terminal ข้างใน container เวลาดีบัก (ทางเลือก)
 
-ผลจริง (เครื่องที่เคย pull แล้วจะเห็น `Image is up to date` ส่วนครั้งแรกจะเห็นแถบดาวน์โหลดแต่ละ layer แล้วจบด้วย `Downloaded newer image`)
+หลัง `docker run` **รอสัก 5–10 วินาที** ให้ container เริ่ม sshd และ dockerd ข้างในให้เสร็จก่อน (ตรวจได้ด้วย `docker ps --filter name=k8s-lab` ต้องเห็น `Up`) ถ้ามี `k8s-lab` จากบทที่ 1 อยู่แล้วใช้ `docker start k8s-lab` แทนได้
 
-```text
-2569_1: Pulling from tuchsanai/devtools-kind
-Digest: sha256:75a9ae4531e819fdb41fd2b26550c893a40e695e882dc5338dc5b3bfa55c472c
-Status: Image is up to date for tuchsanai/devtools-kind:2569_1
-docker.io/tuchsanai/devtools-kind:2569_1
-
-$ docker images tuchsanai/devtools-kind
-IMAGE                            ID             DISK USAGE   CONTENT SIZE   EXTRA
-tuchsanai/devtools-kind:2569_1   8108a1bc7901       1.55GB             0B   U
-```
-
-- `Digest: sha256:75a9ae45...` คือลายนิ้วมือของ image ถ้าตรงกับนี้แปลว่าได้ image ตัวเดียวกับที่ใช้ทดลอง
-- ID `8108a1bc7901` ต้องตรงกัน (Docker เวอร์ชันเก่าอาจแสดงคอลัมน์เป็น `REPOSITORY  TAG  IMAGE ID  CREATED  SIZE` แทน)
-
-#### 1.2 สร้างและเริ่ม container
-
-คัดลอกทั้งบรรทัด ใช้ได้ทั้ง PowerShell และ bash
-
-```bash
-docker run -dit --name k8s-lab --hostname k8s-lab --privileged -p 2223:22 -p 8889:8888 -p 30080-30082:30080-30082 tuchsanai/devtools-kind:2569_1
-```
-
-ความหมายของแต่ละส่วน
-
-| ส่วนของคำสั่ง | ความหมาย |
-|---|---|
-| `-dit` | รันเบื้องหลัง (`-d`) พร้อม terminal (`-it`) container จึงไม่ปิดเอง |
-| `--name k8s-lab` | ชื่อ container ที่ใช้อ้างอิงในคำสั่ง `docker` ทั้งหมดของบทนี้ |
-| `--hostname k8s-lab` | ชื่อเครื่องภายใน ทำให้ prompt เป็น `root@k8s-lab` ตรงกับเอกสาร |
-| `--privileged` | ให้สิทธิ์รัน Docker ซ้อนใน container (kind สร้าง node แต่ละตัวเป็น container ใน dockerd ข้างใน) **ขาดไม่ได้** |
-| `-p 2223:22` | port `2223` ของเครื่องนักศึกษา → SSH (`22`) ใน container |
-| `-p 8889:8888` | JupyterLab (ทางเลือก เปิดที่ `http://localhost:8889/lab`) |
-| `-p 30080-30082:30080-30082` | port สำหรับ NodePort ของบทถัดไป บทนี้ยังไม่ใช้ แต่ต้อง map ไว้ตั้งแต่ตอนสร้าง (เพิ่มภายหลังไม่ได้) |
-| `tuchsanai/devtools-kind:2569_1` | image ที่ดึงมาในข้อ 1.1 |
-
-> ถ้าขึ้น `Conflict. The container name "/k8s-lab" is already in use` แปลว่ามี `k8s-lab` จากบทที่ 1 อยู่แล้ว ใช้ตัวเดิมต่อได้เลย (`docker start k8s-lab` แล้วไปขั้นที่ 2) หรือถ้าอยากเริ่มใหม่ให้ `docker rm -f k8s-lab` แล้วสั่ง `docker run` ใหม่ (**คลัสเตอร์และไฟล์ใน container เดิมจะหายหมด**)
->
-> ถ้ามีโฟลเดอร์ `Devtool_SSH` จากบทที่ 1 และอยากล็อกอินด้วย key แทนรหัสผ่าน ให้รันคำสั่งนี้ในโฟลเดอร์ที่มี `Devtool_SSH` แล้วเติม `-v "${PWD}/Devtool_SSH:/etc/devtools/ssh"` ก่อนชื่อ image ถ้าไม่เติม container จะสร้าง key ใหม่ให้เองข้างใน และล็อกอินด้วยรหัสผ่าน `passwd` ได้ตามปกติ
->
-> ถ้าขึ้น `port is already allocated` แปลว่า port `2223`/`8889`/`30080–30082` ถูก container อื่นใช้อยู่ ดูด้วย `docker ps` แล้วหยุดตัวนั้น (`docker stop <ชื่อ>`) จากนั้นลบ container ที่สร้างไม่สำเร็จด้วย `docker rm -f k8s-lab` แล้วสั่งใหม่
-
-ผลจริงคือ ID ยาว 64 ตัวอักษรของ container ที่สร้าง (ในเครื่องนักศึกษาจะเป็นค่าอื่น) ถ้าเห็น ID แบบนี้และไม่มีข้อความ error แปลว่าสร้างสำเร็จ
-
-```text
-c6cab43a9c94c4db2c19ccc26ad6f71753f709941ef9be2e2eacb1c48d2b1498
-```
-
-> **✅ ผ่านขั้นที่ 1 เมื่อ:** `docker ps --filter name=k8s-lab` เห็น `k8s-lab` สถานะ `Up` (ถ้าเป็น `Exited` ให้ดูสาเหตุด้วย `docker logs k8s-lab` ส่วนมากเกิดจากลืม `--privileged`)
-
-### ขั้นที่ 2: SSH เข้า k8s-lab
-
-<p align="center" id="fig-2">
-  <img src="images/01b-lab0-step2-ssh.png" alt="รูปที่ 2 LAB0 ขั้นที่ 2 SSH เข้า k8s-lab" width="900"><br>
-  <em><b>รูปที่ 2</b> LAB0 ขั้นที่ 2: ssh -p 2223 root@localhost เปิดท่อจากเครื่องนักศึกษาเข้า container k8s-lab เมื่อล็อกอินสำเร็จจะเห็น prompt root@k8s-lab:~#</em>
-</p>
-
-**ทำอะไร:** ล็อกอินเข้า container `k8s-lab` ผ่าน SSH เหมือนล็อกอินเข้าเซิร์ฟเวอร์ Linux จริง
-
-**ทำไม:** คำสั่ง `kubectl`, `kind`, `k8s-up` และไฟล์ LAB ทั้งหมดอยู่ **ใน container** ไม่ได้อยู่บนเครื่องนักศึกษา จึงต้องเข้าไปทำงานข้างใน
-
-🖥️ **บนเครื่องนักศึกษา**
+**2) SSH เข้า container** 🖥️ ครั้งแรกพิมพ์ `yes` แล้วใส่รหัสผ่าน `passwd`
 
 ```bash
 ssh -p 2223 root@localhost
 ```
 
-| ส่วนของคำสั่ง | ความหมาย |
-|---|---|
-| `ssh` | โปรแกรมล็อกอินระยะไกลแบบเข้ารหัส |
-| `-p 2223` | port ฝั่งเครื่องนักศึกษาที่ map ไปยัง SSH (`22`) ของ container ใน `docker run` ขั้นที่ 1 (ถ้าไม่ใส่ จะไปที่ port `22` ของเครื่องตัวเองซึ่งไม่ใช่ container) |
-| `root@localhost` | ล็อกอินเป็นผู้ใช้ `root` ที่เครื่อง `localhost` (เครื่องตัวเอง) แล้ว Docker ส่งต่อเข้า container ให้ |
-
-ครั้งแรกจะถามยืนยัน host key ให้พิมพ์ `yes` แล้วกด Enter จากนั้นใส่รหัสผ่าน `passwd` (พิมพ์แล้วจะไม่เห็นตัวอักษร เป็นเรื่องปกติ)
-
-ผลจริง (ข้อความยืนยัน host key มาจากการเชื่อมต่อครั้งแรก fingerprint และเวลา `Last login` จะต่างกัน)
-
-```text
-The authenticity of host '[localhost]:2223 ([::1]:2223)' can't be established.
-Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
-Warning: Permanently added '[localhost]:2223' (ED25519) to the list of known hosts.
-root@localhost's password:
-Welcome to Ubuntu 24.04.5 LTS (GNU/Linux 6.6.87.2-microsoft-standard-WSL2 x86_64)
-
- * Documentation:  https://help.ubuntu.com
- * Management:     https://landscape.canonical.com
- * Support:        https://ubuntu.com/pro
-
-This system has been minimized by removing packages and content that are
-not required on a system that users do not log into.
-
-To restore this content, you can run the 'unminimize' command.
-Last login: Tue Oct  6 08:43:36 2026 from 172.17.0.1
-root@k8s-lab:~#
-```
-
-- `Welcome to Ubuntu 24.04.5 LTS` = ตอนนี้อยู่ใน Linux ของ container แล้ว (เลข kernel ขึ้นกับเครื่อง เช่น `...-WSL2` บน Windows)
-- `root@k8s-lab:~#` อ่านว่า ผู้ใช้ `root` @ เครื่อง `k8s-lab` อยู่ที่ `~` (home = `/root`) และ `#` = เป็น root
-
-เมื่อเห็น prompt `root@k8s-lab` ต่อจากนี้หน้าต่างนี้คือ **SSH session หลัก** คำสั่งทุก LAB ต่อจากนี้ (🐧) พิมพ์ในหน้าต่างนี้
-
-> **✅ ผ่านขั้นที่ 2 เมื่อ:** prompt เปลี่ยนเป็น `root@k8s-lab:~#`
-
-> ถ้าเคยลบแล้วสร้าง `k8s-lab` ใหม่ SSH จะเตือน `REMOTE HOST IDENTIFICATION HAS CHANGED!` เพราะ container ใหม่มี host key ใหม่ ให้ลบ key เก่าด้วย `ssh-keygen -R "[localhost]:2223"` แล้ว ssh ใหม่
-
-### ขั้นที่ 3: git clone แล้ว cd เข้าโฟลเดอร์ LAB
-
-<p align="center" id="fig-3">
-  <img src="images/01c-lab0-step3-git-clone.png" alt="รูปที่ 3 LAB0 ขั้นที่ 3 git clone และ cd" width="900"><br>
-  <em><b>รูปที่ 3</b> LAB0 ขั้นที่ 3: git clone ดึง repo DevTools มาไว้ที่ /workspace/DevTools ใน k8s-lab แล้ว cd ลงไปจนถึงโฟลเดอร์ 02_LAB ที่มี labs และ som-shop</em>
-</p>
-
-**ทำอะไร:** ดาวน์โหลดไฟล์บทเรียน (README, `labs/`, `som-shop/`) จาก GitHub มาไว้ใน container แล้วเข้าไปยังโฟลเดอร์ LAB ของบทนี้
-
-**ทำไม:** ไฟล์ YAML และแอปที่ใช้ใน LAB 2–9 ต้องอยู่ในเครื่องเดียวกับ `kubectl` คือใน container การ `git clone` ใน container ทำได้ในคำสั่งเดียว ไม่ต้องคัดลอกจากเครื่องนักศึกษา (ใน image มี `git` ให้แล้ว)
-
-🐧 **ใน SSH session ของ k8s-lab**
+**3) สร้างและตรวจคลัสเตอร์** 🐧 **ใน SSH session ของ k8s-lab** (prompt `root@k8s-lab:~#`)
 
 ```bash
-cd /workspace                                              # โฟลเดอร์ทำงานของ container
-git clone https://github.com/Tuchsanai/DevTools.git        # ดาวน์โหลด repo วิชาลงโฟลเดอร์ DevTools
-cd DevTools/05_kubernetes/002_kubernetes_pod/02_LAB        # เข้าโฟลเดอร์ LAB ของบทนี้
+time k8s-up            # สร้างคลัสเตอร์ kind ชื่อ lab ใช้เวลาราว 1 นาที
+kubectl get nodes      # ต้องเห็น 3 node Ready
+kubectl get pods -A    # Pod ระบบใน kube-system ต้อง Running
 ```
-
-| คำสั่ง | ทำอะไร |
-|---|---|
-| `cd /workspace` | ย้ายไปโฟลเดอร์ทำงานหลักของ container (`start.sh` สร้างไว้ให้ ข้างในมี `examples/` อยู่แล้ว) |
-| `git clone <URL>` | ดาวน์โหลด repo ทั้งหมดพร้อมประวัติ commit มาเป็นโฟลเดอร์ใหม่ชื่อ `DevTools` (ชื่อตามท้าย URL) |
-| `cd DevTools/05_kubernetes/002_kubernetes_pod/02_LAB` | เข้าโฟลเดอร์ LAB ของบทนี้ ทุกคำสั่งที่อ้าง path แบบ `labs/...` หรือ `som-shop/...` ในบทนี้ต้องรันจากโฟลเดอร์นี้ |
-
-ตัวอย่างผล (**ไม่ใช่ผลจากรอบทดลอง** ตัวเลขจำนวน object และขนาดขึ้นกับสถานะ repo ตอนที่ clone)
 
 ```text
-root@k8s-lab:/workspace# git clone https://github.com/Tuchsanai/DevTools.git
-Cloning into 'DevTools'...
-remote: Enumerating objects: ..., done.
-remote: Counting objects: 100% (...), done.
-remote: Compressing objects: 100% (...), done.
-Receiving objects: 100% (...), ... MiB | ... MiB/s, done.
-Resolving deltas: 100% (...), done.
-root@k8s-lab:/workspace# cd DevTools/05_kubernetes/002_kubernetes_pod/02_LAB
-root@k8s-lab:/workspace/DevTools/05_kubernetes/002_kubernetes_pod/02_LAB#
-```
-
-หลัง `cd` prompt จะแสดง path ของโฟลเดอร์ LAB (`.../02_LAB#`) แปลว่าพร้อมทำ LAB ต่อ
-
-> - repo มีทุกบทของวิชา จึงใหญ่พอสมควร ถ้าเน็ตช้าใช้ `git clone --depth 1 https://github.com/Tuchsanai/DevTools.git` เพื่อดึงเฉพาะ commit ล่าสุด
-> - ถ้าขึ้น `fatal: destination path 'DevTools' already exists and is not an empty directory` แปลว่าเคย clone ไว้แล้ว ให้ `cd DevTools && git pull` เพื่ออัปเดตแทน แล้ว `cd` เข้าโฟลเดอร์ LAB ตามปกติ
-> - ไฟล์ที่ clone อยู่ **ใน container** ถ้าลบ container ไฟล์ (รวมที่แก้ไว้) จะหายไปด้วย ครั้งหน้าต้อง clone ใหม่
-
-> **✅ ผ่านขั้นที่ 3 เมื่อ:** `git clone` จบด้วย `Resolving deltas: 100% ..., done.` และ prompt เป็น `root@k8s-lab:/workspace/DevTools/05_kubernetes/002_kubernetes_pod/02_LAB#`
-
-### ขั้นที่ 4: สร้างคลัสเตอร์
-
-<p align="center" id="fig-4">
-  <img src="images/01-lab0-cluster-up.png" alt="รูปที่ 4 LAB0 สร้างคลัสเตอร์" width="900"><br>
-  <em><b>รูปที่ 4</b> LAB0 ขั้นที่ 4: รัน k8s-up ใน k8s-lab เพื่อสร้าง kind cluster ชื่อ lab มี control-plane 1 ตัวและ worker 2 ตัว</em>
-</p>
-
-**ทำอะไร:** สร้างคลัสเตอร์ Kubernetes ชื่อ `lab` ด้วย kind ภายใน container มี 3 node คือ `lab-control-plane` (หอบังคับการ) กับ `lab-worker`, `lab-worker2` (เรือที่จะรับ Pod)
-
-**ทำไม:** Pod ทุกตัวในบทนี้ต้องมีคลัสเตอร์ให้ไปอยู่ kind สร้าง node แต่ละตัวเป็น container ซ้อนอยู่ใน Docker ของ `k8s-lab` จึงสร้าง/ลบได้เร็วและไม่กระทบเครื่องนักศึกษา
-
-🐧 **ใน SSH session ของ k8s-lab** (อยู่ที่ `/workspace/DevTools/05_kubernetes/002_kubernetes_pod/02_LAB`)
-
-```bash
-time k8s-up                               # สร้างคลัสเตอร์ kind ชื่อ lab และจับเวลาที่ใช้
-```
-
-| คำสั่ง | ทำอะไร |
-|---|---|
-| `time k8s-up` | `k8s-up` เป็นสคริปต์ในตัว image ที่รอ dockerd พร้อม แล้วสั่ง `kind create cluster --name lab` ตามไฟล์ `/etc/devtools/kind/kind-lab.yaml` (1 control-plane + 2 worker) จากนั้นรอทุก node `Ready` ส่วน `time` นำหน้าเพื่อแสดงเวลาที่ใช้ (`real`) ถ้ามีคลัสเตอร์ `lab` อยู่แล้วจะข้ามการสร้าง |
-
-`k8s-up` ใช้เวลาประมาณ 1 นาที (ครั้งแรกบางเครื่องอาจนานกว่านี้เพราะต้องเตรียม node image) ผลจริง (ตัดบางส่วน ส่วนที่ตัดคือตาราง `kubectl get nodes -o wide` และรายการคำแนะนำท้ายข้อความ เวลา `real` ของแต่ละเครื่องจะต่างกัน)
-
-```text
-[k8s-up] dockerd ready
-[k8s-up] kind create cluster --name lab --config /etc/devtools/kind/kind-lab.yaml
-Creating cluster "lab" ...
- ✓ Ensuring node image (kindest/node:v1.37.0) 🖼️
- ✓ Preparing nodes 📦 📦 📦 
- ✓ Writing configuration 📜
- ✓ Starting control-plane 🕹️
- ✓ Installing CNI 🔌
- ✓ Installing StorageClass 💾
- ✓ Joining worker nodes 🚜
-Set kubectl context to "kind-lab"
-...
-[k8s-up] waiting for all nodes Ready (timeout 180s)...
-node/lab-control-plane condition met
-node/lab-worker condition met
-node/lab-worker2 condition met
 ...
 [k8s-up] cluster 'lab' พร้อมใช้งาน (kubectl context: kind-lab)
 ...
-
 real	0m48.440s
+
+NAME                STATUS   ROLES           AGE   VERSION
+lab-control-plane   Ready    control-plane   23s   v1.37.0
+lab-worker          Ready    <none>          13s   v1.37.0
+lab-worker2         Ready    <none>          13s   v1.37.0
 ```
 
-อ่านผลทีละช่วง
+> **✅ ผ่านเมื่อ:** node 3 ตัว `Ready` และ Pod ใน `kube-system` เป็น `Running` ทุกตัว (ช่วงแรกอาจยัง `0/1` รอสักครู่) ข้อความเรื่อง NodePort ท้าย `k8s-up` ข้ามได้ ปัญหาอื่นดู [Troubleshooting](#troubleshooting)
 
-| บรรทัดในผล | ความหมาย |
-|---|---|
-| `[k8s-up] dockerd ready` | Docker ภายใน container พร้อมแล้ว (kind ต้องใช้ Docker สร้าง node) |
-| `Ensuring node image (kindest/node:v1.37.0)` | เตรียม image ของ node ที่มี Kubernetes v1.37.0 |
-| `Preparing nodes 📦 📦 📦` | สร้าง node 3 ตัว (1 กล่อง = 1 node) |
-| `Starting control-plane` | เริ่ม API server, etcd, scheduler, controller-manager บน `lab-control-plane` |
-| `Installing CNI` / `Installing StorageClass` | ติดตั้งระบบเครือข่ายของ Pod (`kindnet`) และที่เก็บข้อมูลเริ่มต้น |
-| `Joining worker nodes` | ให้ `lab-worker` และ `lab-worker2` เข้าร่วมคลัสเตอร์ |
-| `Set kubectl context to "kind-lab"` | ตั้งค่าให้ `kubectl` ส่งคำสั่งไปที่คลัสเตอร์นี้ |
-| `node/... condition met` | node แต่ละตัวพร้อม (`Ready`) แล้ว |
-| `real 0m48.440s` | เวลาที่ใช้ทั้งหมด (จากคำสั่ง `time`) |
+### ขั้นที่ 2: git clone ไฟล์ LAB
 
-> **✅ ผ่านขั้นที่ 4 เมื่อ:** เห็น `[k8s-up] cluster 'lab' พร้อมใช้งาน (kubectl context: kind-lab)` และ node ทั้ง 3 ตัว `condition met`
-
-> ท้ายข้อความ `k8s-up` จะมีคำแนะนำเรื่องไฟล์ตัวอย่างและ port 30080–30082 (บรรทัดสุดท้ายคือ `NodePort ที่ map ออก host: 30080 30081 30082`) ซึ่งเป็นของบทถัดไป **บทนี้ยังไม่ต้องใช้**
-
-### ขั้นที่ 5: ตรวจคลัสเตอร์
-
-<p align="center" id="fig-5">
-  <img src="images/01e-lab0-step5-check-cluster.png" alt="รูปที่ 5 LAB0 ขั้นที่ 5 ตรวจคลัสเตอร์" width="900"><br>
-  <em><b>รูปที่ 5</b> LAB0 ขั้นที่ 5: ตรวจ 4 เรื่อง (1) context kind-lab (2) node 3 ตัว Ready (3) Pod ระบบใน kube-system (4) taint NoSchedule บน lab-control-plane</em>
+<p align="center" id="fig-2">
+  <img src="images/01c-lab0-step3-git-clone.png" alt="รูปที่ 2 LAB0 ขั้นที่ 2 git clone และ cd" width="900"><br>
+  <em><b>รูปที่ 2</b> LAB0 ขั้นที่ 2: git clone ดึง repo DevTools มาไว้ที่ /workspace/DevTools ใน k8s-lab แล้ว cd ลงไปจนถึงโฟลเดอร์ 02_LAB ที่มี labs และ som-shop</em>
 </p>
-
-**ทำอะไร:** ใช้ `kubectl` ตรวจ 4 เรื่อง คือ (1) คุยกับคลัสเตอร์ถูกตัวไหม (2) node พร้อมครบไหม (3) Pod ระบบทำงานไหม (4) Pod ของเราจะไปลง node ไหนได้บ้าง
-
-**ทำไม:** ถ้าคลัสเตอร์ยังไม่พร้อม LAB ถัดไปจะติด `Pending` หรือ error ที่หาสาเหตุยาก ตรวจตอนนี้ก่อนจะแก้ง่ายกว่า
 
 🐧 **ใน SSH session ของ k8s-lab**
 
 ```bash
-kubectl config current-context                            # kubectl กำลังคุยกับคลัสเตอร์ไหน
-kubectl get nodes -o wide                                 # รายชื่อ node พร้อมสถานะ เวอร์ชัน IP และ runtime
-kubectl get pods -A                                       # Pod ทุกตัวในทุก namespace (รวม Pod ระบบ)
-kubectl describe node lab-control-plane | grep -i taints  # ดู taint ของ control-plane
+cd /workspace
+git clone https://github.com/Tuchsanai/DevTools.git     # เคย clone แล้ว: cd DevTools && git pull
+cd DevTools/05_kubernetes/002_kubernetes_pod/02_LAB
 ```
 
-คำอธิบายทีละคำสั่ง
-
-| คำสั่ง | ทำอะไร | สิ่งที่ต้องเห็น |
-|---|---|---|
-| `kubectl config current-context` | แสดง **context** ปัจจุบันจากไฟล์ `~/.kube/config` (context = คลัสเตอร์ + ผู้ใช้ที่ kubectl จะส่งคำสั่งไปหา) `k8s-up` ตั้งให้เป็น `kind-<ชื่อคลัสเตอร์>` อัตโนมัติ | `kind-lab` ถ้าเป็นค่าอื่นแปลว่าคำสั่งต่อจากนี้จะไปเกิดในคลัสเตอร์อื่น |
-| `kubectl get nodes -o wide` | `get nodes` แสดงรายชื่อ node ทั้งหมดในคลัสเตอร์ ส่วน `-o wide` เพิ่มคอลัมน์ `INTERNAL-IP`, `OS-IMAGE`, `KERNEL-VERSION` และ `CONTAINER-RUNTIME` | 3 node สถานะ `Ready` ROLES ของ `lab-control-plane` คือ `control-plane` ส่วน worker เป็น `<none>` |
-| `kubectl get pods -A` | `get pods` แสดง Pod แต่ปกติดูเฉพาะ namespace `default` ใส่ `-A` (`--all-namespaces`) เพื่อดู **ทุก namespace** จึงเห็น Pod ระบบใน `kube-system` และ `local-path-storage` | ทุกตัว `Running` และ READY `1/1` (ช่วงแรกอาจยัง `0/1` หรือ `ContainerCreating` รอสักครู่แล้วสั่งซ้ำ) |
-| `kubectl describe node lab-control-plane \| grep -i taints` | `describe node` แสดงรายละเอียดเต็มของ node (labels, taints, capacity, Pod ที่อยู่บน node, events) ยาวมาก จึงส่งต่อ (`\|`) ให้ `grep -i taints` กรองเฉพาะบรรทัดที่มีคำว่า taints (`-i` = ไม่สนตัวพิมพ์เล็ก/ใหญ่) | `node-role.kubernetes.io/control-plane:NoSchedule` = ห้ามวาง Pod ทั่วไปบน control-plane |
-
-ผลจริง (ตัดคอลัมน์ `KERNEL-VERSION` ของ `get nodes`; ชื่อ Pod ที่มี hash ต่อท้าย เช่น `coredns-559f6c778d-xxxxx`, `kindnet-xxxxx`, IP ของ node และ AGE จะต่างในแต่ละเครื่อง)
-
-```text
-$ kubectl config current-context
-kind-lab
-
-$ kubectl get nodes -o wide
-NAME                STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                       ...   CONTAINER-RUNTIME
-lab-control-plane   Ready    control-plane   23s   v1.37.0   172.19.0.3    <none>        Debian GNU/Linux 13 (trixie)   ...   containerd://2.3.4
-lab-worker          Ready    <none>          13s   v1.37.0   172.19.0.4    <none>        Debian GNU/Linux 13 (trixie)   ...   containerd://2.3.4
-lab-worker2         Ready    <none>          13s   v1.37.0   172.19.0.2    <none>        Debian GNU/Linux 13 (trixie)   ...   containerd://2.3.4
-
-$ kubectl get pods -A
-NAMESPACE            NAME                                        READY   STATUS    RESTARTS   AGE
-kube-system          coredns-559f6c778d-n4mg8                    1/1     Running   0          13s
-kube-system          coredns-559f6c778d-wh2cb                    1/1     Running   0          13s
-kube-system          etcd-lab-control-plane                      1/1     Running   0          20s
-kube-system          kindnet-6bjtm                               1/1     Running   0          13s
-kube-system          kindnet-7vvdp                               1/1     Running   0          13s
-kube-system          kindnet-ktxwk                               1/1     Running   0          13s
-kube-system          kube-apiserver-lab-control-plane            1/1     Running   0          20s
-kube-system          kube-controller-manager-lab-control-plane   1/1     Running   0          22s
-kube-system          kube-proxy-bpx5t                            1/1     Running   0          13s
-kube-system          kube-proxy-sx7nd                            1/1     Running   0          13s
-kube-system          kube-proxy-z99zt                            1/1     Running   0          13s
-kube-system          kube-scheduler-lab-control-plane            1/1     Running   0          20s
-local-path-storage   local-path-provisioner-75f7fc7dc5-pqxsl     1/1     Running   0          13s
-
-$ kubectl describe node lab-control-plane | grep -i taints
-Taints:             node-role.kubernetes.io/control-plane:NoSchedule
-```
-
-(ทางเลือก) ตรวจเวอร์ชันของเครื่องมือด้วย `kubectl version; kind version` ผลจริงในรอบทดลอง
-
-```text
-Client Version: v1.37.1
-Kustomize Version: v5.8.1
-Server Version: v1.37.0
-kind v0.33.0 go1.26.7 linux/amd64
-```
-
-client (`kubectl` ใน k8s-lab) เป็น v1.37.1 ส่วน server/node เป็น v1.37.0 ต่างกันแค่ patch version จึงใช้ร่วมกันได้ปกติ
-
-### สิ่งที่เห็น
-
-- context คือ `kind-lab` และมี node 3 ตัวสถานะ `Ready` ได้แก่ หอบังคับการ `lab-control-plane` และเรือ `lab-worker`, `lab-worker2`
-- Pod ระบบใน `kube-system` คือองค์ประกอบที่เรียนในบทที่ 1 (etcd, kube-apiserver, kube-scheduler, kube-controller-manager, kube-proxy, CoreDNS และ CNI `kindnet`) ตอนแรกบางตัวอาจยัง `0/1` รอสักครู่จะเป็น `1/1`
-- `lab-control-plane` มี taint `NoSchedule` → Pod ของเราจะไปอยู่บน worker เท่านั้น
-
-> **✅ ผ่านขั้นที่ 5 (จบ LAB 0) เมื่อ:** context เป็น `kind-lab`, node 3 ตัว `Ready` และ Pod ใน `kube-system` เป็น `Running` ทุกตัว
-
-> **🤔 คำถามชวนคิด:** ทำไม `kindnet` และ `kube-proxy` มีอย่างละ 3 Pod แต่ `kube-apiserver` มีแค่ 1 Pod
+> **✅ ผ่านเมื่อ:** prompt เป็น `root@k8s-lab:/workspace/DevTools/05_kubernetes/002_kubernetes_pod/02_LAB#` ทุกคำสั่งที่อ้าง `labs/...` หรือ `som-shop/...` ต้องรันจากโฟลเดอร์นี้
 
 ---
 
 ## LAB 1: Pod แรกด้วย kubectl run
 
-<p align="center" id="fig-6">
-  <img src="images/02-lab1-kubectl-run.png" alt="รูปที่ 6 LAB1 kubectl run" width="900"><br>
-  <em><b>รูปที่ 6</b> LAB1: สร้าง Pod แรกด้วย kubectl run แล้วดูสถานะด้วย kubectl get pods -o wide</em>
+<p align="center" id="fig-3">
+  <img src="images/02-lab1-kubectl-run.png" alt="รูปที่ 3 LAB1 kubectl run" width="900"><br>
+  <em><b>รูปที่ 3</b> LAB1: สร้าง Pod แรกด้วย kubectl run แล้วดูสถานะด้วย kubectl get pods -o wide</em>
 </p>
 
 **เป้าหมาย:** สร้าง ดู อธิบาย และลบ Pod แบบ imperative (สั่งตรง ๆ ไม่ใช้ไฟล์)
 
 🐧 **ใน SSH session ของ k8s-lab** (ทุกขั้นใน LAB นี้)
 
-### ขั้นที่ 1: สร้าง Pod และดูสถานะ
+### ขั้นที่ 1: สร้าง Pod แล้วดูสถานะทันที
 
 ```bash
-kubectl run hello --image=nginx:1.27-alpine
-kubectl get pods
+kubectl run hello --image=nginx:1.27-alpine && kubectl get pods
+```
+
+ผลจริง
+
+```text
+pod/hello created
+NAME    READY   STATUS              RESTARTS   AGE
+hello   0/1     ContainerCreating   0          0s
+```
+
+STATUS ยังเป็น `ContainerCreating` และ READY `0/1` เพราะ Pod **ยังสร้างไม่เสร็จ** node กำลังดึง image `nginx:1.27-alpine` จาก Docker Hub ต้องรอสักครู่ (ครั้งแรกราว 5–10 วินาที) ขั้นถัดไปจึงใช้ `kubectl wait` รอแทนการกดสั่ง `get pods` ซ้ำไปเรื่อย ๆ
+
+### ขั้นที่ 2: รอจน Pod พร้อม แล้วดูแบบละเอียด
+
+```bash
 kubectl wait --for=condition=Ready pod/hello --timeout=180s
+kubectl get pods
 kubectl get pods -o wide
 ```
 
+ผลจริง
+
 ```text
-$ kubectl run hello --image=nginx:1.27-alpine
-pod/hello created
-
-$ kubectl get pods
-NAME    READY   STATUS              RESTARTS   AGE
-hello   0/1     ContainerCreating   0          0s
-
-$ kubectl wait --for=condition=Ready pod/hello --timeout=180s
 pod/hello condition met
 
-$ kubectl get pods -o wide
+NAME    READY   STATUS    RESTARTS   AGE
+hello   1/1     Running   0          8s
+
 NAME    READY   STATUS    RESTARTS   AGE   IP           NODE          NOMINATED NODE   READINESS GATES
-hello   1/1     Running   0          7s    10.244.3.2   lab-worker2   <none>           <none>
+hello   1/1     Running   0          8s    10.244.2.2   lab-worker2   <none>           <none>
 ```
+
+| คำสั่ง | แสดงอะไร |
+|---|---|
+| `kubectl wait --for=condition=Ready pod/hello` | รอจน Pod พร้อม (สูงสุด 180 วินาที) ได้ `condition met` แปลว่าพร้อมแล้ว |
+| `kubectl get pods` | สรุปสั้น: ชื่อ, READY, STATUS, จำนวน restart และอายุ |
+| `kubectl get pods -o wide` | ข้อมูลเดิม **บวก** `IP` ของ Pod และ `NODE` ที่ Pod ไปอยู่ (รวมถึง `NOMINATED NODE`, `READINESS GATES` ที่บทนี้ยังไม่ใช้) |
 
 (IP และ NODE ของนักศึกษาอาจต่างจากนี้ เช่นได้ `lab-worker` แทน `lab-worker2`)
 
-### ขั้นที่ 2: อ่านรายละเอียดด้วย describe
+### ขั้นที่ 3: อ่านรายละเอียดด้วย describe
 
 ```bash
 kubectl describe pod hello
@@ -474,10 +218,10 @@ kubectl describe pod hello
 ```text
 Name:             hello
 Namespace:        default
-Node:             lab-worker2/172.19.0.2
+Node:             lab-worker2/172.19.0.3
 Labels:           run=hello
 Status:           Running
-IP:               10.244.3.2
+IP:               10.244.2.2
 Containers:
   hello:
     Image:          nginx:1.27-alpine
@@ -490,29 +234,33 @@ QoS Class:                   BestEffort
 Events:
   Type    Reason     Age   From               Message
   ----    ------     ----  ----               -------
-  Normal  Scheduled  7s    default-scheduler  Successfully assigned default/hello to lab-worker2
-  Normal  Pulling    6s    kubelet            spec.containers{hello}: Pulling image "nginx:1.27-alpine"
-  Normal  Pulled     0s    kubelet            spec.containers{hello}: Successfully pulled image "nginx:1.27-alpine" in 6.284s (6.284s including waiting). Image size: 20984244 bytes.
+  Normal  Scheduled  8s    default-scheduler  Successfully assigned default/hello to lab-worker2
+  Normal  Pulling    7s    kubelet            spec.containers{hello}: Pulling image "nginx:1.27-alpine"
+  Normal  Pulled     0s    kubelet            spec.containers{hello}: Successfully pulled image "nginx:1.27-alpine" in 7.499s (7.499s including waiting). Image size: 20984244 bytes.
   Normal  Created    0s    kubelet            spec.containers{hello}: Container created
   Normal  Started    0s    kubelet            spec.containers{hello}: Container started
 ```
 
-### ขั้นที่ 3: ลบ Pod
+### ขั้นที่ 4: ลบ Pod แล้วตรวจ
 
 ```bash
 kubectl delete pod hello
 kubectl get pods
 ```
 
+ผลจริง
+
 ```text
 pod "hello" deleted from default namespace
 No resources found in default namespace.
 ```
 
+`No resources found` = ไม่มี Pod เหลือใน namespace `default` แล้ว
+
 ### สิ่งที่เห็น
 
 - `kubectl run` สร้าง **Pod** (ไม่ใช่ container เดี่ยว) STATUS เปลี่ยนจาก `ContainerCreating` เป็น `Running` ภายในไม่กี่วินาที
-- Pod ได้ IP ช่วง `10.244.x.x` และถูกวางบน worker ตัวใดตัวหนึ่ง (ของนักศึกษาอาจเป็น `lab-worker`)
+- `get pods -o wide` บอกว่า Pod ได้ IP ช่วง `10.244.x.x` และถูกวางบน worker ตัวใดตัวหนึ่ง (ของนักศึกษาอาจเป็น `lab-worker`)
 - Events เรียงตามเส้นทางการเกิดของ Pod: `Scheduled` → `Pulling` → `Pulled` → `Created` → `Started`
 - `kubectl run` ติด label `run=hello` ให้อัตโนมัติ และ Pod ที่ไม่กำหนด resources มี QoS เป็น `BestEffort`
 - เมื่อลบแล้ว **ไม่มีใครสร้างคืน** Pod หายถาวร
@@ -523,9 +271,9 @@ No resources found in default namespace.
 
 ## LAB 2: Pod YAML แรก
 
-<p align="center" id="fig-7">
-  <img src="images/03-lab2-first-yaml.png" alt="รูปที่ 7 LAB2 YAML แรก" width="900"><br>
-  <em><b>รูปที่ 7</b> LAB2: อ่านไฟล์ nginx-pod.yaml ที่เตรียมไว้ แล้ว kubectl apply -f สร้าง Pod web</em>
+<p align="center" id="fig-4">
+  <img src="images/03-lab2-first-yaml.png" alt="รูปที่ 4 LAB2 YAML แรก" width="900"><br>
+  <em><b>รูปที่ 4</b> LAB2: อ่านไฟล์ nginx-pod.yaml ที่เตรียมไว้ แล้ว kubectl apply -f สร้าง Pod web</em>
 </p>
 
 **เป้าหมาย:** อ่านไฟล์ `nginx-pod.yaml` ที่เตรียมไว้ สร้าง Pod แบบ declarative และเห็นทั้ง `spec` กับ `status`
@@ -669,9 +417,9 @@ No resources found in default namespace.
 
 ## LAB 3: เข้าไปใน Pod: exec, logs, port-forward
 
-<p align="center" id="fig-8">
-  <img src="images/04-lab3-exec-logs-portforward.png" alt="รูปที่ 8 LAB3 exec/logs/port-forward" width="900"><br>
-  <em><b>รูปที่ 8</b> LAB3: เข้าไปใน Pod ด้วย exec แก้หน้าเว็บ ดู access log และเปิดเว็บผ่าน port-forward + ssh -L</em>
+<p align="center" id="fig-5">
+  <img src="images/04-lab3-exec-logs-portforward.png" alt="รูปที่ 5 LAB3 exec/logs/port-forward" width="900"><br>
+  <em><b>รูปที่ 5</b> LAB3: เข้าไปใน Pod ด้วย exec แก้หน้าเว็บ ดู access log และเปิดเว็บผ่าน port-forward + ssh -L</em>
 </p>
 
 **เป้าหมาย:** สำรวจภายใน container, แก้หน้าเว็บ, ดู access log และ **เปิดเว็บใน Pod จาก browser บนเครื่องนักศึกษา**
@@ -759,9 +507,9 @@ curl -s -o /dev/null -w "%{http_code}\n" localhost:8080/nope
 
 🌐 **browser บนเครื่องนักศึกษา** เปิด **http://localhost:8080** จะเห็นหัวข้อ "สวัสดีจากน้องส้ม 🐱" (ในรอบทดลองจริง เครื่องที่ใช้ทดสอบไม่ได้เปิด SSH ของ container ออกภายนอก จึงเปิดท่อ `ssh -L 18080:localhost:8080` ภายใน k8s-lab ไปยัง sshd ของตัวเอง กลไกเหมือนกันต่างแค่เลข port ฝั่งซ้าย และดึงหน้าเว็บผ่านท่อได้ข้อความเดียวกัน หน้าต่าง port-forward พิมพ์ `Handling connection for 8080` ทุกครั้งที่มี request)
 
-<p align="center" id="fig-9">
-  <img src="images/screenshots/20261005_1725_lab002_02-lab3-nginx.png" alt="รูปที่ 9 ภาพหน้าจอจริง หน้าเว็บ nginx สวัสดีจากน้องส้ม" width="700"><br>
-  <em><b>รูปที่ 9</b> ภาพหน้าจอจริงจากการทดลอง: หน้าเว็บของ Pod web (nginx) หลังแก้ index.html ใน LAB 3 แสดงหัวข้อ "สวัสดีจากน้องส้ม 🐱" บนหน้าขาว (ตอนถ่ายภาพเปิดผ่าน NodePort Service ชั่วคราวที่เพิ่มเองเพื่อถ่ายภาพเท่านั้น นักศึกษาใช้ port-forward + ssh -L ตามขั้นข้างต้น ผลที่เห็นเหมือนกัน)</em>
+<p align="center" id="fig-6">
+  <img src="images/screenshots/20261005_1725_lab002_02-lab3-nginx.png" alt="รูปที่ 6 ภาพหน้าจอจริง หน้าเว็บ nginx สวัสดีจากน้องส้ม" width="700"><br>
+  <em><b>รูปที่ 6</b> ภาพหน้าจอจริงจากการทดลอง: หน้าเว็บของ Pod web (nginx) หลังแก้ index.html ใน LAB 3 แสดงหัวข้อ "สวัสดีจากน้องส้ม 🐱" บนหน้าขาว (ตอนถ่ายภาพเปิดผ่าน NodePort Service ชั่วคราวที่เพิ่มเองเพื่อถ่ายภาพเท่านั้น นักศึกษาใช้ port-forward + ssh -L ตามขั้นข้างต้น ผลที่เห็นเหมือนกัน)</em>
 </p>
 
 ```text
@@ -828,9 +576,9 @@ pod "web" deleted from default namespace
 
 ## LAB 4: Labels และ Selectors
 
-<p align="center" id="fig-10">
-  <img src="images/05-lab4-labels.png" alt="รูปที่ 10 LAB4 labels" width="900"><br>
-  <em><b>รูปที่ 10</b> LAB4: ติดป้าย label ให้ Pod 3 ตัวและใช้ -l เลือกเฉพาะกลุ่มที่ต้องการ</em>
+<p align="center" id="fig-7">
+  <img src="images/05-lab4-labels.png" alt="รูปที่ 7 LAB4 labels" width="900"><br>
+  <em><b>รูปที่ 7</b> LAB4: ติดป้าย label ให้ Pod 3 ตัวและใช้ -l เลือกเฉพาะกลุ่มที่ต้องการ</em>
 </p>
 
 **เป้าหมาย:** สร้าง Pod หลายตัวจากไฟล์เดียว (multi-document `---`) ติด แก้ ลบ label และค้นหาด้วย selector
@@ -1016,9 +764,9 @@ pod "toy-web" deleted from default namespace
 
 ## LAB 5: Lifecycle และการดีบัก Pod ที่พัง
 
-<p align="center" id="fig-11">
-  <img src="images/06-lab5-lifecycle-debug.png" alt="รูปที่ 11 LAB5 lifecycle และดีบัก" width="900"><br>
-  <em><b>รูปที่ 11</b> LAB5: สังเกต Completed, CrashLoopBackOff และ ImagePullBackOff แล้วใช้ describe กับ logs --previous หาสาเหตุ</em>
+<p align="center" id="fig-8">
+  <img src="images/06-lab5-lifecycle-debug.png" alt="รูปที่ 8 LAB5 lifecycle และดีบัก" width="900"><br>
+  <em><b>รูปที่ 8</b> LAB5: สังเกต Completed, CrashLoopBackOff และ ImagePullBackOff แล้วใช้ describe กับ logs --previous หาสาเหตุ</em>
 </p>
 
 **เป้าหมาย:** อ่าน phase, STATUS, RESTARTS ให้ออก และไล่หาสาเหตุ Pod ที่พังด้วย `describe` และ `logs --previous`
@@ -1269,9 +1017,9 @@ No resources found in default namespace.
 
 ## LAB 6: env, command และ resources
 
-<p align="center" id="fig-12">
-  <img src="images/07-lab6-env-command-resources.png" alt="รูปที่ 12 LAB6 env/command/resources" width="900"><br>
-  <em><b>รูปที่ 12</b> LAB6: ส่ง env และ command เข้า container ทดลอง memory limit จนเกิด OOMKilled และ request CPU เกินจน Pending</em>
+<p align="center" id="fig-9">
+  <img src="images/07-lab6-env-command-resources.png" alt="รูปที่ 9 LAB6 env/command/resources" width="900"><br>
+  <em><b>รูปที่ 9</b> LAB6: ส่ง env และ command เข้า container ทดลอง memory limit จนเกิด OOMKilled และ request CPU เกินจน Pending</em>
 </p>
 
 **เป้าหมาย:** ส่งค่าเข้า container ด้วย `env`, ทับคำสั่งด้วย `command`/`args`, เห็นผลของ memory limit (OOMKilled) และ CPU request ที่เกิน (Pending)
@@ -1493,9 +1241,9 @@ No resources found in default namespace.
 
 ## LAB 7: Probes ตรวจสุขภาพ
 
-<p align="center" id="fig-13">
-  <img src="images/08-lab7-probes.png" alt="รูปที่ 13 LAB7 probes" width="900"><br>
-  <em><b>รูปที่ 13</b> LAB7: liveness ล้มแล้ว container ถูก restart ส่วน readiness ล้มแล้ว Pod เป็น READY 0/1 โดยไม่ถูก restart</em>
+<p align="center" id="fig-10">
+  <img src="images/08-lab7-probes.png" alt="รูปที่ 10 LAB7 probes" width="900"><br>
+  <em><b>รูปที่ 10</b> LAB7: liveness ล้มแล้ว container ถูก restart ส่วน readiness ล้มแล้ว Pod เป็น READY 0/1 โดยไม่ถูก restart</em>
 </p>
 
 **เป้าหมาย:** เห็นความต่างของ liveness กับ readiness ด้วยตาตัวเอง
@@ -1661,9 +1409,9 @@ No resources found in default namespace.
 
 ## LAB 8: Multi-container: localhost, emptyDir, init, sidecar
 
-<p align="center" id="fig-14">
-  <img src="images/09-lab8-multi-container.png" alt="รูปที่ 14 LAB8 multi-container" width="900"><br>
-  <em><b>รูปที่ 14</b> LAB8: Pod หลาย container คุยกันผ่าน localhost ใช้ emptyDir ร่วมกัน มี init container เตรียมไฟล์ และ sidecar เขียนข้อมูลต่อเนื่อง</em>
+<p align="center" id="fig-11">
+  <img src="images/09-lab8-multi-container.png" alt="รูปที่ 11 LAB8 multi-container" width="900"><br>
+  <em><b>รูปที่ 11</b> LAB8: Pod หลาย container คุยกันผ่าน localhost ใช้ emptyDir ร่วมกัน มี init container เตรียมไฟล์ และ sidecar เขียนข้อมูลต่อเนื่อง</em>
 </p>
 
 **เป้าหมาย:** พิสูจน์ว่า container ใน Pod เดียวกันใช้ IP เดียวกัน, ใช้ emptyDir ร่วมกัน, เห็นลำดับ init container และพฤติกรรมของข้อมูลเมื่อ container restart เทียบกับเมื่อลบ Pod
@@ -1921,9 +1669,9 @@ No resources found in default namespace.
 
 ## LAB 9: LAB สุดท้าย: ร้านอาหารแมวน้องส้ม
 
-<p align="center" id="fig-15">
-  <img src="images/10-lab9-som-shop-storefront.png" alt="รูปที่ 15 LAB9 ร้านอาหารแมวน้องส้ม" width="900"><br>
-  <em><b>รูปที่ 15</b> LAB สุดท้าย: เปิดร้านอาหารแมวน้องส้มด้วย Next.js + PostgreSQL ใน Pod เดียว</em>
+<p align="center" id="fig-12">
+  <img src="images/10-lab9-som-shop-storefront.png" alt="รูปที่ 12 LAB9 ร้านอาหารแมวน้องส้ม" width="900"><br>
+  <em><b>รูปที่ 12</b> LAB สุดท้าย: เปิดร้านอาหารแมวน้องส้มด้วย Next.js + PostgreSQL ใน Pod เดียว</em>
 </p>
 
 **เป้าหมาย:** build image ของแอป Next.js เอง นำเข้าคลัสเตอร์ด้วย `kind load` เปิดร้านใน Pod เดียวที่มี native sidecar (PostgreSQL), init container 2 ตัว, emptyDir, env, resources และ probes ครบ แล้วเปิดร้านใน browser กดสั่งซื้อ และทดลองว่าข้อมูลรอดหรือหายในสถานการณ์ใด
@@ -1932,9 +1680,9 @@ No resources found in default namespace.
 
 ### 9.1 สถาปัตยกรรมของ Pod som-shop
 
-<p align="center" id="fig-16">
-  <img src="images/11-lab9-pod-architecture.png" alt="รูปที่ 16 สถาปัตยกรรม Pod som-shop" width="900"><br>
-  <em><b>รูปที่ 16</b> สถาปัตยกรรม Pod som-shop: web (Next.js :3000) คุยกับ db (PostgreSQL :5432) ผ่าน localhost ภายใน Pod เดียว และเก็บข้อมูล DB บน emptyDir</em>
+<p align="center" id="fig-13">
+  <img src="images/11-lab9-pod-architecture.png" alt="รูปที่ 13 สถาปัตยกรรม Pod som-shop" width="900"><br>
+  <em><b>รูปที่ 13</b> สถาปัตยกรรม Pod som-shop: web (Next.js :3000) คุยกับ db (PostgreSQL :5432) ผ่าน localhost ภายใน Pod เดียว และเก็บข้อมูล DB บน emptyDir</em>
 </p>
 
 ```text
@@ -1962,9 +1710,9 @@ Pod som-shop  (labels: app=som-shop, part=all-in-one)   IP เดียว เ�
 
 ### 9.2 ลำดับการเริ่มและทำไม db ต้องเป็น native sidecar
 
-<p align="center" id="fig-17">
-  <img src="images/12-lab9-startup-order.png" alt="รูปที่ 17 ลำดับการเริ่ม Pod som-shop" width="900"><br>
-  <em><b>รูปที่ 17</b> ลำดับเริ่ม Pod: db (native sidecar) เริ่มก่อนและผ่าน startupProbe → wait-for-db รอ pg_isready → db-seed สร้างตารางและสินค้า → web เริ่มทำงาน</em>
+<p align="center" id="fig-14">
+  <img src="images/12-lab9-startup-order.png" alt="รูปที่ 14 ลำดับการเริ่ม Pod som-shop" width="900"><br>
+  <em><b>รูปที่ 14</b> ลำดับเริ่ม Pod: db (native sidecar) เริ่มก่อนและผ่าน startupProbe → wait-for-db รอ pg_isready → db-seed สร้างตารางและสินค้า → web เริ่มทำงาน</em>
 </p>
 
 init container ปกติต้องรันจนจบก่อน app container ทุกตัว ถ้าวาง PostgreSQL ไว้ใน `containers` แล้วให้ `wait-for-db` รอ จะรอไม่มีวันจบ (deadlock) จึงวาง `db` ไว้ **บนสุดของ `initContainers` พร้อม `restartPolicy: Always`** (native sidecar, GA ตั้งแต่ Kubernetes 1.33 คลัสเตอร์ของเราเป็น v1.37.0) kubelet จะเริ่ม `db` แล้วรอ startupProbe ผ่านก่อนรัน init ตัวถัดไป และ `db` ทำงานต่อตลอดอายุ Pod
@@ -2128,9 +1876,9 @@ spec:
 
 ### 9.3 Build image และนำเข้าคลัสเตอร์
 
-<p align="center" id="fig-18">
-  <img src="images/13-lab9-build-kind-load.png" alt="รูปที่ 18 build และ kind load" width="900"><br>
-  <em><b>รูปที่ 18</b> build image som-shop-web:1.0 ใน k8s-lab แล้วใช้ kind load docker-image นำ image เข้าไปในทุก node ของคลัสเตอร์</em>
+<p align="center" id="fig-15">
+  <img src="images/13-lab9-build-kind-load.png" alt="รูปที่ 15 build และ kind load" width="900"><br>
+  <em><b>รูปที่ 15</b> build image som-shop-web:1.0 ใน k8s-lab แล้วใช้ kind load docker-image นำ image เข้าไปในทุก node ของคลัสเตอร์</em>
 </p>
 
 node ของ kind เป็น container แยก มี containerd ของตัวเอง **มองไม่เห็น image ใน Docker ของ k8s-lab** จึงต้อง `kind load` เข้าไปก่อน
@@ -2396,9 +2144,9 @@ container `web` รันเป็น user `node` (ไม่ใช่ root) แ�
 
 ### 9.8 เปิดร้านใน browser และสั่งซื้อ
 
-<p align="center" id="fig-19">
-  <img src="images/14-lab9-open-in-browser.png" alt="รูปที่ 19 เปิดร้านจาก browser" width="900"><br>
-  <em><b>รูปที่ 19</b> เปิดร้านจากเครื่องนักศึกษา: kubectl port-forward pod/som-shop 3000:3000 ใน k8s-lab และ ssh -L 3000:localhost:3000 จากเครื่องนักศึกษา</em>
+<p align="center" id="fig-16">
+  <img src="images/14-lab9-open-in-browser.png" alt="รูปที่ 16 เปิดร้านจาก browser" width="900"><br>
+  <em><b>รูปที่ 16</b> เปิดร้านจากเครื่องนักศึกษา: kubectl port-forward pod/som-shop 3000:3000 ใน k8s-lab และ ssh -L 3000:localhost:3000 จากเครื่องนักศึกษา</em>
 </p>
 
 **ขั้นที่ 1:** 🐧 **ใน SSH session หลักของ k8s-lab** เปิด port-forward ค้างไว้
@@ -2434,16 +2182,16 @@ curl -s localhost:3000/api/products | head -c 300; echo
 
 **ขั้นที่ 4:** 🌐 **browser บนเครื่องนักศึกษา** เปิด **http://localhost:3000**
 
-<p align="center" id="fig-20">
-  <img src="images/screenshots/20261005_1725_lab002_01-som-shop.png" alt="รูปที่ 20 ภาพหน้าจอจริง หน้าร้านเริ่มต้น" width="700"><br>
-  <em><b>รูปที่ 20</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านอาหารแมวน้องส้มเมื่อเปิดครั้งแรก มีสินค้า 6 รายการ ออเดอร์ทั้งหมด 0 และ footer แสดงว่าเสิร์ฟโดย Pod som-shop (ภาพนี้ถ่ายผ่าน NodePort Service ชั่วคราวที่เพิ่มเองเพื่อถ่ายภาพ หน้าที่เห็นเหมือนกับที่เปิดผ่าน port-forward + ssh -L)</em>
+<p align="center" id="fig-17">
+  <img src="images/screenshots/20261005_1725_lab002_01-som-shop.png" alt="รูปที่ 17 ภาพหน้าจอจริง หน้าร้านเริ่มต้น" width="700"><br>
+  <em><b>รูปที่ 17</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านอาหารแมวน้องส้มเมื่อเปิดครั้งแรก มีสินค้า 6 รายการ ออเดอร์ทั้งหมด 0 และ footer แสดงว่าเสิร์ฟโดย Pod som-shop (ภาพนี้ถ่ายผ่าน NodePort Service ชั่วคราวที่เพิ่มเองเพื่อถ่ายภาพ หน้าที่เห็นเหมือนกับที่เปิดผ่าน port-forward + ssh -L)</em>
 </p>
 
 กดปุ่ม **🛒 สั่งซื้อ** 3 ครั้ง (เลือกสินค้าต่างกันได้) แต่ละการ์ดจะขึ้น "สั่งซื้อแล้ว! ออเดอร์ #N" จำนวน "เหลือ ... ชิ้น" ลดลง และมีรายการใน "ออเดอร์ล่าสุด"
 
-<p align="center" id="fig-21">
-  <img src="images/screenshots/20261004_1814_lab9_02-shop-after-orders.png" alt="รูปที่ 21 ภาพหน้าจอจริง หลังสั่งซื้อ 3 ครั้ง" width="700"><br>
-  <em><b>รูปที่ 21</b> ภาพหน้าจอจริงจากการทดลอง: หลังกดสั่งซื้อ 3 ครั้ง ออเดอร์ทั้งหมดเป็น 3, stock ของสินค้าที่สั่งลดลง และมีรายการออเดอร์ล่าสุด 3 รายการ</em>
+<p align="center" id="fig-18">
+  <img src="images/screenshots/20261004_1814_lab9_02-shop-after-orders.png" alt="รูปที่ 18 ภาพหน้าจอจริง หลังสั่งซื้อ 3 ครั้ง" width="700"><br>
+  <em><b>รูปที่ 18</b> ภาพหน้าจอจริงจากการทดลอง: หลังกดสั่งซื้อ 3 ครั้ง ออเดอร์ทั้งหมดเป็น 3, stock ของสินค้าที่สั่งลดลง และมีรายการออเดอร์ล่าสุด 3 รายการ</em>
 </p>
 
 **(ทางเลือก) สั่งซื้อด้วย curl** ใน SSH session ที่สอง เพื่อดู API โดยตรง ผลจริงจากรอบทดสอบ (รอบนั้นมีออเดอร์แรกเป็นสินค้า id 1 จำนวน 1 ชิ้นก่อนแล้ว — ได้ `{"ok":true,"order_id":1,"product":{"id":1,...,"stock":19}}` — order_id ด้านล่างจึงเริ่มที่ 2)
@@ -2479,9 +2227,9 @@ kubectl exec som-shop -c db -- psql -U som -d catshop -c 'SELECT o.id, p.sku, o.
 
 ### 9.9 ทดลองที่ 1: ฐานข้อมูลตาย แล้วข้อมูลยังอยู่ไหม
 
-<p align="center" id="fig-22">
-  <img src="images/15-lab9-emptydir-survive-vs-lost.png" alt="รูปที่ 22 emptyDir รอด vs หาย" width="900"><br>
-  <em><b>รูปที่ 22</b> ทดลองกับข้อมูลออเดอร์: restart container db แล้วข้อมูลยังอยู่บน emptyDir แต่ลบ Pod แล้วข้อมูลหายทั้งหมด</em>
+<p align="center" id="fig-19">
+  <img src="images/15-lab9-emptydir-survive-vs-lost.png" alt="รูปที่ 19 emptyDir รอด vs หาย" width="900"><br>
+  <em><b>รูปที่ 19</b> ทดลองกับข้อมูลออเดอร์: restart container db แล้วข้อมูลยังอยู่บน emptyDir แต่ลบ Pod แล้วข้อมูลหายทั้งหมด</em>
 </p>
 
 🐧 **ใน SSH session ที่สอง** (ให้ port-forward ในหน้าต่างหลักทำงานต่อไป) สั่งหยุด PostgreSQL ภายใน container `db`
@@ -2540,9 +2288,9 @@ web restarts=0
 
 🌐 **browser** กด refresh หน้าร้าน ข้อมูลออเดอร์ยังอยู่ครบ
 
-<p align="center" id="fig-23">
-  <img src="images/screenshots/20261004_1815_lab9_03-after-db-restart.png" alt="รูปที่ 23 ภาพหน้าจอจริง หลัง restart db" width="700"><br>
-  <em><b>รูปที่ 23</b> ภาพหน้าจอจริงจากการทดลอง: หลังหยุด PostgreSQL ด้วย pg_ctl stop จน container db ถูก restart ข้อมูล 3 ออเดอร์และ stock ที่ลดลงยังอยู่ครบ</em>
+<p align="center" id="fig-20">
+  <img src="images/screenshots/20261004_1815_lab9_03-after-db-restart.png" alt="รูปที่ 20 ภาพหน้าจอจริง หลัง restart db" width="700"><br>
+  <em><b>รูปที่ 20</b> ภาพหน้าจอจริงจากการทดลอง: หลังหยุด PostgreSQL ด้วย pg_ctl stop จน container db ถูก restart ข้อมูล 3 ออเดอร์และ stock ที่ลดลงยังอยู่ครบ</em>
 </p>
 
 **สรุปทดลองที่ 1:** kubelet restart เฉพาะ container `db` (RESTARTS ของ Pod เป็น 1 ซึ่งมาจาก `db`) ภายใน Pod เดิม IP เดิม ส่วน `web` ไม่ถูก restart และ **ข้อมูลรอด เพราะอยู่บน emptyDir ซึ่งมีอายุเท่ากับ Pod**
@@ -2625,18 +2373,18 @@ seeded 6 products (new: 6)
 kubectl port-forward pod/som-shop 3000:3000
 ```
 
-<p align="center" id="fig-24">
-  <img src="images/screenshots/20261004_1815_lab9_04-after-pod-delete.png" alt="รูปที่ 24 ภาพหน้าจอจริง หลังลบ Pod แล้วสร้างใหม่" width="700"><br>
-  <em><b>รูปที่ 24</b> ภาพหน้าจอจริงจากการทดลอง: หลังลบ Pod แล้ว apply ใหม่ (และรัน port-forward ใหม่) ร้านกลับเป็น 0 ออเดอร์ และ stock กลับเป็นค่าตั้งต้น</em>
+<p align="center" id="fig-21">
+  <img src="images/screenshots/20261004_1815_lab9_04-after-pod-delete.png" alt="รูปที่ 21 ภาพหน้าจอจริง หลังลบ Pod แล้วสร้างใหม่" width="700"><br>
+  <em><b>รูปที่ 21</b> ภาพหน้าจอจริงจากการทดลอง: หลังลบ Pod แล้ว apply ใหม่ (และรัน port-forward ใหม่) ร้านกลับเป็น 0 ออเดอร์ และ stock กลับเป็นค่าตั้งต้น</em>
 </p>
 
 **สรุปทดลองที่ 2:** Pod ใหม่ได้ **IP ใหม่** (รอบทดลองนี้ `10.244.3.21` → `10.244.3.22` ของนักศึกษาจะเป็นเลขอื่น และอาจย้ายไปอีก node ด้วย), emptyDir ว่างเปล่า PostgreSQL จึงสร้างฐานข้อมูลใหม่ และ `db-seed` ใส่สินค้าใหม่ทั้ง 6 รายการ (`new: 6`) **ออเดอร์ทั้งหมดหายไป**
 
 ### 9.11 ทำไมงานจริงต้องแยก และบทหน้าจะทำอะไร
 
-<p align="center" id="fig-25">
-  <img src="images/16-lab9-next-split.png" alt="รูปที่ 25 บทหน้า: แยกเว็บกับฐานข้อมูล" width="900"><br>
-  <em><b>รูปที่ 25</b> Pod เดียวรวมเว็บกับฐานข้อมูลเป็นการออกแบบเพื่อการเรียนรู้ บทหน้าจะแยก web เป็น Deployment, db ใช้ที่เก็บถาวร และเชื่อมกันด้วย Service</em>
+<p align="center" id="fig-22">
+  <img src="images/16-lab9-next-split.png" alt="รูปที่ 22 บทหน้า: แยกเว็บกับฐานข้อมูล" width="900"><br>
+  <em><b>รูปที่ 22</b> Pod เดียวรวมเว็บกับฐานข้อมูลเป็นการออกแบบเพื่อการเรียนรู้ บทหน้าจะแยก web เป็น Deployment, db ใช้ที่เก็บถาวร และเชื่อมกันด้วย Service</em>
 </p>
 
 | ปัญหาที่น้องส้มเจอใน LAB 9 | สิ่งที่บทถัดไปจะใช้ (ยังไม่ทำในบทนี้) |
@@ -2679,14 +2427,14 @@ No resources found in default namespace.
 
 | อาการ | สาเหตุ | วิธีแก้ |
 |---|---|---|
-| `docker run` แจ้ง `Conflict. The container name "/k8s-lab" is already in use` | มี container ชื่อ `k8s-lab` อยู่แล้ว (เช่นจากบทที่ 1) | ใช้ตัวเดิม (`docker start k8s-lab`) หรือลบก่อนด้วย `docker rm -f k8s-lab` แล้ว `docker run` ใหม่ (ดู [LAB 0 ข้อ 1.2](#12-สร้างและเริ่ม-container)) |
-| `docker run` แจ้ง `port is already allocated` | container อื่นใช้ port `2223`/`8889`/`30080–30082` อยู่ | 🖥️ `docker ps` หาตัวที่ใช้ port แล้ว `docker stop <ชื่อ>` จากนั้น `docker rm -f k8s-lab` แล้วสั่ง `docker run` ใหม่ |
+| `docker run` แจ้ง `Conflict. The container name "/k8s-lab" is already in use` | มี container ชื่อ `k8s-lab` อยู่แล้ว (เช่นจากบทที่ 1) | ใช้ตัวเดิม (`docker start k8s-lab`) หรือลบก่อนด้วย `docker rm -f k8s-lab` แล้ว `docker run` ใหม่ (ดู [LAB 0 ขั้นที่ 1](#ขั้นที่-1-setup-container-และคลัสเตอร์)) |
+| `docker run` แจ้ง `port is already allocated` | container อื่นใช้ port `2223`/`8889` อยู่ | 🖥️ `docker ps` หาตัวที่ใช้ port แล้ว `docker stop <ชื่อ>` จากนั้น `docker rm -f k8s-lab` แล้วสั่ง `docker run` ใหม่ |
 | `docker pull` ช้ามากหรือแจ้ง `toomanyrequests` | image ใหญ่ ~1.5 GB หรือ Docker Hub จำกัดการดึง | รอแล้วสั่งซ้ำ (ส่วนที่โหลดแล้วไม่ต้องโหลดใหม่) หรือ `docker login` ด้วยบัญชี Docker Hub ของตัวเอง |
 | `ssh -p 2223` แจ้ง `Connection refused` | container ไม่ได้รัน หรือ sshd ยังไม่ขึ้น | 🖥️ `docker ps -a --filter name=k8s-lab` ถ้า `Exited` ให้ `docker start k8s-lab` แล้วรอ 2–3 วินาที |
 | `ssh` แจ้ง `REMOTE HOST IDENTIFICATION HAS CHANGED!` | ลบแล้วสร้าง `k8s-lab` ใหม่ host key จึงเปลี่ยน | 🖥️ `ssh-keygen -R "[localhost]:2223"` แล้ว ssh ใหม่ |
 | `k8s-up` ล้ม มีข้อความ `Structure needs cleaning` หรือ `docker logs k8s-lab` ไม่มี `memory`/`io` ในบรรทัด cgroup | สร้าง container โดยไม่ใส่ `--privileged` หรือ Docker ไม่ได้ใช้ cgroup v2 | ลบแล้วสร้างใหม่ด้วยคำสั่ง `docker run` เต็มใน LAB 0 (ต้องมี `--privileged`) และใช้ Docker Desktop แบบ WSL2/Linux containers |
 | `git clone` แจ้ง `Could not resolve host: github.com` หรือค้างนาน | container ออกเน็ตไม่ได้ หรือเน็ตช้า | 🐧 ตรวจด้วย `curl -sI https://github.com \| head -1` ถ้าเน็ตช้าใช้ `git clone --depth 1 ...` |
-| `ls` ใน k8s-lab ไม่เจอ `labs/` หรือ `som-shop/`, kubectl แจ้ง `the path "labs/..." does not exist` | ยังไม่ได้ `git clone` หรืออยู่ผิดโฟลเดอร์ | 🐧 ทำ [LAB 0 ขั้นที่ 3](#ขั้นที่-3-git-clone-แล้ว-cd-เข้าโฟลเดอร์-lab) (`cd /workspace && git clone https://github.com/Tuchsanai/DevTools.git`) แล้ว `cd /workspace/DevTools/05_kubernetes/002_kubernetes_pod/02_LAB` (ตรวจด้วย `pwd`) |
+| `ls` ใน k8s-lab ไม่เจอ `labs/` หรือ `som-shop/`, kubectl แจ้ง `the path "labs/..." does not exist` | ยังไม่ได้ `git clone` หรืออยู่ผิดโฟลเดอร์ | 🐧 ทำ [LAB 0 ขั้นที่ 2](#ขั้นที่-2-git-clone-ไฟล์-lab) (`cd /workspace && git clone https://github.com/Tuchsanai/DevTools.git`) แล้ว `cd /workspace/DevTools/05_kubernetes/002_kubernetes_pod/02_LAB` (ตรวจด้วย `pwd`) |
 | `kubectl get nodes` ต่อคลัสเตอร์ไม่ได้ (เช่น connection refused) | ยังไม่ได้รัน `k8s-up` หรือคลัสเตอร์ถูกลบ/หยุดไป | 🐧 รัน `k8s-up` ใหม่ (ถ้าเพิ่ง restart container คลัสเตอร์อาจต้องสร้างใหม่) |
 | Pod `som-shop` ค้าง `Init:ErrImagePull` / `ImagePullBackOff` ที่ `db-seed` หรือ `web` | ลืม `kind load docker-image som-shop-web:1.0 --name lab` node จึงไปหา image บน Docker Hub ซึ่งไม่มี | 🐧 `kind load docker-image som-shop-web:1.0 --name lab` แล้ว `kubectl delete pod som-shop` และ `kubectl apply -f som-shop/k8s/som-shop-pod.yaml` |
 | `kind load docker-image postgres:...` ขึ้น `ctr: content digest sha256:...: not found` | image หลาย platform กับ containerd image store (ดู [9.3](#93-build-image-และนำเข้าคลัสเตอร์)) | ใช้ `docker save --platform linux/amd64 ... -o /tmp/pg.tar` + `kind load image-archive /tmp/pg.tar --name lab` (เครื่อง ARM ใช้ `linux/arm64`) |

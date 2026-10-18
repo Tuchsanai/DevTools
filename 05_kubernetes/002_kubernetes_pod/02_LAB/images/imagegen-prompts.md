@@ -4,20 +4,6 @@ Generated with built-in image_gen via cyolo1 using 00-character-som.png as chara
 
 ทุกภาพแนบ `01_Theory/images/00-character-som.png` เป็นภาพอ้างอิงตัวละครน้องส้ม
 
-## 01-lab0-cluster-up.png
-
-> L01 · LAB0 สร้างคลัสเตอร์ท่าเรือ — LAB0: รัน k8s-up ใน k8s-lab เพื่อสร้าง kind cluster ชื่อ lab มี control-plane 1 ตัวและ worker 2 ตัว
-
-```text
-Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
-Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Pod lesson (README figure, about 1536x1024).
-Scene: Inside a big container card labeled k8s-lab, Nong Som presses a large button on a terminal. The harbor appears inside the card: one control tower lab-control-plane and two ships lab-worker and lab-worker2, each with a green Ready badge. No Pods yet.
-Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly.
-Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001 classroom illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one or more shipping containers and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); image registry = warehouse of container blueprints.
-Text (verbatim, at most 5 short labels): "k8s-up"; "lab-control-plane"; "lab-worker"; "lab-worker2"; "Ready".
-Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words; exactly 1 control tower and 2 ships, no Pod boxes.
-```
-
 ## 02-lab1-kubectl-run.png
 
 > L02 · LAB1 Pod แรกด้วย kubectl run — LAB1: สร้าง Pod แรกด้วย kubectl run แล้วดูสถานะด้วย kubectl get pods -o wide
@@ -230,28 +216,18 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 # LAB 0 step figures (added 2026-10-06, cyolo1 gpt-6-astra high, same character reference)
 
-## 01a-lab0-step1-pull-run.png
+## 01-lab0-setup.png
+
+> LAB0 ขั้นที่ 1 Setup: docker run → ssh -p 2223 → k8s-up (added 2026-10-18, Codex CLI image_gen, same character reference)
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
 Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Pod lesson (README figure, about 1536x1024).
-Scene: Left to right flow on the student's laptop. Left: a warehouse of container blueprints (the image registry) with one blueprint crate labeled tuchsanai/devtools-kind:2569_1. An arrow labeled docker pull carries the crate to a student laptop in the middle where Nong Som types on the keyboard. A second arrow labeled docker run goes from the laptop to the right where one big closed shipping container card labeled k8s-lab appears, with three small port doors on its side; the first door is tagged 2223 → 22 (SSH door). Inside the k8s-lab card show only simple tool icons (wrench, ship wheel, small engine) and empty water, no ships yet.
+Scene: One left-to-right setup flow in three numbered stages (digits 1, 2, 3 in small circles). Stage 1 (left): Nong Som at a student laptop; an arrow labeled docker run goes to a big rounded card / giant shipping container labeled k8s-lab, with one small door on its side; a small hourglass icon next to the card shows "wait a moment while it starts up" (no text on the hourglass). Stage 2 (middle): a glowing tunnel labeled ssh -p 2223 runs from the laptop into that side door of k8s-lab, with a small opened padlock icon (no text). Stage 3 (right, inside the k8s-lab card): a big button labeled k8s-up, and above it the harbor appears: exactly one harbor control tower and two cargo ships, with a bracket over all three labeled 3 nodes Ready and green check marks. No Pods yet.
 Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly.
-Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001 classroom illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one or more shipping containers and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); image registry = warehouse of container blueprints; the lab container k8s-lab = one big rounded card / giant shipping container that holds everything of the lab.
-Text (verbatim, at most 5 short labels): "docker pull"; "tuchsanai/devtools-kind:2569_1"; "docker run"; "k8s-lab"; "2223 → 22".
-Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos (no Docker whale, no GitHub octocat); do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words. No cluster yet: no control tower, no ships, no Pod boxes.
-```
-
-## 01b-lab0-step2-ssh.png
-
-```text
-Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
-Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Pod lesson (README figure, about 1536x1024).
-Scene: Left: Nong Som sits at the student laptop with a terminal window. A glowing tunnel / pipe labeled ssh -p 2223 root@localhost runs from the laptop into the door tagged 2223 on the side of a big shipping container card labeled k8s-lab on the right. Inside the k8s-lab card a large terminal screen shows the prompt root@k8s-lab:~# with a blinking cursor, showing that the student is now working inside the container. A small padlock icon on the tunnel opens (login succeeded), with no text on it.
-Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly.
-Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001 classroom illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one or more shipping containers and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); image registry = warehouse of container blueprints; the lab container k8s-lab = one big rounded card / giant shipping container that holds everything of the lab.
-Text (verbatim, at most 3 short labels): "ssh -p 2223 root@localhost"; "k8s-lab"; "root@k8s-lab:~#".
-Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos (no Docker whale, no GitHub octocat); do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words. No cluster yet: no control tower, no ships, no Pod boxes; do not write any password.
+Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001 classroom illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Node = cargo ship; Control Plane = harbor control tower on the dock; the lab container k8s-lab = one big rounded card / giant shipping container that holds everything of the lab.
+Text (verbatim, at most 5 short labels): "docker run"; "k8s-lab"; "ssh -p 2223"; "k8s-up"; "3 nodes Ready".
+Constraints: only the verbatim labels listed above, spelled exactly, no other words, no gibberish or pseudo-text, no speech bubbles with text, no watermark, no signature, no real company logos (no Docker whale, no GitHub octocat); do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words; do not write any password; exactly 1 control tower and 2 ships, no Pod boxes.
 ```
 
 ## 01c-lab0-step3-git-clone.png
@@ -266,14 +242,3 @@ Text (verbatim, at most 5 short labels): "git clone"; "/workspace/DevTools"; "cd
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos (no Docker whale, no GitHub octocat); do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words. No ships, no control tower, no Pod boxes.
 ```
 
-## 01e-lab0-step5-check-cluster.png
-
-```text
-Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
-Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Pod lesson (README figure, about 1536x1024).
-Scene: Inside a big rounded card labeled k8s-lab, the harbor from the previous panel: exactly one harbor control tower labeled lab-control-plane and two cargo ships labeled lab-worker and lab-worker2. Nong Som stands on the dock holding a large magnifying glass and a clipboard, inspecting. Four numbered inspection callouts (just the digits 1 to 4 in circles plus the labels): (1) a radio antenna badge on Nong Som's clipboard labeled kind-lab (which cluster kubectl talks to); (2) a bracket over the tower and both ships labeled 3 nodes Ready with green check marks; (3) a small row of tiny crew huts on the dock grouped under a sign kube-system (system Pods), drawn as small teal cabins on the dock, not on the ships; (4) a red no-entry sign on the control tower gate labeled NoSchedule, meaning normal cargo cannot be placed on the tower.
-Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly.
-Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001 classroom illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one or more shipping containers and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); image registry = warehouse of container blueprints; the lab container k8s-lab = one big rounded card / giant shipping container that holds everything of the lab.
-Text (verbatim, at most 6 short labels): "k8s-lab"; "kind-lab"; "3 nodes Ready"; "kube-system"; "NoSchedule"; "lab-control-plane".
-Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos (no Docker whale, no GitHub octocat); do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words. Exactly 1 control tower and 2 ships; the ship names may appear as small hull text lab-worker and lab-worker2 in addition to the labels above; no user Pod boxes on the ships.
-```
