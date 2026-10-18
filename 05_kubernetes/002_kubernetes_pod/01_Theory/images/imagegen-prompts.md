@@ -396,18 +396,16 @@ Text (verbatim, at most 5 short labels): "get -o wide"; "describe"; "logs"; "exe
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words.
 ```
 
-## 29-port-forward-ssh-tunnel.png
+## 29-port-forward-vscode-ports.png
 
-> T29 · 16.1 เปิดเว็บจากเครื่องนักศึกษา — เปิดเว็บใน Pod จาก browser: เครื่องนักศึกษา → ssh -L → container k8s-lab → kubectl port-forward → Pod
+> 13. เปิดเว็บใน Pod — browser บนเครื่องนักศึกษา → แท็บ PORTS ของ VS Code → k8s-lab → kubectl port-forward → Pod
 
 ```text
-Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
-Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Pod lesson (README figure, about 1536x1024).
-Scene: Left-to-right chain of rounded cards connected by two tunnel pipes. Card 1: student laptop with a browser showing localhost:3000. Tunnel 1 labeled ssh -L (to port 2223). Card 2: k8s-lab container box holding a terminal. Tunnel 2 labeled kubectl port-forward. Card 3: a ship with a Pod box listening on port 3000. Nong Som crawls happily through the tunnel carrying a web page.
-Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly.
-Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001 classroom illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one or more shipping containers and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); image registry = warehouse of container blueprints.
-Text (verbatim, at most 5 short labels): "localhost:3000"; "ssh -L 3000"; "k8s-lab"; "kubectl port-forward"; "Pod :3000".
-Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words; no NodePort 30080-30082 shown, no direct arrow from laptop to Pod.
+Scene: left-to-right pipeline of three rounded cards joined by teal pipes with arrows. Card 1: a student laptop whose browser shows "localhost:8080" and a page heading with a cat icon. Card 2: a blue code-editor window (generic, no logo) docked to a blue shipping container labeled k8s-lab; the editor bottom panel shows a tab row with a highlighted "PORTS" tab and one row "8080" with a small globe icon. Card 3: a teal Pod cabin box on a cargo ship, containing an orange container labeled nginx, with a small tag ":80". Pipe between card 1 and 2 is labeled "VS Code PORTS"; pipe between card 2 and 3 is labeled "kubectl port-forward pod/web 8080:80". Nong Som rides inside the second pipe carrying a web page.
+Text (verbatim, at most 6 labels): "localhost:8080"; "VS Code PORTS"; "k8s-lab"; "kubectl port-forward pod/web 8080:80"; "Pod web :80"; "PORTS".
+Character: Nong Som (น้องส้ม) exactly as in 00-character-som.png — chubby orange tabby cat, darker orange stripes, white chest/muzzle/paws, big round green eyes, small pink nose, walks upright; navy captain hat with white 7-spoke ship-wheel badge and a teal neckerchief. Appears exactly once.
+Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace. Metaphor: container = colored shipping container; Pod = rounded translucent teal cabin box with one small IP tag; Node = cargo ship.
+Constraints: only the verbatim labels listed, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no watermark, no real company logos. Do not show Service, NodePort, Deployment, Ingress or "ssh".
 ```
 
 ## 30-pod-is-ephemeral.png
@@ -450,4 +448,61 @@ Character: Nong Som (น้องส้ม) exactly as in the attached reference
 Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001 classroom illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one or more shipping containers and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); image registry = warehouse of container blueprints.
 Text (verbatim, exactly 7 short labels): "สรุปบทที่ 2"; "Pod"; "YAML"; "Lifecycle"; "Probes"; "emptyDir"; "Multi-container". The checklist board has EXACTLY 6 rows and EVERY row has its text label (Pod, YAML, Lifecycle, Probes, emptyDir, Multi-container) — no row without text.
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words.
+```
+
+## 33-yaml-map-list.png
+
+> 5.1 YAML มีของแค่ 3 แบบ — map, list และ list ของ map
+
+```text
+Scene: three side-by-side rounded cards teaching YAML data shapes. Card A "map": a cabinet with labeled drawers, beside code text exactly:
+name: web
+image: nginx
+Card B "list": a numbered queue of three cat-food cans in a row, beside code text exactly:
+- tuna
+- saba
+- chicken
+Card C "list of maps": a stack of two index cards, each card has two fields, beside code text exactly:
+- name: db
+  port: 5432
+- name: web
+  port: 3000
+Highlight the "- " dash in pink and keys in blue. Nong Som points at card C with a ruler.
+Text (verbatim, plus only the code lines above): "map = key: value"; "list = - รายการ"; "list ของ map".
+Character: Nong Som (น้องส้ม) exactly as in 00-character-som.png — chubby orange tabby cat, darker orange stripes, white chest/muzzle/paws, big round green eyes, small pink nose, walks upright; navy captain hat with white 7-spoke ship-wheel badge and a teal neckerchief. Appears exactly once.
+Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace. Metaphor: container = colored shipping container; Pod = rounded translucent teal cabin box with one small IP tag; Node = cargo ship.
+Constraints: only the verbatim labels listed, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no watermark, no real company logos. Do not show Service, NodePort, Deployment, Ingress or "ssh".
+```
+
+## 34-yaml-indent-tree.png
+
+> 5.3 การเยื้อง = ใครเป็นลูกของใคร — YAML เทียบกับแผนภาพต้นไม้
+
+```text
+Scene: left half is a clipboard with this YAML in monospace with faint vertical dotted indent guides:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.27-alpine
+Right half is the same structure drawn as a tree diagram of rounded nodes connected by lines: root "Pod" -> children "apiVersion", "kind", "metadata", "spec"; "metadata" -> "name: web"; "spec" -> "containers" -> "- (ตัวที่ 1)" -> "name: nginx", "image". Matching colors between each YAML line and its tree node. Nong Som stands between them pointing a ruler at the indentation.
+Text (verbatim, plus only the YAML lines above): "เยื้องเข้า = เป็นลูก"; "เยื้องเท่ากัน = พี่น้อง"; "- (ตัวที่ 1)"; "Pod".
+Character: Nong Som (น้องส้ม) exactly as in 00-character-som.png — chubby orange tabby cat, darker orange stripes, white chest/muzzle/paws, big round green eyes, small pink nose, walks upright; navy captain hat with white 7-spoke ship-wheel badge and a teal neckerchief. Appears exactly once.
+Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace. Metaphor: container = colored shipping container; Pod = rounded translucent teal cabin box with one small IP tag; Node = cargo ship.
+Constraints: only the verbatim labels listed, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no watermark, no real company logos. Do not show Service, NodePort, Deployment, Ingress or "ssh".
+```
+
+## 35-som-shop-yaml-skeleton.png
+
+> 12.3 อ่าน YAML ร้านน้องส้มทั้งไฟล์ — โครง volumes / initContainers / containers ของ Pod som-shop
+
+```text
+Scene: a large teal Pod cabin box labeled "Pod som-shop" drawn like a floor plan with three zones from top to bottom. Zone 1 "volumes": a shelf labeled "db-data (emptyDir)". Zone 2 "initContainers" with three containers in order with numbered badges 1,2,3: "db" (blue, with a small loop icon and tag "restartPolicy: Always"), "wait-for-db" (gray, check-mark, tag "จบแล้ว"), "db-seed" (gray, check-mark, tag "จบแล้ว"). Zone 3 "containers": an orange container "web :3000". A dotted line from db to the shelf, and a dashed arrow from web to db labeled "localhost:5432". Nong Som holds a rolled blueprint.
+Text (verbatim): "Pod som-shop"; "volumes"; "initContainers"; "containers"; "db-data (emptyDir)"; "db"; "wait-for-db"; "db-seed"; "web :3000"; "restartPolicy: Always"; "จบแล้ว"; "localhost:5432".
+Character: Nong Som (น้องส้ม) exactly as in 00-character-som.png — chubby orange tabby cat, darker orange stripes, white chest/muzzle/paws, big round green eyes, small pink nose, walks upright; navy captain hat with white 7-spoke ship-wheel badge and a teal neckerchief. Appears exactly once.
+Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace. Metaphor: container = colored shipping container; Pod = rounded translucent teal cabin box with one small IP tag; Node = cargo ship.
+Constraints: only the verbatim labels listed, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no watermark, no real company logos. Do not show Service, NodePort, Deployment, Ingress or "ssh".
 ```
