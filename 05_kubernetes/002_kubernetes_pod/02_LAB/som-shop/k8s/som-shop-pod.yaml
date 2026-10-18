@@ -1,4 +1,4 @@
-# LAB 9: ร้านอาหารแมวน้องส้ม — Next.js + PostgreSQL ใน Pod เดียว
+# LAB 8: ร้านอาหารแมวน้องส้ม — Next.js + PostgreSQL ใน Pod เดียว
 # ออกแบบเพื่อการเรียนรู้เท่านั้น! งานจริงควรแยก web กับ db คนละ Pod (บทหน้า)
 apiVersion: v1
 kind: Pod

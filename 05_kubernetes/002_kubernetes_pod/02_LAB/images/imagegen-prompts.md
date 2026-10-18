@@ -102,20 +102,6 @@ Text (verbatim, at most 4 short labels): "Liveness → restart"; "Readiness → 
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words.
 ```
 
-## 09-lab8-multi-container.png
-
-> L09 · LAB8 Multi-container — LAB8: Pod หลาย container คุยกันผ่าน localhost ใช้ emptyDir ร่วมกัน มี init container เตรียมไฟล์ และ sidecar เขียนข้อมูลต่อเนื่อง
-
-```text
-Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
-Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Pod lesson (README figure, about 1536x1024).
-Scene: Cutaway of one Pod box with one IP tag. A small init container prepare finishes first (green check) after placing index.html on an emptyDir shelf; then web (nginx) serves the file and a sidecar menu-writer keeps appending time notes to the shelf. The sidecar reaches web via localhost:80 (same Pod IP). READY pill shows 2/2 (web + menu-writer). Nong Som watches with a clipboard.
-Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly.
-Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001 classroom illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one or more shipping containers and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); image registry = warehouse of container blueprints.
-Text (verbatim, at most 6 short labels): "init: prepare ✓"; "web"; "menu-writer"; "emptyDir"; "localhost:80"; "2/2".
-Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words.
-```
-
 ## 10-lab9-som-shop-storefront.png
 
 > L10 · LAB9 ร้านอาหารแมวน้องส้ม — LAB สุดท้าย: เปิดร้านอาหารแมวน้องส้มด้วย Next.js + PostgreSQL ใน Pod เดียว
@@ -170,20 +156,6 @@ Character: Nong Som (น้องส้ม) exactly as in the attached reference
 Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001 classroom illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one or more shipping containers and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); image registry = warehouse of container blueprints.
 Text (verbatim, at most 4 short labels): "docker build"; "som-shop-web:1.0"; "kind load docker-image"; "--name lab".
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words.
-```
-
-## 14-lab9-open-in-browser.png
-
-> L14 · LAB9 เปิดร้านใน browser — เปิดร้านจากเครื่องนักศึกษา: kubectl port-forward pod/som-shop 3000:3000 ใน k8s-lab และ ssh -L 3000:localhost:3000 จากเครื่องนักศึกษา
-
-```text
-Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
-Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Pod lesson (README figure, about 1536x1024).
-Scene: A student laptop on the left shows the shop web page (product cards, an order button) at localhost:3000. A tunnel ssh -L leads into the k8s-lab card, where a second tunnel port-forward leads to the Pod som-shop on a ship, port 3000. Nong Som waves from inside the shop window in the Pod.
-Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly.
-Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001 classroom illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one or more shipping containers and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); image registry = warehouse of container blueprints.
-Text (verbatim, at most 4 short labels): "localhost:3000"; "ssh -L 3000:localhost:3000"; "port-forward pod/som-shop"; "สั่งซื้อ".
-Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; do not show Service, NodePort, Deployment, ReplicaSet or Ingress objects or words; no NodePort 30080-30082, no direct path from laptop to Pod. IMPORTANT: the shop page in the laptop browser is a CAT FOOD store — product cards must show only cat food items (dry kibble bag with fish icon, wet food can, cat treat pouch), orange "สั่งซื้อ" buttons; absolutely no T-shirts, mugs, hats or other merchandise.
 ```
 
 ## 15-lab9-emptydir-survive-vs-lost.png
@@ -258,14 +230,15 @@ Constraints: realistic flat UI rendering like an actual screenshot, no 3D, no ca
 
 ## 04a-lab3-vscode-attach.png
 
-> LAB3 ขั้นที่ 0: ภาพจำลองหน้าจอ VS Code คลิกขวา k8s-lab → Attach Visual Studio Code (added 2026-10-18, Codex CLI image_gen)
+> LAB3 ขั้นที่ 0: ภาพจำลองหน้าจอ VS Code คลิกขวา container tuchsanai/devtools-kind:2569_1 (k8s-lab) → Attach Visual Studio Code ใช้ภาพจริงจากเอกสาร VS Code เป็นต้นแบบ UI (updated 2026-10-18, Codex CLI image_gen)
 
 ```text
 Use case: realistic software screenshot for a Thai university DevTools lab README; students must recognize the exact UI they will see.
 Asset type: landscape 16:10 high-resolution realistic desktop screenshot (about 1600x1000), crisp UI text, looks like a real screen capture, NOT a cartoon.
-Scene: A real-looking Visual Studio Code window on Windows, Dark Modern theme, local (no remote connected; bottom-left status bar shows only the plain blue remote button icon). The Activity Bar on the left has the Containers (whale-free generic container cube) icon selected, and the side bar title reads CONTAINERS. Under a section CONTAINERS there is a group "tuchsanai/devtools-kind:2569_1" containing one running container item with a green play icon labeled "k8s-lab  Up 10 minutes". The user has right-clicked that item and a context menu is open with these items in order: View Logs, Attach Shell, Attach Visual Studio Code, Inspect, Open in Browser, Stop, Restart, Remove. The item "Attach Visual Studio Code" is highlighted (hover). The editor area on the right shows the VS Code Welcome page faintly.
-Annotation overlay (the only non-realistic part): a thick orange rounded rectangle around the "k8s-lab" container item and another around the "Attach Visual Studio Code" menu item, with a short orange arrow between them; in the lower-right corner a small sticker of Nong Som (the attached character reference, kept small, about 12% of image width) pointing at the menu item.
-Character sticker: Nong Som exactly as in the attached reference sheet 00-character-som.png — chubby orange tabby cat, white chest and muzzle, big green eyes, navy captain hat with white ship-wheel badge, teal neckerchief; appears exactly once, small, in the corner.
-Text: all UI text must be real English VS Code labels spelled exactly as listed above; keep other text minimal; no gibberish.
-Constraints: realistic flat UI rendering like an actual screenshot, no 3D, no cartoon editor, no Docker whale logo, no watermark, no extra windows; exactly one container item.
+Reference: the second attached image is a REAL screenshot of the VS Code Container Tools sidebar; copy its exact look (fonts, colors, spacing, icons, section headers CONTAINERS / IMAGES / NETWORKS, context-menu style).
+Scene: A full VS Code window on Windows, Dark Modern theme, no remote connected. The Activity Bar container-tools icon is selected; the side bar title reads CONTAINERS. The CONTAINERS section is expanded and contains exactly one running container item: a green play-triangle icon, the main label "tuchsanai/devtools-kind:2569_1" and, after it in dimmer grey text, the description "k8s-lab - Up 10 minutes". Below it the IMAGES section is collapsed. The user has RIGHT-CLICKED exactly on that container item (the row is highlighted) and its context menu is open next to it, styled like the reference, with items: View Logs, Attach Shell, Attach Visual Studio Code, Inspect, Open in Browser, Stop, Restart, Remove... ; the item "Attach Visual Studio Code" is highlighted in blue under the mouse cursor. The editor area on the right shows the VS Code Welcome page faintly.
+Annotation overlay (the only non-realistic part): a thick orange rounded rectangle around the whole container row "tuchsanai/devtools-kind:2569_1 k8s-lab - Up 10 minutes" with a small orange label "1 คลิกขวา", and another thick orange rounded rectangle around "Attach Visual Studio Code" with a small orange label "2"; in the lower-right corner a small sticker of Nong Som (first attached image, kept small, about 12% of image width) pointing at the menu.
+Character sticker: Nong Som exactly as in the first attached reference sheet — chubby orange tabby cat, white chest and muzzle, big green eyes, navy captain hat with white ship-wheel badge, teal neckerchief; appears exactly once, small, in the corner.
+Text: UI text must be the real English labels spelled exactly as listed; no gibberish.
+Constraints: realistic flat UI rendering like an actual screenshot, no 3D, no Docker whale logo, no watermark; exactly one container item.
 ```
