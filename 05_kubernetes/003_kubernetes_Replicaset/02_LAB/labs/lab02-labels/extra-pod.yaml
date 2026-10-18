@@ -1,0 +1,12 @@
+# LAB 2: Pod เดี่ยวที่ติดป้าย app: web เหมือน Pod ของ ReplicaSet web
+# ReplicaSet นับ Pod จากป้าย → เห็นว่ามีเกิน 3 ตัว จึงลบทิ้ง 1 ตัว
+apiVersion: v1
+kind: Pod
+metadata:
+  name: extra-web
+  labels:
+    app: web                 # ป้ายตรงกับ selector ของ ReplicaSet web
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.27-alpine

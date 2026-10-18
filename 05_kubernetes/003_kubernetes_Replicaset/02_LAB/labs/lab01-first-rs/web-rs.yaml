@@ -1,0 +1,20 @@
+# LAB 1, 2, 3: ReplicaSet แรก — ขอ Pod nginx 3 ตัว แล้วให้ ReplicaSet คอยดูแลให้ครบเสมอ
+apiVersion: apps/v1          # ReplicaSet อยู่กลุ่ม apps รุ่น v1 (Pod ใช้แค่ v1)
+kind: ReplicaSet
+metadata:
+  name: web                  # ชื่อ ReplicaSet → Pod ที่สร้างจะชื่อ web-xxxxx
+spec:
+  replicas: 3                # อยากได้ Pod 3 ตัวตลอดเวลา
+  selector:                  # วิธีนับว่า Pod ตัวไหนเป็นของเรา: ดูจากป้าย label
+    matchLabels:
+      app: web
+  template:                  # แม่พิมพ์ Pod — ข้างในคือ Pod จากบทที่ 2 (ไม่มี apiVersion/kind)
+    metadata:
+      labels:
+        app: web             # ต้องตรงกับ selector ไม่งั้น apply ไม่ผ่าน
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80

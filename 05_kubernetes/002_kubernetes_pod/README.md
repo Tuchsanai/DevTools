@@ -64,3 +64,5 @@
 ## เริ่มเลย
 
 👉 [อ่านทฤษฎี](01_Theory/README.md) → [ลงมือทำ LAB](02_LAB/README.md)
+
+**บทถัดไป:** [บทที่ 3: Kubernetes ReplicaSet — ร้านน้องส้มไม่มีวันปิด](../003_kubernetes_Replicaset/README.md)
