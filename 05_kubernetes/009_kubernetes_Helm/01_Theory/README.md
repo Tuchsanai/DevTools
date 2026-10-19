@@ -319,6 +319,18 @@ spec:
 
 แปลทั้งไฟล์เป็นประโยคเดียว: **"Deployment ชื่อเดียวกับ release มี Pod ตามจำนวน `replicas` ใช้ image whoami ตามเวอร์ชันใน values และตอบกลับด้วยข้อความ `message`"**
 
+ช่องแต่ละช่องไปเอาค่ามาจากไหน วาง `values.yaml` คู่กับแม่พิมพ์ **วงสีเดียวกัน = ช่องในแม่พิมพ์ กับค่าที่มาเติม**
+
+<p align="center">
+  <img src="images/08a-values-vs-template-map.png" alt="values.yaml กับ templates/deployment.yaml วางคู่กัน ลูกศรจาก key ใน values ไปยังช่อง .Values ในแม่พิมพ์" width="900">
+</p>
+
+- **① `{{ .Values.replicas }}`** = ค่าของ key `replicas` → `replicas: 2`
+- **② `{{ .Values.image.tag }}` เดินตามการเยื้อง** เข้า `image` แล้วหา `tag` (หัวข้อ 6.2) → `"traefik/whoami:v1.11.0"`
+- **③ `{{ .Values.message | quote }}`** = `hello-v1` แล้วใส่ `" "` ให้ (หัวข้อ 6.4)
+- **④ `{{ .Release.Name }}` ไม่ได้มาจาก values** แต่มาจากชื่อที่ตั้งตอน `helm install` ใช้ช่องเดียวกัน 3 ที่ ป้ายจึงตรงกันเสมอ
+- **⑤ `service.nodePort`** ไม่ได้ใช้ในไฟล์นี้ ไปใช้ใน `templates/service.yaml` ส่วนชื่อ key ที่ส่งเข้ามาผิด Helm ไม่ฟ้อง แค่ไม่มีช่องไหนหยิบไปใช้ (หัวข้อ 10)
+
 ### service.yaml และ NOTES.txt
 
 ```yaml

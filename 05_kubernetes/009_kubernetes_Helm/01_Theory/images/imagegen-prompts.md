@@ -283,3 +283,9 @@ Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, 
 Text (verbatim, at most 5 short labels): "chart"; "values"; "release"; "som-dev"; "som-prod".
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English, including braces and punctuation), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos (no Helm or Traefik logo, no extra ship-wheel symbols besides Nong Som's hat badge); exactly one cat (Nong Som); assemblers, guards, deckhands, crew, workers, receptionists and customers are faceless human figures, never cats; do not show GitHub Actions, CI/CD pipeline, Argo, autoscaler objects or words. 'chart' on the kit box, 'values' on the yellow slip, 'release' as a banner above the two shops, 'som-dev' and 'som-prod' on the two name plates.
 ```
+
+## 08a-values-vs-template-map.png
+
+> หัวข้อ 7 · values.yaml คู่กับ templates/deployment.yaml: ① replicas ② image.* ③ message | quote ④ .Release.Name ⑤ service.nodePort
+
+ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะโค้ดในภาพต้องตรงกับไฟล์ LAB ทุกตัวอักษร วาดเป็น SVG (`08a-values-vs-template-map.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/yaml_map.py` (spec `009`) แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) ให้ฟอนต์ไทยเหมือนกันทุกเครื่อง แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง
