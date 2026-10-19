@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" width="1200" height="760">
+<defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mnavy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f172a"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="mslate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker></defs>
+<rect width="1200" height="760" fill="#ffffff"/>
+<text x="600" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="25" font-weight="700" fill="#0f172a" xml:space="preserve">ทำไมร้านไม่ปิด แต่การเปลี่ยนรุ่นค้าง</text>
+<text x="600" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#475569" xml:space="preserve">replicas: 3 · ไม่ได้ตั้ง maxSurge / maxUnavailable จึงใช้ค่าเริ่มต้น 25% ทั้งคู่ · ตัวเลขจากผลจริงของ LAB 3</text>
+<rect x="30" y="100" width="520" height="330" rx="12" fill="#f8fafc" fill-opacity="1" stroke="#cbd5e1" stroke-width="2.5"/>
+<text x="50" y="134" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">สถานะตอนนี้ (kubectl get pods)</text>
+<rect x="50" y="160" width="96" height="58" rx="10" fill="#fff7ed" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<rect x="52" y="200" width="92" height="7" fill="#ea580c" opacity="0.85"/>
+<text x="98" y="190" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">1.27</text>
+<text x="98" y="246" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">พร้อม ✓</text>
+<rect x="170" y="160" width="96" height="58" rx="10" fill="#fff7ed" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<rect x="172" y="200" width="92" height="7" fill="#ea580c" opacity="0.85"/>
+<text x="218" y="190" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">1.27</text>
+<text x="218" y="246" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">พร้อม ✓</text>
+<rect x="290" y="160" width="96" height="58" rx="10" fill="#fff7ed" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<rect x="292" y="200" width="92" height="7" fill="#ea580c" opacity="0.85"/>
+<text x="338" y="190" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">1.27</text>
+<text x="338" y="246" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">พร้อม ✓</text>
+<rect x="410" y="160" width="96" height="58" rx="10" fill="#fef2f2" fill-opacity="1" stroke="#dc2626" stroke-width="2.5"/>
+<rect x="412" y="200" width="92" height="7" fill="#dc2626" opacity="0.85"/>
+<text x="458" y="190" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#dc2626" xml:space="preserve">1.99</text>
+<text x="458" y="246" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#dc2626" xml:space="preserve">ไม่พร้อม ✗</text>
+<text x="458" y="268" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="13" font-weight="400" fill="#dc2626" xml:space="preserve">ImagePullBackOff</text>
+<text x="50" y="318" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="400" fill="#0f172a" xml:space="preserve">Pod รวม</text>
+<text x="250" y="318" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">= 3 + 1 = 4</text>
+<text x="50" y="356" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="400" fill="#0f172a" xml:space="preserve">Pod ที่พร้อม</text>
+<text x="250" y="356" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">= 3</text>
+<text x="50" y="400" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#dc2626" xml:space="preserve">Pod ใหม่ดึง image nginx:1.99-alpine ไม่ได้ (ไม่มีอยู่จริง) จึงไม่มีวันพร้อม</text>
+<rect x="590" y="100" width="580" height="150" rx="12" fill="#ffffff" fill-opacity="1" stroke="#ea580c" stroke-width="3"/>
+<circle cx="620" cy="132" r="14" fill="#ea580c"/>
+<text x="620" y="138" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">1</text>
+<text x="645" y="139" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="19" font-weight="700" fill="#ea580c" xml:space="preserve">กฎข้อ 1 · maxSurge 25%</text>
+<text x="620" y="174" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">25% ของ 3 = 0.75 → ปัดขึ้นเป็น 1</text>
+<text x="620" y="204" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#0f172a" xml:space="preserve">Pod รวมมีได้ไม่เกิน 3 + 1 = 4</text>
+<text x="620" y="234" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#dc2626" xml:space="preserve">ตอนนี้ 4 แล้ว → สร้าง Pod ใหม่เพิ่มไม่ได้</text>
+<rect x="590" y="270" width="580" height="150" rx="12" fill="#ffffff" fill-opacity="1" stroke="#2563eb" stroke-width="3"/>
+<circle cx="620" cy="302" r="14" fill="#2563eb"/>
+<text x="620" y="308" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">2</text>
+<text x="645" y="309" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="19" font-weight="700" fill="#2563eb" xml:space="preserve">กฎข้อ 2 · maxUnavailable 25%</text>
+<text x="620" y="344" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">25% ของ 3 = 0.75 → ปัดลงเป็น 0</text>
+<text x="620" y="374" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#0f172a" xml:space="preserve">Pod ที่พร้อมต้องเหลืออย่างน้อย 3 − 0 = 3</text>
+<text x="620" y="404" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#dc2626" xml:space="preserve">ตอนนี้พร้อม 3 → ลบ Pod เก่าไม่ได้ (ลบแล้วเหลือ 2)</text>
+<rect x="30" y="470" width="1140" height="270" rx="12" fill="#f8fafc" fill-opacity="1" stroke="#cbd5e1" stroke-width="2.5"/>
+<rect x="50" y="500" width="250" height="92" rx="12" fill="#ffffff" fill-opacity="1" stroke="#ea580c" stroke-width="3"/>
+<text x="175" y="538" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#ea580c" xml:space="preserve">เพิ่มไม่ได้ + ลดไม่ได้</text>
+<text x="175" y="570" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="400" fill="#475569" xml:space="preserve">ติดทั้งกฎข้อ 1 และ 2</text>
+<line x1="304" y1="546" x2="324" y2="546" stroke="#334155" stroke-width="3" marker-end="url(#mslate)"/>
+<rect x="330" y="500" width="250" height="92" rx="12" fill="#ffffff" fill-opacity="1" stroke="#334155" stroke-width="3"/>
+<text x="455" y="538" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#334155" xml:space="preserve">รอ Pod ใหม่พร้อม</text>
+<text x="455" y="570" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="400" fill="#475569" xml:space="preserve">แต่ไม่มีวันพร้อม</text>
+<line x1="584" y1="546" x2="604" y2="546" stroke="#334155" stroke-width="3" marker-end="url(#mslate)"/>
+<rect x="610" y="500" width="250" height="92" rx="12" fill="#ffffff" fill-opacity="1" stroke="#7c3aed" stroke-width="3"/>
+<text x="735" y="538" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#7c3aed" xml:space="preserve">ครบ 30 วินาที</text>
+<text x="735" y="570" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#475569" xml:space="preserve">progressDeadlineSeconds: 30</text>
+<line x1="864" y1="546" x2="884" y2="546" stroke="#334155" stroke-width="3" marker-end="url(#mslate)"/>
+<rect x="890" y="500" width="250" height="92" rx="12" fill="#ffffff" fill-opacity="1" stroke="#dc2626" stroke-width="3"/>
+<text x="1015" y="538" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#dc2626" xml:space="preserve">Progressing = False</text>
+<text x="1015" y="570" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="400" fill="#475569" xml:space="preserve">rollout status ขึ้น error</text>
+<rect x="50" y="620" width="1090" height="92" rx="12" fill="#f0fdf4" fill-opacity="1" stroke="#16a34a" stroke-width="3"/>
+<text x="595" y="658" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="19" font-weight="700" fill="#16a34a" xml:space="preserve">ระหว่างนั้น Pod เก่า 3 ตัวไม่ถูกแตะเลย → READY 3/3 → ร้านเปิดตลอด (Available = True)</text>
+<text x="595" y="690" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#14532d" xml:space="preserve">Deployment ไม่ย้อนกลับเอง ต้องสั่ง kubectl rollout undo (ขั้นที่ 6)</text>
+</svg>

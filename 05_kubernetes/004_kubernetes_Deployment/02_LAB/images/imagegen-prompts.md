@@ -6,7 +6,7 @@ Generated with built-in image_gen via cyolo1 (Codex CLI, swarm, difficulty 1) us
 
 Metaphor ที่ใช้ทั้งชุด: container = ตู้คอนเทนเนอร์, Pod = กล่องห้องโดยสารใสสีเขียวอมฟ้ามีป้าย IP, Node = เรือสินค้า (lab-worker, lab-worker2), Control Plane = หอควบคุมท่าเรือ, template = แม่พิมพ์กล่อง, ReplicaSet = หัวหน้าลูกเรือ (คนไม่มีหน้า ชุดกรมท่า ถือ clipboard `replicas: 3`), **Deployment = ผู้จัดการลูกเรือ (คนไม่มีหน้า ชุดเจ้าหน้าที่สีขาว หมวกแก๊ปมีปีก ถือสมุดบันทึกรุ่น revision)** สั่งหัวหน้าทีมเก่า (แม่พิมพ์เก่า กล่องแถบส้ม) และหัวหน้าทีมใหม่ (แม่พิมพ์ใหม่ กล่องแถบเขียว), RS เก่าที่เหลือ 0 = แม่พิมพ์เก่าบนชั้นข้างหัวหน้าทีมเก่าที่นั่งพัก, rollback = ผู้จัดการพลิกสมุดกลับหน้าเดิม
 
-รูปที่ 1 `01-lab0-setup.png`, รูปที่ 2 `01c-lab0-git-clone.png`, รูปที่ 15 `05a-lab4-vscode-attach.png` ใช้ภาพเดิมจากบทที่ 3 (prompt อยู่ใน `003_kubernetes_Replicaset/02_LAB/images/imagegen-prompts.md`) และภาพหน้าจอจริงใน `screenshots/` ไม่ได้สร้างด้วย image gen
+รูปที่ 1 `01-lab0-setup.png`, รูปที่ 2 `01c-lab0-git-clone.png`, รูปที่ 18 `05a-lab4-vscode-attach.png` ใช้ภาพเดิมจากบทที่ 3 (prompt อยู่ใน `003_kubernetes_Replicaset/02_LAB/images/imagegen-prompts.md`) และภาพหน้าจอจริงใน `screenshots/` ไม่ได้สร้างด้วย image gen
 
 ## 02-lab1-first-deploy.png
 
@@ -52,7 +52,7 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 05-lab4-som-menu-rolling.png
 
-> รูปที่ 13 · LAB4 ร้านน้องส้มทยอยเปลี่ยนจาก v1.0 เป็น v2.0 ทีละสาขา (maxSurge: 1, maxUnavailable: 0)
+> รูปที่ 16 · LAB4 ร้านน้องส้มทยอยเปลี่ยนจาก v1.0 เป็น v2.0 ทีละสาขา (maxSurge: 1, maxUnavailable: 0)
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
@@ -66,7 +66,7 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 05b-lab4-vscode-ports.png
 
-> รูปที่ 16 · LAB4 ขั้นที่ 4 ภาพจำลองหน้าจอ VS Code แท็บ PORTS (port-forward deploy/som-menu 8080:3000) — สร้างใหม่แทนภาพบทที่ 3 ที่เขียน rs/som-menu โดยใช้ภาพเดิมเป็นภาพอ้างอิง
+> รูปที่ 19 · LAB4 ขั้นที่ 4 ภาพจำลองหน้าจอ VS Code แท็บ PORTS (port-forward deploy/som-menu 8080:3000) — สร้างใหม่แทนภาพบทที่ 3 ที่เขียน rs/som-menu โดยใช้ภาพเดิมเป็นภาพอ้างอิง
 
 ```text
 ก่อนเริ่ม ให้เปิดดูภาพ /workspace/DevTools/05_kubernetes/004_kubernetes_Deployment/02_LAB/images/05b-lab4-vscode-ports.png (ภาพจำลองหน้าจอ VS Code เดิม) และภาพอ้างอิงตัวละคร /workspace/DevTools/05_kubernetes/004_kubernetes_Deployment/01_Theory/images/00-character-som.png ด้วยเครื่องมือดูภาพ แล้วสร้างภาพใหม่ที่เหมือนภาพ 05b-lab4-vscode-ports.png เดิมทุกอย่าง (ส่งภาพเดิมให้โมเดลภาพเป็นภาพอ้างอิง/แก้ไขภาพถ้าทำได้) ต่างกันแค่ข้อความในคอลัมน์ Running Process
@@ -83,15 +83,15 @@ Constraints: realistic flat UI rendering like an actual screenshot, no 3D, no ca
 
 ## 06-lab4-port-forward-lost.png
 
-> รูปที่ 18 · LAB4 ขั้นที่ 8 port-forward ขาดเมื่อ Pod รุ่นเก่าถูกปิดตอนเปลี่ยนรุ่น (lost connection to pod)
+> รูปที่ 22 · LAB4 ขั้นที่ 8 port-forward ขาดเมื่อ Pod รุ่นเก่าถูกปิดตอนเปลี่ยนรุ่น (lost connection to pod) — สร้างใหม่ 19 ต.ค. 2569 ให้ชื่อ Pod ในภาพตรงกับรอบทดลองใหม่ (som-menu-5f5c95db8f-645xp)
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
 Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Deployment lesson (README figure, about 1536x1024).
-Scene: Left: a student laptop showing a browser at localhost:8080. A single glowing tube (tunnel) labeled port-forward runs from the laptop to ONE specific Pod box: an orange-awning branch labeled som-menu-5f5c95db8f-7zv4t with a small v1.0 sign. Center: the crew manager (faceless human in white officer uniform and white winged cap, not a cat) is swapping that old box out (dashed outline, being lifted away by a crane) to replace it with the new version, so the tube is snapped in the middle with jagged broken ends and a small red warning card reading lost connection to pod. Right: three new teal-green-awning branches with v2.0 signs are already open, but none of them has a tube connected. Nong Som stands by the laptop holding the broken tube end with a surprised face.
+Scene: Left: a student laptop showing a browser at localhost:8080. A single glowing tube (tunnel) labeled port-forward runs from the laptop to ONE specific Pod box: an orange-awning branch labeled som-menu-5f5c95db8f-645xp with a small v1.0 sign. Center: the crew manager (faceless human in white officer uniform and white winged cap, not a cat) is swapping that old box out (dashed outline, being lifted away by a crane) to replace it with the new version, so the tube is snapped in the middle with jagged broken ends and a small red warning card reading lost connection to pod. Right: three new teal-green-awning branches with v2.0 signs are already open, but none of them has a tube connected. Nong Som stands by the laptop holding the broken tube end with a surprised face.
 Character: Nong Som (น้องส้ม) exactly as in the reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly. She is the ONLY cat in the image; every other character is a simple faceless human figure.
 Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001-003 illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one shipping container and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock; Pod template = a box-shaped mold / stamp that presses out identical Pod boxes; ReplicaSet = a crew chief: a simple faceless human sailor silhouette in a navy uniform and navy cap (NOT a cat, NOT an animal) holding a clipboard that reads replicas: 3; Deployment = the crew manager: a simple faceless human figure (NOT a cat, NOT an animal) in a white officer uniform and a white peaked cap with a small winged badge, holding a revision logbook (a notebook with numbered pages), who gives orders to the crew chiefs; during an update the manager directs two crew chiefs: the old-team chief stands by the OLD mold and his Pod boxes carry an orange stripe, the new-team chief stands by the NEW mold and his Pod boxes carry a green stripe; an old ReplicaSet scaled to 0 = the old mold kept on a shelf while the old-team chief sits resting beside it; rollback = the manager flips the logbook back to an earlier page and wakes the old-team chief.
-Text (verbatim): "localhost:8080"; "port-forward"; "som-menu-5f5c95db8f-7zv4t"; "v1.0"; "v2.0"; "lost connection to pod".
+Text (verbatim): "localhost:8080"; "port-forward"; "som-menu-5f5c95db8f-645xp"; "v1.0"; "v2.0"; "lost connection to pod".
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos (no Docker whale, no Kubernetes wheel logo, no GitHub octocat); do not show Service, Ingress or NodePort objects or words; exactly one Nong Som and no other cats; the crew manager and crew chiefs are faceless human figures, never cats.
 ```
 
@@ -139,7 +139,7 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 05c-lab4-plan.png
 
-> รูปที่ 14 · แผนการทดลอง LAB 4 (4 การทดลอง ตรงกับ 🎯 เป้าหมายขั้นนี้ ในแต่ละขั้น)
+> รูปที่ 17 · แผนการทดลอง LAB 4 (4 การทดลอง ตรงกับ 🎯 เป้าหมายขั้นนี้ ในแต่ละขั้น)
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
@@ -190,3 +190,35 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 > รูปที่ 10 · LAB2 ขั้นที่ 2 · web-deploy.yaml คู่กับ web-deploy-v2.yaml: ① name ② change-cause ③ image ④ selector/labels ห้ามแก้ ⑤ template
 
 ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะโค้ดในภาพต้องตรงกับไฟล์ LAB ทุกตัวอักษร วาดเป็น SVG (`03d-lab2-yaml-v1-vs-v2-map.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/yaml_map.py (spec 004lab2)` แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง
+
+## 04b-lab3-two-lights.png
+
+> รูปที่ 14 · LAB3 ขั้นที่ 5 · ไฟ 2 ดวงของ Deployment: Available True (ร้านเปิด) กับ Progressing False (เปลี่ยนรุ่นค้างเกิน 30 วินาที)
+
+```text
+Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
+Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Deployment lab (README figure, about 1536x1024).
+Scene: A harbor control room. In the center the crew manager (faceless human, white officer uniform, white peaked cap with a small winged badge, NOT a cat) stands at a big control panel with exactly TWO large round signal lamps side by side. LEFT lamp is glowing GREEN, labeled Available above it and True below it, with a small shop-awning icon and the Thai caption ร้านเปิดอยู่ (the shop is open). RIGHT lamp is glowing RED, labeled Progressing above it and False below it, with a large stopwatch next to it whose face shows 30s, and the Thai caption เปลี่ยนรุ่นค้าง (the version change is stuck). Through a big window behind the panel: three ORANGE-stripe teal Pod boxes still open and serving a small queue of customers (simple faceless human figures), and one NEW Pod box hanging from a crane with a red X and a red warning tag reading nginx:1.99-alpine, its mold slot empty. Nong Som stands at the lower right pointing at the two lamps with a curious, thoughtful face.
+Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once. Nong Som is the ONLY cat in the picture.
+Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, plain white background, palette navy / blue / teal with orange accents, rounded shapes, crisp large legible labels, generous whitespace; matches the chapter 001-003 illustration set. Shared metaphor: Pod = rounded translucent teal cabin box wrapping one shipping container; old-version Pod boxes carry an ORANGE stripe; Deployment = the crew manager (faceless human).
+Text (verbatim): "Available"; "True"; "Progressing"; "False"; "30s"; "ร้านเปิดอยู่"; "เปลี่ยนรุ่นค้าง"; "nginx:1.99-alpine".
+Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos (no Docker whale, no Kubernetes wheel logo, no GitHub octocat); do not show Service, Ingress or NodePort objects or words; exactly one cat (Nong Som); the crew manager and customers are faceless human figures, never cats; exactly two lamps.
+```
+
+## 04c-lab3-why-stuck-map.png
+
+> รูปที่ 13 · LAB3 ขั้นที่ 4 · ทำไมร้านไม่ปิดแต่การเปลี่ยนรุ่นค้าง: คำนวณ maxSurge / maxUnavailable 25% กับ replicas 3
+
+ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะตัวเลขและข้อความในภาพต้องตรงกับผลทดลองจริง วาดเป็น SVG (`04c-lab3-why-stuck-map.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/lab34_svgs.py` แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง
+
+## 04d-lab3-history-undo-map.png
+
+> รูปที่ 15 · LAB3 ขั้นที่ 6 · เลขรุ่นใน rollout history ขยับจาก 1, 2 เป็น 2, 3 หลัง undo
+
+ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะตัวเลขและข้อความในภาพต้องตรงกับผลทดลองจริง วาดเป็น SVG (`04d-lab3-history-undo-map.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/lab34_svgs.py` แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง
+
+## 05d-lab4-rolling-timeline.png
+
+> รูปที่ 21 · LAB4 ขั้นที่ 7 · เส้นเวลาการเปลี่ยนเมนู 2.0 จากการวัดจริงทุก 2 วินาที
+
+ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะตัวเลขและข้อความในภาพต้องตรงกับผลทดลองจริง วาดเป็น SVG (`05d-lab4-rolling-timeline.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/lab34_svgs.py` แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง

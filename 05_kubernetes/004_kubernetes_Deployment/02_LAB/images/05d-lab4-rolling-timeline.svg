@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1340 745" width="1340" height="745">
+<defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mnavy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f172a"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="mslate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker></defs>
+<rect width="1340" height="745" fill="#ffffff"/>
+<text x="670" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="24" font-weight="700" fill="#0f172a" xml:space="preserve">ร้านน้องส้มเปลี่ยนเป็นเมนู 2.0 ทีละสาขา: ร้านไม่ปิดแม้แต่วินาทีเดียว</text>
+<text x="670" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#475569" xml:space="preserve">maxSurge: 1 · maxUnavailable: 0 · minReadySeconds: 10 · เวลาจากการวัดจริงทุก 2 วินาที</text>
+<line x1="50" y1="134" x2="1150" y2="134" stroke="#7c3aed" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="1162" y="139" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#7c3aed" xml:space="preserve">สูงสุด 4 Pod</text>
+<text x="1162" y="159" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="400" fill="#7c3aed" xml:space="preserve">= 3 + maxSurge 1</text>
+<line x1="50" y1="204" x2="1150" y2="204" stroke="#16a34a" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="1162" y="209" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#16a34a" xml:space="preserve">พร้อมอย่างน้อย 3</text>
+<text x="1162" y="229" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="400" fill="#16a34a" xml:space="preserve">= 3 − maxUnavailable 0</text>
+<rect x="90" y="348" width="96" height="58" rx="10" fill="#fff7ed" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<rect x="92" y="388" width="92" height="7" fill="#ea580c" opacity="0.85"/>
+<text x="138" y="378" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">1.0</text>
+<rect x="90" y="278" width="96" height="58" rx="10" fill="#fff7ed" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<rect x="92" y="318" width="92" height="7" fill="#ea580c" opacity="0.85"/>
+<text x="138" y="308" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">1.0</text>
+<rect x="90" y="208" width="96" height="58" rx="10" fill="#fff7ed" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<rect x="92" y="248" width="92" height="7" fill="#ea580c" opacity="0.85"/>
+<text x="138" y="238" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">1.0</text>
+<line x1="70" y1="424" x2="206" y2="424" stroke="#334155" stroke-width="2"/>
+<text x="138" y="452" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#0f172a" xml:space="preserve">ก่อน apply v2</text>
+<text x="138" y="480" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#16a34a" xml:space="preserve">พร้อม 3 · รวม 3</text>
+<line x1="212" y1="290" x2="308" y2="290" stroke="#334155" stroke-width="2.5" marker-end="url(#mslate)"/>
+<rect x="320" y="348" width="96" height="58" rx="10" fill="#fff7ed" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<rect x="322" y="388" width="92" height="7" fill="#ea580c" opacity="0.85"/>
+<text x="368" y="378" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">1.0</text>
+<rect x="320" y="278" width="96" height="58" rx="10" fill="#fff7ed" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<rect x="322" y="318" width="92" height="7" fill="#ea580c" opacity="0.85"/>
+<text x="368" y="308" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">1.0</text>
+<rect x="320" y="208" width="96" height="58" rx="10" fill="#fff7ed" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<rect x="322" y="248" width="92" height="7" fill="#ea580c" opacity="0.85"/>
+<text x="368" y="238" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">1.0</text>
+<rect x="320" y="138" width="96" height="58" rx="10" fill="#ffffff" fill-opacity="1" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="7 5"/>
+<rect x="322" y="178" width="92" height="7" fill="#16a34a" opacity="0.35"/>
+<text x="368" y="168" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">2.0</text>
+<line x1="300" y1="424" x2="436" y2="424" stroke="#334155" stroke-width="2"/>
+<text x="368" y="452" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#0f172a" xml:space="preserve">0–11 วินาที</text>
+<text x="368" y="480" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#16a34a" xml:space="preserve">พร้อม 3 · รวม 4</text>
+<line x1="442" y1="290" x2="538" y2="290" stroke="#334155" stroke-width="2.5" marker-end="url(#mslate)"/>
+<rect x="550" y="348" width="96" height="58" rx="10" fill="#fff7ed" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<rect x="552" y="388" width="92" height="7" fill="#ea580c" opacity="0.85"/>
+<text x="598" y="378" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">1.0</text>
+<rect x="550" y="278" width="96" height="58" rx="10" fill="#fff7ed" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<rect x="552" y="318" width="92" height="7" fill="#ea580c" opacity="0.85"/>
+<text x="598" y="308" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">1.0</text>
+<rect x="550" y="208" width="96" height="58" rx="10" fill="#f0fdf4" fill-opacity="1" stroke="#16a34a" stroke-width="2.5"/>
+<rect x="552" y="248" width="92" height="7" fill="#16a34a" opacity="0.85"/>
+<text x="598" y="238" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">2.0</text>
+<rect x="550" y="138" width="96" height="58" rx="10" fill="#ffffff" fill-opacity="1" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="7 5"/>
+<rect x="552" y="178" width="92" height="7" fill="#16a34a" opacity="0.35"/>
+<text x="598" y="168" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">2.0</text>
+<line x1="530" y1="424" x2="666" y2="424" stroke="#334155" stroke-width="2"/>
+<text x="598" y="452" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#0f172a" xml:space="preserve">11–22 วินาที</text>
+<text x="598" y="480" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#16a34a" xml:space="preserve">พร้อม 3 · รวม 4</text>
+<line x1="672" y1="290" x2="768" y2="290" stroke="#334155" stroke-width="2.5" marker-end="url(#mslate)"/>
+<rect x="780" y="348" width="96" height="58" rx="10" fill="#fff7ed" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<rect x="782" y="388" width="92" height="7" fill="#ea580c" opacity="0.85"/>
+<text x="828" y="378" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">1.0</text>
+<rect x="780" y="278" width="96" height="58" rx="10" fill="#f0fdf4" fill-opacity="1" stroke="#16a34a" stroke-width="2.5"/>
+<rect x="782" y="318" width="92" height="7" fill="#16a34a" opacity="0.85"/>
+<text x="828" y="308" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">2.0</text>
+<rect x="780" y="208" width="96" height="58" rx="10" fill="#f0fdf4" fill-opacity="1" stroke="#16a34a" stroke-width="2.5"/>
+<rect x="782" y="248" width="92" height="7" fill="#16a34a" opacity="0.85"/>
+<text x="828" y="238" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">2.0</text>
+<rect x="780" y="138" width="96" height="58" rx="10" fill="#ffffff" fill-opacity="1" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="7 5"/>
+<rect x="782" y="178" width="92" height="7" fill="#16a34a" opacity="0.35"/>
+<text x="828" y="168" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">2.0</text>
+<line x1="760" y1="424" x2="896" y2="424" stroke="#334155" stroke-width="2"/>
+<text x="828" y="452" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#0f172a" xml:space="preserve">22–33 วินาที</text>
+<text x="828" y="480" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#16a34a" xml:space="preserve">พร้อม 3 · รวม 4</text>
+<line x1="902" y1="290" x2="998" y2="290" stroke="#334155" stroke-width="2.5" marker-end="url(#mslate)"/>
+<rect x="1010" y="348" width="96" height="58" rx="10" fill="#f0fdf4" fill-opacity="1" stroke="#16a34a" stroke-width="2.5"/>
+<rect x="1012" y="388" width="92" height="7" fill="#16a34a" opacity="0.85"/>
+<text x="1058" y="378" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">2.0</text>
+<rect x="1010" y="278" width="96" height="58" rx="10" fill="#f0fdf4" fill-opacity="1" stroke="#16a34a" stroke-width="2.5"/>
+<rect x="1012" y="318" width="92" height="7" fill="#16a34a" opacity="0.85"/>
+<text x="1058" y="308" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">2.0</text>
+<rect x="1010" y="208" width="96" height="58" rx="10" fill="#f0fdf4" fill-opacity="1" stroke="#16a34a" stroke-width="2.5"/>
+<rect x="1012" y="248" width="92" height="7" fill="#16a34a" opacity="0.85"/>
+<text x="1058" y="238" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">2.0</text>
+<line x1="990" y1="424" x2="1126" y2="424" stroke="#334155" stroke-width="2"/>
+<text x="1058" y="452" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#0f172a" xml:space="preserve">34 วินาที เสร็จ</text>
+<text x="1058" y="480" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#16a34a" xml:space="preserve">พร้อม 3 · รวม 3</text>
+<text x="260" y="280" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="13" font-weight="700" fill="#334155" xml:space="preserve">apply v2</text>
+<text x="490" y="280" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="13" font-weight="700" fill="#334155" xml:space="preserve">ครบ 10 วิ → ปิด 1.0</text>
+<text x="720" y="280" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="13" font-weight="700" fill="#334155" xml:space="preserve">ครบ 10 วิ → ปิด 1.0</text>
+<text x="950" y="280" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="13" font-weight="700" fill="#334155" xml:space="preserve">ครบ 10 วิ → ปิด 1.0</text>
+<rect x="40" y="528" width="96" height="58" rx="10" fill="#fff7ed" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<rect x="42" y="568" width="92" height="7" fill="#ea580c" opacity="0.85"/>
+<text x="88" y="558" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">1.0</text>
+<text x="150" y="560" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">สาขาเมนู 1.0 (นับว่าพร้อม)</text>
+<rect x="420" y="528" width="96" height="58" rx="10" fill="#f0fdf4" fill-opacity="1" stroke="#16a34a" stroke-width="2.5"/>
+<rect x="422" y="568" width="92" height="7" fill="#16a34a" opacity="0.85"/>
+<text x="468" y="558" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">2.0</text>
+<text x="530" y="560" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">สาขาเมนู 2.0 ที่พร้อมครบ 10 วินาทีแล้ว</text>
+<rect x="40" y="608" width="96" height="58" rx="10" fill="#ffffff" fill-opacity="1" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="7 5"/>
+<rect x="42" y="648" width="92" height="7" fill="#16a34a" opacity="0.35"/>
+<text x="88" y="638" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">2.0</text>
+<text x="150" y="640" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">สาขา 2.0 ที่เพิ่งเปิด ยังไม่นับ: รอ readinessProbe ผ่าน แล้วรอต่อ 10 วินาที (minReadySeconds)</text>
+<text x="40" y="708" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">ทุกช่วงมีสาขาที่พร้อม 3 สาขาเสมอ และมีสาขารวมไม่เกิน 4 · จังหวะละประมาณ 11 วินาที 3 จังหวะ ≈ 34 วินาที (kubectl rollout status รอจนครบ)</text>
+</svg>

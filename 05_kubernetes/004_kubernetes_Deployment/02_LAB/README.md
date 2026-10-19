@@ -11,7 +11,7 @@
 
 ทุก LAB ทำ **ใน container `k8s-lab`** (image `tuchsanai/devtools-kind:2569_1` มี kubectl, kind, helm, k9s และ Docker ข้างในครบ) บทที่แล้ว LAB 4 จบด้วยปัญหาว่า แก้แม่พิมพ์ของ ReplicaSet แล้วต้อง **ลบ Pod เก่าเอง** ร้านจึงปิดไปชั่วครู่ บทนี้ให้ **Deployment** มาคุม ReplicaSet อีกชั้น ตั้งแต่ Deployment แรก ดูว่ามันสร้าง ReplicaSet และ Pod ให้อย่างไร ลองเปลี่ยนรุ่นแบบทยอยทีละ Pod (rolling update) ย้อนกลับ (rollback) ลองอัปเดตพังให้เห็นว่าร้านไม่ปิด จนถึงให้ **"ร้านอาหารแมวน้องส้ม"** เปลี่ยนเมนูเป็นเวอร์ชัน 2.0 โดยลูกค้ายังเข้าร้านได้ตลอด
 
-> บล็อก **Expected output** คือผลที่ควรเห็นหลังรันคำสั่ง (ไม่ต้องพิมพ์ตาม) มาจากการทดลองจริงเมื่อ 18 ต.ค. 2569 (kind v0.33.0, kubectl v1.37.1, Kubernetes v1.37.0) **ชื่อ ReplicaSet และ Pod ถูกสุ่มท้ายชื่อทุกครั้ง** (เช่น `web-6bd858c6f9-86xzl`) ค่า AGE, IP และ Node ในเครื่องนักศึกษาจะต่างไป เป็นเรื่องปกติ
+> บล็อก **Expected output** คือผลที่ควรเห็นหลังรันคำสั่ง (ไม่ต้องพิมพ์ตาม) มาจากการทดลองจริงรอบเดียวกันทั้งบทเมื่อ 19 ต.ค. 2569 (kind v0.33.0, kubectl v1.37.1, Kubernetes v1.37.0) **ชื่อ ReplicaSet และ Pod ถูกสุ่มท้ายชื่อทุกครั้ง** (เช่น `web-6bd858c6f9-lpjxd`) ค่า AGE, IP และ Node ในเครื่องนักศึกษาจะต่างไป เป็นเรื่องปกติ
 
 | สัญลักษณ์ | รันที่ไหน |
 |---|---|
@@ -47,16 +47,18 @@
 
 | รูปที่ | เรื่อง | รูปที่ | เรื่อง |
 |:---:|---|:---:|---|
-| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 11 | [LAB 3 อัปเดตพัง แต่ร้านไม่ปิด](#fig-11) |
-| 2 | [LAB 0 git clone](#fig-2) | 12 | [แผนการทดลอง LAB 3](#fig-12) |
-| 3 | [LAB 1 Deployment → ReplicaSet → Pod](#fig-3) | 13 | [LAB 4 ร้านน้องส้มทยอยเปลี่ยนเมนูทีละสาขา](#fig-13) |
-| 4 | [แผนการทดลอง LAB 1](#fig-4) | 14 | [แผนการทดลอง LAB 4](#fig-14) |
-| 5 | [LAB 2 rolling update และ rollout undo](#fig-5) | 15 | [LAB 4 attach VS Code เข้า k8s-lab](#fig-15) |
-| 6 | [แผนการทดลอง LAB 2](#fig-6) | 16 | [LAB 4 เปิดเว็บผ่าน VS Code PORTS](#fig-16) |
-| 7 | [LAB 2 คำสั่ง rollout history ถามผู้จัดการคนไหน](#fig-7) | 17 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 1.0](#fig-17) |
-| 8 | [LAB 2 อ่านคำสั่ง rollout history ทีละคำ](#fig-8) | 18 | [port-forward หลุดเมื่อ Pod รุ่นเก่าถูกปิด](#fig-18) |
-| 9 | [LAB 2 ไฟล์รุ่นใหม่ แก้ตรงไหน](#fig-9) | 19 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 2.0](#fig-19) |
-| 10 | [LAB 2 เทียบ YAML รุ่นเดิมกับรุ่นใหม่](#fig-10) | 20 | [ภาพหน้าจอจริง: ย้อนกลับเป็นเวอร์ชัน 1.0](#fig-20) |
+| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 13 | [LAB 3 ทำไมร้านไม่ปิดแต่การเปลี่ยนรุ่นค้าง](#fig-13) |
+| 2 | [LAB 0 git clone](#fig-2) | 14 | [LAB 3 ไฟ 2 ดวง Available / Progressing](#fig-14) |
+| 3 | [LAB 1 Deployment → ReplicaSet → Pod](#fig-3) | 15 | [LAB 3 เลขรุ่นขยับอย่างไรตอน undo](#fig-15) |
+| 4 | [แผนการทดลอง LAB 1](#fig-4) | 16 | [LAB 4 ร้านน้องส้มทยอยเปลี่ยนเมนูทีละสาขา](#fig-16) |
+| 5 | [LAB 2 rolling update และ rollout undo](#fig-5) | 17 | [แผนการทดลอง LAB 4](#fig-17) |
+| 6 | [แผนการทดลอง LAB 2](#fig-6) | 18 | [LAB 4 attach VS Code เข้า k8s-lab](#fig-18) |
+| 7 | [LAB 2 คำสั่ง rollout history ถามผู้จัดการคนไหน](#fig-7) | 19 | [LAB 4 เปิดเว็บผ่าน VS Code PORTS](#fig-19) |
+| 8 | [LAB 2 อ่านคำสั่ง rollout history ทีละคำ](#fig-8) | 20 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 1.0](#fig-20) |
+| 9 | [LAB 2 ไฟล์รุ่นใหม่ แก้ตรงไหน](#fig-9) | 21 | [LAB 4 เส้นเวลาการเปลี่ยนเมนู 2.0](#fig-21) |
+| 10 | [LAB 2 เทียบ YAML รุ่นเดิมกับรุ่นใหม่](#fig-10) | 22 | [port-forward หลุดเมื่อ Pod รุ่นเก่าถูกปิด](#fig-22) |
+| 11 | [LAB 3 อัปเดตพัง แต่ร้านไม่ปิด](#fig-11) | 23 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 2.0](#fig-23) |
+| 12 | [แผนการทดลอง LAB 3](#fig-12) | 24 | [ภาพหน้าจอจริง: ย้อนกลับเป็นเวอร์ชัน 1.0](#fig-24) |
 
 ### โครงสร้างไฟล์ LAB
 
@@ -124,7 +126,7 @@ time k8s-up
 ...
 [k8s-up] cluster 'lab' พร้อมใช้งาน (kubectl context: kind-lab)
 ...
-real	0m34.382s
+real	0m29.418s
 </pre>
 
 `k8s-up` สร้างคลัสเตอร์ใช้เวลาราว 30 วินาที – 1 นาที ข้อความเรื่อง NodePort ท้าย `k8s-up` ข้ามได้
@@ -137,7 +139,7 @@ kubectl get nodes
 
 <pre>
 NAME                STATUS   ROLES           AGE   VERSION
-lab-control-plane   Ready    control-plane   27s   v1.37.0
+lab-control-plane   Ready    control-plane   22s   v1.37.0
 lab-worker          Ready    &lt;none&gt;          12s   v1.37.0
 lab-worker2         Ready    &lt;none&gt;          12s   v1.37.0
 </pre>
@@ -150,19 +152,19 @@ kubectl get pods -A
 
 <pre>
 NAMESPACE            NAME                                        READY   STATUS    RESTARTS   AGE
-kube-system          coredns-559f6c778d-kq4z2                    1/1     Running   0          17s
-kube-system          coredns-559f6c778d-prjzl                    1/1     Running   0          17s
-kube-system          etcd-lab-control-plane                      1/1     Running   0          25s
-kube-system          kindnet-csj6r                               1/1     Running   0          12s
-kube-system          kindnet-n9n88                               1/1     Running   0          12s
-kube-system          kindnet-xnj5h                               1/1     Running   0          17s
-kube-system          kube-apiserver-lab-control-plane            1/1     Running   0          25s
-kube-system          kube-controller-manager-lab-control-plane   1/1     Running   0          25s
-kube-system          kube-proxy-9ccwd                            1/1     Running   0          12s
-kube-system          kube-proxy-ptp2n                            1/1     Running   0          12s
-kube-system          kube-proxy-qvf5x                            1/1     Running   0          17s
-kube-system          kube-scheduler-lab-control-plane            1/1     Running   0          25s
-local-path-storage   local-path-provisioner-75f7fc7dc5-xfcq5     1/1     Running   0          17s
+kube-system          coredns-559f6c778d-k4rqg                    1/1     Running   0          13s
+kube-system          coredns-559f6c778d-q2z2x                    1/1     Running   0          13s
+kube-system          etcd-lab-control-plane                      1/1     Running   0          19s
+kube-system          kindnet-9cbpt                               1/1     Running   0          13s
+kube-system          kindnet-kz95w                               1/1     Running   0          12s
+kube-system          kindnet-mlkc9                               1/1     Running   0          12s
+kube-system          kube-apiserver-lab-control-plane            1/1     Running   0          19s
+kube-system          kube-controller-manager-lab-control-plane   1/1     Running   0          19s
+kube-system          kube-proxy-9kwg8                            1/1     Running   0          13s
+kube-system          kube-proxy-jvxwd                            1/1     Running   0          12s
+kube-system          kube-proxy-rrv5s                            1/1     Running   0          12s
+kube-system          kube-scheduler-lab-control-plane            1/1     Running   0          19s
+local-path-storage   local-path-provisioner-75f7fc7dc5-r6mgc     1/1     Running   0          13s
 </pre>
 
 `kube-controller-manager` คือตัวที่มี **deployment-controller** และ **replicaset-controller** อยู่ข้างใน: deployment-controller ดูแล Deployment (สร้างและปรับจำนวน ReplicaSet) ส่วน replicaset-controller นับและสร้าง Pod เหมือนบทที่ 3 (ถ้าบาง Pod ยัง `0/1` ให้รอสักครู่แล้วสั่งซ้ำ)
@@ -279,7 +281,7 @@ kubectl get deploy
 
 <pre>
 NAME   READY   UP-TO-DATE   AVAILABLE   AGE
-web    3/3     3            3           11s
+web    3/3     3            3           10s
 </pre>
 
 - `READY 3/3` = Pod พร้อม 3 จากที่ขอ 3
@@ -307,9 +309,9 @@ kubectl get pods --show-labels
 
 <pre>
 NAME                   READY   STATUS    RESTARTS   AGE   LABELS
-web-6bd858c6f9-86xzl   1/1     Running   0          10s   app=web,pod-template-hash=6bd858c6f9
-web-6bd858c6f9-kmn4v   1/1     Running   0          10s   app=web,pod-template-hash=6bd858c6f9
-web-6bd858c6f9-xj2vm   1/1     Running   0          10s   app=web,pod-template-hash=6bd858c6f9
+web-6bd858c6f9-lpjxd   1/1     Running   0          10s   app=web,pod-template-hash=6bd858c6f9
+web-6bd858c6f9-vsx6z   1/1     Running   0          10s   app=web,pod-template-hash=6bd858c6f9
+web-6bd858c6f9-xl8bz   1/1     Running   0          10s   app=web,pod-template-hash=6bd858c6f9
 </pre>
 
 - ชื่อ Pod มี **3 ท่อน**: `web` (ชื่อ Deployment) - `6bd858c6f9` (hash ของแม่พิมพ์) - `86xzl` (ตัวอักษรสุ่ม)
@@ -360,7 +362,7 @@ Events:
 เลือก Pod มา 1 ตัวจาก `kubectl get pods`
 
 ```bash
-kubectl get pod web-6bd858c6f9-86xzl -o yaml    # ← เปลี่ยนเป็นชื่อ Pod ของตัวเอง
+kubectl get pod web-6bd858c6f9-lpjxd -o yaml    # ← เปลี่ยนเป็นชื่อ Pod ของตัวเอง
 ```
 
 **Expected output** (ตัดเฉพาะส่วนสำคัญ)
@@ -369,13 +371,13 @@ kubectl get pod web-6bd858c6f9-86xzl -o yaml    # ← เปลี่ยนเ�
 apiVersion: v1
 kind: Pod
 metadata:
-  creationTimestamp: "2026-10-18T07:10:45Z"
+  creationTimestamp: "2026-10-19T11:03:35Z"
   generateName: web-6bd858c6f9-
   generation: 1
   labels:
     app: web
     pod-template-hash: 6bd858c6f9
-  name: web-6bd858c6f9-86xzl
+  name: web-6bd858c6f9-lpjxd
   namespace: default
   ownerReferences:
   - apiVersion: apps/v1
@@ -383,8 +385,8 @@ metadata:
     controller: true
     kind: ReplicaSet
     name: web-6bd858c6f9
-    uid: e7abb07f-5ea6-44b6-a981-9bf335a1cd63
-  resourceVersion: "671"
+    uid: 107c44ff-4a0d-4302-82e9-df8712254d3a
+  resourceVersion: "650"
 ...
 </pre>
 
@@ -405,7 +407,7 @@ metadata:
     deployment.kubernetes.io/max-replicas: "4"
     deployment.kubernetes.io/revision: "1"
     kubernetes.io/change-cause: nginx 1.27
-  creationTimestamp: "2026-10-18T07:10:45Z"
+  creationTimestamp: "2026-10-19T11:03:35Z"
   generation: 1
   labels:
     app: web
@@ -418,9 +420,9 @@ metadata:
     controller: true
     kind: Deployment
     name: web
-    uid: 2ca4adbc-9874-4c8d-af57-6f917909e785
-  resourceVersion: "685"
-  uid: e7abb07f-5ea6-44b6-a981-9bf335a1cd63
+    uid: 28ec9577-73e6-4f5f-8db7-e9e79669384b
+  resourceVersion: "669"
+  uid: 107c44ff-4a0d-4302-82e9-df8712254d3a
 spec:
   replicas: 3
   selector:
@@ -431,7 +433,7 @@ spec:
 </pre>
 
 - `ownerReferences` ของ ReplicaSet ชี้ไปที่ **`kind: Deployment` ชื่อ `web`** จึงเป็นเจ้าของ 2 ชั้น: Pod → ReplicaSet → Deployment
-- `uid` ของ ReplicaSet (`e7abb07f-...`) ตรงกับ `uid` ใน `ownerReferences` ของ Pod ข้างบน
+- `uid` ของ ReplicaSet (`107c44ff-...`) ตรงกับ `uid` ใน `ownerReferences` ของ Pod ข้างบน
 - selector ของ ReplicaSet มี `pod-template-hash` เพิ่มมา ReplicaSet จึงนับเฉพาะ Pod จากแม่พิมพ์รุ่นของตัวเอง
 
 ### ขั้นที่ 5: ลบ Pod 1 ตัว
@@ -441,13 +443,13 @@ spec:
 > 🔍 **สังเกต:** จำนวนยังเป็น 3 ตัวที่มาแทนมี **ชื่อใหม่ `AGE` น้อย** แต่ hash ตรงกลางชื่อยังเหมือนเดิม
 
 ```bash
-kubectl delete pod web-6bd858c6f9-86xzl    # ← เปลี่ยนเป็นชื่อ Pod ของตัวเอง
+kubectl delete pod web-6bd858c6f9-lpjxd    # ← เปลี่ยนเป็นชื่อ Pod ของตัวเอง
 ```
 
 **Expected output**
 
 <pre>
-pod "web-6bd858c6f9-86xzl" deleted from default namespace
+pod "web-6bd858c6f9-lpjxd" deleted from default namespace
 </pre>
 
 ```bash
@@ -458,12 +460,12 @@ kubectl get pods
 
 <pre>
 NAME                   READY   STATUS    RESTARTS   AGE
-web-6bd858c6f9-kmn4v   1/1     Running   0          11s
-web-6bd858c6f9-mcvkz   1/1     Running   0          1s
-web-6bd858c6f9-xj2vm   1/1     Running   0          11s
+web-6bd858c6f9-v2gb2   1/1     Running   0          1s
+web-6bd858c6f9-vsx6z   1/1     Running   0          11s
+web-6bd858c6f9-xl8bz   1/1     Running   0          11s
 </pre>
 
-ได้ `web-6bd858c6f9-mcvkz` อายุ 1 วินาทีมาแทน การสร้าง Pod แทนตัวที่หาย (self-healing) **ยังเป็นงานของ ReplicaSet** เหมือนบทที่ 3 Deployment ไม่ต้องทำอะไร
+ได้ `web-6bd858c6f9-v2gb2` อายุ 1 วินาทีมาแทน การสร้าง Pod แทนตัวที่หาย (self-healing) **ยังเป็นงานของ ReplicaSet** เหมือนบทที่ 3 Deployment ไม่ต้องทำอะไร
 
 ### ขั้นที่ 6: ลบ ReplicaSet ทั้งตัว
 
@@ -504,12 +506,12 @@ kubectl get pods
 
 <pre>
 NAME                   READY   STATUS              RESTARTS   AGE
-web-6bd858c6f9-7n5g4   0/1     ContainerCreating   0          0s
-web-6bd858c6f9-kmn4v   1/1     Terminating         0          16s
-web-6bd858c6f9-mcvkz   1/1     Terminating         0          6s
-web-6bd858c6f9-mmqqd   0/1     ContainerCreating   0          0s
-web-6bd858c6f9-ntpv4   0/1     ContainerCreating   0          0s
-web-6bd858c6f9-xj2vm   1/1     Terminating         0          16s
+web-6bd858c6f9-6tcl7   0/1     ContainerCreating   0          0s
+web-6bd858c6f9-svwks   0/1     ContainerCreating   0          0s
+web-6bd858c6f9-tdl5h   0/1     ContainerCreating   0          0s
+web-6bd858c6f9-v2gb2   1/1     Terminating         0          1s
+web-6bd858c6f9-vsx6z   1/1     Terminating         0          11s
+web-6bd858c6f9-xl8bz   1/1     Terminating         0          11s
 </pre>
 
 Pod เก่า 3 ตัวถูกลบตาม ReplicaSet ตัวเก่า (`Terminating`) ส่วน ReplicaSet ตัวใหม่สร้าง Pod ใหม่ 3 ตัว รอสัก 5 วินาที แล้วดูอีกครั้ง
@@ -533,9 +535,9 @@ kubectl get pods
 
 <pre>
 NAME                   READY   STATUS    RESTARTS   AGE
-web-6bd858c6f9-7n5g4   1/1     Running   0          5s
-web-6bd858c6f9-mmqqd   1/1     Running   0          5s
-web-6bd858c6f9-ntpv4   1/1     Running   0          5s
+web-6bd858c6f9-6tcl7   1/1     Running   0          5s
+web-6bd858c6f9-svwks   1/1     Running   0          5s
+web-6bd858c6f9-tdl5h   1/1     Running   0          5s
 </pre>
 
 ผู้จัดการ (Deployment) เห็นว่าหัวหน้าลูกเรือหายไป จึงตั้งคนใหม่จากแม่พิมพ์เดิมทันที = Deployment ดูแล ReplicaSet แบบเดียวกับที่ ReplicaSet ดูแล Pod
@@ -566,7 +568,7 @@ kubectl get deploy
 
 <pre>
 NAME   READY   UP-TO-DATE   AVAILABLE   AGE
-web    5/5     5            5           27s
+web    5/5     5            5           21s
 </pre>
 
 ```bash
@@ -610,7 +612,7 @@ kubectl get rs
 
 <pre>
 NAME             DESIRED   CURRENT   READY   AGE
-web-6bd858c6f9   5         5         5       13s
+web-6bd858c6f9   5         5         5       14s
 </pre>
 
 ```bash
@@ -621,11 +623,11 @@ kubectl get pods
 
 <pre>
 NAME                   READY   STATUS    RESTARTS   AGE
-web-6bd858c6f9-5xlvp   1/1     Running   0          8s
-web-6bd858c6f9-d7725   1/1     Running   0          3s
-web-6bd858c6f9-gr4jq   1/1     Running   0          3s
-web-6bd858c6f9-ntpv4   1/1     Running   0          13s
-web-6bd858c6f9-w2gqx   1/1     Running   0          3s
+web-6bd858c6f9-46zwl   1/1     Running   0          3s
+web-6bd858c6f9-js6z4   1/1     Running   0          3s
+web-6bd858c6f9-mcbc5   1/1     Running   0          9s
+web-6bd858c6f9-qgxcd   1/1     Running   0          3s
+web-6bd858c6f9-tdl5h   1/1     Running   0          14s
 </pre>
 
 คำสั่งบอกว่า `scaled` แต่ ReplicaSet **เด้งกลับเป็น 5** และมี Pod ใหม่ 3 ตัว (`AGE 3s`) แปลว่า ReplicaSet ลดเหลือ 2 จริง แล้ว Deployment เห็นว่าไม่ตรงกับที่ตัวเองตั้งไว้ (5) จึงสั่งกลับเป็น 5 ทันที **ผู้จัดการชนะหัวหน้าลูกเรือ** ถ้ามี Deployment ให้ scale ที่ Deployment เท่านั้น
@@ -658,7 +660,7 @@ kubectl get deploy
 
 <pre>
 NAME   READY   UP-TO-DATE   AVAILABLE   AGE
-web    3/3     3            3           35s
+web    3/3     3            3           30s
 </pre>
 
 ```bash
@@ -669,9 +671,9 @@ kubectl get pods
 
 <pre>
 NAME                   READY   STATUS    RESTARTS   AGE
-web-6bd858c6f9-d7725   1/1     Running   0          8s
-web-6bd858c6f9-gr4jq   1/1     Running   0          8s
-web-6bd858c6f9-ntpv4   1/1     Running   0          18s
+web-6bd858c6f9-46zwl   1/1     Running   0          8s
+web-6bd858c6f9-qgxcd   1/1     Running   0          8s
+web-6bd858c6f9-tdl5h   1/1     Running   0          19s
 </pre>
 
 กลับเป็น **3** เหมือนบทที่ 3 (**ไฟล์ชนะ**) จำนวนถาวรต้องแก้ `replicas` ในไฟล์แล้ว apply
@@ -777,9 +779,9 @@ kubectl get pods
 
 <pre>
 NAME                   READY   STATUS    RESTARTS   AGE
-web-6bd858c6f9-6pgg9   1/1     Running   0          10s
-web-6bd858c6f9-c627t   1/1     Running   0          10s
-web-6bd858c6f9-vt6vq   1/1     Running   0          10s
+web-6bd858c6f9-2tw76   1/1     Running   0          10s
+web-6bd858c6f9-89pwv   1/1     Running   0          10s
+web-6bd858c6f9-qwhfk   1/1     Running   0          10s
 </pre>
 
 hash ยังเป็น `6bd858c6f9` เหมือน LAB 1 เพราะแม่พิมพ์เหมือนเดิมทุกตัวอักษร ต่อไปจะดูประวัติรุ่น แต่ก่อนพิมพ์ **อ่านคำสั่งให้ออกก่อนว่าแต่ละคำมาจากไหน**
@@ -890,7 +892,7 @@ The Deployment "web" is invalid: spec.selector: Invalid value: {"matchLabels":{"
 
 > 🎯 **เป้าหมายขั้นนี้:** ทดสอบ **rolling update**: แก้แม่พิมพ์แล้ว apply Deployment ทยอยเปลี่ยน Pod ให้เองโดยเราไม่ต้องลบ Pod ([ทฤษฎีหัวข้อ 7](../01_Theory/README.md#7-rolling-update-ทยอยเปลี่ยนทีละ-pod) · [ทฤษฎีหัวข้อ 9](../01_Theory/README.md#9-ติดตามการเปลี่ยนรุ่น-rollout-status-และ-history))
 >
-> 🔍 **สังเกต:** `rollout status` นับ Pod รุ่นใหม่ขึ้นทีละตัว 0 → 1 → 2 → 3 แล้วจบด้วย `successfully rolled out`
+> 🔍 **สังเกต:** `rollout status` นับ Pod รุ่นใหม่ขึ้นทีละตัว 1 → 2 → 3 แล้วจบด้วย `successfully rolled out`
 
 ```bash
 kubectl apply -f labs/lab02-rolling-update/web-deploy-v2.yaml
@@ -902,7 +904,7 @@ kubectl apply -f labs/lab02-rolling-update/web-deploy-v2.yaml
 deployment.apps/web configured
 </pre>
 
-ดูความคืบหน้าทันที คำสั่งนี้ **รอจนเปลี่ยนรุ่นเสร็จแล้วจบเอง** (ประมาณ 17 วินาที)
+ดูความคืบหน้าทันที คำสั่งนี้ **รอจนเปลี่ยนรุ่นเสร็จแล้วจบเอง** (ประมาณ 15 วินาที)
 
 ```bash
 kubectl rollout status deployment/web
@@ -911,7 +913,6 @@ kubectl rollout status deployment/web
 **Expected output**
 
 <pre>
-Waiting for deployment "web" rollout to finish: 0 out of 3 new replicas have been updated...
 Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
@@ -925,7 +926,7 @@ Waiting for deployment "web" rollout to finish: 1 old replicas are pending termi
 deployment "web" successfully rolled out
 </pre>
 
-นับ Pod รุ่นใหม่ขึ้นทีละตัว 0 → 1 → 2 → 3 แล้วรอ Pod รุ่นเก่าตัวสุดท้ายปิด จบด้วย `successfully rolled out`
+นับ Pod รุ่นใหม่ขึ้นทีละตัว 1 → 2 → 3 (บางเครื่องเห็นบรรทัด `0 out of 3` ก่อน ถ้าพิมพ์เร็วมาก) แล้วรอ Pod รุ่นเก่าตัวสุดท้ายปิด จบด้วย `successfully rolled out`
 
 ### ขั้นที่ 4: ReplicaSet เก่ากับใหม่
 
@@ -941,8 +942,8 @@ kubectl get rs -o wide
 
 <pre>
 NAME             DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES              SELECTOR
-web-5b86859d48   3         3         3       17s   nginx        nginx:1.28-alpine   app=web,pod-template-hash=5b86859d48
-web-6bd858c6f9   0         0         0       27s   nginx        nginx:1.27-alpine   app=web,pod-template-hash=6bd858c6f9
+web-5b86859d48   3         3         3       15s   nginx        nginx:1.28-alpine   app=web,pod-template-hash=5b86859d48
+web-6bd858c6f9   0         0         0       25s   nginx        nginx:1.27-alpine   app=web,pod-template-hash=6bd858c6f9
 </pre>
 
 - ReplicaSet ใหม่ `web-5b86859d48` (hash ใหม่, `nginx:1.28-alpine`) มี **3** ตัว
@@ -956,13 +957,13 @@ kubectl get pods
 
 <pre>
 NAME                   READY   STATUS        RESTARTS   AGE
-web-5b86859d48-4xpxh   1/1     Running       0          17s
-web-5b86859d48-5c46b   1/1     Running       0          8s
-web-5b86859d48-l2db6   1/1     Running       0          1s
-web-6bd858c6f9-c627t   1/1     Terminating   0          27s
+web-5b86859d48-5m57j   1/1     Running       0          1s
+web-5b86859d48-5mrk9   1/1     Running       0          8s
+web-5b86859d48-tlngl   1/1     Running       0          15s
+web-6bd858c6f9-qwhfk   1/1     Terminating   0          25s
 </pre>
 
-Pod รุ่นใหม่อายุ **17s, 8s, 1s** = เกิดทีละตัว ไม่ใช่พร้อมกัน ส่วน `web-6bd858c6f9-c627t` คือ Pod รุ่นเก่าตัวสุดท้ายที่กำลังปิด
+Pod รุ่นใหม่อายุ **15s, 8s, 1s** = เกิดทีละตัว ไม่ใช่พร้อมกัน ส่วน `web-6bd858c6f9-qwhfk` คือ Pod รุ่นเก่าตัวสุดท้ายที่กำลังปิด
 
 ### ขั้นที่ 5: ดูจังหวะการเปลี่ยนรุ่นใน Events
 
@@ -992,8 +993,8 @@ NewReplicaSet:   web-5b86859d48 (3/3 replicas created)
 Events:
   Type    Reason             Age   From                   Message
   ----    ------             ----  ----                   -------
-  Normal  ScalingReplicaSet  27s   deployment-controller  Scaled up replica set web-6bd858c6f9 from 0 to 3
-  Normal  ScalingReplicaSet  17s   deployment-controller  Scaled up replica set web-5b86859d48 from 0 to 1
+  Normal  ScalingReplicaSet  25s   deployment-controller  Scaled up replica set web-6bd858c6f9 from 0 to 3
+  Normal  ScalingReplicaSet  15s   deployment-controller  Scaled up replica set web-5b86859d48 from 0 to 1
   Normal  ScalingReplicaSet  8s    deployment-controller  Scaled down replica set web-6bd858c6f9 from 3 to 2
   Normal  ScalingReplicaSet  8s    deployment-controller  Scaled up replica set web-5b86859d48 from 1 to 2
   Normal  ScalingReplicaSet  1s    deployment-controller  Scaled down replica set web-6bd858c6f9 from 2 to 1
@@ -1060,7 +1061,6 @@ Waiting for deployment "web" rollout to finish: 0 out of 3 new replicas have bee
 Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
-Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
 Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
 Waiting for deployment "web" rollout to finish: 2 out of 3 new replicas have been updated...
@@ -1081,8 +1081,8 @@ kubectl get rs -o wide
 
 <pre>
 NAME             DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES              SELECTOR
-web-5b86859d48   0         0         0       19s   nginx        nginx:1.28-alpine   app=web,pod-template-hash=5b86859d48
-web-6bd858c6f9   3         3         3       29s   nginx        nginx:1.27-alpine   app=web,pod-template-hash=6bd858c6f9
+web-5b86859d48   0         0         0       18s   nginx        nginx:1.28-alpine   app=web,pod-template-hash=5b86859d48
+web-6bd858c6f9   3         3         3       28s   nginx        nginx:1.27-alpine   app=web,pod-template-hash=6bd858c6f9
 </pre>
 
 ไม่มี ReplicaSet ใหม่เกิดขึ้น Deployment **ปลุก ReplicaSet เก่า `web-6bd858c6f9`** (nginx 1.27) กลับเป็น 3 และลดตัว 1.28 เหลือ 0
@@ -1095,14 +1095,13 @@ kubectl get pods
 
 <pre>
 NAME                   READY   STATUS        RESTARTS   AGE
-web-5b86859d48-4xpxh   1/1     Terminating   0          19s
-web-5b86859d48-5c46b   0/1     Completed     0          10s
-web-6bd858c6f9-4ks55   1/1     Running       0          1s
-web-6bd858c6f9-c4z2d   1/1     Running       0          0s
-web-6bd858c6f9-rsmpc   1/1     Running       0          2s
+web-5b86859d48-tlngl   1/1     Terminating   0          18s
+web-6bd858c6f9-65n95   1/1     Running       0          3s
+web-6bd858c6f9-fczj7   1/1     Running       0          2s
+web-6bd858c6f9-m4xsg   1/1     Running       0          1s
 </pre>
 
-Pod ที่ Running ขึ้นต้น `web-6bd858c6f9-` (แม่พิมพ์เดิม) แต่ท้ายชื่อเป็นตัวใหม่ทั้งหมด = **Pod ใหม่** ที่ปั๊มจากแม่พิมพ์เก่า ส่วน Pod รุ่น 1.28 กำลังปิด (`Terminating` / `Completed`)
+Pod ที่ Running ขึ้นต้น `web-6bd858c6f9-` (แม่พิมพ์เดิม) แต่ท้ายชื่อเป็นตัวใหม่ทั้งหมด = **Pod ใหม่** ที่ปั๊มจากแม่พิมพ์เก่า ส่วน Pod รุ่น 1.28 ตัวสุดท้ายกำลังปิด (`Terminating`)
 
 ```bash
 kubectl rollout history deployment/web
@@ -1136,7 +1135,7 @@ kubectl get deploy --show-labels
 
 <pre>
 NAME   READY   UP-TO-DATE   AVAILABLE   AGE   LABELS
-web    3/3     3            3           30s   &lt;none&gt;
+web    3/3     3            3           28s   &lt;none&gt;
 </pre>
 
 ตัว Deployment `web` **ไม่มีป้าย** (`<none>`) เพราะในไฟล์เราเขียน `labels` ไว้ใต้ `template` เท่านั้น ลองลบด้วยป้าย `app=web` ดู
@@ -1215,6 +1214,14 @@ No resources found in default namespace.
   <em><b>รูปที่ 12</b> แผนการทดลอง LAB3 มี 4 การทดลอง: (1) ขั้นที่ 1–3 อัปเดตเป็น image ที่ไม่มีจริงจนเกิน progressDeadlineSeconds (2) ขั้นที่ 4 ร้านยังเปิด 3/3 เพราะ Pod เก่าไม่ถูกลด (3) ขั้นที่ 5 หาสาเหตุจาก Events และ Conditions (4) ขั้นที่ 6–7 rollout undo แล้ว Pod เดิมยังอยู่ครบ</em>
 </p>
 
+> **ทบทวนก่อนเริ่ม: คำสั่งตระกูล `rollout` ที่ใช้ใน LAB นี้** (อ่านทีละคำได้ใน [รูปที่ 8](#fig-8))
+>
+> - `kubectl rollout status deployment/web` = **"เปลี่ยนรุ่นเสร็จหรือยัง"** คำสั่งนี้ค้างรอจนเสร็จ หรือจนประกาศว่าล้มเหลว
+> - `kubectl rollout history deployment/web` = **"เคยมีรุ่นอะไรบ้าง"** เปิดสมุดรุ่น ตอบทันทีไม่ต้องรอ
+> - `kubectl rollout undo deployment/web` = **"ย้อนไปรุ่นก่อนหน้า"** ทยอยเปลี่ยน Pod กลับเหมือนตอนเปลี่ยนรุ่น
+>
+> ทั้ง 3 คำสั่งลงท้ายด้วย `deployment/web` เสมอ = ถามผู้จัดการชนิด Deployment ชื่อ `web` (ตรงกับ `kind` และ `metadata.name` ในไฟล์)
+
 ### ขั้นที่ 1: สร้าง Deployment รุ่นดี
 
 > 🎯 **เป้าหมายขั้นนี้:** เตรียม **ร้านรุ่นดี 3 ตัว** ไว้เทียบว่าตอนอัปเดตพัง Pod เก่าจะถูกแตะไหม ([ทฤษฎีหัวข้อ 11](../01_Theory/README.md#11-อัปเดตพัง-แต่ร้านไม่ปิด))
@@ -1241,12 +1248,12 @@ kubectl get pods
 
 <pre>
 NAME                   READY   STATUS    RESTARTS   AGE
-web-6bd858c6f9-27bw4   1/1     Running   0          10s
-web-6bd858c6f9-d8dc6   1/1     Running   0          10s
-web-6bd858c6f9-nqt9t   1/1     Running   0          10s
+web-6bd858c6f9-k7tsh   1/1     Running   0          10s
+web-6bd858c6f9-rnjmx   1/1     Running   0          10s
+web-6bd858c6f9-zdcjm   1/1     Running   0          10s
 </pre>
 
-**จดชื่อ Pod 3 ตัวนี้ไว้** จะใช้เทียบตอนท้าย LAB
+**จดชื่อ Pod 3 ตัวนี้ไว้** (ตัวอย่างนี้คือ `k7tsh`, `rnjmx`, `zdcjm` ของนักศึกษาจะต่างไป) ขั้นที่ 6 จะกลับมาเทียบ
 
 ### ขั้นที่ 2: ไฟล์อัปเดตที่พิมพ์ผิด
 
@@ -1284,9 +1291,10 @@ spec:
 
 ทำงานอย่างไร
 
-- `progressDeadlineSeconds: 30` (บรรทัด `← ใหม่`) = ถ้าการเปลี่ยนรุ่นไม่คืบหน้าเลยนานเกิน 30 วินาที ให้ประกาศว่า **ล้มเหลว** (ค่าเริ่มต้น 600 วินาที = 10 นาที ตั้งสั้นไว้จะได้ไม่ต้องรอนาน)
-- `image: nginx:1.99-alpine` (บรรทัด `← พิมพ์ผิด`) = รุ่นที่ไม่มีอยู่จริง Pod ใหม่จะดึง image ไม่ได้
-- โน้ต `change-cause` เปลี่ยนเป็น `nginx 1.99 (พิมพ์ผิด)` ไว้ดูใน history
+- ไฟล์นี้คือ `web-deploy.yaml` ของ LAB 1 ที่แก้ 3 จุด ชื่อยังเป็น `web` การ apply จึงเป็นการ **เปลี่ยนรุ่นของ Deployment ตัวเดิม** (หลักการเขียนไฟล์รุ่นใหม่ใน LAB 2 ขั้นที่ 2)
+- `image: nginx:1.99-alpine` (บรรทัด `← พิมพ์ผิด`) = **ต้นเหตุของปัญหา** รุ่นนี้ไม่มีใน Docker Hub ตั้งใจพิมพ์ผิดให้เหมือนความผิดพลาดที่เจอได้จริง
+- `progressDeadlineSeconds: 30` (บรรทัด `← ใหม่`) = **นาฬิกาจับเวลาของการเปลี่ยนรุ่น** ถ้าผ่านไป 30 วินาทีแล้วการเปลี่ยนรุ่นไม่คืบหน้าเลย (ไม่มี Pod รุ่นใหม่พร้อมเพิ่มขึ้น) ให้ประกาศว่า **ล้มเหลว** ค่าเริ่มต้นคือ 600 วินาที (10 นาที) ตั้งสั้นไว้จะได้ไม่ต้องรอนาน
+- โน้ต `change-cause` เปลี่ยนเป็น `nginx 1.99 (พิมพ์ผิด)` จะได้เห็นใน `rollout history` ว่ารุ่นนี้คือรุ่นที่พัง
 
 ### ขั้นที่ 3: apply แล้วรอดู
 
@@ -1304,8 +1312,10 @@ kubectl apply -f labs/lab03-bad-update/web-deploy-bad.yaml
 deployment.apps/web configured
 </pre>
 
+`configured` = แก้ Deployment `web` ตัวเดิม apply **ผ่าน** เพราะ Kubernetes ไม่รู้ว่ามี image นี้หรือไม่ จนกว่าจะลองดึงจริง ต่อไปเฝ้าดูการเปลี่ยนรุ่น ใส่ `time` ไว้ข้างหน้าเพื่อจับเวลา (แบบ `time k8s-up` ใน LAB 0)
+
 ```bash
-kubectl rollout status deployment/web
+time kubectl rollout status deployment/web
 ```
 
 **Expected output** (รอประมาณ 30 วินาที)
@@ -1313,15 +1323,27 @@ kubectl rollout status deployment/web
 <pre>
 Waiting for deployment "web" rollout to finish: 1 out of 3 new replicas have been updated...
 error: deployment "web" exceeded its progress deadline
+
+real	0m30.098s
+user	0m0.031s
+sys	0m0.029s
 </pre>
 
-ค้างอยู่ที่ `1 out of 3` นาน 30 วินาที แล้วจบด้วย `exceeded its progress deadline` = Deployment ประกาศว่าการเปลี่ยนรุ่นนี้ **ล้มเหลว**
+อ่านทีละบรรทัด
+
+- `1 out of 3 new replicas have been updated` = Pod รุ่นใหม่ **ถูกสร้างแล้ว 1 จาก 3 ตัว** (updated = สร้างจากแม่พิมพ์ใหม่แล้ว ยังไม่ได้แปลว่าพร้อม) แล้วตัวเลขไม่ขยับอีกเลย
+- `exceeded its progress deadline` = **เกินเส้นตาย 30 วินาที** ตาม `progressDeadlineSeconds` Deployment จึงประกาศว่าการเปลี่ยนรุ่นนี้ **ล้มเหลว**
+- `real 0m30.098s` = คำสั่งรอจริง 30 วินาที ตรงกับค่าที่ตั้งไว้
+
+> **⚠️ ล้มเหลวไม่ได้แปลว่าย้อนกลับ:** `rollout status` แค่รายงานว่าล้มเหลว Deployment **ยังค้างอยู่ที่รุ่นที่พัง** ไม่ได้ย้อนกลับให้เอง (พิมพ์ `rollout status` ซ้ำตอนนี้ก็ได้ error เดิมทันที) ต้องสั่งย้อนเองในขั้นที่ 6
 
 ### ขั้นที่ 4: ร้านยังเปิดอยู่ไหม
 
 > 🎯 **เป้าหมายขั้นนี้:** ทดสอบหลักการสำคัญของ LAB นี้: **อัปเดตพังแล้วร้านยังเปิดไหม** ([ทฤษฎีหัวข้อ 8](../01_Theory/README.md#8-maxsurge-maxunavailable-และ-minreadyseconds) · [ทฤษฎีหัวข้อ 11](../01_Theory/README.md#11-อัปเดตพัง-แต่ร้านไม่ปิด))
 >
-> 🔍 **สังเกต:** `READY 3/3` / `AVAILABLE 3`, Pod ใหม่ 1 ตัว `ErrImagePull` ส่วน Pod เก่า 3 ตัว **ชื่อเดิม** ยัง `Running`
+> 🔍 **สังเกต:** `READY 3/3` / `AVAILABLE 3`, Pod ใหม่ 1 ตัว `ImagePullBackOff` ส่วน Pod เก่า 3 ตัว **ชื่อเดิม** ยัง `Running`
+
+ดูทีละชั้น เริ่มจากผู้จัดการ (Deployment)
 
 ```bash
 kubectl get deploy
@@ -1334,8 +1356,11 @@ NAME   READY   UP-TO-DATE   AVAILABLE   AGE
 web    3/3     1            3           41s
 </pre>
 
-- `READY 3/3` และ `AVAILABLE 3` = **ร้านยังเปิดครบ 3 สาขา**
-- `UP-TO-DATE 1` = มี Pod จากแม่พิมพ์ใหม่แค่ 1 ตัว (ตัวที่พัง)
+- `READY 3/3` = Pod ที่พร้อม 3 จากที่ขอ 3 = **ลูกค้ายังได้ 3 สาขา**
+- `UP-TO-DATE 1` = Pod ที่เป็นแม่พิมพ์ใหม่ (`nginx:1.99-alpine`) มีแค่ **1** ตัว
+- `AVAILABLE 3` = Pod ที่พร้อมให้บริการจริง 3 ตัว (เป็นตัวเก่าทั้งหมด)
+
+ต่อไปดูหัวหน้าลูกเรือ (ReplicaSet) ทั้งสองทีม
 
 ```bash
 kubectl get rs -o wide
@@ -1349,7 +1374,10 @@ web-5f795d85b    1         1         0       31s   nginx        nginx:1.99-alpin
 web-6bd858c6f9   3         3         3       41s   nginx        nginx:1.27-alpine   app=web,pod-template-hash=6bd858c6f9
 </pre>
 
-ReplicaSet ใหม่ (`nginx:1.99-alpine`) มี 1 ตัวแต่ `READY 0` ส่วน ReplicaSet เก่ายังมี **3 ตัวพร้อม** Deployment ไม่ลดตัวเก่าเลย เพราะ max unavailable = 0 (ขั้นที่ 5 ของ LAB 2) จะลดตัวเก่าได้ก็ต่อเมื่อตัวใหม่พร้อมแล้ว
+- **ทีมใหม่** `web-5f795d85b` (`nginx:1.99-alpine`): ขอ 1 สร้าง 1 แต่ **พร้อม 0**
+- **ทีมเก่า** `web-6bd858c6f9` (`nginx:1.27-alpine`): ยัง **3 ตัวพร้อมครบ** Deployment ไม่ได้ลดทีมเก่าเลยแม้แต่ตัวเดียว
+
+สุดท้ายดู Pod
 
 ```bash
 kubectl get pods
@@ -1358,14 +1386,26 @@ kubectl get pods
 **Expected output**
 
 <pre>
-NAME                   READY   STATUS         RESTARTS   AGE
-web-5f795d85b-zgblt    0/1     ErrImagePull   0          31s
-web-6bd858c6f9-27bw4   1/1     Running        0          41s
-web-6bd858c6f9-d8dc6   1/1     Running        0          41s
-web-6bd858c6f9-nqt9t   1/1     Running        0          41s
+NAME                   READY   STATUS             RESTARTS   AGE
+web-5f795d85b-n5zw6    0/1     ImagePullBackOff   0          31s
+web-6bd858c6f9-k7tsh   1/1     Running            0          41s
+web-6bd858c6f9-rnjmx   1/1     Running            0          41s
+web-6bd858c6f9-zdcjm   1/1     Running            0          41s
 </pre>
 
-Pod ใหม่ 1 ตัว `ErrImagePull` (ดึง image ไม่ได้) ส่วน Pod เก่า 3 ตัวเดิม **ยัง Running** ลูกค้ายังเข้าร้านได้ตามปกติ (บางจังหวะอาจเห็น `ImagePullBackOff` = รอแล้วลองดึงใหม่)
+- Pod เก่า 3 ตัว **ชื่อตรงกับที่จดไว้ในขั้นที่ 1** ยัง `Running` = ลูกค้ายังเข้าร้านได้ตามปกติ
+- Pod ใหม่ `0/1` สถานะ `ImagePullBackOff` = ดึง image ไม่ได้ แล้ว **พักรอก่อนลองใหม่** (back-off) บางจังหวะจะเห็นเป็น `ErrImagePull` = เพิ่งลองดึงแล้วพัง สองคำนี้สลับกันไปเรื่อย ๆ เพราะ kubelet ลองดึงซ้ำ (อาการเดียวกับบทที่ 2)
+
+**ทำไม Deployment ไม่ลด Pod เก่า?** ไฟล์นี้ไม่ได้ตั้ง `maxSurge` / `maxUnavailable` จึงใช้ค่าเริ่มต้น 25% ทั้งคู่ คำนวณกับ `replicas: 3` ได้ตามรูปข้างล่าง
+
+<p align="center" id="fig-13">
+  <img src="images/04c-lab3-why-stuck-map.png" alt="รูปที่ 13 ทำไมร้านไม่ปิดแต่การเปลี่ยนรุ่นค้าง กฎ maxSurge และ maxUnavailable" width="900"><br>
+  <em><b>รูปที่ 13</b> ทำไมร้านไม่ปิด แต่การเปลี่ยนรุ่นค้าง: กฎข้อ 1 (maxSurge) ให้มี Pod รวมได้ไม่เกิน 4 ซึ่งเต็มแล้ว จึงสร้างเพิ่มไม่ได้ กฎข้อ 2 (maxUnavailable) บังคับให้พร้อมอย่างน้อย 3 จึงลบ Pod เก่าไม่ได้ Pod ใหม่ไม่มีวันพร้อม การเปลี่ยนรุ่นจึงค้างจนครบ 30 วินาที ระหว่างนั้น Pod เก่า 3 ตัวไม่ถูกแตะ ร้านเปิดตลอด</em>
+</p>
+
+- **กฎข้อ 1 `maxSurge`** 25% ของ 3 = 0.75 ปัดขึ้นเป็น **1** → มี Pod รวมได้ไม่เกิน 3 + 1 = **4** ตอนนี้มี 4 แล้ว (เก่า 3 + ใหม่ 1) จึง **สร้างเพิ่มไม่ได้**
+- **กฎข้อ 2 `maxUnavailable`** 25% ของ 3 = 0.75 ปัดลงเป็น **0** → Pod ที่พร้อมต้องเหลืออย่างน้อย 3 − 0 = **3** ถ้าลบตัวเก่าจะเหลือพร้อม 2 จึง **ลบไม่ได้**
+- Deployment จึงต้องรอให้ Pod ใหม่พร้อมก่อน แต่มันไม่มีวันพร้อม การเปลี่ยนรุ่นจึง **ค้างอยู่ขั้นแรก** และ Pod เก่าไม่ถูกแตะ = **ร้านไม่ปิด**
 
 ### ขั้นที่ 5: หาสาเหตุ
 
@@ -1373,8 +1413,10 @@ Pod ใหม่ 1 ตัว `ErrImagePull` (ดึง image ไม่ได้)
 >
 > 🔍 **สังเกต:** คำว่า `not found` ใน Events ของ Pod และ `Progressing False ProgressDeadlineExceeded` คู่กับ `Available True`
 
+ถาม 2 ชั้น: **Pod ที่พังบอกอะไร** แล้ว **ผู้จัดการ (Deployment) สรุปว่าอย่างไร**
+
 ```bash
-kubectl describe pod web-5f795d85b-zgblt    # ← เปลี่ยนเป็นชื่อ Pod ที่พังของตัวเอง
+kubectl describe pod web-5f795d85b-n5zw6    # ← เปลี่ยนเป็นชื่อ Pod ที่พังของตัวเอง
 ```
 
 **Expected output** (ตัดเฉพาะส่วน Events)
@@ -1384,15 +1426,19 @@ kubectl describe pod web-5f795d85b-zgblt    # ← เปลี่ยนเป็
 Events:
   Type     Reason     Age                From               Message
   ----     ------     ----               ----               -------
-  Normal   Scheduled  31s                default-scheduler  Successfully assigned default/web-5f795d85b-zgblt to lab-worker
-  Normal   Pulling    18s (x2 over 31s)  kubelet            spec.containers{nginx}: Pulling image "nginx:1.99-alpine"
-  Warning  Failed     16s (x2 over 29s)  kubelet            spec.containers{nginx}: Failed to pull image "nginx:1.99-alpine": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/library/nginx:1.99-alpine": failed to resolve reference "docker.io/library/nginx:1.99-alpine": docker.io/library/nginx:1.99-alpine: not found
-  Warning  Failed     16s (x2 over 29s)  kubelet            spec.containers{nginx}: Error: ErrImagePull
-  Normal   BackOff    3s (x2 over 29s)   kubelet            spec.containers{nginx}: Back-off pulling image "nginx:1.99-alpine"
-  Warning  Failed     3s (x2 over 29s)   kubelet            spec.containers{nginx}: Error: ImagePullBackOff
+  Normal   Scheduled  31s                default-scheduler  Successfully assigned default/web-5f795d85b-n5zw6 to lab-worker2
+  Normal   BackOff    27s                kubelet            spec.containers{nginx}: Back-off pulling image "nginx:1.99-alpine"
+  Warning  Failed     27s                kubelet            spec.containers{nginx}: Error: ImagePullBackOff
+  Normal   Pulling    15s (x2 over 30s)  kubelet            spec.containers{nginx}: Pulling image "nginx:1.99-alpine"
+  Warning  Failed     12s (x2 over 28s)  kubelet            spec.containers{nginx}: Failed to pull image "nginx:1.99-alpine": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/library/nginx:1.99-alpine": failed to resolve reference "docker.io/library/nginx:1.99-alpine": docker.io/library/nginx:1.99-alpine: not found
+  Warning  Failed     12s (x2 over 28s)  kubelet            spec.containers{nginx}: Error: ErrImagePull
 </pre>
 
-คำสำคัญคือ **`not found`** = ไม่มี image `nginx:1.99-alpine` ใน Docker Hub (พิมพ์เลขรุ่นผิด) แล้วฝั่ง Deployment เห็นอะไร
+- อ่านบรรทัด `Warning` ที่ยาวที่สุด คำสำคัญอยู่ท้ายบรรทัด: **`nginx:1.99-alpine: not found`** = ไม่มี image รุ่นนี้ใน Docker Hub (พิมพ์เลขรุ่นผิด)
+- `(x2 over 30s)` = kubelet ลองดึงซ้ำแล้ว 2 ครั้งใน 30 วินาที ทุกครั้งพังด้วยเหตุผลเดิม
+- Pod ถูกวางบนเรือได้ปกติ (`Scheduled`) ปัญหาอยู่ที่ **ดึง image ไม่ได้** อย่างเดียว
+
+ต่อไปดูว่าผู้จัดการสรุปสถานการณ์ว่าอย่างไร
 
 ```bash
 kubectl describe deploy web
@@ -1418,15 +1464,29 @@ NewReplicaSet:   web-5f795d85b (1/1 replicas created)
 ...
 </pre>
 
-- `Available True` = ร้านยังเปิด (Pod พร้อมครบตามขั้นต่ำ)
-- `Progressing False ProgressDeadlineExceeded` = การเปลี่ยนรุ่น **ติดค้างเกิน 30 วินาที** ตาม `progressDeadlineSeconds`
-- `4 total | 3 available | 1 unavailable` = เก่า 3 พร้อม + ใหม่ 1 ไม่พร้อม
+แถว `Replicas` อ่านแยกทีละคำ
+
+- `3 desired` = ขอไว้ 3 / `1 updated` = เป็นแม่พิมพ์ใหม่ 1 / `4 total` = มีอยู่จริงรวม 4 (เก่า 3 + ใหม่ 1)
+- `3 available` = พร้อมให้บริการ 3 / `1 unavailable` = ไม่พร้อม 1 (ตัวที่ดึง image ไม่ได้)
+
+แถว `Conditions` คือ **ไฟสัญญาณ 2 ดวง** ของผู้จัดการ แต่ละดวงตอบคนละคำถาม
+
+<p align="center" id="fig-14">
+  <img src="images/04b-lab3-two-lights.png" alt="รูปที่ 14 ไฟสัญญาณ 2 ดวงของ Deployment Available True และ Progressing False" width="900"><br>
+  <em><b>รูปที่ 14</b> ไฟ 2 ดวงใน Conditions ของ Deployment: Available = True (ไฟเขียว ร้านเปิดอยู่ เพราะ Pod เก่า 3 ตัวยังพร้อม) แต่ Progressing = False (ไฟแดง การเปลี่ยนรุ่นค้างเกิน 30 วินาที เพราะ Pod ใหม่ nginx:1.99-alpine ดึง image ไม่ได้)</em>
+</p>
+
+- **`Available True`** ตอบว่า **"ร้านเปิดอยู่ไหม"** = เปิด (Pod พร้อมครบตามขั้นต่ำ `MinimumReplicasAvailable`)
+- **`Progressing False`** ตอบว่า **"การเปลี่ยนรุ่นเดินหน้าไหม"** = ไม่ ค้างเกินเส้นตาย (`ProgressDeadlineExceeded`)
+- สองดวงนี้แยกกันได้ อัปเดตพังจึงเห็น **เขียว + แดง** พร้อมกัน ส่วนตอนปกติ (LAB 1 ขั้นที่ 3) เป็น **True ทั้งคู่**
 
 ### ขั้นที่ 6: ย้อนกลับ
 
 > 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **Deployment ไม่ย้อนกลับเอง** ต้องสั่ง undo และ undo ครั้งนี้เสร็จทันทีเพราะ Pod เก่ายังอยู่ครบ ([ทฤษฎีหัวข้อ 10](../01_Theory/README.md#10-ย้อนกลับด้วย-rollout-undo) · [ทฤษฎีหัวข้อ 11](../01_Theory/README.md#11-อัปเดตพัง-แต่ร้านไม่ปิด))
 >
 > 🔍 **สังเกต:** `rollout status` จบทันทีโดยไม่มี `Waiting` และ Pod 3 ตัว **ชื่อตรงกับที่จดไว้ในขั้นที่ 1** `AGE` นับต่อ
+
+ก่อนย้อน เปิดสมุดรุ่นดูก่อนว่าจะย้อนไปรุ่นไหน
 
 ```bash
 kubectl rollout history deployment/web
@@ -1442,6 +1502,9 @@ REVISION  CHANGE-CAUSE
 
 </pre>
 
+- `REVISION` = เลขรุ่น นับเพิ่มทุกครั้งที่ **แม่พิมพ์เปลี่ยน** / `CHANGE-CAUSE` = โน้ต `change-cause` ในไฟล์ของรุ่นนั้น
+- **เลขมากที่สุด = รุ่นที่ใช้อยู่ตอนนี้** = รุ่น 2 (พิมพ์ผิด) ดังนั้น `undo` จะพากลับไป **รุ่น 1** (`nginx 1.27`)
+
 ```bash
 kubectl rollout undo deployment/web
 ```
@@ -1453,7 +1516,8 @@ Warning: resource deployments/web was previously managed with 'kubectl apply'. R
 deployment.apps/web rolled back
 </pre>
 
-`Warning` เรื่องเดียวกับ LAB 2 (ไฟล์ที่ apply ล่าสุดยังเป็นไฟล์ที่พิมพ์ผิด)
+- บรรทัดสุดท้าย `rolled back` = ย้อนสำเร็จ
+- `Warning` เรื่องเดียวกับ LAB 2: ไฟล์ที่ apply ล่าสุดยังเป็น **ไฟล์ที่พิมพ์ผิด** ถ้าใครเผลอ apply ไฟล์นั้นอีก ร้านจะพังซ้ำ (LAB 4 ขั้นที่ 11 จะแก้ให้ดู)
 
 ```bash
 kubectl rollout status deployment/web
@@ -1465,7 +1529,7 @@ kubectl rollout status deployment/web
 deployment "web" successfully rolled out
 </pre>
 
-เสร็จทันที ไม่มีบรรทัด `Waiting` เลย รอสัก 5 วินาที แล้วดู Pod
+เสร็จทันที ไม่มีบรรทัด `Waiting` (บางเครื่องอาจเห็น `1 old replicas are pending termination...` ก่อน 1 บรรทัด = รอ Pod ที่พังปิด) เพราะทีมเก่ามี 3 ตัวพร้อมอยู่แล้ว **ไม่มีอะไรต้องสร้างใหม่** รอสัก 5 วินาที แล้วดู Pod
 
 ```bash
 kubectl get pods
@@ -1475,12 +1539,12 @@ kubectl get pods
 
 <pre>
 NAME                   READY   STATUS    RESTARTS   AGE
-web-6bd858c6f9-27bw4   1/1     Running   0          46s
-web-6bd858c6f9-d8dc6   1/1     Running   0          46s
-web-6bd858c6f9-nqt9t   1/1     Running   0          46s
+web-6bd858c6f9-k7tsh   1/1     Running   0          46s
+web-6bd858c6f9-rnjmx   1/1     Running   0          46s
+web-6bd858c6f9-zdcjm   1/1     Running   0          46s
 </pre>
 
-เทียบกับชื่อที่จดไว้ในขั้นที่ 1: **Pod 3 ตัวเดิม** AGE นับต่อเนื่อง (46s) และ `RESTARTS 0` ร้านไม่เคยปิดเลยแม้แต่วินาทีเดียว เพราะ ReplicaSet เก่าไม่เคยถูกลด การ undo แค่ลด ReplicaSet ที่พังเหลือ 0 (Pod ที่พังถูกลบไป)
+เทียบกับชื่อที่จดไว้ในขั้นที่ 1: **Pod 3 ตัวเดิม** (`k7tsh`, `rnjmx`, `zdcjm`) `AGE` นับต่อเนื่อง (46s) และ `RESTARTS 0` = **ร้านไม่เคยปิดเลยแม้แต่วินาทีเดียว** การ undo แค่ลดทีมใหม่ที่พังเหลือ 0 (Pod ที่พังถูกลบไป)
 
 ```bash
 kubectl get rs -o wide
@@ -1493,6 +1557,8 @@ NAME             DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES          
 web-5f795d85b    0         0         0       36s   nginx        nginx:1.99-alpine   app=web,pod-template-hash=5f795d85b
 web-6bd858c6f9   3         3         3       46s   nginx        nginx:1.27-alpine   app=web,pod-template-hash=6bd858c6f9
 </pre>
+
+ทีมที่พัง `web-5f795d85b` เหลือ **0** แต่ยังเก็บไว้ (แม่พิมพ์ทุกรุ่นถูกเก็บไว้เผื่อย้อน) ทีมเก่า `web-6bd858c6f9` กลับมาเป็นทีมหลัก เปิดสมุดรุ่นอีกครั้ง
 
 ```bash
 kubectl rollout history deployment/web
@@ -1507,6 +1573,37 @@ REVISION  CHANGE-CAUSE
 3         nginx 1.27
 
 </pre>
+
+**รุ่น 1 หายไป แล้วมีรุ่น 3 เป็น `nginx 1.27`** จุดนี้คนงงบ่อยที่สุด ดูรูปข้างล่าง
+
+<p align="center" id="fig-15">
+  <img src="images/04d-lab3-history-undo-map.png" alt="รูปที่ 15 เลขรุ่นใน rollout history ขยับจาก 1 2 เป็น 2 3 หลัง undo" width="900"><br>
+  <em><b>รูปที่ 15</b> อ่าน rollout history ตลอด LAB 3: หลังขั้นที่ 1 มีรุ่น 1 (nginx 1.27) หลังขั้นที่ 3 เพิ่มรุ่น 2 (พิมพ์ผิด) หลัง undo ในขั้นที่ 6 แม่พิมพ์ของรุ่น 1 ถูกหยิบกลับมาใช้แล้วจดเป็นรุ่น 3 จึงไม่มีเลข 1 แล้ว ReplicaSet web-6bd858c6f9 ยังเป็นตัวเดิมตลอด</em>
+</p>
+
+- `undo` ไม่ได้ "ลบรุ่น 2" แต่ **หยิบแม่พิมพ์ของรุ่น 1 กลับมาใช้เป็นรุ่นล่าสุด** แล้วจดเลขใหม่ต่อท้ายเป็น **3** (แม่พิมพ์เดียวกันจึงไม่จดซ้ำเป็นเลข 1 อีก)
+- ReplicaSet ของรุ่น 3 คือ `web-6bd858c6f9` ตัวเดิม (hash เดิม) ไม่มี ReplicaSet ใหม่เกิดขึ้น
+- อยากรู้ว่าแต่ละเลขคือแม่พิมพ์อะไร ใส่ `--revision=<เลข>` ต่อท้ายได้ (ไม่บังคับทำ)
+
+```bash
+kubectl rollout history deployment/web --revision=3
+```
+
+**Expected output**
+
+<pre>
+deployment.apps/web with revision #3
+Pod Template:
+  Labels:	app=web
+	pod-template-hash=6bd858c6f9
+  Annotations:	kubernetes.io/change-cause: nginx 1.27
+  Containers:
+   nginx:
+    Image:	nginx:1.27-alpine
+...
+</pre>
+
+รุ่น 3 = แม่พิมพ์ `nginx:1.27-alpine` ที่มี `pod-template-hash=6bd858c6f9` ตรงกับ ReplicaSet ทีมเก่า
 
 ### ขั้นที่ 7: ลบ Deployment
 
@@ -1536,11 +1633,14 @@ kubectl get pods
 No resources found in default namespace.
 </pre>
 
+ลบด้วยไฟล์ไหนก็ได้ (หรือ `kubectl delete deployment web`) เพราะทุกไฟล์ใน LAB 1–3 ชื่อ Deployment `web` เหมือนกัน
+
 ### สิ่งที่เห็น
 
-- image ผิด → Pod ใหม่ `ErrImagePull` แต่ Deployment **ไม่ลด Pod เก่า** เพราะตัวใหม่ยังไม่พร้อม ร้านจึงเปิดครบตลอด (`READY 3/3`)
-- `progressDeadlineSeconds` กำหนดว่าติดค้างนานเท่าไรถือว่าล้มเหลว เห็นได้จาก `rollout status` จบด้วย `exceeded its progress deadline` และ Condition `ProgressDeadlineExceeded`
+- image ผิด → Pod ใหม่ `ErrImagePull` / `ImagePullBackOff` แต่ Deployment **ไม่ลด Pod เก่า** เพราะกฎ `maxUnavailable` (0) บังคับให้พร้อมอย่างน้อย 3 ร้านจึงเปิดครบตลอด (`READY 3/3`)
+- `progressDeadlineSeconds` คือนาฬิกาจับเวลา ค้างเกินกำหนด → `rollout status` ขึ้น `exceeded its progress deadline` และไฟ `Progressing` เป็น `False` ขณะที่ไฟ `Available` ยังเป็น `True`
 - Deployment **ไม่ย้อนกลับเอง** เราต้องสั่ง `kubectl rollout undo` ซึ่งเสร็จทันทีเพราะ Pod เก่ายังอยู่ครบ
+- `rollout history` เลขมากสุด = รุ่นปัจจุบัน และ undo ทำให้เลขรุ่นที่ย้อนไปขยับเป็นเลขใหม่ (1 → 3)
 
 > **🤔 คำถามชวนคิด:** ถ้าไม่ได้ใส่ `progressDeadlineSeconds: 30` (ใช้ค่าเริ่มต้น 600) ร้านจะปิดไหม และ `kubectl rollout status` จะต่างไปอย่างไร
 
@@ -1548,16 +1648,16 @@ No resources found in default namespace.
 
 ## LAB 4: LAB สุดท้าย: ร้านอาหารแมวน้องส้มเปลี่ยนเมนูโดยไม่ปิดร้าน
 
-<p align="center" id="fig-13">
-  <img src="images/05-lab4-som-menu-rolling.png" alt="รูปที่ 13 LAB4 ร้านน้องส้มทยอยเปลี่ยนเมนูทีละสาขา" width="900"><br>
-  <em><b>รูปที่ 13</b> LAB สุดท้าย: Deployment som-menu ทยอยเปลี่ยนหน้าร้านจากเวอร์ชัน 1.0 (ส้ม) เป็นเวอร์ชัน 2.0 (เขียวอมฟ้า) ทีละสาขา เปิดสาขาใหม่ได้เกินทีละ 1 (maxSurge: 1) และสาขาที่พร้อมไม่ต่ำกว่า 3 เลย (maxUnavailable: 0) ลูกค้าจึงได้รับบริการตลอด</em>
+<p align="center" id="fig-16">
+  <img src="images/05-lab4-som-menu-rolling.png" alt="รูปที่ 16 LAB4 ร้านน้องส้มทยอยเปลี่ยนเมนูทีละสาขา" width="900"><br>
+  <em><b>รูปที่ 16</b> LAB สุดท้าย: Deployment som-menu ทยอยเปลี่ยนหน้าร้านจากเวอร์ชัน 1.0 (ส้ม) เป็นเวอร์ชัน 2.0 (เขียวอมฟ้า) ทีละสาขา เปิดสาขาใหม่ได้เกินทีละ 1 (maxSurge: 1) และสาขาที่พร้อมไม่ต่ำกว่า 3 เลย (maxUnavailable: 0) ลูกค้าจึงได้รับบริการตลอด</em>
 </p>
 
 **เป้าหมาย:** เปิดหน้าร้านน้องส้ม 3 สาขาด้วย Deployment เปลี่ยนเมนูเป็นเวอร์ชัน 2.0 โดยร้านไม่ปิดเลย ดูสองรุ่นเปิดปนกันระหว่างเปลี่ยน แล้วย้อนกลับเมื่อลูกค้าไม่ชอบเมนูใหม่
 
-<p align="center" id="fig-14">
-  <img src="images/05c-lab4-plan.png" alt="รูปที่ 14 แผนการทดลอง LAB4" width="900"><br>
-  <em><b>รูปที่ 14</b> แผนการทดลอง LAB4 มี 4 การทดลอง: (1) ขั้นที่ 0–5 เปิดร้าน 3 สาขาเวอร์ชัน 1.0 (2) ขั้นที่ 6–7 ทยอยเปลี่ยนเป็นเวอร์ชัน 2.0 โดยสาขาที่พร้อมไม่ต่ำกว่า 3 (3) ขั้นที่ 8 port-forward หลุดต้องต่อท่อใหม่ (4) ขั้นที่ 9–12 ย้อนกลับเป็นเวอร์ชัน 1.0 แล้ว apply ไฟล์ให้ตรงกับคลัสเตอร์</em>
+<p align="center" id="fig-17">
+  <img src="images/05c-lab4-plan.png" alt="รูปที่ 17 แผนการทดลอง LAB4" width="900"><br>
+  <em><b>รูปที่ 17</b> แผนการทดลอง LAB4 มี 4 การทดลอง: (1) ขั้นที่ 0–5 เปิดร้าน 3 สาขาเวอร์ชัน 1.0 (2) ขั้นที่ 6–7 ทยอยเปลี่ยนเป็นเวอร์ชัน 2.0 โดยสาขาที่พร้อมไม่ต่ำกว่า 3 (3) ขั้นที่ 8 port-forward หลุดต้องต่อท่อใหม่ (4) ขั้นที่ 9–12 ย้อนกลับเป็นเวอร์ชัน 1.0 แล้ว apply ไฟล์ให้ตรงกับคลัสเตอร์</em>
 </p>
 
 หน้าร้าน (`som-menu/app/server.js`) เป็นเว็บ Node.js เล็ก ๆ ตัวเดียวกับบทที่ 3 บอก **ชื่อ Pod ที่เสิร์ฟหน้านี้** และเวอร์ชันของร้าน แต่ละ Pod = 1 สาขา
@@ -1570,9 +1670,9 @@ No resources found in default namespace.
 >
 > 🔍 **สังเกต:** มุมล่างซ้ายขึ้น `Container tuchsanai/devtools-kind:2569_1 (k8s-lab)` และเปิดโฟลเดอร์ `02_LAB` แล้ว
 
-<p align="center" id="fig-15">
-  <img src="images/05a-lab4-vscode-attach.png" alt="รูปที่ 15 LAB4 attach VS Code เข้า container k8s-lab" width="900"><br>
-  <em><b>รูปที่ 15</b> LAB4 ขั้นที่ 0 (ภาพจำลองหน้าจอ VS Code): ในแท็บ Containers คลิกขวาที่ k8s-lab แล้วเลือก Attach Visual Studio Code</em>
+<p align="center" id="fig-18">
+  <img src="images/05a-lab4-vscode-attach.png" alt="รูปที่ 18 LAB4 attach VS Code เข้า container k8s-lab" width="900"><br>
+  <em><b>รูปที่ 18</b> LAB4 ขั้นที่ 0 (ภาพจำลองหน้าจอ VS Code): ในแท็บ Containers คลิกขวาที่ k8s-lab แล้วเลือก Attach Visual Studio Code</em>
 </p>
 
 1. เปิด VS Code บนเครื่องนักศึกษา กดไอคอน **Containers** ที่แถบซ้าย
@@ -1599,10 +1699,9 @@ docker build -t som-menu:1.0 .
 
 <pre>
 ...
-#9 naming to docker.io/library/som-menu:1.0 done
-#9 unpacking to docker.io/library/som-menu:1.0
-#9 unpacking to docker.io/library/som-menu:1.0 1.0s done
-#9 DONE 1.2s
+#9 naming to docker.io/library/som-menu:1.0 0.0s done
+#9 unpacking to docker.io/library/som-menu:1.0 0.0s done
+#9 DONE 0.2s
 </pre>
 
 เวอร์ชัน 2.0 ใช้โค้ดเดียวกัน แต่ส่งค่า `APP_VERSION=2.0` ตอน build (หน้าร้านจะเปลี่ยนสีและมีเมนูใหม่)
@@ -1639,15 +1738,15 @@ kind load docker-image som-menu:1.0 som-menu:2.0 --name lab
 **Expected output**
 
 <pre>
-Image: "som-menu:1.0" with ID "sha256:e2b11864514bea3676dd7929fe9a7e21ea09688f2465e5f8c4dd8fd2ad1e8fd9" not yet present on node "lab-worker", loading...
-Image: "som-menu:1.0" with ID "sha256:e2b11864514bea3676dd7929fe9a7e21ea09688f2465e5f8c4dd8fd2ad1e8fd9" not yet present on node "lab-worker2", loading...
-Image: "som-menu:1.0" with ID "sha256:e2b11864514bea3676dd7929fe9a7e21ea09688f2465e5f8c4dd8fd2ad1e8fd9" not yet present on node "lab-control-plane", loading...
-Image: "som-menu:2.0" with ID "sha256:1b154d99c2794aa65a37161a16a995e36a48d92c70b164b1b13a6f72f0a9b417" not yet present on node "lab-worker", loading...
-Image: "som-menu:2.0" with ID "sha256:1b154d99c2794aa65a37161a16a995e36a48d92c70b164b1b13a6f72f0a9b417" not yet present on node "lab-worker2", loading...
-Image: "som-menu:2.0" with ID "sha256:1b154d99c2794aa65a37161a16a995e36a48d92c70b164b1b13a6f72f0a9b417" not yet present on node "lab-control-plane", loading...
+Image: "som-menu:1.0" with ID "sha256:5a48f933475e675b2de4832d44606980c81000f92241cf4781e3b3e8584b7e59" not yet present on node "lab-control-plane", loading...
+Image: "som-menu:1.0" with ID "sha256:5a48f933475e675b2de4832d44606980c81000f92241cf4781e3b3e8584b7e59" not yet present on node "lab-worker2", loading...
+Image: "som-menu:1.0" with ID "sha256:5a48f933475e675b2de4832d44606980c81000f92241cf4781e3b3e8584b7e59" not yet present on node "lab-worker", loading...
+Image: "som-menu:2.0" with ID "sha256:2eee34995d6eed4c35d85cf32ec6b65848650ac8340ef1aadc48e7fdb059111c" not yet present on node "lab-control-plane", loading...
+Image: "som-menu:2.0" with ID "sha256:2eee34995d6eed4c35d85cf32ec6b65848650ac8340ef1aadc48e7fdb059111c" not yet present on node "lab-worker2", loading...
+Image: "som-menu:2.0" with ID "sha256:2eee34995d6eed4c35d85cf32ec6b65848650ac8340ef1aadc48e7fdb059111c" not yet present on node "lab-worker", loading...
 </pre>
 
-ส่งทั้ง 2 เวอร์ชันเข้าทุก node ไว้ก่อน เพราะ Pod ไปเกิดบนเรือลำไหนก็ได้
+ส่งทั้ง 2 เวอร์ชันเข้าทุก node ไว้ก่อน เพราะ Pod ไปเกิดบนเรือลำไหนก็ได้ (ลำดับ node ในแต่ละเครื่องอาจต่างกัน)
 
 ### ขั้นที่ 3: เปิดร้าน 3 สาขาด้วย Deployment
 
@@ -1712,10 +1811,11 @@ spec:
 ทำงานอย่างไร
 
 - ส่วน `template` เหมือน `som-menu-rs.yaml` ของบทที่ 3 ทุกบรรทัด (ป้าย `version`, `env`, probe ทั้งสอง, `resources`) ที่เปลี่ยนคือ `kind: Deployment` และโน้ต `change-cause`
-- **ของใหม่** `minReadySeconds: 10` = สาขาใหม่ต้องผ่าน readinessProbe ต่อเนื่อง 10 วินาทีก่อนจึงนับว่า "เปิดแล้ว" (available) การเปลี่ยนรุ่นจึงช้าพอให้เราดูทัน
-- **ของใหม่** `strategy.rollingUpdate.maxSurge: 1` = ระหว่างเปลี่ยนรุ่น มี Pod **เกิน 3 ได้ทีละ 1** (สูงสุด 4)
-- **ของใหม่** `maxUnavailable: 0` = Pod ที่พร้อมต้อง **ไม่ต่ำกว่า 3 เลย** ต้องเปิดสาขาใหม่ให้พร้อมก่อน จึงปิดสาขาเก่าได้ 1 สาขา
-- readinessProbe สำคัญมากตรงนี้ Deployment ใช้มันตัดสินว่าสาขาใหม่ "พร้อม" แล้วหรือยัง
+- **ของใหม่ 3 ค่า** อยู่ใต้ `spec` ระดับบน (เป็นของ Deployment ไม่ใช่ของ Pod) และทั้ง 3 ค่าทำงานเฉพาะ **ตอนเปลี่ยนรุ่น** เท่านั้น ตอนเปิดร้านครั้งแรกแทบไม่เห็นผล
+  - `maxSurge: 1` = ระหว่างเปลี่ยนรุ่น เปิดสาขา **เกิน 3 ได้ทีละ 1** (สูงสุด 4 สาขา) เหมือนมีช่องจอดสำรอง 1 ช่อง
+  - `maxUnavailable: 0` = สาขาที่พร้อมต้อง **ไม่ต่ำกว่า 3 เลย** จึงต้องเปิดสาขาใหม่ให้พร้อมก่อน แล้วค่อยปิดสาขาเก่า 1 สาขา
+  - `minReadySeconds: 10` = สาขาใหม่ต้อง **พร้อมต่อเนื่อง 10 วินาที** จึงนับว่า "เปิดแล้ว" (available) ทำให้เปลี่ยนรุ่นช้าพอให้เราดูทัน และกันแอปที่พร้อมแป๊บเดียวแล้วล้ม
+- `readinessProbe` (ถาม `/api/health`) คือตัวตัดสินว่าสาขาใหม่ "พร้อม" หรือยัง Deployment ใช้คำตอบนี้ก่อนจะยอมปิดสาขาเก่า
 
 ```bash
 kubectl apply -f som-menu/k8s/som-menu-deploy.yaml
@@ -1734,7 +1834,6 @@ kubectl rollout status deployment/som-menu
 **Expected output** (รอประมาณ 10 วินาที)
 
 <pre>
-Waiting for deployment "som-menu" rollout to finish: 0 out of 3 new replicas have been updated...
 Waiting for deployment "som-menu" rollout to finish: 0 of 3 updated replicas are available...
 Waiting for deployment "som-menu" rollout to finish: 0 of 3 updated replicas are available...
 Waiting for deployment "som-menu" rollout to finish: 0 of 3 updated replicas are available...
@@ -1742,7 +1841,7 @@ Waiting for deployment "som-menu" rollout to finish: 0 of 3 updated replicas are
 deployment "som-menu" successfully rolled out
 </pre>
 
-`0 of 3 updated replicas are available` = Pod พร้อมแล้วแต่ยังรอให้ครบ `minReadySeconds: 10`
+`0 of 3 updated replicas are available` = Pod รุ่นนี้ถูกสร้างครบ 3 แล้ว แต่ **ยังไม่มีตัวไหนนับว่า available** เพราะต้องพร้อมต่อเนื่องครบ 10 วินาทีก่อน (`minReadySeconds`) ครบแล้วจึงจบด้วย `successfully rolled out`
 
 ```bash
 kubectl get deploy
@@ -1774,12 +1873,12 @@ kubectl get pods -o wide
 
 <pre>
 NAME                        READY   STATUS    RESTARTS   AGE   IP            NODE          NOMINATED NODE   READINESS GATES
-som-menu-5f5c95db8f-7zv4t   1/1     Running   0          11s   10.244.2.19   lab-worker    &lt;none&gt;           &lt;none&gt;
-som-menu-5f5c95db8f-ml4l4   1/1     Running   0          11s   10.244.2.18   lab-worker    &lt;none&gt;           &lt;none&gt;
-som-menu-5f5c95db8f-xlmhm   1/1     Running   0          11s   10.244.1.11   lab-worker2   &lt;none&gt;           &lt;none&gt;
+som-menu-5f5c95db8f-645xp   1/1     Running   0          11s   10.244.2.10   lab-worker    &lt;none&gt;           &lt;none&gt;
+som-menu-5f5c95db8f-gs4k6   1/1     Running   0          11s   10.244.1.20   lab-worker2   &lt;none&gt;           &lt;none&gt;
+som-menu-5f5c95db8f-pxfkz   1/1     Running   0          11s   10.244.1.19   lab-worker2   &lt;none&gt;           &lt;none&gt;
 </pre>
 
-ร้านเปิดครบ 3 สาขา ทั้ง 3 ชั้น: Deployment `som-menu` → ReplicaSet `som-menu-5f5c95db8f` → Pod `som-menu-5f5c95db8f-xxxxx`
+ร้านเปิดครบ 3 สาขา ทั้ง 3 ชั้น: Deployment `som-menu` → ReplicaSet `som-menu-5f5c95db8f` → Pod `som-menu-5f5c95db8f-xxxxx` กระจายบนเรือ 2 ลำ
 
 ### ขั้นที่ 4: เปิดหน้าร้านใน browser
 
@@ -1802,19 +1901,19 @@ Forwarding from [::1]:8080 -&gt; 3000
 
 คำสั่งนี้ **ค้างไว้** (อย่าปิด) แล้วไปที่แท็บ **PORTS** ของ VS Code ชี้ที่แถว port `8080` แล้วกดไอคอน **ลูกโลก (Open in Browser)** (ถ้าไม่เห็นแถว กด **Forward a Port** แล้วพิมพ์ `8080`)
 
-<p align="center" id="fig-16">
-  <img src="images/05b-lab4-vscode-ports.png" alt="รูปที่ 16 LAB4 เปิดเว็บผ่านแท็บ PORTS ของ VS Code" width="900"><br>
-  <em><b>รูปที่ 16</b> LAB4 ขั้นที่ 4 (ภาพจำลองหน้าจอ VS Code ที่ attach เข้า k8s-lab แล้ว): แท็บ PORTS แสดง port 8080 ที่มาจาก kubectl port-forward deploy/som-menu 8080:3000 ชี้ที่แถวนั้นแล้วกดไอคอนลูกโลก Open in Browser</em>
+<p align="center" id="fig-19">
+  <img src="images/05b-lab4-vscode-ports.png" alt="รูปที่ 19 LAB4 เปิดเว็บผ่านแท็บ PORTS ของ VS Code" width="900"><br>
+  <em><b>รูปที่ 19</b> LAB4 ขั้นที่ 4 (ภาพจำลองหน้าจอ VS Code ที่ attach เข้า k8s-lab แล้ว): แท็บ PORTS แสดง port 8080 ที่มาจาก kubectl port-forward deploy/som-menu 8080:3000 ชี้ที่แถวนั้นแล้วกดไอคอนลูกโลก Open in Browser</em>
 </p>
 
 🌐 browser จะเปิด `http://localhost:8080` เห็นหน้าร้านเวอร์ชัน 1.0 และชื่อ Pod ที่เสิร์ฟหน้านี้
 
-<p align="center" id="fig-17">
-  <img src="images/screenshots/20261018_lab4_01-shop-v1.png" alt="รูปที่ 17 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 1.0" width="650"><br>
-  <em><b>รูปที่ 17</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านเวอร์ชัน 1.0 เสิร์ฟโดย Pod som-menu-5f5c95db8f-7zv4t (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward deploy/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
+<p align="center" id="fig-20">
+  <img src="images/screenshots/20261019_lab4_01-shop-v1.png" alt="รูปที่ 20 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 1.0" width="650"><br>
+  <em><b>รูปที่ 20</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านเวอร์ชัน 1.0 เสิร์ฟโดย Pod som-menu-5f5c95db8f-645xp (ทดสอบ 19 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward deploy/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
 </p>
 
-**จดชื่อ Pod ที่เห็นบนหน้าเว็บไว้** (ตัวอย่างนี้คือ `som-menu-5f5c95db8f-7zv4t` ของนักศึกษาจะต่างไป)
+**จดชื่อ Pod ที่เห็นบนหน้าเว็บไว้** (ตัวอย่างนี้คือ `som-menu-5f5c95db8f-645xp` ของนักศึกษาจะต่างไป) Pod ตัวนี้คือ **ปลายท่อ** ของ port-forward ขั้นที่ 8 จะเห็นว่าเกิดอะไรกับท่อเมื่อ Pod ตัวนี้ถูกปิด
 
 ### ขั้นที่ 5: ดู log ของสาขานั้น
 
@@ -1825,21 +1924,23 @@ Forwarding from [::1]:8080 -&gt; 3000
 เปิด **Terminal ใหม่** ใน VS Code (กด `+` ที่แท็บ TERMINAL) เพราะ terminal แรกยังรัน port-forward อยู่ ขั้นต่อจากนี้พิมพ์ใน terminal ที่ 2 ยกเว้นที่บอกว่า terminal แรก
 
 ```bash
-kubectl logs som-menu-5f5c95db8f-7zv4t    # ← เปลี่ยนเป็นชื่อ Pod ของตัวเอง (ชื่อที่เห็นบนหน้าเว็บ)
+kubectl logs som-menu-5f5c95db8f-645xp    # ← เปลี่ยนเป็นชื่อ Pod ของตัวเอง (ชื่อที่เห็นบนหน้าเว็บ)
 ```
 
 **Expected output**
 
 <pre>
-ร้านอาหารแมวน้องส้ม v1.0 เปิดสาขา som-menu-5f5c95db8f-7zv4t ที่ port 3000
-[v1.0] som-menu-5f5c95db8f-7zv4t เสิร์ฟหน้าร้านครั้งที่ 1
+ร้านอาหารแมวน้องส้ม v1.0 เปิดสาขา som-menu-5f5c95db8f-645xp ที่ port 3000
+[v1.0] som-menu-5f5c95db8f-645xp เสิร์ฟหน้าร้านครั้งที่ 1
 </pre>
+
+บรรทัดแรกคือตอนสาขาเปิด บรรทัดที่สองคือตอนเราเปิดหน้าเว็บ 1 ครั้ง (refresh กี่ครั้งก็นับเพิ่มที่สาขาเดิม เพราะท่อต่อเข้าสาขาเดียว)
 
 ### ขั้นที่ 6: เปลี่ยนเป็นเมนูเวอร์ชัน 2.0
 
 > 🎯 **เป้าหมายขั้นนี้:** ทดสอบหลักการหลักของบท: **เปลี่ยนรุ่นโดยร้านไม่ปิด** สองรุ่นเปิดปนกันได้ แต่สาขาที่พร้อมไม่ต่ำกว่า 3 ([ทฤษฎีหัวข้อ 7](../01_Theory/README.md#7-rolling-update-ทยอยเปลี่ยนทีละ-pod) · [ทฤษฎีหัวข้อ 8](../01_Theory/README.md#8-maxsurge-maxunavailable-และ-minreadyseconds))
 >
-> 🔍 **สังเกต:** `version=1.0` 3 ตัว + `version=2.0` 1 ตัว รวม 4 = 3 + `maxSurge: 1` และ `READY` รวมไม่ต่ำกว่า 3
+> 🔍 **สังเกต:** `version=1.0` 3 ตัว + `version=2.0` 1 ตัว รวม 4 = 3 + `maxSurge: 1` และสาขา 1.0 ยัง `1/1` ครบ 3
 
 ไฟล์ `som-menu/k8s/som-menu-deploy-v2.yaml`
 
@@ -1896,11 +1997,11 @@ spec:
             limits:   { cpu: 200m, memory: 128Mi }
 ```
 
-ต่างจาก `som-menu-deploy.yaml` แค่ **3 บรรทัดที่มี `← เปลี่ยน`**
+ต่างจาก `som-menu-deploy.yaml` แค่ **3 บรรทัดที่มี `← เปลี่ยน`** ตามหลักการเขียนไฟล์รุ่นใหม่ (LAB 2 ขั้นที่ 2): ชื่อ `som-menu` เหมือนเดิม และแก้เฉพาะ
 
-- โน้ต `change-cause` เป็น `เมนูเวอร์ชัน 2.0`
-- ป้ายในแม่พิมพ์ `version: "2.0"` (เดิม `"1.0"`)
-- `image: som-menu:2.0` (เดิม `som-menu:1.0`)
+- โน้ต `change-cause` เป็น `เมนูเวอร์ชัน 2.0` (จะไปโผล่ใน `rollout history`)
+- ป้ายในแม่พิมพ์ `version: "2.0"` (เดิม `"1.0"`) ไว้ดูว่า Pod ไหนรุ่นอะไร selector ไม่ได้ใช้ป้ายนี้ จึงแก้ได้
+- `image: som-menu:2.0` (เดิม `som-menu:1.0`) = ตัวที่ทำให้แม่พิมพ์เปลี่ยน → ReplicaSet ใหม่ → rolling update
 
 เตรียมพิมพ์คำสั่ง `kubectl get pods --show-labels` ต่อ **ทันที** หลัง apply เพื่อจับจังหวะที่สองรุ่นเปิดปนกัน
 
@@ -1922,13 +2023,15 @@ kubectl get pods --show-labels
 
 <pre>
 NAME                        READY   STATUS    RESTARTS   AGE   LABELS
-som-menu-5f5c95db8f-7zv4t   1/1     Running   0          44s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
-som-menu-5f5c95db8f-ml4l4   1/1     Running   0          44s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
-som-menu-5f5c95db8f-xlmhm   1/1     Running   0          44s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
-som-menu-6bf6c9f6c5-dfxqw   1/1     Running   0          3s    app=som-menu,pod-template-hash=6bf6c9f6c5,version=2.0
+som-menu-5f5c95db8f-645xp   1/1     Running   0          29s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
+som-menu-5f5c95db8f-gs4k6   1/1     Running   0          29s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
+som-menu-5f5c95db8f-pxfkz   1/1     Running   0          29s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
+som-menu-6bf6c9f6c5-4z86z   0/1     Pending   0          0s    app=som-menu,pod-template-hash=6bf6c9f6c5,version=2.0
 </pre>
 
-**สองรุ่นเปิดปนกัน**: สาขา `version=1.0` ครบ 3 + สาขาใหม่ `version=2.0` 1 สาขา (`pod-template-hash` ต่างกัน) Deployment ยังไม่ปิดสาขาเก่าเลย
+- สาขา `version=1.0` ยังครบ 3 และยัง `1/1` = **ร้านเปิดเต็มที่**
+- สาขาใหม่ `version=2.0` เพิ่งเกิด (`AGE 0s`) ยัง `0/1 Pending` = กำลังหาเรือและเริ่ม container ถ้าพิมพ์ช้ากว่านี้จะเห็น `ContainerCreating` หรือ `1/1 Running` แทน
+- `pod-template-hash` ต่างกัน (`5f5c95db8f` กับ `6bf6c9f6c5`) = แม่พิมพ์คนละรุ่น คนละทีม
 
 ```bash
 kubectl get rs
@@ -1938,12 +2041,12 @@ kubectl get rs
 
 <pre>
 NAME                  DESIRED   CURRENT   READY   AGE
-som-menu-5f5c95db8f   3         3         3       44s
-som-menu-6bf6c9f6c5   1         1         1       3s
+som-menu-5f5c95db8f   3         3         3       29s
+som-menu-6bf6c9f6c5   1         1         0       0s
 </pre>
 
-- ReplicaSet เก่า 3 + ReplicaSet ใหม่ 1 = **4 ตัว** ไม่เกิน 3 + `maxSurge: 1`
-- สาขาที่พร้อม (`READY`) รวม 4 **ไม่ต่ำกว่า 3** ตาม `maxUnavailable: 0` = **ร้านไม่ปิด**
+- ทีมเก่า 3 + ทีมใหม่ 1 = **4 ตัว** พอดี 3 + `maxSurge: 1` (เปิดสาขาที่ 4 ได้แค่ 1 สาขา)
+- ทีมเก่ายัง `READY 3` = สาขาที่พร้อม **ไม่ต่ำกว่า 3** ตาม `maxUnavailable: 0` = **ร้านไม่ปิด**
 
 ### ขั้นที่ 7: รอให้เปลี่ยนรุ่นเสร็จ
 
@@ -1961,6 +2064,7 @@ kubectl rollout status deployment/som-menu
 Waiting for deployment "som-menu" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "som-menu" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "som-menu" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "som-menu" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "som-menu" rollout to finish: 2 out of 3 new replicas have been updated...
 Waiting for deployment "som-menu" rollout to finish: 2 out of 3 new replicas have been updated...
 Waiting for deployment "som-menu" rollout to finish: 2 out of 3 new replicas have been updated...
@@ -1973,7 +2077,18 @@ Waiting for deployment "som-menu" rollout to finish: 1 old replicas are pending 
 deployment "som-menu" successfully rolled out
 </pre>
 
-แต่ละสาขาใหม่ต้องพร้อมต่อเนื่อง 10 วินาที (`minReadySeconds`) ก่อนปิดสาขาเก่าได้ 1 สาขา 3 รอบ ≈ 30 วินาที
+`rollout status` พิมพ์บรรทัดใหม่ทุกครั้งที่สถานะเปลี่ยน อ่านเป็น 3 ช่วง
+
+- `1 out of 3 new replicas have been updated` → `2 out of 3` = จำนวนสาขารุ่นใหม่ที่ **สร้างแล้ว** ขยับทีละ 1
+- `1 old replicas are pending termination` = สาขารุ่นใหม่ครบ 3 แล้ว **เหลือรอสาขาเก่าตัวสุดท้ายปิด**
+- `successfully rolled out` = เสร็จ ทุกสาขาเป็นรุ่นใหม่ และสาขาเก่าปิดหมด
+
+จังหวะจริงที่วัดทุก 2 วินาทีระหว่างทดลอง (สาขาที่พร้อมอยู่ที่ 3 ตลอด ไม่เคยต่ำกว่า)
+
+<p align="center" id="fig-21">
+  <img src="images/05d-lab4-rolling-timeline.png" alt="รูปที่ 21 เส้นเวลาการเปลี่ยนเมนู 2.0 ทีละสาขา สาขาที่พร้อมไม่ต่ำกว่า 3 และรวมไม่เกิน 4" width="900"><br>
+  <em><b>รูปที่ 21</b> เส้นเวลาจริงของการเปลี่ยนเป็นเมนู 2.0: ทุกช่วงมีสาขาพร้อม 3 สาขาและรวมไม่เกิน 4 สาขา สาขา 2.0 ที่เพิ่งเปิด (เส้นประ) ต้องผ่าน readinessProbe แล้วรอต่ออีก 10 วินาที (minReadySeconds) ก่อน Deployment จะปิดสาขา 1.0 ให้ 1 สาขา ทำซ้ำ 3 จังหวะ รวมประมาณ 34 วินาที</em>
+</p>
 
 ```bash
 kubectl get rs -o wide
@@ -1983,8 +2098,8 @@ kubectl get rs -o wide
 
 <pre>
 NAME                  DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES         SELECTOR
-som-menu-5f5c95db8f   0         0         0       74s   web          som-menu:1.0   app=som-menu,pod-template-hash=5f5c95db8f
-som-menu-6bf6c9f6c5   3         3         3       33s   web          som-menu:2.0   app=som-menu,pod-template-hash=6bf6c9f6c5
+som-menu-5f5c95db8f   0         0         0       60s   web          som-menu:1.0   app=som-menu,pod-template-hash=5f5c95db8f
+som-menu-6bf6c9f6c5   3         3         3       31s   web          som-menu:2.0   app=som-menu,pod-template-hash=6bf6c9f6c5
 </pre>
 
 ```bash
@@ -1995,13 +2110,14 @@ kubectl get pods --show-labels
 
 <pre>
 NAME                        READY   STATUS        RESTARTS   AGE   LABELS
-som-menu-5f5c95db8f-7zv4t   1/1     Terminating   0          74s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
-som-menu-6bf6c9f6c5-4r9fk   1/1     Running       0          11s   app=som-menu,pod-template-hash=6bf6c9f6c5,version=2.0
-som-menu-6bf6c9f6c5-dfxqw   1/1     Running       0          33s   app=som-menu,pod-template-hash=6bf6c9f6c5,version=2.0
-som-menu-6bf6c9f6c5-jw9pf   1/1     Running       0          22s   app=som-menu,pod-template-hash=6bf6c9f6c5,version=2.0
+som-menu-5f5c95db8f-645xp   1/1     Terminating   0          60s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
+som-menu-6bf6c9f6c5-4z86z   1/1     Running       0          31s   app=som-menu,pod-template-hash=6bf6c9f6c5,version=2.0
+som-menu-6bf6c9f6c5-5phjj   1/1     Running       0          10s   app=som-menu,pod-template-hash=6bf6c9f6c5,version=2.0
+som-menu-6bf6c9f6c5-7242z   1/1     Running       0          20s   app=som-menu,pod-template-hash=6bf6c9f6c5,version=2.0
 </pre>
 
-สาขา `version=2.0` ครบ 3 (อายุ 33s, 22s, 11s ห่างกันราว 10 วินาที = ทีละสาขา) ส่วน `som-menu-5f5c95db8f-7zv4t` สาขาเก่าตัวสุดท้ายกำลังปิด ซึ่งก็คือ **สาขาที่ browser ของเราต่อท่ออยู่**
+- สาขา `version=2.0` ครบ 3 อายุ **31s, 20s, 10s** ห่างกันราว 10 วินาที = เปิดทีละสาขาตามจังหวะ `minReadySeconds`
+- `som-menu-5f5c95db8f-645xp` สาขาเก่าตัวสุดท้ายกำลังปิด ซึ่งก็คือ **สาขาที่ browser ของเราต่อท่ออยู่** (ชื่อที่จดไว้ในขั้นที่ 4)
 
 ### ขั้นที่ 8: port-forward หลุด
 
@@ -2018,13 +2134,19 @@ Handling connection for 8080
 Handling connection for 8080
 Handling connection for 8080
 Handling connection for 8080
-E1018 14:14:44.332755   32022 portforward.go:549] "An error occurred forwarding" err="error forwarding port 3000 to pod 0dbf0ff1d86d85e0d7167b8907afc947eaee24f58d5bc7db53d21fd6a7db8b5d, uid : network namespace for sandbox \"0dbf0ff1d86d85e0d7167b8907afc947eaee24f58d5bc7db53d21fd6a7db8b5d\" is closed" localPort=8080 remotePort=3000
+Handling connection for 8080
+Handling connection for 8080
+E1019 18:06:58.129690   36193 portforward.go:549] "An error occurred forwarding" err="error forwarding port 3000 to pod ffe340a448509e43e1c532be4e0047ce045172d9fcd3f250d1a8020fb9c89875, uid : failed to execute portforward in network namespace \"/var/run/netns/cni-93f72853-99f1-f034-71a6-d9ead7607edb\": failed to connect to localhost:3000 inside namespace \"ffe340a448509e43e1c532be4e0047ce045172d9fcd3f250d1a8020fb9c89875\", IPv4: dial tcp4 127.0.0.1:3000: connect: connection refused IPv6 dial tcp6 [::1]:3000: connect: connection refused " localPort=8080 remotePort=3000
 error: lost connection to pod
 </pre>
 
-<p align="center" id="fig-18">
-  <img src="images/06-lab4-port-forward-lost.png" alt="รูปที่ 18 port-forward หลุดเมื่อ Pod รุ่นเก่าถูกปิด" width="900"><br>
-  <em><b>รูปที่ 18</b> port-forward ต่อท่อเข้าสาขาเดียว (Pod som-menu-5f5c95db8f-7zv4t) เมื่อผู้จัดการเปลี่ยนสาขานั้นเป็นรุ่นใหม่ Pod เก่าถูกปิด ท่อจึงขาด (lost connection to pod) แม้สาขา v2.0 จะเปิดครบแล้ว ต้องต่อท่อใหม่เอง</em>
+- `Handling connection for 8080` = ทุกครั้งที่ browser ขอหน้าเว็บ (หน้าเว็บ รูปน้องส้ม) ท่อส่งต่อให้ 1 ครั้ง
+- บรรทัด `E1019 ...` ยาว ๆ = ท่อส่งต่อไม่ได้แล้ว เพราะแอปในสาขานั้นปิดไปแล้ว (`connection refused`) ข้อความกลางบรรทัดอาจต่างไปตามจังหวะที่ Pod ปิด (บางครั้งเป็น `network namespace ... is closed`) **ให้ดูบรรทัดสุดท้าย**
+- `error: lost connection to pod` = port-forward **จบการทำงานเอง** ท่อขาดแล้ว
+
+<p align="center" id="fig-22">
+  <img src="images/06-lab4-port-forward-lost.png" alt="รูปที่ 22 port-forward หลุดเมื่อ Pod รุ่นเก่าถูกปิด" width="900"><br>
+  <em><b>รูปที่ 22</b> port-forward ต่อท่อเข้าสาขาเดียว (Pod som-menu-5f5c95db8f-645xp) เมื่อผู้จัดการเปลี่ยนสาขานั้นเป็นรุ่นใหม่ Pod เก่าถูกปิด ท่อจึงขาด (lost connection to pod) แม้สาขา v2.0 จะเปิดครบแล้ว ต้องต่อท่อใหม่เอง</em>
 </p>
 
 ร้าน **ไม่ได้ปิด** (สาขา v2.0 เปิดครบ 3) แต่ port-forward ผูกกับ **Pod ตัวเดียว** ที่เลือกไว้ตอนเริ่ม Pod นั้นถูกปิด ท่อก็ขาด ปัญหานี้ Deployment แก้ไม่ได้ ต้องรอ **Service** ในบทถัดไป ตอนนี้ต่อท่อใหม่ใน **terminal แรก**
@@ -2042,31 +2164,31 @@ Forwarding from [::1]:8080 -&gt; 3000
 
 refresh browser จะเห็นหน้าร้านสีเขียวอมฟ้า **เวอร์ชัน 2.0** มีเมนูใหม่ "ไอศกรีมแมว"
 
-<p align="center" id="fig-19">
-  <img src="images/screenshots/20261018_lab4_02-shop-v2.png" alt="รูปที่ 19 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 2.0" width="650"><br>
-  <em><b>รูปที่ 19</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านเวอร์ชัน 2.0 เสิร์ฟโดย Pod som-menu-6bf6c9f6c5-dfxqw มีเมนูใหม่ไอศกรีมแมว (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward deploy/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
+<p align="center" id="fig-23">
+  <img src="images/screenshots/20261019_lab4_02-shop-v2.png" alt="รูปที่ 23 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 2.0" width="650"><br>
+  <em><b>รูปที่ 23</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านเวอร์ชัน 2.0 เสิร์ฟโดย Pod som-menu-6bf6c9f6c5-4z86z มีเมนูใหม่ไอศกรีมแมว (ทดสอบ 19 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward deploy/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
 </p>
 
 ใน terminal ที่ 2 ดู log ของสาขาที่เห็นบนหน้าเว็บ
 
 ```bash
-kubectl logs som-menu-6bf6c9f6c5-dfxqw    # ← เปลี่ยนเป็นชื่อ Pod ของตัวเอง (ชื่อที่เห็นบนหน้าเว็บ)
+kubectl logs som-menu-6bf6c9f6c5-4z86z    # ← เปลี่ยนเป็นชื่อ Pod ของตัวเอง (ชื่อที่เห็นบนหน้าเว็บ)
 ```
 
 **Expected output**
 
 <pre>
-ร้านอาหารแมวน้องส้ม v2.0 เปิดสาขา som-menu-6bf6c9f6c5-dfxqw ที่ port 3000
-[v2.0] som-menu-6bf6c9f6c5-dfxqw เสิร์ฟหน้าร้านครั้งที่ 1
+ร้านอาหารแมวน้องส้ม v2.0 เปิดสาขา som-menu-6bf6c9f6c5-4z86z ที่ port 3000
+[v2.0] som-menu-6bf6c9f6c5-4z86z เสิร์ฟหน้าร้านครั้งที่ 1
 </pre>
 
 ### ขั้นที่ 9: ลูกค้าไม่ชอบเมนูใหม่ ย้อนกลับ
 
 > 🎯 **เป้าหมายขั้นนี้:** ทดสอบ **rollback แบบร้านไม่ปิด** ด้วยกติกา `maxSurge` / `maxUnavailable` เดียวกัน ([ทฤษฎีหัวข้อ 10](../01_Theory/README.md#10-ย้อนกลับด้วย-rollout-undo))
 >
-> 🔍 **สังเกต:** ReplicaSet เดิม `som-menu-5f5c95db8f` กลับเป็น 3 ด้วย Pod ใหม่ และ revision 1 กลายเป็น 3
+> 🔍 **สังเกต:** ReplicaSet เดิม `som-menu-5f5c95db8f` กลับเป็น 3 ด้วย Pod ใหม่ และรุ่น 1 กลายเป็นรุ่น 3
 
-ดูประวัติก่อน
+ทำแบบเดียวกับ LAB 3 ขั้นที่ 6: **เปิดสมุดรุ่นก่อน → undo → รอดู → เปิดสมุดอีกครั้ง**
 
 ```bash
 kubectl rollout history deployment/som-menu
@@ -2081,6 +2203,8 @@ REVISION  CHANGE-CAUSE
 2         เมนูเวอร์ชัน 2.0
 
 </pre>
+
+รุ่นปัจจุบันคือเลขมากสุด = **รุ่น 2** (เมนู 2.0) undo จะพากลับไป **รุ่น 1**
 
 ```bash
 kubectl rollout undo deployment/som-menu
@@ -2097,7 +2221,7 @@ deployment.apps/som-menu rolled back
 kubectl rollout status deployment/som-menu
 ```
 
-**Expected output** (รอประมาณ 40 วินาที)
+**Expected output** (รอประมาณ 35 วินาที)
 
 <pre>
 Waiting for deployment "som-menu" rollout to finish: 0 out of 3 new replicas have been updated...
@@ -2117,7 +2241,7 @@ Waiting for deployment "som-menu" rollout to finish: 1 old replicas are pending 
 deployment "som-menu" successfully rolled out
 </pre>
 
-การย้อนกลับก็ใช้กติกา `maxSurge: 1` / `maxUnavailable: 0` เดียวกัน ร้านไม่ปิดระหว่างย้อนเช่นกัน
+ต่างจาก LAB 3 ตรงที่ **ต้องรอเหมือนตอนเปลี่ยนรุ่น** เพราะคราวนี้สาขาเมนู 1.0 ถูกปิดไปหมดแล้ว (ทีมเก่าเหลือ 0) ต้องเปิดสาขา 1.0 ใหม่ทีละสาขาด้วยกติกา `maxSurge: 1` / `maxUnavailable: 0` / `minReadySeconds: 10` เดิม ร้านจึงไม่ปิดระหว่างย้อนเช่นกัน ส่วน `new replicas` ตอนนี้หมายถึงสาขารุ่นที่กำลังย้อนไป (เมนู 1.0)
 
 ```bash
 kubectl get pods --show-labels
@@ -2127,11 +2251,13 @@ kubectl get pods --show-labels
 
 <pre>
 NAME                        READY   STATUS        RESTARTS   AGE   LABELS
-som-menu-5f5c95db8f-gjg9s   1/1     Running       0          11s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
-som-menu-5f5c95db8f-jbh7d   1/1     Running       0          38s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
-som-menu-5f5c95db8f-p5l89   1/1     Running       0          22s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
-som-menu-6bf6c9f6c5-jw9pf   1/1     Terminating   0          90s   app=som-menu,pod-template-hash=6bf6c9f6c5,version=2.0
+som-menu-5f5c95db8f-5n5sr   1/1     Running       0          10s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
+som-menu-5f5c95db8f-mg456   1/1     Running       0          20s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
+som-menu-5f5c95db8f-wx2ms   1/1     Running       0          31s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
+som-menu-6bf6c9f6c5-7242z   1/1     Terminating   0          57s   app=som-menu,pod-template-hash=6bf6c9f6c5,version=2.0
 </pre>
+
+สาขา `version=1.0` กลับมาครบ 3 ขึ้นต้นด้วย hash เดิม `5f5c95db8f` แต่ท้ายชื่อใหม่ทั้งหมด = **Pod ใหม่** ที่ปั๊มจากแม่พิมพ์เดิม ส่วนสาขา 2.0 ตัวสุดท้ายกำลังปิด
 
 ```bash
 kubectl get rs -o wide
@@ -2140,12 +2266,12 @@ kubectl get rs -o wide
 **Expected output**
 
 <pre>
-NAME                  DESIRED   CURRENT   READY   AGE     CONTAINERS   IMAGES         SELECTOR
-som-menu-5f5c95db8f   3         3         3       2m22s   web          som-menu:1.0   app=som-menu,pod-template-hash=5f5c95db8f
-som-menu-6bf6c9f6c5   0         0         0       101s    web          som-menu:2.0   app=som-menu,pod-template-hash=6bf6c9f6c5
+NAME                  DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES         SELECTOR
+som-menu-5f5c95db8f   3         3         3       97s   web          som-menu:1.0   app=som-menu,pod-template-hash=5f5c95db8f
+som-menu-6bf6c9f6c5   0         0         0       68s   web          som-menu:2.0   app=som-menu,pod-template-hash=6bf6c9f6c5
 </pre>
 
-ReplicaSet เดิม `som-menu-5f5c95db8f` (อายุ 2m22s) ถูกปลุกกลับเป็น 3 ด้วย Pod ใหม่ ส่วน ReplicaSet v2.0 เหลือ 0 แต่ยังเก็บไว้
+ReplicaSet เดิม `som-menu-5f5c95db8f` (อายุ 97s = ตัวแรกสุดของร้าน) ถูกปลุกกลับเป็น 3 ส่วน ReplicaSet เมนู 2.0 เหลือ 0 แต่ยังเก็บไว้
 
 ```bash
 kubectl rollout history deployment/som-menu
@@ -2160,6 +2286,8 @@ REVISION  CHANGE-CAUSE
 3         เมนูเวอร์ชัน 1.0
 
 </pre>
+
+เลขรุ่นขยับแบบเดียวกับ [รูปที่ 15](#fig-15): แม่พิมพ์เมนู 1.0 ถูกหยิบกลับมาใช้แล้วจดเป็น **รุ่น 3** (เลขมากสุด = รุ่นที่ใช้อยู่ตอนนี้)
 
 ### ขั้นที่ 10: เปิดร้านหลังย้อนกลับ
 
@@ -2176,11 +2304,13 @@ Handling connection for 8080
 Handling connection for 8080
 Handling connection for 8080
 Handling connection for 8080
-E1018 14:15:52.331353   32820 portforward.go:549] "An error occurred forwarding" err="error forwarding port 3000 to pod e78bbc4a82c50f17a5a875e3a5bbce66df0c595e78bae418c1749a8f4f49475b, uid : network namespace for sandbox \"e78bbc4a82c50f17a5a875e3a5bbce66df0c595e78bae418c1749a8f4f49475b\" is closed" localPort=8080 remotePort=3000
+Handling connection for 8080
+Handling connection for 8080
+E1019 18:07:35.203674   37164 portforward.go:549] "An error occurred forwarding" err="error forwarding port 3000 to pod 6e25e904780c4462ab91797ac94526ad0721408a5eccd7da4993f44be4df702d, uid : network namespace for sandbox \"6e25e904780c4462ab91797ac94526ad0721408a5eccd7da4993f44be4df702d\" is closed" localPort=8080 remotePort=3000
 error: lost connection to pod
 </pre>
 
-ต่อท่อใหม่ใน terminal แรก
+รอบนี้ข้อความกลางบรรทัดเป็น `network namespace ... is closed` (Pod ปิดไปแล้วทั้งกล่อง) แต่บรรทัดสุดท้ายเหมือนเดิม: `lost connection to pod` ต่อท่อใหม่ใน terminal แรก
 
 ```bash
 kubectl port-forward deploy/som-menu 8080:3000
@@ -2195,9 +2325,9 @@ Forwarding from [::1]:8080 -&gt; 3000
 
 refresh browser จะเห็นหน้าร้านสีส้ม **เวอร์ชัน 1.0** กลับมา (ไม่มีเมนูไอศกรีมแมว) และชื่อ Pod ขึ้นต้น `som-menu-5f5c95db8f-` เหมือนตอนแรก แต่ท้ายชื่อเป็นตัวใหม่
 
-<p align="center" id="fig-20">
-  <img src="images/screenshots/20261018_lab4_03-shop-rollback-v1.png" alt="รูปที่ 20 ภาพหน้าจอจริง ย้อนกลับเป็นเวอร์ชัน 1.0" width="650"><br>
-  <em><b>รูปที่ 20</b> ภาพหน้าจอจริงจากการทดลอง: หลัง kubectl rollout undo หน้าร้านกลับเป็นเวอร์ชัน 1.0 เสิร์ฟโดย Pod som-menu-5f5c95db8f-jbh7d (แม่พิมพ์เดิม hash เดิม แต่เป็น Pod ใหม่) (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward deploy/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
+<p align="center" id="fig-24">
+  <img src="images/screenshots/20261019_lab4_03-shop-rollback-v1.png" alt="รูปที่ 24 ภาพหน้าจอจริง ย้อนกลับเป็นเวอร์ชัน 1.0" width="650"><br>
+  <em><b>รูปที่ 24</b> ภาพหน้าจอจริงจากการทดลอง: หลัง kubectl rollout undo หน้าร้านกลับเป็นเวอร์ชัน 1.0 เสิร์ฟโดย Pod som-menu-5f5c95db8f-wx2ms (แม่พิมพ์เดิม hash เดิม แต่เป็น Pod ใหม่) (ทดสอบ 19 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward deploy/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
 </p>
 
 ### ขั้นที่ 11: ทำให้ไฟล์ตรงกับคลัสเตอร์
@@ -2206,7 +2336,7 @@ refresh browser จะเห็นหน้าร้านสีส้ม **เ�
 >
 > 🔍 **สังเกต:** ขึ้น `configured` แต่ไม่มี revision ใหม่ และ Pod 3 ตัวชื่อเดิม `AGE` นับต่อ
 
-ตอนนี้คลัสเตอร์เป็นเวอร์ชัน 1.0 แต่ไฟล์ที่ apply ล่าสุดคือ v2 (เรื่องที่ `Warning` ของ undo เตือนไว้) ใน terminal ที่ 2 apply ไฟล์เวอร์ชัน 1.0 ให้ไฟล์กับคลัสเตอร์ตรงกัน
+ตอนนี้ **คลัสเตอร์เป็นเมนู 1.0** (undo แล้ว) แต่ **ไฟล์ที่ apply ล่าสุดคือ v2** ถ้าวันหลังมีคน apply ไฟล์ v2 ซ้ำ ร้านจะเปลี่ยนกลับเป็นเมนู 2.0 ที่ลูกค้าไม่ชอบทันที (ไฟล์ชนะ) จึง apply ไฟล์เวอร์ชัน 1.0 ให้ตรงกัน ใน terminal ที่ 2
 
 ```bash
 kubectl apply -f som-menu/k8s/som-menu-deploy.yaml
@@ -2240,12 +2370,14 @@ kubectl get pods --show-labels
 
 <pre>
 NAME                        READY   STATUS    RESTARTS   AGE   LABELS
-som-menu-5f5c95db8f-gjg9s   1/1     Running   0          28s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
-som-menu-5f5c95db8f-jbh7d   1/1     Running   0          55s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
-som-menu-5f5c95db8f-p5l89   1/1     Running   0          39s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
+som-menu-5f5c95db8f-5n5sr   1/1     Running   0          16s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
+som-menu-5f5c95db8f-mg456   1/1     Running   0          26s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
+som-menu-5f5c95db8f-wx2ms   1/1     Running   0          37s   app=som-menu,pod-template-hash=5f5c95db8f,version=1.0
 </pre>
 
-ขึ้น `configured` แต่ **ไม่มี revision ใหม่** และ Pod 3 ตัว **ชื่อเดิม** (AGE นับต่อ) เพราะแม่พิมพ์ในไฟล์ตรงกับ revision 3 อยู่แล้ว apply ครั้งนี้แค่อัปเดตบันทึกว่าไฟล์ล่าสุดคือเวอร์ชัน 1.0 จากนี้ใครมา apply ไฟล์ก็จะไม่พาร้านย้อนไปเวอร์ชัน 2.0 โดยไม่ตั้งใจ
+- ขึ้น `configured` แต่ **ไม่มี revision ใหม่** (ยังเป็น 2 กับ 3) เพราะแม่พิมพ์ในไฟล์ตรงกับรุ่น 3 ที่รันอยู่แล้ว
+- Pod 3 ตัว **ชื่อเดิม** `AGE` นับต่อ = ไม่มี Pod ไหนถูกเปลี่ยน
+- apply ครั้งนี้แค่อัปเดต **บันทึกว่าไฟล์ล่าสุดคือเวอร์ชัน 1.0** (ตัวที่ `Warning` ของ undo พูดถึง) จากนี้ใคร apply ไฟล์ก็ไม่พาร้านย้อนไปเมนู 2.0 โดยไม่ตั้งใจ
 
 ### ขั้นที่ 12: เก็บกวาด
 
@@ -2265,11 +2397,23 @@ kubectl delete -f som-menu/k8s/som-menu-deploy.yaml
 deployment.apps "som-menu" deleted from default namespace
 </pre>
 
+รอสัก 5 วินาที
+
+```bash
+kubectl get pods
+```
+
+**Expected output**
+
+<pre>
+No resources found in default namespace.
+</pre>
+
 ### สิ่งที่เห็น
 
 - แก้แม่พิมพ์แล้ว apply → Deployment เปลี่ยนรุ่นให้เองทีละสาขา **ไม่ต้องลบ Pod เอง** และระหว่างเปลี่ยนมีสองรุ่นเปิดปนกัน (`version=1.0` กับ `version=2.0`)
-- `maxSurge: 1` + `maxUnavailable: 0` = เปิดสาขาใหม่ให้พร้อมก่อน แล้วค่อยปิดสาขาเก่า 1 สาขา จำนวนสาขาที่พร้อมจึงไม่ต่ำกว่า 3 ตลอดการเปลี่ยนรุ่น และ `minReadySeconds` ทำให้ทยอยช้าลงพอให้เห็น
-- `kubectl rollout undo` ย้อนกลับแบบไม่ปิดร้านเช่นกัน แล้วควร apply ไฟล์ให้ตรงกับรุ่นที่ย้อนไป
+- `maxSurge: 1` + `maxUnavailable: 0` = เปิดสาขาใหม่ให้พร้อมก่อน แล้วค่อยปิดสาขาเก่า 1 สาขา สาขาที่พร้อมจึงไม่ต่ำกว่า 3 ตลอด และ `minReadySeconds: 10` ทำให้แต่ละจังหวะห่างกันราว 10 วินาทีพอให้เห็น
+- `rollout status` บอกความคืบหน้า (`new replicas updated` → `old replicas pending termination` → `successfully rolled out`) `rollout history` บอกว่ารุ่นไหนใช้อยู่ (เลขมากสุด) `rollout undo` ย้อนกลับแบบไม่ปิดร้านเช่นกัน แล้วควร apply ไฟล์ให้ตรงกับรุ่นที่ย้อนไป
 - port-forward ยังผูกกับ Pod ตัวเดียว ทุกครั้งที่เปลี่ยนรุ่นจึงหลุด (`lost connection to pod`) แม้ร้านจะไม่ปิด
 
 ### คำถามท้าย LAB 4
@@ -2368,6 +2512,8 @@ docker stop k8s-lab
 |---|---|
 | `kubectl rollout status deployment/<ชื่อ>` | รอดูการเปลี่ยนรุ่นจนเสร็จ (หรือจนเกิน `progressDeadlineSeconds`) |
 | `kubectl rollout history deployment/<ชื่อ>` | ดูรายการ revision พร้อม `CHANGE-CAUSE` |
+| `kubectl rollout history deployment/<ชื่อ> --revision=<เลข>` | ดูว่ารุ่นนั้นใช้แม่พิมพ์อะไร (image, ป้าย, `pod-template-hash`) |
+| `time <คำสั่ง>` | จับเวลาว่าคำสั่งรอนานเท่าไร (เช่น `time kubectl rollout status deployment/web`) |
 | `kubectl rollout undo deployment/<ชื่อ>` | ย้อนกลับไปรุ่นก่อนหน้า (ปลุก ReplicaSet เก่า) แล้วควร apply ไฟล์ให้ตรง |
 
 **เข้าถึงแอป / ดู log**

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+<defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mnavy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f172a"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="mslate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker></defs>
+<rect width="1200" height="800" fill="#ffffff"/>
+<text x="600" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="25" font-weight="700" fill="#0f172a" xml:space="preserve">อ่าน kubectl rollout history: เลขรุ่นขยับอย่างไรตอน undo</text>
+<text x="600" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#475569" xml:space="preserve">1 REVISION = 1 แม่พิมพ์ = 1 ReplicaSet · ข้อมูลจากผลจริงของ LAB 3 ขั้นที่ 1, 3 และ 6</text>
+<rect x="30" y="100" width="360" height="440" rx="12" fill="#f8fafc" fill-opacity="1" stroke="#cbd5e1" stroke-width="2.5"/>
+<text x="210" y="134" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">หลัง apply รุ่นดี (ขั้นที่ 1)</text>
+<rect x="50" y="155" width="320" height="190" rx="10" fill="#0f172a" fill-opacity="1" stroke="#0f172a" stroke-width="0"/>
+<text x="66" y="186" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#94a3b8" xml:space="preserve">REVISION  CHANGE-CAUSE</text>
+<rect x="58" y="200" width="304" height="38" rx="8" fill="#ea580c" fill-opacity="0.25" stroke="#ea580c" stroke-width="2"/>
+<text x="66" y="226" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#f1f5f9" xml:space="preserve">1         nginx 1.27</text>
+<text x="66" y="330" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="13" font-weight="400" fill="#94a3b8" xml:space="preserve">แถบสี = รุ่นที่ใช้อยู่ตอนนี้</text>
+<text x="50" y="382" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#0f172a" xml:space="preserve">ReplicaSet ที่มีอยู่</text>
+<rect x="50" y="392" width="320" height="40" rx="10" fill="#ffffff" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<text x="64" y="418" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">web-6bd858c6f9</text>
+<text x="356" y="418" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">3 Pod</text>
+<rect x="420" y="100" width="360" height="440" rx="12" fill="#f8fafc" fill-opacity="1" stroke="#cbd5e1" stroke-width="2.5"/>
+<text x="600" y="134" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">หลัง apply ไฟล์พิมพ์ผิด (ขั้นที่ 3)</text>
+<rect x="440" y="155" width="320" height="190" rx="10" fill="#0f172a" fill-opacity="1" stroke="#0f172a" stroke-width="0"/>
+<text x="456" y="186" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#94a3b8" xml:space="preserve">REVISION  CHANGE-CAUSE</text>
+<text x="456" y="226" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#f1f5f9" xml:space="preserve">1         nginx 1.27</text>
+<rect x="448" y="244" width="304" height="38" rx="8" fill="#dc2626" fill-opacity="0.25" stroke="#dc2626" stroke-width="2"/>
+<text x="456" y="270" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#f1f5f9" xml:space="preserve">2         nginx 1.99 (พิมพ์ผิด)</text>
+<text x="456" y="330" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="13" font-weight="400" fill="#94a3b8" xml:space="preserve">แถบสี = รุ่นที่ใช้อยู่ตอนนี้</text>
+<text x="440" y="382" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#0f172a" xml:space="preserve">ReplicaSet ที่มีอยู่</text>
+<rect x="440" y="392" width="320" height="40" rx="10" fill="#ffffff" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<text x="454" y="418" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">web-6bd858c6f9</text>
+<text x="746" y="418" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">3 Pod</text>
+<rect x="440" y="444" width="320" height="40" rx="10" fill="#ffffff" fill-opacity="1" stroke="#dc2626" stroke-width="2.5"/>
+<text x="454" y="470" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#dc2626" xml:space="preserve">web-5f795d85b</text>
+<text x="746" y="470" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#dc2626" xml:space="preserve">1 Pod พัง</text>
+<rect x="810" y="100" width="360" height="440" rx="12" fill="#f8fafc" fill-opacity="1" stroke="#cbd5e1" stroke-width="2.5"/>
+<text x="990" y="134" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">หลัง rollout undo (ขั้นที่ 6)</text>
+<rect x="830" y="155" width="320" height="190" rx="10" fill="#0f172a" fill-opacity="1" stroke="#0f172a" stroke-width="0"/>
+<text x="846" y="186" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#94a3b8" xml:space="preserve">REVISION  CHANGE-CAUSE</text>
+<text x="846" y="226" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#f1f5f9" xml:space="preserve">2         nginx 1.99 (พิมพ์ผิด)</text>
+<rect x="838" y="244" width="304" height="38" rx="8" fill="#ea580c" fill-opacity="0.25" stroke="#ea580c" stroke-width="2"/>
+<text x="846" y="270" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#f1f5f9" xml:space="preserve">3         nginx 1.27</text>
+<text x="846" y="330" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="13" font-weight="400" fill="#94a3b8" xml:space="preserve">แถบสี = รุ่นที่ใช้อยู่ตอนนี้</text>
+<text x="830" y="382" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#0f172a" xml:space="preserve">ReplicaSet ที่มีอยู่</text>
+<rect x="830" y="392" width="320" height="40" rx="10" fill="#ffffff" fill-opacity="1" stroke="#ea580c" stroke-width="2.5"/>
+<text x="844" y="418" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">web-6bd858c6f9</text>
+<text x="1136" y="418" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">3 Pod</text>
+<rect x="830" y="444" width="320" height="40" rx="10" fill="#ffffff" fill-opacity="1" stroke="#64748b" stroke-width="2.5"/>
+<text x="844" y="470" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#64748b" xml:space="preserve">web-5f795d85b</text>
+<text x="1136" y="470" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#64748b" xml:space="preserve">0 Pod</text>
+<line x1="392" y1="250" x2="418" y2="250" stroke="#334155" stroke-width="3" marker-end="url(#mslate)"/>
+<line x1="782" y1="250" x2="808" y2="250" stroke="#334155" stroke-width="3" marker-end="url(#mslate)"/>
+<text x="405" y="580" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">apply ไฟล์ใหม่ = จดหน้าใหม่ เลข 2</text>
+<text x="795" y="580" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">undo = ย้ายหน้า 1 มาไว้ท้าย เป็นเลข 3</text>
+<path d="M750,220 C840,156 770,350 836,264" fill="none" stroke="#ea580c" stroke-width="3" marker-end="url(#morange)"/>
+<text x="795" y="604" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="400" fill="#ea580c" xml:space="preserve">(แม่พิมพ์เดียวกัน hash 6bd858c6f9)</text>
+<circle cx="48" cy="654" r="14" fill="#334155"/>
+<text x="48" y="660" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">1</text>
+<text x="76" y="660" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#1e293b" xml:space="preserve">เลข REVISION เพิ่มทุกครั้งที่แม่พิมพ์ (template) เปลี่ยน ส่วน CHANGE-CAUSE คือโน้ต change-cause ในไฟล์</text>
+<circle cx="48" cy="698" r="14" fill="#ea580c"/>
+<text x="48" y="704" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">2</text>
+<text x="76" y="704" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#1e293b" xml:space="preserve">undo ไม่ได้สร้างแม่พิมพ์ใหม่ แต่ปลุก ReplicaSet เดิม web-6bd858c6f9 กลับมา เลข 1 จึงหายไปกลายเป็นเลข 3</text>
+<circle cx="48" cy="742" r="14" fill="#16a34a"/>
+<text x="48" y="748" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">3</text>
+<text x="76" y="748" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#1e293b" xml:space="preserve">รุ่นที่ใช้อยู่ตอนนี้คือเลขมากที่สุดในตารางเสมอ ส่วน ReplicaSet ที่มี 0 Pod คือแม่พิมพ์ที่เก็บไว้เผื่อย้อน</text>
+</svg>
