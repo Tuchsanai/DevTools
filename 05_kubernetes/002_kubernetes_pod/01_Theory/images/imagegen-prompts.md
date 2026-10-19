@@ -506,3 +506,9 @@ Character: Nong Som (น้องส้ม) exactly as in 00-character-som.png �
 Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace. Metaphor: container = colored shipping container; Pod = rounded translucent teal cabin box with one small IP tag; Node = cargo ship.
 Constraints: only the verbatim labels listed, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no watermark, no real company logos. Do not show Service, NodePort, Deployment, Ingress or "ssh".
 ```
+
+## 35a-som-shop-matching-map.png
+
+> หัวข้อ 12.3 · ค่าที่ต้องตรงกันใน som-shop-pod.yaml: ① ชื่อ volume db-data ② port 5432 ของ db ③ port 3000 ของ web
+
+ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะโค้ดในภาพต้องตรงกับไฟล์ LAB ทุกตัวอักษร วาดเป็น SVG (`35a-som-shop-matching-map.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/yaml_map.py` (spec `002`) แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) ให้ฟอนต์ไทยเหมือนกันทุกเครื่อง แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง

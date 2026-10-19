@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1390 829" width="1390" height="829">
+<defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="msky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0369a1"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mpink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#db2777"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>
+<rect width="1390" height="829" fill="#ffffff"/>
+<text x="695" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="24" font-weight="700" fill="#0f172a" xml:space="preserve">ในไฟล์ Pod เดียว ชื่อและเลข port ที่ต้องตรงกัน</text>
+<text x="695" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#475569" xml:space="preserve">som-shop-pod.yaml (LAB 8) ตัดมาบางส่วน  ·  วงสีเดียวกัน = ค่าที่ต้องตรงกัน  ·  ... = บรรทัดที่ตัดออก</text>
+<rect x="30" y="110" width="600" height="515" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="30" y="110" width="600" height="40" rx="16" fill="#0f172a"/>
+<rect x="30" y="134" width="600" height="16" fill="#0f172a"/>
+<text x="48" y="137" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#fff" xml:space="preserve">containers: web</text>
+<text x="612" y="137" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#fff" xml:space="preserve">หน้าร้าน Next.js</text>
+<rect x="800" y="110" width="560" height="515" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="800" y="110" width="560" height="40" rx="16" fill="#0f172a"/>
+<rect x="800" y="134" width="560" height="16" fill="#0f172a"/>
+<text x="818" y="137" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#fff" xml:space="preserve">volumes + initContainers: db</text>
+<text x="1342" y="137" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#fff" xml:space="preserve">ฐานข้อมูล</text>
+<rect x="865" y="211" width="131" height="27" rx="14" fill="#dc2626" fill-opacity="0.16" stroke="#dc2626" stroke-width="3"/>
+<rect x="901" y="454" width="131" height="27" rx="14" fill="#dc2626" fill-opacity="0.16" stroke="#dc2626" stroke-width="3"/>
+<rect x="410" y="319" width="140" height="27" rx="14" fill="#ea580c" fill-opacity="0.16" stroke="#ea580c" stroke-width="3"/>
+<rect x="901" y="400" width="185" height="27" rx="14" fill="#ea580c" fill-opacity="0.16" stroke="#ea580c" stroke-width="3"/>
+<rect x="901" y="589" width="104" height="27" rx="14" fill="#ea580c" fill-opacity="0.16" stroke="#ea580c" stroke-width="3"/>
+<rect x="131" y="400" width="131" height="27" rx="14" fill="#0d9488" fill-opacity="0.16" stroke="#0d9488" stroke-width="3"/>
+<rect x="131" y="481" width="185" height="27" rx="14" fill="#0d9488" fill-opacity="0.16" stroke="#0d9488" stroke-width="3"/>
+<rect x="131" y="589" width="104" height="27" rx="14" fill="#0d9488" fill-opacity="0.16" stroke="#0d9488" stroke-width="3"/>
+<text x="48" y="177" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  containers:</text>
+<text x="48" y="204" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    - name: web</text>
+<text x="48" y="231" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      image: som-shop-web:1.0</text>
+<text x="48" y="258" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      ...</text>
+<text x="48" y="285" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      env:</text>
+<text x="48" y="312" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        - name: DATABASE_URL</text>
+<text x="48" y="339" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">          value: postgres://som:meow1234@localhost:5432/catshop</text>
+<text x="48" y="366" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        ...</text>
+<text x="48" y="393" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        - name: PORT</text>
+<text x="48" y="420" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">          value: &quot;3000&quot;</text>
+<text x="48" y="447" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        ...</text>
+<text x="48" y="474" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      ports:</text>
+<text x="48" y="501" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        - containerPort: 3000</text>
+<text x="48" y="528" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      readinessProbe:</text>
+<text x="48" y="555" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        httpGet:</text>
+<text x="48" y="582" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">          path: /api/health</text>
+<text x="48" y="609" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">          port: 3000</text>
+<text x="818" y="177" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">spec:</text>
+<text x="818" y="204" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  volumes:</text>
+<text x="818" y="231" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    - name: db-data</text>
+<text x="818" y="258" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      emptyDir: {}</text>
+<text x="818" y="285" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  initContainers:</text>
+<text x="818" y="312" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    - name: db</text>
+<text x="818" y="339" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      image: postgres:17.11-alpine</text>
+<text x="818" y="366" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      ...</text>
+<text x="818" y="393" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      ports:</text>
+<text x="818" y="420" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        - containerPort: 5432</text>
+<text x="818" y="447" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      volumeMounts:</text>
+<text x="818" y="474" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        - name: db-data</text>
+<text x="818" y="501" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">          mountPath: /var/lib/postgresql/data</text>
+<text x="818" y="528" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      ...</text>
+<text x="818" y="555" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      livenessProbe:</text>
+<text x="818" y="582" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        tcpSocket:</text>
+<text x="818" y="609" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">          port: 5432</text>
+<path d="M998,224 C1187,224 1187,468 1034,468" fill="none" stroke="#dc2626" stroke-width="3" marker-start="url(#mred)" marker-end="url(#mred)"/>
+<path d="M621,332 L644,332 L786,414 L898,414" fill="none" stroke="#ea580c" stroke-width="3" stroke-linejoin="round" marker-end="url(#morange)"/>
+<path d="M1088,414 C1295,414 1295,602 1007,602" fill="none" stroke="#ea580c" stroke-width="3" marker-start="url(#morange)" marker-end="url(#morange)"/>
+<path d="M264,414 C372,414 372,494 318,494" fill="none" stroke="#0d9488" stroke-width="3" marker-start="url(#mteal)" marker-end="url(#mteal)"/>
+<path d="M318,494 C372,494 372,602 237,602" fill="none" stroke="#0d9488" stroke-width="3" marker-start="url(#mteal)" marker-end="url(#mteal)"/>
+<circle cx="1148" cy="346" r="14" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+<text x="1148" y="352" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">1</text>
+<text x="1168" y="352" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#dc2626" xml:space="preserve">ต้องตรงกัน</text>
+<circle cx="1243" cy="508" r="14" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="1243" y="514" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">2</text>
+<circle cx="358" cy="454" r="14" fill="#0d9488" stroke="#fff" stroke-width="2"/>
+<text x="358" y="460" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">3</text>
+<circle cx="358" cy="548" r="14" fill="#0d9488" stroke="#fff" stroke-width="2"/>
+<text x="358" y="554" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">3</text>
+<text x="378" y="554" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">เลขเดียวกัน</text>
+<circle cx="715" cy="373" r="15" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="715" y="378" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">2</text>
+<text x="715" y="406" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#ea580c" xml:space="preserve">web ต่อ db</text>
+<circle cx="48" cy="665" r="14" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+<text x="48" y="670" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">1</text>
+<text x="86" y="671" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">ชื่อ volume ที่ประกาศใน volumes ต้องตรงกับชื่อใน volumeMounts ไม่งั้น apply ไม่ผ่าน (หัวข้อ 11)</text>
+<circle cx="48" cy="701" r="14" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="48" y="706" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">2</text>
+<text x="86" y="707" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">5432 = port ที่ PostgreSQL ฟังจริง: containerPort, livenessProbe และ DATABASE_URL ของ web ใช้เลขเดียวกัน</text>
+<circle cx="48" cy="737" r="14" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="48" y="742" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">2</text>
+<text x="86" y="743" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">web เรียก db ด้วย localhost เพราะอยู่ Pod เดียวกัน ใช้เครือข่ายเดียวกัน (หัวข้อ 3)</text>
+<circle cx="48" cy="773" r="14" fill="#0d9488" stroke="#fff" stroke-width="2"/>
+<text x="48" y="778" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">3</text>
+<text x="86" y="779" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">PORT &quot;3000&quot; สั่งให้ Next.js ฟัง port 3000 ดังนั้น containerPort และ readinessProbe ต้องเป็น 3000 ตาม</text>
+</svg>

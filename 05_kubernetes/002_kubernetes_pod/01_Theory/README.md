@@ -789,6 +789,16 @@ spec:
         limits:   { cpu: 500m, memory: 512Mi }
 ```
 
+ไฟล์ยาวก็จริง แต่มีค่าไม่กี่ตัวที่ **ต้องเขียนให้ตรงกันหลายที่** ถ้าพิมพ์ไม่ตรงแม้ตัวเดียว ร้านจะเปิดไม่ได้ ภาพนี้ตัดมาเฉพาะส่วนนั้น **วงสีเดียวกัน = ค่าที่ต้องตรงกัน** และ `...` = บรรทัดที่ตัดออก
+
+<p align="center">
+  <img src="images/35a-som-shop-matching-map.png" alt="ใน som-shop-pod.yaml ชื่อ volume db-data port 5432 และ port 3000 ต้องตรงกันหลายที่" width="900">
+</p>
+
+- **① ชื่อ volume ต้องตรงกัน** `db-data` ที่ประกาศใน `volumes` ต้องเหมือนกับใน `volumeMounts` ทุกตัวอักษร ไม่งั้น apply ไม่ผ่าน (หัวข้อ 11)
+- **② 5432 = port ที่ PostgreSQL ฟังจริง** `containerPort` และ `livenessProbe` ของ db กับ `DATABASE_URL` ของ web จึงใช้เลขเดียวกัน และ web เรียก db ด้วย `localhost` เพราะอยู่ Pod เดียวกัน ใช้เครือข่ายเดียวกัน (หัวข้อ 3)
+- **③ 3000 = port ที่ Next.js ฟัง** env `PORT: "3000"` เป็นตัวสั่ง ดังนั้น `containerPort`, `readinessProbe` และ `kubectl port-forward 3000:3000` ใน LAB 8 ต้องใช้ 3000 ตาม
+
 ลำดับการเริ่มจึงเป็น
 
 ```text
