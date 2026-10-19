@@ -214,3 +214,9 @@ Text (verbatim, at most 4 short labels): "PVC"; "PV"; "StorageClass"; "30080".
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; exactly one cat (Nong Som); deckhands, crew, workers, receptionist and customers are faceless human figures, never cats; do not show Ingress, LoadBalancer or StatefulSet objects or words. PVC is on the paper form, PV on the green locker, StorageClass on the kiosk sign, 30080 on the gate.
 ```
 
+
+## 06a-yaml-pvc-vs-pod-map.png
+
+> หัวข้อ 5 · notes-pvc.yaml คู่กับ notes-pod.yaml: ① claimName ② ชื่อ volume ③ mountPath ④ accessModes/storage ⑤ ชื่อ Pod ไม่เกี่ยว
+
+ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะโค้ดในภาพต้องตรงกับไฟล์ LAB ทุกตัวอักษร วาดเป็น SVG (`06a-yaml-pvc-vs-pod-map.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/yaml_map.py` (spec `007`) แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) ให้ฟอนต์ไทยเหมือนกันทุกเครื่อง แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1190 838" width="1190" height="838">
+<defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="msky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0369a1"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mpink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#db2777"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>
+<rect width="1190" height="838" fill="#ffffff"/>
+<text x="595" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="24" font-weight="700" fill="#0f172a" xml:space="preserve">Pod ใช้ที่เก็บถาวร ด้วยการอ้างชื่อ PVC</text>
+<text x="595" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#475569" xml:space="preserve">วงสีเดียวกัน = ค่าที่ต้องตรงกัน  ·  ... = บรรทัด command ที่ตัดออก</text>
+<rect x="30" y="110" width="430" height="488" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="30" y="110" width="430" height="40" rx="16" fill="#64748b"/>
+<rect x="30" y="134" width="430" height="16" fill="#64748b"/>
+<text x="48" y="137" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#fff" xml:space="preserve">notes-pvc.yaml</text>
+<text x="442" y="137" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#fff" xml:space="preserve">PVC (ใบขอที่เก็บ)</text>
+<rect x="630" y="110" width="530" height="488" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="630" y="110" width="530" height="40" rx="16" fill="#0f172a"/>
+<rect x="630" y="134" width="530" height="16" fill="#0f172a"/>
+<text x="648" y="137" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#fff" xml:space="preserve">notes-pod.yaml</text>
+<text x="1142" y="137" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#fff" xml:space="preserve">Pod ที่ใช้ PVC</text>
+<rect x="59" y="238" width="149" height="27" rx="14" fill="#dc2626" fill-opacity="0.16" stroke="#dc2626" stroke-width="3"/>
+<rect x="713" y="562" width="194" height="27" rx="14" fill="#dc2626" fill-opacity="0.16" stroke="#dc2626" stroke-width="3"/>
+<rect x="731" y="427" width="113" height="27" rx="14" fill="#ea580c" fill-opacity="0.16" stroke="#ea580c" stroke-width="3"/>
+<rect x="695" y="508" width="113" height="27" rx="14" fill="#ea580c" fill-opacity="0.16" stroke="#ea580c" stroke-width="3"/>
+<rect x="731" y="454" width="158" height="27" rx="14" fill="#0d9488" fill-opacity="0.1" stroke="#0d9488" stroke-width="3"/>
+<rect x="59" y="292" width="176" height="135" rx="18" fill="#16a34a" fill-opacity="0.05" stroke="#16a34a" stroke-width="3" stroke-dasharray="8 6"/>
+<rect x="659" y="238" width="185" height="27" rx="14" fill="#64748b" fill-opacity="0.04" stroke="#64748b" stroke-width="3" stroke-dasharray="8 6"/>
+<text x="48" y="177" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">apiVersion: v1</text>
+<text x="48" y="204" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">kind: PersistentVolumeClaim</text>
+<text x="48" y="231" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">metadata:</text>
+<text x="48" y="258" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  name: notes-pvc</text>
+<text x="48" y="285" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">spec:</text>
+<text x="48" y="312" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  accessModes:</text>
+<text x="48" y="339" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    - ReadWriteOnce</text>
+<text x="48" y="366" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  resources:</text>
+<text x="48" y="393" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    requests:</text>
+<text x="48" y="420" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      storage: 100Mi</text>
+<text x="648" y="177" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">apiVersion: v1</text>
+<text x="648" y="204" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">kind: Pod</text>
+<text x="648" y="231" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">metadata:</text>
+<text x="648" y="258" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  name: notes-pvc-pod</text>
+<text x="648" y="285" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">spec:</text>
+<text x="648" y="312" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  containers:</text>
+<text x="648" y="339" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    - name: busybox</text>
+<text x="648" y="366" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      image: busybox:1.37</text>
+<text x="648" y="393" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      ...</text>
+<text x="648" y="420" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      volumeMounts:</text>
+<text x="648" y="447" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        - name: notes</text>
+<text x="648" y="474" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">          mountPath: /data</text>
+<text x="648" y="501" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  volumes:</text>
+<text x="648" y="528" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    - name: notes</text>
+<text x="648" y="555" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      persistentVolumeClaim:</text>
+<text x="648" y="582" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        claimName: notes-pvc</text>
+<path d="M210,252 L474,252 L616,576 L710,576" fill="none" stroke="#dc2626" stroke-width="3" stroke-linejoin="round" marker-end="url(#mred)"/>
+<path d="M846,440 C918,440 918,522 810,522" fill="none" stroke="#ea580c" stroke-width="3" marker-start="url(#morange)" marker-end="url(#morange)"/>
+<circle cx="900" cy="481" r="14" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="900" y="486" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">2</text>
+<text x="920" y="487" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">ต้องตรงกัน</text>
+<circle cx="973" cy="468" r="14" fill="#0d9488" stroke="#fff" stroke-width="2"/>
+<text x="973" y="473" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">3</text>
+<text x="993" y="474" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">แอปเห็นโฟลเดอร์นี้</text>
+<circle cx="257" cy="414" r="14" fill="#16a34a" stroke="#fff" stroke-width="2"/>
+<text x="257" y="419" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">4</text>
+<text x="277" y="420" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#16a34a" xml:space="preserve">ขอเท่าไร แบบไหน</text>
+<circle cx="866" cy="252" r="14" fill="#64748b" stroke="#fff" stroke-width="2"/>
+<text x="866" y="257" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">5</text>
+<text x="886" y="258" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#64748b" xml:space="preserve">ชื่อ Pod ไม่เกี่ยว</text>
+<circle cx="545" cy="414" r="15" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+<text x="545" y="419" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">1</text>
+<text x="545" y="446" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#dc2626" xml:space="preserve">ต้องตรงกัน</text>
+<circle cx="48" cy="638" r="14" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+<text x="48" y="644" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">1</text>
+<text x="86" y="644" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">claimName ต้องตรงกับชื่อ PVC ทุกตัวอักษร ไม่ตรง (หรือยังไม่มี PVC) = Pod ค้าง Pending</text>
+<circle cx="48" cy="674" r="14" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="48" y="680" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">2</text>
+<text x="86" y="680" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">ชื่อ volume ใต้ volumes ต้องตรงกับชื่อใต้ volumeMounts เหมือน emptyDir ในบทที่ 2</text>
+<circle cx="48" cy="710" r="14" fill="#0d9488" stroke="#fff" stroke-width="2"/>
+<text x="48" y="716" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">3</text>
+<text x="86" y="716" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">mountPath: /data = โฟลเดอร์ที่แอปเห็น ไฟล์ที่เขียนใต้ /data ไปอยู่บนที่เก็บของ PVC (รอดแม้ลบ Pod)</text>
+<circle cx="48" cy="746" r="14" fill="#16a34a" stroke="#fff" stroke-width="2"/>
+<text x="48" y="752" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">4</text>
+<text x="86" y="752" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">accessModes / storage อยู่ฝั่ง PVC เท่านั้น: ขอพื้นที่ 100Mi เขียนได้จาก Node เดียว (หัวข้อ 4)</text>
+<circle cx="48" cy="782" r="14" fill="#64748b" stroke="#fff" stroke-width="2"/>
+<text x="48" y="788" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">5</text>
+<text x="86" y="788" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">ชื่อ Pod notes-pvc-pod คล้ายชื่อ PVC แต่ไม่เกี่ยวกัน ที่ต้องตรงคือ claimName เท่านั้น</text>
+</svg>

@@ -259,6 +259,18 @@ spec:                                           spec:
 - `volumeMounts` → `name: notes` + `mountPath: /data` = เสียบ volume `notes` ไว้ที่โฟลเดอร์ `/data` ใน container **เหมือนเดิมทุกตัวอักษร**
 - แอปไม่รู้ด้วยซ้ำว่าเปลี่ยนที่เก็บ มันเห็นแค่โฟลเดอร์ `/data` เหมือนเดิม ต่างกันแค่ว่า **โฟลเดอร์นั้นอยู่นอก Pod**
 
+คราวนี้วาง **ใบขอ PVC คู่กับ Pod ที่ใช้มัน** ให้เห็นว่า 2 ไฟล์ต่อกันด้วยชื่อตรงไหน **วงสีเดียวกัน = ค่าที่ต้องตรงกัน**
+
+<p align="center">
+  <img src="images/06a-yaml-pvc-vs-pod-map.png" alt="notes-pvc.yaml กับ notes-pod.yaml วางคู่กัน ลูกศรจากชื่อ PVC ไป claimName และชื่อ volume ที่ต้องตรงกัน" width="900">
+</p>
+
+- **① `claimName` ต้องตรงกับชื่อ PVC** (`notes-pvc`) นี่คือจุดเดียวที่ 2 ไฟล์ต่อกัน
+- **② ชื่อ volume ต้องตรงกัน** `notes` ใต้ `volumes` กับใต้ `volumeMounts` เหมือน emptyDir ในบทที่ 2
+- **③ `mountPath: /data`** คือโฟลเดอร์ที่แอปเห็น ไฟล์ที่เขียนใต้ `/data` ไปอยู่บนที่เก็บของ PVC
+- **④ ขนาดและวิธีเขียน** (`accessModes`, `storage`) อยู่ฝั่ง PVC เท่านั้น Pod ไม่ต้องรู้
+- **⑤ ชื่อ Pod ไม่เกี่ยว** `notes-pvc-pod` คล้ายชื่อ PVC แต่ไม่ได้ใช้จับคู่ ที่ต้องตรงคือ `claimName` เท่านั้น
+
 ถ้า Pod อ้าง PVC ที่ยังไม่มี Pod จะค้าง `Pending` (scheduler หาเรือให้ไม่ได้จนกว่าจะมี PVC) ดังนั้นลำดับที่ LAB ใช้คือ **apply PVC ก่อน Pod เสมอ**
 
 > **เคล็ดลับ:** อ่าน YAML ของ Pod แล้วอยากรู้ว่าข้อมูลรอดไหม ให้ไล่ 2 จุด: `volumes` ใช้ชนิดอะไร (`emptyDir` = อายุเท่า Pod, `persistentVolumeClaim` = อายุเท่า PVC) และแอปเขียนไฟล์ลง **ใต้ `mountPath`** หรือเปล่า
