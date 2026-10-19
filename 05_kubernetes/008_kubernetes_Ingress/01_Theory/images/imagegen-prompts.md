@@ -213,3 +213,9 @@ Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, 
 Text (verbatim, at most 5 short labels): "30080"; "Ingress"; "shop.localhost"; "kitchen.localhost"; "traefik".
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos (no Traefik or Helm logo); exactly one cat (Nong Som); guards, deckhands, crew, workers, receptionists and customers are faceless human figures, never cats; do not show Gateway API, LoadBalancer, HTTPS padlock or certificate objects or words. 30080 is above the gate. Ingress is on the signboard. shop.localhost and kitchen.localhost are the two rows on the signboard. traefik is the small name badge on the guard's vest.
 ```
+
+## 07a-yaml-ingress-vs-svc-map.png
+
+> หัวข้อ 6.2 · shop-ingress-host.yaml คู่กับ Service menu: ① service.name ② port.number ③ targetPort ④ host ⑤ ingressClassName
+
+ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะโค้ดในภาพต้องตรงกับไฟล์ LAB ทุกตัวอักษร วาดเป็น SVG (`07a-yaml-ingress-vs-svc-map.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/yaml_map.py` (spec `008`) แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) ให้ฟอนต์ไทยเหมือนกันทุกเครื่อง แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง

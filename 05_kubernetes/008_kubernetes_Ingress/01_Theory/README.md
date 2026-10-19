@@ -318,6 +318,18 @@ spec:
 - ไฟล์นี้ **ไม่มีเลข `30080`** เลย ประตูเป็นเรื่องของยาม (`traefik-values.yaml` หัวข้อ 4) ป้ายบอกแค่ "ชื่อไหน ไปบูธไหน"
 - `number: 80` คือ `port` ของ Service `menu` ใน `menu-app.yaml` (`port: 80` → `targetPort: 80`) แบบ [บทที่ 5 หัวข้อ 5](../../005_kubernetes_Service/01_Theory/README.md#5-port-targetport-nodeport-3-ตัวเลขที่ต้องแยกให้ออก)
 
+วางป้ายคู่กับ Service `menu` ใน `menu-app.yaml` ให้เห็นว่าป้าย **ชี้ไปที่บูธด้วยค่าไหน** **วงสีเดียวกัน = ค่าที่ต้องตรงกัน**
+
+<p align="center">
+  <img src="images/07a-yaml-ingress-vs-svc-map.png" alt="shop-ingress-host.yaml กับ Service menu วางคู่กัน ลูกศรจาก service.name ไป metadata.name และจาก port.number ไป port ของ Service" width="900">
+</p>
+
+- **① `service.name` ต้องตรงกับชื่อ Service** พิมพ์ผิดแล้ว apply ผ่านเงียบ ๆ แต่ลูกค้าได้ 404 (หัวข้อ 10)
+- **② `port.number` ต้องตรงกับ `port` ของ Service** ไม่ใช่ `targetPort` และไม่ใช่ `containerPort`
+- **③ `targetPort`** เป็นเรื่องระหว่าง Service กับ Pod (บทที่ 5) ป้ายไม่ต้องรู้
+- **④ `host`** คือชื่อที่ลูกค้าพิมพ์ใน browser
+- **⑤ `ingressClassName`** ต้องตรงกับชื่อใน `kubectl get ingressclass` ไม่งั้นไม่มียามคนไหนอ่านป้ายนี้ (หัวข้อ 3)
+
 ### 6.3 ผิดบ่อย แก้ง่าย
 
 | ผิด | ถูก | เพราะ |
