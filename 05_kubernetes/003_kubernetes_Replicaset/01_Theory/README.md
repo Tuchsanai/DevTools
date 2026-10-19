@@ -518,6 +518,27 @@ status:                                       # ← kubelet รายงาน�
 - `ownerReferences` ทำให้ **ลบ ReplicaSet แล้ว Pod ลูกถูกลบตาม** (LAB 1 ตอนท้าย: `kubectl delete -f` แล้ว Pod ขึ้น `Terminating` ทั้ง 3 ตัว)
 - ถ้าอยากลบแค่ ReplicaSet แต่เก็บ Pod ไว้ ใช้ `kubectl delete rs web --cascade=orphan` (LAB ไม่ได้ใช้)
 
+### 5.3 ลบโดยไม่ต้องมีไฟล์ YAML
+
+`kubectl delete -f <ไฟล์>` ไม่ได้ใช้ไฟล์ทั้งไฟล์ kubectl แค่อ่าน **ชนิด (`kind`) กับชื่อ (`metadata.name`)** จากไฟล์ แล้วลบ object ที่ชื่อนั้น ถ้ารู้ 2 อย่างนี้ก็ **ลบได้เลยโดยไม่ต้องมีไฟล์**
+
+| วิธี | ตัวอย่าง | ใช้เมื่อ |
+|---|---|---|
+| ตามไฟล์ | `kubectl delete -f labs/lab01-first-rs/web-rs.yaml` | มีไฟล์ที่ใช้สร้างอยู่ในมือ |
+| ตามชนิด + ชื่อ | `kubectl delete rs web` (หรือ `replicaset web`, `rs/web`) | ไม่มีไฟล์ หรือไม่รู้ว่าสร้างจากไฟล์ไหน ดูชื่อก่อนด้วย `kubectl get rs` |
+| ตามป้าย | `kubectl delete pod -l app=web` | ลบหลาย Pod ที่ติดป้ายเดียวกันในคำสั่งเดียว (LAB 1 ใช้ลบ Pod ทุกตัว) |
+
+ผลจริงจาก LAB 2: ลบ ReplicaSet ด้วยชื่ออย่างเดียว Pod ลูกถูกลบตามเหมือนลบด้วยไฟล์
+
+```text
+$ kubectl delete rs web
+replicaset.apps "web" deleted from default namespace
+$ kubectl get pods
+No resources found in default namespace.
+```
+
+> **⚠️ กับดัก:** `kubectl delete rs -l app=web` ได้ **`No resources found`** ทั้งที่ ReplicaSet `web` ยังอยู่ เพราะ `-l` หาจากป้าย **บนตัว object เอง** (`metadata.labels`) ซึ่ง `web-rs.yaml` ไม่ได้เขียนไว้ (`kubectl get rs --show-labels` ขึ้น `<none>`) ป้าย `app=web` อยู่ใน `template` = ป้ายบน **Pod** ส่วน `kubectl delete pod -l app=web` ลบได้แค่ Pod แล้ว ReplicaSet สร้างคืนทันที (LAB 1 ขั้นที่ 7) จะลบให้หมดต้องลบที่ ReplicaSet
+
 ---
 
 ## 6. Self-healing: ใครซ่อมอะไร

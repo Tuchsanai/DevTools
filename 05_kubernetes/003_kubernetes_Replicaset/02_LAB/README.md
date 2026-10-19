@@ -915,14 +915,41 @@ kubectl delete pod web-4jvnp    # ← เปลี่ยนเป็นชื่
 pod "web-4jvnp" deleted from default namespace
 </pre>
 
-### ขั้นที่ 8: ลบ ReplicaSet
+### ขั้นที่ 8: ลบ ReplicaSet โดยไม่ใช้ไฟล์ YAML
 
-> 🎯 **เป้าหมายขั้นนี้:** เก็บกวาด ReplicaSet ของ LAB นี้ ก่อนเริ่ม LAB ถัดไปด้วยไฟล์เดิม
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **ลบ ReplicaSet ได้โดยไม่ต้องมีไฟล์ YAML** แค่รู้ชนิดกับชื่อ และ `-l` หาจากป้ายของใคร ([ทฤษฎีหัวข้อ 5](../01_Theory/README.md#5-selector-ชื่อ-pod-และเจ้าของ))
 >
-> 🔍 **สังเกต:** ได้ `deleted` (Pod ลูกถูกลบตาม)
+> 🔍 **สังเกต:** ลบด้วยป้าย `app=web` ได้ `No resources found` แต่ลบด้วยชื่อ `web` สำเร็จ และ Pod ลูกหายตาม
+
+สมมุติว่าไม่มีไฟล์ YAML อยู่ในมือ ขั้นแรกดูก่อนว่ามี ReplicaSet ชื่ออะไร ติดป้ายอะไร
 
 ```bash
-kubectl delete -f labs/lab01-first-rs/web-rs.yaml
+kubectl get rs --show-labels
+```
+
+**Expected output**
+
+<pre>
+NAME   DESIRED   CURRENT   READY   AGE   LABELS
+web    3         3         3       30s   &lt;none&gt;
+</pre>
+
+ตัว ReplicaSet `web` **ไม่มีป้าย** (`<none>`) เพราะในไฟล์เราเขียน `labels` ไว้ใต้ `template` เท่านั้น ลองลบด้วยป้าย `app=web` ดู
+
+```bash
+kubectl delete rs -l app=web
+```
+
+**Expected output**
+
+<pre>
+No resources found
+</pre>
+
+ไม่มี ReplicaSet ไหนติดป้าย `app=web` ป้ายนี้อยู่บน **Pod** ต่างหาก คราวนี้ลบด้วย **ชนิด + ชื่อ**
+
+```bash
+kubectl delete rs web
 ```
 
 **Expected output**
@@ -931,12 +958,28 @@ kubectl delete -f labs/lab01-first-rs/web-rs.yaml
 replicaset.apps "web" deleted from default namespace
 </pre>
 
+รอสัก 5 วินาที
+
+```bash
+kubectl get pods
+```
+
+**Expected output**
+
+<pre>
+No resources found in default namespace.
+</pre>
+
+- `kubectl delete rs web` = ลบ object ชนิด ReplicaSet ชื่อ `web` ได้ผลเหมือน `kubectl delete -f` ทุกอย่าง เพราะ `-f` ก็แค่อ่าน `kind` กับ `metadata.name` จากไฟล์
+- เขียนแบบอื่นได้: `kubectl delete replicaset web` หรือ `kubectl delete rs/web` ถ้าพิมพ์ชื่อที่ไม่มีจะได้ `Error from server (NotFound): replicasets.apps "web" not found`
+
 ### สิ่งที่เห็น
 
 - `kubectl scale rs <ชื่อ> --replicas=N` เพิ่ม-ลดจำนวนได้ทันที เพิ่มก็สร้างเฉพาะที่ขาด ลดก็ลบเฉพาะส่วนเกิน
 - `apply` ไฟล์เดิมทับค่าที่ `scale` ไว้ (ไฟล์ชนะ) จำนวนถาวรต้องแก้ในไฟล์
 - ReplicaSet **นับ Pod จากป้าย** ตาม selector: Pod แปลกหน้าที่ป้ายตรงถูกลบ (`Deleted pod: extra-web`) ส่วน Pod ที่ถอดป้ายหลุดออกไปเป็น Pod เดี่ยวและถูกสร้างตัวใหม่แทน
 - Pod ที่หลุดออกไปไม่มี `ownerReferences` ต้องลบเอง
+- ลบ ReplicaSet ได้โดยไม่ต้องมีไฟล์ด้วย `kubectl delete rs web` (ชนิด + ชื่อ) ส่วน `-l` หาจากป้ายบนตัว ReplicaSet เอง ไม่ใช่ป้ายของ Pod
 
 > **🤔 คำถามชวนคิด:** ถ้าติดป้าย `app=web` กลับคืนให้ `web-4jvnp` (ก่อนลบมัน) ตอนที่ ReplicaSet มีครบ 3 ตัวแล้ว จะเกิดอะไรขึ้น
 
@@ -1751,7 +1794,8 @@ docker stop k8s-lab
 |---|---|
 | `kubectl apply -f <ไฟล์>` | สร้าง ReplicaSet หรือแก้ตัวเดิม (ชื่อเดิม = `configured`) |
 | `kubectl delete -f <ไฟล์>` | ลบตามไฟล์ (ลบ ReplicaSet แล้ว Pod ลูกถูกลบตาม) |
-| `kubectl delete rs <ชื่อ>` | ลบ ReplicaSet ตามชื่อ (Pod ลูกถูกลบตาม) |
+| `kubectl delete rs <ชื่อ>` | ลบ ReplicaSet ตามชื่อ ไม่ต้องมีไฟล์ YAML (Pod ลูกถูกลบตาม) |
+| `kubectl get rs --show-labels` | ดูชื่อและป้ายของ ReplicaSet ก่อนลบ (`-l` หาจากป้ายนี้ ไม่ใช่ป้ายของ Pod) |
 | `kubectl delete pod <ชื่อ>` | ลบ Pod (ถ้ามี ReplicaSet ดูแล จะสร้างตัวใหม่แทน) |
 | `kubectl delete pod -l <key=value>` | ลบทุก Pod ที่มีป้ายนี้ (เช่น Pod รุ่นเก่า) |
 
