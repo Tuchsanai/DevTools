@@ -569,7 +569,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: som-db                 # แอปอื่นเรียก som-db:5432 ได้ (บทที่ 5)                  ← บทที่ 5 หัวข้อ 6
+  name: som-db                 # แอปอื่นเรียก som-db:5432 ได้ (บทที่ 5)                  ← บทที่ 5 หัวข้อ 7
 spec: ...                      # selector app: som-db, port 5432 → targetPort 5432
 ```
 
@@ -678,7 +678,7 @@ spec:
           volumeMounts:
             - name: orders
               mountPath: /data            # แอปเขียนสมุดที่ /data/orders.txt          ← หัวข้อ 5
-          readinessProbe: ...             # ← บทที่ 2 หัวข้อ 10, บทที่ 5 หัวข้อ 11
+          readinessProbe: ...             # ← บทที่ 2 หัวข้อ 10, บทที่ 5 หัวข้อ 12
           resources: ...                  # ← บทที่ 2 หัวข้อ 7.4
       volumes:
         - name: orders

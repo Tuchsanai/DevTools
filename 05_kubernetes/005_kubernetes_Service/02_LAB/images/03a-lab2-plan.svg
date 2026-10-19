@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 470" width="1200" height="470">
+<defs><marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0f172a"/></marker></defs>
+<rect width="1200" height="470" fill="#ffffff"/>
+<text x="600" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="26" font-weight="700" fill="#0d9488" xml:space="preserve">แผนการทดลอง LAB 2 · Endpoints ตาม label ของ Pod</text>
+<text x="600" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#475569" xml:space="preserve">4 การทดลอง ตรงกับ 🎯 เป้าหมายขั้นนี้ ของแต่ละขั้น</text>
+<rect x="30" y="100" width="258" height="345" rx="16" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<circle cx="62" cy="134" r="19" fill="#0d9488"/>
+<text x="62" y="141" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="20" font-weight="700" fill="#ffffff" xml:space="preserve">1</text>
+<rect x="92" y="119" width="182" height="30" rx="15" fill="#ffffff" stroke="#0d9488" stroke-width="1.5"/>
+<text x="183" y="140" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">ขั้นที่ 1–2</text>
+<text x="48" y="186" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">ลบ Pod แล้ว</text>
+<text x="48" y="212" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">Endpoints เปลี่ยนเอง</text>
+<text x="48" y="250" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ทดสอบว่า</text>
+<text x="48" y="274" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">Pod ใหม่ IP ใหม่ เข้ารายชื่อเอง</text>
+<text x="48" y="297" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">ClusterIP ของ Service เดิม</text>
+<line x1="44" y1="367" x2="274" y2="367" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="48" y="391" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ดูผลจาก</text>
+<text x="48" y="415" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#0d9488" xml:space="preserve">kubectl describe svc</text>
+<line x1="294" y1="272.5" x2="322" y2="272.5" stroke="#0f172a" stroke-width="4" marker-end="url(#m)"/>
+<rect x="328" y="100" width="258" height="345" rx="16" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<circle cx="360" cy="134" r="19" fill="#0d9488"/>
+<text x="360" y="141" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="20" font-weight="700" fill="#ffffff" xml:space="preserve">2</text>
+<rect x="390" y="119" width="182" height="30" rx="15" fill="#ffffff" stroke="#0d9488" stroke-width="1.5"/>
+<text x="481" y="140" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">ขั้นที่ 3</text>
+<text x="346" y="186" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">ถอด label</text>
+<text x="346" y="212" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">ออกจาก Pod</text>
+<text x="346" y="250" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ทดสอบว่า</text>
+<text x="346" y="274" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">Pod ยัง Running แต่หลุด</text>
+<text x="346" y="297" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">จาก Endpoints ไม่ได้รับ request</text>
+<line x1="342" y1="367" x2="572" y2="367" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="346" y="391" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ดูผลจาก</text>
+<text x="346" y="415" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#0d9488" xml:space="preserve">kubectl label pod</text>
+<text x="346" y="436" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#0d9488" xml:space="preserve">&lt;ชื่อ&gt; app-</text>
+<line x1="592" y1="272.5" x2="620" y2="272.5" stroke="#0f172a" stroke-width="4" marker-end="url(#m)"/>
+<rect x="626" y="100" width="258" height="345" rx="16" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<circle cx="658" cy="134" r="19" fill="#0d9488"/>
+<text x="658" y="141" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="20" font-weight="700" fill="#ffffff" xml:space="preserve">3</text>
+<rect x="688" y="119" width="182" height="30" rx="15" fill="#ffffff" stroke="#0d9488" stroke-width="1.5"/>
+<text x="779" y="140" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">ขั้นที่ 4</text>
+<text x="644" y="186" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">scale เป็น 5</text>
+<text x="644" y="212" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">Endpoints เพิ่มเอง</text>
+<text x="644" y="250" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ทดสอบว่า</text>
+<text x="644" y="274" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">Pod ใหม่ที่พร้อมเข้ารายชื่อ</text>
+<text x="644" y="297" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">โดยไม่ต้องแก้ Service</text>
+<line x1="640" y1="367" x2="870" y2="367" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="644" y="391" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ดูผลจาก</text>
+<text x="644" y="415" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#0d9488" xml:space="preserve">+ 2 more...</text>
+<line x1="890" y1="272.5" x2="918" y2="272.5" stroke="#0f172a" stroke-width="4" marker-end="url(#m)"/>
+<rect x="924" y="100" width="258" height="345" rx="16" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<circle cx="956" cy="134" r="19" fill="#0d9488"/>
+<text x="956" y="141" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="20" font-weight="700" fill="#ffffff" xml:space="preserve">4</text>
+<rect x="986" y="119" width="182" height="30" rx="15" fill="#ffffff" stroke="#0d9488" stroke-width="1.5"/>
+<text x="1077" y="140" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">ขั้นที่ 5–6</text>
+<text x="942" y="186" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">กับดัก selector</text>
+<text x="942" y="212" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">พิมพ์ผิด</text>
+<text x="942" y="250" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ทดสอบว่า</text>
+<text x="942" y="274" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">apply ผ่าน แต่ Endpoints ว่าง</text>
+<text x="942" y="297" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">เรียกแล้ว Connection refused</text>
+<line x1="938" y1="367" x2="1168" y2="367" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="942" y="391" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ดูผลจาก</text>
+<text x="942" y="415" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#0d9488" xml:space="preserve">Endpoints: (ว่าง)</text>
+</svg>

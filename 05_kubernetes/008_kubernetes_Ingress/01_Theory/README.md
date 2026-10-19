@@ -38,7 +38,7 @@
 ในบทที่ 7 ร้านน้องส้มมีสมุดออเดอร์ที่ไม่หายแล้ว แต่ยังมีปัญหาที่หน้าประตู ([บทที่ 7 หัวข้อ 13](../../007_kubernetes_PersistentVolume/01_Theory/README.md#13-ปูทางบทถัดไป))
 
 - ลูกค้าเข้าร้านด้วย **เลข port** `http://localhost:30080` ไม่ใช่ **ชื่อร้าน** แบบเว็บทั่วไป
-- ถ้ามีหลายบริการ (หน้าร้าน ครัว ร้านเครื่องดื่ม) ต้องเปิด **NodePort คนละประตู** ([บทที่ 5 หัวข้อ 10](../../005_kubernetes_Service/01_Theory/README.md#10-nodeport-ประตูบนทุก-node)) ลูกค้าต้องจำว่าเลขไหนคือร้านไหน
+- ถ้ามีหลายบริการ (หน้าร้าน ครัว ร้านเครื่องดื่ม) ต้องเปิด **NodePort คนละประตู** ([บทที่ 5 หัวข้อ 11](../../005_kubernetes_Service/01_Theory/README.md#11-nodeport-ประตูบนทุก-node)) ลูกค้าต้องจำว่าเลขไหนคือร้านไหน
 - k8s-lab map ออกมาให้แค่ `30080`–`30082` = เปิดได้มากสุด 3 บริการ
 
 > "ท่าเรือเรามีประตูเล็กเต็มรั้วไปหมด ปิดให้เหลือ **ประตูใหญ่บานเดียว** แล้วจ้าง **ยาม** ยืนเฝ้า ติด **ป้ายผังทางเข้า** ไว้ข้างประตู ลูกค้าบอกชื่อร้าน ยามก็ชี้ทางให้" — กัปตันบอก
@@ -202,7 +202,7 @@ ports:
       default: false
 ```
 
-- `service.spec.type: NodePort` = Service ของ **ยาม** เป็น NodePort แบบ [บทที่ 5 หัวข้อ 10](../../005_kubernetes_Service/01_Theory/README.md#10-nodeport-ประตูบนทุก-node) (ค่าตั้งต้นของ chart เป็นแบบอื่นที่ใช้บนคลาวด์)
+- `service.spec.type: NodePort` = Service ของ **ยาม** เป็น NodePort แบบ [บทที่ 5 หัวข้อ 11](../../005_kubernetes_Service/01_Theory/README.md#11-nodeport-ประตูบนทุก-node) (ค่าตั้งต้นของ chart เป็นแบบอื่นที่ใช้บนคลาวด์)
 - `ports.web.nodePort: 30080` = ประตู HTTP ของยามคือเลข `30080` ที่ k8s-lab map ออกมาแล้ว
 - `ports.websecure.expose.default: false` = **ไม่เปิด** ประตู HTTPS จึงเหลือ port เดียว ผลจริงใน LAB 1
 
@@ -222,7 +222,7 @@ traefik   NodePort   10.96.31.255   <none>        80:30080/TCP   20s     ← por
   <img src="images/06-namespaces-zones.png" alt="แผนที่ท่าเรือแบ่งรั้ว 3 โซน default มีบูธและกล่อง Pod kube-system มีหอบังคับการ traefik มีประตู 30080 กับยาม" width="800">
 </p>
 
-**Namespace** = **ห้อง / โซนแยก** ในคลัสเตอร์เดียวกัน object ทุกตัวที่เราสร้างมาตั้งแต่บทที่ 2 อยู่โซน `default` ([บทที่ 5 หัวข้อ 6](../../005_kubernetes_Service/01_Theory/README.md#6-เรียกด้วยชื่อ-dns-ในคลัสเตอร์)) บทนี้เป็นครั้งแรกที่เราสร้างโซนใหม่ ผลจริงใน LAB 1
+**Namespace** = **ห้อง / โซนแยก** ในคลัสเตอร์เดียวกัน object ทุกตัวที่เราสร้างมาตั้งแต่บทที่ 2 อยู่โซน `default` ([บทที่ 5 หัวข้อ 7](../../005_kubernetes_Service/01_Theory/README.md#7-เรียกด้วยชื่อ-dns-ในคลัสเตอร์)) บทนี้เป็นครั้งแรกที่เราสร้างโซนใหม่ ผลจริงใน LAB 1
 
 ```text
 $ kubectl get namespaces
@@ -316,7 +316,7 @@ spec:
 แปลทั้งไฟล์เป็นประโยคเดียว: **"ป้ายชื่อ `shop-host` ให้ยาม Traefik อ่าน: ใครมาด้วยชื่อ `shop.localhost` ส่งไปบูธ `menu` port 80, ใครมาด้วยชื่อ `drink.localhost` ส่งไปบูธ `drink` port 80 ไม่ว่าจะเดินทางไหน"**
 
 - ไฟล์นี้ **ไม่มีเลข `30080`** เลย ประตูเป็นเรื่องของยาม (`traefik-values.yaml` หัวข้อ 4) ป้ายบอกแค่ "ชื่อไหน ไปบูธไหน"
-- `number: 80` คือ `port` ของ Service `menu` ใน `menu-app.yaml` (`port: 80` → `targetPort: 80`) แบบ [บทที่ 5 หัวข้อ 5](../../005_kubernetes_Service/01_Theory/README.md#5-port-targetport-nodeport-3-ตัวเลขที่ต้องแยกให้ออก)
+- `number: 80` คือ `port` ของ Service `menu` ใน `menu-app.yaml` (`port: 80` → `targetPort: 80`) แบบ [บทที่ 5 หัวข้อ 4](../../005_kubernetes_Service/01_Theory/README.md#4-ที่อยู่-3-แบบ-และ-port-4-ตัว-ศัพท์ที่ต้องแยกให้ออก)
 
 วางป้ายคู่กับ Service `menu` ใน `menu-app.yaml` ให้เห็นว่าป้าย **ชี้ไปที่บูธด้วยค่าไหน** **วงสีเดียวกัน = ค่าที่ต้องตรงกัน**
 
@@ -377,7 +377,7 @@ X-Forwarded-Server: traefik-5f58d5c648-bnsq2     ← ยามที่ส่ง
 
 - **`Host: shop.localhost:30080`** = สิ่งที่ยามอ่าน กฎเขียน `host: shop.localhost` (ไม่มี port) ยามเทียบแค่ **ชื่อ**
 - **`X-Forwarded-...`** = บรรทัดที่ **ยามเติมให้** ก่อนส่งต่อ บอก Pod ว่าลูกค้าตัวจริงมาด้วยชื่ออะไร port ไหน และ `X-Forwarded-Server` บอกชื่อยาม = `traefik-5f58d5c648-bnsq2` ตรงกับ `get pods -n traefik`
-- **`X-Forwarded-For: 172.19.0.2`** = คำขอเข้ามาทางเรือที่มี IP นี้ ซึ่งคือ `lab-control-plane` (INTERNAL-IP ใน LAB 0) เพราะ k8s-lab map port ไว้ที่ Node นั้น แล้ว NodePort ส่งต่อไปที่ Pod ของยาม ([บทที่ 5 หัวข้อ 10](../../005_kubernetes_Service/01_Theory/README.md#10-nodeport-ประตูบนทุก-node))
+- **`X-Forwarded-For: 172.19.0.2`** = คำขอเข้ามาทางเรือที่มี IP นี้ ซึ่งคือ `lab-control-plane` (INTERNAL-IP ใน LAB 0) เพราะ k8s-lab map port ไว้ที่ Node นั้น แล้ว NodePort ส่งต่อไปที่ Pod ของยาม ([บทที่ 5 หัวข้อ 11](../../005_kubernetes_Service/01_Theory/README.md#11-nodeport-ประตูบนทุก-node))
 - `curl` ซ้ำได้ `Hostname: menu-c9cff5587-9br8c` อีกตัว = กระจายไปทั้ง 2 Pod ของบูธ `menu` เหมือนบทที่ 5
 
 ป้ายชี้ไปที่ Service แต่ยามดู **รายชื่อ Pod ของ Service** แล้วส่งไปที่ Pod เอง เห็นได้ใน `describe ingress` (LAB 2)
@@ -393,7 +393,7 @@ Rules:
                    /   drink:80 (10.244.2.4:80)
 ```
 
-ในวงเล็บคือ **Endpoints** ของบูธ ([บทที่ 5 หัวข้อ 7](../../005_kubernetes_Service/01_Theory/README.md#7-service-หา-pod-จากป้าย)) ถ้า selector ของบูธผิดจนรายชื่อว่าง ยามก็ไม่มีใครให้ส่ง
+ในวงเล็บคือ **Endpoints** ของบูธ ([บทที่ 5 หัวข้อ 8](../../005_kubernetes_Service/01_Theory/README.md#8-service-หา-pod-จากป้าย)) ถ้า selector ของบูธผิดจนรายชื่อว่าง ยามก็ไม่มีใครให้ส่ง
 
 > **เคล็ดลับ:** อยากรู้ว่าคำขอเดินทางผิดตรงไหน ให้ใช้ whoami หรือ `describe ingress` ไล่ตามลำดับ **ประตู (svc traefik) → ยาม (pod traefik) → ป้าย (ingress) → บูธ (svc) → กล่อง (pod)**
 
@@ -431,7 +431,7 @@ $ curl http://localhost:30080
 
 ### ทำไม `*.localhost` ใช้ได้โดยไม่ต้องตั้ง DNS
 
-ปกติชื่อเว็บต้องมี **DNS** แปลชื่อเป็น IP (เหมือนสมุดรายชื่อท่า [บทที่ 5 หัวข้อ 6](../../005_kubernetes_Service/01_Theory/README.md#6-เรียกด้วยชื่อ-dns-ในคลัสเตอร์) แต่เป็นของอินเทอร์เน็ต) แต่ชื่อที่ลงท้าย **`.localhost`** เป็นชื่อพิเศษที่ browser รุ่นใหม่และ `curl` ส่งเข้า **เครื่องตัวเอง** (`127.0.0.1`) ทันที
+ปกติชื่อเว็บต้องมี **DNS** แปลชื่อเป็น IP (เหมือนสมุดรายชื่อท่า [บทที่ 5 หัวข้อ 7](../../005_kubernetes_Service/01_Theory/README.md#7-เรียกด้วยชื่อ-dns-ในคลัสเตอร์) แต่เป็นของอินเทอร์เน็ต) แต่ชื่อที่ลงท้าย **`.localhost`** เป็นชื่อพิเศษที่ browser รุ่นใหม่และ `curl` ส่งเข้า **เครื่องตัวเอง** (`127.0.0.1`) ทันที
 
 - `shop.localhost`, `drink.localhost`, `kitchen.localhost` จึงไปถึง `localhost:30080` เหมือนกันหมด
 - ต่างกันแค่บรรทัด `Host:` ที่ติดไปกับคำขอ ซึ่งเป็นสิ่งเดียวที่ยามใช้แยก
@@ -565,7 +565,7 @@ drink        ClusterIP   10.96.5.128   <none>        80/TCP    42s     ← ช�
 
 ### เทียบกับกับดักของบทที่ 5
 
-เหมือน **selector พิมพ์ผิดแล้ว Endpoints ว่าง** ใน [บทที่ 5 หัวข้อ 8](../../005_kubernetes_Service/01_Theory/README.md#8-กับดัก-selector-พิมพ์ผิด-แล้ว-endpoints-ว่าง) ทุกอย่าง: apply ผ่าน ไม่มี error ต้องดู `describe` ต่างกันแค่ว่าขาดตรงไหน
+เหมือน **selector พิมพ์ผิดแล้ว Endpoints ว่าง** ใน [บทที่ 5 หัวข้อ 9](../../005_kubernetes_Service/01_Theory/README.md#9-กับดัก-selector-พิมพ์ผิด-แล้ว-endpoints-ว่าง) ทุกอย่าง: apply ผ่าน ไม่มี error ต้องดู `describe` ต่างกันแค่ว่าขาดตรงไหน
 
 - **วงเล็บมี `<error: services ... not found>`** = **ป้ายผิด** (ชื่อบูธบนป้ายไม่มีอยู่จริง) → เทียบ `name:` กับ `kubectl get svc`
 - **วงเล็บว่าง / มีบูธแต่ไม่มี IP ของ Pod** = **บูธผิด** (selector ของ Service ไม่ตรงป้ายของ Pod หรือ Pod ยังไม่พร้อม) → ไล่ 3 ขั้นของบทที่ 5
@@ -592,7 +592,7 @@ som-menu      ClusterIP   10.96.215.207   <none>        80/TCP    5s      ← �
 
 ```
 
-- Service ของร้านเป็น **ClusterIP** ([บทที่ 5 หัวข้อ 9](../../005_kubernetes_Service/01_Theory/README.md#9-clusterip-ที่อยู่ภายในคลัสเตอร์)) = บูธที่ **อยู่ข้างในท่า** คนนอกเดินมาถึงตรงไม่ได้
+- Service ของร้านเป็น **ClusterIP** ([บทที่ 5 หัวข้อ 10](../../005_kubernetes_Service/01_Theory/README.md#10-clusterip-ที่อยู่ภายในคลัสเตอร์)) = บูธที่ **อยู่ข้างในท่า** คนนอกเดินมาถึงตรงไม่ได้
 - คนนอกเข้าได้ทาง **ประตู `30080` ของยาม** เท่านั้น (Service `traefik` แบบ NodePort `80:30080` ใน LAB 1 หัวข้อ 4) แล้วยามพาไปบูธตามป้าย
 - `som-menu.yaml` บทนี้ **ลบ `type: NodePort` และ `nodePort: 30080`** ออกจาก Service ของบทที่ 5–7 (comment ในไฟล์เขียนว่า `ClusterIP (ค่าเริ่มต้น) ไม่มี nodePort แล้ว`)
 

@@ -5,27 +5,31 @@
 
 อ่านบทนี้จบแล้วควรทำได้ 4 อย่าง
 
-1. อธิบายได้ว่า **Service** คืออะไร และมันหา Pod เจอได้อย่างไรจาก **ป้าย (selector)** และ **Endpoints**
-2. **อ่านไฟล์ YAML ของ Service ออกทุกบรรทัด** และแยก `port`, `targetPort`, `nodePort` ออกจากกันได้
-3. เรียก Service ด้วยชื่อในคลัสเตอร์ (**ClusterIP + DNS**) และเปิดจากนอกคลัสเตอร์ด้วย **NodePort**
+1. บอกได้ว่า **Service มี 3 แบบ** (ClusterIP, NodePort, LoadBalancer) แต่ละแบบเปิดให้ใครเข้าได้ และต่างกันอย่างไร
+2. แยก **ที่อยู่ 3 แบบ** (Node IP, ClusterIP, Pod IP) กับ **port 4 ตัว** (`nodePort`, `port`, `targetPort`, `containerPort`) ออกจากกันได้
+3. อธิบายว่า Service หา Pod เจอจาก **ป้าย (selector)** และ **Endpoints** อย่างไร อ่าน YAML ของ Service ออกทุกบรรทัด และเรียก Service ได้ทั้งด้วยชื่อในคลัสเตอร์ (**ClusterIP + DNS**) และจากนอกคลัสเตอร์ (**NodePort**)
 4. บอกได้ว่า Service ยังทำอะไร **ไม่ได้** (ดูแลค่าตั้งค่า รหัสผ่าน และข้อมูลของร้าน) ก่อนไปบทถัดไป
 
 ## สารบัญ
 
 1. [เริ่มเรื่อง: ลูกค้าหาร้านไม่เจอ](#1-เริ่มเรื่อง-ลูกค้าหาร้านไม่เจอ)
 2. [Service คืออะไร](#2-service-คืออะไร)
-3. [Service ทำงานอย่างไร](#3-service-ทำงานอย่างไร)
-4. [อ่าน YAML ของ Service ทีละบรรทัด](#4-อ่าน-yaml-ของ-service-ทีละบรรทัด)
-5. [port, targetPort, nodePort: 3 ตัวเลขที่ต้องแยกให้ออก](#5-port-targetport-nodeport-3-ตัวเลขที่ต้องแยกให้ออก)
-6. [เรียกด้วยชื่อ: DNS ในคลัสเตอร์](#6-เรียกด้วยชื่อ-dns-ในคลัสเตอร์)
-7. [Service หา Pod จากป้าย](#7-service-หา-pod-จากป้าย)
-8. [กับดัก: selector พิมพ์ผิด แล้ว Endpoints ว่าง](#8-กับดัก-selector-พิมพ์ผิด-แล้ว-endpoints-ว่าง)
-9. [ClusterIP: ที่อยู่ภายในคลัสเตอร์](#9-clusterip-ที่อยู่ภายในคลัสเตอร์)
-10. [NodePort: ประตูบนทุก Node](#10-nodeport-ประตูบนทุก-node)
-11. [Service ระหว่างเปลี่ยนรุ่น: readinessProbe และ rolling update](#11-service-ระหว่างเปลี่ยนรุ่น-readinessprobe-และ-rolling-update)
-12. [อ่าน YAML ร้านน้องส้มทั้งไฟล์](#12-อ่าน-yaml-ร้านน้องส้มทั้งไฟล์)
-13. [ปูทางบทถัดไป](#13-ปูทางบทถัดไป)
-14. [สรุปและคำถามทบทวน](#14-สรุปและคำถามทบทวน)
+3. [Service มีกี่แบบ และแต่ละแบบต่างกันอย่างไร](#3-service-มีกี่แบบ-และแต่ละแบบต่างกันอย่างไร)
+4. [ที่อยู่ 3 แบบ และ port 4 ตัว: ศัพท์ที่ต้องแยกให้ออก](#4-ที่อยู่-3-แบบ-และ-port-4-ตัว-ศัพท์ที่ต้องแยกให้ออก)
+5. [Service ทำงานอย่างไร](#5-service-ทำงานอย่างไร)
+6. [อ่าน YAML ของ Service ทีละบรรทัด](#6-อ่าน-yaml-ของ-service-ทีละบรรทัด)
+7. [เรียกด้วยชื่อ: DNS ในคลัสเตอร์](#7-เรียกด้วยชื่อ-dns-ในคลัสเตอร์)
+8. [Service หา Pod จากป้าย](#8-service-หา-pod-จากป้าย)
+9. [กับดัก: selector พิมพ์ผิด แล้ว Endpoints ว่าง](#9-กับดัก-selector-พิมพ์ผิด-แล้ว-endpoints-ว่าง)
+10. [ClusterIP: ที่อยู่ภายในคลัสเตอร์](#10-clusterip-ที่อยู่ภายในคลัสเตอร์)
+11. [NodePort: ประตูบนทุก Node](#11-nodeport-ประตูบนทุก-node)
+12. [Service ระหว่างเปลี่ยนรุ่น: readinessProbe และ rolling update](#12-service-ระหว่างเปลี่ยนรุ่น-readinessprobe-และ-rolling-update)
+13. [อ่าน YAML ร้านน้องส้มทั้งไฟล์](#13-อ่าน-yaml-ร้านน้องส้มทั้งไฟล์)
+14. [ปูทางบทถัดไป](#14-ปูทางบทถัดไป)
+15. [สรุปและคำถามทบทวน](#15-สรุปและคำถามทบทวน)
+
+> **อ่านหัวข้อ 3–4 ให้แยกออกก่อน** สองหัวข้อนี้เป็นแผนที่ของทั้งบท หัวข้อที่ 5 เป็นต้นไปลงรายละเอียดทีละเรื่อง
+> หัวข้อใหม่จะเปิดด้วย **🎯 หัวข้อนี้เรียนเพื่อ** (อ่านแล้วตอบอะไรได้) และปิดด้วย **🧪 พิสูจน์ใน LAB** ซึ่งลิงก์ไปยังขั้นของ LAB ที่ได้เห็นเรื่องนั้นจริง
 
 ---
 
@@ -56,7 +60,7 @@
 - **NodePort** = **ประตูท่าเรือหมายเลข `30080`** มีบนเรือทุกลำ เปิดออกสู่ถนนด้านนอก
 - **kube-proxy** = คนเรือที่ **วางรางส่งลูกค้า** บนเรือทุกลำ / **DNS** = **สมุดรายชื่อท่า** (ชื่อ → ที่อยู่)
 
-> **ขอบเขตบทนี้:** Service 2 แบบคือ **ClusterIP** (ใช้ในคลัสเตอร์) และ **NodePort** (เปิดออกนอกคลัสเตอร์) ส่วนแบบ LoadBalancer และ Ingress ใช้กับคลาวด์หรือเว็บหลายโดเมน ไม่อยู่ในบทนี้
+> **ขอบเขตบทนี้:** Service มี 3 แบบ ซึ่งจะรู้จักครบในหัวข้อ 3 แต่ LAB ลงมือแค่ 2 แบบคือ **ClusterIP** (ใช้ในคลัสเตอร์) และ **NodePort** (เปิดออกนอกคลัสเตอร์) ส่วน Ingress สำหรับเว็บหลายโดเมนอยู่ในบทที่ 8
 
 ---
 
@@ -105,7 +109,178 @@ Hello from Pod web-65b66cc75b-9nnn8
 
 ---
 
-## 3. Service ทำงานอย่างไร
+## 3. Service มีกี่แบบ และแต่ละแบบต่างกันอย่างไร
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** แยก Service ทั้ง 3 แบบให้ออกก่อนเรื่องอื่น รู้ว่าแต่ละแบบเปิดให้ **ใคร** เข้าถึงได้ และ LAB ไหนใช้แบบไหน หัวข้อหลังจากนี้ทั้งหมดพูดถึงแค่ 2 แบบแรก
+
+<p align="center">
+  <img src="images/03a-service-types-layers.png" alt="Service 3 แบบซ้อนกันเป็นชั้น ClusterIP อยู่ในสุด NodePort ครอบ ClusterIP และ LoadBalancer ครอบ NodePort" width="800">
+</p>
+
+แบบของ Service กำหนดด้วย field `type:` ใต้ `spec:` ซึ่งมี 3 ค่า
+
+- **ทั้ง 3 แบบซ้อนกันเป็นชั้น** แบบที่อยู่ชั้นนอกมีความสามารถทุกอย่างของแบบที่อยู่ข้างใน แล้วเพิ่มช่องทางเข้าถึงจากนอกคลัสเตอร์อีก 1 ชั้น
+  - **ClusterIP** มีชื่อ DNS + IP ที่ใช้ได้ภายในคลัสเตอร์
+  - **NodePort** = ClusterIP + เปิด port เดียวกันบน Node ทุกตัว
+  - **LoadBalancer** = NodePort + load balancer ของผู้ให้บริการคลาวด์
+- ถ้าไม่ระบุ `type:` จะได้ **ClusterIP**
+
+| แบบ (`type:`) | ได้อะไร | ใครเข้าถึงได้ | ที่อยู่ที่ใช้เรียก | เหมาะกับ | ในบทนี้ |
+|---|---|---|---|---|---|
+| `ClusterIP` (ค่าเริ่มต้น) | ชื่อ DNS + IP ภายในคลัสเตอร์ | Pod ในคลัสเตอร์เท่านั้น | `http://som-menu` | ระบบที่ใช้กันภายในคลัสเตอร์ เช่น ฐานข้อมูล | LAB 1–2 |
+| `NodePort` | ClusterIP + `nodePort` บน Node ทุกตัว | + เครื่องนอกคลัสเตอร์ที่เข้าถึง Node ได้ | `<Node IP>:30080` | ทดลองบนเครื่อง หรือคลัสเตอร์ที่ไม่ได้อยู่บนคลาวด์ | LAB 3–4 |
+| `LoadBalancer` | NodePort + load balancer ของคลาวด์ | + ผู้ใช้บนอินเทอร์เน็ต | `<EXTERNAL-IP>:80` | ระบบจริงบนคลาวด์ (AWS, GCP, Azure) | ไม่ได้ใช้ |
+
+ภาพสถาปัตยกรรมทั้ง 3 แบบด้านล่างใช้ Service `som-menu` ของ LAB 4 (รับที่ port 80 ส่งต่อไป port 3000 ของ Pod) เป็นตัวอย่างเดียวกัน ส่วนที่ต่างกันในภาพจึงเป็นผลของการเปลี่ยน `type:` อย่างเดียว ให้สังเกตว่า request **เข้ามาจากไหน** และ **ผ่านอะไรบ้าง**
+
+### 3.1 ClusterIP: เข้าถึงได้เฉพาะภายในคลัสเตอร์
+
+<p align="center">
+  <img src="images/03b-arch-clusterip.png" alt="สถาปัตยกรรม ClusterIP: Pod client เรียก http://som-menu:80 Service ส่งต่อไป Pod 3 ตัวที่ port 3000 browser นอกคลัสเตอร์เข้าไม่ได้" width="800">
+</p>
+
+- Service ได้ **ชื่อ DNS** (`som-menu`) กับ **ClusterIP** 1 อัน (`10.96.254.181`) Pod ทุกตัวในคลัสเตอร์เรียก `http://som-menu` ได้ ①
+- Service ส่ง request ต่อไป Pod ที่ label ตรงกับ selector และพร้อมแล้ว ที่ port 3000 ไม่ว่า Pod นั้นอยู่ Node ไหน ②
+- browser บนเครื่องเรา **เรียก ClusterIP ตรง ๆ ไม่ได้** เพราะ IP ช่วง `10.96.x.x` ใช้ได้เฉพาะภายในคลัสเตอร์
+- LAB 1–2 จึงสร้าง Pod `client` ไว้เป็นผู้เรียก Service จากภายในคลัสเตอร์
+
+```yaml
+  type: ClusterIP            # ค่าเริ่มต้น: ได้ IP ภายในคลัสเตอร์ 1 อันที่ไม่เปลี่ยน
+```
+
+(จาก `labs/lab01-clusterip/web-svc.yaml` รายละเอียดอยู่ในหัวข้อ 10)
+
+### 3.2 NodePort: เปิด port เดียวกันบน Node ทุกตัว
+
+<p align="center">
+  <img src="images/03c-arch-nodeport.png" alt="สถาปัตยกรรม NodePort: browser เข้าทาง nodePort 30080 ซึ่งเปิดบน Node ทั้ง 3 ตัว แล้วส่งต่อไป Service port 80 และ Pod port 3000" width="800">
+</p>
+
+- ได้ทุกอย่างของ ClusterIP (Pod ในคลัสเตอร์ยังเรียก `http://som-menu` ได้) **แล้วเพิ่ม** `nodePort` เลขเดียวกันบน Node ทุกตัว
+- เครื่องนอกคลัสเตอร์เรียก `<Node IP ตัวไหนก็ได้>:30080` ① request ถูกส่งต่อไปที่ Service port 80 ② แล้ว Service ส่งต่อไป Pod ที่ port 3000 ③
+- Node ที่ไม่มี Pod ของแอปอยู่เลย (`lab-control-plane`) ก็เปิด port นี้ด้วย kube-proxy บน Node นั้นส่ง request ต่อไป Pod บน Node อื่น
+- ใน k8s-lab `localhost:30080` บนเครื่องเราถูกส่งต่อไปที่ port 30080 ของ `lab-control-plane` (หัวข้อ 11)
+
+```yaml
+  type: NodePort
+  ...
+      nodePort: 30080        # นอกคลัสเตอร์เปิด http://localhost:30080
+```
+
+(จาก `som-menu/k8s/som-menu-svc.yaml` รายละเอียดอยู่ในหัวข้อ 11)
+
+### 3.3 LoadBalancer: ใช้ load balancer ของผู้ให้บริการคลาวด์
+
+<p align="center">
+  <img src="images/03d-arch-loadbalancer.png" alt="สถาปัตยกรรม LoadBalancer: ผู้ใช้บนอินเทอร์เน็ตเรียก EXTERNAL-IP ของ load balancer ของคลาวด์ ซึ่งส่งต่อไปที่ nodePort ของทุก Node" width="800">
+</p>
+
+- ได้ทุกอย่างของ NodePort แล้ว **ให้ผู้ให้บริการคลาวด์** สร้าง load balancer ให้ 1 ตัว IP สาธารณะของ load balancer แสดงในคอลัมน์ `EXTERNAL-IP`
+- ผู้ใช้เรียกที่อยู่เดียว ไม่ต้องรู้ว่ามี Node กี่ตัวหรือ IP อะไร ① load balancer ส่ง request ต่อไปที่ nodePort ของ Node ที่ยังทำงานอยู่ (Kubernetes สุ่มเลข nodePort ให้) หลังจากนั้นเส้นทางเหมือน NodePort ทุกอย่าง ②③
+- **ไม่ได้ใช้ใน LAB** เพราะคลัสเตอร์ kind บนเครื่องเราไม่มีผู้ให้บริการคลาวด์มาสร้าง load balancer ให้ คอลัมน์ `EXTERNAL-IP` จะค้างเป็น `<pending>` (ผลจริงอยู่ในหัวข้อ 3.4) บทนี้จึงใช้ NodePort
+
+### 3.4 YAML ของ 3 แบบต่างกันตรงไหน
+
+<p align="center">
+  <img src="images/03e-yaml-types-compare.png" alt="YAML ของ ClusterIP NodePort และ LoadBalancer วางเทียบกัน วงบรรทัด type และ nodePort ที่ต่างกัน ใต้แต่ละไฟล์มีผล kubectl get svc และเส้นทางของ request" width="800">
+</p>
+
+วาง YAML ของทั้ง 3 แบบเทียบกัน ไฟล์ซ้ายและไฟล์กลางคือไฟล์จริงของ LAB 1 และ LAB 3 ส่วนไฟล์ขวาเป็นตัวอย่าง
+
+- **① `type:`** เป็นบรรทัดเดียวที่เลือกแบบของ Service ส่วน `selector`, `port` และ `targetPort` (พื้นเทา) เหมือนกันทุกแบบ
+- **② `nodePort:`** เขียนได้เฉพาะแบบ NodePort และ LoadBalancer ถ้าไม่เขียน Kubernetes สุ่มเลขให้
+- **คอลัมน์ `PORT(S)`** ของ ClusterIP มีแค่ `80/TCP` ส่วนแบบ NodePort และ LoadBalancer แสดงเป็น `port:nodePort`
+- **เส้นทางของ request** (แถวล่างของภาพ) ยิ่ง Service อยู่ชั้นนอก request ยิ่งเริ่มจากที่ไกลกว่า แต่ทุกแบบผ่าน ClusterIP แล้วไปจบที่ Pod เหมือนกัน
+
+ผลของ LoadBalancer ในภาพมาจากการลองสร้างบนคลัสเตอร์ kind ตอนเตรียมบท (ไม่อยู่ใน LAB)
+
+```text
+$ kubectl create service loadbalancer lbtest-tmp --tcp=80:80
+$ kubectl get svc lbtest-tmp
+NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+lbtest-tmp   LoadBalancer   10.96.156.194   <pending>     80:32521/TCP   15s
+```
+
+- `EXTERNAL-IP <pending>` = รอผู้ให้บริการคลาวด์สร้าง load balancer ให้ ซึ่งบน kind จะไม่มีวันได้
+- `80:32521/TCP` = Kubernetes สุ่ม nodePort `32521` ให้เอง แม้ load balancer ยังไม่มา NodePort ก็ใช้ได้แล้ว
+
+> **ประโยคเดียวที่ต้องจำ:** **ClusterIP** เข้าถึงได้เฉพาะในคลัสเตอร์ · **NodePort** = ClusterIP + port บน Node ทุกตัว · **LoadBalancer** = NodePort + load balancer ของคลาวด์ บทนี้ลงมือทำแค่ 2 แบบแรก
+
+> 🧪 **พิสูจน์ใน LAB:** ClusterIP เรียกได้จาก Pod `client` ด้วยชื่อ → **LAB 1** ขั้นที่ [5](../02_LAB/README.md#ขั้นที่-5-เรียก-service-ด้วยชื่อ) · NodePort เรียกได้ทั้งจาก `localhost:30080` และจาก IP ของทุก Node → **LAB 3** ขั้นที่ [3](../02_LAB/README.md#ขั้นที่-3-เรียกจากนอกคลัสเตอร์ด้วย-curl), [4](../02_LAB/README.md#ขั้นที่-4-ประตูเปิดบนทุก-node)
+
+---
+
+## 4. ที่อยู่ 3 แบบ และ port 4 ตัว: ศัพท์ที่ต้องแยกให้ออก
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** แยกศัพท์ที่สะกดคล้ายกัน (Pod / port, Node / nodePort, ClusterIP) และรู้ว่าตัวเลขแต่ละตัวในไฟล์ LAB เป็นของ object ไหน ก่อนอ่าน YAML และผลของ `kubectl get svc`
+
+### ศัพท์ที่สะกดคล้ายกัน แต่เป็นคนละอย่าง
+
+- **Pod** คือหน่วยที่ container ของแอปรันอยู่ ส่วน **port** คือ **หมายเลข port** ของ TCP ที่รับการเชื่อมต่อ สะกดคล้ายกันแต่ไม่เกี่ยวกัน
+- **Node** คือเครื่อง (worker หรือ control-plane) ในคลัสเตอร์ ส่วน **nodePort** คือ **หมายเลข port บน Node** ที่ Service สั่งให้เปิด
+- **NodePort** (N ตัวใหญ่) คือชื่อ **แบบ** ของ Service (`type: NodePort`) ส่วน **nodePort** (n ตัวเล็ก) คือ **field ตัวเลข** ใต้ `ports:` (`nodePort: 30080`)
+- **ClusterIP** มี 2 ความหมาย
+  - ชื่อ **แบบ** ของ Service (`type: ClusterIP`)
+  - **IP ของ Service** ในคอลัมน์ `CLUSTER-IP` เช่น `10.96.254.181` Service ทุกแบบในบทนี้มี IP นี้
+
+### ที่อยู่ 3 แบบ คู่กับ port 4 ตัว
+
+<p align="center">
+  <img src="images/04a-addresses-and-ports.png" alt="เส้นทางของ request จาก browser ผ่าน Node ไป Service ไป Pod แต่ละชั้นมี IP และ port ของตัวเอง พร้อมตารางบอกว่าเขียนไว้ไฟล์ไหน ใครใช้ และเปลี่ยนไหม" width="800">
+</p>
+
+request 1 ครั้งที่มาจากนอกคลัสเตอร์ผ่าน 3 ชั้น คือ Node → Service → Pod แต่ละชั้นมี **IP** และ **port** ของตัวเอง ตัวเลขในตารางมาจาก Service `som-menu` ใน LAB 4
+
+| port | เปิดอยู่ที่ไหน | ใช้คู่กับ IP | ใครเรียก port นี้ | กำหนดในไฟล์ไหน | LAB 4 |
+|---|---|---|---|---|---|
+| `nodePort` | Node ทุกตัว (Service สั่งให้เปิด) | Node IP เช่น `172.19.0.2` | เครื่องนอกคลัสเตอร์ | Service (เฉพาะแบบ NodePort / LoadBalancer) | `30080` |
+| `port` | Service | ClusterIP `10.96.254.181` หรือชื่อ `som-menu` | Pod ในคลัสเตอร์ | Service | `80` |
+| `targetPort` | Pod ปลายทาง (Service ส่ง request ต่อมาที่ port นี้) | Pod IP เช่น `10.244.2.38` | Service | Service | `3000` |
+| `containerPort` | container ใน Pod | Pod IP | port ที่แอปเปิดรับ | Deployment | `3000` |
+
+- `targetPort` กับ `containerPort` หมายถึง **port เดียวกัน** (port ของแอปใน Pod) ที่เขียนไว้ 2 ไฟล์ จึงต้องเป็นเลขเดียวกันเสมอ
+- `containerPort` เป็นข้อมูลประกอบเท่านั้น แอปจะรับการเชื่อมต่อที่ port ไหนขึ้นกับโค้ดของแอป (`server.js` ฟังที่ค่า `PORT=3000` ที่ตั้งไว้ใน Dockerfile)
+- ถ้าไม่ระบุ `targetPort` Kubernetes ใช้เลขเดียวกับ `port` ถ้าไม่ระบุ `nodePort` Kubernetes สุ่มเลขในช่วง 30000–32767 ให้
+
+### ไล่ตัวเลขจริงตั้งแต่ LAB 1 ถึง LAB 4
+
+| LAB | Service (ไฟล์) | `type` | `nodePort` | `port` | `targetPort` | `containerPort` | เรียกด้วย |
+|---|---|---|---|---|---|---|---|
+| 1–2 | `web` (`web-svc.yaml`) | ClusterIP | – | 80 | 80 | 80 (nginx) | `wget -qO- http://web` จาก Pod `client` |
+| 3 | `web-nodeport` (`web-svc-nodeport.yaml`) | NodePort | 30080 | 80 | 80 | 80 (nginx) | `curl http://localhost:30080` |
+| 4 | `som-menu` (`som-menu-svc.yaml`) | NodePort | 30080 | 80 | 3000 | 3000 (Node.js) | browser `http://localhost:30080` |
+
+- **LAB 1 มีเลข 80 อยู่ 2 ตัว** ทั้ง 2 ตัวเป็น 80 เพราะ nginx ฟังที่ port 80
+  - `port: 80` คือ port ของ Service เลือก 80 เพื่อให้เรียก `http://web` ได้โดยไม่ต้องระบุ port
+  - `targetPort: 80` คือ port ของ Pod ที่ Service ส่ง request ต่อไป
+  - เลขเท่ากันแต่เป็น **คนละ port**: ตัวหนึ่งอยู่ที่ ClusterIP ของ Service อีกตัวอยู่ที่ Pod IP
+- **LAB 3** เพิ่มแค่ `nodePort: 30080` เครื่องนอกคลัสเตอร์จึงเรียกได้
+- **LAB 4** แอปฟังที่ port 3000 จึงเปลี่ยน `targetPort` เป็น 3000 ส่วน `port` ยังเป็น 80 ตัวเลขทั้ง 3 ตัวไม่ซ้ำกัน จึงเห็นชัดที่สุดว่าแต่ละตัวเป็นคนละ port
+
+### เห็นทั้ง 3 ตัวในผลจริงของ LAB 4
+
+```text
+$ kubectl get svc
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+som-menu     NodePort    10.96.254.181   <none>        80:30080/TCP   10s     ← port:nodePort
+
+$ kubectl describe svc som-menu
+Port:                     <unset>  80/TCP
+TargetPort:               3000/TCP
+NodePort:                 <unset>  30080/TCP
+Endpoints:                10.244.2.39:3000,10.244.2.38:3000,10.244.1.25:3000   ← ลงท้าย :3000 = targetPort
+```
+
+- คอลัมน์ `PORT(S)` แสดงเป็น **`port:nodePort`** (`80:30080`) ไม่มี targetPort ในคอลัมน์นี้ ต้องดูจาก `describe`
+- `Endpoints` ลงท้ายด้วย **targetPort** เสมอ เพราะเป็น IP:port จริงของ Pod
+
+> **เคล็ดลับ:** จำตามเส้นทางของ request จากนอกเข้าใน **nodePort → port → targetPort** (Node → Service → Pod) และ `targetPort` ต้องเท่ากับ `containerPort` ใน Deployment เสมอ
+
+> 🧪 **พิสูจน์ใน LAB:** `describe svc` ของ `som-menu` แสดง `Port 80` → `TargetPort 3000` → `NodePort 30080` ครบ และ Endpoints ลงท้าย `:3000` → **LAB 4** ขั้นที่ [5](../02_LAB/README.md#ขั้นที่-5-เปิดร้าน) · LAB 1 ที่ `port` กับ `targetPort` เป็น 80 ทั้งคู่ → **LAB 1** ขั้นที่ [3](../02_LAB/README.md#ขั้นที่-3-service-ส่งงานให้ใคร-endpoints)
+
+---
+
+## 5. Service ทำงานอย่างไร
 
 <p align="center">
   <img src="images/04-service-endpoints-kubeproxy.png" alt="selector ไปเป็น Endpoints โดย endpointslice-controller แล้ว kube-proxy วางรางบนทุก Node" width="800">
@@ -165,7 +340,7 @@ web-9fqdm    IPv4          80      10.244.2.18,10.244.1.12,10.244.2.19   0s
 
 ---
 
-## 4. อ่าน YAML ของ Service ทีละบรรทัด
+## 6. อ่าน YAML ของ Service ทีละบรรทัด
 
 YAML ของบทนี้ใช้กฎเดิมจาก [บทที่ 2 หัวข้อ 5](../../002_kubernetes_pod/01_Theory/README.md#5-yaml-ฉบับเข้าใจง่าย) ทบทวนสั้น ๆ
 
@@ -175,7 +350,7 @@ YAML ของบทนี้ใช้กฎเดิมจาก [บทที�
 
 สิ่งใหม่ของ YAML บทนี้: **Service มี `metadata` / `spec` ชุดเดียว เพราะ Service ไม่มี `template` และไม่สร้าง Pod** มันแค่ชี้ไปหา Pod ที่มีอยู่แล้ว
 
-### 4.1 วาง Deployment คู่กับ Service
+### 6.1 วาง Deployment คู่กับ Service
 
 <p align="center">
   <img src="images/05-yaml-service-vs-deployment.png" alt="web-deploy.yaml มี template และ matchLabels ส่วน web-svc.yaml สั้นกว่า ไม่มีแม่พิมพ์" width="800">
@@ -190,13 +365,13 @@ LAB 1 ใช้ 2 ไฟล์คู่กัน วางเทียบกั�
 อ่านตามเลขในภาพ
 
 - **① `apiVersion` / `kind` คนละกลุ่ม** Service อยู่กลุ่มหลัก **`v1`** (เหมือน Pod) ไม่ใช่ `apps/v1` แบบ Deployment
-- **② `name` ซ้ำกันได้** เพราะเป็น object คนละชนิด ชื่อ Service คือชื่อที่ Pod อื่นใช้เรียก เช่น `http://web` (หัวข้อ 6)
+- **② `name` ซ้ำกันได้** เพราะเป็น object คนละชนิด ชื่อ Service คือชื่อที่ Pod อื่นใช้เรียก เช่น `http://web` (หัวข้อ 7)
 - **③ ป้ายต้องตรงกัน** `selector` ของ Service จับป้ายใน **`template.metadata.labels`** ของ Deployment (= ป้ายบนตัว Pod) ไม่ใช่ป้ายของตัว Deployment และ selector ของ Service **ใส่ป้ายตรง ๆ** ไม่มี `matchLabels:` คั่น
 - **④ `targetPort` ต้องตรงกับ `containerPort`** คือ port ที่แอปใน Pod ฟังอยู่จริง Service ส่งลูกค้าต่อไปที่เลขนี้
-- **⑤ `port` เป็นของ Service เอง** คือ port ที่คนเรียกใช้ จะเป็นคนละเลขกับ `targetPort` ก็ได้ (หัวข้อ 5)
+- **⑤ `port` เป็นของ Service เอง** คือ port ที่คนเรียกใช้ จะเป็นคนละเลขกับ `targetPort` ก็ได้ (หัวข้อ 4)
 - **⑥ ส่วนเส้นประสีเทามีแค่ฝั่ง Deployment** Service **ไม่มี `replicas` ไม่มี `template` ไม่มี `containers`** มันไม่สร้าง Pod แค่ชี้ไปหา ลบ Service ทิ้ง Pod ก็ยังอยู่ครบ
 
-### 4.2 ไล่ไฟล์จริงจาก LAB 1
+### 6.2 ไล่ไฟล์จริงจาก LAB 1
 
 ไฟล์ `02_LAB/labs/lab01-clusterip/web-svc.yaml`
 
@@ -223,7 +398,7 @@ spec:
 |---|---|
 | `apiVersion: v1` | Service อยู่กลุ่มหลัก รุ่น `v1` (เหมือน Pod) |
 | `kind: Service` | ขอสร้าง **Service** |
-| `metadata:` → `name: web` | Service ชื่อ `web` = **ชื่อที่ใช้เรียก** (`http://web`) และชื่อใน DNS (หัวข้อ 6) |
+| `metadata:` → `name: web` | Service ชื่อ `web` = **ชื่อที่ใช้เรียก** (`http://web`) และชื่อใน DNS (หัวข้อ 7) |
 | `spec:` → `type: ClusterIP` | แบบของ Service ได้ IP ภายในคลัสเตอร์ (ไม่เขียนก็ได้ เพราะเป็นค่าเริ่มต้น) |
 | `  selector:` → `app: web` | ส่งลูกค้าไปทุก Pod ที่ติดป้าย `app=web` |
 | `  ports:` | รายการ port ที่ Service เปิดรับ (มีได้หลายชิ้น) |
@@ -232,66 +407,20 @@ spec:
 
 แปลทั้งไฟล์เป็นประโยคเดียว: **"ขอ Service ชื่อ `web` แบบ ClusterIP รับลูกค้าที่ port 80 แล้วส่งต่อไป port 80 ของ Pod ทุกตัวที่ติดป้าย `app=web`"**
 
-### 4.3 ผิดบ่อย แก้ง่าย
+### 6.3 แก้บรรทัดไหน แล้วเกิดอะไร
 
-| ผิด | ถูก | เพราะ |
+| แก้อะไรใน `web-svc.yaml` แล้ว apply | สิ่งที่เกิด | เห็นที่ |
 |---|---|---|
-| `apiVersion: apps/v1` | `apiVersion: v1` | Service อยู่กลุ่มหลัก ไม่ได้อยู่กลุ่ม `apps` |
-| `kind: service` | `kind: Service` | ตัว S ต้องใหญ่ |
-| `selector:` → `matchLabels:` → `app: web` | `selector:` → `app: web` | selector ของ Service เป็นป้ายตรง ๆ Kubernetes ไม่รับ `matchLabels` ตรงนี้ |
-| `targetPort` ไม่ตรง `containerPort` (เช่น 80 แต่แอปฟัง 3000) | ให้ตรงกัน | Endpoints มีครบ แต่ส่งไปผิดประตู เรียกแล้วต่อไม่ติด |
-| selector พิมพ์ผิด (`app: wbe`) | ให้ตรงป้ายใน `template` | apply ผ่าน แต่ **Endpoints ว่าง** (หัวข้อ 8) |
+| `type: ClusterIP` → `NodePort` และเพิ่ม `nodePort: 30080` | ได้ประตู 30080 บนทุก Node คนนอกคลัสเตอร์เข้าได้ ClusterIP ยังอยู่ | LAB 3 (`web-svc-nodeport.yaml`) |
+| `selector` จาก `app: web` เป็น `app: wbe` | apply ผ่าน แต่ **Endpoints ว่าง** เรียกแล้วได้ `Connection refused` | LAB 2 (`web-svc-typo.yaml`) หัวข้อ 9 |
+| `targetPort` เป็นเลขที่แอปไม่ได้ฟัง (เช่น 3000 กับ nginx) | apply ผ่าน Endpoints มีครบ แต่ส่งไปผิดประตู เรียกแล้วต่อไม่ติด | คำถามทบทวนข้อ 10 |
+| `port: 80` เป็น `8080` | Pod ในคลัสเตอร์ต้องเรียก `http://web:8080` ส่วน Pod ปลายทางไม่รู้เรื่อง | หัวข้อ 4 |
 
-> **⚠️ กับดัก:** 2 แถวล่างเป็นความผิดที่ **apply ผ่านทุกครั้ง** Kubernetes ไม่รู้ว่าเราตั้งใจจะส่งไป Pod ไหน หรือแอปฟัง port อะไร ต้องตรวจเองด้วย `kubectl describe svc`
-
----
-
-## 5. port, targetPort, nodePort: 3 ตัวเลขที่ต้องแยกให้ออก
-
-<p align="center">
-  <img src="images/06-three-ports.png" alt="เส้นทาง localhost:30080 ผ่าน nodePort 30080 ไป port 80 ไป targetPort 3000" width="800">
-</p>
-
-ร้านน้องส้มใน LAB 4 ใช้ตัวเลขไม่ซ้ำกันเลย จึงเห็นชัดว่าแต่ละตัวอยู่ตรงไหน (`som-menu/k8s/som-menu-svc.yaml`)
-
-```yaml
-  ports:
-    - port: 80               # ในคลัสเตอร์เรียก http://som-menu (port 80)
-      targetPort: 3000       # หน้าร้าน Node.js ฟัง port 3000
-      nodePort: 30080        # นอกคลัสเตอร์เปิด http://localhost:30080
-```
-
-| ตัวเลข | เป็น port ของใคร | ใครใช้ | ในอุปมา |
-|---|---|---|---|
-| `nodePort: 30080` | **Node** (เปิดบนทุก Node) | คนนอกคลัสเตอร์ | ประตูท่าเรือหมายเลข 30080 |
-| `port: 80` | **Service** (ที่ ClusterIP) | Pod ในคลัสเตอร์ | ช่องรับลูกค้าของบูธต้อนรับ |
-| `targetPort: 3000` | **container ใน Pod** | Service ส่งต่อมา | ประตูของกล่อง (= `containerPort`) |
-
-ลูกค้าจาก browser เดินทางแบบนี้: `localhost:30080` → **nodePort 30080** → Service **port 80** → Pod **targetPort 3000**
-
-เห็นทั้ง 3 ตัวในผลจริงของ LAB 4
-
-```text
-$ kubectl get svc
-NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
-som-menu     NodePort    10.96.254.181   <none>        80:30080/TCP   10s     ← port:nodePort
-
-$ kubectl describe svc som-menu
-Port:                     <unset>  80/TCP
-TargetPort:               3000/TCP
-NodePort:                 <unset>  30080/TCP
-Endpoints:                10.244.2.39:3000,10.244.2.38:3000,10.244.1.25:3000   ← ลงท้าย :3000 = targetPort
-```
-
-- คอลัมน์ `PORT(S)` เขียน **`port:nodePort`** (`80:30080`) ส่วน targetPort ไม่โผล่ในคอลัมน์นี้
-- Endpoints ลงท้ายด้วย **targetPort** เสมอ เพราะเป็นที่อยู่จริงของ Pod
-- ใน LAB 1–3 `port` กับ `targetPort` เป็น 80 ทั้งคู่ (nginx ฟัง 80) ดูเหมือนตัวเดียวกัน แต่เป็นคนละ port
-
-> **เคล็ดลับ:** จำจากซ้ายไปขวาตามทางเดินของลูกค้า **node → service → target** (ประตูท่าเรือ → บูธ → กล่อง) และ `targetPort` ต้องเท่ากับ `containerPort` ใน Deployment เสมอ
+> **⚠️ กับดัก:** แถวที่ 2 กับ 3 เป็นความผิดที่ **apply ผ่านทุกครั้ง** เพราะ Kubernetes ไม่รู้ว่าเราตั้งใจส่งไป Pod ไหน หรือแอปฟัง port อะไร ต้องตรวจเองด้วย `kubectl describe svc`
 
 ---
 
-## 6. เรียกด้วยชื่อ: DNS ในคลัสเตอร์
+## 7. เรียกด้วยชื่อ: DNS ในคลัสเตอร์
 
 <p align="center">
   <img src="images/07-dns-phonebook.png" alt="Pod client ถามสมุดรายชื่อท่า kube-dns ได้ที่อยู่ของ web" width="800">
@@ -332,11 +461,11 @@ Address: 10.96.39.117            ← ได้ ClusterIP ของ Service web
 
 Pod ที่อยู่ namespace เดียวกันเรียกแค่ `web` ก็พอ (LAB 1 เรียกทั้ง `http://web` และ `http://web.default.svc.cluster.local` ได้ทั้งคู่) ส่วน Pod ต่างห้องต้องเรียกชื่อยาวขึ้น เช่น `web.default`
 
-> **ประโยคเดียวที่ต้องจำ:** ในแอป **ให้เรียกชื่อ Service** (`http://web`, `http://som-menu`) ไม่ใช่ Pod IP หรือ ClusterIP เพราะชื่อไม่เปลี่ยนแม้ลบแล้วสร้าง Service ใหม่ (หัวข้อ 9)
+> **ประโยคเดียวที่ต้องจำ:** ในแอป **ให้เรียกชื่อ Service** (`http://web`, `http://som-menu`) ไม่ใช่ Pod IP หรือ ClusterIP เพราะชื่อไม่เปลี่ยนแม้ลบแล้วสร้าง Service ใหม่ (หัวข้อ 10)
 
 ---
 
-## 7. Service หา Pod จากป้าย
+## 8. Service หา Pod จากป้าย
 
 <p align="center">
   <img src="images/08-endpoints-follow-labels.png" alt="ลบ Pod ถอดป้าย scale 5 กระดานรายชื่อของพนักงานต้อนรับเปลี่ยนตามเอง" width="800">
@@ -389,7 +518,7 @@ Endpoints:  10.244.2.22:80,10.244.2.23:80,10.244.1.15:80 + 2 more...
 
 ---
 
-## 8. กับดัก: selector พิมพ์ผิด แล้ว Endpoints ว่าง
+## 9. กับดัก: selector พิมพ์ผิด แล้ว Endpoints ว่าง
 
 <p align="center">
   <img src="images/09-selector-typo-empty.png" alt="selector app=wbe ไม่ตรงป้าย app=web กระดาน Endpoints ว่าง ลูกค้าถูกปฏิเสธ" width="800">
@@ -435,14 +564,14 @@ command terminated with exit code 1
 ### ตรวจ 3 ขั้น เมื่อเรียก Service ไม่ได้
 
 1. **`kubectl describe svc <ชื่อ>`** ดูบรรทัด `Endpoints:` ถ้า **ว่าง** = Service หา Pod ไม่เจอ ไปขั้น 2
-2. **`kubectl get pods --show-labels`** เทียบป้ายของ Pod กับบรรทัด `Selector:` ทีละตัวอักษร (`wbe` ≠ `web`) หรือ Pod มีครบแต่ `READY 0/1` (ยังไม่พร้อม หัวข้อ 11)
+2. **`kubectl get pods --show-labels`** เทียบป้ายของ Pod กับบรรทัด `Selector:` ทีละตัวอักษร (`wbe` ≠ `web`) หรือ Pod มีครบแต่ `READY 0/1` (ยังไม่พร้อม หัวข้อ 12)
 3. ถ้า Endpoints **มีครบ** แต่ยังต่อไม่ติด → เทียบ `TargetPort` กับ `containerPort` ของ Pod
 
 > **⚠️ กับดัก:** Service ที่ selector ผิด **ไม่มี error ตอน apply ไม่มี Events ไม่มี STATUS สีแดง** สิ่งเดียวที่บอกคือ `Endpoints:` ว่าง ให้ดูบรรทัดนี้เป็นอย่างแรกทุกครั้ง
 
 ---
 
-## 9. ClusterIP: ที่อยู่ภายในคลัสเตอร์
+## 10. ClusterIP: ที่อยู่ภายในคลัสเตอร์
 
 <p align="center">
   <img src="images/10-clusterip-inside.png" alt="ป้ายที่อยู่ ClusterIP ยึดแน่นอยู่ที่บูธ กล่องข้างหลังเปลี่ยนได้ คนนอกรั้วเข้าไม่ถึง" width="800">
@@ -456,7 +585,7 @@ command terminated with exit code 1
 
 - LAB 1 Service `web` ได้ `10.96.39.117`
 - ตอนท้าย LAB 1 ลบทิ้ง แล้ว LAB 2 apply ไฟล์เดิมซ้ำ ได้ `10.96.173.122`
-- ชื่อ `web` เหมือนเดิม → แอปที่เรียกด้วยชื่อ (หัวข้อ 6) ไม่ต้องแก้อะไร
+- ชื่อ `web` เหมือนเดิม → แอปที่เรียกด้วยชื่อ (หัวข้อ 7) ไม่ต้องแก้อะไร
 
 **ใช้ได้เฉพาะในคลัสเตอร์** ClusterIP เป็นที่อยู่ภายในคลัสเตอร์ Pod ทุกตัวเรียกได้ แต่ browser บนเครื่องเรา **เรียกตรงไม่ได้** ในอุปมาคือบูธอยู่ในรั้วท่าเรือ คนบนถนนเดินเข้าไปไม่ถึง LAB 1–2 จึงต้องใช้ Pod `client` เป็นลูกค้าในคลัสเตอร์
 
@@ -470,11 +599,11 @@ spec:
       command: ["sleep", "3600"]   # นอนรอ 1 ชั่วโมง (มี wget และ nslookup ให้ใช้)
 ```
 
-> **เคล็ดลับ:** ClusterIP เหมาะกับของที่ **ใช้กันเองในคลัสเตอร์** เช่น ฐานข้อมูลที่หน้าเว็บเรียก คนนอกไม่ควรเข้าถึงอยู่แล้ว ส่วนหน้าร้านที่ลูกค้าต้องเปิดจาก browser ใช้ NodePort (หัวข้อ 10)
+> **เคล็ดลับ:** ClusterIP เหมาะกับของที่ **ใช้กันเองในคลัสเตอร์** เช่น ฐานข้อมูลที่หน้าเว็บเรียก คนนอกไม่ควรเข้าถึงอยู่แล้ว ส่วนหน้าร้านที่ลูกค้าต้องเปิดจาก browser ใช้ NodePort (หัวข้อ 11)
 
 ---
 
-## 10. NodePort: ประตูบนทุก Node
+## 11. NodePort: ประตูบนทุก Node
 
 <p align="center">
   <img src="images/11-nodeport-gate-every-ship.png" alt="ประตู 30080 บนหอบังคับการและเรือทุกลำ ลูกค้าจากถนนเข้าได้ทุกประตู" width="800">
@@ -524,7 +653,7 @@ $ curl http://172.19.0.3:30080      ← ประตูของ lab-worker2
 Hello from Pod web-65b66cc75b-wsszc ← Pod นี้อยู่บน lab-worker
 ```
 
-เข้าประตูของเรือลำไหนก็ได้ kube-proxy บนเรือลำนั้นส่งต่อไป Pod ในรายชื่อ **ซึ่งอาจอยู่คนละลำ** (หัวข้อ 3) Node ที่ไม่มี Pod ของเราเลยก็เปิดประตูนี้เหมือนกัน
+เข้าประตูของเรือลำไหนก็ได้ kube-proxy บนเรือลำนั้นส่งต่อไป Pod ในรายชื่อ **ซึ่งอาจอยู่คนละลำ** (หัวข้อ 5) Node ที่ไม่มี Pod ของเราเลยก็เปิดประตูนี้เหมือนกัน
 
 ### ทำไม LAB 0 ต้องเพิ่ม `-p 30080-30082:30080-30082`
 
@@ -535,18 +664,11 @@ Hello from Pod web-65b66cc75b-wsszc ← Pod นี้อยู่บน lab-work
 
 ขาดชั้นแรก `curl localhost:30080` ใน SSH ของ k8s-lab ยังได้ แต่ browser บนเครื่องเราเปิดไม่ได้ และถ้าตั้ง `nodePort` เป็นเลขอื่นนอก 30080–30082 ก็เข้าได้แค่ด้วย IP ของ Node จากใน k8s-lab
 
-| | ClusterIP | NodePort |
-|---|---|---|
-| ได้ ClusterIP | ใช่ | ใช่ (ทุก NodePort มี ClusterIP ด้วย) |
-| เปิด port บน Node | ไม่ | ทุก Node (30000–32767) |
-| ใครเรียกได้ | Pod ในคลัสเตอร์ | Pod ในคลัสเตอร์ + คนนอกที่เข้าถึง Node ได้ |
-| ใช้ใน LAB | 1, 2 (`web`, `web-typo`) | 3, 4 (`web-nodeport`, `som-menu`) |
-
-> **เคล็ดลับ:** ในคลาวด์จริงมี `type: LoadBalancer` ที่ขอเครื่องกระจายโหลดของผู้ให้บริการคลาวด์มาเปิดที่อยู่เดียวหน้าทุก Node ให้ คลัสเตอร์ kind บนเครื่องเราไม่มีเครื่องนั้น บทนี้จึงใช้ NodePort
+> **เคล็ดลับ:** เทียบ ClusterIP กับ NodePort และแบบอื่นได้จากตารางและภาพสถาปัตยกรรมใน [หัวข้อ 3](#3-service-มีกี่แบบ-และแต่ละแบบต่างกันอย่างไร) ส่วนบนคลาวด์จริงจะใช้ `type: LoadBalancer` แทน (หัวข้อ 3.3) ซึ่งคลัสเตอร์ kind บนเครื่องเราใช้ไม่ได้ บทนี้จึงใช้ NodePort
 
 ---
 
-## 11. Service ระหว่างเปลี่ยนรุ่น: readinessProbe และ rolling update
+## 12. Service ระหว่างเปลี่ยนรุ่น: readinessProbe และ rolling update
 
 <p align="center">
   <img src="images/12-service-readiness-rolling.png" alt="กล่องใหม่ 0/1 ไม่อยู่ในกระดาน Endpoints กล่องที่กำลังปิดรอ 5 วินาทีหลัง SIGTERM" width="800">
@@ -627,7 +749,7 @@ process.on("SIGTERM", () => {
 
 ---
 
-## 12. อ่าน YAML ร้านน้องส้มทั้งไฟล์
+## 13. อ่าน YAML ร้านน้องส้มทั้งไฟล์
 
 <p align="center">
   <img src="images/13-som-menu-svc-yaml-skeleton.png" alt="โครงของ som-menu-svc.yaml และ selector ที่จับป้ายในแม่พิมพ์ของ som-menu-deploy.yaml" width="800">
@@ -650,12 +772,12 @@ spec:
 
 ```yaml
 # LAB 4: ที่อยู่เดียวของร้านน้องส้ม — Service แบบ NodePort กระจายลูกค้าไปทุกสาขาที่พร้อม
-apiVersion: v1                 # ← หัวข้อ 4: Service อยู่กลุ่มหลัก
+apiVersion: v1                 # ← หัวข้อ 6: Service อยู่กลุ่มหลัก
 kind: Service
 metadata:
-  name: som-menu               # ← หัวข้อ 6: ชื่อใน DNS = som-menu.default.svc.cluster.local
+  name: som-menu               # ← หัวข้อ 7: ชื่อใน DNS = som-menu.default.svc.cluster.local
 spec:
-  type: NodePort               # ← หัวข้อ 10
+  type: NodePort               # ← หัวข้อ 3.2, 11
   selector:
     app: som-menu            # ทุกสาขาที่ติดป้ายนี้ ไม่สนว่า version 1.0 หรือ 2.0
   ports:
@@ -682,8 +804,8 @@ spec:
           image: som-menu:1.0
           ...
           ports:
-            - containerPort: 3000      # ← = targetPort ของ Service (หัวข้อ 5)
-          readinessProbe:              # ← หัวข้อ 11: ผ่านแล้วจึงเข้ารายชื่อของ Service
+            - containerPort: 3000      # ← = targetPort ของ Service (หัวข้อ 4)
+          readinessProbe:              # ← หัวข้อ 12: ผ่านแล้วจึงเข้ารายชื่อของ Service
             httpGet:
               path: /api/health
               port: 3000
@@ -691,14 +813,14 @@ spec:
 ```
 
 - 3 จุดที่ต้องตรงกันระหว่าง 2 ไฟล์: **ป้าย** (`app: som-menu`), **port** (`targetPort` = `containerPort` = 3000), และ readinessProbe ที่ตัดสินว่าสาขาไหนพร้อม
-- ถ้าใส่ `version: "1.0"` ลงใน selector ของ Service ด้วย พอเปลี่ยนเป็นรุ่น 2.0 เสร็จ จะไม่มี Pod ตรงเลย กลายเป็น **Endpoints ว่าง** แบบหัวข้อ 8 ทั้งร้าน
+- ถ้าใส่ `version: "1.0"` ลงใน selector ของ Service ด้วย พอเปลี่ยนเป็นรุ่น 2.0 เสร็จ จะไม่มี Pod ตรงเลย กลายเป็น **Endpoints ว่าง** แบบหัวข้อ 9 ทั้งร้าน
 - `som-menu-deploy-v2.yaml` ต่างแค่ 3 บรรทัด (บทที่ 4) และหัวไฟล์เขียนไว้ว่า **"Service ตัวเดิม ไม่ต้องแก้"**
 
 แปลทั้งไฟล์เป็นประโยคเดียว: **"ขอ Service ชื่อ `som-menu` แบบ NodePort เปิดประตู 30080 บนทุก Node และ port 80 ในคลัสเตอร์ แล้วส่งลูกค้าต่อไป port 3000 ของทุกสาขาที่ติดป้าย `app=som-menu` และพร้อม ไม่ว่าจะเป็นรุ่นไหน"**
 
 ---
 
-## 13. ปูทางบทถัดไป
+## 14. ปูทางบทถัดไป
 
 <p align="center">
   <img src="images/14-next-chapter-preview.png" alt="ตัวอย่างบทหน้า มองผ่านกล้องส่องทางไกล" width="800">
@@ -714,7 +836,7 @@ spec:
 
 ---
 
-## 14. สรุปและคำถามทบทวน
+## 15. สรุปและคำถามทบทวน
 
 <p align="center">
   <img src="images/15-chapter-summary.png" alt="สรุปบทที่ 5" width="800">
@@ -723,14 +845,14 @@ spec:
 ### สรุป
 
 1. **Service** ให้ที่อยู่เดียวที่คงที่ (ชื่อ + ClusterIP) กับกลุ่ม Pod ที่ติดป้ายเดียวกัน และกระจายลูกค้าไปทุก Pod ที่พร้อม
-2. ทำงาน 3 ช่วง: `selector` → endpointslice-controller จด **Endpoints** → **kube-proxy บนทุก Node** วางกฎส่งต่อ → Pod
-3. YAML ของ Service ใช้ `apiVersion: v1` มี `metadata` / `spec` ชุดเดียว **ไม่มี template ไม่สร้าง Pod** และ selector ไม่มี `matchLabels`
-4. 3 ตัวเลข: `nodePort` (Node, คนนอก) → `port` (Service, ในคลัสเตอร์) → `targetPort` (container ต้องตรง `containerPort`) และ `PORT(S)` เขียน `port:nodePort`
-5. เรียกด้วยชื่อผ่าน DNS (`kube-dns` ที่ `10.96.0.10`) ชื่อสั้น `web` หรือชื่อเต็ม `web.default.svc.cluster.local`
-6. Endpoints **ตามป้ายเสมอ**: ลบ Pod, ถอดป้าย, scale แล้วรายชื่อเปลี่ยนเอง ไม่ต้องแก้ Service
-7. selector พิมพ์ผิด apply ผ่านแต่ **Endpoints ว่าง** → `Connection refused` ตรวจ `describe svc` → `--show-labels` → targetPort
-8. **ClusterIP** คงที่ตลอดอายุ Service แต่ใช้ได้ในคลัสเตอร์เท่านั้น ลบแล้วสร้างใหม่ได้ IP ใหม่ จึงเรียกด้วยชื่อ
-9. **NodePort** เปิด port 30000–32767 บนทุก Node เข้าประตูไหนก็ไปถึง Pod ได้ทุกลำ (k8s-lab ส่งออกเฉพาะ 30080–30082)
+2. Service มี **3 แบบ** ซ้อนกันเป็นชั้น: **ClusterIP** (ใช้ในคลัสเตอร์) ⊂ **NodePort** (+ ประตูบนทุก Node) ⊂ **LoadBalancer** (+ เครื่องกระจายโหลดของคลาวด์) บทนี้ใช้ 2 แบบแรก
+3. ที่อยู่ 3 แบบ คู่กับ port: Node IP + `nodePort` (คนนอก) → ClusterIP + `port` (Pod ในคลัสเตอร์) → Pod IP + `targetPort` (= `containerPort`) และ `PORT(S)` เขียนเป็น `port:nodePort`
+4. ทำงาน 3 ช่วง: `selector` → endpointslice-controller จด **Endpoints** → **kube-proxy บนทุก Node** วางกฎส่งต่อ → Pod
+5. YAML ของ Service ใช้ `apiVersion: v1` มี `metadata` / `spec` ชุดเดียว **ไม่มี template ไม่สร้าง Pod** และ selector ไม่มี `matchLabels`
+6. เรียกด้วยชื่อผ่าน DNS (`kube-dns` ที่ `10.96.0.10`) ชื่อสั้น `web` หรือชื่อเต็ม `web.default.svc.cluster.local`
+7. Endpoints **ตามป้ายเสมอ**: ลบ Pod, ถอดป้าย, scale แล้วรายชื่อเปลี่ยนเอง ไม่ต้องแก้ Service
+8. selector พิมพ์ผิด apply ผ่านแต่ **Endpoints ว่าง** → `Connection refused` ตรวจ `describe svc` → `--show-labels` → targetPort
+9. **ClusterIP** คงที่ตลอดอายุ Service (ลบแล้วสร้างใหม่ได้ IP ใหม่ จึงเรียกด้วยชื่อ) ส่วน **NodePort** เปิด port 30000–32767 บนทุก Node (k8s-lab ส่งออกเฉพาะ 30080–30082)
 10. Pod ที่ READY `0/1` ไม่อยู่ใน Endpoints, เปลี่ยนรุ่นแล้วแค่ refresh, Pod ที่กำลังปิดควรรอให้ถอดชื่อก่อน → บทหน้า **ConfigMap + Secret**
 
 ### คำถามทบทวน
@@ -845,12 +967,12 @@ port-forward ผูกท่อกับ Pod ตัวเดียว Pod ถู
 ตอนลบ Pod การส่ง SIGTERM กับการถอด Pod ออกจาก Endpoints เกิดพร้อมกัน และ kube-proxy บนทุก Node ต้องใช้เวลาปรับรางอีกนิด ถ้าปิดทันที ลูกค้าที่ยังถูกส่งมาช่วงนั้นจะต่อไม่ติด (เคยเจอ `Connection reset by peer`) รอ 5 วินาทีให้ถอดชื่อเสร็จก่อน แล้วค่อยปิด
 </details>
 
-**9. LAB 1 Service `web` ได้ `10.96.39.117` แต่ LAB 2 apply ไฟล์เดิมได้ `10.96.173.122` เกิดอะไรขึ้น ถ้ามีแอปที่ hard-code `10.96.39.117` ไว้จะเป็นอย่างไร ควรเขียนแบบไหน**
+**9. เลือกแบบของ Service ให้แต่ละงาน: (ก) ฐานข้อมูลที่หน้าเว็บในคลัสเตอร์เรียกใช้ คนนอกไม่ควรเข้าถึง (ข) เปิดหน้าร้านจาก browser บนเครื่องเรา ในคลัสเตอร์ kind (ค) เปิดเว็บจริงบนคลาวด์ให้ลูกค้าจำที่อยู่เดียว**
 
 <details>
 <summary>แนวคำตอบ</summary>
 
-ตอนท้าย LAB 1 ลบ Service ทิ้ง LAB 2 จึงเป็น Service ตัวใหม่ ได้ ClusterIP ใหม่ (ClusterIP คงที่แค่ตลอดอายุ Service ตัวเดิม) แอปที่ hard-code IP เก่าจะเรียกไม่ติด ควรเรียกด้วยชื่อ `http://web` ที่ DNS แปลเป็น IP ปัจจุบันให้เสมอ
+(ก) **ClusterIP** ใช้ได้เฉพาะในคลัสเตอร์ (ข) **NodePort** เปิดประตู `30080` บนทุก Node แบบ LAB 3–4 (ค) **LoadBalancer** คลาวด์ตั้งเครื่องกระจายโหลดให้ ได้ `EXTERNAL-IP` ที่เดียว
 </details>
 
 **10. ถ้าแก้ `som-menu-svc.yaml` ให้ `targetPort: 80` (แต่แอปฟัง 3000) `describe svc` จะเห็น Endpoints ไหม แล้วเรียกได้ไหม**
@@ -858,7 +980,7 @@ port-forward ผูกท่อกับ Pod ตัวเดียว Pod ถู
 <details>
 <summary>แนวคำตอบ</summary>
 
-เห็น Endpoints ครบ 3 ตัว (ป้ายยังตรง และ Pod พร้อม) แต่ลงท้ายเป็น `:80` ซึ่งไม่มีแอปฟังอยู่ จึงเรียกไม่ติด เป็นขั้นที่ 3 ของการตรวจในหัวข้อ 8: Endpoints มีแต่ต่อไม่ได้ → เทียบ `targetPort` กับ `containerPort`
+เห็น Endpoints ครบ 3 ตัว (ป้ายยังตรง และ Pod พร้อม) แต่ลงท้ายเป็น `:80` ซึ่งไม่มีแอปฟังอยู่ จึงเรียกไม่ติด เป็นขั้นที่ 3 ของการตรวจในหัวข้อ 9: Endpoints มีแต่ต่อไม่ได้ → เทียบ `targetPort` กับ `containerPort`
 </details>
 
 ---
@@ -868,4 +990,4 @@ port-forward ผูกท่อกับ Pod ตัวเดียว Pod ถู
 - Kubernetes Docs: [Service](https://kubernetes.io/docs/concepts/services-networking/service/) · [DNS for Services and Pods](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/) · [EndpointSlices](https://kubernetes.io/docs/concepts/services-networking/endpoint-slices/)
 - [Connecting Applications with Services](https://kubernetes.io/docs/tutorials/services/connect-applications-service/) · [Pod Lifecycle: Termination of Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-termination)
 
-> ภาพประกอบในโฟลเดอร์ [`images/`](images/) สร้างด้วย AI เพื่อการเรียนการสอน (prompt อยู่ใน [`images/imagegen-prompts.md`](images/imagegen-prompts.md)) ผลลัพธ์คำสั่งมาจาก LAB จริงบน kind v0.33.0 / Kubernetes v1.37.0 (ทดลอง 18 ต.ค. 2569) ชื่อ Pod, ClusterIP, Pod IP, Node IP และลำดับที่ Service เลือก Pod ในเครื่องผู้เรียนจะต่างกัน
+> ภาพการ์ตูนในโฟลเดอร์ [`images/`](images/) สร้างด้วย AI เพื่อการเรียนการสอน (prompt อยู่ใน [`images/imagegen-prompts.md`](images/imagegen-prompts.md)) ส่วนภาพสถาปัตยกรรม ภาพเทียบ YAML และภาพ IP/port ในหัวข้อ 3–4 และ 6 วาดเป็น SVG จากค่าจริงใน LAB ผลลัพธ์คำสั่งมาจาก LAB จริงบน kind v0.33.0 / Kubernetes v1.37.0 (ทดลอง 18 ต.ค. 2569) ชื่อ Pod, ClusterIP, Pod IP, Node IP และลำดับที่ Service เลือก Pod ในเครื่องผู้เรียนจะต่างกัน

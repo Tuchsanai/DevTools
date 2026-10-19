@@ -1,7 +1,7 @@
 # บทที่ 5: Kubernetes Service — ที่อยู่เดียวของร้านน้องส้ม
 
 > **รายวิชา:** Software Development Tools and Environments (DevTools)
-> **หัวข้อ:** Kubernetes Service, selector และ Endpoints, ClusterIP, DNS ในคลัสเตอร์, NodePort, port / targetPort / nodePort และ Service คู่กับ rolling update
+> **หัวข้อ:** Service 3 แบบ (ClusterIP, NodePort, LoadBalancer), ที่อยู่และ port (nodePort / port / targetPort / containerPort), selector และ Endpoints, DNS ในคลัสเตอร์ และ Service คู่กับ rolling update
 > **ผลลัพธ์การเรียนรู้ที่เกี่ยวข้อง:** CLO-5, CLO-6
 
 <p align="center">
@@ -15,13 +15,13 @@
 
 | ส่วน | เนื้อหา | ลิงก์ |
 |---|---|---|
-| 📖 **ทฤษฎี** | Service คืออะไร, selector → Endpoints → kube-proxy, อ่าน YAML ของ Service ทีละบรรทัด, port / targetPort / nodePort, DNS ในคลัสเตอร์, Endpoints ตามป้ายของ Pod, กับดัก selector ผิด, ClusterIP, NodePort, Service คู่กับ readinessProbe และ rolling update (มีคำถามทบทวนพร้อมแนวคำตอบ) | [01_Theory/README.md](01_Theory/README.md) |
+| 📖 **ทฤษฎี** | Service คืออะไร, **Service มี 3 แบบพร้อมภาพสถาปัตยกรรมแต่ละแบบ**, **ที่อยู่ 3 แบบกับ port 4 ตัว**, selector → Endpoints → kube-proxy, อ่าน YAML ของ Service ทีละบรรทัด, port / targetPort / nodePort, DNS ในคลัสเตอร์, Endpoints ตามป้ายของ Pod, กับดัก selector ผิด, ClusterIP, NodePort, Service คู่กับ readinessProbe และ rolling update (มีคำถามทบทวนพร้อมแนวคำตอบ) | [01_Theory/README.md](01_Theory/README.md) |
 | 🧪 **ปฏิบัติการ** | LAB 0–4: สร้างคลัสเตอร์ (เปิด port 30080–30082) → Service แรกแบบ ClusterIP → Service หา Pod จากป้าย → NodePort → **LAB สุดท้าย: ร้านอาหารแมวน้องส้มมีที่อยู่เดียว** พร้อมสรุปคำสั่งท้ายบท | [02_LAB/README.md](02_LAB/README.md) |
 
 ## คำแนะนำในการเรียน
 
-1. **อ่านทฤษฎีก่อน** อย่างน้อยหัวข้อ 1–6 แล้วเริ่ม LAB 0–1 ได้เลย
-2. ก่อนทำ LAB 2–4 ให้อ่านหัวข้อ 7–12 (Endpoints, selector ผิด, ClusterIP, NodePort, Service กับ rolling update, YAML ร้านน้องส้ม)
+1. **อ่านทฤษฎีก่อน** อย่างน้อยหัวข้อ 1–7 แล้วเริ่ม LAB 0–1 ได้เลย หัวข้อ 3 (Service 3 แบบ) และ 4 (ที่อยู่และ port) สำคัญที่สุด ต้องแยกให้ออกก่อน
+2. ก่อนทำ LAB 2–4 ให้อ่านหัวข้อ 8–13 (Endpoints, selector ผิด, ClusterIP, NodePort, Service กับ rolling update, YAML ร้านน้องส้ม)
 3. ทำ LAB **ตามลำดับ** ใช้เวลารวมประมาณ 2.5–3 ชั่วโมง
 4. สังเกตสัญลักษณ์ในเอกสาร LAB ว่าคำสั่งรันที่ไหน: 🖥️ บนเครื่องนักศึกษา / 🐧 ใน SSH session ของ k8s-lab / 🌐 browser
 5. ผลลัพธ์ในเอกสารมาจากการทดลองจริง (Kubernetes v1.37.0) แต่ **ชื่อ Pod, IP ของ Pod และ CLUSTER-IP ถูกสุ่มทุกครั้ง** และ Pod ที่ตอบแต่ละครั้งอาจต่างจากในเอกสาร

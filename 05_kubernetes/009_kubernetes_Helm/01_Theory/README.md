@@ -347,7 +347,7 @@ spec:
       nodePort: {{ .Values.service.nodePort }}
 ```
 
-- `selector: app: {{ .Release.Name }}` ใช้ช่องเดียวกับป้ายของ Pod ใน deployment.yaml บูธจึงหา Pod เจอเสมอ ([บทที่ 5 หัวข้อ 10](../../005_kubernetes_Service/01_Theory/README.md#10-nodeport-ประตูบนทุก-node)) / `nodePort` มาจาก `.Values.service.nodePort` → `30081`
+- `selector: app: {{ .Release.Name }}` ใช้ช่องเดียวกับป้ายของ Pod ใน deployment.yaml บูธจึงหา Pod เจอเสมอ ([บทที่ 5 หัวข้อ 11](../../005_kubernetes_Service/01_Theory/README.md#11-nodeport-ประตูบนทุก-node)) / `nodePort` มาจาก `.Values.service.nodePort` → `30081`
 
 `templates/NOTES.txt` เป็นข้อความธรรมดาที่มีช่องได้เหมือนกัน บรรทัดแรก `ติดตั้ง {{ .Release.Name }} แล้ว: {{ .Values.replicas }} Pod ตอบว่า {{ .Values.message }}` ได้เป็น `ติดตั้ง hello แล้ว: 2 Pod ตอบว่า hello-v1` ท้ายผล `helm install` (หัวข้อ 8) = คู่มือสั้น ๆ ที่คนเขียน chart ฝากไว้ให้คนติดตั้ง
 

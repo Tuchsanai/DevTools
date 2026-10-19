@@ -74,20 +74,6 @@ Text (verbatim, at most 5 short labels): "web-deploy.yaml"; "web-svc.yaml"; "mat
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; exactly one cat (Nong Som); the receptionist, deckhands, clerks, crew and customers are faceless human figures, never cats; do not show Ingress or LoadBalancer objects or words. All other lines are plain grey bars with no letters.
 ```
 
-## 06-three-ports.png
-
-> 5. port, targetPort, nodePort — เส้นทาง localhost:30080 → nodePort → port 80 → targetPort 3000
-
-```text
-Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
-Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Service lesson (README figure, about 1536x1024).
-Scene: A left-to-right path with four numbered stops connected by a dashed footpath. Stop 1: a laptop on a street desk with a browser window label localhost:30080. Stop 2: a harbor gate on the side of a cargo ship, gate number label nodePort: 30080. Stop 3: the receptionist (orange vest) at her booth on the deck, label port: 80. Stop 4: a teal Pod box with a small door on its side through which a customer enters, label targetPort: 3000. A single customer figure walks along the path. Nong Som stands at stop 1 pointing along the path.
-Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly. Nong Som is the ONLY cat in the picture.
-Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, plain white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 002-004 illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one shipping container and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); ReplicaSet = crew chief, a faceless sailor silhouette in a navy uniform (a human figure, NOT a cat) holding a clipboard that reads replicas: 3; Deployment = crew manager, a faceless human officer silhouette (NOT a cat) in a white officer uniform and a peaked cap with a small wings badge, holding a revision logbook; old version = Pod boxes with an orange stripe, new version = Pod boxes with a green stripe; NEW in this chapter: Service = harbor receptionist, a faceless human figure (NOT a cat, no animal features) wearing an orange vest, standing at a small reception booth on the dock; the booth has a fixed name sign and a small address plate (the ClusterIP); the receptionist holds a board listing the ready Pod boxes (Endpoints) and directs customers, taking turns, to Pod boxes whose tag matches; NodePort = a numbered harbor gate 30080 that exists on every ship and opens to the street outside; kube-proxy = a faceless deckhand who lays small guide rails on every ship that route customers to the boxes; DNS = a harbor directory book that maps names to addresses; customers = simple round-headed human figures, never cats.
-Text (verbatim, at most 4 short labels): "localhost:30080"; "nodePort: 30080"; "port: 80"; "targetPort: 3000".
-Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; exactly one cat (Nong Som); the receptionist, deckhands, clerks, crew and customers are faceless human figures, never cats; do not show Ingress or LoadBalancer objects or words. Exactly four stops in this order.
-```
-
 ## 07-dns-phonebook.png
 
 > 6. เรียกด้วยชื่อ — DNS ในคลัสเตอร์ = สมุดรายชื่อท่า
@@ -220,3 +206,9 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 > หัวข้อ 4.1 · web-deploy.yaml คู่กับ web-svc.yaml: ① คนละกลุ่ม ② ชื่อซ้ำได้ ③ selector ตรงกับป้ายใน template ④ targetPort ตรงกับ containerPort ⑤ port ของ Service เอง ⑥ replicas/template มีแค่ Deployment
 
 ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะโค้ดในภาพต้องตรงกับไฟล์ LAB ทุกตัวอักษร วาดเป็น SVG (`05a-yaml-deploy-vs-svc-map.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/yaml_map.py` (spec `005`) แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) ให้ฟอนต์ไทยเหมือนกันทุกเครื่อง แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง
+
+## 03a-service-types-layers.png · 03b-arch-clusterip.png · 03c-arch-nodeport.png · 03d-arch-loadbalancer.png · 03e-yaml-types-compare.png · 04a-addresses-and-ports.png
+
+> หัวข้อ 3 (Service 3 แบบ: ภาพรวมแบบชั้นซ้อน + ภาพสถาปัตยกรรมแบบละ 1 ภาพ + เทียบ YAML 3 แบบ) และหัวข้อ 4 (ที่อยู่ 3 แบบกับ port 4 ตัว)
+
+ภาพชุดนี้ **ไม่ได้สร้างด้วย image gen** เพราะตัวเลข IP / port และชื่อในภาพต้องตรงกับ LAB ทุกตัวอักษร วาดเป็น SVG ด้วยสคริปต์ `05_kubernetes/backup/tools/svc_types_svgs.py` (ไฟล์ `.svg` คือต้นฉบับที่แก้ได้) แล้ว render เป็น PNG ด้วย `05_kubernetes/backup/tools/render_svgs.sh` (Microsoft Edge headless `--force-device-scale-factor=2`) ภาพสถาปัตยกรรม 3 ภาพใช้ layout เดียวกัน (นอกคลัสเตอร์ | Service + Node 3 ตัว | ถนนด้านนอก) และใช้ร้าน `som-menu` (port 80 → targetPort 3000) เป็นตัวอย่างเดียวกัน ภาพจึงต่างกันเฉพาะส่วนที่ `type:` เปลี่ยน แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง

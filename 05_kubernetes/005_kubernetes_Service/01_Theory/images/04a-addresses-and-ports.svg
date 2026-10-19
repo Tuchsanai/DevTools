@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 775" width="1300" height="775">
+<defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mnavy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f172a"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="msky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0369a1"/></marker><marker id="mslate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker></defs>
+<rect width="1300" height="775" fill="#ffffff"/>
+<text x="650" y="44" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="26" font-weight="700" fill="#0f172a" xml:space="preserve">เส้นทางของ request 1 ครั้ง: ทุกชั้นมี IP และ port ของตัวเอง</text>
+<text x="650" y="78" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#475569" xml:space="preserve">ตัวเลขจาก Service som-menu ใน LAB 4 (som-menu-svc.yaml + som-menu-deploy.yaml)</text>
+<rect x="190" y="110" width="245" height="150" rx="14" fill="#f1f5f9" stroke="#64748b" stroke-width="3"/>
+<text x="312" y="142" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="19" font-weight="700" fill="#334155" xml:space="preserve">เครื่องเรา</text>
+<text x="312" y="168" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">browser</text>
+<rect x="220" y="190" width="185" height="46" rx="9" fill="#64748b" stroke="#64748b" stroke-width="2"/>
+<text x="312" y="220" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="18" font-weight="700" fill="#ffffff" xml:space="preserve">30080</text>
+<path d="M437,213 L463,213" fill="none" stroke="#0f172a" stroke-width="4" stroke-linejoin="round" marker-end="url(#mnavy)"/>
+<circle cx="450" cy="186" r="12" fill="#0f172a"/>
+<text x="450" y="192" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">1</text>
+<rect x="465" y="110" width="245" height="150" rx="14" fill="#f0f9ff" stroke="#0369a1" stroke-width="3"/>
+<text x="588" y="142" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="19" font-weight="700" fill="#0369a1" xml:space="preserve">Node</text>
+<text x="588" y="168" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">lab-control-plane</text>
+<rect x="495" y="190" width="185" height="46" rx="9" fill="#ea580c" stroke="#ea580c" stroke-width="2"/>
+<text x="588" y="220" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="18" font-weight="700" fill="#ffffff" xml:space="preserve">nodePort 30080</text>
+<path d="M712,213 L738,213" fill="none" stroke="#0f172a" stroke-width="4" stroke-linejoin="round" marker-end="url(#mnavy)"/>
+<circle cx="725" cy="186" r="12" fill="#0f172a"/>
+<text x="725" y="192" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">2</text>
+<rect x="740" y="110" width="245" height="150" rx="14" fill="#fff7ed" stroke="#ea580c" stroke-width="3"/>
+<text x="862" y="142" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="19" font-weight="700" fill="#ea580c" xml:space="preserve">Service</text>
+<text x="862" y="168" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">som-menu</text>
+<rect x="770" y="190" width="185" height="46" rx="9" fill="#ea580c" stroke="#ea580c" stroke-width="2"/>
+<text x="862" y="220" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="18" font-weight="700" fill="#ffffff" xml:space="preserve">port 80</text>
+<path d="M987,213 L1013,213" fill="none" stroke="#0f172a" stroke-width="4" stroke-linejoin="round" marker-end="url(#mnavy)"/>
+<circle cx="1000" cy="186" r="12" fill="#0f172a"/>
+<text x="1000" y="192" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">3</text>
+<rect x="1015" y="110" width="245" height="150" rx="14" fill="#f0fdfa" stroke="#0d9488" stroke-width="3"/>
+<text x="1138" y="142" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="19" font-weight="700" fill="#0d9488" xml:space="preserve">Pod</text>
+<text x="1138" y="168" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">som-menu-...</text>
+<rect x="1045" y="190" width="185" height="46" rx="9" fill="#0d9488" stroke="#0d9488" stroke-width="2"/>
+<text x="1138" y="220" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="18" font-weight="700" fill="#ffffff" xml:space="preserve">targetPort 3000</text>
+<text x="862" y="286" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#7c3aed" xml:space="preserve">↑ Pod ในคลัสเตอร์เรียกที่นี่ได้โดยตรง</text>
+<text x="862" y="308" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#7c3aed" xml:space="preserve">http://som-menu:80</text>
+<rect x="20" y="340" width="1260" height="50" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+<text x="36" y="371" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">IP</text>
+<text x="312" y="371" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">localhost</text>
+<text x="588" y="371" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">Node IP 172.19.0.2</text>
+<text x="862" y="371" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">ClusterIP 10.96.254.181</text>
+<text x="1138" y="371" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">Pod IP 10.244.2.38</text>
+<rect x="20" y="398" width="1260" height="74" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+<text x="36" y="441" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">port</text>
+<text x="312" y="441" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">30080 (docker run -p)</text>
+<text x="588" y="441" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">nodePort: 30080</text>
+<text x="862" y="441" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">port: 80</text>
+<text x="1138" y="429" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">targetPort: 3000</text>
+<text x="1138" y="453" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">= containerPort: 3000</text>
+<rect x="20" y="480" width="1260" height="74" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+<text x="36" y="523" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">กำหนดไว้ที่</text>
+<text x="312" y="523" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">คำสั่ง docker run ใน LAB 0</text>
+<text x="588" y="523" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">som-menu-svc.yaml</text>
+<text x="862" y="523" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">som-menu-svc.yaml</text>
+<text x="1138" y="511" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">targetPort → svc.yaml</text>
+<text x="1138" y="535" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">containerPort → deploy.yaml</text>
+<rect x="20" y="562" width="1260" height="74" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+<text x="36" y="605" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">ใครเรียก port นี้</text>
+<text x="312" y="605" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">เราพิมพ์ใน browser</text>
+<text x="588" y="605" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">เครื่องนอกคลัสเตอร์</text>
+<text x="862" y="605" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">Pod ในคลัสเตอร์</text>
+<text x="1138" y="593" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">Service ส่งต่อมา</text>
+<text x="1138" y="617" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">แอปใน Pod ฟังอยู่</text>
+<rect x="20" y="644" width="1260" height="74" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+<text x="36" y="687" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">เปลี่ยนไหม</text>
+<text x="312" y="687" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">ไม่เปลี่ยน</text>
+<text x="588" y="687" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">ไม่เปลี่ยน</text>
+<text x="862" y="687" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">ไม่เปลี่ยนตลอดอายุ Service</text>
+<text x="1138" y="675" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">Pod ใหม่ = IP ใหม่</text>
+<text x="1138" y="699" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">(port ไม่เปลี่ยน)</text>
+<text x="650" y="756" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">จำง่าย ๆ: request จากนอกคลัสเตอร์ผ่าน  nodePort (Node) → port (Service) → targetPort (Pod)  และ targetPort ต้องเท่ากับ containerPort</text>
+</svg>

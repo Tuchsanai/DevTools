@@ -19,6 +19,13 @@
 | 🐧 | SSH session ใน k8s-lab (prompt `root@k8s-lab`) |
 | 🌐 | browser บนเครื่องนักศึกษา |
 
+บทนี้ลงมือ Service 2 แบบจาก 3 แบบใน [ทฤษฎีหัวข้อ 3](../01_Theory/README.md#3-service-มีกี่แบบ-และแต่ละแบบต่างกันอย่างไร): **LAB 1–2 ใช้ ClusterIP** (เรียกจากภายในคลัสเตอร์) และ **LAB 3–4 ใช้ NodePort** (เรียกจากนอกคลัสเตอร์) ตัวเลข `port` / `targetPort` / `nodePort` ของทุก LAB สรุปเทียบกันไว้ใน [ทฤษฎีหัวข้อ 4](../01_Theory/README.md#4-ที่อยู่-3-แบบ-และ-port-4-ตัว-ศัพท์ที่ต้องแยกให้ออก)
+
+ทุก LAB มี **ภาพแผนการทดลอง** บอกว่า LAB นั้นมีกี่การทดลอง และทุกขั้นเริ่มด้วย 2 บรรทัดนี้ อ่านก่อนพิมพ์คำสั่ง
+
+- 🎯 **เป้าหมายขั้นนี้** = ขั้นนี้ทดลองเพื่อพิสูจน์หลักการอะไร (มีลิงก์ไปหัวข้อทฤษฎีที่เกี่ยวข้อง)
+- 🔍 **สังเกต** = ตอนดูผลลัพธ์ให้มองหาอะไร ถ้าเห็นตามนี้ แปลว่าหลักการนั้นเป็นจริง
+
 ### กติกา
 
 - ทำงานในโฟลเดอร์ `/workspace/DevTools/05_kubernetes/005_kubernetes_Service/02_LAB` และ **ลบ Service และ Deployment ของตัวเองทุกครั้งที่จบ LAB**
@@ -42,12 +49,14 @@
 
 | รูปที่ | เรื่อง | รูปที่ | เรื่อง |
 |:---:|---|:---:|---|
-| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 7 | [LAB 4 บูธ som-menu ส่งลูกค้าเฉพาะสาขาที่พร้อม](#fig-7) |
-| 2 | [LAB 0 git clone](#fig-2) | 8 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 1.0 สาขาแรก](#fig-8) |
-| 3 | [LAB 1 Service ClusterIP และชื่อใน DNS](#fig-3) | 9 | [ภาพหน้าจอจริง: refresh แล้วได้อีกสาขา](#fig-9) |
-| 4 | [LAB 2 Endpoints ตามป้าย และ selector พิมพ์ผิด](#fig-4) | 10 | [ภาพหน้าจอจริง: แค่ refresh ก็ได้เวอร์ชัน 2.0](#fig-10) |
-| 5 | [LAB 3 NodePort ประตู 30080 บนทุก Node](#fig-5) | 11 | [บทที่ 4 ท่อหลุด เทียบกับบทที่ 5 ที่อยู่เดียว](#fig-11) |
-| 6 | [ภาพหน้าจอจริง: nginx ผ่าน NodePort](#fig-6) | | |
+| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 9 | [ภาพหน้าจอจริง: nginx ผ่าน NodePort](#fig-9) |
+| 2 | [LAB 0 git clone](#fig-2) | 10 | [LAB 4 Service som-menu ส่ง request เฉพาะ Pod ที่พร้อม](#fig-10) |
+| 3 | [LAB 1 Service ClusterIP และชื่อใน DNS](#fig-3) | 11 | [แผนการทดลอง LAB 4](#fig-11) |
+| 4 | [แผนการทดลอง LAB 1](#fig-4) | 12 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 1.0 Pod แรก](#fig-12) |
+| 5 | [LAB 2 Endpoints ตาม label และ selector พิมพ์ผิด](#fig-5) | 13 | [ภาพหน้าจอจริง: refresh แล้วได้อีก Pod](#fig-13) |
+| 6 | [แผนการทดลอง LAB 2](#fig-6) | 14 | [ภาพหน้าจอจริง: แค่ refresh ก็ได้เวอร์ชัน 2.0](#fig-14) |
+| 7 | [LAB 3 NodePort 30080 บน Node ทุกตัว](#fig-7) | 15 | [บทที่ 4 port-forward หลุด เทียบกับบทที่ 5 ที่อยู่เดียว](#fig-15) |
+| 8 | [แผนการทดลอง LAB 3](#fig-8) | | |
 
 ### โครงสร้างไฟล์ LAB
 
@@ -219,9 +228,18 @@ cd DevTools/05_kubernetes/005_kubernetes_Service/02_LAB
 
 **เป้าหมาย:** สร้าง Pod nginx 3 ตัวด้วย Deployment แล้วสร้าง Service แบบ ClusterIP เป็นที่อยู่เดียวของทั้ง 3 ตัว เรียกด้วยชื่อ `web` จาก Pod อีกตัวในคลัสเตอร์ ดูว่า Service กระจายงาน และชื่อ `web` แปลงเป็น IP ได้อย่างไร
 
+<p align="center" id="fig-4">
+  <img src="images/02a-lab1-plan.png" alt="รูปที่ 4 แผนการทดลอง LAB1" width="900"><br>
+  <em><b>รูปที่ 4</b> แผนการทดลอง LAB1 มี 4 การทดลอง: (1) ขั้นที่ 1–2 สร้าง Service แบบ ClusterIP ได้ IP คงที่ 1 อัน (2) ขั้นที่ 3 Endpoints คือรายชื่อ Pod IP:targetPort ที่ selector หาเจอ (3) ขั้นที่ 4–6 เรียกชื่อ web จาก Pod ในคลัสเตอร์ request กระจายไปทุก Pod และ DNS แปลชื่อเป็น ClusterIP (4) ขั้นที่ 7–8 เรียก Pod IP ตรง ๆ ได้ Pod ตัวเดียว จึงควรเรียกด้วยชื่อ Service</em>
+</p>
+
 🐧 **ใน SSH session ของ k8s-lab** (ทุกขั้นใน LAB 1–3)
 
 ### ขั้นที่ 1: Pod nginx 3 ตัวที่บอกชื่อตัวเอง
+
+> 🎯 **เป้าหมายขั้นนี้:** เตรียม Pod 3 ตัวที่มี label `app: web` และตอบชื่อ Pod ของตัวเอง ไว้ดูว่า Service ส่ง request ไป Pod ไหน ([ทฤษฎีหัวข้อ 8](../01_Theory/README.md#8-service-หา-pod-จากป้าย))
+>
+> 🔍 **สังเกต:** Pod 3 ตัวมี Pod IP คนละอัน (`10.244.x.x`) และอยู่บน 2 Node ถ้าเรียก Pod IP เอง ต้องจำ IP ถึง 3 อัน
 
 ไฟล์ `labs/lab01-clusterip/web-deploy.yaml`
 
@@ -286,6 +304,10 @@ Pod 3 ตัว **IP คนละอัน** อยู่บนเรือ 2 �
 
 ### ขั้นที่ 2: สร้าง Service
 
+> 🎯 **เป้าหมายขั้นนี้:** สร้าง Service แบบ **ClusterIP** แล้วดูว่าได้ IP คงที่ 1 อันสำหรับ Pod ทั้ง 3 ตัว ([ทฤษฎีหัวข้อ 3](../01_Theory/README.md#3-service-มีกี่แบบ-และแต่ละแบบต่างกันอย่างไร) · [ทฤษฎีหัวข้อ 6](../01_Theory/README.md#6-อ่าน-yaml-ของ-service-ทีละบรรทัด))
+>
+> 🔍 **สังเกต:** `TYPE ClusterIP`, `CLUSTER-IP` ขึ้นต้น `10.96.` (คนละช่วงกับ Pod IP) และ `PORT(S) 80/TCP` ไม่มีเลข nodePort
+
 ไฟล์ `labs/lab01-clusterip/web-svc.yaml`
 
 ```yaml
@@ -308,7 +330,7 @@ spec:
 - `kind: Service` ชื่อ **`web`** = ชื่อนี้คือที่อยู่ที่ Pod อื่นใช้เรียก (`http://web`)
 - `type: ClusterIP` = ได้ **IP ภายในคลัสเตอร์ 1 อัน ที่ไม่เปลี่ยน** ตลอดอายุของ Service (เรียกได้เฉพาะจากในคลัสเตอร์)
 - `selector: app: web` = ส่งงานให้ **ทุก Pod ที่มีป้าย `app=web`** (เขียนป้ายตรง ๆ ไม่มี `matchLabels` แบบ ReplicaSet)
-- `port: 80` คือ port ที่คนเรียกใช้ ส่วน `targetPort: 80` คือ port ของ container ที่ Service ส่งต่อไป (LAB 4 สองค่านี้จะไม่เท่ากัน)
+- `port: 80` คือ port ของ Service (ที่ ClusterIP) ส่วน `targetPort: 80` คือ port ของ Pod ที่ Service ส่ง request ต่อไป เลขเท่ากันแต่เป็นคนละ port (ทฤษฎีหัวข้อ 4) และใน LAB 4 สองค่านี้จะไม่เท่ากัน
 - Service ไม่ได้สร้าง Pod เลย และไม่ใช่เจ้าของ Pod มันแค่ **หา Pod จากป้าย** แล้วส่งงานให้
 
 ```bash
@@ -336,6 +358,10 @@ web          ClusterIP   10.96.39.117   &lt;none&gt;        80/TCP    0s
 Service `web` ได้ **`CLUSTER-IP 10.96.39.117`** (ขึ้นต้น `10.96.` เหมือน `kube-dns` ใน LAB 0 คนละช่วงกับ IP ของ Pod ที่ขึ้นต้น `10.244.`) และเปิด port `80/TCP`
 
 ### ขั้นที่ 3: Service ส่งงานให้ใคร (Endpoints)
+
+> 🎯 **เป้าหมายขั้นนี้:** ดูว่า Service หา Pod จาก `selector` แล้วจดเป็น **Endpoints** ([ทฤษฎีหัวข้อ 5](../01_Theory/README.md#5-service-ทำงานอย่างไร))
+>
+> 🔍 **สังเกต:** `Endpoints` คือ Pod IP:targetPort (`:80`) ของ Pod ทั้ง 3 ตัว ตรงกับ `kubectl get pods -o wide` ในขั้นที่ 1
 
 ```bash
 kubectl describe svc web
@@ -383,6 +409,10 @@ web-9fqdm    IPv4          80      10.244.2.18,10.244.1.12,10.244.2.19   0s
 EndpointSlice `web-9fqdm` (ชื่อ Service + ตัวอักษรสุ่ม) ถูกสร้างให้เองพร้อม Service มี IP ของ Pod ทั้ง 3 ตัว เราไม่ต้องเขียนรายชื่อนี้เอง
 
 ### ขั้นที่ 4: Pod ลูกค้า
+
+> 🎯 **เป้าหมายขั้นนี้:** สร้าง Pod ไว้เรียก Service จากภายในคลัสเตอร์ เพราะ ClusterIP เรียกจากนอกคลัสเตอร์ไม่ได้ ([ทฤษฎีหัวข้อ 3](../01_Theory/README.md#3-service-มีกี่แบบ-และแต่ละแบบต่างกันอย่างไร) · [ทฤษฎีหัวข้อ 10](../01_Theory/README.md#10-clusterip-ที่อยู่ภายในคลัสเตอร์))
+>
+> 🔍 **สังเกต:** Pod `client` ไม่มี label `app: web` จึงไม่ถูกนับเป็นปลายทางของ Service
 
 Service แบบ ClusterIP เรียกได้จาก **ในคลัสเตอร์** เท่านั้น จึงต้องมี Pod ไว้เป็นลูกค้า ไฟล์ `labs/lab01-clusterip/client-pod.yaml`
 
@@ -433,6 +463,10 @@ web-65b66cc75b-ktpwd   1/1     Running   0          18s
 
 ### ขั้นที่ 5: เรียก Service ด้วยชื่อ
 
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่าเรียก **ชื่อ Service ชื่อเดียว** แล้ว request ถูกกระจายไปทุก Pod ([ทฤษฎีหัวข้อ 3](../01_Theory/README.md#3-service-มีกี่แบบ-และแต่ละแบบต่างกันอย่างไร) · [ทฤษฎีหัวข้อ 5](../01_Theory/README.md#5-service-ทำงานอย่างไร))
+>
+> 🔍 **สังเกต:** เรียก `http://web` (port 80) ซ้ำ ชื่อ Pod ที่ตอบเปลี่ยนไปมาจนครบ 3 ตัว
+
 ```bash
 kubectl exec client -- wget -qO- http://web
 ```
@@ -457,6 +491,10 @@ Hello from Pod web-65b66cc75b-9nnn8
 - Service เลือก Pod แบบสุ่ม ไม่ได้วนตามลำดับ จึงอาจได้ตัวเดิมซ้ำหลายครั้ง (ตัวอย่างนี้ `ktpwd` ได้ 4 ครั้ง)
 
 ### ขั้นที่ 6: ชื่อ web มาจากไหน (DNS)
+
+> 🎯 **เป้าหมายขั้นนี้:** ดูว่าใครแปลชื่อ `web` เป็น ClusterIP ([ทฤษฎีหัวข้อ 7](../01_Theory/README.md#7-เรียกด้วยชื่อ-dns-ในคลัสเตอร์))
+>
+> 🔍 **สังเกต:** `Server: 10.96.0.10` คือ `kube-dns` และ `Address` ตรงกับ `CLUSTER-IP` ของขั้นที่ 2
 
 ชื่อ `web` เป็นชื่อย่อ ชื่อเต็มของ Service คือ `<ชื่อ Service>.<namespace>.svc.cluster.local`
 
@@ -494,6 +532,10 @@ Address: 10.96.39.117
 
 ### ขั้นที่ 7: เรียก Pod ด้วย IP ตรง ๆ ได้ไหม
 
+> 🎯 **เป้าหมายขั้นนี้:** เทียบการเรียก **Pod IP ตรง ๆ** กับการเรียกผ่าน Service ([ทฤษฎีหัวข้อ 4](../01_Theory/README.md#4-ที่อยู่-3-แบบ-และ-port-4-ตัว-ศัพท์ที่ต้องแยกให้ออก))
+>
+> 🔍 **สังเกต:** เรียก Pod IP ได้ แต่ได้ Pod ตัวเดียวทุกครั้ง และ IP นี้ผูกอยู่กับ Pod ตัวนั้นเท่านั้น
+
 เลือก IP ของ Pod มา 1 ตัวจาก `kubectl get pods -o wide` ในขั้นที่ 1
 
 ```bash
@@ -524,6 +566,10 @@ web-65b66cc75b-ktpwd   1/1     Running   0          19s   10.244.1.12   lab-work
 `10.244.2.18` คือ `web-65b66cc75b-8wgnn` เรียกด้วย IP ของ Pod **ได้** แต่ได้ Pod ตัวเดียวทุกครั้ง และ IP นี้จะหายไปเมื่อ Pod ถูกลบหรือเปลี่ยนรุ่น (LAB 2 จะเห็น) งานจริงจึงเรียกด้วย **ชื่อ Service** เสมอ
 
 ### ขั้นที่ 8: ลบทุกอย่างของ LAB 1
+
+> 🎯 **เป้าหมายขั้นนี้:** เก็บกวาดทุกอย่างของ LAB 1 ด้วยชื่อโฟลเดอร์
+>
+> 🔍 **สังเกต:** คำสั่งค้างราว 30 วินาที (Pod `client`) แล้วเหลือแค่ Service `kubernetes` ของระบบ
 
 `kubectl delete -f` ใส่ชื่อ **โฟลเดอร์** ได้ จะลบทุกอย่างจากทุกไฟล์ในโฟลเดอร์นั้นในคำสั่งเดียว
 
@@ -575,14 +621,23 @@ No resources found in default namespace.
 
 ## LAB 2: Service หา Pod จากป้าย
 
-<p align="center" id="fig-4">
-  <img src="images/03-lab2-endpoints-labels.png" alt="รูปที่ 4 LAB2 Endpoints ตามป้าย และ selector พิมพ์ผิด" width="900"><br>
-  <em><b>รูปที่ 4</b> LAB2: ซ้าย พนักงานต้อนรับของบูธ web อัปเดตกระดาน Endpoints เอง เมื่อกล่องถูกลบ IP เก่าถูกขีดฆ่าและมี IP ใหม่มาแทน กล่องที่ถูกลอกป้าย app: web ออกจะไม่มีลูกค้าถูกส่งไป ขวา บูธ web-typo ที่ selector พิมพ์ผิดเป็น app: wbe กระดาน Endpoints ว่างเปล่า ลูกค้าได้ Connection refused</em>
+<p align="center" id="fig-5">
+  <img src="images/03-lab2-endpoints-labels.png" alt="รูปที่ 5 LAB2 Endpoints ตามป้าย และ selector พิมพ์ผิด" width="900"><br>
+  <em><b>รูปที่ 5</b> LAB2: ซ้าย พนักงานต้อนรับของบูธ web อัปเดตกระดาน Endpoints เอง เมื่อกล่องถูกลบ IP เก่าถูกขีดฆ่าและมี IP ใหม่มาแทน กล่องที่ถูกลอกป้าย app: web ออกจะไม่มีลูกค้าถูกส่งไป ขวา บูธ web-typo ที่ selector พิมพ์ผิดเป็น app: wbe กระดาน Endpoints ว่างเปล่า ลูกค้าได้ Connection refused</em>
 </p>
 
 **เป้าหมาย:** ดูว่า Endpoints ของ Service เปลี่ยนตาม Pod เองเมื่อ Pod ถูกลบ ถูกถอดป้าย หรือเพิ่มจำนวน และเจอกับดักที่พบบ่อยที่สุด: พิมพ์ป้ายใน `selector` ผิด
 
+<p align="center" id="fig-6">
+  <img src="images/03a-lab2-plan.png" alt="รูปที่ 6 แผนการทดลอง LAB2" width="900"><br>
+  <em><b>รูปที่ 6</b> แผนการทดลอง LAB2 มี 4 การทดลอง: (1) ขั้นที่ 1–2 ลบ Pod แล้ว Endpoints เปลี่ยนเอง ClusterIP เดิม (2) ขั้นที่ 3 ถอด label แล้ว Pod หลุดจาก Endpoints ทั้งที่ยัง Running (3) ขั้นที่ 4 scale เป็น 5 แล้ว Endpoints เพิ่มเอง (4) ขั้นที่ 5–6 selector พิมพ์ผิด Endpoints ว่าง ได้ Connection refused</em>
+</p>
+
 ### ขั้นที่ 1: สร้างทุกอย่างจากโฟลเดอร์เดียว
+
+> 🎯 **เป้าหมายขั้นนี้:** สร้าง Service จากไฟล์เดิมอีกครั้ง แล้วดูว่าได้ ClusterIP ใหม่ ส่วนชื่อเหมือนเดิม ([ทฤษฎีหัวข้อ 10](../01_Theory/README.md#10-clusterip-ที่อยู่ภายในคลัสเตอร์))
+>
+> 🔍 **สังเกต:** `IP` เป็น `10.96.173.122` ไม่ใช่ `10.96.39.117` ของ LAB 1 และ Endpoints ไม่มี IP ของ Pod `client`
 
 `kubectl apply -f` ใส่ชื่อโฟลเดอร์ได้เหมือน `delete` จะสร้าง Deployment, Service และ Pod client จากไฟล์ทั้ง 3 ใน LAB 1 พร้อมกัน
 
@@ -636,6 +691,10 @@ Service สร้างใหม่จึงได้ IP ใหม่ `10.96.173
 
 ### ขั้นที่ 2: ลบ Pod แล้ว Endpoints เปลี่ยนเอง
 
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **ลบ Pod แล้ว Endpoints อัปเดตเอง** โดยไม่ต้องแก้ Service ([ทฤษฎีหัวข้อ 8](../01_Theory/README.md#8-service-หา-pod-จากป้าย))
+>
+> 🔍 **สังเกต:** IP ของ Pod ที่ถูกลบหายไป IP ของ Pod ใหม่เข้ามาแทน ส่วน `IP` ของ Service ไม่เปลี่ยน
+
 ```bash
 kubectl delete pod web-65b66cc75b-c96gf    # ← เปลี่ยนเป็นชื่อ Pod web ตัวหนึ่งของตัวเอง
 ```
@@ -682,6 +741,10 @@ Endpoints:                10.244.2.22:80,10.244.2.23:80,10.244.1.14:80
 `10.244.1.13` หายไป และ `10.244.1.14` เข้ามาแทนใน Endpoints **เอง** ส่วน IP ของ Service (`10.96.173.122`) ไม่เปลี่ยน ลูกค้าที่เรียก `http://web` ไม่ต้องรู้เลยว่า Pod เปลี่ยนตัว
 
 ### ขั้นที่ 3: ถอดป้ายออกจาก Pod
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า Service เลือก Pod **จาก label เท่านั้น** ([ทฤษฎีหัวข้อ 8](../01_Theory/README.md#8-service-หา-pod-จากป้าย))
+>
+> 🔍 **สังเกต:** Pod ที่ถอด label ยัง `Running` แต่หายจาก Endpoints และไม่ได้รับ request เลยใน 4 ครั้ง
 
 `kubectl label pod <ชื่อ> app-` = **ลบป้าย** `app` ออกจาก Pod (ชื่อป้ายตามด้วย `-`) ลองถอดป้ายจาก Pod ที่เพิ่งเกิดใหม่
 
@@ -749,6 +812,10 @@ Hello from Pod web-65b66cc75b-wqrqq
 
 ### ขั้นที่ 4: ลบ Pod ที่ถอดป้าย แล้วเพิ่มเป็น 5 ตัว
 
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **scale แล้ว Endpoints เพิ่มตาม** โดยไม่ต้องแก้ Service ([ทฤษฎีหัวข้อ 8](../01_Theory/README.md#8-service-หา-pod-จากป้าย))
+>
+> 🔍 **สังเกต:** `Endpoints` แสดง 3 ตัวแรกตามด้วย `+ 2 more...` รวมเป็น 5 ตามจำนวน Pod
+
 Pod `grb46` ไม่มีใครดูแลแล้ว (ReplicaSet ไม่นับ Service ไม่ส่งงาน) ลบทิ้ง
 
 ```bash
@@ -805,6 +872,10 @@ Endpoints:                10.244.2.22:80,10.244.2.23:80,10.244.1.15:80 + 2 more.
 `+ 2 more...` = `describe` แสดงแค่ 3 ตัวแรก แล้วบอกว่ายังมีอีก 2 รวมเป็น **5** ตามจำนวน Pod Pod ใหม่ (`10.244.1.16`, `10.244.2.24`) เข้ารายชื่อเองทันทีที่พร้อม ไม่ต้องแก้ Service เลย
 
 ### ขั้นที่ 5: กับดัก — พิมพ์ป้ายใน selector ผิด
+
+> 🎯 **เป้าหมายขั้นนี้:** เจอกับดัก **selector พิมพ์ผิด** และฝึกตรวจจากบรรทัด `Endpoints` ([ทฤษฎีหัวข้อ 9](../01_Theory/README.md#9-กับดัก-selector-พิมพ์ผิด-แล้ว-endpoints-ว่าง))
+>
+> 🔍 **สังเกต:** apply ผ่านและได้ `CLUSTER-IP` ปกติ แต่ `Endpoints:` ว่าง เรียกแล้วได้ `Connection refused`
 
 ไฟล์ `labs/lab02-selector/web-svc-typo.yaml`
 
@@ -896,6 +967,10 @@ command terminated with exit code 1
 
 ### ขั้นที่ 6: ลบทุกอย่างของ LAB 2
 
+> 🎯 **เป้าหมายขั้นนี้:** เก็บกวาด Service ทั้ง 2 ตัว Deployment และ Pod `client`
+>
+> 🔍 **สังเกต:** `get pods` ขึ้น `No resources found`
+
 ```bash
 kubectl delete -f labs/lab02-selector/web-svc-typo.yaml
 ```
@@ -945,14 +1020,23 @@ No resources found in default namespace.
 
 ## LAB 3: NodePort: เปิดประตูให้คนนอกคลัสเตอร์
 
-<p align="center" id="fig-5">
-  <img src="images/04-lab3-nodeport.png" alt="รูปที่ 5 LAB3 NodePort ประตู 30080 บนทุก Node" width="900"><br>
-  <em><b>รูปที่ 5</b> LAB3: NodePort = ประตูหมายเลข 30080 ที่เปิดบนเรือทุกลำ คนจากถนนด้านนอก (browser ที่ localhost:30080) เข้าประตูลำไหนก็ได้ คนเรือ kube-proxy วางรางส่งต่อไปบูธ web-nodeport แล้วไป Pod ที่ป้าย app: web</em>
+<p align="center" id="fig-7">
+  <img src="images/04-lab3-nodeport.png" alt="รูปที่ 7 LAB3 NodePort ประตู 30080 บนทุก Node" width="900"><br>
+  <em><b>รูปที่ 7</b> LAB3: NodePort = ประตูหมายเลข 30080 ที่เปิดบนเรือทุกลำ คนจากถนนด้านนอก (browser ที่ localhost:30080) เข้าประตูลำไหนก็ได้ คนเรือ kube-proxy วางรางส่งต่อไปบูธ web-nodeport แล้วไป Pod ที่ป้าย app: web</em>
 </p>
 
 **เป้าหมาย:** ClusterIP เรียกได้แค่ในคลัสเตอร์ คราวนี้ใช้ Service แบบ **NodePort** เปิด port `30080` บนทุก Node ให้ curl และ browser จากนอกคลัสเตอร์เข้าถึง Pod ได้ โดยไม่ต้องใช้ port-forward
 
+<p align="center" id="fig-8">
+  <img src="images/04a-lab3-plan.png" alt="รูปที่ 8 แผนการทดลอง LAB3" width="900"><br>
+  <em><b>รูปที่ 8</b> แผนการทดลอง LAB3 มี 4 การทดลอง: (1) ขั้นที่ 1–2 เปลี่ยน type เป็น NodePort ยังมี ClusterIP และได้ nodePort 30080 เพิ่ม (2) ขั้นที่ 3 เรียก localhost:30080 จากนอกคลัสเตอร์ (3) ขั้นที่ 4 nodePort เปิดบน Node ทุกตัว (4) ขั้นที่ 5–6 เปิดจาก browser บนเครื่องเราโดยไม่ใช้ port-forward</em>
+</p>
+
 ### ขั้นที่ 1: สร้าง Pod nginx 3 ตัว
+
+> 🎯 **เป้าหมายขั้นนี้:** เตรียม Pod 3 ตัวเดิม และจดไว้ว่า Pod ไหนอยู่ Node ไหน ([ทฤษฎีหัวข้อ 11](../01_Theory/README.md#11-nodeport-ประตูบนทุก-node))
+>
+> 🔍 **สังเกต:** Pod อยู่บน `lab-worker` และ `lab-worker2` ไม่มี Pod บน `lab-control-plane`
 
 ใช้ไฟล์ Deployment เดิมของ LAB 1
 
@@ -984,6 +1068,10 @@ web-65b66cc75b-wsszc   1/1     Running   0          10s   10.244.2.26   lab-work
 **จดไว้ว่า Pod ไหนอยู่ Node ไหน** จะใช้ในขั้นที่ 4
 
 ### ขั้นที่ 2: Service แบบ NodePort
+
+> 🎯 **เป้าหมายขั้นนี้:** เปลี่ยน `type` เป็น **NodePort** แล้วดูว่าได้อะไรเพิ่มจาก ClusterIP ([ทฤษฎีหัวข้อ 3](../01_Theory/README.md#3-service-มีกี่แบบ-และแต่ละแบบต่างกันอย่างไร) · [ทฤษฎีหัวข้อ 11](../01_Theory/README.md#11-nodeport-ประตูบนทุก-node))
+>
+> 🔍 **สังเกต:** ยังมี `CLUSTER-IP` อยู่ `PORT(S)` เป็น `80:30080/TCP` และมีบรรทัด `NodePort: 30080/TCP` เพิ่มจาก LAB 1
 
 ไฟล์ `labs/lab03-nodeport/web-svc-nodeport.yaml`
 
@@ -1068,6 +1156,10 @@ Events:                   &lt;none&gt;
 
 ### ขั้นที่ 3: เรียกจากนอกคลัสเตอร์ด้วย curl
 
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **เครื่องนอกคลัสเตอร์** เรียก Service ผ่าน nodePort ได้ ([ทฤษฎีหัวข้อ 11](../01_Theory/README.md#11-nodeport-ประตูบนทุก-node))
+>
+> 🔍 **สังเกต:** ได้คำตอบจาก Pod ทั้ง 3 ตัว แม้ request เข้าทาง `lab-control-plane` ที่ไม่มี Pod อยู่เลย
+
 ตอนนี้เราอยู่ใน container `k8s-lab` ซึ่ง **อยู่นอกคลัสเตอร์** (คลัสเตอร์คือ Node 3 ตัวที่ kind สร้างไว้ข้างใน) `localhost:30080` ของ k8s-lab ถูก map ไปที่ port 30080 ของ Node `lab-control-plane` ตั้งแต่ `k8s-up`
 
 ```bash
@@ -1088,6 +1180,10 @@ Hello from Pod web-65b66cc75b-wsszc
 เข้าทางประตูของ `lab-control-plane` ซึ่ง **ไม่มี Pod web อยู่เลย** แต่ยังได้คำตอบจาก Pod ทั้ง 3 ตัวบนเรือ worker สลับกัน เพราะ kube-proxy บน Node นั้นส่งต่อให้
 
 ### ขั้นที่ 4: ประตูเปิดบนทุก Node
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **nodePort เปิดบน Node ทุกตัว** ([ทฤษฎีหัวข้อ 11](../01_Theory/README.md#11-nodeport-ประตูบนทุก-node))
+>
+> 🔍 **สังเกต:** Node ทั้ง 2 ตัวตอบ และ Pod ที่ตอบอาจอยู่คนละ Node กับ Node IP ที่เรียก
 
 ดู IP ของ Node แต่ละตัว
 
@@ -1133,11 +1229,15 @@ Hello from Pod web-65b66cc75b-wsszc
 
 ### ขั้นที่ 5: เปิดด้วย browser บนเครื่องนักศึกษา
 
+> 🎯 **เป้าหมายขั้นนี้:** เปิดแอปจาก browser บนเครื่องเรา โดยไม่ใช้ port-forward ([ทฤษฎีหัวข้อ 11](../01_Theory/README.md#11-nodeport-ประตูบนทุก-node))
+>
+> 🔍 **สังเกต:** หน้าเว็บขึ้น `Hello from Pod ...` ที่ `http://localhost:30080`
+
 🌐 เปิด browser บนเครื่องนักศึกษา ไปที่ `http://localhost:30080`
 
-<p align="center" id="fig-6">
-  <img src="images/screenshots/20261018_lab3_01-nodeport-browser.png" alt="รูปที่ 6 ภาพหน้าจอจริง nginx ผ่าน NodePort" width="500"><br>
-  <em><b>รูปที่ 6</b> ภาพหน้าจอจริงจากการทดลอง: browser เปิด http://localhost:30080 เห็น Hello from Pod web-65b66cc75b-mz8sm ผ่าน Service web-nodeport (ทดสอบ 18 ต.ค. 2569 ด้วย Chrome จริงบนเครื่อง host ตอนถ่าย container ทดลอง map port 30080 ไปที่ port อื่นของ host นักศึกษาเปิด http://localhost:30080 ตรง ๆ หน้าเว็บที่เห็นเหมือนกัน)</em>
+<p align="center" id="fig-9">
+  <img src="images/screenshots/20261018_lab3_01-nodeport-browser.png" alt="รูปที่ 9 ภาพหน้าจอจริง nginx ผ่าน NodePort" width="500"><br>
+  <em><b>รูปที่ 9</b> ภาพหน้าจอจริงจากการทดลอง: browser เปิด http://localhost:30080 เห็น Hello from Pod web-65b66cc75b-mz8sm ผ่าน Service web-nodeport (ทดสอบ 18 ต.ค. 2569 ด้วย Chrome จริงบนเครื่อง host ตอนถ่าย container ทดลอง map port 30080 ไปที่ port อื่นของ host นักศึกษาเปิด http://localhost:30080 ตรง ๆ หน้าเว็บที่เห็นเหมือนกัน)</em>
 </p>
 
 เส้นทางคือ browser → port 30080 ของเครื่องเรา (`-p 30080-30082:30080-30082` ตอน `docker run`) → port 30080 ของ k8s-lab → port 30080 ของ Node `lab-control-plane` (`k8s-up` map ไว้) → kube-proxy → Pod **ไม่ต้องใช้ port-forward และไม่ต้องเปิดค้างไว้**
@@ -1145,6 +1245,10 @@ Hello from Pod web-65b66cc75b-wsszc
 กด refresh แล้วมักได้ **ชื่อ Pod เดิม** เพราะ browser ใช้การเชื่อมต่อเดิมซ้ำ (keep-alive) และ Service เลือก Pod ตอน **เปิดการเชื่อมต่อใหม่** เท่านั้น แอปน้องส้มใน LAB 4 แก้เรื่องนี้ไว้แล้ว
 
 ### ขั้นที่ 6: ลบ Service และ Deployment
+
+> 🎯 **เป้าหมายขั้นนี้:** เก็บกวาด Service และ Deployment ของ LAB 3
+>
+> 🔍 **สังเกต:** เหลือแค่ Service `kubernetes` และ `No resources found`
 
 ```bash
 kubectl delete -f labs/lab03-nodeport/web-svc-nodeport.yaml
@@ -1201,12 +1305,17 @@ No resources found in default namespace.
 
 ## LAB 4: LAB สุดท้าย: ร้านน้องส้มมีที่อยู่เดียว
 
-<p align="center" id="fig-7">
-  <img src="images/05-lab4-som-menu-service.png" alt="รูปที่ 7 LAB4 บูธ som-menu ส่งลูกค้าเฉพาะสาขาที่พร้อม" width="900"><br>
-  <em><b>รูปที่ 7</b> LAB สุดท้าย: ลูกค้าเข้าร้านน้องส้มทางเดียวคือ localhost:30080 ผ่านประตู 30080 ไปที่บูธ som-menu พนักงานต้อนรับส่งลูกค้าไปทุกสาขาที่อยู่บนกระดาน Endpoints ระหว่างเปลี่ยนเมนูจาก v1.0 (กันสาดส้ม) เป็น v2.0 (กันสาดเขียว) สาขาใหม่ที่ยัง 0/1 (readinessProbe ยังไม่ผ่าน) ไม่มีลูกค้าถูกส่งไป</em>
+<p align="center" id="fig-10">
+  <img src="images/05-lab4-som-menu-service.png" alt="รูปที่ 10 LAB4 บูธ som-menu ส่งลูกค้าเฉพาะสาขาที่พร้อม" width="900"><br>
+  <em><b>รูปที่ 10</b> LAB สุดท้าย: ลูกค้าเข้าร้านน้องส้มทางเดียวคือ localhost:30080 ผ่านประตู 30080 ไปที่บูธ som-menu พนักงานต้อนรับส่งลูกค้าไปทุกสาขาที่อยู่บนกระดาน Endpoints ระหว่างเปลี่ยนเมนูจาก v1.0 (กันสาดส้ม) เป็น v2.0 (กันสาดเขียว) สาขาใหม่ที่ยัง 0/1 (readinessProbe ยังไม่ผ่าน) ไม่มีลูกค้าถูกส่งไป</em>
 </p>
 
 **เป้าหมาย:** เปิดร้านน้องส้ม 3 สาขาด้วย Deployment แล้วให้ Service แบบ NodePort เป็น **ที่อยู่เดียวของร้าน** `http://localhost:30080` refresh แล้วได้สาขาต่าง ๆ เปลี่ยนเมนูเป็นเวอร์ชัน 2.0 และย้อนกลับ โดยลูกค้า **ไม่ต้องเปลี่ยนที่อยู่และไม่ต้องต่อท่อใหม่** เลย (แก้ปัญหา port-forward หลุดของบทที่ 4)
+
+<p align="center" id="fig-11">
+  <img src="images/05a-lab4-plan.png" alt="รูปที่ 11 แผนการทดลอง LAB4" width="900"><br>
+  <em><b>รูปที่ 11</b> แผนการทดลอง LAB4 มี 4 การทดลอง: (1) ขั้นที่ 1–5 Deployment + Service แบบ NodePort ที่ port 80 → targetPort 3000 และ nodePort 30080 (2) ขั้นที่ 6–7 ที่อยู่เดียวกระจาย request ไปหลาย Pod (3) ขั้นที่ 8–10 เปลี่ยนเป็นเวอร์ชัน 2.0 Pod ที่ยัง 0/1 ไม่อยู่ใน Endpoints และแค่ refresh ก็ได้รุ่นใหม่ (4) ขั้นที่ 11–13 rollback ได้ 1.0 กับ 2.0 ปนกันเพราะ selector ดูแค่ app=som-menu แล้วเก็บกวาด</em>
+</p>
 
 **ไม่ต้องใช้ VS Code** ทุกคำสั่งพิมพ์ใน 🐧 **SSH session ของ k8s-lab** ตามเดิม ส่วนหน้าเว็บเปิดด้วย 🌐 browser บนเครื่องนักศึกษา
 
@@ -1227,6 +1336,10 @@ No resources found in default namespace.
   ```
 
 ### ขั้นที่ 1: build image ของหน้าร้าน 2 เวอร์ชัน
+
+> 🎯 **เป้าหมายขั้นนี้:** เตรียม image `som-menu` 2 เวอร์ชันจากโค้ดเดียวกัน ไว้ทดสอบว่าเปลี่ยนรุ่นแล้วที่อยู่ของ Service ไม่เปลี่ยน ([ทฤษฎีหัวข้อ 13](../01_Theory/README.md#13-อ่าน-yaml-ร้านน้องส้มทั้งไฟล์))
+>
+> 🔍 **สังเกต:** ได้ `som-menu:1.0` และ `som-menu:2.0` ต่างกันแค่ค่า `APP_VERSION` ที่ส่งตอน build
 
 ```bash
 cd som-menu/app
@@ -1269,6 +1382,10 @@ cd ../..
 
 ### ขั้นที่ 2: นำ image เข้าคลัสเตอร์
 
+> 🎯 **เป้าหมายขั้นนี้:** ส่ง image ทั้ง 2 เวอร์ชันเข้า **Node ทุกตัว** เพราะ Pod ไปเกิดบน Node ไหนก็ได้
+>
+> 🔍 **สังเกต:** ขึ้น `loading...` 6 บรรทัด (3 Node × 2 เวอร์ชัน)
+
 ```bash
 kind load docker-image som-menu:1.0 som-menu:2.0 --name lab
 ```
@@ -1287,6 +1404,10 @@ Image: "som-menu:2.0" with ID "sha256:259858733cc4eedc232f73d1d1ee6c102c9d460177
 ส่งทั้ง 2 เวอร์ชันเข้าทุก node ไว้ก่อน เพราะ Pod ไปเกิดบนเรือลำไหนก็ได้
 
 ### ขั้นที่ 3: Deployment ของร้าน 3 สาขา
+
+> 🎯 **เป้าหมายขั้นนี้:** อ่าน Deployment ให้เห็นค่าที่ Service จะใช้: label `app: som-menu`, `containerPort: 3000` และ `readinessProbe` ([ทฤษฎีหัวข้อ 13](../01_Theory/README.md#13-อ่าน-yaml-ร้านน้องส้มทั้งไฟล์))
+>
+> 🔍 **สังเกต:** label อยู่ใต้ `template` และ `containerPort` เป็น 3000 ไม่ใช่ 80
 
 ไฟล์ `som-menu/k8s/som-menu-deploy.yaml`
 
@@ -1350,6 +1471,10 @@ spec:
 
 ### ขั้นที่ 4: Service ที่อยู่เดียวของร้าน
 
+> 🎯 **เป้าหมายขั้นนี้:** อ่าน Service แบบ NodePort ที่ตัวเลข port ทั้ง 3 ตัวไม่ซ้ำกัน ([ทฤษฎีหัวข้อ 4](../01_Theory/README.md#4-ที่อยู่-3-แบบ-และ-port-4-ตัว-ศัพท์ที่ต้องแยกให้ออก) · [ทฤษฎีหัวข้อ 13](../01_Theory/README.md#13-อ่าน-yaml-ร้านน้องส้มทั้งไฟล์))
+>
+> 🔍 **สังเกต:** `port: 80` (Service), `targetPort: 3000` (= `containerPort`) และ `nodePort: 30080` (Node)
+
 ไฟล์ `som-menu/k8s/som-menu-svc.yaml`
 
 ```yaml
@@ -1375,6 +1500,10 @@ spec:
 - port 3 ตัวไม่เท่ากันแล้ว: `nodePort: 30080` (ประตูบนทุก Node ที่ browser เข้ามา) → `port: 80` (port ของ Service ในคลัสเตอร์ Pod อื่นเรียก `http://som-menu`) → `targetPort: 3000` (port ที่หน้าร้าน Node.js ฟังอยู่ ตรงกับ `containerPort: 3000`)
 
 ### ขั้นที่ 5: เปิดร้าน
+
+> 🎯 **เป้าหมายขั้นนี้:** ยืนยันว่า Service ส่ง request ต่อไปที่ **targetPort 3000** ของ Pod ([ทฤษฎีหัวข้อ 4](../01_Theory/README.md#4-ที่อยู่-3-แบบ-และ-port-4-ตัว-ศัพท์ที่ต้องแยกให้ออก))
+>
+> 🔍 **สังเกต:** `PORT(S) 80:30080/TCP`, `TargetPort: 3000/TCP` และ Endpoints ลงท้าย `:3000`
 
 ```bash
 kubectl apply -f som-menu/k8s/som-menu-deploy.yaml
@@ -1466,6 +1595,10 @@ Events:                   &lt;none&gt;
 
 ### ขั้นที่ 6: ลูกค้าเข้าร้านทาง localhost:30080
 
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า nodePort ที่อยู่เดียว (`localhost:30080`) กระจาย request ไปทุก Pod ([ทฤษฎีหัวข้อ 3](../01_Theory/README.md#3-service-มีกี่แบบ-และแต่ละแบบต่างกันอย่างไร) · [ทฤษฎีหัวข้อ 11](../01_Theory/README.md#11-nodeport-ประตูบนทุก-node))
+>
+> 🔍 **สังเกต:** ชื่อ Pod ใน `/api/info` เปลี่ยนไปมา และเป็นเวอร์ชัน `1.0` ทั้งหมด
+
 `/api/info` ของหน้าร้านตอบชื่อสาขา (Pod) และเวอร์ชันเป็น JSON สั้น ๆ เหมาะกับ curl
 
 ```bash
@@ -1487,18 +1620,22 @@ curl http://localhost:30080/api/info
 
 ### ขั้นที่ 7: เปิดหน้าร้านใน browser
 
+> 🎯 **เป้าหมายขั้นนี้:** เปิดแอปจาก browser บนเครื่องเราโดยไม่ใช้ port-forward ([ทฤษฎีหัวข้อ 11](../01_Theory/README.md#11-nodeport-ประตูบนทุก-node) · [ทฤษฎีหัวข้อ 12](../01_Theory/README.md#12-service-ระหว่างเปลี่ยนรุ่น-readinessprobe-และ-rolling-update))
+>
+> 🔍 **สังเกต:** refresh แล้วชื่อ Pod บนหน้าเว็บเปลี่ยน และตรงกับจำนวนครั้งใน `kubectl logs`
+
 🌐 เปิด browser บนเครื่องนักศึกษา ไปที่ `http://localhost:30080` **ไม่ต้องใช้ VS Code และไม่ต้องรัน port-forward** แบบบทที่ 4
 
-<p align="center" id="fig-8">
-  <img src="images/screenshots/20261018_lab4_01-shop-v1-branch-a.png" alt="รูปที่ 8 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 1.0 สาขาแรก" width="650"><br>
-  <em><b>รูปที่ 8</b> ภาพหน้าจอจริงจากการทดลอง: เปิด http://localhost:30080 ได้หน้าร้านเวอร์ชัน 1.0 เสิร์ฟโดย Pod som-menu-5f5c95db8f-v2cvl (ทดสอบ 18 ต.ค. 2569 ด้วย Chrome จริงบนเครื่อง host ตอนถ่าย container ทดลอง map port 30080 ไปที่ port อื่นของ host นักศึกษาเปิด http://localhost:30080 ตรง ๆ หน้าเว็บที่เห็นเหมือนกัน)</em>
+<p align="center" id="fig-12">
+  <img src="images/screenshots/20261018_lab4_01-shop-v1-branch-a.png" alt="รูปที่ 12 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 1.0 สาขาแรก" width="650"><br>
+  <em><b>รูปที่ 12</b> ภาพหน้าจอจริงจากการทดลอง: เปิด http://localhost:30080 ได้หน้าร้านเวอร์ชัน 1.0 เสิร์ฟโดย Pod som-menu-5f5c95db8f-v2cvl (ทดสอบ 18 ต.ค. 2569 ด้วย Chrome จริงบนเครื่อง host ตอนถ่าย container ทดลอง map port 30080 ไปที่ port อื่นของ host นักศึกษาเปิด http://localhost:30080 ตรง ๆ หน้าเว็บที่เห็นเหมือนกัน)</em>
 </p>
 
 กด **refresh** ไปเรื่อย ๆ Service สุ่มสาขาให้ทุกครั้ง จึงอาจได้สาขาเดิมซ้ำ 2–3 ครั้งก่อน (ตอนทดลอง ครั้งที่ 1–3 ได้ `v2cvl` ครั้งที่ 4 ได้สาขาอื่น)
 
-<p align="center" id="fig-9">
-  <img src="images/screenshots/20261018_lab4_02-shop-v1-branch-b.png" alt="รูปที่ 9 ภาพหน้าจอจริง refresh แล้วได้อีกสาขา" width="650"><br>
-  <em><b>รูปที่ 9</b> ภาพหน้าจอจริงจากการทดลอง: ที่อยู่เดิม http://localhost:30080 แค่กด refresh ได้อีกสาขาคือ Pod som-menu-5f5c95db8f-s5s9q (ทดสอบ 18 ต.ค. 2569 ด้วย Chrome จริงบนเครื่อง host ตอนถ่าย container ทดลอง map port 30080 ไปที่ port อื่นของ host นักศึกษาเปิด http://localhost:30080 ตรง ๆ หน้าเว็บที่เห็นเหมือนกัน)</em>
+<p align="center" id="fig-13">
+  <img src="images/screenshots/20261018_lab4_02-shop-v1-branch-b.png" alt="รูปที่ 13 ภาพหน้าจอจริง refresh แล้วได้อีกสาขา" width="650"><br>
+  <em><b>รูปที่ 13</b> ภาพหน้าจอจริงจากการทดลอง: ที่อยู่เดิม http://localhost:30080 แค่กด refresh ได้อีกสาขาคือ Pod som-menu-5f5c95db8f-s5s9q (ทดสอบ 18 ต.ค. 2569 ด้วย Chrome จริงบนเครื่อง host ตอนถ่าย container ทดลอง map port 30080 ไปที่ port อื่นของ host นักศึกษาเปิด http://localhost:30080 ตรง ๆ หน้าเว็บที่เห็นเหมือนกัน)</em>
 </p>
 
 ดู log ของ 2 สาขาที่เห็นบนหน้าเว็บ
@@ -1530,6 +1667,10 @@ kubectl logs som-menu-5f5c95db8f-s5s9q    # ← เปลี่ยนเป็�
 log ตรงกับที่ refresh: สาขา `v2cvl` เสิร์ฟ 3 ครั้ง แล้วครั้งที่ 4 ไปที่ `s5s9q` (การเรียก `/api/info` ด้วย curl ไม่นับในบรรทัด "เสิร์ฟหน้าร้าน")
 
 ### ขั้นที่ 8: เปลี่ยนเป็นเมนูเวอร์ชัน 2.0
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **Pod ที่ readinessProbe ยังไม่ผ่าน (`0/1`) ยังไม่อยู่ใน Endpoints** ([ทฤษฎีหัวข้อ 12](../01_Theory/README.md#12-service-ระหว่างเปลี่ยนรุ่น-readinessprobe-และ-rolling-update))
+>
+> 🔍 **สังเกต:** curl 6 ครั้งได้ `1.0` ทั้งหมด ทั้งที่มี Pod `2.0` ที่ label ตรงแต่ยัง `READY 0/1`
 
 ไฟล์ `som-menu/k8s/som-menu-deploy-v2.yaml`
 
@@ -1640,6 +1781,10 @@ som-menu-6bf6c9f6c5-gllvz   0/1     Running   0          3s    app=som-menu,pod-
 
 ### ขั้นที่ 9: รอให้เปลี่ยนรุ่นเสร็จ
 
+> 🎯 **เป้าหมายขั้นนี้:** ยืนยันว่าเปลี่ยนรุ่นแล้ว **Endpoints เปลี่ยนเป็น IP ชุดใหม่ แต่ ClusterIP และ nodePort เดิม** ([ทฤษฎีหัวข้อ 12](../01_Theory/README.md#12-service-ระหว่างเปลี่ยนรุ่น-readinessprobe-และ-rolling-update))
+>
+> 🔍 **สังเกต:** Endpoints ไม่มี IP ของ Pod `1.0` แล้ว `IP 10.96.254.181` และ `NodePort 30080` เหมือนเดิม และ curl ได้ `2.0`
+
 ```bash
 kubectl rollout status deployment/som-menu
 ```
@@ -1716,21 +1861,29 @@ curl http://localhost:30080/api/info
 
 ### ขั้นที่ 10: แค่ refresh ก็ได้เมนูใหม่
 
+> 🎯 **เป้าหมายขั้นนี้:** เทียบกับบทที่ 4: ที่อยู่เดิม แค่ refresh ก็ได้รุ่นใหม่ ([ทฤษฎีหัวข้อ 12](../01_Theory/README.md#12-service-ระหว่างเปลี่ยนรุ่น-readinessprobe-และ-rolling-update))
+>
+> 🔍 **สังเกต:** หน้าเว็บเป็นเวอร์ชัน 2.0 โดยไม่ต้องทำอะไรเพิ่ม
+
 🌐 กลับไปที่ browser แล้ว **กด refresh อย่างเดียว** ไม่ต้องทำอะไรเพิ่ม
 
-<p align="center" id="fig-10">
-  <img src="images/screenshots/20261018_lab4_03-shop-v2.png" alt="รูปที่ 10 ภาพหน้าจอจริง แค่ refresh ก็ได้เวอร์ชัน 2.0" width="650"><br>
-  <em><b>รูปที่ 10</b> ภาพหน้าจอจริงจากการทดลอง: หลังเปลี่ยนรุ่น แค่กด refresh ที่ http://localhost:30080 เดิม ได้หน้าร้านสีเขียวอมฟ้าเวอร์ชัน 2.0 เสิร์ฟโดย Pod som-menu-6bf6c9f6c5-cjzrb มีเมนูใหม่ไอศกรีมแมว (ทดสอบ 18 ต.ค. 2569 ด้วย Chrome จริงบนเครื่อง host ตอนถ่าย container ทดลอง map port 30080 ไปที่ port อื่นของ host นักศึกษาเปิด http://localhost:30080 ตรง ๆ หน้าเว็บที่เห็นเหมือนกัน)</em>
+<p align="center" id="fig-14">
+  <img src="images/screenshots/20261018_lab4_03-shop-v2.png" alt="รูปที่ 14 ภาพหน้าจอจริง แค่ refresh ก็ได้เวอร์ชัน 2.0" width="650"><br>
+  <em><b>รูปที่ 14</b> ภาพหน้าจอจริงจากการทดลอง: หลังเปลี่ยนรุ่น แค่กด refresh ที่ http://localhost:30080 เดิม ได้หน้าร้านสีเขียวอมฟ้าเวอร์ชัน 2.0 เสิร์ฟโดย Pod som-menu-6bf6c9f6c5-cjzrb มีเมนูใหม่ไอศกรีมแมว (ทดสอบ 18 ต.ค. 2569 ด้วย Chrome จริงบนเครื่อง host ตอนถ่าย container ทดลอง map port 30080 ไปที่ port อื่นของ host นักศึกษาเปิด http://localhost:30080 ตรง ๆ หน้าเว็บที่เห็นเหมือนกัน)</em>
 </p>
 
-<p align="center" id="fig-11">
-  <img src="images/06-lab4-no-more-lost-connection.png" alt="รูปที่ 11 บทที่ 4 ท่อหลุด เทียบกับบทที่ 5 ที่อยู่เดียว" width="900"><br>
-  <em><b>รูปที่ 11</b> เทียบสองบท: บทที่ 4 port-forward ต่อท่อตรงเข้าสาขาเดียว พอสาขานั้นถูกปิดตอนเปลี่ยนรุ่น ท่อก็ขาด (lost connection to pod) บทที่ 5 browser เข้าทางประตู 30080 ไปที่บูธ Service som-menu ซึ่งส่งต่อไปสาขาที่พร้อมเสมอ สาขาไหนถูกปิด ลูกค้าก็ไปสาขาอื่นได้ทันที</em>
+<p align="center" id="fig-15">
+  <img src="images/06-lab4-no-more-lost-connection.png" alt="รูปที่ 15 บทที่ 4 ท่อหลุด เทียบกับบทที่ 5 ที่อยู่เดียว" width="900"><br>
+  <em><b>รูปที่ 15</b> เทียบสองบท: บทที่ 4 port-forward ต่อท่อตรงเข้าสาขาเดียว พอสาขานั้นถูกปิดตอนเปลี่ยนรุ่น ท่อก็ขาด (lost connection to pod) บทที่ 5 browser เข้าทางประตู 30080 ไปที่บูธ Service som-menu ซึ่งส่งต่อไปสาขาที่พร้อมเสมอ สาขาไหนถูกปิด ลูกค้าก็ไปสาขาอื่นได้ทันที</em>
 </p>
 
 เทียบกับบทที่ 4: ตอนนั้น port-forward ผูกกับ **Pod ตัวเดียว** พอเปลี่ยนรุ่นแล้ว Pod นั้นถูกปิด ท่อก็ขาด ต้องรัน port-forward ใหม่ทุกครั้ง คราวนี้ browser ต่อกับ **ประตู 30080 ของ Service** ซึ่งไม่เคยหายไปไหน Service แค่เปลี่ยนรายชื่อสาขาใน Endpoints ลูกค้าจึง **ไม่ต้องเปลี่ยนที่อยู่และไม่ต้องต่อท่อใหม่**
 
 ### ขั้นที่ 11: ย้อนกลับ ระหว่างย้อนลูกค้าได้ทั้งสองรุ่น
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า selector ดูแค่ `app=som-menu` ระหว่าง rollback Pod ที่พร้อมทั้ง 2 รุ่นอยู่ใน Endpoints พร้อมกัน ([ทฤษฎีหัวข้อ 12](../01_Theory/README.md#12-service-ระหว่างเปลี่ยนรุ่น-readinessprobe-และ-rolling-update))
+>
+> 🔍 **สังเกต:** ได้ `1.0` กับ `2.0` ปนกัน และ Pod ที่ `Terminating` ไม่ได้รับ request
 
 ```bash
 kubectl rollout history deployment/som-menu
@@ -1835,6 +1988,10 @@ curl http://localhost:30080/api/info
 
 ### ขั้นที่ 12: ทำให้ไฟล์ตรงกับคลัสเตอร์
 
+> 🎯 **เป้าหมายขั้นนี้:** ทำให้ไฟล์ที่ apply ล่าสุดตรงกับรุ่นที่ย้อนไป (เหมือนบทที่ 4)
+>
+> 🔍 **สังเกต:** ขึ้น `configured`
+
 เหมือนบทที่ 4: apply ไฟล์เวอร์ชัน 1.0 ให้ไฟล์ที่ apply ล่าสุดตรงกับรุ่นที่ย้อนไป
 
 ```bash
@@ -1848,6 +2005,10 @@ deployment.apps/som-menu configured
 </pre>
 
 ### ขั้นที่ 13: เก็บกวาด
+
+> 🎯 **เป้าหมายขั้นนี้:** เก็บกวาด Service และ Deployment ของ LAB 4
+>
+> 🔍 **สังเกต:** `deleted` ทั้ง 2 รายการ
 
 ```bash
 kubectl delete -f som-menu/k8s/som-menu-svc.yaml

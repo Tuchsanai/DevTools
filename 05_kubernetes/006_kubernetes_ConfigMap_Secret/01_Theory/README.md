@@ -35,7 +35,7 @@
   <img src="images/01-opening-rebuild-to-change-sign.png" alt="น้องส้มเหนื่อยกับการ build ตู้ใหม่ทุกครั้งที่เปลี่ยนป้าย และรหัสผ่านเขียนเปิดอยู่ใน YAML" width="800">
 </p>
 
-ในบทที่ 5 ร้านอาหารแมวน้องส้มมีที่อยู่เดียวแล้ว (`http://localhost:30080`) แต่ยังมีปัญหาที่ Service ช่วยไม่ได้ ([บทที่ 5 หัวข้อ 13](../../005_kubernetes_Service/01_Theory/README.md#13-ปูทางบทถัดไป))
+ในบทที่ 5 ร้านอาหารแมวน้องส้มมีที่อยู่เดียวแล้ว (`http://localhost:30080`) แต่ยังมีปัญหาที่ Service ช่วยไม่ได้ ([บทที่ 5 หัวข้อ 14](../../005_kubernetes_Service/01_Theory/README.md#14-ปูทางบทถัดไป))
 
 - **ค่าตั้งค่าเขียนอยู่ใน YAML ของ Deployment** เช่น ชื่อร้าน แก้ทีต้องแก้ไฟล์ Deployment
 - **ค่าบางอย่างฝังใน image ตอน build** เช่น `APP_VERSION` ที่ส่งด้วย `--build-arg` จะเปลี่ยนต้อง build image ใหม่
@@ -410,7 +410,7 @@ web-6ffd6db47c-qg4dx   1/1     Running   0          90s
 
 ### ไฟล์เดียว หลาย object: `---`
 
-`web-deploy.yaml` มีทั้ง Deployment และ Service ([บทที่ 5](../../005_kubernetes_Service/01_Theory/README.md#10-nodeport-ประตูบนทุก-node)) ในไฟล์เดียว คั่นด้วย `---` (ขีด 3 ตัวชิดซ้าย) = **"จบ object หนึ่ง เริ่ม object ถัดไป"**
+`web-deploy.yaml` มีทั้ง Deployment และ Service ([บทที่ 5](../../005_kubernetes_Service/01_Theory/README.md#11-nodeport-ประตูบนทุก-node)) ในไฟล์เดียว คั่นด้วย `---` (ขีด 3 ตัวชิดซ้าย) = **"จบ object หนึ่ง เริ่ม object ถัดไป"**
 
 ใน LAB 2 apply ครั้งเดียวได้ทั้ง `deployment.apps/web created` และ `service/web created` และ `kubectl delete -f` ไฟล์เดียวกันก็ลบทั้งคู่
 
@@ -603,7 +603,7 @@ $ kubectl logs som-menu-7879c9f754-29kxc
 - ชื่อ Pod เปลี่ยน hash จาก `895b459c4` เป็น **`7879c9f754`** = **ReplicaSet ใหม่** ([บทที่ 4 หัวข้อ 5](../../004_kubernetes_Deployment/01_Theory/README.md#5-ชื่อ-pod-3-ท่อน-และเจ้าของ-2-ชั้น))
 - ทำไม hash เปลี่ยนทั้งที่เราไม่ได้แก้อะไร: `rollout restart` **แปะเวลาที่สั่ง restart** ไว้เป็น annotation ในแม่พิมพ์ (`template`) ให้เอง แม่พิมพ์เปลี่ยนนิดเดียว → hash ใหม่ → Deployment ทยอยเปลี่ยน Pod เหมือนเปลี่ยนรุ่นทุกอย่าง (นับเป็น revision ใหม่ในสมุดรุ่นด้วย)
 - Pod ใหม่เริ่ม container ใหม่ จึงอ่าน env จาก ConfigMap ล่าสุด log ขึ้นประกาศใหม่ทันที
-- ระหว่างเปลี่ยน มี readinessProbe + Service ([บทที่ 5 หัวข้อ 11](../../005_kubernetes_Service/01_Theory/README.md#11-service-ระหว่างเปลี่ยนรุ่น-readinessprobe-และ-rolling-update)) ร้านจึงไม่ปิด แค่ refresh browser
+- ระหว่างเปลี่ยน มี readinessProbe + Service ([บทที่ 5 หัวข้อ 12](../../005_kubernetes_Service/01_Theory/README.md#12-service-ระหว่างเปลี่ยนรุ่น-readinessprobe-และ-rolling-update)) ร้านจึงไม่ปิด แค่ refresh browser
 
 > **เคล็ดลับ:** `rollout restart` ใช้กับ **Deployment** (object ที่มีแม่พิมพ์) ไม่ใช้กับ Pod เดี่ยว Pod เดี่ยวต้องลบแล้วสร้างใหม่แบบ LAB 1
 

@@ -91,7 +91,7 @@
 <text x="86" y="860" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">targetPort ต้องตรงกับ containerPort = port ที่แอปใน Pod ฟังจริง</text>
 <circle cx="48" cy="890" r="14" fill="#0d9488" stroke="#fff" stroke-width="2"/>
 <text x="48" y="896" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">5</text>
-<text x="86" y="896" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">port: 80 = port ของ Service เอง ที่คนเรียกใช้ (คนละเลขกับ targetPort ก็ได้ หัวข้อ 5)</text>
+<text x="86" y="896" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">port: 80 = port ของ Service เอง ที่คนเรียกใช้ (คนละเลขกับ targetPort ก็ได้ หัวข้อ 4)</text>
 <circle cx="48" cy="926" r="14" fill="#64748b" stroke="#fff" stroke-width="2"/>
 <text x="48" y="932" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">6</text>
 <text x="86" y="932" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">replicas / template (เส้นประสีเทา) มีแค่ฝั่ง Deployment: Service ไม่สร้าง Pod ลบ Service แล้ว Pod ยังอยู่</text>
