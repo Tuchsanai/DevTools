@@ -748,7 +748,7 @@ No resources found in default namespace.
 
 <p align="center" id="fig-6">
   <img src="images/03a-lab2-plan.png" alt="รูปที่ 6 แผนการทดลอง LAB2" width="900"><br>
-  <em><b>รูปที่ 6</b> แผนการทดลอง LAB2 มี 4 การทดลอง: (1) ขั้นที่ 1–3 แก้แม่พิมพ์แล้ว Deployment ทยอยเปลี่ยน Pod ทีละตัว (2) ขั้นที่ 4–5 ReplicaSet เก่าเหลือ 0 แต่เก็บไว้ และจังหวะเพิ่มใหม่-ลดเก่า (3) ขั้นที่ 6 สมุดประวัติรุ่น rollout history (4) ขั้นที่ 7–8 rollout undo ย้อนกลับรุ่นเดิม</em>
+  <em><b>รูปที่ 6</b> แผนการทดลอง LAB2 มี 4 การทดลอง: (1) ขั้นที่ 1–3 แก้แม่พิมพ์แล้ว Deployment ทยอยเปลี่ยน Pod ทีละตัว (2) ขั้นที่ 4–5 ReplicaSet เก่าเหลือ 0 แต่เก็บไว้ และจังหวะเพิ่มใหม่-ลดเก่า (3) ขั้นที่ 6 สมุดประวัติรุ่น rollout history (4) ขั้นที่ 7 rollout undo ย้อนกลับรุ่นเดิม แล้วขั้นที่ 8 ลบ Deployment โดยไม่ใช้ไฟล์ YAML</em>
 </p>
 
 ### ขั้นที่ 1: สร้าง Deployment รุ่นแรก
@@ -1120,20 +1120,57 @@ REVISION  CHANGE-CAUSE
 
 revision 1 หายไปกลายเป็น **revision 3** เพราะ undo = "เอาแม่พิมพ์ของรุ่น 1 มาใช้เป็นรุ่นล่าสุด" เลข revision จึงนับต่อเป็น 3
 
-### ขั้นที่ 8: ลบ Deployment
+### ขั้นที่ 8: ลบ Deployment โดยไม่ใช้ไฟล์ YAML
 
-> 🎯 **เป้าหมายขั้นนี้:** เก็บกวาด Deployment ของ LAB นี้ ก่อนเริ่ม LAB ถัดไปด้วยไฟล์เดิม
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **ลบ Deployment ได้โดยไม่ต้องมีไฟล์ YAML** แค่รู้ชนิดกับชื่อ และ `-l` หาจากป้ายของใคร ([ทฤษฎีหัวข้อ 5](../01_Theory/README.md#5-ชื่อ-pod-3-ท่อน-และเจ้าของ-2-ชั้น))
 >
-> 🔍 **สังเกต:** ได้ `deleted` และ Pod หายหมด (ลบด้วยไฟล์ไหนก็ได้ เพราะชื่อ `web` เหมือนกัน)
+> 🔍 **สังเกต:** ลบด้วยป้าย `app=web` ได้ `No resources found` แต่ลบด้วยชื่อ `web` สำเร็จ และ ReplicaSet กับ Pod หายตามทั้งสาย
+
+สมมุติว่าไม่มีไฟล์ YAML อยู่ในมือ ขั้นแรกดูก่อนว่ามี Deployment ชื่ออะไร ติดป้ายอะไร
 
 ```bash
-kubectl delete -f labs/lab02-rolling-update/web-deploy-v2.yaml
+kubectl get deploy --show-labels
+```
+
+**Expected output**
+
+<pre>
+NAME   READY   UP-TO-DATE   AVAILABLE   AGE   LABELS
+web    3/3     3            3           30s   &lt;none&gt;
+</pre>
+
+ตัว Deployment `web` **ไม่มีป้าย** (`<none>`) เพราะในไฟล์เราเขียน `labels` ไว้ใต้ `template` เท่านั้น ลองลบด้วยป้าย `app=web` ดู
+
+```bash
+kubectl delete deployment -l app=web
+```
+
+**Expected output**
+
+<pre>
+No resources found
+</pre>
+
+ไม่มี Deployment ไหนติดป้าย `app=web` ป้ายนี้อยู่บน **Pod** ต่างหาก คราวนี้ลบด้วย **ชนิด + ชื่อ**
+
+```bash
+kubectl delete deployment web
 ```
 
 **Expected output**
 
 <pre>
 deployment.apps "web" deleted from default namespace
+</pre>
+
+```bash
+kubectl get rs
+```
+
+**Expected output**
+
+<pre>
+No resources found in default namespace.
 </pre>
 
 รอสัก 5 วินาที
@@ -1148,7 +1185,9 @@ kubectl get pods
 No resources found in default namespace.
 </pre>
 
-ใช้ไฟล์ไหนลบก็ได้ เพราะทั้งสองไฟล์ชื่อ Deployment `web` เหมือนกัน
+- `kubectl delete deployment web` = ลบ object ชนิด Deployment ชื่อ `web` ได้ผลเหมือน `kubectl delete -f` ทุกอย่าง เพราะ `-f` ก็แค่อ่าน `kind` กับ `metadata.name` จากไฟล์
+- เขียนแบบอื่นได้: `kubectl delete deploy web` หรือ `kubectl delete deployment/web` ถ้าพิมพ์ชื่อที่ไม่มีจะได้ `Error from server (NotFound): deployments.apps "web" not found`
+- `-l` หาจากป้าย **บนตัว object ที่สั่งลบ** อยากลบด้วยป้ายต้องเขียน `labels` ไว้ใต้ `metadata` ของ Deployment ด้วย (ร้านน้องส้มใน LAB 4 มี `app: som-menu` ทั้งสองที่)
 
 ### สิ่งที่เห็น
 
@@ -1156,6 +1195,7 @@ No resources found in default namespace.
 - ReplicaSet เก่าถูกลดเหลือ 0 แต่ยังเก็บไว้ = แม่พิมพ์เก่าพร้อมใช้ย้อนกลับ
 - `kubectl rollout status` รอดูจนเสร็จ, `kubectl rollout history` ดูรุ่นพร้อม `CHANGE-CAUSE`, `kubectl rollout undo` ย้อนไปรุ่นก่อนโดยปลุก ReplicaSet เก่า
 - undo ทำให้ revision เดิมกลายเป็นเลขใหม่ (1 → 3) และไฟล์ที่ apply ล่าสุดไม่ถูกแก้ตาม
+- ลบ Deployment ได้โดยไม่ต้องมีไฟล์ด้วย `kubectl delete deployment web` (ชนิด + ชื่อ) ส่วน `-l` หาจากป้ายบนตัว Deployment เอง ไม่ใช่ป้ายของ Pod
 
 > **🤔 คำถามชวนคิด:** ถ้า undo อีกครั้งตอนนี้ (history มี 2 และ 3) จะได้ nginx รุ่นไหน และ revision ใหม่จะเป็นเลขอะไร
 
@@ -2295,7 +2335,8 @@ docker stop k8s-lab
 |---|---|
 | `kubectl apply -f <ไฟล์>` | สร้าง Deployment หรือแก้ตัวเดิม (แก้ `template` = เปลี่ยนรุ่น) |
 | `kubectl delete -f <ไฟล์>` | ลบตามไฟล์ (ลบ Deployment แล้ว ReplicaSet และ Pod ถูกลบตาม) |
-| `kubectl delete deploy <ชื่อ>` | ลบ Deployment ตามชื่อ |
+| `kubectl delete deploy <ชื่อ>` | ลบ Deployment ตามชื่อ ไม่ต้องมีไฟล์ YAML (ReplicaSet และ Pod หายตาม) |
+| `kubectl get deploy --show-labels` | ดูชื่อและป้ายของ Deployment ก่อนลบ (`-l` หาจากป้ายนี้ ไม่ใช่ป้ายของ Pod) |
 | `kubectl delete rs <ชื่อ>` | ลบ ReplicaSet (ถ้ามี Deployment ดูแล จะสร้างตัวใหม่แทน) |
 | `kubectl delete pod <ชื่อ>` | ลบ Pod (ReplicaSet จะสร้างตัวใหม่แทน) |
 

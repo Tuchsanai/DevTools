@@ -360,7 +360,28 @@ metadata:
 - Pod → ReplicaSet → Deployment เป็น **สายเจ้าของ 2 ชั้น**
 - ลบ Deployment แล้ว ReplicaSet และ Pod หายตามทั้งสาย (LAB 1 ตอนท้าย: `kubectl delete -f` แล้ว `get deploy`, `get rs`, `get pods` ขึ้น `No resources found` ทั้งหมด)
 
-> 🧪 **พิสูจน์ใน LAB:** `ownerReferences` 2 ชั้น และลบ Deployment ตัวเดียว ทั้งสายหายตาม → **LAB 1** ขั้นที่ [4](../02_LAB/README.md#ขั้นที่-4-เจ้าของ-2-ชั้น), [10](../02_LAB/README.md#ขั้นที่-10-ลบ-deployment)
+### 5.3 ลบโดยไม่ต้องมีไฟล์ YAML
+
+`kubectl delete -f <ไฟล์>` ไม่ได้ใช้ไฟล์ทั้งไฟล์ kubectl แค่อ่าน **ชนิด (`kind`) กับชื่อ (`metadata.name`)** จากไฟล์ แล้วลบ object ที่ชื่อนั้น ถ้ารู้ 2 อย่างนี้ก็ **ลบได้เลยโดยไม่ต้องมีไฟล์**
+
+| วิธี | ตัวอย่าง | ใช้เมื่อ |
+|---|---|---|
+| ตามไฟล์ | `kubectl delete -f labs/lab01-first-deploy/web-deploy.yaml` | มีไฟล์ที่ใช้สร้างอยู่ในมือ |
+| ตามชนิด + ชื่อ | `kubectl delete deployment web` (หรือ `deploy web`, `deployment/web`) | ไม่มีไฟล์ หรือไม่รู้ว่าสร้างจากไฟล์ไหน ดูชื่อก่อนด้วย `kubectl get deploy` |
+| ตามป้าย | `kubectl delete <ชนิด> -l <key=value>` | ลบหลายตัวที่ติดป้ายเดียวกันในคำสั่งเดียว (ระวังกับดักข้างล่าง) |
+
+วิธีเดียวกันใช้กับทุกชนิด LAB 1 ลบ Pod และ ReplicaSet ด้วยชื่อมาแล้ว (`kubectl delete pod web-6bd858c6f9-86xzl`, `kubectl delete rs web-6bd858c6f9`) ส่วน LAB 2 ลบ Deployment ด้วยชื่อ ได้ผลเหมือนลบด้วยไฟล์ทุกอย่าง ทั้งสายหายตาม
+
+```text
+$ kubectl delete deployment web
+deployment.apps "web" deleted from default namespace
+$ kubectl get rs
+No resources found in default namespace.
+```
+
+> **⚠️ กับดัก:** `kubectl delete deployment -l app=web` ได้ **`No resources found`** ทั้งที่ Deployment `web` ยังอยู่ เพราะ `-l` หาจากป้าย **บนตัว object เอง** (`metadata.labels`) ซึ่งไฟล์ `web-deploy.yaml` ไม่ได้เขียนไว้ (`kubectl get deploy --show-labels` ขึ้น `<none>`) ป้าย `app=web` อยู่ใน `template` = ป้ายบน **Pod** ถ้าสั่ง `kubectl delete pod -l app=web` ก็ลบได้แค่ Pod แล้ว ReplicaSet สร้างใหม่ทันที (บทที่ 3) จะลบให้หมดต้องลบที่ Deployment
+
+> 🧪 **พิสูจน์ใน LAB:** `ownerReferences` 2 ชั้น และลบ Deployment ตัวเดียว ทั้งสายหายตาม ไม่ว่าลบด้วยไฟล์หรือด้วยชื่อ → **LAB 1** ขั้นที่ [4](../02_LAB/README.md#ขั้นที่-4-เจ้าของ-2-ชั้น), [10](../02_LAB/README.md#ขั้นที่-10-ลบ-deployment) · **LAB 2** ขั้นที่ [8](../02_LAB/README.md#ขั้นที่-8-ลบ-deployment-โดยไม่ใช้ไฟล์-yaml)
 
 ---
 
