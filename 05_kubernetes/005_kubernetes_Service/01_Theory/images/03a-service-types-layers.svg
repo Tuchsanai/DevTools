@@ -6,8 +6,8 @@
 <rect x="30" y="110" width="1140" height="460" rx="22" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3"/>
 <text x="54" y="148" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="22" font-weight="700" fill="#7c3aed" xml:space="preserve">LoadBalancer</text>
 <text x="235" y="147" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#334155" xml:space="preserve">= NodePort + load balancer ของคลาวด์ (EXTERNAL-IP)</text>
-<rect x="915" y="129" width="235" height="25" rx="8" fill="#ffffff" stroke="#7c3aed" stroke-width="1.5"/>
-<text x="1032" y="147" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#7c3aed" xml:space="preserve">ใช้บนคลาวด์ · ไม่ได้ใช้ใน LAB</text>
+<rect x="945" y="129" width="205" height="25" rx="8" fill="#ffffff" stroke="#7c3aed" stroke-width="1.5"/>
+<text x="1048" y="147" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#7c3aed" xml:space="preserve">ใช้บนคลาวด์ · ลองใน LAB 3</text>
 <rect x="70" y="200" width="1060" height="350" rx="22" fill="#fff7ed" stroke="#ea580c" stroke-width="3"/>
 <text x="94" y="238" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="22" font-weight="700" fill="#ea580c" xml:space="preserve">NodePort</text>
 <text x="221" y="237" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#334155" xml:space="preserve">= ClusterIP + nodePort 30000–32767 บน Node ทุกตัว</text>

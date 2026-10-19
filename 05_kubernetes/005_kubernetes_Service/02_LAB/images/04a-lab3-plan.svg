@@ -35,12 +35,13 @@
 <circle cx="658" cy="134" r="19" fill="#ea580c"/>
 <text x="658" y="141" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="20" font-weight="700" fill="#ffffff" xml:space="preserve">3</text>
 <rect x="688" y="119" width="182" height="30" rx="15" fill="#ffffff" stroke="#ea580c" stroke-width="1.5"/>
-<text x="779" y="140" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">ขั้นที่ 4</text>
-<text x="644" y="186" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">nodePort เปิด</text>
-<text x="644" y="212" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">บน Node ทุกตัว</text>
+<text x="779" y="140" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">ขั้นที่ 4–5</text>
+<text x="644" y="186" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">nodePort เปิดบน</text>
+<text x="644" y="212" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">Node ทุกตัว + browser</text>
 <text x="644" y="250" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ทดสอบว่า</text>
 <text x="644" y="274" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">เรียก Node IP ตัวไหนก็ได้</text>
-<text x="644" y="297" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">Pod ที่ตอบอยู่คนละ Node ได้</text>
+<text x="644" y="297" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">browser เข้าได้โดยไม่ต้อง</text>
+<text x="644" y="320" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">ใช้ port-forward</text>
 <line x1="640" y1="367" x2="870" y2="367" stroke="#cbd5e1" stroke-width="1.5"/>
 <text x="644" y="391" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ดูผลจาก</text>
 <text x="644" y="415" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#ea580c" xml:space="preserve">curl &lt;Node IP&gt;:30080</text>
@@ -49,13 +50,14 @@
 <circle cx="956" cy="134" r="19" fill="#ea580c"/>
 <text x="956" y="141" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="20" font-weight="700" fill="#ffffff" xml:space="preserve">4</text>
 <rect x="986" y="119" width="182" height="30" rx="15" fill="#ffffff" stroke="#ea580c" stroke-width="1.5"/>
-<text x="1077" y="140" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">ขั้นที่ 5–6</text>
-<text x="942" y="186" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">เปิดจาก browser</text>
-<text x="942" y="212" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">บนเครื่องเรา</text>
+<text x="1077" y="140" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">ขั้นที่ 6–7</text>
+<text x="942" y="186" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">ลอง type</text>
+<text x="942" y="212" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">LoadBalancer</text>
 <text x="942" y="250" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ทดสอบว่า</text>
-<text x="942" y="274" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">เข้าแอปได้โดยไม่ต้อง</text>
-<text x="942" y="297" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">ใช้ port-forward</text>
+<text x="942" y="274" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">EXTERNAL-IP ค้าง &lt;pending&gt;</text>
+<text x="942" y="297" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">แต่ nodePort ที่สุ่มได้</text>
+<text x="942" y="320" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">ใช้งานได้ทันที</text>
 <line x1="938" y1="367" x2="1168" y2="367" stroke="#cbd5e1" stroke-width="1.5"/>
 <text x="942" y="391" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ดูผลจาก</text>
-<text x="942" y="415" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#ea580c" xml:space="preserve">http://localhost:30080</text>
+<text x="942" y="415" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#ea580c" xml:space="preserve">kubectl get svc</text>
 </svg>

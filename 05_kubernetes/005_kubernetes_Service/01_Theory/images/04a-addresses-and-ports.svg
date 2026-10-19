@@ -37,9 +37,9 @@
 <rect x="20" y="340" width="1260" height="50" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
 <text x="36" y="371" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">IP</text>
 <text x="312" y="371" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">localhost</text>
-<text x="588" y="371" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">Node IP 172.19.0.2</text>
-<text x="862" y="371" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">ClusterIP 10.96.254.181</text>
-<text x="1138" y="371" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">Pod IP 10.244.2.38</text>
+<text x="588" y="371" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">Node IP 172.19.0.4</text>
+<text x="862" y="371" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">ClusterIP 10.96.187.5</text>
+<text x="1138" y="371" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">Pod IP 10.244.2.14</text>
 <rect x="20" y="398" width="1260" height="74" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
 <text x="36" y="441" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">port</text>
 <text x="312" y="441" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">30080 (docker run -p)</text>

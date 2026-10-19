@@ -50,13 +50,14 @@
 <circle cx="956" cy="134" r="19" fill="#0d9488"/>
 <text x="956" y="141" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="20" font-weight="700" fill="#ffffff" xml:space="preserve">4</text>
 <rect x="986" y="119" width="182" height="30" rx="15" fill="#ffffff" stroke="#0d9488" stroke-width="1.5"/>
-<text x="1077" y="140" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">ขั้นที่ 5–6</text>
-<text x="942" y="186" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">กับดัก selector</text>
-<text x="942" y="212" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">พิมพ์ผิด</text>
+<text x="1077" y="140" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">ขั้นที่ 5–7</text>
+<text x="942" y="186" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">กับดัก selector ผิด</text>
+<text x="942" y="212" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">และ targetPort ผิด</text>
 <text x="942" y="250" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ทดสอบว่า</text>
-<text x="942" y="274" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">apply ผ่าน แต่ Endpoints ว่าง</text>
-<text x="942" y="297" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">เรียกแล้ว Connection refused</text>
+<text x="942" y="274" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">selector ผิด: Endpoints ว่าง</text>
+<text x="942" y="297" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">targetPort ผิด: Endpoints ครบ</text>
+<text x="942" y="320" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">แต่ต่อไม่ติดทั้งคู่</text>
 <line x1="938" y1="367" x2="1168" y2="367" stroke="#cbd5e1" stroke-width="1.5"/>
 <text x="942" y="391" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">ดูผลจาก</text>
-<text x="942" y="415" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#0d9488" xml:space="preserve">Endpoints: (ว่าง)</text>
+<text x="942" y="415" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#0d9488" xml:space="preserve">Connection refused</text>
 </svg>

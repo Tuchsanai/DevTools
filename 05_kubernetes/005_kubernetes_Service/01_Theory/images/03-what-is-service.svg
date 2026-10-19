@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560">
+<defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mnavy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f172a"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="msky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0369a1"/></marker><marker id="mslate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker></defs>
+<rect width="1200" height="560" fill="#ffffff"/>
+<text x="600" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="25" font-weight="700" fill="#0f172a" xml:space="preserve">Service คืออะไร: ที่อยู่เดียวที่คงที่ของกลุ่ม Pod ที่มี label เดียวกัน</text>
+<text x="600" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#475569" xml:space="preserve">ตัวอย่างจาก LAB 1 · ค่าจริงจากการทดลอง 19 ต.ค. 2569</text>
+<rect x="30" y="100" width="555" height="380" rx="16" fill="#fef2f2" stroke="#dc2626" stroke-width="2.5"/>
+<text x="307" y="138" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="21" font-weight="700" fill="#dc2626" xml:space="preserve">ไม่มี Service</text>
+<rect x="615" y="100" width="555" height="380" rx="16" fill="#f0fdf4" stroke="#16a34a" stroke-width="2.5"/>
+<text x="892" y="138" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="21" font-weight="700" fill="#16a34a" xml:space="preserve">มี Service web</text>
+<rect x="60" y="180" width="160" height="70" rx="10" fill="#ffffff" stroke="#7c3aed" stroke-width="2.5"/>
+<text x="140" y="222" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#7c3aed" xml:space="preserve">Pod client</text>
+<rect x="380" y="170" width="170" height="66" rx="10" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<text x="465" y="198" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#0d9488" xml:space="preserve">gm2pc</text>
+<text x="465" y="222" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#334155" xml:space="preserve">10.244.2.6</text>
+<path d="M222,215 L376,203" fill="none" stroke="#64748b" stroke-width="2" stroke-linejoin="round" marker-end="url(#mgray)" stroke-dasharray="9 7"/>
+<rect x="380" y="260" width="170" height="66" rx="10" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<text x="465" y="288" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#0d9488" xml:space="preserve">jmvlk</text>
+<text x="465" y="312" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#334155" xml:space="preserve">10.244.2.5</text>
+<path d="M222,215 L376,293" fill="none" stroke="#64748b" stroke-width="2" stroke-linejoin="round" marker-end="url(#mgray)" stroke-dasharray="9 7"/>
+<rect x="380" y="350" width="170" height="66" rx="10" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<text x="465" y="378" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#0d9488" xml:space="preserve">wrw8f</text>
+<text x="465" y="402" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#334155" xml:space="preserve">10.244.1.3</text>
+<path d="M222,215 L376,383" fill="none" stroke="#64748b" stroke-width="2" stroke-linejoin="round" marker-end="url(#mgray)" stroke-dasharray="9 7"/>
+<text x="60" y="290" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#dc2626" xml:space="preserve">ต้องจำ Pod IP เอง 3 อัน</text>
+<text x="60" y="318" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#dc2626" xml:space="preserve">Pod ใหม่ = IP ใหม่ ต้องแก้ตาม</text>
+<text x="60" y="346" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#dc2626" xml:space="preserve">port-forward ต่อได้ทีละ Pod</text>
+<rect x="645" y="180" width="160" height="70" rx="10" fill="#ffffff" stroke="#7c3aed" stroke-width="2.5"/>
+<text x="725" y="222" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#7c3aed" xml:space="preserve">Pod client</text>
+<rect x="830" y="160" width="160" height="110" rx="12" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/>
+<text x="910" y="192" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#2563eb" xml:space="preserve">Service web</text>
+<text x="910" y="220" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#2563eb" xml:space="preserve">10.96.169.141</text>
+<text x="910" y="246" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="13" font-weight="400" fill="#334155" xml:space="preserve">selector app=web</text>
+<path d="M807,215 L826,215" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linejoin="round" marker-end="url(#mpurple)"/>
+<text x="725" y="278" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#7c3aed" xml:space="preserve">http://web</text>
+<rect x="1010" y="300" width="150" height="48" rx="9" fill="#f0fdfa" stroke="#0d9488" stroke-width="2"/>
+<text x="1085" y="330" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">gm2pc</text>
+<path d="M910,272 L910,324 L1006,324" fill="none" stroke="#0d9488" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#mteal)"/>
+<rect x="1010" y="358" width="150" height="48" rx="9" fill="#f0fdfa" stroke="#0d9488" stroke-width="2"/>
+<text x="1085" y="388" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">jmvlk</text>
+<path d="M910,272 L910,382 L1006,382" fill="none" stroke="#0d9488" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#mteal)"/>
+<rect x="1010" y="416" width="150" height="48" rx="9" fill="#f0fdfa" stroke="#0d9488" stroke-width="2"/>
+<text x="1085" y="446" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">wrw8f</text>
+<path d="M910,272 L910,440 L1006,440" fill="none" stroke="#0d9488" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#mteal)"/>
+<text x="645" y="330" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#16a34a" xml:space="preserve">เรียกชื่อเดียว ไม่ต้องรู้ Pod IP</text>
+<text x="645" y="358" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#16a34a" xml:space="preserve">Pod เปลี่ยน รายชื่อเปลี่ยนเอง</text>
+<text x="645" y="386" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#16a34a" xml:space="preserve">กระจาย request ไปทุก Pod ที่พร้อม</text>
+<text x="600" y="525" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">Service ไม่สร้าง Pod · หา Pod จาก label (selector) · ได้ชื่อ DNS และ ClusterIP ที่ไม่เปลี่ยนตลอดอายุของ Service</text>
+</svg>

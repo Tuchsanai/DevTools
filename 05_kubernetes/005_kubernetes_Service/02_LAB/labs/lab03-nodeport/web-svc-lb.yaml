@@ -1,0 +1,13 @@
+# LAB 3: Service แบบ LoadBalancer — บน kind ไม่มี load balancer ของคลาวด์ EXTERNAL-IP จึงค้างเป็น <pending> แต่ nodePort ใช้ได้
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-lb
+spec:
+  type: LoadBalancer         # ← ใหม่: NodePort + ขอ load balancer จากผู้ให้บริการคลาวด์
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: 80
+      # ไม่เขียน nodePort ระบบสุ่มให้

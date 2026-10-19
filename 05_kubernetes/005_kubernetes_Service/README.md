@@ -16,7 +16,7 @@
 | ส่วน | เนื้อหา | ลิงก์ |
 |---|---|---|
 | 📖 **ทฤษฎี** | Service คืออะไร, **Service มี 3 แบบพร้อมภาพสถาปัตยกรรมแต่ละแบบ**, **ที่อยู่ 3 แบบกับ port 4 ตัว**, selector → Endpoints → kube-proxy, อ่าน YAML ของ Service ทีละบรรทัด, port / targetPort / nodePort, DNS ในคลัสเตอร์, Endpoints ตามป้ายของ Pod, กับดัก selector ผิด, ClusterIP, NodePort, Service คู่กับ readinessProbe และ rolling update (มีคำถามทบทวนพร้อมแนวคำตอบ) | [01_Theory/README.md](01_Theory/README.md) |
-| 🧪 **ปฏิบัติการ** | LAB 0–4: สร้างคลัสเตอร์ (เปิด port 30080–30082) → Service แรกแบบ ClusterIP → Service หา Pod จากป้าย → NodePort → **LAB สุดท้าย: ร้านอาหารแมวน้องส้มมีที่อยู่เดียว** พร้อมสรุปคำสั่งท้ายบท | [02_LAB/README.md](02_LAB/README.md) |
+| 🧪 **ปฏิบัติการ** | LAB 0–4: สร้างคลัสเตอร์ (เปิด port 30080–30082) → Service แรกแบบ ClusterIP → Endpoints ตาม label + กับดัก selector / targetPort ผิด → NodePort + ลอง LoadBalancer → **LAB สุดท้าย: ร้านอาหารแมวน้องส้มมีที่อยู่เดียว** พร้อมสรุปคำสั่งท้ายบท | [02_LAB/README.md](02_LAB/README.md) |
 
 ## คำแนะนำในการเรียน
 
@@ -24,7 +24,7 @@
 2. ก่อนทำ LAB 2–4 ให้อ่านหัวข้อ 8–13 (Endpoints, selector ผิด, ClusterIP, NodePort, Service กับ rolling update, YAML ร้านน้องส้ม)
 3. ทำ LAB **ตามลำดับ** ใช้เวลารวมประมาณ 2.5–3 ชั่วโมง
 4. สังเกตสัญลักษณ์ในเอกสาร LAB ว่าคำสั่งรันที่ไหน: 🖥️ บนเครื่องนักศึกษา / 🐧 ใน SSH session ของ k8s-lab / 🌐 browser
-5. ผลลัพธ์ในเอกสารมาจากการทดลองจริง (Kubernetes v1.37.0) แต่ **ชื่อ Pod, IP ของ Pod และ CLUSTER-IP ถูกสุ่มทุกครั้ง** และ Pod ที่ตอบแต่ละครั้งอาจต่างจากในเอกสาร
+5. ผลลัพธ์ในเอกสารมาจากการทดลองจริงรอบเดียวกันทั้งบท (19 ต.ค. 2569, Kubernetes v1.37.0) แต่ **ชื่อ Pod, IP ของ Pod และ CLUSTER-IP ถูกสุ่มทุกครั้ง** และ Pod ที่ตอบแต่ละครั้งอาจต่างจากในเอกสาร
 6. ลองตอบคำถามทบทวนด้วยตัวเองก่อนเปิดดูแนวคำตอบ
 
 > **ขอบเขตของบทนี้:** ใช้ Service แบบ **ClusterIP** และ **NodePort** กับ Deployment / Pod ส่วน LoadBalancer และ Ingress ไม่อยู่ในบทนี้ ค่าตั้งค่าและรหัสผ่านของแอป (ConfigMap / Secret) เป็น **เนื้อหาของบทถัดไป**
@@ -48,8 +48,8 @@
     ├── images/                       ← ภาพประกอบ LAB + screenshots/ ภาพหน้าจอจริง
     ├── labs/                         ← YAML ของ LAB 1–3
     │   ├── lab01-clusterip/          ← web-deploy.yaml, web-svc.yaml, client-pod.yaml
-    │   ├── lab02-selector/web-svc-typo.yaml
-    │   └── lab03-nodeport/web-svc-nodeport.yaml
+    │   ├── lab02-selector/           ← web-svc-typo.yaml, web-svc-wrongport.yaml
+    │   └── lab03-nodeport/           ← web-svc-nodeport.yaml, web-svc-lb.yaml
     └── som-menu/                     ← LAB 4 ร้านอาหารแมวน้องส้มมีที่อยู่เดียว
         ├── app/                      ← เว็บหน้าร้าน Node.js (server.js + Dockerfile)
         └── k8s/                      ← som-menu-deploy.yaml, som-menu-deploy-v2.yaml, som-menu-svc.yaml

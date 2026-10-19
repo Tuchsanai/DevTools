@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="1200" height="660">
+<defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mnavy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f172a"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="msky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0369a1"/></marker><marker id="mslate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker></defs>
+<rect width="1200" height="660" fill="#ffffff"/>
+<text x="600" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="25" font-weight="700" fill="#0f172a" xml:space="preserve">LAB 1 · Service แบบ ClusterIP: เรียกด้วยชื่อจาก Pod ในคลัสเตอร์</text>
+<text x="600" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#475569" xml:space="preserve">ค่าจริงจากการทดลอง 19 ต.ค. 2569 · ชื่อ Pod และ IP ในเครื่องนักศึกษาจะต่างไป</text>
+<rect x="40" y="130" width="250" height="90" rx="12" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2.5"/>
+<text x="165" y="166" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="19" font-weight="700" fill="#7c3aed" xml:space="preserve">Pod client</text>
+<text x="165" y="194" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">busybox (ขั้นที่ 4)</text>
+<rect x="40" y="330" width="250" height="120" rx="12" fill="#ffffff" stroke="#64748b" stroke-width="2.5"/>
+<text x="165" y="362" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#334155" xml:space="preserve">DNS ของคลัสเตอร์</text>
+<text x="165" y="388" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">kube-dns 10.96.0.10</text>
+<text x="165" y="420" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#2563eb" xml:space="preserve">web → 10.96.169.141</text>
+<path d="M120,220 L120,326" fill="none" stroke="#64748b" stroke-width="3" stroke-linejoin="round" marker-end="url(#mgray)"/>
+<circle cx="96" cy="272" r="14" fill="#64748b"/>
+<text x="96" y="278" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">1</text>
+<rect x="400" y="120" width="380" height="400" rx="16" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/>
+<text x="590" y="156" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="21" font-weight="700" fill="#2563eb" xml:space="preserve">Service web</text>
+<text x="424" y="196" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#64748b" xml:space="preserve">type</text>
+<text x="560" y="196" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#0f172a" xml:space="preserve">ClusterIP</text>
+<text x="424" y="226" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#64748b" xml:space="preserve">ClusterIP</text>
+<text x="560" y="226" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#0f172a" xml:space="preserve">10.96.169.141</text>
+<text x="424" y="256" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#64748b" xml:space="preserve">port</text>
+<text x="560" y="256" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#0f172a" xml:space="preserve">80 → targetPort 80</text>
+<text x="424" y="286" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#64748b" xml:space="preserve">selector</text>
+<text x="560" y="286" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#0f172a" xml:space="preserve">app=web</text>
+<rect x="420" y="330" width="340" height="170" rx="10" fill="#ffffff" stroke="#0d9488" stroke-width="2"/>
+<text x="590" y="360" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#0d9488" xml:space="preserve">Endpoints (Pod IP:targetPort)</text>
+<text x="590" y="396" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#0d9488" xml:space="preserve">10.244.2.6:80</text>
+<text x="590" y="428" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#0d9488" xml:space="preserve">10.244.1.3:80</text>
+<text x="590" y="460" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#0d9488" xml:space="preserve">10.244.2.5:80</text>
+<path d="M290,175 L396,175" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linejoin="round" marker-end="url(#mpurple)"/>
+<circle cx="343" cy="152" r="14" fill="#7c3aed"/>
+<text x="343" y="158" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">2</text>
+<text x="343" y="205" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#7c3aed" xml:space="preserve">http://web</text>
+<rect x="880" y="140" width="290" height="100" rx="12" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<text x="1025" y="170" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#0d9488" xml:space="preserve">web-65b66cc75b-gm2pc</text>
+<text x="1025" y="196" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">Pod IP 10.244.2.6</text>
+<text x="1025" y="222" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="400" fill="#64748b" xml:space="preserve">label app=web · Node lab-worker</text>
+<path d="M762,378 L876,190" fill="none" stroke="#0d9488" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#mteal)"/>
+<rect x="880" y="265" width="290" height="100" rx="12" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<text x="1025" y="295" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#0d9488" xml:space="preserve">web-65b66cc75b-wrw8f</text>
+<text x="1025" y="321" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">Pod IP 10.244.1.3</text>
+<text x="1025" y="347" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="400" fill="#64748b" xml:space="preserve">label app=web · Node lab-worker2</text>
+<path d="M762,410 L876,315" fill="none" stroke="#0d9488" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#mteal)"/>
+<rect x="880" y="390" width="290" height="100" rx="12" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<text x="1025" y="420" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#0d9488" xml:space="preserve">web-65b66cc75b-jmvlk</text>
+<text x="1025" y="446" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">Pod IP 10.244.2.5</text>
+<text x="1025" y="472" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="400" fill="#64748b" xml:space="preserve">label app=web · Node lab-worker</text>
+<path d="M762,442 L876,440" fill="none" stroke="#0d9488" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#mteal)"/>
+<circle cx="820" cy="316" r="14" fill="#0d9488"/>
+<text x="820" y="322" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">3</text>
+<circle cx="52" cy="556" r="12" fill="#64748b"/>
+<text x="52" y="562" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">1</text>
+<text x="74" y="562" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">ขั้นที่ 6: nslookup ถาม kube-dns ได้ว่าชื่อ web คือ ClusterIP 10.96.169.141</text>
+<circle cx="52" cy="588" r="12" fill="#7c3aed"/>
+<text x="52" y="594" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">2</text>
+<text x="74" y="594" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">ขั้นที่ 5: wget http://web จาก Pod client · ขั้นที่ 2: CLUSTER-IP คนละช่วงกับ Pod IP (10.96.x.x กับ 10.244.x.x)</text>
+<circle cx="52" cy="620" r="12" fill="#0d9488"/>
+<text x="52" y="626" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">3</text>
+<text x="74" y="626" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">ขั้นที่ 3: Endpoints = Pod IP:targetPort ของ Pod ที่ label ตรง selector · ขั้นที่ 7: เรียก Pod IP ตรง ๆ ได้ Pod ตัวเดียว</text>
+</svg>

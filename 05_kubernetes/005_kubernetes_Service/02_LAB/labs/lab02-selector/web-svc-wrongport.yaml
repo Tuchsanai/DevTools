@@ -1,0 +1,11 @@
+# LAB 2: Service ที่ targetPort ผิด — selector ถูก Endpoints จึงมีครบ แต่ส่ง request ไปที่ port ที่ nginx ไม่ได้ฟัง
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-wrongport
+spec:
+  selector:
+    app: web                 # label ถูกต้อง Endpoints จึงมี Pod ครบ
+  ports:
+    - port: 80
+      targetPort: 8080       # ← ผิด: nginx ใน Pod ฟังที่ port 80 (containerPort: 80) ไม่ใช่ 8080

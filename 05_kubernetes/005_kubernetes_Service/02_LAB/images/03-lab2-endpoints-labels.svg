@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+<defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mnavy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f172a"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="msky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0369a1"/></marker><marker id="mslate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker></defs>
+<rect width="1200" height="800" fill="#ffffff"/>
+<text x="600" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="25" font-weight="700" fill="#0f172a" xml:space="preserve">LAB 2 · Endpoints เปลี่ยนตาม label ของ Pod ส่วน ClusterIP 10.96.62.215 ไม่เปลี่ยน</text>
+<text x="600" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#475569" xml:space="preserve">ค่าจริงจากการทดลอง 19 ต.ค. 2569 · ชื่อ Pod และ IP ในเครื่องนักศึกษาจะต่างไป</text>
+<rect x="30" y="100" width="268" height="380" rx="14" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<text x="164" y="132" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0d9488" xml:space="preserve">ขั้นที่ 1 · เริ่มต้น</text>
+<text x="164" y="162" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">Endpoints ของ Service web</text>
+<rect x="46" y="174" width="236" height="38" rx="9" fill="#ffffff" stroke="#334155" stroke-width="1.2"/>
+<text x="60" y="200" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#334155" xml:space="preserve">  10.244.1.4</text>
+<text x="270" y="200" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#334155" xml:space="preserve">mtg6r</text>
+<rect x="46" y="220" width="236" height="38" rx="9" fill="#ffffff" stroke="#334155" stroke-width="1.2"/>
+<text x="60" y="246" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#334155" xml:space="preserve">  10.244.2.9</text>
+<text x="270" y="246" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#334155" xml:space="preserve">wmdll</text>
+<rect x="46" y="266" width="236" height="38" rx="9" fill="#ffffff" stroke="#334155" stroke-width="1.2"/>
+<text x="60" y="292" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#334155" xml:space="preserve">  10.244.2.10</text>
+<text x="270" y="292" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#334155" xml:space="preserve">r9wlj</text>
+<path d="M300,290 L320,290" fill="none" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" marker-end="url(#mnavy)"/>
+<rect x="322" y="100" width="268" height="380" rx="14" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<text x="456" y="132" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0d9488" xml:space="preserve">ขั้นที่ 2 · ลบ Pod mtg6r</text>
+<text x="456" y="162" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">Endpoints ของ Service web</text>
+<rect x="338" y="174" width="236" height="38" rx="9" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+<text x="352" y="200" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#dc2626" text-decoration="line-through" xml:space="preserve">− 10.244.1.4</text>
+<text x="562" y="200" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#dc2626" xml:space="preserve">mtg6r</text>
+<rect x="338" y="220" width="236" height="38" rx="9" fill="#ffffff" stroke="#334155" stroke-width="1.2"/>
+<text x="352" y="246" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#334155" xml:space="preserve">  10.244.2.9</text>
+<text x="562" y="246" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#334155" xml:space="preserve">wmdll</text>
+<rect x="338" y="266" width="236" height="38" rx="9" fill="#ffffff" stroke="#334155" stroke-width="1.2"/>
+<text x="352" y="292" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#334155" xml:space="preserve">  10.244.2.10</text>
+<text x="562" y="292" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#334155" xml:space="preserve">r9wlj</text>
+<rect x="338" y="312" width="236" height="38" rx="9" fill="#ffffff" stroke="#16a34a" stroke-width="2"/>
+<text x="352" y="338" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#16a34a" xml:space="preserve">+ 10.244.1.5</text>
+<text x="562" y="338" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#16a34a" xml:space="preserve">fm44v</text>
+<path d="M592,290 L612,290" fill="none" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" marker-end="url(#mnavy)"/>
+<rect x="614" y="100" width="268" height="380" rx="14" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<text x="748" y="132" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0d9488" xml:space="preserve">ขั้นที่ 3 · ถอด label fm44v</text>
+<text x="748" y="162" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">Endpoints ของ Service web</text>
+<rect x="630" y="174" width="236" height="38" rx="9" fill="#ffffff" stroke="#334155" stroke-width="1.2"/>
+<text x="644" y="200" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#334155" xml:space="preserve">  10.244.2.9</text>
+<text x="854" y="200" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#334155" xml:space="preserve">wmdll</text>
+<rect x="630" y="220" width="236" height="38" rx="9" fill="#ffffff" stroke="#334155" stroke-width="1.2"/>
+<text x="644" y="246" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#334155" xml:space="preserve">  10.244.2.10</text>
+<text x="854" y="246" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#334155" xml:space="preserve">r9wlj</text>
+<rect x="630" y="266" width="236" height="38" rx="9" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+<text x="644" y="292" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#dc2626" text-decoration="line-through" xml:space="preserve">− 10.244.1.5</text>
+<text x="854" y="292" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#dc2626" xml:space="preserve">fm44v</text>
+<rect x="630" y="312" width="236" height="38" rx="9" fill="#ffffff" stroke="#16a34a" stroke-width="2"/>
+<text x="644" y="338" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#16a34a" xml:space="preserve">+ 10.244.1.6</text>
+<text x="854" y="338" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#16a34a" xml:space="preserve">rxwr5</text>
+<text x="748" y="455" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="13" font-weight="700" fill="#dc2626" xml:space="preserve">fm44v ยัง Running แต่ไม่มี label app</text>
+<path d="M884,290 L904,290" fill="none" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" marker-end="url(#mnavy)"/>
+<rect x="906" y="100" width="268" height="380" rx="14" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<text x="1040" y="132" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0d9488" xml:space="preserve">ขั้นที่ 4 · scale เป็น 5</text>
+<text x="1040" y="162" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">Endpoints ของ Service web</text>
+<rect x="922" y="174" width="236" height="38" rx="9" fill="#ffffff" stroke="#334155" stroke-width="1.2"/>
+<text x="936" y="200" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#334155" xml:space="preserve">  10.244.2.9</text>
+<text x="1146" y="200" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#334155" xml:space="preserve">wmdll</text>
+<rect x="922" y="220" width="236" height="38" rx="9" fill="#ffffff" stroke="#334155" stroke-width="1.2"/>
+<text x="936" y="246" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#334155" xml:space="preserve">  10.244.2.10</text>
+<text x="1146" y="246" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#334155" xml:space="preserve">r9wlj</text>
+<rect x="922" y="266" width="236" height="38" rx="9" fill="#ffffff" stroke="#334155" stroke-width="1.2"/>
+<text x="936" y="292" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#334155" xml:space="preserve">  10.244.1.6</text>
+<text x="1146" y="292" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#334155" xml:space="preserve">rxwr5</text>
+<rect x="922" y="312" width="236" height="38" rx="9" fill="#ffffff" stroke="#16a34a" stroke-width="2"/>
+<text x="936" y="338" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#16a34a" xml:space="preserve">+ 10.244.1.7</text>
+<text x="1146" y="338" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#16a34a" xml:space="preserve">5g6zf</text>
+<rect x="922" y="358" width="236" height="38" rx="9" fill="#ffffff" stroke="#16a34a" stroke-width="2"/>
+<text x="936" y="384" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#16a34a" xml:space="preserve">+ 10.244.2.11</text>
+<text x="1146" y="384" text-anchor="end" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="400" fill="#16a34a" xml:space="preserve">mzbfz</text>
+<text x="600" y="510" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#0f172a" xml:space="preserve">สีเขียว + = เข้ารายชื่อเอง · สีแดง − = ออกจากรายชื่อเอง · ไม่ต้องแก้ Service เลยสักครั้ง</text>
+<rect x="30" y="540" width="555" height="200" rx="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2.5"/>
+<text x="54" y="576" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#dc2626" xml:space="preserve">ขั้นที่ 5 · web-typo · selector app=wbe</text>
+<text x="54" y="616" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#0f172a" xml:space="preserve">Endpoints: (ว่าง)</text>
+<text x="54" y="652" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">ไม่มี Pod ไหนมี label app=wbe</text>
+<text x="54" y="688" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#dc2626" xml:space="preserve">wget → Connection refused</text>
+<rect x="615" y="540" width="555" height="200" rx="14" fill="#fff7ed" stroke="#ea580c" stroke-width="2.5"/>
+<text x="639" y="576" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#ea580c" xml:space="preserve">ขั้นที่ 6 · web-wrongport · targetPort 8080</text>
+<text x="639" y="616" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#0f172a" xml:space="preserve">Endpoints: 10.244.x.x:8080 (มีครบ 5)</text>
+<text x="639" y="652" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">nginx ใน Pod ฟังที่ port 80 ไม่ใช่ 8080</text>
+<text x="639" y="688" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#ea580c" xml:space="preserve">wget → Connection refused</text>
+<text x="600" y="774" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#0f172a" xml:space="preserve">แยก 2 กับดักจาก kubectl describe svc: Endpoints ว่าง = selector ผิด · Endpoints ครบแต่ต่อไม่ติด = targetPort ผิด</text>
+</svg>

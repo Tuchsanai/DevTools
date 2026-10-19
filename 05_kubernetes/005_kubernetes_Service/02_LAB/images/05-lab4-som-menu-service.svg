@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" width="1200" height="760">
+<defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mnavy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f172a"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="msky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0369a1"/></marker><marker id="mslate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker></defs>
+<rect width="1200" height="760" fill="#ffffff"/>
+<text x="600" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="25" font-weight="700" fill="#0f172a" xml:space="preserve">LAB 4 · som-menu: ที่อยู่เดิมตลอด ส่วน Endpoints เปลี่ยนตาม Pod ที่พร้อม</text>
+<text x="600" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="400" fill="#475569" xml:space="preserve">ค่าจริงจากการทดลอง 19 ต.ค. 2569 · ชื่อ Pod และ IP ในเครื่องนักศึกษาจะต่างไป</text>
+<rect x="30" y="98" width="1140" height="56" rx="12" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+<text x="600" y="133" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">localhost:30080  →  nodePort 30080  →  Service som-menu (ClusterIP 10.96.187.5, port 80)  →  targetPort 3000</text>
+<rect x="30" y="176" width="555" height="450" rx="14" fill="#ffffff" stroke="#0d9488" stroke-width="2.5"/>
+<text x="54" y="210" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">ขั้นที่ 8 · ระหว่างเปลี่ยนรุ่น (3 วินาทีหลัง apply v2)</text>
+<text x="54" y="244" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">Pod (label app=som-menu)</text>
+<text x="360" y="244" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">อยู่ใน Endpoints?</text>
+<rect x="50" y="256" width="515" height="44" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+<text x="64" y="284" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">gqsd2</text>
+<text x="150" y="284" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">v1.0</text>
+<text x="210" y="284" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">1/1</text>
+<text x="360" y="284" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#ea580c" xml:space="preserve">✓ 10.244.2.14:3000</text>
+<rect x="50" y="312" width="515" height="44" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+<text x="64" y="340" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">jfjlg</text>
+<text x="150" y="340" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">v1.0</text>
+<text x="210" y="340" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">1/1</text>
+<text x="360" y="340" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#ea580c" xml:space="preserve">✓ 10.244.1.9:3000</text>
+<rect x="50" y="368" width="515" height="44" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+<text x="64" y="396" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#ea580c" xml:space="preserve">zq7lg</text>
+<text x="150" y="396" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">v1.0</text>
+<text x="210" y="396" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">1/1</text>
+<text x="360" y="396" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#ea580c" xml:space="preserve">✓ 10.244.2.15:3000</text>
+<rect x="50" y="424" width="515" height="44" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+<text x="64" y="452" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#dc2626" xml:space="preserve">687px</text>
+<text x="150" y="452" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">v2.0</text>
+<text x="210" y="452" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">0/1</text>
+<text x="360" y="452" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#dc2626" xml:space="preserve">✗ readinessProbe ยังไม่ผ่าน</text>
+<rect x="50" y="556" width="515" height="46" rx="10" fill="#f8fafc" stroke="#0f172a" stroke-width="1.5"/>
+<text x="307" y="586" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">curl 6 ครั้ง → version 1.0 ทั้งหมด</text>
+<rect x="615" y="176" width="555" height="450" rx="14" fill="#ffffff" stroke="#0d9488" stroke-width="2.5"/>
+<text x="639" y="210" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="18" font-weight="700" fill="#0f172a" xml:space="preserve">ขั้นที่ 9 · หลังเปลี่ยนรุ่นเสร็จ</text>
+<text x="639" y="244" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">Pod (label app=som-menu)</text>
+<text x="945" y="244" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#64748b" xml:space="preserve">อยู่ใน Endpoints?</text>
+<rect x="635" y="256" width="515" height="44" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+<text x="649" y="284" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">687px</text>
+<text x="735" y="284" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">v2.0</text>
+<text x="795" y="284" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">1/1</text>
+<text x="945" y="284" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#16a34a" xml:space="preserve">✓ </text>
+<rect x="635" y="312" width="515" height="44" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+<text x="649" y="340" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">kpgxt</text>
+<text x="735" y="340" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">v2.0</text>
+<text x="795" y="340" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">1/1</text>
+<text x="945" y="340" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#16a34a" xml:space="preserve">✓ </text>
+<rect x="635" y="368" width="515" height="44" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+<text x="649" y="396" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#16a34a" xml:space="preserve">b58wj</text>
+<text x="735" y="396" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">v2.0</text>
+<text x="795" y="396" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">1/1</text>
+<text x="945" y="396" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#16a34a" xml:space="preserve">✓ </text>
+<rect x="635" y="424" width="515" height="44" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+<text x="649" y="452" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#dc2626" xml:space="preserve">zq7lg</text>
+<text x="735" y="452" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">v1.0</text>
+<text x="795" y="452" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#334155" xml:space="preserve">Terminating</text>
+<text x="945" y="452" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#dc2626" xml:space="preserve">✗ ถูกถอดจาก Endpoints แล้ว</text>
+<text x="639" y="528" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#16a34a" xml:space="preserve">Endpoints: 10.244.1.10, 10.244.2.16, 10.244.2.17 (:3000)</text>
+<rect x="635" y="556" width="515" height="46" rx="10" fill="#f8fafc" stroke="#0f172a" stroke-width="1.5"/>
+<text x="892" y="586" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">curl 4 ครั้ง → version 2.0 ทั้งหมด</text>
+<path d="M587,400 L613,400" fill="none" stroke="#0f172a" stroke-width="4" stroke-linejoin="round" marker-end="url(#mnavy)"/>
+<text x="600" y="668" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a" xml:space="preserve">ClusterIP 10.96.187.5 และ nodePort 30080 เหมือนเดิมทั้งก่อนและหลัง browser จึงแค่ refresh ก็ได้รุ่นใหม่</text>
+<text x="600" y="704" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#334155" xml:space="preserve">ขั้นที่ 11: ระหว่าง rollback ได้ทั้ง 1.0 และ 2.0 ปนกัน เพราะ selector ดูแค่ app=som-menu ไม่ดู version</text>
+</svg>

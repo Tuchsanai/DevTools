@@ -2,7 +2,7 @@
 <defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mnavy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f172a"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="msky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0369a1"/></marker><marker id="mslate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker></defs>
 <rect width="1200" height="1150" fill="#ffffff"/>
 <text x="600" y="44" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="26" font-weight="700" fill="#0f172a" xml:space="preserve">YAML ของ 3 แบบต่างกันแค่ 1–2 บรรทัด แต่เส้นทางของ request ต่างกัน</text>
-<text x="600" y="78" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#475569" xml:space="preserve">วงสีเดียวกัน = บรรทัดที่ต่างกัน · พื้นเทา = บรรทัดที่เหมือนกันทุกแบบ · ไฟล์ ClusterIP และ NodePort คือไฟล์จริงของ LAB 1 และ LAB 3</text>
+<text x="600" y="78" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#475569" xml:space="preserve">วงสีเดียวกัน = บรรทัดที่ต่างกัน · พื้นเทา = บรรทัดที่เหมือนกันทุกแบบ · ทั้ง 3 ไฟล์คือไฟล์จริงของ LAB 1 และ LAB 3</text>
 <rect x="30" y="105" width="360" height="432" rx="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
 <rect x="30" y="105" width="360" height="42" rx="14" fill="#2563eb"/><rect x="30" y="133" width="360" height="14" fill="#2563eb"/>
 <text x="46" y="133" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#ffffff" xml:space="preserve">web-svc.yaml</text>
@@ -35,10 +35,10 @@
 <rect x="60" y="745" width="300" height="44" rx="10" fill="#ffffff" stroke="#64748b" stroke-width="2.5"/>
 <text x="210" y="773" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#334155" xml:space="preserve">Pod client ในคลัสเตอร์</text>
 <rect x="60" y="955" width="300" height="44" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
-<text x="210" y="983" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#2563eb" xml:space="preserve">ClusterIP 10.96.39.117:80</text>
+<text x="210" y="983" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#2563eb" xml:space="preserve">ClusterIP 10.96.169.141:80</text>
 <path d="M210,789 L210,952" fill="none" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" marker-end="url(#mnavy)"/>
 <rect x="60" y="1025" width="300" height="44" rx="10" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
-<text x="210" y="1053" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">Pod IP 10.244.2.18:80</text>
+<text x="210" y="1053" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">Pod IP 10.244.2.6:80</text>
 <path d="M210,999 L210,1022" fill="none" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" marker-end="url(#mnavy)"/>
 <rect x="420" y="105" width="360" height="432" rx="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
 <rect x="420" y="105" width="360" height="42" rx="14" fill="#ea580c"/><rect x="420" y="133" width="360" height="14" fill="#ea580c"/>
@@ -80,15 +80,15 @@
 <text x="600" y="913" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">Node IP 172.19.0.2:30080</text>
 <path d="M600,789 L600,882" fill="none" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" marker-end="url(#mnavy)"/>
 <rect x="450" y="955" width="300" height="44" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
-<text x="600" y="983" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#2563eb" xml:space="preserve">ClusterIP 10.96.76.223:80</text>
+<text x="600" y="983" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#2563eb" xml:space="preserve">ClusterIP 10.96.231.50:80</text>
 <path d="M600,929 L600,952" fill="none" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" marker-end="url(#mnavy)"/>
 <rect x="450" y="1025" width="300" height="44" rx="10" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
-<text x="600" y="1053" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">Pod IP 10.244.2.25:80</text>
+<text x="600" y="1053" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">Pod IP 10.244.2.12:80</text>
 <path d="M600,999 L600,1022" fill="none" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" marker-end="url(#mnavy)"/>
 <rect x="810" y="105" width="360" height="432" rx="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
 <rect x="810" y="105" width="360" height="42" rx="14" fill="#7c3aed"/><rect x="810" y="133" width="360" height="14" fill="#7c3aed"/>
-<text x="826" y="133" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#ffffff" xml:space="preserve">ตัวอย่าง (ไม่มีไฟล์ใน LAB)</text>
-<text x="1154" y="133" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">บนคลาวด์</text>
+<text x="826" y="133" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#ffffff" xml:space="preserve">web-svc-lb.yaml</text>
+<text x="1154" y="133" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">LAB 3</text>
 <rect x="818" y="336" width="344" height="152" rx="8" fill="#f1f5f9"/>
 <text x="1156" y="356" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="13" font-weight="700" fill="#64748b" xml:space="preserve">เหมือนกันทุกแบบ</text>
 <text x="828" y="178" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="400" fill="#0f172a" xml:space="preserve">apiVersion: v1</text>
@@ -116,7 +116,7 @@
 <text x="959" y="610" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400" fill="#0f172a" xml:space="preserve">LoadBalancer</text>
 <text x="830" y="640" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#64748b" xml:space="preserve">PORT(S)</text>
 <rect x="950" y="620" width="119" height="28" rx="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
-<text x="959" y="640" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#7c3aed" xml:space="preserve">80:32521/TCP</text>
+<text x="959" y="640" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#7c3aed" xml:space="preserve">80:31484/TCP</text>
 <text x="830" y="670" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#64748b" xml:space="preserve">EXTERNAL-IP</text>
 <rect x="950" y="650" width="161" height="28" rx="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
 <text x="959" y="670" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#7c3aed" xml:space="preserve">&lt;pending&gt; บน kind</text>
@@ -126,7 +126,7 @@
 <text x="990" y="843" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#7c3aed" xml:space="preserve">EXTERNAL-IP:80 (load balancer)</text>
 <path d="M990,789 L990,812" fill="none" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" marker-end="url(#mnavy)"/>
 <rect x="840" y="885" width="300" height="44" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="2.5"/>
-<text x="990" y="913" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">Node IP:32521 (สุ่มให้)</text>
+<text x="990" y="913" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ea580c" xml:space="preserve">Node IP:31484 (สุ่มให้)</text>
 <path d="M990,859 L990,882" fill="none" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" marker-end="url(#mnavy)"/>
 <rect x="840" y="955" width="300" height="44" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
 <text x="990" y="983" text-anchor="middle" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="700" fill="#2563eb" xml:space="preserve">ClusterIP:80</text>
@@ -140,5 +140,5 @@
 <text x="62" y="1098" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">type: บรรทัดเดียวที่เลือกแบบ</text>
 <circle cx="42" cy="1124" r="12" fill="#0f172a"/>
 <text x="42" y="1130" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#ffffff" xml:space="preserve">2</text>
-<text x="62" y="1130" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">nodePort: เขียนได้เฉพาะ NodePort / LoadBalancer (LoadBalancer ไม่เขียนก็ได้ ระบบสุ่มให้) · ผล kubectl ของ LoadBalancer มาจากการทดลองบน kind จริง</text>
+<text x="62" y="1130" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">nodePort: เขียนได้เฉพาะ NodePort / LoadBalancer (LoadBalancer ไม่เขียนก็ได้ ระบบสุ่มให้) · ผล kubectl มาจาก LAB 1 และ LAB 3 จริง</text>
 </svg>
