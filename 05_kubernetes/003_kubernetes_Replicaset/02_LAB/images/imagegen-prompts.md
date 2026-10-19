@@ -6,7 +6,7 @@ Generated with built-in image_gen via cyolo1 (Codex CLI, swarm, difficulty 1) us
 
 Metaphor ที่ใช้ทั้งชุด: container = ตู้คอนเทนเนอร์, Pod = กล่องห้องโดยสารใสสีเขียวอมฟ้ามีป้าย IP, Node = เรือสินค้า (lab-worker, lab-worker2), Control Plane = หอควบคุมท่าเรือ, **ReplicaSet = หัวหน้าลูกเรือ (คนไม่มีหน้า ไม่ใช่แมว) ถือ clipboard `replicas: 3`**, template = แม่พิมพ์กล่อง, selector = ป้ายที่หัวหน้านับ
 
-รูปที่ 1 `01-lab0-setup.png`, รูปที่ 7 `05a-lab4-vscode-attach.png` และภาพหน้าจอจริงใน `screenshots/` ไม่ได้สร้างในรอบนี้
+รูปที่ 1 `01-lab0-setup.png`, รูปที่ 11 `05a-lab4-vscode-attach.png` และภาพหน้าจอจริงใน `screenshots/` ไม่ได้สร้างในรอบนี้
 
 ## 01c-lab0-git-clone.png
 
@@ -38,7 +38,7 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 03-lab2-scale-labels.png
 
-> รูปที่ 4 · LAB2 หมุน replicas 3→5→2 และ selector นับ Pod จากป้าย (extra-web ถูกลบ, Pod ถอดป้ายหลุดออกไป)
+> รูปที่ 5 · LAB2 หมุน replicas 3→5→2 และ selector นับ Pod จากป้าย (extra-web ถูกลบ, Pod ถอดป้ายหลุดออกไป)
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
@@ -52,7 +52,7 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 04-lab3-cordon.png
 
-> รูปที่ 5 · LAB3 cordon เรือ lab-worker2 Pod ใหม่ไปลง lab-worker หมด แล้ว uncordon
+> รูปที่ 7 · LAB3 cordon เรือ lab-worker2 Pod ใหม่ไปลง lab-worker หมด แล้ว uncordon
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
@@ -66,7 +66,7 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 05-lab4-som-menu-branches.png
 
-> รูปที่ 6 · LAB4 ร้านน้องส้ม 3 สาขา = 3 Pod จากแม่พิมพ์เดียว
+> รูปที่ 9 · LAB4 ร้านน้องส้ม 3 สาขา = 3 Pod จากแม่พิมพ์เดียว
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
@@ -80,7 +80,7 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 05b-lab4-vscode-ports.png
 
-> รูปที่ 8 · LAB4 ขั้นที่ 4 ภาพจำลองหน้าจอ VS Code แท็บ PORTS (port-forward rs/som-menu 8080:3000)
+> รูปที่ 12 · LAB4 ขั้นที่ 4 ภาพจำลองหน้าจอ VS Code แท็บ PORTS (port-forward rs/som-menu 8080:3000)
 
 ```text
 Use case: realistic software screenshot for a Thai university DevTools lab README; students must recognize the exact UI they will see.
@@ -94,7 +94,7 @@ Constraints: realistic flat UI rendering like an actual screenshot, no 3D, no ca
 
 ## 06-lab4-port-forward-lost.png
 
-> รูปที่ 10 · LAB4 ขั้นที่ 6 port-forward ขาดเมื่อ Pod ถูกลบ (lost connection to pod)
+> รูปที่ 14 · LAB4 ขั้นที่ 6 port-forward ขาดเมื่อ Pod ถูกลบ (lost connection to pod)
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
@@ -104,4 +104,60 @@ Character: Nong Som (น้องส้ม) exactly as in the reference sheet 00
 Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001-002 illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one shipping container and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock; ReplicaSet = a crew chief: a simple faceless human sailor silhouette in a navy uniform and cap (NOT a cat, NOT an animal) holding a clipboard that reads replicas: 3; Pod template = a box-shaped mold / stamp that presses out identical Pod boxes; selector = the colored tag on each Pod box that the crew chief counts.
 Text (verbatim): "localhost:8080"; "port-forward"; "som-menu-7vhqr"; "kubectl delete pod"; "lost connection to pod"; "som-menu-pskr4"; "replicas: 3".
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos (no Docker whale, no Kubernetes wheel logo, no GitHub octocat); do not show Service, Deployment, Ingress or NodePort objects or words; exactly one Nong Som; the crew chief is a human silhouette, never a cat.
+```
+
+## 02a-lab1-plan.png
+
+> รูปที่ 4 · แผนการทดลอง LAB 1 (4 การทดลอง ตรงกับ 🎯 เป้าหมายขั้นนี้ ในแต่ละขั้น)
+
+```text
+Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
+Asset type: landscape 3:2 educational story illustration for Thai Kubernetes ReplicaSet lab (README figure, about 1536x1024).
+Scene: An experiment roadmap for LAB 1, drawn as a winding harbor boardwalk path from left to right with exactly 4 numbered round station signs (1, 2, 3, 4) connected by footprints. A big header banner at top-left reads the lab title. Each station has one large rounded card above it with a small simple illustration and one short Thai caption. Station 1 card: the faceless crew chief with clipboard replicas: 3 next to a box mold that has just stamped out 3 identical teal Pod boxes; caption "สร้างได้ 3 ตัว". Station 2 card: one teal Pod box with a string tag pointing back to the crew chief, Nong Som looking at the tag with a magnifying glass; caption "ใครเป็นเจ้าของ". Station 3 card: one Pod box vanishing in a puff of dust while a brand-new teal Pod box pops out of the mold, a circular green arrow; caption "ลบแล้วเกิดใหม่". Station 4 card: the crew chief fading away and all 3 Pod boxes fading away together; caption "ลบหัวหน้า ลูกหายตาม". Nong Som appears only at station 2.
+Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly. Nong Som is the ONLY cat in the picture.
+Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, plain white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 002 illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one shipping container and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); ReplicaSet = crew chief, a faceless navy sailor silhouette (a human figure, NOT a cat, no animal features) holding a clipboard that reads replicas: 3; template = a box mold / stamp that produces identical teal Pod boxes; selector = a tag on each Pod box that the crew chief counts.
+Text (verbatim, at most 9 short labels): "LAB 1"; "1"; "2"; "3"; "4"; "สร้างได้ 3 ตัว"; "ใครเป็นเจ้าของ"; "ลบแล้วเกิดใหม่"; "ลบหัวหน้า ลูกหายตาม".
+Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; exactly one cat (Nong Som); the crew chief is a faceless human sailor silhouette, never a cat; do not show Service, Deployment, Ingress or NodePort objects or words. Exactly 4 stations and 4 cards; each caption appears exactly once, spelled exactly.
+```
+
+## 03a-lab2-plan.png
+
+> รูปที่ 6 · แผนการทดลอง LAB 2 (4 การทดลอง ตรงกับ 🎯 เป้าหมายขั้นนี้ ในแต่ละขั้น)
+
+```text
+Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
+Asset type: landscape 3:2 educational story illustration for Thai Kubernetes ReplicaSet lab (README figure, about 1536x1024).
+Scene: An experiment roadmap for LAB 2, drawn as a winding harbor boardwalk path from left to right with exactly 4 numbered round station signs (1, 2, 3, 4) connected by footprints. A big header banner at top-left reads the lab title. Each station has one large rounded card above it with a small simple illustration and one short Thai caption. Station 1 card: the crew chief turning a big dial from 3 to 5 to 2, small row of teal Pod boxes growing and shrinking; caption "เพิ่ม-ลดจำนวน". Station 2 card: a YAML paper sheet showing replicas: 3 stamping over a dial that showed 2, the dial snapping back to 3; caption "ไฟล์ชนะ". Station 3 card: a stranger teal Pod box wearing the same tag app=web walking into a row of 3 Pods; the crew chief counts 4 and removes one; caption "ป้ายตรง = ถูกนับ". Station 4 card: Nong Som peeling the tag off one Pod box which drifts away alone, while the mold stamps a new Pod box to fill the gap; caption "ถอดป้าย = หลุด". Nong Som appears only at station 4.
+Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly. Nong Som is the ONLY cat in the picture.
+Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, plain white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 002 illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one shipping container and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); ReplicaSet = crew chief, a faceless navy sailor silhouette (a human figure, NOT a cat, no animal features) holding a clipboard that reads replicas: 3; template = a box mold / stamp that produces identical teal Pod boxes; selector = a tag on each Pod box that the crew chief counts.
+Text (verbatim, at most 9 short labels): "LAB 2"; "1"; "2"; "3"; "4"; "เพิ่ม-ลดจำนวน"; "ไฟล์ชนะ"; "ป้ายตรง = ถูกนับ"; "ถอดป้าย = หลุด".
+Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; exactly one cat (Nong Som); the crew chief is a faceless human sailor silhouette, never a cat; do not show Service, Deployment, Ingress or NodePort objects or words. Exactly 4 stations and 4 cards; each caption appears exactly once, spelled exactly.
+```
+
+## 04a-lab3-plan.png
+
+> รูปที่ 8 · แผนการทดลอง LAB 3 (4 การทดลอง ตรงกับ 🎯 เป้าหมายขั้นนี้ ในแต่ละขั้น)
+
+```text
+Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
+Asset type: landscape 3:2 educational story illustration for Thai Kubernetes ReplicaSet lab (README figure, about 1536x1024).
+Scene: An experiment roadmap for LAB 3, drawn as a winding harbor boardwalk path from left to right with exactly 4 numbered round station signs (1, 2, 3, 4) connected by footprints. A big header banner at top-left reads the lab title. Each station has one large rounded card above it with a small simple illustration and one short Thai caption. Station 1 card: two cargo ships labeled lab-worker and lab-worker2, teal Pod boxes spread on both ships; caption "กระจายหลายเรือ". Station 2 card: a big no-entry barrier sign on the ship lab-worker2; caption "cordon ห้ามจอด". Station 3 card: new teal Pod boxes all landing on the ship lab-worker, avoiding the barred ship lab-worker2; caption "Pod ใหม่หลบไป". Station 4 card: the barrier removed from lab-worker2; old Pod boxes stay where they are on lab-worker while only brand-new Pod boxes land on lab-worker2; caption "Pod เดิมไม่ย้าย". Nong Som stands at the end of the path after station 4 holding a binocular. Exactly two ships per card where ships are shown.
+Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly. Nong Som is the ONLY cat in the picture.
+Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, plain white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 002 illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one shipping container and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); ReplicaSet = crew chief, a faceless navy sailor silhouette (a human figure, NOT a cat, no animal features) holding a clipboard that reads replicas: 3; template = a box mold / stamp that produces identical teal Pod boxes; selector = a tag on each Pod box that the crew chief counts.
+Text (verbatim, at most 9 short labels): "LAB 3"; "1"; "2"; "3"; "4"; "กระจายหลายเรือ"; "cordon ห้ามจอด"; "Pod ใหม่หลบไป"; "Pod เดิมไม่ย้าย".
+Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; exactly one cat (Nong Som); the crew chief is a faceless human sailor silhouette, never a cat; do not show Service, Deployment, Ingress or NodePort objects or words. Exactly 4 stations and 4 cards; each caption appears exactly once, spelled exactly.
+```
+
+## 05c-lab4-plan.png
+
+> รูปที่ 10 · แผนการทดลอง LAB 4 (4 การทดลอง ตรงกับ 🎯 เป้าหมายขั้นนี้ ในแต่ละขั้น)
+
+```text
+Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
+Asset type: landscape 3:2 educational story illustration for Thai Kubernetes ReplicaSet lab (README figure, about 1536x1024).
+Scene: An experiment roadmap for LAB 4, drawn as a winding harbor boardwalk path from left to right with exactly 4 numbered round station signs (1, 2, 3, 4) connected by footprints. A big header banner at top-left reads the lab title. Each station has one large rounded card above it with a small simple illustration and one short Thai caption. Station 1 card: three small cat-food shop stalls, each inside a teal Pod box, made from the same mold; caption "เปิด 3 สาขา". Station 2 card: a single pipe from a laptop browser connected to only one of the three shop stalls; caption "port-forward สาขาเดียว". Station 3 card: the connected stall disappearing, a new stall appearing, and the pipe broken in the middle; caption "ลบสาขา ท่อขาด". Station 4 card: the mold swapped to a teal-green version 2.0 mold; old orange stalls removed and new teal-green stalls stamped out; caption "เปลี่ยนเมนู 2.0". Nong Som stands at station 1 proudly in front of the shops. Shop stalls have no readable shop-sign text.
+Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly. Nong Som is the ONLY cat in the picture.
+Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, plain white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 002 illustration set. Shared metaphor (keep consistent across the series): container = colored shipping container box; Pod = rounded translucent teal cabin box that wraps one shipping container and carries one small IP tag; Node = cargo ship (worker ships lab-worker and lab-worker2); Control Plane = harbor control tower on the dock (lab-control-plane); ReplicaSet = crew chief, a faceless navy sailor silhouette (a human figure, NOT a cat, no animal features) holding a clipboard that reads replicas: 3; template = a box mold / stamp that produces identical teal Pod boxes; selector = a tag on each Pod box that the crew chief counts.
+Text (verbatim, at most 9 short labels): "LAB 4"; "1"; "2"; "3"; "4"; "เปิด 3 สาขา"; "port-forward สาขาเดียว"; "ลบสาขา ท่อขาด"; "เปลี่ยนเมนู 2.0".
+Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; exactly one cat (Nong Som); the crew chief is a faceless human sailor silhouette, never a cat; do not show Service, Deployment, Ingress or NodePort objects or words. Exactly 4 stations and 4 cards; each caption appears exactly once, spelled exactly.
 ```

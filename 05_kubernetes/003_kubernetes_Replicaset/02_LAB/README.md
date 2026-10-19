@@ -19,6 +19,11 @@
 | 🐧 | SSH session ใน k8s-lab (prompt `root@k8s-lab`) |
 | 🌐 | browser บนเครื่องนักศึกษา |
 
+ทุก LAB มี **ภาพแผนการทดลอง** บอกว่า LAB นั้นมีกี่การทดลอง และทุกขั้นเริ่มด้วย 2 บรรทัดนี้ อ่านก่อนพิมพ์คำสั่ง
+
+- 🎯 **เป้าหมายขั้นนี้** = ขั้นนี้ทดลองเพื่อพิสูจน์หลักการอะไร (มีลิงก์ไปหัวข้อทฤษฎีที่เกี่ยวข้อง)
+- 🔍 **สังเกต** = ตอนดูผลลัพธ์ให้มองหาอะไร ถ้าเห็นตามนี้ แปลว่าหลักการนั้นเป็นจริง
+
 ### กติกา
 
 - ทำงานในโฟลเดอร์ `/workspace/DevTools/05_kubernetes/003_kubernetes_Replicaset/02_LAB` และ **ลบ ReplicaSet ของตัวเองทุกครั้งที่จบ LAB**
@@ -42,12 +47,14 @@
 
 | รูปที่ | เรื่อง | รูปที่ | เรื่อง |
 |:---:|---|:---:|---|
-| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 7 | [LAB 4 attach VS Code เข้า k8s-lab](#fig-7) |
-| 2 | [LAB 0 git clone](#fig-2) | 8 | [LAB 4 เปิดเว็บผ่าน VS Code PORTS](#fig-8) |
-| 3 | [LAB 1 ReplicaSet แรก + self-healing](#fig-3) | 9 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 1.0](#fig-9) |
-| 4 | [LAB 2 scale และ selector นับ Pod จากป้าย](#fig-4) | 10 | [port-forward หลุดเมื่อ Pod ถูกลบ](#fig-10) |
-| 5 | [LAB 3 cordon เรือ lab-worker2](#fig-5) | 11 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 2.0](#fig-11) |
-| 6 | [LAB 4 ร้านน้องส้มหลายสาขา](#fig-6) | | |
+| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 9 | [LAB 4 ร้านน้องส้มหลายสาขา](#fig-9) |
+| 2 | [LAB 0 git clone](#fig-2) | 10 | [แผนการทดลอง LAB 4](#fig-10) |
+| 3 | [LAB 1 ReplicaSet แรก + self-healing](#fig-3) | 11 | [LAB 4 attach VS Code เข้า k8s-lab](#fig-11) |
+| 4 | [แผนการทดลอง LAB 1](#fig-4) | 12 | [LAB 4 เปิดเว็บผ่าน VS Code PORTS](#fig-12) |
+| 5 | [LAB 2 scale และ selector นับ Pod จากป้าย](#fig-5) | 13 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 1.0](#fig-13) |
+| 6 | [แผนการทดลอง LAB 2](#fig-6) | 14 | [port-forward หลุดเมื่อ Pod ถูกลบ](#fig-14) |
+| 7 | [LAB 3 cordon เรือ lab-worker2](#fig-7) | 15 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 2.0](#fig-15) |
+| 8 | [แผนการทดลอง LAB 3](#fig-8) | | |
 
 ### โครงสร้างไฟล์ LAB
 
@@ -195,9 +202,18 @@ cd DevTools/05_kubernetes/003_kubernetes_Replicaset/02_LAB
 
 **เป้าหมาย:** สร้าง ReplicaSet จากไฟล์ YAML ดูว่ามันสร้าง Pod ให้กี่ตัว ชื่ออะไร Pod รู้ได้อย่างไรว่าใครเป็นเจ้าของ แล้วลองลบ Pod ดูว่าเกิดอะไร (self-healing)
 
+<p align="center" id="fig-4">
+  <img src="images/02a-lab1-plan.png" alt="รูปที่ 4 แผนการทดลอง LAB1" width="900"><br>
+  <em><b>รูปที่ 4</b> แผนการทดลอง LAB1 มี 4 การทดลอง: (1) ขั้นที่ 1–4 ส่งไฟล์เดียวได้ Pod 3 ตัว (2) ขั้นที่ 5 Pod รู้ว่าใครเป็นเจ้าของ (3) ขั้นที่ 6–7 ลบ Pod แล้วเกิดตัวใหม่แทน (4) ขั้นที่ 8 ลบ ReplicaSet แล้ว Pod ลูกหายตาม</em>
+</p>
+
 🐧 **ใน SSH session ของ k8s-lab** (ทุกขั้นใน LAB 1–3)
 
 ### ขั้นที่ 1: ไฟล์ ReplicaSet แรก
+
+> 🎯 **เป้าหมายขั้นนี้:** รู้จัก 3 ส่วนของ ReplicaSet (`replicas` / `selector` / `template`) ก่อนลงมือ จะได้รู้ว่าผลแต่ละขั้นมาจากบรรทัดไหน ([ทฤษฎีหัวข้อ 4](../01_Theory/README.md#4-อ่าน-yaml-ของ-replicaset-ทีละบรรทัด))
+>
+> 🔍 **สังเกต:** ป้าย `app: web` ใน `template` ตรงกับ `selector` ทุกตัวอักษร
 
 ไฟล์ `labs/lab01-first-rs/web-rs.yaml` (เปิดดูได้ใน VS Code หรือ JupyterLab)
 
@@ -233,6 +249,10 @@ spec:
 - ป้ายใน `template` (`app: web`) **ต้องตรงกับ selector** ไม่งั้น Pod ที่ปั๊มออกมาจะไม่ถูกนับ และ apply ไม่ผ่าน
 
 ### ขั้นที่ 2: สร้าง ReplicaSet
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **ส่งไฟล์ ReplicaSet ไฟล์เดียว ได้ Pod ตามจำนวน `replicas`** โดยไม่ต้องเขียน Pod เอง ([ทฤษฎีหัวข้อ 2](../01_Theory/README.md#2-replicaset-คืออะไร) · [ทฤษฎีหัวข้อ 3](../01_Theory/README.md#3-replicaset-ทำงานอย่างไร))
+>
+> 🔍 **สังเกต:** `DESIRED` เป็น 3 และมี Pod 3 ตัวชื่อ `web-xxxxx` ทั้งที่เราไม่ได้ตั้งชื่อ
 
 ```bash
 kubectl apply -f labs/lab01-first-rs/web-rs.yaml
@@ -277,6 +297,10 @@ web-vfd2r   0/1     ContainerCreating   0          1s
 เราไม่ได้เขียน Pod เลยสักตัว แต่ได้ Pod 3 ตัว ชื่อเป็น **ชื่อ ReplicaSet + ตัวอักษรสุ่ม 5 ตัว** (`web-xxxxx`)
 
 ### ขั้นที่ 3: ดู Pod และ ReplicaSet เมื่อพร้อม
+
+> 🎯 **เป้าหมายขั้นนี้:** ยืนยันว่า **สถานะจริงตรงกับที่ขอ** แล้ว (วงจรนับ-เทียบ-แก้ทำงานจบ) ([ทฤษฎีหัวข้อ 3](../01_Theory/README.md#3-replicaset-ทำงานอย่างไร))
+>
+> 🔍 **สังเกต:** `DESIRED = CURRENT = READY = 3`, คอลัมน์ `SELECTOR` และ Node ของแต่ละ Pod
 
 รอสัก 12 วินาที แล้วดู Pod แบบละเอียด
 
@@ -323,6 +347,10 @@ web    3         3         3       14s   nginx        nginx:1.27-alpine   app=we
 
 ### ขั้นที่ 4: อ่านรายละเอียดด้วย describe
 
+> 🎯 **เป้าหมายขั้นนี้:** หา **หลักฐานว่าใครเป็นคนสร้าง Pod** ([ทฤษฎีหัวข้อ 3](../01_Theory/README.md#3-replicaset-ทำงานอย่างไร))
+>
+> 🔍 **สังเกต:** Events `SuccessfulCreate` จาก `replicaset-controller` 3 บรรทัด และ `Pod Template` ที่ตรงกับไฟล์
+
 ```bash
 kubectl describe rs web
 ```
@@ -362,6 +390,10 @@ Events:
 
 ### ขั้นที่ 5: Pod รู้ได้อย่างไรว่าใครเป็นเจ้าของ
 
+> 🎯 **เป้าหมายขั้นนี้:** ดูว่า **Pod รู้ได้อย่างไรว่าใครเป็นเจ้าของ** (สิ่งที่ Pod เดี่ยวในบทที่ 2 ไม่มี) ([ทฤษฎีหัวข้อ 5](../01_Theory/README.md#5-selector-ชื่อ-pod-และเจ้าของ))
+>
+> 🔍 **สังเกต:** `generateName: web-` และ `ownerReferences` ที่ชี้ไป `kind: ReplicaSet` ชื่อ `web`
+
 เลือก Pod มา 1 ตัวจาก `kubectl get pods`
 
 ```bash
@@ -396,6 +428,10 @@ metadata:
 - `ownerReferences` บอกว่า Pod นี้มีเจ้าของคือ `kind: ReplicaSet` ชื่อ `web` (Pod จากบทที่ 2 ไม่มีส่วนนี้)
 
 ### ขั้นที่ 6: Self-healing — ลบ Pod 1 ตัว
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบ **self-healing**: Pod หายไป 1 ตัว ReplicaSet จะเติมให้ไหม และตัวที่มาแทนคือตัวเดิมหรือตัวใหม่ ([ทฤษฎีหัวข้อ 6](../01_Theory/README.md#6-self-healing-ใครซ่อมอะไร))
+>
+> 🔍 **สังเกต:** จำนวนยังเป็น 3 ตัวที่มาแทนมี **ชื่อใหม่ IP ใหม่ AGE น้อย** และมี Event `SuccessfulCreate` บรรทัดใหม่
 
 ```bash
 kubectl delete pod web-l96sh    # ← เปลี่ยนเป็นชื่อ Pod ของตัวเอง
@@ -444,6 +480,10 @@ kubectl describe rs web
 
 ### ขั้นที่ 7: ลบทุกตัวพร้อมกัน
 
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบกรณีหนักสุด: **ลบหมดทุกตัวพร้อมกัน** ReplicaSet ยังซ่อมได้ไหม ([ทฤษฎีหัวข้อ 6](../01_Theory/README.md#6-self-healing-ใครซ่อมอะไร))
+>
+> 🔍 **สังเกต:** Pod ใหม่ครบ 3 ตัว ชื่อใหม่ทั้งหมด
+
 ใช้ `-l` ลบทุก Pod ที่มีป้าย `app=web`
 
 ```bash
@@ -474,6 +514,10 @@ web-mh4dg   1/1     Running   0          1s
 ลบหมดก็ยังได้ Pod ใหม่ครบ 3 ตัว (ชื่อใหม่ทั้งหมด) ตราบใดที่ ReplicaSet ยังอยู่
 
 ### ขั้นที่ 8: ลบ ReplicaSet
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **ลบเจ้าของ (ReplicaSet) แล้ว Pod ลูกเป็นอย่างไร** ([ทฤษฎีหัวข้อ 5](../01_Theory/README.md#5-selector-ชื่อ-pod-และเจ้าของ))
+>
+> 🔍 **สังเกต:** Pod ทั้ง 3 ตัวขึ้น `Terminating` แล้วหายไป และไม่มีใครสร้างคืน
 
 ```bash
 kubectl delete -f labs/lab01-first-rs/web-rs.yaml
@@ -525,16 +569,25 @@ No resources found in default namespace.
 
 ## LAB 2: Scale และ Labels/Selector
 
-<p align="center" id="fig-4">
-  <img src="images/03-lab2-scale-labels.png" alt="รูปที่ 4 LAB2 scale และ selector นับ Pod จากป้าย" width="900"><br>
-  <em><b>รูปที่ 4</b> LAB2: (ซ้าย) หมุน replicas จาก 3 เป็น 5 แล้วลดเหลือ 2 (ขวา) ReplicaSet นับ Pod จากป้าย app=web — Pod แปลกหน้าที่ติดป้ายเดียวกัน (extra-web) ถูกลบทิ้ง ส่วน Pod ที่ถูกถอดป้ายหลุดออกไปเป็น Pod เดี่ยว</em>
+<p align="center" id="fig-5">
+  <img src="images/03-lab2-scale-labels.png" alt="รูปที่ 5 LAB2 scale และ selector นับ Pod จากป้าย" width="900"><br>
+  <em><b>รูปที่ 5</b> LAB2: (ซ้าย) หมุน replicas จาก 3 เป็น 5 แล้วลดเหลือ 2 (ขวา) ReplicaSet นับ Pod จากป้าย app=web — Pod แปลกหน้าที่ติดป้ายเดียวกัน (extra-web) ถูกลบทิ้ง ส่วน Pod ที่ถูกถอดป้ายหลุดออกไปเป็น Pod เดี่ยว</em>
 </p>
 
 **เป้าหมาย:** เพิ่ม-ลดจำนวน Pod ด้วย `kubectl scale` รู้จักกับดัก "ไฟล์ชนะ" และทดลองให้เห็นว่า ReplicaSet **นับ Pod จากป้าย (label)** ไม่ได้นับจากชื่อ
 
+<p align="center" id="fig-6">
+  <img src="images/03a-lab2-plan.png" alt="รูปที่ 6 แผนการทดลอง LAB2" width="900"><br>
+  <em><b>รูปที่ 6</b> แผนการทดลอง LAB2 มี 4 การทดลอง: (1) ขั้นที่ 1–3 เพิ่ม-ลดจำนวนด้วย scale (2) ขั้นที่ 4 apply ไฟล์เดิมแล้วไฟล์ชนะ (3) ขั้นที่ 5 Pod แปลกหน้าที่ป้ายตรงถูกนับ (4) ขั้นที่ 6–7 ถอดป้ายแล้ว Pod หลุดจากการดูแล</em>
+</p>
+
 ใช้ไฟล์ `labs/lab01-first-rs/web-rs.yaml` ตัวเดิมจาก LAB 1 (`replicas: 3`, selector `app: web`)
 
 ### ขั้นที่ 1: สร้าง ReplicaSet
+
+> 🎯 **เป้าหมายขั้นนี้:** เตรียม **จุดเริ่มต้น 3 ตัว** ไว้เทียบกับตอน scale
+>
+> 🔍 **สังเกต:** จดชื่อ Pod 3 ตัวนี้ไว้ ขั้นต่อไปจะดูว่าตัวไหนอยู่ ตัวไหนหาย
 
 ```bash
 kubectl apply -f labs/lab01-first-rs/web-rs.yaml
@@ -562,6 +615,10 @@ web-m96xl   1/1     Running   0          8s
 </pre>
 
 ### ขั้นที่ 2: เพิ่มเป็น 5 ตัว
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบ **scale เพิ่ม**: ReplicaSet สร้างใหม่ทั้งหมด หรือเติมเฉพาะที่ขาด ([ทฤษฎีหัวข้อ 7](../01_Theory/README.md#7-scale-เพิ่ม-ลดจำนวน-pod))
+>
+> 🔍 **สังเกต:** 3 ตัวเดิม **ชื่อเดิม** ยังอยู่ มีตัวใหม่เพิ่มแค่ 2 ตัว (`AGE 0s`)
 
 ```bash
 kubectl scale rs web --replicas=5
@@ -602,6 +659,10 @@ web    5         5         5       15s
 </pre>
 
 ### ขั้นที่ 3: ลดเหลือ 2 ตัว
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบ **scale ลด**: ReplicaSet ลบเฉพาะส่วนเกินหรือไม่ ([ทฤษฎีหัวข้อ 7](../01_Theory/README.md#7-scale-เพิ่ม-ลดจำนวน-pod))
+>
+> 🔍 **สังเกต:** เหลือ 2 ตัว ตัวที่ถูกลบขึ้น `Completed` / `Terminating` ก่อนหายไป
 
 ```bash
 kubectl scale rs web --replicas=2
@@ -644,6 +705,10 @@ web-lfsgc   1/1     Running   0          22s
 
 ### ขั้นที่ 4: กับดัก — apply ไฟล์เดิมอีกครั้ง
 
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **ค่าจาก `scale` กับค่าในไฟล์ อะไรชนะ** เมื่อ apply ไฟล์เดิมซ้ำ ([ทฤษฎีหัวข้อ 7](../01_Theory/README.md#7-scale-เพิ่ม-ลดจำนวน-pod))
+>
+> 🔍 **สังเกต:** `DESIRED` เด้งจาก 2 กลับเป็น 3 ตามไฟล์
+
 ตอนนี้ ReplicaSet มี 2 ตัว แต่ในไฟล์ยังเขียน `replicas: 3` ลอง apply ไฟล์เดิม
 
 ```bash
@@ -672,6 +737,10 @@ web    3         3         3       28s
 กลับเป็น **3** ทันที เพราะ `apply` = "ทำให้ตรงกับไฟล์" ค่าที่ `scale` ไว้จึงถูกทับ (**ไฟล์ชนะ**) ถ้าอยากให้จำนวนใหม่อยู่ถาวร ให้แก้ `replicas` ในไฟล์แล้ว apply
 
 ### ขั้นที่ 5: ReplicaSet นับ Pod จากป้าย
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า ReplicaSet **นับ Pod จากป้าย ไม่ได้นับจากชื่อหรือผู้สร้าง** โดยส่ง Pod แปลกหน้าที่ติดป้ายเดียวกันเข้าไป ([ทฤษฎีหัวข้อ 8](../01_Theory/README.md#8-labels-replicaset-นับ-pod-จากป้าย) · [ทฤษฎีหัวข้อ 4](../01_Theory/README.md#4-อ่าน-yaml-ของ-replicaset-ทีละบรรทัด))
+>
+> 🔍 **สังเกต:** `extra-web` ขึ้น `Terminating` ทันทีที่เกิด และ Event `Deleted pod: extra-web`
 
 ```bash
 kubectl get pods --show-labels
@@ -758,6 +827,10 @@ Events เล่าเรื่องทั้ง LAB นี้: สร้าง
 
 ### ขั้นที่ 6: ถอดป้ายออกจาก Pod 1 ตัว
 
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบกลับด้าน: **Pod ที่ถอดป้ายออก ยังถูกนับไหม** ([ทฤษฎีหัวข้อ 8](../01_Theory/README.md#8-labels-replicaset-นับ-pod-จากป้าย))
+>
+> 🔍 **สังเกต:** Pod ที่ถอดป้ายยัง `Running` อยู่ แต่ ReplicaSet สร้างตัวใหม่มาเติม และ `-l app=web` เห็นแค่ 3 ตัว
+
 ใส่ `-` ต่อท้ายชื่อ key = ถอดป้าย `app` ออก
 
 ```bash
@@ -804,6 +877,10 @@ web-sf5r5   1/1     Running   0          6s
 
 ### ขั้นที่ 7: Pod ที่ถอดป้ายกลายเป็น Pod เดี่ยว
 
+> 🎯 **เป้าหมายขั้นนี้:** ยืนยันว่า Pod ที่ถอดป้าย **หลุดจากเจ้าของจริง** กลายเป็น Pod เดี่ยว ([ทฤษฎีหัวข้อ 5](../01_Theory/README.md#5-selector-ชื่อ-pod-และเจ้าของ) · [ทฤษฎีหัวข้อ 8](../01_Theory/README.md#8-labels-replicaset-นับ-pod-จากป้าย))
+>
+> 🔍 **สังเกต:** ไม่มีทั้ง `labels` และ `ownerReferences` ใน YAML ของ Pod
+
 ```bash
 kubectl get pod web-4jvnp -o yaml    # ← เปลี่ยนเป็นชื่อ Pod ของตัวเอง
 ```
@@ -840,6 +917,10 @@ pod "web-4jvnp" deleted from default namespace
 
 ### ขั้นที่ 8: ลบ ReplicaSet
 
+> 🎯 **เป้าหมายขั้นนี้:** เก็บกวาด ReplicaSet ของ LAB นี้ ก่อนเริ่ม LAB ถัดไปด้วยไฟล์เดิม
+>
+> 🔍 **สังเกต:** ได้ `deleted` (Pod ลูกถูกลบตาม)
+
 ```bash
 kubectl delete -f labs/lab01-first-rs/web-rs.yaml
 ```
@@ -863,14 +944,23 @@ replicaset.apps "web" deleted from default namespace
 
 ## LAB 3: Pod กระจายบนหลาย Node
 
-<p align="center" id="fig-5">
-  <img src="images/04-lab3-cordon.png" alt="รูปที่ 5 LAB3 cordon เรือ lab-worker2" width="900"><br>
-  <em><b>รูปที่ 5</b> LAB3: kubectl cordon ติดป้ายห้ามรับ Pod ใหม่ที่เรือ lab-worker2 Pod ที่สร้างใหม่ทั้งหมดจึงไปลงเรือ lab-worker เมื่อ uncordon แล้ว Pod ใหม่กลับไปลง lab-worker2 ได้อีก</em>
+<p align="center" id="fig-7">
+  <img src="images/04-lab3-cordon.png" alt="รูปที่ 7 LAB3 cordon เรือ lab-worker2" width="900"><br>
+  <em><b>รูปที่ 7</b> LAB3: kubectl cordon ติดป้ายห้ามรับ Pod ใหม่ที่เรือ lab-worker2 Pod ที่สร้างใหม่ทั้งหมดจึงไปลงเรือ lab-worker เมื่อ uncordon แล้ว Pod ใหม่กลับไปลง lab-worker2 ได้อีก</em>
 </p>
 
 **เป้าหมาย:** ดูว่า Pod ของ ReplicaSet ถูกวางบน Node ไหน และถ้าปิดรับ Pod ใหม่ที่ Node หนึ่ง (cordon) Pod ที่เกิดใหม่จะไปอยู่ที่ไหน
 
+<p align="center" id="fig-8">
+  <img src="images/04a-lab3-plan.png" alt="รูปที่ 8 แผนการทดลอง LAB3" width="900"><br>
+  <em><b>รูปที่ 8</b> แผนการทดลอง LAB3 มี 4 การทดลอง: (1) ขั้นที่ 1 Pod กระจายบนหลายเรือ (2) ขั้นที่ 2 cordon ห้ามรับ Pod ใหม่ (3) ขั้นที่ 3 Pod ใหม่หลบไปเรืออีกลำ (4) ขั้นที่ 4–5 uncordon แล้ว Pod เดิมไม่ย้าย มีแค่ Pod ใหม่ที่ไปเรือว่าง</em>
+</p>
+
 ### ขั้นที่ 1: สร้าง ReplicaSet แล้วดู Node
+
+> 🎯 **เป้าหมายขั้นนี้:** ดูว่า **ใครเลือก Node ให้ Pod** และ Pod ถูกวางกระจายหรือกองอยู่ลำเดียว ([ทฤษฎีหัวข้อ 9](../01_Theory/README.md#9-pod-กระจายบนหลายเรือ))
+>
+> 🔍 **สังเกต:** คอลัมน์ `NODE` มีทั้ง `lab-worker` และ `lab-worker2`
 
 ```bash
 kubectl apply -f labs/lab01-first-rs/web-rs.yaml
@@ -901,6 +991,10 @@ scheduler กระจาย Pod ไปทั้ง `lab-worker` และ `lab-
 
 ### ขั้นที่ 2: ปิดรับ Pod ใหม่ที่ lab-worker2 (cordon)
 
+> 🎯 **เป้าหมายขั้นนี้:** จำลอง **เรือเข้าอู่**: ติดป้ายห้ามรับ Pod ใหม่ที่ `lab-worker2` ([ทฤษฎีหัวข้อ 9](../01_Theory/README.md#9-pod-กระจายบนหลายเรือ))
+>
+> 🔍 **สังเกต:** `lab-worker2` ขึ้น `Ready,SchedulingDisabled` (ยัง Ready อยู่ แค่ไม่รับ Pod ใหม่)
+
 ```bash
 kubectl cordon lab-worker2
 ```
@@ -927,6 +1021,10 @@ lab-worker2         Ready,SchedulingDisabled   &lt;none&gt;          2m4s    v1.
 `SchedulingDisabled` = ห้ามวาง Pod **ใหม่** บน `lab-worker2` (Pod เดิมที่อยู่แล้วยังทำงานต่อ)
 
 ### ขั้นที่ 3: ลบ Pod ทั้งหมด แล้วดูว่า Pod ใหม่ไปไหน
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **Pod ที่เกิดใหม่หลบ Node ที่ cordon** ไว้ ([ทฤษฎีหัวข้อ 9](../01_Theory/README.md#9-pod-กระจายบนหลายเรือ))
+>
+> 🔍 **สังเกต:** Pod ใหม่ทั้ง 3 ตัวไปอยู่ `lab-worker` หมด
 
 ```bash
 kubectl delete pod -l app=web
@@ -959,6 +1057,10 @@ Pod ใหม่ทั้ง 3 ตัวไปอยู่ที่ `lab-worker`
 
 ### ขั้นที่ 4: เปิดรับ Pod ใหม่อีกครั้ง (uncordon)
 
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่าเอาป้ายห้ามออกแล้ว **Pod เดิมย้ายกลับเองไหม** ([ทฤษฎีหัวข้อ 9](../01_Theory/README.md#9-pod-กระจายบนหลายเรือ))
+>
+> 🔍 **สังเกต:** `SchedulingDisabled` หายไป แต่ Pod 3 ตัวยังอยู่ที่ `lab-worker` เหมือนเดิม
+
 ```bash
 kubectl uncordon lab-worker2
 ```
@@ -985,6 +1087,10 @@ lab-worker2         Ready    &lt;none&gt;          2m11s   v1.37.0
 `SchedulingDisabled` หายไปแล้ว แต่ Pod 3 ตัวเดิม **ไม่ย้ายกลับ** เอง (Kubernetes ไม่ย้าย Pod ที่ทำงานอยู่)
 
 ### ขั้นที่ 5: เพิ่ม Pod แล้วดูว่าไปอยู่ไหน
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **Pod ที่เกิดใหม่** ไปลง Node ที่ว่างกว่า ([ทฤษฎีหัวข้อ 9](../01_Theory/README.md#9-pod-กระจายบนหลายเรือ) · [ทฤษฎีหัวข้อ 7](../01_Theory/README.md#7-scale-เพิ่ม-ลดจำนวน-pod))
+>
+> 🔍 **สังเกต:** Pod ใหม่ 2 ตัว (`AGE 6s`) ไปลง `lab-worker2`
 
 ```bash
 kubectl scale rs web --replicas=5
@@ -1017,6 +1123,10 @@ Pod ใหม่ 2 ตัว (`AGE 6s`) ไปลง `lab-worker2` ทั้ง�
 
 ### ขั้นที่ 6: ลบ ReplicaSet
 
+> 🎯 **เป้าหมายขั้นนี้:** เก็บกวาด ReplicaSet ของ LAB นี้
+>
+> 🔍 **สังเกต:** ได้ `deleted` และไม่มี Node ไหนค้าง `SchedulingDisabled`
+
 ```bash
 kubectl delete -f labs/lab01-first-rs/web-rs.yaml
 ```
@@ -1039,12 +1149,17 @@ replicaset.apps "web" deleted from default namespace
 
 ## LAB 4: LAB สุดท้าย: ร้านอาหารแมวน้องส้มหลายสาขา
 
-<p align="center" id="fig-6">
-  <img src="images/05-lab4-som-menu-branches.png" alt="รูปที่ 6 LAB4 ร้านอาหารแมวน้องส้มหลายสาขา" width="900"><br>
-  <em><b>รูปที่ 6</b> LAB สุดท้าย: ReplicaSet som-menu ดูแลหน้าร้าน 3 สาขา (3 Pod) ที่ปั๊มจากแม่พิมพ์เดียวกัน แต่ละสาขาบอกชื่อ Pod ของตัวเองบนหน้าเว็บ</em>
+<p align="center" id="fig-9">
+  <img src="images/05-lab4-som-menu-branches.png" alt="รูปที่ 9 LAB4 ร้านอาหารแมวน้องส้มหลายสาขา" width="900"><br>
+  <em><b>รูปที่ 9</b> LAB สุดท้าย: ReplicaSet som-menu ดูแลหน้าร้าน 3 สาขา (3 Pod) ที่ปั๊มจากแม่พิมพ์เดียวกัน แต่ละสาขาบอกชื่อ Pod ของตัวเองบนหน้าเว็บ</em>
 </p>
 
 **เป้าหมาย:** เปิดหน้าร้านน้องส้ม 3 สาขาด้วย ReplicaSet แล้วลองทุกอย่างที่เรียนมา: ลบสาขา เพิ่มสาขาช่วงลูกค้าเยอะ และเปลี่ยนเมนูเป็นเวอร์ชัน 2.0
+
+<p align="center" id="fig-10">
+  <img src="images/05c-lab4-plan.png" alt="รูปที่ 10 แผนการทดลอง LAB4" width="900"><br>
+  <em><b>รูปที่ 10</b> แผนการทดลอง LAB4 มี 4 การทดลอง: (1) ขั้นที่ 0–3 เปิดร้าน 3 สาขา (2) ขั้นที่ 4–5 port-forward ไปสาขาเดียว (3) ขั้นที่ 6–7 ลบสาขาแล้วท่อขาด เพิ่มสาขาลูกค้าก็ไม่กระจาย (4) ขั้นที่ 8–9 เปลี่ยนแม่พิมพ์เป็นเมนู 2.0</em>
+</p>
 
 หน้าร้าน (`som-menu/app/server.js`) เป็นเว็บ Node.js เล็ก ๆ ที่บอก **ชื่อ Pod ที่เสิร์ฟหน้านี้** และเวอร์ชันของร้าน แต่ละ Pod = 1 สาขา
 
@@ -1052,9 +1167,13 @@ replicaset.apps "web" deleted from default namespace
 
 ### ขั้นที่ 0: เปิด VS Code แล้ว attach เข้า container k8s-lab
 
-<p align="center" id="fig-7">
-  <img src="images/05a-lab4-vscode-attach.png" alt="รูปที่ 7 LAB4 attach VS Code เข้า container k8s-lab" width="900"><br>
-  <em><b>รูปที่ 7</b> LAB4 ขั้นที่ 0 (ภาพจำลองหน้าจอ VS Code): ในแท็บ Containers คลิกขวาที่ k8s-lab แล้วเลือก Attach Visual Studio Code</em>
+> 🎯 **เป้าหมายขั้นนี้:** เตรียมที่ทำงานที่มีทั้ง Terminal และแท็บ **PORTS** ไว้เปิดเว็บใน browser
+>
+> 🔍 **สังเกต:** มุมล่างซ้ายของ VS Code ขึ้นชื่อ container `k8s-lab`
+
+<p align="center" id="fig-11">
+  <img src="images/05a-lab4-vscode-attach.png" alt="รูปที่ 11 LAB4 attach VS Code เข้า container k8s-lab" width="900"><br>
+  <em><b>รูปที่ 11</b> LAB4 ขั้นที่ 0 (ภาพจำลองหน้าจอ VS Code): ในแท็บ Containers คลิกขวาที่ k8s-lab แล้วเลือก Attach Visual Studio Code</em>
 </p>
 
 1. เปิด VS Code บนเครื่องนักศึกษา กดไอคอน **Containers** ที่แถบซ้าย
@@ -1064,6 +1183,10 @@ replicaset.apps "web" deleted from default namespace
 5. เมนู **Terminal → New Terminal**
 
 ### ขั้นที่ 1: build image ของหน้าร้าน 2 เวอร์ชัน
+
+> 🎯 **เป้าหมายขั้นนี้:** เตรียม **เมนู 2 รุ่น** (1.0 กับ 2.0) จากโค้ดชุดเดียวกัน ไว้ทดลองเปลี่ยนแม่พิมพ์ในขั้นที่ 8
+>
+> 🔍 **สังเกต:** ได้ image 2 tag คือ `som-menu:1.0` และ `som-menu:2.0`
 
 ```bash
 cd som-menu/app
@@ -1106,6 +1229,10 @@ cd ../..
 
 ### ขั้นที่ 2: นำ image เข้าคลัสเตอร์
 
+> 🎯 **เป้าหมายขั้นนี้:** ให้ **ทุกเรือมี image** เพราะ Pod อาจไปเกิดบนเรือลำไหนก็ได้ ([ทฤษฎีหัวข้อ 9](../01_Theory/README.md#9-pod-กระจายบนหลายเรือ))
+>
+> 🔍 **สังเกต:** ข้อความ `loading...` ครบทั้ง 3 node สำหรับทั้ง 2 เวอร์ชัน
+
 ```bash
 kind load docker-image som-menu:1.0 som-menu:2.0 --name lab
 ```
@@ -1124,6 +1251,10 @@ Image: "som-menu:2.0" with ID "sha256:34fb2936aa8588dbcc8d4d5f4ca1723526a7f20768
 ส่งทั้ง 2 เวอร์ชันเข้าทุก node ไว้ก่อน เพราะ Pod ไปเกิดบนเรือลำไหนก็ได้
 
 ### ขั้นที่ 3: เปิดร้าน 3 สาขา
+
+> 🎯 **เป้าหมายขั้นนี้:** ใช้ทุกอย่างจาก LAB 1 กับ **แอปจริงที่มี probe**: ReplicaSet เดียวเปิดร้าน 3 สาขา ([ทฤษฎีหัวข้อ 11](../01_Theory/README.md#11-อ่าน-yaml-ร้านน้องส้มหลายสาขาทั้งไฟล์))
+>
+> 🔍 **สังเกต:** `READY 3` ของ ReplicaSet = readinessProbe ของทุกสาขาผ่านแล้ว
 
 ไฟล์ `som-menu/k8s/som-menu-rs.yaml`
 
@@ -1218,6 +1349,10 @@ som-menu   3         3         3       6s
 
 ### ขั้นที่ 4: เปิดหน้าร้านใน browser
 
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า `port-forward rs/...` **ต่อเข้ากี่สาขา** ([ทฤษฎีหัวข้อ 12](../01_Theory/README.md#12-เปิดเว็บของ-replicaset-และบทถัดไป))
+>
+> 🔍 **สังเกต:** ชื่อ Pod บนหน้าเว็บ (จดไว้ใช้ขั้นถัดไป)
+
 `port-forward` ใส่ชื่อ ReplicaSet ได้ (`rs/som-menu`) kubectl จะ **เลือก Pod มา 1 ตัว** แล้วต่อท่อเข้าตัวนั้น
 
 ```bash
@@ -1233,21 +1368,25 @@ Forwarding from [::1]:8080 -&gt; 3000
 
 คำสั่งนี้ **ค้างไว้** (อย่าปิด) แล้วไปที่แท็บ **PORTS** ของ VS Code ชี้ที่แถว port `8080` แล้วกดไอคอน **ลูกโลก (Open in Browser)** (ถ้าไม่เห็นแถว กด **Forward a Port** แล้วพิมพ์ `8080`)
 
-<p align="center" id="fig-8">
-  <img src="images/05b-lab4-vscode-ports.png" alt="รูปที่ 8 LAB4 เปิดเว็บผ่านแท็บ PORTS ของ VS Code" width="900"><br>
-  <em><b>รูปที่ 8</b> LAB4 ขั้นที่ 4 (ภาพจำลองหน้าจอ VS Code ที่ attach เข้า k8s-lab แล้ว): แท็บ PORTS แสดง port 8080 ที่มาจาก kubectl port-forward rs/som-menu 8080:3000 ชี้ที่แถวนั้นแล้วกดไอคอนลูกโลก Open in Browser</em>
+<p align="center" id="fig-12">
+  <img src="images/05b-lab4-vscode-ports.png" alt="รูปที่ 12 LAB4 เปิดเว็บผ่านแท็บ PORTS ของ VS Code" width="900"><br>
+  <em><b>รูปที่ 12</b> LAB4 ขั้นที่ 4 (ภาพจำลองหน้าจอ VS Code ที่ attach เข้า k8s-lab แล้ว): แท็บ PORTS แสดง port 8080 ที่มาจาก kubectl port-forward rs/som-menu 8080:3000 ชี้ที่แถวนั้นแล้วกดไอคอนลูกโลก Open in Browser</em>
 </p>
 
 🌐 browser จะเปิด `http://localhost:8080` เห็นหน้าร้านเวอร์ชัน 1.0 และชื่อ Pod ที่เสิร์ฟหน้านี้
 
-<p align="center" id="fig-9">
-  <img src="images/screenshots/20261018_lab4_01-shop-v1.png" alt="รูปที่ 9 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 1.0" width="650"><br>
-  <em><b>รูปที่ 9</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านเวอร์ชัน 1.0 เสิร์ฟโดย Pod som-menu-7vhqr (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward rs/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
+<p align="center" id="fig-13">
+  <img src="images/screenshots/20261018_lab4_01-shop-v1.png" alt="รูปที่ 13 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 1.0" width="650"><br>
+  <em><b>รูปที่ 13</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านเวอร์ชัน 1.0 เสิร์ฟโดย Pod som-menu-7vhqr (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward rs/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
 </p>
 
 **จดชื่อ Pod ที่เห็นบนหน้าเว็บไว้** (ตัวอย่างนี้คือ `som-menu-7vhqr` ของนักศึกษาจะต่างไป)
 
 ### ขั้นที่ 5: ดู log ของสาขานั้น
+
+> 🎯 **เป้าหมายขั้นนี้:** ยืนยันว่า **ลูกค้าทุกคนไปสาขาเดียว** แม้ร้านจะมี 3 สาขา ([ทฤษฎีหัวข้อ 12](../01_Theory/README.md#12-เปิดเว็บของ-replicaset-และบทถัดไป))
+>
+> 🔍 **สังเกต:** บรรทัด "เสิร์ฟหน้าร้าน" เพิ่มเฉพาะใน log ของสาขาที่อยู่บนหน้าเว็บ
 
 เปิด **Terminal ใหม่** ใน VS Code (กด `+` ที่แท็บ TERMINAL) เพราะ terminal แรกยังรัน port-forward อยู่
 
@@ -1265,6 +1404,10 @@ kubectl logs som-menu-7vhqr    # ← เปลี่ยนเป็นชื่�
 ทุกครั้งที่ refresh browser จะมีบรรทัด "เสิร์ฟหน้าร้าน" เพิ่ม **เฉพาะสาขานี้** สาขาอื่นไม่ได้รับลูกค้าเลย
 
 ### ขั้นที่ 6: ปิดสาขาที่กำลังเสิร์ฟอยู่
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบ self-healing คู่กับการเชื่อมต่อ: **ปิดสาขาที่กำลังเสิร์ฟ ร้านกลับมาเองไหม** ([ทฤษฎีหัวข้อ 6](../01_Theory/README.md#6-self-healing-ใครซ่อมอะไร) · [ทฤษฎีหัวข้อ 12](../01_Theory/README.md#12-เปิดเว็บของ-replicaset-และบทถัดไป))
+>
+> 🔍 **สังเกต:** Pod ใหม่มาแทนทันที แต่ port-forward ขึ้น `lost connection to pod` ต้องต่อใหม่เอง
 
 ```bash
 kubectl delete pod som-menu-7vhqr    # ← เปลี่ยนเป็นชื่อ Pod ของตัวเอง (ชื่อที่เห็นบนหน้าเว็บ)
@@ -1302,9 +1445,9 @@ E1018 13:18:21.848586   37558 portforward.go:549] "An error occurred forwarding"
 error: lost connection to pod
 </pre>
 
-<p align="center" id="fig-10">
-  <img src="images/06-lab4-port-forward-lost.png" alt="รูปที่ 10 port-forward หลุดเมื่อ Pod ถูกลบ" width="900"><br>
-  <em><b>รูปที่ 10</b> port-forward ต่อท่อเข้า Pod ตัวเดียว เมื่อ Pod นั้นถูกลบ ท่อก็ขาด (lost connection to pod) แม้ ReplicaSet จะสร้าง Pod ใหม่แทนแล้ว ต้องต่อท่อใหม่เอง</em>
+<p align="center" id="fig-14">
+  <img src="images/06-lab4-port-forward-lost.png" alt="รูปที่ 14 port-forward หลุดเมื่อ Pod ถูกลบ" width="900"><br>
+  <em><b>รูปที่ 14</b> port-forward ต่อท่อเข้า Pod ตัวเดียว เมื่อ Pod นั้นถูกลบ ท่อก็ขาด (lost connection to pod) แม้ ReplicaSet จะสร้าง Pod ใหม่แทนแล้ว ต้องต่อท่อใหม่เอง</em>
 </p>
 
 port-forward ผูกกับ **Pod ตัวเดียว** ไม่ได้ผูกกับ ReplicaSet Pod นั้นหาย ท่อก็ขาด ต่อท่อใหม่ใน terminal แรก
@@ -1323,6 +1466,10 @@ Forwarding from [::1]:8080 -&gt; 3000
 refresh browser จะเห็นร้านกลับมา โดย **ชื่อ Pod บนหน้าเว็บเปลี่ยนไป** เป็นสาขาอื่น
 
 ### ขั้นที่ 7: ลูกค้าเยอะ เพิ่มเป็น 5 สาขา
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **เพิ่มสาขาแล้วลูกค้ากระจายไปสาขาใหม่ไหม** ([ทฤษฎีหัวข้อ 7](../01_Theory/README.md#7-scale-เพิ่ม-ลดจำนวน-pod) · [ทฤษฎีหัวข้อ 12](../01_Theory/README.md#12-เปิดเว็บของ-replicaset-และบทถัดไป))
+>
+> 🔍 **สังเกต:** มี Pod 5 ตัว แต่ browser ยังคุยกับสาขาเดียวเหมือนเดิม
 
 ใน terminal ที่ 2
 
@@ -1356,6 +1503,10 @@ som-menu-qcchv   1/1     Running   0          5s    10.244.2.18   lab-worker    
 มี 5 สาขาแล้ว แต่ browser ของเรายังคุยกับสาขาเดียวผ่าน port-forward อยู่ดี
 
 ### ขั้นที่ 8: เปลี่ยนเป็นเมนูเวอร์ชัน 2.0
+
+> 🎯 **เป้าหมายขั้นนี้:** ทดสอบว่า **แก้แม่พิมพ์แล้ว Pod ที่มีอยู่เปลี่ยนตามไหม** (และไฟล์ทับค่า scale อีกครั้ง) ([ทฤษฎีหัวข้อ 10](../01_Theory/README.md#10-แก้แม่พิมพ์-แล้ว-pod-เดิมเปลี่ยนไหม) · [ทฤษฎีหัวข้อ 7](../01_Theory/README.md#7-scale-เพิ่ม-ลดจำนวน-pod))
+>
+> 🔍 **สังเกต:** `IMAGES` ของ ReplicaSet เป็น `som-menu:2.0` แต่ Pod ยังเป็น `version=1.0` จนกว่าจะลบทิ้ง และจำนวนกลับเป็น 3
 
 ไฟล์ `som-menu/k8s/som-menu-rs-v2.yaml`
 
@@ -1485,6 +1636,10 @@ Pod ใหม่ทั้ง 3 ตัวปั๊มจากแม่พิม�
 
 ### ขั้นที่ 9: เปิดร้านเวอร์ชัน 2.0
 
+> 🎯 **เป้าหมายขั้นนี้:** ยืนยันว่า **Pod ที่ปั๊มจากแม่พิมพ์ใหม่เป็นรุ่นใหม่จริง** ([ทฤษฎีหัวข้อ 10](../01_Theory/README.md#10-แก้แม่พิมพ์-แล้ว-pod-เดิมเปลี่ยนไหม))
+>
+> 🔍 **สังเกต:** หน้าร้านสีเขียวอมฟ้า ป้าย `เวอร์ชัน 2.0` และมีเมนูไอศกรีมแมว
+
 port-forward ใน terminal แรกหลุดอีกแล้ว (Pod ที่ต่ออยู่ถูกลบ) กด **Ctrl+C** ถ้ายังค้าง แล้วต่อท่อใหม่
 
 ```bash
@@ -1500,9 +1655,9 @@ Forwarding from [::1]:8080 -&gt; 3000
 
 refresh browser จะเห็นหน้าร้านสีเขียวอมฟ้า **เวอร์ชัน 2.0** มีเมนูใหม่ "ไอศกรีมแมว"
 
-<p align="center" id="fig-11">
-  <img src="images/screenshots/20261018_lab4_02-shop-v2.png" alt="รูปที่ 11 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 2.0" width="650"><br>
-  <em><b>รูปที่ 11</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านเวอร์ชัน 2.0 เสิร์ฟโดย Pod som-menu-j2mk8 มีเมนูใหม่ไอศกรีมแมว (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward rs/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
+<p align="center" id="fig-15">
+  <img src="images/screenshots/20261018_lab4_02-shop-v2.png" alt="รูปที่ 15 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 2.0" width="650"><br>
+  <em><b>รูปที่ 15</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านเวอร์ชัน 2.0 เสิร์ฟโดย Pod som-menu-j2mk8 มีเมนูใหม่ไอศกรีมแมว (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward rs/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
 </p>
 
 ใน terminal ที่ 2 ดู log ของสาขาที่เห็นบนหน้าเว็บ
@@ -1519,6 +1674,10 @@ kubectl logs som-menu-j2mk8    # ← เปลี่ยนเป็นชื่�
 </pre>
 
 ### ขั้นที่ 10: เก็บกวาด
+
+> 🎯 **เป้าหมายขั้นนี้:** เก็บกวาดร้านทั้งหมด
+>
+> 🔍 **สังเกต:** ได้ `deleted` และ Pod หายตามทั้งหมด
 
 กลับไปที่ terminal แรกแล้วกด **Ctrl+C** หยุด port-forward จากนั้น
 
