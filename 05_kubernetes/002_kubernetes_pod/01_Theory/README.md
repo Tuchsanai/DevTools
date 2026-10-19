@@ -414,6 +414,26 @@ status:
 - `kubectl explain pod.spec.containers` — คู่มือบอกว่า field นี้มีอะไรบ้าง
 - `kubectl run web --image=nginx:1.27-alpine --dry-run=client -o yaml > pod.yaml` — ให้ kubectl ร่างไฟล์ให้ (ยังไม่สร้าง Pod จริง)
 
+### 6.5 ลบโดยไม่ต้องมีไฟล์ YAML
+
+`kubectl delete -f <ไฟล์>` ไม่ได้ใช้ไฟล์ทั้งไฟล์ kubectl แค่อ่าน **ชนิด (`kind`) กับชื่อ (`metadata.name`)** จากไฟล์ แล้วลบ object ที่ชื่อนั้น ถ้ารู้ 2 อย่างนี้ก็ **ลบได้เลยโดยไม่ต้องมีไฟล์**
+
+| วิธี | ตัวอย่างใน LAB | ใช้เมื่อ |
+|---|---|---|
+| ตามไฟล์ | `kubectl delete -f labs/lab02-first-yaml/nginx-pod.yaml` (LAB 2) | มีไฟล์ที่ใช้สร้างอยู่ในมือ |
+| ตามชนิด + ชื่อ | `kubectl delete pod hello` (LAB 1) หรือเขียน `pod/hello` | ไม่มีไฟล์ เช่น Pod ที่สร้างด้วย `kubectl run` ซึ่งไม่มีไฟล์ YAML เลย ดูชื่อก่อนด้วย `kubectl get pods` |
+| ตามป้าย | `kubectl delete pod -l app=som-shop` (LAB 4) | ลบหลาย Pod ที่ติดป้ายเดียวกันในคำสั่งเดียว (ระวัง ตรงป้ายเมื่อไรลบหมด) |
+
+```text
+$ kubectl delete pod hello
+pod "hello" deleted from default namespace
+$ kubectl delete pod hello
+Error from server (NotFound): pods "hello" not found      ← ลบชื่อที่ไม่มีแล้ว ได้ NotFound
+```
+
+- `-l` หาจากป้าย **บนตัว object ที่สั่งลบ** Pod ติดป้ายไว้ที่ `metadata.labels` ของตัวเอง `kubectl delete pod -l ...` จึงเจอ (บทที่ 3–4 ป้ายจะย้ายไปอยู่ใน `template` แล้วกลายเป็นกับดัก)
+- Pod เดี่ยวลบแล้ว **หายถาวร** ไม่ว่าลบด้วยวิธีไหน ไม่มีใครสร้างคืน (หัวข้อ 14)
+
 ---
 
 ## 7. ตั้งค่า container: image, env, command, resources

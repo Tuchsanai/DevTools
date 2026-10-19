@@ -277,6 +277,8 @@ No resources found in default namespace.
 
 `No resources found` = ไม่มี Pod เหลือใน namespace `default` แล้ว
 
+Pod `hello` สร้างด้วย `kubectl run` จึง **ไม่มีไฟล์ YAML เลย** ลบได้ด้วย **ชนิด + ชื่อ** (`pod` + `hello`) ไม่ต้องมีไฟล์ ([ทฤษฎีหัวข้อ 6.5](../01_Theory/README.md#65-ลบโดยไม่ต้องมีไฟล์-yaml)) ไม่รู้ชื่อให้ดูจาก `kubectl get pods` ก่อนเสมอ
+
 ### สิ่งที่เห็น
 
 - `kubectl run` สร้าง **Pod** (ไม่ใช่ container เดี่ยว) STATUS เปลี่ยนจาก `ContainerCreating` เป็น `Running` ภายในไม่กี่วินาที
@@ -458,7 +460,7 @@ No resources found in default namespace.
 - ไฟล์ YAML บอก "สิ่งที่อยากได้" แล้ว `kubectl apply -f` ให้ Kubernetes สร้างตาม
 - `get pod web -o yaml` มีทั้ง `spec` (สิ่งที่ขอ) และ `status` (สถานะจริง)
 - `apply` สั่งซ้ำได้ (`unchanged`) แต่ `create` ซ้ำไม่ได้ (`AlreadyExists`)
-- ลบด้วยไฟล์เดิมได้ด้วย `kubectl delete -f`
+- ลบด้วยไฟล์เดิมได้ด้วย `kubectl delete -f` หรือลบด้วยชนิด + ชื่อ `kubectl delete pod web` ก็ได้ผลเหมือนกัน เพราะ `-f` แค่อ่าน `kind` กับ `metadata.name` จากไฟล์ (ทฤษฎีหัวข้อ 6.5)
 
 > **🏆 ท้าทาย:** คัดลอก `nginx-pod.yaml` เป็น `/tmp/my-pod.yaml` แก้ชื่อ Pod เป็น `my-web` แล้ว `kubectl apply -f /tmp/my-pod.yaml` ดูด้วย `kubectl get pods` แล้วลบทิ้ง
 
