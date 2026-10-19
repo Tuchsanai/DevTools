@@ -27,9 +27,16 @@
 13. [port-forward ระหว่างเปลี่ยนรุ่น และบทถัดไป](#13-port-forward-ระหว่างเปลี่ยนรุ่น-และบทถัดไป)
 14. [สรุปและคำถามทบทวน](#14-สรุปและคำถามทบทวน)
 
+ทุกหัวข้อมี 2 บรรทัดนี้ช่วยให้รู้ว่ากำลังเรียนไปเพื่ออะไร
+
+- 🎯 **หัวข้อนี้เรียนเพื่อ** (ต้นหัวข้อ) = อ่านหัวข้อนี้แล้วจะตอบคำถามอะไรได้ และเอาไปใช้ตอนไหน
+- 🧪 **พิสูจน์ใน LAB** (ท้ายหัวข้อ) = LAB ขั้นไหนทดลองให้เห็นจริง และผลที่เห็นพิสูจน์อะไร กดลิงก์ไปที่ขั้นนั้นได้ทันที
+
 ---
 
 ## 1. เริ่มเรื่อง: เปลี่ยนเมนูทีไร ร้านปิด
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** เห็น **ปัญหา** ที่บทนี้มาแก้ก่อน: ใช้ ReplicaSet เปลี่ยนเวอร์ชันทีไร ร้านปิดทุกที ถ้าไม่เห็นปัญหานี้ จะไม่เห็นว่า Deployment มีไว้ทำไม
 
 <p align="center">
   <img src="images/01-opening-menu-change-closed.png" alt="น้องส้มเปลี่ยนเมนูด้วย ReplicaSet ต้องลบ Pod เก่าเอง ร้านปิดชั่วครู่" width="800">
@@ -60,6 +67,8 @@
 ---
 
 ## 2. Deployment คืออะไร
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** รู้ว่า Deployment คืออะไร และ **ต่างจาก ReplicaSet ตรงไหน** จะได้ตอบได้ว่าทำไมงานจริงสร้าง Deployment แทบไม่เคยสร้าง ReplicaSet เอง
 
 <p align="center">
   <img src="images/03-what-is-deployment.png" alt="Deployment ผู้จัดการถือสมุดรุ่น สั่งหัวหน้าลูกเรือ ReplicaSet" width="800">
@@ -102,9 +111,13 @@ web-6bd858c6f9   3         3         3       10s
 | ย้อนกลับ | แก้ไฟล์กลับ แล้วลบ Pod เอง | `kubectl rollout undo` คำสั่งเดียว |
 | ใช้ในงานจริง | แทบไม่สร้างเอง | ใช้เป็นหลัก |
 
+> 🧪 **พิสูจน์ใน LAB:** ส่งไฟล์ Deployment ไฟล์เดียว แล้วได้ของครบ 3 ชั้น Deployment → ReplicaSet → Pod → **LAB 1** ขั้นที่ [2](../02_LAB/README.md#ขั้นที่-2-สร้าง-deployment-แล้วดูทั้ง-3-ชั้น)
+
 ---
 
 ## 3. Deployment ทำงานอย่างไร
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** รู้ว่า **ใครในคลัสเตอร์ทำงานอะไร** ตั้งแต่ apply จนได้ Pod เวลาอ่าน Events หรือหาสาเหตุตอนระบบพัง จะรู้ว่าต้องไปดูที่ชั้นไหน
 
 <p align="center">
   <img src="images/04-deploy-rs-pod-chain.png" alt="สามชั้น Deployment สั่ง ReplicaSet สั่ง Pod" width="800">
@@ -140,9 +153,13 @@ Events:
 
 > **ประโยคเดียวที่ต้องจำ:** Deployment **ปรับตัวเลข replicas ของ ReplicaSet** ส่วน ReplicaSet **สร้าง/ลบ Pod** ตามตัวเลขนั้น
 
+> 🧪 **พิสูจน์ใน LAB:** Events ของ Deployment พูดถึงแค่ ReplicaSet แสดงว่า Deployment ไม่ได้สร้าง Pod เอง → **LAB 1** ขั้นที่ [2](../02_LAB/README.md#ขั้นที่-2-สร้าง-deployment-แล้วดูทั้ง-3-ชั้น), [3](../02_LAB/README.md#ขั้นที่-3-อ่านรายละเอียดด้วย-describe)
+
 ---
 
 ## 4. อ่าน YAML ของ Deployment ทีละบรรทัด
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** อ่านไฟล์ที่ใช้ใน LAB 1–3 ให้ออกทุกบรรทัด รู้ว่า **บรรทัดไหนเป็นของใคร** (Deployment / ReplicaSet / Pod) และ **แก้บรรทัดไหนแล้วจะเกิดอะไร** จะได้รู้ว่าผลที่เห็นในแต่ละขั้นของ LAB มาจากบรรทัดไหน
 
 YAML ของบทนี้ใช้กฎเดิมจาก [บทที่ 2 หัวข้อ 5](../../002_kubernetes_pod/01_Theory/README.md#5-yaml-ฉบับเข้าใจง่าย) ทบทวนสั้น ๆ
 
@@ -219,41 +236,97 @@ spec:
             - containerPort: 80
 ```
 
-ไฟล์นี้ใช้ใน LAB 1, LAB 2 และ LAB 3
+ไฟล์นี้ใช้ใน LAB 1, LAB 2 และ LAB 3 อ่านง่ายที่สุดถ้าแบ่งเป็น **4 ก้อน** แล้วถามทีละก้อนว่า "ก้อนนี้เป็นของใคร และมีไว้ทำอะไร"
 
-อ่านทีละบรรทัด
+**ก้อนที่ 1: `apiVersion` + `kind` — บอกว่านี่คือ object อะไร**
 
-| บรรทัด | ความหมาย |
-|---|---|
-| `apiVersion: apps/v1` | Deployment อยู่กลุ่ม `apps` รุ่น `v1` (กลุ่มเดียวกับ ReplicaSet) |
-| `kind: Deployment` | ขอสร้าง **Deployment** |
-| `metadata:` → `name: web` | Deployment ชื่อ `web` → ReplicaSet ชื่อ `web-<hash>` → Pod ชื่อ `web-<hash>-<สุ่ม>` |
-| `  annotations:` → `kubernetes.io/change-cause: "nginx 1.27"` | โน้ตบอกว่ารุ่นนี้คืออะไร ไปโผล่ในคอลัมน์ `CHANGE-CAUSE` ของ `rollout history` |
-| `spec:` | เริ่มส่วน "อยากได้อะไร" ของ Deployment |
-| `  replicas: 3` | อยากได้ Pod **3 ตัว** ตลอดเวลา |
-| `  selector:` → `matchLabels:` → `app: web` | นับ Pod ที่มีป้าย `app=web` |
-| `  template:` | เริ่ม **แม่พิมพ์ Pod** (เปลี่ยนเมื่อไร = เปลี่ยนรุ่น) |
-| `    metadata:` → `labels:` → `app: web` | Pod ทุกตัวติดป้าย `app=web` (**ต้องตรงกับ selector**) |
-| `    spec:` → `containers:` | ข้างใน Pod มี container อะไร (เหมือนบทที่ 2) |
-| `      - name: nginx` / `image: nginx:1.27-alpine` | container ชื่อ `nginx` ใช้ image `nginx:1.27-alpine` |
-| `          - containerPort: 80` | แอปฟัง port 80 |
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+```
+
+- `kind: Deployment` บอก kube-apiserver ว่าไฟล์นี้คือ Deployment งานจึงไปถึง **deployment-controller** (หัวข้อ 3) ถ้าเขียน `kind: ReplicaSet` งานจะไปที่ replicaset-controller แทน และจะไม่มีการทยอยเปลี่ยนรุ่นให้
+- `apps/v1` = กลุ่ม `apps` รุ่น `v1` กลุ่มเดียวกับ ReplicaSet (ส่วน Pod อยู่กลุ่มหลัก จึงเขียนแค่ `v1`)
+
+**ก้อนที่ 2: `metadata` — ชื่อและโน้ตของตัว Deployment**
+
+```yaml
+metadata:
+  name: web
+  annotations:
+    kubernetes.io/change-cause: "nginx 1.27"
+```
+
+- `name: web` คือ **ตัวตน** ของ Deployment apply ไฟล์ที่ใช้ชื่อเดิมซ้ำ = แก้ตัวเดิม (ขึ้น `configured` แบบ LAB 2) ชื่อนี้ยังเป็น **ต้นชื่อ** ของ ReplicaSet (`web-6bd858c6f9`) และ Pod (`web-6bd858c6f9-86xzl`) ด้วย
+- `annotations` = โน้ตที่แปะไว้ให้คนอ่าน Kubernetes ไม่ได้ใช้ตัดสินอะไร ส่วน `kubernetes.io/change-cause` จะไปโผล่ในคอลัมน์ `CHANGE-CAUSE` ของ `rollout history` (หัวข้อ 9)
+- โน้ตนี้ **ไม่ทำให้เกิดการเปลี่ยนรุ่น** ตอนเตรียม LAB ลองแก้แค่ข้อความ change-cause แล้ว apply ได้ `configured` แต่ยังเป็น revision 1, ReplicaSet ตัวเดิม และไม่มี Pod ไหนถูกแตะ เปลี่ยนแค่ข้อความในประวัติของรุ่นปัจจุบัน จึงต้องแก้โน้ต **พร้อมกับ** แม่พิมพ์ทุกครั้ง (แบบไฟล์ของ LAB 2)
+
+**ก้อนที่ 3: `spec` ระดับบน — Deployment อยากได้อะไร**
+
+```yaml
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+```
+
+- `replicas: 3` = อยากได้ Pod 3 ตัว Deployment **ส่งเลขนี้ต่อให้ ReplicaSet** (LAB 1 เห็น `DESIRED 3`) แก้เลขนี้ = scale ReplicaSet ตัวเดิม ไม่ใช่การเปลี่ยนรุ่น
+- `selector` = นับ Pod ที่ติดป้าย `app=web` ReplicaSet ที่ Deployment สร้างจะได้ selector นี้ **บวก `pod-template-hash`** ที่เติมให้เอง (หัวข้อ 5.1) ทีมเก่ากับทีมใหม่จึงไม่นับ Pod ของกันและกัน
+- `selector` ต้องตรงกับป้ายใน `template` ทุกตัวอักษร ไม่งั้น Kubernetes ปฏิเสธตั้งแต่ apply (เหมือนบทที่ 3)
+
+ไฟล์นี้ไม่ได้เขียนวิธีเปลี่ยนรุ่นไว้ Deployment จึง **เติมค่าเริ่มต้นให้เอง** ดูได้จาก `kubectl get deploy web -o yaml` (ทดลองตอนเตรียม LAB ตัดมาเฉพาะบรรทัดที่เกี่ยวข้อง)
+
+```text
+spec:
+  progressDeadlineSeconds: 600     ← เปลี่ยนรุ่นค้างเกิน 600 วินาที = ล้มเหลว (หัวข้อ 11)
+  ...
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%                ← มี Pod เกิน replicas ได้ 25% (หัวข้อ 8)
+      maxUnavailable: 25%          ← Pod ที่พร้อมขาดจาก replicas ได้ 25% (หัวข้อ 8)
+    type: RollingUpdate            ← เปลี่ยนรุ่นแบบทยอย (หัวข้อ 7)
+```
+
+ค่าเหล่านี้เป็นของ **Deployment เท่านั้น** (ReplicaSet ไม่มี) จึงอยู่ใต้ `spec` ระดับบน ไม่ได้อยู่ใต้ `template` LAB 3 และ LAB 4 จะเขียนค่าเหล่านี้เองในไฟล์
+
+**ก้อนที่ 4: `template` — แม่พิมพ์ของ Pod**
+
+```yaml
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+```
+
+- ทุกบรรทัดใต้ `template` เป็นของ **Pod** (หน้าตาเหมือนไฟล์ Pod ในบทที่ 2 ที่ตัด `apiVersion` / `kind` ออก) Deployment ไม่ได้ใช้เอง แต่ส่งต่อให้ ReplicaSet ใช้ปั๊ม Pod
+- `labels` ต้องตรงกับ `selector` ในก้อนที่ 3 Pod ที่ปั๊มออกมาจึงถูกนับ
+- `containers` = ข้างใน Pod มี container ชื่อ `nginx` ใช้ image `nginx:1.27-alpine` และแอปฟัง port 80
+- **ก้อนนี้สำคัญที่สุดของบท** Deployment คำนวณ `pod-template-hash` จากก้อนนี้ แก้บรรทัดไหนก็ได้ในก้อนนี้ (เช่น `image`) → hash ใหม่ → ReplicaSet ใหม่ → rolling update → revision ใหม่ (หัวข้อ 7)
+
+**แก้บรรทัดไหน แล้วเกิดอะไร** สรุปจากการทดลองจริง
+
+| แก้อะไรแล้ว apply | สิ่งที่เกิด | revision ใหม่? | เห็นที่ |
+|---|---|:---:|---|
+| `replicas` | ReplicaSet ตัวเดิมเพิ่ม/ลด Pod | ไม่ | LAB 1 ขั้นที่ 9 |
+| `image` (หรือบรรทัดใดก็ได้ใน `template`) | ได้ ReplicaSet ใหม่ ทยอยเปลี่ยน Pod ทีละตัว | ใช่ | LAB 2 ขั้นที่ 3–4 |
+| แค่ `change-cause` | ข้อความในประวัติรุ่นปัจจุบันเปลี่ยน Pod ไม่ถูกแตะ | ไม่ | ทดลองตอนเตรียม LAB |
 
 แปลทั้งไฟล์เป็นประโยคเดียว: **"ขอ Deployment ชื่อ `web` (รุ่น "nginx 1.27") ดูแล Pod ที่ติดป้าย `app=web` ให้มี 3 ตัวเสมอ โดยสร้างจากแม่พิมพ์ที่มี container `nginx` ใช้ image `nginx:1.27-alpine` ฟัง port 80"**
 
-### 4.3 ผิดบ่อย แก้ง่าย
-
-| ผิด | ถูก | เพราะ |
-|---|---|---|
-| `apiVersion: v1` | `apiVersion: apps/v1` | Deployment อยู่กลุ่ม `apps` |
-| `kind: deployment` | `kind: Deployment` | ตัว D ต้องใหญ่ |
-| `replicas: "3"` | `replicas: 3` | จำนวนต้องเป็นตัวเลข |
-| ป้ายใน `template` ไม่ตรง selector | ทำให้ตรงกัน | Kubernetes ปฏิเสธตั้งแต่ apply (เหมือนบทที่ 3 หัวข้อ 5.1) |
-| `strategy` / `minReadySeconds` อยู่ใต้ `template.spec` | อยู่ใต้ `spec` ระดับบน | เป็นค่าของ Deployment ไม่ใช่ของ Pod (หัวข้อ 8) |
-| `containers` อยู่ใต้ `spec` ระดับบน | อยู่ใต้ `template.spec` | container เป็นของ Pod |
+> 🧪 **พิสูจน์ใน LAB:** อ่านไฟล์แรกเทียบกับ `web-rs.yaml` ของบทที่ 3 ก่อน apply → **LAB 1** ขั้นที่ [1](../02_LAB/README.md#ขั้นที่-1-ไฟล์-deployment-แรก)
 
 ---
 
 ## 5. ชื่อ Pod 3 ท่อน และเจ้าของ 2 ชั้น
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** อ่าน **ชื่อ Pod และป้าย** ให้ออกว่ามาจาก Deployment ไหน แม่พิมพ์รุ่นไหน เพราะตอนเปลี่ยนรุ่นใน LAB 2–4 ต้องแยกให้ได้ว่า Pod ตัวไหนรุ่นเก่า ตัวไหนรุ่นใหม่
 
 <p align="center">
   <img src="images/07-pod-name-three-parts.png" alt="ชื่อ Pod สามท่อน และ ownerReferences สองชั้น" width="800">
@@ -304,9 +377,13 @@ metadata:
 - Pod → ReplicaSet → Deployment เป็น **สายเจ้าของ 2 ชั้น**
 - ลบ Deployment แล้ว ReplicaSet และ Pod หายตามทั้งสาย (LAB 1 ตอนท้าย: `kubectl delete -f` แล้ว `get deploy`, `get rs`, `get pods` ขึ้น `No resources found` ทั้งหมด)
 
+> 🧪 **พิสูจน์ใน LAB:** `ownerReferences` 2 ชั้น และลบ Deployment ตัวเดียว ทั้งสายหายตาม → **LAB 1** ขั้นที่ [4](../02_LAB/README.md#ขั้นที่-4-เจ้าของ-2-ชั้น), [10](../02_LAB/README.md#ขั้นที่-10-ลบ-deployment)
+
 ---
 
 ## 6. ใครดูแลอะไร: Deployment หรือ ReplicaSet
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** รู้ว่า **ต้องสั่งงานที่ชั้นไหน** เพราะถ้าสั่งผิดชั้น (เช่น scale ที่ ReplicaSet) คำสั่งจะดูเหมือนสำเร็จ แต่ถูกแก้กลับโดยไม่บอก
 
 <p align="center">
   <img src="images/08-who-manages-what.png" alt="ReplicaSet ซ่อม Pod ส่วน Deployment ซ่อม ReplicaSet" width="800">
@@ -367,9 +444,13 @@ web-6bd858c6f9-w2gqx   1/1     Running   0          3s   ← เกิดให�
 
 > **⚠️ กับดัก:** เมื่อมี Deployment แล้ว **สั่งงานที่ Deployment หรือไฟล์ของ Deployment เท่านั้น** อย่าไปแก้ ReplicaSet ตรง ๆ ผู้จัดการจะแก้กลับทุกครั้ง และสุดท้าย `apply` ไฟล์ก็ชนะทุกคำสั่ง (ใน LAB 1 apply แล้วกลับเป็น `3/3`)
 
+> 🧪 **พิสูจน์ใน LAB:** ลบ Pod / ลบ ReplicaSet แล้วได้คืน, scale ที่ ReplicaSet แล้วเด้งกลับ และ apply ไฟล์แล้วไฟล์ชนะ → **LAB 1** ขั้นที่ [5](../02_LAB/README.md#ขั้นที่-5-ลบ-pod-1-ตัว), [6](../02_LAB/README.md#ขั้นที่-6-ลบ-replicaset-ทั้งตัว), [7](../02_LAB/README.md#ขั้นที่-7-scale-ที่-deployment), [8](../02_LAB/README.md#ขั้นที่-8-กับดัก--scale-ที่-replicaset), [9](../02_LAB/README.md#ขั้นที่-9-apply-ไฟล์เดิมอีกครั้ง)
+
 ---
 
 ## 7. Rolling update: ทยอยเปลี่ยนทีละ Pod
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** เข้าใจ **หัวใจของบท**: Deployment เปลี่ยนเวอร์ชันโดยร้านไม่ปิดได้อย่างไร และทำไมแก้แม่พิมพ์แล้วได้ ReplicaSet ตัวใหม่
 
 <p align="center">
   <img src="images/09-rolling-update-steps.png" alt="Rolling update ทยอยเพิ่มทีมใหม่ ลดทีมเก่า" width="800">
@@ -417,9 +498,13 @@ web-6bd858c6f9   0         0         0       27s   nginx        nginx:1.27-alpin
 
 > **ประโยคเดียวที่ต้องจำ:** เปลี่ยน `template` = ได้ **ReplicaSet ใหม่** 1 ตัว ส่วนเปลี่ยนแค่ `replicas` (scale) **ไม่** สร้าง ReplicaSet ใหม่ แค่ปรับตัวเลขของตัวเดิม
 
+> 🧪 **พิสูจน์ใน LAB:** แก้ `image` แล้วได้ ReplicaSet ใหม่ Pod ถูกทยอยเปลี่ยนทีละตัว → **LAB 2** ขั้นที่ [2](../02_LAB/README.md#ขั้นที่-2-ไฟล์รุ่นใหม่), [3](../02_LAB/README.md#ขั้นที่-3-เปลี่ยนรุ่น), [4](../02_LAB/README.md#ขั้นที่-4-replicaset-เก่ากับใหม่) · **LAB 4** ขั้นที่ [6](../02_LAB/README.md#ขั้นที่-6-เปลี่ยนเป็นเมนูเวอร์ชัน-20)
+
 ---
 
 ## 8. maxSurge, maxUnavailable และ minReadySeconds
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** รู้ว่า **ตัวเลขไหนคุมจังหวะการเปลี่ยนรุ่น** และตั้งค่าอย่างไรให้ร้านไม่ปิดแม้แต่วินาทีเดียว (LAB 4 ตั้งค่าเหล่านี้เอง)
 
 <p align="center">
   <img src="images/10-maxsurge-maxunavailable.png" alt="maxSurge เกินได้ 1 maxUnavailable ห้ามขาด minReadySeconds จับเวลา" width="800">
@@ -483,9 +568,13 @@ som-menu-6bf6c9f6c5-dfxqw   1/1     Running   0          3s    app=som-menu,pod-
 
 > **เคล็ดลับ:** Deployment ยังมีอีกแบบคือ `type: Recreate` = ลบ Pod เก่าทั้งหมดก่อนแล้วค่อยสร้างใหม่ (ร้านปิดชั่วครู่ แต่ไม่มีสองรุ่นปนกัน) LAB ไม่ได้ใช้
 
+> 🧪 **พิสูจน์ใน LAB:** จังหวะเพิ่มใหม่-ลดเก่าใน Events และสาขาที่พร้อมไม่ต่ำกว่า 3 ตลอดการเปลี่ยนรุ่น → **LAB 2** ขั้นที่ [5](../02_LAB/README.md#ขั้นที่-5-ดูจังหวะการเปลี่ยนรุ่นใน-events) · **LAB 3** ขั้นที่ [4](../02_LAB/README.md#ขั้นที่-4-ร้านยังเปิดอยู่ไหม) · **LAB 4** ขั้นที่ [3](../02_LAB/README.md#ขั้นที่-3-เปิดร้าน-3-สาขาด้วย-deployment), [6](../02_LAB/README.md#ขั้นที่-6-เปลี่ยนเป็นเมนูเวอร์ชัน-20), [7](../02_LAB/README.md#ขั้นที่-7-รอให้เปลี่ยนรุ่นเสร็จ)
+
 ---
 
 ## 9. ติดตามการเปลี่ยนรุ่น: rollout status และ history
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** รู้วิธี **ติดตามว่าการเปลี่ยนรุ่นเสร็จหรือยัง** และดูว่าเคยมีรุ่นอะไรบ้าง ก่อนตัดสินใจย้อนกลับ
 
 <p align="center">
   <img src="images/11-revision-logbook.png" alt="สมุดบันทึกรุ่น REVISION และ CHANGE-CAUSE" width="800">
@@ -521,9 +610,13 @@ REVISION  CHANGE-CAUSE
 - **CHANGE-CAUSE** = ข้อความจาก annotation `kubernetes.io/change-cause` ในไฟล์ ถ้าไม่ได้เขียนจะขึ้น `<none>` จนแยกไม่ออกว่ารุ่นไหนคืออะไร
 - เลขรุ่นปัจจุบันดูได้จาก `deployment.kubernetes.io/revision: 2` ใน `kubectl describe deploy web`
 
+> 🧪 **พิสูจน์ใน LAB:** `rollout status` รอจนเสร็จหรือจนล้มเหลว และ `rollout history` แสดงรุ่นพร้อม `CHANGE-CAUSE` → **LAB 2** ขั้นที่ [1](../02_LAB/README.md#ขั้นที่-1-สร้าง-deployment-รุ่นแรก), [3](../02_LAB/README.md#ขั้นที่-3-เปลี่ยนรุ่น), [6](../02_LAB/README.md#ขั้นที่-6-ดูประวัติรุ่น) · **LAB 3** ขั้นที่ [3](../02_LAB/README.md#ขั้นที่-3-apply-แล้วรอดู) · **LAB 4** ขั้นที่ [7](../02_LAB/README.md#ขั้นที่-7-รอให้เปลี่ยนรุ่นเสร็จ)
+
 ---
 
 ## 10. ย้อนกลับด้วย rollout undo
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** รู้วิธี **ย้อนกลับเมื่อรุ่นใหม่มีปัญหา** ด้วยคำสั่งเดียว และกับดักที่ตามมาหลังย้อน (ไฟล์ในมือกับคลัสเตอร์ไม่ตรงกัน)
 
 <p align="center">
   <img src="images/12-rollback-undo.png" alt="ผู้จัดการพลิกสมุดกลับ ปลุกหัวหน้าทีมเก่า" width="800">
@@ -564,9 +657,13 @@ deployment.apps/som-menu configured
 
 ได้ `configured` แต่ `rollout history` ยังเป็น 2 กับ 3 เหมือนเดิม **ไม่มี revision ใหม่** และ Pod 3 ตัวเดิมไม่ถูกเปลี่ยน เพราะแม่พิมพ์ในไฟล์ตรงกับที่รันอยู่แล้ว การ apply นี้แค่บันทึกว่า "ไฟล์ที่ใช้ล่าสุดคือ v1" ให้ตรงกัน
 
+> 🧪 **พิสูจน์ใน LAB:** undo ปลุก ReplicaSet เก่า เลข revision ขยับใหม่ แล้ว apply ไฟล์ให้ตรงกับคลัสเตอร์ → **LAB 2** ขั้นที่ [7](../02_LAB/README.md#ขั้นที่-7-ย้อนกลับ-rollback) · **LAB 3** ขั้นที่ [6](../02_LAB/README.md#ขั้นที่-6-ย้อนกลับ) · **LAB 4** ขั้นที่ [9](../02_LAB/README.md#ขั้นที่-9-ลูกค้าไม่ชอบเมนูใหม่-ย้อนกลับ), [11](../02_LAB/README.md#ขั้นที่-11-ทำให้ไฟล์ตรงกับคลัสเตอร์)
+
 ---
 
 ## 11. อัปเดตพัง แต่ร้านไม่ปิด
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** เห็นว่า **อัปเดตพังแล้วร้านไม่ปิดได้อย่างไร** และรู้วิธีหาสาเหตุ ซึ่งเป็นเหตุผลหลักที่งานจริงใช้ rolling update
 
 <p align="center">
   <img src="images/13-bad-update-shop-open.png" alt="Pod รุ่นใหม่ ErrImagePull แต่ Pod เก่า 3 ตัวยังเปิดร้าน" width="800">
@@ -651,9 +748,13 @@ Pod 3 ตัวเป็น **ตัวเดิม** (AGE 46s) ไม่มี�
 
 > **ประโยคเดียวที่ต้องจำ:** rolling update ที่ `maxUnavailable: 0` + readinessProbe ทำให้ **อัปเดตพังได้ แต่ร้านไม่ปิด** แล้วค่อย `rollout undo`
 
+> 🧪 **พิสูจน์ใน LAB:** image ผิดแต่ยัง `READY 3/3` และหลัง undo Pod 3 ตัวเดิมยังอยู่ครบ → **LAB 3** ขั้นที่ [1](../02_LAB/README.md#ขั้นที่-1-สร้าง-deployment-รุ่นดี), [2](../02_LAB/README.md#ขั้นที่-2-ไฟล์อัปเดตที่พิมพ์ผิด), [3](../02_LAB/README.md#ขั้นที่-3-apply-แล้วรอดู), [4](../02_LAB/README.md#ขั้นที่-4-ร้านยังเปิดอยู่ไหม), [5](../02_LAB/README.md#ขั้นที่-5-หาสาเหตุ), [6](../02_LAB/README.md#ขั้นที่-6-ย้อนกลับ)
+
 ---
 
 ## 12. อ่าน YAML ร้านน้องส้มทั้งไฟล์
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** อ่าน **ไฟล์ใหญ่ของ LAB สุดท้าย** ให้ออกทั้งไฟล์ ว่าแต่ละบรรทัดโยงกลับไปหัวข้อไหน ก่อนลงมือเปิดร้านน้องส้มใน LAB 4
 
 <p align="center">
   <img src="images/14-som-menu-deploy-yaml-skeleton.png" alt="โครงของไฟล์ som-menu-deploy.yaml" width="800">
@@ -736,9 +837,13 @@ spec:
 
 แปลทั้งไฟล์เป็นประโยคเดียว: **"ขอ Deployment `som-menu` (รุ่น "เมนูเวอร์ชัน 1.0") ดูแลหน้าร้าน 3 สาขาที่ติดป้าย `app=som-menu` ทุกสาขาใช้ image `som-menu:1.0` ฟัง port 3000 และเมื่อเปลี่ยนรุ่น ให้เปิดสาขาใหม่เกินได้ทีละ 1 ห้ามสาขาที่พร้อมต่ำกว่า 3 และสาขาใหม่ต้องผ่าน `/api/health` ต่อเนื่อง 10 วินาทีจึงนับว่าเปิด"**
 
+> 🧪 **พิสูจน์ใน LAB:** build image 2 รุ่น แล้วเปิดร้าน 3 สาขาด้วยไฟล์นี้ → **LAB 4** ขั้นที่ [1](../02_LAB/README.md#ขั้นที่-1-build-image-ของหน้าร้าน-2-เวอร์ชัน), [3](../02_LAB/README.md#ขั้นที่-3-เปิดร้าน-3-สาขาด้วย-deployment)
+
 ---
 
 ## 13. port-forward ระหว่างเปลี่ยนรุ่น และบทถัดไป
+
+> 🎯 **หัวข้อนี้เรียนเพื่อ:** เข้าใจว่า **ทำไม port-forward หลุดระหว่างเปลี่ยนรุ่น** ทั้งที่ร้านไม่ได้ปิด ปัญหานี้คือเหตุผลที่ต้องเรียน Service ในบทถัดไป
 
 <p align="center">
   <img src="images/15-port-forward-lost-rolling.png" alt="port-forward ต่อเข้า Pod เก่า Pod ถูกลบระหว่าง rolling update ท่อขาด" width="800">
@@ -767,6 +872,8 @@ error: lost connection to pod
 - port-forward ไปสาขาเดียว และหลุดทุกครั้งที่ Pod ถูกเปลี่ยน → **Service** ให้ที่อยู่เดียวที่คงที่ กระจายลูกค้าไปทุกสาขาที่พร้อม ไม่ว่า Pod จะถูกเปลี่ยนรุ่นกี่รอบ (บทที่ 5)
 - ข้อมูลใน Pod หายเมื่อได้ Pod ใหม่ (rolling update สร้าง Pod ใหม่ทุกตัว) → **PersistentVolume**
 - รหัสผ่านยังเขียนอยู่ใน YAML (บทที่ 2) → **Secret**
+
+> 🧪 **พิสูจน์ใน LAB:** port-forward หลุดทุกครั้งที่เปลี่ยนรุ่น ต้องต่อท่อใหม่เอง → **LAB 4** ขั้นที่ [4](../02_LAB/README.md#ขั้นที่-4-เปิดหน้าร้านใน-browser), [8](../02_LAB/README.md#ขั้นที่-8-port-forward-หลุด), [10](../02_LAB/README.md#ขั้นที่-10-เปิดร้านหลังย้อนกลับ)
 
 ---
 
