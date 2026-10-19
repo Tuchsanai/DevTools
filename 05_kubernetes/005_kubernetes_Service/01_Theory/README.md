@@ -181,36 +181,20 @@ YAML ของบทนี้ใช้กฎเดิมจาก [บทที�
   <img src="images/05-yaml-service-vs-deployment.png" alt="web-deploy.yaml มี template และ matchLabels ส่วน web-svc.yaml สั้นกว่า ไม่มีแม่พิมพ์" width="800">
 </p>
 
-LAB 1 ใช้ 2 ไฟล์คู่กัน วางเทียบกัน (ตัด comment และบรรทัด `command` / `args` ออก)
+LAB 1 ใช้ 2 ไฟล์คู่กัน วางเทียบกัน (ตัด comment และบรรทัด `command` / `args` ออกเป็น `...`) **วงสีเดียวกัน = ค่าที่ต้องตรงกัน** ลูกศรบอกว่า Service เอาค่ามาจากตรงไหนใน Deployment
 
-```yaml
-# web-deploy.yaml (สร้าง Pod)            # web-svc.yaml (ชี้ไปหา Pod)
-apiVersion: apps/v1                       apiVersion: v1                 # ← กลุ่มหลัก เหมือน Pod
-kind: Deployment                          kind: Service
-metadata:                                 metadata:
-  name: web                                 name: web
-spec:                                     spec:
-  replicas: 3                               type: ClusterIP
-  selector:                                 selector:
-    matchLabels:                              app: web                   # ← ป้ายตรง ๆ ไม่มี matchLabels
-      app: web                              ports:
-  template:                                   - port: 80
-    metadata:                                   targetPort: 80
-      labels:
-        app: web          # ← Service จับป้ายนี้
-    spec:
-      containers:
-        - name: nginx
-          image: nginx:1.27-alpine
-          ...
-          ports:
-            - containerPort: 80   # ← targetPort ต้องตรงกับเลขนี้
-```
+<p align="center">
+  <img src="images/05a-yaml-deploy-vs-svc-map.png" alt="web-deploy.yaml กับ web-svc.yaml วางคู่กัน ลูกศรจากป้ายใน template ไป selector ของ Service และจาก containerPort ไป targetPort" width="900">
+</p>
 
-- `apiVersion` ของ Service คือ **`v1`** (กลุ่มหลักเหมือน Pod) ไม่ใช่ `apps/v1` แบบ Deployment
-- selector ของ Deployment ต้องมี `matchLabels:` คั่น แต่ selector ของ Service **ใส่ป้ายตรง ๆ** ใต้ `selector:` เลย
-- ป้ายที่ Service จับคือป้ายใน **`template.metadata.labels`** ของ Deployment (= ป้ายบนตัว Pod) ไม่ใช่ป้ายของตัว Deployment
-- ฝั่ง Service **ไม่มี `replicas` ไม่มี `template` ไม่มี `containers`** ลบ Service ทิ้ง Pod ก็ยังอยู่ครบ
+อ่านตามเลขในภาพ
+
+- **① `apiVersion` / `kind` คนละกลุ่ม** Service อยู่กลุ่มหลัก **`v1`** (เหมือน Pod) ไม่ใช่ `apps/v1` แบบ Deployment
+- **② `name` ซ้ำกันได้** เพราะเป็น object คนละชนิด ชื่อ Service คือชื่อที่ Pod อื่นใช้เรียก เช่น `http://web` (หัวข้อ 6)
+- **③ ป้ายต้องตรงกัน** `selector` ของ Service จับป้ายใน **`template.metadata.labels`** ของ Deployment (= ป้ายบนตัว Pod) ไม่ใช่ป้ายของตัว Deployment และ selector ของ Service **ใส่ป้ายตรง ๆ** ไม่มี `matchLabels:` คั่น
+- **④ `targetPort` ต้องตรงกับ `containerPort`** คือ port ที่แอปใน Pod ฟังอยู่จริง Service ส่งลูกค้าต่อไปที่เลขนี้
+- **⑤ `port` เป็นของ Service เอง** คือ port ที่คนเรียกใช้ จะเป็นคนละเลขกับ `targetPort` ก็ได้ (หัวข้อ 5)
+- **⑥ ส่วนเส้นประสีเทามีแค่ฝั่ง Deployment** Service **ไม่มี `replicas` ไม่มี `template` ไม่มี `containers`** มันไม่สร้าง Pod แค่ชี้ไปหา ลบ Service ทิ้ง Pod ก็ยังอยู่ครบ
 
 ### 4.2 ไล่ไฟล์จริงจาก LAB 1
 

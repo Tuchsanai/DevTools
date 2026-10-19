@@ -214,3 +214,9 @@ Text (verbatim, at most 6 short labels): "Service"; "web"; "ClusterIP"; "NodePor
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; exactly one cat (Nong Som); the receptionist, deckhands, clerks, crew and customers are faceless human figures, never cats; do not show Ingress or LoadBalancer objects or words.
 ```
 
+
+## 05a-yaml-deploy-vs-svc-map.png
+
+> หัวข้อ 4.1 · web-deploy.yaml คู่กับ web-svc.yaml: ① คนละกลุ่ม ② ชื่อซ้ำได้ ③ selector ตรงกับป้ายใน template ④ targetPort ตรงกับ containerPort ⑤ port ของ Service เอง ⑥ replicas/template มีแค่ Deployment
+
+ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะโค้ดในภาพต้องตรงกับไฟล์ LAB ทุกตัวอักษร วาดเป็น SVG (`05a-yaml-deploy-vs-svc-map.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/yaml_map.py` (spec `005`) แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) ให้ฟอนต์ไทยเหมือนกันทุกเครื่อง แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง

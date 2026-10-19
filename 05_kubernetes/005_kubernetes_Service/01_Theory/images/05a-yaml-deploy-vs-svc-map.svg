@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 982" width="1120" height="982">
+<defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="msky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0369a1"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mpink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#db2777"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>
+<rect width="1120" height="982" fill="#ffffff"/>
+<text x="560" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="24" font-weight="700" fill="#0f172a" xml:space="preserve">Service ไม่สร้าง Pod แค่ชี้ไปหา Pod ด้วยป้าย และส่งต่อไปที่ port</text>
+<text x="560" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#475569" xml:space="preserve">วงสีเดียวกัน = ส่วนที่ต้องตรงกัน  ·  ลูกศรบอกว่า Service เอาค่ามาจากไหนใน Deployment</text>
+<rect x="30" y="110" width="470" height="596" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="30" y="110" width="470" height="40" rx="16" fill="#64748b"/>
+<rect x="30" y="134" width="470" height="16" fill="#64748b"/>
+<text x="48" y="137" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#fff" xml:space="preserve">web-deploy.yaml</text>
+<text x="482" y="137" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#fff" xml:space="preserve">บทที่ 4 · Deployment</text>
+<rect x="670" y="110" width="420" height="596" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="670" y="110" width="420" height="40" rx="16" fill="#0f172a"/>
+<rect x="670" y="134" width="420" height="16" fill="#0f172a"/>
+<text x="688" y="137" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#fff" xml:space="preserve">web-svc.yaml</text>
+<text x="1072" y="137" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#fff" xml:space="preserve">บทนี้ · Service</text>
+<rect x="41" y="157" width="185" height="54" rx="18" fill="#ea580c" fill-opacity="0.1" stroke="#ea580c" stroke-width="3"/>
+<rect x="681" y="157" width="140" height="54" rx="18" fill="#ea580c" fill-opacity="0.1" stroke="#ea580c" stroke-width="3"/>
+<rect x="59" y="238" width="95" height="27" rx="14" fill="#2563eb" fill-opacity="0.1" stroke="#2563eb" stroke-width="3"/>
+<rect x="699" y="238" width="95" height="27" rx="14" fill="#2563eb" fill-opacity="0.1" stroke="#2563eb" stroke-width="3"/>
+<rect x="59" y="292" width="113" height="27" rx="14" fill="#64748b" fill-opacity="0.04" stroke="#64748b" stroke-width="3" stroke-dasharray="8 6"/>
+<rect x="59" y="400" width="302" height="297" rx="18" fill="#64748b" fill-opacity="0.04" stroke="#64748b" stroke-width="3" stroke-dasharray="8 6"/>
+<rect x="113" y="481" width="86" height="27" rx="14" fill="#dc2626" fill-opacity="0.18" stroke="#dc2626" stroke-width="3"/>
+<rect x="717" y="346" width="86" height="27" rx="14" fill="#dc2626" fill-opacity="0.18" stroke="#dc2626" stroke-width="3"/>
+<rect x="167" y="670" width="167" height="27" rx="14" fill="#db2777" fill-opacity="0.18" stroke="#db2777" stroke-width="3"/>
+<rect x="735" y="427" width="140" height="27" rx="14" fill="#db2777" fill-opacity="0.18" stroke="#db2777" stroke-width="3"/>
+<rect x="735" y="400" width="86" height="27" rx="14" fill="#0d9488" fill-opacity="0.1" stroke="#0d9488" stroke-width="3"/>
+<text x="48" y="177" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">apiVersion: apps/v1</text>
+<text x="48" y="204" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">kind: Deployment</text>
+<text x="48" y="231" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">metadata:</text>
+<text x="48" y="258" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  name: web</text>
+<text x="48" y="285" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">spec:</text>
+<text x="48" y="312" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  replicas: 3</text>
+<text x="48" y="339" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  selector:</text>
+<text x="48" y="366" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    matchLabels:</text>
+<text x="48" y="393" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      app: web</text>
+<text x="48" y="420" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  template:</text>
+<text x="48" y="447" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    metadata:</text>
+<text x="48" y="474" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      labels:</text>
+<text x="48" y="501" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        app: web</text>
+<text x="48" y="528" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    spec:</text>
+<text x="48" y="555" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      containers:</text>
+<text x="48" y="582" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        - name: nginx</text>
+<text x="48" y="609" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">          image: nginx:1.27-alpine</text>
+<text x="48" y="636" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">          ...</text>
+<text x="48" y="663" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">          ports:</text>
+<text x="48" y="690" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">            - containerPort: 80</text>
+<text x="688" y="177" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">apiVersion: v1</text>
+<text x="688" y="204" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">kind: Service</text>
+<text x="688" y="231" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">metadata:</text>
+<text x="688" y="258" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  name: web</text>
+<text x="688" y="285" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">spec:</text>
+<text x="688" y="312" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  type: ClusterIP</text>
+<text x="688" y="339" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  selector:</text>
+<text x="688" y="366" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    app: web</text>
+<text x="688" y="393" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  ports:</text>
+<text x="688" y="420" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    - port: 80</text>
+<text x="688" y="447" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      targetPort: 80</text>
+<path d="M228,184 L514,184 L656,184 L678,184" fill="none" stroke="#ea580c" stroke-width="3" stroke-linejoin="round" marker-end="url(#morange)"/>
+<path d="M156,252 L514,252 L656,252 L696,252" fill="none" stroke="#2563eb" stroke-width="3" stroke-linejoin="round" marker-end="url(#mblue)"/>
+<path d="M201,494 L514,494 L656,360 L714,360" fill="none" stroke="#dc2626" stroke-width="3" stroke-linejoin="round" marker-end="url(#mred)"/>
+<path d="M336,684 L514,684 L656,440 L732,440" fill="none" stroke="#db2777" stroke-width="3" stroke-linejoin="round" marker-end="url(#mpink)"/>
+<circle cx="843" cy="414" r="14" fill="#0d9488" stroke="#fff" stroke-width="2"/>
+<text x="843" y="419" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">5</text>
+<text x="863" y="420" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#0d9488" xml:space="preserve">port ของ Service เอง</text>
+<circle cx="194" cy="306" r="14" fill="#64748b" stroke="#fff" stroke-width="2"/>
+<text x="194" y="311" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">6</text>
+<text x="214" y="312" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#64748b" xml:space="preserve">Service ไม่มีส่วนนี้</text>
+<circle cx="585" cy="184" r="15" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="585" y="190" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">1</text>
+<text x="585" y="217" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#ea580c" xml:space="preserve">คนละกลุ่ม</text>
+<circle cx="585" cy="252" r="15" fill="#2563eb" stroke="#fff" stroke-width="2"/>
+<text x="585" y="257" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">2</text>
+<text x="585" y="284" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#2563eb" xml:space="preserve">ชื่อซ้ำได้</text>
+<circle cx="585" cy="427" r="15" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+<text x="585" y="432" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">3</text>
+<text x="585" y="460" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#dc2626" xml:space="preserve">ต้องตรงกัน</text>
+<circle cx="585" cy="562" r="15" fill="#db2777" stroke="#fff" stroke-width="2"/>
+<text x="585" y="568" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">4</text>
+<text x="585" y="595" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#db2777" xml:space="preserve">ต้องตรงกัน</text>
+<circle cx="48" cy="746" r="14" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="48" y="752" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">1</text>
+<text x="86" y="752" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">apiVersion / kind: Service อยู่กลุ่มหลัก v1 (เหมือน Pod) ไม่ใช่ apps/v1 แบบ Deployment</text>
+<circle cx="48" cy="782" r="14" fill="#2563eb" stroke="#fff" stroke-width="2"/>
+<text x="48" y="788" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">2</text>
+<text x="86" y="788" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">name ซ้ำกันได้เพราะคนละชนิด ชื่อ Service = ชื่อที่ Pod อื่นใช้เรียก (http://web)</text>
+<circle cx="48" cy="818" r="14" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+<text x="48" y="824" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">3</text>
+<text x="86" y="824" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">selector ของ Service ต้องตรงกับป้ายใน template ของ Deployment (= ป้ายบนตัว Pod) และไม่มี matchLabels</text>
+<circle cx="48" cy="854" r="14" fill="#db2777" stroke="#fff" stroke-width="2"/>
+<text x="48" y="860" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">4</text>
+<text x="86" y="860" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">targetPort ต้องตรงกับ containerPort = port ที่แอปใน Pod ฟังจริง</text>
+<circle cx="48" cy="890" r="14" fill="#0d9488" stroke="#fff" stroke-width="2"/>
+<text x="48" y="896" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">5</text>
+<text x="86" y="896" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">port: 80 = port ของ Service เอง ที่คนเรียกใช้ (คนละเลขกับ targetPort ก็ได้ หัวข้อ 5)</text>
+<circle cx="48" cy="926" r="14" fill="#64748b" stroke="#fff" stroke-width="2"/>
+<text x="48" y="932" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">6</text>
+<text x="86" y="932" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">replicas / template (เส้นประสีเทา) มีแค่ฝั่ง Deployment: Service ไม่สร้าง Pod ลบ Service แล้ว Pod ยังอยู่</text>
+</svg>
