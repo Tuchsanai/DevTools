@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1130 955" width="1130" height="955">
+<defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="msky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0369a1"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mpink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#db2777"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>
+<rect width="1130" height="955" fill="#ffffff"/>
+<text x="565" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="24" font-weight="700" fill="#0f172a" xml:space="preserve">ReplicaSet = เอา Pod ทั้งตัวใส่ไว้ใน template แล้วเพิ่มตัวนับ</text>
+<text x="565" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#475569" xml:space="preserve">วงสีเดียวกัน = ส่วนที่คู่กัน  ·  ลูกศรบอกว่าเปลี่ยน / ย้ายเข้า template / เพิ่มใหม่</text>
+<rect x="30" y="110" width="430" height="569" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="30" y="110" width="430" height="40" rx="16" fill="#64748b"/>
+<rect x="30" y="134" width="430" height="16" fill="#64748b"/>
+<text x="48" y="137" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#fff" xml:space="preserve">nginx-pod.yaml</text>
+<text x="442" y="137" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#fff" xml:space="preserve">บทที่ 2 · Pod (ย่อ)</text>
+<rect x="630" y="110" width="470" height="569" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="630" y="110" width="470" height="40" rx="16" fill="#0f172a"/>
+<rect x="630" y="134" width="470" height="16" fill="#0f172a"/>
+<text x="648" y="137" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#fff" xml:space="preserve">web-rs.yaml</text>
+<text x="1082" y="137" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#fff" xml:space="preserve">บทนี้ · ReplicaSet</text>
+<rect x="41" y="157" width="140" height="54" rx="18" fill="#ea580c" fill-opacity="0.1" stroke="#ea580c" stroke-width="3"/>
+<rect x="641" y="157" width="185" height="54" rx="18" fill="#ea580c" fill-opacity="0.1" stroke="#ea580c" stroke-width="3"/>
+<rect x="59" y="238" width="95" height="27" rx="14" fill="#2563eb" fill-opacity="0.1" stroke="#2563eb" stroke-width="3"/>
+<rect x="659" y="238" width="95" height="27" rx="14" fill="#2563eb" fill-opacity="0.1" stroke="#2563eb" stroke-width="3"/>
+<rect x="59" y="265" width="104" height="54" rx="18" fill="#7c3aed" fill-opacity="0.1" stroke="#7c3aed" stroke-width="3"/>
+<rect x="695" y="454" width="104" height="54" rx="18" fill="#7c3aed" fill-opacity="0.1" stroke="#7c3aed" stroke-width="3"/>
+<rect x="41" y="319" width="284" height="162" rx="18" fill="#0369a1" fill-opacity="0.06" stroke="#0369a1" stroke-width="3"/>
+<rect x="677" y="508" width="284" height="162" rx="18" fill="#0369a1" fill-opacity="0.06" stroke="#0369a1" stroke-width="3"/>
+<rect x="659" y="292" width="140" height="108" rx="18" fill="#16a34a" fill-opacity="0.1" stroke="#16a34a" stroke-width="3" stroke-dasharray="8 6"/>
+<rect x="695" y="373" width="86" height="27" rx="14" fill="#dc2626" fill-opacity="0.18" stroke="#dc2626" stroke-width="2.5"/>
+<rect x="713" y="481" width="86" height="27" rx="14" fill="#dc2626" fill-opacity="0.18" stroke="#dc2626" stroke-width="2.5"/>
+<text x="48" y="177" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">apiVersion: v1</text>
+<text x="48" y="204" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">kind: Pod</text>
+<text x="48" y="231" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">metadata:</text>
+<text x="48" y="258" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  name: web</text>
+<text x="48" y="285" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  labels:</text>
+<text x="48" y="312" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    app: web</text>
+<text x="48" y="339" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">spec:</text>
+<text x="48" y="366" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  containers:</text>
+<text x="48" y="393" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    - name: nginx</text>
+<text x="48" y="420" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      image: nginx:1.27-alpine</text>
+<text x="48" y="447" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      ports:</text>
+<text x="48" y="474" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        - containerPort: 80</text>
+<text x="648" y="177" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">apiVersion: apps/v1</text>
+<text x="648" y="204" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">kind: ReplicaSet</text>
+<text x="648" y="231" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">metadata:</text>
+<text x="648" y="258" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  name: web</text>
+<text x="648" y="285" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">spec:</text>
+<text x="648" y="312" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  replicas: 3</text>
+<text x="648" y="339" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  selector:</text>
+<text x="648" y="366" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    matchLabels:</text>
+<text x="648" y="393" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      app: web</text>
+<text x="648" y="420" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  template:</text>
+<text x="648" y="447" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    metadata:</text>
+<text x="648" y="474" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      labels:</text>
+<text x="648" y="501" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        app: web</text>
+<text x="648" y="528" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    spec:</text>
+<text x="648" y="555" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      containers:</text>
+<text x="648" y="582" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        - name: nginx</text>
+<text x="648" y="609" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">          image: nginx:1.27-alpine</text>
+<text x="648" y="636" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">          ports:</text>
+<text x="648" y="663" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">            - containerPort: 80</text>
+<path d="M183,184 L474,184 L616,184 L638,184" fill="none" stroke="#ea580c" stroke-width="3" stroke-linejoin="round" marker-end="url(#morange)"/>
+<path d="M156,252 L474,252 L616,252 L656,252" fill="none" stroke="#2563eb" stroke-width="3" stroke-linejoin="round" marker-end="url(#mblue)"/>
+<line x1="506" y1="346" x2="656" y2="346" stroke="#16a34a" stroke-width="3" marker-end="url(#mgreen)"/>
+<path d="M165,292 L474,292 L616,481 L692,481" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linejoin="round" marker-end="url(#mpurple)"/>
+<path d="M327,400 L474,400 L616,589 L674,589" fill="none" stroke="#0369a1" stroke-width="3" stroke-linejoin="round" marker-end="url(#msky)"/>
+<path d="M783,386 C891,386 891,494 801,494" fill="none" stroke="#dc2626" stroke-width="3" marker-start="url(#mred)" marker-end="url(#mred)"/>
+<circle cx="868" cy="440" r="14" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+<text x="868" y="446" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">6</text>
+<text x="888" y="446" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#dc2626" xml:space="preserve">ต้องตรงกัน</text>
+<circle cx="545" cy="184" r="15" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="545" y="190" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">1</text>
+<text x="545" y="217" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#ea580c" xml:space="preserve">เปลี่ยน</text>
+<circle cx="545" cy="252" r="15" fill="#2563eb" stroke="#fff" stroke-width="2"/>
+<text x="545" y="257" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">2</text>
+<text x="545" y="284" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#2563eb" xml:space="preserve">copy มาได้</text>
+<circle cx="490" cy="346" r="15" fill="#16a34a" stroke="#fff" stroke-width="2"/>
+<text x="490" y="352" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">5</text>
+<text x="490" y="379" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#16a34a" xml:space="preserve">เพิ่มใหม่</text>
+<circle cx="545" cy="386" r="15" fill="#7c3aed" stroke="#fff" stroke-width="2"/>
+<text x="545" y="392" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">3</text>
+<text x="545" y="420" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#7c3aed" xml:space="preserve">ย้ายเข้า template</text>
+<circle cx="545" cy="494" r="15" fill="#0369a1" stroke="#fff" stroke-width="2"/>
+<text x="545" y="500" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">4</text>
+<text x="545" y="528" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#0369a1" xml:space="preserve">ย้ายเข้า template</text>
+<circle cx="48" cy="719" r="14" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="48" y="724" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">1</text>
+<text x="86" y="725" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">apiVersion / kind เปลี่ยน: Pod อยู่กลุ่มหลัก v1 ส่วน ReplicaSet อยู่กลุ่ม apps/v1</text>
+<circle cx="48" cy="755" r="14" fill="#2563eb" stroke="#fff" stroke-width="2"/>
+<text x="48" y="760" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">2</text>
+<text x="86" y="761" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">name ใช้ชื่อเดิมได้ และกลายเป็นต้นชื่อ: ReplicaSet web → Pod web-xxxxx</text>
+<circle cx="48" cy="791" r="14" fill="#7c3aed" stroke="#fff" stroke-width="2"/>
+<text x="48" y="796" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">3</text>
+<text x="86" y="797" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">labels ของ Pod ย้ายเข้าไปอยู่ใต้ template.metadata (Pod ทุกตัวที่ปั๊มออกมาติดป้ายนี้)</text>
+<circle cx="48" cy="827" r="14" fill="#0369a1" stroke="#fff" stroke-width="2"/>
+<text x="48" y="832" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">4</text>
+<text x="86" y="833" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">spec ของ Pod (containers ทั้งก้อน) ย้ายเข้าไปอยู่ใต้ template.spec โดยเยื้องลึกขึ้น</text>
+<circle cx="48" cy="863" r="14" fill="#16a34a" stroke="#fff" stroke-width="2"/>
+<text x="48" y="868" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">5</text>
+<text x="86" y="869" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">replicas / selector เพิ่มใหม่ เป็นของ ReplicaSet เอง: อยากได้กี่ตัว และนับ Pod จากป้ายไหน</text>
+<circle cx="48" cy="899" r="14" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+<text x="48" y="904" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">6</text>
+<text x="86" y="905" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">ป้ายใน selector ต้องตรงกับป้ายใน template ทุกตัวอักษร ไม่งั้น apply ไม่ผ่าน</text>
+</svg>

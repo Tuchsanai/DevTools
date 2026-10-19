@@ -148,28 +148,20 @@ YAML ของบทนี้ใช้กฎเดิมจาก [บทที�
   <img src="images/06-yaml-rs-nesting.png" alt="YAML ของ ReplicaSet มีแม่พิมพ์ Pod ซ้อนอยู่ข้างใน" width="800">
 </p>
 
-เอาไฟล์ Pod จากบทที่ 2 มาวางคู่กับ ReplicaSet จะเห็นว่า **ส่วน `template` คือ Pod เดิมที่ถูกพับเข้าไป** แค่ตัด `apiVersion`, `kind` และ `name` ออก
+เอาไฟล์ Pod จากบทที่ 2 (ย่อ ตัดป้าย `owner` ออก) มาวางคู่กับ `web-rs.yaml` ของ LAB 1 จะเห็นว่า **ส่วน `template` คือ Pod เดิมที่ถูกพับเข้าไป** แค่ตัด `apiVersion`, `kind` และ `name` ออก **วงสีเดียวกัน = ส่วนที่คู่กัน** ลูกศรบอกว่าส่วนนั้นเปลี่ยน ย้ายเข้า `template` หรือเพิ่มใหม่
 
-```yaml
-# Pod ในบทที่ 2                     # ReplicaSet ในบทนี้
-apiVersion: v1                      apiVersion: apps/v1
-kind: Pod                           kind: ReplicaSet
-metadata:                           metadata:
-  name: web                           name: web
-  labels:                           spec:
-    app: web                          replicas: 3
-spec:                                 selector:
-  containers:                           matchLabels:
-    - name: nginx                         app: web
-      image: nginx:1.27-alpine        template:
-                                        metadata:        # ← metadata ของ Pod
-                                          labels:
-                                            app: web
-                                        spec:            # ← spec ของ Pod
-                                          containers:
-                                            - name: nginx
-                                              image: nginx:1.27-alpine
-```
+<p align="center">
+  <img src="images/06a-yaml-pod-vs-rs-map.png" alt="nginx-pod.yaml กับ web-rs.yaml วางคู่กัน ลูกศรบอกว่า labels และ containers ของ Pod ย้ายเข้าไปอยู่ใน template" width="900">
+</p>
+
+อ่านตามเลขในภาพ
+
+- **① `apiVersion` / `kind` เปลี่ยน** Pod อยู่กลุ่มหลัก `v1` ส่วน ReplicaSet อยู่กลุ่ม `apps/v1`
+- **② `name` copy มาได้** ReplicaSet ชื่อ `web` แล้ว Pod ที่มันสร้างจะชื่อ `web-xxxxx` (หัวข้อ 5.2)
+- **③ `labels` ของ Pod ย้ายเข้าไปอยู่ใต้ `template.metadata`** Pod ทุกตัวที่ปั๊มออกมาจะติดป้ายนี้
+- **④ `spec` ของ Pod (containers ทั้งก้อน) ย้ายเข้าไปอยู่ใต้ `template.spec`** เนื้อหาเหมือนเดิมทุกบรรทัด แค่เยื้องลึกขึ้น
+- **⑤ `replicas` / `selector` เพิ่มใหม่** เป็นของ ReplicaSet เอง บอกว่าอยากได้กี่ตัว และนับ Pod จากป้ายไหน
+- **⑥ ป้ายต้องตรงกัน** `app: web` ใต้ `selector` กับใต้ `template.metadata.labels` ต้องเหมือนกันทุกตัวอักษร ไม่งั้น apply ไม่ผ่าน (หัวข้อ 4.4 และ 5.1)
 
 ในไฟล์ ReplicaSet จึงมี `metadata` กับ `spec` **อย่างละ 2 ชุด** อ่านให้ดีว่าอยู่ระดับไหน
 

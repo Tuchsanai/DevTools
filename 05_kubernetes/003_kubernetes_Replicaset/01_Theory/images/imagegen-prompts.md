@@ -297,3 +297,9 @@ Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, 
 Text (verbatim, at most 9 short labels): "selector"; "app=web"; "version=1.0"; "app=website"; "app=Web"; "tier=web"; "นับ"; "ไม่นับ".
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; exactly one cat (Nong Som); the crew chief is a faceless human sailor silhouette, never a cat; do not show Service, Deployment, Ingress or NodePort objects or words. Exactly 5 Pod boxes; exactly 2 green checks and 3 red X marks; the tag app=web appears on the chief's selector tag and on Pods 1 and 2 only.
 ```
+
+## 06a-yaml-pod-vs-rs-map.png
+
+> หัวข้อ 4.1 · nginx-pod.yaml (ย่อ) คู่กับ web-rs.yaml: ① เปลี่ยน apiVersion/kind ② copy name ③ labels ย้ายเข้า template ④ containers ย้ายเข้า template ⑤ เพิ่ม replicas/selector ⑥ selector กับ labels ต้องตรงกัน
+
+ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะโค้ดในภาพต้องตรงกับไฟล์ LAB ทุกตัวอักษร วาดเป็น SVG (`06a-yaml-pod-vs-rs-map.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/yaml_map.py` (spec `003`) แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) ให้ฟอนต์ไทยเหมือนกันทุกเครื่อง แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง
