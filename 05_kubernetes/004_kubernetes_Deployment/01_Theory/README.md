@@ -175,37 +175,20 @@ YAML ของบทนี้ใช้กฎเดิมจาก [บทที�
   <img src="images/06-yaml-rs-vs-deploy.png" alt="web-rs.yaml กับ web-deploy.yaml ต่างกันแค่ kind" width="800">
 </p>
 
-เอา `web-rs.yaml` จากบทที่ 3 มาวางคู่กับ `web-deploy.yaml` ของบทนี้ (ตัด comment ออก)
+เอา `web-rs.yaml` จากบทที่ 3 มาวางคู่กับ `web-deploy.yaml` ของบทนี้ (ตัด comment ออก) **วงสีเดียวกัน = ส่วนที่คู่กัน** ลูกศรบอกว่าส่วนนั้นเปลี่ยน เพิ่มใหม่ หรือ copy มาจากไฟล์ ReplicaSet
 
-```yaml
-# web-rs.yaml (บทที่ 3)            # web-deploy.yaml (บทนี้)
-apiVersion: apps/v1                 apiVersion: apps/v1
-kind: ReplicaSet                    kind: Deployment                  # ← เปลี่ยน
-metadata:                           metadata:
-  name: web                           name: web
-                                      annotations:                    # ← เพิ่ม (หัวข้อ 9)
-                                        kubernetes.io/change-cause: "nginx 1.27"
-spec:                               spec:
-  replicas: 3                         replicas: 3
-  selector:                           selector:
-    matchLabels:                        matchLabels:
-      app: web                            app: web
-  template:                           template:
-    metadata:                           metadata:
-      labels:                             labels:
-        app: web                            app: web
-    spec:                               spec:
-      containers:                         containers:
-        - name: nginx                       - name: nginx
-          image: nginx:1.27-alpine            image: nginx:1.27-alpine
-          ports:                              ports:
-            - containerPort: 80                 - containerPort: 80
-```
+<p align="center">
+  <img src="images/06a-yaml-rs-vs-deploy-map.png" alt="web-rs.yaml กับ web-deploy.yaml วางคู่กัน วงส่วนที่คู่กันและลูกศรบอกว่าเปลี่ยน เพิ่ม หรือ copy มา" width="900">
+</p>
 
-- `apiVersion` เหมือนเดิม (`apps/v1`) เปลี่ยนแค่ `kind`
-- `annotations` เป็นโน้ตที่แปะไว้ ไม่บังคับ แต่ทำให้ประวัติรุ่นอ่านง่าย (หัวข้อ 9)
+อ่านตามเลขในภาพ
+
+- **① `kind` เปลี่ยนแค่ตรงนี้** จาก `ReplicaSet` เป็น `Deployment` (`apiVersion: apps/v1` เหมือนเดิม) งานจึงไปถึง deployment-controller แทน replicaset-controller
+- **② `name` copy มาได้เลย** ชื่อนี้กลายเป็นต้นชื่อของทุกอย่างที่ Deployment สร้าง: `web` → ReplicaSet `web-6bd858c6f9` → Pod `web-6bd858c6f9-86xzl`
+- **③ `annotations` เพิ่มใหม่** มีเฉพาะฝั่ง Deployment เป็นโน้ตบอกว่ารุ่นนี้คืออะไร ไม่บังคับ แต่ทำให้ประวัติรุ่นอ่านง่าย (หัวข้อ 9)
+- **④ ⑤ ⑥ `replicas` / `selector` / `template` copy มาเหมือนเดิมทุกตัวอักษร** 3 ก้อนนี้คือสิ่งที่ ReplicaSet ต้องใช้ Deployment จึงรับไว้แล้ว **ส่งต่อให้ ReplicaSet ที่มันสร้าง** เราจึงไม่ต้องเขียน ReplicaSet เองเลย
+- **⑦ ป้ายต้องตรงกัน** `app: web` ใต้ `selector` กับ `app: web` ใต้ `template.metadata.labels` ต้องเหมือนกันทุกตัวอักษร กฎนี้ใช้ทั้งไฟล์ ReplicaSet และ Deployment (ไม่ตรง = apply ไม่ผ่าน)
 - `metadata` / `spec` ระดับบนสุด = ของ **Deployment** ส่วน `template.metadata` / `template.spec` = ของ **Pod** เหมือนบทที่ 3
-- ReplicaSet **ไม่มีอยู่ในไฟล์เลย** Deployment สร้างให้เองจาก `replicas` + `selector` + `template` ชุดนี้
 
 ### 4.2 ไล่ไฟล์จริงจาก LAB 1
 

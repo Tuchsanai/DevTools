@@ -241,3 +241,9 @@ Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, 
 Text (verbatim, at most 5 short labels): "บทที่ 4 Deployment"; "3 ชั้น"; "ทยอยเปลี่ยน"; "จดทุกรุ่น"; "ย้อนกลับได้".
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; exactly one cat (Nong Som); the crew manager and crew chiefs are faceless human silhouettes, never cats; do not show Service, Ingress or NodePort objects or words.
 ```
+
+## 06a-yaml-rs-vs-deploy-map.png
+
+> หัวข้อ 4.1 · วาง web-rs.yaml คู่กับ web-deploy.yaml วงส่วนที่คู่กัน ลูกศร ① เปลี่ยน kind ② copy name ③ เพิ่ม annotations ④–⑥ copy replicas / selector / template ⑦ selector กับ labels ต้องตรงกัน
+
+ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะโค้ดในภาพต้องตรงกับไฟล์ LAB ทุกตัวอักษร จึงวาดเป็น SVG (`06a-yaml-rs-vs-deploy-map.svg` คือต้นฉบับที่แก้ได้) แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2 --window-size=1180,960`) เพื่อให้ฟอนต์ไทยออกมาเหมือนกันทุกเครื่อง ถ้าแก้ SVG ให้ render PNG ใหม่ทุกครั้ง
