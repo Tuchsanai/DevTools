@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1170 856" width="1170" height="856">
+<defs><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="mgreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="msky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0369a1"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mpink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#db2777"/></marker><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>
+<rect width="1170" height="856" fill="#ffffff"/>
+<text x="585" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="24" font-weight="700" fill="#0f172a" xml:space="preserve">Pod ดึงค่าจาก ConfigMap ด้วยชื่อแฟ้ม และชื่อ key</text>
+<text x="585" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#475569" xml:space="preserve">วงสีเดียวกัน = ค่าที่ต้องตรงกัน  ·  ลูกศรบอกว่า Pod ไปเอาค่ามาจากตรงไหนใน ConfigMap</text>
+<rect x="30" y="110" width="440" height="542" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="30" y="110" width="440" height="40" rx="16" fill="#64748b"/>
+<rect x="30" y="134" width="440" height="16" fill="#64748b"/>
+<text x="48" y="137" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#fff" xml:space="preserve">shop-config.yaml</text>
+<text x="452" y="137" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#fff" xml:space="preserve">ConfigMap</text>
+<rect x="640" y="110" width="500" height="542" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="640" y="110" width="500" height="40" rx="16" fill="#0f172a"/>
+<rect x="640" y="134" width="500" height="16" fill="#0f172a"/>
+<text x="658" y="137" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="700" fill="#fff" xml:space="preserve">config-pod.yaml</text>
+<text x="1122" y="137" text-anchor="end" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#fff" xml:space="preserve">Pod ที่ใช้ค่า</text>
+<rect x="59" y="238" width="167" height="27" rx="14" fill="#dc2626" fill-opacity="0.16" stroke="#dc2626" stroke-width="3"/>
+<rect x="777" y="508" width="167" height="27" rx="14" fill="#dc2626" fill-opacity="0.16" stroke="#dc2626" stroke-width="3"/>
+<rect x="759" y="616" width="167" height="27" rx="14" fill="#dc2626" fill-opacity="0.16" stroke="#dc2626" stroke-width="3"/>
+<rect x="59" y="292" width="302" height="81" rx="18" fill="#7c3aed" fill-opacity="0.06" stroke="#7c3aed" stroke-width="3"/>
+<rect x="59" y="292" width="95" height="27" rx="14" fill="#ea580c" fill-opacity="0.18" stroke="#ea580c" stroke-width="3"/>
+<rect x="777" y="535" width="140" height="27" rx="14" fill="#ea580c" fill-opacity="0.18" stroke="#ea580c" stroke-width="3"/>
+<rect x="705" y="562" width="221" height="81" rx="18" fill="#7c3aed" fill-opacity="0.06" stroke="#7c3aed" stroke-width="3"/>
+<rect x="741" y="427" width="149" height="27" rx="14" fill="#64748b" fill-opacity="0.04" stroke="#64748b" stroke-width="3" stroke-dasharray="8 6"/>
+<text x="48" y="177" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">apiVersion: v1</text>
+<text x="48" y="204" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">kind: ConfigMap</text>
+<text x="48" y="231" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">metadata:</text>
+<text x="48" y="258" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  name: shop-config</text>
+<text x="48" y="285" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">data:</text>
+<text x="48" y="312" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  SHOP_NAME: &quot;ร้านอาหารแมวน้องส้ม&quot;</text>
+<text x="48" y="339" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  OPEN_HOURS: &quot;09:00-21:00&quot;</text>
+<text x="48" y="366" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  ANNOUNCEMENT: &quot;วันนี้ลด 10%&quot;</text>
+<text x="658" y="177" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">apiVersion: v1</text>
+<text x="658" y="204" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">kind: Pod</text>
+<text x="658" y="231" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">metadata:</text>
+<text x="658" y="258" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  name: config-pod</text>
+<text x="658" y="285" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">spec:</text>
+<text x="658" y="312" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">  containers:</text>
+<text x="658" y="339" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">    - name: busybox</text>
+<text x="658" y="366" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      image: busybox:1.37</text>
+<text x="658" y="393" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      command: [&quot;sleep&quot;, &quot;3600&quot;]</text>
+<text x="658" y="420" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      env:</text>
+<text x="658" y="447" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        - name: SHOP_NAME</text>
+<text x="658" y="474" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">          valueFrom:</text>
+<text x="658" y="501" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">            configMapKeyRef:</text>
+<text x="658" y="528" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">              name: shop-config</text>
+<text x="658" y="555" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">              key: SHOP_NAME</text>
+<text x="658" y="582" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">      envFrom:</text>
+<text x="658" y="609" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">        - configMapRef:</text>
+<text x="658" y="636" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" fill="#0f172a" xml:space="preserve">            name: shop-config</text>
+<path d="M228,252 L484,252 L626,522 L774,522" fill="none" stroke="#dc2626" stroke-width="3" stroke-linejoin="round" marker-end="url(#mred)"/>
+<path d="M946,522 C982,522 982,630 928,630" fill="none" stroke="#dc2626" stroke-width="3" marker-start="url(#mred)" marker-end="url(#mred)"/>
+<path d="M360,306 L484,306 L626,548 L774,548" fill="none" stroke="#ea580c" stroke-width="3" stroke-linejoin="round" marker-end="url(#morange)"/>
+<path d="M363,332 L484,332 L626,602 L702,602" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linejoin="round" marker-end="url(#mpurple)"/>
+<circle cx="972" cy="576" r="14" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+<text x="972" y="581" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">1</text>
+<text x="992" y="582" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#dc2626" xml:space="preserve">แฟ้มเดียวกัน</text>
+<circle cx="912" cy="440" r="14" fill="#64748b" stroke="#fff" stroke-width="2"/>
+<text x="912" y="446" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">4</text>
+<text x="932" y="446" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#64748b" xml:space="preserve">ชื่อตัวแปร ตั้งเองได้</text>
+<circle cx="512" cy="306" r="15" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+<text x="512" y="311" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">1</text>
+<text x="512" y="338" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#dc2626" xml:space="preserve">ชื่อแฟ้ม</text>
+<circle cx="555" cy="427" r="15" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="555" y="432" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">2</text>
+<text x="555" y="460" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#ea580c" xml:space="preserve">ชื่อ key</text>
+<circle cx="600" cy="554" r="15" fill="#7c3aed" stroke="#fff" stroke-width="2"/>
+<text x="600" y="559" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">3</text>
+<text x="600" y="587" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#7c3aed" xml:space="preserve">ทุก key</text>
+<circle cx="48" cy="692" r="14" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+<text x="48" y="698" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">1</text>
+<text x="86" y="698" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">name: shop-config ทั้ง 2 ที่ใน Pod ต้องตรงกับชื่อ ConfigMap ไม่ตรง = ไม่มีแฟ้มนี้ container ไม่ยอมเริ่ม (หัวข้อ 5)</text>
+<circle cx="48" cy="728" r="14" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="48" y="734" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">2</text>
+<text x="86" y="734" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">configMapKeyRef: key ต้องตรงกับชื่อ key ใต้ data ทุกตัวอักษร (หยิบทีละ key)</text>
+<circle cx="48" cy="764" r="14" fill="#7c3aed" stroke="#fff" stroke-width="2"/>
+<text x="48" y="770" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">3</text>
+<text x="86" y="770" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">envFrom: ทุก key ใต้ data กลายเป็นตัวแปร ชื่อตัวแปร = ชื่อ key (ได้ครบ 3 ตัว)</text>
+<circle cx="48" cy="800" r="14" fill="#64748b" stroke="#fff" stroke-width="2"/>
+<text x="48" y="806" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff" xml:space="preserve">4</text>
+<text x="86" y="806" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b" xml:space="preserve">name: SHOP_NAME ใต้ env คือชื่อตัวแปรที่แอปเห็น ตั้งเองได้ ไม่ต้องตรงกับ key</text>
+</svg>

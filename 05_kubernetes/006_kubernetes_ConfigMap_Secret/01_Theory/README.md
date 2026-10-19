@@ -207,6 +207,17 @@ data:
             name: shop-config
 ```
 
+วาง `shop-config.yaml` คู่กับ `config-pod.yaml` ให้เห็นว่า Pod **อ้างถึง ConfigMap ตรงไหนบ้าง** และค่าไหนต้องพิมพ์ให้ตรงกัน **วงสีเดียวกัน = ค่าที่ต้องตรงกัน**
+
+<p align="center">
+  <img src="images/05a-yaml-configmap-vs-pod-map.png" alt="shop-config.yaml กับ config-pod.yaml วางคู่กัน ลูกศรจากชื่อ ConfigMap และชื่อ key ไปยังจุดที่ Pod อ้างถึง" width="900">
+</p>
+
+- **① ชื่อแฟ้มต้องตรงกัน** `name: shop-config` ทั้งใต้ `configMapKeyRef` และใต้ `configMapRef` ต้องตรงกับ `metadata.name` ของ ConfigMap ไม่ตรง = หาแฟ้มไม่เจอ container ไม่ยอมเริ่ม (หัวข้อ 5)
+- **② ชื่อ key ต้องตรงกัน** `key: SHOP_NAME` ต้องตรงกับชื่อ key ใต้ `data` ทุกตัวอักษร
+- **③ `envFrom` เอาทุก key** ใต้ `data` มาเป็นตัวแปร ชื่อตัวแปร = ชื่อ key
+- **④ ชื่อตัวแปรตั้งเองได้** `- name: SHOP_NAME` ใต้ `env` คือชื่อที่แอปเห็น ไม่จำเป็นต้องตรงกับ key (อธิบายต่อในแบบที่ 1)
+
 ### แบบที่ 1: `configMapKeyRef` หยิบทีละ key
 
 - `env` → `- name:` = **ชื่อตัวแปร** ที่แอปจะเห็น

@@ -214,3 +214,9 @@ Text (verbatim, at most 5 short labels): "ConfigMap"; "Secret"; "env"; "file"; "
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos; exactly one cat (Nong Som); couriers, deckhands, clerks, crew, receptionist and customers are faceless human figures, never cats; do not show Ingress, LoadBalancer or PersistentVolume objects or words. env labels the sticky note path, file labels the hanging board path. The number 30080 on the gate is allowed.
 ```
 
+
+## 05a-yaml-configmap-vs-pod-map.png
+
+> หัวข้อ 4 · shop-config.yaml คู่กับ config-pod.yaml: ① ชื่อแฟ้ม ② ชื่อ key ③ envFrom ทุก key ④ ชื่อตัวแปรตั้งเองได้
+
+ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะโค้ดในภาพต้องตรงกับไฟล์ LAB ทุกตัวอักษร วาดเป็น SVG (`05a-yaml-configmap-vs-pod-map.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/yaml_map.py` (spec `006`) แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) ให้ฟอนต์ไทยเหมือนกันทุกเครื่อง แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง
