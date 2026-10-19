@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 890" width="1200" height="890">
+<defs><marker id="mgray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="mpurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="mteal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker><marker id="mred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="mblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="morange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker></defs>
+<rect width="1200" height="890" fill="#ffffff"/>
+<text x="600" y="42" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="24" font-weight="700" fill="#0f172a">อ่านคำสั่ง kubectl rollout history deployment/web ทีละคำ</text>
+<text x="600" y="74" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#475569">deployment/web = ชนิด / ชื่อ ของ object ในไฟล์ YAML  ·  CHANGE-CAUSE มาจากโน้ตในไฟล์</text>
+<rect x="246" y="102" width="707" height="70" rx="14" fill="#0f172a" fill-opacity="1" stroke="#0f172a" stroke-width="0"/>
+<rect x="280" y="118" width="128" height="40" rx="12" fill="#64748b" fill-opacity="0.35" stroke="#64748b" stroke-width="3"/>
+<rect x="412" y="118" width="128" height="40" rx="12" fill="#7c3aed" fill-opacity="0.35" stroke="#7c3aed" stroke-width="3"/>
+<rect x="544" y="118" width="128" height="40" rx="12" fill="#0d9488" fill-opacity="0.35" stroke="#0d9488" stroke-width="3"/>
+<rect x="676" y="118" width="177" height="40" rx="12" fill="#dc2626" fill-opacity="0.35" stroke="#dc2626" stroke-width="3"/>
+<rect x="858" y="118" width="62" height="40" rx="12" fill="#2563eb" fill-opacity="0.35" stroke="#2563eb" stroke-width="3"/>
+<text x="286" y="150" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff" xml:space="preserve">kubectl rollout history deployment/web</text>
+<circle cx="344" cy="200" r="15" fill="#64748b" stroke="#fff" stroke-width="2"/>
+<text x="344" y="206" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff">1</text>
+<text x="344" y="236" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#64748b">ตัวสั่งงาน</text>
+<circle cx="476" cy="200" r="15" fill="#7c3aed" stroke="#fff" stroke-width="2"/>
+<text x="476" y="206" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff">2</text>
+<text x="476" y="236" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#7c3aed">เรื่องเปลี่ยนรุ่น</text>
+<circle cx="608" cy="200" r="15" fill="#0d9488" stroke="#fff" stroke-width="2"/>
+<text x="608" y="206" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff">3</text>
+<text x="608" y="236" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#0d9488">ขอดูประวัติ</text>
+<circle cx="765" cy="200" r="15" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+<text x="765" y="206" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff">4</text>
+<text x="765" y="236" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#dc2626">ชนิด (kind)</text>
+<circle cx="889" cy="200" r="15" fill="#2563eb" stroke="#fff" stroke-width="2"/>
+<text x="889" y="206" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff">5</text>
+<text x="889" y="236" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#2563eb">ชื่อ (name)</text>
+<text x="300" y="288" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="700" fill="#0f172a">web-deploy.yaml (ส่วนบน)</text>
+<rect x="300" y="300" width="540" height="194" rx="14" fill="#cbd5e1" fill-opacity="0" stroke="#cbd5e1" stroke-width="2"/>
+<rect x="301" y="301" width="538" height="192" rx="14" fill="#f8fafc"/>
+<rect x="366" y="348" width="102" height="27" rx="14" fill="#dc2626" fill-opacity="0.14" stroke="#dc2626" stroke-width="3"/>
+<rect x="384" y="402" width="39" height="27" rx="14" fill="#2563eb" fill-opacity="0.14" stroke="#2563eb" stroke-width="3"/>
+<rect x="348" y="456" width="372" height="27" rx="14" fill="#ea580c" fill-opacity="0.14" stroke="#ea580c" stroke-width="3"/>
+<text x="318" y="341" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">apiVersion: apps/v1</text>
+<text x="318" y="368" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">kind: Deployment</text>
+<text x="318" y="395" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">metadata:</text>
+<text x="318" y="422" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">  name: web</text>
+<text x="318" y="449" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">  annotations:</text>
+<text x="318" y="476" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="400" fill="#0f172a" xml:space="preserve">    kubernetes.io/change-cause: &quot;nginx 1.27&quot;</text>
+<text x="890" y="288" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#0f172a">ผลลัพธ์</text>
+<rect x="890" y="300" width="280" height="194" rx="14" fill="#0f172a"/>
+<rect x="992" y="348" width="120" height="27" rx="14" fill="#ea580c" fill-opacity="0.25" stroke="#ea580c" stroke-width="2"/>
+<rect x="992" y="375" width="102" height="27" rx="14" fill="#ea580c" fill-opacity="0.25" stroke="#ea580c" stroke-width="3"/>
+<text x="908" y="341" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="400" fill="#e2e8f0" xml:space="preserve">deployment.apps/web</text>
+<text x="908" y="368" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="400" fill="#e2e8f0" xml:space="preserve">REVISION  CHANGE-CAUSE</text>
+<text x="908" y="395" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="16" font-weight="400" fill="#e2e8f0" xml:space="preserve">1         nginx 1.27</text>
+<path d="M765,246 L765,258 L498,362 L471,362" fill="none" stroke="#dc2626" stroke-width="3" stroke-linejoin="round" marker-end="url(#mred)"/>
+<path d="M889,246 L889,270 L583,416 L426,416" fill="none" stroke="#2563eb" stroke-width="3" stroke-linejoin="round" marker-end="url(#mblue)"/>
+<path d="M722,470 L1043,470 L1043,405" fill="none" stroke="#ea580c" stroke-width="3" stroke-linejoin="round" marker-end="url(#morange)"/>
+<circle cx="892" cy="470" r="15" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="892" y="475" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff">6</text>
+<text x="892" y="448" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="14" font-weight="700" fill="#ea580c">โน้ตในไฟล์</text>
+<text x="50" y="544" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="700" fill="#0f172a">คำสั่งพี่น้องในกลุ่ม rollout ที่ใช้ใน LAB นี้</text>
+<rect x="50" y="562" width="398" height="36" rx="10" fill="#0f172a"/>
+<rect x="140" y="567" width="78" height="26" rx="8" fill="#7c3aed" fill-opacity="0.35" stroke="#7c3aed" stroke-width="2"/>
+<text x="64" y="588" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="18" font-weight="400" fill="#ffffff" xml:space="preserve">kubectl rollout status deployment/web</text>
+<text x="466" y="588" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#334155">→ รอดูจนเปลี่ยนรุ่นเสร็จ (ขั้นที่ 3)</text>
+<rect x="50" y="606" width="378" height="36" rx="10" fill="#0f172a"/>
+<rect x="140" y="611" width="78" height="26" rx="8" fill="#7c3aed" fill-opacity="0.35" stroke="#7c3aed" stroke-width="2"/>
+<text x="64" y="632" text-anchor="start" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="18" font-weight="400" fill="#ffffff" xml:space="preserve">kubectl rollout undo deployment/web</text>
+<text x="446" y="632" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="400" fill="#334155">→ ย้อนกลับไปรุ่นก่อน (ขั้นที่ 7)</text>
+<circle cx="48" cy="692" r="14" fill="#64748b" stroke="#fff" stroke-width="2"/>
+<text x="48" y="698" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff">1</text>
+<text x="86" y="698" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b">kubectl = โปรแกรมที่ใช้สั่งคลัสเตอร์ ทุกคำสั่งขึ้นต้นด้วยคำนี้</text>
+<circle cx="48" cy="726" r="14" fill="#7c3aed" stroke="#fff" stroke-width="2"/>
+<text x="48" y="732" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff">2</text>
+<text x="86" y="732" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b">rollout = กลุ่มคำสั่งเรื่องการเปลี่ยนรุ่น ใช้กับ Deployment (ผู้จัดการ) ไม่ใช้กับ ReplicaSet</text>
+<circle cx="48" cy="760" r="14" fill="#0d9488" stroke="#fff" stroke-width="2"/>
+<text x="48" y="766" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff">3</text>
+<text x="86" y="766" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b">history = ขอดูสมุดประวัติรุ่น ส่วน status = รอดู และ undo = ย้อนกลับ</text>
+<rect x="28" y="780" width="48" height="28" rx="14" fill="#dc2626"/>
+<text x="52" y="800" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="15" font-weight="700" fill="#fff">4–5</text>
+<text x="86" y="800" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b">deployment/web = &lt;ชนิด&gt;/&lt;ชื่อ&gt; ต้องตรงกับ kind: Deployment และ name: web ในไฟล์ (เขียนสั้นเป็น deploy/web ก็ได้)</text>
+<circle cx="48" cy="828" r="14" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+<text x="48" y="834" text-anchor="middle" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="16" font-weight="700" fill="#fff">6</text>
+<text x="86" y="834" text-anchor="start" font-family="'Noto Sans Thai', 'Leelawadee UI', Tahoma, Thonburi, sans-serif" font-size="17" font-weight="400" fill="#1e293b">CHANGE-CAUSE มาจาก annotation kubernetes.io/change-cause ในไฟล์ ถ้าไม่เขียนจะขึ้น &lt;none&gt;</text>
+</svg>

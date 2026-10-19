@@ -6,7 +6,7 @@ Generated with built-in image_gen via cyolo1 (Codex CLI, swarm, difficulty 1) us
 
 Metaphor ที่ใช้ทั้งชุด: container = ตู้คอนเทนเนอร์, Pod = กล่องห้องโดยสารใสสีเขียวอมฟ้ามีป้าย IP, Node = เรือสินค้า (lab-worker, lab-worker2), Control Plane = หอควบคุมท่าเรือ, template = แม่พิมพ์กล่อง, ReplicaSet = หัวหน้าลูกเรือ (คนไม่มีหน้า ชุดกรมท่า ถือ clipboard `replicas: 3`), **Deployment = ผู้จัดการลูกเรือ (คนไม่มีหน้า ชุดเจ้าหน้าที่สีขาว หมวกแก๊ปมีปีก ถือสมุดบันทึกรุ่น revision)** สั่งหัวหน้าทีมเก่า (แม่พิมพ์เก่า กล่องแถบส้ม) และหัวหน้าทีมใหม่ (แม่พิมพ์ใหม่ กล่องแถบเขียว), RS เก่าที่เหลือ 0 = แม่พิมพ์เก่าบนชั้นข้างหัวหน้าทีมเก่าที่นั่งพัก, rollback = ผู้จัดการพลิกสมุดกลับหน้าเดิม
 
-รูปที่ 1 `01-lab0-setup.png`, รูปที่ 2 `01c-lab0-git-clone.png`, รูปที่ 11 `05a-lab4-vscode-attach.png` ใช้ภาพเดิมจากบทที่ 3 (prompt อยู่ใน `003_kubernetes_Replicaset/02_LAB/images/imagegen-prompts.md`) และภาพหน้าจอจริงใน `screenshots/` ไม่ได้สร้างด้วย image gen
+รูปที่ 1 `01-lab0-setup.png`, รูปที่ 2 `01c-lab0-git-clone.png`, รูปที่ 15 `05a-lab4-vscode-attach.png` ใช้ภาพเดิมจากบทที่ 3 (prompt อยู่ใน `003_kubernetes_Replicaset/02_LAB/images/imagegen-prompts.md`) และภาพหน้าจอจริงใน `screenshots/` ไม่ได้สร้างด้วย image gen
 
 ## 02-lab1-first-deploy.png
 
@@ -38,7 +38,7 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 04-lab3-bad-update.png
 
-> รูปที่ 7 · LAB3 อัปเดตพัง nginx:1.99 (ErrImagePull) แต่กล่องเก่า 3 ใบยังเปิดร้าน ผู้จัดการรอ 30s แล้ว rollout undo
+> รูปที่ 11 · LAB3 อัปเดตพัง nginx:1.99 (ErrImagePull) แต่กล่องเก่า 3 ใบยังเปิดร้าน ผู้จัดการรอ 30s แล้ว rollout undo
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
@@ -52,7 +52,7 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 05-lab4-som-menu-rolling.png
 
-> รูปที่ 9 · LAB4 ร้านน้องส้มทยอยเปลี่ยนจาก v1.0 เป็น v2.0 ทีละสาขา (maxSurge: 1, maxUnavailable: 0)
+> รูปที่ 13 · LAB4 ร้านน้องส้มทยอยเปลี่ยนจาก v1.0 เป็น v2.0 ทีละสาขา (maxSurge: 1, maxUnavailable: 0)
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
@@ -66,7 +66,7 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 05b-lab4-vscode-ports.png
 
-> รูปที่ 12 · LAB4 ขั้นที่ 4 ภาพจำลองหน้าจอ VS Code แท็บ PORTS (port-forward deploy/som-menu 8080:3000) — สร้างใหม่แทนภาพบทที่ 3 ที่เขียน rs/som-menu โดยใช้ภาพเดิมเป็นภาพอ้างอิง
+> รูปที่ 16 · LAB4 ขั้นที่ 4 ภาพจำลองหน้าจอ VS Code แท็บ PORTS (port-forward deploy/som-menu 8080:3000) — สร้างใหม่แทนภาพบทที่ 3 ที่เขียน rs/som-menu โดยใช้ภาพเดิมเป็นภาพอ้างอิง
 
 ```text
 ก่อนเริ่ม ให้เปิดดูภาพ /workspace/DevTools/05_kubernetes/004_kubernetes_Deployment/02_LAB/images/05b-lab4-vscode-ports.png (ภาพจำลองหน้าจอ VS Code เดิม) และภาพอ้างอิงตัวละคร /workspace/DevTools/05_kubernetes/004_kubernetes_Deployment/01_Theory/images/00-character-som.png ด้วยเครื่องมือดูภาพ แล้วสร้างภาพใหม่ที่เหมือนภาพ 05b-lab4-vscode-ports.png เดิมทุกอย่าง (ส่งภาพเดิมให้โมเดลภาพเป็นภาพอ้างอิง/แก้ไขภาพถ้าทำได้) ต่างกันแค่ข้อความในคอลัมน์ Running Process
@@ -83,7 +83,7 @@ Constraints: realistic flat UI rendering like an actual screenshot, no 3D, no ca
 
 ## 06-lab4-port-forward-lost.png
 
-> รูปที่ 14 · LAB4 ขั้นที่ 8 port-forward ขาดเมื่อ Pod รุ่นเก่าถูกปิดตอนเปลี่ยนรุ่น (lost connection to pod)
+> รูปที่ 18 · LAB4 ขั้นที่ 8 port-forward ขาดเมื่อ Pod รุ่นเก่าถูกปิดตอนเปลี่ยนรุ่น (lost connection to pod)
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
@@ -125,7 +125,7 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 04a-lab3-plan.png
 
-> รูปที่ 8 · แผนการทดลอง LAB 3 (4 การทดลอง ตรงกับ 🎯 เป้าหมายขั้นนี้ ในแต่ละขั้น)
+> รูปที่ 12 · แผนการทดลอง LAB 3 (4 การทดลอง ตรงกับ 🎯 เป้าหมายขั้นนี้ ในแต่ละขั้น)
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
@@ -139,7 +139,7 @@ Constraints: only the verbatim labels listed above, spelled exactly (Thai and En
 
 ## 05c-lab4-plan.png
 
-> รูปที่ 10 · แผนการทดลอง LAB 4 (4 การทดลอง ตรงกับ 🎯 เป้าหมายขั้นนี้ ในแต่ละขั้น)
+> รูปที่ 14 · แผนการทดลอง LAB 4 (4 การทดลอง ตรงกับ 🎯 เป้าหมายขั้นนี้ ในแต่ละขั้น)
 
 ```text
 Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
@@ -150,3 +150,43 @@ Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, 
 Text (verbatim, at most 9 short labels): "LAB 4"; "1"; "2"; "3"; "4"; "เปิดร้าน v1.0"; "ทยอยเปลี่ยนเป็น v2.0"; "ท่อหลุด ต่อใหม่"; "ย้อนกลับ v1.0".
 Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos (no Docker whale, no Kubernetes wheel logo, no GitHub octocat); do not show Service, Ingress or NodePort objects or words; exactly one cat (Nong Som); the crew manager and crew chiefs are faceless human figures, never cats. Exactly 4 stations and 4 cards; each caption appears exactly once, spelled exactly.
 ```
+
+## 03b-lab2-new-version-file.png
+
+> รูปที่ 9 · LAB2 ขั้นที่ 2 · ไฟล์รุ่นใหม่ = ไฟล์เดิมที่แก้ 2 บรรทัด ชื่อเดิม แม่พิมพ์ใหม่
+
+```text
+Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
+Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Deployment lab (README figure, about 1536x1024).
+Scene: Nong Som stands at a big drafting table in the middle, holding up two large paper sheets side by side like comparing documents. LEFT sheet header reads web-deploy.yaml; it shows a name tag line name: web and an orange highlighted line nginx:1.27-alpine. RIGHT sheet header reads web-deploy-v2.yaml; it shows the SAME name tag line name: web and a green highlighted line nginx:1.28-alpine. A thick dashed bracket connects the two name: web lines with the Thai label เหมือนเดิม (same). A bold curved arrow goes from the orange image line to the green image line with the Thai label แก้ตรงนี้ (edit here). On the right side of the picture the crew manager (faceless human, white uniform, winged cap) receives the RIGHT sheet through a slot labeled kubectl apply, and beside him a new box mold stamps one new GREEN-stripe Pod box while three ORANGE-stripe Pod boxes still stand nearby. Keep the sheets mostly empty except for the listed labels (draw other lines as plain gray bars, no readable text).
+Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly. Nong Som is the ONLY cat in the picture.
+Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, plain white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001-003 illustration set. Shared metaphor (keep consistent across the series): Pod = rounded translucent teal cabin box that wraps one shipping container; Pod template = a box-shaped mold / stamp that presses out identical Pod boxes; ReplicaSet = a crew chief: a simple faceless human sailor silhouette in a navy uniform and navy cap (NOT a cat, NOT an animal); Deployment = the crew manager: a simple faceless human figure (NOT a cat, NOT an animal) in a white officer uniform and a white peaked cap with a small winged badge, holding a revision logbook (a notebook with numbered pages); old-version Pod boxes carry an ORANGE stripe, new-version Pod boxes carry a GREEN stripe.
+Text (verbatim): "web-deploy.yaml"; "web-deploy-v2.yaml"; "name: web"; "nginx:1.27-alpine"; "nginx:1.28-alpine"; "เหมือนเดิม"; "แก้ตรงนี้"; "kubectl apply".
+Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos (no Docker whale, no Kubernetes wheel logo, no GitHub octocat); do not show Service, Ingress or NodePort objects or words; exactly one cat (Nong Som); the crew manager and crew chiefs are faceless human figures, never cats.
+```
+
+## 03c-lab2-rollout-history-cmd.png
+
+> รูปที่ 7 · LAB2 ขั้นที่ 1 · kubectl rollout history deployment/web = ขอดูสมุดรุ่นของผู้จัดการชื่อ web
+
+```text
+Use case: scientific-educational story illustration (one panel of a continuous story) for a Thai university DevTools course; must teach the concept correctly at a glance.
+Asset type: landscape 3:2 educational story illustration for Thai Kubernetes Deployment lab (README figure, about 1536x1024).
+Scene: On the left, Nong Som types on a laptop; above the laptop a wide command banner shows the command kubectl rollout history deployment/web in monospace, with the word deployment underlined in red and the word web underlined in blue. A red arrow from the underlined word deployment points to a large badge on the crew manager's chest that reads Deployment; a blue arrow from the underlined word web points to the crew manager's name tag that reads web. On the right, the crew manager (faceless human, white uniform, winged cap) holds his revision logbook wide open toward the viewer; the open page has a header REVISION / CHANGE-CAUSE and exactly one row reading 1 and nginx 1.27. A yellow sticky note labeled change-cause is attached to the page edge, showing where the text in the logbook comes from. Behind the manager, one crew chief stands next to three ORANGE-stripe Pod boxes.
+Character: Nong Som (น้องส้ม) exactly as in the attached reference sheet 00-character-som.png — a chubby orange tabby cat with darker orange stripes on forehead and back, white chest, white muzzle and white paws, big round green eyes, small pink nose, short round ears, walking upright on two legs; navy captain hat with a white 7-spoke ship-wheel badge and a teal neckerchief. Keep face, proportions, colors, hat, badge and neckerchief identical to the reference; Nong Som appears exactly once, expressive and friendly. Nong Som is the ONLY cat in the picture.
+Style: clean flat vector cartoon, thick smooth navy outlines, soft cel shading, plain white background, palette navy / blue / teal with orange accents, rounded cards, crisp large legible labels, generous whitespace; matches the chapter 001-003 illustration set. Shared metaphor (keep consistent across the series): Pod = rounded translucent teal cabin box that wraps one shipping container; Pod template = a box-shaped mold / stamp that presses out identical Pod boxes; ReplicaSet = a crew chief: a simple faceless human sailor silhouette in a navy uniform and navy cap (NOT a cat, NOT an animal); Deployment = the crew manager: a simple faceless human figure (NOT a cat, NOT an animal) in a white officer uniform and a white peaked cap with a small winged badge, holding a revision logbook (a notebook with numbered pages); old-version Pod boxes carry an ORANGE stripe, new-version Pod boxes carry a GREEN stripe.
+Text (verbatim): "kubectl rollout history deployment/web"; "Deployment"; "web"; "REVISION"; "CHANGE-CAUSE"; "1"; "nginx 1.27"; "change-cause".
+Constraints: only the verbatim labels listed above, spelled exactly (Thai and English), no other words, no gibberish or pseudo-text, no extra speech bubbles with text, no watermark, no signature, no real company logos (no Docker whale, no Kubernetes wheel logo, no GitHub octocat); do not show Service, Ingress or NodePort objects or words; exactly one cat (Nong Som); the crew manager and crew chiefs are faceless human figures, never cats.
+```
+
+## 03e-lab2-rollout-command-map.png
+
+> รูปที่ 8 · LAB2 ขั้นที่ 1 · อ่านคำสั่ง kubectl rollout history deployment/web ทีละคำ โยงกับ kind, name และ annotation
+
+ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะโค้ดในภาพต้องตรงกับไฟล์ LAB ทุกตัวอักษร วาดเป็น SVG (`03e-lab2-rollout-command-map.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/cmd_map.py` แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง
+
+## 03d-lab2-yaml-v1-vs-v2-map.png
+
+> รูปที่ 10 · LAB2 ขั้นที่ 2 · web-deploy.yaml คู่กับ web-deploy-v2.yaml: ① name ② change-cause ③ image ④ selector/labels ห้ามแก้ ⑤ template
+
+ภาพนี้ **ไม่ได้สร้างด้วย image gen** เพราะโค้ดในภาพต้องตรงกับไฟล์ LAB ทุกตัวอักษร วาดเป็น SVG (`03d-lab2-yaml-v1-vs-v2-map.svg` คือต้นฉบับที่แก้ได้) ด้วยสคริปต์ `05_kubernetes/backup/tools/yaml_map.py (spec 004lab2)` แล้ว render เป็น PNG ด้วย Microsoft Edge headless (`--force-device-scale-factor=2`) แก้ SVG แล้วต้อง render PNG ใหม่ทุกครั้ง

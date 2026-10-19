@@ -47,14 +47,16 @@
 
 | รูปที่ | เรื่อง | รูปที่ | เรื่อง |
 |:---:|---|:---:|---|
-| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 9 | [LAB 4 ร้านน้องส้มทยอยเปลี่ยนเมนูทีละสาขา](#fig-9) |
-| 2 | [LAB 0 git clone](#fig-2) | 10 | [แผนการทดลอง LAB 4](#fig-10) |
-| 3 | [LAB 1 Deployment → ReplicaSet → Pod](#fig-3) | 11 | [LAB 4 attach VS Code เข้า k8s-lab](#fig-11) |
-| 4 | [แผนการทดลอง LAB 1](#fig-4) | 12 | [LAB 4 เปิดเว็บผ่าน VS Code PORTS](#fig-12) |
-| 5 | [LAB 2 rolling update และ rollout undo](#fig-5) | 13 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 1.0](#fig-13) |
-| 6 | [แผนการทดลอง LAB 2](#fig-6) | 14 | [port-forward หลุดเมื่อ Pod รุ่นเก่าถูกปิด](#fig-14) |
-| 7 | [LAB 3 อัปเดตพัง แต่ร้านไม่ปิด](#fig-7) | 15 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 2.0](#fig-15) |
-| 8 | [แผนการทดลอง LAB 3](#fig-8) | 16 | [ภาพหน้าจอจริง: ย้อนกลับเป็นเวอร์ชัน 1.0](#fig-16) |
+| 1 | [LAB 0 Setup container และคลัสเตอร์](#fig-1) | 11 | [LAB 3 อัปเดตพัง แต่ร้านไม่ปิด](#fig-11) |
+| 2 | [LAB 0 git clone](#fig-2) | 12 | [แผนการทดลอง LAB 3](#fig-12) |
+| 3 | [LAB 1 Deployment → ReplicaSet → Pod](#fig-3) | 13 | [LAB 4 ร้านน้องส้มทยอยเปลี่ยนเมนูทีละสาขา](#fig-13) |
+| 4 | [แผนการทดลอง LAB 1](#fig-4) | 14 | [แผนการทดลอง LAB 4](#fig-14) |
+| 5 | [LAB 2 rolling update และ rollout undo](#fig-5) | 15 | [LAB 4 attach VS Code เข้า k8s-lab](#fig-15) |
+| 6 | [แผนการทดลอง LAB 2](#fig-6) | 16 | [LAB 4 เปิดเว็บผ่าน VS Code PORTS](#fig-16) |
+| 7 | [LAB 2 คำสั่ง rollout history ถามผู้จัดการคนไหน](#fig-7) | 17 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 1.0](#fig-17) |
+| 8 | [LAB 2 อ่านคำสั่ง rollout history ทีละคำ](#fig-8) | 18 | [port-forward หลุดเมื่อ Pod รุ่นเก่าถูกปิด](#fig-18) |
+| 9 | [LAB 2 ไฟล์รุ่นใหม่ แก้ตรงไหน](#fig-9) | 19 | [ภาพหน้าจอจริง: หน้าร้านเวอร์ชัน 2.0](#fig-19) |
+| 10 | [LAB 2 เทียบ YAML รุ่นเดิมกับรุ่นใหม่](#fig-10) | 20 | [ภาพหน้าจอจริง: ย้อนกลับเป็นเวอร์ชัน 1.0](#fig-20) |
 
 ### โครงสร้างไฟล์ LAB
 
@@ -780,7 +782,29 @@ web-6bd858c6f9-c627t   1/1     Running   0          10s
 web-6bd858c6f9-vt6vq   1/1     Running   0          10s
 </pre>
 
-hash ยังเป็น `6bd858c6f9` เหมือน LAB 1 เพราะแม่พิมพ์เหมือนเดิมทุกตัวอักษร ดูประวัติรุ่น
+hash ยังเป็น `6bd858c6f9` เหมือน LAB 1 เพราะแม่พิมพ์เหมือนเดิมทุกตัวอักษร ต่อไปจะดูประวัติรุ่น แต่ก่อนพิมพ์ **อ่านคำสั่งให้ออกก่อนว่าแต่ละคำมาจากไหน**
+
+<p align="center" id="fig-7">
+  <img src="images/03c-lab2-rollout-history-cmd.png" alt="รูปที่ 7 คำสั่ง rollout history ถามผู้จัดการ Deployment ชื่อ web ให้เปิดสมุดรุ่น" width="900"><br>
+  <em><b>รูปที่ 7</b> kubectl rollout history deployment/web = ขอให้ผู้จัดการ (ชนิด Deployment) ชื่อ web เปิดสมุดบันทึกรุ่น หน้าแรกมี REVISION 1 ที่ CHANGE-CAUSE เป็น nginx 1.27 ซึ่งมาจากโน้ต change-cause ในไฟล์</em>
+</p>
+
+<p align="center" id="fig-8">
+  <img src="images/03e-lab2-rollout-command-map.png" alt="รูปที่ 8 อ่านคำสั่ง kubectl rollout history deployment/web ทีละคำ โยงกับ kind name และ annotation ในไฟล์" width="900"><br>
+  <em><b>รูปที่ 8</b> อ่านคำสั่งทีละคำ: deployment/web คือชนิดและชื่อที่ตรงกับ kind: Deployment และ name: web ในไฟล์ ส่วนคอลัมน์ CHANGE-CAUSE ในผลลัพธ์มาจาก annotation kubernetes.io/change-cause</em>
+</p>
+
+คำสั่งนี้มาจากไหน
+
+| คำ | ความหมาย | มาจากไหน |
+|---|---|---|
+| `kubectl` | โปรแกรมสั่งคลัสเตอร์ | ใช้ทุกคำสั่ง |
+| `rollout` | กลุ่มคำสั่งเรื่อง **การเปลี่ยนรุ่น** | ใช้กับ Deployment (ผู้จัดการ) |
+| `history` | ขอดู **สมุดประวัติรุ่น** | พี่น้องในกลุ่มเดียวกันคือ `status` (ขั้นที่ 3) และ `undo` (ขั้นที่ 7) |
+| `deployment/web` | `<ชนิด>/<ชื่อ>` ของ object ที่จะถาม | `kind: Deployment` และ `metadata.name: web` ในไฟล์ YAML |
+
+- `deployment/web` ต้องตรงกับไฟล์ที่ apply ไป ถ้าพิมพ์ `deployment/web2` จะขึ้น not found เพราะไม่มี Deployment ชื่อนั้น จะเขียนสั้นเป็น `deploy/web` ก็ได้
+- คอลัมน์ `CHANGE-CAUSE` ไม่ได้มาจาก kubectl เอง แต่มาจากโน้ต `kubernetes.io/change-cause` ที่เราเขียนไว้ใน `metadata.annotations` ของไฟล์ ถ้าไม่ได้เขียนจะขึ้น `<none>`
 
 ```bash
 kubectl rollout history deployment/web
@@ -835,6 +859,32 @@ spec:
 - ชื่อยังเป็น `web` การ apply จึงเป็นการ **แก้ Deployment ตัวเดิม**
 - ต่างจากไฟล์ LAB 1 แค่ **2 บรรทัดที่มี `← เปลี่ยน`**: โน้ต `change-cause` เป็น `nginx 1.28` และ `image: nginx:1.28-alpine`
 - `image` อยู่ใน `template` แม่พิมพ์จึงเปลี่ยน hash ใหม่ → Deployment สร้าง ReplicaSet ตัวใหม่แล้วทยอยย้าย Pod ไปหา
+
+<p align="center" id="fig-9">
+  <img src="images/03b-lab2-new-version-file.png" alt="รูปที่ 9 น้องส้มเทียบ web-deploy.yaml กับ web-deploy-v2.yaml name เหมือนเดิม แก้ image แล้วส่งให้ผู้จัดการด้วย kubectl apply" width="900"><br>
+  <em><b>รูปที่ 9</b> ไฟล์รุ่นใหม่คือไฟล์เดิมที่แก้นิดเดียว: name: web เหมือนเดิม (จึงเป็นการแก้ผู้จัดการคนเดิม) แก้แค่ image จาก nginx:1.27-alpine เป็น nginx:1.28-alpine แล้วส่งด้วย kubectl apply ผู้จัดการจะปั๊มกล่องแถบเขียวรุ่นใหม่ทีละใบ</em>
+</p>
+
+วางไฟล์ 2 รุ่นเทียบกัน (ตัด comment ออก) ให้เห็นว่า **ตรงไหนต้องแก้ ตรงไหนห้ามแก้**
+
+<p align="center" id="fig-10">
+  <img src="images/03d-lab2-yaml-v1-vs-v2-map.png" alt="รูปที่ 10 web-deploy.yaml กับ web-deploy-v2.yaml วางคู่กัน วงส่วนที่แก้และส่วนที่ห้ามแก้" width="900"><br>
+  <em><b>รูปที่ 10</b> เทียบ YAML รุ่นเดิมกับรุ่นใหม่ ① name เดิม ② แก้โน้ต change-cause ③ แก้ image ④ selector และป้ายห้ามแก้ ⑤ แม่พิมพ์ (template) เปลี่ยน = รุ่นใหม่</em>
+</p>
+
+**หลักการเขียนไฟล์รุ่นใหม่สำหรับ rolling update** (เลขตรงกับรูปที่ 10)
+
+1. **copy ไฟล์เดิมมาแก้** อย่าเขียนใหม่ทั้งไฟล์ จะได้ไม่เผลอแก้บรรทัดอื่น
+2. **① `name` ต้องเหมือนเดิม** apply แล้วจึงขึ้น `configured` (แก้ตัวเดิม) ถ้าเปลี่ยนชื่อ เช่น `web-v2` จะได้ Deployment **ตัวใหม่อีกตัว** อยู่คู่กับตัวเดิม (Pod รวม 6 ตัว) ไม่ใช่การเปลี่ยนรุ่น
+3. **③ แก้สิ่งที่อยากเปลี่ยนใต้ `template`** เช่น `image` แม่พิมพ์เปลี่ยน → hash ใหม่ → ReplicaSet ใหม่ → ทยอยเปลี่ยน Pod ส่วนการแก้ `replicas` อย่างเดียวเป็นแค่ scale ไม่เกิดรุ่นใหม่
+4. **② แก้โน้ต `change-cause` คู่กันเสมอ** ให้บอกว่ารุ่นนี้คืออะไร ไม่งั้น `rollout history` จะโชว์ข้อความของรุ่นเก่า (แก้แค่โน้ตอย่างเดียวก็ไม่เกิดรุ่นใหม่)
+5. **④ ห้ามแก้ `selector` และป้ายใน `template`** selector ของ Deployment แก้ไม่ได้หลังสร้าง ลองแก้ `app: web` เป็น `app: web2` ทั้งสองที่แล้ว apply จะได้
+
+<pre>
+The Deployment "web" is invalid: spec.selector: Invalid value: {"matchLabels":{"app":"web2"}}: field is immutable
+</pre>
+
+(ผลข้อ 2 และข้อ 5 มาจากการทดลองตอนเตรียม LAB ไม่ต้องทำตาม)
 
 ### ขั้นที่ 3: เปลี่ยนรุ่น
 
@@ -1113,16 +1163,16 @@ No resources found in default namespace.
 
 ## LAB 3: อัปเดตพัง แต่ร้านไม่ปิด
 
-<p align="center" id="fig-7">
-  <img src="images/04-lab3-bad-update.png" alt="รูปที่ 7 LAB3 อัปเดตพัง แต่ร้านไม่ปิด" width="900"><br>
-  <em><b>รูปที่ 7</b> LAB3: กล่องใหม่ 1 ใบติดป้ายแดง nginx:1.99 ดึงพิมพ์เขียวไม่ได้ (ErrImagePull) แต่กล่องเก่า 3 ใบยังเปิดร้านอยู่ ผู้จัดการดูนาฬิกาจนเกิน 30 วินาที (progressDeadlineSeconds) แล้วพลิกสมุดกลับ (rollout undo)</em>
+<p align="center" id="fig-11">
+  <img src="images/04-lab3-bad-update.png" alt="รูปที่ 11 LAB3 อัปเดตพัง แต่ร้านไม่ปิด" width="900"><br>
+  <em><b>รูปที่ 11</b> LAB3: กล่องใหม่ 1 ใบติดป้ายแดง nginx:1.99 ดึงพิมพ์เขียวไม่ได้ (ErrImagePull) แต่กล่องเก่า 3 ใบยังเปิดร้านอยู่ ผู้จัดการดูนาฬิกาจนเกิน 30 วินาที (progressDeadlineSeconds) แล้วพลิกสมุดกลับ (rollout undo)</em>
 </p>
 
 **เป้าหมาย:** ลองเปลี่ยนเป็น image ที่ไม่มีอยู่จริง (พิมพ์เลขรุ่นผิด) ดูว่า Deployment ทำอย่างไร ร้านยังเปิดอยู่ไหม รู้ได้อย่างไรว่าพัง แล้วย้อนกลับ
 
-<p align="center" id="fig-8">
-  <img src="images/04a-lab3-plan.png" alt="รูปที่ 8 แผนการทดลอง LAB3" width="900"><br>
-  <em><b>รูปที่ 8</b> แผนการทดลอง LAB3 มี 4 การทดลอง: (1) ขั้นที่ 1–3 อัปเดตเป็น image ที่ไม่มีจริงจนเกิน progressDeadlineSeconds (2) ขั้นที่ 4 ร้านยังเปิด 3/3 เพราะ Pod เก่าไม่ถูกลด (3) ขั้นที่ 5 หาสาเหตุจาก Events และ Conditions (4) ขั้นที่ 6–7 rollout undo แล้ว Pod เดิมยังอยู่ครบ</em>
+<p align="center" id="fig-12">
+  <img src="images/04a-lab3-plan.png" alt="รูปที่ 12 แผนการทดลอง LAB3" width="900"><br>
+  <em><b>รูปที่ 12</b> แผนการทดลอง LAB3 มี 4 การทดลอง: (1) ขั้นที่ 1–3 อัปเดตเป็น image ที่ไม่มีจริงจนเกิน progressDeadlineSeconds (2) ขั้นที่ 4 ร้านยังเปิด 3/3 เพราะ Pod เก่าไม่ถูกลด (3) ขั้นที่ 5 หาสาเหตุจาก Events และ Conditions (4) ขั้นที่ 6–7 rollout undo แล้ว Pod เดิมยังอยู่ครบ</em>
 </p>
 
 ### ขั้นที่ 1: สร้าง Deployment รุ่นดี
@@ -1458,16 +1508,16 @@ No resources found in default namespace.
 
 ## LAB 4: LAB สุดท้าย: ร้านอาหารแมวน้องส้มเปลี่ยนเมนูโดยไม่ปิดร้าน
 
-<p align="center" id="fig-9">
-  <img src="images/05-lab4-som-menu-rolling.png" alt="รูปที่ 9 LAB4 ร้านน้องส้มทยอยเปลี่ยนเมนูทีละสาขา" width="900"><br>
-  <em><b>รูปที่ 9</b> LAB สุดท้าย: Deployment som-menu ทยอยเปลี่ยนหน้าร้านจากเวอร์ชัน 1.0 (ส้ม) เป็นเวอร์ชัน 2.0 (เขียวอมฟ้า) ทีละสาขา เปิดสาขาใหม่ได้เกินทีละ 1 (maxSurge: 1) และสาขาที่พร้อมไม่ต่ำกว่า 3 เลย (maxUnavailable: 0) ลูกค้าจึงได้รับบริการตลอด</em>
+<p align="center" id="fig-13">
+  <img src="images/05-lab4-som-menu-rolling.png" alt="รูปที่ 13 LAB4 ร้านน้องส้มทยอยเปลี่ยนเมนูทีละสาขา" width="900"><br>
+  <em><b>รูปที่ 13</b> LAB สุดท้าย: Deployment som-menu ทยอยเปลี่ยนหน้าร้านจากเวอร์ชัน 1.0 (ส้ม) เป็นเวอร์ชัน 2.0 (เขียวอมฟ้า) ทีละสาขา เปิดสาขาใหม่ได้เกินทีละ 1 (maxSurge: 1) และสาขาที่พร้อมไม่ต่ำกว่า 3 เลย (maxUnavailable: 0) ลูกค้าจึงได้รับบริการตลอด</em>
 </p>
 
 **เป้าหมาย:** เปิดหน้าร้านน้องส้ม 3 สาขาด้วย Deployment เปลี่ยนเมนูเป็นเวอร์ชัน 2.0 โดยร้านไม่ปิดเลย ดูสองรุ่นเปิดปนกันระหว่างเปลี่ยน แล้วย้อนกลับเมื่อลูกค้าไม่ชอบเมนูใหม่
 
-<p align="center" id="fig-10">
-  <img src="images/05c-lab4-plan.png" alt="รูปที่ 10 แผนการทดลอง LAB4" width="900"><br>
-  <em><b>รูปที่ 10</b> แผนการทดลอง LAB4 มี 4 การทดลอง: (1) ขั้นที่ 0–5 เปิดร้าน 3 สาขาเวอร์ชัน 1.0 (2) ขั้นที่ 6–7 ทยอยเปลี่ยนเป็นเวอร์ชัน 2.0 โดยสาขาที่พร้อมไม่ต่ำกว่า 3 (3) ขั้นที่ 8 port-forward หลุดต้องต่อท่อใหม่ (4) ขั้นที่ 9–12 ย้อนกลับเป็นเวอร์ชัน 1.0 แล้ว apply ไฟล์ให้ตรงกับคลัสเตอร์</em>
+<p align="center" id="fig-14">
+  <img src="images/05c-lab4-plan.png" alt="รูปที่ 14 แผนการทดลอง LAB4" width="900"><br>
+  <em><b>รูปที่ 14</b> แผนการทดลอง LAB4 มี 4 การทดลอง: (1) ขั้นที่ 0–5 เปิดร้าน 3 สาขาเวอร์ชัน 1.0 (2) ขั้นที่ 6–7 ทยอยเปลี่ยนเป็นเวอร์ชัน 2.0 โดยสาขาที่พร้อมไม่ต่ำกว่า 3 (3) ขั้นที่ 8 port-forward หลุดต้องต่อท่อใหม่ (4) ขั้นที่ 9–12 ย้อนกลับเป็นเวอร์ชัน 1.0 แล้ว apply ไฟล์ให้ตรงกับคลัสเตอร์</em>
 </p>
 
 หน้าร้าน (`som-menu/app/server.js`) เป็นเว็บ Node.js เล็ก ๆ ตัวเดียวกับบทที่ 3 บอก **ชื่อ Pod ที่เสิร์ฟหน้านี้** และเวอร์ชันของร้าน แต่ละ Pod = 1 สาขา
@@ -1480,9 +1530,9 @@ No resources found in default namespace.
 >
 > 🔍 **สังเกต:** มุมล่างซ้ายขึ้น `Container tuchsanai/devtools-kind:2569_1 (k8s-lab)` และเปิดโฟลเดอร์ `02_LAB` แล้ว
 
-<p align="center" id="fig-11">
-  <img src="images/05a-lab4-vscode-attach.png" alt="รูปที่ 11 LAB4 attach VS Code เข้า container k8s-lab" width="900"><br>
-  <em><b>รูปที่ 11</b> LAB4 ขั้นที่ 0 (ภาพจำลองหน้าจอ VS Code): ในแท็บ Containers คลิกขวาที่ k8s-lab แล้วเลือก Attach Visual Studio Code</em>
+<p align="center" id="fig-15">
+  <img src="images/05a-lab4-vscode-attach.png" alt="รูปที่ 15 LAB4 attach VS Code เข้า container k8s-lab" width="900"><br>
+  <em><b>รูปที่ 15</b> LAB4 ขั้นที่ 0 (ภาพจำลองหน้าจอ VS Code): ในแท็บ Containers คลิกขวาที่ k8s-lab แล้วเลือก Attach Visual Studio Code</em>
 </p>
 
 1. เปิด VS Code บนเครื่องนักศึกษา กดไอคอน **Containers** ที่แถบซ้าย
@@ -1712,16 +1762,16 @@ Forwarding from [::1]:8080 -&gt; 3000
 
 คำสั่งนี้ **ค้างไว้** (อย่าปิด) แล้วไปที่แท็บ **PORTS** ของ VS Code ชี้ที่แถว port `8080` แล้วกดไอคอน **ลูกโลก (Open in Browser)** (ถ้าไม่เห็นแถว กด **Forward a Port** แล้วพิมพ์ `8080`)
 
-<p align="center" id="fig-12">
-  <img src="images/05b-lab4-vscode-ports.png" alt="รูปที่ 12 LAB4 เปิดเว็บผ่านแท็บ PORTS ของ VS Code" width="900"><br>
-  <em><b>รูปที่ 12</b> LAB4 ขั้นที่ 4 (ภาพจำลองหน้าจอ VS Code ที่ attach เข้า k8s-lab แล้ว): แท็บ PORTS แสดง port 8080 ที่มาจาก kubectl port-forward deploy/som-menu 8080:3000 ชี้ที่แถวนั้นแล้วกดไอคอนลูกโลก Open in Browser</em>
+<p align="center" id="fig-16">
+  <img src="images/05b-lab4-vscode-ports.png" alt="รูปที่ 16 LAB4 เปิดเว็บผ่านแท็บ PORTS ของ VS Code" width="900"><br>
+  <em><b>รูปที่ 16</b> LAB4 ขั้นที่ 4 (ภาพจำลองหน้าจอ VS Code ที่ attach เข้า k8s-lab แล้ว): แท็บ PORTS แสดง port 8080 ที่มาจาก kubectl port-forward deploy/som-menu 8080:3000 ชี้ที่แถวนั้นแล้วกดไอคอนลูกโลก Open in Browser</em>
 </p>
 
 🌐 browser จะเปิด `http://localhost:8080` เห็นหน้าร้านเวอร์ชัน 1.0 และชื่อ Pod ที่เสิร์ฟหน้านี้
 
-<p align="center" id="fig-13">
-  <img src="images/screenshots/20261018_lab4_01-shop-v1.png" alt="รูปที่ 13 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 1.0" width="650"><br>
-  <em><b>รูปที่ 13</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านเวอร์ชัน 1.0 เสิร์ฟโดย Pod som-menu-5f5c95db8f-7zv4t (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward deploy/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
+<p align="center" id="fig-17">
+  <img src="images/screenshots/20261018_lab4_01-shop-v1.png" alt="รูปที่ 17 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 1.0" width="650"><br>
+  <em><b>รูปที่ 17</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านเวอร์ชัน 1.0 เสิร์ฟโดย Pod som-menu-5f5c95db8f-7zv4t (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward deploy/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
 </p>
 
 **จดชื่อ Pod ที่เห็นบนหน้าเว็บไว้** (ตัวอย่างนี้คือ `som-menu-5f5c95db8f-7zv4t` ของนักศึกษาจะต่างไป)
@@ -1932,9 +1982,9 @@ E1018 14:14:44.332755   32022 portforward.go:549] "An error occurred forwarding"
 error: lost connection to pod
 </pre>
 
-<p align="center" id="fig-14">
-  <img src="images/06-lab4-port-forward-lost.png" alt="รูปที่ 14 port-forward หลุดเมื่อ Pod รุ่นเก่าถูกปิด" width="900"><br>
-  <em><b>รูปที่ 14</b> port-forward ต่อท่อเข้าสาขาเดียว (Pod som-menu-5f5c95db8f-7zv4t) เมื่อผู้จัดการเปลี่ยนสาขานั้นเป็นรุ่นใหม่ Pod เก่าถูกปิด ท่อจึงขาด (lost connection to pod) แม้สาขา v2.0 จะเปิดครบแล้ว ต้องต่อท่อใหม่เอง</em>
+<p align="center" id="fig-18">
+  <img src="images/06-lab4-port-forward-lost.png" alt="รูปที่ 18 port-forward หลุดเมื่อ Pod รุ่นเก่าถูกปิด" width="900"><br>
+  <em><b>รูปที่ 18</b> port-forward ต่อท่อเข้าสาขาเดียว (Pod som-menu-5f5c95db8f-7zv4t) เมื่อผู้จัดการเปลี่ยนสาขานั้นเป็นรุ่นใหม่ Pod เก่าถูกปิด ท่อจึงขาด (lost connection to pod) แม้สาขา v2.0 จะเปิดครบแล้ว ต้องต่อท่อใหม่เอง</em>
 </p>
 
 ร้าน **ไม่ได้ปิด** (สาขา v2.0 เปิดครบ 3) แต่ port-forward ผูกกับ **Pod ตัวเดียว** ที่เลือกไว้ตอนเริ่ม Pod นั้นถูกปิด ท่อก็ขาด ปัญหานี้ Deployment แก้ไม่ได้ ต้องรอ **Service** ในบทถัดไป ตอนนี้ต่อท่อใหม่ใน **terminal แรก**
@@ -1952,9 +2002,9 @@ Forwarding from [::1]:8080 -&gt; 3000
 
 refresh browser จะเห็นหน้าร้านสีเขียวอมฟ้า **เวอร์ชัน 2.0** มีเมนูใหม่ "ไอศกรีมแมว"
 
-<p align="center" id="fig-15">
-  <img src="images/screenshots/20261018_lab4_02-shop-v2.png" alt="รูปที่ 15 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 2.0" width="650"><br>
-  <em><b>รูปที่ 15</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านเวอร์ชัน 2.0 เสิร์ฟโดย Pod som-menu-6bf6c9f6c5-dfxqw มีเมนูใหม่ไอศกรีมแมว (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward deploy/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
+<p align="center" id="fig-19">
+  <img src="images/screenshots/20261018_lab4_02-shop-v2.png" alt="รูปที่ 19 ภาพหน้าจอจริง หน้าร้านเวอร์ชัน 2.0" width="650"><br>
+  <em><b>รูปที่ 19</b> ภาพหน้าจอจริงจากการทดลอง: หน้าร้านเวอร์ชัน 2.0 เสิร์ฟโดย Pod som-menu-6bf6c9f6c5-dfxqw มีเมนูใหม่ไอศกรีมแมว (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward deploy/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
 </p>
 
 ใน terminal ที่ 2 ดู log ของสาขาที่เห็นบนหน้าเว็บ
@@ -2105,9 +2155,9 @@ Forwarding from [::1]:8080 -&gt; 3000
 
 refresh browser จะเห็นหน้าร้านสีส้ม **เวอร์ชัน 1.0** กลับมา (ไม่มีเมนูไอศกรีมแมว) และชื่อ Pod ขึ้นต้น `som-menu-5f5c95db8f-` เหมือนตอนแรก แต่ท้ายชื่อเป็นตัวใหม่
 
-<p align="center" id="fig-16">
-  <img src="images/screenshots/20261018_lab4_03-shop-rollback-v1.png" alt="รูปที่ 16 ภาพหน้าจอจริง ย้อนกลับเป็นเวอร์ชัน 1.0" width="650"><br>
-  <em><b>รูปที่ 16</b> ภาพหน้าจอจริงจากการทดลอง: หลัง kubectl rollout undo หน้าร้านกลับเป็นเวอร์ชัน 1.0 เสิร์ฟโดย Pod som-menu-5f5c95db8f-jbh7d (แม่พิมพ์เดิม hash เดิม แต่เป็น Pod ใหม่) (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward deploy/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
+<p align="center" id="fig-20">
+  <img src="images/screenshots/20261018_lab4_03-shop-rollback-v1.png" alt="รูปที่ 20 ภาพหน้าจอจริง ย้อนกลับเป็นเวอร์ชัน 1.0" width="650"><br>
+  <em><b>รูปที่ 20</b> ภาพหน้าจอจริงจากการทดลอง: หลัง kubectl rollout undo หน้าร้านกลับเป็นเวอร์ชัน 1.0 เสิร์ฟโดย Pod som-menu-5f5c95db8f-jbh7d (แม่พิมพ์เดิม hash เดิม แต่เป็น Pod ใหม่) (ทดสอบ 18 ต.ค. 2569 ด้วย browser จริงบนเครื่อง host ผ่าน kubectl port-forward deploy/som-menu 8080:3000 ตอนถ่ายต่อท่อออกมาด้วย SSH tunnel แทนแท็บ PORTS ของ VS Code หน้าเว็บที่เห็นเหมือนกัน)</em>
 </p>
 
 ### ขั้นที่ 11: ทำให้ไฟล์ตรงกับคลัสเตอร์
