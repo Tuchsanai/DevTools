@@ -176,7 +176,78 @@ spec:                                 selector:
 - `metadata` / `spec` **ระดับบนสุด** = ของ ReplicaSet
 - `template.metadata` / `template.spec` (เยื้องลึกกว่า) = ของ **Pod** ที่จะถูกสร้าง
 
-### 4.2 ไล่ไฟล์จริงจาก LAB 1
+### 4.2 หลักการเขียน: โครง 3 ชั้น
+
+<p align="center">
+  <img src="images/06a-rs-yaml-recipe.png" alt="สูตรเขียน ReplicaSet 4 ขั้น หัวไฟล์ replicas template selector" width="800">
+</p>
+
+ไฟล์ ReplicaSet ทุกไฟล์มีโครงเดียวกัน ต่างกันแค่ค่าในวงเล็บ `<...>` จำโครงนี้ได้ก็เขียนเองได้ทุกไฟล์
+
+```yaml
+# ── ชั้น 1: หัวไฟล์ (ของ ReplicaSet) ─────────────────────
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: <ชื่อ ReplicaSet>
+spec:
+  # ── ชั้น 2: ReplicaSet ต้องรู้ 3 เรื่อง ──────────────────
+  replicas: <จำนวน>              # ① อยากได้กี่ตัว
+  selector:                      # ② นับ Pod ตัวไหนเป็นของเรา
+    matchLabels:
+      <key>: <value>
+  template:                      # ③ Pod หน้าตาแบบไหน
+    # ── ชั้น 3: Pod ทั้งตัว (ของ Pod ที่จะถูกสร้าง) ───────
+    metadata:
+      labels:
+        <key>: <value>           # ต้องมีป้ายทุกคู่ที่อยู่ใน ②
+    spec:
+      containers:
+        - name: <ชื่อ container>
+          image: <image>
+```
+
+หลักการ 4 ข้อ
+
+1. **ชั้น 1** มี 4 key เหมือน object ทุกตัวใน Kubernetes: `apiVersion`, `kind`, `metadata`, `spec`
+2. **ชั้น 2** `spec` ของ ReplicaSet มีลูก 3 ตัวที่เป็นพี่น้องกัน (เยื้อง 2 ช่องเท่ากัน) ตอบ 3 คำถาม: **กี่ตัว** (`replicas`) / **นับตัวไหน** (`selector`) / **หน้าตาแบบไหน** (`template`)
+3. **ชั้น 3** `template` มีลูกแค่ 2 ตัวคือ `metadata` กับ `spec` = Pod จากบทที่ 2 ที่ตัด `apiVersion`, `kind` และ `name` ออก (ไม่ต้องตั้งชื่อ Pod เพราะระบบตั้งให้ หัวข้อ 5.2)
+4. **ป้ายต้องเชื่อมกัน** ทุกคู่ใน `selector.matchLabels` ต้องมีอยู่ใน `template.metadata.labels` ด้วย (หัวข้อ 4.4 และ 5.1)
+
+เวลาอ่านเอกสารหรือ error มักเขียนตำแหน่งเป็น **path แบบจุด** ไล่จากชั้นนอกเข้าใน เช่น error ในหัวข้อ 5.1 ชี้ไปที่ `spec.template.metadata.labels`
+
+- `spec.replicas` → จำนวน (ของ ReplicaSet)
+- `spec.selector.matchLabels` → ป้ายที่ใช้นับ (ของ ReplicaSet)
+- `spec.template.metadata.labels` → ป้ายที่ติดให้ Pod ทุกตัว (ของ Pod)
+- `spec.template.spec.containers` → container ข้างใน Pod (ของ Pod)
+
+**สูตรเขียนจากไฟล์ Pod เดิม 4 ขั้น** (ตรงกับ 4 การ์ดในภาพ)
+
+1. เปลี่ยนหัวไฟล์เป็น `apiVersion: apps/v1` และ `kind: ReplicaSet` ตั้ง `metadata.name`
+2. ใต้ `spec` ใส่ `replicas: 3`
+3. ยก `metadata` (เหลือแค่ `labels`) กับ `spec` ของ Pod เดิมไปไว้ใต้ `template:` แล้ว **เยื้องเข้าไปอีก 4 ช่อง**
+4. ก๊อปป้ายจาก `template.metadata.labels` มาใส่ `selector.matchLabels`
+
+นับช่องว่างของ `web-rs.yaml` (หัวข้อ 4.3) ดูได้ว่าแต่ละชั้นลึกเท่าไร
+
+```text
+spec:                          ← 0 ช่อง  ชั้น 1
+  replicas: 3                  ← 2 ช่อง  ชั้น 2
+  selector:                    ← 2 ช่อง
+    matchLabels:               ← 4 ช่อง
+      app: web                 ← 6 ช่อง
+  template:                    ← 2 ช่อง
+    metadata:                  ← 4 ช่อง  ชั้น 3 เริ่มที่นี่ (เดิมในไฟล์ Pod อยู่ที่ 0 ช่อง)
+      labels:                  ← 6 ช่อง
+        app: web               ← 8 ช่อง
+    spec:                      ← 4 ช่อง
+      containers:              ← 6 ช่อง
+        - name: nginx          ← 8 ช่อง
+```
+
+> YAML ใช้ **space เท่านั้น ห้ามใช้ Tab** และเยื้องทีละ 2 ช่องทั้งไฟล์ ถ้าเยื้องคลาดไปช่องเดียว key จะไปเป็นลูกของคนอื่นทันที
+
+### 4.3 ไล่ไฟล์จริงจาก LAB 1
 
 <p align="center">
   <img src="images/07-rs-yaml-three-parts.png" alt="สามส่วนสำคัญ replicas selector template" width="800">
@@ -228,13 +299,109 @@ spec:
 
 แปลทั้งไฟล์เป็นประโยคเดียว: **"ขอ ReplicaSet ชื่อ `web` ดูแล Pod ที่ติดป้าย `app=web` ให้มี 3 ตัวเสมอ ถ้าต้องสร้างใหม่ ให้สร้างจากแม่พิมพ์ที่มี container `nginx` ใช้ image `nginx:1.27-alpine` ฟัง port 80"**
 
-### 4.3 ผิดบ่อย แก้ง่าย
+### 4.4 selector.matchLabels จับคู่กับป้ายอย่างไร
+
+<p align="center">
+  <img src="images/07a-matchlabels-matching.png" alt="หัวหน้าลูกเรือถือป้าย app=web นับเฉพาะ Pod ที่มีป้ายตรงทุกตัวอักษร" width="800">
+</p>
+
+`matchLabels` คือรายการป้ายแบบ `key: value` ที่หัวหน้าลูกเรือถือไว้ ทุกรอบที่นับ หัวหน้าเดินดูป้ายของ Pod ทุกตัวใน namespace แล้วใช้กติกา 3 ข้อ
+
+1. **ต้องมีครบทุกคู่** ถ้า `matchLabels` มี 2 ป้าย Pod ต้องมีทั้ง 2 ป้าย (ขาดป้ายเดียวก็ไม่นับ)
+2. **ต้องตรงทุกตัวอักษร** ทั้ง key และ value ตัวพิมพ์เล็ก-ใหญ่ต่างกันก็ไม่ตรง (`Web` ≠ `web`)
+3. **ป้ายเกินได้** Pod มีป้ายอื่นเพิ่มนอกจากที่ selector ขอ ก็ยังนับ
+
+ทดลองจริงใน namespace ทดสอบ: สร้าง Pod เดี่ยว 5 ตัวที่ติดป้ายต่างกัน แล้วถามว่า selector `app: web` จะนับตัวไหน
+
+| Pod | ป้าย | นับไหม | เพราะ |
+|---|---|:---:|---|
+| `p-web` | `app=web` | ✅ | ตรงพอดี |
+| `p-web-v1` | `app=web`, `version=1.0` | ✅ | มี `app=web` ครบ ป้าย `version` เกินมาไม่เป็นไร |
+| `p-website` | `app=website` | ❌ | value ไม่ตรง (`website` ≠ `web`) |
+| `p-web-upper` | `app=Web` | ❌ | ตัวพิมพ์ใหญ่ไม่ตรง |
+| `p-tier` | `tier=web` | ❌ | key ไม่ตรง (`tier` ≠ `app`) แม้ value จะเป็น `web` |
+
+`kubectl get pods -l` ใช้กติกาเดียวกับ selector จึงใช้ **ตรวจล่วงหน้า** ได้ว่า ReplicaSet จะนับ Pod ตัวไหน (`-l` เขียนป้ายแบบ `key=value` หลายป้ายคั่นด้วย `,` = ต้องมีครบทุกป้าย)
+
+```text
+$ kubectl get pods --show-labels
+NAME          READY   STATUS    RESTARTS   AGE   LABELS
+p-tier        1/1     Running   0          21s   tier=web
+p-web         1/1     Running   0          21s   app=web
+p-web-upper   1/1     Running   0          5s    app=Web
+p-web-v1      1/1     Running   0          21s   app=web,version=1.0
+p-website     1/1     Running   0          21s   app=website
+
+$ kubectl get pods -l app=web --show-labels
+NAME       READY   STATUS    RESTARTS   AGE   LABELS
+p-web      1/1     Running   0          21s   app=web
+p-web-v1   1/1     Running   0          21s   app=web,version=1.0
+
+$ kubectl get pods -l app=web,version=1.0
+NAME       READY   STATUS    RESTARTS   AGE
+p-web-v1   1/1     Running   0          21s
+```
+
+แล้ว apply `web-rs.yaml` (`replicas: 3`) ลงใน namespace เดียวกัน หัวหน้านับได้ 2 ตัวอยู่แล้ว (`p-web`, `p-web-v1`) จึง **สร้างเพิ่มแค่ 1 ตัว** และรับ 2 ตัวนั้นเป็นลูกด้วย
+
+```text
+$ kubectl get rs
+NAME   DESIRED   CURRENT   READY   AGE
+web    3         3         3       6s
+
+$ kubectl describe rs web
+...
+  Normal  SuccessfulCreate  6s    replicaset-controller  Created pod: web-fw2bl
+
+$ kubectl get pods -o custom-columns=NAME:.metadata.name,OWNER:.metadata.ownerReferences[0].name
+NAME          OWNER
+p-tier        <none>
+p-web         web
+p-web-upper   <none>
+p-web-v1      web
+p-website     <none>
+web-fw2bl     web
+```
+
+selector ไม่สนว่าใครสร้าง Pod ขอแค่ป้ายตรงก็นับ (ผลที่ตามมาดูหัวข้อ 8)
+
+**selector ที่มีหลายป้าย** แม่พิมพ์ต้องติดป้ายให้ครบทุกคู่ด้วย ไม่งั้นแม่พิมพ์จะปั๊ม Pod ที่ตัวเองนับไม่ได้ ตัวอย่างนี้ selector ขอ `version: "2.0"` แต่แม่พิมพ์ติด `"1.0"`
+
+```yaml
+  selector:
+    matchLabels:
+      app: som-menu
+      version: "2.0"       # selector ขอ 2 ป้าย
+  template:
+    metadata:
+      labels:
+        app: som-menu      # ✅ ตรง
+        version: "1.0"     # ❌ ไม่ตรง → ไม่ครบทุกคู่
+```
+
+```text
+The ReplicaSet "som-menu" is invalid: spec.template.metadata.labels: Invalid value: {"app":"som-menu","version":"1.0"}: `selector` does not match template `labels`
+```
+
+ในไฟล์ของบทนี้จึงใช้ selector แค่ป้ายเดียว (`app`) แล้วใส่ป้ายเสริมอย่าง `version` ไว้ในแม่พิมพ์อย่างเดียว (LAB 4)
+
+**ค่าป้ายเป็นข้อความเสมอ** ค่าที่หน้าตาเหมือนตัวเลขต้องใส่ `""` ถ้าเขียน `version: 1.0` YAML จะอ่านเป็นตัวเลข แล้ว apply ไม่ผ่าน
+
+```text
+Error from server (BadRequest): error when creating "<ไฟล์>": ReplicaSet in version "v1" cannot be handled as a ReplicaSet: json: cannot unmarshal number into Go struct field ObjectMeta.spec.template.metadata.labels of type string
+```
+
+> นอกจาก `matchLabels` ยังมี `matchExpressions` ที่เขียนเงื่อนไขได้ซับซ้อนกว่า (เช่น "version เป็น 1.0 หรือ 2.0") แต่บทนี้และบทถัด ๆ ไปใช้แค่ `matchLabels`
+
+### 4.5 ผิดบ่อย แก้ง่าย
 
 | ผิด | ถูก | เพราะ |
 |---|---|---|
 | `apiVersion: v1` | `apiVersion: apps/v1` | ReplicaSet อยู่กลุ่ม `apps` |
 | `kind: Replicaset` | `kind: ReplicaSet` | ตัว S ต้องใหญ่ |
 | `replicas: "3"` | `replicas: 3` | จำนวนต้องเป็นตัวเลข ไม่ใส่ `""` |
+| ป้าย `version: 1.0` | `version: "1.0"` | ค่าป้ายต้องเป็นข้อความ (หัวข้อ 4.4) |
+| `selector: app: web` (ไม่มี `matchLabels`) | `selector:` → `matchLabels:` → `app: web` | ป้ายต้องอยู่ใต้ `matchLabels` ไม่งั้นได้ `unknown field "spec.selector.app"` |
 | ลืม `selector` | ใส่ `selector.matchLabels` | `apps/v1` บังคับต้องมี |
 | ป้ายใน `template` ไม่ตรง selector | ทำให้ตรงกัน | Kubernetes ปฏิเสธ (หัวข้อ 5.1) |
 | `containers` อยู่ใต้ `spec` ระดับบน | อยู่ใต้ `template.spec` | container เป็นของ Pod ไม่ใช่ของ ReplicaSet |
@@ -251,25 +418,47 @@ spec:
 
 ถ้าแม่พิมพ์ติดป้าย `app=website` แต่ selector นับ `app=web` หัวหน้าจะสร้างกล่องที่ตัวเอง **นับไม่เจอ** แล้วสร้างใหม่ไม่รู้จบ Kubernetes จึง **ปฏิเสธตั้งแต่ apply**
 
+ไฟล์ทั้งไฟล์ด้านล่างคือ `web-rs.yaml` (หัวข้อ 4.3) ที่เปลี่ยนแค่ 2 บรรทัดที่มี `←`
+
 ```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
 metadata:
-  name: bad-web
+  name: bad-web              # ← ตั้งชื่อใหม่ ไม่ให้ชนกับ web
 spec:
+  replicas: 3
   selector:
     matchLabels:
-      app: web           # หัวหน้านับป้าย app=web
+      app: web               # หัวหน้านับป้าย app=web
   template:
     metadata:
       labels:
-        app: website     # แต่แม่พิมพ์ติดป้าย app=website → ไม่ตรง
-...
+        app: website         # ← แม่พิมพ์ติดป้าย app=website → ไม่ตรงกับ selector
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
 ```
 
-ถ้าลอง apply ReplicaSet ที่ป้ายไม่ตรงแบบนี้ จะได้ error นี้
+ไล่ดูทีละจุด
+
+- `spec.selector.matchLabels` ขอป้าย `app=web`
+- `spec.template.metadata.labels` ติดป้าย `app=website` → value ไม่ตรง (กติกาข้อ 2 ในหัวข้อ 4.4)
+- ส่วนอื่นถูกทุกบรรทัด แต่ทั้งไฟล์ใช้ไม่ได้เพราะป้าย 2 จุดนี้ไม่เชื่อมกัน
+
+ลอง apply จะได้ error นี้ และไม่มี ReplicaSet ถูกสร้างเลย
 
 ```text
+$ kubectl apply -f bad-web-rs.yaml
 The ReplicaSet "bad-web" is invalid: spec.template.metadata.labels: Invalid value: {"app":"website"}: `selector` does not match template `labels`
+
+$ kubectl get rs
+No resources found in default namespace.
 ```
+
+อ่าน error ตาม path แบบจุด: ปัญหาอยู่ที่ `spec.template.metadata.labels` ค่าที่เห็นคือ `{"app":"website"}` และเหตุผลคือ selector ไม่ตรงกับป้ายของแม่พิมพ์ แก้โดยเปลี่ยน `app: website` เป็น `app: web` ให้ตรงกับ selector
 
 - ป้ายใน template **มีมากกว่า** selector ได้ เช่น `som-menu-rs.yaml` (LAB 4) ติดป้าย `app: som-menu` + `version: "1.0"` แต่ selector ใช้แค่ `app`
 - `selector` **แก้ไม่ได้** หลังสร้างแล้ว อยากเปลี่ยนต้องลบแล้วสร้างใหม่
@@ -280,21 +469,58 @@ The ReplicaSet "bad-web" is invalid: spec.template.metadata.labels: Invalid valu
   <img src="images/09-pod-name-owner.png" alt="ชื่อ Pod สุ่มท้าย และ ownerReferences ชี้กลับหา ReplicaSet" width="800">
 </p>
 
-Pod ที่ ReplicaSet สร้างมีชื่อแบบ `<ชื่อ ReplicaSet>-<สุ่ม 5 ตัว>` และมี **ป้ายบอกเจ้าของ** อยู่ใน metadata ดูได้จาก `kubectl get pod web-l96sh -o yaml` (LAB 1 ตัดมาบางบรรทัด)
+Pod ที่ ReplicaSet สร้างมีชื่อแบบ `<ชื่อ ReplicaSet>-<สุ่ม 5 ตัว>` และมี **ป้ายบอกเจ้าของ** อยู่ใน metadata ดูได้จาก `kubectl get pod <ชื่อ Pod> -o yaml` (LAB 1 ขั้นที่ 5)
+
+ด้านล่างคือ **Pod ทั้งตัว** จากการรัน `web-rs.yaml` อีกรอบ (ชื่อสุ่มใหม่จึงเป็น `web-4ttw5` ไม่ใช่ `web-l96sh` แบบใน LAB) ของจริงยาวราว 140 บรรทัด ส่วนที่ไม่เกี่ยวกับบทนี้ตัดเหลือ `...` ไว้ ให้ดูว่าแต่ละบรรทัด **มาจากไหน**
 
 ```yaml
+apiVersion: v1
+kind: Pod
 metadata:
-  generateName: web-           # ← ขึ้นต้นด้วย web- แล้วระบบสุ่มต่อท้าย
+  creationTimestamp: "2026-10-19T03:07:32Z"   # ← ระบบเติม: เวลาที่เกิด
+  generateName: web-                          # ← ReplicaSet: ชื่อขึ้นต้นด้วย web- แล้วให้ระบบสุ่มต่อท้าย
+  generation: 1
   labels:
-    app: web
-  name: web-l96sh
-  ownerReferences:             # ← เจ้าของของ Pod นี้
+    app: web                                  # ← แม่พิมพ์ (template.metadata.labels)
+  name: web-4ttw5                             # ← ระบบสุ่มให้: web- + 5 ตัว
+  namespace: default
+  ownerReferences:                            # ← ReplicaSet: เจ้าของของ Pod นี้
   - apiVersion: apps/v1
     blockOwnerDeletion: true
     controller: true
     kind: ReplicaSet
     name: web
+    uid: c5182bb1-f176-4b06-ba7e-8bf373a5b71b
+  resourceVersion: "81765"
+  uid: 99aacb80-589f-4b27-9fb7-c455c634d819
+spec:
+  containers:
+  - image: nginx:1.27-alpine                  # ← แม่พิมพ์ (template.spec.containers)
+    imagePullPolicy: IfNotPresent             # ← ระบบเติมค่าเริ่มต้น
+    name: nginx                               # ← แม่พิมพ์
+    ports:
+    - containerPort: 80                       # ← แม่พิมพ์
+      protocol: TCP                           # ← ระบบเติมค่าเริ่มต้น
+    resources: {}
+    ...                                       #   (volumeMounts ฯลฯ ระบบเติม)
+  dnsPolicy: ClusterFirst
+  nodeName: lab-worker                        # ← kube-scheduler เลือกเรือให้
+  restartPolicy: Always                       # ← ระบบเติมค่าเริ่มต้น (บทที่ 2)
+  schedulerName: default-scheduler
+  ...                                         #   (tolerations, volumes ฯลฯ ระบบเติม)
+status:                                       # ← kubelet รายงานสถานะจริง
+  ...
+  phase: Running
+  podIP: 10.244.2.24
+  qosClass: BestEffort
+  startTime: "2026-10-19T03:07:32Z"
 ```
+
+อ่านภาพรวมได้ 3 กลุ่ม
+
+- **มาจากแม่พิมพ์** = `labels` และ `containers` (`name`, `image`, `containerPort`) ตรงกับที่เราเขียนใน `template` ทุกตัวอักษร Pod ทุกตัวของ ReplicaSet นี้จึงมีส่วนนี้เหมือนกันหมด
+- **ReplicaSet เติม** = `generateName` และ `ownerReferences` สองบรรทัดนี้คือสิ่งที่ Pod เดี่ยวในบทที่ 2 **ไม่มี**
+- **ระบบเติม/รายงาน** = ชื่อสุ่ม, `uid`, ค่าเริ่มต้นต่าง ๆ, `nodeName` จาก kube-scheduler และ `status` จาก kubelet ส่วนนี้ต่างกันในแต่ละ Pod
 
 - ชื่อสุ่มทำให้ Pod **ไม่ซ้ำกัน** แม้จะออกมาจากแม่พิมพ์เดียวกัน
 - `ownerReferences` ทำให้ **ลบ ReplicaSet แล้ว Pod ลูกถูกลบตาม** (LAB 1 ตอนท้าย: `kubectl delete -f` แล้ว Pod ขึ้น `Terminating` ทั้ง 3 ตัว)
